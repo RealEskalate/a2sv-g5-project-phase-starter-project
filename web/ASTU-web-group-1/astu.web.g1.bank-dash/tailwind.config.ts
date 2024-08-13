@@ -1,13 +1,13 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 
 const config = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -18,7 +18,41 @@ const config = {
       },
     },
     extend: {
+      fontSize: {
+        "13px": "0.8125rem", // 13px
+        "15px": "0.9375rem", // 15px
+        "16px": "1rem", // 16px
+        "17px": "1.0625rem", // 17px
+        "18px": "1.125rem", // 18px
+        "20px": "1.25rem", // 20px
+        "22px": "1.375rem", // 22px
+        "28px": "1.75rem", // 28px
+      },
       colors: {
+        // Custom FontStyles and Colors
+
+        navy: "#343c6a",
+        blue: "#2d60ff",
+        "blue-steel": "#718ebf",
+        "blue-bright": "#1814f3",
+
+        /* Grays */
+        "gray-light": "#b1b1b1",
+        "gray-dark": "#232323",
+
+        /* Accent Colors */
+        teal: "#16dbcc",
+        pink: "#ff82ac",
+        orange: "#fcaa0b",
+
+        /* Background */
+        "bg-light": "#f5f5f5",
+
+        /* Gradient Colors */
+        "grad-start": "#4c49ed",
+        "grad-end": "#0a06f4",
+
+        // Shadcn 
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -75,6 +109,6 @@ const config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config
+} satisfies Config;
 
-export default config
+export default config;

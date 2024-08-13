@@ -1,4 +1,3 @@
-Readme prepared for The Repository.
 
 # A2SV G5 Starter Project Phase Repository 
 

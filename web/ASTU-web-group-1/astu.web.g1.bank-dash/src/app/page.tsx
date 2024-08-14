@@ -1,5 +1,5 @@
-import Image from 'next/image';
+import MyCard from '@/components/MyCard/MyCard';
 
 export default function Home() {
-  return <>replace me by ur component</>;
+  return <></>;
 }

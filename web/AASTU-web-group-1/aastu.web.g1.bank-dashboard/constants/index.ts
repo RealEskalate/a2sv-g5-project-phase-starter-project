@@ -2,47 +2,47 @@ export const sidebarLinks = [
     {
         title: 'Dashboard',
         route: '/dashboard',
-        icon: '/icons/home.png'
+        icon: '/icons/home.svg'
     }, 
     {
         title: 'Transactions',
         route: '/dashboard/transactions',
-        icon: '/icons/transactions.png'
+        icon: '/icons/transactions.svg'
     }, 
     {
         title: 'Accounts',
         route: '/dashboard/accounts',
-        icon: '/icons/accounts.png'
+        icon: '/icons/accounts.svg'
     }, 
 
     {
         title: 'Investments',
         route: '/dashboard/investments',
-        icon: '/icons/investments.png'
+        icon: '/icons/investments.svg'
     }, 
     {
         title: 'Credit Cards',
         route: '/dashboard/credit-cards',
-        icon: '/icons/creditCards.png'
+        icon: '/icons/CreditCard.svg'
     }, 
     {
         title: 'Loans',
         route: '/dashboard/loans',
-        icon: '/icons/loans.png'
+        icon: '/icons/loans.svg'
     }, 
     {
         title: 'Services',
         route: '/dashboard/services',
-        icon: '/icons/services.png'
+        icon: '/icons/services.svg'
     }, 
     {
         title: 'My Privileges',
         route: '/dashboard/my-privileges',
-        icon: '/icons/myPriveleges.png'
+        icon: '/icons/MyPrivileges.svg'
     }, 
     {
         title: 'Setting',
         route: '/dashboard/setting',
-        icon: '/icons/setting.png'
+        icon: '/icons/Settings.svg'
     }, 
 ]

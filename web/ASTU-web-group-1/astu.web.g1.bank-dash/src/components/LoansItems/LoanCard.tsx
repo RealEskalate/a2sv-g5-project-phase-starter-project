@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
 
-function InvestmentCard({
+function LoanCard({
   image,
   name,
   amount,
@@ -35,4 +35,4 @@ function InvestmentCard({
   );
 }
 
-export default InvestmentCard;
+export default LoanCard;

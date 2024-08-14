@@ -8,21 +8,21 @@ interface titleProp {
 const Navbar = ({ title }: titleProp) => {
   return (
     <header>
-      <div className="flex justify-between p-5">
-        <div className="left-content flex justify-between items-center m-5">
+      <div className="flex justify-between">
+        <div className="left-content flex justify-between items-center pl-[27px]">
           <div className="logo flex items-center justify-between mr-14">
             <Image
               src={"/credit-card.png"}
-              width={50}
-              height={50}
+              width={36}
+              height={36}
               alt="bankDash logo"
               className="mr-3"
             />
-            <p className="font-extrabold text-3xl text-blue-950">BankDash.</p>
+            <p className="font-black text-[25px] text-[#343C6A]">BankDash.</p>
           </div>
 
           <div className="Title">
-            <p className="font-bold text-3xl text-blue-950">{title}</p>
+            <p className="font-semibold text-[25px] text-[#343C6A]">{title}</p>
           </div>
         </div>
 

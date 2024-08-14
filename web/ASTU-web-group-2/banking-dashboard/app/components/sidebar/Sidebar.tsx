@@ -8,7 +8,7 @@ const Sidebar = () => {
     <div className="absolute top-0 left-0 bottom-0 border-r border-[#E6EFF5] w-[240px]">
       <div className="flex flex-col w-[189px] h-[420px] gap-2  pt-[114px]">
         {sidebarListItems.map((item, index) => (
-          <div className="flex gap-6">
+          <div key={index} className="flex gap-6">
             <Link className="flex gap-5 " key={index} href={item.path}>
               {index === 0 ? (
                 <div className="h-[50px] w-[5px] bg-[#2D60FF] rounded-r-lg"></div>

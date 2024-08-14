@@ -17,7 +17,7 @@ export default function RootLayout({
     (item) => item.route === pathname
   )[0].title;
   return (
-    <main className="flex h-screen font-inter bg-white sm:bg-[#F5F7FA]">
+    <main className="flex h-screen font-inter bg-white md:bg-[#F5F7FA]">
       <Sidebar />
 
       <div className="flex-grow flex flex-col">

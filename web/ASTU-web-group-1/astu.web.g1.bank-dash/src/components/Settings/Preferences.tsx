@@ -66,7 +66,7 @@ const Preferences = () => {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="bg-blue-bright text-white px-10 py-2 rounded-lg"
+            className="bg-[#1814f3] text-white px-10 py-2 rounded-lg w-full md:w-auto mt-4"
           >
             Submit
           </button>

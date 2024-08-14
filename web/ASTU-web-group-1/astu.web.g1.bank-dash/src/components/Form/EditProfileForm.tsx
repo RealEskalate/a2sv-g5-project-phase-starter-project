@@ -9,7 +9,7 @@ const EditProfileForm = () => {
                 <InputGroup id="username" label="User Name" inputType="text" registerName="username" register={undefined} placeholder="Charlene Reed" />
             </div>
             <div className="flex flex-col md:flex-row md:space-x-5">
-                <InputGroup id="email" label="email" inputType="text" registerName="email" register={undefined} placeholder="charlene.reed@gmail.com" />
+                <InputGroup id="email" label="Email" inputType="text" registerName="email" register={undefined} placeholder="charlene.reed@gmail.com" />
                 <InputGroup id="password" label="Password" inputType="password" registerName="password" register={undefined} placeholder="*********************" />
             </div>
             <div className="flex flex-col md:flex-row md:space-x-5">
@@ -24,7 +24,7 @@ const EditProfileForm = () => {
                 <InputGroup id="postalCode" label="Postal Code" inputType="text" registerName="postalCode" register={undefined} placeholder="45322" />
                 <InputGroup id="country" label="Country" inputType="text" registerName="country" register={undefined} placeholder="USA" />
             </div>
-            <div className="flex justify-end"><button type="submit" className="bg-blue-bright text-white px-6 py-2 rounded-lg">Submit</button></div>
+            <div className="flex justify-end"><button type="submit" className="bg-[#1814f3] text-white px-10 py-2 rounded-lg w-full md:w-auto mt-4">Submit</button></div>
         </form>
     </div>
   )

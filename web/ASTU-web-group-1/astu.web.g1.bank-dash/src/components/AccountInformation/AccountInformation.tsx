@@ -1,33 +1,35 @@
 import React from "react";
+import AccountInformationCard from "./AccountInformationCard";
 
-interface AccountInformationProps {
-  image: string;
-  name: string;
-  balance: string;
-  color: string;
-}
-
-const AccountInformation = ({
-  image,
-  name,
-  balance,
-  color,
-}: AccountInformationProps) => {
+const AccountInformation = () => {
   return (
-    <div className="flex shadow-2xl items-center justify-center max-w-[255px] h-[85px] md:h-[120px] bg-white rounded-[25px] px-[36px] py-[25px]">
-      <div
-        className={`w-[45px]  md:w-[70px] ${color} relative right-4 h-[45px] md:h-[70px] rounded-full items-center justify-center`}
-      >
-        <img
-          src={image}
-          alt="image"
-          className="mx-auto my-[15px] md:my-[20px] w-[15px] md:w-[30px] h-[15px] md:h-[30px] object-cover"
-        />
-      </div>
-      <div className="flex flex-col gap-1">
-        <p className="text-[#718EBF] text-[12px] md:text-[16px]">{name}</p>
-        <h1 className="text-[16px] md:text-[25px] font-medium">${balance}</h1>
-      </div>
+    <div className="w-full grid grid-cols-2 grid-rows-2 min-[1030px]:grid-cols-4 md:grid-rows-1 grid-flow-row gap-4">
+      <AccountInformationCard
+        image="/assets/images/balance.png"
+        name="My Balance"
+        balance="12,7000"
+        color="bg-[#FFF5D9]"
+      />
+      <AccountInformationCard
+        image="/assets/images/income.png"
+        name="Income"
+        balance="5,600"
+        color="bg-[#E7EDFF]"
+      />
+
+      <AccountInformationCard
+        image="/assets/images/expense.png"
+        name="Expense"
+        balance="3,460"
+        color="bg-[#FFE0EB]"
+      />
+
+      <AccountInformationCard
+        image="/assets/images/saving.png"
+        name="Total Saving"
+        balance="7,920"
+        color="bg-[#DCFAF8]"
+      />
     </div>
   );
 };

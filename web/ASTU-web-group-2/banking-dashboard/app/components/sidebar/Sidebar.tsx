@@ -5,7 +5,7 @@ import Image from "next/image";
 
 const Sidebar = () => {
   return (
-    <div className="absolute top-0 left-0 bottom-0 border-r border-[#E6EFF5] w-[240px]">
+    <div className="hidden sm:block absolute top-0 left-0 bottom-0 border-r border-[#E6EFF5] w-[240px]">
       <div className="flex flex-col w-[189px] h-[420px] gap-2  pt-[114px]">
         {sidebarListItems.map((item, index) => (
           <div className="flex gap-6">

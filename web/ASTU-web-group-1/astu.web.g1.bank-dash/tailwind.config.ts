@@ -45,6 +45,7 @@ const config = {
         /* Grays */
         'gray-light': '#b1b1b1',
         'gray-dark': '#232323',
+        'gray-mid': '#F5F7FA',
 
         /* Accent Colors */
         teal: '#16dbcc',

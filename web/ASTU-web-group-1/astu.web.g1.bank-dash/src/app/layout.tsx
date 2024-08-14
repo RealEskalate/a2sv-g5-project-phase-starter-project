@@ -23,7 +23,7 @@ export default function RootLayout({
           <div className='relative'>
             <Sidebar />
           </div>
-          <div className='w-full'>
+          <div className='w-full overflow-hidden'>
             <NavBar />
             <div className='p-5'>{children}</div>
           </div>

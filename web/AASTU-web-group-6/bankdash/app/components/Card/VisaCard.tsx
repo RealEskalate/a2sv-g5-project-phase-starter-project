@@ -1,14 +1,14 @@
 import React from "react";
 import Image from "next/image";
 import simUrl from "../../../public/assets/SIM-icon.png";
-import simBlackUrl from "../../../public/assets/sim-icon-black.png";
+import simBlackUrl from "../../../public/assets/sim-black-icon.png";
 
 const VisaCard = ({ isBlack }: { isBlack: boolean }) => {
   return (
     <div
-      className={`w-96 font-Lato flex flex-col gap-2  rounded-3xl ${
+      className={`w-full font-Lato flex flex-col gap-2 grow rounded-3xl ${
         isBlack
-          ? "text-colorBody-1 bg-white border-solid border-2 border-gray-200"
+          ? "text-colorBody-1 bg-white border-solid border-[1px] border-gray-200"
           : "text-white bg-card-gradient"
       }`}
     >
@@ -37,7 +37,11 @@ const VisaCard = ({ isBlack }: { isBlack: boolean }) => {
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-2 card-box rounded-b-3xl p-4 bg-card-box-light">
+      <div
+        className={`flex items-center gap-2 card-box rounded-b-3xl p-4 bg-card-box-light ${
+          isBlack ? "border-solid border-t-2 border-gray-200" : ""
+        }`}
+      >
         <div className="number flex grow font-medium text-xl">
           3778*** **** 1234
         </div>

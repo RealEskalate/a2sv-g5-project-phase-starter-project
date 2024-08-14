@@ -7,7 +7,7 @@ const Navbar = () => {
         A2SV Wallet
       </h1>
       <h1>
-        Page Name
+        Page
       </h1>
     </div>
   )

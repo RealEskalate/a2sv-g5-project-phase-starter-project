@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "banking-dashboard": "file:",
+    "chart.js": "^4.4.3",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
@@ -21,7 +23,6 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "tailwindcss": "^3.4.1"
   }
 }

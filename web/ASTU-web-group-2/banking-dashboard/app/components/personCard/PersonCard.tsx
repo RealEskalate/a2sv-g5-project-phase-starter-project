@@ -8,9 +8,10 @@ interface PersonCardType {
   imageLink: string;
   fullName: string;
   jobTitle: string;
+  isSelected: boolean;
 }
 
-const PersonCard = ({ imageLink, fullName, jobTitle }: PersonCardType) => {
+const PersonCard = ({ imageLink, fullName, jobTitle, isSelected }: PersonCardType) => {
   return (
     <div className="flex flex-col gap-3 items-center">
       <div>
@@ -21,10 +22,10 @@ const PersonCard = ({ imageLink, fullName, jobTitle }: PersonCardType) => {
         />
       </div>
       <div className="flex flex-col items-center">
-        <div className={`text-[#232323] font-normal ${inter.className}`}>
+        <div className={`text-[#232323] ${isSelected ? "font-bold" : "font-normal"} ${inter.className}`}>
           {fullName}
         </div>
-        <div className={`text-[#718EBF] font-normal ${inter.className}`}>
+        <div className={`text-[#718EBF] ${isSelected ? "font-bold" : "font-normal"} ${inter.className}`}>
           {jobTitle}{" "}
         </div>
       </div>

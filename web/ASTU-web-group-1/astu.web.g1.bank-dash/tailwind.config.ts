@@ -1,5 +1,5 @@
-import type { Config } from "tailwindcss";
-import { Lato, Inter } from "next/font/google";
+import type { Config } from 'tailwindcss';
+import { Lato, Inter } from 'next/font/google';
 
 const config = {
   darkMode: ["class"],
@@ -20,19 +20,20 @@ const config = {
     },
     extend: {
       fontFamily: {
-        Lato: ["Lato", "sans-serif"],
-        Inter: ["Inter", "sans-serif"],
+        Lato: ['Lato', 'sans-serif'],
+        Inter: ['Inter', 'sans-serif'],
       },
       fontSize: {
-        "12px": "0.75rem", // 12px
-        "13px": "0.8125rem", // 13px
-        "15px": "0.9375rem", // 15px
-        "16px": "1rem", // 16px
-        "17px": "1.0625rem", // 17px
-        "18px": "1.125rem", // 18px
-        "20px": "1.25rem", // 20px
-        "22px": "1.375rem", // 22px
-        "28px": "1.75rem", // 28px
+        '12px': '0.75rem', // 12px
+        '13px': '0.8125rem', // 13px
+        '15px': '0.9375rem', // 15px
+        '16px': '1rem', // 16px
+        '17px': '1.0625rem', // 17px
+        '18px': '1.125rem', // 18px
+        '20px': '1.25rem', // 20px
+        '22px': '1.375rem', // 22px
+        '28px': '1.75rem', // 28px
+  
       },
       colors: {
         // Custom FontStyles and Colors
@@ -43,9 +44,10 @@ const config = {
         "blue-bright": "#1814f3",
 
         /* Grays */
-        "gray-light": "#b1b1b1",
-        "gray-dark": "#232323",
-
+        'gray-light': '#b1b1b1',
+        'gray-dark': '#232323',
+        'gray-mid': '#F5F7FA',
+        
         /* Accent Colors */
         teal: "#16dbcc",
         pink: "#ff82ac",
@@ -62,11 +64,17 @@ const config = {
         "grad-end": "#0a06f4",
 
         // Shadcn
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        // Shadcn
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

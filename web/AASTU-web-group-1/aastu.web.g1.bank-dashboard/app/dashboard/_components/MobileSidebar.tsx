@@ -35,7 +35,7 @@ const MobileSidebar = () => {
               BankDash.
             </h1>
           </Link>
-          <div className="mobilenav-sheet">
+          <div>
             <SheetClose asChild>
               <nav className="flex h-full flex-col gap-6 pt-16 text-white">
                 {sidebarLinks.map((link) => {

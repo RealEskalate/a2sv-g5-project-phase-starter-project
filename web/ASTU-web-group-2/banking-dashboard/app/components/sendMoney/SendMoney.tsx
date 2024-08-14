@@ -1,10 +1,11 @@
-"use client"
-import React, { useState } from 'react';
+"use client";
+import { useState } from "react";
 import InputMoney from "../inputMoney/InputMoney";
 import PersonCard from "../personCard/PersonCard";
 
 const SendMoney = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const cards = [
     {
@@ -25,17 +26,17 @@ const SendMoney = () => {
     {
       imageLink: "https://avatarfiles.alphacoders.com/347/347546.png",
       fullName: "Metana Heder",
-      jobTitle: "Wayer",
+      jobTitle: "Compiler",
     },
     {
       imageLink: "https://avatarfiles.alphacoders.com/347/347546.png",
       fullName: "Metana Heder",
-      jobTitle: "CEO",
+      jobTitle: "Compiler",
     },
     {
       imageLink: "https://avatarfiles.alphacoders.com/347/347546.png",
       fullName: "Metana Heder",
-      jobTitle: "Firecracker",
+      jobTitle: "Compiler",
     },
   ];
 
@@ -47,16 +48,26 @@ const SendMoney = () => {
     );
   };
 
+  const handleCardClick = (index: number) => {
+    setSelectedIndex(index);
+  };
+
   return (
     <div className="flex flex-col gap-4 rounded-3xl bg-white w-fit px-5 pt-7 pb-9">
       <div className="flex gap-4 items-center">
         {visibleCards.map((card, index) => (
-          <PersonCard
+          <div
             key={index}
-            imageLink={card.imageLink}
-            fullName={card.fullName}
-            jobTitle={card.jobTitle}
-          />
+            onClick={() => handleCardClick(currentIndex + index)}
+            className="cursor-pointer"
+          >
+            <PersonCard
+              imageLink={card.imageLink}
+              fullName={card.fullName}
+              jobTitle={card.jobTitle}
+              isSelected={selectedIndex === currentIndex + index}
+            />
+          </div>
         ))}
         <button
           onClick={handleNext}

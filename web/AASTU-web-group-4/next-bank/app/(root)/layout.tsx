@@ -1,28 +1,29 @@
-import MobileNav from "@/components/MobileNav";
-import Sidebar from "@/components/Sidebar";
-import Image from "next/image";
-import { redirect } from "next/navigation";
+'use client'
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+import { FC, useState } from 'react';
+import { Sidebar } from '@/components/Sidebar';
+import { Navbar } from '@/components/Navbar';
+import { usePathname } from 'next/navigation';
+import { sidebarLinks, user } from '@/constants';
 
+const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  const pathname = usePathname();
+  const pageTitle = pathname === "/"
+    ? "Overview"
+    : sidebarLinks.find(link => link.route === pathname)?.label || "";
 
   return (
-    <main className="flex h-screen w-full font-inter">
-      <Sidebar/>
-
-      <div className="flex size-full flex-col">
-        <div className="root-layout">
-          <Image src="/icons/logo.svg" width={30} height={30} alt="logo" />
-          <div>
-            <MobileNav/>
-          </div>
-        </div>
-        {children}
+    <div className="flex">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <div className="flex-1 flex flex-col">
+        <Navbar pageTitle={pageTitle} toggleSidebar={toggleSidebar} userProfileImage={user.profileImage} />
+        <main className="flex-grow">{children}</main>
       </div>
-    </main>
+    </div>
   );
-}
+};
+
+export default RootLayout;

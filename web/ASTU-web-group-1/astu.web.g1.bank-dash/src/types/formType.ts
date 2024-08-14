@@ -8,8 +8,6 @@ export interface InputGroupType {
   placeholder: string;
 }
 
-export interface ToggleInputType {
-  label: string;
-  path: string;
-  currentState: boolean;
+export interface ToggleInputType extends InputGroupType {
+  currentState: boolean
 }

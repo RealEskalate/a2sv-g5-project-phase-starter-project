@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import { Lato, Inter } from 'next/font/google';
 
 const config = {
   darkMode: ['class'],
@@ -18,7 +19,12 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        Lato: ['Lato', 'sans-serif'],
+        Inter: ['Inter', 'sans-serif'],
+      },
       fontSize: {
+        '12px': '0.75rem', // 12px
         '13px': '0.8125rem', // 13px
         '15px': '0.9375rem', // 15px
         '16px': '1rem', // 16px
@@ -52,6 +58,12 @@ const config = {
         'grad-start': '#4c49ed',
         'grad-end': '#0a06f4',
 
+        // Shadcn
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
         // Shadcn
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

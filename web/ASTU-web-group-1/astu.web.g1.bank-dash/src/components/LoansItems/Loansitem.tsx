@@ -3,7 +3,13 @@ import LoanCard from "./LoanCard";
 
 const Loansitem = () => {
   return (
-    <div className="flex overflow-x-auto justify-around overflow-clip whitespace-nowrap w-full">
+    <div
+      className="flex overflow-x-auto justify-around overflow-clip whitespace-nowrap w-full"
+      style={{
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+      }}
+    >
       <LoanCard
         image={"/assets/icons/personal.svg"}
         name={"Personal Loans"}

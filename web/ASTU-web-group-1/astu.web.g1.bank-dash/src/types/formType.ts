@@ -7,3 +7,9 @@ export interface InputGroupType {
   register: any;
   placeholder: string;
 }
+
+export interface ToggleInputType {
+  label: string;
+  path: string;
+  currentState: boolean;
+}

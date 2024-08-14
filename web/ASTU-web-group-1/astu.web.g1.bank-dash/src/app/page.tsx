@@ -1,5 +1,12 @@
-import Image from 'next/image';
+import React from 'react';
+import ServicesCardApp from '@/components/ServicesCards/servicesCardApp';
 
-export default function Home() {
-  return <>replace me by ur component</>;
-}
+const Home: React.FC = () => {
+  return (
+    <div className=' flex justify-center'>
+      <ServicesCardApp/>
+    </div>
+  );
+};
+
+export default Home;

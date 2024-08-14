@@ -17,18 +17,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
+    <html lang="en">
       <body className={inter.className}>
-        <div className='flex w-full bg-light min-h-screen'>
-          <div className='relative'>
+        <div className="flex w-full bg-light min-h-screen">
+          <div className="relative">
             <Sidebar />
           </div>
-          <div className='w-full'>
+          <div className="w-full overflow-hidden">
             <NavBar />
-            <div className='p-5'>{children}</div>
+            <div className="p-5">{children}</div>
           </div>
         </div>
       </body>
     </html>
+
   );
 }

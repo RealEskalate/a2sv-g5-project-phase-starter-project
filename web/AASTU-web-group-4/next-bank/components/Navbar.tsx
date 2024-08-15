@@ -2,10 +2,11 @@ import { FC } from 'react';
 import Image from 'next/image';
 import { FaSearch, FaCog, FaBell } from 'react-icons/fa';
 
-interface NavbarProps {
+type NavbarProps = {
   pageTitle: string;
+  toggleSidebar: () => void;
   userProfileImage: string;
-}
+};
 
 export const Navbar: FC<NavbarProps> = ({ pageTitle, userProfileImage }) => {
   return (

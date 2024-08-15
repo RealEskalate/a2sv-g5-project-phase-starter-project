@@ -6,6 +6,8 @@ import { Navbar } from '@/components/Navbar';
 import { usePathname } from 'next/navigation';
 import { sidebarLinks, user } from '@/constants';
 
+
+
 const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);

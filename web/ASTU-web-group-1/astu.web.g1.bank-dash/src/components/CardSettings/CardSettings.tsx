@@ -35,13 +35,14 @@ const data = [
 
 export default function CardSettings() {
   return (
-    <>
+    <div className="w-full md:w-1/3">
       {/* <div className="w-full lg:w-1/3 ">
       <CardSettings />
     </div> */}
-      <p className="font-semibold text-lg lg:text-20px text-deepNavy py-3">
+      {/* <p className="font-semibold text-lg lg:text-20px text-deepNavy py-3">
         Card Setting
-      </p>
+      </p> */}
+      <h1 className="text-[#333B69] py-2 font-semibold">Card Setting</h1>
       <div className="bg-white w-full px-5 py-6 rounded-3xl space-y-5">
         {data.map((ele) => (
           <CardSettingItem
@@ -51,6 +52,6 @@ export default function CardSettings() {
           />
         ))}
       </div>
-    </>
+    </div>
   );
 }

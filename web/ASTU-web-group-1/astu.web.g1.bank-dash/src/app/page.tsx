@@ -1,9 +1,7 @@
+import AddNewCard from "@/components/AddNewCard/AddNewCard";
 import CardSettings from "@/components/CardSettings/CardSettings";
+import MyCard from "@/components/MyCard/MyCard";
 
 export default function Home() {
-  return (
-    <div className="w-full  lg:w-1/3 ">
-      <CardSettings />
-    </div>
-  );
+  return <></>;
 }

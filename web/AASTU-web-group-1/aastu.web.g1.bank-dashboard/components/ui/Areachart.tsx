@@ -6,6 +6,7 @@ import {
   CartesianGrid,
   XAxis,
   YAxis,
+  Legend,
   ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
@@ -67,6 +68,8 @@ export function Areachart() {
                 cursor={false}
                 content={<ChartTooltipContent indicator="dot" />}
               />
+              
+              <Legend />
               <Area
                 type="natural"
                 dataKey="value"

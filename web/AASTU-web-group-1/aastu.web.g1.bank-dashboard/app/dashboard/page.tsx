@@ -1,6 +1,10 @@
-import React from "react";
-import { FcSimCardChip } from "react-icons/fc";
-import Image from "next/image";
+'use client'
+import React, { useRef } from "react";
+import {
+  IoChevronForwardCircleOutline,
+  IoChevronBackCircleOutline,
+} from "react-icons/io5";
+
 import { Transaction } from "./_components/Transaction";
 import { Barchart } from "@/components/ui/Barchart";
 import { Creditcard } from "./_components/Creditcard";
@@ -10,8 +14,15 @@ import { Areachart } from "@/components/ui/Areachart";
 import { Piechart } from "@/components/ui/Piechart";
 
 const MainDashboard = () => {
+  const QuickTransferSection = useRef<HTMLDivElement|null>(null);
+  const scrollCards = (scrollOffset:number)=>{
+    if(QuickTransferSection.current){
+    QuickTransferSection.current.scrollLeft+=scrollOffset;   
+    }
+   
+  }
   return (
-    <div className="p-5 md:pl-10 md:ml-auto space-y-5 overflow-x-hidden">
+    <div className="p-5 md:pl-10 md:ml-auto space-y-5 ">
       {/* First Row: My Cards and Recent Transactions */}
       <div className="md:grid md:grid-cols-2 md:gap-10 space-y-5 md:space-y-0">
         {/* My Cards Section */}
@@ -35,7 +46,6 @@ const MainDashboard = () => {
               name=" Sarah Johnson"
               textColor="text-black"
             />
-        
           </div>
         </div>
 
@@ -77,7 +87,7 @@ const MainDashboard = () => {
           <div className="font-inter text-[16px] font-semibold">
             <h4>Weekly Activity</h4>
           </div>
-          <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300 p-5">
+          <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300 md:p-5 sm:min-w-[375px]">
             <Barchart />
           </div>
         </div>
@@ -101,7 +111,36 @@ const MainDashboard = () => {
             <h4>Quick Transfer</h4>
           </div>
           <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300 p-5 space-y-5">
-            <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div>
+              <button
+                className="float-right hover:bg-blue-500 rounded-xl"
+                onClick={() => scrollCards(200)}
+              >
+                <IoChevronForwardCircleOutline size={20} />
+              </button>
+              <button
+                className="float-left hover:bg-blue-500 rounded-xl"
+                onClick={() => scrollCards(-200)}
+              >
+                <IoChevronBackCircleOutline size={20} />
+              </button>
+            </div>
+
+            <div
+              ref={QuickTransferSection}
+              className="flex max-w-[300px] space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            >
+              <Profile image="/images/avatar.png" name="Olivia Lia" job="CEO" />
+              <Profile
+                image="/images/avatar.png"
+                name="Randy Press"
+                job="Director"
+              />
+              <Profile
+                image="/images/avatar.png"
+                name="Workman"
+                job="Designer"
+              />
               <Profile image="/images/avatar.png" name="Olivia Lia" job="CEO" />
               <Profile
                 image="/images/avatar.png"
@@ -124,8 +163,9 @@ const MainDashboard = () => {
                   className="w-[90px] h-[40px] rounded-full bg-gray-200 px-3"
                   placeholder="525.50"
                 />
-                <button className="bg-[#1814F3] text-white rounded-full px-4 h-[40px] ml-2 flex items-center">
-                  Send <PiTelegramLogoLight />
+                <button className="bg-[#1814F3] text-white rounded-full px-4 h-[40px] ml-2 flex items-center space-x-2">
+                  <p>Send </p>
+                  <PiTelegramLogoLight />
                 </button>
               </div>
             </div>

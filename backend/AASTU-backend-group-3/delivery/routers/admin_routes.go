@@ -1,6 +1,12 @@
 package routers
 
-import "github.com/gin-gonic/gin"
+import (
+	"group3-blogApi/delivery/controllers/adminController"
+	"group3-blogApi/delivery/controllers/authController"
+
+	"github.com/gin-gonic/gin"
+)
+
 
 func SetUpAdmin(router *gin.Engine) {
 	admin := router.Group("/admin")

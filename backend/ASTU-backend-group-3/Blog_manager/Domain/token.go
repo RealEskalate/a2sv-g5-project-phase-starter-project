@@ -1,9 +1,12 @@
 package Domain
 
-type Token struct{
-	TokenId string `json:"token_id" bson:"token_id"`
-	Token string `json:"token" bson:"token"`
-	User_iD string `json:"user_id" bson:"user_id"`
-	CreatedAt string `json:"created_at" bson:"created_at"`
-	ExpiresAt string `json:"expires_at" bson:"expires_at"`
+import (
+    "go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+type Token struct {
+    TokenID       primitive.ObjectID `json:"token_id" bson:"token_id"`
+    AccessToken   string             `json:"access_token" bson:"access_token"`
+    RefreshToken  string             `json:"refresh_token" bson:"refresh_token"`
+    Username      string             `json:"username" bson:"username"`
 }

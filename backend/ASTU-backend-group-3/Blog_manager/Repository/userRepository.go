@@ -1,4 +1,4 @@
-package repository
+package Repository
 
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
@@ -9,10 +9,10 @@ import (
 )
 
 type UserRepository interface {
-	Save(user *Domain.User) error
+	Save(user *Domain.RegisterInput) error
 	FindByEmail(email string) (*Domain.User, error)
 	FindByUsername(username string) (*Domain.User, error)
-	Update(username string, UpdatedUser *Domain.User) error
+	Update(username string, UpdatedUser bson.M) error
 	Delete(userID string) error
 	IsDbEmpty() (bool, error)
 }
@@ -25,7 +25,7 @@ func NewUserRepository(collection *mongo.Collection) UserRepository {
 	return &userRepository{collection: collection}
 }
 
-func (r *userRepository) Save(user *Domain.User) error {
+func (r *userRepository) Save(user *Domain.RegisterInput) error {
 	_, err := r.collection.InsertOne(context.TODO(), user)
 	return err
 }
@@ -48,10 +48,15 @@ func (r *userRepository) FindByUsername(username string) (*Domain.User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) Update(username string, updatedUser *Domain.User) error {
+func (r *userRepository) Update(username string, updateFields bson.M) error {
 	filter := bson.M{"username": username}
-	update := bson.M{"$set": updatedUser}
-	_, err := r.collection.UpdateOne(context.TODO(), filter, update)
+
+	// Only perform the update if there are fields to update
+	if len(updateFields) == 0 {
+		return nil // No update needed
+	}
+
+	_, err := r.collection.UpdateOne(context.TODO(), filter, bson.M{"$set": updateFields})
 	return err
 }
 

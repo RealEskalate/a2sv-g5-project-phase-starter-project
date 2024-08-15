@@ -31,7 +31,7 @@ const YearlyTotalInvestment = () => {
       {
         data: [65, 69, 80, 81, 56, 79],
         borderColor: "#FCAA0B",
-        borderWidth: 2
+        borderWidth: 2,
       },
     ],
   };
@@ -49,8 +49,13 @@ const YearlyTotalInvestment = () => {
   };
 
   return (
-    <div className="w-1/2 bg-white p-6 rounded-3xl">
-      <Line data={data} options={options} className="w-full" />
+    <div className="w-full md:w-1/2">
+      <h1 className="text-[#333B69] text-20px py-2 font-semibold">
+        Balance History
+      </h1>
+      <div className="bg-white p-6 rounded-3xl">
+        <Line data={data} options={options} className="w-full" />
+      </div>
     </div>
   );
 };

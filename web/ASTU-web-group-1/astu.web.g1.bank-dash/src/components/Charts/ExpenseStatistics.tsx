@@ -72,12 +72,12 @@ const options: ChartOptions<"polarArea"> = {
       display: true,
       formatter: (value) => {
         // return `${labels[index++]} ${value}%`;
-        return `${value}%`
+        return `${value}%`;
       },
       color: "white",
       font: {
         size: 10,
-      }
+      },
     },
   },
 
@@ -95,9 +95,13 @@ const options: ChartOptions<"polarArea"> = {
 
 const ExpenseStatistics: React.FC = () => {
   return (
-    <div className="w-full md:w-4/12 bg-white p-6 px-10 rounded-3xl ">
-      <h2>Polar Area Chart Example</h2>
-      <PolarArea data={data} options={options} />
+    <div className="w-full md:w-4/12">
+      <h1 className="text-[#333B69] text-20px py-2 font-semibold">
+        Expense Statistics
+      </h1>
+      <div className="bg-white p-6 px-10 rounded-3xl ">
+        <PolarArea data={data} options={options} />
+      </div>
     </div>
   );
 };

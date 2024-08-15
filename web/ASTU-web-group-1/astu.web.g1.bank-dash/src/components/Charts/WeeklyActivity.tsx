@@ -78,9 +78,13 @@ const WeeklyActivity = () => {
   };
 
   return (
-    <div className="w-full md:w-8/12 bg-white rounded-3xl p-10">
-      <h1 className="text-[#333B69] py-2 font-semibold">Weekly Activaty</h1>
-      <Bar data={data} options={options} height={350} width={1000} />
+    <div className="w-full md:w-8/12">
+      <h1 className="text-[#333B69] text-20px py-2 font-semibold">
+        Weekly Activity
+      </h1>
+      <div className="bg-white rounded-3xl p-10">
+        <Bar data={data} options={options} height={350} width={1000} />
+      </div>
     </div>
   );
 };

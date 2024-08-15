@@ -1,4 +1,3 @@
-
 "use client";
 import {
   CartesianGrid,
@@ -27,37 +26,46 @@ const data = [
 ];
 const BalanceHistory = () => {
   return (
-    <div className="md:w-7/12 bg-white p-6 rounded-3xl">
-      <ResponsiveContainer width={'100%'} height={300}>
-        
-      <AreaChart
-        data={data}
-        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-      >
-        <defs>
-          <linearGradient id="color" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#1814f3" stopOpacity={0.8} />
-            <stop offset="95%" stopColor="#1814f3" stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <XAxis dataKey="name" />
-        <YAxis />
-        <CartesianGrid strokeDasharray="3 3" />
-        <Tooltip />
-        <ReferenceLine x="Page C" stroke="green" label="Min PAGE" />
-        <ReferenceLine y={4000} label="Max" stroke="red" strokeDasharray="3 3" />
-        <Area
-          type="monotone"
-          dataKey="totalIncome"
-          stroke="#1814f3"
-          strokeWidth={3}
-          fillOpacity={1}
-          fill="url(#color)"
-          />
-      </AreaChart>
-          </ResponsiveContainer>
+    <div className="w-full md:w-7/12">
+      <h1 className="text-[#333B69] text-20px py-2 font-semibold">
+        Balance History
+      </h1>
+      <div className=" bg-white p-6 rounded-3xl">
+        <ResponsiveContainer width={"100%"} height={300}>
+          <AreaChart
+            data={data}
+            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="color" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#1814f3" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#1814f3" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <CartesianGrid strokeDasharray="3 3" />
+            <Tooltip />
+            <ReferenceLine x="Page C" stroke="green" label="Min PAGE" />
+            <ReferenceLine
+              y={4000}
+              label="Max"
+              stroke="red"
+              strokeDasharray="3 3"
+            />
+            <Area
+              type="monotone"
+              dataKey="totalIncome"
+              stroke="#1814f3"
+              strokeWidth={3}
+              fillOpacity={1}
+              fill="url(#color)"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };
 
-export default BalanceHistory
+export default BalanceHistory;

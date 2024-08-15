@@ -1,9 +1,9 @@
-import React from 'react'
+import React from "react";
+import CreditCard from "./components/creditCard/CreditCard";
 const page = () => {
-  return (
-    <div>page </div>
 
-  )
-}
+  return <div></div>;
+};
 
-export default page
+
+export default page;

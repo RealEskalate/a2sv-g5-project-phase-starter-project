@@ -1,60 +1,26 @@
-'use client'
+import Link from "next/link";
+import { sidebarLinks } from "@/constants";
 
-import { sidebarLinks } from '@/constants'
-import { cn } from '@/lib/utils'
-import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-// import Footer from './Footer'
+type SidebarProps = {
+  isOpen: boolean;
+  toggleSidebar: () => void;
+};
 
-const Sidebar = ({ user }: SiderbarProps) => {
-  const pathname = usePathname();
-
+export const Sidebar: React.FC<SidebarProps> = () => {
   return (
-    <section className="sidebar">
-      <nav className="flex flex-col gap-4">
-        <Link href="/" className="mb-12 cursor-pointer flex items-center gap-2">
-          <Image 
-            src="/icons/logo.svg"
-            width={34}
-            height={34}
-            alt="Horizon logo"
-            className="size-[24px] max-xl:size-14"
-          />
-          <h1 className="sidebar-logo">Horizon</h1>
-        </Link>
-
-        {sidebarLinks.map((item) => {
-          const isActive = pathname === item.route || pathname.startsWith(`${item.route}/`)
-
-          return (
-            <Link href={item.route} key={item.label}
-              className={cn('sidebar-link', { 'bg-bank-gradient': isActive })}
-              passHref
-            >
-              <div className="relative size-6">
-                <Image 
-                  src={item.imgURL}
-                  alt={item.label}
-                  fill
-                  className={cn({
-                    'brightness-[3] invert-0': isActive
-                  })}
-                />
-              </div>
-              <p className={cn("sidebar-label", { "!text-white": isActive })}>
-                {item.label}
-              </p>
-            </Link>
-          )
-        })}
-        
-        {/* <PlaidLink user={user} /> */}
-      </nav>
-
-      {/* <Footer user={user} /> */}
-    </section>
-  )
-}
-
-export default Sidebar
+    <div className="hidden md:flex flex-col w-64 h-full bg-white shadow-lg p-4 fixed left-0 top-0">
+      <div className="space-y-4">
+        {sidebarLinks.map((link) => (
+          <Link
+            key={link.route}
+            href={link.route}
+            className="flex items-center p-2 hover:underline hover:text-blue-600"
+          >
+            <link.Icon className="mr-3" size={25} />
+            <span>{link.label}</span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+};

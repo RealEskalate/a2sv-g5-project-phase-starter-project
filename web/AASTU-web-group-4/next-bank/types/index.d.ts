@@ -1,5 +1,20 @@
 /* eslint-disable no-unused-vars */
 
+
+export interface NavbarProps {
+  user: {
+    profileImage?: string;
+  };
+  currentPageName: string;
+}
+
+
+export interface DummyUser {
+  name: string;
+  email: string;
+  profileImage: string;
+}
+
 declare type SearchParamProps = {
   params: { [key: string]: string };
   searchParams: { [key: string]: string | string[] | undefined };
@@ -157,7 +172,7 @@ declare interface HeaderBoxProps {
 }
 
 declare interface MobileNavProps {
-  user: User;
+  user: DummyUser;
 }
 
 declare interface PageHeaderProps {
@@ -221,7 +236,7 @@ declare interface RightSidebarProps {
 }
 
 declare interface SiderbarProps {
-  user: User;
+  user: DummyUser;
 }
 
 declare interface RecentTransactionsProps {

@@ -2,15 +2,20 @@ import React from "react";
 import Image from "next/image";
 import simUrl from "../../../public/assets/SIM-icon.png";
 import simBlackUrl from "../../../public/assets/sim-black-icon.png";
-
-const VisaCard = ({ isBlack }: { isBlack: boolean }) => {
+interface ColorType {
+  isBlack: boolean;
+  isFade: boolean;
+}
+const VisaCard: React.FC<ColorType> = ({ isBlack, isFade }) => {
   return (
     <div
-      className={`h-full w-full font-Lato flex flex-col gap-2 grow rounded-3xl ${
+      className={`w-full font-Lato flex flex-col gap-2 grow rounded-3xl ${
         isBlack
           ? "text-colorBody-1 bg-white border-solid border-[1px] border-gray-200"
-          : "text-white bg-card-gradient"
-      }`}
+          : isFade
+          ? "text-white bg-card-gradient-2"
+          : "text-white bg-card-gradient-1"
+      } `}
     >
       <div className="flex flex-col gap-6 p-6">
         <div className="flex text-sm">

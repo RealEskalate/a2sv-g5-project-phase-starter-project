@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const Header = ({ title }: { title: string }) => {
   return (
-    <div className="bg-white mb-5 max-md:hidden">
+    <div className="bg-white max-md:hidden">
       <div className="flex justify-between px-10 py-4">
         <h1 className="text-3xl text-primaryBlack font-[600]">{title}</h1>
 

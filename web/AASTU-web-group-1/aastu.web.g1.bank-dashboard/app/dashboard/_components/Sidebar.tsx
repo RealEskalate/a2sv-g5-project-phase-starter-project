@@ -8,7 +8,10 @@ import { cn } from "@/lib/utils";
 const Sidebar = () => {
   const pathname = usePathname();
   return (
-    <div className="sticky left-0 top-0 h-screen w-fit border-r border-gray-200 bg-white pt-4 text-white max-md:hidden sm:p-2 xl:p-4 2xl:w-[270px]">
+    <div
+      className="sticky left-0 top-0 h-screen border-r border-gray-200 bg-white pt-4 text-white max-md:hidden 
+    sm:p-2 xl:p-4 2xl:w-[250px]"
+    >
       <div className="flex items-center gap-2 p-3 pb-8">
         <Image src="/icons/logo.png" width={25} height={25} alt="logo" />
         <h1 className="text-primaryBlack font-[900] text-[1.5rem]">

@@ -28,8 +28,6 @@ func InitRoutes(r *gin.Engine, blogUsecase usecases.BlogUsecase, userUsecase use
 		// User profile routes
 		auth.GET("/profile", userController.GetProfile)
 		auth.PUT("/profile", userController.UpdateProfile)
-		auth.POST("/login", userController.Login)
-		auth.POST("/register", userController.Register)
 		auth.POST("/logout", userController.Logout)
 
 		// Blog routes

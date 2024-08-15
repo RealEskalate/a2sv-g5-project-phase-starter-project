@@ -1,3 +1,4 @@
+import CardExpenceStatistics from "@/components/Charts/CardExpenceStatistics";
 import DepateAndCredit from "@/components/Charts/DepateAndCredit";
 import MonthlyRevenue from "@/components/Charts/MonthlyRevenue";
 import MyExpence from "@/components/Charts/MyExpence";
@@ -11,8 +12,7 @@ const BalanceHistory = dynamic(
 export default function Home() {
   return (
     <div className="md:flex md:space-x-6">
-      <YearlyTotalInvestment />
-      <MonthlyRevenue />
+      <CardExpenceStatistics />
     </div>
   );
 }

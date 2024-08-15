@@ -1,0 +1,14 @@
+Common Branch
+aastu.backend.g7.main (don't touch this )
+aastu.backend.g7.test
+aastu.backend.g7.abel
+aastu.backend.g7.bini
+aastu.backend.g7.eyob
+
+
+standard =
+
+aastu.backend.g7.[name].[feature_name]
+
+
+/make a confflict

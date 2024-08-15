@@ -10,6 +10,7 @@ import {
   FaUserShield,
 } from "react-icons/fa";
 
+
 export const sidebarLinks = [
   { id:1, route: "/", label: "Dashboard", Icon: FaHome },
   { id:2, route: "transaction", label: "Transaction", Icon: FaExchangeAlt },
@@ -27,3 +28,31 @@ export const user = {
   email: "john.doe@example.com",
   profileImage: "/path/to/profile-image.jpg", // Use a valid path for the profile image
 };
+
+export const creditcardstyles = [{
+  iconwhite : "w-6 h-6",
+  icongray : "w-6 h-6"
+
+}]
+
+export const colors = {
+  blue: 'bg-[#1814F3]',
+  white: 'bg -[#ffffff]',
+  navbartext:' text-[#343C6A]',
+  black: 'bg-[#000000]',
+  textblack: 'text-[#232323]',
+  textred: 'text-[#FF4B4A]',
+  textgreen: 'text-[#41D4A8]',
+  green :'bg-[#16DBCC]',
+  red : 'bg-[#FF82AC]',
+  textgray : 'text-[#718EBF]',
+  gradientcard:'linear-gradient(to bottom, #4C49ED,#0A06F4)',
+  gradientchart:'linear-gradient(to bottom, #2D60FF,#2D60FF)',
+  textblue : "text-[#1814F3]",
+  lightblue : "bg-gray-100"
+};
+
+export const logo = {
+  icon : "/icons/logo.png",
+}
+

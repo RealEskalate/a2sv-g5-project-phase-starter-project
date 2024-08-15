@@ -6,36 +6,36 @@ const AddNewCardForm = () => {
     <form action="">
       <div className="flex flex-col md:flex-row md:gap-6">
         <InputGroup
-          id="cardNumber"
+          id="cardType"
           label="Card Type"
           inputType="text"
-          registerName="cardNumber"
+          registerName="cardType"
           register={undefined}
           placeholder="Classic"
         />
         <InputGroup
-          id="cardNumber"
+          id="cardHolder"
           label="Name On Card"
           inputType="text"
-          registerName="cardNumber"
+          registerName="cardHolder"
           register={undefined}
           placeholder="My Card"
         />
       </div>
       <div className="flex flex-col md:flex-row md:gap-6">
         <InputGroup
-          id="cardNumber"
-          label="Card Number"
+          id="balance"
+          label="Balance"
           inputType="text"
-          registerName="cardNumber"
+          registerName="balance"
           register={undefined}
-          placeholder="**** **** **** ****"
+          placeholder="27,00$"
         />
         <InputGroup
-          id="cardNumber"
+          id="expiryDate"
           label="Exipiration Date"
           inputType="text"
-          registerName="cardNumber"
+          registerName="expiryDate"
           register={undefined}
           placeholder="25 January 2025"
         />

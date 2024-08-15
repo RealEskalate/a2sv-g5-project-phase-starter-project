@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <div className='flex w-full bg-light min-h-screen'>
+        <div className='flex w-full bg-slate-100 min-h-screen font-Inter'>
           <div className='relative'>
             <Sidebar />
           </div>

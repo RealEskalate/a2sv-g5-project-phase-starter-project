@@ -14,7 +14,7 @@ type AuthRepository interface {
 
 type AuthUseCase interface {
 	Login(c *gin.Context, user *User) (string, error, int)
-	Register(c *gin.Context, user *User) (OmitedUser, error, int)
+	Register(c *gin.Context, user *User) (*OmitedUser, error, int)
 }
 
 type UserRepository interface {

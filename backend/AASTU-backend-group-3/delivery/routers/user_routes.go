@@ -1,6 +1,11 @@
 package routers
 
-import "github.com/gin-gonic/gin"
+import (
+	"group3-blogApi/delivery/controllers/authController"
+	"group3-blogApi/delivery/controllers/userController"
+
+	"github.com/gin-gonic/gin"
+)
 
 func SetUpUser(router *gin.Engine) {
 	user := router.Group("/user")

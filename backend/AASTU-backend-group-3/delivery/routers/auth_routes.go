@@ -1,6 +1,10 @@
 package routers
 
-import "github.com/gin-gonic/gin"
+import (
+	"group3-blogApi/delivery/controllers/authController"
+
+	"github.com/gin-gonic/gin"
+)
 
 func SetUpAuth(router *gin.Engine) {
 

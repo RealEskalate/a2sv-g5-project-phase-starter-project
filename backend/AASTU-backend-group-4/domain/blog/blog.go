@@ -23,8 +23,8 @@ type BlogUsecase interface {
 	UpdateBlog(ctx context.Context, authorID primitive.ObjectID, blogID primitive.ObjectID, updatedBlog *Blog) error
 	DeleteBlog(ctx context.Context, authorID primitive.ObjectID, blogID primitive.ObjectID) error
 	SearchBlog(ctx context.Context, blogTitle string, blogAuthor string) ([]*Blog, error)
-	GetAllBlogs(ctx context.Context) ([]*Blog, error)
-	FilterBlogByTag(ctx context.Context, tag string) ([]*Blog, error)
+	GetBlogs(ctx context.Context) ([]*Blog, error)
+	GetBlog(ctx context.Context, blogid primitive.ObjectID) ([]*Blog, error)
 }
 
 type BlogRepository interface {

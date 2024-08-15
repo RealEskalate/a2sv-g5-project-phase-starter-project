@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { User } from "@/types/index";
+import Image from "next/image";
 
 const SignupForm = () => {
   const [step, setStep] = useState(1);
@@ -41,11 +42,12 @@ const SignupForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex justify-center items-center mb-8 mt-8">
-        <img
+      <div className="flex justify-center items-center mb-8 mt-8 h-[50vh]">
+        <Image
           src="https://cdn.freelogovectors.net/wp-content/uploads/2024/03/chase_logo-freelogovectors.net_.png"
           alt="Logo"
-          className="h-16 w-16"
+          width={16}
+          height={16}
         />
         <h1 className="text-2xl font-extrabold ml-4">NextBank</h1>
       </div>

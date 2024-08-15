@@ -61,7 +61,7 @@ const page = () => {
           <MyInvestment
             title="Apple Store"
             color="#FFE0EB"
-            icon="/assets/apple.svg"
+            icon="/assets/applee.svg"
             amount="$54,000"
             Envestment="Envestment Value"
             returnValue="+16%"

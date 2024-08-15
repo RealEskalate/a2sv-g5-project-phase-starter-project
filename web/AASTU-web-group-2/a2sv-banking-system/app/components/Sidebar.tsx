@@ -119,6 +119,7 @@ const Sidebar = ({ toggle, handleClose }: SidebarProps) => {
           </div>
           <SidebarElements
             handleNav={handleNav}
+            handleActive={handleActive}
             elements={elements}
             active={active}
           />

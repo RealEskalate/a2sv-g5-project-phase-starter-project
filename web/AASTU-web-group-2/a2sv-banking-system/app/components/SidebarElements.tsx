@@ -15,7 +15,7 @@ interface Props {
   active: string;
 }
 
-const SidebarElements = ({ handleNav, handleActive, elements, active }: Props) => {
+const SidebarElements = ({handleActive, handleNav, elements, active }: Props) => {
   return (
     <div className="flex flex-col gap-5 py-5">
       {elements.map((el) => (
@@ -28,7 +28,9 @@ const SidebarElements = ({ handleNav, handleActive, elements, active }: Props) =
           } flex gap-3 items-center font-semibold text-l`}
         >
           <button
-            onClick={() => handleActive(el.text)}
+            onClick={() => {handleActive(el.text)
+              handleNav(el.destination)
+            }}
             className="flex items-center w-full"
           >
             <span

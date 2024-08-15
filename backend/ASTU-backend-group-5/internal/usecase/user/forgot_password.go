@@ -3,14 +3,13 @@ package user
 import (
 	"blogApp/internal/config"
 	"blogApp/pkg/email"
+	"blogApp/pkg/hash"
+	"blogApp/pkg/jwt"
+	"context"
+	"errors"
+	"fmt"
 	"log"
 )
-
-// Generate a random token
-func generateToken() string {
-	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	return chars
-}
 
 func (u *UserUsecase) RequestPasswordResetUsecase(userEmail string) error {
 	var emailSender email.EmailSender
@@ -38,9 +37,12 @@ func (u *UserUsecase) RequestPasswordResetUsecase(userEmail string) error {
 			Config.EMAIL_SENDER_PASSWORD,
 		)
 	}
-
+	accessToken, err := jwt.GenerateJWT("password-reset", userEmail, "password-reset", "password-reset")
+	if err != nil {
+		return err
+	}
 	go func() {
-		err := emailSender.SendPasswordResetEmail(userEmail, generateToken())
+		err := emailSender.SendPasswordResetEmail(userEmail, accessToken)
 		if err != nil {
 			log.Printf("Failed to send password reset email: %v", err)
 		}
@@ -50,5 +52,22 @@ func (u *UserUsecase) RequestPasswordResetUsecase(userEmail string) error {
 }
 
 func (u *UserUsecase) ResetPassword(resetToken string, newPassword string, email string) error {
+	claims, err := jwt.ValidateToken(resetToken)
+	if err != nil {
+		return err
+	}
+	issuerEmail := claims.Email
+	fmt.Println(issuerEmail, email)
+	if issuerEmail != email {
+		return errors.New("invalid token")
+	}
+	hashedPassword, err := hash.HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+	err = u.repo.UpdatePassword(context.Background(), email, hashedPassword)
+	if err != nil {
+		return err
+	}
 	return nil
 }

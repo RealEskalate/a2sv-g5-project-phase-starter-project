@@ -1,8 +1,8 @@
 package main
 
-import "fmt"
+import "blogApp/internal/http/routes"
 
 func main() {
-
-	fmt.Println("welcome to PostIt")
+	r := routes.SetupRouter()
+	r.Run(":3000")
 }

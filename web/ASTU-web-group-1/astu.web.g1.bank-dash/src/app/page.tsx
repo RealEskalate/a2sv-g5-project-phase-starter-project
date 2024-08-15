@@ -1,4 +1,10 @@
+import AddNewCard from "@/components/AddNewCard/AddNewCard";
 
 export default function Home() {
-  return <></>;
+  return (
+    <>
+      {" "}
+      <AddNewCard />{" "}
+    </>
+  );
 }

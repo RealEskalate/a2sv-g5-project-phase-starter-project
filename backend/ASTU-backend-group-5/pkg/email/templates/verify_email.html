@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .email-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 25px;
+        }
+
+        .logo img {
+            width: 120px;
+        }
+
+        .email-content h1 {
+            color: #28a745;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .email-content p {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .email-content a {
+            display: inline-block;
+            margin-top: 10px;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .email-content a:hover {
+            background-color: #0056b3;
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .footer a {
+            color: #28a745;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="logo">
+            <img src="https://yourapp.com/logo.png" alt="PostIt Logo">
+        </div>
+        <div class="email-content">
+            <h1>Verify Your Email Address</h1>
+            <p>Hi there,</p>
+            <p>Please verify your email by clicking the link below:</p>
+            <p><a href="https://yourapp.com/verify-email?token={{token}}">Verify Email</a></p>
+            <p>If you did not create an account, please ignore this email.</p>
+        </div>
+        <div class="footer">
+            <p>Thanks,<br>The PostIt Team</p>
+            <p><a href="https://yourapp.com">Visit PostIt</a></p>
+        </div>
+    </div>
+</body>
+
+</html>

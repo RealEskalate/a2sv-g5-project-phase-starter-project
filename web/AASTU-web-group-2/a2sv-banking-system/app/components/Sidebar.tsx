@@ -9,8 +9,8 @@ import {
   MdPayment,
   MdStar,
   MdSettings,
-  MdOutlineCancel,
 } from "react-icons/md";
+import { FaTimes } from "react-icons/fa";
 import { RiHandCoinLine } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 import SidebarElements from "./SidebarElements";
@@ -84,45 +84,50 @@ const Sidebar = ({ toggle, handleClose }: SidebarProps) => {
   const handleNav = (destination: string) => {
     router.push(destination);
   };
-  const handleActive = (element:string) => {
+  const handleActive = (element: string) => {
     setActive(element);
-
-  }
+    handleClose();
+  };
 
   return (
     <>
-      <div className="hidden md:flex md:flex-col md:gap-10 py-7 border-r h-svh">
+      <div className="hidden md:flex md:flex-col md:gap-5 py-7 border-r h-svh">
         <div className="px-5 py-2">
           <Image src="/Logo.png" width={183} height={36} alt="Logo" />
         </div>
         <SidebarElements
           handleNav={handleNav}
-          handleActive = {handleActive}
+          handleActive={handleActive}
           elements={elements}
           active={active}
         />
       </div>
 
       {toggle && (
-        <div
-          className={`fixed top-0 left-0 w-64 bg-white shadow-black h-full transform ${
-            toggle ? "translate-x-0" : "-translate-x-full"
-          } transition-transform ease-in-out duration-1000 flex flex-col gap-5 py-5 px-5`}
-        >
-          <div className="flex justify-end">
-            <button onClick={handleClose} className="cursor-pointer">
-              <MdOutlineCancel className="text-2xl" />
-            </button>
+        <div className="md:hidden flex">
+          <div
+            className={`fixed top-0 left-0 w-80 bg-white shadow-black h-full transform transition-transform${
+              toggle ? "translate-x-0" : "-translate-x-full"
+            }  ease-in-out duration-1000 flex flex-col px-5`}
+          >
+            <div className="flex flex-col justify-between">
+              <button
+                onClick={handleClose}
+                className="cursor-pointer text-[#2D60FF] flex justify-end mt-5"
+              >
+                <FaTimes className="text-3xl" />
+              </button>
+              <div className="px-3 mt-3 mb-4">
+                <Image src="/Logo.png" width={183} height={36} alt="Logo" />
+              </div>
+            </div>
+            <SidebarElements
+              handleNav={handleNav}
+              handleActive={handleActive}
+              elements={elements}
+              active={active}
+            />
           </div>
-          <div className="px-5 py-2">
-            <Image src="/Logo.png" width={183} height={36} alt="Logo" />
-          </div>
-          <SidebarElements
-            handleNav={handleNav}
-            handleActive={handleActive}
-            elements={elements}
-            active={active}
-          />
         </div>
       )}
     </>

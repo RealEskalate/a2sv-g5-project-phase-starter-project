@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import x from "../../../public/assets/profile-1.png";
+import x from "../../../public/assets/next-icon.svg";
 import { AreaComp } from "../Charts/AreaComp";
 const Bottom = () => {
   const people: any = [1, 2, 3];
@@ -11,9 +11,9 @@ const Bottom = () => {
           Expense Statistics
         </h1>
 
-        <div className="flex gap-6 bg-white rounded-3xl border-solid border-2 border-gray-200 p-6">
+        <div className="flex gap-6 bg-white rounded-3xl  p-6">
           <div className="profle-box flex flex-col gap-4">
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center ">
               <div className="profile-item flex flex-col gap-1 p-6 items-center justify-center">
                 <Image
                   className=" rounded-full "
@@ -47,6 +47,14 @@ const Bottom = () => {
                 <div className="name text-base font-semibold">LIvia Bator</div>
                 <div className="role text-base text-[#718EBF]">CEO</div>
               </div>
+              <button className="next flex p-6 h-fit bg-white shadow-sm rounded-full">
+                <Image
+                  src={"/assets/next-icon.svg"}
+                  alt=""
+                  width={12}
+                  height={12}
+                />
+              </button>
             </div>
 
             <div className="bottom flex gap-4">
@@ -69,7 +77,14 @@ const Bottom = () => {
           Balance History
         </h1>
 
-        <div className="flex w-full h-80 gap-6 bg-white rounded-3xl border-solid border-2 border-gray-200">
+        <div className="flex w-full gap-6 p-8 bg-white rounded-3xl border-solid border-gray-200 border-[0.5px] shadow-sm">
+          <div className="leftCanva pb-10 flex flex-col items-end justify-between text-sm text-[#718EBF]">
+            <span>400</span>
+            <span>300</span>
+            <span>200</span>
+            <span>100</span>
+            <span>0</span>
+          </div>
           <AreaComp />
         </div>
       </div>

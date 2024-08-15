@@ -19,7 +19,7 @@ const Navigation = ({ children }: Props) => {
           ></Sidebar>
         </div>
 
-        <div className="flex flex-col gap-5 w-full">
+        <div className="flex flex-col w-full">
           <div className="w-full">
             <Navbar
               handleClick={() => {

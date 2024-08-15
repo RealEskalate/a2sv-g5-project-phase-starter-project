@@ -7,67 +7,95 @@ interface titleProp {
 
 const Navbar = ({ title }: titleProp) => {
   return (
-    <header>
-      <div className="flex justify-between">
-        <div className="left-content flex justify-between items-center pl-[27px]">
-          <div className="logo flex items-center justify-between mr-14">
-            <Image
-              src={"/credit-card.png"}
-              width={36}
-              height={36}
-              alt="bankDash logo"
-              className="mr-3"
-            />
-            <p className="font-black text-[25px] text-[#343C6A]">BankDash.</p>
-          </div>
-
-          <div className="Title">
-            <p className="font-semibold text-[25px] text-[#343C6A]">{title}</p>
-          </div>
-        </div>
-
-        <div className="right-contnet m-5 flex items-center">
-          <div className="search-div flex bg-gray-100 items-center rounded-full pl-5 pr-5 pt-3 pb-3 mr-7">
-            <Image
-              src={"/search.png"}
-              width={17}
-              height={17}
-              alt="magnifying-glass"
-              className="mr-5"
-            />
-            <input
-              type="text"
-              placeholder="Search for something"
-              className="text-md bg-gray-100"
-            />
-          </div>
-
-          <div className="bg-gray-100 p-2 rounded-full items-center mr-7">
-            <Image
-              src={"/settings.png"}
-              width={30}
-              height={30}
-              alt="magnifying-glass"
-            />
-          </div>
-
-          <div className="bg-gray-100 p-2 rounded-full items-center mr-7">
-            <Image
-              src={"/notification.png"}
-              width={30}
-              height={30}
-              alt="magnifying-glass"
-            />
-          </div>
-
+    <header className="flex flex-col justify-center items-center">
+      <div className="flex w-full">
+        <div className="logo flex items-center justify-between sm:mr-14 pl-[27px]">
           <Image
-            src={"/default-image.png"}
-            width={60}
-            height={60}
-            alt="profile-picture"
-            className="object-cover rounded-full"
+            src={"assets/navbar/hamburger.svg"}
+            width={25}
+            height={25}
+            alt="hamburger"
+            className="mr-3 sm:hidden block"
           />
+          <Image
+            src={"/assets/navbar/credit-card.svg"}
+            width={36}
+            height={36}
+            alt="bankDash logo"
+            className="mr-3 sm:block hidden"
+          />
+          <p className="font-black text-[25px] text-[#343C6A] sm:flex hidden">
+            BankDash.
+          </p>
         </div>
+
+        <div className="w-full m-5 flex sm:justify-between items-center">
+          <div className="flex w-full justify-center sm:w-auto">
+            <p className="font-semibold text-[20px] sm:text-[25px] text-[#343C6A] sm:ml-7">
+              {title}
+            </p>
+          </div>
+
+          <div className="sm:flex position:absolute right-0 gap-5">
+            <div className="search-div hidden sm:flex bg-[#F5F7FA] items-center rounded-full h-[50px] pl-5 pr-5 pt-3 pb-3">
+              <Image
+                src={"/assets/navbar/magnifying-glass.svg"}
+                width={20}
+                height={20}
+                alt="magnifying-glass"
+                className="mr-5 "
+              />
+              <input
+                type="text"
+                placeholder="Search for something"
+                className="text-[15px] bg-[#F5F7FA]"
+              />
+            </div>
+
+            <div className="bg-[#F5F7FA] hidden sm:flex justify-center rounded-full items-center">
+              <Image
+                src={"/assets/navbar/settings.svg"}
+                width={50}
+                height={50}
+                alt="settings"
+                className="flex-shrink-0"
+              />
+            </div>
+
+            <div className="bg-[#F5F7FA] hidden sm:flex justify-center rounded-full items-center">
+              <Image
+                src={"/assets/navbar/notification.svg"}
+                width={50}
+                height={50}
+                alt="notification"
+                className="flex-shrink-0"
+              />
+            </div>
+
+            <Image
+              src={"/assets/navbar/default-image.svg"}
+              width={50}
+              height={50}
+              alt="profile-picture"
+              className="object-fill rounded-full "
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="search-div flex w-4/5 sm:hidden bg-[#F5F7FA] items-center rounded-full pl-5 pr-5 pt-3 pb-3">
+        <Image
+          src={"/assets/navbar/magnifying-glass.svg"}
+          width={20}
+          height={20}
+          alt="magnifying-glass"
+          className="mr-5"
+        />
+        <input
+          type="text"
+          placeholder="Search for something"
+          className="text-md bg-[#F5F7FA] w-full"
+        />
       </div>
     </header>
   );

@@ -3,7 +3,9 @@ import LoginForm from '@/app/components/Forms/LoginForm'
 
 const Login = () => {
   return (
-    <LoginForm/>
+    <div className="py-10 h-ful flex justify-center content-center">
+      <LoginForm/>
+    </div>
   )
 }
 

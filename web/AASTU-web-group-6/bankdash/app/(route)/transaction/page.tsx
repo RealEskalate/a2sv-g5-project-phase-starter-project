@@ -28,29 +28,28 @@ const transactions = [
 
 const Transaction = () => {
   return (
-    <div className="space-y- bg-[#F5F7FA] px-10">
-      <div className="flex justify-between gap-8 py-4">
-        <div className=" w-full">
-          <p className="font-semibold text-[22px] text-[#343C6A]">My Cards</p>
+    <div className="space-y-6 bg-[#F5F7FA] px-4 sm:px-6 md:px-8 lg:px-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
+        <div className="lg:col-span-2 py-4 overflow-x-auto scrollbar-hide">
+          <div className="flex justify-between mb-5">
+            <p className="font-semibold text-xl sm:text-2xl text-[#343C6A]">
+              My Cards
+            </p>
+            <p className="font-semibold text-base sm:text-lg text-[#343C6A] cursor-pointer">
+              + Add Card
+            </p>
+          </div>
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-8 min-w-[650px] min-h-[170px]">
+              <VisaCard isBlack={false} />
+              <VisaCard isBlack={true} />
+            </div>
+          </div>
         </div>
-        <div className="h-[100%] text-right w-full">
-          <p className="font-semibold text-[17px] text-[#343C6A] text-right">
-            + Add Card
+        <div className="w-full">
+          <p className="font-semibold text-xl sm:text-2xl text-[#343C6A] mb-1 py-4">
+            My Expense
           </p>
-        </div>
-        <div className="w-full text-right">
-          <p className="font-semibold text-[22px] text-[#343C6A]">My Expense</p>
-        </div>
-      </div>
-
-      <div className="flex gap-8 w-full">
-        <div className="w-full">
-          <VisaCard isBlack={false} />
-        </div>
-        <div className="w-full">
-          <VisaCard isBlack={true} />
-        </div>
-        <div className="w-full">
           <BarGraph />
         </div>
       </div>

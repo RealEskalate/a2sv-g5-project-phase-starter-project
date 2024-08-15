@@ -14,7 +14,7 @@ export default function SideBarItems({
     <div
       className={`${
         active ? 'text-blue' : 'text-gray-light'
-      } flex font-semibold items-center my-6 text-16px`}
+      } flex font-semibold items-center my-6 text-16px cursor-pointer`}
     >
       {active && <div className='w-1.5 h-10 bg-blue rounded-r-[10px] absolute'></div>}
       <Icon className='w-[21px] h-[21px] mx-5 ml-6 object-cover fon' />

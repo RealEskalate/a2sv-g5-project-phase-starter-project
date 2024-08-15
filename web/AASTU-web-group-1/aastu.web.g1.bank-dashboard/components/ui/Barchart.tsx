@@ -61,11 +61,11 @@ export function Barchart() {
   }, []);
 
   return (
-    <Card >
+    <Card>
       <CardContent className="sm:p-0">
-        <ChartContainer config={chartConfig} className="flex p-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}  >
+        <ChartContainer config={chartConfig} className=" p-0 max-h-[370px]">
+          <ResponsiveContainer >
+            <BarChart data={chartData}>
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
               <XAxis
                 dataKey="day"
@@ -81,13 +81,13 @@ export function Barchart() {
                 dataKey="Deposite"
                 fill={chartConfig.Deposite.color}
                 radius={10}
-                barSize={15}
+                barSize={10}
               />
-              <Bar 
+              <Bar
                 dataKey="Withdraw"
                 fill={chartConfig.Withdraw.color}
                 radius={10}
-                barSize={15}
+                barSize={10}
               />
             </BarChart>
           </ResponsiveContainer>

@@ -36,10 +36,10 @@ const chartConfig = {
 
 export function Areachart() {
   return (
-    <Card>
+    <Card className="md:h-45">
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" >
             <AreaChart
               data={chartData}
               margin={{
@@ -48,6 +48,7 @@ export function Areachart() {
                 left: 0,
                 bottom: 0,
               }}
+              barSize={20}
             >
               <defs>
                 <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
@@ -68,7 +69,7 @@ export function Areachart() {
                 cursor={false}
                 content={<ChartTooltipContent indicator="dot" />}
               />
-              
+
               <Legend />
               <Area
                 type="natural"

@@ -3,6 +3,7 @@ package repositories
 import (
 	"blog_g2/domain"
 	"context"
+	"errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -59,11 +60,51 @@ func (br *BlogRepository) RetrieveBlog(pgnum int) ([]domain.Blog, error) {
 	return blogs, nil
 }
 
-func (br *BlogRepository) UpdateBlog(updatedblog domain.Blog) error {
+func (br *BlogRepository) UpdateBlog(updatedblog domain.Blog, blogID string) error {
+	ID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return err
+	}
+
+	updatedblog.ID = ID
+	bsonModel, err := bson.Marshal(updatedblog)
+	if err != nil {
+		return err
+	}
+
+	var blog bson.M
+	err = bson.Unmarshal(bsonModel, &blog)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.D{{Key: "_id", Value: ID}}
+	update := bson.D{{Key: "$set", Value: blog}}
+
+	_, err = br.collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func (br *BlogRepository) DeleteBlog(blogID primitive.ObjectID) error {
+func (br *BlogRepository) DeleteBlog(blogID string) error {
+	ID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return err
+	}
+
+	query := bson.M{"_id": ID}
+	result, err := br.collection.DeleteOne(context.TODO(), query)
+	if err != nil {
+		return err
+	}
+
+	if result.DeletedCount == 0 {
+		return errors.New("no blog with this id exists")
+	}
+
 	return nil
 }
 

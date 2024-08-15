@@ -3,8 +3,10 @@ package routers
 import "github.com/gin-gonic/gin"
 
 func SetUpUser(router *gin.Engine) {
+	//user routes
 	user := router.Group("/user")
-	{
+
+	{ 
 		user.GET("/profile", authMiddleware, userController.Profile)
 		user.PUT("/update", authMiddleware, userController.Update)
 		user.POST("/upload-image", authMiddleware, userController.UploadImage)

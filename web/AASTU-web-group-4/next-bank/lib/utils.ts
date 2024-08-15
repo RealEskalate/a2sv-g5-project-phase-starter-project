@@ -3,10 +3,71 @@ import { type ClassValue, clsx } from "clsx";
 // import qs from "query-string";
 import { twMerge } from "tailwind-merge";
 // import { z } from "zod";
+import { v4 as uuidv4 } from 'uuid';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+
+
+// src/data/generateDummyTransactions.ts
+
+
+export interface Transaction {
+  id: string;
+  description: string;
+  type: 'income' | 'expense';
+  category: string;
+  card: string;
+  date: string;
+  amount: number;
+}
+
+// Function to generate random date
+const generateRandomDate = (): string => {
+  const start = new Date(2023, 0, 1); // Jan 1, 2023
+  const end = new Date();
+  const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+  return date.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
+};
+
+// Dummy data generator
+export const generateDummyTransactions = (count: number): Transaction[] => {
+  const transactions: Transaction[] = [];
+
+  const descriptions = [
+    'Spotify Subscription', 
+    'Mobile Services', 
+    'Transfer from John Doe', 
+    'Amazon Shopping', 
+    'Electricity Bill'
+  ];
+
+  const categories = ['shopping', 'transfer', 'service'];
+  const cards = ['Visa ****1234', 'Mastercard ****5678', 'Amex ****9101'];
+
+  for (let i = 0; i < count; i++) {
+    const isIncome = Math.random() > 0.5;
+    transactions.push({
+      id: uuidv4(),
+      description: descriptions[Math.floor(Math.random() * descriptions.length)],
+      type: isIncome ? 'income' : 'expense',
+      category: categories[Math.floor(Math.random() * categories.length)],
+      card: cards[Math.floor(Math.random() * cards.length)],
+      date: generateRandomDate(),
+      amount: isIncome ? +(Math.random() * 1000).toFixed(2) : -(Math.random() * 1000).toFixed(2),
+    });
+  }
+
+  return transactions;
+};
+
+// Generate and export 100 dummy transactions
+export const transactions = generateDummyTransactions(100);
+
+
+
 
 // FORMAT DATE TIME
 // export const formatDateTime = (dateString: Date) => {

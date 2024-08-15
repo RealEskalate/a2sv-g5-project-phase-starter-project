@@ -9,7 +9,7 @@ import {
   ExclamationCircleIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
-import { creditcardstyles, colors ,logo } from '../constants/index';
+import { creditcardstyles, colors ,logo } from "../constants/index";
 const LoginForm: React.FC = () => {
   const {
     register,
@@ -99,7 +99,7 @@ const LoginForm: React.FC = () => {
 
           <div className="my-14 flex flex-col items-center text-xl">
             <p>
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <span className={`${colors.textblue} font-medium text-xl`}>
                 <Link href="/signup">Sign Up</Link>
               </span>

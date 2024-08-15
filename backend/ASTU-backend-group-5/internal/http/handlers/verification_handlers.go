@@ -1,29 +1,12 @@
 package handlers
 
 import (
-	"blogApp/internal/usecase/user"
+	"blogApp/internal/domain"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
-
-type UserUsecase interface {
-	RequestEmailVerification(user user.User) error
-	RequestPasswordResetUsecase(userEmail string) error
-	ResetPassword(token string, password string, email string) error
-	VerifyEmail(token string, email string) error
-}
-
-type UserHandler struct {
-	Usecase UserUsecase
-}
-
-func NewUserHandler(uc UserUsecase) *UserHandler {
-	return &UserHandler{
-		Usecase: uc,
-	}
-}
 
 func (h *UserHandler) RequestVerifyEmail(c *gin.Context) {
 	var request struct {
@@ -35,12 +18,12 @@ func (h *UserHandler) RequestVerifyEmail(c *gin.Context) {
 		return
 	}
 
-	user := user.User{
+	user := domain.User{
 		Email: request.Email,
 	}
 
 	go func() {
-		err := h.Usecase.RequestEmailVerification(user)
+		err := h.UserUsecase.RequestEmailVerification(user)
 		if err != nil {
 			log.Printf("Error sending verification email: %v", err)
 		}
@@ -57,7 +40,7 @@ func (h *UserHandler) VerifyEmail(c *gin.Context) {
 		return
 	}
 
-	err := h.Usecase.VerifyEmail(token, email)
+	err := h.UserUsecase.VerifyEmail(token, email)
 	if err != nil {
 		log.Printf("Error verifying email: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify email"})
@@ -75,7 +58,7 @@ func (h *UserHandler) ResetPasswordRequest(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
-	err := h.Usecase.RequestPasswordResetUsecase(request.Email)
+	err := h.UserUsecase.RequestPasswordResetUsecase(request.Email)
 	if err != nil {
 		log.Printf("Error sending password reset email: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send password reset email"})
@@ -96,7 +79,7 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 		return
 	}
 
-	err = h.Usecase.ResetPassword(request.Token, request.Password, request.Email)
+	err = h.UserUsecase.ResetPassword(request.Token, request.Password, request.Email)
 	if err != nil {
 		log.Printf("Error resetting password: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password"})

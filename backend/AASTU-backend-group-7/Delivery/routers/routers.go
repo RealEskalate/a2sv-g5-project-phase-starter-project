@@ -2,6 +2,7 @@ package routers
 
 import (
 	config "blogapp/Config"
+	custommongo "blogapp/CustomMongo"
 	"blogapp/Domain"
 	"context"
 	"log"
@@ -9,7 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var router *gin.Engine
+var Router *gin.Engine
+var BlogCollections Domain.BlogCollections
 
 func Setuprouter() *gin.Engine {
 	// Initialize the database
@@ -25,13 +27,18 @@ func Setuprouter() *gin.Engine {
 	}()
 
 	// Initialize the collections
-	BlogCollections := Domain.Collections{
+	customUserCol := custommongo.NewMongoCollection(DataBase.Collection("Users"))
+	customBlogCol := custommongo.NewMongoCollection(DataBase.Collection("Blogs"))
+	BlogCollections = Domain.BlogCollections{
 
-		Users: DataBase.Collection("Users"),
-		Blogs: DataBase.Collection("Blogs"),
+		Users: customUserCol,
+		Blogs: customBlogCol,
 	}
 
+	// go to auth router
+	AuthRouter()
+
 	// Initialize the router
-	router = gin.Default()
-	return router
+	Router = gin.Default()
+	return Router
 }

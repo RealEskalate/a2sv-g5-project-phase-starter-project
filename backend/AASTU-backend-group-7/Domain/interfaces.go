@@ -8,8 +8,8 @@ import (
 )
 
 type AuthRepository interface {
-	Login(ctx context.Context, user *User) (string, error, int)
-	Register(ctx context.Context, user *User) (OmitedUser, error, int)
+	Login() (string, error, int)
+	Register() (*OmitedUser, error, int)
 }
 
 type AuthUseCase interface {

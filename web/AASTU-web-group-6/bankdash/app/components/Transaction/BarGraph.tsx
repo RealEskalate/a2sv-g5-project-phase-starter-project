@@ -46,9 +46,9 @@ const BarGraph = () => {
 
   return (
     <div className="space-y-3">
-      <Card className="w-full rounded-[25px]">
+      <Card className="rounded-[25px]">
         <CardContent>
-          <ChartContainer config={chartConfig} className="">
+          <ChartContainer config={chartConfig} className="h-[200px]">
             <BarChart data={chartData}>
               <CartesianGrid vertical={false} />
               <XAxis

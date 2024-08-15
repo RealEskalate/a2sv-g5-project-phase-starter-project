@@ -1,7 +1,12 @@
 import React from "react";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
+import Transaction from "@/app/(route)/transaction/page";
 
-const Recent = ({ transactions }) => {
+interface LoanTableProps {
+  transactions: TransactionValue[];
+}
+
+const Recent = ({ transactions }: LoanTableProps) => {
   return (
     <div className="space-y-7 my-6">
       <h3 className="font-semibold text-[22px] text-[#343C6A]">
@@ -51,7 +56,7 @@ const Recent = ({ transactions }) => {
                   </p>
                 </td>
                 <td>
-                  <p className="table-button">{transaction.type}</p>
+                  <p className="table-button"> Download </p>
                 </td>
               </tr>
             ))}

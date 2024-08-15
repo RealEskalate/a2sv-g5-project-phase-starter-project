@@ -1,15 +1,19 @@
 import React from "react";
 import Image from "next/image";
-import simUrl from "../../../public/assets/SIM-icon.png";
-import simBlackUrl from "../../../public/assets/sim-black-icon.png";
+import white from "../../../public/assets/sim-white-icon.png";
+import gray from "../../../public/assets/sim-gray-icon.png";
+import black from "../../../public/assets/sim-black-icon.png";
+
 interface ColorType {
   isBlack: boolean;
   isFade: boolean;
+  isSimGray: boolean;
 }
-const VisaCard: React.FC<ColorType> = ({ isBlack, isFade }) => {
+
+const VisaCard: React.FC<ColorType> = ({ isBlack, isFade, isSimGray }) => {
   return (
     <div
-      className={`w-full font-Lato flex flex-col gap-2 grow rounded-3xl ${
+      className={`w-full max-h-[242px] font-Lato flex flex-col gap-2 grow rounded-3xl ${
         isBlack
           ? "text-colorBody-1 bg-white border-solid border-[1px] border-gray-200"
           : isFade
@@ -26,8 +30,8 @@ const VisaCard: React.FC<ColorType> = ({ isBlack, isFade }) => {
           <Image
             width={48}
             height={24}
-            src={isBlack ? simBlackUrl : simUrl}
-            alt="SIM Icon"
+            src={isBlack && !isSimGray ? black : isSimGray ? gray : white}
+            alt={isBlack ? "black" : isSimGray ? "gray" : "white"}
             className="simIcon"
           />
         </div>

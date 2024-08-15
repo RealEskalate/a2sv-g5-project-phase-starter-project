@@ -47,35 +47,39 @@ const chartConfig = {
 
 export function PieComp() {
   return (
-    <Card className="w-full flex flex-col border-0 shadow-none bg-transparent">
-      <CardContent className="flex-1 pb-0">
-        <ChartContainer config={chartConfig} className="mx-auto aspect-square">
-          <PieChart className="h-80">
-            <ChartTooltip
-              content={<ChartTooltipContent nameKey="visitors" hideLabel />}
-            />
-            <Pie
-              data={chartData}
-              dataKey="visitors"
-              innerRadius={2} // Adjust the inner radius of the pie
-              paddingAngle={5} // Add padding between each section
-              // Use a fixed radius for the pie and handle slice rendering manually
-              outerRadius={150} // Set a fixed maximum outer radius
-            >
-              {}
-              <LabelList
-                dataKey="browser"
-                className="flex flex-col fill-background font-bold text-[13px] text-wrap"
-                stroke="none"
-                fontSize={12}
-                formatter={(value: keyof typeof chartConfig) =>
-                  chartConfig[value]?.label
-                }
+    <div className="flex w-full it gap-6 p-8 bg-white rounded-3xl border-solid border-2 border-gray-200">
+      <Card className="w-full flex flex-col border-0 shadow-none bg-transparent">
+        <CardContent className="flex pb-0 p-0">
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square h-64"
+          >
+            <PieChart className="">
+              <ChartTooltip
+                content={<ChartTooltipContent nameKey="visitors" hideLabel />}
               />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+              <Pie
+                data={chartData}
+                dataKey="visitors"
+                innerRadius={2} // Adjust the inner radius of the pie
+                paddingAngle={5} // Add padding between each section
+                outerRadius={110} // Set a fixed maximum outer radius
+              >
+                {}
+                <LabelList
+                  dataKey="browser"
+                  className="flex flex-col fill-background font-bold text-[13px] text-wrap"
+                  stroke="none"
+                  fontSize={12}
+                  formatter={(value: keyof typeof chartConfig) =>
+                    chartConfig[value]?.label
+                  }
+                />
+              </Pie>
+            </PieChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

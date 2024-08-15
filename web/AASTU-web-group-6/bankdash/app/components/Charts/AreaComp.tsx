@@ -28,11 +28,11 @@ const chartConfig = {
 
 export function AreaComp() {
   return (
-    <Card className="w-full border-0 shadow-none bg-transparent">
+    <Card className="w-full border-0 shadow-none bg-transparent ">
       <CardContent>
         <ChartContainer
           config={chartConfig}
-          className="barHeight w-full min-h-[200px]"
+          className="barHeight w-full min-h-[100px] h-56"
         >
           <AreaChart
             accessibilityLayer

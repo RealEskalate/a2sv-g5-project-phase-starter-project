@@ -30,9 +30,12 @@ const Last_trans = ({
         <p className="font-inter font-medium text-base text-[#232323] ">{title}</p>
         <p className="font-inter font-normal text-[15px] text-[#718EBF]">{date}</p>
       </div>
-      <p className="font-inter font-normal text-base text-[#718EBF] w-[15%]">{type}</p>
-      <p className="font-inter font-normal text-base text-[#718EBF] w-[10%]">{account_no}</p>
-      <p className="font-inter font-normal text-base text-[#718EBF] w-[10%]"> {status}</p>
+      
+      <p className="hidden lg:block font-inter font-normal text-base text-[#718EBF] w-[15%]">{type}</p>
+      <p className="hidden lg:block font-inter font-normal text-base text-[#718EBF] w-[10%]">{account_no}</p>
+      <p className="hidden lg:block font-inter font-normal text-base text-[#718EBF] w-[10%]"> {status}</p>
+      
+      
       <p className={`font-inter font-medium text-base ${textColor}`}>{amount}</p>
     </div>
   );

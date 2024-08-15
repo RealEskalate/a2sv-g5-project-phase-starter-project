@@ -34,13 +34,13 @@ const MyInvestment = ({
         <p className="font-inter text-[15px] font-normal text-[#718EBF]">{titleRe}</p>
       </div>
       </div>
-      <div className="flex flex-col w-[20%]">
+      <div className=" hidden lg:block  flex-col w-[20%]">
         <p className="font-inter text-base font-medium text-[#232323]">{amount}</p>
         <p className="font-inter text-[15px] font-normal text-[#718EBF]">{Envestment}</p>
       </div>
       <div className="flex flex-col w-[20%]">
         <p className={` font-medium text-base font-inter ${textColor}`}>{returnValue}</p>
-        <p className="font-inter text-[15px] font-normal text-[#718EBF]">{returnRe}</p>
+        <p className="hidden lg:block font-inter text-[15px] font-normal text-[#718EBF]">{returnRe}</p>
       </div>
 
     </div>

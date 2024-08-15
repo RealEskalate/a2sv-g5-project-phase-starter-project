@@ -8,7 +8,7 @@ interface props{
 }
 const Card = ({title,amount,icon,color , width}:props) => {
   return (
-    <div className={`flex border ${width}  justify-center items-center rounded-3xl py-2 gap-7`}>
+    <div className={`flex border w-full lg:${width}  justify-center items-center rounded-3xl py-2 gap-7`}>
         <div className='border  flex justify-center items-center rounded-full w-[70px] h-[70px]' style={{ backgroundColor: color , borderColor:color}}>
             <img src={icon}/>
         </div>

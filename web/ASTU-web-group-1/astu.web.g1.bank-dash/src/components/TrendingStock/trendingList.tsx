@@ -21,6 +21,7 @@ const TrendingList = () => {
       </h1>
       <div
         className="overflow-x-auto bg-white md:px-4 max-h-[241px] min[890px]:max-h-[290px] lg:max-h-[243px] rounded-2xl md:rounded-2xl"
+
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
@@ -40,6 +41,7 @@ const TrendingList = () => {
                 Price
               </th>
               <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
+
                 Return
               </th>
             </tr>

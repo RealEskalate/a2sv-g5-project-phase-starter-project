@@ -1,0 +1,16 @@
+package domain
+
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+type Blog struct {
+	ID        primitive.ObjectID `json:"_id,omitempty" bson:"id,omitempty"`
+	Title     string             `json:"title " bson:"title"`
+	Content   string             `json:"content" bson:"content"`
+	Tag       string             `json:"tag" bson:"tag"`
+	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
+	Owner     User               `json:"owner" bson:"owner"`
+}

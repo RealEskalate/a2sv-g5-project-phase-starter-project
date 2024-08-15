@@ -2,6 +2,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
+import Image from "next/image";
 import {
   AtSymbolIcon,
   KeyIcon,
@@ -9,6 +10,7 @@ import {
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import { useLoginMutation } from "@/lib/redux/features/authapi";
+import { creditcardstyles, colors ,logo } from "../constants/index";
 const LoginForm: React.FC = () => {
   const {
     register,
@@ -35,10 +37,12 @@ const LoginForm: React.FC = () => {
       <div className="flex-col items-center justify-center  h-24  w-[50vh] ">
         <form onSubmit={handleSubmit(onSubmit)} className=" p-4 rounded-2xl ">
           <div className="flex  flex-col justify-center items-center my-4 ">
-            <img
-              src="https://cdn.freelogovectors.net/wp-content/uploads/2024/03/chase_logo-freelogovectors.net_.png"
+            <Image
+              src={logo.icon}
               alt="next logo"
-                className="h-30 w-40 m-auto my-4"
+              width={150} 
+              height={50} 
+              className="h-30 w-40 m-auto my-4"
             />
             <h1 className=" font-bold text-4xl text-gray-700 font-serif ">NEXT BANK</h1>
           </div>
@@ -95,8 +99,7 @@ const LoginForm: React.FC = () => {
           </div>
           <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 mt-4 w-full rounded-3xl text-xl"
-          >
+             className={`${colors.blue}  text-white px-4 py-2 mt-4 w-full rounded-3xl text-xl`}>
             {isLoading ? (
               <ArrowPathIcon className="h-5 w-5 animate-spin mr-2 text-white" />
             ) : (
@@ -106,14 +109,14 @@ const LoginForm: React.FC = () => {
 
           <div className="my-14 flex flex-col items-center text-xl">
             <p>
-              Don't have an account?{" "}
-              <span className="text-indigo-500 font-medium text-xl">
+              Don&apos;t have an account?{" "}
+              <span className={`${colors.textblue} font-medium text-xl`}>
                 <Link href="/signup">Sign Up</Link>
               </span>
             </p>
-            <p className="my-8 text-indigo-500 font-medium">
+            <span className={`${colors.textblue} font-medium text-xl py-6`}>
               <Link href="/forgotpassword">Forgot password?</Link>
-            </p>
+            </span>
           </div>
         </form>
       </div>

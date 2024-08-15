@@ -9,7 +9,6 @@ import {
 import {
   Card,
   CardContent,
- 
 } from "@/components/ui/card";
 import {
   ChartConfig,
@@ -47,38 +46,33 @@ const chartConfig = {
 
 export function Pie_chart() {
   return (
-    <Card >
-      <CardContent >
-        <ChartContainer
-          config={chartConfig}
-          className="flex" // Increased the size for better visibility
-        >
-          <ResponsiveContainer width="100%" height={300}>
-<PieChart>
-            <Tooltip />
-            <Pie
-              data={chartData}
-              dataKey="value"
-              nameKey="expense"
-              outerRadius="80%"
-              fill="#8884d8"
-              label
-              labelLine
-              paddingAngle={10}
-
-            >
-              <LabelList
-                dataKey="expense"
-                position="inside"
-                fontSize={12} 
-                formatter={(value: string) => value}
-                stroke="#fff"
-                className="font-inter font-light"
-              />
-            </Pie>
-          </PieChart>
+    <Card className="max-h-[370px] ">
+      <CardContent>
+        <ChartContainer config={chartConfig} className="p-0 ">
+          <ResponsiveContainer width="100%" >
+            <PieChart>
+              <Tooltip />
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="expense"
+                outerRadius="90%"  
+                fill="#8884d8"
+                label
+                labelLine
+                paddingAngle={5}
+              >
+                <LabelList
+                  dataKey="expense"
+                  position="inside"
+                  fontSize={12}
+                  formatter={(value: string) => value}
+                  stroke="#fff"
+                  className="font-inter font-light"
+                />
+              </Pie>
+            </PieChart>
           </ResponsiveContainer>
-          
         </ChartContainer>
       </CardContent>
     </Card>

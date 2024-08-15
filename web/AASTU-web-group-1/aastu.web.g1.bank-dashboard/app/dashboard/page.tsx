@@ -24,7 +24,7 @@ const MainDashboard = () => {
   return (
     <div className="p-5 md:pl-10 md:ml-auto space-y-5 ">
       {/* First Row: My Cards and Recent Transactions */}
-      <div className="md:grid md:grid-cols-2 md:gap-10 space-y-5 md:space-y-0">
+      <div className="md:grid md:grid-cols-2 md:gap-5 space-y-5 md:space-y-0 space-x-5">
         {/* My Cards Section */}
         <div className="space-y-5">
           <div className="flex justify-between font-inter text-[16px] font-semibold">
@@ -33,14 +33,14 @@ const MainDashboard = () => {
           </div>
           <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <CreditCard
-              color="bg-gradient-to-r from-[#423fee] to-[#2723f1]"
+              isBlue={true}
               balance={5894}
               creditNumber="3778*** ****1234"
               name="Eddy Cusuma"
               textColor="text-white"
             />
             <CreditCard
-              color="bg-white"
+              isBlue={false}
               balance={3210}
               creditNumber="3778*** ****1234"
               name=" Sarah Johnson"
@@ -54,7 +54,7 @@ const MainDashboard = () => {
           <div className="font-inter text-[16px] font-semibold">
             <h4>Recent Transactions</h4>
           </div>
-          <div className="space-y-2 md:p-5 bg-white rounded-xl md:shadow-lg md:border md:border-gray-300">
+          <div className="space-y-5 md:p-5 bg-white rounded-xl md:shadow-lg md:border md:border-gray-300">
             <Transaction
               image="/icons/wallet.png"
               transactionType="Deposited from my"
@@ -81,9 +81,9 @@ const MainDashboard = () => {
       </div>
 
       {/* Second Row: Weekly Activity and Expense Statistics */}
-      <div className="md:grid md:grid-cols-2 md:gap-10 space-y-5 md:space-y-0">
+      <div className="md:grid md:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
         {/* Weekly Activity Section */}
-        <div className="space-y-5">
+        <div className="space-y-5 ">
           <div className="font-inter text-[16px] font-semibold">
             <h4>Weekly Activity</h4>
           </div>
@@ -93,20 +93,20 @@ const MainDashboard = () => {
         </div>
 
         {/* Expense Statistics Section */}
-        <div className="space-y-5">
+        <div className="space-y-5 ">
           <div className="font-inter text-[16px] font-semibold">
             <h4>Expense Statistics</h4>
           </div>
-          <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300 md:p-5 sm:space-x-10">
+          <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300 md:p-5 sm:space-x-10 sm:min-w-[375px]">
             <Pie_chart />
           </div>
         </div>
       </div>
 
       {/* Third Row: Quick Transfer and Balance History */}
-      <div className="md:flex md:gap-10 space-y-5 md:space-y-0">
+      <div className="md:grid md:grid-cols-[1fr,2fr] md:gap-10 space-y-5 md:space-y-0">
         {/* Quick Transfer Section */}
-        <div className="space-y-5 md:w-1/3">
+        <div className="space-y-5 ">
           <div className="font-inter text-[16px] font-semibold">
             <h4>Quick Transfer</h4>
           </div>
@@ -173,7 +173,7 @@ const MainDashboard = () => {
         </div>
 
         {/* Balance History Section */}
-        <div className="space-y-5 md:w-2/3">
+        <div className="space-y-5 ">
           <div className="font-inter text-[16px] font-semibold">
             <h4>Balance History</h4>
           </div>

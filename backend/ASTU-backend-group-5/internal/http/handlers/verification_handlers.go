@@ -39,14 +39,14 @@ func (h *UserHandler) RequestVerifyEmail(c *gin.Context) {
 		Email: request.Email,
 	}
 
-	err := h.Usecase.RequestEmailVerification(user)
-	if err != nil {
-		log.Printf("Error sending verification email: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification email"})
-		return
-	}
+	go func() {
+		err := h.Usecase.RequestEmailVerification(user)
+		if err != nil {
+			log.Printf("Error sending verification email: %v", err)
+		}
+	}()
 
-	c.JSON(http.StatusOK, gin.H{"message": "Verification email sent successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Verification email is being sent"})
 }
 
 func (h *UserHandler) VerifyEmail(c *gin.Context) {

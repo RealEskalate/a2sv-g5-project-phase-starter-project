@@ -1,8 +1,9 @@
 import React from 'react'
+import Infobox from '../components/infobox/Infobox'
 
 const AccountsPage = () => {
   return (
-    <div>Accounts Page</div>
+    <Infobox/>
   )
 }
 

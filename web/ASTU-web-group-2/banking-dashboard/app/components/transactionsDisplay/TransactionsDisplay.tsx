@@ -57,6 +57,10 @@ const expense = transactions.filter((transaction) => transaction.amount < 0);
 const inter = Inter({ subsets: ["latin"] });
 const TransactionsDisplay = () => {
   const [chooseIndex, setChooseIndex] = useState(0);
+  const [focusedPage, setFocusedPage] = useState(1);
+  const pageLength = 4;
+  const range = Array.from({ length: pageLength }, (_, i) => i + 1);
+
   return (
     <div className={`flex flex-col gap-5 ${inter.className}`}>
       <div className="flex gap-12 text-[#718EBF] font-medium border-b border-[#EBEEF2] pl-6">
@@ -85,29 +89,40 @@ const TransactionsDisplay = () => {
           Expense
         </button>
       </div>
-      {chooseIndex == 0 ? (
-        <TransactionsTable transactions={transactions} />
-      ) : chooseIndex == 1 ? (
-        <TransactionsTable transactions={deposit} />
-      ) : (
-        <TransactionsTable transactions={expense} />
-      )}
+      <TransactionsTable
+        transactions={
+          chooseIndex == 0 ? transactions : chooseIndex == 1 ? deposit : expense
+        }
+      />
 
       <div className="flex justify-end rounded-xl p-6 text-[#1814F3] gap-3">
-        <button className="flex gap-1 items-center">
+        <button
+          className="flex gap-1 items-center"
+          onClick={() => setFocusedPage((prev) => Math.max(1, prev - 1))}
+        >
           <img
             src="/assets/transactionsDisplay/paginationLeftArrow.svg"
             alt="left-arrow"
           />{" "}
           Previous
         </button>
-        <button className="rounded-xl px-4 py-2 bg-[#1814F3] text-white">
-          1
-        </button>
-        <button>2</button>
-        <button>3</button>
-        <button>4</button>
-        <button className="flex gap-1 items-center">
+        {range.map((elm) => (
+          <button
+            onClick={() => setFocusedPage(elm)}
+            className={`${
+              focusedPage == elm &&
+              "rounded-xl px-4 py-2 bg-[#1814F3] text-white"
+            }`}
+          >
+            {elm}
+          </button>
+        ))}
+        <button
+          className="flex gap-1 items-center"
+          onClick={() =>
+            setFocusedPage((prev) => Math.min(pageLength, prev + 1))
+          }
+        >
           Next
           <img
             src="/assets/transactionsDisplay/paginationRightArrow.svg"

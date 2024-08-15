@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Sidebar from "./components/Sidebar";
-import Navbar from "./components/Navbar";
+import Navigation from "./components/Navigation"
 export const metadata: Metadata = {
   title: "A2SV Wallet",
   description: "Built for a2sv",
@@ -14,17 +13,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex flex-col gap-5 ">
-        <div className="bg-gray-300 px-5">
-
-        <Navbar />
-        </div>
-        <div className="flex gap-5">
-          <div className="bg-gray-300">
-          <Sidebar></Sidebar>
-          </div>
-          {children}
-        </div>
+      <body className="flex">
+        <Navigation>{children}</Navigation>
       </body>
     </html>
   );

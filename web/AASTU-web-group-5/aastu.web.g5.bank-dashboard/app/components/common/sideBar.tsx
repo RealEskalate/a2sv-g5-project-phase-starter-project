@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { FaTimes } from "react-icons/fa";
 import creditCard from "/public/assets/icons/credit-card 1.svg";
 import econometrics from "/public/assets/icons/econometrics 1.svg";
 import economicInvestment from "/public/assets/icons/economic-investment 1.svg";
@@ -10,15 +11,21 @@ import service from "/public/assets/icons/service 1.svg";
 import settingsSolid from "/public/assets/icons/settings solid 1.svg";
 import transfer from "/public/assets/icons/transfer 1.svg";
 import user from "/public/assets/icons/user 3 1.svg";
-const primary_2 = 'rgba(52, 60, 106, 1)'
-const primary_3 = 'rgba(45, 96, 255, 1)'
-const sidecolor = '#B1B1B1'
-const SideBar = () => {
+
+const primary_2 = 'rgba(52, 60, 106, 1)';
+const primary_3 = 'rgba(45, 96, 255, 1)';
+const sidecolor = '#B1B1B1';
+
+const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolean, toggleSidebar: () => void }) => {
     return (
-        <div className="pl-[38px]">
-            <div className="flex gap-[9px] items-center " style={{ height: "101px" }}>
+        <div className={`pl-[38px] ${isSidebarVisible ? 'block' : 'hidden'} sm:block flex items-center flex-col min-w-full sm:w-auto `   }  >
+            <div className="flex gap-[9px] items-center relative" style={{ height: "101px" }}>
                 <Image src={mainIcon} alt="BankDash Logo" className="h-[36px] w-[36px]" />
-                <div className="font-bold"  style={{color:primary_2}}>BankDash.</div>
+                <div className="font-bold" style={{ color: primary_2 }}>BankDash.</div>
+                <div></div>
+                <button className="sm:hidden ml-auto absolute -right-8" onClick={toggleSidebar}>
+                    <FaTimes size={24} />
+                </button>
             </div>
 
             <div className="flex flex-col gap-[42px]">

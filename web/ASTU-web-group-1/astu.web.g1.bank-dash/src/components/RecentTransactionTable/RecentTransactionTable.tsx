@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import TableButton from "../TableButton/TableButton";
 import RecentTransactionDescription from "./RecentTransactionDescription";
+import { ChevronLeft,ChevronRight } from "lucide-react"
+
 const data = [
   {
     id: 1,
@@ -77,6 +79,7 @@ const data = [
 
 const RecentTransactionTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentButton, setCurrentButton] = useState("all-transaction")
   const rowsPerPage = 5;
 
   // Calculate total pages
@@ -87,6 +90,18 @@ const RecentTransactionTable = () => {
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
+
+  const handelAllTransaction = () => {
+    setCurrentButton("all-transaction")
+  }
+
+  const handelIncome = () => {
+    setCurrentButton("income")
+  }
+
+  const handelExpense = () => {
+    setCurrentButton("expense")
+  }
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -106,6 +121,29 @@ const RecentTransactionTable = () => {
       <h1 className="text-16px md:text-18px xl:text-22px text-[#333B69] font-semibold">
         Recent Transaction
       </h1>
+      <div className="flex flex-row max-[640px]:justify-between  md:gap-[60px] lg:gap-[80px] text-blue-steel">
+          <div className="flex flex-col gap-2">
+            <button className={`border-none px-[11px] whitespace-nowrap ${currentButton === "all-transaction" && "text-blue-bright"}`} onClick={handelAllTransaction}>
+              All Transactions
+            </button>
+            {currentButton === "all-transaction" && <div className="bg-blue-bright h-1 rounded-t-full">
+            </div>}
+          </div>
+          <div className="flex flex-col gap-2">
+            <button className={`border-none px-[11px] whitespace-nowrap ${currentButton === "income" && "text-blue-bright"}`} onClick={handelIncome}>
+              Incomes
+            </button>
+            {currentButton === "income" && <div className="bg-blue-bright h-1 rounded-t-full">
+              </div>}
+          </div>
+          <div className="flex flex-col gap-2">
+            <button className={`border-none px-[11px] whitespace-nowrap ${currentButton === "expense" && "text-blue-bright"}`} onClick={handelExpense}>
+              Expense
+            </button>
+            {currentButton === "expense" && <div className="bg-blue-bright h-1 rounded-t-full">
+              </div>}
+          </div>
+      </div>
       <div className="relative overflow-x-auto bg-white px-4 md:px-6 pt-5 md:pt-6 rounded-2xl md:rounded-2xl">
         <table className="bg-white px-5 lg:px-11 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className=" text-12px md:text-16px font-Lato font-medium text-blue-steel bg-white border-b">
@@ -146,8 +184,8 @@ const RecentTransactionTable = () => {
                 <td className="hidden md:table-cell py-3">
                   {data.date}
                 </td>
-                <td className={`py-3 ${data.amount>0?"text-candyPink" : "text-mintGreen"}`}>
-                  {data.amount>0?"+$"+data.amount:"-$"+data.amount}
+                <td className={`py-3 ${data.amount<0?"text-candyPink" : "text-mintGreen"}`}>
+                  {data.amount<0?"-$"+data.amount:"+$"+data.amount}
                 </td>
                 <td className="hidden md:table-cell py-3 w-24 md:w-32">
                   <TableButton text="Download" classname="px-6 text-[#123288] border-[#123288]" />
@@ -159,14 +197,15 @@ const RecentTransactionTable = () => {
       </div>
     </div>
       <nav
-        className="flex items-center justify-end pt-4"
+        className="flex items-center justify-end pt-4 text-blue-bright"
       >
-        <ul className="inline-flex items-center -space-x-px text-sm h-8">
-          <li>
+        <ul className="inline-flex items-center -space-x-px text-sm h-8 gap-[10px]">
+          <li className="flex flex-row flex-wrap gap-3 items-center">
+            <ChevronLeft />
             <button
               onClick={handlePreviousPage}
               disabled={currentPage === 1}
-              className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              className="flex items-center justify-center px-3 h-8  "
             >
               Previous
             </button>
@@ -175,24 +214,23 @@ const RecentTransactionTable = () => {
             <li key={index}>
               <button
                 onClick={() => setCurrentPage(index + 1)}
-                className={`flex items-center justify-center px-3 h-8 leading-tight ${
-                  currentPage === index + 1
-                    ? "text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                    : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                className={`flex items-center justify-center px-3 h-8 ${
+                  currentPage === index + 1 && "bg-blue-bright text-white rounded-xl"
                 }`}
               >
                 {index + 1}
               </button>
             </li>
           ))}
-          <li>
+          <li className="flex flex-row flex-wrap gap-3 items-center">
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              className="flex items-center justify-center px-3 h-8"
             >
               Next
             </button>
+            <ChevronRight />
           </li>
         </ul>
       </nav>

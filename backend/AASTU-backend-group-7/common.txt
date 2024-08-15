@@ -11,4 +11,4 @@ standard =
 aastu.backend.g7.[name].[feature_name]
 
 
-/make a confflict
+/make a conflict

@@ -61,7 +61,7 @@ export default function ClientSideComponent({
                       : "text-[#B1B1B1]"
                   }`}
                 >
-                  <img
+                  <Image
                     src={item.icon}
                     alt={item.title}
                     className={`w-6 h-6 ${

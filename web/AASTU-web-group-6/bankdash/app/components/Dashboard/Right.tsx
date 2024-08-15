@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { PieComp } from "../Charts/PieComp";
 const Right = () => {
   const dummyTr: any = [
     {
@@ -67,7 +68,9 @@ const Right = () => {
           Expense Statistics
         </h1>
 
-        <div className="flex w-full h-80 gap-6 bg-white rounded-3xl border-solid border-2 border-gray-200"></div>
+        <div className="flex w-full gap-6 bg-white rounded-3xl border-solid border-2 border-gray-200">
+          <PieComp />
+        </div>
       </div>
     </section>
   );

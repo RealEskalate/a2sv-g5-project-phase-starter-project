@@ -42,9 +42,11 @@ const NavBar = () => {
                 height={32}
               />
             </button>
+
             <button>
               <Image
-                src="/assets/user.svg"
+                className = "rounded-full"
+                src="/assets/profile-1.png"
                 alt="user image"
                 width={32}
                 height={32}

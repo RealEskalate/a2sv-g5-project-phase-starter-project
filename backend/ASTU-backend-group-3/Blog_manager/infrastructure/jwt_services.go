@@ -1,4 +1,4 @@
-package utils
+package infrastructure
 
 import (
 	"log"

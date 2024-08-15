@@ -4,7 +4,7 @@ import (
 	"ASTU-backend-group-3/Blog_manager/Delivery/controller"
 	"ASTU-backend-group-3/Blog_manager/Delivery/router"
 	"ASTU-backend-group-3/Blog_manager/Repository"
-	Usecases "ASTU-backend-group-3/Blog_manager/Usecases"
+	"ASTU-backend-group-3/Blog_manager/Usecases"
 
 	// "ASTU-backend-group-3/Blog_manager/Delivery/router"
 	"context"

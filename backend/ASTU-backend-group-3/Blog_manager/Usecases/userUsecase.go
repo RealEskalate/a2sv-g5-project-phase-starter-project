@@ -2,8 +2,10 @@ package Usecases
 
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
-	utils "ASTU-backend-group-3/Blog_manager/Infrastructure"
 	"ASTU-backend-group-3/Blog_manager/Repository"
+	infrastructure "ASTU-backend-group-3/Blog_manager/infrastructur"
+
+	// "ASTU-backend-group-3/Blog_manager/infrastructure"
 	"errors"
 	"fmt"
 	"strings"
@@ -42,7 +44,7 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.RegisterInpu
 	}
 
 	// Hash the password
-	hashedPassword, err := utils.HashPassword(input.Password)
+	hashedPassword, err := infrastructure.HashPassword(input.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %v", err)
 	}
@@ -88,7 +90,7 @@ func (u *userUsecase) UpdateUser(username string, updatedUser *Domain.UpdateUser
 	}
 	if updatedUser.Password != "" {
 		// Hash the new password before updating
-		hashedPassword, err := utils.HashPassword(updatedUser.Password)
+		hashedPassword, err := infrastructure.HashPassword(updatedUser.Password)
 		if err != nil {
 			return fmt.Errorf("failed to hash password: %v", err)
 		}

@@ -1,10 +1,12 @@
 package main
 
 import (
-	"ASTU-backend-group-3/Blog_manager/usecases"
 	"ASTU-backend-group-3/Blog_manager/Delivery/controller"
-	"ASTU-backend-group-3/Blog_manager/repository"
-	"ASTU-backend-group-3/Blog_manager/Delivery/routers"
+	"ASTU-backend-group-3/Blog_manager/Delivery/router"
+	"ASTU-backend-group-3/Blog_manager/Repository"
+	Usecases "ASTU-backend-group-3/Blog_manager/Usecases"
+
+	// "ASTU-backend-group-3/Blog_manager/Delivery/router"
 	"context"
 	"log"
 	"os"
@@ -15,38 +17,35 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
 func main() {
-	// connect to MongoDB
-	err := godotenv.Load(".env")
-	if err != nil {
+	// Load environment variables from .env file
+	if err := godotenv.Load(".env"); err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGO_URI")))
+	// Create a new MongoDB client and connect to the server
+	clientOptions := options.Client().ApplyURI(os.Getenv("MONGO_URI"))
+	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Failed to create MongoDB client:", err)
 	}
 
+	// Check the connection
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatal(err)
+	if err := client.Ping(ctx, nil); err != nil {
+		log.Fatal("Failed to ping MongoDB:", err)
 	}
 
 	userDatabase := client.Database("Blog management")
 
 	userCollection := userDatabase.Collection("User")
-	userRepository := repository.NewUserRepository(userCollection)
-	userUsecase := usecases.NewUserUsecase(userRepository)
+	userRepository := Repository.NewUserRepository(userCollection)
+	userUsecase := Usecases.NewUserUsecase(userRepository)
 	userController := controller.NewUserController(userUsecase)
 
-	router := routers.SetupRouter(userController)
+	router := router.SetupRouter(userController)
 	log.Fatal(router.Run(":8080"))
-
-
-
 
 }

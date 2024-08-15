@@ -71,7 +71,7 @@ const page = () => {
           <MyInvestment
             title="Samsung Mobile"
             color="#E7EDFF"
-            icon="/assets/Google.svg"
+            icon="/assets/google.svg"
             amount="$25,300"
             Envestment="Envestment Value"
             returnValue="-4%"

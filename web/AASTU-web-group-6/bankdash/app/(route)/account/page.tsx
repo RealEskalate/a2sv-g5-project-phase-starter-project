@@ -86,7 +86,7 @@ export default function Home() {
           </p>
           <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">See All</p>
           </div>
-          <VisaCard isBlack={false}/>
+          <VisaCard isBlack={false} isFade={true}/>
        
         </div>
         

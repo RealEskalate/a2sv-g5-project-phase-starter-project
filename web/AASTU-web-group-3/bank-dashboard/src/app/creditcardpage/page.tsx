@@ -6,7 +6,7 @@ import CardListPage from "../components/cardList/CardList";
 
 const creditCardPage = () => {
   return (
-    <div className="body bg-[#F5F7FA] w-full h-[100vh] overflow-y-auto pb-5">
+    <div className="body bg-[#F5F7FA] w-full h-full overflow-y-auto pb-5">
       {/* <div className="nav w-[375px] h-[140px]  bg-white rounded-[15px]  ">
         Navigation bar
       </div> */}

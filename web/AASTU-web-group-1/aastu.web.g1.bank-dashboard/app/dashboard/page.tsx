@@ -7,11 +7,11 @@ import {
 
 import { Transaction } from "./_components/Transaction";
 import { Barchart } from "@/components/ui/Barchart";
-import { Creditcard } from "./_components/Creditcard";
+import CreditCard from "./_components/CreditCard";
 import { Profile } from "./_components/Profile";
 import { PiTelegramLogoLight } from "react-icons/pi";
 import { Areachart } from "@/components/ui/Areachart";
-import { Piechart } from "@/components/ui/Piechart";
+import { Pie_chart } from "@/components/ui/Pie_chart";
 
 const MainDashboard = () => {
   const QuickTransferSection = useRef<HTMLDivElement|null>(null);
@@ -32,14 +32,14 @@ const MainDashboard = () => {
             <h4>See All</h4>
           </div>
           <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            <Creditcard
+            <CreditCard
               color="bg-gradient-to-r from-[#423fee] to-[#2723f1]"
               balance={5894}
               creditNumber="3778*** ****1234"
               name="Eddy Cusuma"
               textColor="text-white"
             />
-            <Creditcard
+            <CreditCard
               color="bg-white"
               balance={3210}
               creditNumber="3778*** ****1234"
@@ -98,7 +98,7 @@ const MainDashboard = () => {
             <h4>Expense Statistics</h4>
           </div>
           <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300 md:p-5 sm:space-x-10">
-            <Piechart />
+            <Pie_chart />
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ import (
 	"log"
 
 	// "time"
-	"task/mongo"
+	"blogs/mongo"
 )
 
 func ConnectDB(url string, DBname string) (mongo.Database, mongo.Client, error) {

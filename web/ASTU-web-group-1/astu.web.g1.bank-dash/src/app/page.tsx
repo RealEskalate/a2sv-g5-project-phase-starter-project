@@ -1,4 +1,5 @@
-export default function Home() {
+import CardSettings from "@/components/CardSettings/CardSettings";
 
-  return <div></div>;
+export default function Home() {
+  return <></>;
 }

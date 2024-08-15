@@ -15,31 +15,33 @@ const TrendingList = () => {
     { name: "Product J", price: "$55.00", pers: "+13%", color: true },
   ];
   return (
-    <div className="w-full md:w-2/5">
-      <h1 className="mb-3 font-Inter font-[600] text-xl text-deepNavy">
+    <div className="w-full md:w-2/5 px-2">
+      <h1 className="py-2 mb-4 w-fit  font-Inter font-[600] text-xl text-deepNavy">
         Trending Stock
       </h1>
       <div
-        className="overflow-x-auto bg-white md:px-4 h-[300px] rounded-2xl md:rounded-2xl"
+        className="overflow-x-auto bg-white md:px-4 max-h-[241px] min[890px]:max-h-[290px] lg:max-h-[243px] rounded-2xl md:rounded-2xl"
+
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
         }}
       >
-        <table className="w-full text-left divide-y border-collapse">
+        <table className="w-full text-left divide-y">
           <thead className="sticky top-0 bg-white z-10">
             <tr>
-              <th className="font-[500] font-Inter text-14px text-blue-steel py-3">
+              <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
                 <span className=" md:hidden lg:inline">SL</span>
                 No
               </th>
-              <th className="font-[500] font-Inter text-14px text-blue-steel py-3">
+              <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
                 Name
               </th>
-              <th className="font-[500] font-Inter text-14px text-blue-steel py-3">
+              <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
                 Price
               </th>
-              <th className="font-[500] font-Inter text-14px text-blue-steel py-3">
+              <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
+
                 Return
               </th>
             </tr>

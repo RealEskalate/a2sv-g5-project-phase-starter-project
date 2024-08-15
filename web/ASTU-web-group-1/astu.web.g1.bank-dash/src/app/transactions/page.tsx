@@ -1,31 +1,31 @@
 import React from "react";
 import MyCard from "@/components/MyCard/MyCard";
 import RecentTransactionTable from "@/components/RecentTransactionTable/RecentTransactionTable";
+import { Plus } from "lucide-react";
 export default function page() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col lg:flex-row gap-6">
-        <div className="flex flex-col gap-4">
-          <div className="flex justify-between">
-            <p>MyCard</p>
-            <p>+ Add card</p>
-          </div>
-          <div className="hidden lg:flex flex-row gap-6">
-            <MyCard />
-            <MyCard />
-          </div>
-          <div className="flex lg:hidden gap-6 overflow-x-auto">
-            <div className="flex flex-row gap-6 whitespace-nowrap">
-              <MyCard />
-              <MyCard />
+        <div className="w-full lg:flex ">
+          <div className="lg:w-2/3 md:pr-3 xl:pr-5 flex-shrink">
+            <div className="w-full">
+              <div className="flex justify-between">
+                <p className="text-[#333B69] pb-2 font-semibold">My Card</p>
+                <p className="text-[#333B69] pb-2 font-semibold">+ Add</p>
+              </div>
+              <div className="flex  overflow-x-auto space-x-2">
+                <MyCard />
+                <MyCard />
+                <div className="w-[295px] h-[175px] bg-gray-200 rounded-3xl justify-center items-center flex flex-shrink-0">
+                  <Plus size={32} />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex flex-col gap-4">
-          <div className="flex justify-between">
-            <p>My Expense</p>
-          </div>
-          <div className="flex">
+          <div className="lg:w-1/3 w-full">
+            <div className="flex justify-between">
+              <p className="text-[#333B69] pb-2 font-semibold">My Expense</p>
+            </div>
             <MyCard />
           </div>
         </div>

@@ -18,20 +18,20 @@ const Navbar = ({ title }: titleProp) => {
             className="mr-3 sm:hidden block"
           />
           <Image
-            src={"/credit-card.png"}
+            src={"/assets/navbar/credit-card.svg"}
             width={36}
             height={36}
             alt="bankDash logo"
             className="mr-3 sm:block hidden"
           />
-          <p className="font-black text-[25px] text-[#343C6A] sm:block hidden">
+          <p className="font-black text-[25px] text-[#343C6A] sm:flex hidden">
             BankDash.
           </p>
         </div>
 
         <div className="w-full m-5 flex sm:justify-between items-center">
           <div className="flex w-full justify-center sm:w-auto">
-            <p className="font-semibold text-[20px] sm:text-[25px] text-[#343C6A]">
+            <p className="font-semibold text-[20px] sm:text-[25px] text-[#343C6A] sm:ml-7">
               {title}
             </p>
           </div>

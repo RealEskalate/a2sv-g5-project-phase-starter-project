@@ -12,13 +12,43 @@ export default async function RootLayout({
 
   return (
     <main className="flex h-screen w-full font-inter">
-      <Sidebar/>
+      <Sidebar user={{
+        $id: "",
+        email: "",
+        userId: "",
+        dwollaCustomerUrl: "",
+        dwollaCustomerId: "",
+        firstName: "",
+        lastName: "",
+        name: "",
+        address1: "",
+        city: "",
+        state: "",
+        postalCode: "",
+        dateOfBirth: "",
+        ssn: ""
+      }}/>
 
       <div className="flex size-full flex-col">
         <div className="root-layout">
           <Image src="/icons/logo.svg" width={30} height={30} alt="logo" />
           <div>
-            <MobileNav/>
+            <MobileNav user={{
+              $id: "",
+              email: "",
+              userId: "",
+              dwollaCustomerUrl: "",
+              dwollaCustomerId: "",
+              firstName: "",
+              lastName: "",
+              name: "",
+              address1: "",
+              city: "",
+              state: "",
+              postalCode: "",
+              dateOfBirth: "",
+              ssn: ""
+            }}/>
           </div>
         </div>
         {children}

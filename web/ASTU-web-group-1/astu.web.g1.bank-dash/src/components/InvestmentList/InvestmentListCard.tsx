@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 type InvestmentListCardProps = {
@@ -20,10 +21,12 @@ const InvestmentListCard: React.FC<InvestmentListCardProps> = ({
   return (
     <div className="flex  w-full bg-white rounded-[20px] p-2 ">
       <div className="flex-shrink-0 mr-4 ">
-        <img
+        <Image
           className="lg:w-[55px] lg:h-[55px] w-[40px] h-[40px] sm:rounded-[20px]"
           src={imageUrl}
           alt="card image"
+          width={1000}
+          height={1000}
         />
       </div>
       <div className="flex-1 min-w-0 py-2 ">

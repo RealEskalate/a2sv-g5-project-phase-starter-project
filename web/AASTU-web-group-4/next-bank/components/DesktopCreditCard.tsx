@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 
 const DesktopCreditCart = () => {
   return (
@@ -8,8 +9,7 @@ const DesktopCreditCart = () => {
             <span className='text-[12px]'>Balance</span>
             <span className='block text-[20px] font-bold'>$5,756</span>
         </div>
-
-        <img src="icons/chip.png" alt="chip card" className='w-[29px] h-[29px] mt-4 mr-2' />
+        <Image src="/icons/chip.png" width={30} height={2} alt="chip card" className='h-[29px] mt-4 mr-2' />
       </div>
 
       <div className="flex justify-between w-[90%]">
@@ -26,7 +26,7 @@ const DesktopCreditCart = () => {
       
       <div className="flex justify-between child-div absolute bottom-0 left-0 right-0 bg-gradient-to-b from-blue-600">
         <span className='p-3 ml-2 text-[22px]'>3778 **** **** 1234</span>
-        <img src="icons/masterCard.png" alt="master card icon" className='w-[44px] h-[42px] mt-1.5 mr-3' />
+        <Image src="/icons/masterCard.png" width={44} height={42} alt="master card icon" className=' mt-1.5 mr-3' />
       </div>
 
     </div>

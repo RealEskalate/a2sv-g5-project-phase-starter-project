@@ -75,7 +75,7 @@ export default function Home() {
               status="Completed"
               amount="+$780"
               color="#FFE0EB"
-              icon="/assets/user.svg"
+              icon="/assets/userr.svg"
             />
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function Home() {
               title="Michael"
               date="2 days ago"
               amount="$160"
-              icon="/assets/user.svg"
+              icon="/assets/userr.svg"
               color="#FFF5D9"
             />
             <InvoiceCard
@@ -128,7 +128,7 @@ export default function Home() {
               title="William"
               date="10 days ago"
               amount="$90"
-              icon="/assets/user.svg"
+              icon="/assets/userr.svg"
               color="#FFE0EB"
             />
           </div>

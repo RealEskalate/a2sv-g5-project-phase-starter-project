@@ -34,11 +34,11 @@ func Setuprouter() *gin.Engine {
 		Users: customUserCol,
 		Blogs: customBlogCol,
 	}
+	// Initialize the router
+	Router = gin.Default()
 
 	// go to auth router
 	AuthRouter()
 
-	// Initialize the router
-	Router = gin.Default()
 	return Router
 }

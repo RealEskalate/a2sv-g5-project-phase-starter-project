@@ -107,10 +107,14 @@ const config: Config = {
         page: "#F5F7FA",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        "card-gradient":
+        "card-gradient-1":
           "linear-gradient(45deg, rgba(76,73,237,1) 41%, rgba(10,6,244,1) 100%)",
+        "card-gradient-2":
+          "linear-gradient(-45deg, rgba(83,155,255,1) 40%, rgba(45,96,255,1) 90%)",
         "card-box-light":
           "linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%)",
+        "area-bg":
+          "linear-gradient(90deg, rgba(45,96,255,1) 0%, rgba(45,96,255,1) 50%)",
       },
     },
   },

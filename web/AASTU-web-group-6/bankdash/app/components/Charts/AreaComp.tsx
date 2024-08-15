@@ -1,29 +1,22 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+
 const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
+  { month: "Jul", desktop: 20 },
+  { month: "Aug", desktop: 80 },
+  { month: "Sep", desktop: 390 },
+  { month: "Oct", desktop: 500 },
+  { month: "Nov", desktop: 150 },
+  { month: "Dev", desktop: 400 },
+  { month: "January", desktop: 86 },
 ];
 
 const chartConfig = {
@@ -31,23 +24,16 @@ const chartConfig = {
     label: "Desktop",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
-  },
 } satisfies ChartConfig;
 
 export function AreaComp() {
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Area Chart - Stacked</CardTitle>
-        <CardDescription>
-          Showing total visitors for the last 6 months
-        </CardDescription>
-      </CardHeader>
+    <Card className="w-full border-0 shadow-none bg-transparent">
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer
+          config={chartConfig}
+          className="barHeight w-full min-h-[200px]"
+        >
           <AreaChart
             accessibilityLayer
             data={chartData}
@@ -56,49 +42,37 @@ export function AreaComp() {
               right: 12,
             }}
           >
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stopColor="rgba(45, 96, 255, 0)" />
+                <stop offset="90%" stopColor="rgba(45, 96, 255, 0.5)" />
+              </linearGradient>
+            </defs>
+
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => value.slice(0, 4)}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Area
-              dataKey="mobile"
-              type="natural"
-              fill="var(--color-mobile)"
-              fillOpacity={0.4}
-              stroke="var(--color-mobile)"
-              stackId="a"
-            />
+
             <Area
               dataKey="desktop"
               type="natural"
-              fill="var(--color-desktop)"
-              fillOpacity={0.4}
-              stroke="var(--color-desktop)"
+              fill="url(#gradient)" // Use the gradient fill
+              stroke="#1814F3" // Stroke color
+              strokeWidth={3} // Stroke width
               stackId="a"
             />
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
-            </div>
-          </div>
-        </div>
-      </CardFooter>
     </Card>
   );
 }

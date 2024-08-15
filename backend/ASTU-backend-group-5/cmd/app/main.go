@@ -1,8 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"blogApp/internal/http/routes"
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
+	router := gin.Default()
 
-	fmt.Println("welcome to PostIt")
+	routes.RegisterVerificationRoutes(router)
+
+	router.Run(fmt.Sprintf(":%d", 8080))
 }

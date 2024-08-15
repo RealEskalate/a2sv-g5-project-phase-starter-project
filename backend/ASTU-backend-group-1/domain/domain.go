@@ -3,7 +3,7 @@ package domain
 import "time"
 
 type User struct {
-	ID        string
+	UserId    string
 	Username  string
 	Email     string
 	FirstName string
@@ -11,24 +11,33 @@ type User struct {
 	Password  string
 	IsAdmin   bool
 }
-type Blog struct {
-	Title    string
-	Content  string
-	AuthorID string
-	Date     time.Time
-	Tags     []string
-}
-type BlogFilterOption struct {
-	Tags       []string
-	AuthorId   string
-	Date       time.Time
-	BlogId     string
+type UserFilterOption struct {
+	Filter struct {
+		UserId    string
+		Username  string
+		Email     string
+		FirstName string
+		LastName  string
+		IsAdmin   bool
+	}
 	Pagination int
 }
-type UserFilterOption struct {
-	UserID     string
-	Email      string
-	Username   string
+type Blog struct {
+	ID       string    `json:"id,omitempty"`
+	Title    string    `json:"title,omitempty"`
+	Content  string    `json:"content,omitempty"`
+	AuthorID string    `json:"author_id,omitempty"`
+	Date     time.Time `json:"date,omitempty"`
+	Tags     []string  `json:"tags,omitempty"`
+}
+type BlogFilterOption struct {
+	Filter struct {
+		Title    string
+		Tags     []string
+		AuthorId string
+		Date     time.Time
+		BlogId   string
+	}
 	Pagination int
 }
 type BlogRepository interface {

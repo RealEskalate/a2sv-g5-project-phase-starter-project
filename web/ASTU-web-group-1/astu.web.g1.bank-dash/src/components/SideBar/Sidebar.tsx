@@ -65,7 +65,7 @@ export default function Sidebar() {
       <>
         <aside className='fixed sm:relative top-0 left-0 z-40 w-[230px] transition-transition -translate-x-full sm:translate-x-0 duration-300 '>
           <div className='min-h-screen py-4 overflow-y-auto bg-white '>
-            <p className='flex items-center px-3 text-18px font-bold text-navy'>
+            <p className='flex items-center px-3 text-xl font-bold text-navy mb-10 my-3'>
               <Logo className='w-[28px] h-[25px] mx-2' /> BankDash.
             </p>
             {data.map((ele) => (

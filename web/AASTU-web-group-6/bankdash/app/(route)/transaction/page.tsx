@@ -43,7 +43,7 @@ const Transaction = () => {
         </div>
       </div>
 
-      <div className="flex gap-8 w-full h-full">
+      <div className="flex gap-8 w-full">
         <div className="w-full">
           <VisaCard isBlack={false} />
         </div>

@@ -46,10 +46,9 @@ const BarGraph = () => {
 
   return (
     <div className="space-y-3">
-      <p className="font-semibold text-[22px] text-[#343C6A]">My Expense</p>
-      <Card className="w-[300px] rounded-[25px]">
+      <Card className="rounded-[25px]">
         <CardContent>
-          <ChartContainer config={chartConfig}>
+          <ChartContainer config={chartConfig} className="h-[200px]">
             <BarChart data={chartData}>
               <CartesianGrid vertical={false} />
               <XAxis
@@ -69,7 +68,7 @@ const BarGraph = () => {
                     key={`cell-${index}`}
                     fill={
                       index === activeIndex
-                        ? "#94a3b8" // Hover color
+                        ? "#16DBCC" // Hover color
                         : "var(--color-desktop)" // Default color
                     }
                     onMouseOver={() => handleMouseOver(index)}

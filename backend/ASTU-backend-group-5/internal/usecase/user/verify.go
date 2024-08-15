@@ -24,7 +24,6 @@ type UserUsecase struct {
 func NewUserUsecase() *UserUsecase {
 	return &UserUsecase{}
 }
-
 func (u *UserUsecase) RequestEmailVerification(user User) error {
 	var emailSender email.EmailSender
 
@@ -51,10 +50,14 @@ func (u *UserUsecase) RequestEmailVerification(user User) error {
 			Config.EMAIL_SENDER_PASSWORD,
 		)
 	}
-	err = emailSender.SendVerificationEmail(user.Email, TokenGenerator())
-	if err != nil {
-		log.Fatalf("Failed to send email: %v", err)
-	}
+
+	go func() {
+		err := emailSender.SendVerificationEmail(user.Email, TokenGenerator())
+		if err != nil {
+			log.Printf("Failed to send verification email: %v", err)
+		}
+	}()
+
 	return nil
 }
 

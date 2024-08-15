@@ -1,3 +1,5 @@
+import TrendingList from "@/components/TrendingStock/trendingList";
+
 export default function Home() {
-  return <></>;
+  return <div></div>;
 }

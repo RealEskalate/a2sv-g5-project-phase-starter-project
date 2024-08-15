@@ -4,7 +4,9 @@ const page = () => {
   return (
     <div>
       Dashboard
-      <ImageComponent></ImageComponent>
+      <ImageComponent>
+        
+      </ImageComponent>
     </div>
   )
 }

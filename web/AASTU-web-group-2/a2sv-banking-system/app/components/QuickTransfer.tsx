@@ -3,9 +3,10 @@ import ImageComponent from "./QuickTransferImage"
 export default function Home() {
   return (
     <div className = "bg-white rounded-3xl my-4 mx-4">
+      <p className="text-[#343C6A] mx-3 py-3 font-semibold text-xl">Quick Transfer</p>
       <div className="flex flex-col gap-3 px-5 py-5">
         {/*  Image Component  */}
-            <div className="flex gap-6 py-2 justify-between items-center">
+            <div className="flex gap-6 py-2 px-3 justify-between items-center">
               <ImageComponent/>
               <ImageComponent/>
               <ImageComponent/>
@@ -34,6 +35,6 @@ export default function Home() {
             </div>  
         </div>
       </div>
-  
+
   );
 }

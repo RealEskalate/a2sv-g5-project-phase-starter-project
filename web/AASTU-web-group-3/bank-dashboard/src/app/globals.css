@@ -3,3 +3,10 @@
 @tailwind utilities;
 
 
+.filter-active {
+    filter: brightness(0) saturate(100%) invert(34%) sepia(98%) saturate(2173%) hue-rotate(196deg) brightness(99%) contrast(103%);
+}
+.filter-inactive {
+filter: brightness(0) saturate(100%) invert(90%) sepia(0%) saturate(0%) hue-rotate(360deg) brightness(100%) contrast(90%);
+}
+  

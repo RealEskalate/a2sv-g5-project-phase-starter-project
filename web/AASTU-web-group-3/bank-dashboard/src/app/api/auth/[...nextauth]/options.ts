@@ -1,4 +1,4 @@
-import { NextAuthOptions } from "next-auth";
+import { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 interface Credentials {
@@ -6,11 +6,23 @@ interface Credentials {
   password: string;
 }
 
-interface User {
+interface User extends NextAuthUser {
   data: {
     access_token: string;
     refresh_token: string;
-  }
+  };
+  id: string;
+}
+
+function isUser(user: unknown): user is User {
+  return (
+    typeof user === "object" &&
+    user !== null &&
+    "data" in user &&
+    typeof (user as User).data === "object" &&
+    "access_token" in (user as User).data &&
+    "refresh_token" in (user as User).data
+  );
 }
 
 export const options: NextAuthOptions = {
@@ -19,13 +31,13 @@ export const options: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         userName: {
-          label: "Username ",
+          label: "Username",
           type: "text",
           placeholder: "Enter email address",
         },
         password: {
           label: "Password",
-          type: "Password",
+          type: "password",
           placeholder: "Enter password",
         },
       },
@@ -41,9 +53,12 @@ export const options: NextAuthOptions = {
         if (!res.ok) return null;
 
         const result = await res.json();
-        
+
         if (result.success && result.data) {
-          const user: User = result;
+          const user: User = {
+            ...result,
+            id: result.data.userId,
+          };
           return user;
         }
 
@@ -51,25 +66,23 @@ export const options: NextAuthOptions = {
       },
     }),
   ],
-  pages:{
-      signIn: '/auth/signin',
-
+  pages: {
+    signIn: '/auth/signin',
   },
   session: {
     strategy: 'jwt',
   },
   callbacks: {
     async jwt({ token, user }) {
-      console.log('User', user)
-      if (user) {
+      if (isUser(user)) {
         token.accessToken = user.data.access_token;
         token.refreshToken = user.data.refresh_token;
       }
       return token;
     },
     async session({ session, token }) {
-      session.accessToken = token.accessToken;
-      session.refreshToken = token.refreshToken;
+      session.accessToken = token.accessToken as string;
+      session.refreshToken = token.refreshToken as string;
       return session;
     },
   },

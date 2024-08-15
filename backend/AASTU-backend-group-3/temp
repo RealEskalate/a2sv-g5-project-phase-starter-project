@@ -1,0 +1,95 @@
+Public Routes
+User Registration
+POST /api/users/register
+User Login
+POST /api/users/login
+Forgot Password
+POST /api/users/forgot-password
+Reset Password
+POST /api/users/reset-password
+Retrieve Blog Posts
+GET /api/blogs
+Query Parameters:
+page (optional): Page number for pagination.
+perPage (optional): Number of posts per page.
+Search Blog Posts
+GET /api/blogs/search
+Query Parameters:
+title (optional): Search by blog post title.
+author (optional): Search by blog post author name.
+Filter Blog Posts
+GET /api/blogs/filter
+Query Parameters:
+tags (optional): Comma-separated list of tags.
+date (optional): Filter by date (e.g., "2024-08-15").
+Generate Blog Content Suggestions
+POST /api/ai/content-suggestions
+Request Body:
+json
+Copy code
+{
+"keywords": ["string"],
+"topic": "string"
+}
+
+User Routes
+User Logout
+POST /api/users/logout
+Headers: Authorization: Bearer <access_token>
+Update User Profile
+PUT /api/users/profile
+Headers: Authorization: Bearer <access_token>
+Refresh Token
+POST /api/users/refresh-token
+Request Body:
+json
+Copy code
+{
+"refreshToken": "string"
+}
+
+Create Blog Post
+POST /api/blogs
+Headers: Authorization: Bearer <access_token>
+Update Blog Post
+PUT /api/blogs/{blogId}
+Headers: Authorization: Bearer <access_token>
+Delete Blog Post
+DELETE /api/blogs/{blogId}
+Headers: Authorization: Bearer <access_token>
+Admin Routes
+Admin Create Blog Post
+POST /api/admin/blogs
+Headers: Authorization: Bearer <access_token>
+Admin Update Blog Post
+PUT /api/admin/blogs/{blogId}
+Headers: Authorization: Bearer <access_token>
+Admin Delete Blog Post
+DELETE /api/admin/blogs/{blogId}
+Headers: Authorization: Bearer <access_token>
+Admin Get All Users
+GET /api/admin/users
+Headers: Authorization: Bearer <access_token>
+Admin Update User Role
+PUT /api/admin/users/{userId}/role
+Request Body:
+json
+Copy code
+{
+"role": "string" (e.g., "Admin", "User")
+}
+
+Headers: Authorization: Bearer <access_token>
+Admin Delete User
+DELETE /api/admin/users/{userId}
+Headers: Authorization: Bearer <access_token>
+AI Routes
+Generate Blog Content Suggestions
+POST /api/ai/content-suggestions
+Request Body:
+json
+Copy code
+{
+"keywords": ["string"],
+"topic": "string"
+}

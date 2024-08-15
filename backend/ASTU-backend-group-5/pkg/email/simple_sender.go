@@ -2,7 +2,9 @@ package email
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/smtp"
+	"strings"
 )
 
 type SimpleEmailSender struct {
@@ -22,23 +24,43 @@ func NewSimpleEmailSender(smtpHost, smtpPort, senderEmail, senderPasswd string) 
 }
 
 func (s *SimpleEmailSender) SendVerificationEmail(userEmail string, token string) error {
-	subject := "Subject: Verify Your Email\n"
-	body := fmt.Sprintf("Please verify your email by clicking the link: https://yourapp.com/verify-email?token=%s", token)
-	message := subject + "\n" + body
-
-	return s.sendMail(userEmail, message)
+	subject := "Verify Your Email"
+	html, err := s.loadHTML("pkg/email/templates/verify_email.html")
+	if err != nil {
+		return err
+	}
+	html = strings.Replace(html, "{{token}}", token, -1)
+	return s.sendMail(userEmail, subject, html)
 }
 
 func (s *SimpleEmailSender) SendPasswordResetEmail(userEmail string, token string) error {
-	subject := "Subject: Reset Your Password\n"
-	body := fmt.Sprintf("You can reset your password using the following link: https://yourapp.com/reset-password?token=%s", token)
-	message := subject + "\n" + body
-
-	return s.sendMail(userEmail, message)
+	subject := "Reset Your Password"
+	html, err := s.loadHTML("pkg/email/templates/password_reset.html")
+	if err != nil {
+		return err
+	}
+	html = strings.Replace(html, "{{token}}", token, -1)
+	return s.sendMail(userEmail, subject, html)
 }
 
-func (s *SimpleEmailSender) sendMail(to string, message string) error {
+func (s *SimpleEmailSender) loadHTML(filename string) (string, error) {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (s *SimpleEmailSender) sendMail(to string, subject string, html string) error {
 	auth := smtp.PlainAuth("", s.senderEmail, s.senderPasswd, s.smtpHost)
-	err := smtp.SendMail(s.smtpHost+":"+s.smtpPort, auth, s.senderEmail, []string{to}, []byte(message))
+	from := s.senderEmail
+	toList := []string{to}
+
+	header := fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s\r\nMIME-Version: 1.0\r\nContent-Type: multipart/alternative; boundary=\"boundary\"\r\n\r\n", from, toList[0], subject)
+	body := fmt.Sprintf("--boundary\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n%s\r\n--boundary--", html)
+
+	msg := header + body
+
+	err := smtp.SendMail(s.smtpHost+":"+s.smtpPort, auth, from, toList, []byte(msg))
 	return err
 }

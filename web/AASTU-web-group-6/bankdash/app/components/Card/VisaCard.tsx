@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import simUrl from "../../../public/assets/SIM-icon.png";
+import simUrl from "../../../public/assets/sim-icon.png";
 import simBlackUrl from "../../../public/assets/sim-black-icon.png";
 interface ColorType {
   isBlack: boolean;

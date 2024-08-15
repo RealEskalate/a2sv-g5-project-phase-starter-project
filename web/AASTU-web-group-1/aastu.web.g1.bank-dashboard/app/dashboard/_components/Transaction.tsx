@@ -20,24 +20,23 @@ export const Transaction = ({
     <div className="flex justify-between">
       <div className="flex space-x-2">
         <div
-          className={`inline-flex items-center justify-center ${color} rounded-full w-[50px] h-[50px]`}
+          className={`inline-flex items-center justify-center ${color} rounded-full w-[35px] h-[35px]`}
         >
           <Image
             src={image}
             alt={`transation icon`}
             className="object-cover object-center"
-            width={20}
-            height={20}
+            width={15}
+            height={15}
           />
         </div>
 
         <div>
-          <p className={`font-inter text-[14px]`} style={{ fontWeight: 500 }}>
+          <p className={`font-inter text-[14px] font-medium`} >
             {transactionType}
           </p>
           <p
-            className={`font-inter text-[12px] text-indigo-400`}
-            style={{ fontWeight: 400 }}
+            className={`font-inter text-[12px] text-indigo-400 font-normal`}
           >
             {date}
           </p>

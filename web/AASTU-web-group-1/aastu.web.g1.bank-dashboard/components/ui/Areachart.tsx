@@ -38,7 +38,7 @@ export function Areachart() {
     <Card>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={chartData}
               margin={{

@@ -10,7 +10,6 @@ const CreditCards = () => {
         <div className="p-3">
           <h1 className="text-2xl">My Cards</h1>
           <div className="flex flex-row max-y-[200px] overflow-y-auto gap-6 sm:max-x-[500px] md:max-x-[600px]">
-
             <CreditCard />
             <CreditCard />
             {/* Add more <CreditCard /> components as needed */}

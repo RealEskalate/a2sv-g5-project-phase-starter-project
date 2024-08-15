@@ -5,6 +5,7 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -15,10 +16,13 @@ type UserRepository interface {
 	Update(username string, UpdatedUser *Domain.User) error
 	Delete(userID string) error
 	IsDbEmpty() (bool, error)
+	InsertToken(username string , accessToke string , refreshToken string) error
+	DeleteToken(username string) error
 }
 
 type userRepository struct {
 	collection *mongo.Collection
+	tokenCollection *mongo.Collection
 }
 
 func NewUserRepository(collection *mongo.Collection) UserRepository {
@@ -67,4 +71,32 @@ func (r *userRepository) IsDbEmpty() (bool, error) {
 		return false, err
 	}
 	return count == 0, nil
+}
+
+
+func (r *userRepository) InsertToken(username string, accessToke string, refreshToken string) error {
+	token := &Domain.Token{
+		TokenID: primitive.NewObjectID(),
+        Username: username,
+        AccessToken: accessToke,
+        RefreshToken: refreshToken,
+    }
+	
+	_ , err := r.tokenCollection.InsertOne(context.TODO(), token)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+
+func (r *userRepository) DeleteToken (username string ) error{
+	filter := bson.M{"username": username}
+    _, err := r.tokenCollection.DeleteOne(context.TODO(), filter)
+    if err!= nil {
+        return err
+    }
+
 }

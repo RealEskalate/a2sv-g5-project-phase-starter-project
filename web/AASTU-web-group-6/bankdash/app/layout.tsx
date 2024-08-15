@@ -3,7 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import NavBar from "./components/Layout/NavBar";
 import Sidebar from "./components/Layout/Sidebar";
-
+import { usePathname } from "next/navigation";
+import LayoutProvider from "./Provider/LayoutProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,17 +18,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
   return (
     <html lang="en">
       <body className={`${inter.className} bg-body`}>
-        <div className="w-full flex ">
-          <Sidebar/>
-        <div className="w-full py-6 px-5">
-          <NavBar/>
+        <LayoutProvider>
           {children}
-        </div>
-        </div>
-        </body>
+        </LayoutProvider>
+      </body>
     </html>
   );
 }

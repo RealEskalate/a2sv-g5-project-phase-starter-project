@@ -8,13 +8,13 @@ interface Props {
   name: string;
   textColor: string;
 }
-const CreditCard = ({
+const CreditCard: React.FC<Props> = ({
   balance,
   isBlue,
   creditNumber,
   name,
   textColor,
-}: Props) => {
+}) => {
   return (
     <div
       className={` min-w-[300px] h-[200px] ${
@@ -38,7 +38,10 @@ const CreditCard = ({
           <p className="text-[10px] text-gray-400" style={{ fontWeight: 400 }}>
             CARD HOLDER
           </p>
-          <p className={`text-[13px] ${textColor} `} style={{ fontWeight: 700 }}>
+          <p
+            className={`text-[13px] ${textColor} `}
+            style={{ fontWeight: 700 }}
+          >
             {name}
           </p>
         </div>
@@ -46,7 +49,10 @@ const CreditCard = ({
           <p className="text-[10px] text-gray-400" style={{ fontWeight: 400 }}>
             VALID THRU
           </p>
-          <p className={`text-[13px] ${textColor} `}style={{ fontWeight: 700 }}>
+          <p
+            className={`text-[13px] ${textColor} `}
+            style={{ fontWeight: 700 }}
+          >
             12/22
           </p>
         </div>

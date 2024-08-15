@@ -7,7 +7,7 @@ import {
 
 import { Transaction } from "./_components/Transaction";
 import { Barchart } from "@/components/ui/Barchart";
-import CreditCard from "./_components/CreditCard";
+import CreditCard from "./_components/Creditcard";
 import { Profile } from "./_components/Profile";
 import { PiTelegramLogoLight } from "react-icons/pi";
 import { Areachart } from "@/components/ui/Areachart";

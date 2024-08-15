@@ -1,4 +1,4 @@
-import CreditCard from "../_components/CreditCard";
+import CreditCard from "../_components/Creditcard";
 import React from "react";
 import Image from "next/image";
 import { Donut } from "@/components/ui/Piechart";

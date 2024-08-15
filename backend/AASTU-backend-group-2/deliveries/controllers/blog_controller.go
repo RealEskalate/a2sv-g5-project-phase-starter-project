@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -64,10 +65,35 @@ func (controller *BlogController) RetrieveBlog(c *gin.Context) {
 	c.JSON(200, blogs)
 }
 func (controller *BlogController) UpdateBlog(c *gin.Context) {
+	getID := c.Param("id")
+	if getID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "id can not be empty"})
+	}
 
+	var blog domain.Blog
+	if err := c.BindJSON(&blog); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid blog request"})
+	}
+
+	err := controller.Blogusecase.UpdateBlog(c, blog, getID)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	c.IndentedJSON(http.StatusAccepted, gin.H{"message": "blog succesfully updated"})
 }
 func (controller *BlogController) DeleteBlog(c *gin.Context) {
+	getID := c.Param("id")
+	if getID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "id can not be empty"})
+	}
 
+	err := controller.Blogusecase.DeleteBlog(c, getID)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	c.IndentedJSON(http.StatusAccepted, gin.H{"message": "blog succesfully deleted"})
 }
 func (controller *BlogController) SearchBlog(c *gin.Context) {
 

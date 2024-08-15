@@ -3,8 +3,6 @@ package repositories
 import (
 	"blog_g2/domain"
 	"context"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogUsecase struct {
@@ -27,11 +25,21 @@ func (br *BlogUsecase) RetrieveBlog(c context.Context, page int) ([]domain.Blog,
 	return br.BlogRepo.RetrieveBlog(page)
 }
 
-func (br *BlogUsecase) UpdateBlog(c context.Context, updatedblog domain.Blog) error {
+func (br *BlogUsecase) UpdateBlog(c context.Context, updatedblog domain.Blog, blogID string) error {
+	err := br.BlogRepo.UpdateBlog(updatedblog, blogID)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func (br *BlogUsecase) DeleteBlog(c context.Context, blogID primitive.ObjectID) error {
+func (br *BlogUsecase) DeleteBlog(c context.Context, blogID string) error {
+	err := br.BlogRepo.DeleteBlog(blogID)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

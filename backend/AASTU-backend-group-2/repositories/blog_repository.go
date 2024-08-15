@@ -2,10 +2,13 @@ package repositories
 
 import (
 	"blog_g2/domain"
+	"context"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type BlogRepository struct {
@@ -23,12 +26,37 @@ func NewBlogRepository(mongoClient *mongo.Client) domain.BlogRepository {
 
 }
 
+const perpage = 10
+
 func (br *BlogRepository) CreateBlog(blog domain.Blog) error {
+	_, err := br.collection.InsertOne(context.TODO(), blog)
+
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (br *BlogRepository) RetrieveBlog(pgnum int) ([]domain.Blog, error) {
-	return []domain.Blog{}, nil
+
+	skip := perpage * (pgnum - 1)
+	findoptions := options.Find()
+	findoptions.SetSkip(int64(skip))
+	findoptions.SetLimit(perpage)
+	findoptions.SetSort(bson.D{{Key: "date", Value: -1}})
+
+	cursor, err := br.collection.Find(context.Background(), bson.D{}, findoptions)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var blogs []domain.Blog
+
+	if err = cursor.All(context.Background(), &blogs); err != nil {
+		return nil, err
+	}
+	return blogs, nil
 }
 
 func (br *BlogRepository) UpdateBlog(updatedblog domain.Blog) error {

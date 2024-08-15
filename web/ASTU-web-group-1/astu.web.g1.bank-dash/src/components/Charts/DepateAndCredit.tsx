@@ -15,11 +15,20 @@ const data = [
 const BarChartRechart = () => {
   return (
     <div className="w-full md:w-8/12 h-[350px] bg-white p-6 rounded-3xl">
-      <div>
-        <h3 className="blue-steel">
+      <div className="flex justify-between align-middle mb-6">
+        <h3 className="text-blue-steel">
           <span className="text-deepNavy">$7,654</span> Debited &{" "}
           <span className="text-deepNavy">$5,420</span> Credited in this week
         </h3>
+        <div className="flex space-x-5">
+          <p className="text-sm flex items-center text-blue-steel">
+            <div className="h-4 w-4 rounded-sm inline-block bg-[#1A16F3] me-2"></div> Debit
+          </p>
+
+          <p className="text-sm flex items-center text-blue-steel">
+            <div className="h-4 w-4 rounded-sm inline-block bg-[#FCAA0B] me-2"></div> Debit
+          </p>
+        </div>
       </div>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart

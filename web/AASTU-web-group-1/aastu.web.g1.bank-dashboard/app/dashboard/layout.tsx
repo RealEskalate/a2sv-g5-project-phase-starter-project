@@ -19,8 +19,7 @@ export default function RootLayout({
   return (
     <main className="flex h-screen font-inter bg-white md:bg-[#F5F7FA]">
       <Sidebar />
-
-      <div className="flex-grow flex flex-col">
+      <div className="w-full flex-grow flex flex-col overflow-x-hidden">
         <Header title={title} />
 
         <div className="flex size-full flex-col">

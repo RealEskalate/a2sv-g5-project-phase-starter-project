@@ -2,29 +2,19 @@ package user
 
 import (
 	"blogApp/internal/config"
+	"blogApp/internal/domain"
 	"blogApp/pkg/email"
+	"blogApp/pkg/jwt"
+	"context"
+	"errors"
 	"log"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TokenGenerator() string {
 	return "token"
 }
 
-type User struct {
-	Email    string
-	ID       primitive.ObjectID
-	UserName string
-}
-
-type UserUsecase struct {
-}
-
-func NewUserUsecase() *UserUsecase {
-	return &UserUsecase{}
-}
-func (u *UserUsecase) RequestEmailVerification(user User) error {
+func (u *UserUsecase) RequestEmailVerification(user domain.User) error {
 	var emailSender email.EmailSender
 
 	Config, err := config.Load()
@@ -62,5 +52,26 @@ func (u *UserUsecase) RequestEmailVerification(user User) error {
 }
 
 func (u *UserUsecase) VerifyEmail(token string, email string) error {
+	claims, err := jwt.ValidateToken(token)
+	if err != nil {
+		return err
+	}
+	issuerEmail := claims.Email
+	if issuerEmail != email {
+		return errors.New("invalid token")
+	}
+	user, err := u.repo.FindUserByEmail(context.Background(), email)
+	if err != nil {
+		return err
+	}
+	if user == nil {
+		return errors.New("user not found")
+	}
+	// user. = true
+	err = u.repo.UpdateUser(context.Background(), user)
+	if err != nil {
+		return err
+	}
 	return nil
+
 }

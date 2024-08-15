@@ -1,43 +1,22 @@
 package routes
 
 import (
-    "blogApp/internal/http/handlers"
-    "blogApp/internal/repository/mongodb"
-    "blogApp/internal/usecase/user"
-    "blogApp/pkg/mongo"
-    "log"
-    "os"
+	"blogApp/internal/http/handlers"
+	"blogApp/internal/repository/mongodb"
+	"blogApp/internal/usecase/user"
 
-    "github.com/gin-gonic/gin"
-    "github.com/joho/godotenv"
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func SetupRouter() *gin.Engine {
-    err := godotenv.Load(".env")
-    if err != nil {
-        log.Fatalf("Error loading .env file: %s", err)
-    }
-    uri := os.Getenv("MONGO_URI")
-    // Connect to the database
-    client, err := mongo.ConnectDB(uri)
-    if err != nil {
-        log.Fatal(err)
-    }
-    db := client.Database("blogDB")
-    if err != nil {
-        log.Fatal(err)
-    }
+func RegisterUserRouters(collection *mongo.Collection, router *gin.Engine) {
+	// userCollection := mongo.GetCollection("users")
 
-    // Get the collection
-    userRepo := &mongodb.UserRepositoryMongo{Collection: db.Collection("users")}
-    loginUseCase := user.NewLoginUseCase(userRepo)
-    loginHandler := handlers.NewLoginHandler(loginUseCase)
+	userRepo := &mongodb.UserRepositoryMongo{Collection: collection}
+	loginUseCase := user.NewUserUsecase(userRepo)
+	userHandler := handlers.NewUserHandler(loginUseCase)
 
-    // Setup Gin router
-    r := gin.Default()
+	router.POST("/auth/login", userHandler.Login)
+	router.POST("/auth/register", userHandler.Register)
 
-    // Register login route
-    r.POST("/api/v1/auth/login", loginHandler.Login)
-
-    return r
 }

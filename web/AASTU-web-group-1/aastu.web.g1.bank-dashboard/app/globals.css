@@ -72,4 +72,8 @@
   body {
     @apply bg-[#f5f7fa] text-foreground;
   }
+
+  .tabs{
+    @apply data-[state=active]:border-b-primaryBlue data-[state=active]:border-b-4 data-[state=active]:text-primaryBlue bg-gray-100 text-gray-800 bg-transparent
+  }
 }

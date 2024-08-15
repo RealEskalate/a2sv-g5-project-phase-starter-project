@@ -12,7 +12,7 @@ const Settings = () => {
           <TabsList className="w-full mb-6 md:justify-start bg-white">
             <TabsTrigger
               value="edit_profile"
-              className=" data-[state=active]:border-b-transparent border-b-4 border-b-transparent data-[state=active]:text-[#1814f3] data-[state=active]:border-b-[#1814f3]"
+              className="data-[state=active]:border-b-transparent border-b-4 border-b-transparent data-[state=active]:text-[#1814f3] data-[state=active]:border-b-[#1814f3]"
             >
               Edit Profile
             </TabsTrigger>

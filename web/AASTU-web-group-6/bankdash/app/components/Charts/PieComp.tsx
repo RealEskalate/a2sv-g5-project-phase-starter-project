@@ -1,6 +1,5 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { LabelList, Pie, PieChart } from "recharts";
 
 import {
@@ -29,19 +28,19 @@ const totalVisitors = 100;
 
 const chartConfig = {
   Services: {
-    label: `${((15 / totalVisitors) * 100).toFixed(0)}%\nServices`,
+    label: `Services`,
     color: "#FC7900",
   },
   Transfer: {
-    label: `${((30 / totalVisitors) * 100).toFixed(0)}%\nTransfer`,
+    label: `Transfer`,
     color: "#343C6A",
   },
   Shopping: {
-    label: `${((20 / totalVisitors) * 100).toFixed(0)}%\nShopping`,
+    label: `Shopping`,
     color: "#FA00FF",
   },
   Other: {
-    label: `${((35 / totalVisitors) * 100).toFixed(0)}%\nOther`,
+    label: `Other`,
     color: "#1814F3",
   },
 } satisfies ChartConfig;

@@ -6,7 +6,7 @@ import simBlackUrl from "../../../public/assets/sim-black-icon.png";
 const VisaCard = ({ isBlack }: { isBlack: boolean }) => {
   return (
     <div
-      className={`w-full font-Lato flex flex-col gap-2 grow rounded-3xl ${
+      className={`h-full w-full font-Lato flex flex-col gap-2 grow rounded-3xl ${
         isBlack
           ? "text-colorBody-1 bg-white border-solid border-[1px] border-gray-200"
           : "text-white bg-card-gradient"

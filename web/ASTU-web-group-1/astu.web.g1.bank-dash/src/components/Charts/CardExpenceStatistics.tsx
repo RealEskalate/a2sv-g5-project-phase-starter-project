@@ -16,13 +16,8 @@ const data = {
   datasets: [
     {
       label: "My First Dataset",
-      data: [10,10,10,10],
-      backgroundColor: [
-        "#4C78FF",
-        "#16DBCC",
-        "#FF82AC",
-        "#FFBB38",
-      ],
+      data: [10, 10, 10, 10],
+      backgroundColor: ["#4C78FF", "#16DBCC", "#FF82AC", "#FFBB38"],
       hoverOffset: 4,
     },
   ],
@@ -44,30 +39,39 @@ const options = {
 
 const CardExpenceStatistics: React.FC = () => {
   return (
-    <div className="w-full md:w-4/12 bg-white p-6 rounded-3xl">
-      <div className="mt-8 flex justify-center">
-        <Doughnut data={data} options={options} />
-      </div>
-      <div className="flex justify-around mt-4">
-        <div className="space-y-4">
-          <h1 className="flex items-center">
-            {" "}
-            <p className="w-4 h-4 rounded-full bg-[#4C78FF] me-3"></p> DBL Bank
-          </h1>
-          <h1 className="flex items-center">
-            {" "}
-            <p className="w-4 h-4 rounded-full bg-[#16DBCC] me-3"></p> AMB Bank
-          </h1>
+    <div className="w-full md:w-4/12">
+      <h1 className="text-[#333B69] text-20px py-2 font-semibold">
+        Card and Expence Statistics
+      </h1>
+      <div className="w-full bg-white p-6 rounded-3xl">
+        <div className="mx-10 mt-4 flex justify-center">
+          <Doughnut data={data} options={options} />
         </div>
-        <div className="space-y-4">
-          <h1 className="flex items-center">
-            {" "}
-            <p className="w-4 h-4 rounded-full bg-[#FF82AC] me-3"></p> RBC Bank
-          </h1>
-          <h1 className="flex items-center">
-            {" "}
-            <p className="w-4 h-4 rounded-full bg-[#FFBB38] me-3"></p> MCP Bank
-          </h1>
+        <div className="flex justify-around mt-4">
+          <div className="space-y-4">
+            <h1 className="flex items-center">
+              {" "}
+              <p className="w-4 h-4 rounded-full bg-[#4C78FF] me-3"></p> DBL
+              Bank
+            </h1>
+            <h1 className="flex items-center">
+              {" "}
+              <p className="w-4 h-4 rounded-full bg-[#16DBCC] me-3"></p> AMB
+              Bank
+            </h1>
+          </div>
+          <div className="space-y-4">
+            <h1 className="flex items-center">
+              {" "}
+              <p className="w-4 h-4 rounded-full bg-[#FF82AC] me-3"></p> RBC
+              Bank
+            </h1>
+            <h1 className="flex items-center">
+              {" "}
+              <p className="w-4 h-4 rounded-full bg-[#FFBB38] me-3"></p> MCP
+              Bank
+            </h1>
+          </div>
         </div>
       </div>
     </div>

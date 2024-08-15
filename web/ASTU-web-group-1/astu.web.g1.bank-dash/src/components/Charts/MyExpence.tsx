@@ -18,34 +18,36 @@ const data: ExpenceChart[] = [
 
 const MyExpence = () => {
   return (
-    <div
-      style={{ height: "" }}
-      className="bg-white p-6 rounded-3xl h-[250px] w-full md:w-4/12"
-    >
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={data}
-          margin={{ top: 10, right: 0, left: 0, bottom: 30 }}
-          width={150}
-        >
-          <Bar
-            dataKey="uv"
-            fill={data[0].name === "Apr" ? "#16DBCC" : "#EDF0F7"}
-            barSize={25}
+    <div className="w-full md:w-4/12">
+      <h1 className="text-[#333B69] text-20px py-2 font-semibold">
+        My Expence
+      </h1>
+      <div className="bg-white p-6 rounded-3xl h-[250px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={data}
+            margin={{ top: 10, right: 0, left: 0, bottom: 30 }}
+            width={150}
           >
-            {data.map((entry, index) => (
-              <Cell
-                cursor="pointer"
-                fill={entry["name"] === "Jun" ? "#16DBCC" : "#EDF0F7"}
-                key={`cell-${index}`}
-                radius={8}
-              />
-            ))}
+            <Bar
+              dataKey="uv"
+              fill={data[0].name === "Apr" ? "#16DBCC" : "#EDF0F7"}
+              barSize={25}
+            >
+              {data.map((entry, index) => (
+                <Cell
+                  cursor="pointer"
+                  fill={entry["name"] === "Jun" ? "#16DBCC" : "#EDF0F7"}
+                  key={`cell-${index}`}
+                  radius={8}
+                />
+              ))}
 
-            <LabelList dataKey="name" position="bottom" fill="#718EBF" />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+              <LabelList dataKey="name" position="bottom" fill="#718EBF" />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

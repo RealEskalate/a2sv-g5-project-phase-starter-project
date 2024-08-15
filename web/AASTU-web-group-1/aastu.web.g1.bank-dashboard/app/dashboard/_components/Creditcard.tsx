@@ -1,11 +1,19 @@
 import React from 'react'
 import { FcSimCardChip } from "react-icons/fc";
 import Image from 'next/image';
-export const Creditcard = () => {
+interface Props{
+  color:string,
+  creditNumber:string
+  balance:number,
+  name:string
+  textColor:string
+}
+
+export const Creditcard = ({color,creditNumber,balance,name,textColor}:Props) => {
   return (
-    <div className="w-[265px] min-w-[265px] h-[170px] bg-gradient-to-r from-[#423fee] to-[#2723f1] rounded-xl pt-3 space-y-5 border border-gray-300">
+    <div className={`max-w-[350px] max-h-[235px] min-w-[260px] ${color} w-[265px]  h-[170px]  rounded-xl pt-3 space-y-5 border border-gray-300`}>
       <div className="flex justify-between px-5">
-        <div className={`block text-white space-y-[1px]`}>
+        <div className={`block ${textColor} space-y-[1px]`}>
           <p
             className={`font-lato text-[11px]`}
             style={{ fontWeight: 400 }}
@@ -13,10 +21,9 @@ export const Creditcard = () => {
             Balance
           </p>
           <p
-            className={`text-[16px]`}
-            style={{ fontWeight: 700 }}
+            className={`text-[16px] font-semibold`}
           >
-            $5,756
+            ${balance}
           </p>
         </div>
         <FcSimCardChip size={30} />
@@ -31,10 +38,9 @@ export const Creditcard = () => {
             CARD HOLDER
           </p>
           <p
-            className={`font-lato text-[13px] text-white`}
-            style={{ fontWeight: 700 }}
+            className={`font-lato text-[13px] ${textColor} font-semibold`}
           >
-            Eddy Cusuma
+            {name}
           </p>
         </div>
         <div className={`block space-y-[1px]`}>
@@ -45,23 +51,22 @@ export const Creditcard = () => {
             VALID THRU
           </p>
           <p
-            className={`font-lato text-[13px] text-white`}
-            style={{ fontWeight: 700 }}
+            className={`font-lato text-[13px] ${textColor} font-semibold`}
+           
           >
-            Eddy 12/22
+            End 12/22
           </p>
         </div>
       </div>
 
       <div className="relative">
-        <div className="absolute top-0 left-0 w-full h-3/4 backdrop-blur-[2px] bg-gradient-to-b from-white/30 to-transparent "></div>
+        <div className="absolute top-0 left-0 w-full h-3/4 backdrop-blur-[2px] bg-gradient-to-b from-white/20 to-transparent border-t border-gray-200 "></div>
 
         <div className="relative flex justify-between px-5 items-center py-1">
           <p
-            className={`font-lato text-[15px] text-white`}
-            style={{ fontWeight: 700 }}
+            className={`font-lato text-[15px] ${textColor} font-semibold`}
           >
-            3778*** ****1234
+            {creditNumber}
           </p>
           <Image
             src={`/images/intersection.png`}

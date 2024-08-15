@@ -63,7 +63,7 @@ export function Barchart() {
   return (
     <Card>
       <CardContent>
-        <ChartContainer config={chartConfig} className="w-full h-96">
+        <ChartContainer config={chartConfig} className="flex">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} >
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -83,7 +83,7 @@ export function Barchart() {
                 radius={10}
                 barSize={20}
               />
-              <Bar
+              <Bar 
                 dataKey="Withdraw"
                 fill={chartConfig.Withdraw.color}
                 radius={10}

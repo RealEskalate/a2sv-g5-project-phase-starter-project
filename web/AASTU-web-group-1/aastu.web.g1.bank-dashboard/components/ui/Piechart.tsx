@@ -1,5 +1,11 @@
 "use client";
-import { LabelList, Pie, PieChart, Tooltip } from "recharts";
+import {
+  LabelList,
+  Pie,
+  PieChart,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import {
   Card,
   CardContent,
@@ -41,13 +47,14 @@ const chartConfig = {
 
 export function Piechart() {
   return (
-    <Card className="flex flex-col">
-      <CardContent className="flex-1 pb-0">
+    <Card >
+      <CardContent >
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]" // Increased the size for better visibility
+          className="flex" // Increased the size for better visibility
         >
-          <PieChart>
+          <ResponsiveContainer width="100%" height={300}>
+<PieChart>
             <Tooltip />
             <Pie
               data={chartData}
@@ -57,6 +64,7 @@ export function Piechart() {
               fill="#8884d8"
               label
               labelLine
+              paddingAngle={10}
 
             >
               <LabelList
@@ -69,6 +77,8 @@ export function Piechart() {
               />
             </Pie>
           </PieChart>
+          </ResponsiveContainer>
+          
         </ChartContainer>
       </CardContent>
     </Card>

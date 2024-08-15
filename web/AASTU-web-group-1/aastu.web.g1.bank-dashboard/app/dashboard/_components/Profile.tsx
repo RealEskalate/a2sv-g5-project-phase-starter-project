@@ -13,8 +13,8 @@ export const Profile = ({image,name,job}:Props) => {
           src={image}
           alt={`profile picture`}
           className="inline-block !rounded-full object-cover object-center ml-2"
-          width={35}
-          height={35}
+          width={50}
+          height={50}
         />
         <div className='block'>
           <h4 className="font-inter font-normal text-[12px] min-w-[55px] text-center">{name}</h4>

@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa";
 
 
-<<<<<<< HEAD
+
 // src/constants/index.ts
 
 export const ITEMS_PER_PAGE = 5;
@@ -176,10 +176,6 @@ export const transactionsData = [
 
 
 
-
-
-=======
->>>>>>> 81ada0dcef0025b85971baaefe2ff6e6f98aa422
 export const sidebarLinks = [
   { id:1, route: "/", label: "Dashboard", Icon: FaHome },
   { id:2, route: "transaction", label: "Transaction", Icon: FaExchangeAlt },

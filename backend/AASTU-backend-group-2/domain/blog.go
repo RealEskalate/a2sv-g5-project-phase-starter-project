@@ -13,7 +13,7 @@ type Blog struct {
 	Content string             `bson:"content,omitempty" json:"content,omitempty"`
 	UserID  primitive.ObjectID `bson:"userid,omitempty" json:"-"`
 	Tags    []string           `bson:"tags,omitempty" json:"tags,omitempty"`
-	Date    time.Time          `bson:"due_date,omitempty" json:"due_date,omitempty"`
+	Date    time.Time          `bson:"date,omitempty" json:"date,omitempty"`
 }
 
 type BlogUsecase interface {
@@ -21,8 +21,8 @@ type BlogUsecase interface {
 	RetrieveBlog(c context.Context) ([]Blog, error)
 	UpdateBlog(c context.Context, updatedblog Blog) error
 	DeleteBlog(c context.Context, blogID primitive.ObjectID) error
-	SearchBlog(c context.Context) ([]Blog, error)
-	FilterBlog(c context.Context) ([]Blog, error)
+	SearchBlog(c context.Context, postName string, authorName string) ([]Blog, error)
+	FilterBlog(c context.Context, tag []string, date time.Time) ([]Blog, error)
 }
 
 type BlogRepository interface {
@@ -31,5 +31,5 @@ type BlogRepository interface {
 	UpdateBlog(updatedblog Blog) error
 	DeleteBlog(blogID primitive.ObjectID) error
 	SearchBlog(postName string, authorName string) ([]Blog, error)
-	FilterBlog(tag string, date time.Time) ([]Blog, error)
+	FilterBlog(tag []string, date time.Time) ([]Blog, error)
 }

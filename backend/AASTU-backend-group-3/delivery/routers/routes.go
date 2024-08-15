@@ -11,8 +11,11 @@ func SetupRouter() *gin.Engine {
     // Public Routes
 
     SetUpAuth(router)
-    // SetupUserLoginRoutes(router)
-    // SetupUserOperationRoutes(router)
+    SetPublicRoutes(router)
+    SetUpUser(router)
+    SetUpAdmin(router)
+    SetUpAi(router)
+   
 
 
   

@@ -57,7 +57,6 @@ function Dashboard() {
               </div>
             </div>
 
-
             {/* Third Row: Quick Transfer and Balance History */}
             <div className='flex flex-col md:flex-row gap-6'>
               <div className='flex-1 bg-white p-4 rounded-lg'>

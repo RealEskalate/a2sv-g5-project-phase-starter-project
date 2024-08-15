@@ -93,8 +93,8 @@ function WeeklyActivityChart() {
   }, []);
 
   return (
-    <div className="text-gray-500 border rounded-[22px] bg-white lg:w-[530px] px-5 lg:h-[300px] md:w-[487px] md:h-[299px] w-fit h-[254]">
-      <div className="flex flex-row justify-end lg:w-[450px] md:w-[467px]  w-[325px]">
+    <div className="text-gray-500 border rounded-[22px] bg-white lg:w-[730px] px-5 lg:h-[300px] md:w-[487px] md:h-[299px] w-fit h-[254]">
+      <div className="flex flex-row justify-end lg:w-[650px] md:w-[467px]  w-[325px]">
         <div className="flex flex-row mx-5 mt-5">
           <div className="w-[12px] h-[12px]  mx-2 mt-[6px] border rounded-full bg-[#16DBCC]"></div>
           <div className="">Deposite</div>
@@ -104,9 +104,9 @@ function WeeklyActivityChart() {
           <div className="">Withdraw</div>
         </div>
       </div>
-      <div>
+      <div className="lg:w-[730px] lg:h-[226px] md:w-[487px] md:h-[204px] w-[325px] h-[204px]">
         <div className="weekly-activity-chart lg:w-[730px] lg:h-[226px] md:w-[487px] md:h-[204px] w-[325px] h-[204px]">
-          <canvas ref={chartRef} />
+          <canvas  ref={chartRef} />
         </div>
       </div>
     </div>

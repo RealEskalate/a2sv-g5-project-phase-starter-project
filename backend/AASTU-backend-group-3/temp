@@ -7,6 +7,7 @@ Forgot Password
 POST /api/users/forgot-password
 Reset Password
 POST /api/users/reset-password
+
 Retrieve Blog Posts
 GET /api/blogs
 Query Parameters:
@@ -57,6 +58,7 @@ Headers: Authorization: Bearer <access_token>
 Delete Blog Post
 DELETE /api/blogs/{blogId}
 Headers: Authorization: Bearer <access_token>
+
 Admin Routes
 Admin Create Blog Post
 POST /api/admin/blogs

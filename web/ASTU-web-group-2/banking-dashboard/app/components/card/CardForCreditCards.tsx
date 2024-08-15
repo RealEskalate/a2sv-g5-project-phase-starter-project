@@ -6,16 +6,18 @@ const Card = ({
   button,
   link,
   children,
+  className = "flex flex-col lg:w-[730px] lg:h-[300px] md:w-[487px] md:h-[299px] h-[254]",
 }: {
   title: string;
   button: string;
   link: string;
   children: React.ReactNode;
+  className?: string;
 }) => {
   return (
-    <div className="flex flex-col lg:w-[730px] lg:h-[300px] md:w-[487px] md:h-[299px] h-[254]">
+    <div className={`${className}`}>
       <div className="flex justify-between">
-        <p className="font-semibold my-3 text-[18px] md:text-[18px] lg:text[22px] text-[#343C6A]">{title}</p>
+        <p className="font-semibold my-3 text-[18px] md:text-[18px] lg:text-[22px] text-[#343C6A]">{title}</p>
         <Link href={link}>
           <p className="font-semibold my-3 text[12px] text-[#343C6A] text-right pr-3">
             {button}

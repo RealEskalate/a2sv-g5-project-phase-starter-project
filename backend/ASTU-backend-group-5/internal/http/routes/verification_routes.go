@@ -15,5 +15,5 @@ func RegisterVerificationRoutes(router *gin.Engine) {
 	router.GET("/verify-email", userHandler.VerifyEmail)
 
 	router.POST("/reset-password-request", userHandler.ResetPasswordRequest)
-	router.GET("/reset-password", userHandler.ResetPassword)
+	router.POST("/reset-password", userHandler.ResetPassword)
 }

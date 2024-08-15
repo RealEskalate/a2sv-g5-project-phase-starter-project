@@ -39,13 +39,14 @@ func (u *UserUsecase) RequestPasswordResetUsecase(userEmail string) error {
 		)
 	}
 
-	resetToken := generateToken()
+	go func() {
+		err := emailSender.SendPasswordResetEmail(userEmail, generateToken())
+		if err != nil {
+			log.Printf("Failed to send password reset email: %v", err)
+		}
+	}()
 
-	err = emailSender.SendPasswordResetEmail(userEmail, resetToken)
-	if err != nil {
-		log.Fatalf("Failed to send email: %v", err)
-	}
-	return err
+	return nil
 }
 
 func (u *UserUsecase) ResetPassword(resetToken string, newPassword string, email string) error {

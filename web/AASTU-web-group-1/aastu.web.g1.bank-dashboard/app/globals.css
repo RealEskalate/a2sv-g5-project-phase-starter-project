@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lato:wght@400;700&family=Lusitana:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -56,6 +58,10 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+  }
+
+  .filter-custom-blue {
+    filter: brightness(0) saturate(100%) invert(31%) sepia(100%) saturate(3487%) hue-rotate(208deg) brightness(101%) contrast(101%);
   }
 }
 

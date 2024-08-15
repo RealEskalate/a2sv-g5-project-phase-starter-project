@@ -18,7 +18,14 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        inter: ['Inter', 'sans-serif'],
+        lusitana: ['Lusitana', 'serif'],
+        lato: ['Lato', 'sans-serif'],
+      },
       colors: {
+        primaryBlue: "#1814F3",
+        primaryBlack: "#343C6A",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -74,7 +81,23 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"),
+    function ({ addUtilities }:any) {
+      const newUtilities = {
+        '.scrollbar-hidden': {
+          /* Hide scrollbar for WebKit browsers */
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+          /* Hide scrollbar for IE, Edge, and Firefox */
+          '-ms-overflow-style': 'none',  /* IE and Edge */
+          'scrollbar-width': 'none',  /* Firefox */
+        },
+      };
+
+      addUtilities(newUtilities, ['responsive', 'hover']);
+    },
+  ],
 } satisfies Config
 
 export default config

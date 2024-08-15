@@ -6,11 +6,11 @@ import Avatar from '../Avatar/Avatar';
 
 export default function NavBar() {
   return (
-    <div className='w-full p-5 bg-white h-[80px] flex justify-between px-5 items-center'>
+    <div className='w-full p-5 bg-white h-[70px] flex justify-between px-5 items-center'>
       <button type='button' className='items-center rounded-lg sm:hidden font-bold'>
         <Hamburger className='w-7 h-7 object-cover' />
       </button>
-      <p className=''>active</p>
+      <p className='font-semibold text-xl text-navy'>Active</p>
       <div className='flex space-x-2 items-center'>
         <div className='hidden md:flex '>
           <input

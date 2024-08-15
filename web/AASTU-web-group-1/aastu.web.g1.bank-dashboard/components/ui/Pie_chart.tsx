@@ -45,7 +45,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function Piechart() {
+export function Pie_chart() {
   return (
     <Card >
       <CardContent >

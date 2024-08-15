@@ -1,4 +1,5 @@
 import React from "react";
+<<<<<<< HEAD
 import WeeklyActivityChart from "./components/charts/WeeklyActivityChart";
 import Card from "./components/card/Card";
 import CardForCreditCards from "./components/card/CardForCreditCards";
@@ -16,5 +17,10 @@ const page = () => {
 =======
     <div>page </div>
 >>>>>>> 6b39585 (updated the recent transaction and finished the list card components)
+=======
+const page = () => {
+  return <div></div>;
+};
+>>>>>>> 0412ffb (Active Loans Over view completed)
 
 export default page;

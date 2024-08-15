@@ -1,6 +1,16 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
+import LoginResponseValue from "@/types/LoginResponseValue";
+
+// Define User type based on what NextAuth expects
+interface User {
+  id: string;
+  name?: string;
+  email?: string;
+  accessToken: string;
+  // other fields as required
+}
 
 const handler = NextAuth({
   providers: [
@@ -29,7 +39,17 @@ const handler = NextAuth({
           );
 
           if (response.status === 200) {
-            return response.data;  // Return the user object if authentication is successful
+            const data: LoginResponseValue = response.data;
+
+            // Ensure the returned object conforms to the User type
+            const user: User = {
+              id: data.data.access_token,  // Assuming access_token is used as ID, adjust as needed
+              name: data.message,  // Adjust as needed based on response structure
+              accessToken: data.data.access_token,
+              // Populate other fields as necessary
+            };
+
+            return user;  // Return the user object
           } else {
             return null;  // Return null if authentication fails
           }
@@ -43,12 +63,12 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.accessToken = user.access_token;  // Set access token in JWT token
+        token.accessToken = user.accessToken;  // Set access token in JWT token
       }
       return token;
     },
     async session({ session, token }) {
-      session.accessToken = token.accessToken;  // Attach access token to session
+      session.accessToken = (token as { accessToken?: string }).accessToken; // Attach access token to session
       return session;
     },
   },

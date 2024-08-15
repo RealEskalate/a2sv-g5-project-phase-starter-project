@@ -18,7 +18,7 @@ type Blog struct {
 
 type BlogUsecase interface {
 	CreateBlog(c context.Context, blog Blog) error
-	RetrieveBlog(c context.Context) ([]Blog, error)
+	RetrieveBlog(c context.Context, page int) ([]Blog, error)
 	UpdateBlog(c context.Context, updatedblog Blog, blogID string) error
 	DeleteBlog(c context.Context, blogID string) error
 	SearchBlog(c context.Context) ([]Blog, error)

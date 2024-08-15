@@ -17,12 +17,12 @@ func NewBlogUsecase(blogrepo domain.BlogRepository) domain.BlogUsecase {
 }
 
 func (br *BlogUsecase) CreateBlog(c context.Context, blog domain.Blog) error {
+	br.BlogRepo.CreateBlog(blog)
 	return nil
 }
 
-func (br *BlogUsecase) RetrieveBlog(c context.Context) ([]domain.Blog, error) {
-
-	return []domain.Blog{}, nil
+func (br *BlogUsecase) RetrieveBlog(c context.Context, page int) ([]domain.Blog, error) {
+	return br.BlogRepo.RetrieveBlog(page)
 }
 
 func (br *BlogUsecase) UpdateBlog(c context.Context, updatedblog domain.Blog, blogID string) error {

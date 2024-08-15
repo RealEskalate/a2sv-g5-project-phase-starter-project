@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex flex-col gap-5 ">
+      <body className="flex flex-col gap-5 bg-yellow-200">
         <div className="bg-gray-300 px-5">
 
         <Navbar />

@@ -38,7 +38,9 @@ func (ac *authController) Login(c *gin.Context) {
 		c.IndentedJSON(statusCode, gin.H{"error": err.Error()})
 	} else {
 		//success
-		c.IndentedJSON(http.StatusOK, gin.H{"message": "User logged in successfully", "token": token})
+		c.IndentedJSON(http.StatusOK, gin.H{"message": "User logged in successfully", 
+		"acess_token": token.AccessToken,
+		"refresh_token": token.RefreshToken})
 	}
 
 }

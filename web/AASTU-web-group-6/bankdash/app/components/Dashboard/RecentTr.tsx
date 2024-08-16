@@ -30,7 +30,7 @@ const RecentTr = () => {
   ];
 
   return (
-    <div className="w-2/5 min-w-80 cards-container center-content flex flex-col gap-4">
+    <div className="cards-container text-nowrap center-content flex flex-col gap-4 sm:scale-75 md:scale-90 lg:scale-100">
       <h1 className="flex grow page text-xl font-semibold text-colorBody-1">
         Recent Transactions
       </h1>

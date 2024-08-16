@@ -21,7 +21,7 @@ const MyInvestment = ({
 }: props) => {
   const textColor = returnValue.startsWith('-') ? 'text-[#FE5C73]' : 'text-[#16DBAA]';
   return (
-    <div className="border border-solid rounded-[20px] flex items-center justify-around py-4 mb-5">
+    <div className="border border-solid rounded-[20px] flex items-center justify-around py-4 mb-5 bg-white">
     <div className="flex items-center gap-2 w-[40%]">
       <div
         className="border border-solid rounded-2xl  w-[75px] h-[75px] flex justify-center items-center"

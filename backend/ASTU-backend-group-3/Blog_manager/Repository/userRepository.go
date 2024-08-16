@@ -3,7 +3,6 @@ package Repository
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"context"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -26,13 +25,12 @@ type userRepository struct {
 	tokenCollection *mongo.Collection
 }
 
-func NewUserRepository(collection *mongo.Collection) UserRepository {
-	return &userRepository{collection: collection}
+func NewUserRepository(collection, tokenCollection *mongo.Collection) UserRepository {
+	return &userRepository{collection: collection, tokenCollection: tokenCollection}
 }
 
 func (r *userRepository) Save(user *Domain.User) error {
-	count, err := r.collection.InsertOne(context.TODO(), user)
-	fmt.Println("from count", count)
+	_, err := r.collection.InsertOne(context.TODO(), user)
 	return err
 }
 
@@ -87,7 +85,6 @@ func (r *userRepository) InsertToken(username string, accessToke string, refresh
 		AccessToken:  accessToke,
 		RefreshToken: refreshToken,
 	}
-
 	_, err := r.tokenCollection.InsertOne(context.TODO(), token)
 
 	if err != nil {

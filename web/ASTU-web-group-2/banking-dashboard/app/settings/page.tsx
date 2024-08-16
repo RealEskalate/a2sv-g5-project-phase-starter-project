@@ -1,8 +1,8 @@
 import React from 'react'
-
+import EditProfile from '../components/editProfile/EditProfile'
 const SettingsPage = () => {
   return (
-    <div>SettingsPage</div>
+    <div><EditProfile/></div>
   )
 }
 

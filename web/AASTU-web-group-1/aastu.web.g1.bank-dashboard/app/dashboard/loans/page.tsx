@@ -7,7 +7,7 @@ const Loans = () => {
     <div className="bg-slate-100">
       <div className="flex gap-2 overflow-x-scroll scrollbar-hidden my-3 px-10">
         {loanTypes.map((item) => (
-          <div className="my-2">
+          <div className="my-2" key={item.name}>
             <Card {...item} />
           </div>
           ))}

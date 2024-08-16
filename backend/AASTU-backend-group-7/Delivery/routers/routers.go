@@ -29,6 +29,7 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	// Initialize the collections
 	customUserCol := custommongo.NewMongoCollection(usercol)
 	customBlogCol := custommongo.NewMongoCollection(blogcol)
+	
 	BlogCollections = Domain.BlogCollections{
 
 		Users: customUserCol,
@@ -39,6 +40,9 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 
 	// go to auth router
 	AuthRouter()
+
+	// go to blog router
+	BlogRouter()
 
 	return Router
 }

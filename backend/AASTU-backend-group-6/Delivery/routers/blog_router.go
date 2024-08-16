@@ -8,7 +8,7 @@ import (
 
 func NewBlogrouter(blogRouter *gin.RouterGroup, controller controllers.BlogController) {
 	// unprotected
-	blogRouter.GET("/", controller.GetBlogs)
+	blogRouter.GET("/")
 	blogRouter.GET("/:id")
 
 	blogRouter.GET("/search/:title&:author")

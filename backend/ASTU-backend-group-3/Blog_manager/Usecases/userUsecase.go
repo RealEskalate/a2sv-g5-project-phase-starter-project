@@ -1,31 +1,4 @@
-package usecases
-
-import (
-    "ASTU-backend-group-3/Blog_manager/Domain"
-    "ASTU-backend-group-3/Blog_manager/infrastructure"
-	"ASTU-backend-group-3/Blog_manager/Repository"
-    "context"
-
-)
-
-type UserUsecase interface {
-	Register (ctx context.Context, user *Domain.User) error
-	Login(ctx context.Context, email, password string) (string, error)
-	Logout(ctx context.Context, access_token, refresh_token string) error
-} 
-
-type userUsecase struct {
-	userRepository repository.UserRepository
-}
-
-func NewUserUsecase(userRepository repository.UserRepository) UserUsecase {
-	return &userUsecase{userRepository: userRepository}
-}
-
-func (u *userUsecase) Register(ctx context.Context, user *Domain.User) error {
-	// implementation of Register method
-}
-func (u *userUsecase) Login(ctx context.Context, email, password string) (string, error) {
+func (u *userUsecase) Login(*Domain.LoginInput) (string, error) {
 	user, err := u.userRepository.FindByEmail(email)
     if err!= nil {
         return " ", err
@@ -58,7 +31,7 @@ func (u *userUsecase) Login(ctx context.Context, email, password string) (string
 	return access_token, nil
 }
 
-func (u *userUsecase) Logout(ctx context.Context,  username  string) error {
+func (u *userUsecase) Logout( username  string) error {
 	u.userRepository.DeleteToken (username )
 }
 

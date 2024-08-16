@@ -13,11 +13,11 @@ type User struct {
 }
 
 type UserUsecase interface {
-	RegisterUser(user User) error
-	LoginUser(email, password string) (*User, error)
-	LogOutUser(userID primitive.ObjectID) error
-	ForgetPassword(email string) error
-	UpdateUser(userID primitive.ObjectID, updatedUser *User) error
+	// RegisterUser(user User) error
+	// LoginUser(email, password string) (string, error)
+	// LogOutUser(userID primitive.ObjectID) error
+	// ForgetPassword(email string) error
+	// UpdateUser(userID primitive.ObjectID, updatedUser *User) error
 }
 
 type UserRepository interface {

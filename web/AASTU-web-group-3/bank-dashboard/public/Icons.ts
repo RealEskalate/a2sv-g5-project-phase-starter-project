@@ -11,3 +11,5 @@ export const menuItems = [
 export const logo = '/icons/logo.svg'
 export const simCard = '/icons/Chip_Card.svg'
 export const masterCardLogo = '/icons/masterCardLogo.svg'
+export const masterCardLogoDarker = '/icons/materCardDarker.svg'
+export const simCardDarker = '/icons/simCardDarker.svg'

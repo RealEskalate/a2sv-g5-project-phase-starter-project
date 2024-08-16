@@ -28,3 +28,13 @@ func (r *SignupRepository) Create(user domain.User) (domain.User , error) {
 
 
 }
+
+func (r * SignupRepository) FindUserByEmail(c context.Context , email string) (domain.User , error) {
+	collection := r.database.Collection(r.collection)
+	var user domain.User
+	err := collection.FindOne(c, domain.User{Email: email}).Decode(&user)
+	if err != nil {
+		return domain.User{} , err
+	}
+	return user , nil
+}

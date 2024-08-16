@@ -88,8 +88,8 @@ ${label}`;
   }, []);
 
   return (
-    <div className='flex  flex-col flex-initial flex-wrap gap-[10px] bg-white drop-shadow-xl font-medium rounded-[25px]'>
-      <Pie data={data} options={options} />
+    <div className='bg-white shadow-xl rounded-3xl'>
+      <canvas ref={canvasRef} />
     </div>
   );
 };

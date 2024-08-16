@@ -14,4 +14,3 @@ export interface singleCompanyResponseType {
   message: string;
   data: CompanyDataType;
 }
-

@@ -4,63 +4,64 @@ import (
 	"astu-backend-g1/domain"
 	"context"
 
-	mongomocks "github.com/sv-tools/mongoifc/mocks/mockery"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/sv-tools/mongoifc"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	// "go.mongodb.org/mongo-driver/mongo"
 )
 
 type BlogRepository struct {
-	collection *mongomocks.Collection
+	collection mongoifc.Collection
 }
 
-// Create implements domain.BlogRepository.
-func (u *BlogRepository) Create(blog domain.Blog) (domain.Blog, error) {
-	_, err := u.collection.InsertOne(context.TODO(), blog)
+func NewBlogRepository(c mongoifc.Collection) domain.BlogRepository {
+	return &BlogRepository{collection: c}
+}
+
+func (repo *BlogRepository) Get(opts domain.BlogFilterOption) ([]domain.Blog, error) {
+	the_options := options.Find()
+	the_options.SetLimit(int64(opts.Pagination.PageSize))
+	the_options.SetSkip(int64((opts.Pagination.Page - 1) * opts.Pagination.PageSize))
+
+	// if opts.Order.Like {
+	// 	the_options.SetSort(options.Sort{Key: bson.D{{"likes", 1}}})
+	// }
+	// if opts.Order.Dislike {
+	// 	the_options.SetSort(options.Sort{Key: bson.D{{"dislikes", 1}}})
+	// }
+	// if opts.Order.Comments {
+	// 	the_options.SetSort(options.Sort{Key: bson.D{{"comments", 1}}})
+	// }
+	// if opts.Order.View {
+	// 	the_options.SetSort(options.Sort{Key: bson.D{{"views", 1}}})
+	// }
+
+	cur, err := repo.collection.Find(context.TODO(), opts.Filter, options.Find())
+	if err != nil {
+		return []domain.Blog{}, err
+	}
+	Blogs := []domain.Blog{}
+	for cur.Next(context.TODO()) {
+		var Blog domain.Blog
+		if err := cur.Decode(&Blog); err != nil {
+			return Blogs, err
+		}
+		Blogs = append(Blogs, Blog)
+	}
+	return Blogs, nil
+}
+
+func (repo *BlogRepository) Create(u domain.Blog) (domain.Blog, error) {
+	_, err := repo.collection.InsertOne(context.TODO(), &u, options.InsertOne())
 	if err != nil {
 		return domain.Blog{}, err
 	}
-	return blog, err
+	return u, nil
 }
 
-// Delete implements domain.BlogRepository.
-func (u *BlogRepository) Delete(BlogId string) error {
-	_, err := u.collection.DeleteOne(context.TODO(), bson.M{"id": BlogId})
-	if err!= nil {
-        return err
-    }
+func (repo *BlogRepository) Update(BlogId string, updateData domain.Blog) (domain.Blog, error) {
+	return domain.Blog{}, nil
+}
+
+func (repo *BlogRepository) Delete(BlogId string) error {
 	return nil
-}
-
-// Get implements domain.BlogRepository.
-func (u *BlogRepository) Get(opts domain.BlogFilterOption) ([]domain.Blog, error) {
-	var results []domain.Blog
-	findOptions := options.Find()
-	findOptions.SetLimit(int64(opts.Pagination))
-	cursor,err:=u.collection.Find(context.TODO(),opts.Filter,)
-	if err!= nil {
-		return []domain.Blog{}, err
-	}
-	for cursor.Next(context.TODO()) {
-		var blog domain.Blog
-        err := cursor.Decode(&blog)
-        if err!= nil {
-            return []domain.Blog{}, err
-        }
-        results = append(results, blog)
-	}
-	return results, nil
-}
-
-// Update implements domain.BlogRepository.
-func (u *BlogRepository) Update(BlogId string, updateData domain.Blog) (domain.Blog, error) {
-	err := u.collection.FindOneAndUpdate(context.TODO(),bson.M{"BlogId": BlogId}, updateData)
-	if err!= nil {	
-		return domain.Blog{}, nil
-	}
-	return domain.Blog{ID: "1",}, nil
-}
-
-func NewBlogRepository(col *mongomocks.Collection) *BlogRepository {
-	return &BlogRepository{collection: col}
 }

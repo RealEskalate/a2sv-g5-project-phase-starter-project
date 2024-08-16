@@ -23,6 +23,6 @@ type Tokens struct {
 }
 
 type RefreshToken struct {
-	userID       primitive.ObjectID `json:"user_id" bson:"_id,omitempty"`
+	UserID       primitive.ObjectID `json:"user_id" bson:"_id,omitempty"`
 	RefreshToken string `json:"refresh_token"`
 }

@@ -18,15 +18,17 @@ type AuthUseCase interface {
 }
 
 type RefreshRepository interface {
-	Update(ctx context.Context, refreshToken string, userid primitive.ObjectID) (error, int)
-	Delete(ctx context.Context, userid primitive.ObjectID) (error, int)
-	Find(ctx context.Context, userid primitive.ObjectID) (string, error, int)
+	// UpdateToken(ctx context.Context, refreshToken string, userid primitive.ObjectID) (error, int)
+	DeleteToken(ctx context.Context, userid primitive.ObjectID) (error, int)
+	FindToken(ctx context.Context, userid primitive.ObjectID) (string, error, int)
+	StoreToken(ctx context.Context, userid primitive.ObjectID, refreshToken string) (error, int)
 }
 
 type RefreshUseCase interface {
-	UpdateToken(c *gin.Context, refreshToken string, userid primitive.ObjectID) (error, int)
+	// UpdateToken(c *gin.Context, refreshToken string, userid primitive.ObjectID) (error, int)
 	DeleteToken(c *gin.Context, userid primitive.ObjectID) (error, int)
 	FindToken(c *gin.Context, userid primitive.ObjectID) (string, error, int)
+	StoreToken(c *gin.Context, userid primitive.ObjectID, refreshToken string) (error, int)
 }
 
 type BlogRepository interface {

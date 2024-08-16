@@ -42,7 +42,7 @@ func (r *RefreshController) Refresh(c *gin.Context) {
 	}
 
 	// verify the refresh token
-	err = jwtservice.VerifyRefreshToken(refreshToken)
+	err = jwtservice.VerifyRefreshToken(refreshToken, accessClaims.ID)
 
 	if err != nil {
 		c.JSON(401, gin.H{"error": err.Error()})
@@ -66,8 +66,8 @@ func (r *RefreshController) Refresh(c *gin.Context) {
 		return
 	}
 
-	// update the refresh token
-	err, statuscode = r.RefreshUseCase.UpdateToken(c, newRefreshToken, accessClaims.ID)
+	// store the refresh token
+	err, statuscode = r.RefreshUseCase.StoreToken(c,  accessClaims.ID, newRefreshToken)
 	
 	if err != nil {
 		c.JSON(statuscode, gin.H{"error": err.Error()})

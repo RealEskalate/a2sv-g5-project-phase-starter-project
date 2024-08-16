@@ -64,14 +64,20 @@ func (h *UserHandler) Register(c *gin.Context) {
 }
 
 func (h *UserHandler) GetUser(c *gin.Context){
-	user, ok := c.Request.Context().Value("user").(*domain.User)
+
+	user, ok := c.Get("user").(*domain.User)
 
 	if user == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
 		return
 	}
+	dbUser, err := h.UserUsecase.GetUser(user.Id)
+	if err != nil{
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, dbUser)
 }
 
 
@@ -108,4 +114,35 @@ func (h *UserHandler) UpdateUser(c * gin.Context){
     c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
 
+package handler
 
+import (
+    "net/http"
+    "your_project/usecase"
+    "github.com/gin-gonic/gin"
+)
+
+func (h *UserHandler) FilterUsers(c *gin.Context) {
+    // Define valid filters
+    validFilters := []string{"role", "email", "username", "firstName", "lastName"}
+
+    // Create a map to hold the filters
+    filters := make(map[string]interface{})
+
+    // Loop through query parameters and add valid ones to the filters map
+    for _, key := range validFilters {
+        if value := c.Query(key); value != "" {
+            filters[key] = value
+        }
+    }
+
+    // Call the usecase to filter users based on the provided filters
+    users, err := h.usecase.FilterUsers(filters)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    // Return the filtered users
+    c.JSON(http.StatusOK, users)
+}

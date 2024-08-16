@@ -17,6 +17,14 @@ type AuthUseCase interface {
 	Register(c *gin.Context, user *User) (*OmitedUser, error, int)
 }
 
+type BlogRepository interface {
+
+}
+
+type BlogUseCase interface {
+
+}
+
 type UserRepository interface {
 	CreateUsers(ctx context.Context, user *User) (OmitedUser, error, int)
 	GetUsers(ctx context.Context) ([]*OmitedUser, error, int)

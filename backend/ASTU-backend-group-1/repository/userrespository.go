@@ -107,7 +107,7 @@ func (repo *userRepository) Get(opts domain.UserFilterOption) ([]domain.User, er
 	return users, nil
 }
 
-func (repo *userRepository) Create(u domain.User) (domain.User, error) {
+func (repo *userRepository) Create(u *domain.User) (domain.User, error) {
 	u.ID = primitive.NewObjectID().Hex()
 	_, err := repo.collection.InsertOne(context.TODO(), &u, options.InsertOne())
 	if mongo.IsDuplicateKeyError(err) {
@@ -116,7 +116,7 @@ func (repo *userRepository) Create(u domain.User) (domain.User, error) {
 	if err != nil {
 		return domain.User{}, err
 	}
-	return u, nil
+	return *u, nil
 }
 
 func (repo *userRepository) Update(userId string, updateData domain.User) (domain.User, error) {

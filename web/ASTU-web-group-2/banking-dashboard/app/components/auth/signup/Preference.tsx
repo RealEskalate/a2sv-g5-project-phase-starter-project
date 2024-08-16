@@ -4,8 +4,9 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ToggleSwitch from './ToggleSwitch'; // Import the ToggleSwitch component
 import { MainData } from './Signup'; // Adjust the import path as necessary
+import { useSignUpMutation } from '@/lib/serice/TransactionService';
+import { useRouter } from 'next/navigation'; // Import useRouter from next/router
 
-// Define the Yup schema for validation
 const schema = Yup.object().shape({
   currency: Yup.string().required('Currency is required'),
   timeZone: Yup.string().required('TimeZone is required'),
@@ -28,6 +29,7 @@ interface YourFormComponentProps {
 }
 
 const YourFormComponent: React.FC<YourFormComponentProps> = ({ setMainData, mainData }) => {
+  const router = useRouter(); // Initialize the useRouter hook
   const { control, handleSubmit, register, formState: { errors } } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -38,8 +40,9 @@ const YourFormComponent: React.FC<YourFormComponentProps> = ({ setMainData, main
       accountRecommendations: mainData.preference?.accountRecommendations || false,
     },
   });
-
-  const onSubmit = (data: FormValues) => {
+  const [signUp] = useSignUpMutation();
+  
+  const onSubmit = async (data: FormValues) => {
     const formattedData = {
       ...mainData,
       preference: {
@@ -51,8 +54,17 @@ const YourFormComponent: React.FC<YourFormComponentProps> = ({ setMainData, main
         twoFactorAuthentication: true, // You can set this based on your needs
       },
     };
-    console.log(formattedData);
+
     setMainData(formattedData);
+    
+    const res = await signUp(formattedData); // Make sure to send formattedData
+    
+    if (res.data) {
+      router.push('/login'); // Navigate to the login page after successful signup
+    } else {
+      // Handle error cases here
+      console.error('Signup failed', res.error);
+    }
   };
 
   return (

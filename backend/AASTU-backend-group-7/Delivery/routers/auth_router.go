@@ -21,7 +21,7 @@ func AuthRouter() {
 		//login
 		authRouter.POST("/login", authcontroller.Login)
 		//logout
-		authRouter.POST("/logout",auth_middleware.AuthMiddleware(), authcontroller.Logout)
+		authRouter.GET("/logout",auth_middleware.AuthMiddleware(), authcontroller.Logout)
 
 	}
 }

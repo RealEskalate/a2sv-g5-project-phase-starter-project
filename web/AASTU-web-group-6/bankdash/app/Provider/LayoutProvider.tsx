@@ -17,7 +17,7 @@ const LayoutProvider = ({ children }: { children: ReactNode }) => {
       {shouldRenderLayout ? (
         <div className="w-full flex">
           <Sidebar />
-          <div className="flex flex-col grow py-6 px-5 ">
+          <div className="w-full bg-[#f5f7fa]">
             <NavBar />
             {children}
           </div>

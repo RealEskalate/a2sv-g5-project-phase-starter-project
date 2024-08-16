@@ -4,6 +4,7 @@ aastu.backend.g7.test
 aastu.backend.g7.abel
 aastu.backend.g7.bini
 aastu.backend.g7.eyob
+aastu.backend.g7.eyob.trial
 
 
 standard =

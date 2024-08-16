@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetRouter(router *gin.Engine, c *controllers.BlogController) {
 
+func SetRouter(router *gin.Engine, c *controllers.BlogController) {
 	router.POST("/blog", c.CreateBlog)
 	router.GET("/blog", c.RetrieveBlog)
 	router.PUT("/blog/:id", c.UpdateBlog)

@@ -5,6 +5,7 @@ import (
 	"context"
 
 	"time"
+
 )
 
 type BlogUsecase struct {
@@ -29,6 +30,7 @@ func (br *BlogUsecase) CreateBlog(c context.Context, blog domain.Blog) error {
 func (br *BlogUsecase) RetrieveBlog(c context.Context, page int) ([]domain.Blog, error) {
 	_, cancel := context.WithTimeout(c, br.contextTimeout)
 	defer cancel()
+
 	return br.BlogRepo.RetrieveBlog(page)
 }
 
@@ -42,6 +44,7 @@ func (br *BlogUsecase) DeleteBlog(c context.Context, blogID string) error {
 	_, cancel := context.WithTimeout(c, br.contextTimeout)
 	defer cancel()
 	return br.BlogRepo.DeleteBlog(blogID)
+
 }
 
 func (br *BlogUsecase) SearchBlog(c context.Context, name string, author string) ([]domain.Blog, error) {

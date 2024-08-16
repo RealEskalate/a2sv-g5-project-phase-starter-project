@@ -1,14 +1,14 @@
 package routers
 
 import (
-	"blogs/Delivery/controllers"
+	controllers "blogs/delivery/controllers"
 
 	"github.com/gin-gonic/gin"
 )
 
 func NewBlogrouter(blogRouter *gin.RouterGroup, controller controllers.BlogController) {
 	// unprotected
-	// blogRouter.GET("/", controller.GetBlogs)
+	blogRouter.GET("/", controller.GetBlogs)
 	blogRouter.GET("/:id")
 
 	// blogRouter.GET("/search/:title&:author")

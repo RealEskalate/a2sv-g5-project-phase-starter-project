@@ -1,13 +1,10 @@
-
-
 package Usecases
 
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"ASTU-backend-group-3/Blog_manager/Repository"
-	"ASTU-backend-group-3/Blog_manager/infrastructure"
 
-	// "ASTU-backend-group-3/Blog_manager/infrastructure"
+	"ASTU-backend-group-3/Blog_manager/infrastructure"
 	"errors"
 	"fmt"
 	"strings"
@@ -134,14 +131,14 @@ func (u *userUsecase) DeleteUser(username string) error {
 	return nil
 }
 func (u *userUsecase) Login(*Domain.LoginInput) (string, error) {
-	user, err := u.userRepository.FindByEmail(email)
+	user, err := u.userRepo.FindByEmail(email)
     if err!= nil {
         return " ", err
     }
 
 	storedPassword := user.Password
 
-	err = infrastructure.ComparePasswords(storedPassword, password)
+	err = infrastructure.ComparePassword(storedPassword, password)
 
 	if err != nil{
 		return  " ", err
@@ -158,7 +155,7 @@ func (u *userUsecase) Login(*Domain.LoginInput) (string, error) {
 		return " ", err
 	}
 
-	err =  u.userRepository.InsertToken(user.Username , access_token , refresh_token)
+	err =  u.userRepo.InsertToken(user.Username , access_token , refresh_token)
 	if err != nil{
 		return " ", err
 	}
@@ -167,5 +164,5 @@ func (u *userUsecase) Login(*Domain.LoginInput) (string, error) {
 }
 
 func (u *userUsecase) Logout( username  string) error {
-	u.userRepository.DeleteToken (username )
+	u.userRepo.DeleteToken (username )
 }

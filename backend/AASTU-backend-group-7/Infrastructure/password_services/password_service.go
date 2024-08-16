@@ -1,4 +1,4 @@
-package Infrastructure
+package password_services
 
 import "golang.org/x/crypto/bcrypt"
 

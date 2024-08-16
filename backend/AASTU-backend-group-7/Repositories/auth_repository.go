@@ -2,8 +2,8 @@ package Repositories
 
 import (
 	"blogapp/Domain"
-	"blogapp/Infrastructure"
 	jwtservice "blogapp/Infrastructure/jwt_service"
+	"blogapp/Infrastructure/password_services"
 	"context"
 	"errors"
 	"fmt"
@@ -31,11 +31,11 @@ func (au *authRepository) Login(ctx context.Context, user *Domain.User) (string,
 	var existingUser Domain.User
 	err := au.collection.FindOne(ctx, filter).Decode(&existingUser)
 
-	if err != nil || !Infrastructure.CompareHashAndPasswordCustom(existingUser.Password, user.Password) {
+	if err != nil || !password_services.CompareHashAndPasswordCustom(existingUser.Password, user.Password) {
 		fmt.Printf("Login Called:%v, %v", existingUser.Password, user.Password)
-		
+
 		// cpmpare the hashed password
-		hashedPassword, _ := Infrastructure.GenerateFromPasswordCustom(user.Password)
+		hashedPassword, _ := password_services.GenerateFromPasswordCustom(user.Password)
 		fmt.Print(existingUser.Password == hashedPassword)
 		return "", errors.New("Invalid credentials"), http.StatusBadRequest
 	}
@@ -64,7 +64,7 @@ func (au *authRepository) Register(ctx context.Context, user *Domain.User) (*Dom
 	}
 
 	// User registration logic
-	hashedPassword, err := Infrastructure.GenerateFromPasswordCustom(user.Password)
+	hashedPassword, err := password_services.GenerateFromPasswordCustom(user.Password)
 	if err != nil {
 		fmt.Println("error at hashing", err)
 		return &Domain.OmitedUser{}, err, 500
@@ -82,7 +82,7 @@ func (au *authRepository) Register(ctx context.Context, user *Domain.User) (*Dom
 
 	// Access the InsertedID field from the InsertOneResult struct
 	insertedID := InsertedID.InsertedID.(primitive.ObjectID)
-	
+
 	err = au.collection.FindOne(context.TODO(), bson.D{{"_id", insertedID}}).Decode(&fetched)
 	if err != nil {
 		fmt.Println(err)

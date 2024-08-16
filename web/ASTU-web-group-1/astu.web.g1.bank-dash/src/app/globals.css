@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+.active {
+  background: red;
+  color: red;
+}
+
 @layer base {
   :root {
     /*  Shadcn */
@@ -59,13 +64,13 @@
     --chart-5: 340 75% 55%;
   }
 }
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    -ms-appearance: none;
-    appearance: none;
-    margin: 0; 
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  margin: 0;
 }
 
 @layer base {

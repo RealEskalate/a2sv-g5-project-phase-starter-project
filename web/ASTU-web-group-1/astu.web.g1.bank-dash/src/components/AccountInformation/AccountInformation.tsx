@@ -3,7 +3,7 @@ import AccountInformationCard from "./AccountInformationCard";
 
 const AccountInformation = () => {
   return (
-    <div className="w-full grid grid-cols-2 grid-rows-2 min-[1030px]:grid-cols-4 md:grid-rows-1 grid-flow-row gap-4">
+    <div className="w-full grid grid-cols-2 grid-rows-2 min-[1030px]:grid-cols-4 md:grid-rows-1 grid-flow-row gap-4 mb-5">
       <AccountInformationCard
         image="/assets/images/balance.png"
         name="My Balance"

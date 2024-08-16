@@ -2,7 +2,6 @@ package mongodb
 
 import (
 	"blogApp/internal/domain"
-	"errors"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,14 +13,10 @@ type UserRepositoryMongo struct {
 	Collection *mongo.Collection
 }
 
-// FindUserById implements repository.UserRepository.
-func (r *UserRepositoryMongo) FindUserById(ctx context.Context, id string) (*domain.User, error) {
-	panic("unimplemented")
-}
-
-// FindUserByUserName implements repository.UserRepository.
-func (r *UserRepositoryMongo) FindUserByUserName(ctx context.Context, username string) (*domain.User, error) {
-	panic("unimplemented")
+func NewUserRepositoryMongo(collection *mongo.Collection) *UserRepositoryMongo {
+	return &UserRepositoryMongo{
+		Collection: collection,
+	}
 }
 
 func (r *UserRepositoryMongo) CreateUser(ctx context.Context, user *domain.User) error {
@@ -34,20 +29,93 @@ func (r *UserRepositoryMongo) FindUserByEmail(ctx context.Context, email string)
 	user := &domain.User{}
 	err := r.Collection.FindOne(ctx, bson.M{"email": email}).Decode(user)
 	if err == mongo.ErrNoDocuments {
-		return nil, errors.New("user not found") // expected if no user is found
+		return nil, nil
 	}
-	if err != nil { //something went wrong
+	if err != nil {
 		return nil, err
 	}
-	return user, err //user exists
+	return user, nil
 }
 
-func (r *UserRepositoryMongo) UpdatePassword(ctx context.Context, email string, password string) error {
-	_, err := r.Collection.UpdateOne(ctx, bson.M{"email": email}, bson.M{"$set": bson.M{"password": password}})
-	return err
+func (r *UserRepositoryMongo) FindUserById(ctx context.Context, id string) (*domain.User, error) {
+	user := &domain.User{}
+	err := r.Collection.FindOne(ctx, bson.M{"_id": id}).Decode(user)
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (r *UserRepositoryMongo) FindUserByUserName(ctx context.Context, username string) (*domain.User, error) {
+	user := &domain.User{}
+	err := r.Collection.FindOne(ctx, bson.M{"username": username}).Decode(user)
+	if err == mongo.ErrNoDocuments {
+		return nil, nil //nil, nil means no user found and no error
+	}
+	if err != nil {
+		return nil, err // any other error
+	}
+	return user, nil // nil, user means user found and no error
 }
 
 func (r *UserRepositoryMongo) UpdateUser(ctx context.Context, user *domain.User) error {
 	_, err := r.Collection.UpdateOne(ctx, bson.M{"_id": user.ID}, bson.M{"$set": user})
 	return err
+}
+
+func (r *UserRepositoryMongo) DeleteUser(ctx context.Context, id string) error {
+	_, err := r.Collection.DeleteOne(ctx, bson.M{"_id": id})
+	return err
+}
+
+func (r *UserRepositoryMongo) GetAllUsers(ctx context.Context) ([]*domain.User, error) {
+	var users []*domain.User
+
+	cursor, err := r.Collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	for cursor.Next(ctx) {
+		var user domain.User
+		if err := cursor.Decode(&user); err != nil {
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+
+	return users, nil
+}
+
+func (r *UserRepositoryMongo) FilterUsers(ctx context.Context, filter map[string]interface{}) ([]*domain.User, error) {
+
+	var users []*domain.User
+
+	cursor, err := r.Collection.Find(ctx, filter)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for cursor.Next(ctx) {
+		var user domain.User
+		if err := cursor.Decode(&user); err != nil {
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+
+	return users, nil
+
+}
+
+func (r *UserRepositoryMongo) IsEmptyCollection(ctx context.Context) (bool, error) {
+	count, err := r.Collection.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		return false, err
+	}
+	return count == 0, nil
 }

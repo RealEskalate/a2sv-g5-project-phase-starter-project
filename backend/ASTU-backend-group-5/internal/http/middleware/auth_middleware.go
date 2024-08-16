@@ -32,7 +32,7 @@ func AuthMiddleware() gin.HandlerFunc {
         }
 
         // If the token is valid, proceed with the request
-        c.Set("user", claims)
+        c.Set("claims", claims)
         c.Next()
     }
 }

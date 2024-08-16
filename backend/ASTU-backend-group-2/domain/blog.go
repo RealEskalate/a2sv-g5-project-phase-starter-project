@@ -17,10 +17,9 @@ type Blog struct {
 	LikeCount    int                `json:"like_count" bson:"like_count"`
 	DislikeCount int                `json:"dislike_count" bson:"dislike_count"`
 	Comments     []Comment          `json:"comments" bson:"comments"`
-	Likes        []UserAction       `json:"likes" bson:"likes"`
-	Dislikes     []UserAction       `json:"dislikes" bson:"dislikes"`
-	CreatedAt    time.Time          `json:"created_at" bson:"created_at"`
-	UpdatedAt    time.Time          `json:"updated_at" bson:"updated_at"`
+
+	CreatedAt time.Time `json:"created_at" bson:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
 }
 
 // defines the structure for the blogs that will be  received from the request when creating and updating
@@ -42,7 +41,12 @@ type Comment struct {
 	Content   string             `json:"content" bson:"content" binding:"required"`
 	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
 }
-type UserAction struct {
-	UserID primitive.ObjectID `json:"user_id" bson:"user_id"`
-	Date   time.Time          `json:"date" bson:"date"`
+
+// user reaction to the blog if liked or disliked
+type Reaction struct {
+	BlogID   primitive.ObjectID `json:"blog_id" bson:"blog_id"`
+	UserID   primitive.ObjectID `json:"user_id" bson:"user_id"`
+	Liked    bool               `json:"liked" bson:"liked"`
+	Disliked bool               `json:"disliked" bson:"disliked"`
+	Date     time.Time          `json:"date" bson:"date"`
 }

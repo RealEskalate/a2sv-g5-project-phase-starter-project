@@ -1,0 +1,2 @@
+export const session =
+  'eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYW9sa2EiLCJpYXQiOjE3MjM3OTgxODYsImV4cCI6MTcyMzg4NDU4Nn0.ykYCHjviubUSCFHWsG7cfOtgTzsQUpS3OCsORGBEzSg2I4bPxXVbhcbTgqjkrW4h';

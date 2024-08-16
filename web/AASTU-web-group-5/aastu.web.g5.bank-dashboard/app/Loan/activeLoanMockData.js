@@ -1,0 +1,68 @@
+const activeLoansData = [
+	{
+		id: 1,
+		money: 10000,
+		leftToRepay: 5000,
+		duration: "12 months",
+		interestrate: 5.0,
+		installment: 833.33,
+	},
+	{
+		id: 2,
+		money: 15000,
+		leftToRepay: 7000,
+		duration: "18 months",
+		interestrate: 4.5,
+		installment: 833.33,
+	},
+	{
+		id: 3,
+		money: 8000,
+		leftToRepay: 2000,
+		duration: "6 months",
+		interestrate: 6.0,
+		installment: 1333.33,
+	},
+	{
+		id: 4,
+		money: 8000,
+		leftToRepay: 2000,
+		duration: "6 months",
+		interestrate: 6.0,
+		installment: 1333.33,
+	},
+	{
+		id: 5,
+		money: 8000,
+		leftToRepay: 2000,
+		duration: "6 months",
+		interestrate: 6.0,
+		installment: 1333.33,
+	},
+	{
+		id: 6,
+		money: 8000,
+		leftToRepay: 2000,
+		duration: "6 months",
+		interestrate: 6.0,
+		installment: 1333.33,
+	},
+	{
+		id: 7,
+		money: 8000,
+		leftToRepay: 2000,
+		duration: "6 months",
+		interestrate: 6.0,
+		installment: 1333.33,
+	},
+	{
+		id: 8,
+		money: 8000,
+		leftToRepay: 2000,
+		duration: "6 months",
+		interestrate: 6.0,
+		installment: 1333.33,
+	},
+];
+
+export default activeLoansData;

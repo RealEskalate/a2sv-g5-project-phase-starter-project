@@ -42,9 +42,9 @@ type BlogRepository interface {
   DeleteBlogByID(id string) error
   SearchBlog(title, author string, tags []string) ([]*Blog, error)
   FilterBlog(tags []string, dateFrom, dateTo time.Time) ([]*Blog, error)
-  AddView(blogid string) error
-  AddLike(blogid, username string, like bool) error
-  AddComment(blogid string, comment *Comment) error
+  AddView(view *View) error
+  AddLike(like *Like) error
+  AddComment(comment *Comment) error
 }
 
 type BlogUsecase interface {
@@ -54,7 +54,7 @@ type BlogUsecase interface {
   DeleteBlogByID(id string) error
   SearchBlog(title, author string, tags []string) ([]*Blog, error)
   FilterBlog(tags []string, dateFrom, dateTo time.Time) ([]*Blog, error)
-  IncreamentView(blogid string) error
-  AddLike(blogid, username string, like bool) error
-  AddComment(blogid string, comment *Comment) error
+  AddView(view *View) error
+  AddLike(like *Like) error
+  AddComment(comment *Comment) error
 }

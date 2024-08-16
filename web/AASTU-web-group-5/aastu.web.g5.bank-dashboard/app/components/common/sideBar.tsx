@@ -49,6 +49,7 @@ const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolea
                 </button>
             </div>
 
+
             <div className="flex flex-col gap-[42px]">
                 <div className="flex gap-[23px]" onClick={() => handleIconClick("home", "/home")}>
                     <Image src={enabled === "home" ? enabledHome : home} alt="Home Icon" className="h-[25px] w-[25px]" />
@@ -89,6 +90,7 @@ const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolea
             </div>
         </div>
     );
+
 };
 
 export default SideBar;

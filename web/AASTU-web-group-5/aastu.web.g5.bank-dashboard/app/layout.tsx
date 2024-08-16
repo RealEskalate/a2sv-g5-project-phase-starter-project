@@ -1,23 +1,23 @@
-'use client'
-import { useState } from 'react';
+"use client";
+import { useState } from "react";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import NavBar from "./components/common/navBar";
-import Sidebar from "./components/common/sideBar"; 
-import { metadata } from "./layoutMetadata"; 
+import Sidebar from "./components/common/sideBar";
+import { metadata } from "./layoutMetadata";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+	const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
-  const toggleSidebar = () => {
-    setIsSidebarVisible(!isSidebarVisible);
-  };
+	const toggleSidebar = () => {
+		setIsSidebarVisible(!isSidebarVisible);
+	};
 
   return (
     <html lang="en">

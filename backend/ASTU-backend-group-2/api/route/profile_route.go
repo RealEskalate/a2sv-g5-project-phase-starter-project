@@ -7,7 +7,7 @@ import (
 )
 
 // ProfileHandlers is a function that defines all the routes for the profile
-func ProfileHandlers(r *gin.RouterGroup, ctrl controller.ProfileController) {
+func ProfileHandlers(r *gin.Engine, ctrl controller.ProfileController) {
 
 	// only authenticated users can access
 	r.Use(middleware.UserMiddleware())

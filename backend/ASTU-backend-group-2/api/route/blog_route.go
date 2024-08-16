@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func BlogHandlers(r *gin.RouterGroup, ctrl controller.BlogController) {
+func BlogHandlers(r *gin.Engine, ctrl controller.BlogController) {
 
 	// anyone can access
 	r.GET("/blogs", ctrl.GetBlogs())

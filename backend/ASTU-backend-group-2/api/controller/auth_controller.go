@@ -9,5 +9,6 @@ type AuthHandlers interface {
 	Logout() gin.HandlerFunc
 	Signup() gin.HandlerFunc
 	ForgotPassword() gin.HandlerFunc
+	ResetPassword() gin.HandlerFunc
 	VerifyEmail() gin.HandlerFunc
 }

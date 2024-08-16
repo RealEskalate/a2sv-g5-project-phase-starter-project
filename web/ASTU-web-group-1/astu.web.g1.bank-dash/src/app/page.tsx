@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+import TrendingList from "@/components/TrendingStock/trendingList";
+export default function Home() {
+  return <div></div>;
+=======
 import BalanceHistory from '@/components/Charts/BalanceHistory';
 import DebiteAndCredit from '@/components/Charts/DebiteAndCredit';
 import ExpenseStatistics from '@/components/Charts/ExpenseStatistics';
@@ -43,4 +48,5 @@ export default function Home() {
       </div>
     </>
   );
+>>>>>>> 715c07199bf7b1561bb67630c6c3611075825f77
 }

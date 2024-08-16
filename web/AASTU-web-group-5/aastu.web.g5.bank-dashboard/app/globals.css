@@ -61,10 +61,10 @@
 
 @layer base {
 	* {
-		@apply border-border;
+		/* @apply border-border; */
 	}
 	body {
 		/* @apply bg-background text-foreground; */
-		background: #f5f7fc;
+		/* background: #f5f7fc; */
 	}
 }

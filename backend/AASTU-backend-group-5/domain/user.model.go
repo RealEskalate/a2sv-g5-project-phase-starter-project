@@ -14,6 +14,8 @@ type User struct {
 	Is_Admin       bool               `json:"is_admin" bson:"is_admin"`
 	Password       string             `json:"password" bson:"password"`
 	RefreshToken   string             `json:"refresh_token" bson:"refresh_token"`
+	VerificationToken string 		  `json:"verification_token" bson:"verification_token"`
+	Is_Verified bool 				  `json:"is_verified" bson:"is_verified"`
 }
 
 // user model that will be returned from the server
@@ -25,6 +27,7 @@ type ResponseUser struct {
 	Email          string `json:"email" bson:"email"`
 	Is_Admin       bool   `json:"is_admin" bson:"is_admin"`
 }
+
 
 // from actual user model to response model to be don in usecase
 func CreateResponseUser(user User) ResponseUser {

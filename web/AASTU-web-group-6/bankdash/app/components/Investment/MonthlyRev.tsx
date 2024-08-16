@@ -35,7 +35,7 @@ const chartConfig = {
 
 export function MonthlyRev() {
   return (
-    <Card className="py-5">
+    <Card className=" rounded-3xl py-5 shadow-lg border-gray-300">
       
       <CardContent>
         <ChartContainer config={chartConfig}>

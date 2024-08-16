@@ -22,10 +22,7 @@ func SetupRouter(userController *controller.UserController) *gin.Engine {
 	protected.Use(utils.Auth_Admin()) // make sure to add Auth_User in the middleware
 	protected.DELETE("/delete/:username", userController.DeleteUser)
 
-	// router.POST("/login", userController.Login)
-	// router.GET("/users", userController.GetUsers)
-	// router.GET("/users/:username", userController.GetUser)
-	// router.DELETE("/users/:username", userController.DeleteUser)
+	
 
 	return router
 }

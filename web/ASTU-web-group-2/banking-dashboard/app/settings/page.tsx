@@ -1,9 +1,11 @@
-import React from 'react'
-import EditProfile from '../components/editProfile/EditProfile'
+import React from "react";
+import EditProfile from "../components/editProfile/EditProfile";
 const SettingsPage = () => {
   return (
-    <div><EditProfile/></div>
-  )
-}
+    <div className="flex flex-col gap-2">
+      <EditProfile />
+    </div>
+  );
+};
 
-export default SettingsPage
+export default SettingsPage;

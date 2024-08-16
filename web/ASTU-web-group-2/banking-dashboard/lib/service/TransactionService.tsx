@@ -1,17 +1,16 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const transactionApi = createApi({
-  reducerPath: "bankdashboard",
+  reducerPath: "transactionDash",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://bank-dashboard-6acc.onrender.com",
   }),
-
   endpoints: (builder) => ({
-  signUp: builder.mutation({
+    signUp: builder.mutation({
       query: (data) => ({
         url: "/auth/register",
         method: "POST",
-        body:data
+        body: data,
       }),
     }),
     getAllTransaction: builder.query({
@@ -26,4 +25,4 @@ export const transactionApi = createApi({
   }),
 });
 
-export const { useGetAllTransactionQuery,useSignUpMutation } = transactionApi;
+export const { useGetAllTransactionQuery, useSignUpMutation } = transactionApi;

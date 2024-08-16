@@ -202,7 +202,7 @@ export const creditcardstyles = [{
 
 export const colors = {
   blue: 'bg-[#1814F3]',
-  white: 'bg -[#ffffff]',
+  white: 'bg-white',
   navbartext:' text-[#343C6A]',
   black: 'bg-[#000000]',
   textblack: 'text-[#232323]',

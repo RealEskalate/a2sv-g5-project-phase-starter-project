@@ -2,6 +2,7 @@ package controllers
 
 import (
 	domain "blogs/Domain"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -52,7 +53,13 @@ func (b BlogController) GetMyBlogs(c *gin.Context) {
 
 // SearchBlogByTitleAndAuthor implements domain.BlogUsecase.
 func (b BlogController) SearchBlogByTitleAndAuthor(c *gin.Context) {
-	panic("unimplemented")
+	title := c.Query("title")
+	author := c.Query("author")
+	x := fmt.Sprintf("title: %s, author: %s", title, author)
+	fmt.Println("////////////////////////////")
+	fmt.Println(title, author)
+	fmt.Println("////////////////////////////")
+	c.JSON(200, gin.H{"des blogs": x})
 }
 
 // UpdateBlogByID implements domain.BlogUsecase.

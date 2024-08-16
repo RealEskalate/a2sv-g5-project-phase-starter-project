@@ -160,3 +160,13 @@ func (b *BlogStorage) SearchBlogs(ctx context.Context, query string) (infrastruc
 func (b *BlogStorage) UpdateBlog(ctx context.Context, id string, blog blog.Blog) error {
 	panic("unimplemented")
 }
+
+// UnlikeBlog implements BlogRepository.
+func (b *BlogStorage) UnlikeBlog(ctx context.Context, like blog.Like) error {
+	panic("unimplemented")
+}
+
+// UndislikeBlog implements BlogRepository.
+func (b *BlogStorage) UndislikeBlog(ctx context.Context, dislike blog.Dislike) error {
+	panic("unimplemented")
+}

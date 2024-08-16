@@ -5,6 +5,7 @@ import BankServiceMobile from "../bankService/BankServiceMobile";
 const BankServicesList = () => {
   const data = [
     {
+      id: 1,
       category: "Business Loans",
       description: "It is a long established",
       logo: "/assets/bankService/businessLoans.svg",
@@ -21,10 +22,6 @@ const BankServicesList = () => {
           title: "Loan Option 3",
           subtitle: "Many publishing",
         },
-        {
-          title: "Loan Option 4",
-          subtitle: "Many publishing",
-        },
       ],
       action: {
         label: "View Details",
@@ -32,6 +29,7 @@ const BankServicesList = () => {
       },
     },
     {
+      id: 2,
       category: "Checking Accounts",
       description: "It is a long established",
       logo: "/assets/bankService/checkAccounts.svg",
@@ -48,10 +46,6 @@ const BankServicesList = () => {
           title: "Account Option C",
           subtitle: "Many publishing",
         },
-        {
-          title: "Account Option D",
-          subtitle: "Many publishing",
-        },
       ],
       action: {
         label: "View Details",
@@ -59,6 +53,7 @@ const BankServicesList = () => {
       },
     },
     {
+      id: 3,
       category: "Savings Accounts",
       description: "It is a long established",
       logo: "/assets/bankService/savingAccounts.svg",
@@ -75,10 +70,6 @@ const BankServicesList = () => {
           title: "Savings Plan 3",
           subtitle: "Many publishing",
         },
-        {
-          title: "Savings Plan 4",
-          subtitle: "Many publishing",
-        },
       ],
       action: {
         label: "View Details",
@@ -86,6 +77,7 @@ const BankServicesList = () => {
       },
     },
     {
+      id: 4,
       category: "Debit and Credit Cards",
       description: "It is a long established",
       logo: "/assets/bankService/debitCredit.svg",
@@ -102,10 +94,6 @@ const BankServicesList = () => {
           title: "Card Plan 3",
           subtitle: "Earn rewards",
         },
-        {
-          title: "Card Plan 4",
-          subtitle: "Earn rewards",
-        },
       ],
       action: {
         label: "View Details",
@@ -113,6 +101,7 @@ const BankServicesList = () => {
       },
     },
     {
+      id: 5,
       category: "Life Insurance",
       description: "It is a long established",
       logo: "/assets/bankService/lifeInsurance.svg",
@@ -129,10 +118,6 @@ const BankServicesList = () => {
           title: "Insurance Plan 3",
           subtitle: "Many publishing",
         },
-        {
-          title: "Insurance Plan 4",
-          subtitle: "Many publishing",
-        },
       ],
       action: {
         label: "View Details",
@@ -140,6 +125,7 @@ const BankServicesList = () => {
       },
     },
     {
+      id: 6,
       category: "Business Loans",
       description: "It is a long established",
       logo: "/assets/bankService/businessLoans.svg",
@@ -154,10 +140,6 @@ const BankServicesList = () => {
         },
         {
           title: "Loan Option 3",
-          subtitle: "Many publishing",
-        },
-        {
-          title: "Loan Option 4",
           subtitle: "Many publishing",
         },
       ],
@@ -178,6 +160,7 @@ const BankServicesList = () => {
             description={bankService.description}
             details={bankService.details}
             action={bankService.action}
+            key={bankService.id}
           />
         ))}
       </div>
@@ -191,6 +174,7 @@ const BankServicesList = () => {
             description={bankService.description}
             details={bankService.details}
             action={bankService.action}
+            key={bankService.id}
           />
         ))}
       </div>

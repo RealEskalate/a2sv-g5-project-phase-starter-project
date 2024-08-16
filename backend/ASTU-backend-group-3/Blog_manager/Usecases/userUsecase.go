@@ -63,6 +63,7 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.RegisterInpu
 		Gender:         input.Gender,
 		Address:        input.Address,
 	}
+	
 
 	// Save the user to the repository
 	err = u.userRepo.Save(user)

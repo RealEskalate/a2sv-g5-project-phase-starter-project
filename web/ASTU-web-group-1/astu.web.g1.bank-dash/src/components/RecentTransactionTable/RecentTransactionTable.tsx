@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import TableButton from "../TableButton/TableButton";
 import RecentTransactionDescription from "./RecentTransactionDescription";
-import { ChevronLeft,ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const data = [
   {
@@ -79,7 +79,7 @@ const data = [
 
 const RecentTransactionTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentButton, setCurrentButton] = useState("all-transaction")
+  const [currentButton, setCurrentButton] = useState("all-transaction");
   const rowsPerPage = 5;
 
   // Calculate total pages
@@ -92,16 +92,16 @@ const RecentTransactionTable = () => {
   );
 
   const handelAllTransaction = () => {
-    setCurrentButton("all-transaction")
-  }
+    setCurrentButton("all-transaction");
+  };
 
   const handelIncome = () => {
-    setCurrentButton("income")
-  }
+    setCurrentButton("income");
+  };
 
   const handelExpense = () => {
-    setCurrentButton("expense")
-  }
+    setCurrentButton("expense");
+  };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -118,87 +118,123 @@ const RecentTransactionTable = () => {
   return (
     <div>
       <div className="flex flex-col gap-4">
-      <h1 className="text-16px md:text-18px xl:text-22px text-[#333B69] font-semibold">
-        Recent Transaction
-      </h1>
-      <div className="flex flex-row max-[640px]:justify-between  md:gap-[60px] lg:gap-[80px] text-blue-steel">
+        <h1 className="text-16px md:text-18px xl:text-22px text-[#333B69] font-semibold">
+          Recent Transaction
+        </h1>
+        <div className="flex flex-row max-[640px]:justify-between  md:gap-[60px] lg:gap-[80px] text-blue-steel">
           <div className="flex flex-col gap-2">
-            <button className={`border-none px-[11px] whitespace-nowrap ${currentButton === "all-transaction" && "text-blue-bright"}`} onClick={handelAllTransaction}>
+            <button
+              className={`border-none px-[11px] whitespace-nowrap ${
+
+                currentButton === "all-transaction" && "text-blue-bright"
+              }`}
+              onClick={handelAllTransaction}
+            >
               All Transactions
             </button>
-            {currentButton === "all-transaction" && <div className="bg-blue-bright h-1 rounded-t-full">
-            </div>}
+            {currentButton === "all-transaction" && (
+              <div className="bg-blue-bright h-1 rounded-t-full"></div>
+            )}
           </div>
           <div className="flex flex-col gap-2">
-            <button className={`border-none px-[11px] whitespace-nowrap ${currentButton === "income" && "text-blue-bright"}`} onClick={handelIncome}>
+            <button
+              className={`border-none px-[11px] whitespace-nowrap ${
+
+                currentButton === "income" && "text-blue-bright"
+              }`}
+              onClick={handelIncome}
+            >
               Incomes
             </button>
-            {currentButton === "income" && <div className="bg-blue-bright h-1 rounded-t-full">
-              </div>}
+            {currentButton === "income" && (
+              <div className="bg-blue-bright h-1 rounded-t-full"></div>
+            )}
           </div>
           <div className="flex flex-col gap-2">
-            <button className={`border-none px-[11px] whitespace-nowrap ${currentButton === "expense" && "text-blue-bright"}`} onClick={handelExpense}>
+            <button
+              className={`border-none px-[11px] whitespace-nowrap ${
+
+                currentButton === "expense" && "text-blue-bright"
+              }`}
+              onClick={handelExpense}
+            >
               Expense
             </button>
-            {currentButton === "expense" && <div className="bg-blue-bright h-1 rounded-t-full">
-              </div>}
+            {currentButton === "expense" && (
+              <div className="bg-blue-bright h-1 rounded-t-full"></div>
+            )}
           </div>
-      </div>
-      <div className="relative overflow-x-auto bg-white px-4 md:px-6 pt-5 md:pt-6 rounded-2xl md:rounded-2xl">
-        <table className="bg-white px-5 lg:px-11 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className=" text-12px md:text-16px font-Lato font-medium text-blue-steel bg-white border-b">
-            <tr className="">
-              <th scope="col" className="hidden md:table-cell pb-2">
-                Description
-              </th>
-              <th scope="col" className=" hidden md:table-cell pb-2">
-                Transacton ID
-              </th>
-              <th scope="col" className="hidden md:table-cell pb-2">
-                Type
-              </th>
-              <th scope="col" className="hidden md:table-cell pb-2">
-                Card
-              </th>
-              <th scope="col" className="hidden md:table-cell pb-2">
-                Date
-              </th>
-              <th scope="col" className="hidden md:table-cell pb-2">
-                Amount
-              </th>
-              <th scope="col" className="hidden md:table-cell pb-2 w-fit">
-                Recipt
-              </th>
-            </tr>
-          </thead>
-          <tbody className="text-12px xl:text-16px text-gray-dark cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700">
-            {currentData.map((data, index) => (
-              <tr
-                key={index}
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <td className="py-3"><RecentTransactionDescription amount={data.amount} description={data.description}/></td>
-                <td className="hidden md:table-cell py-3">{data.transactionId}</td>
-                <td className="hidden md:table-cell py-3">{data.type}</td>
-                <td className="hidden md:table-cell py-3">{data.card.slice(0,4) + " ****"}</td>
-                <td className="hidden md:table-cell py-3">
-                  {data.date}
-                </td>
-                <td className={`py-3 ${data.amount<0?"text-candyPink" : "text-mintGreen"}`}>
-                  {data.amount<0?"-$"+data.amount:"+$"+data.amount}
-                </td>
-                <td className="hidden md:table-cell py-3 w-24 md:w-32">
-                  <TableButton text="Download" classname="px-6 text-[#123288] border-[#123288]" />
-                </td>
+        </div>
+        <div className="relative overflow-x-auto bg-white px-4 md:px-6 pt-5 md:pt-6 rounded-2xl md:rounded-2xl">
+          <table className="bg-white px-5 lg:px-11 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead className=" text-12px md:text-16px font-Lato font-medium text-blue-steel bg-white border-b">
+
+              <tr className="">
+                <th scope="col" className="hidden md:table-cell pb-2">
+                  Description
+                </th>
+                <th scope="col" className=" hidden md:table-cell pb-2">
+                  Transacton ID
+                </th>
+                <th scope="col" className="hidden md:table-cell pb-2">
+                  Type
+                </th>
+                <th scope="col" className="hidden md:table-cell pb-2">
+                  Card
+                </th>
+                <th scope="col" className="hidden md:table-cell pb-2">
+                  Date
+                </th>
+                <th scope="col" className="hidden md:table-cell pb-2">
+                  Amount
+                </th>
+                <th scope="col" className="hidden md:table-cell pb-2 w-fit">
+                  Recipt
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="text-12px xl:text-16px text-gray-dark cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700">
+
+              {currentData.map((data, index) => (
+                <tr
+                  key={index}
+                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <td className="py-3">
+                    <RecentTransactionDescription
+                      amount={data.amount}
+                      description={data.description}
+                    />
+                  </td>
+                  <td className="hidden md:table-cell py-3">
+                    {data.transactionId}
+                  </td>
+                  <td className="hidden md:table-cell py-3">{data.type}</td>
+                  <td className="hidden md:table-cell py-3">
+                    {data.card.slice(0, 4) + " ****"}
+                  </td>
+                  <td className="hidden md:table-cell py-3">{data.date}</td>
+                  <td
+                    className={`py-3 ${
+                      data.amount < 0 ? "text-candyPink" : "text-mintGreen"
+                    }`}
+                  >
+                    {data.amount < 0 ? "-$" + data.amount : "+$" + data.amount}
+                  </td>
+                  <td className="hidden md:table-cell py-3 w-24 md:w-32">
+                    <TableButton
+                      text="Download"
+                      classname="px-6 text-[#123288] border-[#123288]"
+
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-      <nav
-        className="flex items-center justify-end pt-4 text-blue-bright"
-      >
+      <nav className="flex items-center justify-end pt-4 text-blue-bright">
         <ul className="inline-flex items-center -space-x-px text-sm h-8 gap-[10px]">
           <li className="flex flex-row flex-wrap gap-3 items-center">
             <ChevronLeft />
@@ -215,7 +251,8 @@ const RecentTransactionTable = () => {
               <button
                 onClick={() => setCurrentPage(index + 1)}
                 className={`flex items-center justify-center px-3 h-8 ${
-                  currentPage === index + 1 && "bg-blue-bright text-white rounded-xl"
+                  currentPage === index + 1 &&
+                  "bg-blue-bright text-white rounded-xl"
                 }`}
               >
                 {index + 1}

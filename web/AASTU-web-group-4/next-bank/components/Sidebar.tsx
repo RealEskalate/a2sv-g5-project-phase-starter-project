@@ -8,7 +8,7 @@ type SidebarProps = {
 
 export const Sidebar: React.FC<SidebarProps> = () => {
   return (
-    <div className="hidden md:flex flex-col w-64 h-auto bg-white shadow-lg p-4 left-0 top-0">
+    <div className="hidden md:flex flex-col w-64 h-screen bg-white shadow-lg p-4  left-0 top-0">
       <div className="space-y-4">
         {sidebarLinks.map((link) => (
           <Link

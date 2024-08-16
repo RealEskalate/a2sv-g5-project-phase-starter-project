@@ -9,7 +9,7 @@ import (
 
 type AuthRepository interface {
 	Login() (string, error, int)
-	Register() (*OmitedUser, error, int)
+	Register(ctx context.Context,user *User) (*OmitedUser, error, int)
 }
 
 type AuthUseCase interface {

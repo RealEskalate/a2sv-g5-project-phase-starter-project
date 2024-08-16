@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"blogapp/Domain"
+	"context"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +13,7 @@ type authUseCase struct {
 	contextTimeout time.Duration
 }
 
-func NewAuthUseCase(repo Domain.AuthRepository) (*authUseCase) {
+func NewAuthUseCase(repo Domain.AuthRepository) *authUseCase {
 	return &authUseCase{
 		AuthRepository: repo,
 		contextTimeout: time.Second * 10,
@@ -28,5 +29,7 @@ func (a *authUseCase) Login(c *gin.Context, user *Domain.User) (string, error, i
 // register
 func (a *authUseCase) Register(c *gin.Context, user *Domain.User) (*Domain.OmitedUser, error, int) {
 	// return error
-	return nil, nil, 0
+	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
+	defer cancel()
+	return a.AuthRepository.Register(ctx,user)
 }

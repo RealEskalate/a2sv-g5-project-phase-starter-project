@@ -4,7 +4,6 @@ import (
 	config "blogapp/Config"
 	custommongo "blogapp/CustomMongo"
 	"blogapp/Domain"
-	"context"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -20,15 +19,19 @@ func Setuprouter() *gin.Engine {
 	DataBase := client.Database("Blog")
 
 	// Defer the closing of the database
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			log.Fatal(err)
-		}
-	}()
+	// defer func() {
+	// 	if err := client.Disconnect(context.TODO()); err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// }()
+
+	//initialize the collections
+	usercol := DataBase.Collection("Users")
+	blogcol := DataBase.Collection("Blogs")
 
 	// Initialize the collections
-	customUserCol := custommongo.NewMongoCollection(DataBase.Collection("Users"))
-	customBlogCol := custommongo.NewMongoCollection(DataBase.Collection("Blogs"))
+	customUserCol := custommongo.NewMongoCollection(usercol)
+	customBlogCol := custommongo.NewMongoCollection(blogcol)
 	BlogCollections = Domain.BlogCollections{
 
 		Users: customUserCol,

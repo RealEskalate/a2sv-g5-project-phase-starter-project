@@ -1,7 +1,7 @@
-"use client";
-import React from "react";
+'use client';
+import React from 'react';
 
-import { PolarArea } from "react-chartjs-2";
+import { PolarArea } from 'react-chartjs-2';
 
 import {
   Chart as ChartJS,
@@ -12,9 +12,9 @@ import {
   CategoryScale,
   LinearScale,
   ChartOptions,
-} from "chart.js";
+} from 'chart.js';
 
-import ChartDataLabels from "chartjs-plugin-datalabels";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(
   Tooltip,
@@ -23,11 +23,11 @@ ChartJS.register(
   ArcElement,
   RadialLinearScale,
   CategoryScale,
-  LinearScale
+  LinearScale,
 );
 
 const vals = [18, 16, 18, 24];
-const labels = ["Transfer", "Services", "Otheres", "Shopping"];
+const labels = ['Transfer', 'Services', 'Otheres', 'Shopping'];
 let index = 0;
 
 const roundToDecimal = (num: number): number => {
@@ -35,25 +35,23 @@ const roundToDecimal = (num: number): number => {
   return Math.round(num * factor) / factor;
 };
 
-let valsInPercentage = vals.map(
-  (val) => (val * 100) / vals.reduce((a, b) => a + b, 0)
-);
+let valsInPercentage = vals.map((val) => (val * 100) / vals.reduce((a, b) => a + b, 0));
 valsInPercentage = valsInPercentage.map((val) => roundToDecimal(val));
 
 const data = {
   labels: labels,
   datasets: [
     {
-      label: "Dataset 1",
+      label: 'Dataset 1',
       data: valsInPercentage,
-      backgroundColor: ["#343C6A", "#FC7900", "#1814F3", "#FA00FF"],
-      borderColor: ["white", "white", "white", "white"],
+      backgroundColor: ['#343C6A', '#FC7900', '#1814F3', '#FA00FF'],
+      borderColor: ['white', 'white', 'white', 'white'],
       borderWidth: 5,
     },
   ],
 };
 
-const options: ChartOptions<"polarArea"> = {
+const options: ChartOptions<'polarArea'> = {
   responsive: true,
   plugins: {
     legend: {
@@ -62,7 +60,7 @@ const options: ChartOptions<"polarArea"> = {
     tooltip: {
       callbacks: {
         label: (context) => {
-          const label = context.label || "";
+          const label = context.label || '';
           const value = context.raw || 0;
           return `${label}: ${value}`;
         },
@@ -74,9 +72,10 @@ const options: ChartOptions<"polarArea"> = {
         // return `${labels[index++]} ${value}%`;
         return `${value}%`;
       },
-      color: "white",
+      color: 'white',
       font: {
-        size: 10,
+        size: 12,
+        weight: 'bold',
       },
     },
   },
@@ -95,11 +94,9 @@ const options: ChartOptions<"polarArea"> = {
 
 const ExpenseStatistics: React.FC = () => {
   return (
-    <div className="w-full md:w-4/12">
-      <h1 className="text-[#333B69] text-20px py-2 font-semibold">
-        Expense Statistics
-      </h1>
-      <div className="bg-white p-6 px-10 rounded-3xl ">
+    <div className='w-full md:w-4/12'>
+      <h1 className='text-[#333B69] pb-3 font-semibold'>Expense Statistics</h1>
+      <div className='bg-white rounded-3xl flex justify-center items-center'>
         <PolarArea data={data} options={options} />
       </div>
     </div>

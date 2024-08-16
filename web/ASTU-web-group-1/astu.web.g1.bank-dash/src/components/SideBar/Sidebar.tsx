@@ -10,52 +10,62 @@ import Services from '../../../public/assets/icons/services-icon.svg';
 import MyPrivileges from '../../../public/assets/icons/myPrivileges-icon.svg';
 import Setting from '../../../public/assets/icons/setting-icon.svg';
 import Logo from '../../../public/assets/icons/logo-icon.svg';
+import Link from 'next/link';
 
 const data = [
   {
     icon: HomeIcon,
     title: 'Dashboard',
     active: true,
+    url: '/',
   },
   {
     icon: Transaction,
     title: 'Transactions',
     active: false,
+    url: 'transactions',
   },
   {
     icon: Accounts,
     title: 'Accounts',
     active: false,
+    url: '/accounts',
   },
   {
     icon: InvestmentIcon,
     title: 'Investment',
     active: false,
+    url: '/investments',
   },
   {
     icon: CreditCard,
     title: 'Credit Card',
     active: false,
+    url: '/credit-card',
   },
   {
     icon: Loans,
     title: 'Loans',
     active: false,
+    url: '/loans',
   },
   {
     icon: Services,
     title: 'Services',
     active: false,
+    url: '/services',
   },
   {
     icon: MyPrivileges,
     title: 'My Privileges',
     active: false,
+    url: '/my-privileges',
   },
   {
     icon: Setting,
     title: 'Setting',
     active: false,
+    url: '/settings',
   },
 ];
 
@@ -68,7 +78,9 @@ export default function Sidebar() {
             <Logo className='w-[28px] h-[25px] mx-2' /> BankDash.
           </p>
           {data.map((ele) => (
-            <SideBarItems key={ele.title} Icon={ele.icon} title={ele.title} active={ele.active} />
+            <Link href={ele.url} key={ele.title}>
+              <SideBarItems Icon={ele.icon} title={ele.title} active={ele.active} />
+            </Link>
           ))}
         </div>
       </aside>

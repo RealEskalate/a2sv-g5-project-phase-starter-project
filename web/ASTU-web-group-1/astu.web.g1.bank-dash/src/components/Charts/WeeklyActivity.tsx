@@ -1,6 +1,6 @@
-"use client";
-import React from "react";
-import { Bar } from "react-chartjs-2";
+'use client';
+import React from 'react';
+import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,37 +10,30 @@ import {
   Tooltip,
   Legend,
   ChartOptions,
-} from "chart.js";
+} from 'chart.js';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const WeeklyActivity = () => {
   // Define the chart data with type annotations
   const datavalues1 = [12, 19, 3, 5, 2, 3];
   const datavalues2 = [12, 8, 10, 5, 8, 4];
-  const label = ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"];
+  const label = ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'];
   const data = {
     labels: label,
     datasets: [
       {
-        label: "Deposite",
+        label: 'Deposite',
         data: datavalues1,
-        backgroundColor: "rgba(75, 10, 192)",
+        backgroundColor: 'rgba(75, 10, 192)',
         borderRadius: 6,
         barThickness: 30,
         barPercentage: 0.5,
       },
       {
-        label: "Withdraw",
+        label: 'Withdraw',
         data: datavalues2,
-        backgroundColor: "#16dbcc",
+        backgroundColor: '#16dbcc',
         borderRadius: 6,
         barThickness: 30,
         barPercentage: 0.5,
@@ -48,17 +41,17 @@ const WeeklyActivity = () => {
     ],
   };
 
-  const options: ChartOptions<"bar"> = {
+  const options: ChartOptions<'bar'> = {
     responsive: true,
     plugins: {
       legend: {
-        position: "top" as const,
-        align: "end" as const,
+        position: 'top' as const,
+        align: 'end' as const,
         labels: {
           boxWidth: 20,
           boxHeight: 20,
           usePointStyle: true,
-          pointStyle: "circle",
+          pointStyle: 'circle',
         },
       },
     },
@@ -78,11 +71,9 @@ const WeeklyActivity = () => {
   };
 
   return (
-    <div className="w-full md:w-8/12">
-      <h1 className="text-[#333B69] text-20px py-2 font-semibold">
-        Weekly Activity
-      </h1>
-      <div className="bg-white rounded-3xl p-10">
+    <div className='w-full md:w-8/12 md:me-6'>
+      <h1 className='text-[#333B69] pb-3 font-semibold'>Weekly Activity</h1>
+      <div className='bg-white rounded-3xl p-10'>
         <Bar data={data} options={options} height={350} width={1000} />
       </div>
     </div>

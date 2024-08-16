@@ -4,8 +4,8 @@ import InvestmentListCard from "./InvestmentListCard";
 const InvestmentList = () => {
   return (
     <>
-      <div className="flex flex-col items-start px-2 w-full md:w-[500px] space-y-2">
-        <h1 className="text-[#333B69] py-2 font-semibold">My Investment</h1>
+      <div className="flex flex-col items-start px-2 w-full md:w-3/5 space-y-4">
+        <h1 className="text-deepNavy font-Inter py-2 font-[600] text-xl">My Investment</h1>
         <InvestmentListCard
           companyName="Apple Store"
           amount="54,000"

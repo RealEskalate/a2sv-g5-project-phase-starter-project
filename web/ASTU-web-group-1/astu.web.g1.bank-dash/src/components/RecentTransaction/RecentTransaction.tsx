@@ -4,8 +4,8 @@ import RecentTransactionCard from './RecentTransactionCard';
 const RecentTransaction = () => {
   return (
     <div className='w-full'>
-      <h1 className='text-[#333B69] pb-2 font-semibold'>Recent Transaction</h1>
-      <div className=' max-w-md  bg-white border border-gray-200 rounded-[15px] px-4 py-3'>
+      <h1 className='text-[#333B69] pb-3 font-semibold'>Recent Transaction</h1>
+      <div className=' max-w-md  bg-white  rounded-[15px] px-4 py-3'>
         <div className='flow-root'>
           <ul role='list' className=' '>
             <li className='py-1'>

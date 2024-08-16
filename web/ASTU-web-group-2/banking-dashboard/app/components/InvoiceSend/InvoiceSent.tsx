@@ -24,6 +24,7 @@ const recentlistitems = [
     amount: "$700",
     icons: "/assets/invoicesSent/icon4.svg",
   },
+
 ];
 
 const InvoicesSent = () => {
@@ -46,5 +47,6 @@ const InvoicesSent = () => {
     </div>
   );
 };
+
 
 export default InvoicesSent;

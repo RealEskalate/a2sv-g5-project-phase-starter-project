@@ -1,13 +1,13 @@
 package domain
 
 type User struct {
-	ID        string
-	Username  string
-	Email     string
-	FirstName string
-	LastName  string
-	Password  string
-	IsAdmin   bool
+	ID        string `bson:"_id" json:"id"`
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Password  string `json:"password"`
+	IsAdmin   bool   `json:"is_admin"`
 }
 type UserFilter struct {
 	UserId    string

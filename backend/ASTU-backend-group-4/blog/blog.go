@@ -3,12 +3,12 @@ package blog
 import "time"
 
 type Tag struct {
-	ID   string `json:"id,omitempty"`
+	ID   string `json:"id,omitempty" bson:"_id,omitempty"`
 	Name string `json:"name,omitempty"`
 }
 
 type Blog struct {
-	ID            string    `json:"id,omitempty"`
+	ID            string    `json:"id,omitempty" bson:"_id,omitempty"`
 	AuthorID      string    `json:"author_id,omitempty"`
 	Title         string    `json:"title,omitempty"`
 	Content       string    `json:"content,omitempty"`
@@ -22,7 +22,7 @@ type Blog struct {
 }
 
 type Comment struct {
-	ID        string    `json:"id,omitempty"`
+	ID        string    `json:"id,omitempty" bson:"_id,omitempty"`
 	BlogID    string    `json:"blog_id,omitempty"`
 	AuthorID  string    `json:"author_id,omitempty"`
 	Content   string    `json:"content,omitempty"`
@@ -31,7 +31,7 @@ type Comment struct {
 }
 
 type Like struct {
-	ID     string `json:"id,omitempty"`
+	ID     string `json:"id,omitempty" bson:"_id,omitempty"`
 	BlogID string `json:"blog_id,omitempty"`
 	UserID string `json:"user_id,omitempty"`
 }

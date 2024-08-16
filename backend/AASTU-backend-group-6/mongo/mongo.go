@@ -97,7 +97,7 @@ func (d *nullawareDecoder) DecodeValue(dctx bsoncodec.DecodeContext, vr bsonrw.V
 func NewClient(connection string) (Client, error) {
 
 	time.Local = time.UTC
-	c, err := mongo.Connect(context.TODO() , options.Client().ApplyURI(connection))
+	c, err :=  mongo.Connect(context.Background(),options.Client().ApplyURI(connection))
 
 	return &mongoClient{cl: c}, err
 

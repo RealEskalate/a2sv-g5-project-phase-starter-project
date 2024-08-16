@@ -21,11 +21,12 @@ func NewUserUsecase(Userrepo domain.UserRepository, timeout time.Duration) domai
 }
 
 func (uuse *UserUsecase) RegisterUser(c context.Context, user domain.User) error {
-	return nil
+	return uuse.UserRepo.RegisterUser(user)
+
 }
 
 func (uuse *UserUsecase) LoginUser(c context.Context, user domain.User) (string, error) {
-	return "", nil
+	return uuse.UserRepo.LoginUser(user)
 }
 
 func (uuse *UserUsecase) ForgotPassword(c context.Context, email string) error {

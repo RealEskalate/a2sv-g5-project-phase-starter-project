@@ -5,14 +5,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type Claims struct {
+type AccessClaims struct {
 	ID             primitive.ObjectID `json:"id"`
-	Username       string             `json:"username"`
-	Password       string             `json:"password"`
 	Role           string             `json:"role"`
-	StandardClaims jwt.StandardClaims `json:"standard_claims"`
+	jwt.StandardClaims
 }
 
-func (c *Claims) Valid() error {
-	return c.StandardClaims.Valid()
+type RefreshClaims struct {
+	ID             primitive.ObjectID `json:"id"`
+	Role           string             `json:"role"`
+	jwt.StandardClaims
 }

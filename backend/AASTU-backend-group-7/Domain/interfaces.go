@@ -8,13 +8,21 @@ import (
 )
 
 type AuthRepository interface {
-	Login(ctx context.Context, user *User) (string, error, int)
-	Register(ctx context.Context, user *User) (OmitedUser, error, int)
+	Login(ctx context.Context,user *User) (string, error, int)
+	Register(ctx context.Context,user *User) (*OmitedUser, error, int)
 }
 
 type AuthUseCase interface {
 	Login(c *gin.Context, user *User) (string, error, int)
-	Register(c *gin.Context, user *User) (OmitedUser, error, int)
+	Register(c *gin.Context, user *User) (*OmitedUser, error, int)
+}
+
+type BlogRepository interface {
+
+}
+
+type BlogUseCase interface {
+
 }
 
 type UserRepository interface {

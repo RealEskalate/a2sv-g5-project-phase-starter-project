@@ -1,7 +1,7 @@
 package auth_middleware
 
 import (
-	config "blogapp/Config"
+	Config "blogapp/Config"
 	"blogapp/Domain"
 	"fmt"
 	"net/http"
@@ -36,7 +36,7 @@ func AuthMiddleware() gin.HandlerFunc {
 				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 			}
 
-			return config.JwtSecret, nil
+			return Config.JwtSecret, nil
 		})
 
 		if err != nil || !token.Valid {

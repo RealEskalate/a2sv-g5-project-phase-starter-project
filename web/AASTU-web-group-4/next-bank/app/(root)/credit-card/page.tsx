@@ -12,9 +12,9 @@ const CreditCard = () => {
       <div className="myCards w-[80%] mx-auto mt-4">
         <h1 className='text-[19px] mb-3 font-bold text-[#333B69]'>My Cards</h1>
         <div className="flex overflow-x-auto space-x-4 pr-3">
-          {cards.map((bg) => (
+          {cards.map((bg, index) => (
             <span className='p-3'>
-              <ResponsiveCreditCard backgroundColor={bg} />
+              <ResponsiveCreditCard backgroundColor={bg} key={index} />
             </span>
           ))}
         </div>

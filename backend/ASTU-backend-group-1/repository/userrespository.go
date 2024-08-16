@@ -136,6 +136,9 @@ func (repo *userRepository) Update(userId string, updateData domain.User) (domai
 	if updateData.FirstName != "" {
 		user.FirstName = updateData.FirstName
 	}
+	if updateData.IsActive {
+		user.IsActive = true
+	}
 	if updateData.Email != "" || updateData.Username != "" {
 		return user, fmt.Errorf("username or email modification not allowed")
 	}

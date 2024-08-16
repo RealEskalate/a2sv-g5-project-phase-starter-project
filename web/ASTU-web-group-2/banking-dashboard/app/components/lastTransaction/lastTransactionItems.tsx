@@ -1,41 +1,26 @@
-type Item = {
-  image: string;
-  title: string;
-  date: string;
-  category: string;
-  pass: string;
-  status: string;
-  amount: string;
-};
+import { useGetAllTransactionQuery } from "@/lib/service/TransactionService";
+import { Item } from "./LastTransaction";
 
-export const items: Item[] = [
-  {
-    image: "/assets/lastTransaction/spot-sub.svg",
-    title: "Spotify Subscription",
-    date: "25 Jan 2021",
-    category: "Shopping",
-    pass: "1234 ****",
-    status: "Pending",
-    amount: "-$150",
-  },
+export async function getLastTransaction(): Promise<Item[]> {
+  const access =
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJzYW1pdGVzdCIsImlhdCI6MTcyMzgwNzQzNiwiZXhwIjoxNzIzODkzODM2fQ.dTGZWeZVDP1btw1nf_hW84Zr5CPjW32hnj-vXlsWCUQz4MlU1EuTvHhSp3-xfmUZ";
+  const { data, isError, isLoading, isSuccess } =
+    await useGetAllTransactionQuery(access);
 
-  {
-    image: "/assets/lastTransaction/settings.svg",
-    title: "Mobile Service",
-    date: "25 Jan 2021",
-    category: "Service",
-    pass: "1234 ****",
-    status: "Completed",
-    amount: "-$340",
-  },
+  if (isLoading) {
+    console.log("fetching");
+  }
 
-  {
-    image: "/assets/lastTransaction/user.svg",
-    title: "Emily Watson",
-    date: "25 Jan 2021",
-    category: "Transfer",
-    pass: "1234 ****",
-    status: "Completed",
-    amount: "+$780",
-  },
-];
+  if (isError) {
+    console.log("error");
+  }
+
+  let retrunData: Item[] = [];
+
+  if (isSuccess) {
+    retrunData = data.data;
+  }
+  return retrunData;
+}
+
+export const items: Promise<Item[]> = getLastTransaction();

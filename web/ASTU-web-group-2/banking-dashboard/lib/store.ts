@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { transactionApi } from "./serice/TransactionService";
+import { transactionApi } from "./service/TransactionService";
 
 export const store = () => {
   return configureStore({

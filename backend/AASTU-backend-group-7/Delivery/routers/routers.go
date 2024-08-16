@@ -1,21 +1,18 @@
 package routers
 
 import (
-	config "blogapp/Config"
 	custommongo "blogapp/CustomMongo"
 	"blogapp/Domain"
-	"log"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var Router *gin.Engine
 var BlogCollections Domain.BlogCollections
 
-func Setuprouter() *gin.Engine {
+func Setuprouter(client *mongo.Client) *gin.Engine {
 	// Initialize the database
-	client := config.ConnectDB()
-	log.Println(client)
 	DataBase := client.Database("Blog")
 
 	// Defer the closing of the database

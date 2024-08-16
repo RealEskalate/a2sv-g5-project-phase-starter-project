@@ -21,7 +21,6 @@ func NewMongoTokenRepository(db database.Database) domain.TokenRepository {
 		collection: domain.TokenCollection,
 	}
 }
-
 func (repo *MongoTokenRepository) SaveToken(ctx context.Context, token *domain.Token) error {
 	collection := repo.db.Collection(repo.collection)
 	_, err := collection.InsertOne(ctx, token)

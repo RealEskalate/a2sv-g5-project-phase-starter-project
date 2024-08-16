@@ -43,3 +43,9 @@ type ProfileUsecase interface {
 	UpdateProfile(c context.Context, profile *Profile) error
 	DeleteProfile(c context.Context, id primitive.ObjectID) error
 }
+
+type LoginUsecase interface {
+	AuthenticateUser(c context.Context, login *AuthLogin) (*User, error)
+	CreateAccessToken(user *User, secret string, expiry int) (string, error)
+	CreateRefreshToken(user *User, secret string, expiry int) (string, error)
+}

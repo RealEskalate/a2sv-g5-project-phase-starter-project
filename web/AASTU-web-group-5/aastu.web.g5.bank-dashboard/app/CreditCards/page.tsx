@@ -1,7 +1,7 @@
 import React from "react";
 import CreditCardComponent from "./CreditCardComponent";
 
-const page = () => {
+const Page = () => {
 	return (
 		<div>
 			<CreditCardComponent />
@@ -9,4 +9,4 @@ const page = () => {
 	);
 };
 
-export default page;
+export default Page;

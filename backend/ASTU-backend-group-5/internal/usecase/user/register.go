@@ -18,14 +18,15 @@ func NewUserUsecase(repo repository.UserRepository) *UserUsecase {
 
 func (u *UserUsecase) RegisterUser(user *domain.User) (*domain.User, error) {
 	email := user.Email
-	exists, err := u.repo.FindUserByEmail(context.Background(), email)
+	dbUser, err := u.repo.FindUserByEmail(context.Background(), email)
 
 	if err != nil {
 		return nil, err
 	}
-	if exists != nil {
+	if dbUser != nil {
 		return nil, errors.New("user already exists")
 	}
+
 	user.Role = "user"
 
 	isEmpty, err := u.repo.IsEmptyCollection(context.Background())
@@ -34,7 +35,7 @@ func (u *UserUsecase) RegisterUser(user *domain.User) (*domain.User, error) {
 	}
 
 	if isEmpty {
-		user.Role = "admin"
+		user.Role = "owner"
 	}
 
 	user.Password, err = hash.HashPassword(user.Password)

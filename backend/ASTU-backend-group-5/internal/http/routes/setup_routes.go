@@ -5,7 +5,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+
 func SetUpRoute(router *gin.Engine, collection *mongo.Collection) {
-	RegisterUserRouters(collection, router)
+	RegisterUserRoutes(collection, router)
 	RegisterVerificationRoutes(collection, router)
+	RegisterAdminUserRoutes(collection, router)
 }

@@ -6,7 +6,7 @@ import (
     "blogApp/internal/domain"
 )
 
-func AdminMiddleware() gin.HandlerFunc {
+func OwnerMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
         claims, exists := c.Get("claims")
         if !exists {
@@ -22,13 +22,12 @@ func AdminMiddleware() gin.HandlerFunc {
             return
         }
 
-        if userClaims.Role != "admin" {
-            c.JSON(http.StatusForbidden, gin.H{"error": "Admin access required"})
+        if userClaims.Role != "owner" {
+            c.JSON(http.StatusForbidden, gin.H{"error": "Owner access required"})
             c.Abort()
             return
         }
 
-        // If the user is an admin, proceed with the request
         c.Next()
     }
 }

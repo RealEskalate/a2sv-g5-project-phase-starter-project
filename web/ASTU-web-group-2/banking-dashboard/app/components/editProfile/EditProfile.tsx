@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import FormComponent from './FormComponent'; // Adjust the import path as necessary
 import YourFormComponent from './Preference';
+import ProfileSecurity from '../profileSecurity/profileSecurity';
 
 interface Preference {
   currency: string;
@@ -82,6 +83,7 @@ const EditProfile = () => {
 
           
           {activeTab == 1 && <YourFormComponent/>}
+          {activeTab == 2 && <ProfileSecurity/>}
         
       </div>
     </div>

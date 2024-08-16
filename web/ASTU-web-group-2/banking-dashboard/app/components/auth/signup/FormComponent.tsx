@@ -39,10 +39,10 @@ const schema = yup.object().shape({
   country: yup.string().required('Country is required'),
 });
 
-const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData,setActiveTab }) => {
+const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData, setActiveTab }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(mainData.profilePicture || null);
 
-  const { control, handleSubmit, formState: { errors } } = useForm<FormValues>({
+  const { control, formState: { errors } } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
       name: mainData.name,
@@ -59,30 +59,25 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData,set
     }
   });
 
-  const onSubmit = (data: FormValues) => {
-    const formattedData = {
-      ...data,
-      dateOfBirth: new Date(data.dateOfBirth).toISOString(), // Convert date to ISO string
-      profilePicture: selectedImage,
-    };
-  
-    console.log(formattedData);
-    setMainData((prev: any) => ({ ...prev, ...formattedData }));
-    setActiveTab(1)
+  // Function to update mainData when input changes
+  const handleInputChange = (field: keyof FormValues, value: string) => {
+    setMainData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setSelectedImage(e.target?.result as string);
+        const imageResult = e.target?.result as string;
+        setSelectedImage(imageResult);
+        handleInputChange('profilePicture', imageResult);
       };
       reader.readAsDataURL(event.target.files[0]);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className=''>
+    <form className=''>
       <div className="flex max-md:flex-col justify-between gap-[2rem]">
         <div className="flex flex-col w-[30rem] max-md:w-full">
           <div className="mb-6 flex justify-center">
@@ -120,20 +115,23 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData,set
               <Controller
                 name={field}
                 control={control}
-                render={({ field }) => (
+                render={({ field: { value, onChange, ...restField } }) => (
                   <div className="mb-4">
                     <label className="block mb-1 font-400 text-[16px] text-[#232323] capitalize">
-                      {field.name.charAt(0).toUpperCase() + field.name.slice(1).replace(/([A-Z])/g, ' $1')}
+                      {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
                     </label>
                     <input
-                      {...field}
-                      type={field.name === 'dateOfBirth' ? 'date' : 'text'}
-                      placeholder={`Enter your ${field.name}`}
+                      {...restField}
+                      type={field === 'dateOfBirth' ? 'date' : 'text'}
+                      placeholder={`Enter your ${field}`}
                       className="w-full p-2 border border-[#DFEAF2] rounded-[15px] focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      value={field.value}
-                      onChange={(e) => field.onChange(e.target.value)}
+                      value={value}
+                      onChange={(e) => {
+                        onChange(e);
+                        handleInputChange(field, e.target.value);
+                      }}
                     />
-                    {errors[field.name] && <p className="text-red-500 text-sm">{errors[field.name]?.message}</p>}
+                    {errors[field] && <p className="text-red-500 text-sm">{errors[field]?.message}</p>}
                   </div>
                 )}
               />
@@ -146,20 +144,23 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData,set
               <Controller
                 name={field}
                 control={control}
-                render={({ field }) => (
+                render={({ field: { value, onChange, ...restField } }) => (
                   <div className="mb-4">
                     <label className="block mb-1 font-400 text-[16px] text-[#232323] capitalize">
-                      {field.name.charAt(0).toUpperCase() + field.name.slice(1).replace(/([A-Z])/g, ' $1')}
+                      {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
                     </label>
                     <input
-                      {...field}
-                      type={field.name === 'password' ? 'password' : 'text'}
-                      placeholder={`Enter your ${field.name}`}
+                      {...restField}
+                      type={field === 'password' ? 'password' : 'text'}
+                      placeholder={`Enter your ${field}`}
                       className="w-full p-2 border border-[#DFEAF2] rounded-[15px] focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      value={field.value}
-                      onChange={(e) => field.onChange(e.target.value)}
+                      value={value}
+                      onChange={(e) => {
+                        onChange(e);
+                        handleInputChange(field, e.target.value);
+                      }}
                     />
-                    {errors[field.name] && <p className="text-red-500 text-sm">{errors[field.name]?.message}</p>}
+                    {errors[field] && <p className="text-red-500 text-sm">{errors[field]?.message}</p>}
                   </div>
                 )}
               />
@@ -168,7 +169,7 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData,set
         </div>
       </div>
       <div className="flex justify-end mt-6 ">
-        <button type="submit" className="bg-blue-700 md:w-[190px] text-white px-6 py-2 rounded-lg hover:bg-blue-600" >
+        <button type="button" onClick={() => setActiveTab(1)} className="bg-blue-700 md:w-[190px] text-white px-6 py-2 rounded-lg hover:bg-blue-600">
           Next
         </button>
       </div>

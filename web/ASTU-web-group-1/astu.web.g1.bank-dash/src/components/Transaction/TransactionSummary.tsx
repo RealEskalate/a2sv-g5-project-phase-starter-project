@@ -21,7 +21,7 @@ const TransactionSummary = ({
   amount,
 }: TransactionSummaryType) => {
   return (
-    <div className="grid grid-cols-6 md:grid-cols-10 lg:grid-cols-12 ">
+    <div className="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-8 xl:grid-cols-12 ">
       <div className="flex items-center col-span-5 ">
         <div className="bg-[#DCFAF8] flex items-center rounded-xl mr-2">
           <SpotifyIcon className="w-10 h-10 shrink-0" />
@@ -34,10 +34,10 @@ const TransactionSummary = ({
       <div className="hidden md:flex items-center text-blue-steel col-span-2  text-xs lg:text-sm">
         {reason}
       </div>
-      <div className="hidden lg:flex items-center text-blue-steel col-span-2 text-xs lg:text-sm ">
+      <div className="hidden xl:flex items-center text-blue-steel col-span-2 text-xs lg:text-sm ">
         {accountNo}
       </div>
-      <div className="hidden md:flex items-center text-blue-steel col-span-2 text-xs lg:text-sm ">
+      <div className="hidden xl:flex items-center text-blue-steel col-span-2 text-xs lg:text-sm ">
         {status}
       </div>
       <div

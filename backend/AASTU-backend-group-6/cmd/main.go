@@ -15,7 +15,7 @@ func main() {
 		fmt.Print("Error in env.load")
 	}
 	// fmt.Print(config)
-	DB, client, err := infrastructure.ConnectDB(config.DatabaseUrl, config.Dbname)
+	DB, client, err := infrastructure.ConnectDB(config.DatabaseUrl, config.DbName)
 
 	if err != nil {
 		fmt.Print("Error in connectDB")

@@ -42,7 +42,7 @@ func (au *authRepository) Login(ctx context.Context, user *Domain.User) (string,
 	}
 
 	// Generate JWT
-	jwtToken, err := jwtservice.SignJwt(existingUser)
+	jwtToken, err := jwtservice.CreateAccessToken(existingUser)
 	if err != nil {
 		return "", err, 500
 	}

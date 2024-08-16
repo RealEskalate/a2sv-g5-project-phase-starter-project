@@ -49,9 +49,7 @@ const BankServices = [
 const BankServicesList = () => {
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-16px md:text-18px xl:text-22px text-[#333B69] font-semibold">
-        Bank Services List
-      </h1>
+      <p className='text-[#333B69] pb-3 font-semibold'>Bank Services List</p>
       <div className="flex flex-col gap-3">
         {BankServices.map((items, index) => (
           <div key={index} className="grid grid-cols-7 md:grid-cols-7 xl:grid-cols-11 items-center bg-white p-3 rounded-xl">
@@ -96,7 +94,7 @@ const BankServicesList = () => {
               <div className="">
                 <TableButton
                   text="View Details"
-                  classname="hidden md:flex px-6"
+                  classname="hidden md:flex px-6 lg:text-[14px]"
                 />
               </div>
               <span className="font-medium text-12px lg:text-15px text-blue-bright md:hidden">

@@ -1,6 +1,8 @@
 package Domain
 
 import (
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -9,6 +11,8 @@ type User struct {
 	Email    string             `json:"email" validate:"required"`
 	Password string             `json:"password,omitempty" validate:"required"`
 	Role     string             `json:"Role"`
+	// generate user registeration date
+	CreatedAt time.Time `json:"created_at"`
 }
 
 // this could have been handled in a better way but i was too lazy to do it

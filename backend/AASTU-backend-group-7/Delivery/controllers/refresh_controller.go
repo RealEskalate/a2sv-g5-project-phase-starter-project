@@ -59,22 +59,22 @@ func (r *RefreshController) Refresh(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	newRefreshToken, err := jwtservice.CreateRefreshToken(user)
+	// newRefreshToken, err := jwtservice.CreateRefreshToken(user)
 	
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
+	// if err != nil {
+	// 	c.JSON(500, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
 	// store the refresh token
-	err, statuscode = r.RefreshUseCase.StoreToken(c,  accessClaims.ID, newRefreshToken)
+	// err, statuscode = r.RefreshUseCase.StoreToken(c,  accessClaims.ID, newRefreshToken)
 	
-	if err != nil {
-		c.JSON(statuscode, gin.H{"error": err.Error()})
-		return
-	}
+	// if err != nil {
+	// 	c.JSON(statuscode, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
-	c.JSON(200, gin.H{"access_token": newAccessToken, "refresh_token": newRefreshToken})
+	c.JSON(200, gin.H{"access_token": newAccessToken, "refresh_token": refreshToken})
 
 	
 }

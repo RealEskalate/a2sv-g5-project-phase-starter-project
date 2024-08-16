@@ -10,11 +10,13 @@ import (
 type AuthRepository interface {
 	Login(ctx context.Context, user *User) (Tokens, error, int)
 	Register(ctx context.Context, user *User) (*OmitedUser, error, int)
+	Logout(ctx context.Context, user_id primitive.ObjectID) (error, int)
 }
 
 type AuthUseCase interface {
 	Login(c *gin.Context, user *User) (Tokens, error, int)
 	Register(c *gin.Context, user *User) (*OmitedUser, error, int)
+	Logout(c *gin.Context, user_id primitive.ObjectID) (error, int)
 }
 
 type RefreshRepository interface {

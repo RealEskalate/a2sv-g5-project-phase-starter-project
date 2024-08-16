@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRoutes(r *gin.Engine, blogUsecase usecases.BlogUsecase, userUsecase usecases.UserUsecase, jwtService infrastructure.JWTService) {
+func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, jwtService infrastructure.JWTService) {
 	// Initialize controllers
 	blogController := controllers.NewBlogController(blogUsecase)
 	userController := controllers.NewUserController(userUsecase)

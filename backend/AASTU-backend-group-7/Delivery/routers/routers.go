@@ -3,6 +3,7 @@ package routers
 import (
 	custommongo "blogapp/CustomMongo"
 	"blogapp/Domain"
+	email_service "blogapp/Infrastructure/email_service"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -29,7 +30,7 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	// Initialize the collections
 	customUserCol := custommongo.NewMongoCollection(usercol)
 	customBlogCol := custommongo.NewMongoCollection(blogcol)
-	
+
 	BlogCollections = Domain.BlogCollections{
 
 		Users: customUserCol,
@@ -44,5 +45,22 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	// go to blog router
 	BlogRouter()
 
+	Router.POST("/sendemail", sendemail)
+
 	return Router
+}
+
+func sendemail(c *gin.Context) {
+	em := email_service.NewMailTrapService()
+	err := em.SendEmail("abel.bekele@a2sv.org", "Test", "This is a test email", "catagory1")
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	} else {
+		c.JSON(200, gin.H{
+			"message": "Email sent successfully",
+		})
+	}
 }

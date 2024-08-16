@@ -137,7 +137,7 @@ func (repo *userRepository) Update(userId string, updateData domain.User) (domai
 		user.FirstName = updateData.FirstName
 	}
 	if updateData.Email != "" || updateData.Username != "" {
-		return user, fmt.Errorf("cannot modify username or email")
+		return user, fmt.Errorf("username or email modification not allowed")
 	}
 	repo.collection.ReplaceOne(context.TODO(), bson.D{{"_id", userId}}, user)
 	return user, nil

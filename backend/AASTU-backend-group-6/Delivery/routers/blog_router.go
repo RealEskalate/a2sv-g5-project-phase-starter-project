@@ -18,10 +18,9 @@ func NewBlogrouter(config *infrastructure.Config, DB mongo.Database, blogRouter 
 	// protected
 	blogRouter.GET("/my")
 	blogRouter.GET("/my/:id")
-	blogRouter.GET("/my/comment")
 
 	blogRouter.POST("/create")
 	blogRouter.PUT("/update/:id")
 	blogRouter.DELETE("/delete/:id")
-
+	blogRouter.POST("/comment/create")
 }

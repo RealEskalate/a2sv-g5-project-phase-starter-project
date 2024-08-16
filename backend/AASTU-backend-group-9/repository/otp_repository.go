@@ -25,6 +25,13 @@ func (u *OTPRepository) GetOTPByEmail(c context.Context, email string) (*domain.
 	err := collection.FindOne(c, filter).Decode(otp)
 	return otp, err
 }
+
+func (u *OTPRepository) DeleteOTP(c context.Context, email string) error {
+	collection := u.database.Collection(domain.CollectionOTP)
+	filter := bson.M{"email": email}
+	_, err := collection.DeleteOne(c, filter)
+	return err
+}
 func NewOTPRepository(db database.Database, collection string) domain.OTPRepository {
 	return &OTPRepository{
 		database:   db,

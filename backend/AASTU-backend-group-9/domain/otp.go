@@ -14,3 +14,8 @@ type OTP struct {
     CreatedAt  time.Time `bson:"created_at"`
     ExpiresAt  time.Time `bson:"expires_at"`
 }
+
+type OTPRequest struct {
+    Email    string `json:"email" binding:"required"`
+    Value    string `json:"value" binding:"required"`
+}

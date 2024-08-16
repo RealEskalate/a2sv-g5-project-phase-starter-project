@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import TrendingList from "@/components/TrendingStock/trendingList";
-export default function Home() {
-  return <div></div>;
-=======
 import BalanceHistory from '@/components/Charts/BalanceHistory';
 import DebiteAndCredit from '@/components/Charts/DebiteAndCredit';
 import ExpenseStatistics from '@/components/Charts/ExpenseStatistics';
@@ -10,9 +5,9 @@ import WeeklyActivity from '@/components/Charts/WeeklyActivity';
 import MyCard from '@/components/MyCard/MyCard';
 import QuickTransfer from '@/components/QuickTransfer/QuickTransfer';
 import RecentTransaction from '@/components/RecentTransaction/RecentTransaction';
-import TestNaol from '@/components/TestNaol';
-import CardProvider from '@/providers/cardProvider';
 import { Plus } from 'lucide-react';
+import StoreProvider from '@/providers/StoreProvider';
+import TestNaol from '@/components/TestNaol';
 
 export default function Home() {
   return (
@@ -25,10 +20,11 @@ export default function Home() {
               <p className='text-[#333B69] pb-3 font-semibold'>See All</p>
             </div>
             <div className='flex  overflow-x-auto space-x-2'>
-              <CardProvider>
+              <StoreProvider>
                 <MyCard />
                 <MyCard />
-              </CardProvider>
+                <TestNaol />
+              </StoreProvider>
               <div className='w-[295px] h-[175px] bg-gray-200 rounded-3xl justify-center items-center flex flex-shrink-0'>
                 <Plus size={32} />
               </div>
@@ -52,5 +48,4 @@ export default function Home() {
       </div>
     </>
   );
->>>>>>> 715c07199bf7b1561bb67630c6c3611075825f77
 }

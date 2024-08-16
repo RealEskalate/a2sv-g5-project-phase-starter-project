@@ -62,8 +62,22 @@ type PaginationResponse[T interface{}] struct {
 }
 
 type BlogUseCase interface {
-	CreateBlog(blog Blog) (string, error)
+	CreateBlog(blog Blog) (Blog, error)
 	UpdateBlog(id string, blog Blog) (Blog, error)
+	DeleteBlog(id string) error
+	GetBlogByID(id string) (Blog, error)
+	GetBlogs(filterOptions []FilterOption, pagination PaginationRequest) (PaginationResponse[Blog], error)
+	SearchBlogs(query string) (PaginationResponse[Blog], error)
+	GetCommentsByBlogID(blogID string, pagination PaginationRequest) (PaginationResponse[Comment], error)
+	CreateComment(comment Comment) error
+	DeleteComment(id string) error
+	LikeBlog(like Like) error
+	DislikeBlog(dislike Dislike) error
+}
+
+type BlogRepository interface {
+	CreateBlog(blog Blog) (string, error)
+	UpdateBlog(id string, blog Blog) error
 	DeleteBlog(id string) error
 	GetBlogByID(id string) (Blog, error)
 	GetBlogs(filterOptions []FilterOption, pagination PaginationRequest) (PaginationResponse[Blog], error)

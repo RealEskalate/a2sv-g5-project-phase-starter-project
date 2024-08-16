@@ -4,6 +4,9 @@ import Card from "./components/card/Card";
 import CardForCreditCards from "./components/card/CardForCreditCards";
 import CreditCard from "./components/creditCard/CreditCard";
 import Page from "./components/TrendingStock/Page";
+import RecentTransaction from "./components/recent-transaction/RecentTransaction";
+import ExpenseStatisticsChart from "./components/charts/ExpenseStatisticsChart";
+import SendMoney from "./components/sendMoney/SendMoney";
 const page = () => {
   return (
     <div className="flex flex-col gap-2">
@@ -36,7 +39,7 @@ const page = () => {
         </CardForCreditCards>
         <Card
           title="Recent Transactions"
-          className="max-w-[350px] lg:mx-auto h-auto"
+          className="max-w-[350px] lg:mx-auto h-[367px]"
         >
           <RecentTransaction />
         </Card>
@@ -44,7 +47,7 @@ const page = () => {
       <div className="flex max-sm:flex-col gap-[30px]">
         <Card
           title="Weekly Activity"
-          className="flex flex-col lg:w-[730px] lg:h-[300px] md:w-[487px] md:h-[299px] h-[254]"
+          className="flex flex-col min-w-[730px] lg:mx-auto h-auto"
         >
           <WeeklyActivityChart />
         </Card>

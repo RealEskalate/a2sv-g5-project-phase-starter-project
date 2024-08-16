@@ -5,6 +5,7 @@ import NavBar from "./components/Layout/NavBar";
 import Sidebar from "./components/Layout/Sidebar";
 import { usePathname } from "next/navigation";
 import LayoutProvider from "./Provider/LayoutProvider";
+import ReduxProvider from "./Redux/ReduxProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,13 +19,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
   return (
     <html lang="en">
       <body className={`${inter.className} bg-body`}>
-        <LayoutProvider>
-          {children}
-        </LayoutProvider>
+        {/* i just add redux provider here */}
+        <ReduxProvider>
+          <LayoutProvider>{children}</LayoutProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

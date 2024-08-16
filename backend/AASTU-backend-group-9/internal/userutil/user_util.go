@@ -1,8 +1,10 @@
 package userutil
 
 import (
-	"golang.org/x/crypto/bcrypt"
+	"math/rand"
+	"time"
 	"regexp"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // HashPassword hashes the password
@@ -36,4 +38,8 @@ func ValidateEmail(email string) bool {
 
 func ValidatePassword(password string) bool {
 	return len(password) >= 8
+}
+func GenerateOTP() string {
+	rand.Seed(time.Now().UnixNano())
+	return string(rune(100000 + rand.Intn(900000)))
 }

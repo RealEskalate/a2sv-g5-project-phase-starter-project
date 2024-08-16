@@ -5,6 +5,7 @@ import (
 	"ASTU-backend-group-3/Blog_manager/Delivery/router"
 	"ASTU-backend-group-3/Blog_manager/Repository"
 	"ASTU-backend-group-3/Blog_manager/Usecases"
+	"ASTU-backend-group-3/Blog_manager/infrastructure"
 
 	// "ASTU-backend-group-3/Blog_manager/Delivery/router"
 	"context"
@@ -42,7 +43,11 @@ func main() {
 
 	userCollection := userDatabase.Collection("User")
 	userRepository := Repository.NewUserRepository(userCollection)
-	userUsecase := Usecases.NewUserUsecase(userRepository)
+	// Initialize the Email Service
+	emailService := infrastructure.NewEmailService()
+
+	// Initialize the User Usecase with the User Repository and Email Service
+	userUsecase := Usecases.NewUserUsecase(userRepository, emailService)
 	userController := controller.NewUserController(userUsecase)
 
 	router := router.SetupRouter(userController)

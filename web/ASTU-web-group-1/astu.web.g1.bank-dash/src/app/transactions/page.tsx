@@ -2,6 +2,7 @@ import React from "react";
 import MyCard from "@/components/MyCard/MyCard";
 import RecentTransactionTable from "@/components/RecentTransactionTable/RecentTransactionTable";
 import { Plus } from "lucide-react";
+import MyExpence from "@/components/Charts/MyExpence";
 export default function page() {
   return (
     <div className="flex flex-col gap-5">
@@ -22,12 +23,7 @@ export default function page() {
               </div>
             </div>
           </div>
-          <div className="lg:w-1/3 w-full">
-            <div className="flex justify-between">
-              <p className="text-[#333B69] pb-2 font-semibold">My Expense</p>
-            </div>
-            <MyCard />
-          </div>
+           <MyExpence />
         </div>
       </div>
       <div>

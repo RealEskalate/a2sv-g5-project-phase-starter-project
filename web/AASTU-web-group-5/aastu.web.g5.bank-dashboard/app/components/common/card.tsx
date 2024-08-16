@@ -16,16 +16,16 @@ const Card = ({
 	return (
 		<div>
 			<div className={creditCardColor.cardBgColor}>
-				<div className="flex justify-between p-4 px-6">
-					<div>
+				<div className="flex justify-between  p-4  ">
+					<div className="">
 						<div className="text-sm opacity-70">Balance</div>
 						<div className="text-lg">$5,756</div>
 					</div>
-					<div>
+					<div className="">
 						<Image src={creditCardColor.imageCreditCard} alt="chip card" />
 					</div>
 				</div>
-				<div className="flex gap-16 p-4 pr-28">
+				<div className="flex gap-16 p-4 ">
 					<div className="pl-2">
 						<div className="text-sm opacity-70">CARD HOLDER</div>
 						<div>Eddy Cusuma</div>
@@ -38,7 +38,7 @@ const Card = ({
 				{creditCardColor.grayCircleColor ? (
 					<div className={creditCardColor.bottomBgColor}>
 						<div className="">
-							<div className="border-2 border-solid border-gray-600 opacity-20"></div>
+							<div className="border-b-2 border-solid border-gray-600 opacity-20"></div>
 							<div className="flex justify-between p-4">
 								<div className="text-xl">3778 *** *** 1234</div>
 								<div className="flex">

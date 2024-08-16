@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/RealEskalate/astu-backend-g4/backend/ASTU-backend-group-4/pkg/infrastructure"
+	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/pkg/infrastructure"
 )
 
 type Tag struct {
@@ -79,4 +79,6 @@ type BlogRepository interface {
 	DeleteComment(ctx context.Context, id string) error
 	LikeBlog(ctx context.Context, like Like) error
 	DislikeBlog(ctx context.Context, dislike Dislike) error
+	UnlikeBlog(ctx context.Context, like Like) error
+	UndislikeBlog(ctx context.Context, dislike Dislike) error
 }

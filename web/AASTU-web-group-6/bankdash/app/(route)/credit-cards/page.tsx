@@ -13,9 +13,9 @@ const CreditCards = () => {
           My Cards
         </p>
         <div className="flex gap-10 pb-5">
-          <VisaCard isBlack={false} isFade={true}  />
-          <VisaCard isBlack={false} isFade={false} />
-          <VisaCard isBlack={true} isFade={false} />
+          <VisaCard isBlack={false} isFade={true} isSimGray={false} />
+          <VisaCard isBlack={false} isFade={false} isSimGray={false} />
+          <VisaCard isBlack={true} isFade={false} isSimGray={false} />
         </div>
       </div>
       <div className="flex flex-row">

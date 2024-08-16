@@ -35,7 +35,7 @@ export default function Component() {
     
       }
       else{
-        setpierad(150)
+        setpierad(100)
       }
     fun()
     window.addEventListener('resize' , fun)
@@ -43,15 +43,15 @@ export default function Component() {
       window.removeEventListener('resize' , fun)
     }
     }
-    },[window.innerWidth])
+    },[])
   return (
-    <Card className=" md:py-10  ">
+    <Card className=" md:py-20 ">
       <CardHeader className="items-center pb-0">
         
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
-          className="mx-auto  max-h-[90%] "
+          className="mx-auto my- max-h-[90%] "
           config={{}}
         >
           <PieChart>
@@ -64,7 +64,8 @@ export default function Component() {
               nameKey="category"
               cx="50%"
               cy="50%"
-              outerRadius={pierad}
+              outerRadius={100}
+              style={{stroke: "none"}}
               // className="md:"
               labelLine={false}
               label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {

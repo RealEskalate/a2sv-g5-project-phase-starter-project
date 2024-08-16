@@ -21,13 +21,15 @@ const CardStatistics = () => {
 	}, []);
 
 	return (
-		<div className="statics pl-5 p">
-			<div className="p-2 font-semibold text-blue-900">
+		<div className="statics ">
+			<div className="p-4 pl-5 font-semibold text-blue-900">
 				Card Expense Statistics
 			</div>
-			<div className="w-80 bg-white rounded-2xl pb-5">
-				<div className="flex justify-center p-4">
-					<DonutChart data={chartData} />
+			<div className="pl-4">
+				<div className="w-80 bg-white rounded-2xl pb-8 ">
+					<div className="flex justify-center ">
+						<DonutChart data={chartData} />
+					</div>
 				</div>
 			</div>
 		</div>

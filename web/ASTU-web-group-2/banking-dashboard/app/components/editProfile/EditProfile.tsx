@@ -1,7 +1,8 @@
-'use client';
-import React, { useState } from 'react';
-import FormComponent from './FormComponent'; // Adjust the import path as necessary
-import YourFormComponent from './Preference';
+"use client";
+import React, { useState } from "react";
+import FormComponent from "./FormComponent"; // Adjust the import path as necessary
+import YourFormComponent from "./Preference";
+import ProfileSecurity from "../profileSecurity/profileSecurity";
 
 interface Preference {
   currency: string;
@@ -83,9 +84,8 @@ const EditProfile = () => {
           <FormComponent setMainData={setMainData} mainData={mainData} />
         )}
 
-          
-          {activeTab == 1 && <YourFormComponent/>}
-        
+        {activeTab == 1 && <YourFormComponent />}
+        {activeTab == 2 && <ProfileSecurity />}
       </div>
     </div>
   );

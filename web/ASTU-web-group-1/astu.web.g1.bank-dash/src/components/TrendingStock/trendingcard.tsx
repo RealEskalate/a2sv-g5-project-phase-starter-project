@@ -14,14 +14,15 @@ const Trendingcard = ({
   Color: boolean;
 }) => {
   return (
-    <tr className="">
-      <td className="font-[400] font-Inter text-sm py-1.5 px-1">{No}</td>
-      <td className="font-[400] font-Inter text-sm py-1.5 px-1 truncate">
+    <tr>
+      <td className="font-[400] font-Inter text-sm py-1.5 pl-4">{No}</td>
+      <td className="font-[400] font-Inter text-sm py-1.5 pl-4 truncate">
         {Name}
       </td>
-      <td className="font-[400] font-Inter text-sm py-1.5 px-1">{price}</td>
+      <td className="font-[400] font-Inter text-sm py-1.5 pl-4 truncate">{price}</td>
       <td
-        className={`font-[500] py-1.5 px-1 text-16px ${
+        className={`font-[500] py-1.5 pl-4 truncate text-16px ${
+
           Color ? "text-mintGreen" : "text-candyPink"
         }`}
       >

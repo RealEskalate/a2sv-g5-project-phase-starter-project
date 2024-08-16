@@ -8,6 +8,7 @@ type User struct {
 	LastName  string `json:"last_name"`
 	Password  string `json:"password"`
 	IsAdmin   bool   `json:"is_admin"`
+	IsActive  bool   `json:"is_active"`
 }
 type UserFilter struct {
 	UserId    string

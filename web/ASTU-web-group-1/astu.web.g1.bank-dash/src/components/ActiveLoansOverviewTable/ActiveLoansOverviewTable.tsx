@@ -73,7 +73,7 @@ const ActiveLoansOverviewTable = () => {
               <th scope="col" className="hidden min-[900px]:table-cell pb-2">
                 Interest rate
               </th>
-              <th scope="col" className="hidden md:table-cell pb-2">
+              <th scope="col" className="hidden min-[900px]:table-cell pb-2">
                 Installment
               </th>
               <th scope="col" className=" pb-2 w-fit">
@@ -94,10 +94,10 @@ const ActiveLoansOverviewTable = () => {
                 <td className="hidden min-[900px]:table-cell py-3">
                   {data["Interest rate"]}
                 </td>
-                <td className="hidden md:table-cell py-3">
+                <td className="hidden min-[900px]:table-cell py-3">
                   {data.Installment}
                 </td>
-                <td className="py-3 w-24 md:w-32">
+                <td className="py-3 w-24 md:w-32 ">
                   <TableButton text="Repay" classname="px-6" />
                 </td>
               </tr>

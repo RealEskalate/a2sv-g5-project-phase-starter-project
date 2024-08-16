@@ -114,7 +114,7 @@ function DebitCreditOverviewChart() {
             </div>
           </div>
           <div>
-            <div className="weekly-activity-chart lg:w-[670px]  lg:h-[309px] md:w-[417px] md:h-[240px] w-[325px] h-[204px] lg:mx-[30px] md:mx-[35px] mx-[12px]">
+            <div className="weekly-activity-chart lg:w-[700px]  lg:h-[309px] md:w-[417px] md:h-[240px] w-[325px] h-[204px] lg:mx-[30px] md:mx-[35px] mx-[12px]">
               <canvas ref={chartRef} />
             </div>
           </div>

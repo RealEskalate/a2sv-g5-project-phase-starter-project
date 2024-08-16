@@ -89,13 +89,10 @@ function MyExpenseChart() {
   }, []);
 
   return (
-    <div className="text-gray-500 border rounded-[22px] bg-white lg:w-[370px] px-[10px] lg:h-[225px] md:w-[251px] md:h-[170px] w-fit h-[214px]">
-      <div>
-        <div className="mt-8 expense-chart lg:w-[350px] lg:h-[225px] md:w-[231px] md:h-[170px] w-[325px] h-[214px]">
+    <div className="flex  flex-col flex-initial flex-wrap gap-[10px] bg-white drop-shadow-xl font-medium rounded-[25px] h-[225px] pt-[45px]">
           <canvas ref={chartRef} />
-        </div>
-      </div>
-    </div>
+     </div>
+
   );
 }
 

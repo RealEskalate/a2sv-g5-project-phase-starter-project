@@ -6,6 +6,8 @@ import MyCard from "@/components/MyCard/MyCard";
 import QuickTransfer from "@/components/QuickTransfer/QuickTransfer";
 import RecentTransaction from "@/components/RecentTransaction/RecentTransaction";
 import { Plus } from "lucide-react";
+import StoreProvider from "@/providers/StoreProvider";
+import TestNaol from "@/components/TestNaol";
 
 export default function Home() {
   return (
@@ -18,8 +20,11 @@ export default function Home() {
               <p className="text-[#333B69] pb-3 font-semibold">See All</p>
             </div>
             <div className="flex  overflow-x-auto space-x-2">
-              <MyCard />
-              <MyCard />
+              <StoreProvider>
+                <MyCard />
+                <MyCard />
+                <TestNaol />
+              </StoreProvider>
               <div className="w-[295px] h-[175px] bg-gray-200 rounded-3xl justify-center items-center flex flex-shrink-0">
                 <Plus size={32} />
               </div>

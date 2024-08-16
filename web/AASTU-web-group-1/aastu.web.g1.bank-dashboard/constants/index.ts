@@ -46,3 +46,26 @@ export const sidebarLinks = [
         icon: '/icons/Settings.svg'
     }, 
 ]
+
+export const loanTypes =[
+    {
+        name: 'Personal Loans',
+        route: "",
+        icon: '/icons/PersonalLoan.svg'
+    },
+    {
+        name: 'Corporate Loans',
+        route:'',
+        icon: '/icons/CorporateLoan.svg'
+    },
+    {
+        name: 'Business Loans',
+        route: '',
+        icon: '/icons/BusinessLoan.svg'
+    },
+    {
+        name: 'Custom Loans',
+        route: '',
+        icon: '/icons/CustomLoan.svg'
+    },
+]

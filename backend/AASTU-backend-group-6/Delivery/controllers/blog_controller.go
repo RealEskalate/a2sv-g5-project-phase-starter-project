@@ -7,14 +7,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type BlogController struct {
+	BlogUsecase domain.BlogUsecase
+}
 
-func CreateBlogController(ctx *gin.Context) {
-	var post domain.Post
-	err := ctx.ShouldBind(&post)
-	if err != nil{
-		ctx.JSON(http.StatusBadRequest, domain.ErrorResponse{
-			Message: err.Error(),
-			Status: http.StatusBadRequest,
-		})
+func NewBlogController(BlogUsecase domain.BlogUsecase) *BlogController {
+	return &BlogController{
+		BlogUsecase: BlogUsecase,
 	}
 }
+func UpdateBlogController(c *gin.Context) {
+	id := c.Param("id")
+	fmt.Println(id)
+	var post domain.Blog
+	if err := c.ShouldBind(&post); err == nil {
+
+	}
+}
+

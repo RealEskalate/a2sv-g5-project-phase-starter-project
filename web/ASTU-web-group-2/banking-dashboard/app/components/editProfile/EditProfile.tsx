@@ -1,7 +1,8 @@
-'use client';
-import React, { useState } from 'react';
-import FormComponent from './FormComponent'; // Adjust the import path as necessary
-import YourFormComponent from './Preference';
+"use client";
+import React, { useState } from "react";
+import FormComponent from "./FormComponent"; // Adjust the import path as necessary
+import YourFormComponent from "./Preference";
+import ProfileSecurity from "../profileSecurity/profileSecurity";
 
 interface Preference {
   currency: string;
@@ -29,31 +30,31 @@ interface MainData {
 
 // Provide a default value that matches the MainData type
 const defaultMainData: MainData = {
-  name: '',
-  email: '',
+  name: "",
+  email: "",
   dateOfBirth: new Date().toISOString(),
-  permanentAddress: '',
-  postalCode: '',
-  username: '',
-  password: '',
-  presentAddress: '',
-  city: '',
-  country: '',
-  profilePicture: '',
+  permanentAddress: "",
+  postalCode: "",
+  username: "",
+  password: "",
+  presentAddress: "",
+  city: "",
+  country: "",
+  profilePicture: "",
   preference: {
-    currency: '',
+    currency: "",
     sentOrReceiveDigitalCurrency: true,
     receiveMerchantOrder: true,
     accountRecommendations: true,
-    timeZone: '',
+    timeZone: "",
     twoFactorAuthentication: true,
-  }
+  },
 };
 
 const EditProfile = () => {
   const [activeTab, setActiveTab] = useState<number>(0);
-  const tabs = ['Edit Profile', 'Preferences', 'Security'];
-  const [mainData, setMainData] = useState<MainData>(defaultMainData); 
+  const tabs = ["Edit Profile", "Preferences", "Security"];
+  const [mainData, setMainData] = useState<MainData>(defaultMainData);
 
   return (
     <div className="flex flex-col items-center p-6 ">
@@ -63,7 +64,11 @@ const EditProfile = () => {
             {tabs.map((tab, index) => (
               <li
                 key={index}
-                className={`cursor-pointer p-2 font-[500] text-[16px] ${activeTab === index ? 'text-blue-700 font-bold' : 'text-[#718EBF]'}`}
+                className={`cursor-pointer p-2 font-[500] text-[16px] ${
+                  activeTab === index
+                    ? "text-blue-700 font-bold"
+                    : "text-[#718EBF]"
+                }`}
                 onClick={() => setActiveTab(index)}
               >
                 {tab}
@@ -75,18 +80,16 @@ const EditProfile = () => {
             style={{ transform: `translateX(${activeTab * 100}%)` }}
           />
         </div>
-        {activeTab == 0&&<FormComponent 
-        setMainData = {setMainData}
-        mainData = {mainData}
-        />}
+        {activeTab == 0 && (
+          <FormComponent setMainData={setMainData} mainData={mainData} />
+        )}
 
-          
-          {activeTab == 1 && <YourFormComponent/>}
-        
+        {activeTab == 1 && <YourFormComponent />}
+        {activeTab == 2 && <ProfileSecurity />}
       </div>
     </div>
   );
 };
 
 export default EditProfile;
-export type {MainData}
+export type { MainData };

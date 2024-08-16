@@ -1,0 +1,51 @@
+Entities:
+    blog:
+        attributes:
+            blogid
+            title
+            content
+            tags
+            created date
+            updated date
+            liked by
+            disliked by 
+            count
+        filter:
+            tag, author, date
+        sort:
+            likes, date, dislike
+
+    user:
+        user name 
+        first name 
+        second name 
+        email
+        password
+        userid
+        token
+        refresh token 
+        isAdmin
+        Created at 
+        updated at 
+
+
+    comment:
+        attribute:
+            content 
+            user id 
+            blog id 
+    
+    reaction:
+        attribute:
+            blog id
+            user id 
+            type 
+
+    
+
+
+AI
+
+
+performance scalablity 
+

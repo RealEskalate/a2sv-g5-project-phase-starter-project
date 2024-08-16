@@ -90,7 +90,7 @@ function YearlyTotalInvestment() {
   }, []);
 
   return (
-    <div className="text-gray-500 border rounded-[22px] bg-white lg:w-[370px] px-[10px] lg:h-[225px] md:w-[251px] md:h-[170px] w-fit h-[214px]">
+    <div className="text-gray-500 border rounded-[22px] bg-white p-2">
       <div>
         <div className="mt-8 expense-chart lg:w-[350px] lg:h-[225px] md:w-[231px] md:h-[170px] w-[325px] h-[214px]">
           <canvas ref={chartRef} />

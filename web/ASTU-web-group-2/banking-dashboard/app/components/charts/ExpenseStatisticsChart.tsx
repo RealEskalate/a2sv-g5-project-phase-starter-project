@@ -88,10 +88,12 @@ ${label}`;
   }, []);
 
   return (
-    <div className='w-[350px] h-[350px] bg-white shadow-xl p-4 rounded-3xl'>
+    <div className='bg-white shadow-xl rounded-3xl'>
+
       <canvas ref={canvasRef} />
     </div>
   );
 };
 
 export default ExpenseStatisticsChart;
+

@@ -51,7 +51,7 @@ type UserRespositoryTestSuite struct {
 
 func (suite *UserRespositoryTestSuite) SetupSuite() {
 	suite.coll = &mongomocks.Collection{}
-	suite.userRepository = NewUserRepository(suite.coll)
+	suite.userRepository = NewUserTestRepository(suite.coll)
 }
 
 func (suite *UserRespositoryTestSuite) TearDownSuite() {
@@ -132,7 +132,9 @@ func (suite *UserRespositoryTestSuite) TestUpdate() {
 		*arg = expectedUser
 	}).Return(nil)
 	suite.coll.On("FindOne", mock.Anything, bson.D{{"id", expectedUser.ID}}, mock.Anything).Return(singleResult)
-	updatedUser, err := suite.userRepository.Update(expectedUser.ID, expectedUser)
+	updateData := domain.User{Password: "New password", IsAdmin: false}
+	expectedUser.Password = updateData.Password
+	updatedUser, err := suite.userRepository.Update(expectedUser.ID, updateData)
 	assert.Nil(err)
 	assert.Equal(expectedUser, updatedUser)
 }

@@ -23,9 +23,8 @@ const AccountsPage = () => {
             title="Credit Cards"
             button="See All"
             link="/credit-cards"
-            className="max-w-[350px] lg:mx-auto h-auto"
+            className="fflex flex-col"
           >
-            <div className="">
               <CreditCard
                 balance={1250}
                 cardHolder="John Doe"
@@ -33,7 +32,6 @@ const AccountsPage = () => {
                 cardNumber="1234 5678 9012 3456"
                 cardType="primary" // Can be "primary", "secondary", or "tertiary"
               />
-            </div>
           </CardForCreditCards>
         </div>
       </div>

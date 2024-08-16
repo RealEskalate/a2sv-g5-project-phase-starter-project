@@ -3,6 +3,7 @@ import CardForCreditCards from "../components/card/CardForCreditCards";
 import CreditCard from "../components/creditCard/CreditCard";
 import Card from "../components/card/Card";
 import MyExpenseChart from "../components/charts/MyExpenseChart";
+import TransactionsDisplay from "../components/transactionsDisplay/TransactionsDisplay";
 
 const TransactionPage = () => {
   return (
@@ -34,13 +35,17 @@ const TransactionPage = () => {
             </div>
           </div>
         </CardForCreditCards>
-        <Card
-          title="My Expense"
-          className="max-w-[350px] lg:mx-auto h-auto"
-        >
+        <Card title="My Expense" className="max-w-[350px] lg:mx-auto h-auto">
           <MyExpenseChart />
         </Card>
       </div>
+     
+        <Card
+          title="Recent Transactions"
+          className="flex flex-col max-sm:w-fit"
+        >
+          <TransactionsDisplay />
+        </Card>
     </div>
   );
 };

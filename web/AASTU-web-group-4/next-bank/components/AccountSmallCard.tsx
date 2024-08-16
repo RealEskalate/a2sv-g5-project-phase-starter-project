@@ -1,7 +1,5 @@
-// import Image from 'next/image';
-import { TbMoneybag } from "react-icons/tb";
-
 import Image from 'next/image';
+import { TbMoneybag } from "react-icons/tb";
 
 const BalanceCard = () => {
   return (

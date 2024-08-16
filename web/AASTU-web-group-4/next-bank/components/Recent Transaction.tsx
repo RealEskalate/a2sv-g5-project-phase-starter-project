@@ -10,7 +10,7 @@ const RecentTransaction = ({icon , color ,colortext , name , date ,amount}:{
     amount:string
 }) => {
   return (
-    <div className= "">
+    <div className= " ">
       <div className={`${colors.white} `}>
           <div className=''>
             <div className='flex  p-2 justify-between w-screen md:w-auto'>

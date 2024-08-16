@@ -1,15 +1,6 @@
 import React from "react";
-import CardBox from "../cardBox/page";
-
-interface CardData {
-  cardType: string;
-  bank: string;
-  detailsLink: string;
-  svgColor: string;
-  svgBgColor: string;
-  cardNumber: string;
-  NamainCard: string;
-}
+import { CardData } from "@/types/cardData";
+import CardBox from "@/app/components/cardBox";
 
 const CardListPage = () => {
   const cardData: CardData[] = [
@@ -43,7 +34,7 @@ const CardListPage = () => {
   ];
 
   return (
-    <div className="card-list-container  md:flex md:flex-col ">
+    <div className="card-list-container  ">
       {cardData.map((card, index) => (
         <CardBox
           key={index}

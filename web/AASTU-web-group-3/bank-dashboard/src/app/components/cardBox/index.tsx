@@ -1,17 +1,15 @@
-"use client";
 import Link from "next/link";
-import React from "react";
+import { CardData } from "@/types/cardData";
 
-interface CardBoxProps {
-  cardType: string;
-  bank: string;
-  detailsLink: string;
-  svgColor: string;
-  svgBgColor: string;
-  cardNumber: string,
-  NamainCard: string,
-}
-const CardBox = ({ cardType, bank, detailsLink, svgColor  , svgBgColor,cardNumber,NamainCard}: CardBoxProps) => {
+export default function CardBox({
+  cardType,
+  bank,
+  cardNumber,
+  NamainCard,
+  detailsLink,
+  svgBgColor,
+  svgColor,
+}: CardData) {
   return (
     <div className="body flex  md:w-auto w-auto h-auto p-2 border-[1px] rounded-[10px] m-2 bg-white">
       <div className="left">
@@ -72,7 +70,7 @@ const CardBox = ({ cardType, bank, detailsLink, svgColor  , svgBgColor,cardNumbe
         </div>
         <div>
           <Link
-            href={(detailsLink = "detailsLink")}
+            href={detailsLink}
             className="font-normal text-[11px] text-[#1814F3]"
           >
             View Details
@@ -81,6 +79,4 @@ const CardBox = ({ cardType, bank, detailsLink, svgColor  , svgBgColor,cardNumbe
       </div>
     </div>
   );
-};
-
-export default CardBox;
+}

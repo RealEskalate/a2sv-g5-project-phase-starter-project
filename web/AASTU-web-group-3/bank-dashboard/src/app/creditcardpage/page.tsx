@@ -1,36 +1,73 @@
 "use client";
 import Image from "next/image";
-import DoughnutChart from "../components/charts/Doughnut/page";
+import DoughnutChart from "../components/Chart/Doughnut";
 import React from "react";
 import CardListPage from "../components/cardList/CardList";
+import CreditCard from "../components/CreditCard";
 
 const creditCardPage = () => {
   return (
-    <div className="body bg-[#F5F7FA] w-full h-full overflow-y-auto pb-5">
-      {/* <div className="nav w-[375px] h-[140px]  bg-white rounded-[15px]  ">
-        Navigation bar
-      </div> */}
-      <div className="p-5 font-semibold text-[16px] leading-[19.36px] text-[#343C6A]">
-        My Cards
+    <div className="body bg-[#F5F7FA] w-full h-full overflow-y-auto pb-5 m-0">
+      <div className="cards m-2 bg-[#F5F7FA]  p-1">
+        <div className="credit-card-info flex  px-4 h-20 items-center">
+          <h1 className="font-semibold text-[#343C6A] text-[16px] md:text-[22px] ml-4">
+            My cards
+          </h1>
+        </div>
+
+        <div className="creditcards  flex justify-between gap-5 lg:flex-row overflow-x-auto overflow-y-hidden no-scrollbar  h-56  lg:justify-between lg:px-4 ">
+          <div className="credit-card min-w-72 max-w-88 flex-shrink-0 ">
+            <CreditCard
+              name="Abenezer M"
+              balance="$5,756"
+              cardNumber="3778 **** **** 1234"
+              validDate="11/15"
+              backgroundImg="bg-[linear-gradient(107.38deg,#2D60FF_2.61%,#539BFF_101.2%)]"
+              textColor="text-white"
+            />
+          </div>
+
+          <div className="credit-card min-w-72 max-w-96 flex-shrink-0 ">
+            <CreditCard
+              name="Abeni W"
+              balance="$5,756"
+              cardNumber="3778 **** **** 1234"
+              validDate="11/15"
+              backgroundImg="bg-[linear-gradient(107.38deg,#4C49ED_2.61%,#0A06F4_101.2%)]"
+              textColor="text-white"
+            />
+          </div>
+
+          <div className="credit-card min-w-72 max-w-88 flex-shrink-0">
+            <CreditCard
+              name="Abeni M"
+              balance="$5,756"
+              cardNumber="3778 **** **** 1234"
+              validDate="11/15"
+              backgroundImg="bg-white"
+              textColor="text-black"
+            />
+          </div>
+
+          {/* Add more cards here if needed */}
+        </div>
       </div>
-      <div className=" h-44 border-2 p-5  bg-white rounded-[15px] mx-5">
-        My card import here
-      </div>
+
       <div className="statandlist md:flex">
-        <div className="md:w-[35%]">
-          <p className=" p-4 font-semibold text-[16px] leading-[19.36px] text-[#343C6A] mx-2">
+        <div className="md:w-[30%] md:mx-4">
+          <p className="p-4 font-semibold text-[16px] leading-[19.36px] text-[#343C6A] mx-2">
             Card Expense Statistics
           </p>
-          <div className="piechart md:w-auto md:h-auto flex justify-center  md:ml-5 md:px-0 border-[1px] w-auto h-[300px] bg-white rounded-[15px] mx-5  px-8">
+          <div className="piechart flex md:h-[230px] md:mx-2 items-center h-auto bg-white rounded-[15px] mx-5 px-8">
             <DoughnutChart />
           </div>
         </div>
 
-        <div className="md:w-[65%] md:mr-3  ">
-          <p className="p-4 md:pb-2 md:mx-0 font-semibold text-[16px] leading-[19.36px] text-[#343C6A] mx-2 ">
+        <div className="md:w-[70%]">
+          <p className="p-4 md:pb-2 font-semibold text-[16px] leading-[19.36px] text-[#343C6A] mx-2">
             Card List
           </p>
-          <div className="cardList md:mx-0 w-auto h-auto  mx-4 ">
+          <div className="cardList w-auto h-auto mx-4 md:mx-0">
             <CardListPage />
           </div>
         </div>

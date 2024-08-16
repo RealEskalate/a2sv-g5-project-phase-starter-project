@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { BarChartComponent } from "./components/BarChartComponent";
 import { TableComponent } from "./components/TableComponent";
-import { Card } from "../components/common/card";
+import  CreditCardComponent from "../CreditCards/CreditCardComponent";
 import dummyData from "./components/dummyData"; // Adjust the path as needed
 import columns from "./components/columns"; // Adjust the path as needed
 import TableCard from "./components/TableComponentMobile"; // Adjust the path as needed
@@ -28,8 +28,8 @@ const Transactions: React.FC = () => {
             </button>
           </div>
           {/* <CardsComponent /> */}
-          <p><Card/></p>
-          <p><Card/></p>
+					<CreditCardComponent/>
+          <p><CreditCardComponent/></p>
         </div>
         <div className="flex-1 lg:w-2/5">
           <h2 className="text-lg font-semibold mb-4 font-Inter text-[#343C6A]">

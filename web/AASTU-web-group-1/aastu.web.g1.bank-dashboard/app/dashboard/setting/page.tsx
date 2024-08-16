@@ -1,34 +1,25 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Link from "next/link";
-import React from "react";
 import EditProfile from "./component/EditProfile";
 import Preferences from "./component/Preferences";
 import Security from "./component/Security";
 
 const Setting = () => {
   return (
-    <div className="flex items-center justify-center h-full">
-      <Tabs defaultValue="editProfile" className="w-[400px] bg-white">
-        <TabsList className="bg-transparent p-12">
-          <TabsTrigger
-            value="editProfile"
-            className="data-[state=active]:border-b-primaryBlue data-[state=active]:border-b-4 data-[state=active]:text-primaryBlue bg-gray-100 text-gray-800 bg-transparent pb-4 px-5"
-          >
+    <div className="flex w-full mt-5 md:ml-5">
+      <Tabs
+        defaultValue="editProfile"
+        className="w-full max-w-full md:max-w-[900px] bg-white p-4 rounded-2xl"
+      >
+        <TabsList className="bg-transparent md:p-12">
+          <TabsTrigger value="editProfile" className="tabs">
             Edit Profile
           </TabsTrigger>
-          <TabsTrigger
-            value="Preferences"
-            className="data-[state=active]:border-b-primaryBlue data-[state=active]:border-b-4 data-[state=active]:text-primaryBlue bg-gray-100 text-gray-800 bg-transparent pb-4 px-5"
-          >
+          <TabsTrigger value="Preferences" className="tabs">
             Preferences
           </TabsTrigger>
-          <TabsTrigger
-            value="security"
-            className="data-[state=active]:border-b-primaryBlue data-[state=active]:border-b-4 data-[state=active]:text-primaryBlue bg-gray-100 text-gray-800 bg-transparent pb-4 px-5"
-          >
+          <TabsTrigger value="security" className="tabs">
             Security
           </TabsTrigger>
-          <hr />
         </TabsList>
         <TabsContent value="editProfile">
           <EditProfile />

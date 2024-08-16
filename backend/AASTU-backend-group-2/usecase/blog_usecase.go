@@ -6,8 +6,6 @@ import (
 
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
 )
 
 type BlogUsecase struct {
@@ -24,30 +22,29 @@ func NewBlogUsecase(blogrepo domain.BlogRepository, timeout time.Duration) domai
 }
 
 func (br *BlogUsecase) CreateBlog(c context.Context, blog domain.Blog) error {
-	br.BlogRepo.CreateBlog(blog)
-	return nil
+	_, cancel := context.WithTimeout(c, br.contextTimeout)
+	defer cancel()
+	return br.BlogRepo.CreateBlog(blog)
 }
 
 func (br *BlogUsecase) RetrieveBlog(c context.Context, page int) ([]domain.Blog, error) {
+	_, cancel := context.WithTimeout(c, br.contextTimeout)
+	defer cancel()
+
 	return br.BlogRepo.RetrieveBlog(page)
 }
 
 func (br *BlogUsecase) UpdateBlog(c context.Context, updatedblog domain.Blog, blogID string) error {
-	err := br.BlogRepo.UpdateBlog(updatedblog, blogID)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	_, cancel := context.WithTimeout(c, br.contextTimeout)
+	defer cancel()
+	return br.BlogRepo.UpdateBlog(updatedblog, blogID)
 }
 
 func (br *BlogUsecase) DeleteBlog(c context.Context, blogID string) error {
-	err := br.BlogRepo.DeleteBlog(blogID)
-	if err != nil {
-		return err
-	}
+	_, cancel := context.WithTimeout(c, br.contextTimeout)
+	defer cancel()
+	return br.BlogRepo.DeleteBlog(blogID)
 
-	return nil
 }
 
 func (br *BlogUsecase) SearchBlog(c context.Context, name string, author string) ([]domain.Blog, error) {

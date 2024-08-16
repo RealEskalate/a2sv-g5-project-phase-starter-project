@@ -1,0 +1,5 @@
+database:
+  username: <your-database-username> 
+  password: <your-database-password> 
+  uri: <your-database-uri>
+

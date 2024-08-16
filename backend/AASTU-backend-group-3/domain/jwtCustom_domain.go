@@ -3,8 +3,8 @@ package domain
 import (
 	"time"
 
+	"github.com/golang-jwt/jwt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-
 )
 
 type Token struct {
@@ -17,14 +17,14 @@ type Token struct {
 	UpdatedAt    time.Time          `bson:"updated_at" json:"updatedAt"`
 }
 
-// type JwtCustomClaims struct {
-// 	Authorized bool   `json:"authorized"`
-// 	UserID     string `json:"user_id"`
-// 	Role       string `json:"role"`
-// 	Username   string `json:"username"`
+type JwtCustomClaims struct {
+	Authorized bool   `json:"authorized"`
+	UserID     string `json:"user_id"`
+	Role       string `json:"role"`
+	Username   string `json:"username"`
 
-// 	jwt.StandardClaims
-// }
+	jwt.StandardClaims
+}
 
 // type JwtCustomClaimsInterface interface {
 // 	Authorized() bool

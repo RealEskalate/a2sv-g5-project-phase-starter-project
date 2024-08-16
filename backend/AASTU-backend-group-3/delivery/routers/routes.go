@@ -8,13 +8,21 @@ import (
 func SetupRouter() *gin.Engine {
     router := gin.Default()
 
-    // Public Routes
-
+  
+    // auth routes
     SetUpAuth(router)
-    SetPublicRoutes(router)
-    SetUpUser(router)
-    SetUpAdmin(router)
-    SetUpAi(router)
+
+    // // public routes
+    // SetPublicRoutes(router)
+
+    // // user routes
+    // SetUpUser(router)
+
+    // // Admin routes
+    // SetUpAdmin(router)
+
+    // // Ai routes
+    // SetUpAi(router)
    
 
 

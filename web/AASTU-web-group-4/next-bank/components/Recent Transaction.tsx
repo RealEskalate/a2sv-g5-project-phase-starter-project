@@ -10,10 +10,10 @@ const RecentTransaction = ({icon , color ,colortext , name , date ,amount}:{
     amount:string
 }) => {
   return (
-    <div className= " ">
-      <div className={`${colors.white} `}>
+    <div className= "max-w-auto">
+      <div className={`${colors.white} max-w-auto`}>
           <div className=''>
-            <div className='flex  p-2 justify-between w-screen md:w-auto'>
+            <div className='flex p-2 justify-between w-auto md:w-auto'>
               <div className=' flex gap-4'>
                   <div className={`${color} rounded-full flex items-center justify-center p-4 h-20 w-20  `}>
                       <Image

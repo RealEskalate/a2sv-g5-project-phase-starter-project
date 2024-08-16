@@ -2,7 +2,7 @@ import React from "react";
 
 export const InputLabel = ({ label }: { label: string }) => {
   return (
-    <label htmlFor="" className="text-sm">
+    <label htmlFor="" className="text-sm lg:text-base">
       {label}
     </label>
   );
@@ -25,7 +25,7 @@ const AddCardForm = () => {
             <input
               type="text"
               placeholder="Classic"
-              className="border px-3 py-3 rounded-xl lg:w-80 text-xs"
+              className="border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base"
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -34,7 +34,7 @@ const AddCardForm = () => {
             <input
               type="text"
               placeholder="My Cards"
-              className="border px-3 py-3 rounded-xl lg:w-80 text-xs"
+              className="border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base"
             />
           </div>
         </div>
@@ -45,7 +45,7 @@ const AddCardForm = () => {
             <input
               type="number"
               placeholder="27,000$"
-              className="border px-3 py-3 rounded-xl lg:w-80 text-xs"
+              className="border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base"
             />
           </div>
           <div className="flex flex-col gap-2 w-full md:w-auto">
@@ -54,7 +54,7 @@ const AddCardForm = () => {
             <input
               type="date"
               placeholder="27,000$"
-              className="border px-3 py-3 rounded-xl w-full md:w-40 lg:w-80 text-xs"
+              className="border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base"
             />
           </div>
         </div>

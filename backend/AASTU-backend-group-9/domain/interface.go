@@ -62,4 +62,6 @@ type TokenRepository interface {
 type OTPRepository interface {
 	GetOTPByEmail(ctx context.Context, email string) (*OTP, error)
 	SaveOTP(c context.Context, otp *OTP) error
-}
+
+type LogoutUsecase interface {
+	Logout(ctx context.Context, refreshToken string) error

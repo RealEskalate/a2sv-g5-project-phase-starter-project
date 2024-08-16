@@ -29,7 +29,8 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export default function Component() {
+
+export default function LineChart() {
   return (
     <Card >
       <CardHeader>

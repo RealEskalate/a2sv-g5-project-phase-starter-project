@@ -9,7 +9,8 @@ import { text } from "stream/consumers";
 import BarChart from "@/components/BarChart";
 import PieChart from "@/components/PieChart";
 import QuickTransfer from "@/components/QuickTransfer";
-import LineChart from "@/components/Linechart";
+import LineChart from "@/components/LineChart";
+
 
 
 const page = () => {

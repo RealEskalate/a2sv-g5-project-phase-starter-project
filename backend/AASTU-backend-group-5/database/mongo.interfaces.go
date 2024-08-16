@@ -12,6 +12,7 @@ type CollectionInterface interface {
 	InsertOne(context.Context, interface{}, ...*options.InsertOneOptions) (*mongo.InsertOneResult, error)
 	UpdateOne(context.Context, interface{}, interface{}, ...*options.UpdateOptions) (*mongo.UpdateResult, error)
 	DeleteOne(context.Context, interface{}, ...*options.DeleteOptions) (DeleteResultInterface, error)
+	FindOneAndUpdate(ctx context.Context, filter interface{},update interface{}, opts ...*options.FindOneAndUpdateOptions) SingleResultInterface
 	Indexes() IndexView
 }
 
@@ -32,4 +33,8 @@ type SingleResultInterface interface {
 type DeleteResultInterface interface {
 	DeletedCount() int64
 }
+
+
+
+
 

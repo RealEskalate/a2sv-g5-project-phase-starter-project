@@ -11,7 +11,7 @@ const Sidebar = () => {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <div className="py-6 px-5 flex flex-col gap-8 absolute left-0 border-r border-r-[#E6EFF5] bg-white">
+    <div className="py-6 px-5 flex flex-col gap-8 border-r border-r-[#E6EFF5] bg-white">
       <div className="flex gap-2">
         <Image src="/assets/logo.svg" alt="logo" width={36} height={36} />
         <h1 className="text-3xl font-bold text-[#343C6A]">BankDash</h1>

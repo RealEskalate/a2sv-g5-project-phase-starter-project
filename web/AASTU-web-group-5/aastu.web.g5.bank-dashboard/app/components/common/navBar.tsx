@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaSearch, FaBars, FaTimes } from "react-icons/fa";
-import seetings from "/public/assets/icons/group417.png";
-import notification from "/public/assets/icons/group418.png";
+import seetings from "/public/assets/icons/Group417.png";
+import notification from "/public/assets/icons/Group418.png";
 import person from "/public/assets/icons/MaskGroup.png";
 import magnifying from "/public/assets/icons/magnifying-glass.png";
 import Image from "next/image";

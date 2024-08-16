@@ -25,27 +25,27 @@ func NewUserRepository(c mongoifc.Collection) domain.UserRepository {
 }
 
 func (repo *userRepository) Get(opts domain.UserFilterOption) ([]domain.User, error) {
-	if opts.Username != "" {
+	if opts.Filter.Username != "" {
 		var user domain.User
-		err := repo.collection.FindOne(context.TODO(), bson.D{{"username", opts.Username}}).Decode(&user)
+		err := repo.collection.FindOne(context.TODO(), bson.D{{"username", opts.Filter.Username}}).Decode(&user)
 		if err != nil {
 			return []domain.User{}, err
 		}
 		return []domain.User{user}, nil
-	} else if opts.Email != "" {
+	} else if opts.Filter.Email != "" {
 		var user domain.User
-		err := repo.collection.FindOne(context.TODO(), bson.D{{"email", opts.Email}}).Decode(&user)
+		err := repo.collection.FindOne(context.TODO(), bson.D{{"email", opts.Filter.Email}}).Decode(&user)
 		if err != nil {
 			return []domain.User{}, err
 		}
 		return []domain.User{user}, nil
-	} else if opts.UserID != "" {
+	} else if opts.Filter.UserId != "" {
 		var user domain.User
-		err := repo.collection.FindOne(context.TODO(), bson.D{{"id", opts.UserID}}).Decode(&user)
+		err := repo.collection.FindOne(context.TODO(), bson.D{{"id", opts.Filter.UserId}}).Decode(&user)
 		if err != nil {
 			return []domain.User{}, err
 		}
-		user.ID = opts.UserID
+		user.ID = opts.Filter.UserId
 		return []domain.User{user}, nil
 	}
 	cur, err := repo.collection.Find(context.TODO(), bson.D{{}}, options.Find())

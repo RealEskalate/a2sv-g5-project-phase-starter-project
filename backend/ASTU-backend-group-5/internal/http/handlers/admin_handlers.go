@@ -56,7 +56,7 @@ func (h *UserHandler) AdminRemoveUser(c *gin.Context){
 
 }
 
-func (h *UserHandler) Promote(c *gin.Context){
+func (h *UserHandler) PromoteToAdmin(c *gin.Context){
 	id, ok := c.Request.Context().Value("id").(string)
 
 	if !ok{

@@ -14,20 +14,20 @@ const AccountInformationCard = ({
   color,
 }: AccountInformationProps) => {
   const ImageContainerSize = {
-    width: "clamp(45px, 8vw + 15px, 70px)",
-    height: "clamp(45px, 8vw + 15px, 70px)",
+    width: "clamp(45px, 6vw + 15px, 55px)",
+    height: "clamp(45px, 6vw + 15px, 55px)",
   };
 
   const imageSize = {
-    width: "clamp(15px, 3vw + 5px, 30px)",
-    height: "clamp(15px, 3vw + 5px, 30px)",
+    width: "clamp(25px, 2.5vw + 2px, 30px)",
+    height: "clamp(25px, 2.5vw + 2px, 30px)",
   };
 
   return (
     <div className=" flex items-center justify-center w-full py-4 p-2 rounded-[25px] bg-white sm:min-w-[200px]">
       <div
         style={ImageContainerSize}
-        className={`flex ${color} rounded-full items-center justify-center`}
+        className={`flex ${color} rounded-full items-center justify-center flex-shrink-0`}
       >
         <img
           src={image}
@@ -40,15 +40,15 @@ const AccountInformationCard = ({
         <p
           style={{
             color: "#718EBF",
-            fontSize: "clamp(0.75rem, 0.875rem + 0.4vw, .5rem)",
+            fontSize: "clamp(0.95rem, 0.9rem + 0.5vw, .8rem)",
           }}
           className="md:text-[16px]"
         >
           {name}
         </p>
         <h1
-          style={{ fontSize: "clamp(16px, 2vw + 4px, 30px)" }}
-          className="text-[16px] md:text-[25px] font-medium"
+          // style={{ fontSize: "clamp(16px, 2vw + 4px, 30px)" }}
+          className="text-xl md:text-2xl font-medium"
         >
           ${balance}
         </h1>

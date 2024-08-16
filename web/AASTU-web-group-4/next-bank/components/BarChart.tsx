@@ -1,53 +1,65 @@
-'use client'
-import React from 'react';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+"use client"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart"
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+const chartData = [
+  { month: "January", desktop: 186, mobile: 80 },
+  { month: "February", desktop: 305, mobile: 200 },
+  { month: "March", desktop: 237, mobile: 120 },
+  { month: "April", desktop: 73, mobile: 190 },
+  { month: "May", desktop: 209, mobile: 130 },
+  { month: "June", desktop: 214, mobile: 140 },
+]
 
-const BarChart = () => {
-    const dummyData = {
-        labels: ["2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03"],
-        datasets: [
-          {
-            label: "Monthly Balance",
-            data: [1500, 1750, 1600, 1800, 1700, 1900],
-            backgroundColor: "rgba(24, 20, 243, 0.2)", // 20% opacity
-            borderColor: "#1814F3", // Original color for the border
-            borderWidth: 1,
-            borderRadius: 10, // Rounded bars
-            barThickness: 10, // Bar thickness
-          },
-          {
-            label: "Balance",
-            data: [1500, 1750, 1600, 1800, 1700, 1900],
-            backgroundColor: "rgba(10, 200, 243, 0.2)", // 20% opacity
-            borderColor: "#1814F3", // Original color for the border
-            borderWidth: 1,
-            borderRadius: 10, // Rounded bars
-            barThickness: 10, // Bar thickness
-          },
-        ],
-      };
-      
-      const options = {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "top" as const,
-          },
-        },
-        scales: {
-          x: {
-            stacked: false,
-          },
-          y: {
-            beginAtZero: true,
-          },
-        },
-      };
+const chartConfig = {
+  desktop: {
+    label: "Desktop",
+    color: "#16DBCC",
+  },
+  mobile: {
+    label: "Mobile",
+    color: "#1814F3",
+  },
+} satisfies ChartConfig
 
-    return <Bar data={dummyData} options={options} />;
-};
-
-export default BarChart;
+export default function Component() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Weekly Activity</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig}>
+          <BarChart accessibilityLayer data={chartData}>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="month"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={true}
+              tickFormatter={(value) => value.slice(0, 3)}
+            />
+            <YAxis axisLine={true} tickLine={false} />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent indicator="dashed" />}
+            />
+            <Bar dataKey="desktop" fill={chartConfig.desktop.color} radius={[20,20,0,0]} />
+            <Bar dataKey="mobile" fill={chartConfig.mobile.color} radius={[20,20,0,0]} />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  )
+}

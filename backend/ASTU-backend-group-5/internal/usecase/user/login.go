@@ -14,6 +14,9 @@ func (u *UserUsecase) Login(email, password string) (*domain.User, *domain.Token
 	if err != nil {
 		return nil, nil, err
 	}
+	if user == nil {
+		return nil, nil, errors.New("invalid credentials")
+	}
 
 	if !hash.CheckPasswordHash(password, user.Password) {
 		return nil, nil, errors.New("invalid credentials")

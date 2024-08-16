@@ -37,7 +37,7 @@ const LoanTable = () => {
 								<th className="p-2 font-medium hidden sm:table-cell">
 									Installment
 								</th>
-								<th className="p-2 font-medium">Repay</th>
+								<th className="p-2 font-medium ">Repay</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -59,7 +59,7 @@ const LoanTable = () => {
 										${loan.installment.toLocaleString()} / month
 									</td>
 									<td className="p-2">
-										<div className="text-center border-2 border-solid border-[#232323] p-1 px-3 rounded-3xl hover:border-[#1814F3] hover:text-[#1814F3]">
+										<div className="text-center border-2 border-solid border-[#232323] cursor-pointer p-1 px-3 rounded-3xl hover:border-[#1814F3] hover:text-[#1814F3]">
 											Repay
 										</div>
 									</td>

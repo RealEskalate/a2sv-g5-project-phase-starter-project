@@ -195,14 +195,15 @@ export const user = {
 };
 
 export const creditcardstyles = [{
-  iconwhite : "w-6 h-6",
+  iconwhite : "/icons/chip.png",
   icongray : "w-6 h-6"
 
 }]
 
 export const colors = {
   blue: 'bg-[#1814F3]',
-  white: 'bg -[#ffffff]',
+  white: 'bg-[#ffffff]',
+  textwhite : 'text-[#ffffff]',
   navbartext:' text-[#343C6A]',
   black: 'bg-[#000000]',
   textblack: 'text-[#232323]',
@@ -217,7 +218,9 @@ export const colors = {
   lightblue : "bg-gray-100",
   lightorange : 'bg-[#FFF5D9]',
   lightpurple : 'bg-[#E7EDFF]',
-  lightgreen : 'bg-[#DCFAF8]'
+  lightgreen : 'bg-[#DCFAF8]',
+  graybg : 'bg-[#F5F7FA]'
+
 
 
 };

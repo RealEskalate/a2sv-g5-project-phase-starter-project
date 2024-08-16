@@ -24,4 +24,3 @@ func UpdateBlogController(c *gin.Context) {
 
 	}
 }
-

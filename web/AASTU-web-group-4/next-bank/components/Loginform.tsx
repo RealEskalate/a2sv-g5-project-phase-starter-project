@@ -11,6 +11,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { useLoginMutation } from "@/lib/redux/features/authapi";
 import { creditcardstyles, colors ,logo } from "../constants/index";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "@/lib/redux/features/authSlice";
+
+
 const LoginForm: React.FC = () => {
   const {
     register,
@@ -18,12 +22,22 @@ const LoginForm: React.FC = () => {
     formState: { errors },
   } = useForm();
 
-  const [login] = useLoginMutation();
+  const dispatch = useDispatch();
+  const [login ]= useLoginMutation();
 
   const onSubmit = async (data: any) => {
     try {
-      const user = await login(data).unwrap();
+      const adjustedData = {
+        userName: data.userName,
+        password: data.password,
+      };
+      const user = await login(adjustedData).unwrap();
+
+      // Dispatch the access token and user data to Redux store
+      dispatch(setCredentials({ accessToken: user.data.accessToken, user: user.data }));
+
       console.log('Login successful:', user);
+      window.location.href= "/"
     } catch (error) {
       console.error('Failed to login:', error);
     }
@@ -50,23 +64,23 @@ const LoginForm: React.FC = () => {
           <div className="my-10">
             <div>
               <label
-                htmlFor="username"
+                htmlFor="userName"
                 className="block font-bold mb-2 text-gray-700"
               >
-                Username
+                UserName
               </label>
               <input
-                id="username"
+                id="userName"
                 type="text"
                 placeholder="Username"
-                {...register("username", { required: "Username is required" })}
+                {...register("userName", { required: "Username is required" })}
                 className="w-full m-auto border-gray-200 border-2  rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-14 px-2.5 "
               />
-              {errors.username && (
+              {errors.userName && (
                 <div className="flex gap-1">
                   <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
                   <p className="text-red-500">
-                    {errors.username.message as string}
+                    {errors.userName.message as string}
                   </p>
                 </div>
               )}
@@ -125,3 +139,6 @@ const LoginForm: React.FC = () => {
 };
 
 export default LoginForm;
+
+
+

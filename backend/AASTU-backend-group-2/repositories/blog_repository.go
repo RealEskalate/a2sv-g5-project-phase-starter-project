@@ -28,6 +28,7 @@ func NewBlogRepository(mongoClient *mongo.Client) domain.BlogRepository {
 
 }
 
+
 const perpage = 10
 
 func (br *BlogRepository) CreateBlog(blog domain.Blog) error {
@@ -40,7 +41,9 @@ func (br *BlogRepository) CreateBlog(blog domain.Blog) error {
 }
 
 func (br *BlogRepository) RetrieveBlog(pgnum int) ([]domain.Blog, error) {
-
+	if pgnum == 0 {
+		pgnum = 1
+	}
 	skip := perpage * (pgnum - 1)
 	findoptions := options.Find()
 	findoptions.SetSkip(int64(skip))

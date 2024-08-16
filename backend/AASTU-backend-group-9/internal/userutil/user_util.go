@@ -1,8 +1,9 @@
 package userutil
 
 import (
-	"golang.org/x/crypto/bcrypt"
 	"regexp"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // HashPassword hashes the password

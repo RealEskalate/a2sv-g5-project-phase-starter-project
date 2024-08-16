@@ -1,0 +1,13 @@
+# Config file for Air
+
+[build]
+  # Binary to run.
+  bin = "main"
+  # Watch these filename extensions.
+  include_ext = ["go", "tpl", "tmpl", "html"]
+  # Ignore these filename extensions or directories.
+  exclude_dir = ["assets", "tmp", "vendor"]
+  # Main package.
+  cmd = "go run main.go"
+  # Working directory.
+  work_dir = "/"

@@ -2,7 +2,7 @@ package controllers
 
 import (
 	domain "blogs/Domain"
-	"net/http"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )

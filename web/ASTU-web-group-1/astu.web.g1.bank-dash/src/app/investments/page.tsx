@@ -9,7 +9,7 @@ export default function page() {
   return (
     <div>
       <InvestmentItem />
-      <div className="md:flex space-x-2">
+      <div className="md:flex space-x-4">
         <YearlyTotalInvestment />
         <MonthlyRevenue />
       </div>

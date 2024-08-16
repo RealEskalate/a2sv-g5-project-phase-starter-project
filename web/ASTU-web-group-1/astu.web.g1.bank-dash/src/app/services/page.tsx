@@ -1,5 +1,12 @@
+import BankServicesList from '@/components/BankServicesList/BankServicesList';
+import ServicesCardApp from '@/components/ServicesCards/servicesCardApp';
 import React from 'react';
 
 export default function page() {
-  return <div>service</div>;
+  return (
+    <div>
+      <ServicesCardApp />
+      <BankServicesList/>
+    </div>
+  );
 }

@@ -20,4 +20,5 @@ func NewSignupRouter(env *config.Env, timeout time.Duration, db database.Databas
 		Env:           env,
 	}
 	group.POST("/signup", sc.Signup)
+	group.POST("/verify-otp", sc.VerifyOTP)
 }

@@ -7,13 +7,15 @@ import (
 	"context"
 	"errors"
 	"time"
-
+	"net/smtp"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type signupUsecase struct {
-	userRepository domain.UserRepository
-	contextTimeout time.Duration
+	userRepository  domain.UserRepository
+	tokenRepository domain.TokenRepository
+	otpRepository   domain.OTPRepository
+	contextTimeout  time.Duration
 }
 
 func NewSignupUsecase(userRepository domain.UserRepository, timeout time.Duration) domain.SignupUsecase {
@@ -68,6 +70,17 @@ func (su *signupUsecase) GetUserByUsername(c context.Context, username string) (
 	}
 	return user, nil
 }
+func (su *signupUsecase) SaveOTP(c context.Context, otp *domain.OTP) error {
+	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
+	defer cancel()
+	return su.otpRepository.SaveOTP(ctx, otp)
+}
+
+func (su *signupUsecase) GetOTPByEmail(c context.Context, email string) (*domain.OTP, error) {
+	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
+	defer cancel()
+	return su.otpRepository.GetOTPByEmail(ctx, email)
+}
 
 func (su *signupUsecase) CreateAccessToken(user *domain.AuthSignup, secret string, expiry int) (accessToken string, err error) {
 	return tokenutil.CreateAccessToken(user, secret, expiry)
@@ -75,4 +88,76 @@ func (su *signupUsecase) CreateAccessToken(user *domain.AuthSignup, secret strin
 
 func (su *signupUsecase) CreateRefreshToken(user *domain.AuthSignup, secret string, expiry int) (refreshToken string, err error) {
 	return tokenutil.CreateRefreshToken(user, secret, expiry)
+}
+
+func (su *signupUsecase) SaveRefreshToken(c context.Context, token *domain.Token) error {
+	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
+	defer cancel()
+	return su.tokenRepository.SaveToken(ctx, token)
+}
+
+func (su *signupUsecase) VerifyOTP(c context.Context, otp *domain.OTP) error {
+	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
+	defer cancel()
+	storedOTP, err := su.GetOTPByEmail(ctx, otp.Email)
+	if err != nil {
+		return err
+	}
+	if storedOTP.Value != otp.Value {
+		return errors.New("invalid OTP")
+	}
+	if time.Now().After(storedOTP.ExpiresAt) {
+		return errors.New("OTP expired")
+	}
+	return nil
+}
+
+func (su *signupUsecase) SendOTP(c context.Context, user *domain.AuthSignup,smtpusername, smtppassword,smtpport,smtphost string ) error {
+	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
+	defer cancel()
+	otp := domain.OTP{
+		Value:     userutil.GenerateOTP(),
+		Username:  user.Username,
+		Email:     user.Email,
+		Password:  user.Password,
+		CreatedAt: time.Now(),
+		ExpiresAt: time.Now().Add(time.Minute * 5),
+	}
+	err := su.SaveOTP(ctx, &otp)
+	if err != nil {
+		return err
+	}
+	err = su.sendEmail(user.Email, otp.Value,smtpusername, smtppassword,smtpport,smtphost) // Call the sendEmail function to send the OTP to the user's email
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (su *signupUsecase) sendEmail(email string, otpValue string,smtpusername, smtppassword,smtpport,smtphost string ) error {
+	// Implement your email sending logic here
+	// You can use third-party libraries or APIs to send the email
+	// Make sure to handle any errors that may occur during the email sending process
+	// Example code:
+	from := smtpusername
+    password := smtppassword
+
+  // Receiver email address.
+  to := []string{
+    email,
+  }
+
+  // smtp server configuration.
+  smtpHost := smtphost
+  smtpPort := smtpport
+
+  // Message.
+  message := []byte("Your OTP is " + otpValue)
+  
+  // Authentication.
+  auth := smtp.PlainAuth("", from, password, smtpHost)
+  
+  // Sending email.
+  err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
+  return err
 }

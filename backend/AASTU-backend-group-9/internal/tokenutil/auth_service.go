@@ -54,7 +54,6 @@ func (s *AuthService) RefreshAccessToken(refreshToken string) (string, error) {
         return "", err
     }
 
-    storedToken.AccessToken = newAccessToken
     storedToken.CreatedAt = time.Now()
     err = s.tokenRepo.SaveToken(context.Background(), storedToken)
     if err != nil {

@@ -1,9 +1,9 @@
 import React from 'react'
-import CardList from "../../components/CardList"
+// import CardList from "../../components/CardList"
 
 const page = () => {
   return (
-    <div><CardList/></div>
+    <div>page</div>
   )
 }
 

@@ -20,6 +20,7 @@ func InitRoutes(r *gin.Engine, blogUsecase usecases.BlogUsecase, userUsecase use
 	r.POST("/register", userController.Register)
 	r.POST("/login", userController.Login)
 	r.POST("/forgot-password", userController.ForgotPassword)
+	r.POST("/refresh-token", userController.RefreshToken)
 
 	// Authenticated routes
 	auth := r.Group("/api")
@@ -35,11 +36,11 @@ func InitRoutes(r *gin.Engine, blogUsecase usecases.BlogUsecase, userUsecase use
 		auth.GET("/blogs", blogController.GetAllBlogPosts)
 		auth.GET("/blogs/:id", blogController.GetBlogByID)
 		auth.PUT("/blogs/:id", blogController.UpdateBlogPost)
-		auth.POST("/blogs/:id", blogController.SearchBlogPost)
+		auth.POST("/blogsearch", blogController.SearchBlogPost)
 		auth.DELETE("/blogs/:id", blogController.DeleteBlogPost)
 
 		// Admin-specific routes
 		auth.POST("/getallusers", adminMiddleware, userController.getallUsers)
-		auth.PUT("/deleteusers", adminMiddleware, userController.deleteusers)
+		auth.PUT("/deleteusers/:id", adminMiddleware, userController.deleteusers)
 	}
 }

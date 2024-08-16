@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (u *UserUsecase) UpdateProfile(user *domain.User) error {
+func (u *UserUsecase) UpdateUser(user *domain.User) error {
 	userId := user.ID
 	dbUser, err := u.repo.FindUserByEmail(context.Background(), userId.Hex())
 	if err != nil {

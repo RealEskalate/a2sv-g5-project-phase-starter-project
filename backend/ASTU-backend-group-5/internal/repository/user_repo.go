@@ -21,4 +21,6 @@ type UserRepository interface {
 
 	GetAllUsers(ctx context.Context) ([]*domain.User, error)
 	FilterUsers(ctx context.Context, filter map[string]interface{}) ([]*domain.User, error)
+
+	IsEmptyCollection(ctx context.Context) (bool, error)
 }

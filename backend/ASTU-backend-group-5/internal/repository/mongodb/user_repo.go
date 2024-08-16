@@ -28,28 +28,37 @@ func (r *UserRepositoryMongo) CreateUser(ctx context.Context, user *domain.User)
 func (r *UserRepositoryMongo) FindUserByEmail(ctx context.Context, email string) (*domain.User, error) {
 	user := &domain.User{}
 	err := r.Collection.FindOne(ctx, bson.M{"email": email}).Decode(user)
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
-	return user, err //user exists
+	return user, nil
 }
 
 func (r *UserRepositoryMongo) FindUserById(ctx context.Context, id string) (*domain.User, error) {
 	user := &domain.User{}
 	err := r.Collection.FindOne(ctx, bson.M{"_id": id}).Decode(user)
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
-	return user, err
+	return user, nil
 }
 
 func (r *UserRepositoryMongo) FindUserByUserName(ctx context.Context, username string) (*domain.User, error) {
 	user := &domain.User{}
 	err := r.Collection.FindOne(ctx, bson.M{"username": username}).Decode(user)
-	if err != nil {
-		return nil, err
+	if err == mongo.ErrNoDocuments {
+		return nil, nil //nil, nil means no user found and no error
 	}
-	return user, err //user exists
+	if err != nil {
+		return nil, err // any other error
+	}
+	return user, nil // nil, user means user found and no error
 }
 
 func (r *UserRepositoryMongo) UpdateUser(ctx context.Context, user *domain.User) error {
@@ -86,6 +95,7 @@ func (r *UserRepositoryMongo) FilterUsers(ctx context.Context, filter map[string
 	var users []*domain.User
 
 	cursor, err := r.Collection.Find(ctx, filter)
+
 	if err != nil {
 		return nil, err
 	}
@@ -100,4 +110,12 @@ func (r *UserRepositoryMongo) FilterUsers(ctx context.Context, filter map[string
 
 	return users, nil
 
+}
+
+func (r *UserRepositoryMongo) IsEmptyCollection(ctx context.Context) (bool, error) {
+	count, err := r.Collection.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		return false, err
+	}
+	return count == 0, nil
 }

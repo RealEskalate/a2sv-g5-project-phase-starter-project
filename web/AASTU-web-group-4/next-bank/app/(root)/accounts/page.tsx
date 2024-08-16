@@ -3,6 +3,7 @@ import React from 'react'
 import BalanceCard from '@/components/AccountSmallCard'
 import App from '@/components/LastTransactionCard'
 import DesktopCreditCart from '@/components/DesktopCreditCard';
+import TransactionList from '@/components/InvoicesCard';
 
 const Accounts = () => {
   return (
@@ -15,13 +16,16 @@ const Accounts = () => {
         <h1>Last Transaction</h1>
         <App/>
       </div>
-        {/* <div>
+        <div>
           <h1>My Card</h1>
-          <DesktopCreditCart/>
-        </div> */}
+          <DesktopCreditCart bgColor={''} textColor={''}/>
+        </div>
         {/* <div>
           <h1>Debit & Credit Overview</h1>   
         </div> */}
+        <div>
+          <TransactionList/>
+        </div>
     </div>
   )
 }

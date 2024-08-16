@@ -29,8 +29,9 @@ export default function Component() {
   useEffect(()=>{
 
     const fun= () =>{
-      if(window.innerWidth <= 767){
-        setpierad(150)
+      if(window.innerWidth < 1024){
+        setpierad(20)
+        alert('less than 1024')
     
       }
       else{
@@ -42,15 +43,15 @@ export default function Component() {
       window.removeEventListener('resize' , fun)
     }
     }
-    },[])
+    },[window.innerWidth])
   return (
-    <Card className=" py-6 ">
+    <Card className=" md:py-10  ">
       <CardHeader className="items-center pb-0">
         
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
-          className="mx-auto  max-h-[450px] "
+          className="mx-auto  max-h-[90%] "
           config={{}}
         >
           <PieChart>

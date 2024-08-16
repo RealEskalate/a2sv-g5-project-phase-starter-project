@@ -28,9 +28,7 @@ const QuickTransfer = () => {
 
   return (
     <div className="flex flex-col items-start gap-3 w-[100%]">
-      <h1 className={`font-semibold text-[18px] ${colors.navbartext}`}>
-        Quick Transfer
-      </h1>
+      
 
       <div className="flex justify-between w-[100%] px-2">
         <div

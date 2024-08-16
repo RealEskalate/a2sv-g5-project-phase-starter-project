@@ -6,12 +6,12 @@ import (
 )
 
 type Chat struct {
-	ID        		string
-	Title     		string
-	History   		[]Message
-	UserID    		string
-	CreatedAt 		time.Time
-	UpdatedAt 		time.Time
+	ID        		string			`bson:"_id"`
+	Title     		string			`json:"title"`
+	History   		[]Message		`json:"history"`
+	UserID    		string			`json:"user_id"`
+	CreatedAt 		time.Time		`json:"created_at"`
+	UpdatedAt 		time.Time		`json:"updated_at"`
 }
 
 

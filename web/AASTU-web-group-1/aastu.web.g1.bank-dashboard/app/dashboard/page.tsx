@@ -1,26 +1,25 @@
-'use client'
-import React, { useRef } from "react";
+"use client";
+import { useRef } from "react";
 import {
-  IoChevronForwardCircleOutline,
   IoChevronBackCircleOutline,
+  IoChevronForwardCircleOutline,
 } from "react-icons/io5";
 
-import { Transaction } from "./_components/Transaction";
-import { Barchart } from "@/components/ui/Barchart";
-import CreditCard from "./_components/Creditcard";
-import { Profile } from "./_components/Profile";
-import { PiTelegramLogoLight } from "react-icons/pi";
 import { Areachart } from "@/components/ui/Areachart";
+import { Barchart } from "@/components/ui/Barchart";
 import { Pie_chart } from "@/components/ui/Pie_chart";
+import { PiTelegramLogoLight } from "react-icons/pi";
+import CreditCard from "./_components/Credit_Card";
+import { Profile } from "./_components/Profile";
+import { Transaction } from "./_components/Transaction";
 
 const MainDashboard = () => {
-  const QuickTransferSection = useRef<HTMLDivElement|null>(null);
-  const scrollCards = (scrollOffset:number)=>{
-    if(QuickTransferSection.current){
-    QuickTransferSection.current.scrollLeft+=scrollOffset;   
+  const QuickTransferSection = useRef<HTMLDivElement | null>(null);
+  const scrollCards = (scrollOffset: number) => {
+    if (QuickTransferSection.current) {
+      QuickTransferSection.current.scrollLeft += scrollOffset;
     }
-   
-  }
+  };
   return (
     <div className="p-5 md:pl-10 md:ml-auto space-y-5 ">
       {/* First Row: My Cards and Recent Transactions */}

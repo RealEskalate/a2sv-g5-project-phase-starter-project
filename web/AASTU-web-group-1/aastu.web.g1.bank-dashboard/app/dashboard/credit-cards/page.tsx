@@ -1,7 +1,6 @@
-import CreditCard from "../_components/Creditcard";
-import React from "react";
-import Image from "next/image";
 import { Donut } from "@/components/ui/Piechart";
+import Image from "next/image";
+import CreditCard from "../_components/Credit_Card";
 
 const CreditCards = () => {
   return (
@@ -11,7 +10,7 @@ const CreditCards = () => {
           <h1 className="text-2xl">My Cards</h1>
           <div className="flex flex-row max-y-[200px] overflow-y-auto gap-6 sm:max-x-[500px] md:max-x-[600px]">
             <CreditCard
-             isBlue={true}
+              isBlue={true}
               balance={5894}
               creditNumber="3778*** ****1234"
               name="Eddy Cusuma"

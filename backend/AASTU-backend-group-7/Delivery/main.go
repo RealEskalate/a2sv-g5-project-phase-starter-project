@@ -1,7 +1,7 @@
 package main
 
 import (
-	config "blogapp/Config"
+	Config "blogapp/Config"
 	"blogapp/Delivery/routers"
 	"context"
 	"log"
@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Connect to the database
-	client := config.ConnectDB()
+	client := Config.ConnectDB()
 
 	// Defer the closing of the database
 	defer func() {

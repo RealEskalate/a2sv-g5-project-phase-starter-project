@@ -51,7 +51,7 @@ const YearlyTotalInvestment = () => {
   return (
     <div className="w-full md:w-1/2">
       <h1 className="text-[#333B69] text-20px py-2 font-semibold">
-        Balance History
+        Yearly Total Investment
       </h1>
       <div className="bg-white p-6 rounded-3xl">
         <Line data={data} options={options} className="w-full" />

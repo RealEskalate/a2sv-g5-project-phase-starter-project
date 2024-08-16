@@ -37,7 +37,7 @@ type Like struct {
 }
 
 type Dislike struct {
-	ID     string `json:"id,omitempty"`
+	ID     string `json:"id,omitempty" bson:"_id,omitempty"`
 	BlogID string `json:"blog_id,omitempty"`
 	UserID string `json:"user_id,omitempty"`
 }

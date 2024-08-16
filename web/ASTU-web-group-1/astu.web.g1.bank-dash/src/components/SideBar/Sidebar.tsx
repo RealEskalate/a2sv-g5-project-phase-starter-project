@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import SideBarItems from '../SideBarItems/SideBarItems';
 import HomeIcon from '../../../public/assets/icons/home-icon.svg';
@@ -11,6 +12,7 @@ import MyPrivileges from '../../../public/assets/icons/myPrivileges-icon.svg';
 import Setting from '../../../public/assets/icons/setting-icon.svg';
 import Logo from '../../../public/assets/icons/logo-icon.svg';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 const data = [
   {
@@ -70,6 +72,8 @@ const data = [
 ];
 
 export default function Sidebar() {
+  const param = useParams();
+  console.log(param, 'as');
   return (
     <>
       <aside className='fixed sm:relative top-0 left-0 z-40 w-[215px] transition-transition -translate-x-full sm:translate-x-0 duration-300 '>

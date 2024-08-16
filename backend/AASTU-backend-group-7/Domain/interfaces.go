@@ -24,9 +24,9 @@ type RefreshRepository interface {
 }
 
 type RefreshUseCase interface {
-	Update(c *gin.Context, refreshToken string, userid primitive.ObjectID) (error, int)
-	Delete(c *gin.Context, userid primitive.ObjectID) (error, int)
-	Find(c *gin.Context, userid primitive.ObjectID) (string, error, int)
+	UpdateToken(c *gin.Context, refreshToken string, userid primitive.ObjectID) (error, int)
+	DeleteToken(c *gin.Context, userid primitive.ObjectID) (error, int)
+	FindToken(c *gin.Context, userid primitive.ObjectID) (string, error, int)
 }
 
 type BlogRepository interface {

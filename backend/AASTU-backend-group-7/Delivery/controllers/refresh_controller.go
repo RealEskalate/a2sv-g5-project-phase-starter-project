@@ -28,7 +28,7 @@ func (r *RefreshController) Refresh(c *gin.Context) {
 	}
 
 	// get the refresh token
-	refreshToken, err, statuscode := r.RefreshUseCase.Find(c, accessClaims.ID)
+	refreshToken, err, statuscode := r.RefreshUseCase.FindToken(c, accessClaims.ID)
 
 	if err != nil {
 		c.JSON(statuscode, gin.H{"error": err.Error()})
@@ -67,7 +67,7 @@ func (r *RefreshController) Refresh(c *gin.Context) {
 	}
 
 	// update the refresh token
-	err, statuscode = r.RefreshUseCase.Update(c, newRefreshToken, accessClaims.ID)
+	err, statuscode = r.RefreshUseCase.UpdateToken(c, newRefreshToken, accessClaims.ID)
 	
 	if err != nil {
 		c.JSON(statuscode, gin.H{"error": err.Error()})

@@ -1,53 +1,61 @@
-import Image from "next/image";
+import { Landmark } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import { useState } from "react";
+
+const navigation = [
+  { name: "Product", href: "#" },
+  { name: "Features", href: "#" },
+  { name: "Marketplace", href: "#" },
+  { name: "Company", href: "#" },
+];
 
 const Navbar = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <>
-      <div
-        className="flex w-full z-20 bg-slate-100 px-10 md:px-20 justify-between items-center fixed space-x-3 lg:px-14 border-b shadow-lg border-gray-100"
-        id="dashboard"
-      >
-        <div className="flex flex-col md:flex-row w-fit md:w-fit space-x-2 items-center py-2">
-          <Image
-            src="/assets/images/logo.jpg"
-            alt=""
-            width={100}
-            height={100}
-            className="object-cover rounded-full h-14 w-14 md:w-16 md:h-16"
-          />
-          <h1 className="font-Inter hidden sm:block font-extrabold text-xl md:text-2xl text-deepNavy">
-            BANK DASHBOARD
-          </h1>
-        </div>
-        <div className="flex md:space-x-5 space-x-6 items-center justify-end ">
-          <Link
-            href="#dashboard"
-            className="px-2 text-deepNavy text-center font-semibold md:text-lg hover:text-indigo-600 cursor-pointer hidden md:block"
-          >
-            Dashboard
-          </Link>
-          <Link
-            href="#why"
-            className="text-deepNavy text-center font-semibold md:text-lg hover:text-indigo-600 cursor-pointer md:block"
-          >
-            Why
-          </Link>
-          <Link
-            href="#contacts"
-            className="text-deepNavy text-center font-semibold md:text-lg hover:text-indigo-600 cursor-pointer md:block"
-          >
-            Contacts
-          </Link>
-          <Link
-            href="/api/auth/signin"
-            className="text-deepNavy text-center font-semibold md:text-lg hover:text-indigo-600 cursor-pointer md:block"
-          >
-            SignIn
-          </Link>
-        </div>
-      </div>
+      <header className="absolute inset-x-0 top-0 z-50 md:mx-20">
+        <nav
+          aria-label="Global"
+          className="flex items-center justify-between p-6 lg:px-8"
+        >
+          <div className="flex lg:flex-1">
+            <a href="/" className="-m-1.5 p-1.5">
+              <span className="sr-only">Your Company</span>
+
+              <Landmark />
+            </a>
+          </div>
+          <div className="flex lg:hidden">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+            >
+              <span className="sr-only">Open main menu</span>
+            </button>
+          </div>
+          <div className="hidden lg:flex lg:gap-x-12">
+            {navigation.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                className="text-sm font-semibold leading-6 text-gray-900"
+              >
+                {item.name}
+              </a>
+            ))}
+          </div>
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+            <Link
+              href="/api/auth/signin"
+              className="text-sm font-semibold leading-6 text-gray-900"
+            >
+              Log in <span aria-hidden="true">&rarr;</span>
+            </Link>
+          </div>
+        </nav>
+      </header>
     </>
   );
 };

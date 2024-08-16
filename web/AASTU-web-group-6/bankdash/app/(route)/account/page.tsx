@@ -6,8 +6,8 @@ import VisaCard from '@/app/components/Card/VisaCard';
 export default function Home() {
   return (
     <>
-      <div className="flex flex-col lg:flex-row gap-7">
-      <div className='flex lg:w-[45%] gap-7'>
+      <div className="flex flex-col lg:flex-row gap-3 lg:gap-7">
+      <div className='flex w-full lg:w-[45%] gap-3 lg:gap-12'>
         <Card
           title="My Balance"
           amount="$12,750"
@@ -23,7 +23,7 @@ export default function Home() {
           width='w-[45%]'
         />
         </div>
-        <div className='flex  lg:w-[45%] gap-7'>
+        <div className='flex  w-full lg:w-[45%] gap-3 lg:gap-12'>
         <Card
           title="Expense"
           amount="$3,460"
@@ -46,7 +46,7 @@ export default function Home() {
           <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
             Last Transaction
           </p>
-          <div className=" bg-white border rounded-3xl p-3">
+          <div className=" bg-white border rounded-3xl p-3 shadow-lg border-gray-300">
             <Last_trans
               title="Spotify Subscription"
               date="25 Jan 2021"
@@ -99,10 +99,10 @@ export default function Home() {
           <DebitCreditOver />
         </div>
         <div className="lg:w-[30%]">
-          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
+          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 ">
             Invoices Sent
           </p>
-          <div className="border border-solid rounded-3xl p-9">
+          <div className="border border-solid rounded-3xl p-9  bg-white shadow-lg border-gray-300">
             <InvoiceCard
               title="Apple Store"
               date="5h ago"

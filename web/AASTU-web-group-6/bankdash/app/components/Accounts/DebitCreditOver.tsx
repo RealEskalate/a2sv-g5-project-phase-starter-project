@@ -40,10 +40,10 @@ const chartConfig = {
 
 export function DebitCreditOver() {
   return (
-    <Card className="rounded-3xl  ">
+    <Card className="rounded-3xl shadow-lg border-gray-300   ">
       <CardHeader>
         <div className="flex justify-between ">
-        <CardTitle className="text-base font-normal font-inter text-[#718EBF]"><span className="text-black">$7,560</span> Debited & <span className="text-black">$5,420</span> Credited in this Week</CardTitle>
+        <CardTitle className=" hidden lg:block text-base font-normal font-inter text-[#718EBF]"><span className="text-black">$7,560</span> Debited & <span className="text-black">$5,420</span> Credited in this Week</CardTitle>
         <div className="flex gap-5">
         <div className="flex items-center">
           <div className="border border-[#4C78FF] w-[15px] h-[15px] rounded-sm bg-[#4C78FF]">
@@ -57,7 +57,6 @@ export function DebitCreditOver() {
         </div>
         </div>
         </div>
-        {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
       <CardContent  >
         <ChartContainer config={chartConfig} className="h-[350px] w-[100%]">
@@ -81,14 +80,7 @@ export function DebitCreditOver() {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      {/* <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter> */}
+      
     </Card>
   )
 }

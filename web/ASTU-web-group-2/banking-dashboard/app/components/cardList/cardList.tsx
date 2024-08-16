@@ -3,7 +3,7 @@ import Link from "next/link";
 const recentlistitems = [
   
 
-     {icon: "/assets/invoicesSent/icon1.svg" ,
+     {icon: "/assets/cardlist/card1.svg" ,
     col1: {
       des: "Card Type",
       sub: "Secondary"
@@ -23,7 +23,7 @@ const recentlistitems = [
     col5: {
       des: "View Detail",
     }},
-    {icon: "/assets/invoicesSent/icon1.svg" ,
+    {icon: "/assets/cardlist/card2.svg" ,
       col1: {
         des: "Card Type",
         sub: "Secondary"
@@ -43,7 +43,7 @@ const recentlistitems = [
       col5: {
         des: "View Detail",
       }},
-      {icon: "/assets/invoicesSent/icon1.svg" ,
+      {icon: "/assets/cardlist/card3.svg" ,
         col1: {
           des: "Card Type",
           sub: "Secondary"

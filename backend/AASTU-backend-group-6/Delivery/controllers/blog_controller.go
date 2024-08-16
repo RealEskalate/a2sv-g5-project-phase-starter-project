@@ -2,19 +2,73 @@ package controllers
 
 import (
 	domain "blogs/Domain"
-	"net/http"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
+type BlogController struct {
+	BlogUsecase domain.BlogUsecase
+}
 
-func CreateBlogController(ctx *gin.Context) {
-	var post domain.Post
-	err := ctx.ShouldBind(&post)
-	if err != nil{
-		ctx.JSON(http.StatusBadRequest, domain.ErrorResponse{
-			Message: err.Error(),
-			Status: http.StatusBadRequest,
-		})
+// CommentOnBlog implements domain.BlogUsecase.
+func (b BlogController) CommentOnBlog(c *gin.Context) {
+	panic("unimplemented")
+}
+
+// CreateBlog implements domain.BlogUsecase.
+func (b BlogController) CreateBlog(c *gin.Context) {
+	panic("unimplemented")
+}
+
+// DeleteBlogByID implements domain.BlogUsecase.
+func (b BlogController) DeleteBlogByID(c *gin.Context) {
+	panic("unimplemented")
+}
+
+// FilterBlogsByTag implements domain.BlogUsecase.
+func (b BlogController) FilterBlogsByTag(c *gin.Context) {
+	panic("unimplemented")
+}
+
+// GetBlogByID implements domain.BlogUsecase.
+func (b BlogController) GetBlogByID(c *gin.Context) {
+	c.JSON(200, gin.H{"des blognal": "blog"})
+}
+
+// GetBlogs implements domain.BlogUsecase.
+func (b BlogController) GetBlogs(c *gin.Context) {
+	c.JSON(200, gin.H{"des blogs": "blogs"})
+}
+
+// GetMyBlogByID implements domain.BlogUsecase.
+func (b BlogController) GetMyBlogByID(c *gin.Context) {
+	panic("unimplemented")
+}
+
+// GetMyBlogs implements domain.BlogUsecase.
+func (b BlogController) GetMyBlogs(c *gin.Context) {
+	panic("unimplemented")
+}
+
+// SearchBlogByTitleAndAuthor implements domain.BlogUsecase.
+func (b BlogController) SearchBlogByTitleAndAuthor(c *gin.Context) {
+	title := c.Query("title")
+	author := c.Query("author")
+	x := fmt.Sprintf("title: %s, author: %s", title, author)
+	fmt.Println("////////////////////////////")
+	fmt.Println(title, author)
+	fmt.Println("////////////////////////////")
+	c.JSON(200, gin.H{"des blogs": x})
+}
+
+// UpdateBlogByID implements domain.BlogUsecase.
+func (b BlogController) UpdateBlogByID(c *gin.Context) {
+	panic("unimplemented")
+}
+
+func NewBlogController(BlogUsecase domain.BlogUsecase) BlogController {
+	return BlogController{
+		BlogUsecase: BlogUsecase,
 	}
 }

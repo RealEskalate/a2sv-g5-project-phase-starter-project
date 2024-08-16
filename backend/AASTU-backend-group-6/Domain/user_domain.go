@@ -1,6 +1,10 @@
 package domain
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"context"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type User struct {
 	ID                primitive.ObjectID `bson:"_id,omitempity" json:"id" `
@@ -10,7 +14,7 @@ type User struct {
 	Password          string             `json:"password" validate:"required"`
 	Profile_image_url string             `json:"profile_image" `
 	GoogleID          string             `json:"googleId"`
-	Posts             []Post             `json:"posts"`
+	Posts             []Blog             `json:"posts"`
 	RefreshToken      string             `json:"refreshToken" validate:"required"`
 	AccessToken       string             `json:"accessToken" validate:"required"`
 	Contact           string             `json:"contact"`
@@ -27,6 +31,15 @@ type UserRepository interface {
 	UpdateUser(user User) (User, error)
 	DeleteUser(id string) error
 	ForgotPassword(email string, token string) error
+}
+
+type SignupRepository interface {
+	Create(User) (User, error)
+	FindUserByEmail(c context.Context , email string) (User, error)
+}
+
+type SignupUseCase interface {
+	Create(c context.Context , user User) interface{}
 }
 
 type UserUseCase interface {

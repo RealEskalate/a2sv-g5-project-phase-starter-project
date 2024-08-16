@@ -7,12 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewUserrouter(config *infrastructure.Config, DB mongo.Database, blogRouter *gin.RouterGroup) {
-	blogRouter.POST("/create")
-	blogRouter.GET("/get")
-	blogRouter.GET("/get/:id")
-	blogRouter.PUT("/update/:id")
-	blogRouter.DELETE("/delete/:id")
-	blogRouter.POST("/comment/:id")
+func NewUserrouter(config *infrastructure.Config, DB mongo.Database, userRouter *gin.RouterGroup) {
+	// userRouter.POST("/create")
+	userRouter.GET("/get")
+	userRouter.GET("/get/:id")
+	userRouter.PUT("/update/:id")
+	userRouter.DELETE("/delete/:id")
+	userRouter.POST("/comment/:id")
 
 }

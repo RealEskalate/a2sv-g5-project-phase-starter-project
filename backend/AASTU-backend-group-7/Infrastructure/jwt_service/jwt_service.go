@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func CreateAccessToken(existingUser Domain.User) (string, error) {
@@ -43,7 +44,7 @@ func CreateRefreshToken(existingUser Domain.User) (refreshToken string, err erro
 	return jwtToken, err
 }
 
-func VerifyRefreshToken(tokenString string) ( error) {
+func VerifyRefreshToken(tokenString string, userid primitive.ObjectID) ( error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(Config.JwtSecret), nil
 	})
@@ -58,6 +59,10 @@ func VerifyRefreshToken(tokenString string) ( error) {
 
 	if time.Now().Unix() > claims.ExpiresAt {
 		return errors.New("Refresh token has expired")
+	}
+
+	if claims.ID != userid {
+		return errors.New("Invalid refresh token")
 	}
 
 	return nil

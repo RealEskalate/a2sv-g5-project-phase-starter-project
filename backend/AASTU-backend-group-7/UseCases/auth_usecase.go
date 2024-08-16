@@ -22,8 +22,10 @@ func NewAuthUseCase(repo Domain.AuthRepository) *authUseCase {
 
 // login
 func (a *authUseCase) Login(c *gin.Context, user *Domain.User) (string, error, int) {
-	// return error
-	return "", nil, 0
+	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
+	defer cancel()
+
+	return a.AuthRepository.Login(ctx, user)
 }
 
 // register

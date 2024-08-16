@@ -17,6 +17,8 @@ func AuthRouter() {
 
 		// register
 		authRouter.POST("/register", authcontroller.Register)
+		//login
+		authRouter.POST("/login", authcontroller.Login)
 
 	}
 }

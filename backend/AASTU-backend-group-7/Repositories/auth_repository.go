@@ -3,6 +3,7 @@ package Repositories
 import (
 	"blogapp/Domain"
 	"blogapp/Infrastructure"
+	jwtservice "blogapp/Infrastructure/jwt_service"
 	"context"
 	"errors"
 	"fmt"
@@ -25,9 +26,27 @@ func NewAuthRepository(_collection Domain.Collection) *authRepository {
 }
 
 // login
-func (au *authRepository) Login() (string, error, int) {
-	// return error
-	return "", nil, 0
+func (au *authRepository) Login(ctx context.Context, user *Domain.User) (string, error, int) {
+	filter := bson.D{{"email", user.Email}}
+	var existingUser Domain.User
+	err := au.collection.FindOne(ctx, filter).Decode(&existingUser)
+
+	if err != nil || !Infrastructure.CompareHashAndPasswordCustom(existingUser.Password, user.Password) {
+		fmt.Printf("Login Called:%v, %v", existingUser.Password, user.Password)
+		
+		// cpmpare the hashed password
+		hashedPassword, _ := Infrastructure.GenerateFromPasswordCustom(user.Password)
+		fmt.Print(existingUser.Password == hashedPassword)
+		return "", errors.New("Invalid credentials"), http.StatusBadRequest
+	}
+
+	// Generate JWT
+	jwtToken, err := jwtservice.SignJwt(existingUser)
+	if err != nil {
+		return "", err, 500
+	}
+
+	return jwtToken, nil, 200
 }
 
 // register

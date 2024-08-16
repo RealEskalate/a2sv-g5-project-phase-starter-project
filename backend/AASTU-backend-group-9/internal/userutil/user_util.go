@@ -43,4 +43,3 @@ func GenerateOTP() string {
 	rand.Seed(time.Now().UnixNano())
 	return string(rune(100000 + rand.Intn(900000)))
 }
-

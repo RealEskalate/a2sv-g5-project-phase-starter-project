@@ -4,6 +4,7 @@ import (
 	Config "blogapp/Config"
 	"blogapp/Domain"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -44,7 +45,7 @@ func CreateRefreshToken(existingUser Domain.User) (refreshToken string, err erro
 	return jwtToken, err
 }
 
-func VerifyRefreshToken(tokenString string, userid primitive.ObjectID) ( error) {
+func VerifyRefreshToken(tokenString string, userid primitive.ObjectID) error {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(Config.JwtSecret), nil
 	})
@@ -54,6 +55,10 @@ func VerifyRefreshToken(tokenString string, userid primitive.ObjectID) ( error) 
 
 	claims, ok := token.Claims.(*Domain.RefreshClaims)
 	if !ok || !token.Valid {
+		fmt.Println(ok)
+		fmt.Print(token.Valid)
+		fmt.Println(claims.ID)
+		fmt.Println("first one")
 		return errors.New("Invalid refresh token")
 	}
 
@@ -62,6 +67,7 @@ func VerifyRefreshToken(tokenString string, userid primitive.ObjectID) ( error) 
 	}
 
 	if claims.ID != userid {
+		fmt.Println("second one")
 		return errors.New("Invalid refresh token")
 	}
 

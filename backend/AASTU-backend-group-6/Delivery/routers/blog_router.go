@@ -1,19 +1,18 @@
 package routers
 
 import (
-	infrastructure "blogs/Infrastructure"
-	"blogs/mongo"
+	controllers "blogs/delivery/controllers"
 
 	"github.com/gin-gonic/gin"
 )
 
-func NewBlogrouter(config *infrastructure.Config, DB mongo.Database, blogRouter *gin.RouterGroup) {
+func NewBlogrouter(blogRouter *gin.RouterGroup, controller controllers.BlogController) {
 	// unprotected
-	blogRouter.GET("/")
+	blogRouter.GET("/", controller.GetBlogs)
 	blogRouter.GET("/:id")
 
-	blogRouter.GET("/search/:title&:author")
-	blogRouter.GET("/tag/:tag")
+	blogRouter.GET("/search", controller.SearchBlogByTitleAndAuthor)
+	blogRouter.GET("/filter", controller.FilterBlogsByTag)
 
 	// protected
 	blogRouter.GET("/my")

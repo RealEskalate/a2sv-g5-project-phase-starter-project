@@ -12,13 +12,18 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const blogCollection = "blogs"
+const (
+	blogCollection    = "blogs"
+	commentCollection = "comments"
+)
 
 var ErrUnableToCreateBlog = errors.New("unable to create blog")
 var ErrUnableToCreatComment = errors.New("unable to create comment")
 var ErrInvalidID = errors.New("invalid ID")
 var ErrUnableToDeleteBlog = errors.New("unable to delete blog")
 var ErrBlogNotFound = errors.New("blog not found")
+var ErrUnableToDeleteComment = errors.New("unable to delete comment")
+var ErrCommentNotFound = errors.New("comment not found")
 
 type BlogStorage struct {
 	db *mongo.Database
@@ -75,7 +80,25 @@ func (b *BlogStorage) DeleteBlog(ctx context.Context, id string) error {
 
 // DeleteComment implements BlogRepository.
 func (b *BlogStorage) DeleteComment(ctx context.Context, id string) error {
-	panic("unimplemented")
+	commentIDPrimitive, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return ErrInvalidID
+	}
+
+	filter := bson.D{{Key: "_id", Value: commentIDPrimitive}}
+
+	result, err := b.db.Collection(commentCollection).DeleteOne(ctx, filter)
+
+	if err != nil {
+		log.Default().Printf("Failed to delete comment: %v", err)
+		return ErrUnableToDeleteBlog
+	}
+
+	if result.DeletedCount == 0 {
+		return ErrBlogNotFound
+	}
+
+	return nil
 }
 
 // DislikeBlog implements BlogRepository.

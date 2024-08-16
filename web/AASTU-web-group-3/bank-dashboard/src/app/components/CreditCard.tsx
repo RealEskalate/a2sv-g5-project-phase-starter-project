@@ -1,55 +1,60 @@
 import React from "react";
-import { simCard, masterCardLogo } from "../../../public/Icons";
+import Image from "next/image";
+import {
+  simCard,
+  masterCardLogo,
+  masterCardLogoDarker,
+  simCardDarker,
+} from "../../../public/Icons";
+import { CardProps } from "../../types/creditCardData";
 
-type CardProps = {
-  name: string;
-  cardNumber: string;
-  balance: string;
-  validDate: string;
-  backgroundImg: string;
-};
-
-const CreditCard: React.FC<CardProps> = ({
+export default function CreditCard({
   name,
   cardNumber,
   validDate,
   balance,
   backgroundImg,
-}) => {
+  textColor,
+}: CardProps) {
+  const masterCardDarker =
+    backgroundImg === "bg-white" ? masterCardLogoDarker : masterCardLogo;
+  const sCard = backgroundImg === "bg-white" ? simCardDarker : simCard;
+  const cardText =
+    backgroundImg === "bg-white" ? "text-[#718EBF]" : "text-[#ffffff95]";
   return (
-    <div className={`w-2/5 h-56 m-auto bg-red-100 rounded-3xl relative text-white shadow-2xl transition-transform transform hover:scale-105`}>
-      <img
-        className="relative object-cover w-full h-full rounded-xl"
-        src={backgroundImg}
-        alt="Credit Card Background"
-      />
-      <div className="w-full px-8 absolute top-8">
-        <div className="flex justify-between px-2">
+    <div
+      className={`w-full h-48 m-auto ${backgroundImg} ${textColor} rounded-3xl relative  shadow-2xl`}
+    >
+      <div className="w-full absolute top-4">
+        <div className="flex justify-between px-5 py-1">
           <div>
-            <p className="font-light ">Balance</p>
-            <p className="font-md">{balance}</p>
+            <p className={` lg:font-bold text-xs ${cardText}`}>Balance</p>
+            <p className="font-semibold">{balance}</p>
           </div>
-          <img className="w-10 h-10" src={simCard} alt="Card Logo" />
+          <Image width={34} height={34} src={sCard} alt="Card Logo" />
         </div>
-        <div className="flex justify-start gap-14 p-2">
+        <div className="flex justify-start gap-10 py-2 px-5">
           <div>
-            <p className="font-light text-[#ffffff95] text-sm">CARD HOLDER</p>
-            <p className="font-md">{name}</p>
+            <p className={`font-thin ${cardText} text-[10px]`}>CARD HOLDER</p>
+            <p className="font-semibold text-sm lg:text-sm ">{name}</p>
           </div>
+
           <div>
-            <p className="font-light text-xs text-[#ffffff95]">VALID THRU</p>
-            <p className="font-md  text-sm">{validDate}</p>
+            <p className={`font-thin ${cardText} text-sm`}>VALID THRU</p>
+            <p className="font-semibold  text-lg ">{validDate}</p>
           </div>
         </div>
 
-            <div className="flex justify-between mt-2 p-2">
-              <p className="font-md tracking-more-wider">{cardNumber}</p>
-                <img className="w-8 h-8" src={masterCardLogo} alt="Card Logo" />
-            </div>
-
+        <div className="flex justify-between mt-2 px-5">
+          <p className="font-semibold tracking-wider">{cardNumber}</p>
+          <Image
+            width={24}
+            height={24}
+            src={masterCardDarker}
+            alt="Card Logo"
+          />
         </div>
+      </div>
     </div>
   );
-};
-
-export default CreditCard;
+}

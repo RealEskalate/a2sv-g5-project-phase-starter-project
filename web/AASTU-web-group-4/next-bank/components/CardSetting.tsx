@@ -19,7 +19,7 @@ const CardSetting = () => {
   return (
     <div className='md:w-[335px] md:h-[430px] w-[330px] h-[450px] rounded-3xl bg-white mt-10'>
         { options.map((option, index) => (
-            <CardSettingLine icon={option.icon} title={option.title} description={option.description} background={option.background} />
+            <CardSettingLine key={index} icon={option.icon} title={option.title} description={option.description} background={option.background} />
         ))}
     </div>
   )

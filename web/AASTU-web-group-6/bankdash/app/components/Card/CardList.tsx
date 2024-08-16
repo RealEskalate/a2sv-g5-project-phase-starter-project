@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface ListCardProps {
   img: string;
@@ -31,7 +32,7 @@ const CardList: React.FC<ListCardProps> = ({
     <div>
       <div className="ml-10 mb-5 flex items-center h-24 bg-white gap-24 border rounded-3xl">
         <div className={`{icon rounded-full p-3 ${color} ml-4`}>
-          <img src={img} alt="" />
+          <Image src={img} alt="" width={24} height={24} />
         </div>
         <div>
           <p className="font-medium text-base text-[#232323] -ml-20">{title}</p>

@@ -125,6 +125,7 @@ const RecentTransactionTable = () => {
           <div className="flex flex-col gap-2">
             <button
               className={`border-none px-[11px] whitespace-nowrap ${
+
                 currentButton === "all-transaction" && "text-blue-bright"
               }`}
               onClick={handelAllTransaction}
@@ -138,6 +139,7 @@ const RecentTransactionTable = () => {
           <div className="flex flex-col gap-2">
             <button
               className={`border-none px-[11px] whitespace-nowrap ${
+
                 currentButton === "income" && "text-blue-bright"
               }`}
               onClick={handelIncome}
@@ -151,6 +153,7 @@ const RecentTransactionTable = () => {
           <div className="flex flex-col gap-2">
             <button
               className={`border-none px-[11px] whitespace-nowrap ${
+
                 currentButton === "expense" && "text-blue-bright"
               }`}
               onClick={handelExpense}
@@ -165,6 +168,7 @@ const RecentTransactionTable = () => {
         <div className="relative overflow-x-auto bg-white px-4 md:px-6 pt-5 md:pt-6 rounded-2xl md:rounded-2xl">
           <table className="bg-white px-5 lg:px-11 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className=" text-12px md:text-16px font-Lato font-medium text-blue-steel bg-white border-b">
+
               <tr className="">
                 <th scope="col" className="hidden md:table-cell pb-2">
                   Description
@@ -190,6 +194,7 @@ const RecentTransactionTable = () => {
               </tr>
             </thead>
             <tbody className="text-12px xl:text-16px text-gray-dark cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700">
+
               {currentData.map((data, index) => (
                 <tr
                   key={index}
@@ -220,6 +225,7 @@ const RecentTransactionTable = () => {
                     <TableButton
                       text="Download"
                       classname="px-6 text-[#123288] border-[#123288]"
+
                     />
                   </td>
                 </tr>

@@ -13,9 +13,9 @@ const RecentTransactionDescription = ({
     <div className="flex flex-row flex-wrap gap-3 items-center">
       <div>
         {amount < 0 ? (
-          <CircleArrowDown className="w-8 h-8 text-blue-steel" />
+          <CircleArrowDown className="w-6 h-6 text-blue-steel" />
         ) : (
-          <CircleArrowUp className="w-8 h-8 text-blue-steel"/>
+          <CircleArrowUp className="w-6 h-6 text-blue-steel"/>
         )}
       </div>
       <div>

@@ -1,7 +1,7 @@
 package auth_middleware
 
 import (
-	config "blogapp/Config"
+	Config "blogapp/Config"
 	"blogapp/Domain"
 	"fmt"
 	"net/http"
@@ -36,7 +36,7 @@ func AuthMiddleware() gin.HandlerFunc {
 				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 			}
 
-			return config.JwtSecret, nil
+			return Config.JwtSecret, nil
 		})
 
 		if err != nil || !token.Valid {
@@ -87,14 +87,13 @@ func IsAdminMiddleware() gin.HandlerFunc {
 		// userID,err := c.Set("user_id" )
 		role, ok := c.Get("role")
 
-		if ok  && role == "Admin" {
+		if ok && role == "Admin" {
 			c.Next()
 		} else {
 			c.JSON(401, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}
-
 
 	}
 }

@@ -27,7 +27,7 @@ func NewAuthRepository(_collection Domain.Collection) *authRepository {
 }
 
 // login
-func (au *authRepository) Login(ctx context.Context, user *Domain.User) (string, error, int) {
+func (au *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.Tokens, error, int) {
 	filter := bson.D{{"email", user.Email}}
 	var existingUser Domain.User
 	err := au.collection.FindOne(ctx, filter).Decode(&existingUser)
@@ -38,16 +38,26 @@ func (au *authRepository) Login(ctx context.Context, user *Domain.User) (string,
 		// cpmpare the hashed password
 		hashedPassword, _ := password_services.GenerateFromPasswordCustom(user.Password)
 		fmt.Print(existingUser.Password == hashedPassword)
-		return "", errors.New("Invalid credentials"), http.StatusBadRequest
+		return Domain.Tokens{}, errors.New("Invalid credentials"), http.StatusBadRequest
 	}
 
-	// Generate JWT
-	jwtToken, err := jwtservice.CreateAccessToken(existingUser)
+	// Generate JWT access
+	jwtAccessToken, err := jwtservice.CreateAccessToken(existingUser)
 	if err != nil {
-		return "", err, 500
+		return Domain.Tokens{}, err, 500
 	}
 
-	return jwtToken, nil, 200
+	jwtRefreshToken, err := jwtservice.CreateRefreshToken(existingUser)
+	if err != nil {
+		return Domain.Tokens{}, err, 500
+	}
+
+	tokens := Domain.Tokens{
+		AccessToken:  jwtAccessToken,
+		RefreshToken: jwtRefreshToken,
+	}
+	
+	return tokens, nil, 200
 }
 
 // register

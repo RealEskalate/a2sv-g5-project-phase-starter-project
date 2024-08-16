@@ -1,4 +1,4 @@
-package config
+package Config
 
 import (
 	"log"
@@ -17,7 +17,7 @@ func Envinit() {
 	// 		"See: " +
 	// 		"www.mongodb.com/docs/drivers/go/current/usage-examples/#environment-variable")
 	// }
-	
+
 	// JwtSecretKey := os.Getenv("JWT_SECRETE_KEY")
 	// if uri == "" {
 	// 	log.Fatal("Set your 'JWT_SECRETE_KEY' environment variable. " +

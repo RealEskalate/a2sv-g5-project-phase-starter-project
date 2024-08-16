@@ -12,7 +12,7 @@ type blogController struct {
 	AuthUseCase Domain.BlogUseCase
 }
 
-func getclaim(c *gin.Context) (*Domain.AccessClaims, error) {
+func Getclaim(c *gin.Context) (*Domain.AccessClaims, error) {
 	claim, exists := c.Get("claim")
 	if !exists {
 		return nil, errors.New("claim not set")
@@ -33,7 +33,7 @@ func NewBlogController(usecase Domain.BlogUseCase) *blogController {
 }
 
 func (controller *blogController) CreateBlog(c *gin.Context) {
-	claims, err := getclaim(c)
+	claims, err := Getclaim(c)
 	if err != nil {
 		c.JSON(401, gin.H{"error": err.Error()})
 		return

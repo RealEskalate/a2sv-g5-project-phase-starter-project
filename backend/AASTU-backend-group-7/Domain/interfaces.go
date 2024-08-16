@@ -8,21 +8,31 @@ import (
 )
 
 type AuthRepository interface {
-	Login(ctx context.Context,user *User) (string, error, int)
-	Register(ctx context.Context,user *User) (*OmitedUser, error, int)
+	Login(ctx context.Context, user *User) (Tokens, error, int)
+	Register(ctx context.Context, user *User) (*OmitedUser, error, int)
 }
 
 type AuthUseCase interface {
-	Login(c *gin.Context, user *User) (string, error, int)
+	Login(c *gin.Context, user *User) (Tokens, error, int)
 	Register(c *gin.Context, user *User) (*OmitedUser, error, int)
 }
 
-type BlogRepository interface {
+type RefreshRepository interface {
+	Update(ctx context.Context, refreshToken string, userid primitive.ObjectID) (error, int)
+	Delete(ctx context.Context, userid primitive.ObjectID) (error, int)
+	Find(ctx context.Context, userid primitive.ObjectID) (string, error, int)
+}
 
+type RefreshUseCase interface {
+	Update(c *gin.Context, refreshToken string, userid primitive.ObjectID) (error, int)
+	Delete(c *gin.Context, userid primitive.ObjectID) (error, int)
+	Find(c *gin.Context, userid primitive.ObjectID) (string, error, int)
+}
+
+type BlogRepository interface {
 }
 
 type BlogUseCase interface {
-
 }
 
 type UserRepository interface {

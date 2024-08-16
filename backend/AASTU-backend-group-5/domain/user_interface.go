@@ -15,10 +15,10 @@ type User_Controller_interface interface {
 type User_Usecase_interface interface {
 	GetOneUser(id string) (ResponseUser , error) 
 	GetUsers() ([]ResponseUser , error)
-	UpdateUser(id string , user User) (ResponseUser , error)
+	UpdateUser(id string , user UpdateUser) (ResponseUser , error)
 	DeleteUser(id string) (error)
-	LogIn(user User) (ResponseUser , error)
-	Register(user User) (ResponseUser , error)
+	LogIn(user LogINUser) (ResponseUser , error)
+	Register(user RegisterUser) (ResponseUser , error)
 	FilterUser(map[string]string) ([]ResponseUser , error)
 }
 

@@ -6,7 +6,11 @@ import AddCardForm from "./AddCardForm";
 import MainCreditCard from "./MainCreditCard";
 
 const HeadingTitle = ({ title }: { title: string }) => {
-  return <h1 className="text-[#343C6A] font-semibold md:text-xl ">{title}</h1>;
+  return (
+    <h1 className="text-[#343C6A] font-semibold lg:text-xl md:text-lg">
+      {title}
+    </h1>
+  );
 };
 
 const CreditCards = () => {
@@ -47,6 +51,7 @@ const CreditCards = () => {
               ["Card Type", "Secondary"],
               ["Card Type", "Secondary"],
               ["Card Type", "Secondary"],
+              ["Card Type", "Secondary"],
             ]}
           />
 
@@ -57,12 +62,14 @@ const CreditCards = () => {
               ["Card Type", "Secondary"],
               ["Card Type", "Secondary"],
               ["Card Type", "Secondary"],
+              ["Card Type", "Secondary"],
             ]}
           />
           <CreditCard
             icon={<img src="card1.svg" />}
             linkUrl=""
             data={[
+              ["Card Type", "Secondary"],
               ["Card Type", "Secondary"],
               ["Card Type", "Secondary"],
               ["Card Type", "Secondary"],
@@ -72,11 +79,11 @@ const CreditCards = () => {
       </div>
 
       <div className="flex flex-col gap-6 md:flex-row">
-        <div className="flex flex-col gap-5 w-full">
+        <div className="flex flex-col gap-5">
           <HeadingTitle title="Add New Card" />
           <AddCardForm />
         </div>
-        <div className="flex flex-col gap-5 basis-5/12">
+        <div className="flex flex-col gap-5 min-w-64 h-full">
           <HeadingTitle title="Card Setting" />
           <CardSettingList />
         </div>

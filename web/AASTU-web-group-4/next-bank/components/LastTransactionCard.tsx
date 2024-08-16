@@ -55,13 +55,11 @@ const UserIcon = () => (
 );
 
 // Transaction Card Component
-const TransactionCard: React.FC<{ transaction: Transaction }> = ({
-  transaction,
-}) => {
+const TransactionCard: React.FC<{ transaction: Transaction }> = ({ transaction }) => {
   return (
-    <div >
-      <div className="hidden md:block flex items-center w-full md:w-auto">
-        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-4">
+    <div className="flex flex-col md:flex-row justify-between p-4 bg-white rounded-lg shadow-none border-none">
+      <div className="flex items-center w-full md:w-auto">
+        <div className="hidden md:block w-12 h-12 rounded-full bg-gray-100 items-center justify-center mr-4">
           {transaction.icon}
         </div>
         <div className="hidden md:block">
@@ -72,26 +70,20 @@ const TransactionCard: React.FC<{ transaction: Transaction }> = ({
       <div className="hidden md:block">
         <p className="text-sm font-medium text-gray-600">{transaction.type}</p>
       </div>
-      <div className="hidden md:block">
+      <div className="hidden md:block"> 
         <p className="text-sm text-gray-500">{transaction.card}</p>
       </div>
       <div className="hidden md:block">
         <p>{transaction.status}</p>
       </div>
       <div className="hidden md:block">
-        <p
-          className={`text-lg ${
-            transaction.amount.startsWith("+")
-              ? "text-green-500"
-              : "text-red-500"
-          }`}
-        >
+        <p className={`text-lg ${transaction.amount.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>
           {transaction.amount}
         </p>
       </div>
-      {/* Mobile view - only show the first and last divs */}
-      <div className="md:hidden flex space-x-3 justify-between">
-        <div className="flex ">
+      
+      <div className="md:hidden flex justify-between flex-row w-full">
+        <div className="flex flex-row">
           <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-4">
             {transaction.icon}
           </div>
@@ -100,7 +92,7 @@ const TransactionCard: React.FC<{ transaction: Transaction }> = ({
             <p className="text-sm text-gray-500">{transaction.date}</p>
           </div>
         </div>
-        <div>
+        <div >
           <p
             className={`text-lg ${
               transaction.amount.startsWith("+")

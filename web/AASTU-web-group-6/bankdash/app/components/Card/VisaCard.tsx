@@ -13,7 +13,7 @@ interface ColorType {
 const VisaCard: React.FC<ColorType> = ({ isBlack, isFade, isSimGray }) => {
   return (
     <div
-      className={`w-full max-h-[242px] font-Lato flex flex-col gap-2 grow rounded-3xl ${
+      className={`w-full max-h-[242px] sm:scale-75 md:scale-90 lg:scale-100 font-Lato flex flex-col gap-2 grow rounded-3xl ${
         isBlack
           ? "text-colorBody-1 bg-white border-solid border-[1px] border-gray-200"
           : isFade

@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { FaSearch, FaBars, FaTimes } from "react-icons/fa";
-import seetings from "/public/assets/icons/group417.png";
-import notification from "/public/assets/icons/group418.png";
+import seetings from "/public/assets/icons/Group417.png";
+import notification from "/public/assets/icons/Group418.png";
 import person from "/public/assets/icons/MaskGroup.png";
 import magnifying from "/public/assets/icons/magnifying-glass.png";
 import Image from "next/image";
@@ -50,7 +50,7 @@ const SearchInput = () => {
 
 function Desktop() {
   return (
-    <div className="flex justify-between h-[101px] items-center md:pl-[46px] md:pr-[40px]">
+    <div className="flex justify-between h-[101px] items-center md:pl-[46px] md:pr-[40px] bg-white ">
       <div className="font-semibold text-[22px]" style={{ color: primary_2 }}>
         Overview
       </div>

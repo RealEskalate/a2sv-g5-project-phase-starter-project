@@ -2,15 +2,15 @@
 'use client'
 
 import React from 'react'
-import Services from './Services/page'
+import Services from './Services/page'  // Ensure this path is correct
 import Settings from './Settings/page 1/page'  // Ensure this path is correct
 
 const Home = () => {
   return (
     <div> 
-      {/* * <div>
+       {/*  <div>
         <Services/>
-      </div> */}
+      </div>  */}
       <div> 
         <Settings/>
       </div> 

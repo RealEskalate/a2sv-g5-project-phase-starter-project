@@ -18,9 +18,11 @@ type signupUsecase struct {
 	contextTimeout  time.Duration
 }
 
-func NewSignupUsecase(userRepository domain.UserRepository, timeout time.Duration) domain.SignupUsecase {
+func NewSignupUsecase(userRepository domain.UserRepository,tokenRepository domain.TokenRepository, otpRepository domain.OTPRepository,timeout time.Duration) domain.SignupUsecase {
 	return &signupUsecase{
 		userRepository: userRepository,
+		tokenRepository: tokenRepository,
+		otpRepository: otpRepository,
 		contextTimeout: timeout,
 	}
 }
@@ -28,13 +30,6 @@ func NewSignupUsecase(userRepository domain.UserRepository, timeout time.Duratio
 func (su *signupUsecase) RegisterUser(c context.Context, user *domain.AuthSignup) (*primitive.ObjectID, error) {
 	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
 	defer cancel()
-	if !userutil.ValidateEmail(user.Email) {
-		return nil, errors.New("invalid email")
-	}
-	if !userutil.ValidatePassword(user.Password) {
-		return nil, errors.New("invalid password")
-	}
-
 	hashedPassword, err := userutil.HashPassword(user.Password)
 	if err != nil {
 		return nil, err
@@ -90,31 +85,57 @@ func (su *signupUsecase) CreateRefreshToken(user *domain.AuthSignup, secret stri
 	return tokenutil.CreateRefreshToken(user, secret, expiry)
 }
 
-func (su *signupUsecase) SaveRefreshToken(c context.Context, token *domain.Token) error {
+func (su *signupUsecase) SaveRefreshToken(c context.Context, token string,userid primitive.ObjectID) error {
 	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
+	tkn := domain.Token{
+		ID: 		 primitive.NewObjectID(),
+		UserID:      userid,
+		RefreshToken: token,
+		ExpiresAt:    time.Now().Add(time.Hour * 24 * 7),
+	}
 	defer cancel()
-	return su.tokenRepository.SaveToken(ctx, token)
+	return su.tokenRepository.SaveToken(ctx, &tkn)
 }
 
-func (su *signupUsecase) VerifyOTP(c context.Context, otp *domain.OTP) error {
+func (su *signupUsecase) VerifyOTP(c context.Context, otp *domain.OTPRequest) (*domain.OTP,error) {
 	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
 	defer cancel()
 	storedOTP, err := su.GetOTPByEmail(ctx, otp.Email)
 	if err != nil {
-		return err
+		return nil,err
 	}
 	if storedOTP.Value != otp.Value {
-		return errors.New("invalid OTP")
+		return nil,errors.New("invalid OTP")
 	}
 	if time.Now().After(storedOTP.ExpiresAt) {
-		return errors.New("OTP expired")
+		return nil,errors.New("OTP expired")
 	}
-	return nil
+	err = su.otpRepository.DeleteOTP(ctx, storedOTP.Email)
+	if err != nil {
+		return nil,err
+	}
+	return storedOTP, nil
 }
 
-func (su *signupUsecase) SendOTP(c context.Context, user *domain.AuthSignup,smtpusername, smtppassword,smtpport,smtphost string ) error {
+func (su *signupUsecase) SendOTP(c context.Context, user *domain.AuthSignup,smtpusername, smtppassword string ) error {
 	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
 	defer cancel()
+	if !userutil.ValidateEmail(user.Email) {
+		return  errors.New("invalid email")
+	}
+	if !userutil.ValidatePassword(user.Password) {
+		return errors.New("password must be at least 8 characters long")
+	}
+	storedOTP, _ := su.GetOTPByEmail(ctx, user.Email)
+
+	if storedOTP != nil {
+		if time.Now().Before(storedOTP.ExpiresAt) {
+			return errors.New("OTP already sent")
+		}
+		err := su.otpRepository.DeleteOTP(ctx, storedOTP.Email)
+		if err != nil {
+			return err
+		}
 	otp := domain.OTP{
 		Value:     userutil.GenerateOTP(),
 		Username:  user.Username,
@@ -123,41 +144,44 @@ func (su *signupUsecase) SendOTP(c context.Context, user *domain.AuthSignup,smtp
 		CreatedAt: time.Now(),
 		ExpiresAt: time.Now().Add(time.Minute * 5),
 	}
-	err := su.SaveOTP(ctx, &otp)
+	err = su.SaveOTP(ctx, &otp)
 	if err != nil {
 		return err
 	}
-	err = su.sendEmail(user.Email, otp.Value,smtpusername, smtppassword,smtpport,smtphost) // Call the sendEmail function to send the OTP to the user's email
+	err = su.SendEmail(user.Email, otp.Value,smtpusername, smtppassword) // Call the sendEmail function to send the OTP to the user's email
 	if err != nil {
 		return err
 	}
+
+}
 	return nil
+
 }
 
-func (su *signupUsecase) sendEmail(email string, otpValue string,smtpusername, smtppassword,smtpport,smtphost string ) error {
+
+
+func (su *signupUsecase) SendEmail(email string, otpValue, smtpusername, smtppassword string) error {
 	// Implement your email sending logic here
-	// You can use third-party libraries or APIs to send the email
-	// Make sure to handle any errors that may occur during the email sending process
-	// Example code:
 	from := smtpusername
-    password := smtppassword
-
-  // Receiver email address.
-  to := []string{
-    email,
-  }
-
-  // smtp server configuration.
-  smtpHost := smtphost
-  smtpPort := smtpport
-
-  // Message.
-  message := []byte("Your OTP is " + otpValue)
+	password := smtppassword
   
-  // Authentication.
-  auth := smtp.PlainAuth("", from, password, smtpHost)
+	// Receiver email address.
+	to := []string{
+	  email,
+	}
   
-  // Sending email.
-  err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
-  return err
+	// smtp server configuration.
+	smtpHost := "smtp.gmail.com"
+	smtpPort := "587"
+  
+	// Message.
+	print(otpValue)
+	message := []byte("Your OTP is " + otpValue)
+	
+	// Authentication.
+	auth := smtp.PlainAuth("", from, password, smtpHost)
+	
+	// Sending email.
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
+	return err
 }

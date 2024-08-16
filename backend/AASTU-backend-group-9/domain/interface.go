@@ -35,9 +35,9 @@ type SignupUsecase interface {
 	GetUserByUsername(c context.Context, username string) (*User, error)
 	CreateAccessToken(user *AuthSignup, secret string, expiry int) (string, error)
 	CreateRefreshToken(user *AuthSignup, secret string, expiry int) (string, error)
-	SaveRefreshToken(c context.Context, token *Token) error
-	VerifyOTP(c context.Context, otp *OTP) error
-	SendOTP(c context.Context, user *AuthSignup, username,password,port,host string) error
+	SaveRefreshToken(c context.Context, token string, id primitive.ObjectID) error
+	VerifyOTP(c context.Context, otp *OTPRequest) (*OTP, error)
+	SendOTP(c context.Context, user *AuthSignup, username,password string) error
 }
 
 type ProfileUsecase interface {
@@ -62,6 +62,7 @@ type TokenRepository interface {
 type OTPRepository interface {
 	GetOTPByEmail(ctx context.Context, email string) (*OTP, error)
 	SaveOTP(c context.Context, otp *OTP) error
+	DeleteOTP(c context.Context, email string) error
 }
 
 type LogoutUsecase interface {

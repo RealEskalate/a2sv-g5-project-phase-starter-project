@@ -40,7 +40,7 @@ func InitRoutes(r *gin.Engine, blogUsecase usecases.BlogUsecase, userUsecase use
 		auth.DELETE("/blogs/:id", blogController.DeleteBlogPost)
 
 		// Admin-specific routes
-		auth.POST("/getallusers", adminMiddleware, userController.getallUsers)
-		auth.PUT("/deleteusers/:id", adminMiddleware, userController.deleteusers)
+		auth.POST("/getallusers", adminMiddleware, userController.GetAllUsers)
+		auth.PUT("/deleteusers/:id", adminMiddleware, userController.DeleteUser)
 	}
 }

@@ -37,7 +37,7 @@ func (b BlogController) GetBlogByID(c *gin.Context) {
 
 // GetBlogs implements domain.BlogUsecase.
 func (b BlogController) GetBlogs(c *gin.Context) {
-	panic("unimplemented")
+	c.JSON(200, gin.H{"des blogs": "blogs"})
 }
 
 // GetMyBlogByID implements domain.BlogUsecase.

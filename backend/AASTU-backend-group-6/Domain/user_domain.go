@@ -28,6 +28,14 @@ type UserRepository interface {
 	ForgotPassword(email string, token string) error
 }
 
+type SignupRepository interface {
+	Create(User) (User, error)
+}
+
+type SignupUseCase interface {
+	Create(User) interface{}
+}
+
 type UserUseCase interface {
 	CreateUser(user User) interface{}
 	FindUserByEmail(email string) interface{}

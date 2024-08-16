@@ -7,6 +7,13 @@ export const transactionApi = createApi({
   }),
 
   endpoints: (builder) => ({
+  signUp: builder.mutation({
+      query: (data) => ({
+        url: "/auth/register",
+        method: "POST",
+        body:data
+      }),
+    }),
     getAllTransaction: builder.query({
       query: (accessToken: string) => ({
         url: "/transactions",
@@ -19,4 +26,4 @@ export const transactionApi = createApi({
   }),
 });
 
-export const { useGetAllTransactionQuery } = transactionApi;
+export const { useGetAllTransactionQuery,useSignUpMutation } = transactionApi;

@@ -33,7 +33,10 @@ func main() {
 	userDatabase := client.Database("Blog_management")
 
 	userCollection := userDatabase.Collection("User")
-	userRepository := Repository.NewUserRepository(userCollection)
+
+	tokenCollection := userDatabase.Collection("Token")
+	userRepository := Repository.NewUserRepository(userCollection, tokenCollection)
+
 	// Initialize the Email Service
 	emailService := infrastructure.NewEmailService()
 

@@ -16,7 +16,7 @@ type UserUsecase interface {
 	Register(input Domain.RegisterInput) (*Domain.User, error)
 	UpdateUser(username string, updatedUser *Domain.UpdateUserInput) error
 	DeleteUser(username string) error
-	Logout(username string) error
+	Logout(username string, tokenString string) error
 	Login(LoginUser *Domain.LoginInput) (string, error)
 }
 
@@ -55,6 +55,7 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error)
 		return nil, fmt.Errorf("failed to hash password: %v", err)
 	}
 
+	// Create a new user
 	user := &Domain.User{
 		Id:             primitive.NewObjectID(),
 		Name:           input.Name,
@@ -182,6 +183,13 @@ func (u *userUsecase) Login(LoginUser *Domain.LoginInput) (string, error) {
 	return accessToken, nil
 }
 
-func (u *userUsecase) Logout(username string) error {
-	return u.userRepo.DeleteToken(username)
+func (u *userUsecase) Logout(username string, tokenString string) error {
+	err := u.userRepo.DeleteToken(username)
+	if err != nil {
+		return err
+	}
+
+	infrastructure.InvalidateToken(tokenString)
+
+	return nil
 }

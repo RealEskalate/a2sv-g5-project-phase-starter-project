@@ -1,8 +1,12 @@
 package Domain
 
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 type User struct {
 	Name string `json:"name" bson:"name"`
-	Id             string   `json:"id" bson:"id"`
+	Id             primitive.ObjectID   `json:"id" bson:"id"`
 	Username       string   `json:"username" bson:"username"`
 	Password       string   `json:"password" bson:"password"`
 	Email          string   `json:"email" bson:"email"`
@@ -11,7 +15,6 @@ type User struct {
 	Bio            string   `json:"bio" bson:"bio"`
 	Gender         string   `json:"gender" bson:"gender"`
 	Role           string   `json:"role" bson:"role"`
-	IsAdmin        bool     `json:"is_admin" bson:"is_admin"`
 	IsActive       bool     `json:"is_active" bson:"is_active"`
 	Address        string   `json:"address" bson:"address"`
 }

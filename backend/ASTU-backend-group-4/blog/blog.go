@@ -75,7 +75,7 @@ type BlogRepository interface {
 	GetBlogs(ctx context.Context, filterOptions []FilterOption, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
 	SearchBlogs(ctx context.Context, query string) (infrastructure.PaginationResponse[Blog], error)
 	GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
-	CreateComment(ctx context.Context, comment Comment) error
+	CreateComment(ctx context.Context, comment Comment) (string, error)
 	DeleteComment(ctx context.Context, id string) error
 	LikeBlog(ctx context.Context, like Like) error
 	DislikeBlog(ctx context.Context, dislike Dislike) error

@@ -1,5 +1,5 @@
 import CredentialsProvider from "next-auth/providers/credentials";
-import fetchData from "../../fetch";
+import signInUser from "./signInUser"; 
 
 export const options = {
     providers: [
@@ -16,7 +16,7 @@ export const options = {
                 };
 
                 try {
-                    const response = await fetchData({ userName, password });
+                    const response = await signInUser({ userName, password });
                     console.log("Response:", response);
                     if (response && response.id) {
                         return {

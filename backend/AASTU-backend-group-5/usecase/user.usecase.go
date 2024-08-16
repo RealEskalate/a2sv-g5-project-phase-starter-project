@@ -41,12 +41,12 @@ func (usecase *UserUseCase) DeleteUser(id string) error {
 	return usecase.UserRepo.DeleteUserDocument(id)
 }
 
-func (usecase *UserUseCase) LogIn(user domain.User) (domain.ResponseUser, error) {
-	user,err := usecase.UserRepo.LogIn(user)
+func (usecase *UserUseCase) LogIn(user domain.LogINUser) (domain.ResponseUser, error) {
+	logged_user,err := usecase.UserRepo.LogIn(user)
 	if err != nil {
 		return domain.ResponseUser{},err
 	}
-	return domain.CreateResponseUser(user),nil
+	return domain.CreateResponseUser(logged_user),nil
 }
 
 func (usecase *UserUseCase) Register(user domain.RegisterUser) (domain.ResponseUser, error) {

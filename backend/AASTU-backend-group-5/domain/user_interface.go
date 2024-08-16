@@ -27,7 +27,7 @@ type User_Registery_interface interface{
 	GetUserDocuments() ([]User , error)
 	UpdateUserDocument(id string , user UpdateUser) (User , error)
 	DeleteUserDocument(id string) (error)
-	LogIn(user User) (User , error)
+	LogIn(user LogINUser) (User , error)
 	Register(user RegisterUser) (User , error)
 	FilterUserDocument(map[string]string) ([]User , error)
 }

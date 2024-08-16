@@ -23,32 +23,12 @@ import { CalendarIcon } from "@radix-ui/react-icons";
 import { Calendar } from "@/components/ui/calendar";
 import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
-
-const formSchema = z.object({
-  name: z.string().min(2).max(50),
-  email: z.string().email(),
-  dateOfBirth: z.string(),
-  permanentAddress: z.string(),
-  postalCode: z.string(),
-  username: z.string().min(2).max(50),
-  password: z.string().min(8),
-  presentAddress: z.string(),
-  city: z.string(),
-  country: z.string(),
-  profilePicture: z.string(),
-  preference: z.object({
-    currency: z.string(),
-    sentOrReceiveDigitalCurrency: z.boolean(),
-    receiveMerchantOrder: z.boolean(),
-    accountRecommendations: z.boolean(),
-    timeZone: z.string(),
-    twoFactorAuthentication: z.boolean(),
-  }),
-});
+import Link from "next/link";
+import { signUpSchema } from "@/schema/index";
 
 export const SignUpForm = () => {
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -72,21 +52,22 @@ export const SignUpForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: z.infer<typeof signUpSchema>) => {
     console.log("123");
     console.log(values);
   };
 
   return (
     <div className="flex min-h-screen w-full max-w-[420px] flex-col justify-center gap-5 py-10 md:gap-8">
-      <div className="flex items-center gap-2 p-3">
+      <div className="flex items-center gap-2 ">
         <Image src="/icons/logo.png" width={25} height={25} alt="logo" />
         <h1 className="text-primaryBlack font-[900] text-[1.5rem]">
           BankDash.
         </h1>
       </div>
+      <h1 className="gap-2 text-2xl text-primaryBlack font-bold">Register</h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           {/* Name */}
           <FormField
             control={form.control}
@@ -417,11 +398,17 @@ export const SignUpForm = () => {
             )}
           />
           {/* Submit Button */}
-          <Button type="submit" className="rounded-2xl mt-4 md:w-[400px]">
-            Submit
+          <Button
+            type="submit"
+            className="bg-primaryBlue rounded-2xl mt-12 w-full"
+          >
+            Register
           </Button>
         </form>
       </Form>
+      <Link href="/auth/sign-in" className="text-sm text-center text-blue-400">
+        Already have an account? Sign in
+      </Link>
     </div>
   );
 };

@@ -1,8 +1,8 @@
-import { SignUpForm } from "./signUpForm";
+import SignUpForm from "./signUpForm";
 
 const SignUp = async () => {
   return (
-    <section className="flex justify-center items-center size-full max-sm:px-6">
+    <section className="flex items-center justify-center size-full max-sm:px-6">
       <SignUpForm />
     </section>
   );

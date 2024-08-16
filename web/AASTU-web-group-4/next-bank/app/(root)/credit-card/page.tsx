@@ -8,7 +8,7 @@ import CardSetting from '@/components/CardSetting'
 const CreditCard = () => {
   const cards:string[] = [colors.blue, colors.white, colors.blue, colors.white]
   return (
-    <div>
+    <div className='ml-40'>
       <div className="myCards w-[80%] mx-auto mt-4">
         <h1 className='text-[19px] mb-3 font-bold text-[#333B69]'>My Cards</h1>
         <div className="flex overflow-x-auto space-x-4 pr-3">

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-const Sidebar = ({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void; }) => {
+const Sidebar = ({ isOpen = false, toggleSidebar = () => { } }: { isOpen?: boolean; toggleSidebar?: () => void; }) => {
   const pathname = usePathname();
 
   return (

@@ -21,6 +21,9 @@ export function TableComponent({ columns, data }: TableProps) {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: { pageSize: 5 }, // Limit to 5 rows per page
+    },
     debugTable: true,
   });
 
@@ -28,9 +31,9 @@ export function TableComponent({ columns, data }: TableProps) {
     <div className="overflow-x-auto ">
       <table className="min-w-full bg-white border rounded-[25px]">
         <thead className="text-[#718EBF] font-Inter ">
-          {tableInstance.getHeaderGroups().map(headerGroup => (
+          {tableInstance.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
+              {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
                   className="text-left p-2 border-b border-gray-300"
@@ -47,9 +50,9 @@ export function TableComponent({ columns, data }: TableProps) {
           ))}
         </thead>
         <tbody>
-          {tableInstance.getRowModel().rows.map(row => (
+          {tableInstance.getRowModel().rows.map((row) => (
             <tr key={row.id}>
-              {row.getVisibleCells().map(cell => (
+              {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
                   className="p-2 border-b border-gray-300 text-sm text-gray-700"
@@ -76,13 +79,18 @@ function Pagination({ table }: PaginationProps) {
   const { pageIndex } = table.getState().pagination;
 
   // Calculate the range of page numbers to display
-  const pageNumbers = [];
   const totalPageNumbersToShow = 4;
-  
-  // Define the start and end pages for the visible range
-  const startPage = Math.max(0, pageIndex - Math.floor(totalPageNumbersToShow / 2));
-  const endPage = Math.min(pageCount - 1, startPage + totalPageNumbersToShow - 1);
+  let startPage = Math.max(0, pageIndex - Math.floor(totalPageNumbersToShow / 2));
+  let endPage = startPage + totalPageNumbersToShow - 1;
 
+  // Ensure we don't exceed the page count
+  if (endPage >= pageCount) {
+    endPage = pageCount - 1;
+    startPage = Math.max(0, endPage - totalPageNumbersToShow + 1);
+  }
+
+  // Generate the array of page numbers to render
+  const pageNumbers = [];
   for (let i = startPage; i <= endPage; i++) {
     pageNumbers.push(i);
   }
@@ -99,7 +107,7 @@ function Pagination({ table }: PaginationProps) {
       </button>
 
       <div className="flex items-center space-x-1">
-        {pageIndex > 0 && (
+        {pageIndex > 0 && startPage > 0 && (
           <button
             onClick={() => table.setPageIndex(0)}
             className={`p-2 text-sm ${pageIndex === 0 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-600 hover:text-white transition-colors`}
@@ -116,7 +124,7 @@ function Pagination({ table }: PaginationProps) {
             {page + 1}
           </button>
         ))}
-        {pageCount > pageNumbers.length && pageIndex < pageCount - 1 && (
+        {pageCount > endPage + 1 && (
           <button
             onClick={() => table.setPageIndex(pageCount - 1)}
             className={`p-2 text-sm ${pageIndex === pageCount - 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-600 hover:text-white transition-colors`}
@@ -137,3 +145,4 @@ function Pagination({ table }: PaginationProps) {
     </div>
   );
 }
+export default TableComponent;

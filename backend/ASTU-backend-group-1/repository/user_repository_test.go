@@ -127,6 +127,13 @@ func (suite *UserRespositoryTestSuite) TestGet() {
 	})
 }
 
+func (suite *UserRespositoryTestSuite) TestUpdate() {
+	assert := assert.New(suite.T())
+	updatedUser, err := suite.userRepository.Update(expectedUser.ID, expectedUser)
+	assert.NoError(err)
+	assert.Equal(expectedUser, updatedUser)
+}
+
 func TestUserRepository(t *testing.T) {
 	suite.Run(t, new(UserRespositoryTestSuite))
 }

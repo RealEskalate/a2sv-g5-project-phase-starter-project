@@ -1,46 +1,11 @@
-func (u *userUsecase) Login(*Domain.LoginInput) (string, error) {
-	user, err := u.userRepository.FindByEmail(email)
-    if err!= nil {
-        return " ", err
-    }
 
-	storedPassword := user.Password
-
-	err = infrastructure.ComparePasswords(storedPassword, password)
-
-	if err != nil{
-		return  " ", err
-	}
-
-	access_token, err  := infrastructure.GenerateToken(user.Username , user.Role)
-
-	if err != nil{
-		return " ", err
-	}
-	refresh_token , err := infrastructure.GenerateRefreshToken(user.Username)
-
-	if err != nil{
-		return " ", err
-	}
-
-	err =  u.userRepository.InsertToken(user.Username , access_token , refresh_token)
-	if err != nil{
-		return " ", err
-	}
-    
-	return access_token, nil
-}
-
-func (u *userUsecase) Logout( username  string) error {
-	u.userRepository.DeleteToken (username )
-}
 
 package Usecases
 
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"ASTU-backend-group-3/Blog_manager/Repository"
-	infrastructure "ASTU-backend-group-3/Blog_manager/infrastructur"
+	"ASTU-backend-group-3/Blog_manager/infrastructure"
 
 	// "ASTU-backend-group-3/Blog_manager/infrastructure"
 	"errors"
@@ -52,9 +17,10 @@ import (
 
 type UserUsecase interface {
 	Register(input Domain.RegisterInput) (*Domain.RegisterInput, error)
-	Login(user Domain.LoginInput) (*Domain.User, error)
 	UpdateUser(username string, updatedUser *Domain.UpdateUserInput) error
 	DeleteUser(username string) error
+	Logout( username  string) error
+	Login(*Domain.LoginInput) (string, error)
 }
 
 type userUsecase struct {
@@ -166,4 +132,40 @@ func (u *userUsecase) DeleteUser(username string) error {
 	}
 
 	return nil
+}
+func (u *userUsecase) Login(*Domain.LoginInput) (string, error) {
+	user, err := u.userRepository.FindByEmail(email)
+    if err!= nil {
+        return " ", err
+    }
+
+	storedPassword := user.Password
+
+	err = infrastructure.ComparePasswords(storedPassword, password)
+
+	if err != nil{
+		return  " ", err
+	}
+
+	access_token, err  := infrastructure.GenerateToken(user.Username , user.Role)
+
+	if err != nil{
+		return " ", err
+	}
+	refresh_token , err := infrastructure.GenerateRefreshToken(user.Username)
+
+	if err != nil{
+		return " ", err
+	}
+
+	err =  u.userRepository.InsertToken(user.Username , access_token , refresh_token)
+	if err != nil{
+		return " ", err
+	}
+    
+	return access_token, nil
+}
+
+func (u *userUsecase) Logout( username  string) error {
+	u.userRepository.DeleteToken (username )
 }

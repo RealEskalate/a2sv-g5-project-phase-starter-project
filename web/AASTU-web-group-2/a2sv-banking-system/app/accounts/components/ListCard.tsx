@@ -1,6 +1,5 @@
 import React from "react";
 import { IconType } from "react-icons";
-
 type DataItem = {
   heading: string;
   text: string;
@@ -21,7 +20,7 @@ interface Props {
 
 const ListCard = ({ column, width }: Props) => {
   return (
-      <div className={`flex gap-3 items-center rounded-2xl px-5 py-5 bg-white ${width}`}>
+      <div className={`flex gap-3 items-center rounded-2xl px-5 py-4 bg-white ${width}`}>
         <div className={`text-3xl px-2 py-2 rounded-full ${column.iconStyle}`}>
           <column.icon />
         </div>

@@ -13,10 +13,9 @@ export type Item = {
 };
 
 const LastTransaction = () => {
-  const access =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJzYW1pdGVzdCIsImlhdCI6MTcyMzgzNjg1NywiZXhwIjoxNzIzOTIzMjU3fQ.O6YWMCTSeqp9WJXya9rOHpYcCtglFH6T3Ze4W0zpWOGjD0tCUvCv5I-M-b14rdim"; //user another access token if it expires.
+  const access = process.env.ACCESS_TOKEN;
 
-  const { data, isError, isLoading } = useGetAllTransactionQuery(access);
+  const { data, isError, isLoading } = useGetAllTransactionQuery(access!);
 
   if (isLoading) {
     return <div>Loading...</div>;

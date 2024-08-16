@@ -17,8 +17,9 @@ type UserRepository interface {
 	FindUserById(ctx context.Context, id string) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) error
 	UpdateUser(ctx context.Context, user *domain.User) error
-	DeleteUser(ctx context.Context, id string) error
+	UpdatePassword(ctx context.Context, email string, password string) error
+	// DeleteUser(ctx context.Context, id string) error
 
-	GetAllUsers(ctx context.Context) ([]*domain.User, error)
-	FilterUsers(ctx context.Context, filter map[string]interface{}) ([]*domain.User, error)
+	// GetAllUsers(ctx context.Context) ([]*domain.User, error)
+	// FilterUsers(ctx context.Context, filter map[string]interface{}) ([]*domain.User, error)
 }

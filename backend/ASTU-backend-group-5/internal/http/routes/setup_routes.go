@@ -6,6 +6,6 @@ import (
 )
 
 func SetUpRoute(router *gin.Engine, collection *mongo.Collection) {
-	RegisterUserRouters(collection, router)
+	// RegisterUserRouters(collection, router)
 	RegisterVerificationRoutes(collection, router)
 }

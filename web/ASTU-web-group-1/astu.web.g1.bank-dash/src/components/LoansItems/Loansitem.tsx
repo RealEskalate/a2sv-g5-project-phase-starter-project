@@ -21,7 +21,7 @@ const Loansitem = () => {
         amount={`$${100000}`}
       />
       <LoanCard
-        image={"/assets/icons/Businesstrack.svg"}
+        image={"/assets/icons/businesstrack.svg"}
         name={"Business Loans"}
         amount={`$${500000}`}
       />

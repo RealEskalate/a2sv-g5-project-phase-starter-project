@@ -1,10 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { transactionApi } from "./serice/TransactionService";
+import { transactionApi } from "./service/TransactionService";
 
 export const store = () => {
   return configureStore({
     reducer: {
-      [transactionApi.reducerPath]: transactionApi.reducer, // Add your reducer path this way
+      [transactionApi.reducerPath]: transactionApi.reducer,
+      // Add your reducer path this way
     },
     middleware: (getDefaultMiddleWare) =>
       getDefaultMiddleWare().concat(transactionApi.middleware), // Add the middleware beside the transactionAPi.middleware by adding a comma

@@ -5,6 +5,7 @@ export const transactionApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "https://bank-dashboard-6acc.onrender.com",
   }),
+
   endpoints: (builder) => ({
   signUp: builder.mutation({
       query: (data) => ({
@@ -14,11 +15,11 @@ export const transactionApi = createApi({
       }),
     }),
     getAllTransaction: builder.query({
-      query: (accessToken: string = "") => ({
+      query: (accessToken: string) => ({
         url: "/transactions",
         method: "GET",
         headers: {
-          Authorizations: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       }),
     }),

@@ -43,10 +43,10 @@ const Sidebar = () => {
             <h2 className="text-base   ">Transactions</h2>
           </div>
         </Link>
-        <Link href="/">
+        <Link href="/account">
           <div
             className={`flex items-center gap-x-6  ${
-              isActive("/Accounts") ? "text-[#1814F3]" : "text-[#b1b1b1]"
+              isActive("/account") ? "text-[#1814F3]" : "text-[#b1b1b1]"
             }`}
           >
             <Image

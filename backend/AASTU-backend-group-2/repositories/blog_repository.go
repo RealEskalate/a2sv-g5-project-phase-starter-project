@@ -28,15 +28,14 @@ func NewBlogRepository(mongoClient *mongo.Client) domain.BlogRepository {
 
 }
 
-
 const perpage = 10
 
-func (br *BlogRepository) CreateBlog(blog domain.Blog) error {
-	_, err := br.collection.InsertOne(context.TODO(), blog)
-
+func (br *BlogRepository) CreateBlog(blog *domain.Blog) error {
+	result, err := br.collection.InsertOne(context.TODO(), blog)
 	if err != nil {
 		return err
 	}
+	blog.ID = result.InsertedID.(primitive.ObjectID)
 	return nil
 }
 

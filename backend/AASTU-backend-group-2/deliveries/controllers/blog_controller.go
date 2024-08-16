@@ -50,7 +50,7 @@ func (controller *BlogController) CreateBlog(c *gin.Context) {
 	// blog.UserID = userid
 
 	blog.Date = time.Now()
-	err := controller.Blogusecase.CreateBlog(c, blog)
+	err := controller.Blogusecase.CreateBlog(c, &blog)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"error": err.Error(),

@@ -10,70 +10,80 @@ import Services from '../../../public/assets/icons/services-icon.svg';
 import MyPrivileges from '../../../public/assets/icons/myPrivileges-icon.svg';
 import Setting from '../../../public/assets/icons/setting-icon.svg';
 import Logo from '../../../public/assets/icons/logo-icon.svg';
+import Link from 'next/link';
 
 const data = [
   {
     icon: HomeIcon,
     title: 'Dashboard',
     active: true,
+    url: '/',
   },
   {
     icon: Transaction,
     title: 'Transactions',
     active: false,
+    url: 'transactions',
   },
   {
     icon: Accounts,
     title: 'Accounts',
     active: false,
+    url: '/accounts',
   },
   {
     icon: InvestmentIcon,
     title: 'Investment',
     active: false,
+    url: '/investments',
   },
   {
     icon: CreditCard,
     title: 'Credit Card',
     active: false,
+    url: '/credit-card',
   },
   {
     icon: Loans,
     title: 'Loans',
     active: false,
+    url: '/loans',
   },
   {
     icon: Services,
     title: 'Services',
     active: false,
+    url: '/services',
   },
   {
     icon: MyPrivileges,
     title: 'My Privileges',
     active: false,
+    url: '/my-privileges',
   },
   {
     icon: Setting,
     title: 'Setting',
     active: false,
+    url: '/settings',
   },
 ];
 
 export default function Sidebar() {
   return (
     <>
-      <>
-        <aside className='fixed sm:relative top-0 left-0 z-40 w-[230px] transition-transition -translate-x-full sm:translate-x-0 duration-300 '>
-          <div className='min-h-screen py-4 overflow-y-auto bg-white '>
-            <p className='flex items-center px-3 text-18px font-bold text-navy'>
-              <Logo className='w-[28px] h-[25px] mx-2' /> BankDash.
-            </p>
-            {data.map((ele) => (
-              <SideBarItems key={ele.title} Icon={ele.icon} title={ele.title} active={ele.active} />
-            ))}
-          </div>
-        </aside>
-      </>
+      <aside className='fixed sm:relative top-0 left-0 z-40 w-[215px] transition-transition -translate-x-full sm:translate-x-0 duration-300 '>
+        <div className='min-h-screen py-4 overflow-y-auto bg-white '>
+          <p className='flex items-center px-3 text-xl font-bold text-navy mb-10 my-3'>
+            <Logo className='w-[28px] h-[25px] mx-2' /> BankDash.
+          </p>
+          {data.map((ele) => (
+            <Link href={ele.url} key={ele.title}>
+              <SideBarItems Icon={ele.icon} title={ele.title} active={ele.active} />
+            </Link>
+          ))}
+        </div>
+      </aside>
     </>
   );
 }

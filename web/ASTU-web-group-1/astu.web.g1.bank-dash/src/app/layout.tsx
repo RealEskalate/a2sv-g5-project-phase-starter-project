@@ -19,11 +19,11 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <div className='flex w-full bg-light min-h-screen'>
-          <div className='relative'>
+        <div className='flex w-full bg-slate-100 min-h-screen font-Inter'>
+          <div className='min-h-screen fixed left-0 top-0'>
             <Sidebar />
           </div>
-          <div className='w-full'>
+          <div className='w-full overflow-hidden sm:ml-[210px] transaction-all duration-300'>
             <NavBar />
             <div className='p-5'>{children}</div>
           </div>

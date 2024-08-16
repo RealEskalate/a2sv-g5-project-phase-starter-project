@@ -51,12 +51,12 @@ const TableData = [
 const ActiveLoansOverviewTable = () => {
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-16px md:text-18px xl:text-22px text-[#333B69] font-semibold">
+      <h1 className="text-16px md:text-15px xl:text-18px text-[#333B69] font-semibold">
         Active Loans Overview
       </h1>
       <div className="relative overflow-x-auto bg-white px-4 md:px-6 pt-5 md:pt-6 rounded-2xl md:rounded-2xl">
         <table className="bg-white px-5 lg:px-11 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className=" text-12px md:text-16px font-Lato font-medium text-blue-steel bg-white border-b">
+          <thead className=" text-12px md:text-15px font-Lato font-normal text-blue-steel bg-white border-b">
             <tr className="">
               <th scope="col" className="hidden md:table-cell pb-2">
                 SL No
@@ -73,7 +73,7 @@ const ActiveLoansOverviewTable = () => {
               <th scope="col" className="hidden min-[900px]:table-cell pb-2">
                 Interest rate
               </th>
-              <th scope="col" className="hidden md:table-cell pb-2">
+              <th scope="col" className="hidden min-[900px]:table-cell pb-2">
                 Installment
               </th>
               <th scope="col" className=" pb-2 w-fit">
@@ -81,7 +81,7 @@ const ActiveLoansOverviewTable = () => {
               </th>
             </tr>
           </thead>
-          <tbody className="text-12px xl:text-16px text-gray-dark cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700">
+          <tbody className="text-12px xl:text-15px text-gray-dark cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700">
             {TableData.map((data, index) => (
               <tr
                 key={index}
@@ -94,10 +94,10 @@ const ActiveLoansOverviewTable = () => {
                 <td className="hidden min-[900px]:table-cell py-3">
                   {data["Interest rate"]}
                 </td>
-                <td className="hidden md:table-cell py-3">
+                <td className="hidden min-[900px]:table-cell py-3">
                   {data.Installment}
                 </td>
-                <td className="py-3 w-24 md:w-32">
+                <td className="py-3 w-24 md:w-32 ">
                   <TableButton text="Repay" classname="px-6" />
                 </td>
               </tr>

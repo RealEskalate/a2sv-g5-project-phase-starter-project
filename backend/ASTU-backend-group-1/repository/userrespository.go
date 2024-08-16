@@ -7,6 +7,8 @@ import (
 
 	"github.com/sv-tools/mongoifc"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -15,19 +17,31 @@ type userRepository struct {
 }
 
 func NewUserRepository(c mongoifc.Collection) domain.UserRepository {
-	/* indexModels := mongo.IndexModel{
-		Keys: bson.D{
-			{"email", 1},
-			{"username", 1},
+	indexModels := []mongo.IndexModel{
+		{
+			Keys: bson.D{
+				{"email", 1},
+			},
+			Options: options.Index().SetUnique(true),
+		}, {
+			Keys: bson.D{
+				{"username", 1},
+			},
+			Options: options.Index().SetUnique(true),
 		},
-	} */
-	// c.Indexes().CreateOne(context.TODO(), indexModels)
+	}
+	c.Indexes().CreateOne(context.TODO(), indexModels[0])
+	c.Indexes().CreateOne(context.TODO(), indexModels[1])
+	return &userRepository{collection: c}
+}
+
+func NewUserTestRepository(c mongoifc.Collection) domain.UserRepository {
 	return &userRepository{collection: c}
 }
 
 func (repo *userRepository) getByID(userId string) (domain.User, error) {
 	var user domain.User
-	err := repo.collection.FindOne(context.TODO(), bson.D{{"id", userId}}).Decode(&user)
+	err := repo.collection.FindOne(context.TODO(), bson.D{{"_id", userId}}).Decode(&user)
 	if err != nil {
 		return domain.User{}, err
 	}
@@ -57,16 +71,28 @@ func (repo *userRepository) getByEmail(email string) (domain.User, error) {
 func (repo *userRepository) Get(opts domain.UserFilterOption) ([]domain.User, error) {
 	if opts.Filter.Username != "" {
 		user, err := repo.getByUsername(opts.Filter.Username)
+		if err == mongo.ErrNoDocuments {
+			err = fmt.Errorf("there is no user with the given username")
+		}
 		return []domain.User{user}, err
 	} else if opts.Filter.Email != "" {
 		user, err := repo.getByEmail(opts.Filter.Email)
+		if err == mongo.ErrNoDocuments {
+			err = fmt.Errorf("there is no user with the given email")
+		}
 		return []domain.User{user}, err
 	} else if opts.Filter.UserId != "" {
 		user, err := repo.getByID(opts.Filter.UserId)
+		if err == mongo.ErrNoDocuments {
+			err = fmt.Errorf("there is no user with the given id")
+		}
 		user.ID = opts.Filter.UserId
 		return []domain.User{user}, err
 	}
 	cur, err := repo.collection.Find(context.TODO(), bson.D{{}}, options.Find())
+	if err == mongo.ErrNoDocuments {
+		err = fmt.Errorf("there is no users in the database")
+	}
 	if err != nil {
 		return []domain.User{}, err
 	}
@@ -82,7 +108,11 @@ func (repo *userRepository) Get(opts domain.UserFilterOption) ([]domain.User, er
 }
 
 func (repo *userRepository) Create(u domain.User) (domain.User, error) {
+	u.ID = primitive.NewObjectID().Hex()
 	_, err := repo.collection.InsertOne(context.TODO(), &u, options.InsertOne())
+	if mongo.IsDuplicateKeyError(err) {
+		return domain.User{}, fmt.Errorf("user with the same username or email already exists")
+	}
 	if err != nil {
 		return domain.User{}, err
 	}
@@ -106,12 +136,15 @@ func (repo *userRepository) Update(userId string, updateData domain.User) (domai
 	if updateData.FirstName != "" {
 		user.FirstName = updateData.FirstName
 	}
-	repo.collection.ReplaceOne(context.TODO(), bson.D{{"id", userId}}, user)
+	if updateData.Email != "" || updateData.Username != "" {
+		return user, fmt.Errorf("cannot modify username or email")
+	}
+	repo.collection.ReplaceOne(context.TODO(), bson.D{{"_id", userId}}, user)
 	return user, nil
 }
 
 func (repo *userRepository) Delete(userId string) error {
-	res, err := repo.collection.DeleteOne(context.TODO(), bson.D{{"id", userId}})
+	res, err := repo.collection.DeleteOne(context.TODO(), bson.D{{"_id", userId}})
 	if res.DeletedCount == 0 {
 		return fmt.Errorf("user does not exists in the database")
 	}

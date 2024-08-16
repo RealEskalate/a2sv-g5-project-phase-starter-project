@@ -5,7 +5,7 @@ interface props{
 
 const TrendingStock = ({data}:props) => {
   return (
-    <div className='border border-solid rounded-3xl overflow-hidden w-[100%]  bg-white'>
+    <div className='border border-solid rounded-3xl overflow-hidden w-[100%]  bg-white shadow-lg border-gray-300'>
     <table className='w-full' >
         <thead>
             <tr className='text-left '>

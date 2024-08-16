@@ -12,5 +12,6 @@ func Router(server *gin.Engine, config *infrastructure.Config, DB mongo.Database
 	NewBlogrouter(config, DB, blogRouter)
 	userRouter := server.Group("")
 	NewUserrouter(config, DB, userRouter)
+	NewSignupRoute(config, DB, userRouter)
 
 }

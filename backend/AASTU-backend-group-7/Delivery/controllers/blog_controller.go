@@ -12,13 +12,13 @@ type blogController struct {
 	AuthUseCase Domain.BlogUseCase
 }
 
-func getclaim(c *gin.Context) (*Domain.Claims, error) {
+func getclaim(c *gin.Context) (*Domain.AccessClaims, error) {
 	claim, exists := c.Get("claim")
 	if !exists {
 		return nil, errors.New("claim not set")
 	}
 
-	userClaims, ok := claim.(*Domain.Claims)
+	userClaims, ok := claim.(*Domain.AccessClaims)
 	if !ok {
 		return nil, errors.New("invalid claim type")
 	}

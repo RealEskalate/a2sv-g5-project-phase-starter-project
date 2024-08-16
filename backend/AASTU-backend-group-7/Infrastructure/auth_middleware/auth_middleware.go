@@ -72,7 +72,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		//set claims to the context
-		c.Set("claim", &Domain.Claims{
+		c.Set("claim", &Domain.AccessClaims{
 			ID:   userID,
 			Role: role,
 		})

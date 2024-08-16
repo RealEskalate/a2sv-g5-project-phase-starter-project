@@ -36,7 +36,8 @@ func (r *refreshTokenUsecase) ExtractIDFromToken(requestToken string, secret str
 
 // GetUserByID implements domain.RefreshTokenUsecase.
 func (r *refreshTokenUsecase) GetUserByID(c context.Context, id string) (domain.User, error) {
-	ctx, cancel := context.WithTimeout(c, r.contextTimeout)
-	defer cancel()
-	r.userRepository.GetUserByID(ctx, id)
+	// ctx, cancel := context.WithTimeout(c, r.contextTimeout)
+	// defer cancel()
+	// r.userRepository.GetUserByID(ctx, id)
+	return domain.User{}, nil
 }

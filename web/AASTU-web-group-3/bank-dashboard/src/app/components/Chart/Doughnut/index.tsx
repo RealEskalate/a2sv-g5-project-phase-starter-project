@@ -16,7 +16,7 @@ const data = {
   labels: ["MCP Bank", "ABM Bank", "BRC Bank", "DBL Bank"],
   datasets: [
     {
-      data: [25, 25, 25, 25], // Adjust these values as per your requirement
+      data: [25, 25, 25, 25],
       backgroundColor: ["#22E2B8", "#FF678E", "#FFBF47", "#4E88FF"],
       hoverBackgroundColor: ["#22E2B8", "#FF678E", "#FFBF47", "#4E88FF"],
     },
@@ -25,18 +25,20 @@ const data = {
 
 const options = {
   responsive: true,
+  maintainAspectRatio: false, 
   plugins: {
     legend: {
       position: "bottom" as const,
-      rectancle: "round" as const,
     },
   },
 };
 
 const DoughnutChart = () => {
   return (
-    <div className="w-auto h-72 md:h-[240px] flex justify-between items-center">
-      <Doughnut data={data} options={options} />
+    <div className="w-full h-full flex justify-center items-center">
+      <div className="w-full h-80 md:h-full p-3">
+        <Doughnut data={data} options={options} />
+      </div>
     </div>
   );
 };

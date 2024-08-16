@@ -65,9 +65,15 @@ func (u *UserUsecase) ResetPassword(resetToken string, newPassword string, email
 	if err != nil {
 		return err
 	}
-	err = u.repo.UpdatePassword(context.Background(), email, hashedPassword)
-	if err != nil {
-		return err
+	user, err := u.repo.FindUserByEmail(context.Background(), email)
+
+	if user != nil && err == nil {
+		user.Password = hashedPassword
+		err = u.repo.UpdateUser(context.Background(), user)
+		if err != nil {
+			return err
+		}
+		return nil
 	}
-	return nil
+	return err
 }

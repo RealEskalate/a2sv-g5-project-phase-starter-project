@@ -1,13 +1,16 @@
 import React from "react";
 import Image from "next/image";
 import x from "../../../public/assets/next-icon.svg";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { AreaComp } from "../Charts/AreaComp";
 const Bottom = () => {
   const people: any = [1, 2, 3];
   return (
     <section className="Botom w-full flex gap-6 ">
-      <div className="cards-container w-2/5 center-content flex flex-col gap-6">
-        <h1 className="flex grow page text-xl font-semibold text-colorBody-1">
+      <div className="cards-container w-2/5  center-content flex flex-col gap-6">
+        <h1 className="text-xl font-semibold text-colorBody-1">
           Expense Statistics
         </h1>
 
@@ -47,7 +50,7 @@ const Bottom = () => {
                 <div className="name text-base font-semibold">LIvia Bator</div>
                 <div className="role text-base text-[#718EBF]">CEO</div>
               </div>
-              <button className="next flex p-6 h-fit bg-white shadow-sm rounded-full">
+              <button className="next flex p-6 h-fit bg-white shadow-sm shadow-blue-300 rounded-full">
                 <Image
                   src={"/assets/next-icon.svg"}
                   alt=""
@@ -57,15 +60,18 @@ const Bottom = () => {
               </button>
             </div>
 
-            <div className="bottom flex gap-4">
-              <div className="text-gray- text-base text-blue-900">
+            <div className="bottom flex gap-4 items-center">
+              <div className="text-gray- text-lg text-[#718EBF]">
                 Write Amount
               </div>
-              <div className="flex items-center text-base text-[#718EBF] bg-[#EDF1F7] rounded-[50px] px-4 py-2">
-                <span>525.50</span>
-                <button className="p-4 rounded-[50px] bg-[#1814F3] text-white">
-                  {" "}
+              <div className="flex items-center text-base text-[#718EBF] bg-[#EDF1F7] rounded-[50px] py-1 pl-6 grow justify-end">
+                <div className="flex w-full grow">525.50</div>
+                <button className="flex gap-2 w-full p-4 rounded-[50px] bg-[#1814F3] text-white grow px-6 text-6 items-center justify-center">
                   Send
+                  <FontAwesomeIcon
+                    icon={faPaperPlane}
+                    className="w-5 font-normal"
+                  />
                 </button>
               </div>
             </div>
@@ -73,7 +79,7 @@ const Bottom = () => {
         </div>
       </div>
       <div className="cards-container center-content flex flex-col gap-6 grow">
-        <h1 className="flex grow page text-xl font-semibold text-colorBody-1">
+        <h1 className="page text-xl font-semibold text-colorBody-1">
           Balance History
         </h1>
 

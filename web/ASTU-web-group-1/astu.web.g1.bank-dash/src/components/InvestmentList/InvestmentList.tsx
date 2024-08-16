@@ -5,7 +5,7 @@ const InvestmentList = () => {
   return (
     <>
       <div className="flex flex-col items-start px-2 md:w-3/5 space-y-4">
-        <h1 className="text-[#333B69] py-2 font-semibold">My Investment</h1>
+        <h1 className="text-deepNavy text-xl py-2 font-[600]">My Investment</h1>
         <InvestmentListCard
           companyName="Apple Store"
           amount="54,000"

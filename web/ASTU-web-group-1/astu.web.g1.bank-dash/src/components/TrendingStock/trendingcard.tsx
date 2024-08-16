@@ -19,10 +19,11 @@ const Trendingcard = ({
       <td className="font-[400] font-Inter text-sm py-1.5 pl-4 truncate">
         {Name}
       </td>
-      <td className="font-[400] font-Inter text-sm py-1.5 pl-4 truncate">{price}</td>
+      <td className="font-[400] font-Inter text-sm py-1.5 pl-4 truncate">
+        {price}
+      </td>
       <td
         className={`font-[500] py-1.5 pl-4 truncate text-16px ${
-
           Color ? "text-mintGreen" : "text-candyPink"
         }`}
       >

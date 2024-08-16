@@ -9,7 +9,7 @@ import (
 // JWTService interface
 type JWTService interface {
 	GenerateToken(userID, role string) (string, error)
-	GenerateRefreshToken(userID string) (string, error)
+	GenerateRefreshToken(userID, role string) (string, error)  // Modified to include role
 	ValidateToken(token string) (*jwt.Token, *Claims, error)
 	ValidateRefreshToken(token string) (*jwt.Token, error)
 }
@@ -53,20 +53,25 @@ func (j *jwtService) GenerateToken(userID, role string) (string, error) {
 	return token.SignedString([]byte(j.secretKey))
 }
 
-// GenerateRefreshToken generates a new refresh JWT token
-func (j *jwtService) GenerateRefreshToken(userID string) (string, error) {
-	claims := &Claims{
-		ID: userID,
+func (j *jwtService) GenerateRefreshToken(userID, role string) (*domain.RefreshToken, error) {
+	// Set expiration time for refresh token
+	expirationTime := time.Now().Add(time.Hour * 24 * 7) // 7 days
+
+	claims := &domain.Claims{
+		ID:   userID,
+		Role: role,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 24 * 7).Unix(), // Longer expiry time for refresh token
+			ExpiresAt: expirationTime.Unix(),
 			Issuer:    j.issuer,
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(j.refreshSecretKey))
-}
+	signedToken, err := token.SignedString([]byte(j.secretKey))
+	if err != nil {
+		return nil, err
+	}
 
 // ValidateToken validates the given JWT token
 func (j *jwtService) ValidateToken(tokenString string) (*jwt.Token, *Claims, error) {

@@ -11,8 +11,6 @@ import (
 func SignJwt(existingUser Domain.User) (string, error) {
 	userclaims := &Domain.Claims{
 		ID:       existingUser.ID,
-		Email:    existingUser.Email,
-		Password: existingUser.Password,
 		Role:     existingUser.Role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * 10).Unix(),

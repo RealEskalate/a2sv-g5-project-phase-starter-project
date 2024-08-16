@@ -7,6 +7,8 @@ import {
 } from "react-icons/md";
 import ListCard from "./components/ListCard";
 import { IconType } from "react-icons";
+import BarChartForAccounts from "./components/BarChartForAccounts";
+import EditProfile from "../components/EditProfile";
 
 type DataItem = {
   heading: string;
@@ -112,28 +114,48 @@ const Page = () => {
       <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5">
         <div>
           <div className="flex flex-wrap gap-2">
-            <ListCard column={ReusableCard} width={"w-[48%] md:w-[24.3%]"} />
-            <ListCard column={card1} width={"w-[48%] md:w-[24.3%]"} />
-            <ListCard column={card2} width={"w-[48%] md:w-[24.3%]"} />
-            <ListCard column={card3} width={"w-[48%] md:w-[24.3%]"} />
+            <ListCard column={ReusableCard} width={"w-[48%] md:w-[23%]"} />
+            <ListCard column={card1} width={"w-[48%] md:w-[23%]"} />
+            <ListCard column={card2} width={"w-[48%] md:w-[23%]"} />
+            <ListCard column={card3} width={"w-[48%] md:w-[23%]"} />
           </div>
         </div>
-        <div className="flex flex-col gap-5">
-          <span>Last Transaction</span>
-          <div className="bg-white flex flex-col justify-between rounded-2xl">
-            <ListCard column={ReusableLastTransaction} width={"w-full"} />
-            <ListCard column={transaction1} width={"w-full"} />
-            <ListCard column={transaction2} width={"w-full"} />
+
+        <div className="flex flex-col md:flex-row gap-5">
+          <div className="flex flex-col gap-5 md:w-1/2">
+            <span className="text-xl text-[#333B69] font-semibold">
+              Last Transaction
+            </span>
+            <div className="bg-white flex flex-col justify-between rounded-2xl">
+              <ListCard column={ReusableLastTransaction} width={"w-full"} />
+              <ListCard column={transaction1} width={"w-full"} />
+              <ListCard column={transaction2} width={"w-full"} />
+            </div>
+          </div>
+          <div className="md:w-1/2">
+            <span className="text-xl text-[#333B69] font-semibold">
+              Card Goes Here
+            </span>
           </div>
         </div>
-        <div>Card Goes Here</div>
-        <div>Chart Goes here</div>
-        <div className="flex flex-col gap-5">
-          <span>Invoice Sent</span>
-          <div className="bg-white flex flex-col justify-between rounded-2xl">
-            <ListCard column={ReusableLastTransaction} width={"w-full"} />
-            <ListCard column={transaction1} width={"w-full"} />
-            <ListCard column={transaction2} width={"w-full"} />
+
+        <div className="flex flex-col md:flex-row gap-5">
+          <div className="flex flex-col gap-5 md:w-1/2">
+            <span className="text-xl text-[#333B69] font-semibold">
+              Debit & Credit Overview
+            </span>
+            <BarChartForAccounts></BarChartForAccounts>
+          </div>
+          <div className="flex flex-col gap-5 md:w-1/2">
+            <span className="text-xl text-[#333B69] font-semibold">
+              Invoice Sent
+            </span>
+            <div className="bg-white flex flex-col justify-between rounded-2xl">
+              <ListCard column={ReusableLastTransaction} width={"w-full"} />
+              <ListCard column={transaction1} width={"w-full"} />
+              <ListCard column={transaction2} width={"w-full"} />
+              <ListCard column={transaction2} width={"w-full"} />
+            </div>
           </div>
         </div>
       </div>

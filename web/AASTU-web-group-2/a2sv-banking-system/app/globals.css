@@ -67,3 +67,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.react-datepicker-wrapper {
+  @apply inline-block p-0 border-0 w-full;
+}

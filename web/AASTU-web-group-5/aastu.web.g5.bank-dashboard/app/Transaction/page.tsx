@@ -1,15 +1,22 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { BarChartComponent } from "./components/BarChartComponent";
 import { TableComponent } from "./components/TableComponent";
 import dummyData from "./components/dummyData"; // Adjust the path as needed
 import columns from "./components/columns"; // Adjust the path as needed
-// import { CardsComponent } from "./components/CardsComponent"; // Assuming you have a Cards component
+import TableCard from "./components/TableComponentMobile"; // Adjust the path as needed
 
-function Transactions() {
+const Transactions: React.FC = () => {
+  const [activeLink, setActiveLink] = useState<string>('');
+
+  const handleLinkClick = (linkName: string) => {
+    setActiveLink(linkName);
+  };
+
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* First Row: Cards and BarChart */}
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold font-Inter text-[#343C6A]">
@@ -23,7 +30,7 @@ function Transactions() {
           <p>card 1</p>
           <p>card 2</p>
         </div>
-        <div className="flex-1 md:w-2/5">
+        <div className="flex-1 lg:w-2/5">
           <h2 className="text-lg font-semibold mb-4 font-Inter text-[#343C6A]">
             My Expenses
           </h2>
@@ -31,12 +38,41 @@ function Transactions() {
         </div>
       </div>
 
-      {/* Second Row: Table */}
-      <div className="flex-1 w-full">
-        <h2 className="text-lg font-semibold mb-4 font-Inter text-[#343C6A]">
-          Recent Transactions
-        </h2>
-        <TableComponent columns={columns} data={dummyData} />
+      {/* Second Row: Links and Conditional Rendering Based on Device Size */}
+      <div className="flex flex-col w-full">
+        <div className="flex flex-row justify-start items-center mb-4 overflow-x-auto">
+          <a
+            href="#"
+            className={`text-lg font-normal text-[#343C6A] mx-2 transition-all ${activeLink === 'recent' ? 'font-bold' : ''}`}
+            onClick={() => handleLinkClick('recent')}
+          >
+            Recent Transactions
+          </a>
+          <a
+            href="#"
+            className={`text-lg font-normal text-[#343C6A] mx-2 transition-all ${activeLink === 'income' ? 'font-bold' : ''}`}
+            onClick={() => handleLinkClick('income')}
+          >
+            Income
+          </a>
+          <a
+            href="#"
+            className={`text-lg font-normal text-[#343C6A] mx-2 transition-all ${activeLink === 'expenses' ? 'font-bold' : ''}`}
+            onClick={() => handleLinkClick('expenses')}
+          >
+            Expenses
+          </a>
+        </div>
+        
+        <div className="hidden lg:flex flex-col w-full">
+          {/* Render TableComponent for desktop and tablet */}
+          <TableComponent columns={columns} data={dummyData} />
+        </div>
+        
+        <div className="lg:hidden flex flex-col w-full">
+          {/* Render TableCard for mobile */}
+          <TableCard />
+        </div>
       </div>
     </div>
   );

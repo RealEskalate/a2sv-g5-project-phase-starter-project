@@ -65,3 +65,20 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 }
+
+
+func (uc *UserController) Login(c *gin.Context) {
+	var input Domain.LoginInput
+    if err := c.ShouldBindJSON(&input); err!= nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+        return
+    }
+
+    access_token, err := uc.UserUsecase.Login(&input)
+    if err!= nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"access_token": access_token})
+}

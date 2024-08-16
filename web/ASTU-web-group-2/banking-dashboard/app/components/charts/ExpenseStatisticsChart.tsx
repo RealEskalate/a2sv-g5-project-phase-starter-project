@@ -1,54 +1,28 @@
 'use client';
 
-import React from 'react';
-import {
-  Chart as ChartJs,
-  ArcElement,
-  Tooltip,
-  Legend,
-  ChartOptions,
-  ChartData,
-} from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+import React, { useRef, useEffect } from 'react';
+import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-ChartJs.register(ArcElement, Tooltip, Legend, ChartDataLabels);
+Chart.register(ArcElement, Tooltip, Legend);
 
-const data: ChartData<'pie'> = {
+const data = {
   labels: ['Category A', 'Category B', 'Category C', 'Category D'],
   datasets: [
     {
       data: [30, 15, 35, 20],
-      backgroundColor: [
-        '#343C6A',
-        '#FC7900',
-        '#1814F3',
-        '#FA00FF',
-      ],
+      backgroundColor: ['#343C6A', '#FC7900', '#1814F3', '#FA00FF'],
       borderWidth: 5,
       hoverBorderWidth: 2,
     },
   ],
 };
 
-const options: ChartOptions<'pie'> = {
+const options = {
   plugins: {
-    datalabels: {
-      color: '#fff',
-      font: {
-        weight: 'bold',
-        size: 14,
-      },
-      formatter: (value: number, context: any) => {
-        const total = context.chart._metasets[0].total;
-        const percentage = ((value / total) *100).toFixed(2);
-        return `   ${parseInt(percentage)}% 
-${context.chart.data.labels[context.dataIndex]}`;
-      },
-    } ,
     tooltip: {
       callbacks: {
-        label: function (tooltipItem) {
+        label: function (tooltipItem: { dataIndex: any; }) {
           const dataIndex = tooltipItem.dataIndex;
           const label = data.labels ? data.labels[dataIndex] : '';
           const value = data.datasets[0].data[dataIndex];
@@ -64,6 +38,14 @@ ${context.chart.data.labels[context.dataIndex]}`;
     legend: {
       display: false,
     },
+    datalabels: {
+      color: '#fff',
+      display: true,
+      formatter: (value: any, context: { chart: { data: { labels: { [x: string]: any; }; }; }; dataIndex: string | number; }) => {
+        const label = context.chart.data.labels[context.dataIndex];
+        return `${label}: ${value}`;
+      },
+    },
   },
   layout: {
     padding: 10,
@@ -71,11 +53,47 @@ ${context.chart.data.labels[context.dataIndex]}`;
 };
 
 const ExpenseStatisticsChart: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      const ctx = canvasRef.current.getContext('2d');
+      if (ctx) {
+        const newChart = new Chart(ctx, {
+          type: 'pie',
+          data,
+          options: {
+            ...options,
+            plugins: {
+              ...options.plugins,
+              datalabels: {
+                ...options.plugins.datalabels,
+                formatter: (value: any, context: any) => {
+
+                  const label = context.chart.data.labels[context.dataIndex];
+                  return `      ${value}
+${label}`;
+                },
+              },
+            },
+          },
+          plugins: [ChartDataLabels],
+        });
+
+        return () => {
+          newChart.destroy();
+        };
+      }
+    }
+  }, []);
+
   return (
-    <div className='w-[350px] h-[350px] bg-white shadow-xl p-4 rounded-3xl'>
-      <Pie data={data} options={options} />
+    <div className='bg-white shadow-xl rounded-3xl'>
+
+      <canvas ref={canvasRef} />
     </div>
   );
 };
 
 export default ExpenseStatisticsChart;
+

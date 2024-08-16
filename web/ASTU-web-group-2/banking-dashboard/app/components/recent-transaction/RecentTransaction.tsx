@@ -25,8 +25,8 @@ const recentlistitems = [
 
 const RecentTransaction = () => {
   return (
-    <div className='max-w-[350px] mx-auto h-auto'>
-      <h1 className='mb-[20px] text-[22px] text-[#343C6A] font-semibold'>Recent Transactions</h1>
+    // <div className='max-w-[350px] mx-auto h-auto'>
+      // <h1 className='mb-[20px] text-[22px] text-[#343C6A] font-semibold'>Recent Transactions</h1>
       <div className='flex  flex-col flex-initial flex-wrap gap-[10px] bg-white drop-shadow-xl font-medium rounded-[25px] p-[25px]'>
           {recentlistitems.map((value, index) => (
             <div key={index} className='flex items-center gap-3'>
@@ -43,7 +43,8 @@ const RecentTransaction = () => {
             </div>
           ))}
         </div>
-      </div>
+      // </div>
+
 
   );
 }

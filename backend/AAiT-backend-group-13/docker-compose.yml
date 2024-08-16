@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev-stage # Specify the target stage for development
+    restart: on-failure
+    volumes:
+      - .:/app
+      - /app/tmp # Necessary to ensure live-reload tools like air work correctly
+    ports:
+      - "8080:8080"
+    networks:
+      - blog-network
+
+networks:
+  blog-network:

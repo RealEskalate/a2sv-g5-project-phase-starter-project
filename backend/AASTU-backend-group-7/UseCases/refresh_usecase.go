@@ -24,21 +24,21 @@ func NewRefreshUseCase(repo Domain.RefreshRepository) *RefreshUseCase {
 }
 
 // Refresh function
-func (r *RefreshUseCase) Update(c *gin.Context,refreshToken string, userid primitive.ObjectID) (error, int) {
+func (r *RefreshUseCase) UpdateToken(c *gin.Context,refreshToken string, userid primitive.ObjectID) (error, int) {
 	ctx, cancel := context.WithTimeout(c, r.contextTimeout)
 	defer cancel()
 	return r.RefreshRepository.Update(ctx, refreshToken, userid)
 }
 
 // Delete function
-func (r *RefreshUseCase) Delete(c *gin.Context, userid primitive.ObjectID) (error, int) {
+func (r *RefreshUseCase) DeleteToken(c *gin.Context, userid primitive.ObjectID) (error, int) {
 	ctx, cancel := context.WithTimeout(c, r.contextTimeout)
 	defer cancel()
 	return r.RefreshRepository.Delete(ctx, userid)
 }
 
 // Find function
-func (r *RefreshUseCase) Find(c *gin.Context, userid primitive.ObjectID) (string, error, int) {
+func (r *RefreshUseCase) FindToken(c *gin.Context, userid primitive.ObjectID) (string, error, int) {
 	ctx, cancel := context.WithTimeout(c, r.contextTimeout)
 	defer cancel()
 	return r.RefreshRepository.Find(ctx, userid)

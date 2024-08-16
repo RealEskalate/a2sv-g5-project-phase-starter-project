@@ -153,3 +153,4 @@ function BalanceHistoryChart() {
 }
 
 export default BalanceHistoryChart;
+

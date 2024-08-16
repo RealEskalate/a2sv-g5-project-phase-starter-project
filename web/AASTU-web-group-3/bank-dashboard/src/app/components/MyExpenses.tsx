@@ -1,9 +1,8 @@
-import React from 'react'
-
-const MyExpenses = () => {
+import DashboardBarChart from './Chart/DashboardBarChart';
+const MyExpenses = ()=>{
   return (
-    <div>
-      My Expenses
+    <div className='mb-2 md:w-[50%] lg:w-[30%]'>
+      <DashboardBarChart/>
     </div>
   )
 }

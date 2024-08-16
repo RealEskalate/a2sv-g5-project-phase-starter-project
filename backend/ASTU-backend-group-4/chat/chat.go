@@ -1,24 +1,26 @@
 package chat
 
 import (
-	"time"
 	"context"
+	"time"
+
+	"github.com/RealEskalate/astu-backend-g4/backend/ASTU-backend-group-4/pkg/infrastructure"
 )
 
 type Chat struct {
-	ID        		string			`json:"id" bson:"_id" `
-	Title     		string			`json:"title"`
-	History   		[]Message		`json:"history"`
-	UserID    		string			`json:"user_id"`
-	CreatedAt 		time.Time		`json:"created_at"`
-	UpdatedAt 		time.Time		`json:"updated_at"`
+	ID 		   string	   `json:"id,omitempty" bson:"_id,omitempty" `
+	Title	   string	   `json:"title,omitempty"`
+	History	   []Message   `json:"history,omitempty"`
+	UserID	   string	   `json:"user_id,omitempty"`
+	CreatedAt  time.Time   `json:"created_at,omitempty"`
+	UpdatedAt  time.Time   `json:"updated_at,omitempty"`
 }
 
 
 type Message struct{
-	Text 			string			`json:"text"`
-	Role			string			`json:"role"`	
-	SentAt			time.Time		`json:"sent_at"`
+	Text    string	   `json:"text,omitempty"`
+	Role    string	   `json:"role,omitempty"`	
+	SentAt  time.Time  `json:"sent_at,omitempty"`
 }
 
 
@@ -36,6 +38,6 @@ type Repository interface{
 	CreateChat(userID, title string, ctx context.Context) (Chat, error)
 	AddMessage(chatID string, message Message, ctx context.Context) (error)
 	GetChat(chatID string, ctx context.Context) (Chat, error)
-	GetChats(ctx context.Context) ([]Chat, error)
+	GetChats(ctx context.Context, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error)
 	DeleteChat(chatID string, ctx context.Context) (error)
 }

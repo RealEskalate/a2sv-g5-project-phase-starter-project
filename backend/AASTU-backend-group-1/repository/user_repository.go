@@ -10,14 +10,13 @@ import (
 )
 
 type UserRepository struct {
-	userCollection *mongo.Collection
+	userCollection  *mongo.Collection
 	tokenCollection *mongo.Collection
-	
 }
 
-func NewUserRepository(db mongo.Database) *UserRepository {
+func NewUserRepository(db mongo.Database) domain.UserRepository {
 	return &UserRepository{
-		userCollection: db.Collection("users"),
+		userCollection:  db.Collection("users"),
 		tokenCollection: db.Collection("tokens"),
 	}
 }
@@ -90,7 +89,7 @@ func (ur *UserRepository) UpdateProfile(usernameoremail string, user *domain.Use
 			"lastname":   user.LastName,
 			"bio":        user.Bio,
 			"avatar":     user.Avatar,
-			"username":   user.UserName,
+			"username":   user.Username,
 			"email":      user.Email,
 			"role":       user.Role,
 			"address":    user.Address,
@@ -130,7 +129,6 @@ func (ur UserRepository) Resetpassword(usernameoremail string, password string) 
 	return nil
 }
 
-
 func (ur *UserRepository) InsertToken(token *domain.Token) error {
 	_, err := ur.tokenCollection.InsertOne(context.TODO(), token)
 
@@ -140,7 +138,6 @@ func (ur *UserRepository) InsertToken(token *domain.Token) error {
 
 	return nil
 }
-
 
 func (ur *UserRepository) GetTokenByUsername(username string) (*domain.Token, error) {
 	var token domain.Token
@@ -159,4 +156,18 @@ func (ur *UserRepository) GetTokenByUsername(username string) (*domain.Token, er
 	}
 
 	return &token, nil
+}
+
+func (ur *UserRepository) DeleteToken(username string) error {
+	filter := bson.M{
+		"username": username,
+	}
+
+	_, err := ur.tokenCollection.DeleteOne(context.TODO(), filter)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

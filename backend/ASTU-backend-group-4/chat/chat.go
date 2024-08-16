@@ -6,19 +6,19 @@ import (
 )
 
 type Chat struct {
-	ID        		string			`json:"id" bson:"_id" `
-	Title     		string			`json:"title"`
-	History   		[]Message		`json:"history"`
-	UserID    		string			`json:"user_id"`
-	CreatedAt 		time.Time		`json:"created_at"`
-	UpdatedAt 		time.Time		`json:"updated_at"`
+	ID 		   string	   `json:"id,omitempty" bson:"_id,omitempty" `
+	Title	   string	   `json:"title,omitempty"`
+	History	   []Message   `json:"history,omitempty"`
+	UserID	   string	   `json:"user_id,omitempty"`
+	CreatedAt  time.Time   `json:"created_at,omitempty"`
+	UpdatedAt  time.Time   `json:"updated_at,omitempty"`
 }
 
 
 type Message struct{
-	Text 			string			`json:"text"`
-	Role			string			`json:"role"`	
-	SentAt			time.Time		`json:"sent_at"`
+	Text    string	   `json:"text,omitempty"`
+	Role    string	   `json:"role,omitempty"`	
+	SentAt  time.Time  `json:"sent_at,omitempty"`
 }
 
 

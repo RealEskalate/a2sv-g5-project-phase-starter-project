@@ -4,8 +4,8 @@ import CardListCard from "./CardiListCard";
 const CardList = () => {
   return (
     <>
-      <div className="flex flex-col items-start px-4 w-full md:w-2/3 space-y-2">
-        <h1 className="text-[#333B69] py-2 font-semibold">Card List</h1>
+      <div className="flex flex-col items-start  w-full space-y-2">
+        <p className="text-[#333B69] pb-2 font-semibold">Card List</p>
         <CardListCard
           cardType="Secondary"
           bank="DBL Bank"

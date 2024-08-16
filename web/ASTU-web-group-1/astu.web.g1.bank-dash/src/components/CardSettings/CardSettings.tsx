@@ -42,7 +42,7 @@ export default function CardSettings() {
       {/* <p className="font-semibold text-lg lg:text-20px text-deepNavy py-3">
         Card Setting
       </p> */}
-      <h1 className="text-[#333B69] py-2 font-semibold">Card Setting</h1>
+      <p className="text-[#333B69] pb-2 font-semibold">Card Setting</p>
       <div className="bg-white w-full px-5 py-6 rounded-3xl space-y-5">
         {data.map((ele) => (
           <CardSettingItem

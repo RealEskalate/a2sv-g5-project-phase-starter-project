@@ -8,7 +8,7 @@ import (
 
 func OwnerMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
-        claims, exists := c.Get("user")
+        claims, exists := c.Get("claims")
         if !exists {
             c.JSON(http.StatusUnauthorized, gin.H{"error": "No claims found"})
             c.Abort()

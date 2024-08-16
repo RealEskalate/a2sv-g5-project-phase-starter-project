@@ -1,9 +1,7 @@
 package routes
 
 import (
-	"blogApp/internal/http/handlers"
-	"blogApp/internal/repository/mongodb"
-	"blogApp/internal/usecase/user"
+
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -11,9 +9,9 @@ import (
 
 func RegisterVerificationRoutes(collection *mongo.Collection, router *gin.Engine) {
 
-	userRepo := &mongodb.UserRepositoryMongo{Collection: collection}
-	userUsecase := user.NewUserUsecase(userRepo)
-	userHandler := handlers.NewUserHandler(userUsecase)
+	// userRepo := &mongodb.UserRepositoryMongo{Collection: collection}
+	// userUsecase := user.NewUserUsecase(userRepo)
+	userHandler := InstantaiteUserHandler(collection)
 	authRoutes := router.Group("/api/v1/auth")
 
 	{

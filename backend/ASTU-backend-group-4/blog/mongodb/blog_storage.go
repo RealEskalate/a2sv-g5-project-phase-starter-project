@@ -25,6 +25,7 @@ var ErrBlogNotFound = errors.New("blog not found")
 var ErrUnableToDeleteComment = errors.New("unable to delete comment")
 var ErrCommentNotFound = errors.New("comment not found")
 var ErrUnableToDislikeBlog = errors.New("unable to dislike blog")
+var ErrUnabletoGetBlog = errors.New("unable to get blog")
 
 type BlogStorage struct {
 	db *mongo.Database
@@ -115,7 +116,24 @@ func (b *BlogStorage) DislikeBlog(ctx context.Context, dislike blog.Dislike) err
 
 // GetBlogByID implements BlogRepository.
 func (b *BlogStorage) GetBlogByID(ctx context.Context, id string) (blog.Blog, error) {
-	panic("unimplemented")
+	blogIDPrimitive, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return blog.Blog{}, ErrInvalidID
+	}
+
+	filter := bson.D{{Key: "_id", Value: blogIDPrimitive}}
+
+	var blogData blog.Blog
+	err = b.db.Collection(blogCollection).FindOne(ctx, filter).Decode(&blogData)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return blog.Blog{}, ErrBlogNotFound
+		}
+		log.Default().Printf("Failed to get blog by ID: %v", err)
+		return blog.Blog{}, ErrUnabletoGetBlog
+	}
+
+	return blogData, nil
 }
 
 // GetBlogs implements BlogRepository.

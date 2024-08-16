@@ -14,7 +14,7 @@ type UserRepository struct {
 	tokenCollection *mongo.Collection
 }
 
-func NewUserRepository(db mongo.Database) domain.UserRepository {
+func NewUserRepository(db *mongo.Database) domain.UserRepository {
 	return &UserRepository{
 		userCollection:  db.Collection("users"),
 		tokenCollection: db.Collection("tokens"),

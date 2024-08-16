@@ -48,7 +48,7 @@ const SearchInput = () => {
 
 function Desktop() {
   return (
-    <div className="flex justify-between h-[101px] items-center md:pl-[46px] md:pr-[40px]">
+    <div className="flex justify-between h-[101px] items-center md:pl-[46px] md:pr-[40px] bg-white ">
       <div className="font-semibold text-[22px]" style={{ color: primary_2 }}>
         Overview
       </div>

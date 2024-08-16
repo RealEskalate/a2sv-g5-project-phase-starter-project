@@ -1,43 +1,71 @@
-'use client'
-import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import React from 'react';
+"use client"
+import { Pie, PieChart } from "recharts"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart"
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+const chartData = [
+  { category: "Entertainment", amount: 275, fill: "hsl(210, 100%, 40%)" },  // Dim Blue
+  { category: "Shopping", amount: 200, fill: "hsl(120, 100%, 30%)" },       // Dim Green
+  { category: "Groceries", amount: 187, fill: "hsl(30, 100%, 40%)" },       // Dim Orange
+  { category: "Bills", amount: 173, fill: "hsl(0, 80%, 40%)" },             // Dim Red
+  { category: "Other", amount: 90, fill: "hsl(60, 100%, 40%)" },            // Dim Yellow
+]
 
-const PieChart = () => {
-    const dummyData = {
-        labels: ["Category 1", "Category 2", "Category 3", "Category 4"],
-        datasets: [
-          {
-            label: "Distribution",
-            data: [300, 250, 200, 150],
-            backgroundColor: [
-              "rgba(24, 20, 243, 0.2)", // Light blue with 20% opacity
-              "rgba(10, 200, 243, 0.2)", // Light cyan with 20% opacity
-              "rgba(243, 134, 10, 0.2)", // Light orange with 20% opacity
-              "rgba(243, 10, 134, 0.2)", // Light pink with 20% opacity
-            ],
-            borderColor: [
-              "#1814F3", // Original blue color
-              "#0AC8F3", // Original cyan color
-              "#F3860A", // Original orange color
-              "#F30A86", // Original pink color
-            ],
-            borderWidth: 1,
-          },
-        ],
-      };
-      
-      const options = {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "top" as const,
-          },
-        },
-      };
-  return <Pie data={dummyData} options={options} />;
-};
-
-export default PieChart;
+export default function Component() {
+  return (
+    <Card className="flex flex-col">
+      <CardHeader className="items-center pb-0">
+        <CardTitle>Expense Distribution</CardTitle>
+      </CardHeader>
+      <CardContent className="flex-1 pb-0">
+        <ChartContainer
+          className="mx-auto aspect-square max-h-[250px]"
+          config={{}}
+        >
+          <PieChart>
+            <ChartTooltip
+              content={<ChartTooltipContent nameKey="category" />}
+            />
+            <Pie
+              data={chartData}
+              dataKey="amount"
+              nameKey="category"
+              cx="50%"
+              cy="50%"
+              outerRadius={80}
+              labelLine={false}
+              label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+                const RADIAN = Math.PI / 180;
+                const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                return (
+                  <text
+                    x={x}
+                    y={y}
+                    fill="white"
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize={12}
+                  >
+                    {`${(percent * 100).toFixed(0)}%`}
+                  </text>
+                );
+              }}
+            />
+          </PieChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  )
+}

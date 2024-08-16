@@ -11,5 +11,4 @@ type Profile struct {
 	ProfileImg string             `json:"profile_img" bson:"profile_img"`
 	IsOwner    bool               `json:"is_owner" bson:"is_owner"`
 	Role       string             `json:"role" bson:"role"` //may make only tobe admin or user
-	Tokens     []string           `json:"tokens" bson:"tokens"`
 }

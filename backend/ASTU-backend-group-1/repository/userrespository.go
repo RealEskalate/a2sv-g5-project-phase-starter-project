@@ -3,6 +3,7 @@ package repository
 import (
 	"astu-backend-g1/domain"
 	"context"
+	"fmt"
 
 	"github.com/sv-tools/mongoifc"
 	"go.mongodb.org/mongo-driver/bson"
@@ -81,14 +82,6 @@ func (repo *userRepository) Get(opts domain.UserFilterOption) ([]domain.User, er
 }
 
 func (repo *userRepository) Create(u domain.User) (domain.User, error) {
-	/* _, err := repo.Get(domain.UserFilterOption{Filter: domain.UserFilter{Username: u.Username}})
-	if err == nil {
-		return domain.User{}, fmt.Errorf("already existing username")
-	}
-	_, err = repo.Get(domain.UserFilterOption{Filter: domain.UserFilter{Email: u.Email}})
-	if err == nil {
-		return domain.User{}, fmt.Errorf("already existing email")
-	} */
 	_, err := repo.collection.InsertOne(context.TODO(), &u, options.InsertOne())
 	if err != nil {
 		return domain.User{}, err
@@ -97,9 +90,33 @@ func (repo *userRepository) Create(u domain.User) (domain.User, error) {
 }
 
 func (repo *userRepository) Update(userId string, updateData domain.User) (domain.User, error) {
-	return domain.User{}, nil
+	user, err := repo.getByID(userId)
+	if err != nil {
+		return domain.User{}, err
+	}
+	if updateData.IsAdmin != false {
+		user.IsAdmin = true
+	}
+	if updateData.Password != "" {
+		user.Password = updateData.Password
+	}
+	if updateData.LastName != "" {
+		user.LastName = updateData.LastName
+	}
+	if updateData.FirstName != "" {
+		user.FirstName = updateData.FirstName
+	}
+	repo.collection.ReplaceOne(context.TODO(), bson.D{{"id", userId}}, user)
+	return user, nil
 }
 
 func (repo *userRepository) Delete(userId string) error {
+	res, err := repo.collection.DeleteOne(context.TODO(), bson.D{{"id", userId}})
+	if res.DeletedCount == 0 {
+		return fmt.Errorf("user does not exists in the database")
+	}
+	if err != nil {
+		return err
+	}
 	return nil
 }

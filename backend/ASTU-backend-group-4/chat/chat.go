@@ -16,9 +16,9 @@ type Chat struct {
 
 
 type Message struct{
-	Text 			string
-	Role			string
-	SentAt			time.Time
+	Text 			string			`json:"text"`
+	Role			string			`json:"role"`	
+	SentAt			time.Time		`json:"sent_at"`
 }
 
 

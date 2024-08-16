@@ -1,6 +1,10 @@
 package blog
 
-import "time"
+import (
+	"time"
+
+	"github.com/RealEskalate/astu-backend-g4/backend/ASTU-backend-group-4/pkg/infrastructure"
+)
 
 type Tag struct {
 	ID   string `json:"id,omitempty" bson:"_id,omitempty"`
@@ -48,27 +52,14 @@ type FilterOption struct {
 	Value    interface{} `json:"value,omitempty"`
 }
 
-type PaginationRequest struct {
-	Limit int `json:"limit,omitempty"`
-	Page  int `json:"page,omitempty"`
-}
-
-type PaginationResponse[T interface{}] struct {
-	Limit      int   `json:"limit,omitempty"`
-	Page       int   `json:"page,omitempty"`
-	Count      int64 `json:"count,omitempty"`
-	TotalPages int   `json:"total_pages,omitempty"`
-	Items      []T   `json:"items,omitempty"`
-}
-
 type BlogUseCase interface {
 	CreateBlog(blog Blog) (Blog, error)
 	UpdateBlog(id string, blog Blog) (Blog, error)
 	DeleteBlog(id string) error
 	GetBlogByID(id string) (Blog, error)
-	GetBlogs(filterOptions []FilterOption, pagination PaginationRequest) (PaginationResponse[Blog], error)
-	SearchBlogs(query string) (PaginationResponse[Blog], error)
-	GetCommentsByBlogID(blogID string, pagination PaginationRequest) (PaginationResponse[Comment], error)
+	GetBlogs(filterOptions []FilterOption, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
+	SearchBlogs(query string) (infrastructure.PaginationResponse[Blog], error)
+	GetCommentsByBlogID(blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
 	CreateComment(comment Comment) error
 	DeleteComment(id string) error
 	LikeBlog(like Like) error
@@ -80,9 +71,9 @@ type BlogRepository interface {
 	UpdateBlog(id string, blog Blog) error
 	DeleteBlog(id string) error
 	GetBlogByID(id string) (Blog, error)
-	GetBlogs(filterOptions []FilterOption, pagination PaginationRequest) (PaginationResponse[Blog], error)
-	SearchBlogs(query string) (PaginationResponse[Blog], error)
-	GetCommentsByBlogID(blogID string, pagination PaginationRequest) (PaginationResponse[Comment], error)
+	GetBlogs(filterOptions []FilterOption, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
+	SearchBlogs(query string) (infrastructure.PaginationResponse[Blog], error)
+	GetCommentsByBlogID(blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
 	CreateComment(comment Comment) error
 	DeleteComment(id string) error
 	LikeBlog(like Like) error

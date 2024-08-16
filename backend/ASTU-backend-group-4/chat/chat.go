@@ -1,8 +1,10 @@
 package chat
 
 import (
-	"time"
 	"context"
+	"time"
+
+	"github.com/RealEskalate/astu-backend-g4/backend/ASTU-backend-group-4/pkg/infrastructure"
 )
 
 type Chat struct {
@@ -36,6 +38,6 @@ type Repository interface{
 	CreateChat(userID, title string, ctx context.Context) (Chat, error)
 	AddMessage(chatID string, message Message, ctx context.Context) (error)
 	GetChat(chatID string, ctx context.Context) (Chat, error)
-	GetChats(ctx context.Context) ([]Chat, error)
+	GetChats(ctx context.Context, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error)
 	DeleteChat(chatID string, ctx context.Context) (error)
 }

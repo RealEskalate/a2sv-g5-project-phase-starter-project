@@ -21,8 +21,10 @@ type UserUseCaseInterface interface {
 	DeleteUser(id string) error
 	AdminRemoveUser(UserId string) error
 
+
 	PromoteToAdmin(UserId string) error
 	DemoteFromAdmin(UserId string) error
 	GetAllUsers() ([]*domain.User, error)
 	FilterUsers(filter map[string]interface{}) ([]*domain.User, error)
 }
+

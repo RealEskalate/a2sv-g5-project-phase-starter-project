@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type BlogRepository struct {
@@ -118,61 +119,60 @@ func (b *BlogRepository) GetBlogsByPopularity() ([]domain.Blog, error) {
     // MongoDB aggregation pipeline
     pipeline := mongo.Pipeline{
 		bson.D{
-			{"$lookup", bson.D{
-				{"from", "likes"}, // Correct collection name
-				{"localField", "_id"},
-				{"foreignField", "blogid"},
-				{"as", "likes"},
+			{Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "likes"}, 
+				{Key: "localField", Value: "_id"},
+				{Key: "foreignField", Value: "blogid"},
+				{Key: "as", Value: "likes"},
 			}},
 		},
 		bson.D{
-			{"$lookup", bson.D{
-				{"from", "views"}, // Correct collection name
-				{"localField", "_id"},
-				{"foreignField", "blogid"},
-				{"as", "views"},
+			{Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "views"}, 
+				{Key: "localField", Value: "_id"},
+				{Key: "foreignField", Value: "blogid"},
+				{Key: "as", Value: "views"},
 			}},
 		},
 		bson.D{
-			{"$lookup", bson.D{
-				{"from", "comments"}, // Correct collection name
-				{"localField", "_id"},
-				{"foreignField", "blogid"},
-				{"as", "comments"},
+			{Key:"$lookup", Value:bson.D{
+				{Key: "from", Value: "comments"},
+				{Key: "localField", Value: "_id"},
+				{Key: "foreignField", Value: "blogid"},
+				{Key: "as", Value: "comments"},
 			}},
 		},
 
-		// Add calculated fields: likes, views, comments
 		bson.D{
-			{"$addFields", bson.D{
-				{"likes", bson.D{
-					{"$size", bson.D{
-						{"$filter", bson.D{
-							{"input", "$likes"},         // Correct array name from lookup
-							{"as", "like"},
-							{"cond", bson.D{
-								{"$eq", bson.A{"$$like.like", true}}, // Counting only likes with `like: true`
+			{Key: "$addFields", Value: bson.D{
+				{Key: "likes", Value: bson.D{
+					{Key: "$size", Value: bson.D{
+						{Key: "$filter", Value: bson.D{
+							{Key: "input", Value: "$likes"},         // Correct array name from lookup
+							{Key: "as", Value: "like"},
+							{Key: "cond", Value: bson.D{
+								{Key: "$eq", Value: bson.A{"$$like.like", true}}, // Counting only likes with `like: true`
 							}},
 						}},
 					}},
 				}},
-				{"views", bson.D{
-					{"$size", "$views"}, // Count the number of views
+				{Key: "views", Value: bson.D{
+					{Key: "$size", Value: "$views"}, // Count the number of views
 				}},
-				{"comments", bson.D{
-					{"$size", "$comments"}, // Count the number of comments
+				{Key: "comments", Value: bson.D{
+					{Key: "$size", Value: "$comments"}, // Count the number of comments
 				}},
 			}},
 		},
 
 		// Add popularityScore field based on weights for views, likes, comments
 		bson.D{
-			{"$addFields", bson.D{
-				{"popularityScore", bson.D{
-					{"$add", bson.A{
-						bson.D{{"$multiply", bson.A{"$views", 0.5}}},   // Weight for views
-						bson.D{{"$multiply", bson.A{"$likes", 1}}},     // Weight for likes
-						bson.D{{"$multiply", bson.A{"$comments", 2}}},  // Weight for comments
+			{Key: "$addFields", Value: bson.D{
+				{Key: "popularityScore", Value: bson.D{
+					{Key: "$add", Value: bson.A{
+						bson.D{{Key: "$multiply", Value: bson.A{"$views", 0.5}}},   
+						bson.D{{Key: "$multiply", Value: bson.A{"$likes", 1}}},     
+						bson.D{{Key: "$multiply", Value: bson.A{"$comments", 2}}},  
 					}},
 				}},
 			}},
@@ -180,8 +180,8 @@ func (b *BlogRepository) GetBlogsByPopularity() ([]domain.Blog, error) {
 
 		// Sort by popularity score in descending order
 		bson.D{
-			{"$sort", bson.D{
-				{"popularityScore", -1},
+			{Key: "$sort", Value: bson.D{
+				{Key: "popularityScore", Value: -1},
 			}},
 		},
     }
@@ -200,9 +200,34 @@ func (b *BlogRepository) GetBlogsByPopularity() ([]domain.Blog, error) {
     return blogs, nil
 }
 
-func GetBlogsByRecent() []*domain.Blog {
-	panic("not implemented") 
+func (b *BlogRepository) GetBlogsByRecent() ([]*domain.Blog, error) {
+	var blogs []*domain.Blog
+
+	// MongoDB query to find all blogs and sort them by CreatedAt in descending order
+	opts := options.Find().SetSort(bson.D{{"createdAt", -1}})
+	cursor, err := b.blogCollection.Find(context.TODO(), bson.M{}, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.TODO()) // Ensure the cursor is closed after usage
+
+	// Decode all the blogs into the blogs slice
+	for cursor.Next(context.Background()) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return nil, err
+		}
+		blogs = append(blogs, &blog)
+	}
+
+	// Check if the cursor encountered any errors
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return blogs, nil
 }
+
 
 // AddView implements domain.BlogRepository.
 func (b *BlogRepository) AddView(view *domain.View) error {

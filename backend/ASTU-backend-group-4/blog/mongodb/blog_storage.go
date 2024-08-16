@@ -14,6 +14,7 @@ import (
 const blogCollection = "blogs"
 
 var ErrUnableToCreateBlog = errors.New("unable to create blog")
+var ErrUnableToCreatComment = errors.New("unable to create comment")
 
 type BlogStorage struct {
 	db *mongo.Database
@@ -35,8 +36,14 @@ func (b *BlogStorage) CreateBlog(ctx context.Context, blog blog.Blog) (string, e
 }
 
 // CreateComment implements BlogRepository.
-func (b *BlogStorage) CreateComment(ctx context.Context, comment blog.Comment) error {
-	panic("unimplemented")
+func (b *BlogStorage) CreateComment(ctx context.Context, comment blog.Comment) (string, error) {
+	result, err := b.db.Collection(blogCollection).InsertOne(ctx, comment)
+	if err != nil {
+		log.Default().Printf("Failed to create comment: %v", err)
+		return "", ErrUnableToCreatComment
+	}
+
+	return result.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
 // DeleteBlog implements BlogRepository.

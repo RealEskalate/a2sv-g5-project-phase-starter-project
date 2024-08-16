@@ -7,8 +7,6 @@ import (
 
 type Claims struct {
 	ID             primitive.ObjectID `json:"id"`
-	Email          string             `json:"email"`
-	Password       string             `json:"password"`
 	Role           string             `json:"role"`
 	StandardClaims jwt.StandardClaims `json:"standard_claims"`
 }

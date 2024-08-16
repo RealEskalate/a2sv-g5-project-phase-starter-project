@@ -19,10 +19,10 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 const chartData = [
-  { browser: "BRC Bank", visitors: 275, fill: "var(--color-BRC_Bank)" },
-  { browser: "ABM Bank", visitors: 200, fill: "var(--color-ABM_Bank)" },
-  { browser: "DBL Bank", visitors: 187, fill: "var(--color-DBL_Bank)" },
-  { browser: "MCP Bank", visitors: 173, fill: "var(--color-MCP_Bank)" },
+  { browser: "BRC Bank", visitors: 275, fill: "#1EC6B8" },
+  { browser: "ABM Bank", visitors: 200, fill: "#3464F3" },
+  { browser: "DBL Bank", visitors: 187, fill: "#FFB11F" },
+  { browser: "MCP Bank", visitors: 173, fill: "#FF6195" },
 ];
 
 const chartConfig = {
@@ -31,19 +31,19 @@ const chartConfig = {
   },
   BRC_Bank: {
     label: "BRC Bank",
-    color: "#071952",
+    color: "#1EC6B8",
   },
   ABM_Bank: {
     label: "ABM Bank",
-    color: "#088395",
+    color: "#3464F3",
   },
   DBL_Bank: {
     label: "DBL Bank",
-    color: "#37B7C3",
+    color: "#FFB11F",
   },
   MCP_Bank: {
     label: "MCP Bank",
-    color: "#EBF4F6",
+    color: "#FF6195",
   },
 } satisfies ChartConfig;
 

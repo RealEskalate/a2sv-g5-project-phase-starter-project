@@ -8,7 +8,7 @@ export const Options = {
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        username: { label: "Username", placehlder: "username", type: "text" },
+        userName: { label: "UserName", placehlder: "username", type: "text" },
         password: {
           label: "Password",
           placeholder: "enter your password",
@@ -16,16 +16,22 @@ export const Options = {
         },
       },
       async authorize(credentials) {
-        const result = await store.dispatch(
-          authApi.endpoints.login.initiate(credentials)
-        );
-
-        if (result.data) {
-          return result.data;
-        } else {
+        console.log(credentials)
+        try {
+          const result = await store.dispatch(
+            authApi.endpoints.login.initiate(credentials)
+          ).unwrap(); // Use unwrap() to handle resolved values and errors
+          if (result) {
+            return result; // This will be set as the user object
+          } else {
+            return null;
+          }
+        } catch (error) {
+          console.error('Failed to login:', error);
           return null;
         }
-      },
+      }
+      
     }),
   ],
   callbacks: {

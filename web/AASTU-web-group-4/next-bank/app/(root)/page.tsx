@@ -11,6 +11,7 @@ import PieChart from "@/components/PieChart";
 import QuickTransfer from "@/components/QuickTransfer";
 import LineChart from "@/components/Linechart";
 
+
 const page = () => {
   return (
     <div className={`${colors.graybg} p-6 md:ml-64 max-w-full md:p-12`}>

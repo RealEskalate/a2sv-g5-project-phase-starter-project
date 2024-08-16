@@ -43,9 +43,9 @@ const SignUpForm = () => {
     try {
       const responseData: ResponseValue = await SignupService(data);
       if (responseData.success) {
-        console.log("Signup successful:", responseData.data);
+        console.log("Signup successful:");
       } else {
-        console.error("Signup failed:", responseData.message);
+        console.error("Signup failed:");
       }
     } catch (error) {
       console.error("An error occurred:", error);

@@ -18,7 +18,7 @@ const recentlistitems = [
             sub : "Envestment Value"
 
         },
-        icon: "/assets/invoicesSent/icon1.svg"
+        icon: "/assets/myinvestment/card1.svg"
     },
     {   
         title: {
@@ -37,7 +37,7 @@ const recentlistitems = [
             sub : "Envestment Value"
 
         },
-        icon: "/assets/invoicesSent/icon1.svg"
+        icon: "/assets/myinvestment/card2.svg"
     },
     {   
         title: {
@@ -57,7 +57,7 @@ const recentlistitems = [
             sub : "samsung motor"
 
         },
-        icon: "/assets/invoicesSent/icon1.svg"
+        icon: "/assets/myinvestment/card3.svg"
     }
    
   ];

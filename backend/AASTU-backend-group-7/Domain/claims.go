@@ -6,13 +6,13 @@ import (
 )
 
 type AccessClaims struct {
-	ID             primitive.ObjectID `json:"id"`
-	Role           string             `json:"role"`
+	ID   primitive.ObjectID `json:"id"`
+	Role string             `json:"role"`
 	jwt.StandardClaims
 }
 
 type RefreshClaims struct {
-	ID             primitive.ObjectID `json:"id"`
-	Role           string             `json:"role"`
+	ID   primitive.ObjectID `json:"id"`
+	Role string             `json:"role"`
 	jwt.StandardClaims
 }

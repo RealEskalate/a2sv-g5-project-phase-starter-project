@@ -11,17 +11,18 @@ import {
 
 const QuickTransfer = () => {
   return (
-    <div className='flex flex-col '>
-      <p className='text-[#333B69] font-semibold mt-5 mb-3'>Quick Transfer</p>
-      <div className='flex flex-col lg:gap-5 rounded-3xl  md:w-[320px]  w-[325px] py-5 px-6 bg-white'>
+    <div className='flex flex-col'>
+      <p className='text-[#333B69] pb-3 font-semibold'>Quick Transfer</p>
+      <div className='flex flex-col lg:gap-5 rounded-3xl  md:w-[320px] lg:w-full  w-[320px] py-5 px-6 bg-white'>
         <div className='px-10 md:px-6'>
           <Carousel className='w-full max-w-sm'>
             <CarouselContent className='-ml-1'>
-              {Array.from({ length: 5 }).map((_, index) => (
+              {Array.from({ length: 6 }).map((_, index) => (
                 <CarouselItem
                   key={index}
-                  className='pl-1 mb-1.5 md:basis-1/3 basis-1/3 lg:basis-1/3'
+                  className='pl-1 mb-1.5 md:basis-1/3 basis-1/3 lg:basis-1/4'
                 >
+                  {/* <div className='p-1'> */}
                   <div className='p-1'>
                     <ProfileCard />
                   </div>

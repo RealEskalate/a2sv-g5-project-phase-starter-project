@@ -1,61 +1,68 @@
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import fetchData from "../../fetch";
+import signInUser from "./signInUser";
+import { NextAuthOptions } from "next-auth";
 
-export const options = {
+export const options: NextAuthOptions = {
     providers: [
         CredentialsProvider({
             type: "credentials",
             credentials: {
-                userName: { label: "userName", type: "text", placeholder: "jsmith" },
-                password: { label: "Password", type: "password" },
-            },
-            async authorize(credentials) {
-                const { userName, password } = credentials as {
-                    userName: string;
-                    password: string;
-                };
-
-                try {
-                    const response = await fetchData({ userName, password });
-                    console.log("Response:", response);
-                    if (response && response.id) {
-                        return {
-                            id: response.id,
-                            accessToken: response.accessToken,
-                            refreshToken: response.refreshToken,
-                        };
-                    }
-                } catch (err) {
-                    console.error('Failed to login:', err);
+                userName: {
+                    label: 'text',
+                    type: "text",
+                },
+                password: {
+                    label: 'password',
+                    type: "password",
                 }
+                
+            },
 
-                // Return null if authentication fails
+            async authorize(credentials) {
+                const {userName, password} = credentials as {
+                    userName: string,
+                    password: string,
+                };
+                try {
+                    const res = await signInUser({userName, password});
+                    return ({
+                        id: res?.id,
+                        accessToken: res.accessToken,
+                        refreshToken: res.refreshToken
+                    });
+
+                }catch(error){
+                    console.log(error);
+                };
                 return null;
             },
-        }),
+        })
     ],
     pages: {
-        signIn: '/login',
+        signIn: '/SignIn'
     },
     callbacks: {
-        async jwt({ token, user }: { token: any, user: any }) {
-            if (user) {
-                token.accessToken = user.accessToken; // Ensure accessToken is stored
-                token.refreshToken = user.refreshToken; // Store refreshToken
+        async jwt({ token, user }: {token: any, user: any}) {
+            if (user){
+                token.id = user.id,
+                token.accessToken = user.accessToken,
+                token.refreshToken = user.refreshToken
+
             }
+
             return token;
         },
 
-        async session({ session, token }: { session: any, token: any }) {
-            if (session?.user) {
-                session.user.accessToken = token.accessToken;
-                session.user.refreshToken = token.refreshToken; 
-            }
-            return session;
-        },
+        async session({ session, token }: {session: any, token: any}) {
+            if (session?.user){
 
-        // async redirect({ url, baseUrl }: { url: string, baseUrl: string }) {
-        //     return baseUrl; 
-        // },
+                session.user.id = token.id,
+                session.user.accessToken = token.accessToken,
+                session.user.refreshToken = token.refreshToken
+            }
+            
+            return session;
+        }
     },
-};
+}

@@ -3,7 +3,7 @@ import InvoiceSentCard from "./InvoiceSentCard";
 
 const InvoiceSent = () => {
   return (
-    <div className="min-[890px]:w-2/3 lg:w-4/12 mt-3 md:mt-0">
+    <div className="min-[890px]:w-2/3 lg:w-4/12  md:mt-0">
       <h1 className="text-[#333B69] pb-2 font-semibold">Invoices Sent</h1>
       <div className=" max-w-sm  bg-white border border-gray-200 rounded-[15px]  p-4">
         <div className="flow-root">

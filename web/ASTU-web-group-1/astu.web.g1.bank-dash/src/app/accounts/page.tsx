@@ -1,6 +1,5 @@
 import AccountInformation from "@/components/AccountInformation/AccountInformation";
 import DebiteAndCredit from "@/components/Charts/DebiteAndCredit";
-import MonthlyRevenue from "@/components/Charts/MonthlyRevenue";
 import InvoiceSent from "@/components/InvoiceSent/InvoiceSent";
 import MyCard from "@/components/MyCard/MyCard";
 import LastTransaction from "@/components/Transaction/LastTransaction";
@@ -10,7 +9,7 @@ export default function page() {
   return (
     <>
       <AccountInformation />
-      <div className=" min-[890px]:flex min-[890px]:space-x-4 lg:space-x-10 mb-5">
+      <div className=" min-[890px]:flex min-[890px]:space-x-4 lg:space-x-10 ">
         <LastTransaction />
         <div className="mb-5">
           <div className="flex justify-between">

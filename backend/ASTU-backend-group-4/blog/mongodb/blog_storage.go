@@ -24,6 +24,7 @@ var ErrUnableToDeleteBlog = errors.New("unable to delete blog")
 var ErrBlogNotFound = errors.New("blog not found")
 var ErrUnableToDeleteComment = errors.New("unable to delete comment")
 var ErrCommentNotFound = errors.New("comment not found")
+var ErrUnableToDislikeBlog = errors.New("unable to dislike blog")
 
 type BlogStorage struct {
 	db *mongo.Database
@@ -46,7 +47,7 @@ func (b *BlogStorage) CreateBlog(ctx context.Context, blog blog.Blog) (string, e
 
 // CreateComment implements BlogRepository.
 func (b *BlogStorage) CreateComment(ctx context.Context, comment blog.Comment) (string, error) {
-	result, err := b.db.Collection(blogCollection).InsertOne(ctx, comment)
+	result, err := b.db.Collection(commentCollection).InsertOne(ctx, comment)
 	if err != nil {
 		log.Default().Printf("Failed to create comment: %v", err)
 		return "", ErrUnableToCreatComment
@@ -103,7 +104,13 @@ func (b *BlogStorage) DeleteComment(ctx context.Context, id string) error {
 
 // DislikeBlog implements BlogRepository.
 func (b *BlogStorage) DislikeBlog(ctx context.Context, dislike blog.Dislike) error {
-	panic("unimplemented")
+	_, err := b.db.Collection("dislikes").InsertOne(ctx, dislike)
+	if err != nil {
+		log.Default().Printf("Failed to dislike blog: %v", err)
+		return ErrUnableToDislikeBlog
+	}
+
+	return nil
 }
 
 // GetBlogByID implements BlogRepository.

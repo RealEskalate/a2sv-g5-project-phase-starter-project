@@ -9,7 +9,7 @@ type User struct {
 	Password          string             `json:"password" validate:"required"`
 	Profile_image_url string             `json:"profile_image" `
 	GoogleID          string             `json:"googleId"`
-	Posts             []Post             `json:"posts"`
+	Posts             []Blog             `json:"posts"`
 	RefreshToken      string             `json:"refreshToken" validate:"required"`
 	AccessToken       string             `json:"accessToken" validate:"required"`
 	Contact           string             `json:"contact"`

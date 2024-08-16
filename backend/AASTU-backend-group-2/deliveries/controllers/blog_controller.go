@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogController struct {
@@ -31,6 +30,13 @@ func (controller *BlogController) CreateBlog(c *gin.Context) {
 	// 	c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 	// 	return
 	// }
+
+	// userid, exists := c.Get("userid")
+	// if !exists {
+	// 	c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+	// 	return
+	// }
+
 	var blog domain.Blog
 	if err := c.ShouldBindJSON(&blog); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
@@ -41,8 +47,7 @@ func (controller *BlogController) CreateBlog(c *gin.Context) {
 		c.JSON(http.StatusBadGateway, gin.H{"message": "Please fill in all fields"})
 		return
 	}
-	blog.UserID = primitive.NewObjectID()
-	blog.ID = primitive.NewObjectID()
+	// blog.UserID = userid
 
 	blog.Date = time.Now()
 	err := controller.Blogusecase.CreateBlog(c, blog)

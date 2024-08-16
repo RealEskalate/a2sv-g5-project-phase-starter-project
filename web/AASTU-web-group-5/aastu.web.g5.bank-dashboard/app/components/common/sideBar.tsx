@@ -1,14 +1,12 @@
 "use client";
-
-import React, { useState } from "react"; // Ensure useState is imported
+import React, { useState } from "react";
 import Image from "next/image";
 import { FaTimes } from "react-icons/fa";
 
-// Corrected paths for the icons
 import creditCard from "/public/assets/icons/credit-card 1.svg";
 import econometrics from "/public/assets/icons/econometrics 1.svg";
 import economicInvestment from "/public/assets/icons/economic-investment 1.svg";
-import home from "/public/assets/icons/home 2.svg";
+import enabledHome from "/public/assets/icons/home 2.svg";
 import mainIcon from "/public/assets/icons/iconfinder_vector_65_09_473792 1.png";
 import loan from "/public/assets/icons/loan 1.svg";
 import service from "/public/assets/icons/service 1.svg";
@@ -19,7 +17,7 @@ import user from "/public/assets/icons/user 3 1.svg";
 import enabledCreditCard from "/public/assets/icons/enabled/credit-card 1.svg";
 import enabledEconometrics from "/public/assets/icons/enabled/econometrics 1.svg";
 import enabledEconomicInvestment from "/public/assets/icons/enabled/economic-investment 1.svg";
-import enabledHome from "/public/assets/icons/enabled/Vector.svg";
+import home from "/public/assets/icons/enabled/Vector.svg";
 import enabledLoan from "/public/assets/icons/enabled/loan 1.svg";
 import enabledService from "/public/assets/icons/enabled/service 1.svg";
 import enabledSettingsSolid from "/public/assets/icons/enabled/settings solid 1.svg";

@@ -1,6 +1,6 @@
 import React from "react";
 
-const Page = () => {
+const TrendingStock = () => {
   return (
     <div className="w-[445px] h-[300px] bg-white rounded-[25px] max-sm:w-[325px] max-sm:h-[213px] max-sm:rounded-[15px]">
       <table className="">
@@ -100,4 +100,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default TrendingStock;

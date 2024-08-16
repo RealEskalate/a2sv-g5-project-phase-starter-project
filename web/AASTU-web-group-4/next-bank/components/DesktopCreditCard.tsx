@@ -45,3 +45,4 @@ const DesktopCreditCard: React.FC<CreditCardProps> = ({ bgColor, textColor }) =>
 };
 
 export default DesktopCreditCard;
+

@@ -9,10 +9,11 @@ import (
 	"strings"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UserUsecase interface {
-	Register(input Domain.RegisterInput) (*Domain.RegisterInput, error)
+	Register(input Domain.RegisterInput) (*Domain.User, error)
 	UpdateUser(username string, updatedUser *Domain.UpdateUserInput) error
 	DeleteUser(username string) error
 	Logout(username string) error
@@ -33,7 +34,7 @@ func NewUserUsecase(userRepo Repository.UserRepository, emailService *infrastruc
 	}
 }
 
-func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.RegisterInput, error) {
+func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error) {
 	// Validate username: must not contain '@'
 	if strings.Contains(input.Username, "@") {
 		return nil, errors.New("username must not contain '@'")
@@ -54,7 +55,9 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.RegisterInpu
 		return nil, fmt.Errorf("failed to hash password: %v", err)
 	}
 
-	user := &Domain.RegisterInput{
+	user := &Domain.User{
+		Id:             primitive.NewObjectID(),
+		Name:           input.Name,
 		Username:       input.Username,
 		Email:          input.Email,
 		Password:       string(hashedPassword),
@@ -62,6 +65,9 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.RegisterInpu
 		Bio:            input.Bio,
 		Gender:         input.Gender,
 		Address:        input.Address,
+		Role:           "user",
+		IsActive:       true,
+		PostsIDs:       []string{},
 	}
 
 	// Save the user to the repository

@@ -1,11 +1,13 @@
-// import DebitCreditOverviewChart from './DebitCreditOverviewChart'
-import DebitCreditOverviewChart from './DebitCreditOverviewChart'
+import WeeklyActivityChart from './WeeklyActivityChart'
+
+// import PieChart from  './PieChart'
 
 const page = () => {
     return (
         <div className=''>
-            {/* <DebitCreditOverviewChart /> */}
-            <DebitCreditOverviewChart />
+            <WeeklyActivityChart />
+           
+          
         </div>
     )
 }

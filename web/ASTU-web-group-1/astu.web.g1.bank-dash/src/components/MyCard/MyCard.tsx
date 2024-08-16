@@ -12,7 +12,7 @@ const MyCard = () => {
           </div>
           <div className="">
             <Image
-              src="/chip-card-white.svg"
+              src="/assets/icons/chip-card-white.svg"
               alt="chip_card"
               width={35}
               height={35}

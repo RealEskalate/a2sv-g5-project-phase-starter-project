@@ -41,8 +41,8 @@ const Transaction = () => {
           </div>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-8 min-w-[650px] min-h-[170px]">
-              <VisaCard isBlack={false} isFade={false} />
-              <VisaCard isBlack={true} isFade={false} />
+              <VisaCard isBlack={false} isFade={false} isSimGray={false} />
+              <VisaCard isBlack={true} isFade={false} isSimGray={false} />
             </div>
           </div>
         </div>

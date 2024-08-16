@@ -15,6 +15,7 @@ interface UserPreference {
     postalCode: string;
     username: string;
     password: string;
+    confirmPassword: string;
     presentAddress: string;
     city: string;
     country: string;

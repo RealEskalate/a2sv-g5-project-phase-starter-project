@@ -47,7 +47,7 @@ export default function Home() {
           <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
             Last Transaction
           </p>
-          <div className=" bg-white border rounded-3xl p-3">
+          <div className=" bg-white border rounded-3xl p-3 shadow-lg border-gray-300">
             <Last_trans
               title="Spotify Subscription"
               date="25 Jan 2021"
@@ -100,10 +100,10 @@ export default function Home() {
           <DebitCreditOver />
         </div>
         <div className="lg:w-[30%]">
-          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
+          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 ">
             Invoices Sent
           </p>
-          <div className="border border-solid rounded-3xl p-9">
+          <div className="border border-solid rounded-3xl p-9  bg-white shadow-lg border-gray-300">
             <InvoiceCard
               title="Apple Store"
               date="5h ago"

@@ -5,6 +5,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Inter } from "next/font/google";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   userName: z.string().min(1, { message: "User name field is required" }),
@@ -15,29 +17,28 @@ type FormData = z.infer<typeof schema>;
 const inter = Inter({ subsets: ["latin"] });
 
 const SignIn = () => {
-  //   const router = useRouter();
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
-  // const onSubmit = async (data: SignInType) => {
-  //   let res = await signIn("credentials", {
-  //     email: data.email,
-  //     password: data.password,
-  //     redirect: false,
-  //   });
-
-  //   if (!res?.ok) {
-  //     alert("Invalid Credentials");
-  //     router.push("/SignIn");
-  //   } else {
-  //     console.log("response: ", res);
-  //     alert("Successfully logged in")
-  //     router.push("/");
-  //   }
-  // };
+  const onSubmit = async (data: any) => {
+    const res = await signIn("credentials", {
+      userName: data.userName,
+      password: data.password,
+      redirect: false,
+    });
+    if (!res?.ok) {
+      alert("Invalid Credentials");
+      router.push("/logIn");
+    } else {
+      console.log("response: ", res);
+      alert("Successfully logged in");
+      router.push("/");
+    }
+  };
   return (
     <div
       className={`${inter.className} flex justify-center pt-[34px] pb-[50px] rounded-3xl bg-white`}
@@ -54,7 +55,7 @@ const SignIn = () => {
           <div className="border-[1px] w-2/6 h-0 border-[#D6DDEB]"></div>
         </div>
         <form
-          onSubmit={handleSubmit(() => {})}
+          onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col gap-[22px]"
           noValidate
         >

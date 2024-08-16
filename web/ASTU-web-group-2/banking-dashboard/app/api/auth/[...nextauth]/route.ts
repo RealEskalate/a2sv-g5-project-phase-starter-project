@@ -3,4 +3,4 @@ import { options } from "./options"
 
 const handler = NextAuth(options);
 
-export { handler as Get, handler as POST };
+export { handler as GET, handler as POST };

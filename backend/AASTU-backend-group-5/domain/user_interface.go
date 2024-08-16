@@ -2,7 +2,7 @@ package domain
 
 import "github.com/gin-gonic/gin"
 
-type Controller_interface interface {
+type User_Controller_interface interface {
 	GetOneUser() gin.HandlerFunc
 	GetUsers() gin.HandlerFunc
 	UpdateUser() gin.HandlerFunc
@@ -12,7 +12,7 @@ type Controller_interface interface {
 	FilterUser() gin.HandlerFunc
 }
 
-type Usecase_interface interface {
+type User_Usecase_interface interface {
 	GetOneUser(id string) (ResponseUser , error) 
 	GetUsers() ([]ResponseUser , error)
 	UpdateUser(id string , user User) (ResponseUser , error)
@@ -22,7 +22,7 @@ type Usecase_interface interface {
 	FilterUser(map[string]string) ([]ResponseUser , error)
 }
 
-type Registery_interface interface{
+type User_Registery_interface interface{
 	GetUserDocumentByID(id string) (ResponseUser , error) 
 	GetUserDocuments() ([]ResponseUser , error)
 	UpdateUserDocument(id string , user User) (ResponseUser , error)

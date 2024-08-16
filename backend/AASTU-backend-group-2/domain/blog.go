@@ -23,6 +23,7 @@ type BlogUsecase interface {
 	RetrieveBlog(c context.Context, page int) ([]Blog, error)
 	UpdateBlog(c context.Context, updatedblog Blog, blogID string) error
 	DeleteBlog(c context.Context, blogID string) error
+
 }
 
 type BlogRepository interface {

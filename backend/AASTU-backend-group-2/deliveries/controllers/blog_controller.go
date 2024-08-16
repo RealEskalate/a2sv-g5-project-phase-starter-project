@@ -43,6 +43,7 @@ func (controller *BlogController) CreateBlog(c *gin.Context) {
 	}
 	blog.UserID = primitive.NewObjectID()
 	blog.ID = primitive.NewObjectID()
+
 	blog.Date = time.Now()
 	err := controller.Blogusecase.CreateBlog(c, blog)
 	if err != nil {

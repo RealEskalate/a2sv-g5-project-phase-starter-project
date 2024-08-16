@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"blogApp/internal/domain"
+	"errors"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,6 +12,16 @@ import (
 
 type UserRepositoryMongo struct {
 	Collection *mongo.Collection
+}
+
+// FindUserById implements repository.UserRepository.
+func (r *UserRepositoryMongo) FindUserById(ctx context.Context, id string) (*domain.User, error) {
+	panic("unimplemented")
+}
+
+// FindUserByUserName implements repository.UserRepository.
+func (r *UserRepositoryMongo) FindUserByUserName(ctx context.Context, username string) (*domain.User, error) {
+	panic("unimplemented")
 }
 
 func (r *UserRepositoryMongo) CreateUser(ctx context.Context, user *domain.User) error {
@@ -23,7 +34,7 @@ func (r *UserRepositoryMongo) FindUserByEmail(ctx context.Context, email string)
 	user := &domain.User{}
 	err := r.Collection.FindOne(ctx, bson.M{"email": email}).Decode(user)
 	if err == mongo.ErrNoDocuments {
-		return nil, nil //expected if no user is found
+		return nil, errors.New("user not found") // expected if no user is found
 	}
 	if err != nil { //something went wrong
 		return nil, err

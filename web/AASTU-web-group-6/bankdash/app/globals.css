@@ -135,21 +135,51 @@
   }
 }
 
-.simple{
-  color: #232323
-}
-.table-button{
-  @apply border py-2 px-4 text-[#123288] rounded-[50px] border-[#123288] text-center w-fit text-[15px]
+@layer scrollbar_component {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
+  }
 }
 
-.transaction-icon{
-  @apply w-[30px] h-[30px] text-[#718EBF]
+/* Custom utility to hide scrollbars */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
-.transaction-table td, th {
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.simple {
+  color: #232323;
+}
+.table-button {
+  @apply border py-2 px-4 text-[#123288] rounded-[50px] border-[#123288] text-center w-fit text-[15px];
+}
+
+.transaction-icon {
+  @apply w-[30px] h-[30px] text-[#718EBF];
+}
+.transaction-table td,
+th {
   /* padding-top: 6px; */
   border-bottom: 1px solid #e5e7eb; /* You can adjust the color and thickness as needed */
 }
-.transaction-table td{
+.transaction-table td {
   height: 50px;
   align-content: center;
 }

@@ -36,8 +36,8 @@ export default function RootLayout({
           <Navbar title="Dashboard" />
           <div className="flex flex-1 ">
             <Sidebar />
-            <main className="flex-1 p-4 lg:ml-[240px] sm:ml-[240px] ml-0 bg-[#F5F7FA]">
-              <div className="min-h-full">
+            <main className="flex-1 p-4 lg:ml-[240px] sm:ml-[240px] ml-0 bg-[#F5F7FA] ">
+              <div className="overflow-y-scroll">
                 {children}
               </div>
             </main>

@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
-	cmd := exec.Command("air", "--build.cmd", "go run Delivery/main.go", "--build.bin", "./bin/api")
+	cmd := exec.Command("air", "--build.cmd", "go run Delivery/main.go")
+	// cmd := exec.Command("air", "--build.cmd", "go run Delivery/main.go", "--build.bin", "./bin/api")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()

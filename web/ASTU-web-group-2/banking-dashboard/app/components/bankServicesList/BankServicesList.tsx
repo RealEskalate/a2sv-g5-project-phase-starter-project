@@ -34,7 +34,7 @@ const BankServicesList = () => {
     {
       category: "Checking Accounts",
       description: "It is a long established",
-      logo: "/assets/bankService/businessLoans.svg",
+      logo: "/assets/bankService/checkAccounts.svg",
       details: [
         {
           title: "Account Option A",
@@ -61,7 +61,7 @@ const BankServicesList = () => {
     {
       category: "Savings Accounts",
       description: "It is a long established",
-      logo: "/assets/bankService/businessLoans.svg",
+      logo: "/assets/bankService/savingAccounts.svg",
       details: [
         {
           title: "Savings Plan 1",
@@ -88,7 +88,7 @@ const BankServicesList = () => {
     {
       category: "Debit and Credit Cards",
       description: "It is a long established",
-      logo: "/assets/bankService/businessLoans.svg",
+      logo: "/assets/bankService/debitCredit.svg",
       details: [
         {
           title: "Card Plan 1",
@@ -115,7 +115,7 @@ const BankServicesList = () => {
     {
       category: "Life Insurance",
       description: "It is a long established",
-      logo: "/assets/bankService/businessLoans.svg",
+      logo: "/assets/bankService/lifeInsurance.svg",
       details: [
         {
           title: "Insurance Plan 1",

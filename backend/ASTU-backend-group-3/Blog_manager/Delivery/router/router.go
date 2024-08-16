@@ -2,7 +2,7 @@ package router
 
 import (
 	"ASTU-backend-group-3/Blog_manager/Delivery/controller"
-	utils "ASTU-backend-group-3/Blog_manager/Infrastructure"
+	"ASTU-backend-group-3/Blog_manager/infrastructure"
 
 	// "ASTU-backend-group-3/Blog_manager/utils"
 
@@ -13,13 +13,14 @@ func SetupRouter(userController *controller.UserController) *gin.Engine {
 	router := gin.Default()
 
 	router.POST("/register", userController.Register)
-
+	router.POST("/login", userController.Login)
+	
 	usersRoute := router.Group("/user")
-	usersRoute.Use(utils.Auth_User()) // make sure to add Auth_User in the middleware
+	usersRoute.Use(infrastructure.AuthMiddleware()) // make sure to add Auth_User in the middleware
 	usersRoute.PUT("/update/:username", userController.UpdateUser)
 
-	protected := router.Group("/admin")
-	protected.Use(utils.Auth_Admin()) // make sure to add Auth_User in the middleware
+	protected := usersRoute.Group("/")
+	protected.Use(infrastructure.RoleMiddleware("admin")) // make sure to add Auth_User in the middleware
 	protected.DELETE("/delete/:username", userController.DeleteUser)
 
 	

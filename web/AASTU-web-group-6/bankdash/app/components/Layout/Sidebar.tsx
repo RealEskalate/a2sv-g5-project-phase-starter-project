@@ -9,8 +9,9 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   const isActive = (path: string) => pathname === path;
+
   return (
-    <div className="py-6 px-5 flex flex-col gap-8 ablsoute left-0 border-r border-r-[#E6EFF5] bg-white">
+    <div className="py-6 px-5 flex flex-col gap-8 absolute left-0 border-r border-r-[#E6EFF5] bg-white">
       <div className="flex gap-2">
         <Image src="/assets/logo.svg" alt="logo" width={36} height={36} />
         <h1 className="text-3xl font-bold text-[#343C6A]">BankDash</h1>
@@ -18,131 +19,138 @@ const Sidebar = () => {
 
       {/* Menu */}
       <div className="px-8 flex flex-col gap-y-8 font-medium">
-        <Link href="/">
-          <div
-            className={`flex items-center gap-x-6  ${
+        <Link href="/" className="flex items-center gap-x-6">
+          <Image src="/assets/home 2.svg" alt="logo" width={25} height={25} />
+          <h2
+            className={`text-base font-medium ${
               isActive("/") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            }`}
+            } hover:text-blue-500`}
           >
-            <Image src="/assets/home 2.svg" alt="logo" width={25} height={25} />
-            <h2 className="text-basex  ">Dashboard</h2>
-          </div>
-        </Link>
-        <Link href="/transaction">
-          <div
-            className={`flex items-center gap-x-6  ${
-              isActive("/transaction") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            }`}
-          >
-            <Image
-              src="/assets/transfer 1.svg"
-              alt="logo"
-              width={25}
-              height={25}
-            />
-            <h2 className="text-base   ">Transactions</h2>
-          </div>
-        </Link>
-        <Link href="/">
-          <div
-            className={`flex items-center gap-x-6  ${
-              isActive("/Accounts") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            }`}
-          >
-            <Image
-              src="/assets/user 3 1.svg"
-              alt="logo"
-              width={25}
-              height={25}
-            />
-            <h2 className="text-base   ">Accounts</h2>
-          </div>
-        </Link>
-        <Link href="/investment">
-          <div
-            className={`flex items-center gap-x-6  ${
-              isActive("/Investments") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            }`}
-          >
-            <Image
-              src="/assets/economic-investment 1.svg"
-              alt="logo"
-              width={25}
-              height={25}
-            />
-            <h2 className="text-base   ">Investments</h2>
-          </div>
-        </Link>
-        <Link href="/CreditCards">
-          <div
-            className={`flex items-center gap-x-6  ${
-              isActive("/credit-cards") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            }`}
-          >
-            <Image
-              src="/assets/credit-card 1.svg"
-              alt="logo"
-              width={25}
-              height={25}
-            />
-            <h2 className="text-base   ">Credit Cards</h2>
-          </div>
-        </Link>
-        <Link href="/loan">
-          <div
-            className={`flex items-center gap-x-6  ${
-              isActive("/loan") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            }`}
-          >
-            <Image src="/assets/loan 1.svg" alt="logo" width={25} height={25} />
-            <h2 className="text-base">Loans</h2>
-          </div>
-        </Link>
-        <Link href="/Services">
-          <div
-            className={`flex items-center gap-x-6  ${
-              isActive("/Services") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            }`}
-          >
-            <Image
-              src="/assets/service 1.svg"
-              alt="logo"
-              width={25}
-              height={25}
-            />
-            <h2 className="text-base">Services</h2>
-          </div>
-        </Link>
-        <Link href="/">
-          <div
-            className={`flex items-center gap-x-6  ${
-              isActive("/privilages") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            }`}
-          >
-            <Image
-              src="/assets/econometrics 1.svg"
-              alt="logo"
-              width={25}
-              height={25}
-            />
-            <h2 className="text-base">My Privileges</h2>
-          </div>
+            Dashboard
+          </h2>
         </Link>
 
-        <Link href="/setting">
-          <div
-            className={`flex items-center gap-x-6 ${
-              isActive("/setting") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            }`}
+        <Link href="/transaction" className="flex items-center gap-x-6">
+          <Image
+            src="/assets/transfer 1.svg"
+            alt="logo"
+            width={25}
+            height={25}
+          />
+          <h2
+            className={`text-base ${
+              isActive("/transaction") ? "text-[#1814F3]" : "text-[#b1b1b1]"
+            } hover:text-blue-500`}
           >
-            <Image
-              src="/assets/settings solid 1.svg"
-              alt="logo"
-              width={25}
-              height={25}
-            />
-            <h2 className="text-base   ">Setting</h2>
-          </div>
+            Transactions
+          </h2>
+        </Link>
+
+        <Link href="/accounts" className="flex items-center gap-x-6">
+          <Image
+            src="/assets/user 3 1.svg"
+            alt="logo"
+            width={25}
+            height={25}
+          />
+          <h2
+            className={`text-base ${
+              isActive("/accounts") ? "text-[#1814F3]" : "text-[#b1b1b1]"
+            } hover:text-blue-500`}
+          >
+            Accounts
+          </h2>
+        </Link>
+
+        <Link href="/investments" className="flex items-center gap-x-6">
+          <Image
+            src="/assets/economic-investment 1.svg"
+            alt="logo"
+            width={25}
+            height={25}
+          />
+          <h2
+            className={`text-base ${
+              isActive("/investments") ? "text-[#1814F3]" : "text-[#b1b1b1]"
+            } hover:text-blue-500`}
+          >
+            Investments
+          </h2>
+        </Link>
+
+        <Link href="/credit-cards" className="flex items-center gap-x-6">
+          <Image
+            src="/assets/credit-card 1.svg"
+            alt="logo"
+            width={25}
+            height={25}
+          />
+          <h2
+            className={`text-base ${
+              isActive("/credit-cards") ? "text-[#1814F3]" : "text-[#b1b1b1]"
+            } hover:text-blue-500`}
+          >
+            Credit Cards
+          </h2>
+        </Link>
+
+        <Link href="/loan" className="flex items-center gap-x-6">
+          <Image src="/assets/loan 1.svg" alt="logo" width={25} height={25} />
+          <h2
+            className={`text-base ${
+              isActive("/loan") ? "text-[#1814F3]" : "text-[#b1b1b1]"
+            } hover:text-blue-500`}
+          >
+            Loans
+          </h2>
+        </Link>
+
+        <Link href="/service" className="flex items-center gap-x-6">
+          <Image
+            src="/assets/service 1.svg"
+            alt="logo"
+            width={25}
+            height={25}
+          />
+          <h2
+            className={`text-base ${
+              isActive("/service") ? "text-[#1814F3]" : "text-[#b1b1b1]"
+            } hover:text-blue-500`}
+          >
+            Services
+          </h2>
+        </Link>
+
+        <Link href="/privilages" className="flex items-center gap-x-6">
+          <Image
+            src="/assets/econometrics 1.svg"
+            alt="logo"
+            width={25}
+            height={25}
+          />
+          <h2
+            className={`text-base ${
+              isActive("/privilages") ? "text-[#1814F3]" : "text-[#b1b1b1]"
+            } hover:text-blue-500`}
+          >
+            My Privileges
+          </h2>
+        </Link>
+
+        <Link href="/setting" className="flex items-center gap-x-6">
+          <Image
+            src="/assets/settings solid 1.svg"
+            alt="logo"
+            width={25}
+            height={25}
+          />
+          <h2
+            className={`text-base ${
+              isActive("/setting") ? "text-[#1814F3]" : "text-[#b1b1b1]"
+            } hover:text-blue-500`}
+          >
+            Setting
+          </h2>
         </Link>
       </div>
     </div>

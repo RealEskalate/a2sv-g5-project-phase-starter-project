@@ -62,8 +62,8 @@ type PaginationResponse[T interface{}] struct {
 }
 
 type BlogUseCase interface {
-	CreateBlog(blog Blog) error
-	UpdateBlog(id string, blog Blog) error
+	CreateBlog(blog Blog) (string, error)
+	UpdateBlog(id string, blog Blog) (Blog, error)
 	DeleteBlog(id string) error
 	GetBlogByID(id string) (Blog, error)
 	GetBlogs(filterOptions []FilterOption, pagination PaginationRequest) (PaginationResponse[Blog], error)

@@ -3,7 +3,6 @@ package Usecases
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"ASTU-backend-group-3/Blog_manager/Repository"
-
 	"ASTU-backend-group-3/Blog_manager/infrastructure"
 	"errors"
 	"fmt"
@@ -14,17 +13,24 @@ import (
 
 type UserUsecase interface {
 	Register(input Domain.RegisterInput) (*Domain.RegisterInput, error)
-	Login(user Domain.LoginInput) (string, error)
 	UpdateUser(username string, updatedUser *Domain.UpdateUserInput) error
 	DeleteUser(username string) error
+	Logout(username string) error
+	Login(LoginUser *Domain.LoginInput) (string, error)
 }
 
 type userUsecase struct {
-	userRepo Repository.UserRepository
+	userRepo        Repository.UserRepository
+	emailService    *infrastructure.EmailService
+	passwordService *infrastructure.PasswordService
 }
 
-func NewUserUsecase(userRepo Repository.UserRepository) UserUsecase {
-	return &userUsecase{userRepo: userRepo}
+func NewUserUsecase(userRepo Repository.UserRepository, emailService *infrastructure.EmailService) UserUsecase {
+	return &userUsecase{
+		userRepo:        userRepo,
+		emailService:    emailService,
+		passwordService: infrastructure.NewPasswordService(), // Initialize PasswordService here
+	}
 }
 
 func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.RegisterInput, error) {
@@ -42,8 +48,8 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.RegisterInpu
 		return nil, errors.New("email already registered")
 	}
 
-	// Hash the password
-	hashedPassword, err := infrastructure.HashPassword(input.Password)
+	// Hash the password using PasswordService
+	hashedPassword, err := u.passwordService.HashPassword(input.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %v", err)
 	}
@@ -62,6 +68,14 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.RegisterInpu
 	err = u.userRepo.Save(user)
 	if err != nil {
 		return nil, fmt.Errorf("failed to save user: %v", err)
+	}
+
+	// Send a welcome email using EmailService
+	subject := "Welcome to Our Service!"
+	body := fmt.Sprintf("Hi %s, welcome to our platform!", input.Username)
+	err = u.emailService.SendEmail(input.Email, subject, body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send welcome email: %v", err)
 	}
 
 	return user, nil
@@ -88,8 +102,8 @@ func (u *userUsecase) UpdateUser(username string, updatedUser *Domain.UpdateUser
 		updateFields["username"] = updatedUser.Username
 	}
 	if updatedUser.Password != "" {
-		// Hash the new password before updating
-		hashedPassword, err := infrastructure.HashPassword(updatedUser.Password)
+		// Hash the new password before updating using PasswordService
+		hashedPassword, err := u.passwordService.HashPassword(updatedUser.Password)
 		if err != nil {
 			return fmt.Errorf("failed to hash password: %v", err)
 		}
@@ -129,39 +143,39 @@ func (u *userUsecase) DeleteUser(username string) error {
 
 	return nil
 }
-func (u *userUsecase) Login(*Domain.LoginInput) (string, error) {
-	user, err := u.userRepo.FindByEmail(email)
+
+func (u *userUsecase) Login(LoginUser *Domain.LoginInput) (string, error) {
+	user, err := u.userRepo.FindByUsername(LoginUser.Username)
 	if err != nil {
-		return " ", err
+		return "", err
 	}
 
 	storedPassword := user.Password
 
-	err = infrastructure.ComparePassword(storedPassword, password)
-
+	// Compare the stored hashed password with the provided one
+	err = u.passwordService.ComparePasswords(storedPassword, LoginUser.Password)
 	if err != nil {
-		return " ", err
+		return "", err
 	}
 
-	access_token, err := infrastructure.GenerateToken(user.Username, user.Role)
-
+	accessToken, err := infrastructure.GenerateToken(user.Username, user.Role)
 	if err != nil {
-		return " ", err
-	}
-	refresh_token, err := infrastructure.GenerateRefreshToken(user.Username)
-
-	if err != nil {
-		return " ", err
+		return "", err
 	}
 
-	err = u.userRepo.InsertToken(user.Username, access_token, refresh_token)
+	refreshToken, err := infrastructure.GenerateRefreshToken(user.Username)
 	if err != nil {
-		return " ", err
+		return "", err
 	}
 
-	return access_token, nil
+	err = u.userRepo.InsertToken(user.Username, accessToken, refreshToken)
+	if err != nil {
+		return "", err
+	}
+
+	return accessToken, nil
 }
 
 func (u *userUsecase) Logout(username string) error {
-	u.userRepo.DeleteToken(username)
+	return u.userRepo.DeleteToken(username)
 }

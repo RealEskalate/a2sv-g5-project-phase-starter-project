@@ -16,12 +16,12 @@ type UserRepository interface {
 	Update(username string, UpdatedUser bson.M) error
 	Delete(userID string) error
 	IsDbEmpty() (bool, error)
-	InsertToken(username string , accessToke string , refreshToken string) error
+	InsertToken(username string, accessToke string, refreshToken string) error
 	DeleteToken(username string) error
 }
 
 type userRepository struct {
-	collection *mongo.Collection
+	collection      *mongo.Collection
 	tokenCollection *mongo.Collection
 }
 
@@ -78,16 +78,15 @@ func (r *userRepository) IsDbEmpty() (bool, error) {
 	return count == 0, nil
 }
 
-
 func (r *userRepository) InsertToken(username string, accessToke string, refreshToken string) error {
 	token := &Domain.Token{
-		TokenID: primitive.NewObjectID(),
-        Username: username,
-        AccessToken: accessToke,
-        RefreshToken: refreshToken,
-    }
-	
-	_ , err := r.tokenCollection.InsertOne(context.TODO(), token)
+		TokenID:      primitive.NewObjectID(),
+		Username:     username,
+		AccessToken:  accessToke,
+		RefreshToken: refreshToken,
+	}
+
+	_, err := r.tokenCollection.InsertOne(context.TODO(), token)
 
 	if err != nil {
 		return err
@@ -96,12 +95,11 @@ func (r *userRepository) InsertToken(username string, accessToke string, refresh
 	return nil
 }
 
-
-func (r *userRepository) DeleteToken (username string ) error{
+func (r *userRepository) DeleteToken(username string) error {
 	filter := bson.M{"username": username}
-    _, err := r.tokenCollection.DeleteOne(context.TODO(), filter)
-    if err!= nil {
-        return err
-    }
-
+	_, err := r.tokenCollection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return err
+	}
+	return nil
 }

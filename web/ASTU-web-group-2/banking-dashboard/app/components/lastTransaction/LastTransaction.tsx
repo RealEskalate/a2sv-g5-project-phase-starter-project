@@ -13,10 +13,9 @@ export type Item = {
 };
 
 const LastTransaction = () => {
-  const access =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJzYW1pdGVzdCIsImlhdCI6MTcyMzgxMDA0NiwiZXhwIjoxNzIzODk2NDQ2fQ.6W4MhXDf2fYFVvHonw5Bs597XszBLvNnB71B6pqrbhkMU3IFkF7NLwHLLJPotY51";
+  const access = process.env.ACCESS_TOKEN;
 
-  const { data, isError, isLoading } = useGetAllTransactionQuery(access);
+  const { data, isError, isLoading } = useGetAllTransactionQuery(access!);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -63,7 +62,9 @@ const LastTransaction = () => {
 
           <div className="w-[137px] sm:w-[117px] md:w-[156px] ">
             <p className="text-[14px] sm:text-[16px] text-[#333B69] font-medium">
-              {item.receiverUserName}
+              {item.receiverUserName
+                ? item.receiverUserName
+                : "Spotify Subscription"}
             </p>
             <span className="text-[12px] sm:text-[15px] text-[#718EBF]">
               {item.date}

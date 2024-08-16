@@ -31,7 +31,7 @@ func Envinit() {
 		JwtSecret = []byte(JwtSecretKey)
 	} else {
 		JwtSecret = []byte("JwtSecretKey")
-		// log.Fatal("JWT secret key not configured")
+		log.Fatal("JWT secret key not configured")
 	}
 	// Read MONGO_CONNECTION_STRING from environment
 	MONGO_CONNECTION_STRING = os.Getenv("MONGO_CONNECTION_STRING")

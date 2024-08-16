@@ -1,4 +1,4 @@
-package custommongo
+package Mongo
 
 import (
 	"context"

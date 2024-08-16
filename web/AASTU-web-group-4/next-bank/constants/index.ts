@@ -56,3 +56,7 @@ export const logo = {
   icon : "/icons/logo.png",
 }
 
+export const textColors = {
+  textWhite: 'text-white',
+  textDimmed: 'text-[#718EBF]',
+}

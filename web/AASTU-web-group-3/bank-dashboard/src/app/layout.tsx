@@ -32,13 +32,14 @@ export default function ClientSideComponent({
       <html lang="en">
         <body className="flex gap-2">
         <aside
-          className={`fixed top-0 left-0 z-40 w-64  bg-white shadow-md transition-transform transform ${
+          className={`fixed min-h-full top-0 left-0 z-40 w-64  bg-white shadow-md transition-transform transform ${
             ishidden ? "translate-x-0" : "-translate-x-full"
-          } md:translate-x-0 md:relative md:w-1/5 md:flex md:flex-col md:gap-6 md:py-4 md:border md:border-[#E6EFF5] md:border-r-2`}
+          } md:translate-x-0 md:relative md:w-[33%] lg:w-1/4 md:flex md:flex-col md:gap-6 md:py-4 md:border md:border-[#E6EFF5] md:border-r-2`}
         >
+
           <div className="ml-5 mt-3 flex items-center gap-8">
             <div className="flex items-center ">
-              <img src={logo} alt="" className="w-9" />
+              <Image src={logo} alt=""  width={36} height={36} />
               <div className="text-[#343C6A] text-2xl font-extrabold font-serif">
                 BankDash.
               </div>
@@ -64,6 +65,8 @@ export default function ClientSideComponent({
                   <Image
                     src={item.icon}
                     alt={item.title}
+                    width={24}
+                    height={24}
                     className={`w-6 h-6 ${
                       activeItem === item.title
                         ? "filter-active"

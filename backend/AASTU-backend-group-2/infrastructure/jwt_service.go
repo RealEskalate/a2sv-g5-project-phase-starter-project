@@ -1,9 +1,11 @@
 package infrastructure
 
 import (
+	"blog_g2/domain"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/joho/godotenv"
@@ -11,7 +13,8 @@ import (
 )
 
 // a tokenizer for authentication purpose
-func TokenGenerator(id primitive.ObjectID, email string, isadmin bool) (string, error) {
+func TokenGenerator(id primitive.ObjectID, email string, isadmin bool, isAccessToken bool) (string, error) {
+	// Load the environment variables
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -20,11 +23,21 @@ func TokenGenerator(id primitive.ObjectID, email string, isadmin bool) (string, 
 
 	var jwtSecret = []byte(SECRET_KEY)
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"_id":     id.Hex(),
-		"email":   email,
-		"isadmin": isadmin,
-	})
+	var expirationTime time.Duration
+	if isAccessToken {
+		expirationTime = 15 * time.Minute
+	} else {
+		expirationTime = 7 * 24 * time.Hour
+	}
+
+	var claims domain.JWTClaim
+
+	claims.UserID = id.Hex()
+	claims.Email = email
+	claims.Isadmin = isadmin
+	claims.Exp = time.Now().Add(expirationTime).Unix()
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return token.SignedString(jwtSecret)
 }

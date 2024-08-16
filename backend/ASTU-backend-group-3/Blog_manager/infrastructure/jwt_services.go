@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"log"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -15,7 +16,13 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-// Generate a token based on username and Role
+// Blacklist for invalidated tokens
+var blacklistedTokens = struct {
+	sync.RWMutex
+	tokens map[string]bool
+}{tokens: make(map[string]bool)}
+
+// GenerateToken creates a JWT token
 func GenerateToken(username, role string) (string, error) {
 	err := godotenv.Load()
 	if err != nil {
@@ -35,17 +42,28 @@ func GenerateToken(username, role string) (string, error) {
 	}
 
 	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(jwtKey)
-	tokenString, err := token, err
-
 	if err != nil {
 		return "", err
 	}
 
-	return tokenString, nil
-
+	return token, nil
 }
 
-// Parse the token and return the claims
+// InvalidateToken adds a token to the blacklist
+func InvalidateToken(tokenString string) {
+	blacklistedTokens.Lock()
+	defer blacklistedTokens.Unlock()
+	blacklistedTokens.tokens[tokenString] = true
+}
+
+// IsTokenBlacklisted checks if a token is in the blacklist
+func IsTokenBlacklisted(tokenString string) bool {
+	blacklistedTokens.RLock()
+	defer blacklistedTokens.RUnlock()
+	return blacklistedTokens.tokens[tokenString]
+}
+
+// ParseUsernameToken parses the JWT and returns the username
 func ParseUsernameToken(tokenString string) (username string, err error) {
 	err = godotenv.Load()
 	if err != nil {
@@ -58,7 +76,7 @@ func ParseUsernameToken(tokenString string) (username string, err error) {
 		return jwtKey, nil
 	})
 
-	if err != nil {
+	if err != nil || IsTokenBlacklisted(tokenString) {
 		return "", err
 	}
 
@@ -70,8 +88,7 @@ func ParseUsernameToken(tokenString string) (username string, err error) {
 	return claims.Username, nil
 }
 
-
-
+// GenerateRefreshToken creates a new refresh token
 func GenerateRefreshToken(username string) (string, error) {
 	err := godotenv.Load()
 	if err != nil {
@@ -98,5 +115,3 @@ func GenerateRefreshToken(username string) (string, error) {
 
 	return tokenString, nil
 }
-
-

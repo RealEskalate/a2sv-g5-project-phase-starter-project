@@ -44,5 +44,9 @@ func (u *UserUsecase) RegisterUser(user *domain.User) (*domain.User, error) {
 	}
 
 	err = u.repo.CreateUser(context.Background(), user)
+
+	go func() {
+		u.RequestEmailVerification(*user)
+	}()
 	return user, err
 }

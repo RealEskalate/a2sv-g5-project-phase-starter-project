@@ -10,10 +10,6 @@ import (
 	"log"
 )
 
-func TokenGenerator() string {
-	return "token"
-}
-
 func (u *UserUsecase) RequestEmailVerification(user domain.User) error {
 	var emailSender email.EmailSender
 
@@ -21,7 +17,15 @@ func (u *UserUsecase) RequestEmailVerification(user domain.User) error {
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
+	dbUSer, err := u.repo.FindUserByEmail(context.Background(), user.Email)
 
+	if err != nil {
+		return err
+	}
+
+	if dbUSer == nil {
+		return errors.New("user with this email does not exist")
+	}
 	emailProvider := Config.EMAIL_PROVIDER
 
 	switch emailProvider {
@@ -42,7 +46,11 @@ func (u *UserUsecase) RequestEmailVerification(user domain.User) error {
 	}
 
 	go func() {
-		err := emailSender.SendVerificationEmail(user.Email, TokenGenerator())
+		token, err := jwt.GenerateJWT("email-verification", user.Email, "email-verification", "email-verification")
+		if err != nil {
+			log.Printf("Failed to generate token: %v", err)
+		}
+		err = emailSender.SendVerificationEmail(user.Email, token)
 		if err != nil {
 			log.Printf("Failed to send verification email: %v", err)
 		}
@@ -51,23 +59,21 @@ func (u *UserUsecase) RequestEmailVerification(user domain.User) error {
 	return nil
 }
 
-func (u *UserUsecase) VerifyEmail(token string, email string) error {
+func (u *UserUsecase) VerifyEmail(token string) error {
 	claims, err := jwt.ValidateToken(token)
 	if err != nil {
 		return err
 	}
 	issuerEmail := claims.Email
-	if issuerEmail != email {
-		return errors.New("invalid token")
-	}
-	user, err := u.repo.FindUserByEmail(context.Background(), email)
+	user, err := u.repo.FindUserByEmail(context.Background(), issuerEmail)
 	if err != nil {
 		return err
 	}
 	if user == nil {
-		return errors.New("user not found")
+		return errors.New("user with this email does not exist")
 	}
 	// user. = true
+	user.Verified = true
 	err = u.repo.UpdateUser(context.Background(), user)
 	if err != nil {
 		return err

@@ -33,14 +33,13 @@ func (h *UserHandler) RequestVerifyEmail(c *gin.Context) {
 }
 
 func (h *UserHandler) VerifyEmail(c *gin.Context) {
-	email := c.Query("email")
 	token := c.Query("token")
-	if email == "" || token == "" {
+	if token == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing email or token"})
 		return
 	}
 
-	err := h.UserUsecase.VerifyEmail(token, email)
+	err := h.UserUsecase.VerifyEmail(token)
 	if err != nil {
 		log.Printf("Error verifying email: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify email"})
@@ -68,10 +67,10 @@ func (h *UserHandler) ResetPasswordRequest(c *gin.Context) {
 }
 
 func (h *UserHandler) ResetPassword(c *gin.Context) {
+	token := c.Query("token")
 	var request struct {
 		Email    string `json:"email" binding:"required,email"`
 		Password string `json:"password" binding:"required"`
-		Token    string `json:"token" binding:"required"`
 	}
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
@@ -79,7 +78,7 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 		return
 	}
 
-	err = h.UserUsecase.ResetPassword(request.Token, request.Password, request.Email)
+	err = h.UserUsecase.ResetPassword(token, request.Password, request.Email)
 	if err != nil {
 		log.Printf("Error resetting password: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password"})

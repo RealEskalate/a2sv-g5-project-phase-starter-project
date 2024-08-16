@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -71,6 +72,7 @@ func (au *authRepository) Register(ctx context.Context, user *Domain.User) (*Dom
 	}
 
 	user.Password = string(hashedPassword)
+	user.CreatedAt = time.Now()
 	InsertedID, err := au.collection.InsertOne(ctx, user)
 	if err != nil {
 		fmt.Println("error at insert", err)

@@ -11,6 +11,8 @@ const InfoboxForServicePage = () => {
           name={item.name}
           icon={item.icon}
           value={item.value}
+          classNameText1="text-[#232323] font-semibold text-lg max-lg:text-[12px] max-md:text-lg"
+          classNameText2="text-[#718EBF] font-normal text-sm max-lg:text-[12px] max-md:text-sm"
         />
       ))}
     </div>

@@ -21,7 +21,7 @@ func NewRefreshTokenUsecase(userRepository domain.UserRepository, timeout time.D
 
 // CreateAccessToken implements domain.RefreshTokenUsecase.
 func (r *refreshTokenUsecase) CreateAccessToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
-	panic("unimplemented")
+	return infrastructure.CreateAccessToken(user, secret, expiry)
 }
 
 // CreateRefreshToken implements domain.RefreshTokenUsecase.
@@ -38,6 +38,7 @@ func (r *refreshTokenUsecase) ExtractIDFromToken(requestToken string, secret str
 func (r *refreshTokenUsecase) GetUserByID(c context.Context, id string) (domain.User, error) {
 	// ctx, cancel := context.WithTimeout(c, r.contextTimeout)
 	// defer cancel()
-	// r.userRepository.GetUserByID(ctx, id)
+	// print(ctx)
+	// return r.userRepository.GetUserByID(ctx, id)
 	return domain.User{}, nil
 }

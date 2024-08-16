@@ -71,3 +71,22 @@ func (ac *authController) Register(c *gin.Context) {
 	}
 
 }
+
+// logout
+func (ac *authController) Logout(c *gin.Context) {
+	// return error
+	// get the access token from the header
+	claims, err := Getclaim(c)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	err, statusCode := ac.AuthUseCase.Logout(c, claims.ID)
+	if err != nil {
+		c.IndentedJSON(statusCode, gin.H{"error": err.Error()})
+	} else {
+		//success
+		c.IndentedJSON(http.StatusOK, gin.H{"message": "User logged out successfully"})
+	}
+
+}

@@ -15,13 +15,15 @@ import (
 )
 
 type authRepository struct {
-	collection Domain.Collection
+	UserCollection  Domain.Collection
+	TokenRepository Domain.RefreshRepository
 }
 
-func NewAuthRepository(_collection Domain.Collection) *authRepository {
+func NewAuthRepository(user_collection Domain.Collection, token_collection Domain.Collection) *authRepository {
 	return &authRepository{
 
-		collection: _collection,
+		UserCollection:  user_collection,
+		TokenRepository: NewRefreshRepository(token_collection),
 	}
 
 }
@@ -30,7 +32,7 @@ func NewAuthRepository(_collection Domain.Collection) *authRepository {
 func (au *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.Tokens, error, int) {
 	filter := bson.D{{"email", user.Email}}
 	var existingUser Domain.User
-	err := au.collection.FindOne(ctx, filter).Decode(&existingUser)
+	err := au.UserCollection.FindOne(ctx, filter).Decode(&existingUser)
 
 	if err != nil || !password_services.CompareHashAndPasswordCustom(existingUser.Password, user.Password) {
 		fmt.Printf("Login Called:%v, %v", existingUser.Password, user.Password)
@@ -57,8 +59,12 @@ func (au *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.
 		RefreshToken: jwtRefreshToken,
 	}
 
-	
-	
+	// store the refresh token
+	err, statusCode := au.TokenRepository.StoreToken(ctx, existingUser.ID, jwtRefreshToken)
+	if err != nil {
+		return Domain.Tokens{}, err, statusCode
+	}
+
 	return tokens, nil, 200
 }
 
@@ -67,7 +73,7 @@ func (au *authRepository) Register(ctx context.Context, user *Domain.User) (*Dom
 
 	// Check if the email is already taken
 	existingUserFilter := bson.D{{"email", user.Email}}
-	existingUserCount, err := au.collection.CountDocuments(ctx, existingUserFilter)
+	existingUserCount, err := au.UserCollection.CountDocuments(ctx, existingUserFilter)
 	if err != nil {
 		fmt.Println("error at count", err)
 		return &Domain.OmitedUser{}, err, 500
@@ -85,7 +91,7 @@ func (au *authRepository) Register(ctx context.Context, user *Domain.User) (*Dom
 
 	user.Password = string(hashedPassword)
 	user.CreatedAt = time.Now()
-	InsertedID, err := au.collection.InsertOne(ctx, user)
+	InsertedID, err := au.UserCollection.InsertOne(ctx, user)
 	if err != nil {
 		fmt.Println("error at insert", err)
 		return &Domain.OmitedUser{}, err, 500
@@ -97,7 +103,7 @@ func (au *authRepository) Register(ctx context.Context, user *Domain.User) (*Dom
 	// Access the InsertedID field from the InsertOneResult struct
 	insertedID := InsertedID.InsertedID.(primitive.ObjectID)
 
-	err = au.collection.FindOne(context.TODO(), bson.D{{"_id", insertedID}}).Decode(&fetched)
+	err = au.UserCollection.FindOne(context.TODO(), bson.D{{"_id", insertedID}}).Decode(&fetched)
 	if err != nil {
 		fmt.Println(err)
 		return &Domain.OmitedUser{}, errors.New("User Not Created"), 500
@@ -107,4 +113,14 @@ func (au *authRepository) Register(ctx context.Context, user *Domain.User) (*Dom
 	}
 	fetched.Password = ""
 	return &fetched, nil, 200
+}
+
+// logout
+func (au *authRepository) Logout(ctx context.Context, user_id primitive.ObjectID) (error, int) {
+	// delete the refresh token
+	err, statusCode := au.TokenRepository.DeleteToken(ctx, user_id)
+	if err != nil {
+		return err, statusCode
+	}
+	return nil, 200
 }

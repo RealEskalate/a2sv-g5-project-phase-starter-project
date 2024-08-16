@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"blogapp/Domain"
-	"errors"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -12,19 +11,6 @@ type blogController struct {
 	AuthUseCase Domain.BlogUseCase
 }
 
-func Getclaim(c *gin.Context) (*Domain.AccessClaims, error) {
-	claim, exists := c.Get("claim")
-	if !exists {
-		return nil, errors.New("claim not set")
-	}
-
-	userClaims, ok := claim.(*Domain.AccessClaims)
-	if !ok {
-		return nil, errors.New("invalid claim type")
-	}
-
-	return userClaims, nil
-}
 func NewBlogController(usecase Domain.BlogUseCase) *blogController {
 
 	return &blogController{

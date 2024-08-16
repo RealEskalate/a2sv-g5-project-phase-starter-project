@@ -2,11 +2,18 @@ package mongodb
 
 import (
 	"context"
+	"errors"
+	"log"
 
 	"github.com/RealEskalate/astu-backend-g4/backend/ASTU-backend-group-4/blog"
 	"github.com/RealEskalate/astu-backend-g4/backend/ASTU-backend-group-4/pkg/infrastructure"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
+const blogCollection = "blogs"
+
+var ErrUnableToCreateBlog = errors.New("unable to create blog")
 
 type BlogStorage struct {
 	db *mongo.Database
@@ -18,7 +25,13 @@ func NewBlogStorage(db *mongo.Database) *BlogStorage {
 
 // CreateBlog implements BlogRepository.
 func (b *BlogStorage) CreateBlog(ctx context.Context, blog blog.Blog) (string, error) {
-	panic("unimplemented")
+	result, err := b.db.Collection(blogCollection).InsertOne(ctx, blog)
+	if err != nil {
+		log.Default().Printf("Failed to create blog: %v", err)
+		return "", ErrUnableToCreateBlog
+	}
+
+	return result.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
 // CreateComment implements BlogRepository.

@@ -1,3 +1,27 @@
+// signup interface
+export interface User {
+  name: string;
+  email: string;
+  dateOfBirth: string;
+  permanentAddress: string;
+  postalCode: string;
+  username: string;
+  password: string;
+  presentAddress: string;
+  city: string;
+  country: string;
+  profilePicture: string;
+  preference: {
+    currency: string;
+    sentOrReceiveDigitalCurrency: boolean;
+    receiveMerchantOrder: boolean;
+    accountRecommendations: boolean;
+    timeZone: string;
+    twoFactorAuthentication: boolean;
+  };
+}
+
+
 /* eslint-disable no-unused-vars */
 
 

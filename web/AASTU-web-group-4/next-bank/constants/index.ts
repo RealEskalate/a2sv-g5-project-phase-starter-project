@@ -232,3 +232,7 @@ export const logo = {
   RT3 : '/icons/RT3.png',
 }
 
+export const textColors = {
+  textWhite: 'text-white',
+  textDimmed: 'text-[#718EBF]',
+}

@@ -14,14 +14,14 @@ import LineChart from '@/components/Linechart'
 
 const page = () => {
   return (
-    <div className={`${colors.graybg} p-6`}>
-      <div className='flex flex-col justify-between w-screen  md:flex-row max-w-screen-2xl gap-10 '>
+    <div className={`${colors.graybg} p-6 md:ml-64`}>
+      <div className='flex flex-col justify-between w-full  md:flex-row max-w-full gap-10 '>
         <div className=' md:w-3/5 py-4 '>
           <div className={`${colors.navbartext} flex justify-between `}>
             <h1 className='font-bold text-2xl'>My Cards</h1>
             <p className='my-2'> See All</p>
           </div>
-          <div className='flex justify- gap-3 overflow-x-auto md: max-w-4xl'>
+          <div className='flex justify- gap-3 overflow-x-auto max-w-max md: max-w-2xl'>
             <div className='flex py-3 '> <DesktopCreditCart bgColor={colors.blue} textColor={colors.textwhite}/></div>
             <div className='flex py-3'> <DesktopCreditCart bgColor={colors.white} textColor={colors.textblack}/></div>
           </div>
@@ -37,7 +37,7 @@ const page = () => {
           </div>
         </div>
       </div>
-      <div className='flex flex-col  justify-between gap-10 md:flex-row max-w-screen-2xl' >
+      <div className='flex flex-col  justify-between gap-10 md:flex-row max-w-full' >
         <div className=' md:w-3/5 py-5'>
           <div className={`${colors.navbartext} flex justify-between py-4`}>
             <h1 className='font-bold text-2xl'>Weekly Activity</h1>
@@ -56,7 +56,7 @@ const page = () => {
            
            
            
-            <div className='flex flex-col justify-between w-screen  md:flex-row max-w-screen-2xl gap-10 '>
+            <div className='flex flex-col justify-between w-full  md:flex-row max-w-full gap-10 '>
         <div className=' md:w-2/5 py-4 '>
           <div className={`${colors.navbartext} flex justify-between `}>
             <h1 className='font-bold text-2xl'>Quick Transfer</h1>

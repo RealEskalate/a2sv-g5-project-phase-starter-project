@@ -39,12 +39,12 @@ const options = {
 
 const CardExpenceStatistics: React.FC = () => {
   return (
-    <div className="w-full md:w-4/12">
-      <h1 className="text-[#333B69] text-20px py-2 font-semibold">
+    <div>
+      <h1 className="text-[#333B69] pb-2 font-semibold">
         Card and Expence Statistics
       </h1>
       <div className="w-full bg-white p-6 rounded-3xl">
-        <div className="mx-10 mt-4 flex justify-center">
+        <div className="mx-14 md:mx-32 lg:mx-12 xl:mx-16 mt-2 flex justify-center">
           <Doughnut data={data} options={options} />
         </div>
         <div className="flex justify-around mt-4">

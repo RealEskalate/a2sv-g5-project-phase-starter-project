@@ -15,7 +15,7 @@ type UserUsecase interface {
 	Register(input Domain.RegisterInput) (*Domain.RegisterInput, error)
 	UpdateUser(username string, updatedUser *Domain.UpdateUserInput) error
 	DeleteUser(username string) error
-	Logout(username string) error
+	Logout(username string , tokenString string) error
 	Login(LoginUser *Domain.LoginInput) (string, error)
 }
 
@@ -176,6 +176,13 @@ func (u *userUsecase) Login(LoginUser *Domain.LoginInput) (string, error) {
 	return accessToken, nil
 }
 
-func (u *userUsecase) Logout(username string) error {
-	return u.userRepo.DeleteToken(username)
+func (u *userUsecase) Logout(username string, tokenString string) error {
+	err := u.userRepo.DeleteToken(username)
+	if err != nil {
+		return err
+	}
+
+	infrastructure.InvalidateToken(tokenString)
+
+	return nil
 }

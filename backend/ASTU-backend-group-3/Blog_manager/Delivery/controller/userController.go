@@ -4,6 +4,7 @@ import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"ASTU-backend-group-3/Blog_manager/Usecases"
 	"net/http"
+	"ASTU-backend-group-3/Blog_manager/infrastructure"
 
 	"github.com/gin-gonic/gin"
 )
@@ -81,4 +82,26 @@ func (uc *UserController) Login(c *gin.Context) {
     }
 
     c.JSON(http.StatusOK, gin.H{"access_token": access_token})
+}
+
+func (uc *UserController) Logout(c *gin.Context) {
+	tokenString := c.GetHeader("Authorization")
+	if tokenString == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		return
+	}
+
+	username, err := infrastructure.ParseUsernameToken(tokenString)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	err = uc.UserUsecase.Logout(username, tokenString)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Logout failed"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
 }

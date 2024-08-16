@@ -67,7 +67,7 @@ func IsTokenBlacklisted(tokenString string) bool {
 func ParseUsernameToken(tokenString string) (username string, err error) {
 	err = godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("Error loading .env file22")
 	}
 
 	var jwtKey = []byte(os.Getenv("JWT_SECRET"))

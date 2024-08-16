@@ -19,13 +19,14 @@ import (
 )
 
 func main() {
+
 	// Load environment variables from .env file
 	if err := godotenv.Load(".env"); err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
 	// Create a new MongoDB client and connect to the server
-	clientOptions := options.Client().ApplyURI(os.Getenv("MONGO_URI"))
+	clientOptions := options.Client().ApplyURI(os.Getenv("MONGO_URL"))
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatal("Failed to create MongoDB client:", err)

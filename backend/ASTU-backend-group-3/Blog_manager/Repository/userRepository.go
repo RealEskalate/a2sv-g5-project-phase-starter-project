@@ -95,7 +95,7 @@ func (r *userRepository) InsertToken(username string, accessToke string, refresh
 	return nil
 }
 
-func (r *userRepository) DeleteToken(username string) error {
+func (r *userRepository) DeleteToken(username string ) error {
 	filter := bson.M{"username": username}
 	_, err := r.tokenCollection.DeleteOne(context.TODO(), filter)
 	if err != nil {

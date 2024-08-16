@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .data-[state=active]:border-b-primaryBlue {
+    @apply border-b-primaryBlue;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -64,19 +70,15 @@
     filter: brightness(0) saturate(100%) invert(31%) sepia(100%) saturate(3487%) hue-rotate(208deg) brightness(101%) contrast(101%);
   }
 }
-@layer utilities {
-    .border-border {
-        border-color: #your-color-code;
-    }
-}
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-[#f5f7fa] text-foreground;
+
+@layer components {
+  .text-foreground {
+    color: var("#F5F7FA");
   }
 
+  .border-border {
+    border-color: gray;
+  }
   .tabs{
     @apply data-[state=active]:border-b-primaryBlue data-[state=active]:border-b-4 data-[state=active]:text-primaryBlue bg-gray-100 text-gray-800 bg-transparent
   }

@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .data-[state=active]:border-b-primaryBlue {
+    @apply border-b-primaryBlue;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -65,11 +71,15 @@
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
+@layer components {
+  .text-foreground {
+    color: var("#F5F7FA");
   }
-  body {
-    @apply bg-[#f5f7fa] text-foreground;
+
+  .border-border {
+    border-color: gray;
+  }
+  .tabs{
+    @apply data-[state=active]:border-b-primaryBlue data-[state=active]:border-b-4 data-[state=active]:text-primaryBlue bg-gray-100 text-gray-800 bg-transparent
   }
 }

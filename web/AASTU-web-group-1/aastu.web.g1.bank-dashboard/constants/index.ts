@@ -2,23 +2,23 @@ export const sidebarLinks = [
     {
         title: 'Dashboard',
         route: '/dashboard',
-        icon: '/icons/home.svg'
+        icon: '/icons/Home.svg'
     }, 
     {
         title: 'Transactions',
         route: '/dashboard/transactions',
-        icon: '/icons/transactions.svg'
+        icon: '/icons/Transactions.svg'
     }, 
     {
         title: 'Accounts',
         route: '/dashboard/accounts',
-        icon: '/icons/accounts.svg'
+        icon: '/icons/Accounts.svg'
     }, 
 
     {
         title: 'Investments',
         route: '/dashboard/investments',
-        icon: '/icons/investments.svg'
+        icon: '/icons/Investments.svg'
     }, 
     {
         title: 'Credit Cards',
@@ -28,12 +28,12 @@ export const sidebarLinks = [
     {
         title: 'Loans',
         route: '/dashboard/loans',
-        icon: '/icons/loans.svg'
+        icon: '/icons/Loans.svg'
     }, 
     {
         title: 'Services',
         route: '/dashboard/services',
-        icon: '/icons/services.svg'
+        icon: '/icons/Services.svg'
     }, 
     {
         title: 'My Privileges',
@@ -45,4 +45,27 @@ export const sidebarLinks = [
         route: '/dashboard/setting',
         icon: '/icons/Settings.svg'
     }, 
+]
+
+export const loanTypes =[
+    {
+        name: 'Personal Loans',
+        route: "",
+        icon: '/icons/PersonalLoan.svg'
+    },
+    {
+        name: 'Corporate Loans',
+        route:'',
+        icon: '/icons/CorporateLoan.svg'
+    },
+    {
+        name: 'Business Loans',
+        route: '',
+        icon: '/icons/BusinessLoan.svg'
+    },
+    {
+        name: 'Custom Loans',
+        route: '',
+        icon: '/icons/CustomLoan.svg'
+    },
 ]

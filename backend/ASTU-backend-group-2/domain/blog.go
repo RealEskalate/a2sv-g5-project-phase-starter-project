@@ -33,6 +33,13 @@ type BlogIn struct {
 	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
 }
 
+type BlogUpdate struct {
+	Title     string    `json:"title" bson:"title" binding:"required"`
+	Tags      []string  `json:"tags" bson:"tags"`
+	Content   string    `json:"content" bson:"content" binding:"required"`
+	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
+}
+
 // this structure when creating and updating comments
 type Comment struct {
 	ID        primitive.ObjectID `json:"id" bson:"_id"`

@@ -12,3 +12,10 @@ type Profile struct {
 	IsOwner    bool               `json:"is_owner" bson:"is_owner"`
 	Role       string             `json:"role" bson:"role"` //may make only tobe admin or user
 }
+type ProfileUpdate struct {
+	FirstName  string `json:"first_name" bson:"first_name"`
+	LastName   string `json:"last_name" bson:"last_name"`
+	Email      string `json:"email" bson:"email"`
+	Bio        string `json:"bio" bson:"bio"`
+	ProfileImg string `json:"profile_img" bson:"profile_img"`
+}

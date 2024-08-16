@@ -1,6 +1,10 @@
 package domain
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"context"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type User struct {
 	ID                primitive.ObjectID `bson:"_id,omitempity" json:"id" `
@@ -31,10 +35,11 @@ type UserRepository interface {
 
 type SignupRepository interface {
 	Create(User) (User, error)
+	FindUserByEmail(c context.Context , email string) (User, error)
 }
 
 type SignupUseCase interface {
-	Create(User) interface{}
+	Create(c context.Context , user User) interface{}
 }
 
 type UserUseCase interface {

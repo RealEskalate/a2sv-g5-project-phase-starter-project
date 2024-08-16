@@ -19,19 +19,29 @@ export default function RootLayout({
 		setIsSidebarVisible(!isSidebarVisible);
 	};
 
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <div className="min-h-screen bg-slate-200 sm:grid sm:grid-cols-[200px_1fr] md:grid-cols-[250px_1fr]">
-          <div className={`fixed inset-0 bg-white z-50 sm:static sm:block ${isSidebarVisible ? 'block' : 'hidden'}`}>
-            <Sidebar isSidebarVisible={isSidebarVisible} toggleSidebar={toggleSidebar} />
-          </div>
-          <div className="flex flex-col w-full">
-            <NavBar toggleSidebar={toggleSidebar} isSidebarVisible={isSidebarVisible} />
-            <main>{children}</main>
-          </div>
-        </div>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en">
+			<body className={inter.className}>
+				<div className="min-h-screen bg-slate-200 sm:grid sm:grid-cols-[200px_1fr] md:grid-cols-[250px_1fr]">
+					<div
+						className={`fixed inset-0 bg-white z-50 sm:static sm:block ${
+							isSidebarVisible ? "block" : "hidden"
+						}`}
+					>
+						<Sidebar
+							isSidebarVisible={isSidebarVisible}
+							toggleSidebar={toggleSidebar}
+						/>
+					</div>
+					<div className="flex flex-col w-full">
+						<NavBar
+							toggleSidebar={toggleSidebar}
+							isSidebarVisible={isSidebarVisible}
+						/>
+						<main>{children}</main>
+					</div>
+				</div>
+			</body>
+		</html>
+	);
 }

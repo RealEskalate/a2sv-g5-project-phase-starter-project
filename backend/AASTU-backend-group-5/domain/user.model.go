@@ -28,6 +28,26 @@ type ResponseUser struct {
 	Is_Admin       bool   `json:"is_admin" bson:"is_admin"`
 }
 
+type UpdateUser struct {
+	UserName       string `json:"username" bson:"username"`
+	Bio            string `json:"bio" bson:"bio"`
+	ProfilePicture []byte `json:"profile_picture" bson:"profile_picture"`
+}
+
+type LogINUser struct {
+	UserName       string             `json:"username" bson:"username"`
+	Email          string             `json:"email" bson:"email"`
+	Password       string             `json:"password" bson:"password"`
+}
+
+type RegisterUser struct {
+	UserName       string `json:"username" bson:"username"`
+	Bio            string `json:"bio" bson:"bio"`
+	ProfilePicture []byte `json:"profile_picture" bson:"profile_picture"`
+	Email          string `json:"email" bson:"email"`
+	Password       string `json:"password" bson:"password"`
+}
+
 
 // from actual user model to response model to be don in usecase
 func CreateResponseUser(user User) ResponseUser {

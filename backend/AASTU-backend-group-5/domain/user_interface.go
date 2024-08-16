@@ -23,11 +23,11 @@ type User_Usecase_interface interface {
 }
 
 type User_Registery_interface interface{
-	GetUserDocumentByID(id string) (ResponseUser , error) 
-	GetUserDocuments() ([]ResponseUser , error)
-	UpdateUserDocument(id string , user User) (ResponseUser , error)
+	GetUserDocumentByID(id string) (User , error) 
+	GetUserDocuments() ([]User , error)
+	UpdateUserDocument(id string , user UpdateUser) (User , error)
 	DeleteUserDocument(id string) (error)
-	LogIn(user User) (ResponseUser , error)
-	Register(user User) (ResponseUser , error)
-	FilterUserDocument(map[string]string) ([]ResponseUser , error)
+	LogIn(user User) (User , error)
+	Register(user RegisterUser) (User , error)
+	FilterUserDocument(map[string]string) ([]User , error)
 }

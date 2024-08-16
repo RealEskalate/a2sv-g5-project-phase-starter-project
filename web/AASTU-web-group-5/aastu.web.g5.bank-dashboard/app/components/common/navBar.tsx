@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from "react";
 import { FaSearch, FaBars, FaTimes } from "react-icons/fa";
 import seetings from "/public/assets/icons/group417.png";

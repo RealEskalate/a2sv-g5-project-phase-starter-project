@@ -1,10 +1,19 @@
+// app/page.tsx
+'use client'
 
 import React from 'react'
 import Services from './Services/page'
+import Settings from './Settings/page 1/page'  // Ensure this path is correct
+
 const Home = () => {
   return (
     <div> 
-      <Services/>
+      {/* * <div>
+        <Services/>
+      </div> */}
+      <div> 
+        <Settings/>
+      </div> 
     </div>
   )
 }

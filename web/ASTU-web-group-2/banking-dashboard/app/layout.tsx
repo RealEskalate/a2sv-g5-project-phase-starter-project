@@ -19,17 +19,32 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className}`}>
+<<<<<<< HEAD
+      <StoreProvider>
+        <body className={`${inter.className}`}>
+          <div className="flex flex-col min-h-screen">
+            <Navbar title="Dashboard" />
+            <div className="flex flex-1">
+              <Sidebar />
+              <main className="flex-1 p-4 mt-2 lg:ml-[240px] sm:ml-[240px] ml-0 bg-[#E6EFF5]">
+                {children}
+              </main>
+            </div>
+=======
+      <body className={`${inter.className} h-full`}>
         <div className="flex flex-col min-h-screen">
           <Navbar title="Dashboard" />
-          <div className="flex flex-1">
+          <div className="flex flex-1 ">
             <Sidebar />
-            <main className="flex-1 p-4 mt-2 lg:ml-[240px] sm:ml-[240px] ml-0 bg-[#E6EFF5]">
-              {children}
+            <main className="flex-1 p-4 lg:ml-[240px] sm:ml-[240px] ml-0 bg-[#F5F7FA]">
+              <div className="min-h-full">
+                {children}
+              </div>
             </main>
+>>>>>>> 498b86e (Transaction page done)
           </div>
-        </div>
-      </body>
+        </body>
+      </StoreProvider>
     </html>
   );
 }

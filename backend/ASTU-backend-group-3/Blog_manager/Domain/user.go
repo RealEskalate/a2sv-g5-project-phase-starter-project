@@ -1,6 +1,7 @@
 package Domain
 
 type User struct {
+	Name string `json:"name" bson:"name"`
 	Id             string   `json:"id" bson:"id"`
 	Username       string   `json:"username" bson:"username"`
 	Password       string   `json:"password" bson:"password"`
@@ -16,6 +17,7 @@ type User struct {
 }
 
 type RegisterInput struct {
+	Name            string `json:"name" bson:"name"`
 	Username       string `json:"username" bson:"username"`
 	Password       string `json:"password" bson:"password"`
 	Email          string `json:"email" bson:"email"`

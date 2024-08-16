@@ -7,6 +7,7 @@ import (
 
 	"github.com/RealEskalate/astu-backend-g4/backend/ASTU-backend-group-4/blog"
 	"github.com/RealEskalate/astu-backend-g4/backend/ASTU-backend-group-4/pkg/infrastructure"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -15,6 +16,9 @@ const blogCollection = "blogs"
 
 var ErrUnableToCreateBlog = errors.New("unable to create blog")
 var ErrUnableToCreatComment = errors.New("unable to create comment")
+var ErrInvalidID = errors.New("invalid ID")
+var ErrUnableToDeleteBlog = errors.New("unable to delete blog")
+var ErrBlogNotFound = errors.New("blog not found")
 
 type BlogStorage struct {
 	db *mongo.Database
@@ -48,7 +52,25 @@ func (b *BlogStorage) CreateComment(ctx context.Context, comment blog.Comment) (
 
 // DeleteBlog implements BlogRepository.
 func (b *BlogStorage) DeleteBlog(ctx context.Context, id string) error {
-	panic("unimplemented")
+	blogIDPrimitive, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return ErrInvalidID
+	}
+
+	filter := bson.D{{Key: "_id", Value: blogIDPrimitive}}
+
+	result, err := b.db.Collection(blogCollection).DeleteOne(ctx, filter)
+
+	if err != nil {
+		log.Default().Printf("Failed to delete blog: %v", err)
+		return ErrUnableToDeleteBlog
+	}
+
+	if result.DeletedCount == 0 {
+		return ErrBlogNotFound
+	}
+
+	return nil
 }
 
 // DeleteComment implements BlogRepository.

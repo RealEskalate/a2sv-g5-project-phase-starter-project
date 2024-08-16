@@ -1,9 +1,9 @@
 package infrastracture
 
 import (
+	"fmt"
 	"group3-blogApi/config"
 	"group3-blogApi/domain"
-	"fmt"
 
 	"github.com/golang-jwt/jwt"
 )

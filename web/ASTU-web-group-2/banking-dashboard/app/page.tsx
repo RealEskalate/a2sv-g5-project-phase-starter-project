@@ -7,6 +7,7 @@ import Page from "./components/TrendingStock/Page";
 import RecentTransaction from "./components/recent-transaction/RecentTransaction";
 import ExpenseStatisticsChart from "./components/charts/ExpenseStatisticsChart";
 import SendMoney from "./components/sendMoney/SendMoney";
+import BalanceHistoryChart from "./components/charts/BalanceHistoryChart";
 const page = () => {
   return (
     <div className="flex flex-col gap-2">
@@ -66,10 +67,10 @@ const page = () => {
           <SendMoney />
         </Card>
         <Card
-          title="Quick Transfer"
-          className="flex flex-col max-w-[350px] lg:mx-auto h-auto"
+          title="Balance History"
+          className="flex flex-col max-w-[730px] lg:mx-auto h-auto"
         >
-          <SendMoney />
+          <BalanceHistoryChart />
         </Card>
       </div>
     </div>

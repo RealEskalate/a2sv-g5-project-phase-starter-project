@@ -49,7 +49,7 @@ func (m *MongoCollection) FindOneAndReplace(ctx context.Context, filter, replace
 }
 
 func (m *MongoCollection) CountDocuments(ctx context.Context, filter interface{}, opts ...*options.CountOptions) (int64, error) {
-	return m.Collection.CountDocuments(ctx, filter, opts...)
+    return m.Collection.CountDocuments(ctx, filter, opts...)
 }
 
 func (m *MongoCollection) UpdateOne(ctx context.Context, filter, update interface{}, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error) {

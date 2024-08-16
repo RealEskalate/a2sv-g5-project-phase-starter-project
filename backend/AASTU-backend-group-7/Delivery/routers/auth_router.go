@@ -6,7 +6,7 @@ import (
 	usecases "blogapp/UseCases"
 )
 
-func AuthRouter() error {
+func AuthRouter() {
 	authRouter := Router.Group("/auth")
 	{
 
@@ -19,5 +19,4 @@ func AuthRouter() error {
 		authRouter.POST("/register", authcontroller.Register)
 
 	}
-	return nil
 }

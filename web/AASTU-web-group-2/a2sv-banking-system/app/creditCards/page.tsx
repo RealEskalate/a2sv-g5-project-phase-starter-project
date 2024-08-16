@@ -5,7 +5,7 @@ import CardSettingList from "./CardSettingList";
 import AddCardForm from "./AddCardForm";
 import MainCreditCard from "./MainCreditCard";
 
-export const HeadingTitle = ({ title }: { title: string }) => {
+const HeadingTitle = ({ title }: { title: string }) => {
   return <h1 className="text-[#343C6A] font-semibold md:text-xl ">{title}</h1>;
 };
 

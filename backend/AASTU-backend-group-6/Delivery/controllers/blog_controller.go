@@ -2,7 +2,7 @@ package controllers
 
 import (
 	domain "blogs/Domain"
-	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,3 +24,4 @@ func UpdateBlogController(c *gin.Context) {
 
 	}
 }
+

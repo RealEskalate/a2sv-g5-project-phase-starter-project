@@ -1,5 +1,5 @@
 import React from 'react'
-import QuickTransfer from "@/app/components/QuickTransfer"
+import QuickTransfer from "@/app/dashboard/components/QuickTransfer"
 const page = () => {
   return (
     <div>

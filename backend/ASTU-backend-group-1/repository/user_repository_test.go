@@ -14,8 +14,7 @@ import (
 )
 
 var (
-	expectedUser = domain.User{
-		ID:        "1",
+	expectedUser = &domain.User{
 		Username:  "johndoe",
 		Email:     "johndoe@example.com",
 		FirstName: "John",
@@ -65,7 +64,7 @@ func (suite *UserRespositoryTestSuite) TestCreate() {
 	}, nil)
 	result, err := suite.userRepository.Create(expectedUser)
 	assert.NoError(err)
-	assert.Equal(result, expectedUser)
+	assert.Equal(expectedUser, &result)
 }
 
 func (suite *UserRespositoryTestSuite) TestGet() {
@@ -91,34 +90,34 @@ func (suite *UserRespositoryTestSuite) TestGet() {
 		singleResult := &mongomocks.SingleResult{}
 		singleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
 			arg := args.Get(0).(*domain.User)
-			*arg = expectedUser
+			*arg = *expectedUser
 		}).Return(nil)
 		suite.coll.On("FindOne", mock.Anything, bson.D{{"username", expectedUser.Username}}, mock.Anything).Return(singleResult)
 		result, err := suite.userRepository.Get(domain.UserFilterOption{Filter: domain.UserFilter{Username: expectedUser.Username}})
 		assert.NoError(err)
-		assert.Equal(expectedUser, result[0])
+		assert.Equal(expectedUser, &result[0])
 	})
 	suite.T().Run("Getting by Email", func(t *testing.T) {
 		singleResult := &mongomocks.SingleResult{}
 		singleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
 			arg := args.Get(0).(*domain.User)
-			*arg = expectedUser
+			*arg = *expectedUser
 		}).Return(nil)
 		suite.coll.On("FindOne", mock.Anything, bson.D{{"email", expectedUser.Email}}, mock.Anything).Return(singleResult)
 		result, err := suite.userRepository.Get(domain.UserFilterOption{Filter: domain.UserFilter{Email: expectedUser.Email}})
 		assert.Nil(err)
-		assert.Equal(expectedUser, result[0])
+		assert.Equal(expectedUser, &result[0])
 	})
 	suite.T().Run("Getting by Id", func(t *testing.T) {
 		singleResult := &mongomocks.SingleResult{}
 		singleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
 			arg := args.Get(0).(*domain.User)
-			*arg = expectedUser
+			*arg = *expectedUser
 		}).Return(nil)
-		suite.coll.On("FindOne", mock.Anything, bson.D{{"id", expectedUser.ID}}, mock.Anything).Return(singleResult)
+		suite.coll.On("FindOne", mock.Anything, bson.D{{"_id", expectedUser.ID}}, mock.Anything).Return(singleResult)
 		result, err := suite.userRepository.Get(domain.UserFilterOption{Filter: domain.UserFilter{UserId: expectedUser.ID}})
 		assert.Nil(err)
-		assert.Equal(expectedUser, result[0])
+		assert.Equal(expectedUser, &result[0])
 	})
 }
 
@@ -129,21 +128,21 @@ func (suite *UserRespositoryTestSuite) TestUpdate() {
 	singleResult := &mongomocks.SingleResult{}
 	singleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
 		arg := args.Get(0).(*domain.User)
-		*arg = expectedUser
+		*arg = *expectedUser
 	}).Return(nil)
-	suite.coll.On("FindOne", mock.Anything, bson.D{{"id", expectedUser.ID}}, mock.Anything).Return(singleResult)
+	suite.coll.On("FindOne", mock.Anything, bson.D{{"_id", expectedUser.ID}}, mock.Anything).Return(singleResult)
 	updateData := domain.User{Password: "New password", IsAdmin: false}
 	expectedUser.Password = updateData.Password
 	updatedUser, err := suite.userRepository.Update(expectedUser.ID, updateData)
 	assert.Nil(err)
-	assert.Equal(expectedUser, updatedUser)
+	assert.Equal(expectedUser, &updatedUser)
 }
 
 func (suite *UserRespositoryTestSuite) TestDelete() {
 	assert := assert.New(suite.T())
 	deleteResult := &mongo.DeleteResult{}
 	deleteResult.DeletedCount = 1
-	suite.coll.On("DeleteOne", mock.Anything, bson.D{{"id", expectedUser.ID}}, mock.Anything).Return(deleteResult, nil)
+	suite.coll.On("DeleteOne", mock.Anything, bson.D{{"_id", expectedUser.ID}}, mock.Anything).Return(deleteResult, nil)
 	err := suite.userRepository.Delete(expectedUser.ID)
 	assert.Nil(err)
 }

@@ -24,7 +24,7 @@ type UserFilterOption struct {
 }
 type UserRepository interface {
 	Get(opts UserFilterOption) ([]User, error)
-	Create(u User) (User, error)
+	Create(u *User) (User, error)
 	Update(userId string, updateData User) (User, error)
 	Delete(userId string) error
 }

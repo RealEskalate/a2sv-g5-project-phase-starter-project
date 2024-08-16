@@ -1,11 +1,12 @@
-import React from 'react'
+import React from "react";
+import CreditCardComponent from "./CreditCardComponent";
 
-function page() {
-  return (
-    <div>
-      
-    </div>
-  )
-}
+const page = () => {
+	return (
+		<div>
+			<CreditCardComponent />
+		</div>
+	);
+};
 
-export default page
+export default page;

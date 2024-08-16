@@ -3,6 +3,7 @@ package Repository
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"context"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -10,7 +11,7 @@ import (
 )
 
 type UserRepository interface {
-	Save(user *Domain.RegisterInput) error
+	Save(user *Domain.User) error
 	FindByEmail(email string) (*Domain.User, error)
 	FindByUsername(username string) (*Domain.User, error)
 	Update(username string, UpdatedUser bson.M) error
@@ -29,8 +30,9 @@ func NewUserRepository(collection *mongo.Collection) UserRepository {
 	return &userRepository{collection: collection}
 }
 
-func (r *userRepository) Save(user *Domain.RegisterInput) error {
-	_, err := r.collection.InsertOne(context.TODO(), user)
+func (r *userRepository) Save(user *Domain.User) error {
+	count, err := r.collection.InsertOne(context.TODO(), user)
+	fmt.Println("from count", count)
 	return err
 }
 

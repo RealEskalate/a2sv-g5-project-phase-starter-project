@@ -8,7 +8,7 @@ import (
 )
 
 // refreshRouter
-func RefreshRouter() {
+func RefreshTokenRouter() {
 	refreshRouter := Router.Group("/refresh")
 	{
 		// generate new auth repo
@@ -16,6 +16,6 @@ func RefreshRouter() {
 		refreshusecase := usecases.NewRefreshUseCase(refreshrepo)
 		refreshcontroller := controllers.NewRefreshController(refreshusecase)
 
-		refreshRouter.POST("/refresh", auth_middleware.AuthMiddleware(), refreshcontroller.Refresh)
+		refreshRouter.GET("", auth_middleware.AuthMiddleware(), refreshcontroller.Refresh)
 	}
 }

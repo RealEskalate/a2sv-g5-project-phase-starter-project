@@ -47,5 +47,8 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	// go to blog router
 	BlogRouter()
 
+	// go to refresh token router
+	RefreshTokenRouter()
+
 	return Router
 }

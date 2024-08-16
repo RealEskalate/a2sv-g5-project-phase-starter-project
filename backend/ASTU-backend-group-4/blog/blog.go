@@ -1,6 +1,7 @@
 package blog
 
 import (
+	"context"
 	"time"
 
 	"github.com/RealEskalate/astu-backend-g4/backend/ASTU-backend-group-4/pkg/infrastructure"
@@ -67,15 +68,15 @@ type BlogUseCase interface {
 }
 
 type BlogRepository interface {
-	CreateBlog(blog Blog) (string, error)
-	UpdateBlog(id string, blog Blog) error
-	DeleteBlog(id string) error
-	GetBlogByID(id string) (Blog, error)
-	GetBlogs(filterOptions []FilterOption, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
-	SearchBlogs(query string) (infrastructure.PaginationResponse[Blog], error)
-	GetCommentsByBlogID(blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
-	CreateComment(comment Comment) error
-	DeleteComment(id string) error
-	LikeBlog(like Like) error
-	DislikeBlog(dislike Dislike) error
+	CreateBlog(ctx context.Context, blog Blog) (string, error)
+	UpdateBlog(ctx context.Context, id string, blog Blog) error
+	DeleteBlog(ctx context.Context, id string) error
+	GetBlogByID(ctx context.Context, id string) (Blog, error)
+	GetBlogs(ctx context.Context, filterOptions []FilterOption, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
+	SearchBlogs(ctx context.Context, query string) (infrastructure.PaginationResponse[Blog], error)
+	GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
+	CreateComment(ctx context.Context, comment Comment) error
+	DeleteComment(ctx context.Context, id string) error
+	LikeBlog(ctx context.Context, like Like) error
+	DislikeBlog(ctx context.Context, dislike Dislike) error
 }

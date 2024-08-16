@@ -89,6 +89,6 @@ const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolea
             </div>
         </div>
     );
-}; 
+};
 
 export default SideBar;

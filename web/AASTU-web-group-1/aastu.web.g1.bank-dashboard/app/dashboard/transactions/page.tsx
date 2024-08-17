@@ -93,7 +93,7 @@ const Transactions = () => {
         </div>
       </div>
       {/* Second Row: Recent Transaction */}
-      <div className="space-y-5 mx-5  w-[80%] items-center">
+      <div className="space-y-5  w-[90%] items-center">
         <div className="space-y-5 ">
           <h4>Recent Transaction</h4>
         <div className="space-x-5 justify-start flex">

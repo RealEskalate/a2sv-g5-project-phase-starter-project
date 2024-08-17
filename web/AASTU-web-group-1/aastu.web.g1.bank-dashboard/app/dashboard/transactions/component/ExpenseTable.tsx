@@ -1,6 +1,5 @@
-import React from 'react'
-import { CiSaveDown1 } from "react-icons/ci";
-import { CiSaveUp1 } from "react-icons/ci";
+import React from "react";
+import { CiSaveDown1, CiSaveUp1 } from "react-icons/ci";
 
 export interface TransactionProps {
   transactionId: string;
@@ -12,51 +11,53 @@ export interface TransactionProps {
   receiverUserName: string;
 }
 
-export const ExpenseTable: React.FC<{ transactions: TransactionProps[] }> = ({ transactions }) => {
+export const ExpenseTable: React.FC<{ transactions: TransactionProps[] }> = ({
+  transactions,
+}) => {
   return (
-    <div className=" max-w-full  rounded-3xl shadow-md">
-      <table className="w-full divide-y divide-gray-200 rounded-3xl  ">
-        <thead className="bg-white ">
+    <div className="w-[100%] rounded-3xl shadow-md">
+      <table className="w-[100%] divide-y divide-gray-200 rounded-3xl ">
+        <thead className="bg-white">
           <tr className="border-b-2">
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase  truncate max-w-[10rem] "
+              className="lg:px-5 py-3 md:px-2 text-left text-xs font-medium text-gray-500 uppercase truncate md:max-w-[6rem] lg:max-w-[10rem]"
             >
               Description
             </th>
             <th
               scope="col"
-              className="lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase truncate max-w-[10rem] hidden md:table-cell"
+              className="lg:px-5 py-3 md:px-2 text-left text-xs font-medium text-gray-500 uppercase truncate hidden md:table-cell md:max-w-[6rem]"
             >
               Transaction ID
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell"
+              className="lg:px-5 py-3 md:px-2 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell md:max-w-[6rem]"
             >
               Type
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell"
+              className="lg:px-5 py-3 md:px-2 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell md:max-w-[6rem]"
             >
               Card
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell"
+              className="lg:px-5 py-3 md:px-2 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell md:max-w-[6rem]"
             >
               Date
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              className="lg:px-5 py-3 md:px-2 text-left text-xs font-medium text-gray-500 uppercase md:max-w-[4rem]"
             >
               Amount
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell"
+              className="lg:px-5 py-3 md:px-2 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell md:max-w-[6rem]"
             >
               Receipt
             </th>
@@ -64,10 +65,10 @@ export const ExpenseTable: React.FC<{ transactions: TransactionProps[] }> = ({ t
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {transactions.map((transaction) => (
-            <tr key={transaction.transactionId} className="justify-between">
-              {/* description */}
-              <td className=" px-2 py-4  items-center text-sm">
-                <div className="space-x-5 flex  max-w-[12rem]">
+            <tr key={transaction.transactionId}>
+              {/* Description */}
+              <td className="lg:px-5 py-4 md:px-2 items-center text-sm truncate lg:max-w-[10rem] md:max-w-[6rem]">
+                <div className="space-x-2 flex md:max-w-[6rem] lg:max-w-[10rem]">
                   <span className="inline-block align-middle">
                     {transaction.amount > 0 ? (
                       <CiSaveUp1 size={20} />
@@ -76,46 +77,42 @@ export const ExpenseTable: React.FC<{ transactions: TransactionProps[] }> = ({ t
                     )}
                   </span>
                   <span
-                    className="inline-block align-middle truncate max-w-[10rem]"
+                    className="inline-block align-middle truncate"
                     title={transaction.description}
                   >
                     {transaction.description}
                   </span>
                 </div>
               </td>
-              {/* Id */}
-              <td className="lg:px-6 py-4 truncate max-w-[10rem] hidden md:table-cell text-sm">
+              {/* ID */}
+              <td className="lg:px-5 py-4 md:px-2 text-sm truncate hidden md:table-cell md:max-w-[4rem]">
                 {transaction.transactionId}
               </td>
-              {/* type */}
-              <td className="lg:px-6 py-4 truncate max-w-[10rem] hidden md:table-cell text-sm">
+              {/* Type */}
+              <td className="lg:px-5 py-4 md:px-2 text-sm truncate hidden md:table-cell md:max-w-[6rem]">
                 {transaction.type}
               </td>
-              {/* card */}
-              <td className="lg:px-6 py-4 truncate max-w-[10rem] hidden md:table-cell text-sm">
+              {/* Card */}
+              <td className="lg:px-5 py-4 md:px-2 text-sm truncate hidden md:table-cell md:max-w-[6rem]">
                 {transaction.receiverUserName}
               </td>
-              {/* date */}
-              <td className="lg:px-6 py-4 truncate max-w-[10rem] hidden md:table-cell text-sm">
+              {/* Date */}
+              <td className="lg:px-5 py-4 md:px-2 text-sm truncate hidden md:table-cell md:max-w-[6rem]">
                 {transaction.date}
               </td>
-              {/* amount */}
-              <td className="lg:px-6 py-4 truncate max-w-[10rem] text-sm">
+              {/* Amount */}
+              <td className="lg:px-5 py-4 md:px-2 text-sm truncate md:max-w-[4rem]">
                 <p
-                  className={`${
+                  className={
                     transaction.amount > 0 ? "text-green-500" : "text-red-500"
-                  }`}
+                  }
                 >
                   ${transaction.amount}
                 </p>
               </td>
-              {/* receipt */}
-              <td className="lg:px-2 py-4  truncate hidden md:table-cell">
-                <button
-                  className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-2 border border-blue-500 hover:border-transparent rounded-2xl
-                    text-xs
-                    "
-                >
+              {/* Receipt */}
+              <td className="lg:px-5 py-4 md:px-2 text-xs truncate hidden md:table-cell md:max-w-[3rem]">
+                <button className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-1 border border-blue-500 hover:border-transparent rounded-2xl text-xs">
                   Download
                 </button>
               </td>
@@ -125,4 +122,4 @@ export const ExpenseTable: React.FC<{ transactions: TransactionProps[] }> = ({ t
       </table>
     </div>
   );
-}
+};

@@ -1,4 +1,4 @@
-// "use client";
+"use client";
 import React from "react";
 import BarGraph from "@/app/components/Transaction/BarGraph";
 import Recent from "@/app/components/Transaction/Recent";
@@ -12,7 +12,7 @@ import {
 } from "@/types/TransactionValue";
 import TransactionService from "@/app/Services/api/transactionApi";
 
-const Transaction = async () => {
+const Transaction = () => {
   // const accessToken = process.env.NAHOM_TOKEN as string;
 
   // const transactionData = await TransactionService.getTransactions(accessToken);

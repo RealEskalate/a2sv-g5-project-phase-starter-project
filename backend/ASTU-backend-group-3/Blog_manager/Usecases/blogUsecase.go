@@ -8,6 +8,7 @@ import (
 type BlogUsecase interface {
 	CreateBlog(blog *Domain.Blog) (*Domain.Blog, error)
 	DeleteBlogByID(id string) error
+	SearchBlogs(title string, author string, tags []string) ([]*Domain.Blog, error)
 }
 
 type blogUsecase struct {
@@ -37,4 +38,8 @@ func (uc *blogUsecase) CreateBlog(blog *Domain.Blog) (*Domain.Blog, error) {
 
 func (uc *blogUsecase) DeleteBlogByID(id string) error {
 	return uc.blogRepo.DeleteBlogByID(id)
+}
+
+func (uc *blogUsecase) SearchBlogs(title string, author string, tags []string) ([]*Domain.Blog, error) {
+	return uc.blogRepo.SearchBlogs(title, author, tags)
 }

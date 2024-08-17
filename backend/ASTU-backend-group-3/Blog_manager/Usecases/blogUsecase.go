@@ -7,6 +7,7 @@ import (
 
 type BlogUsecase interface {
 	CreateBlog(blog *Domain.Blog) (*Domain.Blog, error)
+	RetrieveBlogs(page, pageSize int, sortBy string) ([]Domain.Blog, int64, error)
 }
 
 type blogUsecase struct {
@@ -32,4 +33,13 @@ func (uc *blogUsecase) CreateBlog(blog *Domain.Blog) (*Domain.Blog, error) {
 	}
 
 	return createdBlog, nil
+}
+
+func (bu *blogUsecase) RetrieveBlogs(page, pageSize int, sortBy string) ([]Domain.Blog, int64, error) {
+	blogs, totalPosts, err := bu.blogRepo.RetrieveBlogs(page, pageSize, sortBy)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return blogs, totalPosts, nil
 }

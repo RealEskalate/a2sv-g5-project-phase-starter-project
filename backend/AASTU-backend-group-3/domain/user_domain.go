@@ -26,11 +26,24 @@ type User struct {
 	ActivationToken string             `bson:"activation_token"`
 	TokenCreatedAt time.Time          `bson:"token_created_at"`
 	IsActive       bool               `bson:"is_active"`
+	RefreshTokens   []RefreshToken      `bson:"refresh_tokens" json:"refresh_tokens"`
 }
 
+
+type RefreshToken struct {
+    Token     string    `bson:"token" json:"token"`
+    DeviceID  string    `bson:"device_id" json:"device_id"`
+    CreatedAt time.Time `bson:"created_at" json:"created_at"`
+}
+
+type LogInResponse struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+}
 type UserUsecase interface {
 	// for every user
-	Login(user User) (User, error)
+	Login(user *User, deviceID string) (LogInResponse, error)
+	RefreshToken(userID, deviceID, token string) (LogInResponse, error)
 	Register(user User) error
 	GetUserByUsernameOrEmail(username, email string) (User, error)
 	AccountActivation(token string, email string) error
@@ -63,10 +76,14 @@ type UserUsecase interface {
 
 type UserRepository interface {
 	// for every user
-	Login(user User) (User, error)
+	Login(user *User) (*User, error)
 	Register(user User) error
 	GetUserByUsernameOrEmail(username, email string) (User, error)
 	AccountActivation(token string, email string) error
+	UpdateUser(user *User) error
+    DeleteRefreshToken(user *User, refreshToken string) error
+    DeleteAllRefreshTokens(user *User) error
+	GetUserByID(id string) (User, error)
 	// ForgotPassword(email string) error
 	// ResetPassword(token, newPassword string) error
 	// RefreshToken(token string) (string, error)

@@ -22,7 +22,7 @@ func SetUpAuth(router *gin.Engine) {
 		auth.POST("/register", authController.Register)
 		auth.GET("/activate", authController.ActivateAccount)
 		
-		auth.POST("/continueWithGoogle", authController.continueWithGoogle)
+		// auth.POST("/continueWithGoogle", authController.continueWithGoogle)
 
 
 	}

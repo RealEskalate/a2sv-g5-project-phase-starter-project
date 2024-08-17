@@ -20,7 +20,7 @@ type AuthUseCase interface {
 }
 
 type RefreshRepository interface {
-	// UpdateToken(ctx context.Context, refreshToken string, userid primitive.ObjectID) (error, int)
+	UpdateToken(ctx context.Context, refreshToken string, userid primitive.ObjectID) (error, int)
 	DeleteToken(ctx context.Context, userid primitive.ObjectID) (error, int)
 	FindToken(ctx context.Context, userid primitive.ObjectID) (string, error, int)
 	StoreToken(ctx context.Context, userid primitive.ObjectID, refreshToken string) (error, int)

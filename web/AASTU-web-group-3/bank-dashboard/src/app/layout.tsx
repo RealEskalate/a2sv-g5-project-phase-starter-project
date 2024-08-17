@@ -118,10 +118,10 @@ export default function ClientSideComponent({
                 </div>
               </div>
               <div className="m-2 absolute top-0 right-0 rounded-full overflow-hidden w-12">
-                <img src={ProfilePic.src} alt="" className="h-12 w-12" />
+                <Image width={48} height={48} src={ProfilePic.src} alt=""  />
               </div>
             </nav>
-            <main className="bg-[#F5F7FA] p-2">{children}</main>
+            <main className="bg-[#F5F7FA] p-1">{children}</main>
           </div>
         </body>
       </html>

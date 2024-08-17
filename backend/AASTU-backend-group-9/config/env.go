@@ -19,6 +19,8 @@ type Env struct {
 	SMTPPassword			string `mapstructure:"SMTPPassword"`
 	SMTPHost				string `mapstructure:"SMTPHost"`
 	SMTPPort				string 	`mapstructure:"SMTPPort"`
+	GoogleClientID         string `mapstructure:"GOOGLE_CLIENT_ID"`
+	GoogleClientSecret     string `mapstructure:"GOOGLE_CLIENT_SECRET"`
 
 }
 

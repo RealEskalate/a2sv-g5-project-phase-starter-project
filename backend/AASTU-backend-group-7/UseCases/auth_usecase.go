@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type authUseCase struct {
@@ -21,7 +22,7 @@ func NewAuthUseCase(repo Domain.AuthRepository) *authUseCase {
 }
 
 // login
-func (a *authUseCase) Login(c *gin.Context, user *Domain.User) (string, error, int) {
+func (a *authUseCase) Login(c *gin.Context, user *Domain.User) (Domain.Tokens, error, int) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 
@@ -35,3 +36,14 @@ func (a *authUseCase) Register(c *gin.Context, user *Domain.User) (*Domain.Omite
 	defer cancel()
 	return a.AuthRepository.Register(ctx,user)
 }
+
+// logout
+
+func (a *authUseCase) Logout(c *gin.Context, user_id primitive.ObjectID) (error,int) {
+	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
+	defer cancel()
+	return a.AuthRepository.Logout(ctx, user_id)
+}
+
+
+

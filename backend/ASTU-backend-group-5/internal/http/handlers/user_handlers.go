@@ -119,7 +119,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 	user.ID, _ = primitive.ObjectIDFromHex(userClaims.UserID)
-	
+
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return

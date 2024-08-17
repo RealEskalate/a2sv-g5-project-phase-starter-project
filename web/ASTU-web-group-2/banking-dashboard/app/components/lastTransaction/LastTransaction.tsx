@@ -15,15 +15,16 @@ export type Item = {
 };
 
 const LastTransaction = () => {
-  const access = process.env.ACCESS_TOKEN;
+  let access: string = "";
   const { data: session, status } = useSession();
   console.log("session data", status);
   console.log(session);
   useEffect(() => {}, [status, session]);
+  if (session) {
+    access = session?.user?.accessToken;
+  }
 
-  const { data, isError, isLoading } = useGetAllTransactionQuery(
-    session?.user.access_token
-  );
+  const { data, isError, isLoading } = useGetAllTransactionQuery(access);
   console.log(access);
 
   if (isLoading) {

@@ -100,7 +100,6 @@ func NewClient(connection string) (Client, error) {
 	c, err :=  mongo.Connect(context.Background(),options.Client().ApplyURI(connection))
 
 	return &mongoClient{cl: c}, err
-
 }
 
 func (mc *mongoClient) Ping(ctx context.Context) error {

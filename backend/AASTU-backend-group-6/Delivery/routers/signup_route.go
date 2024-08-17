@@ -4,7 +4,7 @@ import (
 	infrastructure "blogs/Infrastructure"
 	repositories "blogs/Repositories"
 	usecases "blogs/Usecases"
-	controllers "blogs/delivery/controllers"
+	controllers "blogs/Delivery/controllers"
 	"blogs/mongo"
 	"time"
 
@@ -20,6 +20,10 @@ func NewSignupRoute(config *infrastructure.Config, DB mongo.Database, SignupRout
 	}
 
 	SignupRoute.POST("/signup", signup.Signup)
+	// otp verifyer route
+	SignupRoute.POST("/signup/verify" , signup.VerifyOTP)
+	// Google Auth	
+	SignupRoute.GET("/auth/google" , signup.GoogleAuth)
 	
 	
 	// SignupRoute.POST("/auth/signup" )

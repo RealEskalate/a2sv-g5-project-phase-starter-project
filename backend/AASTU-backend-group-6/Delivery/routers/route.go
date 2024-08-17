@@ -16,7 +16,7 @@ func Router(server *gin.Engine, config *infrastructure.Config, DB mongo.Database
 	blog_usecase := usecases.NewBlogUsecase(blog_repo)
 	blog_controller := controllers.NewBlogController(blog_usecase)
 	blogRouter := server.Group("blogs")
-	NewBlogrouter(blogRouter, *blog_controller)
+	NewBlogrouter(blogRouter,blog_controller)
 	userRouter := server.Group("")
 	// NewUserrouter(config, DB , userRouter)
 	NewSignupRoute(config, DB, userRouter)

@@ -7,7 +7,7 @@ import (
 )
 
 // AdminMiddleware checks if the user is an admin
-func AdminMiddleware(jwtService JWTService) gin.HandlerFunc {
+func AdminMiddleware(jwtService *JwtService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 		token, claims, err := jwtService.ValidateToken(tokenString)
@@ -19,7 +19,7 @@ func AdminMiddleware(jwtService JWTService) gin.HandlerFunc {
 
 		isAdmin := claims.Role
 
-		if isAdmin != "is_admin" {
+		if isAdmin == "is_admin" {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
@@ -29,7 +29,7 @@ func AdminMiddleware(jwtService JWTService) gin.HandlerFunc {
 }
 
 // AuthMiddleware checks if the user is authenticated
-func AuthMiddleware(jwtService JWTService) gin.HandlerFunc {
+func AuthMiddleware(jwtService *JwtService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 
@@ -41,9 +41,9 @@ func AuthMiddleware(jwtService JWTService) gin.HandlerFunc {
 
 		// You can use the claims, e.g., setting them in the context for later use
 		c.Set("userID", claims.ID)
-		c.Set("username", claims.Username)
 		c.Set("role", claims.Role)
 
 		c.Next()
 	}
+
 }

@@ -8,10 +8,10 @@ type JwtCustomClaims struct {
 	Name string `json:"name"`
 	ID   string `json:"id"`
 	Role string `json:"role"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 type JwtCustomRefreshClaims struct {
 	ID string `json:"id"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }

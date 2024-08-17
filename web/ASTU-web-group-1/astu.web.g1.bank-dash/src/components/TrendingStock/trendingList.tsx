@@ -16,19 +16,11 @@ const TrendingList = () => {
   ];
   return (
     <div className="w-full md:w-2/5 px-2">
-<<<<<<< HEAD
-      <h1 className="py-2 mb-3 mt-3 md:mt-0 w-fit  font-Inter font-[600] text-xl text-deepNavy">
-=======
       <h1 className="py-2 mb-4 w-fit  font-Inter font-[600] text-xl text-deepNavy">
->>>>>>> 47d9322f5bab5e86fb3a8c3ac5e601b09bec9dc9
         Trending Stock
       </h1>
       <div
         className="overflow-x-auto bg-white md:px-4 max-h-[241px] min[890px]:max-h-[290px] lg:max-h-[243px] rounded-2xl md:rounded-2xl"
-<<<<<<< HEAD
-=======
-
->>>>>>> 47d9322f5bab5e86fb3a8c3ac5e601b09bec9dc9
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
@@ -48,10 +40,6 @@ const TrendingList = () => {
                 Price
               </th>
               <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
-<<<<<<< HEAD
-=======
-
->>>>>>> 47d9322f5bab5e86fb3a8c3ac5e601b09bec9dc9
                 Return
               </th>
             </tr>

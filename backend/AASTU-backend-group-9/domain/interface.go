@@ -49,3 +49,7 @@ type LoginUsecase interface {
 	CreateAccessToken(user *User, secret string, expiry int) (string, error)
 	CreateRefreshToken(user *User, secret string, expiry int) (string, error)
 }
+
+type LogoutUsecase interface {
+	Logout(ctx context.Context, refreshToken string) error
+}

@@ -1,7 +1,19 @@
 import Image from "next/image";
 import React from "react";
 
-const InfoboxCard = ({name, icon, value}: {name: string, icon: string, value: string}) => {
+const InfoboxCard = ({
+  name,
+  icon,
+  value,
+  classNameText1 = "text-[#718EBF] font-normal text-sm max-lg:text-[12px] max-md:text-sm",
+  classNameText2="text-[#232323] font-semibold text-lg max-lg:text-[12px] max-md:text-lg",
+}: {
+  name: string;
+  icon: string;
+  value: string;
+  classNameText1?: string;
+  classNameText2?: string;
+}) => {
   return (
     <div className="flex items-center rounded-[20px] bg-white h-[90px] shadow-md">
       <div className="flex items-center p-2 gap-3 w-full">
@@ -15,8 +27,12 @@ const InfoboxCard = ({name, icon, value}: {name: string, icon: string, value: st
           />
         </div>
         <div className="flex flex-col justify-center ">
-          <p className="text-[#718EBF] font-normal text-sm max-lg:text-[12px] max-md:text-sm">{name}</p>
-          <p className="text-[#232323] font-semibold text-lg max-lg:text-[12px] max-md:text-lg">{value}</p>
+          <p className={classNameText1}>
+            {name}
+          </p>
+          <p className={classNameText2}>
+            {value}
+          </p>
         </div>
       </div>
     </div>

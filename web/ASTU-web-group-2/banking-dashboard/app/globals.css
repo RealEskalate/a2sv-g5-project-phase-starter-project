@@ -1,4 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Show/hide sidebar based on screen size */
+@media (max-width: 768px) {
+    .sidebar {
+      display: none; /* Hide sidebar on small screens */
+    }
+  
+    .sidebar-toggle {
+      display: block; /* Show hamburger menu */
+    }
+  }
+  
 

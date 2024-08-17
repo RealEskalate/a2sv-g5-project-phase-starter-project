@@ -1,5 +1,5 @@
 "use client"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts"
 import {
   Card,
   CardContent,
@@ -25,11 +25,11 @@ const chartData = [
 const chartConfig = {
   desktop: {
     label: "Desktop",
-    color: "#16DBCC",
+    color: "#1814F3",
   },
   mobile: {
     label: "Mobile",
-    color: "#1814F3",
+    color: "#16DBCC",
   },
 } satisfies ChartConfig
 
@@ -37,7 +37,7 @@ export default function Component() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Weekly Activity</CardTitle>
+        
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -55,6 +55,8 @@ export default function Component() {
               cursor={false}
               content={<ChartTooltipContent indicator="dashed" />}
             />
+            <Legend verticalAlign="top" align="right"  />
+
             <Bar dataKey="desktop" fill={chartConfig.desktop.color} radius={[20,20,0,0]} />
             <Bar dataKey="mobile" fill={chartConfig.mobile.color} radius={[20,20,0,0]} />
           </BarChart>

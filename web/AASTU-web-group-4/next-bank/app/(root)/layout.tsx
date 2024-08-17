@@ -1,12 +1,9 @@
 'use client'
-
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { Navbar } from '@/components/Navbar';
 import { usePathname } from 'next/navigation';
-import { sidebarLinks, user } from '@/constants';
-
-
+import { sidebarLinks } from '@/constants';
 
 const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -17,11 +14,15 @@ const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
     ? "Overview"
     : sidebarLinks.find(link => link.route === pathname)?.label || "";
 
+  useEffect(() => {
+    document.body.style.overflow = isSidebarOpen ? 'hidden' : 'auto';
+  }, [isSidebarOpen]);
+
   return (
     <div className="flex">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-      <div className="flex-1 flex flex-col">
-        <Navbar pageTitle={pageTitle} toggleSidebar={toggleSidebar} userProfileImage={user.profileImage} />
+      <div className={`flex-1 flex flex-col transition-transform duration-300 ${isSidebarOpen ? 'ml-0' : 'ml-0'}`}>
+        <Navbar pageTitle={pageTitle} toggleSidebar={toggleSidebar} />
         <main className="flex-grow">{children}</main>
       </div>
     </div>

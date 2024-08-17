@@ -1,6 +1,7 @@
 package email
 
 import (
+	"blogApp/internal/config"
 	"fmt"
 	"io/ioutil"
 	"net/smtp"
@@ -24,18 +25,33 @@ func NewSimpleEmailSender(smtpHost, smtpPort, senderEmail, senderPasswd string) 
 }
 
 func (s *SimpleEmailSender) SendVerificationEmail(userEmail string, token string) error {
+	config, err := config.Load()
+	if err != nil {
+		return err
+	}
+	url := config.APP_DOMAIN
+
 	subject := "Verify Your Email"
 	html, err := s.loadHTML("pkg/email/templates/verify_email.html")
 	if err != nil {
 		return err
 	}
 	html = strings.Replace(html, "{{token}}", token, -1)
+	html = strings.Replace(html, "{{url}}", "http://"+url, -1)
+	// fmt.Println(html)
 	return s.sendMail(userEmail, subject, html)
 }
 
 func (s *SimpleEmailSender) SendPasswordResetEmail(userEmail string, token string) error {
+	config, err := config.Load()
+	if err != nil {
+		return err
+	}
+	url := config.APP_DOMAIN
+
 	subject := "Reset Your Password"
 	html, err := s.loadHTML("pkg/email/templates/password_reset.html")
+	html = strings.Replace(html, "{{url}}", "http://"+url, -1)
 	if err != nil {
 		return err
 	}

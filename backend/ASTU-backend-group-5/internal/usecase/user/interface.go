@@ -11,7 +11,7 @@ type UserUseCaseInterface interface {
 	RequestEmailVerification(user domain.User) error
 	RequestPasswordResetUsecase(userEmail string) error
 	ResetPassword(token string, password string, email string) error
-	VerifyEmail(token string, email string) error
+	VerifyEmail(token string) error
 
 	FindUserById(id string) (*domain.User, error)
 	FindUserByEmail(email string) (*domain.User, error)
@@ -21,10 +21,8 @@ type UserUseCaseInterface interface {
 	DeleteUser(id string) error
 	AdminRemoveUser(UserId string) error
 
-
 	PromoteToAdmin(UserId string) error
 	DemoteFromAdmin(UserId string) error
 	GetAllUsers() ([]*domain.User, error)
 	FilterUsers(filter map[string]interface{}) ([]*domain.User, error)
 }
-

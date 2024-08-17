@@ -21,7 +21,7 @@ func NewRefreshRepository(refcol Domain.Collection) *RefreshRepository {
 func (r *RefreshRepository) StoreToken(ctx context.Context, userid primitive.ObjectID, refreshToken string) (error, int) {
 	token := Domain.RefreshToken{
 		UserID:           userid,
-		RefreshToken: refreshToken,
+		Refresh_token: refreshToken,
 	}
 	_, err := r.collection.InsertOne(ctx, token)
 	if err != nil {
@@ -31,20 +31,20 @@ func (r *RefreshRepository) StoreToken(ctx context.Context, userid primitive.Obj
 	return nil, 200
 }
 
-// func (r *RefreshRepository) UpdateToken(ctx context.Context,refreshToken string, userid primitive.ObjectID) (error, int) {
-// 	//upaate the refresh token
-// 	filter := primitive.D{{"_id", userid}}
-// 	update := primitive.D{{"$set", primitive.D{{"refresh_token", refreshToken}}}}
-// 	_, err := r.collection.UpdateOne(ctx, filter, update)
+func (r *RefreshRepository) UpdateToken(ctx context.Context,refreshToken string, userid primitive.ObjectID) (error, int) {
+	//upaate the refresh token
+	filter := primitive.D{{"_id", userid}}
+	update := primitive.D{{"$set", primitive.D{{"refresh_token", refreshToken}}}}
+	_, err := r.collection.UpdateOne(ctx, filter, update)
 	
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		return err, 500
-// 	}
+	if err != nil {
+		fmt.Println(err)
+		return err, 500
+	}
 
 	
-// 	return nil, 200
-// }
+	return nil, 200
+}
 
 func (r *RefreshRepository) DeleteToken(ctx context.Context, userid primitive.ObjectID) (error, int) {
 	filter := primitive.D{{"_id", userid}}
@@ -64,5 +64,5 @@ func (r *RefreshRepository) FindToken(ctx context.Context, userid primitive.Obje
 		fmt.Println(err)
 		return "", err, 500
 	}
-	return token.RefreshToken, nil, 200
+	return token.Refresh_token, nil, 200
 }

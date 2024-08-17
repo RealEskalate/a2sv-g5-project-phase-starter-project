@@ -54,17 +54,34 @@ func (au *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.
 		return Domain.Tokens{}, err, 500
 	}
 
+	//check if the refresh token is already stored
+	filter = primitive.D{{"_id", existingUser.ID}}
+	existingTokenCount, err := au.UserCollection.CountDocuments(ctx, filter)
+	fmt.Println("existingTokenCount", existingTokenCount)
+	if err != nil {
+		fmt.Println("error at count", err)
+		return Domain.Tokens{}, err, 500
+	}
+
+	if existingTokenCount > 0 {
+		// update the refresh token
+		err, statusCode := au.TokenRepository.UpdateToken(ctx, jwtRefreshToken, existingUser.ID)
+		if err != nil {
+			return Domain.Tokens{}, err, statusCode
+		}
+
+	} else {
+		err, statusCode := au.TokenRepository.StoreToken(ctx, existingUser.ID, jwtRefreshToken)
+		if err != nil {
+			return Domain.Tokens{}, err, statusCode
+		}
+
+	}
+
 	tokens := Domain.Tokens{
 		AccessToken:  jwtAccessToken,
 		RefreshToken: jwtRefreshToken,
 	}
-
-	// store the refresh token
-	err, statusCode := au.TokenRepository.StoreToken(ctx, existingUser.ID, jwtRefreshToken)
-	if err != nil {
-		return Domain.Tokens{}, err, statusCode
-	}
-
 	return tokens, nil, 200
 }
 

@@ -20,6 +20,20 @@ type AuthTokenImple struct {
 	ctx             context.Context
 }
 
+func NewAuthUserImple(usercollection *mongo.Collection, ctx context.Context) AuthUserImple {
+	return AuthUserImple{
+		usercollection: usercollection,
+		ctx:            ctx,
+	}
+}
+
+func NewAuthTokenImple(tokencollection *mongo.Collection, ctx context.Context) AuthTokenImple {
+	return AuthTokenImple{
+		tokencollection: tokencollection,
+		ctx:             ctx,
+	}
+}
+
 func (au *AuthUserImple) CreateUser(user auth.User) (string, error) {
 	result, err := au.usercollection.InsertOne(au.ctx, user)
 	if err != nil {

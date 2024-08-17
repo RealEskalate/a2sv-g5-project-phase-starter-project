@@ -102,7 +102,7 @@ const SignIn = () => {
           </button>
         </form>
         <div className={` font-normal`}>
-          Don't have an account?{" "}
+          {`Don't have an account? `}
           <Link href="/SignUp" className="font-semibold text-[#1814F3]">
             Register
           </Link>

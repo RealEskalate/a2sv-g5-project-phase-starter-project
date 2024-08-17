@@ -1,7 +1,7 @@
 package jwtservice
 
 import (
-	Config "blogapp/Config"
+	"blogapp/Config"
 	"blogapp/Domain"
 	"time"
 

@@ -1,7 +1,7 @@
 package auth_middleware
 
 import (
-	Config "blogapp/Config"
+	"blogapp/Config"
 	"blogapp/Domain"
 	"fmt"
 	"net/http"

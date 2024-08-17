@@ -16,24 +16,20 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-
-const formSchema = z.object({
-  username: z.string().min(2).max(50),
-  password: z.string().min(8),
-});
+import { signInSchema } from "@/schema";
 
 export const SignInForm = () => {
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(signInSchema),
     defaultValues: {
-      username: "",
+      userName: "",
       password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: z.infer<typeof signInSchema>) => {
     signIn("credentials", {
-      username: values.username,
+      userName: values.userName,
       password: values.password,
       redirect: false,
     });
@@ -55,7 +51,7 @@ export const SignInForm = () => {
           {/* Username */}
           <FormField
             control={form.control}
-            name="username"
+            name="userName"
             render={({ field }: { field: object }) => (
               <FormItem className="mb-1">
                 <FormLabel>Username</FormLabel>

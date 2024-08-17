@@ -14,7 +14,7 @@ export const formSchema = z.object({
   postalCode: z.string().min(4, {
     message: "Postal Code must be at least 4 characters.",
   }),
-  username: z.string().min(2, {
+  userName: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
   password: z.string().min(6, {
@@ -38,7 +38,7 @@ export const signUpSchema = z.object({
   dateOfBirth: z.string(),
   permanentAddress: z.string(),
   postalCode: z.string(),
-  username: z.string().min(2).max(50),
+  userName: z.string().min(2).max(50),
   password: z.string().min(8),
   presentAddress: z.string(),
   city: z.string(),
@@ -56,6 +56,6 @@ export const signUpSchema = z.object({
 
 
 export const signInSchema = z.object({
-  username: z.string().min(2).max(50),
-  password: z.string().min(8),
+  userName: z.string().min(2).max(50),
+  password: z.string().min(2),
 });

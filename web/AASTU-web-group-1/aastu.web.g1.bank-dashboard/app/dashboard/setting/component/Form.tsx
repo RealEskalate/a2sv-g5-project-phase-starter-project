@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import formSchema from "@/schema";
+import { formSchema } from "@/schema";
 import { format } from "date-fns";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import {
@@ -28,7 +28,7 @@ export function ProfileForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      userName: "",
       email: "",
       dateOfBirth: "",
       permanentAddress: "",
@@ -213,7 +213,7 @@ export function ProfileForm() {
             />
             <FormField
               control={form.control}
-              name="username"
+              name="userName"
               render={({ field }) => (
                 <FormItem className="mb-1">
                   <FormLabel>Username</FormLabel>

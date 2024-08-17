@@ -35,7 +35,7 @@ export const SignUpForm = () => {
       dateOfBirth: "",
       permanentAddress: "",
       postalCode: "",
-      username: "",
+      userName: "",
       password: "",
       presentAddress: "",
       city: "",
@@ -187,7 +187,7 @@ export const SignUpForm = () => {
           {/* Username */}
           <FormField
             control={form.control}
-            name="username"
+            name="userName"
             render={({ field }: { field: object }) => (
               <FormItem className="mb-1">
                 <FormLabel>Username</FormLabel>

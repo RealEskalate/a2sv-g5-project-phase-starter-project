@@ -16,7 +16,7 @@ func SetupRouter() *gin.Engine {
     // SetPublicRoutes(router)
 
     // // user routes
-    // SetUpUser(router)
+    SetUpUser(router)
 
     // // Admin routes
     // SetUpAdmin(router)

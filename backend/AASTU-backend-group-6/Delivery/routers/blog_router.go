@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"blogs/delivery/controllers"
+	"blogs/Delivery/controllers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,7 +18,7 @@ func NewBlogrouter(blogRouter *gin.RouterGroup, controller controllers.BlogContr
 	blogRouter.GET("/my")
 	blogRouter.GET("/my/:id")
 
-	blogRouter.POST("/create")
+	blogRouter.POST("/create", controller.CreateBlog)
 	blogRouter.PUT("/update/:id")
 	blogRouter.DELETE("/delete/:id")
 	blogRouter.POST("/comment/create")

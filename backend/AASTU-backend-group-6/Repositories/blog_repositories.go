@@ -2,12 +2,24 @@ package repositories
 
 import (
 	domain "blogs/Domain"
+	infrastructure "blogs/Infrastructure"
 	"blogs/mongo"
+	"context"
+	"errors"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+func NewBlogRepository(PostCollection mongo.Collection, env infrastructure.Config) domain.BlogRepository {
+	return BlogRepository{
+		PostCollection: PostCollection,
+		env:            env,
+	}
+}
 type BlogRepository struct {
 	PostCollection mongo.Collection
-	env            interface{}
+	env           infrastructure.Config
 }
 
 // CommentOnBlog implements domain.BlogRepository.
@@ -16,8 +28,22 @@ func (b BlogRepository) CommentOnBlog(blog_id string, commentor_id string, comme
 }
 
 // CreateBlog implements domain.BlogRepository.
-func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog) error {
-	panic("unimplemented")
+func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
+	timeOut := b.env.ContextTimeout
+	context, _ := context.WithTimeout(context.Background(), time.Duration(timeOut) * time.Second)
+	blog.ID = primitive.NewObjectID()
+	uid, err := primitive.ObjectIDFromHex(user_id) 
+	if err != nil{
+		return domain.Blog{}, errors.New("internal server error")
+	}
+	blog.Creater_id = uid
+	blog.CreatedAt = time.Now()
+	blog.UpdatedAt = time.Now()
+	_, err = b.PostCollection.InsertOne(context, blog)
+	if err != nil{
+		return domain.Blog{}, errors.New("internal server error")
+	}
+	return blog, nil
 }
 
 // DeleteBlogByID implements domain.BlogRepository.
@@ -60,9 +86,4 @@ func (b BlogRepository) UpdateBlogByID(user_id string, blog_id string, blog doma
 	panic("unimplemented")
 }
 
-func NewBlogRepository(PostCollection mongo.Collection, env interface{}) domain.BlogRepository {
-	return BlogRepository{
-		PostCollection: PostCollection,
-		env:            env,
-	}
-}
+

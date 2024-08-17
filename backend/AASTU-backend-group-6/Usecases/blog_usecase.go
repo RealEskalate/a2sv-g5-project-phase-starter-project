@@ -14,8 +14,12 @@ func (b BlogUsecase) CommentOnBlog(blog_id string, commentor_id string, commento
 }
 
 // CreateBlog implements domain.BlogRepository.
-func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog) error {
-	panic("unimplemented")
+func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
+	newBlog, err := b.blogRepository.CreateBlog(user_id, blog)
+	if err != nil{
+		return domain.Blog{}, err
+	}
+	return newBlog, nil
 }
 
 // DeleteBlogByID implements domain.BlogRepository.
@@ -58,7 +62,7 @@ func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.
 	panic("unimplemented")
 }
 
-func NewBlogUsecase(blogRepository domain.BlogRepository) domain.BlogRepository {
+func NewBlogUsecase(blogRepository domain.BlogRepository) domain.BlogUsecase {
 	return BlogUsecase{
 		blogRepository: blogRepository,
 	}

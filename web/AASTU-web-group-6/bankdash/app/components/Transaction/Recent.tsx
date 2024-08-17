@@ -1,20 +1,12 @@
 import React from "react";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
+import fetchTransaction from "@/app/Services/api/transactionApi";
+import { TransactionResponse, TransactionType } from "@/types/TransactionValue";
 
-interface TransactionValue {
-  description: string;
-  id: string;
-  type: string;
-  card: string;
-  date: string;
-  amount: number;
-}
-
-interface LoanTableProps {
-  transactions: TransactionValue[];
-}
-
-const Recent = ({ transactions }: LoanTableProps) => {
+// const Recent = ({ data }: { data: TransactionType }) => {
+const Recent = () => {
+  const data: any = []
+  // console.log(data);
   return (
     <div className="space-y-7 my-6">
       <h3 className="font-semibold text-[22px] text-[#343C6A]">
@@ -47,20 +39,22 @@ const Recent = ({ transactions }: LoanTableProps) => {
             </tr>
           </thead>
           <tbody className="text-[#232323] p-8 space-y-4">
-            {transactions.map((transaction, index) => (
+            {data.map((transaction: TransactionType, index: number) => (
               <tr key={index}>
                 <td className="flex gap-2 items-center">
                   <ArrowUpCircleIcon className="transaction-icon" />
                   {transaction.description}
                 </td>
-                <td className="hidden md:table-cell">{transaction.id}</td>{" "}
+                <td className="hidden md:table-cell">
+                  {transaction.transactionId}
+                </td>{" "}
                 {/* Hidden on mobile, visible on tablets and larger */}
                 <td className="hidden md:table-cell">
                   {transaction.type}
                 </td>{" "}
                 {/* Hidden on mobile, visible on tablets and larger */}
                 <td className="hidden md:table-cell">
-                  {transaction.card}
+                  {transaction.type}
                 </td>{" "}
                 {/* Hidden on mobile, visible on tablets and larger */}
                 <td className="hidden md:table-cell">

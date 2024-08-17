@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -21,33 +22,40 @@ type User struct {
 	Bio               string             `json:"bio"`
 	Role              string             `json:"roles" validate:"required"`
 	Comments          []Comment          `json:"comments"`
+	Verified 		 bool 				`json:"verified"`
+	OTP 			 string 			`json:"otp"`
+	ExpiresAt 		 time.Time			`json:"expires_at"` 
 }
 
 type UserRepository interface {
-	CreateUser(user User) (User, error)
-	FindUserByEmail(email string) (User, error)
-	FindUserByUsername(username string) (User, error)
-	FindUserByID(id string) (User, error)
-	UpdateUser(user User) (User, error)
-	DeleteUser(id string) error
-	ForgotPassword(email string, token string) error
+	CreateUser(ctx context.Context, user User) (error)
+	FindUserByEmail(ctx context.Context, email string) (User, error)
+	FindUserByUsername(ctx context.Context, username string) (User, error)
+	FindUserByID(ctx context.Context, id string) (User, error)
+	UpdateUser(ctx context.Context, user User) (User, error)
+	DeleteUser(ctx context.Context, id string) error
+	ForgotPassword(ctx context.Context, email string, token string) error
+	AllUsers(c context.Context) ([]User, error) 
 }
 
 type SignupRepository interface {
-	Create(User) (User, error)
+	Create(c context.Context , user User) (User, error)
 	FindUserByEmail(c context.Context , email string) (User, error)
+	SetOTP(c context.Context , email string , otp string) (error)
+	VerifyUser(c context.Context , user User) (User, error)
 }
 
 type SignupUseCase interface {
 	Create(c context.Context , user User) interface{}
+	VerifyOTP(c context.Context , otp OtpToken) interface{}
 }
 
 type UserUseCase interface {
-	CreateUser(user User) interface{}
-	FindUserByEmail(email string) interface{}
-	FindUserByUsername(username string) interface{}
-	FindUserByID(id string) interface{}
-	UpdateUser(user User) interface{}
-	DeleteUser(id string) interface{}
-	ForgotPassword(email string, token string) interface{}
+	CreateUser(ctx context.Context, user User) interface{}
+	FindUserByEmail(ctx context.Context, email string) interface{}
+	FindUserByUsername(ctx context.Context, username string) interface{}
+	FindUserByID(ctx context.Context, id string) interface{}
+	UpdateUser(ctx context.Context, user User) interface{}
+	DeleteUser(ctx context.Context, id string) interface{}
+	ForgotPassword(ctx context.Context, email string, token string) interface{}
 }

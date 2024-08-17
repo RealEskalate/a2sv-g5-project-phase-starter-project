@@ -1,0 +1,24 @@
+# Config file for Air
+
+# Working directory
+root = "."
+tmp_dir = "tmp"
+
+# Watch files with .go and .mod extensions
+[build]
+  cmd = "go build -o ./tmp/main ./cmd/main.go"
+  bin = "./tmp/main"
+  full_bin = "APP_ENV=dev ./tmp/main"
+  watch_dir = "./"
+  include_ext = ["go", "mod"]
+  exclude_dir = ["tmp", "vendor"]
+  exclude_file = ["air.toml"]
+  follow_symlink = true
+  delay = 200
+  stop_on_error = false
+
+[log]
+  level = "debug"
+  color = true
+  timestamp = true
+  to = "stdout"

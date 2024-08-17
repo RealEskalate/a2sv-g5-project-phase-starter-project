@@ -3,7 +3,9 @@ import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import fetchTransaction from "@/app/Services/api/transactionApi";
 import { TransactionResponse, TransactionType } from "@/types/TransactionValue";
 
-const Recent = ({ data }: { data: TransactionType }) => {
+// const Recent = ({ data }: { data: TransactionType }) => {
+const Recent = () => {
+  const data: any = []
   // console.log(data);
   return (
     <div className="space-y-7 my-6">

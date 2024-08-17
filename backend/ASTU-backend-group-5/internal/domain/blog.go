@@ -1,6 +1,10 @@
 package domain
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 // Blog represents a blog post with flexible content.
 type Blog struct {
@@ -38,4 +42,18 @@ type View struct {
 	UserID    primitive.ObjectID `json:"user_id" bson:"user_id"`       // ID of user
 	BlogID    primitive.ObjectID `json:"blog_id" bson:"blog_id"`       // ID of blog
 	CreatedAt primitive.DateTime `json:"created_at" bson:"created_at"` // Timestamp for when the view was created
+}
+
+type BlogFilter struct {
+	AuthorID  *primitive.ObjectID // Filter by Author ID
+	Tags      []string            // Filter by Tags
+	Title     *string             // Filter by Title (exact or partial match)
+	DateRange *DateRange          // Filter by Creation Date Range
+	Content   *string             // Filter by Content (exact or partial match)
+}
+
+// DateRange represents a time range for filtering
+type DateRange struct {
+	From time.Time // Start date for the range
+	To   time.Time // End date for the range
 }

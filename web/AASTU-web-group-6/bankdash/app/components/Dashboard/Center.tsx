@@ -1,11 +1,25 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import VisaCard from "../Card/VisaCard";
 import BarComp from "../Charts/BarComp";
 import { PieComp } from "../Charts/PieComp";
 import RecentTr from "./RecentTr";
+import { useSession } from "next-auth/react";
+import useCardDispatch from "@/app/Redux/Dispacher/useCardDispatch";
+import { useAppSelector } from "@/app/Redux/store/store";
+import { Card } from "@/app/Redux/slices/cardSlice";
 
 const Center = () => {
+  const { data: session } = useSession();
+  const accessToken =
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyMzgzMDIxNiwiZXhwIjoxNzIzOTE2NjE2fQ.c5zYX74xJyowvSM8pmN4W8Aw6pMyiJjs9JOP__Cjy9J80EHlOS6gX2yJpcwSdBwF";
+
+  // Update initial card data using the custom hook
+  useCardDispatch(accessToken);
+
+  const CardData: Card[] = useAppSelector((state) => state.cards.cards);
+  console.log("Fetched cards:", CardData);
   return (
     <>
       <section className="w-full flex gap-6">
@@ -18,9 +32,20 @@ const Center = () => {
               SeeAll
             </Link>
           </div>
+
           <div className="flex gap-6 grow">
-            <VisaCard isBlack={false} isFade={false} isSimGray={false} />
-            <VisaCard isBlack={true} isFade={false} isSimGray={false} />
+            <VisaCard
+              data={CardData[0]}
+              isBlack={false}
+              isFade={false}
+              isSimGray={false}
+            />
+            <VisaCard
+              data={CardData[1]}
+              isBlack={true}
+              isFade={false}
+              isSimGray={false}
+            />
           </div>
         </div>
         <RecentTr />

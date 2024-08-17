@@ -3,8 +3,8 @@ import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import fetchTransaction from "@/app/Services/api/transactionApi";
 import { TransactionResponse, TransactionType } from "@/types/TransactionValue";
 
-const Recent = ({ data }: { data: TransactionResponse }) => {
-
+const Recent = ({ data }: { data: TransactionType }) => {
+  // console.log(data);
   return (
     <div className="space-y-7 my-6">
       <h3 className="font-semibold text-[22px] text-[#343C6A]">
@@ -37,7 +37,7 @@ const Recent = ({ data }: { data: TransactionResponse }) => {
             </tr>
           </thead>
           <tbody className="text-[#232323] p-8 space-y-4">
-            {data.data.map((transaction: TransactionType, index: number) => (
+            {data.map((transaction: TransactionType, index: number) => (
               <tr key={index}>
                 <td className="flex gap-2 items-center">
                   <ArrowUpCircleIcon className="transaction-icon" />

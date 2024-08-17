@@ -1,7 +1,7 @@
 import ky from "ky";
 
 interface Credentials {
-  username: string;
+  userName: string;
   password: string;
 }
 

@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import BarGraph from "@/app/components/Transaction/BarGraph";
 import Recent from "@/app/components/Transaction/Recent";
@@ -11,12 +12,13 @@ import {
 } from "@/types/TransactionValue";
 import TransactionService from "@/app/Services/api/transactionApi";
 
-const Transaction = async () => {
-  const accessToken = process.env.NAHOM_TOKEN as string;
+const Transaction = () => {
+  // const accessToken = process.env.NAHOM_TOKEN as string;
 
-  const transactionData = await TransactionService.getTransactions(accessToken);
-  const balance = await TransactionService.balanceHistory(accessToken);
-  // console.log(balance, "---");
+  // const transactionData = await TransactionService.getTransactions(accessToken);
+  // const balance = await TransactionService.balanceHistory(accessToken);
+  // // console.log(balance, "---");
+  const CardData: any = [];
   const convertToChartData = (data: TransactionType[]): ChartData[] => {
     const dayMap: { [key: string]: number } = {
       Mon: 0,
@@ -46,7 +48,7 @@ const Transaction = async () => {
     }));
   };
 
-  const chartData = convertToChartData(transactionData);
+  const chartData = convertToChartData(CardData);
 
   return (
     <div className="space-y-6 bg-[#F5F7FA] px-4 sm:px-6 md:px-8 lg:px-10">
@@ -62,8 +64,18 @@ const Transaction = async () => {
           </div>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-8 min-w-[650px] min-h-[170px]">
-              <VisaCard isBlack={false} isFade={false} isSimGray={false} />
-              <VisaCard isBlack={true} isFade={false} isSimGray={false} />
+              <VisaCard
+                data={CardData[0]}
+                isBlack={false}
+                isFade={false}
+                isSimGray={false}
+              />
+              <VisaCard
+                data={CardData[1]}
+                isBlack={true}
+                isFade={false}
+                isSimGray={false}
+              />
             </div>
           </div>
         </div>

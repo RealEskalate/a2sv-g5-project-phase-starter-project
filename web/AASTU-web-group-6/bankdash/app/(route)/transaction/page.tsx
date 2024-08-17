@@ -1,39 +1,55 @@
-"use client";
+// "use client";
 import React from "react";
 import BarGraph from "@/app/components/Transaction/BarGraph";
 import Recent from "@/app/components/Transaction/Recent";
 import Pagination from "@/app/components/Transaction/Pagination";
 import VisaCard from "@/app/components/Card/VisaCard";
-import { useSession } from "next-auth/react";
-import { useAppSelector } from "@/app/Redux/store/store";
-import { Card } from "@/app/Redux/slices/cardSlice";
+import FetchTransaction from "@/app/Services/api/transactionApi";
+import {
+  TransactionResponse,
+  TransactionType,
+  ChartData,
+} from "@/types/TransactionValue";
+import TransactionService from "@/app/Services/api/transactionApi";
 
-const transactions = [
-  {
-    description: "Spotify Subscription",
-    id: "#123456789",
-    type: "Shopping",
-    card: "123****",
-    date: "28 Jan, 12:36 PM",
-    amount: -25.99,
-    receipt: "Download",
-  },
-  {
-    description: "Freelance Payment",
-    id: "#987654321",
-    type: "Income",
-    card: "456****",
-    date: "27 Jan, 10:45 AM",
-    amount: 250.0,
-    receipt: "Download",
-  },
-  // Add more transactions as needed
-];
+const Transaction = async () => {
+  // const accessToken = process.env.NAHOM_TOKEN as string;
 
-const Transaction = () => {
-  const { data: session } = useSession();
+  // const transactionData = await TransactionService.getTransactions(accessToken);
+  // const balance = await TransactionService.balanceHistory(accessToken);
+  // // console.log(balance, "---");
+  const CardData: any = [];
+  const convertToChartData = (data: TransactionType[]): ChartData[] => {
+    const dayMap: { [key: string]: number } = {
+      Mon: 0,
+      Tue: 0,
+      Wed: 0,
+      Thur: 0,
+      Fri: 0,
+      Sat: 0,
+      Sun: 0,
+    };
 
-  const CardData: Card[] = useAppSelector((state) => state.cards.cards);
+    data.forEach((transaction) => {
+      const day = new Date(transaction.date).toLocaleString("en-US", {
+        weekday: "short",
+      });
+      const formattedDay =
+        day.charAt(0).toUpperCase() + day.slice(1, 3).toLowerCase();
+
+      if (dayMap[formattedDay] !== undefined) {
+        dayMap[formattedDay] += transaction.amount;
+      }
+    });
+
+    return Object.keys(dayMap).map((day) => ({
+      day,
+      amount: dayMap[day],
+    }));
+  };
+
+  const chartData = convertToChartData(CardData);
+
   return (
     <div className="space-y-6 bg-[#F5F7FA] px-4 sm:px-6 md:px-8 lg:px-10">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
@@ -67,10 +83,11 @@ const Transaction = () => {
           <p className="font-semibold text-xl sm:text-2xl text-[#343C6A] mb-1 py-4">
             My Expense
           </p>
-          <BarGraph />
+          <BarGraph chartData={chartData} />
         </div>
       </div>
-      <Recent transactions={transactions} />
+      {/* <Recent data={transactionData} /> */}
+      <Recent />
       <Pagination />
     </div>
   );

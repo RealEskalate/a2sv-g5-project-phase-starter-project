@@ -13,6 +13,7 @@ export default function Home() {
   const CardData: CardType[] = useAppSelector((state) => state.cards.cards);
   return (
     <>
+      
       <div className="flex flex-col lg:flex-row gap-7">
         <div className="flex lg:w-[45%] gap-7">
           <Card

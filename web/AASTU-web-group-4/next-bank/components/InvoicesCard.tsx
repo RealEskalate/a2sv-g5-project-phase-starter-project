@@ -46,7 +46,7 @@ const transactions: Transaction[] = [
 
 const TransactionList: React.FC = () => {
   return (
-    <div className="w-72 bg-white rounded-lg shadow-md p-4 space-y-4">
+    <div className="w-auto bg-white rounded-lg shadow-md p-4 space-y-4">
       {transactions.map(transaction => (
         <div key={transaction.id} className="flex items-center justify-between">
           <div className={`w-10 h-10 flex items-center justify-center rounded-full ${transaction.iconBgColor}`}>

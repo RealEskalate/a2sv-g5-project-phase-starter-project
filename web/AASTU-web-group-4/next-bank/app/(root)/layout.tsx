@@ -18,7 +18,7 @@ const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
     : sidebarLinks.find(link => link.route === pathname)?.label || "";
 
   return (
-    <div className="flex">
+    <div className="flex overflow-x-hidden">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="flex-1 flex flex-col">
         <Navbar pageTitle={pageTitle} toggleSidebar={toggleSidebar} userProfileImage={user.profileImage} />

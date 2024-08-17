@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ToggleSwitch from './ToggleSwitch'; // Import the ToggleSwitch component
 import { MainData } from './Signup'; // Adjust the import path as necessary
-import { useSignUpMutation } from '@/lib/serice/TransactionService';
+import { useSignUpMutation } from '@/lib/service/TransactionService';
 import { useRouter } from 'next/navigation'; // Import useRouter from next/router
 
 const schema = Yup.object().shape({

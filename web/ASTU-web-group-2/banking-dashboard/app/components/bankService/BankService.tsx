@@ -23,8 +23,8 @@ const BankService = ({
           <div className="font-normal text-[#718EBF]">{description}</div>
         </div>
       </div>
-      {details.map((data) => (
-        <div>
+      {details.map((data,index) => (
+        <div key = {index}>
           <div className="font-medium">{data.title}</div>
           <div className="font-normal text-[#718EBF]">{data.subtitle}</div>
         </div>

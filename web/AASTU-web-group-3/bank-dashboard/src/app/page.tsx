@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import img from "./images/profile.png";
 import emanuel from "../../public/images/emanuel-minca-jYv069cQuB8-unsplash 1.png";
 import julia from "../../public/images/pexels-julia-volk-5273755 1.png";
@@ -83,7 +84,7 @@ const HomePage: React.FC = () => {
               <div
                 className={`relative ${transaction.backgroundColor} w-12 h-12 rounded-full flex items-center justify-center`}
                 >
-                <img src={transaction.src} alt={transaction.alt} />
+                <Image width ={100} height={100} src={transaction.src} alt={transaction.alt} />
               </div>
               <div className="flex flex-col">
                 <p className="text-sm font-medium">{transaction.title}</p>
@@ -122,7 +123,9 @@ const HomePage: React.FC = () => {
             {imageData.map((image, index) => (
               <div key={index} className="flex flex-col items-center">
                 <div className="w-12 h-12 bg-gray-300 rounded-full overflow-hidden">
-                  <img
+                  <Image
+                    width={100}
+                    height={100}
                     src={image.src}
                     alt={image.alt}
                     className="w-full h-full object-cover"

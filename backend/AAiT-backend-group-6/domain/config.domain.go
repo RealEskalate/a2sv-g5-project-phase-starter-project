@@ -1,15 +1,7 @@
 package domain
 
 type Config struct {
-	Database  DatabaseConfig
-	TimeZone  string
+	Mongodb_url string
+	DatabaseName string
 	SecretKey string
-}
-
-type DatabaseConfig struct {
-	Host     string
-	Port     int
-	DbName   string
-	Username string
-	Password string
 }

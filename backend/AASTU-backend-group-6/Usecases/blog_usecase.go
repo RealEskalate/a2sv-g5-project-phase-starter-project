@@ -34,8 +34,13 @@ func (b BlogUsecase) GetBlogByID(blog_id string) (domain.Blog, error) {
 }
 
 // GetBlogs implements domain.BlogRepository.
-func (b BlogUsecase) GetBlogs(pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	panic("unimplemented")
+func (b *BlogUsecase) GetBlogs(pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
+	blogs, pagination, err := b.blogRepository.GetBlogs(pageNo, pageSize)
+	if err != nil {
+		return nil, domain.Pagination{}, err
+	} else {
+		return blogs, pagination, nil
+	}
 }
 
 // GetMyBlogByID implements domain.BlogRepository.

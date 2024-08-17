@@ -6,35 +6,38 @@ import (
 	"context"
 )
 
-type SignupRepository struct {
-	database mongo.Database
-	collection string	
-}
-func NewSignupRepository(database mongo.Database , collection string) domain.SignupRepository {
-	return &SignupRepository{database: database , 
-							collection: collection}
+type signupRepository struct {
+	database   mongo.Database
+	collection string
 }
 
-func (r *SignupRepository) Create(user domain.User) (domain.User , error) { 
-		collection := r.database.Collection(r.collection)
+// Create implements domain.SignupRepository.
+func (s *signupRepository) Create(ctx context.Context, user domain.User) (domain.User, error) {
+	collection := s.database.Collection(s.collection)
 
-		_, err := collection.InsertOne(context.Background() , user)
+	_, err := collection.InsertOne(ctx, user)
 
-		if err != nil {
-			return domain.User{} , err
-}
-
-		return user , nil
-
-
-}
-
-func (r * SignupRepository) FindUserByEmail(c context.Context , email string) (domain.User , error) {
-	collection := r.database.Collection(r.collection)
-	var user domain.User
-	err := collection.FindOne(c, domain.User{Email: email}).Decode(&user)
 	if err != nil {
-		return domain.User{} , err
+		return domain.User{}, err
 	}
-	return user , nil
+
+	return user, nil
+}
+
+// FindUserByEmail implements domain.SignupRepository.
+func (s *signupRepository) FindUserByEmail(ctx context.Context, email string) (domain.User, error) {
+	collection := s.database.Collection(s.collection)
+	var user domain.User
+	err := collection.FindOne(ctx, domain.User{Email: email}).Decode(&user)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return user, nil
+}
+
+func NewSignupRepository(database mongo.Database, collection string) domain.SignupRepository {
+	return &signupRepository{
+		database:   database,
+		collection: collection}
+
 }

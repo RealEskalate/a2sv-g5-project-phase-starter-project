@@ -43,7 +43,7 @@ func (u *SignupUseCase) Create(c context.Context , user domain.User) interface{}
 	user.Password = hashedPassword
 
 	// create user
-	createdUser, err := u.SignupRepository.Create(user)
+	createdUser, err := u.SignupRepository.Create(ctx,user)
 
 	if err != nil {
 		return domain.ErrorResponse{Message: "Error creating user", Status: 500}

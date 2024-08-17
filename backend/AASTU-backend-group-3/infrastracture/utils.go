@@ -2,6 +2,7 @@ package infrastracture
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"regexp"
@@ -78,4 +79,10 @@ func GenerateActivationToken() (string, error) {
 
 	// Convert the token to a hex string
 	return hex.EncodeToString(token), nil
+}
+
+func GenerateDeviceFingerprint(ip, userAgent string) string {
+    data := ip + userAgent
+    hash := sha256.Sum256([]byte(data))
+    return hex.EncodeToString(hash[:])
 }

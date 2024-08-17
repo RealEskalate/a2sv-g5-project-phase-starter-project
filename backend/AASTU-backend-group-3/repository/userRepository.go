@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"group3-blogApi/domain"
-	"group3-blogApi/infrastracture"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -19,18 +19,55 @@ func NewUserRepositoryImpl(coll *mongo.Collection) domain.UserRepository {
 	return &UserRepositoryImpl{collection: coll}
 }
 
-func (ur *UserRepositoryImpl) Login(user domain.User) (domain.User, error) {
-	var newUser domain.User
-	err := ur.collection.FindOne(context.Background(), map[string]string{"username": user.Username}).Decode(&newUser)
+
+
+func (ur *UserRepositoryImpl) Login(user *domain.User) (*domain.User, error) {
+	var existingUser domain.User
+	err := ur.collection.FindOne(context.Background(), map[string]string{"username": user.Username}).Decode(&existingUser)
+	if err != nil {
+		return &domain.User{}, err
+	}
+	return &existingUser, nil
+	
+}
+
+func (ur *UserRepositoryImpl) GetUserByID(id string) (domain.User, error) {
+	var user domain.User
+	objID, err:= primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return domain.User{}, err
 	}
-	if infrastracture.CheckPasswordHash(user.Password, newUser.Password) {
-		return newUser, nil
-	}
-	return domain.User{}, errors.New("invalid credentials")
 
+	err = ur.collection.FindOne(context.Background(), bson.M{"_id": objID}).Decode(&user)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return user, nil
 }
+
+func (ur *UserRepositoryImpl) DeleteRefreshToken(user *domain.User, token string) error {
+	objID, err := primitive.ObjectIDFromHex(user.ID.Hex())
+    if err != nil {
+        return err
+    }
+    _, err = ur.collection.UpdateOne(
+        context.Background(),
+        bson.M{"_id": objID},
+        bson.M{"$pull": bson.M{"refresh_tokens": bson.M{"token": token}}},
+    )
+    return err
+}
+
+func (ur *UserRepositoryImpl) UpdateUser(user *domain.User) error {
+	_, err := ur.collection.UpdateOne(context.Background(), map[string]string{"username": user.Username}, bson.M{"$set": user})
+	return err
+}
+
+func (ur *UserRepositoryImpl) DeleteAllRefreshTokens(user *domain.User) error {
+	_, err := ur.collection.UpdateOne(context.Background(), map[string]string{"username": user.Username}, bson.M{"$set": bson.M{"refresh_tokens": []domain.RefreshToken{}}})
+	return err
+}
+
 
 func (ur *UserRepositoryImpl) Register(user domain.User) error {
 

@@ -2,12 +2,12 @@ import React from "react";
 
 const AddNewCard = () => {
 	return (
-		<div className="px-5">
+		<div>
 			<div className="p-2 font-semibold text-blue-900 w-full sm:w-1/2">
 				Add New Card
 			</div>
-			<div className="bg-white rounded-2xl py-6 pr-5">
-				<div className="py-3 pl-8 pr-5 sm:pr-20 text-blue-900 opacity-70">
+			<div className="bg-white rounded-2xl py-6 ">
+				<div className="py-3 pl-8 pr-5 sm:pr-16 text-blue-900 opacity-70">
 					Credit Card generally means a plastic card issued by Scheduled
 					Commercial Banks assigned to a Cardholder, with a credit limit, that
 					can be used to purchase goods and services on credit or obtain cash
@@ -55,7 +55,6 @@ const AddNewCard = () => {
 									</label>
 									<input
 										type="date"
-										value="2024-08-15"
 										placeholder="25 January 2025"
 										className="border-2 border-solid border-blue-100 focus:outline-none focus:border-blue-300 p-2 rounded-xl text-gray-400"
 									/>

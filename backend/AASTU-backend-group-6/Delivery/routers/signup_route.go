@@ -1,10 +1,10 @@
 package routers
 
 import (
+	controllers "blogs/Delivery/controllers"
 	infrastructure "blogs/Infrastructure"
 	repositories "blogs/Repositories"
 	usecases "blogs/Usecases"
-	controllers "blogs/Delivery/controllers"
 	"blogs/mongo"
 	"time"
 

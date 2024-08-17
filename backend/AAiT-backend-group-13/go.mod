@@ -5,6 +5,8 @@ go 1.20
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.10.0
+	github.com/google/uuid v1.6.0
+	github.com/nbutton23/zxcvbn-go v0.0.0-20210217022336-fa2cb2858354
 )
 
 require (

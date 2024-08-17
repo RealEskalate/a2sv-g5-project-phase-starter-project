@@ -3,8 +3,6 @@ package repository
 import (
 	"blogApp/internal/domain"
 	"context"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogRepository interface {
@@ -32,8 +30,4 @@ type BlogRepository interface {
 	// View operations
 	AddView(ctx context.Context, view *domain.View) error
 	GetViewsByBlogID(ctx context.Context, blogID string) ([]*domain.View, error)
-
-	// Real-time updates
-	WatchBlogs(ctx context.Context, pipeline []primitive.M) (<-chan domain.Blog, error)
-	WatchBlogByID(ctx context.Context, id string) (<-chan domain.Blog, error)
 }

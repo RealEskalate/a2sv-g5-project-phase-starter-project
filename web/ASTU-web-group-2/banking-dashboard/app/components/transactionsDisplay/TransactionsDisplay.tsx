@@ -106,8 +106,9 @@ const TransactionsDisplay = () => {
           />{" "}
           Previous
         </button>
-        {range.map((elm) => (
+        {range.map((elm,index) => (
           <button
+            key = {index}
             onClick={() => setFocusedPage(elm)}
             className={`${
               focusedPage == elm &&

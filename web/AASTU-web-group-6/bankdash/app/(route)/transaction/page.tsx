@@ -3,25 +3,20 @@ import BarGraph from "@/app/components/Transaction/BarGraph";
 import Recent from "@/app/components/Transaction/Recent";
 import Pagination from "@/app/components/Transaction/Pagination";
 import VisaCard from "@/app/components/Card/VisaCard";
-import fetchTransaction from "@/app/Services/api/transactionApi";
+import FetchTransaction from "@/app/Services/api/transactionApi";
 import {
   TransactionResponse,
   TransactionType,
   ChartData,
 } from "@/types/TransactionValue";
+import TransactionService from "@/app/Services/api/transactionApi";
 
 const Transaction = async () => {
-  const displayTransaction = async () => {
-    try {
-      const transactionData = await fetchTransaction();
-      return transactionData;
-    } catch (error) {
-      console.error("Error fetching transaction:", error);
-    }
-  };
+  const accessToken = process.env.NAHOM_TOKEN as string;
 
-  const data = await displayTransaction();
-
+  const transactionData = await TransactionService.getTransactions(accessToken);
+  const balance = await TransactionService.balanceHistory(accessToken);
+  // console.log(balance, "---");
   const convertToChartData = (data: TransactionType[]): ChartData[] => {
     const dayMap: { [key: string]: number } = {
       Mon: 0,
@@ -51,8 +46,7 @@ const Transaction = async () => {
     }));
   };
 
-  const chartData = convertToChartData(data.data);
-  console.log(chartData);
+  const chartData = convertToChartData(transactionData);
 
   return (
     <div className="space-y-6 bg-[#F5F7FA] px-4 sm:px-6 md:px-8 lg:px-10">
@@ -80,7 +74,7 @@ const Transaction = async () => {
           <BarGraph chartData={chartData} />
         </div>
       </div>
-      <Recent data={data} />
+      <Recent data={transactionData} />
       <Pagination />
     </div>
   );

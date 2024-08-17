@@ -3,48 +3,33 @@ package infrastructure
 import (
 	"time"
 
+	"meleket/domain"
+
 	"github.com/golang-jwt/jwt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// JWTService interface
-type JWTService interface {
-	GenerateToken(userID, role string) (string, error)
-	GenerateRefreshToken(userID, role string) (string, error)  // Modified to include role
-	ValidateToken(token string) (*jwt.Token, *Claims, error)
-	ValidateRefreshToken(token string) (*jwt.Token, error)
-}
-
-// Claims struct to hold JWT claims
-type Claims struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
-	Role     string `json:"role"`
-	jwt.StandardClaims
-}
-
-type jwtService struct {
+type JwtService struct {
 	secretKey        string
-	issuer           string
 	refreshSecretKey string
 }
 
 // NewJWTService creates a new JWTService
-func NewJWTService(secretKey, issuer, refreshSecretKey string) JWTService {
-	return &jwtService{
+func NewJWTService(secretKey, refreshSecretKey string) *JwtService {
+	return &JwtService{
 		secretKey:        secretKey,
-		issuer:           issuer,
 		refreshSecretKey: refreshSecretKey,
 	}
 }
 
 // GenerateToken generates a new JWT token
-func (j *jwtService) GenerateToken(userID, role string) (string, error) {
-	claims := &Claims{
-		ID:   userID,
-		Role: role,
+func (j *JwtService) GenerateToken(userID primitive.ObjectID, username, role string) (string, error) {
+	claims := &domain.Claims{
+		ID:       userID,
+		Username: username,
+		Role:     role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * 15).Unix(), // Shorter expiry time
-			Issuer:    j.issuer,
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
@@ -53,29 +38,25 @@ func (j *jwtService) GenerateToken(userID, role string) (string, error) {
 	return token.SignedString([]byte(j.secretKey))
 }
 
-func (j *jwtService) GenerateRefreshToken(userID, role string) (*domain.RefreshToken, error) {
-	// Set expiration time for refresh token
-	expirationTime := time.Now().Add(time.Hour * 24 * 7) // 7 days
-
+// GenerateRefreshToken generates a new refresh JWT token
+func (j *JwtService) GenerateRefreshToken(userID primitive.ObjectID, username, role string) (string, error) {
 	claims := &domain.Claims{
-		ID:   userID,
-		Role: role,
+		ID:       userID,
+		Username: username,
+		Role:     role,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
-			Issuer:    j.issuer,
+			ExpiresAt: time.Now().Add(time.Hour * 24 * 7).Unix(), // Longer expiry time for refresh token
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString([]byte(j.secretKey))
-	if err != nil {
-		return nil, err
-	}
+	return token.SignedString([]byte(j.refreshSecretKey))
+}
 
 // ValidateToken validates the given JWT token
-func (j *jwtService) ValidateToken(tokenString string) (*jwt.Token, *Claims, error) {
-	claims := &Claims{}
+func (j *JwtService) ValidateToken(tokenString string) (*jwt.Token, *domain.Claims, error) {
+	claims := &domain.Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
 		// Check that the signing method is what we expect
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -92,7 +73,7 @@ func (j *jwtService) ValidateToken(tokenString string) (*jwt.Token, *Claims, err
 }
 
 // ValidateRefreshToken validates the given refresh JWT token
-func (j *jwtService) ValidateRefreshToken(token string) (*jwt.Token, error) {
+func (j *JwtService) ValidateRefreshToken(token string) (*jwt.Token, error) {
 	return jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
 		// Check that the signing method is what we expect
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {

@@ -1,4 +1,4 @@
-package repository
+package blog
 
 import (
 	"blogApp/internal/domain"
@@ -7,7 +7,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type BlogRepository interface {
+// BlogUseCase defines the business logic operations for managing blogs
+type BlogUseCase interface {
 	// Blog operations
 	CreateBlog(ctx context.Context, blog *domain.Blog) error
 	GetBlogByID(ctx context.Context, id primitive.ObjectID) (*domain.Blog, error)
@@ -33,7 +34,7 @@ type BlogRepository interface {
 	AddView(ctx context.Context, view *domain.View) error
 	GetViewsByBlogID(ctx context.Context, blogID primitive.ObjectID) ([]*domain.View, error)
 
-	// Real-time updates
+	// Real-time updates(will be implemented later)
 	WatchBlogs(ctx context.Context, pipeline []primitive.M) (<-chan domain.Blog, error)
 	WatchBlogByID(ctx context.Context, id primitive.ObjectID) (<-chan domain.Blog, error)
 }

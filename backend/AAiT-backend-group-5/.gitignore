@@ -1,0 +1,56 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Go vendor folder
+vendor/
+
+# Go workspace file
+go.work
+
+# Test binary
+*.test
+
+# Go build output directories
+bin/
+build/
+
+# Logs and temp files
+*.log
+*.tmp
+
+# IDE and editor specific files
+.idea/
+.vscode/
+*.swp
+*~
+
+# macOS specific files
+.DS_Store
+
+# Node modules (if you have a frontend or use npm/yarn for some reason)
+node_modules/
+
+# Environment variables
+.env
+
+# Dependency directories (remove the leading slash if you want to ignore files in all directories)
+vendor/
+
+# Compiled Object files
+*.o
+
+# Coverage files
+*.cov
+
+# If you're using air for live reloading, ignore this folder
+tmp/
+
+# Go mod files
+go.sum

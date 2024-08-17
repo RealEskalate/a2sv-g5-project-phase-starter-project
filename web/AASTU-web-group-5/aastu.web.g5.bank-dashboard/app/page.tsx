@@ -1,5 +1,4 @@
 import Image from "next/image";
-<<<<<<< HEAD
 import Accounts from "./Accounts/page";
 import Investments from "./Investments/page";
 
@@ -10,12 +9,6 @@ export default function Home() {
       <Accounts />
     </div>
   );
-=======
-export default function Home() {
-return(
-  <></>
-);
->>>>>>> 2b6a71a12cb766d5fd3aeb30385b2c227d2346b3
 }
 
 // export default function Home() {

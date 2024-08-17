@@ -1,19 +1,19 @@
 package domain
 
-type CustomError interface {
+type Error interface {
 	Code() int
 	Message() string
 }
 
-type Error struct {
+type CustomError struct {
 	code    int
 	message string
 }
 
-func (e *Error) Code() int {
+func (e *CustomError) Code() int {
 	return e.code
 }
 
-func (e *Error) Message() string {
+func (e *CustomError) Message() string {
 	return e.message
 }

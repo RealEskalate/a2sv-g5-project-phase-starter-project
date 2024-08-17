@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type BlogController struct {
@@ -37,4 +38,18 @@ func (h *BlogController) CreateBlog(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": createdBlog})
+}
+
+func (h *BlogController) DeleteBlogByID(c *gin.Context) {
+	id := c.Param("id")
+	err := h.blogUsecase.DeleteBlogByID(id)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Blog not post not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete blog"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Blog post deleted successfully"})
 }

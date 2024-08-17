@@ -22,6 +22,7 @@ type User struct {
 	Role      string                `bson:"role" json:"role"`
 	CreatedAt primitive.Timestamp `bson:"createdAt" json:"createdAt"`
 	UpdatedAt primitive.Timestamp `bson:"updatedAt" json:"updatedAt"`
+	Image    string              `bson:"image,omitempty" json:"image,omitempty"`
 
 	ActivationToken string             `bson:"activation_token"`
 	TokenCreatedAt time.Time          `bson:"token_created_at"`
@@ -47,6 +48,7 @@ type UserUsecase interface {
 	Register(user User) error
 	GetUserByUsernameOrEmail(username, email string) (User, error)
 	AccountActivation(token string, email string) error
+
 	// ForgotPassword(email string) error
 	// ResetPassword(token, newPassword string) error
 	// RefreshToken(token string) (string, error)

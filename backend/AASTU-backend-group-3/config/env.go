@@ -19,6 +19,14 @@ type envConfigs struct {
 	JwtRefreshSecret string `mapstructure:"JWT_REFRESH_TOKEN_SECRET"`
 	AccessTokenExpiryHour  int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
 	RefreshTokenExpiryHour int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
+	RedirectURL    string `mapstructure:"Google_REDIRECT_URL"`
+	ClientID       string `mapstructure:"Google_CLIENT_ID"`
+	ClientSecret   string `mapstructure:"Google_CLIENT_SECRET"`
+	Scopes 	   string `mapstructure:"Google_SCOPES"`
+	Endpoint 	string `mapstructure:"Google_ENDPOINT"`
+	OauthStateString string `mapstructure:"Google_OAUTH_STATE_STRING"`
+
+	
 }
 
 func loadEnvVariables() *envConfigs {

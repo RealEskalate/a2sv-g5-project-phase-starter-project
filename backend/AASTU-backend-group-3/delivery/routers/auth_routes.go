@@ -9,8 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetUpAuth(router *gin.Engine) {	
 
+
+func SetUpAuth(router *gin.Engine) {
+	
 
 	userRepo := repository.NewUserRepositoryImpl(db.UserCollection)
     userUsecase := usecase.NewUserUsecase(userRepo)

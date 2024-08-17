@@ -3,6 +3,7 @@ package userutil
 import (
 	"regexp"
 
+	"github.com/xlzd/gotp"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -37,4 +38,8 @@ func ValidateEmail(email string) bool {
 
 func ValidatePassword(password string) bool {
 	return len(password) >= 8
+}
+func GenerateOTP() string {
+	secretLength := 8
+	return gotp.RandomSecret(secretLength)
 }

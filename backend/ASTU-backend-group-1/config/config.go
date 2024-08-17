@@ -8,8 +8,13 @@ type Database struct {
 	Uri      string `mapstructure:"uri"`
 	Name     string `mapstructure:"name"`
 }
+type Email struct {
+	EmailKey string `mapstructure:"key"`
+}
 type Config struct {
 	Database Database `mapstructure:"database"`
+	Email    Email    `mapstructure:"email"`
+	Port     string   `mapstructure:"port"`
 }
 
 func LoadConfig() (*Config, error) {

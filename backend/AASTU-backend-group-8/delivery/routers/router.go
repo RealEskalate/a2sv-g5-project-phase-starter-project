@@ -8,10 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, jwtService infrastructure.JWTService) {
+func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, tokenUsecase *usecases.TokenUseCase, otpUsecase *usecases.OTPusecase , jwtService infrastructure.JWTService) {
 	// Initialize controllers
 	blogController := controllers.NewBlogController(blogUsecase)
 	userController := controllers.NewUserController(userUsecase)
+	refreshTokenController := controllers.NewRefreshTokenController(userUsecase)
 
 	// Admin middleware
 	adminMiddleware := infrastructure.AdminMiddleware(jwtService)

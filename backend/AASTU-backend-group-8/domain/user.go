@@ -34,7 +34,7 @@ type AuthUser struct {
 
 type Profile struct {
 	ID        primitive.ObjectID `json:"id" gorm:"primaryKey"`
-	UserID    uint               `json:"user_id"`
+	UserID    primitive.ObjectID `json:"user_id"`
 	Bio       string             `json:"bio"`
 	AvatarURL string             `json:"avatar_url"`
 }
@@ -44,7 +44,7 @@ type UserUsecaseInterface interface {
 	Login(user *AuthUser) (string, string, error)
 	DeleteRefeshToken(userID primitive.ObjectID) error
 	ForgotPassword(email *string) error
-	GetProfile(objectID primitive.ObjectID) (*User, error)
+	GetProfile(objectID primitive.ObjectID) (*Profile, error)
 	UpdateProfile(objectID primitive.ObjectID, user *Profile) (*User, error)
 	GetAllUsers() ([]User, error)
 	DeleteUser(objectID primitive.ObjectID) error
@@ -52,14 +52,13 @@ type UserUsecaseInterface interface {
 }
 
 type UserRepositoryInterface interface {
+	//User operations
 	Create(user *User) error
-	FindByUsername(username *string) (*User, error)
-	// FindTokenByUsername(username *string) (*time.Time, error)
-	FindByID(objectID primitive.ObjectID) (*User, error)
-	FindAll() ([]User, error)
-	UpdateProfile(userID string, user *User) (*User, error)
-	Delete(objectID primitive.ObjectID) error
-	SaveToken(username string, token *RefreshToken) error
-	DeleteToken(username string) error
-	FindRefreshToken(token string) (*RefreshToken, error)
+	GetByUsername(username *string) (*User, error)
+	GetByEmail(email *string) (*User, error)
+	GetByID(objectID primitive.ObjectID) (*User, error)
+	GetAllUsers() ([]User, error)
+	UpdateProfile(userID primitive.ObjectID, profile *Profile) (*Profile, error)
+	DeleteUser(objectID primitive.ObjectID) error
 }
+

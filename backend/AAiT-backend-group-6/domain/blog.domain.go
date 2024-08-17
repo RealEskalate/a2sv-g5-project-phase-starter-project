@@ -35,11 +35,16 @@ type  Comment struct{
 	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
 }
 
+type Pagination struct {
+	Page int `json:"page"`
+	PageSize int `json:"page_size"`
+}
+
 
 type BlogUseCase interface {
-	CreateBlog(blog *Blog,user_id string) error
+	CreateBlog(blog *Blog) error
 	GetBlog(id string) (*Blog, error)
-	GetBlogs() ([]*Blog, error)
+	GetBlogs(pagination *Pagination) ([]*Blog, error)
 	UpdateBlog(blog *Blog,blog_id string) error
 	DeleteBlog(id string) error
 	LikeBlog(blogID string, userID string) error

@@ -2,7 +2,9 @@ package repositories
 
 import (
 	domain "blogs/Domain"
+	utils "blogs/Utils"
 	"blogs/mongo"
+	"context"
 )
 
 type BlogRepository struct {
@@ -37,7 +39,7 @@ func (b BlogRepository) GetBlogByID(blog_id string) (domain.Blog, error) {
 
 // GetBlogs implements domain.BlogRepository.
 func (b BlogRepository) GetBlogs(pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	panic("unimplemented")
+	b.PostCollection.Find(context.TODO(), utils.PaginationByPage(pageNo, pageSize))
 }
 
 // GetMyBlogByID implements domain.BlogRepository.

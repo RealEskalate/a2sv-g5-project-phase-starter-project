@@ -3,6 +3,7 @@ package controllers
 import (
 	domain "blogs/Domain"
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -38,7 +39,15 @@ func (b BlogController) GetBlogByID(c *gin.Context) {
 
 // GetBlogs implements domain.BlogUsecase.
 func (b BlogController) GetBlogs(c *gin.Context) {
-	c.JSON(200, gin.H{"des blogs": "blogs"})
+	pageNo := c.Query("pageNo")
+	pageSize := c.Query("pageSize")
+	blogs, pagination, err := b.BlogUsecase.GetBlogs(pageNo, pageSize)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		c.Abort()
+	} else {
+		c.JSON(http.StatusAccepted, gin.H{"blogs": blogs, "pagination": pagination})
+	}
 }
 
 // GetMyBlogByID implements domain.BlogUsecase.

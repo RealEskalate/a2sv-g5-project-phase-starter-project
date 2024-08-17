@@ -5,7 +5,7 @@ import fetchData from "@/app/Services/api/fetchData";
 
 const Container = async () => {
   const endpoint = "https://bank-dashboard-6acc.onrender.com/cards";
-  const accessToken = process.env.NAT_ACCESSTOKEN as string;
+  const accessToken = process.env.NAHOM_TOKEN as string;
   const res = await fetchData(endpoint, accessToken);
   console.log(res, "cards Data");
   return (

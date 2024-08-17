@@ -11,7 +11,7 @@ const Sidebar = () => {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <div className="py-6 px-5 flex flex-col gap-8 absolute left-0 border-r border-r-[#E6EFF5] bg-white">
+    <div className="py-6 px-5 flex flex-col gap-8 border-r border-r-[#E6EFF5] bg-white">
       <div className="flex gap-2">
         <Image src="/assets/logo.svg" alt="logo" width={36} height={36} />
         <h1 className="text-3xl font-bold text-[#343C6A]">BankDash</h1>
@@ -45,21 +45,20 @@ const Sidebar = () => {
             Transactions
           </h2>
         </Link>
-
-        <Link href="/accounts" className="flex items-center gap-x-6">
-          <Image
-            src="/assets/user 3 1.svg"
-            alt="logo"
-            width={25}
-            height={25}
-          />
-          <h2
-            className={`text-base ${
-              isActive("/accounts") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            } hover:text-blue-500`}
+        <Link href="/account">
+          <div
+            className={`flex items-center gap-x-6  ${
+              isActive("/account") ? "text-[#1814F3]" : "text-[#b1b1b1]"
+            }`}
           >
-            Accounts
-          </h2>
+            <Image
+              src="/assets/user 3 1.svg"
+              alt="logo"
+              width={25}
+              height={25}
+            />
+            <h2 className="text-base   ">Accounts</h2>
+          </div>
         </Link>
 
         <Link href="/investments" className="flex items-center gap-x-6">

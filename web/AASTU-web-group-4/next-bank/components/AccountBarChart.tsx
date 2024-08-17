@@ -35,7 +35,7 @@ const chartConfig = {
 
 export default function Component() {
   return (
-    <Card>
+    <Card className="flex flex-col w-full">
       <CardHeader>
         <CardTitle>Weekly Activity</CardTitle>
       </CardHeader>

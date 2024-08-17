@@ -3,8 +3,9 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import NavBar from '@/components/NavBar/NavBar';
 import Sidebar from '@/components/SideBar/Sidebar';
+import StoreProvider from '@/providers/StoreProvider';
 
-const inter = Inter({ subsets: ['latin'] });
+// const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -18,14 +19,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={inter.className}>
+      <body>
         <div className='flex w-full bg-slate-100 min-h-screen font-Inter'>
-          <div className='min-h-screen fixed left-0 top-0'>
-            <Sidebar />
+          <div className='min-h-screen fixed left-0 top-0 z-50'>
+            <StoreProvider>
+              <Sidebar />
+            </StoreProvider>
           </div>
           <div className='w-full overflow-hidden sm:ml-[210px] transaction-all duration-300'>
-            <NavBar />
-            <div className='p-5'>{children}</div>
+            <StoreProvider>
+              <NavBar />
+            </StoreProvider>
+            <div className='p-5 z-0'>{children}</div>
           </div>
         </div>
       </body>

@@ -1,4 +1,6 @@
-type IUserRepsitory interface {
+package Infrastructure
+
+type IUserRepository interface {
 	RegisterNewUser(domain.User) error
 	GetSingleUser(email string) *domain.User, error
 	PromoteUser(userID primitive.ObjectID) error

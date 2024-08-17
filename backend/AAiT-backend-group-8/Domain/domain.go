@@ -1,3 +1,4 @@
+package Domain
 
 type Blog struct {
 	Id primitive.ObjectID
@@ -40,4 +41,3 @@ type Like struct {
 	UserID primitive.ObjectID
 	BlogID primitive.ObjectID
 }
-

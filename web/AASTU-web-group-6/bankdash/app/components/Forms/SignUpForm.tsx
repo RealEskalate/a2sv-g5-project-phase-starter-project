@@ -1,15 +1,56 @@
 "use client";
-import React from 'react'
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import UserValue from '@/types/UserValue';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import SignupService from '@/app/Services/SignupService';
+import ResponseValue from '@/types/ResponseValue';
+
+// Define the schema using Zod
+const schema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  dateOfBirth: z.string().min(1, "Date of Birth is required"),
+  permanentAddress: z.string(),
+  postalCode: z.string(),
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string().min(6, "Confirm Password is required"),
+  presentAddress: z.string(),
+  city: z.string(),
+  country: z.string(),
+  profilePicture: z.string().url("Invalid URL"),
+  preference: z.object({
+    currency: z.string(),
+    sentOrReceiveDigitalCurrency: z.boolean().optional(),
+    receiveMerchantOrder: z.boolean().optional(),
+    accountRecommendations: z.boolean().optional(),
+    timeZone: z.string(),
+    twoFactorAuthentication: z.boolean().optional(),
+  }),
+}).refine((data) => data.password === data.confirmPassword, {
+  path: ["confirmPassword"],
+  message: "Passwords do not match",
+});
 
 const SignUpForm = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm<UserValue>({
+    resolver: zodResolver(schema),
+  });
 
-    const onSubmit = async (data:UserValue) => {
-        console.log(data)
+  const onSubmit = async (data: UserValue) => {
+    try {
+      const responseData: ResponseValue = await SignupService(data);
+      if (responseData.success) {
+        console.log("Signup successful:");
+      } else {
+        console.error("Signup failed:");
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
     }
-
-    const { register, handleSubmit, formState: { errors } } = useForm<UserValue>();
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-6 bg-white rounded shadow-md max-w-md mx-auto">
@@ -55,6 +96,12 @@ const SignUpForm = () => {
         <label className="block">Password</label>
         <input {...register("password")} type="password" className="input" />
         {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+      </div>
+
+      <div>
+        <label className="block">Confirm Password</label>
+        <input {...register("confirmPassword")} type="password" className="input" />
+        {errors.confirmPassword && <p className="text-red-500">{errors.confirmPassword.message}</p>}
       </div>
 
       <div>
@@ -127,15 +174,11 @@ const SignUpForm = () => {
         )}
       </div>
 
-      {/* {formError && <p className="text-red-500 mt-4">{formError}</p>} */}
-
       <button type="submit" className="w-full py-2 mt-6 bg-blue-500 text-white rounded">
         Signup
       </button>
     </form>
-  )
+  );
 }
 
-export default SignUpForm
-
-
+export default SignUpForm;

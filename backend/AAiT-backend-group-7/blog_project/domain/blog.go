@@ -1,11 +1,15 @@
 package domain
 
-import "github.com/gin-gonic/gin"
+import (
+	"context"
+
+	"github.com/gin-gonic/gin"
+)
 
 type Blog struct {
 	ID        int       `json:"id"`
 	Title     string    `json:"title"`
-	Author_id int       `json:"author_id"`
+	AuthorID  int       `json:"author_id"`
 	Content   string    `json:"content"`
 	Comments  []Comment `json:"comments"`
 	Likes     []Like    `json:"likes"`
@@ -15,56 +19,62 @@ type Blog struct {
 	Views     int       `json:"views"`
 }
 
+
 type Comment struct {
 	ID      int    `json:"id"`
-	User_id int    `json:"user_id"`
+	UserID  int    `json:"user_id"`
 	Content string `json:"content"`
 	Date    string `json:"date"`
 }
 
+
 type Like struct {
-	ID      int    `json:"id"`
-	User_id int    `json:"user_id"`
-	Date    string `json:"date"`
+	ID     int    `json:"id"`
+	UserID int    `json:"user_id"`
+	Date   string `json:"date"`
 }
+
 
 type Dislike struct {
-	ID      int    `json:"id"`
-	User_id int    `json:"user_id"`
-	Date    string `json:"date"`
+	ID     int    `json:"id"`
+	UserID int    `json:"user_id"`
+	Date   string `json:"date"`
 }
 
-type IBlog_Repository interface {
-	GetAllBlogs() ([]Blog, error)
-	GetBlogByID(id int) (Blog, error)
-	CreateBlog(blog Blog) (Blog, error)
-	UpdateBlog(id int, blog Blog) (Blog, error)
-	DeleteBlog(id int) error
-	SearchByTitle(title string) ([]Blog, error)
-	SearchByTags(tags []string) ([]Blog, error)
-	SearchByAuthor(author_id int) ([]Blog, error)
+
+type IBlogRepository interface {
+	GetAllBlogs(ctx context.Context) ([]Blog, error)
+	GetBlogByID(ctx context.Context, id int) (Blog, error)
+	CreateBlog(ctx context.Context, blog Blog) (Blog, error)
+	UpdateBlog(ctx context.Context, id int, blog Blog) (Blog, error)
+	DeleteBlog(ctx context.Context, id int) error
+	SearchByTitle(ctx context.Context, title string) ([]Blog, error)
+	SearchByTags(ctx context.Context, tags []string) ([]Blog, error)
+	SearchByAuthor(ctx context.Context, authorID int) ([]Blog, error)
 }
 
-type IBlog_Usecases interface {
-	GetAllBlogs() ([]Blog, error)
-	GetBlogByID(id int) (Blog, error)
-	CreateBlog(blog Blog) (Blog, error)
-	UpdateBlog(id int, blog Blog) (Blog, error)
-	DeleteBlog(id int) error
-	Search(author string, tags []string, title string) ([]Blog, error)
-	LikeBlog(blog_id int, author_id int) (Like, error)
-	DislikeBlog(blog_id int, author_id int) (Dislike, error)
-	CommentBlog(blog_id int, author_id int, content string) (Comment, error)
+
+type IBlogUsecases interface {
+	GetAllBlogs(ctx context.Context) ([]Blog, error)
+	GetBlogByID(ctx context.Context, id int) (Blog, error)
+	CreateBlog(ctx context.Context, blog Blog) (Blog, error)
+	UpdateBlog(ctx context.Context, id int, blog Blog) (Blog, error)
+	DeleteBlog(ctx context.Context, id int) error
+	Search(ctx context.Context, author string, tags []string, title string) ([]Blog, error)
+	LikeBlog(ctx context.Context, blogID int, authorID int) (Like, error)
+	DislikeBlog(ctx context.Context, blogID int, authorID int) (Dislike, error)
+	CommentBlog(ctx context.Context, blogID int, authorID int, content string) (Comment, error)
 }
 
-type IBlog_Controller interface {
-	GetAllBlogs(c *gin.Context) ([]Blog, error)
-	GetBlogsByAuhorID(c *gin.Context) ([]Blog, error)
-	CreateBlog(c *gin.Context) (Blog, error)
-	UpdateBlog(c *gin.Context) (Blog, error)
-	LikeBlog(c *gin.Context) (Blog, error)
-	DislikeBlog(c *gin.Context) (Blog, error)
-	CommentBlog(c *gin.Context) (Blog, error)
-	DeleteBlog(c *gin.Context) error
-	Search(c *gin.Context) ([]Blog, error)
+type IBlogController interface {
+	GetAllBlogs(c *gin.Context)
+	GetBlogsByAuthorID(c *gin.Context)
+	GetBlogByID(c *gin.Context)
+	CreateBlog(c *gin.Context)
+	UpdateBlog(c *gin.Context)
+	DeleteBlog(c *gin.Context)
+	LikeBlog(c *gin.Context)
+	DislikeBlog(c *gin.Context)
+	CommentBlog(c *gin.Context)
+	Search(c *gin.Context)
 }

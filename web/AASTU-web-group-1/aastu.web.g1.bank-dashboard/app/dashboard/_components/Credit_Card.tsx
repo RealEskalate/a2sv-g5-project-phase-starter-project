@@ -23,6 +23,7 @@ const CreditCard: React.FC<Props> = ({
     >
       <div className="flex justify-between px-5">
         <div className={`block ${textColor} space-y-[1px]`}>
+          
           <p className="text-[11px]" style={{ fontWeight: 400 }}>
             Balance
           </p>

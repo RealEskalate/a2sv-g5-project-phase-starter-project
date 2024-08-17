@@ -18,7 +18,7 @@ export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
           </svg>
         </button>
         <div className="text-xl font-bold flex-1 text-center">{pageTitle}</div>
-        <Image src="/Images/profilepic.jpeg" alt="User Profile" width={32} height={32} className="rounded-full" />
+        <Image src="/Images/profilepic.jpeg" alt="User Profile" width={32} height={32} className="rounded-full aspect-square object-cover" />
       </div>
 
       {/* Mobile Search Bar */}

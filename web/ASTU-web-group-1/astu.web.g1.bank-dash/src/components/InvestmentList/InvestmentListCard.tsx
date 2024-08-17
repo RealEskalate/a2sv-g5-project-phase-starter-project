@@ -21,7 +21,7 @@ const InvestmentListCard: React.FC<InvestmentListCardProps> = ({
   return (
     <div className="flex  w-full bg-white rounded-[20px] p-2 ">
       <div className="flex flex-shrink-0 mr-4 items-center">
-        <img
+        <Image
           className="lg:w-[55px] lg:h-[55px] w-[40px] h-[40px] sm:rounded-[20px]"
           src={imageUrl}
           alt="card image"

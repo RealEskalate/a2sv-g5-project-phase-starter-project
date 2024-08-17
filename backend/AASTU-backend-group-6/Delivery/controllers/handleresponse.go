@@ -1,6 +1,9 @@
 package controllers
 
 import (
+	domain "blogs/Domain"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -9,11 +12,11 @@ func HandleResponse(c *gin.Context, response interface{}) {
 
 	// print the type of response
 	// fmt.Printf("Type of response: %T\n", response)
-	// switch res := response.(type) {
-	// case *domain.SuccessResponse:
-	// 	c.JSON(http.StatusOK, res)
-	// case *domain.ErrorResponse:
-	// 	c.JSON(res.Status, res)
+	switch res := response.(type) {
+	case *domain.SuccessResponse:
+		c.JSON(http.StatusOK, res)
+	case *domain.ErrorResponse:
+		c.JSON(res.Status, res)
 	// case *domain.AllUserResponse:
 	// 	c.JSON(http.StatusOK, res)
 	// case *domain.SingleUserResponse:
@@ -27,6 +30,6 @@ func HandleResponse(c *gin.Context, response interface{}) {
 	// case *domain.SingleTaskResponse:
 	// 	c.JSON(http.StatusOK , res)
 	// default:
-	// 	c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: "Internal Server Error", Status: 500})
-	// }
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: "Internal Server Error", Status: 500})
+	}
 }

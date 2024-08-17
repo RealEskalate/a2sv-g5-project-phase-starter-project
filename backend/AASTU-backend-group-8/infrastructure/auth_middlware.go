@@ -9,8 +9,8 @@ import (
 // AdminMiddleware checks if the user is an admin
 func AdminMiddleware(jwtService JWTService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenString := c.GetHeader("Authorization")
-		token, claims, err := jwtService.ValidateToken(tokenString)
+		authHeader := c.GetHeader("Authorization")
+		token, claims, err := jwtService.ValidateToken(authHeader)
 
 		if err != nil || !token.Valid {
 			c.AbortWithStatus(http.StatusUnauthorized)
@@ -26,14 +26,29 @@ func AdminMiddleware(jwtService JWTService) gin.HandlerFunc {
 
 		c.Next()
 	}
+
+	// return func(c *gin.Context) {
+	// 	role, exists := c.Get("role")
+	// 	if !exists || role != "admin" {
+	// 		c.JSON(http.StatusForbidden, gin.H{"error": "Admin access required"})
+	// 		c.Abort()
+	// 		return
+	// 	}
+	// 	c.Next()
+	// }
 }
 
 // AuthMiddleware checks if the user is authenticated
 func AuthMiddleware(jwtService JWTService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenString := c.GetHeader("Authorization")
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
+			c.Abort()
+			return
+		}
 
-		token, claims, err := jwtService.ValidateToken(tokenString)
+		token, claims, err := jwtService.ValidateToken(authHeader)
 		if err != nil || !token.Valid {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return

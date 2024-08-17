@@ -28,7 +28,7 @@ type BlogUsecaseInterface interface {
 	GetAllBlogPosts() ([]BlogPost, error)
 	GetBlogByID(id primitive.ObjectID) (*BlogPost, error)
 	UpdateBlogPost(id primitive.ObjectID, blog *BlogPost) (*BlogPost, error)
-	SearchBlogPosts(query *SearchBlogPost) ([]BlogPost, error)
+	// SearchBlogPosts(query *SearchBlogPost) ([]BlogPost, error)    TODO
 	DeleteBlogPost(id primitive.ObjectID) error
 }
 

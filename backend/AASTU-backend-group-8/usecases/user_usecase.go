@@ -5,28 +5,31 @@ import (
 	"meleket/domain"
 	"meleket/infrastructure"
 	"meleket/repository"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UserUsecase struct {
-	userRepo    repository.UserRepositoryInterface
-	passwordSvc infrastructure.PasswordService
+	userRepo    domain.UserRepositoryInterface
 	jwtSvc      infrastructure.JWTService
+	// passwordSvc infrastructure.PasswordService
+	// emailSvc	infrastructure.EmailService
 }
 
-func NewUserUsecase(ur repository.UserRepositoryInterface, ps infrastructure.PasswordService, js infrastructure.JWTService) *UserUsecase {
+func NewUserUsecase(ur domain.UserRepositoryInterface,js infrastructure.JWTService) *UserUsecase {  //ps infrastructure.PasswordService, js infrastructure.JWTService)
 	return &UserUsecase{
 		userRepo:    ur,
-		passwordSvc: ps,
 		jwtSvc:      js,
+		// passwordSvc: ps,
+		// emailSvc: 	 es,
 	}
 }
 
 // Register registers a new user
 func (u *UserUsecase) Register(user *domain.User) error {
 	// Hash the user's password before storing it
-	hashedPassword, err := u.passwordSvc.HashPassword(user.Password)
+	hashedPassword, err := infrastructure.HashPassword(user.Password)
 	if err != nil {
 		return err
 	}
@@ -43,23 +46,24 @@ func (u *UserUsecase) Register(user *domain.User) error {
 // Login authenticates a user and returns JWT and refresh tokens if successful
 func (u *UserUsecase) Login(authUser *domain.AuthUser) (string, string, error) {
 	// Retrieve the user by username
-	user, err := u.userRepo.FindByUsername(&authUser.Username)
+	user, err := u.userRepo.GetByUsername(&authUser.Username)
 	if err != nil {
 		return "", "", errors.New("invalid username or password")
 	}
 
 	// Compare the provided password with the stored hashed password
-	if err := u.passwordSvc.CheckPasswordHash(user.Password, authUser.Password); err != nil {
+	if err := infrastructure.CheckPasswordHash(user.Password, authUser.Password); err != nil {
 		return "", "", errors.New("invalid username or password")
 	}
 
 	// Generate JWT and refresh tokens for the authenticated user
-	token, err := u.jwtSvc.GenerateToken(user.ID, user.Role)
+	// token, err := u.jwtSvc.GenerateToken(user.ID, user.Role)
+	token, err := infrastructure.JWTService.GenerateToken(user.ID, user.Role)
 	if err != nil {
 		return "", "", err
 	}
 
-	refreshToken, err := u.jwtSvc.GenerateRefreshToken(user.ID, user.Role)
+	refreshToken, err := infrastructure.JWTService.GenerateRefreshToken(user.ID, user.Role)
 	if err != nil {
 		return "", "", err
 	}
@@ -75,7 +79,7 @@ func (u *UserUsecase) Login(authUser *domain.AuthUser) (string, string, error) {
 
 // DeleteRefreshToken deletes the refresh token for a user
 func (u *UserUsecase) DeleteRefreshToken(userID primitive.ObjectID) error {
-	user, err := u.userRepo.FindByID(userID)
+	user, err := u.userRepo.GetByID(userID)
 	if err != nil {
 		return err
 	}
@@ -85,45 +89,59 @@ func (u *UserUsecase) DeleteRefreshToken(userID primitive.ObjectID) error {
 
 // ForgotPassword handles the forgot password logic
 func (u *UserUsecase) ForgotPassword(email *string) error {
-	_, err := u.userRepo.FindByUsername(email)
+	user, err := u.userRepo.GetByEmail(email)
 	if err != nil {
 		return errors.New("email not found")
 	}
 
-	// Generate and send a password reset token logic would go here
+	// Generate OTP and store it in the database
+	otp := utils.GenerateOTP(6)
+	err = u.userRepo.StoreOTP(user.ID, otp)
+	if err != nil {
+		return err
+	}
+
+	// Send OTP via email
+	err = u.emailSvc.SendOTPEmail(user.Email, otp)
+	if err != nil {
+		return err
+	}
+
+
 	return nil
 }
 
+
 // GetProfile retrieves a user's profile by ID
-func (u *UserUsecase) GetProfile(objectID primitive.ObjectID) (*domain.User, error) {
-	user, err := u.userRepo.FindByID(objectID)
+func (u *UserUsecase) GetProfile(objectID primitive.ObjectID) (*domain.Profile, error) {
+	userProfile, err := u.userRepo.GetByID(objectID)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return userProfile, nil
 }
 
 // UpdateProfile updates a user's profile
-func (u *UserUsecase) UpdateProfile(objectID primitive.ObjectID, profile *domain.Profile) (*domain.User, error) {
-	user, err := u.userRepo.FindByID(objectID)
+func (u *UserUsecase) UpdateProfile(objectID primitive.ObjectID, profile *domain.Profile) (*domain.Profile, error) {
+	// user, err := u.userRepo.FindByID(objectID)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// user.Name = profile.Bio
+	// user.avatar_url = profile.AvatarURL
+
+	updatedprofile, err := u.userRepo.UpdateProfile(objectID, profile)
 	if err != nil {
 		return nil, err
 	}
 
-	user.Name = profile.Bio
-	user.avatar_url = profile.AvatarURL
-
-	updatedUser, err := u.userRepo.UpdateProfile(objectID.Hex(), user)
-	if err != nil {
-		return nil, err
-	}
-
-	return updatedUser, nil
+	return updatedprofile, nil
 }
 
 // GetAllUsers retrieves all users from the repository
 func (u *UserUsecase) GetAllUsers() ([]domain.User, error) {
-	users, err := u.userRepo.FindAll()
+	users, err := u.userRepo.GetAllUsers()
 	if err != nil {
 		return nil, err
 	}
@@ -132,21 +150,7 @@ func (u *UserUsecase) GetAllUsers() ([]domain.User, error) {
 
 // DeleteUser deletes a user by ID
 func (u *UserUsecase) DeleteUser(objectID primitive.ObjectID) error {
-	return u.userRepo.Delete(objectID)
+	return u.userRepo.DeleteUser(objectID)
 }
 
-// RefreshToken refreshes a user's JWT token
-func (u *UserUsecase) RefreshToken(refreshToken *domain.RefreshToken) (string, error) {
-	storedToken, err := u.userRepo.FindRefreshToken(refreshToken.UserID)
-	if err != nil {
-		return "", errors.New("invalid refresh token")
-	}
 
-	// Assuming that the storedToken contains userID and Role, you would generate a new token
-	newToken, err := u.jwtSvc.GenerateToken(storedToken.UserID, storedToken.ExpiresAt.String())
-	if err != nil {
-		return "", err
-	}
-
-	return newToken, nil
-}

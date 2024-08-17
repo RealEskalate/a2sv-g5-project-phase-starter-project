@@ -25,16 +25,6 @@ type BlogFilter struct {
 	} `json:"date_range"`
 }
 
-type RefreshToken struct {
-	// username     string    `bson:"token" json:"token"`
-	UserID    string    `bson:"user_id" json:"user_id"`
-	ExpiresAt time.Time `bson:"expires_at" json:"expires_at"`
-}
-
-// // IsExpired checks if the refresh token is expired
-// func (r *RefreshToken) IsExpired() bool {
-// 	return time.Now().After(r.ExpiresAt)
-// }
 
 //todo:
 // the AI model

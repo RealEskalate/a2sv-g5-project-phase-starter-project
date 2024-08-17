@@ -4,19 +4,20 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // JWTService interface
 type JWTService interface {
-	GenerateToken(userID, role string) (string, error)
-	GenerateRefreshToken(userID, role string) (string, error)  // Modified to include role
+	GenerateToken(userID primitive.ObjectID, role string) (string, error)
+	GenerateRefreshToken(userID primitive.ObjectID, role string) (string, error)  // Modified to include role
 	ValidateToken(token string) (*jwt.Token, *Claims, error)
 	ValidateRefreshToken(token string) (*jwt.Token, error)
 }
 
 // Claims struct to hold JWT claims
 type Claims struct {
-	ID       string `json:"id"`
+	ID       primitive.ObjectID `json:"id"`
 	Username string `json:"username"`
 	Role     string `json:"role"`
 	jwt.StandardClaims
@@ -29,7 +30,7 @@ type jwtService struct {
 }
 
 // NewJWTService creates a new JWTService
-func NewJWTService(secretKey, issuer, refreshSecretKey string) JWTService {
+func NewJWTService(secretKey, issuer, refreshSecretKey string) *jwtService {
 	return &jwtService{
 		secretKey:        secretKey,
 		issuer:           issuer,
@@ -38,7 +39,7 @@ func NewJWTService(secretKey, issuer, refreshSecretKey string) JWTService {
 }
 
 // GenerateToken generates a new JWT token
-func (j *jwtService) GenerateToken(userID, role string) (string, error) {
+func (j *jwtService) GenerateToken(userID primitive.ObjectID, role string) (string, error) {
 	claims := &Claims{
 		ID:   userID,
 		Role: role,
@@ -53,11 +54,11 @@ func (j *jwtService) GenerateToken(userID, role string) (string, error) {
 	return token.SignedString([]byte(j.secretKey))
 }
 
-func (j *jwtService) GenerateRefreshToken(userID, role string) (*domain.RefreshToken, error) {
+func (j *jwtService) GenerateRefreshToken(userID primitive.ObjectID, role string) (string, error) {
 	// Set expiration time for refresh token
 	expirationTime := time.Now().Add(time.Hour * 24 * 7) // 7 days
 
-	claims := &domain.Claims{
+	claims := &Claims{          //should be checked
 		ID:   userID,
 		Role: role,
 		StandardClaims: jwt.StandardClaims{
@@ -70,8 +71,11 @@ func (j *jwtService) GenerateRefreshToken(userID, role string) (*domain.RefreshT
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedToken, err := token.SignedString([]byte(j.secretKey))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
+
+	return signedToken,nil
+}
 
 // ValidateToken validates the given JWT token
 func (j *jwtService) ValidateToken(tokenString string) (*jwt.Token, *Claims, error) {

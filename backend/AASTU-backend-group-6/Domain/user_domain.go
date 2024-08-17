@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -21,6 +22,9 @@ type User struct {
 	Bio               string             `json:"bio"`
 	Role              string             `json:"roles" validate:"required"`
 	Comments          []Comment          `json:"comments"`
+	Verified 		 bool 				`json:"verified"`
+	OTP 			 string 			`json:"otp"`
+	ExpiresAt 		 time.Time			`json:"expires_at"` 
 }
 
 type UserRepository interface {
@@ -35,12 +39,15 @@ type UserRepository interface {
 }
 
 type SignupRepository interface {
-	Create(ctx context.Context, user User) (User, error)
-	FindUserByEmail(ctx context.Context, email string) (User, error)
+	Create(c context.Context , user User) (User, error)
+	FindUserByEmail(c context.Context , email string) (User, error)
+	SetOTP(c context.Context , email string , otp string) (error)
+	VerifyUser(c context.Context , user User) (User, error)
 }
 
 type SignupUseCase interface {
-	Create(ctx context.Context, user User) interface{}
+	Create(c context.Context , user User) interface{}
+	VerifyOTP(c context.Context , otp OtpToken) interface{}
 }
 
 type UserUseCase interface {

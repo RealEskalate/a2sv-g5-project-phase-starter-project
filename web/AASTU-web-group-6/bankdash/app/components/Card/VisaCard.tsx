@@ -3,17 +3,30 @@ import Image from "next/image";
 import white from "../../../public/assets/sim-white-icon.png";
 import gray from "../../../public/assets/sim-gray-icon.png";
 import black from "../../../public/assets/sim-black-icon.png";
+import { Card } from "@/app/Redux/slices/cardSlice";
 
-interface ColorType {
+interface CardType {
+  data: Card;
   isBlack: boolean;
   isFade: boolean;
   isSimGray: boolean;
 }
 
-const VisaCard: React.FC<ColorType> = ({ isBlack, isFade, isSimGray }) => {
+export const convertDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear().toString().slice(-2);
+  return `${month}/${year}`;
+};
+
+const VisaCard: React.FC<CardType> = ({ data, isBlack, isFade, isSimGray }) => {
+  const cardNo = `${data.semiCardNumber.slice(
+    0,
+    4
+  )} **** **** ${data.semiCardNumber.slice(-4)}`;
   return (
     <div
-      className={`w-full max-h-[242px] font-Lato flex flex-col gap-2 grow rounded-3xl ${
+      className={`w-full max-h-[242px] sm:scale-75 md:scale-90 lg:scale-100 font-Lato flex flex-col gap-2 grow rounded-3xl ${
         isBlack
           ? "text-colorBody-1 bg-white border-solid border-[1px] border-gray-200"
           : isFade
@@ -25,7 +38,7 @@ const VisaCard: React.FC<ColorType> = ({ isBlack, isFade, isSimGray }) => {
         <div className="flex text-sm">
           <div className="balance-box flex flex-col grow">
             <div className="label font-normal">Balance</div>
-            <div className="balance text-xl font-medium">$5,756</div>
+            <div className="balance text-xl font-medium">${data.balance}</div>
           </div>
           <Image
             width={48}
@@ -38,11 +51,13 @@ const VisaCard: React.FC<ColorType> = ({ isBlack, isFade, isSimGray }) => {
         <div className="flex">
           <div className="holder-box text-sm font-normal flex flex-col grow">
             <div className="label opacity-70">CARD HOLDER</div>
-            <div className="name text-base font-medium">Eddy Cusuma</div>
+            <div className="name text-base font-medium">{data.cardHolder}</div>
           </div>
           <div className="valid-box">
             <div className="label opacity-70">VALID THRU</div>
-            <div className="name text-base font-medium">12/22</div>
+            <div className="name text-base font-medium">
+              {convertDate(data.expiryDate)}
+            </div>
           </div>
         </div>
       </div>
@@ -51,9 +66,7 @@ const VisaCard: React.FC<ColorType> = ({ isBlack, isFade, isSimGray }) => {
           isBlack ? "border-solid border-t-2 border-gray-200" : ""
         }`}
       >
-        <div className="number flex grow font-medium text-xl">
-          3778*** **** 1234
-        </div>
+        <div className="number flex grow font-medium text-xl">{cardNo}</div>
         <div className="number flex">
           <div
             className={`circle w-8 h-8 ${

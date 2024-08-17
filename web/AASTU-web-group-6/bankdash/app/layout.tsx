@@ -6,6 +6,7 @@ import Sidebar from "./components/Layout/Sidebar";
 import { usePathname } from "next/navigation";
 import LayoutProvider from "./Provider/LayoutProvider";
 import ReduxProvider from "./Redux/ReduxProvider";
+import SessionWrapper from "./Provider/SessionWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,13 +21,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-body`}>
-        {/* i just add redux provider here */}
-        <ReduxProvider>
-          <LayoutProvider>{children}</LayoutProvider>
-        </ReduxProvider>
-      </body>
-    </html>
+    <SessionWrapper>
+      <html lang="en">
+        <body className={`${inter.className} bg-[#f5f7fa]`}>
+          {/* i just add redux provider here */}
+          <ReduxProvider>
+            <LayoutProvider>{children}</LayoutProvider>
+          </ReduxProvider>
+        </body>
+      </html>
+    </SessionWrapper>
   );
 }

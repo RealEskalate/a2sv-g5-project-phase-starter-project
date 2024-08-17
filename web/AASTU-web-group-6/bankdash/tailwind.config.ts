@@ -17,6 +17,14 @@ const config: Config = {
         "2xl": "1400px",
       },
     },
+    screens: {
+      xs: "480px", // Extra small devices (mobile)
+      sm: "640px", // Small devices (landscape phones)
+      md: "768px", // Medium devices (tablets)
+      lg: "1024px", // Large devices (desktops)
+      xl: "1280px", // Extra large devices (large desktops)
+      "2xl": "1536px",
+    },
     // container: {
     //   center: true,
     //   padding: "2rem",

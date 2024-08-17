@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 import x from "../../../public/assets/next-icon.svg";
@@ -5,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { AreaComp } from "../Charts/AreaComp";
+import { useAppSelector } from "@/app/Redux/store/store";
 const Bottom = () => {
   const people: any = [1, 2, 3];
   return (

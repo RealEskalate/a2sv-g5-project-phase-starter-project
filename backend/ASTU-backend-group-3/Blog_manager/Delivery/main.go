@@ -43,9 +43,14 @@ func main() {
 	userDatabase := client.Database("Blog_management")
 
 	userCollection := userDatabase.Collection("User")
+	blogCollection := userDatabase.Collection("Blog")
 
 	tokenCollection := userDatabase.Collection("Token")
 	userRepository := Repository.NewUserRepository(userCollection, tokenCollection)
+
+	blogRepository := Repository.NewBlogRepository(blogCollection)
+	blogUsecase := Usecases.NewBlogUsecase(blogRepository)
+	blogController := controller.NewBlogController(blogUsecase)
 
 	// Initialize the Email Service
 	emailService = infrastructure.NewEmailService()
@@ -54,7 +59,7 @@ func main() {
 	userUsecase := Usecases.NewUserUsecase(userRepository, emailService)
 	userController := controller.NewUserController(userUsecase)
 
-	router := router.SetupRouter(userController)
+	router := router.SetupRouter(userController, blogController)
 	log.Fatal(router.Run(":8080"))
 
 }

@@ -3,8 +3,8 @@ package controller
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"ASTU-backend-group-3/Blog_manager/Usecases"
-	"net/http"
 	"ASTU-backend-group-3/Blog_manager/infrastructure"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -81,8 +81,7 @@ func (uc *UserController) Login(c *gin.Context) {
 		return
 	}
 
-<<<<<<<<< Temporary merge branch 1
-    c.JSON(http.StatusOK, gin.H{"access_token": access_token})
+	c.JSON(http.StatusOK, gin.H{"access_token": access_token})
 }
 
 func (uc *UserController) Logout(c *gin.Context) {
@@ -106,7 +105,3 @@ func (uc *UserController) Logout(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
 }
-=========
-	c.JSON(http.StatusOK, gin.H{"access_token": access_token})
-}
->>>>>>>>> Temporary merge branch 2

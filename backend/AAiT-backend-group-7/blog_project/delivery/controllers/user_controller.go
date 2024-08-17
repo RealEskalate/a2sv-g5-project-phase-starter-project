@@ -3,13 +3,12 @@ package controllers
 
 import (
 	"blog_project/domain"
-	"blog_project/usecases"
 
 	"github.com/gin-gonic/gin"
 )
 
 type userController struct {
-	UserUsecase domain.IUser_Usecases
+	UserUsecase domain.IUserUsecase
 }
 
 func NewUserController(userUsecase domain.IUser_Usecases) domain.IUser_Controller {

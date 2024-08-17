@@ -110,3 +110,21 @@ func (r *BlogRepository) Delete(id uuid.UUID) error {
 	
 	return nil
 }
+
+func (r *BlogRepository) AddView(id uuid.UUID) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	
+	filter := bson.D{{Key: "_id", Value: id}}
+	update := bson.D{{Key: "$inc", Value: bson.D{{Key: "views", Value: 1}}}}
+	
+	_, err := r.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return errors.New("task not found")
+		}
+		return err
+	}
+	
+	return nil
+}

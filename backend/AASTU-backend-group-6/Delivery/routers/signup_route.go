@@ -4,7 +4,7 @@ import (
 	infrastructure "blogs/Infrastructure"
 	repositories "blogs/Repositories"
 	usecases "blogs/Usecases"
-	controllers "blogs/delivery/controllers"
+	controllers "blogs/Delivery/controllers"
 	"blogs/mongo"
 	"time"
 

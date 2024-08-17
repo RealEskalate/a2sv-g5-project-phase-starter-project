@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"group3-blogApi/domain"
 	"group3-blogApi/infrastracture"
 	"time"
@@ -21,7 +22,8 @@ func NewUserRepositoryImpl(coll *mongo.Collection) domain.UserRepository {
 
 func (ur *UserRepositoryImpl) Login(user domain.User) (domain.User, error) {
 	var newUser domain.User
-	err := ur.collection.FindOne(context.Background(), map[string]string{"username": user.Username}).Decode(&newUser)
+	err := ur.collection.FindOne(context.Background(), map[string]string{"email": user.Email}).Decode(&newUser)
+	fmt.Println(user, newUser)
 	if err != nil {
 		return domain.User{}, err
 	}

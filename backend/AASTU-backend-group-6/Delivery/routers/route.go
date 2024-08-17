@@ -7,6 +7,7 @@ import (
 	repositories "blogs/Repositories"
 	usecases "blogs/Usecases"
 	"blogs/mongo"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,5 +23,5 @@ func Router(server *gin.Engine, config *infrastructure.Config, DB mongo.Database
 	userRouter := server.Group("")
 	// NewUserrouter(config, DB , userRouter)
 	NewSignupRoute(config, DB, userRouter)
-
+	NewRefreshTokenRouter(config,time.Duration(time.Now().Add(time.Duration(config.RefreshTokenExpiryHour)).Unix()) ,DB,userRouter)
 }

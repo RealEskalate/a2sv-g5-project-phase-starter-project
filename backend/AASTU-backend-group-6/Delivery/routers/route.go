@@ -1,7 +1,6 @@
 package routers
 
 import (
-	controllers "blogs/Delivery/controllers"
 	domain "blogs/Domain"
 	infrastructure "blogs/Infrastructure"
 	repositories "blogs/Repositories"
@@ -9,12 +8,14 @@ import (
 	"blogs/mongo"
 	"time"
 
+	"blogs/Delivery/controllers"
+
 	"github.com/gin-gonic/gin"
 )
 
 func Router(server *gin.Engine, config *infrastructure.Config, DB mongo.Database) {
 
-	blog_repo := repositories.NewBlogRepository(DB.Collection(config.BlogCollection), *config)
+	blog_repo := repositories.NewBlogRepository(DB.Collection(config.BlogCollection), DB.Collection(config.UserCollection), *config)
 	validator := domain.NewValidator()
 	blog_usecase := usecases.NewBlogUsecase(blog_repo)
 	blog_controller := controllers.NewBlogController(blog_usecase,  validator)

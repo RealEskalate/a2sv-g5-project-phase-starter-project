@@ -16,6 +16,13 @@ type envConfigs struct {
 	LocalServerPort string `mapstructure:"LOCAL_SERVER_PORT"`
 	MongoURI        string `mapstructure:"MONGODB_URL"`
 	JwtSecret 	 string `mapstructure:"JWT_SECRET"`
+	RedirectURL    string `mapstructure:"Google_REDIRECT_URL"`
+	ClientID       string `mapstructure:"Google_CLIENT_ID"`
+	ClientSecret   string `mapstructure:"Google_CLIENT_SECRET"`
+	Scopes 	   string `mapstructure:"Google_SCOPES"`
+	Endpoint 	string `mapstructure:"Google_ENDPOINT"`
+	OauthStateString string `mapstructure:"Google_OAUTH_STATE_STRING"`
+
 	
 }
 

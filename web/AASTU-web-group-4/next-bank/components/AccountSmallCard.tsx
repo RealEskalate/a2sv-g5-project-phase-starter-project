@@ -1,6 +1,4 @@
-import { AppWindowMacIcon } from 'lucide-react';
 import Image from 'next/image';
-// import { TbMoneybag } from "react-icons/tb";
 
 interface BalanceCardProps {
   imageSrc: string;
@@ -58,16 +56,27 @@ const accountDatas: BalanceCardProps[] = [
   }
 ];
 
+// const App: React.FC = () => {
+//   return (
+//     <div className="flex flex-row gap-4 w-full justify-between">
+//       {accountDatas.map((accountData, index) => (
+//         <div key={index} className="w-full sm:w-1/2 lg:w-1/4">
+//           <BalanceCard accountData={accountData} />
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
+
 const App: React.FC = () => {
   return (
-    <div className="flex flex-row gap-4 w-full justify-between">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
       {accountDatas.map((accountData, index) => (
-        <div key={index} className="w-full sm:w-1/2 lg:w-1/4">
-          <BalanceCard accountData={accountData} />
-        </div>
+        <BalanceCard key={index} accountData={accountData} />
       ))}
     </div>
   );
 };
+
 
 export default App;

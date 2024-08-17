@@ -46,13 +46,13 @@ const transactions: Transaction[] = [
 
 const TransactionList: React.FC = () => {
   return (
-    <div className="w-auto bg-white rounded-lg shadow-md p-4 space-y-4">
+    <div className="flex-1 flex flex-col justify-between bg-white rounded-lg shadow-md p-4 space-y-4">
       {transactions.map(transaction => (
         <div key={transaction.id} className="flex items-center justify-between">
           <div className={`w-10 h-10 flex items-center justify-center rounded-full ${transaction.iconBgColor}`}>
             <span className="text-2xl">{transaction.icon}</span>
           </div>
-          <div className="ml-4 flex-1">
+          <div className="flex-1 px-4">
             <div className="text-gray-800 font-medium">{transaction.name}</div>
             <div className="text-gray-400 text-sm">{transaction.time}</div>
           </div>
@@ -64,3 +64,24 @@ const TransactionList: React.FC = () => {
 };
 
 export default TransactionList;
+
+// const TransactionList: React.FC = () => {
+//   return (
+//     <div className="w-auto flex  flex-col justify-between bg-white rounded-lg shadow-md p-4 space-y-4">
+//       {transactions.map(transaction => (
+//         <div key={transaction.id} className="flex w-auto items-center justify-between">
+//           <div className={`w-10 h-10 flex items-center justify-center rounded-full ${transaction.iconBgColor}`}>
+//             <span className="text-2xl">{transaction.icon}</span>
+//           </div>
+//           <div className="flex-1">
+//             <div className="text-gray-800 font-medium">{transaction.name}</div>
+//             <div className="text-gray-400 text-sm">{transaction.time}</div>
+//           </div>
+//           <div className="text-gray-800 font-semibold">{transaction.amount}</div>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
+
+// export default TransactionList;

@@ -30,6 +30,33 @@ func (sc *SignupController) Signup(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
 		return
 	}
+	err := sc.SignupUsecase.SendOTP(c, &user, sc.Env.SMTPUsername, sc.Env.SMTPPassword)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "OTP sent"})
+
+}
+
+// VerifyOTP verifies the OTP
+func (sc *SignupController) VerifyOTP(c *gin.Context) {
+	var otp domain.OTPRequest
+	if err := c.ShouldBindJSON(&otp); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	otpresponse,err := sc.SignupUsecase.VerifyOTP(c, &otp)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "OTP verified"})
+	 user := domain.AuthSignup{
+		Username: otpresponse.Username,
+		Email:    otpresponse.Email,
+		Password: otpresponse.Password,
+	 }
 
 	userID, err := sc.SignupUsecase.RegisterUser(c, &user)
 	if err != nil {
@@ -46,11 +73,16 @@ func (sc *SignupController) Signup(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	err = sc.SignupUsecase.SaveRefreshToken(c, RefreshToken,*userID)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	resp := domain.SignUpResponse{
 		ID:           *userID,
 		AcessToken:   Accesstoken,
 		RefreshToken: RefreshToken,
 	}
 	c.JSON(http.StatusOK, gin.H{"data": resp})
-
 }

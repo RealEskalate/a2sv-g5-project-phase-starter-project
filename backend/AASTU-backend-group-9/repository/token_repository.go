@@ -15,10 +15,10 @@ type MongoTokenRepository struct {
 	collection string
 }
 
-func NewMongoTokenRepository(db database.Database) domain.TokenRepository {
+func NewMongoTokenRepository(db database.Database,collection string) domain.TokenRepository {
 	return &MongoTokenRepository{
 		db:         db,
-		collection: domain.TokenCollection,
+		collection: collection,
 	}
 }
 func (repo *MongoTokenRepository) SaveToken(ctx context.Context, token *domain.Token) error {

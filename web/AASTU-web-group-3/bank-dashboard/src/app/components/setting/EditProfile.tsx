@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import profilePic from "../../../../public/profilepic.png";
-import circleWithPen from "../../../../public/Icons/circleWithPen.svg";
+import circleWithPen from "@/../public/icons/circleWithPen.svg";
 
 interface FormInput {
   name: string;
@@ -67,15 +67,55 @@ const EditProfile = () => {
   };
 
   const formFields = [
-    { id: "name", label: "Your Name", placeholder: "Charlene Reed", type: "text" },
-    { id: "username", label: "User Name", placeholder: "Charlene Reed", type: "text" },
-    { id: "email", label: "Email", placeholder: "charlenereed@gmail.com", type: "email" },
-    { id: "password", label: "Password", placeholder: "**********", type: "password" },
-    { id: "dob", label: "Date of Birth", placeholder: "Enter Date of Birth", type: "date" },
-    { id: "presentAddress", label: "Present Address", placeholder: "San Jose, California, USA", type: "text" },
-    { id: "permanentAddress", label: "Permanent Address", placeholder: "San Jose, California, USA", type: "text" },
+    {
+      id: "name",
+      label: "Your Name",
+      placeholder: "Charlene Reed",
+      type: "text",
+    },
+    {
+      id: "username",
+      label: "User Name",
+      placeholder: "Charlene Reed",
+      type: "text",
+    },
+    {
+      id: "email",
+      label: "Email",
+      placeholder: "charlenereed@gmail.com",
+      type: "email",
+    },
+    {
+      id: "password",
+      label: "Password",
+      placeholder: "**********",
+      type: "password",
+    },
+    {
+      id: "dob",
+      label: "Date of Birth",
+      placeholder: "Enter Date of Birth",
+      type: "date",
+    },
+    {
+      id: "presentAddress",
+      label: "Present Address",
+      placeholder: "San Jose, California, USA",
+      type: "text",
+    },
+    {
+      id: "permanentAddress",
+      label: "Permanent Address",
+      placeholder: "San Jose, California, USA",
+      type: "text",
+    },
     { id: "city", label: "City", placeholder: "San Jose", type: "text" },
-    { id: "postalCode", label: "Postal Code", placeholder: "45962", type: "text" },
+    {
+      id: "postalCode",
+      label: "Postal Code",
+      placeholder: "45962",
+      type: "text",
+    },
     { id: "country", label: "Country", placeholder: "USA", type: "text" },
   ];
 
@@ -104,10 +144,16 @@ const EditProfile = () => {
         />
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-wrap items-end justify-between w-full md:w-4/5">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-wrap items-end justify-between w-full md:w-4/5"
+      >
         {formFields.map((field) => (
           <div key={field.id} className="mb-3 w-full md:w-[45%]">
-            <label className="block text-black text-sm  mb-2" htmlFor={field.id}>
+            <label
+              className="block text-black text-sm  mb-2"
+              htmlFor={field.id}
+            >
               {field.label}
             </label>
             <input
@@ -125,13 +171,12 @@ const EditProfile = () => {
           </div>
         ))}
         <div className="flex justify-end w-full">
-        <button
-          className=" w-full md:w-1/5 bg-[#1814F3] text-white font-semibold py-2 px-4 rounded-lg focus:outline-none"
-          type="submit"
-        >
-          Save
-        </button>
-
+          <button
+            className=" w-full md:w-1/5 bg-[#1814F3] text-white font-semibold py-2 px-4 rounded-lg focus:outline-none"
+            type="submit"
+          >
+            Save
+          </button>
         </div>
       </form>
     </div>

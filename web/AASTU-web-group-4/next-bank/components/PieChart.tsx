@@ -12,6 +12,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { useEffect, useState } from "react"
 
 const chartData = [
   { category: "Entertainment", amount: 275, fill: "hsl(210, 100%, 40%)" },  // Dim Blue
@@ -21,15 +22,36 @@ const chartData = [
   { category: "Other", amount: 90, fill: "hsl(60, 100%, 40%)" },            // Dim Yellow
 ]
 
+
+
 export default function Component() {
+  const [pierad , setpierad] = useState(130)
+  useEffect(()=>{
+
+    const fun= () =>{
+      if(window.innerWidth < 1024){
+        setpierad(20)
+        alert('less than 1024')
+    
+      }
+      else{
+        setpierad(100)
+      }
+    fun()
+    window.addEventListener('resize' , fun)
+    return()=>{
+      window.removeEventListener('resize' , fun)
+    }
+    }
+    },[])
   return (
-    <Card className="flex flex-col">
+    <Card className=" md:py-20 ">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Expense Distribution</CardTitle>
+        
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto my- max-h-[90%] "
           config={{}}
         >
           <PieChart>
@@ -42,7 +64,9 @@ export default function Component() {
               nameKey="category"
               cx="50%"
               cy="50%"
-              outerRadius={80}
+              outerRadius={100}
+              style={{stroke: "none"}}
+              // className="md:"
               labelLine={false}
               label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
                 const RADIAN = Math.PI / 180;

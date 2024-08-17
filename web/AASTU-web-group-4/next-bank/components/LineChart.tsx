@@ -12,6 +12,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { TbBackground } from "react-icons/tb"
 
 const chartData = [
   { month: "January", balance: 186 },
@@ -28,17 +29,21 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export default function Component() {
+
+export default function LineChart() {
   return (
-    <Card>
+    <Card >
       <CardHeader>
-        <CardTitle>Area Chart</CardTitle>
+        
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} 
+            style={{height:'300px' , width:'600px'}}
+        >
           <AreaChart
             accessibilityLayer
             data={chartData}
+            
             margin={{
               left: 12,
               right: 12,
@@ -50,6 +55,7 @@ export default function Component() {
               tickLine={false}
               axisLine={true}
               tickMargin={8}
+              // style={{height:'50px' , width:'200px'}}
               tickFormatter={(value) => value.slice(0, 3)}
             />
             <YAxis dataKey="balance" axisLine={true} />

@@ -27,12 +27,10 @@ const QuickTransfer = () => {
   };
 
   return (
-    <div className="flex flex-col items-start gap-3 w-[100%]">
-      <h1 className={`font-semibold text-[18px] ${colors.navbartext}`}>
-        Quick Transfer
-      </h1>
+    <div className="flex flex-col py-4 items-start gap-3 w-[100%]">
+      
 
-      <div className="flex justify-between w-[100%] px-2">
+      <div className="flex justify-between h-35 w-[100%] px-2">
         <div
           onClick={handlePrev}
           className={`w-[50px] h-[50px] rounded-full ${colors.white} flex justify-center items-center shadow-lg cursor-pointer`}

@@ -21,7 +21,7 @@ const LoanTable = () => {
 				<p>Active Loans Overview</p>
 			</div>
 			<div className="overflow-x-auto">
-				<div className=" p-10 bg-white rounded-3xl  ">
+				<div className=" p-6 bg-white rounded-3xl  ">
 					<table className="w-full">
 						<thead>
 							<tr className="text-[#718EBF] border-b-2 border-solid border-gray-200 ">
@@ -46,20 +46,20 @@ const LoanTable = () => {
 									key={loan.id}
 									className="border-b-2 border-solid border-gray-100  text-[#232323] text-center "
 								>
-									<td className="p-2 hidden sm:table-cell">
+									<td className="p-3 hidden sm:table-cell">
 										{loan.id < 10 ? `0${loan.id}` : loan.id}.
 									</td>
-									<td className="p-2">${loan.money.toLocaleString()}</td>
-									<td className="p-2">${loan.leftToRepay.toLocaleString()}</td>
-									<td className="p-2 hidden sm:table-cell">{loan.duration}</td>
-									<td className="p-2 hidden sm:table-cell">
+									<td className="p-3">${loan.money.toLocaleString()}</td>
+									<td className="p-3">${loan.leftToRepay.toLocaleString()}</td>
+									<td className="p-3 hidden sm:table-cell">{loan.duration}</td>
+									<td className="p-3 hidden sm:table-cell">
 										{loan.interestrate}%
 									</td>
-									<td className="p-2 hidden sm:table-cell">
+									<td className="p-3 hidden sm:table-cell">
 										${loan.installment.toLocaleString()} / month
 									</td>
-									<td className="p-2">
-										<div className="text-center border-2 border-solid border-[#232323] cursor-pointer p-1 px-3 rounded-3xl hover:border-[#1814F3] hover:text-[#1814F3]">
+									<td className="p-3">
+										<div className="text-center text-[#1814F3] border-[#1814F3] opacity-70 hover:opacity-100 sm:text-[#232323]   border-2 border-solid sm:border-[#232323] cursor-pointer p-1 px-3 rounded-3xl sm:hover:border-[#1814F3] sm:hover:text-[#1814F3]">
 											Repay
 										</div>
 									</td>

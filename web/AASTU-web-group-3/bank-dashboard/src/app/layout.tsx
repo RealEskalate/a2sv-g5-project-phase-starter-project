@@ -121,7 +121,7 @@ export default function ClientSideComponent({
                 <Image width={48} height={48} src={ProfilePic.src} alt=""  />
               </div>
             </nav>
-            <main className="bg-[#F5F7FA] p-2">{children}</main>
+            <main className="bg-[#F5F7FA] p-1">{children}</main>
           </div>
         </body>
       </html>

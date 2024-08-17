@@ -7,6 +7,7 @@ import (
 
 type BlogUsecase interface {
 	CreateBlog(blog *Domain.Blog) (*Domain.Blog, error)
+	DeleteBlogByID(id string) error
 }
 
 type blogUsecase struct {
@@ -32,4 +33,8 @@ func (uc *blogUsecase) CreateBlog(blog *Domain.Blog) (*Domain.Blog, error) {
 	}
 
 	return createdBlog, nil
+}
+
+func (uc *blogUsecase) DeleteBlogByID(id string) error {
+	return uc.blogRepo.DeleteBlogByID(id)
 }

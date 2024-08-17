@@ -74,7 +74,8 @@ const Transaction = async () => {
           <BarGraph chartData={chartData} />
         </div>
       </div>
-      <Recent data={transactionData} />
+      {/* <Recent data={transactionData} /> */}
+      <Recent />
       <Pagination />
     </div>
   );

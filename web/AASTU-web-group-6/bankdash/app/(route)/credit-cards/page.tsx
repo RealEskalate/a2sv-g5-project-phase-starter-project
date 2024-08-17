@@ -5,7 +5,6 @@ import AddCard from "@/app/components/Card/AddCard";
 import ExpenseChart from "@/app/components/Charts/ExpenseChart";
 import SettingsCard from "@/app/components/Card/SettingsCard";
 import VisaCard from "@/app/components/Card/VisaCard";
-import useCardDispatch from "@/app/Redux/Dispacher/useCardDispatch";
 import { useAppSelector } from "@/app/Redux/store/store";
 import { useSession } from "next-auth/react";
 import { Card } from "@/app/Redux/slices/cardSlice";

@@ -11,14 +11,14 @@ const Sidebar = () => {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <div className="py-6 px-5 flex flex-col gap-8 border-r border-r-[#E6EFF5] bg-white">
-      <div className="flex gap-2">
+    <div className="w-1/5 py-6 px-5 flex flex-col gap-8 border-r border-r-[#E6EFF5] bg-white">
+      <div className="w-full flex gap-2 items-center justify-center">
         <Image src="/assets/logo.svg" alt="logo" width={36} height={36} />
-        <h1 className="text-3xl font-bold text-[#343C6A]">BankDash</h1>
+        <h1 className="text-2xl font-bold text-[#343C6A]">BankDash</h1>
       </div>
 
       {/* Menu */}
-      <div className="px-8 flex flex-col gap-y-8 font-medium">
+      <div className="w-full p-3 px-6 flex flex-col gap-6 font-medium xs:hidden lg:flex">
         <Link href="/" className="flex items-center gap-x-6">
           <Image src="/assets/home 2.svg" alt="logo" width={25} height={25} />
           <h2

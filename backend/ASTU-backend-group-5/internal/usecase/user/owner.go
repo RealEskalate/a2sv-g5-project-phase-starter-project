@@ -3,11 +3,13 @@ package user
 import (
 	"context"
 	"errors"
+	"fmt"
 )
 
 func (u *UserUsecase) PromoteToAdmin(UserId string) error {
 
 	user, err := u.repo.FindUserById(context.Background(), UserId)
+	fmt.Println(user)
 	if err != nil {
 		return err
 	}

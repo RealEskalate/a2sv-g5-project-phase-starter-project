@@ -39,7 +39,9 @@ func (r *UserRepositoryMongo) FindUserByEmail(ctx context.Context, email string)
 
 func (r *UserRepositoryMongo) FindUserById(ctx context.Context, id string) (*domain.User, error) {
 	user := &domain.User{}
-	err := r.Collection.FindOne(ctx, bson.M{"_id": id}).Decode(user)
+	objectID, _ := primitive.ObjectIDFromHex(id)
+	
+	err := r.Collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(user)
 	if err == mongo.ErrNoDocuments {
 		return nil, nil
 	}

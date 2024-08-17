@@ -22,7 +22,7 @@ func AdminMiddleware() gin.HandlerFunc {
             return
         }
 
-        if userClaims.Role != "admin" {
+        if userClaims.Role != "admin" && userClaims.Role != "owner" {
             c.JSON(http.StatusForbidden, gin.H{"error": "Admin access required"})
             c.Abort()
             return

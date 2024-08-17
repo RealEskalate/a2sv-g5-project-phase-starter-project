@@ -8,21 +8,35 @@ import (
 )
 
 type AuthRepository interface {
-	Login(ctx context.Context,user *User) (string, error, int)
-	Register(ctx context.Context,user *User) (*OmitedUser, error, int)
+	Login(ctx context.Context, user *User) (Tokens, error, int)
+	Register(ctx context.Context, user *User) (*OmitedUser, error, int)
+	Logout(ctx context.Context, user_id primitive.ObjectID) (error, int)
 }
 
 type AuthUseCase interface {
-	Login(c *gin.Context, user *User) (string, error, int)
+	Login(c *gin.Context, user *User) (Tokens, error, int)
 	Register(c *gin.Context, user *User) (*OmitedUser, error, int)
+	Logout(c *gin.Context, user_id primitive.ObjectID) (error, int)
+}
+
+type RefreshRepository interface {
+	UpdateToken(ctx context.Context, refreshToken string, userid primitive.ObjectID) (error, int)
+	DeleteToken(ctx context.Context, userid primitive.ObjectID) (error, int)
+	FindToken(ctx context.Context, userid primitive.ObjectID) (string, error, int)
+	StoreToken(ctx context.Context, userid primitive.ObjectID, refreshToken string) (error, int)
+}
+
+type RefreshUseCase interface {
+	// UpdateToken(c *gin.Context, refreshToken string, userid primitive.ObjectID) (error, int)
+	DeleteToken(c *gin.Context, userid primitive.ObjectID) (error, int)
+	FindToken(c *gin.Context, userid primitive.ObjectID) (string, error, int)
+	StoreToken(c *gin.Context, userid primitive.ObjectID, refreshToken string) (error, int)
 }
 
 type BlogRepository interface {
-
 }
 
 type BlogUseCase interface {
-
 }
 
 type UserRepository interface {

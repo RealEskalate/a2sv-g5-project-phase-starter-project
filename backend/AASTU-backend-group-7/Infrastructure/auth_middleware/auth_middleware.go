@@ -54,7 +54,6 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		userID, err := primitive.ObjectIDFromHex(claims["id"].(string))
-		fmt.Println(userID)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Invalid token",

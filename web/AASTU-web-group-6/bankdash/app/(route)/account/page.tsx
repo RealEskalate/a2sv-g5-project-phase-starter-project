@@ -1,5 +1,5 @@
 import Card from '../../components/Accounts/account'
-import Last_trans from "../../components/Accounts/Last_trans";
+import LastTransList from '@/app/components/Accounts/LastTransPa';
 import { DebitCreditOver } from "../../components/Accounts/DebitCreditOver";
 import InvoiceCard from "../../components/Accounts/InvoiceCard";
 import VisaCard from '@/app/components/Card/VisaCard';
@@ -47,36 +47,7 @@ export default function Home() {
             Last Transaction
           </p>
           <div className=" bg-white border rounded-3xl p-3 shadow-lg border-gray-300">
-            <Last_trans
-              title="Spotify Subscription"
-              date="25 Jan 2021"
-              type="Shopping"
-              account_no="1234 ****"
-              status="Pending"
-              amount="-$150"
-              color="#DCFAF8"
-              icon="/assets/renew.svg"
-            />
-            <Last_trans
-              title="Mobile Service"
-              date="25 Jan 2021"
-              type="Service"
-              account_no="1234 ****"
-              status="Completed"
-              amount="-$340"
-              color="#E7EDFF"
-              icon="/assets/settings.svg"
-            />
-            <Last_trans
-              title="Emilly Wilson"
-              date="25 Jan 2021"
-              type="Transfer"
-              account_no="1234 ****"
-              status="Completed"
-              amount="+$780"
-              color="#FFE0EB"
-              icon="/assets/userr.svg"
-            />
+            <LastTransList/>
           </div>
         </div>
         <div className="lg:w-[30%] lg:h-[250px]">

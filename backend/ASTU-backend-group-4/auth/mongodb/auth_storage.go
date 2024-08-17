@@ -20,6 +20,7 @@ type AuthTokenImple struct {
 	ctx             context.Context
 }
 
+
 func NewAuthUserImple(usercollection *mongo.Collection, ctx context.Context) AuthUserImple {
 	return AuthUserImple{
 		usercollection: usercollection,

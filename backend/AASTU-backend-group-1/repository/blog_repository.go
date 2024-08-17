@@ -18,7 +18,7 @@ type BlogRepository struct {
 	commentCollection *mongo.Collection
 }
 
-func NewBlogRepository(database mongo.Database) domain.BlogRepository {
+func NewBlogRepository(database *mongo.Database) domain.BlogRepository {
 	return &BlogRepository{
 		blogCollection:    database.Collection("blog"),
 		viewCollection:    database.Collection("view"),
@@ -36,32 +36,31 @@ func (b *BlogRepository) InsertBlog(blog *domain.Blog) error {
 // GetBlog implements domain.BlogRepository.
 func (b *BlogRepository) GetBlog(page int, size int) ([]*domain.Blog, error) {
 	panic("not implemented") // TODO: Implement
-	
-	
+
 }
 
 // UpdateBlogByID implements domain.BlogRepository.
 func (b *BlogRepository) UpdateBlogByID(id string, blog *domain.Blog) error {
-	blogid ,err :=primitive.ObjectIDFromHex(id)
+	blogid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
 	}
-	
-	_,err = b.blogCollection.UpdateOne(context.Background(),bson.M{"_id":blogid},bson.M{"$set":blog})
-	
-	return err	
-}
 
+	_, err = b.blogCollection.UpdateOne(context.Background(), bson.M{"_id": blogid}, bson.M{"$set": blog})
+
+	return err
+}
 
 // DeleteBlogByID implements domain.BlogRepository.
 func (b *BlogRepository) DeleteBlogByID(id string) error {
-	blogid ,err :=primitive.ObjectIDFromHex(id)
+	blogid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
 	}
-	_,err = b.blogCollection.DeleteOne(context.Background(),bson.M{"_id":blogid})
+	_, err = b.blogCollection.DeleteOne(context.Background(), bson.M{"_id": blogid})
 	return err
 }
+
 // SearchBlog implements domain.BlogRepository.
 func (b *BlogRepository) SearchBlog(title, author string, tags []string) ([]*domain.Blog, error) {
 	blogs := []*domain.Blog{}
@@ -85,21 +84,17 @@ func (b *BlogRepository) SearchBlog(title, author string, tags []string) ([]*dom
 	return blogs, nil
 }
 
-
-
-
 // FilterBlog implements domain.BlogRepository.
 func (b *BlogRepository) FilterBlog(tags []string, dateFrom time.Time, dateTo time.Time) ([]*domain.Blog, error) {
 	blogs := []*domain.Blog{}
 	filter := bson.M{
 		"tags": bson.M{"$in": tags},
 		"date": bson.M{"$gte": dateFrom, "$lte": dateTo},
-		
 	}
 	cursor, err := b.blogCollection.Find(context.Background(), filter)
 	if err != nil {
 		return nil, err
-		
+
 	}
 	for cursor.Next(context.Background()) {
 		var blog domain.Blog
@@ -112,15 +107,21 @@ func (b *BlogRepository) FilterBlog(tags []string, dateFrom time.Time, dateTo ti
 	return blogs, nil
 }
 
+func (b *BlogRepository) GetBlogsByPopularity(page, limit int, reverse bool) ([]*domain.Blog, error) {
+	var blogs []*domain.Blog
 
-func (b *BlogRepository) GetBlogsByPopularity() ([]domain.Blog, error) {
-    var blogs []domain.Blog
+	// Calculate how many documents to skip
+	skip := (page - 1) * limit
+	sortOrder := -1 // Default sort order is descending
+	if reverse {
+		sortOrder = 1 // If reverse is true, sort in ascending order
+	}
 
-    // MongoDB aggregation pipeline
-    pipeline := mongo.Pipeline{
+	// MongoDB aggregation pipeline with pagination
+	pipeline := mongo.Pipeline{
 		bson.D{
 			{Key: "$lookup", Value: bson.D{
-				{Key: "from", Value: "likes"}, 
+				{Key: "from", Value: "likes"},
 				{Key: "localField", Value: "_id"},
 				{Key: "foreignField", Value: "blogid"},
 				{Key: "as", Value: "likes"},
@@ -128,27 +129,26 @@ func (b *BlogRepository) GetBlogsByPopularity() ([]domain.Blog, error) {
 		},
 		bson.D{
 			{Key: "$lookup", Value: bson.D{
-				{Key: "from", Value: "views"}, 
+				{Key: "from", Value: "views"},
 				{Key: "localField", Value: "_id"},
 				{Key: "foreignField", Value: "blogid"},
 				{Key: "as", Value: "views"},
 			}},
 		},
 		bson.D{
-			{Key:"$lookup", Value:bson.D{
+			{Key: "$lookup", Value: bson.D{
 				{Key: "from", Value: "comments"},
 				{Key: "localField", Value: "_id"},
 				{Key: "foreignField", Value: "blogid"},
 				{Key: "as", Value: "comments"},
 			}},
 		},
-
 		bson.D{
 			{Key: "$addFields", Value: bson.D{
-				{Key: "likes", Value: bson.D{
+				{Key: "likesCount", Value: bson.D{
 					{Key: "$size", Value: bson.D{
 						{Key: "$filter", Value: bson.D{
-							{Key: "input", Value: "$likes"},         // Correct array name from lookup
+							{Key: "input", Value: "$likes"}, // Correct array name from lookup
 							{Key: "as", Value: "like"},
 							{Key: "cond", Value: bson.D{
 								{Key: "$eq", Value: bson.A{"$$like.like", true}}, // Counting only likes with `like: true`
@@ -156,55 +156,72 @@ func (b *BlogRepository) GetBlogsByPopularity() ([]domain.Blog, error) {
 						}},
 					}},
 				}},
-				{Key: "views", Value: bson.D{
+				{Key: "viewsCount", Value: bson.D{
 					{Key: "$size", Value: "$views"}, // Count the number of views
 				}},
-				{Key: "comments", Value: bson.D{
+				{Key: "commentsCount", Value: bson.D{
 					{Key: "$size", Value: "$comments"}, // Count the number of comments
 				}},
 			}},
 		},
-
 		// Add popularityScore field based on weights for views, likes, comments
 		bson.D{
 			{Key: "$addFields", Value: bson.D{
 				{Key: "popularityScore", Value: bson.D{
 					{Key: "$add", Value: bson.A{
-						bson.D{{Key: "$multiply", Value: bson.A{"$views", 0.5}}},   
-						bson.D{{Key: "$multiply", Value: bson.A{"$likes", 1}}},     
-						bson.D{{Key: "$multiply", Value: bson.A{"$comments", 2}}},  
+						bson.D{{Key: "$multiply", Value: bson.A{"$viewsCount", 0.5}}},
+						bson.D{{Key: "$multiply", Value: bson.A{"$likesCount", 1}}},
+						bson.D{{Key: "$multiply", Value: bson.A{"$commentsCount", 2}}},
 					}},
 				}},
 			}},
 		},
-
 		// Sort by popularity score in descending order
 		bson.D{
 			{Key: "$sort", Value: bson.D{
-				{Key: "popularityScore", Value: -1},
+				{Key: "popularityScore", Value: sortOrder},
 			}},
 		},
-    }
+		// Add pagination stage
+		bson.D{
+			{Key: "$skip", Value: skip}, // Skip N documents for pagination
+		},
+		bson.D{
+			{Key: "$limit", Value: limit}, // Limit the number of documents per page
+		},
+	}
 
-    // Execute the aggregation pipeline
-    cursor, err := b.blogCollection.Aggregate(context.TODO(), pipeline)
-    if err != nil {
-        return nil, err
-    }
+	// Execute the aggregation pipeline
+	cursor, err := b.blogCollection.Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.TODO()) // Ensure cursor is closed
 
-    // Decode the result into blogs
-    if err := cursor.All(context.TODO(), &blogs); err != nil {
-        return nil, err
-    }
+	// Decode the result into blogs
+	if err := cursor.All(context.TODO(), &blogs); err != nil {
+		return nil, err
+	}
 
-    return blogs, nil
+	return blogs, nil
 }
 
-func (b *BlogRepository) GetBlogsByRecent() ([]*domain.Blog, error) {
+func (b *BlogRepository) GetBlogsByRecent(page, limit int, reverse bool) ([]*domain.Blog, error) {
 	var blogs []*domain.Blog
 
-	// MongoDB query to find all blogs and sort them by CreatedAt in descending order
-	opts := options.Find().SetSort(bson.D{{"createdAt", -1}})
+	// Calculate the number of documents to skip for pagination
+	skip := (page - 1) * limit
+	sortOrder := -1 // Default sort order is descending
+	if reverse {
+		sortOrder = 1 // If reverse is true, sort in ascending order
+	}
+
+	// MongoDB query to find all blogs, sort them by CreatedAt in descending order, and apply pagination
+	opts := options.Find().
+		SetSort(bson.D{{Key: "created_at", Value: sortOrder}}). // Sort by CreatedAt in descending order
+		SetSkip(int64(skip)).                                   // Skip N documents for pagination
+		SetLimit(int64(limit))                                  // Limit the number of documents per page
+
 	cursor, err := b.blogCollection.Find(context.TODO(), bson.M{}, opts)
 	if err != nil {
 		return nil, err
@@ -228,24 +245,22 @@ func (b *BlogRepository) GetBlogsByRecent() ([]*domain.Blog, error) {
 	return blogs, nil
 }
 
-
 // AddView implements domain.BlogRepository.
 func (b *BlogRepository) AddView(view *domain.View) error {
-	_,err := b.viewCollection.InsertOne(context.Background(), view)
+	_, err := b.viewCollection.InsertOne(context.Background(), view)
 	return err
-	
+
 }
 
 // AddLike implements domain.BlogRepository.
 func (b *BlogRepository) AddLike(like *domain.Like) error {
-	_,err := b.likeCollection.InsertOne(context.Background(), like)
+	_, err := b.likeCollection.InsertOne(context.Background(), like)
 	return err
-	
-}
 
+}
 
 // AddComment implements domain.BlogRepository.
 func (b *BlogRepository) AddComment(comment *domain.Comment) error {
-	_,err := b.commentCollection.InsertOne(context.Background(), comment)
+	_, err := b.commentCollection.InsertOne(context.Background(), comment)
 	return err
 }

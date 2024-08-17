@@ -12,8 +12,8 @@ type Blog struct {
 	Content       string             `bson:"content" json:"content" binding:"required"`
 	Author        User               `bson:"author" json:"author"`
 	Tags          []string           `bson:"tags" json:"tags"`
-	CreatedAt     time.Time          `bson:"date" json:"date"`
-	LastUpdatedAt time.Time          `bson:"updatedDate" json:"updatedDate"`
+	CreatedAt     time.Time          `bson:"created_at" json:"created_at"`
+	LastUpdatedAt time.Time          `bson:"updated_at" json:"updated_at"`
 }
 
 type View struct {
@@ -45,6 +45,8 @@ type BlogRepository interface {
 	AddView(view *View) error
 	AddLike(like *Like) error
 	AddComment(comment *Comment) error
+	GetBlogsByPopularity(page, limit int, reverse bool) ([]*Blog, error)
+	GetBlogsByRecent(page, limit int, reverse bool) ([]*Blog, error)
 }
 
 type BlogUsecase interface {
@@ -57,4 +59,5 @@ type BlogUsecase interface {
 	AddView(view *View) error
 	AddLike(like *Like) error
 	AddComment(comment *Comment) error
+	GetBlogs(sortBy string, page, limit int, reverse bool) ([]*Blog, error)
 }

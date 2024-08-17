@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,9 +16,11 @@ func (h *UserHandler) DemoteUser(c *gin.Context){
 		return
 	}
 	err := h.UserUsecase.DemoteFromAdmin(id)
+	fmt.Println(id)
 
 	if err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error" : err})
+		c.JSON(http.StatusBadRequest, gin.H{"error" : err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message" : "the user demoted to admin successfully!"})
@@ -64,7 +67,8 @@ func (h *UserHandler) PromoteToAdmin(c *gin.Context){
 	err := h.UserUsecase.PromoteToAdmin(id)
 
 	if err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error" : err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message" : "the user promoted to admin successfully!"})

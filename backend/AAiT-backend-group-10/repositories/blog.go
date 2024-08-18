@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type BlogRepository struct {
@@ -132,4 +133,49 @@ func (r *BlogRepository) AddView(id uuid.UUID) error {
 	}
 	
 	return nil
+}
+
+func (r *BlogRepository) Search(filter domain.BlogFilter) ([]domain.Blog, int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	query := bson.D{}
+
+	if filter.Author != "" {		
+		query = append(query, bson.E{Key: "author", Value: filter.Author})
+	}
+
+	if len(filter.Tags) > 0 {
+		query = append(query, bson.E{Key: "tags", Value: bson.D{{Key: "$all", Value: filter.Tags}}})
+	}
+
+	findOptions := options.Find().SetSkip(int64((filter.Page - 1) * filter.PageSize)).SetLimit(int64(filter.PageSize))
+	
+	switch filter.SortBy {
+		case "popularity":
+			findOptions.SetSort(bson.D{{Key: "viewCount", Value: -1}})
+		case "title":
+			findOptions.SetSort(bson.D{{Key: "title", Value: 1}})
+		default:
+			findOptions.SetSort(bson.D{{Key: "createdAt", Value: -1}})
+	}
+
+	cursor, err := r.collection.Find(ctx, query, findOptions)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer cursor.Close(ctx)
+
+	var blogs []domain.Blog
+	if err = cursor.All(ctx, &blogs); err != nil {
+		return nil, 0, err
+	}
+
+	// Get the total count for pagination
+	count, err := r.collection.CountDocuments(ctx, query)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return blogs, int(count), nil
 }

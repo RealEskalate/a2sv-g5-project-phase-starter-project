@@ -45,12 +45,17 @@ type LoginResponse struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
+type ForgotPasswordRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
 type UserUsecase interface {
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)
 	SignupUsecase(ctx context.Context, user *User) error
 	// UpdateUser(userID primitive.ObjectID, updatedUser *User) error
 	DeleteRefreshTokenByUserID(ctx context.Context, userID string) error
+	GeneratePasswordResetToken(ctx context.Context, email, resetTokenSecret string, expiryHour int) error
 }
 
 type UserRepository interface {
@@ -60,4 +65,5 @@ type UserRepository interface {
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)
 	DeleteRefreshTokenByUserID(ctx context.Context, userID string) error // used in logout
+	StoreResetToken(ctx context.Context, userID string, resetToken string, expiryHour int) error
 }

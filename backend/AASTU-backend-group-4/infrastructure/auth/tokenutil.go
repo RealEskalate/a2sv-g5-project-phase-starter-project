@@ -104,3 +104,23 @@ func IsAuthorized(requestToken string, secret string) (bool, error) {
 	}
 	return true, nil
 }
+
+func GenerateResetToken(userID string, secret string, expiryHour int) (string, error) {
+	// Create the JWT claims, which includes the user ID and expiry time
+	claims := jwt.MapClaims{
+		"user_id": userID,
+		"exp":     time.Now().Add(time.Hour * time.Duration(expiryHour)).Unix(),
+		"purpose": "reset_password", // Optional: you can add a purpose field to distinguish token types
+	}
+
+	// Create a new JWT token with the claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Sign the token with the secret key
+	signedToken, err := token.SignedString([]byte(secret))
+	if err != nil {
+		return "", err
+	}
+
+	return signedToken, nil
+}

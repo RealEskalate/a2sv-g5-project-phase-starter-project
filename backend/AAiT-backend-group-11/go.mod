@@ -2,7 +2,10 @@ module backend-starter-project
 
 go 1.20
 
-require go.mongodb.org/mongo-driver v1.16.1
+require (
+	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
+	go.mongodb.org/mongo-driver v1.16.1
+)
 
 require (
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1

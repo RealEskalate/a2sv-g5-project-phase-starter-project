@@ -65,4 +65,8 @@ func (service *userService) DemoteUserToRegular(userId string) error{
 	}
 
 	return nil
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> f8289de (logout, promote/demote, others implemented)

@@ -1,15 +1,49 @@
 package Repositories
 
-import "blogapp/Domain"
+import (
+	"blogapp/Domain"
+	"context"
+	"fmt"
+
+	"go.mongodb.org/mongo-driver/bson"
+)
 
 type blogrepository struct {
-	collection Domain.Collection
+	postCollection        Domain.Collection
+	commentColection      Domain.Collection
+	tagCollection         Domain.Collection
+	likeDislikeCollection Domain.Collection
+	userCollection        Domain.Collection
 }
 
-func NewBlogRepository(_collection Domain.Collection) *blogrepository {
+func NewBlogRepository(posts Domain.Collection, comments Domain.Collection, tags Domain.Collection, likesdislikes Domain.Collection, users Domain.Collection) *blogrepository {
 	return &blogrepository{
-
-		collection: _collection,
+		postCollection:        posts,
+		commentColection:      comments,
+		tagCollection:         tags,
+		likeDislikeCollection: likesdislikes,
+		userCollection:        users,
 	}
 
+}
+
+func (br *blogrepository) CreateBlog(ctx context.Context, post *Domain.Post) (error, int) {
+	// gener
+	
+	_, err := br.postCollection.InsertOne(ctx, post)
+	if err != nil {
+		fmt.Println("error at insert", err)
+		return err, 500
+	}
+	// insert id to field in user collection called posts
+	filter := bson.D{{"_id", post.AuthorID}}
+	update := bson.D{{"$push", bson.D{{"posts", post}}}}
+	_, err = br.userCollection.UpdateOne(ctx, filter, update)
+	// return error if any
+	if err != nil {
+		fmt.Println("error at update", err)
+		return err, 500
+	}
+
+	return nil, 200
 }

@@ -2,19 +2,18 @@ package controllers
 
 import (
 	"blogapp/Domain"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
 type blogController struct {
-	AuthUseCase Domain.BlogUseCase
+	BlogUseCase Domain.BlogUseCase
 }
 
 func NewBlogController(usecase Domain.BlogUseCase) *blogController {
 
 	return &blogController{
-		AuthUseCase: usecase,
+		BlogUseCase: usecase,
 	}
 }
 
@@ -25,20 +24,21 @@ func (controller *blogController) CreateBlog(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(claims.ID)
+	var newBlog Domain.Post
+	if err := c.ShouldBindJSON(&newBlog); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
-	// var newBlog Domain.Blog
-	// if err := c.ShouldBindJSON(&newBlog); err != nil {
-	// 	c.JSON(400, gin.H{"error": err.Error()})
-	// 	return
-	// }
+	newBlog.AuthorID = claims.ID
+	err, statusCode := controller.BlogUseCase.CreateBlog(c, &newBlog)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
 
-	// newBlog.UserID = claims.ID
-
-	// if err := controller.AuthUseCase.CreateBlog(&newBlog); err != nil {
-	// 	c.JSON(500, gin.H{"error": err.Error()})
-	// 	return
-	// }
-
-	// c.JSON(200, gin.H{"message": "Blog created successfully"})
+	c.JSON(200, gin.H{
+		"message": "Blog created successfully",
+		"blog":    newBlog,
+	})
 }

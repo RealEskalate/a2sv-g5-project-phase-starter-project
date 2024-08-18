@@ -10,7 +10,7 @@ import (
 func BlogRouter() {
 	blogRouter := Router.Group("/blog", auth_middleware.AuthMiddleware())
 	{
-		blogrepo := Repositories.NewBlogRepository(BlogCollections.Blogs)
+		blogrepo := Repositories.NewBlogRepository(BlogCollections.Posts, BlogCollections.Comments, BlogCollections.Tags, BlogCollections.Likes, BlogCollections.Users)
 		blogusecase := usecases.NewBlogUseCase(blogrepo)
 		blogcontroller := controllers.NewBlogController(blogusecase)
 

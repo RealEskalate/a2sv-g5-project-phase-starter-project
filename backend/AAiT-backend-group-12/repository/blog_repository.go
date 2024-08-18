@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type BlogRepository struct {
@@ -22,9 +23,22 @@ func NewBlogRepository(coll mongo.Collection) *BlogRepository {
 }
 
 // FindBlogPostByID implements domain.BlogRepositoryInterface.
-func (b *BlogRepository) FindBlogPostByID(ctx context.Context, blogId string) (*domain.Blog, error) {
-	panic("to be implemented by robel")
+func (b *BlogRepository) FetchBlogPostByID(ctx context.Context, postID string) (*domain.Blog, error) {
+	filter := bson.D{{Key: "_id", Value: postID}}
+	update := bson.D{{Key: "$inc", Value: bson.D{{Key: "view_count", Value: 1}}}}
+
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+
+	var post domain.Blog
+	err := b.collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&post)
+	if err != nil {
+		return nil, err
+	}
+
+	return &post, nil
 }
+
+// fetches blogs based on filter. we can provide
 
 // DeleteBlogPost implements domain.BlogRepositoryInterface.
 func (b *BlogRepository) DeleteBlogPost(ctx context.Context, blogId string) error {

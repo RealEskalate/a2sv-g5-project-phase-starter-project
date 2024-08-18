@@ -50,6 +50,7 @@ func (b *BlogRepository) DeleteBlogPost(ctx context.Context, blogId string) erro
 func (b *BlogRepository) InsertBlogPost(ctx context.Context, blog *domain.Blog) error {
 
 	newBlog, err := toDTO(blog)
+	newBlog.ID = primitive.NewObjectID()
 	if err != nil {
 		return err
 	}

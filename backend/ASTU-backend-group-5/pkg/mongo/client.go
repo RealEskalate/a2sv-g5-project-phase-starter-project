@@ -11,6 +11,10 @@ import (
 // Client is the MongoDB client
 var Client *mongo.Client
 
+var TaskCollection *mongo.Collection
+var UserCollection *mongo.Collection
+var TokenCollection *mongo.Collection
+
 // ConnectDB connects to the MongoDB database
 func ConnectDB(uri string) (*mongo.Client, error) {
 	clientOptions := options.Client().ApplyURI(uri)
@@ -47,4 +51,10 @@ func DisconnectDB() {
 		log.Fatal(err)
 	}
 	log.Println("Disconnected from MongoDB")
+}
+
+func InitializeCollections() {
+	TaskCollection = GetCollection("tasks")
+	UserCollection = GetCollection("users")
+	TokenCollection = GetCollection("tokens")
 }

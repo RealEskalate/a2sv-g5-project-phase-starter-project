@@ -1,7 +1,12 @@
 package middleware
 
 import (
+	"blogApp/internal/domain"
+	"blogApp/internal/repository/mongodb"
+	"blogApp/internal/usecase"
 	"blogApp/pkg/jwt"
+	"blogApp/pkg/mongo"
+	"context"
 	"net/http"
 	"strings"
 
@@ -9,30 +14,75 @@ import (
 )
 
 func AuthMiddleware() gin.HandlerFunc {
-    return func(c *gin.Context) {
-        authHeader := c.GetHeader("Authorization")
-        if authHeader == "" {
-            c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
-            c.Abort()
-            return
-        }
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			respondUnauthorized(c, "Authorization header required")
+			return
+		}
 
-        tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-        if tokenString == "" {
-            c.JSON(http.StatusUnauthorized, gin.H{"error": "Bearer token required"})
-            c.Abort()
-            return
-        }
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+		if tokenString == "" {
+			respondUnauthorized(c, "Bearer token required")
+			return
+		}
 
-        claims, err := jwt.ValidateToken(tokenString)
-        if err != nil {
-            c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-            c.Abort()
-            return
-        }
+		// Validate the token
+		claims, err := jwt.ValidateToken(tokenString)
+		if err != nil {
+			respondUnauthorized(c, "Invalid token")
+			return
+		}
+		tokenCollection := mongo.GetCollection("tokens")
+		mongoTokenRepo := mongodb.NewMongoTokenRepository(tokenCollection)
+		tokenUsecase := usecase.NewTokenUsecase(mongoTokenRepo)
 
-        // If the token is valid, proceed with the request
-        c.Set("claims", claims)
-        c.Next()
-    }
+		// Check if the token is blacklisted
+		isBlacklisted, err := tokenUsecase.IsTokenBlacklisted(context.Background(), tokenString, domain.AccessToken)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check token blacklist"})
+			c.Abort()
+			return
+		}
+		if isBlacklisted {
+			respondUnauthorized(c, "Token is blacklisted")
+			return
+		}
+
+		// Set the claims in the context and proceed
+		c.Set("claims", claims)
+		c.Next()
+	}
+}
+
+// func ReafreshTokenMiddleware() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		authHeader := c.GetHeader("Authorization")
+// 		if authHeader == "" {
+// 			respondUnauthorized(c, "Authorization header required")
+// 			return
+// 		}
+
+// 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+// 		if tokenString == "" {
+// 			respondUnauthorized(c, "Bearer token required")
+// 			return
+// 		}
+
+// 		// Validate the token
+// 		claims, err := jwt.ValidateToken(tokenString)
+// 		if err != nil {
+// 			respondUnauthorized(c, "Invalid token")
+// 			return
+// 		}
+
+// 		// Set the claims in the context and proceed
+// 		c.Set("claims", claims)
+// 		c.Next()
+// 	}
+// }
+
+func respondUnauthorized(c *gin.Context, message string) {
+	c.JSON(http.StatusUnauthorized, gin.H{"error": message})
+	c.Abort()
 }

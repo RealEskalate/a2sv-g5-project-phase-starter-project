@@ -23,7 +23,7 @@ func NewUserRepositoryImpl(coll *mongo.Collection) domain.UserRepository {
 
 func (ur *UserRepositoryImpl) Login(user *domain.User) (*domain.User, error) {
 	var existingUser domain.User
-	err := ur.collection.FindOne(context.Background(), map[string]string{"username": user.Username}).Decode(&existingUser)
+	err := ur.collection.FindOne(context.Background(), map[string]string{"email": user.Email}).Decode(&existingUser)
 	if err != nil {
 		return &domain.User{}, err
 	}
@@ -59,7 +59,8 @@ func (ur *UserRepositoryImpl) DeleteRefreshToken(user *domain.User, token string
 }
 
 func (ur *UserRepositoryImpl) UpdateUser(user *domain.User) error {
-	_, err := ur.collection.UpdateOne(context.Background(), map[string]string{"username": user.Username}, bson.M{"$set": user})
+	
+	_, err := ur.collection.UpdateOne(context.Background(), map[string]string{"email": user.Email}, bson.M{"$set": user})
 	return err
 }
 
@@ -115,4 +116,29 @@ func (ur *UserRepositoryImpl) AccountActivation(token string, email string) erro
 
 
 
+
+
+
+
+// rest password
+
+
+func (ur *UserRepositoryImpl) GetUserByEmail(email string) (domain.User, error) {
+	var user domain.User
+	err := ur.collection.FindOne(context.Background(), bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return user, nil
+}
+
+func (ur *UserRepositoryImpl) GetUserByResetToken(token string) (domain.User, error) {
+	var user domain.User
+	// fmt.Println(token,"***************-----------------")	
+	err := ur.collection.FindOne(context.Background(), bson.M{"password_reset_token": token}).Decode(&user)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return user, nil
+}
 

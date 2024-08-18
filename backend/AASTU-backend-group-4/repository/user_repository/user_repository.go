@@ -13,7 +13,7 @@ type UserRepository struct {
 	collection string
 }
 
-func NewUserRepository(db mongo.Database, collection string) user.UserRepository {
+func NewUserRepository(db mongo.Database, collection string) *UserRepository {
 	return &UserRepository{
 		database:   db,
 		collection: collection,

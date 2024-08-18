@@ -1,9 +1,13 @@
 "use client";
 import { useEffect } from "react";
 import { useAppDispatch } from "@/app/Redux/store/store";
-import { setCards, setStatus, setError } from "@/app/Redux/slices/cardSlice";
-import CardService from "@/app/Services/api/CardService";
-import React from "react";
+import TransactionService from "@/app/Services/api/transactionApi";
+import {
+  setTran,
+  setStatus,
+  setBalHist,
+  setError,
+} from "../slices/TransactionSlice";
 
 const useTranDispatch = (accessToken: string) => {
   const dispatch = useAppDispatch();
@@ -12,13 +16,19 @@ const useTranDispatch = (accessToken: string) => {
     const fetchInitialCards = async () => {
       try {
         dispatch(setStatus("loading"));
-        const res: any = await CardService.getAllCards(accessToken);
-        if (res) {
-          dispatch(setCards(res));
+        const transaction: any = await TransactionService.getTransactions(
+          accessToken
+        );
+        const history: any = await TransactionService.balanceHistory(
+          accessToken
+        );
+        if (transaction && history) {
+          dispatch(setTran(transaction));
+          dispatch(setBalHist(history));
           dispatch(setStatus("succeeded"));
         }
       } catch (error) {
-        dispatch(setError("Failed to fetch cards"));
+        dispatch(setError("Failed to fetch transaction"));
         dispatch(setStatus("failed"));
       }
     };

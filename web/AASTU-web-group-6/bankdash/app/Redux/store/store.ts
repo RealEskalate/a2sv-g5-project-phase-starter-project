@@ -11,16 +11,18 @@ import {
   REGISTER,
 } from "redux-persist";
 import cardReducer from "../slices/cardSlice"; // Import the cardSlice reducer
+import transactionReducer from "../slices/TransactionSlice";
 
 const rootReducer = combineReducers({
-  cards: cardReducer, // Add the cardReducer here
+  cards: cardReducer,
+  transactions: transactionReducer,
   // Add other reducers here if needed
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["cards"], // Persist the cards slice
+  whitelist: ["cards", "transactions"], // Persist the cards slice
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -10,7 +10,7 @@ import { useAppSelector } from "@/app/Redux/store/store";
 const Bottom = () => {
   const people: any = [1, 2, 3];
   return (
-    <section className="Botom w-full flex gap-6 ">
+    <section className="Botom flex gap-6 ">
       <div className="cards-container w-2/5  center-content flex flex-col gap-6">
         <h1 className="text-xl font-semibold text-colorBody-1">
           Expense Statistics

@@ -8,7 +8,7 @@ import (
 
 // BlogDTO represents the data structure stored in MongoDB for a blog post.
 type BlogDTO struct {
-	ID         primitive.ObjectID   `bson:"_id,omitempty"`
+	ID         primitive.ObjectID   `bson:"_id"`
 	Title      string               `bson:"title"`
 	Content    string               `bson:"content"`
 	UserID     primitive.ObjectID   `bson:"user_id"`
@@ -23,7 +23,7 @@ type BlogDTO struct {
 
 
 type UserDTO struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	ID        primitive.ObjectID `bson:"_id"`
 	UserName  string             `bson:"username"`
 	Email     string             `bson:"email"`
 	Password  string             `bson:"password"`
@@ -33,7 +33,7 @@ type UserDTO struct {
 
 
 type CommentDTO struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	ID        primitive.ObjectID `bson:"_id"`
 	Content   string             `bson:"content"`
 	UserID    primitive.ObjectID `bson:"user_id"`
 	CreatedAt time.Time          `bson:"created_at"`

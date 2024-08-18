@@ -23,10 +23,20 @@ func NewBlogRepository(db *mongo.Database, collectionName string) interfaces.Blo
 }
 
 func (br *blogRepository) CreateBlogPost(c context.Context, blogPost *entities.BlogPost) (*entities.BlogPost, error) {
+	// Get the user id from the context
+	userId := c.Value("userId").(string)
+	userObjectId, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	//add blog author and timestamps
+	blogPost.AuthorID = userObjectId
+
 	blogPost.CreatedAt = time.Now()
 	blogPost.UpdatedAt = time.Now()
 
-	_, err := br.collection.InsertOne(c, blogPost)
+	_, err = br.collection.InsertOne(c, blogPost)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +78,7 @@ func (br *blogRepository) UpdateBlogPost(c context.Context, blogPost *entities.B
 	return blogPost, nil
 }
 
-func (br *blogRepository) DeleteBlogPost(c context.Context,blogPostId string) error {
+func (br *blogRepository) DeleteBlogPost(c context.Context, blogPostId string) error {
 	objID, err := primitive.ObjectIDFromHex(blogPostId)
 	if err != nil {
 		return err
@@ -113,11 +123,24 @@ func (br *blogRepository) GetBlogPosts(c context.Context, page, pageSize int, so
 	return blogPosts, nil
 }
 
-func (br *blogRepository) SearchBlogPosts(c context.Context, criteria string) ([]entities.BlogPost, error) {
+func (br *blogRepository) SearchBlogPosts(c context.Context, criteria string, tags []string, startDate, endDate time.Time) ([]entities.BlogPost, error) {
+	// Base filter for text search
 	filter := bson.M{
 		"$text": bson.M{
 			"$search": criteria,
 		},
+	}
+
+	// Optional filters
+	if len(tags) > 0 {
+		filter["tags"] = bson.M{"$in": tags}
+	}
+
+	if !startDate.IsZero() && !endDate.IsZero() {
+		filter["createdAt"] = bson.M{
+			"$gte": startDate,
+			"$lte": endDate,
+		}
 	}
 
 	cursor, err := br.collection.Find(c, filter)
@@ -141,6 +164,7 @@ func (br *blogRepository) SearchBlogPosts(c context.Context, criteria string) ([
 
 	return blogPosts, nil
 }
+
 
 func (br *blogRepository) FilterBlogPosts(c context.Context, tags []string, dateRange []time.Time, sortBy string) ([]entities.BlogPost, error) {
 	filter := bson.M{}
@@ -183,111 +207,115 @@ func (br *blogRepository) FilterBlogPosts(c context.Context, tags []string, date
 	return blogPosts, nil
 }
 
-
-
 func (br *blogRepository) LikeBlogPost(c context.Context, postID, userID string) error {
 
-	postObjectID,err := primitive.ObjectIDFromHex(postID)
+	postObjectID, err := primitive.ObjectIDFromHex(postID)
 	if err != nil {
 		return err
 	}
 
-	userObjectID,err := primitive.ObjectIDFromHex(userID)
+	userObjectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return err
 	}
 
-    filter := bson.M{"_id": postObjectID}
-    update := bson.M{
-        "$addToSet": bson.M{"likedBy": userObjectID},
-        "$inc":      bson.M{"likeCount": 1},
-    }
+	filter := bson.M{"_id": postObjectID}
+	update := bson.M{
+		"$addToSet": bson.M{"likedBy": userObjectID},
+		"$inc":      bson.M{"likeCount": 1},
+	}
 
-    // Update the document, only if the user is not already in the likedBy array
-    opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-    var updatedPost entities.BlogPost
-    err = br.collection.FindOneAndUpdate(c, filter, update, opts).Decode(&updatedPost)
+	// Update the document, only if the user is not already in the likedBy array
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	var updatedPost entities.BlogPost
+	err = br.collection.FindOneAndUpdate(c, filter, update, opts).Decode(&updatedPost)
 
-    if err != nil {
-        if err == mongo.ErrNoDocuments {
-            // The document was not found or the user already liked the post
-            return nil
-        }
-        return err
-    }
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			// The document was not found or the user already liked the post
+			return nil
+		}
+		return err
+	}
 
-    return nil
+	return nil
 }
-
 
 func (br *blogRepository) DislikeBlogPost(c context.Context, postID, userID string) error {
 
-	postObjectID,err := primitive.ObjectIDFromHex(postID)
+	postObjectID, err := primitive.ObjectIDFromHex(postID)
 	if err != nil {
 		return err
 	}
 
-	userObjectID,err := primitive.ObjectIDFromHex(userID)
+	userObjectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return err
 	}
 
+	filter := bson.M{
+		"_id":     postObjectID,
+		"likedBy": userObjectID,
+	}
+	update := bson.M{
+		"$pull": bson.M{"likedBy": userID},
+		"$inc":  bson.M{"likeCount": -1},
+	}
 
-    filter := bson.M{
-        "_id":   postObjectID  ,
-        "likedBy": userObjectID,
-    }
-    update := bson.M{
-        "$pull": bson.M{"likedBy": userID},  
-        "$inc":  bson.M{"likeCount": -1},  
-    }
+	// Update the document only if the user's ID is in the likedBy array
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	var updatedPost entities.BlogPost
+	err = br.collection.FindOneAndUpdate(c, filter, update, opts).Decode(&updatedPost)
 
-    // Update the document only if the user's ID is in the likedBy array
-    opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-    var updatedPost entities.BlogPost
-    err = br.collection.FindOneAndUpdate(c, filter, update, opts).Decode(&updatedPost)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			// The document was not found or the user has not liked the post
+			return nil
+		}
+		return err
+	}
 
-    if err != nil {
-        if err == mongo.ErrNoDocuments {
-            // The document was not found or the user has not liked the post
-            return nil
-        }
-        return err
-    }
+	// The operation was successful
+	return nil
+}
 
-    // The operation was successful
-    return nil
+func (br *blogRepository) IncrementViewPost(c context.Context, postID, userID string) error {
+
+	postObjectID, err := primitive.ObjectIDFromHex(postID)
+	if err != nil {
+		return err
+	}
+
+	userObjectID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": postObjectID}
+	update := bson.M{
+		"$addToSet": bson.M{"viewers": userObjectID}, // Add the user ID to viewers if not already present
+		"$inc":      bson.M{"viewCount": 1},          // Increment the view count
+	}
+
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	var updatedPost entities.BlogPost
+	err = br.collection.FindOneAndUpdate(c, filter, update, opts).Decode(&updatedPost)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil
+		}
+		return err
+	}
+	return nil
 }
 
 
-func (br *blogRepository) ViewPost(c context.Context, postID, userID string) error {
-
-	postObjectID,err := primitive.ObjectIDFromHex(postID)
+func (br *blogRepository) CountBlogPosts(c context.Context) (int, error) {
+	count, err := br.collection.CountDocuments(c, bson.M{})
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	userObjectID,err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return err
-	}
-
-
-    filter := bson.M{"_id": postObjectID}
-    update := bson.M{
-        "$addToSet": bson.M{"viewers": userObjectID},  // Add the user ID to viewers if not already present
-        "$inc":      bson.M{"viewCount": 1},     // Increment the view count
-    }
-
-    opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-    var updatedPost entities.BlogPost
-    err = br.collection.FindOneAndUpdate(c, filter, update, opts).Decode(&updatedPost)
-
-    if err != nil {
-        if err == mongo.ErrNoDocuments {
-            return nil
-        }
-        return err
-    }
-    return nil
+	return int(count), nil
 }

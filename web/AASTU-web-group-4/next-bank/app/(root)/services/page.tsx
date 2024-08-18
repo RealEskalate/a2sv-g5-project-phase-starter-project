@@ -1,9 +1,20 @@
-import React from 'react'
+'use client'
 
-const Services = () => {
+import React from "react";
+import ServiceProvided from "@/components/ServiceProvided";
+import BankservicesList from "@/components/BankservicesList";
+
+const Services: React.FC = () => {
   return (
-    <div>Services</div>
-  )
-}
+    <div className="mx-auto max-w-sm sm:ml-80 sm:max-w-[1110px]">
+      <div className="pt-5">
+        <ServiceProvided />
+      </div>
+      <div className="py-10">
+        <BankservicesList />
+      </div>
+    </div>
+  );
+};
 
-export default Services
+export default Services;

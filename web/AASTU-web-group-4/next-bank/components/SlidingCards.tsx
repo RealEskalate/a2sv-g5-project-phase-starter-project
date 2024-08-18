@@ -12,7 +12,7 @@ import Link from 'next/link';
 const SlidingCards: React.FC = () => {
   const cards = [
     { id: 1, bgColor: 'bg-blue-700', textColor: 'text-white' },
-    { id: 2, bgColor: 'bg-indigo-700', textColor: 'text-white' },
+    { id: 2, bgColor: 'bg-purple-700', textColor: 'text-white' },
     { id: 3, bgColor: 'bg-green-700', textColor: 'text-white' },
   ];
 
@@ -30,11 +30,11 @@ const SlidingCards: React.FC = () => {
       </div>
 
       {/* Mobile View - Carousel */}
-      <div className="lg:hidden pt-8 w-full max-w-[350px] h-[235px] mx-auto relative">
-        <Carousel>
+      <div className="lg:hidden pt-8 w-full max-w-[390px] h-[235px] mx-auto relative">
+        <Carousel className=''>
           <CarouselContent>
             {cards.map((card) => (
-              <CarouselItem key={card.id} className="relative w-full h-full flex justify-center items-center">
+              <CarouselItem key={card.id} className="relative w-full h-full flex justify-center items-center -mx-10">
                 <DesktopCreditCard
                   bgColor={card.bgColor}
                   textColor={card.textColor}
@@ -43,14 +43,14 @@ const SlidingCards: React.FC = () => {
             ))}
           </CarouselContent>
           <div className="absolute top-1/2 left-0 transform -translate-y-1/2 flex items-center">
-            <CarouselPrevious className="p-2 text-gray-500 hover:text-gray-700">
+            {/* <CarouselPrevious className="p-2 text-gray-500 hover:text-gray-700">
               <span className="text-2xl">&lt;</span>
-            </CarouselPrevious>
+            </CarouselPrevious> */}
           </div>
           <div className="absolute top-1/2 right-0 transform -translate-y-1/2 flex items-center">
-            <CarouselNext className="p-2 text-gray-500 hover:text-gray-700">
+            {/* <CarouselNext className="p-2 text-gray-500 hover:text-gray-700">
               <span className="text-2xl">&gt;</span>
-            </CarouselNext>
+            </CarouselNext> */}
           </div>
         </Carousel>
 

@@ -50,6 +50,7 @@ type UserUsecase interface {
 	GetByUsername(ctx context.Context, username string) (User, error)
 	SignupUsecase(ctx context.Context, user *User) error
 	// UpdateUser(userID primitive.ObjectID, updatedUser *User) error
+	DeleteRefreshTokenByUserID(ctx context.Context, userID string) error
 }
 
 type UserRepository interface {

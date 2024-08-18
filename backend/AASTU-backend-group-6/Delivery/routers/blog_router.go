@@ -19,7 +19,7 @@ func NewBlogrouter(blogRouter *gin.RouterGroup, controller controllers.BlogContr
 	blogRouter.GET("/my/:id")
 
 	blogRouter.POST("/create", controller.CreateBlog)
-	blogRouter.PUT("/update/:id")
+	blogRouter.PUT("/update/:id", controller.UpdateBlogByID)
 	blogRouter.DELETE("/delete/:id")
 	blogRouter.POST("/comment/create")
 }

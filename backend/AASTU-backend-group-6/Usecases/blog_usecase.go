@@ -74,8 +74,13 @@ func (b BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, pag
 }
 
 // UpdateBlogByID implements domain.BlogRepository.
-func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.Blog) error {
-	panic("unimplemented")
+func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.Blog) (domain.Blog, error) {
+	blog, err := b.blogRepository.UpdateBlogByID(user_id, blog_id, blog)
+	if err != nil {
+		return domain.Blog{}, err
+	} else {
+		return blog, nil
+	}
 }
 
 func NewBlogUsecase(blogRepository domain.BlogRepository) domain.BlogUsecase {

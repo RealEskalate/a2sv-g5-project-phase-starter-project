@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { BarChartComponent } from "./components/BarChartComponent";
 import { TableComponent } from "./components/TableComponent";
 import Card from "../components/common/card";
-import dummyData from "./components/dummyData"; // Adjust the path as needed
-import columns from "./components/columns"; // Adjust the path as needed
-import TableCard from "./components/TableComponentMobile"; // Adjust the path as needed
+import columns from "./components/columns";
+import TableCard from "./components/TableComponentMobile";
 import Chip_card1 from "@/public/assets/image/Chip_Card1.png";
 import Chip_card2 from "@/public/assets/image/Chip_Card2.png";
 import Chip_card3 from "@/public/assets/image/Chip_Card3.png";
@@ -32,7 +33,39 @@ const creditCardColor = {
 };
 
 const Transactions: React.FC = () => {
+  const [data, setData] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [activeLink, setActiveLink] = useState<string>('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions', {
+          headers: {
+            Authorization: `Bearer your_actual_bearer_token_here`, // Replace with your actual token
+          },
+        });
+        
+        // Transform API data to match the format expected by the table
+        const transformedData = response.data.data.map((item: any) => ({
+          column1: item.description,
+          column2: item.transactionId,
+          column3: item.type,
+          column4: "N/A", // Update this if you have card info
+          column5: new Date(item.date).toLocaleDateString(),
+          column6: `$${item.amount.toFixed(2)}`, // Format amount as currency
+          column7: "N/A", // Update this if you have receipt info
+        }));
+
+        setData(transformedData);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        setError("Failed to fetch data. Please check the console for more details.");
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleLinkClick = (linkName: string) => {
     setActiveLink(linkName);
@@ -93,7 +126,7 @@ const Transactions: React.FC = () => {
 
         <div className="hidden lg:flex flex-col w-full">
           {/* Render TableComponent for desktop and tablet */}
-          <TableComponent columns={columns} data={dummyData} />
+          {error ? <div>{error}</div> : <TableComponent columns={columns} data={data} />}
         </div>
 
         <div className="lg:hidden flex flex-col w-full">

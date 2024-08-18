@@ -11,7 +11,7 @@ type ChangeStatus struct {
 }
 
 func (cs ChangeStatus) Handle(username string) (bool, error) {
-	err := cs.UserRepo.Save(username)
+	err := cs.UserRepo.Save(username, cs.ToAdmin)
 
 	if err != nil {
 		return false, er.NewUnexpected("server error")

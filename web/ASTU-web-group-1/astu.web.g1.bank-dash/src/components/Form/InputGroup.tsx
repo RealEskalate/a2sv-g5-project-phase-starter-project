@@ -8,7 +8,7 @@ const InputGroup = ({
   placeholder,
 }: InputGroupType) => {
   return (
-    <div className="w-full space-y-3 my-3">
+    <div className=" w-full lg:w-6/12 space-y-3 my-3">
       <label htmlFor={id} className="gray-dark text-16px">
         {label} <br />
       </label>

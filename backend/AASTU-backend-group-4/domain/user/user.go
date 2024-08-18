@@ -34,18 +34,28 @@ type SignupResponse struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
+type LoginRequest struct {
+	Email    string `form:"email" `
+	Username string `form:"username" `
+	Password string `form:"password" binding:"required"`
+}
+
+type LoginResponse struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+}
+
 type UserUsecase interface {
+	GetByEmail(ctx context.Context, email string) (User, error)
+	GetByUsername(ctx context.Context, username string) (User, error)
 	SignupUsecase(ctx context.Context, user *User) error
-	// LoginUser(email, password string) (string, error)
-	// LogOutUser(userID primitive.ObjectID) error
-	// ForgetPassword(email string) error
 	// UpdateUser(userID primitive.ObjectID, updatedUser *User) error
 }
 
 type UserRepository interface {
 	SignupRepository(ctx context.Context, user *User) error
-	// LoginUser(email, password string) (string, error)
-	// LogOutUser(userID primitive.ObjectID) error
 	// ForgetPassword(email string) error
 	// UpdateUser(userID primitive.ObjectID, updatedUser *User) error
+	GetByEmail(ctx context.Context, email string) (User, error)
+	GetByUsername(ctx context.Context, username string) (User, error)
 }

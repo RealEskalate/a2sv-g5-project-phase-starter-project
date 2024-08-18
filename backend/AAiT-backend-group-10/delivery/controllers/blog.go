@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
+	"strings"
 
 	"aait.backend.g10/domain"
 	"aait.backend.g10/usecases"
@@ -179,4 +181,48 @@ func (b *BlogController) AddView(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "View added successfully"})
+}
+
+
+func (b *BlogController) SearchBlogs(c *gin.Context) {
+	filter := domain.BlogFilter{
+		Author: 		 c.Query("author"),
+		SortBy: 		 c.Query("sortBy"),
+	}
+
+	tagsParam := c.Query("tags")
+
+    // Split the tags into a slice of strings
+    tags := strings.Split(tagsParam, ",")
+
+    // Trim spaces from each tag
+    for i := range tags {
+        tags[i] = strings.TrimSpace(tags[i])
+    }
+
+	filter.Tags = tags
+	
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil || page <= 0 {
+		page = 1 // Default to the first page if not provided or invalid
+	}
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil || limit <= 0 {
+		limit = 20 // Default to 20 items per page if not provided or invalid
+	}
+	filter.Page = page
+	filter.PageSize = limit
+
+	blogs, totalPages, totalCount, err := b.BlogUseCase.SearchBlogs(filter)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"blogs":       blogs,
+		"totalPages":  totalPages,
+		"currentPage": page,
+		"totalCount":  totalCount,
+	})
 }

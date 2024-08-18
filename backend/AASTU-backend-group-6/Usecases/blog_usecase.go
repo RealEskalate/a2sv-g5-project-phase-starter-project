@@ -4,15 +4,20 @@ import (
 	domain "blogs/Domain"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type BlogUsecase struct {
 	blogRepository domain.BlogRepository
+	idConverter    domain.IDConverterInterface
 }
 
-func NewBlogUsecase(blogRepository domain.BlogRepository) domain.BlogUsecase {
+
+
+func NewBlogUsecase(blogRepository domain.BlogRepository, idConverter domain.IDConverterInterface) domain.BlogUsecase {
 	return BlogUsecase{
 		blogRepository: blogRepository,
+		idConverter:    idConverter,
 	}
 }
 
@@ -22,8 +27,16 @@ func (b BlogUsecase) CommentOnBlog(blog_id string, commentor_id string, commento
 }
 
 // CreateBlog implements domain.BlogRepository.
-func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
-	newBlog, err := b.blogRepository.CreateBlog(user_id, blog)
+func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog, role string) (domain.Blog, error) {
+	blog.CreatedAt = time.Now()
+	blog.UpdatedAt = time.Now()
+	if len(blog.Tags) == 0 {
+		blog.Tags = make([]string, 0)
+	}
+	if len(blog.Comments) == 0 {
+		blog.Tags = make([]string, 0)
+	}
+	newBlog, err := b.blogRepository.CreateBlog(user_id, blog, role)
 	if err != nil {
 		return domain.Blog{}, err
 	}
@@ -31,17 +44,30 @@ func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, 
 }
 
 // DeleteBlogByID implements domain.BlogRepository.
-func (b BlogUsecase) DeleteBlogByID(user_id string, blog_id string, role string) error {
-	var err error
-	if strings.ToLower(role) != "admin"{
-		err = b.blogRepository.DeleteBlogByID("", blog_id)
-	}else{
-		err = b.blogRepository.DeleteBlogByID(user_id, blog_id)
+func (b BlogUsecase) DeleteBlogByID(user_id string, blog_id string, role string) domain.ErrorResponse {
+	var errResponse domain.ErrorResponse
+	blog, err := b.blogRepository.GetBlogByID(blog_id)
+	if err != nil {
+		return domain.ErrorResponse{
+			Message: "internal server error",
+			Status:  500,
+		}
 	}
-	if err != nil{
-		return err
+	if strings.ToLower(role) != "admin" && user_id != b.idConverter.ToString(blog.Creater_id) {
+		return domain.ErrorResponse{
+			Message: "permission denied",
+			Status:  403,
+		}
 	}
-	return nil
+	if strings.ToLower(role) == "admin" {
+		errResponse = b.blogRepository.DeleteBlogByID(b.idConverter.ToString(blog.Creater_id), blog_id)
+	} else {
+		errResponse = b.blogRepository.DeleteBlogByID(user_id, blog_id)
+	}
+	if errResponse != (domain.ErrorResponse{}) {
+		return errResponse
+	}
+	return domain.ErrorResponse{}
 }
 
 // FilterBlogsByTag implements domain.BlogRepository.
@@ -55,8 +81,9 @@ func (b BlogUsecase) GetBlogByID(blog_id string) (domain.Blog, error) {
 	return blog, err
 }
 
-// GetBlogs implements domain.BlogRepository.
-func (b *BlogUsecase) GetBlogs(pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
+
+// GetBlogs implements domain.BlogUsecase.
+func (b BlogUsecase) GetBlogs(pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
 	PageNo, err := strconv.ParseInt(pageNo, 10, 64)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
@@ -98,4 +125,3 @@ func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.
 		return blog, nil
 	}
 }
-

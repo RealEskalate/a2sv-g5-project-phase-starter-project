@@ -20,6 +20,7 @@ func NewRouter(db *mongo.Database) {
 	router.PUT("/blogs/:id", blogController.UpdateBlog)
 	router.DELETE("/blogs/:id", blogController.DeleteBlog)
 	router.PATCH("/blogs/:id/view", blogController.AddView)
+	router.GET("/blogs/search", blogController.SearchBlogs)
 
 	router.Run(":8080")
 }

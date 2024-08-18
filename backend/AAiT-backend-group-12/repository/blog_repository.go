@@ -15,7 +15,6 @@ type BlogRepository struct {
 	collection mongo.Collection
 }
 
-
 func NewBlogRepository(coll mongo.Collection) *BlogRepository {
 	return &BlogRepository{
 		collection: coll,
@@ -26,7 +25,6 @@ func NewBlogRepository(coll mongo.Collection) *BlogRepository {
 func (b *BlogRepository) FindBlogPostByID(ctx context.Context, blogId string) (*domain.Blog, error) {
 	panic("to be implemented by robel")
 }
-
 
 // DeleteBlogPost implements domain.BlogRepositoryInterface.
 func (b *BlogRepository) DeleteBlogPost(ctx context.Context, blogId string) error {
@@ -44,7 +42,6 @@ func (b *BlogRepository) DeleteBlogPost(ctx context.Context, blogId string) erro
 
 	return nil
 }
-
 
 // InsertBlogPost implements domain.BlogRepositoryInterface.
 func (b *BlogRepository) InsertBlogPost(ctx context.Context, blog *domain.Blog) error {
@@ -92,7 +89,7 @@ func toDomain(blogDTO *dtos.BlogDTO) *domain.Blog {
 		ID:        blogDTO.ID.Hex(),
 		Title:     blogDTO.Title,
 		Content:   blogDTO.Content,
-		UserID:    blogDTO.UserID.Hex(),
+		Username:  blogDTO.Username,
 		Tags:      blogDTO.Tags,
 		CreatedAt: blogDTO.CreatedAt,
 		UpdatedAt: blogDTO.UpdatedAt,
@@ -107,16 +104,13 @@ func toDTO(blog *domain.Blog) (*dtos.BlogDTO, error) {
 	if err != nil {
 		return nil, err
 	}
-	userID, err := primitive.ObjectIDFromHex(blog.UserID)
-	if err != nil {
-		return nil, err
-	}
+
 	// Similarly, map LikedBy, DislikedBy, and Comments.
 	return &dtos.BlogDTO{
 		ID:        blogID,
 		Title:     blog.Title,
 		Content:   blog.Content,
-		UserID:    userID,
+		Username:  blog.Username,
 		Tags:      blog.Tags,
 		CreatedAt: blog.CreatedAt,
 		UpdatedAt: blog.UpdatedAt,

@@ -7,17 +7,15 @@ import (
 	"blog-api/domain/user"
 )
 
-type userUsecase struct {
+type UserUsecase struct {
 	repo           user.UserRepository
 	contextTimeout time.Duration
-	secret         string
 }
 
-func NewUserUsecase(userRepository user.UserRepository, timeout time.Duration, secret string) user.UserUsecase {
-	return &userUsecase{
+func NewUserUsecase(userRepository user.UserRepository, timeout time.Duration) user.UserUsecase {
+	return  &UserUsecase{
 		repo:           userRepository,
 		contextTimeout: timeout,
-		secret:         secret,
 	}
 }
 

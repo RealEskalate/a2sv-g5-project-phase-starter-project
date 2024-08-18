@@ -8,19 +8,28 @@ import (
 )
 
 func BlogRouter() {
-	blogRouter := Router.Group("/blog", auth_middleware.AuthMiddleware())
+	postRouter := Router.Group("/blog", auth_middleware.AuthMiddleware())
 	{
 		blogrepo := Repositories.NewBlogRepository(BlogCollections)
 		blogusecase := usecases.NewBlogUseCase(blogrepo)
 		blogcontroller := controllers.NewBlogController(blogusecase)
 
-		blogRouter.POST("/create", blogcontroller.CreateBlog)
-		blogRouter.GET("/get", blogcontroller.GetUserPosts)
-		blogRouter.GET("/get/:slug", blogcontroller.GetPostBySlug)
-		blogRouter.GET("/getbyid/:id", blogcontroller.GetPostByID)
-		blogRouter.GET("/getbyauthor/:authorID", blogcontroller.GetPostByAuthorID)
-		blogRouter.PUT("/update/:id", blogcontroller.UpdatePostByID)
+		postRouter.POST("/create", blogcontroller.CreateBlog)
+		postRouter.GET("/get", blogcontroller.GetUserPosts)
+		postRouter.GET("/get/:slug", blogcontroller.GetPostBySlug)
+		postRouter.GET("/getbyid/:id", blogcontroller.GetPostByID)
+		postRouter.GET("/getbyauthor/:authorID", blogcontroller.GetPostByAuthorID)
+		postRouter.PUT("/update/:id", blogcontroller.UpdatePostByID)
 
 
+	}
+
+	commentRouter := Router.Group("/comment", auth_middleware.AuthMiddleware())
+	{
+		commentrepo := Repositories.NewCommentRepository(BlogCollections)
+		commentusecase := usecases.NewCommentUseCase(commentrepo)
+		commentcontroller := controllers.NewCommentController(commentusecase)
+
+		commentRouter.POST("/:id", commentcontroller.CommentOnPost)
 	}
 }

@@ -17,8 +17,8 @@ type Post struct {
 	Views       uint               `json:"views"`
 	AuthorID    primitive.ObjectID `json:"author_id"`
 	LikeCount   uint               `json:"like_count"`
-	LikeDislike []*LikeDislike      `json:"like_dislike"`
-	Comments    []*Comment          `json:"comments"`
+	LikeDislike []*LikeDislike     `json:"like_dislike"`
+	Comments    []*Comment         `json:"comments"`
 	Tags        []*Tag             `json:"tags"`
 }
 
@@ -27,8 +27,8 @@ type Comment struct {
 	Content   string             `json:"content"`
 	CreatedAt time.Time          `json:"created_at"`
 	UpdatedAt time.Time          `json:"updated_at"`
-	AuthorID  uint               `json:"author_id"`
-	PostID    uint               `json:"post_id"`
+	AuthorID  primitive.ObjectID `json:"author_id"`
+	PostID    primitive.ObjectID `json:"post_id"`
 }
 
 type Tag struct {
@@ -40,8 +40,8 @@ type Tag struct {
 
 type LikeDislike struct {
 	ID     primitive.ObjectID `bson:"_id,omitempty" bson:"_id,omitempty"`
-	PostID uint               `json:"post_id"`
-	UserID uint               `json:"user_id"`
+	PostID primitive.ObjectID `json:"post_id"`
+	UserID primitive.ObjectID `json:"user_id"`
 	IsLike bool               `json:"is_like"` // true for like, false for dislike
 	// other fields
 }

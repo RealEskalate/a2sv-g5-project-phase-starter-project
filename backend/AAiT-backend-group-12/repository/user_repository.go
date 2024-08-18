@@ -44,7 +44,6 @@ func (r *UserRepository) FindUser(c context.Context, user *domain.User) (domain.
 			{"email": user.Email},
 		},
 	}
-
 	res := r.collection.FindOne(c, filter)
 	if res.Err() == mongo.ErrNoDocuments {
 		return foundUser, domain.NewError("user not found", domain.ERR_NOT_FOUND)
@@ -138,6 +137,37 @@ func (r *UserRepository) ChangeRole(c context.Context, username string, newRole 
 		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
 	}
 
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return nil
+}
+
+func (r *UserRepository) UpdateVerificationDetails(c context.Context, username string, verificationData domain.VerificationData) domain.CodedError {
+	res := r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$set", Value: bson.D{{Key: "verificationdata", Value: verificationData}}}})
+	if res.Err() == mongo.ErrNoDocuments {
+		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return nil
+}
+
+func (r *UserRepository) VerifyUser(c context.Context, username string) domain.CodedError {
+	res := r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$set", Value: bson.D{{Key: "isverified", Value: true}}}})
+	if res.Err() == mongo.ErrNoDocuments {
+		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	res = r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$unset", Value: bson.D{{Key: "verificationdata", Value: ""}}}})
 	if res.Err() != nil {
 		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
 	}

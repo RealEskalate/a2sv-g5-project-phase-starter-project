@@ -23,6 +23,48 @@ const Preferences = () => {
             </select>
           </div>
 
+<<<<<<< HEAD
+          <div className="w-full lg:w-1/2">
+            <InputGroup
+              id="timeZone"
+              label="Time Zone"
+              inputType="text"
+              registerName="timeZone"
+              register={undefined}
+              placeholder="(GMT-1200) International Date Line West"
+            />
+          </div>
+        </div>
+
+        <label className="gray-dark text-16px">Notification</label>
+          <ToggleInput
+            label="I send or receive digital currency"
+            inputType="checkbox"
+            id="email"
+            registerName="email"
+            register={undefined}
+            placeholder="Email"
+            currentState={true}
+          />
+          <ToggleInput
+            label="I recieve merchant order"
+            inputType="checkbox"
+            id="email"
+            registerName="email"
+            register={undefined}
+            placeholder="Email"
+            currentState={false}
+          />
+          <ToggleInput
+            label="There are recommendation for my account"
+            inputType="checkbox"
+            id="email"
+            registerName="email"
+            register={undefined}
+            placeholder="Email"
+            currentState={true}
+          />
+=======
           <InputGroup
             id="timeZone"
             label="Time Zone"
@@ -62,6 +104,7 @@ const Preferences = () => {
           placeholder="Email"
           currentState={true}
         />
+>>>>>>> 4c1dcd4397f79ee5fe643bbb50f249705894f891
 
         <div className="flex justify-end">
           <button

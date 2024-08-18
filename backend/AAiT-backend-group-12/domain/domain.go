@@ -68,7 +68,8 @@ type BlogFilterOptions struct {
 }
 
 type BlogRepositoryInterface interface {
-	FindBlogPostByID(ctx context.Context, id string) (*Blog, error)
+	GetBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, error)
+	FetchBlogPostByID(ctx context.Context, id string) (*Blog, error)
 	InsertBlogPost(ctx context.Context, blog *Blog) error
 	UpdateBlogPost(ctx context.Context, id string, blog *Blog) error
 	DeleteBlogPost(ctx context.Context, id string) error

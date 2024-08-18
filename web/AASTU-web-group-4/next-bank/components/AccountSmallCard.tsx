@@ -11,12 +11,12 @@ const BalanceCard: React.FC<{ accountData: BalanceCardProps }> = ({ accountData 
   return (
     <div className="bg-white rounded-lg shadow-md p-3 flex items-center space-x-3 w-full">
       {/* Icon */}
-      <div className="bg-yellow-100 rounded-full p-2">
+      <div className="bg-yellow-100 rounded-xl p-2">
         <Image 
           src={accountData.imageSrc} // Replace with your icon path
           alt={accountData.altText}
           width={20}
-          height={20}
+          height={40}
         />
       </div>
 

@@ -7,21 +7,19 @@ import (
 	"blog-api/domain/user"
 )
 
-type userUsecase struct {
+type UserUsecase struct {
 	repo           user.UserRepository
 	contextTimeout time.Duration
-	secret         string
 }
 
 func NewUserUsecase(userRepository user.UserRepository, timeout time.Duration, secret string) user.UserUsecase {
-	return &userUsecase{
+	return &UserUsecase{
 		repo:           userRepository,
 		contextTimeout: timeout,
-		secret:         secret,
 	}
 }
 
-func (uc *userUsecase) GetByEmail(ctx context.Context, email string) (user.User, error) {
+func (uc *UserUsecase) GetByEmail(ctx context.Context, email string) (user.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, uc.contextTimeout)
 	defer cancel()
 
@@ -33,7 +31,7 @@ func (uc *userUsecase) GetByEmail(ctx context.Context, email string) (user.User,
 	return u, nil
 }
 
-func (uc *userUsecase) GetByUsername(ctx context.Context, username string) (user.User, error) {
+func (uc *UserUsecase) GetByUsername(ctx context.Context, username string) (user.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, uc.contextTimeout)
 	defer cancel()
 

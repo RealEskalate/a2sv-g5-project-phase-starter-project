@@ -7,6 +7,7 @@ import (
     "github.com/golang-jwt/jwt/v4"
     "blog/domain"
     "blog/repository"
+    "fmt"
 )
 
 type AuthService struct {
@@ -71,4 +72,22 @@ func (s *AuthService) generateAccessToken(userID string) (string, error) {
 
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
     return token.SignedString([]byte(s.jwtSecret))
+}
+func VerifyToken(tokenString string) (*domain.JwtCustomClaims, error) {
+	claims := &domain.JwtCustomClaims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte("ts"), nil
+	})
+	fmt.Println("Parsed Token:", token)
+	fmt.Println("Token Claims:", claims)
+	if err != nil {
+		fmt.Println("Token Verification Error:", err)
+		return nil, err
+	}
+	if !token.Valid {
+		fmt.Println("Token is invalid")
+		return nil, errors.New("token is invalid")
+	}
+
+	return claims, nil
 }

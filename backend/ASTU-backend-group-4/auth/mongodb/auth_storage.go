@@ -12,23 +12,21 @@ import (
 
 type AuthUserImple struct {
 	usercollection *mongo.Collection
-	ctx            context.Context
 }
 
 type AuthTokenImple struct {
 	tokencollection *mongo.Collection
-	ctx             context.Context
 }
 
-func (au *AuthUserImple) CreateUser(user auth.User) (string, error) {
-	result, err := au.usercollection.InsertOne(au.ctx, user)
+func (au *AuthUserImple) CreateUser(ctx context.Context, user auth.User) (string, error) {
+	result, err := au.usercollection.InsertOne(ctx, user)
 	if err != nil {
 		return "", auth.FailToCreateUser
 	}
 	return result.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func (au *AuthUserImple) UpdateUser(id string, user auth.User) (auth.User, error) {
+func (au *AuthUserImple) UpdateUser(ctx context.Context, id string, user auth.User) (auth.User, error) {
 	userID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return auth.User{}, errors.New("invalied id")
@@ -40,7 +38,7 @@ func (au *AuthUserImple) UpdateUser(id string, user auth.User) (auth.User, error
 		{Key: "email", Value: user.Email},
 	}}}
 
-	result, err := au.usercollection.UpdateOne(au.ctx, filter, update)
+	result, err := au.usercollection.UpdateOne(ctx, filter, update)
 
 	if err != nil {
 		return auth.User{}, err
@@ -52,11 +50,11 @@ func (au *AuthUserImple) UpdateUser(id string, user auth.User) (auth.User, error
 	return user, nil
 }
 
-func (au *AuthUserImple) GetUserByUsername(username string) (auth.User, error) {
+func (au *AuthUserImple) GetUserByUsername(ctx context.Context, username string) (auth.User, error) {
 	var user auth.User
 
 	filter := bson.D{bson.E{Key: "username", Value: username}}
-	err := au.usercollection.FindOne(au.ctx, filter).Decode(&user)
+	err := au.usercollection.FindOne(ctx, filter).Decode(&user)
 
 	if err != nil {
 		return auth.User{}, auth.ErrNoUserWithUsername
@@ -64,11 +62,11 @@ func (au *AuthUserImple) GetUserByUsername(username string) (auth.User, error) {
 	return user, nil
 }
 
-func (au *AuthUserImple) GetUserByEmail(email string) (auth.User, error) {
+func (au *AuthUserImple) GetUserByEmail(ctx context.Context, email string) (auth.User, error) {
 	var user auth.User
 
 	filter := bson.D{bson.E{Key: "email", Value: email}}
-	err := au.usercollection.FindOne(au.ctx, filter).Decode(&user)
+	err := au.usercollection.FindOne(ctx, filter).Decode(&user)
 
 	if err != nil {
 		return auth.User{}, auth.ErrNoUserWithEmail
@@ -76,19 +74,19 @@ func (au *AuthUserImple) GetUserByEmail(email string) (auth.User, error) {
 	return user, nil
 }
 
-func (au *AuthUserImple) GetUsers() ([]auth.User, error) {
+func (au *AuthUserImple) GetUsers(ctx context.Context) ([]auth.User, error) {
 	var users []auth.User
 
 	filter := bson.D{}
-	cursor, err := au.usercollection.Find(au.ctx, filter)
+	cursor, err := au.usercollection.Find(ctx, filter)
 
 	if err != nil {
 		return []auth.User{}, err
 	}
 
-	// defer cursor.Close(au.ctx)
+	// defer cursor.Close(ctx)
 
-	// for cursor.Next(au.ctx) {
+	// for cursor.Next(ctx) {
 	// 	var user auth.User
 	// 	if err := cursor.Decode(&user); err != nil {
 	// 		return []auth.User{}, auth.ErrFailToDecode
@@ -96,7 +94,7 @@ func (au *AuthUserImple) GetUsers() ([]auth.User, error) {
 	// 	users = append(users, user)
 	// }
 
-	cursor.All(au.ctx, users)
+	cursor.All(ctx, users)
 
 	if err := cursor.Err(); err != nil {
 		return []auth.User{}, auth.ErrCursorDuringItr
@@ -104,9 +102,9 @@ func (au *AuthUserImple) GetUsers() ([]auth.User, error) {
 	return users, nil
 }
 
-func (au *AuthUserImple) DeleteUser(id string) error {
+func (au *AuthUserImple) DeleteUser(ctx context.Context, id string) error {
 	filter := bson.D{bson.E{Key: "id", Value: id}}
-	result, err := au.usercollection.DeleteOne(au.ctx, filter)
+	result, err := au.usercollection.DeleteOne(ctx, filter)
 
 	if err != nil {
 		return auth.ErrFailToDelete
@@ -117,25 +115,25 @@ func (au *AuthUserImple) DeleteUser(id string) error {
 	return nil
 }
 
-func (at *AuthTokenImple) RegisterToken(token string) error {
-	_, err := at.tokencollection.InsertOne(at.ctx, token)
+func (at *AuthTokenImple) RegisterToken(ctx context.Context, token string) error {
+	_, err := at.tokencollection.InsertOne(ctx, token)
 	return err
 }
 
-func (at *AuthTokenImple) GetToken(token string) (string, error) {
+func (at *AuthTokenImple) GetToken(ctx context.Context, token string) (string, error) {
 	var tk auth.Token
 
 	filter := bson.D{bson.E{Key: "tokenstring", Value: token}}
-	err := at.tokencollection.FindOne(at.ctx, filter).Decode(&tk)
+	err := at.tokencollection.FindOne(ctx, filter).Decode(&tk)
 	if err != nil {
 		return "", err
 	}
 	return tk.TokenString, nil
 }
 
-func (at *AuthTokenImple) DeleteToken(token string) error {
+func (at *AuthTokenImple) DeleteToken(ctx context.Context, token string) error {
 	filter := bson.D{bson.E{Key: "tokenstring"}}
-	result, err := at.tokencollection.DeleteOne(at.ctx, filter)
+	result, err := at.tokencollection.DeleteOne(ctx, filter)
 	if err != nil {
 		return err
 	}

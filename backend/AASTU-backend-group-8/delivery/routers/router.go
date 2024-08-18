@@ -8,11 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, commentUsecase *usecases.CommentUsecase, jwtService *infrastructure.JwtService) {
+func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, likeUsecase *usecases.LikeUsecase, commentUsecase *usecases.CommentUsecase, jwtService *infrastructure.JwtService) {
 	// Initialize controllers
 	blogController := controllers.NewBlogController(blogUsecase)
 	userController := controllers.NewUserController(userUsecase)
 	commentController := controllers.NewCommentController(commentUsecase)
+	likeController := controllers.NewLikeController(likeUsecase)
 
 	// Admin middleware
 	adminMiddleware := infrastructure.AdminMiddleware(jwtService)
@@ -46,8 +47,14 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 		auth.PUT("/comments/:id", commentController.UpdateComment)
 		auth.DELETE("/comments/:id", commentController.DeleteComment)
 
+		// Like routes
+		auth.POST("/blogs/:id/likes", likeController.AddLike)
+		auth.GET("/blogs/:id/likes", likeController.GetLikesByBlogID)
+		auth.DELETE("/likes/:id", likeController.RemoveLike)
+
 		// Admin-specific routes
 		auth.POST("/getallusers", adminMiddleware, userController.GetAllUsers)
 		auth.PUT("/deleteusers/:id", adminMiddleware, userController.DeleteUser)
+
 	}
 }

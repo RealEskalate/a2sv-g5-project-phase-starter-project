@@ -2,8 +2,10 @@ package Repositories
 
 import (
 	"blogapp/Domain"
+	"blogapp/Utils"
 	"context"
 	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -66,6 +68,8 @@ func (br *blogrepository) GetPostBySlug(ctx context.Context, slug string) ([]*Do
 		if err != nil {
 			return nil, err, 500
 		}
+		// increase viwes by 1
+		post.Views++
 		posts = append(posts, post)
 	}
 
@@ -93,6 +97,7 @@ func (br *blogrepository) GetPostByAuthorID(ctx context.Context, authorID primit
 		if err != nil {
 			return nil, err, 500
 		}
+		post.Views++
 		posts = append(posts, post)
 	}
 	// will come back to this after wraping client
@@ -110,14 +115,41 @@ func (br *blogrepository) GetPostByID(ctx context.Context, id primitive.ObjectID
 	if err != nil {
 		return nil, err, 500
 	}
+	post.Views++
 	return post, nil, 200
 }
 
 // update post by id
-func (br *blogrepository) UpdatePostByID(ctx context.Context, id primitive.ObjectID, post *Domain.Post) (error, int) {
+func (br *blogrepository) UpdatePostByID(ctx context.Context, id primitive.ObjectID, newpost *Domain.Post) (error, int) {
+	// filter post by id
 	filter := bson.D{{"_id", id}}
-	update := bson.D{{"$set", post}}
-	_, err := br.postCollection.UpdateOne(ctx, filter, update)
+	//get post by id
+	post, err, statuscode := br.GetPostByID(ctx, id)
+	if err != nil {
+		return err, statuscode
+	}
+	// update post
+	updateTitle := post.Title
+	updateContent := post.Content
+	updateSlug := post.Slug
+
+	if newpost.Title != "" {
+		updateTitle = newpost.Title
+		updateSlug = Utils.GenerateSlug(newpost.Title)
+	}
+	if newpost.Content != "" {
+		updateContent = newpost.Content
+	}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"title", updateTitle},
+			{"content", updateContent},
+			{"slug", updateSlug },
+			{"updatedAt", time.Now()},
+		}},
+	}
+	_, err = br.postCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err, 500
 	}

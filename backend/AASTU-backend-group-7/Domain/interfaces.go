@@ -34,10 +34,10 @@ type RefreshUseCase interface {
 }
 
 type BlogRepository interface {
-    CreateBlog(ctx context.Context, post *Post) (error, int)
-    GetPostBySlug(ctx context.Context, slug string) ([]*Post, error, int)
-    GetPostByAuthorID(ctx context.Context, authorID primitive.ObjectID) ([]*Post, error, int)
-    GetPostByID(ctx context.Context, id primitive.ObjectID) (*Post, error, int)
+	CreateBlog(ctx context.Context, post *Post) (error, int)
+	GetPostBySlug(ctx context.Context, slug string) ([]*Post, error, int)
+	GetPostByAuthorID(ctx context.Context, authorID primitive.ObjectID) ([]*Post, error, int)
+	GetPostByID(ctx context.Context, id primitive.ObjectID) (*Post, error, int)
 	UpdatePostByID(ctx context.Context, id primitive.ObjectID, post *Post) (error, int)
 }
 
@@ -49,7 +49,14 @@ type BlogUseCase interface {
 	UpdatePostByID(c *gin.Context, id primitive.ObjectID, post *Post) (error, int)
 }
 
+type CommentRepository interface {
+	CommentOnPost(ctx context.Context, comment *Comment,objID primitive.ObjectID) (error, int)
+}
 
+
+type CommentUseCase interface {
+	CommentOnPost(c *gin.Context, comment *Comment, objID primitive.ObjectID) (error, int)
+}
 
 type UserRepository interface {
 	CreateUsers(ctx context.Context, user *User) (OmitedUser, error, int)

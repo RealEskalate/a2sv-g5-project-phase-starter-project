@@ -22,7 +22,7 @@ func NewRouter(db *mongo.Database) {
 		CommentUsecase: usecases.NewCommentUsecase(commentRepo),
 	}
 
-	likeRepo := repositories.NewLikeRepository(db, domain.CollectionLike)
+	likeRepo := repositories.NewLikeRepository(db, os.Getenv("LIKE_COLLECTION_NAME"))
 	likeController := controllers.LikeCOntroller{
 		LikeUseCase: usecases.NewLikeUseCase(likeRepo),
 	}

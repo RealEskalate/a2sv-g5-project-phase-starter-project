@@ -49,12 +49,13 @@ type UserUsecase interface {
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)
 	SignupUsecase(ctx context.Context, user *User) error
-	// LogOutUser(userID primitive.ObjectID) error
-	// ForgetPassword(email string) error
 	// UpdateUser(userID primitive.ObjectID, updatedUser *User) error
 }
 
 type UserRepository interface {
-  GetByEmail(ctx context.Context, email string) (User, error)
+	SignupRepository(ctx context.Context, user *User) error
+	// ForgetPassword(email string) error
+	// UpdateUser(userID primitive.ObjectID, updatedUser *User) error
+	GetByEmail(ctx context.Context, email string) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)
 }

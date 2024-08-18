@@ -29,21 +29,21 @@ func NewBlogController(bu domain.BlogUseCaseInterface) *BlogController{
 func (bc *BlogController) CreateBlogHandler(c *gin.Context){
 	var blog domain.Blog
 	if err := c.ShouldBindJSON(&blog); err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return 
+		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
+		return
 	}
 	err := validate.Struct(blog)
 	if err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
 		return 
 	}
 
-	err = bc.blogUseCase.CreateBlogPost(c, &blog)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	newErr := bc.blogUseCase.CreateBlogPost(c, &blog)
+	if newErr != nil {
+		c.JSON(GetHTTPErrorCode(newErr), domain.Response{"error": newErr.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "blog created successfully"})
+	c.JSON(http.StatusOK, domain.Response{"message": "blog created successfully"})
 }
 
 // UpdateBlogHandler handles the HTTP request to update a blog post.
@@ -56,15 +56,15 @@ func (bc *BlogController) UpdateBlogHandler (c *gin.Context){
 	blogId := c.Param("id") 
 	var blog domain.Blog
 	if err := c.ShouldBindJSON(&blog); err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
 		return 
 	}
 	err := bc.blogUseCase.EditBlogPost(c, blogId, &blog)
 	if err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return 
 	}
-	c.JSON(http.StatusCreated, gin.H{"message": "created successfuly"})
+	c.JSON(http.StatusCreated, domain.Response{"message": "created successfuly"})
 }
 
 
@@ -77,18 +77,39 @@ func (bc *BlogController) DeleteBlogHandler (c *gin.Context){
 
 	err := bc.blogUseCase.DeleteBlogPost(c, blogId)
 	if err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to delete data"})
-		return 
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
+		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "deleted successfuly"})
+	c.JSON(http.StatusOK, domain.Response{"message": "deleted successfuly"})
 }
 
 
-func (bc *BlogController) GetBlogHandler (c *gin.Context){
-	// robel implement this
+// GetBlogHandler handles the HTTP GET request to retrieve a list of blog posts based on filters.
+func (bc *BlogController) GetBlogHandler(c *gin.Context) {
+	var filters domain.BlogFilterOptions
+	if err := c.ShouldBindQuery(&filters); err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{"error": "Invalid query parameters"})
+		return
+	}
+
+	blogs, total, err := bc.blogUseCase.GetBlogPosts(c, filters)
+	if err != nil {
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"total": total, "blogs": blogs})
 }
 
+// GetBlogByIDHandler handles the HTTP GET request to retrieve a single blog post by its ID.
+func (bc *BlogController) GetBlogByIDHandler(c *gin.Context) {
+	blogId := c.Param("id")
 
-func (bc *BlogController) GetBlogByIDHandler (c *gin.Context){
-	// robel implement this
+	blog, err := bc.blogUseCase.GetBlogPostByID(c, blogId)
+	if err != nil {
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, blog)
 }

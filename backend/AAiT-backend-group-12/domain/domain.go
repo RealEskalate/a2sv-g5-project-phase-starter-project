@@ -65,19 +65,19 @@ type BlogFilterOptions struct {
 }
 
 type BlogRepositoryInterface interface {
-	FetchBlogPostByID(ctx context.Context, postID string) (*Blog, error)
-	GetBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, error)
-	InsertBlogPost(ctx context.Context, blog *Blog) error
-	UpdateBlogPost(ctx context.Context, id string, blog *Blog) error
-	DeleteBlogPost(ctx context.Context, id string) error
+	FetchBlogPostByID(ctx context.Context, postID string) (*Blog, CodedError)
+	FetchBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, CodedError)
+	InsertBlogPost(ctx context.Context, blog *Blog) CodedError
+	UpdateBlogPost(ctx context.Context, id string, blog *Blog) CodedError
+	DeleteBlogPost(ctx context.Context, id string) CodedError
 }
 
 type BlogUseCaseInterface interface {
-	GetBlogPostByID(ctx context.Context, id string) (*Blog, error)
-	GetBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, error)
-	CreateBlogPost(ctx context.Context, blog *Blog) error
-	EditBlogPost(ctx context.Context, id string, blog *Blog) error
-	DeleteBlogPost(ctx context.Context, id string) error
+	GetBlogPostByID(ctx context.Context, id string) (*Blog, CodedError)
+	GetBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, CodedError)
+	CreateBlogPost(ctx context.Context, blog *Blog) CodedError
+	EditBlogPost(ctx context.Context, id string, blog *Blog) CodedError
+	DeleteBlogPost(ctx context.Context, id string) CodedError
 }
 
 type UserRepositoryInterface interface {

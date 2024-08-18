@@ -46,9 +46,6 @@ type Comment struct {
 	Content   string    `json:"content"`
 	Username  string    `json:"username"`
 	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	ViewCount uint      `json:"view_count"`
-	Comments  []Comment `json:"comment"`
 }
 
 type BlogFilterOptions struct {
@@ -68,14 +65,16 @@ type BlogFilterOptions struct {
 }
 
 type BlogRepositoryInterface interface {
-	FindBlogPostByID(ctx context.Context, id string) (*Blog, error)
+	FetchBlogPostByID(ctx context.Context, postID string) (*Blog, error)
+	GetBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, error)
 	InsertBlogPost(ctx context.Context, blog *Blog) error
 	UpdateBlogPost(ctx context.Context, id string, blog *Blog) error
 	DeleteBlogPost(ctx context.Context, id string) error
 }
 
 type BlogUseCaseInterface interface {
-	GetBlogPost(ctx context.Context, id string) (*Blog, error)
+	GetBlogPostByID(ctx context.Context, id string) (*Blog, error)
+	GetBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, error)
 	CreateBlogPost(ctx context.Context, blog *Blog) error
 	EditBlogPost(ctx context.Context, id string, blog *Blog) error
 	DeleteBlogPost(ctx context.Context, id string) error

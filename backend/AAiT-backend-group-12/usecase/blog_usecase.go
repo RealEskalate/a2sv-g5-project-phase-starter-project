@@ -55,7 +55,32 @@ func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *dom
 	return nil
 }
 
-// GetBlogPost implements domain.BlogUseCaseInterface.
-func (b *BlogUseCase) GetBlogPost(ctx context.Context, blogId string) (*domain.Blog, error) {
-	panic("implemented by robel")
+// Fetches all blogs
+func (b *BlogUseCase) GetBlogPosts(ctx context.Context, filters domain.BlogFilterOptions) ([]domain.Blog, int, error) {
+	context, cancel := context.WithTimeout(ctx, b.contextTimeOut)
+	defer cancel()
+
+	// Set default pagination if not provided
+	if filters.Page <= 0 {
+		filters.Page = 1
+	}
+	if filters.PostsPerPage <= 0 {
+		filters.PostsPerPage = 10 // Default to 10 posts per page
+	}
+
+	// Set default sorting if not provided
+	if filters.SortBy == "" {
+		filters.SortBy = "created_at" // Default sort by creation date
+		filters.SortDirection = "desc"
+	}
+
+	return b.blogRepo.GetBlogPosts(context, filters)
+}
+
+// FetchBlogPostByID retrieves a single blog post by its ID and increments its view count.
+func (b *BlogUseCase) FetchBlogPostByID(ctx context.Context, postID string) (*domain.Blog, error) {
+	context, cancel := context.WithTimeout(ctx, b.contextTimeOut)
+	defer cancel()
+
+	return b.blogRepo.FetchBlogPostByID(context, postID)
 }

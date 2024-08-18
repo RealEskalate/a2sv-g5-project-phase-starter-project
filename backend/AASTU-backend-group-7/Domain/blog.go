@@ -17,8 +17,8 @@ type Post struct {
 	Views       uint               `json:"views"`
 	AuthorID    primitive.ObjectID `json:"author_id"`
 	LikeCount   uint               `json:"like_count"`
-	LikeDislike []LikeDislike      `json:"like_dislike"`
-	Comments    []Comment          `json:"comments"`
+	LikeDislike []*LikeDislike      `json:"like_dislike"`
+	Comments    []*Comment          `json:"comments"`
 	Tags        []*Tag             `json:"tags"`
 }
 

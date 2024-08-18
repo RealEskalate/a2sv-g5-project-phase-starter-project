@@ -8,12 +8,18 @@ type Database struct {
 	Uri      string `mapstructure:"uri"`
 	Name     string `mapstructure:"name"`
 }
+type Email struct {
+	EmailKey string `mapstructure:"key"`
+}
 type Config struct {
 	Database Database `mapstructure:"database"`
+	Email    Email    `mapstructure:"email"`
+	Port     string   `mapstructure:"port"`
 }
 
 func LoadConfig() (*Config, error) {
-	viper.AddConfigPath(".")
+	//incase to access config file from the root directory
+	viper.AddConfigPath("../")
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {

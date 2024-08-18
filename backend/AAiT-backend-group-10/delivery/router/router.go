@@ -10,19 +10,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewRouter(db *mongo.Database) {
+func NewRouter(db mongo.Database) {
 	router := gin.Default()
-	blogRepo := repositories.NewBlogRepository(db, os.Getenv("BLOG_COLLECTION"))
-	blogUseCase := usecases.NewBlogUseCase(blogRepo)
-	blogController := controllers.NewBlogController(blogUseCase)
 
-	router.POST("/blogs", blogController.CreateBlog)
-	router.GET("/blogs", blogController.GetAllBlogs)
-	router.GET("/blogs/:id", blogController.GetBlogByID)
-	router.PUT("/blogs/:id", blogController.UpdateBlog)
-	router.DELETE("/blogs/:id", blogController.DeleteBlog)
-	router.PATCH("/blogs/:id/view", blogController.AddView)
-	router.GET("/blogs/search", blogController.SearchBlogs)
-
-	router.Run(":"+os.Getenv("PORT"))
+	commentRepo := repositories.NewCommentRepository(db, os.Getenv("COMMENT_COLLECTION_NAME"))
+	commentController := controllers.CommentController{
+		CommentUsecase: usecases.NewCommentUsecase(commentRepo),
+	}
+	router.GET("/comment/:blog_id", commentController.GetComments)
+	router.POST("/comment", commentController.AddComment)
+	router.PUT("/comment", commentController.UpdateComment)
+	router.DELETE("/comment/:blog_id/:user_id", commentController.DelelteComment)
+	port := os.Getenv("PORT")
+	router.Run(":" + port)
 }

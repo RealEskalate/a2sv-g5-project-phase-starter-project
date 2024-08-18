@@ -22,10 +22,9 @@ func init() {
 	}
 }
 
-
 // GenerateJWT generates a new JWT token and populates it with the user's ID and email
 
-func GenerateJWT(userID, email, username, role string) (string, error) {
+func GenerateJWT(userID, email, role, username string) (string, error) {
 	expirationTime := time.Now().Add(15 * time.Minute)
 	if role == "" {
 		role = "user" // Set default role to "user" if no role is passed
@@ -48,6 +47,7 @@ func GenerateJWT(userID, email, username, role string) (string, error) {
 
 	return signedToken, nil // Return the signed token and no error
 }
+
 // GenerateRefreshToken generates a new JWT token and populates it with the user's ID and email
 
 func GenerateRefreshToken(userID, email, role, username string) (string, error) {
@@ -73,7 +73,6 @@ func GenerateRefreshToken(userID, email, role, username string) (string, error) 
 
 	return signedToken, nil // Return the signed token and no error
 }
-
 
 // ValidateToken validates the JWT token string and returns the claims if the token is valid
 func ValidateToken(tokenString string) (*domain.Claims, error) {

@@ -7,6 +7,11 @@ import (
 	"time"
 )
 
+type TokenUseCaseInterface interface {
+	BlacklistToken(ctx context.Context, token string, tokenType domain.TokenType, expiry time.Time) error
+	IsTokenBlacklisted(ctx context.Context, token string, tokenType domain.TokenType) (bool, error)
+}
+
 type TokenUsecase struct {
 	repo repository.TokenRepository
 }

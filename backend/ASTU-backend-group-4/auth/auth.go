@@ -1,6 +1,9 @@
 package auth
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type User struct {
 	ID        string    `json:"id,omitempty" bson:"_id"`
@@ -25,15 +28,15 @@ type LoginForm struct {
 }
 
 type AuthRepository interface {
-	CreateUser(user User) (string, error)
-	UpdateUser(id string, user User) (User, error)
-	GetUserByUsername(username string) (User, error)
-	GetUserByEmail(email string) (User, error)
-	GetUsers() ([]User, error)
-	DeleteUser(id string) error
-	RegisterToken(token string) error
-	GetToken(token string) (Token, error)
-	DeleteToken(token string) error
+	CreateUser(ctx context.Context, user User) (string, error)
+	UpdateUser(ctx context.Context, id string, user User) (User, error)
+	GetUserByUsername(ctx context.Context, username string) (User, error)
+	GetUserByEmail(ctx context.Context, email string) (User, error)
+	GetUsers(ctx context.Context) ([]User, error)
+	DeleteUser(ctx context.Context, id string) error
+	RegisterToken(ctx context.Context, token string) error
+	GetToken(ctx context.Context, token string) (Token, error)
+	DeleteToken(ctx context.Context, token string) error
 }
 
 type AuthServices interface {

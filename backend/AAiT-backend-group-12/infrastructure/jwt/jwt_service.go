@@ -73,3 +73,27 @@ func GetExpiryDate(token *jwt.Token) (time.Time, domain.CodedError) {
 
 	return expiresAtTime, nil
 }
+
+/*
+Get username of the token
+*/
+func GetUsername(token *jwt.Token) (string, domain.CodedError) {
+	username, ok := token.Claims.(jwt.MapClaims)["username"]
+	if !ok {
+		return "", domain.NewError("Invalid token: Username not found", domain.ERR_UNAUTHORIZED)
+	}
+
+	return fmt.Sprintf("%v", username), nil
+}
+
+/*
+Get role of the token
+*/
+func GetRole(token *jwt.Token) (string, domain.CodedError) {
+	role, ok := token.Claims.(jwt.MapClaims)["role"]
+	if !ok {
+		return "", domain.NewError("Invalid token: Role not found", domain.ERR_UNAUTHORIZED)
+	}
+
+	return fmt.Sprintf("%v", role), nil
+}

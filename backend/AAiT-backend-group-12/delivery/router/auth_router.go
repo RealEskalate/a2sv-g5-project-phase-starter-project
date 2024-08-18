@@ -16,4 +16,5 @@ func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup) {
 
 	authGroup.POST("/signup", controller.HandleSignup)
 	authGroup.POST("/login", controller.HandleLogin)
+	authGroup.POST("/renew-token", controller.HandleRenewAccessToken)
 }

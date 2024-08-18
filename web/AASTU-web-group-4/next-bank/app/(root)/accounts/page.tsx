@@ -33,7 +33,7 @@ const Accounts = () => {
           <div className="lg:col-span-3 flex flex-col h-full">
             <div className="mb-3 flex justify-between items-center text-lg font-semibold">
               <h2>My Card</h2>
-              <a href="/credit-card" className="self-end">
+              <a href="/credit-card" className="font-normal self-end">
                 See All
               </a>
             </div>

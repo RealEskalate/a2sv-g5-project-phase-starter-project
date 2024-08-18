@@ -60,8 +60,6 @@ func (repo *userRepository) DeleteUser(userId string) error{
 }
 
 
-
-
 func (repo *userRepository) FindUserById(userId string) (*entities.User, error){
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

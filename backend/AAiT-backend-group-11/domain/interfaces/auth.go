@@ -8,7 +8,3 @@ type AuthenticationService interface {
 	Logout(userId string) error
 }
 
-type PasswordResetService interface {
-    RequestPasswordReset(email string) error
-    ResetPassword(token, newPassword string) error
-}

@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import profilePic from "../../../../public/profilepic.png";
-import circleWithPen from "../../../../public/Icons/circleWithPen.svg";
+import {circleWithPen} from "@/../../public/Icons"
 
 interface FormInput {
   name: string;

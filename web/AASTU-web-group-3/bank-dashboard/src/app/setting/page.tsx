@@ -22,8 +22,8 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="w-11/12 mt-6 h-screen bg-white rounded-3xl">
-      <div className="border-[#718EBF] border-b flex justify-between md:justify-start md:gap-4">
+    <div className="w-11/12 mt-3 bg-white rounded-3xl">
+      <div className="border-[#718EBF] border-b flex justify-between md:justify-start md:gap-3">
         <div
           onClick={() => setActiveTab("Edit Profile")}
           className={`cursor-pointer text-xl py-4 px-3 ${

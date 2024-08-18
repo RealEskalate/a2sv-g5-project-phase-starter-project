@@ -7,5 +7,5 @@ import (
 
 type UserController struct {
 	usecase user.UserUsecase
-	env     *bootstrap.Env
+	Env     *bootstrap.Env
 }

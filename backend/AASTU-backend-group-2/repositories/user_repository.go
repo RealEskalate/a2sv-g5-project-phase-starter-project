@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -25,7 +26,7 @@ func NewUserRepository(mongoClient *mongo.Client) domain.UserRepository {
 
 }
 
-func (urepo *UserRepository) RegisterUser(user domain.User) error {
+func (urepo *UserRepository) RegisterUser(user *domain.User) error {
 
 	usernameFilter := bson.M{"username": user.UserName}
 	usernameExists, err := urepo.collection.CountDocuments(context.TODO(), usernameFilter)
@@ -45,11 +46,14 @@ func (urepo *UserRepository) RegisterUser(user domain.User) error {
 		return fmt.Errorf("email already exists")
 	}
 
+	user.ID = primitive.NewObjectID()
+
 	password, err := infrastructure.PasswordHasher(user.Password)
 
 	if err != nil {
 		return err
 	}
+
 	user.Password = password
 	_, err = urepo.collection.InsertOne(context.TODO(), user)
 
@@ -93,7 +97,20 @@ func (urepo *UserRepository) ForgotPassword(email string) error {
 	return nil
 }
 
-func (urepo *UserRepository) LogoutUser() error {
+func (urepo *UserRepository) LogoutUser(uid string) error {
+	uuid, err := primitive.ObjectIDFromHex(uid)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": uuid}
+	update := bson.M{"$set": bson.M{"refreshtoken": ""}}
+	_, err = urepo.collection.UpdateOne(context.TODO(), filter, update)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

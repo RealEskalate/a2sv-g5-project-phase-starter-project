@@ -9,8 +9,8 @@ import (
 
 type User struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	UserName     string             `json:"username"`
-	Email        string             `json:"email"`
+	UserName     string             `json:"username,omitempty"`
+	Email        string             `json:"email,omitempty"`
 	Password     string             `json:"password,omitempty"`
 	IsAdmin      bool               `json:"isadmin,omitempty"`
 	JoinedAt     time.Time          `json:"joinedat,omitempty"`
@@ -18,17 +18,17 @@ type User struct {
 }
 
 type UserUsecase interface {
-	RegisterUser(c context.Context, user User) error
+	RegisterUser(c context.Context, user *User) error
 	LoginUser(c context.Context, user User) (string, error)
 	ForgotPassword(c context.Context, email string) error
-	LogoutUser(c context.Context) error
+	LogoutUser(c context.Context, uid string) error
 	PromoteDemoteUser(c context.Context, userid string) error
 }
 
 type UserRepository interface {
-	RegisterUser(user User) error
+	RegisterUser(user *User) error
 	LoginUser(user User) (string, error)
 	ForgotPassword(email string) error
-	LogoutUser() error
+	LogoutUser(uid string) error
 	PromoteDemoteUser(userid string) error
 }

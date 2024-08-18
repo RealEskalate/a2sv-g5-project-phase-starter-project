@@ -7,7 +7,9 @@ import (
 	"blogs/mongo"
 	"context"
 	"errors"
+	"fmt"
 	"math"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -34,31 +36,36 @@ func (b BlogRepository) CommentOnBlog(blog_id string, commentor_id string, comme
 }
 
 // CreateBlog implements domain.BlogRepository.
-func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
+func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string) (domain.Blog, error) {
 	timeOut := b.env.ContextTimeout
 
 	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
 	defer cancel()
 	blog.ID = primitive.NewObjectID()
 	uid, err := primitive.ObjectIDFromHex(user_id)
-	if len(blog.Tags) == 0 {
-		blog.Tags = make([]string, 0)
-	}
+	
 	if err != nil {
 		return domain.Blog{}, errors.New("internal server error")
 	}
-	blog.Creater_id = uid
-	blog.CreatedAt = time.Now()
-	blog.UpdatedAt = time.Now()
+	filter := bson.M{"_id": blog.Creater_id}
+	if strings.ToLower(role) == "admin"{
+		if blog.Creater_id == primitive.NilObjectID{
+			blog.Creater_id = uid
+			filter = bson.M{"_id": uid}
+		}
+	}else{
+		blog.Creater_id = uid
+		filter = bson.M{"_id": uid}
+	}
 	_, err = b.PostCollection.InsertOne(context, blog)
 	if err != nil {
 		return domain.Blog{}, errors.New("internal server error")
 	}
-	filter := bson.M{"_id": uid}
 	update := bson.M{
 		"$push": bson.M{"posts": blog},
 	}
-	_, err = b.UserCollection.UpdateOne(context, filter, update)
+	_,  err = b.UserCollection.UpdateOne(context, filter, update)
+	fmt.Println(filter, update)
 	if err != nil {
 		return domain.Blog{}, errors.New("internal server error")
 	}
@@ -66,8 +73,46 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog) (domain.Blo
 }
 
 // DeleteBlogByID implements domain.BlogRepository.
-func (b BlogRepository) DeleteBlogByID(user_id string, blog_id string) error {
-	panic("unimplemented")
+func (b BlogRepository) DeleteBlogByID(user_id string, blog_id string) domain.ErrorResponse {
+	timeOut := b.env.ContextTimeout
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut) * time.Second)
+	defer cancel()
+	blogID, blogErr := primitive.ObjectIDFromHex(blog_id)
+	userID, userErr := primitive.ObjectIDFromHex(user_id)
+	if blogErr != nil || userErr != nil{
+		return domain.ErrorResponse{
+			Message: "internal server error",
+			Status: 500,
+		}
+	}
+	filter := bson.M{"_id": blogID}
+	result, err := b.PostCollection.DeleteOne(context, filter)
+	if err != nil{
+		return domain.ErrorResponse{
+			Message: "internal server error",
+			Status: 500,
+		}
+	}
+	if result == 0{
+		return domain.ErrorResponse{
+			Message: "blog not found",
+			Status: 404,
+		}
+	}
+	filter = bson.M{"_id": userID}
+	update := bson.M{
+		"$pull": bson.M{"posts" : bson.M{
+			"_id" : blogID,
+		}},
+	}
+	_, err = b.UserCollection.UpdateOne(context, filter, update)
+	if err != nil{
+		return domain.ErrorResponse{
+			Message: "internal server error",
+			Status: 500,
+		}
+	}
+	return domain.ErrorResponse{}
 }
 
 // FilterBlogsByTag implements domain.BlogRepository.

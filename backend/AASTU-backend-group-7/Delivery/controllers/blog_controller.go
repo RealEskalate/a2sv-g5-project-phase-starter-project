@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"blogapp/Domain"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -56,5 +57,75 @@ func (controller *blogController) CreateBlog(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "Blog created successfully",
 		"blog":    newBlogPost,
+	})
+}
+
+func (controller *blogController) GetPostBySlug(c *gin.Context) {
+	slug := c.Param("slug")
+	posts, err, statusCode := controller.BlogUseCase.GetPostBySlug(c, slug)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Post fetched successfully",
+		"posts":   posts,
+	})
+}
+
+func (controller *blogController) GetPostByID(c *gin.Context) {
+	id,err := primitive.ObjectIDFromHex(c.Param("id"))// convert id to object id
+	
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	post, err, statusCode := controller.BlogUseCase.GetPostByID(c, id)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Post fetched successfully",
+		"post":    post,
+	})
+}
+
+func (controller *blogController) GetPostByAuthorID(c *gin.Context) {
+	authorID,err := primitive.ObjectIDFromHex(c.Param("author_id"))// convert id to object id
+	
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	posts, err, statusCode := controller.BlogUseCase.GetPostByAuthorID(c, authorID)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Post fetched successfully",
+		"posts":   posts,
+	})
+}
+
+//	get my posts
+func (controller *blogController) GetUserPosts(c *gin.Context) {
+	claims, err := Getclaim(c)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
+	posts, err, statusCode := controller.BlogUseCase.GetPostByAuthorID(c, claims.ID)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Post fetched successfully",
+		"posts":   posts,
 	})
 }

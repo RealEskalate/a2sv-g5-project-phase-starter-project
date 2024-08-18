@@ -37,7 +37,6 @@ func (uc *loginUsecase) LoginUser(ctx context.Context, emailOrUsername string, p
 	return user, nil
 
 }
-
 func (uc *loginUsecase) GenerateAccessToken(user *models.User, expiry int) (string, *models.ErrorResponse) {
 	token, err := uc.jwtService.CreateAccessToken(*user, expiry)
 

@@ -7,7 +7,12 @@ import (
 )
 
 type Env struct {
-	JWT_SECRET string `mapstructure:"JWT_SECRET"`
+	JWT_SECRET    string `mapstructure:"JWT_SECRET"`
+	SMTP_SERVER   string `mapstructure:"SMTP_SERVER"`
+	SMTP_PORT     string `mapstructure:"SMTP_PORT"`
+	SMTP_USERNAMR string `mapstructure:"SMTP_USERNAMR"`
+	SMTP_PASSWORD string `mapstructure:"SMTP_PASSWORD"`
+	SMTP_SENDER_EMAIL string `mapstructure:"SMTP_SENDER_EMAIL"`
 }
 
 func NewEnv() *Env {

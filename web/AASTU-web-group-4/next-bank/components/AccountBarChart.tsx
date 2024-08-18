@@ -37,12 +37,12 @@ export default function Component() {
     <Card className="flex flex-col w-full h-[350px]">
       <CardHeader className="flex justify-between">
         <div className="flex flex-row justify-between space-x-4">
-          <div className="text-sm font-normal">
+          <div className="hidden md:flex text-sm font-normal">
             <span className="font-bold">${totalDebit}</span> Debited &{" "}
             <span className="font-bold">${totalCredit}</span> Credited in this
             Week
           </div>
-          <div className="flex px-3 ">
+          <div className="flex px-3 text-right">
             <span
               className="w-4 h-4 rounded-xl"
               style={{ backgroundColor: chartConfig.debit.color }}

@@ -129,9 +129,9 @@ const HomePage: React.FC = () => {
                   <Image
                     src={image.src}
                     alt={image.alt}
-                    className="w-full h-full object-cover"
-                    height={100}
                     width={100}
+                    height={100}
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <p className="text-sm font-medium">{image.name}</p>

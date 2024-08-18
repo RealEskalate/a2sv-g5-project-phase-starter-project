@@ -16,8 +16,9 @@ func NewBlogRouter(collection *mongo.Collection, taskGroup *gin.RouterGroup) {
 
 	bc := controllers.NewBlogController(bu)
 
-	taskGroup.POST("/blogs", bc.CreateBlogHandler)
-	taskGroup.PUT("/blogs/:id", bc.UpdateBlogHandler)
-	taskGroup.DELETE("/blogs/:id", bc.DeleteBlogHandler)
-
+	taskGroup.POST("/create", bc.CreateBlogHandler)
+	taskGroup.PUT("/:id", bc.UpdateBlogHandler)
+	taskGroup.DELETE("/:id", bc.DeleteBlogHandler)
+	taskGroup.POST("/", bc.GetBlogHandler)
+	taskGroup.GET("/:id", bc.GetBlogByIDHandler)
 }

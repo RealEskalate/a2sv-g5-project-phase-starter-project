@@ -20,7 +20,7 @@ func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration) *BlogU
 }
 
 // CreateBlogPost implements domain.BlogUseCaseInterface.
-func (b *BlogUseCase) CreateBlogPost(ctx context.Context, blog *domain.Blog) error {
+func (b *BlogUseCase) CreateBlogPost(ctx context.Context, blog *domain.Blog) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
@@ -32,7 +32,7 @@ func (b *BlogUseCase) CreateBlogPost(ctx context.Context, blog *domain.Blog) err
 }
 
 // DeleteBlogPost implements domain.BlogUseCaseInterface.
-func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string) error {
+func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
@@ -44,7 +44,7 @@ func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string) error {
 }
 
 // EditBlogPost implements domain.BlogUseCaseInterface.
-func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *domain.Blog) error {
+func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *domain.Blog) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
@@ -56,7 +56,7 @@ func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *dom
 }
 
 // Fetches all blogs
-func (b *BlogUseCase) GetBlogPosts(ctx context.Context, filters domain.BlogFilterOptions) ([]domain.Blog, int, error) {
+func (b *BlogUseCase) GetBlogPosts(ctx context.Context, filters domain.BlogFilterOptions) ([]domain.Blog, int, domain.CodedError) {
 	context, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
@@ -74,13 +74,13 @@ func (b *BlogUseCase) GetBlogPosts(ctx context.Context, filters domain.BlogFilte
 		filters.SortDirection = "desc"
 	}
 
-	return b.blogRepo.GetBlogPosts(context, filters)
+	return b.blogRepo.FetchBlogPosts(context, filters)
 }
 
 // FetchBlogPostByID retrieves a single blog post by its ID and increments its view count.
-func (b *BlogUseCase) FetchBlogPostByID(ctx context.Context, postID string) (*domain.Blog, error) {
+func (b *BlogUseCase) GetBlogPostByID(ctx context.Context, blogID string) (*domain.Blog, domain.CodedError) {
 	context, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
-	return b.blogRepo.FetchBlogPostByID(context, postID)
+	return b.blogRepo.FetchBlogPostByID(context, blogID)
 }

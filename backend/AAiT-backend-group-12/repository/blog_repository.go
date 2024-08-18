@@ -24,14 +24,18 @@ func NewBlogRepository(coll *mongo.Collection) *BlogRepository {
 }
 
 // FetchBlogPostByID retrieves a blog post by its ID and increments the view count.
-func (b *BlogRepository) FetchBlogPostByID(ctx context.Context, postID string) (*domain.Blog, domain.CodedError) {
-	filter := bson.D{{Key: "_id", Value: postID}}
+func (b *BlogRepository) FetchBlogPostByID(ctx context.Context, blogId string) (*domain.Blog, domain.CodedError) {
+	objID, err := primitive.ObjectIDFromHex(blogId)
+	if err != nil {
+		return nil, domain.NewError("Invalid blog ID", domain.ERR_BAD_REQUEST)
+	}
+	filter := bson.D{{Key: "_id", Value: objID}}
 	update := bson.D{{Key: "$inc", Value: bson.D{{Key: "view_count", Value: 1}}}}
 
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 
 	var post domain.Blog
-	err := b.collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&post)
+	err = b.collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&post)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, domain.NewError("Blog post not found", domain.ERR_NOT_FOUND)
@@ -43,7 +47,7 @@ func (b *BlogRepository) FetchBlogPostByID(ctx context.Context, postID string) (
 }
 
 // fetches blogs based on filter.The filtering options are defined in the domain named BlogFilterOptions.
-func (b *BlogRepository) GetBlogPosts(ctx context.Context, filters domain.BlogFilterOptions) ([]domain.Blog, int, error) {
+func (b *BlogRepository) FetchBlogPosts(ctx context.Context, filters domain.BlogFilterOptions) ([]domain.Blog, int, domain.CodedError) {
 	var query bson.D
 
 	// Search by title
@@ -161,10 +165,10 @@ func (b *BlogRepository) InsertBlogPost(ctx context.Context, blog *domain.Blog) 
 }
 
 // UpdateBlogPost implements domain.BlogRepositoryInterface.
-func (b *BlogRepository) UpdateBlogPost(ctx context.Context, blogId string, blog *domain.Blog) error {
+func (b *BlogRepository) UpdateBlogPost(ctx context.Context, blogId string, blog *domain.Blog) domain.CodedError {
 	objID, err := primitive.ObjectIDFromHex(blogId)
 	if err != nil {
-		return err
+		return domain.NewError("Invalid blog ID", domain.ERR_BAD_REQUEST)
 	}
 
 	filter := bson.M{"_id": objID}

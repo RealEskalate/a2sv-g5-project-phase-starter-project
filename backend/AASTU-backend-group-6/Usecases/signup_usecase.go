@@ -78,7 +78,7 @@ func (u *SignupUseCase) Create(c context.Context , user domain.User) interface{}
 
 
 
-	return &domain.SuccessResponse{Message: "Registerd Sucessfully Verify your account" , Status: 201}
+	return &domain.SuccessResponse{Message: "Registerd Sucessfully Verify your account" ,Data: "" , Status: 201}
 }
 
 
@@ -88,6 +88,7 @@ func (u *SignupUseCase) VerifyOTP(c context.Context , otp domain.OtpToken) inter
 	defer cancel()
 
 	// check if OTP is correct
+	
 	user, err := u.SignupRepository.FindUserByEmail(ctx , otp.Email)
 	if err != nil {
 		return &domain.ErrorResponse{Message: "User not found", Status: 404}
@@ -105,13 +106,101 @@ func (u *SignupUseCase) VerifyOTP(c context.Context , otp domain.OtpToken) inter
 
 	// update user
 	user.Verified = true
+	user.OTP = ""
 
 	verifiedUser , err := u.SignupRepository.VerifyUser(ctx , user)
 
 	if err != nil { 
-		return domain.ErrorResponse{Message: "Error verifying user", Status: 500}
+		return &domain.ErrorResponse{Message: "Error verifying user", Status: 500}
 	}
 
-	return domain.SuccessResponse{Message: "OTP verified successfully", Data: verifiedUser, Status: 200}
+	return &domain.SuccessResponse{Message: "Account verified successfully", Data: verifiedUser, Status: 200}
 
+}
+
+
+
+
+
+func (u *SignupUseCase) ForgotPassword(c context.Context , email domain.ForgotPasswordRequest) interface{} {
+
+
+	ctx , cancel := context.WithTimeout(c , u.contextTimeout)
+	defer cancel()
+
+	// check if user exists
+	_, err := u.SignupRepository.FindUserByEmail(ctx , email.Email)
+	if err != nil {
+		return &domain.ErrorResponse{Message: "User not found", Status: 404}
+	}
+
+	// generate token
+
+	token , err := infrastructure.GenerateResetToken()
+
+	if err != nil {
+		return &domain.ErrorResponse{Message: "Error generating reset token", Status: 500}
+	}
+
+	// save token to db
+	// expiration time 15 minutes
+
+	expiration := time.Now().Add(time.Minute  * 20)
+
+	_ , err = u.SignupRepository.SetResetToken(ctx , email , token , expiration)
+
+	if err != nil {
+		return &domain.ErrorResponse{Message: "Error saving reset token", Status: 500}
+	}
+
+	// send reset email
+
+	err = infrastructure.SendResetEmail(email.Email , token)
+
+	if err != nil {
+		return &domain.ErrorResponse{Message: "Error sending reset email", Status: 500}
+	}
+
+	return &domain.SuccessResponse{Message: "Reset email sent", Data: "" , Status: 200}
+	
+}
+
+func (u *SignupUseCase) ResetPassword(c context.Context , password domain.ResetPasswordRequest , token string) interface{} {
+
+	ctx , cancel := context.WithTimeout(c , u.contextTimeout)
+	defer cancel()
+
+	// check if the ResetToken is Set
+
+	user , err := u.SignupRepository.FindUserByResetToken(ctx , token)
+
+	if err != nil {
+		return &domain.ErrorResponse{Message: "Invalid reset token", Status: 400}
+	}
+
+	// check if token is expired
+	
+	if time.Now().After(user.ResetPasswordExpires) {
+		return &domain.ErrorResponse{Message: "Reset token expired", Status: 400}
+	}
+	hashedPassword, err := infrastructure.HashPassword(password.Password)
+
+	if err != nil {
+		return &domain.ErrorResponse{Message: "Error hashing password", Status: 500}
+	}
+	
+	// hash the password
+
+	user.Password = hashedPassword
+	user.ResetPasswordToken = ""
+	user.ResetPasswordExpires= time.Time{}
+
+	// update user
+	_ , err  = u.SignupRepository.UpdateUser(ctx ,  user )
+
+	if err != nil {
+		return  &domain.ErrorResponse{Message: "Error in Reseting the Password", Status: 500}
+	}
+
+	return &domain.SuccessResponse{Message: "Password Reset Sucessfully" , Status: 200}
 }

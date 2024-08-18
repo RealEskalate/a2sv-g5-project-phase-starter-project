@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 type LoginController struct {
@@ -39,6 +41,13 @@ func (lc *LoginController) Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	tkn := domain.Token{
+		ID: 		 primitive.NewObjectID(),
+		UserID:      user.ID,
+		RefreshToken: refreshToken,
+		ExpiresAt:    time.Now().Add(time.Hour * 24 * 7),
+	}
+	err = lc.LoginUsecase.SaveRefreshToken(c, &tkn)
 
 	resp := domain.LoginResponse{
 		ID:           user.ID,

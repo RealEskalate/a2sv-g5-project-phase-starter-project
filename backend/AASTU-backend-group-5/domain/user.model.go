@@ -9,7 +9,7 @@ type User struct {
 	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	UserName       string             `json:"username" bson:"username"`
 	Bio            string             `json:"bio" bson:"bio"`
-	ProfilePicture []byte             `json:"profile_picture" bson:"profile_picture"`
+	ProfilePicture string             `json:"profile_picture" bson:"profile_picture"`
 	Email          string             `json:"email" bson:"email"`
 	Is_Admin       bool               `json:"is_admin" bson:"is_admin"`
 	Password       string             `json:"password" bson:"password"`
@@ -23,7 +23,7 @@ type ResponseUser struct {
 	ID             string `json:"_id" bson:"_id"`
 	UserName       string `json:"username" bson:"username"`
 	Bio            string `json:"bio" bson:"bio"`
-	ProfilePicture []byte `json:"profile_picture" bson:"profile_picture"`
+	ProfilePicture string `json:"profile_picture" bson:"profile_picture"`
 	Email          string `json:"email" bson:"email"`
 	Is_Admin       bool   `json:"is_admin" bson:"is_admin"`
 }
@@ -31,7 +31,7 @@ type ResponseUser struct {
 type UpdateUser struct {
 	UserName       string `json:"username" bson:"username"`
 	Bio            string `json:"bio" bson:"bio"`
-	ProfilePicture []byte `json:"profile_picture" bson:"profile_picture"`
+	ProfilePicture string `json:"profile_picture" bson:"profile_picture"`
 }
 
 type LogINUser struct {
@@ -43,7 +43,7 @@ type LogINUser struct {
 type RegisterUser struct {
 	UserName       string `json:"username" bson:"username"`
 	Bio            string `json:"bio" bson:"bio"`
-	ProfilePicture []byte `json:"profile_picture" bson:"profile_picture"`
+	ProfilePicture string `json:"profile_picture,omitempty" bson:"profile_picture,omitempty"`
 	Email          string `json:"email" bson:"email"`
 	Password       string `json:"password" bson:"password"`
 }

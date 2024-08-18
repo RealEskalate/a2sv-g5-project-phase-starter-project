@@ -3,7 +3,7 @@ package usecase
 import "github.com/RealEskalate/blogpost/domain"
 
 type UserUseCase struct {
-	UserRepo domain.User_Registery_interface
+	UserRepo domain.User_Repository_interface
 }
 
 func (usecase *UserUseCase) GetOneUser(id string) (domain.ResponseUser, error) {

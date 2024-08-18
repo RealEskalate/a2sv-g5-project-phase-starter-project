@@ -34,12 +34,3 @@ type BlogRepository interface {
 	// GetAllBlogs(ctx context.Context) ([]*Blog, error)
 	// FilterBlogByTag(ctx context.Context, tag string) ([]*Blog, error)
 }
-
-type BlogDatabase interface {
-	// SearchBlog(filter interface{}) ([]Blog, error)
-	// GetAllBlogs(filter interface{}) ([]Blog, error)
-	// FilterBlogByTag(filter interface{}) (Blog, error)
-	// CreateBlog(blog Blog) error
-	// UpdateBlog(id primitive.ObjectID, update interface{}) error
-	// DeleteBlog(id primitive.ObjectID, filter interface{}) error
-}

@@ -1,8 +1,9 @@
 package router
 
 import (
+	"os"
+
 	"aait.backend.g10/delivery/controllers"
-	"aait.backend.g10/domain"
 	"aait.backend.g10/repositories"
 	"aait.backend.g10/usecases"
 	"github.com/gin-gonic/gin"
@@ -11,9 +12,8 @@ import (
 
 func NewRouter(db mongo.Database) {
 	router := gin.Default()
-	// router.Use(cors.Default())
-	// router.Use(middleware.AuthMiddleware())
-	likeRepo := repositories.NewLikeRepository(db, domain.CollectionLike)
+
+	likeRepo := repositories.NewLikeRepository(db, os.Getenv("LIKE_COLLECTION"))
 	likeController := controllers.LikeCOntroller{
 		LikeUseCase: usecases.NewLikeUseCase(likeRepo),
 	}

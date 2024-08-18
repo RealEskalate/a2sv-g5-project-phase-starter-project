@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"blog_api/domain"
+	jwt_service "blog_api/infrastructure/jwt"
 	"fmt"
 	"strings"
 	"time"
@@ -48,15 +49,9 @@ func AuthMiddlewareWithRoles(validRoles []string, secret string, ValidateToken f
 		}
 
 		// check the expiry date of the token
-		expiresAt, ok := token.Claims.(jwt.MapClaims)["expiresAt"]
-		if !ok {
-			MiddlewareError(c, 401, "Invalid token: Expiry date not found")
-			return
-		}
-
-		expiresAtTime, convErr := time.Parse(time.RFC3339Nano, fmt.Sprintf("%v", expiresAt))
-		if convErr != nil {
-			MiddlewareError(c, 401, "Error while parsing expiry date: "+convErr.Error())
+		expiresAtTime, err := jwt_service.GetExpiryDate(token)
+		if err != nil {
+			MiddlewareError(c, 401, err.Error())
 			return
 		}
 
@@ -66,16 +61,16 @@ func AuthMiddlewareWithRoles(validRoles []string, secret string, ValidateToken f
 		}
 
 		// get the role from the claims of the JWT
-		userRole, ok := token.Claims.(jwt.MapClaims)["role"]
-		if !ok {
-			MiddlewareError(c, 401, "Invalid token: Role not found")
+		userRole, err := jwt_service.GetRole(token)
+		if err != nil {
+			MiddlewareError(c, 401, err.Error())
 			return
 		}
 
 		// get the username from the claims of the JWT
-		username, ok := token.Claims.(jwt.MapClaims)["username"]
-		if !ok {
-			MiddlewareError(c, 401, "Invalid token: Username not found")
+		username, err := jwt_service.GetUsername(token)
+		if err != nil {
+			MiddlewareError(c, 401, err.Error())
 			return
 		}
 

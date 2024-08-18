@@ -108,7 +108,7 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 	return accessToken, refreshToken, nil
 }
 
-func (u *UserUsecase) RenewAccessToken(c context.Context, user *domain.User, refreshToken string) (string, domain.CodedError) {
+func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (string, domain.CodedError) {
 	token, err := jwt_service.ValidateAndParseToken(refreshToken, env.ENV.JWT_SECRET_TOKEN)
 	if err != nil {
 		return "", domain.NewError("Invalid token", domain.ERR_UNAUTHORIZED)
@@ -124,14 +124,26 @@ func (u *UserUsecase) RenewAccessToken(c context.Context, user *domain.User, ref
 		return "", domain.NewError("Token expired", domain.ERR_UNAUTHORIZED)
 	}
 
+	// get the username from the token
+	username, err := jwt_service.GetUsername(token)
+	if err != nil {
+		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
+	}
+
+	// get the role from the token
+	role, err := jwt_service.GetRole(token)
+	if err != nil {
+		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
+	}
+
 	// get the hashed refresh token from the database
-	foundUser, err := u.userRepository.FindUser(c, user)
+	foundUser, err := u.userRepository.FindUser(c, &domain.User{Username: username})
 	err = cryptography.ValidateHashedString(foundUser.RefreshToken, strings.Split(refreshToken, ".")[2])
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
 	}
 
-	accessToken, err := jwt_service.SignJWTWithPayload(user.Username, user.Role, "accessToken", time.Hour*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	accessToken, err := jwt_service.SignJWTWithPayload(username, role, "accessToken", time.Hour*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
 	}

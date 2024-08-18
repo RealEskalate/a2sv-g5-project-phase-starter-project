@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"blog_api/domain"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -61,4 +62,27 @@ func (controller *AuthController) HandleLogin(c *gin.Context) {
 	}
 
 	c.JSON(201, domain.Response{"accessToken": acK, "refreshToken": rfK})
+}
+
+func (controller *AuthController) HandleRenewAccessToken(c *gin.Context) {
+	// obtain token from the request header
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.JSON(401, domain.Response{"error": "Authorization header not found"})
+		return
+	}
+
+	headerSegments := strings.Split(authHeader, " ")
+	if len(headerSegments) != 2 || strings.ToLower(headerSegments[0]) != "bearer" {
+		c.JSON(401, domain.Response{"error": "Authorization header is invalid"})
+		return
+	}
+
+	accessToken, err := controller.usecase.RenewAccessToken(c, headerSegments[1])
+	if err != nil {
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, domain.Response{"accessToken": accessToken})
 }

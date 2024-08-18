@@ -23,11 +23,12 @@ type User_Usecase_interface interface {
 }
 
 type User_Repository_interface interface{
-	GetUserDocumentByID(id string) (User , error) 
+	GetUserDocumentByID(id string) (User , error)
 	GetUserDocuments() ([]User , error)
 	UpdateUserDocument(id string , user UpdateUser) (User , error)
 	DeleteUserDocument(id string) (error)
 	LogIn(user LogINUser) (User , error)
 	Register(user RegisterUser) (User , error)
-	FilterUserDocument(map[string]string) ([]User , error)
+	FilterUserDocument(filter map[string]string) ([]User , error)
 }
+

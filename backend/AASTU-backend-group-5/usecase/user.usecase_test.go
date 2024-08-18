@@ -18,7 +18,7 @@ type UserUseCaseSuite struct {
 
 func (suite *UserUseCaseSuite) SetupTest() {
 	repo := new(mocks.User_Repository_interface)
-	suite.usecase = &UserUseCase{UserRepo: repo}
+	suite.usecase = NewUserUseCase(repo)
 	suite.repo = repo
 }
 

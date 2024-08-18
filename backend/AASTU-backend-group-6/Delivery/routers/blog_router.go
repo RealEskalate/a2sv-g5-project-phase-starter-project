@@ -15,8 +15,8 @@ func NewBlogrouter(blogRouter *gin.RouterGroup, controller controllers.BlogContr
 	blogRouter.GET("/filter", controller.FilterBlogsByTag)
 
 	// protected
-	blogRouter.GET("/my")
-	blogRouter.GET("/my/:id")
+	blogRouter.GET("/my", controller.GetMyBlogs)
+	blogRouter.GET("/my/:id", controller.GetMyBlogByID)
 
 	blogRouter.POST("/create", controller.CreateBlog)
 	blogRouter.PUT("/update/:id", controller.UpdateBlogByID)

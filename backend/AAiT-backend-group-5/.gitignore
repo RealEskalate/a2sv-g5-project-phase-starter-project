@@ -54,3 +54,4 @@ tmp/
 
 # Go mod files
 go.sum
+makefile

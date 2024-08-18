@@ -1,69 +1,62 @@
 package controllers
-
 import (
 	"blog_api/domain"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
-type BlogController struct {
-	blogUseCase domain.BlogUseCaseInterface
+type AuthController struct {
+	usecase domain.UserUsecaseInterface
 }
 
-var validate = validator.New()
-func (bc *BlogController) CreateBlogHandler(c *gin.Context){
-	var blog domain.Blog
-	if err := c.ShouldBindJSON(&blog); err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return 
+func GetHTTPErrorCode(err domain.CodedError) int {
+	switch err.GetCode() {
+	case domain.ERR_BAD_REQUEST:
+		return 400
+	case domain.ERR_UNAUTHORIZED:
+		return 401
+	case domain.ERR_FORBIDDEN:
+		return 403
+	case domain.ERR_NOT_FOUND:
+		return 404
+	case domain.ERR_CONFLICT:
+		return 409
+	default:
+		return 500
 	}
-	err := validate.Struct(blog)
-	if err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return 
-	}
+}
 
-	err = bc.blogUseCase.CreateBlogPost(c, &blog)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+func NewAuthController(usecase domain.UserUsecaseInterface) *AuthController {
+	return &AuthController{usecase: usecase}
+}
+
+func (controller *AuthController) HandleSignup(c *gin.Context) {
+	var newUser domain.User
+	if err := c.BindJSON(&newUser); err != nil {
+		c.JSON(400, domain.Response{"error": "Invalid input"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "blog created successfully"})
 
-}
-
-func (bc *BlogController) UpdateBlogHandler (c *gin.Context){
-	blogId := c.Param("id") 
-	var blog domain.Blog
-	if err := c.ShouldBindJSON(&blog); err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return 
+	err := controller.usecase.Signup(c, &newUser)
+	if err != nil {
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
+		return
 	}
-	err := bc.blogUseCase.EditBlogPost(c, blogId, &blog)
-	if err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return 
+
+	c.JSON(201, domain.Response{"message": "User created"})
+}
+
+func (controller *AuthController) HandleLogin(c *gin.Context) {
+	var newUser domain.User
+	if err := c.BindJSON(&newUser); err != nil {
+		c.JSON(400, domain.Response{"error": "Invalid input"})
+		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"message": "created successfuly"})
-}
 
-func (bc *BlogController) DeleteBlogHandler (c *gin.Context){
-	blogId := c.Param("id") 
-
-	err := bc.blogUseCase.DeleteBlogPost(c, blogId)
-	if err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to delete data"})
-		return 
+	acK, rfK, err := controller.usecase.Login(c, &newUser)
+	if err != nil {
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
+		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "deleted successfuly"})
-}
 
-func (bc *BlogController) GetBlogHandler (c *gin.Context){
-	// robel implement this
-}
-
-func (bc *BlogController) GetBlogByIDHandler (c *gin.Context){
-	// robel implement this
+	c.JSON(201, domain.Response{"accessToken": acK, "refreshToken": rfK})
 }

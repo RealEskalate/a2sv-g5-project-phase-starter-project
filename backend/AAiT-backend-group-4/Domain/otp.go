@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -23,4 +24,15 @@ type UserOTPVerification struct {
 type OTPVerificationResponse struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
+}
+
+type OTPUsecase interface {
+	GenerateOTP(user *UserOTPRequest) (otp UserOTPVerification, err error)
+	VerifyOTP(user *UserOTPVerification) (resp OTPVerificationResponse, err error)
+}
+
+type OTPRepository interface {
+	CreateOTP(c context.Context, otp *UserOTPVerification) error
+	GetOTPByEmail(c context.Context, email string) (otp UserOTPVerification, err error)
+	DeleteOTPByEmail(c context.Context, email string) error
 }

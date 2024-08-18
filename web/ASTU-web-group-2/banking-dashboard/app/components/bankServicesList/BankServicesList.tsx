@@ -1,6 +1,9 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import BankService from "../bankService/BankService";
-import BankServiceMobile from "../bankService/BankServiceMobile";
+import BankServiceMobile, {
+  BankServiceType,
+} from "../bankService/BankServiceMobile";
 import { useGetBankServiceQuery } from "@/lib/service/BankService";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -10,43 +13,40 @@ const BankServicesList = () => {
 
   const { data: session, status } = useSession();
 
-  if (status == "unauthenticated") router.push("/login");
+  useEffect(() => {}, [session, status]);
+  console.log(session, status);
 
-  const accessToken = session?.user.accessToken;
+  if (!session?.user) router.push("/login");
 
-  const {data } = useGetBankServiceQuery({
+  const accessToken = session?.user.accessToken!;
+
+  const { data: res, isLoading } = useGetBankServiceQuery({
     accessToken: accessToken,
-    size: 6,
+    size: 7,
     page: 1,
   });
-  console.log(data);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="w-16 h-16 border-t-4 border-b-4 border-blue-500 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  const data = res.data!;
 
   return (
     <div>
       <div className="flex flex-col gap-5 max-md:hidden">
-        {data.map((bankService) => (
-          <BankService
-            logoLink={bankService.logo}
-            category={bankService.category}
-            description={bankService.description}
-            details={bankService.details}
-            action={bankService.action}
-            key={bankService.id}
-          />
+        {data.map((bankService: BankServiceType) => (
+          <BankService {...bankService} />
         ))}
       </div>
 
       {/* Mobile view */}
       <div className="flex flex-col gap-5 md:hidden">
-        {data.map((bankService) => (
-          <BankServiceMobile
-            logoLink={bankService.logo}
-            category={bankService.category}
-            description={bankService.description}
-            details={bankService.details}
-            action={bankService.action}
-            key={bankService.id}
-          />
+        {data.map((bankService: BankServiceType) => (
+          <BankServiceMobile {...bankService} />
         ))}
       </div>
     </div>

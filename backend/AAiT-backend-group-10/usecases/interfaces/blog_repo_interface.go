@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type BlogRepoInterface interface {
+type IBlogRepository interface {
 	Create(blog *domain.Blog) error
 	FindAll() ([]domain.Blog, error)
 	FindByID(id uuid.UUID) (*domain.Blog, error)

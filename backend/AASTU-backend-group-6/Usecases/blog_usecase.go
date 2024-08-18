@@ -35,7 +35,8 @@ func (b BlogUsecase) FilterBlogsByTag(tag string, pageNo string, pageSize string
 
 // GetBlogByID implements domain.BlogRepository.
 func (b BlogUsecase) GetBlogByID(blog_id string) (domain.Blog, error) {
-	panic("unimplemented")
+	blog, err := b.blogRepository.GetBlogByID(blog_id)
+	return blog, err
 }
 
 // GetBlogs implements domain.BlogRepository.

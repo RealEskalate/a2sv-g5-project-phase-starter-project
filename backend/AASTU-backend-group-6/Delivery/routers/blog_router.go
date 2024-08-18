@@ -9,7 +9,7 @@ import (
 func NewBlogrouter(blogRouter *gin.RouterGroup, controller controllers.BlogController) {
 	// unprotected
 	blogRouter.GET("/", controller.GetBlogs)
-	blogRouter.GET("/:id")
+	blogRouter.GET("/:id", controller.GetBlogByID)
 
 	blogRouter.GET("/search", controller.SearchBlogByTitleAndAuthor)
 	blogRouter.GET("/filter", controller.FilterBlogsByTag)

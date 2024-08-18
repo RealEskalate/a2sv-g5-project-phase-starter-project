@@ -61,7 +61,16 @@ func (b BlogRepository) FilterBlogsByTag(tag string, pageNo string, pageSize str
 
 // GetBlogByID implements domain.BlogRepository.
 func (b BlogRepository) GetBlogByID(blog_id string) (domain.Blog, error) {
-	panic("unimplemented")
+	blog_object_id, err := primitive.ObjectIDFromHex(blog_id)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	var blog domain.Blog
+	if err := b.PostCollection.FindOne(context.TODO(), primitive.D{{Key: "_id", Value: blog_object_id}}).Decode(&blog); err != nil {
+		return domain.Blog{}, err
+	} else {
+		return blog, nil
+	}
 }
 
 // GetBlogs implements domain.BlogRepository.

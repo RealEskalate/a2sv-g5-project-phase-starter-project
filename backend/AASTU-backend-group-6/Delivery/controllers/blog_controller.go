@@ -80,7 +80,18 @@ func (b BlogController) FilterBlogsByTag(c *gin.Context) {
 
 // GetBlogByID implements domain.BlogUsecase.
 func (b BlogController) GetBlogByID(c *gin.Context) {
-	c.JSON(200, gin.H{"des blognal": "blog"})
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+		c.Abort()
+	}
+	blog, err := b.BlogUsecase.GetBlogByID(id)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		c.Abort()
+	} else {
+		c.JSON(http.StatusOK, gin.H{"blog": blog})
+	}
 }
 
 // GetBlogs implements domain.BlogUsecase.

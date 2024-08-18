@@ -4,23 +4,29 @@ import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
 	"context"
-	"errors"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type userRepository struct {
-	database   *mongo.Database
-	collection string
+
+type userRepository struct{
+	collection *mongo.Collection
+	
 }
 
-// CreateUser implements interfaces.UserRepository.
-func (ur *userRepository) CreateUser(user *entities.User) (*entities.User, error) {
-	collection := ur.database.Collection(ur.collection)
-	ctx := context.Background()
+func NewUserRepository(collection *mongo.Collection) interfaces.UserRepository {
+	return &userRepository{
+		collection: collection,
+	}
+}
 
-	_, err := collection.InsertOne(ctx, user)
+func (repo *userRepository) CreateUser(user *entities.User) (*entities.User, error){
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := repo.collection.InsertOne(ctx, user)
 	if err != nil {
 		return nil, err
 	}
@@ -28,12 +34,24 @@ func (ur *userRepository) CreateUser(user *entities.User) (*entities.User, error
 	return user, nil
 }
 
-// DeleteUser implements interfaces.UserRepository.
-func (ur *userRepository) DeleteUser(userId string) error {
-	collection := ur.database.Collection(ur.collection)
-	ctx := context.Background()
+func (repo *userRepository) FindUserByEmail(email string) (*entities.User, error){
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-	_, err := collection.DeleteOne(ctx, userId)
+	var user entities.User
+	err := repo.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (repo *userRepository) DeleteUser(userId string) error{
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := repo.collection.DeleteOne(ctx, bson.M{"_id": userId})
 	if err != nil {
 		return err
 	}
@@ -41,64 +59,32 @@ func (ur *userRepository) DeleteUser(userId string) error {
 	return nil
 }
 
-// DemoteUserToRegular implements interfaces.UserRepository.
-func (ur *userRepository) DemoteUserToRegular(userId string) error {
-	panic("unimplemented")
-}
 
-// FindUserByEmail implements interfaces.UserRepository.
-func (ur *userRepository) FindUserByEmail(email string) (*entities.User, error) {
-	collection := ur.database.Collection(ur.collection)
 
-	// Create a filter to find the user by email
-	filter := bson.M{"email": email}
+
+func (repo *userRepository) FindUserById(userId string) (*entities.User, error){
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	var user entities.User
-
-	// Find the user in the collection
-	err := collection.FindOne(context.TODO(), filter).Decode(&user)
+	err := repo.collection.FindOne(ctx, bson.M{"_id": userId}).Decode(&user)
 	if err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, nil // No user found with this email
-		}
-		return nil, err // Some other error occurred
+		return nil, err
 	}
 
 	return &user, nil
+
 }
 
-// FindUserById implements interfaces.UserRepository.
-func (ur *userRepository) FindUserById(userId string) (*entities.User, error) {
-	panic("unimplemented")
-}
+func (repo *userRepository) UpdateUser(user *entities.User) (*entities.User, error){
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-// PromoteUserToAdmin implements interfaces.UserRepository.
-func (ur *userRepository) PromoteUserToAdmin(userId string) error {
-	panic("unimplemented")
-}
-
-// UpdateUser implements interfaces.UserRepository.
-func (ur *userRepository) UpdateUser(user *entities.User) (*entities.User, error) {
-	collection := ur.database.Collection(ur.collection)
-
-	// Create a filter to find the user by ID
-	filter := bson.M{"_id": user.ID}
-
-	// Create an update to replace the user with the new user
-	update := bson.M{"$set": user}
-
-	// Update the user in the collection
-	_, err := collection.UpdateOne(context.TODO(), filter, update)
+	_, err := repo.collection.UpdateOne(ctx, bson.M{"_id": user.ID}, bson.M{"$set": user})
 	if err != nil {
 		return nil, err
 	}
 
 	return user, nil
-}
 
-func NewUserRepository(db *mongo.Database, collection string) interfaces.UserRepository {
-	return &userRepository{
-		database:   db,
-		collection: collection,
-	}
 }

@@ -3,71 +3,66 @@ package service
 import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
-	"context"
-	"time"
 )
 
-type UserService struct {
+type userService struct {
 	userRepository interfaces.UserRepository
-	contextTimeout time.Duration
-}
-
-// CreateUser implements interfaces.UserService.
-func (us *UserService) CreateUser(user *entities.User) (*entities.User, error) {
-	_, cancel := context.WithTimeout(context.Background(), us.contextTimeout)
-	defer cancel()
-
-	return us.userRepository.CreateUser(user)
-}
-
-// DeleteUser implements interfaces.UserService.
-func (us *UserService) DeleteUser(userId string) error {
-	_, cancel := context.WithTimeout(context.Background(), us.contextTimeout)
-	defer cancel()
-
-	return us.userRepository.DeleteUser(userId)
-}
-
-// DemoteUserToRegular implements interfaces.UserService.
-func (us *UserService) DemoteUserToRegular(userId string) error {
-	_, cancel := context.WithTimeout(context.Background(), us.contextTimeout)
-	defer cancel()
-
-	return us.userRepository.DemoteUserToRegular(userId)
-}
-
-// FindUserByEmail implements interfaces.UserService.
-func (us *UserService) FindUserByEmail(email string) (*entities.User, error) {
-	_, cancel := context.WithTimeout(context.Background(), us.contextTimeout)
-	defer cancel()
-	return us.userRepository.FindUserByEmail(email)
-}
-
-// FindUserById implements interfaces.UserService.
-func (us *UserService) FindUserById(userId string) (*entities.User, error) {
-	_, cancel := context.WithTimeout(context.Background(), us.contextTimeout)
-	defer cancel()
-	return us.userRepository.FindUserById(userId)
-}
-
-// PromoteUserToAdmin implements interfaces.UserService.
-func (us *UserService) PromoteUserToAdmin(userId string) error {
-	_, cancel := context.WithTimeout(context.Background(), us.contextTimeout)
-	defer cancel()
-
-	return us.userRepository.PromoteUserToAdmin(userId)
-}
-
-// UpdateUser implements interfaces.UserService.
-func (us *UserService) UpdateUser(user *entities.User) (*entities.User, error) {
-	_, cancel := context.WithTimeout(context.Background(), us.contextTimeout)
-	defer cancel()
-
-	return us.userRepository.UpdateUser(user)
 }
 
 func NewUserService(userRepository interfaces.UserRepository) interfaces.UserService {
-	return &UserService{
+	return &userService{
 		userRepository: userRepository,
 	}
+}
+
+func (service *userService) CreateUser(user *entities.User) (*entities.User, error){
+	return service.userRepository.CreateUser(user)
+}
+
+func (service *userService) FindUserByEmail(email string) (*entities.User, error){
+	return service.userRepository.FindUserByEmail(email)
+}
+
+func (service *userService) FindUserById(userId string) (*entities.User, error){
+	return service.userRepository.FindUserById(userId)
+}
+
+func (service *userService) UpdateUser(user *entities.User) (*entities.User, error){
+	return service.userRepository.UpdateUser(user)
+}
+
+func (service *userService) DeleteUser(userId string) error{
+	return service.userRepository.DeleteUser(userId)
+}
+
+
+
+func (service *userService) PromoteUserToAdmin(userId string) error{
+	user, err := service.userRepository.FindUserById(userId)
+	if err != nil {
+		return err
+	}
+
+	user.Role = "admin"
+	_, err = service.userRepository.UpdateUser(user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (service *userService) DemoteUserToRegular(userId string) error{
+	user, err := service.userRepository.FindUserById(userId)
+	if err != nil {
+		return err
+	}
+
+	user.Role = "regular"
+	_, err = service.userRepository.UpdateUser(user)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

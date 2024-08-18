@@ -20,7 +20,7 @@ func NewUserRepository(db mongo.Database, collection string) user.UserRepository
 	}
 }
 
-func (ur *userRepository) GetByEmail(ctx context.Context, email string) (user.User, error) {
+func (ur *UserRepository) GetByEmail(ctx context.Context, email string) (user.User, error) {
 	var u user.User
 	collection := ur.database.Collection(ur.collection)
 	filter := bson.M{"email": email}
@@ -28,7 +28,7 @@ func (ur *userRepository) GetByEmail(ctx context.Context, email string) (user.Us
 	return u, err
 }
 
-func (ur *userRepository) GetByUsername(ctx context.Context, username string) (user.User, error) {
+func (ur *UserRepository) GetByUsername(ctx context.Context, username string) (user.User, error) {
 	var u user.User
 	collection := ur.database.Collection(ur.collection)
 	filter := bson.M{"username": username}

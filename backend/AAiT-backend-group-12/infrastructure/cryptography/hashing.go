@@ -1,4 +1,4 @@
-package infrastructure
+package cryptography
 
 import (
 	"blog_api/domain"

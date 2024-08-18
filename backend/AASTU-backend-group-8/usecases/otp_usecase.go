@@ -56,6 +56,7 @@ func (ou *OTPUsecase) GenerateAndSendOTP(user *domain.User) error {
         return nil
 }
 
+// verification endpoint
 func (ou *OTPUsecase) VerifyOTP(email, otp string) (*domain.OTP,error) {
         existingOtp, err := ou.otpRepository.GetOTPByEmail(email)
         if err != nil {

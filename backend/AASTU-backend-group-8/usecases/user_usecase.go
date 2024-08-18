@@ -60,13 +60,13 @@ func (u *UserUsecase) Login(authUser *domain.AuthUser) (string, string, error) {
 	return "", "", nil
 }
 
-// DeleteRefreshToken deletes the refresh token for a user
+
 func (u *UserUsecase) DeleteRefreshToken(userID primitive.ObjectID) error {
-	// Implement the deletion of the refresh token if needed
+	
 	return nil
 }
 
-// ForgotPassword handles the forgot password logic
+
 func (u *UserUsecase) ForgotPassword(email *string) error {
 	user, err := u.userRepo.GetUserByEmail(email)
 	if err != nil {
@@ -82,18 +82,15 @@ func (u *UserUsecase) ForgotPassword(email *string) error {
 	return nil
 }
 
-// GetProfile retrieves a user's profile by ID
 func (u *UserUsecase) GetProfile(objectID primitive.ObjectID) (*domain.Profile, error) {
 	return nil, nil
 }
 
-// UpdateProfile updates a user's profile
 func (u *UserUsecase) UpdateProfile(objectID primitive.ObjectID, profile *domain.Profile) (*domain.Profile, error) {
 	updatedProfile, err := u.userRepo.UpdateProfile(objectID, profile)
 	return updatedProfile, err
 }
 
-// GetAllUsers retrieves all users from the repository
 func (u *UserUsecase) GetAllUsers() ([]*domain.User, error) {
 	users, err := u.userRepo.GetAllUsers()
 	return users, err

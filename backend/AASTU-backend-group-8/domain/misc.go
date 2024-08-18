@@ -31,6 +31,20 @@ type RefreshToken struct {
 	ExpiresAt time.Time `bson:"expires_at" json:"expires_at"`
 }
 
+type Comment struct {
+	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	BlogID    primitive.ObjectID `bson:"blog_id"`
+	UserID    primitive.ObjectID `bson:"author_id"`
+	Content   string             `bson:"content"`
+	CreatedAt time.Time          `bson:"created_at"`
+}
+type CommentUsecaseInterface interface {
+	AddComment(comment *Comment) error
+	GetCommentsByBlogID(blogID primitive.ObjectID) ([]Comment, error)
+	UpdateComment(commentID primitive.ObjectID, content string) error
+	DeleteComment(commentID primitive.ObjectID) error
+}
+
 // // IsExpired checks if the refresh token is expired
 // func (r *RefreshToken) IsExpired() bool {
 // 	return time.Now().After(r.ExpiresAt)

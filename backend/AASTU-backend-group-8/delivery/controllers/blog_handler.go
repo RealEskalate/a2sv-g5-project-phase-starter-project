@@ -1,6 +1,6 @@
 package controllers
 
-import(
+import (
 	"meleket/domain"
 	"net/http"
 
@@ -16,37 +16,37 @@ func NewBlogController(blogUsecase domain.BlogUsecaseInterface) *BlogController 
 	return &BlogController{blogUsecase: blogUsecase}
 }
 
-func (bc *BlogController) CreateBlogPost(c *gin.Context){
+func (bc *BlogController) CreateBlogPost(c *gin.Context) {
 	var blog domain.BlogPost
 	if err := c.ShouldBindJSON(&blog); err != nil {
-		c.JSON(http.StatusBadRequest,gin.H{"error":err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	autherID := c.MustGet("userID").(primitive.ObjectID)
 	blog.AuthorID = autherID
 
-	createdBlog,err := bc.blogUsecase.CreateBlogPost(&blog)
+	createdBlog, err := bc.blogUsecase.CreateBlogPost(&blog)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Blog post created successfully", "blog": createdBlog})
 }
 
-func (bc *BlogController) GetAllBlogPosts(c *gin.Context){
+func (bc *BlogController) GetAllBlogPosts(c *gin.Context) {
 	blogs, err := bc.blogUsecase.GetAllBlogPosts()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, blogs)
 }
 
-func (bc *BlogController) GetBlogByID(c *gin.Context){
-	id , err := primitive.ObjectIDFromHex(c.Param("id")) // should be updated
+func (bc *BlogController) GetBlogByID(c *gin.Context) {
+	id, err := primitive.ObjectIDFromHex(c.Param("id")) // should be updated
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
 		return
@@ -63,7 +63,7 @@ func (bc *BlogController) GetBlogByID(c *gin.Context){
 }
 
 func (bc *BlogController) UpdateBlogPost(c *gin.Context) {
-	id , err := primitive.ObjectIDFromHex(c.Param("id")) // should be updated
+	id, err := primitive.ObjectIDFromHex(c.Param("id")) // should be updated
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
 		return
@@ -114,4 +114,39 @@ func (bc *BlogController) DeleteBlogPost(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Blog post deleted successfully"})
+}
+
+func (c *BlogController) AddComment(ctx *gin.Context) {
+	var req struct {
+		BlogID  string `json:"blog_id"`
+		Content string `json:"content"`
+	}
+
+	if err := ctx.BindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	blogID, _ := primitive.ObjectIDFromHex(req.BlogID)
+	authorID := ctx.MustGet("userID").(primitive.ObjectID)
+
+	if err := c.blogUsecase.AddComment(blogID, authorID, req.Content); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
+}
+
+func (c *BlogController) GetComments(ctx *gin.Context) {
+	blogID := ctx.Param("id")
+	objectID, _ := primitive.ObjectIDFromHex(blogID)
+
+	comments, err := c.blogUsecase.GetComments(objectID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, comments)
 }

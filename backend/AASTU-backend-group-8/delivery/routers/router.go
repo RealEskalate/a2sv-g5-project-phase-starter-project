@@ -8,10 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, jwtService *infrastructure.JwtService) {
+func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, commentUsecase *usecases.CommentUsecase, jwtService *infrastructure.JwtService) {
 	// Initialize controllers
 	blogController := controllers.NewBlogController(blogUsecase)
 	userController := controllers.NewUserController(userUsecase)
+	commentController := controllers.NewCommentController(commentUsecase)
 
 	// Admin middleware
 	adminMiddleware := infrastructure.AdminMiddleware(jwtService)
@@ -38,6 +39,12 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 		auth.PUT("/blogs/:id", blogController.UpdateBlogPost)
 		auth.POST("/blogsearch", blogController.SearchBlogPost)
 		auth.DELETE("/blogs/:id", blogController.DeleteBlogPost)
+
+		// Comment routes
+		auth.POST("/blogs/:id/comments", commentController.AddComment)
+		auth.GET("/blogs/:id/comments", commentController.GetCommentsByBlogID)
+		auth.PUT("/comments/:id", commentController.UpdateComment)
+		auth.DELETE("/comments/:id", commentController.DeleteComment)
 
 		// Admin-specific routes
 		auth.POST("/getallusers", adminMiddleware, userController.GetAllUsers)

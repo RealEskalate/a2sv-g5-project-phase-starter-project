@@ -48,6 +48,7 @@ type LoginUsecase interface {
 	AuthenticateUser(c context.Context, login *AuthLogin) (*User, error)
 	CreateAccessToken(user *User, secret string, expiry int) (string, error)
 	CreateRefreshToken(user *User, secret string, expiry int) (string, error)
+	SaveRefreshToken(c context.Context, token *Token) error
 }
 type TokenRepository interface {
 	SaveToken(ctx context.Context, token *Token) error

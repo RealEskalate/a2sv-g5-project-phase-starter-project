@@ -12,4 +12,5 @@ type IBlogRepository interface {
 	Update(blog *domain.Blog) error
 	Delete(id uuid.UUID) error
 	AddView(id uuid.UUID) error
+	Search(filter domain.BlogFilter) ([]domain.Blog, int, error)
 }

@@ -56,7 +56,7 @@ func AuthMiddlewareWithRoles(secret string, ValidateToken func(string, string) (
 		}
 
 		if tokenType != "accessToken" {
-			MiddlewareError(c, 401, "Invalid token type: make sure to use the accessToken")
+			MiddlewareError(c, 401, "Invalid token type: make sure to use the accessToken to authorize actions")
 			return
 		}
 

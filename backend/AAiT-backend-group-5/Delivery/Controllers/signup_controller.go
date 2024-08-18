@@ -6,13 +6,11 @@ import (
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
-	utils "github.com/aait.backend.g5.main/backend/Utils"
 	"github.com/gin-gonic/gin"
 )
 
 type SignupController struct {
 	SignupUsecase interfaces.SignupUsecase
-	Env           *utils.Env
 }
 
 func (signupController *SignupController) Signup(ctx *gin.Context) {

@@ -1,45 +1,15 @@
-package models
+package dtos
 
 import (
-	"time"
-
+	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// Blog struct represents a blog post in the system
-type Blog struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Title     string             `bson:"title" json:"title" validate:"required"`
-	Content   string             `bson:"content" json:"content" validate:"required"`
-	AuthorID  primitive.ObjectID `bson:"author_id" json:"author_id"`
-	Tags      []string           `bson:"tags" json:"tags"`
-	Slug      string             `bson:"slug" json:"slug"`
-	CreatedAt time.Time          `bson:"created_at,omitempty" json:"created_at,omitempty"`
-	UpdatedAt time.Time          `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
-}
-
-// Comment struct represents a comment on a blog post
-type Comment struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	BlogID    primitive.ObjectID `bson:"blog_id" json:"blog_id" validate:"required"`
-	UserID    primitive.ObjectID `bson:"author_id" json:"author_id"`
-	Content   string             `bson:"content" json:"content" validate:"required"`
-	CreatedAt time.Time          `bson:"created_at,omitempty" json:"created_at,omitempty"`
-}
-
-// Popularity struct represents popularity metrics for a blog post
-type Popularity struct {
-	BlogID       primitive.ObjectID `bson:"blog_id" json:"blog_id" validate:"required"`
-	ViewCount    int                `bson:"view_count" json:"view_count"`
-	LikeCount    int                `bson:"like_count" json:"like_count"`
-	DislikeCount int                `bson:"dislike_count" json:"dislike_count"`
-}
-
 // BlogResponse struct represents the response when a single blog is retrieved, including comments and popularity
 type BlogResponse struct {
-	Blog       Blog       `json:"blog"`
-	Comments   []Comment  `json:"comments"`
-	Popularity Popularity `json:"popularity"`
+	Blog       models.Blog       `json:"blog"`
+	Comments   []models.Comment  `json:"comments"`
+	Popularity models.Popularity `json:"popularity"`
 }
 
 // CreateBlogResponse represents the response after creating a new blog post
@@ -97,10 +67,11 @@ type FilterBlogRequest struct {
 
 // FilterBlogResponse represents the response for filtered blog posts
 type FilterBlogResponse struct {
-	Blogs []Blog `json:"blogs"`
+	Blogs []models.Blog `json:"blogs"`
 }
 
+// CustomeError struct represents a custom error message
 type CustomeError struct {
-	Code    int
-	Message string
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }

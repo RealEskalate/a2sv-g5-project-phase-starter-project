@@ -1,8 +1,25 @@
 import React from "react";
 import BankService from "../bankService/BankService";
 import BankServiceMobile from "../bankService/BankServiceMobile";
+import { useGetBankServiceQuery } from "@/lib/service/BankService";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const BankServicesList = () => {
+  const router = useRouter();
+
+  const { data: session, status } = useSession();
+
+  if (status == "unauthenticated") router.push("/login");
+
+  const accessToken = session?.user.accessToken;
+
+  const {data } = useGetBankServiceQuery({
+    accessToken: accessToken,
+    size: 6,
+    page: 1,
+  });
+  console.log(data);
   
   return (
     <div>

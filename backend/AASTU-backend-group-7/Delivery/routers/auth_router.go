@@ -22,6 +22,8 @@ func AuthRouter() {
 		authRouter.POST("/login", authcontroller.Login)
 		//logout
 		authRouter.GET("/logout",auth_middleware.AuthMiddleware(), authcontroller.Logout)
+		// forget password 
+		authRouter.POST("/forget-password", authcontroller.ForgetPassword)
 
 	}
 }

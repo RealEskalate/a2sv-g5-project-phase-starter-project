@@ -9,6 +9,7 @@ import (
 func CreateAccessToken(user *domain.AuthSignup, secret string, expiry int) (accessToken string, err error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry)).Unix()
 	claims := &domain.JwtCustomClaims{
+		UserID: user.UserID,
 		Email:   user.Email,
 		Username:   user.Username,
 		StandardClaims: jwt.StandardClaims{

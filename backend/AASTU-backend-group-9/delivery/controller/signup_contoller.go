@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type SignupController struct {
@@ -69,6 +70,9 @@ func (sc *SignupController) Register(c *gin.Context, user domain.AuthSignup) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	sc.Token(c, user, *userID)
+}
+func (sc *SignupController) Token(c *gin.Context, user domain.AuthSignup, userID primitive.ObjectID) {
 	Accesstoken, err := sc.SignupUsecase.CreateAccessToken(&user, sc.Env.AccessTokenSecret, sc.Env.AccessTokenExpiryHour)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -79,20 +83,19 @@ func (sc *SignupController) Register(c *gin.Context, user domain.AuthSignup) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err = sc.SignupUsecase.SaveRefreshToken(c, RefreshToken, *userID)
+	err = sc.SignupUsecase.SaveRefreshToken(c, RefreshToken, userID)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	resp := domain.SignUpResponse{
-		ID:           *userID,
+		ID:           userID,
 		AcessToken:   Accesstoken,
 		RefreshToken: RefreshToken,
 	}
 	c.JSON(http.StatusOK, gin.H{"data": resp})
 }
-
 func (sc *SignupController) GoogleLogin(c *gin.Context) {
 	url := config.AppConfig.GoogleLoginConfig.AuthCodeURL("randomstate")
 	c.Redirect(http.StatusSeeOther, url)
@@ -137,9 +140,12 @@ func (sc *SignupController) GoogleCallback(c *gin.Context) {
 		return
 	}
 	returnedUser, _ := sc.SignupUsecase.GetUserByEmail(c, user.Email)
-		if returnedUser != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
-			return
+	if returnedUser != nil {
+		user := domain.AuthSignup{
+			Email: user.Email,
+		}
+		sc.Token(c, user, returnedUser.ID)
+		return
 	}
 	// Use the extracted email here
 	email := user.Email

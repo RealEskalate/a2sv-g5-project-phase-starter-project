@@ -31,12 +31,12 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	// Initialize the collections
 	customUserCol := custommongo.NewMongoCollection(usercol)
 	customBlogCol := custommongo.NewMongoCollection(blogcol)
+	customRefreshTokenCol := custommongo.NewMongoCollection(refreshtokencol)
 
-  customRefreshTokenCol := custommongo.NewMongoCollection(refreshtokencol)
 	BlogCollections = Domain.BlogCollections{
 
-		Users: customUserCol,
-		Blogs: customBlogCol,
+		Users:         customUserCol,
+		Blogs:         customBlogCol,
 		RefreshTokens: customRefreshTokenCol,
 	}
 	// Initialize the router
@@ -48,7 +48,7 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	// go to blog router
 	BlogRouter()
 
-  // go to refresh token router
+	// go to refresh token router
 	RefreshTokenRouter()
 	Router.POST("/sendemail", sendemail)
 	return Router

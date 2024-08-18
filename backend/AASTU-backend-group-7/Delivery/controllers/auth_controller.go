@@ -90,3 +90,7 @@ func (ac *authController) Logout(c *gin.Context) {
 	}
 
 }
+
+// forget password
+func (ac *authController) ForgetPassword(c *gin.Context) {
+}

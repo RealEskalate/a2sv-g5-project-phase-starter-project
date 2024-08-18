@@ -22,8 +22,8 @@ func NewBlogRepository(coll mongo.Collection) *BlogRepository {
 	}
 }
 
-// FindBlogPostByID implements domain.BlogRepositoryInterface.
-func (b *BlogRepository) FetchBlogPostByID(ctx context.Context, postID string) (*domain.Blog, error) {
+// FetchBlogPostByID retrieves a blog post by its ID and increments the view count.
+func (b *BlogRepository) FetchBlogPostByID(ctx context.Context, postID string) (*domain.Blog, domain.CodedError) {
 	filter := bson.D{{Key: "_id", Value: postID}}
 	update := bson.D{{Key: "$inc", Value: bson.D{{Key: "view_count", Value: 1}}}}
 
@@ -32,7 +32,10 @@ func (b *BlogRepository) FetchBlogPostByID(ctx context.Context, postID string) (
 	var post domain.Blog
 	err := b.collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&post)
 	if err != nil {
-		return nil, err
+		if err == mongo.ErrNoDocuments {
+			return nil, domain.NewError("Blog post not found", domain.ERR_NOT_FOUND)
+		}
+		return nil, domain.NewError("Internal server error: "+ err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
 
 	return &post, nil
@@ -103,13 +106,13 @@ func (b *BlogRepository) GetBlogPosts(ctx context.Context, filters domain.BlogFi
 	// Execute the query
 	cursor, err := b.collection.Find(ctx, query, findOptions)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, domain.NewError("Internal server error: "+err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
 	defer cursor.Close(ctx)
 
 	var blogDTOs []dtos.BlogDTO
 	if err := cursor.All(ctx, &blogDTOs); err != nil {
-		return nil, 0, err
+		return nil, 0, domain.NewError("Internal server error: "+err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
 
 	// Convert DTOs to domain models
@@ -118,44 +121,39 @@ func (b *BlogRepository) GetBlogPosts(ctx context.Context, filters domain.BlogFi
 		blogs = append(blogs, *toDomain(&blogDTO))
 	}
 
-	// Get total count for pagination metadata
-	totalCount, err := b.collection.CountDocuments(ctx, query)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return blogs, int(totalCount), nil
+	return blogs, int(len(blogs)), nil
 }
 
 
-// DeleteBlogPost implements domain.BlogRepositoryInterface.
-func (b *BlogRepository) DeleteBlogPost(ctx context.Context, blogId string) error {
+// DeleteBlogPost deletes a blog post by its ID.
+func (b *BlogRepository) DeleteBlogPost(ctx context.Context, blogId string) domain.CodedError {
 	objID, err := primitive.ObjectIDFromHex(blogId)
 	if err != nil {
-		return err
+		return domain.NewError("Invalid blog ID", domain.ERR_BAD_REQUEST)
 	}
 
 	filter := bson.M{"_id": objID}
 
 	_, err = b.collection.DeleteOne(ctx, filter)
+	
 	if err != nil {
-		return err
+		return domain.NewError("Internal server error: "+err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
 
 	return nil
 }
 
-// InsertBlogPost implements domain.BlogRepositoryInterface.
-func (b *BlogRepository) InsertBlogPost(ctx context.Context, blog *domain.Blog) error {
-
+// InsertBlogPost inserts a new blog post into the database.
+func (b *BlogRepository) InsertBlogPost(ctx context.Context, blog *domain.Blog) domain.CodedError {
 	newBlog, err := toDTO(blog)
-	newBlog.ID = primitive.NewObjectID()
 	if err != nil {
-		return err
+		return domain.NewError("Internal server error: "+err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
+	newBlog.ID = primitive.NewObjectID()
+
 	_, err = b.collection.InsertOne(ctx, newBlog)
 	if err != nil {
-		return err
+		return domain.NewError("Internal server error: "+err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
 
 	return nil
@@ -180,7 +178,7 @@ func (b *BlogRepository) UpdateBlogPost(ctx context.Context, blogId string, blog
 
 	_, err = b.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
-		return err
+		return domain.NewError("Internal server error: "+err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
 
 	return nil
@@ -197,7 +195,8 @@ func toDomain(blogDTO *dtos.BlogDTO) *domain.Blog {
 		CreatedAt: blogDTO.CreatedAt,
 		UpdatedAt: blogDTO.UpdatedAt,
 		ViewCount: blogDTO.ViewCount,
-		// Map LikedBy, DislikedBy, and Comments appropriately
+		LikedBy:   blogDTO.LikedBy,
+		DislikedBy: blogDTO.DislikedBy,
 	}
 }
 
@@ -208,7 +207,6 @@ func toDTO(blog *domain.Blog) (*dtos.BlogDTO, error) {
 		return nil, err
 	}
 
-	// Similarly, map LikedBy, DislikedBy, and Comments.
 	return &dtos.BlogDTO{
 		ID:        blogID,
 		Title:     blog.Title,
@@ -218,6 +216,8 @@ func toDTO(blog *domain.Blog) (*dtos.BlogDTO, error) {
 		CreatedAt: blog.CreatedAt,
 		UpdatedAt: blog.UpdatedAt,
 		ViewCount: blog.ViewCount,
+		LikedBy:   blog.LikedBy,
+		DislikedBy: blog.DislikedBy,
 	}, nil
 }
 

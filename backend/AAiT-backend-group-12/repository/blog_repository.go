@@ -15,7 +15,6 @@ type BlogRepository struct {
 	collection mongo.Collection
 }
 
-var _ domain.BlogRepositoryInterface = &BlogRepository{}
 
 func NewBlogRepository(coll mongo.Collection) *BlogRepository {
 	return &BlogRepository{

@@ -51,5 +51,5 @@ type BlogUseCaseInterface interface {
 	GetBlogPost(ctx context.Context, id string) (*Blog, error)
 	CreateBlogPost(ctx context.Context, blog *Blog) error
 	EditBlogPost(ctx context.Context, id string, blog *Blog) error
-	DeleteBlogPost(ctx context.Context, id string)
+	DeleteBlogPost(ctx context.Context, id string) error
 }

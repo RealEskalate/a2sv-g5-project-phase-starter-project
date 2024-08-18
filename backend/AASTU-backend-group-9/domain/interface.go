@@ -68,3 +68,10 @@ type OTPRepository interface {
 type LogoutUsecase interface {
 	Logout(ctx context.Context, refreshToken string) error
 }
+
+
+
+type ForgotPasswordUsecase interface {
+    SendResetOTP(c context.Context, email string, smtpUsername, smtpPassword string) error
+    ResetPassword(c context.Context, email, otpValue, newPassword string) error
+}

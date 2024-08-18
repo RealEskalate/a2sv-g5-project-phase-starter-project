@@ -1,0 +1,4 @@
+[build]
+cmd = "go build -o ./tmp/main.exe ./delivery"
+bin = "./tmp/main.exe"
+include_ext = ["go"]

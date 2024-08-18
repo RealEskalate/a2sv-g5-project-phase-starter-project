@@ -22,6 +22,13 @@ func BadRequest(msg string) *ErrorResponse {
 	}
 }
 
+func ErrTokenNotFound(msg string) *ErrorResponse {
+	return &ErrorResponse{
+		Code:    http.StatusUnauthorized,
+		Message: msg,
+	}
+}
+
 func Unauthorized(msg string) *ErrorResponse {
 	return &ErrorResponse{
 		Code:    http.StatusUnauthorized,

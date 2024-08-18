@@ -30,26 +30,41 @@ type Blog struct {
 	ID         string    `json:"id"`
 	Title      string    `json:"title"`
 	Content    string    `json:"content"`
-	UserID     string    `json:"user_id"`
+	Username   string    `json:"username"`
 	Tags       []string  `json:"tags"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 	ViewCount  uint      `json:"view_count"`
-	LikedBy    []User    `json:"liked_by"`
-	DislikedBy []User    `json:"disliked_by"`
+	LikedBy    []string  `json:"liked_by"`
+	DislikedBy []string  `json:"disliked_by"`
 	Comments   []Comment `json:"comment"`
 }
-
 
 // Comment represents a comment entity in the domain.
 type Comment struct {
 	ID        string    `json:"id"`
 	Content   string    `json:"content"`
-	UserID    string    `json:"user_id"`
+	Username  string    `json:"username"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	ViewCount uint      `json:"view_count"`
 	Comments  []Comment `json:"comment"`
+}
+
+type BlogFilterOptions struct {
+	Title         string // Search by title
+	Author        string // Search by author name
+	Tags          []string
+	DateFrom      time.Time
+	DateTo        time.Time
+	SortBy        string // Sort by criteria: date, like count, dislike count, view count
+	SortDirection string // Sort direction: asc, desc
+	Page          int    // Pagination: Page number
+	PostsPerPage  int    // Pagination: Posts per page
+	MinLikes      int    // Filter by minimum likes
+	MinDislikes   int    // Filter by minimum dislikes
+	MinComments   int    // Filter by minimum comments
+	MinViewCount  int    // Filter by minimum view count
 }
 
 type BlogRepositoryInterface interface {

@@ -6,6 +6,6 @@ type BlogCollections struct {
 	RefreshTokens Collection
 	Posts         Collection
 	Comments      Collection
-	Likes         Collection
+	LikesDislikes Collection
 	Tags          Collection
 }

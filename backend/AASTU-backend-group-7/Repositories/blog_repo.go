@@ -17,13 +17,13 @@ type blogrepository struct {
 	userCollection        Domain.Collection
 }
 
-func NewBlogRepository(posts Domain.Collection, comments Domain.Collection, tags Domain.Collection, likesdislikes Domain.Collection, users Domain.Collection) *blogrepository {
+func NewBlogRepository(blogCollection Domain.BlogCollections) *blogrepository {
 	return &blogrepository{
-		postCollection:        posts,
-		commentColection:      comments,
-		tagCollection:         tags,
-		likeDislikeCollection: likesdislikes,
-		userCollection:        users,
+		postCollection:        blogCollection.Posts,
+		commentColection:      blogCollection.Comments,
+		tagCollection:         blogCollection.Tags,
+		likeDislikeCollection: blogCollection.LikesDislikes,
+		userCollection:        blogCollection.Users,
 	}
 
 }
@@ -68,17 +68,18 @@ func (br *blogrepository) GetPostBySlug(ctx context.Context, slug string) ([]*Do
 		}
 		posts = append(posts, post)
 	}
-	// will come back to this after wraping client
-	// if err := cursor.Err(); err != nil {
-	// 	return nil, err, 500
-	// }
+
+	if err := cursor.Err(); err != nil {
+		return nil, err, 500
+	}
 	return posts, nil, 200
 }
 
 // get all posts from author id return an array of posts
 func (br *blogrepository) GetPostByAuthorID(ctx context.Context, authorID primitive.ObjectID) ([]*Domain.Post, error, int) {
 	var posts []*Domain.Post
-	filter := bson.D{{"author_id", authorID}}
+	filter := bson.D{{"authorid", authorID}}
+	fmt.Println("filter", filter)
 	cursor, err := br.postCollection.Find(ctx, filter)
 
 	if err != nil {
@@ -95,9 +96,9 @@ func (br *blogrepository) GetPostByAuthorID(ctx context.Context, authorID primit
 		posts = append(posts, post)
 	}
 	// will come back to this after wraping client
-	// if err := cursor.Err(); err != nil {
-	// 	return nil, err, 500
-	// }
+	if err := cursor.Err(); err != nil {
+		return nil, err, 500
+	}
 	return posts, nil, 200
 }
 
@@ -110,4 +111,15 @@ func (br *blogrepository) GetPostByID(ctx context.Context, id primitive.ObjectID
 		return nil, err, 500
 	}
 	return post, nil, 200
+}
+
+// update post by id
+func (br *blogrepository) UpdatePostByID(ctx context.Context, id primitive.ObjectID, post *Domain.Post) (error, int) {
+	filter := bson.D{{"_id", id}}
+	update := bson.D{{"$set", post}}
+	_, err := br.postCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err, 500
+	}
+	return nil, 200
 }

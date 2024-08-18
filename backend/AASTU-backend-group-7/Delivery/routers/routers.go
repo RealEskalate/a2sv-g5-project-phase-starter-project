@@ -29,15 +29,14 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	// Initialize the blog collections
 	posts := DataBase.Collection("Posts")
 	comments := DataBase.Collection("Comments")
-	likes := DataBase.Collection("Likes")
+	likesDislikes := DataBase.Collection("likesDislikes")
 	tags := DataBase.Collection("Tags")
 	// Initialize the custom blog collections
-	
+
 	customPostCol := custommongo.NewMongoCollection(posts)
 	customCommentCol := custommongo.NewMongoCollection(comments)
-	customLikeCol := custommongo.NewMongoCollection(likes)
+	customlikesDislikesCol := custommongo.NewMongoCollection(likesDislikes)
 	customTagCol := custommongo.NewMongoCollection(tags)
-
 
 	BlogCollections = Domain.BlogCollections{
 
@@ -46,11 +45,11 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 		RefreshTokens: customRefreshTokenCol,
 		Posts:         customPostCol,
 		Comments:      customCommentCol,
-		Likes:         customLikeCol,
+		LikesDislikes: customlikesDislikesCol,
 		Tags:          customTagCol,
 	}
 	// Initialize the router
-	
+
 	Router = gin.Default()
 
 	// go to auth router

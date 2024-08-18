@@ -38,6 +38,7 @@ type BlogRepository interface {
     GetPostBySlug(ctx context.Context, slug string) ([]*Post, error, int)
     GetPostByAuthorID(ctx context.Context, authorID primitive.ObjectID) ([]*Post, error, int)
     GetPostByID(ctx context.Context, id primitive.ObjectID) (*Post, error, int)
+	UpdatePostByID(ctx context.Context, id primitive.ObjectID, post *Post) (error, int)
 }
 
 type BlogUseCase interface {
@@ -45,6 +46,7 @@ type BlogUseCase interface {
 	GetPostBySlug(c *gin.Context, slug string) ([]*Post, error, int)
 	GetPostByAuthorID(c *gin.Context, authorID primitive.ObjectID) ([]*Post, error, int)
 	GetPostByID(c *gin.Context, id primitive.ObjectID) (*Post, error, int)
+	UpdatePostByID(c *gin.Context, id primitive.ObjectID, post *Post) (error, int)
 }
 
 

@@ -45,3 +45,9 @@ func (uc *blogUsecase) GetPostByAuthorID(c *gin.Context, authorID primitive.Obje
 	return uc.BlogRepository.GetPostByAuthorID(ctx,authorID)
 }
 
+func (uc *blogUsecase) UpdatePostByID(c *gin.Context, id primitive.ObjectID, post *Domain.Post) (error, int) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.UpdatePostByID(ctx,id,post)
+}
+

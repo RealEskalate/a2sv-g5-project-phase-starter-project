@@ -186,21 +186,32 @@ func (b *BlogController) AddView(c *gin.Context) {
 
 func (b *BlogController) SearchBlogs(c *gin.Context) {
 	filter := domain.BlogFilter{
-		Author: 		 c.Query("author"),
+		Title:  		 c.Query("title"),
 		SortBy: 		 c.Query("sortBy"),
 	}
 
+	authParam := c.Query("author")
+	if authParam != "" {
+		author, err := uuid.Parse(authParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Author ID"})
+			return
+		}
+		filter.Author = author
+	}
+
 	tagsParam := c.Query("tags")
+	if tagsParam != "" {
+		// Split the tags into a slice of strings
+		tags := strings.Split(tagsParam, ",")
 
-    // Split the tags into a slice of strings
-    tags := strings.Split(tagsParam, ",")
+		// Trim spaces from each tag
+		for i := range tags {
+			tags[i] = strings.TrimSpace(tags[i])
+		}
 
-    // Trim spaces from each tag
-    for i := range tags {
-        tags[i] = strings.TrimSpace(tags[i])
-    }
-
-	filter.Tags = tags
+		filter.Tags = tags
+	}
 	
 	page, err := strconv.Atoi(c.Query("page"))
 	if err != nil || page <= 0 {

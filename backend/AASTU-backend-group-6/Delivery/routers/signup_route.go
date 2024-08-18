@@ -24,6 +24,8 @@ func NewSignupRoute(config *infrastructure.Config, DB mongo.Database, SignupRout
 	SignupRoute.POST("/signup/verify" , signup.VerifyOTP)
 	// Google Auth	
 	SignupRoute.GET("/auth/google" , signup.GoogleAuth)
+
+	SignupRoute.POST("/reset" , signup.ForgotPassword)
 	
 	
 	// SignupRoute.POST("/auth/signup" )

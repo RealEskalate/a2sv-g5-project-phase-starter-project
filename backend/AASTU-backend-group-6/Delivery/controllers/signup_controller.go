@@ -40,4 +40,41 @@ func (s *SignupController) VerifyOTP(c *gin.Context) {
 
 func (s *SignupController) GoogleAuth(c *gin.Context) {
 	
+	
+
+}
+
+
+func (s *SignupController) ForgotPassword(c *gin.Context) {
+	var userEmail domain.ForgotPasswordRequest
+
+	token := c.Query("token")
+
+	if token == "" { 
+
+		err := c.ShouldBindJSON(&userEmail)
+		if err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+	
+		response := s.SignupUsecase.ForgotPassword(c , userEmail)
+		HandleResponse(c , response)
+		return
+	}else{
+		var password domain.ResetPasswordRequest
+		err := c.ShouldBindJSON(&password)
+
+		if err != nil { 
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+
+		response := s.SignupUsecase.ResetPassword(c , password , token)
+
+		HandleResponse(c , response)
+
+	}
+
+
 }

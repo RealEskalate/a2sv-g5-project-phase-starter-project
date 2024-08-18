@@ -15,8 +15,10 @@ func main() {
 	}
 	mongo.ConnectDB(confs.MONGO_URI)
 	defer mongo.DisconnectDB()
+	mongo.InitializeCollections()
 
-	userCollection := mongo.GetCollection("users")
+	userCollection := mongo.UserCollection
+
 	router := gin.Default()
 
 	routes.SetUpRoute(router, userCollection)

@@ -1,6 +1,12 @@
 package routes
 
 import (
+	"blogApp/internal/http/handlers"
+	"blogApp/internal/http/middleware"
+	"blogApp/internal/repository/mongodb"
+	"blogApp/internal/usecase"
+	localmongo "blogApp/pkg/mongo"
+
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -20,5 +26,13 @@ func RegisterVerificationRoutes(collection *mongo.Collection, router *gin.Engine
 		authRoutes.POST("/reset-password/request", userHandler.ResetPasswordRequest)
 		authRoutes.POST("/reset-password/confirm", userHandler.ResetPassword)
 
+		//logout and refresh
+		tokenRepo := mongodb.NewMongoTokenRepository(localmongo.TokenCollection)
+		tokenUsecase := usecase.NewTokenUsecase(tokenRepo)
+		TokenHandler := handlers.NewTokenHandler(*tokenUsecase)
+
+		r2 := authRoutes.Group("/", middleware.AuthMiddleware())
+		r2.POST("/logout", TokenHandler.LogOut)
+		r2.POST("/refresh", TokenHandler.RefreshToken)
 	}
 }

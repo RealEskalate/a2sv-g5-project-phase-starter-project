@@ -14,10 +14,7 @@ type MongoTokenRepository struct {
 	collection *mongo.Collection
 }
 
-func NewMongoTokenRepository(client *mongo.Client, dbName, collectionName string) *MongoTokenRepository {
-	collection := client.Database(dbName).Collection(collectionName)
-	// Create indexes
-	_ = createIndexes(collection)
+func NewMongoTokenRepository(collection *mongo.Collection) *MongoTokenRepository {
 	return &MongoTokenRepository{collection: collection}
 }
 
@@ -47,6 +44,11 @@ func (r *MongoTokenRepository) BlacklistToken(ctx context.Context, token string,
 	return err
 }
 
+func (r *MongoTokenRepository) RemoveBlacklistedToken(ctx context.Context, token string, tokenType domain.TokenType) error {
+	_, err := r.collection.DeleteOne(ctx, bson.M{"token": token, "token_type": tokenType})
+	return err
+}
+
 func (r *MongoTokenRepository) IsTokenBlacklisted(ctx context.Context, token string, tokenType domain.TokenType) (bool, error) {
 	var result domain.BlacklistedToken
 	err := r.collection.FindOne(ctx, bson.M{"token": token, "token_type": tokenType}).Decode(&result)
@@ -55,6 +57,13 @@ func (r *MongoTokenRepository) IsTokenBlacklisted(ctx context.Context, token str
 			return false, nil
 		}
 		return false, err
+	}
+	if result.Expiry.Before(time.Now()) {
+		err = r.RemoveBlacklistedToken(ctx, token, tokenType)
+		if err != nil {
+			return true, err
+		}
+		return true, nil
 	}
 	return true, nil
 }

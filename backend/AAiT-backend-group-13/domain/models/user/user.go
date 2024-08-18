@@ -102,8 +102,8 @@ func New(config Config) (*User, error) {
 	}, nil
 }
 
-// NewMap maps a User from database and returns user pointer.
-func NewMap(config MapConfig) (*User, error) {
+// Map maps a User from database and returns user pointer.
+func Map(config MapConfig) (*User, error) {
 
 	//returns user with specified fields
 	return &User{
@@ -142,6 +142,7 @@ func validatePassword(password string) error {
 	return nil
 }
 
+// validateEmail checks the email validity.
 func validateEmail(email string) error {
 	if !emailRegex.MatchString(email) {
 		return er.EmailInvalidFormat
@@ -149,6 +150,7 @@ func validateEmail(email string) error {
 	return nil
 }
 
+// validateFirstName validates FirstName.
 func validateFirstName(firstName string) error {
 	if len(firstName) < minFirstNameLength {
 		return er.UsernameTooShort

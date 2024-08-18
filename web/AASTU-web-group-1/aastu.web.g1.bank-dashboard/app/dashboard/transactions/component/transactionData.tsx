@@ -1,6 +1,7 @@
-import { TransactionProps } from "./ExpenseTable";
+import { TransactionData } from "@/types";
 
-export const transactions: TransactionProps[] = [
+
+export const transactions: TransactionData[] = [
   {
     transactionId: "#12548796",
     type: "shopping",

@@ -22,7 +22,7 @@ type User_Usecase_interface interface {
 	FilterUser(map[string]string) ([]ResponseUser , error)
 }
 
-type User_Registery_interface interface{
+type User_Repository_interface interface{
 	GetUserDocumentByID(id string) (User , error) 
 	GetUserDocuments() ([]User , error)
 	UpdateUserDocument(id string , user UpdateUser) (User , error)

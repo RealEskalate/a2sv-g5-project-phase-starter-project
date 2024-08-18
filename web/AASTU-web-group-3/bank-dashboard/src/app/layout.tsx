@@ -9,8 +9,7 @@ import {
   IoSearchOutline,
   IoNotificationsOutline,
 } from "react-icons/io5";
-import { menuItems, logo } from "./../../public/Icons";
-import ProfilePic from "./../../public/profilepic.png";
+import { menuItems, logo ,profilepic} from "@/../../public/Icons";
 
 export default function ClientSideComponent({
   children,
@@ -118,10 +117,10 @@ export default function ClientSideComponent({
                 </div>
               </div>
               <div className="m-2 absolute top-0 right-0 rounded-full overflow-hidden w-12">
-                <Image src={ProfilePic.src} alt=""  width={48}  height={48}/>
+                <Image src={profilepic} alt=""  width={48}  height={48}/>
               </div>
             </nav>
-            <main className="bg-[#F5F7FA] p-1">{children}</main>
+            <main className="bg-[#F5F7FA] p-1 flex items-center justify-center">{children}</main>
           </div>
         </body>
       </html>

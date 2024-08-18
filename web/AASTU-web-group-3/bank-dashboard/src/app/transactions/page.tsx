@@ -6,7 +6,7 @@ import DashboardBarChart from "../components/Chart/DashboardBarChart";
 
 const TransactionsPage = () => {
   return (
-    <section>
+    <section className="w-[98%]">
       <div className="credit-cards expenses flex flex-col lg:flex-row justify-between">
         <div className="lg:w-[65%]  rounded-xl bg-[#F5F7FA] p-1">
           <div className="credit-card-info flex justify-between px-4 h-20 items-center">

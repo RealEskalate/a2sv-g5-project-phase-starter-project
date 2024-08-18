@@ -12,14 +12,14 @@ import (
 type UserUsecase struct {
 	userRepo    repository.UserRepositoryInterface
 	passwordSvc infrastructure.PasswordService
-	jwtSvc      infrastructure.JWTService
+	jwtSvc      *infrastructure.JwtService // Use the struct type directly
 }
 
-func NewUserUsecase(ur repository.UserRepositoryInterface, ps infrastructure.PasswordService, js infrastructure.JWTService) *UserUsecase {
+// NewUserUsecase creates a new instance of UserUsecase
+func NewUserUsecase(ur repository.UserRepositoryInterface, ps infrastructure.PasswordService, js *infrastructure.JwtService) *UserUsecase {
 	return &UserUsecase{
 		userRepo:    ur,
 		passwordSvc: ps,
-		jwtSvc:      js,
 	}
 }
 
@@ -54,12 +54,12 @@ func (u *UserUsecase) Login(authUser *domain.AuthUser) (string, string, error) {
 	}
 
 	// Generate JWT and refresh tokens for the authenticated user
-	token, err := u.jwtSvc.GenerateToken(user.ID, user.Role)
+	token, err := u.jwtSvc.GenerateToken(user.ID, user.Username, user.Role)
 	if err != nil {
 		return "", "", err
 	}
 
-	refreshToken, err := u.jwtSvc.GenerateRefreshToken(user.ID, user.Role)
+	refreshToken, err := u.jwtSvc.GenerateRefreshToken(user.ID, user.Username, user.Role)
 	if err != nil {
 		return "", "", err
 	}
@@ -80,7 +80,7 @@ func (u *UserUsecase) DeleteRefreshToken(userID primitive.ObjectID) error {
 		return err
 	}
 
-	return u.userRepo.DeleteToken(user.userID)
+	return u.userRepo.DeleteToken(user.ID)
 }
 
 // ForgotPassword handles the forgot password logic
@@ -111,7 +111,7 @@ func (u *UserUsecase) UpdateProfile(objectID primitive.ObjectID, profile *domain
 	}
 
 	user.Name = profile.Bio
-	user.avatar_url = profile.AvatarURL
+	user.AvatarURL = profile.AvatarURL
 
 	updatedUser, err := u.userRepo.UpdateProfile(objectID.Hex(), user)
 	if err != nil {
@@ -143,7 +143,7 @@ func (u *UserUsecase) RefreshToken(refreshToken *domain.RefreshToken) (string, e
 	}
 
 	// Assuming that the storedToken contains userID and Role, you would generate a new token
-	newToken, err := u.jwtSvc.GenerateToken(storedToken.UserID, storedToken.ExpiresAt.String())
+	newToken, err := u.jwtSvc.GenerateToken(storedToken.UserID, refreshToken.ExpiresAt.String(), storedToken.Role)
 	if err != nil {
 		return "", err
 	}

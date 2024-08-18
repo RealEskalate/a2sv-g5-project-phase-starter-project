@@ -71,11 +71,11 @@ func (u *BlogUsecase) DeleteBlogPost(id primitive.ObjectID) error {
 	}
 	return nil
 }
-func (u *BlogUsecase) AddComment(blogID, authorID primitive.ObjectID, content string) error {
+func (u *BlogUsecase) AddComment(blogID, userID primitive.ObjectID, content string) error {
 	comment := &domain.Comment{
 		ID:        primitive.NewObjectID(),
 		BlogID:    blogID,
-		AuthorID:  authorID,
+		UserID:    userID,
 		Content:   content,
 		CreatedAt: time.Now(),
 	}

@@ -15,6 +15,11 @@ type UserUsecase struct {
 	jwtSvc      *infrastructure.JwtService // Use the struct type directly
 }
 
+// DeleteRefeshToken implements domain.UserUsecaseInterface.
+func (u *UserUsecase) DeleteRefeshToken(userID primitive.ObjectID) error {
+	return u.userRepo.DeleteToken(userID)
+}
+
 // NewUserUsecase creates a new instance of UserUsecase
 func NewUserUsecase(ur repository.UserRepositoryInterface, ps infrastructure.PasswordService, js *infrastructure.JwtService) *UserUsecase {
 	return &UserUsecase{

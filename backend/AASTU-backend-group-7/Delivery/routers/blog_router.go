@@ -15,5 +15,11 @@ func BlogRouter() {
 		blogcontroller := controllers.NewBlogController(blogusecase)
 
 		blogRouter.POST("/create", blogcontroller.CreateBlog)
+		blogRouter.GET("/get", blogcontroller.GetUserPosts)
+		blogRouter.GET("/get/:slug", blogcontroller.GetPostBySlug)
+		blogRouter.GET("/get/:id", blogcontroller.GetPostByID)
+		blogRouter.GET("/get/:authorID", blogcontroller.GetPostByAuthorID)
+
+
 	}
 }

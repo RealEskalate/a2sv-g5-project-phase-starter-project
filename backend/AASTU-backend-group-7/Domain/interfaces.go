@@ -34,11 +34,17 @@ type RefreshUseCase interface {
 }
 
 type BlogRepository interface {
-	CreateBlog(ctx context.Context, post *Post) (error, int)
+    CreateBlog(ctx context.Context, post *Post) (error, int)
+    GetPostBySlug(ctx context.Context, slug string) ([]*Post, error, int)
+    GetPostByAuthorID(ctx context.Context, authorID primitive.ObjectID) ([]*Post, error, int)
+    GetPostByID(ctx context.Context, id primitive.ObjectID) (*Post, error, int)
 }
 
 type BlogUseCase interface {
 	CreateBlog(c *gin.Context, post *Post) (error, int)
+	GetPostBySlug(c *gin.Context, slug string) ([]*Post, error, int)
+	GetPostByAuthorID(c *gin.Context, authorID primitive.ObjectID) ([]*Post, error, int)
+	GetPostByID(c *gin.Context, id primitive.ObjectID) (*Post, error, int)
 }
 
 

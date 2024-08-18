@@ -27,23 +27,23 @@ func (r *UserRepository) Create(user *domain.User) error {
 	return err
 }
 
-func (r *UserRepository) GetByUsername(username string) (*domain.User, error) {
+func (r *UserRepository) GetUserByUsername(username *string) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var user domain.User
 	err := r.collection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
-	return &user, err
+	return nil, err
 }
 
-func (r *UserRepository) ByEmail(email *string) (*domain.User, error) {
+func (r *UserRepository) GetUserByEmail(email *string) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var user domain.User
 	err := r.collection.FindOne(ctx, bson.M{"email": *email}).Decode(&user)
-	return &user, err
+	return nil, err
 }
 
-func (r *UserRepository) GetByID(id primitive.ObjectID) (*domain.User, error) {
+func (r *UserRepository) GetUserByID(id primitive.ObjectID) (*domain.User, error) {
 	var user domain.User
 	err := r.collection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&user)
 	if err != nil {

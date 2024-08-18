@@ -92,13 +92,13 @@ func (bc *BlogController) SearchBlogPost(c *gin.Context) {
 		return
 	}
 
-	blogs, err := bc.blogUsecase.SearchBlogPosts(&search)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	// blogs, err := bc.blogUsecase.SearchBlogPosts(&search)
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
-	c.JSON(http.StatusOK, blogs)
+	// c.JSON(http.StatusOK, blogs)
 }
 
 func (bc *BlogController) DeleteBlogPost(c *gin.Context) {

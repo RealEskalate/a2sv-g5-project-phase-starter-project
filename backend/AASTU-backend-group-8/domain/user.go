@@ -23,7 +23,7 @@ type User struct {
 	ID       primitive.ObjectID `json:"id"  bson:"_id,omitempty"`
 	Name     string             `json:"name" validate:"required,min=2,max=100"`
 	Email    string             `json:"email" validate:"required,email"`
-	Password string             `json:"-"`
+	Password string             `json:"password"`
 	Role     string             `json:"role"`
 }
 
@@ -40,25 +40,28 @@ type Profile struct {
 }
 
 type UserUsecaseInterface interface {
+	GetUserByUsername(username *string) (*User, error)
+	GetUserByEmail(email *string) (*User, error)
 	Register(user *User) error
 	Login(user *AuthUser) (string, string, error)
-	DeleteRefeshToken(userID primitive.ObjectID) error
+	DeleteRefreshToken(userID primitive.ObjectID) error // Fixed typo here
 	ForgotPassword(email *string) error
 	GetProfile(objectID primitive.ObjectID) (*Profile, error)
-	UpdateProfile(objectID primitive.ObjectID, user *Profile) (*User, error)
-	GetAllUsers() ([]User, error)
+	UpdateProfile(objectID primitive.ObjectID, user *Profile) (*Profile, error)
+	GetAllUsers() ([]*User, error)
 	DeleteUser(objectID primitive.ObjectID) error
-	RefreshToken(refreshToken *RefreshToken) (string, error)
 }
+	// RefreshToken(refreshToken *RefreshToken) (string, error)
+
 
 type UserRepositoryInterface interface {
 	//User operations
 	Create(user *User) error
-	GetByUsername(username *string) (*User, error)
-	GetByEmail(email *string) (*User, error)
-	GetByID(objectID primitive.ObjectID) (*User, error)
-	GetAllUsers() ([]User, error)
-	UpdateProfile(userID primitive.ObjectID, profile *Profile) (*Profile, error)
-	DeleteUser(objectID primitive.ObjectID) error
+	GetUserByUsername(username *string) (*User, error)
+	GetUserByEmail(email *string) (*User, error)
+	GetUserByID(id primitive.ObjectID) (*User, error)
+	GetAllUsers() ([]*User, error)
+	UpdateProfile(id primitive.ObjectID, profile *Profile) (*Profile, error)
+	DeleteUser(id primitive.ObjectID) error
 }
 

@@ -3,36 +3,26 @@ package infrastructure
 import (
 	"crypto/tls"
 	"fmt"
-	"meleket/domain"
-	"meleket/utils"
 
 	gomail "gopkg.in/mail.v2"
 )
 
-type EmailService struct{
-	dialer *gomail.Dialer
-}
-
-//
-func (s *EmailService) SendOTPEmail(user *domain.User) error {
-	otp := utils.GenerateOTP(6)
-
-	// Store OTP in the database
-	if err := s.userRepo.StoreOTP(user.ID, otp); err != nil {
-		return err
-	}
-
+func SendOTPEmail(email, otp string) error {
 	// Set up the email
 	m := gomail.NewMessage()
 	m.SetHeader("From", "kalkidanamare11a@gmail.com")
-	m.SetHeader("To", user.Email)
+	m.SetHeader("To", email)
 	m.SetHeader("Subject", "Your OTP Code")
 	m.SetBody("text/plain", fmt.Sprintf("Your OTP code is %s", otp))
 
 	// Set up the SMTP server
-	d := gomail.NewDialer("smtp.gmail.com", 587, "kalidanamare11a@gmail.com", "axbs xtrk xuqm vvsa")
+	d := gomail.NewDialer("smtp.gmail.com", 587, "kalkidanamare11a@gmail.com", "jcwf vfzi njtd rayo")
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 
 	// Send the email
-	return d.DialAndSend(m)
+	if err := d.DialAndSend(m); err != nil {
+		return err
+	}
+
+	return nil
 }

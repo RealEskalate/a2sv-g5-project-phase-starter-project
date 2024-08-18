@@ -48,19 +48,19 @@ func (uc *UserController) Login(c *gin.Context){
 }
 
 func (uc *UserController) Logout(c *gin.Context) {
-	userID := c.MustGet("userID")
-	objectID, ok := userID.(primitive.ObjectID)
-	//the below might not be necessary
-	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid userID type"})
-		return
-	}
+	// userID := c.MustGet("userID")
+	// objectID, ok := userID.(primitive.ObjectID)
+	// //the below might not be necessary
+	// if !ok {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid userID type"})
+	// 	return
+	// }
 	
-	err := uc.userUsecase.DeleteRefeshToken(objectID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
-		return
-	}
+	// err := uc.userUsecase.DeleteRefeshToken(objectID)
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
+	// 	return
+	// }
 
 	c.JSON(http.StatusOK, gin.H{"message": "User logged out successfully"})
 }
@@ -72,13 +72,13 @@ func (uc *UserController) RefreshToken(c *gin.Context){
 		return
 	}
 
-	newToken, err := uc.userUsecase.RefreshToken(&token)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
-		return
-	}
+	// newToken, err := uc.userUsecase.RefreshToken(&token)
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
+	// 	return
+	// }
 
-	c.JSON(http.StatusOK, gin.H{"message": "Token refreshed successfully", "token": newToken})
+	// c.JSON(http.StatusOK, gin.H{"message": "Token refreshed successfully", "token": newToken})
 }
 
 func (uc *UserController) ForgotPassword(c *gin.Context){

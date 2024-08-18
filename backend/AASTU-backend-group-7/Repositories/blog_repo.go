@@ -28,8 +28,8 @@ func NewBlogRepository(posts Domain.Collection, comments Domain.Collection, tags
 }
 
 func (br *blogrepository) CreateBlog(ctx context.Context, post *Domain.Post) (error, int) {
-	// gener
-	
+
+	// insert post to post collection
 	_, err := br.postCollection.InsertOne(ctx, post)
 	if err != nil {
 		fmt.Println("error at insert", err)
@@ -47,3 +47,4 @@ func (br *blogrepository) CreateBlog(ctx context.Context, post *Domain.Post) (er
 
 	return nil, 200
 }
+

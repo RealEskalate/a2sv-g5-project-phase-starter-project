@@ -17,6 +17,10 @@ func SignJWTWithPayload(username string, role string, tokenType string, tokenLif
 		return "", domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
+	if tokenType != "accessToken" && tokenType != "refreshToken" {
+		return "", domain.NewError("Invalid token type field", domain.ERR_INTERNAL_SERVER)
+	}
+
 	jwtSecret := []byte(secret)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username":  username,
@@ -96,4 +100,16 @@ func GetRole(token *jwt.Token) (string, domain.CodedError) {
 	}
 
 	return fmt.Sprintf("%v", role), nil
+}
+
+/*
+Get role of the token
+*/
+func GetTokenType(token *jwt.Token) (string, domain.CodedError) {
+	tokenType, ok := token.Claims.(jwt.MapClaims)["tokenType"]
+	if !ok {
+		return "", domain.NewError("Invalid token: TokenType not found", domain.ERR_UNAUTHORIZED)
+	}
+
+	return fmt.Sprintf("%v", tokenType), nil
 }

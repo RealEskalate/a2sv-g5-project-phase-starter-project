@@ -26,7 +26,7 @@ WORKFLOW:
   - Checks the role of the user associated with the token
   - Calls `c.Next()` if the querying user has permission to access the endpoint
 */
-func AuthMiddlewareWithRoles(validRoles []string, secret string, ValidateToken func(string, string) (*jwt.Token, error)) gin.HandlerFunc {
+func AuthMiddlewareWithRoles(secret string, ValidateToken func(string, string) (*jwt.Token, error), validRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// obtain token from the request header
 		authHeader := c.GetHeader("Authorization")
@@ -45,6 +45,18 @@ func AuthMiddlewareWithRoles(validRoles []string, secret string, ValidateToken f
 		token, validErr := ValidateToken(headerSegments[1], secret)
 		if validErr != nil {
 			MiddlewareError(c, 401, validErr.Error())
+			return
+		}
+
+		// check whether the token is an accessToken
+		tokenType, err := jwt_service.GetTokenType(token)
+		if err != nil {
+			MiddlewareError(c, 401, err.Error())
+			return
+		}
+
+		if tokenType != "accessToken" {
+			MiddlewareError(c, 401, "Invalid token type: make sure to use the accessToken")
 			return
 		}
 

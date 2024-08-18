@@ -35,4 +35,5 @@ type UserRepositoryInterface interface {
 type UserUsecaseInterface interface {
 	Signup(c context.Context, user *User) CodedError
 	Login(c context.Context, user *User) (string, string, CodedError)
+	RenewAccessToken(c context.Context, user *User, refreshToken string) (string, CodedError)
 }

@@ -1,4 +1,4 @@
-package jwt
+package jwt_service
 
 import (
 	"blog_api/domain"
@@ -21,7 +21,7 @@ func SignJWTWithPayload(username string, role string, tokenType string, tokenLif
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username":  username,
 		"role":      role,
-		"expiresAt": time.Now().Add(time.Hour * 2),
+		"expiresAt": time.Now().Round(0).Add(tokenLifeSpan),
 		"tokenType": tokenType,
 	})
 	jwtToken, signingErr := token.SignedString(jwtSecret)
@@ -55,4 +55,21 @@ func ValidateAndParseToken(rawToken string, secret string) (*jwt.Token, error) {
 	}
 
 	return token, nil
+}
+
+/*
+Get expiry date of the token
+*/
+func GetExpiryDate(token *jwt.Token) (time.Time, domain.CodedError) {
+	expiresAt, ok := token.Claims.(jwt.MapClaims)["expiresAt"]
+	if !ok {
+		return time.Now(), domain.NewError("Invalid token: Expiry date not found", domain.ERR_UNAUTHORIZED)
+	}
+
+	expiresAtTime, convErr := time.Parse(time.RFC3339Nano, fmt.Sprintf("%v", expiresAt))
+	if convErr != nil {
+		return time.Now(), domain.NewError("Error while parsing expiry date: "+convErr.Error(), domain.ERR_UNAUTHORIZED)
+	}
+
+	return expiresAtTime, nil
 }

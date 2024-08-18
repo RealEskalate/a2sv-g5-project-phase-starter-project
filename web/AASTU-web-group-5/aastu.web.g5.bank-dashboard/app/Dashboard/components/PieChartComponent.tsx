@@ -1,89 +1,104 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react'; // Import React and useState
-import { Pie, PieChart, Tooltip, Cell, Sector } from "recharts"
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Pie, PieChart, Tooltip, Cell, Sector } from "recharts";
 
-// Dummy data for the pie chart
-const dummyChartData = [
-  { browser: "Others", Expenses: 350, fill: "#FF6384" },
-  { browser: "Transfer", Expenses: 300, fill: "#36A2EB" },
-  { browser: "Shopping", Expenses: 200, fill: "#FFCE56" },
-  { browser: "Services", Expenses: 150, fill: "#4BC0C0" },
-]
+// Define state for data and errors
+const PieChartComponent: React.FC = () => {
+  const [data, setData] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-// Calculate the total sum of expenses
-const totalExpenses = dummyChartData.reduce((sum, entry) => sum + entry.Expenses, 0);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions/expenses', {
+          headers: {
+            Authorization: `Bearer your_bearer_token_here`, // Replace with your token
+          },
+        });
+        setData(response.data.data); // Adjust based on API response
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        setError("Failed to fetch data. Please check the console for more details.");
+      }
+    };
 
-// Define a custom label component
-const CustomLabel = (props: any) => {
-  const { cx, cy, midAngle, outerRadius, value, name } = props;
-  const RADIAN = Math.PI / 180;
-  const radius = (outerRadius) / 2; // Position inside the sector
+    fetchData();
+  }, []);
 
-  // Calculate the position of the label
-  const x = cx + radius * Math.cos(-RADIAN * midAngle);
-  const y = cy + radius * Math.sin(-RADIAN * midAngle);
+  // Define dummy data to fallback on if needed
+  const dummyChartData = data.length === 0 ? [
+    { browser: "Others", Expenses: 350, fill: "#FF6384" },
+    { browser: "Transfer", Expenses: 300, fill: "#36A2EB" },
+    { browser: "Shopping", Expenses: 200, fill: "#FFCE56" },
+    { browser: "Services", Expenses: 150, fill: "#4BC0C0" },
+  ] : data.map((item: any) => ({
+    browser: item.type, // or other relevant property
+    Expenses: item.amount,
+    fill: "#8884d8", // Customize as needed
+  }));
 
-  // Calculate the percentage
-  const percentage = ((value / totalExpenses) * 100);
+  const totalExpenses = dummyChartData.reduce((sum, entry) => sum + entry.Expenses, 0);
 
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="#fff"
-      textAnchor="middle"
-      className="text-xs font-semibold"
-      dominantBaseline="central"
-    >
-      <tspan x={x} dy="-1.2em">{name}</tspan>
-      <tspan x={x} dy="1.2em">{percentage.toFixed(1)}%</tspan>
-    </text>
-  );
-};
+  const CustomLabel = (props: any) => {
+    const { cx, cy, midAngle, outerRadius, value, name } = props;
+    const RADIAN = Math.PI / 180;
+    const radius = (outerRadius) / 2;
 
-// Define a custom shape for the hover effect
-const renderActiveShape = (props: any) => {
-  const { cx, cy, midAngle, outerRadius, startAngle, endAngle, fill } = props;
-  const RADIAN = Math.PI / 180;
+    const x = cx + radius * Math.cos(-RADIAN * midAngle);
+    const y = cy + radius * Math.sin(-RADIAN * midAngle);
 
-  // Increase outer radius for the hover effect
-  const hoverRadius = outerRadius + 15; // Adjust the value as needed
+    const percentage = ((value / totalExpenses) * 100);
 
-  return (
-    <g>
-      <Sector
-        cx={cx}
-        cy={cy}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        outerRadius={hoverRadius}
-        fill={fill}
-      />
-      <Sector
-        cx={cx}
-        cy={cy}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        outerRadius={outerRadius}
-        fill={fill}
-        stroke="none"
-      />
-    </g>
-  );
-};
-
-// PieChart component
-export function PieChartComponent() {
-  const [activeIndex, setActiveIndex] = useState<number | 0>(0);
-
-  const onPieEnter = (data: any, index: number) => {
-    setActiveIndex(index);
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="#fff"
+        textAnchor="middle"
+        className="text-xs font-semibold"
+        dominantBaseline="central"
+      >
+        <tspan x={x} dy="-1.2em">{name}</tspan>
+        <tspan x={x} dy="1.2em">{percentage.toFixed(1)}%</tspan>
+      </text>
+    );
   };
 
-  const onPieLeave = () => {
-    setActiveIndex(0);
+  const renderActiveShape = (props: any) => {
+    const { cx, cy, midAngle, outerRadius, startAngle, endAngle, fill } = props;
+    const RADIAN = Math.PI / 180;
+    const hoverRadius = outerRadius + 15;
+
+    return (
+      <g>
+        <Sector
+          cx={cx}
+          cy={cy}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          outerRadius={hoverRadius}
+          fill={fill}
+        />
+        <Sector
+          cx={cx}
+          cy={cy}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          outerRadius={outerRadius}
+          fill={fill}
+          stroke="none"
+        />
+      </g>
+    );
   };
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -96,13 +111,13 @@ export function PieChartComponent() {
           cy="50%"
           outerRadius={100}
           fill="#8884d8"
-          activeShape={renderActiveShape} // Apply the hover effect
-          label={CustomLabel} // Use the custom label component
-          stroke="#fff" // Set the stroke color to white
-          strokeWidth={3} // Set the stroke width for the border
-          onMouseEnter={onPieEnter} // Handle mouse enter
-          onMouseLeave={onPieLeave} // Handle mouse leave
-          activeIndex={activeIndex} // Apply hover effect based on activeIndex
+          activeShape={renderActiveShape}
+          label={CustomLabel}
+          stroke="#fff"
+          strokeWidth={3}
+          onMouseEnter={(_, index) => setActiveIndex(index)}
+          onMouseLeave={() => setActiveIndex(0)}
+          activeIndex={activeIndex}
         >
           {dummyChartData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -110,5 +125,7 @@ export function PieChartComponent() {
         </Pie>
       </PieChart>
     </div>
-  )
-}
+  );
+};
+
+export default PieChartComponent;

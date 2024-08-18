@@ -1,5 +1,5 @@
 // mockData.ts
-import Deposit from "@/public/assets/icons/deposit.jpg"
+import bDeposit from "@/public/assets/icons/deposit.jpg"
 import Transfer from "@/public/assets/icons/transfer.jpg"
 import Paypal from '@/public/assets/icons/paypal.jpg'
 

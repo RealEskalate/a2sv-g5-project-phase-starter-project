@@ -1,12 +1,22 @@
-"use client"
+"use client";
 
-import React from 'react';
-import Image from 'next/image'; // Assuming you're using Next.js
-import { RecentTransaction } from './mockData'; // Adjust the path as needed
-import { Slice } from 'lucide-react';
+import React, { useEffect } from 'react';
+import Image from 'next/image';
+import { getRecentTransactions } from '../slices/transactionsSlice';
+import { useAppDispatch, useAppSelector } from '../hooks';
 
 export const RecentTransactionCard = () => {
-  const slicedTransactions = RecentTransaction.slice(0, 3);
+  const dispatch = useAppDispatch();
+  const { data, loading, error } = useAppSelector((state) => state.transactions);
+
+  useEffect(() => {
+    dispatch(getRecentTransactions());
+  }, [dispatch]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  const slicedTransactions = data.slice(0, 3);
 
   return (
     <div>
@@ -21,7 +31,7 @@ export const RecentTransactionCard = () => {
                 <p className="text-xs md:text-sm text-gray-500">{transaction.date}</p>
               </div>
             </div>
-            {transaction.amount[0]=="+" ? 
+            {transaction.amount[0] === "+" ? 
             <p className="font-semibold text-green-600 text-sm md:text-base">{transaction.amount}</p>
             : <p className="font-semibold text-red-700 text-sm md:text-base">{transaction.amount}</p> }
           </div>
@@ -30,6 +40,5 @@ export const RecentTransactionCard = () => {
     </div>
   );
 };
-
 
 export default RecentTransactionCard;

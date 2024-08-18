@@ -38,7 +38,95 @@ func (b *BlogRepository) FetchBlogPostByID(ctx context.Context, postID string) (
 	return &post, nil
 }
 
-// fetches blogs based on filter. we can provide
+// fetches blogs based on filter.The filtering options are defined in the domain named BlogFilterOptions.
+func (b *BlogRepository) GetBlogPosts(ctx context.Context, filters domain.BlogFilterOptions) ([]domain.Blog, int, error) {
+	var query bson.D
+
+	// Search by title
+	if filters.Title != "" {
+		query = append(query, bson.E{Key: "title", Value: bson.D{{Key: "$regex", Value: filters.Title}, {Key: "$options", Value: "i"}}}) // Case-insensitive
+	}
+
+	// Search by author name
+	if filters.Author != "" {
+		query = append(query, bson.E{Key: "username", Value: bson.D{{Key: "$regex", Value: filters.Author}, {Key: "$options", Value: "i"}}}) // Case-insensitive
+	}
+
+	// Filter by tag
+	if len(filters.Tags) > 0 {
+		query = append(query, bson.E{Key: "tags", Value: bson.D{{Key: "$in", Value: filters.Tags}}})
+	}
+
+	// Filter by date range
+	if !filters.DateFrom.IsZero() && !filters.DateTo.IsZero() {
+		query = append(query, bson.E{Key: "created_at", Value: bson.D{{Key: "$gte", Value: filters.DateFrom}, {Key: "$lte", Value: filters.DateTo}}})
+	} else if !filters.DateFrom.IsZero() {
+		query = append(query, bson.E{Key: "created_at", Value: bson.D{{Key: "$gte", Value: filters.DateFrom}}})
+	} else if !filters.DateTo.IsZero() {
+		query = append(query, bson.E{Key: "created_at", Value: bson.D{{Key: "$lte", Value: filters.DateTo}}})
+	}
+
+	// Filter by popularity metrics
+	if filters.MinLikes > 0 {
+		query = append(query, bson.E{Key: "liked_by", Value: bson.D{{Key: "$size", Value: bson.D{{Key: "$gte", Value: filters.MinLikes}}}}})
+	}
+	if filters.MinDislikes > 0 {
+		query = append(query, bson.E{Key: "disliked_by", Value: bson.D{{Key: "$size", Value: bson.D{{Key: "$gte", Value: filters.MinDislikes}}}}})
+	}
+	if filters.MinComments > 0 {
+		query = append(query, bson.E{Key: "comments", Value: bson.D{{Key: "$size", Value: bson.D{{Key: "$gte", Value: filters.MinComments}}}}})
+	}
+	if filters.MinViewCount > 0 {
+		query = append(query, bson.E{Key: "view_count", Value: bson.D{{Key: "$gte", Value: filters.MinViewCount}}})
+	}
+
+	findOptions := options.Find()
+
+	// Sorting
+	sort := bson.D{}
+	if filters.SortBy != "" {
+		sortDirection := 1 // Default ascending
+		if filters.SortDirection == "desc" {
+			sortDirection = -1
+		}
+		sort = append(sort, bson.E{Key: filters.SortBy, Value: sortDirection})
+		findOptions.SetSort(sort)
+	}
+
+	// Pagination
+	if filters.Page > 0 && filters.PostsPerPage > 0 {
+		skip := (filters.Page - 1) * filters.PostsPerPage
+		findOptions.SetSkip(int64(skip))
+		findOptions.SetLimit(int64(filters.PostsPerPage))
+	}
+
+	// Execute the query
+	cursor, err := b.collection.Find(ctx, query, findOptions)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer cursor.Close(ctx)
+
+	var blogDTOs []dtos.BlogDTO
+	if err := cursor.All(ctx, &blogDTOs); err != nil {
+		return nil, 0, err
+	}
+
+	// Convert DTOs to domain models
+	var blogs []domain.Blog
+	for _, blogDTO := range blogDTOs {
+		blogs = append(blogs, *toDomain(&blogDTO))
+	}
+
+	// Get total count for pagination metadata
+	totalCount, err := b.collection.CountDocuments(ctx, query)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return blogs, int(totalCount), nil
+}
+
 
 // DeleteBlogPost implements domain.BlogRepositoryInterface.
 func (b *BlogRepository) DeleteBlogPost(ctx context.Context, blogId string) error {

@@ -17,21 +17,8 @@ type User struct {
 	Username  string             `json:"username" bson:"username"`
 	Password  string             `json:"password" bson:"password"`
 	Email     string             `json:"email" bson:"email"`
-	Role      string             `json:"role" bson:"role"` // e.g., "Admin" or "User"
+	IsAdmin   bool               `json:"isAdmin" bson:"isAdmin"`
 	Active    bool               `json:"active" bson:"active"`
-}
-
-type SignupRequest struct {
-	Firstname string `json:"firstname" bson:"firstname" binding:"required"`
-	Lastname  string `json:"lastname" bson:"lastname" binding:"required"`
-	Username  string `json:"username" bson:"username" binding:"required"`
-	Password  string `json:"password" bson:"password" binding:"required"`
-	Email     string `json:"email" bson:"email" binding:"required"`
-}
-
-type SignupResponse struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
 }
 
 type LoginRequest struct {
@@ -56,10 +43,10 @@ type ResetPasswordRequest struct {
 }
 
 type UserUsecase interface {
+	SignupUsecase(ctx context.Context, user *User) error
+	// UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *User) error
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)
-	SignupUsecase(ctx context.Context, user *User) error
-	// UpdateUser(userID primitive.ObjectID, updatedUser *User) error
 	DeleteRefreshTokenByUserID(ctx context.Context, userID string) error
 	GeneratePasswordResetToken(ctx context.Context, email, resetTokenSecret string, expiryHour int) error
 	ResetPassword(ctx context.Context, resetToken, newPassword, resetTokenSecret string) error
@@ -68,7 +55,7 @@ type UserUsecase interface {
 type UserRepository interface {
 	SignupRepository(ctx context.Context, user *User) error
 	// ForgetPassword(email string) error
-	// UpdateUser(userID primitive.ObjectID, updatedUser *User) error
+	// UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *User) error
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)
 	DeleteRefreshTokenByUserID(ctx context.Context, userID string) error // used in logout

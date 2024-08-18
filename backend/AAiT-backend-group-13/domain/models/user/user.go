@@ -52,6 +52,19 @@ type Config struct {
 	PasswordHasher ihash.Service
 }
 
+// Config holds parameters for creating a new User.
+type MapConfig struct {
+	Id             uuid.UUID
+	FirstName      string
+	LastName       string
+	Username       string
+	Email          string
+	HashedPassword string
+	IsAdmin        bool
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+}
+
 // New creates a new User with the provided configuration.
 func New(config Config) (*User, error) {
 	if err := validateUsername(config.Username); err != nil {
@@ -84,6 +97,25 @@ func New(config Config) (*User, error) {
 		email:        config.Email,
 		firstName:    config.FirstName,
 		lastName:     config.LastName,
+		createdAt:    time.Now(),
+		updatedAt:    time.Now(),
+	}, nil
+}
+
+// NewMap maps a User from database and returns user pointer.
+func NewMap(config MapConfig) (*User, error) {
+
+	//returns user with specified fields
+	return &User{
+		id:           config.Id,
+		username:     config.Username,
+		passwordHash: config.HashedPassword,
+		isAdmin:      config.IsAdmin,
+		email:        config.Email,
+		firstName:    config.FirstName,
+		lastName:     config.LastName,
+		createdAt:    config.CreatedAt,
+		updatedAt:    config.UpdatedAt,
 	}, nil
 }
 

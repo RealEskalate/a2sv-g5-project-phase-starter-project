@@ -21,11 +21,11 @@ type TokenData struct {
 
 // Email and server configuration
 const (
-	smtpHost      = "smtp.gmail.com"          // SMTP server for Gmail
-	smtpPort      = 465                       // Port for SMTPS (SSL/TLS)
+	smtpHost      = "smtp.gmail.com"              // SMTP server for Gmail
+	smtpPort      = 465                           // Port for SMTPS (SSL/TLS)
 	emailFrom     = "yordanoslegesse15@gmail.com" // Your Gmail address
-	emailPassword = "bcewmdllhervddxu"        // Your app-specific password
-	tokenTTL      = time.Minute * 15          // Token Time-To-Live (5 minutes)
+	emailPassword = "bcewmdllhervddxu"            // Your app-specific password
+	tokenTTL      = time.Minute * 15              // Token Time-To-Live (5 minutes)
 )
 
 // Generates a secure random OTP

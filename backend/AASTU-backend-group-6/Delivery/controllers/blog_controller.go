@@ -13,6 +13,13 @@ type BlogController struct {
 	Validator   domain.ValidateInterface
 }
 
+func NewBlogController(BlogUsecase domain.BlogUsecase, validator domain.ValidateInterface) BlogController {
+	return BlogController{
+		BlogUsecase: BlogUsecase,
+		Validator: validator,
+	}
+}
+
 // CommentOnBlog implements domain.BlogUsecase.
 func (b BlogController) CommentOnBlog(c *gin.Context) {
 	panic("unimplemented")
@@ -67,10 +74,54 @@ func (b BlogController) CreateBlog(c *gin.Context) {
 	})
 
 }
-
 // DeleteBlogByID implements domain.BlogUsecase.
 func (b BlogController) DeleteBlogByID(c *gin.Context) {
-	panic("unimplemented")
+	blog_id := c.Param("id")
+	uid, isAuth := c.Get("id")
+	if isAuth{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status: http.StatusUnauthorized,
+		})
+		return
+	}
+	userID, isString := uid.(string)
+	if !isString{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status: http.StatusUnauthorized,
+		})
+		return
+	}
+	role, isAuth := c.Get("role")
+	if isAuth{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status: http.StatusUnauthorized,
+		})
+		return
+	}
+	userRole, isString := role.(string)
+	if !isString{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status: http.StatusUnauthorized,
+		})
+		return
+	}
+	err := b.BlogUsecase.DeleteBlogByID(userID, blog_id, userRole)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
+			Message: err.Error(),
+			Status: http.StatusInternalServerError,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, domain.SuccessResponse{
+		Message: "Blog deleted successfully.",
+		Status: http.StatusOK,
+	})
+
 }
 
 // FilterBlogsByTag implements domain.BlogUsecase.
@@ -152,12 +203,5 @@ func (b BlogController) UpdateBlogByID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	} else {
 		c.JSON(http.StatusAccepted, gin.H{"updated_blog": updatedBlog})
-	}
-}
-
-func NewBlogController(BlogUsecase domain.BlogUsecase, validator domain.ValidateInterface) BlogController {
-	return BlogController{
-		BlogUsecase: BlogUsecase,
-		Validator:   validator,
 	}
 }

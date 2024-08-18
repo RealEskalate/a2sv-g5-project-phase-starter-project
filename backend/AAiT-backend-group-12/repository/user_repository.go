@@ -2,6 +2,7 @@ package repository
 
 import (
 	"blog_api/domain"
+	"blog_api/domain/dtos"
 	"context"
 	"strings"
 
@@ -81,4 +82,30 @@ func (r *UserRepository) SetRefreshToken(c context.Context, user *domain.User, n
 	}
 
 	return nil
+}
+
+func (r *UserRepository) UpdateUser(c context.Context, username string, user *dtos.UpdateUser) (map[string]string, domain.CodedError) {
+	var updatedData = make(map[string]string)
+	var updates = bson.D{}
+
+	if user.Bio != "" {
+		updatedData["bio"] = user.Bio
+		updates = append(updates, bson.E{Key: "bio", Value: user.Bio})
+	}
+
+	if user.PhoneNumber != "" {
+		updatedData["phonenumber"] = user.PhoneNumber
+		updates = append(updates, bson.E{Key: "phonenumber", Value: user.PhoneNumber})
+	}
+
+	res := r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$set", Value: updates}})
+	if res.Err() != nil && res.Err() == mongo.ErrNoDocuments {
+		return updatedData, domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
+	if res.Err() != nil {
+		return updatedData, domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return updatedData, nil
 }

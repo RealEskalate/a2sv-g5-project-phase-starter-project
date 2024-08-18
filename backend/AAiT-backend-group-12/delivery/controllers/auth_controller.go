@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"blog_api/domain"
+	"blog_api/domain/dtos"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -85,4 +86,32 @@ func (controller *AuthController) HandleRenewAccessToken(c *gin.Context) {
 	}
 
 	c.JSON(200, domain.Response{"accessToken": accessToken})
+}
+
+func (controller *AuthController) HandleUpdateUser(c *gin.Context) {
+	reqUsername := strings.TrimSpace(c.Param("username"))
+	if reqUsername == "" {
+		c.JSON(400, domain.Response{"error": "Username is required"})
+		return
+	}
+
+	var updatedUser dtos.UpdateUser
+	if err := c.BindJSON(&updatedUser); err != nil {
+		c.JSON(400, domain.Response{"error": "Invalid input"})
+		return
+	}
+
+	tokenUsername, ok := c.Keys["username"]
+	if !ok {
+		c.JSON(400, domain.Response{"error": "Username not found in token"})
+		return
+	}
+
+	resData, err := controller.usecase.UpdateUser(c, reqUsername, tokenUsername.(string), &updatedUser)
+	if err != nil {
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, domain.Response{"message": "User updated", "data": resData})
 }

@@ -10,13 +10,15 @@ import { toggleHamburgerMenu } from '@/lib/redux/slices/uiSlice';
 
 export default function NavBar() {
   const path: { [key: string]: string } = {
-    '/': 'Dashboard',
-    '/transactions': 'Transactions',
-    '/accounts': 'Accounts',
-    '/investments': 'Investments',
-    '/credit-card': 'Credit Card',
-    '/loans': 'Loans',
-    '/services': 'Services',
+    '/bank-dash': 'Overview',
+    '/bank-dash/transactions': 'Transactions',
+    '/bank-dash/accounts': 'Accounts',
+    '/bank-dash/investments': 'Investments',
+    '/bank-dash/credit-card': 'Credit Card',
+    '/bank-dash/loans': 'Loans',
+    '/bank-dash/services': 'Services',
+    '/bank-dash/settings': 'Settings',
+
   };
   const pathname = usePathname();
   console.log(pathname);

@@ -40,13 +40,13 @@ func (uc *UserController) LoginController(c *gin.Context) {
 		return
 	}
 
-	accessToken, err := auth.CreateAccessToken(&u, uc.env.AccessTokenSecret, uc.env.AccessTokenExpiryHour)
+	accessToken, err := auth.CreateAccessToken(&u, uc.Env.AccessTokenSecret, uc.Env.AccessTokenExpiryHour)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate access token"})
 		return
 	}
 
-	refreshToken, err := auth.CreateRefreshToken(&u, uc.env.RefreshTokenSecret, uc.env.RefreshTokenExpiryHour)
+	refreshToken, err := auth.CreateRefreshToken(&u, uc.Env.RefreshTokenSecret, uc.Env.RefreshTokenExpiryHour)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate refresh token"})
 		return

@@ -6,6 +6,7 @@ import (
 
 	"aait.backend.g10/domain"
 	"aait.backend.g10/usecases/interfaces"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -35,6 +36,7 @@ func (l *LikeRepository) LikeBlog(like domain.Like) error {
 	err := l.Collection.FindOne(ctx, filter).Decode(&existingLike)
 	if err == mongo.ErrNoDocuments {
 		// Insert a new document
+		like.ID = uuid.New()
 		_, err = l.Collection.InsertOne(ctx, like)
 	} else if err == nil {
 		// Update the existing document

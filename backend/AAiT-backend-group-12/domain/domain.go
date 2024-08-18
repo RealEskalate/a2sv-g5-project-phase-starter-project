@@ -9,20 +9,20 @@ type Blog struct {
 	ID         string    `json:"id"`
 	Title      string    `json:"title"`
 	Content    string    `json:"content"`
-	UserID     string    `json:"user_id"`
+	Username   string    `json:"username"`
 	Tags       []string  `json:"tags"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 	ViewCount  uint      `json:"view_count"`
-	LikedBy    []User    `json:"liked_by"`
-	DislikedBy []User    `json:"disliked_by"`
+	LikedBy    []string  `json:"liked_by"`
+	DislikedBy []string  `json:"disliked_by"`
 	Comments   []Comment `json:"comment"`
 }
 
 // User represents a user entity in the domain.
 type User struct {
 	ID        string    `json:"id"`
-	UserName  string    `json:"username"`
+	Username  string    `json:"username"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
 	Role      string    `json:"role"`
@@ -33,7 +33,7 @@ type User struct {
 type Comment struct {
 	ID        string    `json:"id"`
 	Content   string    `json:"content"`
-	UserID    string    `json:"user_id"`
+	Username  string    `json:"username"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	ViewCount uint      `json:"view_count"`

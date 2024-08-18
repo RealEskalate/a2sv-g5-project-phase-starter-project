@@ -29,13 +29,23 @@ func (uuse *UserUsecase) LoginUser(c context.Context, user domain.User) (string,
 }
 
 func (uuse *UserUsecase) ForgotPassword(c context.Context, email string) error {
-	return nil
+	_, cancel := context.WithTimeout(c, uuse.contextTimeout)
+	defer cancel()
+	return uuse.UserRepo.ForgotPassword(email)
+}
+
+func (uuse *UserUsecase) ResetPassword(c context.Context, token string, newPassword string) error {
+	_, cancel := context.WithTimeout(c, uuse.contextTimeout)
+	defer cancel()
+	return uuse.UserRepo.ResetPassword(token, newPassword)
 }
 
 func (uuse *UserUsecase) LogoutUser(c context.Context) error {
 	return nil
 }
 
-func (uuse *UserUsecase) PromoteDemoteUser(c context.Context, userid string) error {
-	return nil
+func (uuse *UserUsecase) PromoteDemoteUser(c context.Context, userid string, isAdmin bool) error {
+	_, cancel := context.WithTimeout(c, uuse.contextTimeout)
+	defer cancel()
+	return uuse.UserRepo.PromoteDemoteUser(userid, isAdmin)
 }

@@ -18,8 +18,12 @@ func main() {
 	bloguse := usecase.NewBlogUsecase(blogrepo, time.Second*300)
 	blogcont := controllers.NewBlogController(bloguse)
 
+	userrepo := repositories.NewUserRepository(client)
+	useruse := usecase.NewUserUsecase(userrepo, time.Second*300)
+	usercont := controllers.NewUserController(useruse)
+
 	//the router gateway
 	r := gin.Default()
-	router.SetRouter(r, blogcont)
-	r.Run()
+	router.SetRouter(r, blogcont, usercont)
+	r.Run("localhost:8000")
 }

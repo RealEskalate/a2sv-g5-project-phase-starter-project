@@ -13,66 +13,140 @@ import {
 import {
   ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
 } from "@/components/ui/chart";
+import { getallTransactions } from "@/app/dashboard/transactions/component/getTransactions";
+import { TransactionData } from "@/types";
+import { useState,useEffect } from "react";
 
-const chartData = [
-  { expense: "Other", value: 30, fill: "#1814F3" },
-  { expense: "Investment", value: 20, fill: "#343C6A" },
-  { expense: "Bill Expense", value: 15, fill: "#FC7900" },
-  { expense: "Entertainment", value: 35, fill: "#FA00FF" },
-];
 
-const chartConfig = {
-  value: {
-    label: "Value",
-  },
-  other: {
-    label: "Other",
-    color: "#1814F3",
-  },
-  investment: {
-    label: "Investment",
-    color: "#343C6A",
-  },
-  billExpense: {
-    label: "Bill Expense",
-    color: "#FC7900",
-  },
-  entertainment: {
-    label: "Entertainment",
-    color: "#FA00FF",
-  },
-} satisfies ChartConfig;
+
+
+const categoryTotals ={
+  Other:0,
+  Investment:0,
+  BillExpense:0,
+  Entertainment:0
+};
+
 
 export function Pie_chart() {
+  const [transactions, setTransactions] = useState<TransactionData[]>([]);
+  const [chartData,setChartData] = useState<{ expense: string; value: number; fill: string; }[]>([]);
+  useEffect(()=>{
+    const fetchTransactions = async () => {
+      const transactions = await getallTransactions(0, 100);
+       setTransactions(transactions || []);}
+       fetchTransactions();
+  },[]);
+
+  useEffect(()=>{
+      transactions.map((transaction: TransactionData) => {
+        switch (transaction.type) {
+          case "shopping":
+            categoryTotals.Entertainment += transaction.amount;
+            break;
+          case "deposit":
+            categoryTotals.Investment += transaction.amount;
+            break;
+          case "service":
+            categoryTotals.BillExpense += transaction.amount;
+            break;
+          case "transfer":
+            categoryTotals.BillExpense += transaction.amount;
+            break;
+          default:
+            categoryTotals.Other += transaction.amount;
+            break;
+        }
+      });
+
+      const totalSum =
+        categoryTotals.Other +
+        categoryTotals.Investment +
+        categoryTotals.BillExpense +
+        categoryTotals.Entertainment;
+
+        const newChartData = [
+          {
+            expense: "Other",
+            value: Math.round((categoryTotals.Other / totalSum) * 100),
+            fill: "#1814F3",
+          },
+          {
+            expense: "Investment",
+            value: Math.round((categoryTotals.Investment / totalSum) * 100),
+            fill: "#343C6A",
+          },
+          {
+            expense: "Bill Expense",
+            value: Math.round((categoryTotals.BillExpense / totalSum) * 100),
+            fill: "#FC7900",
+          },
+          {
+            expense: "Entertainment",
+            value: Math.round((categoryTotals.Entertainment / totalSum) * 100),
+            fill: "#FA00FF",
+          },
+        ];
+        setChartData(newChartData);
+  },[transactions]);
+  
+ const chartConfig = {
+   value: {
+     label: "Value",
+   },
+   other: {
+     label: "Other",
+     color: "#1814F3",
+   },
+   investment: {
+     label: "Investment",
+     color: "#343C6A",
+   },
+   billExpense: {
+     label: "Bill Expense",
+     color: "#FC7900",
+   },
+   entertainment: {
+     label: "Entertainment",
+     color: "#FA00FF",
+   },
+ } satisfies ChartConfig;
+
   return (
-    <Card className="max-h-[370px] ">
+    <Card >
       <CardContent>
-        <ChartContainer config={chartConfig} className="p-0 w-full ">
-          <ResponsiveContainer width="100%" >
+        <ChartContainer config={chartConfig} className="h-60 w-full ">
+        
             <PieChart>
-              <Tooltip />
+              <ChartTooltip
+                content={<ChartTooltipContent nameKey="expense" hideLabel />}
+              />
               <Pie
                 data={chartData}
                 dataKey="value"
                 nameKey="expense"
-                outerRadius="90%"  
-                fill="#8884d8"
+                outerRadius="80%"
                 label
-                labelLine
                 paddingAngle={5}
               >
                 <LabelList
                   dataKey="expense"
                   position="inside"
                   fontSize={12}
-                  formatter={(value: string) => value}
-                  stroke="#fff"
-                  className="font-inter font-light"
+                  fontFamily="font-lustria"
+                  formatter={(value: number) =>
+                    ` ${value}`
+                  }
+                  // stroke="#fff"
+                  // className=" font-bold text-blue "
                 />
               </Pie>
             </PieChart>
-          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
     </Card>

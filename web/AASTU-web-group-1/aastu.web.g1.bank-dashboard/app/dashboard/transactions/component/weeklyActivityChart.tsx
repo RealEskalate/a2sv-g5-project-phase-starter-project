@@ -62,10 +62,11 @@ export function Barchart() {
 
   return (
     <Card>
-      <CardContent className="sm:p-0">
-        <ChartContainer config={chartConfig} className=" p-0 max-h-[370px]">
-          <ResponsiveContainer >
+      <CardContent >
+        <ChartContainer config={chartConfig} className="h-60 w-full ">
+      
             <BarChart data={chartData}>
+              <Legend />
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
               <XAxis
                 dataKey="day"
@@ -76,7 +77,7 @@ export function Barchart() {
               />
               <YAxis />
               <Tooltip content={<ChartTooltipContent indicator="dashed" />} />
-              <Legend />
+
               <Bar
                 dataKey="Deposite"
                 fill={chartConfig.Deposite.color}
@@ -90,7 +91,6 @@ export function Barchart() {
                 barSize={10}
               />
             </BarChart>
-          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
     </Card>

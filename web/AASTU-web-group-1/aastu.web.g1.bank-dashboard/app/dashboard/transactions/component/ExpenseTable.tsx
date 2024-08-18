@@ -1,22 +1,28 @@
 import React from "react";
 import { CiSaveDown1, CiSaveUp1 } from "react-icons/ci";
+import { getCurrentUser } from "./getCurrentUser";
+import { TransactionData, UserData } from "@/types";
 
-export interface TransactionProps {
-  transactionId: string;
-  type: "shopping" | "transfer" | "service" | "deposit";
-  senderUserName: string;
-  description: string;
-  date: string;
-  amount: number;
-  receiverUserName: string;
-}
 
-export const ExpenseTable: React.FC<{ transactions: TransactionProps[] }> = ({
+
+    
+
+
+export const ExpenseTable: React.FC<{ transactions: TransactionData[] }> = ({
   transactions,
 }) => {
+  const [currentUser, setCurrentUser] = React.useState<UserData | null>(null);
+
+  React.useEffect(() => {
+    getCurrentUser().then(user => {
+      if (user) {
+        setCurrentUser(user);
+      }
+    });
+  }, []);
   return (
     <div className="w-[100%] rounded-3xl shadow-md">
-      <table className="w-[100%] divide-y divide-gray-200 rounded-3xl ">
+      <table className="w-[100%] divide-y divide-gray-200  rounded-xl md:shadow-lg md:border md:border-gray-300  ">
         <thead className="bg-white">
           <tr className="border-b-2">
             <th
@@ -67,17 +73,17 @@ export const ExpenseTable: React.FC<{ transactions: TransactionProps[] }> = ({
           {transactions.map((transaction) => (
             <tr key={transaction.transactionId}>
               {/* Description */}
-              <td className="lg:px-5 py-4 md:px-2 items-center text-sm truncate lg:max-w-[10rem] md:max-w-[6rem]">
+              <td className="lg:px-5 py-4 px-2 items-center text-sm truncate lg:max-w-[10rem] md:max-w-[6rem]">
                 <div className="space-x-2 flex md:max-w-[6rem] lg:max-w-[10rem]">
                   <span className="inline-block align-middle">
-                    {transaction.amount > 0 ? (
+                    {transaction.senderUserName === currentUser?.username ? (
                       <CiSaveUp1 size={20} />
                     ) : (
                       <CiSaveDown1 size={20} />
                     )}
                   </span>
                   <span
-                    className="inline-block align-middle truncate"
+                    className="inline-block align-middle truncate "
                     title={transaction.description}
                   >
                     {transaction.description}
@@ -92,9 +98,11 @@ export const ExpenseTable: React.FC<{ transactions: TransactionProps[] }> = ({
               <td className="lg:px-5 py-4 md:px-2 text-sm truncate hidden md:table-cell md:max-w-[6rem]">
                 {transaction.type}
               </td>
-              {/* Card */}
+              {/* reciver*/}
               <td className="lg:px-5 py-4 md:px-2 text-sm truncate hidden md:table-cell md:max-w-[6rem]">
-                {transaction.receiverUserName}
+                {transaction.receiverUserName !== null
+                  ? transaction.receiverUserName
+                  : "unknown"}
               </td>
               {/* Date */}
               <td className="lg:px-5 py-4 md:px-2 text-sm truncate hidden md:table-cell md:max-w-[6rem]">
@@ -104,7 +112,9 @@ export const ExpenseTable: React.FC<{ transactions: TransactionProps[] }> = ({
               <td className="lg:px-5 py-4 md:px-2 text-sm truncate md:max-w-[4rem]">
                 <p
                   className={
-                    transaction.amount > 0 ? "text-green-500" : "text-red-500"
+                    transaction.senderUserName !== currentUser?.username
+                      ? "text-green-500"
+                      : "text-red-500"
                   }
                 >
                   ${transaction.amount}

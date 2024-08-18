@@ -1,55 +1,66 @@
 "use client";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   IoChevronBackCircleOutline,
   IoChevronForwardCircleOutline,
 } from "react-icons/io5";
 
-import { Areachart } from "@/components/ui/Areachart";
-import { Barchart } from "@/components/ui/Barchart";
+
+import { Barchart } from "@/app/dashboard/transactions/component/weeklyActivityChart";
 import { Pie_chart } from "@/components/ui/Pie_chart";
 import { PiTelegramLogoLight } from "react-icons/pi";
 import CreditCard from "./_components/Credit_Card";
 import { Profile } from "./_components/Profile";
 import { Transaction } from "./_components/Transaction";
+import { getCreditCards } from "./transactions/component/getCreditCards";
+import { CardDetails } from "@/types";
+import { BalanceAreachart  } from "./transactions/component/balanceChart";
 
 const MainDashboard = () => {
+
   const QuickTransferSection = useRef<HTMLDivElement | null>(null);
+
   const scrollCards = (scrollOffset: number) => {
     if (QuickTransferSection.current) {
       QuickTransferSection.current.scrollLeft += scrollOffset;
     }
   };
+
+   const [creditCards, setCreditCards] = useState<CardDetails[]>([]);
+   useEffect(() => {
+     const fetchData = async () => {
+       const res = await getCreditCards();
+       setCreditCards(res || []);
+     };
+     fetchData();
+   }, []);
+
   return (
-    <div className="p-5 md:pl-10  space-y-5 ">
+    <div className=" p-5 space-y-5 ">
       {/* First Row: My Cards and Recent Transactions */}
-      <div className="md:grid md:grid-cols-2 md:gap-5 space-y-5 md:space-y-0 space-x-5">
+      <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0  ">
         {/* My Cards Section */}
-        <div className="space-y-5">
+        <div className="md:w-2/3 space-y-5 ">
           <div className="flex justify-between font-inter text-[16px] font-semibold">
             <h4>My Cards</h4>
             <h4>See All</h4>
           </div>
           <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            <CreditCard
-              isBlue={true}
-              balance={5894}
-              creditNumber="3778*** ****1234"
-              name="Eddy Cusuma"
-              textColor="text-white"
-            />
-            <CreditCard
-              isBlue={false}
-              balance={3210}
-              creditNumber="3778*** ****1234"
-              name=" Sarah Johnson"
-              textColor="text-black"
-            />
+            {creditCards.map((card) => (
+              <CreditCard
+                id={card.id}
+                balance={card.balance}
+                semiCardNumber={card.semiCardNumber}
+                cardHolder={card.cardHolder}
+                expiryDate={card.expiryDate}
+                cardType={card.cardType}
+              />
+            ))}
           </div>
         </div>
 
         {/* Recent Transactions Section */}
-        <div className="space-y-5">
+        <div className="space-y-5 md:w-1/3">
           <div className="font-inter text-[16px] font-semibold">
             <h4>Recent Transactions</h4>
           </div>
@@ -80,23 +91,23 @@ const MainDashboard = () => {
       </div>
 
       {/* Second Row: Weekly Activity and Expense Statistics */}
-      <div className="md:grid md:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
+      <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0 ">
         {/* Weekly Activity Section */}
-        <div className="space-y-5 ">
+        <div className="md:w-2/3 space-y-5 ">
           <div className="font-inter text-[16px] font-semibold">
             <h4>Weekly Activity</h4>
           </div>
-          <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300 md:p-5 sm:min-w-[375px]">
+          <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300  ">
             <Barchart />
           </div>
         </div>
 
         {/* Expense Statistics Section */}
-        <div className="space-y-5 ">
+        <div className="md:w-1/3 space-y-5 ">
           <div className="font-inter text-[16px] font-semibold">
             <h4>Expense Statistics</h4>
           </div>
-          <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300 md:p-5 sm:space-x-10 sm:min-w-[375px]">
+          <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300   ">
             <Pie_chart />
           </div>
         </div>
@@ -129,27 +140,30 @@ const MainDashboard = () => {
               ref={QuickTransferSection}
               className="flex max-w-[300px] space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             >
-              <Profile image="/images/avatar.png" name="Olivia Lia" job="CEO" />
               <Profile
-                image="/images/avatar.png"
+                image="/images/avatar1.svg"
+                name="Olivia Lia"
+                job="CEO"
+              />
+              <Profile
+                image="/images/avatar2.svg"
                 name="Randy Press"
                 job="Director"
               />
               <Profile
-                image="/images/avatar.png"
+                image="/images/avatar3.svg"
                 name="Workman"
                 job="Designer"
               />
-              <Profile image="/images/avatar.png" name="Olivia Lia" job="CEO" />
               <Profile
-                image="/images/avatar.png"
+                image="/images/avatar4.svg"
+                name="Patricia Lia"
+                job="CEO"
+              />
+              <Profile
+                image="/images/avatar1.svg"
                 name="Randy Press"
                 job="Director"
-              />
-              <Profile
-                image="/images/avatar.png"
-                name="Workman"
-                job="Designer"
               />
             </div>
             <div className="flex space-x-10 h-[40px] items-center">
@@ -177,7 +191,7 @@ const MainDashboard = () => {
             <h4>Balance History</h4>
           </div>
           <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300 p-5">
-            <Areachart />
+            <BalanceAreachart />
           </div>
         </div>
       </div>

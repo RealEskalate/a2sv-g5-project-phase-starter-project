@@ -34,7 +34,7 @@ const Security = () => {
         <div className="font-semibold text-xl py-2 text-[#333B69] ">
           Two-factor Authentication
         </div>
-        <div className="flex gap-3 w-full items-center py-2 ">
+        <div className="flex gap-3 w-full md:w-3/5 items-center py-2 ">
           <div className="w-1/5">
             <SwitchButton
               isOn={tFactorAuthentication}

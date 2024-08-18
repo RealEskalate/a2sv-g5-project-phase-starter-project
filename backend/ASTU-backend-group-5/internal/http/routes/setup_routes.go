@@ -10,4 +10,5 @@ func SetUpRoute(router *gin.Engine, collection *mongo.Collection) {
 	RegisterUserRoutes(collection, router)
 	RegisterVerificationRoutes(collection, router)
 	RegisterAdminUserRoutes(collection, router)
+	// RegisterBlogRoutes(collection, router)
 }

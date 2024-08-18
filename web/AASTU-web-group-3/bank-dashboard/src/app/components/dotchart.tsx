@@ -72,7 +72,7 @@ const LineGraphWithDots = () => {
         ticks: {
           color: '#718EBF', // Y-axis label color
           stepSize: 10000, // Control the number of ticks
-          callback: (value) => `$${value}`, // Add $ symbol before Y-axis labels
+          callback: (value:number) => `$${value}`, // Add $ symbol before Y-axis labels
           padding: 10, // Move Y-axis labels to the left
         },
         grid: {
@@ -100,7 +100,7 @@ const LineGraphWithDots = () => {
         Yearly Total Investment
       </h1>
     <div className="flex justify-evenly h-[300px] bg-white rounded-2xl p-4 shadow-lg">
-      <Line data={data} options={options} />
+      <Line data={data}/>
     </div>
     </div>
   );

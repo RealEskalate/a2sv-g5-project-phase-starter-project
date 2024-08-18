@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"blogapp/Domain"
+	"blogapp/Dtos"
 	"context"
 	"time"
 
@@ -30,20 +31,17 @@ func (a *authUseCase) Login(c *gin.Context, user *Domain.User) (Domain.Tokens, e
 }
 
 // register
-func (a *authUseCase) Register(c *gin.Context, user *Domain.User) (*Domain.OmitedUser, error, int) {
+func (a *authUseCase) Register(c *gin.Context, user *Dtos.RegisterUserDto) (*Domain.OmitedUser, error, int) {
 	// return error
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
-	return a.AuthRepository.Register(ctx,user)
+	return a.AuthRepository.Register(ctx, user)
 }
 
 // logout
 
-func (a *authUseCase) Logout(c *gin.Context, user_id primitive.ObjectID) (error,int) {
+func (a *authUseCase) Logout(c *gin.Context, user_id primitive.ObjectID) (error, int) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 	return a.AuthRepository.Logout(ctx, user_id)
 }
-
-
-

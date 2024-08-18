@@ -50,8 +50,17 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 
 	// go to refresh token router
 	RefreshTokenRouter()
+
+	// user router
+	UserRouter()
+
+	// profile router
+	ProfileRouter()
+
 	Router.POST("/sendemail", sendemail)
+
 	return Router
+
 }
 
 func sendemail(c *gin.Context) {

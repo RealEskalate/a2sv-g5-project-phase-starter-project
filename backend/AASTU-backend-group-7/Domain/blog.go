@@ -1,9 +1,13 @@
 package Domain
 
-import "time"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Post struct {
-	ID          uint `gorm:"primaryKey"`
+	ID          primitive.ObjectID `bson:"_id,omitempty" gorm:"primary_key"`
 	Title       string
 	Content     string `gorm:"type:text"`
 	Slug        string `gorm:"uniqueIndex"`
@@ -11,31 +15,31 @@ type Post struct {
 	UpdatedAt   time.Time
 	IsPublished bool
 	Views       uint
-	AuthorID    uint
+	AuthorID    primitive.ObjectID `bson:"authorid,omitempty" gorm:"index"`
 	Comments    []Comment
-	Tags        []*Tag `gorm:"many2many:post_tags;"`
+	Tags        []Tag `gorm:"many2many:post_tags;"`
 }
 
 type Comment struct {
-	ID        uint   `gorm:"primaryKey"`
-	Content   string `gorm:"type:text"`
+	ID        primitive.ObjectID `bson:"_id,omitempty" gorm:"primary_key"`
+	Content   string             `gorm:"type:text"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	AuthorID  uint
-	PostID    uint
+	AuthorID  primitive.ObjectID `bson:"authorid,omitempty" gorm:"index"`
+	PostID    primitive.ObjectID `bson:"postid,omitempty" gorm:"index"`
 }
 
 type Tag struct {
-	ID    uint    `gorm:"primaryKey"`
-	Name  string  `gorm:"uniqueIndex"`
-	Slug  string  `gorm:"uniqueIndex"`
-	Posts []*Post `gorm:"many2many:post_tags;"`
+	ID    primitive.ObjectID `bson:"_id,omitempty" gorm:"primary_key"`
+	Name  string
+	Slug  string
+	Posts []Post `gorm:"many2many:post_tags;"`
 }
 
 type LikeDislike struct {
-    ID       uint `gorm:"primaryKey"`
-    PostID   uint
-    UserID   uint
-    IsLike   bool // true for like, false for dislike
-    // other fields
+	ID     primitive.ObjectID `bson:"_id,omitempty" gorm:"primary_key"`
+	PostID primitive.ObjectID `bson:"postid,omitempty" gorm:"index"`
+	UserID primitive.ObjectID `bson:"userid,omitempty" gorm:"index"`
+	IsLike bool
+	// other fields
 }

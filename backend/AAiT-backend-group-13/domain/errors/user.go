@@ -17,10 +17,10 @@ var (
 	// Invalid Email
 	EmailInvalidFormat = NewValidation("email has an invalid format.")
 
-	// Username is shorter than allowed.
+	// FirstName is shorter than allowed.
 	FirstNameTooShort = NewValidation("first is too short.")
 
-	// Username is longer than allowed.
+	// FirstName is longer than allowed.
 	FirstNameTooLong = NewValidation("first is too long.")
 )
 
@@ -28,6 +28,11 @@ var (
 var (
 	// User with a similar username exists.
 	UsernameConflict = NewConflict("username already taken.")
+)
+
+var (
+	// User with a similar username exists.
+	EmailConflict = NewConflict("email already taken.")
 )
 
 // NotFound errors

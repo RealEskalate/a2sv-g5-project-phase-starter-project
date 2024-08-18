@@ -12,7 +12,7 @@ import (
 Creates and signs a JWT with the username, role and tokenLifeSpan as the
 payloads. Returns the signed token if there aren't any errors.
 */
-func SignJWTWithPayload(username string, role string, tokenLifeSpan time.Duration, secret string) (string, domain.CodedError) {
+func SignJWTWithPayload(username string, role string, tokenType string, tokenLifeSpan time.Duration, secret string) (string, domain.CodedError) {
 	if secret == "" {
 		return "", domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
@@ -22,6 +22,7 @@ func SignJWTWithPayload(username string, role string, tokenLifeSpan time.Duratio
 		"username":  username,
 		"role":      role,
 		"expiresAt": time.Now().Add(time.Hour * 2),
+		"tokenType": tokenType,
 	})
 	jwtToken, signingErr := token.SignedString(jwtSecret)
 	if signingErr != nil {

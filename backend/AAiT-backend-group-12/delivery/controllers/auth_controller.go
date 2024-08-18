@@ -46,3 +46,19 @@ func (controller *AuthController) HandleSignup(c *gin.Context) {
 
 	c.JSON(201, domain.Response{"message": "User created"})
 }
+
+func (controller *AuthController) HandleLogin(c *gin.Context) {
+	var newUser domain.User
+	if err := c.BindJSON(&newUser); err != nil {
+		c.JSON(400, domain.Response{"error": "Invalid input"})
+		return
+	}
+
+	acK, rfK, err := controller.usecase.Login(c, &newUser)
+	if err != nil {
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
+		return
+	}
+
+	c.JSON(201, domain.Response{"accessToken": acK, "refreshToken": rfK})
+}

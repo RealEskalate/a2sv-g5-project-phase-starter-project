@@ -12,7 +12,7 @@ type UserUsecase struct {
 	contextTimeout time.Duration
 }
 
-func NewUserUsecase(userRepository user.UserRepository, timeout time.Duration, secret string) user.UserUsecase {
+func NewUserUsecase(userRepository user.UserRepository, timeout time.Duration) user.UserUsecase {
 	return &UserUsecase{
 		repo:           userRepository,
 		contextTimeout: timeout,

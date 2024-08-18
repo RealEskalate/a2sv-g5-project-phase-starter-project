@@ -1,20 +1,17 @@
 package main
 
 import (
-	"context"
 	"log"
 	"meleket/bootstrap"
 	"meleket/infrastructure"
 	"meleket/repository"
-	"meleket/routers"
+	"meleket/delivery/routers"
 	"meleket/usecases"
 	"os"
-	"time"
+
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
@@ -41,20 +38,21 @@ func main() {
 	userRepo := repository.NewUserRepository(userMockCollection)
 	blogRepo := repository.NewBlogRepository(blogMockCollection)
 	tokenRepo := repository.NewTokenRepository(tokenMockCollection)
-	otpRepo := repository.NewOTPRepository(otpMockCollection)
+	otpRepo := repository.NewOtpRepository(otpMockCollection)
 	
-	jwtService := infrastructure.NewJWTService(os.Getenv("JWT_SECRET"),"kal", os.Getenv("JWT_REFRESH_SECRET"))
+	jwtService := infrastructure.NewJWTService(os.Getenv("JWT_SECRET"),"Kal", os.Getenv("JWT_REFRESH_SECRET"))
 	
-	userUsecase := usecases.NewUserUsecase(userRepo,jwtService)
-	tokenUsecase := usecases.NewTokenRepository(tokenRepo)
-	blogUsecase := usecases.NewBlogRepository(blogRepo)
-	otpUsecase := usecases.NewotpRepository(otpRepo)
+	userUsecase := usecases.NewUserUsecase(userRepo)
+	tokenUsecase := usecases.NewTokenUsecase(tokenRepo)
+	blogUsecase := usecases.NewBlogUsecase(blogRepo)
+	otpUsecase := usecases.NewOTPUsecase(otpRepo)
 
 	// passwordService := infrastructure.NewPasswordService()
 
 
 	r := gin.Default()
 	routers.InitRoutes(r, blogUsecase, userUsecase, tokenUsecase, otpUsecase, jwtService)
+	// routers.InitRoutes(r, blogUsecase, userUsecase, tokenUsecase, otpUsecase)
 
 	if err := r.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)

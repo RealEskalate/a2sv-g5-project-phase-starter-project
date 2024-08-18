@@ -7,7 +7,6 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type BlogRepository struct {
@@ -25,7 +24,7 @@ func (r *BlogRepository) Save(blog *domain.BlogPost) error {
 	return err
 }
 
-func (r *BlogRepository) FindAll() ([]domain.BlogPost, error) {
+func (r *BlogRepository) GetAllBlog() ([]domain.BlogPost, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var blogs []domain.BlogPost	
@@ -40,7 +39,7 @@ func (r *BlogRepository) FindAll() ([]domain.BlogPost, error) {
 	return blogs, err
 }
 
-func (r *BlogRepository) FindByID(id primitive.ObjectID) (*domain.BlogPost, error) {
+func (r *BlogRepository) GetBlogByID(id primitive.ObjectID) (*domain.BlogPost, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var blog domain.BlogPost

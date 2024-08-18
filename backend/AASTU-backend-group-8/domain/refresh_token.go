@@ -12,11 +12,14 @@ type RefreshToken struct {
 	ExpiresAt time.Time `bson:"expires_at" json:"expires_at"`
 }
 
-type RefreshTokenRepositoryInterface interface {
-	// RefreshToken operations
-	SaveRefreshToken(refreshToken *RefreshToken) error
-	DeleteRefreshTokenByUserID(userID primitive.ObjectID) error
-	FindRefreshToken(token string) (*RefreshToken, error)
+type RefreshTokenUsecaseInterface interface {
+    RefreshToken(refreshToken string) (string, error)
+}
+
+type TokenRepositoryInterface interface {
+    SaveRefreshToken(refreshToken *RefreshToken) error
+    FindRefreshToken(token string) (*RefreshToken, error)
+    DeleteRefreshTokenByUserID(userID primitive.ObjectID) error
 }
 
 // IsExpired checks if the refresh token is expired

@@ -1,17 +1,35 @@
 package domain
 
 import(
+	// "meleket/infrastructure"
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type OTP struct {
-	UserID    primitive.ObjectID `bson:"user_id"`
-	OTP       string             `bson:"otp"`
+	Otp       string             `bson:"otp"`
+	Email	  string 			 `bson:"email"`
+	Username  string 			 `bson:"username"`
 	ExpiresAt time.Time          `bson:"expires_at"`
+
+	// for later registration
+	Password string             `json:"-"`
+	Role     string             `json:"role"`
 }
 
 type OTPRequest struct {
-	OTP string `json:"otp"`
+	Otp   string `json:"otp"`
+	Email string `json:"email"`
+}
+
+
+type OTPUsecaseInterface interface {
+    GenerateAndSendOTP(user *User) error
+    VerifyOTP(email, otp string)(*OTP, error)
+}
+
+
+type OTPRepositoryInterface interface {
+    StoreOTP(otp *OTP) error
+    GetOTPByEmail(email string) (*OTP, error)
+    DeleteOTPByEmail(email string) error
 }

@@ -37,14 +37,11 @@ type SignupUsecase interface {
 	CreateRefreshToken(user *AuthSignup, secret string, expiry int) (string, error)
 	SaveRefreshToken(c context.Context, token string, id primitive.ObjectID) error
 	VerifyOTP(c context.Context, otp *OTPRequest) (*OTP, error)
-	SendOTP(c context.Context, user *AuthSignup, username,password string) error
+	SendOTP(c context.Context, user *AuthSignup, username, password string) error
 }
 
 type ProfileUsecase interface {
-	CreateProfile(c context.Context, profile *Profile) error
-	GetProfileByID(c context.Context, id primitive.ObjectID) (*ProfileResponse, error)
-	UpdateProfile(c context.Context, profile *Profile) error
-	DeleteProfile(c context.Context, id primitive.ObjectID) error
+	UpdateProfile(c context.Context, profile *Profile, userid primitive.ObjectID) (*ProfileResponse, error)
 }
 
 type LoginUsecase interface {
@@ -53,10 +50,10 @@ type LoginUsecase interface {
 	CreateRefreshToken(user *User, secret string, expiry int) (string, error)
 }
 type TokenRepository interface {
-    SaveToken(ctx context.Context, token *Token) error
-    FindTokenByAccessToken(ctx context.Context, accessToken string) (*Token, error)
-    DeleteToken(ctx context.Context, tokenID primitive.ObjectID) error
-    FindTokenByRefreshToken(ctx context.Context, refreshToken string) (*Token, error)
+	SaveToken(ctx context.Context, token *Token) error
+	FindTokenByAccessToken(ctx context.Context, accessToken string) (*Token, error)
+	DeleteToken(ctx context.Context, tokenID primitive.ObjectID) error
+	FindTokenByRefreshToken(ctx context.Context, refreshToken string) (*Token, error)
 }
 
 type OTPRepository interface {
@@ -69,9 +66,8 @@ type LogoutUsecase interface {
 	Logout(ctx context.Context, refreshToken string) error
 }
 
-
-
 type ForgotPasswordUsecase interface {
     SendResetOTP(c context.Context, email string, smtpUsername, smtpPassword string) error
     ResetPassword(c context.Context, email, otpValue, newPassword string) error
 }
+

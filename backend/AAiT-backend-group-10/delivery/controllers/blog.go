@@ -1,1 +1,182 @@
 package controllers
+
+import (
+	"net/http"
+
+	"aait.backend.g10/domain"
+	"aait.backend.g10/usecases"
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
+)
+
+type BlogController struct {
+	BlogUseCase usecases.IBlogUseCase
+}
+
+func NewBlogController(b usecases.IBlogUseCase) *BlogController {
+	return &BlogController{
+		BlogUseCase: b,
+	}
+}
+
+
+func (b *BlogController) CreateBlog(c *gin.Context) {
+	var blog domain.Blog
+	if err := c.ShouldBindJSON(&blog); err != nil {
+		var validationErrors validator.ValidationErrors
+		if errors, ok := err.(validator.ValidationErrors); ok {
+		  validationErrors = errors
+		}
+		errorMessages := make(map[string]string)
+		for _, e := range validationErrors {
+	
+		  field := e.Field()
+		  switch field {
+		  case "Title":
+			errorMessages["title"] = "Title is required."
+		  case "Content":
+			errorMessages["content"] = "Content is required."
+		  case "Author":
+			errorMessages["author"] = "Author is required."
+		  case "Tags":
+			errorMessages["tags"] = "Tags is required."
+		  }
+		}
+
+		if len(errorMessages) == 0 {
+			errorMessages["json"] = "Invalid JSON"
+		}
+	
+		c.JSON(http.StatusBadRequest, gin.H{"errors": errorMessages})
+		return
+	}
+
+	newBlog, err := b.BlogUseCase.CreateBlog(&blog)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, newBlog)
+}
+
+
+func (b *BlogController) GetAllBlogs(c *gin.Context) {
+	blogs, err := b.BlogUseCase.GetAllBlogs()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, blogs)
+}
+
+
+func (b *BlogController) GetBlogByID(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	blog, err := b.BlogUseCase.GetBlogByID(id)
+	if err != nil {
+		if err.Error() == "blog not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Blog Not Found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, blog)
+}
+
+
+func (b *BlogController) UpdateBlog(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	var blog domain.Blog
+	if err := c.ShouldBindJSON(&blog); err != nil {
+		var validationErrors validator.ValidationErrors
+		if errors, ok := err.(validator.ValidationErrors); ok {
+		  validationErrors = errors
+		}
+	
+		errorMessages := make(map[string]string)
+		for _, e := range validationErrors {
+	
+		  field := e.Field()
+		  switch field {
+		  case "Title":
+			errorMessages["title"] = "Title is required."
+		  case "Content":
+			errorMessages["content"] = "Content is required."
+	
+		  case "Author":
+			errorMessages["author"] = "Author is required."
+	
+		  case "Tags":
+			errorMessages["tags"] = "Tags is required."
+		  }
+		}
+
+		if len(errorMessages) == 0 {
+			errorMessages["json"] = "Invalid JSON"
+		}
+	
+		c.JSON(http.StatusBadRequest, gin.H{"errors": errorMessages})
+		return
+	}
+	blog.ID = id
+	err = b.BlogUseCase.UpdateBlog(&blog)
+	if err != nil {
+		if err.Error() == "blog not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Blog Not Found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Blog updated successfully"})
+}
+
+
+func (b *BlogController) DeleteBlog(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	err = b.BlogUseCase.DeleteBlog(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Blog deleted successfully"})
+}
+
+
+func (b *BlogController) AddView(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	err = b.BlogUseCase.AddView(id)
+	if err != nil {
+		if err.Error() == "blog not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Blog Not Found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "View added successfully"})
+}

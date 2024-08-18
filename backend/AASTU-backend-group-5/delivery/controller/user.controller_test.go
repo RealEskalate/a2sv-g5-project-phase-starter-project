@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -24,6 +25,8 @@ func (suite *UserControllerSuite) SetupTest() {
 	suite.controller = &UserController{UserUsecase: usecase}
 	suite.usecase = usecase
 }
+
+// Positive Tests
 
 func (suite *UserControllerSuite) TestGetOneUser() {
 	user := domain.ResponseUser{
@@ -49,7 +52,7 @@ func (suite *UserControllerSuite) TestGetOneUser() {
 
 func (suite *UserControllerSuite) TestGetUsers() {
 	users := []domain.ResponseUser{
-		 {
+		{
 			ID: primitive.NewObjectID().Hex(),
 			UserName: "username",
 			Email: "testuser@gmail.com",
@@ -92,11 +95,10 @@ func (suite *UserControllerSuite) TestUpdateUser() {
 	}`)
 
 	c.Request = httptest.NewRequest(http.MethodPut, "/user/"+id.Hex(), body)
-	c.Params = gin.Params{gin.Param{Key: "_id", Value: id.Hex()}}
+	c.Params = gin.Params{gin.Param{Key: "id", Value: id.Hex()}}
 	c.Request.Header.Set("Content-Type", "application/json")
 
-
-	suite.usecase.On("UpdateUser", "", updateUser).Return(updatedUser, nil)
+	suite.usecase.On("UpdateUser", id.Hex(), updateUser).Return(updatedUser, nil)
 
 	handler := suite.controller.UpdateUser()
 	handler(c)
@@ -151,7 +153,7 @@ func (suite *UserControllerSuite) TestLogIn() {
 	handler := suite.controller.LogIn()
 	handler(c)
 
-	suite.Equal(http.StatusOK, w.Code , w.Body.String())
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 }
 
 func (suite *UserControllerSuite) TestRegister() {
@@ -159,7 +161,7 @@ func (suite *UserControllerSuite) TestRegister() {
 		UserName: "username",
 		Bio: "test bio",
 		ProfilePicture: "pp",
-		Email: "test@gmail.com",	
+		Email: "test@gmail.com",
 		Password: "password",
 	}
 
@@ -179,7 +181,6 @@ func (suite *UserControllerSuite) TestRegister() {
 		"bio": "test bio",
 		"profile_picture": "pp"
 	}`)
-	
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -191,7 +192,7 @@ func (suite *UserControllerSuite) TestRegister() {
 	handler := suite.controller.Register()
 	handler(c)
 
-	suite.Equal(http.StatusOK, w.Code , w.Body.String())
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 }
 
 func (suite *UserControllerSuite) TestFilterUser() {
@@ -217,6 +218,152 @@ func (suite *UserControllerSuite) TestFilterUser() {
 	handler(c)
 
 	suite.Equal(http.StatusOK, w.Code)
+}
+
+// Negative Tests
+
+func (suite *UserControllerSuite) TestGetOneUser_Error() {
+	id := primitive.NewObjectID().Hex()
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Params = gin.Params{gin.Param{Key: "id", Value: id}}
+
+	suite.usecase.On("GetOneUser", id).Return(domain.ResponseUser{}, errors.New("user not found"))
+
+	handler := suite.controller.GetOneUser()
+	handler(c)
+
+	suite.Equal(http.StatusNotFound, w.Code)
+	suite.JSONEq(`{"error": "user not found"}`, w.Body.String())
+}
+
+func (suite *UserControllerSuite) TestGetUsers_Error() {
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+
+	suite.usecase.On("GetUsers").Return(nil, errors.New("could not retrieve users"))
+
+	handler := suite.controller.GetUsers()
+	handler(c)
+
+	suite.Equal(http.StatusNotFound, w.Code)
+	suite.JSONEq(`{"error" : "not found"}`, w.Body.String())
+}
+
+func (suite *UserControllerSuite) TestUpdateUser_Error() {
+	id := primitive.NewObjectID()
+	updateUser := domain.UpdateUser{
+		UserName: "Updated username",
+	}
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+
+	body := bytes.NewBufferString(`{
+		"username": "Updated username"
+	}`)
+
+	c.Request = httptest.NewRequest(http.MethodPut, "/user/"+id.Hex(), body)
+	c.Params = gin.Params{gin.Param{Key: "id", Value: id.Hex()}}
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	suite.usecase.On("UpdateUser", id.Hex(), updateUser).Return(domain.ResponseUser{}, errors.New("error updating user"))
+
+	handler := suite.controller.UpdateUser()
+	handler(c)
+
+	suite.Equal(http.StatusBadRequest, w.Code)
+}
+
+func (suite *UserControllerSuite) TestDeleteUser_Error() {
+	id := primitive.NewObjectID().Hex()
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Params = gin.Params{gin.Param{Key: "id", Value: id}}
+
+	suite.usecase.On("DeleteUser", id).Return(errors.New("failed to delete user"))
+
+	handler := suite.controller.DeleteUser()
+	handler(c)
+
+	suite.Equal(http.StatusBadRequest, w.Code)
+	suite.JSONEq(`{"error" : "couldn't delete"}`, w.Body.String())
+}
+
+func (suite *UserControllerSuite) TestLogIn_Error() {
+	loginModel := domain.LogINUser{
+		UserName: "username",
+		Email: "test@gmail.com",
+		Password: "password",
+	}
+
+	body := bytes.NewBufferString(`{
+		"username": "username",
+		"email":"test@gmail.com",
+		"password" : "password"
+	}`)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPost, "/login", body)
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	suite.usecase.On("LogIn", loginModel).Return(domain.ResponseUser{}, errors.New("login failed"))
+
+	handler := suite.controller.LogIn()
+	handler(c)
+
+	suite.Equal(http.StatusBadRequest, w.Code)
+	suite.JSONEq(`{"error" : "failed to login"}`, w.Body.String())
+}
+
+func (suite *UserControllerSuite) TestRegister_Error() {
+	registerUser := domain.RegisterUser{
+		UserName: "username",
+		Bio: "test bio",
+		ProfilePicture: "pp",
+		Email: "test@gmail.com",
+		Password: "password",
+	}
+
+	body := bytes.NewBufferString(`{
+		"username": "username",
+		"email": "test@gmail.com",
+		"password": "password",
+		"bio": "test bio",
+		"profile_picture": "pp"
+	}`)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPost, "/register/", body)
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	suite.usecase.On("Register", registerUser).Return(domain.ResponseUser{}, errors.New("registration failed"))
+
+	handler := suite.controller.Register()
+	handler(c)
+
+	suite.Equal(http.StatusBadRequest, w.Code)
+	suite.JSONEq(`{"error" : "failed to register"}`, w.Body.String())
+}
+
+func (suite *UserControllerSuite) TestFilterUser_Error() {
+	filter := map[string]string{"email": "test@gmail.com"}
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodGet, "/users?email=test@gmail.com", nil)
+
+	suite.usecase.On("FilterUser", filter).Return(nil, errors.New("failed to filter users"))
+
+	handler := suite.controller.FilterUser()
+	handler(c)
+
+	suite.Equal(404, w.Code)
+	suite.JSONEq(`{"error": "not found"}`, w.Body.String())
 }
 
 func TestUserController(t *testing.T) {

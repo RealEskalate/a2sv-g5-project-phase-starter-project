@@ -18,6 +18,7 @@ export default function NavBar() {
     '/bank-dash/loans': 'Loans',
     '/bank-dash/services': 'Services',
     '/bank-dash/settings': 'Settings',
+
   };
   const pathname = usePathname();
   console.log(pathname);

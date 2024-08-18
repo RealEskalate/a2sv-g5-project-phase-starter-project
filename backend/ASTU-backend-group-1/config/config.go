@@ -18,7 +18,8 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
-	viper.AddConfigPath(".")
+	//incase to access config file from the root directory
+	viper.AddConfigPath("../")
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {

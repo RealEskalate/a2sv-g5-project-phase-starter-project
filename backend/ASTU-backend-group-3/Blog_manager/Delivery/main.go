@@ -19,15 +19,6 @@ import (
 
 func main() {
 
-	emailService := infrastructure.NewEmailService()
-
-	// Test sending an email
-	if err := emailService.SendEmail("nebiyumusbah378@gmail.com", "Test Email", "<h1>This is a test email</h1>"); err != nil {
-		log.Fatalf("Email sending test failed: %v", err)
-	} else {
-		log.Println("Email sending test passed!")
-	}
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -48,7 +39,7 @@ func main() {
 	userRepository := Repository.NewUserRepository(userCollection, tokenCollection)
 
 	// Initialize the Email Service
-	emailService = infrastructure.NewEmailService()
+	emailService := infrastructure.NewEmailService()
 
 	// Initialize the User Usecase with the User Repository and Email Service
 	userUsecase := Usecases.NewUserUsecase(userRepository, emailService)

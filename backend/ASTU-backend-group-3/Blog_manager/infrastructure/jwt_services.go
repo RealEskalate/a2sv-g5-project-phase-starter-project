@@ -1,38 +1,14 @@
 package infrastructure
 
 import (
-	"log"
-	"os"
-	"sync"
+	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/joho/godotenv"
 )
 
-type Claims struct {
-	Username string `json:"username"`
-	Role     string `json:"role"`
-	jwt.StandardClaims
-}
-
-// Blacklist for invalidated tokens
-var blacklistedTokens = struct {
-	sync.RWMutex
-	tokens map[string]bool
-}{tokens: make(map[string]bool)}
-
-// GenerateToken creates a JWT token
-func GenerateToken(username, role string) (string, error) {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	var jwtKey = []byte(os.Getenv("JWT_SECRET"))
-
-	expirationTime := time.Now().Add(24 * time.Hour)
-
+func GenerateJWT(username string, role string) (string, error) {
+	expirationTime := time.Now().Add(2 * time.Hour)
 	claims := &Claims{
 		Username: username,
 		Role:     role,
@@ -40,78 +16,102 @@ func GenerateToken(username, role string) (string, error) {
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}
-
-	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(jwtKey)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
 		return "", err
 	}
-
-	return token, nil
+	return tokenString, nil
 }
 
-// InvalidateToken adds a token to the blacklist
-func InvalidateToken(tokenString string) {
-	blacklistedTokens.Lock()
-	defer blacklistedTokens.Unlock()
-	blacklistedTokens.tokens[tokenString] = true
-}
-
-// IsTokenBlacklisted checks if a token is in the blacklist
-func IsTokenBlacklisted(tokenString string) bool {
-	blacklistedTokens.RLock()
-	defer blacklistedTokens.RUnlock()
-	return blacklistedTokens.tokens[tokenString]
-}
-
-// ParseUsernameToken parses the JWT and returns the username
-func ParseUsernameToken(tokenString string) (username string, err error) {
-	err = godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	var jwtKey = []byte(os.Getenv("JWT_SECRET"))
-
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
-	})
-
-	if err != nil || IsTokenBlacklisted(tokenString) {
-		return "", err
-	}
-
-	claims, ok := token.Claims.(*Claims)
-	if !ok {
-		return "", err
-	}
-
-	return claims.Username, nil
-}
-
-// GenerateRefreshToken creates a new refresh token
 func GenerateRefreshToken(username string) (string, error) {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	var jwtKey = []byte(os.Getenv("JWT_SECRET"))
-
-	expirationTime := time.Now().Add(7 * 24 * time.Hour)
-
+	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}
-
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
 	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
 		return "", err
 	}
-
 	return tokenString, nil
+}
+
+func GetUsernameFromToken(token *jwt.Token) (string, error) {
+	claims, ok := token.Claims.(*Claims)
+	if !ok {
+		return "", jwt.ErrInvalidKey
+	}
+	return claims.Username, nil
+}
+
+func GetRoleFromToken(token *jwt.Token) (string, error) {
+	claims, ok := token.Claims.(*Claims)
+    if!ok {
+        return "", jwt.ErrInvalidKey
+    }
+    return claims.Role, nil
+}
+
+type ResetClaims struct {
+    Username string `json:"username"`
+    jwt.StandardClaims
+}
+
+
+func GenerateResetToken(username string, jwtKey []byte) (string, error) {
+    expirationTime := time.Now().Add(10 * time.Minute)
+    claims := &ResetClaims{
+        Username: username,
+        StandardClaims: jwt.StandardClaims{
+            ExpiresAt: expirationTime.Unix(),
+        },
+    }
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+    tokenString, err := token.SignedString(jwtKey)
+    if err != nil {
+        return "", err
+    }
+    return tokenString, nil
+}
+
+func ParseToken(tokenString string, jwtKey []byte) (*Claims, error) {
+    token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+        // Verify the token's signing method
+        if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+            return nil, jwt.ErrSignatureInvalid
+        }
+        return jwtKey, nil
+    })
+
+    if err != nil || !token.Valid {
+        return nil, err
+    }
+
+    claims, ok := token.Claims.(*Claims)
+    if !ok {
+        return nil, jwt.ErrInvalidKey
+    }
+
+    return claims, nil
+}
+
+
+func ParseResetToken(tokenString string, jwtKey []byte) (*ResetClaims, error) {
+    token, err := jwt.ParseWithClaims(tokenString, &ResetClaims{}, func(token *jwt.Token) (interface{}, error) {
+        return jwtKey, nil
+    })
+
+    if err != nil {
+        return nil, err
+    }
+
+    if claims, ok := token.Claims.(*ResetClaims); ok && token.Valid {
+        return claims, nil
+    } else {
+        return nil, fmt.Errorf("invalid token")
+    }
 }

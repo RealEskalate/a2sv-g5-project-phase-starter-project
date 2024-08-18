@@ -3,10 +3,11 @@ package controller
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"ASTU-backend-group-3/Blog_manager/Usecases"
-	"net/http"
 	"ASTU-backend-group-3/Blog_manager/infrastructure"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/dgrijalva/jwt-go"
 )
 
 // UserController handles user-related endpoints
@@ -55,6 +56,7 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
 
+// DeleteUser handles deleting a user
 func (uc *UserController) DeleteUser(c *gin.Context) {
 	username := c.Param("username")
 
@@ -67,6 +69,7 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 }
 
+// Login handles user login
 func (uc *UserController) Login(c *gin.Context) {
 	var input Domain.LoginInput
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -74,39 +77,125 @@ func (uc *UserController) Login(c *gin.Context) {
 		return
 	}
 
-	access_token, err := uc.UserUsecase.Login(&input)
-
+	accessToken, err := uc.UserUsecase.Login(c, &input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-<<<<<<<<< Temporary merge branch 1
-    c.JSON(http.StatusOK, gin.H{"access_token": access_token})
+	c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
 }
+
+
+func (uc *UserController) RefreshToken(c *gin.Context) {
+	refreshToken, err := c.Cookie("refresh_token")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "refresh token not found"})
+		return
+	}
+	var jwtKey = []byte("BlogManagerSecretKey")
+
+	token, err := jwt.ParseWithClaims(refreshToken, &infrastructure.Claims{}, func(token *jwt.Token) (interface{}, error) {
+		// Verify the token's signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return jwtKey, nil
+	})
+
+	if err != nil || !token.Valid {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+		c.Abort()
+		return
+	}
+
+	// Get the username from the token
+	username, err := infrastructure.GetUsernameFromToken(token)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to get username from token"})
+		c.Abort()
+		return
+	}
+	
+	// Set token claims in context
+	claims, ok := token.Claims.(*infrastructure.Claims)
+	if !ok || !token.Valid {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
+		c.Abort()
+		return
+	}
+	claims.Username = username
+
+	accessToken, err := infrastructure.GenerateJWT(claims.Username, claims.Role)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
+}
+
+func (uc *UserController) ForgotPassword(c *gin.Context) {
+
+	var input Domain.ForgetPasswordInput
+
+
+    if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	
+	token  , err := uc.UserUsecase.ForgotPassword(input.Username)
+	if err!= nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+	c.JSON(http.StatusOK, gin.H{ "token":token})
+
+}
+func (uc *UserController) ResetPassword(c *gin.Context) {
+	reset_token := c.Param("token")
+	
+	new_token , err := uc.UserUsecase.Reset(reset_token)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return   
+	 }
+	 c.JSON(http.StatusOK, gin.H{"access_token": new_token})
+
+}
+	
+	
+func (uc *UserController) ChangePassword(c *gin.Context) {
+	var input Domain.ChangePasswordInput
+
+    if err := c.ShouldBindJSON(&input); err!= nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+        return
+    }
+
+	err := uc.UserUsecase.UpdatePassword(input.Username, input.NewPassword)
+    if err!= nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Password changed successfully"})
+}
+
 
 func (uc *UserController) Logout(c *gin.Context) {
+	username := c.Param("username")
 	tokenString := c.GetHeader("Authorization")
-	if tokenString == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
-		return
-	}
 
-	username, err := infrastructure.ParseUsernameToken(tokenString)
+	err := uc.UserUsecase.Logout(username, tokenString)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = uc.UserUsecase.Logout(username, tokenString)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Logout failed"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
+	c.JSON(http.StatusOK, gin.H{"message": "User logged out successfully"})
 }
-=========
-	c.JSON(http.StatusOK, gin.H{"access_token": access_token})
-}
->>>>>>>>> Temporary merge branch 2

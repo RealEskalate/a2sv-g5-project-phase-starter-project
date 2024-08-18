@@ -86,7 +86,7 @@ const HomePage: React.FC = () => {
                 <div
                   className={`relative ${transaction.backgroundColor} w-12 h-12 rounded-full flex items-center justify-center`}
                 >
-                  <Image width={100} height={100} src={transaction.src} alt={transaction.alt} />
+                  <Image src={transaction.src} alt={transaction.alt} height={100} width ={100} />
                 </div>
                 <div className="flex flex-col">
                   <p className="text-sm font-medium">{transaction.title}</p>

@@ -2,10 +2,12 @@ package usermodel
 
 import (
 	"regexp"
+	"time"
 
 	"github.com/google/uuid"
 	er "github.com/group13/blog/domain/errors"
-	ihash "github.com/group13/blog/domain/hash_interface"
+	ihash "github.com/group13/blog/domain/i_hash"
+
 	"github.com/nbutton23/zxcvbn-go"
 )
 
@@ -33,6 +35,8 @@ type User struct {
 	email        string
 	passwordHash string
 	isAdmin      bool
+	createdAt    time.Time
+	updatedAt    time.Time
 }
 
 // Config holds parameters for creating a new User.
@@ -43,6 +47,8 @@ type Config struct {
 	Email          string
 	PlainPassword  string
 	IsAdmin        bool
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 	PasswordHasher ihash.Service
 }
 
@@ -149,6 +155,16 @@ func (u *User) Email() string {
 // PasswordHash returns the user's password hash.
 func (u *User) PasswordHash() string {
 	return u.passwordHash
+}
+
+// CreatedAt returns the user's account Created date.
+func (u *User) CreatedAt() time.Time {
+	return u.createdAt
+}
+
+// UpdatedAT returns the user's account last Updated date.
+func (u *User) UpdatedAt() time.Time {
+	return u.updatedAt
 }
 
 // IsAdmin returns whether the user is an admin.

@@ -1,6 +1,10 @@
 package domain
 
-import "time"
+import (
+	"time"
+
+	"github.com/golang-jwt/jwt"
+)
 
 type User struct {
 	ID             string    `bson:"_id" json:"id"`
@@ -41,4 +45,11 @@ type UserUsecase interface {
 	Create(u *User) (User, error)
 	Update(userId string, updateData User) (User, error)
 	Delete(userId string) error
+	AccountVerification(uemail string, confirmationToken string) (string, error)
+}
+type Claims struct {
+	ID      string `bson:"_id,omitempty" json:"id,omitempty"`
+	Email   string `json:"username`
+	IsAdmin bool   `json:"is_admin"`
+	jwt.StandardClaims
 }

@@ -2,6 +2,7 @@ package usecases
 
 import (
 	domain "blogs/Domain"
+	"strconv"
 )
 
 type BlogUsecase struct {
@@ -16,7 +17,7 @@ func (b BlogUsecase) CommentOnBlog(blog_id string, commentor_id string, commento
 // CreateBlog implements domain.BlogRepository.
 func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
 	newBlog, err := b.blogRepository.CreateBlog(user_id, blog)
-	if err != nil{
+	if err != nil {
 		return domain.Blog{}, err
 	}
 	return newBlog, nil
@@ -39,7 +40,16 @@ func (b BlogUsecase) GetBlogByID(blog_id string) (domain.Blog, error) {
 
 // GetBlogs implements domain.BlogRepository.
 func (b *BlogUsecase) GetBlogs(pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	blogs, pagination, err := b.blogRepository.GetBlogs(pageNo, pageSize)
+	PageNo, err := strconv.ParseInt(pageNo, 10, 64)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+	PageSize, err := strconv.ParseInt(pageSize, 10, 64)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+
+	blogs, pagination, err := b.blogRepository.GetBlogs(PageNo, PageSize)
 	if err != nil {
 		return nil, domain.Pagination{}, err
 	} else {
@@ -68,7 +78,7 @@ func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.
 }
 
 func NewBlogUsecase(blogRepository domain.BlogRepository) domain.BlogUsecase {
-	return BlogUsecase{
+	return &BlogUsecase{
 		blogRepository: blogRepository,
 	}
 }

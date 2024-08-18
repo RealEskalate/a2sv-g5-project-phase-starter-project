@@ -7,6 +7,7 @@ import (
 	"blogs/mongo"
 	"context"
 	"errors"
+	"math"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -64,8 +65,37 @@ func (b BlogRepository) GetBlogByID(blog_id string) (domain.Blog, error) {
 }
 
 // GetBlogs implements domain.BlogRepository.
-func (b BlogRepository) GetBlogs(pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	b.PostCollection.Find(context.TODO(), utils.PaginationByPage(pageNo, pageSize))
+func (b BlogRepository) GetBlogs(pageNo int64, pageSize int64) ([]domain.Blog, domain.Pagination, error) {
+	pagination := utils.PaginationByPage(pageNo, pageSize)
+
+	totalResults, err := b.PostCollection.CountDocuments(context.TODO(), utils.MongoNoFilter())
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+
+	// Calculate total pages
+	totalPages := int64(math.Ceil(float64(totalResults) / float64(pageSize)))
+
+	cursor, err := b.PostCollection.Find(context.TODO(), utils.MongoNoFilter(), pagination)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+	var blogs []domain.Blog
+	for cursor.Next(context.TODO()) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return []domain.Blog{}, domain.Pagination{}, err
+		}
+		blogs = append(blogs, blog)
+	}
+	paginationInfo := domain.Pagination{
+		CurrentPage: pageNo,
+		PageSize:    pageSize,
+		TotalPages:  totalPages,
+		TotatRecord: totalResults,
+	}
+
+	return blogs, paginationInfo, err
 }
 
 // GetMyBlogByID implements domain.BlogRepository.

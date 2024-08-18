@@ -50,12 +50,15 @@ type BlogUseCase interface {
 }
 
 type CommentRepository interface {
-	CommentOnPost(ctx context.Context, comment *Comment,objID primitive.ObjectID) (error, int)
+	CommentOnPost(ctx context.Context, comment *Comment, objID primitive.ObjectID) (error, int)
+	GetCommentByID(ctx context.Context, id primitive.ObjectID) (*Comment, error, int)
+	EditComment(ctx context.Context, id primitive.ObjectID, comment *Comment) (error, int)
 }
-
 
 type CommentUseCase interface {
 	CommentOnPost(c *gin.Context, comment *Comment, objID primitive.ObjectID) (error, int)
+	GetCommentByID(c *gin.Context, id primitive.ObjectID) (*Comment, error, int)
+	EditComment(c *gin.Context, id primitive.ObjectID, comment *Comment) (error, int)
 }
 
 type UserRepository interface {

@@ -2,10 +2,12 @@ package usermodel
 
 import (
 	"regexp"
+	"time"
 
 	"github.com/google/uuid"
 	er "github.com/group13/blog/domain/errors"
-	ihash "github.com/group13/blog/domain/hash_interface"
+	ihash "github.com/group13/blog/domain/i_hash"
+
 	"github.com/nbutton23/zxcvbn-go"
 )
 
@@ -33,6 +35,8 @@ type User struct {
 	email        string
 	passwordHash string
 	isAdmin      bool
+	createdAt    time.Time
+	updatedAt    time.Time
 }
 
 // Config holds parameters for creating a new User.
@@ -43,7 +47,22 @@ type Config struct {
 	Email          string
 	PlainPassword  string
 	IsAdmin        bool
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 	PasswordHasher ihash.Service
+}
+
+// Config holds parameters for creating a new User.
+type MapConfig struct {
+	Id             uuid.UUID
+	FirstName      string
+	LastName       string
+	Username       string
+	Email          string
+	HashedPassword string
+	IsAdmin        bool
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }
 
 // New creates a new User with the provided configuration.
@@ -78,6 +97,25 @@ func New(config Config) (*User, error) {
 		email:        config.Email,
 		firstName:    config.FirstName,
 		lastName:     config.LastName,
+		createdAt:    time.Now(),
+		updatedAt:    time.Now(),
+	}, nil
+}
+
+// Map maps a User from database and returns user pointer.
+func Map(config MapConfig) (*User, error) {
+
+	//returns user with specified fields
+	return &User{
+		id:           config.Id,
+		username:     config.Username,
+		passwordHash: config.HashedPassword,
+		isAdmin:      config.IsAdmin,
+		email:        config.Email,
+		firstName:    config.FirstName,
+		lastName:     config.LastName,
+		createdAt:    config.CreatedAt,
+		updatedAt:    config.UpdatedAt,
 	}, nil
 }
 
@@ -104,6 +142,7 @@ func validatePassword(password string) error {
 	return nil
 }
 
+// validateEmail checks the email validity.
 func validateEmail(email string) error {
 	if !emailRegex.MatchString(email) {
 		return er.EmailInvalidFormat
@@ -111,6 +150,7 @@ func validateEmail(email string) error {
 	return nil
 }
 
+// validateFirstName validates FirstName.
 func validateFirstName(firstName string) error {
 	if len(firstName) < minFirstNameLength {
 		return er.UsernameTooShort
@@ -149,6 +189,16 @@ func (u *User) Email() string {
 // PasswordHash returns the user's password hash.
 func (u *User) PasswordHash() string {
 	return u.passwordHash
+}
+
+// CreatedAt returns the user's account Created date.
+func (u *User) CreatedAt() time.Time {
+	return u.createdAt
+}
+
+// UpdatedAT returns the user's account last Updated date.
+func (u *User) UpdatedAt() time.Time {
+	return u.updatedAt
 }
 
 // IsAdmin returns whether the user is an admin.

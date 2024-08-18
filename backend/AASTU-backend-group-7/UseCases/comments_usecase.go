@@ -26,3 +26,15 @@ func (uc *commentUsecase) CommentOnPost(c *gin.Context, comment *Domain.Comment,
 	defer cancel()
 	return uc.commentRepository.CommentOnPost(ctx, comment,objID)
 }
+
+func (uc *commentUsecase) GetCommentByID(c *gin.Context, id primitive.ObjectID) (*Domain.Comment, error, int) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.commentRepository.GetCommentByID(ctx, id)
+}
+
+func (uc *commentUsecase) EditComment(c *gin.Context, id primitive.ObjectID, comment *Domain.Comment) (error, int) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.commentRepository.EditComment(ctx, id, comment)
+}

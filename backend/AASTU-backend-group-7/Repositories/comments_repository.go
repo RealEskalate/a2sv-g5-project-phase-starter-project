@@ -10,18 +10,19 @@ import (
 
 type commentRepository struct {
 	postcollection    Domain.Collection
-	commentcollection Domain.Collection
+	commentCollection Domain.Collection
 }
 
 func NewCommentRepository(blogcollection Domain.BlogCollections) *commentRepository {
 	return &commentRepository{
 		postcollection:    blogcollection.Posts,
-		commentcollection: blogcollection.Comments,
+		commentCollection: blogcollection.Comments,
 	}
 }
 
 func (cr *commentRepository) CommentOnPost(ctx context.Context, comment *Domain.Comment, objID primitive.ObjectID) (error, int) {
-	_, err := cr.commentcollection.InsertOne(ctx, comment)
+	
+	_, err := cr.commentCollection.InsertOne(ctx, comment)
 	if err != nil {
 		return err, 500
 	}
@@ -33,5 +34,25 @@ func (cr *commentRepository) CommentOnPost(ctx context.Context, comment *Domain.
 		return err, 500
 	}
 
+	return nil, 200
+}
+
+func (cr *commentRepository) GetCommentByID(ctx context.Context, id primitive.ObjectID) (*Domain.Comment, error, int) {
+	var comment *Domain.Comment
+	filter := bson.D{{"_id", id}}
+	err := cr.commentCollection.FindOne(ctx, filter).Decode(&comment)
+	if err != nil {
+		return nil, err, 500
+	}
+	return comment, nil, 200
+}
+
+func (cr *commentRepository) EditComment(ctx context.Context, id primitive.ObjectID, comment *Domain.Comment) (error, int) {
+	filter := bson.D{{"_id", id}}
+	update := bson.D{{"$set", comment}}
+	_, err := cr.commentCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err, 500
+	}
 	return nil, 200
 }

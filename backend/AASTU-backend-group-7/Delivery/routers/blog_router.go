@@ -31,5 +31,9 @@ func BlogRouter() {
 		commentcontroller := controllers.NewCommentController(commentusecase)
 
 		commentRouter.POST("/:id", commentcontroller.CommentOnPost)
+		// comment by id
+		commentRouter.GET("/get/:id", commentcontroller.GetCommentByID)
+		//	edit comment
+		commentRouter.PUT("/edit/:id", commentcontroller.EditComment)
 	}
 }

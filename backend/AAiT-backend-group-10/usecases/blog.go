@@ -15,6 +15,7 @@ type IBlogUseCase interface {
 	UpdateBlog(blog *domain.Blog) error
 	DeleteBlog(id uuid.UUID) error
 	AddView(id uuid.UUID) error
+	SearchBlogs(filter domain.BlogFilter) ([]domain.Blog, int, int, error)
 }
 
 type BlogUseCase struct {
@@ -51,4 +52,18 @@ func (b *BlogUseCase) DeleteBlog(id uuid.UUID) error {
 
 func (b *BlogUseCase) AddView(id uuid.UUID) error {
 	return b.blogRepo.AddView(id)
+}
+
+func (b *BlogUseCase) SearchBlogs(filter domain.BlogFilter) ([]domain.Blog, int, int, error) {
+	if filter.SortBy == "" {
+		filter.SortBy = "recent" // Default sort by most recent
+	}
+
+	blogs, totalCount, err := b.blogRepo.Search(filter)
+	if err != nil {
+		return nil, 0, 0, err
+	}
+
+	totalPages := (totalCount + filter.PageSize - 1) / filter.PageSize // calculate total pages
+	return blogs, totalPages, totalCount, nil
 }

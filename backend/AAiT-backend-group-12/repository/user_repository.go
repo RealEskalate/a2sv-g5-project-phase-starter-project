@@ -109,3 +109,38 @@ func (r *UserRepository) UpdateUser(c context.Context, username string, user *dt
 
 	return updatedData, nil
 }
+
+func (r *UserRepository) ChangeRole(c context.Context, username string, newRole string) domain.CodedError {
+	var user domain.User
+	qres := r.collection.FindOne(c, bson.D{{Key: "username", Value: username}})
+	if qres.Err() == mongo.ErrNoDocuments {
+		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
+	if qres.Err() != nil {
+		return domain.NewError(qres.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	if err := qres.Decode(&user); err != nil {
+		return domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	if user.Role == "root" {
+		return domain.NewError("Cannot change the role of the root user", domain.ERR_FORBIDDEN)
+	}
+
+	if user.Role == newRole {
+		return domain.NewError("User already has the role '"+newRole+"'", domain.ERR_BAD_REQUEST)
+	}
+
+	res := r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$set", Value: bson.D{{Key: "role", Value: newRole}}}})
+	if res.Err() != nil && res.Err() == mongo.ErrNoDocuments {
+		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return nil
+}

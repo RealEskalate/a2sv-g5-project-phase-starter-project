@@ -34,6 +34,7 @@ type UserRepositoryInterface interface {
 	FindUser(c context.Context, user *User) (User, CodedError)
 	SetRefreshToken(c context.Context, user *User, newRefreshToken string) CodedError
 	UpdateUser(c context.Context, username string, user *dtos.UpdateUser) (map[string]string, CodedError)
+	ChangeRole(c context.Context, username string, newRole string) CodedError
 }
 
 type UserUsecaseInterface interface {
@@ -41,4 +42,6 @@ type UserUsecaseInterface interface {
 	Login(c context.Context, user *User) (string, string, CodedError)
 	RenewAccessToken(c context.Context, refreshToken string) (string, CodedError)
 	UpdateUser(c context.Context, requestUsername string, tokenUsername string, user *dtos.UpdateUser) (map[string]string, CodedError)
+	PromoteUser(c context.Context, username string) CodedError
+	DemoteUser(c context.Context, username string) CodedError
 }

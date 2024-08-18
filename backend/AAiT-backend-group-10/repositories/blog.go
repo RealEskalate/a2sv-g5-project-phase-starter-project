@@ -43,13 +43,13 @@ func (r *BlogRepository) FindAll() ([]domain.Blog, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	
-	cursor, err := r.collection.Find(ctx, nil)
+	cursor, err := r.collection.Find(ctx, bson.D{{}})
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
 	
-	var blogs []domain.Blog
+	var blogs = make([]domain.Blog, 0)  
 	if err := cursor.All(ctx, &blogs); err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (r *BlogRepository) FindByID(id uuid.UUID) (*domain.Blog, error) {
 	err := r.collection.FindOne(ctx, filter).Decode(&blog)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, errors.New("task Not Found")
+			return nil, errors.New("blog not found")
 		  }
 		  return nil, err
 	}
@@ -81,14 +81,19 @@ func (r *BlogRepository) Update(blog *domain.Blog) error {
 	defer cancel()
 	
 	filter := bson.D{{Key: "_id", Value: blog.ID}}
-	update := bson.D{{Key: "$set", Value: blog}}
+	update := bson.D{{Key: "$set", Value: bson.D{
+		{Key: "title", Value: blog.Title},
+		{Key: "content", Value: blog.Content},
+		{Key: "tags", Value: blog.Tags},
+		{Key: "updatedAt", Value: blog.UpdatedAt},
+	  }}}
 	
-	_, err := r.collection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return errors.New("task not found")
+	result := r.collection.FindOneAndUpdate(ctx, filter, update)
+	if result.Err() != nil {
+		if result.Err() == mongo.ErrNoDocuments {
+			return errors.New("blog not found")
 		}
-		return err
+		return result.Err()
 	}
 	
 	return nil
@@ -103,7 +108,7 @@ func (r *BlogRepository) Delete(id uuid.UUID) error {
 	_, err := r.collection.DeleteOne(ctx, filter)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return errors.New("task not found")
+			return errors.New("blog not found")
 		}
 		return err
 	}
@@ -116,14 +121,14 @@ func (r *BlogRepository) AddView(id uuid.UUID) error {
 	defer cancel()
 	
 	filter := bson.D{{Key: "_id", Value: id}}
-	update := bson.D{{Key: "$inc", Value: bson.D{{Key: "views", Value: 1}}}}
+	update := bson.D{{Key: "$inc", Value: bson.D{{Key: "viewCount", Value: 1}}}}
 	
-	_, err := r.collection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return errors.New("task not found")
+	result := r.collection.FindOneAndUpdate(ctx, filter, update)
+	if result.Err() != nil {
+		if result.Err() == mongo.ErrNoDocuments {
+			return errors.New("blog not found")
 		}
-		return err
+		return result.Err()
 	}
 	
 	return nil

@@ -9,9 +9,6 @@ export const transactionsApi = createApi({
     prepareHeaders: async (headers) => {
       const session = await getSession();
       const token = session?.accessToken; // Get the access token from the session
-      console.log("Token", token)
-
-
 
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);

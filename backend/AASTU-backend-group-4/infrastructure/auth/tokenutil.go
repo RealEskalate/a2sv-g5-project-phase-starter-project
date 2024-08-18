@@ -124,3 +124,42 @@ func GenerateResetToken(userID string, secret string, expiryHour int) (string, e
 
 	return signedToken, nil
 }
+
+func VerifyResetToken(tokenString, secret string) (jwt.MapClaims, error) {
+	// Parse the token
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+		return []byte(secret), nil
+	})
+
+	if err != nil || !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+
+	// Extract claims from the token
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, errors.New("invalid token claims")
+	}
+
+	// Check expiration
+	if exp, ok := claims["exp"].(float64); ok {
+		if time.Now().Unix() > int64(exp) {
+			return nil, errors.New("token has expired")
+		}
+	} else {
+		return nil, errors.New("expiration time not found in token")
+	}
+
+	if purpose, ok := claims["purpose"].(string); ok {
+		if purpose != "reset_password" {
+			return nil, errors.New("invalid token purpose")
+		}
+	} else {
+		return nil, errors.New("purpose claim not found in token")
+	}
+
+	return claims, nil
+}

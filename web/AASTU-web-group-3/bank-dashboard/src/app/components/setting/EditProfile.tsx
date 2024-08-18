@@ -1,8 +1,7 @@
 import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
-import profilePic from "../../../../public/profilepic.png";
-import circleWithPen from "@/../public/icons/circleWithPen.svg";
+import {circleWithPen,profilepic} from "@/../../public/Icons"
 
 interface FormInput {
   name: string;
@@ -123,7 +122,9 @@ const EditProfile = () => {
     <div className="p-4 flex flex-col md:flex-row gap-8">
       <div className="relative rounded-full w-64 h-64 mb-5 md:w-40 md:h-40">
         <Image
-          src={profilePic}
+          src={profilepic}
+          width={256}
+          height={256}
           alt="profilepic"
           className="w-64 h-64 md:w-40 md:h-40 object-cover rounded-full"
         />
@@ -157,7 +158,7 @@ const EditProfile = () => {
               {field.label}
             </label>
             <input
-              className="w-full p-3 md:p-2 text-[#718EBF] border text-sm border-[#DFEAF2] rounded-lg focus:outline-none"
+              className="w-full p-3 md:p-2 text-[#718EBF] border-2 text-sm border-[#DFEAF2] rounded-lg focus:outline-none"
               type={field.type}
               id={field.id}
               placeholder={field.placeholder}

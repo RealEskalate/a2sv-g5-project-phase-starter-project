@@ -9,9 +9,9 @@ import (
 
 const (
 	minTitleLength   = 3
-	maxTitleLength   = 30
-	minContentLength = 10
-	maxContentLength = 250
+	maxTitleLength   = 100
+	minContentLength = 50
+	maxContentLength = 10000
 )
 
 // Blog represents the aggregate user with private fields.
@@ -72,8 +72,8 @@ func New(config Config) (*Blog, error) {
 	}, nil
 }
 
-// New map maps a Blog from database.
-func NewMap(mapConfig MapConfig) (*Blog, error) {
+// Map maps a Blog from database and returns Blog.
+func Map(mapConfig MapConfig) (*Blog, error) {
 
 	//returns blog with specified fields
 	return &Blog{

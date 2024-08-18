@@ -12,7 +12,7 @@ func SetupRouter(port int, routePrefix string, db *mongo.Database) {
 	router := gin.Default()
 
 	// auth
-	authRouter := router.Group("/api" + routePrefix + "/auth")
+	authRouter := router.Group("/api/" + routePrefix + "/auth")
 	NewAuthRouter(db.Collection(domain.CollectionUsers), authRouter)
 
 	// blog

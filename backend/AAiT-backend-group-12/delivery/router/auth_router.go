@@ -15,4 +15,5 @@ func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup) {
 	controller := controllers.NewAuthController(usecase)
 
 	authGroup.POST("/signup", controller.HandleSignup)
+	authGroup.POST("/login", controller.HandleLogin)
 }

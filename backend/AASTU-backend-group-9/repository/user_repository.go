@@ -37,7 +37,11 @@ func (u *userRepository) GetUserByEmail(c context.Context, email string) (*domai
 
 // GetUserByID implements domain.UserRepository.
 func (u *userRepository) GetUserByID(c context.Context, id primitive.ObjectID) (*domain.User, error) {
-	panic("unimplemented")
+	collection := u.database.Collection(u.collection)
+	filter := bson.M{"_id": id}
+	user := &domain.User{}
+	err := collection.FindOne(c, filter).Decode(user)
+	return user, err
 }
 
 // GetUserByUsername implements domain.UserRepository.
@@ -51,7 +55,11 @@ func (u *userRepository) GetUserByUsername(c context.Context, username string) (
 
 // UpdateUser implements domain.UserRepository.
 func (u *userRepository) UpdateUser(c context.Context, user *domain.User) error {
-	panic("unimplemented")
+	collection := u.database.Collection(u.collection)
+	filter := bson.M{"_id": user.ID}
+	update := bson.M{"$set": bson.M{"first_name": user.First_Name, "last_name": user.Last_Name, "bio": user.Bio, "profile_picture": user.Profile_Picture, "contact_info": user.Contact_Info}}
+	_, err := collection.UpdateOne(c, filter, update)
+	return err
 }
 
 func NewUserRepository(db database.Database, collection string) domain.UserRepository {

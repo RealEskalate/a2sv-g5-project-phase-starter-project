@@ -1,17 +1,11 @@
-"use client"
-import { Bar, BarChart, YAxis, Legend, XAxis } from "recharts"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Bar, BarChart, XAxis } from "recharts";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 
 const chartData = [
   { day: "Sat", debit: 50, credit: 20 },
@@ -21,7 +15,11 @@ const chartData = [
   { day: "Wed", debit: 49, credit: 11 },
   { day: "Thu", debit: 33, credit: 44 },
   { day: "Fri", debit: 10, credit: 22 },
-]
+];
+
+// Calculate total debit and credit
+const totalDebit = chartData.reduce((sum, data) => sum + data.debit, 0);
+const totalCredit = chartData.reduce((sum, data) => sum + data.credit, 0);
 
 const chartConfig = {
   debit: {
@@ -32,13 +30,32 @@ const chartConfig = {
     label: "Credit",
     color: "#FC7900",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export default function Component() {
   return (
     <Card className="flex flex-col w-full h-[350px]">
-      <CardHeader>
-        <CardTitle>Weekly Activity</CardTitle>
+      <CardHeader className="flex justify-between">
+        <div className="flex flex-row justify-between space-x-4">
+          <div className="text-sm font-normal">
+            <span className="font-bold">${totalDebit}</span> Debited &{" "}
+            <span className="font-bold">${totalCredit}</span> Credited in this
+            Week
+          </div>
+          <div className="flex px-3 ">
+            <span
+              className="w-4 h-4 rounded-xl"
+              style={{ backgroundColor: chartConfig.debit.color }}
+            ></span>
+            <span className="text-sm font-normal pl-2 pr-4">Debit</span>
+
+            <span
+              className="w-4 h-4 rounded-xl"
+              style={{ backgroundColor: chartConfig.credit.color }}
+            ></span>
+            <span className="text-sm font-normal pl-2">Credit</span>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="flex-1">
         <ChartContainer config={chartConfig} className="p-0">
@@ -46,22 +63,28 @@ export default function Component() {
             data={chartData}
             barCategoryGap="10%"
             barGap={5}
-            barSize={30}
-            // width="100%"        
-            height={240}       // Set height to 100% of the container
-            margin={{ top: 20, right: 20, left: 20, bottom: 20 }}  
+            barSize={20} // Adjusted bar size
+            height={200} // Adjusted height
+            margin={{ top: 10, right: 20, left: 20, bottom: 90 }} // Reduced top margin
           >
             <XAxis dataKey="day" axisLine={true} tickLine={false} />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="dashed" />}
             />
-            <Legend verticalAlign="top" align="right" />
-            <Bar dataKey="debit" fill={chartConfig.debit.color} radius={[5, 5, 0, 0]} />
-            <Bar dataKey="credit" fill={chartConfig.credit.color} radius={[5, 5, 0, 0]} />
+            <Bar
+              dataKey="debit"
+              fill={chartConfig.debit.color}
+              radius={[5, 5, 0, 0]}
+            />
+            <Bar
+              dataKey="credit"
+              fill={chartConfig.credit.color}
+              radius={[5, 5, 0, 0]}
+            />
           </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

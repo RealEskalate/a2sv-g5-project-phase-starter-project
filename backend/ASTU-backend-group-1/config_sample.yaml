@@ -1,0 +1,7 @@
+database:
+  username: <your-database-username> 
+  password: <your-database-password> 
+  uri: <your-database-uri>
+email:
+  key: <google app key>
+port: <port number>

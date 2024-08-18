@@ -1,5 +1,5 @@
 package iuser
 
 type IUserRepository interface {
-	Save(username string) error
+	Save(string, bool) error
 }

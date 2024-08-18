@@ -7,7 +7,9 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -16,8 +18,11 @@ type UserUsecase interface {
 	Register(input Domain.RegisterInput) (*Domain.User, error)
 	UpdateUser(username string, updatedUser *Domain.UpdateUserInput) error
 	DeleteUser(username string) error
+	Login(c *gin.Context, LoginUser *Domain.LoginInput) (string, error)
 	Logout(username string, tokenString string) error
-	Login(LoginUser *Domain.LoginInput) (string, error)
+	ForgotPassword(username string) (string, error)
+	Reset(token string) (string, error)
+	UpdatePassword(username string, newPassword string) error
 }
 
 type userUsecase struct {
@@ -30,17 +35,15 @@ func NewUserUsecase(userRepo Repository.UserRepository, emailService *infrastruc
 	return &userUsecase{
 		userRepo:        userRepo,
 		emailService:    emailService,
-		passwordService: infrastructure.NewPasswordService(), // Initialize PasswordService here
+		passwordService: infrastructure.NewPasswordService(),
 	}
 }
 
 func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error) {
-	// Validate username: must not contain '@'
 	if strings.Contains(input.Username, "@") {
 		return nil, errors.New("username must not contain '@'")
 	}
 
-	// Check if username or email already exists
 	if _, err := u.userRepo.FindByUsername(input.Username); err == nil {
 		return nil, errors.New("username already exists")
 	}
@@ -49,13 +52,11 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error)
 		return nil, errors.New("email already registered")
 	}
 
-	// Hash the password using PasswordService
 	hashedPassword, err := u.passwordService.HashPassword(input.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %v", err)
 	}
 
-	// Create a new user
 	user := &Domain.User{
 		Id:             primitive.NewObjectID(),
 		Name:           input.Name,
@@ -71,13 +72,11 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error)
 		PostsIDs:       []string{},
 	}
 
-	// Save the user to the repository
 	err = u.userRepo.Save(user)
 	if err != nil {
 		return nil, fmt.Errorf("failed to save user: %v", err)
 	}
 
-	// Send a welcome email using EmailService
 	subject := "Welcome to Our Service!"
 	body := fmt.Sprintf("Hi %s, welcome to our platform!", input.Username)
 	err = u.emailService.SendEmail(input.Email, subject, body)
@@ -89,27 +88,20 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error)
 }
 
 func (u *userUsecase) UpdateUser(username string, updatedUser *Domain.UpdateUserInput) error {
-	// Retrieve the existing user from the repository
 	_, err := u.userRepo.FindByUsername(username)
 	if err != nil {
 		return errors.New("user not found")
 	}
 
-	// Validate the new username if it is being updated
+	updateFields := bson.M{}
+
 	if updatedUser.Username != "" {
 		if strings.Contains(updatedUser.Username, "@") {
 			return errors.New("username must not contain '@'")
 		}
-	}
-
-	// Prepare update fields
-	updateFields := bson.M{}
-
-	if updatedUser.Username != "" {
 		updateFields["username"] = updatedUser.Username
 	}
 	if updatedUser.Password != "" {
-		// Hash the new password before updating using PasswordService
 		hashedPassword, err := u.passwordService.HashPassword(updatedUser.Password)
 		if err != nil {
 			return fmt.Errorf("failed to hash password: %v", err)
@@ -126,7 +118,6 @@ func (u *userUsecase) UpdateUser(username string, updatedUser *Domain.UpdateUser
 		updateFields["address"] = updatedUser.Address
 	}
 
-	// Call repository to update the user
 	err = u.userRepo.Update(username, updateFields)
 	if err != nil {
 		return fmt.Errorf("failed to update user: %v", err)
@@ -136,13 +127,11 @@ func (u *userUsecase) UpdateUser(username string, updatedUser *Domain.UpdateUser
 }
 
 func (u *userUsecase) DeleteUser(username string) error {
-	// Check if the user exists before attempting to delete
 	_, err := u.userRepo.FindByUsername(username)
 	if err != nil {
 		return fmt.Errorf("user not found: %v", err)
 	}
 
-	// Call repository to delete the user
 	err = u.userRepo.Delete(username)
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %v", err)
@@ -151,33 +140,32 @@ func (u *userUsecase) DeleteUser(username string) error {
 	return nil
 }
 
-func (u *userUsecase) Login(LoginUser *Domain.LoginInput) (string, error) {
+func (u *userUsecase) Login(c *gin.Context, LoginUser *Domain.LoginInput) (string, error) {
 	user, err := u.userRepo.FindByUsername(LoginUser.Username)
 	if err != nil {
-		return "", err
+		return "", errors.New("invalid username or password")
 	}
 
-	storedPassword := user.Password
-
-	// Compare the stored hashed password with the provided one
-	err = u.passwordService.ComparePasswords(storedPassword, LoginUser.Password)
+	err = u.passwordService.ComparePasswords(user.Password, LoginUser.Password)
 	if err != nil {
-		return "", err
+		return "", errors.New("invalid username or password")
 	}
 
-	accessToken, err := infrastructure.GenerateToken(user.Username, user.Role)
+	accessToken, err := infrastructure.GenerateJWT(user.Username, user.Role)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to generate access token: %v", err)
 	}
 
 	refreshToken, err := infrastructure.GenerateRefreshToken(user.Username)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to generate refresh token: %v", err)
 	}
+
+	c.SetCookie("refresh_token", refreshToken, 3600, "/", "", false, true)
 
 	err = u.userRepo.InsertToken(user.Username, accessToken, refreshToken)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to store tokens: %v", err)
 	}
 
 	return accessToken, nil
@@ -189,7 +177,66 @@ func (u *userUsecase) Logout(username string, tokenString string) error {
 		return err
 	}
 
-	infrastructure.InvalidateToken(tokenString)
+	claims, err := infrastructure.ParseToken(tokenString, []byte("BlogManagerSecretKey"))
+	if err != nil {
+		fmt.Println("Error parsing token:", err)
+		return err
+	}
+	claims.ExpiresAt = time.Now().Unix()
+
+	infrastructure.Blacklist.AddToBlacklist(tokenString)
+	fmt.Println(infrastructure.Blacklist.IsTokenBlacklisted(tokenString))
+
+	return nil
+}
+
+func (u *userUsecase) ForgotPassword(username string) (string, error) {
+	user, err := u.userRepo.FindByUsername(username)
+	if err != nil {
+		return "", errors.New("user not found")
+	}
+
+	resetToken, err := infrastructure.GenerateResetToken(user.Username, []byte("BlogManagerSecretKey"))
+	if err != nil {
+		return "", err
+	}
+
+	return resetToken, nil
+}
+
+func (u *userUsecase) Reset(token string) (string, error) {
+
+	claims, err := infrastructure.ParseResetToken(token, []byte("BlogManagerSecretKey"))
+	if err != nil {
+		fmt.Println("Error parsing token:", err)
+		return "", err
+	}
+
+	user, err := u.userRepo.FindByUsername(claims.Username)
+
+	if err != nil {
+		return "", errors.New("user not found")
+	}
+	access_token, err := infrastructure.GenerateJWT(user.Username, user.Role)
+
+	if err != nil {
+		return "", fmt.Errorf("failed to generate access token: %v", err)
+	}
+
+	return access_token, nil
+}
+
+func (u *userUsecase) UpdatePassword(username string, newPassword string) error {
+
+	hashedPassword, err := u.passwordService.HashPassword(newPassword)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %v", err)
+	}
+
+	err = u.userRepo.Update(username, bson.M{"password": hashedPassword})
+	if err != nil {
+		return fmt.Errorf("failed to update password: %v", err)
+	}
 
 	return nil
 }

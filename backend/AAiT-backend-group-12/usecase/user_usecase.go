@@ -240,3 +240,11 @@ func (u *UserUsecase) UpdateUser(c context.Context, requestUsername string, toke
 
 	return u.userRepository.UpdateUser(c, requestUsername, user)
 }
+
+func (u *UserUsecase) PromoteUser(c context.Context, username string) domain.CodedError {
+	return u.userRepository.ChangeRole(c, username, "admin")
+}
+
+func (u *UserUsecase) DemoteUser(c context.Context, username string) domain.CodedError {
+	return u.userRepository.ChangeRole(c, username, "user")
+}

@@ -21,4 +21,6 @@ func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup) {
 	authGroup.POST("/login", controller.HandleLogin)
 	authGroup.PATCH("/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, "user"), controller.HandleUpdateUser)
 	authGroup.POST("/renew-token", controller.HandleRenewAccessToken)
+	authGroup.PATCH("/promote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, "admin", "root"), controller.HandlePromoteUser)
+	authGroup.PATCH("/demote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, "root"), controller.HandleDemoteUser)
 }

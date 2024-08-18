@@ -115,3 +115,35 @@ func (controller *AuthController) HandleUpdateUser(c *gin.Context) {
 
 	c.JSON(200, domain.Response{"message": "User updated", "data": resData})
 }
+
+func (controller *AuthController) HandlePromoteUser(c *gin.Context) {
+	username := c.Param("username")
+	if username == "" {
+		c.JSON(400, domain.Response{"error": "Username is required"})
+		return
+	}
+
+	err := controller.usecase.PromoteUser(c, username)
+	if err != nil {
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, domain.Response{"message": "User promoted"})
+}
+
+func (controller *AuthController) HandleDemoteUser(c *gin.Context) {
+	username := c.Param("username")
+	if username == "" {
+		c.JSON(400, domain.Response{"error": "Username is required"})
+		return
+	}
+
+	err := controller.usecase.DemoteUser(c, username)
+	if err != nil {
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, domain.Response{"message": "User demoted"})
+}

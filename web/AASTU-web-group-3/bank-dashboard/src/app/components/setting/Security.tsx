@@ -34,12 +34,13 @@ const Security = () => {
         <div className="font-semibold text-xl py-2 text-[#333B69] ">
           Two-factor Authentication
         </div>
-        <div className="flex gap-3 w-full items-center py-2 ">
+        <div className="flex gap-3 w-full md:w-3/5 items-center py-2 ">
+          <div className="w-1/5">
             <SwitchButton
               isOn={tFactorAuthentication}
               onToggle={setTFactorAuthentication}
             />
-
+          </div>
           Enable or disable two factor authentication
         </div>
       </div>
@@ -50,12 +51,12 @@ const Security = () => {
         </div>
 
         <div className="mb-3 w-full md:w-[45%]">
-          <label className="block text-black text-sm mb-2">Currency</label>
+          <label className="block text-black text-sm mb-2">Password</label>
           <input
-            className="w-full p-3 text-[#718EBF] border text-sm border-[#DFEAF2] rounded-lg focus:outline-none"
+            className="w-full p-3 text-[#718EBF] border-2 text-sm border-[#DFEAF2] rounded-lg focus:outline-none"
             type="password"
             id="password"
-            placeholder="USD"
+            placeholder="*********"
             {...register("Password", {
               required: {
                 value: true,
@@ -65,12 +66,12 @@ const Security = () => {
           />
         </div>
         <div className="mb-3 w-full md:w-[45%]">
-          <label className="block text-black text-sm mb-2">Time Zone</label>
+          <label className="block text-black text-sm mb-2">New Password</label>
           <input
-            className="w-full p-3 text-[#718EBF] border text-sm border-[#DFEAF2] rounded-lg focus:outline-none"
+            className="w-full p-3 text-[#718EBF] border-2 text-sm border-[#DFEAF2] rounded-lg focus:outline-none"
             type="password"
-            id="Time Zone"
-            placeholder="(GMT-12:00) International Date Line West"
+            id="newPassword"
+            placeholder="*********"
             {...register("newPassword", {
               required: {
                 value: true,

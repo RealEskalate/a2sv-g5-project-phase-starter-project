@@ -5,11 +5,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func PaginationByPage(pageNo int, pageSize int) *options.FindOptions{
-	skip := (int64(pageNo) - 1) * int64(pageSize)
+func PaginationByPage(pageNo int64, pageSize int64) *options.FindOptions {
+	skip := (int64(pageNo) - 1) * pageSize
 	findOptions := options.Find()
-	findOptions.SetSort(bson.D{{Key:"createdAt", Value : -1}})
+	findOptions.SetSort(bson.D{{Key: "createdAt", Value: -1}})
 	findOptions.SetSkip(skip)
-	findOptions.SetLimit(int64(pageSize))
+	findOptions.SetLimit(pageSize)
 	return findOptions
 }

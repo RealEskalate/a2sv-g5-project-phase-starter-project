@@ -10,7 +10,7 @@ import (
 
 type BlogController struct {
 	BlogUsecase domain.BlogUsecase
-	Validator domain.ValidateInterface
+	Validator   domain.ValidateInterface
 }
 
 // CommentOnBlog implements domain.BlogUsecase.
@@ -22,48 +22,48 @@ func (b BlogController) CommentOnBlog(c *gin.Context) {
 func (b BlogController) CreateBlog(c *gin.Context) {
 	var blog domain.Blog
 	uid, isAuth := c.Get("id")
-	if isAuth{
+	if isAuth {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
 			Message: "Authentication failed.",
-			Status: http.StatusUnauthorized,
+			Status:  http.StatusUnauthorized,
 		})
 		return
 	}
 	userID, isString := uid.(string)
-	if !isString{
+	if !isString {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
 			Message: "Authentication failed.",
-			Status: http.StatusUnauthorized,
+			Status:  http.StatusUnauthorized,
 		})
 		return
 	}
-	if err := c.ShouldBind(&blog); err != nil{
+	if err := c.ShouldBind(&blog); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: err.Error(),
-			Status: http.StatusBadRequest,
+			Status:  http.StatusBadRequest,
 		})
 		return
 	}
-	if err := b.Validator.ValidateStruct(blog); err != nil{
+	if err := b.Validator.ValidateStruct(blog); err != nil {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
 			Message: "Invalid request payload.",
-			Status: http.StatusUnauthorized,
+			Status:  http.StatusUnauthorized,
 		})
 		return
 	}
-	
+
 	newBlog, err := b.BlogUsecase.CreateBlog(userID, blog)
-	if err != nil{
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Message: err.Error(),
-			Status: http.StatusInternalServerError,
+			Status:  http.StatusInternalServerError,
 		})
 		return
 	}
 	c.JSON(http.StatusCreated, domain.SuccessResponse{
 		Message: "Blog created successfully.",
-		Data: newBlog,
-		Status: http.StatusCreated,
+		Data:    newBlog,
+		Status:  http.StatusCreated,
 	})
 
 }
@@ -87,12 +87,20 @@ func (b BlogController) GetBlogByID(c *gin.Context) {
 func (b BlogController) GetBlogs(c *gin.Context) {
 	pageNo := c.Query("pageNo")
 	pageSize := c.Query("pageSize")
+
+	if pageNo == "" {
+		pageNo = "0"
+	}
+	if pageSize == "" {
+		pageSize = "0"
+	}
+
 	blogs, pagination, err := b.BlogUsecase.GetBlogs(pageNo, pageSize)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		c.Abort()
 	} else {
-		c.JSON(http.StatusAccepted, gin.H{"blogs": blogs, "pagination": pagination})
+		c.JSON(http.StatusOK, gin.H{"blogs": blogs, "pagination": pagination})
 	}
 }
 
@@ -125,6 +133,6 @@ func (b BlogController) UpdateBlogByID(c *gin.Context) {
 func NewBlogController(BlogUsecase domain.BlogUsecase, validator domain.ValidateInterface) BlogController {
 	return BlogController{
 		BlogUsecase: BlogUsecase,
-		Validator: validator,
+		Validator:   validator,
 	}
 }

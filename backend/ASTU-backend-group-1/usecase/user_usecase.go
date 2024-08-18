@@ -6,8 +6,8 @@ type userUsecase struct {
 	userRepository domain.UserRepository
 }
 
-func NewUserUsecase() (domain.UserUsecase, error) {
-	return &userUsecase{}, nil
+func NewUserUsecase(u domain.UserRepository) (domain.UserUsecase, error) {
+	return &userUsecase{userRepository: u}, nil
 }
 
 func (useCase *userUsecase) Get() ([]domain.User, error) {

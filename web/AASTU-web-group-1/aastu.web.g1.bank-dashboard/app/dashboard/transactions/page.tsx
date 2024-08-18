@@ -91,6 +91,7 @@ const Transactions = () => {
           <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {creditCards.map((card) => (
               <CreditCard
+              key={card.id}
                id = {card.id}
                 balance={card.balance}
                 semiCardNumber={card.semiCardNumber}

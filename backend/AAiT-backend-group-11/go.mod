@@ -8,7 +8,6 @@ require (
 )
 
 require (
-	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/joho/godotenv v1.5.1
 	github.com/klauspost/compress v1.13.6 // indirect

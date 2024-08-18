@@ -88,7 +88,3 @@ func (repo *userRepository) UpdateUser(user *entities.User) (*entities.User, err
 	return user, nil
 
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> f8289de (logout, promote/demote, others implemented)

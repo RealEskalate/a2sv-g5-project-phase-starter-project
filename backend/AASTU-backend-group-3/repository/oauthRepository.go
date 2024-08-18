@@ -2,79 +2,35 @@ package repository
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"group3-blogApi/config/db"
 	"group3-blogApi/domain"
-	"io"
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"golang.org/x/oauth2"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type OAuthRepository interface {
-	GenerateAuthURL() string
-	ExchangeCodeForToken(code string) (*oauth2.Token, error)
-	GetUserInfo(token *oauth2.Token) (string, error)
-}
-
-type oauthRepository struct {
-	config *oauth2.Config
-}
-
-func NewOAuthRepository(config *oauth2.Config) OAuthRepository {
-	return &oauthRepository{config: config}
-}
-
-func (r *oauthRepository) GenerateAuthURL() string {
-	return r.config.AuthCodeURL("random")
-}
-
-func (r *oauthRepository) ExchangeCodeForToken(code string) (*oauth2.Token, error) {
-	return r.config.Exchange(context.Background(), code)
-}
-
-
-func (r *oauthRepository) GetUserInfo(token *oauth2.Token) (string, error) {
-	client := r.config.Client(context.Background(), token)
-	response, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
-	if err != nil {
-		return "", fmt.Errorf("failed getting user info: %w", err)
-	}
-	defer response.Body.Close()
-
-	content, err := io.ReadAll(response.Body)
-	if err != nil {
-		return "", fmt.Errorf("failed reading response body: %w", err)
-	}
-
-	// Unmarshal the JSON response into a map
-	var userInfo map[string]interface{}
-	if err := json.Unmarshal(content, &userInfo); err != nil {
-		return "", fmt.Errorf("failed to unmarshal user info: %w", err)
-	}
-
-	// Create a new user based on the extracted info
-	newUser := domain.User{
-		Username:  userInfo["name"].(string),
-		Email:     userInfo["email"].(string),
-		Role:      "user",
-		IsActive:  true,
-		
-		Image:     userInfo["picture"].(string),
-		ActivationToken: "",
-		TokenCreatedAt:  time.Now(),
-	}
-	// cheak if registered
+func (ur *UserRepositoryImpl) FindOrCreateUserByGoogleID(oauthUserInfo domain.OAuthUserInfo, deviceID string) (*domain.User, error) {
 	var user domain.User
-	err2 := db.UserCollection.FindOne(context.Background(),  bson.M{"email": newUser.Email}).Decode(&user)
-	if err2 != nil  {
+	filter := bson.M{"google_id": oauthUserInfo.ProviderID}
 
-		db.UserCollection.InsertOne(context.Background(), newUser)
+	err := ur.collection.FindOne(context.Background(), filter).Decode(&user)
+	if err == mongo.ErrNoDocuments {
+		newUser := domain.User{
+			Email:    oauthUserInfo.Email,
+			GoogleID: oauthUserInfo.ProviderID,
+			Username: oauthUserInfo.Name,
+			Image:    oauthUserInfo.Picture,
+			RefreshTokens: []domain.RefreshToken{},
+			IsActive: true, 
+		}
+		result, err := ur.collection.InsertOne(context.Background(), newUser)
+		if err != nil {
+			return nil, err
+		}
+		newUser.ID = result.InsertedID.(primitive.ObjectID)
+		return &newUser, nil
+	} else if err != nil {
+		return nil, err
 	}
-
-	return string(content), nil
+	return &user, nil
 }
-
-

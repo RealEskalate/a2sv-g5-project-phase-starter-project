@@ -13,6 +13,12 @@ type BlogController struct {
 
 var validate = validator.New()
 
+func NewBlogController(bu domain.BlogUseCaseInterface) *BlogController{
+	return &BlogController{
+		blogUseCase: bu,
+	}
+}
+
 // CreateBlogHandler handles the HTTP request for creating a new blog post.
 // It binds the JSON data from the request body to a domain.Blog struct,
 // validates the struct using the validate library, and then calls the

@@ -3,9 +3,9 @@ import InvoiceSentCard from "./InvoiceSentCard";
 
 const InvoiceSent = () => {
   return (
-    <div className="md:w-4/12">
-      <h1 className="text-[#333B69] py-2 font-semibold">Invoices Sent</h1>
-      <div className=" max-w-sm  bg-white border border-gray-200 rounded-[15px] shadow p-4">
+    <div className="min-[890px]:w-2/3 lg:w-4/12 mt-3 md:mt-0">
+      <h1 className="text-[#333B69] pb-2 font-semibold">Invoices Sent</h1>
+      <div className=" max-w-sm  bg-white border border-gray-200 rounded-[15px]  p-4">
         <div className="flow-root">
           <ul role="list" className=" ">
             <li className="py-1">

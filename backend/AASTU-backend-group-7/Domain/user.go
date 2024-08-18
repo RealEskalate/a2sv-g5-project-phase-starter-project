@@ -16,7 +16,7 @@ type User struct {
     Bio      string
     CreatedAt time.Time
     UpdatedAt time.Time
-    Posts    []Post
+    Posts    []*Post
 }
 
 // this could have been handled in a better way but i was too lazy to do it

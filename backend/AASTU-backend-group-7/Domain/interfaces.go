@@ -34,10 +34,14 @@ type RefreshUseCase interface {
 }
 
 type BlogRepository interface {
+	CreateBlog(ctx context.Context, post *Post) (error, int)
 }
 
 type BlogUseCase interface {
+	CreateBlog(c *gin.Context, post *Post) (error, int)
 }
+
+
 
 type UserRepository interface {
 	CreateUsers(ctx context.Context, user *User) (OmitedUser, error, int)

@@ -16,30 +16,41 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	// Initialize the database
 	DataBase := client.Database("Blog")
 
-	// Defer the closing of the database
-	// defer func() {
-	// 	if err := client.Disconnect(context.TODO()); err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// }()
-
-	//initialize the collections
+	//initialize the user collections
 	usercol := DataBase.Collection("Users")
 	blogcol := DataBase.Collection("Blogs")
 	refreshtokencol := DataBase.Collection("RefreshTokens")
 
-	// Initialize the collections
+	// Initialize the custonm user collections
 	customUserCol := custommongo.NewMongoCollection(usercol)
 	customBlogCol := custommongo.NewMongoCollection(blogcol)
 	customRefreshTokenCol := custommongo.NewMongoCollection(refreshtokencol)
+
+	// Initialize the blog collections
+	posts := DataBase.Collection("Posts")
+	comments := DataBase.Collection("Comments")
+	likes := DataBase.Collection("Likes")
+	tags := DataBase.Collection("Tags")
+	// Initialize the custom blog collections
+	
+	customPostCol := custommongo.NewMongoCollection(posts)
+	customCommentCol := custommongo.NewMongoCollection(comments)
+	customLikeCol := custommongo.NewMongoCollection(likes)
+	customTagCol := custommongo.NewMongoCollection(tags)
+
 
 	BlogCollections = Domain.BlogCollections{
 
 		Users:         customUserCol,
 		Blogs:         customBlogCol,
 		RefreshTokens: customRefreshTokenCol,
+		Posts:         customPostCol,
+		Comments:      customCommentCol,
+		Likes:         customLikeCol,
+		Tags:          customTagCol,
 	}
 	// Initialize the router
+	
 	Router = gin.Default()
 
 	// go to auth router

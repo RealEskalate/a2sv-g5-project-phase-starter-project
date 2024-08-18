@@ -19,5 +19,6 @@ func NewRouter(db mongo.Database) {
 	}
 	router.PUT("/like", likeController.LikeBlog)
 	router.DELETE("/like", likeController.DeleteLike)
-	router.Run(":8080")
+	port := os.Getenv("PORT")
+	router.Run(":" + port)
 }

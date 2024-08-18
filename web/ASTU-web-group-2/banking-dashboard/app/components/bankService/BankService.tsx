@@ -13,7 +13,6 @@ const BankService = ({
   status,
   type,
 }: BankServiceType) => {
-  const router = useRouter();
   return (
     <div
       className={`${inter.className} flex justify-between bg-white rounded-[22px] h-fit p-5 items-center`}

@@ -13,19 +13,23 @@ const LayoutProvider = ({ children }: { children: ReactNode }) => {
   const shouldRenderLayout = !noLayoutPaths.includes(pathname);
 
   return (
-    <div>
+    <>
       {shouldRenderLayout ? (
-        <div className="w-full flex">
-          <Sidebar />
-          <div className="w-80 flex flex-col grow">
-            <NavBar />
-            {children}
+        <section className="w-full flex relative">
+          <div className="sidebar-container fixed z-20 h-screen w-[20%] bg-white pr-1">
+            <Sidebar />
           </div>
-        </div>
+          <div className="relative flex flex-col w-full pl-[20%]">
+            <NavBar />
+            <section className="content flex w-full z-0 pt-20">
+              {children}
+            </section>
+          </div>
+        </section>
       ) : (
         <div>{children}</div>
       )}
-    </div>
+    </>
   );
 };
 

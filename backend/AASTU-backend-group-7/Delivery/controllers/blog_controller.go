@@ -74,8 +74,8 @@ func (controller *blogController) GetPostBySlug(c *gin.Context) {
 }
 
 func (controller *blogController) GetPostByID(c *gin.Context) {
-	id,err := primitive.ObjectIDFromHex(c.Param("id"))// convert id to object id
-	
+	id, err := primitive.ObjectIDFromHex(c.Param("id")) // convert id to object id
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -93,8 +93,8 @@ func (controller *blogController) GetPostByID(c *gin.Context) {
 }
 
 func (controller *blogController) GetPostByAuthorID(c *gin.Context) {
-	authorID,err := primitive.ObjectIDFromHex(c.Param("author_id"))// convert id to object id
-	
+	authorID, err := primitive.ObjectIDFromHex(c.Param("author_id")) // convert id to object id
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -111,7 +111,7 @@ func (controller *blogController) GetPostByAuthorID(c *gin.Context) {
 	})
 }
 
-//	get my posts
+// get my posts
 func (controller *blogController) GetUserPosts(c *gin.Context) {
 	claims, err := Getclaim(c)
 	if err != nil {
@@ -127,5 +127,50 @@ func (controller *blogController) GetUserPosts(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "Post fetched successfully",
 		"posts":   posts,
+	})
+}
+
+func (controller *blogController) UpdatePostByID(c *gin.Context) {
+
+	id, err := primitive.ObjectIDFromHex(c.Param("id")) // convert id to object id
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// get author id of post
+	post, err, statusCode := controller.BlogUseCase.GetPostByID(c, id)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	// get author id of post
+	authorID := post.AuthorID
+
+	// check if user is author of post
+	isAuthor, err := IsAuthorOrAdmin(c, authorID)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if !isAuthor {
+		c.JSON(401, gin.H{"error": "You are not author of this post"})
+		return
+	}
+
+	var updatedPost Domain.Post
+	if err := c.ShouldBindJSON(&updatedPost); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	err, statusCode = controller.BlogUseCase.UpdatePostByID(c, id, &updatedPost)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Post updated successfully",
 	})
 }

@@ -39,6 +39,7 @@ Sort by:
 - date
 - like count
 - dislike count
+- view count
 
 ### AI:
 - suggest improvement: takes content and title -> performs improvement ands back the data

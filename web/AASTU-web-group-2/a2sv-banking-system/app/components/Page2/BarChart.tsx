@@ -59,9 +59,8 @@ const BarChart: React.FC = () => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl h-64">
+    <div className="bg-white p-4 pt-8 rounded-3xl shadow-md w-full max-w-[600px] h-[230px]">
       <Bar data={data} options={options} />
-      <div className="text-right text-gray-600 font-medium mt-2">$12,500</div>
     </div>
   );
 };

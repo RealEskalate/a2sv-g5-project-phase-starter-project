@@ -138,7 +138,21 @@ func (b BlogController) SearchBlogByTitleAndAuthor(c *gin.Context) {
 
 // UpdateBlogByID implements domain.BlogUsecase.
 func (b BlogController) UpdateBlogByID(c *gin.Context) {
-	panic("unimplemented")
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+		c.Abort()
+	}
+	var blog domain.Blog
+	if err := c.ShouldBind(&blog); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	updatedBlog, err := b.BlogUsecase.UpdateBlogByID("", id, blog)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	} else {
+		c.JSON(http.StatusAccepted, gin.H{"updated_blog": updatedBlog})
+	}
 }
 
 func NewBlogController(BlogUsecase domain.BlogUsecase, validator domain.ValidateInterface) BlogController {

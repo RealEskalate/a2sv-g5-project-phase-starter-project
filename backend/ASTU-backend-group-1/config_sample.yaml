@@ -3,5 +3,5 @@ database:
   password: <your-database-password> 
   uri: <your-database-uri>
 email:
-  key: "nenbydebhwkqanpf"
-port: "http://localhost:8000/"
+  key: <google app key>
+port: <port number>

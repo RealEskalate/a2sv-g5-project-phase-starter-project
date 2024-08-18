@@ -1,14 +1,18 @@
 package domain
 
+import "time"
+
 type User struct {
-	ID        string `bson:"_id" json:"id"`
-	Username  string `json:"username"`
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Password  string `json:"password"`
-	IsAdmin   bool   `json:"is_admin"`
-	IsActive  bool   `json:"is_active"`
+	ID             string    `bson:"_id" json:"id"`
+	Username       string    `json:"username"`
+	Email          string    `json:"email"`
+	FirstName      string    `json:"first_name"`
+	LastName       string    `json:"last_name"`
+	Password       string    `json:"password"`
+	VerifyToken    string    `json:"-"`
+	ExpirationDate time.Time `json:"expirationtoken"`
+	IsAdmin        bool      `json:"is_admin"`
+	IsActive       bool      `json:"is_active"`
 }
 type UserFilter struct {
 	UserId    string
@@ -16,7 +20,8 @@ type UserFilter struct {
 	Email     string
 	FirstName string
 	LastName  string
-	IsAdmin   bool
+
+	IsAdmin bool
 }
 type UserFilterOption struct {
 	Filter     UserFilter

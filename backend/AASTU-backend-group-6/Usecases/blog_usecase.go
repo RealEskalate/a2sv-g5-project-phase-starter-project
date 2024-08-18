@@ -2,10 +2,17 @@ package usecases
 
 import (
 	domain "blogs/Domain"
+	"strings"
 )
 
 type BlogUsecase struct {
 	blogRepository domain.BlogRepository
+}
+
+func NewBlogUsecase(blogRepository domain.BlogRepository) domain.BlogUsecase {
+	return BlogUsecase{
+		blogRepository: blogRepository,
+	}
 }
 
 // CommentOnBlog implements domain.BlogRepository.
@@ -14,13 +21,26 @@ func (b BlogUsecase) CommentOnBlog(blog_id string, commentor_id string, commento
 }
 
 // CreateBlog implements domain.BlogRepository.
-func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog) error {
-	panic("unimplemented")
+func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
+	newBlog, err := b.blogRepository.CreateBlog(user_id, blog)
+	if err != nil{
+		return domain.Blog{}, err
+	}
+	return newBlog, nil
 }
 
 // DeleteBlogByID implements domain.BlogRepository.
-func (b BlogUsecase) DeleteBlogByID(user_id string, blog_id string) error {
-	panic("unimplemented")
+func (b BlogUsecase) DeleteBlogByID(user_id string, blog_id string, role string) error {
+	var err error
+	if strings.ToLower(role) != "admin"{
+		err = b.blogRepository.DeleteBlogByID("", blog_id)
+	}else{
+		err = b.blogRepository.DeleteBlogByID(user_id, blog_id)
+	}
+	if err != nil{
+		return err
+	}
+	return nil
 }
 
 // FilterBlogsByTag implements domain.BlogRepository.
@@ -58,8 +78,4 @@ func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.
 	panic("unimplemented")
 }
 
-func NewBlogUsecase(blogRepository domain.BlogRepository) domain.BlogRepository {
-	return BlogUsecase{
-		blogRepository: blogRepository,
-	}
-}
+

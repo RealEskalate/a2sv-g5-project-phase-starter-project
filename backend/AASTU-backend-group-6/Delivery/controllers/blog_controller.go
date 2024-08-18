@@ -3,12 +3,21 @@ package controllers
 import (
 	domain "blogs/Domain"
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type BlogController struct {
 	BlogUsecase domain.BlogUsecase
+	Validator domain.ValidateInterface
+}
+
+func NewBlogController(BlogUsecase domain.BlogUsecase, validator domain.ValidateInterface) BlogController {
+	return BlogController{
+		BlogUsecase: BlogUsecase,
+		Validator: validator,
+	}
 }
 
 // CommentOnBlog implements domain.BlogUsecase.
@@ -18,12 +27,101 @@ func (b BlogController) CommentOnBlog(c *gin.Context) {
 
 // CreateBlog implements domain.BlogUsecase.
 func (b BlogController) CreateBlog(c *gin.Context) {
-	panic("unimplemented")
-}
+	var blog domain.Blog
+	uid, isAuth := c.Get("id")
+	if isAuth{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status: http.StatusUnauthorized,
+		})
+		return
+	}
+	userID, isString := uid.(string)
+	if !isString{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status: http.StatusUnauthorized,
+		})
+		return
+	}
+	if err := c.ShouldBind(&blog); err != nil{
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Message: err.Error(),
+			Status: http.StatusBadRequest,
+		})
+		return
+	}
+	if err := b.Validator.ValidateStruct(blog); err != nil{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Invalid request payload.",
+			Status: http.StatusUnauthorized,
+		})
+		return
+	}
+	
+	newBlog, err := b.BlogUsecase.CreateBlog(userID, blog)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
+			Message: err.Error(),
+			Status: http.StatusInternalServerError,
+		})
+		return
+	}
+	c.JSON(http.StatusCreated, domain.SuccessResponse{
+		Message: "Blog created successfully.",
+		Data: newBlog,
+		Status: http.StatusCreated,
+	})
 
+}
 // DeleteBlogByID implements domain.BlogUsecase.
 func (b BlogController) DeleteBlogByID(c *gin.Context) {
-	panic("unimplemented")
+	blog_id := c.Param("id")
+	uid, isAuth := c.Get("id")
+	if isAuth{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status: http.StatusUnauthorized,
+		})
+		return
+	}
+	userID, isString := uid.(string)
+	if !isString{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status: http.StatusUnauthorized,
+		})
+		return
+	}
+	role, isAuth := c.Get("role")
+	if isAuth{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status: http.StatusUnauthorized,
+		})
+		return
+	}
+	userRole, isString := role.(string)
+	if !isString{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status: http.StatusUnauthorized,
+		})
+		return
+	}
+	err := b.BlogUsecase.DeleteBlogByID(userID, blog_id, userRole)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
+			Message: err.Error(),
+			Status: http.StatusInternalServerError,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, domain.SuccessResponse{
+		Message: "Blog deleted successfully.",
+		Status: http.StatusOK,
+	})
+
 }
 
 // FilterBlogsByTag implements domain.BlogUsecase.
@@ -65,10 +163,4 @@ func (b BlogController) SearchBlogByTitleAndAuthor(c *gin.Context) {
 // UpdateBlogByID implements domain.BlogUsecase.
 func (b BlogController) UpdateBlogByID(c *gin.Context) {
 	panic("unimplemented")
-}
-
-func NewBlogController(BlogUsecase domain.BlogUsecase) BlogController {
-	return BlogController{
-		BlogUsecase: BlogUsecase,
-	}
 }

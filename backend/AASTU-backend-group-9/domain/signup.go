@@ -12,6 +12,7 @@ type CreateUser struct {
 
 // AuthSignup is a struct that contains the email and password of a user
 type AuthSignup struct {
+	UserID          primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
 	Username  		string `json:"username" binding:"required"`
 	Email           string `json:"email" binding:"required"`
 	Password        string `json:"password"`

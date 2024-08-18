@@ -72,14 +72,12 @@ const SettingsPage: React.FC = () => {
             
             {activeTab === 'Edit Profile' && (
               <div>
-                {/* Your Edit Profile form or content goes here */}
                 <p>Edit Profile Content</p>
               </div>
             )}
 
             {activeTab === 'Security' && (
               <div>
-                {/* Your Security settings form or content goes here */}
                 <p>Security Settings Content</p>
               </div>
             )}

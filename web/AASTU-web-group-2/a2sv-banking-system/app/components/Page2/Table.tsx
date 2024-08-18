@@ -14,7 +14,7 @@ interface TableProps<T> {
 const Table = <T extends {}>({ columns, data }: TableProps<T>) => {
   return (
     <div className=" rounded-3xl shadow-md p-4 bg-white ">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden">
         <table className="min-w-full divide-y divide-[#E6EFF5] rounded-lg bg-white">
           <thead className="bg-white font-inter font-medium hidden sm:table-header-group">
             <tr>

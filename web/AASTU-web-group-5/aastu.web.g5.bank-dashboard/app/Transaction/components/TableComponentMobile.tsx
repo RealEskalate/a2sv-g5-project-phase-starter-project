@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaArrowUp, FaArrowDown,FaArrowLeft,FaArrowRight } from "react-icons/fa";
+// import { FaArrowUp, FaArrowDown,FaArrowLeft,FaArrowRight } from "react-icons/fa";
 import dummyData from "../components/dummyData"; // Adjust the path as needed
 
 const itemsPerPage = 5;
@@ -30,7 +30,7 @@ const TableCard: React.FC = () => {
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 0}
         >
-          <FaArrowLeft size={20} />
+          {/* <FaArrowLeft size={20} /> */}
           <span className="ml-1">Prev</span>
         </button>
 
@@ -52,7 +52,7 @@ const TableCard: React.FC = () => {
           disabled={currentPage === totalPages - 1}
         >
           <span className="mr-1">Next</span>
-          <FaArrowRight size={20} />
+          {/* <FaArrowRight size={20} /> */}
         </button>
       </div>
     );
@@ -64,12 +64,12 @@ const TableCard: React.FC = () => {
         const amount = data.column6;
         const isPositive = amount.startsWith('+') || parseFloat(amount.replace(/[^0-9.-]/g, '')) > 0;
         const amountColor = isPositive ? 'text-green-500' : 'text-red-500';
-        const icon = isPositive ? <FaArrowUp className={`text-xl ${amountColor}`} /> : <FaArrowDown className={`text-xl ${amountColor}`} />;
+        // const icon = isPositive ? <FaArrowUp className={`text-xl ${amountColor}`} /> : <FaArrowDown className={`text-xl ${amountColor}`} />;
 
         return (
           <div key={index} className="flex items-center p-4 border rounded-lg shadow-md">
             <div className="mr-4">
-              {icon}
+              {/* {icon} */}
             </div>
             <div className="flex-1 flex justify-between items-center">
               <div className="flex-1">

@@ -2,7 +2,7 @@
 import React from 'react';
 import { RecentTransactionCard } from "./components/RecentTransactionCard";
 import { QuickTransferList } from './components/QuickTransferList';
-import { PieChartComponent } from './components/PieChartComponent';
+import  PieChartComponent  from './components/PieChartComponent';
 import { BarchartComponent } from './components/BarchartComponent';
 import { LineGraphComponent } from './components/LineGraphComponent';
 import Link from 'next/link';

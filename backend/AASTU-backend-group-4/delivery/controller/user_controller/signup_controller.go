@@ -27,13 +27,15 @@ func (uc *UserController) SignupController(c *gin.Context) {
 	// 	return
 	// }
 	//
-	// if _, err = uc.usecase.GetByEmail(c, request.Email); err != nil{
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Email is already taken"})
-	// }
-	//
-	// if _, err = uc.usecase.GetByUsername(c, request.Username); err != nil{
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Username is already taken"})
-	// }
+	if _, err = uc.usecase.GetByEmail(c, request.Email); err == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Email is already taken"})
+		return
+	}
+
+	if _, err = uc.usecase.GetByUsername(c, request.Username); err == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is already taken"})
+		return
+	}
 
 	encryptedPassword, err := bcrypt.GenerateFromPassword(
 		[]byte(request.Password),
@@ -53,7 +55,7 @@ func (uc *UserController) SignupController(c *gin.Context) {
 		Username:  request.Username,
 		Email:     request.Email,
 		Password:  request.Password,
-		Role:      "User",
+		IsAdmin:   false,
 		Active:    false,
 	}
 

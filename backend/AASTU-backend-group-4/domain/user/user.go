@@ -58,4 +58,5 @@ type UserRepository interface {
 	// UpdateUser(userID primitive.ObjectID, updatedUser *User) error
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)
+	DeleteRefreshTokenByUserID(ctx context.Context, userID string) error // used in logout
 }

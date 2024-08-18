@@ -27,7 +27,7 @@ const CreditCards = () => {
         <p className="flex grow page text-xl font-semibold text-colorBody-1">
           My Cards
         </p>
-        <div className="flex gap-10 pb-5">
+        <div className="flex gap-6">
           <VisaCard
             data={CardData[0]}
             isBlack={false}
@@ -44,7 +44,7 @@ const CreditCards = () => {
             data={CardData[2]}
             isBlack={true}
             isFade={false}
-            isSimGray={false}
+            isSimGray={true}
           />
         </div>
       </div>

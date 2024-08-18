@@ -1,16 +1,24 @@
 import React from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
 
-const NavBar = () => {
+const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
   return (
-    <div className="w-[80%] fixed z-10 flex flex-row justify-center bg-white pl-[2%] pr-[5%] py-4">
-      <h1 className="text-3xl font-semibold text-[#343C6A]">Overview</h1>
+    <div className="w-full fixed left-0 z-10 flex flex-row justify-center items-center bg-white sm:px-[4%] sm:gap-[6%] lg:pl-[240px] pr-[3%] py-4">
+      <button
+        onClick={openSidebar}
+        className="bg-[#F5F7FA] rounded-[12px] p-3 py-2 flex items-center hover:bg-[#d0e6f6] lg:hidden"
+      >
+        <FontAwesomeIcon icon={faBars} className="text-2xl text-gray-700" />
+      </button>
+      <h1 className="text-3xl font-semibold text-[#343C6A] sm:hidden lg:block">
+        Overview
+      </h1>
       <div className="flex justify-end gap-5 grow">
         {/* Search */}
-        <div className="relative  flex gap-2 items-center text-base text-[#8BA3CB]">
+        <div className="relative  flex gap-2 items-center text-base text-[#8BA3CB] sm:grow  lg:grow-0">
           <FontAwesomeIcon
             icon={faSearch}
             className="absolute left-5 text-xl"

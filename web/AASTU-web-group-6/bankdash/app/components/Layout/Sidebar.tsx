@@ -1,10 +1,19 @@
 "use client";
 
 import React, { useMemo } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faClose, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faBell } from "@fortawesome/free-regular-svg-icons";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 
-const Sidebar = () => {
+const Sidebar = ({
+  isOpen,
+  closeSidebar,
+}: {
+  isOpen: boolean;
+  closeSidebar: () => void;
+}) => {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -71,19 +80,32 @@ const Sidebar = () => {
     },
   ];
 
+  const clicked = () => {
+    () => router.push(item.url);
+    closeSidebar();
+  };
   return (
-    <div className="py-6 px-5 w-[99.6%] h-screen flex flex-col gap-8 border-r border-r-[#E6EFF5] bg-white">
-      <div className="flex gap-2 px-6">
+    <div className="py-6 px-5 w-[99.6%]  h-screen flex flex-col gap-8 border-r border-r-[#E6EFF5] bg-white">
+      <div className="flex gap-2 px-[4%] relative">
         <Image src="/assets/logo.svg" alt="logo" width={36} height={36} />
         <h1 className="text-2xl font-extrabold text-[#343C6A]">BankDash.</h1>
+        <button
+          onClick={closeSidebar}
+          className="bg-[#F5F7FA] rounded-[12px] p-3 py-2 flex items-center absolute left-64 hover:bg-[#d0e6f6] lg:hidden"
+        >
+          <FontAwesomeIcon icon={faClose} className="text-2xl text-gray-700" />
+        </button>
       </div>
 
       {/* Menu */}
-      <div className="w-full p-3 px-6 flex flex-col gap-2 text-base font-medium xs:hidden lg:flex">
+      <div className="p-3 px-6 flex flex-col gap-2 text-base font-medium text-nowrap">
         {menuItems.map((item, index) => (
           <button
             key={index}
-            onClick={() => router.push(item.url)}
+            onClick={() => {
+              router.push(item.url);
+              closeSidebar();
+            }}
             className="flex items-center gap-x-6 relative py-3"
           >
             <div

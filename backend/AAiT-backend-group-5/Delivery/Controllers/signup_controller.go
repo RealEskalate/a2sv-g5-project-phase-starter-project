@@ -25,16 +25,8 @@ func (signupController *SignupController) Signup(ctx *gin.Context) {
 		return
 	}
 
-	// encrypt password
-	// encryptedPassword, err := bcrypt.GenerateFromPassword(
-	// 	[]byte(userCreateRequest.Password),
-	// 	bcrypt.DefaultCost,
-	// )
-
-	// if err != nil {
-	// 	ctx.JSON(http.StatusInternalServerError, models.InternalServerError("internal server error"))
-	// 	return
-	// }
+	// PASSWORD ENCRYPTION NOT PERFOMRMED....
+	// EXPECTED TO BE PERFOMRMED IN THE CREATEuSER USECASE
 
 	// populate fields for new user
 	newUser := &models.User{

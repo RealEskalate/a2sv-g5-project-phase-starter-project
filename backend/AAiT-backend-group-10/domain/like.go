@@ -4,10 +4,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const (
-	CollectionLike = "likes"
-)
-
 type Like struct {
 	ID     uuid.UUID `json:"id,omitempty" bson:"id,omitempty"`
 	IsLike bool      `json:"is_like" bson:"is_like"`

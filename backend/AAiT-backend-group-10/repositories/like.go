@@ -15,7 +15,7 @@ type LikeRepository struct {
 	Collection *mongo.Collection
 }
 
-func NewLikeRepository(db mongo.Database, collectionName string) interfaces.LikeRepositoryInterface {
+func NewLikeRepository(db *mongo.Database, collectionName string) interfaces.LikeRepositoryInterface {
 	collection := db.Collection(collectionName)
 	return &LikeRepository{
 		Collection: collection,

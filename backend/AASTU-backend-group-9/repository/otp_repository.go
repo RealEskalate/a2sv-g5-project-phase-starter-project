@@ -2,7 +2,8 @@ package repository
 
 import (
 	"blog/database"
-	"blog/domain"
+	"blog/domain" // Add this line to import the missing package
+	
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"

@@ -4,9 +4,9 @@ import Image from 'next/image';
 export default function page() {
   return (
     <div className='flex justify-around items-center min-h-screen'>
-      <div className='w-[30vw] h-[60vh] relative'>
+      <div className='md:w-1/2 h-[60vh] relative'>
         <Image
-          src='/assets/new-user.png'
+          src='/assets/images/apple.png'
           alt='hello'
           layout='fill'
           objectFit='cover'

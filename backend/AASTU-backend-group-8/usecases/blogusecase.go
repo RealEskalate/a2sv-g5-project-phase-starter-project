@@ -4,12 +4,14 @@ package usecases
 import (
 	"meleket/domain"
 	"meleket/repository"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogUsecase struct {
-	blogRepo repository.BlogRepositoryInterface
+	blogRepo    repository.BlogRepositoryInterface
+	commentRepo repository.CommentRepositoryInterface
 }
 
 func NewBlogUsecase(br repository.BlogRepositoryInterface) *BlogUsecase {
@@ -68,4 +70,18 @@ func (u *BlogUsecase) DeleteBlogPost(id primitive.ObjectID) error {
 		return err
 	}
 	return nil
+}
+func (u *BlogUsecase) AddComment(blogID, authorID primitive.ObjectID, content string) error {
+	comment := &domain.Comment{
+		ID:        primitive.NewObjectID(),
+		BlogID:    blogID,
+		AuthorID:  authorID,
+		Content:   content,
+		CreatedAt: time.Now(),
+	}
+	return u.commentRepo.AddComment(comment)
+}
+
+func (u *BlogUsecase) GetComments(blogID primitive.ObjectID) ([]domain.Comment, error) {
+	return u.commentRepo.GetCommentsByBlogID(blogID)
 }

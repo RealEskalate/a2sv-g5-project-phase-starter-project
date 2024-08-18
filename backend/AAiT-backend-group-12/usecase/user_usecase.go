@@ -175,6 +175,16 @@ func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (
 		return "", domain.NewError("Invalid token", domain.ERR_UNAUTHORIZED)
 	}
 
+	// check whether the token is a refreshToken
+	tokenType, err := jwt_service.GetTokenType(token)
+	if err != nil {
+		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
+	}
+
+	if tokenType != "refreshToken" {
+		return "", domain.NewError("Invalid token type: make sure to use the refreshToken", domain.ERR_FORBIDDEN)
+	}
+
 	// get the username from the token
 	username, err := jwt_service.GetUsername(token)
 	if err != nil {

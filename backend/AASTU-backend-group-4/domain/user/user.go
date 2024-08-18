@@ -32,11 +32,24 @@ type LoginResponse struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
+type ForgotPasswordRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+type ResetPasswordRequest struct {
+	ResetToken      string `json:"reset_token" binding:"required"`
+	NewPassword     string `json:"new_password" binding:"required,min=8"`
+	ConfirmPassword string `json:"confirm_password" binding:"required,eqfield=NewPassword"`
+}
+
 type UserUsecase interface {
 	SignupUsecase(ctx context.Context, user *User) error
 	// UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *User) error
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)
+	DeleteRefreshTokenByUserID(ctx context.Context, userID string) error
+	GeneratePasswordResetToken(ctx context.Context, email, resetTokenSecret string, expiryHour int) error
+	ResetPassword(ctx context.Context, resetToken, newPassword, resetTokenSecret string) error
 }
 
 type UserRepository interface {
@@ -45,4 +58,7 @@ type UserRepository interface {
 	// UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *User) error
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)
+	DeleteRefreshTokenByUserID(ctx context.Context, userID string) error // used in logout
+	StoreResetToken(ctx context.Context, userID string, resetToken string, expiryHour int) error
+	UpdatePassword(ctx context.Context, userID string, newPassword string) error
 }

@@ -27,7 +27,7 @@ func (lu *loginUsecase) AuthenticateUser(c context.Context, login *domain.AuthLo
 
 	user, err := lu.userRepository.GetUserByEmail(ctx, login.Email)
 	if err != nil {
-		return nil, errors.New("invalid credentials")
+		return nil, errors.New("invalid Email")
 	}
 
 	err = userutil.ComparePassword(user.Password, login.Password)

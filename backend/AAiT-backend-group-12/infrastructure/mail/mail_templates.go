@@ -1,8 +1,12 @@
 package mail_service
 
-import "fmt"
+import (
+	"blog_api/delivery/env"
+	"fmt"
+)
 
-func EmailVerificationTemplate(link string) string {
+func EmailVerificationTemplate(hostUrl string, username string, token string) string {
+	link := hostUrl + "/api/" + env.ENV.ROUTE_PREFIX + "/auth/verify/email/" + username + "/" + token
 	return fmt.Sprintf(`
 		<!DOCTYPE html>
 		<html>

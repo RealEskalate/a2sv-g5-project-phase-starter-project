@@ -13,11 +13,12 @@ import (
 
 func CreateRootUser(db *mongo.Database, rootUsername string, rootPassword string) error {
 	rootUser := domain.User{
-		Username:  rootUsername,
-		Email:     "",
-		Password:  rootPassword,
-		Role:      "root",
-		CreatedAt: time.Now().Round(0),
+		Username:   rootUsername,
+		Email:      "root@root.root",
+		Password:   rootPassword,
+		Role:       "root",
+		CreatedAt:  time.Now().Round(0),
+		IsVerified: true,
 	}
 
 	hashedPwd, err := cryptography.HashString(rootUser.Password)

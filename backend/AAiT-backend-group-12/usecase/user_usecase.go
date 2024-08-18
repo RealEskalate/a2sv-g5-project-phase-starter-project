@@ -6,6 +6,8 @@ import (
 	"blog_api/domain/dtos"
 	"blog_api/infrastructure/cryptography"
 	jwt_service "blog_api/infrastructure/jwt"
+	mail_service "blog_api/infrastructure/mail"
+	"blog_api/infrastructure/utils"
 	"context"
 	"net/mail"
 	"regexp"
@@ -92,22 +94,52 @@ func (u *UserUsecase) SanitizeAndValidateNewUser(user *domain.User) domain.Coded
 	return nil
 }
 
-func (u *UserUsecase) Signup(c context.Context, user *domain.User) domain.CodedError {
+func (u *UserUsecase) GetVerificationData(c context.Context, username string) (domain.VerificationData, domain.CodedError) {
+	var verificationData domain.VerificationData
+	generatedToken, gErr := utils.GenerateToken(32)
+	if gErr != nil {
+		return verificationData, domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
+	}
+
+	verificationData = domain.VerificationData{
+		Token:     generatedToken,
+		ExpiresAt: time.Now().Round(0).Add(time.Hour * 2),
+	}
+
+	return verificationData, nil
+}
+
+func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl string) domain.CodedError {
 	err := u.SanitizeAndValidateNewUser(user)
 	if err != nil {
 		return err
 	}
 
-	hashedPw, err := cryptography.HashString(user.Password)
+	hashedPwd, err := cryptography.HashString(user.Password)
 	if err != nil {
 		return domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
 	}
-	user.Password = hashedPw
+
+	verificationData, err := u.GetVerificationData(c, user.Username)
+	if err != nil {
+		return err
+	}
+
+	user.VerificationData = verificationData
+	user.Password = hashedPwd
 	user.Role = "user"
+	user.IsVerified = false
+	user.CreatedAt = time.Now().Round(0)
 
 	err = u.userRepository.CreateUser(c, user)
 	if err != nil {
 		return err
+	}
+
+	mail := mail_service.EmailVerificationTemplate(hostUrl, user.Username, verificationData.Token)
+	mailErr := mail_service.SendMail("Blog API", user.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
+	if mailErr != nil {
+		return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)
 	}
 
 	return nil
@@ -138,6 +170,11 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 	foundUser, err := u.userRepository.FindUser(c, user)
 	if err != nil {
 		return "", "", err
+	}
+
+	// check if the user is verified
+	if !foundUser.IsVerified {
+		return "", "", domain.NewError("User email not verified", domain.ERR_UNAUTHORIZED)
 	}
 
 	err = cryptography.ValidateHashedString(foundUser.Password, user.Password)
@@ -208,6 +245,11 @@ func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (
 		return "", qErr
 	}
 
+	// check if the user is verified
+	if !foundUser.IsVerified {
+		return "", domain.NewError("User email not verified", domain.ERR_UNAUTHORIZED)
+	}
+
 	if foundUser.RefreshToken == "" {
 		return "", domain.NewError("User not found", domain.ERR_NOT_FOUND)
 	}
@@ -247,4 +289,39 @@ func (u *UserUsecase) PromoteUser(c context.Context, username string) domain.Cod
 
 func (u *UserUsecase) DemoteUser(c context.Context, username string) domain.CodedError {
 	return u.userRepository.ChangeRole(c, username, "user")
+}
+
+func (u *UserUsecase) VerifyEmail(c context.Context, username string, token string, hostUrl string) domain.CodedError {
+	username = strings.TrimSpace(username)
+	user, err := u.userRepository.FindUser(c, &domain.User{Username: username})
+	if err != nil {
+		return err
+	}
+
+	if user.VerificationData.Token != token {
+		return domain.NewError("Invalid token", domain.ERR_BAD_REQUEST)
+	}
+
+	if user.IsVerified {
+		return domain.NewError("User already verified", domain.ERR_BAD_REQUEST)
+	}
+
+	if user.VerificationData.ExpiresAt.Before(time.Now().Round(0)) {
+		verificationData, err := u.GetVerificationData(c, username)
+		if err != nil {
+			return err
+		}
+
+		u.userRepository.UpdateVerificationDetails(c, username, verificationData)
+
+		mail := mail_service.EmailVerificationTemplate(hostUrl, username, verificationData.Token)
+		mailErr := mail_service.SendMail("Blog API", user.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
+		if mailErr != nil {
+			return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)
+		}
+
+		return domain.NewError("Token expired. Another link has been sent to your email. Please try again", domain.ERR_BAD_REQUEST)
+	}
+
+	return u.userRepository.VerifyUser(c, username)
 }

@@ -3,6 +3,7 @@ package controllers
 import (
 	"blog_api/domain"
 	"blog_api/domain/dtos"
+	"fmt"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -33,6 +34,16 @@ func NewAuthController(usecase domain.UserUsecaseInterface) *AuthController {
 	return &AuthController{usecase: usecase}
 }
 
+func (controller *AuthController) GetDomain(c *gin.Context) string {
+	scheme := "http"
+	if c.Request.TLS != nil {
+		scheme = "https"
+	}
+
+	host := c.Request.Host
+	return fmt.Sprintf("%s://%s", scheme, host)
+}
+
 func (controller *AuthController) HandleSignup(c *gin.Context) {
 	var newUser domain.User
 	if err := c.BindJSON(&newUser); err != nil {
@@ -40,13 +51,13 @@ func (controller *AuthController) HandleSignup(c *gin.Context) {
 		return
 	}
 
-	err := controller.usecase.Signup(c, &newUser)
+	err := controller.usecase.Signup(c, &newUser, controller.GetDomain(c))
 	if err != nil {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return
 	}
 
-	c.JSON(201, domain.Response{"message": "User created"})
+	c.JSON(201, domain.Response{"message": "User created. Please verify your email."})
 }
 
 func (controller *AuthController) HandleLogin(c *gin.Context) {
@@ -146,4 +157,21 @@ func (controller *AuthController) HandleDemoteUser(c *gin.Context) {
 	}
 
 	c.JSON(200, domain.Response{"message": "User demoted"})
+}
+
+func (controller *AuthController) HandleVerifyEmail(c *gin.Context) {
+	username := c.Param("username")
+	token := c.Param("token")
+	if username == "" || token == "" {
+		c.JSON(400, domain.Response{"error": "Username and token are required"})
+		return
+	}
+
+	err := controller.usecase.VerifyEmail(c, username, token, controller.GetDomain(c))
+	if err != nil {
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, domain.Response{"message": "User verified"})
 }

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"blogapp/Domain"
+	"blogapp/Dtos"
 	"fmt"
 	"net/http"
 
@@ -38,9 +39,9 @@ func (ac *authController) Login(c *gin.Context) {
 		c.IndentedJSON(statusCode, gin.H{"error": err.Error()})
 	} else {
 		//success
-		c.IndentedJSON(http.StatusOK, gin.H{"message": "User logged in successfully", 
-		"acess_token": token.AccessToken,
-		"refresh_token": token.RefreshToken})
+		c.IndentedJSON(http.StatusOK, gin.H{"message": "User logged in successfully",
+			"acess_token":   token.AccessToken,
+			"refresh_token": token.RefreshToken})
 	}
 
 }
@@ -48,7 +49,7 @@ func (ac *authController) Login(c *gin.Context) {
 // register
 func (ac *authController) Register(c *gin.Context) {
 	// return error
-	var newUser Domain.User
+	var newUser Dtos.RegisterUserDto
 	v := validator.New()
 	if err := c.ShouldBindJSON(&newUser); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid data", "error": err.Error()})

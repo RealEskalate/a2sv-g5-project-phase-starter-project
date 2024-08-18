@@ -83,10 +83,10 @@ func AuthMiddleware() gin.HandlerFunc {
 func IsAdminMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		// userID,err := c.Set("user_id" )
-		role, ok := c.Get("role")
+		claim := c.MustGet("claim").(*Domain.AccessClaims)
+		role := claim.Role
 
-		if ok && role == "Admin" {
+		if role == "admin" {
 			c.Next()
 		} else {
 			c.JSON(401, gin.H{"error": "Unauthorized"})

@@ -2,12 +2,27 @@ package repositories
 
 import (
 	domain "blogs/Domain"
+	infrastructure "blogs/Infrastructure"
 	"blogs/mongo"
-)
+	"context"
+	"errors"
+	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 type BlogRepository struct {
 	PostCollection mongo.Collection
-	env            interface{}
+	UserCollection mongo.Collection
+	env           infrastructure.Config
+}
+
+func NewBlogRepository(PostCollection mongo.Collection, UserCollection mongo.Collection, env infrastructure.Config) domain.BlogRepository {
+	return BlogRepository{
+		PostCollection: PostCollection,
+		UserCollection : UserCollection,
+		env:            env,
+	}
 }
 
 // CommentOnBlog implements domain.BlogRepository.
@@ -16,8 +31,31 @@ func (b BlogRepository) CommentOnBlog(blog_id string, commentor_id string, comme
 }
 
 // CreateBlog implements domain.BlogRepository.
-func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog) error {
-	panic("unimplemented")
+func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
+	timeOut := b.env.ContextTimeout
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut) * time.Second)
+	defer cancel()
+	blog.ID = primitive.NewObjectID()
+	uid, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil{
+		return domain.Blog{}, errors.New("internal server error")
+	}
+	blog.Creater_id = uid
+	blog.CreatedAt = time.Now()
+	blog.UpdatedAt = time.Now()
+	_, err = b.PostCollection.InsertOne(context, blog)
+	if err != nil{
+		return domain.Blog{}, errors.New("internal server error")
+	}
+	filter := bson.M{"_id": uid}
+	update := bson.M{
+		"$push": bson.M{"posts" : blog},
+	}
+	_, err = b.UserCollection.UpdateOne(context, filter, update)
+	if err != nil{
+		return domain.Blog{}, errors.New("internal server error")
+	}
+	return blog, nil
 }
 
 // DeleteBlogByID implements domain.BlogRepository.
@@ -60,9 +98,8 @@ func (b BlogRepository) UpdateBlogByID(user_id string, blog_id string, blog doma
 	panic("unimplemented")
 }
 
-func NewBlogRepository(PostCollection mongo.Collection, env interface{}) domain.BlogRepository {
-	return BlogRepository{
-		PostCollection: PostCollection,
-		env:            env,
-	}
-}
+
+
+
+
+

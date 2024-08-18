@@ -52,6 +52,6 @@ type BlogRepository interface {
 	SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]Blog, Pagination, error)
 	FilterBlogsByTag(tag string, pageNo string, pageSize string) ([]Blog, Pagination, error)
 
-	GetMyBlogs(user_id string, pageNo string, pageSize string) ([]Blog, Pagination, error)
+	GetMyBlogs(user_id string, pageNo int64, pageSize int64) ([]Blog, Pagination, error)
 	GetMyBlogByID(user_id string, blog_id string) (Blog, error)
 }

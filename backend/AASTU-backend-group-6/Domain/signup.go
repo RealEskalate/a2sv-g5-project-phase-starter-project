@@ -15,3 +15,14 @@ type SignUpResponse struct {
 	Data    interface{} `json:"data"`
 	Status  int         `json:"status"`
 }
+
+
+
+
+type ForgotPasswordRequest struct { 
+	Email string `json:"email" validate:"required"`
+}
+
+type ResetPasswordRequest struct {
+	Password string `json:"password" validate:"required"`
+}

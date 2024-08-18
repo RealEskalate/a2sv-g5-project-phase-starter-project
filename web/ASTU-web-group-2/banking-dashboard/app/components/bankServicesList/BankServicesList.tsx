@@ -39,14 +39,14 @@ const BankServicesList = () => {
     <div>
       <div className="flex flex-col gap-5 max-md:hidden">
         {data.map((bankService: BankServiceType) => (
-          <BankService {...bankService} />
+          <BankService {...bankService} key={bankService.id} />
         ))}
       </div>
 
       {/* Mobile view */}
       <div className="flex flex-col gap-5 md:hidden">
         {data.map((bankService: BankServiceType) => (
-          <BankServiceMobile {...bankService} />
+          <BankServiceMobile {...bankService} key={bankService.id} />
         ))}
       </div>
     </div>

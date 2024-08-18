@@ -12,11 +12,11 @@ import (
 
 type BlogRepository struct {
 	// database collection
-	collection mongo.Collection
+	collection *mongo.Collection
 }
 
 
-func NewBlogRepository(coll mongo.Collection) *BlogRepository {
+func NewBlogRepository(coll *mongo.Collection) *BlogRepository {
 	return &BlogRepository{
 		collection: coll,
 	}

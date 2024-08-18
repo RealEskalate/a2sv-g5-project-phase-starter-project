@@ -1,11 +1,13 @@
 "use client";
 import { useGetAllTransactionQuery } from "@/lib/service/TransactionService";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { defaultItems } from "./lastTransactionItems";
 
 export type Item = {
   transactionId: string;
   type: string;
-  senderUserName: string;
   description: string;
   date: string;
   amount: number;
@@ -13,19 +15,25 @@ export type Item = {
 };
 
 const LastTransaction = () => {
-  const access = process.env.ACCESS_TOKEN;
+  let access: string = "";
+  const { data: session, status } = useSession();
+  console.log("session data", status);
+  console.log(session);
+  useEffect(() => {}, [status, session]);
+  if (session) {
+    access = session?.user?.accessToken;
+  }
 
-  const { data, isError, isLoading } = useGetAllTransactionQuery(access!);
+  const { data, isError, isLoading } = useGetAllTransactionQuery(access);
+  console.log(access);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (isError) {
-    return <div>Error fetching transactions</div>;
-  }
-
-  let items: Item[] = data?.data || [];
+  let items: Item[] = data?.data || defaultItems;
+  console.log("items");
+  console.log(items);
   if (items.length > 3) {
     items = items.slice(0, 3);
   }
@@ -36,14 +44,14 @@ const LastTransaction = () => {
       {items.map((item, index) => (
         <div key={index} className="flex items-center justify-between ">
           <div className="flex w-[45px] sm:w-[55px] justify-center mr-5">
-            {item.type === "shopping" ? (
+            {item.type === "Shopping" || item.type === "shopping" ? (
               <Image
                 src={"/assets/lastTransaction/spot-sub.svg"}
                 width={55}
                 height={55}
                 alt={`${item.receiverUserName}-image`}
               />
-            ) : item.type === "service" ? (
+            ) : item.type === "Service" || item.type === "service" ? (
               <Image
                 src={"/assets/lastTransaction/settings.svg"}
                 width={55}

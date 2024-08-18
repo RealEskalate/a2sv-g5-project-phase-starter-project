@@ -20,7 +20,7 @@ const BankServicesList = () => {
     page: 1,
   });
   console.log(data);
-  
+
   return (
     <div>
       <div className="flex flex-col gap-5 max-md:hidden">

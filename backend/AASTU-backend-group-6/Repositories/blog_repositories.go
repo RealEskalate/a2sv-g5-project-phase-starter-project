@@ -14,16 +14,18 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func NewBlogRepository(PostCollection mongo.Collection, env infrastructure.Config) domain.BlogRepository {
-	return BlogRepository{
-		PostCollection: PostCollection,
-		env:            env,
-	}
-}
-
 type BlogRepository struct {
 	PostCollection mongo.Collection
+	UserCollection mongo.Collection
 	env            infrastructure.Config
+}
+
+func NewBlogRepository(PostCollection mongo.Collection, UserCollection mongo.Collection, env infrastructure.Config) domain.BlogRepository {
+	return BlogRepository{
+		PostCollection: PostCollection,
+		UserCollection: UserCollection,
+		env:            env,
+	}
 }
 
 // CommentOnBlog implements domain.BlogRepository.
@@ -34,7 +36,9 @@ func (b BlogRepository) CommentOnBlog(blog_id string, commentor_id string, comme
 // CreateBlog implements domain.BlogRepository.
 func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
 	timeOut := b.env.ContextTimeout
-	context, _ := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
+
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
+	defer cancel()
 	blog.ID = primitive.NewObjectID()
 	uid, err := primitive.ObjectIDFromHex(user_id)
 	if len(blog.Tags) == 0 {
@@ -47,6 +51,14 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog) (domain.Blo
 	blog.CreatedAt = time.Now()
 	blog.UpdatedAt = time.Now()
 	_, err = b.PostCollection.InsertOne(context, blog)
+	if err != nil {
+		return domain.Blog{}, errors.New("internal server error")
+	}
+	filter := bson.M{"_id": uid}
+	update := bson.M{
+		"$push": bson.M{"posts": blog},
+	}
+	_, err = b.UserCollection.UpdateOne(context, filter, update)
 	if err != nil {
 		return domain.Blog{}, errors.New("internal server error")
 	}

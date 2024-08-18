@@ -25,6 +25,8 @@ type User struct {
 	Verified 		 bool 				`json:"verified"`
 	OTP 			 string 			`json:"otp"`
 	ExpiresAt 		 time.Time			`json:"expires_at"` 
+	ResetPasswordToken string 			`json:"reset_password_token"`
+	ResetPasswordExpires time.Time		`json:"reset_password_expires"`
 }
 
 type UserRepository interface {
@@ -43,11 +45,16 @@ type SignupRepository interface {
 	FindUserByEmail(c context.Context , email string) (User, error)
 	SetOTP(c context.Context , email string , otp string) (error)
 	VerifyUser(c context.Context , user User) (User, error)
+	SetResetToken(c context.Context , email ForgotPasswordRequest , token string , expiration time.Time) (User, error)
+	FindUserByResetToken(c context.Context, token string) (User, error)
+	UpdateUser(c context.Context, user User) (User , error)
 }
 
 type SignupUseCase interface {
 	Create(c context.Context , user User) interface{}
 	VerifyOTP(c context.Context , otp OtpToken) interface{}
+	ForgotPassword(c context.Context , email ForgotPasswordRequest) interface{}
+	ResetPassword(c context.Context , password ResetPasswordRequest , token string) interface{}
 }
 
 type UserUseCase interface {

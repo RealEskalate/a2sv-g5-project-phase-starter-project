@@ -11,6 +11,10 @@ type UserController struct {
 	UserUsecase domain.User_Usecase_interface
 }
 
+func NewUserController(usecase domain.User_Usecase_interface) *UserController {
+	return &UserController{UserUsecase: usecase}
+}
+
 func (controller *UserController) GetOneUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")

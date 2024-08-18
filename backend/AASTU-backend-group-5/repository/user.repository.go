@@ -12,6 +12,9 @@ type UserRepository struct {
 	Collection database.CollectionInterface
 }
 
+func NewUserRepository(collection database.CollectionInterface) *UserRepository {
+	return &UserRepository{Collection: collection}
+}
 
 func (repository *UserRepository)GetUserDocumentByID(id string) (domain.User , error) {
 	pid,err := primitive.ObjectIDFromHex(id)
@@ -108,23 +111,31 @@ func (repository *UserRepository)LogIn(user domain.LogINUser) (domain.User , err
 	return logged,nil
 }
 
-func (repository *UserRepository)Register(user domain.RegisterUser) (string , error) {
+func (repository *UserRepository)Register(user domain.RegisterUser) (domain.User , error) {
 	var document bson.D
 	byteModel,err := bson.Marshal(user)
 	if err != nil {
-		return "",err
+		return domain.User{},err
 	}
 	err = bson.Unmarshal(byteModel , &document)
 	if err != nil {
-		return "",err
+		return domain.User{},err
 	}
 	insertedID,err := repository.Collection.InsertOne(context.TODO() , document)
 	if err != nil {
-		return "",err
+		return domain.User{},err
 	}
+	
 	pid := insertedID.InsertedID.(primitive.ObjectID)
-
-	return pid.Hex(),nil
+	filter := bson.D{{Key: "_id" , Value: pid}}
+	result := repository.Collection.FindOne(context.TODO(),filter)
+	
+	var new_user domain.User
+	err = result.Decode(&user)
+	if err != nil {
+		return domain.User{},err
+	}
+	return new_user,nil
 }
 
 func (repository *UserRepository)FilterUserDocument(filter map[string]string) ([]domain.User , error) {

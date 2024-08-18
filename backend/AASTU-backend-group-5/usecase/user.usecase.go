@@ -6,6 +6,11 @@ type UserUseCase struct {
 	UserRepo domain.User_Repository_interface
 }
 
+
+func NewUserUseCase(repo domain.User_Repository_interface) *UserUseCase {
+	return &UserUseCase{UserRepo: repo}
+}
+
 func (usecase *UserUseCase) GetOneUser(id string) (domain.ResponseUser, error) {
 	user,err := usecase.UserRepo.GetUserDocumentByID(id)
 	if err != nil {

@@ -5,13 +5,13 @@ import (
 	"blog-api/mongo"
 )
 
-type userRepository struct {
+type UserRepository struct {
 	database   mongo.Database
 	collection string
 }
 
 func NewUserRepository(db mongo.Database, collection string) user.UserRepository {
-	return &userRepository{
+	return &UserRepository{
 		database:   db,
 		collection: collection,
 	}

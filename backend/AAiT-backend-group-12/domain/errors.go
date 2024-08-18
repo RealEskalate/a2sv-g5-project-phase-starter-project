@@ -5,7 +5,8 @@ const (
 	ERR_NOT_FOUND       = "err_not_found"
 	ERR_INTERNAL_SERVER = "err_internal_server"
 	ERR_UNAUTHORIZED    = "err_unauthorized"
-	ERR_FORBIDDEN       = "err_fORBIDDEN"
+	ERR_FORBIDDEN       = "err_forbidden"
+	ERR_CONFLICT        = "err_conflict"
 )
 
 type CodedError interface {

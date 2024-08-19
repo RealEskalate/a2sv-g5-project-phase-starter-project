@@ -16,7 +16,11 @@ type UserUseCase interface {
 }
 
 type BlogUseCase interface {
+<<<<<<< HEAD
 	CreateBlog(blog *Blog, authorID string) Error
+=======
+	CreateBlog(blog *Blog , authorID string) Error
+>>>>>>> d260d430 (like and comment crud operations finished)
 	GetBlog(blogID string) (*Blog, Error)
 	GetBlogs() ([]Blog, Error)
 	UpdateBlog(blogID string, blog *Blog) Error
@@ -36,7 +40,7 @@ type BlogUseCase interface {
 	
 	AddComment(blogID string, comment *Comment) Error
 	DeleteComment(blogID, commentID string) Error
-	EditComment(commentID string, comment *Comment) Error
+	EditComment(blogID string , commentID string, comment *Comment) Error
 	Like(blogId string , userID string) Error
 	DisLike(blogId string , userID string) Error
 >>>>>>> a142a8e6 (blog controller added)

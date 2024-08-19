@@ -26,6 +26,11 @@ var (
 	emailRegex    = regexp.MustCompile(emailPattern)
 )
 
+type ResetCode struct {
+	Code int64
+	Expr time.Time
+}
+
 // User represents the aggregate user with private fields.
 type User struct {
 	id           uuid.UUID
@@ -35,6 +40,7 @@ type User struct {
 	email        string
 	passwordHash string
 	isAdmin      bool
+	resetCode    *ResetCode
 	createdAt    time.Time
 	updatedAt    time.Time
 }
@@ -63,6 +69,7 @@ type MapConfig struct {
 	IsAdmin        bool
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
+	ResetCode      *ResetCode
 }
 
 // New creates a new User with the provided configuration.
@@ -114,6 +121,7 @@ func Map(config MapConfig) (*User, error) {
 		email:        config.Email,
 		firstName:    config.FirstName,
 		lastName:     config.LastName,
+		resetCode:    config.ResetCode,
 		createdAt:    config.CreatedAt,
 		updatedAt:    config.UpdatedAt,
 	}, nil
@@ -206,6 +214,11 @@ func (u *User) IsAdmin() bool {
 	return u.isAdmin
 }
 
+// IsAdmin returns whether the user is an admin.
+func (u *User) ResetCode() *ResetCode {
+	return u.resetCode
+}
+
 // UpdateUsername updates the user's username after validation.
 func (u *User) UpdateUsername(newUsername string) error {
 	if err := validateUsername(newUsername); err != nil {
@@ -227,6 +240,11 @@ func (u *User) UpdateFirstName(newFirstName string) error {
 // UpdateLastNname updates the user's lastname.
 func (u *User) UpdateLastName(newLastName string) error {
 	u.firstName = newLastName
+	return nil
+}
+
+func (u *User) UpdateResetCode(code *ResetCode) error {
+	u.resetCode = code
 	return nil
 }
 

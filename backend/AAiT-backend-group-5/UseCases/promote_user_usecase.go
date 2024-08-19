@@ -11,14 +11,15 @@ type userUsecase struct {
 	repo interfaces.UserRepository
 }
 
-func NewUserUsecase(repo interfaces.UserRepository) interfaces.UserUsecase {
+func NewUserUsecase(repo interfaces.UserRepository) interfaces.PromoteUserUsecase {
 	return &userUsecase{
 		repo: repo,
 	}
 }
 
-func (uc *userUsecase) PromoteUser(ctx context.Context, user *models.User) *models.ErrorResponse {
-	user, err := uc.repo.GetUserByID(ctx, user.ID.Hex())
+func (uc *userUsecase) PromoteUser(ctx context.Context, userID string) *models.ErrorResponse {
+
+	user, err := uc.repo.GetUserByID(ctx, userID)
 	if err != nil {
 		return err
 	}
@@ -29,8 +30,8 @@ func (uc *userUsecase) PromoteUser(ctx context.Context, user *models.User) *mode
 	}
 
 	// Promote the user
-	user.Role = "admin"
-	err = uc.repo.UpdateUser(ctx, user)
+
+	err = uc.repo.PromoteUser(ctx, userID)
 	if err != nil {
 		return err
 	}
@@ -38,9 +39,9 @@ func (uc *userUsecase) PromoteUser(ctx context.Context, user *models.User) *mode
 	return nil
 }
 
-func (uc *userUsecase) DemoteUser(ctx context.Context, user *models.User) *models.ErrorResponse {
+func (uc *userUsecase) DemoteUser(ctx context.Context, userID string) *models.ErrorResponse {
 
-	user, err := uc.repo.GetUserByID(ctx, user.ID.Hex())
+	user, err := uc.repo.GetUserByID(ctx, userID)
 	if err != nil {
 		return err
 	}
@@ -51,8 +52,8 @@ func (uc *userUsecase) DemoteUser(ctx context.Context, user *models.User) *model
 	}
 
 	// Demote the user
-	user.Role = "user"
-	err = uc.repo.UpdateUser(ctx, user)
+
+	err = uc.repo.DemoteUser(ctx, userID)
 	if err != nil {
 		return err
 	}

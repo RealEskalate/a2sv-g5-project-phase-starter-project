@@ -11,13 +11,12 @@ type userController struct {
 	UserUsecase domain.IUserUsecase
 }
 
-func NewUserController(userUsecase domain.IUserUsecase) domain.IUserController{
+func NewUserController(userUsecase domain.IUserUsecase) domain.IUserController {
 	return &userController{UserUsecase: userUsecase}
 }
 
-
 func (uc *userController) GetAllUsers(c *gin.Context) {
-	users, err := uc.UserUsecase.GetAllUsers()
+	users, err := uc.UserUsecase.GetAllUsers(c)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -27,9 +26,9 @@ func (uc *userController) GetAllUsers(c *gin.Context) {
 
 func (uc *userController) GetUserByID(c *gin.Context) {
 	id := c.Param("id")
-	idInt , err := strconv.Atoi(id)
+	idInt, err := strconv.Atoi(id)
 
-	user, err := uc.UserUsecase.GetUserByID(c , idInt)
+	user, err := uc.UserUsecase.GetUserByID(c, idInt)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -46,7 +45,7 @@ func (uc *userController) CreateUser(c *gin.Context) {
 		return
 	}
 
-	newUser, err := uc.UserUsecase.CreateUser(c , user)
+	newUser, err := uc.UserUsecase.CreateUser(c, user)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -57,7 +56,7 @@ func (uc *userController) CreateUser(c *gin.Context) {
 func (uc *userController) UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 
-	idInt , err := strconv.Atoi(id)
+	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -71,7 +70,7 @@ func (uc *userController) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	newUser, err := uc.UserUsecase.UpdateUser(c , idInt, user)
+	newUser, err := uc.UserUsecase.UpdateUser(c, idInt, user)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -82,13 +81,13 @@ func (uc *userController) UpdateUser(c *gin.Context) {
 func (uc *userController) DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 
-	idInt , err := strconv.Atoi(id)
+	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = uc.UserUsecase.DeleteUser(c , idInt)
+	err = uc.UserUsecase.DeleteUser(c, idInt)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -99,7 +98,7 @@ func (uc *userController) DeleteUser(c *gin.Context) {
 func (uc *userController) AddBlog(c *gin.Context) {
 	userID := c.Param("userID")
 
-	userIDInt , err := strconv.Atoi(userID)
+	userIDInt, err := strconv.Atoi(userID)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -112,8 +111,7 @@ func (uc *userController) AddBlog(c *gin.Context) {
 		return
 	}
 
-
-	newUser, err := uc.UserUsecase.AddBlog(c , userIDInt, Blog)
+	newUser, err := uc.UserUsecase.AddBlog(c, userIDInt, Blog)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -129,7 +127,7 @@ func (uc *userController) Login(c *gin.Context) {
 		return
 	}
 
-	newUser, err := uc.UserUsecase.Login(c , user.Username, user.Password)
+	newUser, err := uc.UserUsecase.Login(c, user.Username, user.Password)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -137,15 +135,13 @@ func (uc *userController) Login(c *gin.Context) {
 	c.JSON(200, newUser)
 }
 
-
 func (uc *userController) Logout(c *gin.Context) {
-
 
 }
 
 func (uc *userController) ForgetPassword(c *gin.Context) {
 	email := c.Param("email")
-	err := uc.UserUsecase.ForgetPassword(c , email)
+	err := uc.UserUsecase.ForgetPassword(c, email)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -157,7 +153,7 @@ func (uc *userController) ResetPassword(c *gin.Context) {
 
 	username := c.Param("username")
 	password := c.Param("password")
-	err := uc.UserUsecase.ResetPassword(c , username, password)
+	err := uc.UserUsecase.ResetPassword(c, username, password)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -167,34 +163,38 @@ func (uc *userController) ResetPassword(c *gin.Context) {
 
 func (uc *userController) PromoteUser(c *gin.Context) {
 	id := c.Param("id")
-	idInt , err := strconv.Atoi(id)
+	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	user ,err := uc.UserUsecase.PromoteUser(c , idInt)
+	user, err := uc.UserUsecase.PromoteUser(c, idInt)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "User promoted successfully" , "user": user})
+	c.JSON(200, gin.H{"message": "User promoted successfully", "user": user})
 }
 
 func (uc *userController) DemoteUser(c *gin.Context) {
 	id := c.Param("id")
-	idInt , err := strconv.Atoi(id)
+	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	user ,err := uc.UserUsecase.DemoteUser(c , idInt)
+	user, err := uc.UserUsecase.DemoteUser(c, idInt)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "User demoted successfully" , "user": user})
+	c.JSON(200, gin.H{"message": "User demoted successfully", "user": user})
+}
+
+func (uc *userController) RefreshToken(c *gin.Context) {
+
 }

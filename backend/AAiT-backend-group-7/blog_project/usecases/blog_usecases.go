@@ -13,7 +13,7 @@ type BlogUsecases struct {
 	UserUsecase domain.IUserUsecase
 }
 
-func NewBlogUsecases(repo domain.IBlogRepository) domain.IBlogUsecases {
+func NewBlogUsecases(repo domain.IBlogRepository) domain.IBlogUsecase {
 	return &BlogUsecases{
 		BlogRepo: repo,
 	}
@@ -31,7 +31,7 @@ func (u *BlogUsecases) CreateBlog(ctx context.Context, blog domain.Blog) (domain
 	// Generate a new unique ID based on the current time in nanoseconds
 	blog.ID = int(time.Now().UnixNano() / 1000) // Convert nanoseconds to microseconds
 
-	_, err := u.UserUsecase.AddBlog(ctx, blog.AuthorID, blog.ID)
+	_, err := u.UserUsecase.AddBlog(ctx, blog.AuthorID, blog)
 	if err != nil {
 		return domain.Blog{}, err
 	}
@@ -113,16 +113,16 @@ func (u *BlogUsecases) Search(ctx context.Context, author string, tags []string,
 	return results, nil
 }
 
-func (u *BlogUsecases) LikeBlog(ctx context.Context, blogID int, authorID int) (domain.Like, error) {
+func (u *BlogUsecases) LikeBlog(ctx context.Context, blogID int, authorID int) (domain.Blog, error) {
 	blog, err := u.BlogRepo.GetBlogByID(ctx, blogID)
 	if err != nil {
-		return domain.Like{}, err
+		return domain.Blog{}, err
 	}
 
 	// Check if the user has already liked the blog
 	for _, like := range blog.Likes {
 		if like.UserID == authorID {
-			return domain.Like{}, errors.New("user already liked this blog")
+			return domain.Blog{}, errors.New("user already liked this blog")
 		}
 	}
 
@@ -136,22 +136,22 @@ func (u *BlogUsecases) LikeBlog(ctx context.Context, blogID int, authorID int) (
 
 	_, err = u.BlogRepo.UpdateBlog(ctx, blogID, blog)
 	if err != nil {
-		return domain.Like{}, err
+		return domain.Blog{}, err
 	}
 
-	return newLike, nil
+	return blog, nil
 }
 
-func (u *BlogUsecases) DislikeBlog(ctx context.Context, blogID int, authorID int) (domain.Dislike, error) {
+func (u *BlogUsecases) DislikeBlog(ctx context.Context, blogID int, authorID int) (domain.Blog, error) {
 	blog, err := u.BlogRepo.GetBlogByID(ctx, blogID)
 	if err != nil {
-		return domain.Dislike{}, err
+		return domain.Blog{}, err
 	}
 
 	// Check if the user has already disliked the blog
 	for _, dislike := range blog.Dislikes {
 		if dislike.UserID == authorID {
-			return domain.Dislike{}, errors.New("user already disliked this blog")
+			return domain.Blog{}, errors.New("user already disliked this blog")
 		}
 	}
 
@@ -165,16 +165,16 @@ func (u *BlogUsecases) DislikeBlog(ctx context.Context, blogID int, authorID int
 
 	_, err = u.BlogRepo.UpdateBlog(ctx, blogID, blog)
 	if err != nil {
-		return domain.Dislike{}, err
+		return domain.Blog{}, err
 	}
 
-	return newDislike, nil
+	return blog, nil
 }
 
-func (u *BlogUsecases) CommentBlog(ctx context.Context, blogID int, authorID int, content string) (domain.Comment, error) {
+func (u *BlogUsecases) AddComent(ctx context.Context, blogID int, authorID int, content string) (domain.Blog, error) {
 	blog, err := u.BlogRepo.GetBlogByID(ctx, blogID)
 	if err != nil {
-		return domain.Comment{}, err
+		return domain.Blog{}, err
 	}
 
 	// Add comment
@@ -188,8 +188,8 @@ func (u *BlogUsecases) CommentBlog(ctx context.Context, blogID int, authorID int
 
 	_, err = u.BlogRepo.UpdateBlog(ctx, blogID, blog)
 	if err != nil {
-		return domain.Comment{}, err
+		return domain.Blog{}, err
 	}
 
-	return newComment, nil
+	return blog, nil
 }

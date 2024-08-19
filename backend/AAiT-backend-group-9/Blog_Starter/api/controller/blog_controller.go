@@ -25,6 +25,7 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 	// implementation
 	var blog domain.BlogCreate
 	err := c.ShouldBindJSON(&blog)
+	
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

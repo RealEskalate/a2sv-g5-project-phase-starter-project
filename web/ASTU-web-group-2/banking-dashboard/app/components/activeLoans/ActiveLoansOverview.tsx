@@ -2,12 +2,12 @@
 import React from "react";
 import { defaultloans, loan } from "./ActiveLoansItems";
 import { useSession } from "next-auth/react";
-import { useGetAllLoanServiceQuery } from "@/lib/service/LoanService";
+import { useGetMyLoanServiceQuery } from "@/lib/service/LoanService";
 
 const ActiveLoansOverview = () => {
   const { data: session } = useSession();
   const accessToken = session?.user.accessToken;
-  const { data, isLoading, isError, isSuccess } = useGetAllLoanServiceQuery(
+  const { data, isLoading, isError, isSuccess } = useGetMyLoanServiceQuery(
     accessToken || ""
   );
   let loans: loan[] = [];
@@ -29,9 +29,13 @@ const ActiveLoansOverview = () => {
   return (
     <div className="bg-white rounded-3xl w-full h-max-[466px] sm:w-max-[743px] sm:h-max-[500px] md:h-max-[625px] md:w-max-[1110px] p-3">
       {loans.length === 0 ? (
-        <div className="flex items-center justify-center min-h-full">
-          No active loans for you
+        <div className="flex justify-center">
+
+          <img src = "/assets/bankService/empty-image.png" className="w-fit h-fit"/>
         </div>
+        // <div className="flex items-center justify-center min-h-full">
+        //   No active loans for you
+        // </div>
       ) : (
         <table className="min-w-full divide-y">
           <thead>

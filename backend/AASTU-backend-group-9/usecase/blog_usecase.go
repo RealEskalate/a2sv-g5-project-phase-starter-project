@@ -155,6 +155,31 @@ func (bu *blogUsecase) SearchBlogs(ctx context.Context, query string, filters *d
     }
 
     return blogResponses, nil
+}
+
+func (bu *blogUsecase) FilterBlogsByTags(ctx context.Context, tags []string) ([]*domain.Blog, error) {
+	blogs, err := bu.blogRepository.FilterBlogsByTags(ctx, tags)
+	if err != nil {
+		return nil, err
+	}
+	return blogs, nil
+}
+
+func (bu *blogUsecase) FilterBlogsByDate(ctx context.Context, date string) ([]*domain.Blog, error) {
+	blogs, err := bu.blogRepository.FilterBlogsByDate(ctx, date)
+	if err != nil {
+		return nil, err
+	}
+	return blogs, nil
+}
+
+func (bu *blogUsecase) FilterBlogsByPopularity(ctx context.Context, popularity string) ([]*domain.Blog, error) {
+	blogs, err := bu.blogRepository.FilterBlogsByPopularity(ctx, popularity)
+	if err != nil {
+		return nil, err
+	}
+	return blogs, nil
+}
 
 }
 

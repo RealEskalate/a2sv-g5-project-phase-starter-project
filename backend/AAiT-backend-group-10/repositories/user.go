@@ -44,8 +44,8 @@ func (r *UserRepository) GetUserByID(id uuid.UUID) (*domain.User, error) {
 	return &user, nil
 }
 
-func (r *UserRepository) UpdateUser(user *domain.User) (*domain.User, error) {
-	return nil, nil
+func (r *UserRepository) UpdateUser(user *domain.User) error {
+	return nil
 }
 
 func (r *UserRepository) DeleteUser(id uuid.UUID) error {
@@ -53,6 +53,20 @@ func (r *UserRepository) DeleteUser(id uuid.UUID) error {
 }
 
 func (r *UserRepository) PromoteUser(id uuid.UUID, makeAdmin bool) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	filter := bson.D{{Key: "_id", Value: id}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "isAdmin", Value: makeAdmin}}}}
+	result, err := r.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	if result.MatchedCount == 0 {
+		return errors.New("username not found")
+	} 
+
 	return nil
 }
 

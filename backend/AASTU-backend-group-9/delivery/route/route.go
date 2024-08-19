@@ -4,9 +4,7 @@ import (
 	"blog/config"
 	"blog/delivery/middleware"
 	"blog/database"
-	"blog/delivery/middleware"
 	"time"
-
 	"github.com/gin-gonic/gin"
 )
 

@@ -22,6 +22,7 @@ type Blog struct {
 	CommentsCount int       `json:"comments_count,omitempty"`
 	LikesCount    int       `json:"likes_count,omitempty"`
 	DislikesCount int       `json:"dislikes_count,omitempty"`
+	Popularity    float32   `json:"popularity,omitempty"`
 	CreatedAt     time.Time `json:"created_at,omitempty"`
 	UpdatedAt     time.Time `json:"updated_at,omitempty"`
 }

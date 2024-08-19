@@ -1,4 +1,4 @@
-import {Table,TableBody,TableCaption, TableCell, TableFooter, TableHead,TableHeader,TableRow,} from "@/components/ui/table"
+import {Table,TableBody, TableCell, TableFooter, TableHead,TableHeader,TableRow,} from "@/components/ui/table"
 import { Invoices } from "./data-tabel"
 
 export function TableDemo() {

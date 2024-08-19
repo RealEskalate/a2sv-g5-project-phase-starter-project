@@ -32,8 +32,8 @@ const SignIn = () => {
       redirect: false,
     });
     if (!res?.ok) {
-      notify.error("Invalid Credentials");
-      router.push("/logIn");
+      alert("Invalid Credentials");
+      router.push("/login");
     } else {
       console.log("response: ", res);
       notify.success("Successfully logged in");
@@ -104,7 +104,7 @@ const SignIn = () => {
         </form>
         <div className={` font-normal`}>
           {`Don't have an account? `}
-          <Link href="/SignUp" className="font-semibold text-[#1814F3]">
+          <Link href="/signup" className="font-semibold text-[#1814F3]">
             Register
           </Link>
         </div>

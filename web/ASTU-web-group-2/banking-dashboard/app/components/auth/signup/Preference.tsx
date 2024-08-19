@@ -2,11 +2,11 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import ToggleSwitch from './ToggleSwitch'; // Import the ToggleSwitch component
-import { MainData } from './Signup'; // Adjust the import path as necessary
+import ToggleSwitch from './ToggleSwitch'; 
+import { MainData } from './Signup'; 
 import { useSignUpMutation } from '@/lib/service/TransactionService';
-import { useRouter } from 'next/navigation'; // Import useRouter from next/router
-
+import { useRouter } from 'next/navigation'; 
+import notify from "@/utils/notify"
 const schema = Yup.object().shape({
   currency: Yup.string().required('Currency is required'),
   timeZone: Yup.string().required('TimeZone is required'),
@@ -28,8 +28,17 @@ interface YourFormComponentProps {
   setMainData: React.Dispatch<React.SetStateAction<MainData>>;
 }
 
+interface SignUpResponse {
+  data?: any; // Replace `any` with the actual type if known
+  error?: {
+    data?: {
+      message: string;
+    };
+  };
+}
+
 const YourFormComponent: React.FC<YourFormComponentProps> = ({ setMainData, mainData }) => {
-  const router = useRouter(); // Initialize the useRouter hook
+  const router = useRouter(); 
   const { control, handleSubmit, register, formState: { errors } } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -51,25 +60,31 @@ const YourFormComponent: React.FC<YourFormComponentProps> = ({ setMainData, main
         receiveMerchantOrder: data.receiveMerchantOrder,
         accountRecommendations: data.accountRecommendations,
         timeZone: data.timeZone,
-        twoFactorAuthentication: true, // You can set this based on your needs
+        twoFactorAuthentication: true,
       },
     };
-
+  
     setMainData(formattedData);
-    
-    const res = await signUp(formattedData); // Make sure to send formattedData
-    
-    if (res.data) {
-      router.push('/login'); // Navigate to the login page after successful signup
-    } else {
-      // Handle error cases here
+  
+    const res = await signUp(formattedData);
+  
+    if ('data' in res) {
+      notify.success('Signup successful');
+      router.push('/login');
+    } else if ('error' in res) {
+      let errorMessage = 'Signup failed';
+      if (res.error && 'data' in res.error) {
+        const errorData = (res.error as { data?: { message: string } }).data;
+        errorMessage = errorData?.message || 'Signup failed';
+      }
+      notify.error(errorMessage);
       console.error('Signup failed', res.error);
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-      <div className='flex max-md:grid items-center justify-center space-x-4'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div className='w-full'>
           <label className='block mb-1 font-400 text-[16px] text-[#232323] capitalize'>
             Currency
@@ -94,54 +109,57 @@ const YourFormComponent: React.FC<YourFormComponentProps> = ({ setMainData, main
         </div>
       </div>
 
-      <div className='flex flex-col gap-[0.4rem]'>
-        <label className=' mb-1 font-400 text-[16px] text-[#232323] capitalize'>
+      <div className='space-y-4'>
+        <label className='block mb-1 font-400 text-[16px] text-[#232323] capitalize'>
           Notification
         </label>
-        <Controller
-          name='sentOrReceiveDigitalCurrency'
-          control={control}
-          render={({ field }) => (
-            <ToggleSwitch
-              id='sentOrReceiveDigitalCurrency'
-              label='I send or receive digital currency'
-              checked={field.value}
-              onChange={field.onChange}
-            />
-          )}
-        />
-        <Controller
-          name='receiveMerchantOrder'
-          control={control}
-          render={({ field }) => (
-            <ToggleSwitch
-              id='receiveMerchantOrder'
-              label='I receive merchant order'
-              checked={field.value}
-              onChange={field.onChange}
-            />
-          )}
-        />
-        <Controller
-          name='accountRecommendations'
-          control={control}
-          render={({ field }) => (
-            <ToggleSwitch
-              id='accountRecommendations'
-              label='There are recommendations for my account'
-              checked={field.value}
-              onChange={field.onChange}
-            />
-          )}
-        />
+        <div className='md:grid gap-3'>
+          <Controller
+            name='sentOrReceiveDigitalCurrency'
+            control={control}
+            render={({ field }) => (
+              <ToggleSwitch
+                id='sentOrReceiveDigitalCurrency'
+                label='I send or receive digital currency'
+                checked={field.value}
+                onChange={field.onChange}
+              />
+            )}
+          />
+          <Controller
+            name='receiveMerchantOrder'
+            control={control}
+            render={({ field }) => (
+              <ToggleSwitch
+                id='receiveMerchantOrder'
+                label='I receive merchant order'
+                checked={field.value}
+                onChange={field.onChange}
+              />
+            )}
+          />
+          <Controller
+            name='accountRecommendations'
+            control={control}
+            render={({ field }) => (
+              <ToggleSwitch
+                id='accountRecommendations'
+                label='There are recommendations for my account'
+                checked={field.value}
+                onChange={field.onChange}
+              />
+            )}
+          />
+        </div>
       </div>
-
-      <button
-        type='submit'
-        className='px-4 py-2 bg-blue-500 text-white rounded-lg'
-      >
-        Register
-      </button>
+      <div className='flex justify-end'>
+        <button
+          type='submit'
+          className='w-full md:w-auto px-4 py-2 bg-blue-500 text-white rounded-lg'
+        >
+          Register
+        </button>
+      </div>
     </form>
   );
 };

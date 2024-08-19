@@ -1,11 +1,11 @@
 import React from "react";
-import Infobox from "../components/infobox/Infobox";
-import LastTransaction from "../components/lastTransaction/LastTransaction";
-import Card from "../components/card/Card";
-import CreditCard from "../components/creditCard/CreditCard";
-import CardForCreditCards from "../components/card/CardForCreditCards";
-import DebitCreditOverviewChart from "../components/charts/DebitCreditOverviewChart";
-import InvoicesSent from "../components/InvoiceSend/InvoiceSent";
+import Infobox from "../../components/infobox/Infobox";
+import LastTransaction from "../../components/lastTransaction/LastTransaction";
+import Card from "../../components/card/Card";
+import CreditCard from "../../components/creditCard/CreditCard";
+import CardForCreditCards from "../../components/card/CardForCreditCards";
+import DebitCreditOverviewChart from "../../components/charts/DebitCreditOverviewChart";
+import InvoicesSent from "../../components/InvoiceSend/InvoiceSent";
 
 const AccountsPage = () => {
   return (

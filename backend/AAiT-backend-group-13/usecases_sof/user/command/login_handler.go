@@ -3,7 +3,6 @@ package usercommand
 import (
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
-	usermodel "github.com/group13/blog/domain/models/user"
 	result "github.com/group13/blog/usecases_sof/user/result"
 	iemail "github.com/group13/blog/usecases_sof/utils/i_email"
 	ijwt "github.com/group13/blog/usecases_sof/utils/i_jwt"
@@ -46,6 +45,11 @@ func (h *SignUpHandler) HandleLogin(command *LoginCommand) (*result.LoginInResul
 	if ok := h.repo.MatchPassword(command.password, user.PasswordHash(), h.hashService); !ok {
 
 		return nil, er.NewValidation("password is incorrect.")
+	}
+
+	user.MakeActive()
+	if err := h.repo.Save(user); err != nil {
+		return nil, err
 	}
 
 	token, err := h.jwtService.Generate(user, ijwt.Access)

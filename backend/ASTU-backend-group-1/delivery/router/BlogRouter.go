@@ -24,7 +24,7 @@ func (gr *BlogRoute) GinBlogRouter() {
 		blogRouter.GET("/filter", gr.usecase.HandleFilterBlogs)
 		blogRouter.PATCH("/:blogId", gr.usecase.HandleUpdate)
 		blogRouter.DELETE("/:blogId", gr.usecase.HandleDelete)
-		
+
 		// TODO: aperson cannot like and dislike the same blog
 		blogRouter.PATCH("/interact/:type", gr.usecase.HandleBlogLikeOrDislike)
 		
@@ -32,12 +32,15 @@ func (gr *BlogRoute) GinBlogRouter() {
 	}
 	commentRouter := router.Group("/comment")
 	{
+		// TODO: check if there is a blog with such id 
+		commentRouter.PATCH("/new", gr.usecase.HandleCommentOnBlog)
+		
+		// TODO: aperson cannot like and dislike the same blcomment
+		commentRouter.PATCH("/interact/:type", gr.usecase.HandleCommentLikeOrDislike)
 		// INFO:TESTING
 		// INFO:TOBE TESTED
-		commentRouter.POST("/:comment", gr.usecase.HandleCommentOnBlog)
-		commentRouter.GET("/:comment/like:commentId", gr.usecase.HandleCommentLikeOrDislike)
-		commentRouter.GET("/:comment/dislike:commentId", gr.usecase.HandleCommentLikeOrDislike)
-		commentRouter.GET("/:comment/View:commentId", gr.usecase.HandleCommentLikeOrDislike)
+		// commentRouter.PATCH("/:comment/interact:commentId", gr.usecase.HandleCommentLikeOrDislike)
+		// commentRouter.PATCH("/:comment/interact:commentId", gr.usecase.HandleCommentLikeOrDislike)
 		// commentRouter.GET("/:blogId/reply:commentId",gr.usecase.Handle)
 	}
 	router.GET("", func(ctx *gin.Context) {

@@ -1,13 +1,13 @@
 package user_usecase
 
 import (
-	"blog-api/domain/user"
+	"blog-api/domain"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (uc *UserUsecase) UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *user.UpdateRequest) error {
+func (uc *UserUsecase) UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *domain.UpdateRequest) error {
 	ctx, cancel := context.WithTimeout(ctx, uc.contextTimeout)
 	defer cancel()
 

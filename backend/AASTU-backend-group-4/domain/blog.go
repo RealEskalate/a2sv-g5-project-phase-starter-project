@@ -23,9 +23,10 @@ type Blog struct {
 
 type BlogUsecase interface {
 	CreateBlog(ctx context.Context, blog *Blog) (*Blog, error)
-	GetBlogByID(ctx context.Context, id string) (*Blog, error)
 	GetBlogs(ctx context.Context, page, limit int, sortBy string) ([]Blog, int, error)
-	// UpdateBlog(ctx context.Context, authorID primitive.ObjectID, blogID primitive.ObjectID, updatedBlog *Blog) error
+	UpdateBlog(ctx context.Context, blogID primitive.ObjectID, updatedBlog *Blog) error
+	GetBlogByID(ctx context.Context, blogID primitive.ObjectID) (*Blog, error)
+	DeleteBlog(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID, isAdmin bool) error
 	// DeleteBlog(ctx context.Context, authorID primitive.ObjectID, blogID primitive.ObjectID) error
 	// SearchBlog(ctx context.Context, blogTitle string, blogAuthor string) ([]*Blog, error)
 	// GetBlogs(ctx context.Context) ([]*Blog, error)
@@ -33,11 +34,11 @@ type BlogUsecase interface {
 
 type BlogRepository interface {
 	CreateBlog(ctx context.Context, blog *Blog) error
-	GetBlogByID(ctx context.Context, id primitive.ObjectID) (*Blog, error)
+	GetBlogByID(ctx context.Context, blogID primitive.ObjectID) (*Blog, error)
 	GetPaginatedBlogs(ctx context.Context, page, limit int, sortBy string) ([]Blog, error)
 	GetTotalBlogs(ctx context.Context) (int, error)
-	// UpdateBlog(ctx context.Context, blogID primitive.ObjectID, authorID primitive.ObjectID, updatedBlog *Blog) error
-	// DeleteBlog(ctx context.Context, blogID primitive.ObjectID, authorID primitive.ObjectID) error
+	UpdateBlog(ctx context.Context, authorID primitive.ObjectID, updatedBlog *Blog) error
+	DeleteBlog(ctx context.Context, blogID primitive.ObjectID) error
 	// SearchBlog(ctx context.Context, blogTitle string, blogAuthor string) ([]*Blog, error)
 	// GetAllBlogs(ctx context.Context) ([]*Blog, error)
 	// FilterBlogByTag(ctx context.Context, tag string) ([]*Blog, error)

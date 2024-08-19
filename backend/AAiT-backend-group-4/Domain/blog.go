@@ -101,3 +101,24 @@ type BlogRepository interface {
 	// UpdateFeedback retrives blogs by it's id and updates it's feedback
 	UpdateFeedback(ctx context.Context, id string, updateFunc func(*Feedback) error) error
 }
+
+type BlogUsecase interface {
+	// CreateBlog inserts a new blog into the collection
+	CreateBlog(c context.Context, blog *Blog) error
+	// FetchByBlogID retrieves a blog by its ID
+	FetchByBlogID(c context.Context, blogID string) (Blog, error)
+	// FetchAll retrieves all blogs from the collection
+	FetchAll(c context.Context) ([]Blog, error)
+	// FetchByBlogAuthor retrieves blogs by the author's ID
+	FetchByBlogAuthor(c context.Context, authorID string) ([]Blog, error)
+	// FetchByBlogTitle retrieves blogs by their title
+	FetchByBlogTitle(c context.Context, title string) ([]Blog, error)
+	// UpdateBlog updates a blog in the collection by its ID
+	UpdateBlog(ctx context.Context, id primitive.ObjectID, blog BlogUpdate) error
+	// DeleteBlog deletes a blog from the collection by its ID
+	DeleteBlog(ctx context.Context, id primitive.ObjectID) error
+	// UpdateFeedback retrives blogs by it's id and updates it's feedback
+	UpdateFeedback(ctx context.Context, id string, updateFunc func(*Feedback) error) error
+
+	SearchBlogs(c context.Context, filter Filter) ([]Blog, error)
+}

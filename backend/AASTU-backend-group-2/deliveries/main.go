@@ -25,6 +25,6 @@ func main() {
 	//the router gateway
 	r := gin.Default()
 	router.SetRouter(r, blogcont, usercont, client)
-	r.Run("localhost:8000")
+	r.Run("localhost:8080")
 
 }

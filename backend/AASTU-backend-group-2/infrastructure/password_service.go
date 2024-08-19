@@ -1,16 +1,20 @@
 package infrastructure
 
 import (
-	"time"
-	"github.com/dchest/passwordreset"
+	"crypto/sha256"
 	"fmt"
+	"time"
 	"unicode"
+
+	"github.com/dchest/passwordreset"
 	"golang.org/x/crypto/bcrypt"
 )
 
+var hashedEmail [32]byte
+
 // compares the inputted password from the existing hash
-func PasswordComparator(hash string, password string) bool {
-	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) != nil
+func PasswordComparator(hash string, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }
 
 // hashes the password with a SHA-256 encryption
@@ -26,23 +30,31 @@ func PasswordHasher(password string) (string, error) {
 func ForgotPasswordHandler(email string) error {
 	secretKey := DotEnvLoader("Reset_Password")
 
-	token := passwordreset.NewToken(email, time.Hour*1, []byte(secretKey), []byte(secretKey))
+	// Generate a token valid for 1 hour
+	hashedEmail = sha256.Sum256([]byte(email))
+
+	token := passwordreset.NewToken(email, time.Hour*1, hashedEmail[:], []byte(secretKey))
 	if err := sendResetEmail(email, token); err != nil {
 		return err
 	}
-
 	return nil
 }
 
-
 func VerifyToken(token string) (string, error) {
 	secretKey := DotEnvLoader("Reset_Password")
-	tokenDataFunc := func(email string) ([]byte, error) {
-		return []byte(email), nil
-	}
 
-	email, err := passwordreset.VerifyToken(token, tokenDataFunc, []byte(secretKey))
+	// Log the token and the secret key for debugging (remove in production)
+	fmt.Printf("Verifying Token: %s\n", token)
+	fmt.Printf("Secret Key: %s\n", secretKey)
+
+	// Verify the token
+	email, err := passwordreset.VerifyToken(token, func(email string) ([]byte, error) {
+		hashedEmail := sha256.Sum256([]byte(email))
+		return hashedEmail[:], nil
+	}, []byte(secretKey))
+
 	if err != nil {
+		fmt.Printf("Token verification failed:::")
 		return "", err
 	}
 

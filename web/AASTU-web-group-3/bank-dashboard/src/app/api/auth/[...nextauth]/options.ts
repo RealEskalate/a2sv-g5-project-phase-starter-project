@@ -1,5 +1,7 @@
 import { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { store } from "@/lib/redux/store";
+import { authApi } from "@/lib/redux/api/authApi";
 
 interface Credentials {
   userName: string;
@@ -33,7 +35,7 @@ export const options: NextAuthOptions = {
         userName: {
           label: "Username",
           type: "text",
-          placeholder: "Enter email address",
+          placeholder: "Enter username",
         },
         password: {
           label: "Password",
@@ -44,22 +46,20 @@ export const options: NextAuthOptions = {
       async authorize(credentials: Credentials | undefined): Promise<User | null> {
         if (!credentials) return null;
 
-        const res = await fetch("https://bank-dashboard-6acc.onrender.com/auth/login", {
-          method: "POST",
-          body: JSON.stringify(credentials),
-          headers: { "Content-Type": "application/json" },
-        });
+        try {
+          const result = await store.dispatch(
+            authApi.endpoints.login.initiate(credentials)
+          ).unwrap();
 
-        if (!res.ok) return null;
-
-        const result = await res.json();
-
-        if (result.success && result.data) {
-          const user: User = {
-            ...result,
-            id: result.data.userId,
-          };
-          return user;
+          if (result.success && result.data) {
+            const user: User = {
+              ...result,
+              id: result.data.userId,
+            };
+            return user;
+          }
+        } catch (error) {
+          console.error('Login error:', error);
         }
 
         return null;
@@ -71,6 +71,9 @@ export const options: NextAuthOptions = {
   },
   session: {
     strategy: 'jwt',
+  },
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
   },
   callbacks: {
     async jwt({ token, user }) {

@@ -43,7 +43,7 @@ type UserUsecase interface {
 	Get() ([]User, error)
 	GetByID(userID string) (User, error)
 	GetByEmail(email string) (User, error)
-	GetByUsername(email string) (User, error)
+	GetByUsername(username string) (User, error)
 	Create(u *User) (User, error)
 	Update(userId string, updateData User) (User, error)
 	Delete(userId string) error

@@ -19,8 +19,8 @@ func NewBlogRepository(db mongo.Database, collection string) domain.BlogReposito
 	}
 }
 
-func (br *blogRepository) Create(blog *domain.Blog) error {
-	return nil
+func (br *blogRepository) GetByTags(c context.Context, tags []string) ([]domain.Blog, error) {
+	return []domain.Blog{}, nil
 }
 
 func (br *blogRepository) GetAllBlogs(c context.Context) ([]domain.Blog, error) {
@@ -31,38 +31,26 @@ func (br *blogRepository) GetBlogByID(c context.Context, blogID string) (domain.
 	return domain.Blog{}, nil
 }
 
-func (br *blogRepository) CreateBlog(c context.Context, newBlog *domain.Blog) error {
-	return nil
+func (br *blogRepository) GetByPopularity(c context.Context) ([]domain.Blog, error) {
+	return []domain.Blog{}, nil
 }
 
-func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBlog *domain.Blog) error {
-	return nil
+func (br *blogRepository) Search(c context.Context, searchTerm string) ([]domain.Blog, error) {
+	return []domain.Blog{}, nil
+}
+
+func (br *blogRepository) CreateBlog(c context.Context, newBlog *domain.Blog) (domain.Blog, error) {
+	return domain.Blog{}, nil
+}
+
+func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBlog *domain.Blog) (domain.Blog, error) {
+	return domain.Blog{}, nil
 }
 
 func (br *blogRepository) DeleteBlog(c context.Context, blogID string) error {
 	return nil
 }
 
-func (br *blogRepository) GetComments(c context.Context, blogID string) ([]domain.Comment, error) {
-	return []domain.Comment{}, nil
-}
-
-func (br *blogRepository) CreateComment(c context.Context, blogID string, comment *domain.Comment) error {
-	return nil
-}
-
-func (br *blogRepository) GetComment(c context.Context, blogID, commentID string) (domain.Comment, error) {
-	return domain.Comment{}, nil
-}
-
-func (br *blogRepository) UpdateComment(c context.Context, blogID, commentID string, updatedComment *domain.Comment) error {
-	return nil
-}
-
-func (br *blogRepository) DeleteComment(c context.Context, blogID, commentID string) error {
-	return nil
-}
-
-func (br *blogRepository) LikeBlog(c context.Context, blogID, userID string) error {
-	return nil
+func (br *blogRepository) SortByDate(c context.Context) ([]domain.Blog, error) {
+	return []domain.Blog{}, nil
 }

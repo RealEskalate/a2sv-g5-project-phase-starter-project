@@ -76,6 +76,7 @@ type UserRepository interface {
 	UpdateUser(c context.Context, userID string, updatedUser *User) error
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)
+	RevokeRefreshToken(c context.Context, refreshToken string) error
 
 	ResetUserPassword(c context.Context, userID string, resetPassword *ResetPassword) error
 	UpdateUserPassword(c context.Context, userID string, updatePassword *UpdatePassword) error

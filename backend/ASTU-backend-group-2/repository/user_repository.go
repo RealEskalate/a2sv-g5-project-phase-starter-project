@@ -7,7 +7,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type userRepository struct {
@@ -22,7 +21,7 @@ func NewUserRepository(db mongo.Database, collection string) domain.UserReposito
 	}
 }
 
-func (ur *userRepository) Create(c context.Context, user *domain.User) error {
+func (ur *userRepository) CreateUser(c context.Context, user *domain.User) error {
 	collection := ur.database.Collection(ur.collection)
 
 	_, err := collection.InsertOne(c, user)
@@ -30,39 +29,23 @@ func (ur *userRepository) Create(c context.Context, user *domain.User) error {
 	return err
 }
 
-func (ur *userRepository) Fetch(c context.Context) ([]domain.User, error) {
-	collection := ur.database.Collection(ur.collection)
-
-	opts := options.Find().SetProjection(bson.D{{Key: "password", Value: 0}})
-	cursor, err := collection.Find(c, bson.D{}, opts)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var users []domain.User
-
-	err = cursor.All(c, &users)
-	if users == nil {
-		return []domain.User{}, err
-	}
-
-	return users, err
+func (ur *userRepository) GetUser(c context.Context, userId string) (*domain.User, error) {
+	return nil, nil
 }
 
-func (ur *userRepository) GetByEmail(c context.Context, email string) (domain.User, error) {
+func (ur *userRepository) GetUserByEmail(c context.Context, email string) (*domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 	var user domain.User
 	err := collection.FindOne(c, bson.M{"email": email}).Decode(&user)
-	return user, err
+	return &user, err
 }
 
-func (ur *userRepository) GetByID(c context.Context, id string) (domain.User, error) {
+func (ur *userRepository) GetByID(c context.Context, userID string) (domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 
 	var user domain.User
 
-	idHex, err := primitive.ObjectIDFromHex(id)
+	idHex, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return user, err
 	}
@@ -76,4 +59,26 @@ func (ur *userRepository) RevokeRefreshToken(c context.Context, refreshToken str
 
 	_, err := collection.UpdateOne(c, bson.M{"tokens": refreshToken}, bson.M{"$pull": bson.M{"tokens": refreshToken}})
 	return err
+}
+
+func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *domain.User) error {
+	return nil
+}
+func (ur *userRepository) DeleteUser(c context.Context, userID string) error {
+	return nil
+}
+func (ur *userRepository) IsUserActive(c context.Context, userID string) (bool, error) {
+	return false, nil
+}
+func (ur *userRepository) ResetUserPassword(c context.Context, userID string, resetPassword *domain.ResetPassword) error {
+	return nil
+}
+func (ur *userRepository) UpdateUserPassword(c context.Context, userID string, updatePassword *domain.UpdatePassword) error {
+	return nil
+}
+func (ur *userRepository) PromoteUserToAdmin(c context.Context, userID string) error {
+	return nil
+}
+func (ur *userRepository) DemoteAdminToUser(c context.Context, userID string) error {
+	return nil
 }

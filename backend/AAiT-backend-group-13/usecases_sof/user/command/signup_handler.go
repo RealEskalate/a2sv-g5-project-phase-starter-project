@@ -1,19 +1,24 @@
 package usercommand
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
+	"io"
 	"time"
 
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
 	usermodel "github.com/group13/blog/domain/models/user"
+
 	// icmd "github.com/group13/blog/usecase/common/cqrs/command"
 	result "github.com/group13/blog/usecases_sof/user/result"
 	icommand "github.com/group13/blog/usecases_sof/utils/command"
 	iemail "github.com/group13/blog/usecases_sof/utils/i_email"
 	ijwt "github.com/group13/blog/usecases_sof/utils/i_jwt"
 	irepository "github.com/group13/blog/usecases_sof/utils/i_repo"
-	
 )
 
 type SignUpHandler struct {
@@ -112,26 +117,41 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 }
 
 
-
-
 func (h *SignUpHandler) GenerateValidationLink(user usermodel.User) (string, error) {
-	// Generate the secret value using the hashed value of userid, expiryday, and username
-	secret := h.generateSecret(user.ID().String(), time.Now().Add(time.Minute*15).Format(time.RFC3339), user.Username())
+	userID := user.ID().String()
+	expiryDay := time.Now().Add(time.Hour * 24).Format(time.RFC3339)
+	username := user.Username()
+    // Concatenate the values
+    value := userID + "|" + expiryDay + "|" + username
 
-	validationLink := fmt.Sprintf("https://localhost:8080/validate?=%s", secret)
+    // Encrypt the concatenated value
+    encryptedValue, err := h.encrypt(value)
+    if err != nil {
+        return "", er.NewUnexpected("failed to encrypt value")
+    }
+
+    validationLink := fmt.Sprintf("https://localhost:8080/validate?=%s", encryptedValue)
 	return validationLink, nil
 }
 
-// generateSecret generates the secret value using the hashed value of userid, expiryday, and username
-func (h *SignUpHandler)generateSecret(userID, expiryDay, username string) string {
-	// Concatenate the values
-	value := userID + expiryDay + username
+func (h *SignUpHandler) encrypt(plainText string) (string, error) {
+    key := []byte("thisis32bitlongpassphraseimusing!") // 32 bytes key for AES-256
 
-	// Hash the concatenated value
-	hashedValue, err := h.hashService.Hash(value)
-	if err	!= nil {
-		return ""
-	}	
+    block, err := aes.NewCipher(key)
+    if err != nil {
+        return "", err
+    }
 
-	return hashedValue
+    ciphertext := make([]byte, aes.BlockSize+len(plainText))
+    iv := ciphertext[:aes.BlockSize]
+
+    if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+        return "", err
+    }
+
+    stream := cipher.NewCFBEncrypter(block, iv)
+    stream.XORKeyStream(ciphertext[aes.BlockSize:], []byte(plainText))
+
+    return hex.EncodeToString(ciphertext), nil
 }
+

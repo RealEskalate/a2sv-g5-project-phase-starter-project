@@ -6,6 +6,7 @@ const InputGroup = ({
   registerName,
   register,
   placeholder,
+  errorMessage,
 }: InputGroupType) => {
   return (
     <div className="w-full space-y-1 my-3">
@@ -16,9 +17,10 @@ const InputGroup = ({
         type={inputType}
         id={id}
         placeholder={placeholder}
-        // {...register(registerName)}
+        {...register(registerName)}
         className="w-full border-2 border-[#DFEAF2] p-5 py-3 rounded-xl placeholder:text-blue-steel focus:border-blue-steel outline-none"
       />
+      {errorMessage && <p className="text-red-400"> {errorMessage} </p>}
     </div>
   );
 };

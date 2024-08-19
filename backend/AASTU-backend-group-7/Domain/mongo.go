@@ -24,6 +24,8 @@ type Cursor interface {
 	Next(ctx context.Context) bool
 	Decode(val interface{}) error
 	Close(ctx context.Context) error
+	Err() error
+
 }
 
 // single result interface

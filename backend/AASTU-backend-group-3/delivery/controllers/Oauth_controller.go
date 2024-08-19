@@ -3,6 +3,8 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"group3-blogApi/config"
 	"group3-blogApi/domain"
 	"io/ioutil"
 	"net/http"
@@ -14,59 +16,67 @@ import (
 	"group3-blogApi/infrastracture"
 )
 
-var (
-	googleOauthConfig = &oauth2.Config{
+func getGoogleOauthConfig() *oauth2.Config {
+	return &oauth2.Config{
 		RedirectURL:  "http://localhost:8080/auth/callback",
-		ClientID:     "33361312477-ddpanahl6fj6sk82mav0c2kijcpcgvts.apps.googleusercontent.com",
-		ClientSecret: "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",
+		ClientID:     config.EnvConfigs.ClientID,
+		ClientSecret: config.EnvConfigs.ClientSecret,
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"},
 		Endpoint:     google.Endpoint,
 	}
-	oauthStateString = "random"
-)
-
+}
 
 func (uc *UserController) HandleGoogleLogin(c *gin.Context) {
+	googleOauthConfig := getGoogleOauthConfig()
+	oauthStateString := config.EnvConfigs.OauthStateString
+
+	fmt.Println("Google login", oauthStateString, googleOauthConfig)
 	url := googleOauthConfig.AuthCodeURL(oauthStateString)
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
 func (uc *UserController) HandleGoogleCallback(c *gin.Context) {
-    if c.Query("state") != oauthStateString {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid OAuth state"})
-        return
-    }
+	googleOauthConfig := getGoogleOauthConfig()
+	oauthStateString := config.EnvConfigs.OauthStateString
 
-    token, err := googleOauthConfig.Exchange(context.Background(), c.Query("code"))
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to exchange code"})
-        return
-    }
+	if c.Query("state") != oauthStateString {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid OAuth state"})
+		return
+	}
 
-    client := googleOauthConfig.Client(context.Background(), token)
-    response, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user info"})
-        return
-    }
-    defer response.Body.Close()
+	token, err := googleOauthConfig.Exchange(context.Background(), c.Query("code"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to exchange code"})
+		return
+	}
 
-    data, _ := ioutil.ReadAll(response.Body)
+	client := googleOauthConfig.Client(context.Background(), token)
+	response, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user info"})
+		return
+	}
+	defer response.Body.Close()
 
-    var googleUser domain.OAuthUserInfo
-    json.Unmarshal(data, &googleUser)
+	data, _ := ioutil.ReadAll(response.Body)
 
-    googleUser.Provider = domain.Google
+	var googleUser domain.OAuthUserInfo
+	json.Unmarshal(data, &googleUser)
 
-    ipAddress := c.ClientIP()
-    userAgent := c.Request.UserAgent()
-    deviceFingerprint := infrastracture.GenerateDeviceFingerprint(ipAddress, userAgent)
+	// to see the user info
+	// fmt.Println(googleUser,"///////////////////////////////////////")
 
-    loginResponse, err := uc.UserUsecase.OAuthLogin(googleUser, deviceFingerprint)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to login with Google"})
-        return
-    }
+	googleUser.Provider = domain.Google
 
-    c.JSON(http.StatusOK, gin.H{"tokens": loginResponse})
+	ipAddress := c.ClientIP()
+	userAgent := c.Request.UserAgent()
+	deviceFingerprint := infrastracture.GenerateDeviceFingerprint(ipAddress, userAgent)
+
+	loginResponse, err := uc.UserUsecase.OAuthLogin(googleUser, deviceFingerprint)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"tokens": loginResponse})
 }

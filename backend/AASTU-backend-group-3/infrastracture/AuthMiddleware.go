@@ -79,23 +79,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 func RoleMiddleware(Role_ string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// userClaims, exists := c.Get("user")
-		// // fmt.Println(userClaims)
-
-
-		// if !exists {
-		// 	c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-		// 	c.Abort()
-		// 	return
-		// }
-
-		// user, ok := userClaims.(jwt.MapClaims)
-		// if !ok {
-		// 	c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse user claims"})
-		// 	c.Abort()
-		// 	return
-		// }
-
+		
 		role:= c.GetString("role")
 		if  role == "" {
 			c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Role not found in claims"})

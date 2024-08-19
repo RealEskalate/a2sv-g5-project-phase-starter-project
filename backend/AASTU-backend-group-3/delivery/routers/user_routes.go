@@ -3,6 +3,7 @@ package routers
 import (
 	"group3-blogApi/config/db"
 	"group3-blogApi/delivery/controllers"
+	"group3-blogApi/infrastracture"
 	"group3-blogApi/repository"
 	"group3-blogApi/usecase"
 
@@ -15,13 +16,18 @@ func SetUpUser(router *gin.Engine) {
     userUsecase := usecase.NewUserUsecase(userRepo)
     authController := controllers.NewUserController(userUsecase)
 	user := router.Group("/user")
+	user.Use(infrastracture.AuthMiddleware())
 
 	{
-		// user.GET("/profile", authMiddleware, userController.Profile)
-		// user.PUT("/update", authMiddleware, userController.Update)
-		// user.POST("/upload-image", authMiddleware, userController.UploadImage)
-		// user.POST("/logout", authMiddleware, authController.Logout)
-		// user.POST("/reset-password", authMiddleware, authController.ResetPassword)
+		user.GET("/me",  authController.GetMyProfile)
+		user.PUT("/update", authController.UpdateMyProfile)
+		user.POST("/upload-image", authController.UploadImage)
+		user.DELETE("/me",  authController.DeleteMyAccount)
+	
+
+
+		// Logout Routes
+	
 		user.POST("/refresh-token", authController.RefreshToken)
 		user.POST("/logout", authController.Logout)
 		user.GET("logout-all", authController.LogoutAll)

@@ -49,6 +49,7 @@ type OAuthUserInfo struct {
     LastName   string
 	Name       string
     Picture    string
+	
 }
 
 
@@ -89,6 +90,21 @@ type UserUsecase interface {
 	SendPasswordResetLink(email string) error
 
 
+	// for user profile
+	GetMyProfile( userID string) (User, error)
+	GetUsers() ([]User, error)
+	DeleteUser( userID string) (User, error)
+	DeleteMyAccount( userID string) error
+	UploadImage(userID string, imagePath string) error
+	UpdateMyProfile( user User, UserID string) error
+
+
+
+	// // Admin only
+	// DeleteUser( userID string) (User, error)
+	UpdateUserRole(  userID, role string) (User, error)
+
+
 	// GetUserByEmail(email string) (User, error)
 	// FindOrCreateUserByGoogleID(oauthUserInfo OAuthUserInfo) (*User, error)
 	// FindOrCreateUserByGoogleID(googleID string, email string, deviceID string) (*User, error)
@@ -98,7 +114,7 @@ type UserUsecase interface {
 	// RefreshToken(token string) (string, error)
 	// Logout(userID string) error
 
-	// // for user profile
+	// for user profile
 	// GetUsers(ctx context.Context) ([]User, error)
 	// GetUser(ctx context.Context, userID string) (User, error)
 	// GetUserBlogs(ctx context.Context, userID string) ([]Blog, error)
@@ -122,6 +138,7 @@ type UserUsecase interface {
 
 type UserRepository interface {
 	// for every user
+
 	Login(user *User) (*User, error)
 	Register(user User) error
 	GetUserByUsernameOrEmail(username, email string) (User, error)
@@ -134,22 +151,21 @@ type UserRepository interface {
 	GetUserByResetToken(token string) (User, error)
 	GetUserByEmail(email string) (User, error)
 
-	// ForgotPassword(email string) error
-	// ResetPassword(token, newPassword string) error
-	// RefreshToken(token string) (string, error)
-	// Logout(userID string) error
 
 	// // for user profile
-	// GetUsers(ctx context.Context) ([]User, error)
-	// GetUser(ctx context.Context, userID string) (User, error)
-	// GetUserBlogs(ctx context.Context, userID string) ([]Blog, error)
-	// UpdateProfile(ctx context.Context, user User) error
-	// UploadImage(ctx context.Context, userID string, imagePath string) error
-	// DeleteMyAccount(ctx context.Context, userID string) error
+	GetMyProfile( userID string) (User, error)
+	GetUsers() ([]User, error)
+	DeleteUser( userID string) (User, error)
+	DeleteMyAccount( userID string) error
+	// GetUser( userID string) (User, error)
+	UploadImage(userID string, imagePath string) error
+	UpdateMyProfile( user User, userID string) error
+
+	// // GetUserBlogs(ctx context.Context, userID string) ([]Blog, error)
 
 	// // Admin only
-	// DeleteUser(ctx context.Context, userID string) (User, error)
-	// UpdateUserRole(ctx context.Context, userID, role string) (User, error)
+	// DeleteUser( userID string) (User, error)
+	UpdateUserRole(  userID, role string) (User, error)
 
 }
 

@@ -13,7 +13,7 @@ const Sidebar = ({ isOpen = false, toggleSidebar = () => { } }: { isOpen?: boole
       className={`fixed top-0 left-0 border-r border-[#E6EFF5] w-[240px] bg-white z-50 transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } sm:translate-x-0 sm:w-[240px] sm:block flex flex-col`}
-      style={{ height: '100vh' }} // Ensure sidebar takes full viewport height
+      style={{ height: '100vh' }} 
     >
       <div className="flex items-center p-4">
         <Image
@@ -43,14 +43,14 @@ const Sidebar = ({ isOpen = false, toggleSidebar = () => { } }: { isOpen?: boole
         {sidebarListItems.map((item, index) => (
           <Link key={index} href={item.path}>
             <div
-              className={`flex items-center gap-8  py-1 ${
+              className={`flex items-center gap-8 ${
                 pathname === item.path ? "text-[#2D60FF]" : "text-[#B1B1B1]"
               }`}
             >
               <div
-                className={`h-[50px] w-[5px] ${
+                className={`h-[60px] w-[6px] ${
                   pathname === item.path ? "bg-[#2D60FF]" : "bg-transparent"
-                } rounded-r-lg`}
+                } rounded-r-[10px]`}
               ></div>
               <div className="flex gap-8 items-center">
                 <Image

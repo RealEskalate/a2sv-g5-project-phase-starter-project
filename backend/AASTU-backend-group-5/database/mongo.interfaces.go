@@ -16,6 +16,7 @@ type CollectionInterface interface {
 	Indexes() IndexView
 }
 
+
 type IndexView interface{
 	CreateOne(ctx context.Context, model mongo.IndexModel, opts ...*options.CreateIndexesOptions) (string, error)
 }

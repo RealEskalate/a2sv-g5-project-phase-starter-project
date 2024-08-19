@@ -18,8 +18,9 @@ func NewOauthRoute(config *infrastructure.Config, DB mongo.Database, OauthRoute 
 	repo := repositories.NewSignupRepository(DB , config.UserCollection)
 	
 	userrepo := repositories.NewUserRepository(DB, config.UserCollection)
+	aur := repositories.NewActiveUserRepository(DB, config.ActiveUserCollection)
 	usecase := usecases.NewOauthUsecase(repo , time.Duration(config.ContextTimeout) * time.Second , oauth )
-	loginusecase := usecases.NewLoginUsecase(userrepo, time.Duration(config.ContextTimeout) * time.Second)
+	loginusecase := usecases.NewLoginUsecase(userrepo, aur , time.Duration(config.ContextTimeout) * time.Second)
 
 	oauthcontroller := controllers.OauthController{
 		OauthUsecase : usecase,

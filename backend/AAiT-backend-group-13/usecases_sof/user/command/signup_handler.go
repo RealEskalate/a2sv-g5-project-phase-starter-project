@@ -1,14 +1,19 @@
 package usercommand
 
 import (
+	"fmt"
+	"time"
+
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
 	usermodel "github.com/group13/blog/domain/models/user"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
 	result "github.com/group13/blog/usecases_sof/user/result"
+	icommand "github.com/group13/blog/usecases_sof/utils/command"
 	iemail "github.com/group13/blog/usecases_sof/utils/i_email"
 	ijwt "github.com/group13/blog/usecases_sof/utils/i_jwt"
 	irepository "github.com/group13/blog/usecases_sof/utils/i_repo"
+	
 )
 
 type SignUpHandler struct {
@@ -25,8 +30,14 @@ type SignUpConfig struct {
 	emailService iemail.Service
 }
 
+<<<<<<< HEAD
 // Ensure Handler implements icmd.IHandler
 var _ icmd.IHandler[*SignUpCommand, *result.SignUpResult] = &SignUpHandler{}
+=======
+
+// Ensure Handler implements icmd.IHandler
+var _ icommand.Ihandler[*signUpCommand, *result.SignUpResult] = &SignUpHandler{}
+>>>>>>> 0ca90274 (hashing and comparing moved to usecase)
 
 func NewSignUpHandler(config SignUpConfig) *SignUpHandler {
 	return &SignUpHandler{
@@ -39,9 +50,22 @@ func NewSignUpHandler(config SignUpConfig) *SignUpHandler {
 
 func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, error) {
 	cfg := &usermodel.Config{
+<<<<<<< HEAD
 		Username:      command.username,
 		Email:         command.email,
 		PlainPassword: command.password,
+=======
+		Username:       command.username,
+		Email:          command.email,
+		PlainPassword:  command.password,
+		FirstName:      command.firstName,
+		LastName:       command.lastName,
+		IsAdmin:        false ,
+		PasswordHasher: h.hashService,
+
+		
+
+>>>>>>> 0ca90274 (hashing and comparing moved to usecase)
 	}
 
 	user, err := usermodel.New(*cfg)
@@ -69,7 +93,7 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 
 	password := user.PasswordHash()
 	user.UpdatePassword(password, h.hashService)
-	validationLink, err := h.repo.GenerateValidationLink(*user)
+	validationLink, err := h.GenerateValidationLink(*user)
 	if err != nil {
 		return nil, err
 	}
@@ -93,4 +117,29 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 		LastName:  user.LastName(),
 		IsAdmin:   user.IsAdmin(),
 	}, nil
+}
+
+
+
+
+func (h *SignUpHandler) GenerateValidationLink(user usermodel.User) (string, error) {
+	// Generate the secret value using the hashed value of userid, expiryday, and username
+	secret := h.generateSecret(user.ID().String(), time.Now().Add(time.Minute*15).Format(time.RFC3339), user.Username())
+
+	validationLink := fmt.Sprintf("https://localhost:8080/validate?=%s", secret)
+	return validationLink, nil
+}
+
+// generateSecret generates the secret value using the hashed value of userid, expiryday, and username
+func (h *SignUpHandler)generateSecret(userID, expiryDay, username string) string {
+	// Concatenate the values
+	value := userID + expiryDay + username
+
+	// Hash the concatenated value
+	hashedValue, err := h.hashService.Hash(value)
+	if err	!= nil {
+		return ""
+	}	
+
+	return hashedValue
 }

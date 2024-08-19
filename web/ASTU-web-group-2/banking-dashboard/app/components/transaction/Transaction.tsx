@@ -1,11 +1,10 @@
 import { Inter } from "next/font/google";
 
 export interface TransactionType {
-  id: number;
   description: string;
   transactionId: string;
   type: string;
-  card: string;
+  card?: string;
   date: string;
   amount: number;
 }
@@ -15,7 +14,7 @@ const Transaction = ({
   description,
   transactionId,
   type,
-  card,
+  card = "",
   date,
   amount,
 }: TransactionType) => {
@@ -39,10 +38,12 @@ const Transaction = ({
       <td className="py-3 px-6">{date}</td>
       <td
         className={`py-3 px-6 ${
-          amount < 0 ? "text-red-500" : "text-green-500"
+          type.toLowerCase() != "deposit" ? "text-red-500" : "text-green-500"
         }`}
       >
-        {amount < 0 ? `-$${Math.abs(amount)}` : `+$${amount}`}
+        {type.toLowerCase() != "deposit"
+          ? `-$${Math.abs(amount)}`
+          : `+$${amount}`}
       </td>
       <td className="py-3 px-6">
         <button

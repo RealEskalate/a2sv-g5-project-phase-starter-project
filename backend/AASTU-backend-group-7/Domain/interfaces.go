@@ -42,6 +42,7 @@ type BlogRepository interface {
 	GetTags(ctx context.Context, id primitive.ObjectID) ([]*Tag, error, int)
 	GetComments(ctx context.Context, id primitive.ObjectID) ([]*Comment, error, int)
 	GetAllPosts(ctx context.Context) ([]*Post, error, int)
+	AddTagToPost(ctx context.Context, id primitive.ObjectID, slug string) (error, int)
 }
 
 type BlogUseCase interface {
@@ -53,6 +54,7 @@ type BlogUseCase interface {
 	GetTags(c *gin.Context, id primitive.ObjectID) ([]*Tag, error, int)
 	GetComments(c *gin.Context, id primitive.ObjectID) ([]*Comment, error, int)
 	GetAllPosts(c *gin.Context) ([]*Post, error, int)
+	AddTagToPost(c *gin.Context, id primitive.ObjectID, slug string) (error, int)
 }
 
 type CommentRepository interface {

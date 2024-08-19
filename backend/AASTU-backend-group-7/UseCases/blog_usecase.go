@@ -69,5 +69,9 @@ func (uc *blogUsecase) GetAllPosts(c *gin.Context) ([]*Domain.Post, error, int) 
 	return uc.BlogRepository.GetAllPosts(ctx)
 }
 
-
+func (uc *blogUsecase) AddTagToPost(c *gin.Context, id primitive.ObjectID, slug string) (error, int) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.AddTagToPost(ctx, id, slug)
+}
 

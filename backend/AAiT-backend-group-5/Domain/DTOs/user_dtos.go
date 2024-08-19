@@ -2,13 +2,12 @@ package dtos
 
 // dtos/user.go
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
-
 // CreateAccountRequest represents the payload for creating a new user account
 type CreateAccountRequest struct {
 	Username string `json:"username" validate:"required,min=3,max=30"`
 	Name     string `json:"name" validate:"required"`
 	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=6"`
 }
 
 // CreateAccountResponse represents the response after creating a new user account
@@ -27,8 +26,7 @@ type PasswordResetRequest struct {
 
 // SetUpPasswordRequest represents the payload for setting up a new password
 type SetUpPasswordRequest struct {
-	Password string             `json:"password" validate:"required,min=8"`
-	UserID   primitive.ObjectID `bson:"user_id" json:"user_id"`
+	Password string `json:"password" validate:"required,min=8"`
 }
 
 // LoginRequest represents the payload for user login

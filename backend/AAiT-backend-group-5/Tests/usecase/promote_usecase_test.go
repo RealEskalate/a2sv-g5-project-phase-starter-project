@@ -6,7 +6,7 @@ import (
 
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
-	"github.com/aait.backend.g5.main/backend/Mocks"
+	mocks "github.com/aait.backend.g5.main/backend/Mocks"
 	usecases "github.com/aait.backend.g5.main/backend/UseCases"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
@@ -14,9 +14,9 @@ import (
 
 type UserUsecaseTestSuite struct {
 	suite.Suite
-	ctrl            *gomock.Controller
-	mockUserRepo    *mocks.MockUserRepository
-	userUsecase     interfaces.PromoteUserUsecase
+	ctrl         *gomock.Controller
+	mockUserRepo *mocks.MockUserRepository
+	userUsecase  interfaces.PromoteDemoteUserUsecase
 }
 
 func (suite *UserUsecaseTestSuite) SetupTest() {

@@ -21,7 +21,7 @@ func (u *BlogUsecase) CreateBlog(ctx context.Context, blog *domain.Blog) (*domai
     blog.UpdatedAt = time.Now()
 
     // Call the repository to save the blog post
-    err := u.repo.CreateBlog(context.Background(), blog)
+    err := u.blogRepo.CreateBlog(context.Background(), blog)
     if err != nil {
         return nil, err
     }

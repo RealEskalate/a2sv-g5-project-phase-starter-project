@@ -13,7 +13,7 @@ import (
 type UserRepository interface {
 	Save(user *Domain.User) error
 	FindByEmail(email string) (*Domain.User, error)
-	FindByUsername(username string) (*Domain.User, error)
+	FindByUsername(username string) (Domain.User, error)
 	Update(username string, UpdatedUser bson.M) error
 	Delete(userID string) error
 	IsDbEmpty() (bool, error)
@@ -44,13 +44,13 @@ func (r *userRepository) FindByEmail(email string) (*Domain.User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) FindByUsername(username string) (*Domain.User, error) {
+func (r *userRepository) FindByUsername(username string) (Domain.User, error) {
 	var user Domain.User
 	err := r.collection.FindOne(context.TODO(), bson.M{"username": username}).Decode(&user)
 	if err != nil {
-		return nil, err
+		return Domain.User{}, err
 	}
-	return &user, nil
+	return user, nil
 }
 
 func (r *userRepository) Update(username string, updateFields bson.M) error {

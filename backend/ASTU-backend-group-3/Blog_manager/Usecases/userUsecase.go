@@ -23,6 +23,7 @@ type UserUsecase interface {
 	Reset(token string) (string, error)
 	UpdatePassword(username string, newPassword string) error
 	PromoteTOAdmin(username string) error
+	Verify(token string) error
 }
 
 type userUsecase struct {
@@ -67,7 +68,7 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error)
 		Bio:            input.Bio,
 		Gender:         input.Gender,
 		Address:        input.Address,
-		IsActive:       true,
+		IsActive:       false,
 		PostsIDs:       []string{},
 	}
 
@@ -82,8 +83,13 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error)
 		return nil, fmt.Errorf("failed to save user: %v", err)
 	}
 
+	newToken, err := infrastructure.GenerateResetToken(user.Username, []byte("BlogManagerSecretKey"))
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate reset token: %v", err)
+	}
+
 	subject := "Welcome to Our Service!"
-	body := fmt.Sprintf("Hi %s, welcome to our platform!", input.Username)
+	body := fmt.Sprintf("Hi %s, welcome to our platform! Please verify your account by clicking the link below:\n\nhttp://localhost:8080/verify/%s", input.Name, newToken)
 	err = u.emailService.SendEmail(input.Email, subject, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send welcome email: %v", err)
@@ -171,6 +177,10 @@ func (u *userUsecase) Login(c *gin.Context, LoginUser *Domain.LoginInput) (strin
 	err = u.userRepo.InsertToken(user.Username, accessToken, refreshToken)
 	if err != nil {
 		return "", fmt.Errorf("failed to store tokens: %v", err)
+	}
+
+	if !user.IsActive {
+		return "", fmt.Errorf("user not verified")
 	}
 
 	return accessToken, nil
@@ -264,5 +274,22 @@ func (u *userUsecase) PromoteTOAdmin(username string) error {
 		return fmt.Errorf("failed to promote user to admin: %v", err)
 	}
 
+	return nil
+}
+
+func (u *userUsecase) Verify(token string) error {
+	claims, err := infrastructure.ParseResetToken(token, []byte("BlogManagerSecretKey"))
+	if err != nil {
+		fmt.Println("Error parsing token:", err)
+	}
+
+	user, err := u.userRepo.FindByUsername(claims.Username)
+	if err != nil {
+		return errors.New("user not found")
+	}
+	err = u.userRepo.Update(user.Username, bson.M{"is_active": true})
+	if err != nil {
+		return fmt.Errorf("failed to verify user: %v", err)
+	}
 	return nil
 }

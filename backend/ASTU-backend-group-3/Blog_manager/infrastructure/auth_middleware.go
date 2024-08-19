@@ -62,7 +62,12 @@ func AuthMiddleware(tokenCollection *mongo.Collection) gin.HandlerFunc {
 			return
 		}
 
-		// Set the username and role in the context
+		if claims.ExpiresAt < time.Now().Unix() {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token expired"})
+			c.Abort()
+			return
+		}
+
 		c.Set("username", claims.Username)
 		c.Set("role", claims.Role)
 		c.Next()

@@ -19,7 +19,7 @@ const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   }, [isSidebarOpen]);
 
   return (
-    <div className="flex">
+    <div className="flex overflow-x-hidden">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div className={`flex-1 flex flex-col transition-transform duration-300 ${isSidebarOpen ? 'ml-0' : 'ml-0'} overflow-x-hidden`}>
         <Navbar pageTitle={pageTitle} toggleSidebar={toggleSidebar} />

@@ -1,5 +1,6 @@
 import { Bar, BarChart, XAxis } from "recharts";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useState, useEffect } from "react";
 import {
   ChartConfig,
   ChartContainer,
@@ -33,6 +34,19 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function Component() {
+  const [bottomMargin, setBottomMargin] = useState(90);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      setBottomMargin(window.innerWidth < 768 ? 1 : 90);
+    };
+
+    window .addEventListener('resize', handleResize);
+    handleResize();
+    return() => window.removeEventListener('resize', handleResize);
+  }, []);
+
+
   return (
     <Card className="flex flex-col w-full h-[350px]">
       <CardHeader className="flex justify-between">
@@ -65,7 +79,7 @@ export default function Component() {
             barGap={5}
             barSize={20} // Adjusted bar size
             height={200} // Adjusted height
-            margin={{ top: 10, right: 20, left: 20, bottom: 90 }} // Reduced top margin
+            margin={{ top: 10, right: 20, left: 20, bottom: bottomMargin }} // Reduced top margin
           >
             <XAxis dataKey="day" axisLine={true} tickLine={false} />
             <ChartTooltip

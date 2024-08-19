@@ -7,15 +7,15 @@ import (
 )
 
 type User struct {
-	ID         int      `json:"id"`
-	Username   string   `json:"username"`
-	Password   string   `json:"password"`
-	Email      string   `json:"email"`
-	Blogs      []int    `json:"blogs"`
-	Role       string   `json:"role"`
-	Bio        string   `json:"bio"`
-	Phone      string   `json:"phone"`
-	ProfilePic string   `json:"profile_pic"`
+	ID         int    `json:"id"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	Email      string `json:"email"`
+	Blogs      []int  `json:"blogs"`
+	Role       string `json:"role"`
+	Bio        string `json:"bio"`
+	Phone      string `json:"phone"`
+	ProfilePic string `json:"profile_pic"`
 }
 
 type IUserRepository interface {
@@ -37,10 +37,12 @@ type IUserUsecase interface {
 	CreateUser(ctx context.Context, user User) (User, error)
 	UpdateUser(ctx context.Context, id int, user User) (User, error)
 	DeleteUser(ctx context.Context, id int) error
-	AddBlog(ctx context.Context, userID int, blogID int) (User, error)
+	AddBlog(ctx context.Context, userID int, blog Blog) (User, error)
 	Login(ctx context.Context, username, password string) (User, error)
 	ForgetPassword(ctx context.Context, email string) error
 	ResetPassword(ctx context.Context, username, password string) error
+	PromoteUser(ctx context.Context, userID int) (User, error)
+	DemoteUser(ctx context.Context, userID int) (User, error)
 }
 
 type IUserController interface {
@@ -54,7 +56,7 @@ type IUserController interface {
 	Logout(c *gin.Context)
 	ForgetPassword(c *gin.Context)
 	ResetPassword(c *gin.Context)
-	PromoUser(c *gin.Context)
+	PromoteUser(c *gin.Context)
 	DemoteUser(c *gin.Context)
 	RefreshToken(c *gin.Context)
 }

@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import Transaction, { TransactionType } from "../transaction/Transaction";
 import React from "react";
-interface TransactionTypeArray {
+export interface TransactionTypeArray {
   transactions: TransactionType[];
 }
 
@@ -23,7 +23,7 @@ const TransactionsTable: React.FC<TransactionTypeArray> = ({transactions}) => {
         </thead>
         <tbody>
           {transactions.map((transaction: TransactionType) => (
-            <Transaction {...transaction} key={transaction.id} />
+            <Transaction {...transaction} key={transaction.transactionId} />
           ))}
         </tbody>
       </table>
@@ -32,7 +32,7 @@ const TransactionsTable: React.FC<TransactionTypeArray> = ({transactions}) => {
       <div className=" bg-white rounded-2xl pt-2 px-4 md:hidden">
         {transactions.map((transaction: TransactionType) => (
           <div
-            key={transaction.id}
+            key={transaction.transactionId}
             className="border-b border-[#E6EFF5] py-4 flex items-center justify-between gap-1"
           >
             <div className="flex items-center gap-3">
@@ -52,10 +52,10 @@ const TransactionsTable: React.FC<TransactionTypeArray> = ({transactions}) => {
             </div>
             <div
               className={`text-sm ${
-                transaction.amount < 0 ? "text-red-500" : "text-green-500"
+                transaction.type.toLowerCase() != "deposit" ? "text-red-500" : "text-green-500"
               }`}
             >
-              {transaction.amount < 0
+              {transaction.type.toLowerCase() != "deposit"
                 ? `-$${Math.abs(transaction.amount)}`
                 : `+$${transaction.amount}`}
             </div>

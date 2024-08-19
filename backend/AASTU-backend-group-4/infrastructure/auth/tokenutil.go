@@ -15,6 +15,7 @@ func CreateAccessToken(user *user.User, secret string, expiry int) (string, erro
 		"user_id":  user.ID.Hex(),
 		"username": user.Username,
 		"email":    user.Email,
+		"isAdmin":  user.IsAdmin,
 		"exp":      time.Now().Add(time.Hour * time.Duration(expiry)).Unix(),
 	}
 

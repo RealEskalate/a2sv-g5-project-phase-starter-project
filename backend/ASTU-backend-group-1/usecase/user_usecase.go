@@ -18,6 +18,20 @@ func NewUserUsecase(u domain.UserRepository) (domain.UserUsecase, error) {
 func (useCase *userUsecase) Get() ([]domain.User, error) {
 	return useCase.userRepository.Get(domain.UserFilterOption{})
 }
+func (useCase *userUsecase)LoginUser(uname string,password string) (string, error) {
+	user  ,err:= useCase.GetByUsername(uname)
+	if err != nil {
+		return "",err
+	}
+	accesstoken, refreshToken, err := infrastructure.GenerateToken(&user, password)
+	if err != nil {
+		return "",  err
+	}
+	user.RefreshToken = refreshToken
+	useCase.userRepository.Update(user.ID, user)
+
+	return accesstoken, nil
+}
 
 func (useCase *userUsecase) GetByID(userID string) (domain.User, error) {
 	filter := domain.UserFilter{UserId: userID}
@@ -37,13 +51,15 @@ func (useCase *userUsecase) AccountVerification(uemail string, confirmationToken
 	opts := domain.UserFilterOption{Filter: filter}
 	users, err := useCase.userRepository.Get(opts)
 	if users[0].VerifyToken == confirmationToken {
-		users[0].IsActive = true
-		useCase.userRepository.Update(users[0].ID, users[0])
-		token, err := infrastructure.Genratetoken(&users[0], users[0].Password)
+		accesstoken,refreshToken, err := infrastructure.GenerateToken(&users[0], users[0].Password)
 		if err != nil {
 			return "", err
 		}
-		return token, nil
+		users[0].IsActive = true
+		users[0].RefreshToken = refreshToken
+		useCase.userRepository.Update(users[0].ID, users[0])
+		
+		return accesstoken, nil
 
 	}
 	return "", err
@@ -59,19 +75,19 @@ func (useCase *userUsecase) GetByEmail(email string) (domain.User, error) {
 func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	u.Password, _ = infrastructure.PasswordHasher(u.Password)
 	u.IsActive = false
-	nUser, err := useCase.userRepository.Create(u)
+	
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	confirmationToken := make([]byte, 64)
 	charsetLength := big.NewInt(int64(len(charset)))
 
 	for i := 0; i < 64; i++ {
-		num, err := rand.Int(rand.Reader, charsetLength)
-		if err != nil {
-			return nUser, err
-		}
+		num, _ := rand.Int(rand.Reader, charsetLength)
 		confirmationToken[i] = charset[num.Int64()]
 	}
+	u.VerifyToken = string(confirmationToken)
+	nUser, err := useCase.userRepository.Create(u)
 	err = infrastructure.SendEmail(u.Email, "Registration Confirmation", "This sign up Confirmation email to verify: ", string(confirmationToken))
+	
 	if err != nil {
 		return nUser, err
 	}

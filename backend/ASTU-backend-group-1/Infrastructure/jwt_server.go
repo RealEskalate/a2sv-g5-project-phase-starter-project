@@ -1,8 +1,9 @@
 package infrastructure
 
 import (
+	"astu-backend-g1/config"
 	"astu-backend-g1/domain"
-	"os"
+	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -11,28 +12,47 @@ import (
 )
 
 // Genratetoken generates a JWT token for the given user and password.
-func Genratetoken(user *domain.User, pwd string) (string, error) {
-	var jwtSecret = []byte(os.Getenv("JWT_SECRET_KEY"))
+func GenerateToken(user *domain.User, pwd string) (string, string, error) {
+	configjwt,err := config.LoadConfig()
+	if err != nil {
+		return "", "", err
+	}
+	var jwtSecret = []byte(configjwt.JWTKey)
 
 	// User login logic
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pwd)) != nil {
-		return "Invalid username or password", nil
+		return "", "", errors.New("Invalid username or password")
 	}
 
-
-
-	expirationTime := time.Now().Add(24 * 7 * time.Hour)
+	// Access token
+	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &domain.Claims{
 		ID:      user.ID,
 		Email:   user.Email,
 		IsAdmin: user.IsAdmin,
 		StandardClaims: jwt.StandardClaims{
+			Audience:  "",
 			ExpiresAt: expirationTime.Unix(),
+			IssuedAt:  time.Now().Unix(),
+			Issuer:    "",
+			Subject:   "",
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	accessTokenString, err := accessToken.SignedString(jwtSecret)
+	if err != nil {
+		return "", "", err
+	}
 
-	jwtToken, err := token.SignedString(jwtSecret)
-	return jwtToken, err
+	// Refresh token
+	expirationTime = time.Now().Add(7 * 24 * time.Hour)
+	claims.ExpiresAt = expirationTime.Unix()
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	refreshTokenString, err := refreshToken.SignedString(jwtSecret)
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessTokenString, refreshTokenString, nil
 }

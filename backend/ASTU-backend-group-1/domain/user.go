@@ -14,6 +14,7 @@ type User struct {
 	LastName       string    `json:"last_name"`
 	Password       string    `json:"password"`
 	VerifyToken    string    `json:"-"`
+	RefreshToken   string    `json:"-"`
 	ExpirationDate time.Time `json:"expirationtoken"`
 	IsAdmin        bool      `json:"is_admin"`
 	IsActive       bool      `json:"is_active"`

@@ -11,7 +11,7 @@ import (
 
 // Handler handles the validation of password reset codes.
 type Handler struct {
-	userrepo   irepo.User
+	userrepo   irepo.UserRepository
 	jwtService ijwt.Service
 }
 
@@ -19,7 +19,7 @@ type Handler struct {
 var _ icmd.IHandler[Command, string] = &Handler{}
 
 // New creates a new instance of Handler.
-func New(userrepo irepo.User, jwtService ijwt.Service) *Handler {
+func New(userrepo irepo.UserRepository, jwtService ijwt.Service) *Handler {
 	return &Handler{
 		userrepo:   userrepo,
 		jwtService: jwtService,

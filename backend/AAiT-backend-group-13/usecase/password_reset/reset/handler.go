@@ -10,13 +10,13 @@ import (
 
 // Handler handles the logic for resetting a user's password.
 type Handler struct {
-	userrepo    irepo.User
+	userrepo    irepo.UserRepository
 	hashService ihash.Service
 	jwtService  ijwt.Service
 }
 
 // New creates a new instance of Handler.
-func New(userrepo irepo.User) *Handler {
+func New(userrepo irepo.UserRepository) *Handler {
 	return &Handler{userrepo: userrepo}
 }
 

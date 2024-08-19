@@ -23,7 +23,10 @@ func (u *userRepository) CreateUser(c context.Context, user *domain.User) error 
 
 // DeleteUser implements domain.UserRepository.
 func (u *userRepository) DeleteUser(c context.Context, id primitive.ObjectID) error {
-	panic("unimplemented")
+	collection := u.database.Collection(u.collection)
+	filter := bson.M{"_id": id}
+	_, err := collection.DeleteOne(c, filter)
+	return err
 }
 
 // GetUserByEmail implements domain.UserRepository.
@@ -53,6 +56,26 @@ func (u *userRepository) GetUserByUsername(c context.Context, username string) (
 	return user, err
 }
 
+// GetUsers implements domain.UserRepository.
+func (u *userRepository) GetAllUsers(c context.Context) ([]*domain.User, error) {
+	collection := u.database.Collection(u.collection)
+	cursor, err := collection.Find(c, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(c)
+	
+	var users []*domain.User
+	for cursor.Next(c) {
+		var user domain.User
+		if err := cursor.Decode(&user); err != nil {
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+	return users, nil
+}
+
 // UpdateUser implements domain.UserRepository.
 func (u *userRepository) UpdateUser(c context.Context, user *domain.User) error {
 	collection := u.database.Collection(u.collection)
@@ -60,6 +83,27 @@ func (u *userRepository) UpdateUser(c context.Context, user *domain.User) error 
 	update := bson.M{"$set": bson.M{"first_name": user.First_Name, "last_name": user.Last_Name, "bio": user.Bio, "profile_picture": user.Profile_Picture, "contact_info": user.Contact_Info}}
 	_, err := collection.UpdateOne(c, filter, update)
 	return err
+}
+func (u *userRepository) UpdatePassword(c context.Context, user *domain.User) error {
+	collection := u.database.Collection(u.collection)
+	filter := bson.M{"_id": user.ID}
+	update := bson.M{"$set": bson.M{"password": user.Password}}
+	_, err := collection.UpdateOne(c, filter, update)
+	return err
+}
+func (u *userRepository) PromoteUser(c context.Context, id primitive.ObjectID)  error {
+	collection := u.database.Collection(u.collection)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": bson.M{"role": "admin"}}
+	_, err := collection.UpdateOne(c, filter, update)
+	return  err
+}
+func (u *userRepository) DemoteUser(c context.Context, id primitive.ObjectID)  error {
+	collection := u.database.Collection(u.collection)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": bson.M{"role": "user"}}
+	_, err := collection.UpdateOne(c, filter, update)
+	return  err
 }
 
 func NewUserRepository(db database.Database, collection string) domain.UserRepository {

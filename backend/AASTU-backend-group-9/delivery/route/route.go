@@ -23,8 +23,8 @@ func Setup(env *config.Env, timeout time.Duration, db database.Database, gin *gi
 	protectedRouter.Use(middleware.AuthMidd)
 	// All Private APIs
   	NewProfileRouter(env, timeout, db, protectedRouter)
-	NewLogoutRouter(env, timeout, db, protectedRouter)
-  
+	  NewLogoutRouter(env, timeout, db, protectedRouter)
+  	NewForgotPasswordRouter(env, db, protectedRouter)
   
 
 }

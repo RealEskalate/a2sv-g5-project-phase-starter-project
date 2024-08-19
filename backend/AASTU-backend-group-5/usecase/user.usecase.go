@@ -95,3 +95,19 @@ func (usecase *UserUseCase) FilterUser(filter map[string]string) ([]domain.Respo
 
 	return response_users,nil
 }
+
+func (usecase *UserUseCase) PromoteUser(id string) (domain.ResponseUser, error) {
+	new_user,err := usecase.UserRepo.PromoteUser(id)
+	if err != nil {
+		return domain.ResponseUser{},err
+	}
+	return domain.CreateResponseUser(new_user),nil
+}
+
+func (usecase *UserUseCase) DemoteUser(id string) (domain.ResponseUser, error) {
+	new_user,err := usecase.UserRepo.DemoteUser(id)
+	if err != nil {
+		return domain.ResponseUser{},err
+	}
+	return domain.CreateResponseUser(new_user),nil
+}

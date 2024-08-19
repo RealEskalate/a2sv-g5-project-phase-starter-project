@@ -30,6 +30,34 @@ func (_m *User_Usecase_interface) DeleteUser(id string) error {
 	return r0
 }
 
+// DemoteUser provides a mock function with given fields: id
+func (_m *User_Usecase_interface) DemoteUser(id string) (domain.ResponseUser, error) {
+	ret := _m.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DemoteUser")
+	}
+
+	var r0 domain.ResponseUser
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (domain.ResponseUser, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(string) domain.ResponseUser); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(domain.ResponseUser)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // FilterUser provides a mock function with given fields: _a0
 func (_m *User_Usecase_interface) FilterUser(_a0 map[string]string) ([]domain.ResponseUser, error) {
 	ret := _m.Called(_a0)
@@ -111,6 +139,34 @@ func (_m *User_Usecase_interface) GetUsers() ([]domain.ResponseUser, error) {
 
 	if rf, ok := ret.Get(1).(func() error); ok {
 		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// PromoteUser provides a mock function with given fields: id
+func (_m *User_Usecase_interface) PromoteUser(id string) (domain.ResponseUser, error) {
+	ret := _m.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PromoteUser")
+	}
+
+	var r0 domain.ResponseUser
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (domain.ResponseUser, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(string) domain.ResponseUser); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(domain.ResponseUser)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(id)
 	} else {
 		r1 = ret.Error(1)
 	}

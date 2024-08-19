@@ -80,10 +80,6 @@ const Sidebar = ({
     },
   ];
 
-  const clicked = () => {
-    () => router.push(item.url);
-    closeSidebar();
-  };
   return (
     <div className="py-6 px-5 w-[99.6%]  h-screen flex flex-col gap-8 border-r border-r-[#E6EFF5] bg-white">
       <div className="flex gap-2 px-[4%] relative">

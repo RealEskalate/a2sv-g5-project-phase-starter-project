@@ -1,3 +1,4 @@
+"use client"
 import Card from "../../components/Accounts/account";
 import LastTransList from "@/app/components/Accounts/LastTransPa";
 import { DebitCreditOver } from "../../components/Accounts/DebitCreditOver";
@@ -65,12 +66,12 @@ export default function Home() {
               See All
             </p>
           </div>
-          <VisaCard
+          {/* <VisaCard
             data={CardData[0]}
             isBlack={false}
             isFade={true}
             isSimGray={false}
-          />
+          /> */}
         </div>
       </div>
       <div className="flex flex-col lg:flex-row justify-between my-5">
@@ -84,7 +85,7 @@ export default function Home() {
           <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 ">
             Invoices Sent
           </p>
-          <div className="border border-solid rounded-3xl p-9  bg-white shadow-lg border-gray-300">
+          <div className="border border-solid rounded-3xl md:p-4 lg:p-9  bg-white shadow-lg border-gray-300">
             <InvoiceCard
               title="Apple Store"
               date="5h ago"

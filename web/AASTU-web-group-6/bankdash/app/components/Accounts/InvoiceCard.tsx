@@ -10,7 +10,7 @@ const InvoiceCard = ({
     title,amount,icon,color,date
 }:props) => {
   return (
-    <div className='flex justify-between items-center mb-8'>
+    <div className='flex justify-between items-center mb-8 overflow-x-visible'>
         <div className='flex items-center gap-3'>
         <div className="border border-solid rounded-2xl  w-[60px] h-[60px] flex justify-center items-center" style={{borderColor: color , backgroundColor:color}}>
 <img src={icon}/>

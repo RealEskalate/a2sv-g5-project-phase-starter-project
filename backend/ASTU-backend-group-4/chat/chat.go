@@ -23,12 +23,12 @@ type Message struct {
 }
 
 type Usecase interface {
-	CreateChat(userID, title string) (Chat, error)
-	DeleteChat(chatID string) error
-	GenerateChatTitle(message Message) (string, error)
-	GetChat(chatID string) (Chat, error)
-	GetChats(pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error)
-	SendMessage(chatID string, message Message) error
+	CreateChat(ctx context.Context, userID, title string) (Chat, error)
+	DeleteChat(ctx context.Context, chatID string) error
+	GenerateChatTitle(ctx context.Context, message Message) (string, error)
+	GetChat(ctx context.Context, chatID string) (Chat, error)
+	GetChats(ctx context.Context, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error)
+	SendMessage(ctx context.Context, chatID string, message Message) error
 }
 
 type Repository interface {

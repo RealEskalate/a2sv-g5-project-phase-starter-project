@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import LoginValue from '@/types/LoginValue';
-import AuthService from '@/app/Services/AuthService';
+import AuthService from '@/app/Services/api/authService';
 
 const LoginForm = () => {
   const [error, setError] = useState("");

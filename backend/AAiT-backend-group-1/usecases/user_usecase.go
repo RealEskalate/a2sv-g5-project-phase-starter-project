@@ -23,30 +23,6 @@ type UserUseCase struct {
 	mailService     mail.EmailService
 }
 
-type ResetPasswordRequest struct {
-	NewPasswor      string `json:"password"`
-	ConfirmPassword string `json:"confirm_password"`
-	Token           string
-}
-
-func NewUserUseCase(userRespository domain.UserRepository, sessionRepository domain.SessionRepository, pwdService infrastructure.PasswprdService, jwtService infrastructure.JWTTokenService, mailServ mail.EmailService) UserUseCase {
-	return UserUseCase{
-		userRepo:        userRespository,
-		sessionRepo:     sessionRepository,
-		passwordService: pwdService,
-		jwtService:      jwtService,
-		mailService:     mailServ,
-	}
-}
-
-func (userUC *UserUseCase) RegisterStart(cxt *gin.Context, user *domain.User) domain.Error {
-	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
-	if errTimeout != nil {
-		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
-	}
-	userRepo domain.UserRepository
-}
-
 func NewUserUseCase(userRespository domain.UserRepository, sessionRepository domain.SessionRepository, pwdService infrastructure.PasswprdService, jwtService infrastructure.JWTTokenService, mailServ mail.EmailService) UserUseCase {
 	return UserUseCase{
 		userRepo:        userRespository,
@@ -68,20 +44,8 @@ func (userUC *UserUseCase) Register(cxt *gin.Context, user *domain.User) domain.
 	if errValidity != nil {
 		return &domain.CustomError{Message: errValidity.Error(), Code: http.StatusBadRequest}
 	}
-
-	existingUser, errRepo := userUC.userRepo.FindByEmail(context, user.Email)
-	if errRepo != nil {
+	if _, errRepo := userUC.userRepo.Create(context, user); errRepo != nil {
 		return errRepo
-	}
-	if existingUser.Email != "" {
-		return &domain.CustomError{Message: "Email already exists", Code: http.StatusBadRequest}
-	}
-	existingUser, errRepo = userUC.userRepo.FindByUsername(context, user.Username)
-	if errRepo != nil {
-		return errRepo
-	}
-	if existingUser.Username != "" {
-		return &domain.CustomError{Message: "Username already exists", Code: http.StatusBadRequest}
 	}
 
 	verificationToken, errVerification := userUC.jwtService.GenerateVerificationToken(user)
@@ -102,56 +66,6 @@ func (userUC *UserUseCase) Register(cxt *gin.Context, user *domain.User) domain.
 	return nil
 }
 
-func (userUC *UserUseCase) RegisterEnd(cxt *gin.Context, token string) domain.Error {
-	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
-	if errTimeout != nil {
-		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
-	}
-	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
-	defer cancel()
-func (userUC *UserUseCase) Login(cxt context.Context, username, password string) (string, domain.Error) {
-	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
-	if errTimeout != nil {
-		return "", &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
-	}
-
-	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
-	defer cancel()
-
-}
-func (userUC *UserUseCase) ForgotPassword(context context.Context, email string) domain.Error {
-	existingUser, err := userUC.userRepo.FindByEmail(context, email)
-	if err != nil {
-		return err
-	}
-
-	parsedToken, errParse := userUC.jwtService.ValidateVerificationToken(token)
-	if errParse != nil {
-		return &domain.CustomError{Message: errParse.Error(), Code: http.StatusBadRequest}
-	}
-
-	claims, ok := parsedToken.Claims.(jwt.MapClaims)
-	if !ok {
-		return &domain.CustomError{Message: "error parsing claims", Code: http.StatusInternalServerError}
-	}
-
-	newUser := domain.User{
-		Username:  claims["username"].(string),
-		Email:     claims["email"].(string),
-		Role:      claims["role"].(string),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		Password:  claims["password"].(string),
-	}
-
-	_, errCreateUser := userUC.userRepo.Create(context, &newUser)
-	if errCreateUser != nil {
-		return errCreateUser
-	}
-
-	return nil
-}
-
 func (userUC *UserUseCase) Login(cxt context.Context, username, password string) (map[string]string, domain.Error) {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
@@ -159,8 +73,8 @@ func (userUC *UserUseCase) Login(cxt context.Context, username, password string)
 	}
 
 
-// 	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
-// 	defer cancel()
+	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
+	defer cancel()
 
 	existingUser, errExisting := userUC.userRepo.FindByUsername(context, username)
 	if errExisting != nil {
@@ -213,7 +127,7 @@ func (userUC *UserUseCase) ForgotPassword(cxt context.Context, email string) dom
 		return err
 	}
 
-	passwordResetToken, errToken := userUC.jwtService.GenerateResetToken(email)
+	passwordResetToken, errToken := userUC.jwtService.GenerateVerificationToken(&domain.User{Email: email})
 	if errToken != nil {
 		return &domain.CustomError{Message: errToken.Error(), Code: http.StatusInternalServerError}
 	}
@@ -223,14 +137,10 @@ func (userUC *UserUseCase) ForgotPassword(cxt context.Context, email string) dom
 		return errSession
 	}
 
-	if errSession != nil {
-		return errSession
-	}
-
 	if existingCheck {
-		errUpdate := userUC.sessionRepo.UpdateToken(context, existingSession.ID.Hex(), &domain.Session{PasswordResetToken: passwordResetToken})
-		if errUpdate != nil {
-			return errUpdate
+		errDelete := userUC.sessionRepo.DeleteToken(context, existingSession.ID.Hex())
+		if errDelete != nil {
+			return errDelete
 		}
 	}
 
@@ -249,57 +159,6 @@ func (userUC *UserUseCase) ForgotPassword(cxt context.Context, email string) dom
 		return &domain.CustomError{Message: errEmail.Error(), Code: http.StatusInternalServerError}
 	}
 
-	return nil
-}
-
-func (userUC *UserUseCase) ResetPassword(newPassword, confirmPassword, token string, cxt *gin.Context) domain.Error {
-	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
-	if errTimeout != nil {
-		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
-	}
-	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
-	defer cancel()
-
-	parsedToken, errParse := userUC.jwtService.ValidateResetToken(token)
-	if errParse != nil {
-		return &domain.CustomError{Message: "error parsing token", Code: http.StatusInternalServerError}
-	}
-
-	claims, ok := parsedToken.Claims.(jwt.MapClaims)
-	if !ok {
-		return &domain.CustomError{Message: "error parsing claims", Code: http.StatusInternalServerError}
-	}
-
-	existingUser, errSearch := userUC.userRepo.FindByEmail(context, claims["email"].(string))
-	if errSearch != nil {
-		return errSearch
-	}
-	session, existenceCheck, errSession := userUC.sessionRepo.FindTokenByUserUsername(context, existingUser.Username)
-	if errSession != nil {
-		return &domain.CustomError{Message: "error while fetching session", Code: http.StatusInternalServerError}
-	}
-
-	if !existenceCheck {
-		return &domain.CustomError{Message: "session not found", Code: http.StatusNotFound}
-	}
-
-	if session.PasswordResetToken != token {
-		return &domain.CustomError{Message: "invalid token", Code: http.StatusUnauthorized}
-	}
-
-	if newPassword != confirmPassword {
-		return &domain.CustomError{Message: "passwords do not match", Code: http.StatusBadRequest}
-	}
-
-	hashedPassword, errHash := userUC.passwordService.HashPassword(newPassword)
-	if errHash != nil {
-		return &domain.CustomError{Message: errHash.Error(), Code: http.StatusInternalServerError}
-	}
-
-	errUpdate := userUC.userRepo.Update(context, existingUser.ID.Hex(), &domain.User{Password: hashedPassword})
-	if errUpdate != nil {
-		return errUpdate
-	}
 	return nil
 }
 
@@ -344,45 +203,6 @@ func (userUC *UserUseCase) Logout(cxt context.Context, token map[string]string) 
 	}
 
 	return nil
-}
-
-func (userUC *UserUseCase) PromoteUser(cxt context.Context, userID string) domain.Error {
-	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
-	if errTimeout != nil {
-		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
-	}
-	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
-	defer cancel()
-
-	promotion := domain.User{
-		Role: "admin",
-	}
-	return userUC.userRepo.Update(context, userID, &promotion)
-}
-
-func (userUC *UserUseCase) DemoteUser(cxt context.Context, userID string) domain.Error {
-	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
-	if errTimeout != nil {
-		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
-	}
-	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
-	defer cancel()
-
-	promotion := domain.User{
-		Role: "user",
-	}
-	return userUC.userRepo.Update(context, userID, &promotion)
-}
-
-func (userUC *UserUseCase) UpdateProfile(cxt context.Context, userID string, user *domain.User) domain.Error {
-	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
-	if errTimeout != nil {
-		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
-	}
-	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
-	defer cancel()
-
-	return userUC.userRepo.Update(context, userID, user)
 }
 
 func (userUC *UserUseCase) PromoteUser(cxt context.Context, userID string) domain.Error {

@@ -49,10 +49,13 @@ const BankServices = [
 const BankServicesList = () => {
   return (
     <div className="flex flex-col gap-4">
-      <p className='text-[#333B69] pb-3 font-semibold'>Bank Services List</p>
+      <p className="text-[#333B69] pb-3 font-semibold">Bank Services List</p>
       <div className="flex flex-col gap-3">
         {BankServices.map((items, index) => (
-          <div key={index} className="grid grid-cols-7 md:grid-cols-7 xl:grid-cols-11 items-center bg-white p-3 rounded-xl">
+          <div
+            key={index}
+            className="grid grid-cols-7 md:grid-cols-7 xl:grid-cols-11 items-center bg-white p-3 rounded-xl"
+          >
             <div className="flex col-span-5 md:col-span-3 items-center gap-3 lg:gap-4">
               <div className="flex relative w-9 h-9 lg:w-12 lg:h-12 items-center">
                 <Image src={items.icon} alt="" fill />

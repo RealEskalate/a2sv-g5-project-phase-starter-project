@@ -220,3 +220,13 @@ func (controller *AuthController) HandleResetPassword(c *gin.Context) {
 
 	c.JSON(200, domain.Response{"message": "Password reset successful"})
 }
+
+func (controller *AuthController) HandleLogout(c *gin.Context) {
+	authHeader, err := controller.GetAuthHeader(c)
+	if err != nil {
+		c.JSON(401, domain.Response{"error": err.Error()})
+		return
+	}
+
+	controller.usecase.Logout(c, c.Keys["username"].(string), authHeader)
+}

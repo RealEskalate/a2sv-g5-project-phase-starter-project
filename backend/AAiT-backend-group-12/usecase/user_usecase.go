@@ -223,7 +223,7 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 		return "", "", domain.NewError("Incorrect password", domain.ERR_UNAUTHORIZED)
 	}
 
-	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Hour*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
 	if err != nil {
 		return "", "", err
 	}
@@ -300,7 +300,7 @@ func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (
 		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
 	}
 
-	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Hour*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
@@ -436,7 +436,7 @@ func (u *UserUsecase) ResetPassword(c context.Context, resetDto dtos.ResetPasswo
 }
 
 func (u *UserUsecase) Logout(c context.Context, username string, accessToken string) domain.CodedError {
-	err := u.cacheRepository.CacheData(accessToken, "", time.Minute*30)
+	err := u.cacheRepository.CacheData(accessToken, "", time.Minute*time.Duration(u.ENV.ACCESS_TOKEN_LIFESPAN))
 	if err != nil {
 		return err
 	}

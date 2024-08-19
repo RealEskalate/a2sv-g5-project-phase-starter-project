@@ -138,8 +138,10 @@ type UserUsecaseInterface interface {
 	VerifyEmail(c context.Context, username string, token string, hostUrl string) CodedError
 	InitResetPassword(c context.Context, username string, email string, hostUrl string) CodedError
 	ResetPassword(c context.Context, resetDto dtos.ResetPassword, token string) CodedError
+	Logout(c context.Context, username string, accessToken string) CodedError
 }
 
 type CacheRepositoryInterface interface {
 	CacheData(key string, value string, expiration time.Duration) CodedError
+	IsCached(key string) bool
 }

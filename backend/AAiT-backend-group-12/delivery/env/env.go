@@ -33,12 +33,12 @@ func LoadEnvironmentVariables() error {
 		return fmt.Errorf("error parsing PORT number: %v", err.Error())
 	}
 
-	accessTkLifespan, err := strconv.ParseInt(os.Getenv("ACCESS_TOKEN_LIFESPAN"), 10, 64)
+	accessTkLifespan, err := strconv.ParseInt(os.Getenv("ACCESS_TOKEN_LIFESPAN_MINUTES"), 10, 64)
 	if err != nil {
 		return fmt.Errorf("error parsing accessTkLifespan number: %v", err.Error())
 	}
 
-	refreshTkLifespan, err := strconv.ParseInt(os.Getenv("REFRESH_TOKEN_LIFESPAN"), 10, 64)
+	refreshTkLifespan, err := strconv.ParseInt(os.Getenv("REFRESH_TOKEN_LIFESPAN_HOURS"), 10, 64)
 	if err != nil {
 		return fmt.Errorf("error parsing refreshTkLifespan number: %v", err.Error())
 	}

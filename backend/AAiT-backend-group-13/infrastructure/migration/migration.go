@@ -10,7 +10,7 @@ import (
 )
 
 // Function to create a composite index
-func createCompositeIndex(collection *mongo.Collection, fieldNames []string, unique bool) {
+func createCompositeIndex(collection *mongo.Collection, fieldNames []string) {
 	keys := bson.D{}
 	for _, fieldName := range fieldNames {
 		keys = append(keys, bson.E{Key: fieldName, Value: 1}) // 1 for ascending order
@@ -18,7 +18,7 @@ func createCompositeIndex(collection *mongo.Collection, fieldNames []string, uni
 
 	indexModel := mongo.IndexModel{
 		Keys:    keys,
-		Options: options.Index().SetUnique(unique),
+		Options: options.Index().SetUnique(true),
 	}
 
 	_, err := collection.Indexes().CreateOne(context.TODO(), indexModel)
@@ -31,56 +31,56 @@ func createCompositeIndex(collection *mongo.Collection, fieldNames []string, uni
 
 // Function to create an index with id and title
 func CreateIndexWithIDAndTitle(collection *mongo.Collection) {
-	createCompositeIndex(collection, []string{"id", "title"}, true)
+	createCompositeIndex(collection, []string{"_id", "title"})
 }
 
 // Function to create an index with id and content
 func CreateIndexWithIDAndContent(collection *mongo.Collection) {
-	createCompositeIndex(collection, []string{"id", "content"}, false)
+	createCompositeIndex(collection, []string{"_id", "content"})
 }
 
 // Function to create an index with id and tags
 func CreateIndexWithIDAndTags(collection *mongo.Collection) {
-	createCompositeIndex(collection, []string{"id", "tags"}, false)
+	createCompositeIndex(collection, []string{"_id", "tags"})
 }
 
 // Function to create an index with id and createdDate
 func CreateIndexWithIDAndCreatedDate(collection *mongo.Collection) {
-	createCompositeIndex(collection, []string{"id", "createdDate"}, false)
+	createCompositeIndex(collection, []string{"_id", "createdDate"})
 }
 
 // Function to create an index with id and updatedDate
 func CreateIndexWithIDAndUpdatedDate(collection *mongo.Collection) {
-	createCompositeIndex(collection, []string{"id", "updatedDate"}, false)
+	createCompositeIndex(collection, []string{"_id", "updatedDate"})
 }
 
 // Function to create an index with id and userid
 func CreateIndexWithIDAndUserID(collection *mongo.Collection) {
-	createCompositeIndex(collection, []string{"id", "userid"}, false)
+	createCompositeIndex(collection, []string{"_id", "userid"})
 }
 
 // Function to create an index with id and likeCount
 func CreateIndexWithIDAndLikeCount(collection *mongo.Collection) {
-	createCompositeIndex(collection, []string{"id", "likeCount"}, false)
+	createCompositeIndex(collection, []string{"_id", "likeCount"})
 }
 
 // Function to create an index with id and disLikeCount
 func CreateIndexWithIDAndDisLikeCount(collection *mongo.Collection) {
-	createCompositeIndex(collection, []string{"id", "disLikeCount"}, false)
+	createCompositeIndex(collection, []string{"_id", "disLikeCount"})
 }
 
 // Function to create an index with id and commentCount
 func CreateIndexWithIDAndCommentCount(collection *mongo.Collection) {
-	createCompositeIndex(collection, []string{"id", "commentCount"}, false)
+	createCompositeIndex(collection, []string{"_id", "commentCount"})
 }
 
 // Function to create an index with id and commentCount
 func CreateIndexWithIDAndFirstName(collection *mongo.Collection) {
-	createCompositeIndex(collection, []string{"id", "firstName"}, false)
+	createCompositeIndex(collection, []string{"_id", "firstName"})
 }
 
 // Function to create an index with id and commentCount
 func CreateIndexWithIDAndLastName(collection *mongo.Collection) {
 
-	createCompositeIndex(collection, []string{"id", "lastName"}, false)
+	createCompositeIndex(collection, []string{"_id", "lastName"})
 }

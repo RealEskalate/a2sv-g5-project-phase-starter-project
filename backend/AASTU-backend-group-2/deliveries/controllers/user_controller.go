@@ -22,7 +22,6 @@ func NewUserController(Usermgr domain.UserUsecase) *UserController {
 	return &UserController{
 		Userusecase: Usermgr,
 	}
-
 }
 
 // RegisterUser is a controller method to register a user

@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -41,7 +42,19 @@ type Blog struct {
 	Author_Info Author             `json:"author_info" bson:"author_info"`
 	Date        time.Time          `json:"date" bson:"date"`
 	Tags        []Tag              `json:"tags" bson:"tags"`
+	Popularity  float64            `json:"popularity" bson:"popularity" `
 	Feedbacks   Feedback           `json:"feedbacks" bson:"feedbacks"`
 	Created_At  time.Time          `json:"created_at" bson:"created_at"`
 	Updated_At  time.Time          `json:"updated_at" bson:"updated_at"`
+}
+
+type BlogRepository interface {
+	// CreateBlog inserts a new blog into the collection
+	CreateBlog(c context.Context, blog *Blog) error
+	// FetchByBlogID retrieves a blog by its ID
+	FetchByBlogID(c context.Context, blogID string) (Blog, error)
+	// FetchByBlogAuthor retrieves blogs by the author's ID
+	FetchByBlogAuthor(c context.Context, authorID string) ([]Blog, error)
+	// FetchByBlogTitle retrieves blogs by their title
+	FetchByBlogTitle(c context.Context, title string) ([]Blog, error)
 }

@@ -1,9 +1,7 @@
 package controllers
 
-
 import (
 	"blog_project/domain"
-	"blog_project/usecases"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +13,6 @@ type userController struct {
 func NewUserController(userUsecase domain.IUser_Usecases) domain.IUser_Controller {
 	return &userController{UserUsecase: userUsecase}
 }
-
 
 func (uc *userController) GetAllUsers(c *gin.Context) {
 	users, err := uc.UserUsecase.GetAllUsers()

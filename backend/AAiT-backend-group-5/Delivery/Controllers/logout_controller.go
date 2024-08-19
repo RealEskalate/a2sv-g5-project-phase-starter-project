@@ -3,10 +3,10 @@ package controllers
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type LogoutController struct {
@@ -22,23 +22,18 @@ func NewLogoutController(logoutUsecase interfaces.LogoutUsecase, jwtService inte
 }
 
 func (logoutController *LogoutController) Logout(ctx *gin.Context) {
-	// get claims from authorization header
+	// get token from authorization header
 	authHeader := ctx.GetHeader("Authorization")
+	token := strings.TrimPrefix(authHeader, "Bearer ")
 
-	claims, err := logoutController.JwtService.GetClaims(authHeader)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errors.New("invalid token"))
-		return
-	}
-
-	// get userId from claims
-	userId, err := primitive.ObjectIDFromHex(claims.ID)
+	// validate token and get JwtCustom from the token
+	JwtCustom, err := logoutController.JwtService.ValidateToken(token)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errors.New("invalid user id"))
 		return
 	}
 
-	e := logoutController.LogoutUsecase.LogoutUser(ctx, userId.Hex())
+	e := logoutController.LogoutUsecase.LogoutUser(ctx, JwtCustom.ID)
 	if e != nil {
 		ctx.JSON(e.Code, e.Error())
 		return

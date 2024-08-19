@@ -21,12 +21,12 @@ func NewBlogRepository(collection database.CollectionInterface) *BlogRepository 
 		collection: collection}
 }
 
-func (BR *BlogRepository) CreateBlogDocument(blog domain.Blog) (domain.Blog, error) {
+func (BR *BlogRepository) CreateBlogDocunent(blog domain.Blog) (domain.Blog, error) {
 	_, err := BR.collection.InsertOne(context.TODO(), blog)
 	return blog, err
 }
 
-func (BR *BlogRepository) GetOneBlogDocument(id string) (domain.Blog, error) {
+func (BR *BlogRepository) GetOneBlogDocunent(id string) (domain.Blog, error) {
 	obId, _ := primitive.ObjectIDFromHex(id)
 	var blog domain.Blog
 	query := bson.M{"_id": obId}
@@ -39,7 +39,7 @@ func (BR *BlogRepository) GetOneBlogDocument(id string) (domain.Blog, error) {
 	return blog, nil
 }
 
-func (BR *BlogRepository) GetBlogDocuments(offset int, limit int) ([]domain.Blog, error) {
+func (BR *BlogRepository) GetBlogDocunents(offset int, limit int) ([]domain.Blog, error) {
 	var blogs []domain.Blog
 
 	options := options.Find()
@@ -63,15 +63,16 @@ func (BR *BlogRepository) GetBlogDocuments(offset int, limit int) ([]domain.Blog
 	return blogs, nil
 }
 
-func (BR *BlogRepository) UpdateBlogDocument(id string, blog domain.Blog) (domain.Blog, error) {
+func (BR *BlogRepository) UpdateBlogDocunent(id string, blog domain.Blog) (domain.Blog, error) {
 	obId, _ := primitive.ObjectIDFromHex(id)
 	_, err := BR.collection.UpdateOne(context.TODO(), bson.M{"_id": obId}, bson.M{"$set": blog})
 	return blog, err
 }
 
-func (BR *BlogRepository) DeleteBlogDocument(id string, userID primitive.ObjectID) error {
+func (BR *BlogRepository) DeleteBlogDocument(id string, userID string) error {
 	obID, _ := primitive.ObjectIDFromHex(id)
-	query := bson.M{"_id": obID, "user._id": userID}
+	userObId,_:= primitive.ObjectIDFromHex(userID)
+	query := bson.M{"_id": obID, "user._id": userObId}
 
 	res, err := BR.collection.DeleteOne(context.TODO(), query)
 	if err != nil {
@@ -85,7 +86,7 @@ func (BR *BlogRepository) DeleteBlogDocument(id string, userID primitive.ObjectI
 	return nil
 }
 
-func (BR *BlogRepository) FilterBlogDocument(filter map[string]string) ([]domain.Blog, error) {
+func (BR *BlogRepository) FilterBlogDocunent(filter map[string]string) ([]domain.Blog, error) {
 	var blogs []domain.Blog
 
 	query := bson.M{}

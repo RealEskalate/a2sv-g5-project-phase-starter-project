@@ -7,8 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
-
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -20,12 +18,12 @@ type UserUsecase interface {
 	UpdateUser(username string, updatedUser *Domain.UpdateUserInput) error
 	DeleteUser(username string) error
 	Login(c *gin.Context, LoginUser *Domain.LoginInput) (string, error)
-	Logout(username string, tokenString string) error
+	Logout(tokenString string) error
 	ForgotPassword(username string) (string, error)
 	Reset(token string) (string, error)
 	UpdatePassword(username string, newPassword string) error
-	PromoteTOAdmin(username string)  (error)
-	Verify (token string) (error)
+	PromoteTOAdmin(username string) error
+	Verify(token string) error
 }
 
 type userUsecase struct {
@@ -60,8 +58,6 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error)
 		return nil, fmt.Errorf("failed to hash password: %v", err)
 	}
 
-	
-
 	user := &Domain.User{
 		Id:             primitive.NewObjectID(),
 		Name:           input.Name,
@@ -76,9 +72,9 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error)
 		PostsIDs:       []string{},
 	}
 
-	if ok , err := u.userRepo.IsDbEmpty() ; ok && err == nil {
+	if ok, err := u.userRepo.IsDbEmpty(); ok && err == nil {
 		user.Role = "admin"
-    } else{
+	} else {
 		user.Role = "user"
 	}
 
@@ -87,7 +83,7 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error)
 		return nil, fmt.Errorf("failed to save user: %v", err)
 	}
 
-	newToken, err := infrastructure.GenerateResetToken(user.Username,[]byte("BlogManagerSecretKey"))
+	newToken, err := infrastructure.GenerateResetToken(user.Username, []byte("BlogManagerSecretKey"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate reset token: %v", err)
 	}
@@ -183,29 +179,18 @@ func (u *userUsecase) Login(c *gin.Context, LoginUser *Domain.LoginInput) (strin
 		return "", fmt.Errorf("failed to store tokens: %v", err)
 	}
 
-	if !user.IsActive  {
+	if !user.IsActive {
 		return "", fmt.Errorf("user not verified")
 	}
 
 	return accessToken, nil
 }
 
-func (u *userUsecase) Logout(username string, tokenString string) error {
-	err := u.userRepo.DeleteToken(username)
+func (u *userUsecase) Logout(tokenString string) error {
+	err := u.userRepo.ExpireToken(tokenString)
 	if err != nil {
 		return err
 	}
-
-	claims, err := infrastructure.ParseToken(tokenString, []byte("BlogManagerSecretKey"))
-	if err != nil {
-		fmt.Println("Error parsing token:", err)
-		return err
-	}
-	claims.ExpiresAt = time.Now().Unix()
-
-	infrastructure.Blacklist.AddToBlacklist(tokenString)
-	fmt.Println(infrastructure.Blacklist.IsTokenBlacklisted(tokenString))
-
 	return nil
 }
 
@@ -237,8 +222,6 @@ func (u *userUsecase) ForgotPassword(username string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to send reset email: %v", err)
 	}
-
-
 
 	return resetToken, nil
 }
@@ -280,24 +263,21 @@ func (u *userUsecase) UpdatePassword(username string, newPassword string) error 
 	return nil
 }
 
-
 func (u *userUsecase) PromoteTOAdmin(username string) error {
 	_, err := u.userRepo.FindByUsername(username)
-    if err!= nil {
-        return errors.New("user not found")
-    }
+	if err != nil {
+		return errors.New("user not found")
+	}
 
-    err = u.userRepo.Update(username, bson.M{"role": "admin"})
-    if err!= nil {
-        return fmt.Errorf("failed to promote user to admin: %v", err)
-    }
+	err = u.userRepo.Update(username, bson.M{"role": "admin"})
+	if err != nil {
+		return fmt.Errorf("failed to promote user to admin: %v", err)
+	}
 
-    return nil
+	return nil
 }
 
-
-
-func (u *userUsecase) Verify (token string) error {
+func (u *userUsecase) Verify(token string) error {
 	claims, err := infrastructure.ParseResetToken(token, []byte("BlogManagerSecretKey"))
 	if err != nil {
 		fmt.Println("Error parsing token:", err)
@@ -305,10 +285,10 @@ func (u *userUsecase) Verify (token string) error {
 
 	user, err := u.userRepo.FindByUsername(claims.Username)
 	if err != nil {
-        return errors.New("user not found")
-    }
+		return errors.New("user not found")
+	}
 	err = u.userRepo.Update(user.Username, bson.M{"is_active": true})
-	if err != nil{
+	if err != nil {
 		return fmt.Errorf("failed to verify user: %v", err)
 	}
 	return nil

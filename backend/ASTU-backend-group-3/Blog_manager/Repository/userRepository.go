@@ -3,6 +3,7 @@ package Repository
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"context"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -17,7 +18,7 @@ type UserRepository interface {
 	Delete(userID string) error
 	IsDbEmpty() (bool, error)
 	InsertToken(username string, accessToke string, refreshToken string) error
-	DeleteToken(username string) error
+	ExpireToken(token string) error
 }
 
 type userRepository struct {
@@ -84,6 +85,7 @@ func (r *userRepository) InsertToken(username string, accessToke string, refresh
 		Username:     username,
 		AccessToken:  accessToke,
 		RefreshToken: refreshToken,
+		ExpiresAt:    time.Now().Add(2 * time.Hour),
 	}
 	_, err := r.tokenCollection.InsertOne(context.TODO(), token)
 
@@ -94,11 +96,22 @@ func (r *userRepository) InsertToken(username string, accessToke string, refresh
 	return nil
 }
 
-func (r *userRepository) DeleteToken(username string) error {
-	filter := bson.M{"username": username}
-	_, err := r.tokenCollection.DeleteOne(context.TODO(), filter)
+func (r *userRepository) ExpireToken(token string) error {
+	// Define the filter to find the token
+	filter := bson.M{"access_token": token}
+
+	// Define the update to set the ExpiresAt field to the current time
+	update := bson.M{
+		"$set": bson.M{
+			"expires_at": time.Now().Unix(), // Assuming ExpiresAt is stored as a Unix timestamp
+		},
+	}
+
+	// Perform the update operation
+	_, err := r.tokenCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

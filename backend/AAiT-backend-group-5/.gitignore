@@ -31,6 +31,8 @@ build/
 *.swp
 *~
 
+test.go
+
 # macOS specific files
 .DS_Store
 

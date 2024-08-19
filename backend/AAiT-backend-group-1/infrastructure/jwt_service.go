@@ -20,6 +20,26 @@ type JWTTokenService struct {
 
 func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User) (string, error) {
 	claim := jwt.MapClaims{
+		"id":   user.ID,
+		"role": user.Role,
+		"exp":  time.Now().Add(time.Minute * 15).Unix(),
+		"iat":  time.Now().Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	jwtToken, err := token.SignedString(service.AccessSecret)
+	if err != nil {
+		return "", err
+	}
+	return jwtToken, nil
+type JWTTokenService struct {
+	AccessSecret  string
+	RefreshSecret string
+	Collection    *mongo.Collection
+}
+
+func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User) (string, error) {
+	claim := jwt.MapClaims{
 		"user_id":  user.ID.Hex(),
 		"username": user.Username,
 		"role":     user.Role,
@@ -41,13 +61,8 @@ func (service *JWTTokenService) GenerateRefreshTokenWithPayload(user domain.User
 		"exp": time.Now().Add(time.Minute * 15).Unix(),
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
-	jwtToken, err := token.SignedString(service.RefreshSecret)
-	if err != nil {
-		return "", err
-	}
-
-	return jwtToken, nil
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(j.secretKey))
 }
 
 func (service *JWTTokenService) ValidateAccessToken(token string) (*jwt.Token, error) {

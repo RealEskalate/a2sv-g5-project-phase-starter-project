@@ -8,5 +8,4 @@ import (
 
 type SignupUsecase interface {
 	CreateUser(ctx context.Context, user *models.User) *models.ErrorResponse
-	GetUserByID(ctx context.Context, id string) (*models.User, *models.ErrorResponse)
 }

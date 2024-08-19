@@ -7,5 +7,5 @@ import (
 )
 
 type LogoutUsecase interface {
-	LogoutUser(ctx context.Context, userID string, tokenStr string) *models.ErrorResponse
+	LogoutUser(ctx context.Context, userID string) *models.ErrorResponse
 }

@@ -38,7 +38,7 @@ export const signUpSchema = z.object({
   dateOfBirth: z.string(),
   permanentAddress: z.string(),
   postalCode: z.string(),
-  userName: z.string().min(2).max(50),
+  username: z.string().min(2).max(50),
   password: z.string().min(8),
   presentAddress: z.string(),
   city: z.string(),

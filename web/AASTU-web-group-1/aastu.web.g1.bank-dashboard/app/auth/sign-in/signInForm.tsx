@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -17,8 +17,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { signInSchema } from "@/schema";
+import { useRouter } from "next/navigation";
 
 export const SignInForm = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const form = useForm({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -27,12 +31,27 @@ export const SignInForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof signInSchema>) => {
-    signIn("credentials", {
-      userName: values.userName,
-      password: values.password,
-      redirect: false,
-    });
+  const onSubmit = async (values: z.infer<typeof signInSchema>) => {
+    setLoading(true);
+    try {
+      const result = await signIn("credentials", {
+        userName: values.userName,
+        password: values.password,
+        redirect: false,
+      });
+      console.log(result);
+      if (result?.error) {
+        console.error("Sign-in error:", result.error);
+        setError(result.error);
+      } else {
+        console.log("Sign-in successful");
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -88,15 +107,19 @@ export const SignInForm = () => {
 
           {/* Submit Button */}
           <Button
+            disabled={loading}
             type="submit"
             className="bg-primaryBlue rounded-2xl mt-12 w-full"
           >
-            Sign In
+            {loading ? "Signing In..." : "Sign In"}
           </Button>
+          <p className="text-red-500 text-sm text-center">
+            {error && "Something went wrong. Please try again"}
+          </p>
         </form>
       </Form>
       <Link href="/auth/sign-up" className="text-sm text-center text-blue-400">
-        Don&apos;t have an account? Sign in
+        Don&apos;t have an account? Sign Up
       </Link>
     </div>
   );

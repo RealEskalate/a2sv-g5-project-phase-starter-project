@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -25,8 +25,14 @@ import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
 import Link from "next/link";
 import { signUpSchema } from "@/schema/index";
+import ky from "ky";
+import { useRouter } from "next/navigation";
 
 export const SignUpForm = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
   const form = useForm({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -35,7 +41,7 @@ export const SignUpForm = () => {
       dateOfBirth: "",
       permanentAddress: "",
       postalCode: "",
-      userName: "",
+      username: "",
       password: "",
       presentAddress: "",
       city: "",
@@ -52,9 +58,31 @@ export const SignUpForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof signUpSchema>) => {
-    console.log("123");
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
+    setLoading(true);
+    try {
+      const res: { success: boolean; message: string } = await ky
+        .post("https://bank-dashboard-6acc.onrender.com/auth/register", {
+          json: values,
+        })
+        .json();
+      if (res.success) {
+        router.push("/auth/sign-in");
+      }
+      if (!res.success) {
+        setError(res.message);
+      }
+    } catch (error) {
+      if (error) {
+        const errorResponse = await (error as any)?.response.json();
+        setError(errorResponse.message);
+        console.error("Error response:", errorResponse);
+      } else {
+        console.error("Unexpected error:", error);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -187,7 +215,7 @@ export const SignUpForm = () => {
           {/* Username */}
           <FormField
             control={form.control}
-            name="userName"
+            name="username"
             render={({ field }: { field: object }) => (
               <FormItem className="mb-1">
                 <FormLabel>Username</FormLabel>
@@ -399,11 +427,13 @@ export const SignUpForm = () => {
           />
           {/* Submit Button */}
           <Button
+            disabled={loading}
             type="submit"
             className="bg-primaryBlue rounded-2xl mt-12 w-full"
           >
-            Register
+            {loading ? "Registering..." : "Register"}
           </Button>
+          <p className="text-sm text-center text-red-500">{error}</p>
         </form>
       </Form>
       <Link href="/auth/sign-in" className="text-sm text-center text-blue-400">

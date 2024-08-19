@@ -12,14 +12,14 @@ import (
 
 // Handler handles the logic for sending password reset codes.
 type Handler struct {
-	userrepo irepo.User
+	userrepo irepo.UserRepository
 }
 
 // Ensure Handler implements the icmd.IHandler interface.
 var _ icmd.IHandler[string, time.Time] = &Handler{}
 
 // New creates a new instance of Handler.
-func New(userrepo irepo.User) *Handler {
+func New(userrepo irepo.UserRepository) *Handler {
 	return &Handler{userrepo: userrepo}
 }
 

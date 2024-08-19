@@ -173,7 +173,6 @@ func (b *Blog) UpdateTitle(config Config) error {
 	}
 
 	b.title = config.Title
-	b.updatedDate = time.Now()
 	return nil
 }
 
@@ -185,13 +184,11 @@ func (b *Blog) UpdateContent(config Config) error {
 	}
 
 	b.content = config.Content
-	b.updatedDate = time.Now()
 	return nil
 }
 
 // UpdateTags updates the blog's tags.
 func (b *Blog) UpdateTags(config Config) error {
 	b.tags = config.Tags
-	b.updatedDate = time.Now()
 	return nil
 }

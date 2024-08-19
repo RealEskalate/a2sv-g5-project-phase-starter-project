@@ -22,7 +22,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	db := client.Database("blog_project")
+	db := client.Database(os.Getenv("DB_NAME"))
 	router.NewRouter(db)
 
 }

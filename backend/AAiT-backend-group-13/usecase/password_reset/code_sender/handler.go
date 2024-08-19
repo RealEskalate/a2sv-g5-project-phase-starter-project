@@ -10,16 +10,21 @@ import (
 	irepo "github.com/group13/blog/usecase/common/i_repo"
 )
 
+// Handler handles the logic for sending password reset codes.
 type Handler struct {
 	userrepo irepo.User
 }
 
+// Ensure Handler implements the icmd.IHandler interface.
 var _ icmd.IHandler[string, time.Time] = &Handler{}
 
+// New creates a new instance of Handler.
 func New(userrepo irepo.User) *Handler {
 	return &Handler{userrepo: userrepo}
 }
 
+// Handle generates and sets a password reset code for the user identified by the given email.
+// It returns the expiration time of the reset code or an error if the process fails.
 func (h *Handler) Handle(email string) (time.Time, error) {
 	user, err := h.userrepo.FindByUsername(email)
 	if err != nil {

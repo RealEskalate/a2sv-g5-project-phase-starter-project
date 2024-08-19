@@ -7,10 +7,7 @@ import (
 )
 type SignupController struct {
 	SignupUsecase domain.SignupUseCase
-
-	
 }
-
 
 func (s *SignupController) Signup(c *gin.Context) {	
 	var user domain.User
@@ -38,11 +35,8 @@ func (s *SignupController) VerifyOTP(c *gin.Context) {
 
 }
 
-func (s *SignupController) GoogleAuth(c *gin.Context) {
-	
-	
 
-}
+
 
 
 func (s *SignupController) ForgotPassword(c *gin.Context) {

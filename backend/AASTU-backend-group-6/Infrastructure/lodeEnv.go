@@ -19,6 +19,11 @@ type Config struct {
 	RefreshTokenExpiryHour int
 	AccessTokenSecret      string
 	RefreshTokenSecret     string
+	ClientID			   string
+	ClientSecret		   string
+	RedirectURL			   string
+	OauthSecret			   string
+
 }
 
 func LoadEnv() (*Config, error) {
@@ -38,6 +43,13 @@ func LoadEnv() (*Config, error) {
 	refreshTokenExpiryHourStr := os.Getenv("REFRESH_TOKEN_EXPIRY_HOUR")
 	accessTokenSecret := os.Getenv("ACCESS_TOKEN_SECRET")
 	refreshTokenSecret := os.Getenv("REFRESH_TOKEN_SECRET")
+	clientId	:= os.Getenv("CLIENT_ID")
+	clientSecret	:= os.Getenv("CLIENT_SECRET")
+	redirectURL	:= os.Getenv("REDIRECT_URI")
+	oauthSecret	:= os.Getenv("OAUTH_STATE_STRING")
+	
+
+
 
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
@@ -74,6 +86,10 @@ func LoadEnv() (*Config, error) {
 		RefreshTokenExpiryHour: refreshTokenExpiryHour,
 		AccessTokenSecret:      accessTokenSecret,
 		RefreshTokenSecret:     refreshTokenSecret,
+		ClientID:				clientId,
+		ClientSecret:			clientSecret,
+		RedirectURL:			redirectURL,
+		OauthSecret:			oauthSecret,
 	}
 
 	return config, nil

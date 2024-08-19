@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+
 type UserRepository struct {
 	database   mongo.Database
 	collection string

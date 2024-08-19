@@ -1,8 +1,7 @@
-package usecases
+package usecase
 
 import (
 	"astu-backend-g1/domain"
-	"fmt"
 	"strings"
 	"time"
 )
@@ -15,7 +14,7 @@ func NewBlogUsecase(repo domain.BlogRepository) *BlogUsecase {
 	return &BlogUsecase{blogRepository: repo}
 }
 
-func (uc *BlogUsecase) CreateBLog(title, content, authorId, date, tags string) {
+func (uc *BlogUsecase) CreateBLog(title, content, authorId, date, tags string) (domain.Blog, error) {
 	tagList := strings.Split(tags, ",")
 	theDate, err := time.Parse("2006-01-02", date)
 	if err != nil {
@@ -28,20 +27,22 @@ func (uc *BlogUsecase) CreateBLog(title, content, authorId, date, tags string) {
 		Date:     theDate,
 		Tags:     tagList,
 	}
-	uc.blogRepository.Create(blogData)
+	blog, err := uc.blogRepository.Create(blogData)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	return blog, nil
 }
 
-func (uc *BlogUsecase) GetAllBlogs() {
+func (uc *BlogUsecase) GetAllBlogs() ([]domain.Blog, error) {
 	blogs, err := uc.blogRepository.Get(domain.BlogFilterOption{})
 	if err != nil {
-		panic(err)
+		return []domain.Blog{}, err
 	}
-	for _, blog := range blogs {
-		fmt.Println(blog)
-	}
+	return blogs, nil
 }
 
-func (uc *BlogUsecase) FilterBlogs(title, id, date, tags, authorId string, LikeSort, DislikeSort, CommentSort, ViewSort int) {
+func (uc *BlogUsecase) FilterBlogs(title, id, date, tags, authorId string, LikeSort, DislikeSort, CommentSort, ViewSort int) ([]domain.Blog, error) {
 	filter := domain.BlogFilterOption{}
 	if title != "" {
 		filter.Filter.Title = title
@@ -67,10 +68,14 @@ func (uc *BlogUsecase) FilterBlogs(title, id, date, tags, authorId string, LikeS
 	filter.Order.Dislikes = DislikeSort
 	filter.Order.Comments = CommentSort
 	filter.Order.Views = ViewSort
-	uc.blogRepository.Get(filter)
+	blogs, err := uc.blogRepository.Get(filter)
+	if err != nil {
+		return []domain.Blog{}, err
+	}
+	return blogs, nil
 }
 
-func (uc *BlogUsecase) UpdateBLog(blogId, updateTitle, updateContent, updateAuthorId, updateTags, updateLikes, updateView, updateDislikes string) {
+func (uc *BlogUsecase) UpdateBLog(blogId, updateTitle, updateContent, updateAuthorId, updateTags, updateLikes, updateView, updateDislikes string) (domain.Blog, error) {
 	updateBlog := domain.Blog{}
 	if updateTitle != "" {
 		updateBlog.Title = updateTitle
@@ -94,43 +99,87 @@ func (uc *BlogUsecase) UpdateBLog(blogId, updateTitle, updateContent, updateAuth
 	if updateDislikes != "" {
 		updateBlog.Dislikes = strings.Split(updateDislikes, ",")
 	}
-	uc.blogRepository.Update(blogId, updateBlog)
+	blog, err := uc.blogRepository.Update(blogId, updateBlog)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	return blog, nil
 }
-func (uc *BlogUsecase) DeleteBLog(blogId string) {
-	uc.blogRepository.Delete(blogId)
-}
-
-func (uc *BlogUsecase) LikeBlog(blogId, userId string) {
-	uc.blogRepository.LikeOrDislikeBlog(blogId, userId, 1)
-}
-func (uc *BlogUsecase) DislikeBlog(blogId, userId string) {
-	uc.blogRepository.LikeOrDislikeBlog(blogId, userId, -1)
-}
-func (uc *BlogUsecase) ViewBlogs(blogId, userId string) {
-	uc.blogRepository.LikeOrDislikeBlog(blogId, userId, 0)
+func (uc *BlogUsecase) DeleteBLog(blogId string) error {
+	err := uc.blogRepository.Delete(blogId)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (uc *BlogUsecase) LikeComment(blogId, commentId, userId string) {
-	uc.blogRepository.LikeOrDislikeComment(blogId, commentId, userId, 1)
+func (uc *BlogUsecase) LikeBlog(blogId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeBlog(blogId, userId, 1)
+	if err != nil {
+		return err
+	}
+	return nil
 }
-func (uc *BlogUsecase) DislikeComment(blogId, commentId, userId string) {
-	uc.blogRepository.LikeOrDislikeComment(blogId, commentId, userId, -1)
+func (uc *BlogUsecase) DislikeBlog(blogId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeBlog(blogId, userId, -1)
+	if err != nil {
+		return err
+	}
+	return nil
 }
-func (uc *BlogUsecase) ViewComment(blogId, commentId, userId string) {
-	uc.blogRepository.LikeOrDislikeComment(blogId, commentId, userId, 0)
+func (uc *BlogUsecase) ViewBlogs(blogId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeBlog(blogId, userId, 0)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (uc *BlogUsecase) LikeReply(blogId, commentId, replyId, userId string) {
-	uc.blogRepository.LikeOrDislikeReply(blogId, commentId, replyId, userId, 1)
+func (uc *BlogUsecase) LikeComment(blogId, commentId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeComment(blogId, commentId, userId, 1)
+	if err != nil {
+		return err
+	}
+	return nil
 }
-func (uc *BlogUsecase) DislikeReply(blogId, commentId, replyId, userId string) {
-	uc.blogRepository.LikeOrDislikeReply(blogId, commentId, replyId, userId, -1)
+func (uc *BlogUsecase) DislikeComment(blogId, commentId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeComment(blogId, commentId, userId, -1)
+	if err != nil {
+		return err
+	}
+	return nil
 }
-func (uc *BlogUsecase) ViewReply(blogId, commentId, replyId, userId string) {
-	uc.blogRepository.LikeOrDislikeReply(blogId, commentId, replyId, userId, 0)
+func (uc *BlogUsecase) ViewComment(blogId, commentId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeComment(blogId, commentId, userId, 0)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (uc *BlogUsecase) AddComment(content, blogId, authorId string) {
+func (uc *BlogUsecase) LikeReply(blogId, commentId, replyId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeReply(blogId, commentId, replyId, userId, 1)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (uc *BlogUsecase) DislikeReply(blogId, commentId, replyId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeReply(blogId, commentId, replyId, userId, -1)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (uc *BlogUsecase) ViewReply(blogId, commentId, replyId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeReply(blogId, commentId, replyId, userId, 0)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (uc *BlogUsecase) AddComment(content, blogId, authorId string) error {
 	comment := domain.Comment{
 		Content:  content,
 		AuthorId: authorId,
@@ -140,7 +189,11 @@ func (uc *BlogUsecase) AddComment(content, blogId, authorId string) {
 		Views:    []string{},
 		Replies:  []domain.Reply{},
 	}
-	uc.blogRepository.AddComment(blogId, comment)
+	err := uc.blogRepository.AddComment(blogId, comment)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // func (uc *BlogUsecase) GetComments()    {

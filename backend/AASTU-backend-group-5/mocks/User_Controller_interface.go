@@ -92,32 +92,12 @@ func (_m *User_Controller_interface) GetUsers() gin.HandlerFunc {
 	return r0
 }
 
-// LogIn provides a mock function with given fields:
-func (_m *User_Controller_interface) LogIn() gin.HandlerFunc {
+// UpdatePassword provides a mock function with given fields:
+func (_m *User_Controller_interface) UpdatePassword() gin.HandlerFunc {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
-		panic("no return value specified for LogIn")
-	}
-
-	var r0 gin.HandlerFunc
-	if rf, ok := ret.Get(0).(func() gin.HandlerFunc); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(gin.HandlerFunc)
-		}
-	}
-
-	return r0
-}
-
-// Register provides a mock function with given fields:
-func (_m *User_Controller_interface) Register() gin.HandlerFunc {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for Register")
+		panic("no return value specified for UpdatePassword")
 	}
 
 	var r0 gin.HandlerFunc

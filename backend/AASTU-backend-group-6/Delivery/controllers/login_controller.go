@@ -33,6 +33,10 @@ func (lc *LoginController) Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Invalid credentials"})
 		return
 	}
+	if !user.Verified {
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "User not verified"})
+		return
+	}
 
 	accessToken, err := lc.LoginUsecase.CreateAccessToken(&user, lc.Env.AccessTokenSecret, lc.Env.AccessTokenExpiryHour)
 	if err != nil {
@@ -45,7 +49,12 @@ func (lc *LoginController) Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
-	err=lc.LoginUsecase.SaveAsActiveUser(user, refreshToken, c)
+	activeUser:= domain.ActiveUser{
+		ID: user.ID,
+		RefreshToken: refreshToken,
+		UserAgent: c.Request.UserAgent(),
+	}
+	err = lc.LoginUsecase.SaveAsActiveUser(activeUser, refreshToken, c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error(), Status: http.StatusInternalServerError})
 		return

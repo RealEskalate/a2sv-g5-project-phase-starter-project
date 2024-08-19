@@ -9,13 +9,15 @@ import (
 	jwt "github.com/golang-jwt/jwt/v4"
 )
 
+
 func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry))
 
 	// Create claims
 	claims := &domain.JwtCustomClaims{
-		Name: user.Full_Name,
+		UserName: user.Username,
 		ID:   user.ID.Hex(),
+		Role : user.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(exp), // Convert expiration time to *jwt.NumericDate
 		},
@@ -76,4 +78,28 @@ func ExtractIDFromToken(requestToken string, secret string) (string, error) {
 	}
 
 	return claims["id"].(string), nil
+}
+
+
+func ExtractFromToken(requestToken string, secret string) (domain.JwtCustomClaims, error) {
+	token, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(secret), nil
+	})
+
+	if err != nil {
+		return domain.JwtCustomClaims{}, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok && !token.Valid {
+		return domain.JwtCustomClaims{}, fmt.Errorf("invalid token")
+	}
+	return domain.JwtCustomClaims{
+		UserName: claims["user_name"].(string),
+		ID:   claims["id"].(string),
+		Role: claims["role"].(string),
+	}, nil
 }

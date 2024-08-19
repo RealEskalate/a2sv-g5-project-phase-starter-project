@@ -1,4 +1,4 @@
-package repository
+package repositories
 
 import (
 	domain "aait-backend-group4/Domain"
@@ -28,6 +28,49 @@ func NewBlogRepository(db mongo.Database, collection string) domain.BlogReposito
 		database:   db,
 		collection: collection,
 	}
+}
+
+func (br *blogRepository) SearchBlogs(c context.Context, filter domain.Filter) ([]domain.Blog, error) {
+	var blogs []domain.Blog
+
+	// Create MongoDB filter
+	mongoFilter := bson.M{}
+	if filter.AuthorName != nil {
+		mongoFilter["author_info.name"] = *filter.AuthorName
+	}
+	if filter.Tags != nil {
+		mongoFilter["tags"] = bson.M{"$in": *filter.Tags}
+	}
+	if filter.BlogTitle != nil {
+		mongoFilter["title"] = *filter.BlogTitle
+	}
+	if filter.Popularity != nil {
+		mongoFilter["popularity"] = *filter.Popularity
+	}
+
+	// Create find options with sorting
+	findOptions := options.Find()
+	if filter.Sort_By != nil {
+		switch *filter.Sort_By {
+		case domain.FilterParam("date"):
+			findOptions.SetSort(bson.D{{Key: "created_at", Value: 1}}) // 1 for ascending, -1 for descending
+		case domain.FilterParam("popularity"):
+			findOptions.SetSort(bson.D{{Key: "popularity", Value: -1}}) // -1 for descending
+		}
+	}
+
+	// Execute the query
+	cursor, err := br.database.Collection(br.collection).Find(c, mongoFilter, findOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	err = cursor.All(c, &blogs)
+	if err != nil {
+		return nil, err
+	}
+
+	return blogs, nil
 }
 
 // CreateBlog inserts a new blog into the collection

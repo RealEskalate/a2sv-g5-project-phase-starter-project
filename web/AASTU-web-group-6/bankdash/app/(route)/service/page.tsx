@@ -26,15 +26,16 @@ const Services = () => {
   ];
   const [services, setServices] = useState<BankService[]>([]);
   const [pageNumber, setPageNumber] = useState(1);
+  const accessToken =
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiZXRzZWxvdCIsImlhdCI6MTcyNDA3OTU4NCwiZXhwIjoxNzI0MTY1OTg0fQ.BNYNyfJ31Y6rEe36T3NswXh--osgvHtfQQ4TreVTVDBZIhev6TesU1HArRTFTqH_";
 
-  async function fetchData() {
+  async function fetchData(accessToken: string) {
     try {
       const response = await axios.get(
         `https://bank-dashboard-6acc.onrender.com/bank-services?page=0&size=6`,
         {
           headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiZXRzZWxvdCIsImlhdCI6MTcyNDA1NzM4NCwiZXhwIjoxNzI0MTQzNzg0fQ.llmB9jgsJp_N5198BSUMB5-ypOEPNC1uLYCSAXbgVSfnCVpOwoEz1161x_ltS2AX",
+            Authorization: `Bearer ${accessToken}`,
           },
         }
       );
@@ -46,27 +47,27 @@ const Services = () => {
   }
 
   useEffect(() => {
-    fetchData();
+    fetchData(accessToken);
   }, []);
 
   return (
-    <div>
-      <div className="flex gap-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:pl-10 lg:pt-10">
-        <div className="sm:min-w-[30%]">
+    <div className="ml-5 lg:ml-0 ">
+      <div className="mr-5 lg:mr-0 flex gap-10 overflow-x-auto lg:overflow-x-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:pl-10 lg:pt-10">
+        <div className="w-[75%] lg:min-w-[30%]">
           <ServicesCard
             img="/assets/lifeInsurance.svg"
             title="Life Insurance"
             desc="Unlimited Protection"
           />
         </div>
-        <div className="sm:min-w-[30%]">
+        <div className="w-[75%] lg:min-w-[30%]">
           <ServicesCard
             img="/assets/shoppingBag.svg"
             title="Shopping"
             desc="Buy. Think. Grow"
           />
         </div>
-        <div className="sm:min-w-[30%]">
+        <div className="w-[75%] lg:min-w-[30%]">
           <ServicesCard
             img="/assets/safety.svg"
             title="Safety"
@@ -76,10 +77,10 @@ const Services = () => {
       </div>
 
       <div>
-        <p className="font-semibold text-[22px] text-[#343C6A] pt-5 pb-5 lg:p-10">
+        <p className="font-semibold text-[22px] text-[#343C6A] pt-5 pb-5 lg:p-10 ">
           Bank Services List
         </p>
-        <div>
+        <div className="sm:w-fit lg:w-full">
           {services.length > 0 ? (
             services.map((service, index) => (
               <DescriptionCard
@@ -98,7 +99,7 @@ const Services = () => {
               />
             ))
           ) : (
-            <p>No services available</p>
+            <p className="pl-10">No services available</p>
           )}
         </div>
       </div>

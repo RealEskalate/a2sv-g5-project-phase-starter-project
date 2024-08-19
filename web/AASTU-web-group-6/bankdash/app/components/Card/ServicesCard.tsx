@@ -8,7 +8,7 @@ interface ServicesCardProps {
 
 const ServicesCard: React.FC<ServicesCardProps> = ({ img, title, desc }) => {
   return (
-    <div className="flex items-center justify-center h-28 gap-5 bg-white border rounded-3xl min-w-[300px]">
+    <div className="flex items-center justify-center h-28 gap-5 bg-white border rounded-3xl">
       <img className="p-2" src={img} alt="" />
       <div>
         <p className="font-semibold text-xl text-[#232323]">{title}</p>

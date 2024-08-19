@@ -1,12 +1,5 @@
-interface UserPreference {
-    currency: string;
-    sentOrReceiveDigitalCurrency: boolean;
-    receiveMerchantOrder: boolean;
-    accountRecommendations: boolean;
-    timeZone: string;
-    twoFactorAuthentication: boolean;
-  }
-  
+import UserPreferenceValue from "./UserPreferenceValue";
+
   interface UserValue {
     name: string;
     email: string;
@@ -15,12 +8,11 @@ interface UserPreference {
     postalCode: string;
     username: string;
     password: string;
-    confirmPassword: string;
     presentAddress: string;
     city: string;
     country: string;
     profilePicture: string;
-    preference: UserPreference;
+    preference: UserPreferenceValue;
   }
   
   export default UserValue;

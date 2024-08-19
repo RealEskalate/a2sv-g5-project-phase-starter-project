@@ -22,7 +22,8 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["cards", "transactions"], // Persist the cards slice
+  // whitelist: ["cards", "transactions"], // Persist the cards slice
+  // whitelist: [], // Persist the cards slice
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

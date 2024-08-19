@@ -2,6 +2,8 @@ package Usecase
 
 import (
 	domain "AAiT-backend-group-8/Domain"
+	"fmt"
+	"log"
 
 	"crypto/rand"
 	"encoding/hex"
@@ -151,8 +153,10 @@ func (uuc *UserUseCaseImpl) RefreshToken(email, refresher string) (string, error
 
 func (uuc *UserUseCaseImpl) Login(email string, password string) (string, string, error) {
 	//Get user's hashedPassword from the database
+	fmt.Print("email and password", email, password)
 	user, err := uuc.userRepository.GetUserByEmail(email)
 	if err != nil {
+		log.Fatal(err)
 		return "", "", errors.New("incorrect email or password")
 	}
 

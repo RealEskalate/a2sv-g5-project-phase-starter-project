@@ -2,6 +2,7 @@ package Controller
 
 import (
 	"AAiT-backend-group-8/Domain"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -52,26 +53,43 @@ func (h *UserHandler) VerifyEmail(c *gin.Context) {
 }
 
 func (h *UserHandler) Login(c *gin.Context) {
-	type email_pass struct {
-		email    string
-		password string
+	type EmailPass struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 
-	var ep email_pass
+	var ep EmailPass
 
-	bind_err := c.BindJSON(&ep)
-	if bind_err != nil {
+	bindErr := c.BindJSON(&ep)
+	if bindErr != nil {
 		c.IndentedJSON(400, gin.H{"message": "invalid request payload"})
 		return
 	}
 
-	token, refresher, err := h.UserUsecase.Login(ep.email, ep.password)
+	fmt.Printf("Received payload: %v\n", ep)
 
+	token, refresher, err := h.UserUsecase.Login(ep.Email, ep.Password)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.IndentedJSON(http.StatusOK, gin.H{"token": token, "refresher": refresher})
+}
+
+func (h *UserHandler) RefreshToken(c *gin.Context) {
+	var cred Domain.Credential
+
+	bind_err := c.BindJSON(&cred)
+	if bind_err != nil {
+		c.IndentedJSON(400, gin.H{"message": "invalid request payload"})
+		return
+	}
+
+	token, err := h.UserUsecase.RefreshToken(cred.Email, cred.Refresher)
+	if err != nil {
+		c.IndentedJSON(400, gin.H{"message": "invalid refresh token "})
+	}
+	c.IndentedJSON(http.StatusOK, gin.H{"token": token})
 
 }

@@ -20,8 +20,9 @@ func main() {
 	ts := infrastructure.NewTokenService(SECRET_KEY)
 	ps := infrastructure.NewPasswordService()
 	tr := repository.NewTokenRepository(token_collection, context.TODO())
+	ms:= infrastructure.NewMailService()
 
-	userUseCase := Usecase.NewUserUseCase(userRepo, ts, ps, tr)
+	userUseCase := Usecase.NewUserUseCase(userRepo, ts, ps, tr,ms)
 
 	userHandler := Controller.NewUserHandler(userUseCase)
 	r := Router.InitRouter(userHandler)

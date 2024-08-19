@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	// "blog/delivery/middleware"
 )
 
 func NewLogoutRouter(env *config.Env, timeout time.Duration, db database.Database, r *gin.RouterGroup) {
@@ -18,6 +19,6 @@ func NewLogoutRouter(env *config.Env, timeout time.Duration, db database.Databas
     logoutController := &controller.LogoutController{
         LogoutUsecase: logoutUsecase,
     }
-
+	// r.Use(middleware.AuthMidd)
     r.POST("/logout", logoutController.Logout)
 }

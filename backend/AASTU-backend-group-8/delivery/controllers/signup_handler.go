@@ -35,7 +35,7 @@ func (sc *SignupController) Signup(c *gin.Context) {
 	}
 
 	// Check if username already exists
-	existingUser, _ = sc.userUsecase.GetUserByUsername(&user.Name)
+	existingUser, _ = sc.userUsecase.GetUserByUsername(user.Name)
 	if existingUser != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
 		return

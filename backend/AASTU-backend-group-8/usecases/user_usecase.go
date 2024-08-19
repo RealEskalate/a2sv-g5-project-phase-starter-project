@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"errors"
+	"fmt"
 	"meleket/domain"
 	"meleket/infrastructure"
 	"time"
@@ -52,7 +53,7 @@ func (u *UserUsecase) Register(user *domain.User) error {
 }
 
 
-func (u *UserUsecase) GetUserByUsername(username *string) (*domain.User, error) {
+func (u *UserUsecase) GetUserByUsername(username string) (*domain.User, error) {
 	return u.userRepo.GetUserByUsername(username)
 }
 
@@ -60,33 +61,12 @@ func (u *UserUsecase) GetUserByEmail(email *string) (*domain.User, error) {
 	return u.userRepo.GetUserByEmail(email)
 }
 
-
-func (u *UserUsecase) GetProfile(objectID primitive.ObjectID) (*domain.Profile, error) {
-	return nil, nil
-}
-
-func (u *UserUsecase) UpdateProfile(objectID primitive.ObjectID, profile *domain.Profile) (*domain.Profile, error) {
-	updatedProfile, err := u.userRepo.UpdateProfile(objectID, profile)
-	return updatedProfile, err
-}
-
-func (u *UserUsecase) GetAllUsers() ([]*domain.User, error) {
-	users, err := u.userRepo.GetAllUsers()
-	return users, err
-}
-
-// DeleteUser deletes a user by ID
-func (u *UserUsecase) DeleteUser(objectID primitive.ObjectID) error {
-	return u.userRepo.DeleteUser(objectID)
-}
-
-
 // Login authenticates a user and returns JWT and refresh tokens if successful
 func (u *UserUsecase) Login(authUser *domain.AuthUser) (string, string, error) {
-
-	user, err := u.userRepo.GetUserByUsername(&authUser.Username)
+	fmt.Println("authuser: ", authUser)
+	user, err := u.userRepo.GetUserByUsername(authUser.Username)
 	if err != nil {
-		return "", "", errors.New("invalid username or password1")
+		return "", "", err
 	}
 
 	if err := infrastructure.CheckPasswordHash(user.Password, authUser.Password); err != nil {
@@ -119,6 +99,27 @@ func (u *UserUsecase) Login(authUser *domain.AuthUser) (string, string, error) {
 
 	return token, refreshToken, nil
 }
+
+func (u *UserUsecase) GetProfile(objectID primitive.ObjectID) (*domain.Profile, error) {
+	return nil, nil
+}
+
+func (u *UserUsecase) UpdateProfile(objectID primitive.ObjectID, profile *domain.Profile) (*domain.Profile, error) {
+	updatedProfile, err := u.userRepo.UpdateProfile(objectID, profile)
+	return updatedProfile, err
+}
+
+func (u *UserUsecase) GetAllUsers() ([]*domain.User, error) {
+	users, err := u.userRepo.GetAllUsers()
+	return users, err
+}
+
+// DeleteUser deletes a user by ID
+func (u *UserUsecase) DeleteUser(objectID primitive.ObjectID) error {
+	return u.userRepo.DeleteUser(objectID)
+}
+
+
 
 // DeleteRefreshToken deletes the refresh token for a user
 func (u *UserUsecase) DeleteRefreshToken(userID primitive.ObjectID) error {

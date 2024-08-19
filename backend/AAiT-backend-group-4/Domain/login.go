@@ -14,6 +14,6 @@ type LoginResponse struct {
 
 type LoginUsecase interface {
 	GetByIDentifier(c context.Context, identifier string) (user User, err error)
-	CreateAccessToken(user *User, secret string, expiry int) (accessToken string, err error)
-	CreateRefreshToken(user *User, secret string, expiry int) (accessToken string, err error)
+	CreateAllTokens(user *User, accessSecret string, refreshSecret string,
+		accessExpiry int, refreshExpiry int) (accessToken string, refreshToken string, err error)
 }

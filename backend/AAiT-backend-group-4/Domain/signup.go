@@ -23,6 +23,6 @@ type SignupUsecase interface {
 	Signup(c context.Context, user *SignupRequest) (resp UserOTPVerification, err error)
 	GetByEmail(c context.Context, email string) (user User, err error)
 	GetByUsername(c context.Context, userName string) (user User, err error)
-	CreateAccessToken(user *User, secret string, expiry int) (accessToken string, err error)
-	CreateRefreshToken(user *User, secret string, expiry int) (accessToken string, err error)
+	CreateAllTokens(user *User, accessSecret string, refreshSecret string,
+		accessExpiry int, refreshExpiry int) (accessToken string, refreshToken string, err error)
 }

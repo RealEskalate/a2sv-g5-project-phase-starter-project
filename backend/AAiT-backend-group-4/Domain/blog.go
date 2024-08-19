@@ -39,9 +39,9 @@ type Blog struct {
 	Title       string             `json:"title" bson:"title" validate:"required,min=5,max=100"`
 	Content     string             `json:"content" bson:"content" validate:"required,min=5"`
 	Author_Info Author             `json:"author_info" bson:"author_info"`
-	Date        time.Time          `json:"date" bson:"date"`
 	Tags        []Tag              `json:"tags" bson:"tags"`
 	Feedbacks   Feedback           `json:"feedbacks" bson:"feedbacks"`
+	Popularity  float64            `json:"popularity" bson:"popularity"`
 	Created_At  time.Time          `json:"created_at" bson:"created_at"`
 	Updated_At  time.Time          `json:"updated_at" bson:"updated_at"`
 }

@@ -11,7 +11,7 @@ type userUsecase struct {
 	repo interfaces.UserRepository
 }
 
-func NewUserUsecase(repo interfaces.UserRepository) interfaces.PromoteUserUsecase {
+func NewUserUsecase(repo interfaces.UserRepository) interfaces.PromoteDemoteUserUsecase {
 	return &userUsecase{
 		repo: repo,
 	}

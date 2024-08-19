@@ -22,6 +22,7 @@ func Setup(env *config.Env, timeout time.Duration, db mongo.Database, gin *gin.E
 		infrastructure.AuthenticateAdmin(),
 	)
 
-	NewAuthenticationRouter(env, timeout, db, publicRouter)
-	NewForgotPasswordRouter(env, timeout, db, protectedRouter)
+	NewAuthenticationRouter(env, db, publicRouter)
+	NewForgotPasswordRouter(env, db, protectedRouter)
+	NewPromoteDemoteRouter(db, adminRouter)
 }

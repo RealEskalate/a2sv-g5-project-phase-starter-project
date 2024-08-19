@@ -26,7 +26,9 @@ func main() {
 	commrepo := repositories.NewCommentRepository(client)
 	commuse := usecase.NewCommentUsecase(commrepo, time.Second*300)
 
-	blogcont := controllers.NewBlogController(bloguse, likeuse, commuse, disluse)
+	aiserv, _ := infrastructure.NewGeminiAIService()
+
+	blogcont := controllers.NewBlogController(bloguse, likeuse, commuse, disluse, aiserv)
 
 	userrepo := repositories.NewUserRepository(client)
 	useruse := usecase.NewUserUsecase(userrepo, time.Second*300)

@@ -18,7 +18,17 @@ func NewBlogUseCaseImpl(blogRepository BlogRepository) BlogUseCase {
 
 // CreateBlog implements BlogUseCase.
 func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, blog Blog) (Blog, error) {
-	panic("unimplemented")
+	blogId, err := b.blogRepository.CreateBlog(ctx, blog)
+	if err != nil {
+		return Blog{}, err
+	}
+
+	newBlog, err := b.blogRepository.GetBlogByID(ctx, blogId)
+	if err != nil {
+		return Blog{}, err
+	}
+
+	return newBlog, nil
 }
 
 // CreateComment implements BlogUseCase.

@@ -26,6 +26,7 @@ func NewRepo(client *mongo.Client, dbName, collectionName string) *Repo {
 	collection := client.Database(dbName).Collection(collectionName)
 	return &Repo{
 		collection: collection,
+	
 	}
 }
 
@@ -34,7 +35,6 @@ func (b Repo) Save(blog *blogmodel.Blog) error {
 	defer cancel()
 
 	filter := bson.M{"_id": blog.ID()}
-
 	update := bson.M{
 		"$set": bson.M{
 			"title":        blog.Title(),

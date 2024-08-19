@@ -9,14 +9,14 @@ import (
 
 // Handler handles the promote command logic.
 type Handler struct {
-	userRepo irepo.User
+	userRepo irepo.UserRepository
 }
 
 // Ensure Handler implement icmd.Handler
 var _ icmd.IHandler[*Command, bool] = &Handler{}
 
 // New creates a new instance of the Handler with the provided user repository.
-func New(userRepo irepo.User) *Handler {
+func New(userRepo irepo.UserRepository) *Handler {
 	return &Handler{userRepo: userRepo}
 }
 

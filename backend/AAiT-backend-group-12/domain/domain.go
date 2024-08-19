@@ -49,8 +49,8 @@ type User struct {
 
 type Blog struct {
 	ID         string    `json:"id"`
-	Title      string    `json:"title" validate:"required,min=2"`
-	Content    string    `json:"content" validate:"required,min=6"`
+	Title      string    `json:"title"`
+	Content    string    `json:"content"`
 	Username   string    `json:"username"`
 	Tags       []string  `json:"tags"`
 	CreatedAt  time.Time `json:"created_at"`
@@ -60,7 +60,12 @@ type Blog struct {
 	DislikedBy []string  `json:"disliked_by"`
 	Comments   []Comment `json:"comment"`
 }
-
+//TODO  implement the tag in the repository
+type NewBlog struct{
+	Title      string    `json:"title" validate:"required,min=2"`
+	Content    string    `json:"content" validate:"required,min=6"`
+	Tags       []string  `json:"tags"`
+}
 // Comment represents a comment entity in the domain.
 type Comment struct {
 	ID        string    `json:"id"`
@@ -89,7 +94,7 @@ type BlogRepositoryInterface interface {
 	FetchBlogPostByID(ctx context.Context, postID string) (*Blog, CodedError)
 	FetchBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, CodedError)
 	InsertBlogPost(ctx context.Context, blog *Blog) CodedError
-	UpdateBlogPost(ctx context.Context, id string, blog *Blog) CodedError
+	UpdateBlogPost(ctx context.Context, id string, blog *NewBlog) CodedError
 	DeleteBlogPost(ctx context.Context, id string) CodedError
 	TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) CodedError
 }
@@ -97,8 +102,8 @@ type BlogRepositoryInterface interface {
 type BlogUseCaseInterface interface {
 	GetBlogPostByID(ctx context.Context, id string) (*Blog, CodedError)
 	GetBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, CodedError)
-	CreateBlogPost(ctx context.Context, blog *Blog, createdBy string) CodedError
-	EditBlogPost(ctx context.Context, id string, blog *Blog, editedBy string) CodedError
+	CreateBlogPost(ctx context.Context, blog *NewBlog, createdBy string) CodedError
+	EditBlogPost(ctx context.Context, id string, blog *NewBlog, editedBy string) CodedError
 	DeleteBlogPost(ctx context.Context, id string, deletedBy string) CodedError
 	TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) CodedError
 }

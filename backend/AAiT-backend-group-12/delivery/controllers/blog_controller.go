@@ -22,7 +22,7 @@ func NewBlogController(bu domain.BlogUseCaseInterface) *BlogController {
 
 // CreateBlogHandler handles the HTTP request for creating a new blog post.
 func (bc *BlogController) CreateBlogHandler(c *gin.Context) {
-	var blog domain.Blog
+	var blog domain.NewBlog
 	if err := c.ShouldBindJSON(&blog); err != nil {
 		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
 		return
@@ -51,7 +51,7 @@ func (bc *BlogController) CreateBlogHandler(c *gin.Context) {
 // UpdateBlogHandler handles the HTTP request to update a blog post.
 func (bc *BlogController) UpdateBlogHandler(c *gin.Context) {
 	blogId := c.Param("id")
-	var blog domain.Blog
+	var blog domain.NewBlog
 	if err := c.ShouldBindJSON(&blog); err != nil {
 		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
 		return

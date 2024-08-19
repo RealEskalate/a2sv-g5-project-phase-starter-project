@@ -19,7 +19,7 @@ func Router(server *gin.Engine, config *infrastructure.Config, DB mongo.Database
 	validator := domain.NewValidator()
 	idConverter := domain.NewIdConverter()
 	blog_usecase := usecases.NewBlogUsecase(blog_repo, idConverter)
-	blog_controller := controllers.NewBlogController(blog_usecase,  validator)
+	blog_controller := controllers.NewBlogController(blog_usecase, validator)
 	blogRouter := server.Group("blogs")
 	authHandler := infrastructure.NewAuthMiddleware(*config).AuthenticationMiddleware()
 	NewBlogrouter(blogRouter, blog_controller, authHandler)
@@ -29,4 +29,10 @@ func Router(server *gin.Engine, config *infrastructure.Config, DB mongo.Database
 	NewSignupRoute(config, DB, userRouter)
 	NewRefreshTokenRouter(config, exp, DB, userRouter)
 	NewLoginRouter(config, exp, DB, userRouter)
+
+	authUserrouter := userRouter.Use(authHandler)
+	NewLogoutRouter(config, exp, DB, authUserrouter.(*gin.RouterGroup))
+
+	NewOauthRoute(config, DB, userRouter)
+
 }

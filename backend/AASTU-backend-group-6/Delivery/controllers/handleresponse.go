@@ -17,8 +17,11 @@ func HandleResponse(c *gin.Context, response interface{}) {
 		c.JSON(http.StatusOK, res)
 	case *domain.ErrorResponse:
 		c.JSON(res.Status, res)
-	// case *domain.AllUserResponse:
-	// 	c.JSON(http.StatusOK, res)
+	case *domain.URL:
+		url := res.URL
+		c.Redirect(http.StatusTemporaryRedirect, url)
+	case *domain.LoginResponse:
+		c.JSON(http.StatusOK, res)
 	// case *domain.SingleUserResponse:
 	// 	c.JSON(http.StatusOK , res)
 	// case *domain.LoginResponse:

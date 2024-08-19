@@ -8,8 +8,9 @@ import (
 )
 
 type refreshTokenUsecase struct {
-	userRepository domain.UserRepository
-	contextTimeout time.Duration
+	userRepository       domain.UserRepository
+	activeUserRepository domain.ActiveUserRepository
+	contextTimeout       time.Duration
 }
 
 func NewRefreshTokenUsecase(userRepository domain.UserRepository, timeout time.Duration) domain.RefreshTokenUsecase {
@@ -18,6 +19,24 @@ func NewRefreshTokenUsecase(userRepository domain.UserRepository, timeout time.D
 		contextTimeout: timeout,
 	}
 }
+
+// removeActiveUser implements domain.RefreshTokenUsecase.
+func (r *refreshTokenUsecase) RemoveActiveUser(c context.Context, id string, user_agent string) error {
+	ctx, cancel := context.WithTimeout(c, r.contextTimeout)
+	defer cancel()
+
+	return r.activeUserRepository.DeleteActiveUser(id,user_agent, ctx)
+}
+
+// checkActiveUser implements domain.RefreshTokenUsecase.
+func (r *refreshTokenUsecase) CheckActiveUser(c context.Context, id string) (domain.ActiveUser, error) {
+	ctx, cancel := context.WithTimeout(c, r.contextTimeout)
+	defer cancel()
+
+	return r.activeUserRepository.FindActiveUserById(id, ctx)
+}
+
+// checkActiveUser implements domain.RefreshTokenUsecase.
 
 // CreateAccessToken implements domain.RefreshTokenUsecase.
 func (r *refreshTokenUsecase) CreateAccessToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
@@ -40,5 +59,4 @@ func (r *refreshTokenUsecase) GetUserByID(c context.Context, id string) (domain.
 	defer cancel()
 	print(ctx)
 	return r.userRepository.FindUserByID(ctx, id)
-	return domain.User{}, nil
 }

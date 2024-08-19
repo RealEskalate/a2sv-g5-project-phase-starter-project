@@ -35,6 +35,9 @@ func (ur *UserRepositoryImpl) FindOrCreateUserByGoogleID(oauthUserInfo domain.OA
 			return nil, err
 		}
 		uu, err := ur.collection.Find(context.Background(), filter)
+		if err != nil {
+			return nil, err
+		}
 		var users []domain.User
 		err = uu.All(context.Background(), &users)
 		if err != nil {

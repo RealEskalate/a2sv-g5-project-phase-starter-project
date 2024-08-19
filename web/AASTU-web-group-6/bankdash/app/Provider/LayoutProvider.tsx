@@ -29,7 +29,9 @@ const LayoutProvider = ({ children }: { children: ReactNode }) => {
           {/* Sidebar */}
           <div
             className={`fixed z-20 h-screen sm:w-[50%] lg:w-[22%] lg:max-w-[220px] bg-white dark:bg-[#242428] pr-1 top-0 transition-transform duration-300 ease-in-out transform ${
-              isOpen ? "translate-x-0" : "-translate-x-full"
+              isOpen
+                ? "translate-x-0 opacity-100"
+                : "-translate-x-full opacity-0 sm:opacity-100"
             } lg:translate-x-0`}
           >
             <Sidebar isOpen={isOpen} closeSidebar={toggle} />

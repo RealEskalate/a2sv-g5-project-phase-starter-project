@@ -19,7 +19,7 @@ const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
   };
 
   return (
-    <div className="w-full fixed left-0 z-10 flex flex-row justify-center items-center bg-white dark:bg-[#232328] sm:px-[4%] sm:gap-[6%] lg:pl-[240px] pr-[3%] py-4">
+    <div className="w-full fixed left-0 z-10 flex flex-row justify-center items-center bg-white dark:bg-[#232328] xs:px-[3%] sm:px-[4%] sm:gap-[6%] lg:pl-[240px] pr-[3%] py-4">
       <button
         onClick={openSidebar}
         className="bg-[#F5F7FA] dark:bg-gray-600 rounded-[12px] p-3 py-2 flex items-center hover:bg-[#d0e6f6] dark:hover:bg-gray-600 lg:hidden"
@@ -32,8 +32,8 @@ const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
       <h1 className="text-3xl font-semibold text-[#343C6A] dark:text-white xs:hidden sm:hidden lg:block">
         Overview
       </h1>
-      <div className="flex justify-end gap-5 grow">
-        <div className="relative flex gap-2 items-center text-base text-[#8BA3CB] dark:text-gray-400 xs:grow sm:grow lg:grow-0">
+      <div className="flex justify-end gap-5 grow ">
+        <div className="relative flex gap-2 items-center text-base text-[#8BA3CB] dark:text-gray-400 xs:grow xs:fixed xs:top-24 xs:left-2 xs:w-[90%] sm:grow-0 sm:relative sm:top-0 sm:w-fit">
           <FontAwesomeIcon
             icon={faSearch}
             className="absolute left-5 text-xl"
@@ -49,7 +49,7 @@ const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
 
         <button
           onClick={onDarkMode}
-          className="flex items-center bg-[#F5F7FA] dark:bg-gray-700 rounded-full p-3 hover:bg-gray-200 dark:hover:bg-gray-600"
+          className="flex items-center bg-[#F5F7FA] dark:bg-gray-700 rounded-full p-3 hover:bg-gray-200 dark:hover:bg-gray-600 xs:w-[50px]"
         >
           <FontAwesomeIcon
             icon={isDarkMode ? faSun : faMoon}
@@ -57,7 +57,7 @@ const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
           />
         </button>
 
-        <button className="bg-[#F5F7FA] dark:bg-gray-700 rounded-full p-3">
+        <button className="bg-[#F5F7FA] dark:bg-gray-700 rounded-full p-3 xs:hidden md:flex">
           <Image
             src="/assets/bell-icon.svg"
             alt="notification"

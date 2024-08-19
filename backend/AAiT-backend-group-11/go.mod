@@ -1,6 +1,8 @@
 module backend-starter-project
 
-go 1.20
+go 1.21
+
+toolchain go1.23.0
 
 require (
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
@@ -57,6 +59,7 @@ require (
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/google/generative-ai-go v0.17.0
 	github.com/joho/godotenv v1.5.1
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect

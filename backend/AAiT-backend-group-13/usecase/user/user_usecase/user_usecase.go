@@ -2,7 +2,7 @@ package userusecase
 
 import (
 	er "github.com/group13/blog/domain/errors"
-	iuser "github.com/group13/blog/usecase/user/i_user"
+	iuser "github.com/group13/blog/usecase/user/i_repository"
 )
 
 type ChangeStatus struct {

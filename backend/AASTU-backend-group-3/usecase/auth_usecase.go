@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"errors"
+	"fmt"
 	"group3-blogApi/domain"
 	"group3-blogApi/infrastracture"
 	"time"
@@ -28,6 +29,11 @@ func (u *UserUsecase) Login(user *domain.User, deviceID string) (domain.LogInRes
 	}
 
 	user.RefreshTokens = append(user.RefreshTokens, newRefreshToken)
+	hashedPassword, err := infrastracture.HashPassword(user.Password)
+	if err != nil {
+		return domain.LogInResponse{}, errors.New("could not hash password")
+	}
+	user.Password = hashedPassword
 	err = u.UserRepo.UpdateUser(user)
 	if err != nil {
 		return domain.LogInResponse{}, err
@@ -93,6 +99,10 @@ func (au *UserUsecase) RefreshToken(userID, deviceID, token string) (domain.LogI
 }
 func (au *UserUsecase) Register(user domain.User) error {
 
+	if user.Username == "" || user.Email == "" || user.Password == "" {
+		return errors.New("all fields are required")
+	}
+
 	if !infrastracture.IsValidEmail(user.Email) {
 		return errors.New("invalid email format")
 	}
@@ -144,4 +154,65 @@ func (au *UserUsecase) GetUserByUsernameOrEmail(username, email string) (domain.
 
 func (au *UserUsecase) AccountActivation(token string, email string) error {
 	return au.UserRepo.AccountActivation(token, email)
+}
+
+
+
+
+// reset password
+
+func (uc *UserUsecase) SendPasswordResetLink(email string) error {
+	user, err := uc.UserRepo.GetUserByEmail(email)
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	// Generate a reset token (you can use JWT or a random string)
+	resetToken, err := infrastracture.GenerateActivationToken()
+	if err != nil {
+		return errors.New("could not generate reset token")
+	}
+	user.PasswordResetToken = resetToken
+	user.TokenCreatedAt = time.Now()
+
+	// Save the reset token in the database
+	err = uc.UserRepo.UpdateUser(&user)
+	if err != nil {
+		return errors.New("failed to save reset token")
+	}
+
+	// Send the email with the reset link (implement your email logic)
+	
+	infrastracture.SendResetLink(user.Email, resetToken)
+
+	return nil
+}
+
+func (uc *UserUsecase) ResetPassword(token, newPassword string) error {
+	user, err := uc.UserRepo.GetUserByResetToken(token)
+	if err != nil {
+		return errors.New("invalid or expired token")
+	}
+
+	if time.Since(user.TokenCreatedAt) > 24*time.Hour {
+		return errors.New("token has expired")
+	}
+
+	// Update the user's password
+	fmt.Println("newPassword////////////", newPassword)
+	hashedPassword, err  := infrastracture.HashPassword(newPassword)
+	user.Password = hashedPassword
+	if err != nil {
+		return errors.New("could not hash password")
+	}
+
+	user.PasswordResetToken = ""
+	user.TokenCreatedAt = time.Time{}
+
+	err = uc.UserRepo.UpdateUser(&user)
+	if err != nil {
+		return errors.New("failed to reset password")
+	}
+
+	return nil
 }

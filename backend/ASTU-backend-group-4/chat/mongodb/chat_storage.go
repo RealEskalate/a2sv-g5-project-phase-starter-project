@@ -61,7 +61,7 @@ func (chatRepository *ChatRepository) GetChat(chatID string, ctx context.Context
 func (chatRepository *ChatRepository) GetChats(ctx context.Context, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[chat.Chat], error) {
 	collection := chatRepository.Database.Collection(collectionName)
 	findOptions := options.Find()
-	findOptions.SetSkip(int64(pagination.Page - 1))
+	findOptions.SetSkip(int64(pagination.Page - 1) * int64(pagination.Limit))
 	findOptions.SetLimit(int64(pagination.Limit))
 
 	count, err := collection.CountDocuments(ctx, bson.M{})

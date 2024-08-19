@@ -43,8 +43,8 @@ func (c *Controller) RegisterPrivileged(route *gin.RouterGroup) {
 	tasks := route.Group("/tasks")
 	{
 		tasks.POST("", c.addBlog)
-		tasks.PUT("/:id", c.updateTask)
-		tasks.DELETE("/:id", c.deleteTask)
+		tasks.PUT("/:id", c.updateBlog)
+		tasks.DELETE("/:id", c.deleteBlog)
 	}
 }
 
@@ -69,7 +69,7 @@ func (c *Controller) addBlog(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusCreated, task)
 }
 
-func (c *Controller) updateTask(ctx *gin.Context) {
+func (c *Controller) updateBlog(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, er.NewBadRequest("Invalid Id Format"))
@@ -100,7 +100,7 @@ func (c *Controller) updateTask(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusNoContent, gin.H{})
 }
 
-func (c *Controller) deleteTask(ctx *gin.Context) {
+func (c *Controller) deleteBlog(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, er.NewBadRequest("Invalid Id Format"))

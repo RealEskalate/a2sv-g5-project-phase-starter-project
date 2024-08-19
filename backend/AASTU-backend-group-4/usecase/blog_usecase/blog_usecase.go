@@ -1,19 +1,25 @@
 package blog_usecase
 
 import (
+	domain "blog-api/domain/blog"
+	"context"
 	"time"
 
-	"blog-api/domain/blog"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogUsecase struct {
-	repo           blog.BlogRepository
+	repo           domain.BlogRepository
 	contextTimeout time.Duration
 }
 
-func NewBlogUsecase(BlogRepository blog.BlogRepository, timeout time.Duration) blog.BlogUsecase {
+func NewBlogUsecase(BlogRepository domain.BlogRepository, timeout time.Duration) domain.BlogUsecase {
 	return &BlogUsecase{
 		repo:           BlogRepository,
 		contextTimeout: timeout,
 	}
+}
+
+func (bu *BlogUsecase) GetBlog(ctx context.Context, blogID primitive.ObjectID) (*domain.Blog, error) {
+	return bu.repo.GetBlog(ctx, blogID)
 }

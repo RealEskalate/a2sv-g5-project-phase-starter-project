@@ -52,10 +52,16 @@ func JwtAuthMiddleware(secret string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
+		isAdmin, ok := claims["isAdmin"].(bool)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin role claims"})
+			c.Abort()
+			return
+		}
 		c.Set("userID", userID)
 		c.Set("email", email)
 		c.Set("username", username)
+		c.Set("isAdmin", isAdmin)
 		c.Next()
 	}
 }

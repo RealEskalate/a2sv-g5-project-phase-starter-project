@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -10,20 +11,21 @@ import (
 type Like struct {
 	ID     primitive.ObjectID `json:"_id" bson:"_id"`
 	UserID primitive.ObjectID `json:"user_id" bson:"user_id"`
-	PostID primitive.ObjectID `json:"post_id" bson:"post_id"`
+	BlogID primitive.ObjectID `json:"post_id" bson:"post_id"`
 }
 
 type DisLike struct {
 	ID     primitive.ObjectID `json:"_id" bson:"_id"`
 	UserID primitive.ObjectID `json:"user_id" bson:"user_id"`
-	PostID primitive.ObjectID `json:"post_id" bson:"post_id"`
+	BlogID primitive.ObjectID `json:"post_id" bson:"post_id"`
 }
 
 type Comment struct {
-	ID      primitive.ObjectID `json:"_id" bson:"_id"`
-	UserID  primitive.ObjectID `json:"user_id" bson:"user_id"`
-	PostID  primitive.ObjectID `json:"post_id" bson:"post_id"`
-	Content string             `json:"comment" bson:"comment"`
+	ID      primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	UserID  primitive.ObjectID `json:"user_id,omitempty" bson:"user_id,omitempty"`
+	BlogID  primitive.ObjectID `json:"post_id,omitempty" bson:"post_id,omitempty"`
+	Comment string             `json:"comment,omitempty" bson:"comment,omitempty"`
+	Date    time.Time          `json:"date,omitempty" bson:"date,omitempty"`
 }
 
 // Popularity interfaces
@@ -52,15 +54,15 @@ type DisLikeRepository interface {
 }
 
 type CommentUsecase interface {
-	GetComments(context context.Context, post_id string) ([]Comment, error)
-	CreateComment(context context.Context, post_id string, user_id string, comment Comment) error
-	DeleteComment(context context.Context, comment_id string) error
-	UpdateComment(context context.Context, comment_id string) error
+	GetComments(ctx context.Context, BlogID string) ([]Comment, error)
+	CreateComment(ctx context.Context, BlogID string, userID string, comment Comment) error
+	UpdateComment(ctx context.Context, commentID string, comment Comment) error
+	DeleteComment(ctx context.Context, commentID string) error
 }
 
 type CommentRepository interface {
-	GetComments(post_id string) ([]Comment, error)
-	CreateComment(post_id string, user_id string, comment Comment) error
-	DeleteComment(comment_id string) error
-	UpdateComment(comment_id string) error
+	GetComments(BlogID string) ([]Comment, error)
+	CreateComment(BlogID, userID string, comment Comment) error
+	UpdateComment(commentID string, comment Comment) error
+	DeleteComment(commentID string) error
 }

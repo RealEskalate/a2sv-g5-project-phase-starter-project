@@ -16,6 +16,8 @@ type Blog struct {
 	Date     time.Time          `bson:"date,omitempty" json:"date,omitempty"`
 	Likes    int                `bson:"likes,omitempty" json:"likes,omitempty"`
 	DisLikes int                `bson:"dislikes,omitempty" json:"dislikes,omitempty"`
+	Comments []Comment          `bson:"comment,omitempty" json:"comment,omitempty"`
+
 }
 
 type BlogUsecase interface {

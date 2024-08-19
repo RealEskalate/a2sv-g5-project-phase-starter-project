@@ -15,6 +15,8 @@ import (
 const (
 	blogCollection    = "blogs"
 	commentCollection = "comments"
+	likeCollection    = "likes"
+	dislikeCollection = "dislikes"
 )
 
 var ErrUnableToCreateBlog = errors.New("unable to create blog")
@@ -25,6 +27,7 @@ var ErrBlogNotFound = errors.New("blog not found")
 var ErrUnableToDeleteComment = errors.New("unable to delete comment")
 var ErrCommentNotFound = errors.New("comment not found")
 var ErrUnableToDislikeBlog = errors.New("unable to dislike blog")
+var ErrUnableToLikeBlog = errors.New("unable to like blog")
 var ErrUnabletoGetBlog = errors.New("unable to get blog")
 
 type BlogStorage struct {
@@ -105,7 +108,7 @@ func (b *BlogStorage) DeleteComment(ctx context.Context, id string) error {
 
 // DislikeBlog implements BlogRepository.
 func (b *BlogStorage) DislikeBlog(ctx context.Context, dislike blog.Dislike) error {
-	_, err := b.db.Collection("dislikes").InsertOne(ctx, dislike)
+	_, err := b.db.Collection(dislikeCollection).InsertOne(ctx, dislike)
 	if err != nil {
 		log.Default().Printf("Failed to dislike blog: %v", err)
 		return ErrUnableToDislikeBlog
@@ -148,7 +151,13 @@ func (b *BlogStorage) GetCommentsByBlogID(ctx context.Context, blogID string, pa
 
 // LikeBlog implements BlogRepository.
 func (b *BlogStorage) LikeBlog(ctx context.Context, like blog.Like) error {
-	panic("unimplemented")
+	_, err := b.db.Collection(likeCollection).InsertOne(ctx, like)
+	if err != nil {
+		log.Default().Printf("Failed to like blog: %v", err)
+		return ErrUnableToLikeBlog
+	}
+
+	return nil
 }
 
 // SearchBlogs implements BlogRepository.

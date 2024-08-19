@@ -27,6 +27,7 @@ func (m *MongoCursor) Decode(val interface{}) error {
 func (m *MongoCursor) Close(ctx context.Context) error {
 	return m.Cursor.Close(ctx)
 }
+
 func (m *MongoCursor) Err() error {
 	return m.Cursor.Err()
 }

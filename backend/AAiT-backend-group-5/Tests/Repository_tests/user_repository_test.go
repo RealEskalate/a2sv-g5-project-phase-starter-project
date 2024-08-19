@@ -52,7 +52,6 @@ func (suite *UserRepositorySuite) TestCreateUser() {
 		Name:       "Test User",
 		Email:      "testuser@example.com",
 		Password:   "hashedpassword",
-		IsVerified: false,
 	}
 
 	err := suite.Repository.CreateUser(suite.TestContext, user)
@@ -152,17 +151,22 @@ func (suite *UserRepositorySuite) TestDeleteUser() {
 		Username: "deletableuser",
 		Email:    "deletable@example.com",
 	}
-	suite.Collection.InsertOne(suite.TestContext, user)
+	insertResult, rr := suite.Collection.InsertOne(suite.TestContext, user)
+	suite.Empty(rr, "Expected no error when inserting user")
 
+	var result models.User
+	Err := suite.Collection.FindOne(suite.TestContext, bson.M{"_id": insertResult.InsertedID}).Decode(&result)
+	suite.Empty(Err, "Expected no error when fetching user")
 	// Delete the user
-	err := suite.Repository.DeleteUser(suite.TestContext, user.ID.Hex())
+	
+	err := suite.Repository.DeleteUser(suite.TestContext, result.ID)
 	suite.Empty(err, "Expected no error when deleting user")
 
 	// Ensure the user is deleted
 	var deletedUser models.User
-	Err := suite.Collection.FindOne(suite.TestContext, bson.M{"username": "deletableuser"}).Decode(&deletedUser)
-	suite.Nil(Err, "Expected an error when fetching a deleted user")
-	suite.Empty(Err)
+	Err = suite.Collection.FindOne(suite.TestContext, bson.M{"username": "deletableuser"}).Decode(&deletedUser)
+	suite.Error(Err, "Expected an error when fetching a deleted user")
+
 }
 
 func (suite *UserRepositorySuite) TestPromoteUser() {
@@ -216,6 +220,7 @@ func (suite *UserRepositorySuite) TestDemoteUser() {
 	suite.Empty(err, "Expected no error when fetching user after demotion")
 	suite.Equal(role, demotedUser.Role, "Expected role to remain admin (demotion logic should be handled correctly)")
 }
+
 
 
 func TestUserRepositorySuite(t *testing.T) {

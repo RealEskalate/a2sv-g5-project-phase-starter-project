@@ -57,6 +57,10 @@ func (lu *loginUsecase) LoginWithIdentifier(c context.Context, identifier string
 		}
 	}
 
+	if !user.Verified {
+		return "", "", fmt.Errorf("account not verified")
+	}
+
 	accessToken, refreshToken, err = lu.CreateAllTokens(c, &user, lu.Env.AccessTokenSecret, lu.Env.RefreshTokenSecret,
 		lu.Env.AccessTokenExpiryMinute, lu.Env.RefreshTokenExpiryHour)
 

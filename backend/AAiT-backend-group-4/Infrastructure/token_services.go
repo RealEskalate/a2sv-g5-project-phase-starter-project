@@ -8,16 +8,16 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-type services struct{}
+type tokenService struct{}
 
-func NewServices() domain.TokenInfrastructure {
-	return &services{}
+func NewTokenService() domain.TokenInfrastructure {
+	return &tokenService{}
 }
 
 // CreateAllTokens generates access and refresh tokens for a user.
 // It takes the user object, access and refresh secrets, access and refresh expiry durations as input.
 // It returns the access token, refresh token, and any error encountered during token generation.
-func (s *services) CreateAllTokens(user *domain.User, accessSecret string,
+func (s *tokenService) CreateAllTokens(user *domain.User, accessSecret string,
 	refreshSecret string, accessExpriy int, refreshExpiry int) (accessToken string, refreshToken string, err error) {
 	claims := domain.JwtCustomClaims{
 		UserID:   user.ID.Hex(),
@@ -51,7 +51,7 @@ func (s *services) CreateAllTokens(user *domain.User, accessSecret string,
 // ValidateToken validates the given token string using the provided secret key.
 // It returns the claims extracted from the token if the token is valid and not expired.
 // Otherwise, it returns an error indicating the reason for the validation failure.
-func (s *services) ValidateToken(tokenString string, secret string) (claims *domain.JwtCustomClaims, err error) {
+func (s *tokenService) ValidateToken(tokenString string, secret string) (claims *domain.JwtCustomClaims, err error) {
 	token, err := jwt.ParseWithClaims(tokenString,
 		&domain.JwtCustomClaims{},
 		func(t *jwt.Token) (interface{}, error) {
@@ -76,7 +76,7 @@ func (s *services) ValidateToken(tokenString string, secret string) (claims *dom
 // ExtractRoleFromToken extracts the role from a JWT token.
 // It takes the token string and the secret key as input parameters.
 // It returns the role as a string and an error if the token is invalid.
-func (s *services) ExtractRoleFromToken(tokenString string, secret string) (string, error) {
+func (s *tokenService) ExtractRoleFromToken(tokenString string, secret string) (string, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
@@ -100,7 +100,7 @@ func (s *services) ExtractRoleFromToken(tokenString string, secret string) (stri
 // CheckTokenExpiry checks the expiry of a given token.
 // It takes a token string and a secret as input parameters.
 // It returns a boolean value indicating whether the token has expired or not, and an error if any.
-func (s *services) CheckTokenExpiry(tokenString string, secret string) (bool, error) {
+func (s *tokenService) CheckTokenExpiry(tokenString string, secret string) (bool, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
 	})
@@ -127,7 +127,7 @@ func (s *services) CheckTokenExpiry(tokenString string, secret string) (bool, er
 // ExtractClaims extracts the claims from a JWT token.
 // It takes the token string and the secret key as input parameters.
 // It returns a map[string]interface{} containing the extracted claims and an error if any.
-func (s *services) ExtractClaims(tokenString string, secret string) (map[string]interface{}, error) {
+func (s *tokenService) ExtractClaims(tokenString string, secret string) (map[string]interface{}, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])

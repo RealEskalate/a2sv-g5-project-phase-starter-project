@@ -31,6 +31,7 @@ type Author struct {
 type Comment struct {
 	User_ID   string    `json:"user_id"`
 	User_Name string    `json:"user_name"`
+	Content   string    `json:"content"`
 	Date      time.Time `json:"date"`
 }
 

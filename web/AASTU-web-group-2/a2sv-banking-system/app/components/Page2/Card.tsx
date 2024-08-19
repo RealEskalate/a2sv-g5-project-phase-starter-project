@@ -32,7 +32,7 @@ const CreditCard: React.FC<CardProps> = ({
 
   return (
     <div className='border rounded-3xl my-4 mx-2'>
-      <div className={`relative w-full bg-gradient-to-b ${bgColor} ${textColor} rounded-3xl shadow-md font-lato pt-6  h-[230px]  min-w-[300px]`}>
+      <div className={`relative w-full bg-gradient-to-b ${bgColor} ${textColor} rounded-3xl shadow-md font-lato pt-6  h-[230px]  min-w-[350px]`}>
         <div className="flex justify-between items-start px-6">
           <div>
             <p className="text-xs font-semibold text-[#718EBF]">Balance</p>

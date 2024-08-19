@@ -1,4 +1,5 @@
-import React from 'react';
+"use client";
+import React, { useState } from "react";
 
 interface NotificationToggleProps {
   id: string;
@@ -8,21 +9,39 @@ interface NotificationToggleProps {
 }
 
 const NotificationToggle: React.FC<NotificationToggleProps> = ({ id, label, checked, onChange }) => {
+  const [enabled, setEnabled] = useState(checked);
+
+  const handleToggle = () => {
+    const newChecked = !enabled;
+    setEnabled(newChecked);
+    onChange(newChecked);
+  };
+
   return (
-    <div className="flex items-center gap-4 mb-4">
-      <div className={`relative w-12 h-6 ${checked ? 'bg-[#16DBCC]' : 'bg-[#DFEAF2]'} rounded-full flex items-center`}>
-        <div
-          className={`absolute h-6 w-6 bg-white rounded-full ${checked ? 'right-0.5' : 'left-0.5'}`}
-        ></div>
-      </div>
-      <label htmlFor={id} className="text-gray-700">{label}</label>
+    <div className="flex items-center gap-3">
       <input
         type="checkbox"
         id={id}
-        className="hidden"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
+        className="peer hidden"
+        checked={enabled}
+        onChange={handleToggle}
       />
+      <label
+        htmlFor={id}
+        className={`cursor-pointer rounded-full w-12 h-6 flex items-center relative transition-colors duration-300 ${
+          enabled ? "bg-[#16DBCC]" : "bg-gray-200"
+        }`}
+      >
+        <span
+          className={`bg-white w-6 h-6 rounded-full transition-transform duration-300 ${
+            enabled ? "translate-x-6" : ""
+          }`}
+        ></span>
+      </label>
+
+      <label htmlFor={id} className="text-xs text-[#232323] lg:text-base">
+        {label}
+      </label>
     </div>
   );
 };

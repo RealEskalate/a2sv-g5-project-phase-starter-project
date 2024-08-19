@@ -1,6 +1,6 @@
-"use client"
+"use client";
 import React, { useState } from 'react';
-import Tabs from "../components/Tabs"
+import Tabs from "../components/Tabs";
 import TextInput from '../components/TextInput';
 import NotificationToggle from '../components/NotificationToggle';
 import EditProfile from '../components/EditProfile';
@@ -65,22 +65,25 @@ const SettingsPage: React.FC = () => {
                 </div>
 
                 <div className="mt-6 flex justify-end">
-                  <button type="submit" className="px-12 py-2 bg-[#1814F3] text-white rounded-xl">
+                  <button
+                    type="submit"
+                    className="bg-[#1814F3] border border-[#1814F3] rounded-xl text-white px-6 py-3 font-semibold text-xl md:w-1/4"
+                  >
                     Save
                   </button>
                 </div>
               </form>
             )}
-            
+
             {activeTab === 'Edit Profile' && (
               <div>
-                <EditProfile></EditProfile>
+                <EditProfile />
               </div>
             )}
 
             {activeTab === 'Security' && (
               <div>
-                <SecuritySetting></SecuritySetting>
+                <SecuritySetting />
               </div>
             )}
           </div>

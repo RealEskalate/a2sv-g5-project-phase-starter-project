@@ -70,9 +70,13 @@ type BlogRepository interface {
 
 
 	LikeBlog(blogId, userId string) error
+	LikeComment(blogId,commentId, userId string) error
+	LikeReply(blogId, userId string) error
+	
 	DislikeBlog(blogId, userId string) error
 	AddComment(blogId string, comment Comment) error
 	ReplyToComment(blogId, commentId string, reply Reply) error
-	AddView(blogId, userId string) error
+	AddViewBlog(blogId, userId string) error
+	AddViewComment(blogId, userId string) error
 	
 }

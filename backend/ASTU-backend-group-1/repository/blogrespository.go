@@ -273,6 +273,33 @@ func (r *MongoBlogRepository) LikeBlog(blogId, userId string) error {
 
 	return nil
 }
+func (r *MongoBlogRepository) LikeComment(blogId,commentId, userId string) error {
+	id, err := IsValidObjectID(blogId)
+	if err != nil {
+		fmt.Println("invalid blog ID: ", blogId)
+		return err
+	}
+	cid, err := IsValidObjectID(commentId)
+	if err != nil {
+		fmt.Println("invalid user ID: ", commentId)
+		return err
+	}
+	uid, err := IsValidObjectID(userId)
+	if err != nil {
+		fmt.Println("invalid user ID: ", userId)
+		return err
+	}
+	filter := bson.M{"_id": id, "comments.comment_id": cid}
+	update := bson.M{"$addToSet": bson.M{"likes": uid}}
+
+	_, err = r.collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		log.Printf("Failed to like blog: %v", err)
+		return err
+	}
+
+	return nil
+}
 
 func (r *MongoBlogRepository) DislikeBlog(blogId, userId string) error {
 	id, err := IsValidObjectID(blogId)
@@ -295,7 +322,29 @@ func (r *MongoBlogRepository) DislikeBlog(blogId, userId string) error {
 	return nil
 }
 
-func (r *MongoBlogRepository) AddView(blogId, userId string) error {
+func (r *MongoBlogRepository) AddViewBlog(blogId, userId string) error {
+	id, err := IsValidObjectID(blogId)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": id}
+	uid, err := IsValidObjectID(userId)
+	if err != nil {
+		return err
+	}
+
+	update := bson.M{"$addToSet": bson.M{"views": uid}}
+
+	_, err = r.collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		log.Printf("Failed to add view: %v", err)
+		return err
+	}
+
+	return nil
+}
+func (r *MongoBlogRepository) AddViewComment(blogId, userId string) error {
 	id, err := IsValidObjectID(blogId)
 	if err != nil {
 		return err

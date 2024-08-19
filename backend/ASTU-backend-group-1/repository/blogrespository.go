@@ -250,7 +250,7 @@ func (r *MongoBlogRepository) Delete(blogId string) error {
 	return nil
 }
 
-func (r *MongoBlogRepository) LikeBlog(blogId, userId string) error {
+func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int) error {
 	id, err := IsValidObjectID(blogId)
 	if err != nil {
 		fmt.Println("invalid blog ID: ", blogId)
@@ -263,7 +263,14 @@ func (r *MongoBlogRepository) LikeBlog(blogId, userId string) error {
 	}
 
 	filter := bson.M{"_id": id}
-	update := bson.M{"$addToSet": bson.M{"likes": uid}}
+	update := bson.M{}
+	if like == 1 {
+		update["$addToSet"] = bson.M{"likes": uid, "view": uid}
+	} else if like == -1 {
+		update["$addToSet"] = bson.M{"dislikes": uid, "view": uid}
+	} else {
+		update["$addToSet"] = bson.M{"view": uid}
+	}
 
 	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
@@ -273,45 +280,73 @@ func (r *MongoBlogRepository) LikeBlog(blogId, userId string) error {
 
 	return nil
 }
-
-func (r *MongoBlogRepository) DislikeBlog(blogId, userId string) error {
+func (r *MongoBlogRepository) LikeOrDislikeComment(blogId, commentId, userId string, like int) error {
 	id, err := IsValidObjectID(blogId)
 	if err != nil {
+		fmt.Println("invalid blog ID: ", blogId)
+		return err
+	}
+	cid, err := IsValidObjectID(commentId)
+	if err != nil {
+		fmt.Println("invalid user ID: ", commentId)
 		return err
 	}
 	uid, err := IsValidObjectID(userId)
 	if err != nil {
+		fmt.Println("invalid user ID: ", userId)
 		return err
 	}
-	// todo:check is the user has done the opposite task that is liking
-	filter := bson.M{"_id": id}
-	update := bson.M{"$addToSet": bson.M{"dislikes": uid}}
-
+	filter := bson.M{"_id": id, "comments.comment_id": cid}
+	update := bson.M{}
+	if like == 1 {
+		update["$addToSet"] = bson.M{"likes": uid, "view": uid}
+	} else if like == -1 {
+		update["$addToSet"] = bson.M{"dislikes": uid, "view": uid}
+	} else {
+		update["$addToSet"] = bson.M{"view": uid}
+	}
 	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		log.Printf("Failed to dislike blog: %v", err)
+		log.Printf("Failed to like blog: %v", err)
 		return err
 	}
+
 	return nil
 }
-
-func (r *MongoBlogRepository) AddView(blogId, userId string) error {
+func (r *MongoBlogRepository) LikeOrDislikeReply(blogId, commentId, replyId, userId string, like int) error {
 	id, err := IsValidObjectID(blogId)
 	if err != nil {
+		fmt.Println("invalid blog ID: ", blogId)
 		return err
 	}
-
-	filter := bson.M{"_id": id}
+	cid, err := IsValidObjectID(commentId)
+	if err != nil {
+		fmt.Println("invalid user ID: ", commentId)
+		return err
+	}
+	rid, err := IsValidObjectID(replyId)
+	if err != nil {
+		fmt.Println("invalid user ID: ", replyId)
+		return err
+	}
 	uid, err := IsValidObjectID(userId)
 	if err != nil {
+		fmt.Println("invalid user ID: ", userId)
 		return err
 	}
-
-	update := bson.M{"$addToSet": bson.M{"views": uid}}
+	filter := bson.M{"_id": id, "comments.comment_id": cid, "replies.reply_id": rid}
+	update := bson.M{}
+	if like == 1 {
+		update["$addToSet"] = bson.M{"likes": uid, "view": uid}
+	} else if like == -1 {
+		update["$addToSet"] = bson.M{"dislikes": uid, "view": uid}
+	} else {
+		update["$addToSet"] = bson.M{"view": uid}
+	}
 
 	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		log.Printf("Failed to add view: %v", err)
+		log.Printf("Failed to like blog: %v", err)
 		return err
 	}
 

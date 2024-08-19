@@ -1,31 +1,42 @@
-import React from 'react'
+"use client";
 
-const Navigation = () => {
-  return (
-    <div className="flex justify-between items-center border-b pb-4">
-    <div className="flex items-center">
-      <img
-        src="/profile-pic.png"
-        alt="Profile"
-        className="w-24 h-24 rounded-full mr-4"
-      />
-      <button className="p-2 bg-blue-600 text-white rounded-full">
-        Edit
-      </button>
-    </div>
-    <div className="flex space-x-8">
-      <button className="pb-2 border-b-4 border-blue-600">
-        Edit Profile
-      </button>
-      <button className="pb-2 border-b-4 border-transparent">
-        Preferences
-      </button>
-      <button className="pb-2 border-b-4 border-transparent">
-        Security
-      </button>
-    </div>
-  </div>
-    )
+import React from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+
+interface MenuItem {
+  label: string;
+  url: string;
 }
 
-export default Navigation
+const Navigation: React.FC = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const menuItems: MenuItem[] = [
+    { label: 'Edit Profile', url: '/settings/editprofile' },
+    { label: 'Preferences', url: '/settings/preference' },
+    { label: 'Security', url: '/settings/security' },
+  ];
+
+  const isActive = (path: string) => pathname === path;
+
+  return (
+    <div className="flex justify-between items-center border-b py-4 px-2 min-h-6 max-h-20">
+      <div className="flex space-x-8">
+        {menuItems.map((item, index) => (
+          <button
+            key={index}
+            onClick={() => router.push(item.url)}
+            className={`pb-2 border-b-4 rounded cursor-pointer ${
+              isActive(item.url) ? 'border-blue-800' : 'border-transparent'
+            }`}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Navigation;

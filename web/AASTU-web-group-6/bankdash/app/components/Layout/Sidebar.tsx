@@ -19,7 +19,10 @@ const Sidebar = ({
 
   // Memoizing the isActive function to prevent unnecessary recalculations
   const isActive = useMemo(
-    () => (path: string) => pathname === path,
+    () => (path: string, additionalPaths: string[] = []) => {
+      if (pathname === path) return true;
+      return additionalPaths.some((additionalPath) => pathname === additionalPath);
+    },
     [pathname]
   );
 
@@ -73,15 +76,20 @@ const Sidebar = ({
       active: "/assets/privi-icon-active.svg",
     },
     {
-      label: "Setting",
-      url: "/setting",
+      label: "Settings",
+      url: "/settings/editprofile",
       icon: "/assets/setting-icon.svg",
       active: "/assets/setting-icon-active.svg",
+      additionalActivePaths: [
+        "/settings/editprofile",
+        "/settings/preference",
+        "/settings/security",
+      ],
     },
   ];
 
   return (
-    <div className="py-6 px-5 w-[99.6%]  h-screen flex flex-col gap-8 border-r border-r-[#E6EFF5] bg-white">
+    <div className="py-6 px-5 w-[99.6%] h-screen flex flex-col gap-8 border-r border-r-[#E6EFF5] bg-white">
       <div className="flex gap-2 px-[4%] relative">
         <Image src="/assets/logo.svg" alt="logo" width={36} height={36} />
         <h1 className="text-2xl font-extrabold text-[#343C6A]">BankDash.</h1>
@@ -106,18 +114,26 @@ const Sidebar = ({
           >
             <div
               className={`${
-                isActive(item.url) ? "visible" : "hidden"
+                isActive(item.url, item.additionalActivePaths || [])
+                  ? "visible"
+                  : "hidden"
               } flex w-6 h-[45px] rounded-[32px] bg-[#1814F3] absolute left-[-60px]`}
             ></div>
             <Image
-              src={isActive(item.url) ? item.active : item.icon}
+              src={
+                isActive(item.url, item.additionalActivePaths || [])
+                  ? item.active
+                  : item.icon
+              }
               alt={item.label}
               width={20}
               height={20}
             />
             <div
               className={`${
-                isActive(item.url) ? "text-[#1814F3]" : "text-[#B1B1B1]"
+                isActive(item.url, item.additionalActivePaths || [])
+                  ? "text-[#1814F3]"
+                  : "text-[#B1B1B1]"
               } hover:text-[#1814F3]`}
             >
               {item.label}

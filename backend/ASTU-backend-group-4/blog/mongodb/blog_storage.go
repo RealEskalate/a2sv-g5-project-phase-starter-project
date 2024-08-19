@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
@@ -32,6 +33,7 @@ var ErrUnableToLikeBlog = errors.New("unable to like blog")
 var ErrUnableToUnLikeBlog = errors.New("unable to unlike blog")
 var ErrUnableToUnDislikeBlog = errors.New("unable to unlike blog")
 var ErrUnabletoGetBlog = errors.New("unable to get blog")
+var ErrUnabletoSearchBlogs = errors.New("unable to search blogs")
 
 type BlogStorage struct {
 	db *mongo.Database
@@ -164,8 +166,32 @@ func (b *BlogStorage) LikeBlog(ctx context.Context, like blog.Like) error {
 }
 
 // SearchBlogs implements BlogRepository.
-func (b *BlogStorage) SearchBlogs(ctx context.Context, query string) (infrastructure.PaginationResponse[blog.Blog], error) {
-	panic("unimplemented")
+func (b *BlogStorage) SearchBlogs(ctx context.Context, query string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[blog.Blog], error) {
+	filter := bson.D{{Key: "$text", Value: bson.D{
+		{Key: "$search", Value: query},
+		{Key: "$caseSensitive", Value: false},
+	}}}
+
+	findOptions := options.Find()
+	findOptions.SetSkip(int64(pagination.Limit*pagination.Page - 1))
+	findOptions.SetLimit(int64(pagination.Limit))
+	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+
+	count, err := b.db.Collection(blogCollection).CountDocuments(ctx, filter)
+	if err != nil {
+		return infrastructure.PaginationResponse[blog.Blog]{}, err
+	}
+
+	cursor, err := b.db.Collection(blogCollection).Find(ctx, filter, findOptions)
+	if err != nil {
+		log.Default().Printf("Failed to search blogs: %v", err)
+		return infrastructure.PaginationResponse[blog.Blog]{}, ErrUnabletoSearchBlogs
+	}
+
+	var blogs []blog.Blog
+	cursor.All(ctx, &blogs)
+
+	return infrastructure.NewPaginationResponse[blog.Blog](pagination.Limit, pagination.Page, count, blogs), nil
 }
 
 // UpdateBlog implements BlogRepository.

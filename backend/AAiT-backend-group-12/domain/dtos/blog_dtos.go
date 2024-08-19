@@ -21,14 +21,6 @@ type BlogDTO struct {
 	Comments   []CommentDTO       `bson:"comments"`
 }
 
-type UserDTO struct {
-	ID        primitive.ObjectID `bson:"_id"`
-	Username  string             `bson:"username"`
-	Email     string             `bson:"email"`
-	Password  string             `bson:"password"`
-	Role      string             `bson:"role"`
-	CreatedAt time.Time          `bson:"created_at"`
-}
 
 type CommentDTO struct {
 	ID        primitive.ObjectID `bson:"_id"`

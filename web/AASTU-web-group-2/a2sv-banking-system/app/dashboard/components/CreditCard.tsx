@@ -1,0 +1,84 @@
+
+import React from 'react';
+
+interface CardProps {
+  balance: string;
+  cardHolder: string;
+  validThru: string;
+  cardNumber: string;
+  filterClass?: string;
+  bgColor?: string; 
+  textColor?: string; 
+  iconBgColor?: string;
+  showIcon?: boolean; 
+}
+
+const CreditCard: React.FC<CardProps> = ({
+  balance,
+  cardHolder,
+  validThru,
+  cardNumber,
+  filterClass = "filter-white",
+  bgColor = '', 
+  textColor = 'text-white',
+  iconBgColor = 'bg-opacity-10',
+  showIcon = true
+}) => {
+
+  const isBlueGradient = bgColor.includes('#4C49ED') || bgColor.includes('#0A06F4');
+  const ellipseImageSrc = isBlueGradient ? '/group17.png' : '/group18.png';
+
+  const cardHolderTextColor = isBlueGradient ? 'text-[rgba(255,255,255,0.7)]' : 'text-[#718EBF]';
+
+  return (
+    <div className='border rounded-3xl my-4 mx-4'>
+<div className={`w-80rem bg-gradient-to-b ${bgColor} ${textColor} rounded-3xl shadow-md font-lato pt-6 px-6 md:pt-8 md:px-8`}>
+<div className="flex justify-between items-start">
+        <div>
+          <p className="text-xs md:text-sm font-semibold text-[#718EBF]">Balance</p>
+          <p className="text-xl md:text-2xl font-medium">{balance}</p>
+        </div>
+        {showIcon && (
+          <div className={`w-8 h-8 md:w-10 md:h-10 ${iconBgColor} rounded-full flex items-center justify-center`}>
+                <svg width="29" height="29" viewBox="0 0 29 29" fill="currentColor" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+                <rect width="29" height="29" fill="url(#pattern0_170_21)" />
+                <defs>
+                    <pattern id="pattern0_170_21" patternContentUnits="objectBoundingBox" width="1" height="1">
+                    <use xlinkHref="#image0_170_21" transform="scale(0.01)" />
+                    </pattern>
+                    <image id="image0_170_21" width="100" height="100" xlinkHref="data:image/png;base64,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"/>
+                </defs>
+                </svg>
+          </div>
+        )}
+      </div>
+
+      <div className='flex justify-between gap-12 mt-4 md:mt-6'>
+        <div>
+          <p className={`text-xs md:text-sm font-medium ${cardHolderTextColor}`}>CARD HOLDER</p>
+          <p className="font-medium text-base md:text-lg">{cardHolder}</p>
+        </div>
+        <div className='pr-8 md:pr-12'>
+          <p className={`text-xs md:text-sm font-medium ${cardHolderTextColor}`}>VALID THRU</p>
+          <p className="font-medium text-base md:text-lg">{validThru}</p>       
+        </div>
+      </div>
+
+      <div className="relative mt-4 md:mt-6 flex  justify-between py-4 md:py-6 ">
+        {/* <div className="relative flex max-w-[66rem] w-full rounded-xl bg-clip-border text-gray-700 shadow"></div> */}
+        <div className="text-base md:text-lg font-medium z-10">
+          {cardNumber}
+        </div>
+        <div className='flex justify-end'>
+            <svg width="44" height="30" viewBox="0 0 44 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="15" cy="15" r="15" fill="white" fill-opacity="0.5"/>
+                <circle cx="29" cy="15" r="15" fill="white" fill-opacity="0.5"/>
+            </svg>
+        </div>
+      </div>
+    </div>
+    </div>
+  );
+};
+
+export default CreditCard;

@@ -64,6 +64,16 @@ type CommentUseCase interface {
 	GetUserComments(c *gin.Context, id primitive.ObjectID) ([]*Comment, error, int)
 }
 
+type TagRepository interface {
+	CreateTag(ctx context.Context, tag *Tag) (error, int)
+	DeleteTag(ctx context.Context, id primitive.ObjectID) (error, int)
+}
+
+type TagUseCase interface {
+	CreateTag(c *gin.Context, tag *Tag) (error, int)
+	DeleteTag(c *gin.Context, id primitive.ObjectID) (error,int)
+}
+
 type UserRepository interface {
 	CreateUser(ctx context.Context, user *User) (OmitedUser, error, int)
 	GetUsers(ctx context.Context) ([]*OmitedUser, error, int)

@@ -14,6 +14,8 @@ func CreateAccessToken(user *domain.User, secret string, expiry int) (string, er
 	claims := jwt.MapClaims{
 		"user_id":  user.ID.Hex(),
 		"username": user.Username,
+		"email":    user.Email,
+		"isAdmin":  user.IsAdmin,
 		"exp":      time.Now().Add(time.Hour * time.Duration(expiry)).Unix(),
 	}
 

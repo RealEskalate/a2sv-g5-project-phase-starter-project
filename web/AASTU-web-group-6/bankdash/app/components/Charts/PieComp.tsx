@@ -47,12 +47,12 @@ const chartConfig = {
 
 export function PieComp() {
   return (
-    <div className="flex w-full it gap-6 p-8 bg-white rounded-3xl border-solid border-2 border-gray-200">
+    <div className="flex w-full it gap-6 p-8 bg-white rounded-3xl">
       <Card className="w-full flex flex-col border-0 shadow-none bg-transparent">
         <CardContent className="flex pb-0 p-0">
           <ChartContainer
             config={chartConfig}
-            className="mx-auto aspect-square h-64"
+            className="sm:w-full lg:w-[330px] lg:h-64"
           >
             <PieChart className="">
               <ChartTooltip

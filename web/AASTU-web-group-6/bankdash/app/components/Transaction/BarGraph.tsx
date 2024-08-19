@@ -2,14 +2,9 @@
 
 import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, Cell } from "recharts";
+import { DailyAmount } from "@/types/TransactionValue";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
@@ -17,25 +12,35 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-];
+// const chartData = [
+//   { month: "January", desktop: 186 },
+//   { month: "February", desktop: 305 },
+//   { month: "March", desktop: 237 },
+//   { month: "April", desktop: 73 },
+//   { month: "May", desktop: 209 },
+//   { month: "June", desktop: 214 },
+// ];
+// const chartData = [
+//   { day: "Mon", amount: 0 },
+//   { day: "Tue", amount: 0 },
+//   { day: "Wed", amount: 0 },
+//   { day: "Thur", amount: 0 },
+//   { day: "Fri", amount: 102500 },
+//   { day: "Sat", amount: 0 },
+//   { day: "Sun", amount: 0 },
+// ];
 
 const chartConfig = {
   desktop: {
-    label: "Desktop",
+    label: "amount",
     color: "#EDF0F7",
   },
 } satisfies ChartConfig;
 
-const BarGraph = () => {
+const BarGraph = ({ chartData }: { chartData: DailyAmount[] }) => {
+// const BarGraph = () => {
+  console.log(chartData, "hello");
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
   const handleMouseOver = (index: number) => {
     setActiveIndex(index);
   };
@@ -52,7 +57,7 @@ const BarGraph = () => {
             <BarChart data={chartData}>
               <CartesianGrid vertical={false} />
               <XAxis
-                dataKey="month"
+                dataKey="day"
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
@@ -62,7 +67,7 @@ const BarGraph = () => {
                 cursor={false}
                 content={<ChartTooltipContent hideLabel />}
               />
-              <Bar dataKey="desktop" radius={8}>
+              <Bar dataKey="amount" radius={8}>
                 {chartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}

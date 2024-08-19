@@ -1,157 +1,129 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faClose, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faBell } from "@fortawesome/free-regular-svg-icons";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 
-const Sidebar = () => {
+const Sidebar = ({
+  isOpen,
+  closeSidebar,
+}: {
+  isOpen: boolean;
+  closeSidebar: () => void;
+}) => {
   const pathname = usePathname();
+  const router = useRouter();
 
-  const isActive = (path: string) => pathname === path;
+  // Memoizing the isActive function to prevent unnecessary recalculations
+  const isActive = useMemo(
+    () => (path: string) => pathname === path,
+    [pathname]
+  );
+
+  const menuItems = [
+    {
+      label: "Dashboard",
+      url: "/",
+      icon: "/assets/home-icon.svg",
+      active: "/assets/home-icon-active.svg",
+    },
+    {
+      label: "Transactions",
+      url: "/transaction",
+      icon: "/assets/transfer-icon.svg",
+      active: "/assets/transfer-icon-active.svg",
+    },
+    {
+      label: "Accounts",
+      url: "/account",
+      icon: "/assets/account-icon.svg",
+      active: "/assets/account-icon-active.svg",
+    },
+    {
+      label: "Investments",
+      url: "/investment",
+      icon: "/assets/invest-icon.svg",
+      active: "/assets/invest-icon-active.svg",
+    },
+    {
+      label: "Credit Cards",
+      url: "/credit-cards",
+      icon: "/assets/card-icon.svg",
+      active: "/assets/card-icon-active.svg",
+    },
+    {
+      label: "Loans",
+      url: "/loan",
+      icon: "/assets/loan-icon.svg",
+      active: "/assets/loan-icon-active.svg",
+    },
+    {
+      label: "Services",
+      url: "/service",
+      icon: "/assets/service-icon.svg",
+      active: "/assets/service-icon-active.svg",
+    },
+    {
+      label: "My Privileges",
+      url: "/privilages",
+      icon: "/assets/privi-icon.svg",
+      active: "/assets/privi-icon-active.svg",
+    },
+    {
+      label: "Setting",
+      url: "/setting",
+      icon: "/assets/setting-icon.svg",
+      active: "/assets/setting-icon-active.svg",
+    },
+  ];
 
   return (
-    <div className="py-6 px-5 flex flex-col gap-8 border-r border-r-[#E6EFF5] bg-white">
-      <div className="flex gap-2">
+    <div className="py-6 px-5 w-[99.6%]  h-screen flex flex-col gap-8 border-r border-r-[#E6EFF5] bg-white">
+      <div className="flex gap-2 px-[4%] relative">
         <Image src="/assets/logo.svg" alt="logo" width={36} height={36} />
-        <h1 className="text-3xl font-bold text-[#343C6A]">BankDash</h1>
+        <h1 className="text-2xl font-extrabold text-[#343C6A]">BankDash.</h1>
+        <button
+          onClick={closeSidebar}
+          className="bg-[#F5F7FA] rounded-[12px] p-3 py-2 flex items-center absolute left-64 hover:bg-[#d0e6f6] lg:hidden"
+        >
+          <FontAwesomeIcon icon={faClose} className="text-2xl text-gray-700" />
+        </button>
       </div>
 
       {/* Menu */}
-      <div className="px-8 flex flex-col gap-y-8 font-medium">
-        <Link href="/" className="flex items-center gap-x-6">
-          <Image src="/assets/home 2.svg" alt="logo" width={25} height={25} />
-          <h2
-            className={`text-base font-medium ${
-              isActive("/") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            } hover:text-blue-500`}
+      <div className="p-3 px-6 flex flex-col gap-2 text-base font-medium text-nowrap">
+        {menuItems.map((item, index) => (
+          <button
+            key={index}
+            onClick={() => {
+              router.push(item.url);
+              closeSidebar();
+            }}
+            className="flex items-center gap-x-6 relative py-3"
           >
-            Dashboard
-          </h2>
-        </Link>
-
-        <Link href="/transaction" className="flex items-center gap-x-6">
-          <Image
-            src="/assets/transfer 1.svg"
-            alt="logo"
-            width={25}
-            height={25}
-          />
-          <h2
-            className={`text-base ${
-              isActive("/transaction") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            } hover:text-blue-500`}
-          >
-            Transactions
-          </h2>
-        </Link>
-
-        <Link href="/accounts" className="flex items-center gap-x-6">
-          <Image
-            src="/assets/user 3 1.svg"
-            alt="logo"
-            width={25}
-            height={25}
-          />
-          <h2
-            className={`text-base ${
-              isActive("/accounts") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            } hover:text-blue-500`}
-          >
-            Accounts
-          </h2>
-        </Link>
-
-        <Link href="/investments" className="flex items-center gap-x-6">
-          <Image
-            src="/assets/economic-investment 1.svg"
-            alt="logo"
-            width={25}
-            height={25}
-          />
-          <h2
-            className={`text-base ${
-              isActive("/investments") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            } hover:text-blue-500`}
-          >
-            Investments
-          </h2>
-        </Link>
-
-        <Link href="/credit-cards" className="flex items-center gap-x-6">
-          <Image
-            src="/assets/credit-card 1.svg"
-            alt="logo"
-            width={25}
-            height={25}
-          />
-          <h2
-            className={`text-base ${
-              isActive("/credit-cards") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            } hover:text-blue-500`}
-          >
-            Credit Cards
-          </h2>
-        </Link>
-
-        <Link href="/loan" className="flex items-center gap-x-6">
-          <Image src="/assets/loan 1.svg" alt="logo" width={25} height={25} />
-          <h2
-            className={`text-base ${
-              isActive("/loan") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            } hover:text-blue-500`}
-          >
-            Loans
-          </h2>
-        </Link>
-
-        <Link href="/service" className="flex items-center gap-x-6">
-          <Image
-            src="/assets/service 1.svg"
-            alt="logo"
-            width={25}
-            height={25}
-          />
-          <h2
-            className={`text-base ${
-              isActive("/service") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            } hover:text-blue-500`}
-          >
-            Services
-          </h2>
-        </Link>
-
-        <Link href="/privilages" className="flex items-center gap-x-6">
-          <Image
-            src="/assets/econometrics 1.svg"
-            alt="logo"
-            width={25}
-            height={25}
-          />
-          <h2
-            className={`text-base ${
-              isActive("/privilages") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            } hover:text-blue-500`}
-          >
-            My Privileges
-          </h2>
-        </Link>
-
-        <Link href="/setting" className="flex items-center gap-x-6">
-          <Image
-            src="/assets/settings solid 1.svg"
-            alt="logo"
-            width={25}
-            height={25}
-          />
-          <h2
-            className={`text-base ${
-              isActive("/setting") ? "text-[#1814F3]" : "text-[#b1b1b1]"
-            } hover:text-blue-500`}
-          >
-            Setting
-          </h2>
-        </Link>
+            <div
+              className={`${
+                isActive(item.url) ? "visible" : "hidden"
+              } flex w-6 h-[45px] rounded-[32px] bg-[#1814F3] absolute left-[-60px]`}
+            ></div>
+            <Image
+              src={isActive(item.url) ? item.active : item.icon}
+              alt={item.label}
+              width={20}
+              height={20}
+            />
+            <div
+              className={`${
+                isActive(item.url) ? "text-[#1814F3]" : "text-[#B1B1B1]"
+              } hover:text-[#1814F3]`}
+            >
+              {item.label}
+            </div>
+          </button>
+        ))}
       </div>
     </div>
   );

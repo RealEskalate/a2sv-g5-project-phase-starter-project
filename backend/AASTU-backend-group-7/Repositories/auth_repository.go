@@ -126,7 +126,6 @@ func (au *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 	user.Password = string(hashedPassword)
 	user.Role = "role"
 	user.CreatedAt = time.Now()
-	user.Posts = []primitive.ObjectID{}
 
 	InsertedID, err := au.UserCollection.InsertOne(ctx, user)
 	if err != nil {

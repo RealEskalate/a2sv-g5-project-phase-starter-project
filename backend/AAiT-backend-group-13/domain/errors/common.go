@@ -1,4 +1,3 @@
-
 package er
 
 import "fmt"
@@ -25,6 +24,8 @@ const (
 
 	// Unauthorized represents an error for unauthorized access.
 	Unauthorized = "Unauthorized"
+
+	BadRequest = "Bad Request"
 )
 
 // Error represents a custom domain error with a type and message.
@@ -55,6 +56,12 @@ func (e Error) Type() string {
 // NewValidation creates a new validation error with the given message.
 func NewValidation(message string) *Error {
 	return new(Validation, message)
+}
+
+// NewBadRequest creates a new Error with a 400 Bad Request status code
+// and the provided message.
+func NewBadRequest(message string) *Error {
+	return new(BadRequest, message)
 }
 
 // NewConflict creates a new conflict error with the given message.

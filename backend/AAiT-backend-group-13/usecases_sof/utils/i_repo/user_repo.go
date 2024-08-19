@@ -2,7 +2,6 @@ package irepository
 
 import (
 	"github.com/google/uuid"
-	ihash "github.com/group13/blog/domain/i_hash"
 	usermodel "github.com/group13/blog/domain/models/user"
 )
 
@@ -11,7 +10,5 @@ type UserRepository interface {
 	FindById(id uuid.UUID) (*usermodel.User, error)
 	FindByUsername(username string) (*usermodel.User, error)
 	FindByEmail(email string) (*usermodel.User, error)
-	MatchPassword(password string, hashedPassword string, hash ihash.Service) bool
-	GenerateValidationLink(user usermodel.User) (string, error)
 	
 }

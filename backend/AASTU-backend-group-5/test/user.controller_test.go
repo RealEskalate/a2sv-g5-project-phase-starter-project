@@ -1,4 +1,4 @@
-package controller
+package test
 
 import (
 	"bytes"
@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/RealEskalate/blogpost/delivery/controller"
 	"github.com/RealEskalate/blogpost/domain"
 	"github.com/RealEskalate/blogpost/mocks"
 	"github.com/gin-gonic/gin"
@@ -17,13 +18,13 @@ import (
 
 type UserControllerSuite struct {
 	suite.Suite
-	controller *UserController
+	controller *controller.UserController
 	usecase    *mocks.User_Usecase_interface
 }
 
 func (suite *UserControllerSuite) SetupTest() {
 	usecase := new(mocks.User_Usecase_interface)
-	suite.controller = &UserController{UserUsecase: usecase}
+	suite.controller = &controller.UserController{UserUsecase: usecase}
 	suite.usecase = usecase
 }
 

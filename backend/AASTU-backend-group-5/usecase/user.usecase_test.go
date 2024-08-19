@@ -3,6 +3,7 @@ package usecase
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/RealEskalate/blogpost/domain"
 	"github.com/RealEskalate/blogpost/mocks"
@@ -18,19 +19,24 @@ type UserUseCaseSuite struct {
 
 func (suite *UserUseCaseSuite) SetupTest() {
 	repo := new(mocks.User_Repository_interface)
-	suite.usecase = &UserUseCase{UserRepo: repo}
+	suite.usecase = NewUserUseCase(repo)
 	suite.repo = repo
 }
 
 func (suite *UserUseCaseSuite) TestGetOneUser() {
 	id := primitive.NewObjectID()
+	pp := domain.Media{
+		Uplaoded_date: time.Now(),
+		Path: "path/img.png",
+		ID: primitive.NewObjectID(),
+	}
 	user := domain.User{
 		ID:    id,
 		UserName: "username",
 		Email: "test@gmail.com",
 		Is_Admin: false,
 		Bio: "test bio",
-		ProfilePicture: "pp",
+		ProfilePicture: pp,
 	}
 
 	suite.repo.On("GetUserDocumentByID", id.Hex()).Return(user, nil)
@@ -53,6 +59,11 @@ func (suite *UserUseCaseSuite) TestGetOneUser_Error() {
 
 
 func (suite *UserUseCaseSuite) TestGetUsers() {
+	pp := domain.Media{
+		Uplaoded_date: time.Now(),
+		Path: "path/img.png",
+		ID: primitive.NewObjectID(),
+	}
 	users := []domain.User{
 		{
 			ID:    primitive.NewObjectID(),
@@ -60,7 +71,7 @@ func (suite *UserUseCaseSuite) TestGetUsers() {
 			Email: "test@gmail.com",
 			Is_Admin: false,
 			Bio: "test bio",
-			ProfilePicture: "pp",
+			ProfilePicture: pp,
 		},
 	}
 
@@ -89,13 +100,19 @@ func (suite *UserUseCaseSuite) TestUpdateUser() {
 		UserName: "updated username",
 	}
 
+	pp := domain.Media{
+		Uplaoded_date: time.Now(),
+		Path: "path/img.png",
+		ID: primitive.NewObjectID(),
+	}
+
 	updatedUser := domain.User{
 		ID:    id,
 		UserName: "updated username",
 		Email: "test@gmail.com",
 		Is_Admin: false,
 		Bio: "test bio",
-		ProfilePicture: "pp",
+		ProfilePicture: pp,
 	}
 
 	suite.repo.On("UpdateUserDocument", id.Hex(), updateUser).Return(updatedUser, nil)
@@ -151,13 +168,19 @@ func (suite *UserUseCaseSuite) TestLogIn() {
 		Password: "password",
 	}
 
+	pp := domain.Media{
+		Uplaoded_date: time.Now(),
+		Path: "path/img.png",
+		ID: primitive.NewObjectID(),
+	}
+
 	loggedUser := domain.User{
 		ID:    primitive.NewObjectID(),
 		UserName: "username",
 		Email: "test@gmail.com",
 		Is_Admin: false,
 		Bio: "test bio",
-		ProfilePicture: "pp",
+		ProfilePicture: pp,
 	}
 
 	suite.repo.On("LogIn", loginUser).Return(loggedUser, nil)
@@ -186,21 +209,26 @@ func (suite *UserUseCaseSuite) TestLogIn_Error() {
 
 
 func (suite *UserUseCaseSuite) TestRegister() {
+	
+	
 	registerUser := domain.RegisterUser{
 		UserName: "username",
 		Bio: "test bio",
-		ProfilePicture: "pp",
 		Email: "test@gmail.com",
 		Password: "password",
 	}
-
+	pp := domain.Media{
+		Uplaoded_date: time.Now(),
+		Path: "path/img.png",
+		ID: primitive.NewObjectID(),
+	}
 	registeredUser := domain.User{
 		ID:    primitive.NewObjectID(),
 		UserName: "username",
 		Email: "test@gmail.com",
 		Is_Admin: false,
 		Bio: "test bio",
-		ProfilePicture: "pp",
+		ProfilePicture: pp,
 	}
 
 	suite.repo.On("Register", registerUser).Return(registeredUser, nil)
@@ -214,7 +242,6 @@ func (suite *UserUseCaseSuite) TestRegister_Error() {
 	registerUser := domain.RegisterUser{
 		UserName: "username",
 		Bio: "test bio",
-		ProfilePicture: "pp",
 		Email: "test@gmail.com",
 		Password: "password",
 	}
@@ -230,6 +257,13 @@ func (suite *UserUseCaseSuite) TestRegister_Error() {
 
 func (suite *UserUseCaseSuite) TestFilterUser() {
 	filter := map[string]string{"email": "test@gmail.com"}
+	
+	pp := domain.Media{
+		Uplaoded_date: time.Now(),
+		Path: "path/img.png",
+		ID: primitive.NewObjectID(),
+	}
+	
 	users := []domain.User{
 		{
 			ID:    primitive.NewObjectID(),
@@ -237,7 +271,7 @@ func (suite *UserUseCaseSuite) TestFilterUser() {
 			Email: "test@gmail.com",
 			Is_Admin: false,
 			Bio: "test bio",
-			ProfilePicture: "pp",
+			ProfilePicture: pp,
 		},
 	}
 

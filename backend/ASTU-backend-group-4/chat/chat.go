@@ -27,7 +27,7 @@ type Usecase interface {
 	DeleteChat(chatID string) error
 	GenerateChatTitle(message Message) (string, error)
 	GetChat(chatID string) (Chat, error)
-	GetChats() ([]Chat, error)
+	GetChats(pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error)
 	SendMessage(chatID string, message Message) error
 }
 

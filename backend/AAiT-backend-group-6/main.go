@@ -2,7 +2,8 @@ package main
 
 import (
 	"AAiT-backend-group-6/bootstrap"
-	"time"
+	"AAiT-backend-group-6/delivery/routers"
+	// "time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,13 +14,14 @@ func main() {
 	env := app.Env
 
 	db := app.Mongo.Database(env.DBName)
+	println(db)
 	defer app.CloseDBConnection()
 
-	timeout := time.Duration(env.ContextTimeout) * time.Second
+	// timeout := time.Duration(env.ContextTimeout) * time.Second
 
 	gin := gin.Default()
 
-	route.Setup(env, timeout, db, gin)
+	routers.SetupRouter(db, gin)
 
 	gin.Run(env.ServerAddress)
 }

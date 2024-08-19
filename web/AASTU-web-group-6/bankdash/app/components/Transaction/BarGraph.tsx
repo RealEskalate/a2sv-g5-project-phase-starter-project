@@ -38,7 +38,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const BarGraph = ({ chartData }: { chartData: DailyAmount[] }) => {
-// const BarGraph = () => {
+  // const BarGraph = () => {
   console.log(chartData, "hello");
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const handleMouseOver = (index: number) => {
@@ -51,9 +51,9 @@ const BarGraph = ({ chartData }: { chartData: DailyAmount[] }) => {
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-[25px]">
+      <Card className="rounded-[25px] dark:bg-[#232328]">
         <CardContent>
-          <ChartContainer config={chartConfig} className="h-[200px] w-full">
+          <ChartContainer config={chartConfig} className="h-56 w-full">
             <BarChart data={chartData}>
               <CartesianGrid vertical={false} />
               <XAxis

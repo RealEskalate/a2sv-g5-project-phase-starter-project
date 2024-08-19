@@ -168,16 +168,18 @@
   color: #232323;
 }
 .table-button {
-  @apply border py-2 px-4 text-[#123288] rounded-[50px] border-[#123288] text-center w-fit text-[15px];
+  @apply border py-2 px-4 text-[#143ba5] rounded-[50px] border-[#123288] dark:text-[#153fb1] text-center w-fit text-[15px];
 }
-
+.table-button:hover {
+  background: rgba(0, 0, 255, 0.143);
+}
 .transaction-icon {
   @apply w-[30px] h-[30px] text-[#718EBF];
 }
 .transaction-table td,
 th {
   /* padding-top: 6px; */
-  border-bottom: 1px solid #e5e7eb; /* You can adjust the color and thickness as needed */
+  /* border-bottom: 1px solid #e5e7eb; You can adjust the color and thickness as needed */
 }
 .transaction-table td {
   height: 50px;

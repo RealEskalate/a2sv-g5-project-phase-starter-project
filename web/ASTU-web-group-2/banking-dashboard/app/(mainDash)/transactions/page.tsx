@@ -1,9 +1,9 @@
 import React from "react";
-import CardForCreditCards from "../components/card/CardForCreditCards";
-import CreditCard from "../components/creditCard/CreditCard";
-import Card from "../components/card/Card";
-import MyExpenseChart from "../components/charts/MyExpenseChart";
-import TransactionsDisplay from "../components/transactionsDisplay/TransactionsDisplay";
+import CardForCreditCards from "../../components/card/CardForCreditCards";
+import CreditCard from "../../components/creditCard/CreditCard";
+import Card from "../../components/card/Card";
+import MyExpenseChart from "../../components/charts/MyExpenseChart";
+import TransactionsDisplay from "../../components/transactionsDisplay/TransactionsDisplay";
 
 const TransactionPage = () => {
   return (

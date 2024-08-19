@@ -21,6 +21,7 @@ func NewTagsRepository(blogCollection Domain.BlogCollections) *tagsRepository {
 }
 
 func (repo *tagsRepository) CreateTag(ctx context.Context, tag *Domain.Tag) (error, int) {
+
 	_, err := repo.tagCollection.InsertOne(ctx, tag)
 	if err != nil {
 		return err, 500

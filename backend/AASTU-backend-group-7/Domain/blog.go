@@ -33,7 +33,7 @@ type Tag struct {
 	ID     primitive.ObjectID `bson:"_id,omitempty" bson:"_id,omitempty"`
 	Name   string             `json:"name"`
 	Slug   string             `json:"slug"`
-	PostID primitive.ObjectID `json:"post_id"`
+	Posts []primitive.ObjectID `json:"post_id"`
 }
 
 type LikeDislike struct {

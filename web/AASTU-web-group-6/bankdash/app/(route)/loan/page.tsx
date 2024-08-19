@@ -1,34 +1,15 @@
 import LoanTable from "@/app/components/Loan/LoanTable";
 import React from "react";
-import LoanValue from "@/types/LoanValue";
+import { LoanType } from "@/types/LoanValue";
 import Card from "../../components/Accounts/account";
 import loanApi from "@/app/Services/api/loanApi";
 
-const loans: LoanValue[] = [
-  {
-    description: "Personal Loan",
-    id: 1,
-    loanAmount: 20000,
-    leftToRepay: 14500,
-    Duration: 8,
-    interestRate: 12,
-    Installment: 2500,
-  },
-  {
-    description: "Personal Loan",
-    id: 2,
-    loanAmount: 20000,
-    leftToRepay: 14500,
-    Duration: 8,
-    interestRate: 12,
-    Installment: 2500,
-  },
-];
+const loans: LoanType[] = [];
 
 const Loan = async () => {
-  const accessToken = process.env.NAHOM_TOKEN as string;
+  // const accessToken = process.env.NAHOM_TOKEN as string;
 
-  const loanData = await loanApi.getLoan(accessToken);
+  // const loanData = await loanApi.getLoan(accessToken);
   // console.log(loanData);
   return (
     <div className="space-y-4 mt-4">

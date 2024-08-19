@@ -8,7 +8,7 @@ const ServicesPage = () => {
     <div className="flex flex-col gap-2">
       <InfoboxForServicePage />
       <Card
-        title="Active Loans Overview"
+        title="Bank Services List"
         className="flex flex-col max-sm:w-fit"
       >
         <BankServicesList />

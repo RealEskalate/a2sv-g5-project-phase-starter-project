@@ -24,8 +24,6 @@ func SetUpAuth(router *gin.Engine) {
 		auth.POST("/register", authController.Register)
 		auth.GET("/activate", authController.ActivateAccount)
 
-
-
 		// OAuth``
 		auth.GET("/login/google", authController.HandleGoogleLogin)
 		auth.GET("/callback", authController.HandleGoogleCallback)

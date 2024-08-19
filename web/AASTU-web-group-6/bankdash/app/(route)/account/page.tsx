@@ -1,12 +1,17 @@
-import Card from '../../components/Accounts/account'
-import Last_trans from "../../components/Accounts/Last_trans";
+import Card from "../../components/Accounts/account";
+import LastTransList from "@/app/components/Accounts/LastTransPa";
 import { DebitCreditOver } from "../../components/Accounts/DebitCreditOver";
 import InvoiceCard from "../../components/Accounts/InvoiceCard";
-import VisaCard from '@/app/components/Card/VisaCard';
+import VisaCard from "@/app/components/Card/VisaCard";
+import { useSession } from "next-auth/react";
+import { Card as CardType } from "@/app/Redux/slices/cardSlice";
+import { useAppSelector } from "@/app/Redux/store/store";
 export default function Home() {
+  const { data: session } = useSession();
+
+  const CardData: CardType[] = useAppSelector((state) => state.cards.cards);
   return (
-    <>
-      
+    <div className="w-[96%] flex flex-col grow gap-6 p-8 pt-6">
       <div className="flex flex-col lg:flex-row gap-7">
         <div className="flex lg:w-[45%] gap-7">
           <Card
@@ -48,36 +53,7 @@ export default function Home() {
             Last Transaction
           </p>
           <div className=" bg-white border rounded-3xl p-3 shadow-lg border-gray-300">
-            <Last_trans
-              title="Spotify Subscription"
-              date="25 Jan 2021"
-              type="Shopping"
-              account_no="1234 ****"
-              status="Pending"
-              amount="-$150"
-              color="#DCFAF8"
-              icon="/assets/renew.svg"
-            />
-            <Last_trans
-              title="Mobile Service"
-              date="25 Jan 2021"
-              type="Service"
-              account_no="1234 ****"
-              status="Completed"
-              amount="-$340"
-              color="#E7EDFF"
-              icon="/assets/settings.svg"
-            />
-            <Last_trans
-              title="Emilly Wilson"
-              date="25 Jan 2021"
-              type="Transfer"
-              account_no="1234 ****"
-              status="Completed"
-              amount="+$780"
-              color="#FFE0EB"
-              icon="/assets/userr.svg"
-            />
+            <LastTransList />
           </div>
         </div>
         <div className="lg:w-[30%] lg:h-[250px]">
@@ -89,7 +65,12 @@ export default function Home() {
               See All
             </p>
           </div>
-          <VisaCard isBlack={false} isFade={true} isSimGray={false}/>
+          <VisaCard
+            data={CardData[0]}
+            isBlack={false}
+            isFade={true}
+            isSimGray={false}
+          />
         </div>
       </div>
       <div className="flex flex-col lg:flex-row justify-between my-5">
@@ -135,6 +116,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

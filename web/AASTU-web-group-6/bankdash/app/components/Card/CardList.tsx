@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface ListCardProps {
   img: string;
@@ -28,31 +29,23 @@ const CardList: React.FC<ListCardProps> = ({
   color,
 }) => {
   return (
-    <div>
-      <div className="ml-10 mb-5 flex items-center h-24 bg-white gap-24 border rounded-3xl">
-        <div className={`{icon rounded-full p-3 ${color} ml-4`}>
-          <img src={img} alt="" />
-        </div>
-        <div>
-          <p className="font-medium text-base text-[#232323] -ml-20">{title}</p>
-          <p className="text-[#718EBF] -ml-20 text-[15px]">{desc}</p>
-        </div>
-        <div>
-          <p className="font-medium text-base text-[#232323]">{colOne}</p>
-          <p className="text-[#718EBF] text-[15px]">{descOne}</p>
-        </div>
-        <div>
-          <p className="font-meduim text-base text-[#232323]">{colTwo}</p>
-          <p className="text-[#718EBF] text-[15px]">{descTwo}</p>
-        </div>
-        <div>
-          <p className="font-medium text-base text-[#232323]">{colThree}</p>
-          <p className="text-[#718EBF] text-[15px]">{descThree}</p>
-        </div>
-        <button className="text-[#1814F3] text-[15px] w-36 h-8 mr-5 font-semibold">
-          {btn}
-        </button>
+    <div className="relative flex w-full items-center justify-between bg-white gap-24 rounded-3xl p-4">
+      <div className={`{icon rounded-2xl p-4 ${color}`}>
+        <Image src={img} alt="" width={24} height={24} />
       </div>
+
+      <div className="flex flex-col grow">
+        <p className="font-medium text-base text-[#232323]">{title}</p>
+        <p className="text-[#718EBF] text-[15px]">{desc}</p>
+      </div>
+      <div className="flex flex-col grow">
+        <p className="font-medium text-base text-[#232323]">{title}</p>
+        <p className="text-[#718EBF] text-[15px]">{desc}</p>
+      </div>
+
+      <button className="text-[#1814F3] text-[15px] w-36 font-semibold">
+        {btn}
+      </button>
     </div>
   );
 };

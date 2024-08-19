@@ -6,11 +6,11 @@ import (
 )
 
 type BlogRepository struct {
-	collction mongo.Collection
+	collection mongo.Collection
 }
 
 func NewBlogRepository(collection mongo.Collection) blog.BlogRepository {
 	return &BlogRepository{
-		collction: collection,
+		collection: collection,
 	}
 }

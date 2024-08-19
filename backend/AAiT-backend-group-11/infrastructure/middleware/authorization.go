@@ -35,13 +35,18 @@ func (middleware *authMiddleware) AuthMiddleware(role string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
 		claims := middleware.TokenService.GetClaimsFromToken(accessToken)
-		if claims["role"] != role {
-			c.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions"})
-			c.Abort()
-			return
+		if role!=""{
+			if claims["role"] != role {
+				c.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions"})
+				c.Abort()
+				return
+			}
 		}
+		
+		c.Set("userId", claims["userId"])
+		c.Set("role", claims["role"])
+		c.Set("userName", claims["useName"])
 		c.Next()
 	}
 

@@ -8,10 +8,8 @@ import (
 type JwtService interface {
 	GenerateAccessTokenWithPayload(user User) (string, error)
 	GenerateRefreshTokenWithPayload(user User) (string, error)
-	GenerateVerificationToken(user *User) (string, error)
 	ValidateAccessToken(token string) (*jwt.Token, error)
 	ValidateRefreshToken(token string) (*jwt.Token, error)
-	ValidateVerificationToken(token string) (*jwt.Token, error)
 	RevokedToken(token string) error
 }
 
@@ -22,6 +20,6 @@ type PasswordService interface {
 
 type MiddlewareService interface {
 	Authenticate() gin.HandlerFunc
-
-	Authorize(...string) gin.HandlerFunc
+	Authorize() gin.HandlerFunc
 }
+

@@ -81,6 +81,26 @@ func (repository *UserRepository)UpdateUserDocument(id string , user domain.Upda
 	return new_user , nil
 }
 
+func (repository *UserRepository)UpdateUserPassword(id string , new_hashed_password string) (domain.User , error) {
+	pid , err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	filter := bson.D{{Key: "_id" , Value: pid}}
+	update := bson.D{{Key: "$set" , Value: bson.D{{Key: "password" , Value: new_hashed_password}}}}
+
+	result := repository.Collection.FindOneAndUpdate(context.TODO() , filter , update)
+	var user domain.User
+
+	err = result.Decode(&user)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	return user,nil
+}
+
 func (repository *UserRepository)DeleteUserDocument(id string) (error) {
 	pid,err := primitive.ObjectIDFromHex(id)
 	if err != nil {

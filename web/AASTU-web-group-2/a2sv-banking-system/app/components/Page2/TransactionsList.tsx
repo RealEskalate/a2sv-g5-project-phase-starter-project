@@ -12,12 +12,12 @@ interface Transaction {
 }
 
 const TransactionsList = () => {
-  const columns: Column<Transaction>[] = [
+  const columns: Array<{ Header: string; accessor: keyof Transaction; Cell?: (row: any) => JSX.Element }> = [
     {
       Header: '',
       accessor: 'amount',
-      Cell: ({ amount }: { amount: string }) => {
-        const amountValue = parseFloat(amount.replace(/[^0-9.-]/g, ''));
+      Cell: ({ value }: { value: string | undefined }) => {
+        const amountValue = value ? parseFloat(value.replace(/[^0-9.-]/g, '')) : 0;
         const isPositive = amountValue > 0;
         return (
           <div className="flex items-center">
@@ -35,9 +35,9 @@ const TransactionsList = () => {
     {
       Header: 'Description',
       accessor: 'description',
-      Cell: ({ description }: { description: string }) => (
+      Cell: ({ value }: { value: string }) => (
         <div className="flex items-center">
-          <span className="ml-2">{description}</span>
+          <span className="ml-2">{value}</span>
         </div>
       ),
     },
@@ -60,12 +60,12 @@ const TransactionsList = () => {
     {
       Header: 'Amount',
       accessor: 'amount',
-      Cell: ({ amount }: { amount: string }) => {
-        const amountValue = parseFloat(amount.replace(/[^0-9.-]/g, ''));
+      Cell: ({ value }: { value: string | undefined }) => {
+        const amountValue = value ? parseFloat(value.replace(/[^0-9.-]/g, '')) : 0;
         const isPositive = amountValue > 0;
         return (
           <span className={isPositive ? 'text-green-500' : 'text-red-500'}>
-            {amount}
+            {value || 'N/A'}
           </span>
         );
       },
@@ -91,11 +91,10 @@ const TransactionsList = () => {
       amount: '-$2,500',
       receipt: '',
     },
-  
   ];
 
   return (
-    <div className=" p-4">
+    <div className="p-4">
       {/* Desktop View */}
       <div className="hidden md:block">
         <Table columns={columns} data={data} />
@@ -140,7 +139,6 @@ const TransactionsList = () => {
           </div>
         ))}
       </div>
-      
 
       <div className="flex items-center mt-4 space-x-2">
         <div className="ml-auto flex items-center space-x-1">

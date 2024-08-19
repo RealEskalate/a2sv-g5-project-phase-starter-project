@@ -16,5 +16,4 @@ type User struct {
 	Email      string             `bson:"email" json:"email" validate:"required,email"`
 	Password   string             `bson:"password" json:"password"`
 	Role       Role               `bson:"role" json:"role"`
-	IsVerified bool               `bson:"is_verified" json:"is_verified"`
 }

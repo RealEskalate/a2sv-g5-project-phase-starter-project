@@ -3,14 +3,14 @@ package domain
 import "time"
 
 type Blog struct {
-	ID        string   `bson:"_id" json:"id"`
-	Title     string   `bson:"title" json:"title"`
-	Content   string   `bson:"content" json:"content"`
-	Author    string   `bson:"author" json:"author"`
-	Tags      []string `bson:"tags" json:"tags"`
-	ViewCount int      `bson:"view_count" json:"view_count"`
-	CreatedAt time.Time `bson:"created_at" json:"created_at"`
-	UpdatedAt time.Time    `bson:"updated_at" json:"updated_at"`
+	ID        	string   		`bson:"_id" json:"id"`
+	Title     	string   		`bson:"title" json:"title"`
+	Content   	string   		`bson:"content" json:"content"`
+	Author    	string   		`bson:"author" json:"author"`
+	Tags      	[]string 		`bson:"tags" json:"tags"`
+	ViewCount 	int      		`bson:"view_count" json:"view_count"`
+	CreatedAt 	time.Time 		`bson:"created_at" json:"created_at"`
+	UpdatedAt 	time.Time 		`bson:"updated_at" json:"updated_at"`
 }
 
 type RequestBlog struct {

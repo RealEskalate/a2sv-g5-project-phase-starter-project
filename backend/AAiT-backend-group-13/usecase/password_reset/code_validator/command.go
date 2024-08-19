@@ -11,3 +11,11 @@ type Command struct {
 	// Id is the unique identifier of the user associated with the reset code.
 	Id uuid.UUID
 }
+
+// NewCommand creates a new Command.
+func NewCommand(code int64, id uuid.UUID) *Command {
+	return &Command{
+		Code: code,
+		Id:   id,
+	}
+}

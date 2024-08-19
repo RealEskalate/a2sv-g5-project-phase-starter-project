@@ -7,6 +7,8 @@ import StoreProvider from "./StoreProvider";
 import { SessionProvider } from "next-auth/react";
 import { AuthProvider } from "./AuthProvider";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -25,6 +27,7 @@ export default function RootLayout({
         <StoreProvider>
           <body className={`${inter.className}`}>
             <div className="flex flex-col min-h-screen">
+             <ToastContainer />
               <Navbar title="Dashboard" />
               <div className="flex flex-1">
                 <Sidebar />

@@ -11,15 +11,6 @@ const CardStatistics = () => {
 		{ browser: "MCP Bank", visitors: 173, fill: "#FFBB38" },
 	]);
 
-	useEffect(() => {
-		// Example: Fetch data from an API or compute data dynamically
-		// fetch("/api/chartData")
-		// 	.then((response) => response.json())
-		// 	.then((data) => setChartData(data))
-		// 	.catch((error) => console.error("Error fetching chart data:", error));
-		// Or update chartData dynamically based on your application logic
-	}, []);
-
 	return (
 		<div className="statics  ">
 			<div className="p-3 font-semibold text-blue-900">
@@ -27,7 +18,7 @@ const CardStatistics = () => {
 			</div>
 			<div>
 				<div className="w-full  bg-white rounded-2xl">
-					<div className="flex justify-center p-8">
+					<div className="flex justify-center p-6">
 						<DonutChart data={chartData} />
 					</div>
 				</div>

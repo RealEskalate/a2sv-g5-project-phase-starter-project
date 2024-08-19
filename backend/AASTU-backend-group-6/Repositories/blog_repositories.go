@@ -31,8 +31,36 @@ func NewBlogRepository(PostCollection mongo.Collection, UserCollection mongo.Col
 }
 
 // CommentOnBlog implements domain.BlogRepository.
-func (b BlogRepository) CommentOnBlog(blog_id string, commentor_id string, commentor_username string, comment domain.Comment) error {
-	panic("unimplemented")
+func (b BlogRepository) CommentOnBlog(user_id string, user_name string,  comment domain.Comment) error {
+	timeOut := b.env.ContextTimeout
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
+	defer cancel()
+
+	comment.ID = primitive.NewObjectID()
+	fmt.Println(comment)
+	filter := bson.M{"_id" : comment.Blog_ID}
+
+	updated := bson.M{
+		"$push": bson.M{"comments": comment},
+	}
+	_, err := b.PostCollection.UpdateOne(context, filter, updated)
+	if err != nil {
+		return  errors.New("internal server error")
+	}
+	userID, _ := primitive.ObjectIDFromHex(user_id)
+	commentFilter := bson.D{
+        {Key: "_id", Value : userID},
+        {Key : "posts._id", Value: comment.Blog_ID},
+    }
+	update := bson.M{
+		"$push": bson.M{"posts.$.comments": comment},
+	}
+	fmt.Println(commentFilter, update)
+    _, err = b.UserCollection.UpdateOne(context, commentFilter, update)
+	if err != nil{
+		return errors.New("internal server error")
+	}
+	return nil
 }
 
 // CreateBlog implements domain.BlogRepository.
@@ -65,7 +93,6 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string
 		"$push": bson.M{"posts": blog},
 	}
 	_, err = b.UserCollection.UpdateOne(context, filter, update)
-	fmt.Println(filter, update)
 	if err != nil {
 		return domain.Blog{}, errors.New("internal server error")
 	}

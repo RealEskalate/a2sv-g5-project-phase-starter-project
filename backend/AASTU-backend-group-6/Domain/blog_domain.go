@@ -22,8 +22,8 @@ type Blog struct {
 type Comment struct {
 	ID                 primitive.ObjectID `bson:"_id,omitempity" json:"id" `
 	Blog_ID            primitive.ObjectID `bson:"blog_id"`
-	Commentor_ID       primitive.ObjectID `bson:"commentor_id" validate:"required"`
-	Commentor_username string             `bson:"commentor_username" validate:"required"`
+	Commentor_ID       primitive.ObjectID `bson:"commentor_id"`
+	Commentor_username string             `bson:"commentor_username"`
 	Content            string             `bson:"content" validate:"required,min=1,max=255"`
 }
 
@@ -33,7 +33,7 @@ type BlogUsecase interface {
 	GetBlogs(pageNo string, pageSize string) ([]Blog, Pagination, error)
 	UpdateBlogByID(user_id string, blog_id string, blog Blog, role string) (Blog, error)
 	DeleteBlogByID(user_id string, blog_id string, role string) ErrorResponse
-	CommentOnBlog(blog_id string, commentor_id string, commentor_username string, comment Comment) error
+	CommentOnBlog(user_id string, user_name string,  comment Comment) error
 
 
 	SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]Blog, Pagination, ErrorResponse)
@@ -49,7 +49,7 @@ type BlogRepository interface {
 	GetBlogs(pageNo int64, pageSize int64) ([]Blog, Pagination, error)
 	UpdateBlogByID(user_id string, blog_id string, blog Blog) (Blog, error)
 	DeleteBlogByID(user_id string, blog_id string) ErrorResponse
-	CommentOnBlog(blog_id string, commentor_id string, commentor_username string, comment Comment) error
+	CommentOnBlog(user_id string, user_name string, comment Comment) error
 
 	SearchBlogByTitleAndAuthor(title string, author string, pageNo int64, pageSize int64) ([]Blog, Pagination, error)
 	FilterBlogsByTag(tags []string, pageNo int64, pageSize int64) ([]Blog, Pagination, error)

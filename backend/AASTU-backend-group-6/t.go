@@ -14,7 +14,7 @@ func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToke
 
 	// Create claims
 	claims := &domain.JwtCustomClaims{
-		Name: user.Full_Name,
+		UserName: user.Username,
 		ID:   user.ID.Hex(),
 		Role: user.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -31,8 +31,8 @@ func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToke
 func main() {
 	id, _ := primitive.ObjectIDFromHex("66c0a0dcdb2272faca4591ae")
 	fmt.Println(CreateAccessToken(&domain.User{
-		Full_Name: "Full_Name",
-		ID:        id,
+		Username: "Full_Name",
+		ID:       id,
 		Role:      "user",
 	}, "access_token_secret", 10))
 }

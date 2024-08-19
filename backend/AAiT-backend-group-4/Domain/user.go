@@ -49,6 +49,7 @@ type UserRepository interface {
 	UpdateProfileImage(c context.Context, id string, profileImage string) (User, error)
 	VerifyUser(c context.Context, id string) (User, error)
 	UpdateTokens(c context.Context, id string, accessToken string, refreshToken string) (User, error)
+	IsAdmin(c context.Context, id string)bool
 }
 
 type UserUsecase interface {

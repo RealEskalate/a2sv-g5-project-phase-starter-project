@@ -1,4 +1,10 @@
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+import { getServerSession } from "next-auth";
 import Image from "next/image";
+import { authOptions } from "../api/auth/[...nextauth]/options";
 
 export default function RootLayout({
   children,

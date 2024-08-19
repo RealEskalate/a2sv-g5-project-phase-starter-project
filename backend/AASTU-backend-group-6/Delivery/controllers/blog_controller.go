@@ -4,6 +4,7 @@ import (
 	domain "blogs/Domain"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,13 +23,48 @@ func NewBlogController(BlogUsecase domain.BlogUsecase, validator domain.Validate
 
 // CommentOnBlog implements domain.BlogUsecase.
 func (b BlogController) CommentOnBlog(c *gin.Context) {
-	panic("unimplemented")
+	var comment domain.Comment
+	userID := c.GetString("user_id")
+	userName := c.GetString("user_name")
+	if userID == "" || userName == ""{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status:  http.StatusUnauthorized,
+		})
+		return
+	}
+	if err := c.ShouldBind(&comment); err != nil{
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Message: err.Error(),
+			Status:  http.StatusBadRequest,
+		})
+		return
+	}
+	if err := b.Validator.ValidateStruct(comment); err != nil{
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Message: "Invalid request payload.",
+			Status:  http.StatusBadRequest,
+		})
+		return
+	}
+	err := b.BlogUsecase.CommentOnBlog(userID, userName, comment)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
+			Message: err.Error(),
+			Status: http.StatusInternalServerError,
+		})
+		return
+	}
+	c.JSON(http.StatusCreated, domain.SuccessResponse{
+		Message: "Comment created successfully",
+		Status: http.StatusCreated,
+	} )
 }
 
 // CreateBlog implements domain.BlogUsecase.
 func (b BlogController) CreateBlog(c *gin.Context) {
 	var blog domain.Blog
-	userID := c.GetString("id")
+	userID := c.GetString("user_id")
 	role := c.GetString("role")
 	if userID == "" || role == "" {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
@@ -78,8 +114,9 @@ func (b BlogController) DeleteBlogByID(c *gin.Context) {
 		})
 		return
 	}
-	userID := c.GetString("id")
+	userID := c.GetString("user_id")
 	role := c.GetString("role")
+	fmt.Println(userID, role)
 	if userID == "" || role == "" {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
 			Message: "Authentication failed.",
@@ -101,13 +138,57 @@ func (b BlogController) DeleteBlogByID(c *gin.Context) {
 
 // FilterBlogsByTag implements domain.BlogUsecase.
 func (b BlogController) FilterBlogsByTag(c *gin.Context) {
-	panic("unimplemented")
+	pageNo := c.Query("pageNo")
+	pageSize := c.Query("pageSize")
+
+	if pageNo == "" {
+		pageNo = "0"
+	}
+	if pageSize == "" {
+		pageSize = "0"
+	}
+
+	tagsParam := c.Query("tags")
+	var tags []string
+	if tagsParam != "" {
+		tags = strings.Split(tagsParam, ",")
+		if len(tags) == 0 {
+			c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+				Status:  http.StatusBadRequest,
+				Message: "tags should not empty",
+			})
+			c.Abort()
+		}
+	} else {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Message: "tags should not empty",
+		})
+		c.Abort()
+	}
+	blogs, pagination, err := b.BlogUsecase.FilterBlogsByTag(tags, pageNo, pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	} else {
+		data := make(map[string]interface{}, 2)
+		data["blogs"] = blogs
+		data["pagination"] = pagination
+
+		c.JSON(http.StatusAccepted, domain.SuccessResponse{
+			Status:  http.StatusAccepted,
+			Data:    data,
+			Message: "blogs",
+		})
+	}
 }
 
 // GetBlogByID implements domain.BlogUsecase.
 func (b BlogController) GetBlogByID(c *gin.Context) {
-	user_id := c.Param("id")
-	if user_id == "" {
+	blog_id := c.Param("id")
+	if blog_id == "" {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: "user id is required",
 			Status:  http.StatusBadRequest,
@@ -115,7 +196,7 @@ func (b BlogController) GetBlogByID(c *gin.Context) {
 		c.Abort()
 	}
 
-	blog, err := b.BlogUsecase.GetBlogByID(user_id)
+	blog, err := b.BlogUsecase.GetBlogByID(blog_id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Message: err.Error(),
@@ -162,8 +243,16 @@ func (b BlogController) GetMyBlogByID(c *gin.Context) {
 		})
 		c.Abort()
 	}
-	user_id := "60f1b3b3b3b3b3b3b3b3b3b3"
-	blog, err := b.BlogUsecase.GetMyBlogByID(user_id, blog_id)
+	user_id := c.GetString("user_id")
+	role := c.GetString("role")
+	if user_id == "" || role == "" {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Message: "User id is required",
+			Status:  http.StatusBadRequest,
+		})
+	}
+
+	blog, err := b.BlogUsecase.GetMyBlogByID(user_id, blog_id, role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Message: err.Error(),
@@ -189,14 +278,17 @@ func (b BlogController) GetMyBlogs(c *gin.Context) {
 	if pageSize == "" {
 		pageSize = "0"
 	}
+
 	// user_id, user_id_existes := c.Get("id")
-	user_id := "60f1b3b3b3b3b3b3b3b3b3b3"
-	// if !user_id_existes {
-	// 	c.JSON(http.StatusBadRequest, domain.ErrorResponse{
-	// 		Message: "User Not known",
-	// 		Status:  http.StatusBadRequest,
-	// 	})
-	// }
+	user_id := c.GetString("user_id")
+	// role := c.GetString("role")
+	if user_id == "" {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Message: "User id is required",
+			Status:  http.StatusBadRequest,
+		})
+	}
+
 	myBlogs, pagination, err := b.BlogUsecase.GetMyBlogs(user_id, pageNo, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
@@ -213,23 +305,47 @@ func (b BlogController) GetMyBlogs(c *gin.Context) {
 func (b BlogController) SearchBlogByTitleAndAuthor(c *gin.Context) {
 	title := c.Query("title")
 	author := c.Query("author")
-	x := fmt.Sprintf("title: %s, author: %s", title, author)
-	fmt.Println("////////////////////////////")
-	fmt.Println(title, author)
-	fmt.Println("////////////////////////////")
-	c.JSON(200, gin.H{"des blogs": x})
+	pageNo := c.Query("pageNo")
+	pageSize := c.Query("pageSize")
+	blogs, pagination, err := b.BlogUsecase.SearchBlogByTitleAndAuthor(title, author, pageNo, pageSize)
+  
+	if err != (domain.ErrorResponse{}) {
+		c.JSON(err.Status, domain.ErrorResponse{
+			Message: err.Message,
+			Status: err.Status,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, domain.SuccessResponse{
+		Message: "Blogs fetched successfully.",
+		Data: map[string]interface{}{
+			"Blogs":      blogs,
+			"Pagination": pagination,
+		},
+		Status: http.StatusOK,
+	})
 }
 
 // UpdateBlogByID implements domain.BlogUsecase.
 func (b BlogController) UpdateBlogByID(c *gin.Context) {
-	id := c.Param("id")
-	if id == "" {
+
+	blog_id := c.Param("id")
+	if blog_id == "" {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
-			Message: "user id is required",
+			Message: "blog id is required",
 			Status:  http.StatusBadRequest,
 		})
 		c.Abort()
 	}
+	user_id := c.GetString("user_id")
+	role := c.GetString("role")
+	if user_id == "" || role == "" {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Message: "User id is required",
+			Status:  http.StatusBadRequest,
+		})
+	}
+
 	var blog domain.Blog
 	if err := c.ShouldBind(&blog); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
@@ -238,7 +354,7 @@ func (b BlogController) UpdateBlogByID(c *gin.Context) {
 		})
 		c.Abort()
 	}
-	updatedBlog, err := b.BlogUsecase.UpdateBlogByID("", id, blog)
+	updatedBlog, err := b.BlogUsecase.UpdateBlogByID(user_id, blog_id, blog, role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Message: err.Error(),

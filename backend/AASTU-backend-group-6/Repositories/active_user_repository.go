@@ -20,6 +20,7 @@ func NewActiveUserRepository(db mongo.Database, collection string) domain.Active
 		collection: collection,
 	}
 }
+
 // CreateActiveUser implements domain.ActiveUserRepository.
 func (a *activeUserRepository) CreateActiveUser(au domain.ActiveUser, c context.Context) error {
 	collection := a.database.Collection(a.collection)
@@ -30,17 +31,24 @@ func (a *activeUserRepository) CreateActiveUser(au domain.ActiveUser, c context.
 }
 
 // DeleteActiveUserById implements domain.ActiveUserRepository.
-func (a *activeUserRepository) DeleteActiveUserById(id primitive.ObjectID, c context.Context) error {
+func (a *activeUserRepository) DeleteActiveUser(ids string, user_agent string, c context.Context) error {
+	id, err := primitive.ObjectIDFromHex(ids)
+	if err != nil {
+		return err
+	}
 	collction := a.database.Collection(a.collection)
-	_, err := collction.DeleteOne(c, bson.M{"_id": id})
+	_, err = collction.DeleteOne(c, bson.M{"id": id, "user_agent": user_agent})
 	return err
 }
 
 // FindActiveUserById implements domain.ActiveUserRepository.
-func (a *activeUserRepository) FindActiveUserById(id primitive.ObjectID, c context.Context) (domain.ActiveUser, error) {
+func (a *activeUserRepository) FindActiveUserById(ids string, c context.Context) (domain.ActiveUser, error) {
 	collection := a.database.Collection(a.collection)
+	id, err := primitive.ObjectIDFromHex(ids)
+	if err != nil {
+		return domain.ActiveUser{}, err
+	}
 	var au domain.ActiveUser
-	err := collection.FindOne(c, bson.M{"_id": id}).Decode(&au)
+	err = collection.FindOne(c, bson.M{"id": id}).Decode(&au)
 	return au, err
 }
-

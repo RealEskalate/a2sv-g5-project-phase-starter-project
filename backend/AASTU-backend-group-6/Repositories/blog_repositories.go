@@ -31,8 +31,36 @@ func NewBlogRepository(PostCollection mongo.Collection, UserCollection mongo.Col
 }
 
 // CommentOnBlog implements domain.BlogRepository.
-func (b BlogRepository) CommentOnBlog(blog_id string, commentor_id string, commentor_username string, comment domain.Comment) error {
-	panic("unimplemented")
+func (b BlogRepository) CommentOnBlog(user_id string, user_name string,  comment domain.Comment) error {
+	timeOut := b.env.ContextTimeout
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
+	defer cancel()
+
+	comment.ID = primitive.NewObjectID()
+	fmt.Println(comment)
+	filter := bson.M{"_id" : comment.Blog_ID}
+
+	updated := bson.M{
+		"$push": bson.M{"comments": comment},
+	}
+	_, err := b.PostCollection.UpdateOne(context, filter, updated)
+	if err != nil {
+		return  errors.New("internal server error")
+	}
+	userID, _ := primitive.ObjectIDFromHex(user_id)
+	commentFilter := bson.D{
+        {Key: "_id", Value : userID},
+        {Key : "posts._id", Value: comment.Blog_ID},
+    }
+	update := bson.M{
+		"$push": bson.M{"posts.$.comments": comment},
+	}
+	fmt.Println(commentFilter, update)
+    _, err = b.UserCollection.UpdateOne(context, commentFilter, update)
+	if err != nil{
+		return errors.New("internal server error")
+	}
+	return nil
 }
 
 // CreateBlog implements domain.BlogRepository.
@@ -65,7 +93,6 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string
 		"$push": bson.M{"posts": blog},
 	}
 	_, err = b.UserCollection.UpdateOne(context, filter, update)
-	fmt.Println(filter, update)
 	if err != nil {
 		return domain.Blog{}, errors.New("internal server error")
 	}
@@ -116,8 +143,37 @@ func (b BlogRepository) DeleteBlogByID(user_id string, blog_id string) domain.Er
 }
 
 // FilterBlogsByTag implements domain.BlogRepository.
-func (b BlogRepository) FilterBlogsByTag(tag string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	panic("unimplemented")
+func (b BlogRepository) FilterBlogsByTag(tags []string, pageNo int64, pageSize int64) ([]domain.Blog, domain.Pagination, error) {
+	pagination := utils.PaginationByPage(pageNo, pageSize)
+	filter := bson.D{{Key: "tags", Value: bson.D{{Key: "$in", Value: tags}}}}
+	totalResults, err := b.PostCollection.CountDocuments(context.TODO(), filter)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+
+	// Calculate total pages
+	totalPages := int64(math.Ceil(float64(totalResults) / float64(pageSize)))
+
+	cursor, err := b.PostCollection.Find(context.TODO(), filter, pagination)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+	var blogs []domain.Blog
+	for cursor.Next(context.TODO()) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return []domain.Blog{}, domain.Pagination{}, err
+		}
+		blogs = append(blogs, blog)
+	}
+	paginationInfo := domain.Pagination{
+		CurrentPage: pageNo,
+		PageSize:    pageSize,
+		TotalPages:  totalPages,
+		TotatRecord: totalResults,
+	}
+
+	return blogs, paginationInfo, nil
 }
 
 // GetBlogByID implements domain.BlogRepository.
@@ -228,14 +284,55 @@ func (b BlogRepository) GetMyBlogs(user_id string, pageNo int64, pageSize int64)
 }
 
 // SearchBlogByTitleAndAuthor implements domain.BlogRepository.
-func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	panic("unimplemented")
+func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, pageNo int64, pageSize int64) ([]domain.Blog, domain.Pagination, error) {
+	timeOut := b.env.ContextTimeout
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
+	defer cancel()
+	pageOption := utils.PaginationByPage(pageNo, pageSize)
+	filter := bson.M{}
+	if title != "" {
+		filter["title"] = bson.M{"$regex": title, "$options": "i"}
+	}
+
+	if author != ""{
+		filter["author"] = bson.M{"$regex": author, "$options": "i"}
+	}
+	totalResults, err := b.PostCollection.CountDocuments(context, filter)
+	if err != nil {
+		return nil, domain.Pagination{}, err
+	}
+	totalPages := int64(math.Ceil(float64(totalResults) / float64(pageSize)))
+	var blogs []domain.Blog
+	cursor, err := b.PostCollection.Find(context, filter, pageOption)
+	if err != nil {
+		return nil, domain.Pagination{}, err
+	}
+	for cursor.Next(context) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return nil, domain.Pagination{}, err
+		}
+		blogs = append(blogs, blog)
+	}
+	if err != nil {
+		return nil, domain.Pagination{}, err
+	}
+	return blogs, domain.Pagination{
+		CurrentPage: pageNo,
+		PageSize:    pageSize,
+		TotalPages:  totalPages,
+		TotatRecord: totalResults,
+	}, nil
 }
 
 // UpdateBlogByID implements domain.BlogRepository.
 func (b BlogRepository) UpdateBlogByID(user_id string, blog_id string, blog domain.Blog) (domain.Blog, error) {
 
 	blog_object_id, err := primitive.ObjectIDFromHex(blog_id)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	user_object_id, err := primitive.ObjectIDFromHex(user_id)
 	if err != nil {
 		return domain.Blog{}, err
 	}
@@ -260,6 +357,21 @@ func (b BlogRepository) UpdateBlogByID(user_id string, blog_id string, blog doma
 
 	filter := primitive.D{{Key: "_id", Value: blog_object_id}}
 	if _, err = b.PostCollection.UpdateOne(context.TODO(), filter, update); err != nil {
+		return domain.Blog{}, err
+	}
+
+	userUpdate := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "posts.$.author", Value: blog.Author},
+			{Key: "posts.$.title", Value: blog.Title},
+			{Key: "posts.$.content", Value: blog.Content},
+			{Key: "posts.$.tags", Value: blog.Tags},
+			{Key: "posts.$.blog_image", Value: blog.Blog_image},
+			{Key: "posts.$.updatedAt", Value: time.Now()},
+		}},
+	}
+
+	if _, err := b.UserCollection.UpdateOne(context.TODO(), primitive.D{{Key: "_id", Value: user_object_id}, {Key: "posts._id", Value: blog_object_id}}, userUpdate); err != nil {
 		return domain.Blog{}, err
 	}
 

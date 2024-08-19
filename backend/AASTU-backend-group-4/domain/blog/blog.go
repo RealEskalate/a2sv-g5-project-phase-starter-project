@@ -1,6 +1,7 @@
 package blog
 
 import (
+	"context"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -18,7 +19,7 @@ type Blog struct {
 }
 
 type BlogUsecase interface {
-	// CreateBlog(ctx context.Context, blog *Blog) error
+	CreateBlog(ctx context.Context, blog *Blog) (*Blog,error)
 	// UpdateBlog(ctx context.Context, authorID primitive.ObjectID, blogID primitive.ObjectID, updatedBlog *Blog) error
 	// DeleteBlog(ctx context.Context, authorID primitive.ObjectID, blogID primitive.ObjectID) error
 	// SearchBlog(ctx context.Context, blogTitle string, blogAuthor string) ([]*Blog, error)
@@ -27,7 +28,7 @@ type BlogUsecase interface {
 }
 
 type BlogRepository interface {
-	// CreateBlog(ctx context.Context, blog *Blog) error
+	CreateBlog(ctx context.Context, blog *Blog) error
 	// UpdateBlog(ctx context.Context, blogID primitive.ObjectID, authorID primitive.ObjectID, updatedBlog *Blog) error
 	// DeleteBlog(ctx context.Context, blogID primitive.ObjectID, authorID primitive.ObjectID) error
 	// SearchBlog(ctx context.Context, blogTitle string, blogAuthor string) ([]*Blog, error)

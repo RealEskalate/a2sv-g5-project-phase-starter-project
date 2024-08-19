@@ -4,6 +4,12 @@ import (
 	"blog-api/domain/blog"
 )
 
-type blogController struct {
+type BlogController struct {
 	usecase blog.BlogUsecase
+}
+
+func NewBlogController(usecase blog.BlogUsecase) *BlogController {
+	return &BlogController{
+		usecase: usecase,
+	}
 }

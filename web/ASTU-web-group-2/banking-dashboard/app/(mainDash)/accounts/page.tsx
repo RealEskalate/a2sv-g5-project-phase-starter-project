@@ -33,7 +33,7 @@ const AccountsPage = () => {
           />
         </CardForCreditCards>
       </div>
-      <div className="flex max-sm:flex-col justify-between gap-8">
+      <div className="flex max-sm:flex-col justify-between">
         <Card
           title="Debit & Credit Overview"
           className="flex flex-col lg:w-[730px] w-[350px]"

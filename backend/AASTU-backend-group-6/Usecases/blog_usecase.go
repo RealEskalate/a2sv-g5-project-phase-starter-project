@@ -21,8 +21,14 @@ func NewBlogUsecase(blogRepository domain.BlogRepository, idConverter domain.IDC
 }
 
 // CommentOnBlog implements domain.BlogRepository.
-func (b BlogUsecase) CommentOnBlog(blog_id string, commentor_id string, commentor_username string, comment domain.Comment) error {
-	panic("unimplemented")
+func (b BlogUsecase) CommentOnBlog(user_id string, user_name string,  comment domain.Comment) error {
+	comment.Commentor_ID = b.idConverter.ToObjectID(user_id)
+	comment.Commentor_username = user_name
+	err := b.blogRepository.CommentOnBlog(user_id, user_name, comment)
+	if err != nil{
+		return err
+	}
+	return nil
 }
 
 // CreateBlog implements domain.BlogRepository.

@@ -1,7 +1,6 @@
 package infrastructure
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -46,10 +45,9 @@ func (authenticate *Auth) AuthenticationMiddleware() gin.HandlerFunc{
 			c.Abort()
 			return
 		}
-		c.Set("user_name", claims.Name)
+		c.Set("user_name", claims.UserName)
 		c.Set("user_id" , claims.ID)
 		c.Set("role", claims.Role)
-		fmt.Println(claims.Name, claims.ID, claims.Role, "dani")
 		c.Next()
 		// Can check the expiration time of the token if it is valid or not
 	}

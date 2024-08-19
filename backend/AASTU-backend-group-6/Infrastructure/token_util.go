@@ -15,7 +15,7 @@ func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToke
 
 	// Create claims
 	claims := &domain.JwtCustomClaims{
-		Name: user.Full_Name,
+		UserName: user.Username,
 		ID:   user.ID.Hex(),
 		Role : user.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -93,13 +93,12 @@ func ExtractFromToken(requestToken string, secret string) (domain.JwtCustomClaim
 		return domain.JwtCustomClaims{}, err
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
-	fmt.Println(ok, claims)
 
 	if !ok && !token.Valid {
 		return domain.JwtCustomClaims{}, fmt.Errorf("invalid token")
 	}
 	return domain.JwtCustomClaims{
-		Name: claims["name"].(string),
+		UserName: claims["user_name"].(string),
 		ID:   claims["id"].(string),
 		Role: claims["role"].(string),
 	}, nil

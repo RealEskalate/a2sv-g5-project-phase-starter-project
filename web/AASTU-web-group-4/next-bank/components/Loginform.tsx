@@ -10,7 +10,9 @@ import {
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import { creditcardstyles, colors ,logo } from "../constants/index";
-import Cookies from 'js-cookie';
+import Cookie from 'js-cookie';
+import { loginUser } from '@/services/authentication';
+
 
 const LoginForm: React.FC = () => {
   const {
@@ -24,30 +26,14 @@ const LoginForm: React.FC = () => {
 
   const onSubmit = async (data: any) => {
     setIsLoading(true);
-    try {
-      const response = await fetch('https://bank-dashboard-6acc.onrender.com/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+      try {
+        const loggedInUser = await loginUser(data);
+        Cookie.set('accessToken', loggedInUser.data.access_token);
+        Cookie.set('refreshToken', loggedInUser.data.refresh_token);
+      } catch (error) {
+        console.error('Login Error:', error);
       }
-
-      const responseData = await response.json();
-      Cookies.set('loginResponse', JSON.stringify(responseData));
-      console.log('Success:', responseData);
-      // You can redirect the user or perform other actions here
-    } catch (error) {
-      console.error('Error:', error);
-      setErrorMessage('Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
   return (
     <div className="flex items-center justify-center h-[50vh]">

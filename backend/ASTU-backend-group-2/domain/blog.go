@@ -63,30 +63,57 @@ type Reaction struct {
 	Date     time.Time          `json:"date" bson:"date"`
 }
 
+// BlogRepository defines the methods required for data access related to blogs and comments.
 type BlogRepository interface {
-	GetAllBlogs(c context.Context) ([]Blog, error)                                            // Retrieves all blogs
-	GetBlogByID(c context.Context, blogID string) (Blog, error)                               // Retrieves a single blog by ID
-	CreateBlog(c context.Context, newBlog *Blog) error                                        // Creates a new blog
-	UpdateBlog(c context.Context, blogID string, updatedBlog *Blog) error                     // Updates an existing blog by ID
-	DeleteBlog(c context.Context, blogID string) error                                        // Deletes a blog by ID
-	GetComments(c context.Context, blogID string) ([]Comment, error)                          // Retrieves comments for a specific blog
-	CreateComment(c context.Context, blogID string, comment *Comment) error                   // Adds a comment to a blog
-	GetComment(c context.Context, blogID, commentID string) (Comment, error)                  // Retrieves a specific comment by ID
-	UpdateComment(c context.Context, blogID, commentID string, updatedComment *Comment) error // Updates a comment by ID
-	DeleteComment(c context.Context, blogID, commentID string) error                          // Deletes a comment by ID
-	LikeBlog(c context.Context, blogID, userID string) error                                  // Adds a like to a blog
+	GetByTags(c context.Context, tags []string) ([]Blog, error)
+	GetAllBlogs(c context.Context) ([]Blog, error)
+	GetBlogByID(c context.Context, blogID string) (Blog, error)
+	GetByPopularity(c context.Context) ([]Blog, error)
+	Search(c context.Context, searchTerm string) ([]Blog, error)
+	CreateBlog(c context.Context, newBlog *Blog) (Blog, error)
+	UpdateBlog(c context.Context, blogID string, updatedBlog *Blog) (Blog, error)
+	DeleteBlog(c context.Context, blogID string) error
+	SortByDate(c context.Context) ([]Blog, error)
 }
 
+
+type CommentRepository interface {
+	GetComments(c context.Context, blogID string) ([]Comment, error)
+	CreateComment(c context.Context, blogID string, comment *Comment) (Comment, error)
+	GetComment(c context.Context, blogID, commentID string) (Comment, error)
+	UpdateComment(c context.Context, blogID, commentID string, updatedComment *Comment) (Comment, error)
+	DeleteComment(c context.Context, blogID, commentID string) error
+}
+
+type LikeRepository interface {
+	LikeBlog(c context.Context, blogID, userID string) error
+	DislikeBlog(c context.Context, blogID, userID string) error
+}
+
+
 type BlogUsecase interface {
-	GetAllBlogs() ([]Blog, error)                                                    // Retrieves all blogs
-	GetBlogByID(blogID string) (Blog, error)                                         // Retrieves a single blog by ID
-	CreateBlog(newBlog Blog) (Blog, error)                                           // Creates a new blog
-	UpdateBlog(blogID string, updatedBlog Blog) (Blog, error)                        // Updates an existing blog by ID
-	DeleteBlog(blogID string) error                                                  // Deletes a blog by ID
-	GetComments(blogID string) ([]Comment, error)                                    // Retrieves comments for a specific blog
-	CreateComment(blogID string, comment Comment) (Comment, error)                   // Adds a comment to a blog
-	GetComment(blogID, commentID string) (Comment, error)                            // Retrieves a specific comment by ID
-	UpdateComment(blogID, commentID string, updatedComment Comment) (Comment, error) // Updates a comment by ID
-	DeleteComment(blogID, commentID string) error                                    // Deletes a comment by ID
-	LikeBlog(blogID string, userID string) error                                     // Adds a like to a blog
+	GetByTags(c context.Context, tags []string) ([]Blog, error)
+	GetAllBlogs(c context.Context) ([]Blog, error)
+	GetBlogByID(c context.Context, blogID string) (Blog, error)
+	GetByPopularity(c context.Context) ([]Blog, error)
+	Search(c context.Context, searchTerm string) ([]Blog, error)
+	CreateBlog(c context.Context, newBlog *Blog) (Blog, error)
+	UpdateBlog(c context.Context, blogID string, updatedBlog *Blog) (Blog, error)
+	DeleteBlog(c context.Context, blogID string) error
+	SortByDate(c context.Context) ([]Blog, error)
+}
+
+
+type CommentUsecase interface {
+	GetComments(c context.Context, blogID string) ([]Comment, error)
+	CreateComment(c context.Context, blogID string, comment *Comment) (Comment, error)
+	GetComment(c context.Context, blogID, commentID string) (Comment, error)
+	UpdateComment(c context.Context, blogID, commentID string, updatedComment *Comment) (Comment, error)
+	DeleteComment(c context.Context, blogID, commentID string) error
+}
+
+
+type LikeUsecase interface {
+	LikeBlog(c context.Context, blogID, userID string) error
+	DislikeBlog(c context.Context, blogID, userID string) error
 }

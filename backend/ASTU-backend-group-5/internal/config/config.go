@@ -15,6 +15,7 @@ type Config struct {
 	EMAIL_SENDER_PASSWORD string
 	APP_DOMAIN            string
 	APP_PORT              string
+	AI_API_DOMAIN         string
 }
 
 func Load() (*Config, error) {
@@ -31,6 +32,7 @@ func Load() (*Config, error) {
 		EMAIL_SENDER_PASSWORD: os.Getenv("SENDER_PASSWORD"),
 		APP_DOMAIN:            os.Getenv("APP_DOMAIN"),
 		APP_PORT:              os.Getenv("APP_PORT"),
+		AI_API_DOMAIN:         os.Getenv("AI_API_DOMAIN"),
 	}
 	return Config, nil
 }

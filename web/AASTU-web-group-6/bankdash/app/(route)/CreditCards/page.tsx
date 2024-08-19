@@ -8,25 +8,25 @@ import VisaCard from "@/app/components/Card/VisaCard";
 const CreditCards = () => {
   return (
     <>
-      <div>
+      <div className="overflow-x-hidden">
         <p className="text-[#333B69] font-semibold text-[22px] pb-5">
           My Cards
         </p>
-        <div className="flex gap-10 pb-5">
+        <div className="flex gap-7 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ">
           <VisaCard isBlack={false} isFade={true} isSimGray={false} />
           <VisaCard isBlack={false} isFade={false} isSimGray={false} />
           <VisaCard isBlack={true} isFade={false} isSimGray={false} />
         </div>
       </div>
-      <div className="flex flex-row">
-        <div>
-          <p className="text-[#333B69] font-semibold text-[22px] pb-5">
+      <div className="flex flex-col lg:flex-row lg:gap-20">
+        <div className="pb-2">
+          <p className="text-[#333B69] font-semibold text-[22px] lg:pb-5 pt-4">
             Card Expense Statistics
           </p>
           <ExpenseChart />
         </div>
         <div>
-          <p className="text-[#333B69] font-semibold text-[22px] ml-10 pb-5">
+          <p className="text-[#333B69] font-semibold text-[22px] lg:ml-10 pb-5 pt-5">
             Card List
           </p>
           <CardList
@@ -70,12 +70,14 @@ const CreditCards = () => {
           />
         </div>
       </div>
-      <div className="flex w-[95%] gap-10">
+      <div className="flex flex-col lg:w-[95%] lg:flex-row gap-10">
         <div>
           <p className="text-[#333B69] font-semibold text-[22px] pb-5">
             Add New Card
           </p>
+          <div className="min-w-[325px]">
           <AddCard />
+          </div>
         </div>
         <div>
           <p className="text-[#333B69] font-semibold text-[22px] pb-5">

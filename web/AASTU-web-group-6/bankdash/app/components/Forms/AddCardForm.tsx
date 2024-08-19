@@ -4,14 +4,14 @@ const AddCardForm = () => {
   return (
     <div>
       <form className="w-[50%]" action="">
-        <div className="flex gap-10">
+        <div className="flex flex-col lg:flex-row gap-10">
           <div>
             <div className="flex flex-col">
               <label className="text-[#232323] text-base font-semibold pb-2">
                 Card Type
               </label>
               <input
-                className="border border-[#DFEAF2] p-2 rounded-2xl mb-5"
+                className="border border-[#DFEAF2] p-2 rounded-2xl mb-5 w-[285px]"
                 type="text"
                 placeholder="Classic"
               />
@@ -21,7 +21,7 @@ const AddCardForm = () => {
                 Balance
               </label>
               <input
-                className="border border-[#DFEAF2] p-2 rounded-2xl"
+                className="border border-[#DFEAF2] p-2 rounded-2xl w-[285px]"
                 type="text"
                 placeholder="Classic"
               />
@@ -33,7 +33,7 @@ const AddCardForm = () => {
                 Name on Card
               </label>
               <input
-                className="border border-[#DFEAF2] p-2 rounded-2xl mb-5"
+                className="border border-[#DFEAF2] p-2 rounded-2xl mb-5 w-[285px]"
                 type="text"
                 placeholder="Classic"
               />
@@ -43,7 +43,7 @@ const AddCardForm = () => {
                 Expiration Date
               </label>
               <input
-                className="border border-[#DFEAF2] p-2 rounded-2xl"
+                className="border border-[#DFEAF2] p-2 rounded-2xl w-[285px]"
                 type="date"
                 placeholder="Classic"
               />
@@ -52,7 +52,7 @@ const AddCardForm = () => {
         </div>
         <button
           type="submit"
-          className="mt-4 px-8 py-3 bg-[#1814F3] text-white text-lg font-semibold rounded-[9px]"
+          className="mt-4 px-8 py-3 bg-[#1814F3] text-white text-lg font-semibold rounded-[9px] w-[285px]"
         >
           Add Card
         </button>

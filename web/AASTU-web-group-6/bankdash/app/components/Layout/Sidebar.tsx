@@ -2,7 +2,12 @@
 
 import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faClose, faSearch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faClose,
+  faRightFromBracket,
+  faSearch,
+} from "@fortawesome/free-solid-svg-icons";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -78,6 +83,12 @@ const Sidebar = ({
       icon: "/assets/setting-icon.svg",
       active: "/assets/setting-icon-active.svg",
     },
+    {
+      label: "LogOut",
+      url: "/login",
+      icon: "",
+      active: "",
+    },
   ];
 
   return (
@@ -115,6 +126,7 @@ const Sidebar = ({
               width={20}
               height={20}
             />
+            {/* <FontAwesomeIcon icon={faRightFromBracket} className="" /> */}
             <div
               className={`${
                 isActive(item.url) ? "text-[#1814F3]" : "text-[#B1B1B1]"

@@ -7,6 +7,8 @@ import {
   setStatus,
   setBalHist,
   setError,
+  setExpense,
+  setIncome,
 } from "../slices/TransactionSlice";
 
 const useTranDispatch = (accessToken: string) => {
@@ -22,9 +24,14 @@ const useTranDispatch = (accessToken: string) => {
         const history: any = await TransactionService.balanceHistory(
           accessToken
         );
-        if (transaction && history) {
+        const expense = await TransactionService.getExpenseData(accessToken);
+        const income = await TransactionService.getIncomeData(accessToken);
+
+        if (transaction) {
           dispatch(setTran(transaction));
           dispatch(setBalHist(history));
+          dispatch(setExpense(expense));
+          dispatch(setIncome(income));
           dispatch(setStatus("succeeded"));
         }
       } catch (error) {

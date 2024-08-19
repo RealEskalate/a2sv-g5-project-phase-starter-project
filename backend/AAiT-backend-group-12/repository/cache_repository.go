@@ -8,15 +8,15 @@ import (
 )
 
 type CacheRepository struct {
-	redisClient *redis.Client
+	cacheClient *redis.Client
 }
 
-func NewRedisRepository(redisClient *redis.Client) *CacheRepository {
+func NewCacheRepository(redisClient *redis.Client) *CacheRepository {
 	return &CacheRepository{redisClient}
 }
 
 func (r *CacheRepository) CacheData(key string, value string, expiration time.Duration) domain.CodedError {
-	status := r.redisClient.Set(key, value, expiration)
+	status := r.cacheClient.Set(key, value, expiration)
 	if status.Err() != nil {
 		return domain.NewError(status.Err().Error(), domain.ERR_INTERNAL_SERVER)
 	}
@@ -24,8 +24,8 @@ func (r *CacheRepository) CacheData(key string, value string, expiration time.Du
 	return nil
 }
 
-func (r *CacheRepository) InCache(key string) bool {
-	status := r.redisClient.Exists(key)
+func (r *CacheRepository) IsCached(key string) bool {
+	status := r.cacheClient.Exists(key)
 	if status.Err() != nil {
 		return false
 	}

@@ -16,12 +16,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, redisClient *redis.Client) {
+func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, cacheClient *redis.Client) {
 	userRepository := repository.NewUserRepository(collection)
-	redisRepoistory := repository.NewRedisRepository(redisClient)
+	cacheRepoistory := repository.NewCacheRepository(cacheClient)
 	usecase := usecase.NewUserUsecase(
 		userRepository,
-		redisRepoistory,
+		cacheRepoistory,
 		utils.GenerateToken,
 		mail_service.EmailVerificationTemplate,
 		mail_service.PasswordResetTemplate,
@@ -39,12 +39,16 @@ func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, red
 	controller := controllers.NewAuthController(usecase)
 
 	authGroup.POST("/signup", controller.HandleSignup)
-	authGroup.POST("/login", controller.HandleLogin)
-	authGroup.PATCH("/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, "user"), controller.HandleUpdateUser)
-	authGroup.POST("/renew-token", controller.HandleRenewAccessToken)
-	authGroup.PATCH("/promote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, "admin", "root"), controller.HandlePromoteUser)
-	authGroup.PATCH("/demote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, "root"), controller.HandleDemoteUser)
 	authGroup.GET("/verify/email/:username/:token", controller.HandleVerifyEmail)
+
+	authGroup.POST("/login", controller.HandleLogin)
+	authGroup.POST("/renew-token", controller.HandleRenewAccessToken)
+	authGroup.POST("/logout", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, "user", "admin", "root"), controller.HandleLogout)
+
+	authGroup.PATCH("/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, "user"), controller.HandleUpdateUser)
+
+	authGroup.PATCH("/promote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, "admin", "root"), controller.HandlePromoteUser)
+	authGroup.PATCH("/demote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, "root"), controller.HandleDemoteUser)
 
 	authGroup.POST("/forgot-password", controller.HandleInitResetPassword)
 	authGroup.POST("/reset-password", controller.HandleResetPassword)

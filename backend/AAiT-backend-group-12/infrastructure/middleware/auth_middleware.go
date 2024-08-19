@@ -26,7 +26,7 @@ WORKFLOW:
   - Checks the role of the user associated with the token
   - Calls `c.Next()` if the querying user has permission to access the endpoint
 */
-func AuthMiddlewareWithRoles(secret string, ValidateToken func(string, string) (*jwt.Token, error), validRoles ...string) gin.HandlerFunc {
+func AuthMiddlewareWithRoles(secret string, ValidateToken func(string, string) (*jwt.Token, error), cacheRepository domain.CacheRepositoryInterface, validRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// obtain token from the request header
 		authHeader := c.GetHeader("Authorization")
@@ -38,6 +38,13 @@ func AuthMiddlewareWithRoles(secret string, ValidateToken func(string, string) (
 		headerSegments := strings.Split(authHeader, " ")
 		if len(headerSegments) != 2 || strings.ToLower(headerSegments[0]) != "bearer" {
 			MiddlewareError(c, 401, "Authorization header is invalid")
+			return
+		}
+
+		// check if the access token has been blacklisted
+		// an access token is blacklisted when the user logs out
+		if cacheRepository.IsCached(headerSegments[1]) {
+			MiddlewareError(c, 401, "User has been logged out")
 			return
 		}
 

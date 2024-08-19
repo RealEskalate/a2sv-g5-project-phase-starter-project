@@ -4,11 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"github.com/joho/godotenv"
 	"AAIT-backend-group-3/internal/infrastructures/database"
-	"AAIT-backend-group-3/internal/repositories/implementation"
+	// "AAIT-backend-group-3/internal/repositories/implementation"
 )
 
 func main() {
@@ -21,10 +20,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error connecting to MongoDB: %v", err)
 	}
-
-	userRepo := repository.NewMongoUserRepository(dbClient.Database, "users")
-	blogRepo := repository.NewMongoBlogRepository(dbClient.Database, "blogs")
-	commentRepo := repository.NewMongoCommentRepository(dbClient.Database, "comments")
+	fmt.Println("Connected to MongoDB!", dbClient.Database.Name())
+	// userRepo := repositories.NewMongoUserRepository(dbClient.Database, "users")
+	// blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs")
+	// commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
 
 	// Initialize services
 	// userService := service.NewUserService(userRepo)

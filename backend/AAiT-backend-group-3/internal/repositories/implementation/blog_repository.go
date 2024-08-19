@@ -1,4 +1,4 @@
-package  repositories
+package repositories
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"AAIT-backend-group-3/internal/domain/models"
 )
 
+var ctx = context.TODO()
 type MongoBlogRepository struct {
 	collection *mongo.Collection
 }
@@ -19,12 +20,12 @@ func NewMongoBlogRepository(db *mongo.Database, collectionName string) *MongoBlo
 	}
 }
 
-func (r *MongoBlogRepository) CreateBlog(ctx context.Context, blog *models.Blog) error {
+func (r *MongoBlogRepository) CreateBlog(blog *models.Blog) error {
 	_, err := r.collection.InsertOne(ctx, blog)
 	return err
 }
 
-func (r *MongoBlogRepository) GetBlogByID(ctx context.Context, blogID primitive.ObjectID) (*models.Blog, error) {
+func (r *MongoBlogRepository) GetBlogByID(blogID primitive.ObjectID) (*models.Blog, error) {
 	var blog models.Blog
 	err := r.collection.FindOne(ctx, bson.M{"_id": blogID}).Decode(&blog)
 	if err != nil {
@@ -33,10 +34,9 @@ func (r *MongoBlogRepository) GetBlogByID(ctx context.Context, blogID primitive.
 	return &blog, nil
 }
 
-func (r *MongoBlogRepository) GetBlogs(ctx context.Context, filter map[string]interface{}, search string, page int, limit int) ([]*models.Blog, error) {
+func (r *MongoBlogRepository) GetBlogs(filter map[string]interface{}, search string, page int, limit int) ([]*models.Blog, error) {
 	var blogs []*models.Blog
 
-	
 	filterBson := bson.M{}
 	if search != "" {
 		filterBson["$text"] = bson.M{"$search": search}
@@ -69,7 +69,7 @@ func (r *MongoBlogRepository) GetBlogs(ctx context.Context, filter map[string]in
 	return blogs, nil
 }
 
-func (r *MongoBlogRepository) EditBlog(ctx context.Context, blogID primitive.ObjectID, newBlog *models.Blog) error {
+func (r *MongoBlogRepository) EditBlog(blogID primitive.ObjectID, newBlog *models.Blog) error {
 	_, err := r.collection.UpdateOne(
 		ctx,
 		bson.M{"_id": blogID},
@@ -78,19 +78,16 @@ func (r *MongoBlogRepository) EditBlog(ctx context.Context, blogID primitive.Obj
 	return err
 }
 
-func (r *MongoBlogRepository) DeleteBlog(ctx context.Context, blogID primitive.ObjectID) error {
+func (r *MongoBlogRepository) DeleteBlog(blogID primitive.ObjectID) error {
 	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": blogID})
 	return err
 }
 
-func (r *MongoBlogRepository) AddCommentToTheList(ctx context.Context, blogID primitive.ObjectID, comment *models.Comment) error {
+func (r *MongoBlogRepository) AddCommentToTheList(blogID primitive.ObjectID, commentID primitive.ObjectID) error {
 	_, err := r.collection.UpdateOne(
 		ctx,
 		bson.M{"_id": blogID},
-		bson.M{"$push": bson.M{"comments": comment}},
+		bson.M{"$push": bson.M{"comments": commentID}},
 	)
 	return err
 }
-
-
-

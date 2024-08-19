@@ -1,18 +1,17 @@
 package repository_interface
 
 import (
-	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"AAIT-backend-group-3/internal/domain/models"
 )
 type UserRepositoryInterface interface {
-	SignUp(ctx context.Context, user *models.User) error
-	GetUserByID(ctx context.Context, id primitive.ObjectID) (*models.User, error)
-	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
-	DeleteUser(ctx context.Context, id primitive.ObjectID) error
-	UpdateProfile(ctx context.Context, id primitive.ObjectID, user *models.User) error
-	Login(ctx context.Context, user *models.User) (*models.User, error)
-	ForgetPassword(ctx context.Context, email string) error
-    PromoteUser(ctx context.Context, userID primitive.ObjectID) error
-    DemoteUser(ctx context.Context, userID primitive.ObjectID) error
+	SignUp(user *models.User) error
+	GetUserByID(id primitive.ObjectID) (*models.User, error)
+	GetUserByEmail(email string) (*models.User, error)
+	DeleteUser(id primitive.ObjectID) error
+	UpdateProfile(id primitive.ObjectID, user *models.User) error
+	Login(user *models.User) (*models.User, error)
+	ForgetPassword(email string) error
+    PromoteUser(userID primitive.ObjectID) error
+    DemoteUser(userID primitive.ObjectID) error
 }

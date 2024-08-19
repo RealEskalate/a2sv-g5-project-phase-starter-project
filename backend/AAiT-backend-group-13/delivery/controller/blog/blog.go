@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	dto "github.com/group13/blog/delivery/controller/user/user_dto"
+	"github.com/group13/blog/delivery/controller/user/dto"
 	er "github.com/group13/blog/domain/errors"
 	blogmodel "github.com/group13/blog/domain/models/blog"
 	addcmd "github.com/group13/blog/usecase/blog/command/add"

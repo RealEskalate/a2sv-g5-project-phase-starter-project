@@ -4,11 +4,11 @@ import { PieComp } from "../Charts/PieComp";
 const RecentTr = () => {
   const dummyTr: any = [
     {
-      title: "Deposit from my Card",
+      title: "Deposit from Card",
       date: "28 January 2021",
       price: "$850",
       isNeg: true,
-      icon: "/assets/tr-icon-1.svg",
+      icon: "/assets/block-card-orange-icon.svg",
       color: "bg-orange-100",
     },
     {
@@ -30,7 +30,7 @@ const RecentTr = () => {
   ];
 
   return (
-    <div className="w-2/5 min-w-80 cards-container center-content flex flex-col gap-4">
+    <div className="cards-container sm:w-full lg:w-[33%] text-nowrap center-content flex flex-col gap-4">
       <h1 className="flex grow page text-xl font-semibold text-colorBody-1">
         Recent Transactions
       </h1>
@@ -40,8 +40,10 @@ const RecentTr = () => {
             key={key}
             className="recentTr w-full flex gap-4 items-center justify-center"
           >
-            <div className={`{icon rounded-full p-4 ${data.color}`}>
-              <Image src={data.icon || ""} alt="" width={28} height={42} />
+            <div
+              className={`{icon flex items-center rounded-full p-4 ${data.color}`}
+            >
+              <Image src={data.icon} alt="" width={28} height={28} />
             </div>
             <div className="flex flex-col gap-1">
               <div className="title text-base text-black font-medium">

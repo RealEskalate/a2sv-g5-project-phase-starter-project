@@ -1,24 +1,62 @@
+"use client"
 import Card from "../../components/Accounts/account";
 import React from "react";
 import { YearlyInvest } from "../../components/Investment/YearlyInvest";
 import { MonthlyRev } from "../../components/Investment/MonthlyRev";
 import MyInvestment from "../../components/Investment/MyInvestment";
 import TrendingStock from "../../components/Investment/TrendingStock";
+import { useState , useEffect } from "react";
+import InvestmentService from "@/app/Services/api/investmentApi";
+interface YearlyInvestment {
+  time: string; 
+  value: number;
+}
+
+interface MonthlyRevenue {
+  time: string; 
+  value: number;
+}
+
+interface InvestmentData {
+  totalInvestment: number;
+  rateOfReturn: number;
+  yearlyTotalInvestment: YearlyInvestment[];
+  monthlyRevenue: MonthlyRevenue[];
+}
 const page = () => {
-  const data = [
+  const data1 = [
     ["01.", "Trivago", "$520", "+5%"],
     [" 02.", "Canon", "$480", " +10%"],
     ["03.", "Uber Food", " $350", "-3%"],
     ["04.", " Nokia", " $940", "+2%"],
     ["05.", "Tiktok", "$670", "-12%"],
   ];
+  const [data, setData] = useState<InvestmentData>();
+  const [error, setError] = useState<string | null>(null);
+  const accessToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjM5OTIwNjMsImV4cCI6MTcyNDA3ODQ2M30.TQUQ-1kz6M-DWcCDKjVgasHzfZxxhZf0Odeux1Jw1OPqxa4doCexoALnIAeGIkQS";
 
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const result = await InvestmentService.getInvestmentData(accessToken);
+        setData(result);
+        console.log("data" , data);
+      } catch (error) {
+        setError("error");
+        alert("error");
+      }
+    };
+
+    getData();
+  }, []);
+  const formattedAmount = `$${data?.totalInvestment.toLocaleString()}`;
+  const formattedReturn = `${data?.rateOfReturn.toFixed(2).toLocaleString()}%`
   return (
-    <>
+    <div className="w-[96%] flex flex-col grow gap-6 p-8 pt-6">
       <div className="flex flex-col lg:flex-row gap-6">
         <Card
           title="Total Invested Amount"
-          amount="$150,000"
+          amount={formattedAmount}
           color="#DCFAF8"
           icon="/assets/money-bag-of-dollars.svg"
           width="w-[32%]"
@@ -32,7 +70,7 @@ const page = () => {
         ></Card>
         <Card
           title="Rate of Return"
-          amount="+5.80%"
+          amount={formattedReturn}
           color="#E7EDFF"
           icon="/assets/repeat.svg"
           width="w-[32%]"
@@ -43,14 +81,14 @@ const page = () => {
           <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
             Yearly Total Investment
           </p>
-          <YearlyInvest />
+          <YearlyInvest data = {data}/>
         </div>
 
         <div className="w-full lg:w-[48%]">
           <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
             Monthly Revenue
           </p>
-          <MonthlyRev />
+          <MonthlyRev data = {data}/>
         </div>
       </div>
       <div className="flex flex-col lg:flex-row justify-between my-5">
@@ -93,10 +131,10 @@ const page = () => {
           <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
             Trending Stock
           </p>
-          <TrendingStock data={data} />
+          <TrendingStock data={data1} />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

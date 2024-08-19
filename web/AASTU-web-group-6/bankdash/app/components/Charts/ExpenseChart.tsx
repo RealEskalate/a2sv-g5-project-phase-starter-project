@@ -30,30 +30,31 @@ const chartConfig = {
     label: "Visitors",
   },
   chrome: {
-    label: "Chrome",
+    label: "ABM Bank",
     color: "#16DBCC",
   },
   safari: {
-    label: "Safari",
+    label: "DBL Bank",
     color: "#3464F3",
   },
   firefox: {
-    label: "Firefox",
+    label: "MCP Bank",
     color: "#FFB11F",
   },
   edge: {
-    label: "Edge",
+    label: "BRC Bank",
     color: "#FF82AC",
   },
 } satisfies ChartConfig;
 
 export default function Component() {
   return (
-    <Card className="flex flex-col h-80 p-8 border rounded-3xl">
-      <CardContent className="flex-1 pb-0">
+    <div className="flex w-full flex-col items-center justify-center gap-[-10px] p-8 bg-white rounded-3xl shadow-sm">
+      <Card className="w-full border-0 shadow-none bg-transparent">
+        {" "}
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="we mx-auto aspect-square max-h-[250px] h-44"
         >
           <PieChart>
             <ChartTooltip
@@ -76,31 +77,29 @@ export default function Component() {
             />
           </PieChart>
         </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center justify-center gap-8">
-          <div>
-            <div className="flex items-center gap-1 pb-3">
-              <img src="/assets/ellipseB.svg" alt="" />
-              <p className="text-[#718EBF] font-[15px]">DBL Bank</p>
-            </div>
-            <div className="flex items-center gap-1">
-              <img src="/assets/ellipseG.svg" alt="" />
-              <p className="text-[#718EBF] font-[15px]">ABM Bank</p>
-            </div>
+      </Card>
+      <div className="flex items-center justify-center gap-8">
+        <div>
+          <div className="flex items-center gap-2 pb-3">
+            <div className="circle w-4 h-4 rounded-full bg-[#4C78FF]"></div>
+            <p className="text-[#718EBF] font-[15px]">DBL Bank</p>
           </div>
-          <div>
-            <div className="flex items-center gap-1 pb-3">
-              <img src="/assets/ellipseP.svg" alt="" />
-              <p className="text-[#718EBF] font-[15px]">BRC Bank</p>
-            </div>
-            <div className="flex items-center gap-1">
-              <img src="/assets/ellipseO.svg" alt="" />
-              <p className="text-[#718EBF] font-[15px]">MCP Bank</p>
-            </div>
+          <div className="flex items-center gap-2">
+            <div className="circle w-4 h-4 rounded-full bg-[#16DBCC]"></div>
+            <p className="text-[#718EBF] font-[15px]">ABM Bank</p>
           </div>
         </div>
-      </CardFooter>
-    </Card>
+        <div>
+          <div className="flex items-center gap-2 pb-3">
+            <div className="circle w-4 h-4 rounded-full bg-[#FF82AC]"></div>
+            <p className="text-[#718EBF] font-[15px]">BRC Bank</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="circle w-4 h-4 rounded-full bg-[#FFBB38]"></div>
+            <p className="text-[#718EBF] font-[15px]">MCP Bank</p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

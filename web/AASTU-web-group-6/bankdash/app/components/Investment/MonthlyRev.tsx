@@ -17,25 +17,51 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-const chartData = [
-  { Year: "2016", investment: 5000 },
-  { Year: "2017", investment: 25000 },
-  { Year: "2018", investment: 18000 },
-  { Year: "2019", investment: 38000 },
-  { Year: "2020", investment: 20000 },
-  { Year: "2021", investment: 30000 },
-]
+interface YearlyInvestment {
+  time: string; 
+  value: number;
+}
 
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "hsl(var(--chart-1))",
-  },
-} satisfies ChartConfig
+interface MonthlyRevenue {
+  time: string; 
+  value: number;
+}
 
-export function MonthlyRev() {
+interface InvestmentData {
+  totalInvestment: number;
+  rateOfReturn: number;
+  yearlyTotalInvestment: YearlyInvestment[];
+  monthlyRevenue: MonthlyRevenue[];
+}
+interface YearlyInvestProps {
+  data: InvestmentData | undefined;
+}
+function formatMonth(time: string): string {
+  const [month] = time.split('/');
+  const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const monthIndex = parseInt(month, 10) - 1;
+  return monthNames[monthIndex];
+}
+
+export function MonthlyRev({data}:YearlyInvestProps) {
+  
+  const formchartData = data?.monthlyRevenue
+  const chartData = formchartData?.map(item => ({
+    ...item,
+    time: formatMonth(item.time)
+})).slice().reverse();
+  
+  const chartConfig = {
+    desktop: {
+      label: "Desktop",
+      color: "hsl(var(--chart-1))",
+    },
+  } satisfies ChartConfig
   return (
-    <Card className="py-5">
+    <Card className=" rounded-3xl py-5 shadow-lg border-gray-300">
       
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -49,18 +75,18 @@ export function MonthlyRev() {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="Year"
+              dataKey="time"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               padding={{left:20}}
-              // tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => value.slice(0, 3)}
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              ticks={[0, 10000, 20000, 30000, 40000]}
+              ticks={[0, 2000, 4000, 6000, 8000]}
               tickFormatter={(value) => value.toLocaleString()}
               
             />
@@ -69,7 +95,7 @@ export function MonthlyRev() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Line
-              dataKey="investment"
+              dataKey="value"
               type="natural"
               stroke="#16DBCC"
               strokeWidth={3}

@@ -1,7 +1,9 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { TrendingUp } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import LastTransService from "@/app/Services/api/lastTransService";
+import { useState, useEffect } from "react";
 
 import {
   Card,
@@ -10,59 +12,132 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
-const chartData = [
-  { day: "Saturday", debit: 186, credit: 80 },
-  { day: "Sunday", debit: 305, credit: 200 },
-  { day: "Monday", debit: 237, credit: 120 },
-  { day: "Tuesday", debit: 73, credit: 190 },
-  { day: "Wednesday", debit: 209, credit: 130 },
-  { day: "Thursday", debit: 214, credit: 140 },
-  { day: "Friday", debit: 214, credit: 140 }
-]
+} from "@/components/ui/chart";
 
 const chartConfig = {
   debit: {
     label: "Debit",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
+  credit: {
     label: "Credit",
     color: "hsl(var(--chart-2))",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
+interface chartData {
+  day: string;
+  debit: number;
+  credit: number;
+}
+function isDateInLast7Days(dateString: string): boolean {
+  const currentDate = new Date();
+  const sevenDaysAgo = new Date(currentDate);
+  sevenDaysAgo.setDate(currentDate.getDate() - 7);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
 
+  const transactionDate = new Date(dateString);
+  return transactionDate >= sevenDaysAgo && transactionDate <= currentDate;
+}
+function getDayOfWeek(dateString: string): string {
+  const date = new Date(dateString);
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  return daysOfWeek[date.getDay()];
+}
 export function DebitCreditOver() {
+  const [data, setData] = useState<chartData[]>([]);
+  const [totalIncome, setTotalIncome] = useState(0);  
+  const [totalExpense, setTotalExpense] = useState(0);
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const accessToken =
+          "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjM5OTIwNjMsImV4cCI6MTcyNDA3ODQ2M30.TQUQ-1kz6M-DWcCDKjVgasHzfZxxhZf0Odeux1Jw1OPqxa4doCexoALnIAeGIkQS";
+        const expense = await LastTransService.getExpenseData(accessToken);
+        const income = await LastTransService.getIncomeData(accessToken);
+        const chartData: { [day: string]: { debit: number; credit: number } } =
+          {
+            Sunday: { debit: 0, credit: 0 },
+            Monday: { debit: 0, credit: 0 },
+            Tuesday: { debit: 0, credit: 0 },
+            Wednesday: { debit: 0, credit: 0 },
+            Thursday: { debit: 0, credit: 0 },
+            Friday: { debit: 0, credit: 0 },
+            Saturday: { debit: 0, credit: 0 },
+          };
+          let incomeSum = 0;
+          let expenseSum = 0;
+        income.forEach((transaction) => {
+          if (isDateInLast7Days(transaction.date)) {
+            incomeSum+=transaction.amount;
+            const dayOfWeek = getDayOfWeek(transaction.date);
+            chartData[dayOfWeek].credit += transaction.amount;
+          }
+        });
+
+        expense.forEach((transaction) => {
+          if (isDateInLast7Days(transaction.date)) {
+            expenseSum+=transaction.amount;
+            const dayOfWeek = getDayOfWeek(transaction.date);
+            chartData[dayOfWeek].debit += transaction.amount;
+          }
+        });
+
+        const formattedChartData = Object.keys(chartData).map((day) => ({
+          day: day,
+          debit: chartData[day].debit,
+          credit: chartData[day].credit,
+        }));
+        formattedChartData.reverse();
+        setData(formattedChartData);
+        setTotalExpense(expenseSum);
+        setTotalIncome(incomeSum)
+      } catch (error) {
+        alert("Error Fetching data ");
+      }
+    };
+    getData();
+  }, []);
   return (
-    <Card className="rounded-3xl  ">
+    <Card className="rounded-3xl shadow-lg border-gray-300   ">
       <CardHeader>
         <div className="flex justify-between ">
-        <CardTitle className="text-base font-normal font-inter text-[#718EBF]"><span className="text-black">$7,560</span> Debited & <span className="text-black">$5,420</span> Credited in this Week</CardTitle>
-        <div className="flex gap-5">
-        <div className="flex items-center">
-          <div className="border border-[#4C78FF] w-[15px] h-[15px] rounded-sm bg-[#4C78FF]">
+          <CardTitle className=" hidden lg:block text-base font-normal font-inter text-[#718EBF]">
+            <span className="text-black">${totalExpense}</span> Debited &{" "}
+            <span className="text-black">${totalIncome}</span> Credited in this Week
+          </CardTitle>
+          <div className="flex gap-5">
+            <div className="flex items-center">
+              <div className="border border-[#4C78FF] w-[15px] h-[15px] rounded-sm bg-[#4C78FF]"></div>
+              <p className="font-inter font-normal text-base text-[#718EBF]">
+                Debit
+              </p>
+            </div>
+            <div className="flex items-center">
+              <div className="border border-[#FCAA0B] w-[15px] h-[15px] rounded-sm bg-[#FCAA0B]"></div>
+              <p className="font-inter font-normal text-base text-[#718EBF]">
+                Credit
+              </p>
+            </div>
           </div>
-          <p className="font-inter font-normal text-base text-[#718EBF]">Debit</p>
         </div>
-        <div className="flex items-center">
-          <div className="border border-[#FCAA0B] w-[15px] h-[15px] rounded-sm bg-[#FCAA0B]">
-          </div>
-          <p className="font-inter font-normal text-base text-[#718EBF]">Credit</p>
-        </div>
-        </div>
-        </div>
-        {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
-      <CardContent  >
+      <CardContent>
         <ChartContainer config={chartConfig} className="h-[350px] w-[100%]">
-          <BarChart accessibilityLayer data={chartData} >
-            
+          <BarChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} className="h-[70%]" />
             <XAxis
               dataKey="day"
@@ -77,18 +152,9 @@ export function DebitCreditOver() {
             />
             <Bar dataKey="debit" fill="#1A16F3" radius={10} />
             <Bar dataKey="credit" fill="#FCAA0B" radius={10} />
-          
           </BarChart>
         </ChartContainer>
       </CardContent>
-      {/* <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter> */}
     </Card>
-  )
+  );
 }

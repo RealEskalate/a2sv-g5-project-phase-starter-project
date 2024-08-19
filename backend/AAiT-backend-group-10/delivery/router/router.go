@@ -22,6 +22,11 @@ func NewRouter(db *mongo.Database) {
 		CommentUsecase: usecases.NewCommentUsecase(commentRepo),
 	}
 
+	likeRepo := repositories.NewLikeRepository(db, os.Getenv("LIKE_COLLECTION_NAME"))
+	likeController := controllers.LikeController{
+		LikeUseCase: usecases.NewLikeUseCase(likeRepo),
+	}
+
 	router.POST("/blogs", blogController.CreateBlog)
 	router.GET("/blogs", blogController.GetAllBlogs)
 	router.GET("/blogs/:id", blogController.GetBlogByID)
@@ -35,6 +40,11 @@ func NewRouter(db *mongo.Database) {
 	router.POST("/comment", commentController.AddComment)
 	router.PUT("/comment/:id", commentController.UpdateComment)
 	router.DELETE("/comment/:id", commentController.DelelteComment)
+
+	router.PUT("/like", likeController.LikeBlog)
+	router.DELETE("/like", likeController.DeleteLike)
+	router.GET("/like/:blog_id", likeController.BlogLikeCount)
+
 	port := os.Getenv("PORT")
 	router.Run(":" + port)
 }

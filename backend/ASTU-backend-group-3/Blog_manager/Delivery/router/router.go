@@ -23,6 +23,9 @@ func SetupRouter(userController *controller.UserController, blogController *cont
 	usersRoute.POST("/logout", userController.Logout)
 	usersRoute.POST("/blogs", blogController.CreateBlog)
 	usersRoute.GET("/blogs", blogController.RetrieveBlogs)
+	usersRoute.DELETE("/blogs/:id", blogController.DeleteBlogByID)
+	usersRoute.GET("/blogs/search", blogController.SearchBlogs)
+	usersRoute.PUT("/blogs/update/:id", blogController.UpdateBlog)
 	// usersRoute := router.Group("/user")
 	// usersRoute.Use(infrastructure.AuthMiddleware()) // make sure to add Auth_User in the middleware
 	// usersRoute.PUT("/update/:username", userController.UpdateUser)

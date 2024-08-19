@@ -14,12 +14,15 @@ type TokenRepository struct {
 }
 
 func NewTokenRepository(collection *mongo.Collection, ctx context.Context) domain.ITokenRepository {
-	return &TokenRepository{}
+	// Assign the collection and context to the struct fields
+	return &TokenRepository{
+		Collection: collection,
+		Context:    ctx,
+	}
 }
 
 func (tr *TokenRepository) InsertRefresher(credential domain.Credential) error {
 	_, err := tr.Collection.InsertOne(tr.Context, credential)
-
 	return err
 }
 

@@ -21,25 +21,25 @@ type UserMongoRepository struct {
 // NewUserRepository creates a new UserMongoRepository
 func NewUserRepository(db *mongo.Database) *UserMongoRepository {
 	return &UserMongoRepository{
-		Collection: db.Collection("user-Collection"),
+		Collection: db.Collection("user-collection"),
 	}
 }
 
-func (ur *UserMongoRepository) CreateUser(ctx context.Context, user *models.User) error {
+func (ur *UserMongoRepository) CreateUser(ctx context.Context, user *models.User) *models.ErrorResponse {
 
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	_, err := ur.Collection.InsertOne(ctx, user)
 	if err != nil {
-		return err
+		return models.InternalServerError(err.Error())
 	}
 
-	return nil
+	return models.Nil()
 }
 
 // GetUserByEmailOrUsername fetches a user based on the username or email.
-func (ur *UserMongoRepository) GetUserByEmailOrUsername(ctx context.Context, username, email string) (*User, error) {
+func (ur *UserMongoRepository) GetUserByEmailOrUsername(ctx context.Context, username, email string) (*models.User, *models.ErrorResponse) {
 	var user models.User
 	filter := bson.M{
 		"$or": []bson.M{
@@ -51,36 +51,37 @@ func (ur *UserMongoRepository) GetUserByEmailOrUsername(ctx context.Context, use
 	err := ur.Collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, ErrUserNotFound
+			return nil, models.NotFound(err.Error())
 		}
-		return nil, err
+		return nil, models.NotFound(err.Error())
 	}
 
-	return &user, nil
+	return &user, models.Nil()
 }
 
 // GetUserByID fetches a user by their ID.
-func (ur *UserMongoRepository) GetUserByID(ctx context.Context, id string) (*models.User, error) {
+func (ur *UserMongoRepository) GetUserByID(ctx context.Context, id string) (*models.User, *models.ErrorResponse) {
 	objID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, err
+		return nil, models.InternalServerError(err.Error())
 	}
 
 	var user models.User
 	err = ur.Collection.FindOne(ctx, bson.M{"_id": objID}).Decode(&user)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, ErrUserNotFound
-		}
-		return nil, err
+		return nil, models.NotFound(err.Error())
 	}
 
-	return &user, nil
+	return &user, models.Nil()
 }
 
 // UpdateUser updates a user's information.
-func (ur *UserMongoRepository) UpdateUser(ctx context.Context, user *models.User) error {
-	filter := bson.M{"_id": user.ID}
+func (ur *UserMongoRepository) UpdateUser(ctx context.Context, user *models.User, id string) *models.ErrorResponse {
+	objID, Err := primitive.ObjectIDFromHex(id)
+	if Err != nil {
+		return models.InternalServerError(Err.Error())
+	}
+	filter := bson.M{"_id": objID}
 
 	update := bson.M{}
 	if user.Username != "" {
@@ -94,7 +95,7 @@ func (ur *UserMongoRepository) UpdateUser(ctx context.Context, user *models.User
 	}
 
 	if len(update) == 0 {
-		return nil
+		return models.Nil()
 	}
 
 	updateDocument := bson.M{
@@ -102,35 +103,32 @@ func (ur *UserMongoRepository) UpdateUser(ctx context.Context, user *models.User
 	}
 
 	_, err := ur.Collection.UpdateOne(ctx, filter, updateDocument)
-	return err
+	if err != nil{
+		return models.InternalServerError(err.Error())
+	}
+	return models.Nil()	
 }
 
 // DeleteUser deletes a user by their ID.
-func (ur *UserMongoRepository) DeleteUser(ctx context.Context, userID string) error {
+func (ur *UserMongoRepository) DeleteUser(ctx context.Context, userID string) *models.ErrorResponse {
 	objID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		return err
+		return models.InternalServerError(err.Error())
 	}
 
 	_, err = ur.Collection.DeleteOne(ctx, bson.M{"_id": objID})
-	return err
-}
+	if err != nil{
+		return models.InternalServerError(err.Error())
+	}
 
-// PromoteUser promotes a user to a higher role.
-func (ur *UserMongoRepository) PromoteUser(ctx context.Context, userID string) error {
-	return ur.updateUserRole(ctx, userID, "Admin") // Example role
-}
-
-// DemoteUser demotes a user to a lower role.
-func (ur *UserMongoRepository) DemoteUser(ctx context.Context, userID string) error {
-	return ur.updateUserRole(ctx, userID, "User") // Example role
+	return models.Nil()	
 }
 
 // updateUserRole is a helper method to update a user's role.
-func (ur *UserMongoRepository) updateUserRole(ctx context.Context, userID, role string) error {
+func (ur *UserMongoRepository) updateUserRole(ctx context.Context, userID, role string) *models.ErrorResponse {
 	objID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		return err
+		return models.InternalServerError(err.Error())
 	}
 
 	filter := bson.M{"_id": objID}
@@ -139,50 +137,22 @@ func (ur *UserMongoRepository) updateUserRole(ctx context.Context, userID, role 
 	}
 
 	_, err = ur.Collection.UpdateOne(ctx, filter, update)
+	if err != nil{
+		return models.InternalServerError(err.Error())
+	}
+
+	return models.Nil()
+}
+
+// PromoteUser promotes a user to an admin role.
+func (ur *UserMongoRepository) PromoteUser(ctx context.Context, userID string) *models.ErrorResponse {
+	err := ur.updateUserRole(ctx, userID, "admin") 
 	return err
 }
 
-// StoreAccessToken stores an access token for the user.
-func (ur *UserMongoRepository) StoreAccessToken(ctx context.Context, userID, token string) error {
-	return ur.storeToken(ctx, userID, "access_token", token)
-}
-
-// StoreRefreshToken stores a refresh token for the user.
-func (ur *UserMongoRepository) StoreRefreshToken(ctx context.Context, userID, token string) error {
-	return ur.storeToken(ctx, userID, "refresh_token", token)
-}
-
-// storeToken is a helper method to store a token for a user.
-func (ur *UserMongoRepository) storeToken(ctx context.Context, userID, tokenType, token string) error {
-	objID, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return err
-	}
-
-	filter := bson.M{"_id": objID}
-	update := bson.M{
-		"$set": bson.M{tokenType: token},
-	}
-
-	_, err = ur.Collection.UpdateOne(ctx, filter, update)
+// DemoteUser demotes a user to a lower role.
+func (ur *UserMongoRepository) DemoteUser(ctx context.Context, userID string) *models.ErrorResponse {
+	err := ur.updateUserRole(ctx, userID, "admin") 
 	return err
 }
 
-// DeleteTokensFromDB deletes both access and refresh tokens for a user.
-func (ur *UserMongoRepository) DeleteTokensFromDB(ctx context.Context, userID string) error {
-	objID, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return err
-	}
-
-	filter := bson.M{"_id": objID}
-	update := bson.M{
-		"$unset": bson.M{
-			"access_token":  1,
-			"refresh_token": 1,
-		},
-	}
-
-	_, err = ur.Collection.UpdateOne(ctx, filter, update)
-	return err
-}

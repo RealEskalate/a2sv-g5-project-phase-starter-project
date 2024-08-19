@@ -1,28 +1,35 @@
 package config
 
 import (
-	"log"
-
-	"github.com/spf13/viper"
+    "log"
+	
+    "github.com/spf13/viper"
 )
 
 type Env struct {
-	JWT_SECRET    string `mapstructure:"JWT_SECRET"`
-	SMTP_SERVER   string `mapstructure:"SMTP_SERVER"`
-	SMTP_PORT     string `mapstructure:"SMTP_PORT"`
-	SMTP_USERNAMR string `mapstructure:"SMTP_USERNAMR"`
-	SMTP_PASSWORD string `mapstructure:"SMTP_PASSWORD"`
-	SMTP_SENDER_EMAIL string `mapstructure:"SMTP_SENDER_EMAIL"`
+    JWT_SECRET        string `mapstructure:"JWT_SECRET"`
+    SMTP_SERVER       string `mapstructure:"SMTP_SERVER"`
+    SMTP_PORT         string `mapstructure:"SMTP_PORT"`
+    SMTP_USERNAME     string `mapstructure:"SMTP_USERNAME"`
+    SMTP_PASSWORD     string `mapstructure:"SMTP_PASSWORD"`
+    SMTP_SENDER_EMAIL string `mapstructure:"SMTP_SENDER_EMAIL"`
+    MONGO_URI         string `mapstructure:"MONGO_URI"`
+    DB_NAME           string `mapstructure:"DB_NAME"`
 }
 
 func NewEnv() *Env {
-	viper.AutomaticEnv()
+    viper.SetConfigFile(".env") 
+    viper.AutomaticEnv()        
 
-	env := Env{}
+    if err := viper.ReadInConfig(); err != nil {
+        log.Fatalf("Error reading .env file: %v", err)
+    }
 
-	if err := viper.Unmarshal(&env); err != nil {
-		log.Fatal("Error getting the enviroment variables")
-	}
+    env := Env{}
 
-	return &env
+    if err := viper.Unmarshal(&env); err != nil {
+        log.Fatalf("Error unmarshaling environment variables: %v", err)
+    }
+
+    return &env
 }

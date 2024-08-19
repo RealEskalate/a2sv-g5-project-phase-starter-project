@@ -50,7 +50,7 @@ func (controller *BlogController) CreateBlog(c *gin.Context) {
 	// blog.UserID = userid
 
 	blog.Date = time.Now()
-	err := controller.Blogusecase.CreateBlog(c, blog)
+	err := controller.Blogusecase.CreateBlog(c, &blog)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"error": err.Error(),
@@ -81,16 +81,19 @@ func (controller *BlogController) UpdateBlog(c *gin.Context) {
 	getID := c.Param("id")
 	if getID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "id can not be empty"})
+		return
 	}
 
 	var blog domain.Blog
 	if err := c.BindJSON(&blog); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid blog request"})
+		return
 	}
 
 	err := controller.Blogusecase.UpdateBlog(c, blog, getID)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.IndentedJSON(http.StatusAccepted, gin.H{"message": "blog succesfully updated"})
@@ -99,11 +102,13 @@ func (controller *BlogController) DeleteBlog(c *gin.Context) {
 	getID := c.Param("id")
 	if getID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "id can not be empty"})
+		return
 	}
 
 	err := controller.Blogusecase.DeleteBlog(c, getID)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.IndentedJSON(http.StatusAccepted, gin.H{"message": "blog succesfully deleted"})

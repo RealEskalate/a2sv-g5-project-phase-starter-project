@@ -17,12 +17,18 @@ type User struct {
 	RefreshToken string             `json:"refreshtoken,omitempty"`
 }
 
+type RestRequest struct {
+	Email       string `json:"email"`
+	NewPassword string `json:"password"`
+}
+
 type UserUsecase interface {
 	RegisterUser(c context.Context, user *User) error
 	LoginUser(c context.Context, user User) (string, error)
 	ForgotPassword(c context.Context, email string) error
 	LogoutUser(c context.Context, uid string) error
-	PromoteDemoteUser(c context.Context, userid string) error
+	PromoteDemoteUser(c context.Context, userid string, isAdmin bool) error
+	ResetPassword(c context.Context, token string, newPassword string) error
 }
 
 type UserRepository interface {
@@ -31,4 +37,7 @@ type UserRepository interface {
 	ForgotPassword(email string) error
 	LogoutUser(uid string) error
 	PromoteDemoteUser(userid string) error
+	LogoutUser() error
+	PromoteDemoteUser(userid string, isAdmin bool) error
+	ResetPassword(token string, newPassword string) error
 }

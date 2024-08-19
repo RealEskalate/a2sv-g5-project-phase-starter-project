@@ -5,6 +5,7 @@ import (
 	"blogApp/internal/usecase"
 	"blogApp/pkg/jwt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -51,6 +52,14 @@ func (h *TokenHandler) RefreshToken(c *gin.Context) {
 
 func (h *TokenHandler) LogOut(c *gin.Context) {
 	token := domain.Token{}
+	token.AccessToken = strings.Split(c.GetHeader("x_access_token"), " ")[1]
+	token.RefreshToken = strings.Split(c.GetHeader("x_refresh_token"), " ")[1]
+	if token.AccessToken == "" || token.RefreshToken  == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Authorization token required"})
+		return
+	}
+
+
 	if err := c.ShouldBindJSON(&token); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

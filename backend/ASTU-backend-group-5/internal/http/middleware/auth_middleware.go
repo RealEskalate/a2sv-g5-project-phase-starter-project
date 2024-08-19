@@ -7,6 +7,7 @@ import (
 	"blogApp/pkg/jwt"
 	"blogApp/pkg/mongo"
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -15,13 +16,14 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
+		authHeader := strings.Split(c.GetHeader("Authorization"), " ")[1]
 		if authHeader == "" {
 			respondUnauthorized(c, "Authorization header required")
 			return
 		}
 
-		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+		tokenString := authHeader
+		fmt.Println(authHeader)
 		if tokenString == "" {
 			respondUnauthorized(c, "Bearer token required")
 			return

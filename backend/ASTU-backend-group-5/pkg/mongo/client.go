@@ -14,6 +14,12 @@ var Client *mongo.Client
 var TaskCollection *mongo.Collection
 var UserCollection *mongo.Collection
 var TokenCollection *mongo.Collection
+var BlogsCollection *mongo.Collection
+var CommentsCollection *mongo.Collection
+var LikesCollection *mongo.Collection
+var ViewsCollection *mongo.Collection
+var TagsCollection *mongo.Collection
+
 
 // ConnectDB connects to the MongoDB database
 func ConnectDB(uri string) (*mongo.Client, error) {
@@ -57,4 +63,11 @@ func InitializeCollections() {
 	TaskCollection = GetCollection("tasks")
 	UserCollection = GetCollection("users")
 	TokenCollection = GetCollection("tokens")
+	BlogsCollection = GetCollection("blogs")
+	CommentsCollection = GetCollection("comments")
+	LikesCollection = GetCollection("likes")
+	ViewsCollection = GetCollection("views")
+	TagsCollection = GetCollection("tags")
+	
+
 }

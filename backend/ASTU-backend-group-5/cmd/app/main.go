@@ -18,9 +18,15 @@ func main() {
 	mongo.InitializeCollections()
 
 	userCollection := mongo.UserCollection
+	blogCollection := mongo.BlogsCollection
+	commentCollection := mongo.CommentsCollection
+	likeCollection := mongo.LikesCollection
+	viewCollection := mongo.ViewsCollection
+	tagCollection := mongo.TagsCollection
+
 
 	router := gin.Default()
 
-	routes.SetUpRoute(router, userCollection)
+	routes.SetUpRoute(router,blogCollection,commentCollection,likeCollection,viewCollection,tagCollection, userCollection)
 	router.Run(confs.APP_DOMAIN)
 }

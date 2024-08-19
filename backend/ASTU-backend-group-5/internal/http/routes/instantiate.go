@@ -5,7 +5,7 @@ import (
 	"blogApp/internal/repository/mongodb"
 	"blogApp/internal/usecase"
 	"blogApp/internal/usecase/user"
-
+	"blogApp/internal/usecase/blog"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -21,3 +21,12 @@ func InstantaiteTokenUsecase(collection *mongo.Collection) *usecase.TokenUsecase
 	tokenUsecase := usecase.NewTokenUsecase(tokenRepo)
 	return tokenUsecase
 }
+
+
+func InstantaiteBlogHandler(blogsCollection, commentsCollection, likesCollection, viewsCollection, tagsCollection *mongo.Collection) *handlers.BlogHandler {
+	blogRepo := mongodb.NewMongoBlogRepository(blogsCollection, commentsCollection, likesCollection, viewsCollection, tagsCollection)
+	blogUsecase := blog.NewBlogUseCase(blogRepo)
+	blogHandler := handlers.NewBlogHandler(blogUsecase)
+	return blogHandler
+}
+

@@ -199,3 +199,16 @@ func (uc *UserController) Logout(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User logged out successfully"})
 }
+
+
+func (uc *UserController) PromoteToAdmin(c *gin.Context)  {
+	username := c.Param("username")
+
+	err := uc.UserUsecase.PromoteTOAdmin(username)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "User promoted to admin successfully"})
+}

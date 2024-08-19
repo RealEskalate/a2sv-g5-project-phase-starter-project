@@ -10,14 +10,19 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
+import cardReducer from "../slices/cardSlice"; // Import the cardSlice reducer
+import transactionReducer from "../slices/TransactionSlice";
+
 const rootReducer = combineReducers({
-  //reducers
+  cards: cardReducer,
+  transactions: transactionReducer,
+  // Add other reducers here if needed
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: [],
+  whitelist: ["cards", "transactions"], // Persist the cards slice
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -32,13 +37,12 @@ export const store = configureStore({
     }),
 });
 
-//creating persisted store
 export const persistor = persistStore(store);
 
 // defining type
 export type RootState = ReturnType<typeof store.getState>;
-export type AppDispach = typeof store.dispatch;
+export type AppDispatch = typeof store.dispatch;
 
-//creating custom hooks for useDispach and useSelector
-export const useAppDispach = () => useDispatch<AppDispach>();
+// creating custom hooks for useDispatch and useSelector
+export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

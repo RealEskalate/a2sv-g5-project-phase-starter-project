@@ -29,4 +29,6 @@ func SetRouter(router *gin.Engine, com *controllers.CommentController, c *contro
 	router.POST("/forget-password", cu.ForgotPassword)
 	router.POST("/reset-password", cu.ResetPassword)
 
+	router.POST("/generate", middleware.AuthMiddleware(client), c.GeneratePost)
+
 }

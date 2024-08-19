@@ -10,7 +10,7 @@ const Sidebar = () => {
   return (
     <div
       className="sticky left-0 top-0 h-screen border-r border-gray-200 bg-white pt-4 text-white max-md:hidden 
-    sm:p-2 xl:p-4 2xl:w-[250px]"
+    sm:p-2 xl:p-4 2xl:w-[300px]"
     >
       <div className="flex items-center gap-2 p-3 pb-8">
         <Image src="/icons/logo.png" width={25} height={25} alt="logo" />

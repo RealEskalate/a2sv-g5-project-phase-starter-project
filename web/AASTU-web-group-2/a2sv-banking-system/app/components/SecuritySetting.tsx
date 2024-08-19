@@ -84,11 +84,10 @@ const SecuritySetting = () => {
             className="border rounded-lg px-3 py-2 text-xs flex items-end w-full md:w-64"
           />
         </div>
-        <div className="w-full flex">
-          <div className="md:w-full"></div>
+        <div className="w-full flex justify-end">
           <button
             type="submit"
-            className="bg-[#1814F3] hover:bg-[#423fef] text-white px-5 py-3 rounded-xl lg:w-auto text-sm w-full md:w-4/12"
+            className="bg-[#1814F3] hover:bg-[#423fef] text-white px-5 py-3 rounded-xl md:w-2/12 text-sm w-full  self-end"
           >
             Save
           </button>

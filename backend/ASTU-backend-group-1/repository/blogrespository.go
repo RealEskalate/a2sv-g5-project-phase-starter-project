@@ -251,6 +251,8 @@ func (r *MongoBlogRepository) Delete(blogId string) error {
 }
 
 func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int) error {
+
+	fmt.Println("this is the blog id,userId and like", blogId, userId, like)
 	id, err := IsValidObjectID(blogId)
 	if err != nil {
 		fmt.Println("invalid blog ID: ", blogId)

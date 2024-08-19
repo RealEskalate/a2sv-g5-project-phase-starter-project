@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"astu-backend-g1/domain"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -18,7 +19,7 @@ func (uc *BlogUsecase) CreateBLog(title, content, authorId, date, tags string) (
 	tagList := strings.Split(tags, ",")
 	theDate, err := time.Parse("2006-01-02", date)
 	if err != nil {
-		panic(err)
+		return domain.Blog{}, err
 	}
 	blogData := domain.Blog{
 		Title:    title,
@@ -114,6 +115,7 @@ func (uc *BlogUsecase) DeleteBLog(blogId string) error {
 }
 
 func (uc *BlogUsecase) LikeBlog(blogId, userId string) error {
+	fmt.Println("usecase: this is the blog i,user id ", blogId, userId)
 	err := uc.blogRepository.LikeOrDislikeBlog(blogId, userId, 1)
 	if err != nil {
 		return err

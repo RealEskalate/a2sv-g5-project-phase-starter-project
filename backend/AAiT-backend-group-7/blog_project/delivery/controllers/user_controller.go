@@ -137,6 +137,65 @@ func (uc *userController) Login(c *gin.Context) {
 	c.JSON(200, newUser)
 }
 
-func (uc *userController) RefreshToken(c *gin.Context){
-	
+
+func (uc *userController) Logout(c *gin.Context) {
+
+
 }
+
+func (uc *userController) ForgetPassword(c *gin.Context) {
+	email := c.Param("email")
+	err := uc.UserUsecase.ForgetPassword(c , email)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Password reset link sent to email"})
+}
+
+func (uc *userController) ResetPassword(c *gin.Context) {
+
+	username := c.Param("username")
+	password := c.Param("password")
+	err := uc.UserUsecase.ResetPassword(c , username, password)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Password reset successfully"})
+}
+
+func (uc *userController) PromoteUser(c *gin.Context) {
+	id := c.Param("id")
+	idInt , err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	user ,err := uc.UserUsecase.PromoteUser(c , idInt)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "User promoted successfully" , "user": user})
+}
+
+func (uc *userController) DemoteUser(c *gin.Context) {
+	id := c.Param("id")
+	idInt , err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	user ,err := uc.UserUsecase.DemoteUser(c , idInt)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "User demoted successfully" , "user": user})
+}
+

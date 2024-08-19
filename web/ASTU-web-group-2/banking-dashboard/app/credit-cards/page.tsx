@@ -6,16 +6,19 @@ import CardList from "../components/cardList/cardList";
 import CardExpenseStatisticsChart from "../components/charts/CardExpenseStatisticsChart";
 import AddNewCard from "../components/addNewCard/AddNewCard";
 import CardSetting from "../components/CardSetting/CardSetting";
+import CardForCreditCards from "../components/card/CardForCreditCards";
 
 const CreditCardsPage = () => {
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex max-sm:flex-col gap-[30px]">
-        <Card
+    <div className="flex flex-col gap-2 pb-5">
+      <div className="flex max-sm:flex-col justify-between">
+        <CardForCreditCards
           title="My Cards"
-          className="flex flex-col w-full md:h-[299px] h-[254]"
+          className="flex flex-col w-fit max-sm:w-[350px]"
+          link="/credit-cards"
+          button=""
         >
-          <div className="flex  gap-[30px]">
+          <div className="flex justify-between gap-5">
             <div>
               <CreditCard
                 balance={1250}
@@ -44,9 +47,9 @@ const CreditCardsPage = () => {
               />
             </div>
           </div>
-        </Card>
+        </CardForCreditCards>
       </div>
-      <div className="flex max-sm:flex-col gap-[30px]">
+      <div className="flex max-sm:flex-col  justify-between">
         <Card
           title="Card Expense Statistics"
           className="flex flex-col max-w-[350px] lg:mx-auto h-auto"
@@ -60,16 +63,16 @@ const CreditCardsPage = () => {
           <CardList />
         </Card>
       </div>
-      <div className="flex max-sm:flex-col gap-[30px]">
+      <div className="flex max-sm:flex-col justify-between">
         <Card
           title="Add New Card"
-          className="flex flex-col min-w-[730px] lg:mx-auto h-auto"
+          className="flex flex-col lg:w-[730px] w-[350px] h-auto"
         >
           <AddNewCard />
         </Card>
         <Card
           title="Card Setting"
-          className="flex flex-col max-w-[350px] lg:mx-auto h-auto"
+          className="flex flex-col w-[350px]  h-auto"
         >
           <CardSetting />
         </Card>

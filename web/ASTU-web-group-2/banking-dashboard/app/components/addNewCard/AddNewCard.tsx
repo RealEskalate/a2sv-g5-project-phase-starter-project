@@ -2,7 +2,7 @@ import React from "react";
 
 const AddNewCard = () => {
   return (
-    <div className="w-[730px] h-[440px] ml-290px mt-849px bg-white rounded-[25px]">
+    <div className="ml-290px mt-849px bg-white rounded-[25px]">
       <p className="pl-[30px] pt-[27px] text-[#718EBF] font-normal text-[16px] leading-[26px]">
         Credit Card generally means a plastic card issued by Scheduled
         Commercial Banks assigned to a Cardholder, with a credit limit, that can
@@ -10,8 +10,8 @@ const AddNewCard = () => {
         advances.
       </p>
       <div className="pl-[30px] pt-[29px]">
-        <form className="contact-form">
-          <div className="flex gap-[30px] pb-[22px]">
+        <form className="contact-form ">
+          <div className="flex gap-[30px] pb-[22px] max-sm:flex-col">
             <div className="flex flex-col gap-[11px] ">
               <label className="text-[16px] leading-[19.26px] font-normal text-[#232323]">
                 Card Type
@@ -34,8 +34,8 @@ const AddNewCard = () => {
               />
             </div>
           </div>
-          <div className="flex gap-[30px] pb-[30px]">
-            <div className="flex flex-col gap-[11px]">
+          <div className="flex gap-[30px] pb-[30px] max-sm:flex-col">
+            <div className="flex flex-col gap-[11px] ">
               <label className="text-[16px] leading-[19.26px] font-normal text-[#232323]">
                 Balance
               </label>

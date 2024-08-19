@@ -13,7 +13,7 @@ type LogoutController struct {
 }
 
 func (l *LogoutController) Logout(c *gin.Context) {
-	id := c.Param("id")
+	id := c.GetString("user_id")
 	// TODO: get id from claims
 	_, err := l.LogoutUsecase.CheckActiveUser(c, id)
 	if err != nil {

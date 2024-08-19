@@ -40,6 +40,9 @@ type BlogRepository interface {
 	GetPostByAuthorID(ctx context.Context, authorID primitive.ObjectID) ([]*Post, error, int)
 	GetPostByID(ctx context.Context, id primitive.ObjectID) (*Post, error, int)
 	UpdatePostByID(ctx context.Context, id primitive.ObjectID, post *Post) (error, int)
+	GetTags(ctx context.Context, id primitive.ObjectID) ([]*Tag, error, int)
+	GetComments(ctx context.Context, id primitive.ObjectID) ([]*Comment, error, int)
+	GetAllPosts(ctx context.Context) ([]*Post, error, int)
 }
 
 type BlogUseCase interface {
@@ -48,6 +51,9 @@ type BlogUseCase interface {
 	GetPostByAuthorID(c *gin.Context, authorID primitive.ObjectID) ([]*Post, error, int)
 	GetPostByID(c *gin.Context, id primitive.ObjectID) (*Post, error, int)
 	UpdatePostByID(c *gin.Context, id primitive.ObjectID, post *Post) (error, int)
+	GetTags(c *gin.Context, id primitive.ObjectID) ([]*Tag, error, int)
+	GetComments(c *gin.Context, id primitive.ObjectID) ([]*Comment, error, int)
+	GetAllPosts(c *gin.Context) ([]*Post, error, int)
 }
 
 type CommentRepository interface {
@@ -55,6 +61,7 @@ type CommentRepository interface {
 	GetCommentByID(ctx context.Context, id primitive.ObjectID) (*Comment, error, int)
 	EditComment(ctx context.Context, id primitive.ObjectID, comment *Comment) (error, int)
 	GetUserComments(ctx context.Context, id primitive.ObjectID) ([]*Comment, error, int)
+	DeleteComment(ctx context.Context, id primitive.ObjectID) (error, int)
 }
 
 type CommentUseCase interface {
@@ -62,6 +69,7 @@ type CommentUseCase interface {
 	GetCommentByID(c *gin.Context, id primitive.ObjectID) (*Comment, error, int)
 	EditComment(c *gin.Context, id primitive.ObjectID, comment *Comment) (error, int)
 	GetUserComments(c *gin.Context, id primitive.ObjectID) ([]*Comment, error, int)
+	DeleteComment(c *gin.Context, id primitive.ObjectID) (error, int)
 }
 
 type TagRepository interface {

@@ -3,6 +3,7 @@ package controllers
 import (
 	"blogapp/Domain"
 	"blogapp/Utils"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -173,6 +174,58 @@ func (controller *blogController) UpdatePostByID(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{
 		"message": "Post updated successfully",
-		"newpost" : updatedPost,
+		"newpost": updatedPost,
+	})
+}
+
+func (controller *blogController) GetTags(c *gin.Context) {
+	postID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	tags, err, statusCode := controller.BlogUseCase.GetTags(c, postID)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Tags fetched successfully",
+		"tags":    tags,
+	})
+}
+
+func (controller *blogController) GetComments(c *gin.Context) {
+	postID, err := primitive.ObjectIDFromHex(c.Param("id")) // convert id to object id
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	comments, err, statusCode := controller.BlogUseCase.GetComments(c, postID)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message":  "Comments fetched successfully",
+		"comments": comments,
+	})
+}
+
+func (controller *blogController) GetAllPosts(c *gin.Context) {
+	queryparams := c.Request.URL.Query()
+	fmt.Println(queryparams)
+	fmt.Println("hehe")
+
+	posts, err, statusCode := controller.BlogUseCase.GetAllPosts(c)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Posts fetched successfully",
+		"posts":   posts,
 	})
 }

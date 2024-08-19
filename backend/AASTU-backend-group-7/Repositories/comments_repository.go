@@ -68,3 +68,13 @@ func (cr *commentRepository) GetUserComments(ctx context.Context, authorID primi
 	}
 	return comments, nil, 200
 }
+
+func (cr *commentRepository) DeleteComment(ctx context.Context, id primitive.ObjectID) (error, int) {
+	filter := bson.D{{"_id", id}}
+	_, err := cr.commentCollection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err, 500
+	}
+	return nil, 200
+}
+

@@ -2,7 +2,7 @@ package infrastructure
 
 import (
 	"blog_g2/domain"
-	"fmt"
+	"errors"
 	"log"
 	"os"
 	"time"
@@ -49,11 +49,29 @@ func TokenClaimer(tokenstr string) (*jwt.Token, error) {
 
 	log.Println("secretkey: ", SECRET_KEY)
 
-	return jwt.Parse(tokenstr, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-
+	return jwt.ParseWithClaims(tokenstr, &domain.JWTClaim{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(SECRET_KEY), nil
 	})
+}
+
+func RefreshAccessToken(refreshTokenString string) (string, error) {
+	token, err := TokenClaimer(refreshTokenString)
+	if err != nil || !token.Valid {
+		return "", errors.New("Invalid or expired refresh token")
+	}
+
+	claims, ok := token.Claims.(*domain.JWTClaim)
+	if !ok || claims.Exp < time.Now().Unix() {
+		return "", errors.New("Refresh token expired")
+	}
+
+	uid, _ := primitive.ObjectIDFromHex(claims.UserID)
+
+	// Issue a new access token
+	newAccessToken, err := TokenGenerator(uid, claims.Email, claims.Isadmin, true)
+	if err != nil {
+		return "", err
+	}
+
+	return newAccessToken, nil
 }

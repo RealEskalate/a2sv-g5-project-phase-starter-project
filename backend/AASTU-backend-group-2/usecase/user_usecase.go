@@ -20,7 +20,7 @@ func NewUserUsecase(Userrepo domain.UserRepository, timeout time.Duration) domai
 
 }
 
-func (uuse *UserUsecase) RegisterUser(c context.Context, user domain.User) error {
+func (uuse *UserUsecase) RegisterUser(c context.Context, user *domain.User) error {
 	return uuse.UserRepo.RegisterUser(user)
 
 }
@@ -41,8 +41,8 @@ func (uuse *UserUsecase) ResetPassword(c context.Context, token string, newPassw
 	return uuse.UserRepo.ResetPassword(token, newPassword)
 }
 
-func (uuse *UserUsecase) LogoutUser(c context.Context) error {
-	return nil
+func (uuse *UserUsecase) LogoutUser(c context.Context, uid string) error {
+	return uuse.UserRepo.LogoutUser(uid)
 }
 
 func (uuse *UserUsecase) PromoteDemoteUser(c context.Context, userid string, isAdmin bool) error {

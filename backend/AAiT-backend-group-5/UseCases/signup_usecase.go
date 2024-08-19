@@ -58,9 +58,9 @@ func (uc *signupUsecase) CreateUser(ctx context.Context, user *models.User) *mod
 	// send the email
 	subject := "Email Verification"
 	body := "Please click the link below to verify your email address\n" + url + "This link will expire in 1 hour"
-	err = uc.emailService.SendEmail(user.Email, subject, body)
+	e := uc.emailService.SendEmail(user.Email, subject, body)
 
-	if err != nil {
+	if e != nil {
 		return models.InternalServerError("Error while sending email")
 	}
 

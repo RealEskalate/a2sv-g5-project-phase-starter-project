@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	Models "github.com/aait.backend.g5.main/backend/Domain/Models"
+	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -36,10 +36,10 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 }
 
 // CreateUser mocks base method.
-func (m *MockUserRepository) CreateUser(ctx context.Context, user Models.User) *Models.ErrorResponse {
+func (m *MockUserRepository) CreateUser(ctx context.Context, user *models.User) *models.ErrorResponse {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", ctx, user)
-	ret0, _ := ret[0].(*Models.ErrorResponse)
+	ret0, _ := ret[0].(*models.ErrorResponse)
 	return ret0
 }
 
@@ -50,10 +50,10 @@ func (mr *MockUserRepositoryMockRecorder) CreateUser(ctx, user interface{}) *gom
 }
 
 // DeleteTokensFromDB mocks base method.
-func (m *MockUserRepository) DeleteTokensFromDB(ctx context.Context, userID string) *Models.ErrorResponse {
+func (m *MockUserRepository) DeleteTokensFromDB(ctx context.Context, userID string) *models.ErrorResponse {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteTokensFromDB", ctx, userID)
-	ret0, _ := ret[0].(*Models.ErrorResponse)
+	ret0, _ := ret[0].(*models.ErrorResponse)
 	return ret0
 }
 
@@ -64,10 +64,10 @@ func (mr *MockUserRepositoryMockRecorder) DeleteTokensFromDB(ctx, userID interfa
 }
 
 // DeleteUser mocks base method.
-func (m *MockUserRepository) DeleteUser(ctx context.Context, userID string) *Models.ErrorResponse {
+func (m *MockUserRepository) DeleteUser(ctx context.Context, userID string) *models.ErrorResponse {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteUser", ctx, userID)
-	ret0, _ := ret[0].(*Models.ErrorResponse)
+	ret0, _ := ret[0].(*models.ErrorResponse)
 	return ret0
 }
 
@@ -78,10 +78,10 @@ func (mr *MockUserRepositoryMockRecorder) DeleteUser(ctx, userID interface{}) *g
 }
 
 // DemoteUser mocks base method.
-func (m *MockUserRepository) DemoteUser(ctx context.Context, userID string) *Models.ErrorResponse {
+func (m *MockUserRepository) DemoteUser(ctx context.Context, userID string) *models.ErrorResponse {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DemoteUser", ctx, userID)
-	ret0, _ := ret[0].(*Models.ErrorResponse)
+	ret0, _ := ret[0].(*models.ErrorResponse)
 	return ret0
 }
 
@@ -92,11 +92,11 @@ func (mr *MockUserRepositoryMockRecorder) DemoteUser(ctx, userID interface{}) *g
 }
 
 // GetUserByEmailOrUsername mocks base method.
-func (m *MockUserRepository) GetUserByEmailOrUsername(ctx context.Context, username, email string) (*Models.User, *Models.ErrorResponse) {
+func (m *MockUserRepository) GetUserByEmailOrUsername(ctx context.Context, username, email string) (*models.User, *models.ErrorResponse) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserByEmailOrUsername", ctx, username, email)
-	ret0, _ := ret[0].(*Models.User)
-	ret1, _ := ret[1].(*Models.ErrorResponse)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(*models.ErrorResponse)
 	return ret0, ret1
 }
 
@@ -107,11 +107,11 @@ func (mr *MockUserRepositoryMockRecorder) GetUserByEmailOrUsername(ctx, username
 }
 
 // GetUserByID mocks base method.
-func (m *MockUserRepository) GetUserByID(ctx context.Context, id string) (*Models.User, *Models.ErrorResponse) {
+func (m *MockUserRepository) GetUserByID(ctx context.Context, id string) (*models.User, *models.ErrorResponse) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserByID", ctx, id)
-	ret0, _ := ret[0].(*Models.User)
-	ret1, _ := ret[1].(*Models.ErrorResponse)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(*models.ErrorResponse)
 	return ret0, ret1
 }
 
@@ -122,10 +122,10 @@ func (mr *MockUserRepositoryMockRecorder) GetUserByID(ctx, id interface{}) *gomo
 }
 
 // PromoteUser mocks base method.
-func (m *MockUserRepository) PromoteUser(ctx context.Context, userID string) *Models.ErrorResponse {
+func (m *MockUserRepository) PromoteUser(ctx context.Context, userID string) *models.ErrorResponse {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "PromoteUser", ctx, userID)
-	ret0, _ := ret[0].(*Models.ErrorResponse)
+	ret0, _ := ret[0].(*models.ErrorResponse)
 	return ret0
 }
 
@@ -136,10 +136,10 @@ func (mr *MockUserRepositoryMockRecorder) PromoteUser(ctx, userID interface{}) *
 }
 
 // StoreAccessToken mocks base method.
-func (m *MockUserRepository) StoreAccessToken(ctx context.Context, userID, token string) *Models.ErrorResponse {
+func (m *MockUserRepository) StoreAccessToken(ctx context.Context, userID, token string) *models.ErrorResponse {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StoreAccessToken", ctx, userID, token)
-	ret0, _ := ret[0].(*Models.ErrorResponse)
+	ret0, _ := ret[0].(*models.ErrorResponse)
 	return ret0
 }
 
@@ -150,10 +150,10 @@ func (mr *MockUserRepositoryMockRecorder) StoreAccessToken(ctx, userID, token in
 }
 
 // StoreRefreshToken mocks base method.
-func (m *MockUserRepository) StoreRefreshToken(ctx context.Context, userID, token string) *Models.ErrorResponse {
+func (m *MockUserRepository) StoreRefreshToken(ctx context.Context, userID, token string) *models.ErrorResponse {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StoreRefreshToken", ctx, userID, token)
-	ret0, _ := ret[0].(*Models.ErrorResponse)
+	ret0, _ := ret[0].(*models.ErrorResponse)
 	return ret0
 }
 
@@ -164,10 +164,10 @@ func (mr *MockUserRepositoryMockRecorder) StoreRefreshToken(ctx, userID, token i
 }
 
 // UpdateUser mocks base method.
-func (m *MockUserRepository) UpdateUser(ctx context.Context, user *Models.User, id string) *Models.ErrorResponse {
+func (m *MockUserRepository) UpdateUser(ctx context.Context, user *models.User, id string) *models.ErrorResponse {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateUser", ctx, user, id)
-	ret0, _ := ret[0].(*Models.ErrorResponse)
+	ret0, _ := ret[0].(*models.ErrorResponse)
 	return ret0
 }
 

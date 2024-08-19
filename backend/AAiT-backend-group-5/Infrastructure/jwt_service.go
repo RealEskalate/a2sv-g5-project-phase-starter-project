@@ -51,9 +51,7 @@ func (j *jwtService) CreateRefreshToken(user models.User, expTim int) (refreshTo
 
 	// Define the claims for the refresh token
 	claims := &models.JWTCustome{
-		ID:    user.ID.Hex(),
-		Email: user.Email,
-		Role:  string(user.Role),
+		ID: user.ID.Hex(),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expTime,
 		},
@@ -105,19 +103,4 @@ func (j *jwtService) ValidateAuthHeader(authHeader string) ([]string, error) {
 	return authParts, nil
 }
 
-func (j *jwtService) GetClaims(authHeader string) (*models.JWTCustome, error) {
 
-	// Validate and parse the Authorization header
-	authParts, err := j.ValidateAuthHeader(authHeader)
-	if err != nil {
-		return nil, fmt.Errorf("invalid authorization header: %v", err)
-	}
-
-	// Validate the JWT token
-	claims, err := j.ValidateToken(authParts[1])
-	if err != nil {
-		return nil, fmt.Errorf("invalid token: %v", err)
-	}
-
-	return claims, nil
-}

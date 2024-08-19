@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"aait.backend.g10/domain"
+	"aait.backend.g10/usecases/dto"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -44,14 +45,32 @@ func (r *UserRepository) GetUserByID(id uuid.UUID) (*domain.User, error) {
 	return &user, nil
 }
 
-func (r *UserRepository) UpdateUser(user *domain.User) error {
+func (r *UserRepository) UpdateUser(user *dto.UserUpdate) error {
+	update := bson.D{}
+	if user.FullName != "" {
+		update = append(update, bson.E{Key: "fullname", Value: user.FullName})
+	}
+	if user.Bio != "" {
+		update = append(update, bson.E{Key: "bio", Value: user.Bio})
+	}
+	if user.ImageURL != "" {
+		update = append(update, bson.E{Key: "imageUrl", Value: user.ImageURL})
+	}
+	if user.Password != "" {
+		update = append(update, bson.E{Key: "password", Value: user.Password})
+	}
+	update = append(update, bson.E{Key: "updated_at", Value: user.UpdatedAt})
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	filter := bson.D{{Key: "_id", Value: user.ID}}
+	_, err := r.collection.UpdateOne(ctx, filter, bson.D{{Key: "$set", Value: update}})
+	if err != nil {
+		return err
+	}
 	return nil
 }
-
-func (r *UserRepository) DeleteUser(id uuid.UUID) error {
-	return nil
-}
-
 func (r *UserRepository) PromoteUser(id uuid.UUID, makeAdmin bool) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()

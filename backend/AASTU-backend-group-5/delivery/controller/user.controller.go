@@ -147,3 +147,31 @@ func (controller *UserController) FilterUser() gin.HandlerFunc {
 		ctx.IndentedJSON(http.StatusOK , gin.H{"data" : users})
 	}
 }
+
+func (controller *UserController) PromoteUser() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		user,err := controller.UserUsecase.PromoteUser(id)
+		if err != nil {
+			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : "error updating user"})
+			return
+		}
+
+		ctx.IndentedJSON(http.StatusOK , gin.H{"data" : user})
+	}
+}
+
+func (controller *UserController) DemoteUser() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		user,err := controller.UserUsecase.DemoteUser(id)
+		if err != nil {
+			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : "error updating user"})
+			return
+		}
+
+		ctx.IndentedJSON(http.StatusOK , gin.H{"data" : user})
+	}
+}

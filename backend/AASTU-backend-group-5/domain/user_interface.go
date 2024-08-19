@@ -9,6 +9,8 @@ type User_Controller_interface interface {
 	DeleteUser() gin.HandlerFunc
 	FilterUser() gin.HandlerFunc
 	UpdatePassword() gin.HandlerFunc
+	PromoteUser() gin.HandlerFunc
+	DemoteUser() gin.HandlerFunc
 }
 
 type User_Usecase_interface interface {
@@ -18,6 +20,8 @@ type User_Usecase_interface interface {
 	DeleteUser(id string) (error)
 	FilterUser(map[string]string) ([]ResponseUser , error)
 	UpdatePassword(id string , updated_user UpdatePassword)(ResponseUser , error) 
+	PromoteUser(id string) (ResponseUser, error)
+	DemoteUser(id string) (ResponseUser, error)
 }
 
 type User_Repository_interface interface{
@@ -27,5 +31,7 @@ type User_Repository_interface interface{
 	DeleteUserDocument(id string) (error)
 	FilterUserDocument(filter map[string]string) ([]User , error)
 	UpdateUserPassword(id string , new_hashed_password string) (User , error)
+	PromoteUser(id string) (User , error)
+	DemoteUser(id string) (User , error)
 }
 

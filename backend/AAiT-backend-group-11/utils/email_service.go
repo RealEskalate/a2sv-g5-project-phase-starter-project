@@ -123,8 +123,8 @@ func (e *emailService) SendEmail(emailAddress string, subject string, body strin
 }
 
 // NewEmailService creates a new instance of emailService.
-func NewEmailService(smtpServer, username, password, sender string) interfaces.EmailService {
-	auth := smtp.PlainAuth("", username, password, smtpServer)
+func NewEmailService(smtpServer, password, sender string) interfaces.EmailService {
+	auth := smtp.PlainAuth("", sender, password, smtpServer)
 	return &emailService{
 		smtpServer: smtpServer,
 		auth:       auth,

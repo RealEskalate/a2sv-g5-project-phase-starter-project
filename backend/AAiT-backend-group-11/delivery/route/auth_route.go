@@ -14,9 +14,11 @@ func NewAuthRouter(env *bootstrap.Env, db *mongo.Database, group *gin.RouterGrou
 	ur := repository.NewUserRepository(db.Collection("users"))
 	usr := service.NewUserService(ur)
 	tokenRepo := repository.NewRefreshTokenRepository(db.Collection("refresh_tokens"))
+	otpRepo := repository.NewOtpRepository(db.Collection("otp"))
+	otpService := service.NewOtpService(otpRepo)
 
 	ac := controller.AuthController{
-		AuthService : service.NewAuthService(usr, tokenRepo),
+		AuthService : service.NewAuthService(usr, tokenRepo, otpService),
 		TokenRepo : repository.NewRefreshTokenRepository(db.Collection("refresh_tokens")),
 		Env: env,
 	}

@@ -2,6 +2,7 @@ package router
 
 import (
 	"ASTU-backend-group-3/Blog_manager/Delivery/controller"
+	"ASTU-backend-group-3/Blog_manager/infrastructure"
 
 	// "ASTU-backend-group-3/Blog_manager/infrastructure"
 
@@ -20,7 +21,7 @@ func SetupRouter(userController *controller.UserController, blogController *cont
 	router.GET("/reset/:token", userController.ResetPassword)
 
 	usersRoute := router.Group("/")
-	// usersRoute.Use(infrastructure.AuthMiddleware()) // make sure to add Auth_User in the middleware
+	usersRoute.Use(infrastructure.AuthMiddleware()) // make sure to add Auth_User in the middleware
 	usersRoute.PUT("/update/:username", userController.UpdateUser)
 	usersRoute.PUT("/change_password", userController.ChangePassword)
 	usersRoute.POST("/logout", userController.Logout)

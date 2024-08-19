@@ -5,6 +5,7 @@ import (
 	"ASTU-backend-group-3/Blog_manager/Usecases"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -224,4 +225,22 @@ func (h *BlogController) AddComment(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Comment added"})
+}
+
+func (c *BlogController) FilterBlogs(ctx *gin.Context) {
+	var tags []string
+	if ctx.Query("tags") != "" {
+		tags = strings.Split(ctx.Query("tags"), ",")
+	}
+	startDate, _ := time.Parse(time.RFC3339, ctx.Query("startDate"))
+	endDate, _ := time.Parse(time.RFC3339, ctx.Query("endDate"))
+	sortBy := ctx.Query("sortBy")
+
+	blogs, err := c.blogUsecase.FilterBlogs(tags, startDate, endDate, sortBy)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, blogs)
 }

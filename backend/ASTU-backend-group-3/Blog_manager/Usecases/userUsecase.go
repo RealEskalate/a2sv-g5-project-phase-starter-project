@@ -6,6 +6,7 @@ import (
 	"ASTU-backend-group-3/Blog_manager/infrastructure"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -40,24 +41,45 @@ func NewUserUsecase(userRepo Repository.UserRepository, emailService *infrastruc
 	}
 }
 
+const (
+	passwordMinLength = 8
+	passwordMaxLength = 20
+)
+
+// Register creates a new user, hashes the password, generates a verification token, and sends a welcome email.
 func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error) {
+	// Validate username
 	if strings.Contains(input.Username, "@") {
 		return nil, errors.New("username must not contain '@'")
 	}
 
+	// Check if username already exists
 	if _, err := u.userRepo.FindByUsername(input.Username); err == nil {
 		return nil, errors.New("username already exists")
 	}
 
+	// Validate email format
+	if !isValidEmail(input.Email) {
+		return nil, errors.New("invalid email format")
+	}
+
+	// Check if email already registered
 	if _, err := u.userRepo.FindByEmail(input.Email); err == nil {
 		return nil, errors.New("email already registered")
 	}
 
+	// Validate password strength
+	if err := validatePasswordStrength(input.Password); err != nil {
+		return nil, err
+	}
+
+	// Hash the password
 	hashedPassword, err := u.passwordService.HashPassword(input.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %v", err)
 	}
 
+	// Create new user
 	user := &Domain.User{
 		Id:             primitive.NewObjectID(),
 		Name:           input.Name,
@@ -68,28 +90,34 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error)
 		Bio:            input.Bio,
 		Gender:         input.Gender,
 		Address:        input.Address,
-		IsActive:       false,
+		IsActive:       false, // Initially inactive
 		PostsIDs:       []string{},
 	}
 
+	// Set user role based on database state
 	if ok, err := u.userRepo.IsDbEmpty(); ok && err == nil {
 		user.Role = "admin"
 	} else {
 		user.Role = "user"
 	}
 
+	// Save user to repository
 	err = u.userRepo.Save(user)
 	if err != nil {
 		return nil, fmt.Errorf("failed to save user: %v", err)
 	}
 
+	// Generate a verification token
 	newToken, err := infrastructure.GenerateResetToken(user.Username, []byte("BlogManagerSecretKey"))
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate reset token: %v", err)
+		return nil, fmt.Errorf("failed to generate verification token: %v", err)
 	}
 
+	// Construct the email body
 	subject := "Welcome to Our Service!"
-	body := fmt.Sprintf("Hi %s, welcome to our platform! Please verify your account by clicking the link below:\n\nhttp://localhost:8080/verify/%s", input.Name, newToken)
+	body := fmt.Sprintf("Hi %s,\n\nWelcome to our platform! Please verify your account by clicking the link below:\n\nhttp://localhost:8080/verify/%s\n\nThank you!", input.Name, newToken)
+
+	// Send verification email
 	err = u.emailService.SendEmail(input.Email, subject, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send welcome email: %v", err)
@@ -291,5 +319,45 @@ func (u *userUsecase) Verify(token string) error {
 	if err != nil {
 		return fmt.Errorf("failed to verify user: %v", err)
 	}
+	return nil
+}
+
+// isValidEmail checks if the email format is valid
+func isValidEmail(email string) bool {
+	re := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	return re.MatchString(email)
+}
+
+// validatePasswordStrength checks if the password meets strength criteria
+func validatePasswordStrength(password string) error {
+	if len(password) < passwordMinLength || len(password) > passwordMaxLength {
+		return fmt.Errorf("password must be between %d and %d characters", passwordMinLength, passwordMaxLength)
+	}
+
+	hasUpper := false
+	hasDigit := false
+	hasSpecial := false
+
+	for _, c := range password {
+		switch {
+		case c >= 'A' && c <= 'Z':
+			hasUpper = true
+		case c >= '0' && c <= '9':
+			hasDigit = true
+		case c == '@' || c == '#' || c == '$' || c == '%' || c == '^' || c == '&' || c == '*':
+			hasSpecial = true
+		}
+	}
+
+	if !hasUpper {
+		return errors.New("password must contain at least one uppercase letter")
+	}
+	if !hasDigit {
+		return errors.New("password must contain at least one digit")
+	}
+	if !hasSpecial {
+		return errors.New("password must contain at least one special character")
+	}
+
 	return nil
 }

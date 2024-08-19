@@ -23,7 +23,42 @@ func NewBlogController(BlogUsecase domain.BlogUsecase, validator domain.Validate
 
 // CommentOnBlog implements domain.BlogUsecase.
 func (b BlogController) CommentOnBlog(c *gin.Context) {
-	panic("unimplemented")
+	var comment domain.Comment
+	userID := c.GetString("user_id")
+	userName := c.GetString("user_name")
+	if userID == "" || userName == ""{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status:  http.StatusUnauthorized,
+		})
+		return
+	}
+	if err := c.ShouldBind(&comment); err != nil{
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Message: err.Error(),
+			Status:  http.StatusBadRequest,
+		})
+		return
+	}
+	if err := b.Validator.ValidateStruct(comment); err != nil{
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Message: "Invalid request payload.",
+			Status:  http.StatusBadRequest,
+		})
+		return
+	}
+	err := b.BlogUsecase.CommentOnBlog(userID, userName, comment)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
+			Message: err.Error(),
+			Status: http.StatusInternalServerError,
+		})
+		return
+	}
+	c.JSON(http.StatusCreated, domain.SuccessResponse{
+		Message: "Comment created successfully",
+		Status: http.StatusCreated,
+	} )
 }
 
 // CreateBlog implements domain.BlogUsecase.

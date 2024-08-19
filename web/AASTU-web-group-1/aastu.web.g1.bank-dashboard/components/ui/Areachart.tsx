@@ -36,10 +36,10 @@ const chartConfig = {
 
 export function Areachart() {
   return (
-    <Card className="md:h-45">
+    <Card >
       <CardContent>
-        <ChartContainer config={chartConfig}>
-          <ResponsiveContainer width="100%" >
+        <ChartContainer config={chartConfig} className="md:h-40 w-full">
+          <ResponsiveContainer  >
             <AreaChart
               data={chartData}
               margin={{

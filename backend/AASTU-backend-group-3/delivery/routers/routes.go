@@ -22,7 +22,7 @@ func SetupRouter() *gin.Engine {
     SetUpUser(router)
 
     // // Admin routes
-    // SetUpAdmin(router)
+    SetUpAdmin(router)
 
     // // Ai routes
     // SetUpAi(router)

@@ -1,13 +1,14 @@
 "use client";
 import Card from "../../components/Accounts/account";
-import LastTransList from "@/app/components/Accounts/LastTransPa";
+import LastTransList from "@/app/components/Accounts/LastTransList";
 import { DebitCreditOver } from "../../components/Accounts/DebitCreditOver";
 import InvoiceCard from "../../components/Accounts/InvoiceCard";
 import VisaCard from "@/app/components/Card/VisaCard";
 import { Card as CardType } from "@/app/Redux/slices/cardSlice";
 import { useAppSelector } from "@/app/Redux/store/store";
+import LastTrans from "@/app/components/Accounts/Last_trans";
+import { TransactionType } from "@/app/Redux/slices/TransactionSlice";
 export default function Home() {
-
   const CardData: CardType[] = useAppSelector((state) => state.cards.cards);
 
   return (

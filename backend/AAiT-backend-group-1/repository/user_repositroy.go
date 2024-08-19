@@ -88,7 +88,11 @@ func (userRepo *UserRepository) Create(cxt context.Context, user *domain.User) (
 		}
 		return &domain.User{}, &domain.CustomError{Message: fmt.Sprintf("error inserting the user. %v \n", errInsert.Error()), Code: http.StatusInternalServerError}
 	}
-	user.ID = insertResult.InsertedID.(primitive.ObjectID)
+	returnedID, ok := insertResult.InsertedID.(primitive.ObjectID)
+	if !ok {
+		return &domain.User{}, &domain.CustomError{Message: fmt.Sprintf("error getting the user id. %v \n", errInsert.Error()), Code: http.StatusInternalServerError}
+	}
+	user.ID = returnedID
 	return user, nil
 }
 

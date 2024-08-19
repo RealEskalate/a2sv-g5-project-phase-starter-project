@@ -1,19 +1,20 @@
 package domain
 
 import (
+	"context"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserUseCase interface {
-	Register(user *User) Error
-	Login(username, password string) (string, Error)
-	ForgotPassword(email string) Error
-	Logout(token string) Error
-	PromoteUser(userID string) Error
-	DemoteUser(userID string) Error
-	UpdateProfile(userID string, user *User) Error
+	Register(context context.Context, user *User) Error
+	Login(context context.Context, username, password string) (string, Error)
+	ForgotPassword(context context.Context, email string) Error
+	Logout(context context.Context, token string) Error
+	PromoteUser(context context.Context, userID string) Error
+	DemoteUser(context context.Context, userID string) Error
+	UpdateProfile(context context.Context, userID string, user *User) Error
 }
 
 type BlogUseCase interface {
@@ -25,7 +26,7 @@ type BlogUseCase interface {
 	SearchBlogs(title, author string) ([]*Blog, Error)
 	FilterBlogs(tags []string, dateAfter time.Time, popular bool) ([]*Blog, Error)
 	LikeBlog(userID, blogID string) Error
-	
+
 	AddComment(c *gin.Context)
 	DeleteComment(c *gin.Context)
 	EditComment(c *gin.Context)

@@ -10,12 +10,12 @@ import (
 )
 
 type ForgotPasswordController struct {
-	ForgotPasswordUsecase interfaces.ForgotPasswordUsecase
+	PasswordUsecase interfaces.PasswordUsecase
 }
 
-func NewForgotPasswordController(forgotPasswordUsecase interfaces.ForgotPasswordUsecase) *ForgotPasswordController {
+func NewForgotPasswordController(forgotPasswordUsecase interfaces.PasswordUsecase) *ForgotPasswordController {
 	return &ForgotPasswordController{
-		ForgotPasswordUsecase: forgotPasswordUsecase,
+		PasswordUsecase: forgotPasswordUsecase,
 	}
 }
 
@@ -30,14 +30,14 @@ func (forgotPasswordController *ForgotPasswordController) ForgotPasswordRequest(
 	}
 
 	// generate URL to be sent via email
-	resetURL, e := forgotPasswordController.ForgotPasswordUsecase.GenerateResetURL(ctx, request.Email)
+	resetURL, e := forgotPasswordController.PasswordUsecase.GenerateResetURL(ctx, request.Email)
 	if e != nil {
 		ctx.JSON(e.Code, e.Error())
 		return
 	}
 
 	// send confirmation email
-	e = forgotPasswordController.ForgotPasswordUsecase.SendResetEmail(ctx, request.Email, resetURL)
+	e = forgotPasswordController.PasswordUsecase.SendResetEmail(ctx, request.Email, resetURL)
 	if e != nil {
 		ctx.JSON(e.Code, e.Error())
 		return
@@ -59,7 +59,7 @@ func (forgotPasswordController *ForgotPasswordController) ForgotPasswordConfirm(
 	// get short code from the URL
 	shortURLCode := ctx.Param("id")
 
-	e := forgotPasswordController.ForgotPasswordUsecase.UpdateUserPassword(ctx, setUpPasswordRequest.Password, shortURLCode)
+	e := forgotPasswordController.PasswordUsecase.UpdateUserPassword(ctx, setUpPasswordRequest.Password, shortURLCode)
 	if e != nil {
 		ctx.JSON(e.Code, e.Error())
 		return

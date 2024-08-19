@@ -4,43 +4,51 @@ import (
 	"ASTU-backend-group-3/Blog_manager/Delivery/controller"
 	"ASTU-backend-group-3/Blog_manager/infrastructure"
 
-	"ASTU-backend-group-3/Blog_manager/infrastructure"
-
-	// "ASTU-backend-group-3/Blog_manager/utils"
-
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func SetupRouter(userController *controller.UserController, blogController *controller.BlogController) *gin.Engine {
+func SetupRouter(userController *controller.UserController, blogController *controller.BlogController, tokenCollection *mongo.Collection) *gin.Engine {
 	router := gin.Default()
 
+	// Public routes (no authentication required)
 	router.POST("/register", userController.Register)
 	router.POST("/login", userController.Login)
 	router.POST("/refresh", userController.RefreshToken)
 	router.POST("/forgot-password", userController.ForgotPassword)
 	router.GET("/reset/:token", userController.ResetPassword)
 
+	// Public blog routes
+	router.GET("/blogs", blogController.RetrieveBlogs)
+	router.DELETE("/blogs/:id", blogController.DeleteBlogByID)
+
+	// Authenticated user routes
 	usersRoute := router.Group("/")
-	usersRoute.Use(infrastructure.AuthMiddleware()) // make sure to add Auth_User in the middleware
+	usersRoute.Use(infrastructure.AuthMiddleware(tokenCollection)) // Apply authentication middleware
+
+	// User management routes
 	usersRoute.PUT("/update/:username", userController.UpdateUser)
 	usersRoute.PUT("/change_password", userController.ChangePassword)
 	usersRoute.POST("/logout", userController.Logout)
-	// usersRoute.POST("/logout", userController.Logout)
 
-	usersRoute.POST("/blogs", blogController.CreateBlog)
-	usersRoute.GET("/blogs", blogController.RetrieveBlogs)
-	usersRoute.DELETE("/blogs/:id", blogController.DeleteBlogByID)
-	usersRoute.GET("/blogs/search", blogController.SearchBlogs)
-	usersRoute.PUT("/blogs/update/:id", blogController.UpdateBlog)
-	// usersRoute := router.Group("/user")
-	// usersRoute.Use(infrastructure.AuthMiddleware()) // make sure to add Auth_User in the middleware
-	// usersRoute.PUT("/update/:username", userController.UpdateUser)
-	protected := usersRoute.Group("/")
-	// protected.Use(infrastructure.AdminMiddleware()) // make sure to add Auth_User in the middleware
+	// Blog management routes for authenticated users
+	blogsRoute := usersRoute.Group("/blogs")
+	blogsRoute.POST("/", blogController.CreateBlog)
+	blogsRoute.GET("/search", blogController.SearchBlogs)
+	blogsRoute.PUT("/update/:id", blogController.UpdateBlog)
+	blogsRoute.POST("/:id/like", blogController.ToggleLike)
+	blogsRoute.POST("/:id/dislike", blogController.ToggleDislike)
+	blogsRoute.POST("/:id/comment", blogController.AddComment)
 
-	protected.Use(infrastructure.RoleMiddleware("admin")) // make sure to add Auth_User in the middleware
-	protected.DELETE("/delete/:username", userController.DeleteUser)
-	protected.PUT("/promote/:username", userController.PromoteToAdmin)
+	// Increment view count route
+	blogsRoute.POST("/:id/view", blogController.IncrementViewCount)
+
+	// Admin routes (requires admin role)
+	adminRoute := usersRoute.Group("/")
+	adminRoute.Use(infrastructure.RoleMiddleware("admin")) // Apply admin role middleware
+
+	adminRoute.DELETE("/delete/:username", userController.DeleteUser)
+	adminRoute.PUT("/promote/:username", userController.PromoteToAdmin)
 
 	return router
 }

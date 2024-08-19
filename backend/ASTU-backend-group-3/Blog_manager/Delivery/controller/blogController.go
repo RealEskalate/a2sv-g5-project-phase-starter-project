@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -156,4 +157,71 @@ func (h *BlogController) UpdateBlog(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": updatedBlog})
+}
+
+func (h *BlogController) IncrementViewCount(c *gin.Context) {
+	blogID := c.Param("id")
+
+	err := h.blogUsecase.IncrementViewCount(blogID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to increment view count"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "View count updated"})
+}
+
+func (h *BlogController) ToggleLike(c *gin.Context) {
+	blogID := c.Param("id")
+	username := c.GetString("username")
+
+	err := h.blogUsecase.ToggleLike(blogID, username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to toggle like"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Like toggled"})
+}
+
+func (h *BlogController) ToggleDislike(c *gin.Context) {
+	blogID := c.Param("id")
+	username := c.GetString("username")
+
+	err := h.blogUsecase.ToggleDislike(blogID, username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to toggle dislike"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Dislike toggled"})
+}
+
+func (h *BlogController) AddComment(c *gin.Context) {
+	blogID := c.Param("id")
+
+	var input struct {
+		Content string `json:"content" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	comment := Domain.Comment{
+		Id:        primitive.NewObjectID().Hex(),
+		Content:   input.Content,
+		PostID:    blogID,
+		UserID:    c.GetString("username"),
+		CreatedAt: time.Now().Format(time.RFC3339),
+	}
+
+	err := h.blogUsecase.AddComment(blogID, comment)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add comment"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Comment added"})
 }

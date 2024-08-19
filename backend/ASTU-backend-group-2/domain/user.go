@@ -50,17 +50,33 @@ type ResetPassword struct {
 	NewPassword string `json:"new_password" binding:"required"`
 }
 
-type UserRepository interface {
-	GetByID(c context.Context, userID string) (*UserOut, error)                       // Retrieves a user's profile by ID
-	UpdateProfile(c context.Context, userID string, updatedProfile *UserUpdate) error // Updates a user's profile
-	PromoteToAdmin(c context.Context, userID string) error                            // Promotes a user to admin
-	DemoteToUser(c context.Context, userID string) error                              // Demotes an admin to a regular user
-	Delete(c context.Context, userID string) error                                    // Deletes a user's profile
-}
 type UserUsecase interface {
-	GetUserProfile(c context.Context, userID string) (*User, error)                 // Retrieves a user's profile by ID
-	UpdateUserProfile(c context.Context, userID string, updatedProfile *User) error // Updates a user's profile
-	DeleteUserProfile(c context.Context, userID string) error                       // Deletes a user's profile
-	PromoteUserToAdmin(c context.Context, userID string) error                      // Promotes a user to admin
-	DemoteAdminToUser(c context.Context, userID string) error                       // Demotes an admin to a regular user
+	CreateUser(c context.Context, user *User) error
+	GetUserByEmail(c context.Context, email string) (*User, error)
+	GetUser(c context.Context, userID string) (*User, error)
+	UpdateUser(c context.Context, userID string, updatedUser *User) error
+	DeleteUser(c context.Context, userID string) error
+	IsUserActive(c context.Context, userID string) (bool, error)
+
+	ResetUserPassword(c context.Context, userID string, resetPassword *ResetPassword) error
+	UpdateUserPassword(c context.Context, userID string, updatePassword *UpdatePassword) error
+
+	PromoteUserToAdmin(c context.Context, userID string) error
+	DemoteAdminToUser(c context.Context, userID string) error
+}
+
+type UserRepository interface {
+	CreateUser(c context.Context, user *User) error
+	GetUserByEmail(c context.Context, email string) (*User, error)
+	GetUser(c context.Context, userID string) (*User, error)
+	UpdateUser(c context.Context, userID string, updatedUser *User) error
+	DeleteUser(c context.Context, userID string) error
+	IsUserActive(c context.Context, userID string) (bool, error)
+
+	ResetUserPassword(c context.Context, userID string, resetPassword *ResetPassword) error
+	UpdateUserPassword(c context.Context, userID string, updatePassword *UpdatePassword) error
+
+	PromoteUserToAdmin(c context.Context, userID string) error
+	DemoteAdminToUser(c context.Context, userID string) error
+
 }

@@ -1,8 +1,7 @@
 package domain
 
-import (
-	"context"
-)
+import "context"
+
 
 type UserIn struct {
 	FirstName  string `json:"first_name" bson:"first_name" binding:"required,min=3,max=30"`

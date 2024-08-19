@@ -4,6 +4,7 @@ import (
 	"blog_api/delivery/env"
 	"blog_api/delivery/router"
 	initdb "blog_api/infrastructure/db"
+	google_auth "blog_api/infrastructure/oauth"
 	redis_service "blog_api/infrastructure/redis"
 	"log"
 )
@@ -45,6 +46,9 @@ func main() {
 	}
 
 	defer redisClient.Close()
+
+	// create google provider for oauth
+	google_auth.NewAuth("", "", "", 0)
 
 	// setup router
 	router.SetupRouter(env.ENV.PORT, env.ENV.ROUTE_PREFIX, database, redisClient)

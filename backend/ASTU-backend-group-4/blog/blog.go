@@ -73,7 +73,7 @@ type BlogRepository interface {
 	DeleteBlog(ctx context.Context, id string) error
 	GetBlogByID(ctx context.Context, id string) (Blog, error)
 	GetBlogs(ctx context.Context, filterOptions []FilterOption, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
-	SearchBlogs(ctx context.Context, query string) (infrastructure.PaginationResponse[Blog], error)
+	SearchBlogs(ctx context.Context, query string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
 	GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
 	CreateComment(ctx context.Context, comment Comment) (string, error)
 	DeleteComment(ctx context.Context, id string) error

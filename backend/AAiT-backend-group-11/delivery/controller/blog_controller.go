@@ -182,3 +182,17 @@ func (bc *BlogController) SearchBlogPosts(c *gin.Context) {
 
 	c.JSON(http.StatusOK, blogPosts)
 }
+
+func (bc *BlogController) GetBlogPost(c *gin.Context) {
+	blogPostId := c.Param("id")
+	userId := c.GetString("userId")
+
+
+	blogPost, err := bc.blogService.GetBlogPostById(blogPostId, userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, blogPost)
+}

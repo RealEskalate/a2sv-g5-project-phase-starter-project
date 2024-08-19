@@ -219,3 +219,26 @@ func (lr *likeReposiotory) GetLikesByBlog(c context.Context, blogID string) (lik
 
 	return likeResults, nil
 }
+
+func (lr *likeReposiotory) GetLikeByID(c context.Context, likeID string) (domain.Like, error) {
+	collection := lr.databse.Collection(lr.collection)
+
+	likeObjectID, err := primitive.ObjectIDFromHex(likeID)
+	if err != nil {
+		return domain.Like{}, err
+	}
+
+	filter := bson.M{"_id": likeObjectID}
+
+	var like domain.Like
+	
+	err = collection.FindOne(c, filter).Decode(&like)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return domain.Like{}, err
+		}
+		return domain.Like{}, err
+	}
+
+	return like, nil
+}

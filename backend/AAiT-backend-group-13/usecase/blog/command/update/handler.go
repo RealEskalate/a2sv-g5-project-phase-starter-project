@@ -27,13 +27,39 @@ func (h *Handler) Handle(cmd *Command) (*blogmodel.Blog, error) {
 		return nil, err
 	}
 
-	err = blog.Update(blogmodel.Config{
-		Title:   cmd.title,
-		Content: cmd.content,
-		Tags:    cmd.tags,
-	})
-	if err != nil {
-		return nil, err
+	if cmd.title != "" {
+
+		err = blog.UpdateTitle(blogmodel.Config{
+			Title: cmd.title,
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	if cmd.content != "" {
+		err = blog.UpdateContent(blogmodel.Config{
+			Content: cmd.content,
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	if cmd.tags != nil {
+
+		err = blog.UpdateTitle(blogmodel.Config{
+			Tags: cmd.tags,
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
 	}
 
 	err = h.repo.Save(blog)

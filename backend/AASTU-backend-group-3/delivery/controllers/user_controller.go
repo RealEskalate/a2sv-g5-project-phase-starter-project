@@ -3,6 +3,8 @@ package controllers
 import (
 	"group3-blogApi/domain"
 	"group3-blogApi/infrastracture"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -85,4 +87,43 @@ func (uc *UserController) ActivateAccount(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "Account activated successfully"})
+}
+
+
+// reset password
+
+func (uc *UserController) SendPasswordResetLink(c *gin.Context) {
+	var req domain.ResetPasswordRequest
+	
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	err := uc.UserUsecase.SendPasswordResetLink(req.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password reset link sent"})
+}
+
+func (uc *UserController) ResetPassword(c *gin.Context) {
+	var req struct {
+		Password string `json:"password"`
+	}
+	token := c.Param("token")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	err := uc.UserUsecase.ResetPassword(token, req.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password has been reset"})
 }

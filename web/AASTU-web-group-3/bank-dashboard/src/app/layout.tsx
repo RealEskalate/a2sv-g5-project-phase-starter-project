@@ -9,8 +9,7 @@ import {
   IoSearchOutline,
   IoNotificationsOutline,
 } from "react-icons/io5";
-import { menuItems, logo } from "./../../public/Icons";
-import ProfilePic from "./../../public/profilepic.png";
+import { menuItems, logo ,profilepic} from "@/../../public/Icons";
 
 import Provider from "@/lib/redux/Provider";
 
@@ -112,7 +111,7 @@ export default function ClientSideComponent({
                   </div>
                 </div>
                 <div className="m-2 absolute top-0 right-0 rounded-full overflow-hidden w-12">
-                  <img src={ProfilePic.src} alt="" className="h-12 w-12" />
+                  <img src={profilepic} alt="" className="h-12 w-12" />
                 </div>
               </nav>
               <main className="bg-[#F5F7FA]">{children}</main>

@@ -25,7 +25,7 @@ type BlogUseCase interface {
 	SearchBlogs(title, author string) ([]*Blog, Error)
 	FilterBlogs(tags []string, dateAfter time.Time, popular bool) ([]*Blog, Error)
 	LikeBlog(userID, blogID string) Error
-	
+
 	AddComment(c *gin.Context)
 	DeleteComment(c *gin.Context)
 	EditComment(c *gin.Context)
@@ -33,8 +33,8 @@ type BlogUseCase interface {
 	DisLike(c gin.Context)
 }
 
-type BlogAssisstantUseCase interface {
-	GenerateBlog(c *gin.Context)
-	EnhanceBlog(c *gin.Context)
-	SuggestBlog(c *gin.Context)
+type BlogAssistantUseCase interface {
+	GenerateBlog(keywords []string, tone, audience string) (string, Error)
+	EnhanceBlog(content, command string) (string, Error)
+	SuggestBlog(industry string) ([]string, Error)
 }

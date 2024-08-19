@@ -25,7 +25,7 @@ const Page = () => {
                             </button>
                         </div>
 
-                        <div className='flex overflow-x-auto space-x-6 scrollbar-hide [&::-webkit-scrollbar]:hidden'>
+                        <div className='flex overflow-x-auto space-x-6 scrollbar-hide gap-16 [&::-webkit-scrollbar]:hidden'>
                             <div className="flex-shrink-0 w-72">
                                 <Card
                                     balance="$5,756"

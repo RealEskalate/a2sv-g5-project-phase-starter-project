@@ -18,9 +18,10 @@ func NewRouter(db mongo.Database) {
 		CommentUsecase: usecases.NewCommentUsecase(commentRepo),
 	}
 	router.GET("/comment/:blog_id", commentController.GetComments)
+	router.GET("/comment_count/:blog_id", commentController.GetCommentsCount)
 	router.POST("/comment", commentController.AddComment)
-	router.PUT("/comment", commentController.UpdateComment)
-	router.DELETE("/comment/:blog_id/:user_id", commentController.DelelteComment)
+	router.PUT("/comment/:id", commentController.UpdateComment)
+	router.DELETE("/comment/:id", commentController.DelelteComment)
 	port := os.Getenv("PORT")
 	router.Run(":" + port)
 }

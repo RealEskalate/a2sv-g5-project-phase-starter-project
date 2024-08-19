@@ -7,7 +7,8 @@ import (
 
 type CommentRepositoryInterface interface {
 	GetComments(blogID uuid.UUID) ([]domain.Comment, error)
+	GetCommentsCount(blogID uuid.UUID) (int, error)
 	AddComment(comment domain.Comment) error
-	UpdateComment(updatedComment domain.Comment) error
-	DelelteComment(blogID uuid.UUID, userID uuid.UUID) error
+	UpdateComment(commentID uuid.UUID, updatedComment domain.Comment) error
+	DelelteComment(commentID uuid.UUID) error
 }

@@ -13,8 +13,13 @@ import (
 func SetUpUser(router *gin.Engine) {
 	//user routes
 	userRepo := repository.NewUserRepositoryImpl(db.UserCollection)
-    userUsecase := usecase.NewUserUsecase(userRepo)
-    authController := controllers.NewUserController(userUsecase)
+	userUsecase := usecase.NewUserUsecase(userRepo)
+	authController := controllers.NewUserController(userUsecase)
+
+	blogRepo := repository.NewBlogRepositoryImpl(db.BlogCollection)
+	blogUsecase := usecase.NewBlogUsecase(blogRepo)
+	blogController := controllers.NewBlogController(blogUsecase)
+
 	user := router.Group("/user")
 	user.Use(infrastracture.AuthMiddleware())
 
@@ -28,7 +33,9 @@ func SetUpUser(router *gin.Engine) {
 
 		// Logout Routes
 	
+
 		user.POST("/refresh-token", authController.RefreshToken)
+
 		user.POST("/logout", authController.Logout)
 		user.GET("logout-all", authController.LogoutAll)
 		user.GET("/devices/logout", authController.LogoutDevice)

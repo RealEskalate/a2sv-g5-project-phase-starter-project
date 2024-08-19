@@ -15,8 +15,8 @@ func SetupRouter() *gin.Engine {
     // // oauth routes
     SetupOauthRouter(router)
 
-    // // public routes
-    // SetPublicRoutes(router)
+    //public routes
+    SetUpPublicRoutes(router)
 
     // // user routes
     SetUpUser(router)

@@ -1,19 +1,57 @@
 package routers
+// import (
+//  	"group3-blogApi/config/db"
+// 	"github.com/gin-gonic/gin"
+// 	"group3-blogApi/repository"
+// 	"group3-blogApi/usecase"
+// 	"group3-blogApi/delivery/controllers"
+	
+// )
 
-// import "github.com/gin-gonic/gin"
+// func SetUpPublicRoutes(router *gin.Engine) {	
 
-// func SetPublicRoutes(router *gin.Engine) {
-// 	// Public Routes
+
+// 	blogRepo := repository.NewBlogRepositoryImpl(db.BlogCollection)
+//     blogUsecase := usecase.NewBlogUsecase(blogRepo)
+//     blogController := controllers.NewBlogController(blogUsecase)
+
 // 	public := router.Group("/")
-
 // 	{
-// 		public.GET("/blogs", blogController.GetBlogs)
-// 		public.GET("/blogs/:id", blogController.GetBlog)
-// 		public.GET("/users", userController.GetUsers)
-// 		public.GET("/users/:id", userController.GetUser)
-// 		public.GET("/users/:id/blogs", userController.GetUserBlogs)
-// 		public.GET("/api/blogs/search", blogController.SearchBlogs)
-// 		public.GET("/api/blogs/filter", blogController.FilterBlogs)
-
+// 		public.GET("/blogs", blogController.GetBlogs)                    // Get all blogs with pagination and sorting
+// 		public.GET("/blogs/:id", blogController.GetBlog)                  // Get blog by ID
+// 		public.GET("/users/:id/blogs", blogController.GetUserBlogs)       // Get blogs by user
+// 		public.GET("/blogs/search", blogController.SearchBlogs)       // Search blogs
+// 		public.GET("/blogs/filter", blogController.FilterBlogs)
+// 		       // Filter blogs
 // 	}
+
 // }
+
+
+
+import (
+	"group3-blogApi/config/db"
+	"group3-blogApi/delivery/controllers"
+	//infrastracture "group3-blogApi/infrastracture"
+	"group3-blogApi/repository"
+	"group3-blogApi/usecase"
+
+	"github.com/gin-gonic/gin"
+)
+
+func SetUpPublicRoutes(router *gin.Engine) {	
+
+
+	blogRepo := repository.NewBlogRepositoryImpl(db.BlogCollection)
+    blogUsecase := usecase.NewBlogUsecase(blogRepo)
+    blogController := controllers.NewBlogController(blogUsecase)
+
+	public := router.Group("/")
+	{
+		public.GET("/blogs", blogController.GetBlogs)                    // Get all blogs with pagination and sorting
+		public.GET("/blog/:id", blogController.GetBlog)                  // Get blog by ID
+		public.GET("/users/:id/blogs", blogController.GetUserBlogs)       // Get blogs by user
+		public.GET("/blogs/search", blogController.SearchBlogs)       // Search blogs
+		public.GET("/blogs/filter", blogController.FilterBlogs)       // Filter blogs
+	}
+}

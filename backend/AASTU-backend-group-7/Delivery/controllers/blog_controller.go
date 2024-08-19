@@ -41,6 +41,7 @@ func (controller *blogController) CreateBlog(c *gin.Context) {
 	// generate slug
 	newBlogPost.Slug = Utils.GenerateSlug(newBlogPost.Title)
 	//created at and updated at
+	newBlogPost.Tags = []primitive.ObjectID{}
 	newBlogPost.PublishedAt = time.Now()
 	newBlogPost.UpdatedAt = time.Now()
 
@@ -270,16 +271,15 @@ func (controller *blogController) AddTagToPost(c *gin.Context) {
 		return
 	}
 
-	// slug := Utils.GenerateSlug(tag.Name)
+	slug := Utils.GenerateSlug(tag.Name)
 
 
-	// err, statusCode = controller.BlogUseCase.AddTagToPost(c, postID, &tag)
+	err, statusCode = controller.BlogUseCase.AddTagToPost(c, postID, slug)
 	if err != nil {
 		c.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{
 		"message": "Tag added successfully",
-		"tag":     tag,
 	})
 }

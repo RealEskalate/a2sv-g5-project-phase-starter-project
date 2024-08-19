@@ -44,3 +44,4 @@ func (usecase *tagsUseCase) GetTagBySlug(c *gin.Context, slug string) (*Domain.T
 	defer cancel()
 	return usecase.tagRepository.GetTagBySlug(ctx, slug)
 }
+

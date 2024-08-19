@@ -124,7 +124,7 @@ bson.D{{Key: "email", Value: user.Email}},
 	}
 
 	user.Password = string(hashedPassword)
-	user.Role = "role"
+	user.Role = "user"
 	user.CreatedAt = time.Now()
 
 	InsertedID, err := au.UserCollection.InsertOne(ctx, user)

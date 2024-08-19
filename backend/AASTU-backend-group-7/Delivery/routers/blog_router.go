@@ -21,7 +21,7 @@ func BlogRouter() {
 		postRouter.GET("/getbyauthor/:authorID", blogcontroller.GetPostByAuthorID)
 		postRouter.PUT("/update/:id", blogcontroller.UpdatePostByID)
 		
-		// postRouter.PUT("/tags/:id", blogcontroller.AddTagToPost)
+		postRouter.PUT("/tags/:id", blogcontroller.AddTagToPost)
 		
 
 		// get tags

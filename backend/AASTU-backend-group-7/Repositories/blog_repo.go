@@ -229,3 +229,27 @@ func (br *blogrepository) GetAllPosts(ctx context.Context) ([]*Domain.Post, erro
 	}
 	return posts, nil, 200
 }
+
+// add tag to post
+func (br *blogrepository) AddTagToPost(ctx context.Context, id primitive.ObjectID, slug string) (error, int) {
+	// get tag by slug
+	filter := bson.D{{"slug", slug}}
+	var tag *Domain.Tag
+	err := br.tagCollection.FindOne(ctx, filter).Decode(&tag)
+	if err != nil {
+		return err, 500
+	}
+	// update post with tag
+	update := bson.D{{"$push", bson.D{{"tags", tag.ID}}}}
+	_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
+	if err != nil {
+		return err, 500
+	}
+	// update tag with post
+	update = bson.D{{"$push", bson.D{{"posts", id}}}}
+	_, err = br.tagCollection.UpdateOne(ctx, bson.D{{"_id", tag.ID}}, update)
+	if err != nil {
+		return err, 500
+	}
+	return nil, 200
+}

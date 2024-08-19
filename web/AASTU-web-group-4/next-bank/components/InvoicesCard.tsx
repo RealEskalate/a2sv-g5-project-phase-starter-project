@@ -53,8 +53,9 @@ const TransactionList: React.FC = () => {
           <Image 
             src={transaction.icon} 
             alt={transaction.name} 
-            className="w-6 h-6" 
-          />
+            width = {24}
+            height={24}
+            />
         </div>
         <div className="flex-1 px-4">
           <div className="text-gray-800 font-medium">{transaction.name}</div>

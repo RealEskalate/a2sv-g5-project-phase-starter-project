@@ -2,6 +2,7 @@ package Repository
 
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
+	"ASTU-backend-group-3/Blog_manager/infrastructure"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -16,6 +17,10 @@ type BlogRepository interface {
 	SearchBlogs(title string, author string, tags []string) ([]Domain.Blog, error)
 	RetrieveBlogs(page, pageSize int, sortBy string) ([]Domain.Blog, int64, error)
 	FindByID(id string) (*Domain.Blog, error)
+	IncrementViewCount(blogID string) error
+	AddComment(blogID string, comment Domain.Comment) error
+	ToggleDislike(blogID, username string) error
+	ToggleLike(blogID, username string) error
 }
 
 type blogRepository struct {
@@ -121,4 +126,62 @@ func (r *blogRepository) FindByID(id string) (*Domain.Blog, error) {
 		return nil, err
 	}
 	return &blog, nil
+}
+
+func (r *blogRepository) IncrementViewCount(blogID string) error {
+	filter := bson.M{"id": blogID}
+	update := bson.M{"$inc": bson.M{"view_count": 1}}
+
+	_, err := r.collection.UpdateOne(context.TODO(), filter, update)
+	return err
+}
+
+func (r *blogRepository) AddComment(blogID string, comment Domain.Comment) error {
+	filter := bson.M{"id": blogID}
+	update := bson.M{"$push": bson.M{"comments": comment}}
+
+	_, err := r.collection.UpdateOne(context.TODO(), filter, update)
+	return err
+}
+
+func (r *blogRepository) ToggleLike(blogID, username string) error {
+	blog, err := r.FindByID(blogID)
+	if err != nil {
+		return err
+	}
+
+	var update bson.M
+	if infrastructure.Contains(blog.Likes, username) {
+		// Remove the like
+		update = bson.M{"$pull": bson.M{"likes": username}}
+	} else {
+		// Add the like
+		update = bson.M{"$push": bson.M{"likes": username}}
+		// Remove dislike if exists
+		update["$pull"] = bson.M{"dislikes": username}
+	}
+
+	_, err = r.collection.UpdateOne(context.TODO(), bson.M{"id": blogID}, update)
+	return err
+}
+
+func (r *blogRepository) ToggleDislike(blogID, username string) error {
+	blog, err := r.FindByID(blogID)
+	if err != nil {
+		return err
+	}
+
+	var update bson.M
+	if infrastructure.Contains(blog.Dislikes, username) {
+		// Remove the dislike
+		update = bson.M{"$pull": bson.M{"dislikes": username}}
+	} else {
+		// Add the dislike
+		update = bson.M{"$push": bson.M{"dislikes": username}}
+		// Remove like if exists
+		update["$pull"] = bson.M{"likes": username}
+	}
+
+	_, err = r.collection.UpdateOne(context.TODO(), bson.M{"id": blogID}, update)
+	return err
 }

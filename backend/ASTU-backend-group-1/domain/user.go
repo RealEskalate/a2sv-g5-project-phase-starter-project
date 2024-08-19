@@ -18,6 +18,7 @@ type User struct {
 	ExpirationDate time.Time `json:"expirationtoken"`
 	IsAdmin        bool      `json:"is_admin"`
 	IsActive       bool      `json:"is_active"`
+	
 }
 type UserFilter struct {
 	UserId    string

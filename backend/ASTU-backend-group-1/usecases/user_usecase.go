@@ -5,6 +5,7 @@ import (
 	"astu-backend-g1/domain"
 	"crypto/rand"
 	"math/big"
+	"time"
 )
 
 type userUsecase struct {
@@ -46,26 +47,45 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 		num, _ := rand.Int(rand.Reader, charsetLength)
 		confirmationToken[i] = charset[num.Int64()]
 	}
+
+	//adding the token to the user
 	user.VerifyToken = string(confirmationToken)
+	
+	// Add 20 minutes to the current time
+	expirationTime := time.Now().Add(20 * time.Minute)
+	user.ExpirationDate = expirationTime
 	useCase.userRepository.Update(user.ID, user)
 	err = infrastructure.SendEmail(user.Email, "Password Reset", "This is the password reset link: ", string(confirmationToken))
 	if err != nil {
 		return "", err
 	}
+
+
 	return "Password reset token sent to your email", nil
 }
-//handle password reset
+
+// handle password reset
 func (useCase *userUsecase) ResetPassword(email string, token string, password string) (string, error) {
 	user, err := useCase.GetByEmail(email)
 	if err != nil {
 		return "", err
 	}
-	if user.VerifyToken == token {	
+	if user.VerifyToken == token {
+		// Check if token has expired
+		if tokenExpired(user.ExpirationDate) {
+			return "Token has expired", nil
+		}
 		user.Password, _ = infrastructure.PasswordHasher(password)
 		useCase.userRepository.Update(user.ID, user)
 		return "Password reset successful", nil
 	}
 	return "Invalid token", nil
+}
+
+// Check if token has expired
+func tokenExpired(expirationDate time.Time) bool {
+	currentTime := time.Now()
+	return currentTime.After(expirationDate)
 }
 
 

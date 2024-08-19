@@ -14,17 +14,17 @@ import (
 
 type blogRepository struct {
 	collection *mongo.Collection
+	ctx 	  context.Context
 }
 
-func NewBlogRepository(db *mongo.Database, collectionName string) interfaces.BlogRepository {
+func NewBlogRepository(collection *mongo.Collection, ctx context.Context) interfaces.BlogRepository {
 	return &blogRepository{
-		collection: db.Collection(collectionName),
+		collection: collection,
+		ctx: ctx,
 	}
 }
 
-func (br *blogRepository) CreateBlogPost(c context.Context, blogPost *entities.BlogPost) (*entities.BlogPost, error) {
-	// Get the user id from the context
-	userId := c.Value("userId").(string)
+func (br *blogRepository) CreateBlogPost(blogPost *entities.BlogPost, userId string) (*entities.BlogPost, error) {
 	userObjectId, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (br *blogRepository) CreateBlogPost(c context.Context, blogPost *entities.B
 	blogPost.CreatedAt = time.Now()
 	blogPost.UpdatedAt = time.Now()
 
-	_, err = br.collection.InsertOne(c, blogPost)
+	_, err = br.collection.InsertOne(br.ctx, blogPost)
 	if err != nil {
 		return nil, err
 	}
@@ -44,14 +44,14 @@ func (br *blogRepository) CreateBlogPost(c context.Context, blogPost *entities.B
 	return blogPost, nil
 }
 
-func (br *blogRepository) GetBlogPostById(c context.Context, blogPostId string) (*entities.BlogPost, error) {
+func (br *blogRepository) GetBlogPostById(blogPostId string) (*entities.BlogPost, error) {
 	objID, err := primitive.ObjectIDFromHex(blogPostId)
 	if err != nil {
 		return nil, err
 	}
 
 	var blogPost entities.BlogPost
-	err = br.collection.FindOne(c, bson.M{"_id": objID}).Decode(&blogPost)
+	err = br.collection.FindOne(br.ctx, bson.M{"_id": objID}).Decode(&blogPost)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, nil
@@ -62,7 +62,7 @@ func (br *blogRepository) GetBlogPostById(c context.Context, blogPostId string) 
 	return &blogPost, nil
 }
 
-func (br *blogRepository) UpdateBlogPost(c context.Context, blogPost *entities.BlogPost) (*entities.BlogPost, error) {
+func (br *blogRepository) UpdateBlogPost(blogPost *entities.BlogPost) (*entities.BlogPost, error) {
 	blogPost.UpdatedAt = time.Now()
 
 	filter := bson.M{"_id": blogPost.ID}
@@ -70,7 +70,7 @@ func (br *blogRepository) UpdateBlogPost(c context.Context, blogPost *entities.B
 		"$set": blogPost,
 	}
 
-	_, err := br.collection.UpdateOne(c, filter, update)
+	_, err := br.collection.UpdateOne(br.ctx, filter, update)
 	if err != nil {
 		return nil, err
 	}
@@ -78,13 +78,13 @@ func (br *blogRepository) UpdateBlogPost(c context.Context, blogPost *entities.B
 	return blogPost, nil
 }
 
-func (br *blogRepository) DeleteBlogPost(c context.Context, blogPostId string) error {
+func (br *blogRepository) DeleteBlogPost(blogPostId string) error {
 	objID, err := primitive.ObjectIDFromHex(blogPostId)
 	if err != nil {
 		return err
 	}
 
-	_, err = br.collection.DeleteOne(c, bson.M{"_id": objID})
+	_, err = br.collection.DeleteOne(br.ctx, bson.M{"_id": objID})
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (br *blogRepository) DeleteBlogPost(c context.Context, blogPostId string) e
 	return nil
 }
 
-func (br *blogRepository) GetBlogPosts(c context.Context, page, pageSize int, sortBy string) ([]entities.BlogPost, error) {
+func (br *blogRepository) GetBlogPosts(page, pageSize int, sortBy string) ([]entities.BlogPost, error) {
 	options := options.Find()
 	options.SetSkip(int64((page - 1) * pageSize))
 	options.SetLimit(int64(pageSize))
@@ -101,14 +101,14 @@ func (br *blogRepository) GetBlogPosts(c context.Context, page, pageSize int, so
 		options.SetSort(bson.D{{Key: sortBy, Value: 1}})
 	}
 
-	cursor, err := br.collection.Find(c, bson.M{}, options)
+	cursor, err := br.collection.Find(br.ctx, bson.M{}, options)
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(c)
+	defer cursor.Close(br.ctx)
 
 	var blogPosts []entities.BlogPost
-	for cursor.Next(c) {
+	for cursor.Next(br.ctx) {
 		var blogPost entities.BlogPost
 		if err := cursor.Decode(&blogPost); err != nil {
 			return nil, err
@@ -123,7 +123,7 @@ func (br *blogRepository) GetBlogPosts(c context.Context, page, pageSize int, so
 	return blogPosts, nil
 }
 
-func (br *blogRepository) SearchBlogPosts(c context.Context, criteria string, tags []string, startDate, endDate time.Time) ([]entities.BlogPost, error) {
+func (br *blogRepository) SearchBlogPosts(criteria string, tags []string, startDate, endDate time.Time) ([]entities.BlogPost, error) {
 	// Base filter for text search
 	filter := bson.M{
 		"$text": bson.M{
@@ -143,14 +143,14 @@ func (br *blogRepository) SearchBlogPosts(c context.Context, criteria string, ta
 		}
 	}
 
-	cursor, err := br.collection.Find(c, filter)
+	cursor, err := br.collection.Find(br.ctx, filter)
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(c)
+	defer cursor.Close(br.ctx)
 
 	var blogPosts []entities.BlogPost
-	for cursor.Next(c) {
+	for cursor.Next(br.ctx) {
 		var blogPost entities.BlogPost
 		if err := cursor.Decode(&blogPost); err != nil {
 			return nil, err
@@ -166,7 +166,7 @@ func (br *blogRepository) SearchBlogPosts(c context.Context, criteria string, ta
 }
 
 
-func (br *blogRepository) FilterBlogPosts(c context.Context, tags []string, dateRange []time.Time, sortBy string) ([]entities.BlogPost, error) {
+func (br *blogRepository) FilterBlogPosts(tags []string, dateRange []time.Time, sortBy string) ([]entities.BlogPost, error) {
 	filter := bson.M{}
 
 	if len(tags) > 0 {
@@ -185,14 +185,14 @@ func (br *blogRepository) FilterBlogPosts(c context.Context, tags []string, date
 		options.SetSort(bson.D{{Key: sortBy, Value: 1}})
 	}
 
-	cursor, err := br.collection.Find(c, filter, options)
+	cursor, err := br.collection.Find(br.ctx, filter, options)
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(c)
+	defer cursor.Close(br.ctx)
 
 	var blogPosts []entities.BlogPost
-	for cursor.Next(c) {
+	for cursor.Next(br.ctx) {
 		var blogPost entities.BlogPost
 		if err := cursor.Decode(&blogPost); err != nil {
 			return nil, err
@@ -207,7 +207,7 @@ func (br *blogRepository) FilterBlogPosts(c context.Context, tags []string, date
 	return blogPosts, nil
 }
 
-func (br *blogRepository) LikeBlogPost(c context.Context, postID, userID string) error {
+func (br *blogRepository) LikeBlogPost(postID, userID string) error {
 
 	postObjectID, err := primitive.ObjectIDFromHex(postID)
 	if err != nil {
@@ -228,7 +228,7 @@ func (br *blogRepository) LikeBlogPost(c context.Context, postID, userID string)
 	// Update the document, only if the user is not already in the likedBy array
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 	var updatedPost entities.BlogPost
-	err = br.collection.FindOneAndUpdate(c, filter, update, opts).Decode(&updatedPost)
+	err = br.collection.FindOneAndUpdate(br.ctx, filter, update, opts).Decode(&updatedPost)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -241,7 +241,7 @@ func (br *blogRepository) LikeBlogPost(c context.Context, postID, userID string)
 	return nil
 }
 
-func (br *blogRepository) DislikeBlogPost(c context.Context, postID, userID string) error {
+func (br *blogRepository) DislikeBlogPost(postID, userID string) error {
 
 	postObjectID, err := primitive.ObjectIDFromHex(postID)
 	if err != nil {
@@ -265,7 +265,7 @@ func (br *blogRepository) DislikeBlogPost(c context.Context, postID, userID stri
 	// Update the document only if the user's ID is in the likedBy array
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 	var updatedPost entities.BlogPost
-	err = br.collection.FindOneAndUpdate(c, filter, update, opts).Decode(&updatedPost)
+	err = br.collection.FindOneAndUpdate(br.ctx, filter, update, opts).Decode(&updatedPost)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -279,7 +279,7 @@ func (br *blogRepository) DislikeBlogPost(c context.Context, postID, userID stri
 	return nil
 }
 
-func (br *blogRepository) IncrementViewPost(c context.Context, postID, userID string) error {
+func (br *blogRepository) IncrementViewPost(postID, userID string) error {
 
 	postObjectID, err := primitive.ObjectIDFromHex(postID)
 	if err != nil {
@@ -299,7 +299,7 @@ func (br *blogRepository) IncrementViewPost(c context.Context, postID, userID st
 
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 	var updatedPost entities.BlogPost
-	err = br.collection.FindOneAndUpdate(c, filter, update, opts).Decode(&updatedPost)
+	err = br.collection.FindOneAndUpdate(br.ctx, filter, update, opts).Decode(&updatedPost)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -311,8 +311,8 @@ func (br *blogRepository) IncrementViewPost(c context.Context, postID, userID st
 }
 
 
-func (br *blogRepository) CountBlogPosts(c context.Context) (int, error) {
-	count, err := br.collection.CountDocuments(c, bson.M{})
+func (br *blogRepository) CountBlogPosts() (int, error) {
+	count, err := br.collection.CountDocuments(br.ctx, bson.M{})
 	if err != nil {
 		return 0, err
 	}

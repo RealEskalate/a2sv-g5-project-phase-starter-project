@@ -24,13 +24,22 @@ func NewBlogController(blogService interfaces.BlogService) *BlogController {
 
 func (bc *BlogController) CreateBlogPost(c *gin.Context) {
     var blogPost entities.BlogPost
-
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+		return
+	}
+	userIdStr, ok := userId.(string)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while finding user"})
+		return
+	}
     if err := c.ShouldBindJSON(&blogPost); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
         return
     }
 
-    createdBlogPost, err := bc.blogService.CreateBlogPost(c, &blogPost)
+    createdBlogPost, err := bc.blogService.CreateBlogPost(&blogPost, userIdStr)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -58,7 +67,7 @@ func (bc *BlogController) GetBlogPosts(c *gin.Context) {
         return
     }
 
-    blogPosts, totalPosts, err := bc.blogService.GetBlogPosts(c, page, pageSize, sortBy)
+    blogPosts, totalPosts, err := bc.blogService.GetBlogPosts(page, pageSize, sortBy)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -99,7 +108,7 @@ func (bc *BlogController) UpdateBlogPost(c *gin.Context) {
 	blogPost.ID = objID
 
 	// Update the blog post
-	updatedBlogPost, err := bc.blogService.UpdateBlogPost(c, &blogPost)
+	updatedBlogPost, err := bc.blogService.UpdateBlogPost(&blogPost)
 	if err != nil {
 		if errors.Is(err, errors.New("unauthorized: only the author can update this post")) {
 			c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to update this blog post"})
@@ -120,7 +129,7 @@ func (bc *BlogController) DeleteBlogPost(c *gin.Context) {
 	blogPostId := c.Param("id")
 
 	// Delete the blog post
-	err := bc.blogService.DeleteBlogPost(c, blogPostId)
+	err := bc.blogService.DeleteBlogPost(blogPostId)
 	if err != nil {
 		if errors.Is(err, errors.New("unauthorized: only the author or an admin can delete this post")) {
 			c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to delete this blog post"})
@@ -161,7 +170,7 @@ func (bc *BlogController) SearchBlogPosts(c *gin.Context) {
 		}
 	}
 
-	blogPosts, err := bc.blogService.SearchBlogPosts(c, criteria, tags, startDate, endDate)
+	blogPosts, err := bc.blogService.SearchBlogPosts(criteria, tags, startDate, endDate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

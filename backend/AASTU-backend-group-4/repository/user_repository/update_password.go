@@ -7,7 +7,6 @@ import (
 )
 
 func (ur *UserRepository) UpdatePassword(ctx context.Context, userID string, newPassword string) error {
-	collection := ur.database.Collection(ur.collection)
 	filter := bson.M{"_id": userID}
 	update := bson.M{
 		"$set": bson.M{
@@ -16,6 +15,6 @@ func (ur *UserRepository) UpdatePassword(ctx context.Context, userID string, new
 			"reset_token_expiry": nil,
 		},
 	}
-	_, err := collection.UpdateOne(ctx, filter, update)
+	_, err := ur.collection.UpdateOne(ctx, filter, update)
 	return err
 }

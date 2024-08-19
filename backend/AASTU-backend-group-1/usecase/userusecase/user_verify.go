@@ -3,7 +3,6 @@ package userusecase
 import (
 	"blogs/config"
 	"blogs/domain"
-	"errors"
 )
 
 func (u *UserUsecase) VerifyUser(token string) error {
@@ -14,7 +13,7 @@ func (u *UserUsecase) VerifyUser(token string) error {
 
 	registerClaims, ok := claims.(*domain.RegisterClaims)
 	if !ok {
-		return errors.New("invalid token claims type")
+		return config.ErrInvalidToken
 	}
 
 	user, err := u.UserRepo.GetUserByUsernameorEmail(registerClaims.Username)
@@ -23,7 +22,7 @@ func (u *UserUsecase) VerifyUser(token string) error {
 	}
 
 	if user.IsVerified {
-		return errors.New("user is already verified")
+		return config.ErrAlreadyVerified
 	}
 
 	user.IsVerified = true

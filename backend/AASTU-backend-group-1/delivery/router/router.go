@@ -2,6 +2,7 @@ package router
 
 import (
 	"blogs/delivery/controller"
+	"blogs/delivery/middleware"
 	"blogs/repository"
 	"blogs/usecase"
 
@@ -21,25 +22,38 @@ func getUserController(database *mongo.Database) *controller.UserController {
 	userRepository := repository.NewUserRepository(database)
 	userUsecase := usecase.NewUserUsecase(userRepository)
 	userController := controller.NewUserController(userUsecase)
+
+	err := userUsecase.AddRoot()
+	if err != nil {
+		panic(err)
+	}
+
 	return userController
 }
 
 func publicRouter(router *gin.Engine, userController *controller.UserController) {
-	router.POST("/users/register", func(ctx *gin.Context) {})
-	router.POST("/users/login", func(ctx *gin.Context) {})
-	router.POST("/users/reset-password", func(ctx *gin.Context) {})
-	router.POST("/users/forgot-password", func(ctx *gin.Context) {})
+	router.POST("/users/register", userController.RegisterUser)
+	router.POST("/users/login", userController.LoginUser)
+	router.POST("/users/forgot-password", userController.ForgotPassword)
+	router.GET("/users/verify", userController.VerifyUser)
+	router.GET("/users/reset-password", userController.ResetPassword)
 }
 
-func privateUserRouter(router *gin.Engine, userController *controller.UserController) {
-	router.POST("/users/logout", func(ctx *gin.Context) {})
-	router.POST("/tokens/refresh", func(ctx *gin.Context) {})
-
-	router.POST("/users/:id/blogs", func(ctx *gin.Context) {})
-	router.GET("/users/:id/blogs", func(ctx *gin.Context) {})
+func protectedRouter(router *gin.Engine, userController *controller.UserController) {
+	router.GET(
+		"/tokens/refresh",
+		middleware.AuthMiddleware("refresh"),
+		userController.RefreshToken,
+	)
 }
 
-func privateBlogRouter(router *gin.Engine, blogController *controller.BlogController) {
+func privateUserRouter(router *gin.RouterGroup, userController *controller.UserController) {
+	router.PATCH("/users", userController.UpdateProfile)
+	router.PATCH("/users/promote", userController.PromoteUser)
+	router.POST("/users/logout", userController.LogoutUser)
+}
+
+func privateBlogRouter(router *gin.RouterGroup, blogController *controller.BlogController) {
 	router.POST("/blogs", blogController.InsertBlog)
 	router.GET("/blogs", blogController.GetBlogs)
 	router.GET("/blogs/:id", func(ctx *gin.Context) {})
@@ -63,11 +77,13 @@ func SetupRouter(mongoClient *mongo.Client) *gin.Engine {
 	userController := getUserController(database)
 
 	publicRouter(router, userController)
+	protectedRouter(router, userController)
 
-	// router.Use(middleware.AuthMiddleware(mongoClient))
+	privateRouter := router.Group("")
+	privateRouter.Use(middleware.AuthMiddleware("access"))
 
-	privateUserRouter(router, userController)
-	privateBlogRouter(router, blogController)
+	privateUserRouter(privateRouter, userController)
+	privateBlogRouter(privateRouter, blogController)
 
 	return router
 }

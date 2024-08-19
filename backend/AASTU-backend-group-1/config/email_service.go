@@ -1,18 +1,16 @@
 package config
 
 import (
+	"blogs/bootstrap"
 	"crypto/tls"
 	"fmt"
 	"net/smtp"
-	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/jordan-wright/email"
 )
 
-func getPassword() string {
-	godotenv.Load(".env")
-	return os.Getenv("EMAIL_PASSWORD")
+func getPassword() (string, error) {
+	return bootstrap.GetEnv("EMAIL_PASSWORD")
 }
 
 func SendEmail(to, subject, body string) error {
@@ -22,8 +20,13 @@ func SendEmail(to, subject, body string) error {
 	e.Subject = subject
 	e.Text = []byte(body)
 
-	err := e.SendWithTLS("smtp.gmail.com:465",
-		smtp.PlainAuth("", "eyouel.melkamu@a2sv.org", getPassword(), "smtp.gmail.com"),
+	password, err := getPassword()
+	if err != nil {
+		return err
+	}
+
+	err = e.SendWithTLS("smtp.gmail.com:465",
+		smtp.PlainAuth("", "eyouel.melkamu@a2sv.org", password, "smtp.gmail.com"),
 		&tls.Config{ServerName: "smtp.gmail.com"},
 	)
 	if err != nil {

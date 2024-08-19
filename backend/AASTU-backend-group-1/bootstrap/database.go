@@ -17,6 +17,6 @@ func ConnectToMongoDB(uri string) (*mongo.Client, error) {
 	return client, nil
 }
 
-func DisconnectFromMongoDB(client *mongo.Client) {
-	client.Disconnect(context.Background())
+func DisconnectFromMongoDB(client *mongo.Client) error {
+	return client.Disconnect(context.Background())
 }

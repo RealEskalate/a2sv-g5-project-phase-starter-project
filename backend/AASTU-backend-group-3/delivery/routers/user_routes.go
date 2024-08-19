@@ -16,9 +16,9 @@ func SetUpUser(router *gin.Engine) {
 	userUsecase := usecase.NewUserUsecase(userRepo)
 	authController := controllers.NewUserController(userUsecase)
 
-	blogRepo := repository.NewBlogRepositoryImpl(db.BlogCollection)
-	blogUsecase := usecase.NewBlogUsecase(blogRepo)
-	blogController := controllers.NewBlogController(blogUsecase)
+	// blogRepo := repository.NewBlogRepositoryImpl(db.BlogCollection)
+	// blogUsecase := usecase.NewBlogUsecase(blogRepo)
+	// blogController := controllers.NewBlogController(blogUsecase)
 
 	user := router.Group("/user")
 	user.Use(infrastracture.AuthMiddleware())

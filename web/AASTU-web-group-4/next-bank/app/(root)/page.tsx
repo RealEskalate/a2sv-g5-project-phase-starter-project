@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Color } from "chart.js";
 import { colors, logo } from "@/constants";
@@ -116,3 +117,4 @@ const page = () => {
 };
 
 export default page;
+

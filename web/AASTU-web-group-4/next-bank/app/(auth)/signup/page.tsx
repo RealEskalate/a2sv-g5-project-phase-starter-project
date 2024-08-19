@@ -5,6 +5,9 @@ import { User } from "@/types/index";
 import { creditcardstyles, colors ,logo } from "../../../constants/index";
 import Image from "next/image";
 import Link from "next/link";
+import { registerUser } from '@/services/authentication';
+import Cookie from "js-cookie";
+
 
 const SignupForm = () => {
   const [step, setStep] = useState(1);
@@ -35,9 +38,18 @@ const SignupForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<User>();
+  
   const onSubmit = (data: User) => {
-    console.log("Final Data:", data);
-  };
+    const handleRegister = async () => {
+      try {
+        const registeredUser = await registerUser(data);
+        console.log('Registered User:', registeredUser);
+        Cookie.set('accessToken', registeredUser.data.access_token);
+        Cookie.set('refreshToken', registeredUser.data.refresh_token);
+      } catch (error) {
+        console.error('Registration Error:', error);
+      }
+    };
 
   const handleNextStep = () => setStep(step + 1);
   const handlePreviousStep = () => setStep(step - 1);
@@ -358,6 +370,5 @@ const SignupForm = () => {
       </form>
     );
   };
-  
+};
   export default SignupForm;
-  

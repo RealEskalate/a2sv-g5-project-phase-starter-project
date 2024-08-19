@@ -14,7 +14,10 @@ type signupUsecase struct {
 	urlService   interfaces.URLService
 }
 
-func NewSignupUsecase(repository interfaces.UserRepository, emailService interfaces.EmailService, jwtService interfaces.JwtService, urlService interfaces.URLService) interfaces.SignupUsecase {
+func NewSignupUsecase(repository interfaces.UserRepository,
+	emailService interfaces.EmailService,
+	jwtService interfaces.JwtService,
+	urlService interfaces.URLService) interfaces.SignupUsecase {
 	return &signupUsecase{
 		repository:   repository,
 		emailService: emailService,
@@ -63,8 +66,4 @@ func (uc *signupUsecase) CreateUser(ctx context.Context, user *models.User) *mod
 
 	return nil
 
-}
-
-func (uc *signupUsecase) GetUserByID(ctx context.Context, id string) (*models.User, *models.ErrorResponse) {
-	return uc.repository.GetUserByID(ctx, id)
 }

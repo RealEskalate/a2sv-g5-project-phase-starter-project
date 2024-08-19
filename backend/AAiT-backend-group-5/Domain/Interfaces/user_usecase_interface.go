@@ -7,6 +7,6 @@ import (
 )
 
 type UserUsecase interface {
-	PromoteUser(ctx context.Context, user *models.User) error
-	DemoteUser(ctx context.Context, user *models.User) error
+	PromoteUser(ctx context.Context, user *models.User) *models.ErrorResponse
+	DemoteUser(ctx context.Context, user *models.User) *models.ErrorResponse
 }

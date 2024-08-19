@@ -21,6 +21,7 @@ func NewSetupPassword(urlService interfaces.URLService,
 	emailService interfaces.EmailService,
 	passwordService interfaces.PasswordService,
 ) interfaces.PasswordUsecase {
+
 	return &setup_password{
 		urlService:      urlService,
 		jwtService:      jwtService,
@@ -31,7 +32,6 @@ func NewSetupPassword(urlService interfaces.URLService,
 }
 
 func (sp *setup_password) GenerateResetURL(ctx context.Context, email string) (string, *models.ErrorResponse) {
-	// Implement the logic to generate the reset URL
 
 	// get user data
 	user, uErr := sp.repo.GetUserByEmailOrUsername(ctx, email, email)
@@ -55,7 +55,6 @@ func (sp *setup_password) GenerateResetURL(ctx context.Context, email string) (s
 }
 
 func (sp *setup_password) SendResetEmail(ctx context.Context, email string, resetURL string) *models.ErrorResponse {
-	// Implement the logic to send the reset email
 	subject := "Password Reset"
 	body := "Click the link below to reset your password\n" + resetURL + "\n\nThis link will expire in 1 hour"
 
@@ -75,7 +74,6 @@ func (sp *setup_password) SendResetEmail(ctx context.Context, email string, rese
 }
 
 func (sp *setup_password) SetPassword(ctx context.Context, shortURlCode string, password string) *models.ErrorResponse {
-	// Implement the logic to set the password
 	// get token
 	urls, tErr := sp.urlService.GetURL(shortURlCode)
 

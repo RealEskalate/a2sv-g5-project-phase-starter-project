@@ -6,9 +6,9 @@ import (
 	"errors"
 )
 
-func (u *UserUsecase) UpdateProfile(usernameoremail string, user *domain.User) error {
+func (u *UserUsecase) UpdateProfile(user *domain.User, claims *domain.LoginClaims) error {
 	// Get existing user details
-	existingUser, err := u.UserRepo.GetUserByUsernameorEmail(usernameoremail)
+	existingUser, err := u.UserRepo.GetUserByUsernameorEmail(claims.Username)
 	if err != nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func (u *UserUsecase) UpdateProfile(usernameoremail string, user *domain.User) e
 	}
 
 	// Update the user profile in the repository
-	err = u.UserRepo.UpdateProfile(usernameoremail, existingUser)
+	err = u.UserRepo.UpdateProfile(claims.Username, existingUser)
 	if err != nil {
 		return err
 	}

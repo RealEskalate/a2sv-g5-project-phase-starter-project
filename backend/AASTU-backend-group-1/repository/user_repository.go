@@ -30,6 +30,24 @@ func filterUser(usernameoremail string) bson.M {
 	}
 }
 
+func (ur *UserRepository) CheckRoot() error {
+	var user domain.User
+	filter := bson.M{
+		"role": "root",
+	}
+
+	err := ur.userCollection.FindOne(context.TODO(), filter).Decode(&user)
+	if err == nil {
+		return errors.New("root user already exists")
+	}
+
+	if err == mongo.ErrNoDocuments {
+		return nil
+	}
+
+	return err
+}
+
 func (ur *UserRepository) CheckUsernameAndEmail(username, email string) error {
 	var user domain.User
 	filter := bson.M{
@@ -85,15 +103,16 @@ func (ur *UserRepository) UpdateProfile(usernameoremail string, user *domain.Use
 
 	update := bson.M{
 		"$set": bson.M{
-			"firstname":  user.FirstName,
-			"lastname":   user.LastName,
-			"bio":        user.Bio,
-			"avatar":     user.Avatar,
-			"username":   user.Username,
-			"email":      user.Email,
-			"role":       user.Role,
-			"address":    user.Address,
-			"joinedDate": user.JoinedDate,
+			"firstname":   user.FirstName,
+			"lastname":    user.LastName,
+			"bio":         user.Bio,
+			"avatar":      user.Avatar,
+			"username":    user.Username,
+			"email":       user.Email,
+			"role":        user.Role,
+			"address":     user.Address,
+			"joined_date": user.JoinedDate,
+			"is_verified": user.IsVerified,
 		},
 	}
 

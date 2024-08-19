@@ -1,19 +1,21 @@
-package Repository
+package repository
 
 import (
+	"AAiT-backend-group-8/Domain"
 	"context"
 	"fmt"
-	"AAiT-backend-group-8/Domain"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type UserRepositoryImpl struct {
-	db *mongo.Collection
+	db  *mongo.Collection
+	ctx context.Context
 }
 
-func NewUserRepository(db *mongo.Collection) *UserRepositoryImpl {
-	return &UserRepositoryImpl{db: db}
+func NewUserRepository(db *mongo.Collection, cont context.Context) *UserRepositoryImpl {
+	return &UserRepositoryImpl{db: db, ctx: cont}
 }
 
 func (r *UserRepositoryImpl) CreateUser(user *Domain.User) error {
@@ -29,7 +31,7 @@ func (r *UserRepositoryImpl) GetUserByEmail(email string) (*Domain.User, error) 
 
 func (r *UserRepositoryImpl) GetUserByVerificationToken(token string) (*Domain.User, error) {
 	var user Domain.User
-	err := r.db.FindOne(context.TODO(), bson.M{"verification_token": token}).Decode(&user)
+	err := r.db.FindOne(r.ctx, bson.M{"verification_token": token}).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -41,14 +43,14 @@ func (r *UserRepositoryImpl) VerifyUser(user *Domain.User) error {
 		"verified":           true,
 		"verification_token": user.VerificationToken,
 	}}
-	_, err := r.db.UpdateOne(context.TODO(), filter, update)
+	_, err := r.db.UpdateOne(r.ctx, filter, update)
 	fmt.Println(err)
 	return err
 }
 func (r *UserRepositoryImpl) GetUserCount() (int64, error) {
-    count, err := r.db.CountDocuments(context.Background(), bson.M{})
-    if err != nil {
-        return 0, err
-    }
-    return count, nil
+	count, err := r.db.CountDocuments(context.Background(), bson.M{})
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }

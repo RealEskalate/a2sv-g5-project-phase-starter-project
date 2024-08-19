@@ -24,7 +24,7 @@ const CardForCreditCards = ({
           </p>
         </Link>
       </div>
-      <div className="flex gap-[30px] max-md:overflow-x-auto">
+      <div className="flex justify-between max-md:overflow-x-auto">
         {children}
       </div>
     </div>

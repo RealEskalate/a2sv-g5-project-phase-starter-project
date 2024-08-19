@@ -14,6 +14,15 @@ export type Item = {
   receiverUserName: string;
 };
 
+function formatDate(date: Date) {
+  const options: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  };
+  return date.toLocaleDateString("en-GB", options);
+}
+
 const LastTransaction = () => {
   let access: string = "";
   const { data: session, status } = useSession();
@@ -31,9 +40,21 @@ const LastTransaction = () => {
     return <div>Loading...</div>;
   }
 
-  let items: Item[] = data?.data || defaultItems;
-  console.log("items");
-  console.log(items);
+  let transactions: Item[] = data?.data || defaultItems;
+  console.log("transaction");
+  console.log(transactions);
+
+  let items = transactions
+    .map((transaction) => ({
+      ...transaction,
+      date: new Date(transaction.date),
+    }))
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .map((transaction) => ({
+      ...transaction,
+      date: formatDate(transaction.date),
+    }));
+
   if (items.length > 3) {
     items = items.slice(0, 3);
   }
@@ -41,6 +62,14 @@ const LastTransaction = () => {
   return (
     // The width depends on the width of container
     <div className="w-[325px] sm:w-[487px] md:w-[730px]  flex flex-col bg-white gap-5 p-5 rounded-3xl">
+      {
+      items.length === 0 
+        &&
+        <div className="flex justify-center">
+
+        <img src = "/assets/bankService/empty-image.png" className="w-[35%]  "/>
+      </div>
+        }
       {items.map((item, index) => (
         <div key={index} className="flex items-center justify-between ">
           <div className="flex w-[45px] sm:w-[55px] justify-center mr-5">

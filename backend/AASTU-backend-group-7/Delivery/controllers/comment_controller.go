@@ -116,5 +116,22 @@ func (cc *CommentController) EditComment(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"message": "Comment updated successfully",
-		"comment": comment,})
+		"comment": *comment,})
+}
+
+func (cc *CommentController) GetUserComments(c *gin.Context) {
+	id := c.Param("id")
+	objID, err := Utils.StringToObjectId(id)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	comments, err, statuscode := cc.commentUseCase.GetUserComments(c, objID)
+	if err != nil {
+		c.JSON(statuscode, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"comments": comments})
 }

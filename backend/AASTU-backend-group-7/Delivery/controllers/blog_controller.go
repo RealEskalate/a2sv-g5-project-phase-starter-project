@@ -38,12 +38,6 @@ func (controller *blogController) CreateBlog(c *gin.Context) {
 	newBlogPost.AuthorID = claims.ID
 	// generate id for post
 	newBlogPost.ID = primitive.NewObjectID()
-	// generate empty array for comments
-	newBlogPost.Comments = []*Domain.Comment{}
-	// generate empty array for tags
-	newBlogPost.Tags = []*Domain.Tag{}
-	// generate empty array for likeDislike
-	newBlogPost.LikeDislike = []*Domain.LikeDislike{}
 	// generate slug
 	newBlogPost.Slug = Utils.GenerateSlug(newBlogPost.Title)
 	//created at and updated at
@@ -90,7 +84,7 @@ func (controller *blogController) GetPostByID(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{
 		"message": "Post fetched successfully",
-		"post":    post,
+		"post":    *post,
 	})
 }
 
@@ -179,5 +173,6 @@ func (controller *blogController) UpdatePostByID(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{
 		"message": "Post updated successfully",
+		"newpost" : updatedPost,
 	})
 }

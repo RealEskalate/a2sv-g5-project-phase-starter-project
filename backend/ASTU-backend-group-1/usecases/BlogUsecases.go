@@ -198,6 +198,14 @@ func (uc *BlogUsecase) AddComment(content, blogId, authorId string) error {
 	return nil
 }
 
+func (uc *BlogUsecase) GetAllComments(blogId string) ([]domain.Comment, error) {
+	comments, err := uc.blogRepository.GetAllComments(blogId)
+    if err!= nil {
+        return []domain.Comment{}, err
+    }
+    return comments, nil
+}
+
 // func (uc *BlogUsecase) GetComments()    {
 // 	comments, err := uc.blogRepository.GetComments(domain.CommentFilterOption{})
 //     if err!= nil {

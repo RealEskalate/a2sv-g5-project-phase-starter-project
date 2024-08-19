@@ -303,6 +303,7 @@ export const logo = {
   RT1 : '/icons/RT1.png',
   RT2 : '/icons/RT2.png',
   RT3 : '/icons/RT3.png',
+  transfer : '/icons/transfer2.png',
 }
 
 export const textColors = {

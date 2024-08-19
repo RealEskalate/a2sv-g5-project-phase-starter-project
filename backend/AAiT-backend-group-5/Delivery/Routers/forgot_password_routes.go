@@ -14,17 +14,19 @@ import (
 
 func NewForgotPasswordRouter(env *config.Env, timeout time.Duration, database mongo.Database, group *gin.RouterGroup) {
 	emailConfig := config.NewEmailServer(*env)
-	repository := repository.NewRepository(database)
+
+	url_repository := repository.NewURLRepository(&database)
+	user_repository := repository.NewUserRepository(&database)
 
 	jwt_service := infrastructure.NewJwtService(env)
 	password_service := infrastructure.NewPasswordService()
 	email_service := infrastructure.NewEmailService(emailConfig, *env)
-	url_service := infrastructure.NewURLService(env, repository)
+	url_service := infrastructure.NewURLService(env, url_repository)
 
 	ForgotPasswordController := &controllers.ForgotPasswordController{
-		PasswordUsecase: usecases.NewSetupPassword(url_service, jwt_service, repository, email_service, password_service),
+		PasswordUsecase: usecases.NewSetupPassword(url_service, jwt_service, user_repository, email_service, password_service),
 	}
 
 	group.POST("/forgotPassword", ForgotPasswordController.ForgotPasswordRequest)
-	group.POST("/forgotPassword", ForgotPasswordController.SetNewPassword)
+	group.POST("/resetPassword", ForgotPasswordController.SetNewPassword)
 }

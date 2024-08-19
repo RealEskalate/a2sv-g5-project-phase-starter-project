@@ -14,21 +14,23 @@ import (
 
 func NewAuthenticationRouter(env *config.Env, timeout time.Duration, database mongo.Database, group *gin.RouterGroup) {
 	emailConfig := config.NewEmailServer(*env)
-	repository := repository.NewRepository(database)
+
+	url_repository := repository.NewURLRepository(&database)
+	user_repository := repository.NewUserRepository(&database)
 
 	jwt_service := infrastructure.NewJwtService(env)
 	password_service := infrastructure.NewPasswordService()
 	email_service := infrastructure.NewEmailService(emailConfig, *env)
-	url_service := infrastructure.NewURLService(env, repository)
+	url_service := infrastructure.NewURLService(env, url_repository)
 
 	LoginController := &controllers.LoginController{
-		LoginUsecase: usecases.NewLoginUsecase(jwt_service, password_service, repository),
+		LoginUsecase: usecases.NewLoginUsecase(jwt_service, password_service, user_repository),
 		Env:          env,
 	}
 
 	SignupController := &controllers.SignupController{
-		SignupUsecase:   usecases.NewSignupUsecase(repository, email_service),
-		PasswordUsecase: usecases.NewSetupPassword(url_service, jwt_service, repository, email_service, password_service),
+		SignupUsecase:   usecases.NewSignupUsecase(user_repository, email_service, jwt_service, url_service),
+		PasswordUsecase: usecases.NewSetupPassword(url_service, jwt_service, user_repository, email_service, password_service),
 	}
 
 	group.POST("/login", LoginController.Login)

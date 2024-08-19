@@ -10,12 +10,12 @@ import (
 
 func main() {
 
-	// Initialize MongoDB connection
-	client := config.ConnectDB()
-	db := config.GetDatabase(client)
-
 	env := config.NewEnv()
 	timeout := time.Duration(env.CONTEXT_TIMEOUT) * time.Second
+
+	// Initialize MongoDB connection
+	client := config.ConnectDB(env)
+	db := config.GetDatabase(client, env)
 
 	gin := gin.Default()
 

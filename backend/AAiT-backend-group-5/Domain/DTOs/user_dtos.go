@@ -55,6 +55,5 @@ type Response struct {
 type ProfileUpdateRequest struct {
 	Username string `json:"username"`
 	Name     string `json:"name"`
-	Email    string `json:"email"`
 	Password string `bson:"password" json:"password"`
 }

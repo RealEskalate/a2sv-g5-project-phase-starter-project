@@ -2,15 +2,17 @@ package usecase
 
 import (
 	"context"
+
+
 	// "errors"
 	"blog/domain"
 
 	"time"
 
+	
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	// "github.com/gin-gonic/gin"
 	// "errors"
-	
 )
 
 type blogUsecase struct  {
@@ -128,4 +130,32 @@ func (bu *blogUsecase) UpdateBlog(ctx context.Context, id primitive.ObjectID, re
 
 func (bu *blogUsecase) DeleteBlog(ctx context.Context, id primitive.ObjectID) error {
 	return bu.blogRepository.DeleteBlog(ctx, id)
+}
+
+// Usecases/blog_usecase.go
+// Usecases/blog_usecase.go
+// domain/usecase.go
+// controller/blog_controller.go
+// usecase/blog_usecase.go
+func (bu *blogUsecase) SearchBlogs(ctx context.Context, query string, filters *domain.BlogFilters) ([]*domain.BlogResponse, error) {
+    // Implement the search functionality here
+    blogs, err := bu.blogRepository.SearchBlogs(ctx, query, filters)
+    if err != nil {
+        return nil, err
+    }
+
+    var blogResponses []*domain.BlogResponse
+    for _, blog := range blogs {
+        blogResponses = append(blogResponses, &domain.BlogResponse{
+            ID:        blog.ID,
+            Title:     blog.Title,
+            Content:   blog.Content,
+            Tags:      blog.Tags,
+            CreatedAt: blog.CreatedAt,
+            UpdatedAt: blog.UpdatedAt,
+            AuthorID:  blog.AuthorID,
+        })
+    }
+
+    return blogResponses, nil
 }

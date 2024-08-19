@@ -86,3 +86,58 @@ func (r *blogRepository) DeleteBlog(ctx context.Context, id primitive.ObjectID) 
 	_, err := collection.DeleteOne(ctx, bson.M{"_id": id})
 	return err
 }
+
+// Repositories/blog_repository.go
+// SearchBlogs searches for blogs based on query and filters.
+func (r *blogRepository) SearchBlogs(ctx context.Context, query string, filters *domain.BlogFilters) ([]*domain.Blog, error) {
+	var blogs []*domain.Blog
+
+	collection := r.database.Collection(r.collection)
+
+	// Construct the search query
+	searchQuery := bson.M{}
+	if query != "" {
+		searchQuery["$text"] = bson.M{"$search": query}
+	}
+
+	// Add filters if provided
+	if filters != nil {
+		if filters.AuthorID != (primitive.ObjectID{}) { // Check if AuthorID is the zero value
+			searchQuery["author_id"] = filters.AuthorID
+		}
+		if len(filters.Tags) > 0 {
+			searchQuery["tags"] = bson.M{"$in": filters.Tags}
+		}
+		if filters.Title != "" {
+			searchQuery["title"] = bson.M{"$regex": filters.Title, "$options": "i"} // Case-insensitive search
+		}
+		if filters.Date != "" {
+			searchQuery["date"] = filters.Date
+		}
+		if filters.Popularity != "" {
+			searchQuery["popularity"] = filters.Popularity
+		}
+	}
+
+	// Find matching documents
+	cursor, err := collection.Find(ctx, searchQuery)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return nil, err
+		}
+		blogs = append(blogs, &blog)
+	}
+
+	// Ensure cursor is not closed with an error
+	if err := cursor.Close(ctx); err != nil {
+		return nil, err
+	}
+
+	return blogs, nil
+}

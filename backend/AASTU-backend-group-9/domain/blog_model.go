@@ -50,11 +50,12 @@ type BlogResponse struct {
 
 // BlogFilters are the filters that can be applied when searching or filtering blog posts.
 type BlogFilters struct {
-	Tags       []string `json:"tags,omitempty"`
-	Date       string   `json:"date,omitempty"`
-	Popularity string   `json:"popularity,omitempty"`
+	Title     string             `json:"title,omitempty"`
+	Tags      []string           `json:"tags,omitempty"`
+	Date      string             `json:"date,omitempty"`
+	Popularity string           `json:"popularity,omitempty"`
+	AuthorID  primitive.ObjectID `json:"author_id"`
 }
-
 // PopularityAction represents an action to track popularity metrics like views, likes, or comments.
 type PopularityAction struct {
 	Metric string `json:"metric"`

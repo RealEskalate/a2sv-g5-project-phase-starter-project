@@ -13,8 +13,9 @@ import (
 
 func NewLoginRouter(env *infrastructure.Config, timeout time.Duration, db mongo.Database, group *gin.RouterGroup) {
 	ur := repositories.NewUserRepository(db, env.UserCollection)
+	aur := repositories.NewActiveUserRepository(db, env.ActiveUserCollection)
 	lc := &controllers.LoginController{
-		LoginUsecase: usecases.NewLoginUsecase(ur, timeout),
+		LoginUsecase: usecases.NewLoginUsecase(ur, aur, timeout),
 		Env:          env,
 	}
 	group.POST("/login", lc.Login)

@@ -14,6 +14,7 @@ type Config struct {
 	DbName                 string
 	UserCollection         string
 	BlogCollection         string
+	ActiveUserCollection   string
 	ContextTimeout         int
 	AccessTokenExpiryHour  int
 	RefreshTokenExpiryHour int
@@ -33,6 +34,7 @@ func LoadEnv() (*Config, error) {
 	dbname := os.Getenv("DB_NAME")
 	usercoll := os.Getenv("user_collection")
 	blogcoll := os.Getenv("blog_collection")
+	activeusercoll := os.Getenv("ACTIVE_USER_COLLECTION")
 	contextTimeoutStr := os.Getenv("CONTEXT_TIMEOUT")
 	accessTokenExpiryHourStr := os.Getenv("ACCESS_TOKEN_EXPIRY_HOUR")
 	refreshTokenExpiryHourStr := os.Getenv("REFRESH_TOKEN_EXPIRY_HOUR")
@@ -69,6 +71,7 @@ func LoadEnv() (*Config, error) {
 		DbName:                 dbname,
 		UserCollection:         usercoll,
 		BlogCollection:         blogcoll,
+		ActiveUserCollection:   activeusercoll,
 		ContextTimeout:         contextTimeout,
 		AccessTokenExpiryHour:  accessTokenExpiryHour,
 		RefreshTokenExpiryHour: refreshTokenExpiryHour,

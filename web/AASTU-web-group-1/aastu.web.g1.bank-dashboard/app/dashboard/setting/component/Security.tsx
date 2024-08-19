@@ -3,12 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,13 +14,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
-import { access } from "fs";
-import ky from "ky";
-// import { changePassword } from "@/lib/auth";
 
-const Security = (context: GetServerSidePropsContext) => {
+const Security = () => {
   const formSchema = z.object({
     twoFactor: z.boolean().default(true).optional(),
     currentPassword: z
@@ -42,21 +36,20 @@ const Security = (context: GetServerSidePropsContext) => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const changePassword = async () => {
-      const session = await getSession(context);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const session = await getSession();
       const accessToken = session?.user.accessToken;
-
-      const formData = {
-        password: values.currentPassword,
-        newPassword: values.newPassword,
-      };
-
       console.log(accessToken);
 
       if (!accessToken) {
         throw new Error("No access token found");
       }
+
+      const formData = {
+        password: values.currentPassword,
+        newPassword: values.newPassword,
+      };
 
       const res = await fetch(
         "https://bank-dashboard-6acc.onrender.com/auth/change_password",
@@ -65,31 +58,22 @@ const Security = (context: GetServerSidePropsContext) => {
           body: JSON.stringify(formData),
           headers: {
             Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
           },
         }
       ).then((res) => res.json());
+
       console.log(res);
-    };
-    //     .post("https://bank-dashboard-6acc.onrender.com/auth/change_password", {
-    //       json: formData,
-    //       headers: {
-    //         Authorization: `Bearer ${accessToken}`,
-    //       },
-    //     })
-    //     .json();
-
-    //   console.log(res);
-    //   return res;
-    // };
-
-    changePassword();
-  }
+    } catch (error) {
+      console.error("Error changing password:", error);
+    }
+  };
 
   return (
     <div className="md:px-16">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="mt-5 ">
+          <div className="mt-5">
             <h1 className="mb-2 text-primaryBlack font-bold">
               Two-factor Authentication
             </h1>
@@ -105,7 +89,7 @@ const Security = (context: GetServerSidePropsContext) => {
                       onCheckedChange={field.onChange}
                     />
                     <div className="space-y-0.5">
-                      Enable or disable two factor authentication
+                      Enable or disable two-factor authentication
                     </div>
                   </FormItem>
                 )}

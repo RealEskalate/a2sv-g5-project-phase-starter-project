@@ -30,7 +30,6 @@ func (uc *userUsecase) PromoteUser(ctx context.Context, userID string) *models.E
 	}
 
 	// Promote the user
-
 	err = uc.repo.PromoteUser(ctx, userID)
 	if err != nil {
 		return err

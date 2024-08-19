@@ -5,15 +5,16 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func SetupRouter(port int, routePrefix string, db *mongo.Database) {
+func SetupRouter(port int, routePrefix string, db *mongo.Database, redisClient *redis.Client) {
 	router := gin.Default()
 
 	// auth
 	authRouter := router.Group("/api/" + routePrefix + "/auth")
-	NewAuthRouter(db.Collection(domain.CollectionUsers), authRouter)
+	NewAuthRouter(db.Collection(domain.CollectionUsers), authRouter, redisClient)
 
 	// blog
 	blogAuthor := router.Group("/api/" + routePrefix + "/blogs")

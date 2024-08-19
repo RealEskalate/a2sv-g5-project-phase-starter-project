@@ -16,13 +16,14 @@ import (
 )
 
 type UserUsecase struct {
-	userRepository domain.UserRepositoryInterface
+	userRepository  domain.UserRepositoryInterface
+	cacheRepository domain.CacheRepositoryInterface
 }
 
 var PhoneRegex = regexp.MustCompile(`^\+?[1-9][0-9]{7,14}$`)
 
-func NewUserUsecase(userRepository domain.UserRepositoryInterface) *UserUsecase {
-	return &UserUsecase{userRepository: userRepository}
+func NewUserUsecase(userRepository domain.UserRepositoryInterface, cacheRepository domain.CacheRepositoryInterface) *UserUsecase {
+	return &UserUsecase{userRepository: userRepository, cacheRepository: cacheRepository}
 }
 
 func (u *UserUsecase) ValidatePassword(password string) domain.CodedError {

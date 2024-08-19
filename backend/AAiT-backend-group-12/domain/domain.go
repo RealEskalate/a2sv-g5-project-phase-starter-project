@@ -120,3 +120,7 @@ type UserUsecaseInterface interface {
 	InitResetPassword(c context.Context, username string, email string, hostUrl string) CodedError
 	ResetPassword(c context.Context, resetDto dtos.ResetPassword, token string) CodedError
 }
+
+type CacheRepositoryInterface interface {
+	CacheData(c context.Context)
+}

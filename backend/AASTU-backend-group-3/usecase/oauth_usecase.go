@@ -7,6 +7,7 @@ import (
 )
 
 func (uc *UserUsecase) OAuthLogin(oauthUserInfo domain.OAuthUserInfo, deviceID string) (domain.LogInResponse, error) {
+
 	user, err := uc.UserRepo.FindOrCreateUserByGoogleID(oauthUserInfo, deviceID)
 	if err != nil {
 		return domain.LogInResponse{}, err

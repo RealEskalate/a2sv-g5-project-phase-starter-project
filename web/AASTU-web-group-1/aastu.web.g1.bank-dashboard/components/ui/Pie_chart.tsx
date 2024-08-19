@@ -48,7 +48,7 @@ export function Pie_chart() {
   return (
     <Card className="max-h-[370px] ">
       <CardContent>
-        <ChartContainer config={chartConfig} className="p-0 ">
+        <ChartContainer config={chartConfig} className="p-0 w-full ">
           <ResponsiveContainer width="100%" >
             <PieChart>
               <Tooltip />

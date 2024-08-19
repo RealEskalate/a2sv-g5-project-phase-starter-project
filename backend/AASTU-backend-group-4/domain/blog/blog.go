@@ -23,6 +23,7 @@ type BlogUsecase interface {
 	UpdateBlog(ctx context.Context, blogID primitive.ObjectID, updatedBlog *Blog) error
 	GetBlog(ctx context.Context, blogID primitive.ObjectID) (*Blog, error)
 	DeleteBlog(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID, isAdmin bool) error
+	SearchBlog(ctx context.Context, title string, author string) ([]*Blog, error)
 	// GetBlogs(ctx context.Context) ([]*Blog, error)
 	// GetBlog(ctx context.Context, blogid primitive.ObjectID) ([]*Blog, error)
 }
@@ -32,7 +33,7 @@ type BlogRepository interface {
 	UpdateBlog(ctx context.Context, authorID primitive.ObjectID, updatedBlog *Blog) error
 	GetBlog(ctx context.Context, blogID primitive.ObjectID) (*Blog, error)
 	DeleteBlog(ctx context.Context, blogID primitive.ObjectID) error
-	// SearchBlog(ctx context.Context, blogTitle string, blogAuthor string) ([]*Blog, error)
+	SearchBlog(ctx context.Context, title string, author string) ([]*Blog, error)
 	// GetAllBlogs(ctx context.Context) ([]*Blog, error)
 	// FilterBlogByTag(ctx context.Context, tag string) ([]*Blog, error)
 }

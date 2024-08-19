@@ -126,7 +126,7 @@ const Sidebar = ({
               width={20}
               height={20}
             />
-            <FontAwesomeIcon icon={faRightFromBracket} className="" />
+            {/* <FontAwesomeIcon icon={faRightFromBracket} className="" /> */}
             <div
               className={`${
                 isActive(item.url) ? "text-[#1814F3]" : "text-[#B1B1B1]"

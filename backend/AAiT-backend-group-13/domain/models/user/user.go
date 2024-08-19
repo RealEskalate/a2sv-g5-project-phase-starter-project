@@ -47,8 +47,6 @@ type Config struct {
 	Email          string
 	PlainPassword  string
 	IsAdmin        bool
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
 	PasswordHasher ihash.Service
 }
 

@@ -22,6 +22,7 @@ type Blog struct {
 	tags         []string
 	createdDate  time.Time
 	updatedDate  time.Time
+	userid       uuid.UUID
 	likeCount    int
 	disLikeCount int
 	commentCount int
@@ -33,11 +34,13 @@ type Config struct {
 	Title   string
 	Content string
 	Tags    []string
+	UserId  uuid.UUID
 }
 
 // MapConfig holds parameters for mapping with Blog from Data Base.
 type MapConfig struct {
 	Id           uuid.UUID
+	UserId       uuid.UUID
 	Title        string
 	Content      string
 	Tags         []string
@@ -61,6 +64,7 @@ func New(config Config) (*Blog, error) {
 	//returns blog with specified fields
 	return &Blog{
 		id:           uuid.New(),
+		userid:       config.UserId,
 		title:        config.Title,
 		content:      config.Content,
 		tags:         config.Tags,
@@ -78,6 +82,7 @@ func Map(mapConfig MapConfig) (*Blog, error) {
 	//returns blog with specified fields
 	return &Blog{
 		id:           mapConfig.Id,
+		userid:       mapConfig.UserId,
 		title:        mapConfig.Title,
 		content:      mapConfig.Content,
 		tags:         mapConfig.Tags,
@@ -92,6 +97,11 @@ func Map(mapConfig MapConfig) (*Blog, error) {
 // ID returns Blog Id.
 func (b *Blog) ID() uuid.UUID {
 	return b.id
+}
+
+// UserId returns Blog's Auther Id.
+func (b *Blog) UserId() uuid.UUID {
+	return b.userid
 }
 
 // Title returns Blog's title.
@@ -153,5 +163,22 @@ func validateContent(content string) error {
 		return er.ContentTooLong
 	}
 
+	return nil
+}
+
+// Update updates the blog's fields with the provided configuration after validating the data.
+func (b *Blog) Update(config Config) error {
+	if err := validateTitle(config.Title); err != nil {
+		return err
+	}
+
+	if err := validateContent(config.Content); err != nil {
+		return err
+	}
+
+	b.title = config.Title
+	b.content = config.Content
+	b.tags = config.Tags
+	b.updatedDate = time.Now()
 	return nil
 }

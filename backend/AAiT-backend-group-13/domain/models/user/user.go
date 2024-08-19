@@ -42,7 +42,7 @@ type User struct {
 // Config holds parameters for creating a new User.
 type Config struct {
 	FirstName      string
-	LastName       string 
+	LastName       string
 	Username       string
 	Email          string
 	PlainPassword  string

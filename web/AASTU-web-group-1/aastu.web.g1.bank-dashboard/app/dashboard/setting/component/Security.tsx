@@ -16,10 +16,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { GetServerSidePropsContext } from "next";
+import { getSession } from "next-auth/react";
+import { access } from "fs";
 import ky from "ky";
-import { getSession, useSession } from "next-auth/react";
+// import { changePassword } from "@/lib/auth";
 
-const Security = () => {
+const Security = (context: GetServerSidePropsContext) => {
   const formSchema = z.object({
     twoFactor: z.boolean().default(true).optional(),
     currentPassword: z
@@ -40,31 +43,48 @@ const Security = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const formData = {
-      password: values.currentPassword,
-      newPassword: values.newPassword,
+    const changePassword = async () => {
+      const session = await getSession(context);
+      const accessToken = session?.user.accessToken;
+
+      const formData = {
+        password: values.currentPassword,
+        newPassword: values.newPassword,
+      };
+
+      console.log(accessToken);
+
+      if (!accessToken) {
+        throw new Error("No access token found");
+      }
+
+      const res = await fetch(
+        "https://bank-dashboard-6acc.onrender.com/auth/change_password",
+        {
+          method: "POST",
+          body: JSON.stringify(formData),
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      ).then((res) => res.json());
+      console.log(res);
     };
+    //     .post("https://bank-dashboard-6acc.onrender.com/auth/change_password", {
+    //       json: formData,
+    //       headers: {
+    //         Authorization: `Bearer ${accessToken}`,
+    //       },
+    //     })
+    //     .json();
 
-    const { data: session } = await useSession();
-    const accessToken = session?.user?.accessToken;
+    //   console.log(res);
+    //   return res;
+    // };
 
-    console.log(accessToken);
-
-    if (!accessToken) {
-      throw new Error("No access token found");
-    }
-
-    const res = await ky
-      .post("https://bank-dashboard-6acc.onrender.com/auth/change_password", {
-        json: formData,
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .json();
-
-    return res;
+    changePassword();
   }
+
   return (
     <div className="md:px-16">
       <Form {...form}>

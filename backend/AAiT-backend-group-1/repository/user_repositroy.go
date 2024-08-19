@@ -8,6 +8,7 @@ import (
 
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -17,96 +18,114 @@ type UserRepository struct {
 }
 
 func NewUserRespository(collection *mongo.Collection) domain.UserRepository {
-	return UserRepository{
+	return &UserRepository{
 		collection: collection,
 	}
 }
 
-func (userRepo *UserRepository) FindById(ctx context.Context, id uuid.UUID) (*domain.User, error) {
-	userID := uuid.String(id)
-	if userID == "" {
-		return domain.User{}, domain.UserError{Message: fmt.Sprintf("invalid uuid format, got %v \n", id), Code: http.StatusBadRequest}
+func (userRepo *UserRepository) FindById(ctx context.Context, id string) (*domain.User, domain.Error) {
+	userID, errIDParse := primitive.ObjectIDFromHex(id)
+	if errIDParse != nil {
+		return &domain.User{}, &domain.CustomError{Message: fmt.Sprintf("error parsing the user id. %v \n", errIDParse.Error()), Code: http.StatusInternalServerError}
 	}
-	filter := bson.D{{"id": userID}}
+	filter := bson.D{{"_id", userID}}
 	var fetchedUser domain.User
-	err := userRepo.collection.FindOne(ctx, filter).Decode(&fetchedUser)
-	if err != nil {
-		return domain.User{}, domain.UserError{Message: fmt.Sprintf("an error occured during fetching user"), Code: http.StatusInternalServerError}
+	errFetchUser := userRepo.collection.FindOne(ctx, filter).Decode(&fetchedUser)
+	if errFetchUser != nil {
+		if errors.Is(errFetchUser, mongo.ErrNoDocuments) {
+			return &domain.User{}, &domain.CustomError{Message: fmt.Sprintf("user not found. %v \n", errFetchUser.Error()), Code: http.StatusNotFound}
+		}
+		return &domain.User{}, &domain.CustomError{Message: fmt.Sprintf("error fetching the user. %v \n", errFetchUser.Error()), Code: http.StatusInternalServerError}
 	}
-	return fetchedUser, nil
+	return &fetchedUser, nil
 }
 
-func (userRepo *UserRepository) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
-	filter := bson.D{{"email": email}}
+func (userRepo *UserRepository) FindByEmail(cxt context.Context, email string) (*domain.User, domain.Error) {
+	filter := bson.D{{"email", email}}
 	var fetchedUser domain.User
-	err := userRepo.collection.FindOne(ctx, filter).Decode(&fetchedUser)
-	if err != nil {
-		return domain.User, domain.UserError{Message: fmt.Sprintf("an error occured during fetching user, %v \n", errFetching.Error()), Code: http.StatusInternalServerError}
+	errFetchUser := userRepo.collection.FindOne(cxt, filter).Decode(&fetchedUser)
+	if errFetchUser != nil {
+		if errors.Is(errFetchUser, mongo.ErrNoDocuments) {
+			return &domain.User{}, &domain.CustomError{Message: fmt.Sprintf("user not found. %v \n", errFetchUser.Error()), Code: http.StatusNotFound}
+		}
+		return &domain.User{}, &domain.CustomError{Message: fmt.Sprintf("error fetching the user. %v \n", errFetchUser.Error()), Code: http.StatusInternalServerError}
 	}
-	return fetchedUser, nil
+	return &fetchedUser, nil
 }
-
-func (userRepo *UserRepository) FindByUsername(ctx context.Context, username string) (*domain.User, error) {
-	filter := bson.D{{"username": username}}
+func (userRepo *UserRepository) FindByUsername(cxt context.Context, username string) (*domain.User, domain.Error) {
+	filter := bson.D{{"username", username}}
 	var fetchedUser domain.User
-	err := userRepo.collection.FindOne(ctx, filter).Decode(&fetchedUser)
-	if err != nil {
-		return domain.User, domain.UserError{Message: fmt.Sprintf("an error occured during fetching user, %v \n", errFetching.Error()), Code: http.StatusInternalServerError}
+	errFetchUser := userRepo.collection.FindOne(cxt, filter).Decode(&fetchedUser)
+	if errFetchUser != nil {
+		if errors.Is(errFetchUser, mongo.ErrNoDocuments) {
+			return &domain.User{}, &domain.CustomError{Message: fmt.Sprintf("user not found. %v \n", errFetchUser.Error()), Code: http.StatusNotFound}
+		}
+		return &domain.User{}, &domain.CustomError{Message: fmt.Sprintf("error fetching the user. %v \n", errFetchUser.Error()), Code: http.StatusInternalServerError}
 	}
-	return fetchedUser, nil
+	return &fetchedUser, nil
 }
-
-func (userRepo *UserRepository) FindAll(ctx context.Context) ([]domain.User, error) {
+func (userRepo *UserRepository) FindAll(cxt context.Context) ([]domain.User, domain.Error) {
 	filter := bson.D{}
 	opts := options.Find().SetSort(bson.D{{"username", 1}})
-	cursor, errFetching := userRepo.collection.Find(ctx, filter, opts)
-	if errFetching != nil {
-		return []domain.User, domain.UserError{Message: fmt.Sprintf("an error occured during fetching users, %v \n", errFetching.Error()), Code: http.StatusInternalServerError}
-	}
-
 	var fetchedUsers []domain.User
-	errCursor := cursor.All(&fetchedUsers)
-	if errCursor != nil {
-		return []domain.User, domain.UserError{Message: fmt.Sprintf("an error occured during fetching users, %v \n", errFetching.Error()), Code: http.StatusInternalServerError}
+	cursor, errFetchUsers := userRepo.collection.Find(cxt, filter, opts)
+	if errFetchUsers != nil {
+		return []domain.User{}, &domain.CustomError{Message: fmt.Sprintf("error fetching the users. %v \n", errFetchUsers.Error()), Code: http.StatusInternalServerError}
 	}
 
+	errCusrsor := cursor.All(cxt, &fetchedUsers)
+	if errCusrsor != nil {
+		return []domain.User{}, &domain.CustomError{Message: fmt.Sprintf("error decoding the users. %v \n", errCusrsor.Error()), Code: http.StatusInternalServerError}
+	}
 	return fetchedUsers, nil
 }
 
-func (userRepo *UserRepository) Create(cxt context.Context, user *domain.User) (*domain.User, error) {
-	insertedResult, errInserting := userRepo.collection.InsertOne(cxt, user)
-	if errInserting != nil {
-		return domain.User{}, domain.UserError{Message: fmt.Sprintf("an error occured during inserting user, %v \n", errInserting.Error()), Code: http.StatusInternalServerError}
+func (userRepo *UserRepository) Create(cxt context.Context, user *domain.User) (*domain.User, domain.Error) {
+	insertResult, errInsert := userRepo.collection.InsertOne(cxt, user)
+	if errInsert != nil {
+		if mongo.IsDuplicateKeyError(errInsert) {
+			return &domain.User{}, &domain.CustomError{Message: fmt.Sprintf("user already exists. %v \n", errInsert.Error()), Code: http.StatusConflict}
+		}
+		return &domain.User{}, &domain.CustomError{Message: fmt.Sprintf("error inserting the user. %v \n", errInsert.Error()), Code: http.StatusInternalServerError}
 	}
+	user.ID = insertResult.InsertedID.(primitive.ObjectID)
 	return user, nil
 }
-func (userRepo *UserRepository) Update(cxt context.Context, user *domain.User) (*domain.User, error) {
-	userID := uuid.String(user.ID)
-	if userID == "" {
-		return domain.User{}, domain.UserError{Message: fmt.Sprintf("invalid uuid format, got %v \n", user.ID), Code: http.StatusBadRequest}
-	}
-	filter := bson.D{{"id": userID}}
-	update := bson.D{{"$set", bson.D{{"username", user.Username}, {"email", user.Email}, {"password", user.Password}}}}
 
-	var updatedUser domain.User
-	errUpdating := userRepo.collection.FindOneAndUpdate(cxt, filter, update).Decode(&updatedUser)
-	if errUpdating != nil {
-		if errors.Is(errUpdating, mongo.ErrNoDocuments) {
-			return domain.User{}, domain.UserError{Message: fmt.Sprintf("user with id %v not found to update\n", userID), Code: http.StatusNotFound}
-		}
-		return domain.User{}, domain.UserError{Message: fmt.Sprintf("an error occured during updating user, %v \n", err.Error()), Code: http.StatusInternalServerError}
+func (userRepo *UserRepository) Update(cxt context.Context, id string, user *domain.User) domain.Error {
+	updateID, errIDParse := primitive.ObjectIDFromHex(id)
+	if errIDParse != nil {
+		return &domain.CustomError{Message: fmt.Sprintf("error parsing the user id. %v \n", errIDParse.Error()), Code: http.StatusInternalServerError}
 	}
-	return updatedUser, nil
+
+	filter := bson.D{{"_id", updateID}}
+	updateDoc := bson.D{{"$set", user}}
+	opts := options.Update().SetUpsert(false)
+	updateResult, errUpdate := userRepo.collection.UpdateOne(cxt, filter, updateDoc, opts)
+
+	if errUpdate != nil {
+		return &domain.CustomError{Message: fmt.Sprintf("error updating the user. %v \n", errUpdate.Error()), Code: http.StatusInternalServerError}
+	}
+	if updateResult.MatchedCount == 0 {
+		return &domain.CustomError{Message: fmt.Sprintf("user not found. %v \n", errUpdate.Error()), Code: http.StatusNotFound}
+	}
+
+	return nil
 }
-func (userRepo *UserRepository) Delete(cxt context.Context, id uuid.UUID) error {
-	userID := uuid.String(id)
-	if userID == "" {
-		return domain.UserError{Message: fmt.Sprintf("invalid uuid format, got %v \n", id), Code: http.StatusBadRequest}
+func (userRepo *UserRepository) Delete(cxt context.Context, id string) domain.Error {
+	deleteID, errIDParse := primitive.ObjectIDFromHex(id)
+	if errIDParse != nil {
+		return &domain.CustomError{Message: fmt.Sprintf("error parsing the user id. %v \n", errIDParse.Error()), Code: http.StatusInternalServerError}
 	}
-	filter := bson.D{{"id": userID}}
-	_, errDeleting := userRepo.collection.DeleteOne(cxt, filter)
-	if errDeleting != nil {
-		return domain.UserError{Message: fmt.Sprintf("an error occured during deleting user, %v \n", errDeleting.Error()), Code: http.StatusInternalServerError}
+
+	filter := bson.D{{"_id", deleteID}}
+	deleteResult, errDelete := userRepo.collection.DeleteOne(cxt, filter)
+
+	if errDelete != nil {
+		return &domain.CustomError{Message: fmt.Sprintf("error updating the user. %v \n", errDelete.Error()), Code: http.StatusInternalServerError}
+	}
+	if deleteResult.DeletedCount == 0 {
+		return &domain.CustomError{Message: fmt.Sprintf("user not found. %v \n", errDelete.Error()), Code: http.StatusNotFound}
 	}
 	return nil
 }

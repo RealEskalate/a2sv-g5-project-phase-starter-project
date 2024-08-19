@@ -44,8 +44,8 @@ func (uc *loginUsecase) LoginUser(ctx context.Context, userReqest dtos.LoginRequ
 	}
 
 	// save the refresh token
-	err = uc.repository.StoreAccessToken(ctx, user.ID.Hex(), accessToken)
-	tErr := uc.repository.StoreRefreshToken(ctx, user.ID.Hex(), refresheToken)
+	err = uc.repository.StoreAccessToken(ctx, user.ID, accessToken)
+	tErr := uc.repository.StoreRefreshToken(ctx, user.ID, refresheToken)
 	if err != nil {
 		return nil, err
 	}

@@ -23,8 +23,8 @@ func (bc *BlogController) CreateBlogPost(c *gin.Context) {
 		return
 	}
 
-	autherID := c.MustGet("userID").(primitive.ObjectID)
-	blog.AuthorID = autherID
+	// autherID := c.MustGet("userID").(primitive.ObjectID)
+	// blog.AuthorID = autherID
 
 	createdBlog, err := bc.blogUsecase.CreateBlogPost(&blog)
 	if err != nil {

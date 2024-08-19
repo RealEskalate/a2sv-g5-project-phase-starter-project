@@ -33,7 +33,7 @@ func (cc *CommentController) AddComment(c *gin.Context) {
 	}
 
 	comment.BlogID = blogID
-	comment.UserID = c.MustGet("userID").(primitive.ObjectID)
+	// comment.UserID = c.MustGet("userID").(primitive.ObjectID)
 
 	if err := cc.commentUsecase.AddComment(&comment); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

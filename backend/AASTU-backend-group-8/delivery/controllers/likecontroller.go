@@ -17,19 +17,21 @@ func NewLikeController(likeUsecase domain.LikeUsecaseInterface) *LikeController 
 }
 
 func (lc *LikeController) AddLike(c *gin.Context) {
+	// Get the blog ID from the URL parameter
+	blogIDParam := c.Param("id")
+	blogID, err := primitive.ObjectIDFromHex(blogIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
+		return
+	}
+
+	// Bind the user ID from the JSON body
 	var likeRequest struct {
-		BlogID string `json:"blog_id"`
 		UserID string `json:"user_id"`
 	}
 
 	if err := c.ShouldBindJSON(&likeRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	blogID, err := primitive.ObjectIDFromHex(likeRequest.BlogID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
 		return
 	}
 
@@ -39,6 +41,7 @@ func (lc *LikeController) AddLike(c *gin.Context) {
 		return
 	}
 
+	// Add the like using the blog ID and user ID
 	err = lc.likeUsecase.AddLike(blogID, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

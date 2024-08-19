@@ -17,11 +17,11 @@ type User struct {
 	Username           string             `json:"username" bson:"username"`
 	Password           string             `json:"password" bson:"password"`
 	Email              string             `json:"email" bson:"email"`
-	Role               string             `json:"role" bson:"role"` // e.g., "Admin" or "User"
-	Active             bool               `json:"active" bson:"active"`
 	Bio                string             `json:"bio" bson:"bio"`
 	ProfilePicture     string             `json:"profile_picture" bson:"profile_picture"` // URL to the profile picture
 	ContactInformation string             `json:"contact_information" bson:"contact_information"`
+  IsAdmin            bool               `json:"isAdmin" bson:"isAdmin"`
+  Active             bool               `json:"active" bson:"active"`
 }
 
 type UpdateRequest struct {
@@ -31,19 +31,6 @@ type UpdateRequest struct {
 	Bio                string `json:"bio" bson:"bio"`
 	ProfilePicture     string `json:"profile_picture" bson:"profile_picture"`
 	ContactInformation string `json:"contact_information" bson:"contact_information"`
-}
-
-type SignupRequest struct {
-	Firstname string `json:"firstname" bson:"firstname" binding:"required"`
-	Lastname  string `json:"lastname" bson:"lastname" binding:"required"`
-	Username  string `json:"username" bson:"username" binding:"required"`
-	Password  string `json:"password" bson:"password" binding:"required"`
-	Email     string `json:"email" bson:"email" binding:"required"`
-}
-
-type SignupResponse struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
 }
 
 type LoginRequest struct {
@@ -57,11 +44,24 @@ type LoginResponse struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
+type ForgotPasswordRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+type ResetPasswordRequest struct {
+	ResetToken      string `json:"reset_token" binding:"required"`
+	NewPassword     string `json:"new_password" binding:"required,min=8"`
+	ConfirmPassword string `json:"confirm_password" binding:"required,eqfield=NewPassword"`
+}
+
 type UserUsecase interface {
+	SignupUsecase(ctx context.Context, user *User) error
+	UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *User) error
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)
-	SignupUsecase(ctx context.Context, user *User) error
-	UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *UpdateRequest) error
+	DeleteRefreshTokenByUserID(ctx context.Context, userID string) error
+	GeneratePasswordResetToken(ctx context.Context, email, resetTokenSecret string, expiryHour int) error
+	ResetPassword(ctx context.Context, resetToken, newPassword, resetTokenSecret string) error
 }
 
 type UserRepository interface {
@@ -70,4 +70,7 @@ type UserRepository interface {
 	UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *UpdateRequest) error
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)
+	DeleteRefreshTokenByUserID(ctx context.Context, userID string) error // used in logout
+	StoreResetToken(ctx context.Context, userID string, resetToken string, expiryHour int) error
+	UpdatePassword(ctx context.Context, userID string, newPassword string) error
 }

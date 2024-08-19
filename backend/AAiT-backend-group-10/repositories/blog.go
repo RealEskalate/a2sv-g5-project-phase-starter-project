@@ -141,8 +141,8 @@ func (r *BlogRepository) Search(filter domain.BlogFilter) ([]domain.Blog, int, e
 
 	query := bson.D{}
 
-	if filter.Author != uuid.Nil {		
-		query = append(query, bson.E{Key: "author", Value: filter.Author})
+	if filter.AuthorIds != nil {
+		query = append(query, bson.E{Key: "author", Value: bson.D{{Key: "$in", Value: filter.AuthorIds}}})
 	}
 
 	if filter.Title != "" {

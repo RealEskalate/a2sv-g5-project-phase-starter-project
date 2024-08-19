@@ -32,9 +32,9 @@ type Usecase interface {
 }
 
 type Repository interface {
-	CreateChat(chat Chat, ctx context.Context) (Chat, error)
-	AddMessage(chatID string, message Message, ctx context.Context) error
-	GetChat(chatID string, ctx context.Context) (Chat, error)
+	AddMessage(ctx context.Context, chatID string, message Message) error
+	CreateChat(ctx context.Context, chat Chat) (Chat, error)
+	DeleteChat(ctx context.Context, chatID string) error
+	GetChat(ctx context.Context, chatID string) (Chat, error)
 	GetChats(ctx context.Context, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error)
-	DeleteChat(chatID string, ctx context.Context) error
 }

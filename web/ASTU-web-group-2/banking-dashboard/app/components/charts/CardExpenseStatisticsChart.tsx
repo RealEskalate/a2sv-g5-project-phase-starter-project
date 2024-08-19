@@ -32,7 +32,7 @@ const customRadiusPlugin = {
     data.datasets.forEach((dataset: any, datasetIndex: any) => {
       const meta = chart.getDatasetMeta(datasetIndex);
       meta.data.forEach(
-        (arc: { outerRadius: number }, arcIndex: string | number) => {
+        (arc: { outerRadius: number }, arcIndex: number) => {
           const outerRadius = Math.min(totalWidth, totalHeight) / 2;
           arc.outerRadius = outerRadius * radiusModifier[arcIndex];
         }
@@ -43,7 +43,7 @@ const customRadiusPlugin = {
 
 function CardExpenseStatisticsChart() {
   const chartRef = useRef<HTMLCanvasElement | null>(null);
-  const chartInstanceRef = useRef<Chart | null>(null);
+  const chartInstanceRef = useRef<Chart<"doughnut"> | null>(null);
 
   useEffect(() => {
     if (chartRef.current) {
@@ -54,11 +54,11 @@ function CardExpenseStatisticsChart() {
           chartInstanceRef.current.destroy();
         }
 
-        const chartData: ChartData<"doughnut"> = {
+        const chartData: ChartData<"doughnut", number[], string> = {
           labels: ["DBL Bank", "ABM Bank", "BRC Bank", "MCP Bank"],
           datasets: [
             {
-              data: [30, 20, 25, 25], // Example data for slices
+              data: [30, 20, 25, 25],
               backgroundColor: [
                 "rgb(22, 219, 204)",
                 "rgb(255, 130, 172)",
@@ -66,10 +66,9 @@ function CardExpenseStatisticsChart() {
                 "rgb(76, 120, 255)",
               ],
               borderWidth: 0,
-              cutout: "10%",
             },
             {
-              data: [30, 20, 25, 25], // Example data for slices
+              data: [30, 20, 25, 25],
               backgroundColor: [
                 "rgb(30, 198, 184)",
                 "rgb(255, 97, 149)",
@@ -77,7 +76,6 @@ function CardExpenseStatisticsChart() {
                 "rgb(52, 100, 243)",
               ],
               borderWidth: 0,
-              cutout: "30%",
             },
           ],
         };
@@ -90,6 +88,7 @@ function CardExpenseStatisticsChart() {
               display: false,
             },
           },
+          cutout: "30%", // Move the cutout here
         };
 
         const combinedChart = new Chart(context, {

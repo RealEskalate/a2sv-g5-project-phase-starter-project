@@ -3,17 +3,23 @@ import Image from "next/image";
 import React, { useState } from "react";
 import Sidebar from "../sidebar/Sidebar"; // Import Sidebar component
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { title } from "process";
 
-interface TitleProp {
-  title: string;
-}
 
-const Navbar = ({ title }: TitleProp) => {
+const Navbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+  const pathname = usePathname()
+  const capitalizeFirstLetter = (text:string) => {
+    if (!text || text == "/") return 'Dashboard';
+    text = text.replace('-', ' ')
+    return text.charAt(1).toUpperCase() + text.slice(2).toLowerCase();
+  };
+  const title = capitalizeFirstLetter(pathname);
 
   return (
     <>
@@ -48,7 +54,7 @@ const Navbar = ({ title }: TitleProp) => {
               <input
                 type="text"
                 placeholder="Search for something"
-                className="text-[15px] bg-[#F5F7FA] border-none outline-none w-full placeholder:text-[#B1B1B1] focus:ring-0"
+                className="text-[15px] bg-[#F5F7FA] border border-transparent rounded-full px-4 py-2 w-full placeholder:text-[#B1B1B1] focus:outline-none focus:ring-0 focus:border-transparent"
               />
             </div>
 

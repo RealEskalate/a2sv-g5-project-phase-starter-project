@@ -20,7 +20,7 @@ const Page = () => {
             </th>
           </tr>
           <tr className="h-[1px] bg-[#F4F5F7] ">
-            <td colspan="4" className="p-0 pl-[4px]"></td>
+            <td colSpan={4} className="p-0 pl-[4px]"></td>
           </tr>
         </thead>
         <tbody>

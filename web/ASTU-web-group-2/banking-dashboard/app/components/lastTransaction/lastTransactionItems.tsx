@@ -1,26 +1,37 @@
-import { useGetAllTransactionQuery } from "@/lib/service/TransactionService";
-import { Item } from "./LastTransaction";
+export type Item = {
+  transactionId: string;
+  type: string;
+  description: string;
+  date: string;
+  amount: number;
+  receiverUserName: string;
+};
 
-export async function getLastTransaction(): Promise<Item[]> {
-  const access =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJzYW1pdGVzdCIsImlhdCI6MTcyMzgwNzQzNiwiZXhwIjoxNzIzODkzODM2fQ.dTGZWeZVDP1btw1nf_hW84Zr5CPjW32hnj-vXlsWCUQz4MlU1EuTvHhSp3-xfmUZ";
-  const { data, isError, isLoading, isSuccess } =
-    await useGetAllTransactionQuery(access);
+export const defaultItems: Item[] = [
+  {
+    receiverUserName: "Spotify Subscription",
+    date: "25 Jan 2021",
+    type: "Shopping",
+    transactionId: "1234 ****",
+    description: "Pending",
+    amount: -159,
+  },
 
-  if (isLoading) {
-    console.log("fetching");
-  }
+  {
+    receiverUserName: "Mobile Service",
+    date: "25 Jan 2021",
+    type: "Service",
+    transactionId: "1234 ****",
+    description: "Completed",
+    amount: -340,
+  },
 
-  if (isError) {
-    console.log("error");
-  }
-
-  let retrunData: Item[] = [];
-
-  if (isSuccess) {
-    retrunData = data.data;
-  }
-  return retrunData;
-}
-
-export const items: Promise<Item[]> = getLastTransaction();
+  {
+    receiverUserName: "Emily Watson",
+    date: "25 Jan 2021",
+    type: "Transfer",
+    transactionId: "1234 ****",
+    description: "Completed",
+    amount: 780,
+  },
+];

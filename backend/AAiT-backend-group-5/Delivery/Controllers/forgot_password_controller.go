@@ -13,9 +13,9 @@ type ForgotPasswordController struct {
 	PasswordUsecase interfaces.PasswordUsecase
 }
 
-func NewForgotPasswordController(forgotPasswordUsecase interfaces.PasswordUsecase) *ForgotPasswordController {
+func NewForgotPasswordController(PasswordUsecase interfaces.PasswordUsecase) *ForgotPasswordController {
 	return &ForgotPasswordController{
-		PasswordUsecase: forgotPasswordUsecase,
+		PasswordUsecase: PasswordUsecase,
 	}
 }
 

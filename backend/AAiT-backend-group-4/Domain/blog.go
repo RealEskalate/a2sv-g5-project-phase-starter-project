@@ -17,6 +17,13 @@ const (
 	FinanceBusiness Tag = "Finance & Business"
 )
 
+type PaginationData struct {
+	NextPage     int `json:"next_page"`
+	PreviousPage int `json:"previous_page"`
+	CurrentPage  int `json:"current_page"`
+	TotalPages   int `json:"total_pages"`
+	TotalItems   int `json:"total_items"`
+}
 type Author struct {
 	Author_ID string
 	Name      string

@@ -69,6 +69,8 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 
 	// profile router
 	ProfileRouter()
+	// chat router
+	ChatRouter()
 
 	Router.POST("/sendemail", sendemail)
 

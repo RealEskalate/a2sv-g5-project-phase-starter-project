@@ -21,14 +21,12 @@ type Env struct {
 	SERVER_ADDRESS  string `mapstructure:"SERVER_ADDRESS"`
 	CONTEXT_TIMEOUT int    `mapstructure:"CONTEXT_TIMEOUT"`
 
-	ACCESS_TOKEN_EXPIRY_HOUR  int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
-	REFRESH_TOKEN_EXPIRY_HOUR int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
-	ACCESS_TOKEN_SECRET       string `mapstructure:"ACCESS_TOKEN_SECRET"`
-	REFRESH_TOKEN_SECRET      string `mapstructure:"REFRESH_TOKEN_SECRET"`
+	ACCESS_TOKEN_EXPIRY_HOUR  int `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
+	REFRESH_TOKEN_EXPIRY_HOUR int `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
 }
 
 func NewEnv() *Env {
-	viper.SetConfigFile(".env")
+	viper.SetConfigFile("/home/mercury/Desktop/a2sv_starter_project/a2sv-g5-project-phase-starter-project/backend/AAiT-backend-group-5/.env")
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {

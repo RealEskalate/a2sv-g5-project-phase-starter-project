@@ -1,3 +1,6 @@
 .env
 tmp
 .air.toml
+venv
+venv/
+.venv

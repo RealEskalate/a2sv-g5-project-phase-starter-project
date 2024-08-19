@@ -1,6 +1,7 @@
 package blog
 
 import (
+	"blogApp/internal/ai"
 	"blogApp/internal/domain"
 	"blogApp/internal/repository"
 	"context"
@@ -26,8 +27,17 @@ func (u *blogUseCase) CreateBlog(ctx context.Context, blog *domain.Blog) error {
 	if blog == nil {
 		return errors.New("blog cannot be nil")
 	}
-	// Add more input validation if necessary
-	err := u.repo.CreateBlog(ctx, blog)
+
+	is_valid, message, err := ai.ModerateBlog(blog.Content, blog.Title)
+	if err != nil {
+		log.Printf("Error moderating blog: %v", err)
+		return fmt.Errorf("failed to moderate blog: %w", err)
+	}
+	if !is_valid {
+		return errors.New(message)
+	}
+
+	err = u.repo.CreateBlog(ctx, blog)
 	if err != nil {
 		log.Printf("Error creating blog: %v", err)
 		return fmt.Errorf("failed to create blog: %w", err)

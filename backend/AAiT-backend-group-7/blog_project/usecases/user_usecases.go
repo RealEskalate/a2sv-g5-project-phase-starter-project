@@ -72,8 +72,9 @@ func (u *UserUsecase) DeleteUser(ctx context.Context, id int) error {
 	return u.UserRepo.DeleteUser(ctx, id)
 }
 
-func (u *UserUsecase) AddBlog(ctx context.Context, userID int, blogID int) (domain.User, error) {
-	return u.UserRepo.AddBlog(ctx, userID, blogID)
+func (u *UserUsecase) AddBlog(ctx context.Context, userID int, blog domain.Blog) (domain.User, error) {
+
+	return u.UserRepo.AddBlog(ctx, userID, blog)
 }
 
 func (u *UserUsecase) Login(ctx context.Context, username, password string) (domain.User, error) {
@@ -128,31 +129,32 @@ func (u *UserUsecase) ResetPassword(ctx context.Context, username, password stri
 	return err
 }
 
-func (u *UserUsecase) Promote(ctx context.Context, userid int) error {
-	user, err := u.UserRepo.GetUserByID(ctx, userid)
+func (u *UserUsecase) PromoteUser(ctx context.Context, userID int) (domain.User, error) {
+	user, err := u.UserRepo.GetUserByID(ctx, userID)
 
 	if err != nil {
-		return err
+		return domain.User{}, nil
 	}
 
 	user.Role = "admin"
 
-	u.UserRepo.UpdateUser(ctx, userid, user)
-	return nil
+	u.UpdateUser(ctx, user.ID, user)
 
+	return user, nil
 }
 
-func (u *UserUsecase) Demote(ctx context.Context, userid int) error {
-	user, err := u.UserRepo.GetUserByID(ctx, userid)
+func (u *UserUsecase) DemoteUser(ctx context.Context, userID int) (domain.User, error) {
+	user, err := u.UserRepo.GetUserByID(ctx, userID)
 
 	if err != nil {
-		return err
+		return domain.User{}, nil
 	}
 
 	user.Role = "user"
 
-	u.UserRepo.UpdateUser(ctx, userid, user)
-	return nil
+	u.UpdateUser(ctx, user.ID, user)
+
+	return user, nil
 }
 
 // Email validation function

@@ -16,9 +16,6 @@ type MongoDBClient struct {
 }
 
 func NewMongoDBClient(ctx context.Context, dbName string) (*MongoDBClient, error) {
-
-
-	// 
 	err := godotenv.Load(".env")
 	if err != nil {
 		return nil, fmt.Errorf("error loading .env file: %v", err)

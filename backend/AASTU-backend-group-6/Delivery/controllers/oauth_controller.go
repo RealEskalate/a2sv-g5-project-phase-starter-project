@@ -3,7 +3,6 @@ package controllers
 import (
 	domain "blogs/Domain"
 	infrastructure "blogs/Infrastructure"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,7 +22,6 @@ func (s *OauthController) GoogleAuth(c *gin.Context) {
 
 func (s *OauthController) GoogleCallback(c *gin.Context) {
 
-
 	state := c.Query("state")
 	
 	if state != s.Config.OauthSecret {
@@ -33,9 +31,6 @@ func (s *OauthController) GoogleCallback(c *gin.Context) {
 	}
 	code := c.Query("code")
 
-	
-	
-	
 	user := s.OauthUsecase.OauthCallback(c , code)
 
 	switch data := user.(type) {

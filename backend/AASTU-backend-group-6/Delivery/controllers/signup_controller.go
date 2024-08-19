@@ -2,8 +2,10 @@ package controllers
 
 import (
 	domain "blogs/Domain"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/copier"
 )
 type SignupController struct {
 	SignupUsecase domain.SignupUseCase
@@ -11,14 +13,21 @@ type SignupController struct {
 
 func (s *SignupController) Signup(c *gin.Context) {	
 	var user domain.User
-	err := c.ShouldBindJSON(&user)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-	
-	response := s.SignupUsecase.Create(c , user)
-	HandleResponse(c , response)
+  var signupRequest domain.SignUpRequest
+  err := c.BindJSON(&signupRequest)
+  if err != nil {
+    c.JSON(400, gin.H{"error": err.Error()})
+    return
+  }
+  err = copier.Copy(&user, &signupRequest)
+  if err != nil {
+    c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to map fields"})
+    return
+  }
+
+  response := s.SignupUsecase.Create(c, user)
+  HandleResponse(c, response)
+
 }
 
 

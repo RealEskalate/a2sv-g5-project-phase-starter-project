@@ -34,6 +34,7 @@ var ErrUnableToUnLikeBlog = errors.New("unable to unlike blog")
 var ErrUnableToUnDislikeBlog = errors.New("unable to unlike blog")
 var ErrUnabletoGetBlog = errors.New("unable to get blog")
 var ErrUnabletoSearchBlogs = errors.New("unable to search blogs")
+var ErrUnableToGetComments = errors.New("unable to get comments")
 
 type BlogStorage struct {
 	db *mongo.Database
@@ -151,7 +152,33 @@ func (b *BlogStorage) GetBlogs(ctx context.Context, filterOptions []blog.FilterO
 
 // GetCommentsByBlogID implements BlogRepository.
 func (b *BlogStorage) GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[blog.Comment], error) {
-	panic("unimplemented")
+	blogIDPrimitive, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return infrastructure.PaginationResponse[blog.Comment]{}, ErrInvalidID
+	}
+
+	filter := bson.D{{Key: "blog_id", Value: blogIDPrimitive}}
+
+	findOptions := options.Find()
+	findOptions.SetSkip(int64(pagination.Limit*pagination.Page - 1))
+	findOptions.SetLimit(int64(pagination.Limit))
+	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+
+	count, err := b.db.Collection(commentCollection).CountDocuments(ctx, filter)
+	if err != nil {
+		return infrastructure.PaginationResponse[blog.Comment]{}, err
+	}
+
+	cursor, err := b.db.Collection(commentCollection).Find(ctx, filter, findOptions)
+	if err != nil {
+		log.Default().Printf("Failed to get comments by blog ID: %v", err)
+		return infrastructure.PaginationResponse[blog.Comment]{}, ErrUnableToGetComments
+	}
+
+	var comments []blog.Comment
+	cursor.All(ctx, &comments)
+
+	return infrastructure.NewPaginationResponse[blog.Comment](pagination.Limit, pagination.Page, count, comments), nil
 }
 
 // LikeBlog implements BlogRepository.

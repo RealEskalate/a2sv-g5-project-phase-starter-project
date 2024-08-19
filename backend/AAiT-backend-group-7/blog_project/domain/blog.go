@@ -43,6 +43,9 @@ type IBlogRepository interface {
 	CreateBlog(ctx context.Context, blog Blog) (Blog, error)
 	UpdateBlog(ctx context.Context, id int, blog Blog) (Blog, error)
 	DeleteBlog(ctx context.Context, id int) error
+	SearchByTitle(ctx context.Context, title string) ([]Blog, error)
+	SearchByTags(ctx context.Context, tags []string) ([]Blog, error)
+	SearchByAuthor(ctx context.Context, author string) ([]Blog, error)
 }
 
 type IBlogUsecase interface {

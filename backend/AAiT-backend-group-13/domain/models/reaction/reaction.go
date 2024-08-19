@@ -22,6 +22,7 @@ func New(config Config) *Reaction {
 
 	//returns Comment with specified fields
 	return &Reaction{
+		id:     uuid.New(),
 		isLike: config.IsLike,
 		userId: config.UserId,
 		blogId: config.BlogId,

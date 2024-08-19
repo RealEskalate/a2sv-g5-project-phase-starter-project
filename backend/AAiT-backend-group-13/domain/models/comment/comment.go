@@ -12,6 +12,7 @@ const (
 
 // Comment represents the Comment with private fields.
 type Comment struct {
+	id      uuid.UUID
 	content string
 	userId  uuid.UUID
 	blogId  uuid.UUID
@@ -32,6 +33,7 @@ func New(config Config) (*Comment, error) {
 
 	//returns Comment with specified fields
 	return &Comment{
+		id:      uuid.New(),
 		content: config.Content,
 		userId:  config.UserId,
 		blogId:  config.BlogId,
@@ -49,6 +51,10 @@ func validateContent(content string) error {
 	}
 
 	return nil
+}
+
+func (c Comment) Id() uuid.UUID {
+	return c.id
 }
 
 // Content returns comments's content

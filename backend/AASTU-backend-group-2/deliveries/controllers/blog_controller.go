@@ -17,7 +17,7 @@ type BlogController struct {
 }
 
 // Blog-controller constructor
-func NewBlogController(Blogmgr domain.BlogUsecase) *BlogController {
+func NewBlogController(Blogmgr domain.BlogUsecase, likemgr domain.LikeUsecase, commentmgr domain.CommentUsecase, dislmgr domain.DisLikeUsecase) *BlogController {
 	return &BlogController{
 		Blogusecase: Blogmgr,
 	}

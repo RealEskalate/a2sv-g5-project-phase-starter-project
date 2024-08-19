@@ -16,7 +16,17 @@ func main() {
 
 	blogrepo := repositories.NewBlogRepository(client)
 	bloguse := usecase.NewBlogUsecase(blogrepo, time.Second*300)
-	blogcont := controllers.NewBlogController(bloguse)
+
+	likerepo := repositories.NewLikeRepository(client)
+	likeuse := usecase.NewLikeUsecase(likerepo, time.Second*300)
+
+	dislrepo := repositories.NewDislikeRepository(client)
+	disluse := usecase.NewDislikeUsecase(dislrepo, time.Second*300)
+
+	commrepo := repositories.NewCommentRepository(client)
+	commuse := usecase.NewCommentUsecase(commrepo, time.Second*300)
+
+	blogcont := controllers.NewBlogController(bloguse, likeuse, commuse, disluse)
 
 	userrepo := repositories.NewUserRepository(client)
 	useruse := usecase.NewUserUsecase(userrepo, time.Second*300)

@@ -1,7 +1,9 @@
 package Utils
 
 import (
+	"blogapp/Domain"
 	"encoding/json"
+	"strings"
 	// "errors"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +30,28 @@ func StringToObjectId(str string) (primitive.ObjectID, error) {
 		return primitive.ObjectID{}, err
 	}
 	return objID, nil
+}
+
+// genreate slug from title
+func GenerateSlug(title string) string {
+	slug := title
+	slug = strings.ToLower(slug)
+	slug = strings.Replace(slug, " ", "-", -1)
+	return slug
+}
+
+// is user author of post or admin
+func IsAuthorOrAdmin(claim Domain.AccessClaims, authorID primitive.ObjectID) (bool, error) {
+
+	if claim.Role == "admin" {
+		return true, nil
+	}
+
+	if claim.ID == authorID {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 // func ExtractUser(c *gin.Context) (Domain.OmitedUser, error) {

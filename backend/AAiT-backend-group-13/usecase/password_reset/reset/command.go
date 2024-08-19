@@ -14,3 +14,12 @@ type Command struct {
 	// NewPassword is the new password for the user.
 	NewPassword string
 }
+
+
+func NewCommand(id uuid.UUID, token string, newPassword string) *Command {
+	return &Command{
+		Id:          id,
+		token:       token,
+		NewPassword: newPassword,
+	}
+}

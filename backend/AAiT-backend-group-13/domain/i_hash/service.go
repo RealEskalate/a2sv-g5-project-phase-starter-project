@@ -9,4 +9,5 @@ type Service interface {
 	// Match hashes the plainWord and compare that with hashedWord and
 	// Returns: 1. true if the hashed string matches the plain text string 2.false if they do not match. 3. An error if the comparison process fails.
 	Match(hashedWord, plainWord string) (bool, error)
+	Decode(secret string) (string, error)
 }

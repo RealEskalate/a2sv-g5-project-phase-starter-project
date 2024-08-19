@@ -1,6 +1,9 @@
 package result
 
-import "github.com/google/uuid"
+import (
+
+	"github.com/google/uuid"
+)
 
 type SignUpResult struct {
 	ID       uuid.UUID 
@@ -33,4 +36,18 @@ func NewLoginInResult(token string, refreshtoekn string) LoginInResult {
 		Token: token,
 		Refreshtoekn: refreshtoekn,
 	}
+}
+
+
+type ValidateEmailResult struct {
+	Token string 
+	Refreshtoken string
+}
+
+
+func NewValidateEmailResult(token string, refreshtoken string) ValidateEmailResult {
+		return ValidateEmailResult{
+			Token:        token,
+			Refreshtoken: refreshtoken,
+		}
 }

@@ -4,9 +4,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BarChartComponent } from "./components/BarChartComponent";
 import { TableComponent } from "./components/TableComponent";
+import TableCard from "./components/TableComponentMobile";
 import Card from "../components/common/card";
 import columns from "./components/columns";
-import TableCard from "./components/TableComponentMobile";
 import Chip_card1 from "@/public/assets/image/Chip_Card1.png";
 import Chip_card2 from "@/public/assets/image/Chip_Card2.png";
 import Chip_card3 from "@/public/assets/image/Chip_Card3.png";
@@ -25,7 +25,7 @@ const creditCardColor = {
     grayCircleColor: false,
   },
   cardThree: {
-    cardBgColor: "bg-white rounded-3xl textblack",
+    cardBgColor: "bg-white rounded-3xl text-black",
     bottomBgColor: "",
     imageCreditCard: Chip_card3,
     grayCircleColor: true,
@@ -42,11 +42,10 @@ const Transactions: React.FC = () => {
       try {
         const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions', {
           headers: {
-            Authorization: `Bearer your_actual_bearer_token_here`, // Replace with your actual token
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`, // Use environment variable
           },
         });
-        
-        // Transform API data to match the format expected by the table
+
         const transformedData = response.data.data.map((item: any) => ({
           column1: item.description,
           column2: item.transactionId,
@@ -126,12 +125,13 @@ const Transactions: React.FC = () => {
 
         <div className="hidden lg:flex flex-col w-full">
           {/* Render TableComponent for desktop and tablet */}
-          {error ? <div>{error}</div> : <TableComponent columns={columns} data={data} />}
+          {error ? <div>{error}</div> : 
+          <TableComponent columns={columns} data={data} />}
         </div>
 
         <div className="lg:hidden flex flex-col w-full">
           {/* Render TableCard for mobile */}
-          <TableCard />
+          <TableCard data={data} />
         </div>
       </div>
     </div>

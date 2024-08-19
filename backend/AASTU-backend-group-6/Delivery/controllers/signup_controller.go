@@ -14,17 +14,22 @@ type SignupController struct {
 
 func (s *SignupController) Signup(c *gin.Context) {
 	var user domain.User
-	var signupRequest domain.SignUpRequest
-	err := c.BindJSON(&signupRequest)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-	err = copier.Copy(&user, &signupRequest)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to map fields"})
-		return
-	}
+  var signupRequest domain.SignUpRequest
+  err := c.BindJSON(&signupRequest)
+  if err != nil {
+    c.JSON(400, gin.H{"error": err.Error()})
+    return
+  }
+  err = copier.Copy(&user, &signupRequest)
+  if err != nil {
+    c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to map fields"})
+    return
+  }
+
+  response := s.SignupUsecase.Create(c, user)
+  HandleResponse(c, response)
+
+}
 
 	response := s.SignupUsecase.Create(c, user)
 	HandleResponse(c, response)

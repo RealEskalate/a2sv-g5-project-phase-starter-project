@@ -33,9 +33,9 @@ func (u *SignupUseCase) Create(c context.Context , user domain.User) interface{}
 	user.ID = idofNumber
 
 	// check if user already exists
-	user , err := u.SignupRepository.FindUserByEmail(ctx , user.Email)
+	_ , err := u.SignupRepository.FindUserByEmail(ctx , user.Email)
 	
-	if err == nil && user.Verified  {
+	if err == nil {
 		return &domain.ErrorResponse{Message: "User already exists", Status: 400}
 	}
 	// hash the password

@@ -24,6 +24,7 @@ type Config struct {
 	ClientSecret		   string
 	RedirectURL			   string
 	OauthSecret			   string
+	GeminiAPIKey		   string
 
 }
 
@@ -49,6 +50,7 @@ func LoadEnv() (*Config, error) {
 	clientSecret	:= os.Getenv("CLIENT_SECRET")
 	redirectURL	:= os.Getenv("REDIRECT_URI")
 	oauthSecret	:= os.Getenv("OAUTH_STATE_STRING")
+	geminiAPIKey := os.Getenv("GEMINI_API_KEY")
 	
 
 
@@ -93,6 +95,7 @@ func LoadEnv() (*Config, error) {
 		ClientSecret:			clientSecret,
 		RedirectURL:			redirectURL,
 		OauthSecret:			oauthSecret,
+		GeminiAPIKey:			geminiAPIKey,
 	}
 
 	return config, nil

@@ -35,4 +35,7 @@ func Router(server *gin.Engine, config *infrastructure.Config, DB mongo.Database
 
 	NewOauthRoute(config, DB, userRouter)
 
+	aiRoute := server.Group("")
+	NewAIRoute(config, DB, aiRoute)
+	
 }

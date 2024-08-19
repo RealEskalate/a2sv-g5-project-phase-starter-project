@@ -12,7 +12,7 @@ type IUserUseCase interface {
 	GetUserByID(id uuid.UUID) (*domain.User, error)
 	UpdateUser(user *domain.User) error
 	DeleteUser(id uuid.UUID) error
-	PromoteUser(id uuid.UUID, makeAdmin bool) (*domain.User, error)
+	PromoteUser(id uuid.UUID, makeAdmin bool) error
 	// GetUserByName(name string) (*domain.User, error)
 }
 
@@ -36,7 +36,7 @@ func (u *UserUseCase) GetUserByID(id uuid.UUID) (*domain.User, error) {
 	return u.userRepo.GetUserByID(id)
 }
 
-func (u *UserUseCase) UpdateUser(user *domain.User) (*domain.User, error) {
+func (u *UserUseCase) UpdateUser(user *domain.User) error {
 	return u.userRepo.UpdateUser(user)
 }
 

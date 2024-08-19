@@ -34,8 +34,8 @@ type BlogUseCase interface {
 	DisLike(blogId string , userID string) Error
 }
 
-type BlogAssisstantUseCase interface {
-	GenerateBlog(c *gin.Context)
-	EnhanceBlog(c *gin.Context)
-	SuggestBlog(c *gin.Context)
+type BlogAssistantUseCase interface {
+	GenerateBlog(keywords []string, tone, audience string) (string, Error)
+	EnhanceBlog(content, command string) (string, Error)
+	SuggestBlog(industry string) ([]string, Error)
 }

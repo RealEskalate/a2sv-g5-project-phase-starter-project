@@ -33,4 +33,10 @@ func (userController *UserController) Register(cxt *gin.Context) {
 
 func (userController *UserController) Login(c *gin.Context) {
   var loginInfo struct{username string `json:"username" binding="required"`, password string`json:"username" binding="required"`,}
+  errUnmarshal := cxt.ShouldBind(&loginInfo)
+	if errUnmarshal != nil {
+		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errUnmarshal.Error()})
+		return
+	}
+  errLogin
 }

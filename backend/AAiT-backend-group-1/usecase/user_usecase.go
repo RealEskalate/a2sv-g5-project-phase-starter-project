@@ -21,17 +21,11 @@ func NewUserUseCase(userRespository domain.UserRepository) UserUseCase {
 	}
 }
 
-var (
-	timeoutStr = os.Getenv("CONTEXT_TIMEOUT")
-	timeout    int64
-	err        error
-)
-
-timeout, err = strconv.ParseInt(timeoutStr, 10, 64)
+func (userUC *UserUseCase) Register(cxt *gin.Context, user *domain.User) domain.Error {
+	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
 	}
-func (userUC *UserUseCase) Register(cxt *gin.Context, user *domain.User) domain.Error {
 	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
 	defer cancel()
 	errValidity := user.Validate()
@@ -44,10 +38,21 @@ func (userUC *UserUseCase) Register(cxt *gin.Context, user *domain.User) domain.
 	return nil
 }
 
-func (userUC *UserUseCase) Login(context context.Context, username, password string) (string, domain.Error) {
-  
+func (userUC *UserUseCase) Login(cxt context.Context, username, password string) (string, domain.Error) {
+	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
+	if errTimeout != nil {
+		return "", &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
+	}
+
+	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
+	defer cancel()
+
 }
 func (userUC *UserUseCase) ForgotPassword(context context.Context, email string) domain.Error {
+	existingUser, err := userUC.userRepo.FindByEmail(context, email)
+	if err != nil {
+		return err
+	}
 
 }
 func (userUC *UserUseCase) Logout(context context.Context, token string) domain.Error {

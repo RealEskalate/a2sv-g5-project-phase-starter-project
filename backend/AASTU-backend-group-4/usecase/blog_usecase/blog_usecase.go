@@ -7,13 +7,17 @@ import (
 )
 
 type BlogUsecase struct {
-	repo           domain.BlogRepository
+	blogRepo           domain.BlogRepository
+	commentRepo 	  domain.CommentRepository
+	likeRepo 		  domain.LikeRepository
 	contextTimeout time.Duration
 }
 
-func NewBlogUsecase(BlogRepository domain.BlogRepository, timeout time.Duration) domain.BlogUsecase {
+func NewBlogUsecase(blogRepository domain.BlogRepository, commentRepository domain.CommentRepository, likeRepository domain.LikeRepository, timeout time.Duration) *BlogUsecase {
 	return &BlogUsecase{
-		repo:           BlogRepository,
+		blogRepo:           blogRepository,
+		commentRepo: commentRepository,
+		likeRepo: likeRepository,
 		contextTimeout: timeout,
 	}
 }

@@ -7,15 +7,15 @@ import (
 )
 
 type Like struct {
-    ID     primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-    BlogID primitive.ObjectID `bson:"blog_id" json:"blog_id"`
-    UserID primitive.ObjectID `bson:"user_id" json:"user_id"`
+	ID     primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	BlogID primitive.ObjectID `bson:"blog_id" json:"blog_id"`
+	UserID primitive.ObjectID `bson:"user_id" json:"user_id"`
 }
 
 type LikeRepository interface {
-    GetLikesCount(ctx context.Context, blogID string) (int, error)
+	GetLikesCount(ctx context.Context, blogID primitive.ObjectID) (int, error)
 
-    // CreateLike(ctx context.Context, like Like) error
-    // DeleteLike(ctx context.Context, likeID string) error
-    // IsLikedByUser(ctx context.Context, blogID, userID string) (bool, error)
+	// CreateLike(ctx context.Context, like Like) error
+	// DeleteLike(ctx context.Context, likeID string) error
+	// IsLikedByUser(ctx context.Context, blogID, userID string) (bool, error)
 }

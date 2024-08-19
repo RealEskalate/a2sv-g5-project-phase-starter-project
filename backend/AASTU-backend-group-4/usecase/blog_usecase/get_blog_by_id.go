@@ -13,5 +13,5 @@ func (uc *BlogUsecase) GetBlogByID(ctx context.Context, id string) (*domain.Blog
         return nil, err
     }
 
-    return uc.repo.GetBlogByID(context.Background(), objID)
+    return uc.blogRepo.GetBlogByID(context.Background(), objID)
 }

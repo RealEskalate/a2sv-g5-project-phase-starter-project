@@ -15,7 +15,7 @@ type Comment struct {
 	CreatedAt time.Time          `bson:"created_at" json:"created_at"`
 }
 type CommentRepository interface {
-	GetCommentsCount(ctx context.Context, blogID string) (int, error)
+	GetCommentsCount(ctx context.Context, blogID primitive.ObjectID) (int, error)
 	// CreateComment(ctx context.Context, comment Comment) error
 	// GetCommentsByBlogID(ctx context.Context, blogID string, page, limit int) ([]Comment, error)
 	// DeleteComment(ctx context.Context, commentID string) error

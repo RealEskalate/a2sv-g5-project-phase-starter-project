@@ -33,6 +33,10 @@ func (lc *LoginController) Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Invalid credentials"})
 		return
 	}
+	if !user.Verified{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "User not verified"})
+		return
+	}
 
 	accessToken, err := lc.LoginUsecase.CreateAccessToken(&user, lc.Env.AccessTokenSecret, lc.Env.AccessTokenExpiryHour)
 	if err != nil {

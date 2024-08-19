@@ -1,4 +1,3 @@
-import React from 'react';
 import Image from 'next/image';
 
 interface CreditCardProps {
@@ -21,7 +20,7 @@ const DesktopCreditCard: React.FC<CreditCardProps> = ({ bgColor, textColor }) =>
       </div>
 
       {/* Middle Section */}
-      <div className="flex justify-between w-[90%] mt-2">
+      <div className="flex justify-between w-auto mt-2">
         <div className="ml-3 p-2">
           <span className={`text-[10px] md:text-[12px] ${textColor}`}>CARD HOLDER</span>
           <span className={`block text-[13px] md:text-[15px] font-bold ${textColor}`}>Tekola Chane</span>

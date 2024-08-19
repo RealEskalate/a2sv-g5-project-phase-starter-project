@@ -181,7 +181,7 @@ func (bu *blogUsecase) FilterBlogsByPopularity(ctx context.Context, popularity s
 	return blogs, nil
 }
 
-}
+
 
 func (bu *blogUsecase) TrackView(ctx context.Context, id primitive.ObjectID) error {
     return bu.blogRepository.IncrementViews(ctx, id)

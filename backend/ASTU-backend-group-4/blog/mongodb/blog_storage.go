@@ -20,6 +20,7 @@ const (
 )
 
 var ErrUnableToCreateBlog = errors.New("unable to create blog")
+var ErrUnableToUpdateBlog = errors.New("unable to update blog")
 var ErrUnableToCreatComment = errors.New("unable to create comment")
 var ErrInvalidID = errors.New("invalid ID")
 var ErrUnableToDeleteBlog = errors.New("unable to delete blog")
@@ -179,7 +180,7 @@ func (b *BlogStorage) UpdateBlog(ctx context.Context, id string, blog blog.Blog)
 	result, err := b.db.Collection(blogCollection).ReplaceOne(ctx, filter, blog)
 	if err != nil {
 		log.Default().Printf("Failed to update blog: %v", err)
-		return ErrUnableToCreateBlog
+		return ErrUnableToUpdateBlog
 	}
 
 	if result.ModifiedCount == 0 {

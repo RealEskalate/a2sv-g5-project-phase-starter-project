@@ -15,7 +15,7 @@ import { TransactionType } from "@/app/Redux/slices/TransactionSlice";
 const Center = () => {
   const { data: session } = useSession();
   const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyMzkxNjcyMiwiZXhwIjoxNzI0MDAzMTIyfQ.p9aXcFbPCTl88kFVBDa5JuDj03jg1KEjfo82GCAPY2kQo8c9x4gwNNYai4isHVZM";
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyNDA1Mjk3OCwiZXhwIjoxNzI0MTM5Mzc4fQ.feou6fRicLmeyDDDRK1yypbPRWy7RESdJF7IH-XIF4jC2RfYTHLr7KxO01EHEWV-";
 
   // Update initial card and tran data using the custom hook
   useCardDispatch(accessToken);
@@ -28,7 +28,7 @@ const Center = () => {
   const balanceHist: TransactionType[] = useAppSelector(
     (state) => state.transactions.balanceHist
   );
-
+  console.log(CardData, "Card data")
   return (
     <>
       <section className="flex gap-6 sm:flex-col lg:flex-row">

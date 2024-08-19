@@ -11,17 +11,17 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-type jwtService struct {
+type JwtService struct {
 	Env *config.Env
 }
 
 func NewJwtService(env *config.Env) interfaces.JwtService {
-	return &jwtService{
+	return &JwtService{
 		Env: env,
 	}
 }
 
-func (j *jwtService) CreateAccessToken(user models.User, expTim int) (accessToken string, err error) {
+func (j *JwtService) CreateAccessToken(user models.User, expTim int) (accessToken string, err error) {
 	expTime := time.Now().Add(time.Minute * time.Duration(expTim)).Unix()
 	secret := []byte(j.Env.JWT_SECRET)
 
@@ -44,7 +44,7 @@ func (j *jwtService) CreateAccessToken(user models.User, expTim int) (accessToke
 	return t, err
 }
 
-func (j *jwtService) CreateRefreshToken(user models.User, expTim int) (refreshToken string, err error) {
+func (j *JwtService) CreateRefreshToken(user models.User, expTim int) (refreshToken string, err error) {
 	// Set the expiration time for the refresh token, e.g., 7 days
 	expTime := time.Now().Add(time.Hour * time.Duration(expTim)).Unix()
 	secret := []byte(j.Env.JWT_SECRET)
@@ -70,7 +70,7 @@ func (j *jwtService) CreateRefreshToken(user models.User, expTim int) (refreshTo
 	return refreshToken, nil
 }
 
-func (j *jwtService) ValidateToken(tokenStr string) (*models.JWTCustome, error) {
+func (j *JwtService) ValidateToken(tokenStr string) (*models.JWTCustome, error) {
 	jwtSecret := []byte(j.Env.JWT_SECRET)
 
 	token, err := jwt.ParseWithClaims(tokenStr, &models.JWTCustome{}, func(token *jwt.Token) (interface{}, error) {
@@ -92,7 +92,7 @@ func (j *jwtService) ValidateToken(tokenStr string) (*models.JWTCustome, error) 
 	return claims, nil
 }
 
-func (j *jwtService) ValidateAuthHeader(authHeader string) ([]string, error) {
+func (j *JwtService) ValidateAuthHeader(authHeader string) ([]string, error) {
 	if authHeader == "" {
 		return nil, fmt.Errorf("authorization header is required")
 	}
@@ -105,7 +105,7 @@ func (j *jwtService) ValidateAuthHeader(authHeader string) ([]string, error) {
 	return authParts, nil
 }
 
-func (j *jwtService) GetClaims(authHeader string) (*models.JWTCustome, error) {
+func (j *JwtService) GetClaims(authHeader string) (*models.JWTCustome, error) {
 
 	// Validate and parse the Authorization header
 	authParts, err := j.ValidateAuthHeader(authHeader)

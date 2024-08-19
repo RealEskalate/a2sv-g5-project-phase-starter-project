@@ -14,6 +14,9 @@ type Env struct {
 	SMTP_PASSWORD     string `mapstructure:"SMTP_PASSWORD"`
 	SMTP_SENDER_EMAIL string `mapstructure:"SMTP_SENDER_EMAIL"`
 
+	SERVER_ADDRESS  string `mapstructure:"SERVER_ADDRESS"`
+	CONTEXT_TIMEOUT int    `mapstructure:"CONTEXT_TIMEOUT"`
+
 	ACCESS_TOKEN_EXPIRY_HOUR  int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
 	REFRESH_TOKEN_EXPIRY_HOUR int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
 	ACCESS_TOKEN_SECRET       string `mapstructure:"ACCESS_TOKEN_SECRET"`

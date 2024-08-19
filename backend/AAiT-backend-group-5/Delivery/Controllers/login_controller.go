@@ -23,42 +23,20 @@ func NewLoginController(loginUsecase interfaces.LoginUsecase, env *config.Env) *
 }
 
 func (loginController *LoginController) Login(c *gin.Context) {
-	var request dtos.LoginRequest
+	var loginRequest dtos.LoginRequest
 
 	// attempt to bind the json payload
-	err := c.ShouldBind(&request)
+	err := c.ShouldBind(&loginRequest)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, errors.New("invalid request"))
 		return
 	}
 
 	// envode Login_Usecase
-	user, e := loginController.LoginUsecase.LoginUser(c, request.UsernameOrEmail, request.Password)
+	loginResponse, e := loginController.LoginUsecase.LoginUser(c, loginRequest)
 	if e != nil {
 		c.JSON(e.Code, e.Error())
 		return
-	}
-
-	accessTokenExp := loginController.Env.ACCESS_TOKEN_EXPIRY_HOUR
-	refreshTokenExp := loginController.Env.REFRESH_TOKEN_EXPIRY_HOUR
-
-	// generate access token
-	accessToken, e := loginController.LoginUsecase.GenerateAccessToken(user, accessTokenExp)
-	if e != nil {
-		c.JSON(e.Code, e.Error())
-		return
-	}
-
-	// generate refresh token
-	refreshToken, e := loginController.LoginUsecase.GenerateRefreshToken(user, refreshTokenExp)
-	if e != nil {
-		c.JSON(e.Code, e.Error())
-		return
-	}
-
-	loginResponse := dtos.LoginResponse{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
 	}
 
 	c.JSON(http.StatusOK, loginResponse)

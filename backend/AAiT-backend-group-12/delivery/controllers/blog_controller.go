@@ -56,7 +56,7 @@ func (bc *BlogController) UpdateBlogHandler(c *gin.Context) {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, domain.Response{"message": "created successfuly"})
+	c.JSON(http.StatusNoContent, domain.Response{"message": "updated successfuly"})
 }
 
 // DeleteBlogHandler handles the HTTP DELETE request to delete a blog post.
@@ -68,7 +68,7 @@ func (bc *BlogController) DeleteBlogHandler(c *gin.Context) {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, domain.Response{"message": "deleted successfuly"})
+	c.JSON(http.StatusNoContent, domain.Response{"message": "deleted successfuly"})
 }
 
 // GetBlogHandler handles the HTTP GET request to retrieve a list of blog posts based on filters.

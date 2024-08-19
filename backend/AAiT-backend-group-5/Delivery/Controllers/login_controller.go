@@ -22,22 +22,22 @@ func NewLoginController(loginUsecase interfaces.LoginUsecase, env *config.Env) *
 	}
 }
 
-func (loginController *LoginController) Login(c *gin.Context) {
+func (loginController *LoginController) Login(ctx *gin.Context) {
 	var loginRequest dtos.LoginRequest
 
 	// attempt to bind the json payload
-	err := c.ShouldBind(&loginRequest)
+	err := ctx.ShouldBind(&loginRequest)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, errors.New("invalid request"))
+		ctx.JSON(http.StatusBadRequest, errors.New("invalid request"))
 		return
 	}
 
 	// envode Login_Usecase
-	loginResponse, e := loginController.LoginUsecase.LoginUser(c, loginRequest)
+	loginResponse, e := loginController.LoginUsecase.LoginUser(ctx, loginRequest)
 	if e != nil {
-		c.JSON(e.Code, e.Error())
+		ctx.JSON(e.Code, e.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, loginResponse)
+	ctx.JSON(http.StatusOK, loginResponse)
 }

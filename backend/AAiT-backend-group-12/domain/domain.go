@@ -44,8 +44,8 @@ type User struct {
 
 type Blog struct {
 	ID         string    `json:"id"`
-	Title      string    `json:"title"`
-	Content    string    `json:"content"`
+	Title      string    `json:"title" validate:"required,min=2"`
+	Content    string    `json:"content" validate:"required,min=6"`
 	Username   string    `json:"username"`
 	Tags       []string  `json:"tags"`
 	CreatedAt  time.Time `json:"created_at"`

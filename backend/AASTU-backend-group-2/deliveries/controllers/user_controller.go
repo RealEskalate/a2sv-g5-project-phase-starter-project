@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"blog_g2/domain"
+	"net/http"
+	"strconv"
 	"blog_g2/infrastructure"
 	"net/mail"
 	"time"
@@ -80,6 +82,41 @@ func (uc *UserController) LoginUser(c *gin.Context) {
 // ForgotPassword is a controller method to reset a user's password
 func (uc *UserController) ForgotPassword(c *gin.Context) {
 
+	var info domain.RestRequest
+	if err := c.BindJSON(&info); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err := uc.Userusecase.ForgotPassword(c, info.Email)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusAccepted, gin.H{"message": "email succefully sent to the email provided"})
+}
+
+func (uc *UserController) ResetPassword(c *gin.Context) {
+
+	token := c.Query("token")
+	if token == "" {
+		c.JSON(http.StatusBadRequest, "Token is required")
+		return
+	}
+	var info domain.RestRequest
+	if err := c.BindJSON(&info); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err := uc.Userusecase.ResetPassword(c, token, info.NewPassword)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusAccepted, gin.H{"message": "password have been reset succefully"})
 }
 
 // LogoutUser is a controller method to logout a user
@@ -89,5 +126,30 @@ func (uc *UserController) LogoutUser(c *gin.Context) {
 
 // PromoteDemoteUser is a controller method to promote or demote a user
 func (uc *UserController) PromoteDemoteUser(c *gin.Context) {
+	ID := c.Query("id")
+	if ID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "id is empty"})
+		return
+	}
+
+	isAdminstr := c.Query("isadmin")
+	if isAdminstr == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "isAdmin is empty"})
+		return
+	}
+
+	isAdmin, err := strconv.ParseBool(isAdminstr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = uc.Userusecase.PromoteDemoteUser(c, ID, isAdmin)
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusAccepted, gin.H{"message": "user admin privilege succesfully updated"})
 
 }

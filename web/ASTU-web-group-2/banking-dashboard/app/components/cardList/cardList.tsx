@@ -1,173 +1,125 @@
-'use client'
-import React from "react";
+'use client';
+import { useGetAllCardInfoQuery, useLazyRetiriveCardInfoQuery } from "@/lib/service/CardServices";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-const  icons = [
+
+const icons = [
   "/assets/cardlist/card1.svg",
- "/assets/cardlist/card2.svg",
- "/assets/cardlist/card3.svg",
-
-]
-
-interface Props {
-  cardType: string,
-  cardHolder : string;
-  cardNumber: string,
-
-
-
-}
-const recentlistitems = [
-  
-
-     {icon: "/assets/cardlist/card1.svg" ,
-    col1: {
-    
-      sub: "Secondary"
-    },
-    col2: {
-      sub: "DBL-Bank"
-    },
-    col3: {
-  
-      sub: "**** **** 5600"
-    },
-    col4: {
-  
-      sub: "William "
-    },
-    col5: {
-      des: "View Detail",
-    }},
-    {icon: "/assets/cardlist/card2.svg" ,
-      col1: {
-        des: "Card Type",
-        sub: "Secondary"
-      },
-      col2: {
-        des: "Bank ",
-        sub: "DBL-Bank"
-      },
-      col3: {
-        des: "Card Numver",
-        sub: "**** **** 5600"
-      },
-      col4: {
-        des: "Namain Card",
-        sub: "William "
-      },
-      col5: {
-        des: "View Detail",
-      }},
-      {icon: "/assets/cardlist/card3.svg" ,
-        col1: {
-          des: "Card Type",
-          sub: "Secondary"
-        },
-        col2: {
-          des: "Bank ",
-          sub: "DBL-Bank"
-        },
-        col3: {
-          des: "Card Numver",
-          sub: "**** **** 5600"
-        },
-        col4: {
-          des: "Namain Card",
-          sub: "William "
-        },
-       },
-   
-   
-  
-
+  "/assets/cardlist/card2.svg",
+  "/assets/cardlist/card3.svg",
 ];
 
-const CardList =  async  () => {
+interface Card {
+  id: string;
+  cardType: string;
+  cardHolder: string;
+}
+
+interface FullCard extends Card {
+  cardNumber: string;
+  bank?: string; // Optional bank property
+}
+
+const CardList = () => {
   const session = useSession();
   const accessToken = session.data?.user.accessToken || "";
+  
+  const { data: cardsData, isLoading, error } = useGetAllCardInfoQuery(accessToken);
+  const [cardDetails, setCardDetails] = useState<FullCard[]>([]);
+  const [retrieveCardInfo, { data: cardDetailsData }] = useLazyRetiriveCardInfoQuery();
 
-  try {
-    const response =  await fetch("https://bank-dashboard-6acc.onrender.com/cards", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+  useEffect(() => {
+    const fetchFullCardDetails = async () => {
+      if (cardsData && cardsData.length > 0) {
+        const limitedData = cardsData.slice(0, 3); // Limit to the first 3 cards
 
-    if (!response.ok) {
-      return <div>Error while fetching data</div>;
-    }
+        const fullCardsPromises = limitedData.map(async (card: Card) => {
+          const { data: cardDetails } = await retrieveCardInfo({ token: accessToken, id: card.id });
 
-    const data =  response.json();
-    console.log(data);}
-    
-    catch(error){
-      console.log(error)
-    }
+          return {
+            ...card,
+            cardNumber: cardDetails?.cardNumber || "",
+            bank: cardDetails?.bank || "DBM Bank", // Default bank value
+          };
+        });
 
+        const fullCards = await Promise.all(fullCardsPromises);
+        setCardDetails(fullCards);
+        console.log("Fetched full cards:", fullCards);
+      }
+    };
+
+    fetchFullCardDetails();
+  }, [cardsData, accessToken, retrieveCardInfo]);
+
+  if (isLoading) {
+    return <div>Loading cards...</div>;
+  }
+
+  if (error) {
+    return <div>Error fetching cards</div>;
+  }
+
+  if (!cardsData || cardsData.length === 0) {
+    return <div>No cards available</div>;
+  }
+
+  const displayedCards = cardDetails.length > 0 ? cardDetails.slice(0, 3) : [];
 
   return (
-    <div className=" sm:w-[475px] md:w-[730px]  ">
-      {recentlistitems.map((item, index) => (
-        <div key={index} className="grid grid-flow-col h-[69px] lg:h-[90px] justify-between mb-[10px] sm:mb-[15px] items-center pl-[20px] bg-white rounded-3xl grid-col-12">
-          
+    <div className="sm:w-[475px] md:w-[730px]">
+      {displayedCards.length === 0 ? (
+        <div>No card details available</div>
+      ) : (
+        displayedCards.map((card: FullCard, index) => (
+          <div
+            key={card.id}
+            className="grid grid-flow-col h-[69px] lg:h-[90px] justify-between mb-[10px] sm:mb-[15px] items-center pl-[20px] bg-white rounded-3xl grid-col-12"
+          >
             <div className="col-span-1">
-              <img
-                src={item.icon}
-                className="lg:w-[60px] w-[45px]"
-              />
+              <img src={icons[index]} className="lg:w-[60px] w-[45px]" alt={`Card ${index}`} />
             </div>
-            
-            <div className="col-span-2 ">
-              <p className="text-[14px] md:[text-[12px]] lg:text-[16px] text-[#333B69] ">
-              Card Type
+            <div className="col-span-2">
+              <p className="text-[14px] md:[text-[12px]] lg:text-[16px] text-[#333B69]">
+                Card Type
               </p>
               <span className="text-[12px] sm:text-[15px] text-[#718EBF]">
-                {item.col1.sub}
+                {card.cardType}
               </span>
             </div>
-      
-            <div className=" col-span-[2.5] ">
+            <div className="col-span-[2.5]">
               <p className="text-[14px] md:[text-[12px]] lg:text-[16px] text-[#333B69]">
                 Bank
               </p>
-              <span className="text-[12px]  md:[text-[12px]] lg:text-[16px] text-[#718EBF]">
-                {item.col2.sub}
+              <span className="text-[12px] md:[text-[12px]] lg:text-[16px] text-[#718EBF]">
+                {card.bank}
               </span>
             </div>
-
-
-
-            <div className=" hidden col-span-[2.5] sm:block ">
-              <p className="text-[14px] md:text-[12px]  lg:text-[16px] text-[#333B69] font-medium">
+            <div className="hidden col-span-[2.5] sm:block">
+              <p className="text-[14px] md:text-[12px] lg:text-[16px] text-[#333B69] font-medium">
                 Card Number
               </p>
               <span className="text-[12px] sm:text-[15px] text-[#718EBF]">
-                {item.col3.sub}
+                {'*'.repeat(4)} {'*'.repeat(4)} {card.cardNumber.slice(-4)}
               </span>
             </div>
-
-
-            <div className=" hidden col-span-2 sm:block ">
+            <div className="hidden col-span-2 sm:block">
               <p className="text-[14px] sm:text-[16px] text-[#333B69] font-medium">
-                Nomain Card
+                Card Holder
               </p>
               <span className="text-[12px] sm:text-[15px] text-[#718EBF]">
-                {item.col4.sub}
+                {card.cardHolder}
               </span>
             </div>
-    
-            <div className=" col-span-2 ">
-              <p className='text-[14px] sm:text-[16px] text-[#1814F3] font-medium ' >
-                <Link href = "#">
-                View Detail
-                </Link>
+            <div className="col-span-2">
+              <p className="text-[14px] sm:text-[16px] text-[#1814F3] font-medium">
+                <Link href="#">View Detail</Link>
               </p>
             </div>
-      
-        </div>
-      ))}
+          </div>
+        ))
+      )}
     </div>
   );
 };

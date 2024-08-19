@@ -5,6 +5,7 @@ import { userApi } from "./service/UserService";
 import { loanApi } from "./service/LoanService";
 import { companyApi } from "./service/CompanyService";
 import { investmentApi } from "./service/InvestmentServices";
+import { CreditCardInfoApi } from "./service/CardServices";
 
 export const store = () => {
   return configureStore({
@@ -14,6 +15,7 @@ export const store = () => {
       [userApi.reducerPath]: userApi.reducer,
       [loanApi.reducerPath]: loanApi.reducer,
       [companyApi.reducerPath]: companyApi.reducer,
+      [CreditCardInfoApi.reducerPath]: CreditCardInfoApi.reducer
       // Add your reducer path this way
     },
     middleware: (getDefaultMiddleWare) =>
@@ -22,7 +24,9 @@ export const store = () => {
         bankApi.middleware,
         userApi.middleware,
         loanApi.middleware,
-        companyApi.middleware
+        companyApi.middleware,
+        CreditCardInfoApi.middleware
+
       ), // Add the middleware beside the transactionAPi.middleware by adding a comma
   });
 };

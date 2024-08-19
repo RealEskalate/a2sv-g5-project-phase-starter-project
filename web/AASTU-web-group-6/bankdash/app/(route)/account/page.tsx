@@ -4,11 +4,9 @@ import LastTransList from "@/app/components/Accounts/LastTransPa";
 import { DebitCreditOver } from "../../components/Accounts/DebitCreditOver";
 import InvoiceCard from "../../components/Accounts/InvoiceCard";
 import VisaCard from "@/app/components/Card/VisaCard";
-import { useSession } from "next-auth/react";
 import { Card as CardType } from "@/app/Redux/slices/cardSlice";
 import { useAppSelector } from "@/app/Redux/store/store";
 export default function Home() {
-  const { data: session } = useSession();
 
   const CardData: CardType[] = useAppSelector((state) => state.cards.cards);
 

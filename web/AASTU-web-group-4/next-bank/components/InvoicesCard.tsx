@@ -53,7 +53,9 @@ const TransactionList: React.FC = () => {
           <Image 
             src={transaction.icon} 
             alt={transaction.name} 
-            className="w-6 h-6" 
+            // className="w-6 h-6" 
+            width={24}  // Set actual width
+            height={24} // Set actual height
           />
         </div>
         <div className="flex-1 px-4">

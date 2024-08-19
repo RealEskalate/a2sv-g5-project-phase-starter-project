@@ -24,6 +24,8 @@ type SignUpConfig struct {
 	emailService iemail.Service 
 	
 }
+// Ensure Handler implements icmd.IHandler
+var _ icommand.IHandler[*Command, *blogmodel.Blog] = &Handler{}
 
 func NewSignUpHandler(config SignUpConfig) *SignUpHandler {
 	return &SignUpHandler{

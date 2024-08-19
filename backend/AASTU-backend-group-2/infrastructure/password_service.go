@@ -1,9 +1,10 @@
 package infrastructure
 
 import (
+	"time"
+	"github.com/dchest/passwordreset"
 	"fmt"
 	"unicode"
-
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -20,6 +21,34 @@ func PasswordHasher(password string) (string, error) {
 	}
 	return string(hash), nil
 }
+
+// Handels forgot password
+func ForgotPasswordHandler(email string) error {
+	secretKey := DotEnvLoader("Reset_Password")
+
+	token := passwordreset.NewToken(email, time.Hour*1, []byte(secretKey), []byte(secretKey))
+	if err := sendResetEmail(email, token); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+
+func VerifyToken(token string) (string, error) {
+	secretKey := DotEnvLoader("Reset_Password")
+	tokenDataFunc := func(email string) ([]byte, error) {
+		return []byte(email), nil
+	}
+
+	email, err := passwordreset.VerifyToken(token, tokenDataFunc, []byte(secretKey))
+	if err != nil {
+		return "", err
+	}
+
+	return email, nil
+}
+
 func PasswordValidator(password string) error {
 
 	var (
@@ -65,5 +94,4 @@ func PasswordValidator(password string) error {
 	}
 
 	return nil
-
 }

@@ -15,6 +15,12 @@ require (
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
+	github.com/creack/pty v1.1.21 // indirect
+	github.com/dchest/authcookie v0.0.0-20190824115100-f900d2294c8e // indirect
+	github.com/dchest/passwordreset v0.0.0-20190826080013-4518b1f41006 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/fatih/color v1.16.0 // indirect
+	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
@@ -45,6 +51,8 @@ require (
 	golang.org/x/sys v0.23.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
+	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -1,6 +1,8 @@
 package router
 
 import (
+	"os"
+
 	"aait.backend.g10/delivery/controllers"
 	"aait.backend.g10/repositories"
 	"aait.backend.g10/usecases"
@@ -10,7 +12,7 @@ import (
 
 func NewRouter(db *mongo.Database) {
 	router := gin.Default()
-	blogRepo := repositories.NewBlogRepository(db, "blogs")
+	blogRepo := repositories.NewBlogRepository(db, os.Getenv("BLOG_COLLECTION"))
 	blogUseCase := usecases.NewBlogUseCase(blogRepo)
 	blogController := controllers.NewBlogController(blogUseCase)
 
@@ -22,5 +24,5 @@ func NewRouter(db *mongo.Database) {
 	router.PATCH("/blogs/:id/view", blogController.AddView)
 	router.GET("/blogs/search", blogController.SearchBlogs)
 
-	router.Run(":8080")
+	router.Run(":"+os.Getenv("PORT"))
 }

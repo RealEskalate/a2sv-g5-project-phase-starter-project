@@ -230,14 +230,14 @@ func (b BlogRepository) GetMyBlogs(user_id string, pageNo int64, pageSize int64)
 // SearchBlogByTitleAndAuthor implements domain.BlogRepository.
 func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, pageNo int64, pageSize int64) ([]domain.Blog, domain.Pagination, error) {
 	timeOut := b.env.ContextTimeout
-	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut) * time.Second)
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
 	defer cancel()
 	pageOption := utils.PaginationByPage(pageNo, pageSize)
 	filter := bson.M{}
 	if title != "" {
 		filter["title"] = bson.M{"$regex": `(?i)` + title}
 	}
-	if author != ""{
+	if author != "" {
 		filter["author"] = bson.M{"$regex": `(?i)` + author}
 	}
 	fmt.Println(filter)
@@ -263,8 +263,8 @@ func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, 
 	}
 	return blogs, domain.Pagination{
 		CurrentPage: pageNo,
-		PageSize: pageSize,
-		TotalPages: totalPages,
+		PageSize:    pageSize,
+		TotalPages:  totalPages,
 		TotatRecord: totalResults,
 	}, nil
 }
@@ -273,6 +273,10 @@ func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, 
 func (b BlogRepository) UpdateBlogByID(user_id string, blog_id string, blog domain.Blog) (domain.Blog, error) {
 
 	blog_object_id, err := primitive.ObjectIDFromHex(blog_id)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	user_object_id, err := primitive.ObjectIDFromHex(user_id)
 	if err != nil {
 		return domain.Blog{}, err
 	}
@@ -297,6 +301,21 @@ func (b BlogRepository) UpdateBlogByID(user_id string, blog_id string, blog doma
 
 	filter := primitive.D{{Key: "_id", Value: blog_object_id}}
 	if _, err = b.PostCollection.UpdateOne(context.TODO(), filter, update); err != nil {
+		return domain.Blog{}, err
+	}
+
+	userUpdate := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "posts.$.author", Value: blog.Author},
+			{Key: "posts.$.title", Value: blog.Title},
+			{Key: "posts.$.content", Value: blog.Content},
+			{Key: "posts.$.tags", Value: blog.Tags},
+			{Key: "posts.$.blog_image", Value: blog.Blog_image},
+			{Key: "posts.$.updatedAt", Value: time.Now()},
+		}},
+	}
+
+	if _, err := b.UserCollection.UpdateOne(context.TODO(), primitive.D{{Key: "_id", Value: user_object_id}, {Key: "posts._id", Value: blog_object_id}}, userUpdate); err != nil {
 		return domain.Blog{}, err
 	}
 

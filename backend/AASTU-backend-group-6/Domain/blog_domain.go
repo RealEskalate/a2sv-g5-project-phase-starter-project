@@ -31,7 +31,7 @@ type BlogUsecase interface {
 	CreateBlog(user_id string, blog Blog, role string) (Blog, error)
 	GetBlogByID(blog_id string) (Blog, error)
 	GetBlogs(pageNo string, pageSize string) ([]Blog, Pagination, error)
-	UpdateBlogByID(user_id string, blog_id string, blog Blog) (Blog, error)
+	UpdateBlogByID(user_id string, blog_id string, blog Blog, role string) (Blog, error)
 	DeleteBlogByID(user_id string, blog_id string, role string) ErrorResponse
 	CommentOnBlog(blog_id string, commentor_id string, commentor_username string, comment Comment) error
 
@@ -39,7 +39,7 @@ type BlogUsecase interface {
 	FilterBlogsByTag(tag string, pageNo string, pageSize string) ([]Blog, Pagination, error)
 
 	GetMyBlogs(user_id string, pageNo string, pageSize string) ([]Blog, Pagination, error)
-	GetMyBlogByID(user_id string, blog_id string) (Blog, error)
+	GetMyBlogByID(user_id string, blog_id string, role string) (Blog, error)
 }
 type BlogRepository interface {
 	CreateBlog(user_id string, blog Blog, role string) (Blog, error)

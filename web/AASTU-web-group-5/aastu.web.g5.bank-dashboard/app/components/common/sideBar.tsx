@@ -1,8 +1,9 @@
-'use client';
-import React, { useState } from "react";
-import Image from "next/image";
-import { FaTimes } from "react-icons/fa";
+"use client";
 
+import React, { useState } from "react"; // Ensure useState is imported
+import Image from "next/image";
+import { useRouter, usePathname } from "next/navigation";
+import { FaTimes } from "react-icons/fa";
 
 import creditCard from "/public/assets/icons/credit-card 1.svg";
 import econometrics from "/public/assets/icons/econometrics 1.svg";
@@ -15,7 +16,6 @@ import settingsSolid from "/public/assets/icons/settings solid 1.svg";
 import transfer from "/public/assets/icons/transfer 1.svg";
 import user from "/public/assets/icons/user 3 1.svg";
 
-
 import enabledCreditCard from "/public/assets/icons/enabled/credit-card 1.svg";
 import enabledEconometrics from "/public/assets/icons/enabled/econometrics 1.svg";
 import enabledEconomicInvestment from "/public/assets/icons/enabled/economic-investment 1.svg";
@@ -26,15 +26,19 @@ import enabledSettingsSolid from "/public/assets/icons/enabled/settings solid 1.
 import enabledTransfer from "/public/assets/icons/enabled/transfer 1.svg";
 import enabledUser from "/public/assets/icons/enabled/user 3 1.svg";
 
-const primary_2 = 'rgba(52, 60, 106, 1)';
-const primary_3 = 'rgba(45, 96, 255, 1)';
-const sidecolor = '#B1B1B1';
+const primary_2 = "rgba(52, 60, 106, 1)";
+const primary_3 = "rgba(45, 96, 255, 1)";
+const sidecolor = "#B1B1B1";
 
 const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolean, toggleSidebar: () => void }) => {
-    const [enabled, setEnabled] = useState<string>("home");
-
-    const handleIconClick = (option: string) => {
+    const [enabled, setEnabled] = useState<string>(usePathname().substring(1,));
+    if (enabled === "") {
+        setEnabled("Dashboard");}
+    console.log(enabled,111)
+    const router = useRouter();
+    const handleIconClick = (option: string, path: string) => {
         setEnabled(option);
+        router.push(path);
     };
 
     return (
@@ -48,41 +52,40 @@ const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolea
                 </button>
             </div>
 
-
             <div className="flex flex-col gap-[42px]">
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("home")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("home", "/Dashboard")}>
                     <Image src={enabled === "home" ? enabledHome : home} alt="Home Icon" className="h-[25px] w-[25px]" />
                     <div> Dashboard</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("transfer")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("transfer", "/Transaction")}>
                     <Image src={enabled === "transfer" ? enabledTransfer : transfer} alt="Transfer Icon" className="h-[25px] w-[25px]" />
                     <div> Transactions</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("user")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("user", "/Accounts")}>
                     <Image src={enabled === "user" ? enabledUser : user} alt="User Icon" className="h-[25px] w-[25px]" />
                     <div> Accounts</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("economicInvestment")}>
-                    <Image src={enabled === "economicInvestment" ? enabledEconomicInvestment : economicInvestment} alt="Investments Icon" className="h-[25px] w-[25px]" />
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("investments", "/Investments")}>
+                    <Image src={enabled === "investments" ? enabledEconomicInvestment : economicInvestment} alt="Investments Icon" className="h-[25px] w-[25px]" />
                     <div> Investments</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("creditCard")}>
-                    <Image src={enabled === "creditCard" ? enabledCreditCard : creditCard} alt="Credit Card Icon" className="h-[25px] w-[25px]" />
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("CreditCards", "/CreditCards")}>
+                    <Image src={enabled === "CreditCards" ? enabledCreditCard : creditCard} alt="Credit Card Icon" className="h-[25px] w-[25px]" />
                     <div> Credit Cards</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("loan")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("loan", "/loans")}>
                     <Image src={enabled === "loan" ? enabledLoan : loan} alt="Loan Icon" className="h-[25px] w-[25px]" />
                     <div> Loans</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("service")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("service", "/services")}>
                     <Image src={enabled === "service" ? enabledService : service} alt="Services Icon" className="h-[25px] w-[25px]" />
                     <div> Services</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("econometrics")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("econometrics", "/privileges")}>
                     <Image src={enabled === "econometrics" ? enabledEconometrics : econometrics} alt="Privileges Icon" className="h-[25px] w-[25px]" />
                     <div> My Privileges</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("settings")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("settings", "/Settings")}>
                     <Image src={enabled === "settings" ? enabledSettingsSolid : settingsSolid} alt="Settings Icon" className="h-[25px] w-[25px]" />
                     <div> Settings</div>
                 </div>

@@ -98,12 +98,6 @@ type BlogRepository interface {
 	BlogExists(ctx context.Context, id primitive.ObjectID) (bool, error)
 	// UserIsAuthor checks if a user is the author of a blog by their user ID and the blog ID
 	UserIsAuthor(ctx context.Context, blogID primitive.ObjectID, userID string) (bool, error)
-	// UpdatePopularity updates the popularity of a blog
-	UpdatePopularity(ctx context.Context, id primitive.ObjectID, popularity float64) error
-	// FetchByPageAndPopularity retrieves blogs from the collection based on page number and sorts them by popularity
-	FetchByPageAndPopularity(ctx context.Context, pageNumber, pageSize int) ([]Blog, error)
-	// FetchByTags retrieves blogs that have the specified tags
-	FetchByTags(ctx context.Context, tags []Tag) ([]Blog, error)
-	// SearchBlogs retrieves blogs that match the search query
-	SearchBlogs(ctx context.Context, filter Filter) ([]Blog, error)
+	// UpdateFeedback retrives blogs by it's id and updates it's feedback
+	UpdateFeedback(ctx context.Context, id string, updateFunc func(*Feedback) error) error
 }

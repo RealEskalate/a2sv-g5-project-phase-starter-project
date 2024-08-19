@@ -190,3 +190,16 @@ func (ur *userRepository) UpdateTokens(c context.Context, id string, accessToken
 
 	return updatedUser, nil
 }
+
+
+
+// ISAdmin is a method to check if a user is Admin
+
+func (ur *userRepository)IsAdmin(c context.Context, userID string,) (bool, error) {
+    user, err := ur.GetByID(context.TODO(), userID)
+    if err != nil {
+        return false, err
+    }
+
+    return user.User_Role  == "ADMIN", nil
+}

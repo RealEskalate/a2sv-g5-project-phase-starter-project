@@ -14,6 +14,10 @@ type BlogUsecase interface {
 	DeleteBlogByID(id string) error
 	SearchBlogs(title string, author string, tags []string) ([]Domain.Blog, error)
 	FindByID(id string) (*Domain.Blog, error)
+	IncrementViewCount(id string) error
+	ToggleLike(blogID, username string) error
+	ToggleDislike(blogID, username string) error
+	AddComment(blogID string, comment Domain.Comment) error
 }
 
 type blogUsecase struct {
@@ -86,4 +90,24 @@ func (uc *blogUsecase) UpdateBlog(blogID string, input Domain.UpdateBlogInput, a
 
 func (uc *blogUsecase) FindByID(id string) (*Domain.Blog, error) {
 	return uc.blogRepo.FindByID(id)
+}
+
+// Increment the view count of a blog post
+func (u *blogUsecase) IncrementViewCount(id string) error {
+	return u.blogRepo.IncrementViewCount(id)
+}
+
+// Toggle like on a blog post
+func (u *blogUsecase) ToggleLike(blogID, username string) error {
+	return u.blogRepo.ToggleLike(blogID, username)
+}
+
+// Toggle dislike on a blog post
+func (u *blogUsecase) ToggleDislike(blogID, username string) error {
+	return u.blogRepo.ToggleDislike(blogID, username)
+}
+
+// Add a comment to a blog post
+func (u *blogUsecase) AddComment(blogID string, comment Domain.Comment) error {
+	return u.blogRepo.AddComment(blogID, comment)
 }

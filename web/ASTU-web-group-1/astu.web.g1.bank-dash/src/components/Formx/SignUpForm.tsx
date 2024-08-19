@@ -53,7 +53,7 @@ export default function SignUpForm() {
     if (!res.success) {
       alert(res.message);
     } else {
-      router.push(`/api/auth/verify?email=${data.email}`);
+      router.push(`/api/auth/signin`);
       alert(res.message);
     }
   };

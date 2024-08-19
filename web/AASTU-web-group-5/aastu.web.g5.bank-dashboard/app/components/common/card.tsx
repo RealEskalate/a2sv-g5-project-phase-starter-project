@@ -9,58 +9,67 @@ interface CreditCardColorProps {
 }
 
 interface CardProps {
-	balance: number;
-	cardHolder: string;
-	expiryDate: string;
-	semiCardNumber: string;
-	creditCardColor: CreditCardColorProps;
+	cardData: any;
+	cardColor: CreditCardColorProps;
 }
 
-const Card = ({ card }: { card: CardProps }) => {
+const Card: React.FC<CardProps> = ({ cardData, cardColor }) => {
+	// Format expiry date to YYYY-MM-DD
+	function formatExpiryDate(expiryDate: string) {
+		const date = new Date(expiryDate);
+		const day = String(date.getDate()).padStart(2, "0");
+		const month = String(date.getMonth() + 1).padStart(2, "0");
+		return `${day}/${month}`;
+	}
+
+	// Format card number
+	const formatCardNumber = (semiCardNumber: string) => {
+		const firstNum = semiCardNumber.slice(0, 4);
+		const lastNum = semiCardNumber.slice(-4);
+
+		return `${firstNum} **** **** ${lastNum}`;
+	};
+
+	const dateFormat = formatExpiryDate(cardData.expiryDate);
+	const formattedCardNumber = formatCardNumber(cardData.semiCardNumber);
+
 	return (
 		<div className="w-[33%]">
-			<div className={card.creditCardColor.cardBgColor}>
+			<div className={cardColor.cardBgColor}>
 				<div className="flex justify-between p-5">
 					<div>
 						<div className="text-sm opacity-70">Balance</div>
-						<div className="text-lg">${card.balance}</div>
+						<div className="text-lg">${cardData.balance}</div>
 					</div>
 					<div>
-						<Image src={card.creditCardColor.imageCreditCard} alt="chip card" />
+						<Image src={cardColor.imageCreditCard} alt="chip card" />
 					</div>
 				</div>
 				<div className="flex gap-16 p-4">
 					<div className="pl-2">
 						<div className="text-sm opacity-70">CARD HOLDER</div>
-						<div>{card.cardHolder}</div>
+						<div>{cardData.cardHolder}</div>
 					</div>
 					<div>
 						<div className="text-sm opacity-70">VALID THRU</div>
-						<div>{card.expiryDate}</div>
+						<div>{dateFormat}</div>
 					</div>
 				</div>
-				{card.creditCardColor.grayCircleColor ? (
-					<div className={card.creditCardColor.bottomBgColor}>
-						<div>
-							<div className="border-b-2 border-solid border-gray-600 opacity-20"></div>
-							<div className="flex justify-between p-4">
-								<div className="text-xl">{card.semiCardNumber}</div>
-								<div className="flex">
-									<div className="w-8 h-8 rounded-full bg-gray-400 opacity-50"></div>
-									<div className="w-8 h-8 rounded-full bg-gray-400 -ml-4 opacity-50"></div>
-								</div>
-							</div>
-						</div>
+				<div className={cardColor.bottomBgColor}>
+					<div className="text-xl">{formattedCardNumber}</div>
+					<div className="flex">
+						<div
+							className={`w-8 h-8 rounded-full ${
+								cardColor.grayCircleColor ? "bg-gray-400" : "bg-gray-100"
+							} opacity-50`}
+						></div>
+						<div
+							className={`w-8 h-8 rounded-full ${
+								cardColor.grayCircleColor ? "bg-gray-400" : "bg-gray-100"
+							} -ml-4 opacity-50`}
+						></div>
 					</div>
-				) : (
-					<div className={card.creditCardColor.bottomBgColor}>
-						<div className="text-xl">{card.semiCardNumber}</div>
-						<div className="flex">
-							<div className="w-8 h-8 rounded-full bg-gray-100 opacity-50"></div>
-							<div className="w-8 h-8 rounded-full bg-gray-100 -ml-4 opacity-50"></div>
-						</div>
-					</div>
-				)}
+				</div>
 			</div>
 		</div>
 	);

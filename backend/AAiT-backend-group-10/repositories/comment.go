@@ -14,7 +14,7 @@ type CommentRepository struct {
 	Collection *mongo.Collection
 }
 
-func NewCommentRepository(db mongo.Database, collectionName string) *CommentRepository {
+func NewCommentRepository(db *mongo.Database, collectionName string) *CommentRepository {
 	collection := db.Collection(collectionName)
 	return &CommentRepository{
 		Collection: collection,

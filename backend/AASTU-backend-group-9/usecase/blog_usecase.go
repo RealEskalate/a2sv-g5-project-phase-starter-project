@@ -54,21 +54,13 @@ func (bu *blogUsecase) CreateBlog(ctx context.Context, req *domain.BlogCreationR
 	}, nil
 }
 
-func (bu *blogUsecase) GetBlogByID(ctx context.Context, id primitive.ObjectID) (*domain.BlogResponse, error) {
+func (bu *blogUsecase) GetBlogByID(ctx context.Context, id primitive.ObjectID) (*domain.Blog, error) {
 	blog, err := bu.blogRepository.GetBlogByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return &domain.BlogResponse{
-		ID:        blog.ID,
-		Title:     blog.Title,
-		Content:   blog.Content,
-		Tags:      blog.Tags,
-		CreatedAt: blog.CreatedAt,
-		UpdatedAt: blog.UpdatedAt,
-		AuthorID: blog.AuthorID,
-	}, nil
+	return blog, nil
 }
 
 func (bu *blogUsecase) GetAllBlogs(ctx context.Context, page int, limit int, sortBy string) ([]*domain.BlogResponse, error) {
@@ -181,7 +173,7 @@ func (bu *blogUsecase) FilterBlogsByPopularity(ctx context.Context, popularity s
 	return blogs, nil
 }
 
-}
+
 
 func (bu *blogUsecase) TrackView(ctx context.Context, id primitive.ObjectID) error {
     return bu.blogRepository.IncrementViews(ctx, id)

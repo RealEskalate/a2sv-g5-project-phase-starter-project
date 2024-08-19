@@ -33,7 +33,7 @@ type BlogRepository interface {
 // BlogUsecase defines the business logic methods for blogs.
 type BlogUsecase interface {
 	CreateBlog(ctx context.Context, blog *BlogCreationRequest,claims *JwtCustomClaims) (*BlogResponse, error)
-	GetBlogByID(ctx context.Context, id primitive.ObjectID) (*BlogResponse, error)
+	GetBlogByID(ctx context.Context, id primitive.ObjectID) (*Blog, error)
 	GetAllBlogs(ctx context.Context, page int, limit int, sortBy string) ([]*BlogResponse, error)
 	UpdateBlog(ctx context.Context, id primitive.ObjectID, blog *BlogUpdateRequest) (*BlogResponse, error)
 	DeleteBlog(ctx context.Context, id primitive.ObjectID) error

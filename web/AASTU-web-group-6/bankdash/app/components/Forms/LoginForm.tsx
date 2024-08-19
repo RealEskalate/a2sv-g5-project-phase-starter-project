@@ -1,10 +1,10 @@
 "use client";
 import { useForm } from 'react-hook-form';
-import { signIn } from 'next-auth/react';
 import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import LoginValue from '@/types/LoginValue';
+import AuthService from '@/app/Services/api/authService';
 
 const LoginForm = () => {
   const [error, setError] = useState("");
@@ -13,19 +13,22 @@ const LoginForm = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginValue>();
 
   const onSubmit = async (data: LoginValue) => {
-    setLoading(true);  
-    const result = await signIn("credentials", {
-      redirect: false,
-      userName: data.userName,
-      password: data.password,
-    });
+    setLoading(true);
+    setError("");  
 
-    if (result?.error) {
-      setError(result.error);
-      setLoading(false);  
-    } else {
-      console.log("Login successful");
-      router.push("/");  
+    try {
+      const response = await AuthService.login(data);
+      if (response.success) {
+        console.log("Login successful:", response.message);
+        router.push("/");
+      } else {
+        setError(response.message);
+        setLoading(false);
+      }
+    } catch (err) {
+      setError("An error occurred during login.");
+      console.error(err);
+      setLoading(false);
     }
   };
 
@@ -47,7 +50,7 @@ const LoginForm = () => {
             id="userName"
             className='h-8 py-1 px-2 border-[1px] border-gray-400 rounded-lg'
             type="text"
-            disabled={loading}  
+            disabled={loading}
           />
           {errors.userName && <p className="text-red-500">{errors.userName.message}</p>}
         </div>

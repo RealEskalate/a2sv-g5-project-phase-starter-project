@@ -48,6 +48,10 @@ func (lc *LoginController) Login(c *gin.Context) {
 		ExpiresAt:    time.Now().Add(time.Hour * 24 * 7),
 	}
 	err = lc.LoginUsecase.SaveRefreshToken(c, &tkn)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	resp := domain.LoginResponse{
 		ID:           user.ID,

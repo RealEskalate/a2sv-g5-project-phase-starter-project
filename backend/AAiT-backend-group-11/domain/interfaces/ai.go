@@ -1,8 +1,11 @@
 package interfaces
 
-import  "backend-starter-project/domain/entities"
+import (
+	"backend-starter-project/domain/entities"
+	"context"
+)
 
 type AIContentService interface {
-	GenerateContentSuggestions(keywords []string) (*entities.ContentSuggestion, error)
-	SuggestContentImprovements(blogPostId, content string) (*entities.ContentSuggestion, error)
+	GenerateContentSuggestions(c context.Context,keywords []string) (*entities.ContentSuggestion, error)
+	SuggestContentImprovements(c context.Context, blogPostId, content string) (*entities.ContentSuggestion, error)
 }

@@ -20,9 +20,9 @@ func Setup(env *config.Env, timeout time.Duration, db database.Database, gin *gi
 	// Middleware to verify AccessToken
 	// protectedRouter.Use(middleware.AuthMiddleware())
 	// All Private APIs
-  NewProfileRouter(env, timeout, db, protectedRouter)
+  	NewProfileRouter(env, timeout, db, protectedRouter)
 	NewLogoutRouter(env, timeout, db, protectedRouter)
-  NewForgotPasswordRouter(env, db, protectedRouter)
+  	NewForgotPasswordRouter(env, db, protectedRouter)
   
 
 }

@@ -49,7 +49,7 @@ export const transactionsApi = createApi({
 
     createTransactionDeposit: builder.mutation<
     TransactionDepositRequest,
-    TransactionRequest
+    TransactionResponse
     >({
       query: (deposit) => ({
         url: "/transactions/deposit",

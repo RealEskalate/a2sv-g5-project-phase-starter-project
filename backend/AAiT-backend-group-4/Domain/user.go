@@ -11,8 +11,8 @@ type User struct {
 	ID            primitive.ObjectID `bson:"_id"`
 	First_Name    string             `json:"first_name" bson:"first_name" validate:"required,min=2,max=100"`
 	Last_Name     string             `json:"last_name" bson:"last_name" validate:"required,min=2,max=100"`
-	Username      *string            `json:"user_name" bson:"user_name" validate:"min=5"`
-	Email         *string            `json:"email" bson:"email" validate:"email"`
+	Username      string             `json:"user_name" bson:"user_name" validate:"min=5"`
+	Email         string             `json:"email" bson:"email" validate:"email"`
 	Password      string             `json:"password" bson:"password" validate:"required,min=6"`
 	Phone         *string            `json:"phone" bson:"phone"`
 	Bio           *string            `json:"bio" bson:"bio"`
@@ -47,6 +47,7 @@ type UserRepository interface {
 	UpdateUser(c context.Context, id string, user UserUpdate) (User, error)
 	Promote(c context.Context, id string) (User, error)
 	UpdateProfileImage(c context.Context, id string, profileImage string) (User, error)
+	CheckIfUserIsVerified(c context.Context, id string) (bool, error)
 	VerifyUser(c context.Context, id string) (User, error)
 	UpdateTokens(c context.Context, id string, accessToken string, refreshToken string) (User, error)
 }

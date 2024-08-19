@@ -23,9 +23,27 @@ func NewUserRepository(database mongo.Database, collection string) domain.UserRe
 	}
 }
 
+func (ur *userRepository) CheckIfUserIsVerified(c context.Context, id string) (bool, error) {
+	user, err := ur.GetByID(c, id)
+	if err != nil {
+		return false, nil
+	}
+
+	return user.Verified, nil
+}
+
 func (ur *userRepository) CreateUser(c context.Context, user *domain.User) error {
 	collection := ur.database.Collection(ur.collection)
-	_, err := collection.InsertOne(c, user)
+	// Fetch the count of documents in the collection
+	count, err := collection.CountDocuments(c, bson.D{})
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		user.User_Role = "ADMIN"
+	}
+	_, err = collection.InsertOne(c, user)
 
 	return err
 }
@@ -191,15 +209,13 @@ func (ur *userRepository) UpdateTokens(c context.Context, id string, accessToken
 	return updatedUser, nil
 }
 
-
-
 // ISAdmin is a method to check if a user is Admin
 
-func (ur *userRepository)IsAdmin(c context.Context, userID string,) (bool, error) {
-    user, err := ur.GetByID(context.TODO(), userID)
-    if err != nil {
-        return false, err
-    }
+func (ur *userRepository) IsAdmin(c context.Context, userID string) (bool, error) {
+	user, err := ur.GetByID(context.TODO(), userID)
+	if err != nil {
+		return false, err
+	}
 
-    return user.User_Role  == "ADMIN", nil
+	return user.User_Role == "ADMIN", nil
 }

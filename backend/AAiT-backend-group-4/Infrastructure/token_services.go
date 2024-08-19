@@ -18,8 +18,8 @@ func (s *services) CreateAllTokens(user *domain.User, accessSecret string,
 	refreshSecret string, accessExpriy int, refreshExpiry int) (accessToken string, refreshToken string, err error) {
 	claims := domain.JwtCustomClaims{
 		UserID:   user.ID.Hex(),
-		Email:    *user.Email,
-		Username: *user.Username,
+		Email:    user.Email,
+		Username: user.Username,
 		Role:     user.User_Role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * time.Duration(accessExpriy)).Unix(),

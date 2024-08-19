@@ -20,7 +20,7 @@ type SignupRespnse struct {
 }
 
 type SignupUsecase interface {
-	Signup(c context.Context, user *SignupRequest) (resp UserOTPVerification, err error)
+	Signup(c context.Context, user *SignupRequest) (resp OTPVerificationResponse, err error)
 	GetByEmail(c context.Context, email string) (user User, err error)
 	GetByUsername(c context.Context, userName string) (user User, err error)
 	CreateAllTokens(user *User, accessSecret string, refreshSecret string,

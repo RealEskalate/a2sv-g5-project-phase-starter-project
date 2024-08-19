@@ -32,10 +32,8 @@ const chartConfig = {
 
 export default function LineChart() {
   return (
-    <Card >
-      <CardHeader>
-        
-      </CardHeader>
+    <Card className="w-">
+
       <CardContent>
         <ChartContainer config={chartConfig} 
             style={{height:'300px' , width:'600px'}}
@@ -43,7 +41,9 @@ export default function LineChart() {
           <AreaChart
             accessibilityLayer
             data={chartData}
-            
+            className="w-50 bg-black-1"
+           
+           
             margin={{
               left: 12,
               right: 12,
@@ -69,6 +69,8 @@ export default function LineChart() {
               fill={chartConfig.balance.color}
               fillOpacity={0.4}
               stroke={chartConfig.balance.color}
+              width={300}
+              height={300}
             />
           </AreaChart>
         </ChartContainer>

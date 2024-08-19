@@ -74,11 +74,15 @@ type CommentUseCase interface {
 type TagRepository interface {
 	CreateTag(ctx context.Context, tag *Tag) (error, int)
 	DeleteTag(ctx context.Context, id primitive.ObjectID) (error, int)
+	GetTagBySlug(ctx context.Context, slug string) (*Tag, error, int)
+	GetAllTags(ctx context.Context) ([]*Tag, error, int)
 }
 
 type TagUseCase interface {
 	CreateTag(c *gin.Context, tag *Tag) (error, int)
 	DeleteTag(c *gin.Context, id primitive.ObjectID) (error,int)
+	GetTagBySlug(c *gin.Context, slug string) (*Tag, error, int)
+	GetAllTags(c *gin.Context) ([]*Tag, error, int)
 }
 
 type UserRepository interface {

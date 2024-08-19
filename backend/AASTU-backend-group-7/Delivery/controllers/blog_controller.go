@@ -3,7 +3,6 @@ package controllers
 import (
 	"blogapp/Domain"
 	"blogapp/Utils"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -215,9 +214,9 @@ func (controller *blogController) GetComments(c *gin.Context) {
 }
 
 func (controller *blogController) GetAllPosts(c *gin.Context) {
-	queryparams := c.Request.URL.Query()
-	fmt.Println(queryparams)
-	fmt.Println("hehe")
+	// queryparams := c.Request.URL.Query()
+	// fmt.Println(queryparams)
+	// fmt.Println("hehe")
 
 	posts, err, statusCode := controller.BlogUseCase.GetAllPosts(c)
 	if err != nil {
@@ -227,5 +226,60 @@ func (controller *blogController) GetAllPosts(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "Posts fetched successfully",
 		"posts":   posts,
+	})
+}
+
+func (controller *blogController) AddTagToPost(c *gin.Context) {
+	claims, err := Getclaim(c)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
+	postID, err := primitive.ObjectIDFromHex(c.Param("id")) // convert id to object id
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// get post
+	post, err, statusCode := controller.BlogUseCase.GetPostByID(c, postID)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+
+	// get author id of post
+	authorID := post.AuthorID
+
+	// check if user is author of post
+	isAuthor, err := Utils.IsAuthorOrAdmin(*claims, authorID)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if !isAuthor {
+		c.JSON(401, gin.H{"error": "You are not author of this post"})
+		return
+	}
+
+	var tag Domain.Tag
+	if err := c.ShouldBindJSON(&tag); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	// slug := Utils.GenerateSlug(tag.Name)
+
+
+	// err, statusCode = controller.BlogUseCase.AddTagToPost(c, postID, &tag)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Tag added successfully",
+		"tag":     tag,
 	})
 }

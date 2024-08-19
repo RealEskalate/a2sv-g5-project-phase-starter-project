@@ -55,3 +55,25 @@ func (tagController *TagController) DeleteTag(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Tag deleted successfully"})
 }
+
+// GetAllTags function
+func (tagController *TagController) GetAllTags(c *gin.Context) {
+	tags, err,statuscode := tagController.tagUseCase.GetAllTags(c)
+	if err != nil {
+		c.JSON(statuscode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, tags)
+}
+
+// Get tags by slug function
+func (tagController *TagController) GetTagBySlug(c *gin.Context) {
+	slug := c.Param("slug")
+	tag, err,statuscode := tagController.tagUseCase.GetTagBySlug(c,slug)
+	if err != nil {
+		c.JSON(statuscode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, tag)
+}
+

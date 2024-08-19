@@ -14,5 +14,5 @@ type BlogRepositoryInterface interface {
 	GetBlogs(ctx context.Context, filter map[string]interface{}, search string, page int, limit int) ([]*models.Blog, error)
 	EditBlog(ctx context.Context,blogID primitive.ObjectID, newBlog *models.Blog ) error
 	DeleteBlog(ctx context.Context, blogID primitive.ObjectID) error
-	AddCommentToTheList(ctx content.Context, blogID primitive.ObjectID, comment *models.Comment) error
+	AddCommentToTheList(ctx context.Context, blogID primitive.ObjectID, comment *models.Comment) error
 }

@@ -1,14 +1,14 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"log"
-	"net/http"
-	"os"
-	"github.com/joho/godotenv"
-	"AAIT-backend-group-3/internal/infrastructures/database"
-	"AAIT-backend-group-3/internal/repositories/implementation"
+	// "context"
+	 "fmt"
+	 "log"
+	// "net/http"
+	// "os"
+	 "github.com/joho/godotenv"
+	// "AAIT-backend-group-3/internal/infrastructures/database"
+	// "AAIT-backend-group-3/internal/repositories/implementation"
 )
 
 func main() {
@@ -16,15 +16,15 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
-	dbName := os.Getenv("DB_NAME")
-	dbClient, err := database.NewMongoDBClient(context.Background(), dbName)
-	if err != nil {
-		log.Fatalf("Error connecting to MongoDB: %v", err)
-	}
+	// dbName := os.Getenv("DB_NAME")
+	// dbClient, err := database.NewMongoDBClient(context.Background(), dbName)
+	// if err != nil {
+	// 	log.Fatalf("Error connecting to MongoDB: %v", err)
+	// }
 
-	userRepo := repository.NewMongoUserRepository(dbClient.Database, "users")
-	blogRepo := repository.NewMongoBlogRepository(dbClient.Database, "blogs")
-	commentRepo := repository.NewMongoCommentRepository(dbClient.Database, "comments")
+	// userRepo := repositories.NewMongoUserRepository(dbClient.Database, "users")
+	// blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs")
+	// commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
 
 	// Initialize services
 	// userService := service.NewUserService(userRepo)

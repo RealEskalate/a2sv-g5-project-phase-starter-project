@@ -69,7 +69,7 @@ type IBlogUsecases interface {
 type IBlogController interface {
 	GetAllBlogs(c *gin.Context)
 	// GetBlogsByAuthorID(c *gin.Context)
-	GetBlogByID(c *gin.Context)
+	// GetBlogByID(c *gin.Context)
 	CreateBlog(c *gin.Context)
 	UpdateBlog(c *gin.Context)
 	DeleteBlog(c *gin.Context)

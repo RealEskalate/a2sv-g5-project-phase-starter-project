@@ -26,22 +26,6 @@ func (bc *blogController) GetAllBlogs(c *gin.Context) {
 	c.JSON(200, blogs)
 }
 
-func (bc *blogController) GetBlogByID(c *gin.Context) {
-	id := c.Param("id")
-	idInt, err := strconv.Atoi(id)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	blog, err := bc.BlogUsecase.GetBlogByID(c , idInt)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(200, blog)
-}
-
 func (bc *blogController) CreateBlog(c *gin.Context) {
 	var blog domain.Blog
 	err := c.BindJSON(&blog)
@@ -207,4 +191,19 @@ func (bc *blogController) CommentBlog (c *gin.Context){
 
 }
 
+
+func (bc *blogController) Search(c *gin.Context){
+	author := c.Query("author")
+	tags := c.QueryArray("tags")
+	title := c.Query("title")
+
+	blogs , err := bc.BlogUsecase.Search(c , author , tags , title)
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, blogs)
+
+}
 

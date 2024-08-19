@@ -14,9 +14,9 @@ const Investments = () => {
           <Card {...item} key="item.name"/>
         ))}
       </div>
-      <div className="flex flex-col md:flex-row md:gap-40 md:ml-20 md:justify-start gap-10 my-4 w-full justify-center " >
+      <div className="flex flex-col md:flex-row md:gap-40 gap-10 my-4 w-full justify-center " >
         <div className="w-[90%] md:w-[35%] mx-auto md:mx-0">
-          <h1 className="my-3 font-[600] text-[16px] text-[#333B69] md:text-[22px]" >Yearly Total Investment</h1>
+          <h1 className="my-3 font-[600] text-[16px] text-[#333B69] md:text-[22px] text-nowrap" >Yearly Total Investment</h1>
           <LineChartComp/>
         </div>
         <div className="w-[90%] md:w-[35%] mx-auto md:mx-0">
@@ -24,7 +24,7 @@ const Investments = () => {
           <Chart2/>
         </div>
       </div>
-      <div className=" flex flex-col md:flex-row gap-3 md:gap-10 my-2 w-full justify-center md:justify-start md:ml-20">
+      <div className=" flex flex-col md:flex-row gap-3 md:gap-8 my-2 w-full justify-center ">
         <Investment/>
         <Trending/>
       </div>

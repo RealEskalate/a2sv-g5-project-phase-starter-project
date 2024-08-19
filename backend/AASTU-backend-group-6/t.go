@@ -28,11 +28,11 @@ func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToke
 	}
 	return t, err
 }
-func main(){
-	id, _ :=  primitive.ObjectIDFromHex("66c0a0dcdb2272faca4591ae")
+func main() {
+	id, _ := primitive.ObjectIDFromHex("66c0a0dcdb2272faca4591ae")
 	fmt.Println(CreateAccessToken(&domain.User{
 		Full_Name: "Full_Name",
-		ID:       id,
+		ID:        id,
 		Role:      "user",
 	}, "access_token_secret", 10))
 }

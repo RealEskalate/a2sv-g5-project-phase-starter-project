@@ -2,6 +2,7 @@ package usecases
 
 import (
 	domain "blogs/Domain"
+	"errors"
 	"strconv"
 	"strings"
 	"time"
@@ -69,8 +70,22 @@ func (b BlogUsecase) DeleteBlogByID(user_id string, blog_id string, role string)
 }
 
 // FilterBlogsByTag implements domain.BlogRepository.
-func (b BlogUsecase) FilterBlogsByTag(tag string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	panic("unimplemented")
+func (b BlogUsecase) FilterBlogsByTag(tags []string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
+	PageNo, err := strconv.ParseInt(pageNo, 10, 64)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+	PageSize, err := strconv.ParseInt(pageSize, 10, 64)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+
+	blogs, pagination, err := b.blogRepository.FilterBlogsByTag(tags, PageNo, PageSize)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	} else {
+		return blogs, pagination, nil
+	}
 }
 
 // GetBlogByID implements domain.BlogRepository.
@@ -99,9 +114,20 @@ func (b BlogUsecase) GetBlogs(pageNo string, pageSize string) ([]domain.Blog, do
 }
 
 // GetMyBlogByID implements domain.BlogRepository.
-func (b BlogUsecase) GetMyBlogByID(user_id string, blog_id string) (domain.Blog, error) {
+func (b BlogUsecase) GetMyBlogByID(user_id string, blog_id string, role string) (domain.Blog, error) {
 	myBlog, err := b.blogRepository.GetMyBlogByID(user_id, blog_id)
-	return myBlog, err
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	if strings.ToLower(role) == "admin" {
+		return myBlog, err
+	} else {
+		if user_id == myBlog.Creater_id.Hex() {
+			return myBlog, nil
+		} else {
+			return domain.Blog{}, errors.New("unauthorized access")
+		}
+	}
 }
 
 // GetMyBlogs implements domain.BlogRepository.
@@ -146,6 +172,7 @@ func (b BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, pag
 		}
 	}
 	blogs, pagination, err := b.blogRepository.SearchBlogByTitleAndAuthor(title, author, pageNO, limit)
+
 	if err != nil{
 		return nil, domain.Pagination{}, domain.ErrorResponse{
 			Message: "internal server error",
@@ -156,11 +183,28 @@ func (b BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, pag
 }
 
 // UpdateBlogByID implements domain.BlogRepository.
-func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.Blog) (domain.Blog, error) {
-	blog, err := b.blogRepository.UpdateBlogByID(user_id, blog_id, blog)
+func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.Blog, role string) (domain.Blog, error) {
+	var updated_blog domain.Blog
+	var err error
+
+	if strings.ToLower(role) == "admin" {
+		updated_blog, err = b.blogRepository.UpdateBlogByID(user_id, blog_id, blog)
+	} else {
+		existing_blog, err := b.GetBlogByID(blog_id)
+		if err != nil {
+			return domain.Blog{}, err
+		} else {
+			if existing_blog.Creater_id.Hex() == user_id {
+				updated_blog, err = b.blogRepository.UpdateBlogByID(user_id, blog_id, blog)
+			} else {
+				return domain.Blog{}, errors.New("unauthorized access")
+			}
+		}
+	}
+
 	if err != nil {
 		return domain.Blog{}, err
 	} else {
-		return blog, nil
+		return updated_blog, nil
 	}
 }

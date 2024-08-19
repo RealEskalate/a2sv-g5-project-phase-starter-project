@@ -14,6 +14,13 @@ type LogoutController struct {
 	JwtService    interfaces.JwtService
 }
 
+func NewLogoutController(logoutUsecase interfaces.LogoutUsecase, jwtService interfaces.JwtService) *LogoutController {
+	return &LogoutController{
+		LogoutUsecase: logoutUsecase,
+		JwtService:    jwtService,
+	}
+}
+
 func (logoutController *LogoutController) Logout(ctx *gin.Context) {
 	// get claims from authorization header
 	authHeader := ctx.GetHeader("Authorization")

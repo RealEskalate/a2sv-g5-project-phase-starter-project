@@ -13,6 +13,12 @@ type ForgotPasswordController struct {
 	ForgotPasswordUsecase interfaces.ForgotPasswordUsecase
 }
 
+func NewForgotPasswordController(forgotPasswordUsecase interfaces.ForgotPasswordUsecase) *ForgotPasswordController {
+	return &ForgotPasswordController{
+		ForgotPasswordUsecase: forgotPasswordUsecase,
+	}
+}
+
 func (forgotPasswordController *ForgotPasswordController) ForgotPasswordRequest(ctx *gin.Context) {
 	var request dtos.PasswordResetRequest
 

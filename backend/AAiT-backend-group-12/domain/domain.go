@@ -96,6 +96,9 @@ type BlogUseCaseInterface interface {
 	EditBlogPost(ctx context.Context, id string, blog *Blog) CodedError
 	DeleteBlogPost(ctx context.Context, id string) CodedError
 	TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) CodedError
+	GenerateTrendingTopics(keywords []string) ([]string, error)
+	ReviewBlogContent(blogContent string) (string, error)
+	GenerateBlogContent(topics []string) (string, error)
 }
 
 type UserRepositoryInterface interface {

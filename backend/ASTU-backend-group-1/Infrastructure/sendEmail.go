@@ -14,7 +14,7 @@ func SendEmail(toEmail string, title string, body string, hashedpwd string) erro
 	}
 	log.Println(config.Email.EmailKey, config.Port)
 
-	//in route to handle email reliated comfirmation is domain/confirmation/:email/:pwd
+	//in route to handle email related confirmation is domain/confirmation/:email/:pwd
 	//also make
 	link := "http://localhost:8000/confirmation/email/" + toEmail + "/pwd/" + hashedpwd + "/"
 	message := `

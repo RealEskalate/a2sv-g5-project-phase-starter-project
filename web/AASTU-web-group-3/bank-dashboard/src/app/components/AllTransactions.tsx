@@ -1,7 +1,10 @@
 "use client"
-import React from "react";
+import React, { useEffect } from "react";
 import { FaRegArrowAltCircleUp, FaRegArrowAltCircleDown } from "react-icons/fa";
-import { useGetAllTransactionsQuery } from "@/lib/redux/api/transactionsApi"; // Adjust the import path based on your folder structure
+import { useDispatch, useSelector } from "react-redux";
+import { useGetAllTransactionsQuery } from "@/lib/redux/api/transactionsApi";
+import { setTransactions, setLoading, setError } from "@/lib/redux/slices/transactionsSlice";
+import { RootState } from "@/lib/redux/store";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -21,10 +24,23 @@ const formatDate = (dateString: string) => {
 };
 
 const AllTransactions = () => {
-  const { data, error, isLoading } = useGetAllTransactionsQuery({ size: 10, page: 1 }); // Adjust size and page based on your needs
+  const dispatch = useDispatch();
+  const { transactions, loading, error } = useSelector((state: RootState) => state.transactions);
+  const { data, isLoading, isError } = useGetAllTransactionsQuery({ size: 10, page: 1 });
+  useEffect(() => {
+    dispatch(setLoading(isLoading));
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading transactions</div>;
+    if (data) {
+      dispatch(setTransactions(data.data));
+    }
+
+    if (isError) {
+      dispatch(setError("Error loading transactions"));
+    }
+  }, [data, isLoading, isError, dispatch]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="">
@@ -40,7 +56,7 @@ const AllTransactions = () => {
           <div className="justify-self-center">Receipt</div>
         </div>
 
-        {data?.data.map((transaction, index) => (
+        {transactions.map((transaction, index) => (
           <div
             key={index}
             className="grid grid-cols-7 xl:grid-cols-9 border-b min-h-12 items-center text-xs lg:font-medium xl:text-[18px]"

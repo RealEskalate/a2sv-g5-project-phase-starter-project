@@ -166,18 +166,31 @@ func validateContent(content string) error {
 	return nil
 }
 
-// Update updates the blog's fields with the provided configuration after validating the data.
-func (b *Blog) Update(config Config) error {
+// UpdateTitle updates the blog's Title after validating the data.
+func (b *Blog) UpdateTitle(config Config) error {
 	if err := validateTitle(config.Title); err != nil {
 		return err
 	}
+
+	b.title = config.Title
+	b.updatedDate = time.Now()
+	return nil
+}
+
+// UpdateContent updates the blog's content  after validating the data.
+func (b *Blog) UpdateContent(config Config) error {
 
 	if err := validateContent(config.Content); err != nil {
 		return err
 	}
 
-	b.title = config.Title
 	b.content = config.Content
+	b.updatedDate = time.Now()
+	return nil
+}
+
+// UpdateTags updates the blog's tags.
+func (b *Blog) UpdateTags(config Config) error {
 	b.tags = config.Tags
 	b.updatedDate = time.Now()
 	return nil

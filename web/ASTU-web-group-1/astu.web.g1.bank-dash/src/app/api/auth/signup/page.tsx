@@ -1,4 +1,4 @@
-import SignUpForm from '@/components/Formx/SignUpForm';
+import SignUpForm from '@/components/Form/AuthForm/SignUpForm';
 import Image from 'next/image';
 
 export default function page() {
@@ -14,7 +14,7 @@ export default function page() {
         />
       </div>
       <div className='h-[100vh] bg-slate-200 md:w-1/2 p-6 flex items-center justify-center '>
-      <SignUpForm />
+        <SignUpForm />
       </div>
     </div>
   );

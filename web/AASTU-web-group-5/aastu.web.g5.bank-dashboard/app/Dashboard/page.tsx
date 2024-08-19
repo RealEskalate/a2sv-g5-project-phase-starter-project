@@ -1,10 +1,10 @@
 "use client"
 import React from 'react';
-import { RecentTransactionCard } from "./components/RecentTransactionCard";
+import  RecentTransactionCard from "./components/RecentTransactionCard";
 import { QuickTransferList } from './components/QuickTransferList';
 import  PieChartComponent  from './components/PieChartComponent';
 import { BarchartComponent } from './components/BarchartComponent';
-import { LineGraphComponent } from './components/LineGraphComponent';
+import  LineGraphComponent  from './components/LineGraphComponent';
 import Link from 'next/link';
 import Card from '../components/common/card';
 import Chip_card1 from "@/public/assets/image/Chip_Card1.png";

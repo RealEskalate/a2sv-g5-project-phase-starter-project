@@ -2,6 +2,7 @@ package Repositories
 
 import (
 	"blogapp/Domain"
+	"blogapp/Dtos"
 	jwtservice "blogapp/Infrastructure/jwt_service"
 	"blogapp/Infrastructure/password_services"
 	"context"
@@ -86,10 +87,15 @@ func (au *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.
 }
 
 // register
-func (au *authRepository) Register(ctx context.Context, user *Domain.User) (*Domain.OmitedUser, error, int) {
+func (au *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserDto) (*Domain.OmitedUser, error, int) {
 
 	// Check if the email is already taken
-	existingUserFilter := bson.D{{"email", user.Email}}
+	existingUserFilter := bson.D{
+		{"$or", bson.A{
+			bson.D{{"email", user.Email}},
+			bson.D{{"username", user.UserName}},
+		}},
+	}
 	existingUserCount, err := au.UserCollection.CountDocuments(ctx, existingUserFilter)
 	if err != nil {
 		fmt.Println("error at count", err)
@@ -98,7 +104,11 @@ func (au *authRepository) Register(ctx context.Context, user *Domain.User) (*Dom
 	if existingUserCount > 0 {
 		return &Domain.OmitedUser{}, errors.New("Email is already taken"), http.StatusBadRequest
 	}
-
+	// check if password is following the rules
+	err = password_services.CheckPasswordStrength(user.Password)
+	if err != nil {
+		return &Domain.OmitedUser{}, err, http.StatusBadRequest
+	}
 	// User registration logic
 	hashedPassword, err := password_services.GenerateFromPasswordCustom(user.Password)
 	if err != nil {
@@ -107,6 +117,7 @@ func (au *authRepository) Register(ctx context.Context, user *Domain.User) (*Dom
 	}
 
 	user.Password = string(hashedPassword)
+	user.Role = "role"
 	user.CreatedAt = time.Now()
 	user.Posts = []*Domain.Post{}
 

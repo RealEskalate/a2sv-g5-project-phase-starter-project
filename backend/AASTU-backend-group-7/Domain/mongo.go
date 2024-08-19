@@ -25,7 +25,6 @@ type Cursor interface {
 	Decode(val interface{}) error
 	Close(ctx context.Context) error
 	Err() error
-
 }
 
 // single result interface

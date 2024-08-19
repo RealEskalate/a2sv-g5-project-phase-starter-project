@@ -17,7 +17,7 @@ const ActiveLoansOverview = () => {
     loans = defaultloans;
   }
   if (isLoading) {
-    console.log("Fetching");
+    return <div>Loading...</div>;
   }
 
   if (isSuccess) {

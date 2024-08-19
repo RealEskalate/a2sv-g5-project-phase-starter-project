@@ -13,22 +13,27 @@ export interface TransactionType {
 
 interface TranState {
   transactions: TransactionType[];
+  balanceHist: TransactionType[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
 const initialState: TranState = {
   transactions: [],
+  balanceHist: [],
   status: "idle",
   error: null,
 };
 
 const transactionSlice = createSlice({
-  name: "cards",
+  name: "transactions",
   initialState,
   reducers: {
     setTran(state, action: PayloadAction<TransactionType[]>) {
       state.transactions = action.payload;
+    },
+    setBalHist(state, action: PayloadAction<TransactionType[]>) {
+      state.balanceHist = action.payload;
     },
 
     setStatus(state, action: PayloadAction<TranState["status"]>) {
@@ -40,6 +45,7 @@ const transactionSlice = createSlice({
   },
 });
 
-export const { setTran, setStatus, setError } = transactionSlice.actions;
+export const { setTran, setBalHist, setStatus, setError } =
+  transactionSlice.actions;
 
 export default transactionSlice.reducer;

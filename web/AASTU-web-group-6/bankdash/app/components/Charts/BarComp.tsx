@@ -53,6 +53,7 @@ export default function BarComp() {
               fill="#1814F3" // Change to your desired color
               radius={4}
               barSize={12}
+              // opacity={0.4}
             />
             <Bar
               dataKey="mobile"

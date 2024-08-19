@@ -4,21 +4,23 @@ import BarGraph from "@/app/components/Transaction/BarGraph";
 import Recent from "@/app/components/Transaction/Recent";
 import Pagination from "@/app/components/Transaction/Pagination";
 import VisaCard from "@/app/components/Card/VisaCard";
-import FetchTransaction from "@/app/Services/api/transactionApi";
-import {
-  TransactionResponse,
-  TransactionType,
-  ChartData,
-} from "@/types/TransactionValue";
-import TransactionService from "@/app/Services/api/transactionApi";
+import { TransactionType, ChartData } from "@/types/TransactionValue";
+import { useAppSelector } from "@/app/Redux/store/store";
+import { Card } from "../../Redux/slices/cardSlice";
 
 const Transaction = () => {
-  // const accessToken = process.env.NAHOM_TOKEN as string;
+  // use data from redux store
+  const CardData: Card[] = useAppSelector((state) => state.cards.cards);
+  const TranData: TransactionType[] = useAppSelector(
+    (state) => state.transactions.transactions
+  );
+  const balanceHist: TransactionType[] = useAppSelector(
+    (state) => state.transactions.balanceHist
+  );
+  console.log("Fetched cards:", CardData);
+  console.log("Fetched Transaction:", TranData);
+  console.log("Fetched balanceHist:", balanceHist);
 
-  // const transactionData = await TransactionService.getTransactions(accessToken);
-  // const balance = await TransactionService.balanceHistory(accessToken);
-  // // console.log(balance, "---");
-  const CardData: any = [];
   const convertToChartData = (data: TransactionType[]): ChartData[] => {
     const dayMap: { [key: string]: number } = {
       Mon: 0,
@@ -48,7 +50,7 @@ const Transaction = () => {
     }));
   };
 
-  const chartData = convertToChartData(CardData);
+  const chartData = convertToChartData(TranData);
 
   return (
     <div className="space-y-6 bg-[#F5F7FA] px-4 sm:px-6 md:px-8 lg:px-10">
@@ -86,8 +88,7 @@ const Transaction = () => {
           <BarGraph chartData={chartData} />
         </div>
       </div>
-      {/* <Recent data={transactionData} /> */}
-      <Recent />
+      <Recent data={TranData} />
       <Pagination />
     </div>
   );

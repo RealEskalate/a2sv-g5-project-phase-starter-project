@@ -36,7 +36,7 @@ type BlogUsecase interface {
 	CommentOnBlog(blog_id string, commentor_id string, commentor_username string, comment Comment) error
 
 	SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]Blog, Pagination, error)
-	FilterBlogsByTag(tag string, pageNo string, pageSize string) ([]Blog, Pagination, error)
+	FilterBlogsByTag(tags []string, pageNo string, pageSize string) ([]Blog, Pagination, error)
 
 	GetMyBlogs(user_id string, pageNo string, pageSize string) ([]Blog, Pagination, error)
 	GetMyBlogByID(user_id string, blog_id string, role string) (Blog, error)
@@ -50,7 +50,7 @@ type BlogRepository interface {
 	CommentOnBlog(blog_id string, commentor_id string, commentor_username string, comment Comment) error
 
 	SearchBlogByTitleAndAuthor(title string, author string, pageNo int64, pageSize int64) ([]Blog, Pagination, error)
-	FilterBlogsByTag(tag string, pageNo string, pageSize string) ([]Blog, Pagination, error)
+	FilterBlogsByTag(tags []string, pageNo int64, pageSize int64) ([]Blog, Pagination, error)
 
 	GetMyBlogs(user_id string, pageNo int64, pageSize int64) ([]Blog, Pagination, error)
 	GetMyBlogByID(user_id string, blog_id string) (Blog, error)

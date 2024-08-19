@@ -4,6 +4,7 @@ import (
 	domain "blogs/Domain"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -102,7 +103,51 @@ func (b BlogController) DeleteBlogByID(c *gin.Context) {
 
 // FilterBlogsByTag implements domain.BlogUsecase.
 func (b BlogController) FilterBlogsByTag(c *gin.Context) {
-	panic("unimplemented")
+	pageNo := c.Query("pageNo")
+	pageSize := c.Query("pageSize")
+
+	if pageNo == "" {
+		pageNo = "0"
+	}
+	if pageSize == "" {
+		pageSize = "0"
+	}
+
+	tagsParam := c.Query("tags")
+	var tags []string
+	if tagsParam != "" {
+		tags = strings.Split(tagsParam, ",")
+		if len(tags) == 0 {
+			c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+				Status:  http.StatusBadRequest,
+				Message: "tags should not empty",
+			})
+			c.Abort()
+		}
+	} else {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Message: "tags should not empty",
+		})
+		c.Abort()
+	}
+	blogs, pagination, err := b.BlogUsecase.FilterBlogsByTag(tags, pageNo, pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	} else {
+		data := make(map[string]interface{}, 2)
+		data["blogs"] = blogs
+		data["pagination"] = pagination
+
+		c.JSON(http.StatusAccepted, domain.SuccessResponse{
+			Status:  http.StatusAccepted,
+			Data:    data,
+			Message: "blogs",
+		})
+	}
 }
 
 // GetBlogByID implements domain.BlogUsecase.
@@ -249,7 +294,6 @@ func (b BlogController) SearchBlogByTitleAndAuthor(c *gin.Context) {
 		},
 		Status: http.StatusOK,
 	})
-
 }
 
 // UpdateBlogByID implements domain.BlogUsecase.

@@ -22,6 +22,7 @@ func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration) *BlogU
 // CreateBlogPost implements domain.BlogUseCaseInterface.
 func (b *BlogUseCase) CreateBlogPost(ctx context.Context, blog *domain.Blog) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
+	blog.CreatedAt = time.Now()
 	defer cancel()
 
 	err := b.blogRepo.InsertBlogPost(ctx, blog)
@@ -47,6 +48,8 @@ func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string) domain.
 func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *domain.Blog) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
+
+	blog.UpdatedAt = time.Now()
 
 	err := b.blogRepo.UpdateBlogPost(ctx, blogId, blog)
 	if err != nil{

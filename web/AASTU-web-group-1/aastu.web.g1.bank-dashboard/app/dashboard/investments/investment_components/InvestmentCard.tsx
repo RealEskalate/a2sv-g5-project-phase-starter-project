@@ -8,13 +8,13 @@ export default function InvestmentCard(props:any){
       </div>
       <div className='my-auto w-[50%] md:w-[30%]'>
         <h1>{props.name}</h1>
-        <div className='flex flex-row gap-1 text-nowrap'>
+        <div className='flex flex-row gap-1 flex-wrap'>
             {props.type.map((item:any) => (
-              <p className='text-bg-gray font-[400] text-blue-900 text-[14px] md:text-[16px]' key={item}>{item}</p>
+              <p className='text-bg-gray font-[400] text-blue-900 text-[14px] md:text-[16px] text-wrap w-[100px] ml-0' key={item}>{item}</p>
             ))}
         </div>
       </div>
-      <div className='my-auto w-[30%] hidden md:table-cell'>
+      <div className='my-auto w-[30%] hidden lg:table-cell'>
         <h1 className='text-[16px] md:text-[20px]' >{props.investmentValue}</h1>
         <p className='text-blue-800 text-[10px] md:text-[16px]'>Envestment Value</p>
       </div>

@@ -70,3 +70,8 @@ func UnprocessableEntity(msg string) *ErrorResponse {
 		Message: msg,
 	}
 }
+
+
+func Nil() *ErrorResponse{
+	return &ErrorResponse{}
+}

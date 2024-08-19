@@ -25,12 +25,21 @@ type BlogUseCase interface {
 	SearchBlogsByAuthor(author string) ([]Blog, Error)
 	FilterBlogs(tags []string, dateAfter time.Time, popular bool) ([]Blog, Error)
 	LikeBlog(userID, blogID string) Error
+<<<<<<< HEAD
 
 	AddComment(blogID string, comment *Comment) Error
 	DeleteComment(blogID, commentID string) Error
 	EditComment(blogID string, commentID string, comment *Comment) Error
 	Like(blogId string, userID string) Error
 	DisLike(blogId string, userID string) Error
+=======
+	
+	AddComment(blogID string, comment *Comment) Error
+	DeleteComment(blogID, commentID string) Error
+	EditComment(commentID string, comment *Comment) Error
+	Like(blogId string , userID string) Error
+	DisLike(blogId string , userID string) Error
+>>>>>>> a142a8e6 (blog controller added)
 }
 
 type BlogAssistantUseCase interface {

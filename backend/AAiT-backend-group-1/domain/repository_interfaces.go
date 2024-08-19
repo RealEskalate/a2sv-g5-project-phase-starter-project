@@ -13,14 +13,15 @@ type UserRepository interface {
 type BlogRepository interface {
 	FindById(id string) (*Blog, Error)
 	FindAll() ([]Blog, Error)
-	Create(blog *Blog) (*Blog, Error)
-	Update(blog *Blog) (*Blog, Error)
+	Create(blog *Blog ) (*Blog, Error)
+	Update(blogID string , blog *Blog) (*Blog, Error)
 	Delete(id string) Error
-	Search(query string) ([]Blog, Error)
+	SearchByTitle(title string) ([]Blog, Error)
+	SearchByAuthor(author string) ([]Blog, Error)
 	Filter(filters map[string]interface{}) ([]Blog, Error)
 	AddComment(blogID string, comment *Comment) Error
 	DeleteComment(blogID, commentID string) Error
 	EditComment(blogID, commentID string, comment *Comment) Error
-	Like(id string) Error
-	DisLike(id string) Error
+	Like(id string , userID string) Error
+	DisLike(id string , userID string) Error
 }

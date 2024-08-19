@@ -13,6 +13,13 @@ type Blog struct {
 	UpdatedAt time.Time    `bson:"updated_at" json:"updated_at"`
 }
 
+type RequestBlog struct {
+	Title     string   `json:"title"`
+	Content   string   `json:"content"`
+	Author    string   `json:"author"`
+	Tags      []string `json:"tags"`
+}
+
 type BlogRepository interface {
 	FindAll() ([]Blog, error)
 	FindByID(id string) (*Blog, error)

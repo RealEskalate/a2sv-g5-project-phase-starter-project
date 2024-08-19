@@ -138,7 +138,7 @@ const transactions: Transaction[] = [
 // App Component
 const App: React.FC = () => {
   return (
-    <div className="p-3 flex-1 h-auto bg-gray-50">
+    <div className="p-3 gap-4 flex-1 h-auto bg-gray-50">
       {transactions.map((transaction, index) => (
         <TransactionCard key={index} transaction={transaction} />
       ))}

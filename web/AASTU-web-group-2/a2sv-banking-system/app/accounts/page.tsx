@@ -9,6 +9,7 @@ import ListCard from "./components/ListCard";
 import { IconType } from "react-icons";
 import BarChartForAccounts from "./components/BarChartForAccounts";
 import Card from "../components/Page2/Card";
+
 type DataItem = {
   heading: string;
   text: string;

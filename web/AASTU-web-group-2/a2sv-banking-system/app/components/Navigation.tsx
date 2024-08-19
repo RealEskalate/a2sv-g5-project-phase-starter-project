@@ -15,6 +15,7 @@ const Navigation: React.FC<Props> = ({ children }) => {
     const fetchSession = async () => {
       const sessionData = await getSession();
       if (sessionData?.user) {
+        console.log("Session Available")
         setSession(true);
       }
     };

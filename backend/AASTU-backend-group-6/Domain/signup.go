@@ -2,6 +2,7 @@ package domain
 
 type SignUpRequest struct {
 	Email             string `json:"email" validate:"required"`
+	Full_Name         string `json:"full_name" validate:"required"`
 	Username          string `json:"username" validate:"required"`
 	Password          string `json:"password" validate:"required"`
 	Profile_image_url string `json:"profile_image"`
@@ -15,9 +16,6 @@ type SignUpResponse struct {
 	Data    interface{} `json:"data"`
 	Status  int         `json:"status"`
 }
-
-
-
 
 type ForgotPasswordRequest struct { 
 	Email string `json:"email" validate:"required"`

@@ -43,6 +43,7 @@ type User struct {
 	resetCode    *ResetCode
 	createdAt    time.Time
 	updatedAt    time.Time
+	isActive     bool
 }
 
 // Config holds parameters for creating a new User.
@@ -212,9 +213,9 @@ func (u *User) IsAdmin() bool {
 	return u.isAdmin
 }
 
-// IsAdmin returns whether the user is an admin.
-func (u *User) ResetCode() *ResetCode {
-	return u.resetCode
+// IsActive returns whether the user is an active.
+func (u *User) IsActive() bool {
+	return u.isActive
 }
 
 // UpdateUsername updates the user's username after validation.
@@ -224,6 +225,10 @@ func (u *User) UpdateUsername(newUsername string) error {
 	}
 	u.username = newUsername
 	return nil
+}
+
+func (u *User) MakeActive() {
+	u.isActive = true
 }
 
 // UpdateFirstName updates the user's firstname after validation.

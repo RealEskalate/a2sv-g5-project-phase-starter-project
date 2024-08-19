@@ -14,17 +14,15 @@ type BlogController interface {
 	GetBlogs(c *gin.Context)
 	UpdateBlog(c *gin.Context)
 	DeleteBlog(c *gin.Context)
-	SearchBlogs(c *gin.Context)
+	SearchBlogsByTitle(c *gin.Context)
+	SearchBlogsByAuthor(c *gin.Context)
 	FilterBlogs(c *gin.Context)
-	CommentBlog(c *gin.Context)
 	LikeBlog(c *gin.Context)
 	DislikeBlog(c *gin.Context)
-	
 	AddComment(c *gin.Context)
 	DeleteComment(c *gin.Context)
 	EditComment(c *gin.Context)
-	Like(c gin.Context)
-	DisLike(c gin.Context)
+
 }
 
 type UserController interface {

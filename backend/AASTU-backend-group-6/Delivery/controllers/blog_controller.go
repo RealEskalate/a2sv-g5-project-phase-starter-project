@@ -216,17 +216,11 @@ func (b BlogController) SearchBlogByTitleAndAuthor(c *gin.Context) {
 	author := c.Query("author")
 	pageNo := c.Query("pageNo")
 	pageSize := c.Query("pageSize")
-	if pageNo == "" {
-		pageNo = "0"
-	}
-	if pageSize == "" {
-		pageSize = "0"
-	}
 	blogs, pagination, err := b.BlogUsecase.SearchBlogByTitleAndAuthor(title, author, pageNo, pageSize)
-	if err != nil{
-		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
-			Message: err.Error(),
-			Status: http.StatusInternalServerError,
+	if err != (domain.ErrorResponse{}) {
+		c.JSON(err.Status, domain.ErrorResponse{
+			Message: err.Message,
+			Status: err.Status,
 		})
 		return
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 
-type BlogRepository interface {
+type BlogRepositoryInterface interface {
 	CreateBlog(ctx context.Context, blog *models.Blog) error
 	GetBlogByID(ctx context.Context, blogID primitive.ObjectID) (*models.Blog, error)
 	GetBlogs(ctx context.Context, filter map[string]interface{}, search string, page int, limit int) ([]*models.Blog, error)

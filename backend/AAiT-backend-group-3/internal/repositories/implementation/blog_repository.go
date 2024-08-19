@@ -7,7 +7,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"AAIT-backend-group-3/internal/domain/models"
-	"AAIT-backend-group-3/internal/repository_interfaces"
 )
 
 type MongoBlogRepository struct {
@@ -37,7 +36,7 @@ func (r *MongoBlogRepository) GetBlogByID(ctx context.Context, blogID primitive.
 func (r *MongoBlogRepository) GetBlogs(ctx context.Context, filter map[string]interface{}, search string, page int, limit int) ([]*models.Blog, error) {
 	var blogs []*models.Blog
 
-	// Construct the filter
+	
 	filterBson := bson.M{}
 	if search != "" {
 		filterBson["$text"] = bson.M{"$search": search}
@@ -92,3 +91,6 @@ func (r *MongoBlogRepository) AddCommentToTheList(ctx context.Context, blogID pr
 	)
 	return err
 }
+
+
+

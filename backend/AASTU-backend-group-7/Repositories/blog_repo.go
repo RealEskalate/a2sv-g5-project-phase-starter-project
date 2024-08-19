@@ -33,14 +33,14 @@ func NewBlogRepository(blogCollection Domain.BlogCollections) *blogrepository {
 func (br *blogrepository) CreateBlog(ctx context.Context, post *Domain.Post) (error, int) {
 
 	// insert post to post collection
-	_, err := br.postCollection.InsertOne(ctx, post)
+	blogID, err := br.postCollection.InsertOne(ctx, post)
 	if err != nil {
 		fmt.Println("error at insert", err)
 		return err, 500
 	}
 	// insert id to field in user collection called posts
 	filter := bson.D{{"_id", post.AuthorID}}
-	update := bson.D{{"$push", bson.D{{"posts", post}}}}
+	update := bson.D{{"$push", bson.D{{"posts", blogID}}}}
 	_, err = br.userCollection.UpdateOne(ctx, filter, update)
 	// return error if any
 	if err != nil {

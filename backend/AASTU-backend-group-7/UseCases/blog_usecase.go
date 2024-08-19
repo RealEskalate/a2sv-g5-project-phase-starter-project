@@ -51,3 +51,5 @@ func (uc *blogUsecase) UpdatePostByID(c *gin.Context, id primitive.ObjectID, pos
 	return uc.BlogRepository.UpdatePostByID(ctx,id,post)
 }
 
+
+

@@ -11,12 +11,12 @@ import (
 
 type BlogUseCaseTestSuite struct {
 	suite.Suite
-	mockBlogRepo *mocks.Blog_Rerpository_interface
+	mockBlogRepo *mocks.Blog_Repository_interface
 	blogUseCase  *usecase.BlogUseCase
 }
 
 func (suite *BlogUseCaseTestSuite) SetupTest() {
-	suite.mockBlogRepo = mocks.NewBlog_Rerpository_interface(suite.T())
+	suite.mockBlogRepo = mocks.NewBlog_Repository_interface(suite.T())
 	suite.blogUseCase = &usecase.BlogUseCase{
 		BlogRepo: suite.mockBlogRepo,
 	}
@@ -43,7 +43,7 @@ func (suite *BlogUseCaseTestSuite) TestGetOneBlog() {
 	blogs, err := suite.blogUseCase.GetOneBlog(id)
 	suite.NoError(err)
 	suite.Len(blogs, 1)
-	suite.Equal(expectedBlogs[0].Title, blogs[0].Title)
+	suite.Equal(expectedBlogs[0].Title, blogs.Title)
 
 	suite.mockBlogRepo.AssertExpectations(suite.T())
 }
@@ -63,10 +63,10 @@ func (suite *BlogUseCaseTestSuite) TestUpdateBlog() {
 
 func (suite *BlogUseCaseTestSuite) TestDeleteBlog() {
 	id := "some-id"
-
+	user_id := "some_user_id"
 	suite.mockBlogRepo.On("DeleteBlogDocunent", id).Return(nil)
 
-	err := suite.blogUseCase.DeleteBlog(id)
+	err := suite.blogUseCase.DeleteBlog(id , user_id)
 	suite.NoError(err)
 
 	suite.mockBlogRepo.AssertExpectations(suite.T())

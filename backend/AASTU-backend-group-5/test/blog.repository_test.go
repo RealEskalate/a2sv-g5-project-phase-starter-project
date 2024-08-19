@@ -44,7 +44,7 @@ func (suite *BlogRepoTestSuite) TestFindById() {
 	}).Return(nil)
 
 	id := primitive.NewObjectID()
-	blog, err := suite.repo.GetOneBlogDocument(id.Hex())
+	blog, err := suite.repo.GetOneBlogDocunent(id.Hex())
 	suite.NoError(err)
 	suite.NotNil(blog.ID)
 
@@ -66,7 +66,7 @@ func (suite *BlogRepoTestSuite) TestGetAllBlogs() {
 
 	suite.mockCursor.On("Close", context.TODO()).Return(nil)
 
-	blogs, err := suite.repo.GetBlogDocuments(0, 10)
+	blogs, err := suite.repo.GetBlogDocunents(0 , 10)
 
 	suite.NoError(err)
 	suite.Len(blogs, 1)
@@ -87,7 +87,7 @@ func (suite *BlogRepoTestSuite) TestUpdateBlogById() {
 
 	id := primitive.NewObjectID().Hex()
 	blog := domain.Blog{ID: primitive.NewObjectID(), Title: "updated title"}
-	updatedBlog, err := suite.repo.UpdateBlogDocument(id, blog)
+	updatedBlog, err := suite.repo.UpdateBlogDocunent(id , blog)
 	suite.NoError(err)
 	suite.Equal("updated title", updatedBlog.Title)
 
@@ -98,7 +98,7 @@ func (suite *BlogRepoTestSuite) TestCreateBlog() {
 	suite.mockColl.On("InsertOne", context.TODO(), mock.Anything).Return(&mongo.InsertOneResult{}, nil)
 
 	blog := domain.Blog{Title: "test title"}
-	createdBlog, err := suite.repo.CreateBlogDocument(blog)
+	createdBlog, err := suite.repo.CreateBlogDocunent(blog)
 	suite.NoError(err)
 	suite.Equal("test title", createdBlog.Title)
 
@@ -119,7 +119,7 @@ func (suite *BlogRepoTestSuite) TestDeleteBlogByID() {
 	suite.mockDeleteResult.On("DeletedCount").Return(int64(1))
 
 	id := primitive.NewObjectID().Hex()
-	err := suite.repo.DeleteBlogDocument(id, primitive.NewObjectID())
+	err := suite.repo.DeleteBlogDocument(id, primitive.NewObjectID().Hex())
 	suite.NoError(err)
 
 	suite.mockColl.AssertExpectations(suite.T())

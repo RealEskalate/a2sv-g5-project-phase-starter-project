@@ -119,12 +119,7 @@ func (bc *BlogController) GetOneBlog() gin.HandlerFunc {
 			return
 		}
 
-		if len(blogs) == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Blog post not found."})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"message": "Blog post retrieved successfully!", "blog": blogs[0]})
+		c.JSON(http.StatusOK, gin.H{"message": "Blog post retrieved successfully!", "blog": blogs})
 	}
 }
 
@@ -158,8 +153,12 @@ func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		idStr := c.Param("id")
-
-		if err := bc.BlogUsecase.DeleteBlog(idStr); err != nil {
+		
+		user_id,err := c.Get("user_id")
+		if err {
+			c.IndentedJSON(http.StatusBadRequest , gin.H{"error": "context not set"})
+		}
+		if err := bc.BlogUsecase.DeleteBlog(idStr , user_id.(string)); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to delete blog post. Please try again: " + err.Error()})
 			return
 		}

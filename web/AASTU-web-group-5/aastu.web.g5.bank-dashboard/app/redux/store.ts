@@ -1,7 +1,8 @@
+// store.js
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
+import userSaga from './userSaga';
 import userReducer from './slice/userSlice';
-import rootSaga from './sagas';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -9,9 +10,9 @@ const store = configureStore({
   reducer: {
     user: userReducer,
   },
-  middleware: [sagaMiddleware],
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(sagaMiddleware),
 });
 
-sagaMiddleware.run(rootSaga);
+sagaMiddleware.run(userSaga);
 
 export default store;

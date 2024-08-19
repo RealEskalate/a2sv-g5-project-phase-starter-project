@@ -3,6 +3,7 @@ package controllers
 import (
 	domain "blogs/Domain"
 	infrastructure "blogs/Infrastructure"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,14 +23,17 @@ func (s *OauthController) GoogleAuth(c *gin.Context) {
 
 func (s *OauthController) GoogleCallback(c *gin.Context) {
 
-	state := c.Query("state")
 
+	state := c.Query("state")
+	
 	if state != s.Config.OauthSecret {
 		c.JSON(400, gin.H{"error": "invalid oauth state"})
 		return
 
 	}
 	code := c.Query("code")
+
+	
 	
 	
 	user := s.OauthUsecase.OauthCallback(c , code)
@@ -49,6 +53,14 @@ func (s *OauthController) GoogleCallback(c *gin.Context) {
 			return
 		}
 
+		err = s.Login.SaveAsActiveUser(data.User, refreshToken, c)
+
+		if err != nil {
+			c.JSON(500, gin.H{"error": "error saving active user"})
+			return
+		}
+
+
 		loginResponse := &domain.LoginResponse{
 			Message: "Login Successful",
 			AccessToken:  acessToken,
@@ -61,11 +73,9 @@ func (s *OauthController) GoogleCallback(c *gin.Context) {
 	case *domain.ErrorResponse:
 		HandleResponse(c , data)
 		return 
-		
 	default:
 		c.JSON(500, gin.H{"error": "unexpected response from OauthCallback"})
 	}
 
-	
 	
 }

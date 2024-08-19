@@ -3,8 +3,10 @@ package usecases
 import (
 	domain "blogs/Domain"
 	"context"
+	"strings"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	oauth2Service "google.golang.org/api/oauth2/v2"
 	"google.golang.org/api/option"
 )
@@ -24,6 +26,8 @@ func NewOauthUsecase(signupRepository domain.SignupRepository, timeout time.Dura
 
 
 func (u *OauthUseCase) OauthService() (interface{}) {
+	
+
 	// Call InitialConfig and handle potential errors
 	credentials, err := u.oauthService.InitialConfig()
 	if err != nil {
@@ -81,6 +85,9 @@ func (u *OauthUseCase)  OauthCallback(c context.Context , query string) (interfa
 		userData.GoogleID = userinfo.Id
 		userData.Role = "user"
 		userData.Verified = true
+		userData.ID = primitive.NewObjectID()
+		// spliting with @
+		userData.Username = userinfo.Email[:strings.Index(userinfo.Email, "@")]
 
 
 		createdUser, err := u.signupRepository.Create(ctx, userData)

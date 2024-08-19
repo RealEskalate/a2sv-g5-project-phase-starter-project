@@ -90,11 +90,18 @@ func (au *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.
 func (au *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserDto) (*Domain.OmitedUser, error, int) {
 
 	// Check if the email is already taken
-	existingUserFilter := bson.D{
-		{"$or", bson.A{
-			bson.D{{"email", user.Email}},
-			bson.D{{"username", user.UserName}},
-		}},
+	existingUserFilter := bson.D{}
+	if user.UserName != "" {
+		existingUserFilter = bson.D{
+			{"$or", bson.A{
+				bson.D{{Key: "email", Value: user.Email}},
+				bson.D{{Key: "username", Value: user.UserName}},
+			}},
+		}
+	} else {
+		existingUserFilter = bson.D{
+			{Key: "email", Value: user.Email},
+		}
 	}
 	existingUserCount, err := au.UserCollection.CountDocuments(ctx, existingUserFilter)
 	if err != nil {

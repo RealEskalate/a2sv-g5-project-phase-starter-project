@@ -40,4 +40,15 @@ func BlogRouter() {
 		// get user's comments
 		commentRouter.GET("/getmycomments", commentcontroller.GetMyComments)
 	}
+
+	tagRouter := Router.Group("/tags", auth_middleware.AuthMiddleware(), auth_middleware.IsAdminMiddleware())
+	{
+		tagRepo := Repositories.NewTagsRepository(BlogCollections)
+		tagUsecase := usecases.NewTagsUseCase(tagRepo)
+		tagController := controllers.NewTagsController(tagUsecase)
+
+		tagRouter.POST("/create", tagController.CreateTag)
+		//delete tag
+		tagRouter.DELETE("/delete/:id", tagController.DeleteTag)
+	}
 }

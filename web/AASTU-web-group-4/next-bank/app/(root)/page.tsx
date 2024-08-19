@@ -2,6 +2,7 @@ import React from "react";
 import { Color } from "chart.js";
 import { colors, logo } from "@/constants";
 import DesktopCreditCart from "@/components/DesktopCreditCard";
+import ResponsiveCreditCard from "@/components/CreditCard";
 import RecentTransaction from "@/components/Recent Transaction";
 import ExpensesChart from "@/components/ExpensesCart";
 import { icons, Import } from "lucide-react";
@@ -26,15 +27,13 @@ const page = () => {
           <div className="max-w-sm md:max-w-full">
             <div className="flex gap-3 overflow-x-auto max-w-full md:w-auto">
               <div className=" py-3 ">
-                <DesktopCreditCart
-                  bgColor={colors.blue}
-                  textColor={colors.textwhite}
+                <ResponsiveCreditCard
+                  backgroundColor={colors.blue}
                 />
               </div>
               <div className=" py-3 ">
-                <DesktopCreditCart
-                  bgColor={colors.white}
-                  textColor={colors.textblack}
+              <ResponsiveCreditCard
+                  backgroundColor={colors.white}
                 />
               </div>
             </div>

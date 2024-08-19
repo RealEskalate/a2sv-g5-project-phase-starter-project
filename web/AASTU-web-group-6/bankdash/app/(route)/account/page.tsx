@@ -1,5 +1,5 @@
-import Card from '../../components/Accounts/account'
-import LastTransList from '@/app/components/Accounts/LastTransPa';
+import Card from "../../components/Accounts/account";
+import LastTransList from "@/app/components/Accounts/LastTransPa";
 import { DebitCreditOver } from "../../components/Accounts/DebitCreditOver";
 import InvoiceCard from "../../components/Accounts/InvoiceCard";
 import VisaCard from "@/app/components/Card/VisaCard";
@@ -12,7 +12,6 @@ export default function Home() {
   const CardData: CardType[] = useAppSelector((state) => state.cards.cards);
   return (
     <>
-      
       <div className="flex flex-col lg:flex-row gap-7">
         <div className="flex lg:w-[45%] gap-7">
           <Card
@@ -54,7 +53,7 @@ export default function Home() {
             Last Transaction
           </p>
           <div className=" bg-white border rounded-3xl p-3 shadow-lg border-gray-300">
-            <LastTransList/>
+            <LastTransList />
           </div>
         </div>
         <div className="lg:w-[30%] lg:h-[250px]">

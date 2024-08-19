@@ -38,10 +38,10 @@ const handleRequest = async (
 };
 class LastTransService {
   public static getExpenseData(accessToken?: string): Promise<Transaction[]> {
-    return handleRequest("GET", `${API_URL_expense}?page=0&size=3`, undefined, accessToken);
+    return handleRequest("GET", `${API_URL_expense}?page=0&size=1000`, undefined, accessToken);
   }
   public static getIncomeData(accessToken?: string): Promise<Transaction[]> {
-    return handleRequest("GET", `${API_URL_income}?page=0&size=3`, undefined, accessToken);
+    return handleRequest("GET", `${API_URL_income}?page=0&size=1000`, undefined, accessToken);
   }
 
 }

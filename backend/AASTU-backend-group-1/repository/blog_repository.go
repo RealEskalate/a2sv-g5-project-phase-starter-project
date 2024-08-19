@@ -18,6 +18,16 @@ type BlogRepository struct {
 	commentCollection *mongo.Collection
 }
 
+// UpdateLike implements domain.BlogRepository.
+func (b *BlogRepository) UpdateLike(like *domain.Like) error {
+	panic("unimplemented")
+}
+
+// GetBlogByID implements domain.BlogRepository.
+func (b *BlogRepository) GetBlogByID(id string) (*domain.Blog, error) {
+	panic("unimplemented")
+}
+
 func NewBlogRepository(database *mongo.Database) domain.BlogRepository {
 	return &BlogRepository{
 		blogCollection:    database.Collection("blog"),
@@ -31,12 +41,6 @@ func NewBlogRepository(database *mongo.Database) domain.BlogRepository {
 func (b *BlogRepository) InsertBlog(blog *domain.Blog) error {
 	_, err := b.blogCollection.InsertOne(context.Background(), blog)
 	return err
-}
-
-// GetBlog implements domain.BlogRepository.
-func (b *BlogRepository) GetBlog(page int, size int) ([]*domain.Blog, error) {
-	panic("not implemented") // TODO: Implement
-
 }
 
 // UpdateBlogByID implements domain.BlogRepository.

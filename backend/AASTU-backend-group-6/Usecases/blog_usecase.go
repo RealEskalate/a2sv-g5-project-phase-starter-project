@@ -150,20 +150,36 @@ func (b BlogUsecase) GetMyBlogs(user_id string, pageNo string, pageSize string) 
 }
 
 // SearchBlogByTitleAndAuthor implements domain.BlogRepository.
-func (b BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
+func (b BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, domain.ErrorResponse) {
+	if pageNo == "" {
+		pageNo = "0"
+	}
+	if pageSize == "" {
+		pageSize = "0"
+	}
 	pageNO, err := strconv.ParseInt(pageNo, 10, 64)
 	if err != nil {
-		return []domain.Blog{}, domain.Pagination{}, err
+		return []domain.Blog{}, domain.Pagination{}, domain.ErrorResponse{
+			Message: "invalid page number",
+			Status:  400,
+		}
 	}
 	limit, err := strconv.ParseInt(pageSize, 10, 64)
 	if err != nil {
-		return []domain.Blog{}, domain.Pagination{}, err
+		return []domain.Blog{}, domain.Pagination{}, domain.ErrorResponse{
+			Message: "invalid page size",
+			Status:  400,
+		}
 	}
 	blogs, pagination, err := b.blogRepository.SearchBlogByTitleAndAuthor(title, author, pageNO, limit)
-	if err != nil {
-		return nil, domain.Pagination{}, err
+
+	if err != nil{
+		return nil, domain.Pagination{}, domain.ErrorResponse{
+			Message: "internal server error",
+			Status:  500,
+		}
 	}
-	return blogs, pagination, nil
+	return blogs, pagination, domain.ErrorResponse{}
 }
 
 // UpdateBlogByID implements domain.BlogRepository.

@@ -264,12 +264,12 @@ func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, 
 	pageOption := utils.PaginationByPage(pageNo, pageSize)
 	filter := bson.M{}
 	if title != "" {
-		filter["title"] = bson.M{"$regex": `(?i)` + title}
+		filter["title"] = bson.M{"$regex": title, "$options": "i"}
 	}
-	if author != "" {
-		filter["author"] = bson.M{"$regex": `(?i)` + author}
+
+	if author != ""{
+		filter["author"] = bson.M{"$regex": author, "$options": "i"}
 	}
-	fmt.Println(filter)
 	totalResults, err := b.PostCollection.CountDocuments(context, filter)
 	if err != nil {
 		return nil, domain.Pagination{}, err

@@ -33,8 +33,9 @@ func (u *SignupUseCase) Create(c context.Context , user domain.User) interface{}
 	user.ID = idofNumber
 
 	// check if user already exists
-	_, err := u.SignupRepository.FindUserByEmail(ctx , user.Email)
-	if err == nil {
+	user , err := u.SignupRepository.FindUserByEmail(ctx , user.Email)
+	
+	if err == nil && user.Verified  {
 		return &domain.ErrorResponse{Message: "User already exists", Status: 400}
 	}
 	// hash the password
@@ -90,7 +91,7 @@ func (u *SignupUseCase) VerifyOTP(c context.Context , otp domain.OtpToken) inter
 	// check if OTP is correct
 	
 	user, err := u.SignupRepository.FindUserByEmail(ctx , otp.Email)
-	if err != nil {
+	if err != nil  {
 		return &domain.ErrorResponse{Message: "User not found", Status: 404}
 	}
 
@@ -204,3 +205,5 @@ func (u *SignupUseCase) ResetPassword(c context.Context , password domain.ResetP
 
 	return &domain.SuccessResponse{Message: "Password Reset Sucessfully" , Status: 200}
 }
+
+

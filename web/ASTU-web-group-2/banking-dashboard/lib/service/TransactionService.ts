@@ -22,7 +22,29 @@ export const transactionApi = createApi({
         },
       }),
     }),
+    getExpenses: builder.query({
+      query: (accessToken: string) => ({
+        url: "/transactions/expenses",
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        params:{
+          "page":1,
+          "size" : 7
+        }
+      }),
+    }),
+    getBalanceHistory: builder.query({
+      query: (accessToken: string) => ({
+        url: "/transactions/balance-history",
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },    
+      }),
+    }),
   }),
 });
 
-export const { useGetAllTransactionQuery, useSignUpMutation } = transactionApi;
+export const { useGetAllTransactionQuery, useSignUpMutation, useGetExpensesQuery, useGetBalanceHistoryQuery } = transactionApi;

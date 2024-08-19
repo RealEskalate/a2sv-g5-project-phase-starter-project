@@ -14,8 +14,8 @@ import (
 )
 
 type authService struct {
-	userService interfaces.UserService
-	tokenRepo   interfaces.RefreshTokenRepository
+	userService          interfaces.UserService
+	tokenRepo              interfaces.RefreshTokenRepository
 	OtpService  interfaces.OTPService
 }
 
@@ -50,13 +50,18 @@ func (service *authService) VerifyEmail(email string, code string) error {
     }
 
     return nil
+	passwordService      interfaces.PasswordService
+	tokenService         interfaces.TokenService
 }
 
-func NewAuthService(userService interfaces.UserService, tokenRepo interfaces.RefreshTokenRepository, otpService interfaces.OTPService) interfaces.AuthenticationService {
+func NewAuthService(userService interfaces.UserService, tokenRepo interfaces.RefreshTokenRepository, otpService interfaces.OTPService,
+	passService interfaces.PasswordService, tokenService interfaces.TokenService) interfaces.AuthenticationService {
 	return &authService{
-		userService: userService,
-		tokenRepo:   tokenRepo,
+		userService:          userService,
+		tokenRepo:              tokenRepo,
+		tokenService:         tokenService,
 		OtpService:  otpService,
+		passwordService:      passService,
 	}
 }
 func (service *authService) RegisterUser(user *entities.User) (*entities.User, error) {

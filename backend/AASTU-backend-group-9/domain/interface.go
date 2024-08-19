@@ -54,6 +54,7 @@ type LoginUsecase interface {
 	CreateAccessToken(user *User, secret string, expiry int) (string, error)
 	CreateRefreshToken(user *User, secret string, expiry int) (string, error)
 	SaveRefreshToken(c context.Context, token *Token) error
+	CheckRefreshToken(c context.Context, refreshToken string) (*Token, error)
 }
 type TokenRepository interface {
 	SaveToken(ctx context.Context, token *Token) error
@@ -73,7 +74,6 @@ type LogoutUsecase interface {
 }
 
 type ForgotPasswordUsecase interface {
-    SendResetOTP(c context.Context, email string, smtpUsername, smtpPassword string) error
-    ResetPassword(c context.Context, email, otpValue, newPassword string) error
+	SendResetOTP(c context.Context, email string, smtpUsername, smtpPassword string) error
+	ResetPassword(c context.Context, email, otpValue, newPassword string) error
 }
-

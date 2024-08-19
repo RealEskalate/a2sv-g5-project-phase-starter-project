@@ -150,6 +150,10 @@ func (b *BlogRepository) DeleteBlogPost(ctx context.Context, blogId string) doma
 
 // InsertBlogPost inserts a new blog post into the database.
 func (b *BlogRepository) InsertBlogPost(ctx context.Context, blog *domain.Blog) domain.CodedError {
+	blog.LikedBy = make([]string, 0)
+	blog.DislikedBy = make([]string, 0)
+	blog.Comments = make([]domain.Comment, 0)
+
 	newBlog, err := toDTO(blog)
 	if err != nil {
 		return domain.NewError("Internal server error: "+err.Error(), domain.ERR_INTERNAL_SERVER)
@@ -238,7 +242,6 @@ func toDomain(blogDTO *dtos.BlogDTO) *domain.Blog {
 
 // Converts Blog domain model to BlogDTO.
 func toDTO(blog *domain.Blog) (*dtos.BlogDTO, error) {
-
 	return &dtos.BlogDTO{
 		Title:      blog.Title,
 		Content:    blog.Content,

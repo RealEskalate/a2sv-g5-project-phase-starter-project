@@ -24,7 +24,7 @@ type User struct {
 	UpdatedAt primitive.Timestamp `bson:"updatedAt" json:"updatedAt"`
 	Image    string              `bson:"image,omitempty" json:"image,omitempty"`
 
-	ActivationToken string             `bson:"activation_token"`
+	ActivationToken string             `bson:"activation_token,omitempty" json:"activation_token,omitempty"`
 	TokenCreatedAt time.Time          `bson:"token_created_at"`
 	IsActive       bool               `bson:"is_active"`
 	RefreshTokens   []RefreshToken      `bson:"refresh_tokens" json:"refresh_tokens"`
@@ -76,6 +76,10 @@ type UserUsecase interface {
 	Register(user User) error
 	GetUserByUsernameOrEmail(username, email string) (User, error)
 	AccountActivation(token string, email string) error
+	Logout(userID, deviceID, token string) error
+	LogoutAllDevices(userID string) error
+	LogoutDevice(userID, deviceID string) error
+	GetDevices(userID string) ([]string, error)
 
 	// for google oauth
 	OAuthLogin(oauthUserInfo OAuthUserInfo, deviceID string) (LogInResponse, error)

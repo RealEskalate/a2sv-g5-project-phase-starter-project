@@ -9,12 +9,14 @@ import (
 	"blog_api/usecase"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup) {
-	repository := repository.NewUserRepository(collection)
-	usecase := usecase.NewUserUsecase(repository)
+func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, redisClient *redis.Client) {
+	userRepository := repository.NewUserRepository(collection)
+	redisRepoistory := repository.NewRedisRepository(redisClient)
+	usecase := usecase.NewUserUsecase(userRepository, redisRepoistory)
 	controller := controllers.NewAuthController(usecase)
 
 	authGroup.POST("/signup", controller.HandleSignup)

@@ -17,13 +17,13 @@ export default function RootLayout({
     (item) => item.route === pathname
   )[0].title;
   return (
-    <main className="flex h-screen font-inter bg-white md:bg-[#F5F7FA]">
+    <main className="flex h-screen font-inter bg-[#F5F7FA]">
       <Sidebar />
       <div className="w-full flex-grow flex flex-col overflow-x-hidden">
         <Header title={title} />
 
         <div className="flex size-full flex-col">
-          <div className="flex h-16 items-center justify-between p-5 sm:p-8 md:hidden">
+          <div className="bg-white flex h-16 items-center justify-between p-5 sm:p-8 md:hidden">
             <div>
               <MobileSidebar />
             </div>
@@ -33,8 +33,8 @@ export default function RootLayout({
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </div>
-          <div className="justify-center items-center flex">
-            <div className="justify-center items-center flex gap-3 bg-[#F5F7FA] p-3 rounded-full md:hidden">
+          <div className="justify-center items-center flex bg-white">
+            <div className="justify-center items-center flex gap-3 bg-[#F5F7FA] p-3 rounded-full md:hidden mb-4 md:mb-0">
               <Image
                 src="/icons/Search.svg"
                 width={20}

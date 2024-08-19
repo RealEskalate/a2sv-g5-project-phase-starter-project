@@ -44,7 +44,7 @@ func (uc *UserController) Login(c *gin.Context){
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User logged in successfully", "token": token, "refresh_token": refreshToken})
+	c.JSON(http.StatusOK, gin.H{"message": "Logged in successfully", "token": token, "refresh_token": refreshToken})
 }
 
 func (uc *UserController) Logout(c *gin.Context) {
@@ -81,21 +81,6 @@ func (uc *UserController) RefreshToken(c *gin.Context){
 	// c.JSON(http.StatusOK, gin.H{"message": "Token refreshed successfully", "token": newToken})
 }
 
-func (uc *UserController) ForgotPassword(c *gin.Context){
-	var email domain.Email
-	if err := c.ShouldBindJSON(&email); err != nil {
-		c.JSON(http.StatusBadRequest,gin.H{"error":err.Error()})
-		return
-	}
-
-	err := uc.userUsecase.ForgotPassword(&email.Email)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Password reset link sent to email"})
-}
 
 func (uc *UserController) GetProfile(c *gin.Context){
 	userID := c.MustGet("userID").(primitive.ObjectID)

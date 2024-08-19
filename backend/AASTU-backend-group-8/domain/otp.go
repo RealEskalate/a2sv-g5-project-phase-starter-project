@@ -25,6 +25,7 @@ type OTPRequest struct {
 type OTPUsecaseInterface interface {
     GenerateAndSendOTP(user *User) error
     VerifyOTP(email, otp string)(*OTP, error)
+	ForgotPassword(email *string) error
 }
 
 

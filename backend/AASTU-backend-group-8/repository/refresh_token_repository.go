@@ -27,9 +27,9 @@ func (r *TokenRepository) SaveRefreshToken(refreshToken *domain.RefreshToken) er
 	return err
 }
 
-func (r *TokenRepository) FindRefreshToken(token string) (*domain.RefreshToken, error) {
+func (r *TokenRepository) FindRefreshToken(userID primitive.ObjectID) (*domain.RefreshToken, error) {
 	var refreshToken domain.RefreshToken
-	err := r.collection.FindOne(context.TODO(), bson.M{"token": token}).Decode(&refreshToken)
+	err := r.collection.FindOne(context.TODO(), bson.M{"user_id": userID}).Decode(&refreshToken)
 	return &refreshToken, err
 }
 

@@ -42,10 +42,10 @@ func main() {
 	
 	jwtService := infrastructure.NewJWTService(os.Getenv("JWT_SECRET"),"Kal", os.Getenv("JWT_REFRESH_SECRET"))
 	
-	userUsecase := usecases.NewUserUsecase(userRepo)
-	tokenUsecase := usecases.NewTokenUsecase(tokenRepo)
+	userUsecase := usecases.NewUserUsecase(userRepo,tokenRepo, jwtService)
+	tokenUsecase := usecases.NewTokenUsecase(tokenRepo,jwtService)
 	blogUsecase := usecases.NewBlogUsecase(blogRepo)
-	otpUsecase := usecases.NewOTPUsecase(otpRepo)
+	otpUsecase := usecases.NewOTPUsecase(otpRepo,userRepo)
 
 	// passwordService := infrastructure.NewPasswordService()
 

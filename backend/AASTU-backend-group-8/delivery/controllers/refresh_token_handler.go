@@ -1,37 +1,35 @@
 package controllers
 
 import (
-    // "net/http"
+    "net/http"
     "github.com/gin-gonic/gin"
     "meleket/domain"
 )
 
 type RefreshTokenController struct {
     UserUsecase domain.UserUsecaseInterface
+    RefreshTokenUsecase domain.RefreshTokenUsecaseInterface
 }
 
-func NewRefreshTokenController(uu domain.UserUsecaseInterface) *RefreshTokenController {
+func NewRefreshTokenController(uu domain.UserUsecaseInterface, rt domain.RefreshTokenUsecaseInterface) *RefreshTokenController {
     return &RefreshTokenController{
         UserUsecase: uu,
+        RefreshTokenUsecase: rt,
     }
 }
 
-type RefreshTokenRequest struct {
-    RefreshToken string `json:"refresh_token" binding:"required"`
-}
-
 func (c *RefreshTokenController) RefreshToken(ctx *gin.Context) {
-    // var req RefreshTokenRequest
-    // if err := ctx.ShouldBindJSON(&req); err != nil {
-    //     ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-    //     return
-    // }
+    var refreshT domain.RefreshToken
+    if err := ctx.ShouldBindJSON(&refreshT); err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
 
-    // newToken, err := c.UserUsecase.RefreshToken(req.RefreshToken)
-    // if err != nil {
-    //     ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-    //     return
-    // }
+    newAccessToken, err := c.RefreshTokenUsecase.RefreshToken(&refreshT)
+    if err != nil {
+        ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+        return
+    }
 
-    // ctx.JSON(http.StatusOK, gin.H{"token": newToken})
+    ctx.JSON(http.StatusOK, gin.H{"token": newAccessToken})
 }

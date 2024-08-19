@@ -1,40 +1,43 @@
 package usecases
 
 import (
-    // "errors"
-    "meleket/domain"
+	"errors"
+	"meleket/domain"
+	"meleket/infrastructure"
+    "time"
 )
 
 type TokenUsecase struct {
-    userRepo domain.TokenRepositoryInterface
-    // jwtSvc   domain.JWTService
+    tokenRepo domain.TokenRepositoryInterface
+    jwtSvc   infrastructure.JWTService
 }
 
-// func NewTokenRepository(ur repository.UserRepositoryInterface, js domain.JWTService) *UserUsecase {
-func NewTokenUsecase(ur domain.TokenRepositoryInterface) *TokenUsecase{
+// func NewTokenRepository(tr repository.UserRepositoryInterface, js domain.JWTService) *UserUsecase {
+func NewTokenUsecase(tr domain.TokenRepositoryInterface, js infrastructure.JWTService) *TokenUsecase{
     return &TokenUsecase{
-        userRepo: ur,
-        // jwtSvc:   js,
+        tokenRepo: tr,
+        jwtSvc:   js,
     }
 }
 
-// // RefreshToken refreshes a user's JWT token
-// func (u *UserUsecase) RefreshToken(refreshToken string) (string, error) {
-//     storedToken, err := u.userRepo.FindRefreshToken(refreshToken)
-//     if err != nil {
-//         return "", errors.New("invalid refresh token")
-//     }
+// RefreshToken refreshes a user's JWT token
+func (u *TokenUsecase) RefreshToken(refreshToken *domain.RefreshToken) (string, error) {
+    // Check if the refresh token is expired
+    if refreshToken.ExpiresAt.Before(time.Now()) {
+        return "", errors.New("refresh token expired!! Login again")
+    }
 
-//     // Check if the refresh token is expired
-//     if storedToken.ExpiresAt.Before(time.Now()) {
-//         return "", errors.New("refresh token expired")
-//     }
+    _, err := u.tokenRepo.FindRefreshToken(refreshToken.UserID)
+    if err != nil {
+        return "", errors.New("invalid refresh token")
+    }
 
-//     // Generate a new JWT token
-//     newToken, err := u.jwtSvc.GenerateToken(storedToken.UserID.Hex(), storedToken.ExpiresAt.String())
-//     if err != nil {
-//         return "", err
-//     }
 
-//     return newToken, nil
-// }
+    // Generate a new JWT token
+    newToken, err := u.jwtSvc.GenerateToken(refreshToken.UserID, refreshToken.Role)
+    if err != nil {
+        return "", errors.New("could not generate new JWT token!")
+    }
+
+    return newToken, nil
+}

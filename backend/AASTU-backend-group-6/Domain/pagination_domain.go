@@ -1,7 +1,8 @@
 package domain
 
 type Pagination struct {
-	CurrentPage         int `bson:"current_page"`
-	TotalPages          int `bson:"total_page"`
-	TotalNumberOfResult int `bson:"total_number_of_result"`
+	CurrentPage int64 `bson:"current_page"`
+	PageSize    int64 `bson:"page_size"`
+	TotalPages  int64 `bson:"total_page"`
+	TotatRecord int64 `bson:"total_record"`
 }

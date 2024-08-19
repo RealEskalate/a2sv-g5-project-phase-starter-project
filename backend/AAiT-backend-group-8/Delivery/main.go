@@ -3,9 +3,10 @@ package main
 import (
 	"AAiT-backend-group-8/Delivery/Controller"
 	Router "AAiT-backend-group-8/Delivery/Routes"
+	"AAiT-backend-group-8/Infrastructure"
 	repository "AAiT-backend-group-8/Repository"
-	"AAiT-backend-group-8/Usecase"
-	"AAiT-backend-group-8/infrastructure"
+	usecase "AAiT-backend-group-8/Usecase"
+
 	"context"
 )
 
@@ -20,10 +21,11 @@ func main() {
 	ts := infrastructure.NewTokenService(SECRET_KEY)
 	ps := infrastructure.NewPasswordService()
 	tr := repository.NewTokenRepository(token_collection, context.TODO())
+	ms := infrastructure.NewMailService()
 
-	userUseCase := Usecase.NewUserUseCase(userRepo, ts, ps, tr)
+	userUseCase := usecase.NewUserUseCase(userRepo, ts, ps, tr, ms)
 
-	userHandler := Controller.NewUserHandler(userUseCase)
+	userHandler := controllers.NewUserHandler(userUseCase)
 	r := Router.InitRouter(userHandler)
 
 	r.Run(":8080")

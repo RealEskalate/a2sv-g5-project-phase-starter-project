@@ -46,21 +46,21 @@ func (usecase *UserUseCase) DeleteUser(id string) error {
 	return usecase.UserRepo.DeleteUserDocument(id)
 }
 
-func (usecase *UserUseCase) LogIn(user domain.LogINUser) (domain.ResponseUser, error) {
-	logged_user,err := usecase.UserRepo.LogIn(user)
-	if err != nil {
-		return domain.ResponseUser{},err
-	}
-	return domain.CreateResponseUser(logged_user),nil
-}
+// func (usecase *UserUseCase) LogIn(user domain.LogINUser) (domain.ResponseUser, error) {
+// 	logged_user,err := usecase.UserRepo.LogIn(user)
+// 	if err != nil {
+// 		return domain.ResponseUser{},err
+// 	}
+// 	return domain.CreateResponseUser(logged_user),nil
+// }
 
-func (usecase *UserUseCase) Register(user domain.RegisterUser) (domain.ResponseUser, error) {
-	new_user,err := usecase.UserRepo.Register(user)
-	if err != nil {
-		return domain.ResponseUser{},err
-	}
-	return domain.CreateResponseUser(new_user),nil
-}
+// func (usecase *UserUseCase) Register(user domain.RegisterUser) (domain.ResponseUser, error) {
+// 	new_user,err := usecase.UserRepo.Register(user)
+// 	if err != nil {
+// 		return domain.ResponseUser{},err
+// 	}
+// 	return domain.CreateResponseUser(new_user),nil
+// }
 
 func (usecase *UserUseCase) FilterUser(filter map[string]string) ([]domain.ResponseUser, error) {
 	users,err := usecase.UserRepo.FilterUserDocument(filter)

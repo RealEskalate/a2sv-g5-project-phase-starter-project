@@ -138,85 +138,85 @@ func (suite *UserControllerSuite) TestDeleteUser() {
 	suite.JSONEq(`{"message": "accepted!"}`, w.Body.String())
 }
 
-func (suite *UserControllerSuite) TestLogIn() {
-	loginModel := domain.LogINUser{
-		UserName: "username",
-		Email: "test@gmail.com",
-		Password: "password"}
-	pp := domain.Media{
-			Uplaoded_date: time.Now(),
-			Path: "path/img.png",
-			ID: primitive.NewObjectID(),
-		}
-	user := domain.ResponseUser{
-		ID: primitive.NewObjectID().Hex(),
-		UserName: "username",
-		Email: "testuser@gmail.com",
-		Is_Admin: false,
-		Bio: "test bio",
-		ProfilePicture: pp,
-	}
+// func (suite *UserControllerSuite) TestLogIn() {
+// 	loginModel := domain.LogINUser{
+// 		UserName: "username",
+// 		Email: "test@gmail.com",
+// 		Password: "password"}
+// 	pp := domain.Media{
+// 			Uplaoded_date: time.Now(),
+// 			Path: "path/img.png",
+// 			ID: primitive.NewObjectID(),
+// 		}
+// 	user := domain.ResponseUser{
+// 		ID: primitive.NewObjectID().Hex(),
+// 		UserName: "username",
+// 		Email: "testuser@gmail.com",
+// 		Is_Admin: false,
+// 		Bio: "test bio",
+// 		ProfilePicture: pp,
+// 	}
 
-	body := bytes.NewBufferString(`{
-		"username": "username",
-		"email":"test@gmail.com",
-		"password" : "password"
-	}`)
+// 	body := bytes.NewBufferString(`{
+// 		"username": "username",
+// 		"email":"test@gmail.com",
+// 		"password" : "password"
+// 	}`)
 
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/login", body)
-	c.Request.Header.Set("Content-Type", "application/json")
+// 	w := httptest.NewRecorder()
+// 	c, _ := gin.CreateTestContext(w)
+// 	c.Request = httptest.NewRequest(http.MethodPost, "/login", body)
+// 	c.Request.Header.Set("Content-Type", "application/json")
 
-	suite.usecase.On("LogIn", loginModel).Return(user, nil)
+// 	suite.usecase.On("LogIn", loginModel).Return(user, nil)
 
-	handler := suite.controller.LogIn()
-	handler(c)
+// 	handler := suite.controller.LogIn()
+// 	handler(c)
 
-	suite.Equal(http.StatusOK, w.Code, w.Body.String())
-}
+// 	suite.Equal(http.StatusOK, w.Code, w.Body.String())
+// }
 
-func (suite *UserControllerSuite) TestRegister() {
-	registerUser := domain.RegisterUser{
-		UserName: "username",
-		Bio: "test bio",
-		Email: "test@gmail.com",
-		Password: "password",
-	}
-	pp := domain.Media{
-		Uplaoded_date: time.Now(),
-		Path: "path/img.png",
-		ID: primitive.NewObjectID(),
-	}
-	user := domain.ResponseUser{
-		ID: primitive.NewObjectID().Hex(),
-		UserName: "username",
-		Email: "testuser@gmail.com",
-		Is_Admin: false,
-		Bio: "test bio",
-		ProfilePicture: pp,
-	}
+// func (suite *UserControllerSuite) TestRegister() {
+// 	registerUser := domain.RegisterUser{
+// 		UserName: "username",
+// 		Bio: "test bio",
+// 		Email: "test@gmail.com",
+// 		Password: "password",
+// 	}
+// 	pp := domain.Media{
+// 		Uplaoded_date: time.Now(),
+// 		Path: "path/img.png",
+// 		ID: primitive.NewObjectID(),
+// 	}
+// 	user := domain.ResponseUser{
+// 		ID: primitive.NewObjectID().Hex(),
+// 		UserName: "username",
+// 		Email: "testuser@gmail.com",
+// 		Is_Admin: false,
+// 		Bio: "test bio",
+// 		ProfilePicture: pp,
+// 	}
 
-	body := bytes.NewBufferString(`{
-		"username": "username",
-		"email": "test@gmail.com",
-		"password": "password",
-		"bio": "test bio",
-		"profile_picture": "pp"
-	}`)
+// 	body := bytes.NewBufferString(`{
+// 		"username": "username",
+// 		"email": "test@gmail.com",
+// 		"password": "password",
+// 		"bio": "test bio",
+// 		"profile_picture": "pp"
+// 	}`)
 
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/register/", body)
-	c.Request.Header.Set("Content-Type", "application/json")
+// 	w := httptest.NewRecorder()
+// 	c, _ := gin.CreateTestContext(w)
+// 	c.Request = httptest.NewRequest(http.MethodPost, "/register/", body)
+// 	c.Request.Header.Set("Content-Type", "application/json")
 
-	suite.usecase.On("Register", registerUser).Return(user, nil)
+// 	suite.usecase.On("Register", registerUser).Return(user, nil)
 
-	handler := suite.controller.Register()
-	handler(c)
+// 	handler := suite.controller.Register()
+// 	handler(c)
 
-	suite.Equal(http.StatusOK, w.Code, w.Body.String())
-}
+// 	suite.Equal(http.StatusOK, w.Code, w.Body.String())
+// }
 
 func (suite *UserControllerSuite) TestFilterUser() {
 	filter := map[string]string{"email": "test@gmail.com"}
@@ -320,62 +320,62 @@ func (suite *UserControllerSuite) TestDeleteUser_Error() {
 	suite.JSONEq(`{"error" : "couldn't delete"}`, w.Body.String())
 }
 
-func (suite *UserControllerSuite) TestLogIn_Error() {
-	loginModel := domain.LogINUser{
-		UserName: "username",
-		Email: "test@gmail.com",
-		Password: "password",
-	}
+// func (suite *UserControllerSuite) TestLogIn_Error() {
+// 	loginModel := domain.LogINUser{
+// 		UserName: "username",
+// 		Email: "test@gmail.com",
+// 		Password: "password",
+// 	}
 
-	body := bytes.NewBufferString(`{
-		"username": "username",
-		"email":"test@gmail.com",
-		"password" : "password"
-	}`)
+// 	body := bytes.NewBufferString(`{
+// 		"username": "username",
+// 		"email":"test@gmail.com",
+// 		"password" : "password"
+// 	}`)
 
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/login", body)
-	c.Request.Header.Set("Content-Type", "application/json")
+// 	w := httptest.NewRecorder()
+// 	c, _ := gin.CreateTestContext(w)
+// 	c.Request = httptest.NewRequest(http.MethodPost, "/login", body)
+// 	c.Request.Header.Set("Content-Type", "application/json")
 
-	suite.usecase.On("LogIn", loginModel).Return(domain.ResponseUser{}, errors.New("login failed"))
+// 	suite.usecase.On("LogIn", loginModel).Return(domain.ResponseUser{}, errors.New("login failed"))
 
-	handler := suite.controller.LogIn()
-	handler(c)
+// 	handler := suite.controller.LogIn()
+// 	handler(c)
 
-	suite.Equal(http.StatusBadRequest, w.Code)
-	suite.JSONEq(`{"error" : "failed to login"}`, w.Body.String())
-}
+// 	suite.Equal(http.StatusBadRequest, w.Code)
+// 	suite.JSONEq(`{"error" : "failed to login"}`, w.Body.String())
+// }
 
-func (suite *UserControllerSuite) TestRegister_Error() {
-	registerUser := domain.RegisterUser{
-		UserName: "username",
-		Bio: "test bio",
-		Email: "test@gmail.com",
-		Password: "password",
-	}
+// func (suite *UserControllerSuite) TestRegister_Error() {
+// 	registerUser := domain.RegisterUser{
+// 		UserName: "username",
+// 		Bio: "test bio",
+// 		Email: "test@gmail.com",
+// 		Password: "password",
+// 	}
 
-	body := bytes.NewBufferString(`{
-		"username": "username",
-		"email": "test@gmail.com",
-		"password": "password",
-		"bio": "test bio",
-		"profile_picture": "pp"
-	}`)
+// 	body := bytes.NewBufferString(`{
+// 		"username": "username",
+// 		"email": "test@gmail.com",
+// 		"password": "password",
+// 		"bio": "test bio",
+// 		"profile_picture": "pp"
+// 	}`)
 
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/register/", body)
-	c.Request.Header.Set("Content-Type", "application/json")
+// 	w := httptest.NewRecorder()
+// 	c, _ := gin.CreateTestContext(w)
+// 	c.Request = httptest.NewRequest(http.MethodPost, "/register/", body)
+// 	c.Request.Header.Set("Content-Type", "application/json")
 
-	suite.usecase.On("Register", registerUser).Return(domain.ResponseUser{}, errors.New("registration failed"))
+// 	suite.usecase.On("Register", registerUser).Return(domain.ResponseUser{}, errors.New("registration failed"))
 
-	handler := suite.controller.Register()
-	handler(c)
+// 	handler := suite.controller.Register()
+// 	handler(c)
 
-	suite.Equal(http.StatusBadRequest, w.Code)
-	suite.JSONEq(`{"error" : "failed to register"}`, w.Body.String())
-}
+// 	suite.Equal(http.StatusBadRequest, w.Code)
+// 	suite.JSONEq(`{"error" : "failed to register"}`, w.Body.String())
+// }
 
 func (suite *UserControllerSuite) TestFilterUser_Error() {
 	filter := map[string]string{"email": "test@gmail.com"}

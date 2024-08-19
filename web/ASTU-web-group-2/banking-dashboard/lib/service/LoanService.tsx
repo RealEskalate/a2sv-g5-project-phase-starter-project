@@ -7,9 +7,9 @@ export const loanApi = createApi({
   }),
 
   endpoints: (builder) => ({
-    getAllLoanService: builder.query({
+    getMyLoanService: builder.query({
       query: (accessToken: string) => ({
-        url: "/active-loans/all",
+        url: "/active-loans/my-loans",
         method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -21,4 +21,4 @@ export const loanApi = createApi({
   }),
 });
 
-export const { useGetAllLoanServiceQuery } = loanApi;
+export const { useGetMyLoanServiceQuery } = loanApi;

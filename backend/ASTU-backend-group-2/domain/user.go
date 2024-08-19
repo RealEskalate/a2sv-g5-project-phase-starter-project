@@ -1,6 +1,10 @@
 package domain
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"context"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type User struct {
 	ID         primitive.ObjectID `json:"id" bson:"_id"`
@@ -25,4 +29,14 @@ type UserOut struct {
 	ProfileImg string             `json:"profile_img" bson:"profile_img"`
 	IsOwner    bool               `json:"is_owner" bson:"is_owner"`
 	Role       string             `json:"role" bson:"role"` //may make only tobe admin or user
+}
+
+
+
+type UserRepository interface {
+	GetByID(c context.Context, userID string) (*User, error)          // Retrieves a user's profile by ID
+	Update(c context.Context, userID string, updatedProfile *User) error // Updates a user's profile
+	Delete(c context.Context, userID string) error                      // Deletes a user's profile
+	PromoteToAdmin(c context.Context, userID string) error              // Promotes a user to admin
+	DemoteToUser(c context.Context, userID string) error                // Demotes an admin to a regular user
 }

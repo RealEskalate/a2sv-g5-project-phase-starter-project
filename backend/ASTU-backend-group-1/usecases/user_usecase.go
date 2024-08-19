@@ -32,6 +32,42 @@ func (useCase *userUsecase)LoginUser(uname string,password string) (string, erro
 
 	return accesstoken, nil
 }
+// function for forget password
+func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
+	user, err := useCase.GetByEmail(email)
+	if err != nil {
+		return "", err
+	}
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	confirmationToken := make([]byte, 64)
+	charsetLength := big.NewInt(int64(len(charset)))
+
+	for i := 0; i < 64; i++ {
+		num, _ := rand.Int(rand.Reader, charsetLength)
+		confirmationToken[i] = charset[num.Int64()]
+	}
+	user.VerifyToken = string(confirmationToken)
+	useCase.userRepository.Update(user.ID, user)
+	err = infrastructure.SendEmail(user.Email, "Password Reset", "This is the password reset link: ", string(confirmationToken))
+	if err != nil {
+		return "", err
+	}
+	return "Password reset token sent to your email", nil
+}
+//handle password reset
+func (useCase *userUsecase) ResetPassword(email string, token string, password string) (string, error) {
+	user, err := useCase.GetByEmail(email)
+	if err != nil {
+		return "", err
+	}
+	if user.VerifyToken == token {	
+		user.Password, _ = infrastructure.PasswordHasher(password)
+		useCase.userRepository.Update(user.ID, user)
+		return "Password reset successful", nil
+	}
+	return "Invalid token", nil
+}
+
 
 func (useCase *userUsecase) GetByID(userID string) (domain.User, error) {
 	filter := domain.UserFilter{UserId: userID}

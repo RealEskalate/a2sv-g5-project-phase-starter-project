@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import Tabs from "../components/Tabs"
 import TextInput from '../components/TextInput';
 import NotificationToggle from '../components/NotificationToggle';
+import EditProfile from '../components/EditProfile';
+import SecuritySetting from '../components/SecuritySetting';
 
 const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('Preferences');
@@ -72,13 +74,13 @@ const SettingsPage: React.FC = () => {
             
             {activeTab === 'Edit Profile' && (
               <div>
-                <p>Edit Profile Content</p>
+                <EditProfile></EditProfile>
               </div>
             )}
 
             {activeTab === 'Security' && (
               <div>
-                <p>Security Settings Content</p>
+                <SecuritySetting></SecuritySetting>
               </div>
             )}
           </div>

@@ -20,20 +20,6 @@ func NewLogoutUsecase(jwtService interfaces.JwtService, repository interfaces.Se
 }
 
 func (uc *logoutUsecase) LogoutUser(ctx context.Context, userID string, refreshToken string) *models.ErrorResponse {
-	// Validate the provided token
-	_, err := uc.jwtService.ValidateToken(refreshToken)
-	if err != nil {
-		return models.Unauthorized("Invalid or expired token")
-	}
-
-	userToken, tokenErr := uc.repository.GetToken(ctx, userID)
-	if tokenErr != nil {
-		return tokenErr
-	}
-
-	if userToken.RefreshToken != refreshToken {
-		return models.Unauthorized("Invalid refresh token")
-	}
 
 	// Remove the token from the repository
 	if err := uc.repository.RemoveToken(ctx, userID); err != nil {

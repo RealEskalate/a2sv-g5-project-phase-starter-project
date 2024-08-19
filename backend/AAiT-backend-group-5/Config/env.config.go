@@ -13,6 +13,7 @@ type Env struct {
 	SMTP_USERNAMR string `mapstructure:"SMTP_USERNAMR"`
 	SMTP_PASSWORD string `mapstructure:"SMTP_PASSWORD"`
 	SMTP_SENDER_EMAIL string `mapstructure:"SMTP_SENDER_EMAIL"`
+	
 }
 
 func NewEnv() *Env {

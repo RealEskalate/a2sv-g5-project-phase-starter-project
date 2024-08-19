@@ -3,10 +3,7 @@ import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import fetchTransaction from "@/app/Services/api/transactionApi";
 import { TransactionResponse, TransactionType } from "@/types/TransactionValue";
 
-// const Recent = ({ data }: { data: TransactionType }) => {
-const Recent = () => {
-  const data: any = []
-  // console.log(data);
+const Recent = ({ data }: { data: TransactionType[] }) => {
   return (
     <div className="space-y-7 my-6">
       <h3 className="font-semibold text-[22px] text-[#343C6A]">

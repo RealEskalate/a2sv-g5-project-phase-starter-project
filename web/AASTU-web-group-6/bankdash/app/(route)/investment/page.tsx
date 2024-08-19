@@ -52,7 +52,7 @@ const page = () => {
   const formattedAmount = `$${data?.totalInvestment.toLocaleString()}`;
   const formattedReturn = `${data?.rateOfReturn.toFixed(2).toLocaleString()}%`
   return (
-    <>
+    <div className="w-[96%] flex flex-col grow gap-6 p-8 pt-6">
       <div className="flex flex-col lg:flex-row gap-6">
         <Card
           title="Total Invested Amount"
@@ -134,7 +134,7 @@ const page = () => {
           <TrendingStock data={data1} />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

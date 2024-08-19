@@ -26,7 +26,7 @@ const VisaCard: React.FC<CardType> = ({ data, isBlack, isFade, isSimGray }) => {
   )} **** **** ${data.semiCardNumber.slice(-4)}`;
   return (
     <div
-      className={`w-full max-h-[242px] sm:scale-75 md:scale-90 lg:scale-100 font-Lato flex flex-col gap-2 grow rounded-3xl ${
+      className={`w-full max-h-[242px] font-Lato flex flex-col gap-2 grow rounded-3xl ${
         isBlack
           ? "text-colorBody-1 bg-white border-solid border-[1px] border-gray-200"
           : isFade
@@ -62,7 +62,7 @@ const VisaCard: React.FC<CardType> = ({ data, isBlack, isFade, isSimGray }) => {
         </div>
       </div>
       <div
-        className={`flex items-center gap-2 card-box rounded-b-3xl p-4 bg-card-box-light ${
+        className={`flex items-center gap-2 card-box rounded-b-3xl text-nowrap p-4 bg-card-box-light ${
           isBlack ? "border-solid border-t-2 border-gray-200" : ""
         }`}
       >

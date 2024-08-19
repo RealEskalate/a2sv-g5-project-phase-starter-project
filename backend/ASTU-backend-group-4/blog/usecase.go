@@ -1,6 +1,10 @@
 package blog
 
-import "github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/pkg/infrastructure"
+import (
+	"context"
+
+	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/pkg/infrastructure"
+)
 
 type BlogUseCaseImpl struct {
 	blogRepository BlogRepository
@@ -13,56 +17,56 @@ func NewBlogUseCaseImpl(blogRepository BlogRepository) BlogUseCase {
 }
 
 // CreateBlog implements BlogUseCase.
-func (b *BlogUseCaseImpl) CreateBlog(blog Blog) (Blog, error) {
+func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, blog Blog) (Blog, error) {
 	panic("unimplemented")
 }
 
 // CreateComment implements BlogUseCase.
-func (b *BlogUseCaseImpl) CreateComment(comment Comment) error {
+func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, comment Comment) error {
 	panic("unimplemented")
 }
 
 // DeleteBlog implements BlogUseCase.
-func (b *BlogUseCaseImpl) DeleteBlog(id string) error {
+func (b *BlogUseCaseImpl) DeleteBlog(ctx context.Context, id string) error {
 	panic("unimplemented")
 }
 
 // DeleteComment implements BlogUseCase.
-func (b *BlogUseCaseImpl) DeleteComment(id string) error {
+func (b *BlogUseCaseImpl) DeleteComment(ctx context.Context, id string) error {
 	panic("unimplemented")
 }
 
 // DislikeBlog implements BlogUseCase.
-func (b *BlogUseCaseImpl) DislikeBlog(dislike Dislike) error {
+func (b *BlogUseCaseImpl) DislikeBlog(ctx context.Context, dislike Dislike) error {
 	panic("unimplemented")
 }
 
 // GetBlogByID implements BlogUseCase.
-func (b *BlogUseCaseImpl) GetBlogByID(id string) (Blog, error) {
+func (b *BlogUseCaseImpl) GetBlogByID(ctx context.Context, id string) (Blog, error) {
 	panic("unimplemented")
 }
 
 // GetBlogs implements BlogUseCase.
-func (b *BlogUseCaseImpl) GetBlogs(filterQuery FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error) {
+func (b *BlogUseCaseImpl) GetBlogs(ctx context.Context, filterQuery FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error) {
 	panic("unimplemented")
 }
 
 // GetCommentsByBlogID implements BlogUseCase.
-func (b *BlogUseCaseImpl) GetCommentsByBlogID(blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error) {
+func (b *BlogUseCaseImpl) GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error) {
 	panic("unimplemented")
 }
 
 // LikeBlog implements BlogUseCase.
-func (b *BlogUseCaseImpl) LikeBlog(like Like) error {
+func (b *BlogUseCaseImpl) LikeBlog(ctx context.Context, like Like) error {
 	panic("unimplemented")
 }
 
 // SearchBlogs implements BlogUseCase.
-func (b *BlogUseCaseImpl) SearchBlogs(query string) (infrastructure.PaginationResponse[Blog], error) {
+func (b *BlogUseCaseImpl) SearchBlogs(ctx context.Context, query string) (infrastructure.PaginationResponse[Blog], error) {
 	panic("unimplemented")
 }
 
 // UpdateBlog implements BlogUseCase.
-func (b *BlogUseCaseImpl) UpdateBlog(id string, blog Blog) (Blog, error) {
+func (b *BlogUseCaseImpl) UpdateBlog(ctx context.Context, id string, blog Blog) (Blog, error) {
 	panic("unimplemented")
 }

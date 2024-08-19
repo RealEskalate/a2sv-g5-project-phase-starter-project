@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 
 	config "github.com/aait.backend.g5.main/backend/Config"
@@ -11,8 +12,9 @@ import (
 )
 
 type SignupController struct {
-	SignupUsecase interfaces.SignupUsecase
-	Env           *config.Env
+	SignupUsecase   interfaces.SignupUsecase
+	PasswordUsecase interfaces.PasswordUsecase
+	Env             *config.Env
 }
 
 func (signupController *SignupController) Signup(ctx *gin.Context) {
@@ -40,4 +42,26 @@ func (signupController *SignupController) Signup(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "check your email"})
+}
+
+func (signupController *SignupController) ForgotPasswordConfirm(ctx *gin.Context) {
+	var setUpPasswordRequest *dtos.SetUpPasswordRequest
+
+	// attempt to bind the payload carrying the new password
+	err := ctx.ShouldBind(&setUpPasswordRequest)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.New("invalid request"))
+		return
+	}
+
+	// get short code from the URL
+	shortURLCode := ctx.Param("id")
+
+	e := signupController.PasswordUsecase.UpdateUserPassword(ctx, setUpPasswordRequest.Password, shortURLCode)
+	if e != nil {
+		ctx.JSON(e.Code, e.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "registeration successful, proceed to login"})
 }

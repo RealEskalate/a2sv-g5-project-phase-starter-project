@@ -17,6 +17,8 @@ func SetupRouter(userController *controller.UserController, blogController *cont
 	router.POST("/refresh", userController.RefreshToken)
 	router.POST("/forgot-password", userController.ForgotPassword)
 	router.GET("/reset/:token", userController.ResetPassword)
+	router.GET("/verify/:token", userController.Verify)
+	router.POST("/chat" , controller.Chat)
 
 	// Public blog routes
 	router.GET("/blogs", blogController.RetrieveBlogs)

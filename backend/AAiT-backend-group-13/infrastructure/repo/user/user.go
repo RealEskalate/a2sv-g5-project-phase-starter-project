@@ -68,25 +68,63 @@ func (u *Repo) Save(user *usermodel.User) error {
 }
 
 func (u *Repo) FindById(id uuid.UUID) (*usermodel.User, error) {
-	return nil, nil
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": id}
+
+	var user usermodel.User
+	err := u.collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, er.UserNotFound
+		}
+		return nil, er.NewUnexpected(err.Error())
+	}
+
+	return &user, nil
 }
 
 func (u *Repo) FindByUsername(username string) (*usermodel.User, error) {
-	return nil, nil
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"username": username}
+
+	var user usermodel.User
+	err := u.collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, er.UserNotFound
+		}
+		return nil, er.NewUnexpected(err.Error())
+	}
+
+	return &user, nil
 }
 
-func (u *Repo) CheckUsernameAvailability(username string) error {
-	return nil
-}
-
-func (u *Repo) CheckEmailAvailability(email string) error {
-	return nil
-}
 
 func (u *Repo) MatchPassword(password string, hashedPassword string, hash ihash.Service) bool {
-	return true
+	hashed := hash.Hash(password)
+	return hashed == hashedPassword
 }
 
+
 func (u *Repo) GenerateValidationLink(user usermodel.User) (string, error) {
-	return "", nil
+	// Generate the secret value using the hashed value of userid, expiryday, and username
+	secret := u.generateSecret(user.ID().String(), time.Now().Add(time.Minute() * 15).Format(time.RFC3339), user.Username())
+
+	validationLink := fmt.Sprintf("https://localhost:8080/validate?userId=%s", secret)
+	return validationLink, nil
+}
+
+// generateSecret generates the secret value using the hashed value of userid, expiryday, and username
+func (u *Repo) generateSecret(userID, expiryDay, username string) string {
+	// Concatenate the values
+	value := userID + expiryDay + username
+
+	// Hash the concatenated value
+	hashedValue := ihash.Hash(value)
+
+	return hashedValue
 }

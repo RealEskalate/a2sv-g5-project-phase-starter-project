@@ -60,7 +60,7 @@ type Blog struct {
 	DislikedBy []string  `json:"disliked_by"`
 	Comments   []Comment `json:"comment"`
 }
-//TODO  implement the tag in the repository
+
 type NewBlog struct{
 	Title      string    `json:"title" validate:"required,min=2"`
 	Content    string    `json:"content" validate:"required,min=6"`

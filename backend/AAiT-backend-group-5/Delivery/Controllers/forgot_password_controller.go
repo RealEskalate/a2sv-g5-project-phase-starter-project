@@ -7,54 +7,57 @@ import (
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type ForgotPasswordController struct {
 	ForgotPasswordUsecase interfaces.ForgotPasswordUsecase
-	JwtService            interfaces.JwtService
 }
 
-func (forgotPasswordController *ForgotPasswordController) Login(c *gin.Context) {
+func (forgotPasswordController *ForgotPasswordController) ForgotPasswordRequest(ctx *gin.Context) {
 	var request dtos.PasswordResetRequest
 
-	resetURL, e := forgotPasswordController.ForgotPasswordUsecase.GenerateResetURL(c, request.Email)
-	if e != nil {
-		c.JSON(e.Code, e.Error())
-	}
-
-	e = forgotPasswordController.ForgotPasswordUsecase.SendResetEmail(c, request.Email, resetURL)
-	if e != nil {
-		c.JSON(e.Code, e.Error())
-	}
-
-	setUpPasswordRequest := &dtos.SetUpPasswordRequest{}
-
-	err := c.ShouldBind(setUpPasswordRequest)
+	// attempt to bind json payload
+	err := ctx.ShouldBind(request)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, errors.New("invalid request"))
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
 		return
 	}
 
-	authHeader := c.GetHeader("Authorization")
-	claims, err := forgotPasswordController.JwtService.GetClaims(authHeader)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, errors.New("invalid token"))
-		return
-	}
-
-	userId, err := primitive.ObjectIDFromHex(claims.ID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, errors.New("invalid user id"))
-		return
-	}
-
-	setUpPasswordRequest.UserID = userId
-	e = forgotPasswordController.ForgotPasswordUsecase.UpdateUserPassword(c, setUpPasswordRequest.Password, setUpPasswordRequest.Password)
+	// generate URL to be sent via email
+	resetURL, e := forgotPasswordController.ForgotPasswordUsecase.GenerateResetURL(ctx, request.Email)
 	if e != nil {
-		c.JSON(e.Code, e.Error())
+		ctx.JSON(e.Code, e.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "password reset, login again"})
+	// send confirmation email
+	e = forgotPasswordController.ForgotPasswordUsecase.SendResetEmail(ctx, request.Email, resetURL)
+	if e != nil {
+		ctx.JSON(e.Code, e.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "confirmation email sent"})
+}
+
+func (forgotPasswordController *ForgotPasswordController) ForgotPasswordConfirm(ctx *gin.Context) {
+	var setUpPasswordRequest *dtos.SetUpPasswordRequest
+
+	// attempt to bind the payload carrying the new password
+	err := ctx.ShouldBind(&setUpPasswordRequest)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.New("invalid request"))
+		return
+	}
+
+	// get short code from the URL
+	shortURLCode := ctx.Param("id")
+
+	e := forgotPasswordController.ForgotPasswordUsecase.UpdateUserPassword(ctx, setUpPasswordRequest.Password, shortURLCode)
+	if e != nil {
+		ctx.JSON(e.Code, e.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "password reset, login again"})
 }

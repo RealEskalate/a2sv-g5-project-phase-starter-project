@@ -2,7 +2,6 @@ package mongodb
 
 import (
 	"context"
-	"errors"
 	"math"
 
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/chat"
@@ -108,7 +107,7 @@ func (chatRepository *ChatRepository) DeleteChat(chatID string, ctx context.Cont
 	}
 
 	if deleteResult.DeletedCount == 0 {
-		return errors.New("chat not found")
+		return chat.ChatNotFoundError
 	}
 
 	return nil

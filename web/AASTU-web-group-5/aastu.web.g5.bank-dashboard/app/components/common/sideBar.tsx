@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from "react";
 import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FaTimes } from "react-icons/fa";
 
 import creditCard from "/public/assets/icons/credit-card 1.svg";
@@ -30,9 +30,11 @@ const primary_3 = 'rgba(45, 96, 255, 1)';
 const sidecolor = '#B1B1B1';
 
 const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolean, toggleSidebar: () => void }) => {
-    const [enabled, setEnabled] = useState<string>(usePathname().substring(1,));
-    console.log(enabled,111)
+    const pathname = usePathname() || 'Dashboard';
+    const [enabled, setEnabled] = useState<string>(pathname);
+    
     const router = useRouter();
+
     const handleIconClick = (option: string, path: string) => {
         setEnabled(option);
         router.push(path);
@@ -50,7 +52,7 @@ const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolea
             </div>
 
             <div className="flex flex-col gap-[42px]">
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("home", "/home")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("home", "/Dashboard")}>
                     <Image src={enabled === "home" ? enabledHome : home} alt="Home Icon" className="h-[25px] w-[25px]" />
                     <div> Dashboard</div>
                 </div>
@@ -58,16 +60,16 @@ const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolea
                     <Image src={enabled === "transfer" ? enabledTransfer : transfer} alt="Transfer Icon" className="h-[25px] w-[25px]" />
                     <div> Transactions</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("user", "/accounts")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("user", "/Accounts")}>
                     <Image src={enabled === "user" ? enabledUser : user} alt="User Icon" className="h-[25px] w-[25px]" />
                     <div> Accounts</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("investments", "/investments")}>
-                    <Image src={enabled === "investments" ? enabledEconomicInvestment : economicInvestment} alt="Investments Icon" className="h-[25px] w-[25px]" />
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("economicInvestment", "/investments")}>
+                    <Image src={enabled === "economicInvestment" ? enabledEconomicInvestment : economicInvestment} alt="Investments Icon" className="h-[25px] w-[25px]" />
                     <div> Investments</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("CreditCards", "/CreditCards")}>
-                    <Image src={enabled === "CreditCards" ? enabledCreditCard : creditCard} alt="Credit Card Icon" className="h-[25px] w-[25px]" />
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("creditCard", "/CreditCards")}>
+                    <Image src={enabled === "creditCard" ? enabledCreditCard : creditCard} alt="Credit Card Icon" className="h-[25px] w-[25px]" />
                     <div> Credit Cards</div>
                 </div>
                 <div className="flex gap-[23px]" onClick={() => handleIconClick("loan", "/loans")}>

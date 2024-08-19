@@ -28,11 +28,11 @@ type Comment struct {
 }
 
 type BlogUsecase interface {
-	CreateBlog(user_id string, blog Blog) (Blog, error)
+	CreateBlog(user_id string, blog Blog, role string) (Blog, error)
 	GetBlogByID(blog_id string) (Blog, error)
 	GetBlogs(pageNo string, pageSize string) ([]Blog, Pagination, error)
-	UpdateBlogByID(user_id string, blog_id string, blog Blog) error
-	DeleteBlogByID(user_id string, blog_id string, role string) error
+	UpdateBlogByID(user_id string, blog_id string, blog Blog) (Blog, error)
+	DeleteBlogByID(user_id string, blog_id string, role string) ErrorResponse
 	CommentOnBlog(blog_id string, commentor_id string, commentor_username string, comment Comment) error
 
 	SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]Blog, Pagination, error)
@@ -42,16 +42,16 @@ type BlogUsecase interface {
 	GetMyBlogByID(user_id string, blog_id string) (Blog, error)
 }
 type BlogRepository interface {
-	CreateBlog(user_id string, blog Blog) (Blog, error)
+	CreateBlog(user_id string, blog Blog, role string) (Blog, error)
 	GetBlogByID(blog_id string) (Blog, error)
-	GetBlogs(pageNo string, pageSize string) ([]Blog, Pagination, error)
-	UpdateBlogByID(user_id string, blog_id string, blog Blog) error
-	DeleteBlogByID(user_id string, blog_id string) error
+	GetBlogs(pageNo int64, pageSize int64) ([]Blog, Pagination, error)
+	UpdateBlogByID(user_id string, blog_id string, blog Blog) (Blog, error)
+	DeleteBlogByID(user_id string, blog_id string) ErrorResponse
 	CommentOnBlog(blog_id string, commentor_id string, commentor_username string, comment Comment) error
 
 	SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]Blog, Pagination, error)
 	FilterBlogsByTag(tag string, pageNo string, pageSize string) ([]Blog, Pagination, error)
 
-	GetMyBlogs(user_id string, pageNo string, pageSize string) ([]Blog, Pagination, error)
+	GetMyBlogs(user_id string, pageNo int64, pageSize int64) ([]Blog, Pagination, error)
 	GetMyBlogByID(user_id string, blog_id string) (Blog, error)
 }

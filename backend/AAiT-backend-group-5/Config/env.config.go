@@ -13,6 +13,7 @@ type Env struct {
 	SMTP_PASSWORD     string `mapstructure:"SMTP_PASSWORD"`
 	SMTP_SENDER_EMAIL string `mapstructure:"SMTP_SENDER_EMAIL"`
 	BASE_URL          string `mapstructure:"BASE_URL"`
+	REDIS_BLOG_KEY    string `mapstructure:"REDIS_BLOG_KEY"`
 }
 
 func NewEnv() *Env {
@@ -26,6 +27,7 @@ func NewEnv() *Env {
 	viper.BindEnv("SMTP_PASSWORD")
 	viper.BindEnv("SMTP_SENDER_EMAIL")
 	viper.BindEnv("BASE_URL")
+	viper.BindEnv("REDIS_BLOG_KEY")
 
 	env := Env{}
 

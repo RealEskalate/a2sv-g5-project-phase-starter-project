@@ -1,4 +1,4 @@
-type loan = {
+export type loan = {
   serialNumber: string | null;
   loanAmount: string | null;
   amountLeftToRepay: string | null;
@@ -10,7 +10,7 @@ type loan = {
   userId: string | null;
 };
 
-export const loans: loan[] = [
+export const defaultloans: loan[] = [
   {
     serialNumber: "01",
     loanAmount: "100,000",

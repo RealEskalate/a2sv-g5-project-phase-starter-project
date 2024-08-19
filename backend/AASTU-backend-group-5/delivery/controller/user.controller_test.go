@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/RealEskalate/blogpost/domain"
 	"github.com/RealEskalate/blogpost/mocks"
@@ -29,13 +30,18 @@ func (suite *UserControllerSuite) SetupTest() {
 // Positive Tests
 
 func (suite *UserControllerSuite) TestGetOneUser() {
+	pp := domain.Media{
+		Uplaoded_date: time.Now(),
+		Path: "path/img.png",
+		ID: primitive.NewObjectID(),
+	}
 	user := domain.ResponseUser{
 		ID: primitive.NewObjectID().Hex(),
 		UserName: "username",
 		Email: "testuser@gmail.com",
 		Is_Admin: false,
 		Bio: "test bio",
-		ProfilePicture: "pp",
+		ProfilePicture: pp,
 	}
 
 	w := httptest.NewRecorder()
@@ -51,6 +57,11 @@ func (suite *UserControllerSuite) TestGetOneUser() {
 }
 
 func (suite *UserControllerSuite) TestGetUsers() {
+	pp := domain.Media{
+		Uplaoded_date: time.Now(),
+		Path: "path/img.png",
+		ID: primitive.NewObjectID(),
+	}
 	users := []domain.ResponseUser{
 		{
 			ID: primitive.NewObjectID().Hex(),
@@ -58,7 +69,7 @@ func (suite *UserControllerSuite) TestGetUsers() {
 			Email: "testuser@gmail.com",
 			Is_Admin: false,
 			Bio: "test bio",
-			ProfilePicture: "pp",
+			ProfilePicture: pp,
 		},
 	}
 
@@ -78,13 +89,18 @@ func (suite *UserControllerSuite) TestUpdateUser() {
 	updateUser := domain.UpdateUser{
 		UserName: "Updated username",
 	}
+	pp := domain.Media{
+		Uplaoded_date: time.Now(),
+		Path: "path/img.png",
+		ID: primitive.NewObjectID(),
+	}
 	updatedUser := domain.ResponseUser{
 		ID: id.Hex(),
 		UserName: "Updated username",
 		Email: "testuser@gmail.com",
 		Is_Admin: false,
 		Bio: "test bio",
-		ProfilePicture: "pp",
+		ProfilePicture: pp,
 	}
 
 	w := httptest.NewRecorder()
@@ -127,14 +143,18 @@ func (suite *UserControllerSuite) TestLogIn() {
 		UserName: "username",
 		Email: "test@gmail.com",
 		Password: "password"}
-
+	pp := domain.Media{
+			Uplaoded_date: time.Now(),
+			Path: "path/img.png",
+			ID: primitive.NewObjectID(),
+		}
 	user := domain.ResponseUser{
 		ID: primitive.NewObjectID().Hex(),
 		UserName: "username",
 		Email: "testuser@gmail.com",
 		Is_Admin: false,
 		Bio: "test bio",
-		ProfilePicture: "pp",
+		ProfilePicture: pp,
 	}
 
 	body := bytes.NewBufferString(`{
@@ -160,18 +180,21 @@ func (suite *UserControllerSuite) TestRegister() {
 	registerUser := domain.RegisterUser{
 		UserName: "username",
 		Bio: "test bio",
-		ProfilePicture: "pp",
 		Email: "test@gmail.com",
 		Password: "password",
 	}
-
+	pp := domain.Media{
+		Uplaoded_date: time.Now(),
+		Path: "path/img.png",
+		ID: primitive.NewObjectID(),
+	}
 	user := domain.ResponseUser{
 		ID: primitive.NewObjectID().Hex(),
 		UserName: "username",
 		Email: "testuser@gmail.com",
 		Is_Admin: false,
 		Bio: "test bio",
-		ProfilePicture: "pp",
+		ProfilePicture: pp,
 	}
 
 	body := bytes.NewBufferString(`{
@@ -197,6 +220,11 @@ func (suite *UserControllerSuite) TestRegister() {
 
 func (suite *UserControllerSuite) TestFilterUser() {
 	filter := map[string]string{"email": "test@gmail.com"}
+	pp := domain.Media{
+		Uplaoded_date: time.Now(),
+		Path: "path/img.png",
+		ID: primitive.NewObjectID(),
+	}
 	users := []domain.ResponseUser{
 		{
 			ID: primitive.NewObjectID().Hex(),
@@ -204,7 +232,7 @@ func (suite *UserControllerSuite) TestFilterUser() {
 			Email: "testuser@gmail.com",
 			Is_Admin: false,
 			Bio: "test bio",
-			ProfilePicture: "pp",
+			ProfilePicture: pp,
 		},
 	}
 
@@ -323,7 +351,6 @@ func (suite *UserControllerSuite) TestRegister_Error() {
 	registerUser := domain.RegisterUser{
 		UserName: "username",
 		Bio: "test bio",
-		ProfilePicture: "pp",
 		Email: "test@gmail.com",
 		Password: "password",
 	}

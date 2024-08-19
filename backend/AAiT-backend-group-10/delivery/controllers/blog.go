@@ -188,16 +188,7 @@ func (b *BlogController) SearchBlogs(c *gin.Context) {
 	filter := domain.BlogFilter{
 		Title:  		 c.Query("title"),
 		SortBy: 		 c.Query("sortBy"),
-	}
-
-	authParam := c.Query("author")
-	if authParam != "" {
-		author, err := uuid.Parse(authParam)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Author ID"})
-			return
-		}
-		filter.Author = author
+		Author: 		 c.Query("author"),
 	}
 
 	tagsParam := c.Query("tags")

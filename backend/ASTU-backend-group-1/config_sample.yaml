@@ -5,3 +5,4 @@ database:
 email:
   key: <google app key>
 port: <port number>
+jwt: <jwt key>

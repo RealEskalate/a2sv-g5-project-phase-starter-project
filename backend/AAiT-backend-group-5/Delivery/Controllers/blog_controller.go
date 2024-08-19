@@ -1,210 +1,166 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type blogController struct {
-	usecase interfaces.BlogUsecase
+type BlogController struct {
+	BlogUsecase interfaces.BlogUsecase
+	JwtService  interfaces.JwtService
 }
 
-func NewBlogController(usecase interfaces.BlogUsecase) interfaces.BlogController {
-	return &blogController{
-		usecase: usecase,
-	}
-}
-
-func (c *blogController) getAuthorID(ctx *gin.Context) (string, bool) {
-	authorID, ok := ctx.Get("id")
-	if !ok {
-		return "", false
-	}
-
-	authorIDStr, ok := authorID.(string)
-	if !ok {
-		return "", false
-	}
-
-	return authorIDStr, true
-}
-
-func (c *blogController) CreateBlogController(ctx *gin.Context) {
-	var newBlog dtos.CreateBlogRequest
-
-	if err := ctx.ShouldBind(&newBlog); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
-		return
-	}
-
-	authorID, ok := c.getAuthorID(ctx)
-
-	if !ok {
-		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
-	blog := models.Blog{
-		Title:    newBlog.Title,
-		Content:  newBlog.Content,
-		Tags:     newBlog.Tags,
-		AuthorID: authorID,
-	}
-
-	createdBlog, err := c.usecase.CreateBlog(ctx, &blog)
+func (blogController BlogController) GetBlogs(ctx *gin.Context) {
+	blogs, err := blogController.BlogUsecase.GetBlogs(ctx)
 	if err != nil {
-		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})
+		ctx.JSON(err.Code, err.Error())
 		return
 	}
 
-	ctx.IndentedJSON(http.StatusCreated, gin.H{"data": createdBlog})
-
+	ctx.JSON(http.StatusOK, blogs)
 }
 
-func (c *blogController) GetBlogController(ctx *gin.Context) {
-	blogId := ctx.Param("id")
-
-	blog, err := c.usecase.GetBlog(ctx, blogId)
-
+func (blogController BlogController) GetBlog(ctx *gin.Context) {
+	blog, err := blogController.BlogUsecase.GetBlog(ctx)
 	if err != nil {
-		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})
+		ctx.JSON(err.Code, err.Error())
 		return
 	}
 
-	ctx.IndentedJSON(http.StatusOK, gin.H{"data": blog})
+	ctx.JSON(http.StatusOK, blog)
 }
 
-func (c *blogController) GetBlogsController(ctx *gin.Context) {
-	blogs, err := c.usecase.GetBlogs(ctx)
+func (blogController BlogController) CreateBlog(ctx *gin.Context) {
+	var new_blog *models.Blog
 
+	if e := ctx.BindJSON(new_blog); e != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		return
+	}
+
+	err := blogController.BlogUsecase.CreateBlog(ctx, new_blog)
 	if err != nil {
-		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})
+		ctx.JSON(err.Code, err.Error())
 		return
 	}
 
-	ctx.IndentedJSON(http.StatusOK, gin.H{"data": blogs})
+	ctx.JSON(http.StatusOK, gin.H{"message": "blog created successfully"})
 }
 
-func (c *blogController) SearchBlogsController(ctx *gin.Context) {
-	var filter dtos.FilterBlogRequest
+func (blogController BlogController) SearchBlogs(ctx *gin.Context) {
+	var updated_request dtos.FilterBlogRequest
 
-	if err := ctx.ShouldBind(&filter); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+	if e := ctx.BindJSON(&updated_request); e != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 
-	blogs, err := c.usecase.SearchBlogs(ctx, filter)
+	blogs, err := blogController.BlogUsecase.SearchBlogs(ctx, updated_request)
+	if err != nil {
+		ctx.JSON(err.Code, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, blogs)
+}
+
+func (blogController BlogController) UpdateBlog(ctx *gin.Context) {
+	var updated_request *dtos.UpdateBlogRequest
+
+	if e := ctx.BindJSON(updated_request); e != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		return
+	}
+
+	// Use the JWT service to get the claims from the token
+	authHeader := ctx.GetHeader("Authorization")
+	claims, err := blogController.JwtService.GetClaims(authHeader)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.New("invalid token"))
+		return
+	}
+
+	// Get user role and user ID from the claims
+	userRole := claims.Role
+	userId, err := primitive.ObjectIDFromHex(claims.Id)
 
 	if err != nil {
-		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})
+		ctx.JSON(http.StatusBadRequest, errors.New("invalid user id"))
 		return
 	}
 
-	ctx.IndentedJSON(http.StatusOK, gin.H{"data": blogs})
+	// update only allowed for blog author or admin
+	if userId == updated_request.AuthorID || userRole == "admin" {
 
+		blogID, e := primitive.ObjectIDFromHex(updated_request.BlogID)
+		if e != nil {
+			ctx.JSON(http.StatusInternalServerError, errors.New("internal server error"))
+			return
+		}
+
+		updated_blog := models.Blog{
+			ID:      blogID,
+			Title:   updated_request.Title,
+			Content: updated_request.Content,
+			Tags:    updated_request.Tags,
+		}
+
+		err := blogController.BlogUsecase.UpdateBlog(ctx, &updated_blog)
+		if err != nil {
+			ctx.JSON(err.Code, err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{"message": "blog update successful"})
+		return
+	}
+
+	ctx.JSON(http.StatusMethodNotAllowed, gin.H{"error": "update not allowed"})
 }
-func (c *blogController) UpdateBlogController(ctx *gin.Context) {
-	var updateBlog dtos.UpdateBlogRequest
-	blogID := ctx.Param("id")
 
-	if err := ctx.ShouldBind(&updateBlog); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+func (blogController BlogController) DeleteBlog(ctx *gin.Context) {
+	var delete_request *dtos.DeleteBlogRequest
+
+	if e := ctx.BindJSON(delete_request); e != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 
-	authorID, ok := c.getAuthorID(ctx)
-	if !ok {
-		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	// Use the JWT service to get the claims from the token
+	authHeader := ctx.GetHeader("Authorization")
+	claims, err := blogController.JwtService.GetClaims(authHeader)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.New("invalid token"))
 		return
 	}
 
-	blog := models.Blog{
-		ID:       blogID,
-		AuthorID: authorID,
-		Title:    updateBlog.Title,
-		Content:  updateBlog.Content,
-		Tags:     updateBlog.Tags,
-	}
-
-	err := c.usecase.UpdateBlog(ctx, blog.ID, &blog)
+	// Get user role and user ID from the claims
+	userRole := claims.Role
+	userId, err := primitive.ObjectIDFromHex(claims.Id)
 
 	if err != nil {
-		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})
+		ctx.JSON(http.StatusBadRequest, errors.New("invalid user id"))
 		return
 	}
 
-	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Blog updated successfully"})
-}
+	// update only allowed for blog author or admin
+	if userId == delete_request.AuthorID || userRole == "admin" {
 
-func (c *blogController) DeleteBlogController(ctx *gin.Context) {
-	blogID := ctx.Param("id")
-	authorID, ok := c.getAuthorID(ctx)
+		err := blogController.BlogUsecase.DeleteBlog(ctx, delete_request.BlogID)
+		if err != nil {
+			ctx.JSON(err.Code, err.Error())
+			return
+		}
 
-	if !ok {
-		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		ctx.JSON(http.StatusOK, gin.H{"message": "blog delete successful"})
 		return
 	}
 
-	deleteBlogReq := dtos.DeleteBlogRequest{
-		BlogID:   blogID,
-		AuthorID: authorID,
-	}
-
-	if err := c.usecase.DeleteBlog(ctx, deleteBlogReq); err != nil {
-		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})
-		return
-	}
-
-	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Blog deleted successfully"})
-}
-
-func (c *blogController) TrackPopularityController(ctx *gin.Context) {
-	var blogPopularity dtos.TrackPopularityRequest
-
-	if err := ctx.ShouldBind(&blogPopularity); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
-		return
-	}
-
-	userID, ok := c.getAuthorID(ctx)
-	if !ok {
-		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
-	blogPopularity.UserID = userID
-	if err := c.usecase.TrackPopularity(ctx, blogPopularity); err != nil {
-		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})
-		return
-	}
-
-	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Popularity tracked successfully"})
-}
-
-func (c *blogController) AddCommentController(ctx *gin.Context) {
-	var comment models.Comment
-
-	if err := ctx.ShouldBind(&comment); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
-		return
-	}
-
-	userID, ok := c.getAuthorID(ctx)
-
-	if !ok {
-		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
-	comment.UserID = userID
-	if err := c.usecase.AddComment(ctx, comment); err != nil {
-		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})
-		return
-	}
-
-	ctx.IndentedJSON(http.StatusCreated, gin.H{"message": "Comment added successfully"})
+	ctx.JSON(http.StatusMethodNotAllowed, gin.H{"error": "delete not allowed"})
 }

@@ -285,3 +285,39 @@ func (us *userRepository) DemoteUser(ctx context.Context, id primitive.ObjectID,
 	}
 	return result, nil, 200
 }
+
+func (us *userRepository) ChangePassByEmail(ctx context.Context, email string, password string) (Domain.OmitedUser, error, int) {
+	statusCode := 200
+	filter := bson.D{{"email", email}}
+	update := bson.D{
+		{"$set", bson.D{
+			{"password", password},
+		}},
+	}
+	updateResult, err := us.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		statusCode = 500
+		return Domain.OmitedUser{}, err, statusCode
+	}
+	if updateResult.ModifiedCount == 0 {
+		statusCode = 400
+		fmt.Println("user does not exist:", email)
+		return Domain.OmitedUser{}, errors.New("user does not exist"), statusCode
+	}
+
+	fmt.Printf("Matched %v documents and updated %v documents.\n", updateResult.MatchedCount, updateResult.ModifiedCount)
+
+	return Domain.OmitedUser{}, nil, statusCode
+}
+
+// find by email
+func (us *userRepository) FindByEmail(ctx context.Context, email string) (Domain.OmitedUser, error, int) {
+	filter := bson.D{{"email", email}}
+	var result Domain.OmitedUser
+	err := us.collection.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		fmt.Println(err)
+		return Domain.OmitedUser{}, err, 500
+	}
+	return result, nil, 200
+}

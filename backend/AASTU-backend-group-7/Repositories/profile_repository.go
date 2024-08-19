@@ -2,6 +2,7 @@ package Repositories
 
 import (
 	"blogapp/Domain"
+	"blogapp/Infrastructure/password_services"
 	"context"
 	"errors"
 	"fmt"
@@ -67,8 +68,16 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 	if user.UserName != "" {
 		NewUser.UserName = user.UserName
 	}
-	if user.Email != "" {
-		NewUser.Email = user.Email
+	if user.Password != "" {
+		err = password_services.CheckPasswordStrength(user.Password)
+		if err != nil {
+			return Domain.OmitedUser{}, err, 400
+		}
+		newpass, er := password_services.GenerateFromPasswordCustom(user.Password)
+		if er != nil {
+			return Domain.OmitedUser{}, er, 500
+		}
+		NewUser.Password = newpass
 	}
 	if user.Role != "" {
 		NewUser.Role = user.Role

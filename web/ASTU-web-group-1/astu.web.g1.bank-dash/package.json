@@ -12,10 +12,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
-<<<<<<< HEAD
-=======
     "@reduxjs/toolkit": "^2.2.7",
->>>>>>> 4c1dcd4397f79ee5fe643bbb50f249705894f891
     "@svgr/webpack": "^8.1.0",
     "chart.js": "^4.4.3",
     "chartjs-plugin-datalabels": "^2.2.0",
@@ -28,13 +25,9 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
     "react-hook-form": "^7.52.2",
-<<<<<<< HEAD
-    "react-select": "^5.8.0",
-=======
     "react-redux": "^9.1.2",
     "react-select": "^5.8.0",
     "recharts": "^2.12.7",
->>>>>>> 4c1dcd4397f79ee5fe643bbb50f249705894f891
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"

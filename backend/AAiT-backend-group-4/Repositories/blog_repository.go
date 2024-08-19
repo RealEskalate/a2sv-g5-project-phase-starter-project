@@ -237,10 +237,11 @@ func (br *blogRepository) UpdateBlog(ctx context.Context, id primitive.ObjectID,
 
 // DeleteBlog deletes a blog from the collection by its ID
 func (br *blogRepository) DeleteBlog(ctx context.Context, id primitive.ObjectID) error {
+
 	collection := br.database.Collection(br.collection)
 
-	_, err := collection.DeleteOne(ctx, bson.M{"_id": id})
-	return err
+	_, errs := collection.DeleteOne(ctx, bson.M{"_id": id})
+	return errs
 }
 
 // BlogExists checks if a blog exists by its ID

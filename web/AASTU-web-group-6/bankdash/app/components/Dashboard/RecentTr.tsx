@@ -1,7 +1,14 @@
 import React from "react";
 import Image from "next/image";
 import { PieComp } from "../Charts/PieComp";
+import { useAppSelector } from "@/app/Redux/store/store";
+import { TransactionType } from "@/app/Redux/slices/TransactionSlice";
 const RecentTr = () => {
+  const transdata: TransactionType[] = useAppSelector(
+    (state) => state.transactions.transactions
+  );
+  console.log(transdata, "lates data");
+
   const dummyTr: any = [
     {
       title: "Deposit from Card",
@@ -35,19 +42,17 @@ const RecentTr = () => {
         Recent Transactions
       </h1>
       <div className="flex flex-col w-full gap-4 bg-white rounded-3xl shadow-gray-50 text-colorBody-1 p-6">
-        {dummyTr.map((data: any, key: number) => (
+        {transdata?.slice(-3).map((data, key: number) => (
           <div
             key={key}
             className="recentTr w-full flex gap-4 items-center justify-center"
           >
-            <div
-              className={`{icon flex items-center rounded-full p-4 ${data.color}`}
-            >
-              <Image src={data.icon} alt="" width={28} height={28} />
+            <div className={`{icon flex items-center rounded-full p-4 `}>
+              <Image src={dummyTr[key].icon} alt="" width={28} height={28} />
             </div>
             <div className="flex flex-col gap-1">
               <div className="title text-base text-black font-medium">
-                {data.title}
+                {data.description}
               </div>
               <div className="date text-sm text-blue-900 opacity-70">
                 {data.date}
@@ -55,10 +60,10 @@ const RecentTr = () => {
             </div>
             <div
               className={`price flex grow justify-end font-medium ${
-                data.isNeg ? "text-red-500" : "text-green-500"
+                data.amount < 0 ? "text-red-500" : "text-green-500"
               }`}
             >
-              {data.price}
+              {data.amount} ETB
             </div>
           </div>
         ))}

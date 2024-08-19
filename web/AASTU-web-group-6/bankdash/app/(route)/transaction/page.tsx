@@ -14,13 +14,16 @@ const Transaction = () => {
   const TranData: TransactionType[] = useAppSelector(
     (state) => state.transactions.transactions
   );
-  const balanceHist: TransactionType[] = useAppSelector(
-    (state) => state.transactions.balanceHist
+  const expenseData: TransactionType[] = useAppSelector(
+    (state) => state.transactions.expense
   );
+  const IncomeData: TransactionType[] = useAppSelector(
+    (state) => state.transactions.income
+  );
+
   const cardColor = [false, true];
-  console.log("Fetched cards:", CardData);
-  console.log("Fetched Transaction:", TranData);
-  console.log("Fetched balanceHist:", balanceHist);
+  // console.log("Fetched cards:", CardData);
+  // console.log("Fetched Transaction:", TranData);
 
   const convertToChartData = (data: TransactionType[]): ChartData[] => {
     const dayMap: { [key: string]: number } = {

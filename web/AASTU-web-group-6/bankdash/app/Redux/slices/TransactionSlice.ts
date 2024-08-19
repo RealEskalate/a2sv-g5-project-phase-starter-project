@@ -1,5 +1,6 @@
 // src/features/cardSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { string } from "zod";
 
 export interface TransactionType {
   transactionId: string;
@@ -10,10 +11,16 @@ export interface TransactionType {
   amount: number;
   receiverUserName: string | null;
 }
+export interface BalanceType {
+  time: string;
+  value: string;
+}
 
 interface TranState {
   transactions: TransactionType[];
-  balanceHist: TransactionType[];
+  balanceHist: BalanceType[];
+  expense: TransactionType[];
+  income: TransactionType[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
@@ -21,6 +28,8 @@ interface TranState {
 const initialState: TranState = {
   transactions: [],
   balanceHist: [],
+  expense: [],
+  income: [],
   status: "idle",
   error: null,
 };
@@ -32,8 +41,14 @@ const transactionSlice = createSlice({
     setTran(state, action: PayloadAction<TransactionType[]>) {
       state.transactions = action.payload;
     },
-    setBalHist(state, action: PayloadAction<TransactionType[]>) {
+    setBalHist(state, action: PayloadAction<BalanceType[]>) {
       state.balanceHist = action.payload;
+    },
+    setExpense(state, action: PayloadAction<TransactionType[]>) {
+      state.expense = action.payload;
+    },
+    setIncome(state, action: PayloadAction<TransactionType[]>) {
+      state.income = action.payload;
     },
 
     setStatus(state, action: PayloadAction<TranState["status"]>) {
@@ -45,7 +60,13 @@ const transactionSlice = createSlice({
   },
 });
 
-export const { setTran, setBalHist, setStatus, setError } =
-  transactionSlice.actions;
+export const {
+  setTran,
+  setBalHist,
+  setExpense,
+  setIncome,
+  setStatus,
+  setError,
+} = transactionSlice.actions;
 
 export default transactionSlice.reducer;

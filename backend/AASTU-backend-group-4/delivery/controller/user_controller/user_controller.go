@@ -1,11 +1,11 @@
 package user_controller
 
 import (
-	"blog-api/domain/user"
+	"blog-api/domain"
 	"blog-api/infrastructure/bootstrap"
 )
 
 type UserController struct {
-	usecase user.UserUsecase
+	usecase domain.UserUsecase
 	Env     *bootstrap.Env
 }

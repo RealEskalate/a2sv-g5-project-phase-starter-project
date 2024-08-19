@@ -1,7 +1,7 @@
 package blog_controller
 
 import (
-	"blog-api/domain/blog"
+	"blog-api/domain"
 	"context"
 	"net/http"
 
@@ -10,7 +10,7 @@ import (
 )
 
 func (bc *BlogController) CreateBlog(c *gin.Context) {
-	var blog blog.Blog
+	var blog domain.Blog
 
 	// Bind the incoming JSON request to the blog struct
 	if err := c.ShouldBindJSON(&blog); err != nil {

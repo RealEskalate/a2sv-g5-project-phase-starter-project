@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from post_moderator import moderator_agent, decision_state
 import load_env
 
-from blog_assistant import BlogAssistant
+from blog_assistance_enhanced import BlogAssistant
 from tools import *
 
 
@@ -32,9 +32,12 @@ async def validate_post_endpoint(post: BlogPost):
     
 @app.post("/blog_assistant/")
 async def stream_blog(query: Q):
-    assistant = BlogAssistant(tools=[duck_duck_go_search])  
-    # return StreamingResponse(assistant.run(query), media_type="text/plain")
-    return {"response": assistant.run(query)}
+    assistant = BlogAssistant(tools=[duck_duck_go_search, generate_image, add_content, set_title])  
+    try:
+        assistant.run(query)
+        return blog
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 

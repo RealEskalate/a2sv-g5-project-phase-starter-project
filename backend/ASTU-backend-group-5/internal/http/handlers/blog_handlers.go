@@ -238,3 +238,7 @@ func (h *BlogHandler) GetViewsByBlogIDHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, views)
 }
+
+func (h *BlogHandler) GetAiBlog(c *gin.Context) {
+	//GetAiBlog
+}

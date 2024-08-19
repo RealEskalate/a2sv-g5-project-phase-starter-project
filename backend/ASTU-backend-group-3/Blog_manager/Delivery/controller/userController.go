@@ -191,6 +191,10 @@ func (uc *UserController) Logout(c *gin.Context) {
 	username := c.Param("username")
 	tokenString := c.GetHeader("Authorization")
 
+	if len(tokenString) > 7 && tokenString[:7] == "Bearer " {
+		tokenString = tokenString[7:]
+	}
+
 	err := uc.UserUsecase.Logout(username, tokenString)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -212,3 +216,14 @@ func (uc *UserController) PromoteToAdmin(c *gin.Context)  {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User promoted to admin successfully"})
 }
+
+func (uc *UserController) Verify(c *gin.Context) {
+	token := c.Param("token")
+	err := uc.UserUsecase.Verify(token)
+	if err!= nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+	c.JSON(http.StatusOK, gin.H{"message": "Email verified successfully"})
+}
+

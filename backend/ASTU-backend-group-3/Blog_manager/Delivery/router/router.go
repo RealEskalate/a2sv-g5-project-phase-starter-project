@@ -18,6 +18,8 @@ func SetupRouter(userController *controller.UserController, blogController *cont
 	router.POST("/refresh", userController.RefreshToken)
 	router.POST("/forgot-password", userController.ForgotPassword)
 	router.GET("/reset/:token", userController.ResetPassword)
+	router.GET("/verify/:token", userController.Verify)
+	router.POST("/chat" , controller.Chat)
 
 	usersRoute := router.Group("/")
 	usersRoute.Use(infrastructure.AuthMiddleware()) // make sure to add Auth_User in the middleware

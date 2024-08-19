@@ -4,6 +4,7 @@ import (
 	"blog/config"
 	"blog/delivery/middleware"
 	"blog/database"
+	"blog/delivery/middleware"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -22,10 +23,9 @@ func Setup(env *config.Env, timeout time.Duration, db database.Database, gin *gi
 	// Middleware to verify AccessToken
 	protectedRouter.Use(middleware.AuthMidd)
 	// All Private APIs
-    NewProfileRouter(env, timeout, db, protectedRouter)
+  NewProfileRouter(env, timeout, db, protectedRouter)
 	NewLogoutRouter(env, timeout, db, protectedRouter)
 	RegisterAIRoutes(env, timeout, protectedRouter)
-   
   
 
 }

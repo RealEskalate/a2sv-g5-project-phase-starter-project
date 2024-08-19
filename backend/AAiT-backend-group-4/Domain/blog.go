@@ -100,7 +100,22 @@ type BlogRepository interface {
 	UserIsAuthor(ctx context.Context, blogID primitive.ObjectID, userID string) (bool, error)
 	// UpdateFeedback retrives blogs by it's id and updates it's feedback
 	UpdateFeedback(ctx context.Context, id string, updateFunc func(*Feedback) error) error
+	// SearchBlogs filters Blogs with given filter parameters and retrives blogs form the dataBase
 	SearchBlogs(c context.Context, filter Filter) ([]Blog, error)
+	// AddLikes adds the number of Likes in the feedback field found in the blog info
+	IncrementLikes(feedback *Feedback) error
+	// DecrementsLikes decrements the number of likes from the feedback field of the blog
+	DecrementLikes(feedback *Feedback) error 
+	// IncrementDislikes Increments the number of Dislikes from the feedback field of the blog
+	IncrementDislike(feedback *Feedback) error 
+	// DecrementDislikes decrements the number of Dislikes from the feedback field of the blog
+	DecrementDislikes(feedback *Feedback) error
+	// AddComent adds a comment in to a blog feedback section 
+	AddComment(feedback *Feedback, comment Comment) error
+	// UpdateComment updates a comment using the comment's user id and blogs id
+	UpdateComment(feedback *Feedback, updatedComment Comment, userID string) error 
+	// RemoveComents removes a comment in a blog feedback section using the removing users id 
+	RemoveComment(feedback *Feedback, requesterUserID string, isAdmin bool) error
 }
 
 type BlogUsecase interface {
@@ -118,8 +133,14 @@ type BlogUsecase interface {
 	UpdateBlog(ctx context.Context, id primitive.ObjectID, blog BlogUpdate, updatingID string) error
 	// DeleteBlog deletes a blog from the collection by its ID
 	DeleteBlog(ctx context.Context, id primitive.ObjectID, deletingID string) error
-	// UpdateFeedback retrives blogs by it's id and updates it's feedback
-	UpdateFeedback(ctx context.Context, id string, updateFunc func(*Feedback) error) error
 
 	SearchBlogs(c context.Context, filter Filter) ([]Blog, error)
+	// AddComent adds a comment in to a blog feedback section 
+	AddComment(ctx context.Context, blogID string, comment Comment) error
+	// UpdateComment updates a comment using the comment's user id
+	UpdateComment(c context.Context, blogID primitive.ObjectID, userID string, updatedComment Comment) error
+	// RemoveComents removes a comment in a blog feedback section using the removing users id 
+	RemoveComment(ctx context.Context, blogID primitive.ObjectID, requesterUserID string) error
+	
+
 }

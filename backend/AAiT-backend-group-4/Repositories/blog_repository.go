@@ -276,8 +276,6 @@ func (br *blogRepository) UpdatePopularity(ctx context.Context, id primitive.Obj
 	return err
 }
 
-// IncreamentViewCount of a blog when a blog is fetched
-
 func (br *blogRepository) UpdateFeedback(c context.Context, id string, updateFunc func(*domain.Feedback) error) error {
 
 	filter := bson.M{"_id": id}
@@ -299,31 +297,54 @@ func (br *blogRepository) UpdateFeedback(c context.Context, id string, updateFun
 	return err
 }
 
+// Increments the number of likes in the blogs feedback
+func (br *blogRepository) IncrementLikes(feedback *domain.Feedback) error {
+	feedback.Likes ++
+	return nil
+}
+// Decrement the number of likes in the blogs feedback
+func (br *blogRepository) DecrementLikes(feedback *domain.Feedback) error {
+	feedback.Dislikes --
+	return nil
+}
+
+// Increments the number of dislikes in the blogs feedback
+func (br *blogRepository) IncrementDislike(feedback *domain.Feedback) error {
+	feedback.Dislikes ++
+	return nil
+}
+
+// Decement the number of dislikes in the blogs feedback
+func (br *blogRepository) DecrementDislikes(feedback *domain.Feedback) error{
+	feedback.Dislikes --
+	return nil
+}
+
+
 // adds a comment in to the feedback list of the blog
-func AddComment(feedback *domain.Feedback, comment domain.Comment) error {
+func (br *blogRepository) AddComment(feedback *domain.Feedback, comment domain.Comment) error {
 	feedback.Comments = append(feedback.Comments, comment)
 	return nil
 }
 
-// Increments the number of views in the blogs feedback
-func IncrementViewCount(feedback *domain.Feedback) error {
-	feedback.View_count++
-	return nil
+func (br *blogRepository) UpdateComment(feedback *domain.Feedback, updatedComment domain.Comment, userID string) error {
+        commentIndex := -1
+        for i, comment := range feedback.Comments {
+            if comment.User_ID == userID {
+                commentIndex = i
+                break
+            }
+        }
+
+        if commentIndex == -1 {
+            return errors.New("unauthorized: you can only update your own comments or must be an admin")
+        }
+
+        feedback.Comments[commentIndex] = updatedComment
+        return nil
 }
 
-// Increments the number of likes in the blogs feedback
-func AddLike(feedback *domain.Feedback) error {
-	feedback.Likes++
-	return nil
-}
-
-// Increments the number of likes in the blogs feedback
-func DecrementLike(feedback *domain.Feedback) error {
-	feedback.Dislikes--
-	return nil
-}
-
-func RemoveComments(feedback *domain.Feedback, requesterUserID string, isAdmin bool) error {
+func (br *blogRepository) RemoveComment(feedback *domain.Feedback, requesterUserID string, isAdmin bool) error {
 	var newComments []domain.Comment
 	commentFound := false
 

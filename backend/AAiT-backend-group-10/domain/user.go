@@ -50,5 +50,4 @@ type UserRepository interface {
 	GetUserByEmail(email string) (*User, error)
 	GetUserByUsername(username string) (*User, error)
 	UpdateUser(user *User) error
->>>>>>> e194abfa (aait-backend.g10: add user registration and login)
 }

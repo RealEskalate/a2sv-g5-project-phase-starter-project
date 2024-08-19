@@ -1,6 +1,7 @@
 package usercontroller
 
 import (
+	"blogs/config"
 	"blogs/domain"
 	"net/http"
 	"time"
@@ -57,7 +58,14 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 
 	err = u.UserUsecase.RegisterUser(user)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		code := config.GetStatusCode(err)
+
+		if code == http.StatusInternalServerError {
+			ctx.JSON(code, gin.H{"error": "Internal server error"})
+			return
+		}
+
+		ctx.JSON(code, gin.H{"error": err.Error()})
 		return
 	}
 

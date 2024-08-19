@@ -1,6 +1,7 @@
 package usercontroller
 
 import (
+	"blogs/config"
 	"blogs/domain"
 	"log"
 	"net/http"
@@ -18,10 +19,15 @@ func (u *UserController) RefreshToken(ctx *gin.Context) {
 
 	accessToken, err := u.UserUsecase.RefreshToken(claims)
 	if err != nil {
-		log.Println(err)
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		code := config.GetStatusCode(err)
+
+		if code == http.StatusInternalServerError {
+			log.Println(err)
+			ctx.JSON(code, gin.H{"error": "Internal server error"})
+			return
+		}
+
+		ctx.JSON(code, gin.H{"error": err.Error()})
 		return
 	}
 

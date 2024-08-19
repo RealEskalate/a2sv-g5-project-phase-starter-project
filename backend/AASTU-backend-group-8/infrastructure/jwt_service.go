@@ -56,7 +56,7 @@ func (j *jwtService) GenerateToken(userID primitive.ObjectID, role string) (stri
 
 func (j *jwtService) GenerateRefreshToken(userID primitive.ObjectID, role string) (string, error) {
 	// Set expiration time for refresh token
-	expirationTime := time.Now().Add(time.Hour * 24 * 7) // 7 days
+	expirationTime := time.Now().Add(time.Hour * 24 * 7)
 
 	claims := &Claims{          //should be checked
 		ID:   userID,

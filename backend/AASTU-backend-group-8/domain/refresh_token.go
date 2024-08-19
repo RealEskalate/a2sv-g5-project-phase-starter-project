@@ -8,17 +8,18 @@ import (
 
 type RefreshToken struct {
 	// username     string    `bson:"token" json:"token"`
-	UserID    string    `bson:"user_id" json:"user_id"`
-	ExpiresAt time.Time `bson:"expires_at" json:"expires_at"`
+	UserID    	primitive.ObjectID  `bson:"user_id" json:"user_id"`
+	Role 		string 				`bson:"role" json:"role"`
+	ExpiresAt 	time.Time 			`bson:"expires_at" json:"expires_at"`
 }
 
 type RefreshTokenUsecaseInterface interface {
-    RefreshToken(refreshToken string) (string, error)
+    RefreshToken(refreshToken *RefreshToken) (string, error)
 }
 
 type TokenRepositoryInterface interface {
     SaveRefreshToken(refreshToken *RefreshToken) error
-    FindRefreshToken(token string) (*RefreshToken, error)
+    FindRefreshToken(userID primitive.ObjectID) (*RefreshToken, error)
     DeleteRefreshTokenByUserID(userID primitive.ObjectID) error
 }
 

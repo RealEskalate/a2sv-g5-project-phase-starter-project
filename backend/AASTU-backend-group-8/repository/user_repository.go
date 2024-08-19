@@ -32,7 +32,7 @@ func (r *UserRepository) GetUserByUsername(username *string) (*domain.User, erro
 	defer cancel()
 	var user domain.User
 	err := r.collection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
-	return nil, err
+	return &user, err
 }
 
 func (r *UserRepository) GetUserByEmail(email *string) (*domain.User, error) {
@@ -40,7 +40,7 @@ func (r *UserRepository) GetUserByEmail(email *string) (*domain.User, error) {
 	defer cancel()
 	var user domain.User
 	err := r.collection.FindOne(ctx, bson.M{"email": *email}).Decode(&user)
-	return nil, err
+	return &user, err
 }
 
 func (r *UserRepository) GetUserByID(id primitive.ObjectID) (*domain.User, error) {

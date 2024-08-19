@@ -11,38 +11,40 @@ import (
 
 
 type OTPUsecase struct {
-        otpRepository domain.OTPRepositoryInterface
+        otpRepository   domain.OTPRepositoryInterface
+        userRepo        domain.UserRepositoryInterface
 	// infrastruct   infrastructure.EmailService
 }
 
-func NewOTPUsecase(or domain.OTPRepositoryInterface) *OTPUsecase {
+func NewOTPUsecase(or domain.OTPRepositoryInterface, ur domain.UserRepositoryInterface) *OTPUsecase {
         return &OTPUsecase{
                 otpRepository: or,
+                userRepo: ur,
         }
 }
 
 func (ou *OTPUsecase) GenerateAndSendOTP(user *domain.User) error {
-		if !utils.ValidateEmail(user.Email) {
-			return  errors.New("invalid email")
-		}
-		if !utils.ValidatePassword(user.Password) {
-			return errors.New("password must be at least 8 characters long")
-		}
+        if !utils.ValidateEmail(user.Email) {
+                return  errors.New("invalid email")
+        }
+        if !utils.ValidatePassword(user.Password) {
+                return errors.New("password must be at least 8 characters long")
+        }
 
         // Generate OTP
         otp := utils.GenerateOTP(6)
-		existingOtp := domain.OTP{
-			Otp:       otp,
-			Email: 	   user.Email,
-			Username:    user.Name,
-			ExpiresAt: time.Now().Add(time.Hour * 24 * 7),
+        storeOtp := domain.OTP{
+                Otp:       otp,
+                Email: 	   user.Email,
+                Username:    user.Name,
+                ExpiresAt: time.Now().Add(time.Hour * 24 * 7),
 
-			Password: user.Password,
-			Role: user.Role,
-		}
+                Password: user.Password,
+                Role: user.Role,
+        }
 
         // Store OTP in the database
-        err := ou.otpRepository.StoreOTP(&existingOtp)
+        err := ou.otpRepository.StoreOTP(&storeOtp)
         if err != nil {
                 return err
         }
@@ -58,16 +60,16 @@ func (ou *OTPUsecase) GenerateAndSendOTP(user *domain.User) error {
 
 // verification endpoint
 func (ou *OTPUsecase) VerifyOTP(email, otp string) (*domain.OTP,error) {
-        existingOtp, err := ou.otpRepository.GetOTPByEmail(email)
+        storeOtp, err := ou.otpRepository.GetOTPByEmail(email)
         if err != nil {
                 return nil, err
         }
 
-        if time.Now().After(existingOtp.ExpiresAt) {
+        if time.Now().After(storeOtp.ExpiresAt) {
                 return nil, errors.New("otp expired")
         }
 
-        if existingOtp.Otp != otp {
+        if storeOtp.Otp != otp {
                 return nil, errors.New("invalid OTP")
         }
 
@@ -76,5 +78,39 @@ func (ou *OTPUsecase) VerifyOTP(email, otp string) (*domain.OTP,error) {
                 return nil, errors.New("couldn't delete OTP")
         }
 
-        return existingOtp, nil
+        return storeOtp, nil
+}
+
+func (ou *OTPUsecase) ForgotPassword(email *string) error {
+        if !utils.ValidateEmail(*email) {
+                return  errors.New("invalid email")
+        }
+	user, err := ou.userRepo.GetUserByEmail(email)
+	if err != nil {
+		return errors.New("email not found")
+	}
+
+	// Generate OTP and store it in the database
+	otp := utils.GenerateOTP(6)
+        storeOtp := domain.OTP{
+                Otp:       otp,
+                Email: 	   user.Email,
+                Username:    user.Name,
+                ExpiresAt: time.Now().Add(time.Hour * 24 * 7),
+
+                Password: user.Password,
+                Role: user.Role,
+        }
+	err = ou.otpRepository.StoreOTP(&storeOtp)
+	if err != nil {
+		return err
+	}
+
+	// Send OTP via email
+	err = infrastructure.SendOTPEmail(user.Email, otp)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

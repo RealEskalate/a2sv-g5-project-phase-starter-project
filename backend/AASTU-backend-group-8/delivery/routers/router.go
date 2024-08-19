@@ -8,14 +8,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, tokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase , jwtService infrastructure.JWTService) {
-// func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, tokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase) {
+func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, refreshTokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase , jwtService infrastructure.JWTService) {
 
 	// Initialize controllers
 	signupController := controllers.NewSignupController(userUsecase, otpUsecase)
 	blogController := controllers.NewBlogController(blogUsecase)
 	userController := controllers.NewUserController(userUsecase)
-	// refreshTokenController := controllers.NewRefreshTokenController(userUsecase)
+	refreshTokenController := controllers.NewRefreshTokenController(userUsecase, refreshTokenUsecase)
+	forgotPasswordController := controllers.NewForgotPasswordController()
 
 	// Admin middleware
 	// adminMiddleware := infrastructure.AdminMiddleware(jwtService)
@@ -23,10 +23,11 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 
 	// Public routes
 	r.POST("/signup", signupController.Signup)
-	r.POST("/login", userController.Login)
 	r.POST("/verify", signupController.VerifyOTP)
-	r.POST("/forgot-password", userController.ForgotPassword)
-	r.POST("/refresh-token", userController.RefreshToken)
+	r.POST("/login", userController.Login)
+	r.POST("/refreshtoken", refreshTokenController.RefreshToken)
+	r.POST("/forgotpassword", forgotPasswordController.ForgotPassword)
+	r.POST("/verfiyforgotpassword", forgotPasswordController.VerifyForgotOTP)
 
 	// Authenticated routes
 	auth := r.Group("/api")

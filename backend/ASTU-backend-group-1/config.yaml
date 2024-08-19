@@ -5,3 +5,4 @@ database:
 email:
   key: "nenbydebhwkqanpf"
 port: "http://localhost:8000/"
+jwt: "starterproject"

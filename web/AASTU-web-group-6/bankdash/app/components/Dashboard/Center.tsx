@@ -9,31 +9,38 @@ import { useSession } from "next-auth/react";
 import useCardDispatch from "@/app/Redux/Dispacher/useCardDispatch";
 import { useAppSelector } from "@/app/Redux/store/store";
 import { Card } from "@/app/Redux/slices/cardSlice";
+import useTranDispatch from "@/app/Redux/Dispacher/useTranDispatch";
+import { TransactionType } from "@/app/Redux/slices/TransactionSlice";
 
 const Center = () => {
   const { data: session } = useSession();
   const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyMzgzMDIxNiwiZXhwIjoxNzIzOTE2NjE2fQ.c5zYX74xJyowvSM8pmN4W8Aw6pMyiJjs9JOP__Cjy9J80EHlOS6gX2yJpcwSdBwF";
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyMzkxNjcyMiwiZXhwIjoxNzI0MDAzMTIyfQ.p9aXcFbPCTl88kFVBDa5JuDj03jg1KEjfo82GCAPY2kQo8c9x4gwNNYai4isHVZM";
 
-  // Update initial card data using the custom hook
+  // Update initial card and tran data using the custom hook
   useCardDispatch(accessToken);
+  useTranDispatch(accessToken);
 
   const CardData: Card[] = useAppSelector((state) => state.cards.cards);
-  console.log("Fetched cards:", CardData);
+  const TranData: TransactionType[] = useAppSelector(
+    (state) => state.transactions.transactions
+  );
+  const balanceHist: TransactionType[] = useAppSelector(
+    (state) => state.transactions.balanceHist
+  );
+
   return (
     <>
-      <section className="w-full flex gap-6">
-        <div className="cards-container w-full cente-Content flex flex-col gap-6">
-          <div className="card-box flex">
-            <h1 className="flex grow page text-xl font-semibold text-colorBody-1">
-              My Cards
-            </h1>
+      <section className="flex gap-6 sm:flex-col lg:flex-row">
+        <div className="cards-container sm:w-full lg:w-[67%] cente-Content flex flex-col gap-6">
+          <div className="card-box flex w-full items-center justify-between">
+            <h1 className="text-xl font-semibold text-colorBody-1">My Cards</h1>
             <Link href={""} className="text-base font-medium hover:underline">
               SeeAll
             </Link>
           </div>
 
-          <div className="flex gap-6 grow">
+          <div className="flex gap-6 grow w-full">
             <VisaCard
               data={CardData[0]}
               isBlack={false}
@@ -51,7 +58,7 @@ const Center = () => {
         <RecentTr />
       </section>
 
-      <section className="flex gap-6 grow">
+      <section className="flex gap-6 grow sm:flex-col lg:flex-row">
         <div className="Weekly-container w-full cente-Content flex flex-col gap-6 ">
           <h1 className="flex grow page text-xl font-semibold text-colorBody-1">
             Weekly Activity
@@ -79,7 +86,7 @@ const Center = () => {
             </div>
           </div>
         </div>
-        <div className="cards-container w-2/5 center-content flex flex-col gap-6">
+        <div className="cards-container sm:w-full lg:w-[40%] items-center flex flex-col gap-6">
           <h1 className="text-xl font-semibold text-colorBody-1">
             Expense Statistics
           </h1>

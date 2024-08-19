@@ -4,7 +4,7 @@ import (
 	"ASTU-backend-group-3/Blog_manager/Delivery/controller"
 	"ASTU-backend-group-3/Blog_manager/infrastructure"
 
-	// "ASTU-backend-group-3/Blog_manager/infrastructure"
+	"ASTU-backend-group-3/Blog_manager/infrastructure"
 
 	// "ASTU-backend-group-3/Blog_manager/utils"
 
@@ -37,11 +37,10 @@ func SetupRouter(userController *controller.UserController, blogController *cont
 	// usersRoute.PUT("/update/:username", userController.UpdateUser)
 	protected := usersRoute.Group("/")
 	// protected.Use(infrastructure.AdminMiddleware()) // make sure to add Auth_User in the middleware
-	protected.DELETE("/delete/:username", userController.DeleteUser)
 
-	// protected := usersRoute.Group("/")
-	// protected.Use(infrastructure.RoleMiddleware("admin")) // make sure to add Auth_User in the middleware
-	// protected.DELETE("/delete/:username", userController.DeleteUser)
+	protected.Use(infrastructure.RoleMiddleware("admin")) // make sure to add Auth_User in the middleware
+	protected.DELETE("/delete/:username", userController.DeleteUser)
+	protected.PUT("/promote/:username", userController.PromoteToAdmin)
 
 	return router
 }

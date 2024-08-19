@@ -1,0 +1,29 @@
+package controllers
+
+import (
+	domain "blogs/Domain"
+	infrastructure "blogs/Infrastructure"
+
+	"github.com/gin-gonic/gin"
+)
+
+type LogoutController struct {
+	LogoutUsecase domain.LogoutUsecase
+	Env           *infrastructure.Config
+}
+
+func (l *LogoutController) Logout(c *gin.Context) {
+	id := c.Param("id")
+	// TODO: get id from claims
+	_, err := l.LogoutUsecase.CheckActiveUser(c, id)
+	if err != nil {
+		c.JSON(404, gin.H{"error": "User not found, page not found, login before logout"})
+		return
+	}
+	err = l.LogoutUsecase.Logout(c, id)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Logout success"})
+}

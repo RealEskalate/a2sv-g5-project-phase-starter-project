@@ -4,6 +4,7 @@ import "github.com/google/uuid"
 
 // Reaction represents the Reaction(Like or Dislike) with private fields.
 type Reaction struct {
+	id     uuid.UUID
 	isLike bool
 	userId uuid.UUID
 	blogId uuid.UUID
@@ -25,6 +26,10 @@ func New(config Config) *Reaction {
 		userId: config.UserId,
 		blogId: config.BlogId,
 	}
+}
+
+func (r Reaction) ID() uuid.UUID {
+	return r.id
 }
 
 // IsLike returns boolean : true if reaction is like false if not

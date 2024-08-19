@@ -1,13 +1,13 @@
 import React from "react";
 
-import WeeklyActivityChart from "./components/charts/WeeklyActivityChart";
-import Card from "./components/card/Card";
-import CardForCreditCards from "./components/card/CardForCreditCards";
-import CreditCard from "./components/creditCard/CreditCard";
-import RecentTransaction from "./components/recent-transaction/RecentTransaction";
-import ExpenseStatisticsChart from "./components/charts/ExpenseStatisticsChart";
-import SendMoney from "./components/sendMoney/SendMoney";
-import BalanceHistoryChart from "./components/charts/BalanceHistoryChart";
+import WeeklyActivityChart from "../components/charts/WeeklyActivityChart";
+import Card from "../components/card/Card";
+import CardForCreditCards from "../components/card/CardForCreditCards";
+import CreditCard from "../components/creditCard/CreditCard";
+import RecentTransaction from "../components/recent-transaction/RecentTransaction";
+import ExpenseStatisticsChart from "../components/charts/ExpenseStatisticsChart";
+import SendMoney from "../components/sendMoney/SendMoney";
+import BalanceHistoryChart from "../components/charts/BalanceHistoryChart";
 const page = () => {
   return (
     <div className="flex flex-col gap-2">

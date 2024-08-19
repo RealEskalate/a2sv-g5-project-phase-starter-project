@@ -1,11 +1,11 @@
 import React from "react";
-import Card from "../components/card/Card";
-import CreditCard from "../components/creditCard/CreditCard";
-import ExpenseStatisticsChart from "../components/charts/ExpenseStatisticsChart";
-import CardList from "../components/cardList/cardList";
-import CardExpenseStatisticsChart from "../components/charts/CardExpenseStatisticsChart";
-import AddNewCard from "../components/addNewCard/AddNewCard";
-import CardSetting from "../components/CardSetting/CardSetting";
+import Card from "../../components/card/Card";
+import CreditCard from "../../components/creditCard/CreditCard";
+import ExpenseStatisticsChart from "../../components/charts/ExpenseStatisticsChart";
+import CardList from "../../components/cardList/cardList";
+import CardExpenseStatisticsChart from "../../components/charts/CardExpenseStatisticsChart";
+import AddNewCard from "../../components/addNewCard/AddNewCard";
+import CardSetting from "../../components/CardSetting/CardSetting";
 
 const CreditCardsPage = () => {
   return (

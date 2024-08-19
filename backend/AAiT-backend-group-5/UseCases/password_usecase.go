@@ -15,11 +15,13 @@ type setup_password struct {
 	repo            interfaces.UserRepository
 }
 
-func NewSetupPassword(urlService interfaces.URLService,
+func NewSetupPassword(
+	urlService interfaces.URLService,
 	jwtService interfaces.JwtService,
 	repo interfaces.UserRepository,
 	emailService interfaces.EmailService,
 	passwordService interfaces.PasswordService,
+	
 ) interfaces.PasswordUsecase {
 
 	return &setup_password{

@@ -33,7 +33,8 @@ const page = () => {
   ];
   const [data, setData] = useState<InvestmentData>();
   const [error, setError] = useState<string | null>(null);
-  const accessToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjM5OTIwNjMsImV4cCI6MTcyNDA3ODQ2M30.TQUQ-1kz6M-DWcCDKjVgasHzfZxxhZf0Odeux1Jw1OPqxa4doCexoALnIAeGIkQS";
+  const accessToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjQwNTY5MDEsImV4cCI6MTcyNDE0MzMwMX0.06ogiDUHZipaLn7gIoJDxGz4Bw_zFmsA72Zp99eKGkKVjOFRXy3MUvh55dspPaib";
+
 
   useEffect(() => {
     const getData = async () => {

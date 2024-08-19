@@ -64,8 +64,8 @@ export function DebitCreditOver() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const accessToken =
-          "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjM5OTIwNjMsImV4cCI6MTcyNDA3ODQ2M30.TQUQ-1kz6M-DWcCDKjVgasHzfZxxhZf0Odeux1Jw1OPqxa4doCexoALnIAeGIkQS";
+         const accessToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjQwNTY5MDEsImV4cCI6MTcyNDE0MzMwMX0.06ogiDUHZipaLn7gIoJDxGz4Bw_zFmsA72Zp99eKGkKVjOFRXy3MUvh55dspPaib"
+
         const expense = await LastTransService.getExpenseData(accessToken);
         const income = await LastTransService.getIncomeData(accessToken);
         const chartData: { [day: string]: { debit: number; credit: number } } =
@@ -101,8 +101,11 @@ export function DebitCreditOver() {
           debit: chartData[day].debit,
           credit: chartData[day].credit,
         }));
-        formattedChartData.reverse();
-        setData(formattedChartData);
+        const currentDayIndex = new Date().getDay();
+        const rotatedChartData = [
+          ...formattedChartData.slice(currentDayIndex + 1),
+          ...formattedChartData.slice(0, currentDayIndex + 1),]
+        setData(rotatedChartData);
         setTotalExpense(expenseSum);
         setTotalIncome(incomeSum)
       } catch (error) {

@@ -48,7 +48,7 @@ const LastTrans = ({
   }
 
   return (
-    <div className="flex gap-10 items-center mb-5 pl-4">
+    <div className="flex gap-10 items-center mb-5 ">
       <div
         className="border border-solid rounded-2xl w-[55px] h-[55px] flex justify-center items-center"
         style={{ borderColor: color, backgroundColor: color }}

@@ -32,3 +32,15 @@ func (usecase *tagsUseCase) DeleteTag(c *gin.Context, id primitive.ObjectID) (er
 	defer cancel()
 	return usecase.tagRepository.DeleteTag(ctx, id)
 }
+
+func (usecase *tagsUseCase) GetAllTags(c *gin.Context) ([]*Domain.Tag, error, int) {
+	ctx, cancel := context.WithTimeout(c, usecase.contextTimeout)
+	defer cancel()
+	return usecase.tagRepository.GetAllTags(ctx)
+}
+
+func (usecase *tagsUseCase) GetTagBySlug(c *gin.Context, slug string) (*Domain.Tag, error, int) {
+	ctx, cancel := context.WithTimeout(c, usecase.contextTimeout)
+	defer cancel()
+	return usecase.tagRepository.GetTagBySlug(ctx, slug)
+}

@@ -21,6 +21,8 @@ func BlogRouter() {
 		postRouter.GET("/getbyauthor/:authorID", blogcontroller.GetPostByAuthorID)
 		postRouter.PUT("/update/:id", blogcontroller.UpdatePostByID)
 		
+		// postRouter.PUT("/tags/:id", blogcontroller.AddTagToPost)
+		
 
 		// get tags
 		postRouter.GET("/tags/:id", blogcontroller.GetTags)
@@ -60,7 +62,12 @@ func BlogRouter() {
 		tagRouter.POST("/create", tagController.CreateTag)
 		//delete tag
 		tagRouter.DELETE("/delete/:id", tagController.DeleteTag)
-		// add tag to post
+		//get all tags
+		tagRouter.GET("/all", tagController.GetAllTags)
+		// get tags by slug
+		tagRouter.GET("/get/:slug", tagController.GetTagBySlug)
+		
+
 		
 	}
 }

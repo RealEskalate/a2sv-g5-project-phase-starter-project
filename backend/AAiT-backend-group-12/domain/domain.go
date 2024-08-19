@@ -16,11 +16,17 @@ const (
 	CollectionBlogs = "blogs"
 )
 
+const (
+	VerifyEmailType   = "verify_email"
+	ResetPasswordType = "reset_password"
+)
+
 type Response gin.H
 
 type VerificationData struct {
 	Token     string    `json:"token"`
 	ExpiresAt time.Time `json:"expires_at"`
+	Type      string    `json:"type"`
 }
 
 type User struct {

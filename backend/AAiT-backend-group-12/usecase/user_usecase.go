@@ -94,7 +94,7 @@ func (u *UserUsecase) SanitizeAndValidateNewUser(user *domain.User) domain.Coded
 	return nil
 }
 
-func (u *UserUsecase) GetVerificationData(c context.Context, username string) (domain.VerificationData, domain.CodedError) {
+func (u *UserUsecase) GetVerificationData(c context.Context, username string, verificationType string, expiresAt time.Time) (domain.VerificationData, domain.CodedError) {
 	var verificationData domain.VerificationData
 	generatedToken, gErr := utils.GenerateToken(32)
 	if gErr != nil {
@@ -103,7 +103,8 @@ func (u *UserUsecase) GetVerificationData(c context.Context, username string) (d
 
 	verificationData = domain.VerificationData{
 		Token:     generatedToken,
-		ExpiresAt: time.Now().Round(0).Add(time.Hour * 2),
+		ExpiresAt: expiresAt,
+		Type:      verificationType,
 	}
 
 	return verificationData, nil
@@ -120,7 +121,7 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 		return domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
-	verificationData, err := u.GetVerificationData(c, user.Username)
+	verificationData, err := u.GetVerificationData(c, user.Username, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2))
 	if err != nil {
 		return err
 	}
@@ -307,12 +308,15 @@ func (u *UserUsecase) VerifyEmail(c context.Context, username string, token stri
 	}
 
 	if user.VerificationData.ExpiresAt.Before(time.Now().Round(0)) {
-		verificationData, err := u.GetVerificationData(c, username)
+		verificationData, err := u.GetVerificationData(c, username, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2))
 		if err != nil {
 			return err
 		}
 
-		u.userRepository.UpdateVerificationDetails(c, username, verificationData)
+		err = u.userRepository.UpdateVerificationDetails(c, username, verificationData)
+		if err != nil {
+			return err
+		}
 
 		mail := mail_service.EmailVerificationTemplate(hostUrl, username, verificationData.Token)
 		mailErr := mail_service.SendMail("Blog API", user.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
@@ -324,4 +328,33 @@ func (u *UserUsecase) VerifyEmail(c context.Context, username string, token stri
 	}
 
 	return u.userRepository.VerifyUser(c, username)
+}
+
+func (u *UserUsecase) ResetPassword(c context.Context, username string, email string, hostUrl string) domain.CodedError {
+	foundUser, err := u.userRepository.FindUser(c, &domain.User{Username: username, Email: email})
+	if err != nil {
+		return err
+	}
+
+	if !foundUser.IsVerified {
+		return domain.NewError("User email not verified", domain.ERR_UNAUTHORIZED)
+	}
+
+	verificationData, err := u.GetVerificationData(c, username, domain.ResetPasswordType, time.Now().Round(0).Add(time.Minute*10))
+	if err != nil {
+		return err
+	}
+
+	err = u.userRepository.UpdateVerificationDetails(c, username, verificationData)
+	if err != nil {
+		return err
+	}
+
+	mail := mail_service.EmailVerificationTemplate(hostUrl, username, verificationData.Token)
+	mailErr := mail_service.SendMail("Blog API", foundUser.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
+	if mailErr != nil {
+		return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return nil
 }

@@ -69,22 +69,22 @@ const InvestmentPage = () => {
       </div>
       <div className=" flex flex-col lg:flex-row justify-between my-5">
         <div className=" w-full lg:w-[48%]">
-          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
+          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 dark:text-gray-300">
             Yearly Total Investment
           </p>
           <YearlyInvest data={data} />
         </div>
 
         <div className="w-full lg:w-[48%]">
-          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
+          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 dark:text-gray-300">
             Monthly Revenue
           </p>
           <MonthlyRev data={data} />
         </div>
       </div>
-      <div className="flex flex-col lg:flex-row justify-between my-5">
+      <div className="flex flex-col lg:flex-row justify-between gap-6 my-5">
         <div className=" w-full lg:w-[60%]">
-          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
+          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 dark:text-gray-300">
             My Investment
           </p>
           <MyInvestment
@@ -118,8 +118,8 @@ const InvestmentPage = () => {
             titleRe="Electric Vehicles"
           />
         </div>
-        <div className=" lg:w-[35%]">
-          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
+        <div className=" lg:w-[40%]">
+          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 dark:text-gray-300">
             Trending Stock
           </p>
           <TrendingStock data={data1} />

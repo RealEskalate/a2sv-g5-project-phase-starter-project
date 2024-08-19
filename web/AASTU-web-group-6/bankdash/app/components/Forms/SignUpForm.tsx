@@ -4,8 +4,7 @@ import { useForm } from 'react-hook-form';
 import UserValue from '@/types/UserValue';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import AuthService from '@/app/Services/AuthService';
-import ResponseValue from '@/types/ResponseValue';
+import AuthService from '@/app/Services/api/authService';
 
 // Define the schema using Zod
 const schema = z.object({
@@ -44,7 +43,7 @@ const SignUpForm = () => {
   const onSubmit = async (data: FormData) => {
     const { confirmPassword, ...userData } = data;
     try {
-      const responseData: ResponseValue = await AuthService.register(userData);
+      const responseData = await AuthService.register(userData);
       if (responseData.success) {
         console.log("Signup successful:", responseData.message);
       } else {

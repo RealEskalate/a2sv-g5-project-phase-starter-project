@@ -21,6 +21,8 @@ type Config struct {
 	UserRepo irepository.UserRepository 
 	jwtService   ijwt.Services 
 	HashService  ihash.Service 
+	emailService iemail.Service 
+	
 }
 
 func NewHandler(config Config) *handler {
@@ -28,6 +30,7 @@ func NewHandler(config Config) *handler {
 		repo:        config.UserRepo,
 		jwtService:  config.jwtService,
 		hashService: config.HashService,
+		emailService: config.emailService,
 	}
 }
 

@@ -34,6 +34,20 @@ func NewAuthController(usecase domain.UserUsecaseInterface) *AuthController {
 	return &AuthController{usecase: usecase}
 }
 
+func (controller *AuthController) GetAuthHeader(c *gin.Context) (string, error) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		return "", fmt.Errorf("authorization header not found")
+	}
+
+	headerSegments := strings.Split(authHeader, " ")
+	if len(headerSegments) != 2 || strings.ToLower(headerSegments[0]) != "bearer" {
+		return "", fmt.Errorf("authorization header is invalid")
+	}
+
+	return headerSegments[1], nil
+}
+
 func (controller *AuthController) GetDomain(c *gin.Context) string {
 	scheme := "http"
 	if c.Request.TLS != nil {
@@ -77,20 +91,13 @@ func (controller *AuthController) HandleLogin(c *gin.Context) {
 }
 
 func (controller *AuthController) HandleRenewAccessToken(c *gin.Context) {
-	// obtain token from the request header
-	authHeader := c.GetHeader("Authorization")
-	if authHeader == "" {
-		c.JSON(401, domain.Response{"error": "Authorization header not found"})
+	token, gErr := controller.GetAuthHeader(c)
+	if gErr != nil {
+		c.JSON(401, domain.Response{"error": gErr.Error()})
 		return
 	}
 
-	headerSegments := strings.Split(authHeader, " ")
-	if len(headerSegments) != 2 || strings.ToLower(headerSegments[0]) != "bearer" {
-		c.JSON(401, domain.Response{"error": "Authorization header is invalid"})
-		return
-	}
-
-	accessToken, err := controller.usecase.RenewAccessToken(c, headerSegments[1])
+	accessToken, err := controller.usecase.RenewAccessToken(c, token)
 	if err != nil {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return
@@ -174,4 +181,42 @@ func (controller *AuthController) HandleVerifyEmail(c *gin.Context) {
 	}
 
 	c.JSON(200, domain.Response{"message": "User verified"})
+}
+
+func (controller *AuthController) HandleInitResetPassword(c *gin.Context) {
+	var user domain.User
+	if err := c.BindJSON(&user); err != nil {
+		c.JSON(400, domain.Response{"error": "Invalid input " + err.Error()})
+		return
+	}
+
+	uErr := controller.usecase.InitResetPassword(c, user.Username, user.Email, controller.GetDomain(c))
+	if uErr != nil {
+		c.JSON(GetHTTPErrorCode(uErr), domain.Response{"error": uErr.Error()})
+		return
+	}
+
+	c.JSON(200, domain.Response{"message": "A reset password token has been sent to your email."})
+}
+
+func (controller *AuthController) HandleResetPassword(c *gin.Context) {
+	var resetData dtos.ResetPassword
+	token, err := controller.GetAuthHeader(c)
+	if err != nil {
+		c.JSON(401, domain.Response{"error": err.Error()})
+		return
+	}
+
+	if err = c.BindJSON(&resetData); err != nil {
+		c.JSON(400, domain.Response{"error": "Invalid input " + err.Error()})
+		return
+	}
+
+	uErr := controller.usecase.ResetPassword(c, resetData, token)
+	if uErr != nil {
+		c.JSON(GetHTTPErrorCode(uErr), domain.Response{"error": uErr.Error()})
+		return
+	}
+
+	c.JSON(200, domain.Response{"message": "Password reset successful"})
 }

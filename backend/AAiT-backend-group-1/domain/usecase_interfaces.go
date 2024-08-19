@@ -26,11 +26,11 @@ type BlogUseCase interface {
 	FilterBlogs(tags []string, dateAfter time.Time, popular bool) ([]*Blog, Error)
 	LikeBlog(userID, blogID string) Error
 	
-	AddComment(c *gin.Context)
-	DeleteComment(c *gin.Context)
-	EditComment(c *gin.Context)
-	Like(c gin.Context)
-	DisLike(c gin.Context)
+	AddComment(blogID string, comment *Comment) Error
+	DeleteComment(blogID, commentID string) Error
+	EditComment(commentID string, comment *Comment) Error
+	Like(blogId string , userID string) Error
+	DisLike(blogId string , userID string) Error
 }
 
 type BlogAssisstantUseCase interface {

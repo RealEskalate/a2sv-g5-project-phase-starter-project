@@ -19,20 +19,20 @@ type Blog struct {
 }
 
 type Comment struct {
-	ID      int    `json:"id" bson:"_id,omitempty"`
+	ID      int    `json:"id"`
 	UserID  int    `json:"user_id"`
 	Content string `json:"content"`
 	Date    string `json:"date"`
 }
 
 type Like struct {
-	ID     int    `json:"id" bson:"_id,omitempty"`
+	ID     int    `json:"id"`
 	UserID int    `json:"user_id"`
 	Date   string `json:"date"`
 }
 
 type Dislike struct {
-	ID     int    `json:"id" bson:"_id,omitempty"`
+	ID     int    `json:"id"`
 	UserID int    `json:"user_id"`
 	Date   string `json:"date"`
 }

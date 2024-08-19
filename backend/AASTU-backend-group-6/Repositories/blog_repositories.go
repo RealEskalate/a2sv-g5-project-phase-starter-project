@@ -228,8 +228,45 @@ func (b BlogRepository) GetMyBlogs(user_id string, pageNo int64, pageSize int64)
 }
 
 // SearchBlogByTitleAndAuthor implements domain.BlogRepository.
-func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	panic("unimplemented")
+func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, pageNo int64, pageSize int64) ([]domain.Blog, domain.Pagination, error) {
+	timeOut := b.env.ContextTimeout
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut) * time.Second)
+	defer cancel()
+	pageOption := utils.PaginationByPage(pageNo, pageSize)
+	filter := bson.M{}
+	if title != "" {
+		filter["title"] = bson.M{"$regex": `(?i)` + title}
+	}
+	if author != ""{
+		filter["author"] = bson.M{"$regex": `(?i)` + author}
+	}
+	fmt.Println(filter)
+	totalResults, err := b.PostCollection.CountDocuments(context, filter)
+	if err != nil {
+		return nil, domain.Pagination{}, err
+	}
+	totalPages := int64(math.Ceil(float64(totalResults) / float64(pageSize)))
+	var blogs []domain.Blog
+	cursor, err := b.PostCollection.Find(context, filter, pageOption)
+	if err != nil {
+		return nil, domain.Pagination{}, err
+	}
+	for cursor.Next(context) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return nil, domain.Pagination{}, err
+		}
+		blogs = append(blogs, blog)
+	}
+	if err != nil {
+		return nil, domain.Pagination{}, err
+	}
+	return blogs, domain.Pagination{
+		CurrentPage: pageNo,
+		PageSize: pageSize,
+		TotalPages: totalPages,
+		TotatRecord: totalResults,
+	}, nil
 }
 
 // UpdateBlogByID implements domain.BlogRepository.

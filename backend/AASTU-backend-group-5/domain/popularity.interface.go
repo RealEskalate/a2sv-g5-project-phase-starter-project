@@ -9,14 +9,14 @@ type Like_Controller_inteface interface {
 }
 
 type Like_Usecase_interface interface {
-	GetLikes(post_id string) ([]Like , error)
-	CreateLike(user_id string , post_id string) error
+	GetLikes(post_id string) ([]Like, error)
+	CreateLike(user_id string, post_id string) error
 	DeleteLike(like_id string) error
 }
 
 type Like_Repositroy_interface interface {
-	GetLikes(post_id string) ([]Like , error)
-	CreateLike(user_id string , post_id string) error
+	GetLikes(post_id string) ([]Like, error)
+	CreateLike(user_id string, post_id string) error
 	DeleteLike(like_id string) error
 }
 
@@ -27,14 +27,14 @@ type DisLike_Controller_inteface interface {
 }
 
 type DisLike_Usecase_interface interface {
-	GetDisLikes(post_id string) ([]Like , error)
-	CreateDisLike(user_id string , post_id string) error
+	GetDisLikes(post_id string) ([]DisLike, error)
+	CreateDisLike(user_id string, post_id string) error
 	DeleteDisLike(like_id string) error
 }
 
 type DisLike_Repository_interface interface {
-	GetDisLikes(post_id string) ([]Like , error)
-	CreateDisLike(user_id string , post_id string) error
+	GetDisLikes(post_id string) ([]DisLike, error)
+	CreateDisLike(user_id string, post_id string) error
 	DeleteDisLike(like_id string) error
 }
 
@@ -46,16 +46,15 @@ type Comment_Controller_inteface interface {
 }
 
 type Comment_Usecase_interface interface {
-	GetComments(post_id string) ([]Comment , error)
-	CreateComment(post_id string , user_id string) error
+	GetComments(post_id string) ([]Comment, error)
+	CreateComment(post_id string, user_id string) error
 	DeleteComment(comment_id string) error
 	UpdateComment(comment_id string) error
 }
 
 type Comment_Repository_interface interface {
-	GetComments(post_id string) ([]Comment , error)
-	CreateComment(post_id string , user_id string) error
+	GetComments(post_id string) ([]Comment, error)
+	CreateComment(post_id string, user_id string) error
 	DeleteComment(comment_id string) error
 	UpdateComment(comment_id string) error
 }
-

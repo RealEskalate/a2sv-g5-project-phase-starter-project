@@ -10,8 +10,7 @@ type UserRepository interface {
 	Save(user *usermodel.User) error 
 	FindById(id uuid.UUID) (*usermodel.User, error)
 	FindByUsername(username string) (*usermodel.User, error)
-	CheckUsernameAvailability(username string) error
-	CheckEmailAvailability(email string) error
+	FindByEmail(email string) (*usermodel.User, error)
 	MatchPassword(password string, hashedPassword string, hash ihash.Service) bool
 	GenerateValidationLink(user usermodel.User) (string, error)
 	

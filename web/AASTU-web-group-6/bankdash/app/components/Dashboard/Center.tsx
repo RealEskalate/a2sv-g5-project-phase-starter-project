@@ -15,7 +15,7 @@ import { TransactionType } from "@/app/Redux/slices/TransactionSlice";
 const Center = () => {
   const { data: session } = useSession();
   const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyMzkxNjcyMiwiZXhwIjoxNzI0MDAzMTIyfQ.p9aXcFbPCTl88kFVBDa5JuDj03jg1KEjfo82GCAPY2kQo8c9x4gwNNYai4isHVZM";
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyNDA1NTAzNCwiZXhwIjoxNzI0MTQxNDM0fQ.JnQsQUCDteDsH98dIKD5_SLSjRhypg_3ik6YL0LVh8Ju4YDJRPOoc7iWPtIL2pVb";
 
   // Update initial card and tran data using the custom hook
   useCardDispatch(accessToken);
@@ -28,6 +28,11 @@ const Center = () => {
   const balanceHist: TransactionType[] = useAppSelector(
     (state) => state.transactions.balanceHist
   );
+  const cardColor = [false, true];
+
+  console.log(CardData, "from redux");
+  console.log(TranData, "from redux Tr");
+  console.log(balanceHist, "from redux Bala");
 
   return (
     <>
@@ -41,18 +46,17 @@ const Center = () => {
           </div>
 
           <div className="flex gap-6 grow w-full">
-            <VisaCard
-              data={CardData[0]}
-              isBlack={false}
-              isFade={false}
-              isSimGray={false}
-            />
-            <VisaCard
-              data={CardData[1]}
-              isBlack={true}
-              isFade={false}
-              isSimGray={false}
-            />
+            <>
+              {CardData?.slice(0, 2).map((item, index) => (
+                <VisaCard
+                  key={index}
+                  data={item}
+                  isBlack={cardColor[index] || false}
+                  isFade={false}
+                  isSimGray={false}
+                />
+              ))}
+            </>
           </div>
         </div>
         <RecentTr />

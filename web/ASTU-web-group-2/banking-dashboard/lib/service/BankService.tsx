@@ -7,17 +7,42 @@ export const bankApi = createApi({
   }),
   endpoints: (builder) => ({
     getBankService: builder.query({
-      query: (accessToken: string) => ({
-        url: "/bank-services",
+      query: (data: { accessToken: string; size: number; page: number }) => ({
+        url: `/bank-services?size=${data.size}&page=${data.page}`,
         method: "GET",
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${data.accessToken}`,
         },
       }),
     }),
 
     // Add your requests here the same way
+    postBankService: builder.mutation({
+      query: (data: {
+        accessToken: string;
+        name: string;
+        details: string;
+        numberOfUsers: number;
+        status: string;
+        type: string;
+        icon: string;
+      }) => ({
+        url: `/bank-services`,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${data.accessToken}`,
+        },
+        body: {
+          name: data.name,
+          details: data.details,
+          numberOfUsers: data.numberOfUsers,
+          status: data.status,
+          type: data.type,
+          icon: data.icon,
+        },
+      }),
+    }),
   }),
 });
 
-export const { useGetBankServiceQuery } = bankApi;
+export const { useGetBankServiceQuery, usePostBankServiceMutation } = bankApi;

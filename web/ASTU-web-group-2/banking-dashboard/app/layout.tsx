@@ -4,7 +4,11 @@ import "./globals.css";
 import Navbar from "./components/navbar/Navbar";
 import Sidebar from "./components/sidebar/Sidebar";
 import StoreProvider from "./StoreProvider";
+import { SessionProvider } from "next-auth/react";
+import { AuthProvider } from "./AuthProvider";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -19,19 +23,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <StoreProvider>
-        <body className={`${inter.className}`}>
-          <div className="flex flex-col min-h-screen">
-            <Navbar title="Dashboard" />
-            <div className="flex flex-1">
-              <Sidebar />
-              <main className="max-md:pt-[100px] flex-1 p-4 mt-[60px] lg:ml-[240px] sm:ml-[240px] ml-0 bg-[#E6EFF5]">
-                {children}
-              </main>
+      <AuthProvider>
+        <StoreProvider>
+          <body className={`${inter.className}`}>
+            <div className="flex flex-col min-h-screen">
+             <ToastContainer />
+              <Navbar />
+              <div className="flex flex-1">
+                <Sidebar />
+                <main className="max-md:pt-[100px] flex-1 p-4 mt-[60px] lg:ml-[240px] sm:ml-[240px] ml-0 bg-[#E6EFF5]">
+                  {children}
+                </main>
+              </div>
             </div>
-          </div>
-        </body>
-      </StoreProvider>
+          </body>
+        </StoreProvider>
+      </AuthProvider>
     </html>
   );
 }

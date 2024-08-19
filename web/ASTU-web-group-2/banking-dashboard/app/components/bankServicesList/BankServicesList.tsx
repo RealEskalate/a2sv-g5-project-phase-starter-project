@@ -1,181 +1,53 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import BankService from "../bankService/BankService";
-import BankServiceMobile from "../bankService/BankServiceMobile";
+import BankServiceMobile, {
+  BankServiceType,
+} from "../bankService/BankServiceMobile";
+import { useGetBankServiceQuery } from "@/lib/service/BankService";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const BankServicesList = () => {
-  const data = [
-    {
-      id: 1,
-      category: "Business Loans",
-      description: "It is a long established",
-      logo: "/assets/bankService/businessLoans.svg",
-      details: [
-        {
-          title: "Loan Option 1",
-          subtitle: "Many publishing",
-        },
-        {
-          title: "Loan Option 2",
-          subtitle: "Many publishing",
-        },
-        {
-          title: "Loan Option 3",
-          subtitle: "Many publishing",
-        },
-      ],
-      action: {
-        label: "View Details",
-        link: "/details/business-loans",
-      },
-    },
-    {
-      id: 2,
-      category: "Checking Accounts",
-      description: "It is a long established",
-      logo: "/assets/bankService/checkAccounts.svg",
-      details: [
-        {
-          title: "Account Option A",
-          subtitle: "Many publishing",
-        },
-        {
-          title: "Account Option B",
-          subtitle: "Many publishing",
-        },
-        {
-          title: "Account Option C",
-          subtitle: "Many publishing",
-        },
-      ],
-      action: {
-        label: "View Details",
-        link: "/details/checking-accounts",
-      },
-    },
-    {
-      id: 3,
-      category: "Savings Accounts",
-      description: "It is a long established",
-      logo: "/assets/bankService/savingAccounts.svg",
-      details: [
-        {
-          title: "Savings Plan 1",
-          subtitle: "Many publishing",
-        },
-        {
-          title: "Savings Plan 2",
-          subtitle: "Many publishing",
-        },
-        {
-          title: "Savings Plan 3",
-          subtitle: "Many publishing",
-        },
-      ],
-      action: {
-        label: "View Details",
-        link: "/details/savings-accounts",
-      },
-    },
-    {
-      id: 4,
-      category: "Debit and Credit Cards",
-      description: "It is a long established",
-      logo: "/assets/bankService/debitCredit.svg",
-      details: [
-        {
-          title: "Card Plan 1",
-          subtitle: "Earn rewards",
-        },
-        {
-          title: "Card Plan 2",
-          subtitle: "Earn rewards",
-        },
-        {
-          title: "Card Plan 3",
-          subtitle: "Earn rewards",
-        },
-      ],
-      action: {
-        label: "View Details",
-        link: "/details/debit-credit-cards",
-      },
-    },
-    {
-      id: 5,
-      category: "Life Insurance",
-      description: "It is a long established",
-      logo: "/assets/bankService/lifeInsurance.svg",
-      details: [
-        {
-          title: "Insurance Plan 1",
-          subtitle: "Many publishing",
-        },
-        {
-          title: "Insurance Plan 2",
-          subtitle: "Many publishing",
-        },
-        {
-          title: "Insurance Plan 3",
-          subtitle: "Many publishing",
-        },
-      ],
-      action: {
-        label: "View Details",
-        link: "/details/life-insurance",
-      },
-    },
-    {
-      id: 6,
-      category: "Business Loans",
-      description: "It is a long established",
-      logo: "/assets/bankService/businessLoans.svg",
-      details: [
-        {
-          title: "Loan Option 1",
-          subtitle: "Many publishing",
-        },
-        {
-          title: "Loan Option 2",
-          subtitle: "Many publishing",
-        },
-        {
-          title: "Loan Option 3",
-          subtitle: "Many publishing",
-        },
-      ],
-      action: {
-        label: "View Details",
-        link: "/details/business-loans",
-      },
-    },
-  ];
+  const router = useRouter();
+
+  const { data: session, status } = useSession();
+
+  useEffect(() => {}, [session, status]);
+  console.log(session, status);
+
+  if (!session?.user) router.push("/login");
+
+  const accessToken = session?.user.accessToken!;
+
+  const { data: res, isLoading } = useGetBankServiceQuery({
+    accessToken: accessToken,
+    size: 6,
+    page: 1,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="w-16 h-16 border-t-4 border-b-4 border-blue-500 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  const data = res.data!;
 
   return (
     <div>
+      {!data && <img src='/assets/bankService/empty-image.png' alt='list empty' />}
       <div className="flex flex-col gap-5 max-md:hidden">
-        {data.map((bankService) => (
-          <BankService
-            logoLink={bankService.logo}
-            category={bankService.category}
-            description={bankService.description}
-            details={bankService.details}
-            action={bankService.action}
-            key={bankService.id}
-          />
+        {data.map((bankService: BankServiceType) => (
+          <BankService {...bankService} key={bankService.id} />
         ))}
       </div>
 
       {/* Mobile view */}
       <div className="flex flex-col gap-5 md:hidden">
-        {data.map((bankService) => (
-          <BankServiceMobile
-            logoLink={bankService.logo}
-            category={bankService.category}
-            description={bankService.description}
-            details={bankService.details}
-            action={bankService.action}
-            key={bankService.id}
-          />
+        {data.map((bankService: BankServiceType) => (
+          <BankServiceMobile {...bankService} key={bankService.id} />
         ))}
       </div>
     </div>

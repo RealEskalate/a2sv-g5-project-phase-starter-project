@@ -70,8 +70,22 @@ func (b BlogUsecase) DeleteBlogByID(user_id string, blog_id string, role string)
 }
 
 // FilterBlogsByTag implements domain.BlogRepository.
-func (b BlogUsecase) FilterBlogsByTag(tag string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	panic("unimplemented")
+func (b BlogUsecase) FilterBlogsByTag(tags []string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
+	PageNo, err := strconv.ParseInt(pageNo, 10, 64)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+	PageSize, err := strconv.ParseInt(pageSize, 10, 64)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+
+	blogs, pagination, err := b.blogRepository.FilterBlogsByTag(tags, PageNo, PageSize)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	} else {
+		return blogs, pagination, nil
+	}
 }
 
 // GetBlogByID implements domain.BlogRepository.

@@ -116,8 +116,37 @@ func (b BlogRepository) DeleteBlogByID(user_id string, blog_id string) domain.Er
 }
 
 // FilterBlogsByTag implements domain.BlogRepository.
-func (b BlogRepository) FilterBlogsByTag(tag string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	panic("unimplemented")
+func (b BlogRepository) FilterBlogsByTag(tags []string, pageNo int64, pageSize int64) ([]domain.Blog, domain.Pagination, error) {
+	pagination := utils.PaginationByPage(pageNo, pageSize)
+	filter := bson.D{{Key: "tags", Value: bson.D{{Key: "$in", Value: tags}}}}
+	totalResults, err := b.PostCollection.CountDocuments(context.TODO(), filter)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+
+	// Calculate total pages
+	totalPages := int64(math.Ceil(float64(totalResults) / float64(pageSize)))
+
+	cursor, err := b.PostCollection.Find(context.TODO(), filter, pagination)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+	var blogs []domain.Blog
+	for cursor.Next(context.TODO()) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return []domain.Blog{}, domain.Pagination{}, err
+		}
+		blogs = append(blogs, blog)
+	}
+	paginationInfo := domain.Pagination{
+		CurrentPage: pageNo,
+		PageSize:    pageSize,
+		TotalPages:  totalPages,
+		TotatRecord: totalResults,
+	}
+
+	return blogs, paginationInfo, nil
 }
 
 // GetBlogByID implements domain.BlogRepository.

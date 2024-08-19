@@ -1,20 +1,13 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { session } from '@/session';
 import { get } from 'http';
+import { baseQuery } from '../api/baseQuery';
 
 const size = 5;
 
 export const transactionApi = createApi({
   reducerPath: 'transactionApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'https://bank-dashboard-6acc.onrender.com',
-    prepareHeaders: (headers, { getState }) => {
-      // You can add custom headers here
-      headers.set('Authorization', `Bearer ${session}`);
-      headers.set('Content-Type', 'application/json');
-      return headers;
-    },
-  }),
+  baseQuery: baseQuery(),
   endpoints: (builder) => ({
     getAllTransactions: builder.query<void, string>({
       query: (page) => `/transactions?page=${page}&size=${size}`,

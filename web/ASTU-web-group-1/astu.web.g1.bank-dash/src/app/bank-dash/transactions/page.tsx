@@ -30,7 +30,9 @@ export default function page() {
         </div>
       </div>
       <div>
+        <StoreProvider>
         <RecentTransactionTable />
+        </StoreProvider>
       </div>
     </div>
   );

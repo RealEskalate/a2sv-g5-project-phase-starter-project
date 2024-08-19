@@ -11,7 +11,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        console.log('data from credentials', credentials);
+        // console.log('data from credentials', credentials);
         const userName = credentials?.username;
         const password = credentials?.password;
         const res = await fetch(`https://bank-dashboard-6acc.onrender.com/auth/login`, {
@@ -21,9 +21,9 @@ export const authOptions: NextAuthOptions = {
           },
           body: JSON.stringify({ userName, password }),
         });
-        console.log('res is', res);
+        // console.log('res is', res);
         const user = await res.json();
-        console.log('first user is ', user);
+        // console.log('first user is ', user);
         if (res.status === 200) {
           // console.log('authorize response is ', user);
           return {

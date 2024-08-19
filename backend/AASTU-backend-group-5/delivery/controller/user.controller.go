@@ -62,6 +62,25 @@ func (controller *UserController) UpdateUser() gin.HandlerFunc {
 	}
 }
 
+func (controller *UserController)UpdatePassword() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var update_password domain.UpdatePassword
+		id := ctx.Param("id")
+		if err := ctx.BindJSON(&update_password); err != nil {
+			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : err.Error()})
+			return
+		}
+
+		response_user,err := controller.UserUsecase.UpdatePassword(id ,update_password)
+		if err != nil {
+			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : err.Error()})
+			return
+		}
+
+		ctx.IndentedJSON(http.StatusAccepted , gin.H{"data" : response_user})
+	}
+}
+
 func (controller *UserController) DeleteUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")

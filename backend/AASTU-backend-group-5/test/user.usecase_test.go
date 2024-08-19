@@ -1,4 +1,4 @@
-package usecase
+package test
 
 import (
 	"errors"
@@ -7,19 +7,20 @@ import (
 
 	"github.com/RealEskalate/blogpost/domain"
 	"github.com/RealEskalate/blogpost/mocks"
+	"github.com/RealEskalate/blogpost/usecase"
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UserUseCaseSuite struct {
 	suite.Suite
-	usecase *UserUseCase
+	usecase *usecase.UserUseCase
 	repo    *mocks.User_Repository_interface
 }
 
 func (suite *UserUseCaseSuite) SetupTest() {
 	repo := new(mocks.User_Repository_interface)
-	suite.usecase = NewUserUseCase(repo)
+	suite.usecase = usecase.NewUserUseCase(repo)
 	suite.repo = repo
 }
 

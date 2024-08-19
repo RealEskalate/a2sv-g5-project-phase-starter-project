@@ -27,17 +27,20 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	usercol := DataBase.Collection("Users")
 	blogcol := DataBase.Collection("Blogs")
 	refreshtokencol := DataBase.Collection("RefreshTokens")
+	resettokencol := DataBase.Collection("ResetTokens")
 
 	// Initialize the collections
 	customUserCol := custommongo.NewMongoCollection(usercol)
 	customBlogCol := custommongo.NewMongoCollection(blogcol)
 	customRefreshTokenCol := custommongo.NewMongoCollection(refreshtokencol)
+	customResetTokenCol := custommongo.NewMongoCollection(resettokencol)
 
 	BlogCollections = Domain.BlogCollections{
 
 		Users:         customUserCol,
 		Blogs:         customBlogCol,
 		RefreshTokens: customRefreshTokenCol,
+		ResetTokens:   customResetTokenCol,
 	}
 	// Initialize the router
 	Router = gin.Default()

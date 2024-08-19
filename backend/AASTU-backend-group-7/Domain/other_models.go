@@ -4,4 +4,5 @@ type BlogCollections struct {
 	Users         Collection
 	Blogs         Collection
 	RefreshTokens Collection
+	ResetTokens   Collection
 }

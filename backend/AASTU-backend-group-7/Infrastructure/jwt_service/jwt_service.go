@@ -77,3 +77,40 @@ func VerifyRefreshToken(tokenString string, userid primitive.ObjectID) error {
 	return nil
 }
 
+func GenerateToken(email string) (string, error) {
+	// Create a new JWT token with the user claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"email": email,
+		"exp":   time.Now().Add(time.Minute * 10).Unix(),
+	})
+
+	// Ensure Config.JwtSecret is of type []byte
+	jwtToken, err := token.SignedString([]byte(Config.JwtSecret))
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	fmt.Println(jwtToken)
+	return jwtToken, nil
+}
+
+func VerifyToken(tokenString string) (string, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(Config.JwtSecret), nil
+	})
+	if err != nil {
+		return "", err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return "", errors.New("Invalid token")
+	}
+
+	email, ok := claims["email"].(string)
+	if !ok {
+		return "", errors.New("Invalid token")
+	}
+
+	return email, nil
+}

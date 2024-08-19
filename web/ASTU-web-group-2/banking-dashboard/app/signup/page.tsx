@@ -3,7 +3,7 @@ import Signup from '../components/auth/signup/Signup'
 
 const page = () => {
   return (
-    <div>
+    <div className='p-5'>
         <Signup/>
     </div>
   )

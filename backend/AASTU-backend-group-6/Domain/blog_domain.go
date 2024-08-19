@@ -31,15 +31,17 @@ type BlogUsecase interface {
 	CreateBlog(user_id string, blog Blog, role string) (Blog, error)
 	GetBlogByID(blog_id string) (Blog, error)
 	GetBlogs(pageNo string, pageSize string) ([]Blog, Pagination, error)
-	UpdateBlogByID(user_id string, blog_id string, blog Blog) (Blog, error)
+	UpdateBlogByID(user_id string, blog_id string, blog Blog, role string) (Blog, error)
 	DeleteBlogByID(user_id string, blog_id string, role string) ErrorResponse
 	CommentOnBlog(blog_id string, commentor_id string, commentor_username string, comment Comment) error
 
+
 	SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]Blog, Pagination, ErrorResponse)
-	FilterBlogsByTag(tag string, pageNo string, pageSize string) ([]Blog, Pagination, error)
+  FilterBlogsByTag(tags []string, pageNo string, pageSize string) ([]Blog, Pagination, error)
+	
 
 	GetMyBlogs(user_id string, pageNo string, pageSize string) ([]Blog, Pagination, error)
-	GetMyBlogByID(user_id string, blog_id string) (Blog, error)
+	GetMyBlogByID(user_id string, blog_id string, role string) (Blog, error)
 }
 type BlogRepository interface {
 	CreateBlog(user_id string, blog Blog, role string) (Blog, error)
@@ -50,7 +52,7 @@ type BlogRepository interface {
 	CommentOnBlog(blog_id string, commentor_id string, commentor_username string, comment Comment) error
 
 	SearchBlogByTitleAndAuthor(title string, author string, pageNo int64, pageSize int64) ([]Blog, Pagination, error)
-	FilterBlogsByTag(tag string, pageNo string, pageSize string) ([]Blog, Pagination, error)
+	FilterBlogsByTag(tags []string, pageNo int64, pageSize int64) ([]Blog, Pagination, error)
 
 	GetMyBlogs(user_id string, pageNo int64, pageSize int64) ([]Blog, Pagination, error)
 	GetMyBlogByID(user_id string, blog_id string) (Blog, error)

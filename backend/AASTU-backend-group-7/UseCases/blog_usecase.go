@@ -51,3 +51,23 @@ func (uc *blogUsecase) UpdatePostByID(c *gin.Context, id primitive.ObjectID, pos
 	return uc.BlogRepository.UpdatePostByID(ctx,id,post)
 }
 
+func (uc *blogUsecase) GetTags(c *gin.Context, id primitive.ObjectID) ([]*Domain.Tag, error, int) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.GetTags(ctx,id)
+}
+
+func (uc *blogUsecase) GetComments(c *gin.Context, id primitive.ObjectID) ([]*Domain.Comment, error, int) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.GetComments(ctx,id)
+}
+
+func (uc *blogUsecase) GetAllPosts(c *gin.Context) ([]*Domain.Post, error, int) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.GetAllPosts(ctx)
+}
+
+
+

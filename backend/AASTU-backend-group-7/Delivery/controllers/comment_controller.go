@@ -116,5 +116,79 @@ func (cc *CommentController) EditComment(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"message": "Comment updated successfully",
-		"comment": comment,})
+		"comment": *comment,})
+}
+
+func (cc *CommentController) GetUserComments(c *gin.Context) {
+	id := c.Param("id")
+	objID, err := Utils.StringToObjectId(id)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	comments, err, statuscode := cc.commentUseCase.GetUserComments(c, objID)
+	if err != nil {
+		c.JSON(statuscode, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"comments": comments})
+}
+
+func (cc *CommentController) GetMyComments(c *gin.Context){
+	claims, err := Getclaim(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	comments, err, statuscode := cc.commentUseCase.GetUserComments(c, claims.ID)
+	if err != nil {
+		c.JSON(statuscode, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"comments": comments})
+}
+
+func (cc *CommentController) DeleteComment(c *gin.Context) {
+	id := c.Param("id")
+	objID, err := Utils.StringToObjectId(id)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	// get comment
+	existingComment, err, statuscode := cc.commentUseCase.GetCommentByID(c, objID)
+	if err != nil {
+		c.JSON(statuscode, gin.H{"error": err.Error()})
+		return
+	}
+
+	// check if user is author of comment
+	claims, err := Getclaim(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	isAuthor, err := Utils.IsAuthorOrAdmin(*claims, existingComment.AuthorID)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if !isAuthor {
+		c.JSON(401, gin.H{"error": "You are not author of this post"})
+		return
+	}
+
+	err, status := cc.commentUseCase.DeleteComment(c, objID)
+	if err != nil {
+		c.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Comment deleted successfully"})
 }

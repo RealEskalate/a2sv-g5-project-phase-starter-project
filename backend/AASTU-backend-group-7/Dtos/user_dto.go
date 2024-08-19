@@ -1,6 +1,8 @@
 package Dtos
 
-import "time"
+import (
+	"time"
+)
 
 type RegisterUserDto struct {
 	Email          string    `json:"email" validate:"required,email"`

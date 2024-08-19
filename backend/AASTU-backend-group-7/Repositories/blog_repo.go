@@ -33,14 +33,14 @@ func NewBlogRepository(blogCollection Domain.BlogCollections) *blogrepository {
 func (br *blogrepository) CreateBlog(ctx context.Context, post *Domain.Post) (error, int) {
 
 	// insert post to post collection
-	_, err := br.postCollection.InsertOne(ctx, post)
+	blogID, err := br.postCollection.InsertOne(ctx, post)
 	if err != nil {
 		fmt.Println("error at insert", err)
 		return err, 500
 	}
 	// insert id to field in user collection called posts
 	filter := bson.D{{"_id", post.AuthorID}}
-	update := bson.D{{"$push", bson.D{{"posts", post}}}}
+	update := bson.D{{"$push", bson.D{{"posts", blogID}}}}
 	_, err = br.userCollection.UpdateOne(ctx, filter, update)
 	// return error if any
 	if err != nil {
@@ -154,4 +154,78 @@ func (br *blogrepository) UpdatePostByID(ctx context.Context, id primitive.Objec
 		return err, 500
 	}
 	return nil, 200
+}
+
+// get tags by from tags field in post collection
+func (br *blogrepository) GetTags(ctx context.Context, id primitive.ObjectID) ([]*Domain.Tag, error, int) {
+	var tags []*Domain.Tag
+	filter := bson.D{{"postid", id}}
+	cursor, err := br.tagCollection.Find(ctx, filter)
+
+	if err != nil {
+		return nil, err, 500
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var tag *Domain.Tag
+		err := cursor.Decode(&tag)
+		if err != nil {
+			return nil, err, 500
+		}
+		tags = append(tags, tag)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, err, 500
+	}
+	return tags, nil, 200
+}
+
+// get comments by post id
+func (br *blogrepository) GetComments(ctx context.Context, id primitive.ObjectID) ([]*Domain.Comment, error, int) {
+	var comments []*Domain.Comment
+	filter := bson.D{{"postid", id}}
+	cursor, err := br.commentColection.Find(ctx, filter)
+
+	if err != nil {
+		return nil, err, 500
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var comment *Domain.Comment
+		err := cursor.Decode(&comment)
+		if err != nil {
+			return nil, err, 500
+		}
+		comments = append(comments, comment)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, err, 500
+	}
+	return comments, nil, 200
+}
+
+// get all posts
+func (br *blogrepository) GetAllPosts(ctx context.Context) ([]*Domain.Post, error, int) {
+	var posts []*Domain.Post
+	cursor, err := br.postCollection.Find(ctx, bson.D{})
+
+	if err != nil {
+		return nil, err, 500
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var post *Domain.Post
+		err := cursor.Decode(&post)
+		if err != nil {
+			return nil, err, 500
+		}
+		posts = append(posts, post)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, err, 500
+	}
+	return posts, nil, 200
 }

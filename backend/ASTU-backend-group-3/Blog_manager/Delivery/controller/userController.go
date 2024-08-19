@@ -83,8 +83,7 @@ func (uc *UserController) Login(c *gin.Context) {
 		return
 	}
 
-<<<<<<<<< Temporary merge branch 1
-    c.JSON(http.StatusOK, gin.H{"access_token": access_token})
+    c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
 }
 
 
@@ -148,7 +147,4 @@ func (uc *UserController) ForgotPassword(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
 }
-=========
-	c.JSON(http.StatusOK, gin.H{"access_token": access_token})
-}
->>>>>>>>> Temporary merge branch 2
+

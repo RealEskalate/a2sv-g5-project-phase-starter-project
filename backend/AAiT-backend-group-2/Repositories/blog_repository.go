@@ -3,10 +3,11 @@ package repositories
 import (
 	"context"
 
+	"AAiT-backend-group-2/Domain"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"AAiT-backend-group-2/Domain"
 )
 
 type blogRepository struct {

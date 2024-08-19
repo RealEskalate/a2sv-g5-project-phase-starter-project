@@ -13,17 +13,15 @@ import (
 	"github.com/joho/godotenv"
 )
 
-
-
 func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	
+
 	mongoConfig := infrastructure.NewMongoDBConfig(os.Getenv("MONGO_URI"), os.Getenv("MONGO_DB"))
 	mongoClient, err := mongoConfig.Connect()
-	
+
 	if err != nil {
 		log.Fatal("Failed to connect to MongoDB")
 	}

@@ -234,10 +234,12 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 	if filter.AuthorName != "" {
 		mongofilter["authorName"] = filter.AuthorName
 	}
-
-	// if len(filter.Tags) > 0 {
-	// 	mongofilter["tags"] = bson.M{"$all": filter.Tags} // Filter documents that contain all the specified tags
-	// }
+	
+	fmt.Println(len(filter.Tags))
+	if len(filter.Tags) > 1 {
+		fmt.Println("hehe", filter.Tags[0])
+		mongofilter["tags"] = bson.M{"$all": filter.Tags} // Filter documents that contain all the specified tags
+	}
 
 	// Default sort by publishedAt in descending order
 	sort := bson.M{"publishedAt": -1} // Default sort by publishedAt descending
@@ -247,6 +249,8 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 			break                       // We assume only one field is sorted, so break after the first
 		}
 	}
+
+	fmt.Println("filter", mongofilter)
 
 	// Calculate the number of documents to skip based on the page number
 	skip := (page - 1) * limit

@@ -177,7 +177,7 @@ func (b *BlogRepository) UpdateBlogPost(ctx context.Context, blogId string, blog
 		"$set": bson.M{
 			"title":     blog.Title,
 			"content":   blog.Content,
-			"updatedAt": blog.UpdatedAt,
+			"updated_at": blog.UpdatedAt,
 		},
 	}
 

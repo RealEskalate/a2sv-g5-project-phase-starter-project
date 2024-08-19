@@ -15,6 +15,11 @@ const (
 	CollectionUsers = "users"
 	CollectionBlogs = "blogs"
 )
+const (
+	RoleUser = "user" 
+	RoleAdmin = "admin"
+	RoleRoot = "root"
+)
 
 const (
 	VerifyEmailType   = "verify_email"
@@ -92,9 +97,9 @@ type BlogRepositoryInterface interface {
 type BlogUseCaseInterface interface {
 	GetBlogPostByID(ctx context.Context, id string) (*Blog, CodedError)
 	GetBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, CodedError)
-	CreateBlogPost(ctx context.Context, blog *Blog) CodedError
-	EditBlogPost(ctx context.Context, id string, blog *Blog) CodedError
-	DeleteBlogPost(ctx context.Context, id string) CodedError
+	CreateBlogPost(ctx context.Context, blog *Blog, createdBy string) CodedError
+	EditBlogPost(ctx context.Context, id string, blog *Blog, editedBy string) CodedError
+	DeleteBlogPost(ctx context.Context, id string, deletedBy string) CodedError
 	TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) CodedError
 }
 

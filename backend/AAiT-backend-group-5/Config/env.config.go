@@ -28,7 +28,7 @@ type Env struct {
 }
 
 func NewEnv() *Env {
-	viper.SetConfigFile(".env")
+	viper.SetConfigFile("/home/bisrat/Musab/A2SV-project-phase-backend/a2sv-g5-project-phase-starter-project/backend/AAiT-backend-group-5/.env")
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {

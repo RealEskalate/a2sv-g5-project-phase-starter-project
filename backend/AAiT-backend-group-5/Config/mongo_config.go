@@ -11,8 +11,8 @@ import (
 )
 
 func ConnectDB(env *Env) *mongo.Client {
-	// mongoURI := env.MONGO_URI
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	mongoURI := env.MONGO_URI
+	clientOptions := options.Client().ApplyURI(mongoURI)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

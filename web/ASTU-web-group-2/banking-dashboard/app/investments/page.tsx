@@ -9,23 +9,23 @@ import TrendingStock from "../components/TrendingStock/TrendingStock";
 
 const InvestmentsPage = () => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 pb-5">
       <InfoboxForInvestementPage />
-      <div className="flex max-sm:flex-col gap-[30px]">
+      <div className="flex max-sm:flex-col justify-between max-sm:w-[350px]">
         <Card
           title="Yearly Total Investment"
-          className="w-[540px] h-[329px] "
+          className="max-sm:w-full w-[540px]"
         >
           <YearlyTotalInvestment />
         </Card>
         <Card
           title="Monthly Revenue"
-          className="w-[540px] h-[329px]"
+          className="max-sm:w-full w-[540px]"
         >
           <MonthlyRevenueChart />
         </Card>
       </div>
-      <div className="flex max-sm:flex-col gap-[30px]">
+      <div className="flex max-sm:flex-col justify-between max-sm:w-[350px]">
         <Card
           title="My Investment"
           className=""
@@ -34,7 +34,7 @@ const InvestmentsPage = () => {
         </Card>
         <Card
           title="Trending Stock"
-          className=""
+          className="max-sm:w-full"
         >
           <TrendingStock />
         </Card>

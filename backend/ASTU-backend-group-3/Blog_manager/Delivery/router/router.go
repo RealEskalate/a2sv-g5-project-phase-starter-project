@@ -18,11 +18,10 @@ func SetupRouter(userController *controller.UserController, blogController *cont
 	router.POST("/forgot-password", userController.ForgotPassword)
 	router.GET("/reset/:token", userController.ResetPassword)
 	router.GET("/verify/:token", userController.Verify)
-	router.POST("/chat" , controller.Chat)
+	router.POST("/chat", controller.Chat)
 
 	// Public blog routes
 	router.GET("/blogs", blogController.RetrieveBlogs)
-	router.DELETE("/blogs/:id", blogController.DeleteBlogByID)
 
 	// Authenticated user routes
 	usersRoute := router.Group("/")
@@ -38,6 +37,7 @@ func SetupRouter(userController *controller.UserController, blogController *cont
 	blogsRoute.POST("/", blogController.CreateBlog)
 	blogsRoute.GET("/search", blogController.SearchBlogs)
 	blogsRoute.PUT("/update/:id", blogController.UpdateBlog)
+	blogsRoute.DELETE("/delete/:id", blogController.DeleteBlogByID)
 	blogsRoute.POST("/:id/like", blogController.ToggleLike)
 	blogsRoute.POST("/:id/dislike", blogController.ToggleDislike)
 	blogsRoute.POST("/:id/comment", blogController.AddComment)

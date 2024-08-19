@@ -30,4 +30,11 @@ type BlogRepository interface {
 	// View operations
 	AddView(ctx context.Context, view *domain.View) error
 	GetViewsByBlogID(ctx context.Context, blogID string) ([]*domain.View, error)
+
+	// Tag operations
+	GetAllTags(ctx context.Context) ([]*domain.BlogTag, error)
+	CreateTag(ctx context.Context, tag *domain.BlogTag) error
+	UpdateTag(ctx context.Context, id string, tag *domain.BlogTag) error
+	DeleteTag(ctx context.Context, id string) error
+	GetTagByID(ctx context.Context, id string) (*domain.BlogTag, error)
 }

@@ -9,29 +9,26 @@ import (
 )
 
 type UserRepository struct {
-	database   mongo.Database
-	collection string
+	collection mongo.Collection
 }
 
-func NewUserRepository(db mongo.Database, collection string) *UserRepository {
+func NewUserRepository(collection mongo.Collection) *UserRepository {
 	return &UserRepository{
-		database:   db,
 		collection: collection,
 	}
 }
 
 func (ur *UserRepository) GetByEmail(ctx context.Context, email string) (user.User, error) {
 	var u user.User
-	collection := ur.database.Collection(ur.collection)
 	filter := bson.M{"email": email}
-	err := collection.FindOne(ctx, filter).Decode(&u)
+	err := ur.collection.FindOne(ctx, filter).Decode(&u)
 	return u, err
 }
 
 func (ur *UserRepository) GetByUsername(ctx context.Context, username string) (user.User, error) {
 	var u user.User
-	collection := ur.database.Collection(ur.collection)
+
 	filter := bson.M{"username": username}
-	err := collection.FindOne(ctx, filter).Decode(&u)
+	err := ur.collection.FindOne(ctx, filter).Decode(&u)
 	return u, err
 }

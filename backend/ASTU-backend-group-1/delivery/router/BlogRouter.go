@@ -35,5 +35,30 @@ func (gr *BlogRoute) GinBlogRouter() {
 		commentRouter.GET("/:blogId/View:commentId", gr.usecase.HandleCommentLikeOrDislike)
 		// commentRouter.GET("/:blogId/reply:commentId",gr.usecase.Handle)
 	}
+	router.GET("", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{"message": "Welcome to Blog API get"})
+		ctx.Abort()
+		return
+	})
+	router.POST("", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{"message": "Welcome to Blog API create"})
+		ctx.Abort()
+		return
+	})
+	router.DELETE("", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{"message": "Welcome to Blog API delete"})
+		ctx.Abort()
+		return
+	})
+	router.PATCH("", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{"message": "Welcome to Blog API patch"})
+		ctx.Abort()
+		return
+	})
+	router.NoRoute(func(ctx *gin.Context) {
+		ctx.JSON(404, gin.H{"message": "Not such route"})
+		ctx.Abort()
+		return
+	})
 	router.Run(":9090")
 }

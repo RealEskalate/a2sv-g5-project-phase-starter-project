@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const transactionApi = createApi({
-  reducerPath: "transactionDash",
+  reducerPath: "bankdashboard",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://bank-dashboard-6acc.onrender.com",
   }),

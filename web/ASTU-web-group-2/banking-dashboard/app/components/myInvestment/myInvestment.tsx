@@ -1,5 +1,8 @@
+'use client'
 import React from 'react'
-
+import { useGetBankServiceQuery } from '@/lib/service/BankService';
+import { useGetInvestmentQuery } from '@/lib/service/InvestmentServices';
+import { useSession } from 'next-auth/react';
 const recentlistitems = [
     {   
         title: {
@@ -62,6 +65,20 @@ const recentlistitems = [
    
   ];
   const MyInvestment = () => {
+    const session = useSession();
+    const accessToken = session.data?.user.accessToken || ""
+    const { data, isLoading, isError } = useGetInvestmentQuery({
+      accessToken: accessToken,
+  years : 1 ,
+  months : 1,
+    });
+    if (isLoading){
+      return <div>isLoading......</div>
+    }
+    if (isError) {
+      return <div>Error while fetching </div>
+    }
+console.log(data.data)
     return (
       <div className=" sm:w-[475px] md:w-[635px]  ">
         {recentlistitems.map((item, index) => (

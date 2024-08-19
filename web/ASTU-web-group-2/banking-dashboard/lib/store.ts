@@ -4,6 +4,7 @@ import { bankApi } from "./service/BankService";
 import { userApi } from "./service/UserService";
 import { loanApi } from "./service/LoanService";
 import { companyApi } from "./service/CompanyService";
+import { investmentApi } from "./service/InvestmentServices";
 
 export const store = () => {
   return configureStore({

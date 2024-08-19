@@ -1,23 +1,39 @@
+'use client'
 import React from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+const  icons = [
+  "/assets/cardlist/card1.svg",
+ "/assets/cardlist/card2.svg",
+ "/assets/cardlist/card3.svg",
+
+]
+
+interface Props {
+  cardType: string,
+  cardHolder : string;
+  cardNumber: string,
+
+
+
+}
 const recentlistitems = [
   
 
      {icon: "/assets/cardlist/card1.svg" ,
     col1: {
-      des: "Card Type",
+    
       sub: "Secondary"
     },
     col2: {
-      des: "Bank ",
       sub: "DBL-Bank"
     },
     col3: {
-      des: "Card Numver",
+  
       sub: "**** **** 5600"
     },
     col4: {
-      des: "Namain Card",
+  
       sub: "William "
     },
     col5: {
@@ -67,7 +83,30 @@ const recentlistitems = [
 
 ];
 
-const CardList = () => {
+const CardList =  async  () => {
+  const session = useSession();
+  const accessToken = session.data?.user.accessToken || "";
+
+  try {
+    const response =  await fetch("https://bank-dashboard-6acc.onrender.com/cards", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      return <div>Error while fetching data</div>;
+    }
+
+    const data =  response.json();
+    console.log(data);}
+    
+    catch(error){
+      console.log(error)
+    }
+
+
   return (
     <div className=" sm:w-[475px] md:w-[730px]  ">
       {recentlistitems.map((item, index) => (
@@ -82,7 +121,7 @@ const CardList = () => {
             
             <div className="col-span-2 ">
               <p className="text-[14px] md:[text-[12px]] lg:text-[16px] text-[#333B69] ">
-                {item.col1.des} 
+              Card Type
               </p>
               <span className="text-[12px] sm:text-[15px] text-[#718EBF]">
                 {item.col1.sub}
@@ -91,7 +130,7 @@ const CardList = () => {
       
             <div className=" col-span-[2.5] ">
               <p className="text-[14px] md:[text-[12px]] lg:text-[16px] text-[#333B69]">
-                {item.col2.des}
+                Bank
               </p>
               <span className="text-[12px]  md:[text-[12px]] lg:text-[16px] text-[#718EBF]">
                 {item.col2.sub}
@@ -102,7 +141,7 @@ const CardList = () => {
 
             <div className=" hidden col-span-[2.5] sm:block ">
               <p className="text-[14px] md:text-[12px]  lg:text-[16px] text-[#333B69] font-medium">
-                {item.col3.des}
+                Card Number
               </p>
               <span className="text-[12px] sm:text-[15px] text-[#718EBF]">
                 {item.col3.sub}
@@ -112,7 +151,7 @@ const CardList = () => {
 
             <div className=" hidden col-span-2 sm:block ">
               <p className="text-[14px] sm:text-[16px] text-[#333B69] font-medium">
-                {item.col4.des}
+                Nomain Card
               </p>
               <span className="text-[12px] sm:text-[15px] text-[#718EBF]">
                 {item.col4.sub}

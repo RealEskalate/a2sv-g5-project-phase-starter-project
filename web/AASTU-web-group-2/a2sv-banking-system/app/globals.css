@@ -57,17 +57,11 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
   }
-}
-
-.react-datepicker-wrapper {
-  @apply inline-block p-0 border-0 w-full;
 }

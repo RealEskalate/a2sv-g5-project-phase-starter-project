@@ -26,7 +26,6 @@ func NewAuthService(userService interfaces.UserService, tokenRepo interfaces.Ref
 		OtpService: otpService,
 	}
 }
-
 func (service *authService) RegisterUser(user *entities.User) (*entities.User, error) {
     _, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
@@ -52,6 +51,11 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
         return nil, err
     }
 
+    // Helper function to delete the user
+    deleteUser := func() error {
+        return service.userService.DeleteUser(user.ID.Hex())
+    }
+
     // Generate a random number between 10000 and 99999 (inclusive).
     randNum := rand.Intn(99999-10000+1) + 10000
 
@@ -72,6 +76,10 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
         if time.Now().Before(oldOtp.Expiration) {
             err = service.OtpService.InvalidateOtp(&oldOtp) // Call to invalidate old OTP
             if err != nil {
+                deleteErr := deleteUser() // Attempt to delete the user
+                if deleteErr != nil {
+                    return nil, fmt.Errorf("failed to invalidate OTP and delete user: %v", deleteErr)
+                }
                 return nil, err
             }
         }
@@ -83,6 +91,10 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
     // Save the new OTP
     err = service.OtpService.SaveOtp(&otp)
     if err != nil {
+        deleteErr := deleteUser() // Attempt to delete the user
+        if deleteErr != nil {
+            return nil, fmt.Errorf("failed to save OTP and delete user: %v", deleteErr)
+        }
         return nil, err
     }
 
@@ -96,9 +108,9 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
     emailSubject := "Verify Your Email"
 
     smtpConfig := entities.SMTPConfig{
-        Server:   "smtp.gmail.com",
-        Username: "helloitsme@gmail.com",
-        Password: "12345",
+        Server:   "smtp.gmail.com:587",
+        Username: "gmail@gmail.com",
+        Password: "strong-password",
     }
 
     // Generate the email body using the template function
@@ -113,6 +125,10 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
     // Send the email
     err = utils.NewEmailService(smtpConfig.Server, smtpConfig.Password, smtpConfig.Username).SendEmail(user.Email, emailTemplate.Subject, emailTemplate.Body)
     if err != nil {
+        deleteErr := deleteUser() // Attempt to delete the user
+        if deleteErr != nil {
+            return nil, fmt.Errorf("failed to send email and delete user: %v", deleteErr)
+        }
         return nil, err
     }
 

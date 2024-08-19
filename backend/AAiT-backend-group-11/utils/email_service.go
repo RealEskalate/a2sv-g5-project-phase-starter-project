@@ -4,6 +4,7 @@ import (
 	"backend-starter-project/domain/interfaces"
 	"log"
 	"net/smtp"
+	"strings"
 
 	"github.com/badoux/checkmail"
 )
@@ -124,7 +125,7 @@ func (e *emailService) SendEmail(emailAddress string, subject string, body strin
 
 // NewEmailService creates a new instance of emailService.
 func NewEmailService(smtpServer, password, sender string) interfaces.EmailService {
-	auth := smtp.PlainAuth("", sender, password, smtpServer)
+	auth := smtp.PlainAuth("", sender, password, smtpServer[:strings.Index(smtpServer, ":")])
 	return &emailService{
 		smtpServer: smtpServer,
 		auth:       auth,

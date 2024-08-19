@@ -14,6 +14,8 @@ type likeReposiotory struct {
 	collection string
 }
 
+// changeIdsToPrimitive converts the given user ID and blog ID from string format to primitive.ObjectID format.
+// It returns the converted userPrimitiveID and blogPrimitiveID, along with any error encountered during the conversion.
 func changeIdsToPrimitive(userID string, blogID string) (primitive.ObjectID, primitive.ObjectID, error) {
 	userPrimitiveID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -28,6 +30,9 @@ func changeIdsToPrimitive(userID string, blogID string) (primitive.ObjectID, pri
 	return userPrimitiveID, blogPrimitiveID, nil
 }
 
+// NewLikeRepository creates a new instance of the LikeRepository.
+// It takes a mongo.Database and a collection name as parameters.
+// Returns a domain.LikeRepository interface.
 func NewLikeRepository(database mongo.Database, collection string) domain.LikeReposiotory {
 	return &likeReposiotory{
 		databse:    database,
@@ -35,6 +40,9 @@ func NewLikeRepository(database mongo.Database, collection string) domain.LikeRe
 	}
 }
 
+// Create creates a new like record in the database.
+// It takes a context.Context, userID string, blogID string, and status bool as parameters.
+// The function returns an error if any error occurs during the creation process.
 func (lr *likeReposiotory) Create(c context.Context, userID string, blogID string, status bool) error {
 	collection := lr.databse.Collection(lr.collection)
 	userPrimitiveID, blogPrimitiveID, err := changeIdsToPrimitive(userID, blogID)
@@ -53,6 +61,10 @@ func (lr *likeReposiotory) Create(c context.Context, userID string, blogID strin
 	return err
 }
 
+// Like updates the status of a like document in the database.
+// It takes the user ID and blog ID as parameters and returns an error if any.
+// If the like document already exists, it updates the status to true.
+// If the like document does not exist, it creates a new like document with the status set to true.
 func (lr *likeReposiotory) Like(c context.Context, userID string, blogID string) error {
 	collection := lr.databse.Collection(lr.collection)
 	userPrimitiveID, blogPrimitiveID, err := changeIdsToPrimitive(userID, blogID)
@@ -77,6 +89,8 @@ func (lr *likeReposiotory) Like(c context.Context, userID string, blogID string)
 	return nil
 }
 
+// Dislike updates the status of a like document to false, indicating that the user dislikes the blog.
+// It takes the user ID and blog ID as parameters and returns an error if any occurred during the update process.
 func (lr *likeReposiotory) Dislike(c context.Context, userId string, blogID string) error {
 	collection := lr.databse.Collection(lr.collection)
 	userPrimitiveID, blogPrimitiveID, err := changeIdsToPrimitive(userId, blogID)
@@ -101,6 +115,12 @@ func (lr *likeReposiotory) Dislike(c context.Context, userId string, blogID stri
 	return nil
 }
 
+// RemoveLike removes a like document from the collection based on the provided id.
+// It takes a context.Context and a string id as parameters.
+// The id is converted to a primitive.ObjectID and used to define the filter to find the document.
+// If the id is not a valid ObjectID, an error is returned.
+// If the document is found, it is removed from the collection.
+// Returns an error if there was an issue with the conversion, deletion, or if the document was not found.
 func (lr *likeReposiotory) RemoveLike(c context.Context, id string) error {
 	collection := lr.databse.Collection(lr.collection)
 
@@ -122,6 +142,9 @@ func (lr *likeReposiotory) RemoveLike(c context.Context, id string) error {
 	return nil
 }
 
+// RemoveDislike removes a dislike from the collection based on the provided ID.
+// It takes a context.Context and an ID string as parameters.
+// The function returns an error if there was a problem removing the dislike.
 func (lr *likeReposiotory) RemoveDislike(c context.Context, id string) error {
 	collection := lr.databse.Collection(lr.collection)
 
@@ -167,6 +190,13 @@ func (lr *likeReposiotory) GetLikesByUser(c context.Context, userID string) (lik
 
 }
 
+// GetLikesByBlog retrieves a list of likes for a specific blog.
+// It takes a context.Context and a blogID string as parameters.
+// The function returns a slice of domain.Like and an error.
+// The likes are retrieved from the database based on the provided blogID.
+// If the blogID is not a valid hexadecimal string, an error is returned.
+// If there are no likes found for the blog, an empty slice is returned.
+// If there is an error during the retrieval process, an error is returned.
 func (lr *likeReposiotory) GetLikesByBlog(c context.Context, blogID string) (likes []domain.Like, err error) {
 	collection := lr.databse.Collection(lr.collection)
 	userPrimitiveID, err := primitive.ObjectIDFromHex(blogID)

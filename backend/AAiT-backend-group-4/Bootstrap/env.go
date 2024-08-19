@@ -15,6 +15,10 @@ type Env struct {
 	DBUser                  string `mapstructure:"DB_USER"`
 	DBPass                  string `mapstructure:"DB_PASS"`
 	DBName                  string `mapstructure:"DB_NAME"`
+	UserCollection          string `mapstructure:"USER_COLLECTION"`
+	BlogCollection          string `mapstructure:"BLOG_COLLECTION"`
+	OtpCollection           string `mapstructure:"OTP_COLLECTION"`
+	LikeCollection          string `mapstructure:"LIKE_COLLECTION"`
 	EmailApiKey             string `mapstructure:"EMAIL_API_KEY"`
 	GeminiApiKey            string `mapstructure:"GEMINI_API"`
 	AccessTokenExpiryMinute int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`

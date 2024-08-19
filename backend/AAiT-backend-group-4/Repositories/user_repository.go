@@ -16,6 +16,10 @@ type userRepository struct {
 	collection string
 }
 
+// NewUserRepository creates a new instance of UserRepository.
+// It takes a mongo.Database and a collection name as parameters.
+// It returns a domain.UserRepository interface.
+// The returned UserRepository instance is initialized with the provided database and collection.
 func NewUserRepository(database mongo.Database, collection string) domain.UserRepository {
 	return &userRepository{
 		database,
@@ -23,6 +27,9 @@ func NewUserRepository(database mongo.Database, collection string) domain.UserRe
 	}
 }
 
+// CheckIfUserIsVerified checks if a user is verified.
+// It takes a context and user ID as parameters.
+// It returns a boolean indicating whether the user is verified or not, and an error if any.
 func (ur *userRepository) CheckIfUserIsVerified(c context.Context, id string) (bool, error) {
 	user, err := ur.GetByID(c, id)
 	if err != nil {
@@ -32,6 +39,12 @@ func (ur *userRepository) CheckIfUserIsVerified(c context.Context, id string) (b
 	return user.Verified, nil
 }
 
+// CreateUser creates a new user in the database.
+// It takes a context.Context and a *domain.User as parameters.
+// The function returns an error if any error occurs during the creation process.
+// If the count of documents in the collection is 0, the user's role will be set to "ADMIN".
+// Otherwise, the user's role will be set to the default value.
+// The function inserts the user into the collection and returns any error that occurs.
 func (ur *userRepository) CreateUser(c context.Context, user *domain.User) error {
 	collection := ur.database.Collection(ur.collection)
 	// Fetch the count of documents in the collection
@@ -48,6 +61,8 @@ func (ur *userRepository) CreateUser(c context.Context, user *domain.User) error
 	return err
 }
 
+// Fetch retrieves all users from the database.
+// It returns a slice of domain.User and an error if any.
 func (ur *userRepository) Fetch(c context.Context) ([]domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 
@@ -68,6 +83,9 @@ func (ur *userRepository) Fetch(c context.Context) ([]domain.User, error) {
 	return users, nil
 }
 
+// GetByID retrieves a user from the database by their ID.
+// It takes a context.Context and the ID of the user as parameters.
+// It returns the retrieved user and an error if any.
 func (ur *userRepository) GetByID(c context.Context, id string) (domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 
@@ -95,6 +113,13 @@ func (ur *userRepository) GetByEmail(c context.Context, email string) (domain.Us
 	return user, err
 }
 
+// UpdateUser updates a user's information in the database.
+// It takes the following parameters:
+// - c: The context.Context object for the database operation.
+// - id: The ID of the user to be updated.
+// - user: The domain.UserUpdate object containing the updated user information.
+// It returns the updated domain.User object and an error, if any.
+// If the user is not found, it returns an error indicating that the user was not found.
 func (ur *userRepository) UpdateUser(c context.Context, id string, user domain.UserUpdate) (domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 
@@ -153,6 +178,9 @@ func (ur *userRepository) UpdateUser(c context.Context, id string, user domain.U
 	return updatedUser, err
 }
 
+// Promote promotes a user to an admin role.
+// It takes a context and the user ID as parameters.
+// It returns the updated user and an error if any.
 func (ur *userRepository) Promote(c context.Context, id string) (domain.User, error) {
 	admin := "ADMIN"
 	newUser := domain.UserUpdate{
@@ -167,6 +195,9 @@ func (ur *userRepository) Promote(c context.Context, id string) (domain.User, er
 	return updatedUser, nil
 }
 
+// UpdateProfileImage updates the profile image of a user with the given ID.
+// It takes a context.Context, the user ID, and the new profile image as parameters.
+// It returns the updated user and an error if the update fails.
 func (ur *userRepository) UpdateProfileImage(c context.Context, id string, profileImage string) (domain.User, error) {
 	newUser := domain.UserUpdate{
 		ProfileImage: &profileImage,
@@ -181,6 +212,9 @@ func (ur *userRepository) UpdateProfileImage(c context.Context, id string, profi
 
 }
 
+// VerifyUser verifies a user by updating the verification status in the repository.
+// It takes a context and the user ID as parameters.
+// It returns the updated user and an error if any.
 func (ur *userRepository) VerifyUser(c context.Context, id string) (domain.User, error) {
 	valid := true
 	newUser := domain.UserUpdate{

@@ -1,4 +1,4 @@
-package user
+package domain
 
 type SignupRequest struct {
 	Firstname string `json:"firstname" bson:"firstname" binding:"required"`

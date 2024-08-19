@@ -1,4 +1,4 @@
-package user
+package domain
 
 type PromoteDemoteRequest struct {
 	Username string `json:"username" bson:"username"`

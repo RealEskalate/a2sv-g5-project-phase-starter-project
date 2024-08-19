@@ -16,21 +16,28 @@ type Blog struct {
 	Tags      []string           `json:"tags" bson:"tags"`
 	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
+	ViewCount int                `bson:"view_count" json:"view_count"`
+	Likes     int                `bson:"-" json:"likes"`    // Field for likes count
+	Comments  int                `bson:"-" json:"comments"` // Field for comments count
 }
 
 type BlogUsecase interface {
-	// CreateBlog(ctx context.Context, blog *Blog) error
+	CreateBlog(ctx context.Context, blog *Blog) (*Blog, error)
+	GetBlogs(ctx context.Context, page, limit int, sortBy string) ([]Blog, int, error)
 	UpdateBlog(ctx context.Context, blogID primitive.ObjectID, updatedBlog *Blog) error
-	GetBlog(ctx context.Context, blogID primitive.ObjectID) (*Blog, error)
+	GetBlogByID(ctx context.Context, blogID primitive.ObjectID) (*Blog, error)
 	DeleteBlog(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID, isAdmin bool) error
+	// DeleteBlog(ctx context.Context, authorID primitive.ObjectID, blogID primitive.ObjectID) error
+	// SearchBlog(ctx context.Context, blogTitle string, blogAuthor string) ([]*Blog, error)
 	// GetBlogs(ctx context.Context) ([]*Blog, error)
-	// GetBlog(ctx context.Context, blogid primitive.ObjectID) ([]*Blog, error)
 }
 
 type BlogRepository interface {
-	// CreateBlog(ctx context.Context, blog *Blog) error
+	CreateBlog(ctx context.Context, blog *Blog) error
+	GetBlogByID(ctx context.Context, blogID primitive.ObjectID) (*Blog, error)
+	GetPaginatedBlogs(ctx context.Context, page, limit int, sortBy string) ([]Blog, error)
+	GetTotalBlogs(ctx context.Context) (int, error)
 	UpdateBlog(ctx context.Context, authorID primitive.ObjectID, updatedBlog *Blog) error
-	GetBlog(ctx context.Context, blogID primitive.ObjectID) (*Blog, error)
 	DeleteBlog(ctx context.Context, blogID primitive.ObjectID) error
 	// SearchBlog(ctx context.Context, blogTitle string, blogAuthor string) ([]*Blog, error)
 	// GetAllBlogs(ctx context.Context) ([]*Blog, error)

@@ -1,7 +1,7 @@
 package user_controller
 
 import (
-	"blog-api/domain/user"
+	"blog-api/domain"
 	"blog-api/infrastructure/auth"
 	"net/http"
 
@@ -10,7 +10,7 @@ import (
 )
 
 func (uc *UserController) LoginController(c *gin.Context) {
-	var loginRequest user.LoginRequest
+	var loginRequest domain.LoginRequest
 
 	if err := c.ShouldBindJSON(&loginRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload. Please provide email or username and password."})
@@ -22,7 +22,7 @@ func (uc *UserController) LoginController(c *gin.Context) {
 		return
 	}
 
-	var u user.User
+	var u domain.User
 	var err error
 	if loginRequest.Email != "" {
 		u, err = uc.usecase.GetByEmail(c, loginRequest.Email)
@@ -52,7 +52,7 @@ func (uc *UserController) LoginController(c *gin.Context) {
 		return
 	}
 
-	response := user.LoginResponse{
+	response := domain.LoginResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}

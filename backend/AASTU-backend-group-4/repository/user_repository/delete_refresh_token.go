@@ -8,7 +8,6 @@ import (
 
 func (ur *UserRepository) DeleteRefreshTokenByUserID(ctx context.Context, userID string) error {
 	filter := bson.M{"user_id": userID}
-	collection := ur.database.Collection(ur.collection)
-	_, err := collection.DeleteOne(ctx, filter)
+	_, err := ur.collection.DeleteOne(ctx, filter)
 	return err
 }

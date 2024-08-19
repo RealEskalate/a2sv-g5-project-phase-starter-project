@@ -1,7 +1,7 @@
 package user_controller
 
 import (
-	"blog-api/domain/user"
+	"blog-api/domain"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,7 +9,7 @@ import (
 )
 
 func (uc *UserController) UpdateUserProfile(c *gin.Context) {
-	var updateRequest user.UpdateRequest
+	var updateRequest domain.UpdateRequest
 
 	if err := c.ShouldBindJSON(&updateRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})

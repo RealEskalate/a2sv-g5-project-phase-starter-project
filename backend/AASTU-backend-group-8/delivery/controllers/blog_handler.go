@@ -84,22 +84,22 @@ func (bc *BlogController) UpdateBlogPost(c *gin.Context) {
 	c.JSON(http.StatusOK, updatedBlog)
 }
 
-func (bc *BlogController) SearchBlogPost(c *gin.Context) {
-	var search domain.SearchBlogPost
+// func (bc *BlogController) SearchBlogPost(c *gin.Context) {
+// 	var search domain.SearchBlogPost
 
-	if err := c.ShouldBindJSON(&search); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+// 	if err := c.ShouldBindJSON(&search); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	blogs, err := bc.blogUsecase.SearchBlogPosts(&search)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+// 	blogs, err := bc.blogUsecase.SearchBlogPosts(&search)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	c.JSON(http.StatusOK, blogs)
-}
+// 	c.JSON(http.StatusOK, blogs)
+// }
 
 func (bc *BlogController) DeleteBlogPost(c *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(c.Param("id"))
@@ -114,39 +114,4 @@ func (bc *BlogController) DeleteBlogPost(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Blog post deleted successfully"})
-}
-
-func (c *BlogController) AddComment(ctx *gin.Context) {
-	var req struct {
-		BlogID  string `json:"blog_id"`
-		Content string `json:"content"`
-	}
-
-	if err := ctx.BindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	blogID, _ := primitive.ObjectIDFromHex(req.BlogID)
-	authorID := ctx.MustGet("userID").(primitive.ObjectID)
-
-	if err := c.blogUsecase.AddComment(blogID, authorID, req.Content); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
-}
-
-func (c *BlogController) GetComments(ctx *gin.Context) {
-	blogID := ctx.Param("id")
-	objectID, _ := primitive.ObjectIDFromHex(blogID)
-
-	comments, err := c.blogUsecase.GetComments(objectID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, comments)
 }

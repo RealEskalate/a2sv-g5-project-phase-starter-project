@@ -5,8 +5,10 @@ go 1.22.5
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/joho/godotenv v1.5.1
 	go.mongodb.org/mongo-driver v1.16.1
 	golang.org/x/crypto v0.23.0
+	gopkg.in/mail.v2 v2.3.1
 )
 
 require (
@@ -42,5 +44,6 @@ require (
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
+	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

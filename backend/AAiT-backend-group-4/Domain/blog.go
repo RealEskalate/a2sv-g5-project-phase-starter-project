@@ -8,6 +8,12 @@ import (
 )
 
 type Tag string
+type FilterParam string
+
+const (
+	Date       FilterParam = "date"
+	Popularity FilterParam = "popularity"
+)
 
 const (
 	Tech            Tag = "Tech"
@@ -47,6 +53,14 @@ type Blog struct {
 	Updated_At  time.Time          `json:"updated_at" bson:"updated_at"`
 }
 
+type Filter struct {
+	AuthorName *string
+	Tags       *[]Tag
+	BlogTitle  *string
+	Popularity *float64
+	Sort_By    *FilterParam
+}
+
 type BlogUpdate struct {
 	Title       *string    `json:"title" bson:"title" validate:"required,min=5,max=100"`
 	Content     *string    `json:"content" bson:"content" validate:"required,min=5"`
@@ -82,4 +96,6 @@ type BlogRepository interface {
 	FetchByPageAndPopularity(ctx context.Context, pageNumber, pageSize int) ([]Blog, error)
 	// FetchByTags retrieves blogs that have the specified tags
 	FetchByTags(ctx context.Context, tags []Tag) ([]Blog, error)
+	// SearchBlogs retrieves blogs that match the search query
+	SearchBlogs(ctx context.Context, filter Filter) ([]Blog, error)
 }

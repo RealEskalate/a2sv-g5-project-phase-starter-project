@@ -14,9 +14,9 @@ const PieChartComponent: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions/expenses', {
+        const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions?page=0', {
           headers: {
-            Authorization: `Bearer your_bearer_token_here`, // Replace with your token
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`, // Replace with your token
           },
         });
         setData(response.data.data); // Adjust based on API response

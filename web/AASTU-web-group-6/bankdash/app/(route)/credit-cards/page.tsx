@@ -21,6 +21,9 @@ const CreditCards = () => {
     "assets/block-card-orange-icon.svg",
   ];
   const bgCont = ["bg-[#E7EDFF]", "bg-[#FFE0EB]", "bg-[#FFF5D9]"];
+  const isBlack = [false, false, true];
+  const isFade = [true, false, false];
+  const isSimGray = [false, false, true];
   return (
     <div className="w-[96%] flex flex-col grow gap-6 p-8 pt-6">
       <div className="cards-container w-full cente-Content flex flex-col gap-6">
@@ -28,24 +31,17 @@ const CreditCards = () => {
           My Cards
         </p>
         <div className="flex gap-6">
-          <VisaCard
-            data={CardData[0]}
-            isBlack={false}
-            isFade={true}
-            isSimGray={false}
-          />
-          <VisaCard
-            data={CardData[1]}
-            isBlack={false}
-            isFade={false}
-            isSimGray={false}
-          />
-          <VisaCard
-            data={CardData[2]}
-            isBlack={true}
-            isFade={false}
-            isSimGray={true}
-          />
+          <>
+            {CardData?.slice(0, 3).map((item, index) => (
+              <VisaCard
+                key={index}
+                data={item}
+                isBlack={isBlack[index] || false}
+                isFade={isFade[index] || false}
+                isSimGray={isSimGray[index] || false}
+              />
+            ))}
+          </>
         </div>
       </div>
       <div className="flex w-full gap-6 text-nowrap">

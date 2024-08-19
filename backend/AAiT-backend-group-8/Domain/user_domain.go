@@ -19,8 +19,8 @@ type User struct {
 }
 
 type Credential struct {
-	Email     string
-	Refresher string
+	Email     string `json:"email" bson:"email"`
+	Refresher string `json:"refresher" bson:"refresher"`
 }
 
 type IUserRepository interface {

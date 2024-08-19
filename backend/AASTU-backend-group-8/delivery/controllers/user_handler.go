@@ -1,6 +1,7 @@
 package controllers
 
-import(
+import (
+	"fmt"
 	"meleket/domain"
 	"net/http"
 
@@ -37,6 +38,7 @@ func (uc *UserController) Login(c *gin.Context){
 		c.JSON(http.StatusBadRequest,gin.H{"error":err.Error()})
 		return
 	}
+	fmt.Println("AuthUser in controller: ",user)
 
 	token, refreshToken, err := uc.userUsecase.Login(&user); 
 	if err != nil {

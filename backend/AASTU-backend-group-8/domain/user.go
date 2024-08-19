@@ -40,7 +40,7 @@ type Profile struct {
 }
 
 type UserUsecaseInterface interface {
-	GetUserByUsername(username *string) (*User, error)
+	GetUserByUsername(username string) (*User, error)
 	GetUserByEmail(email *string) (*User, error)
 	Register(user *User) error
 	Login(user *AuthUser) (string, string, error)
@@ -56,7 +56,7 @@ type UserUsecaseInterface interface {
 type UserRepositoryInterface interface {
 	//User operations
 	Create(user *User) error
-	GetUserByUsername(username *string) (*User, error)
+	GetUserByUsername(username string) (*User, error)
 	GetUserByEmail(email *string) (*User, error)
 	GetUserByID(id primitive.ObjectID) (*User, error)
 	GetAllUsers() ([]*User, error)

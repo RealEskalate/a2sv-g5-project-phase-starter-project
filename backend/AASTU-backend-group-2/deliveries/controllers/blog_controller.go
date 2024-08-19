@@ -13,13 +13,21 @@ import (
 )
 
 type BlogController struct {
-	Blogusecase domain.BlogUsecase
+	Blogusecase    domain.BlogUsecase
+	Likeusecase    domain.LikeUsecase
+	Commentusecase domain.CommentUsecase
+	Dislikeusecase domain.DisLikeUsecase
+	Aiservice      domain.AIService
 }
 
 // Blog-controller constructor
-func NewBlogController(Blogmgr domain.BlogUsecase, likemgr domain.LikeUsecase, commentmgr domain.CommentUsecase, dislmgr domain.DisLikeUsecase) *BlogController {
+func NewBlogController(Blogmgr domain.BlogUsecase, likemgr domain.LikeUsecase, commentmgr domain.CommentUsecase, dislmgr domain.DisLikeUsecase, aiserv domain.AIService) *BlogController {
 	return &BlogController{
-		Blogusecase: Blogmgr,
+		Blogusecase:    Blogmgr,
+		Likeusecase:    likemgr,
+		Commentusecase: commentmgr,
+		Dislikeusecase: dislmgr,
+		Aiservice:      aiserv,
 	}
 
 }
@@ -146,4 +154,24 @@ func (controller *BlogController) FilterBlog(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, gin.H{"blogs": blogs})
+}
+
+func (h *BlogController) GeneratePost(c *gin.Context) {
+	var req domain.PostRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	post, err := h.Aiservice.GeneratePost(req.Title, req.Content)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"title":   post.Title,
+		"content": post.Content,
+	})
 }

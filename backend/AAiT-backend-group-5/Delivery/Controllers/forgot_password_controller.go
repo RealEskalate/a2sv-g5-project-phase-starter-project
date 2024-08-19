@@ -46,7 +46,7 @@ func (forgotPasswordController *ForgotPasswordController) ForgotPasswordRequest(
 	ctx.JSON(http.StatusOK, gin.H{"message": "confirmation email sent"})
 }
 
-func (forgotPasswordController *ForgotPasswordController) ForgotPasswordConfirm(ctx *gin.Context) {
+func (forgotPasswordController *ForgotPasswordController) SetNewPassword(ctx *gin.Context) {
 	var setUpPasswordRequest *dtos.SetUpPasswordRequest
 
 	// attempt to bind the payload carrying the new password

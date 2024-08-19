@@ -14,6 +14,7 @@ type TokenRepository struct {
 }
 
 func NewTokenRepository(collection *mongo.Collection, ctx context.Context) domain.ITokenRepository {
+	// Assign the collection and context to the struct fields
 	return &TokenRepository{
 		Collection: collection,
 		Context:    ctx,

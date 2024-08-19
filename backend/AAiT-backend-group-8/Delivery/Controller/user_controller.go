@@ -1,4 +1,4 @@
-package controllers
+package Controller
 
 import (
 	"AAiT-backend-group-8/Domain"
@@ -53,28 +53,33 @@ func (h *UserHandler) VerifyEmail(c *gin.Context) {
 }
 
 func (h *UserHandler) Login(c *gin.Context) {
-	type EmailPass struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+    // Corrected struct with exported fields
+    type EmailPass struct {
+        Email    string `json:"email"`
+        Password string `json:"password"`
+    }
 
-	var ep EmailPass
+    var ep EmailPass
 
-	bindErr := c.BindJSON(&ep)
-	if bindErr != nil {
-		c.IndentedJSON(400, gin.H{"message": "invalid request payload"})
-		return
-	}
+    // Bind the JSON payload to the struct
+    bindErr := c.BindJSON(&ep)
+    if bindErr != nil {
+        c.IndentedJSON(400, gin.H{"message": "invalid request payload"})
+        return
+    }
 
-	fmt.Printf("Received payload: %v\n", ep)
+    // Debugging line to print the payload (c.Request.Body is already consumed by BindJSON)
+    fmt.Printf("Received payload: %v\n", ep)
 
-	token, refresher, err := h.UserUsecase.Login(ep.Email, ep.Password)
-	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+    // Perform login using the extracted email and password
+    token, refresher, err := h.UserUsecase.Login(ep.Email, ep.Password)
+    if err != nil {
+        c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
 
-	c.IndentedJSON(http.StatusOK, gin.H{"token": token, "refresher": refresher})
+    // Respond with token and refresher
+    c.IndentedJSON(http.StatusOK, gin.H{"token": token, "refresher": refresher})
 }
 
 func (h *UserHandler) RefreshToken(c *gin.Context) {

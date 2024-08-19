@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRouter(userHandler *controllers.UserHandler) *gin.Engine {
+func InitRouter(userHandler *Controller.UserHandler) *gin.Engine {
 	router := gin.Default()
 
 	router.POST("/register", userHandler.RegisterUser)

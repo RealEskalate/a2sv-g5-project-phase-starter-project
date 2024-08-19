@@ -17,12 +17,13 @@ func NewLogoutUsecase(activeUserRepository domain.ActiveUserRepository, timeout 
 		contextTimeout:       timeout,
 	}
 }
+
 // Logout implements domain.LogoutUsecase.
-func (l *logoutUsecase) Logout(c context.Context, id string) error {
+func (l *logoutUsecase) Logout(c context.Context, id string, user_agent string) error {
 	ctx, cancel := context.WithTimeout(c, l.contextTimeout)
 	defer cancel()
 
-	return l.activeUserRepository.DeleteActiveUserById(id, ctx)
+	return l.activeUserRepository.DeleteActiveUser(id, user_agent, ctx)
 }
 func (l *logoutUsecase) CheckActiveUser(c context.Context, id string) (domain.ActiveUser, error) {
 	ctx, cancel := context.WithTimeout(c, l.contextTimeout)

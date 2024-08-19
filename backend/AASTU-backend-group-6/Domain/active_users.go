@@ -15,5 +15,5 @@ type ActiveUser struct {
 type ActiveUserRepository interface {
 	CreateActiveUser(au ActiveUser, c context.Context) error
 	FindActiveUserById(id string, c context.Context) (ActiveUser, error)
-	DeleteActiveUserById(id string, c context.Context) error
+	DeleteActiveUser(id string, user_agent string, c context.Context) error
 }

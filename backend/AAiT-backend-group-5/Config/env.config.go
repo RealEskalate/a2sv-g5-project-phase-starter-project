@@ -7,6 +7,7 @@ import (
 )
 
 type Env struct {
+	BASE_URL          string `mapstructure:"BASE_URL"`
     JWT_SECRET        string `mapstructure:"JWT_SECRET"`
     SMTP_SERVER       string `mapstructure:"SMTP_SERVER"`
     SMTP_PORT         string `mapstructure:"SMTP_PORT"`

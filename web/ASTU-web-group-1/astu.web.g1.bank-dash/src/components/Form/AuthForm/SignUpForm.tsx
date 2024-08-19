@@ -1,157 +1,301 @@
+"use client";
+
 import InputGroup from "../InputGroup";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+
+const stepOneSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    email: z.string().email("Invalid email address"),
+    dateOfBirth: z.string().refine((date) => !isNaN(Date.parse(date)), {
+      message: "Invalid date format",
+    }),
+    permanentAddress: z.string().min(1, "Permanent address is required"),
+    postalCode: z.string().min(1, "Postal code is required"),
+    username: z.string().min(1, "Username is required"),
+    password: z.string().min(6, "Password must be at least 6 characters long"),
+    confirmPassword: z
+      .string()
+      .min(6, "Confirm Password must be at least 6 characters long"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+const stepTwoSchema = z.object({
+  presentAddress: z.string().min(1, "Present address is required"),
+  city: z.string().min(1, "City is required"),
+  country: z.string().min(1, "Country is required"),
+
+  currency: z.string().min(1, "Currency is required"),
+  timeZone: z.string().min(1, "Time zone is required"),
+});
+
+const steps = ["Step 1", "Step 2"];
+const stepSchemas = [stepOneSchema, stepTwoSchema];
 
 const SignUpForm = () => {
+  const [step, setStep] = useState(0);
+  const [prevFormData, setprevFormData] = useState({});
+  const router = useRouter()
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(stepSchemas[step]),
+    mode: "onTouched",
+  });
+
+  const onSubmit = async (data: any) => {
+    if (step < steps.length - 1) {
+      setprevFormData((prevFormData) => ({ ...prevFormData, ...data }));
+      console.log("Form Data at step", prevFormData);
+      setStep(step + 1);
+    } else {
+      setprevFormData((prevFormData) => ({ ...prevFormData, ...data }));
+
+      const finalData = {
+        ...prevFormData,
+        presentAddress: data.presentAddress,
+        city: data.city,
+        country: data.country,
+        profilePicture: "/images/67sdfsd6f7s8d6fa8s6fsgf_s6fs7",
+        preference: {
+          currency: data.currency,
+          sentOrReceiveDigitalCurrency: true,
+          receiveMerchantOrder: true,
+          accountRecommendations: true,
+          timeZone: data.timeZone,
+          twoFactorAuthentication: true,
+        },
+      };
+      // console.log("Returned and combined values", finalData);
+
+      const res = fetch('https://bank-dashboard-6acc.onrender.com/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(finalData),
+      });
+      res.then((res) => {
+        if (res.ok) {
+          console.log('User created successfully');
+          router.push('/api/auth/signin')
+        } 
+        if (!res.ok) {
+          console.log('Failed to create user');
+        }
+      })
+    }
+  };
+
+  const onBack = () => setStep(step - 1);
+
   return (
-    <form className="flex flex-col items-center w-full md:w-1/2 justify-center md:px-16">
-      <div className="w-full md:flex md:gap-4 ">
-        <InputGroup
-          id="name"
-          label="Full Name"
-          inputType="name"
-          registerName="name"
-          register=""
-          placeholder="Enter Full Name"
-        />
-        <InputGroup
-          id="email"
-          label="Email"
-          inputType="email"
-          registerName="email"
-          register=""
-          placeholder="Enter Your Email"
-        />
-      </div>
+    <form
+      className="flex flex-col items-center w-full md:w-1/2 justify-center md:px-16 m-5"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      {step == 0 && (
+        <>
+          <div className="w-full md:flex md:gap-4 ">
+            <InputGroup
+              id="name"
+              label="Full Name"
+              inputType="text"
+              registerName="name"
+              register={register}
+              placeholder="Enter Full Name"
+            />
 
-      <div className="w-full md:flex md:gap-4 ">
-        <InputGroup
-          id="dateOfBirth"
-          label="Date Of Birth"
-          inputType="date"
-          registerName="dateOfBirth"
-          register=""
-          placeholder="Enter Date Of Birth"
-        />
-        <InputGroup
-          id="permanentAddress"
-          label="Permanent Address"
-          inputType="text"
-          registerName="permanentAddress"
-          register=""
-          placeholder="Enter Permanent Address"
-        />
-      </div>
+            {errors?.name && <p>{String(errors.name.message)}</p>}
 
-      <div className="w-full md:flex md:gap-4 ">
-        <InputGroup
-          id="postalCode"
-          label="Postal Code"
-          inputType="text"
-          registerName="postalCode"
-          register=""
-          placeholder="Enter Postal Code"
-        />
-        <InputGroup
-          id="username"
-          label="Username"
-          inputType="username"
-          registerName="username"
-          register=""
-          placeholder="Enter Username"
-        />
-      </div>
-      <div className="w-full md:flex md:gap-4 ">
-        <InputGroup
-          id="password"
-          label="password"
-          inputType="password"
-          registerName="password"
-          register=""
-          placeholder="Enter Password"
-        />
-        <InputGroup
-          id="password"
-          label="Confirm Password"
-          inputType="password"
-          registerName="password"
-          register=""
-          placeholder="RE-Enter password"
-        />
-      </div>
-      <div className="w-full md:flex md:gap-4 ">
-        <InputGroup
-          id="presentAddress"
-          label="Present Address"
-          inputType="text"
-          registerName="presentAddress"
-          register=""
-          placeholder="Enter Present Address"
-        />
-        <InputGroup
-          id="city"
-          label="City"
-          inputType="text"
-          registerName="city"
-          register=""
-          placeholder="Enter City"
-        />
-      </div>
+            <InputGroup
+              id="email"
+              label="Email"
+              inputType="email"
+              registerName="email"
+              register={register}
+              placeholder="Enter Your Email"
+            />
+          </div>
+          {errors?.email && <p>{String(errors.email.message)}</p>}
 
-      <div className="w-full md:flex md:gap-4 ">
-        <InputGroup
-          id="country"
-          label="Country"
-          inputType="text"
-          registerName="country"
-          register=""
-          placeholder="Enter Country"
-        />
-        <InputGroup
-          id="profilePicture"
-          label="profilePicture"
-          inputType="file"
-          registerName="profilePicture"
-          register=""
-          placeholder="Enter Profile Picture"
-        />
-      </div>
+          <div className="w-full md:flex md:gap-4 ">
+            <InputGroup
+              id="dateOfBirth"
+              label="Date Of Birth"
+              inputType="date"
+              registerName="dateOfBirth"
+              register={register}
+              placeholder="Enter Date Of Birth"
+            />
 
-      <div className="w-full md:flex md:gap-4 ">
-        <div className=" w-full lg:w-6/12 space-y-3 my-3">
-          <label htmlFor="timeZone" className="gray-dark text-16px">
-            Currency
-          </label>
-          <select
-            id="timeZone"
-            className="w-full border-2 border-[#DFEAF2] p-5 py-3 rounded-xl placeholder:text-blue-steel focus:border-blue-steel outline-none"
-          >
-            <option selected>USD</option>
-            <option value="US">Birr</option>
-            <option value="CA">Birr</option>
-            <option value="FR">Birr</option>
-          </select>
-        </div>
-        <div className=" w-full lg:w-6/12 space-y-3 my-3">
-          <label htmlFor="timeZone" className="gray-dark text-16px">
-            Time Zone
-          </label>
-          <select
-            id="timeZone"
-            className="w-full border-2 border-[#DFEAF2] p-5 py-3 rounded-xl placeholder:text-blue-steel focus:border-blue-steel outline-none"
-          >
-            <option selected>GMT 3+</option>
-            <option value="US">Birr</option>
-            <option value="CA">Birr</option>
-            <option value="FR">Birr</option>
-          </select>
-        </div>
-      </div>
+            {errors?.dateOfBirth && <p>{String(errors.dateOfBirth.message)}</p>}
 
-      <button
-        type="submit"
-        className="bg-[#1814f3] text-white px-10 py-3 font-Lato font-bold rounded-lg w-full mt-4"
+            <InputGroup
+              id="permanentAddress"
+              label="Permanent Address"
+              inputType="text"
+              registerName="permanentAddress"
+              register={register}
+              placeholder="Enter Permanent Address"
+            />
+            {errors?.permanentAddress && (
+              <p>{String(errors.permanentAddress.message)}</p>
+            )}
+          </div>
+
+          <div className="w-full md:flex md:gap-4 ">
+            <InputGroup
+              id="postalCode"
+              label="Postal Code"
+              inputType="text"
+              registerName="postalCode"
+              register={register}
+              placeholder="Enter Postal Code"
+            />
+            {errors?.postalCode && <p>{String(errors.postalCode.message)}</p>}
+
+            <InputGroup
+              id="username"
+              label="Username"
+              inputType="text"
+              registerName="username"
+              register={register}
+              placeholder="Enter Username"
+            />
+            {errors?.username && <p>{String(errors.username.message)}</p>}
+          </div>
+          <div className="w-full md:flex md:gap-4 ">
+            <InputGroup
+              id="password"
+              label="Password"
+              inputType="password"
+              registerName="password"
+              register={register}
+              placeholder="Enter Password"
+            />
+            {errors?.password && <p>{String(errors.password.message)}</p>}
+
+            <InputGroup
+              id="confirmPassword"
+              label="Confirm Password"
+              inputType="password"
+              registerName="confirmPassword"
+              register={register}
+              placeholder="RE-Enter password"
+            />
+            {errors?.confirmPassword && (
+              <p>{String(errors.confirmPassword.message)}</p>
+            )}
+          </div>
+        </>
+      )}
+
+      {step == 1 && (
+        <>
+          <div className="w-full md:flex md:gap-4 ">
+            <InputGroup
+              id="presentAddress"
+              label="Present Address"
+              inputType="text"
+              registerName="presentAddress"
+              register={register}
+              placeholder="Enter Present Address"
+            />
+            {errors?.presentAddress && (
+              <p>{String(errors.presentAddress.message)}</p>
+            )}
+
+            <InputGroup
+              id="city"
+              label="City"
+              inputType="text"
+              registerName="city"
+              register={register}
+              placeholder="Enter City"
+            />
+            {errors?.city && <p>{String(errors.city.message)}</p>}
+          </div>
+
+          <div className="w-full md:flex md:gap-4 ">
+            <InputGroup
+              id="country"
+              label="Country"
+              inputType="text"
+              registerName="country"
+              register={register}
+              placeholder="Enter Country"
+            />
+            {errors?.country && <p>{String(errors.country.message)}</p>}
+          </div>
+
+          <div className="w-full md:flex md:gap-4 ">
+            <div className=" w-full lg:w-6/12 space-y-3 my-3">
+              <label htmlFor="timeZone" className="gray-dark text-16px">
+                Currency
+              </label>
+              <select
+                id="timeZone"
+                {...register("currency")}
+                className="w-full border-2 border-[#DFEAF2] p-5 py-3 rounded-xl placeholder:text-blue-steel focus:border-blue-steel outline-none"
+              >
+                <option value="USD">USD</option>
+                <option value="US">Birr</option>
+                <option value="CA">Birr</option>
+                <option value="FR">Birr</option>
+              </select>
+            </div>
+            <div className=" w-full lg:w-6/12 space-y-3 my-3">
+              <label htmlFor="timeZone" className="gray-dark text-16px">
+                Time Zone
+              </label>
+              <select
+                id="timeZone"
+                {...register("timeZone")}
+                className="w-full border-2 border-[#DFEAF2] p-5 py-3 rounded-xl placeholder:text-blue-steel focus:border-blue-steel outline-none"
+              >
+                <option value="GMT 3+">GMT 3+</option>
+                <option value="US">Birr</option>
+                <option value="CA">Birr</option>
+                <option value="FR">Birr</option>
+              </select>
+            </div>
+          </div>
+        </>
+      )}
+
+      <div
+        className={`w-full flex ${
+          step == 0 ? "justify-end" : "justify-between"
+        }`}
       >
-        Login
-      </button>
+        {step > 0 && (
+          <button
+            type="submit"
+            className="bg-[#1814f3] text-white px-10 py-3 font-Lato font-bold rounded-lg mt-4"
+            onClick={onBack}
+          >
+            Back
+          </button>
+        )}
+
+        <button
+          type="submit"
+          className="bg-[#1814f3] text-white px-10 py-3 font-Lato font-bold rounded-lg mt-4"
+        >
+          {step < steps.length - 1 ? "Next" : "Register"}
+        </button>
+      </div>
     </form>
   );
 };

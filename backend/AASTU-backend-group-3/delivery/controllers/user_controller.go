@@ -39,6 +39,63 @@ func (uc *UserController) Login(c *gin.Context) {
 
 }
 
+// TODO: get userID from context rather than query
+func (uc *UserController) Logout(c *gin.Context) {
+	var logoutRequest domain.LogoutRequest
+	if err := c.ShouldBindJSON(&logoutRequest); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	ipAddress := c.ClientIP()
+    userAgent := c.Request.UserAgent()
+    deviceFingerprint := infrastracture.GenerateDeviceFingerprint(ipAddress, userAgent)
+
+	err := uc.UserUsecase.Logout(logoutRequest.UserID, deviceFingerprint, logoutRequest.Token)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Logged out successfully"})
+}
+
+// TODO: get userID from context rather than query
+func (uc *UserController) LogoutAll(c *gin.Context) {
+	userID := c.Query("userID")
+	err := uc.UserUsecase.LogoutAllDevices(userID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Logged out from all devices"})
+}
+
+// TODO: get userID from context rather than query
+func (uc *UserController) LogoutDevice(c *gin.Context) {
+	userID := c.Query("userID")
+	deviceID := c.Query("deviceID")
+	err := uc.UserUsecase.LogoutDevice(userID, deviceID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Logged out successfully"})
+}
+
+// TODO: get userID from context rather than query
+func (uc *UserController) GetDevices(c *gin.Context) {
+	userID := c.Query("userID")
+	devices, err := uc.UserUsecase.GetDevices(userID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"devices": devices})
+}
+
 func (uc *UserController) RefreshToken(c *gin.Context) {
 	var refreshRequest domain.RefreshTokenRequest
 

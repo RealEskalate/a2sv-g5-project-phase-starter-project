@@ -67,6 +67,7 @@ func (service *tokenService) InvalidateRefreshToken(token string) (string, error
 func (service *tokenService) GenerateAccessToken(user *entities.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
+			"userName": user.Username,
 			"userId": user.ID,
 			"email":  user.Email,
 			"role":   user.Role,
@@ -83,6 +84,8 @@ func (service *tokenService) GenerateAccessToken(user *entities.User) (string, e
 func (service *tokenService) GenerateRefreshToken(user *entities.User) (*entities.RefreshToken, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
+			"userName": user.Username,
+			"userId": user.ID,
 			"email": user.Email,
 			"role":  user.Role,
 			"exp":   time.Now().Add(time.Hour * 24 * 30).Unix(),

@@ -37,6 +37,7 @@ type User struct {
 	isAdmin      bool
 	createdAt    time.Time
 	updatedAt    time.Time
+	isActive     bool
 }
 
 // Config holds parameters for creating a new User.
@@ -204,6 +205,11 @@ func (u *User) IsAdmin() bool {
 	return u.isAdmin
 }
 
+// IsActive returns whether the user is an active.
+func (u *User) IsActive() bool {
+	return u.isActive
+}
+
 // UpdateUsername updates the user's username after validation.
 func (u *User) UpdateUsername(newUsername string) error {
 	if err := validateUsername(newUsername); err != nil {
@@ -211,6 +217,10 @@ func (u *User) UpdateUsername(newUsername string) error {
 	}
 	u.username = newUsername
 	return nil
+}
+
+func (u *User) MakeActive() {
+	u.isActive = true
 }
 
 // UpdateFirstName updates the user's firstname after validation.

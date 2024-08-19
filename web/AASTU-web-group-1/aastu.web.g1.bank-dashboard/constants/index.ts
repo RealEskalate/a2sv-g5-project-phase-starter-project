@@ -123,3 +123,42 @@ export const investmentsArray = [
         returnValue:'+25%'
     },
 ]
+
+export const trendingArray = [
+    {
+        id: 1,
+        name: 'Apple Store',
+        price: '$540',
+        return: '+16%',
+    },
+    {
+        id: 2,
+        name: 'Trivago',
+        price: '$500',
+        return: '+5%',
+    },
+    {
+        id: 3,
+        name: 'Canon',
+        price: '$480',
+        return: '+10%',  
+    },
+    {
+        id: 4,
+        name: 'Uber Food',
+        price: '$350',
+        return: '-3%',
+    },
+    {
+        id: 5,
+        name: 'Nokia',
+        price: '$940',
+        return: '+2%',
+    },
+    {
+        id: 6,
+        name: 'Tik Tok',
+        price: '$940',
+        return: '-12%',
+    }
+]

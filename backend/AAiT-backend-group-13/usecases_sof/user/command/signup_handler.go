@@ -47,13 +47,25 @@ func (h *SignUpHandler) Handle(command *signUpCommand) (*result.SignUpResult, er
 		return nil, err
 	}
 
-	if err := h.repo.CheckUsernameAvailability(user.Username()); err != nil {
+	res,err := h.repo.FindByUsername(user.Username())
+	if res != nil {
+		return nil, er.NewConflict("username taken") 
+	}
+
+	if err != nil {
 		return nil, err
 	}
 
-	if err := h.repo.CheckEmailAvailability(user.Email()); err != nil {
+	res, err = h.repo.FindByEmail(user.Email())
+	if res != nil {
+		return nil, er.NewConflict("email already exists.") 
+	}
+
+	if err != nil {
 		return nil, err
 	}
+
+	
 
 	password := user.PasswordHash()
 	user.UpdatePassword(password, h.hashService)
@@ -82,33 +94,3 @@ func (h *SignUpHandler) Handle(command *signUpCommand) (*result.SignUpResult, er
 		IsAdmin:   user.IsAdmin(),
 	}, nil
 }
-
-func (h *SignUpHandler) HandleLogin(command *LoginCommand) (*result.LoginInResult, error) {
-	user, err := h.repo.FindByUsername(command.username)
-	if err != nil {
-		return nil, er.NewNotFound("user not found.")
-	}
-
-	if ok := h.repo.MatchPassword(command.password, user.PasswordHash(), h.hashService); !ok {
-
-		return nil, er.NewValidation("password is incorrect.")
-	}
-
-	token, err := h.jwtService.Generate(user, ijwt.Access)
-	if err != nil {
-		return nil, err
-	}
-
-	refreshtoken, err := h.jwtService.Generate(user, ijwt.Refresh)
-
-	if err != nil {	
-		return nil, err
-	}
-
-	return &result.LoginInResult{
-		Token:       token,
-		Refreshtoekn: refreshtoken,
-	}, nil
-	
-}
-

@@ -1,7 +1,7 @@
 package user_controller
 
 import (
-	"blog-api/domain/user"
+	"blog-api/domain"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +10,7 @@ import (
 )
 
 func (uc *UserController) SignupController(c *gin.Context) {
-	var request user.SignupRequest
+	var request domain.SignupRequest
 
 	err := c.ShouldBind(&request)
 	if err != nil {
@@ -48,7 +48,7 @@ func (uc *UserController) SignupController(c *gin.Context) {
 
 	request.Password = string(encryptedPassword)
 
-	user := &user.User{
+	user := &domain.User{
 		ID:        primitive.NewObjectID(),
 		Firstname: request.Firstname,
 		Lastname:  request.Lastname,

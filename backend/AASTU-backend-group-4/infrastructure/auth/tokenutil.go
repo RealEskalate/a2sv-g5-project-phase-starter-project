@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"blog-api/domain/user"
+	"blog-api/domain"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
-func CreateAccessToken(user *user.User, secret string, expiry int) (string, error) {
+func CreateAccessToken(user *domain.User, secret string, expiry int) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id":  user.ID.Hex(),
 		"username": user.Username,
@@ -28,7 +28,7 @@ func CreateAccessToken(user *user.User, secret string, expiry int) (string, erro
 	return t, nil
 }
 
-func CreateRefreshToken(user *user.User, secret string, expiry int) (string, error) {
+func CreateRefreshToken(user *domain.User, secret string, expiry int) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": user.ID.Hex(),
 		"exp":     time.Now().Add(time.Hour * time.Duration(expiry)).Unix(),

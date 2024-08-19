@@ -14,7 +14,7 @@ func (ur *UserRepository) StoreResetToken(ctx context.Context, userID string, re
 			"reset_token_expiry": expiryHour, // Example expiry time
 		},
 	}
-	collection := ur.database.Collection(ur.collection)
-	_, err := collection.UpdateOne(ctx, filter, update)
+
+	_, err := ur.collection.UpdateOne(ctx, filter, update)
 	return err
 }

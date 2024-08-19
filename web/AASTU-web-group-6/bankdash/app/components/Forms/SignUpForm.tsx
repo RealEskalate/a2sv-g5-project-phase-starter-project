@@ -4,8 +4,7 @@ import { useForm } from 'react-hook-form';
 import UserValue from '@/types/UserValue';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import SignupService from '@/app/Services/SignupService';
-import ResponseValue from '@/types/ResponseValue';
+import AuthService from '@/app/Services/api/authService';
 
 // Define the schema using Zod
 const schema = z.object({
@@ -34,18 +33,21 @@ const schema = z.object({
   message: "Passwords do not match",
 });
 
+type FormData = Omit<UserValue, 'password'> & { password: string; confirmPassword: string };
+
 const SignUpForm = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<UserValue>({
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = async (data: UserValue) => {
+  const onSubmit = async (data: FormData) => {
+    const { confirmPassword, ...userData } = data;
     try {
-      const responseData: ResponseValue = await SignupService(data);
+      const responseData = await AuthService.register(userData);
       if (responseData.success) {
-        console.log("Signup successful:");
+        console.log("Signup successful:", responseData.message);
       } else {
-        console.error("Signup failed:");
+        console.error("Signup failed:", responseData.message);
       }
     } catch (error) {
       console.error("An error occurred:", error);

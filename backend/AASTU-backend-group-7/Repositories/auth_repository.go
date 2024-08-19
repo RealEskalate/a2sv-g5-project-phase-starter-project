@@ -108,6 +108,8 @@ func (au *authRepository) Register(ctx context.Context, user *Domain.User) (*Dom
 
 	user.Password = string(hashedPassword)
 	user.CreatedAt = time.Now()
+	user.Posts = []*Domain.Post{}
+
 	InsertedID, err := au.UserCollection.InsertOne(ctx, user)
 	if err != nil {
 		fmt.Println("error at insert", err)

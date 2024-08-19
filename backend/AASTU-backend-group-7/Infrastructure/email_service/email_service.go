@@ -16,8 +16,8 @@ var (
 // MailTrapService defines methods for interacting with the Mailtrap API
 type MailTrapService interface {
 	SendEmail(toEmail string, subject string, text string, category string) error
-	GetEmailMessages(emailAddress string) ([]byte, error)
-	DeleteEmailMessage(emailAddress, messageID string) error
+	// GetEmailMessages(emailAddress string) ([]byte, error)
+	// DeleteEmailMessage(emailAddress, messageID string) error
 }
 
 // mailTrapService implements the MailTrapService interface

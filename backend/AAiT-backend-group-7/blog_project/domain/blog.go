@@ -7,18 +7,17 @@ import (
 )
 
 type Blog struct {
-	ID        int       `json:"id"`
-	Title     string    `json:"title"`
-	AuthorID  int       `json:"author_id"`
-	Content   string    `json:"content"`
-	Comments  []Comment `json:"comments"`
-	Likes     []Like    `json:"likes"`
-	Dislikes  []Dislike `json:"dislikes"`
-	Date      string    `json:"date"`
-	Tags      []string  `json:"tags"`
-	Views     int       `json:"views"`
+	ID       int       `json:"id"`
+	Title    string    `json:"title"`
+	AuthorID int       `json:"author_id"`
+	Content  string    `json:"content"`
+	Comments []Comment `json:"comments"`
+	Likes    []Like    `json:"likes"`
+	Dislikes []Dislike `json:"dislikes"`
+	Date     string    `json:"date"`
+	Tags     []string  `json:"tags"`
+	Views    int       `json:"views"`
 }
-
 
 type Comment struct {
 	ID      int    `json:"id"`
@@ -27,20 +26,17 @@ type Comment struct {
 	Date    string `json:"date"`
 }
 
-
 type Like struct {
 	ID     int    `json:"id"`
 	UserID int    `json:"user_id"`
 	Date   string `json:"date"`
 }
 
-
 type Dislike struct {
 	ID     int    `json:"id"`
 	UserID int    `json:"user_id"`
 	Date   string `json:"date"`
 }
-
 
 type IBlogRepository interface {
 	GetAllBlogs(ctx context.Context) ([]Blog, error)
@@ -52,7 +48,6 @@ type IBlogRepository interface {
 	SearchByTags(ctx context.Context, tags []string) ([]Blog, error)
 	SearchByAuthor(ctx context.Context, authorID int) ([]Blog, error)
 }
-
 
 type IBlogUsecases interface {
 	GetAllBlogs(ctx context.Context) ([]Blog, error)

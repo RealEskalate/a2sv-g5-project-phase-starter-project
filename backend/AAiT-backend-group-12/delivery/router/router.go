@@ -15,6 +15,8 @@ func SetupRouter(port int, routePrefix string, db *mongo.Database, redisClient *
 	// auth
 	authRouter := router.Group("/api/" + routePrefix + "/auth")
 	NewAuthRouter(db.Collection(domain.CollectionUsers), authRouter, redisClient)
+	oauthRouter := router.Group("/")
+	NewOAuthRouter(oauthRouter)
 
 	// blog
 	blogAuthor := router.Group("/api/" + routePrefix + "/blogs")

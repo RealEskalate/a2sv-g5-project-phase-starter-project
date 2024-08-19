@@ -16,6 +16,12 @@ type blogRepository struct {
 	collection string
 }
 
+type paginationPage struct {
+	NextPage     int
+	CurrentPage  int
+	PreviousPage int
+}
+
 // NewBlogRepository creates a new instance of blogRepository
 func NewBlogRepository(db mongo.Database, collection string) domain.BlogRepository {
 	return &blogRepository{

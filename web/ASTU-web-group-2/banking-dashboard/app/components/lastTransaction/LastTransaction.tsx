@@ -40,7 +40,7 @@ const LastTransaction = () => {
 
   return (
     // The width depends on the width of container
-    <div className="w-[325px] sm:w-[487px] md:w-[730px]  flex flex-col bg-white gap-5 p-5 rounded-3xl">
+    <div className=" flex flex-col bg-white gap-5 p-5 rounded-3xl">
       {items.map((item, index) => (
         <div key={index} className="flex items-center justify-between ">
           <div className="flex w-[45px] sm:w-[55px] justify-center mr-5">

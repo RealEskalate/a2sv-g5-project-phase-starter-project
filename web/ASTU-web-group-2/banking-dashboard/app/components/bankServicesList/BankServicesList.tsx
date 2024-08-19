@@ -22,7 +22,7 @@ const BankServicesList = () => {
 
   const { data: res, isLoading } = useGetBankServiceQuery({
     accessToken: accessToken,
-    size: 7,
+    size: 6,
     page: 1,
   });
 
@@ -37,6 +37,7 @@ const BankServicesList = () => {
 
   return (
     <div>
+      {!data && <img src='/assets/bankService/empty-image.png' alt='list empty' />}
       <div className="flex flex-col gap-5 max-md:hidden">
         {data.map((bankService: BankServiceType) => (
           <BankService {...bankService} key={bankService.id} />

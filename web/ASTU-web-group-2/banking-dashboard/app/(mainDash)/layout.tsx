@@ -4,7 +4,7 @@ import Head from 'next/head';
 import Navbar from '../components/navbar/Navbar';
 import Sidebar from '../components/sidebar/Sidebar';
 import { Inter } from 'next/font/google';
-import { useSession, signIn } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -14,8 +14,16 @@ const Layout = ({ children, title = 'My Next.js App' }: { children: React.ReactN
   const router = useRouter();
 
   useEffect(() => {
-    console.log('Session:', session, 'Status:', status);
-  }, [status]);
+    if (status === 'authenticated') {
+      // User is authenticated, no action needed
+      return;
+    }
+    
+    if (status === 'unauthenticated') {
+      // User is not authenticated, redirect to login
+      router.push('/login');
+    }
+  }, [status, router]);
 
   if (status === 'loading') {
     return <p>Loading...</p>;

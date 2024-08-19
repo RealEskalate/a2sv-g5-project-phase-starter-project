@@ -20,15 +20,7 @@ import { getRandomBalance } from "./getRandomBalance";
 import { useEffect, useState } from "react";
 import { BalanceData } from "@/types";
 
-// let chartData = [
-//   // { month: "July", value: 100 },
-//   // { month: "August", value: 200 },
-//   // { month: "September", value: 400 },
-//   // { month: "October", value: 700 },
-//   // { month: "November", value: 300 },
-//   // { month: "December", value: 600 },
-//   // { month: "January", value: 650 },
-// ];
+
 function formatMonth(dateString: string) {
   const [year, month] = dateString.split("-");
   const monthNames = [

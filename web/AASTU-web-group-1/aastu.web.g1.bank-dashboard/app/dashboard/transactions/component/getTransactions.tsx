@@ -3,7 +3,7 @@ import { TransactionProps } from "@/types";
 export async function getallTransactions(page: number, size: number) {
   try {
     const accessToken =
-      "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbW5ldC10ZXMiLCJpYXQiOjE3MjQwMDY5MzIsImV4cCI6MTcyNDA5MzMzMn0.I2q3aT6zWjY09lf5LrWGVmIMDvuQR1vKU2w3jze4iW02o-cQFIeQpi95yv-QTwSO";
+      "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbW5ldC10ZXMiLCJpYXQiOjE3MjQwNDg3NjAsImV4cCI6MTcyNDEzNTE2MH0.baqrlqraepMSM7YMMdUKSUd2j_Z3ui7hyQjvw8b-ENDP9cly77sngGLsVvC3lpC-";
 
     const res = await fetch(
       `https://bank-dashboard-6acc.onrender.com/transactions?page=${page}&size=${size}`,

@@ -35,14 +35,13 @@ type BlogRepository interface {
 }
 
 type BlogUseCase interface {
-    GetAllBlogs(ctx context.Context, page, pageSize int, sortBy, sortOrder string) ([]Blog, int, error)
-    GetBlogByID(ctx context.Context, id string) (*Blog, error)
-    CreateBlog(ctx context.Context, req *RequestBlog, author string) error
-    UpdateBlog(ctx context.Context, req *RequestBlog, author,id string) error
-    DeleteBlog(ctx context.Context, author,id string) error
+	GetAllBlogs(ctx context.Context, page, pageSize int, sortBy, sortOrder string) ([]Blog, int, error)
+	GetBlogByID(ctx context.Context, id string) (*Blog, error)
+	CreateBlog(ctx context.Context, req *RequestBlog, author string) error
+	UpdateBlog(ctx context.Context, req *RequestBlog, author, id string) error
+	DeleteBlog(ctx context.Context, author, id string) error
+	SearchBlogs(query, author string) ([]Blog, error)
 }
-
-
 
 // Validate BlogRequest field
 func (r *RequestBlog) Validate() error {
@@ -52,7 +51,7 @@ func (r *RequestBlog) Validate() error {
 	if r.Content == "" {
 		return errors.New("content is required")
 	}
-	
+
 	if len(r.Tags) == 0 {
 		return errors.New("tags cannot be empty")
 	}

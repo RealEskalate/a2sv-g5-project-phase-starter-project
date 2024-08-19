@@ -21,7 +21,7 @@ func NewLoginUsecase(userRepository domain.UserRepository, activeUserRepository 
 		contextTimeout:       timeout,
 	}
 }
-func (lu *loginUsecase) SaveAsActiveUser(user domain.User, refreshToken string, c context.Context) error {
+func (lu *loginUsecase) SaveAsActiveUser(user domain.ActiveUser, refreshToken string, c context.Context) error {
 	ctx, cancel := context.WithTimeout(c, lu.contextTimeout)
 	defer cancel()
 	return lu.activeUserRepository.CreateActiveUser(domain.ActiveUser{

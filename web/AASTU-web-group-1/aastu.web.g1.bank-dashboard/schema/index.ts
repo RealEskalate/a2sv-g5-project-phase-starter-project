@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const formSchema = z.object({
+export const formSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }),
@@ -14,7 +14,7 @@ const formSchema = z.object({
   postalCode: z.string().min(4, {
     message: "Postal Code must be at least 4 characters.",
   }),
-  username: z.string().min(2, {
+  userName: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
   password: z.string().min(6, {
@@ -31,4 +31,31 @@ const formSchema = z.object({
   }),
 });
 
-export default formSchema;
+
+export const signUpSchema = z.object({ 
+  name: z.string().min(2).max(50),
+  email: z.string().email(),
+  dateOfBirth: z.string(),
+  permanentAddress: z.string(),
+  postalCode: z.string(),
+  username: z.string().min(2).max(50),
+  password: z.string().min(8),
+  presentAddress: z.string(),
+  city: z.string(),
+  country: z.string(),
+  profilePicture: z.string(),
+  preference: z.object({
+    currency: z.string(),
+    sentOrReceiveDigitalCurrency: z.boolean(),
+    receiveMerchantOrder: z.boolean(),
+    accountRecommendations: z.boolean(),
+    timeZone: z.string(),
+    twoFactorAuthentication: z.boolean(),
+  }),
+})
+
+
+export const signInSchema = z.object({
+  userName: z.string().min(2).max(50),
+  password: z.string().min(2),
+});

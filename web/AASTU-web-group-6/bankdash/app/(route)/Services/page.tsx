@@ -16,7 +16,14 @@ interface BankService {
 }
 
 const Services = () => {
-  const colors = ["bg-pink-100", "bg-orange-100", "bg-pink-100", "bg-blue-100", "bg-green-100", "bg-pink-100"]
+  const colors = [
+    "bg-pink-100",
+    "bg-orange-100",
+    "bg-pink-100",
+    "bg-blue-100",
+    "bg-green-100",
+    "bg-pink-100",
+  ];
   const [services, setServices] = useState<BankService[]>([]);
   const [pageNumber, setPageNumber] = useState(1);
 
@@ -27,7 +34,7 @@ const Services = () => {
         {
           headers: {
             Authorization:
-              "Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiZXRzZWxvdCIsImlhdCI6MTcyMzgxNDk0OCwiZXhwIjoxNzIzOTAxMzQ4fQ.cPjaShCATSYxKcZcTiepxm_UzuU8JbP-1zHJ-QSrehlfaRtQ1I-BSBLuOkg-0y73",
+              "Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiZXRzZWxvdCIsImlhdCI6MTcyNDA1NzM4NCwiZXhwIjoxNzI0MTQzNzg0fQ.llmB9jgsJp_N5198BSUMB5-ypOEPNC1uLYCSAXbgVSfnCVpOwoEz1161x_ltS2AX",
           },
         }
       );
@@ -44,23 +51,30 @@ const Services = () => {
 
   return (
     <div>
-      <div className="flex gap-7 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:pl-5 lg:pt-5">
-        <ServicesCard
-          img="/assets/lifeInsurance.svg"
-          title="Life Insurance"
-          desc="Unlimited Protection"
-        />
-        <ServicesCard
-          img="/assets/shoppingBag.svg"
-          title="Shopping"
-          desc="Buy. Think. Grow"
-        />
-        <ServicesCard
-          img="/assets/safety.svg"
-          title="Safety"
-          desc="We are your allies"
-        />
+      <div className="flex gap-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:pl-10 lg:pt-10">
+        <div className="sm:min-w-[30%]">
+          <ServicesCard
+            img="/assets/lifeInsurance.svg"
+            title="Life Insurance"
+            desc="Unlimited Protection"
+          />
+        </div>
+        <div className="sm:min-w-[30%]">
+          <ServicesCard
+            img="/assets/shoppingBag.svg"
+            title="Shopping"
+            desc="Buy. Think. Grow"
+          />
+        </div>
+        <div className="sm:min-w-[30%]">
+          <ServicesCard
+            img="/assets/safety.svg"
+            title="Safety"
+            desc="We are your allies"
+          />
+        </div>
       </div>
+
       <div>
         <p className="font-semibold text-[22px] text-[#343C6A] pt-5 pb-5 lg:p-10">
           Bank Services List

@@ -29,7 +29,7 @@ const DescriptionCard: React.FC<DescriptionCardProps> = ({
 }) => {
   console.log(img);
   return (
-    <div className="lg:ml-10 mb-5 flex items-center justify-between h-24 bg-white gap-5 border rounded-3xl lg:w-[1300px]">
+    <div className="lg:ml-10 mb-5 flex items-center justify-between h-24 bg-white gap-5 border rounded-3xl w-[350px] lg:w-[1300px]">
       <div className={`{icon rounded-full p-3 ${color} ml-4`}>
         <img src={img} alt="" />
       </div>

@@ -3,7 +3,7 @@ import Image from "next/image";
 import white from "../../../public/assets/sim-white-icon.png";
 import gray from "../../../public/assets/sim-gray-icon.png";
 import black from "../../../public/assets/sim-black-icon.png";
-import { Card } from "@/app/Redux/slices/cardSlice";
+import { Card } from "../../Redux/slices/cardSlice";
 
 interface CardType {
   data: Card;
@@ -20,6 +20,7 @@ export const convertDate = (dateString: string): string => {
 };
 
 const VisaCard: React.FC<CardType> = ({ data, isBlack, isFade, isSimGray }) => {
+  console.log(data, "Data")
   const cardNo = `${data.semiCardNumber.slice(
     0,
     4

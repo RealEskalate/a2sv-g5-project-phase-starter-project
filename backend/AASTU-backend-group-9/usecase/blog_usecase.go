@@ -156,6 +156,8 @@ func (bu *blogUsecase) SearchBlogs(ctx context.Context, query string, filters *d
 
     return blogResponses, nil
 
+}
+
 func (bu *blogUsecase) TrackView(ctx context.Context, id primitive.ObjectID) error {
     return bu.blogRepository.IncrementViews(ctx, id)
 }

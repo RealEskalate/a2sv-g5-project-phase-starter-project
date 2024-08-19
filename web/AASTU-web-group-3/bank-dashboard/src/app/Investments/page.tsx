@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import Linechart from '../components/linechart'; 
+import Linechart from '../components/LineChart'; 
 import LineGraphWithDots from '../components/dotchart';
 
 interface Investment {

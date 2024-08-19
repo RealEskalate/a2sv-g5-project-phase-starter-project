@@ -5,7 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"AAIT-backend-group-3/internal/domain/models"
 )
-type UserRepository interface {
+type UserRepositoryInterface interface {
 	SignUp(ctx context.Context, user *models.User) error
 	GetUserByID(ctx context.Context, id primitive.ObjectID) (*models.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)

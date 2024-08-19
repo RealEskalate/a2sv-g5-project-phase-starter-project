@@ -5,9 +5,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"AAiT-Backend-Group-3/internal/domain/models"
-	"AAiT-Backend-Group-3/internal/repository_interfaces"
+	"AAIT-backend-group-3/internal/domain/models"
+	
 )
 
 type MongoUserRepository struct {
@@ -20,36 +19,36 @@ func NewMongoUserRepository(db *mongo.Database, collectionName string) *MongoUse
 	}
 }
 
-func (m *MongoUserRepository) SignUp(ctx context.Context, user *models.User) error{
-	_, err := m.collection.InsertOne(ctx, user)
+func (r *MongoUserRepository) SignUp(ctx context.Context, user *models.User) error{
+	_, err := r.collection.InsertOne(ctx, user)
 	return err
 }
 
-func (m *MongoUserRepository) GetUserByID(ctx context, id primitive.ObjectID) (*models.User, error){
+func (r *MongoUserRepository) GetUserByID(ctx context.Context, id primitive.ObjectID) (*models.User, error){
 	var user models.User
-	err := m.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
+	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func (m *MongoUserRepository) GetUserByEmail(ctx context, email string) (*models.User, error){
+func (r *MongoUserRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error){
 	var user models.User
-	err := m.collection.FindOne(ctx, bson.M)
+	err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
 	if err != nil{
 		return nil, err
 	}
 	return &user, nil
 }
 
-func (m *MongoUserRepository) DeleteUser(ctx context, id primitive.ObjectID) error{
-	_, err := m.collection.DeleteOne(ctx, bson.M{"_id" : id})
+func (r *MongoUserRepository) DeleteUser(ctx context.Context, id primitive.ObjectID) error{
+	_, err := r.collection.DeleteOne(ctx, bson.M{"_id" : id})
 	return err
 }
 
-func (m *MongoUserRepository) UpdateUser(ctx context.Context, id primitive.ObjectID, user *models.User) error {
-	_, err := m.collection.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": user})
+func (r *MongoUserRepository) UpdateUser(ctx context.Context, id primitive.ObjectID, user *models.User) error {
+	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": user})
 	return err
 }
 

@@ -3,7 +3,6 @@ package userusecase
 import (
 	"blogs/config"
 	"blogs/domain"
-	"errors"
 )
 
 func (u *UserUsecase) UpdateProfile(user *domain.User, claims *domain.LoginClaims) error {
@@ -74,12 +73,12 @@ func (u *UserUsecase) UpdateProfile(user *domain.User, claims *domain.LoginClaim
 
 	// Check if the role is present
 	if user.Role != "" {
-		return errors.New("role cannot be updated")
+		return config.ErrUpdateRole
 	}
 
 	// Check if the joined date is present
 	if !user.JoinedDate.IsZero() {
-		return errors.New("joined date cannot be updated")
+		return config.ErrUpdateJoined
 	}
 
 	// Update the user profile in the repository

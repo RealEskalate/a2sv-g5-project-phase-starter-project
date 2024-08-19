@@ -20,6 +20,10 @@ func GenerateAIContent(prompt string) genai.Part {
 	// Generate content
 	model := client.GenerativeModel("gemini-1.5-flash")
 	resp, err := model.GenerateContent(ctx, genai.Text(prompt))
+	if err != nil {
+		panic(err)
+	}
+
 	if resp != nil {
 		candidates := resp.Candidates
 

@@ -1,19 +1,15 @@
+import { getServerSession } from "next-auth";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import React from "react";
+import { authOptions } from "./api/auth/[...nextauth]/options";
+import { redirect } from "next/navigation";
 
-const Home = () => {
-  return (
-    <div className="flex flex-col gap-2 items-center justify-center h-[100vh]">
-      <Link href="/dashboard">
-        <Button>Go to Dashboard</Button>
-      </Link>
-
-      <Link href="/auth/sign-in">
-        <Button>Go to Auth</Button>
-      </Link>
-    </div>
-  );
+const Home = async () => {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/auth/sign-in");
+  }
+  return <></>;
 };
 
 export default Home;

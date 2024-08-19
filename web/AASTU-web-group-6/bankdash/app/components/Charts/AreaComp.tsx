@@ -21,7 +21,7 @@ const chartData = [
 
 const chartConfig = {
   desktop: {
-    label: "Desktop",
+    label: "Balance",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
@@ -32,7 +32,7 @@ export function AreaComp() {
       <CardContent>
         <ChartContainer
           config={chartConfig}
-          className="barHeight w-full min-h-[100px] h-56"
+          className="barHeight w-full min-h-[100px] h-52"
         >
           <AreaChart
             accessibilityLayer

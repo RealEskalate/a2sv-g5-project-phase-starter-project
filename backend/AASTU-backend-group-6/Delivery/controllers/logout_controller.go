@@ -13,14 +13,15 @@ type LogoutController struct {
 }
 
 func (l *LogoutController) Logout(c *gin.Context) {
-	id := c.Param("id")
+	id := c.GetString("user_id")
 	// TODO: get id from claims
 	_, err := l.LogoutUsecase.CheckActiveUser(c, id)
 	if err != nil {
 		c.JSON(404, gin.H{"error": "User not found, page not found, login before logout"})
 		return
 	}
-	err = l.LogoutUsecase.Logout(c, id)
+	user_agent := c.Request.UserAgent()
+	err = l.LogoutUsecase.Logout(c, id, user_agent)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return

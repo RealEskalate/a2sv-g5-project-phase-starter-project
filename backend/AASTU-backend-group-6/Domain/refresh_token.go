@@ -19,5 +19,5 @@ type RefreshTokenUsecase interface {
 	CreateRefreshToken(user *User, secret string, expiry int) (refreshToken string, err error)
 	ExtractIDFromToken(requestToken string, secret string) (string, error)
 	CheckActiveUser(c context.Context,id string) (ActiveUser, error)
-	RemoveActiveUser(c context.Context,id string) error
+	RemoveActiveUser(c context.Context,id string, user_agent string) error
 }

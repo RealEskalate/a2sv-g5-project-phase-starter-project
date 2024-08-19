@@ -66,3 +66,10 @@ type UserUseCase interface {
 	DeleteUser(ctx context.Context, id string) interface{}
 	ForgotPassword(ctx context.Context, email string, token string) interface{}
 }
+
+
+
+
+type UserResponse struct {
+	User   User   `json:"user"`
+}

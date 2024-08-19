@@ -31,6 +31,7 @@ type SignUpConfig struct {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Ensure Handler implements icmd.IHandler
 var _ icmd.IHandler[*SignUpCommand, *result.SignUpResult] = &SignUpHandler{}
 =======
@@ -38,6 +39,15 @@ var _ icmd.IHandler[*SignUpCommand, *result.SignUpResult] = &SignUpHandler{}
 // Ensure Handler implements icmd.IHandler
 var _ icommand.Ihandler[*signUpCommand, *result.SignUpResult] = &SignUpHandler{}
 >>>>>>> 0ca90274 (hashing and comparing moved to usecase)
+=======
+
+// Ensure Handler implements icmd.IHandler
+var _ icommand.Ihandler[*signUpCommand, *result.SignUpResult] = &SignUpHandler{}
+=======
+// Ensure Handler implements icmd.IHandler
+var _ icmd.IHandler[*SignUpCommand, *result.SignUpResult] = &SignUpHandler{}
+>>>>>>> 7a97ce81 (feat(controller): add some user controller)
+>>>>>>> bed12568 (resolved merge conflicts)
 
 func NewSignUpHandler(config SignUpConfig) *SignUpHandler {
 	return &SignUpHandler{
@@ -51,10 +61,13 @@ func NewSignUpHandler(config SignUpConfig) *SignUpHandler {
 func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, error) {
 	cfg := &usermodel.Config{
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Username:      command.username,
 		Email:         command.email,
 		PlainPassword: command.password,
 =======
+=======
+>>>>>>> bed12568 (resolved merge conflicts)
 		Username:       command.username,
 		Email:          command.email,
 		PlainPassword:  command.password,
@@ -65,7 +78,15 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 
 		
 
+<<<<<<< HEAD
 >>>>>>> 0ca90274 (hashing and comparing moved to usecase)
+=======
+=======
+		Username:      command.username,
+		Email:         command.email,
+		PlainPassword: command.password,
+>>>>>>> 7a97ce81 (feat(controller): add some user controller)
+>>>>>>> bed12568 (resolved merge conflicts)
 	}
 
 	user, err := usermodel.New(*cfg)

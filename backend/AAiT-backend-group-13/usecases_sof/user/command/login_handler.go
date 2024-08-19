@@ -33,10 +33,11 @@ func NewLoginHandler(config LoginConfig) *LoginHandler {
 	}
 }
 
+// Ensure Handler implements icmd.IHandler
+var _ icommand.IHandler[*Command, *blogmodel.Blog] = &Handler{}
 
 
-
-func (h *SignUpHandler) HandleLogin(command *LoginCommand) (*result.LoginInResult, error) {
+func (h *SignUpHandler) Handle(command *LoginCommand) (*result.LoginInResult, error) {
 	user, err := h.repo.FindByUsername(command.username)
 	if err != nil {
 		return nil, er.NewNotFound("user not found.")

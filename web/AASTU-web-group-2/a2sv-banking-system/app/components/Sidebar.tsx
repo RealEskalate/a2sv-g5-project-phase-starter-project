@@ -20,6 +20,26 @@ interface SidebarProps {
   handleClose: () => void;
 }
 
+
+import { getServerSession } from "next-auth";
+
+interface ExtendedUser {
+  refresh_token: string;
+  data: any; // Assuming `data` contains user information or other details
+  accessToken?: string;
+}
+
+interface ExtendedSession {
+  user?: ExtendedUser;
+}
+
+const fetchSession = async (): Promise<ExtendedSession> => {
+  const session = await getServerSession();
+  return session as ExtendedSession;
+};
+
+
+
 const Sidebar = ({ toggle, handleClose }: SidebarProps) => {
   const router = useRouter();
   const [active, setActive] = useState("Dashboard");
@@ -75,8 +95,16 @@ const Sidebar = ({ toggle, handleClose }: SidebarProps) => {
     },
   ];
 
-  const handleNav = (destination: string) => {
-    router.push(destination);
+  const handleNav = async (destination: string) => {
+    const session = await fetchSession()
+    if(session){
+
+
+      router.push(destination);
+    }
+    else{
+      console.log("NO session available")
+    }
   };
   const handleActive = (element: string) => {
     setActive(element);

@@ -23,6 +23,9 @@ func main() {
 	dislrepo := repositories.NewDislikeRepository(client)
 	disluse := usecase.NewDislikeUsecase(dislrepo, time.Second*300)
 
+	commrepo := repositories.NewCommentRepository(client)
+	commuse := usecase.NewCommentUsecase(commrepo, time.Second*300)
+	comcont := controllers.NewCommentController(commuse)
 	aiserv, _ := infrastructure.NewGeminiAIService()
 
 	blogcont := controllers.NewBlogController(bloguse, likeuse, commuse, disluse, aiserv)
@@ -33,7 +36,7 @@ func main() {
 
 	//the router gateway
 	r := gin.Default()
-	router.SetRouter(r, blogcont, usercont, client)
+	router.SetRouter(r, comcont, blogcont, usercont, client)
 	r.Run("localhost:8080")
 
 }

@@ -1,8 +1,11 @@
 package usecases
 
 import (
-	"fmt"
 	"time"
+
+	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -18,7 +21,7 @@ func NewBlogUseCase(br domain.BlogRepository) domain.BlogUseCase {
 	}
 }
 
-func (bu *blogUseCase) CreateBlog(blog *domain.Blog, authorID string) domain.Error {
+func (bu *blogUseCase) CreateBlog(blog *domain.Blog) error {
 	// Implement the logic for creating a blog
 	blog.AuthorID, _ = primitive.ObjectIDFromHex(authorID)
 	blog.Likes = []string{}
@@ -34,33 +37,26 @@ func (bu *blogUseCase) CreateBlog(blog *domain.Blog, authorID string) domain.Err
 	if err != nil {
 		return err
 	}
+	blog.AuthorID, _ = primitive.ObjectIDFromHex(authorID)
+	_ , err := bu.blogRepository.Create(blog)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (bu *blogUseCase) GetBlog(blogID string) (*domain.Blog, domain.Error) {
 	// Implement the logic for getting a blog by ID
-	blog, err := bu.blogRepository.FindById(blogID)
-	if err != nil {
-		return nil, err
-	}
-
-	return blog, nil
+	return nil, nil
 }
 
 func (bu *blogUseCase) GetBlogs() ([]domain.Blog, domain.Error) {
 	// Implement the logic for getting all blogs
-	blogs, err := bu.blogRepository.FindAll()
-	if err != nil {
-		return nil, err
-	}
-	return blogs, nil
+	return nil, nil
 }
 
-func (bu *blogUseCase) UpdateBlog(blogID string, blog *domain.Blog) domain.Error {
-	blog, err := bu.blogRepository.Update(blogID, blog)
-	if err != nil {
-		return err
-	}
+func (bu *blogUseCase) UpdateBlog(blogID string, blog *domain.Blog) error {
+	// Implement the logic for updating a blog
 	return nil
 }
 
@@ -75,56 +71,26 @@ func (bu *blogUseCase) DeleteBlog(blogID string) domain.Error {
 
 func (bu *blogUseCase) SearchBlogsByTitle(title string) ([]domain.Blog, domain.Error) {
 	// Implement the logic for searching blogs by title and author
-	blogs, err := bu.blogRepository.SearchByTitle(title)
-	if err != nil {
-		return nil, err
-	}
-	return blogs, nil
+	return nil, nil
 }
 
-func (bu *blogUseCase) SearchBlogsByAuthor(author string) ([]domain.Blog, domain.Error) {
-	// Implement the logic for searching blogs by author
-	blogs, err := bu.blogRepository.SearchByAuthor(author)
-	if err != nil {
-		return nil, err
-	}
-	return blogs, nil
+func (bu *blogUseCase) FilterBlogs(tags []string, dateAfter time.Time, popular bool) ([]*domain.Blog, error) {
+	// Implement the logic for filtering blogs by tags, date, and popularity
+	return nil, nil
 }
 
-func (bu *blogUseCase) FilterBlogs(tags []string, dateAfter time.Time, popular bool) ([]domain.Blog, domain.Error) {
-	filters := map[string]interface{}{
-		"tags":    tags,
-		"date":    dateAfter,
-		"popular": popular,
-	}
-	blogs, err := bu.blogRepository.Filter(filters)
-	if err != nil {
-		return nil, err
-	}
-	return blogs, nil
-}
-
-func (bu *blogUseCase) LikeBlog(userID, blogID string) domain.Error {
-	err := bu.blogRepository.Like(blogID, userID)
-	if err != nil {
-		return err
-	}
+func (bu *blogUseCase) LikeBlog(userID, blogID string) error {
 	// Implement the logic for liking a blog
 	return nil
 }
 
-func (bu *blogUseCase) DisLike(blogID, userID string) domain.Error {
-	// Implement the logic for disliking a blog
-	err := bu.DisLike(blogID, userID)
+func (bu *blogUseCase) AddComment(blogID string, comment *domain.Comment) error {
+	// Implement the logic for adding a comment to a blog
+	err := bu.blogRepository.AddComment(blogID, comment)
 	if err != nil {
 		return err
 	}
-	return nil
-}
-
-func (bu *blogUseCase) AddComment(blogID string, comment *domain.Comment) domain.Error {
-	// Implement the logic for adding a comment to a blog
-	err := bu.blogRepository.AddComment(blogID, comment)
+	err := bu.blogRepository.AddComment(blogID , comment)
 	if err != nil {
 		return err
 	}
@@ -137,6 +103,10 @@ func (bu *blogUseCase) DeleteComment(blogID, commentID string) domain.Error {
 	if err != nil {
 		return err
 	}
+	err := bu.blogRepository.DeleteComment(blogID , commentID)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -144,6 +114,10 @@ func (bu *blogUseCase) EditComment(blogId string, commentID string, comment *dom
 	// Implement the logic for editing a comment
 	fmt.Println("blog Id useCase", blogId)
 	err := bu.blogRepository.EditComment(blogId, commentID, comment)
+	if err != nil {
+		return err
+	}
+	err := bu.blogRepository.EditComment(blogId , commentID , comment)
 	if err != nil {
 		return err
 	}

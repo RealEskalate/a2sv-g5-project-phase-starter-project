@@ -35,6 +35,7 @@ var ErrUnableToUnDislikeBlog = errors.New("unable to unlike blog")
 var ErrUnabletoGetBlog = errors.New("unable to get blog")
 var ErrUnabletoSearchBlogs = errors.New("unable to search blogs")
 var ErrUnableToGetComments = errors.New("unable to get comments")
+var ErrUnabletoGetBlogs = errors.New("unable to get blogs")
 
 type BlogStorage struct {
 	db *mongo.Database
@@ -146,8 +147,47 @@ func (b *BlogStorage) GetBlogByID(ctx context.Context, id string) (blog.Blog, er
 }
 
 // GetBlogs implements BlogRepository.
-func (b *BlogStorage) GetBlogs(ctx context.Context, filterOptions []blog.FilterOption, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[blog.Blog], error) {
-	panic("unimplemented")
+func (b *BlogStorage) GetBlogs(ctx context.Context, filterQuery blog.FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[blog.Blog], error) {
+	filter := bson.D{}
+
+	if filterQuery.Tags != nil {
+		filter = append(filter, bson.E{Key: "tags", Value: bson.D{{Key: "$in", Value: filterQuery.Tags}}})
+	}
+	if filterQuery.CreatedAtFrom != "" && filterQuery.CreatedAtTo != "" {
+		filter = append(filter, bson.E{Key: "created_at", Value: bson.D{
+			{Key: "$gte", Value: filterQuery.CreatedAtFrom},
+			{Key: "$lte", Value: filterQuery.CreatedAtTo},
+		}})
+	}
+
+	if filterQuery.Popularity != 0 {
+		if filterQuery.Popularity > 0 {
+			filter = append(filter, bson.E{Key: "$sort", Value: bson.D{{Key: "popularity", Value: 1}}})
+		} else {
+			filter = append(filter, bson.E{Key: "$sort", Value: bson.D{{Key: "popularity", Value: -1}}})
+		}
+	}
+
+	findOptions := options.Find()
+	findOptions.SetSkip(int64(pagination.Limit*pagination.Page - 1))
+	findOptions.SetLimit(int64(pagination.Limit))
+	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+
+	count, err := b.db.Collection(blogCollection).CountDocuments(ctx, filter)
+	if err != nil {
+		return infrastructure.PaginationResponse[blog.Blog]{}, err
+	}
+
+	cursor, err := b.db.Collection(blogCollection).Find(ctx, filter, findOptions)
+	if err != nil {
+		log.Default().Printf("Failed to get blogs: %v", err)
+		return infrastructure.PaginationResponse[blog.Blog]{}, ErrUnabletoGetBlogs
+	}
+
+	var blogs []blog.Blog
+	cursor.All(ctx, &blogs)
+
+	return infrastructure.NewPaginationResponse[blog.Blog](pagination.Limit, pagination.Page, count, blogs), nil
 }
 
 // GetCommentsByBlogID implements BlogRepository.

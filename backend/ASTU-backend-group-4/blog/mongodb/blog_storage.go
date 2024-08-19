@@ -169,7 +169,24 @@ func (b *BlogStorage) SearchBlogs(ctx context.Context, query string) (infrastruc
 
 // UpdateBlog implements BlogRepository.
 func (b *BlogStorage) UpdateBlog(ctx context.Context, id string, blog blog.Blog) error {
-	panic("unimplemented")
+	blogIDPrimitive, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return ErrInvalidID
+	}
+
+	filter := bson.D{{Key: "_id", Value: blogIDPrimitive}}
+
+	result, err := b.db.Collection(blogCollection).ReplaceOne(ctx, filter, blog)
+	if err != nil {
+		log.Default().Printf("Failed to update blog: %v", err)
+		return ErrUnableToCreateBlog
+	}
+
+	if result.ModifiedCount == 0 {
+		return ErrBlogNotFound
+	}
+
+	return nil
 }
 
 // UnlikeBlog implements BlogRepository.

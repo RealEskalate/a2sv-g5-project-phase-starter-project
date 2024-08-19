@@ -11,12 +11,12 @@ type User struct {
 	Bio               string             `json:"bio" bson:"bio"`
 	ProfilePicture    Media              `json:"profile_picture" bson:"profile_picture"`
 	Email             string             `json:"email" bson:"email"`
-	Is_Admin           bool               `json:"is_admin" bson:"is_admin"`
-	Password          string             `json:"password,omitempty" bson:"password,omitempty"`           
-	VerificationToken string             `json:"verification_token,omitempty" bson:"verification_token,omitempty"` 
-	IsVerified        bool               `json:"is_verified" bson:"is_verified"`                         
-	OAuthProvider     string             `json:"oauth_provider,omitempty" bson:"oauth_provider,omitempty"` 
-	OAuthID           string             `json:"oauth_id,omitempty" bson:"oauth_id,omitempty"`        
+	Is_Admin          bool               `json:"is_admin" bson:"is_admin"`
+	Password          string             `json:"password,omitempty" bson:"password,omitempty"`
+	VerificationToken string             `json:"verification_token,omitempty" bson:"verification_token,omitempty"`
+	IsVerified        bool               `json:"is_verified" bson:"is_verified"`
+	OAuthProvider     string             `json:"oauth_provider,omitempty" bson:"oauth_provider,omitempty"`
+	OAuthID           string             `json:"oauth_id,omitempty" bson:"oauth_id,omitempty"`
 }
 
 // user model that will be returned from the server
@@ -24,7 +24,7 @@ type ResponseUser struct {
 	ID             string `json:"_id" bson:"_id"`
 	UserName       string `json:"username" bson:"username"`
 	Bio            string `json:"bio" bson:"bio"`
-	ProfilePicture Media `json:"profile_picture" bson:"profile_picture"`
+	ProfilePicture Media  `json:"profile_picture" bson:"profile_picture"`
 	Email          string `json:"email" bson:"email"`
 	Is_Admin       bool   `json:"is_admin" bson:"is_admin"`
 }
@@ -41,15 +41,20 @@ type LogINUser struct {
 }
 
 type OAuthLoginUser struct {
-	Provider string `json:"provider" bson:"provider"` 
+	Provider string `json:"provider" bson:"provider"`
 	Token    string `json:"token" bson:"token"`
 }
 
 type RegisterUser struct {
-	UserName       string `json:"username" bson:"username"`
-	Bio            string `json:"bio,omitempty" bson:"bio,omitempty"`
-	Email          string `json:"email" bson:"email"`
-	Password       string `json:"password,omitempty" bson:"password,omitempty"`
+	UserName string `json:"username" bson:"username"`
+	Bio      string `json:"bio,omitempty" bson:"bio,omitempty"`
+	Email    string `json:"email" bson:"email"`
+	Password string `json:"password,omitempty" bson:"password,omitempty"`
+}
+
+type UpdatePassword struct {
+	Password        string `json:"password" bson:"password"`
+	ConfirmPassword string `json:"confirm_password" bson:"confirm_password"`
 }
 
 // from actual user model to response model to be don in usecase

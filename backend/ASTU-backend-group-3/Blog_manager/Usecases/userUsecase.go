@@ -23,6 +23,7 @@ type UserUsecase interface {
 	ForgotPassword(username string) (string, error)
 	Reset(token string) (string, error)
 	UpdatePassword(username string, newPassword string) error
+	PromoteTOAdmin(username string)  (error)
 }
 
 type userUsecase struct {
@@ -57,6 +58,8 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error)
 		return nil, fmt.Errorf("failed to hash password: %v", err)
 	}
 
+	
+
 	user := &Domain.User{
 		Id:             primitive.NewObjectID(),
 		Name:           input.Name,
@@ -67,9 +70,14 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error)
 		Bio:            input.Bio,
 		Gender:         input.Gender,
 		Address:        input.Address,
-		Role:           "user",
 		IsActive:       true,
 		PostsIDs:       []string{},
+	}
+
+	if ok , err := u.userRepo.IsDbEmpty() ; ok && err == nil {
+		user.Role = "admin"
+    } else{
+		user.Role = "user"
 	}
 
 	err = u.userRepo.Save(user)
@@ -200,6 +208,26 @@ func (u *userUsecase) ForgotPassword(username string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	subject := "Password Reset Request"
+	body := fmt.Sprintf(`
+	Hi %s,
+
+	It seems like you requested a password reset. No worries, it happens to the best of us! You can reset your password by clicking the link below:
+
+	<a href="http://localhost:8080/reset/%s">Reset Your Password</a>
+
+	If you did not request a password reset, please ignore this email.
+
+	Best regards,
+	Your Support Team
+	`, user.Name, resetToken)
+
+	err = u.emailService.SendEmail(user.Email, subject, body)
+	if err != nil {
+		return "", fmt.Errorf("failed to send reset email: %v", err)
+	}
+
+
 
 	return resetToken, nil
 }
@@ -239,4 +267,19 @@ func (u *userUsecase) UpdatePassword(username string, newPassword string) error 
 	}
 
 	return nil
+}
+
+
+func (u *userUsecase) PromoteTOAdmin(username string) error {
+	_, err := u.userRepo.FindByUsername(username)
+    if err!= nil {
+        return errors.New("user not found")
+    }
+
+    err = u.userRepo.Update(username, bson.M{"role": "admin"})
+    if err!= nil {
+        return fmt.Errorf("failed to promote user to admin: %v", err)
+    }
+
+    return nil
 }

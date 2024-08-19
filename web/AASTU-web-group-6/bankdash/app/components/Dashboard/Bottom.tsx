@@ -12,8 +12,13 @@ import {
   faGreaterThan,
   faLessThan,
 } from "@fortawesome/free-solid-svg-icons";
+import { BalanceType } from "@/app/Redux/slices/TransactionSlice";
 const Bottom = () => {
   const people: any = [1, 2, 3];
+  const BalanceData: BalanceType[] = useAppSelector(
+    (state) => state.transactions.balanceHist
+  );
+
   return (
     <section className="Botom flex gap-6 sm:flex-col lg:flex-row ">
       <div className="cards-container sm:w-full lg:w-[45%]  center-content flex flex-col gap-6">
@@ -96,7 +101,7 @@ const Bottom = () => {
             <span>100</span>
             <span>0</span>
           </div>
-          <AreaComp />
+          <AreaComp data={BalanceData} />
         </div>
       </div>
     </section>

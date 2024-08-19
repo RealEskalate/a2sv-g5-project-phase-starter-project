@@ -2,7 +2,6 @@
 
 import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import LastTransService from "@/app/Services/api/lastTransService";
 import { useState, useEffect } from "react";
 
 import {
@@ -19,6 +18,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { TransactionType } from "@/app/Redux/slices/TransactionSlice";
+import { useAppSelector } from "@/app/Redux/store/store";
 
 const chartConfig = {
   debit: {
@@ -59,15 +60,20 @@ function getDayOfWeek(dateString: string): string {
 }
 export function DebitCreditOver() {
   const [data, setData] = useState<chartData[]>([]);
-  const [totalIncome, setTotalIncome] = useState(0);  
+  const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
+  const expense: TransactionType[] = useAppSelector(
+    (state) => state.transactions.expense
+  );
+  const income: TransactionType[] = useAppSelector(
+    (state) => state.transactions.income
+  );
+
+  console.log(expense, "from expense");
+  console.log(income, "from income");
   useEffect(() => {
-    const getData = async () => {
+    const getData = () => {
       try {
-        const accessToken =
-          "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjM5OTIwNjMsImV4cCI6MTcyNDA3ODQ2M30.TQUQ-1kz6M-DWcCDKjVgasHzfZxxhZf0Odeux1Jw1OPqxa4doCexoALnIAeGIkQS";
-        const expense = await LastTransService.getExpenseData(accessToken);
-        const income = await LastTransService.getIncomeData(accessToken);
         const chartData: { [day: string]: { debit: number; credit: number } } =
           {
             Sunday: { debit: 0, credit: 0 },
@@ -78,11 +84,11 @@ export function DebitCreditOver() {
             Friday: { debit: 0, credit: 0 },
             Saturday: { debit: 0, credit: 0 },
           };
-          let incomeSum = 0;
-          let expenseSum = 0;
+        let incomeSum = 0;
+        let expenseSum = 0;
         income.forEach((transaction) => {
           if (isDateInLast7Days(transaction.date)) {
-            incomeSum+=transaction.amount;
+            incomeSum += transaction.amount;
             const dayOfWeek = getDayOfWeek(transaction.date);
             chartData[dayOfWeek].credit += transaction.amount;
           }
@@ -90,7 +96,7 @@ export function DebitCreditOver() {
 
         expense.forEach((transaction) => {
           if (isDateInLast7Days(transaction.date)) {
-            expenseSum+=transaction.amount;
+            expenseSum += transaction.amount;
             const dayOfWeek = getDayOfWeek(transaction.date);
             chartData[dayOfWeek].debit += transaction.amount;
           }
@@ -104,9 +110,9 @@ export function DebitCreditOver() {
         formattedChartData.reverse();
         setData(formattedChartData);
         setTotalExpense(expenseSum);
-        setTotalIncome(incomeSum)
+        setTotalIncome(incomeSum);
       } catch (error) {
-        alert("Error Fetching data ");
+        // alert("Error Fetching data ");
       }
     };
     getData();
@@ -117,7 +123,8 @@ export function DebitCreditOver() {
         <div className="flex justify-between ">
           <CardTitle className=" hidden lg:block text-base font-normal font-inter text-[#718EBF]">
             <span className="text-black">${totalExpense}</span> Debited &{" "}
-            <span className="text-black">${totalIncome}</span> Credited in this Week
+            <span className="text-black">${totalIncome}</span> Credited in this
+            Week
           </CardTitle>
           <div className="flex gap-5">
             <div className="flex items-center">

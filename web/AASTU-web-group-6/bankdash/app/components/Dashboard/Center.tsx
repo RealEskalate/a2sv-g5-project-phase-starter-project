@@ -10,12 +10,15 @@ import useCardDispatch from "@/app/Redux/Dispacher/useCardDispatch";
 import { useAppSelector } from "@/app/Redux/store/store";
 import { Card } from "@/app/Redux/slices/cardSlice";
 import useTranDispatch from "@/app/Redux/Dispacher/useTranDispatch";
-import { TransactionType } from "@/app/Redux/slices/TransactionSlice";
+import {
+  BalanceType,
+  TransactionType,
+} from "@/app/Redux/slices/TransactionSlice";
 
 const Center = () => {
   const { data: session } = useSession();
   const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyNDA1NTAzNCwiZXhwIjoxNzI0MTQxNDM0fQ.JnQsQUCDteDsH98dIKD5_SLSjRhypg_3ik6YL0LVh8Ju4YDJRPOoc7iWPtIL2pVb";
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyNDA1OTg3NCwiZXhwIjoxNzI0MTQ2Mjc0fQ.WaIY6V_s4DOLHr5xWeAhzJJf-QYudYl4xBNVunA4rd8tJnobKUgsSlWk7tSyRpbZ";
 
   // Update initial card and tran data using the custom hook
   useCardDispatch(accessToken);
@@ -25,14 +28,11 @@ const Center = () => {
   const TranData: TransactionType[] = useAppSelector(
     (state) => state.transactions.transactions
   );
-  const balanceHist: TransactionType[] = useAppSelector(
-    (state) => state.transactions.balanceHist
-  );
   const cardColor = [false, true];
 
-  console.log(CardData, "from redux");
-  console.log(TranData, "from redux Tr");
-  console.log(balanceHist, "from redux Bala");
+  // console.log(CardData, "from redux");
+  // console.log(TranData, "from redux Tr");
+  // console.log(BalanceData, "from redux Bala");
 
   return (
     <>

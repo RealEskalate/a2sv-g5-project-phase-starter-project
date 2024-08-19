@@ -10,12 +10,16 @@ import (
 type signupUsecase struct {
 	repository   interfaces.UserRepository
 	emailService interfaces.EmailService
+	jwtService   interfaces.JwtService
+	urlService   interfaces.URLService
 }
 
-func NewSignupUsecase(repository interfaces.UserRepository, emailService interfaces.EmailService) interfaces.SignupUsecase {
+func NewSignupUsecase(repository interfaces.UserRepository, emailService interfaces.EmailService, jwtService interfaces.JwtService, urlService interfaces.URLService) interfaces.SignupUsecase {
 	return &signupUsecase{
 		repository:   repository,
 		emailService: emailService,
+		jwtService:   jwtService,
+		urlService:   urlService,
 	}
 }
 
@@ -35,15 +39,27 @@ func (uc *signupUsecase) CreateUser(ctx context.Context, user *models.User) *mod
 		return models.BadRequest("Invalid Email")
 	}
 
-	// update the role
-	user.Role = models.RoleUser
+	// send the email for varification of the email address
+	token, err := uc.jwtService.CreateAccessToken(*user, 60*60)
 
-	// createUser
-	if err := uc.repository.CreateUser(ctx, *user); err != nil {
-		return err
+	if err != nil {
+		return models.InternalServerError("Error while creating token")
 	}
 
-	// send the email for varification of the email address
+	url, uErr := uc.urlService.GenerateURL(token)
+
+	if uErr != nil {
+		return models.InternalServerError("Error while creating url")
+	}
+
+	// send the email
+	subject := "Email Verification"
+	body := "Please click the link below to verify your email address\n" + url + "This link will expire in 1 hour"
+	err = uc.emailService.SendEmail(user.Email, subject, body)
+
+	if err != nil {
+		return models.InternalServerError("Error while sending email")
+	}
 
 	return nil
 

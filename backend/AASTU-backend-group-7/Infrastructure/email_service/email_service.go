@@ -75,7 +75,7 @@ func (s *mailTrapService) SendEmail(toEmail string, subject string, text string,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusCreated {
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return fmt.Errorf("error sending email: %s", resp.Status)
 	}
 	return nil

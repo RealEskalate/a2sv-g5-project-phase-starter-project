@@ -6,6 +6,7 @@ export interface InputGroupType {
   registerName: string;
   register: any;
   placeholder: string;
+  errorMessage?: string;
 }
 
 export interface ToggleInputType extends InputGroupType {

@@ -46,6 +46,7 @@ func (u *SignupUseCase) Create(c context.Context , user domain.User) interface{}
 	}
 
 	user.Password = hashedPassword
+	
 
 	// 15 minute for expiration 
 	user.ExpiresAt = time.Now().Add(time.Minute  * 10)

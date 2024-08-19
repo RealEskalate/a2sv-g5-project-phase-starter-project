@@ -68,6 +68,11 @@ func (service *JWTTokenService) GenerateRefreshTokenWithPayload(user domain.User
 		return "", err
 	}
 
+	_, errInsert := service.Collection.InsertOne(context.TODO(), bson.M{"token": jwtToken})
+	if errInsert != nil {
+		return "", errInsert
+	}
+
 	return jwtToken, nil
 }
 

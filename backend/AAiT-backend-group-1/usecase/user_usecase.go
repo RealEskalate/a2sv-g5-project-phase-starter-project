@@ -109,6 +109,21 @@ func (userUC *UserUseCase) RegisterEnd(cxt *gin.Context, token string) domain.Er
 	}
 	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
 	defer cancel()
+func (userUC *UserUseCase) Login(cxt context.Context, username, password string) (string, domain.Error) {
+	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
+	if errTimeout != nil {
+		return "", &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
+	}
+
+	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
+	defer cancel()
+
+}
+func (userUC *UserUseCase) ForgotPassword(context context.Context, email string) domain.Error {
+	existingUser, err := userUC.userRepo.FindByEmail(context, email)
+	if err != nil {
+		return err
+	}
 
 	parsedToken, errParse := userUC.jwtService.ValidateVerificationToken(token)
 	if errParse != nil {

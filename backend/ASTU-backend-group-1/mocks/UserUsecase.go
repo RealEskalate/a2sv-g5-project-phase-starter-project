@@ -13,6 +13,34 @@ type UserUsecase struct {
 	mock.Mock
 }
 
+// AccountVerification provides a mock function with given fields: uemail, confirmationToken
+func (_m *UserUsecase) AccountVerification(uemail string, confirmationToken string) (string, error) {
+	ret := _m.Called(uemail, confirmationToken)
+
+	if len(ret) == 0 {
+		panic("no return value specified for AccountVerification")
+	}
+
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string) (string, error)); ok {
+		return rf(uemail, confirmationToken)
+	}
+	if rf, ok := ret.Get(0).(func(string, string) string); ok {
+		r0 = rf(uemail, confirmationToken)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(uemail, confirmationToken)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Create provides a mock function with given fields: u
 func (_m *UserUsecase) Create(u *domain.User) (domain.User, error) {
 	ret := _m.Called(u)
@@ -145,9 +173,9 @@ func (_m *UserUsecase) GetByID(userID string) (domain.User, error) {
 	return r0, r1
 }
 
-// GetByUsername provides a mock function with given fields: username
-func (_m *UserUsecase) GetByUsername(username string) (domain.User, error) {
-	ret := _m.Called(username)
+// GetByUsername provides a mock function with given fields: email
+func (_m *UserUsecase) GetByUsername(email string) (domain.User, error) {
+	ret := _m.Called(email)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetByUsername")
@@ -156,16 +184,16 @@ func (_m *UserUsecase) GetByUsername(username string) (domain.User, error) {
 	var r0 domain.User
 	var r1 error
 	if rf, ok := ret.Get(0).(func(string) (domain.User, error)); ok {
-		return rf(username)
+		return rf(email)
 	}
 	if rf, ok := ret.Get(0).(func(string) domain.User); ok {
-		r0 = rf(username)
+		r0 = rf(email)
 	} else {
 		r0 = ret.Get(0).(domain.User)
 	}
 
 	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(username)
+		r1 = rf(email)
 	} else {
 		r1 = ret.Error(1)
 	}

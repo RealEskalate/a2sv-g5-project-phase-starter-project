@@ -36,8 +36,6 @@ type UserRepository interface {
 	LoginUser(user User) (string, error)
 	ForgotPassword(email string) error
 	LogoutUser(uid string) error
-	PromoteDemoteUser(userid string) error
-	LogoutUser() error
 	PromoteDemoteUser(userid string, isAdmin bool) error
 	ResetPassword(token string, newPassword string) error
 }

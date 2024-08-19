@@ -5,6 +5,7 @@ import (
 	"blog_g2/infrastructure"
 	"context"
 	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -67,10 +68,10 @@ func (urepo *UserRepository) LoginUser(user domain.User) (string, error) {
 		return "", err
 	}
 
-	check := infrastructure.PasswordComparator(user.Password, u.Password)
+	check := infrastructure.PasswordComparator(u.Password, user.Password)
 
-	if !check {
-		return "", fmt.Errorf("invalid password")
+	if check != nil {
+		return "", check
 	}
 
 	accessToken, err := infrastructure.TokenGenerator(u.ID, u.Email, u.IsAdmin, true)

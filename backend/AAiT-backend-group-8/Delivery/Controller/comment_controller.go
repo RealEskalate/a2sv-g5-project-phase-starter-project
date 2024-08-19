@@ -9,9 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (c *Controller) GetComments(ctx *gin.Context) {
+func (controller *Controller) GetComments(ctx *gin.Context) {
 	blogID := ctx.Param("blogID")
-	comments, err := c.commentUseCase.GetComments(blogID)
+	comments, err := controller.commentUseCase.GetComments(blogID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -20,14 +20,14 @@ func (c *Controller) GetComments(ctx *gin.Context) {
 }
 
 // a function to get the token from the authorization header , and decode it to get the user id
-func (c *Controller) CreateComment(ctx *gin.Context) {
+func (controller *Controller) CreateComment(ctx *gin.Context) {
 	blogID := ctx.Param("blogID")
-	token, err := c.ExtractToken(ctx)
+	token, err := controller.ExtractToken(ctx)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	_, err = c.commentUseCase.DecodeToken(token, []byte("secret"))
+	_, err = controller.commentUseCase.DecodeToken(token, []byte("secret"))
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -43,7 +43,7 @@ func (c *Controller) CreateComment(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "comment body is required"})
 		return
 	}
-	err = c.commentUseCase.CreateComment(&comment, blogID)
+	err = controller.commentUseCase.CreateComment(&comment, blogID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -51,7 +51,7 @@ func (c *Controller) CreateComment(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusCreated, gin.H{"message": "comment created successfully"})
 }
 
-func (c *Controller) UpdateComment(ctx *gin.Context) {
+func (controller *Controller) UpdateComment(ctx *gin.Context) {
 	var comment domain.Comment
 	if err := ctx.BindJSON(&comment); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -61,7 +61,7 @@ func (c *Controller) UpdateComment(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "comment body is required"})
 		return
 	}
-	err := c.commentUseCase.UpdateComment(&comment)
+	err := controller.commentUseCase.UpdateComment(&comment)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -69,17 +69,17 @@ func (c *Controller) UpdateComment(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "comment updated successfully"})
 }
 
-func (c *Controller) DeleteComment(ctx *gin.Context) {
+func (controller *Controller) DeleteComment(ctx *gin.Context) {
 	commentID := ctx.Param("commentID")
-	err := c.commentUseCase.DeleteComment(commentID)
+	err := controller.commentUseCase.DeleteComment(commentID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "comment deleted successfully"})
-}	
+}
 
-func (c *Controller) ExtractToken(ctx *gin.Context) (string, error) {
+func (controller *Controller) ExtractToken(ctx *gin.Context) (string, error) {
 	authHeader := ctx.GetHeader("Authorization")
 	if authHeader == "" {
 		return "", gin.Error{

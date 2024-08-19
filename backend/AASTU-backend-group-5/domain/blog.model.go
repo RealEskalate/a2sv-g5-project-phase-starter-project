@@ -1,8 +1,10 @@
 package domain
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Blog struct {
@@ -17,4 +19,9 @@ type Blog struct {
 	LikeCount    int                `json:"like_count" bson:"like_count"`
 	DisLikeCount int                `json:"dislike_count" bson:"dislike_count"`
 	ViewCount    int                `json:"view_count" bson:"view_count"`
+}
+type Claims struct {
+	UserID string `json:"user_id"`
+	Role   string `json:"role"`
+	jwt.RegisteredClaims
 }

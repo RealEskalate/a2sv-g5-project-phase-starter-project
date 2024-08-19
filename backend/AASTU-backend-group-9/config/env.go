@@ -9,19 +9,21 @@ type Env struct {
 	AppEnv                 string `mapstructure:"APP_ENV"`
 	ServerAddress          string `mapstructure:"SERVER_ADDRESS"`
 	ContextTimeout         int    `mapstructure:"CONTEXT_TIMEOUT"`
-	MONGO_URI			   string `mapstructure:"MONGO_URI"`
+	MONGO_URI              string `mapstructure:"MONGO_URI"`
 	DBName                 string `mapstructure:"DB_NAME"`
 	AccessTokenExpiryHour  int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
 	RefreshTokenExpiryHour int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
 	AccessTokenSecret      string `mapstructure:"ACCESS_TOKEN_SECRET"`
 	RefreshTokenSecret     string `mapstructure:"REFRESH_TOKEN_SECRET"`
-	SMTPUsername 			string `mapstructure:"SMTPUsername"`
-	SMTPPassword			string `mapstructure:"SMTPPassword"`
-	SMTPHost				string `mapstructure:"SMTPHost"`
-	SMTPPort				string 	`mapstructure:"SMTPPort"`
+	SMTPUsername           string `mapstructure:"SMTPUsername"`
+	SMTPPassword           string `mapstructure:"SMTPPassword"`
+	SMTPHost               string `mapstructure:"SMTPHost"`
+	SMTPPort               string `mapstructure:"SMTPPort"`
 	GoogleClientID         string `mapstructure:"GOOGLE_CLIENT_ID"`
 	GoogleClientSecret     string `mapstructure:"GOOGLE_CLIENT_SECRET"`
-	AIAPIKey 			   string `mapstructure:"AIAPIKey"`
+  AIAPIKey 			         string `mapstructure:"AIAPIKey"`
+	RootUsername           string `mapstructure:"ROOT_USERNAME"`
+	RootPassword           string `mapstructure:"ROOT_PASSWORD"`
 }
 func NewEnv() *Env {
 	env := Env{}

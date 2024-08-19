@@ -22,7 +22,7 @@ func (pc *ProfileController) UpdateProfile(c *gin.Context) {
 		return
 	}
 	 
-	userid, _ := primitive.ObjectIDFromHex(c.GetString("user_id"))
+	userid, _ := primitive.ObjectIDFromHex(c.GetString("userID"))
 
 	resp,err := pc.ProfileUsecase.UpdateProfile(c, &profile, userid)
 	if err != nil {

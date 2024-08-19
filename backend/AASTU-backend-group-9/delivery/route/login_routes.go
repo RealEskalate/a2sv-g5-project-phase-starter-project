@@ -27,4 +27,5 @@ func NewLoginRouter(env *config.Env, timeout time.Duration, db database.Database
 	}
 
 	router.POST("/login", loginController.Login)
+	router.POST("/refresh", loginController.RefreshTokenHandler)
 }

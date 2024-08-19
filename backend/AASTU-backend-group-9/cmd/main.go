@@ -12,6 +12,7 @@ import (
 func main() {
 
 	app := config.App()
+	config.CreateRootUser(&app.Mongo, app.Env)
 	env := app.Env
 	db := app.Mongo.Database(env.DBName)
 	defer app.CloseDBConnection()

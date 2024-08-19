@@ -1,8 +1,10 @@
 package userutil
 
 import (
+	"errors"
+	"net/http"
 	"regexp"
-
+	"blog/domain"
 	"github.com/xlzd/gotp"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -42,4 +44,49 @@ func ValidatePassword(password string) bool {
 func GenerateOTP() string {
 	secretLength := 8
 	return gotp.RandomSecret(secretLength)
+}
+
+// A function that checks if a the logged in user can manipulate the target user.
+func CanManipulateUser(claims *domain.JwtCustomClaims, user *domain.User, manip string) *domain.Error {
+	// If the user is a regular user, they can only manipulate their own account.
+	if claims.Role == "user" {
+		if user.ID != claims.UserID {
+			var message string
+			if manip == "add" {
+				message = "A User cannot add a new user"
+			} else {
+				message = "A User cannot " + manip + " another user"
+			}
+
+			return &domain.Error{
+				Err:        errors.New("unauthorized"),
+				StatusCode: http.StatusForbidden,
+				Message:    message,
+			}
+		}
+
+		return nil
+	}
+
+	// If the user is an admin, they can manipulate all users except root user and other admin users.
+	if claims.Role == "admin" {
+		if user.Role == "root" {
+			return &domain.Error{
+				Err:        errors.New("forbidden"),
+				StatusCode: http.StatusForbidden,
+				Message:    "Cannot " + manip + " root user",
+			}
+		}
+
+		if user.Role == "admin" && claims.UserID != user.ID {
+			return &domain.Error{
+				Err:        errors.New("unauthorized"),
+				StatusCode: http.StatusForbidden,
+				Message:    "Admin cannot " + manip + " another admin user",
+			}
+		}
+	}
+
+	// If the user is a root user, they can manipulate all users.
+	return nil
 }

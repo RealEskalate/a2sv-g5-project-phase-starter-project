@@ -9,6 +9,7 @@ type JwtCustomClaims struct {
 	UserID          primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
 	Email    string `json:"email"`
 	Username   string `json:"username"`
+	Role     string `json:"role"`
 	jwt.StandardClaims
 }
 

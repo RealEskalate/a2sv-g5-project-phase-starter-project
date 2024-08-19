@@ -11,6 +11,7 @@ func App() Application {
 	app := &Application{}
 	app.Env = NewEnv()
 	app.Mongo = NewMongoDatabase(app.Env)
+	
 	return *app
 }
 

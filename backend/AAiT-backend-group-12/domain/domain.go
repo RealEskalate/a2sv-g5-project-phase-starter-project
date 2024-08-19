@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 )
 
 /*
@@ -22,6 +23,24 @@ const (
 )
 
 type Response gin.H
+
+type TokenType *jwt.Token
+
+type EnvironmentVariables struct {
+	DB_ADDRESS             string
+	DB_NAME                string
+	TEST_DB_NAME           string
+	JWT_SECRET_TOKEN       string
+	ACCESS_TOKEN_LIFESPAN  int
+	REFRESH_TOKEN_LIFESPAN int
+	PORT                   int
+	ROUTE_PREFIX           string
+	ROOT_USERNAME          string
+	ROOT_PASSWORD          string
+	SMTP_GMAIL             string
+	SMTP_PASSWORD          string
+	REDIS_URL              string
+}
 
 type VerificationData struct {
 	Token     string    `json:"token"`
@@ -122,5 +141,5 @@ type UserUsecaseInterface interface {
 }
 
 type CacheRepositoryInterface interface {
-	CacheData(c context.Context)
+	CacheData(key string, value string, expiration time.Duration) CodedError
 }

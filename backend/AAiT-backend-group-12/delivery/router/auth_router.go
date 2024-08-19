@@ -3,8 +3,11 @@ package router
 import (
 	"blog_api/delivery/controllers"
 	"blog_api/delivery/env"
+	"blog_api/infrastructure/cryptography"
 	jwt_service "blog_api/infrastructure/jwt"
+	mail_service "blog_api/infrastructure/mail"
 	"blog_api/infrastructure/middleware"
+	"blog_api/infrastructure/utils"
 	"blog_api/repository"
 	"blog_api/usecase"
 
@@ -16,7 +19,23 @@ import (
 func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, redisClient *redis.Client) {
 	userRepository := repository.NewUserRepository(collection)
 	redisRepoistory := repository.NewRedisRepository(redisClient)
-	usecase := usecase.NewUserUsecase(userRepository, redisRepoistory)
+	usecase := usecase.NewUserUsecase(
+		userRepository,
+		redisRepoistory,
+		utils.GenerateToken,
+		mail_service.EmailVerificationTemplate,
+		mail_service.PasswordResetTemplate,
+		mail_service.SendMail,
+		jwt_service.SignJWTWithPayload,
+		jwt_service.GetTokenType,
+		jwt_service.GetUsername,
+		jwt_service.GetExpiryDate,
+		jwt_service.ValidateAndParseToken,
+		cryptography.HashString,
+		cryptography.ValidateHashedString,
+		env.ENV,
+	)
+
 	controller := controllers.NewAuthController(usecase)
 
 	authGroup.POST("/signup", controller.HandleSignup)

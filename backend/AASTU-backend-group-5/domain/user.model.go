@@ -11,11 +11,12 @@ type User struct {
 	Bio               string             `json:"bio" bson:"bio"`
 	ProfilePicture    Media              `json:"profile_picture" bson:"profile_picture"`
 	Email             string             `json:"email" bson:"email"`
-	Is_Admin          bool               `json:"is_admin" bson:"is_admin"`
-	Password          string             `json:"password" bson:"password"`
-	RefreshToken      string             `json:"refresh_token" bson:"refresh_token"`
-	VerificationToken string             `json:"verification_token" bson:"verification_token"`
-	Is_Verified       bool               `json:"is_verified" bson:"is_verified"`
+	Is_Admin           bool               `json:"is_admin" bson:"is_admin"`
+	Password          string             `json:"password,omitempty" bson:"password,omitempty"`           
+	VerificationToken string             `json:"verification_token,omitempty" bson:"verification_token,omitempty"` 
+	IsVerified        bool               `json:"is_verified" bson:"is_verified"`                         
+	OAuthProvider     string             `json:"oauth_provider,omitempty" bson:"oauth_provider,omitempty"` 
+	OAuthID           string             `json:"oauth_id,omitempty" bson:"oauth_id,omitempty"`        
 }
 
 // user model that will be returned from the server
@@ -35,16 +36,20 @@ type UpdateUser struct {
 }
 
 type LogINUser struct {
-	UserName string `json:"username" bson:"username"`
 	Email    string `json:"email" bson:"email"`
 	Password string `json:"password" bson:"password"`
 }
 
+type OAuthLoginUser struct {
+	Provider string `json:"provider" bson:"provider"` 
+	Token    string `json:"token" bson:"token"`
+}
+
 type RegisterUser struct {
 	UserName       string `json:"username" bson:"username"`
-	Bio            string `json:"bio" bson:"bio"`
+	Bio            string `json:"bio,omitempty" bson:"bio,omitempty"`
 	Email          string `json:"email" bson:"email"`
-	Password       string `json:"password" bson:"password"`
+	Password       string `json:"password,omitempty" bson:"password,omitempty"`
 }
 
 // from actual user model to response model to be don in usecase

@@ -161,98 +161,98 @@ func (suite *UserUseCaseSuite) TestDeleteUser_Error() {
 }
 
 
-func (suite *UserUseCaseSuite) TestLogIn() {
-	loginUser := domain.LogINUser{
-		UserName: "username",
-		Email: "test@gmail.com",
-		Password: "password",
-	}
+// func (suite *UserUseCaseSuite) TestLogIn() {
+// 	loginUser := domain.LogINUser{
+// 		UserName: "username",
+// 		Email: "test@gmail.com",
+// 		Password: "password",
+// 	}
 
-	pp := domain.Media{
-		Uplaoded_date: time.Now(),
-		Path: "path/img.png",
-		ID: primitive.NewObjectID(),
-	}
+// 	pp := domain.Media{
+// 		Uplaoded_date: time.Now(),
+// 		Path: "path/img.png",
+// 		ID: primitive.NewObjectID(),
+// 	}
 
-	loggedUser := domain.User{
-		ID:    primitive.NewObjectID(),
-		UserName: "username",
-		Email: "test@gmail.com",
-		Is_Admin: false,
-		Bio: "test bio",
-		ProfilePicture: pp,
-	}
+// 	loggedUser := domain.User{
+// 		ID:    primitive.NewObjectID(),
+// 		UserName: "username",
+// 		Email: "test@gmail.com",
+// 		Is_Admin: false,
+// 		Bio: "test bio",
+// 		ProfilePicture: pp,
+// 	}
 
-	suite.repo.On("LogIn", loginUser).Return(loggedUser, nil)
+// 	suite.repo.On("LogIn", loginUser).Return(loggedUser, nil)
 
-	responseUser, err := suite.usecase.LogIn(loginUser)
+// 	responseUser, err := suite.usecase.LogIn(loginUser)
 
-	suite.NoError(err)
-	suite.Equal(domain.CreateResponseUser(loggedUser), responseUser)
-}
-
-
-func (suite *UserUseCaseSuite) TestLogIn_Error() {
-	loginUser := domain.LogINUser{
-		UserName: "username",
-		Email: "test@gmail.com",
-		Password: "password",
-	}
-
-	suite.repo.On("LogIn", loginUser).Return(domain.User{}, errors.New("login failed"))
-
-	responseUser, err := suite.usecase.LogIn(loginUser)
-
-	suite.Error(err)
-	suite.Equal(domain.ResponseUser{}, responseUser)
-}
+// 	suite.NoError(err)
+// 	suite.Equal(domain.CreateResponseUser(loggedUser), responseUser)
+// }
 
 
-func (suite *UserUseCaseSuite) TestRegister() {
+// func (suite *UserUseCaseSuite) TestLogIn_Error() {
+// 	loginUser := domain.LogINUser{
+// 		UserName: "username",
+// 		Email: "test@gmail.com",
+// 		Password: "password",
+// 	}
+
+// 	suite.repo.On("LogIn", loginUser).Return(domain.User{}, errors.New("login failed"))
+
+// 	responseUser, err := suite.usecase.LogIn(loginUser)
+
+// 	suite.Error(err)
+// 	suite.Equal(domain.ResponseUser{}, responseUser)
+// }
+
+
+// func (suite *UserUseCaseSuite) TestRegister() {
 	
 	
-	registerUser := domain.RegisterUser{
-		UserName: "username",
-		Bio: "test bio",
-		Email: "test@gmail.com",
-		Password: "password",
-	}
-	pp := domain.Media{
-		Uplaoded_date: time.Now(),
-		Path: "path/img.png",
-		ID: primitive.NewObjectID(),
-	}
-	registeredUser := domain.User{
-		ID:    primitive.NewObjectID(),
-		UserName: "username",
-		Email: "test@gmail.com",
-		Is_Admin: false,
-		Bio: "test bio",
-		ProfilePicture: pp,
-	}
+// 	registerUser := domain.RegisterUser{
+// 		UserName: "username",
+// 		Bio: "test bio",
+// 		Email: "test@gmail.com",
+// 		Password: "password",
+// 	}
+// 	pp := domain.Media{
+// 		Uplaoded_date: time.Now(),
+// 		Path: "path/img.png",
+// 		ID: primitive.NewObjectID(),
+// 	}
+// 	registeredUser := domain.User{
+// 		ID:    primitive.NewObjectID(),
+// 		UserName: "username",
+// 		Email: "test@gmail.com",
+// 		Is_Admin: false,
+// 		Bio: "test bio",
+// 		ProfilePicture: pp,
+// 	}
 
-	suite.repo.On("Register", registerUser).Return(registeredUser, nil)
+// 	suite.repo.On("Register", registerUser).Return(registeredUser, nil)
 
-	responseUser,err := suite.usecase.Register(registerUser)
-	suite.Equal(domain.CreateResponseUser(registeredUser), responseUser)
-	suite.NoError(err)
-}
+// 	responseUser,err := suite.usecase.Register(registerUser)
+// 	suite.Equal(domain.CreateResponseUser(registeredUser), responseUser)
+// 	suite.NoError(err)
+// }
 
-func (suite *UserUseCaseSuite) TestRegister_Error() {
-	registerUser := domain.RegisterUser{
-		UserName: "username",
-		Bio: "test bio",
-		Email: "test@gmail.com",
-		Password: "password",
-	}
+// func (suite *UserUseCaseSuite) TestRegister_Error() {
+// 	registerUser := domain.RegisterUser{
+// 		UserName: "username",
+// 		Bio: "test bio",
+// 		Email: "test@gmail.com",
+// 		Password: "password",
+// 	}
 
-	suite.repo.On("Register", registerUser).Return(domain.User{}, errors.New("registration failed"))
+// 	suite.repo.On("Register", registerUser).Return(domain.User{}, errors.New("registration failed"))
 
-	responseUser, err := suite.usecase.Register(registerUser)
+// 	responseUser, err := suite.usecase.Register(registerUser)
 
-	suite.Error(err)
-	suite.Equal(domain.ResponseUser{}, responseUser)
-}
+// 	suite.Error(err)
+// 	suite.Equal(domain.ResponseUser{}, responseUser)
+// }
 
 
 func (suite *UserUseCaseSuite) TestFilterUser() {

@@ -90,53 +90,54 @@ func (repository *UserRepository)DeleteUserDocument(id string) (error) {
 	_,err = repository.Collection.DeleteOne(context.TODO() ,filter)
 	return err
 }
-func (repository *UserRepository)LogIn(user domain.LogINUser) (domain.User , error) {
-	var document bson.D
-	byteModel,err := bson.Marshal(user)
-	if err != nil {
-		return domain.User{},err
-	}
-	err = bson.Unmarshal(byteModel , &document)
-	if err != nil {
-		return domain.User{},err
-	}
 
-	logged := domain.User{}
-	result := repository.Collection.FindOne(context.TODO() , document)
-	err = result.Decode(&logged)
-	if err != nil {
-		return domain.User{},err
-	}
+// func (repository *UserRepository)LogIn(user domain.LogINUser) (domain.User , error) {
+// 	var document bson.D
+// 	byteModel,err := bson.Marshal(user)
+// 	if err != nil {
+// 		return domain.User{},err
+// 	}
+// 	err = bson.Unmarshal(byteModel , &document)
+// 	if err != nil {
+// 		return domain.User{},err
+// 	}
 
-	return logged,nil
-}
+// 	logged := domain.User{}
+// 	result := repository.Collection.FindOne(context.TODO() , document)
+// 	err = result.Decode(&logged)
+// 	if err != nil {
+// 		return domain.User{},err
+// 	}
 
-func (repository *UserRepository)Register(user domain.RegisterUser) (domain.User , error) {
-	var document bson.D
-	byteModel,err := bson.Marshal(user)
-	if err != nil {
-		return domain.User{},err
-	}
-	err = bson.Unmarshal(byteModel , &document)
-	if err != nil {
-		return domain.User{},err
-	}
-	insertedID,err := repository.Collection.InsertOne(context.TODO() , document)
-	if err != nil {
-		return domain.User{},err
-	}
+// 	return logged,nil
+// }
+
+// func (repository *UserRepository)Register(user domain.RegisterUser) (domain.User , error) {
+// 	var document bson.D
+// 	byteModel,err := bson.Marshal(user)
+// 	if err != nil {
+// 		return domain.User{},err
+// 	}
+// 	err = bson.Unmarshal(byteModel , &document)
+// 	if err != nil {
+// 		return domain.User{},err
+// 	}
+// 	insertedID,err := repository.Collection.InsertOne(context.TODO() , document)
+// 	if err != nil {
+// 		return domain.User{},err
+// 	}
 	
-	pid := insertedID.InsertedID.(primitive.ObjectID)
-	filter := bson.D{{Key: "_id" , Value: pid}}
-	result := repository.Collection.FindOne(context.TODO(),filter)
+// 	pid := insertedID.InsertedID.(primitive.ObjectID)
+// 	filter := bson.D{{Key: "_id" , Value: pid}}
+// 	result := repository.Collection.FindOne(context.TODO(),filter)
 	
-	var new_user domain.User
-	err = result.Decode(&user)
-	if err != nil {
-		return domain.User{},err
-	}
-	return new_user,nil
-}
+// 	var new_user domain.User
+// 	err = result.Decode(&user)
+// 	if err != nil {
+// 		return domain.User{},err
+// 	}
+// 	return new_user,nil
+// }
 
 func (repository *UserRepository)FilterUserDocument(filter map[string]string) ([]domain.User , error) {
 	filters := bson.D{}

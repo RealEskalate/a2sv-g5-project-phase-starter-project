@@ -58,9 +58,15 @@ func (uc *signupUsecase) CreateUser(ctx context.Context, user *models.User) *mod
 	// send the email
 	subject := "Email Verification"
 	body := "Please click the link below to verify your email address\n" + url + "This link will expire in 1 hour"
+<<<<<<< HEAD
 	e := uc.emailService.SendEmail(user.Email, subject, body)
 
 	if e != nil {
+=======
+	err = uc.emailService.SendEmail(user.Email, subject, body)
+
+	if err != nil {
+>>>>>>> origin/aait.backend.g5.bisrat.setup-db-and-user-repo
 		return models.InternalServerError("Error while sending email")
 	}
 

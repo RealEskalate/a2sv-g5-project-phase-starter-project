@@ -11,7 +11,11 @@ type userUsecase struct {
 	repo interfaces.UserRepository
 }
 
+<<<<<<< HEAD
 func NewUserUsecase(repo interfaces.UserRepository) interfaces.PromoteDemoteUserUsecase {
+=======
+func NewUserUsecase(repo interfaces.UserRepository) interfaces.PromoteUserUsecase {
+>>>>>>> origin/aait.backend.g5.bisrat.setup-db-and-user-repo
 	return &userUsecase{
 		repo: repo,
 	}

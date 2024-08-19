@@ -9,9 +9,15 @@ import (
 )
 
 func main() {
+<<<<<<< HEAD
 
 	env := config.NewEnv()
 	timeout := time.Duration(env.CONTEXT_TIMEOUT) * time.Second
+=======
+	env := config.NewEnv()
+	client := config.ConnectDB(env)
+	db := config.GetDatabase(client, env)
+>>>>>>> origin/aait.backend.g5.bisrat.setup-db-and-user-repo
 
 	// Initialize MongoDB connection
 	client := config.ConnectDB(env)

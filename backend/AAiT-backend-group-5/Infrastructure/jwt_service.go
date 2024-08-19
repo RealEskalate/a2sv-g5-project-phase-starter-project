@@ -102,3 +102,8 @@ func (j *JwtService) ValidateAuthHeader(authHeader string) ([]string, error) {
 
 	return authParts, nil
 }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin/aait.backend.g5.bisrat.setup-db-and-user-repo

@@ -23,8 +23,14 @@ func (rtc *RefreshTokenController) RefreshToken(c *gin.Context) {
 	}
 	id, err := rtc.RefreshTokenUsecase.ExtractIDFromToken(request.RefreshToken, rtc.Env.RefreshTokenSecret)
 	valid, _ := infrastructure.IsAuthorized(request.RefreshToken, rtc.Env.RefreshTokenSecret)
-	if err != nil || valid {
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "User not found"})
+		return
+	}
+	actvuser, err := rtc.RefreshTokenUsecase.CheckActiveUser(c, id)
+	if id == actvuser.ID.Hex() && !valid {
+		rtc.RefreshTokenUsecase.RemoveActiveUser(c, id)
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "session expired"})
 		return
 	}
 

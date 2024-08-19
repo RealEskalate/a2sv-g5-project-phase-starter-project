@@ -29,6 +29,7 @@ func Router(server *gin.Engine, config *infrastructure.Config, DB mongo.Database
 	NewSignupRoute(config, DB, userRouter)
 	NewRefreshTokenRouter(config, exp, DB, userRouter)
 	NewLoginRouter(config, exp, DB, userRouter)
+	NewLogoutRouter(config, exp, DB, userRouter)
 	NewOauthRoute(config, DB, userRouter)
 	
 }

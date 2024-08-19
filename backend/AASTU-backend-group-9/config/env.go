@@ -21,9 +21,8 @@ type Env struct {
 	SMTPPort				string 	`mapstructure:"SMTPPort"`
 	GoogleClientID         string `mapstructure:"GOOGLE_CLIENT_ID"`
 	GoogleClientSecret     string `mapstructure:"GOOGLE_CLIENT_SECRET"`
-
+	AIAPIKey 			   string `mapstructure:"AIAPIKey"`
 }
-
 func NewEnv() *Env {
 	env := Env{}
 	viper.SetConfigFile(".env")

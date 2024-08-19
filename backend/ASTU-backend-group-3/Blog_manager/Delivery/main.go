@@ -50,7 +50,7 @@ func main() {
 	userUsecase := Usecases.NewUserUsecase(userRepository, emailService)
 	userController := controller.NewUserController(userUsecase)
 
-	router := router.SetupRouter(userController, blogController)
+	router := router.SetupRouter(userController, blogController, tokenCollection)
 	log.Fatal(router.Run(":8080"))
 
 }

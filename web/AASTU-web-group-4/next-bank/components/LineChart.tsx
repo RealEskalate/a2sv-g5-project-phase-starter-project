@@ -32,18 +32,21 @@ const chartConfig = {
 
 export default function LineChart() {
   return (
-    <Card >
+    <Card className="">
       <CardHeader>
-        
+
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} 
-            style={{height:'300px' , width:'600px'}}
+            
+            className="py-4 h-62 w-[100%]"
         >
           <AreaChart
             accessibilityLayer
             data={chartData}
             
+           
+           
             margin={{
               left: 12,
               right: 12,
@@ -64,11 +67,14 @@ export default function LineChart() {
               content={<ChartTooltipContent indicator="line" />}
             />
             <Area
+              className="bg-black-1"
               dataKey="balance"
               type="natural"
               fill={chartConfig.balance.color}
               fillOpacity={0.4}
               stroke={chartConfig.balance.color}
+              
+              
             />
           </AreaChart>
         </ChartContainer>

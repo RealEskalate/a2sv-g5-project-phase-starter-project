@@ -3,6 +3,7 @@ import React from "react";
 import { Color } from "chart.js";
 import { colors, logo } from "@/constants";
 import DesktopCreditCart from "@/components/DesktopCreditCard";
+import ResponsiveCreditCard from "@/components/CreditCard";
 import RecentTransaction from "@/components/Recent Transaction";
 import ExpensesChart from "@/components/ExpensesCart";
 import { icons, Import } from "lucide-react";
@@ -16,9 +17,9 @@ import LineChart from "@/components/LineChart";
 
 const page = () => {
   return (
-    <div className={`${colors.graybg} p-6 md:ml-64 max-w-full md:p-12`}>
+    <div className={`${colors.graybg} p-6 md:ml-64 md:max-w-full md:p-12`}>
       <div className="flex flex-col justify-between max--full  md:flex-row max-w-full gap-10 ">
-        <div className="max-w-full py-4 md:w-3/5">
+        <div className="max-w-sm py-4 md:w-3/5 md:max-w-full">
           <div className={`${colors.navbartext} flex justify-between `}>
             <h1 className="font-bold text-2xl">My Cards</h1>
             <p className="my-2"> See All</p>
@@ -27,21 +28,19 @@ const page = () => {
           <div className="max-w-sm md:max-w-full">
             <div className="flex gap-3 overflow-x-auto max-w-full md:w-auto">
               <div className=" py-3 ">
-                <DesktopCreditCart
-                  bgColor={colors.blue}
-                  textColor={colors.textwhite}
+                <ResponsiveCreditCard
+                  backgroundColor={colors.blue}
                 />
               </div>
               <div className=" py-3 ">
-                <DesktopCreditCart
-                  bgColor={colors.white}
-                  textColor={colors.textblack}
+              <ResponsiveCreditCard
+                  backgroundColor={colors.white}
                 />
               </div>
             </div>
           </div>
         </div>
-        <div className="w-full md:w-2/5">
+        <div className=" max-w-sm md:w-2/5 md:max-w-full ">
           <div className={`${colors.navbartext} flex justify-between  py-4`}>
             <h1 className="font-bold text-2xl">Recent Transaction</h1>
           </div>
@@ -74,7 +73,7 @@ const page = () => {
         </div>
       </div>
       <div className="flex flex-col justify-between gap-10 md:flex-row max-w-full">
-        <div className="w-full md:w-3/5">
+        <div className="max-w-sm md:w-3/5 md:max-w-full">
           <div className={`${colors.navbartext} flex justify-between py-4`}>
             <h1 className="font-bold text-2xl">Weekly Activity</h1>
           </div>
@@ -82,7 +81,7 @@ const page = () => {
             <BarChart />
           </div>
         </div>
-        <div className="w-full md:w-2/5 py-6">
+        <div className="max-w-sm md:w-2/5 py-6 md:max-w-full">
           <div className={`${colors.navbartext}`}>
             <h1 className="font-bold text-2xl">Expense Statstics</h1>
           </div>
@@ -93,7 +92,7 @@ const page = () => {
       </div>
 
       <div className="flex flex-col justify-between w-full  md:flex-row max-w-full gap-10 ">
-        <div className=" md:w-2/5 py-4 ">
+        <div className="max-w-sm md:w-2/5 py-4 md:max-w-full ">
           <div className={`${colors.navbartext} flex justify-between `}>
             <h1 className="font-bold text-2xl">Quick Transfer</h1>
           </div>
@@ -104,7 +103,7 @@ const page = () => {
             </div>
           </div>
         </div>
-        <div className="md:w-3/5">
+        <div className="max-w-sm md:w-3/5 md:max-w-full">
           <div className={`${colors.navbartext} flex justify-between  py-4`}>
             <h1 className="font-bold text-2xl">Balance History</h1>
           </div>

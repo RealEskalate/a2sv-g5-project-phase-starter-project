@@ -11,8 +11,8 @@ import TrendingStock from '@/components/TrendingStock';
 
   const data = [
     {
-      icon: "/icons/apple.png",
-      color: "bg-green-100 ",
+      icon: "/icons/apple_store.png",
+      color: "bg-red-100 ",
       colortext: colors.textblack,
       category: "E-commerce, marketplace",
       categorycolor: colors.textgray,
@@ -21,8 +21,8 @@ import TrendingStock from '@/components/TrendingStock';
       percentage: "1.6%",
     },
     {
-      icon: "/icons/google.png",
-      color: "bg-red-100",
+      icon: "/icons/Google_store.png",
+      color: "bg-blue-100",
       colortext: colors.textblack,
       category: "E-commerce, marketplace",
       categorycolor: colors.textgray,

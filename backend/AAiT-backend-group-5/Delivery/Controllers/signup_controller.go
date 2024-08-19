@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 
-	config "github.com/aait.backend.g5.main/backend/Config"
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
@@ -14,7 +13,13 @@ import (
 type SignupController struct {
 	SignupUsecase   interfaces.SignupUsecase
 	PasswordUsecase interfaces.PasswordUsecase
-	Env             *config.Env
+}
+
+func NewSignupController(signupUsecase interfaces.SignupUsecase, passwordUsecase interfaces.PasswordUsecase) *SignupController {
+	return &SignupController{
+		SignupUsecase:   signupUsecase,
+		PasswordUsecase: passwordUsecase,
+	}
 }
 
 func (signupController *SignupController) Signup(ctx *gin.Context) {

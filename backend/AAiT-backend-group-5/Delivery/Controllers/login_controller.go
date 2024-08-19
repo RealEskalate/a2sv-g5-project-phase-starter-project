@@ -15,6 +15,13 @@ type LoginController struct {
 	Env          *config.Env
 }
 
+func NewLoginController(loginUsecase interfaces.LoginUsecase, env *config.Env) *LoginController {
+	return &LoginController{
+		LoginUsecase: loginUsecase,
+		Env:          env,
+	}
+}
+
 func (loginController *LoginController) Login(c *gin.Context) {
 	var request dtos.LoginRequest
 

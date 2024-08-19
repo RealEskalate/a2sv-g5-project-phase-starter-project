@@ -148,8 +148,9 @@ function BalanceHistoryChart() {
   }
 
   return (
-    <div className="lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[232px] w-[325px] h-[254px]">
-      <div className="rounded-3xl bg-white p-5 lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[325px] h-[223px]">
+    <div className="">
+      <div className="rounded-3xl bg-white p-5 lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[325px] h-[223px]"> 
+        
         <div className="balance-history-chart text-[#718EBF] lg:w-[500px] lg:h-[177px] md:w-[347px] md:h-[147px] w-[289px] h-[190px]">
           <div className="">
             <canvas ref={chartRef} />

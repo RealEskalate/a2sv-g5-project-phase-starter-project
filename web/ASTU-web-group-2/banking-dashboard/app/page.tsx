@@ -13,6 +13,7 @@ const page = () => {
     <div className="flex flex-col gap-2">
       <div className="flex max-sm:flex-col gap-[30px]">
         <CardForCreditCards
+        className="flex flex-col lg:w-[730px] lg:h-[300px] max-md:w-[350px]"
           title="Credit Cards"
           button="See All"
           link="/credit-cards"
@@ -48,7 +49,7 @@ const page = () => {
       <div className="flex max-sm:flex-col gap-[30px]">
         <Card
           title="Weekly Activity"
-          className="flex flex-col min-w-[730px] lg:mx-auto h-auto max-md:w-full"
+          className="flex flex-col lg:mx-auto h-auto max-md:w-fit max-md:pr-4"
         >
           <WeeklyActivityChart />
         </Card>
@@ -68,7 +69,7 @@ const page = () => {
         </Card>
         <Card
           title="Balance History"
-          className="flex flex-col max-w-[730px] lg:mx-auto h-auto"
+          className="flex flex-col max-w-[730px] lg:mx-auto h-auto max-md:w-fit"
         >
           <BalanceHistoryChart />
         </Card>

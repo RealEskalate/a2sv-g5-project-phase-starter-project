@@ -267,8 +267,36 @@ func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int)
 	filter := bson.M{"_id": id}
 	update := bson.M{}
 	if like == 1 {
+		result := bson.M{}
+		dislikeFinder := bson.M{"_id": id, "dislikes": uid}
+		err := r.collection.FindOne(context.TODO(), dislikeFinder).Decode(&result)
+		if err == nil {
+			// INFO: the user have disliked this blog previously
+			_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
+				"$pull": bson.M{
+					"dislikes": uid,
+				},
+			})
+			if err != nil {
+				return err
+			}
+		}
 		update["$addToSet"] = bson.M{"likes": uid, "view": uid}
 	} else if like == -1 {
+		result := bson.M{}
+		likeFinder := bson.M{"_id": id, "likes": uid}
+		err := r.collection.FindOne(context.TODO(), likeFinder).Decode(&result)
+		if err == nil {
+			// INFO: the user have disliked this blog previously
+			_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
+				"$pull": bson.M{
+					"likes": uid,
+				},
+			})
+			if err != nil {
+				return err
+			}
+		}
 		update["$addToSet"] = bson.M{"dislikes": uid, "view": uid}
 	} else {
 		update["$addToSet"] = bson.M{"view": uid}
@@ -301,8 +329,36 @@ func (r *MongoBlogRepository) LikeOrDislikeComment(blogId, commentId, userId str
 	filter := bson.M{"_id": id, "comments.comment_id": cid}
 	update := bson.M{}
 	if like == 1 {
+		result := bson.M{}
+		likeFinder := bson.M{"_id": id, "comments.comment_id": cid, "comments.dislikes": uid}
+		err := r.collection.FindOne(context.TODO(), likeFinder).Decode(&result)
+		if err == nil {
+			// INFO: the user have disliked this blog previously
+			_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
+				"$pull": bson.M{
+					"comments.$.dislikes": uid,
+				},
+			})
+			if err != nil {
+				return err
+			}
+		}
 		update["$addToSet"] = bson.M{"comments.$.likes": uid, "comments.$.views": uid}
 	} else if like == -1 {
+		result := bson.M{}
+		likeFinder := bson.M{"_id": id, "comments.comment_id": cid, "comments.likes": uid}
+		err := r.collection.FindOne(context.TODO(), likeFinder).Decode(&result)
+		if err == nil {
+			// INFO: the user have liked this Comment previously
+			_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
+				"$pull": bson.M{
+					"comments.$.likes": uid,
+				},
+			})
+			if err != nil {
+				return err
+			}
+		}
 		update["$addToSet"] = bson.M{"comments.$.dislikes": uid, "comments.$.views": uid}
 	} else {
 		update["$addToSet"] = bson.M{"comments.$.views": uid}

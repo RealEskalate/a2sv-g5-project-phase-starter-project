@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { Inter } from "next/font/google";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import notify from "@/utils/notify";
 
 const schema = z.object({
   userName: z.string().min(1, { message: "User name field is required" }),
@@ -31,11 +32,11 @@ const SignIn = () => {
       redirect: false,
     });
     if (!res?.ok) {
-      alert("Invalid Credentials");
+      notify.error("Invalid Credentials");
       router.push("/logIn");
     } else {
       console.log("response: ", res);
-      alert("Successfully logged in");
+      notify.success("Successfully logged in");
       router.push("/");
     }
   };

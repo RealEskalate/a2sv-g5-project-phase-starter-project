@@ -48,17 +48,9 @@ func (suite *UserRepositorySuite) TearDownSuite() {
 // TestCreateUser tests the CreateUser method
 func (suite *UserRepositorySuite) TestCreateUser() {
 	user := &models.User{
-<<<<<<< HEAD
 		Username: "testuser",
 		Name:     "Test User",
 		Email:    "testuser@example.com",
-		Password: "hashedpassword",
-=======
-		Username:   "testuser",
-		Name:       "Test User",
-		Email:      "testuser@example.com",
-		Password:   "hashedpassword",
->>>>>>> origin/aait.backend.g5.bisrat.setup-db-and-user-repo
 	}
 
 	err := suite.Repository.CreateUser(suite.TestContext, user)
@@ -165,12 +157,8 @@ func (suite *UserRepositorySuite) TestDeleteUser() {
 	Err := suite.Collection.FindOne(suite.TestContext, bson.M{"_id": insertResult.InsertedID}).Decode(&result)
 	suite.Empty(Err, "Expected no error when fetching user")
 	// Delete the user
-<<<<<<< HEAD
-	err := suite.Repository.DeleteUser(suite.TestContext, user.ID)
-=======
-	
+
 	err := suite.Repository.DeleteUser(suite.TestContext, result.ID)
->>>>>>> origin/aait.backend.g5.bisrat.setup-db-and-user-repo
 	suite.Empty(err, "Expected no error when deleting user")
 
 	// Ensure the user is deleted
@@ -232,11 +220,6 @@ func (suite *UserRepositorySuite) TestDemoteUser() {
 	suite.Equal(role, demotedUser.Role, "Expected role to remain admin (demotion logic should be handled correctly)")
 }
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> origin/aait.backend.g5.bisrat.setup-db-and-user-repo
 func TestUserRepositorySuite(t *testing.T) {
 	suite.Run(t, new(UserRepositorySuite))
 }

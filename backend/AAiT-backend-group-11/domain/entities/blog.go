@@ -15,11 +15,7 @@ type BlogPost struct {
     UpdatedAt   time.Time          `bson:"updatedAt"`
     ViewCount   int                `bson:"viewCount"`
     LikeCount   int                `bson:"likeCount"`
+    LikedBy     []primitive.ObjectID `bson:"likedBy"`
+    Viewers     []primitive.ObjectID `bson:"viewers"`
     CommentCount int               `bson:"commentCount"`
-}
-type Like struct {
-    ID          primitive.ObjectID `bson:"_id,omitempty"`
-    BlogPostID  primitive.ObjectID `bson:"blogPostId"`
-    AuthorID    primitive.ObjectID `bson:"authorId"`
-    CreatedAt   time.Time          `bson:"createdAt"`
 }

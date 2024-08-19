@@ -12,6 +12,7 @@ import (
 )
 
 func NewSignupRoute(config *infrastructure.Config, DB mongo.Database, SignupRoute *gin.RouterGroup) {
+
 	repo := repositories.NewSignupRepository(DB , config.UserCollection)
 	
 	usecase := usecases.NewSignupUseCase(repo , time.Duration(config.ContextTimeout) * time.Second)
@@ -23,12 +24,11 @@ func NewSignupRoute(config *infrastructure.Config, DB mongo.Database, SignupRout
 	// otp verifyer route
 	SignupRoute.POST("/signup/verify" , signup.VerifyOTP)
 	// Google Auth	
-	SignupRoute.GET("/auth/google" , signup.GoogleAuth)
+	// SignupRoute.POST("/auth/google" , signup.GoogleAuth)
 
 	SignupRoute.POST("/reset" , signup.ForgotPassword)
 	
 	
-	// SignupRoute.POST("/auth/signup" )
 	// SignupRoute.GET("/auth/google")
 	
 

@@ -125,7 +125,19 @@ func (b BlogUsecase) GetMyBlogs(user_id string, pageNo string, pageSize string) 
 
 // SearchBlogByTitleAndAuthor implements domain.BlogRepository.
 func (b BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	panic("unimplemented")
+	pageNO, err := strconv.ParseInt(pageNo, 10, 64)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+	limit, err := strconv.ParseInt(pageSize, 10, 64)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+	blogs, pagination, err := b.blogRepository.SearchBlogByTitleAndAuthor(title, author, pageNO, limit)
+	if err != nil{
+		return nil, domain.Pagination{}, err
+	}
+	return blogs, pagination, nil
 }
 
 // UpdateBlogByID implements domain.BlogRepository.

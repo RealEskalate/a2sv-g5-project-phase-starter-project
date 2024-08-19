@@ -17,9 +17,15 @@ type Blog struct {
 	UpdatedAt time.Time          `bson:"updated_at" json:"updated_at"`
 	Views     int                `bson:"views" json:"views"`
 	Likes     int                `bson:"likes" json:"likes"`
+	Dislikes  int                `bson:"dislikes" json:"dislikes"`
 	Comments  int                `bson:"comments" json:"comments"`
 }
-
+type Comment struct {
+    ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+    AuthorID  primitive.ObjectID `bson:"author_id" json:"author_id"`
+    Content   string             `bson:"content" json:"content"`
+    CreatedAt time.Time          `bson:"created_at" json:"created_at"`
+}
 // BlogCreationRequest is used when creating a new blog post.
 type BlogCreationRequest struct {
 	Title   string   `json:"title" binding:"required"`
@@ -45,6 +51,7 @@ type BlogResponse struct {
 	UpdatedAt time.Time          `json:"updated_at"`
 	Views     int                `json:"views"`
 	Likes     int                `json:"likes"`
+	Dislikes  int                `bson:"dislikes" json:"dislikes"`
 	Comments  int                `json:"comments"`
 }
 
@@ -52,11 +59,4 @@ type BlogResponse struct {
 type BlogFilters struct {
 	Tags       []string `json:"tags,omitempty"`
 	Date       string   `json:"date,omitempty"`
-	Popularity string   `json:"popularity,omitempty"`
-}
-
-// PopularityAction represents an action to track popularity metrics like views, likes, or comments.
-type PopularityAction struct {
-	Metric string `json:"metric"`
-	Action string `json:"action"`
 }

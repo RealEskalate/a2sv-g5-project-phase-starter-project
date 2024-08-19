@@ -41,6 +41,7 @@ func SetupRouter(userController *controller.UserController, blogController *cont
 	blogsRoute.POST("/:id/like", blogController.ToggleLike)
 	blogsRoute.POST("/:id/dislike", blogController.ToggleDislike)
 	blogsRoute.POST("/:id/comment", blogController.AddComment)
+	blogsRoute.POST("/filter", blogController.FilterBlogs)
 
 	// Increment view count route
 	blogsRoute.POST("/:id/view", blogController.IncrementViewCount)

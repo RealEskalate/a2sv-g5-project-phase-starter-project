@@ -95,23 +95,3 @@ func (r *userRepository) InsertToken(username string, accessToke string, refresh
 
 	return nil
 }
-
-func (r *userRepository) ExpireToken(token string) error {
-	// Define the filter to find the token
-	filter := bson.M{"access_token": token}
-
-	// Define the update to set the ExpiresAt field to the current time
-	update := bson.M{
-		"$set": bson.M{
-			"expires_at": time.Now().Unix(), // Assuming ExpiresAt is stored as a Unix timestamp
-		},
-	}
-
-	// Perform the update operation
-	_, err := r.tokenCollection.UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}

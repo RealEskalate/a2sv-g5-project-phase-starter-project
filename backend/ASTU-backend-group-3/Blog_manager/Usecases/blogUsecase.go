@@ -18,6 +18,7 @@ type BlogUsecase interface {
 	ToggleLike(blogID, username string) error
 	ToggleDislike(blogID, username string) error
 	AddComment(blogID string, comment Domain.Comment) error
+	FilterBlogs(tags []string, startDate, endDate time.Time, sortBy string) ([]Domain.Blog, error)
 }
 
 type blogUsecase struct {
@@ -110,4 +111,19 @@ func (u *blogUsecase) ToggleDislike(blogID, username string) error {
 // Add a comment to a blog post
 func (u *blogUsecase) AddComment(blogID string, comment Domain.Comment) error {
 	return u.blogRepo.AddComment(blogID, comment)
+}
+
+func (u *blogUsecase) FilterBlogs(tags []string, startDate, endDate time.Time, sortBy string) ([]Domain.Blog, error) {
+	// Validate input criteria if necessary
+	if sortBy != "popularity" && sortBy != "latest" && sortBy != "oldest" && sortBy != "" {
+		return nil, errors.New("invalid sort option, you can only sort using popularity,latest and oldest")
+	}
+
+	// Call the repository method to get filtered blogs
+	blogs, err := u.blogRepo.FilterBlogs(tags, startDate, endDate, sortBy)
+	if err != nil {
+		return nil, err
+	}
+
+	return blogs, nil
 }

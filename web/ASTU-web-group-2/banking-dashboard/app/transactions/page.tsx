@@ -7,7 +7,7 @@ import TransactionsDisplay from "../components/transactionsDisplay/TransactionsD
 
 const TransactionPage = () => {
   return (
-    <div className="flex flex-col gap-2 px-2 pb-5">
+    <div className="flex flex-col gap-2  pb-5">
       <div className="flex max-sm:flex-col justify-between">
         <CardForCreditCards
           className="flex flex-col lg:w-[730px] lg:h-[300px] max-md:w-[350px]"
@@ -36,12 +36,12 @@ const TransactionPage = () => {
             </div>
           </div>
         </CardForCreditCards>
-        <Card title="My Expense" className="w-[350px]  h-auto lg:pl-8 pl-0">
+        <Card title="My Expense" className="w-[350px]  h-auto lg:pl-6 pl-0">
           <MyExpenseChart />
         </Card>
       </div>
 
-      <Card title="Recent Transactions" className="flex flex-col max-sm:w-fit">
+      <Card title="Recent Transactions" className="flex flex-col w-[100%]">
         <TransactionsDisplay />
       </Card>
     </div>

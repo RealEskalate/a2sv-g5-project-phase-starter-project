@@ -10,7 +10,7 @@ import SendMoney from "./components/sendMoney/SendMoney";
 import BalanceHistoryChart from "./components/charts/BalanceHistoryChart";
 const page = () => {
   return (
-    <div className="flex flex-col gap-2 px-2 pb-5">
+    <div className="flex flex-col gap-2  pb-5">
       <div className="flex max-sm:flex-col justify-between">
         <CardForCreditCards
           className="flex flex-col lg:w-[730px] lg:h-[300px] max-md:w-[350px]"

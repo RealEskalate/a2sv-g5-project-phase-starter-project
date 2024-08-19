@@ -28,6 +28,7 @@ var ErrUnableToDeleteComment = errors.New("unable to delete comment")
 var ErrCommentNotFound = errors.New("comment not found")
 var ErrUnableToDislikeBlog = errors.New("unable to dislike blog")
 var ErrUnableToLikeBlog = errors.New("unable to like blog")
+var ErrUnableToUnLikeBlog = errors.New("unable to unlike blog")
 var ErrUnabletoGetBlog = errors.New("unable to get blog")
 
 type BlogStorage struct {
@@ -172,7 +173,13 @@ func (b *BlogStorage) UpdateBlog(ctx context.Context, id string, blog blog.Blog)
 
 // UnlikeBlog implements BlogRepository.
 func (b *BlogStorage) UnlikeBlog(ctx context.Context, like blog.Like) error {
-	panic("unimplemented")
+	_, err := b.db.Collection(likeCollection).DeleteOne(ctx, like)
+	if err != nil {
+		log.Default().Printf("Failed to unlike blog: %v", err)
+		return ErrUnableToUnLikeBlog
+	}
+
+	return nil
 }
 
 // UndislikeBlog implements BlogRepository.

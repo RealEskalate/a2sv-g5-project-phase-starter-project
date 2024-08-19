@@ -1,6 +1,10 @@
 package domain
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"context"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type UserIn struct {
 	ID         primitive.ObjectID `json:"id" bson:"_id"`
@@ -13,4 +17,11 @@ type UserIn struct {
 	IsOwner    bool               `json:"-" bson:"is_owner"`
 	Role       string             `json:"-" bson:"role"` //may make only tobe admin or user
 	Tokens     []string           `json:"tokens" bson:"tokens"`
+}
+
+type SignupUsecase interface {
+	Create(c context.Context, user *User) error
+	GetUserByEmail(c context.Context, email string) (User, error)
+	CreateAccessToken(user *User, secret string, expiry int) (accessToken string, err error)
+	CreateRefreshToken(user *User, secret string, expiry int) (refreshToken string, err error)
 }

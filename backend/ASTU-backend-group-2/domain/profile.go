@@ -1,6 +1,10 @@
 package domain
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"context"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Profile struct {
 	ID         primitive.ObjectID `json:"id" bson:"_id"`
@@ -19,3 +23,13 @@ type ProfileUpdate struct {
 	Bio        string `json:"bio" bson:"bio"`
 	ProfileImg string `json:"profile_img" bson:"profile_img"`
 }
+
+type ProfileUsecase interface {
+	GetUserProfile(c context.Context, userID string) (*User, error)                 // Retrieves a user's profile by ID
+	UpdateUserProfile(c context.Context, userID string, updatedProfile *User) error // Updates a user's profile
+	DeleteUserProfile(c context.Context, userID string) error                       // Deletes a user's profile
+	PromoteUserToAdmin(c context.Context, userID string) error                      // Promotes a user to admin
+	DemoteAdminToUser(c context.Context, userID string) error                       // Demotes an admin to a regular user
+}
+
+

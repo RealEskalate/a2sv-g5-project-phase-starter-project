@@ -17,15 +17,15 @@ type BlogRepository interface {
     LikeBlogPost(blogPostId, userId string) error
 	DislikeBlogPost(blogPostId, userId string) error
 	IncrementViewPost( postID, userID string) error
-	CountBlogPosts() (int, error)
+	CountBlogPosts()(int, error)
 
 }
 
 type BlogService interface {
 	CreateBlogPost(blogPost *entities.BlogPost, userId string) (*entities.BlogPost, error)
-	GetBlogPostById(blogPostId string) (*entities.BlogPost, error)
-	UpdateBlogPost(blogPost *entities.BlogPost) (*entities.BlogPost, error)
-	DeleteBlogPost(blogPostId string) error
+	GetBlogPostById(blogPostId string, userId string) (*entities.BlogPost, error)
+	UpdateBlogPost(blogPost *entities.BlogPost, userId string) (*entities.BlogPost, error)
+	DeleteBlogPost(blogPostId,userId,role string) error
 	GetBlogPosts(page, pageSize int, sortBy string) ([]entities.BlogPost,int, error)
 	SearchBlogPosts(criteria string, tags []string, startDate, endDate time.Time) ([]entities.BlogPost, error)
 	FilterBlogPosts(tags []string, dateRange []time.Time, sortBy string) ([]entities.BlogPost, error)

@@ -14,6 +14,9 @@ type Env struct {
 	SMTP_PASSWORD     string `mapstructure:"SMTP_PASSWORD"`
 	SMTP_SENDER_EMAIL string `mapstructure:"SMTP_SENDER_EMAIL"`
 
+	MONGO_URI string `mapstructure:"MONGO_URI"`
+	DB_NAME   string `mapstructure:"DB_NAME"`
+
 	SERVER_ADDRESS  string `mapstructure:"SERVER_ADDRESS"`
 	CONTEXT_TIMEOUT int    `mapstructure:"CONTEXT_TIMEOUT"`
 
@@ -24,12 +27,17 @@ type Env struct {
 }
 
 func NewEnv() *Env {
+	viper.SetConfigFile(".env")
 	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("Error reading .env file: %v", err)
+	}
 
 	env := Env{}
 
 	if err := viper.Unmarshal(&env); err != nil {
-		log.Fatal("Error getting the enviroment variables")
+		log.Fatalf("Error unmarshaling environment variables: %v", err)
 	}
 
 	return &env

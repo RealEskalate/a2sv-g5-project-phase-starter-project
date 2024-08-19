@@ -23,7 +23,8 @@ func NewBlogController(blogService interfaces.BlogService) *BlogController {
 }
 
 func (bc *BlogController) CreateBlogPost(c *gin.Context) {
-    var blogPost entities.BlogPost
+    
+	var blogPost entities.BlogPost
 	userId, ok := c.Get("userId")
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
@@ -91,6 +92,7 @@ func (bc *BlogController) GetBlogPosts(c *gin.Context) {
 func (bc *BlogController) UpdateBlogPost(c *gin.Context) {
 	// Parse the blog post ID from the URL
 	blogPostId := c.Param("id")
+	userId := c.GetString("userId")
 	objID, err := primitive.ObjectIDFromHex(blogPostId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog post ID"})
@@ -108,7 +110,7 @@ func (bc *BlogController) UpdateBlogPost(c *gin.Context) {
 	blogPost.ID = objID
 
 	// Update the blog post
-	updatedBlogPost, err := bc.blogService.UpdateBlogPost(&blogPost)
+	updatedBlogPost, err := bc.blogService.UpdateBlogPost(&blogPost,userId)
 	if err != nil {
 		if errors.Is(err, errors.New("unauthorized: only the author can update this post")) {
 			c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to update this blog post"})
@@ -127,9 +129,11 @@ func (bc *BlogController) UpdateBlogPost(c *gin.Context) {
 func (bc *BlogController) DeleteBlogPost(c *gin.Context) {
 	// Parse the blog post ID from the URL
 	blogPostId := c.Param("id")
+	userId:= c.GetString("userId")
+	role := c.GetString("role")	
 
 	// Delete the blog post
-	err := bc.blogService.DeleteBlogPost(blogPostId)
+	err := bc.blogService.DeleteBlogPost(blogPostId, userId,role)
 	if err != nil {
 		if errors.Is(err, errors.New("unauthorized: only the author or an admin can delete this post")) {
 			c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to delete this blog post"})

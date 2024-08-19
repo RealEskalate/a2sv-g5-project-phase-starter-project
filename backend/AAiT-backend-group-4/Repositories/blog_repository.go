@@ -3,6 +3,7 @@ package repositories
 import (
 	domain "aait-backend-group4/Domain"
 	"context"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -16,11 +17,11 @@ type blogRepository struct {
 	collection string
 }
 
-type paginationPage struct {
-	NextPage     int
-	CurrentPage  int
-	PreviousPage int
-}
+// type paginationPage struct {
+// 	NextPage     int
+// 	CurrentPage  int
+// 	PreviousPage int
+// }
 
 // NewBlogRepository creates a new instance of blogRepository
 func NewBlogRepository(db mongo.Database, collection string) domain.BlogRepository {
@@ -272,4 +273,77 @@ func (br *blogRepository) UpdatePopularity(ctx context.Context, id primitive.Obj
 
 	_, err := collection.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"popularity": popularity}})
 	return err
+}
+
+// IncreamentViewCount of a blog when a blog is fetched
+
+func (br *blogRepository) UpdateFeedback(c context.Context, id string, updateFunc func(*domain.Feedback) error) error {
+
+	filter := bson.M{"_id": id}
+	var blogPost domain.Blog
+
+	err := br.database.Collection(br.collection).FindOne(context.TODO(), filter).Decode(&blogPost)
+	if err != nil {
+		return err
+	}
+
+	err = updateFunc(&blogPost.Feedbacks)
+	if err != nil {
+		return err
+	}
+
+	update := bson.M{"$set": bson.M{"feedback": blogPost.Feedbacks}}
+	_, err = br.database.Collection(br.collection).UpdateOne(context.TODO(), filter, update)
+
+	return err
+}
+
+// adds a comment in to the feedback list of the blog
+func AddComment(feedback *domain.Feedback, comment domain.Comment) error {
+	feedback.Comments = append(feedback.Comments, comment)
+	return nil
+}
+
+// Increments the number of views in the blogs feedback
+func IncrementViewCount(feedback *domain.Feedback) error {
+	feedback.View_count++
+	return nil
+}
+
+// Increments the number of likes in the blogs feedback
+func AddLike(feedback *domain.Feedback) error {
+	feedback.Likes++
+	return nil
+}
+
+// Increments the number of likes in the blogs feedback
+func DecrementLike(feedback *domain.Feedback) error {
+	feedback.Dislikes--
+	return nil
+}
+
+func RemoveComments(feedback *domain.Feedback, requesterUserID string, isAdmin bool) error {
+	var newComments []domain.Comment
+	commentFound := false
+
+	for _, comment := range feedback.Comments {
+
+		if comment.User_ID == requesterUserID || isAdmin {
+
+			if !isAdmin && comment.User_ID != requesterUserID {
+				return errors.New("unauthorized: you can only remove your own comments or you must be an admin")
+			}
+
+			commentFound = true
+			continue
+		}
+		newComments = append(newComments, comment)
+	}
+
+	if !commentFound {
+		return errors.New("no comments found for the requester")
+	}
+
+	feedback.Comments = newComments
+	return nil
 }

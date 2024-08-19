@@ -3,11 +3,14 @@ import React, { useState } from "react";
 // import EditProfile from './EditProfile';
 import Preference from "./preference";
 import Security from "./security";
+import { useSession } from "next-auth/react";
 
 const activeColor = "text-blue-700";
 const disabledColor = "text-slate-400";
 
 function Settings() {
+  const session = useSession()
+  // console.log(session.data.user,'111')
   const [enabled, setEnabled] = useState("Edit Profile");
 
   const renderContent = () => {

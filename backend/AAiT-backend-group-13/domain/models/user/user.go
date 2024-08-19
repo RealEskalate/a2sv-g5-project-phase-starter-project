@@ -216,6 +216,7 @@ func (u *User) IsAdmin() bool {
 // IsActive returns whether the user is an active.
 func (u *User) IsActive() bool {
 	return u.isActive
+}
 
 func (u *User) ResetCode() *ResetCode {
 	return u.resetCode

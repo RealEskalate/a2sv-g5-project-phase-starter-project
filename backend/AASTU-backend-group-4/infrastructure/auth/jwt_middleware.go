@@ -39,7 +39,23 @@ func JwtAuthMiddleware(secret string) gin.HandlerFunc {
 			return
 		}
 
+		email, ok := claims["email"].(string)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email claims"})
+			c.Abort()
+			return
+		}
+
+		username, ok := claims["username"].(string)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username claims"})
+			c.Abort()
+			return
+		}
+
 		c.Set("userID", userID)
+		c.Set("email", email)
+		c.Set("username", username)
 		c.Next()
 	}
 }

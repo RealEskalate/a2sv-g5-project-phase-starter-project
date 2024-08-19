@@ -15,6 +15,9 @@ type BlogRepository interface {
 	UpdateBlog(ctx context.Context, blog *Blog) error
 	DeleteBlog(ctx context.Context, id primitive.ObjectID) error
 	SearchBlogs(ctx context.Context, query string, filters *BlogFilters) ([]*Blog, error)
+	FilterBlogsByTags(ctx context.Context, tags []string) ([]*Blog, error)
+	FilterBlogsByDate(ctx context.Context, date string) ([]*Blog, error)
+	FilterBlogsByPopularity(ctx context.Context, popularity string) ([]*Blog, error)
 	// SearchBlogs(ctx context.Context, query string, filters *BlogFilters) ([]*Blog, error)
 	// FilterBlogs(ctx context.Context, filters *BlogFilters) ([]*Blog, error)
 	// IncrementPopularity(ctx context.Context, id primitive.ObjectID, metric string) error
@@ -28,6 +31,9 @@ type BlogUsecase interface {
 	UpdateBlog(ctx context.Context, id primitive.ObjectID, blog *BlogUpdateRequest) (*BlogResponse, error)
 	DeleteBlog(ctx context.Context, id primitive.ObjectID) error
 	SearchBlogs(ctx context.Context, query string, filters *BlogFilters) ([]*BlogResponse, error)
+	FilterBlogsByTags(ctx context.Context, tags []string) ([]*Blog, error)
+	FilterBlogsByDate(ctx context.Context, date string) ([]*Blog, error)
+	FilterBlogsByPopularity(ctx context.Context, popularity string) ([]*Blog, error)
 	
 	// SearchBlogs(ctx context.Context, query string, filters *BlogFilters) ([]*BlogResponse, error)
 	// FilterBlogs(ctx context.Context, filters *BlogFilters) ([]*BlogResponse, error)

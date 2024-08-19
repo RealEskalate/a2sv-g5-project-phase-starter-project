@@ -199,3 +199,33 @@ func (bc *BlogController) SearchBlogs(c *gin.Context) {
 
 	c.JSON(http.StatusOK, blogs)
 }
+
+func (bc *BlogController) FilterBlogsByTags(c *gin.Context) {
+	tags := c.QueryArray("tags")
+	blogs, err := bc.BlogUsecase.FilterBlogsByTags(c.Request.Context(), tags)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, blogs)
+}
+
+func (bc *BlogController) FilterBlogsByDate(c *gin.Context) {
+	date := c.Query("date")
+	blogs, err := bc.BlogUsecase.FilterBlogsByDate(c.Request.Context(), date)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, blogs)
+}
+
+func (bc *BlogController) FilterBlogsByPopularity(c *gin.Context) {
+	popularity := c.Query("popularity")
+	blogs, err := bc.BlogUsecase.FilterBlogsByPopularity(c.Request.Context(), popularity)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, blogs)
+}

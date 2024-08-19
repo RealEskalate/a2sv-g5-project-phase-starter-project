@@ -17,7 +17,16 @@ func NewRouter(db *mongo.Database) {
 	jwtService := infrastructures.JwtService{JwtSecret: os.Getenv("JWT_SECRET")}
 
 	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
+	var UserRepo = repositories.NewUserRepositoryMongo(db)
+	var Inf = infrastructures.NewInfrastructure()
+	var UserUsecases = usecases.NewUserUsecase(UserRepo, Inf)
+	type RouteHandler struct {
+		UserRouter *controllers.UserController
+	}
 
+	var Route = RouteHandler{
+		UserRouter: controllers.NewUserController(UserUsecases),
+	}
 	blogRepo := repositories.NewBlogRepository(db, os.Getenv("BLOG_COLLECTION"))
 	blogUseCase := usecases.NewBlogUseCase(blogRepo, userRepo)
 	blogController := controllers.NewBlogController(blogUseCase)
@@ -55,6 +64,10 @@ func NewRouter(db *mongo.Database) {
 	router.DELETE("/like", infrastructures.AuthMiddleware(&jwtService), likeController.DeleteLike)
 	router.GET("/like/:blog_id", infrastructures.AuthMiddleware(&jwtService), likeController.BlogLikeCount)
 
+	router.POST("/register", Route.UserRouter.Register)
+	router.POST("/login", Route.UserRouter.Login)
+	router.POST("/refresh", Route.UserRouter.RefreshToken)
 	port := os.Getenv("PORT")
 	router.Run(":" + port)
+
 }

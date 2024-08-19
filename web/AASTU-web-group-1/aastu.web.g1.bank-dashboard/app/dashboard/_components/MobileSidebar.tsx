@@ -14,7 +14,7 @@ import React from "react";
 const MobileSidebar = () => {
   const pathname = usePathname();
   return (
-    <section className="w-full max-w-[264px]">
+    <section className="w-full max-w-[264px] bg-white">
       <Sheet>
         <SheetTrigger>
           <Image

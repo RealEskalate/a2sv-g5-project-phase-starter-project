@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"blog_g2/infrastructure"
+	"log"
 	"net/mail"
 	"time"
 
@@ -49,12 +50,12 @@ func (uc *UserController) RegisterUser(c *gin.Context) {
 	}
 	user.JoinedAt = time.Now()
 	user.IsAdmin = false
-	err = uc.Userusecase.RegisterUser(c, user)
+	err = uc.Userusecase.RegisterUser(c, &user)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"message": "User registered successfully"})
+	c.JSON(200, gin.H{"message": "User registered successfully", "user": user})
 }
 
 // LoginUser is a controller method to login a user
@@ -121,6 +122,16 @@ func (uc *UserController) ResetPassword(c *gin.Context) {
 
 // LogoutUser is a controller method to logout a user
 func (uc *UserController) LogoutUser(c *gin.Context) {
+	userid := c.GetString("userid")
+	log.Println(userid)
+	err := uc.Userusecase.LogoutUser(c, userid)
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "User logged out successfully"})
 
 }
 

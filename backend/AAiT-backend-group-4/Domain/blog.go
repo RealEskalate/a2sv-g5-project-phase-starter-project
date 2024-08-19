@@ -57,7 +57,6 @@ type Blog struct {
 	Tags        []Tag              `json:"tags" bson:"tags"`
 	Popularity  float64            `json:"popularity" bson:"popularity"`
 	Feedbacks   Feedback           `json:"feedbacks" bson:"feedbacks"`
-	Popularity  float64            `json:"popularity" bson:"popularity"`
 	Created_At  time.Time          `json:"created_at" bson:"created_at"`
 	Updated_At  time.Time          `json:"updated_at" bson:"updated_at"`
 }

@@ -35,7 +35,10 @@ func RegisterBlogRoutes(env *config.Env, timeout time.Duration, db database.Data
 		blogRoutes.GET("/filter/tags", blogController.FilterBlogsByTags)
 		blogRoutes.GET("/filter/date", blogController.FilterBlogsByDate)
 		blogRoutes.GET("/filter/popularity", blogController.FilterBlogsByPopularity)
-
+		blogRoutes.POST("/:id/view", blogController.TrackView)
+    blogRoutes.POST("/:id/like", blogController.TrackLike)
+    blogRoutes.POST("/:id/dislike", blogController.TrackDislike)
+		blogRoutes.POST("/:id/comment", blogController.AddComment)
 
 	}
 }

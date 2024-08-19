@@ -168,6 +168,7 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Blog deleted successfully"})
 }
 
+
 // Delivery/controllers/blog_controller.go
 // controller/blog_controller.go
 func (bc *BlogController) SearchBlogs(c *gin.Context) {
@@ -229,3 +230,51 @@ func (bc *BlogController) FilterBlogsByPopularity(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, blogs)
 }
+func (bc *BlogController) TrackView(c *gin.Context) {
+    id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+    err := bc.BlogUsecase.TrackView(c.Request.Context(), id)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"message": "View tracked successfully"})
+}
+
+func (bc *BlogController) TrackLike(c *gin.Context) {
+    id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+    userID := c.GetString("userID") // Assuming userID is stored in the context
+    err := bc.BlogUsecase.TrackLike(c.Request.Context(), id, userID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"message": "Like tracked successfully"})
+}
+
+func (bc *BlogController) TrackDislike(c *gin.Context) {
+    id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+    userID := c.GetString("userID") // Assuming userID is stored in the context
+    err := bc.BlogUsecase.TrackDislike(c.Request.Context(), id, userID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"message": "Dislike tracked successfully"})
+}
+
+func (bc *BlogController) AddComment(c *gin.Context) {
+    id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+    var comment domain.Comment
+    if err := c.BindJSON(&comment); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+        return
+    }
+    err := bc.BlogUsecase.AddComment(c.Request.Context(), id, &comment)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
+}
+
+

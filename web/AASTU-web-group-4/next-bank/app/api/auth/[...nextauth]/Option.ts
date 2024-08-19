@@ -1,6 +1,5 @@
 import CredentialsProvider from "next-auth/providers/credentials";
-import { store } from "../../../../lib/redux/store";
-import { authApi } from "../../../../lib/redux/api/authapi";
+
 import Provider from "next-auth";
 
 export const Options = {
@@ -17,19 +16,8 @@ export const Options = {
       },
       async authorize(credentials) {
         console.log(credentials);
-        try {
-          const result = await store
-            .dispatch(authApi.endpoints.login.initiate(credentials))
-            .unwrap(); // Use unwrap() to handle resolved values and errors
-          if (result) {
-            return result; // This will be set as the user object
-          } else {
-            return null;
-          }
-        } catch (error) {
-          console.error("Failed to login:", error);
-          return null;
-        }
+        // Add your authorization logic here
+        return null; // or return a User object based on your application logic
       },
     }),
   ],

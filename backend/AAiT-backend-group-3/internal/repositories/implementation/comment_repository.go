@@ -1,12 +1,12 @@
 package repositories
 
 import (
-	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"AAIT-backend-group-3/internal/domain/models"
 )
+
 
 type MongoCommentRepository struct {
 	collection *mongo.Collection
@@ -18,12 +18,12 @@ func NewMongoCommentRepository(db *mongo.Database, collectionName string) *Mongo
 	}
 }
 
-func (r *MongoCommentRepository) CreateComment(ctx context.Context, comment *models.Comment) error {
+func (r *MongoCommentRepository) CreateComment(comment *models.Comment) error {
 	_, err := r.collection.InsertOne(ctx, comment)
 	return err
 }
 
-func (r *MongoCommentRepository) GetCommentByID(ctx context.Context, commentID primitive.ObjectID) (*models.Comment, error) {
+func (r *MongoCommentRepository) GetCommentByID(commentID primitive.ObjectID) (*models.Comment, error) {
 	var comment models.Comment
 	err := r.collection.FindOne(ctx, bson.M{"_id": commentID}).Decode(&comment)
 	if err != nil {
@@ -32,18 +32,17 @@ func (r *MongoCommentRepository) GetCommentByID(ctx context.Context, commentID p
 	return &comment, nil
 }
 
-func (r *MongoCommentRepository) EditComment(ctx context.Context, commentID primitive.ObjectID, newComment *models.Comment) error {
+func (r *MongoCommentRepository) EditComment(commentID primitive.ObjectID, newComment *models.Comment) error {
 	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": commentID}, bson.M{"$set": newComment})
 	return err
 }
 
-func (r *MongoCommentRepository) DeleteComment(ctx context.Context, commentID primitive.ObjectID) error {
+func (r *MongoCommentRepository) DeleteComment(commentID primitive.ObjectID) error {
 	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": commentID})
 	return err
 }
 
-
-func (r *MongoCommentRepository) GetCommentsByIDList(ctx context.Context, commentIDs []primitive.ObjectID) ([]*models.Comment, error) {
+func (r *MongoCommentRepository) GetCommentsByIDList(commentIDs []primitive.ObjectID) ([]*models.Comment, error) {
 	var comments []*models.Comment
 	cursor, err := r.collection.Find(ctx, bson.M{"_id": bson.M{"$in": commentIDs}})
 	if err != nil {
@@ -59,7 +58,8 @@ func (r *MongoCommentRepository) GetCommentsByIDList(ctx context.Context, commen
 	}
 	return comments, nil
 }
-func (r *MongoCommentRepository) GetCommentByAuthorID(ctx context.Context, authorID primitive.ObjectID) ([]*models.Comment, error) {
+
+func (r *MongoCommentRepository) GetCommentByAuthorID(authorID primitive.ObjectID) ([]*models.Comment, error) {
 	var comments []*models.Comment
 	cursor, err := r.collection.Find(ctx, bson.M{"author_id": authorID})
 	if err != nil {
@@ -75,4 +75,3 @@ func (r *MongoCommentRepository) GetCommentByAuthorID(ctx context.Context, autho
 	}
 	return comments, nil
 }
-

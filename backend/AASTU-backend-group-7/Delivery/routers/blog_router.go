@@ -20,6 +20,14 @@ func BlogRouter() {
 		postRouter.GET("/getbyid/:id", blogcontroller.GetPostByID)
 		postRouter.GET("/getbyauthor/:authorID", blogcontroller.GetPostByAuthorID)
 		postRouter.PUT("/update/:id", blogcontroller.UpdatePostByID)
+		
+
+		// get tags
+		postRouter.GET("/tags/:id", blogcontroller.GetTags)
+		//get comments
+		postRouter.GET("/comments/:id", blogcontroller.GetComments)
+		// get all posts
+		postRouter.GET("/all", blogcontroller.GetAllPosts)
 
 
 	}
@@ -35,5 +43,24 @@ func BlogRouter() {
 		commentRouter.GET("/get/:id", commentcontroller.GetCommentByID)
 		//	edit comment
 		commentRouter.PUT("/edit/:id", commentcontroller.EditComment)
+		// get user comments
+		commentRouter.GET("/getauthorcomments/:id", commentcontroller.GetUserComments)
+		// get user's comments
+		commentRouter.GET("/getmycomments", commentcontroller.GetMyComments)
+		// delete comment
+		commentRouter.DELETE("/delete/:id", commentcontroller.DeleteComment)
+	}
+
+	tagRouter := Router.Group("/tags", auth_middleware.AuthMiddleware(), auth_middleware.IsAdminMiddleware())
+	{
+		tagRepo := Repositories.NewTagsRepository(BlogCollections)
+		tagUsecase := usecases.NewTagsUseCase(tagRepo)
+		tagController := controllers.NewTagsController(tagUsecase)
+
+		tagRouter.POST("/create", tagController.CreateTag)
+		//delete tag
+		tagRouter.DELETE("/delete/:id", tagController.DeleteTag)
+		// add tag to post
+		
 	}
 }

@@ -94,12 +94,14 @@ func (au *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 	if user.UserName != "" {
 		existingUserFilter = bson.D{
 			{"$or", bson.A{
-				bson.D{{"email", user.Email}},
-				bson.D{{"username", user.UserName}},
+bson.D{{Key: "email", Value: user.Email}},
+				bson.D{{Key: "username", Value: user.UserName}},
 			}},
 		}
 	} else {
-		existingUserFilter = bson.D{{"email", user.Email}}
+		existingUserFilter = bson.D{
+			{Key: "email", Value: user.Email},
+		}
 	}
 	existingUserCount, err := au.UserCollection.CountDocuments(ctx, existingUserFilter)
 	if err != nil {
@@ -124,7 +126,6 @@ func (au *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 	user.Password = string(hashedPassword)
 	user.Role = "role"
 	user.CreatedAt = time.Now()
-	user.Posts = []*Domain.Post{}
 
 	InsertedID, err := au.UserCollection.InsertOne(ctx, user)
 	if err != nil {

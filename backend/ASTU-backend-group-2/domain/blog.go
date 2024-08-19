@@ -7,6 +7,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+const (
+	CollectionBlog = "blogs"
+)
+
 // this structure will be used when responding for blog request
 type Blog struct {
 	ID            primitive.ObjectID `json:"id" bson:"_id"`
@@ -38,6 +42,10 @@ type BlogUpdate struct {
 	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
 }
 
+const (
+	CollectionComment = "comments"
+)
+
 // this structure for comments
 type Comment struct {
 	ID        primitive.ObjectID `json:"id" bson:"_id"`
@@ -53,6 +61,10 @@ type CommentIn struct {
 	Content   string             `json:"content" bson:"content" binding:"required"`
 	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
 }
+
+const (
+	CollectionReaction = "reactions"
+)
 
 // user reaction to the blog if liked or disliked
 type Reaction struct {

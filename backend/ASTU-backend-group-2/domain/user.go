@@ -6,6 +6,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+const (
+	CollectionUser = "users"
+)
+
 type User struct {
 	ID         primitive.ObjectID `json:"id" bson:"_id"`
 	FirstName  string             `json:"first_name" bson:"first_name" binding:"required,min=3,max=30"`
@@ -78,5 +82,4 @@ type UserRepository interface {
 
 	PromoteUserToAdmin(c context.Context, userID string) error
 	DemoteAdminToUser(c context.Context, userID string) error
-
 }

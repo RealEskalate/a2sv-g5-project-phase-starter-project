@@ -21,3 +21,4 @@ type Blog interface {
 	// GetSingle returns a blog by ID.
 	GetSingle(id uuid.UUID) (*blogmodel.Blog, error)
 }
+

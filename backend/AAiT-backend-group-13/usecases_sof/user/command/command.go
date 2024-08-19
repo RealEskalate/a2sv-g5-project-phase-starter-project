@@ -1,35 +1,29 @@
-package usercommand 
+package usercommand
 
-
-type signUpCommand struct {
-
-	firstName string 
-	lastName string 
-	username string 
-	email string 
-	password string 
-
+type SignUpCommand struct {
+	firstName string
+	lastName  string
+	username  string
+	email     string
+	password  string
 }
 
-func NewSignUpCommand(username string , firstName string , lastName string , email string, password string ) signUpCommand {
-	return signUpCommand{
-		firstName :firstName,
-		username: username,
-		lastName: lastName,
-		email: email, 
-		password: password,
+func NewSignUpCommand(username string, firstName string, lastName string, email string, password string) SignUpCommand {
+	return SignUpCommand{
+		firstName: firstName,
+		username:  username,
+		lastName:  lastName,
+		email:     email,
+		password:  password,
 	}
 }
 
-
 type LoginCommand struct {
-	username string 
-	password string 
-
+	username string
+	password string
 }
 
-
-func NewLoginCommand(username string , password string ) LoginCommand {	
+func NewLoginCommand(username string, password string) LoginCommand {
 	return LoginCommand{
 		username: username,
 		password: password,

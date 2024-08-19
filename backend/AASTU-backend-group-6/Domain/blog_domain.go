@@ -49,7 +49,7 @@ type BlogRepository interface {
 	DeleteBlogByID(user_id string, blog_id string) ErrorResponse
 	CommentOnBlog(blog_id string, commentor_id string, commentor_username string, comment Comment) error
 
-	SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]Blog, Pagination, error)
+	SearchBlogByTitleAndAuthor(title string, author string, pageNo int64, pageSize int64) ([]Blog, Pagination, error)
 	FilterBlogsByTag(tag string, pageNo string, pageSize string) ([]Blog, Pagination, error)
 
 	GetMyBlogs(user_id string, pageNo int64, pageSize int64) ([]Blog, Pagination, error)

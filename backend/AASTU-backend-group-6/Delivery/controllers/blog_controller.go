@@ -28,7 +28,7 @@ func (b BlogController) CommentOnBlog(c *gin.Context) {
 // CreateBlog implements domain.BlogUsecase.
 func (b BlogController) CreateBlog(c *gin.Context) {
 	var blog domain.Blog
-	userID := c.GetString("id")
+	userID := c.GetString("user_id")
 	role := c.GetString("role")
 	if userID == "" || role == "" {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
@@ -78,8 +78,9 @@ func (b BlogController) DeleteBlogByID(c *gin.Context) {
 		})
 		return
 	}
-	userID := c.GetString("id")
+	userID := c.GetString("user_id")
 	role := c.GetString("role")
+	fmt.Println(userID, role)
 	if userID == "" || role == "" {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
 			Message: "Authentication failed.",
@@ -213,11 +214,31 @@ func (b BlogController) GetMyBlogs(c *gin.Context) {
 func (b BlogController) SearchBlogByTitleAndAuthor(c *gin.Context) {
 	title := c.Query("title")
 	author := c.Query("author")
-	x := fmt.Sprintf("title: %s, author: %s", title, author)
-	fmt.Println("////////////////////////////")
-	fmt.Println(title, author)
-	fmt.Println("////////////////////////////")
-	c.JSON(200, gin.H{"des blogs": x})
+	pageNo := c.Query("pageNo")
+	pageSize := c.Query("pageSize")
+	if pageNo == "" {
+		pageNo = "0"
+	}
+	if pageSize == "" {
+		pageSize = "0"
+	}
+	blogs, pagination, err := b.BlogUsecase.SearchBlogByTitleAndAuthor(title, author, pageNo, pageSize)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
+			Message: err.Error(),
+			Status: http.StatusInternalServerError,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, domain.SuccessResponse{
+		Message: "Blogs fetched successfully.",
+		Data: map[string]interface{}{
+			"Blogs": blogs,
+			"Pagination": pagination,
+		},
+		Status: http.StatusOK,
+	})
+
 }
 
 // UpdateBlogByID implements domain.BlogUsecase.

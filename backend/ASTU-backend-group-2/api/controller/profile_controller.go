@@ -24,27 +24,26 @@ type ProfileController struct {
 func (pc *ProfileController) GetProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.Param("id")
-		user, err := pc.UserUsecase.GetUserProfile(c, userID)
+		user, err := pc.UserUsecase.GetUser(c, userID)
 		if err != nil {
 			c.JSON(500, domain.ErrorResponse{Message: err.Error()})
 			return
 		}
 
-		c.JSON(200, user)
+		c.JSON(200, gin.H{"user": user})
 	}
 }
 
 func (pc *ProfileController) UpdateProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.Param("id")
-		var updatedProfile domain.User
-		err := c.ShouldBind(&updatedProfile)
-		if err != nil {
+		var user domain.User
+		if err := c.ShouldBindJSON(&user); err != nil {
 			c.JSON(400, domain.ErrorResponse{Message: err.Error()})
 			return
 		}
 
-		err = pc.UserUsecase.UpdateUserProfile(c, userID, &updatedProfile)
+		err := pc.UserUsecase.UpdateUser(c, userID, &user)
 		if err != nil {
 			c.JSON(500, domain.ErrorResponse{Message: err.Error()})
 			return
@@ -57,7 +56,7 @@ func (pc *ProfileController) UpdateProfile() gin.HandlerFunc {
 func (pc *ProfileController) DeleteProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.Param("id")
-		err := pc.UserUsecase.DeleteUserProfile(c, userID)
+		err := pc.UserUsecase.DeleteUser(c, userID)
 		if err != nil {
 			c.JSON(500, domain.ErrorResponse{Message: err.Error()})
 			return

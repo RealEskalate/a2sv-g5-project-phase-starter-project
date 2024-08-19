@@ -23,13 +23,17 @@ func NewSignupUsecase(userRepository domain.UserRepository, timeout time.Duratio
 func (su *signupUsecase) Create(c context.Context, user *domain.User) error {
 	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
 	defer cancel()
-	return su.userRepository.Create(ctx, user)
+	return su.userRepository.CreateUser(ctx, user)
 }
 
 func (su *signupUsecase) GetUserByEmail(c context.Context, email string) (domain.User, error) {
 	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
 	defer cancel()
-	return su.userRepository.GetByEmail(ctx, email)
+	user, err := su.userRepository.GetUserByEmail(ctx, email)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return *user, nil
 }
 
 func (su *signupUsecase) CreateAccessToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {

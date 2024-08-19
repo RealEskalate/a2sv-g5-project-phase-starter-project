@@ -25,16 +25,16 @@ func NewPrivateBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.
 	group.DELETE("/blogs/:id", bc.DeleteBlog())
 
 	// comments
-	group.GET("/blogs/:id/comments", bc.GetComments())
-	group.POST("/blogs/:id/comments", bc.CreateComment())
+	// group.GET("/blogs/:id/comments", bc.GetComments())
+	// group.POST("/blogs/:id/comments", bc.CreateComment())
 
-	// only authenticated users can access
-	group.GET("/blogs/:id/comments/:comment_id", bc.GetComment())
-	group.PUT("/blogs/:id/comments/:comment_id", bc.UpdateComment())
-	group.PATCH("/blogs/:id/comments/:comment_id", bc.UpdateComment())
-	group.DELETE("/blogs/:id/comments/:comment_id", bc.DeleteComment())
+	// // only authenticated users can access
+	// group.GET("/blogs/:id/comments/:comment_id", bc.GetComment())
+	// group.PUT("/blogs/:id/comments/:comment_id", bc.UpdateComment())
+	// group.PATCH("/blogs/:id/comments/:comment_id", bc.UpdateComment())
+	// group.DELETE("/blogs/:id/comments/:comment_id", bc.DeleteComment())
 
-	group.POST("/blogs/:id/like", bc.CreateLike())
+	// group.POST("/blogs/:id/like", bc.CreateLike())
 }
 
 func NewPublicBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {

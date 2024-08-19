@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"context"
+
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
 	"github.com/gin-gonic/gin"
@@ -13,12 +15,12 @@ type blogController interface {
 	CreateBlog() gin.HandlerFunc
 	UpdateBlog() gin.HandlerFunc
 	DeleteBlog() gin.HandlerFunc
-	GetComments() gin.HandlerFunc
-	CreateComment() gin.HandlerFunc
-	GetComment() gin.HandlerFunc
-	UpdateComment() gin.HandlerFunc
-	DeleteComment() gin.HandlerFunc
-	CreateLike() gin.HandlerFunc
+	// GetComments() gin.HandlerFunc
+	// CreateComment() gin.HandlerFunc
+	// GetComment() gin.HandlerFunc
+	// UpdateComment() gin.HandlerFunc
+	// DeleteComment() gin.HandlerFunc
+	// CreateLike() gin.HandlerFunc
 }
 
 type BlogController struct {
@@ -28,7 +30,7 @@ type BlogController struct {
 
 func (bc *BlogController) GetBlogs() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		blogs, err := bc.BlogUsecase.GetAllBlogs()
+		blogs, err := bc.BlogUsecase.GetAllBlogs(context.Background())
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
@@ -40,7 +42,7 @@ func (bc *BlogController) GetBlogs() gin.HandlerFunc {
 func (bc *BlogController) GetBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		blogID := c.Param("id")
-		blog, err := bc.BlogUsecase.GetBlogByID(blogID)
+		blog, err := bc.BlogUsecase.GetBlogByID(context.Background(), blogID)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
@@ -56,7 +58,7 @@ func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
-		blog, err := bc.BlogUsecase.CreateBlog(newBlog)
+		blog, err := bc.BlogUsecase.CreateBlog(context.Background(), &newBlog)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
@@ -73,7 +75,7 @@ func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
-		blog, err := bc.BlogUsecase.UpdateBlog(blogID, updatedBlog)
+		blog, err := bc.BlogUsecase.UpdateBlog(context.Background(), blogID, &updatedBlog)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
@@ -85,97 +87,11 @@ func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		blogID := c.Param("id")
-		err := bc.BlogUsecase.DeleteBlog(blogID)
+		err := bc.BlogUsecase.DeleteBlog(context.TODO(), blogID)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(204, nil)
-	}
-}
-
-func (bc *BlogController) GetComments() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		blogID := c.Param("id")
-		comments, err := bc.BlogUsecase.GetComments(blogID)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(200, comments)
-	}
-}
-
-func (bc *BlogController) CreateComment() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		blogID := c.Param("id")
-		var newComment domain.Comment
-		if err := c.ShouldBindJSON(&newComment); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-		comment, err := bc.BlogUsecase.CreateComment(blogID, newComment)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(201, comment)
-	}
-}
-
-func (bc *BlogController) GetComment() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		blogID := c.Param("id")
-		commentID := c.Param("comment_id")
-		comment, err := bc.BlogUsecase.GetComment(blogID, commentID)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(200, comment)
-	}
-}
-
-func (bc *BlogController) UpdateComment() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		blogID := c.Param("id")
-		commentID := c.Param("comment_id")
-		var updatedComment domain.Comment
-		if err := c.ShouldBindJSON(&updatedComment); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-		comment, err := bc.BlogUsecase.UpdateComment(blogID, commentID, updatedComment)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(200, comment)
-	}
-}
-
-func (bc *BlogController) DeleteComment() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		blogID := c.Param("id")
-		commentID := c.Param("comment_id")
-		err := bc.BlogUsecase.DeleteComment(blogID, commentID)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(204, nil)
-	}
-}
-
-func (bc *BlogController) CreateLike() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		blogID := c.Param("id")
-		userID := c.Query("user_id")
-		err := bc.BlogUsecase.LikeBlog(blogID, userID)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(201, nil)
 	}
 }

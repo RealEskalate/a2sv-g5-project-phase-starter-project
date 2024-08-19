@@ -32,6 +32,10 @@ func RegisterBlogRoutes(env *config.Env, timeout time.Duration, db database.Data
 		blogRoutes.PUT("/:id", blogController.UpdateBlog)
 		blogRoutes.DELETE("/:id", blogController.DeleteBlog)
 		blogRoutes.GET("/search", blogController.SearchBlogs)
+		blogRoutes.GET("/filter/tags", blogController.FilterBlogsByTags)
+		blogRoutes.GET("/filter/date", blogController.FilterBlogsByDate)
+		blogRoutes.GET("/filter/popularity", blogController.FilterBlogsByPopularity)
+
 
 	}
 }

@@ -86,6 +86,7 @@ function WeeklyActivityChart() {
           },
           options: {
             responsive: true,
+            maintainAspectRatio: false, // Allow the chart to resize based on its container
             plugins: {
               legend: {
                 display: false,
@@ -123,23 +124,19 @@ function WeeklyActivityChart() {
   }
 
   return (
-    <div className="">
-      <div className="text-gray-500 border rounded-[22px] bg-white">
-        <div className="flex flex-row justify-end lg:w-[650px] md:w-[467px]  w-[325px]">
-          <div className="flex flex-row mx-5 mt-5">
-            <div className="w-[12px] h-[12px]  mx-2 mt-[6px] border rounded-full bg-[#16DBCC]"></div>
-            <div className="">Deposits</div>
-          </div>
-          <div className="flex flex-row mx-5 mt-5">
-            <div className="w-[12px] h-[12px] mx-2 mt-[6px] border rounded-full bg-blue-700"></div>
-            <div className="">Withdrawals</div>
-          </div>
+    <div className="flex flex-col text-gray-500 border rounded-[22px] bg-white gap-7">
+      <div className="flex flex-row justify-end gap-2">
+        <div className="flex flex-row mx-5 mt-5 gap-1">
+          <div className="w-[12px] h-[12px] mt-[6px] border rounded-full bg-[#16DBCC]"></div>
+          <div className="">Deposit</div>
         </div>
-        <div>
-          <div className="weekly-activity-chart md:ml-5 lg:w-[667px] lg:h-[310px] md:w-[487px] md:h-[204px] w-[325px] h-[204px] ml-0">
-            <canvas ref={chartRef} />
-          </div>
+        <div className="flex flex-row mx-5 mt-5 gap-1">
+          <div className="w-[12px] h-[12px] mt-[6px] border rounded-full bg-blue-700"></div>
+          <div className="">Withdraw</div>
         </div>
+      </div>
+      <div className="flex justify-center lg:w-[667px] md:w-[487px] w-full h-[226px]">
+        <canvas ref={chartRef} className="w-fit h-fit" />
       </div>
     </div>
   );

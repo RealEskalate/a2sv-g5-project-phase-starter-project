@@ -148,16 +148,9 @@ function BalanceHistoryChart() {
   }
 
   return (
-    <div className="">
-      <div className="rounded-3xl bg-white p-5 lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[325px] h-[223px]"> 
-        
-        <div className="balance-history-chart text-[#718EBF] lg:w-[500px] lg:h-[177px] md:w-[347px] md:h-[147px] w-[289px] h-[190px]">
-          <div className="">
-            <canvas ref={chartRef} />
-          </div>
+        <div className="balance-history-chart text-[#718EBF] rounded-3xl bg-white h-full flex justify-center items-center py-3">
+            <canvas ref={chartRef} className="w-full h-full" />
         </div>
-      </div>
-    </div>
   );
 }
 

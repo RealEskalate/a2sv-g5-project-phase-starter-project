@@ -4,6 +4,8 @@ import (
 	"blog_api/domain"
 	"net/http"
 
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
@@ -119,4 +121,73 @@ func (bc *BlogController) TrackBlogPopularityHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, domain.Response{"message": "Action applied successfully"})
+}
+
+// GenerateContentHandler handles requests to generate content
+func (bc *BlogController) GenerateContentHandler(c *gin.Context) {
+	var req struct {
+		Topics []string `json:"topics"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("Error decoding request body: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	content, err := bc.blogUseCase.GenerateBlogContent(req.Topics)
+	if err != nil {
+		log.Printf("Error generating blog content: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate content"})
+		return
+	}
+
+	response := gin.H{"content": content}
+	c.JSON(http.StatusOK, response)
+}
+
+// ReviewContentHandler handles requests to review content
+func (bc *BlogController) ReviewContentHandler(c *gin.Context) {
+	var req struct {
+		Content string `json:"content"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("Error decoding request body: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	suggestions, err := bc.blogUseCase.ReviewBlogContent(req.Content)
+	if err != nil {
+		log.Printf("Error generating suggestions: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to review content"})
+		return
+	}
+
+	response := gin.H{"suggestions": suggestions}
+	c.JSON(http.StatusOK, response)
+}
+
+// GenerateTopicHandler handles requests to generate topics
+func (bc *BlogController) GenerateTopicHandler(c *gin.Context) {
+	var req struct {
+		Keywords []string `json:"keywords"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("Error decoding request body: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	topics, err := bc.blogUseCase.GenerateTrendingTopics(req.Keywords)
+	if err != nil {
+		log.Printf("Error generating trending topics: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate topics"})
+		return
+	}
+
+	response := gin.H{"topics": topics}
+	c.JSON(http.StatusOK, response)
 }

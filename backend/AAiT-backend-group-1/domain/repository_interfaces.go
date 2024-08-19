@@ -1,13 +1,15 @@
 package domain
 
+import "context"
+
 type UserRepository interface {
-	FindById(id string) (*User, Error)
-	FindByEmail(email string) (*User, Error)
-	FindByUsername(username string) (*User, Error)
-	FindAll() ([]User, Error)
-	Create(user *User) (*User, Error)
-	Update(id string, user *User) Error
-	Delete(id string) Error
+	FindById(cxt context.Context, id string) (*User, Error)
+	FindByEmail(cxt context.Context, email string) (*User, Error)
+	FindByUsername(cxt context.Context, username string) (*User, Error)
+	FindAll(cxt context.Context) ([]User, Error)
+	Create(cxt context.Context, user *User) (*User, Error)
+	Update(cxt context.Context, id string, user *User) Error
+	Delete(cxt context.Context, id string) Error
 }
 
 type BlogRepository interface {
@@ -24,3 +26,4 @@ type BlogRepository interface {
 	Like(id string) Error
 	DisLike(id string) Error
 }
+

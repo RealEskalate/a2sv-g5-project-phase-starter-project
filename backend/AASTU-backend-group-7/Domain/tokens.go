@@ -8,6 +8,11 @@ type Tokens struct {
 }
 
 type RefreshToken struct {
-	UserID       primitive.ObjectID `json:"user_id" bson:"_id,omitempty"`
+	UserID        primitive.ObjectID `json:"user_id" bson:"_id,omitempty"`
 	Refresh_token string             `json:"refresh_token"`
+}
+
+type ResetToken struct {
+	Email       string `json:"email"`
+	Reset_token string `json:"reset_token"`
 }

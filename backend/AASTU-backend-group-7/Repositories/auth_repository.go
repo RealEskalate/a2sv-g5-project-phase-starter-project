@@ -94,7 +94,7 @@ func (au *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 	if user.UserName != "" {
 		existingUserFilter = bson.D{
 			{"$or", bson.A{
-				bson.D{{Key: "email", Value: user.Email}},
+bson.D{{Key: "email", Value: user.Email}},
 				bson.D{{Key: "username", Value: user.UserName}},
 			}},
 		}

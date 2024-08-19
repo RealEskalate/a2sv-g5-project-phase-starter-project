@@ -26,7 +26,6 @@ type RefreshRepository interface {
 	FindToken(ctx context.Context, userid primitive.ObjectID) (string, error, int)
 	StoreToken(ctx context.Context, userid primitive.ObjectID, refreshToken string) (error, int)
 }
-
 type RefreshUseCase interface {
 	// UpdateToken(c *gin.Context, refreshToken string, userid primitive.ObjectID) (error, int)
 	DeleteToken(c *gin.Context, userid primitive.ObjectID) (error, int)
@@ -90,6 +89,8 @@ type UserRepository interface {
 	DeleteUsersById(ctx context.Context, id primitive.ObjectID, current_user AccessClaims) (error, int)
 	PromoteUser(ctx context.Context, id primitive.ObjectID, current_user AccessClaims) (OmitedUser, error, int)
 	DemoteUser(ctx context.Context, id primitive.ObjectID, current_user AccessClaims) (OmitedUser, error, int)
+	ChangePassByEmail(ctx context.Context, email string, password string) (OmitedUser, error, int)
+	FindByEmail(ctx context.Context, email string) (OmitedUser, error, int)
 }
 
 type UserUseCases interface {

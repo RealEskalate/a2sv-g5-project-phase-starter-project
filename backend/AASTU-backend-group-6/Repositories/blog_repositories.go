@@ -43,17 +43,17 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string
 	defer cancel()
 	blog.ID = primitive.NewObjectID()
 	uid, err := primitive.ObjectIDFromHex(user_id)
-	
+
 	if err != nil {
 		return domain.Blog{}, errors.New("internal server error")
 	}
 	filter := bson.M{"_id": blog.Creater_id}
-	if strings.ToLower(role) == "admin"{
-		if blog.Creater_id == primitive.NilObjectID{
+	if strings.ToLower(role) == "admin" {
+		if blog.Creater_id == primitive.NilObjectID {
 			blog.Creater_id = uid
 			filter = bson.M{"_id": uid}
 		}
-	}else{
+	} else {
 		blog.Creater_id = uid
 		filter = bson.M{"_id": uid}
 	}
@@ -64,7 +64,7 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string
 	update := bson.M{
 		"$push": bson.M{"posts": blog},
 	}
-	_,  err = b.UserCollection.UpdateOne(context, filter, update)
+	_, err = b.UserCollection.UpdateOne(context, filter, update)
 	fmt.Println(filter, update)
 	if err != nil {
 		return domain.Blog{}, errors.New("internal server error")
@@ -75,41 +75,41 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string
 // DeleteBlogByID implements domain.BlogRepository.
 func (b BlogRepository) DeleteBlogByID(user_id string, blog_id string) domain.ErrorResponse {
 	timeOut := b.env.ContextTimeout
-	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut) * time.Second)
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
 	defer cancel()
 	blogID, blogErr := primitive.ObjectIDFromHex(blog_id)
 	userID, userErr := primitive.ObjectIDFromHex(user_id)
-	if blogErr != nil || userErr != nil{
+	if blogErr != nil || userErr != nil {
 		return domain.ErrorResponse{
 			Message: "internal server error",
-			Status: 500,
+			Status:  500,
 		}
 	}
 	filter := bson.M{"_id": blogID}
 	result, err := b.PostCollection.DeleteOne(context, filter)
-	if err != nil{
+	if err != nil {
 		return domain.ErrorResponse{
 			Message: "internal server error",
-			Status: 500,
+			Status:  500,
 		}
 	}
-	if result == 0{
+	if result == 0 {
 		return domain.ErrorResponse{
 			Message: "blog not found",
-			Status: 404,
+			Status:  404,
 		}
 	}
 	filter = bson.M{"_id": userID}
 	update := bson.M{
-		"$pull": bson.M{"posts" : bson.M{
-			"_id" : blogID,
+		"$pull": bson.M{"posts": bson.M{
+			"_id": blogID,
 		}},
 	}
 	_, err = b.UserCollection.UpdateOne(context, filter, update)
-	if err != nil{
+	if err != nil {
 		return domain.ErrorResponse{
 			Message: "internal server error",
-			Status: 500,
+			Status:  500,
 		}
 	}
 	return domain.ErrorResponse{}
@@ -165,22 +165,108 @@ func (b BlogRepository) GetBlogs(pageNo int64, pageSize int64) ([]domain.Blog, d
 		TotatRecord: totalResults,
 	}
 
-	return blogs, paginationInfo, err
+	return blogs, paginationInfo, nil
 }
 
 // GetMyBlogByID implements domain.BlogRepository.
 func (b BlogRepository) GetMyBlogByID(user_id string, blog_id string) (domain.Blog, error) {
-	panic("unimplemented")
+	blog_object_id, err := primitive.ObjectIDFromHex(blog_id)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	user_object_id, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+
+	filter := utils.FilterByTaskAndUserID(user_object_id, blog_object_id)
+
+	var myBlog domain.Blog
+	if err := b.PostCollection.FindOne(context.TODO(), filter).Decode(&myBlog); err != nil {
+		return domain.Blog{}, err
+	} else {
+		return myBlog, nil
+	}
 }
 
 // GetMyBlogs implements domain.BlogRepository.
-func (b BlogRepository) GetMyBlogs(user_id string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	panic("unimplemented")
+func (b BlogRepository) GetMyBlogs(user_id string, pageNo int64, pageSize int64) ([]domain.Blog, domain.Pagination, error) {
+	user_object_id, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+	fmt.Println(user_object_id)
+	pagination := utils.PaginationByPage(pageNo, pageSize)
+	totalResults, err := b.PostCollection.CountDocuments(context.TODO(), utils.FilterTaskByUserID(user_object_id))
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+
+	// Calculate total pages
+	totalPages := int64(math.Ceil(float64(totalResults) / float64(pageSize)))
+
+	cursor, err := b.PostCollection.Find(context.TODO(), primitive.D{{}}, pagination)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+	var myBlogs []domain.Blog
+	for cursor.Next(context.TODO()) {
+		var myBlog domain.Blog
+		if err := cursor.Decode(&myBlog); err != nil {
+			return []domain.Blog{}, domain.Pagination{}, err
+		}
+		myBlogs = append(myBlogs, myBlog)
+	}
+	paginationInfo := domain.Pagination{
+		CurrentPage: pageNo,
+		PageSize:    pageSize,
+		TotalPages:  totalPages,
+		TotatRecord: totalResults,
+	}
+
+	return myBlogs, paginationInfo, nil
 }
 
 // SearchBlogByTitleAndAuthor implements domain.BlogRepository.
-func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	panic("unimplemented")
+func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, pageNo int64, pageSize int64) ([]domain.Blog, domain.Pagination, error) {
+	timeOut := b.env.ContextTimeout
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut) * time.Second)
+	defer cancel()
+	pageOption := utils.PaginationByPage(pageNo, pageSize)
+	filter := bson.M{}
+	if title != "" {
+		filter["title"] = bson.M{"$regex": `(?i)` + title}
+	}
+	if author != ""{
+		filter["author"] = bson.M{"$regex": `(?i)` + author}
+	}
+	fmt.Println(filter)
+	totalResults, err := b.PostCollection.CountDocuments(context, filter)
+	if err != nil {
+		return nil, domain.Pagination{}, err
+	}
+	totalPages := int64(math.Ceil(float64(totalResults) / float64(pageSize)))
+	var blogs []domain.Blog
+	cursor, err := b.PostCollection.Find(context, filter, pageOption)
+	if err != nil {
+		return nil, domain.Pagination{}, err
+	}
+	for cursor.Next(context) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return nil, domain.Pagination{}, err
+		}
+		blogs = append(blogs, blog)
+	}
+	if err != nil {
+		return nil, domain.Pagination{}, err
+	}
+	return blogs, domain.Pagination{
+		CurrentPage: pageNo,
+		PageSize: pageSize,
+		TotalPages: totalPages,
+		TotatRecord: totalResults,
+	}, nil
 }
 
 // UpdateBlogByID implements domain.BlogRepository.
@@ -217,6 +303,6 @@ func (b BlogRepository) UpdateBlogByID(user_id string, blog_id string, blog doma
 	if updated_blog, err := b.GetBlogByID(blog_id); err != nil {
 		return domain.Blog{}, err
 	} else {
-		return updated_blog, err
+		return updated_blog, nil
 	}
 }

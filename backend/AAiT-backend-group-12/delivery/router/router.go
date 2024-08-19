@@ -16,7 +16,7 @@ func SetupRouter(port int, routePrefix string, db *mongo.Database) {
 	NewAuthRouter(db.Collection(domain.CollectionUsers), authRouter)
 
 	// blog
-	blogAuthor := router.Group("/api" + routePrefix + "/auth")
+	blogAuthor := router.Group("/api/" + routePrefix + "/blogs")
 	NewBlogRouter(db.Collection(domain.CollectionBlogs), blogAuthor)
 
 	router.Run(fmt.Sprintf(":%v", port))

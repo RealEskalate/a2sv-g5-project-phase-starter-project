@@ -301,12 +301,14 @@ func (r *MongoBlogRepository) LikeOrDislikeComment(blogId, commentId, userId str
 	filter := bson.M{"_id": id, "comments.comment_id": cid}
 	update := bson.M{}
 	if like == 1 {
-		update["$addToSet"] = bson.M{"likes": uid, "view": uid}
+		update["$addToSet"] = bson.M{"comments.$.likes": uid, "comments.$.views": uid}
 	} else if like == -1 {
-		update["$addToSet"] = bson.M{"dislikes": uid, "view": uid}
+		update["$addToSet"] = bson.M{"comments.$.dislikes": uid, "comments.$.views": uid}
 	} else {
-		update["$addToSet"] = bson.M{"view": uid}
+		update["$addToSet"] = bson.M{"comments.$.views": uid}
 	}
+	fmt.Println("this is the filter for the interaction with the comments", filter)
+	fmt.Println("this is the filter for the updates ont the comments", update)
 	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		log.Printf("Failed to like blog: %v", err)

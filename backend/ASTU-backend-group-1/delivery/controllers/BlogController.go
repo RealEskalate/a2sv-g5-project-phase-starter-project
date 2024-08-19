@@ -145,15 +145,15 @@ func (cont *BlogController) HandleBlogLikeOrDislike(ctx *gin.Context) {
 }
 
 func (cont *BlogController) HandleCommentLikeOrDislike(ctx *gin.Context) {
-	like := ctx.Param("like")
-	if like == "1" {
+	interactionType := ctx.Param("type")
+	if interactionType == "1" {
 		err := cont.usecase.LikeComment(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("commentId"), ctx.Request.FormValue("authorId"))
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {
 			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment liked successfully"})
 		}
-	} else if like == "-1" {
+	} else if interactionType == "-1" {
 		err := cont.usecase.DislikeComment(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("commentId"), ctx.Request.FormValue("authorId"))
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)

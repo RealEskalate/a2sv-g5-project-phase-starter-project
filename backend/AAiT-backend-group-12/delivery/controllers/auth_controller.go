@@ -1,8 +1,6 @@
 package controllers
-
 import (
 	"blog_api/domain"
-
 	"github.com/gin-gonic/gin"
 )
 

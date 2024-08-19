@@ -7,7 +7,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	dto "github.com/group13/blog/delivery/user/user_dto"
+
+	dto "github.com/group13/blog/delivery/controller/user/user_dto"
 	er "github.com/group13/blog/domain/errors"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
 	promotcmd "github.com/group13/blog/usecase/user/command/promote"

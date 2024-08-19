@@ -26,4 +26,3 @@ type BlogRepository interface {
 	Like(id string) Error
 	DisLike(id string) Error
 }
-

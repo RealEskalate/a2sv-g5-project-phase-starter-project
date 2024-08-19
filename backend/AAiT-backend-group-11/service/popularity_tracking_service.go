@@ -16,12 +16,12 @@ func NewPopularityTrackingService( blogRepository interfaces.BlogRepository, com
 
 func (pts *popularityTrackingService) IncrementViewCount(c context.Context,blogPostId string) error {
 		//check if the user sees the post previously before incrementing
-		blog,err := pts.blogRepository.GetBlogPostById(c, blogPostId)
+		blog,err := pts.blogRepository.GetBlogPostById(blogPostId)
 		if err != nil {
 			return err
 		}
 		blog.ViewCount++
-		_,err = pts.blogRepository.UpdateBlogPost(c, blog)
+		_,err = pts.blogRepository.UpdateBlogPost(blog)
 		if err != nil {
 			return err
 		}
@@ -29,7 +29,7 @@ func (pts *popularityTrackingService) IncrementViewCount(c context.Context,blogP
 }
 
 func (pts *popularityTrackingService) LikeBlogPost(c context.Context,blogPostId, userId string) error {
-		err := pts.blogRepository.LikeBlogPost(c,blogPostId, userId)
+		err := pts.blogRepository.LikeBlogPost(blogPostId, userId)
 		if err != nil {
 			return err
 		}
@@ -37,7 +37,7 @@ func (pts *popularityTrackingService) LikeBlogPost(c context.Context,blogPostId,
 }
 
 func (pts *popularityTrackingService) DislikeBlogPost(c context.Context,blogPostId, userId string) error {
-		err := pts.blogRepository.DislikeBlogPost(c,blogPostId, userId)
+		err := pts.blogRepository.DislikeBlogPost(blogPostId, userId)
 		if err != nil {
 			return err
 		}
@@ -47,7 +47,7 @@ func (pts *popularityTrackingService) DislikeBlogPost(c context.Context,blogPost
 
 func (pts *popularityTrackingService) GetPopularityMetrics(c context.Context,blogPostId string) (map[string]int, error) {
 		//get the popularity metrics of the blog post
-		blog,err := pts.blogRepository.GetBlogPostById(c, blogPostId)
+		blog,err := pts.blogRepository.GetBlogPostById(blogPostId)
 		if err != nil {
 			return nil,err
 		}

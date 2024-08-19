@@ -3,7 +3,6 @@ package service
 import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
-	"context"
 	"errors"
 	"time"
 )
@@ -16,19 +15,14 @@ func NewBlogService(blogRepository interfaces.BlogRepository) interfaces.BlogSer
 	return &blogService{blogRepository: blogRepository}
 }
 
-func (bs *blogService) CreateBlogPost(c context.Context, blogPost *entities.BlogPost) (*entities.BlogPost, error) {
+func (bs *blogService) CreateBlogPost(blogPost *entities.BlogPost, userId string) (*entities.BlogPost, error) {
 
 	if blogPost.Title == "" || blogPost.Content == "" || len(blogPost.Tags) == 0 {
 		return nil, errors.New("missing required fields")
 	}
 
-	// Get the user id from the context, ensuring the middleware, but we can remove it
-	userId, ok := c.Value("userId").(string)
-	if !ok || userId == "" {
-		return nil, errors.New("user not authenticated")
-	}
 
-	returnedBlog, err := bs.blogRepository.CreateBlogPost(c, blogPost)
+	returnedBlog, err := bs.blogRepository.CreateBlogPost(blogPost,userId)
 	if err != nil {
 		return nil, err
 	}
@@ -36,14 +30,14 @@ func (bs *blogService) CreateBlogPost(c context.Context, blogPost *entities.Blog
 	return returnedBlog, nil
 }
 
-func (bs *blogService) GetBlogPostById(c context.Context, blogPostId string) (*entities.BlogPost, error) {
-	blogPost, err := bs.blogRepository.GetBlogPostById(c, blogPostId)
+func (bs *blogService) GetBlogPostById(blogPostId string, userId string) (*entities.BlogPost, error) {
+	blogPost, err := bs.blogRepository.GetBlogPostById(blogPostId)
 	if err != nil {
 		return nil, err
 	}
 
 	// increment the view count of the blog post
-	err = bs.blogRepository.IncrementViewPost(c, blogPostId, c.Value("userId").(string))
+	err = bs.blogRepository.IncrementViewPost(blogPostId, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -52,21 +46,20 @@ func (bs *blogService) GetBlogPostById(c context.Context, blogPostId string) (*e
 
 }
 
-func (bs *blogService) UpdateBlogPost(c context.Context, blogPost *entities.BlogPost) (*entities.BlogPost, error) {
+func (bs *blogService) UpdateBlogPost(blogPost *entities.BlogPost, userId string) (*entities.BlogPost, error) {
 	
 	// Fetch the existing blog post to verify the author
-	existingBlogPost, err := bs.blogRepository.GetBlogPostById(c, blogPost.ID.Hex())
+	existingBlogPost, err := bs.blogRepository.GetBlogPostById(blogPost.ID.Hex())
 	if err != nil {
 		return nil, err
 	}
 
-	// Check if the user is the author of the blog post
-	userId := c.Value("userId").(string)
+
 	if existingBlogPost.AuthorID.Hex() != userId {
 		return nil, errors.New("unauthorized: only the author can update this post")
 	}
 
-	updatedBlogPost, err := bs.blogRepository.UpdateBlogPost(c, blogPost)
+	updatedBlogPost, err := bs.blogRepository.UpdateBlogPost(blogPost)
 	if err != nil {
 		return nil, err
 	}
@@ -74,22 +67,18 @@ func (bs *blogService) UpdateBlogPost(c context.Context, blogPost *entities.Blog
 	return updatedBlogPost, nil
 }
 
-func (bs *blogService) DeleteBlogPost(c context.Context, blogPostId string) error {
-	blogPost, err := bs.blogRepository.GetBlogPostById(c, blogPostId)
+func (bs *blogService) DeleteBlogPost(blogPostId,userId,role string) error {
+	blogPost, err := bs.blogRepository.GetBlogPostById(blogPostId)
 	if err != nil {
 		return err
 	}
 
-	// Get user details from context
-	userId := c.Value("userId").(string)
-	userRole := c.Value("role").(string) 
-
 	// Check if the user is the author of the blog post or an admin
-	if blogPost.AuthorID.Hex() != userId && userRole != "admin" {
+	if blogPost.AuthorID.Hex() != userId && role != "admin" {
 		return errors.New("unauthorized: only the author or an admin can delete this post")
 	}
 
-	err = bs.blogRepository.DeleteBlogPost(c, blogPostId)
+	err = bs.blogRepository.DeleteBlogPost(blogPostId)
 	if err != nil {
 		return err
 	}
@@ -98,14 +87,14 @@ func (bs *blogService) DeleteBlogPost(c context.Context, blogPostId string) erro
 }
 
 
-func (bs *blogService) GetBlogPosts(c context.Context, page, pageSize int, sortBy string) ([]entities.BlogPost, int, error) {
+func (bs *blogService) GetBlogPosts( page, pageSize int, sortBy string) ([]entities.BlogPost, int, error) {
 
-	blogPosts, err := bs.blogRepository.GetBlogPosts(c, page, pageSize, sortBy)
+	blogPosts, err := bs.blogRepository.GetBlogPosts(page, pageSize, sortBy)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	totalPosts, err := bs.blogRepository.CountBlogPosts(c)
+	totalPosts, err := bs.blogRepository.CountBlogPosts()
 	if err != nil {
 		return nil, 0, err
 	}
@@ -114,8 +103,8 @@ func (bs *blogService) GetBlogPosts(c context.Context, page, pageSize int, sortB
 
 }
 
-func (bs *blogService) SearchBlogPosts(c context.Context, criteria string, tags []string, startDate, endDate time.Time) ([]entities.BlogPost, error) {
-	blogPosts, err := bs.blogRepository.SearchBlogPosts(c, criteria, tags, startDate, endDate)
+func (bs *blogService) SearchBlogPosts(criteria string, tags []string, startDate, endDate time.Time) ([]entities.BlogPost, error) {
+	blogPosts, err := bs.blogRepository.SearchBlogPosts(criteria, tags, startDate, endDate)
 	if err != nil {
 		return nil, err
 	}
@@ -123,9 +112,9 @@ func (bs *blogService) SearchBlogPosts(c context.Context, criteria string, tags 
 	return blogPosts, nil
 }
 
-func (s *blogService) FilterBlogPosts(c context.Context, tags []string, dateRange []time.Time, sortBy string) ([]entities.BlogPost, error) {
+func (s *blogService) FilterBlogPosts(tags []string, dateRange []time.Time, sortBy string) ([]entities.BlogPost, error) {
 
-	blogPosts, err := s.blogRepository.FilterBlogPosts(c, tags, dateRange, sortBy)
+	blogPosts, err := s.blogRepository.FilterBlogPosts(tags, dateRange, sortBy)
 	if err != nil {
 		return nil, err
 	}

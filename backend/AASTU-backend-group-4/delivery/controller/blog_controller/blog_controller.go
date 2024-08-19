@@ -1,14 +1,14 @@
 package blog_controller
 
 import (
-	"blog-api/domain/blog"
+	"blog-api/domain"
 )
 
 type BlogController struct {
-	usecase blog.BlogUsecase
+	usecase domain.BlogUsecase
 }
 
-func NewBlogController(usecase blog.BlogUsecase) *BlogController {
+func NewBlogController(usecase domain.BlogUsecase) *BlogController {
 	return &BlogController{
 		usecase: usecase,
 	}

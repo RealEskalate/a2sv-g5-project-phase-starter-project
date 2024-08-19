@@ -1,7 +1,7 @@
 package blog_usecase
 
 import (
-	"blog-api/domain/blog"
+	"blog-api/domain"
 	"context"
 	"errors"
 	"time"
@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (u *BlogUsecase) CreateBlog(ctx context.Context, blog *blog.Blog) (*blog.Blog,error) {
+func (u *BlogUsecase) CreateBlog(ctx context.Context, blog *domain.Blog) (*domain.Blog,error) {
 	// Validate required fields
     if blog.Title == "" || blog.Content == "" || blog.Author == "" || len(blog.Tags) == 0 {
         return nil, errors.New("all fields are required")

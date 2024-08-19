@@ -3,15 +3,15 @@ package blog_usecase
 import (
 	"time"
 
-	"blog-api/domain/blog"
+	"blog-api/domain"
 )
 
 type BlogUsecase struct {
-	repo           blog.BlogRepository
+	repo           domain.BlogRepository
 	contextTimeout time.Duration
 }
 
-func NewBlogUsecase(BlogRepository blog.BlogRepository, timeout time.Duration) blog.BlogUsecase {
+func NewBlogUsecase(BlogRepository domain.BlogRepository, timeout time.Duration) domain.BlogUsecase {
 	return &BlogUsecase{
 		repo:           BlogRepository,
 		contextTimeout: timeout,

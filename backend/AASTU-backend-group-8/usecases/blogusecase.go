@@ -3,18 +3,15 @@ package usecases
 
 import (
 	"meleket/domain"
-	"meleket/repository"
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogUsecase struct {
-	blogRepo    repository.BlogRepositoryInterface
-	commentRepo repository.CommentRepositoryInterface
+	blogRepo domain.BlogRepositoryInterface
 }
 
-func NewBlogUsecase(br repository.BlogRepositoryInterface) *BlogUsecase {
+func NewBlogUsecase(br domain.BlogRepositoryInterface) *BlogUsecase {
 	return &BlogUsecase{blogRepo: br}
 }
 
@@ -29,7 +26,7 @@ func (u *BlogUsecase) CreateBlogPost(blog *domain.BlogPost) (*domain.BlogPost, e
 
 // GetAllBlogPosts retrieves all blog posts
 func (u *BlogUsecase) GetAllBlogPosts() ([]domain.BlogPost, error) {
-	blogs, err := u.blogRepo.FindAll()
+	blogs, err := u.blogRepo.GetAllBlog()
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +35,7 @@ func (u *BlogUsecase) GetAllBlogPosts() ([]domain.BlogPost, error) {
 
 // GetBlogByID retrieves a blog post by its ID
 func (u *BlogUsecase) GetBlogByID(id primitive.ObjectID) (*domain.BlogPost, error) {
-	blog, err := u.blogRepo.FindByID(id)
+	blog, err := u.blogRepo.GetBlogByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -55,13 +52,13 @@ func (u *BlogUsecase) UpdateBlogPost(id primitive.ObjectID, blog *domain.BlogPos
 }
 
 // SearchBlogPosts searches for blog posts based on search query
-func (u *BlogUsecase) SearchBlogPosts(query *domain.SearchBlogPost) ([]domain.BlogPost, error) {
-	blogs, err := u.blogRepo.Search(query.Title)
-	if err != nil {
-		return nil, err
-	}
-	return blogs, nil
-}
+// func (u *BlogUsecase) SearchBlogPosts(query *domain.SearchBlogPost) ([]domain.BlogPost, error) {
+// 	blogs, err := u.blogRepo.Search(query.Title)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return blogs, nil
+// }
 
 // DeleteBlogPost deletes a blog post by its ID
 func (u *BlogUsecase) DeleteBlogPost(id primitive.ObjectID) error {
@@ -70,18 +67,4 @@ func (u *BlogUsecase) DeleteBlogPost(id primitive.ObjectID) error {
 		return err
 	}
 	return nil
-}
-func (u *BlogUsecase) AddComment(blogID, userID primitive.ObjectID, content string) error {
-	comment := &domain.Comment{
-		ID:        primitive.NewObjectID(),
-		BlogID:    blogID,
-		UserID:    userID,
-		Content:   content,
-		CreatedAt: time.Now(),
-	}
-	return u.commentRepo.AddComment(comment)
-}
-
-func (u *BlogUsecase) GetComments(blogID primitive.ObjectID) ([]domain.Comment, error) {
-	return u.commentRepo.GetCommentsByBlogID(blogID)
 }

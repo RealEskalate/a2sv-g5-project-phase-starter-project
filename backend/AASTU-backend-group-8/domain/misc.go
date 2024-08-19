@@ -25,12 +25,6 @@ type BlogFilter struct {
 	} `json:"date_range"`
 }
 
-type RefreshToken struct {
-	// username     string    `bson:"token" json:"token"`
-	UserID    string    `bson:"user_id" json:"user_id"`
-	ExpiresAt time.Time `bson:"expires_at" json:"expires_at"`
-}
-
 type Comment struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
 	BlogID    primitive.ObjectID `bson:"blog_id"`

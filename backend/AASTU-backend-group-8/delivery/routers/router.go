@@ -8,19 +8,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, likeUsecase *usecases.LikeUsecase, commentUsecase *usecases.CommentUsecase, jwtService *infrastructure.JwtService) {
+func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, likeUsecase *usecases.LikeUsecase, commentUsecase *usecases.CommentUsecase, tokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase, jwtService infrastructure.JWTService) {
+	// func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, tokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase) {
+
 	// Initialize controllers
+	signupController := controllers.NewSignupController(userUsecase, otpUsecase)
 	blogController := controllers.NewBlogController(blogUsecase)
 	userController := controllers.NewUserController(userUsecase)
+	// refreshTokenController := controllers.NewRefreshTokenController(userUsecase)
 	commentController := controllers.NewCommentController(commentUsecase)
 	likeController := controllers.NewLikeController(likeUsecase)
 
 	// Admin middleware
+	// adminMiddleware := infrastructure.AdminMiddleware(jwtService)
 	adminMiddleware := infrastructure.AdminMiddleware(jwtService)
 
 	// Public routes
-	r.POST("/register", userController.Register)
+	r.POST("/signup", signupController.Signup)
 	r.POST("/login", userController.Login)
+	r.POST("/verify", signupController.VerifyOTP)
 	r.POST("/forgot-password", userController.ForgotPassword)
 	r.POST("/refresh-token", userController.RefreshToken)
 
@@ -38,7 +44,7 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 		auth.GET("/blogs", blogController.GetAllBlogPosts)
 		auth.GET("/blogs/:id", blogController.GetBlogByID)
 		auth.PUT("/blogs/:id", blogController.UpdateBlogPost)
-		auth.POST("/blogsearch", blogController.SearchBlogPost)
+		// auth.POST("/blogsearch", blogController.SearchBlogPost)
 		auth.DELETE("/blogs/:id", blogController.DeleteBlogPost)
 
 		// Comment routes

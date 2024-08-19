@@ -83,7 +83,7 @@ func (uc *UserController) Login(c *gin.Context) {
 		return
 	}
 
-    c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
+	c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
 }
 
 
@@ -145,6 +145,57 @@ func (uc *UserController) ForgotPassword(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
+	
+	token  , err := uc.UserUsecase.ForgotPassword(input.Username)
+	if err!= nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+	c.JSON(http.StatusOK, gin.H{ "token":token})
+
+}
+func (uc *UserController) ResetPassword(c *gin.Context) {
+	reset_token := c.Param("token")
+	
+	new_token , err := uc.UserUsecase.Reset(reset_token)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return   
+	 }
+	 c.JSON(http.StatusOK, gin.H{"access_token": new_token})
+
+}
+	
+	
+func (uc *UserController) ChangePassword(c *gin.Context) {
+	var input Domain.ChangePasswordInput
+
+    if err := c.ShouldBindJSON(&input); err!= nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+        return
+    }
+
+	err := uc.UserUsecase.UpdatePassword(input.Username, input.NewPassword)
+    if err!= nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Password changed successfully"})
 }
 
+
+func (uc *UserController) Logout(c *gin.Context) {
+	username := c.Param("username")
+	tokenString := c.GetHeader("Authorization")
+
+	err := uc.UserUsecase.Logout(username, tokenString)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "User logged out successfully"})
+}

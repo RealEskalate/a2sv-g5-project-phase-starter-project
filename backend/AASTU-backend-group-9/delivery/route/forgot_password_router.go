@@ -18,7 +18,7 @@ func NewForgotPasswordRouter(env *config.Env, db database.Database, router *gin.
 
     forgotPasswordController := &controller.ForgotPasswordController{
         ForgotPasswordUsecase: forgotPasswordUsecase,
-        // Remove Env if not needed
+        Env:                  env,
     }
 
     router.POST("/forgot_password", forgotPasswordController.ForgotPassword)

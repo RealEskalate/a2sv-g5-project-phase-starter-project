@@ -74,43 +74,43 @@ func (controller *UserController) DeleteUser() gin.HandlerFunc {
 	}
 }
 
-func (controller *UserController) LogIn() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		log_in_model := domain.LogINUser{}
+// func (controller *UserController) LogIn() gin.HandlerFunc {
+// 	return func(ctx *gin.Context) {
+// 		log_in_model := domain.LogINUser{}
 
-		err := ctx.BindJSON(&log_in_model)
-		if err != nil {
-			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : "invalid form data"})
-			return
-		}
+// 		err := ctx.BindJSON(&log_in_model)
+// 		if err != nil {
+// 			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : "invalid form data"})
+// 			return
+// 		}
 
-		user,err := controller.UserUsecase.LogIn(log_in_model)
-		if err != nil {
-			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : "failed to login"})
-			return
-		}
-		ctx.IndentedJSON(http.StatusOK , gin.H{"data" : user})
-	}
-}
+// 		user,err := controller.UserUsecase.LogIn(log_in_model)
+// 		if err != nil {
+// 			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : "failed to login"})
+// 			return
+// 		}
+// 		ctx.IndentedJSON(http.StatusOK , gin.H{"data" : user})
+// 	}
+// }
 
-func (controller *UserController) Register() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		register_user := domain.RegisterUser{}
+// func (controller *UserController) Register() gin.HandlerFunc {
+// 	return func(ctx *gin.Context) {
+// 		register_user := domain.RegisterUser{}
 
-		err := ctx.BindJSON(&register_user)
-		if err != nil {
-			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : "invalid form data"})
-			return
-		}
+// 		err := ctx.BindJSON(&register_user)
+// 		if err != nil {
+// 			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : "invalid form data"})
+// 			return
+// 		}
 
-		user,err := controller.UserUsecase.Register(register_user)
-		if err != nil {
-			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : "failed to register"})
-			return
-		}
-		ctx.IndentedJSON(http.StatusOK , gin.H{"data" : user})
-	}
-}
+// 		user,err := controller.UserUsecase.Register(register_user)
+// 		if err != nil {
+// 			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : "failed to register"})
+// 			return
+// 		}
+// 		ctx.IndentedJSON(http.StatusOK , gin.H{"data" : user})
+// 	}
+// }
 
 func (controller *UserController) FilterUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {

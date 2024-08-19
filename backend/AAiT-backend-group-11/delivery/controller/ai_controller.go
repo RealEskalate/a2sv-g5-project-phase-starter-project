@@ -14,6 +14,7 @@ type AIContentController struct {
 func NewAIContentController(aiContentService service.AIContentService) *AIContentController {
 	return &AIContentController{
 		aiContentService: aiContentService,
+
 	}}
 
 func (acc *AIContentController) GenerateContentSuggestions(c *gin.Context) {
@@ -38,7 +39,6 @@ func (acc *AIContentController) GenerateContentSuggestions(c *gin.Context) {
 func (acc *AIContentController) SuggestContentImprovements(c *gin.Context) {
 	var req struct {
 		BlogPostID string `json:"blogPostId"`
-		Content    string `json:"content"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -46,7 +46,7 @@ func (acc *AIContentController) SuggestContentImprovements(c *gin.Context) {
 		return
 	}
 
-	contentSuggestion, err := acc.aiContentService.SuggestContentImprovements(req.BlogPostID, req.Content)
+	contentSuggestion, err := acc.aiContentService.SuggestContentImprovements(req.BlogPostID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

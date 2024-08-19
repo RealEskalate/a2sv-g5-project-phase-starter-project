@@ -12,6 +12,7 @@ import TotalSaving_img from '@/public/assests/icon/Accounts/Group401.png';
 import Shopping from '@/public/assests/icon/Accounts/Group328.png';
 import Service from '@/public/assests/icon/Accounts/Group327.png';
 import Transfer from '@/public/assests/icon/Accounts/user2.png';
+import { useSession } from 'next-auth/react';
 
 const Accounts = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -20,8 +21,11 @@ const Accounts = () => {
   const [expense, setExpense] = useState<number>(0);
   const [netBalance, setNetBalance] = useState<number>(0);
   const [invoicesData, setInvoicesData] = useState<any[]>(mockInvoicesData); // Use mock data
+  const { data: session } = useSession();
 
-  const token = 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZHVnbmEiLCJpYXQiOjE3MjQwNjgwODMsImV4cCI6MTcyNDE1NDQ4M30.74Z0YuZRptJrRS4QSMTE1NtKiH55EuggFAzNuq-WDfU9a2enJFU5s3JLCDy_1YrC';
+  
+  const token: string =  ` Bearer ${session?.user?.accessToken} `;
+  console.log(session,11111111,token)
 
   useEffect(() => {
     const fetchTransactions = async () => {

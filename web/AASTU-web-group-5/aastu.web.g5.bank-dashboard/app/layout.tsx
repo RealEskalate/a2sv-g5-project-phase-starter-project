@@ -12,16 +12,18 @@ import { metadata } from "./layoutMetadata";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+	
+		children,
+		}: Readonly<{
+		children: React.ReactNode;
+		}>) {
+		const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
-  const toggleSidebar = () => {
-    setIsSidebarVisible(!isSidebarVisible);
-  };
-
+		const toggleSidebar = () => {
+			setIsSidebarVisible(!isSidebarVisible);
+		};
+      
+		
 	return (
 		<html lang="en">
 			<body className={inter.className}>

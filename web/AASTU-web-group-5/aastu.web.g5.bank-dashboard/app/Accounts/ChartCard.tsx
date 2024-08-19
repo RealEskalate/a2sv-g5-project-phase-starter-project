@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { Card, CardContent } from "../../@/components/ui/card";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 
 // Configuration for chart colors
 const chartConfig = {
@@ -33,6 +34,7 @@ const getDayName = (dateString) => {
 };
 
 export default function Component() {
+  const { data: session } = useSession();
   const [chartData, setChartData] = useState([
     { day: "Mon", debited: 0, credited: 0 },
     { day: "Tue", debited: 0, credited: 0 },
@@ -44,9 +46,9 @@ export default function Component() {
   ]);
 
   useEffect(() => {
-    const token =
-      "Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZHVnbmEiLCJpYXQiOjE3MjQwNjgwODMsImV4cCI6MTcyNDE1NDQ4M30.74Z0YuZRptJrRS4QSMTE1NtKiH55EuggFAzNuq-WDfU9a2enJFU5s3JLCDy_1YrC";
 
+    const token: string =  ` Bearer ${session?.user?.accessToken} `;
+  
     const fetchData = async () => {
       try {
         // Fetch expenses and incomes data simultaneously

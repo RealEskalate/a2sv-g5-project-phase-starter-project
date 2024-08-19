@@ -65,7 +65,7 @@ const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolea
                     <Image src={enabled === "user" ? enabledUser : user} alt="User Icon" className="h-[25px] w-[25px]" />
                     <div> Accounts</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("economicInvestment", "/investments")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("economicInvestment", "/Investments")}>
                     <Image src={enabled === "economicInvestment" ? enabledEconomicInvestment : economicInvestment} alt="Investments Icon" className="h-[25px] w-[25px]" />
                     <div> Investments</div>
                 </div>

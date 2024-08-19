@@ -8,6 +8,7 @@ import Rate_img from "@/public/assests/icon/Investments/Group307.png";
 import ChartCard_Invest from "./ChartCard_Invest";
 import MonthlyRevenueChart from "./MonthlyRevenueChart";
 import { tradingStockData, investmentsData } from "./mockData";
+import { useSession } from "next-auth/react";
 
 const Investments = () => {
   const [investmentOverview, setInvestmentOverview] = useState({
@@ -18,7 +19,9 @@ const Investments = () => {
 
   const [yearlyTotalInvestment, setYearlyTotalInvestment] = useState([]);
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
-  const token = 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZHVnbmEiLCJpYXQiOjE3MjQwNTg1OTQsImV4cCI6MTcyNDE0NDk5NH0.ZzebEqyDcwhwmPr5az8xu4l3AfH0yVAYkoN3EO5ZSRo1Hg-FGLX_Wwg-WJM2LD_4';
+  const { data: session } = useSession();
+
+  const token: string =  ` Bearer ${session?.user?.accessToken} `;
   useEffect(() => {
     const fetchInvestmentData = async () => {
       try {

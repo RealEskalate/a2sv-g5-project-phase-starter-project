@@ -5,4 +5,5 @@ package interfaces
 type EmailService interface {
 	SendEmail(to, subject, body string) error
 	GenerateEmailTemplate(header, content string) string
+	VerifyEmailAddress(emailAddress string) (bool, error)
 }

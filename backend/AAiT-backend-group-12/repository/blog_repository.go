@@ -238,13 +238,8 @@ func toDomain(blogDTO *dtos.BlogDTO) *domain.Blog {
 
 // Converts Blog domain model to BlogDTO.
 func toDTO(blog *domain.Blog) (*dtos.BlogDTO, error) {
-	blogID, err := primitive.ObjectIDFromHex(blog.ID)
-	if err != nil {
-		return nil, err
-	}
 
 	return &dtos.BlogDTO{
-		ID:         blogID,
 		Title:      blog.Title,
 		Content:    blog.Content,
 		Username:   blog.Username,

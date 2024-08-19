@@ -1,6 +1,7 @@
 package blogmodel
 
 import (
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -190,5 +191,39 @@ func (b *Blog) UpdateContent(config Config) error {
 // UpdateTags updates the blog's tags.
 func (b *Blog) UpdateTags(config Config) error {
 	b.tags = config.Tags
+	return nil
+}
+
+func (b *Blog) UpdateCommentCount(inc bool) error {
+	if b.commentCount == 0 && inc {
+		return errors.New("no comment count")
+	}
+	if inc {
+		b.commentCount++
+	} else {
+		b.commentCount--
+	}
+	return nil
+}
+func (b *Blog) UpdateLikeCount(inc bool) error {
+	if b.likeCount == 0 && inc {
+		return errors.New("no likes count")
+	}
+	if inc {
+		b.likeCount++
+	} else {
+		b.likeCount--
+	}
+	return nil
+}
+func (b *Blog) UpdateDisLikeCount(inc bool) error {
+	if b.disLikeCount == 0 && inc {
+		return errors.New("no comment count")
+	}
+	if inc {
+		b.disLikeCount++
+	} else {
+		b.disLikeCount--
+	}
 	return nil
 }

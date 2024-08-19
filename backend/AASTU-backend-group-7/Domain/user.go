@@ -16,7 +16,6 @@ type User struct {
 	Bio            string               `json:"bio"`
 	CreatedAt      time.Time            `json:"created_at"`
 	UpdatedAt      time.Time            `json:"updated_at"`
-	Posts          []primitive.ObjectID `json:"posts"`
 }
 
 // this could have been handled in a better way but i was too lazy to do it
@@ -30,5 +29,4 @@ type OmitedUser struct {
 	Bio            string               `json:"bio"`
 	CreatedAt      time.Time            `json:"created_at"`
 	UpdatedAt      time.Time            `json:"updated_at"`
-	Posts          []primitive.ObjectID `json:"posts"`
 }

@@ -37,5 +37,7 @@ func BlogRouter() {
 		commentRouter.PUT("/edit/:id", commentcontroller.EditComment)
 		// get user comments
 		commentRouter.GET("/getauthorcomments/:id", commentcontroller.GetUserComments)
+		// get user's comments
+		commentRouter.GET("/getmycomments", commentcontroller.GetMyComments)
 	}
 }

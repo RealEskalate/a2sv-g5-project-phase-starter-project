@@ -135,3 +135,19 @@ func (cc *CommentController) GetUserComments(c *gin.Context) {
 
 	c.JSON(200, gin.H{"comments": comments})
 }
+
+func (cc *CommentController) GetMyComments(c *gin.Context){
+	claims, err := Getclaim(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	comments, err, statuscode := cc.commentUseCase.GetUserComments(c, claims.ID)
+	if err != nil {
+		c.JSON(statuscode, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"comments": comments})
+}

@@ -16,7 +16,7 @@ export default function RootLayout({
       {children}
       <div className="flex h-screen w-full sticky top-0 items-center justify-end bg-sky-1 max-lg:hidden">
         <Image
-          src="/icons/authPage.jpg"
+          src="/icons/AuthPage.jpg"
           alt="Auth image"
           width={500}
           height={500}

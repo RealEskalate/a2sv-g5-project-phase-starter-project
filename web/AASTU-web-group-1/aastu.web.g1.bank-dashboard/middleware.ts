@@ -11,6 +11,7 @@ export async function middleware(req: NextRequest) {
 
   const excludedPaths = [
     "/images/",
+    "/icons/",
     "/_next/static/",
     "/_next/image/",
     "/favicon.ico",
@@ -21,6 +22,7 @@ if (excludedPaths.some(path => pathname.startsWith(path))) {
 }
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  console.log("Token", token)
 
   if (!token) {
     const url = req.nextUrl.clone();

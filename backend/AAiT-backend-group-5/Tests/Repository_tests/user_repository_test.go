@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	repository "github.com/aait.backend.g5.main/backend/Repository"
 	"github.com/stretchr/testify/suite"
@@ -13,10 +14,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
 type UserRepositorySuite struct {
 	suite.Suite
-	Repository  *repository.UserMongoRepository
+	Repository  interfaces.UserRepository
 	DB          *mongo.Database
 	Collection  *mongo.Collection
 	TestContext context.Context
@@ -24,7 +24,7 @@ type UserRepositorySuite struct {
 
 // SetupSuite runs before all tests in the suite
 func (suite *UserRepositorySuite) SetupSuite() {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017") 
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
@@ -48,11 +48,10 @@ func (suite *UserRepositorySuite) TearDownSuite() {
 // TestCreateUser tests the CreateUser method
 func (suite *UserRepositorySuite) TestCreateUser() {
 	user := &models.User{
-		Username:   "testuser",
-		Name:       "Test User",
-		Email:      "testuser@example.com",
-		Password:   "hashedpassword",
-		IsVerified: false,
+		Username: "testuser",
+		Name:     "Test User",
+		Email:    "testuser@example.com",
+		Password: "hashedpassword",
 	}
 
 	err := suite.Repository.CreateUser(suite.TestContext, user)
@@ -155,7 +154,7 @@ func (suite *UserRepositorySuite) TestDeleteUser() {
 	suite.Collection.InsertOne(suite.TestContext, user)
 
 	// Delete the user
-	err := suite.Repository.DeleteUser(suite.TestContext, user.ID.Hex())
+	err := suite.Repository.DeleteUser(suite.TestContext, user.ID)
 	suite.Empty(err, "Expected no error when deleting user")
 
 	// Ensure the user is deleted
@@ -216,7 +215,6 @@ func (suite *UserRepositorySuite) TestDemoteUser() {
 	suite.Empty(err, "Expected no error when fetching user after demotion")
 	suite.Equal(role, demotedUser.Role, "Expected role to remain admin (demotion logic should be handled correctly)")
 }
-
 
 func TestUserRepositorySuite(t *testing.T) {
 	suite.Run(t, new(UserRepositorySuite))

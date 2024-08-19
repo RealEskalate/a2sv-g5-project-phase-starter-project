@@ -59,7 +59,7 @@ func (forgotPasswordController *ForgotPasswordController) SetNewPassword(ctx *gi
 	// get short code from the URL
 	shortURLCode := ctx.Param("id")
 
-	e := forgotPasswordController.PasswordUsecase.UpdateUserPassword(ctx, setUpPasswordRequest.Password, shortURLCode)
+	e := forgotPasswordController.PasswordUsecase.SetPassword(ctx, setUpPasswordRequest.Password, shortURLCode)
 	if e != nil {
 		ctx.JSON(e.Code, e.Error())
 		return

@@ -49,7 +49,7 @@ func (signupController *SignupController) Signup(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "check your email"})
 }
 
-func (signupController *SignupController) ForgotPasswordConfirm(ctx *gin.Context) {
+func (signupController *SignupController) ConfirmRegistration(ctx *gin.Context) {
 	var setUpPasswordRequest *dtos.SetUpPasswordRequest
 
 	// attempt to bind the payload carrying the new password
@@ -62,7 +62,7 @@ func (signupController *SignupController) ForgotPasswordConfirm(ctx *gin.Context
 	// get short code from the URL
 	shortURLCode := ctx.Param("id")
 
-	e := signupController.PasswordUsecase.UpdateUserPassword(ctx, setUpPasswordRequest.Password, shortURLCode)
+	e := signupController.PasswordUsecase.SetPassword(ctx, setUpPasswordRequest.Password, shortURLCode)
 	if e != nil {
 		ctx.JSON(e.Code, e.Error())
 		return

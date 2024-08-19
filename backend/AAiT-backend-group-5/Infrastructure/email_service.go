@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"log"
 	"strconv"
 
 	"gopkg.in/gomail.v2"
@@ -36,14 +37,20 @@ func (es *emailService) SendEmail(to string, subject string, body string) *model
 
 	port, err := strconv.Atoi(es.emailConfig.Port)
 	if err != nil {
+		log.Println("Invalid SMTP port configuration", err.Error())
 		return models.InternalServerError("Invalid SMTP port configuration")
 	}
 
+	log.Println("Sending email...", port)
 	d := gomail.NewDialer(es.emailConfig.SMTPServer, port, es.emailConfig.Username, es.emailConfig.Password)
 
 	if err := d.DialAndSend(m); err != nil {
+		log.Println("Invalid SMTP port configuration", err.Error())
+
 		return models.InternalServerError("Error occurred while sending email")
 	}
+
+	log.Println("Email sent successfully")
 
 	return nil
 }

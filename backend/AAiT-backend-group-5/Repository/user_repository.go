@@ -5,7 +5,9 @@ import (
 	"errors"
 	"time"
 
+	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,7 +21,7 @@ type UserMongoRepository struct {
 }
 
 // NewUserRepository creates a new UserMongoRepository
-func NewUserRepository(db *mongo.Database) *UserMongoRepository {
+func NewUserRepository(db *mongo.Database) interfaces.UserRepository {
 	return &UserMongoRepository{
 		Collection: db.Collection("user-collection"),
 	}

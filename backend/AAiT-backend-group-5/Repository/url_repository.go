@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-package repository
-=======
 package repository
 
 import (
@@ -11,31 +8,30 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
-type URL_Repo struct{
+
+type URL_Repo struct {
 	Collection *mongo.Collection
 }
 
-func NewURLRepository(db *mongo.Database) interfaces.URLServiceRepository{
+func NewURLRepository(db *mongo.Database) interfaces.URLServiceRepository {
 	return &URL_Repo{
 		Collection: db.Collection("url-collection"),
 	}
 }
 
-
-func (urlRepo *URL_Repo) SaveURL(url models.URL, ctx context.Context) *models.ErrorResponse{
+func (urlRepo *URL_Repo) SaveURL(url models.URL, ctx context.Context) *models.ErrorResponse {
 	_, err := urlRepo.Collection.InsertOne(ctx, url)
-	if err != nil{
+	if err != nil {
 		return models.InternalServerError(err.Error())
 	}
 
 	return models.Nil()
 }
 
-
-func (urlRepo *URL_Repo) GetURL(short_url_code string, ctx context.Context) (*models.URL, *models.ErrorResponse){
+func (urlRepo *URL_Repo) GetURL(short_url_code string, ctx context.Context) (*models.URL, *models.ErrorResponse) {
 	var result models.URL
 
-	err := urlRepo.Collection.FindOne(ctx, bson.D{{Key:"short_url", Value: short_url_code}}).Decode(&result)
+	err := urlRepo.Collection.FindOne(ctx, bson.D{{Key: "short_url", Value: short_url_code}}).Decode(&result)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -46,12 +42,10 @@ func (urlRepo *URL_Repo) GetURL(short_url_code string, ctx context.Context) (*mo
 	return &result, models.Nil()
 }
 
-
-func (urlRepo *URL_Repo) DeleteURL(id string, ctx context.Context) *models.ErrorResponse{
-	_,err := urlRepo.Collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
-	if err != nil{
+func (urlRepo *URL_Repo) DeleteURL(id string, ctx context.Context) *models.ErrorResponse {
+	_, err := urlRepo.Collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
+	if err != nil {
 		return models.InternalServerError(err.Error())
 	}
 	return models.Nil()
 }
->>>>>>> origin/aait.backend.g5.bisrat.setup-db-and-user-repo

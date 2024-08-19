@@ -1,15 +1,13 @@
 package routers
 
 import (
-	"time"
-
 	config "github.com/aait.backend.g5.main/backend/Config"
 	infrastructure "github.com/aait.backend.g5.main/backend/Infrastructure"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Setup(env *config.Env, timeout time.Duration, db mongo.Database, gin *gin.Engine) {
+func Setup(env *config.Env, db mongo.Database, gin *gin.Engine) {
 	publicRouter := gin.Group("")
 	protectedRouter := gin.Group("")
 	adminRouter := gin.Group("")

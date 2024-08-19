@@ -18,7 +18,7 @@ const LastTransList = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const accessToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjM4OTg5NjUsImV4cCI6MTcyMzk4NTM2NX0.xOmHULIGVJva2RHp9859jUC0zRjOzitYRFrcdbLwUkdYTsIIEtHJv8rz76nUgq0r";
+        const accessToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjM5OTIwNjMsImV4cCI6MTcyNDA3ODQ2M30.TQUQ-1kz6M-DWcCDKjVgasHzfZxxhZf0Odeux1Jw1OPqxa4doCexoALnIAeGIkQS";
         const expense = await LastTransService.getExpenseData(accessToken);
         const income = await LastTransService.getIncomeData(accessToken);
         const incomeData = (income ?? []).map((income: LastTransData) => ({
@@ -32,12 +32,9 @@ const LastTransList = () => {
         }));
         
         const combinedTransactions = [...incomeData, ...expenseData];
+       
         
         combinedTransactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        
-        console.log(combinedTransactions);
-        console.log(expense)
-        console.log(income)
         setData(combinedTransactions.slice(0, 3))
       } catch (error) {
         setError("Error fetching data");

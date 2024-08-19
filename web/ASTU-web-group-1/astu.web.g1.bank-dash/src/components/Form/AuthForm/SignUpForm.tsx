@@ -17,10 +17,10 @@ const stepOneSchema = z
     permanentAddress: z.string().min(1, "Permanent address is required"),
     postalCode: z.string().min(1, "Postal code is required"),
     username: z.string().min(1, "Username is required"),
-    password: z.string().min(6, "Password must be at least 6 characters long"),
+    password: z.string().min(6, "At least 6 characters long"),
     confirmPassword: z
       .string()
-      .min(6, "Confirm Password must be at least 6 characters long"),
+      .min(6, "At least 6 characters long"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -115,9 +115,8 @@ const SignUpForm = () => {
               registerName="name"
               register={register}
               placeholder="Enter Full Name"
+              errorMessage={errors?.name?.message as string}
             />
-
-            {errors?.name && <p>{String(errors.name.message)}</p>}
 
             <InputGroup
               id="email"
@@ -126,9 +125,9 @@ const SignUpForm = () => {
               registerName="email"
               register={register}
               placeholder="Enter Your Email"
+              errorMessage={errors?.email?.message as string}
             />
           </div>
-          {errors?.email && <p>{String(errors.email.message)}</p>}
 
           <div className="w-full md:flex md:gap-4 ">
             <InputGroup
@@ -138,9 +137,8 @@ const SignUpForm = () => {
               registerName="dateOfBirth"
               register={register}
               placeholder="Enter Date Of Birth"
+              errorMessage={errors?.dateOfBirth?.message as string}
             />
-
-            {errors?.dateOfBirth && <p>{String(errors.dateOfBirth.message)}</p>}
 
             <InputGroup
               id="permanentAddress"
@@ -149,10 +147,8 @@ const SignUpForm = () => {
               registerName="permanentAddress"
               register={register}
               placeholder="Enter Permanent Address"
+              errorMessage={errors?.permanentAddress?.message as string}
             />
-            {errors?.permanentAddress && (
-              <p>{String(errors.permanentAddress.message)}</p>
-            )}
           </div>
 
           <div className="w-full md:flex md:gap-4 ">
@@ -163,8 +159,8 @@ const SignUpForm = () => {
               registerName="postalCode"
               register={register}
               placeholder="Enter Postal Code"
+              errorMessage={errors?.postalCode?.message as string}
             />
-            {errors?.postalCode && <p>{String(errors.postalCode.message)}</p>}
 
             <InputGroup
               id="username"
@@ -173,8 +169,8 @@ const SignUpForm = () => {
               registerName="username"
               register={register}
               placeholder="Enter Username"
+              errorMessage={errors?.username?.message as string}
             />
-            {errors?.username && <p>{String(errors.username.message)}</p>}
           </div>
           <div className="w-full md:flex md:gap-4 ">
             <InputGroup
@@ -184,8 +180,8 @@ const SignUpForm = () => {
               registerName="password"
               register={register}
               placeholder="Enter Password"
+              errorMessage={errors?.password?.message as string}
             />
-            {errors?.password && <p>{String(errors.password.message)}</p>}
 
             <InputGroup
               id="confirmPassword"
@@ -194,10 +190,8 @@ const SignUpForm = () => {
               registerName="confirmPassword"
               register={register}
               placeholder="RE-Enter password"
+              errorMessage={errors?.confirmPassword?.message as string}
             />
-            {errors?.confirmPassword && (
-              <p>{String(errors.confirmPassword.message)}</p>
-            )}
           </div>
         </>
       )}
@@ -212,10 +206,8 @@ const SignUpForm = () => {
               registerName="presentAddress"
               register={register}
               placeholder="Enter Present Address"
+              errorMessage={errors?.presentAddress?.message as string}
             />
-            {errors?.presentAddress && (
-              <p>{String(errors.presentAddress.message)}</p>
-            )}
 
             <InputGroup
               id="city"
@@ -224,8 +216,8 @@ const SignUpForm = () => {
               registerName="city"
               register={register}
               placeholder="Enter City"
+              errorMessage={errors?.city?.message as string}
             />
-            {errors?.city && <p>{String(errors.city.message)}</p>}
           </div>
 
           <div className="w-full md:flex md:gap-4 ">
@@ -236,8 +228,8 @@ const SignUpForm = () => {
               registerName="country"
               register={register}
               placeholder="Enter Country"
+              errorMessage={errors?.country?.message as string}
             />
-            {errors?.country && <p>{String(errors.country.message)}</p>}
           </div>
 
           <div className="w-full md:flex md:gap-4 ">
@@ -255,7 +247,11 @@ const SignUpForm = () => {
                 <option value="CA">Birr</option>
                 <option value="FR">Birr</option>
               </select>
+              {errors?.currency && (
+                <p className="text-red-400"> {errors?.currency?.message as string} </p>
+              )}
             </div>
+
             <div className=" w-full lg:w-6/12 space-y-3 my-3">
               <label htmlFor="timeZone" className="gray-dark text-16px">
                 Time Zone
@@ -270,6 +266,9 @@ const SignUpForm = () => {
                 <option value="CA">Birr</option>
                 <option value="FR">Birr</option>
               </select>
+              {errors?.timeZone && (
+                <p className="text-red-400"> {errors?.timeZone?.message as string} </p>
+              )}
             </div>
           </div>
         </>

@@ -25,7 +25,9 @@ func CreateAccessToken(user *domain.AuthSignup, secret string, expiry int) (acce
 }
 
 func CreateRefreshToken(user *domain.AuthSignup, secret string, expiry int) (refreshToken string, err error) {
-	claimsRefresh := &domain.JwtCustomRefreshClaims{
+	claimsRefresh := &domain.JwtCustomClaims{
+		UserID: user.UserID,
+		Email:   user.Email,
 		Username: user.Username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * time.Duration(expiry)).Unix(),

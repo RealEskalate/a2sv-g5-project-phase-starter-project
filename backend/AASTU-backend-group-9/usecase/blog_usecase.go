@@ -1,18 +1,17 @@
 package usecase
 
 import (
+	"blog/domain"
 	"context"
 	"errors"
-	"blog/domain"
 
 	"time"
 
-	
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	// "github.com/gin-gonic/gin"
 )
 
-type blogUsecase struct  {
+type blogUsecase struct {
 	blogRepository domain.BlogRepository
 	contextTimeout time.Duration
 }
@@ -25,8 +24,6 @@ func NewBlogUsecase(blogRepository domain.BlogRepository, timeout time.Duration)
 }
 
 func (bu *blogUsecase) CreateBlog(ctx context.Context, req *domain.BlogCreationRequest, claims *domain.JwtCustomClaims) (*domain.BlogResponse, error) {
-	
-
 
 	blog := &domain.Blog{
 		ID:        primitive.NewObjectID(),
@@ -49,8 +46,7 @@ func (bu *blogUsecase) CreateBlog(ctx context.Context, req *domain.BlogCreationR
 		Tags:      blog.Tags,
 		CreatedAt: blog.CreatedAt,
 		UpdatedAt: blog.UpdatedAt,
-		AuthorID: blog.AuthorID,
-
+		AuthorID:  blog.AuthorID,
 	}, nil
 }
 
@@ -67,7 +63,7 @@ func (bu *blogUsecase) GetBlogByID(ctx context.Context, id primitive.ObjectID) (
 		Tags:      blog.Tags,
 		CreatedAt: blog.CreatedAt,
 		UpdatedAt: blog.UpdatedAt,
-		AuthorID: blog.AuthorID,
+		AuthorID:  blog.AuthorID,
 	}, nil
 }
 
@@ -86,7 +82,7 @@ func (bu *blogUsecase) GetAllBlogs(ctx context.Context, page int, limit int, sor
 			Tags:      blog.Tags,
 			CreatedAt: blog.CreatedAt,
 			UpdatedAt: blog.UpdatedAt,
-			AuthorID: blog.AuthorID,
+			AuthorID:  blog.AuthorID,
 		})
 	}
 
@@ -121,7 +117,7 @@ func (bu *blogUsecase) UpdateBlog(ctx context.Context, id primitive.ObjectID, re
 		Tags:      blog.Tags,
 		CreatedAt: blog.CreatedAt,
 		UpdatedAt: blog.UpdatedAt,
-		AuthorID: blog.AuthorID,
+		AuthorID:  blog.AuthorID,
 	}, nil
 }
 
@@ -135,26 +131,26 @@ func (bu *blogUsecase) DeleteBlog(ctx context.Context, id primitive.ObjectID) er
 // controller/blog_controller.go
 // usecase/blog_usecase.go
 func (bu *blogUsecase) SearchBlogs(ctx context.Context, query string, filters *domain.BlogFilters) ([]*domain.BlogResponse, error) {
-    // Implement the search functionality here
-    blogs, err := bu.blogRepository.SearchBlogs(ctx, query, filters)
-    if err != nil {
-        return nil, err
-    }
+	// Implement the search functionality here
+	blogs, err := bu.blogRepository.SearchBlogs(ctx, query, filters)
+	if err != nil {
+		return nil, err
+	}
 
-    var blogResponses []*domain.BlogResponse
-    for _, blog := range blogs {
-        blogResponses = append(blogResponses, &domain.BlogResponse{
-            ID:        blog.ID,
-            Title:     blog.Title,
-            Content:   blog.Content,
-            Tags:      blog.Tags,
-            CreatedAt: blog.CreatedAt,
-            UpdatedAt: blog.UpdatedAt,
-            AuthorID:  blog.AuthorID,
-        })
-    }
+	var blogResponses []*domain.BlogResponse
+	for _, blog := range blogs {
+		blogResponses = append(blogResponses, &domain.BlogResponse{
+			ID:        blog.ID,
+			Title:     blog.Title,
+			Content:   blog.Content,
+			Tags:      blog.Tags,
+			CreatedAt: blog.CreatedAt,
+			UpdatedAt: blog.UpdatedAt,
+			AuthorID:  blog.AuthorID,
+		})
+	}
 
-    return blogResponses, nil
+	return blogResponses, nil
 }
 
 func (bu *blogUsecase) FilterBlogsByTags(ctx context.Context, tags []string) ([]*domain.Blog, error) {
@@ -181,35 +177,33 @@ func (bu *blogUsecase) FilterBlogsByPopularity(ctx context.Context, popularity s
 	return blogs, nil
 }
 
-
-
 func (bu *blogUsecase) TrackView(ctx context.Context, id primitive.ObjectID) error {
-    return bu.blogRepository.IncrementViews(ctx, id)
+	return bu.blogRepository.IncrementViews(ctx, id)
 }
 
 func (bu *blogUsecase) TrackLike(ctx context.Context, id primitive.ObjectID, userID string) error {
-    liked, err := bu.blogRepository.HasUserLiked(ctx, id, userID)
-    if err != nil {
-        return err
-    }
-    if liked {
-        return errors.New("user has already liked this post")
-    }
-    return bu.blogRepository.IncrementLikes(ctx, id)
+	liked, err := bu.blogRepository.HasUserLiked(ctx, id, userID)
+	if err != nil {
+		return err
+	}
+	if liked {
+		return errors.New("user has already liked this post")
+	}
+	return bu.blogRepository.IncrementLikes(ctx, id)
 }
 
 func (bu *blogUsecase) TrackDislike(ctx context.Context, id primitive.ObjectID, userID string) error {
-    disliked, err := bu.blogRepository.HasUserDisliked(ctx, id, userID)
-    if err != nil {
-        return err
-    }
-    if disliked {
-        return errors.New("user has already disliked this post")
-    }
-    return bu.blogRepository.IncrementDislikes(ctx, id)
+	disliked, err := bu.blogRepository.HasUserDisliked(ctx, id, userID)
+	if err != nil {
+		return err
+	}
+	if disliked {
+		return errors.New("user has already disliked this post")
+	}
+	return bu.blogRepository.IncrementDislikes(ctx, id)
 }
 
 func (bu *blogUsecase) AddComment(ctx context.Context, id primitive.ObjectID, comment *domain.Comment) error {
-    return bu.blogRepository.AddComment(ctx, id, comment)
+	return bu.blogRepository.AddComment(ctx, id, comment)
 
 }

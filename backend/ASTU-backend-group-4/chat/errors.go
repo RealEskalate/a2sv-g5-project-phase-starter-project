@@ -2,4 +2,5 @@ package chat
 
 import "errors"
 
-var ChatNotFoundError error = errors.New("chat not found")
+var ErrChatNotFound error = errors.New("chat not found")
+var ErrInvalidID error = errors.New("invalid ID")

@@ -1,4 +1,4 @@
-package jwt
+package jwt_service
 
 import (
 	"blog_api/domain"
@@ -17,11 +17,15 @@ func SignJWTWithPayload(username string, role string, tokenType string, tokenLif
 		return "", domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
+	if tokenType != "accessToken" && tokenType != "refreshToken" {
+		return "", domain.NewError("Invalid token type field", domain.ERR_INTERNAL_SERVER)
+	}
+
 	jwtSecret := []byte(secret)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username":  username,
 		"role":      role,
-		"expiresAt": time.Now().Add(time.Hour * 2),
+		"expiresAt": time.Now().Round(0).Add(tokenLifeSpan),
 		"tokenType": tokenType,
 	})
 	jwtToken, signingErr := token.SignedString(jwtSecret)
@@ -55,4 +59,57 @@ func ValidateAndParseToken(rawToken string, secret string) (*jwt.Token, error) {
 	}
 
 	return token, nil
+}
+
+/*
+Get expiry date of the token
+*/
+func GetExpiryDate(token *jwt.Token) (time.Time, domain.CodedError) {
+	expiresAt, ok := token.Claims.(jwt.MapClaims)["expiresAt"]
+	if !ok {
+		return time.Now(), domain.NewError("Invalid token: Expiry date not found", domain.ERR_UNAUTHORIZED)
+	}
+
+	expiresAtTime, convErr := time.Parse(time.RFC3339Nano, fmt.Sprintf("%v", expiresAt))
+	if convErr != nil {
+		return time.Now(), domain.NewError("Error while parsing expiry date: "+convErr.Error(), domain.ERR_UNAUTHORIZED)
+	}
+
+	return expiresAtTime, nil
+}
+
+/*
+Get username of the token
+*/
+func GetUsername(token *jwt.Token) (string, domain.CodedError) {
+	username, ok := token.Claims.(jwt.MapClaims)["username"]
+	if !ok {
+		return "", domain.NewError("Invalid token: Username not found", domain.ERR_UNAUTHORIZED)
+	}
+
+	return fmt.Sprintf("%v", username), nil
+}
+
+/*
+Get role of the token
+*/
+func GetRole(token *jwt.Token) (string, domain.CodedError) {
+	role, ok := token.Claims.(jwt.MapClaims)["role"]
+	if !ok {
+		return "", domain.NewError("Invalid token: Role not found", domain.ERR_UNAUTHORIZED)
+	}
+
+	return fmt.Sprintf("%v", role), nil
+}
+
+/*
+Get role of the token
+*/
+func GetTokenType(token *jwt.Token) (string, domain.CodedError) {
+	tokenType, ok := token.Claims.(jwt.MapClaims)["tokenType"]
+	if !ok {
+		return "", domain.NewError("Invalid token: TokenType not found", domain.ERR_UNAUTHORIZED)
+	}
+
+	return fmt.Sprintf("%v", tokenType), nil
 }

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"blog_api/domain"
+	"blog_api/domain/dtos"
 	"context"
 	"strings"
 
@@ -43,7 +44,6 @@ func (r *UserRepository) FindUser(c context.Context, user *domain.User) (domain.
 			{"email": user.Email},
 		},
 	}
-
 	res := r.collection.FindOne(c, filter)
 	if res.Err() == mongo.ErrNoDocuments {
 		return foundUser, domain.NewError("user not found", domain.ERR_NOT_FOUND)
@@ -76,6 +76,98 @@ func (r *UserRepository) SetRefreshToken(c context.Context, user *domain.User, n
 		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
 	}
 
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return nil
+}
+
+func (r *UserRepository) UpdateUser(c context.Context, username string, user *dtos.UpdateUser) (map[string]string, domain.CodedError) {
+	var updatedData = make(map[string]string)
+	var updates = bson.D{}
+
+	if user.Bio != "" {
+		updatedData["bio"] = user.Bio
+		updates = append(updates, bson.E{Key: "bio", Value: user.Bio})
+	}
+
+	if user.PhoneNumber != "" {
+		updatedData["phonenumber"] = user.PhoneNumber
+		updates = append(updates, bson.E{Key: "phonenumber", Value: user.PhoneNumber})
+	}
+
+	res := r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$set", Value: updates}})
+	if res.Err() != nil && res.Err() == mongo.ErrNoDocuments {
+		return updatedData, domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
+	if res.Err() != nil {
+		return updatedData, domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return updatedData, nil
+}
+
+func (r *UserRepository) ChangeRole(c context.Context, username string, newRole string) domain.CodedError {
+	var user domain.User
+	qres := r.collection.FindOne(c, bson.D{{Key: "username", Value: username}})
+	if qres.Err() == mongo.ErrNoDocuments {
+		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
+	if qres.Err() != nil {
+		return domain.NewError(qres.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	if err := qres.Decode(&user); err != nil {
+		return domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	if user.Role == "root" {
+		return domain.NewError("Cannot change the role of the root user", domain.ERR_FORBIDDEN)
+	}
+
+	if user.Role == newRole {
+		return domain.NewError("User already has the role '"+newRole+"'", domain.ERR_BAD_REQUEST)
+	}
+
+	res := r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$set", Value: bson.D{{Key: "role", Value: newRole}}}})
+	if res.Err() != nil && res.Err() == mongo.ErrNoDocuments {
+		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return nil
+}
+
+func (r *UserRepository) UpdateVerificationDetails(c context.Context, username string, verificationData domain.VerificationData) domain.CodedError {
+	res := r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$set", Value: bson.D{{Key: "verificationdata", Value: verificationData}}}})
+	if res.Err() == mongo.ErrNoDocuments {
+		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return nil
+}
+
+func (r *UserRepository) VerifyUser(c context.Context, username string) domain.CodedError {
+	res := r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$set", Value: bson.D{{Key: "isverified", Value: true}}}})
+	if res.Err() == mongo.ErrNoDocuments {
+		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	res = r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$unset", Value: bson.D{{Key: "verificationdata", Value: ""}}}})
 	if res.Err() != nil {
 		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
 	}

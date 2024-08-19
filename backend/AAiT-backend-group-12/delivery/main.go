@@ -19,9 +19,15 @@ func main() {
 		log.Fatal(err.Error())
 		return
 	}
-
-	// defer initdb.DisconnectDB(client)
-
 	database := client.Database(env.ENV.DB_NAME)
+
+	err = initdb.CreateRootUser(database, env.ENV.ROOT_USERNAME, env.ENV.ROOT_PASSWORD)
+	if err != nil {
+		log.Fatal(err.Error())
+		return
+	}
+
+	defer initdb.DisconnectDB(client)
+
 	router.SetupRouter(env.ENV.PORT, env.ENV.ROUTE_PREFIX, database)
 }

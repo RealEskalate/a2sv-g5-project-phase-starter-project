@@ -19,6 +19,8 @@ var ENV struct {
 	ROUTE_PREFIX           string
 	ROOT_USERNAME          string
 	ROOT_PASSWORD          string
+	SMTP_GMAIL             string
+	SMTP_PASSWORD          string
 }
 
 /* Loads environment variables from .env file and verifies that all required variables are set */
@@ -35,6 +37,8 @@ func LoadEnvironmentVariables() error {
 	ENV.ROUTE_PREFIX = os.Getenv("ROUTE_PREFIX")
 	ENV.ROOT_USERNAME = os.Getenv("ROOT_USERNAME")
 	ENV.ROOT_PASSWORD = os.Getenv("ROOT_PASSWORD")
+	ENV.SMTP_GMAIL = os.Getenv("SMTP_GMAIL")
+	ENV.SMTP_PASSWORD = os.Getenv("SMTP_PASSWORD")
 	port, err := strconv.ParseInt(os.Getenv("PORT"), 10, 64)
 	if err != nil {
 		return fmt.Errorf("error parsing PORT number: %v", err.Error())
@@ -80,6 +84,14 @@ func LoadEnvironmentVariables() error {
 
 	if ENV.ROOT_PASSWORD == "" {
 		return fmt.Errorf("error: couldn't load environment variable 'ROOT_PASSWORD'")
+	}
+
+	if ENV.SMTP_GMAIL == "" {
+		return fmt.Errorf("error: couldn't load environment variable 'SMTP_GMAIL'")
+	}
+
+	if ENV.SMTP_PASSWORD == "" {
+		return fmt.Errorf("error: couldn't load environment variable 'SMTP_PASSWORD'")
 	}
 
 	if ENV.PORT == 0 {

@@ -4,26 +4,65 @@ import (
 	"blog_api/delivery/env"
 	"blog_api/domain"
 	"blog_api/domain/dtos"
-	"blog_api/infrastructure/cryptography"
-	jwt_service "blog_api/infrastructure/jwt"
-	mail_service "blog_api/infrastructure/mail"
-	"blog_api/infrastructure/utils"
 	"context"
 	"net/mail"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/golang-jwt/jwt"
 )
 
 type UserUsecase struct {
-	userRepository  domain.UserRepositoryInterface
-	cacheRepository domain.CacheRepositoryInterface
+	userRepository            domain.UserRepositoryInterface
+	cacheRepository           domain.CacheRepositoryInterface
+	GenerateToken             func(int) (string, error)
+	EmailVerificationTemplate func(string, string, string) string
+	PasswordResetTemplate     func(string, string, string) string
+	SendMail                  func(string, string, string, string, string) error
+	SignJWTWithPayload        func(string, string, string, time.Duration, string) (string, domain.CodedError)
+	GetTokenType              func(*jwt.Token) (string, domain.CodedError)
+	GetUsername               func(*jwt.Token) (string, domain.CodedError)
+	GetExpiryDate             func(*jwt.Token) (time.Time, domain.CodedError)
+	ValidateAndParseToken     func(string, string) (*jwt.Token, error)
+	HashString                func(string) (string, domain.CodedError)
+	ValidateHashedString      func(string, string) domain.CodedError
+	ENV                       domain.EnvironmentVariables
 }
 
 var PhoneRegex = regexp.MustCompile(`^\+?[1-9][0-9]{7,14}$`)
 
-func NewUserUsecase(userRepository domain.UserRepositoryInterface, cacheRepository domain.CacheRepositoryInterface) *UserUsecase {
-	return &UserUsecase{userRepository: userRepository, cacheRepository: cacheRepository}
+func NewUserUsecase(
+	userRepository domain.UserRepositoryInterface,
+	cacheRepository domain.CacheRepositoryInterface,
+	GenerateToken func(int) (string, error),
+	EmailVerificationTemplate func(string, string, string) string,
+	PasswordResetTemplate func(string, string, string) string,
+	SendMail func(string, string, string, string, string) error,
+	SignJWTWithPayload func(string, string, string, time.Duration, string) (string, domain.CodedError),
+	GetTokenType func(*jwt.Token) (string, domain.CodedError),
+	GetUsername func(*jwt.Token) (string, domain.CodedError),
+	GetExpiryDate func(*jwt.Token) (time.Time, domain.CodedError),
+	ValidateAndParseToken func(string, string) (*jwt.Token, error),
+	HashString func(string) (string, domain.CodedError),
+	ValidateHashedString func(string, string) domain.CodedError,
+	ENV domain.EnvironmentVariables) *UserUsecase {
+	return &UserUsecase{
+		userRepository:            userRepository,
+		cacheRepository:           cacheRepository,
+		GenerateToken:             GenerateToken,
+		EmailVerificationTemplate: EmailVerificationTemplate,
+		PasswordResetTemplate:     PasswordResetTemplate,
+		SendMail:                  SendMail,
+		SignJWTWithPayload:        SignJWTWithPayload,
+		GetTokenType:              GetTokenType,
+		GetUsername:               GetUsername,
+		GetExpiryDate:             GetExpiryDate,
+		ValidateAndParseToken:     ValidateAndParseToken,
+		HashString:                HashString,
+		ValidateHashedString:      ValidateHashedString,
+		ENV:                       ENV,
+	}
 }
 
 func (u *UserUsecase) ValidatePassword(password string) domain.CodedError {
@@ -97,7 +136,7 @@ func (u *UserUsecase) SanitizeAndValidateNewUser(user *domain.User) domain.Coded
 
 func (u *UserUsecase) GetVerificationData(c context.Context, username string, verificationType string, expiresAt time.Time, tokenLength int) (domain.VerificationData, domain.CodedError) {
 	var verificationData domain.VerificationData
-	generatedToken, gErr := utils.GenerateToken(tokenLength)
+	generatedToken, gErr := u.GenerateToken(tokenLength)
 	if gErr != nil {
 		return verificationData, domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
 	}
@@ -117,7 +156,7 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 		return err
 	}
 
-	hashedPwd, err := cryptography.HashString(user.Password)
+	hashedPwd, err := u.HashString(user.Password)
 	if err != nil {
 		return domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
 	}
@@ -138,8 +177,8 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 		return err
 	}
 
-	mail := mail_service.EmailVerificationTemplate(hostUrl, user.Username, verificationData.Token)
-	mailErr := mail_service.SendMail("Blog API", user.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
+	mail := u.EmailVerificationTemplate(hostUrl, user.Username, verificationData.Token)
+	mailErr := u.SendMail("Blog API", user.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
 	if mailErr != nil {
 		return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)
 	}
@@ -179,23 +218,23 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 		return "", "", domain.NewError("User email not verified", domain.ERR_UNAUTHORIZED)
 	}
 
-	err = cryptography.ValidateHashedString(foundUser.Password, user.Password)
+	err = u.ValidateHashedString(foundUser.Password, user.Password)
 	if err != nil {
 		return "", "", domain.NewError("Incorrect password", domain.ERR_UNAUTHORIZED)
 	}
 
-	accessToken, err := jwt_service.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Hour*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Hour*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
 	if err != nil {
 		return "", "", err
 	}
 
-	refreshToken, err := jwt_service.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(env.ENV.REFRESH_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	refreshToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(env.ENV.REFRESH_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
 	if err != nil {
 		return "", "", err
 	}
 
 	// set the new refresh token in the database after hashing it
-	hashedRefreshToken, err := cryptography.HashString(strings.Split(refreshToken, ".")[2])
+	hashedRefreshToken, err := u.HashString(strings.Split(refreshToken, ".")[2])
 	if err != nil {
 		return "", "", domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
@@ -209,13 +248,13 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 }
 
 func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (string, domain.CodedError) {
-	token, err := jwt_service.ValidateAndParseToken(refreshToken, env.ENV.JWT_SECRET_TOKEN)
+	token, err := u.ValidateAndParseToken(refreshToken, env.ENV.JWT_SECRET_TOKEN)
 	if err != nil {
 		return "", domain.NewError("Invalid token", domain.ERR_UNAUTHORIZED)
 	}
 
 	// check whether the token is a refreshToken
-	tokenType, err := jwt_service.GetTokenType(token)
+	tokenType, err := u.GetTokenType(token)
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
 	}
@@ -225,13 +264,13 @@ func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (
 	}
 
 	// get the username from the token
-	username, err := jwt_service.GetUsername(token)
+	username, err := u.GetUsername(token)
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
 	}
 
 	// check expiry date of the refresh token
-	expiresAtTime, err := jwt_service.GetExpiryDate(token)
+	expiresAtTime, err := u.GetExpiryDate(token)
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
 	}
@@ -256,12 +295,12 @@ func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (
 		return "", domain.NewError("User not found", domain.ERR_NOT_FOUND)
 	}
 
-	err = cryptography.ValidateHashedString(foundUser.RefreshToken, strings.Split(refreshToken, ".")[2])
+	err = u.ValidateHashedString(foundUser.RefreshToken, strings.Split(refreshToken, ".")[2])
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
 	}
 
-	accessToken, err := jwt_service.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Hour*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Hour*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
@@ -319,8 +358,8 @@ func (u *UserUsecase) VerifyEmail(c context.Context, username string, token stri
 			return err
 		}
 
-		mail := mail_service.EmailVerificationTemplate(hostUrl, username, verificationData.Token)
-		mailErr := mail_service.SendMail("Blog API", user.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
+		mail := u.EmailVerificationTemplate(hostUrl, username, verificationData.Token)
+		mailErr := u.SendMail("Blog API", user.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
 		if mailErr != nil {
 			return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)
 		}
@@ -351,8 +390,8 @@ func (u *UserUsecase) InitResetPassword(c context.Context, username string, emai
 		return err
 	}
 
-	mail := mail_service.PasswordResetTemplate(hostUrl, username, verificationData.Token)
-	mailErr := mail_service.SendMail("Blog API", foundUser.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
+	mail := u.PasswordResetTemplate(hostUrl, username, verificationData.Token)
+	mailErr := u.SendMail("Blog API", foundUser.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
 	if mailErr != nil {
 		return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)
 	}
@@ -383,7 +422,7 @@ func (u *UserUsecase) ResetPassword(c context.Context, resetDto dtos.ResetPasswo
 		return err
 	}
 
-	hashedPwd, err := cryptography.HashString(resetDto.NewPassword)
+	hashedPwd, err := u.HashString(resetDto.NewPassword)
 	if err != nil {
 		return domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
 	}
@@ -394,4 +433,13 @@ func (u *UserUsecase) ResetPassword(c context.Context, resetDto dtos.ResetPasswo
 	}
 
 	return nil
+}
+
+func (u *UserUsecase) Logout(c context.Context, username string, accessToken string) domain.CodedError {
+	err := u.cacheRepository.CacheData(accessToken, "", time.Minute*30)
+	if err != nil {
+		return err
+	}
+
+	return u.userRepository.SetRefreshToken(c, &domain.User{Username: username}, "")
 }

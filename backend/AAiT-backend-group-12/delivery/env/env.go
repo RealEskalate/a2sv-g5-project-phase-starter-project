@@ -1,6 +1,7 @@
 package env
 
 import (
+	"blog_api/domain"
 	"fmt"
 	"os"
 	"strconv"
@@ -8,21 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var ENV struct {
-	DB_ADDRESS             string
-	DB_NAME                string
-	TEST_DB_NAME           string
-	JWT_SECRET_TOKEN       string
-	ACCESS_TOKEN_LIFESPAN  int
-	REFRESH_TOKEN_LIFESPAN int
-	PORT                   int
-	ROUTE_PREFIX           string
-	ROOT_USERNAME          string
-	ROOT_PASSWORD          string
-	SMTP_GMAIL             string
-	SMTP_PASSWORD          string
-	REDIS_URL              string
-}
+var ENV domain.EnvironmentVariables
 
 /* Loads environment variables from .env file and verifies that all required variables are set */
 func LoadEnvironmentVariables() error {

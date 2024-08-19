@@ -7,6 +7,7 @@ import (
 )
 
 type Env struct {
+<<<<<<< HEAD
 	JWT_SECRET        string `mapstructure:"JWT_SECRET"`
 	SMTP_SERVER       string `mapstructure:"SMTP_SERVER"`
 	SMTP_PORT         string `mapstructure:"SMTP_PORT"`
@@ -25,6 +26,17 @@ type Env struct {
 	REFRESH_TOKEN_EXPIRY_HOUR int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
 	ACCESS_TOKEN_SECRET       string `mapstructure:"ACCESS_TOKEN_SECRET"`
 	REFRESH_TOKEN_SECRET      string `mapstructure:"REFRESH_TOKEN_SECRET"`
+=======
+	BASE_URL          string `mapstructure:"BASE_URL"`
+    JWT_SECRET        string `mapstructure:"JWT_SECRET"`
+    SMTP_SERVER       string `mapstructure:"SMTP_SERVER"`
+    SMTP_PORT         string `mapstructure:"SMTP_PORT"`
+    SMTP_USERNAME     string `mapstructure:"SMTP_USERNAME"`
+    SMTP_PASSWORD     string `mapstructure:"SMTP_PASSWORD"`
+    SMTP_SENDER_EMAIL string `mapstructure:"SMTP_SENDER_EMAIL"`
+    MONGO_URI         string `mapstructure:"MONGO_URI"`
+    DB_NAME           string `mapstructure:"DB_NAME"`
+>>>>>>> origin/aait.backend.g5.bisrat.setup-db-and-user-repo
 }
 
 func NewEnv() *Env {

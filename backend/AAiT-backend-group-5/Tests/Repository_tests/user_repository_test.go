@@ -48,10 +48,17 @@ func (suite *UserRepositorySuite) TearDownSuite() {
 // TestCreateUser tests the CreateUser method
 func (suite *UserRepositorySuite) TestCreateUser() {
 	user := &models.User{
+<<<<<<< HEAD
 		Username: "testuser",
 		Name:     "Test User",
 		Email:    "testuser@example.com",
 		Password: "hashedpassword",
+=======
+		Username:   "testuser",
+		Name:       "Test User",
+		Email:      "testuser@example.com",
+		Password:   "hashedpassword",
+>>>>>>> origin/aait.backend.g5.bisrat.setup-db-and-user-repo
 	}
 
 	err := suite.Repository.CreateUser(suite.TestContext, user)
@@ -151,17 +158,26 @@ func (suite *UserRepositorySuite) TestDeleteUser() {
 		Username: "deletableuser",
 		Email:    "deletable@example.com",
 	}
-	suite.Collection.InsertOne(suite.TestContext, user)
+	insertResult, rr := suite.Collection.InsertOne(suite.TestContext, user)
+	suite.Empty(rr, "Expected no error when inserting user")
 
+	var result models.User
+	Err := suite.Collection.FindOne(suite.TestContext, bson.M{"_id": insertResult.InsertedID}).Decode(&result)
+	suite.Empty(Err, "Expected no error when fetching user")
 	// Delete the user
+<<<<<<< HEAD
 	err := suite.Repository.DeleteUser(suite.TestContext, user.ID)
+=======
+	
+	err := suite.Repository.DeleteUser(suite.TestContext, result.ID)
+>>>>>>> origin/aait.backend.g5.bisrat.setup-db-and-user-repo
 	suite.Empty(err, "Expected no error when deleting user")
 
 	// Ensure the user is deleted
 	var deletedUser models.User
-	Err := suite.Collection.FindOne(suite.TestContext, bson.M{"username": "deletableuser"}).Decode(&deletedUser)
-	suite.Nil(Err, "Expected an error when fetching a deleted user")
-	suite.Empty(Err)
+	Err = suite.Collection.FindOne(suite.TestContext, bson.M{"username": "deletableuser"}).Decode(&deletedUser)
+	suite.Error(Err, "Expected an error when fetching a deleted user")
+
 }
 
 func (suite *UserRepositorySuite) TestPromoteUser() {
@@ -216,6 +232,11 @@ func (suite *UserRepositorySuite) TestDemoteUser() {
 	suite.Equal(role, demotedUser.Role, "Expected role to remain admin (demotion logic should be handled correctly)")
 }
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin/aait.backend.g5.bisrat.setup-db-and-user-repo
 func TestUserRepositorySuite(t *testing.T) {
 	suite.Run(t, new(UserRepositorySuite))
 }

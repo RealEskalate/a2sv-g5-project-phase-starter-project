@@ -15,5 +15,9 @@ type URLService interface {
 type URLServiceRepository interface {
 	SaveURL(url models.URL, ctx context.Context) *models.ErrorResponse
 	GetURL(short_url_code string, ctx context.Context) (*models.URL, *models.ErrorResponse)
+<<<<<<< HEAD
 	DeleteURL(id string, ctx context.Context) (*models.URL, *models.ErrorResponse)
+=======
+	DeleteURL(id string, ctx context.Context) (*models.ErrorResponse)
+>>>>>>> origin/aait.backend.g5.bisrat.setup-db-and-user-repo
 }

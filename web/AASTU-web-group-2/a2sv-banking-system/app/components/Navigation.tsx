@@ -1,36 +1,53 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import { getSession } from "next-auth/react";
 interface Props {
   children: React.ReactNode;
 }
-const Navigation = ({ children }: Props) => {
+
+const Navigation: React.FC<Props> = ({ children }) => {
   const [toggle, setToggle] = useState(false);
+  const [session, setSession] = useState(false);
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = await getSession();
+      if (sessionData?.user) {
+        setSession(true);
+      }
+    };
+
+    fetchSession();
+  }, []);
+
   return (
-    <>
-      <div className="flex w-full">
-        <div className="">
+    <div className="flex w-full">
+      {session && (
+        <div className="z-50 bg-white">
           <Sidebar
             toggle={toggle}
             handleClose={() => {
               setToggle(!toggle);
             }}
-          ></Sidebar>
+          />
         </div>
+      )}
 
-        <div className="flex flex-col w-full">
-          <div className="w-full">
+      <div className="flex flex-col w-full">
+        {session && (
+          <div className="w-full bg-white md:sticky md:top-0 md:z-10">
             <Navbar
               handleClick={() => {
                 setToggle(!toggle);
               }}
             />
           </div>
-          {children}
-        </div>
+        )}
+        {children}
       </div>
-    </>
+    </div>
   );
 };
 

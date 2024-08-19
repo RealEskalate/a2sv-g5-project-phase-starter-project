@@ -21,11 +21,11 @@ func NewRefreshTokenUsecase(userRepository domain.UserRepository, timeout time.D
 }
 
 // removeActiveUser implements domain.RefreshTokenUsecase.
-func (r *refreshTokenUsecase) RemoveActiveUser(c context.Context, id string) error {
+func (r *refreshTokenUsecase) RemoveActiveUser(c context.Context, id string, user_agent string) error {
 	ctx, cancel := context.WithTimeout(c, r.contextTimeout)
 	defer cancel()
 
-	return r.activeUserRepository.DeleteActiveUserById(id, ctx)
+	return r.activeUserRepository.DeleteActiveUser(id,user_agent, ctx)
 }
 
 // checkActiveUser implements domain.RefreshTokenUsecase.

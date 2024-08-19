@@ -20,7 +20,8 @@ func (l *LogoutController) Logout(c *gin.Context) {
 		c.JSON(404, gin.H{"error": "User not found, page not found, login before logout"})
 		return
 	}
-	err = l.LogoutUsecase.Logout(c, id)
+	user_agent := c.Request.UserAgent()
+	err = l.LogoutUsecase.Logout(c, id, user_agent)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return

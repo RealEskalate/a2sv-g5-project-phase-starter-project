@@ -33,7 +33,8 @@ func (rtc *RefreshTokenController) RefreshToken(c *gin.Context) {
 		return
 	}
 	if id == actvuser.ID.Hex() && !valid {
-		rtc.RefreshTokenUsecase.RemoveActiveUser(c, id)
+		user_agent := c.Request.UserAgent()
+		rtc.RefreshTokenUsecase.RemoveActiveUser(c, id, user_agent)
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "session expired"})
 		return
 	}

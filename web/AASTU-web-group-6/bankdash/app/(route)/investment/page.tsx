@@ -23,7 +23,7 @@ interface InvestmentData {
   yearlyTotalInvestment: YearlyInvestment[];
   monthlyRevenue: MonthlyRevenue[];
 }
-const page = () => {
+const InvestmentPage = () => {
   const data1 = [
     ["01.", "Trivago", "$520", "+5%"],
     [" 02.", "Canon", "$480", " +10%"],
@@ -31,8 +31,8 @@ const page = () => {
     ["04.", " Nokia", " $940", "+2%"],
     ["05.", "Tiktok", "$670", "-12%"],
   ];
-  const [data, setData] = useState<InvestmentData>();
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<InvestmentData | undefined>();
+  const [error, setError] = useState<string>("");
   const accessToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjM5OTIwNjMsImV4cCI6MTcyNDA3ODQ2M30.TQUQ-1kz6M-DWcCDKjVgasHzfZxxhZf0Odeux1Jw1OPqxa4doCexoALnIAeGIkQS";
 
   useEffect(() => {
@@ -41,9 +41,9 @@ const page = () => {
         const result = await InvestmentService.getInvestmentData(accessToken);
         setData(result);
         console.log("data" , data);
-      } catch (error) {
+      } catch (e) {
         setError("error");
-        alert("error");
+        alert(error);
       }
     };
 
@@ -138,4 +138,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default InvestmentPage;

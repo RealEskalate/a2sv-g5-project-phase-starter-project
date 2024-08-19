@@ -13,8 +13,10 @@ import (
 func NewRouter(db *mongo.Database) {
 	router := gin.Default()
 
+	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
+
 	blogRepo := repositories.NewBlogRepository(db, os.Getenv("BLOG_COLLECTION"))
-	blogUseCase := usecases.NewBlogUseCase(blogRepo)
+	blogUseCase := usecases.NewBlogUseCase(blogRepo, userRepo)
 	blogController := controllers.NewBlogController(blogUseCase)
 
 	commentRepo := repositories.NewCommentRepository(db, os.Getenv("COMMENT_COLLECTION_NAME"))

@@ -103,10 +103,10 @@ func (ur *UserMongoRepository) UpdateUser(ctx context.Context, user *models.User
 	}
 
 	_, err := ur.Collection.UpdateOne(ctx, filter, updateDocument)
-	if err != nil{
+	if err != nil {
 		return models.InternalServerError(err.Error())
 	}
-	return models.Nil()	
+	return models.Nil()
 }
 
 // DeleteUser deletes a user by their ID.
@@ -117,11 +117,11 @@ func (ur *UserMongoRepository) DeleteUser(ctx context.Context, userID string) *m
 	}
 
 	_, err = ur.Collection.DeleteOne(ctx, bson.M{"_id": objID})
-	if err != nil{
+	if err != nil {
 		return models.InternalServerError(err.Error())
 	}
 
-	return models.Nil()	
+	return models.Nil()
 }
 
 // updateUserRole is a helper method to update a user's role.
@@ -137,7 +137,7 @@ func (ur *UserMongoRepository) updateUserRole(ctx context.Context, userID, role 
 	}
 
 	_, err = ur.Collection.UpdateOne(ctx, filter, update)
-	if err != nil{
+	if err != nil {
 		return models.InternalServerError(err.Error())
 	}
 
@@ -146,13 +146,12 @@ func (ur *UserMongoRepository) updateUserRole(ctx context.Context, userID, role 
 
 // PromoteUser promotes a user to an admin role.
 func (ur *UserMongoRepository) PromoteUser(ctx context.Context, userID string) *models.ErrorResponse {
-	err := ur.updateUserRole(ctx, userID, "admin") 
+	err := ur.updateUserRole(ctx, userID, "admin")
 	return err
 }
 
 // DemoteUser demotes a user to a lower role.
 func (ur *UserMongoRepository) DemoteUser(ctx context.Context, userID string) *models.ErrorResponse {
-	err := ur.updateUserRole(ctx, userID, "admin") 
+	err := ur.updateUserRole(ctx, userID, "admin")
 	return err
 }
-

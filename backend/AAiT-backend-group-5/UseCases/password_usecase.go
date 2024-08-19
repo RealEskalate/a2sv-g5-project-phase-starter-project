@@ -101,7 +101,7 @@ func (sp *setup_password) SetPassword(ctx context.Context, shortURlCode string, 
 	user.Password = hashedPassword
 
 	// update user
-	err := sp.repo.UpdateUser(ctx, user)
+	err := sp.repo.UpdateUser(ctx, user, u.ID)
 	if err != nil {
 		return err
 	}

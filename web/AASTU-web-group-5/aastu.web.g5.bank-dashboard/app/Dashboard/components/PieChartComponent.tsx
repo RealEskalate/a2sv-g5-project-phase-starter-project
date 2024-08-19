@@ -4,22 +4,21 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pie, PieChart, Tooltip, Cell, Sector } from "recharts";
 
-// Define state for data and errors
 const PieChartComponent: React.FC = () => {
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions?page=0', {
+        const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions/expenses?page=0&size=10', {
           headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`, // Replace with your token
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`,
           },
         });
-        setData(response.data.data); // Adjust based on API response
+        setData(response.data.data);
       } catch (error) {
         console.error("Failed to fetch data:", error);
         setError("Failed to fetch data. Please check the console for more details.");
@@ -29,29 +28,59 @@ const PieChartComponent: React.FC = () => {
     fetchData();
   }, []);
 
-  // Define dummy data to fallback on if needed
-  const dummyChartData = data.length === 0 ? [
-    { browser: "Others", Expenses: 350, fill: "#FF6384" },
-    { browser: "Transfer", Expenses: 300, fill: "#36A2EB" },
-    { browser: "Shopping", Expenses: 200, fill: "#FFCE56" },
-    { browser: "Services", Expenses: 150, fill: "#4BC0C0" },
-  ] : data.map((item: any) => ({
-    browser: item.type, // or other relevant property
-    Expenses: item.amount,
-    fill: "#8884d8", // Customize as needed
-  }));
+  // Map transaction types to colors
+  const typeColors: Record<string, string> = {
+    service: "#FC7900",
+    transfer: "#343C6A",
+    shopping: "#FA00FF",
+    other: "#1814F3", // Default color for "other"
+  };
 
-  const totalExpenses = dummyChartData.reduce((sum, entry) => sum + entry.Expenses, 0);
+  // Process data
+  const processedData = data.reduce((acc: any[], item: any) => {
+    const type = ['service', 'transfer', 'shopping'].includes(item.type?.toLowerCase())
+      ? item.type.toLowerCase()
+      : 'other';
+      
+    const existing = acc.find((entry) => entry.name === type);
+
+    if (existing) {
+      existing.value += item.amount;
+    } else {
+      acc.push({
+        name: type,
+        value: item.amount,
+        fill: typeColors[type],
+      });
+    }
+
+    return acc;
+  }, [] as any[]);
+
+  // Handle "Other" category directly within the processed data
+  const totalValue = processedData.reduce((sum, entry) => sum + entry.value, 0);
+  const threshold = 100; // Example threshold for "Other"
+  const filteredData = processedData.filter(entry => entry.value >= threshold);
+
+  const othersValue = totalValue - filteredData.reduce((sum, entry) => sum + entry.value, 0);
+  
+  if (othersValue > 0) {
+    filteredData.push({
+      name: 'other',
+      value: othersValue,
+      fill: typeColors['other']
+    });
+  }
 
   const CustomLabel = (props: any) => {
     const { cx, cy, midAngle, outerRadius, value, name } = props;
     const RADIAN = Math.PI / 180;
-    const radius = (outerRadius) / 2;
+    const radius = outerRadius / 2;
 
     const x = cx + radius * Math.cos(-RADIAN * midAngle);
     const y = cy + radius * Math.sin(-RADIAN * midAngle);
 
-    const percentage = ((value / totalExpenses) * 100);
+    const percentage = ((value / totalValue) * 100).toFixed(1);
 
     return (
       <text
@@ -63,14 +92,13 @@ const PieChartComponent: React.FC = () => {
         dominantBaseline="central"
       >
         <tspan x={x} dy="-1.2em">{name}</tspan>
-        <tspan x={x} dy="1.2em">{percentage.toFixed(1)}%</tspan>
+        <tspan x={x} dy="1.2em">{percentage}%</tspan>
       </text>
     );
   };
 
   const renderActiveShape = (props: any) => {
     const { cx, cy, midAngle, outerRadius, startAngle, endAngle, fill } = props;
-    const RADIAN = Math.PI / 180;
     const hoverRadius = outerRadius + 15;
 
     return (
@@ -104,9 +132,9 @@ const PieChartComponent: React.FC = () => {
     <div className="flex justify-center items-center h-screen">
       <PieChart width={300} height={300}>
         <Pie
-          data={dummyChartData}
-          dataKey="Expenses"
-          nameKey="browser"
+          data={filteredData}
+          dataKey="value"
+          nameKey="name"
           cx="50%"
           cy="50%"
           outerRadius={100}
@@ -116,13 +144,14 @@ const PieChartComponent: React.FC = () => {
           stroke="#fff"
           strokeWidth={3}
           onMouseEnter={(_, index) => setActiveIndex(index)}
-          onMouseLeave={() => setActiveIndex(0)}
+          onMouseLeave={() => setActiveIndex(undefined)}
           activeIndex={activeIndex}
         >
-          {dummyChartData.map((entry, index) => (
+          {filteredData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={entry.fill} />
           ))}
         </Pie>
+        <Tooltip />
       </PieChart>
     </div>
   );

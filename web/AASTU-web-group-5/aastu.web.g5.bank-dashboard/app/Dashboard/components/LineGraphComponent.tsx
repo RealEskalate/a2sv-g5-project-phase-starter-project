@@ -26,7 +26,7 @@ export function LineGraphComponent() {
   useEffect(() => {
     const fetchChartData = async () => {
       try {
-        const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=07', {
+        const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions/balance-history', {
           headers: {
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`,
           },
@@ -84,9 +84,9 @@ export function LineGraphComponent() {
               <Area
                 dataKey="value"
                 type="monotone"
-                fill="blue"
+                fill="#1814F3"
                 fillOpacity={0.2}
-                stroke="blue"
+                stroke="#1814F3"
               />
             </AreaChart>
           </ResponsiveContainer>

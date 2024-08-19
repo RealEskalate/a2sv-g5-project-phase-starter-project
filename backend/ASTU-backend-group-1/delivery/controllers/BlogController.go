@@ -2,6 +2,7 @@ package controllers
 
 import (
 	usecase "astu-backend-g1/usecases"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -21,18 +22,21 @@ func (cont *BlogController) HandleCreateBlog(ctx *gin.Context) {
 	authorId := ctx.PostForm("author_id")
 	date := ctx.PostForm("date")
 	tags := ctx.PostForm("tags")
-	cont.usecase.CreateBLog(title, content, authorId, date, tags)
-
+	blog, err := cont.usecase.CreateBLog(title, content, authorId, date, tags)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusNotFound, err)
+	} else {
+		ctx.IndentedJSON(http.StatusOK, blog)
+	}
 }
 func (cont *BlogController) HandleGetAllBlogs(ctx *gin.Context) {
-	
-	blogs,err:= cont.usecase.GetAllBlogs()
-	if err != nil {
-		ctx.IndentedJSON(http.StatusNotFound,err)
-	}else{
-		ctx.IndentedJSON(http.StatusOK,blogs)
-	}
 
+	blogs, err := cont.usecase.GetAllBlogs()
+	if err != nil {
+		ctx.IndentedJSON(http.StatusNotFound, err)
+	} else {
+		ctx.IndentedJSON(http.StatusOK, blogs)
+	}
 
 }
 func (cont *BlogController) HandleFilterBlogs(ctx *gin.Context) {
@@ -42,27 +46,51 @@ func (cont *BlogController) HandleFilterBlogs(ctx *gin.Context) {
 	date := ctx.PostForm("date")
 	tags := ctx.PostForm("tags")
 
-	likeSort, err := strconv.Atoi(ctx.PostForm("likes"))
-	if err != nil {
-		panic(err)
+	strLike := ctx.PostForm("likes")
+	likeSort := 0
+	if strLike != "" {
+		val, err := strconv.Atoi(strLike)
+		if err != nil {
+			ctx.IndentedJSON(http.StatusNotFound, err)
+		}
+		likeSort = val
+
 	}
-	DislikeSort, err := strconv.Atoi(ctx.PostForm("dislikes"))
-	if err != nil {
-		panic(err)
+	strDislike := ctx.PostForm("dislikes")
+	dislikeSort := 0
+	if strDislike != "" {
+		val, err := strconv.Atoi(strDislike)
+		if err != nil {
+			ctx.IndentedJSON(http.StatusNotFound, err)
+		}
+		dislikeSort = val
 	}
-	CommentSort, err := strconv.Atoi(ctx.PostForm("comments"))
-	if err != nil {
-		panic(err)
+
+	strComment := ctx.PostForm("comments")
+	commentSort := 0
+	if strComment != "" {
+		val, err := strconv.Atoi(strComment)
+		if err != nil {
+			ctx.IndentedJSON(http.StatusNotFound, err)
+		}
+		commentSort = val
 	}
-	ViewSort, err := strconv.Atoi(ctx.PostForm("views"))
-	if err != nil {
-		panic(err)
+
+	strView := ctx.PostForm("views")
+	viewSort := 0
+	if strView != "" {
+		val, err := strconv.Atoi(strView)
+		if err != nil {
+			ctx.IndentedJSON(http.StatusNotFound, err)
+		}
+		viewSort = val
 	}
-	blogs,err:= cont.usecase.FilterBlogs(title, blogid, date, tags, authorId, likeSort, DislikeSort, CommentSort, ViewSort)
+
+	blogs, err := cont.usecase.FilterBlogs(title, blogid, date, tags, authorId, likeSort, dislikeSort, commentSort, viewSort)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusNotFound,err)
-	}else{
-		ctx.IndentedJSON(http.StatusOK,blogs)
+		ctx.IndentedJSON(http.StatusNotFound, err)
+	} else {
+		ctx.IndentedJSON(http.StatusOK, blogs)
 	}
 
 }
@@ -72,98 +100,99 @@ func (cont *BlogController) HandleUpdate(ctx *gin.Context) {
 	authorId := ctx.PostForm("author_id")
 	// date := ctx.PostForm("date")
 	tags := ctx.PostForm("tags")
-	blog,err := cont.usecase.UpdateBLog(ctx.Request.FormValue("blogId"), title, content, authorId, tags, "", "", "")
-	if err!= nil {
-        ctx.IndentedJSON(http.StatusNotFound,err)
-    }else{
-        ctx.IndentedJSON(http.StatusOK,blog)
-    }
+	blog, err := cont.usecase.UpdateBLog(ctx.Param("blogId"), title, content, authorId, tags, "", "", "")
+	if err != nil {
+		ctx.IndentedJSON(http.StatusNotFound, err)
+	} else {
+		ctx.IndentedJSON(http.StatusOK, blog)
+	}
 
 }
 func (cont *BlogController) HandleDelete(ctx *gin.Context) {
-	err := cont.usecase.DeleteBLog(ctx.Request.FormValue("blogId"))
-	if err!= nil {
-        ctx.IndentedJSON(http.StatusNotFound,err)
-    }else{
-        ctx.IndentedJSON(http.StatusOK,gin.H{"message":"Blog deleted"})
-    }
+	err := cont.usecase.DeleteBLog(ctx.Param("blogId"))
+	if err != nil {
+		ctx.IndentedJSON(http.StatusNotFound, err)
+	} else {
+		ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Blog deleted"})
+	}
 
 }
 func (cont *BlogController) HandleBlogLikeOrDislike(ctx *gin.Context) {
-	like := ctx.PostForm("like")
-	if like == "1" {
+	interactionType := ctx.Param("type")
+	if interactionType == "1" {
+		fmt.Println("like some blog")
 		err := cont.usecase.LikeBlog(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("authorId"))
-		if err!= nil {
-            ctx.IndentedJSON(http.StatusNotFound,err)
-        }else{
-			ctx.IndentedJSON(http.StatusOK,gin.H{"message":"Blog liked successfully"})
+		if err != nil {
+			ctx.IndentedJSON(http.StatusNotFound, err)
+		} else {
+			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Blog liked successfully"})
 		}
-	} else if like == "-1" {
+	} else if interactionType == "-1" {
 		err := cont.usecase.DislikeBlog(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("authorId"))
-		if err!= nil {
-            ctx.IndentedJSON(http.StatusNotFound,err)
-        } else{
-            ctx.IndentedJSON(http.StatusOK,gin.H{"message":"Blog disliked successfully"})
-        }
+		if err != nil {
+			ctx.IndentedJSON(http.StatusNotFound, err)
+		} else {
+			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Blog disliked successfully"})
+		}
 	} else {
-		err:=cont.usecase.ViewBlogs(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("authorId"))
-		if err!= nil {
-            ctx.IndentedJSON(http.StatusNotFound,err)
-        } else{
-            ctx.IndentedJSON(http.StatusOK,gin.H{"message":"Blog viewed successfully"})
-        }
+		err := cont.usecase.ViewBlogs(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("authorId"))
+		if err != nil {
+			ctx.IndentedJSON(http.StatusNotFound, err)
+		} else {
+			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Blog viewed successfully"})
+		}
 	}
 }
 
 func (cont *BlogController) HandleCommentLikeOrDislike(ctx *gin.Context) {
-	like := ctx.PostForm("like")
+	like := ctx.Param("like")
 	if like == "1" {
-		err:=cont.usecase.LikeComment(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("commentId"), ctx.Request.FormValue("authorId"))
-		if err!= nil {
-            ctx.IndentedJSON(http.StatusNotFound, err)
-        } else {
-            ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment liked successfully"})
-        }
+		err := cont.usecase.LikeComment(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("commentId"), ctx.Request.FormValue("authorId"))
+		if err != nil {
+			ctx.IndentedJSON(http.StatusNotFound, err)
+		} else {
+			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment liked successfully"})
+		}
 	} else if like == "-1" {
 		err := cont.usecase.DislikeComment(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("commentId"), ctx.Request.FormValue("authorId"))
-		if err!= nil {
+		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
-		}else{
+		} else {
 			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment disliked successfully"})
 		}
 	} else {
-		err:=cont.usecase.ViewComment(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("commentId"), ctx.Request.FormValue("authorId"))
-		if err!= nil {
-            ctx.IndentedJSON(http.StatusNotFound, err)
-        } else{
-            ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment viewed successfully"})
-        }
+		err := cont.usecase.ViewComment(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("commentId"), ctx.Request.FormValue("authorId"))
+		if err != nil {
+			ctx.IndentedJSON(http.StatusNotFound, err)
+		} else {
+			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment viewed successfully"})
+		}
 	}
 }
 
 func (cont *BlogController) HandleReplyLikeOrDislike(ctx *gin.Context) {
-	like := ctx.PostForm("like")
+	like := ctx.Param("like")
 	if like == "1" {
-		err:=cont.usecase.LikeReply(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("commentId"), ctx.Request.FormValue("replyId"), ctx.Request.FormValue("authorId"))
-		if err!= nil {
-            ctx.IndentedJSON(http.StatusNotFound, err)
-        } else{
-            ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply liked successfully"})
-        }
+		err := cont.usecase.LikeReply(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("commentId"), ctx.Request.FormValue("replyId"), ctx.Request.FormValue("authorId"))
+		if err != nil {
+			ctx.IndentedJSON(http.StatusNotFound, err)
+		} else {
+			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply liked successfully"})
+		}
 	} else if like == "-1" {
 		err := cont.usecase.DislikeReply(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("commentId"), ctx.Request.FormValue("replyId"), ctx.Request.FormValue("authorId"))
-		if err!= nil {
-            ctx.IndentedJSON(http.StatusNotFound, err)
-        } else{
-            ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply disliked successfully"})
-        }
+		if err != nil {
+			ctx.IndentedJSON(http.StatusNotFound, err)
+		} else {
+			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply disliked successfully"})
+		}
 	} else {
 		err := cont.usecase.ViewReply(ctx.Request.FormValue("blogId"), ctx.Request.FormValue("commentId"), ctx.Request.FormValue("replyId"), ctx.Request.FormValue("authorId"))
-		if err!= nil {
-            ctx.IndentedJSON(http.StatusNotFound, err)
-        } else{
-            ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply viewed successfully"})
-        }
+		if err != nil {
+			ctx.IndentedJSON(http.StatusNotFound, err)
+		} else {
+			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply viewed successfully"})
+		}
 	}
 }
 
@@ -176,11 +205,11 @@ func (cont *BlogController) HandleReplyLikeOrDislike(ctx *gin.Context) {
 
 // }
 func (cont *BlogController) HandleCommentOnBlog(ctx *gin.Context) {
-	err:=cont.usecase.AddComment(ctx.Request.FormValue("content"), ctx.Request.FormValue("blogId"), ctx.Request.FormValue("authorId"))
-	if err!= nil {
-        ctx.IndentedJSON(http.StatusNotFound, err)
-    } else{
-        ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
-    }
+	err := cont.usecase.AddComment(ctx.Request.FormValue("content"), ctx.Request.FormValue("blogId"), ctx.Request.FormValue("authorId"))
+	if err != nil {
+		ctx.IndentedJSON(http.StatusNotFound, err)
+	} else {
+		ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
+	}
 
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"AAiT-backend-group-6/bootstrap"
+	"AAiT-backend-group-6/delivery/route"
 	"time"
 
 	"github.com/gin-gonic/gin"

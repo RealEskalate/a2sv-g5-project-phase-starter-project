@@ -51,7 +51,7 @@ const AddCardForm = () => {
                 Card Type
               </label>
               <input
-                className="border border-[#DFEAF2] p-2 rounded-2xl mb-5"
+                className="border border-[#DFEAF2] p-2 rounded-2xl mb-5 w-[285px]"
                 type="text"
                 placeholder="Classic"
                 {...register("cardType", { required: "Card type is required" })}
@@ -88,7 +88,7 @@ const AddCardForm = () => {
                 Name on Card
               </label>
               <input
-                className="border border-[#DFEAF2] p-2 rounded-2xl mb-5"
+                className="border border-[#DFEAF2] p-2 rounded-2xl mb-5 w-[285px]"
                 type="text"
                 placeholder="John Doe"
                 {...register("cardHolder", {
@@ -106,7 +106,7 @@ const AddCardForm = () => {
                 Expiration Date
               </label>
               <input
-                className="border border-[#DFEAF2] p-2 rounded-2xl"
+                className="border border-[#DFEAF2] p-2 rounded-2xl w-[285px]"
                 type="date"
                 {...register("expiryDate", {
                   required: "Expiration date is required",
@@ -122,7 +122,7 @@ const AddCardForm = () => {
         </div>
         <button
           type="submit"
-          className="mt-4 px-8 py-3 bg-[#1814F3] text-white text-lg font-semibold rounded-[9px]"
+          className="mt-4 px-8 py-3 bg-[#1814F3] text-white text-lg font-semibold rounded-[9px] w-[285px]"
         >
           Add Card
         </button>

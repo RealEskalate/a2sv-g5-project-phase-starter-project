@@ -1,18 +1,15 @@
 package repository_interface
 
-
 import (
-	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"AAIT-backend-group-3/internal/domain/models"
 )
 
-
 type BlogRepositoryInterface interface {
-	CreateBlog(ctx context.Context, blog *models.Blog) error
-	GetBlogByID(ctx context.Context, blogID primitive.ObjectID) (*models.Blog, error)
-	GetBlogs(ctx context.Context, filter map[string]interface{}, search string, page int, limit int) ([]*models.Blog, error)
-	EditBlog(ctx context.Context,blogID primitive.ObjectID, newBlog *models.Blog ) error
-	DeleteBlog(ctx context.Context, blogID primitive.ObjectID) error
-	AddCommentToTheList(ctx content.Context, blogID primitive.ObjectID, comment *models.Comment) error
+	CreateBlog(blog *models.Blog) error
+	GetBlogByID(blogID primitive.ObjectID) (*models.Blog, error)
+	GetBlogs(filter map[string]interface{}, search string, page int, limit int) ([]*models.Blog, error)
+	EditBlog(logID primitive.ObjectID, newBlog *models.Blog ) error
+	DeleteBlog(blogID primitive.ObjectID) error
+	AddCommentToTheList(blogID primitive.ObjectID, commentID primitive.ObjectID) error
 }

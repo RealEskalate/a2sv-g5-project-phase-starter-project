@@ -1,59 +1,107 @@
 package Repository
 
-// import (
-// 	"context"
-// 	"errors"
-// 	"fmt"
-// 	"time"
+import (
+	"ASTU-backend-group-3/Blog_manager/Domain"
+	"context"
 
-// 	"your_project/internal/blog/domain"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
 
-// 	"github.com/google/uuid"
-// 	"go.mongodb.org/mongo-driver/bson"
-// 	"go.mongodb.org/mongo-driver/mongo"
-// )
+type BlogRepository interface {
+	Save(blog *Domain.Blog) (*Domain.Blog, error)
+	DeleteBlogByID(id string) error
+	SearchBlogs(title string, author string, tags []string) ([]*Domain.Blog, error)
+	RetrieveBlogs(page, pageSize int, sortBy string) ([]Domain.Blog, int64, error)
+}
 
-// var (
-// 	ErrNotFound = errors.New("blog not found")
-// )
+type blogRepository struct {
+	collection *mongo.Collection
+}
 
-// type BlogRepository interface {
-// 	Create(blog *domain.Blog) (*domain.Blog, error)
-// 	FindByID(id string) (*domain.Blog, error)
-// 	FindAll(page, limit int, sortBy string) ([]*domain.Blog, error)
-// 	Update(blog *domain.Blog) (*domain.Blog, error)
-// 	Delete(id string) error
-// 	Search(query string) ([]*domain.Blog, error)
-// }
+func NewBlogRepository(collection *mongo.Collection) *blogRepository {
+	return &blogRepository{collection: collection}
+}
 
-// type blogRepository struct {
-// 	collection *mongo.Collection
-// }
+func (r *blogRepository) Save(blog *Domain.Blog) (*Domain.Blog, error) {
+	blog.Id = primitive.NewObjectID().Hex()
+	_, err := r.collection.InsertOne(context.TODO(), blog)
+	if err != nil {
+		return nil, err
+	}
+	return blog, nil
+}
 
-// func NewBlogRepository(collection *mongo.Collection) BlogRepository {
-// 	return &blogRepository{collection: collection}
-// }
+func (r *blogRepository) RetrieveBlogs(page, pageSize int, sortBy string) ([]Domain.Blog, int64, error) {
+	var blogs []Domain.Blog
+	skip := (page - 1) * pageSize
+	opts := options.Find().
+		SetSkip(int64(skip)).
+		SetLimit(int64(pageSize)).
+		SetSort(bson.D{{Key: sortBy, Value: -1}}) // Sort by descending order
 
-// func (r *blogRepository) Create(blog *domain.Blog) (*domain.Blog, error) {
-// 	blog.ID = uuid.New() // Assuming you have an ID generation function
-// 	blog.Date = time.Now()
+	cursor, err := r.collection.Find(context.TODO(), bson.D{}, opts)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer cursor.Close(context.TODO())
 
-// 	_, err := r.collection.InsertOne(context.TODO(), blog)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("could not insert blog: %v", err)
-// 	}
+	for cursor.Next(context.TODO()) {
+		var blog Domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return nil, 0, err
+		}
+		blogs = append(blogs, blog)
+	}
 
-// 	return blog, nil
-// }
+	if err := cursor.Err(); err != nil {
+		return nil, 0, err
+	}
 
-// func (r *blogRepository) Delete(id string) error {
-// 	filter := bson.M{"id": id}
-// 	_, err := r.collection.DeleteOne(context.TODO(), filter)
-// 	if err != nil {
-// 		if err == mongo.ErrNoDocuments {
-// 			return ErrNotFound
-// 		}
-// 		return fmt.Errorf("could not delete blog: %v", err)
-// 	}
-// 	return nil
-// }
+	// Get the total count of blog posts
+	totalPosts, err := r.collection.CountDocuments(context.TODO(), bson.D{})
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return blogs, totalPosts, nil
+}
+
+func (r *blogRepositoryy) DeleteBlogByID(id string) error {
+	filter := bson.M{"id": id}
+	_, err := r.collection.DeleteOne(context.TODO(), filter)
+	return err
+}
+
+func (r *blogRepository) SearchBlogs(title string, author string, tags []string) ([]Domain.Blog, error) {
+	filter := bson.M{}
+
+	if title != "" {
+		filter["title"] = bson.M{"$regex": title, "$options": "i"} // Case-insensitive search
+	}
+	if author != "" {
+		filter["author"] = author
+	}
+	if len(tags) > 0 {
+		filter["tags"] = bson.M{"$in": tags}
+	}
+
+	cur, err := r.collection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(context.TODO())
+
+	var blogs []Domain.Blog
+	for cur.Next(context.TODO()) {
+		var blog Domain.Blog
+		if err := cur.Decode(&blog); err != nil {
+			return nil, err
+		}
+		blogs = append(blogs, blog)
+	}
+
+	return blogs, nil
+}

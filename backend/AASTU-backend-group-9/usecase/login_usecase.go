@@ -10,16 +10,18 @@ import (
 )
 
 type loginUsecase struct {
-	userRepository domain.UserRepository
+	userRepository  domain.UserRepository
 	tokenRepository domain.TokenRepository
-	contextTimeout time.Duration
+	contextTimeout  time.Duration
 }
+
+// checkRefreshToken implements domain.LoginUsecase.
 
 func NewLoginUsecase(userRepository domain.UserRepository, tokenRepo domain.TokenRepository, timeout time.Duration) domain.LoginUsecase {
 	return &loginUsecase{
-		userRepository: userRepository,
+		userRepository:  userRepository,
 		tokenRepository: tokenRepo,
-		contextTimeout: timeout,
+		contextTimeout:  timeout,
 	}
 }
 
@@ -41,11 +43,11 @@ func (lu *loginUsecase) AuthenticateUser(c context.Context, login *domain.AuthLo
 }
 
 func (lu *loginUsecase) CreateAccessToken(user *domain.User, secret string, expiry int) (string, error) {
-	return tokenutil.CreateAccessToken(&domain.AuthSignup{Email: user.Email, Username: user.Username}, secret, expiry)
+	return tokenutil.CreateAccessToken(&domain.AuthSignup{Email: user.Email, Username: user.Username, UserID: user.ID}, secret, expiry)
 }
 
 func (lu *loginUsecase) CreateRefreshToken(user *domain.User, secret string, expiry int) (string, error) {
-	return tokenutil.CreateRefreshToken(&domain.AuthSignup{Username: user.Username}, secret, expiry)
+	return tokenutil.CreateRefreshToken(&domain.AuthSignup{Username: user.Username, Email: user.Email, UserID: user.ID}, secret, expiry)
 }
 
 func (lu *loginUsecase) SaveRefreshToken(c context.Context, token *domain.Token) error {
@@ -53,4 +55,12 @@ func (lu *loginUsecase) SaveRefreshToken(c context.Context, token *domain.Token)
 	defer cancel()
 
 	return lu.tokenRepository.SaveToken(ctx, token)
+}
+
+func (lu *loginUsecase) CheckRefreshToken(c context.Context, refreshToken string) (*domain.Token, error) {
+	ctx, cancel := context.WithTimeout(c, lu.contextTimeout)
+	defer cancel()
+
+	return lu.tokenRepository.FindTokenByRefreshToken(ctx, refreshToken)
+
 }

@@ -4,6 +4,7 @@ import (
 	"blog_api/domain"
 	"blog_api/domain/dtos"
 	"context"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -169,7 +170,7 @@ func (b *BlogRepository) InsertBlogPost(ctx context.Context, blog *domain.Blog) 
 }
 
 // UpdateBlogPost implements domain.BlogRepositoryInterface.
-func (b *BlogRepository) UpdateBlogPost(ctx context.Context, blogId string, blog *domain.Blog) domain.CodedError {
+func (b *BlogRepository) UpdateBlogPost(ctx context.Context, blogId string, blog *domain.NewBlog) domain.CodedError {
 	objID, err := primitive.ObjectIDFromHex(blogId)
 	if err != nil {
 		return domain.NewError("Invalid blog ID", domain.ERR_BAD_REQUEST)
@@ -181,7 +182,8 @@ func (b *BlogRepository) UpdateBlogPost(ctx context.Context, blogId string, blog
 		"$set": bson.M{
 			"title":     blog.Title,
 			"content":   blog.Content,
-			"updated_at": blog.UpdatedAt,
+			"tags": blog.Tags,
+			"updated_at": time.Now(),
 		},
 	}
 

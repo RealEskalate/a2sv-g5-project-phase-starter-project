@@ -19,13 +19,27 @@ func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration) *BlogU
 }
 
 // CreateBlogPost implements domain.BlogUseCaseInterface.
-func (b *BlogUseCase) CreateBlogPost(ctx context.Context, blog *domain.Blog, createdBy string) domain.CodedError {
+func (b *BlogUseCase) CreateBlogPost(ctx context.Context, newBlog *domain.NewBlog, createdBy string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
-	blog.CreatedAt = time.Now()
-	blog.Username = createdBy
 	defer cancel()
 
-	err := b.blogRepo.InsertBlogPost(ctx, blog)
+	blog := domain.Blog{// Generate or assign a unique ID
+        Title:     newBlog.Title,
+        Content:   newBlog.Content,
+        Username:  createdBy,            // Set the username of the blog creator
+        Tags:      newBlog.Tags,           // Initialize an empty slice or add tags if available
+        CreatedAt: time.Now(),          // Set the current time as the creation time
+        UpdatedAt: time.Now(),          // Set the current time as the updated time
+        ViewCount: 0,                   // Initialize the view count to 0
+        LikedBy:   []string{},           // Initialize an empty slice for LikedBy
+        DislikedBy: []string{},          // Initialize an empty slice for DislikedBy
+        Comments:  []domain.Comment{},         // Initialize an empty slice for Comments
+    }
+
+	blog.CreatedAt = time.Now()
+	blog.Username = createdBy
+
+	err := b.blogRepo.InsertBlogPost(ctx, &blog)
 	if err != nil {
 		return err
 	}
@@ -51,7 +65,7 @@ func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string, deleted
 }
 
 // EditBlogPost implements domain.BlogUseCaseInterface.
-func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *domain.Blog, editedBy string) domain.CodedError {
+func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *domain.NewBlog, editedBy string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
@@ -62,8 +76,7 @@ func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *dom
 	if foundBlog.Username != editedBy{
 		return domain.NewError("unauthorized request to update blog", domain.ERR_FORBIDDEN)
 	}
-
-	blog.UpdatedAt = time.Now()
+	
 	err = b.blogRepo.UpdateBlogPost(ctx, blogId, blog)
 	if err != nil {
 		return err

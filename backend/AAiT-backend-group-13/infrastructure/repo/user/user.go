@@ -8,7 +8,7 @@ import (
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
 	usermodel "github.com/group13/blog/domain/models/user"
-	irepo "github.com/group13/blog/usecase/common/i_repo"
+	irepo "github.com/group13/blog/usecases_sof/utils/i_repo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -17,6 +17,26 @@ import (
 // Repo handles the persistence of user models.
 type Repo struct {
 	collection *mongo.Collection
+	hash       ihash.Service
+}
+
+// FindByEmail implements irepository.UserRepository.
+func (u *Repo) FindByEmail(email string) (*usermodel.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"email": email}
+
+	var user usermodel.User
+	err := u.collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, er.UserNotFound
+		}
+		return nil, er.NewUnexpected(err.Error())
+	}
+
+	return &user, nil
 }
 
 // Ensure Repo implements irepo.User.
@@ -68,25 +88,46 @@ func (u *Repo) Save(user *usermodel.User) error {
 }
 
 func (u *Repo) FindById(id uuid.UUID) (*usermodel.User, error) {
-	return nil, nil
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": id}
+
+	var user usermodel.User
+	err := u.collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, er.UserNotFound
+		}
+		return nil, er.NewUnexpected(err.Error())
+	}
+
+	return &user, nil
 }
 
 func (u *Repo) FindByUsername(username string) (*usermodel.User, error) {
-	return nil, nil
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"username": username}
+
+	var user usermodel.User
+	err := u.collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, er.UserNotFound
+		}
+		return nil, er.NewUnexpected(err.Error())
+	}
+
+	return &user, nil
 }
 
-func (u *Repo) CheckUsernameAvailability(username string) error {
-	return nil
-}
+// func (u *Repo) MatchPassword(password string, hashedPassword string, hash ihash.Service) bool {
+// 	hashed, err := u.hash.Hash(password)
+// 	if err != nil {
+// 		return false
+// 	}
+// 	return hashed == hashedPassword
+// }
 
-func (u *Repo) CheckEmailAvailability(email string) error {
-	return nil
-}
-
-func (u *Repo) MatchPassword(password string, hashedPassword string, hash ihash.Service) bool {
-	return true
-}
-
-func (u *Repo) GenerateValidationLink(user usermodel.User) (string, error) {
-	return "", nil
-}

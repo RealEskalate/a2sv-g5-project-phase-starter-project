@@ -4,6 +4,7 @@ import (
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
 	result "github.com/group13/blog/usecases_sof/user/result"
+	icommand "github.com/group13/blog/usecases_sof/utils/command"
 	iemail "github.com/group13/blog/usecases_sof/utils/i_email"
 	ijwt "github.com/group13/blog/usecases_sof/utils/i_jwt"
 	irepository "github.com/group13/blog/usecases_sof/utils/i_repo"
@@ -34,17 +35,20 @@ func NewLoginHandler(config LoginConfig) *LoginHandler {
 }
 
 // Ensure Handler implements icmd.IHandler
-var _ icommand.IHandler[*Command, *blogmodel.Blog] = &Handler{}
+var _ icommand.Ihandler[*LoginCommand, *result.LoginInResult] = &LoginHandler{}
 
 
-func (h *SignUpHandler) Handle(command *LoginCommand) (*result.LoginInResult, error) {
+func (h *LoginHandler) Handle(command *LoginCommand) (*result.LoginInResult, error) {
 	user, err := h.repo.FindByUsername(command.username)
 	if err != nil {
 		return nil, er.NewNotFound("user not found.")
 	}
 
-	if ok := h.repo.MatchPassword(command.password, user.PasswordHash(), h.hashService); !ok {
-
+	ok, err := h.hashService.Match(command.password, user.PasswordHash())
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
 		return nil, er.NewValidation("password is incorrect.")
 	}
 

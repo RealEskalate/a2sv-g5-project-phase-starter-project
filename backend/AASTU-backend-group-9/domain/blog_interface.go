@@ -14,6 +14,8 @@ type BlogRepository interface {
 	GetAllBlogs(ctx context.Context, page int, limit int, sortBy string) ([]*Blog, error)
 	UpdateBlog(ctx context.Context, blog *Blog) error
 	DeleteBlog(ctx context.Context, id primitive.ObjectID) error
+
+	SearchBlogs(ctx context.Context, query string, filters *BlogFilters) ([]*Blog, error)
 	IncrementViews(ctx context.Context, id primitive.ObjectID) error
     IncrementLikes(ctx context.Context, id primitive.ObjectID) error
     IncrementDislikes(ctx context.Context, id primitive.ObjectID) error
@@ -32,6 +34,7 @@ type BlogUsecase interface {
 	GetAllBlogs(ctx context.Context, page int, limit int, sortBy string) ([]*BlogResponse, error)
 	UpdateBlog(ctx context.Context, id primitive.ObjectID, blog *BlogUpdateRequest) (*BlogResponse, error)
 	DeleteBlog(ctx context.Context, id primitive.ObjectID) error
+	SearchBlogs(ctx context.Context, query string, filters *BlogFilters) ([]*BlogResponse, error)
 	TrackView(ctx context.Context, id primitive.ObjectID) error
     TrackLike(ctx context.Context, id primitive.ObjectID, userID string) error
     TrackDislike(ctx context.Context, id primitive.ObjectID, userID string) error

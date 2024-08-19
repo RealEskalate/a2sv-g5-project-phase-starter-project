@@ -32,26 +32,26 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 		return
 	}
 
-	if updateRequest.Firstname == "" {
-		updateRequest.Firstname = user_.Firstname
+	if updateRequest.Firstname != "" {
+		user_.Firstname = updateRequest.Firstname
 	}
-	if updateRequest.Lastname == "" {
-		updateRequest.Lastname = user_.Lastname
+	if updateRequest.Lastname != "" {
+		user_.Lastname = updateRequest.Lastname
 	}
-	if updateRequest.Username == "" {
-		updateRequest.Username = user_.Username
+	if updateRequest.Username != "" {
+		user_.Username = updateRequest.Username
 	}
-	if updateRequest.Bio == "" {
-		updateRequest.Bio = user_.Bio
+	if updateRequest.Bio != "" {
+		user_.Bio = updateRequest.Bio
 	}
-	if updateRequest.ContactInformation == "" {
-		updateRequest.ContactInformation = user_.ContactInformation
+	if updateRequest.ContactInformation != "" {
+		user_.ContactInformation = updateRequest.ContactInformation
 	}
-	if updateRequest.ProfilePicture == "" {
-		updateRequest.ProfilePicture = user_.ProfilePicture
+	if updateRequest.ProfilePicture != "" {
+		user_.ProfilePicture = updateRequest.ProfilePicture
 	}
 
-	if err := uc.usecase.UpdateUser(c, userID, &updateRequest); err != nil {
+	if err := uc.usecase.UpdateUser(c, userID, &user_); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user profile"})
 		return
 	}

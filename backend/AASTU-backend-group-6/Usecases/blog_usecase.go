@@ -12,8 +12,6 @@ type BlogUsecase struct {
 	idConverter    domain.IDConverterInterface
 }
 
-
-
 func NewBlogUsecase(blogRepository domain.BlogRepository, idConverter domain.IDConverterInterface) domain.BlogUsecase {
 	return BlogUsecase{
 		blogRepository: blogRepository,
@@ -81,7 +79,6 @@ func (b BlogUsecase) GetBlogByID(blog_id string) (domain.Blog, error) {
 	return blog, err
 }
 
-
 // GetBlogs implements domain.BlogUsecase.
 func (b BlogUsecase) GetBlogs(pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
 	PageNo, err := strconv.ParseInt(pageNo, 10, 64)
@@ -103,12 +100,27 @@ func (b BlogUsecase) GetBlogs(pageNo string, pageSize string) ([]domain.Blog, do
 
 // GetMyBlogByID implements domain.BlogRepository.
 func (b BlogUsecase) GetMyBlogByID(user_id string, blog_id string) (domain.Blog, error) {
-	panic("unimplemented")
+	myBlog, err := b.blogRepository.GetMyBlogByID(user_id, blog_id)
+	return myBlog, err
 }
 
 // GetMyBlogs implements domain.BlogRepository.
 func (b BlogUsecase) GetMyBlogs(user_id string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
-	panic("unimplemented")
+	PageNo, err := strconv.ParseInt(pageNo, 10, 64)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+	PageSize, err := strconv.ParseInt(pageSize, 10, 64)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+
+	myBlogs, pagination, err := b.blogRepository.GetMyBlogs(user_id, PageNo, PageSize)
+	if err != nil {
+		return nil, domain.Pagination{}, err
+	} else {
+		return myBlogs, pagination, nil
+	}
 }
 
 // SearchBlogByTitleAndAuthor implements domain.BlogRepository.

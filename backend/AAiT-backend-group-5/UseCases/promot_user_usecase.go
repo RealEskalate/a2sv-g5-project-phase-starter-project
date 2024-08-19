@@ -11,7 +11,7 @@ type userUsecase struct {
 	repo interfaces.UserRepository
 }
 
-func NewUserUsecase(repo interfaces.UserRepository) interfaces.PromoteUserUsecase {
+func NewUserUsecase(repo interfaces.UserRepository) interfaces.PromoteDemoteUserUsecase {
 	return &userUsecase{
 		repo: repo,
 	}
@@ -30,6 +30,7 @@ func (uc *userUsecase) PromoteUser(ctx context.Context, userID string) *models.E
 	}
 
 	// Promote the user
+
 	err = uc.repo.PromoteUser(ctx, userID)
 	if err != nil {
 		return err

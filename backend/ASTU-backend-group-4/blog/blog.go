@@ -56,17 +56,17 @@ type FilterQuery struct {
 }
 
 type BlogUseCase interface {
-	CreateBlog(blog Blog) (Blog, error)
-	UpdateBlog(id string, blog Blog) (Blog, error)
-	DeleteBlog(id string) error
-	GetBlogByID(id string) (Blog, error)
-	GetBlogs(filterQuery FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
-	SearchBlogs(query string) (infrastructure.PaginationResponse[Blog], error)
-	GetCommentsByBlogID(blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
-	CreateComment(comment Comment) error
-	DeleteComment(id string) error
-	LikeBlog(like Like) error
-	DislikeBlog(dislike Dislike) error
+	CreateBlog(ctx context.Context, blog Blog) (Blog, error)
+	UpdateBlog(ctx context.Context, id string, blog Blog) (Blog, error)
+	DeleteBlog(ctx context.Context, id string) error
+	GetBlogByID(ctx context.Context, id string) (Blog, error)
+	GetBlogs(ctx context.Context, filterQuery FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
+	SearchBlogs(ctx context.Context, query string) (infrastructure.PaginationResponse[Blog], error)
+	GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
+	CreateComment(ctx context.Context, comment Comment) error
+	DeleteComment(ctx context.Context, id string) error
+	LikeBlog(ctx context.Context, like Like) error
+	DislikeBlog(ctx context.Context, dislike Dislike) error
 }
 
 type BlogRepository interface {

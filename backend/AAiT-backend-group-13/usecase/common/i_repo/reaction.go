@@ -9,10 +9,10 @@ import (
 type Reaction interface {
 	Save(*reaction.Reaction) error
 
-	// Delete removes a blog by ID.
+	// Delete removes a reaction by ID.
 	Delete(id uuid.UUID) error
 
-	// Find Reaction By UserId and BlogId
+	// FindReactionById finds reaction by its ID.
 	FindReactionById(uuid.UUID) (*reaction.Reaction, error)
 
 	FindReactionByBlogId(uuid.UUID) (*[]reaction.Reaction, error)

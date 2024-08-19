@@ -42,8 +42,11 @@ func (h *LoginHandler) Handle(command *LoginCommand) (*result.LoginInResult, err
 		return nil, er.NewNotFound("user not found.")
 	}
 
-	if ok := h.repo.MatchPassword(command.password, user.PasswordHash(), h.hashService); !ok {
-
+	ok, err := h.hashService.Match(command.password, user.PasswordHash())
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
 		return nil, er.NewValidation("password is incorrect.")
 	}
 

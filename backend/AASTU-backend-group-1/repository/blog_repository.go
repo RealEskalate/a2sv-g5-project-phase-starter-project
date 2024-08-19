@@ -33,10 +33,20 @@ func (b *BlogRepository) InsertBlog(blog *domain.Blog) error {
 	return err
 }
 
-// GetBlog implements domain.BlogRepository.
-func (b *BlogRepository) GetBlog(page int, size int) ([]*domain.Blog, error) {
-	panic("not implemented") // TODO: Implement
+// GetBlogByID implements domain.BlogRepository.
+func (b *BlogRepository) GetBlogByID(id string) (*domain.Blog, error) {
+	blogid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
 
+	var blog domain.Blog
+	err = b.blogCollection.FindOne(context.Background(), bson.M{"_id": blogid}).Decode(&blog)
+	if err != nil {
+		return nil, err
+	}
+
+	return &blog, nil
 }
 
 // UpdateBlogByID implements domain.BlogRepository.
@@ -246,10 +256,35 @@ func (b *BlogRepository) GetBlogsByRecent(page, limit int, reverse bool) ([]*dom
 }
 
 // AddView implements domain.BlogRepository.
-func (b *BlogRepository) AddView(view *domain.View) error {
-	_, err := b.viewCollection.InsertOne(context.Background(), view)
+func (b *BlogRepository) AddView(view []*domain.View) error {
+	var views []interface{}
+	for _, v := range view {
+		views = append(views, v)
+	}
+	_, err := b.viewCollection.InsertMany(context.Background(), views)
 	return err
 
+}
+
+// GetLikebyAuthorAndBlogID implements domain.BlogRepository.
+func (b *BlogRepository) GetLikebyAuthorAndBlogID(blogID string, author string) (*domain.Like, error) {
+	blogid, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return nil, err
+	}
+
+	var like domain.Like
+	err = b.likeCollection.FindOne(context.Background(), bson.M{"blogid": blogid, "user": author}).Decode(&like)
+	if err != nil {
+		return nil, err
+	}
+
+	return &like, nil
+}
+
+func (b *BlogRepository) UpdateLike(like *domain.Like) error {
+	_, err := b.likeCollection.UpdateOne(context.Background(), bson.M{"blogid": like.BlogID, "user": like.User}, bson.M{"$set": like})
+	return err
 }
 
 // AddLike implements domain.BlogRepository.

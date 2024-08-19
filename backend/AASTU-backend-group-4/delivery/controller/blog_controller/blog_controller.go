@@ -4,6 +4,6 @@ import (
 	"blog-api/domain/blog"
 )
 
-type blogController struct {
+type BlogController struct {
 	usecase blog.BlogUsecase
 }

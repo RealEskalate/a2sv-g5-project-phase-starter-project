@@ -8,8 +8,7 @@ import {
 import ListCard from "./components/ListCard";
 import { IconType } from "react-icons";
 import BarChartForAccounts from "./components/BarChartForAccounts";
-import EditProfile from "../components/EditProfile";
-
+import Card from "../components/Page2/Card";
 type DataItem = {
   heading: string;
   text: string;
@@ -132,10 +131,26 @@ const Page = () => {
               <ListCard column={transaction2} width={"w-full"} />
             </div>
           </div>
-          <div className="md:w-1/2">
-            <span className="text-xl text-[#333B69] font-semibold">
-              Card Goes Here
-            </span>
+          <div className="md:w-1/2 gap-1 flex flex-col">
+            <div className="flex justify-between mr-2">
+              <span className="text-xl text-[#333B69] font-semibold">
+                My Card
+              </span>
+              <span className="text-sm text-[#333B69] font-semibold">
+                See All
+              </span>
+            </div>
+            <Card
+              balance="$5,756"
+              cardHolder="Eddy Cusuma"
+              validThru="12/22"
+              cardNumber="3778 **** **** 1234"
+              filterClass=""
+              bgColor="from-[#4C49ED] to-[#0A06F4]"
+              textColor="text-white"
+              iconBgColor="bg-opacity-10"
+              showIcon={true}
+            ></Card>
           </div>
         </div>
 

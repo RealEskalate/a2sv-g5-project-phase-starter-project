@@ -8,16 +8,28 @@ import (
 )
 
 type loginUsecase struct {
-	userRepository domain.UserRepository
-	contextTimeout time.Duration
+	userRepository       domain.UserRepository
+	activeUserRepository domain.ActiveUserRepository
+	contextTimeout       time.Duration
 }
 
-func NewLoginUsecase(userRepository domain.UserRepository, timeout time.Duration) domain.LoginUsecase {
+// SaveAsActiveUser implements domain.LoginUsecase.
+func NewLoginUsecase(userRepository domain.UserRepository, activeUserRepository domain.ActiveUserRepository, timeout time.Duration) domain.LoginUsecase {
 	return &loginUsecase{
-		userRepository: userRepository,
-		contextTimeout: timeout,
+		userRepository:       userRepository,
+		activeUserRepository: activeUserRepository,
+		contextTimeout:       timeout,
 	}
 }
+func (lu *loginUsecase) SaveAsActiveUser(user domain.User, refreshToken string, c context.Context) error {
+	ctx, cancel := context.WithTimeout(c, lu.contextTimeout)
+	defer cancel()
+	return lu.activeUserRepository.CreateActiveUser(domain.ActiveUser{
+		ID:       user.ID,
+		RefreshToken: refreshToken,
+	}, ctx)
+}
+
 func (lu *loginUsecase) GetUserByEmail(c context.Context, email string) (domain.User, error) {
 	ctx, cancel := context.WithTimeout(c, lu.contextTimeout)
 	defer cancel()

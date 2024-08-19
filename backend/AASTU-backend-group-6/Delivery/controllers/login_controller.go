@@ -45,6 +45,11 @@ func (lc *LoginController) Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
+	err=lc.LoginUsecase.SaveAsActiveUser(user, refreshToken, c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error(), Status: http.StatusInternalServerError})
+		return
+	}
 
 	loginResponse := domain.LoginResponse{
 		AccessToken:  accessToken,

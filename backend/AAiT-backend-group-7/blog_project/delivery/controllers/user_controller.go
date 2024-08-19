@@ -198,4 +198,3 @@ func (uc *userController) DemoteUser(c *gin.Context) {
 
 	c.JSON(200, gin.H{"message": "User demoted successfully" , "user": user})
 }
-

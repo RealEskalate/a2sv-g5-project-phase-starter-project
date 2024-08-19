@@ -114,25 +114,21 @@ func (uuc *UserUseCaseImpl) GetSingleUser(email string) (*domain.User, error) {
 }
 
 func (uuc *UserUseCaseImpl) RefreshToken(email, refresher string) (string, error) {
-	//Check the validity of the refresher token
 	err := uuc.TokenService.ValidateToken(refresher)
 
 	if err != nil {
 		return "", err
 	}
-	//Grasp the user's refresher token from the database
 	existingRefresher, err := uuc.TokenRepo.GetRefresher(email)
 
 	if err != nil {
 		return "", err
 	}
 
-	//cross-check the given refresher with the existing one
 	if existingRefresher != refresher {
 		return "", errors.New("invalid refresher token")
 	}
 
-	//get user data from the db
 	var user *domain.User
 	user, err = uuc.userRepository.GetUserByEmail(email)
 

@@ -77,7 +77,7 @@ func (c *Controller) DeleteComment(ctx *gin.Context) {
 		return
 	}
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "comment deleted successfully"})
-}	
+}
 
 func (c *Controller) ExtractToken(ctx *gin.Context) (string, error) {
 	authHeader := ctx.GetHeader("Authorization")

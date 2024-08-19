@@ -16,6 +16,15 @@ func main() {
 	mongoClient := infrastructure.InitMongoDB("mongodb://localhost:27017")
 	user_collection := mongoClient.Database("starterproject").Collection("users")
 	token_collection := mongoClient.Database("starterproject").Collection("token")
+	comment_collection := mongoClient.Database("starterproject").Collection("comments")
+	commnetRepo := repository.NewCommentRepository(*comment_collection, context.TODO())
+	infra := infrastructure.NewInfrastructure()
+	commentUseCase := usecase.NewCommentUseCase(
+		*commnetRepo,
+		*infra,
+	)
+
+	controller := controllers.NewController(*commentUseCase)
 
 	userRepo := repository.NewUserRepository(user_collection, context.TODO())
 	ts := infrastructure.NewTokenService(SECRET_KEY)
@@ -26,7 +35,7 @@ func main() {
 	userUseCase := usecase.NewUserUseCase(userRepo, ts, ps, tr, ms)
 
 	userHandler := controllers.NewUserHandler(userUseCase)
-	r := Router.InitRouter(userHandler)
+	r := Router.InitRouter(userHandler, *controller)
 
 	r.Run(":8080")
 }

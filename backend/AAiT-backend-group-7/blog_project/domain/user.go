@@ -7,15 +7,15 @@ import (
 )
 
 type User struct {
-	ID           int    `json:"id"`
-	Username     string `json:"username"`
-	Password     string `json:"password"`
-	Email        string `json:"email"`
-	Blogs        []int  `json:"blogs"`
-	Role         string `json:"role"`
-	Bio          string `json:"bio"`
-	Phone        string `json:"phone"`
-	ProfilePic   string `json:"profile_pic"`
+	ID         int    `json:"id"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	Email      string `json:"email"`
+	Blogs      []int  `json:"blogs"`
+	Role       string `json:"role"`
+	Bio        string `json:"bio"`
+	Phone      string `json:"phone"`
+	ProfilePic string `json:"profile_pic"`
 }
 
 type IUserRepository interface {

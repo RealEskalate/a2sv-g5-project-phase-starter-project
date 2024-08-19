@@ -47,10 +47,11 @@ type Dislike struct {
 	UserID string `json:"user_id,omitempty"`
 }
 
-type FilterOption struct {
-	Field    string      `json:"field,omitempty"`
-	Operator string      `json:"operator,omitempty"`
-	Value    interface{} `json:"value,omitempty"`
+type FilterQuery struct {
+	Tags          []string
+	CreatedAtFrom string
+	CreatedAtTo   string
+	Popularity    int
 }
 
 type BlogUseCase interface {
@@ -58,7 +59,7 @@ type BlogUseCase interface {
 	UpdateBlog(id string, blog Blog) (Blog, error)
 	DeleteBlog(id string) error
 	GetBlogByID(id string) (Blog, error)
-	GetBlogs(filterOptions []FilterOption, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
+	GetBlogs(filterQuery FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
 	SearchBlogs(query string) (infrastructure.PaginationResponse[Blog], error)
 	GetCommentsByBlogID(blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
 	CreateComment(comment Comment) error
@@ -72,7 +73,7 @@ type BlogRepository interface {
 	UpdateBlog(ctx context.Context, id string, blog Blog) error
 	DeleteBlog(ctx context.Context, id string) error
 	GetBlogByID(ctx context.Context, id string) (Blog, error)
-	GetBlogs(ctx context.Context, filterOptions []FilterOption, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
+	GetBlogs(ctx context.Context, filterQuery FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
 	SearchBlogs(ctx context.Context, query string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
 	GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
 	CreateComment(ctx context.Context, comment Comment) (string, error)

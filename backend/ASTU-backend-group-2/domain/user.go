@@ -78,4 +78,5 @@ type UserRepository interface {
 
 	PromoteUserToAdmin(c context.Context, userID string) error
 	DemoteAdminToUser(c context.Context, userID string) error
+
 }

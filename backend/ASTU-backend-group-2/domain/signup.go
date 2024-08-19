@@ -2,6 +2,7 @@ package domain
 
 import "context"
 
+
 type UserIn struct {
 	FirstName  string `json:"first_name" bson:"first_name" binding:"required,min=3,max=30"`
 	LastName   string `json:"last_name" bson:"last_name" binding:"max=30"`

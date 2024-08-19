@@ -92,7 +92,7 @@ type LikeRepository interface {
 
 
 type BlogUsecase interface {
-	GetByTags(c context.Context, tags []string) ([]Blog, error)
+  GetByTags(c context.Context, tags []string) ([]Blog, error)
 	GetAllBlogs(c context.Context) ([]Blog, error)
 	GetBlogByID(c context.Context, blogID string) (Blog, error)
 	GetByPopularity(c context.Context) ([]Blog, error)

@@ -61,7 +61,7 @@ func (cc *CommentController) GetCommentByID(c *gin.Context) {
 		return
 	}
 
-	comment, err, statuscode:= cc.commentUseCase.GetCommentByID(c, objID)
+	comment, err, statuscode := cc.commentUseCase.GetCommentByID(c, objID)
 	if err != nil {
 		c.JSON(statuscode, gin.H{"error": err.Error()})
 		return
@@ -79,7 +79,7 @@ func (cc *CommentController) EditComment(c *gin.Context) {
 	}
 
 	// get comment
-	existingComment , err, statuscode := cc.commentUseCase.GetCommentByID(c, objID)
+	existingComment, err, statuscode := cc.commentUseCase.GetCommentByID(c, objID)
 	if err != nil {
 		c.JSON(statuscode, gin.H{"error": err.Error()})
 		return
@@ -102,19 +102,19 @@ func (cc *CommentController) EditComment(c *gin.Context) {
 		return
 	}
 
-
 	var comment = &Domain.Comment{}
 	if err := c.ShouldBindJSON(comment); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-
-	err, status := cc.commentUseCase.EditComment(c, objID,comment)
+	err, status := cc.commentUseCase.EditComment(c, objID, comment)
 	if err != nil {
 		c.JSON(status, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "Comment updated successfully"})
+	c.JSON(200, gin.H{
+		"message": "Comment updated successfully",
+		"comment": comment,})
 }

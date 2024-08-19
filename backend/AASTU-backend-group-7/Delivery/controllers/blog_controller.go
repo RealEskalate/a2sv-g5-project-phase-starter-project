@@ -225,13 +225,16 @@ func (controller *blogController) GetAllPosts(c *gin.Context) {
 	if len(queryparams) > 0 {
 		filter.Slug = queryparams.Get("slug")
 		filter.AuthorName = queryparams.Get("author_id")
-		filter.Limit ,_= strconv.Atoi(queryparams.Get("limit"))
+		filter.Limit, _ = strconv.Atoi(queryparams.Get("limit"))
 		filter.Page, _ = strconv.Atoi(queryparams.Get("page"))
+		filter.Tags = []string{}
+		filter.Sort = map[string]int{}
 	}
 
 	if tags, ok := queryparams["tags"]; ok && len(tags) > 0 {
 		filter.Tags = strings.Split(tags[0], ",") // Splitting by comma to get slice of tags
 	}
+	// fmt.Println(filter.Tags)
 
 	if sort, ok := queryparams["sort"]; ok && len(sort) > 0 {
 		var sortMap map[string]int

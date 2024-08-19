@@ -1,3 +1,4 @@
+"use client";
 import Card from "../../components/Accounts/account";
 import LastTransList from "@/app/components/Accounts/LastTransPa";
 import { DebitCreditOver } from "../../components/Accounts/DebitCreditOver";
@@ -10,6 +11,7 @@ export default function Home() {
   const { data: session } = useSession();
 
   const CardData: CardType[] = useAppSelector((state) => state.cards.cards);
+
   return (
     <div className="w-[96%] flex flex-col grow gap-6 p-8 pt-6">
       <div className="flex flex-col lg:flex-row gap-7">
@@ -65,12 +67,17 @@ export default function Home() {
               See All
             </p>
           </div>
-          <VisaCard
-            data={CardData[0]}
-            isBlack={false}
-            isFade={true}
-            isSimGray={false}
-          />
+          <>
+            {CardData?.slice(0, 1).map((item, index) => (
+              <VisaCard
+                key={index}
+                data={item}
+                isBlack={false}
+                isFade={false}
+                isSimGray={false}
+              />
+            ))}
+          </>
         </div>
       </div>
       <div className="flex flex-col lg:flex-row justify-between my-5">

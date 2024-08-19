@@ -17,6 +17,7 @@ const Transaction = () => {
   const balanceHist: TransactionType[] = useAppSelector(
     (state) => state.transactions.balanceHist
   );
+  const cardColor = [false, true];
   console.log("Fetched cards:", CardData);
   console.log("Fetched Transaction:", TranData);
   console.log("Fetched balanceHist:", balanceHist);
@@ -53,7 +54,7 @@ const Transaction = () => {
   const chartData = convertToChartData(TranData);
 
   return (
-    <div className="space-y-6 bg-[#F5F7FA] px-4 sm:px-6 md:px-8 lg:px-10">
+    <div className="space-y-6 px-4 sm:px-6 md:px-8 lg:px-10">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
         <div className="lg:col-span-2 py-4 overflow-x-auto scrollbar-hide">
           <div className="flex justify-between mb-5">
@@ -66,18 +67,17 @@ const Transaction = () => {
           </div>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-8 min-w-[650px] min-h-[170px]">
-              <VisaCard
-                data={CardData[0]}
-                isBlack={false}
-                isFade={false}
-                isSimGray={false}
-              />
-              <VisaCard
-                data={CardData[1]}
-                isBlack={true}
-                isFade={false}
-                isSimGray={false}
-              />
+              <>
+                {CardData?.slice(0, 2).map((item, index) => (
+                  <VisaCard
+                    key={index}
+                    data={item}
+                    isBlack={cardColor[index] || false}
+                    isFade={false}
+                    isSimGray={false}
+                  />
+                ))}
+              </>
             </div>
           </div>
         </div>

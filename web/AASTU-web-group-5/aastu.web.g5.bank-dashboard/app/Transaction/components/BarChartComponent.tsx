@@ -1,33 +1,68 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Bar, BarChart, CartesianGrid, XAxis, Cell, LabelList } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-];
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
 const chartConfig = {
   desktop: {
-    label: "Desktop",
+    label: "Expenses",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
+const getAllMonths = () => {
+  const months = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+  return months;
+};
+
 export function BarChartComponent() {
+  const [chartData, setChartData] = useState<{ month: string, desktop: number }[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions/expenses?page=0&size=10', {
+          headers: {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`,
+          },
+        });
+        if (response.data.success) {
+          // Initialize data with zeros for each month
+          const months = getAllMonths();
+          const initialData = months.map(month => ({ month, desktop: 0 }));
+
+          // Map API response to chart format
+          response.data.data.forEach((item: { date: string, amount: number }) => {
+            const month = new Date(item.date).toLocaleString('default', { month: 'short' });
+            const index = months.indexOf(month);
+            if (index !== -1) {
+              initialData[index].desktop += item.amount;
+            }
+          });
+
+          setChartData(initialData);
+        } else {
+          setError('Failed to fetch data');
+        }
+      } catch (err) {
+        console.error('Error fetching chart data:', err);
+        setError('Failed to fetch data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChartData();
+  }, []);
 
   const handleMouseEnter = (index: number) => {
     setActiveIndex(index);
@@ -36,6 +71,9 @@ export function BarChartComponent() {
   const handleMouseLeave = () => {
     setActiveIndex(null);
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <Card>
@@ -48,9 +86,7 @@ export function BarChartComponent() {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
             />
-            
             <Bar dataKey="desktop" radius={10}>
               {chartData.map((entry, index) => (
                 <Cell
@@ -84,3 +120,5 @@ export function BarChartComponent() {
     </Card>
   );
 }
+
+export default BarChartComponent;

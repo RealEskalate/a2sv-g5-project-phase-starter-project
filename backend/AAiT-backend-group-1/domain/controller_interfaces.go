@@ -2,6 +2,12 @@ package domain
 
 import "github.com/gin-gonic/gin"
 
+type ApiControllers interface {
+	BlogController
+	UserController
+	BlogAssisstantController
+}
+
 type BlogController interface {
 	CreateBlog(c *gin.Context)
 	GetBlog(c *gin.Context)
@@ -9,15 +15,21 @@ type BlogController interface {
 	UpdateBlog(c *gin.Context)
 	DeleteBlog(c *gin.Context)
 	SearchBlogs(c *gin.Context)
-	FiltersBlogs(c *gin.Context)
-	GenerateBlog(c *gin.Context)
+	FilterBlogs(c *gin.Context)
+	CommentBlog(c *gin.Context)
 	LikeBlog(c *gin.Context)
+	DislikeBlog(c *gin.Context)
+	
+	AddComment(c *gin.Context)
+	DeleteComment(c *gin.Context)
+	EditComment(c *gin.Context)
+	Like(c gin.Context)
+	DisLike(c gin.Context)
 }
 
 type UserController interface {
 	Register(c *gin.Context)
 	Login(c *gin.Context)
-	Authenticate(c *gin.Context)
 	ForgotPassword(c *gin.Context)
 	Logout(c *gin.Context)
 	PromoteUser(c *gin.Context)
@@ -25,9 +37,8 @@ type UserController interface {
 	UpdateProfile(c *gin.Context)
 }
 
-type CommentController interface {
-	CreateComment(c *gin.Context)
-	GetComments(c *gin.Context)
-	UpdateComment(c *gin.Context)
-	DeleteComment(c *gin.Context)
+type BlogAssisstantController interface {
+	GenerateBlog(c *gin.Context)
+	EnhanceBlog(c *gin.Context)
+	SuggestBlog(c *gin.Context)
 }

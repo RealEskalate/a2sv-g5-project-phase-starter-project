@@ -1,9 +1,11 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Author struct {
-	ID 				uuid.UUID   `json:"id"`
-	Name 			string 		`json:"name"`
-	ProfilePicture  string 		`json:"profile_picture"`
+	ID                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Name              string             `bson:"name" json:"name"`
+	ProfilePictureUrl string             `bson:"profile_picture_url" json:"profile_picture_url"`
 }

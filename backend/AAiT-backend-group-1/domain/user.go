@@ -14,6 +14,8 @@
 package domain
 
 import (
+	"errors"
+	"regexp"
 	"time"
 
 	"github.com/google/uuid"
@@ -25,8 +27,60 @@ type User struct {
 	Email          string    `json:"email"`
 	Password       string    `json:"password"`
 	Role           string    `json:"role"`
-	ProfilePicture string    `json:"profile_picture"`
+	ProfilePictureUrl string    `json:"profile_picture"`
 	Bio            string    `json:"bio"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
+}
+
+func NewUser(username, email, password, profilePictureUrl, bio string) *User {
+	return &User{
+		ID:             uuid.New(),
+		Username:       username,
+		Email:          email,
+		Password:       password,
+		Role:           "User",
+		ProfilePictureUrl: profilePictureUrl,
+		Bio:            bio,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+	}
+}
+
+func (u *User) Validate() error {
+	if !regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`).MatchString(u.Email) {
+		return errors.New("Invalid email")
+	}
+
+	if !IsStrongPassword(u.Password) {
+		return errors.New("Password is not strong enough")
+	}
+
+	return nil
+}
+
+func IsStrongPassword(password string) bool {
+	if len(password) < 8 {
+		return false
+	}
+
+	hasUpper := false
+	hasLower := false
+	hasNumber := false
+	hasSpecial := false
+
+	for _, char := range password {
+		switch {
+		case 'A' <= char && char <= 'Z':
+			hasUpper = true
+		case 'a' <= char && char <= 'z':
+			hasLower = true
+		case '0' <= char && char <= '9':
+			hasNumber = true
+		default:
+			hasSpecial = true
+		}
+	}
+
+	return hasUpper && hasLower && hasNumber && hasSpecial
 }

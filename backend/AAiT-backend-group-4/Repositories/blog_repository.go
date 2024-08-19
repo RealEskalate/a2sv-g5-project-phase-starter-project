@@ -348,3 +348,25 @@ func RemoveComments(feedback *domain.Feedback, requesterUserID string, isAdmin b
 	feedback.Comments = newComments
 	return nil
 }
+
+// FetchFeedbackByID fetches feedback by its ID from the database
+func (r *blogRepository) FetchFeedbackByID(ctx context.Context, id string) (domain.Feedback, error) {
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return domain.Feedback{}, errors.New("invalid feedback ID")
+	}
+
+	var feedback domain.Feedback
+	collection := r.database.Collection("feedbacks")
+	filter := bson.M{"_id": objectID}
+
+	err = collection.FindOne(ctx, filter).Decode(&feedback)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return domain.Feedback{}, errors.New("feedback not found")
+		}
+		return domain.Feedback{}, err
+	}
+
+	return feedback, nil
+}

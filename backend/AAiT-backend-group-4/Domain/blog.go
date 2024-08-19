@@ -101,6 +101,7 @@ type BlogRepository interface {
 	// UpdateFeedback retrives blogs by it's id and updates it's feedback
 	UpdateFeedback(ctx context.Context, id string, updateFunc func(*Feedback) error) error
 	SearchBlogs(c context.Context, filter Filter) ([]Blog, error)
+	FetchFeedbackByID(c context.Context, id string) *Feedback
 }
 
 type BlogUsecase interface {

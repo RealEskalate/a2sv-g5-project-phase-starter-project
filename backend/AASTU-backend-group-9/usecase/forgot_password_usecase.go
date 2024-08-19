@@ -87,7 +87,7 @@ func (fpu *forgotPasswordUsecase) ResetPassword(c context.Context, email, otpVal
         return err
     }
     user.Password = hashedPassword
-    err = fpu.userRepository.UpdateUser(ctx, user)
+    err = fpu.userRepository.UpdatePassword(ctx, user)
     if err != nil {
         return err
     }

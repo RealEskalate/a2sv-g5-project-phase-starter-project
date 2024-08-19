@@ -11,8 +11,12 @@ type UserRepository interface {
 	GetUserByID(c context.Context, id primitive.ObjectID) (*User, error)
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserByUsername(c context.Context, username string) (*User, error)
+	GetAllUsers(c context.Context) ([]*User, error)
 	CreateUser(c context.Context, user *User) error
 	UpdateUser(c context.Context, user *User) error
+	UpdatePassword(c context.Context, user *User) error
+	PromoteUser(c context.Context, id primitive.ObjectID)  error
+	DemoteUser(c context.Context, id primitive.ObjectID)  error
 	DeleteUser(c context.Context, id primitive.ObjectID) error
 }
 
@@ -22,11 +26,12 @@ type UserUsecase interface {
 	GetUserByID(c context.Context, id primitive.ObjectID) (*User, error)
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserByUsername(c context.Context, username string) (*User, error)
-	CreateUser(c context.Context, user *CreateUser) error
-	PromoteUser(c context.Context, id primitive.ObjectID) (*Privilage, error)
-	DemoteUser(c context.Context, id primitive.ObjectID) (*Privilage, error)
-	UpdateUser(c context.Context, profile *Profile) (*ProfileResponse, error)
-	DeleteUser(c context.Context, id primitive.ObjectID) error
+	GetAllUsers(c context.Context) ([]*User, error)
+	CreateUser(c context.Context, user *CreateUser,claims *JwtCustomClaims) error
+	PromoteUser(c context.Context, id primitive.ObjectID,claims *JwtCustomClaims) error
+	DemoteUser(c context.Context, id primitive.ObjectID,claims *JwtCustomClaims) error
+	UpdateUser(c context.Context, user *User,claims *JwtCustomClaims, id primitive.ObjectID) (*User, error)
+	DeleteUser(c context.Context, id primitive.ObjectID,claims *JwtCustomClaims) error
 }
 
 type SignupUsecase interface {

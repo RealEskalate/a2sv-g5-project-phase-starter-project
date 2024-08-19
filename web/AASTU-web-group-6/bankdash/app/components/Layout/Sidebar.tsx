@@ -92,7 +92,7 @@ const Sidebar = ({
   const darkModeClass = isDarkMode ? "dark" : "";
 
   return (
-    <div className="py-6 px-5 w-[99.6%]  h-screen flex flex-col gap-8 border-r border-r-[#E6EFF5] border-white dark:border-r-gray-700 dark:bg-[#232328]">
+    <div className="py-6 px-5 w-[99.6%]  h-screen flex flex-col gap-8 border-r border-r-[#E6EFF5] border-white dark:border-r-gray-700 dark:bg-[#232328] relative">
       <div className="flex gap-2 px-[4%] relative">
         <Image src="/assets/logo.svg" alt="logo" width={36} height={36} />
         <h1 className="text-2xl font-extrabold text-[#343C6A] dark:text-white">
@@ -100,7 +100,7 @@ const Sidebar = ({
         </h1>
         <button
           onClick={closeSidebar}
-          className="bg-[#F5F7FA] rounded-[12px] p-3 py-2 flex items-center absolute left-64 hover:bg-[#d0e6f6] lg:hidden"
+          className="bg-[#F5F7FA] rounded-[12px] p-3 py-2 flex items-center absolute xs:left-48 md:left-64 hover:bg-[#d0e6f6] lg:hidden"
         >
           <FontAwesomeIcon icon={faClose} className="text-2xl text-gray-700" />
         </button>

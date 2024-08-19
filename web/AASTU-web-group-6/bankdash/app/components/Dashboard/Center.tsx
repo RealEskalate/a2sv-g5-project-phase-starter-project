@@ -36,7 +36,7 @@ const Center = () => {
 
   return (
     <>
-      <section className="flex gap-6 sm:flex-col lg:flex-row">
+      <section className="flex gap-6 xs:flex-col lg:flex-row">
         <div className="cards-container sm:w-full lg:w-[67%] cente-Content flex flex-col gap-6 ">
           <div className="card-box flex w-full items-center justify-between">
             <h1 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
@@ -50,7 +50,7 @@ const Center = () => {
             </Link>
           </div>
 
-          <div className="flex gap-6 grow w-full">
+          <div className="flex gap-6 grow w-full scrollbar-hide overflow-x-auto xs:scrollB xs:w-[360] sm:overflow-hidden sm:w-auto">
             <>
               {CardData?.slice(0, 2).map((item, index) => (
                 <VisaCard
@@ -67,7 +67,7 @@ const Center = () => {
         <RecentTr />
       </section>
 
-      <section className="flex gap-6 grow sm:flex-col lg:flex-row">
+      <section className="flex gap-6 grow xs:flex-col  lg:flex-row">
         <div className="Weekly-container w-full cente-Content flex flex-col gap-6 ">
           <h1 className="flex grow page text-xl font-semibold text-colorBody-1 dark:text-gray-300">
             Weekly Activity

@@ -70,6 +70,7 @@ type BlogRepositoryInterface interface {
 	InsertBlogPost(ctx context.Context, blog *Blog) CodedError
 	UpdateBlogPost(ctx context.Context, id string, blog *Blog) CodedError
 	DeleteBlogPost(ctx context.Context, id string) CodedError
+	TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) CodedError
 }
 
 type BlogUseCaseInterface interface {
@@ -78,6 +79,7 @@ type BlogUseCaseInterface interface {
 	CreateBlogPost(ctx context.Context, blog *Blog) CodedError
 	EditBlogPost(ctx context.Context, id string, blog *Blog) CodedError
 	DeleteBlogPost(ctx context.Context, id string) CodedError
+	TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) CodedError
 }
 
 type UserRepositoryInterface interface {

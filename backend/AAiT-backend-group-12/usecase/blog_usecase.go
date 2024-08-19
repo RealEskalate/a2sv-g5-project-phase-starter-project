@@ -84,3 +84,10 @@ func (b *BlogUseCase) GetBlogPostByID(ctx context.Context, blogID string) (*doma
 
 	return b.blogRepo.FetchBlogPostByID(context, blogID)
 }
+
+func (b *BlogUseCase) TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) domain.CodedError {
+	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
+	defer cancel()
+
+	return b.blogRepo.TrackBlogPopularity(ctx, blogId, action, username)
+}

@@ -35,7 +35,6 @@ func (bc *blogController) CreateBlog(c *gin.Context) {
 	if err != nil {
 		c.JSON(err.StatusCode(), gin.H{"error": err.Error()})
 	}
-
 	c.JSON(http.StatusOK, gin.H{"data": blog})
 }
 

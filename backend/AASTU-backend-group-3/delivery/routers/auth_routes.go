@@ -12,7 +12,7 @@ import (
 
 
 func SetUpAuth(router *gin.Engine) {
-	
+
 
 	userRepo := repository.NewUserRepositoryImpl(db.UserCollection)
     userUsecase := usecase.NewUserUsecase(userRepo)
@@ -27,6 +27,7 @@ func SetUpAuth(router *gin.Engine) {
 		// OAuth``
 		auth.GET("/login/google", authController.HandleGoogleLogin)
 		auth.GET("/callback", authController.HandleGoogleCallback)
+
 
 
 		// reset password

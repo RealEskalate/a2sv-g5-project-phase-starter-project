@@ -4,7 +4,6 @@ import WeeklyActivityChart from "./components/charts/WeeklyActivityChart";
 import Card from "./components/card/Card";
 import CardForCreditCards from "./components/card/CardForCreditCards";
 import CreditCard from "./components/creditCard/CreditCard";
-import Page from "./components/TrendingStock/Page";
 import RecentTransaction from "./components/recent-transaction/RecentTransaction";
 import ExpenseStatisticsChart from "./components/charts/ExpenseStatisticsChart";
 import SendMoney from "./components/sendMoney/SendMoney";

@@ -5,6 +5,7 @@ import (
 	ihash "github.com/group13/blog/domain/i_hash"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
 	result "github.com/group13/blog/usecases_sof/user/result"
+	icommand "github.com/group13/blog/usecases_sof/utils/command"
 	iemail "github.com/group13/blog/usecases_sof/utils/i_email"
 	ijwt "github.com/group13/blog/usecases_sof/utils/i_jwt"
 	irepository "github.com/group13/blog/usecases_sof/utils/i_repo"
@@ -34,7 +35,9 @@ func NewLoginHandler(config LoginConfig) *LoginHandler {
 }
 
 // Ensure Handler implements icmd.IHandler
-var _ icmd.IHandler[*LoginCommand, *result.LoginInResult] = &LoginHandler{}
+
+
+var _ icommand.Ihandler[*LoginCommand, *result.LoginInResult] = &LoginHandler{}
 
 func (h *LoginHandler) Handle(command *LoginCommand) (*result.LoginInResult, error) {
 	user, err := h.repo.FindByUsername(command.username)

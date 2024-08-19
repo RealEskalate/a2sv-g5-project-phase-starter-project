@@ -1,4 +1,5 @@
-{/*import React from "react";
+
+import React from "react";
 import { Color } from "chart.js";
 import { colors, logo } from "@/constants";
 import DesktopCreditCart from "@/components/DesktopCreditCard";
@@ -117,78 +118,4 @@ const page = () => {
 };
 
 export default page;
-*/}
 
-import React from 'react';
-import { registerUser, refreshToken, loginUser, changePassword } from '../../services/authentication';
-
-const userData = {
-  name: "John Doe",
-  email: "johndoe@example.com",
-  password: "securepassword123",
-  // Add any other required fields for registration
-};
-
-const tokenData = {
-  refreshToken: 'some-refresh-token',
-};
-
-const loginData = {
-  username: "johndoe",
-  password: "securepassword123",
-};
-
-const passwordData = {
-  oldPassword: "securepassword123",
-  newPassword: "newsecurepassword456",
-};
-
-const SomeComponentFunction = () => {
-
-  const handleRegister = async () => {
-    try {
-      const registeredUser = await registerUser(userData);
-      console.log('Registered User:', registeredUser);
-    } catch (error) {
-      console.error('Registration Error:', error);
-    }
-  };
-
-  const handleRefreshToken = async () => {
-    try {
-      const newToken = await refreshToken(tokenData);
-      console.log('New Token:', newToken);
-    } catch (error) {
-      console.error('Token Refresh Error:', error);
-    }
-  };
-
-  const handleLogin = async () => {
-    try {
-      const loggedInUser = await loginUser(loginData);
-      console.log('Logged In User:', loggedInUser);
-    } catch (error) {
-      console.error('Login Error:', error);
-    }
-  };
-
-  const handleChangePassword = async () => {
-    try {
-      const passwordChangeResponse = await changePassword(passwordData);
-      console.log('Password Changed:', passwordChangeResponse);
-    } catch (error) {
-      console.error('Password Change Error:', error);
-    }
-  };
-
-  return (
-    <div>
-      <button onClick={handleRegister}>Register User</button>
-      <button onClick={handleRefreshToken}>Refresh Token</button>
-      <button onClick={handleLogin}>Login User</button>
-      <button onClick={handleChangePassword}>Change Password</button>
-    </div>
-  );
-};
-
-export default SomeComponentFunction;

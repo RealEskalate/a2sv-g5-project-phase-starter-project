@@ -8,6 +8,9 @@ import (
 func (u *UserUsecase) RefreshToken(claims *domain.LoginClaims) (string, error) {
 	_, err := u.UserRepo.GetTokenByUsername(claims.Username)
 	if err != nil {
+		if err == config.ErrTokenNotFound {
+			return "", config.ErrTokenBlacklisted
+		}
 		return "", err
 	}
 

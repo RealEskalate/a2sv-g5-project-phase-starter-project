@@ -2,9 +2,7 @@ package usecase
 
 import (
 	"context"
-
-
-	// "errors"
+	"errors"
 	"blog/domain"
 
 	"time"
@@ -12,7 +10,6 @@ import (
 	
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	// "github.com/gin-gonic/gin"
-	// "errors"
 )
 
 type blogUsecase struct  {
@@ -158,4 +155,34 @@ func (bu *blogUsecase) SearchBlogs(ctx context.Context, query string, filters *d
     }
 
     return blogResponses, nil
+
+func (bu *blogUsecase) TrackView(ctx context.Context, id primitive.ObjectID) error {
+    return bu.blogRepository.IncrementViews(ctx, id)
+}
+
+func (bu *blogUsecase) TrackLike(ctx context.Context, id primitive.ObjectID, userID string) error {
+    liked, err := bu.blogRepository.HasUserLiked(ctx, id, userID)
+    if err != nil {
+        return err
+    }
+    if liked {
+        return errors.New("user has already liked this post")
+    }
+    return bu.blogRepository.IncrementLikes(ctx, id)
+}
+
+func (bu *blogUsecase) TrackDislike(ctx context.Context, id primitive.ObjectID, userID string) error {
+    disliked, err := bu.blogRepository.HasUserDisliked(ctx, id, userID)
+    if err != nil {
+        return err
+    }
+    if disliked {
+        return errors.New("user has already disliked this post")
+    }
+    return bu.blogRepository.IncrementDislikes(ctx, id)
+}
+
+func (bu *blogUsecase) AddComment(ctx context.Context, id primitive.ObjectID, comment *domain.Comment) error {
+    return bu.blogRepository.AddComment(ctx, id, comment)
+
 }

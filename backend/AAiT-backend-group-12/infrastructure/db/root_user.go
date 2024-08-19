@@ -38,6 +38,11 @@ func CreateRootUser(db *mongo.Database, rootUsername string, rootPassword string
 		return fmt.Errorf("error creating root users: " + derr.Error())
 	}
 
+	res := collection.FindOneAndUpdate(context.Background(), bson.D{{Key: "username", Value: rootUsername}}, bson.D{{Key: "$unset", Value: bson.D{{Key: "verificationdata", Value: ""}}}})
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
 	fmt.Println("Root user created successfully")
 
 	return nil

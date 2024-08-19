@@ -94,9 +94,9 @@ func (u *UserUsecase) SanitizeAndValidateNewUser(user *domain.User) domain.Coded
 	return nil
 }
 
-func (u *UserUsecase) GetVerificationData(c context.Context, username string, verificationType string, expiresAt time.Time) (domain.VerificationData, domain.CodedError) {
+func (u *UserUsecase) GetVerificationData(c context.Context, username string, verificationType string, expiresAt time.Time, tokenLength int) (domain.VerificationData, domain.CodedError) {
 	var verificationData domain.VerificationData
-	generatedToken, gErr := utils.GenerateToken(32)
+	generatedToken, gErr := utils.GenerateToken(tokenLength)
 	if gErr != nil {
 		return verificationData, domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
 	}
@@ -121,7 +121,7 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 		return domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
-	verificationData, err := u.GetVerificationData(c, user.Username, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2))
+	verificationData, err := u.GetVerificationData(c, user.Username, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2), 32)
 	if err != nil {
 		return err
 	}
@@ -308,7 +308,7 @@ func (u *UserUsecase) VerifyEmail(c context.Context, username string, token stri
 	}
 
 	if user.VerificationData.ExpiresAt.Before(time.Now().Round(0)) {
-		verificationData, err := u.GetVerificationData(c, username, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2))
+		verificationData, err := u.GetVerificationData(c, username, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2), 32)
 		if err != nil {
 			return err
 		}
@@ -330,7 +330,7 @@ func (u *UserUsecase) VerifyEmail(c context.Context, username string, token stri
 	return u.userRepository.VerifyUser(c, username)
 }
 
-func (u *UserUsecase) ResetPassword(c context.Context, username string, email string, hostUrl string) domain.CodedError {
+func (u *UserUsecase) InitResetPassword(c context.Context, username string, email string, hostUrl string) domain.CodedError {
 	foundUser, err := u.userRepository.FindUser(c, &domain.User{Username: username, Email: email})
 	if err != nil {
 		return err
@@ -340,7 +340,7 @@ func (u *UserUsecase) ResetPassword(c context.Context, username string, email st
 		return domain.NewError("User email not verified", domain.ERR_UNAUTHORIZED)
 	}
 
-	verificationData, err := u.GetVerificationData(c, username, domain.ResetPasswordType, time.Now().Round(0).Add(time.Minute*10))
+	verificationData, err := u.GetVerificationData(c, username, domain.ResetPasswordType, time.Now().Round(0).Add(time.Minute*10), 12)
 	if err != nil {
 		return err
 	}
@@ -350,10 +350,46 @@ func (u *UserUsecase) ResetPassword(c context.Context, username string, email st
 		return err
 	}
 
-	mail := mail_service.EmailVerificationTemplate(hostUrl, username, verificationData.Token)
+	mail := mail_service.PasswordResetTemplate(hostUrl, username, verificationData.Token)
 	mailErr := mail_service.SendMail("Blog API", foundUser.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
 	if mailErr != nil {
 		return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return nil
+}
+
+func (u *UserUsecase) ResetPassword(c context.Context, resetDto dtos.ResetPassword, token string) domain.CodedError {
+	user, err := u.userRepository.FindUser(c, &domain.User{Username: resetDto.Username})
+	if err != nil {
+		return err
+	}
+
+	if user.VerificationData.Token != token {
+		return domain.NewError("Invalid token", domain.ERR_UNAUTHORIZED)
+	}
+
+	if user.VerificationData.Type != domain.ResetPasswordType {
+		return domain.NewError("Invalid verification type", domain.ERR_UNAUTHORIZED)
+	}
+
+	if user.VerificationData.ExpiresAt.Before(time.Now().Round(0)) {
+		return domain.NewError("Token expired", domain.ERR_UNAUTHORIZED)
+	}
+
+	err = u.ValidatePassword(resetDto.NewPassword)
+	if err != nil {
+		return err
+	}
+
+	hashedPwd, err := cryptography.HashString(resetDto.NewPassword)
+	if err != nil {
+		return domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
+	}
+
+	err = u.userRepository.UpdatePassword(c, resetDto.Username, hashedPwd)
+	if err != nil {
+		return err
 	}
 
 	return nil

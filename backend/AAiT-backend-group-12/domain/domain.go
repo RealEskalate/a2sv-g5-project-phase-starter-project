@@ -106,6 +106,7 @@ type UserRepositoryInterface interface {
 	ChangeRole(c context.Context, username string, newRole string) CodedError
 	VerifyUser(c context.Context, username string) CodedError
 	UpdateVerificationDetails(c context.Context, username string, verificationData VerificationData) CodedError
+	UpdatePassword(c context.Context, username string, newPassword string) CodedError
 }
 
 type UserUsecaseInterface interface {
@@ -116,4 +117,6 @@ type UserUsecaseInterface interface {
 	PromoteUser(c context.Context, username string) CodedError
 	DemoteUser(c context.Context, username string) CodedError
 	VerifyEmail(c context.Context, username string, token string, hostUrl string) CodedError
+	InitResetPassword(c context.Context, username string, email string, hostUrl string) CodedError
+	ResetPassword(c context.Context, resetDto dtos.ResetPassword, token string) CodedError
 }

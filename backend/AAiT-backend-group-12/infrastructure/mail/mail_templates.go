@@ -3,6 +3,7 @@ package mail_service
 import (
 	"blog_api/delivery/env"
 	"fmt"
+	"time"
 )
 
 func EmailVerificationTemplate(hostUrl string, username string, token string) string {
@@ -73,15 +74,15 @@ func EmailVerificationTemplate(hostUrl string, username string, token string) st
 					<p>If you did not create an account, no further action is required.</p>
 				</div>
 				<div class="footer">
-					<p>&copy; 2023 Blog API. All rights reserved.</p>
+					<p>&copy; %v Blog API. All rights reserved.</p>
 				</div>
 			</div>
 		</body>
-		</html>`, link)
+		</html>`, link, time.Now().Year())
 }
 
 func PasswordResetTemplate(hostUrl string, username string, token string) string {
-	link := hostUrl + "/api/" + env.ENV.ROUTE_PREFIX + "/auth/reset/password/" + username + "/" + token
+	// link := hostUrl + "/api/" + env.ENV.ROUTE_PREFIX + "/auth/reset/password/" + username + "/" + token
 	return fmt.Sprintf(`
 		<!DOCTYPE html>
 		<html>
@@ -112,21 +113,17 @@ func PasswordResetTemplate(hostUrl string, username string, token string) string
 					margin: 0;
 					color: #333;
 				}
-				.content {
-					padding: 20px;
+				.token {
+				    padding: 15px 0px;
+					text-align: center;
 				}
-				.button {
-					display: inline-block;
-					padding: 10px 20px;
-					margin-top: 20px;
-					background-color: #007bff;
-					color: #fff !important;
-					font-weight: bold;
-					text-decoration: none;
-					border-radius: 5px;
-				}
-				.button:hover {
-					background-color: #0056b3;
+				.token-content{
+				    background-color: #007bff;
+				    padding: 15px;
+				    font-size: 1.25rem;
+				    border-radius: 5px;
+				    margin: auto auto;
+                    color: #fff !important;
 				}
 				.footer {
 					text-align: center;
@@ -143,14 +140,14 @@ func PasswordResetTemplate(hostUrl string, username string, token string) string
 				</div>
 				<div class="content">
 					<p>Dear User,</p>
-					<p>We have received a request to reset your password for your Blog API account. Please click the button below to reset your password:</p>
-					<a href="%s" class="button">Reset Password</a>
+					<p>We have received a request to reset your password for your Blog API account. Please use this token to finalize your request to change your password:</p>
+					<p class="token"> <span class="token-content">%s</span></p>
 					<p>If you did not request a password reset, please ignore this email.</p>
 				</div>
 				<div class="footer">
-					<p>&copy; 2023 Blog API. All rights reserved.</p>
+					<p>&copy; %v Blog API. All rights reserved.</p>
 				</div>
 			</div>
 		</body>
-		</html>`, link)
+		</html>`, token, time.Now().Year())
 }

@@ -174,3 +174,21 @@ func (r *UserRepository) VerifyUser(c context.Context, username string) domain.C
 
 	return nil
 }
+
+func (r *UserRepository) UpdatePassword(c context.Context, username string, newPassword string) domain.CodedError {
+	res := r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$set", Value: bson.D{{Key: "password", Value: newPassword}}}})
+	if res.Err() == mongo.ErrNoDocuments {
+		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	res = r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$unset", Value: bson.D{{Key: "verificationdata", Value: ""}}}})
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return nil
+}

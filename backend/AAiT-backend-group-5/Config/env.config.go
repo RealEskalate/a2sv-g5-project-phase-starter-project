@@ -7,12 +7,17 @@ import (
 )
 
 type Env struct {
-	JWT_SECRET    string `mapstructure:"JWT_SECRET"`
-	SMTP_SERVER   string `mapstructure:"SMTP_SERVER"`
-	SMTP_PORT     string `mapstructure:"SMTP_PORT"`
-	SMTP_USERNAMR string `mapstructure:"SMTP_USERNAMR"`
-	SMTP_PASSWORD string `mapstructure:"SMTP_PASSWORD"`
+	JWT_SECRET        string `mapstructure:"JWT_SECRET"`
+	SMTP_SERVER       string `mapstructure:"SMTP_SERVER"`
+	SMTP_PORT         string `mapstructure:"SMTP_PORT"`
+	SMTP_USERNAMR     string `mapstructure:"SMTP_USERNAMR"`
+	SMTP_PASSWORD     string `mapstructure:"SMTP_PASSWORD"`
 	SMTP_SENDER_EMAIL string `mapstructure:"SMTP_SENDER_EMAIL"`
+
+	ACCESS_TOKEN_EXPIRY_HOUR  int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
+	REFRESH_TOKEN_EXPIRY_HOUR int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
+	ACCESS_TOKEN_SECRET       string `mapstructure:"ACCESS_TOKEN_SECRET"`
+	REFRESH_TOKEN_SECRET      string `mapstructure:"REFRESH_TOKEN_SECRET"`
 }
 
 func NewEnv() *Env {

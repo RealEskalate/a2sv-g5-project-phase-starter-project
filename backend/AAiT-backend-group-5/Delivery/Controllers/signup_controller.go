@@ -3,16 +3,16 @@ package controllers
 import (
 	"net/http"
 
+	config "github.com/aait.backend.g5.main/backend/Config"
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
-	utils "github.com/aait.backend.g5.main/backend/Utils"
 	"github.com/gin-gonic/gin"
 )
 
 type SignupController struct {
 	SignupUsecase interfaces.SignupUsecase
-	Env           *utils.Env
+	Env           *config.Env
 }
 
 func (signupController *SignupController) Signup(ctx *gin.Context) {
@@ -25,15 +25,11 @@ func (signupController *SignupController) Signup(ctx *gin.Context) {
 		return
 	}
 
-	// PASSWORD ENCRYPTION NOT PERFOMRMED....
-	// EXPECTED TO BE PERFOMRMED IN THE CREATEuSER USECASE
-
 	// populate fields for new user
 	newUser := &models.User{
 		Username: userCreateRequest.Username,
 		Name:     userCreateRequest.Name,
 		Email:    userCreateRequest.Email,
-		Password: userCreateRequest.Password,
 	}
 
 	// create user
@@ -43,5 +39,5 @@ func (signupController *SignupController) Signup(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "user registered"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "check your email"})
 }

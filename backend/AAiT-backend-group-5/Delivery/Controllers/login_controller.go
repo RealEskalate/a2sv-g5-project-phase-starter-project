@@ -4,15 +4,15 @@ import (
 	"errors"
 	"net/http"
 
+	config "github.com/aait.backend.g5.main/backend/Config"
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
-	utils "github.com/aait.backend.g5.main/backend/Utils"
 	"github.com/gin-gonic/gin"
 )
 
 type LoginController struct {
 	LoginUsecase interfaces.LoginUsecase
-	Env          *utils.Env
+	Env          *config.Env
 }
 
 func (loginController *LoginController) Login(c *gin.Context) {
@@ -32,8 +32,8 @@ func (loginController *LoginController) Login(c *gin.Context) {
 		return
 	}
 
-	accessTokenExp := loginController.Env.AccessTokenExpiryHour
-	refreshTokenExp := loginController.Env.RefreshTokenExpiryHour
+	accessTokenExp := loginController.Env.ACCESS_TOKEN_EXPIRY_HOUR
+	refreshTokenExp := loginController.Env.REFRESH_TOKEN_EXPIRY_HOUR
 
 	// generate access token
 	accessToken, e := loginController.LoginUsecase.GenerateAccessToken(user, accessTokenExp)

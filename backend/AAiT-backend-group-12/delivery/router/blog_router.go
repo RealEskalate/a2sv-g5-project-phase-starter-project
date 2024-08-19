@@ -10,15 +10,16 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewBlogRouter(collection *mongo.Collection, taskGroup *gin.RouterGroup) {
+func NewBlogRouter(collection *mongo.Collection, blogGroup *gin.RouterGroup) {
 	br := repository.NewBlogRepository(collection)
 	bu := usecase.NewBlogUseCase(br, time.Second * 100)
 
 	bc := controllers.NewBlogController(bu)
 
-	taskGroup.POST("/create", bc.CreateBlogHandler)
-	taskGroup.PUT("/:id", bc.UpdateBlogHandler)
-	taskGroup.DELETE("/:id", bc.DeleteBlogHandler)
-	taskGroup.POST("/", bc.GetBlogHandler)
-	taskGroup.GET("/:id", bc.GetBlogByIDHandler)
+	blogGroup.POST("/create", bc.CreateBlogHandler)
+	blogGroup.PUT("/:id", bc.UpdateBlogHandler)
+	blogGroup.DELETE("/:id", bc.DeleteBlogHandler)
+	blogGroup.POST("/", bc.GetBlogHandler)
+	blogGroup.GET("/:id", bc.GetBlogByIDHandler)
+	blogGroup.POST("/update-popularity", bc.TrackBlogPopularityHandler)
 }

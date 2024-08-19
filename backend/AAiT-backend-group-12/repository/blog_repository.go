@@ -17,6 +17,7 @@ type BlogRepository struct {
 }
 
 var _ domain.BlogRepositoryInterface = &BlogRepository{}
+
 func NewBlogRepository(coll *mongo.Collection) *BlogRepository {
 	return &BlogRepository{
 		collection: coll,
@@ -40,7 +41,7 @@ func (b *BlogRepository) FetchBlogPostByID(ctx context.Context, blogId string) (
 		if err == mongo.ErrNoDocuments {
 			return nil, domain.NewError("Blog post not found", domain.ERR_NOT_FOUND)
 		}
-		return nil, domain.NewError("Internal server error: "+ err.Error(), domain.ERR_INTERNAL_SERVER)
+		return nil, domain.NewError("Internal server error: "+err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
 
 	return &post, nil
@@ -129,7 +130,6 @@ func (b *BlogRepository) FetchBlogPosts(ctx context.Context, filters domain.Blog
 	return blogs, int(len(blogs)), nil
 }
 
-
 // DeleteBlogPost deletes a blog post by its ID.
 func (b *BlogRepository) DeleteBlogPost(ctx context.Context, blogId string) domain.CodedError {
 	objID, err := primitive.ObjectIDFromHex(blogId)
@@ -140,7 +140,7 @@ func (b *BlogRepository) DeleteBlogPost(ctx context.Context, blogId string) doma
 	filter := bson.M{"_id": objID}
 
 	_, err = b.collection.DeleteOne(ctx, filter)
-	
+
 	if err != nil {
 		return domain.NewError("Internal server error: "+err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
@@ -189,18 +189,49 @@ func (b *BlogRepository) UpdateBlogPost(ctx context.Context, blogId string, blog
 	return nil
 }
 
+func (b *BlogRepository) TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) domain.CodedError {
+	objID, err := primitive.ObjectIDFromHex(blogId)
+	if err != nil {
+		return domain.NewError("Invalid blog ID", domain.ERR_BAD_REQUEST)
+	}
+
+	var update bson.D
+
+	switch action {
+	case "like":
+		update = bson.D{
+			{Key: "$addToSet", Value: bson.D{{Key: "liked_by", Value: username}}},
+			{Key: "$pull", Value: bson.D{{Key: "disliked_by", Value: username}}},
+		}
+	case "dislike":
+		update = bson.D{
+			{Key: "$addToSet", Value: bson.D{{Key: "disliked_by", Value: username}}},
+			{Key: "$pull", Value: bson.D{{Key: "liked_by", Value: username}}},
+		}
+	default:
+		return domain.NewError("Invalid action", domain.ERR_BAD_REQUEST)
+	}
+
+	_, err = b.collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: objID}}, update)
+	if err != nil {
+		return domain.NewError("Failed to update blog popularity", domain.ERR_INTERNAL_SERVER)
+	}
+
+	return nil
+}
+
 // Converts BlogDTO to Blog domain model.
 func toDomain(blogDTO *dtos.BlogDTO) *domain.Blog {
 	return &domain.Blog{
-		ID:        blogDTO.ID.Hex(),
-		Title:     blogDTO.Title,
-		Content:   blogDTO.Content,
-		Username:  blogDTO.Username,
-		Tags:      blogDTO.Tags,
-		CreatedAt: blogDTO.CreatedAt,
-		UpdatedAt: blogDTO.UpdatedAt,
-		ViewCount: blogDTO.ViewCount,
-		LikedBy:   blogDTO.LikedBy,
+		ID:         blogDTO.ID.Hex(),
+		Title:      blogDTO.Title,
+		Content:    blogDTO.Content,
+		Username:   blogDTO.Username,
+		Tags:       blogDTO.Tags,
+		CreatedAt:  blogDTO.CreatedAt,
+		UpdatedAt:  blogDTO.UpdatedAt,
+		ViewCount:  blogDTO.ViewCount,
+		LikedBy:    blogDTO.LikedBy,
 		DislikedBy: blogDTO.DislikedBy,
 	}
 }
@@ -213,15 +244,15 @@ func toDTO(blog *domain.Blog) (*dtos.BlogDTO, error) {
 	}
 
 	return &dtos.BlogDTO{
-		ID:        blogID,
-		Title:     blog.Title,
-		Content:   blog.Content,
-		Username:  blog.Username,
-		Tags:      blog.Tags,
-		CreatedAt: blog.CreatedAt,
-		UpdatedAt: blog.UpdatedAt,
-		ViewCount: blog.ViewCount,
-		LikedBy:   blog.LikedBy,
+		ID:         blogID,
+		Title:      blog.Title,
+		Content:    blog.Content,
+		Username:   blog.Username,
+		Tags:       blog.Tags,
+		CreatedAt:  blog.CreatedAt,
+		UpdatedAt:  blog.UpdatedAt,
+		ViewCount:  blog.ViewCount,
+		LikedBy:    blog.LikedBy,
 		DislikedBy: blog.DislikedBy,
 	}, nil
 }

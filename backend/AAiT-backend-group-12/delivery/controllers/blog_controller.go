@@ -27,13 +27,20 @@ func (bc *BlogController) CreateBlogHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
 		return
 	}
+
 	err := validate.Struct(blog)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
 		return
 	}
 
-	newErr := bc.blogUseCase.CreateBlogPost(c, &blog)
+	userName, exists := c.Keys["username"]
+	if !exists{
+		c.JSON(http.StatusForbidden, gin.H{"message": "coudn't find the username field"})
+		return 
+	}
+	created_By := userName.(string)
+	newErr := bc.blogUseCase.CreateBlogPost(c, &blog, created_By)
 	if newErr != nil {
 		c.JSON(GetHTTPErrorCode(newErr), domain.Response{"error": newErr.Error()})
 		return
@@ -49,7 +56,13 @@ func (bc *BlogController) UpdateBlogHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
 		return
 	}
-	err := bc.blogUseCase.EditBlogPost(c, blogId, &blog)
+	userName, exists := c.Keys["username"] 
+	if !exists{
+		c.JSON(http.StatusForbidden, gin.H{"message": "coudn't find the username field"})
+		return 
+	}
+	userNameStr := userName.(string)
+	err := bc.blogUseCase.EditBlogPost(c, blogId, &blog, userNameStr)
 	if err != nil {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return
@@ -60,8 +73,14 @@ func (bc *BlogController) UpdateBlogHandler(c *gin.Context) {
 // DeleteBlogHandler handles the HTTP DELETE request to delete a blog post.
 func (bc *BlogController) DeleteBlogHandler(c *gin.Context) {
 	blogId := c.Param("id")
+	userName, exists := c.Keys["username"] 
+	if !exists{
+		c.JSON(http.StatusForbidden, gin.H{"message": "coudn't find the username field"})
+		return 
+	}
+	userNameStr := userName.(string)
 
-	err := bc.blogUseCase.DeleteBlogPost(c, blogId)
+	err := bc.blogUseCase.DeleteBlogPost(c, blogId, userNameStr)
 	if err != nil {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return
@@ -89,13 +108,11 @@ func (bc *BlogController) GetBlogHandler(c *gin.Context) {
 // GetBlogByIDHandler handles the HTTP GET request to retrieve a single blog post by its ID.
 func (bc *BlogController) GetBlogByIDHandler(c *gin.Context) {
 	blogId := c.Param("id")
-
 	blog, err := bc.blogUseCase.GetBlogPostByID(c, blogId)
 	if err != nil {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, blog)
 }
 

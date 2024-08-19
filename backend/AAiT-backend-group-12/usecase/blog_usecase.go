@@ -11,7 +11,6 @@ type BlogUseCase struct {
 	contextTimeOut time.Duration
 }
 
-
 func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration) *BlogUseCase {
 	return &BlogUseCase{
 		blogRepo:       repo,
@@ -20,9 +19,10 @@ func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration) *BlogU
 }
 
 // CreateBlogPost implements domain.BlogUseCaseInterface.
-func (b *BlogUseCase) CreateBlogPost(ctx context.Context, blog *domain.Blog) domain.CodedError {
+func (b *BlogUseCase) CreateBlogPost(ctx context.Context, blog *domain.Blog, createdBy string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	blog.CreatedAt = time.Now()
+	blog.Username = createdBy
 	defer cancel()
 
 	err := b.blogRepo.InsertBlogPost(ctx, blog)
@@ -33,26 +33,39 @@ func (b *BlogUseCase) CreateBlogPost(ctx context.Context, blog *domain.Blog) dom
 }
 
 // DeleteBlogPost implements domain.BlogUseCaseInterface.
-func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string) domain.CodedError {
+func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string, deletedBy string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
-
-	err := b.blogRepo.DeleteBlogPost(ctx, blogId)
+	blog, err := b.blogRepo.FetchBlogPostByID(ctx, blogId)
 	if err != nil{
+		return err
+	}
+	if blog.Username != deletedBy{
+		return domain.NewError("unauthorized request to delete blog", domain.ERR_FORBIDDEN)
+	}
+	err = b.blogRepo.DeleteBlogPost(ctx, blogId)
+	if err != nil {
 		return err
 	}
 	return nil
 }
 
 // EditBlogPost implements domain.BlogUseCaseInterface.
-func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *domain.Blog) domain.CodedError {
+func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *domain.Blog, editedBy string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
-	blog.UpdatedAt = time.Now()
-
-	err := b.blogRepo.UpdateBlogPost(ctx, blogId, blog)
+	foundBlog, err := b.blogRepo.FetchBlogPostByID(ctx, blogId)
 	if err != nil{
+		return err
+	}
+	if foundBlog.Username != editedBy{
+		return domain.NewError("unauthorized request to update blog", domain.ERR_FORBIDDEN)
+	}
+
+	blog.UpdatedAt = time.Now()
+	err = b.blogRepo.UpdateBlogPost(ctx, blogId, blog)
+	if err != nil {
 		return err
 	}
 	return nil

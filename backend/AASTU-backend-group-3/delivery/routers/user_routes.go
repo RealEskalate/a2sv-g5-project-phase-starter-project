@@ -3,6 +3,7 @@ package routers
 import (
 	"group3-blogApi/config/db"
 	"group3-blogApi/delivery/controllers"
+	"group3-blogApi/infrastracture"
 	"group3-blogApi/repository"
 	"group3-blogApi/usecase"
 
@@ -12,9 +13,15 @@ import (
 func SetUpUser(router *gin.Engine) {
 	//user routes
 	userRepo := repository.NewUserRepositoryImpl(db.UserCollection)
-    userUsecase := usecase.NewUserUsecase(userRepo)
-    authController := controllers.NewUserController(userUsecase)
+	userUsecase := usecase.NewUserUsecase(userRepo)
+	authController := controllers.NewUserController(userUsecase)
+
+	blogRepo := repository.NewBlogRepositoryImpl(db.BlogCollection)
+	blogUsecase := usecase.NewBlogUsecase(blogRepo)
+	blogController := controllers.NewBlogController(blogUsecase)
+
 	user := router.Group("/user")
+	user.Use(infrastracture.AuthMiddleware())
 
 	{
 		// user.GET("/profile", authMiddleware, userController.Profile)
@@ -22,7 +29,9 @@ func SetUpUser(router *gin.Engine) {
 		// user.POST("/upload-image", authMiddleware, userController.UploadImage)
 		// user.POST("/logout", authMiddleware, authController.Logout)
 		// user.POST("/reset-password", authMiddleware, authController.ResetPassword)
+		user.POST("/blogs", blogController.CreateBlog)
 		user.POST("/refresh-token", authController.RefreshToken)
+
 		user.POST("/logout", authController.Logout)
 		user.GET("logout-all", authController.LogoutAll)
 		user.GET("/devices/logout", authController.LogoutDevice)

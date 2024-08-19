@@ -213,3 +213,12 @@ func (cont *BlogController) HandleCommentOnBlog(ctx *gin.Context) {
 	}
 
 }
+
+func (cont *BlogController) HandleGetAllComments(ctx *gin.Context) {
+	comments, err := cont.usecase.GetAllComments(ctx.Param("blogId"))
+    if err!= nil {
+        ctx.IndentedJSON(http.StatusNotFound, err)
+    } else {
+        ctx.IndentedJSON(http.StatusOK, comments)
+    }
+}

@@ -496,7 +496,23 @@ func (r *MongoBlogRepository) ReplyToComment(blogId, commentId string, reply dom
 
 	return nil
 }
+func (r *MongoBlogRepository) GetAllComments(blogId string) ([]domain.Comment, error) {
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return []domain.Comment{}, err
+	}
+	filter := bson.M{"_id": bid}
+	projection := bson.M{"comments": 1, "_id": 0}
+	var result struct {
+		Comments []domain.Comment `bson:"comments"`
+	}
+	err = r.collection.FindOne(context.Background(), filter, options.FindOne().SetProjection(projection)).Decode(&result)
+	if err != nil {
+		return []domain.Comment{}, err
+	}
+	return result.Comments, nil
 
+}
 func IsValidObjectID(id string) (primitive.ObjectID, error) {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

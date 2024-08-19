@@ -27,6 +27,7 @@ func (gr *BlogRoute) GinBlogRouter() {
 
 		// TODO: aperson cannot like and dislike the same blog
 		blogRouter.PATCH("/interact/:type", gr.usecase.HandleBlogLikeOrDislike)
+		// 
 		
 		
 	}
@@ -34,14 +35,14 @@ func (gr *BlogRoute) GinBlogRouter() {
 	{
 		// TODO: check if there is a blog with such id 
 		commentRouter.PATCH("/new", gr.usecase.HandleCommentOnBlog)
-		
+
 		// TODO: aperson cannot like and dislike the same blcomment
 		commentRouter.PATCH("/interact/:type", gr.usecase.HandleCommentLikeOrDislike)
 		// INFO:TESTING
+		commentRouter.GET("/:blogId",gr.usecase.HandleGetAllComments)
 		// INFO:TOBE TESTED
 		// commentRouter.PATCH("/:comment/interact:commentId", gr.usecase.HandleCommentLikeOrDislike)
 		// commentRouter.PATCH("/:comment/interact:commentId", gr.usecase.HandleCommentLikeOrDislike)
-		// commentRouter.GET("/:blogId/reply:commentId",gr.usecase.Handle)
 	}
 	router.GET("", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{"message": "Welcome to Blog API get"})

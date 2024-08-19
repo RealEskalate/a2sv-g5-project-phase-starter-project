@@ -78,4 +78,5 @@ type BlogRepository interface {
 	// TODO: to comment or reply to comment you have to view the blog then the comment
 	AddComment(blogId string, comment Comment) error
 	ReplyToComment(blogId, commentId string, reply Reply) error
+	GetAllComments(blogId string) ([]Comment, error)
 }

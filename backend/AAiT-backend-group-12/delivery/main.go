@@ -4,6 +4,7 @@ import (
 	"blog_api/delivery/env"
 	"blog_api/delivery/router"
 	initdb "blog_api/infrastructure/db"
+	"fmt"
 	"log"
 )
 
@@ -28,6 +29,7 @@ func main() {
 	}
 
 	defer initdb.DisconnectDB(client)
+    fmt.Println(env.ENV.ROUTE_PREFIX)
 
 	router.SetupRouter(env.ENV.PORT, env.ENV.ROUTE_PREFIX, database)
 }

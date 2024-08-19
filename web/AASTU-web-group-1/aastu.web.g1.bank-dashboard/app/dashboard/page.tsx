@@ -21,7 +21,7 @@ const MainDashboard = () => {
     }
   };
   return (
-    <div className="p-5 md:pl-10 md:ml-auto space-y-5 ">
+    <div className="p-5 md:pl-10  space-y-5 ">
       {/* First Row: My Cards and Recent Transactions */}
       <div className="md:grid md:grid-cols-2 md:gap-5 space-y-5 md:space-y-0 space-x-5">
         {/* My Cards Section */}

@@ -28,15 +28,8 @@ type User struct {
 }
 
 type AuthUser struct {
-	Username string `json:"username"`
+	Username string `json:"name"`
 	Password string `json:"password"`
-}
-
-type Profile struct {
-	ID        primitive.ObjectID `json:"id" gorm:"primaryKey"`
-	UserID    primitive.ObjectID `json:"user_id"`
-	Bio       string             `json:"bio"`
-	AvatarURL string             `json:"avatar_url"`
 }
 
 type UserUsecaseInterface interface {
@@ -50,8 +43,8 @@ type UserUsecaseInterface interface {
 	GetAllUsers() ([]*User, error)
 	DeleteUser(objectID primitive.ObjectID) error
 }
-	// RefreshToken(refreshToken *RefreshToken) (string, error)
 
+// RefreshToken(refreshToken *RefreshToken) (string, error)
 
 type UserRepositoryInterface interface {
 	//User operations
@@ -63,4 +56,3 @@ type UserRepositoryInterface interface {
 	UpdateProfile(id primitive.ObjectID, profile *Profile) (*Profile, error)
 	DeleteUser(id primitive.ObjectID) error
 }
-

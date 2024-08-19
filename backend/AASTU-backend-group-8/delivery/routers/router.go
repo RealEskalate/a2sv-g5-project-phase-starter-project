@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, refreshTokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase , jwtService infrastructure.JWTService) {
+func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, refreshTokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase, jwtService infrastructure.JWTService) {
 
 	// Initialize controllers
 	signupController := controllers.NewSignupController(userUsecase, otpUsecase)
@@ -33,10 +33,6 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 	auth := r.Group("/api")
 	auth.Use(infrastructure.AuthMiddleware(jwtService))
 	{
-		// User profile routes
-		auth.GET("/profile", userController.GetProfile)
-		auth.PUT("/profile", userController.UpdateProfile)
-		auth.POST("/logout", userController.Logout)
 
 		// Blog routes
 		auth.POST("/blogs", blogController.CreateBlogPost)

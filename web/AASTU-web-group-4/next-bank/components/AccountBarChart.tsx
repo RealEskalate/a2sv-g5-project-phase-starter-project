@@ -39,7 +39,7 @@ export default function Component() {
         <div className="flex flex-row justify-between space-x-4">
           <div className="hidden md:flex text-sm font-normal">
             <span className="font-bold">${totalDebit}</span> Debited &{" "}
-            <span className="font-bold">${totalCredit}</span> Credited in this
+            <span className="font-bold"> ${totalCredit}</span> Credited in this
             Week
           </div>
           <div className="flex px-3 text-right">

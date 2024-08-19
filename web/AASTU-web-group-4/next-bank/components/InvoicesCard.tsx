@@ -1,3 +1,4 @@
+import Image from 'next/image';
 
 interface Transaction {
   id: number;
@@ -49,7 +50,11 @@ const TransactionList: React.FC = () => {
       {transactions.map(transaction => (
         <div key={transaction.id} className="flex items-center justify-between">
         <div className={`w-10 h-10 flex items-center justify-center rounded-full ${transaction.iconBgColor}`}>
-          <img src={transaction.icon} alt={transaction.name} className="w-6 h-6" />
+          <Image 
+            src={transaction.icon} 
+            alt={transaction.name} 
+            className="w-6 h-6" 
+          />
         </div>
         <div className="flex-1 px-4">
           <div className="text-gray-800 font-medium">{transaction.name}</div>

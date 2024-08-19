@@ -28,13 +28,9 @@ func (u *UserUsecase) Login(user *domain.User, deviceID string) (domain.LogInRes
 		CreatedAt: time.Now(),
 	}
 
-	user.RefreshTokens = append(user.RefreshTokens, newRefreshToken)
-	hashedPassword, err := infrastracture.HashPassword(user.Password)
-	if err != nil {
-		return domain.LogInResponse{}, errors.New("could not hash password")
-	}
-	user.Password = hashedPassword
-	err = u.UserRepo.UpdateUser(user)
+	existingUser.RefreshTokens = append(existingUser.RefreshTokens, newRefreshToken)
+
+	err = u.UserRepo.UpdateUser(existingUser)
 	if err != nil {
 		return domain.LogInResponse{}, err
 	}
@@ -49,6 +45,68 @@ func (u *UserUsecase) Login(user *domain.User, deviceID string) (domain.LogInRes
 	}
 
 	return LogInResponse, nil
+}
+
+func (au *UserUsecase) Logout(userID, deviceID, token string) error {
+	user, err := au.UserRepo.GetUserByID(userID)
+	if err != nil {
+		return errors.New("user not found")
+	}
+	for i, rt := range user.RefreshTokens {
+		if rt.Token == token && rt.DeviceID == deviceID {
+			user.RefreshTokens = append(user.RefreshTokens[:i], user.RefreshTokens[i+1:]...)
+			err = au.UserRepo.UpdateUser(&user)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+	}
+	return errors.New("invalid token")
+}
+
+func (au *UserUsecase) LogoutAllDevices(userID string) error {
+	user, err := au.UserRepo.GetUserByID(userID)
+	if err != nil {
+		return errors.New("user not found")
+	}
+	user.RefreshTokens = []domain.RefreshToken{}
+	err = au.UserRepo.UpdateUser(&user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// logout a specific device with deviceId
+func (au *UserUsecase) LogoutDevice(userID, deviceID string) error {
+	user, err := au.UserRepo.GetUserByID(userID)
+	if err != nil {
+		return errors.New("user not found")
+	}
+	for i, rt := range user.RefreshTokens {
+		if rt.DeviceID == deviceID {
+			user.RefreshTokens = append(user.RefreshTokens[:i], user.RefreshTokens[i+1:]...)
+			err = au.UserRepo.UpdateUser(&user)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+	}
+	return errors.New("device not found")
+}
+
+func (au *UserUsecase) GetDevices(userID string) ([]string, error) {
+	user, err := au.UserRepo.GetUserByID(userID)
+	if err != nil {
+		return nil, errors.New("user not found")
+	}
+	var devices []string
+	for _, rt := range user.RefreshTokens {
+		devices = append(devices, rt.DeviceID)
+	}
+	return devices, nil
 }
 
 func (au *UserUsecase) RefreshToken(userID, deviceID, token string) (domain.LogInResponse, error) {

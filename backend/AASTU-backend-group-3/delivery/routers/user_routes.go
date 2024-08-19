@@ -32,5 +32,10 @@ func SetUpUser(router *gin.Engine) {
 		user.POST("/blogs", blogController.CreateBlog)
 		user.POST("/refresh-token", authController.RefreshToken)
 
+		user.POST("/logout", authController.Logout)
+		user.GET("logout-all", authController.LogoutAll)
+		user.GET("/devices/logout", authController.LogoutDevice)
+		user.GET("/devices", authController.GetDevices)
+
 	}
 }

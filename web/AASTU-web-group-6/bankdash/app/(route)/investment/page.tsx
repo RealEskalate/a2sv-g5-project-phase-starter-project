@@ -14,7 +14,7 @@ const page = () => {
   ];
 
   return (
-    <>
+    <div className="w-[96%] flex flex-col grow gap-6 p-8 pt-6">
       <div className="flex flex-col lg:flex-row gap-6">
         <Card
           title="Total Invested Amount"
@@ -96,7 +96,7 @@ const page = () => {
           <TrendingStock data={data} />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

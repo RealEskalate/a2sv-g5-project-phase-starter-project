@@ -23,7 +23,7 @@ func NewRouter(db *mongo.Database) {
 	}
 
 	likeRepo := repositories.NewLikeRepository(db, os.Getenv("LIKE_COLLECTION_NAME"))
-	likeController := controllers.LikeCOntroller{
+	likeController := controllers.LikeController{
 		LikeUseCase: usecases.NewLikeUseCase(likeRepo),
 	}
 
@@ -43,7 +43,7 @@ func NewRouter(db *mongo.Database) {
 
 	router.PUT("/like", likeController.LikeBlog)
 	router.DELETE("/like", likeController.DeleteLike)
-
+	router.GET("/like/:blog_id", likeController.BlogLikeCount)
 
 	port := os.Getenv("PORT")
 	router.Run(":" + port)

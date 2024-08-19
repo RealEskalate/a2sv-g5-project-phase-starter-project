@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"aait.backend.g10/domain"
-	"aait.backend.g10/usecases/interfaces"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,7 +14,7 @@ type LikeRepository struct {
 	Collection *mongo.Collection
 }
 
-func NewLikeRepository(db *mongo.Database, collectionName string) interfaces.LikeRepositoryInterface {
+func NewLikeRepository(db *mongo.Database, collectionName string) *LikeRepository {
 	collection := db.Collection(collectionName)
 	return &LikeRepository{
 		Collection: collection,
@@ -57,4 +56,15 @@ func (l *LikeRepository) DeleteLike(like domain.Like) error {
 	}
 	_, err := l.Collection.DeleteOne(ctx, filter)
 	return err
+}
+
+func (l *LikeRepository) BlogLikeCount(blog_id uuid.UUID) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	filter := bson.D{
+		{Key: "blog_id", Value: blog_id},
+	}
+	count, err := l.Collection.CountDocuments(ctx, filter)
+	return int(count), err
 }

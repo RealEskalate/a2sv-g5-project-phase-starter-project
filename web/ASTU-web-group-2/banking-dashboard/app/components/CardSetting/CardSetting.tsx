@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 const CardSetting = () => {
   return (
-    <div className="w-[350px] h-[440px] max-sm:w-[325px] max-sm:h-[325px] max-sm:rounded-[15px] bg-white rounded-[25px] flex flex-col gap-[40px] max-sm:gap-[15px]">
+    <div className="max-sm:rounded-[15px] bg-white rounded-[25px] flex flex-col gap-[40px] max-sm:gap-[15px]">
       <div className="flex pl-[30px] pt-[30px] gap-[20px] items-center max-sm:pt-[12px] max-sm:gap-[12px] ">
         <Image
           alt="icon"

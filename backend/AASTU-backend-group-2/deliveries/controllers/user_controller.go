@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"blog_g2/domain"
-	"net/http"
-	"strconv"
 	"blog_g2/infrastructure"
+	"fmt"
 	"log"
+	"net/http"
 	"net/mail"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -99,12 +100,15 @@ func (uc *UserController) ForgotPassword(c *gin.Context) {
 }
 
 func (uc *UserController) ResetPassword(c *gin.Context) {
-
 	token := c.Query("token")
 	if token == "" {
 		c.JSON(http.StatusBadRequest, "Token is required")
 		return
 	}
+
+	// Log the token for debugging purposes
+	fmt.Printf("Received Token: %s\n", token)
+
 	var info domain.RestRequest
 	if err := c.BindJSON(&info); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -113,11 +117,12 @@ func (uc *UserController) ResetPassword(c *gin.Context) {
 
 	err := uc.Userusecase.ResetPassword(c, token, info.NewPassword)
 	if err != nil {
+		fmt.Printf("Error resetting password: %v\n", err)
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusAccepted, gin.H{"message": "password have been reset succefully"})
+	c.JSON(http.StatusAccepted, gin.H{"message": "Password has been reset successfully"})
 }
 
 // LogoutUser is a controller method to logout a user

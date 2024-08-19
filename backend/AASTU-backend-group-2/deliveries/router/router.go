@@ -21,7 +21,7 @@ func SetRouter(router *gin.Engine, c *controllers.BlogController, cu *controller
 
 	router.GET("/logout", middleware.AuthMiddleware(client), cu.LogoutUser)
 
-	router.POST("/forgetpassword", cu.ForgotPassword)
+	router.POST("/forget-password", cu.ForgotPassword)
 	router.POST("/reset-password", cu.ResetPassword)
 
 }

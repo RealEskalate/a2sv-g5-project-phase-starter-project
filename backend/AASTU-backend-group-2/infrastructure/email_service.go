@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"fmt"
+	"net/url"
 
 	"gopkg.in/gomail.v2"
 )
@@ -20,7 +21,8 @@ func sendResetEmail(userEmail, resetToken string) error {
 	m.SetHeader("To", userEmail)
 	m.SetHeader("Subject", "Password Reset Request")
 
-	resetURL := fmt.Sprintf("lochalhost:8080/reset-password?token=%s", resetToken)
+	// Ensure the token is correctly embedded in the URL
+	resetURL := fmt.Sprintf("http://localhost:8080/reset-password?token=%s", url.QueryEscape(resetToken))
 	body := fmt.Sprintf(
 		"Click the following link to reset your password:\n%s\n\n"+
 			"If you did not request a password reset, please ignore this email.",

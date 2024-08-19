@@ -5,7 +5,6 @@ import (
 	"context"
 
 	"time"
-
 )
 
 type BlogUsecase struct {
@@ -21,7 +20,7 @@ func NewBlogUsecase(blogrepo domain.BlogRepository, timeout time.Duration) domai
 
 }
 
-func (br *BlogUsecase) CreateBlog(c context.Context, blog domain.Blog) error {
+func (br *BlogUsecase) CreateBlog(c context.Context, blog *domain.Blog) error {
 	_, cancel := context.WithTimeout(c, br.contextTimeout)
 	defer cancel()
 	return br.BlogRepo.CreateBlog(blog)

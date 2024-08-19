@@ -30,6 +30,7 @@ const handleRequest = async (
         "Content-Type": "application/json",
       },
     });
+    console.log(response.data, "all data");
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

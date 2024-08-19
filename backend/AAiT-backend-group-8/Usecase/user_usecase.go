@@ -1,4 +1,4 @@
-package Usecase
+package usecase
 
 import (
 	domain "AAiT-backend-group-8/Domain"

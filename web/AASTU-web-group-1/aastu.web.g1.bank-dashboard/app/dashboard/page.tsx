@@ -13,8 +13,9 @@ import CreditCard from "./_components/Credit_Card";
 import { Profile } from "./_components/Profile";
 import { Transaction } from "./_components/Transaction";
 import { getCreditCards } from "./transactions/component/getCreditCards";
-import { CardDetails } from "@/types";
+import { CardDetails, TransactionData } from "@/types";
 import { BalanceAreachart  } from "./transactions/component/balanceChart";
+import { getallTransactions } from "./transactions/component/getTransactions";
 
 const MainDashboard = () => {
 
@@ -27,9 +28,12 @@ const MainDashboard = () => {
   };
 
    const [creditCards, setCreditCards] = useState<CardDetails[]>([]);
+   const [recentTransactions, setRecentTransactions] = useState<TransactionData[]>([]);
    useEffect(() => {
      const fetchData = async () => {
        const res = await getCreditCards();
+       const recent = await getallTransactions(0,3);
+       setRecentTransactions(recent || []);
        setCreditCards(res || []);
      };
      fetchData();
@@ -66,27 +70,19 @@ const MainDashboard = () => {
             <h4>Recent Transactions</h4>
           </div>
           <div className="space-y-5 md:p-5 bg-white rounded-xl md:shadow-lg md:border md:border-gray-300">
-            <Transaction
-              image="/icons/wallet.png"
-              transactionType="Deposited from my"
-              date="28 January 2021"
-              amount="+$85"
-              color="bg-yellow-100"
-            />
-            <Transaction
-              image="/icons/paypal.png"
-              transactionType="Deposited Paypal"
-              date="28 January 2021"
-              amount="+$85"
-              color="bg-indigo-100"
-            />
-            <Transaction
-              image="/icons/dollarSign.png"
-              transactionType="Deposited from my"
-              date="28 January 2021"
-              amount="+$85"
-              color="bg-green-100"
-            />
+            {recentTransactions.map((transaction) => (
+              <Transaction
+                key={transaction.transactionId}
+                date={transaction.date}
+                amount={transaction.amount}
+                description={transaction.description}
+                type={transaction.type}
+                transactionId={transaction.transactionId}
+                senderUserName={transaction.senderUserName}
+                receiverUserName={transaction.receiverUserName}
+              />
+            ))}
+          
           </div>
         </div>
       </div>

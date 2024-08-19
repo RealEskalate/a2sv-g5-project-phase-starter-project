@@ -14,17 +14,28 @@ type LogoutController struct {
 	JwtService    interfaces.JwtService
 }
 
-func (logoutController *LogoutController) Logout(c *gin.Context) {
-	authHeader := c.GetHeader("Authorization")
-	claims, err := forgotPasswordController.JwtService.GetClaims(authHeader)
+func (logoutController *LogoutController) Logout(ctx *gin.Context) {
+	// get claims from authorization header
+	authHeader := ctx.GetHeader("Authorization")
+
+	claims, err := logoutController.JwtService.GetClaims(authHeader)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, errors.New("invalid token"))
+		ctx.JSON(http.StatusBadRequest, errors.New("invalid token"))
 		return
 	}
 
+	// get userId from claims
 	userId, err := primitive.ObjectIDFromHex(claims.ID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, errors.New("invalid user id"))
+		ctx.JSON(http.StatusBadRequest, errors.New("invalid user id"))
 		return
 	}
+
+	e := logoutController.LogoutUsecase.LogoutUser(ctx, userId.Hex())
+	if e != nil {
+		ctx.JSON(e.Code, e.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "logged out successfully"})
 }

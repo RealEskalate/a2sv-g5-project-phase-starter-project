@@ -2,15 +2,12 @@ package repository
 
 import (
 	domain "aait-backend-group4/Domain"
-	"fmt"
-	"time"
+	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-
-	// "golang.org/x/net/context"
-	"context"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // blogRepository implements the domain.BlogRepository interface
@@ -27,7 +24,7 @@ func NewBlogRepository(db mongo.Database, collection string) domain.BlogReposito
 	}
 }
 
-// Create inserts a new blog into the collection
+// CreateBlog inserts a new blog into the collection
 func (br *blogRepository) CreateBlog(c context.Context, blog *domain.Blog) error {
 	collection := br.database.Collection(br.collection)
 
@@ -108,92 +105,122 @@ func (br *blogRepository) FetchAll(c context.Context) ([]domain.Blog, error) {
 	return blogs, err
 }
 
-// UpdateBlog updates a blog in the collection by its ID
-// changes the updated time
-// UpdateBlog updates a blog in the collection by its ID
-// changes the updated time
-func (br *blogRepository) UpdateBlog(c context.Context, id primitive.ObjectID, blog domain.BlogUpdate) error {
+// FetchByPageAndPopularity retrieves blogs from the collection based on page number and sorts them by popularity
+func (br *blogRepository) FetchByPageAndPopularity(ctx context.Context, pageNumber, pageSize int) ([]domain.Blog, error) {
 	collection := br.database.Collection(br.collection)
 
-	updateFields := bson.M{}
+	var blogs []domain.Blog
+	skip := (pageNumber - 1) * pageSize
+
+	// Sort by popularity in descending order and apply pagination
+	cursor, err := collection.Find(
+		ctx,
+		bson.M{},
+		options.Find().
+			SetSkip(int64(skip)).
+			SetLimit(int64(pageSize)).
+			SetSort(bson.D{{Key: "popularity", Value: -1}}),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	err = cursor.All(ctx, &blogs)
+	if blogs == nil {
+		return []domain.Blog{}, err
+	}
+
+	return blogs, err
+}
+
+// FetchByTags retrieves blogs that have the specified tags
+func (br *blogRepository) FetchByTags(ctx context.Context, tags []domain.Tag) ([]domain.Blog, error) {
+	collection := br.database.Collection(br.collection)
+
+	var blogs []domain.Blog
+
+	// Use the $in operator to match any blog that contains any of the specified tags
+	cursor, err := collection.Find(ctx, bson.M{"tags": bson.M{"$in": tags}})
+	if err != nil {
+		return nil, err
+	}
+
+	err = cursor.All(ctx, &blogs)
+	if blogs == nil {
+		return []domain.Blog{}, err
+	}
+
+	return blogs, err
+}
+
+// UpdateBlog updates a blog in the collection by its ID
+func (br *blogRepository) UpdateBlog(ctx context.Context, id primitive.ObjectID, blog domain.BlogUpdate) error {
+	collection := br.database.Collection(br.collection)
+
+	updateData := bson.M{}
 
 	if blog.Title != nil {
-		updateFields["title"] = *blog.Title
+		updateData["title"] = *blog.Title
 	}
-
 	if blog.Content != nil {
-		updateFields["content"] = *blog.Content
+		updateData["content"] = *blog.Content
 	}
-
 	if blog.Author_Info != nil {
-		updateFields["author_info"] = *blog.Author_Info
+		updateData["author_info"] = *blog.Author_Info
 	}
-
 	if blog.Tags != nil {
-		updateFields["tags"] = *blog.Tags
+		updateData["tags"] = *blog.Tags
 	}
-
+	if blog.Popularity != nil {
+		updateData["popularity"] = *blog.Popularity
+	}
 	if blog.Feedbacks != nil {
-		updateFields["feedbacks"] = *blog.Feedbacks
+		updateData["feedbacks"] = *blog.Feedbacks
+	}
+	if blog.Updated_At != nil {
+		updateData["updated_at"] = *blog.Updated_At
 	}
 
-	// Add Updated_At field
-	updateFields["updated_at"] = time.Now()
-
-	update := bson.D{{Key: "$set", Value: updateFields}}
-	result, err := collection.UpdateOne(
-		c,
-		bson.D{{Key: "_id", Value: id}},
-		update,
-	)
-
-	if err != nil {
-		return err
-	}
-
-	if result.ModifiedCount == 0 {
-		return fmt.Errorf("blog not found")
-	}
-
-	return nil
+	_, err := collection.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": updateData})
+	return err
 }
 
 // DeleteBlog deletes a blog from the collection by its ID
-func (br *blogRepository) DeleteBlog(c context.Context, id primitive.ObjectID) error {
+func (br *blogRepository) DeleteBlog(ctx context.Context, id primitive.ObjectID) error {
 	collection := br.database.Collection(br.collection)
 
-	_, err := collection.DeleteOne(c, bson.M{"_id": id})
+	_, err := collection.DeleteOne(ctx, bson.M{"_id": id})
 	return err
 }
 
 // BlogExists checks if a blog exists by its ID
-func (br *blogRepository) BlogExists(c context.Context, id primitive.ObjectID) (bool, error) {
+func (br *blogRepository) BlogExists(ctx context.Context, id primitive.ObjectID) (bool, error) {
 	collection := br.database.Collection(br.collection)
 
-	var blog domain.Blog
-	err := collection.FindOne(c, bson.M{"_id": id}).Decode(&blog)
+	count, err := collection.CountDocuments(ctx, bson.M{"_id": id})
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return false, nil
-		}
 		return false, err
 	}
 
-	return true, nil
+	return count > 0, nil
 }
 
 // UserIsAuthor checks if a user is the author of a blog by their user ID and the blog ID
-func (br *blogRepository) UserIsAuthor(c context.Context, blogID primitive.ObjectID, userID string) (bool, error) {
+func (br *blogRepository) UserIsAuthor(ctx context.Context, blogID primitive.ObjectID, userID string) (bool, error) {
 	collection := br.database.Collection(br.collection)
 
-	var blog domain.Blog
-	err := collection.FindOne(c, bson.M{"_id": blogID, "author_info.author_id": userID}).Decode(&blog)
+	count, err := collection.CountDocuments(ctx, bson.M{"_id": blogID, "author_info.author_id": userID})
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return false, nil
-		}
 		return false, err
 	}
 
-	return true, nil
+	return count > 0, nil
+}
+
+// UpdatePopularity updates the popularity of a blog
+func (br *blogRepository) UpdatePopularity(ctx context.Context, id primitive.ObjectID, popularity float64) error {
+	collection := br.database.Collection(br.collection)
+
+	_, err := collection.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"popularity": popularity}})
+	return err
 }

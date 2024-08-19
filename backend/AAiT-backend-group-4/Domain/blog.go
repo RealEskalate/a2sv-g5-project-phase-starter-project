@@ -41,11 +41,21 @@ type Blog struct {
 	Content     string             `json:"content" bson:"content" validate:"required,min=5"`
 	Author_Info Author             `json:"author_info" bson:"author_info"`
 	Tags        []Tag              `json:"tags" bson:"tags"`
-	Popularity  float64            `json:"popularity" bson:"popularity" `
+	Popularity  float64            `json:"popularity" bson:"popularity"`
 	Feedbacks   Feedback           `json:"feedbacks" bson:"feedbacks"`
 	Popularity  float64            `json:"popularity" bson:"popularity"`
 	Created_At  time.Time          `json:"created_at" bson:"created_at"`
 	Updated_At  time.Time          `json:"updated_at" bson:"updated_at"`
+}
+
+type BlogUpdate struct {
+	Title       *string    `json:"title" bson:"title" validate:"required,min=5,max=100"`
+	Content     *string    `json:"content" bson:"content" validate:"required,min=5"`
+	Author_Info *Author    `json:"author_info" bson:"author_info"`
+	Tags        *[]Tag     `json:"tags" bson:"tags"`
+	Popularity  *float64   `json:"popularity" bson:"popularity"`
+	Feedbacks   *Feedback  `json:"feedbacks" bson:"feedbacks"`
+	Updated_At  *time.Time `json:"updated_at" bson:"updated_at"`
 }
 
 type BlogRepository interface {
@@ -53,8 +63,24 @@ type BlogRepository interface {
 	CreateBlog(c context.Context, blog *Blog) error
 	// FetchByBlogID retrieves a blog by its ID
 	FetchByBlogID(c context.Context, blogID string) (Blog, error)
+	// FetchAll retrieves all blogs from the collection
+	FetchAll(c context.Context) ([]Blog, error)
 	// FetchByBlogAuthor retrieves blogs by the author's ID
 	FetchByBlogAuthor(c context.Context, authorID string) ([]Blog, error)
 	// FetchByBlogTitle retrieves blogs by their title
 	FetchByBlogTitle(c context.Context, title string) ([]Blog, error)
+	// UpdateBlog updates a blog in the collection by its ID
+	UpdateBlog(ctx context.Context, id primitive.ObjectID, blog BlogUpdate) error
+	// DeleteBlog deletes a blog from the collection by its ID
+	DeleteBlog(ctx context.Context, id primitive.ObjectID) error
+	// BlogExists checks if a blog exists by its ID
+	BlogExists(ctx context.Context, id primitive.ObjectID) (bool, error)
+	// UserIsAuthor checks if a user is the author of a blog by their user ID and the blog ID
+	UserIsAuthor(ctx context.Context, blogID primitive.ObjectID, userID string) (bool, error)
+	// UpdatePopularity updates the popularity of a blog
+	UpdatePopularity(ctx context.Context, id primitive.ObjectID, popularity float64) error
+	// FetchByPageAndPopularity retrieves blogs from the collection based on page number and sorts them by popularity
+	FetchByPageAndPopularity(ctx context.Context, pageNumber, pageSize int) ([]Blog, error)
+	// FetchByTags retrieves blogs that have the specified tags
+	FetchByTags(ctx context.Context, tags []Tag) ([]Blog, error)
 }

@@ -63,10 +63,10 @@ func (uc *blogUsecase) GetComments(c *gin.Context, id primitive.ObjectID) ([]*Do
 	return uc.BlogRepository.GetComments(ctx,id)
 }
 
-func (uc *blogUsecase) GetAllPosts(c *gin.Context) ([]*Domain.Post, error, int) {
+func (uc *blogUsecase) GetAllPosts(c *gin.Context, filter Domain.Filter) ([]*Domain.Post, error, int) {
 	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
 	defer cancel()
-	return uc.BlogRepository.GetAllPosts(ctx)
+	return uc.BlogRepository.GetAllPosts(ctx, filter)
 }
 
 func (uc *blogUsecase) AddTagToPost(c *gin.Context, id primitive.ObjectID, slug string) (error, int) {

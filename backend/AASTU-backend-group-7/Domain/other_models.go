@@ -10,3 +10,12 @@ type BlogCollections struct {
 	LikesDislikes Collection
 	Tags          Collection
 }
+
+type Filter struct {
+	Slug       string
+	AuthorName string
+	Page       int
+	Limit      int
+	Tags       []string
+	Sort       map[string]int
+}

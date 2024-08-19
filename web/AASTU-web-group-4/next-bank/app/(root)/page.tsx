@@ -1,4 +1,5 @@
-
+"use client"
+{/*
 import React from "react";
 import { Color } from "chart.js";
 import { colors, logo } from "@/constants";
@@ -119,3 +120,98 @@ const page = () => {
 
 export default page;
 
+*/}
+
+import React from 'react';
+import {
+  updateUserDetails,
+  updatePreference,
+  fetchUserDetails,
+  randominvestmentdata,
+  currentuser,
+} from '@/services/userupdate';
+
+const ApiTestComponent = () => {
+
+  const handleUpdateUserDetails = async () => {
+    const userData = {
+      "name": "John wick",
+      "email": "johnwick@example.com",
+      "dateOfBirth": "1990-01-01T00:00:00.000Z",
+      "permanentAddress": "123 Main St",
+      "postalCode": "45678",
+      "username": "johndoe",
+      "password": "securepassword123",
+      "presentAddress": "456 Elm St",
+      "city": "Sample City",
+      "country": "Sample Country",
+      "profilePicture": "profile-pic-url",
+      "preference": {
+        "currency": "USD",
+        "sentOrReceiveDigitalCurrency": true,
+        "receiveMerchantOrder": true,
+        "accountRecommendations": true,
+        "timeZone": "America/New_York",
+        "twoFactorAuthentication": true,
+      },  
+  }
+    try {
+      const response = await updateUserDetails(userData);
+      console.log('Updated User Details Response:', response);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleUpdatePreference = async () => {
+    const userData = { /* Your preference data here */ };
+    try {
+      const response = await updatePreference(userData);
+      console.log('Update Preference Response:', response);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleFetchUserDetails = async () => {
+    const userId = 'your-user-id';
+    try {
+      const response = await fetchUserDetails(userId);
+      console.log('Fetch User Details Response:', response);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleRandomInvestmentData = async () => {
+    const userId = 'your-user-id';
+    try {
+      const response = await randominvestmentdata(userId);
+      console.log('Random Investment Data Response:', response);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleCurrentUser = async () => {
+    const userId = 'your-user-id';
+    try {
+      const response = await currentuser(userId);
+      console.log('Current User Response:', response);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  return (
+    <div className='flex flex-col'>
+      <button onClick={handleUpdateUserDetails}>Update User Details</button>
+      <button onClick={handleUpdatePreference}>Update Preference</button>
+      <button onClick={handleFetchUserDetails}>Fetch User Details</button>
+      <button onClick={handleRandomInvestmentData}>Random Investment Data</button>
+      <button onClick={handleCurrentUser}>Current User</button>
+    </div>
+  );
+};
+
+export default ApiTestComponent;

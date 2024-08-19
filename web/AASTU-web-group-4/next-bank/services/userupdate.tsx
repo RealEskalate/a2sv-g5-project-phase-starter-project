@@ -1,18 +1,25 @@
+import Cookie from "js-cookie"
+
 // Update User Details - PUT Request
+
 export const updateUserDetails = async (userData: any) => {
   try {
+    const token = Cookie.get("accessToken"); // Replace with the actual token
+
     const response = await fetch(
       "https://bank-dashboard-6acc.onrender.com/user/update",
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // Include the token in the header
         },
         body: JSON.stringify(userData),
       }
     );
 
     if (!response.ok) {
+      console.log(response);
       throw new Error("Failed to update user details");
     }
 
@@ -23,6 +30,7 @@ export const updateUserDetails = async (userData: any) => {
     throw error;
   }
 };
+
 
 export const updatePreference = async (userData: any) => {
   try {

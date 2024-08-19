@@ -216,6 +216,9 @@ func (u *User) IsAdmin() bool {
 // IsActive returns whether the user is an active.
 func (u *User) IsActive() bool {
 	return u.isActive
+// IsAdmin returns whether the user is an admin.
+func (u *User) ResetCode() *ResetCode {
+	return u.resetCode
 }
 
 // UpdateUsername updates the user's username after validation.

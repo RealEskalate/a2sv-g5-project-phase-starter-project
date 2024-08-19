@@ -109,8 +109,8 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
 
     smtpConfig := entities.SMTPConfig{
         Server:   "smtp.gmail.com:587",
-        Username: "gmail@gmail.com",
-        Password: "strong-password",
+        Username: "abdulfetah.yishak@a2sv.org",
+        Password: "#AFHHY1best",
     }
 
     // Generate the email body using the template function

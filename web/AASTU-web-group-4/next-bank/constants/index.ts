@@ -195,7 +195,7 @@ export const user = {
 };
 
 export const creditcardstyles = [{
-  iconwhite : "w-6 h-6",
+  iconwhite : "/icons/chip.png",
   icongray : "w-6 h-6"
 
 }]
@@ -205,6 +205,7 @@ export const colors = {
   white: 'bg-white',
   navbartext:' text-[#343C6A]',
   black: 'bg-[#000000]',
+  textwhite: 'text-white',
   textblack: 'text-[#232323]',
   textred: 'text-[#FF4B4A]',
   textgreen: 'text-[#41D4A8]',
@@ -214,11 +215,21 @@ export const colors = {
   gradientcard:'linear-gradient(to bottom, #4C49ED,#0A06F4)',
   gradientchart:'linear-gradient(to bottom, #2D60FF,#2D60FF)',
   textblue : "text-[#1814F3]",
-  lightblue : "bg-gray-100"
+  lightblue : "bg-gray-100",
+  lightorange : 'bg-[#FFF5D9]',
+  lightpurple : 'bg-[#E7EDFF]',
+  lightgreen : 'bg-[#DCFAF8]',
+  graybg : 'bg-[#F5F7FA]'
+
+
+
 };
 
 export const logo = {
   icon : "/icons/logo.png",
+  RT1 : '/icons/RT1.png',
+  RT2 : '/icons/RT2.png',
+  RT3 : '/icons/RT3.png',
 }
 
 export const textColors = {

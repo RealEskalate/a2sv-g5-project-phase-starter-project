@@ -18,7 +18,7 @@ type UserUseCase interface {
 }
 
 type BlogUseCase interface {
-	CreateBlog(blog *Blog, authorID string) Error
+	CreateBlog(blog *Blog , authorID string) Error
 	GetBlog(blogID string) (*Blog, Error)
 	GetBlogs() ([]Blog, Error)
 	UpdateBlog(blogID string, blog *Blog) Error
@@ -30,9 +30,9 @@ type BlogUseCase interface {
 
 	AddComment(blogID string, comment *Comment) Error
 	DeleteComment(blogID, commentID string) Error
-	EditComment(blogID string, commentID string, comment *Comment) Error
-	Like(blogId string, userID string) Error
-	DisLike(blogId string, userID string) Error
+	EditComment(blogID string , commentID string, comment *Comment) Error
+	Like(blogId string , userID string) Error
+	DisLike(blogId string , userID string) Error
 }
 
 type BlogAssistantUseCase interface {

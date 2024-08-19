@@ -35,6 +35,7 @@ func (bc *blogController) CreateBlog(c *gin.Context) {
 	if err != nil {
 		c.JSON(err.StatusCode(), gin.H{"error": err.Error()})
 	}
+
 	c.JSON(http.StatusOK, gin.H{"data": blog})
 }
 
@@ -192,8 +193,7 @@ func (bc *blogController) EditComment(c *gin.Context) {
 	// Implement the logic for editing a comment
 	var comment domain.Comment
 	var commentID = c.Param("comment_id")
-	blogID := c.Param("id")
-	fmt.Println("blog Id controller", blogID)
+	blogID := c.Param("blog_id")
 	if err := c.ShouldBindJSON(&comment); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

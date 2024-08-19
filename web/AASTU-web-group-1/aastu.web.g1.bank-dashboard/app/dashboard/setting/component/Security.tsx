@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import ky from "ky";
+import { getSession, useSession } from "next-auth/react";
 
 const Security = () => {
   const formSchema = z.object({
@@ -37,8 +39,31 @@ const Security = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const formData = {
+      password: values.currentPassword,
+      newPassword: values.newPassword,
+    };
+
+    const { data: session } = await useSession();
+    const accessToken = session?.user?.accessToken;
+
+    console.log(accessToken);
+
+    if (!accessToken) {
+      throw new Error("No access token found");
+    }
+
+    const res = await ky
+      .post("https://bank-dashboard-6acc.onrender.com/auth/change_password", {
+        json: formData,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .json();
+
+    return res;
   }
   return (
     <div className="md:px-16">

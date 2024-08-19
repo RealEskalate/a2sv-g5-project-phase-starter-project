@@ -1,6 +1,7 @@
-package blog
+package domain
 
 import (
+	"context"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -19,17 +20,18 @@ type Blog struct {
 
 type BlogUsecase interface {
 	// CreateBlog(ctx context.Context, blog *Blog) error
-	// UpdateBlog(ctx context.Context, authorID primitive.ObjectID, blogID primitive.ObjectID, updatedBlog *Blog) error
-	// DeleteBlog(ctx context.Context, authorID primitive.ObjectID, blogID primitive.ObjectID) error
-	// SearchBlog(ctx context.Context, blogTitle string, blogAuthor string) ([]*Blog, error)
+	UpdateBlog(ctx context.Context, blogID primitive.ObjectID, updatedBlog *Blog) error
+	GetBlog(ctx context.Context, blogID primitive.ObjectID) (*Blog, error)
+	DeleteBlog(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID, isAdmin bool) error
 	// GetBlogs(ctx context.Context) ([]*Blog, error)
 	// GetBlog(ctx context.Context, blogid primitive.ObjectID) ([]*Blog, error)
 }
 
 type BlogRepository interface {
 	// CreateBlog(ctx context.Context, blog *Blog) error
-	// UpdateBlog(ctx context.Context, blogID primitive.ObjectID, authorID primitive.ObjectID, updatedBlog *Blog) error
-	// DeleteBlog(ctx context.Context, blogID primitive.ObjectID, authorID primitive.ObjectID) error
+	UpdateBlog(ctx context.Context, authorID primitive.ObjectID, updatedBlog *Blog) error
+	GetBlog(ctx context.Context, blogID primitive.ObjectID) (*Blog, error)
+	DeleteBlog(ctx context.Context, blogID primitive.ObjectID) error
 	// SearchBlog(ctx context.Context, blogTitle string, blogAuthor string) ([]*Blog, error)
 	// GetAllBlogs(ctx context.Context) ([]*Blog, error)
 	// FilterBlogByTag(ctx context.Context, tag string) ([]*Blog, error)

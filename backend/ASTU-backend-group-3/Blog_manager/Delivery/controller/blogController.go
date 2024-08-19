@@ -44,7 +44,7 @@ func (h *BlogController) CreateBlog(c *gin.Context) {
 		ViewCount: 0,
 		Likes:     []string{},
 		Dislikes:  []string{},
-		Comments:  []string{},
+		Comments:  []Domain.Comment{},
 	}
 
 	createdBlog, err := h.blogUsecase.CreateBlog(blog)
@@ -79,15 +79,41 @@ func (h *BlogController) RetrieveBlogs(c *gin.Context) {
 }
 func (h *BlogController) DeleteBlogByID(c *gin.Context) {
 	id := c.Param("id")
+	userRole := c.GetHeader("Role") // Extract the role from the header
+
+	// Get the current user's username from the context
+	username, exists := c.Get("username")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found in context"})
+		return
+	}
+
+	// Check if the user is an admin or the author of the blog
+	isAdmin := userRole == "admin"
+	if !isAdmin {
+		// Find the blog by ID to check if the requesting user is the author
+		blog, err := h.blogUsecase.FindByID(id)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Blog not found"})
+			return
+		}
+		if blog.Author != username {
+			c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to delete this blog"})
+			return
+		}
+	}
+
+	// Delete the blog
 	err := h.blogUsecase.DeleteBlogByID(id)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Blog not post not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Blog not found"})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete blog"})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "Blog post deleted successfully"})
 }
 
@@ -103,4 +129,31 @@ func (h *BlogController) SearchBlogs(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": blogs})
+}
+
+func (h *BlogController) UpdateBlog(c *gin.Context) {
+	blogID := c.Param("id")
+
+	var input Domain.UpdateBlogInput // Use the UpdateBlogInput struct
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Extract the author ID from the context (assuming it's set by authentication middleware)
+	author := c.GetString("username")
+	if author == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found in context"})
+		return
+	}
+
+	// Call the use case to update the blog
+	updatedBlog, err := h.blogUsecase.UpdateBlog(blogID, input, author)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": updatedBlog})
 }

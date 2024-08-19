@@ -13,8 +13,9 @@ import (
 type BlogRepository interface {
 	Save(blog *Domain.Blog) (*Domain.Blog, error)
 	DeleteBlogByID(id string) error
-	SearchBlogs(title string, author string, tags []string) ([]*Domain.Blog, error)
+	SearchBlogs(title string, author string, tags []string) ([]Domain.Blog, error)
 	RetrieveBlogs(page, pageSize int, sortBy string) ([]Domain.Blog, int64, error)
+	FindByID(id string) (*Domain.Blog, error)
 }
 
 type blogRepository struct {
@@ -26,7 +27,10 @@ func NewBlogRepository(collection *mongo.Collection) *blogRepository {
 }
 
 func (r *blogRepository) Save(blog *Domain.Blog) (*Domain.Blog, error) {
-	blog.Id = primitive.NewObjectID().Hex()
+	if blog.Id == "" {
+		// Handle the case where the ObjectID is not set
+		blog.Id = primitive.NewObjectID().Hex()
+	}
 	_, err := r.collection.InsertOne(context.TODO(), blog)
 	if err != nil {
 		return nil, err
@@ -69,7 +73,7 @@ func (r *blogRepository) RetrieveBlogs(page, pageSize int, sortBy string) ([]Dom
 	return blogs, totalPosts, nil
 }
 
-func (r *blogRepositoryy) DeleteBlogByID(id string) error {
+func (r *blogRepository) DeleteBlogByID(id string) error {
 	filter := bson.M{"id": id}
 	_, err := r.collection.DeleteOne(context.TODO(), filter)
 	return err
@@ -104,4 +108,17 @@ func (r *blogRepository) SearchBlogs(title string, author string, tags []string)
 	}
 
 	return blogs, nil
+}
+
+func (r *blogRepository) FindByID(id string) (*Domain.Blog, error) {
+	var blog Domain.Blog
+	filter := bson.M{"id": id}
+	err := r.collection.FindOne(context.TODO(), filter).Decode(&blog)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil // Return nil if no document is found
+		}
+		return nil, err
+	}
+	return &blog, nil
 }

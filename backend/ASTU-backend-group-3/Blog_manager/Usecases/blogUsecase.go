@@ -3,13 +3,17 @@ package Usecases
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"ASTU-backend-group-3/Blog_manager/Repository"
+	"errors"
+	"time"
 )
 
 type BlogUsecase interface {
 	CreateBlog(blog *Domain.Blog) (*Domain.Blog, error)
+	UpdateBlog(blogID string, input Domain.UpdateBlogInput, author string) (*Domain.Blog, error)
 	RetrieveBlogs(page, pageSize int, sortBy string) ([]Domain.Blog, int64, error)
 	DeleteBlogByID(id string) error
-	SearchBlogs(title string, author string, tags []string) ([]*Domain.Blog, error)
+	SearchBlogs(title string, author string, tags []string) ([]Domain.Blog, error)
+	FindByID(id string) (*Domain.Blog, error)
 }
 
 type blogUsecase struct {
@@ -49,6 +53,37 @@ func (uc *blogUsecase) DeleteBlogByID(id string) error {
 	return uc.blogRepo.DeleteBlogByID(id)
 }
 
-func (uc *blogUsecase) SearchBlogs(title string, author string, tags []string) ([]*Domain.Blog, error) {
+func (uc *blogUsecase) SearchBlogs(title string, author string, tags []string) ([]Domain.Blog, error) {
 	return uc.blogRepo.SearchBlogs(title, author, tags)
+}
+
+func (uc *blogUsecase) UpdateBlog(blogID string, input Domain.UpdateBlogInput, author string) (*Domain.Blog, error) {
+	// Retrieve the existing blog
+	existingBlog, err := uc.blogRepo.FindByID(blogID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if the current user is the author
+	if existingBlog.Author != author {
+		return nil, errors.New("unauthorized: user is not the author of the blog")
+	}
+
+	// Update the existing blog with the new details
+	existingBlog.Title = input.Title
+	existingBlog.Content = input.Content
+	existingBlog.Tags = input.Tags
+	existingBlog.UpdatedAt = time.Now().Format(time.RFC3339)
+
+	// Save the updated blog to the database
+	updatedBlog, err := uc.blogRepo.Save(existingBlog)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedBlog, nil
+}
+
+func (uc *blogUsecase) FindByID(id string) (*Domain.Blog, error) {
+	return uc.blogRepo.FindByID(id)
 }

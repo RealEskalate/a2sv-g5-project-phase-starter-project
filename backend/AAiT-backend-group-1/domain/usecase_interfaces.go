@@ -3,8 +3,6 @@ package domain
 import (
 	"context"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 type UserUseCase interface {

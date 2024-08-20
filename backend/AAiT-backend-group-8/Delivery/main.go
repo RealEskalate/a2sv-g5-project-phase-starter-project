@@ -25,6 +25,7 @@ func main() {
 	ps := infrastructure.NewPasswordService()
 	tr := repository.NewTokenRepository(token_collection, context.TODO())
 	ms := infrastructure.NewMailService()
+//	ts := infrastructure.NewTokenService(SECRET_KEY)
 
 	userUseCase := usecase.NewUserUseCase(userRepo, ts, ps, tr, ms)
 

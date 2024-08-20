@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"AAiT-backend-group-6/backend/AAiT-backend-group-6/domain"
-	"AAiT-backend-group-6/backend/AAiT-backend-group-6/infrastructure"
+	"AAiT-backend-group-6/domain"
+	"AAiT-backend-group-6/infrastructure"
 
 	"github.com/google/generative-ai-go/genai"
 )

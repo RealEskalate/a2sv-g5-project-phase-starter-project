@@ -1,7 +1,7 @@
 package delivery
 
 import (
-	"AAiT-backend-group-6/backend/AAiT-backend-group-6/domain"
+	"AAiT-backend-group-6/domain"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

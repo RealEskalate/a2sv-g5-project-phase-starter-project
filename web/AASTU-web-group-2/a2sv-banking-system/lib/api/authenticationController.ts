@@ -1,33 +1,8 @@
 // authenticationController.ts
 import { RegisterRequest, RegisterResponse, RefreshTokenResponse, LoginRequest, LoginResponse, ChangePasswordRequest, ChangePasswordResponse } from '@/types/authenticationController.interface';
-import { getServerSession } from 'next-auth';
 
 const BASE_URL = 'https://bank-dashboard-6acc.onrender.com'
 
-interface ExtendedUser {
-  refresh_token: string;
-  data: any; // Assuming `data` contains user information or other details
-  access_token?: string;
-}
-
-interface ExtendedSession {
-  user?: ExtendedUser;
-}
-
-const fetchSession = async (): Promise<ExtendedSession> => {
-  const session = await getServerSession();
-  return session as ExtendedSession;
-};
-
-const getAccessToken = async (): Promise<string | undefined> => {
-  const session = await fetchSession();
-  return session?.user?.access_token;
-};
-
-const getRefreshToken = async (): Promise<string | undefined> => {
-  const session = await fetchSession();
-  return session?.user?.refresh_token;
-};
 
 const register = async (userDetails: RegisterRequest): Promise<RegisterResponse> => {
   try {
@@ -51,9 +26,8 @@ const register = async (userDetails: RegisterRequest): Promise<RegisterResponse>
   }
 };
 
-const refreshToken = async (): Promise<RefreshTokenResponse> => {
+const refreshToken = async (refresh_token:string): Promise<RefreshTokenResponse> => {
     try {
-      const refresh_token = await getRefreshToken();
       const response = await fetch(`${BASE_URL}/auth/refresh_token`, {
         method: 'POST',
         headers: {
@@ -95,9 +69,8 @@ const login = async (credentials: LoginRequest): Promise<any> => {
     }
   };
 
-const changePassword = async (changePasswordDetails: ChangePasswordRequest): Promise<ChangePasswordResponse> => {
+const changePassword = async (changePasswordDetails: ChangePasswordRequest, token:string): Promise<ChangePasswordResponse> => {
   try {
-    const token = await getAccessToken();
     const response = await fetch(`${BASE_URL}/auth/change_password`, {
       method: 'POST',
       headers: {

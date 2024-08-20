@@ -12,6 +12,7 @@ import BarChartForAccounts from "./components/BarChartForAccounts";
 import Card from "../components/Page2/Card";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { getCurrentUser } from "@/lib/api/userControl";
 
 type DataItem = {
   heading: string;
@@ -40,6 +41,7 @@ const Page = () => {
   const [session, setSession] = useState<Data | null>(null);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState();
 
   // Getting the session from the server
   useEffect(() => {
@@ -48,13 +50,25 @@ const Page = () => {
       if (sessionData && sessionData.user) {
         setSession(sessionData.user);
       } else {
-        router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent('/accounts')}`);
+        router.push(
+          `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+        );
       }
       setLoading(false);
     };
 
     fetchSession();
   }, [router]);
+
+  useEffect(() => {
+    const addingData = async () => {
+      if(session?.access_token){
+        const response = await getCurrentUser(session?.access_token)
+        setCurrentUser(response);
+      }
+    };
+    addingData()
+  });
 
   // Example data for the first ListCard
   const ReusableCard: Column = {
@@ -144,9 +158,12 @@ const Page = () => {
   if (loading) return null; // Don't render anything while loading
 
   if (!session) {
-    router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent('/accounts')}`);
+    router.push(
+      `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+    );
     return null;
   }
+  // console.log({currentUser})
   return (
     <>
       <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5">

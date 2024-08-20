@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"regexp"
+	"sync/atomic"
 	"time"
 )
 
@@ -32,18 +33,18 @@ func (u *UserUsecase) GetUserByID(ctx context.Context, id int) (domain.User, err
 }
 
 func (u *UserUsecase) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
-	existingUser, err := u.UserRepo.SearchByEmail(ctx, user.Email)
-	if err != nil {
-		return domain.User{}, errors.New(err.Error())
-	}
+	existingUser, _ := u.UserRepo.SearchByEmail(ctx, user.Email)
+	// if err != nil {
+	// 	return domain.User{}, errors.New(err.Error())
+	// }
 	if existingUser.ID != 0 {
 		return domain.User{}, errors.New("email already in use")
 	}
 
-	existingUser, err = u.UserRepo.SearchByUsername(ctx, user.Username)
-	if err != nil {
-		return domain.User{}, errors.New(err.Error())
-	}
+	existingUser, _ = u.UserRepo.SearchByUsername(ctx, user.Username)
+	// if err != nil {
+	// 	return domain.User{}, errors.New(err.Error())
+	// }
 	if existingUser.ID != 0 {
 		return domain.User{}, errors.New("username already in use")
 	}
@@ -59,7 +60,7 @@ func (u *UserUsecase) CreateUser(ctx context.Context, user domain.User) (domain.
 
 	// user.Password = infrastructure.HashPassword(user.Password)
 
-	user.ID = int(time.Now().UnixNano() / 1000)
+	user.ID = generateUniqueID()
 
 	return u.UserRepo.CreateUser(ctx, user)
 }
@@ -75,6 +76,22 @@ func (u *UserUsecase) DeleteUser(ctx context.Context, id int) error {
 func (u *UserUsecase) AddBlog(ctx context.Context, userID int, blog domain.Blog) (domain.User, error) {
 
 	return u.UserRepo.AddBlog(ctx, userID, blog)
+}
+
+func (u *UserUsecase) DeleteBlog(ctx context.Context, userID int, blogID int) (domain.User, error) {
+	user, err := u.UserRepo.GetUserByID(ctx, userID)
+	if err != nil {
+		return domain.User{}, errors.New(err.Error())
+	}
+
+	for i, blog := range user.Blogs {
+		if blog == blogID {
+			user.Blogs = append(user.Blogs[:i], user.Blogs[i+1:]...)
+			break
+		}
+	}
+
+	return u.UserRepo.UpdateUser(ctx, userID, user)
 }
 
 func (u *UserUsecase) Login(ctx context.Context, username, password string) (domain.User, error) {
@@ -167,8 +184,31 @@ func isValidEmail(email string) bool {
 
 // Password strength validation function
 func isValidPassword(password string) bool {
-	// Require at least one uppercase letter, one lowercase letter, one number, one special character, and minimum length of 8
-	const passwordRegex = `^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$`
-	re := regexp.MustCompile(passwordRegex)
-	return re.MatchString(password)
+	if len(password) < 8 {
+		return false
+	}
+
+	hasUpper := regexp.MustCompile(`[A-Z]`).MatchString(password)
+	hasLower := regexp.MustCompile(`[a-z]`).MatchString(password)
+	hasNumber := regexp.MustCompile(`\d`).MatchString(password)
+	hasSpecial := regexp.MustCompile(`[\W_]`).MatchString(password)
+
+	return hasUpper && hasLower && hasNumber && hasSpecial
+}
+
+var counter int32
+
+func generateUniqueID() int {
+	// Use a larger portion of the timestamp
+	timestamp := int(time.Now().UnixNano() / 1e6 % 1e6) // Last 6 digits
+
+	// Combine with counter
+	uniqueID := timestamp*1000 + int(atomic.AddInt32(&counter, 1)%1000)
+
+	// Ensure uniqueID fits within a 32-bit integer
+	if uniqueID > 2147483647 { // Max int32 value
+		uniqueID = uniqueID % 1000000
+	}
+
+	return uniqueID
 }

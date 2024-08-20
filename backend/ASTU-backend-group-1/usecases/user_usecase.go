@@ -4,6 +4,7 @@ import (
 	infrastructure "astu-backend-g1/Infrastructure"
 	"astu-backend-g1/domain"
 	"crypto/rand"
+	"errors"
 	"math/big"
 	"time"
 )
@@ -24,6 +25,9 @@ func (useCase *userUsecase)LoginUser(uname string,password string) (string, erro
 	if err != nil {
 		return "",err
 	}
+	if user.IsActive == false {
+		return "", errors.New("Account not activated")
+	}
 	accesstoken, refreshToken, err := infrastructure.GenerateToken(&user, password)
 	if err != nil {
 		return "",  err
@@ -38,6 +42,9 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 	user, err := useCase.GetByEmail(email)
 	if err != nil {
 		return "", err
+	}
+	if user.IsActive == false {
+		return "", errors.New("Account not activated")
 	}
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	confirmationToken := make([]byte, 64)
@@ -55,7 +62,7 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 	expirationTime := time.Now().Add(20 * time.Minute)
 	user.ExpirationDate = expirationTime
 	useCase.userRepository.Update(user.ID, user)
-	link := "http://localhost:8000/resetpassword/?email=" + user.Email + "&pwd=" + string(confirmationToken) + "/"
+	link := "http://localhost:8000/resetpassword/?email=" + user.Email + "&token=" + string(confirmationToken) + "/"
 	err = infrastructure.SendEmail(user.Email, "Password Reset", "This is the password reset link: ",link)
 	if err != nil {
 		return "", err
@@ -70,6 +77,9 @@ func (useCase *userUsecase) ResetPassword(email string, token string, password s
 	user, err := useCase.GetByEmail(email)
 	if err != nil {
 		return "", err
+	}
+		if user.IsActive == false {
+		return "", errors.New("Account not activated")
 	}
 	currentTime := time.Now()
 	if user.VerifyToken == token {
@@ -140,7 +150,7 @@ func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	}
 	u.VerifyToken = string(confirmationToken)
 	nUser, err := useCase.userRepository.Create(u)
-	link := "http://localhost:8000/accountVerification/?email=" + u.Email + "&pwd=" + string(confirmationToken) + "/"
+	link := "http://localhost:8000/accountVerification/?email=" + u.Email + "&token=" + string(confirmationToken) + "/"
 	err = infrastructure.SendEmail(u.Email, "Registration Confirmation", "This sign up Confirmation email to verify: ", link)
 	
 	if err != nil {

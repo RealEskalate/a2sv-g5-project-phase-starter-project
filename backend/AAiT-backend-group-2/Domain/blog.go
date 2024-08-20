@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"time"
 )
 
@@ -22,7 +23,6 @@ type Blog struct {
 type RequestBlog struct {
 	Title   string   `json:"title"`
 	Content string   `json:"content"`
-	Author  string   `json:"author"`
 	Tags    []string `json:"tags"`
 }
 
@@ -34,10 +34,27 @@ type BlogRepository interface {
 	Delete(ctx context.Context, id string) error
 }
 
-type BlogUsecase interface {
-	GetAllBlogs() ([]Blog, error)
-	GetBlogByID(id string) (*Blog, error)
-	CreateBlog(blog *Blog) error
-	UpdateBlog(blog *Blog) error
-	DeleteBlog(id string) error
+type BlogUseCase interface {
+    GetAllBlogs(ctx context.Context, page, pageSize int, sortBy, sortOrder string) ([]Blog, int, error)
+    GetBlogByID(ctx context.Context, id string) (*Blog, error)
+    CreateBlog(ctx context.Context, req *RequestBlog, author string) error
+    UpdateBlog(ctx context.Context, req *RequestBlog, author,id string) error
+    DeleteBlog(ctx context.Context, author,id string) error
+}
+
+
+
+// Validate BlogRequest field
+func (r *RequestBlog) Validate() error {
+	if r.Title == "" {
+		return errors.New("title is required")
+	}
+	if r.Content == "" {
+		return errors.New("content is required")
+	}
+	
+	if len(r.Tags) == 0 {
+		return errors.New("tags cannot be empty")
+	}
+	return nil
 }

@@ -4,12 +4,10 @@ import { LoanType } from "@/types/LoanValue";
 import Card from "../../components/Accounts/account";
 import loanApi from "@/app/Services/api/loanApi";
 
-
 const Loan = async () => {
   const loanData = await loanApi.getLoan(
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0bmFob20iLCJpYXQiOjE3MjQxNDYwNjgsImV4cCI6MTcyNDIzMjQ2OH0.Y00dc0ACMvkHK5ZYWVsBxK5lk2l5VB_6xnnFAMXrkMjRjl2jxEZHglllGcw_S61p"
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyNDE2Nzc2NiwiZXhwIjoxNzI0MjU0MTY2fQ.AIG9ss3XGUA3sOEJHOVwdkP7RJS0SbWcjGGe8FoAuMZmOywhutvl2CyyNDDc4qzz"
   );
-
   return (
     <div className="px-5 space-y-4 mt-4 w-full h-screen">
       <div className="flex flex-col lg:flex-row gap-7">

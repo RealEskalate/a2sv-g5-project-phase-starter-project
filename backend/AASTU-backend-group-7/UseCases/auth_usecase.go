@@ -45,3 +45,15 @@ func (a *authUseCase) Logout(c *gin.Context, user_id primitive.ObjectID) (error,
 	defer cancel()
 	return a.AuthRepository.Logout(ctx, user_id)
 }
+
+func (a *authUseCase) GoogleLogin(c *gin.Context) string {
+	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
+	defer cancel()
+	return a.AuthRepository.GoogleLogin(ctx)
+}
+
+func (a *authUseCase) CallbackHandler(c *gin.Context, code string) (Domain.Tokens, error, int) {
+	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
+	defer cancel()
+	return a.AuthRepository.CallbackHandler(ctx, code)
+}

@@ -11,6 +11,8 @@ type RegisterUserDto struct {
 	Role           string    `json:"-",omitempty default:"user"`
 	ProfilePicture string    `json:"profile_picture"`
 	Bio            string    `json:"bio"`
+	EmailVerified  bool      `json:"email_verified" default:"false"`
+	Name           string    `json:name`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }

@@ -18,7 +18,7 @@ import {
 const Center = () => {
   const { data: session } = useSession();
   const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyNDA1OTg3NCwiZXhwIjoxNzI0MTQ2Mjc0fQ.WaIY6V_s4DOLHr5xWeAhzJJf-QYudYl4xBNVunA4rd8tJnobKUgsSlWk7tSyRpbZ";
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyNDE2MzgyMCwiZXhwIjoxNzI0MjUwMjIwfQ.lmocKv2waPGaLomXHYev8fk-G6eviPjD47rfuUk0ffsmtk__kWElrkz1iB2en20g";
 
   // Update initial card and tran data using the custom hook
   useCardDispatch(accessToken);
@@ -29,10 +29,6 @@ const Center = () => {
     (state) => state.transactions.transactions
   );
   const cardColor = [false, true];
-
-  // console.log(CardData, "from redux");
-  // console.log(TranData, "from redux Tr");
-  // console.log(BalanceData, "from redux Bala");
 
   return (
     <>

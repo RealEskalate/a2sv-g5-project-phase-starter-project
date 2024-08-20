@@ -12,38 +12,36 @@ export default function Home() {
   const CardData: CardType[] = useAppSelector((state) => state.cards.cards);
 
   return (
-    <div className="w-[96%] flex flex-col grow gap-6 p-5 lg:p-8 pt-6">
-      <div className="flex flex-col lg:flex-row gap-6 xl:gap-7">
-        <div className="flex lg:w-[45%] gap-4 xl:gap-7">
+    <div className="w-full flex flex-col justify-center grow gap-6 p-5 lg:p-8 pt-6">
+      <div className="flex flex-col xxs:overflow-x-auto md:overflow-hidden lg:flex-row gap-6 xl:gap-7">
+        <div className="flex scrollbar-hide overflow-x-scroll lg:w-[100%] gap-4 xl:gap-7">
           <Card
             title="My Balance"
             amount="$12,750"
             color="#FFF5D9"
             icon="/assets/money-tag 1.svg"
-            width="w-[45%]"
+            width="w-full"
           />
           <Card
             title="Income"
             amount="$5,600"
             color="#E7EDFF"
             icon="/assets/expense.svg"
-            width="w-[45%]"
+            width="w-full"
           />
-        </div>
-        <div className="flex  lg:w-[45%] gap-4 xl:gap-7">
           <Card
             title="Expense"
             amount="$3,460"
             color="#FFE0EB"
             icon="/assets/income.svg"
-            width="w-[45%]"
+            width="w-full"
           />
           <Card
             title="Total Saving"
             amount="$7,920"
             color="#DCFAF8"
             icon="/assets/saving.svg"
-            width="w-[45%]"
+            width="w-full"
           />
         </div>
       </div>

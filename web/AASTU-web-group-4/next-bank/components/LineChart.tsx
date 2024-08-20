@@ -1,5 +1,5 @@
 "use client"
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis,  } from "recharts"
 import {
   Card,
   CardContent,
@@ -29,33 +29,31 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-
 export default function LineChart() {
   return (
-    <Card >
-      <CardHeader>
-        
-      </CardHeader>
+    <Card className=" w-[100%] rounded-2xl">
       <CardContent>
-        <ChartContainer config={chartConfig} 
-            style={{height:'300px' , width:'600px'}}
+        <ChartContainer 
+          config={chartConfig}
+          className="w-[100%]"
         >
           <AreaChart
             accessibilityLayer
             data={chartData}
             
-            margin={{
-              left: 12,
-              right: 12,
-            }}
           >
+            <defs>
+              <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={chartConfig.balance.color} stopOpacity={0.2} />
+                <stop offset="100%" stopColor={chartConfig.balance.color} stopOpacity={0.05} />
+              </linearGradient>
+            </defs>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
               tickLine={false}
               axisLine={true}
               tickMargin={8}
-              // style={{height:'50px' , width:'200px'}}
               tickFormatter={(value) => value.slice(0, 3)}
             />
             <YAxis dataKey="balance" axisLine={true} />
@@ -66,10 +64,12 @@ export default function LineChart() {
             <Area
               dataKey="balance"
               type="natural"
-              fill={chartConfig.balance.color}
-              fillOpacity={0.4}
+              fill="url(#colorBalance)"
               stroke={chartConfig.balance.color}
+              fillOpacity={1}
+              strokeWidth={3}
             />
+            <Legend verticalAlign="top"  height={36} />
           </AreaChart>
         </ChartContainer>
       </CardContent>

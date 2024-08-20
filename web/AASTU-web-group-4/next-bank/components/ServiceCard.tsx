@@ -24,7 +24,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
       )}
     >
       <div className="flex items-center space-x-4">
-        <Icon className="w-8 h-8" aria-hidden="true" />
+        <Icon className="w-14 h-14" aria-hidden="true" />
         <div>
           <h3 className="text-lg font-semibold">{title}</h3>
           <p className="text-sm text-gray-500">{description}</p>

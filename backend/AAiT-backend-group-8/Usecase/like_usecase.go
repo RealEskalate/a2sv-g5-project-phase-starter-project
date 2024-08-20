@@ -62,3 +62,17 @@ func (uc *LikeUseCase) LikeComment(userID string, blogID string) (bool, error) {
 	// succesfully liked
 	return true, nil
 }
+func (uc *LikeUseCase) DeleteLikesOfBlog(blogID string) error {
+	primitiveID, err := uc.infrastructure.ConvertToPrimitiveObjectID(blogID)
+	if err != nil {
+
+		return errors.New("invalid blog id")
+	}
+
+	err = uc.repository.DeleteByBLogID(primitiveID)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}

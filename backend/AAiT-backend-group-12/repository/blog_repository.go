@@ -152,9 +152,6 @@ func (b *BlogRepository) DeleteBlogPost(ctx context.Context, blogId string) doma
 
 // InsertBlogPost inserts a new blog post into the database.
 func (b *BlogRepository) InsertBlogPost(ctx context.Context, blog *domain.Blog) domain.CodedError {
-	blog.LikedBy = make([]string, 0)
-	blog.DislikedBy = make([]string, 0)
-	blog.Comments = make([]domain.Comment, 0)
 
 	newBlog, err := toDTO(blog)
 	if err != nil {
@@ -353,39 +350,6 @@ func (b *BlogRepository) DeleteComment(ctx context.Context, commentId, blogId, u
 	return nil
 }
 
-// FetchComment implements domain.BlogRepositoryInterface.
-func (b *BlogRepository) FetchComment(ctx context.Context, commentId string, blogId string) (domain.Comment, domain.CodedError) {
-	blogID, err := primitive.ObjectIDFromHex(blogId)
-	if err != nil {
-		return domain.Comment{},  domain.NewError("Invalid blog ID", domain.ERR_BAD_REQUEST)
-	}
-
-	//filter the blog using the ID
-	filter := bson.M{"_id": blogID}
-	var foundBlog dtos.BlogDTO
-	err = b.collection.FindOne(ctx, filter).Decode(&foundBlog)
-	if err != nil {
-		if err == mongo.ErrNoDocuments{
-			return domain.Comment{}, domain.NewError("Blog not found" + err.Error(), domain.ERR_NOT_FOUND)
-		}
-		return domain.Comment{}, domain.NewError("Internal Server Error" + err.Error(), domain.ERR_INTERNAL_SERVER)
-	}
-
-	// Find and delete the comment if it exists and the user is the owner
-	for _, comment := range foundBlog.Comments {
-		if comment.ID.Hex() == commentId {
-			return domain.Comment{
-				ID: comment.ID.Hex(),
-				Username: comment.Username,
-				Content: comment.Content,
-				CreatedAt: comment.CreatedAt,
-				UpdatedAt: comment.UpdatedAt,
-			}, nil
-		}
-	}
-
-	return domain.Comment{}, domain.NewError("Comment Not Found", domain.ERR_NOT_FOUND)
-}
 
 // UpdateComment implements domain.BlogRepositoryInterface.
 func (b *BlogRepository) UpdateComment(ctx context.Context, updateComment *domain.NewComment, commentId, blogId, userName string) domain.CodedError {
@@ -407,16 +371,16 @@ func (b *BlogRepository) UpdateComment(ctx context.Context, updateComment *domai
 
 	// Find and update the comment if it exists and the user is the owner
 	commentUpdated := false
-for i := range foundBlog.Comments {
-	if foundBlog.Comments[i].ID.Hex() == commentId {
-		if foundBlog.Comments[i].Username != userName {
-			return domain.NewError("Unauthorized", domain.ERR_FORBIDDEN)
-		}
-		// Update the comment
-		foundBlog.Comments[i].Content = updateComment.Content
-		foundBlog.Comments[i].UpdatedAt = time.Now()
-		commentUpdated = true
-		break
+	for i := range foundBlog.Comments {
+		if foundBlog.Comments[i].ID.Hex() == commentId {
+			if foundBlog.Comments[i].Username != userName {
+				return domain.NewError("Unauthorized", domain.ERR_FORBIDDEN)
+			}
+			// Update the comment
+			foundBlog.Comments[i].Content = updateComment.Content
+			foundBlog.Comments[i].UpdatedAt = time.Now()
+			commentUpdated = true
+			break
 	}
 }
 

@@ -6,7 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AuthMiddleware() gin.HandlerFunc {
+
+func AuthMiddleware(JwtService *JwtService) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		defer context.Next()
 
@@ -26,7 +27,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		token, err := CheckToken(authPart[1])
+		token, err := JwtService.CheckToken(authPart[1])
 
 		if token == nil || !token.Valid {
 			errMsg := "Invalid or expired token"

@@ -52,10 +52,12 @@ const SignUpForm = () => {
   });
 
   const onSubmit = async (data: FormData) => {
+    console.log(data);
     const { confirmPassword, ...userData } = data;
     console.log("Signup successful:", userData);
     try {
       const responseData = await AuthService.register(userData);
+      console.log(responseData);
       if (responseData.success) {
         console.log("Signup successful:", responseData.message);
       } else {

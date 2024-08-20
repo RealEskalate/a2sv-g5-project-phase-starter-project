@@ -1,17 +1,37 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import ToggleButton from "../Button/ToggleButton";
+import authService from "../../services/authService"; // Make sure to import authService
 
 const SecurityForm = () => {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [twoFactorAuth, setTwoFactorAuth] = useState(true);
+
   const handleToggle = (checked: boolean) => {
+    setTwoFactorAuth(checked);
     console.log(
       "Two-factor Authentication is now",
       checked ? "Enabled" : "Disabled"
     );
   };
 
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    try {
+      const response = await authService.changePassword({
+        password: currentPassword,
+        newPassword: newPassword,
+      });
+      console.log("Password changed:", response);
+    } catch (error) {
+      console.error("Error changing password:", error);
+    }
+  };
+
   return (
-    <form className="mt-8 space-y-6 px-3 py-4">
+    <form className="mt-8 space-y-6 px-3 py-4" onSubmit={handleSubmit}>
       <div className="mt-6">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Two-factor Authentication
@@ -19,7 +39,7 @@ const SecurityForm = () => {
         <div className="flex items-center mt-4">
           <ToggleButton
             onToggle={handleToggle}
-            initialChecked={true} // Set initial state based on the original checkbox state
+            initialChecked={twoFactorAuth}
           />
           <span className="ml-3 text-sm text-gray-700 dark:text-gray-300">
             Enable or disable two-factor authentication
@@ -38,8 +58,8 @@ const SecurityForm = () => {
             </label>
             <input
               type="password"
-              value=""
-              readOnly
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
               className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
             />
           </div>
@@ -50,8 +70,8 @@ const SecurityForm = () => {
             </label>
             <input
               type="password"
-              value=""
-              readOnly
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
               className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
             />
           </div>

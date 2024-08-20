@@ -40,6 +40,8 @@ type EnvironmentVariables struct {
 	SMTP_GMAIL             string
 	SMTP_PASSWORD          string
 	REDIS_URL              string
+	GOOGLE_CLIENT_ID       string
+	GOOGLE_CLIENT_SECRET   string
 }
 
 type VerificationData struct {
@@ -139,6 +141,7 @@ type UserUsecaseInterface interface {
 	InitResetPassword(c context.Context, username string, email string, hostUrl string) CodedError
 	ResetPassword(c context.Context, resetDto dtos.ResetPassword, token string) CodedError
 	Logout(c context.Context, username string, accessToken string) CodedError
+	GoogleOAuthAccess(c context.Context, data *dtos.GoogleResponse) (string, string, CodedError)
 }
 
 type CacheRepositoryInterface interface {

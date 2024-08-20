@@ -28,6 +28,8 @@ func LoadEnvironmentVariables() error {
 	ENV.SMTP_GMAIL = os.Getenv("SMTP_GMAIL")
 	ENV.SMTP_PASSWORD = os.Getenv("SMTP_PASSWORD")
 	ENV.REDIS_URL = os.Getenv("REDIS_URL")
+	ENV.GOOGLE_CLIENT_ID = os.Getenv("GOOGLE_CLIENT_ID")
+	ENV.GOOGLE_CLIENT_SECRET = os.Getenv("GOOGLE_CLIENT_SECRET")
 	port, err := strconv.ParseInt(os.Getenv("PORT"), 10, 64)
 	if err != nil {
 		return fmt.Errorf("error parsing PORT number: %v", err.Error())
@@ -47,51 +49,36 @@ func LoadEnvironmentVariables() error {
 	ENV.ACCESS_TOKEN_LIFESPAN = int(accessTkLifespan)
 	ENV.REFRESH_TOKEN_LIFESPAN = int(refreshTkLifespan)
 
-	if ENV.DB_ADDRESS == "" {
+	switch {
+	case ENV.DB_ADDRESS == "":
 		return fmt.Errorf("error: couldn't load environment variable 'DB_ADDRESS'")
-	}
-
-	if ENV.DB_NAME == "" {
+	case ENV.DB_NAME == "":
 		return fmt.Errorf("error: couldn't load environment variable 'DB_NAME'")
-	}
-
-	if ENV.TEST_DB_NAME == "" {
+	case ENV.TEST_DB_NAME == "":
 		return fmt.Errorf("error: couldn't load environment variable 'TEST_DB_NAME'")
-	}
-
-	if ENV.ROUTE_PREFIX == "" {
+	case ENV.ROUTE_PREFIX == "":
 		return fmt.Errorf("error: couldn't load environment variable 'ROUTE_PREFIX'")
-	}
-
-	if ENV.JWT_SECRET_TOKEN == "" {
+	case ENV.JWT_SECRET_TOKEN == "":
 		return fmt.Errorf("error: couldn't load environment variable 'JWT_SECRET_TOKEN'")
-	}
-
-	if ENV.ROOT_USERNAME == "" {
+	case ENV.ROOT_USERNAME == "":
 		return fmt.Errorf("error: couldn't load environment variable 'ROOT_USERNAME'")
-	}
-
-	if ENV.ROOT_PASSWORD == "" {
+	case ENV.ROOT_PASSWORD == "":
 		return fmt.Errorf("error: couldn't load environment variable 'ROOT_PASSWORD'")
-	}
-
-	if ENV.SMTP_GMAIL == "" {
+	case ENV.SMTP_GMAIL == "":
 		return fmt.Errorf("error: couldn't load environment variable 'SMTP_GMAIL'")
-	}
-
-	if ENV.SMTP_PASSWORD == "" {
+	case ENV.SMTP_PASSWORD == "":
 		return fmt.Errorf("error: couldn't load environment variable 'SMTP_PASSWORD'")
-	}
-
-	if ENV.REDIS_URL == "" {
+	case ENV.REDIS_URL == "":
 		return fmt.Errorf("error: couldn't load environment variable 'REDIS_URL'")
-	}
-
-	if ENV.PORT == 0 {
+	case ENV.PORT == 0:
 		return fmt.Errorf("error: couldn't load environment variable 'PORT'")
+	case ENV.GOOGLE_CLIENT_ID == "":
+		return fmt.Errorf("error: couldn't load environment variable 'GOOGLE_CLIENT_ID'")
+	case ENV.GOOGLE_CLIENT_SECRET == "":
+		return fmt.Errorf("error: couldn't load environment variable 'GOOGLE_CLIENT_SECRET'")
+	default:
+		return nil
 	}
-
-	return nil
 }
 
 /* Removes the root credentials from the environment */

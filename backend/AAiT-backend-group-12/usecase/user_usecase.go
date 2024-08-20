@@ -183,6 +183,8 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 		return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)
 	}
 
+	// TODO delete email if sending the mail fails
+
 	return nil
 }
 
@@ -442,4 +444,43 @@ func (u *UserUsecase) Logout(c context.Context, username string, accessToken str
 	}
 
 	return u.userRepository.SetRefreshToken(c, &domain.User{Username: username}, "")
+}
+
+func (u *UserUsecase) GoogleOAuthAccess(c context.Context, data *dtos.GoogleResponse) (string, string, domain.CodedError) {
+	foundUser, err := u.userRepository.FindUser(c, &domain.User{Email: data.Email})
+	if err != nil && err.GetCode() == domain.ERR_NOT_FOUND {
+		// TODO create a new user if the email does not exist
+		return "", "", err
+	}
+
+	if err != nil {
+		return "", "", err
+	}
+
+	if !foundUser.IsVerified {
+		return "", "", domain.NewError("User email not verified", domain.ERR_UNAUTHORIZED)
+	}
+
+	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	if err != nil {
+		return "", "", err
+	}
+
+	refreshToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(env.ENV.REFRESH_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	if err != nil {
+		return "", "", err
+	}
+
+	// set the new refresh token in the database after hashing it
+	hashedRefreshToken, err := u.HashString(strings.Split(refreshToken, ".")[2])
+	if err != nil {
+		return "", "", domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	err = u.userRepository.SetRefreshToken(c, &foundUser, hashedRefreshToken)
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessToken, refreshToken, nil
 }

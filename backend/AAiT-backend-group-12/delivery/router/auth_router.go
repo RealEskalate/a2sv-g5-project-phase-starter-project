@@ -52,4 +52,6 @@ func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, cac
 
 	authGroup.POST("/forgot-password", controller.HandleInitResetPassword)
 	authGroup.POST("/reset-password", controller.HandleResetPassword)
+
+	authGroup.POST("/google/parse", controller.HandleGoogleAuth)
 }

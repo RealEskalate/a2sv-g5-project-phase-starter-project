@@ -12,6 +12,7 @@ const (
 )
 
 type Blog struct {
+
 	BlogID  primitive.ObjectID `json:"blog_id" bson:"_id"`
 	UserID  primitive.ObjectID `json:"user_id" bson:"user_id"`
 	Title   string `json:"title" bson:"title"`
@@ -34,6 +35,7 @@ type BlogCreate struct {
 	Content string   `json:"content" bson:"content" binding:"required"`
 	Tags    []string `json:"tags" bson:"tags" binding:"required"`
 }
+
 
 
 type BlogFilterRequest struct {

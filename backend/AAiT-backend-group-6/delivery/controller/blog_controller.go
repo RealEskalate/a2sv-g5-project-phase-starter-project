@@ -1,4 +1,4 @@
-package delivery
+package controller
 
 import (
 	"AAiT-backend-group-6/domain"
@@ -6,9 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
-
-
 
 type BlogController struct {
 	BlogUsecase domain.BlogUseCase

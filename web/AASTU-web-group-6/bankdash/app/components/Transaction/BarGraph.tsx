@@ -12,24 +12,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-// const chartData = [
-//   { month: "January", desktop: 186 },
-//   { month: "February", desktop: 305 },
-//   { month: "March", desktop: 237 },
-//   { month: "April", desktop: 73 },
-//   { month: "May", desktop: 209 },
-//   { month: "June", desktop: 214 },
-// ];
-// const chartData = [
-//   { day: "Mon", amount: 0 },
-//   { day: "Tue", amount: 0 },
-//   { day: "Wed", amount: 0 },
-//   { day: "Thur", amount: 0 },
-//   { day: "Fri", amount: 102500 },
-//   { day: "Sat", amount: 0 },
-//   { day: "Sun", amount: 0 },
-// ];
-
 const chartConfig = {
   desktop: {
     label: "amount",
@@ -38,8 +20,6 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const BarGraph = ({ chartData }: { chartData: DailyAmount[] }) => {
-  // const BarGraph = () => {
-  console.log(chartData, "hello");
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const handleMouseOver = (index: number) => {
     setActiveIndex(index);

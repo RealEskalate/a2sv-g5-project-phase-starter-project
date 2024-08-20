@@ -15,14 +15,9 @@ import { PiTelegramLogoLight } from "react-icons/pi";
 import CreditCard from "./_components/Credit_Card";
 import { Profile } from "./_components/Profile";
 import { Transaction } from "./_components/Transaction";
-
-
 import { GetServerSidePropsContext } from "next";
 import { Pie_chart } from "@/app/dashboard/_components/Pie_chart";
 import { BalanceAreachart } from "./transactions/component/balanceChart";
-
-
-
 import { Barchart } from "./transactions/component/weeklyActivityChart";
 import getRandomBalance, { addTransactions, getallTransactions, getCreditCards, getExpenses, getIncomes, getQuickTransfer } from "@/lib/api";
 

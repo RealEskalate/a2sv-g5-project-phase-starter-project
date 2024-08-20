@@ -6,15 +6,12 @@ import { MdNavigateNext } from "react-icons/md";
 import CreditCard from "../_components/Credit_Card";
 import { ExpenseChart } from "./component/ExpenseChart";
 import { ExpenseTable } from "./component/ExpenseTable";
-import { getExpenses } from "./component/getExpenses";
-import { getIncomes } from "./component/getIncomes";
-import getallTransactions from "./component/getTransactions";
-import getCreditCards from "../_components/getCreditCards";
 import { CardDetails, TransactionData } from "@/types";
+import { getallTransactions, getCreditCards, getExpenses, getIncomes } from "@/lib/api";
 
 const Transactions = () => {
   const rowsPerPage = 5;
-  const totalPages = 10; // You might want to calculate this dynamically based on your data
+  const totalPages = 10; 
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"all" | "income" | "expense">(
     "all"

@@ -1,6 +1,6 @@
 package usecase
 
-import "AAiT-backend-group-6/backend/AAiT-backend-group-6/domain"
+import "AAiT-backend-group-6/domain"
 
 
 

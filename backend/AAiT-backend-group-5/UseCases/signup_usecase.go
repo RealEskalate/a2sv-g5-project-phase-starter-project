@@ -52,9 +52,9 @@ func (uc *signupUsecase) CreateUser(ctx context.Context, user *models.User) *mod
 	url, uErr := uc.urlService.GenerateURL(token)
 
 	if uErr != nil {
-		return models.InternalServerError("Error while creating url")
+		return models.InternalServerError("Error while creating url" + uErr.Error())
 	}
-
+	
 	// send the email
 	subject := "Email Verification"
 	body := "Please click the link below to verify your email address\n" + url + "This link will expire in 1 hour"

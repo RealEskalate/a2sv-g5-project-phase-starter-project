@@ -49,7 +49,6 @@ func (uc *refreshUsecase) RefreshToken(userID string, refreshToken string) (stri
 
 	newSession := models.Session{
 		UserID:       userID,
-		AccessToken:  accessToken,
 		RefreshToken: newRefresheToken,
 	}
 

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"net/http"
 	"strings"
 
@@ -29,15 +28,15 @@ func (logoutController *LogoutController) Logout(ctx *gin.Context) {
 	// validate token and get JwtCustom from the token
 	JwtCustom, err := logoutController.JwtService.ValidateToken(token)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errors.New("invalid user id"))
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid token"})
 		return
 	}
 
 	e := logoutController.LogoutUsecase.LogoutUser(ctx, JwtCustom.ID)
 	if e != nil {
-		ctx.JSON(e.Code, e.Error())
+		ctx.IndentedJSON(e.Code, gin.H{"error": e.Message})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "logged out successfully"})
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "logged out successfully"})
 }

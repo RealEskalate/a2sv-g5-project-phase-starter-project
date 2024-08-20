@@ -1,19 +1,19 @@
 import React from "react";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
-import LoanValue from "@/types/LoanValue";
+import {LoanType} from "@/types/LoanValue";
 
 interface LoanTableProps {
-  loans: LoanValue[];
+  loans: LoanType[];
 }
 
 const LoanTable = ({ loans }: LoanTableProps) => {
   const totalLoanAmount = loans.reduce((sum, loan) => sum + loan.loanAmount, 0);
   const totalLeftToRepay = loans.reduce(
-    (sum, loan) => sum + loan.leftToRepay,
+    (sum, loan) => sum + loan.amountLeftToRepay,
     0
   );
   const totalInstallment = loans.reduce(
-    (sum, loan) => sum + loan.Installment,
+    (sum, loan) => sum + loan.installment,
     0
   );
   return (
@@ -38,12 +38,12 @@ const LoanTable = ({ loans }: LoanTableProps) => {
             <tbody className="text-[#232323] p-8 space-y-4">
               {loans.map((detail, index) => (
                 <tr key={index}>
-                  <td>{detail.id}</td>
+                  <td>{detail.serialNumber}</td>
                   <td>${detail.loanAmount}</td>
-                  <td>${detail.leftToRepay}</td>
-                  <td>{detail.Duration} Months</td>
+                  <td>${detail.amountLeftToRepay}</td>
+                  <td>{detail.duration} Months</td>
                   <td>{detail.interestRate}%</td>
-                  <td>${detail.Installment}</td>
+                  <td>${detail.installment}</td>
                   <td>
                     <p className="table-button">Replay</p>
                   </td>

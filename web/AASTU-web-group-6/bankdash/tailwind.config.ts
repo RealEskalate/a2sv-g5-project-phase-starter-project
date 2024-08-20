@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 import { Lato } from "next/font/google";
 
 const config: Config = {
-  darkMode: ["class"],
+  darkMode: ["selector"],
   content: [
     "./pages/**/*.{ts,tsx,js,jsx,mdx}",
     "./components/**/*.{ts,tsx,js,jsx,mdx}",

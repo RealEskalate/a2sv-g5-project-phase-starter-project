@@ -11,7 +11,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/group13/blog/delivery/common"
+	"github.com/group13/blog/delivery/common/icontroller"
 	authmiddleware "github.com/group13/blog/delivery/middleware/auth"
 	ijwt "github.com/group13/blog/usecase/common/i_jwt"
 )

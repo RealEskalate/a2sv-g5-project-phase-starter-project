@@ -19,6 +19,15 @@ func (h *BaseHandler) RespondWithCookies(c *gin.Context, status int, v interface
 	h.Respond(c, status, v)
 }
 
+func (h *BaseHandler) RemoveCookie(c *gin.Context, name string) {
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     name,
+		Value:    "",
+		Path:     "/",
+	})
+}
+		
+
 // RespondWithLocation writes a response with a Location header to the Gin context.
 func (h *BaseHandler) RespondWithLocation(c *gin.Context, status int, v interface{}, resourceLocation string) {
 	c.Header("Location", resourceLocation)

@@ -142,7 +142,7 @@
 
 ### 9. **Get All Blogs**
 
-- **Endpoint:** `GET /api/v1/blogs?cursor={base64_string}&limit={number}&sortField={field}&filterField={field}&filterValue={value}&sortOrder={asc|desc}`
+- **Endpoint:** `GET /api/v1/blogs?cursor={base64_string}&limit={number}&autherId={{if you want blogs from single author}}`
 - **Response:**
   - **Status:** `200 OK`
   - **Body:**

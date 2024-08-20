@@ -10,14 +10,14 @@ import (
 
 type likeUsecase struct{
 	blogRepository domain.BlogRepository
-	likeReposiotory domain.LikeReposiotory
+	likeRepository domain.LikeReposiotory
 	contextTimeouts time.Duration
 }
 
 type NewLikesUsecase(blogrepository domain.BlogRepository, likeRepository LikeReposiotory, timeouts time.Duration){
 	return &likeUsecase{
 		blogRepositry: blogrepository,
-		likeReposiotory: likeReposiotory,
+		likeRepository: likeRepository,
 		contextTimeouts: timeouts,
 
 	}
@@ -30,7 +30,7 @@ func (lu *likeUsecase) Like(ctx context.Context, userID string, blogID string) e
     defer cancel()
 
     // Update the Like status in the like repository
-    err := lu.likeReposiotory.Like(ctx, userID, blogID)
+    err := lu.likeRepository.Like(ctx, userID, blogID)
     if err != nil {
         return err
     }
@@ -43,7 +43,7 @@ func (lu *likeUsecase) Dislike(ctx context.Context, userID string, blogID string
     defer cancel()
 
     // Update the Dislike status in the like repository
-    err := lu.likeReposiotory.Dislike(ctx, userID, blogID)
+    err := lu.likeRepository.Dislike(ctx, userID, blogID)
     if err != nil {
         return err
     }
@@ -55,15 +55,16 @@ func (lu *likeUsecase) RemoveLike(ctx context.Context, likeID string) error {
     ctx, cancel := context.WithTimeout(ctx, lu.contextTimeouts)
     defer cancel()
 
+    like, err := lu.likeReposiotory.GetLikeByID(ctx, likeID)
+	if err != nil {
+		return err
+	}
+
     err := lu.likeReposiotory.RemoveLike(ctx, likeID)
     if err != nil {
         return err
     }
 
-	like, err := lu.likeReposiotory.GetLikeByID(ctx, likeID)
-	if err != nil {
-		return err
-	}
 	blogID := like.BlogID.Hex()
 
     return lu.blogRepository.UpdateFeedback(ctx, blogID, blogRepository.DecrementLikes)
@@ -78,11 +79,11 @@ func (lu *likeUsecase) RemoveDislike(ctx context.Context, dislikeID string) erro
         return err
     }
 
-	like, err := lu.likeReposiotory.GetLikeByID(ctx, likeID)
+	dislike, err := lu.likeReposiotory.GetLikeByID(ctx, dislikeID)
 	if err != nil {
 		return err
 	}
-	blogID := like.BlogID.Hex()
+	blogID := dislike.BlogID.Hex()
 
     return lu.blogRepository.UpdateFeedback(ctx, blogID, blogRepository.DecrementDislikes)
 }
@@ -93,12 +94,10 @@ func (lu *likeUsecase) GetLikesByUser(ctx context.Context, userID string) ([]dom
     ctx, cancel := context.WithTimeout(ctx, lu.contextTimeouts)
     defer cancel()
 
-    return lu.likeReposiotory.GetLikesByUser(ctx, userID)
+    return lu.likeRepository.GetLikesByUser(ctx, userID)
 }
 
 func (lu *likeUsecase) GetLikesByBlog(ctx context.Context, blogID string) ([]domain.Like, error) {
-    ctx, cancel := context.WithTimeout(ctx, lu.contextTimeouts)
-    defer cancel()
 
-    return lu.likeReposiotory.GetLikesByBlog(ctx, blogID)
+    return lu.likeRepository.GetLikesByBlog(ctx, blogID)
 }

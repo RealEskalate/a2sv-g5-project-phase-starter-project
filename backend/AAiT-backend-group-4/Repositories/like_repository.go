@@ -198,8 +198,10 @@ func (lr *likeReposiotory) GetLikesByUser(c context.Context, userID string) (lik
 // If there are no likes found for the blog, an empty slice is returned.
 // If there is an error during the retrieval process, an error is returned.
 func (lr *likeReposiotory) GetLikesByBlog(c context.Context, blogID string) (likes []domain.Like, err error) {
+	
 	collection := lr.databse.Collection(lr.collection)
 	userPrimitiveID, err := primitive.ObjectIDFromHex(blogID)
+
 	if err != nil {
 		return []domain.Like{}, err
 	}

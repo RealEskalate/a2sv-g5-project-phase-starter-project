@@ -24,118 +24,61 @@ const CreditCards = () => {
   const isBlack = [false, false, true];
   const isFade = [true, false, false];
   const isSimGray = [false, false, true];
+
   return (
     <div className="w-[96%] flex flex-col grow gap-6 p-8 pt-6">
-      <div className="cards-container w-full cente-Content flex flex-col gap-6">
+      <div className="cards-container w-full flex flex-col gap-6">
         <p className="flex grow page text-xl font-semibold text-colorBody-1">
           My Cards
         </p>
-        <div className="flex gap-6">
-          <>
-            {CardData?.slice(0, 3).map((item, index) => (
-              <VisaCard
-                key={index}
-                data={item}
-                isBlack={isBlack[index] || false}
-                isFade={isFade[index] || false}
-                isSimGray={isSimGray[index] || false}
-              />
-            ))}
-          </>
+        <div className="flex gap-6 overflow-x-auto sm:scroll-snap-x">
+          {CardData?.slice(0, 3).map((item, index) => (
+            <VisaCard
+              key={index}
+              data={item}
+              isBlack={isBlack[index] || false}
+              isFade={isFade[index] || false}
+              isSimGray={isSimGray[index] || false}
+              className="flex-shrink-0 sm:w-auto"
+            />
+          ))}
         </div>
       </div>
-      <div className="flex w-full gap-6 text-nowrap">
-        <div className="expense flex w-[33%] flex-col gap-5 ">
+      <div className="flex flex-col lg:flex-row w-full gap-6">
+        <div className="expense flex w-full lg:w-[33%] flex-col gap-5">
           <h2 className="text-xl font-semibold text-colorBody-1">
             Card Expense Statistics
           </h2>
           <ExpenseChart />
         </div>
-        <div className="cardlist w-[67%] flex flex-col gap-6">
+        <div className="cardlist w-full lg:w-[67%] flex flex-col gap-6">
           <h2 className="text-xl font-semibold text-colorBody-1">Card List</h2>
-          <>
-            {CardData.slice(0, 3).map((card, index) => (
-              <CardList
-                key={card.id}
-                img={imgCont[index]}
-                title={card.cardType}
-                desc="Secondary"
-                colOne="Bank"
-                descOne={card.cardNumber}
-                colTwo="Card Number"
-                descTwo={`**** **** ${card.semiCardNumber}`}
-                colThree="Name on Card"
-                descThree={card.cardHolder}
-                btn="View Details"
-                color={bgCont[index]}
-              />
-            ))}
-          </>
-
-          {/* <CardList
-                 key={index}
-                 img="/assets/money.svg"
-                 title={data.cardType}
-                 desc="Secondary"
-                 colOne="Bank"
-                 descOne="DBL Bank"
-                 colTwo="Card Number"
-                 descTwo="**** **** 5600"
-                 colThree="Namain Card"
-                 descThree="William"
-                 btn="View Details"
-                 color="bg-blue-100"
-               />; */}
-
-          {/* <CardList
-            img="/assets/money.svg"
-            title="Card Type"
-            desc="Secondary"
-            colOne="Bank"
-            descOne="DBL Bank"
-            colTwo="Card Number"
-            descTwo="**** **** 5600"
-            colThree="Namain Card"
-            descThree="William"
-            btn="View Details"
-            color="bg-blue-100"
-          />
-          <CardList
-            img="/assets/moneyPink.svg"
-            title="Card Type"
-            desc="Secondary"
-            colOne="Bank"
-            descOne="BRC Bank"
-            colTwo="Card Number"
-            descTwo="**** **** 4300"
-            colThree="Namain Card"
-            descThree="Michel"
-            btn="View Details"
-            color="bg-pink-100"
-          />
-          <CardList
-            img="/assets/moneyOrange.svg"
-            title="Card Type"
-            desc="Secondary"
-            colOne="Bank"
-            descOne="ABM Bank"
-            colTwo="Card Number"
-            descTwo="**** **** 7560"
-            colThree="Namain Card"
-            descThree="Edward"
-            btn="View Details"
-            color="bg-orange-100"
-          /> */}
+          {CardData.slice(0, 3).map((card, index) => (
+            <CardList
+              key={card.id}
+              img={imgCont[index]}
+              title={card.cardType}
+              desc="Secondary"
+              colOne="Bank"
+              descOne={card.cardNumber}
+              colTwo="Card Number"
+              descTwo={`**** **** ${card.semiCardNumber}`}
+              colThree="Name on Card"
+              descThree={card.cardHolder}
+              btn="View Details"
+              color={bgCont[index]}
+            />
+          ))}
         </div>
       </div>
-      <div className="flex w-full gap-10">
-        <div className="w-[67%] flex flex-col gap-6">
+      <div className="flex flex-col lg:flex-row w-full gap-10">
+        <div className="w-full lg:w-[67%] flex flex-col gap-6">
           <h2 className="text-xl font-semibold text-colorBody-1">
             Add New Card
           </h2>
           <AddCard />
         </div>
-        <div className="w-[33%] flex flex-col gap-6">
+        <div className="w-full lg:w-[33%] flex flex-col gap-6">
           <h2 className="text-xl font-semibold text-colorBody-1">
             Card Setting
           </h2>

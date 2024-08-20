@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -11,8 +12,9 @@ import (
 type JWTService interface {
 	GenerateToken(userID primitive.ObjectID, role string) (string, error)
 	GenerateRefreshToken(userID primitive.ObjectID, role string) (string, error)  // Modified to include role
-	ValidateToken(token string) (*jwt.Token, *Claims, error)
-	ValidateRefreshToken(token string) (*jwt.Token, error)
+	ValidateToken(token string) (*Claims, error)
+	ValidateRefreshToken(token string) (*Claims, error)
+	// GetKey(key string) string
 }
 
 // Claims struct to hold JWT claims
@@ -58,7 +60,7 @@ func (j *jwtService) GenerateRefreshToken(userID primitive.ObjectID, role string
 	// Set expiration time for refresh token
 	expirationTime := time.Now().Add(time.Hour * 24 * 7)
 
-	claims := &Claims{          //should be checked
+	claims := &Claims{         
 		ID:   userID,
 		Role: role,
 		StandardClaims: jwt.StandardClaims{
@@ -69,7 +71,7 @@ func (j *jwtService) GenerateRefreshToken(userID primitive.ObjectID, role string
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString([]byte(j.secretKey))
+	signedToken, err := token.SignedString([]byte(j.refreshSecretKey))
 	if err != nil {
 		return "", err
 	}
@@ -77,11 +79,37 @@ func (j *jwtService) GenerateRefreshToken(userID primitive.ObjectID, role string
 	return signedToken,nil
 }
 
-// ValidateToken validates the given JWT token
-func (j *jwtService) ValidateToken(tokenString string) (*jwt.Token, *Claims, error) {
+
+func (j *jwtService) ValidateRefreshToken(tokenString string) (*Claims,error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(t *jwt.Token) (interface{}, error) {
+		// Ensure the signing method is HMAC
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return []byte(j.refreshSecretKey), nil
+	})
+
+	if err != nil {
+		return nil,err
+	}
+
+	claims, ok := token.Claims.(*Claims)
+	if !ok || !token.Valid {
+		return nil,errors.New("invalid refresh token")
+	}
+
+	// Check if the token is expired
+	if time.Unix(claims.ExpiresAt, 0).Before(time.Now()) {
+		return nil,errors.New("refresh token expired")
+	}
+
+	return claims, nil
+}
+
+func (j *jwtService) ValidateToken(tokenString string) (*Claims, error) {
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
-		// Check that the signing method is what we expect
+		// Ensure the signing method is HMAC
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, jwt.ErrSignatureInvalid
 		}
@@ -89,19 +117,24 @@ func (j *jwtService) ValidateToken(tokenString string) (*jwt.Token, *Claims, err
 	})
 
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	return token, claims, nil
+	// Validate the token and claims
+	if !token.Valid {
+		return nil, errors.New("token is not valid")
+	}
+
+	return claims, nil
 }
 
-// ValidateRefreshToken validates the given refresh JWT token
-func (j *jwtService) ValidateRefreshToken(token string) (*jwt.Token, error) {
-	return jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
-		// Check that the signing method is what we expect
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, jwt.ErrSignatureInvalid
-		}
-		return []byte(j.refreshSecretKey), nil
-	})
-}
+
+
+// func (j *jwtService) GetKey(key string) string {
+// 	if key == "access"{
+// 		return j.secretKey
+// 	} else if key == "refresh"{
+// 		return j.refreshSecretKey
+// 	}
+// 	panic("yazew")
+// }

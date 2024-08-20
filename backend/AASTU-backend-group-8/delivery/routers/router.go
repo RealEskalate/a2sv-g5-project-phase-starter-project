@@ -14,8 +14,9 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 	signupController := controllers.NewSignupController(userUsecase, otpUsecase)
 	blogController := controllers.NewBlogController(blogUsecase)
 	userController := controllers.NewUserController(userUsecase)
-	refreshTokenController := controllers.NewRefreshTokenController(userUsecase, refreshTokenUsecase)
-	forgotPasswordController := controllers.NewForgotPasswordController()
+	refreshTokenController := controllers.NewRefreshTokenController(userUsecase, refreshTokenUsecase, jwtService)
+	forgotPasswordController := controllers.NewForgotPasswordController(userUsecase, otpUsecase)
+	logoutController := controllers.NewLogoutController(refreshTokenUsecase)
 
 	// Admin middleware
 	// adminMiddleware := infrastructure.AdminMiddleware(jwtService)
@@ -33,10 +34,7 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 	auth := r.Group("/api")
 	auth.Use(infrastructure.AuthMiddleware(jwtService))
 	{
-		// User profile routes
-		auth.GET("/profile", userController.GetProfile)
-		auth.PUT("/profile", userController.UpdateProfile)
-		auth.POST("/logout", userController.Logout)
+		auth.POST("/logout", logoutController.Logout)
 
 		// Blog routes
 		auth.POST("/blogs", blogController.CreateBlogPost)
@@ -47,7 +45,7 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 		auth.DELETE("/blogs/:id", blogController.DeleteBlogPost)
 
 		// Admin-specific routes
-		auth.POST("/getallusers", adminMiddleware, userController.GetAllUsers)
-		auth.PUT("/deleteusers/:id", adminMiddleware, userController.DeleteUser)
+		auth.GET("/getallusers", adminMiddleware, userController.GetAllUsers)
+		auth.DELETE("/deleteuser/:id", adminMiddleware, userController.DeleteUser)
 	}
 }

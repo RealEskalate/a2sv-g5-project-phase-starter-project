@@ -44,10 +44,8 @@ type UserUsecaseInterface interface {
 	GetUserByEmail(email *string) (*User, error)
 	Register(user *User) error
 	Login(user *AuthUser) (string, string, error)
-	DeleteRefreshToken(userID primitive.ObjectID) error // Fixed typo here
-	GetProfile(objectID primitive.ObjectID) (*Profile, error)
-	UpdateProfile(objectID primitive.ObjectID, user *Profile) (*Profile, error)
 	GetAllUsers() ([]*User, error)
+	UpdateUser(username , newPassword string) error
 	DeleteUser(objectID primitive.ObjectID) error
 }
 	// RefreshToken(refreshToken *RefreshToken) (string, error)
@@ -57,10 +55,10 @@ type UserRepositoryInterface interface {
 	//User operations
 	Create(user *User) error
 	GetUserByUsername(username string) (*User, error)
-	GetUserByEmail(email *string) (*User, error)
+	GetUserByEmail(email string) (*User, error)
 	GetUserByID(id primitive.ObjectID) (*User, error)
 	GetAllUsers() ([]*User, error)
-	UpdateProfile(id primitive.ObjectID, profile *Profile) (*Profile, error)
+	UpdateUser(username string, user *User) error
 	DeleteUser(id primitive.ObjectID) error
 }
 

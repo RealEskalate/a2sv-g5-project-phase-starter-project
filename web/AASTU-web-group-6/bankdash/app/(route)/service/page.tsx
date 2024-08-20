@@ -17,7 +17,6 @@ interface BankService {
 
 const Services = () => {
   const colors = [
-    "bg-pink-100",
     "bg-orange-100",
     "bg-pink-100",
     "bg-blue-100",
@@ -27,19 +26,19 @@ const Services = () => {
   const [services, setServices] = useState<BankService[]>([]);
   const [pageNumber, setPageNumber] = useState(1);
   const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiZXRzZWxvdCIsImlhdCI6MTcyNDA5MTA4NSwiZXhwIjoxNzI0MTc3NDg1fQ.1bWZW-0HpqdCZjZ_nvkPW8pmkb7U2Jr-F6D4YNH7Z-jlmz0gSS_tCjR81WVcsPY2";
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiZXRzZWxvdCIsImlhdCI6MTcyNDE1NjE5MywiZXhwIjoxNzI0MjQyNTkzfQ.x6tV4QOyUslrkXYJrRfWZjwD8MBgQaRx5UyV0qR0byV68wwf2rVPkWkgu3VZRFpA";
 
   async function fetchData(accessToken: string) {
     try {
       const response = await axios.get(
-        `https://bank-dashboard-6acc.onrender.com/bank-services?page=0&size=6`,
+        `https://bank-dashboard-6acc.onrender.com/bank-services?page=0&size=5`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         }
       );
-      setServices(response.data.data);
+      setServices(response.data.data.content);
       console.log(services);
     } catch (error) {
       console.error("There was a problem with the axios request:", error);
@@ -51,37 +50,37 @@ const Services = () => {
   }, []);
 
   return (
-    <div className="w-[96%]">
+    <div className="w-[96%] xxs:pt-4 xs:pt-20 md:pt-5 lg:pt-0">
       <div className="ml-5 lg:ml-0 ">
-        <div className="mr-5 lg:mr-0 flex justify-between overflow-x-auto lg:overflow-x-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:pl-10 lg:pt-10 w-full">
-          <div className="w-[100%] lg:w-[350px] flex-shrink-0">
-            <ServicesCard
-              img="/assets/lifeInsurance.svg"
-              title="Life Insurance"
-              desc="Unlimited Protection"
-            />
-          </div>
-          <div className="w-[100%] lg:w-[350px] flex-shrink-0">
-            <ServicesCard
-              img="/assets/shoppingBag.svg"
-              title="Shopping"
-              desc="Buy. Think. Grow"
-            />
-          </div>
-          <div className="w-[100%] lg:w-[350px] flex-shrink-0">
-            <ServicesCard
-              img="/assets/safety.svg"
-              title="Safety"
-              desc="We are your allies"
-            />
-          </div>
+        <div className="mr-5 lg:mr-0 flex gap-4 overflow-x-auto lg:overflow-x-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:pl-10 lg:pt-10 w-full">
+          {/* <div className="w-[100%] lg:w-[350px] flex-shrink-0"> */}
+          <ServicesCard
+            img="/assets/lifeInsurance.svg"
+            title="Life Insurance"
+            desc="Unlimited Protection"
+          />
+          {/* </div> */}
+          {/* <div className="w-[100%] lg:w-[350px] flex-shrink-0"> */}
+          <ServicesCard
+            img="/assets/shoppingBag.svg"
+            title="Shopping"
+            desc="Buy. Think. Grow"
+          />
+          {/* </div> */}
+          {/* <div className="w-[100%] lg:w-[350px] flex-shrink-0"> */}
+          <ServicesCard
+            img="/assets/safety.svg"
+            title="Safety"
+            desc="We are your allies"
+          />
         </div>
+        {/* </div> */}
 
         <div>
-          <p className="font-semibold text-[22px] text-[#343C6A] pt-5 pb-5 lg:p-10 ">   
+          <p className="font-semibold text-[22px] text-[#343C6A] pt-5 pb-5 lg:p-10 ">
             Bank Services List
           </p>
-          <div className="w-full">
+          <div className="w-full flex flex-col grow items-start px-4">
             {services.length > 0 ? (
               services.map((service, index) => (
                 <DescriptionCard

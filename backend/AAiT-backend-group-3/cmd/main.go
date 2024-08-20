@@ -24,6 +24,7 @@ func main() {
 	// userRepo := repositories.NewMongoUserRepository(dbClient.Database, "users")
 	// blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs")
 	// commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
+	// otpRepo := repositories.NewMongoOtpRepository(dbClient.Database, "otps")
 
 	// Initialize services
 	// userService := service.NewUserService(userRepo)

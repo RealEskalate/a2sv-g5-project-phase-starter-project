@@ -40,6 +40,7 @@ func CreateRefreshToken(user *user.User, secret string, expiry int) (string, err
 	if err != nil {
 		return "", err
 	}
+
 	return rt, nil
 }
 

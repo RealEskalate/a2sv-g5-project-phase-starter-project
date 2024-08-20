@@ -43,10 +43,6 @@ func ForgotPasswordHandler(email string) error {
 func VerifyToken(token string) (string, error) {
 	secretKey := DotEnvLoader("Reset_Password")
 
-	// Log the token and the secret key for debugging (remove in production)
-	fmt.Printf("Verifying Token: %s\n", token)
-	fmt.Printf("Secret Key: %s\n", secretKey)
-
 	// Verify the token
 	email, err := passwordreset.VerifyToken(token, func(email string) ([]byte, error) {
 		hashedEmail := sha256.Sum256([]byte(email))
@@ -54,7 +50,7 @@ func VerifyToken(token string) (string, error) {
 	}, []byte(secretKey))
 
 	if err != nil {
-		fmt.Printf("Token verification failed:::")
+		fmt.Printf("Token verification failed")
 		return "", err
 	}
 
@@ -106,4 +102,12 @@ func PasswordValidator(password string) error {
 	}
 
 	return nil
+}
+
+func UserVerification(email string) error {
+	secretKey := DotEnvLoader("Reset_Password")
+	hashedEmail = sha256.Sum256([]byte(email))
+
+	token := passwordreset.NewToken(email, time.Hour*1, hashedEmail[:], []byte(secretKey))
+	return sendResetEmail(email, token)
 }

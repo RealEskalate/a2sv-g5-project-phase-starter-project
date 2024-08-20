@@ -28,6 +28,11 @@ func (uuse *UserUsecase) RegisterUser(c context.Context, user *domain.User) erro
 func (uuse *UserUsecase) LoginUser(c context.Context, user domain.User) (string, error) {
 	return uuse.UserRepo.LoginUser(user)
 }
+func (uuse *UserUsecase) VerifyUserEmail(c context.Context, token string) error {
+	_, cancel := context.WithTimeout(c, uuse.contextTimeout)
+	defer cancel()
+	return uuse.UserRepo.VerifyUserEmail(token)
+}
 
 func (uuse *UserUsecase) ForgotPassword(c context.Context, email string) error {
 	_, cancel := context.WithTimeout(c, uuse.contextTimeout)

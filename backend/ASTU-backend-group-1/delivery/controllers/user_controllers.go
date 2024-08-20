@@ -49,7 +49,7 @@ func (c *UserController) ForgetPassword(ctx *gin.Context) {
 }
 func (c *UserController) ResetPassword(ctx *gin.Context) {
 	email := ctx.Query("email")
-	token := ctx.Query("pwd")
+	token := ctx.Query("token")
 	newpassword := ""
 	if err:= ctx.BindJSON(&newpassword);err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})

@@ -118,24 +118,29 @@ export function DebitCreditOver() {
     getData();
   }, []);
   return (
-    <Card className="rounded-3xl shadow-lg border-gray-300   ">
+    <Card className="rounded-3xl shadow-lg dark:bg-[#232328]  ">
       <CardHeader>
         <div className="flex justify-between ">
-          <CardTitle className=" hidden lg:block text-base font-normal font-inter text-[#718EBF]">
-            <span className="text-black">${totalExpense}</span> Debited &{" "}
-            <span className="text-black">${totalIncome}</span> Credited in this
-            Week
+          <CardTitle className="flex gap-2 lg:block text-base font-normal font-inter text-[#718EBF] dark:text-gray-400">
+            <span className="font-semibold text-black dark:text-gray-300">
+              ${totalExpense}
+            </span>{" "}
+            Debited &{" "}
+            <span className="font-semibold text-black dark:text-gray-300">
+              ${totalIncome}
+            </span>{" "}
+            Credited in this Week
           </CardTitle>
           <div className="flex gap-5">
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               <div className="border border-[#4C78FF] w-[15px] h-[15px] rounded-sm bg-[#4C78FF]"></div>
-              <p className="font-inter font-normal text-base text-[#718EBF]">
+              <p className="font-inter font-normal text-base text-[#718EBF] dark:text-gray-300">
                 Debit
               </p>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               <div className="border border-[#FCAA0B] w-[15px] h-[15px] rounded-sm bg-[#FCAA0B]"></div>
-              <p className="font-inter font-normal text-base text-[#718EBF]">
+              <p className="font-inter font-normal text-base text-[#718EBF dark:text-gray-300">
                 Credit
               </p>
             </div>

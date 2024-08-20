@@ -57,14 +57,14 @@ const Transaction = () => {
   const chartData = convertToChartData(TranData);
 
   return (
-    <div className="space-y-6 px-4 sm:px-6 md:px-8 lg:px-10">
+    <div className="pt-4 px-3 sm:px-6 md:px-8 lg:px-10">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
         <div className="lg:col-span-2 py-4 overflow-x-auto scrollbar-hide">
           <div className="flex justify-between mb-5">
-            <p className="font-semibold text-xl sm:text-2xl text-[#343C6A]">
+            <p className="font-semibold text-xl sm:text-xl text-[#343C6A] dark:text-gray-300">
               My Cards
             </p>
-            <p className="font-semibold text-base sm:text-lg text-[#343C6A] cursor-pointer">
+            <p className="font-semibold text-base sm:text-lg text-[#343C6A] cursor-pointer dark:text-gray-300">
               + Add Card
             </p>
           </div>
@@ -84,8 +84,8 @@ const Transaction = () => {
             </div>
           </div>
         </div>
-        <div className="w-full">
-          <p className="font-semibold text-xl sm:text-2xl text-[#343C6A] mb-1 py-4">
+        <div className="w-full flex flex-col gap-4 pt-4">
+          <p className="font-semibold text-[20px] text-[#343C6A] mb-1 dark:text-gray-300">
             My Expense
           </p>
           <BarGraph chartData={chartData} />

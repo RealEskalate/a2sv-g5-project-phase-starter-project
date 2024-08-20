@@ -99,3 +99,50 @@ func (j *JwtService) ValidateAuthHeader(authHeader string) ([]string, error) {
 
 	return authParts, nil
 }
+
+func (j *JwtService) CreateURLToken(user models.User, expTim int) (accessToken string, err error) {
+	expTime := time.Now().Add(time.Minute * time.Duration(expTim)).Unix()
+	secret := []byte(j.Env.JWT_SECRET)
+
+	claims := &models.URLTokenCustom{
+		ID:       user.ID,
+		Name:     user.Name,
+		Username: user.Username,
+		Email:    user.Email,
+		Role:     string(user.Role),
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expTime,
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	t, err := token.SignedString(secret)
+
+	if err != nil {
+		return "", err
+	}
+
+	return t, err
+}
+
+func (j *JwtService) ValidateURLToken(tokenStr string) (*models.URLTokenCustom, error) {
+	jwtSecret := []byte(j.Env.JWT_SECRET)
+
+	token, err := jwt.ParseWithClaims(tokenStr, &models.URLTokenCustom{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return jwtSecret, nil
+	})
+
+	if err != nil || !token.Valid {
+		return nil, fmt.Errorf("invalid token: %v", err)
+	}
+
+	claims, ok := token.Claims.(*models.URLTokenCustom)
+	if !ok {
+		return nil, fmt.Errorf("invalid JWT claims")
+	}
+
+	return claims, nil
+}

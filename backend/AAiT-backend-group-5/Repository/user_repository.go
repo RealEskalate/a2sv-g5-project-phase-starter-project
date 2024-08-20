@@ -58,7 +58,7 @@ func (ur *UserMongoRepository) GetUserByEmailOrUsername(ctx context.Context, use
 		return nil, models.NotFound(err.Error())
 	}
 
-	return &user, models.Nil()
+	return &user, nil
 }
 
 // GetUserByID fetches a user by their ID.
@@ -77,7 +77,7 @@ func (ur *UserMongoRepository) GetUserByID(ctx context.Context, id string) (*mod
 		return nil, models.InternalServerError("error fetching user" + err.Error())
 	}
 
-	return &user, models.Nil()
+	return &user, nil
 }
 
 // UpdateUser updates a user's information.
@@ -97,6 +97,9 @@ func (ur *UserMongoRepository) UpdateUser(ctx context.Context, user *models.User
 	}
 	if user.Email != "" {
 		update["email"] = user.Email
+	}
+	if user.Password != "" {
+		update["password"] = user.Password
 	}
 
 	if len(update) == 0 {
@@ -157,7 +160,7 @@ func (ur *UserMongoRepository) PromoteUser(ctx context.Context, userID string) *
 
 // DemoteUser demotes a user to a lower role.
 func (ur *UserMongoRepository) DemoteUser(ctx context.Context, userID string) *models.ErrorResponse {
-	err := ur.updateUserRole(ctx, userID, "admin")
+	err := ur.updateUserRole(ctx, userID, "user")
 	return err
 }
 

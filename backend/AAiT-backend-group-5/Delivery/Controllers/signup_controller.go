@@ -49,7 +49,7 @@ func (signupController *SignupController) Signup(ctx *gin.Context) {
 }
 
 func (signupController *SignupController) ConfirmRegistration(ctx *gin.Context) {
-	var setUpPasswordRequest *dtos.SetUpPasswordRequest
+	var setUpPasswordRequest dtos.SetUpPasswordRequest
 
 	// attempt to bind the payload carrying the new password
 	err := ctx.ShouldBind(&setUpPasswordRequest)
@@ -61,7 +61,7 @@ func (signupController *SignupController) ConfirmRegistration(ctx *gin.Context) 
 	// get short code from the URL
 	shortURLCode := ctx.Param("id")
 
-	e := signupController.PasswordUsecase.SetPassword(ctx, setUpPasswordRequest.Password, shortURLCode)
+	e := signupController.PasswordUsecase.SetNewUserPassword(ctx, shortURLCode, setUpPasswordRequest.Password)
 	if e != nil {
 		ctx.IndentedJSON(e.Code, gin.H{"error": e.Message})
 		return

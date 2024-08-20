@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"context"
+	"fmt"
 
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
@@ -21,7 +22,7 @@ func NewSetupPassword(
 	repo interfaces.UserRepository,
 	emailService interfaces.EmailService,
 	passwordService interfaces.PasswordService,
-	
+
 ) interfaces.PasswordUsecase {
 
 	return &setup_password{
@@ -41,6 +42,8 @@ func (sp *setup_password) GenerateResetURL(ctx context.Context, email string) (s
 		return "", uErr
 	}
 
+	fmt.Println(user)
+
 	// generate token
 	token, tErr := sp.jwtService.CreateAccessToken(*user, 60*60)
 	if tErr != nil {
@@ -48,7 +51,7 @@ func (sp *setup_password) GenerateResetURL(ctx context.Context, email string) (s
 	}
 
 	// generate reset URL
-	resetURL, rErr := sp.urlService.GenerateURL(token)
+	resetURL, rErr := sp.urlService.GenerateURL(token, "resetPassword")
 	if rErr != nil {
 		return "", rErr
 	}
@@ -58,7 +61,7 @@ func (sp *setup_password) GenerateResetURL(ctx context.Context, email string) (s
 
 func (sp *setup_password) SendResetEmail(ctx context.Context, email string, resetURL string) *models.ErrorResponse {
 	subject := "Password Reset"
-	body := "Click the link below to reset your password\n" + resetURL + "\n\nThis link will expire in 1 hour"
+	body := "Click the link below to reset your password\n" + resetURL + "\nThis link will expire in 1 hour"
 
 	valid := sp.emailService.IsValidEmail(email)
 	if !valid {
@@ -73,10 +76,63 @@ func (sp *setup_password) SendResetEmail(ctx context.Context, email string, rese
 	return nil
 }
 
-func (sp *setup_password) SetPassword(ctx context.Context, shortURlCode string, password string) *models.ErrorResponse {
+func (sp *setup_password) SetNewUserPassword(ctx context.Context, shortURlCode string, password string) *models.ErrorResponse {
 	// get token
 	urls, tErr := sp.urlService.GetURL(shortURlCode)
+	if tErr != nil {
+		return tErr
+	}
 
+	// get user data
+	u, uErr := sp.jwtService.ValidateURLToken(urls.Token)
+	if uErr != nil {
+		return models.BadRequest("Invalid token")
+	}
+
+	// check if password is too short
+	if len(password) < 6 {
+		return models.Forbidden("password is too short")
+	}
+
+	// hash password
+	hashedPassword, hErr := sp.passwordService.EncryptPassword(password)
+	if hErr != nil {
+		return models.InternalServerError("An error occurred while setting the password")
+	}
+
+	// populate fields for the new user
+	newUser := models.User{
+		Name:     u.Name,
+		Username: u.Username,
+		Email:    u.Email,
+		Password: hashedPassword,
+		Role:     models.RoleUser,
+	}
+
+	// check if user already exists
+	user, _ := sp.repo.GetUserByEmailOrUsername(ctx, newUser.Username, newUser.Email)
+	if user != nil {
+		return models.BadRequest("user already registered")
+	}
+
+	// create user
+	err := sp.repo.CreateUser(ctx, &newUser)
+	if err != nil {
+		return err
+	}
+
+	// remove token
+	err = sp.urlService.RemoveURL(shortURlCode)
+	if err != nil {
+		return models.InternalServerError("An error occurred while setting the password")
+	}
+
+	return nil
+}
+
+func (sp *setup_password) SetUpdateUserPassword(ctx context.Context, shortURlCode string, password string) *models.ErrorResponse {
+	// get token
+	urls, tErr := sp.urlService.GetURL(shortURlCode)
 	if tErr != nil {
 		return tErr
 	}
@@ -87,9 +143,9 @@ func (sp *setup_password) SetPassword(ctx context.Context, shortURlCode string, 
 		return models.BadRequest("Invalid token")
 	}
 
-	user, gErr := sp.repo.GetUserByID(ctx, u.ID)
-	if gErr != nil {
-		return gErr
+	// check if password is too short
+	if len(password) < 6 {
+		return models.Forbidden("password is too short")
 	}
 
 	// hash password
@@ -98,10 +154,17 @@ func (sp *setup_password) SetPassword(ctx context.Context, shortURlCode string, 
 		return models.InternalServerError("An error occurred while setting the password")
 	}
 
-	user.Password = hashedPassword
+	// populate fields for the new user
+	updatedUser := models.User{
+		Password: hashedPassword,
+	}
 
 	// update user
-	err := sp.repo.UpdateUser(ctx, user, u.ID)
+	fmt.Println(u.ID)
+	fmt.Println(u.Email)
+	fmt.Println(u.Role)
+
+	err := sp.repo.UpdateUser(ctx, &updatedUser, u.ID)
 	if err != nil {
 		return err
 	}

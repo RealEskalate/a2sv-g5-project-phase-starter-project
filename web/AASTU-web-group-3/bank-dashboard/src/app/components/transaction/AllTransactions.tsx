@@ -31,7 +31,7 @@ const AllTransactions = () => {
     dispatch(setLoading(isLoading));
 
     if (data) {
-      dispatch(setTransactions(data.data));
+      dispatch(setTransactions(data.data.content));
     }
 
     if (isError) {

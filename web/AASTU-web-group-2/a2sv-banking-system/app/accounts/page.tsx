@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import {
   MdHome,
   MdSettings,
@@ -9,6 +10,8 @@ import ListCard from "./components/ListCard";
 import { IconType } from "react-icons";
 import BarChartForAccounts from "./components/BarChartForAccounts";
 import Card from "../components/Page2/Card";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type DataItem = {
   heading: string;
@@ -24,6 +27,8 @@ type Column = {
 };
 
 const Page = () => {
+  const [session, setSession] = useState(false);
+  const route = useRouter();
   // Example data for the first ListCard
   const ReusableCard: Column = {
     icon: MdHome,
@@ -109,6 +114,22 @@ const Page = () => {
     })),
   };
 
+  // Getting the session from the server
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = await getSession();
+      if (sessionData?.user) {
+        console.log("Session Available");
+        setSession(true);
+      }
+    };
+
+    fetchSession();
+  }, []);
+  // getting the session ends here
+  if (!session) {
+    route.push("./api/auth/signin");
+  }
   return (
     <>
       <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5">

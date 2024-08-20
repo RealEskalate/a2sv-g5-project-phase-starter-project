@@ -1,0 +1,61 @@
+export function formatDateString(dateString: string) {
+  const date = new Date(dateString);
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear().toString().slice(-2);
+  return `${month}/${year}`;
+}
+
+
+
+export function Dateformat(dateString: string) {
+  const date = new Date(dateString);
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear().toString().slice(-2);
+  return `${year}-${month}-${date.getDate()}`;
+}
+
+
+export 
+function formatMonth(dateString: string) {
+  const [year, month] = dateString.split("-");
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  return monthNames[parseInt(month) - 1];
+}
+
+
+export function maskCardNumber(cardNumber: string) {
+  // Ensure the card number is a string
+  const strCardNumber = cardNumber.toString();
+
+  const length = strCardNumber.length;
+
+  if (length <= 8) {
+    const firstFour = strCardNumber.slice(0, 4);
+    const lastFour = strCardNumber.slice(-4);
+    const maskedSection = "****";
+    return `${firstFour} ${maskedSection} ${lastFour}`;
+  }
+
+  const firstFour = strCardNumber.slice(0, 4);
+  const lastFour = strCardNumber.slice(-4);
+  const maskedSection = strCardNumber
+    .slice(4, -4)
+    .replace(/./g, "*")
+    .replace(/(.{4})/g, "$1 ");
+
+  return `${firstFour} ${maskedSection.trim()} ${lastFour}`;
+}
+ 

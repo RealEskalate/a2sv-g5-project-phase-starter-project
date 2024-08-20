@@ -1,11 +1,57 @@
 "use client";
+import { useState, useEffect } from "react";
 import BalanceCard from "@/components/AccountSmallCard";
 import LastTransactionCard from "@/components/LastTransactionCard";
 import DesktopCreditCard from "@/components/DesktopCreditCard";
 import InvoicesCard from "@/components/InvoicesCard";
 import AccountBarChart from "@/components/AccountBarChart";
+import { getAllBankServices, getBankServiceById } from "@/services/bankseervice";
 
 const Accounts = () => {
+  const [balanceData, setBalanceData] = useState([]);
+  const [lastTransactionCard, setLastTransactionData] = useState([]);
+  const [cardData, setCardData] = useState(null);
+  const [barChartData, setBarChartData] = useState([]);
+  const [invoiceData, setInvoiceData] = useState([]);
+
+  useEffect(() => {
+    // Fetch all bank services for the balance data
+    const fetchBankServices = async () => {
+      const services = await getAllBankServices();
+      setBalanceData(services);
+    };
+
+    // Fetch last transaction 
+    const fetchLastTransaction = async () => {
+      const transaction = await getBankServiceById(1);
+      setLastTransactionData(transaction);
+    };
+
+    // // Fetch card data
+    // const fetchCardData = async () => {
+    //   const card = await getBankServiceById(2);
+    //   setCardData(card);
+    // };
+
+    // // Fetch bar chart
+    // const fetchBarChartData = async () => {
+    //   const chart = await getBankServiceById(3);
+    //   setBarChartData(chart);
+    // };
+
+    // // Fetch invoice data
+    // const fetchInvoiceData = async () => {
+    //   const invoice = await getBankServiceById(4);
+    //   setInvoiceData(invoice);
+    // };
+
+    fetchBankServices();
+    fetchLastTransaction();
+    // fetchCardData();
+    // fetchBarChartData();
+    // fetchInvoiceData();
+  })
+
   return (
     <div className="flex">
       {/* Sidebar */}

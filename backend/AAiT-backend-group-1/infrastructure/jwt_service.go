@@ -33,10 +33,6 @@ func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User)
 		return "", err
 	}
 	return jwtToken, nil
-type JWTTokenService struct {
-	AccessSecret  string
-	RefreshSecret string
-	Collection    *mongo.Collection
 }
 
 func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User) (string, error) {

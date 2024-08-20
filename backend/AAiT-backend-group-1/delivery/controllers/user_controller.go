@@ -1,4 +1,4 @@
-package controller
+package controllers
 
 import (
 	"fmt"
@@ -9,9 +9,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// type userController struct {
-// 	UserUseCase domain.UserUseCase
-// }
+type UserController struct {
+	UserUseCase domain.UserUseCase
+}
 
 type LoginRequest struct {
 	Username string `json:"username"`
@@ -53,9 +53,20 @@ func (userController *UserController) Register(cxt *gin.Context) {
 func (userController *UserController) VerifyEmail(cxt *gin.Context) {
 	var token string
 	errUnmarshal := cxt.ShouldBind(&token)
+	if errUnmarshal != nil {
+		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errUnmarshal.Error()})
+		return
+	}
+	errVerify := userController.UserUseCase.VerifyEmail(cxt, token)
+	if errVerify != nil {
+		cxt.JSON(errVerify.StatusCode(), gin.H{"Error": errVerify.Error()})
+		return
+	}
+	cxt.JSON(http.StatusAccepted, gin.H{"Message": "User email verified successfully "})
+}
+
 func (userController *UserController) Login(c *gin.Context) {
-  var loginInfo struct{username string `json:"username" binding="required"`, password string`json:"username" binding="required"`,}
-  errUnmarshal := cxt.ShouldBind(&loginInfo)
+	errUnmarshal := cxt.ShouldBind(&loginInfo)
 	if errUnmarshal != nil {
 		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errUnmarshal.Error()})
 		return

@@ -11,6 +11,7 @@ type User struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	UserName     string             `json:"username,omitempty"`
 	Email        string             `json:"email,omitempty"`
+	Imageuri     string             `json:"imageuri,omitempty"`
 	Password     string             `json:"password,omitempty"`
 	IsAdmin      bool               `json:"isadmin,omitempty"`
 	JoinedAt     time.Time          `json:"joinedat,omitempty"`

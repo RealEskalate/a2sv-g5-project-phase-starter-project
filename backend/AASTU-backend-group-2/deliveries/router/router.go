@@ -31,4 +31,6 @@ func SetRouter(router *gin.Engine, com *controllers.CommentController, c *contro
 
 	router.POST("/generate", middleware.AuthMiddleware(client), c.GeneratePost)
 
+	router.POST("/file", controllers.FileUpload)
+
 }

@@ -407,18 +407,18 @@ func (b *BlogRepository) UpdateComment(ctx context.Context, updateComment *domai
 
 	// Find and update the comment if it exists and the user is the owner
 	commentUpdated := false
-	for _, comment := range foundBlog.Comments {
-		if comment.ID.Hex() == commentId {
-			if comment.Username != userName {
-				return domain.NewError("Unauthorized", domain.ERR_FORBIDDEN)
-			}
-			//update the comment
-			comment.Content = updateComment.Content
-			comment.UpdatedAt = time.Now()
-			commentUpdated = true
-			break
+for i := range foundBlog.Comments {
+	if foundBlog.Comments[i].ID.Hex() == commentId {
+		if foundBlog.Comments[i].Username != userName {
+			return domain.NewError("Unauthorized", domain.ERR_FORBIDDEN)
 		}
+		// Update the comment
+		foundBlog.Comments[i].Content = updateComment.Content
+		foundBlog.Comments[i].UpdatedAt = time.Now()
+		commentUpdated = true
+		break
 	}
+}
 
 	if !commentUpdated {
 		return domain.NewError("Comment not found", domain.ERR_NOT_FOUND)

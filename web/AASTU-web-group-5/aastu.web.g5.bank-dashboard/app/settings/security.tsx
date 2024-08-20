@@ -3,6 +3,13 @@ import React, { useState } from 'react';
 import Toggle from './toogle';
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
+interface ExtendedUser {
+  name?: string;
+  email?: string;
+  image?: string;
+  accessToken?: string;
+  }
 
 export default function Security() {
   const { register, formState: { errors } } = useForm();
@@ -10,10 +17,11 @@ export default function Security() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const { data: session } = useSession();
+  const user = session.user as ExtendedUser;
   const [successMessage, setSuccessMessage] = useState('');
 
   
-  const key: string = session?.user?.accessToken || '';
+  const key: string = user.accessToken || '';
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccessMessage('');
@@ -22,26 +30,27 @@ export default function Security() {
 
     
     console.log(currentPassword,newPassword,1)
-    const data = {currentPassword:currentPassword,newPassword:currentPassword}
+    const data = {password:currentPassword,newPassword:newPassword}
+    console.log(JSON.stringify(data))
+
     try {
-      const response = await fetch(
-        `https://bank-dashboard-6acc.onrender.com/auth/change_password?`,
-        {     method: 'POST',
+      const response = await axios.post(
+        `https://bank-dashboard-6acc.onrender.com/auth/change_password`,
+        data,
+        {    
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${key}`
         },
-        body: JSON.stringify(data)
       });
 
       console.log(response)
-      if (!response) {
-        const errorText = await response.text();
+      if (response.status==200) {
+        const errorText = await response.data;
         throw new Error(`Failed to change password: ${errorText}`);
       }
 
-      const result = await response.json();
-      console.log(result,111)
+      const result = await response.data();
       if (result.success){
         console.log(result  )
         setSuccessMessage('Password changed successfully!');
@@ -81,7 +90,7 @@ export default function Security() {
             placeholder="************"
             onChange = {(e) => setCurrentPassword(e.target.value)}
           /> 
-          {errors.currentPassword && <div className="text-red-500 text-sm mt-2">{errors.currentPassword.message}</div>}
+          {errors.currentPassword && <div className="text-red-500 text-sm mt-2">{errors.currentPassword.message.toString()}</div>}
         </div>
         
         <div className="mt-4">
@@ -95,7 +104,7 @@ export default function Security() {
             style={{ paddingLeft: '1.25rem' }}
             placeholder="************"
           />
-          {errors.newPassword && <div className="text-red-500 text-sm mt-2">{errors.newPassword.message}</div>}
+          {errors.newPassword && <div className="text-red-500 text-sm mt-2">{errors.newPassword.message.toString()}</div>}
         </div>
 
         <div className="flex justify-end mt-16 md:mt-18">

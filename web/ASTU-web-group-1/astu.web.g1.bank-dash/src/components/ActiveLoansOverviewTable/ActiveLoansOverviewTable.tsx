@@ -1,54 +1,15 @@
+"use client";
+import { ActiveLoanDataType } from "@/types/active-loan.types";
 import TableButton from "../TableButton/TableButton";
-
-const TableData = [
-  {
-    id: 1,
-    "SL No": "01",
-    "Loan Money": "$100,000",
-    "Left to replay": "$40,000",
-    Duration: "8 Months",
-    "Interest rate": "12%",
-    Installment: "$2,000/month",
-  },
-  {
-    id: 2,
-    "SL No": "02",
-    "Loan Money": "$50,000",
-    "Left to replay": "$15,000",
-    Duration: "6 Months",
-    "Interest rate": "10%",
-    Installment: "$1,500/month",
-  },
-  {
-    id: 3,
-    "SL No": "03",
-    "Loan Money": "$75,000",
-    "Left to replay": "$30,000",
-    Duration: "10 Months",
-    "Interest rate": "8%",
-    Installment: "$1,800/month",
-  },
-  {
-    id: 4,
-    "SL No": "04",
-    "Loan Money": "$120,000",
-    "Left to replay": "$60,000",
-    Duration: "12 Months",
-    "Interest rate": "15%",
-    Installment: "$3,500/month",
-  },
-  {
-    id: 5,
-    "SL No": "05",
-    "Loan Money": "$200,000",
-    "Left to replay": "$100,000",
-    Duration: "18 Months",
-    "Interest rate": "10%",
-    Installment: "$5,000/month",
-  },
-];
+import { useGetAllActiveLoansQuery } from "@/lib/redux/slices/activeLoanSlice";
 
 const ActiveLoansOverviewTable = () => {
+  const { data, isLoading } = useGetAllActiveLoansQuery();
+
+  const allData: ActiveLoanDataType[] | null = data?.data?.filter(
+    (data) => data.type === "approved"
+  );
+  console.log("the table data is ", allData);
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-16px md:text-15px xl:text-18px text-[#333B69] font-semibold">
@@ -82,20 +43,22 @@ const ActiveLoansOverviewTable = () => {
             </tr>
           </thead>
           <tbody className="text-12px xl:text-15px text-gray-dark cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700">
-            {TableData.map((data, index) => (
+            {allData?.map((data, index) => (
               <tr
                 key={index}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                <td className="hidden md:table-cell py-3">{data["SL No"]}</td>
-                <td className="py-3">{data["Loan Money"]}</td>
-                <td className="py-3">{data["Left to replay"]}</td>
-                <td className="hidden lg:table-cell py-3">{data.Duration}</td>
+                <td className="hidden md:table-cell py-3">
+                  {data.serialNumber}
+                </td>
+                <td className="py-3">{data.loanAmount}</td>
+                <td className="py-3">{data.amountLeftToRepay}</td>
+                <td className="hidden lg:table-cell py-3">{data.duration}</td>
                 <td className="hidden min-[900px]:table-cell py-3">
-                  {data["Interest rate"]}
+                  {data.interestRate}
                 </td>
                 <td className="hidden min-[900px]:table-cell py-3">
-                  {data.Installment}
+                  {data.installment}
                 </td>
                 <td className="py-3 w-24 md:w-32 ">
                   <TableButton text="Repay" classname="px-6" />

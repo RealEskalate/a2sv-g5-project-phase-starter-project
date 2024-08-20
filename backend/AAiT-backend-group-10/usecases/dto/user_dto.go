@@ -1,4 +1,4 @@
-package domain
+package dto
 
 type RegisterUserDTO struct {
 	FullName string `json:"fullname" binding:"required"`

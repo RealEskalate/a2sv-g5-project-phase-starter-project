@@ -21,17 +21,6 @@ type User struct {
 =======
 import "time"
 
-// User
-
-// * id
-// * email - unique, required, valid
-// * password - strength, required
-// * fullName - required
-// * bio
-// * imageUrl
-// * isAdmin - boolean, default - false
-// * refreshToken
-
 type User struct {
 	ID           string    `json:"id" bson:"_id,omitempty"`
 	FullName     string    `json:"fullname" bson:"fullname" binding:"required"`
@@ -44,10 +33,4 @@ type User struct {
 	Password     string    `json:"password" bson:"password" binding:"required"`
 	CreatedAt    time.Time `json:"created_at" bson:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at" bson:"updated_at"`
-}
-type UserRepository interface {
-	CreateUser(user *User) error
-	GetUserByEmail(email string) (*User, error)
-	GetUserByUsername(username string) (*User, error)
-	UpdateUser(user *User) error
 }

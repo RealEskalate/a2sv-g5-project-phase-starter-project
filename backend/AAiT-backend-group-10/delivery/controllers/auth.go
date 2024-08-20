@@ -3,32 +3,24 @@ package controllers
 import (
 	"net/http"
 
-	"aait.backend.g10/domain"
 	"aait.backend.g10/usecases"
+	"aait.backend.g10/usecases/dto"
 
 	"github.com/gin-gonic/gin"
 )
 
-type UserController struct {
+type AuthController struct {
 	userUsecase usecases.IAuthUsecase
 }
-type ForgotPasswordRequestDTO struct {
-	Email string `json:"email" binding:"required,email"`
-}
 
-type ResetPasswordRequestDTO struct {
-	Token       string `json:"token" binding:"required"`
-	NewPassword string `json:"new_password" binding:"required,min=8"`
-}
-
-func NewUserController(uc usecases.IAuthUsecase) *UserController {
-	return &UserController{
+func NewAuthController(uc usecases.IAuthUsecase) *AuthController {
+	return &AuthController{
 		userUsecase: uc,
 	}
 }
 
-func (ctrl *UserController) Register(c *gin.Context) {
-	var userDTO domain.RegisterUserDTO
+func (ctrl *AuthController) Register(c *gin.Context) {
+	var userDTO dto.RegisterUserDTO
 	if err := c.ShouldBindJSON(&userDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
@@ -43,8 +35,8 @@ func (ctrl *UserController) Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, user)
 }
 
-func (uc *UserController) Login(c *gin.Context) {
-	var loginDTO domain.LoginUserDTO
+func (uc *AuthController) Login(c *gin.Context) {
+	var loginDTO dto.LoginUserDTO
 	if err := c.ShouldBindJSON(&loginDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -59,16 +51,14 @@ func (uc *UserController) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, tokens)
 }
 
-func (uc *UserController) RefreshToken(c *gin.Context) {
-	var refreshTokenDTO struct {
-		RefreshToken string `json:"refresh_token" binding:"required"`
-	}
-	if err := c.ShouldBindJSON(&refreshTokenDTO); err != nil {
+func (uc *AuthController) RefreshToken(c *gin.Context) {
+	var refreshToken dto.RefreshTokenDTO
+	if err := c.ShouldBindJSON(&refreshToken); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	tokens, err := uc.userUsecase.RefreshTokens(refreshTokenDTO.RefreshToken)
+	tokens, err := uc.userUsecase.RefreshTokens(refreshToken.RefreshToken)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
@@ -77,8 +67,8 @@ func (uc *UserController) RefreshToken(c *gin.Context) {
 	c.JSON(http.StatusOK, tokens)
 }
 
-func (uc *UserController) ForgotPassword(c *gin.Context) {
-	var forgotPasswordDTO usecases.ForgotPasswordRequestDTO
+func (uc *AuthController) ForgotPassword(c *gin.Context) {
+	var forgotPasswordDTO dto.ForgotPasswordRequestDTO
 	if err := c.ShouldBindJSON(&forgotPasswordDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -93,8 +83,8 @@ func (uc *UserController) ForgotPassword(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Password reset link sent to your email"})
 }
 
-func (uc *UserController) ResetPassword(c *gin.Context) {
-	var resetPasswordDTO usecases.ResetPasswordRequestDTO
+func (uc *AuthController) ResetPassword(c *gin.Context) {
+	var resetPasswordDTO dto.ResetPasswordRequestDTO
 	if err := c.ShouldBindJSON(&resetPasswordDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

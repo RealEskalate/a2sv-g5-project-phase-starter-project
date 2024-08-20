@@ -2,52 +2,48 @@ package usecases
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"aait.backend.g10/domain"
 	"aait.backend.g10/infrastructures"
+	"aait.backend.g10/usecases/dto"
 	"aait.backend.g10/usecases/interfaces"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/golang-jwt/jwt/v4"
 )
 
-type ForgotPasswordRequestDTO struct {
-	Email string `json:"email" binding:"required,email"`
-}
-
-type ResetPasswordRequestDTO struct {
-	Token       string `json:"token" binding:"required"`
-	NewPassword string `json:"new_password" binding:"required,min=8"`
-}
 type IAuthUsecase interface {
-	RegisterUser(User *domain.RegisterUserDTO) (interface{}, error)
-	LoginUser(dto *domain.LoginUserDTO) (*domain.TokenResponseDTO, error)
-	RefreshTokens(refreshToken string) (*domain.TokenResponseDTO, error)
-	ResetPassword(dto *ResetPasswordRequestDTO) error
-	ForgotPassword(dto *ForgotPasswordRequestDTO) error
+	RegisterUser(User *dto.RegisterUserDTO) (interface{}, error)
+	LoginUser(dto *dto.LoginUserDTO) (*dto.TokenResponseDTO, error)
+	RefreshTokens(refreshToken string) (*dto.TokenResponseDTO, error)
+	ResetPassword(dto *dto.ResetPasswordRequestDTO) error
+	ForgotPassword(dto *dto.ForgotPasswordRequestDTO) error
 }
 
 type AuthUsecase struct {
 	userRepository  interfaces.UserRepositoryInterface
-	Infranstructure infrastructures.InfrastructureInterface
+	jwtService infrastructures.Jwt
+	pwdService infrastructures.PwdService
+	emailService infrastructures.EmailService
 }
 
-func NewAuthUsecase(ur interfaces.UserRepositoryInterface, Infr infrastructures.InfrastructureInterface) IAuthUsecase {
+func NewAuthUsecase(ur interfaces.UserRepositoryInterface, jwt infrastructures.Jwt, pwdService infrastructures.PwdService, emailService infrastructures.EmailService) IAuthUsecase {
 	return &AuthUsecase{
 		userRepository:  ur,
-		Infranstructure: Infr,
+		jwtService: jwt,
+		pwdService: pwdService,
+		emailService: emailService,
 	}
 }
 
-func (u *AuthUsecase) RegisterUser(User *domain.RegisterUserDTO) (interface{}, error) {
+func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, error) {
 	existingUser, _ := u.userRepository.GetUserByEmail(User.Email)
 	if existingUser != nil {
 		return nil, errors.New("email already exists")
 	}
 
-	hashedPassword, err := u.Infranstructure.HashPassword(User.Password)
+	hashedPassword, err := u.pwdService.HashPassword(User.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -82,23 +78,21 @@ func (u *AuthUsecase) RegisterUser(User *domain.RegisterUserDTO) (interface{}, e
 	}, nil
 }
 
-func (uc *AuthUsecase) LoginUser(dto *domain.LoginUserDTO) (*domain.TokenResponseDTO, error) {
-	user, err := uc.userRepository.GetUserByEmail(dto.Email)
+func (uc *AuthUsecase) LoginUser(loginUser *dto.LoginUserDTO) (*dto.TokenResponseDTO, error) {
+	user, err := uc.userRepository.GetUserByEmail(loginUser.Email)
 	// fmt.Println(user)
 	if err != nil || user == nil {
 		return nil, errors.New("invalid email or password")
 	}
 
 	// Check password
-	fmt.Print(dto.Password)
-	fmt.Println(user.Password)
-	errs := uc.Infranstructure.CheckPasswordHash(dto.Password, user.Password)
+	errs := uc.pwdService.CheckPasswordHash(loginUser.Password, user.Password)
 	if !errs {
 		return nil, errors.New("invalid email or password")
 	}
 
 	// Generate tokens
-	accessToken, refreshToken, err := uc.Infranstructure.GenerateToken(user)
+	accessToken, refreshToken, err := uc.jwtService.GenerateToken(user)
 	if err != nil {
 		return nil, err
 	}
@@ -111,15 +105,17 @@ func (uc *AuthUsecase) LoginUser(dto *domain.LoginUserDTO) (*domain.TokenRespons
 		return nil, err
 	}
 
-	return &domain.TokenResponseDTO{
-		RefreshToken: refreshToken,
+	tokenResponse := &dto.TokenResponseDTO{
 		AccessToken:  accessToken,
-	}, nil
+		RefreshToken: refreshToken,
+	}
+
+	return tokenResponse, nil
 }
 
-func (uc *AuthUsecase) RefreshTokens(refreshToken string) (*domain.TokenResponseDTO, error) {
+func (uc *AuthUsecase) RefreshTokens(refreshToken string) (*dto.TokenResponseDTO, error) {
 	// Validate the refresh token
-	token, err := uc.Infranstructure.ValidateToken(refreshToken)
+	token, err := uc.jwtService.ValidateToken(refreshToken)
 	if err != nil || !token.Valid {
 		return nil, errors.New("invalid refresh token")
 	}
@@ -136,7 +132,7 @@ func (uc *AuthUsecase) RefreshTokens(refreshToken string) (*domain.TokenResponse
 	}
 
 	// Check if the provided refresh token matches the stored one
-	token, err = uc.Infranstructure.ValidateToken(user.RefreshToken)
+	token, err = uc.jwtService.ValidateToken(user.RefreshToken)
 	if err != nil || !token.Valid {
 		return nil, errors.New("login required")
 	}
@@ -145,7 +141,7 @@ func (uc *AuthUsecase) RefreshTokens(refreshToken string) (*domain.TokenResponse
 	}
 
 	// Generate new tokens
-	accessToken, _, err := uc.Infranstructure.GenerateToken(user)
+	accessToken, _, err := uc.jwtService.GenerateToken(user)
 	if err != nil {
 		return nil, err
 	}
@@ -157,27 +153,27 @@ func (uc *AuthUsecase) RefreshTokens(refreshToken string) (*domain.TokenResponse
 		return nil, err
 	}
 
-	return &domain.TokenResponseDTO{
+	return &dto.TokenResponseDTO{
 		AccessToken: accessToken,
 	}, nil
 }
 
-func (uc *AuthUsecase) ForgotPassword(dto *ForgotPasswordRequestDTO) error {
+func (uc *AuthUsecase) ForgotPassword(dto *dto.ForgotPasswordRequestDTO) error {
 	user, err := uc.userRepository.GetUserByEmail(dto.Email)
 	if err != nil || user == nil {
 		return errors.New("user not found")
 	}
 
-	resetToken, err := uc.Infranstructure.GenerateResetToken(user.Email)
+	resetToken, err := uc.jwtService.GenerateResetToken(user.Email)
 	if err != nil {
 		return err
 	}
 
-	return uc.Infranstructure.SendResetEmail(user, resetToken)
+	return uc.emailService.SendResetEmail(user.Email, resetToken)
 }
 
-func (uc *AuthUsecase) ResetPassword(dto *ResetPasswordRequestDTO) error {
-	token, err := uc.Infranstructure.ValidateToken(dto.Token)
+func (uc *AuthUsecase) ResetPassword(dto *dto.ResetPasswordRequestDTO) error {
+	token, err := uc.jwtService.ValidateToken(dto.Token)
 	if err != nil || !token.Valid {
 		return errors.New("invalid or expired token")
 	}

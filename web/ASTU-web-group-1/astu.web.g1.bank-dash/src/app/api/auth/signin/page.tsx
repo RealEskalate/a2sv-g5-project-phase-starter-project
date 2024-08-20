@@ -1,11 +1,9 @@
 import LoginForm from '@/components/Formx/LoginForm';
 import React from 'react';
 import Image from 'next/image';
-import { NextRequest } from 'next/server';
 import AuthProvider from '@/components/Formx/AuthProvider';
 
-export default function Page(req: NextRequest) {
-  console.log(req, 'request from login page');
+export default function Page() {
   return (
     <>
       <div className='bg-white w-screen h-screen flex justify-around items-center'>

@@ -5,11 +5,12 @@ import (
 	"backend-starter-project/infrastructure/middleware"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/generative-ai-go/genai"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 
-func Setup(env *bootstrap.Env, db *mongo.Database, gin *gin.Engine, auth middleware.AuthMiddleware) {
+func Setup(env *bootstrap.Env, db *mongo.Database, gin *gin.Engine, auth middleware.AuthMiddleware, model *genai.GenerativeModel) {
 	
 	publicRouter := gin.Group("")
 
@@ -20,7 +21,7 @@ func Setup(env *bootstrap.Env, db *mongo.Database, gin *gin.Engine, auth middlew
 	adminRouter.Use(auth.AuthMiddleware("admin"))
 
 
-	NewBlogRouter(db, publicRouter.Group("/blogs"))
+	NewBlogRouter(db, publicRouter.Group("/blogs"), model)
 	NewCommmentRouter(db, publicRouter.Group("/comments"))	
 
 	gin.Run(":8080")

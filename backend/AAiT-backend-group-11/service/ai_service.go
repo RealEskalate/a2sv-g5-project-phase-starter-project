@@ -11,22 +11,24 @@ import (
 
 type AIContentServiceInterface interface {
 	GenerateContentSuggestions(keywords []string) (*genai.GenerateContentResponse, error)
-	SuggestContentImprovements( blogPostId string) (*genai.GenerateContentResponse, error)
+	SuggestContentImprovements( blogPostId,instruction string) (*genai.GenerateContentResponse, error)
 }
 
 type AIContentService struct{
 	ctx context.Context
-	model genai.GenerativeModel
+	model *genai.GenerativeModel
 	blogPostRepository interfaces.BlogRepository
 }
 
-func NewAIContentService( ctx context.Context, model genai.GenerativeModel, bpr interfaces.BlogRepository) AIContentServiceInterface {
-	return &AIContentService{ ctx: ctx, model: model}
+func NewAIContentService( ctx context.Context, model *genai.GenerativeModel, bpr interfaces.BlogRepository) AIContentServiceInterface {
+	model.ResponseMIMEType = "json/"
+	return &AIContentService{ ctx: ctx, model: model, blogPostRepository: bpr}
 }
 
 func (acs *AIContentService) GenerateContentSuggestions(keywords []string) (*genai.GenerateContentResponse, error) {
 
 	// Construct the prompt from the keywords
+
 	prompt := "Write blog content about: " + strings.Join(keywords, ", ")
 
 	resp, err :=acs. model.GenerateContent(acs.ctx, genai.Text(prompt))
@@ -37,7 +39,7 @@ func (acs *AIContentService) GenerateContentSuggestions(keywords []string) (*gen
 }
 
 
-func (acs *AIContentService) SuggestContentImprovements(blogPostId string) (*genai.GenerateContentResponse, error) {
+func (acs *AIContentService) SuggestContentImprovements(blogPostId,instruction string) (*genai.GenerateContentResponse, error) {
 
 	// Fetch the blog post content from the database
 	 blogPost, err := acs.blogPostRepository.GetBlogPostById(blogPostId)
@@ -50,7 +52,7 @@ func (acs *AIContentService) SuggestContentImprovements(blogPostId string) (*gen
 
 
 	// Generate a prompt for content improvement
-	prompt := "Improve the following blog: " + content
+	prompt := "Improve the following blog: " + content + "\n" + "by the following instructions: " + instruction + "\n"
 
 	resp, err := acs.model.GenerateContent(acs.ctx, genai.Text(prompt))
 	if err != nil {

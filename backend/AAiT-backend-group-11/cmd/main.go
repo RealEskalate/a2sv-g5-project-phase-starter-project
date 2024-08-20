@@ -24,5 +24,5 @@ func main()  {
 	authMiddleware := middleware.NewAuthMiddleware(ts)
 
 	// Do something with the database
-	route.Setup(env, db, gin.New(), authMiddleware)
+	route.Setup(env, db, gin.New(), authMiddleware, app.GenAi)
 }

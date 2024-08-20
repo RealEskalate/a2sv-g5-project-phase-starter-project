@@ -1,4 +1,4 @@
-package controllers
+package controller
 
 import (
 	"backend-starter-project/service"
@@ -8,10 +8,10 @@ import (
 )
 
 type AIContentController struct {
-	aiContentService service.AIContentService
+	aiContentService service.AIContentServiceInterface
 }
 
-func NewAIContentController(aiContentService service.AIContentService) *AIContentController {
+func NewAIContentController(aiContentService service.AIContentServiceInterface) *AIContentController {
 	return &AIContentController{
 		aiContentService: aiContentService,
 
@@ -39,6 +39,7 @@ func (acc *AIContentController) GenerateContentSuggestions(c *gin.Context) {
 func (acc *AIContentController) SuggestContentImprovements(c *gin.Context) {
 	var req struct {
 		BlogPostID string `json:"blogPostId"`
+		Instruction string `json:"instruction"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -46,7 +47,7 @@ func (acc *AIContentController) SuggestContentImprovements(c *gin.Context) {
 		return
 	}
 
-	contentSuggestion, err := acc.aiContentService.SuggestContentImprovements(req.BlogPostID)
+	contentSuggestion, err := acc.aiContentService.SuggestContentImprovements(req.BlogPostID, req.Instruction)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

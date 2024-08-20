@@ -17,6 +17,8 @@ type AuthRepository interface {
 	GenerateTokenFromUser(ctx context.Context, existingUser User) (Tokens, error, int)
 	ResetPassword(ctx context.Context, email string, password string, resetToken string) (error, int)
 	ForgetPassword(ctx context.Context, email string) (error, int)
+	ActivateAccount(ctx context.Context, token string) (error, int)
+	SendActivationEmail(email string) (error, int)
 }
 
 type AuthUseCase interface {
@@ -27,6 +29,7 @@ type AuthUseCase interface {
 	CallbackHandler(c *gin.Context, code string) (Tokens, error, int)
 	ResetPassword(c *gin.Context, email string, password string, resetToken string) (error, int)
 	ForgetPassword(c *gin.Context, email string) (error, int)
+	ActivateAccount(c *gin.Context, token string) (error, int)
 }
 
 type RefreshRepository interface {

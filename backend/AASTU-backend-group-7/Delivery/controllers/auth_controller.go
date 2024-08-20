@@ -98,20 +98,6 @@ func (ac *authController) Logout(c *gin.Context) {
 // sends email with token and reset link
 func (ac *authController) ForgetPassword(c *gin.Context) {
 	email := c.PostForm("email")
-	// 	_, err, status := ac.userRepository.FindByEmail(c, email)
-	// 	if err != nil {
-	// 		c.JSON(status, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// 	resetToken, err := jwtservice.GenerateToken(email)
-	// 	if err != nil {
-	// 		c.JSON(400, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-
-	// 	err = ac.emailservice.SendEmail(email, "Reset Password", `Click "http://localhost:8080/auth/forget-password/`+resetToken+`">hereto reset your password.
-	// `, "reset")
-
 	err, statusCode := ac.AuthUseCase.ForgetPassword(c, email)
 	if err != nil {
 		c.JSON(statusCode, gin.H{"error": err.Error()})
@@ -211,27 +197,12 @@ func (ac *authController) LoginHandlerGoogle(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
-// func (ac *authController) ChangePassword(c *gin.Context, email string, password string, resetToken string) error {
-
-// 	_, err := jwtservice.VerifyToken(resetToken)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	if password == "" {
-// 		return errors.New("password is required")
-// 	}
-// 	err = password_services.CheckPasswordStrength(password)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	hashed, err := password_services.GenerateFromPasswordCustom(password)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	_, err, _ = ac.userRepository.ChangePassByEmail(c, email, hashed)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	fmt.Println("password:", password, "reset_token", resetToken)
-// 	return nil
-// }
+func (ac *authController) ActivateAccount(c *gin.Context) {
+	activationToken := c.Params.ByName("activation_token")
+	err, statusCode := ac.AuthUseCase.ActivateAccount(c, activationToken)
+	if err != nil {
+		c.IndentedJSON(statusCode, gin.H{"message": err.Error()})
+		return
+	}
+	c.IndentedJSON(statusCode, gin.H{"message": "account activated successfully"})
+}

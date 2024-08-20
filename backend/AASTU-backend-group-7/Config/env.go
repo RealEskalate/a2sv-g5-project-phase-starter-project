@@ -5,6 +5,9 @@ import (
 	"os"
 )
 
+var Port = ":8080"
+var BASE_URL = "http://localhost" + Port
+
 // Global variable to store the Env variables
 var JwtSecret = []byte("your_jwt_secret")
 var MONGO_CONNECTION_STRING string

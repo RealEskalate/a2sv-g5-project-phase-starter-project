@@ -14,7 +14,7 @@ type User struct {
 	Role           string             `json:"role"`
 	ProfilePicture string             `json:"profile_picture"`
 	Bio            string             `json:"bio"`
-	EmailVerified  bool               `json:"email_verified"`
+	EmailVerified  bool               `bson:"email_verified"`
 	Name           string             `json:name`
 	CreatedAt      time.Time          `json:"created_at"`
 	UpdatedAt      time.Time          `json:"updated_at"`
@@ -29,7 +29,7 @@ type OmitedUser struct {
 	Role           string             `json:"role"`
 	ProfilePicture string             `json:"profile_picture"`
 	Bio            string             `json:"bio"`
-	EmailVerified  bool               `json:"email_verified"`
+	EmailVerified  bool               `bson:"email_verified"`
 	Name           string             `json:name`
 	CreatedAt      time.Time          `json:"created_at"`
 	UpdatedAt      time.Time          `json:"updated_at"`

@@ -10,6 +10,8 @@ import (
 
 func main() {
 	server := gin.Default()
+	
+	
 	config, err := infrastructure.LoadEnv()
 	if err != nil {
 		fmt.Print("Error in env.load")
@@ -21,7 +23,7 @@ func main() {
 		fmt.Print("Error in connectDB")
 	}
 	defer infrastructure.CloseDB(client)
-	routers.Router(server, config, DB)
+	routers.Router(server.Group("api/v0"), config, DB)
 	server.Run(fmt.Sprintf(":%d", config.Port))
 
 }

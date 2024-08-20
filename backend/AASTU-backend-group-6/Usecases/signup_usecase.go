@@ -65,12 +65,10 @@ func (u *SignupUseCase) Create(c context.Context , user domain.User) interface{}
 
 	// send OTP
 	otp , err := infrastructure.GenerateOTP()
-
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error generating OTP", Status: 500}
 	}
 	
-
 	// save OTP to db
 	_ , err = u.SignupRepository.Create(ctx  , user)
 	if err != nil {

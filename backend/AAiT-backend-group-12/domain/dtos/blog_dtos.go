@@ -25,7 +25,7 @@ type BlogDTO struct {
 type CommentDTO struct {
 	ID        primitive.ObjectID `bson:"_id"`
 	Content   string             `bson:"content"`
-	Username  string             `bson:"user_id"`
+	Username  string             `bson:"username"`
 	CreatedAt time.Time          `bson:"created_at"`
 	UpdatedAt time.Time          `bson:"updated_at"`
 }

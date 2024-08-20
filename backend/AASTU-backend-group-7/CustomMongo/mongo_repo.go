@@ -73,3 +73,4 @@ func (m *MongoCollection) CreateIndex(ctx context.Context, model bson.D, opts ..
 		Keys: model,
 	}
 	return m.Collection.Indexes().CreateOne(ctx, _model, opts...)
+}

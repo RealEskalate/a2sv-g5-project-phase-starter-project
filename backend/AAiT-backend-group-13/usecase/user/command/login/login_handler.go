@@ -21,17 +21,17 @@ type LoginHandler struct {
 
 type LoginConfig struct {
 	UserRepo     irepo.UserRepository
-	jwtService   ijwt.Service
+	JwtService   ijwt.Service
 	HashService  ihash.Service
-	emailService iemail.Service
+	EmailService iemail.Service
 }
 
 func NewLoginHandler(config LoginConfig) *LoginHandler {
 	return &LoginHandler{
 		repo:         config.UserRepo,
-		jwtService:   config.jwtService,
+		jwtService:   config.JwtService,
 		hashService:  config.HashService,
-		emailService: config.emailService,
+		emailService: config.EmailService,
 	}
 }
 

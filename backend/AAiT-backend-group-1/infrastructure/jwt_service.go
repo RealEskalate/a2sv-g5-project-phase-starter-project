@@ -19,10 +19,11 @@ type JWTTokenService struct {
 
 func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User) (string, error) {
 	claim := jwt.MapClaims{
-		"id":   user.ID,
-		"role": user.Role,
-		"exp":  time.Now().Add(time.Minute * 15).Unix(),
-		"iat":  time.Now().Unix(),
+		"user_id":  user.ID.Hex(),
+		"username": user.Username,
+		"role":     user.Role,
+		"exp":      time.Now().Add(time.Minute * 15).Unix(),
+		"iat":      time.Now().Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
@@ -83,6 +84,26 @@ func (service *JWTTokenService) ValidateRefreshToken(token string) (*jwt.Token, 
 		return nil, fmt.Errorf("token is invalid")
 	}
 	return parsedToken, nil
+}
+
+func (service *JWTTokenService) GenerateVerificationToken(email string) (string, error) {
+	claim := jwt.MapClaims{
+		"email": email,
+		"exp":   time.Now().Add(time.Minute * 15).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	jwtToken, err := token.SignedString(service.RefreshSecret)
+	if err != nil {
+		return "", err
+	}
+
+	_, errInsert := service.Collection.InsertOne(context.TODO(), bson.M{"token": jwtToken})
+	if errInsert != nil {
+		return "", errInsert
+	}
+
+	return jwtToken, nil
 }
 
 func (service *JWTTokenService) RevokedToken(token string) error {

@@ -7,6 +7,7 @@ import (
 )
 
 func NewOAuthRouter(routerGroup *gin.RouterGroup) {
-	routerGroup.GET("/auth/google/start", controllers.BeginGoogleAuth)
-	routerGroup.GET("auth/google/callback", controllers.OAuthCallback)
+	controller := controllers.NewOAuthController()
+	routerGroup.GET("/auth/google/start", controller.GoogleAuthInit)
+	routerGroup.GET("/auth/google/callback", controller.OAuthCallback)
 }

@@ -6,6 +6,7 @@ import (
 	initdb "blog_api/infrastructure/db"
 	google_auth "blog_api/infrastructure/oauth"
 	redis_service "blog_api/infrastructure/redis"
+	"fmt"
 	"log"
 )
 
@@ -48,7 +49,7 @@ func main() {
 	defer redisClient.Close()
 
 	// create google provider for oauth
-	google_auth.NewAuth("", "", "", 0)
+	google_auth.NewAuth(env.ENV.GOOGLE_CLIENT_ID, env.ENV.GOOGLE_CLIENT_SECRET, 1, fmt.Sprintf("http://localhost:%v/auth/google/callback", env.ENV.PORT))
 
 	// setup router
 	router.SetupRouter(env.ENV.PORT, env.ENV.ROUTE_PREFIX, database, redisClient)

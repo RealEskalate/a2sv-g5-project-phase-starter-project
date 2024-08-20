@@ -4,6 +4,7 @@ import (
 	"blog_api/domain"
 	"blog_api/domain/dtos"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -16,17 +17,17 @@ type AuthController struct {
 func GetHTTPErrorCode(err domain.CodedError) int {
 	switch err.GetCode() {
 	case domain.ERR_BAD_REQUEST:
-		return 400
+		return http.StatusBadRequest
 	case domain.ERR_UNAUTHORIZED:
-		return 401
+		return http.StatusUnauthorized
 	case domain.ERR_FORBIDDEN:
-		return 403
+		return http.StatusForbidden
 	case domain.ERR_NOT_FOUND:
-		return 404
+		return http.StatusNotFound
 	case domain.ERR_CONFLICT:
-		return 409
+		return http.StatusConflict
 	default:
-		return 500
+		return http.StatusInternalServerError
 	}
 }
 
@@ -61,7 +62,7 @@ func (controller *AuthController) GetDomain(c *gin.Context) string {
 func (controller *AuthController) HandleSignup(c *gin.Context) {
 	var newUser domain.User
 	if err := c.BindJSON(&newUser); err != nil {
-		c.JSON(400, domain.Response{"error": "Invalid input"})
+		c.JSON(http.StatusBadRequest, domain.Response{"error": "Invalid input"})
 		return
 	}
 
@@ -77,7 +78,7 @@ func (controller *AuthController) HandleSignup(c *gin.Context) {
 func (controller *AuthController) HandleLogin(c *gin.Context) {
 	var newUser domain.User
 	if err := c.BindJSON(&newUser); err != nil {
-		c.JSON(400, domain.Response{"error": "Invalid input"})
+		c.JSON(http.StatusBadRequest, domain.Response{"error": "Invalid input"})
 		return
 	}
 
@@ -93,7 +94,7 @@ func (controller *AuthController) HandleLogin(c *gin.Context) {
 func (controller *AuthController) HandleRenewAccessToken(c *gin.Context) {
 	token, gErr := controller.GetAuthHeader(c)
 	if gErr != nil {
-		c.JSON(401, domain.Response{"error": gErr.Error()})
+		c.JSON(http.StatusUnauthorized, domain.Response{"error": gErr.Error()})
 		return
 	}
 
@@ -109,19 +110,19 @@ func (controller *AuthController) HandleRenewAccessToken(c *gin.Context) {
 func (controller *AuthController) HandleUpdateUser(c *gin.Context) {
 	reqUsername := strings.TrimSpace(c.Param("username"))
 	if reqUsername == "" {
-		c.JSON(400, domain.Response{"error": "Username is required"})
+		c.JSON(http.StatusBadRequest, domain.Response{"error": "Username is required"})
 		return
 	}
 
 	var updatedUser dtos.UpdateUser
 	if err := c.BindJSON(&updatedUser); err != nil {
-		c.JSON(400, domain.Response{"error": "Invalid input"})
+		c.JSON(http.StatusBadRequest, domain.Response{"error": "Invalid input"})
 		return
 	}
 
 	tokenUsername, ok := c.Keys["username"]
 	if !ok {
-		c.JSON(400, domain.Response{"error": "Username not found in token"})
+		c.JSON(http.StatusBadRequest, domain.Response{"error": "Username not found in token"})
 		return
 	}
 
@@ -203,7 +204,7 @@ func (controller *AuthController) HandleResetPassword(c *gin.Context) {
 	var resetData dtos.ResetPassword
 	token, err := controller.GetAuthHeader(c)
 	if err != nil {
-		c.JSON(401, domain.Response{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, domain.Response{"error": err.Error()})
 		return
 	}
 
@@ -224,9 +225,25 @@ func (controller *AuthController) HandleResetPassword(c *gin.Context) {
 func (controller *AuthController) HandleLogout(c *gin.Context) {
 	authHeader, err := controller.GetAuthHeader(c)
 	if err != nil {
-		c.JSON(401, domain.Response{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, domain.Response{"error": err.Error()})
 		return
 	}
 
 	controller.usecase.Logout(c, c.Keys["username"].(string), authHeader)
+}
+
+func (controller *AuthController) HandleGoogleAuth(c *gin.Context) {
+	var response dtos.GoogleResponse
+	if err := c.ShouldBindJSON(&response); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	acK, rfK, err := controller.usecase.GoogleOAuthAccess(c, &response)
+	if err != nil {
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
+		return
+	}
+
+	c.JSON(201, domain.Response{"accessToken": acK, "refreshToken": rfK})
 }

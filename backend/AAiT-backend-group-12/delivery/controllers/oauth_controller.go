@@ -8,14 +8,20 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
-func BeginGoogleAuth(c *gin.Context) {
+type OAuthController struct{}
+
+func NewOAuthController() *OAuthController {
+	return &OAuthController{}
+}
+
+func (controller *OAuthController) GoogleAuthInit(c *gin.Context) {
 	query := c.Request.URL.Query()
 	query.Add("provider", "google")
 	c.Request.URL.RawQuery = query.Encode()
 	gothic.BeginAuthHandler(c.Writer, c.Request)
 }
 
-func OAuthCallback(c *gin.Context) {
+func (controller *OAuthController) OAuthCallback(c *gin.Context) {
 	query := c.Request.URL.Query()
 	query.Add("provider", "google")
 	c.Request.URL.RawQuery = query.Encode()

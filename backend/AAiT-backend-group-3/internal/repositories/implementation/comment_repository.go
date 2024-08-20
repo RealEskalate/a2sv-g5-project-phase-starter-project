@@ -18,9 +18,13 @@ func NewMongoCommentRepository(db *mongo.Database, collectionName string) *Mongo
 	}
 }
 
-func (r *MongoCommentRepository) CreateComment(comment *models.Comment) error {
+func (r *MongoCommentRepository) CreateComment(comment *models.Comment) (*models.Comment,error) {
+	comment.ID = primitive.NewObjectID()
 	_, err := r.collection.InsertOne(ctx, comment)
-	return err
+	if err != nil {
+		return &models.Comment{}, err
+	}
+	return comment, nil
 }
 
 func (r *MongoCommentRepository) GetCommentByID(commentID primitive.ObjectID) (*models.Comment, error) {

@@ -1,4 +1,6 @@
+'use client'
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import ImageComponent from "./components/ImageComponent";
 import Reviving from "./components/QuickTransfer";
 import { BalanceHistory } from "./components/BalanceHistory";
@@ -6,10 +8,36 @@ import { WeeklyActivity } from "./components/WeeklyActivity";
 import { ExpenseStatistics } from "./components/ExpenseStatistics";
 import RecentTransaction from "./components/RecentTransaction";
 import CreditCard from "./components/CreditCard";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 // import {RecentTransaction} from "@/components/RecentTransaction"
 
 export default function Home() {
+  const [session, setSession] = useState(false);
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = await getSession();
+      if (sessionData?.user) {
+        console.log("Session Available");
+        setSession(true);
+      }
+    };
+
+    fetchSession();
+  }, []);
+  // getting the session ends here
+  const router = useRouter();
+    
+  if (!session){
+    router.push('./api/auth/signin');
+    
+    return;
+  }
   return (
+   
+    
+    
+      
     <div className="flex flex-col">
       {/* Mobile Version */}
       <div className="flex flex-col md:hidden">
@@ -121,5 +149,9 @@ export default function Home() {
         </div>
       </div>
     </div>
+    
+
+  
   );
+
 }

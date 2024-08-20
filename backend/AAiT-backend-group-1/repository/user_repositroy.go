@@ -116,6 +116,7 @@ func (userRepo *UserRepository) Update(cxt context.Context, id string, user *dom
 
 	return nil
 }
+
 func (userRepo *UserRepository) Delete(cxt context.Context, id string) domain.Error {
 	deleteID, errIDParse := primitive.ObjectIDFromHex(id)
 	if errIDParse != nil {

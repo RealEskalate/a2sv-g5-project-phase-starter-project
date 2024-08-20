@@ -83,4 +83,3 @@ func IsStrongPassword(password string) bool {
 
 	return hasUpper && hasLower && hasNumber && hasSpecial
 }
-

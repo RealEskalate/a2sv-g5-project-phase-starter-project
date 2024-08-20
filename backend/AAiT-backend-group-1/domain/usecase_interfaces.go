@@ -9,9 +9,9 @@ import (
 
 type UserUseCase interface {
 	Register(context context.Context, user *User) Error
-	Login(context context.Context, username, password string) (string, Error)
+	Login(context context.Context, username, password string) (map[string]string, Error)
 	ForgotPassword(context context.Context, email string) Error
-	Logout(context context.Context, token string) Error
+	Logout(context context.Context, token map[string]string) Error
 	PromoteUser(context context.Context, userID string) Error
 	DemoteUser(context context.Context, userID string) Error
 	UpdateProfile(context context.Context, userID string, user *User) Error

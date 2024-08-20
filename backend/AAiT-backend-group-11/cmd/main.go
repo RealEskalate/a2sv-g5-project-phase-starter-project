@@ -17,6 +17,7 @@ func main()  {
 
 	db := app.Mongo.Database(env.DBName)
 	defer app.CloseDBConnection()
+	defer app.CloseModelClient()
 
 	tr := repository.NewTokenRepository(db)
 	ur := repository.NewUserRepository(db.Collection("users"))
@@ -24,5 +25,5 @@ func main()  {
 	authMiddleware := middleware.NewAuthMiddleware(ts)
 
 	// Do something with the database
-	route.Setup(env, db, gin.New(), authMiddleware, app.GenAi)
+	route.Setup(env, db, gin.Default(), authMiddleware, app.GenAi)
 }

@@ -11,6 +11,11 @@ type ProfileController struct {
 	profileService interfaces.ProfileService
 }
 
+func NewProfileController(ps interfaces.ProfileService ) *ProfileController {
+		return &ProfileController{ profileService: ps }
+	}
+
+
 func (controller *ProfileController) CreateUserProfile(ctx *gin.Context) {
 	var profile entities.Profile
 	err := ctx.ShouldBindJSON(&profile)

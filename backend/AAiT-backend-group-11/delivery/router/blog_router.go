@@ -22,12 +22,12 @@ func NewBlogRouter(db *mongo.Database, group *gin.RouterGroup, model *genai.Gene
 	ac := controller.NewBlogController(bs)
 
 
-	group.POST("/", ac.CreateBlogPost)
-	group.GET("/", ac.GetBlogPosts)
-	group.GET("/:id", ac.GetBlogPost)
-	group.PUT("/:id", ac.UpdateBlogPost)
-	group.DELETE("/:id", ac.DeleteBlogPost)
+	group.POST("", ac.CreateBlogPost)
+	group.GET("", ac.GetBlogPosts)
+	group.GET(":id", ac.GetBlogPost)
+	group.PUT(":id", ac.UpdateBlogPost)
+	group.DELETE(":id", ac.DeleteBlogPost)
 
-	group.POST("/generate", aic.GenerateContentSuggestions)
-	group.POST("/enhance/:id", aic.SuggestContentImprovements)
+	group.POST("generate", aic.GenerateContentSuggestions)
+	group.POST("enhance/:id", aic.SuggestContentImprovements)
 }

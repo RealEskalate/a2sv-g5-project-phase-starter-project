@@ -21,25 +21,21 @@ func (gr *BlogRoute) GinBlogRouter() {
 		// INFO:PASSED
 		blogRouter.POST("/new", gr.usecase.HandleCreateBlog)
 		blogRouter.GET("/all", gr.usecase.HandleGetAllBlogs)
+		blogRouter.GET("/popular", gr.usecase.HandleGetPopular)
 		blogRouter.GET("/filter", gr.usecase.HandleFilterBlogs)
 		blogRouter.PATCH("/:blogId", gr.usecase.HandleUpdate)
 		blogRouter.DELETE("/:blogId", gr.usecase.HandleDelete)
-
-		// TODO: aperson cannot like and dislike the same blog
 		blogRouter.PATCH("/interact/:type", gr.usecase.HandleBlogLikeOrDislike)
-		// 
-		
-		
+
 	}
 	commentRouter := router.Group("/comment")
 	{
-		// TODO: check if there is a blog with such id 
+		// TODO: check if there is a blog with such id
 		commentRouter.PATCH("/new", gr.usecase.HandleCommentOnBlog)
 
-		// TODO: aperson cannot like and dislike the same blcomment
 		commentRouter.PATCH("/interact/:type", gr.usecase.HandleCommentLikeOrDislike)
+		commentRouter.GET("/:blogId", gr.usecase.HandleGetAllComments)
 		// INFO:TESTING
-		commentRouter.GET("/:blogId",gr.usecase.HandleGetAllComments)
 		// INFO:TOBE TESTED
 		// commentRouter.PATCH("/:comment/interact:commentId", gr.usecase.HandleCommentLikeOrDislike)
 		// commentRouter.PATCH("/:comment/interact:commentId", gr.usecase.HandleCommentLikeOrDislike)

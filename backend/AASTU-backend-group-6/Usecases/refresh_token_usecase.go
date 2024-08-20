@@ -25,15 +25,15 @@ func (r *refreshTokenUsecase) RemoveActiveUser(c context.Context, id string, use
 	ctx, cancel := context.WithTimeout(c, r.contextTimeout)
 	defer cancel()
 
-	return r.activeUserRepository.DeleteActiveUser(id,user_agent, ctx)
+	return r.activeUserRepository.DeleteActiveUser(id, user_agent, ctx)
 }
 
 // checkActiveUser implements domain.RefreshTokenUsecase.
-func (r *refreshTokenUsecase) CheckActiveUser(c context.Context, id string) (domain.ActiveUser, error) {
+func (r *refreshTokenUsecase) CheckActiveUser(c context.Context, id string, user_agent string) (domain.ActiveUser, error) {
 	ctx, cancel := context.WithTimeout(c, r.contextTimeout)
 	defer cancel()
 
-	return r.activeUserRepository.FindActiveUserById(id, ctx)
+	return r.activeUserRepository.FindActiveUser(id, user_agent, ctx)
 }
 
 // checkActiveUser implements domain.RefreshTokenUsecase.

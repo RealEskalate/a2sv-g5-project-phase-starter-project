@@ -13,14 +13,14 @@ import (
 
 func NewSignupRoute(config *infrastructure.Config, DB mongo.Database, SignupRoute *gin.RouterGroup) {
 
-	repo := repositories.NewSignupRepository(DB , config.UserCollection)
-	
-	usecase := usecases.NewSignupUseCase(repo , time.Duration(config.ContextTimeout) * time.Second)
+	repo := repositories.NewSignupRepository(DB, config.UserCollection)
+
+	usecase := usecases.NewSignupUseCase(repo, time.Duration(config.ContextTimeout)*time.Second)
 	signup := controllers.SignupController{
 		SignupUsecase: usecase,
 	}
 
 	SignupRoute.POST("/signup", signup.Signup)
-	SignupRoute.POST("/signup/verify" , signup.VerifyOTP)
-	SignupRoute.POST("/reset" , signup.ForgotPassword)
+	SignupRoute.POST("/signup/verify", signup.VerifyOTP)
+	SignupRoute.POST("/reset", signup.ForgotPassword)
 }

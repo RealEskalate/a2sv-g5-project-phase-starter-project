@@ -8,17 +8,21 @@ import AddNewCard from "./AddNewCard";
 import CardSetting from "./CardSetting";
 import creditCardColor from "./cardMockData";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
+import { FaLessThan, FaGreaterThan } from "react-icons/fa";
 
 const CreditCardComponent: React.FC = () => {
 	const [cardData, setCardData] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [currentPage, setCurrentPage] = useState(0);
+	const [totalPages, setTotalPages] = useState(0);
 
 	const { data: session, status } = useSession();
 
-	const accessToken = session.user.accessToken;
+	const accessToken = session?.user?.accessToken;
 
-	const fetchCardData = async () => {
+	const fetchCardData = async (page: number) => {
 		if (!accessToken) {
 			setError("No access token available");
 			setLoading(false);
@@ -27,7 +31,7 @@ const CreditCardComponent: React.FC = () => {
 
 		try {
 			const response = await fetch(
-				"https://bank-dashboard-6acc.onrender.com/cards",
+				`https://bank-dashboard-6acc.onrender.com/cards?page=${page}&size=3`,
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -40,7 +44,8 @@ const CreditCardComponent: React.FC = () => {
 			}
 
 			const data = await response.json();
-			setCardData(data);
+			setCardData(data.content || []);
+			setTotalPages(data.totalPages || 0);
 		} catch (error) {
 			setError((error as Error).message);
 		} finally {
@@ -49,16 +54,30 @@ const CreditCardComponent: React.FC = () => {
 	};
 
 	useEffect(() => {
-		fetchCardData();
-	}, []);
+		if (accessToken) {
+			fetchCardData(currentPage);
+		}
+	}, [accessToken, currentPage]);
 
 	const handleCardAdded = () => {
 		// Re-fetch the card data to update the list
-		fetchCardData();
+		fetchCardData(currentPage);
+	};
+
+	const handleNextPage = () => {
+		if (currentPage < totalPages - 1) {
+			setCurrentPage((prevPage) => prevPage + 1);
+		}
+	};
+
+	const handlePreviousPage = () => {
+		if (currentPage > 0) {
+			setCurrentPage((prevPage) => prevPage - 1);
+		}
 	};
 
 	if (loading) {
-		return <p className="text-center py-5 text-blue-500 ">Loading...</p>;
+		return <p className="text-center py-5 text-blue-500">Loading...</p>;
 	}
 	if (error) {
 		return <p className="py-5">Error: {error}</p>;
@@ -70,20 +89,63 @@ const CreditCardComponent: React.FC = () => {
 				<div className="font-semibold text-blue-900 p-2">My Cards</div>
 				<div className="overflow-x-auto">
 					<div className="flex flex-nowrap gap-6 w-[940px] sm:w-[1024px] md:w-full">
-						{creditCardColor.map((cardColor, index) => (
-							<Card key={index} cardData={cardData[0]} cardColor={cardColor} />
+						{cardData.map((card, index) => (
+							<Card
+								key={index}
+								cardData={card}
+								cardColor={creditCardColor[index % creditCardColor.length]}
+							/>
 						))}
 					</div>
 				</div>
 			</div>
 
-			<div className="flex flex-col sm:flex-row gap-6 sm:gap-12 mt-6">
+			<div className="flex flex-col sm:flex-row gap-6 sm:gap-12 mt-6 pb-2">
 				<div className="w-full sm:w-[33%]">
 					<CardStatistics />
 				</div>
-				<div className="flex flex-col w-full sm:w-[67%]">
+				<div className="flex flex-col w-full sm:w-[67%] ">
 					<div className="font-semibold text-blue-900 p-3">Card List</div>
 					<CardList cardId={cardData.map((card) => card.id)} />
+					<div className="flex justify-end  items-center px-3 text-sm">
+						<div className="flex gap-1 items-center ">
+							<FaLessThan className="text-[#1814F3]  opacity-60   " />
+							<button
+								onClick={handlePreviousPage}
+								disabled={currentPage === 0}
+								className=" text-[#1814F3] rounded "
+							>
+								Previous
+							</button>
+						</div>
+
+						{/* Page numbers */}
+						<div className="flex px-2">
+							{Array.from({ length: totalPages }, (_, index) => (
+								<button
+									key={index}
+									onClick={() => setCurrentPage(index)}
+									className={`px-4 py-2 rounded-xl ${
+										currentPage === index
+											? "bg-blue-500 text-white"
+											: " text-[#1814F3]"
+									}`}
+								>
+									{index + 1}
+								</button>
+							))}
+						</div>
+						<div className="flex gap-1 items-center ">
+							<button
+								onClick={handleNextPage}
+								disabled={currentPage >= totalPages - 1}
+								className="  text-[#1814F3] rounded"
+							>
+								Next
+							</button>
+							<FaGreaterThan className="text-[#1814F3]  opacity-60 " />
+						</div>
+					</div>
 				</div>
 			</div>
 

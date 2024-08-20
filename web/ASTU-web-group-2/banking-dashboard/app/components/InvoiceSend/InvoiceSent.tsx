@@ -1,6 +1,6 @@
 'use client'
 import React from "react";
-import { useGetAllTransactionQuery } from "../recent-transaction/transcation";
+import { useGetAllTransactionQuery } from "@/lib/service/TransactionService";
 import { useSession } from "next-auth/react";
 interface Props{
   description : string,

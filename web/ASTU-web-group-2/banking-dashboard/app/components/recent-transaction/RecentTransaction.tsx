@@ -43,8 +43,8 @@ const recentlistitems = [
 ];
 
 const RecentTransaction = () => {
-  const session = useSession();
-  const accessToken = session.data?.user.accessToken || "";
+  const { data: session } = useSession();
+  const accessToken = session?.user?.accessToken || "";
   const { data, isLoading, error } = useGetAllTransactionQuery(accessToken);
 
   if (isLoading) {
@@ -55,20 +55,26 @@ const RecentTransaction = () => {
     return <div>Error fetching transactions</div>;
   }
 
-  const fetcheddata: Props[] = data?.data || recentlistitems;
+  // Ensure that data?.data is an array
+  let fetcheddata: Props[] = Array.isArray(data?.data) ? data.data : recentlistitems;
 
-  fetcheddata.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  // Limit data to the last 3 items
+  if (fetcheddata.length > 3) {
+    fetcheddata = fetcheddata.slice(-3);
+  }
 
-  const limitedData = fetcheddata.slice(0, 3);
+  // Debugging: Check type and content of fetcheddata
+  console.log('Fetched data:', fetcheddata);
+  console.log('Is array:', Array.isArray(fetcheddata));
 
   return (
     <div className='flex flex-col flex-initial flex-wrap gap-[10px] bg-white drop-shadow-xl font-medium rounded-[25px] p-[25px]'>
-      {limitedData.length === 0 ? (
+      {fetcheddata.length === 0 ? (
         <div>No recent transactions available</div>
       ) : (
-        limitedData.map((value, index) => (
+        fetcheddata.map((value, index) => (
           <div key={index} className='flex items-center gap-3'>
-            <img src={icons[index]} alt='Icon' />
+            <img src={icons[index % icons.length]} alt='Icon' />
             <div className='flex flex-col gap-1'>
               <p className='text-[16px] text-[#232323] leading-[19.36px]'>
                 {value.receiverUserName || recentlistitems[index].transactionName}

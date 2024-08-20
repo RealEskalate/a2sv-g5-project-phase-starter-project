@@ -18,30 +18,38 @@ interface Card {
 
 interface FullCard extends Card {
   cardNumber: string;
-  bank?: string; // Optional bank property
+  bank?: string; 
 }
 
 const CardList = () => {
-  const session = useSession();
-  const accessToken = session.data?.user.accessToken || "";
+  const { data: session } = useSession();
+  const accessToken = session?.user?.accessToken || "";
   
   const { data: cardsData, isLoading, error } = useGetAllCardInfoQuery(accessToken);
   const [cardDetails, setCardDetails] = useState<FullCard[]>([]);
-  const [retrieveCardInfo, { data: cardDetailsData }] = useLazyRetiriveCardInfoQuery();
+  const [retrieveCardInfo, { data: cardDetailsData, error: retrieveCardInfoError }] = useLazyRetiriveCardInfoQuery();
 
   useEffect(() => {
     const fetchFullCardDetails = async () => {
-      if (cardsData && cardsData.length > 0) {
-        const limitedData = cardsData.slice(0, 3); // Limit to the first 3 cards
+      if (cardsData && Array.isArray(cardsData) && cardsData.length > 0) {
+        const limitedData = cardsData.slice(0, 3);
 
         const fullCardsPromises = limitedData.map(async (card: Card) => {
-          const { data: cardDetails } = await retrieveCardInfo({ token: accessToken, id: card.id });
-
-          return {
-            ...card,
-            cardNumber: cardDetails?.cardNumber || "",
-            bank: cardDetails?.bank || "DBM Bank", // Default bank value
-          };
+          try {
+            const { data: cardDetails } = await retrieveCardInfo({ token: accessToken, id: card.id });
+            return {
+              ...card,
+              cardNumber: cardDetails?.cardNumber || "",
+              bank: cardDetails?.bank || "DBM Bank",
+            };
+          } catch (error) {
+            console.error(`Error fetching details for card ${card.id}:`, error);
+            return {
+              ...card,
+              cardNumber: "",
+              bank: "DBM Bank",
+            };
+          }
         });
 
         const fullCards = await Promise.all(fullCardsPromises);
@@ -72,45 +80,31 @@ const CardList = () => {
       {displayedCards.length === 0 ? (
         <div>No card details available</div>
       ) : (
-        displayedCards.map((card: FullCard, index) => (
+        displayedCards.map((card: FullCard) => (
           <div
             key={card.id}
             className="grid grid-flow-col h-[69px] lg:h-[90px] justify-between mb-[10px] sm:mb-[15px] items-center pl-[20px] bg-white rounded-3xl grid-col-12"
           >
             <div className="col-span-1">
-              <img src={icons[index]} className="lg:w-[60px] w-[45px]" alt={`Card ${index}`} />
+              <img src={icons[Math.floor(Math.random() * icons.length)]} className="lg:w-[60px] w-[45px]" alt={`Card Icon`} />
             </div>
             <div className="col-span-2">
-              <p className="text-[14px] md:[text-[12px]] lg:text-[16px] text-[#333B69]">
-                Card Type
-              </p>
-              <span className="text-[12px] sm:text-[15px] text-[#718EBF]">
-                {card.cardType}
-              </span>
+              <p className="text-[14px] md:text-[12px] lg:text-[16px] text-[#333B69]">Card Type</p>
+              <span className="text-[12px] sm:text-[15px] text-[#718EBF]">{card.cardType}</span>
             </div>
             <div className="col-span-[2.5]">
-              <p className="text-[14px] md:[text-[12px]] lg:text-[16px] text-[#333B69]">
-                Bank
-              </p>
-              <span className="text-[12px] md:[text-[12px]] lg:text-[16px] text-[#718EBF]">
-                {card.bank}
-              </span>
+              <p className="text-[14px] md:text-[12px] lg:text-[16px] text-[#333B69]">Bank</p>
+              <span className="text-[12px] md:text-[12px] lg:text-[16px] text-[#718EBF]">{card.bank}</span>
             </div>
             <div className="hidden col-span-[2.5] sm:block">
-              <p className="text-[14px] md:text-[12px] lg:text-[16px] text-[#333B69] font-medium">
-                Card Number
-              </p>
+              <p className="text-[14px] md:text-[12px] lg:text-[16px] text-[#333B69] font-medium">Card Number</p>
               <span className="text-[12px] sm:text-[15px] text-[#718EBF]">
                 {'*'.repeat(4)} {'*'.repeat(4)} {card.cardNumber.slice(-4)}
               </span>
             </div>
             <div className="hidden col-span-2 sm:block">
-              <p className="text-[14px] sm:text-[16px] text-[#333B69] font-medium">
-                Card Holder
-              </p>
-              <span className="text-[12px] sm:text-[15px] text-[#718EBF]">
-                {card.cardHolder}
-              </span>
+              <p className="text-[14px] sm:text-[16px] text-[#333B69] font-medium">Card Holder</p>
+              <span className="text-[12px] sm:text-[15px] text-[#718EBF]">{card.cardHolder}</span>
             </div>
             <div className="col-span-2">
               <p className="text-[14px] sm:text-[16px] text-[#1814F3] font-medium">

@@ -3,31 +3,29 @@ package bootstrap
 import (
 	"AAiT-backend-group-6/mongo"
 	"context"
-	"fmt"
 	"log"
-	"time"
+	// "time"
 )
 
 func NewMongoDatabase(env *Env) mongo.Client {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// defer cancel()
 
-	dbHost := env.DBHost
-	dbPort := env.DBPort
-
-	mongodbURI := fmt.Sprintf("mongodb://%s:%s", dbHost, dbPort)
-
-	client, err := mongo.NewClient(mongodbURI)
+	// Create a new instance of your custom mongoClient
+	client, err := mongo.NewClient("mongodb://localhost:27017")
+	print(client)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = client.Connect(ctx)
+	// Connect the client
+	err = client.Connect(context.TODO())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = client.Ping(ctx)
+	// Ping the database to check the connection
+	err = client.Ping(context.TODO())
 	if err != nil {
 		log.Fatal(err)
 	}

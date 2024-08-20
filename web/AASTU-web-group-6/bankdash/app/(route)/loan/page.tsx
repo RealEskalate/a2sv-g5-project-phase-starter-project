@@ -7,12 +7,12 @@ import loanApi from "@/app/Services/api/loanApi";
 const loans: LoanType[] = [];
 
 const Loan = async () => {
-  // const accessToken = process.env.NAHOM_TOKEN as string;
+  const accessToken = process.env.NAHOM_TOKEN as string;
 
-  // const loanData = await loanApi.getLoan(accessToken);
-  // console.log(loanData);
+  const loanData = await loanApi.getLoan(accessToken);
+
   return (
-    <div className="space-y-4 mt-4">
+    <div className="px-5 space-y-4 mt-4 w-full h-screen">
       <div className="flex flex-col lg:flex-row gap-7">
         <div className="flex lg:w-[45%] gap-7">
           <Card
@@ -47,7 +47,7 @@ const Loan = async () => {
           />
         </div>
       </div>
-      <LoanTable loans={loans} />
+      <LoanTable loans={loanData} />
     </div>
   );
 };

@@ -59,6 +59,7 @@ type UserUsecase interface {
 	CreateUser(c context.Context, user *User) error
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
+
 	GetUsers(c context.Context, limit int64, page int64) (*[]User, mongopagination.PaginationData, error)
 	UpdateUser(c context.Context, userID string, updatedUser *User) error
 	DeleteUser(c context.Context, userID string) error

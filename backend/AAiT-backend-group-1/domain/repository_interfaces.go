@@ -12,6 +12,13 @@ type UserRepository interface {
 	Delete(cxt context.Context, id string) Error
 }
 
+type SessionRepository interface {
+	FindTokenById(cxt context.Context, id string) (*Session, Error)
+	CreateToken(cxt context.Context, session *Session) (*Session, Error)
+	UpdateToken(cxt context.Context, id string, session *Session) Error
+	DeleteToken(cxt context.Context, id string) Error
+	FindTokenByUserUsername(cxt context.Context, username string) (*Session, bool, Error)
+}
 type BlogRepository interface {
 	FindById(id string) (*Blog, Error)
 	FindAll() ([]Blog, Error)

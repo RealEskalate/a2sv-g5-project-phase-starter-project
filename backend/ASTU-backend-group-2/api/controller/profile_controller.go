@@ -24,7 +24,7 @@ type ProfileController struct {
 func (pc *ProfileController) GetProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.Param("id")
-		user, err := pc.UserUsecase.GetUser(c, userID)
+		user, err := pc.UserUsecase.GetUserById(c, userID)
 		if err != nil {
 			c.JSON(500, domain.ErrorResponse{Message: err.Error()})
 			return

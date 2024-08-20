@@ -83,11 +83,10 @@ type BlogRepository interface {
 	GetByPopularity(c context.Context) ([]Blog, error)
 	Search(c context.Context, searchTerm string) ([]Blog, error)
 	CreateBlog(c context.Context, newBlog *Blog) (Blog, error)
-	UpdateBlog(c context.Context, blogID string, updatedBlog *Blog) (Blog, error)
+	UpdateBlog(c context.Context, blogID string, updatedBlog *BlogUpdate) (Blog, error)
 	DeleteBlog(c context.Context, blogID string) error
 	SortByDate(c context.Context) ([]Blog, error)
 }
-
 
 type CommentRepository interface {
 	GetComments(c context.Context, blogID string) ([]Comment, error)
@@ -102,19 +101,17 @@ type LikeRepository interface {
 	DislikeBlog(c context.Context, blogID, userID string) error
 }
 
-
 type BlogUsecase interface {
-  GetByTags(c context.Context, tags []string) ([]Blog, error)
+	GetByTags(c context.Context, tags []string) ([]Blog, error)
 	GetAllBlogs(c context.Context) ([]Blog, error)
 	GetBlogByID(c context.Context, blogID string) (Blog, error)
 	GetByPopularity(c context.Context) ([]Blog, error)
 	Search(c context.Context, searchTerm string) ([]Blog, error)
 	CreateBlog(c context.Context, newBlog *Blog) (Blog, error)
-	UpdateBlog(c context.Context, blogID string, updatedBlog *Blog) (Blog, error)
+	UpdateBlog(c context.Context, blogID string, updatedBlog *BlogUpdate) (Blog, error)
 	DeleteBlog(c context.Context, blogID string) error
 	SortByDate(c context.Context) ([]Blog, error)
 }
-
 
 type CommentUsecase interface {
 	GetComments(c context.Context, blogID string) ([]Comment, error)
@@ -123,7 +120,6 @@ type CommentUsecase interface {
 	UpdateComment(c context.Context, blogID, commentID string, updatedComment *Comment) (Comment, error)
 	DeleteComment(c context.Context, blogID, commentID string) error
 }
-
 
 type LikeUsecase interface {
 	LikeBlog(c context.Context, blogID, userID string) error

@@ -49,7 +49,8 @@ func (sc *SignupController) Signup(c *gin.Context) {
 		Password:  request.Password,
 	}
 
-	err = sc.SignupUsecase.Create(c, &user)
+	_, err = sc.SignupUsecase.Create(c, &user)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return

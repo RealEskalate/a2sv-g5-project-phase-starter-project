@@ -58,7 +58,7 @@ type UserUsecase interface {
 	CreateUser(c context.Context, user *User) error
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
-	GetUsers(c context.Context) (*[]User, error) 
+	GetUsers(c context.Context) (*[]User, error)
 	UpdateUser(c context.Context, userID string, updatedUser *User) error
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)
@@ -71,14 +71,14 @@ type UserUsecase interface {
 }
 
 type UserRepository interface {
-	CreateUser(c context.Context, user *User) (*User,error)
+	CreateUser(c context.Context, user *User) (*User, error)
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
-	GetUsers(c context.Context) (*[]User, error) 
-	UpdateUser(c context.Context, userID string, updatedUser *User) (*User,error)
+	GetUsers(c context.Context) (*[]User, error)
+	UpdateUser(c context.Context, userID string, updatedUser *UserUpdate) (*User, error)
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)
-	RevokeRefreshToken(c context.Context, refreshToken string) error
+	RevokeRefreshToken(c context.Context, userID, refreshToken string) error
 
 	ResetUserPassword(c context.Context, userID string, resetPassword *ResetPassword) error
 	UpdateUserPassword(c context.Context, userID string, updatePassword *UpdatePassword) error

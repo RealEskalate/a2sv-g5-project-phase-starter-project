@@ -29,8 +29,8 @@ func (lu *logoutUsecase) GetUserByEmail(c context.Context, email string) (domain
 	return *user, nil
 }
 
-func (lu *logoutUsecase) RevokeRefreshToken(c context.Context, refreshToken string) error {
+func (lu *logoutUsecase) RevokeRefreshToken(c context.Context, userID string, refreshToken string) error {
 	ctx, cancel := context.WithTimeout(c, lu.contextTimeout)
 	defer cancel()
-	return lu.userRepository.RevokeRefreshToken(ctx, refreshToken)
+	return lu.userRepository.RevokeRefreshToken(ctx, userID, refreshToken)
 }

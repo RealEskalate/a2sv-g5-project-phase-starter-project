@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 
+	mongopagination "github.com/gobeam/mongo-go-pagination"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -58,7 +59,7 @@ type UserUsecase interface {
 	CreateUser(c context.Context, user *User) error
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
-	GetUsers(c context.Context) (*[]User, error)
+	GetUsers(c context.Context, limit int64, page int64) (*[]User, mongopagination.PaginationData, error)
 	UpdateUser(c context.Context, userID string, updatedUser *User) error
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)
@@ -74,7 +75,7 @@ type UserRepository interface {
 	CreateUser(c context.Context, user *User) (*User, error)
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
-	GetUsers(c context.Context) (*[]User, error)
+	GetUsers(c context.Context, limit int64, page int64) (*[]User, mongopagination.PaginationData, error)
 	UpdateUser(c context.Context, userID string, updatedUser *UserUpdate) (*User, error)
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)

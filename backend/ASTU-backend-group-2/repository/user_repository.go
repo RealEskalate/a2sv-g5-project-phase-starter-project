@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	mongopagination "github.com/gobeam/mongo-go-pagination"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -55,18 +56,24 @@ func (ur *userRepository) GetUserByEmail(c context.Context, email string) (*doma
 	return &user, err
 }
 
-func (ur *userRepository) GetUsers(c context.Context) (*[]domain.User, error) {
+func (ur *userRepository) GetUsers(c context.Context, limit int64, page int64) (*[]domain.User, mongopagination.PaginationData, error) {
 	collection := ur.database.Collection(ur.collection)
+	projection := bson.D{
+		{Key: "password", Value: 0},
+		{Key: "tokens", Value: 0},
+		{Key: "is_owner", Value: 0},
+	}
+
 	var users []domain.User
-	cursor, err := collection.Find(c, bson.M{})
+
+	paginatedData, err := mongopagination.New(collection).Context(c).Limit(limit).Page(page).Select(projection).Decode(&users).Find()
+
 	if err != nil {
-		return nil, err
+		return &[]domain.User{}, mongopagination.PaginationData{}, err
 	}
-	err = cursor.All(c, &users)
-	if err != nil {
-		return nil, err
-	}
-	return &users, nil
+
+	return &users, paginatedData.Pagination, nil
+
 }
 
 func (ur *userRepository) RevokeRefreshToken(c context.Context, userID, refreshToken string) error {

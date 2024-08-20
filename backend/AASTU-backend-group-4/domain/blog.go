@@ -27,8 +27,7 @@ type BlogUsecase interface {
 	UpdateBlog(ctx context.Context, blogID primitive.ObjectID, updatedBlog *Blog) error
 	GetBlogByID(ctx context.Context, blogID primitive.ObjectID) (*Blog, error)
 	DeleteBlog(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID, isAdmin bool) error
-	// DeleteBlog(ctx context.Context, authorID primitive.ObjectID, blogID primitive.ObjectID) error
-	// SearchBlog(ctx context.Context, blogTitle string, blogAuthor string) ([]*Blog, error)
+	SearchBlog(ctx context.Context, title string, author string) ([]*Blog, error)
 	// GetBlogs(ctx context.Context) ([]*Blog, error)
 }
 
@@ -39,7 +38,7 @@ type BlogRepository interface {
 	GetTotalBlogs(ctx context.Context) (int, error)
 	UpdateBlog(ctx context.Context, authorID primitive.ObjectID, updatedBlog *Blog) error
 	DeleteBlog(ctx context.Context, blogID primitive.ObjectID) error
-	// SearchBlog(ctx context.Context, blogTitle string, blogAuthor string) ([]*Blog, error)
+	SearchBlog(ctx context.Context, title string, author string) ([]*Blog, error)
 	// GetAllBlogs(ctx context.Context) ([]*Blog, error)
 	// FilterBlogByTag(ctx context.Context, tag string) ([]*Blog, error)
 }

@@ -37,6 +37,29 @@ func (_m *LoginUsecase) AuthenticateUser(c context.Context, login *domain.AuthLo
 	return r0, r1
 }
 
+// CheckRefreshToken provides a mock function with given fields: c, refreshToken
+func (_m *LoginUsecase) CheckRefreshToken(c context.Context, refreshToken string) (*domain.Token, error) {
+	ret := _m.Called(c, refreshToken)
+
+	var r0 *domain.Token
+	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.Token); ok {
+		r0 = rf(c, refreshToken)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.Token)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(c, refreshToken)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // CreateAccessToken provides a mock function with given fields: user, secret, expiry
 func (_m *LoginUsecase) CreateAccessToken(user *domain.User, secret string, expiry int) (string, error) {
 	ret := _m.Called(user, secret, expiry)
@@ -77,6 +100,20 @@ func (_m *LoginUsecase) CreateRefreshToken(user *domain.User, secret string, exp
 	}
 
 	return r0, r1
+}
+
+// SaveRefreshToken provides a mock function with given fields: c, token
+func (_m *LoginUsecase) SaveRefreshToken(c context.Context, token *domain.Token) error {
+	ret := _m.Called(c, token)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.Token) error); ok {
+		r0 = rf(c, token)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 type mockConstructorTestingTNewLoginUsecase interface {

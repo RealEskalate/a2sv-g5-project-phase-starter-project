@@ -1,11 +1,12 @@
 package router
 
 import (
+	"blog_api/repository"
 	"blog_api/delivery/controllers"
 	"blog_api/delivery/env"
 	jwt_service "blog_api/infrastructure/jwt"
 	"blog_api/infrastructure/middleware"
-	"blog_api/repository"
+	ai_service "blog_api/infrastructure/ai"
 	"blog_api/usecase"
 	"blog_api/domain"
 	"time"
@@ -16,7 +17,7 @@ import (
 
 func NewBlogRouter(collection *mongo.Collection, blogGroup *gin.RouterGroup) {
 	br := repository.NewBlogRepository(collection)
-	bu := usecase.NewBlogUseCase(br, time.Second * 100)
+	bu := usecase.NewBlogUseCase(br, time.Second*100, ai_service.NewAIService(env.ENV.GEMINI_API_KEY))
 
 	bc := controllers.NewBlogController(bu)
 
@@ -26,4 +27,7 @@ func NewBlogRouter(collection *mongo.Collection, blogGroup *gin.RouterGroup) {
 	blogGroup.POST("/", bc.GetBlogHandler)
 	blogGroup.GET("/:id", bc.GetBlogByIDHandler)
 	blogGroup.POST("/update-popularity", bc.TrackBlogPopularityHandler)
+	blogGroup.POST("/generate-content", bc.GenerateContentHandler)
+	blogGroup.POST("/review-content", bc.ReviewContentHandler)
+	blogGroup.POST("/generate-topic", bc.GenerateTopicHandler)
 }

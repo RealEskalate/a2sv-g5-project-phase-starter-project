@@ -23,7 +23,7 @@ const Transaction = ({
       <td className="py-6 px-6 flex items-center gap-3">
         <img
           src={
-            amount < 0
+            type != "deposit"
               ? "/assets/transaction/withdraw.svg"
               : "/assets/transaction/deposit.svg"
           }

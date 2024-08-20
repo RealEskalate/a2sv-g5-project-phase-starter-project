@@ -47,8 +47,8 @@ const SignIn = () => {
   };
   return (
     <div
-      className={`${inter.className} flex justify-center pt-[34px] pb-[50px] rounded-3xl bg-white`}
-    >
+      className={`${inter.className} flex justify-center pt-[34px] pb-[50px] rounded-3xl `}
+    > 
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-6">
           <div className={`text-center text-[32px] font-black text-[#25324B]`}>

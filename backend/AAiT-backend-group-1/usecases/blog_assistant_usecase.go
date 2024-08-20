@@ -93,7 +93,7 @@ func (b *blogAssistantUsecase) SuggestBlog(industry string) ([]map[string]interf
 
 	var suggestions []map[string]interface{}
 
-	json.Unmarshal([]byte(formatResponse(resp)), &suggestions)
+	err = json.Unmarshal([]byte(formatResponse(resp)), &suggestions)
 	if err != nil {
 		return nil, &domain.CustomError{Message: "error generating suggestions", Code: 500}
 	}

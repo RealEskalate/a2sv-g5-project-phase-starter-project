@@ -25,19 +25,23 @@ func SetupRouter(userController domain.UserController, blogController domain.Blo
 	r.POST("/promote", authMiddleware.Authorize("admin"), userController.PromoteUser)
 	r.POST("/demote", authMiddleware.Authorize("admin"), userController.DemoteUser)
 
-	// blog related routes
-	r.POST("/post-blog", blogController.CreateBlog)
-	r.GET("/get-blog/:id", blogController.GetBlog)
-	r.GET("/get-blogs", blogController.GetBlogs)
-	r.PUT("/edit-blog/:id", blogController.UpdateBlog)
-	r.DELETE("/delete-blog/:id", blogController.DeleteBlog)
-	r.GET("/search-blogs-title", blogController.SearchBlogsByTitle)
-	r.GET("/search-blogs-author", blogController.SearchBlogsByAuthor)
-	r.GET("/filter-blogs", blogController.FilterBlogs)
-	r.POST("/like-blog/:id", blogController.LikeBlog)
-	r.POST("/add-comment", blogController.AddComment)
-	r.DELETE("/delete-comment/:id", blogController.DeleteComment)
-	r.PUT("/edit-comment/:id", blogController.EditComment)
+	// Blog routes
+	blogRoutes := r.Group("/blogs")
+	{
+		blogRoutes.POST("/", blogController.CreateBlog)
+		blogRoutes.GET("/:id", blogController.GetBlog)
+		blogRoutes.GET("/", blogController.GetBlogs)
+		blogRoutes.PUT("/:id", blogController.UpdateBlog)
+		blogRoutes.DELETE("/:id", blogController.DeleteBlog)
+		blogRoutes.GET("/search/title", blogController.SearchBlogsByTitle)
+		blogRoutes.GET("/search/author", blogController.SearchBlogsByAuthor)
+		blogRoutes.GET("/filter", blogController.FilterBlogs)
+		blogRoutes.POST("/:id/like", blogController.LikeBlog)
+		blogRoutes.POST("/:id/dislike", blogController.DislikeBlog)
+		blogRoutes.POST("/:id/comments", blogController.AddComment)
+		blogRoutes.DELETE("/:id/comments/:comment_id", blogController.DeleteComment)
+		blogRoutes.PUT("/:id/comments/:comment_id", blogController.EditComment)
+	}
 
 	// blog assistant related routes
 	r.POST("/generate-blog", blogAssistantController.GenerateBlog)

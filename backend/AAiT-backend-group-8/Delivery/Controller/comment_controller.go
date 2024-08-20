@@ -26,7 +26,6 @@ func (c *Controller) GetComments(ctx *gin.Context) {
 func (c *Controller) CreateComment(ctx *gin.Context) {
 	blogID := ctx.Param("blogID")
 	token, err := c.ExtractToken(ctx)
-	fmt.Print(token)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

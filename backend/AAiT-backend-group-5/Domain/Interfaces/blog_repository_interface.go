@@ -17,7 +17,7 @@ type BlogRepository interface {
 	UpdateBlog(ctx context.Context, blogID string, blog *models.Blog) *models.ErrorResponse
 	DeleteBlog(ctx context.Context, id string) *models.ErrorResponse
 
-	AddComment(ctx context.Context, blogID string, comment models.Comment) *models.ErrorResponse
-	TrackPopularity(ctx context.Context, blogID string, popularity dtos.TrackPopularityRequest) *models.ErrorResponse
+	AddComment(ctx context.Context, comment models.Comment) *models.ErrorResponse
+	TrackPopularity(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse
 	IncreaseView(ctx context.Context, blogID string) *models.ErrorResponse
 }

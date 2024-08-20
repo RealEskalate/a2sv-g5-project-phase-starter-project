@@ -41,6 +41,7 @@ func (urlRepo *URL_Repo) GetURL(short_url_code string, ctx context.Context) (*mo
 		}
 		return nil, models.NotFound(err.Error())
 	}
+
 	return &result, nil
 }
 

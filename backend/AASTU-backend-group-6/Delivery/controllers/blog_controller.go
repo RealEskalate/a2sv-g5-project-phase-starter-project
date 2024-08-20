@@ -26,21 +26,21 @@ func (b BlogController) CommentOnBlog(c *gin.Context) {
 	var comment domain.Comment
 	userID := c.GetString("user_id")
 	userName := c.GetString("user_name")
-	if userID == "" || userName == ""{
+	if userID == "" || userName == "" {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
 			Message: "Authentication failed.",
 			Status:  http.StatusUnauthorized,
 		})
 		return
 	}
-	if err := c.ShouldBind(&comment); err != nil{
+	if err := c.ShouldBind(&comment); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: err.Error(),
 			Status:  http.StatusBadRequest,
 		})
 		return
 	}
-	if err := b.Validator.ValidateStruct(comment); err != nil{
+	if err := b.Validator.ValidateStruct(comment); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: "Invalid request payload.",
 			Status:  http.StatusBadRequest,
@@ -48,17 +48,17 @@ func (b BlogController) CommentOnBlog(c *gin.Context) {
 		return
 	}
 	err := b.BlogUsecase.CommentOnBlog(userID, userName, comment)
-	if err != nil{
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Message: err.Error(),
-			Status: http.StatusInternalServerError,
+			Status:  http.StatusInternalServerError,
 		})
 		return
 	}
 	c.JSON(http.StatusCreated, domain.SuccessResponse{
 		Message: "Comment created successfully",
-		Status: http.StatusCreated,
-	} )
+		Status:  http.StatusCreated,
+	})
 }
 
 // CreateBlog implements domain.BlogUsecase.
@@ -148,7 +148,22 @@ func (b BlogController) FilterBlogsByTag(c *gin.Context) {
 		pageSize = "0"
 	}
 
+	startdate := c.Query("startDate")
+	endDate := c.Query("endDate")
+	fmt.Println(startdate, endDate, "////////controller")
+
+	if startdate == "" || endDate == "" {
+		if !(startdate == "" && endDate == "") {
+			c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+				Status:  http.StatusBadRequest,
+				Message: "start and end date must be set together",
+			})
+			c.Abort()
+		}
+	}
+
 	tagsParam := c.Query("tags")
+	fmt.Println(tagsParam, len(tagsParam), "/\\")
 	var tags []string
 	if tagsParam != "" {
 		tags = strings.Split(tagsParam, ",")
@@ -166,7 +181,8 @@ func (b BlogController) FilterBlogsByTag(c *gin.Context) {
 		})
 		c.Abort()
 	}
-	blogs, pagination, err := b.BlogUsecase.FilterBlogsByTag(tags, pageNo, pageSize)
+	popularity := c.Query("popularity")
+	blogs, pagination, err := b.BlogUsecase.FilterBlogsByTag(tags, pageNo, pageSize, startdate, endDate, popularity)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Status:  http.StatusInternalServerError,
@@ -216,6 +232,7 @@ func (b BlogController) GetBlogByID(c *gin.Context) {
 func (b BlogController) GetBlogs(c *gin.Context) {
 	pageNo := c.Query("pageNo")
 	pageSize := c.Query("pageSize")
+	popularity := c.Query("popularity")
 
 	if pageNo == "" {
 		pageNo = "0"
@@ -224,7 +241,7 @@ func (b BlogController) GetBlogs(c *gin.Context) {
 		pageSize = "0"
 	}
 
-	blogs, pagination, err := b.BlogUsecase.GetBlogs(pageNo, pageSize)
+	blogs, pagination, err := b.BlogUsecase.GetBlogs(pageNo, pageSize, popularity)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		c.Abort()
@@ -272,6 +289,7 @@ func (b BlogController) GetMyBlogByID(c *gin.Context) {
 func (b BlogController) GetMyBlogs(c *gin.Context) {
 	pageNo := c.Query("pageNo")
 	pageSize := c.Query("pageSize")
+	popularity := c.Query("popularity")
 	if pageNo == "" {
 		pageNo = "0"
 	}
@@ -289,7 +307,7 @@ func (b BlogController) GetMyBlogs(c *gin.Context) {
 		})
 	}
 
-	myBlogs, pagination, err := b.BlogUsecase.GetMyBlogs(user_id, pageNo, pageSize)
+	myBlogs, pagination, err := b.BlogUsecase.GetMyBlogs(user_id, pageNo, pageSize, popularity)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Message: err.Error(),
@@ -307,12 +325,13 @@ func (b BlogController) SearchBlogByTitleAndAuthor(c *gin.Context) {
 	author := c.Query("author")
 	pageNo := c.Query("pageNo")
 	pageSize := c.Query("pageSize")
-	blogs, pagination, err := b.BlogUsecase.SearchBlogByTitleAndAuthor(title, author, pageNo, pageSize)
-  
+	popularity := c.Query("popularity")
+	blogs, pagination, err := b.BlogUsecase.SearchBlogByTitleAndAuthor(title, author, pageNo, pageSize, popularity)
+
 	if err != (domain.ErrorResponse{}) {
 		c.JSON(err.Status, domain.ErrorResponse{
 			Message: err.Message,
-			Status: err.Status,
+			Status:  err.Status,
 		})
 		return
 	}

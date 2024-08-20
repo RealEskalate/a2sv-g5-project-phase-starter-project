@@ -123,4 +123,7 @@ type BlogUsecase interface {
 	UpdateFeedback(ctx context.Context, id string, updateFunc func(*Feedback) error) error
 
 	SearchBlogs(c context.Context, filter Filter) ([]Blog, error)
+	AddComment(c context.Context, userID string, comment Comment) error
+	UpdateComment(ctx context.Context, blogID primitive.ObjectID, userID string, updatedComment Comment) error
+	RemoveComment(c context.Context, blogID primitive.ObjectID, requesterUserID string) error
 }

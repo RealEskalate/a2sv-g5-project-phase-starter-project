@@ -15,12 +15,11 @@ type Blog interface {
 	Delete(id uuid.UUID) error
 
 	// ListByAuthor retrieves paginated blogs for a specific author, sorted by total interaction.
-	ListByAuthor(authorId uuid.UUID, lastSeenID *uuid.UUID, lastSeenInteraction *int, ascending bool, limit int) ([]*blogmodel.Blog, error)
+	ListByAuthor(authorId uuid.UUID, lastSeenID *uuid.UUID, limit int) ([]*blogmodel.Blog, error)
 
 	// ListByTotalInteraction retrieves paginated blogs sorted by total interaction.
-	ListByTotalInteraction(lastSeenID *uuid.UUID, lastSeenInteraction *int, ascending bool, limit int) ([]*blogmodel.Blog, error)
+	ListByTotalInteraction(lastSeenID *uuid.UUID, limit int) ([]*blogmodel.Blog, error)
 
 	// GetSingle returns a blog by ID.
 	GetSingle(id uuid.UUID) (*blogmodel.Blog, error)
 }
-

@@ -1,4 +1,4 @@
-package delivery
+package controller
 
 import (
 	"AAiT-backend-group-6/domain"

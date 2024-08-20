@@ -18,6 +18,9 @@ type Env struct {
 	DBUser                 string `mapstructure:"DB_USER"`
 	DBPass                 string `mapstructure:"DB_PASS"`
 	DBName                 string `mapstructure:"DB_NAME"`
+	Mail 				   string `mapstructure:"MAIL"`
+	MailPassword 		   string `mapstructure:"MAIL_PASSWORD"`
+	SmtpServer 			   string `mapstructure:"SMTP_SERVER"`
 	AccessTokenExpiryHour  int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
 	RefreshTokenExpiryHour int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
 	AccessTokenSecret      string `mapstructure:"ACCESS_TOKEN_SECRET"`
@@ -47,7 +50,7 @@ func NewEnv() *Env {
 func setEnv(envStruct *Env) error{
 	val := reflect.ValueOf(envStruct).Elem()
 	typ := val.Type()
-	for i := range typ.NumField() {
+	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
 		envKey := field.Tag.Get("mapstructure")
 

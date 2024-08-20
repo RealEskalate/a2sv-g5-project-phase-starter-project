@@ -7,7 +7,7 @@ const BASE_URL = 'https://bank-dashboard-6acc.onrender.com'
 interface ExtendedUser {
   refresh_token: string;
   data: any; // Assuming `data` contains user information or other details
-  accessToken?: string;
+  access_token?: string;
 }
 
 interface ExtendedSession {
@@ -21,7 +21,7 @@ const fetchSession = async (): Promise<ExtendedSession> => {
 
 const getAccessToken = async (): Promise<string | undefined> => {
   const session = await fetchSession();
-  return session?.user?.accessToken;
+  return session?.user?.access_token;
 };
 
 const getRefreshToken = async (): Promise<string | undefined> => {

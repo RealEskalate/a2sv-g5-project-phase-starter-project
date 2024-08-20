@@ -59,10 +59,13 @@ const Navbar = () => {
   const title = capitalizeFirstLetter(pathname);
 
   // Render loading state or user information
+
   if (!user) {
     return <p>Loading user data...</p>;
   }
-
+  else{
+    console.log("rrrrrrrr",user)
+  }
   return (
     <>
       <header className="fixed top-0 md:left-[240px] max-md:left-0 right-0 bg-white shadow-md z-40 max-md:h-[140px]">
@@ -133,13 +136,13 @@ const Navbar = () => {
               
               >
               <Image
-                src={user.profilePicture}
+                src={user.profilePicture==="default-profile.png"? "" : user.profilePicture}
                 width={50}
                 height={50}
                 alt="profile-picture"
                 className="object-fill rounded-full cursor-pointer"
                 onClick={toggleDropdown}
-              />
+              />  
 
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50 border-[1px] border-[#afafaf]">

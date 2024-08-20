@@ -2,7 +2,6 @@ package repository
 
 import (
 	"AAiT-backend-group-8/Domain"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -189,7 +188,6 @@ func (blogRepository BlogRepository) Search(criteria *Domain.SearchCriteria) ([]
 		return nil, err
 	}
 
-	fmt.Println(Blogs)
 	return Blogs, nil
 
 }
@@ -234,7 +232,7 @@ func BuildBlogFilter(criteria *Domain.SearchCriteria) (bson.M, *options.FindOpti
 
 	// Sorting
 	if criteria.SortBy != "" {
-		findOptions.SetSort(bson.M{criteria.SortBy: 1}) // 1 for ascending, -1 for descending
+		findOptions.SetSort(bson.M{criteria.SortBy: -1}) // 1 for ascending, -1 for descending
 	}
 
 	// Pagination

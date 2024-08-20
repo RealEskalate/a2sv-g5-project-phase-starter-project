@@ -63,7 +63,7 @@ func (repo *CommentRepository) DeleteComment(commentID primitive.ObjectID) error
 }
 
 func (repo *CommentRepository) DeleteCommentsOfBlog(blogID primitive.ObjectID) error {
-	filter := bson.D{{Key: "blogid", Value: blogID}}
+	filter := bson.D{{Key: "blog_id", Value: blogID}}
 	result, err := repo.collection.DeleteMany(repo.ctx, filter)
 	if err != nil {
 		return errors.New("error deleting comments")
@@ -87,4 +87,19 @@ func (repo *CommentRepository) UpdateComment(comment *domain.Comment) error {
 		return errors.New("comment not found")
 	}
 	return nil
+}
+
+func (repo *CommentRepository) GetCommentByID(commentID primitive.ObjectID) (*domain.Comment, error) {
+
+	filter := bson.D{{Key: "_id", Value: commentID}}
+
+	var comment domain.Comment
+
+	err := repo.collection.FindOne(repo.ctx, filter).Decode(&comment)
+
+	if err != nil {
+		return nil, errors.New("error getting comment" + err.Error())
+	}
+
+	return &comment, nil
 }

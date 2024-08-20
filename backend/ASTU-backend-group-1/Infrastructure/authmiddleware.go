@@ -50,16 +50,12 @@ func AuthMiddleware() gin.HandlerFunc {
 
 			// Extract the claims
 			if claims, ok := token.Claims.(*domain.Claims); ok && token.Valid {
-				id := claims.ID
 
-				user := &domain.User{
-					ID:       id,
-					Username: claims.Username,
-					IsAdmin:  claims.IsAdmin,
-				}
-				c.Set("id", user.ID)
-				c.Set("username", user.Username)
-				c.Set("isActive", user.IsAdmin)
+				
+				c.Set("id", claims.ID)
+				c.Set("username", claims.Username)
+				c.Set("isAdmin", claims.IsAdmin)
+				c.Set("email", claims.Email)
 				c.Next()
 			}
 		}

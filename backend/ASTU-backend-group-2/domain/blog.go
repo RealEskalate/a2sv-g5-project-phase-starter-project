@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	mongopagination "github.com/gobeam/mongo-go-pagination"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -82,19 +83,19 @@ type Reaction struct {
 
 // BlogRepository defines the methods required for data access related to blogs and comments.
 type BlogRepository interface {
-	GetByTags(c context.Context, tags []string, limit int64, page int64) ([]Blog, error)
-	GetAllBlogs(c context.Context, limit int64, page int64) ([]Blog, error)
+	GetByTags(c context.Context, tags []string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
+	GetAllBlogs(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	GetBlogByID(c context.Context, blogID string) (Blog, error)
-	GetByPopularity(c context.Context, limit int64, page int64) ([]Blog, error)
-	Search(c context.Context, searchTerm string, limit int64, page int64) ([]Blog, error)
+	GetByPopularity(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
+	Search(c context.Context, searchTerm string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	CreateBlog(c context.Context, newBlog *Blog) (Blog, error)
 	UpdateBlog(c context.Context, blogID string, updatedBlog *BlogUpdate) (Blog, error)
 	DeleteBlog(c context.Context, blogID string) error
-	SortByDate(c context.Context, limit int64, page int64) ([]Blog, error)
+	SortByDate(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 }
 
 type CommentRepository interface {
-	GetComments(c context.Context, blogID string) ([]Comment, error)
+	GetComments(c context.Context, blogID string, limit int64, page int64) ([]Comment, mongopagination.PaginationData, error)
 	CreateComment(c context.Context, blogID string, comment *Comment) (Comment, error)
 	GetComment(c context.Context, blogID, commentID string) (Comment, error)
 	UpdateComment(c context.Context, blogID, commentID string, updatedComment *Comment) (Comment, error)
@@ -107,19 +108,19 @@ type LikeRepository interface {
 }
 
 type BlogUsecase interface {
-	GetByTags(c context.Context, tags []string) ([]Blog, error)
-	GetAllBlogs(c context.Context) ([]Blog, error)
+	GetByTags(c context.Context, tags []string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
+	GetAllBlogs(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	GetBlogByID(c context.Context, blogID string) (Blog, error)
-	GetByPopularity(c context.Context) ([]Blog, error)
-	Search(c context.Context, searchTerm string) ([]Blog, error)
+	GetByPopularity(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
+	Search(c context.Context, searchTerm string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	CreateBlog(c context.Context, newBlog *Blog) (Blog, error)
 	UpdateBlog(c context.Context, blogID string, updatedBlog *BlogUpdate) (Blog, error)
 	DeleteBlog(c context.Context, blogID string) error
-	SortByDate(c context.Context) ([]Blog, error)
+	SortByDate(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 }
 
 type CommentUsecase interface {
-	GetComments(c context.Context, blogID string) ([]Comment, error)
+	GetComments(c context.Context, blogID string, limit int64, page int64) ([]Comment, mongopagination.PaginationData, error)
 	CreateComment(c context.Context, blogID string, comment *Comment) (Comment, error)
 	GetComment(c context.Context, blogID, commentID string) (Comment, error)
 	UpdateComment(c context.Context, blogID, commentID string, updatedComment *Comment) (Comment, error)

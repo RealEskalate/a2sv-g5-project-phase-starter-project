@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type ProfileController struct {
@@ -21,10 +20,8 @@ func (pc *ProfileController) UpdateProfile(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	 
-	userid, _ := primitive.ObjectIDFromHex(c.GetString("userID"))
-
-	resp,err := pc.ProfileUsecase.UpdateProfile(c, &profile, userid)
+	claims := c.MustGet("claim").(domain.JwtCustomClaims)
+	resp, err := pc.ProfileUsecase.UpdateProfile(c, &profile, claims.UserID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

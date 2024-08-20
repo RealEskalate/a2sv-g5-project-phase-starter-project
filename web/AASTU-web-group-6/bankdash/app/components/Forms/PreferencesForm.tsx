@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import ToggleButton from "../Button/ToggleButton";
-import UserService from "../../services/UserService";
+import UserService  from "@/app/Services/api/userService";
 
 const PreferencesForm = () => {
   const [preferences, setPreferences] = React.useState({
@@ -20,7 +20,7 @@ const PreferencesForm = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await UserService.updatePreference(preferences);
+      const response = await UserService.updatePreference(preferences,"accessToken");
       console.log("Preferences updated:", response);
     } catch (error) {
       console.error("Error updating preferences:", error);

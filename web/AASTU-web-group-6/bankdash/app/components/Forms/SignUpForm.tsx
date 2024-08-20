@@ -67,19 +67,13 @@ const SignUpForm = () => {
   };
 
   const nextStep = async () => {
-    const fieldsToValidate =
+    const fieldsToValidate: (keyof FormData | `preference.${keyof FormData["preference"]}`)[] =
       step === 1
         ? ["name", "email", "username", "password", "confirmPassword"]
         : step === 2
-        ? [
-            "permanentAddress",
-            "postalCode",
-            "presentAddress",
-            "city",
-            "country",
-          ]
+        ? ["permanentAddress", "postalCode", "presentAddress", "city", "country"]
         : ["profilePicture", "preference.currency", "preference.timeZone"];
-
+  
     const isStepValid = await trigger(fieldsToValidate);
     if (isStepValid) {
       setStep((prev) => prev + 1);

@@ -200,3 +200,15 @@ func (service *tokenService) RefreshAccessToken(refresh *entities.RefreshToken) 
 	newToken, _ := service.GenerateAccessToken(user)
 	return newToken, nil
 }
+
+func (service *tokenService) CreateRefreshToken(refreshToken *entities.RefreshToken) (*entities.RefreshToken, error) {
+	return service.tokenRepository.CreateRefreshToken(refreshToken)
+}
+
+func (service *tokenService) DeleteRefreshTokenByUserId(userId string) error {
+	return service.tokenRepository.DeleteRefreshTokenByUserId(userId)
+}
+
+func (service *tokenService) FindRefreshTokenByUserId(userId string) (*entities.RefreshToken, error) {
+	return service.tokenRepository.FindRefreshTokenByUserId(userId)
+}

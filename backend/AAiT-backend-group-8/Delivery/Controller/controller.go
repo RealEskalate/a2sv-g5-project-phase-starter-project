@@ -8,11 +8,13 @@ import (
 type Controller struct {
 	commentUseCase usecase.CommentUseCase
 	UserUsecase    domain.IUserUseCase
+	LikeUseCase    usecase.LikeUseCase
 }
 
-func NewController(commentUseCase usecase.CommentUseCase, userUseCase domain.IUserUseCase) *Controller {
+func NewController(commentUseCase usecase.CommentUseCase, userUseCase domain.IUserUseCase, likeUseCase usecase.LikeUseCase) *Controller {
 	return &Controller{
 		commentUseCase: commentUseCase,
 		UserUsecase:    userUseCase,
+		LikeUseCase:    likeUseCase,
 	}
 }

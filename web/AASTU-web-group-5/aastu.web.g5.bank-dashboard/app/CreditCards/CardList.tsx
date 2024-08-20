@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 import { cardListMockData } from "./cardListMockData";
 // import creditCardColor from "./cardMockData";
 
@@ -19,11 +20,12 @@ interface CardListProps {
 }
 
 const CardList = ({ cardId }: CardListProps) => {
+	const { data: session, status } = useSession();
+
 	const [cardListData, setCardListData] = useState<CardListData[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const accessToken =
-		"eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJvbGlrZWwiLCJpYXQiOjE3MjQwNjg1NzcsImV4cCI6MTcyNDE1NDk3N30.Pl5I-B9Afd9HQSJ2wFNZJdJ8nZ5qzIhgvcgyxcyOZr-wz7AEhtZ2Pn--AsdiOzt7";
+	const accessToken = session.user.accessToken;
 
 	const fetchCardListData = async () => {
 		if (!accessToken) {

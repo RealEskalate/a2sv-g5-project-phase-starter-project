@@ -25,7 +25,7 @@ func GenerateToken(user *domain.User, pwd string) (string, string, error) {
 	}
 
 	// Access token
-	expirationTime := time.Now().Add(24 * time.Hour)
+	expirationTime := time.Now().Add(1 * time.Minute)
 	claims := &domain.Claims{
 		ID:      user.ID,
 		Email:   user.Email,
@@ -46,7 +46,7 @@ func GenerateToken(user *domain.User, pwd string) (string, string, error) {
 	}
 
 	// Refresh token
-	expirationTime = time.Now().Add(7 * 24 * time.Hour)
+	expirationTime = time.Now().Add(3 * time.Hour)
 	claims.ExpiresAt = expirationTime.Unix()
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	refreshTokenString, err := refreshToken.SignedString(jwtSecret)

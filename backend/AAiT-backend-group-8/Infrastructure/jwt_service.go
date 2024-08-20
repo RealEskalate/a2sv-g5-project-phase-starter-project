@@ -44,3 +44,24 @@ func (ts *TokenService) ValidateToken(tokenString string) error {
 
 	return err
 }
+
+func (ts *TokenService) GetClaimsOfToken(tokenString string) (map[string]interface{}, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(ts.SecretKey), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if ok && token.Valid {
+		return claims, nil
+	}
+	// chnange claims to norma map
+	myMap := make(map[string]interface{})
+	for key, value := range claims {
+		myMap[key] = value
+	}
+	return myMap, err
+}

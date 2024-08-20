@@ -66,12 +66,10 @@ func (u *SignupUseCase) Create(c context.Context , user domain.User) interface{}
 
 	// send OTP
 	otp , err := infrastructure.GenerateOTP()
-
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error generating OTP", Status: 500}
 	}
 	
-
 	// save OTP to db
 	_ , err = u.SignupRepository.Create(ctx  , user)
 	if err != nil {
@@ -182,6 +180,11 @@ func (u *SignupUseCase) ForgotPassword(c context.Context , email domain.ForgotPa
 
 func (u *SignupUseCase) ResetPassword(c context.Context , password domain.ResetPasswordRequest , token string) interface{} {
 
+	// check the password validity
+	if err := infrastructure.ValidatePassword(password.Password); err != nil {
+		return &domain.ErrorResponse{Message: err.Error(), Status: 400}
+	}
+
 	ctx , cancel := context.WithTimeout(c , u.contextTimeout)
 	defer cancel()
 
@@ -226,6 +229,12 @@ func (u *SignupUseCase) HandleUnverifiedUser(c context.Context, user domain.User
 	
 	ctx , cancel := context.WithTimeout(c , u.contextTimeout)	
 	defer cancel()
+
+	// check if the user send the register button again Not to send the OTP again before the expiration time
+
+	if time.Now().Before(user.ExpiresAt) {
+		return &domain.ErrorResponse{Message: "OTP already sent", Status: 400}
+	}
 
 	user.ExpiresAt = time.Now().Add(time.Minute  * 10)
 	_ , err := u.SignupRepository.UpdateUser(ctx , user)

@@ -30,3 +30,19 @@ func (ms *MailService) SendVerificationEmail(to, token string) error {
 
 	return d.DialAndSend(m)
 }
+
+func (ms *MailService) SendPasswordResetEmail(to, token string) error {
+	m := gomail.NewMessage()
+	m.SetHeader("From", "BLOGSAPI@gmail.com")
+	m.SetHeader("To", to)
+	m.SetHeader("Subject", "Password Reset Request")
+m.SetBody("text/plain", fmt.Sprintf("Click here to reset your password: http://localhost:8080/store-token?token=%s", token))
+	d := gomail.NewDialer(
+		"smtp.gmail.com",
+		587,
+		"jovaniasfaw@gmail.com",
+		"bjqj bqpw llsd rzsv",
+	)
+
+	return d.DialAndSend(m)
+}

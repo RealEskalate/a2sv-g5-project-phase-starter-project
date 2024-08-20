@@ -25,7 +25,7 @@ func main() {
 
 	userUseCase := usecase.NewUserUseCase(userRepo, ts, ps, tr, ms)
 
-	userHandler := controllers.NewUserHandler(userUseCase)
+	userHandler := Controller.NewUserHandler(userUseCase)
 	r := Router.InitRouter(userHandler)
 
 	r.Run(":8080")

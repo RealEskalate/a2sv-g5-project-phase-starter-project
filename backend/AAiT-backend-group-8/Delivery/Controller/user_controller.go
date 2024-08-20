@@ -1,4 +1,4 @@
-package controllers
+package Controller
 
 import (
 	"AAiT-backend-group-8/Domain"
@@ -53,25 +53,99 @@ func (h *UserHandler) VerifyEmail(c *gin.Context) {
 
 func (h *UserHandler) Login(c *gin.Context) {
 	type email_pass struct {
-		email    string
-		password string
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 
 	var ep email_pass
 
-	bind_err := c.BindJSON(&ep)
+	if err := c.ShouldBindJSON(&ep); err != nil {
+		c.JSON(400, gin.H{"message": "invalid request payload"})
+		return
+	}
+
+	token, refresher, err := h.UserUsecase.Login(ep.Email, ep.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"token": token, "refresher": refresher})
+}
+
+func (h *UserHandler) RefreshToken(c *gin.Context) {
+	var cred Domain.Credential
+
+	bind_err := c.BindJSON(&cred)
 	if bind_err != nil {
 		c.IndentedJSON(400, gin.H{"message": "invalid request payload"})
 		return
 	}
 
-	token, refresher, err := h.UserUsecase.Login(ep.email, ep.password)
-
+	token, err := h.UserUsecase.RefreshToken(cred.Email, cred.Refresher)
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.IndentedJSON(400, gin.H{"message": "invalid refresh token "})
+	}
+	c.IndentedJSON(http.StatusOK, gin.H{"token": token})
+
+}
+
+func (h *UserHandler) ForgotPassword(c *gin.Context) {
+	email := c.Query("email")
+	if email == "" {
+		c.JSON(400, gin.H{"error": "Invalid email"})
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{"token": token, "refresher": refresher})
+	err := h.UserUsecase.GenerateResetPasswordToken(email)
+	if err != nil {
+		if err.Error() == "user not found" {
+			c.JSON(404, gin.H{"error": "User not found"})
+		} else {
+			c.JSON(500, gin.H{"error": err.Error()})
+		}
+		return
+	}
 
+	c.JSON(200, gin.H{"message": "Password reset email sent"})
+}
+
+func (h *UserHandler) StoreToken(c *gin.Context) {
+	token := c.Query("token")
+	if token == "" {
+		c.JSON(400, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	err := h.UserUsecase.StoreToken(token)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Token stored successfully. You can now reset your password."})
+}
+
+func (h *UserHandler) ResetPassword(c *gin.Context) {
+	var payload struct {
+		Token       string `json:"token"`
+		NewPassword string `json:"new_password"`
+	}
+
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	err := h.UserUsecase.ResetPassword(payload.Token, payload.NewPassword)
+	if err != nil {
+		if err.Error() == "invalid or expired token" || err.Error() == "invalid token payload" || err.Error() == "invalid or mismatched token" {
+			c.JSON(400, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(500, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Password reset successful"})
 }

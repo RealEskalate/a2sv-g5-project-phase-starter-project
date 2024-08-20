@@ -13,8 +13,11 @@ type TokenRepository struct {
 	Context    context.Context
 }
 
-func NewTokenRepository(collection *mongo.Collection, ctx context.Context) domain.ITokenRepository {
-	return &TokenRepository{}
+func NewTokenRepository(collection *mongo.Collection, ctx context.Context) *TokenRepository {
+	return &TokenRepository{
+		Collection: collection,
+		Context:    ctx,
+	}
 }
 
 func (tr *TokenRepository) InsertRefresher(credential domain.Credential) error {
@@ -35,4 +38,20 @@ func (tr *TokenRepository) GetRefresher(email string) (string, error) {
 	}
 
 	return existingCredential.Refresher, err
+}
+
+func (tr *TokenRepository) StoreResetToken(email string, token string) error {
+	filter := bson.M{"email": email}
+	update := bson.M{"$set": bson.M{"reset_token": token}}
+
+	_, err := tr.Collection.UpdateOne(tr.Context, filter, update)
+	return err
+}
+
+func (tr *TokenRepository) InvalidateResetToken(email string) error {
+	filter := bson.M{"email": email}
+	update := bson.M{"$unset": bson.M{"reset_token": ""}}
+
+	_, err := tr.Collection.UpdateOne(tr.Context, filter, update)
+	return err
 }

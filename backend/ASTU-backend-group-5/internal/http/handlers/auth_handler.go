@@ -6,7 +6,6 @@ import (
 	"blogApp/pkg/jwt"
 	"net/http"
 	"time"
-
 	"github.com/gin-gonic/gin"
 )
 

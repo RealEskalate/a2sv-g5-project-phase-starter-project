@@ -28,7 +28,7 @@ type BlogUsecase interface {
 	SearchBlogs(ctx context.Context, filter dtos.FilterBlogRequest) ([]*dtos.BlogResponse, *models.ErrorResponse)
 	UpdateBlog(ctx context.Context, blogID string, blog *models.Blog) *models.ErrorResponse
 	DeleteBlog(ctx context.Context, deleteBlogReq dtos.DeleteBlogRequest) *models.ErrorResponse
-	GetBlogPopularity(ctx context.Context, blogID string) (models.Popularity,*models.ErrorResponse)
+	TrackPopularity(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse
 	AddComment(ctx context.Context, comment models.Comment) *models.ErrorResponse
 }
 
@@ -46,7 +46,7 @@ type BlogController interface {
 type BlogPopularityActionRepository interface {
 	Like(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse
 	Dislike(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse
-	GetBlogPopularityAction(ctx context.Context, blogID string, userID string) (models.PopularityAction, *models.ErrorResponse)
+	GetBlogPopularityAction(ctx context.Context, blogID string, userID string) (*models.PopularityAction, *models.ErrorResponse)
 	UndoLike(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse
 	UndoDislike(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse
 }

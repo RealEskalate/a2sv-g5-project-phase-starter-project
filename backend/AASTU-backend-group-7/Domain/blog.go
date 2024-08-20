@@ -7,19 +7,20 @@ import (
 )
 
 type Post struct {
-	ID           primitive.ObjectID   `bson:"_id,omitempty" bson:"_id,omitempty"`
-	Title        string               `json:"title" validate:"required"`
-	Content      string               `json:"content"`
-	Slug         string               `json:"slug"`
-	PublishedAt  time.Time            `json:"published_at"`
-	UpdatedAt    time.Time            `json:"updated_at"`
-	IsPublished  bool                 `json:"is_published"`
-	Views        uint                 `json:"views"`
-	LikeCount    uint                 `json:"like_count"`
-	DislikeCount uint                 `json:"dislike_count"`
-	Popularity   uint                 `json:"popularity"`
-	AuthorID     primitive.ObjectID   `json:"author_id"`
-	Tags         []string `json:"tags"`
+	ID           primitive.ObjectID `bson:"_id,omitempty" bson:"_id,omitempty"`
+	Title        string             `json:"title" validate:"required"`
+	Content      string             `json:"content"`
+	Slug         string             `json:"slug"`
+	PublishedAt  time.Time          `json:"published_at"`
+	UpdatedAt    time.Time          `json:"updated_at"`
+	IsPublished  bool               `json:"is_published"`
+	Views        uint               `json:"views"`
+	LikeCount    uint               `json:"like_count"`
+	DislikeCount uint               `json:"dislike_count"`
+	Popularity   uint               `json:"popularity"`
+	AuthorID     primitive.ObjectID `json:"author_id"`
+	AuthorName   string             `json:"author_name"`
+	Tags         []string           `json:"tags"`
 }
 
 type Comment struct {

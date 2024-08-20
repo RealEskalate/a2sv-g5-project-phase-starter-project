@@ -45,6 +45,7 @@ type BlogRepository interface {
 	AddTagToPost(ctx context.Context, id primitive.ObjectID, slug string) (error, int)
 	LikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int,string)
 	DislikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
+	SearchPosts(ctx context.Context, query string) ([]*Post, error, int)
 }
 
 type BlogUseCase interface {
@@ -59,6 +60,7 @@ type BlogUseCase interface {
 	AddTagToPost(c *gin.Context, id primitive.ObjectID, slug string) (error, int)
 	LikePost(c *gin.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
 	DislikePost(c *gin.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
+	SearchPosts(c *gin.Context, query string) ([]*Post, error, int)
 }
 
 type CommentRepository interface {

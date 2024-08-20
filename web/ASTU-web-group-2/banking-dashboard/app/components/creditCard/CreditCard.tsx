@@ -67,12 +67,12 @@ const CreditCard = ({
       : "/assets/credit-card/elipse.svg";
 
   return (
-    <>
+    <div className="flex flex-col">
       <div
-        className={` w-[350px] h-[165px] ${cardBackground}  rounded-t-[25px] max-sm:w-[265px]  `}
+        className={`w-[350px] h-[165px] ${cardBackground}  rounded-t-[25px]  `}
       >
         <div
-          className={`font-normal leading-[14.4px] pl-[26px] pt-[24px] flex gap-[202px] max-sm:gap-[125px]`}
+          className={`font-normal leading-[14.4px] pl-[26px] pt-[24px] flex gap-[202px]`}
           style={{ color: textColor }}
         >
           <div>
@@ -125,7 +125,7 @@ const CreditCard = ({
         </div>
       </div>
       <div
-        className={`w-[350px] h-[70px] max-sm:w-[265px] ${cardFooterBackground} rounded-b-[25px] flex max-sm:gap-[62px] gap-[32px] items-center px-[26px]`}
+        className={`w-[350px] h-[70px] ${cardFooterBackground} rounded-b-[25px] flex  gap-[32px] items-center justify-between px-[26px]`}
       >
         <p
           className={`font-semibold  ${
@@ -141,7 +141,7 @@ const CreditCard = ({
           <Image alt="icon" src={ellipseIcon} width={44} height={44} />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

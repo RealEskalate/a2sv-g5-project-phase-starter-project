@@ -51,8 +51,8 @@ func (l *LoginUseCase) Login(c context.Context, req *domain.UserLogin) (*domain.
 		return nil, err
 	}
 	
-	_, err:= l.UserRepository.UpdateToken(ctx,accessToken, refreshToken, user.UserID.String())
-	if err!=nil{
+	_, err2:= l.UserRepository.UpdateToken(ctx,accessToken, refreshToken, user.UserID.String())
+	if err2!=nil{
 		return nil, err
 	}
 

@@ -57,3 +57,19 @@ func (b *BlogController) GetBlogs(ctx *gin.Context) {
 		"blogs": blogs,
 	})
 }
+
+
+// GetBlogByID ...
+
+func (b *BlogController) GetBlogByID(ctx *gin.Context) {
+	id := ctx.Param("id")
+	blog, err := b.BlogUsecase.GetBlogByID(id)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	ctx.JSON(http.StatusOK, blog)
+}
+

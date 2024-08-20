@@ -1,6 +1,7 @@
 package usercontroller
 
 import (
+	"blogs/config"
 	"log"
 	"net/http"
 
@@ -32,7 +33,15 @@ func (u *UserController) ForgotPassword(ctx *gin.Context) {
 
 	err = u.UserUsecase.ForgotPassword(input.Email, input.NewPassword)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		code := config.GetStatusCode(err)
+
+		if code == http.StatusInternalServerError {
+			log.Println(err)
+			ctx.JSON(code, gin.H{"error": "Internal server error"})
+			return
+		}
+
+		ctx.JSON(code, gin.H{"error": err.Error()})
 		return
 	}
 

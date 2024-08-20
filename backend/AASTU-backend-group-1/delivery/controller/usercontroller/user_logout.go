@@ -1,6 +1,7 @@
 package usercontroller
 
 import (
+	"blogs/config"
 	"blogs/domain"
 	"log"
 	"net/http"
@@ -18,8 +19,14 @@ func (u *UserController) LogoutUser(ctx *gin.Context) {
 
 	err := u.UserUsecase.LogoutUser(claims.Username)
 	if err != nil {
-		log.Println(err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		code := config.GetStatusCode(err)
+
+		if code == http.StatusInternalServerError {
+			log.Println(err)
+			ctx.JSON(code, gin.H{"error": "Internal server error"})
+		}
+
+		ctx.JSON(code, gin.H{"error": err.Error()})
 		return
 	}
 

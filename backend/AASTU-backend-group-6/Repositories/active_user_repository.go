@@ -30,7 +30,7 @@ func (a *activeUserRepository) CreateActiveUser(au domain.ActiveUser, c context.
 	return err
 }
 
-// DeleteActiveUserById implements domain.ActiveUserRepository.
+// DeleteActiveUser implements domain.ActiveUserRepository.
 func (a *activeUserRepository) DeleteActiveUser(ids string, user_agent string, c context.Context) error {
 	id, err := primitive.ObjectIDFromHex(ids)
 	if err != nil {
@@ -41,14 +41,14 @@ func (a *activeUserRepository) DeleteActiveUser(ids string, user_agent string, c
 	return err
 }
 
-// FindActiveUserById implements domain.ActiveUserRepository.
-func (a *activeUserRepository) FindActiveUserById(ids string, c context.Context) (domain.ActiveUser, error) {
+// FindActiveUser implements domain.ActiveUserRepository.
+func (a *activeUserRepository) FindActiveUser(ids string, user_agent string, c context.Context) (domain.ActiveUser, error) {
 	collection := a.database.Collection(a.collection)
 	id, err := primitive.ObjectIDFromHex(ids)
 	if err != nil {
 		return domain.ActiveUser{}, err
 	}
 	var au domain.ActiveUser
-	err = collection.FindOne(c, bson.M{"id": id}).Decode(&au)
+	err = collection.FindOne(c, bson.M{"id": id, "user_agent": user_agent}).Decode(&au)
 	return au, err
 }

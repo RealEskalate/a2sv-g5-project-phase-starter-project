@@ -27,7 +27,8 @@ func (rtc *RefreshTokenController) RefreshToken(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "User not found"})
 		return
 	}
-	actvuser, err := rtc.RefreshTokenUsecase.CheckActiveUser(c, id)
+
+	actvuser, err := rtc.RefreshTokenUsecase.CheckActiveUser(c, id,c.Request.UserAgent())
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "User not found in active user"})
 		return

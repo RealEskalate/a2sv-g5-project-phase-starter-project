@@ -22,14 +22,14 @@ func NewUserController(u usecases.IUserUseCase) *UserController {
 func (u *UserController) PromoteUser(c *gin.Context) {
 	promote := struct {
 		ID uuid.UUID `json:"id"`
-		isPromote bool `json:"isPromote"`
+		IsPromote bool `json:"isPromote"`
 	}{}
 	if err := c.BindJSON(&promote); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err := u.userUseCase.PromoteUser(promote.ID, promote.isPromote)
+	err := u.userUseCase.PromoteUser(promote.ID, promote.IsPromote)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return

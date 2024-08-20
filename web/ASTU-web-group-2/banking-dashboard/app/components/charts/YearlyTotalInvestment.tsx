@@ -1,6 +1,8 @@
 "use client";
 import { useRef, useEffect } from "react";
 import { Chart, ChartData, ChartOptions } from "chart.js/auto";
+import { useGetInvestmentHistoryQuery } from "@/lib/service/TransactionService";
+import { useSession } from "next-auth/react";
 
 interface CustomCanvasElement extends HTMLCanvasElement {
   chart?: Chart;
@@ -8,9 +10,12 @@ interface CustomCanvasElement extends HTMLCanvasElement {
 
 function YearlyTotalInvestment() {
   const chartRef = useRef<CustomCanvasElement | null>(null);
+  const { data: session } = useSession();
+  const accessToken = session?.user.accessToken!;
+  const { data, isError, isLoading } = useGetInvestmentHistoryQuery(accessToken);
 
   useEffect(() => {
-    if (chartRef.current) {
+    if (chartRef.current && data && data.success) {
       // Destroy the chart instance if it already exists
       if (chartRef.current.chart) {
         chartRef.current.chart.destroy();
@@ -20,13 +25,18 @@ function YearlyTotalInvestment() {
 
       if (context) {
         const chartItem = context.canvas;
-        const data: ChartData<"line"> = {
-          labels: ["2016", "2017", "2018", "2019", "2020", "2021"],
+
+        // Extract the labels and values from the API response
+        const labels = data.data.yearlyTotalInvestment.map((item: { time: any; }) => item.time);
+        const values = data.data.yearlyTotalInvestment.map((item: { value: any; }) => item.value);
+
+        const chartData: ChartData<"line"> = {
+          labels,
           datasets: [
             {
               label: "Balance",
-              data: [5000, 22000, 15000, 35000, 20000, 29000],
-              fill: true, // Fill area under the line
+              data: values,
+              fill: true,
               backgroundColor: "rgba(252, 170, 11,0)", // Color for the filled area
               borderColor: "rgba(252, 170, 11,1)", // Color of the line
               borderWidth: 4,
@@ -37,7 +47,7 @@ function YearlyTotalInvestment() {
           ],
         };
 
-        const options: ChartOptions<"line"> = {
+        const chartOptions: ChartOptions<"line"> = {
           responsive: true,
           plugins: {
             legend: {
@@ -80,22 +90,18 @@ function YearlyTotalInvestment() {
 
         const newChart = new Chart(chartItem, {
           type: "line",
-          data,
-          options,
+          data: chartData,
+          options: chartOptions,
         });
 
         chartRef.current.chart = newChart;
       }
     }
-  }, []);
+  }, [data]);
 
   return (
-    <div className="text-gray-500 border rounded-[22px] bg-white p-2  lg:w-[540px] lg:h-[282px] md:w-[359px] md:h-[226px] w-[325px] h-[225px]">
-      <div>
-        <div className="mt-8 expense-chart lg:mx-[20px] lg:w-[481px] lg:h-[228px] md:w-[321px] md:h-[190px] w-[283px] h-[157px]">
-          <canvas ref={chartRef} />
-        </div>
-      </div>
+    <div className="text-gray-500 border rounded-[22px] bg-white p-5">
+        <canvas ref={chartRef} />
     </div>
   );
 }

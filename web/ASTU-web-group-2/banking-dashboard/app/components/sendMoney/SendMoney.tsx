@@ -53,7 +53,7 @@ const SendMoney = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4 rounded-3xl bg-white w-fit px-5 pt-7 pb-9">
+    <div className="flex flex-col gap-4 rounded-3xl bg-white px-5 pt-7 pb-9">
       <div className="flex gap-4 items-center">
         {visibleCards.map((card, index) => (
           <div

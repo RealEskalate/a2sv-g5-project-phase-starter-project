@@ -52,7 +52,7 @@ import { TransactionType } from "../transaction/Transaction";
 //     card: "1234 ****",
 //     date: "14 Jan, 10.40 PM",
 //     amount: 840,
-//   },
+//   }, 
 // ];
 
 const inter = Inter({ subsets: ["latin"] });

@@ -1,14 +1,34 @@
 "use client";
 import React from "react";
 import ToggleButton from "../Button/ToggleButton";
+import UserService from "../../services/UserService";
 
 const PreferencesForm = () => {
-  const handleToggle = (checked: boolean) => {
-    console.log("Toggle is now", checked ? "On" : "Off");
+  const [preferences, setPreferences] = React.useState({
+    currency: "USD",
+    sentOrReceiveDigitalCurrency: true,
+    receiveMerchantOrder: false,
+    accountRecommendations: true,
+    timeZone: "(GMT-12:00) International Date Line West",
+    twoFactorAuthentication: false,
+  });
+
+  const handleToggle = (key: keyof typeof preferences, value: boolean) => {
+    setPreferences((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      const response = await UserService.updatePreference(preferences);
+      console.log("Preferences updated:", response);
+    } catch (error) {
+      console.error("Error updating preferences:", error);
+    }
   };
 
   return (
-    <form className="mt-8 space-y-6 px-3 py-4">
+    <form className="mt-8 space-y-6 px-3 py-4" onSubmit={handleSubmit}>
       <div className="flex flex-wrap gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700">
@@ -16,7 +36,7 @@ const PreferencesForm = () => {
           </label>
           <input
             type="text"
-            value="USD"
+            value={preferences.currency}
             readOnly
             className="sm:w-[285px] md:w-[334px] lg:w-[510px] border-2 border-gray-300 px-5 py-4 rounded-xl"
           />
@@ -28,7 +48,7 @@ const PreferencesForm = () => {
           </label>
           <input
             type="text"
-            value="(GMT-12:00) International Date Line West"
+            value={preferences.timeZone}
             readOnly
             className="sm:w-[285px] md:w-[334px] lg:w-[510px] border-2 border-gray-300 px-5 py-4 rounded-xl"
           />
@@ -42,8 +62,10 @@ const PreferencesForm = () => {
         <div className="mt-4 space-y-4">
           <div className="flex items-center">
             <ToggleButton
-              onToggle={handleToggle}
-              initialChecked={true} // Set initial state based on the original checkbox state
+              onToggle={(checked) =>
+                handleToggle("sentOrReceiveDigitalCurrency", checked)
+              }
+              initialChecked={preferences.sentOrReceiveDigitalCurrency}
             />
             <span className="ml-3 text-sm text-gray-700">
               I send or receive digital currency
@@ -52,8 +74,10 @@ const PreferencesForm = () => {
 
           <div className="flex items-center">
             <ToggleButton
-              onToggle={handleToggle}
-              initialChecked={false} // Set initial state based on the original checkbox state
+              onToggle={(checked) =>
+                handleToggle("receiveMerchantOrder", checked)
+              }
+              initialChecked={preferences.receiveMerchantOrder}
             />
             <span className="ml-3 text-sm text-gray-700">
               I receive merchant order
@@ -62,8 +86,10 @@ const PreferencesForm = () => {
 
           <div className="flex items-center">
             <ToggleButton
-              onToggle={handleToggle}
-              initialChecked={true} // Set initial state based on the original checkbox state
+              onToggle={(checked) =>
+                handleToggle("accountRecommendations", checked)
+              }
+              initialChecked={preferences.accountRecommendations}
             />
             <span className="ml-3 text-sm text-gray-700">
               There are recommendations for my account

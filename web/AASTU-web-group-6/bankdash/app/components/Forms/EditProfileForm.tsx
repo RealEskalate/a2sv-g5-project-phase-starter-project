@@ -2,8 +2,43 @@ import React from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
+import { useForm } from "react-hook-form"; // Import React Hook Form
+import User from "path-to-your-user-class"; // Update the path to your User class
+
+type FormData = {
+  name: string;
+  email: string;
+  username: string;
+  password: string;
+  confirmPassword: string;
+  dateOfBirth: string;
+  permanentAddress: string;
+  postalCode: string;
+  presentAddress: string;
+  city: string;
+  country: string;
+  profilePicture: string;
+};
 
 const EditProfileForm = () => {
+  const { register, handleSubmit } = useForm<FormData>(); // Initialize React Hook Form
+
+  const onSubmit = async (data: FormData) => {
+    const { confirmPassword, ...userData } = data; // Exclude confirmPassword from userData
+    console.log("Updating user profile:", userData);
+
+    try {
+      const responseData = await User.update(userData); // Call the update method
+      if (responseData.success) {
+        console.log("Profile update successful:", responseData.message);
+      } else {
+        console.error("Profile update failed:", responseData.message);
+      }
+    } catch (error) {
+      console.error("An error occurred during profile update:", error);
+    }
+  };
+
   return (
     <div className="content-center w-full flex justify-center gap-x-12 py-4 flex-wrap sm:pt-4 md:pt-8 lg:pt-12 bg-white rounded-lg shadow-md">
       <div className="flex justify-center  gap-3 w-fit sm:w-full md:w-auto">
@@ -21,26 +56,24 @@ const EditProfileForm = () => {
         </div>
       </div>
 
-      <form className="mt-8 lg:space-y-6 flex flex-col sm:flex-wrap">
+      <form className="mt-8 lg:space-y-6 flex flex-col sm:flex-wrap" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
           <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="name" className="">
-              Your Name
-            </label>
+            <label htmlFor="name">Your Name</label>
             <input
               type="text"
               id="name"
+              {...register("name")}
               className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
               placeholder="Charlene Reed"
             />
           </div>
           <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="username" className="">
-              User Name
-            </label>
+            <label htmlFor="username">User Name</label>
             <input
               type="text"
               id="username"
+              {...register("username")}
               className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
               placeholder="Charlene Reed"
             />
@@ -48,23 +81,21 @@ const EditProfileForm = () => {
         </div>
         <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
           <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="email" className="">
-              Email
-            </label>
+            <label htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
+              {...register("email")}
               className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
               placeholder="charlenereed@gmail.com"
             />
           </div>
           <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="password" className="">
-              Password
-            </label>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
+              {...register("password")}
               className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
               placeholder="********"
             />
@@ -72,23 +103,21 @@ const EditProfileForm = () => {
         </div>
         <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
           <div className="sm:w-full mr-3 md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="dob" className="">
-              Date of Birth
-            </label>
+            <label htmlFor="dob">Date of Birth</label>
             <input
               type="date"
               id="dob"
+              {...register("dateOfBirth")}
               className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
               placeholder="25 January 1990"
             />
           </div>
           <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="present-address" className="">
-              Present Address
-            </label>
+            <label htmlFor="present-address">Present Address</label>
             <input
               type="text"
               id="present-address"
+              {...register("presentAddress")}
               className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
               placeholder="San Jose, California, USA"
             />
@@ -96,23 +125,21 @@ const EditProfileForm = () => {
         </div>
         <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
           <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="permanent-address" className="">
-              Permanent Address
-            </label>
+            <label htmlFor="permanent-address">Permanent Address</label>
             <input
               type="text"
               id="permanent-address"
+              {...register("permanentAddress")}
               className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
               placeholder="San Jose, California, USA"
             />
           </div>
           <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="city" className="">
-              City
-            </label>
+            <label htmlFor="city">City</label>
             <input
               type="text"
               id="city"
+              {...register("city")}
               className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
               placeholder="San Jose"
             />
@@ -120,23 +147,21 @@ const EditProfileForm = () => {
         </div>
         <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
           <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="postal-code" className="">
-              Postal Code
-            </label>
+            <label htmlFor="postal-code">Postal Code</label>
             <input
               type="text"
               id="postal-code"
+              {...register("postalCode")}
               className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
               placeholder="45962"
             />
           </div>
           <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="country" className="">
-              Country
-            </label>
+            <label htmlFor="country">Country</label>
             <input
               type="text"
               id="country"
+              {...register("country")}
               className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
               placeholder="USA"
             />

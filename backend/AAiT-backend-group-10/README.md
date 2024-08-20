@@ -57,7 +57,7 @@
 ### User
 
 * /user/update/:id - update profile
-* /user/promote/?id?makeAdmin  - promote or demote user with id based on makeAdmin bool
+* /user/promote  - promote or demote user with id and based on isPromote bool
 
 
 ### Blog

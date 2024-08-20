@@ -40,7 +40,7 @@ func NewRouter(db *mongo.Database) {
 	router.PATCH("/blogs/:id/view", blogController.AddView)
 	router.GET("/blogs/search", blogController.SearchBlogs)
 
-	router.PATCH("/users/:id/promote", userController.PromoteUser)
+	router.PATCH("/users/promote", userController.PromoteUser)
 
 	router.GET("/comment/:blog_id", commentController.GetComments)
 	router.GET("/comment_count/:blog_id", commentController.GetCommentsCount)

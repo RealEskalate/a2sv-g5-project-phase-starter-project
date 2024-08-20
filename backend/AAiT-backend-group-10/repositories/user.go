@@ -71,12 +71,12 @@ func (r *UserRepository) UpdateUser(user *dto.UserUpdate) error {
 	}
 	return nil
 }
-func (r *UserRepository) PromoteUser(id uuid.UUID, makeAdmin bool) error {
+func (r *UserRepository) PromoteUser(id uuid.UUID, isPromote bool) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	filter := bson.D{{Key: "_id", Value: id}}
-	update := bson.D{{Key: "$set", Value: bson.D{{Key: "isAdmin", Value: makeAdmin}}}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "isAdmin", Value: isPromote}}}}
 	result, err := r.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err

@@ -11,6 +11,6 @@ type IUserRepository interface {
 	GetUserByEmail(email string) (*domain.User, error)
 	GetUserByID(id uuid.UUID) (*domain.User, error)
 	UpdateUser(user *dto.UserUpdate) error
-	PromoteUser(id uuid.UUID, makeAdmin bool) error
+	PromoteUser(id uuid.UUID, isPromote bool) error
 	GetAllUsersWithName(name string) ([]uuid.UUID, error)
 }

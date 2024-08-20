@@ -1,23 +1,42 @@
+// Package jwt provides JWT generation and validation services.
 package jwt
 
 import (
-	"errors"
-	"fmt"
-	"log"
-	"time"
+  "errors"
+  "time"
 
-	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/group13/blog/config"
-	"github.com/group13/blog/domain/errors"
-	usermodel "github.com/group13/blog/domain/models/user"
-	ijwt "github.com/group13/blog/usecase/common/i_jwt"
+  "github.com/dgrijalva/jwt-go"
+  usermodel "github.com/group13/blog/domain/models/user"
+  ijwt "github.com/group13/blog/usecase/common/i_jwt"
 )
 
+// Service implements the ijwt.IService interface for handling JWT operations.
 type Service struct {
-	Email    string
-	Username string
-	Role     bool
-	jwt.StandardClaims
+  secretKey string
+  issuer    string
+  expTime   time.Duration
+  refreshExpTime time.Duration
+  jwt.StandardClaims
+}
+
+var _ ijwt.Service = &Service{}
+
+// Config holds the configuration for creating a new JWT Service.
+type Config struct {
+  SecretKey string
+  Issuer    string
+  ExpTime   time.Duration
+  RefreshExpTime time.Duration
+}
+
+// New creates a new JWT Service with the given configuration.
+func New(config Config) *Service {
+  return &Service{
+    secretKey: config.SecretKey,
+    issuer:    config.Issuer,
+    expTime:   config.ExpTime,
+	refreshExpTime: config.RefreshExpTime,
+  }
 }
 
 
@@ -33,23 +52,31 @@ func (s *Service) Generate(user *usermodel.User, tokenType string) (string, erro
 	jwt_secret_key := config.Envs.JWTSecret
 
 	if tokenType == "access" {
-
-		claims = &Service{
-			email, name, role, jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(time.Hour * 5).Unix(),
+		claims = jwt.MapClaims{
+			"email":  email, 
+			"name": name,
+			"role": role,
+			 jwt.StandardClaims{
+				 ExpiresAt: time.Now().Add(time.Hour * 5).Unix(),
 			},
 		}
-	} else if tokenType == "refresh" {
+		} else if tokenType == "refresh" {
 
-		claims = &Service{
-			email, name, role, jwt.StandardClaims{
+		claims = jwt.MapClaims{
+			"email":  email, 
+			"name": name,
+			"role": role,
+			 jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(time.Hour * 168).Unix(),
 			},
 		}
 	} else {
-		claims = &Service{
-			email, name, role, jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(time.Minute * 15).Unix(),
+		claims = jwt.MapClaims{
+			"email":  email, 
+			"name": name,
+			"role": role,
+			 jwt.StandardClaims{
+				 ExpiresAt: time.Now().Add(time.Minute * 15).Unix(),
 			},
 		}
 	}

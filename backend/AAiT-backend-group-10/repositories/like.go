@@ -20,6 +20,17 @@ func NewLikeRepository(db *mongo.Database, collectionName string) *LikeRepositor
 		Collection: collection,
 	}
 }
+func (l *LikeRepository) GetLike(likeID uuid.UUID) (domain.Like, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	filter := bson.D{
+		{Key: "id", Value: likeID},
+	}
+	var like domain.Like
+	err := l.Collection.FindOne(ctx, filter).Decode(&like)
+	return like, err
+}
 
 // LikeBlog implements usecases.LikeUsecaseInterface.
 func (l *LikeRepository) LikeBlog(like domain.Like) error {

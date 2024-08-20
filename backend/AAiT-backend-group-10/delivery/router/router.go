@@ -45,15 +45,15 @@ func NewRouter(db *mongo.Database) {
 
 	router.PATCH("/users/promote", infrastructures.AuthMiddleware(&jwtService), infrastructures.AdminMiddleWare(), userController.PromoteUser)
 
-	router.GET("/comment/:blog_id", commentController.GetComments)
-	router.GET("/comment_count/:blog_id", commentController.GetCommentsCount)
-	router.POST("/comment", commentController.AddComment)
-	router.PUT("/comment/:id", commentController.UpdateComment)
-	router.DELETE("/comment/:id", commentController.DelelteComment)
+	router.GET("/comment/:blog_id", infrastructures.AuthMiddleware(&jwtService), commentController.GetComments)
+	router.GET("/comment_count/:blog_id", infrastructures.AuthMiddleware(&jwtService), commentController.GetCommentsCount)
+	router.POST("/comment", infrastructures.AuthMiddleware(&jwtService), commentController.AddComment)
+	router.PUT("/comment/:id", infrastructures.AuthMiddleware(&jwtService), commentController.UpdateComment)
+	router.DELETE("/comment/:id", infrastructures.AuthMiddleware(&jwtService), commentController.DelelteComment)
 
-	router.PUT("/like", likeController.LikeBlog)
-	router.DELETE("/like", likeController.DeleteLike)
-	router.GET("/like/:blog_id", likeController.BlogLikeCount)
+	router.PUT("/like", infrastructures.AuthMiddleware(&jwtService), likeController.LikeBlog)
+	router.DELETE("/like", infrastructures.AuthMiddleware(&jwtService), likeController.DeleteLike)
+	router.GET("/like/:blog_id", infrastructures.AuthMiddleware(&jwtService), likeController.BlogLikeCount)
 
 	port := os.Getenv("PORT")
 	router.Run(":" + port)

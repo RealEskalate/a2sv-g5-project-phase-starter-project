@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/group13/blog/config"
-	common "github.com/group13/blog/delivery/common/icontroller"
+	"github.com/group13/blog/delivery/common"
 	blogcontroller "github.com/group13/blog/delivery/controller/blog"
 	usercontroller "github.com/group13/blog/delivery/controller/user"
 	"github.com/group13/blog/delivery/router"
@@ -18,13 +18,10 @@ import (
 	commentrepo "github.com/group13/blog/infrastructure/repo/comment"
 	reactionrepo "github.com/group13/blog/infrastructure/repo/reaction"
 	userrepo "github.com/group13/blog/infrastructure/repo/user"
-	addcmd "github.com/group13/blog/usecase/blog/command/add"
-	deletecmd "github.com/group13/blog/usecase/blog/command/delete"
-	updatecmd "github.com/group13/blog/usecase/blog/command/update"
+	blogcmd "github.com/group13/blog/usecase/blog/command"
 	blogqry "github.com/group13/blog/usecase/blog/query"
-	logincommand "github.com/group13/blog/usecase/user/command/login"
-	promotcmd "github.com/group13/blog/usecase/user/command/promote"
-	signcommand "github.com/group13/blog/usecase/user/command/signup"
+	passwordreset "github.com/group13/blog/usecase/password_reset"
+	usercmd "github.com/group13/blog/usecase/user/command"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -89,36 +86,40 @@ func initRepos(cfg config.Config, mongoClient *mongo.Client) (*userrepo.Repo, *b
 	return userRepo, blogRepo, commentRepo, reactionRepo
 }
 
-func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtService *jwt.Service, mailService *email.MailTrapService) *usercontroller.Controller {
-	// 	ResetPasswordHandler  icmd.IHandler[*resetcodevalidate.Command, bool]
-	// 	ForgotPasswordHandler icmd.IHandler[*forgotpassword.Command, bool]
-	// 	validateEmailHander   icmd.IHandler[string, *result.ValidateEmailResult]
-	//
-	promotHandler := promotcmd.New(userRepo)
-	loginHandler := logincommand.NewLoginHandler(logincommand.LoginConfig{
+func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtService *jwt.Service, mailService *email.MailTrapService) *usercontroller.UserController {
+	promoteHandler := usercmd.NewPromoteHandler(userRepo)
+	loginHandler := usercmd.NewLoginHandler(usercmd.LoginConfig{
 		UserRepo:     userRepo,
 		HashService:  hashService,
 		JwtService:   jwtService,
 		EmailService: mailService,
 	})
-	signupHandler := signcommand.NewSignUpHandler(signcommand.SignUpConfig{
+	signupHandler := usercmd.NewSignUpHandler(usercmd.SignUpConfig{
 		UserRepo:     userRepo,
 		HashService:  hashService,
 		JwtService:   jwtService,
 		EmailService: mailService,
 	})
+	resetPasswordHandler := passwordreset.NewResetHandler(userRepo, hashService, jwtService)
+	resetCodeSendHandler := passwordreset.NewSendcodeHandler(userRepo)
+	validateCodeHandler := passwordreset.NewValidateCodeHandler(userRepo, jwtService)
+	validateEmailHandler := usercmd.NewValidateEmailHandler(userRepo, hashService, jwtService)
 
 	return usercontroller.New(usercontroller.Config{
-		PromotHandler: promotHandler,
-		LoginHandler:  loginHandler,
-		SignupHandler: signupHandler,
+		PromoteHandler:       promoteHandler,
+		LoginHandler:         loginHandler,
+		SignupHandler:        signupHandler,
+		ResetPasswordHandler: resetPasswordHandler,
+		ResetCodeSendHandler: resetCodeSendHandler,
+		ValidateCodeHandler:  validateCodeHandler,
+		ValidateEmailHandler: validateEmailHandler,
 	})
 }
 
 func initBlogController(blogRepo *blogrepo.Repo) *blogcontroller.Controller {
-	addHandler := addcmd.NewHandler(blogRepo)
-	updateHandler := updatecmd.NewHandler(blogRepo)
-	deleteHandler := deletecmd.New(blogRepo)
+	addHandler := blogcmd.NewAddHandler(blogRepo)
+	updateHandler := blogcmd.NewUpdateHandler(blogRepo)
+	deleteHandler := blogcmd.NewDeleteHandler(blogRepo)
 	getMultipleHandler := blogqry.NewGetMultipleHandler(blogRepo)
 
 	return blogcontroller.New(blogcontroller.Config{

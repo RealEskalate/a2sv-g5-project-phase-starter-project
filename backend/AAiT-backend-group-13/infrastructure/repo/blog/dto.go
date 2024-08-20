@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	blogmodel "github.com/group13/blog/domain/models/blog"
+	"github.com/group13/blog/domain/models"
 )
 
 // BlogDTO represents the data structure for a blog in the database.
@@ -21,7 +21,7 @@ type BlogDTO struct {
 	CommentCount int       `bson:"comment_count"`
 }
 
-func FromBlog(b *blogmodel.Blog) *BlogDTO {
+func FromBlog(b *models.Blog) *BlogDTO {
 	return &BlogDTO{
 		ID:           b.ID(),
 		Title:        b.Title(),
@@ -29,9 +29,9 @@ func FromBlog(b *blogmodel.Blog) *BlogDTO {
 		Tags:         b.Tags(),
 		CreatedDate:  b.CreatedDate(),
 		UpdatedDate:  b.UpdatedDate(),
-		AuthorID:     b.UserId(),
+		AuthorID:     b.UserID(),
 		LikeCount:    b.LikeCount(),
-		DisLikeCount: b.DisLikeCount(),
+		DisLikeCount: b.DislikeCount(),
 		CommentCount: b.CommentCount(),
 	}
 }

@@ -6,8 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	er "github.com/group13/blog/domain/errors"
-	ihash "github.com/group13/blog/domain/i_hash"
-	usermodel "github.com/group13/blog/domain/models/user"
+	"github.com/group13/blog/domain/models"
 	irepo "github.com/group13/blog/usecase/common/i_repo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,17 +16,16 @@ import (
 // Repo handles the persistence of user models.
 type Repo struct {
 	collection *mongo.Collection
-	hash       ihash.Service
 }
 
 // FindByEmail implements irepository.UserRepository.
-func (u *Repo) FindByEmail(email string) (*usermodel.User, error) {
+func (u *Repo) FindByEmail(email string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	filter := bson.M{"email": email}
 
-	var user usermodel.User
+	var user models.User
 	err := u.collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -53,7 +51,7 @@ func NewRepo(client *mongo.Client, dbName, collectionName string) *Repo {
 // Save inserts or updates a user in the repository.
 // If the user already exists, it updates the existing record.
 // If the user does not exist, it adds a new record.
-func (u *Repo) Save(user *usermodel.User) error {
+func (u *Repo) Save(user *models.User) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -87,13 +85,13 @@ func (u *Repo) Save(user *usermodel.User) error {
 	return nil
 }
 
-func (u *Repo) FindById(id uuid.UUID) (*usermodel.User, error) {
+func (u *Repo) FindById(id uuid.UUID) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	filter := bson.M{"_id": id}
 
-	var user usermodel.User
+	var user models.User
 	err := u.collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -105,13 +103,13 @@ func (u *Repo) FindById(id uuid.UUID) (*usermodel.User, error) {
 	return &user, nil
 }
 
-func (u *Repo) FindByUsername(username string) (*usermodel.User, error) {
+func (u *Repo) FindByUsername(username string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	filter := bson.M{"username": username}
 
-	var user usermodel.User
+	var user models.User
 	err := u.collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -122,12 +120,3 @@ func (u *Repo) FindByUsername(username string) (*usermodel.User, error) {
 
 	return &user, nil
 }
-
-// func (u *Repo) MatchPassword(password string, hashedPassword string, hash ihash.Service) bool {
-// 	hashed, err := u.hash.Hash(password)
-// 	if err != nil {
-// 		return false
-// 	}
-// 	return hashed == hashedPassword
-// }
-

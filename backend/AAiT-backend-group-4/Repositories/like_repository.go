@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type likeReposiotory struct {
@@ -143,14 +144,18 @@ func (lr *likeReposiotory) RemoveDislike(c context.Context, id string) error {
 	return nil
 }
 
-func (lr *likeReposiotory) GetLikesByUser(c context.Context, userID string) (likes []domain.Like, err error) {
+func (lr *likeReposiotory) GetLikesByUser(c context.Context, userID string, limit, offset int) (likes []domain.Like, err error) {
 	collection := lr.databse.Collection(lr.collection)
 	userPrimitiveID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return []domain.Like{}, err
 	}
 
-	cursor, err := collection.Find(c, bson.M{"user_id": userPrimitiveID})
+	options := options.Find()
+	options.SetLimit(int64(limit))
+	options.SetSkip(int64(offset))
+
+	cursor, err := collection.Find(c, bson.M{"user_id": userPrimitiveID}, options)
 
 	if err != nil {
 		return []domain.Like{}, err
@@ -167,8 +172,8 @@ func (lr *likeReposiotory) GetLikesByUser(c context.Context, userID string) (lik
 
 }
 
-func (lr *likeReposiotory) GetLikesByBlog(c context.Context, blogID string) (likes []domain.Like, err error) {
-	
+func (lr *likeReposiotory) GetLikesByBlog(c context.Context, blogID string, limit, offset int) (likes []domain.Like, err error) {
+
 	collection := lr.databse.Collection(lr.collection)
 	userPrimitiveID, err := primitive.ObjectIDFromHex(blogID)
 
@@ -176,7 +181,11 @@ func (lr *likeReposiotory) GetLikesByBlog(c context.Context, blogID string) (lik
 		return []domain.Like{}, err
 	}
 
-	cursor, err := collection.Find(c, bson.M{"blog_id": userPrimitiveID})
+	options := options.Find()
+	options.SetLimit(int64(limit))
+	options.SetSkip(int64(offset))
+
+	cursor, err := collection.Find(c, bson.M{"blog_id": userPrimitiveID}, options)
 
 	if err != nil {
 		return []domain.Like{}, err

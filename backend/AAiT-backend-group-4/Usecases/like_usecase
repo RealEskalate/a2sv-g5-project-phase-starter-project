@@ -89,15 +89,30 @@ func (lu *likeUsecase) RemoveDislike(ctx context.Context, dislikeID string) erro
 }
 
 
+func (lu *likeUsecase) GetLikesByUser(ctx context.Context, userID string, limit, page int) ([]domain.Like, error) {
 
-func (lu *likeUsecase) GetLikesByUser(ctx context.Context, userID string) ([]domain.Like, error) {
     ctx, cancel := context.WithTimeout(ctx, lu.contextTimeouts)
     defer cancel()
 
-    return lu.likeRepository.GetLikesByUser(ctx, userID)
+    likes, err := lu.likeRepository.GetLikesByUser(ctx, userID, limit, offset)
+    if err!= nil{
+        return []domian.Like{}, err
+    }
+
+    return likes, nil
 }
 
-func (lu *likeUsecase) GetLikesByBlog(ctx context.Context, blogID string) ([]domain.Like, error) {
+func (lu *likeUsecase) GetLikesByBlog(ctx context.Context, blogID string, limit, page int) ([]domain.Like, error) {
 
-    return lu.likeRepository.GetLikesByBlog(ctx, blogID)
+    ctx, cancel := context.WithTimeout(ctx, lu.contextTimeouts)
+    defer cancel()
+
+    offset := (page - 1) * limit
+
+    likes, err := lu.likeRepository.GetLikesByBlog(ctx, blogID, limit, offset)
+    if err != nil {
+        return []domian.Like{}, err 
+    }
+
+    return likes, nil
 }

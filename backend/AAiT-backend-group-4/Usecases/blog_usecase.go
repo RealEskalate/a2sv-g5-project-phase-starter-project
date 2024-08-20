@@ -1,10 +1,12 @@
 package usecases
 
 import (
+	domain "aait-backend-group4/Domain"
 	"context"
 	"time"
+	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	domain"aait-backend-group4/Domain"
 )
 
 type blogUsecase struct {
@@ -21,6 +23,52 @@ func NewBlogUsecase(blogRepository domain.BlogRepository,userRepository domain.U
         contextTimeouts: timeout,
     }
 }
+
+
+// SearchBlogs calls the SearchBlogs mehtod in blog repository to filter blogs based on the filds that exist in filter struct
+// It Calculate offset for pagination
+// Fetch the paginated blogs and total count calling method in repository
+// Calculate pagination metadata
+func (blogU *blogUsecase) SearchBlogs(c context.Context, filter domain.Filter, limit, page int) (domain.PaginatedBlogs, error) {
+
+    ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
+    defer cancel()
+
+    if limit <= 0 || page <= 0 {
+        return domain.PaginatedBlogs{}, fmt.Errorf("invalid limit or page number")
+    }
+
+    offset := (page - 1) * limit
+
+    blogs, totalItems, err := blogU.blogRepository.SearchBlogs(ctx, filter, limit, offset)
+    if err != nil {
+        return domain.PaginatedBlogs{}, err
+    }
+
+    totalPages := (totalItems + limit - 1) / limit
+    previousPage := page - 1
+    nextPage := page + 1
+
+    if previousPage < 1 {
+        previousPage = 0 
+    }
+
+    if nextPage > totalPages {
+        nextPage = 0 
+    }
+
+    return domain.PaginatedBlogs{
+        Blogs: blogs,
+        Pagination: domain.PaginationData{
+            NextPage:     nextPage,
+            PreviousPage: previousPage,
+            CurrentPage:  page,
+            TotalPages:   totalPages,
+            TotalItems:   totalItems,
+        },
+    }, nil
+}
+
 
 
 // Create calls Create method in a blog repository to create a blog
@@ -40,27 +88,156 @@ func (blogU *blogUsecase) FetchByBlogID(c context.Context, blogID string )(domai
 }
 
 // FetchAll calls FetchAll in repository to fetch all blogs in the database
-func (blogU *blogUsecase) FetchAll(c context.Context)([] domain.Blog, error){
+
+
+// FetchByBlogAuthor calls FetchByBlogAuthor method in blog repository to retrive a blog writtern by the author using authuthor and pagination metadata
+func (blogU *blogUsecase) FetchByBlogAuthor(c context.Context, authorID string, limit, offset int) (domain.PaginatedBlogs, error) {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
 
-	return blogU.blogRepository.FetchAll(ctx)
+	blogs, totalCount, err := blogU.blogRepository.FetchByBlogAuthor(ctx, authorID, limit, offset)
+	if err != nil {
+		return domain.PaginatedBlogs{}, err
+	}
+	totalPages := (totalCount + limit - 1) / limit
+	currentPage := (offset / limit) + 1
+
+
+	return domain.PaginatedBlogs{
+        Blogs: blogs,
+        Pagination: domain.PaginationData{
+            NextPage:     currentPage + 1,
+            PreviousPage: currentPage - 1,
+            CurrentPage:  currentPage,
+            TotalPages:   totalPages,
+            TotalItems:   totalCount,
+        },
+    }, nil
 }
 
-// FetchByBlogAuthor calls FetchByBlogAuthor method in blog repository to retrive a blog writtern by the author using authuthor ID
-func (blogU *blogUsecase) FetchByBlogAuthor(c context.Context, authorId string )([] domain.Blog, error){
-	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
-	defer cancel()
-
-	return blogU.blogRepository.FetchByBlogAuthor(ctx, authorId)
-}
 
 // FetchByBlogTitle calls FetchByBlogTitle method in blog repository to retrive a blog by it's title
-func (blogU *blogUsecase) FetchByBlogTitle(c context.Context, title string )([] domain.Blog, error){
+// FetchByBlogTitle fetches blogs by their title and handles pagination
+func (blogU *blogUsecase) FetchByBlogTitle(c context.Context, title string, limit, offset int) (domain.PaginatedBlogs, error) {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
 
-	return blogU.blogRepository.FetchByBlogTitle(ctx, title)
+	blogs, totalCount, err := blogU.blogRepository.FetchByBlogTitle(ctx, title, limit, offset)
+	if err != nil {
+		return domain.PaginatedBlogs{}, err
+	}
+	totalPages := (totalCount + limit - 1) / limit
+	currentPage := (offset / limit) + 1
+
+	return domain.PaginatedBlogs{
+        Blogs: blogs,
+        Pagination: domain.PaginationData{
+            NextPage:     currentPage + 1,
+            PreviousPage: currentPage - 1,
+            CurrentPage:  currentPage,
+            TotalPages:   totalPages,
+            TotalItems:   totalCount,
+        },
+    }, nil
+}
+
+// FetchAll retrieves all blogs with pagination and metadata
+func (blogU *blogUsecase) FetchAll(c context.Context, limit, offset int) (domain.PaginatedBlogs, error) {
+	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
+	defer cancel()
+
+	blogs, totalCount, err := blogU.blogRepository.FetchAll(ctx, limit, offset)
+	if err != nil {
+		return domain.PaginatedBlogs{}, err
+	}
+
+	totalPages := (totalCount + limit - 1) / limit
+	currentPage := (offset / limit) + 1
+
+	return domain.PaginatedBlogs{
+        Blogs: blogs,
+        Pagination: domain.PaginationData{
+            NextPage:     currentPage + 1,
+            PreviousPage: currentPage - 1,
+            CurrentPage:  currentPage,
+            TotalPages:   totalPages,
+            TotalItems:   totalCount,
+        },
+    }, nil
+}
+
+func (blogU *blogUsecase) FetchByPageAndPopularity(ctx context.Context, limit, page int) (domain.PaginatedBlogs, error) {
+	ctx, cancel := context.WithTimeout(ctx, blogU.contextTimeouts)
+	defer cancel()
+
+	// Calculate offset
+	offset := (page - 1) * limit
+
+	// Fetch blogs and total count
+	blogs, totalCount, err := blogU.blogRepository.FetchByPageAndPopularity(ctx, limit, offset)
+	if err != nil {
+		return domain.PaginatedBlogs{}, err
+	}
+
+	// Calculate pagination metadata
+	totalPages := (totalCount + limit - 1) / limit
+	currentPage := page
+	nextPage := currentPage + 1
+	previousPage := currentPage - 1
+
+	if nextPage > totalPages {
+		nextPage = 0 // No next page
+	}
+	if previousPage < 1 {
+		previousPage = 0 // No previous page
+	}
+
+	return domain.PaginatedBlogs{
+		Blogs: blogs,
+		Pagination :domain.PaginationData{
+		NextPage:     nextPage,
+		PreviousPage: previousPage,
+		CurrentPage:  currentPage,
+		TotalPages:   totalPages,
+		TotalItems:   totalCount,
+	}}, nil
+}
+
+func (blogU *blogUsecase) FetchByTags(ctx context.Context, tags []domain.Tag, limit, page int) (domain.PaginatedBlogs, error) {
+	ctx, cancel := context.WithTimeout(ctx, blogU.contextTimeouts)
+	defer cancel()
+
+	// Calculate offset
+	offset := (page - 1) * limit
+
+	// Fetch blogs and total count
+	blogs, totalCount, err := blogU.blogRepository.FetchByTags(ctx, tags, limit, offset)
+	if err != nil {
+		return domain.PaginatedBlogs{}, err
+	}
+
+	// Calculate pagination metadata
+	totalPages := (totalCount + limit - 1) / limit
+	currentPage := page
+	nextPage := currentPage + 1
+	previousPage := currentPage - 1
+
+	if nextPage > totalPages {
+		nextPage = 0 // No next page
+	}
+	if previousPage < 1 {
+		previousPage = 0 // No previous page
+	}
+
+	return domain.PaginatedBlogs{
+		Blogs: blogs,
+		Pagination :domain.PaginationData{
+		NextPage:     nextPage,
+		PreviousPage: previousPage,
+		CurrentPage:  currentPage,
+		TotalPages:   totalPages,
+		TotalItems:   totalCount,
+	}}, nil
 }
 
 
@@ -73,17 +250,23 @@ func (blogU *blogUsecase) UpdateBlog(c context.Context, id primitive.ObjectID, B
 	defer cancel()
 
 	exists, err := blogU.blogRepository.BlogExists(c, id)
-	if !exists{
+	if err != nil {
 		return err
 	}
-	found, err := blogU.blogRepository.UserIsAuthor(c,id, updatingID)
-	if !found{
-		return err
+	if !exists {
+		return fmt.Errorf("blog does not exist")
 	}
 
-
+	found, err := blogU.blogRepository.UserIsAuthor(c, id, updatingID)
+	if err != nil {
+		return err
+	}
+	if !found {
+		return fmt.Errorf("user is not the author of the blog")
+	}
 
 	return blogU.blogRepository.UpdateBlog(ctx, id, BlogUpdate)
+
 }
 
 // DeletBlog checks whether the blog to be deleted exists
@@ -94,32 +277,25 @@ func (blogU *blogUsecase) DeleteBlog(c context.Context, id primitive.ObjectID, d
 	defer cancel()
 
 	exists, err := blogU.blogRepository.BlogExists(c, id)
-	if !exists{
+	if err != nil {
 		return err
+	}
+	if !exists {
+		return fmt.Errorf("blog does not exist")
 	}
 
 	found, err := blogU.blogRepository.UserIsAuthor(c, id, deletingID)
-
-	if !found || !(blogU.userRepository.IsAdmin(ctx, deletingID)){
+	if err != nil {
 		return err
+	}
+	if !found && !blogU.userRepository.IsAdmin(ctx, deletingID) {
+		return fmt.Errorf("user is not authorized to delete the blog")
 	}
 
 	return blogU.blogRepository.DeleteBlog(ctx, id)
+
 }
 
-// SearchBlogs calls the SearchBlogs mehtod in blog repository to filter blogs based on the filds that exist in filter struct
-func (blogU *blogUsecase) SearchBlogs(c context.Context, filter domain.Filter) ([]domain.Blog, error) {
-
-	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
-	defer cancel()
-
-	blogs, err := blogU.blogRepository.SearchBlogs(ctx, filter)
-	if err != nil {
-		return nil, err
-	}
-
-	return blogs, nil
-}
 
 // AddComment function calls the AddComment function in blog repository using user Id
 // Then adds it to the feedback filed of the blog using updateFeedback method

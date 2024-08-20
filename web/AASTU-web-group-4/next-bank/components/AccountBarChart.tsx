@@ -35,26 +35,26 @@ const chartConfig = {
 
 export default function Component() {
   const [bottomMargin, setBottomMargin] = useState(90);
-  
+
   useEffect(() => {
     const handleResize = () => {
       setBottomMargin(window.innerWidth < 768 ? 1 : 90);
     };
 
-    window .addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     handleResize();
-    return() => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
-
 
   return (
     <Card className="flex flex-col w-full ">
       <CardHeader className="flex justify-between">
         <div className="flex flex-row justify-between space-x-4">
           <div className="hidden md:flex text-sm font-normal">
-            <span className="font-bold">${totalDebit}</span> Debited &{" "}
-            <span className="font-bold"> ${totalCredit}</span> Credited in this
-            Week
+            <span className="font-bold">${totalDebit}</span>&nbsp;Debited
+            &&nbsp;
+            <span className="font-bold"> ${totalCredit}</span>&nbsp;Credited in
+            this Week
           </div>
           <div className="flex px-3 text-right">
             <span

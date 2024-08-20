@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/oauth2"
@@ -22,6 +23,7 @@ import (
 )
 
 type authRepository struct {
+	validator       *validator.Validate
 	UserCollection  Domain.Collection
 	TokenRepository Domain.RefreshRepository
 	oauth2Config    oauth2.Config
@@ -42,7 +44,7 @@ func NewAuthRepository(user_collection Domain.Collection, token_collection Domai
 		Endpoint: google.Endpoint,
 	}
 	return &authRepository{
-
+		validator:       validator.New(),
 		UserCollection:  user_collection,
 		TokenRepository: NewRefreshRepository(token_collection),
 		oauth2Config:    *oauth_config,
@@ -79,7 +81,11 @@ func (ar *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.
 
 // register
 func (ar *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserDto) (*Domain.OmitedUser, error, int) {
-
+	// Validate the user input
+	err := ar.validator.Struct(user)
+	if err != nil {
+		return &Domain.OmitedUser{}, err, http.StatusBadRequest
+	}
 	// Check if the email is already taken
 	existingUserFilter := bson.D{}
 	if user.UserName != "" {

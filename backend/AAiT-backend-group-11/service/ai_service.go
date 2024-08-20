@@ -1,70 +1,50 @@
 package service
 
 import (
-	"backend-starter-project/domain/entities"
-	"backend-starter-project/domain/interfaces"
 	"context"
-	"log"
 	"strings"
 
 	"github.com/google/generative-ai-go/genai"
-	"google.golang.org/api/option"
 )
 
-type AIContentService struct{}
-
-func NewAIContentService() interfaces.AIContentService {
-	return &AIContentService{}
+type AIContentServiceInterface interface {
+	GenerateContentSuggestions(keywords []string) (*genai.GenerateContentResponse, error)
+	SuggestContentImprovements( blogPostId, content string) (*genai.GenerateContentResponse, error)
 }
 
-func (acs *AIContentService) GenerateContentSuggestions(c context.Context,keywords []string) (*entities.ContentSuggestion, error) {
-	
-	client, err := genai.NewClient(c, option.WithAPIKey("AIzaSyDGyJ24ipTKSjoGbIsaMd_Np9dqvtd78XI"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer client.Close()
-
-	model := client.GenerativeModel("gemini-1.5-flash")
-
-	resp, err := model.GenerateContent(c, genai.Text("Write a story about a AI and magic"))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	candidates := resp.Candidates
-	for _, candidate := range candidates {
-		log.Printf("Generated text: %s", candidate.Content.Parts)
-	}
-
-	return nil,nil
-
+type AIContentService struct{
+	ctx context.Context
+	model genai.GenerativeModel
 }
-func (acs *AIContentService) SuggestContentImprovements(c context.Context ,blogPostId, content string) (*entities.ContentSuggestion, error) {
-	client, err := genai.NewClient(c, option.WithAPIKey("AIzaSyDGyJ24ipTKSjoGbIsaMd_Np9dqvtd78XI"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer client.Close()
 
-	model := client.GenerativeModel("gemini-1.5-flash")
+func NewAIContentService( ctx context.Context, model genai.GenerativeModel) AIContentServiceInterface {
+	return &AIContentService{ ctx: ctx, model: model}
+}
 
-	resp, err := model.GenerateContent(c, genai.Text("Write a story about a AI and magic"))
+func (acs *AIContentService) GenerateContentSuggestions(keywords []string) (*genai.GenerateContentResponse, error) {
+
+	// Construct the prompt from the keywords
+	prompt := "Write blog content about: " + strings.Join(keywords, ", ")
+
+	resp, err :=acs. model.GenerateContent(acs.ctx, genai.Text(prompt))
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
+	return resp,nil
+}
+
+
+func (acs *AIContentService) SuggestContentImprovements( blogPostId, content string) (*genai.GenerateContentResponse, error) {
+
+	// Generate a prompt for content improvement
+	prompt := "Improve the following blog: " + content
+
+	resp, err := acs.model.GenerateContent(acs.ctx, genai.Text(prompt))
+	if err != nil {
+		return nil, err
+	}
+
 	
-	//create a string builder
-	var generatedAnswer strings.Builder
-	candidates := resp.Candidates
-	for _, candidate := range candidates {
-		//add the candidate to the string builder
-		_ = candidate
 
-	}
-	_ = generatedAnswer
-
-	return nil,nil
-
-
+	return resp, nil
 }

@@ -29,7 +29,6 @@ export default function Login() {
   if (status === 'unauthenticated') {
     return <div>Please log in</div>;
   }
-  console.log(x,'x')
   return (
     <div>
       Welcome, {x.username}

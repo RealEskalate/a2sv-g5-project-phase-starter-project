@@ -10,7 +10,7 @@ type UserUseCase interface {
 	RegisterEnd(context context.Context, token string) Error
 	Login(context context.Context, username, password string) (map[string]string, Error)
 	ForgotPassword(context context.Context, email string) Error
-	ResetPassword(context context.Context, token string)
+	ResetPassword(context context.Context, token string) Error
 	Logout(context context.Context, token map[string]string) Error
 	PromoteUser(context context.Context, userID string) Error
 	DemoteUser(context context.Context, userID string) Error

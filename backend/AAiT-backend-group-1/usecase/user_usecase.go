@@ -23,6 +23,12 @@ type UserUseCase struct {
 	mailService     mail.EmailService
 }
 
+type ResetPasswordRequest struct {
+	NewPasswor      string `json:"password"`
+	ConfirmPassword string `json:"confirm_password"`
+	Token           string
+}
+
 func NewUserUseCase(userRespository domain.UserRepository, sessionRepository domain.SessionRepository, pwdService infrastructure.PasswprdService, jwtService infrastructure.JWTTokenService, mailServ mail.EmailService) UserUseCase {
 	return UserUseCase{
 		userRepo:        userRespository,
@@ -33,7 +39,7 @@ func NewUserUseCase(userRespository domain.UserRepository, sessionRepository dom
 	}
 }
 
-func (userUC *UserUseCase) Register(cxt *gin.Context, user *domain.User) domain.Error {
+func (userUC *UserUseCase) RegisterStart(cxt *gin.Context, user *domain.User) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -44,11 +50,23 @@ func (userUC *UserUseCase) Register(cxt *gin.Context, user *domain.User) domain.
 	if errValidity != nil {
 		return &domain.CustomError{Message: errValidity.Error(), Code: http.StatusBadRequest}
 	}
-	if _, errRepo := userUC.userRepo.Create(context, user); errRepo != nil {
+
+	existingUser, errRepo := userUC.userRepo.FindByEmail(context, user.Email)
+	if errRepo != nil {
 		return errRepo
 	}
+	if existingUser.Email != "" {
+		return &domain.CustomError{Message: "Email already exists", Code: http.StatusBadRequest}
+	}
+	existingUser, errRepo = userUC.userRepo.FindByUsername(context, user.Username)
+	if errRepo != nil {
+		return errRepo
+	}
+	if existingUser.Username != "" {
+		return &domain.CustomError{Message: "Username already exists", Code: http.StatusBadRequest}
+	}
 
-	verificationToken, errVerification := userUC.jwtService.GenerateVerificationToken(user.Email)
+	verificationToken, errVerification := userUC.jwtService.GenerateVerificationToken(user)
 	if errVerification != nil {
 		return &domain.CustomError{Message: errVerification.Error(), Code: http.StatusInternalServerError}
 	}
@@ -63,6 +81,41 @@ func (userUC *UserUseCase) Register(cxt *gin.Context, user *domain.User) domain.
 	if errEmail != nil {
 		return &domain.CustomError{Message: errEmail.Error(), Code: http.StatusInternalServerError}
 	}
+	return nil
+}
+
+func (userUC *UserUseCase) RegisterEnd(cxt *gin.Context, token string) domain.Error {
+	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
+	if errTimeout != nil {
+		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
+	}
+	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
+	defer cancel()
+
+	parsedToken, errParse := userUC.jwtService.ValidateVerificationToken(token)
+	if errParse != nil {
+		return &domain.CustomError{Message: errParse.Error(), Code: http.StatusBadRequest}
+	}
+
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return &domain.CustomError{Message: "error parsing claims", Code: http.StatusInternalServerError}
+	}
+
+	newUser := domain.User{
+		Username:  claims["username"].(string),
+		Email:     claims["email"].(string),
+		Role:      claims["role"].(string),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Password:  claims["password"].(string),
+	}
+
+	_, errCreateUser := userUC.userRepo.Create(context, &newUser)
+	if errCreateUser != nil {
+		return errCreateUser
+	}
+
 	return nil
 }
 
@@ -126,7 +179,7 @@ func (userUC *UserUseCase) ForgotPassword(cxt context.Context, email string) dom
 		return err
 	}
 
-	passwordResetToken, errToken := userUC.jwtService.GenerateVerificationToken(email)
+	passwordResetToken, errToken := userUC.jwtService.GenerateResetToken(email)
 	if errToken != nil {
 		return &domain.CustomError{Message: errToken.Error(), Code: http.StatusInternalServerError}
 	}
@@ -141,9 +194,9 @@ func (userUC *UserUseCase) ForgotPassword(cxt context.Context, email string) dom
 	}
 
 	if existingCheck {
-		errDelete := userUC.sessionRepo.DeleteToken(context, existingSession.ID.Hex())
-		if errDelete != nil {
-			return errDelete
+		errUpdate := userUC.sessionRepo.UpdateToken(context, existingSession.ID.Hex(), &domain.Session{PasswordResetToken: passwordResetToken})
+		if errUpdate != nil {
+			return errUpdate
 		}
 	}
 
@@ -162,6 +215,57 @@ func (userUC *UserUseCase) ForgotPassword(cxt context.Context, email string) dom
 		return &domain.CustomError{Message: errEmail.Error(), Code: http.StatusInternalServerError}
 	}
 
+	return nil
+}
+
+func (userUC *UserUseCase) ResetPassword(newPassword, confirmPassword, token string, cxt *gin.Context) domain.Error {
+	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
+	if errTimeout != nil {
+		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
+	}
+	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
+	defer cancel()
+
+	parsedToken, errParse := userUC.jwtService.ValidateResetToken(token)
+	if errParse != nil {
+		return &domain.CustomError{Message: "error parsing token", Code: http.StatusInternalServerError}
+	}
+
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return &domain.CustomError{Message: "error parsing claims", Code: http.StatusInternalServerError}
+	}
+
+	existingUser, errSearch := userUC.userRepo.FindByEmail(context, claims["email"].(string))
+	if errSearch != nil {
+		return errSearch
+	}
+	session, existenceCheck, errSession := userUC.sessionRepo.FindTokenByUserUsername(context, existingUser.Username)
+	if errSession != nil {
+		return &domain.CustomError{Message: "error while fetching session", Code: http.StatusInternalServerError}
+	}
+
+	if !existenceCheck {
+		return &domain.CustomError{Message: "session not found", Code: http.StatusNotFound}
+	}
+
+	if session.PasswordResetToken != token {
+		return &domain.CustomError{Message: "invalid token", Code: http.StatusUnauthorized}
+	}
+
+	if newPassword != confirmPassword {
+		return &domain.CustomError{Message: "passwords do not match", Code: http.StatusBadRequest}
+	}
+
+	hashedPassword, errHash := userUC.passwordService.HashPassword(newPassword)
+	if errHash != nil {
+		return &domain.CustomError{Message: errHash.Error(), Code: http.StatusInternalServerError}
+	}
+
+	errUpdate := userUC.userRepo.Update(context, existingUser.ID.Hex(), &domain.User{Password: hashedPassword})
+	if errUpdate != nil {
+		return errUpdate
+	}
 	return nil
 }
 

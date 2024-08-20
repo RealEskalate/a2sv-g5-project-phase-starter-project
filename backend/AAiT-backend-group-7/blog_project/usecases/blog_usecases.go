@@ -3,7 +3,6 @@ package usecases
 import (
 	"context"
 	"errors"
-	"time"
 
 	"blog_project/domain"
 )
@@ -13,9 +12,10 @@ type BlogUsecases struct {
 	UserUsecase domain.IUserUsecase
 }
 
-func NewBlogUsecases(repo domain.IBlogRepository) domain.IBlogUsecase {
+func NewBlogUsecase(blogrepo domain.IBlogRepository, userusecase domain.IUserUsecase) domain.IBlogUsecase {
 	return &BlogUsecases{
-		BlogRepo: repo,
+		BlogRepo:    blogrepo,
+		UserUsecase: userusecase,
 	}
 }
 
@@ -29,7 +29,7 @@ func (u *BlogUsecases) GetBlogByID(ctx context.Context, id int) (domain.Blog, er
 
 func (u *BlogUsecases) CreateBlog(ctx context.Context, blog domain.Blog) (domain.Blog, error) {
 	// Generate a new unique ID based on the current time in nanoseconds
-	blog.ID = int(time.Now().UnixNano() / 1000) // Convert nanoseconds to microseconds
+	blog.ID = generateUniqueID() // Convert nanoseconds to microseconds
 
 	_, err := u.UserUsecase.AddBlog(ctx, blog.AuthorID, blog)
 	if err != nil {
@@ -39,11 +39,56 @@ func (u *BlogUsecases) CreateBlog(ctx context.Context, blog domain.Blog) (domain
 	return u.BlogRepo.CreateBlog(ctx, blog)
 }
 
-func (u *BlogUsecases) UpdateBlog(ctx context.Context, id int, blog domain.Blog) (domain.Blog, error) {
-	return u.BlogRepo.UpdateBlog(ctx, id, blog)
+func (u *BlogUsecases) UpdateBlog(ctx context.Context, id int, updatedBlog domain.Blog) (domain.Blog, error) {
+	// Retrieve the existing blog from the repository
+	existingBlog, err := u.BlogRepo.GetBlogByID(ctx, id)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+
+	// Update only the fields that are not empty or zero
+	if updatedBlog.Title != "" {
+		existingBlog.Title = updatedBlog.Title
+	}
+	if updatedBlog.AuthorID != 0 {
+		existingBlog.AuthorID = updatedBlog.AuthorID
+	}
+	if updatedBlog.Content != "" {
+		existingBlog.Content = updatedBlog.Content
+	}
+	if len(updatedBlog.Comments) > 0 {
+		existingBlog.Comments = updatedBlog.Comments
+	}
+	if len(updatedBlog.Likes) > 0 {
+		existingBlog.Likes = updatedBlog.Likes
+	}
+	if len(updatedBlog.Dislikes) > 0 {
+		existingBlog.Dislikes = updatedBlog.Dislikes
+	}
+	if updatedBlog.Date != "" {
+		existingBlog.Date = updatedBlog.Date
+	}
+	if len(updatedBlog.Tags) > 0 {
+		existingBlog.Tags = updatedBlog.Tags
+	}
+	if updatedBlog.Views != 0 {
+		existingBlog.Views = updatedBlog.Views
+	}
+
+	// Save the updated blog back to the repository
+	return u.BlogRepo.UpdateBlog(ctx, id, existingBlog)
 }
 
 func (u *BlogUsecases) DeleteBlog(ctx context.Context, id int) error {
+	blog, err := u.BlogRepo.GetBlogByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	author := blog.AuthorID
+
+	u.UserUsecase.DeleteBlog(ctx, author, id)
+
 	return u.BlogRepo.DeleteBlog(ctx, id)
 }
 

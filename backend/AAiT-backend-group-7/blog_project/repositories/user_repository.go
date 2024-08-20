@@ -56,16 +56,16 @@ func (userRepo *userRepository) GetUserByID(ctx context.Context, id int) (domain
 }
 
 func (userRepo *userRepository) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
-	result, err := userRepo.collection.InsertOne(ctx, user)
+	_, err := userRepo.collection.InsertOne(ctx, user)
 	if err != nil {
 		return domain.User{}, err
 	}
 
-	if id, ok := result.InsertedID.(int); ok {
-		user.ID = id
-	} else {
-		return domain.User{}, errors.New("failed to convert inserted ID to int")
-	}
+	// if id, ok := result.InsertedID.(int); ok {
+	// 	user.ID = id
+	// } else {
+	// 	return domain.User{}, errors.New("failed to convert inserted ID to int")
+	// }
 
 	return user, nil
 }

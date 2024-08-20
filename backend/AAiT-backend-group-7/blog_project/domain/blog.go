@@ -69,4 +69,5 @@ type IBlogController interface {
 	AddComment(c *gin.Context)
 	LikeBlog(c *gin.Context)
 	DislikeBlog(c *gin.Context)
+	Search(c *gin.Context)
 }

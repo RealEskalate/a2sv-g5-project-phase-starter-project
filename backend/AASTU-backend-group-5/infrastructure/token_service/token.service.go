@@ -29,6 +29,7 @@ func (t *TokenService_imp) GenerateAccessToken(user domain.User) (string, error)
 	claims := domain.UserClaims{
 		ID: user.ID,
 		StandardClaims: jwt.StandardClaims{ExpiresAt: time.Now().Add(time.Hour * 24).Unix()},
+		
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(t.AccessTokenSecret))

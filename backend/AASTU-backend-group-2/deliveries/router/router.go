@@ -9,28 +9,31 @@ import (
 )
 
 func SetRouter(router *gin.Engine, com *controllers.CommentController, c *controllers.BlogController, cu *controllers.UserController, client *mongo.Client) {
-	router.POST("/blog", c.CreateBlog)
-	router.GET("/blog", c.RetrieveBlog)
-	router.PUT("/blog/:id", c.UpdateBlog)
-	router.DELETE("/blog/:id", c.DeleteBlog)
-	router.GET("/blog/search", c.SearchBlog)
-	router.GET("/blog/filter", c.FilterBlog)
-
-	router.POST("/blog/:blog_id/comment", com.CreateComment)
-	router.GET("/blog/:blog_id/comment", com.GetComment)
-	router.PUT("/blog/:blog_id/comment/:id", com.UpdateComment)
-	router.DELETE("/blog/:blog_id/comment/:id", com.DeleteComment)
 
 	router.POST("/user/register", cu.RegisterUser)
 	router.POST("/user/login", cu.LoginUser)
-
 	router.GET("/logout", middleware.AuthMiddleware(client), cu.LogoutUser)
 
 	router.POST("/forget-password", cu.ForgotPassword)
 	router.POST("/reset-password", cu.ResetPassword)
 
 	router.POST("/generate", middleware.AuthMiddleware(client), c.GeneratePost)
+	router.POST("/file", middleware.AuthMiddleware(client), controllers.FileUpload)
 
-	router.POST("/file", controllers.FileUpload)
+	r := router.Group("/blog")
+	r.Use(middleware.AuthMiddleware(client))
+	{
+		r.POST("/", c.CreateBlog)
+		r.GET("/", c.RetrieveBlog)
+		r.PUT("/:id", c.UpdateBlog)
+		r.DELETE("/:id", c.DeleteBlog)
+		r.GET("/search", c.SearchBlog)
+		r.GET("/filter", c.FilterBlog)
+
+		r.POST("/comment/:blog_id", com.CreateComment)
+		r.GET("/comment/:blog_id", com.GetComment)
+		r.PUT("/comment/:blog_id/:id", com.UpdateComment)
+		r.DELETE("/comment/:blog_id/:id", com.DeleteComment)
+	}
 
 }

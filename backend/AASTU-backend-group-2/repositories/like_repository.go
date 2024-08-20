@@ -42,14 +42,14 @@ func (lrep *LikeRepository) CreateLike(user_id string, post_id string) error {
 
 	var like domain.Like
 	like.UserID, _ = primitive.ObjectIDFromHex(user_id)
-	like.PostID, _ = primitive.ObjectIDFromHex(post_id)
+	like.BlogID, _ = primitive.ObjectIDFromHex(post_id)
 
 	_, err := lrep.likecollection.InsertOne(context.TODO(), like)
 
 	if err != nil {
 		return err
 	}
-	_, err = lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": like.PostID}, bson.M{"$inc": bson.M{"likes": 1}})
+	_, err = lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": like.BlogID}, bson.M{"$inc": bson.M{"likes": 1}})
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (lrep *LikeRepository) DeleteLike(like_id string) error {
 	if err != nil {
 		return err
 	}
-	_, err = lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": like.PostID}, bson.M{"$inc": bson.M{"likes": -1}})
+	_, err = lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": like.BlogID}, bson.M{"$inc": bson.M{"likes": -1}})
 	if err != nil {
 		return err
 	}

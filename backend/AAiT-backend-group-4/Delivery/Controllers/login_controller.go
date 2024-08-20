@@ -22,10 +22,10 @@ func (lc *LoginController) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	accessToken, refreshToken, err := lc.LoginUsecase.LoginWithIdentifier(c, request.Identifier)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	msg := map[string]string{

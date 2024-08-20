@@ -71,7 +71,7 @@ func (ou *otpUsecase) GenerateOTP(c context.Context, user *domain.UserOTPRequest
 
 	err = ou.otpServices.SendEmail(user.Email, "Email Verification", ou.Env.EmailApiKey, otpCode)
 	if err != nil {
-		return domain.OTPVerificationResponse{}, fmt.Errorf("unable to send an email")
+		return domain.OTPVerificationResponse{}, err
 	}
 
 	NewOtpResponse := domain.OTPVerificationResponse{
@@ -105,6 +105,15 @@ func (ou *otpUsecase) VerifyOTP(c context.Context, user *domain.UserOTPRequest, 
 		return domain.OTPVerificationResponse{}, fmt.Errorf("otp not found please send a new otp verification request")
 	}
 
+	if otpFound.Expires_At.Before(time.Now()) {
+		err = ou.otpRepository.DeleteOTPByEmail(c, otpFound.Email)
+		if err != nil {
+			return domain.OTPVerificationResponse{}, fmt.Errorf("unable to remove otp")
+		}
+
+		return domain.OTPVerificationResponse{}, fmt.Errorf("your otp code has expired request new code")
+	}
+
 	err = ou.passwordServices.ComparePasswords(otp, otpFound.OTP)
 	if err != nil {
 		return domain.OTPVerificationResponse{}, fmt.Errorf("incorrect otp code")
@@ -122,7 +131,7 @@ func (ou *otpUsecase) VerifyOTP(c context.Context, user *domain.UserOTPRequest, 
 
 	_, err = ou.userRepository.UpdateUser(c, user.UserID, updateUser)
 	if err != nil {
-		return domain.OTPVerificationResponse{}, fmt.Errorf("unable to verify user")
+		return domain.OTPVerificationResponse{}, err
 	}
 
 	newOtpVerificationResponse := domain.OTPVerificationResponse{

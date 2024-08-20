@@ -45,6 +45,7 @@ func NewLoginUsecase(userRepository domain.UserRepository, tokenService domain.T
 func (lu *loginUsecase) LoginWithIdentifier(c context.Context, identifier string) (accessToken string, refreshToken string, err error) {
 	_, err = Verifier.Verify(identifier)
 	var user domain.User
+
 	if err != nil {
 		user, err = lu.userRepository.GetByUsername(c, identifier)
 		if err != nil {

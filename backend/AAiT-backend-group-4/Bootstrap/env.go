@@ -20,15 +20,15 @@ type Env struct {
 	OtpCollection           string `mapstructure:"OTP_COLLECTION"`
 	LikeCollection          string `mapstructure:"LIKE_COLLECTION"`
 	EmailApiKey             string `mapstructure:"EMAIL_API_KEY"`
-	GeminiApiKey            string `mapstructure:"GEMINI_API"`
+	GeminiApiKey            string `mapstructure:"GEMINI_API_KEY"`
 	AccessTokenExpiryMinute int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
 	AccessTokenSecret       string `mapstructure:"ACCESS_TOKEN"`
 	RefreshTokenSecret      string `mapstructure:"REFRESH_TOKEN"`
-	RefreshTokenExpiryHour  int    `mapsctructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
+	RefreshTokenExpiryHour  int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
 }
 
 func NewEnv() *Env {
-	env := Env{}
+	env := &Env{}
 
 	viper.SetConfigFile(".env")
 
@@ -46,5 +46,5 @@ func NewEnv() *Env {
 		log.Println("The App is running in development env")
 	}
 
-	return &env
+	return env
 }

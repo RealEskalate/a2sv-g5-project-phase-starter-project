@@ -4,7 +4,6 @@ import (
 	domain "aait-backend-group4/Domain"
 	"bytes"
 	"crypto/rand"
-	"fmt"
 	"text/template"
 
 	"gopkg.in/gomail.v2"
@@ -40,25 +39,26 @@ func (os *otpService) CreateOTP(otp *domain.UserOTPRequest) (otpCode string, err
 // If the template file is not found, an error is returned with the message "template file not found".
 func (os *otpService) SendEmail(email string, subject string, key string, otp string) error {
 	var b bytes.Buffer
-	t, err := template.ParseFiles("../templates/email_confirmation.html")
+	t, err := template.ParseFiles("templates/email_confirmation.html")
 	if err != nil {
-		return fmt.Errorf("template file not found")
+		return err
 	}
 	t.Execute(&b, struct {
 		Subject string
 		Otp     string
-	}{Subject: subject,
-		Otp: otp,
+	}{
+		Subject: subject,
+		Otp:     otp,
 	})
 
 	// Send with Go mail
 	m := gomail.NewMessage()
-	m.SetHeader("From", "AAiT Backend group 4")
+	m.SetHeader("From", "solomonjohna21@gmail.com")
 	m.SetHeader("To", email)
 	m.SetHeader("Subject", subject)
 	m.SetBody("text/html", b.String())
 
-	d := gomail.NewDialer("smtp.gmail.com", 587, "Example@gmail.com", key)
+	d := gomail.NewDialer("smtp.gmail.com", 587, "solomonjohna21@gmail.com", key)
 
 	if err := d.DialAndSend(m); err != nil {
 		return err

@@ -153,6 +153,18 @@ func (ur *userRepository) UpdateUser(c context.Context, id string, user domain.U
 		updateFields["profile_image"] = *user.ProfileImage
 	}
 
+	if user.Verified != nil {
+		updateFields["verified"] = *user.Verified
+	}
+
+	if user.Access_Token != nil {
+		updateFields["access_token"] = *user.Access_Token
+	}
+
+	if user.Refresh_Token != nil {
+		updateFields["refresh_token"] = *user.Refresh_Token
+	}
+
 	var updatedUser domain.User
 	idHex, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

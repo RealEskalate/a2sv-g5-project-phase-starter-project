@@ -37,7 +37,7 @@ func (ac *AIController) GenerateTextWithTags(c *gin.Context) {
 }
 
 func (ac *AIController) GenerateTextWithPrompt(c *gin.Context) {
-	var prompt string
+	var prompt map[string]string
 
 	err := c.ShouldBindJSON(&prompt)
 	if err != nil {
@@ -45,7 +45,7 @@ func (ac *AIController) GenerateTextWithPrompt(c *gin.Context) {
 		return
 	}
 
-	text, err := ac.AiUsecase.GenerateTextWithPrompt(c, prompt)
+	text, err := ac.AiUsecase.GenerateTextWithPrompt(c, prompt["prompt"])
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -60,7 +60,7 @@ func (ac *AIController) GenerateTextWithPrompt(c *gin.Context) {
 }
 
 func (ac *AIController) GenerateSuggestions(c *gin.Context) {
-	var textContent string
+	var textContent map[string]string
 
 	err := c.ShouldBindJSON(&textContent)
 	if err != nil {
@@ -68,7 +68,7 @@ func (ac *AIController) GenerateSuggestions(c *gin.Context) {
 		return
 	}
 
-	text, err := ac.AiUsecase.GenerateSuggestions(c, textContent)
+	text, err := ac.AiUsecase.GenerateSuggestions(c, textContent["textContent"])
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

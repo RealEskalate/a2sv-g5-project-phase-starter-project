@@ -68,7 +68,7 @@ func (service *tokenService) GenerateAccessToken(user *entities.User) (string, e
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"userName": user.Username,
-			"userId": user.ID,
+			"userId": user.ID.Hex(),
 			"email":  user.Email,
 			"role":   user.Role,
 			"exp":    time.Now().Add(time.Hour).Unix(),
@@ -85,7 +85,7 @@ func (service *tokenService) GenerateRefreshToken(user *entities.User) (*entitie
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"userName": user.Username,
-			"userId": user.ID,
+			"userId": user.ID.Hex(),
 			"email": user.Email,
 			"role":  user.Role,
 			"exp":   time.Now().Add(time.Hour * 24 * 30).Unix(),
@@ -95,9 +95,11 @@ func (service *tokenService) GenerateRefreshToken(user *entities.User) (*entitie
 		return &entities.RefreshToken{}, err
 	}
 
+
+
 	// this may be moved to other layers
 	refresh_token := entities.RefreshToken{
-		UserID:    user.ID,
+		UserID:    user.ID.Hex(),
 		Token:     refreshToken,
 		CreatedAt: time.Now(),
 		ExpiresAt: time.Now().Add(time.Hour * 24 * 30),
@@ -106,37 +108,28 @@ func (service *tokenService) GenerateRefreshToken(user *entities.User) (*entitie
 	return &refresh_token, nil
 }
 
-func (service *tokenService) VerifyAccessToken(refresh, token string) (string, error) {
+
+func (service *tokenService) VerifyAccessToken(token string) error {
 
 	accessToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		//if the token is not signed with HMAC
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(service.accessTokenSecret), nil
 	})
 	if err != nil {
-		return "", err
+		return err
 	}
 	if claims, ok := accessToken.Claims.(jwt.MapClaims); ok && accessToken.Valid {
 		// if token is expired
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
-			err := service.VerifyRefreshToken(refresh)
 			if err != nil {
-				return "", err
+				return errors.New("token is expired login again")
 			}
-			userId, ok := claims["userId"].(string)
-			if !ok {
-				return "", fmt.Errorf("invalid user ID in claims")
-			}
-			user, err := service.userRepo.FindUserById(userId)
-			if err != nil {
-				return "", err
-			}
-			newToken, _ := service.GenerateAccessToken(user)
-			return newToken, nil
 		}
 	}
-	return "", nil
+	return nil
 }
 
 func (service *tokenService) VerifyRefreshToken(token string) error {
@@ -146,20 +139,24 @@ func (service *tokenService) VerifyRefreshToken(token string) error {
 		}
 		return []byte(service.refreshTokenSecret), nil
 	})
-
 	if err != nil {
 		return err
 	}
+	
 	if claims, ok := refreshToken.Claims.(jwt.MapClaims); ok && refreshToken.Valid {
+		userId:=claims["userId"].(string)
+		storedToken,err:=service.tokenRepository.FindRefreshTokenByUserId(userId)
+		if err!=nil{
+			return err
+		}
+		if storedToken.Token!=token{
+			return errors.New("token is not valid")
+		}
 		// if token is expired
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
-			userId, ok := claims["userId"].(string)
-			if !ok {
-				return errors.New("invalid user ID in claims")
-			}
-			service.tokenRepository.DeleteRefreshTokenByUserId(userId)
 			return errors.New("token is expired login again")
 		}
+	
 		return nil
 	}
 	return nil
@@ -185,4 +182,21 @@ func (service *tokenService) GetClaimsFromToken(token string) map[string]string 
 		return resp
 	}
 	return map[string]string{}
+}
+
+
+
+func (service *tokenService) RefreshAccessToken(refresh *entities.RefreshToken) (string, error) {
+	err:=service.VerifyRefreshToken(refresh.Token)
+	if err!=nil{
+		service.tokenRepository.DeleteRefreshTokenByUserId(refresh.UserID)
+		return "",err
+	}
+	userId:=refresh.UserID
+	user, err := service.userRepo.FindUserById(userId)
+	if err != nil {
+		return "", err
+	}
+	newToken, _ := service.GenerateAccessToken(user)
+	return newToken, nil
 }

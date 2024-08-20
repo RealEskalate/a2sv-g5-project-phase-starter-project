@@ -15,11 +15,6 @@ func NewProfileController(service interfaces.ProfileService) ProfileController {
 	return ProfileController{ProfileService: service}
 }
 
-func NewProfileController(ps interfaces.ProfileService ) *ProfileController {
-		return &ProfileController{ profileService: ps }
-	}
-
-
 func (controller *ProfileController) CreateUserProfile(ctx *gin.Context) {
 	var profile entities.Profile
 	err := ctx.ShouldBindJSON(&profile)

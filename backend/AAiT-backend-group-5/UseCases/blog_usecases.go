@@ -159,5 +159,5 @@ func (b *blogUsecase) DeleteBlog(ctx context.Context, id string) *models.ErrorRe
 }
 
 func (b *blogUsecase) TrackPopularity(ctx context.Context, blogID string, popularity dtos.TrackPopularityRequest) *models.ErrorResponse {
-	return b.repository.TrackPopularity(ctx, blogID, popularity)
+	return b.repository.TrackPopularity(ctx, popularity)
 }

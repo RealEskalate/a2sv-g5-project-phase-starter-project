@@ -49,7 +49,7 @@ func (bc *BlogController) CreateBlogHandler(c *gin.Context) {
 		c.JSON(GetHTTPErrorCode(newErr), domain.Response{"error": newErr.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, domain.Response{"message": "blog created successfully"})
+	c.JSON(http.StatusCreated, domain.Response{"message": "blog created successfully"})
 }
 
 // UpdateBlogHandler handles the HTTP request to update a blog post.

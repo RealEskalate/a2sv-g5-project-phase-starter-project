@@ -3,12 +3,17 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FaPencilAlt } from 'react-icons/fa';
-import { MainData } from './EditProfile'; // Adjust the import path as necessary
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/lib/store';
+import { setUser } from '@/lib/features/userSlice/userSlice';
+import { useUpdateUserMutation } from '@/lib/service/UserService';
+import { useSession } from 'next-auth/react';
+import notify from '@/utils/notify';
 
 interface FormValues {
   name: string;
   email: string;
-  dateOfBirth: string; // Change to string to match the input type
+  dateOfBirth: string;
   permanentAddress: string;
   postalCode: string;
   username: string;
@@ -19,12 +24,6 @@ interface FormValues {
   profilePicture?: string | null;
 }
 
-interface FormComponentProps {
-  mainData: MainData;
-  setMainData: React.Dispatch<React.SetStateAction<MainData>>;
-}
-
-// Define the schema
 const schema = yup.object().shape({
   name: yup.string().required('Name is required'),
   email: yup.string().email('Invalid email format').required('Email is required'),
@@ -38,36 +37,59 @@ const schema = yup.object().shape({
   country: yup.string().required('Country is required'),
 });
 
-const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData }) => {
-  const [selectedImage, setSelectedImage] = useState<string | null>(mainData.profilePicture || null);
+const FormComponent: React.FC = () => {
+  const user = useSelector((state: RootState) => state.user.user);
+  const dispatch = useDispatch();
+  const [updateUser] = useUpdateUserMutation(); // Use the mutation hook
+
+  const [selectedImage, setSelectedImage] = useState<string | null>(user?.profilePicture || null);
 
   const { control, handleSubmit, formState: { errors } } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
-      name: mainData.name,
-      email: mainData.email,
-      dateOfBirth: mainData.dateOfBirth.split('T')[0], // Adjust for date format
-      permanentAddress: mainData.permanentAddress,
-      postalCode: mainData.postalCode,
-      username: mainData.username,
-      password: mainData.password,
-      presentAddress: mainData.presentAddress,
-      city: mainData.city,
-      country: mainData.country,
-      profilePicture: mainData.profilePicture,
+      name: user?.name || '',
+      email: user?.email || '',
+      dateOfBirth: user?.dateOfBirth?.split('T')[0] || '',
+      permanentAddress: user?.permanentAddress || '',
+      postalCode: user?.postalCode || '',
+      username: user?.username || '',
+      password: '',
+      presentAddress: user?.presentAddress || '',
+      city: user?.city || '',
+      country: user?.country || '',
+      profilePicture: user?.profilePicture || '',
     }
   });
-
-  const onSubmit = (data: FormValues) => {
-    const formattedData = {
+  const { data: session, status } = useSession();
+  
+  const onSubmit = async (data: FormValues) => {
+    const updatedUser = {
+      ...user,
       ...data,
-      dateOfBirth: new Date(data.dateOfBirth).toISOString(), // Convert date to ISO string
+      dateOfBirth: new Date(data.dateOfBirth).toISOString(),
       profilePicture: selectedImage,
     };
-  
-    console.log(formattedData);
-    setMainData((prev: any) => ({ ...prev, ...formattedData }));
-    // Handle form submission
+
+    try {
+      if (session?.user?.accessToken) {
+        const response = await updateUser({
+          accessToken: session.user.accessToken,
+          updatedUser: updatedUser
+        }).unwrap();
+        console.log("Updated User:", response);
+        dispatch(setUser(response.data));
+        notify.success("Profile updated successfully");
+        // Show success message or handle successful update
+      } else {
+        notify.error("Access token is missing");
+        
+        throw new Error("Access token is missing");
+
+      }
+    } catch (error) {
+      console.error("Failed to update user:", error);
+      // Show error message or handle error
+    }
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +113,7 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData }) 
                 className="hidden"
                 onChange={handleImageChange}
               />
-              <div className="w-[10rem] h-[10rem]  rounded-full bg-gray-200 flex items-center justify-center text-gray-500 overflow-hidden">
+              <div className="w-[10rem] h-[10rem] rounded-full bg-gray-200 flex items-center justify-center text-gray-500 overflow-hidden">
                 {selectedImage ? (
                   <img
                     src={selectedImage}
@@ -100,7 +122,7 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData }) 
                   />
                 ) : (
                   <img
-                    src="/public/assets/auth/avatardefault.png"
+                    src="/assets/auth/avatardefault.png"
                     alt="Profile"
                     className="object-cover w-full h-full"
                   />
@@ -127,9 +149,8 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData }) 
                     <input
                       {...field}
                       type={field.name === 'dateOfBirth' ? 'date' : 'text'}
-                      placeholder={`Enter your ${field.name}`}
+                      placeholder={field.value as string}
                       className="w-full p-2 border border-[#DFEAF2] rounded-[15px] focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      value={field.value}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
                     {errors[field.name] && <p className="text-red-500 text-sm">{errors[field.name]?.message}</p>}
@@ -153,9 +174,8 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData }) 
                     <input
                       {...field}
                       type={field.name === 'password' ? 'password' : 'text'}
-                      placeholder={`Enter your ${field.name}`}
+                      placeholder={field.value as string}
                       className="w-full p-2 border border-[#DFEAF2] rounded-[15px] focus:outline-none focus:ring-2 focus:ring-blue-200"
-                      value={field.value}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
                     {errors[field.name] && <p className="text-red-500 text-sm">{errors[field.name]?.message}</p>}
@@ -166,9 +186,12 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData }) 
           ))}
         </div>
       </div>
-      <div className="flex justify-end mt-6 ">
-        <button type="submit" className="bg-blue-700 md:w-[190px] text-white px-6 py-2 rounded-lg hover:bg-blue-600" >
-        Save Changes
+      <div 
+      className="flex justify-end mt-6">
+        <button type="submit" 
+          className='w-full md:w-auto px-4 py-2 bg-[#1814F3] text-white rounded-lg'
+          >
+          Save Changes
         </button>
       </div>
     </form>

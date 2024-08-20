@@ -1,8 +1,10 @@
 package jwt
 
 import (
+	"blogApp/internal/config"
 	"blogApp/internal/domain"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -25,7 +27,17 @@ func init() {
 // GenerateJWT generates a new JWT token and populates it with the user's ID and email
 
 func GenerateJWT(userID, email, role, username string) (string, error) {
-	expirationTime := time.Now().Add(15 * time.Minute)
+	ACCESS_TOKEN_LIFE_TIME := 2 * 24 * time.Hour
+
+	Config, err := config.Load()
+	if err == nil {
+		integerLifeTime, err := strconv.Atoi(Config.ACCESS_TOKEN_LIFE_TIME)
+		if err == nil {
+			ACCESS_TOKEN_LIFE_TIME = time.Duration(integerLifeTime) * time.Hour
+		}
+	}
+
+	expirationTime := time.Now().Add(ACCESS_TOKEN_LIFE_TIME)
 	if role == "" {
 		role = "user" // Set default role to "user" if no role is passed
 	}
@@ -51,7 +63,15 @@ func GenerateJWT(userID, email, role, username string) (string, error) {
 // GenerateRefreshToken generates a new JWT token and populates it with the user's ID and email
 
 func GenerateRefreshToken(userID, email, role, username string) (string, error) {
-	expirationTime := time.Now().Add(7 * 24 * time.Hour)
+	REFRESH_TOKEN_LIFE_TIME := 7 * 24 * time.Hour
+	Config, err := config.Load()
+	if err == nil {
+		integerLifeTime, err := strconv.Atoi(Config.REFRESH_TOKEN_LIFE_TIME)
+		if err == nil {
+			REFRESH_TOKEN_LIFE_TIME = time.Duration(integerLifeTime) * time.Hour
+		}
+	}
+	expirationTime := time.Now().Add(REFRESH_TOKEN_LIFE_TIME)
 	if role == "" {
 		role = "user" // Set default role to "user" if no role is passed
 	}

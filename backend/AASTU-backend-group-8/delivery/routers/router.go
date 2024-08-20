@@ -14,7 +14,7 @@ import (
 	"github.com/markbates/goth/providers/google"
 )
 
-func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, refreshTokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase, jwtService infrastructure.JWTService) {
+func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, refreshTokenUsecase *usecases.TokenUsecase, jwtService infrastructure.JWTService, likeUsecase *usecases.LikeUsecase, commentUsecase *usecases.CommentUsecase, tokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase) {
 
 	// Initialize controllers
 	signupController := controllers.NewSignupController(userUsecase, otpUsecase)
@@ -22,6 +22,8 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 	userController := controllers.NewUserController(userUsecase)
 	refreshTokenController := controllers.NewRefreshTokenController(userUsecase, refreshTokenUsecase)
 	forgotPasswordController := controllers.NewForgotPasswordController()
+	commentController := controllers.NewCommentController(commentUsecase)
+	likeController := controllers.NewLikeController(likeUsecase)
 
 	// Admin middleware
 	// adminMiddleware := infrastructure.AdminMiddleware(jwtService)
@@ -45,7 +47,7 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 		auth.GET("/blogs", blogController.GetAllBlogPosts)
 		auth.GET("/blogs/:id", blogController.GetBlogByID)
 		auth.PUT("/blogs/:id", blogController.UpdateBlogPost)
-		auth.POST("/blogsearch", blogController.SearchBlogPost)
+		// auth.POST("/blogsearch", blogController.SearchBlogPost)
 		auth.DELETE("/blogs/:id", blogController.DeleteBlogPost)
 
 		// Admin-specific routes
@@ -62,4 +64,20 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 	gothic.Store = sessions.NewCookieStore([]byte("secret"))
 	r.GET("/auth/:provider", oauthHandler.SignInWithProvider)
 	r.GET("/auth/:provider/callback", oauthHandler.CallbackHandler)
+	// Comment routes
+	auth.POST("/blogs/:id/comments", commentController.AddComment)
+	auth.GET("/blogs/:id/comments", commentController.GetCommentsByBlogID)
+	auth.PUT("/comments/:id", commentController.UpdateComment)
+	auth.DELETE("/comments/:id", commentController.DeleteComment)
+
+	// Like routes
+	auth.POST("/blogs/:id/likes", likeController.AddLike)
+	auth.GET("/blogs/:id/likes", likeController.GetLikesByBlogID)
+	auth.DELETE("/likes/:id", likeController.RemoveLike)
+
+	// Admin-specific routes
+	auth.POST("/getallusers", adminMiddleware, userController.GetAllUsers)
+	auth.PUT("/deleteusers/:id", adminMiddleware, userController.DeleteUser)
+
+	// }
 }

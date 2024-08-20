@@ -70,36 +70,32 @@ func (r *UserRepository) GetAllUsers() ([]*domain.User, error) {
 	}
 	defer cursor.Close(context.TODO())
 
-	err = cursor.All(context.TODO(),&users)
+	err = cursor.All(context.TODO(), &users)
 
 	return users, err
 }
 
-
 func (r *UserRepository) UpdateProfile(id primitive.ObjectID, profile *domain.Profile) (*domain.Profile, error) {
 	filter := bson.M{"_id": id}
-    update := bson.M{"$set": profile}
-    
-    result := r.collection.FindOneAndUpdate(context.Background(), filter, update)
-    if result.Err() != nil {
-        return nil, result.Err()
-    }
+	update := bson.M{"$set": profile}
 
-    var decoded domain.Profile
-    if err := result.Decode(&decoded); err != nil {
-        return nil, err
-    }
+	result := r.collection.FindOneAndUpdate(context.Background(), filter, update)
+	if result.Err() != nil {
+		return nil, result.Err()
+	}
+
+	var decoded domain.Profile
+	if err := result.Decode(&decoded); err != nil {
+		return nil, err
+	}
 
 	profile.ID = decoded.ID
 	profile.UserID = decoded.UserID
-	
 
-    return profile, nil
+	return profile, nil
 }
-
 
 func (r *UserRepository) DeleteUser(id primitive.ObjectID) error {
 	_, err := r.collection.DeleteOne(context.TODO(), bson.M{"_id": id})
 	return err
 }
-

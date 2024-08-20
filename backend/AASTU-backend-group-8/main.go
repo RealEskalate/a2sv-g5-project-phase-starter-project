@@ -30,6 +30,8 @@ func main() {
 	tokenCollection := client.Database("Blog").Collection("Tokens")
 	otpCollection := client.Database("Blog").Collection("OTPs")
 	profileCollection := client.Database("Blog").Collection("profile")
+	commentCollection := repository.NewMongoCollection(client.Database("Blog").Collection("Comments"))
+	likeCollection := repository.NewMongoCollection(client.Database("Blog").Collection("Likes"))
 
 	userMockCollection := repository.NewMongoCollection(userCollection)
 	blogMockCollection := repository.NewMongoCollection(blogCollection)
@@ -42,6 +44,8 @@ func main() {
 	tokenRepo := repository.NewTokenRepository(tokenMockCollection)
 	otpRepo := repository.NewOtpRepository(otpMockCollection)
 	profileRepo := repository.NewProfileRepository(profileMockCollection)
+	commentRepo := repository.NewCommentRepository(commentCollection)
+	likeRepo := repository.NewLikeRepository(likeCollection)
 
 	jwtService := infrastructure.NewJWTService(os.Getenv("JWT_SECRET"), "Kal", os.Getenv("JWT_REFRESH_SECRET"))
 
@@ -50,6 +54,8 @@ func main() {
 	blogUsecase := usecases.NewBlogUsecase(blogRepo)
 	otpUsecase := usecases.NewOTPUsecase(otpRepo, userRepo)
 	profileUsecase := usecases.NewProfileUsecase(profileRepo)
+	commentUsecase := usecases.NewCommentUsecase(commentRepo)
+	likeUsecase := usecases.NewLikeUsecase(likeRepo)
 
 	profileHandler := controllers.NewProfileHandler(profileUsecase)
 
@@ -58,7 +64,7 @@ func main() {
 	r := gin.Default()
 	profileRouter := routers.NewProfileRouter(profileHandler, r)
 	profileRouter.InitProfileRoutes(r.Group("/api/v1"))
-	routers.InitRoutes(r, blogUsecase, userUsecase, tokenUsecase, otpUsecase, jwtService)
+	routers.InitRoutes(r, blogUsecase, userUsecase, tokenUsecase, jwtService, likeUsecase, commentUsecase, tokenUsecase, otpUsecase)
 	// routers.InitRoutes(r, blogUsecase, userUsecase, tokenUsecase, otpUsecase)
 
 	if err := r.Run(os.Getenv("PORT")); err != nil {

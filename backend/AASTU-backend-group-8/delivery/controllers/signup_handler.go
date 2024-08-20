@@ -1,6 +1,6 @@
 package controllers
 
-import(
+import (
 	"meleket/domain"
 	"net/http"
 
@@ -9,7 +9,7 @@ import(
 
 type SignupController struct {
 	userUsecase domain.UserUsecaseInterface
-	otpUsecase 	domain.OTPUsecaseInterface
+	otpUsecase  domain.OTPUsecaseInterface
 }
 
 func NewSignupController(usercase domain.UserUsecaseInterface, otpcase domain.OTPUsecaseInterface) *SignupController {
@@ -68,10 +68,10 @@ func (sc *SignupController) VerifyOTP(c *gin.Context) {
 
 	// Get the user
 	user := domain.User{
-		Name: existingOtp.Username,
+		Name:     existingOtp.Username,
 		Email:    existingOtp.Email,
 		Password: existingOtp.Password,
-		Role: existingOtp.Role,
+		Role:     existingOtp.Role,
 	}
 	err = sc.userUsecase.Register(&user)
 	if err != nil {

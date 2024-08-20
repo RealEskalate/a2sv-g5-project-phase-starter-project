@@ -5,53 +5,58 @@ import {
   MdSettings,
   MdAttachMoney,
   MdAccountBalance,
-  } from "react-icons/md";
-  import ListCard from "./components/ListCard";
-  import { IconType } from "react-icons";
-  import BarChartForAccounts from "./components/BarChartForAccounts";
-  import Card from "../components/Page2/Card";
-  import { getSession } from "next-auth/react";
-  import { useRouter } from "next/navigation";
-  
-  type DataItem = {
-    heading: string;
-    text: string;
-    headingStyle: string;
-    dataStyle: string;
-  };
-  
-  type Column = {
-    icon: IconType;
-    iconStyle: string;
-    data: DataItem[];
-  };
-  type SessionType = {
-      access_token: string
-      data: string
-      refresh_token: string
-  }
-  const Page = () => {
-    const [session, setSession] = useState<SessionType | null>(null);
-    const route = useRouter();
-    const [loading, setLoading] = useState(true); // Add a loading state
-    // Getting the session from the server
-    useEffect(() => {
-      const fetchSession = async () => {
-        const sessionData = await getSession();
-        if (sessionData?.user) {
-          console.log("session Data" , sessionData.user)
-          setSession(sessionData.user);
-        } else {
-          route.push(`./api/auth/signin?callbackUrl=${encodeURIComponent('/accounts')}`);
-        }
-        setLoading(false); // Set loading to false after session check
-      };
-    
-      fetchSession();
-    }, [route]); // Add router as a dependency
-    
-    // getting the session ends here
-    // Example data for the first ListCard
+} from "react-icons/md";
+import ListCard from "./components/ListCard";
+import { IconType } from "react-icons";
+import BarChartForAccounts from "./components/BarChartForAccounts";
+import Card from "../components/Page2/Card";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+type DataItem = {
+  heading: string;
+  text: string;
+  headingStyle: string;
+  dataStyle: string;
+};
+
+type Column = {
+  icon: IconType;
+  iconStyle: string;
+  data: DataItem[];
+};
+
+type Data = {
+  access_token: string;
+  data: string;
+  refresh_token: string;
+};
+
+type SessionDataType = {
+  user: Data;
+};
+
+const Page = () => {
+  const [session, setSession] = useState<Data | null>(null);
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  // Getting the session from the server
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = (await getSession()) as SessionDataType | null;
+      if (sessionData && sessionData.user) {
+        setSession(sessionData.user);
+      } else {
+        router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent('/accounts')}`);
+      }
+      setLoading(false);
+    };
+
+    fetchSession();
+  }, [router]);
+
+  // Example data for the first ListCard
   const ReusableCard: Column = {
     icon: MdHome,
     iconStyle: "text-[#FFBB38] bg-[#FFF5D9]",
@@ -139,7 +144,8 @@ import {
   if (loading) return null; // Don't render anything while loading
 
   if (!session) {
-    route.push(`./api/auth/signin?callbackUrl=${encodeURIComponent('/accounts')}`);
+    router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent('/accounts')}`);
+    return null;
   }
   return (
     <>

@@ -56,10 +56,11 @@ func (u *blogUseCase) CreateBlog(ctx context.Context, blog *domain.Blog, authorI
 }
 
 // AddComment adds a comment to a blog
-func (u *blogUseCase) AddComment(ctx context.Context, comment *domain.Comment) error {
+func (u *blogUseCase) AddComment(ctx context.Context, comment *domain.Comment, userId string) error {
 	if comment == nil {
 		return errors.New("comment cannot be nil")
 	}
+	comment.UserID, _ = primitive.ObjectIDFromHex(userId)
 	err := u.repo.AddComment(ctx, comment)
 	if err != nil {
 		log.Printf("Error adding comment to blog with ID %s: %v", comment.BlogID.Hex(), err)
@@ -69,10 +70,11 @@ func (u *blogUseCase) AddComment(ctx context.Context, comment *domain.Comment) e
 }
 
 // AddLike adds a like to a blog
-func (u *blogUseCase) AddLike(ctx context.Context, like *domain.Like) error {
+func (u *blogUseCase) AddLike(ctx context.Context, like *domain.Like, userId string) error {
 	if like == nil {
 		return errors.New("like cannot be nil")
 	}
+	like.UserID, _ = primitive.ObjectIDFromHex(userId)
 	err := u.repo.AddLike(ctx, like)
 	if err != nil {
 		log.Printf("Error adding like to blog with ID %s: %v", like.BlogID.Hex(), err)
@@ -82,10 +84,11 @@ func (u *blogUseCase) AddLike(ctx context.Context, like *domain.Like) error {
 }
 
 // AddView adds a view to a blog
-func (u *blogUseCase) AddView(ctx context.Context, view *domain.View) error {
+func (u *blogUseCase) AddView(ctx context.Context, view *domain.View, userId string) error {
 	if view == nil {
 		return errors.New("view cannot be nil")
 	}
+	view.UserID, _ = primitive.ObjectIDFromHex(userId)
 	err := u.repo.AddView(ctx, view)
 	if err != nil {
 		log.Printf("Error adding view to blog with ID %s: %v", view.BlogID.Hex(), err)

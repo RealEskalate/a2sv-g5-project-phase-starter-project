@@ -65,6 +65,7 @@ func (r *MongoBlogRepository) UpdateBlog(ctx context.Context, id string, blog *d
 
 	filter := bson.M{"_id": objectID}
 	update := bson.M{"$set": blog}
+	blog.ID = objectID
 	_, err = r.blogsCollection.UpdateOne(ctx, filter, update)
 	return err
 }
@@ -339,4 +340,21 @@ func (r *MongoBlogRepository) GetTagByID(ctx context.Context, id string) (*domai
 		return nil, err
 	}
 	return &tag, nil
+}
+
+func (r *MongoBlogRepository) HasUserLikedBlog(ctx context.Context, blogID string, userID string) (bool, error) {
+	objectID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return false, err
+	}
+	objectID2, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return false, err
+	}
+
+	count, err := r.likesCollection.CountDocuments(ctx, bson.M{"blog_id": objectID, "user_id": objectID2})
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }

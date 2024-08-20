@@ -57,7 +57,8 @@ type ResetPassword struct {
 type UserUsecase interface {
 	CreateUser(c context.Context, user *User) error
 	GetUserByEmail(c context.Context, email string) (*User, error)
-	GetUser(c context.Context, userID string) (*User, error)
+	GetUserById(c context.Context, userId string) (*User, error)
+	GetUsers(c context.Context) (*[]User, error) 
 	UpdateUser(c context.Context, userID string, updatedUser *User) error
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)
@@ -70,10 +71,11 @@ type UserUsecase interface {
 }
 
 type UserRepository interface {
-	CreateUser(c context.Context, user *User) error
+	CreateUser(c context.Context, user *User) (*User,error)
 	GetUserByEmail(c context.Context, email string) (*User, error)
-	GetUser(c context.Context, userID string) (*User, error)
-	UpdateUser(c context.Context, userID string, updatedUser *User) error
+	GetUserById(c context.Context, userId string) (*User, error)
+	GetUsers(c context.Context) (*[]User, error) 
+	UpdateUser(c context.Context, userID string, updatedUser *User) (*User,error)
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)
 	RevokeRefreshToken(c context.Context, refreshToken string) error

@@ -11,10 +11,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (c *Controller) GetComments(ctx *gin.Context) {
+func (controller *Controller) GetComments(ctx *gin.Context) {
 	blogID := ctx.Param("blogID")
 	fmt.Print(blogID)
-	comments, err := c.commentUseCase.GetComments(blogID)
+	comments, err := controller.commentUseCase.GetComments(blogID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -23,14 +23,14 @@ func (c *Controller) GetComments(ctx *gin.Context) {
 }
 
 // a function to get the token from the authorization header , and decode it to get the user id
-func (c *Controller) CreateComment(ctx *gin.Context) {
+func (controller *Controller) CreateComment(ctx *gin.Context) {
 	blogID := ctx.Param("blogID")
-	token, err := c.ExtractToken(ctx)
+	token, err := controller.ExtractToken(ctx)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	userID, name, err := c.commentUseCase.DecodeToken(token)
+	userID, name, err := controller.commentUseCase.DecodeToken(token)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -50,20 +50,25 @@ func (c *Controller) CreateComment(ctx *gin.Context) {
 
 	fmt.Println(comment)
 
-	//!TODO add the name and id of the user to the comment
 	if comment.Body == "" {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "comment body is required"})
 		return
 	}
-	err = c.commentUseCase.CreateComment(&comment, blogID)
+	err = controller.commentUseCase.CreateComment(&comment, blogID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	err = controller.blogUseCase.UpdateBlogCommentCount(blogID, true)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	ctx.IndentedJSON(http.StatusCreated, gin.H{"message": "comment created successfully"})
 }
 
-func (c *Controller) UpdateComment(ctx *gin.Context) {
+func (controller *Controller) UpdateComment(ctx *gin.Context) {
 	commentID := ctx.Param("commentID")
 	var comment domain.Comment
 	if err := ctx.BindJSON(&comment); err != nil {
@@ -74,7 +79,7 @@ func (c *Controller) UpdateComment(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "comment body is required"})
 		return
 	}
-	err := c.commentUseCase.UpdateComment(&comment, commentID)
+	err := controller.commentUseCase.UpdateComment(&comment, commentID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -82,17 +87,31 @@ func (c *Controller) UpdateComment(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "comment updated successfully"})
 }
 
-func (c *Controller) DeleteComment(ctx *gin.Context) {
+func (controller *Controller) DeleteComment(ctx *gin.Context) {
+
 	commentID := ctx.Param("commentID")
-	err := c.commentUseCase.DeleteComment(commentID)
+	comment, err := controller.commentUseCase.GetCommentByID(commentID)
+
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error ": err.Error()})
+		return
+	}
+	err = controller.commentUseCase.DeleteComment(commentID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	err = controller.blogUseCase.UpdateBlogCommentCount(comment.BlogID.Hex(), false)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "comment deleted successfully"})
 }
 
-func (c *Controller) ExtractToken(ctx *gin.Context) (string, error) {
+func (controller *Controller) ExtractToken(ctx *gin.Context) (string, error) {
 	authHeader := ctx.GetHeader("Authorization")
 	if authHeader == "" {
 		return "", gin.Error{

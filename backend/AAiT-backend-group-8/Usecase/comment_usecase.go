@@ -5,16 +5,15 @@ import (
 	infrastructure "AAiT-backend-group-8/Infrastructure"
 	repository "AAiT-backend-group-8/Repository"
 	"errors"
-	"log"
 )
 
 type CommentUseCase struct {
-	repository     repository.CommentRepository
+	repository     *repository.CommentRepository
 	infrastructure infrastructure.Infrastructure
 	tokenService   domain.ITokenService
 }
 
-func NewCommentUseCase(commentRepository repository.CommentRepository, infrastructure infrastructure.Infrastructure, tokenService domain.ITokenService) *CommentUseCase {
+func NewCommentUseCase(commentRepository *repository.CommentRepository, infrastructure infrastructure.Infrastructure, tokenService domain.ITokenService) *CommentUseCase {
 	return &CommentUseCase{
 		repository:     commentRepository,
 		infrastructure: infrastructure,
@@ -82,7 +81,6 @@ func (uc *CommentUseCase) DeleteCommentsOfBlog(blogID string) error {
 	}
 	err = uc.repository.DeleteCommentsOfBlog(primitiveID)
 	if err != nil {
-		log.Fatal(err.Error())
 		return err
 	}
 	return nil
@@ -110,4 +108,21 @@ func (uc *CommentUseCase) DecodeToken(tokenStr string) (string, string, error) {
 	}
 
 	return id, name, nil
+}
+
+func (uc *CommentUseCase) GetCommentByID(commentID string) (*domain.Comment, error) {
+
+	primitiveID, err := uc.infrastructure.ConvertToPrimitiveObjectID(commentID)
+
+	if err != nil {
+		return nil, errors.New("invalid comment id")
+	}
+
+	comment, err1 := uc.repository.GetCommentByID(primitiveID)
+
+	if err1 != nil {
+		return nil, err1
+	}
+
+	return comment, nil
 }

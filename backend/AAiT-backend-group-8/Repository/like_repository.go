@@ -72,3 +72,15 @@ func (l *LikeRepository) CheckIfLiked(userID, blogID primitive.ObjectID) (bool, 
 	}
 	return true, like
 }
+
+func (l *LikeRepository) DeleteByBLogID(blogID primitive.ObjectID) error {
+	filter := bson.D{{Key: "blog_id", Value: blogID}}
+	result, err := l.collection.DeleteMany(l.ctx, filter)
+	if err != nil {
+		return errors.New("error deleting comments")
+	}
+	if result.DeletedCount == 0 {
+		return errors.New("no comments found")
+	}
+	return nil
+}

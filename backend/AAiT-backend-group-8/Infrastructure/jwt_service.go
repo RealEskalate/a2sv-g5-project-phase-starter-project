@@ -2,7 +2,7 @@ package infrastructure
 
 import (
 	domain "AAiT-backend-group-8/Domain"
-    "errors"
+	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

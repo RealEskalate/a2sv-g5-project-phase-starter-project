@@ -27,7 +27,7 @@ func NewUserUseCase(repo interfaces.IUserRepository) *UserUseCase {
 }
 
 func (u *UserUseCase) CreateUser(user *domain.User) (*domain.User, error) {
-	return u.userRepo.CreateUser(user)
+	return  user, u.userRepo.CreateUser(user)
 }
 
 // func (u *UserUseCase) GetUserByEmail(email string) (*domain.User, error) {

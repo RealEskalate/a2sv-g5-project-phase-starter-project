@@ -21,8 +21,6 @@ const ActiveLoansOverview = () => {
   }
 
   if (isSuccess) {
-    console.log("Sucess");
-    console.log(data);
     loans = data.data;
   }
 
@@ -30,13 +28,15 @@ const ActiveLoansOverview = () => {
     <div className="bg-white rounded-3xl w-full h-max-[466px] sm:w-max-[743px] sm:h-max-[500px] md:h-max-[625px] md:w-max-[1110px] p-3">
       {loans.length === 0 ? (
         <div className="flex justify-center">
-
-          <img src = "/assets/bankService/empty-image.png" className="w-fit h-fit"/>
+          <img
+            src="/assets/bankService/empty-image.png"
+            className="w-fit h-fit"
+          />
         </div>
+      ) : (
         // <div className="flex items-center justify-center min-h-full">
         //   No active loans for you
         // </div>
-      ) : (
         <table className="min-w-full divide-y">
           <thead>
             <tr>

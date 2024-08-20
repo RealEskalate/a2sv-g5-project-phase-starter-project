@@ -12,16 +12,21 @@ import BarChartForAccounts from "./components/BarChartForAccounts";
 import Card from "../components/Page2/Card";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { getCurrentUser } from "@/lib/api/userControl";
 import { getCards } from "@/lib/api/cardController";
-import { GetCardsResponse, Card as CardType } from "@/types/cardController.Interface";
+import {Card as CardType } from "@/types/cardController.Interface";
+import {getCurrentUser} from "@/lib/api/userControl"
+import User from "@/types/userInterface" 
+import Preference from "@/types/userInterface"
+import {getTransactionIncomes, getTransactionsExpenses} from "@/lib/api/transactionController"
+import { PaginatedTransactionsResponse } from "@/types/transactionController.interface";
+
 type DataItem = {
   heading: string;
   text: string;
   headingStyle: string;
   dataStyle: string;
 };
-
+ 
 type Column = {
   icon: IconType;
   iconStyle: string;
@@ -43,7 +48,9 @@ const Page = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [getCard, setGetCards] = useState<CardType[]>();
-
+  const [currentUser, setCurrentUser] = useState()
+  const [income, setIncome] = useState(0)
+  const [expense, setExpense] = useState(0)
   // Getting the session from the server
   useEffect(() => {
     const fetchSession = async () => {
@@ -73,6 +80,45 @@ const Page = () => {
     addingData();
   });
 
+  // Fetching Balance
+  useEffect(() => {
+    const addingData = async () => {
+      if (session?.access_token) {
+        const current = await getCurrentUser(session?.access_token);
+        setCurrentUser(current);
+      }
+    };
+    addingData();
+  });
+
+    // Fetching Income
+    useEffect(() => {
+      const addingData = async () => {
+        if (session?.access_token) {
+          const current = await getTransactionIncomes(0, 1, session?.access_token);
+          console.log("INCOME", current.data)
+          current.data.content.map((items: any) => {
+            setIncome(income + items.amount);
+          })
+        }
+      };
+      addingData();
+    });
+
+    // Fetching Expense
+    useEffect(() => {
+      const addingData = async () => {
+        if (session?.access_token) {
+          const current = await getTransactionsExpenses(0, 1, session?.access_token);
+          console.log("Expense", current.data)
+          current.data.content.map((items: any) => {
+            setExpense(expense + items.amount);
+          })
+        }
+      };
+      addingData();
+    });
+  // console.log("USER, ", currentUser)
   // Example data for the first ListCard
   const ReusableCard: Column = {
     icon: MdHome,
@@ -80,7 +126,7 @@ const Page = () => {
     data: [
       {
         heading: "My Balance",
-        text: "$12,750",
+        text: currentUser?.accountBalance ?? "",
         headingStyle: "text-sm font-bold text-nowrap text-[#718EBF]",
         dataStyle: "text-xs text-nowrap",
       },
@@ -93,6 +139,7 @@ const Page = () => {
     iconStyle: "text-[#396AFF] bg-[#E7EDFF]", // Updating the iconStyle
     data: ReusableCard.data.map((item) => ({
       ...item,
+      text:String(income),
       heading: "Income", // Updating the heading
     })),
   };
@@ -103,6 +150,7 @@ const Page = () => {
     iconStyle: "text-[#FF82AC] bg-[#FFE0EB]", // Updating the iconStyle
     data: ReusableCard.data.map((item) => ({
       ...item,
+      text: String(expense),
       heading: "Expense", // Updating the heading
     })),
   };
@@ -191,6 +239,7 @@ const Page = () => {
               <ListCard column={transaction2} width={"w-full"} />
             </div>
           </div>
+
           <div className="md:w-1/2 gap-1 flex flex-col">
             <div className="flex justify-between mr-2">
               <span className="text-xl text-[#333B69] font-semibold">

@@ -16,9 +16,18 @@ export const loanApi = createApi({
         },
       }),
     }),
+    getMyLoansDetail: builder.query({
+      query: (accessToken: string) => ({
+        url: "/active-loans/detail-data",
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }),
+    }),
 
     // Add your requests here the same way
   }),
 });
 
-export const { useGetMyLoanServiceQuery } = loanApi;
+export const { useGetMyLoanServiceQuery, useGetMyLoansDetailQuery } = loanApi;

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   AtSymbolIcon,
   KeyIcon,
@@ -23,6 +24,7 @@ const LoginForm: React.FC = () => {
   
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter()
 
   const onSubmit = async (data: any) => {
     setIsLoading(true);
@@ -30,8 +32,14 @@ const LoginForm: React.FC = () => {
         const loggedInUser = await loginUser(data);
         Cookie.set('accessToken', loggedInUser.data.access_token);
         Cookie.set('refreshToken', loggedInUser.data.refresh_token);
+        // console.log("Success:", loggedInUser?.data?.access_token)
+        setIsLoading(false);
+        // console.log("redirect...")
+        window.location.href = '/'
+        // console.log("Success")
       } catch (error) {
-        console.error('Login Error:', error);
+        console.error('Error:', error);
+        setIsLoading(false);
       }
     };
 

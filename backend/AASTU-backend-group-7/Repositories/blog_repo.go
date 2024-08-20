@@ -31,22 +31,22 @@ func NewBlogRepository(blogCollection Domain.BlogCollections) *blogrepository {
 }
 
 func (br *blogrepository) CreateBlog(ctx context.Context, post *Domain.Post) (error, int) {
+	// get author name from user collection using author id
+	filter := bson.D{{"_id", post.AuthorID}}
+	var user *Domain.User
+	err := br.userCollection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return err, 500
+	}
+	post.AuthorName = user.Name
 
 	// insert post to post collection
-	blogID, err := br.postCollection.InsertOne(ctx, post)
+	_, err = br.postCollection.InsertOne(ctx, post)
 	if err != nil {
 		fmt.Println("error at insert", err)
 		return err, 500
 	}
-	// insert id to field in user collection called posts
-	filter := bson.D{{"_id", post.AuthorID}}
-	update := bson.D{{"$push", bson.D{{"posts", blogID}}}}
-	_, err = br.userCollection.UpdateOne(ctx, filter, update)
-	// return error if any
-	if err != nil {
-		fmt.Println("error at update", err)
-		return err, 500
-	}
+	
 
 	return nil, 200
 }
@@ -446,4 +446,33 @@ func (br *blogrepository) DislikePost(ctx context.Context, id primitive.ObjectID
 	}
 
 	return nil, 200, "liked successfully"
+}
+
+// search posts
+func (br *blogrepository) SearchPosts(ctx context.Context, query string) ([]*Domain.Post, error, int) {
+	// search posts by title or author name using the query
+	var posts []*Domain.Post
+	filter := bson.D{{"$or", bson.A{
+		bson.D{{"title", primitive.Regex{Pattern: query, Options: "i"}}},
+		bson.D{{"authorname", primitive.Regex{Pattern: query, Options: "i"}}},
+	}}}
+	cursor, err := br.postCollection.Find(ctx, filter)
+
+	if err != nil {
+		return nil, err, 500
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var post *Domain.Post
+		err := cursor.Decode(&post)
+		if err != nil {
+			return nil, err, 500
+		}
+		posts = append(posts, post)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, err, 500
+	}
+	return posts, nil, 200
 }

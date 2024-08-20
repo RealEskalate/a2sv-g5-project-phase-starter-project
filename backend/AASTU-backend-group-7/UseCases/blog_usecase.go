@@ -88,3 +88,9 @@ func (uc *blogUsecase) DislikePost(c *gin.Context, id primitive.ObjectID, userID
 	return uc.BlogRepository.DislikePost(ctx, id, userID)
 }
 
+func (uc *blogUsecase) SearchPosts(c *gin.Context, query string) ([]*Domain.Post, error, int) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.SearchPosts(ctx, query)
+}
+

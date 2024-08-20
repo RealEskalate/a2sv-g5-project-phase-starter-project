@@ -34,8 +34,8 @@ func BlogRouter() {
 		postRouter.POST("/like/:id", blogcontroller.LikePost)
 		// dislike post
 		postRouter.POST("/dislike/:id", blogcontroller.DislikePost)
-		// undislike post
-
+		// search posts
+		postRouter.GET("/search", blogcontroller.SearchPosts)
 
 
 	}

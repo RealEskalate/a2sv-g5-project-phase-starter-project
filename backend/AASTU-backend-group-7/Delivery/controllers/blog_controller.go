@@ -352,3 +352,23 @@ func (controller *blogController) DislikePost(c *gin.Context) {
 		"message": message,
 	})
 }
+
+func (controller *blogController) SearchPosts(c *gin.Context) {
+	// get search query
+	queryparams := c.Request.URL.Query()
+	searchQuery := queryparams.Get("q")
+
+	posts, err, statusCode := controller.BlogUseCase.SearchPosts(c, searchQuery)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Posts fetched successfully",
+		"posts":   posts,
+	})
+
+}
+
+
+

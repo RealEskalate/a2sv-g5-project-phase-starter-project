@@ -133,15 +133,9 @@ function MonthlyRevenueChart() {
   }, []);
 
   return (
-    <div className="lg:w-[540px] lg:h-[276px] md:w-[423px] md:h-[232px] w-[325px] h-[254px]">
-      <div className="rounded-3xl bg-white p-5 lg:w-[540px] lg:h-[276px] md:w-[423px] md:h-[200px] w-full h-[195px]">
-        <div className="balance-history-chart text-[#718EBF] lg:w-[500px] lg:h-[177px] md:w-[347px] md:h-[147px] w-full h-[19px]">
-          <div className="">
+        <div className="text-gray-500 border rounded-[22px] bg-white p-5">
             <canvas ref={chartRef} />
           </div>
-        </div>
-      </div>
-    </div>
   );
 }
 

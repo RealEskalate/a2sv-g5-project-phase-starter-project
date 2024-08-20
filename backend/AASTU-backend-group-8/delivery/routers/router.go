@@ -75,9 +75,5 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 	auth.GET("/blogs/:id/likes", likeController.GetLikesByBlogID)
 	auth.DELETE("/likes/:id", likeController.RemoveLike)
 
-	// Admin-specific routes
-	auth.POST("/getallusers", adminMiddleware, userController.GetAllUsers)
-	auth.PUT("/deleteusers/:id", adminMiddleware, userController.DeleteUser)
-
 	// }
 }

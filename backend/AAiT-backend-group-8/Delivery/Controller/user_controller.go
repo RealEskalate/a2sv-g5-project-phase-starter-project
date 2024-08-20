@@ -2,7 +2,6 @@ package controller
 
 import (
 	"AAiT-backend-group-8/Domain"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -67,7 +66,7 @@ func (h *Controller) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": token, "refresher": refresher})
 }
 
-func (h *UserHandler) RefreshToken(c *gin.Context) {
+func (h *Controller) RefreshToken(c *gin.Context) {
 	var cred Domain.Credential
 
 	bind_err := c.BindJSON(&cred)
@@ -84,7 +83,7 @@ func (h *UserHandler) RefreshToken(c *gin.Context) {
 
 }
 
-func (h *UserHandler) ForgotPassword(c *gin.Context) {
+func (h *Controller) ForgotPassword(c *gin.Context) {
 	email := c.Query("email")
 	if email == "" {
 		c.JSON(400, gin.H{"error": "Invalid email"})
@@ -104,7 +103,7 @@ func (h *UserHandler) ForgotPassword(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Password reset email sent"})
 }
 
-func (h *UserHandler) StoreToken(c *gin.Context) {
+func (h *Controller) StoreToken(c *gin.Context) {
 	token := c.Query("token")
 	if token == "" {
 		c.JSON(400, gin.H{"error": "Invalid token"})
@@ -120,7 +119,7 @@ func (h *UserHandler) StoreToken(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Token stored successfully. You can now reset your password."})
 }
 
-func (h *UserHandler) ResetPassword(c *gin.Context) {
+func (h *Controller) ResetPassword(c *gin.Context) {
 	var payload struct {
 		Token       string `json:"token"`
 		NewPassword string `json:"new_password"`

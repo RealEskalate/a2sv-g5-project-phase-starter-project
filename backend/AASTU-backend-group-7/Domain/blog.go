@@ -8,7 +8,7 @@ import (
 
 type Post struct {
 	ID           primitive.ObjectID   `bson:"_id,omitempty" bson:"_id,omitempty"`
-	Title        string               `json:"title"`
+	Title        string               `json:"title" validate:"required"`
 	Content      string               `json:"content"`
 	Slug         string               `json:"slug"`
 	PublishedAt  time.Time            `json:"published_at"`
@@ -24,7 +24,7 @@ type Post struct {
 
 type Comment struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" bson:"_id,omitempty"`
-	Content   string             `json:"content"`
+	Content   string             `json:"content" validate:"required"`
 	CreatedAt time.Time          `json:"created_at"`
 	UpdatedAt time.Time          `json:"updated_at"`
 	AuthorID  primitive.ObjectID `json:"author_id"`
@@ -33,7 +33,7 @@ type Comment struct {
 
 type Tag struct {
 	ID    primitive.ObjectID   `bson:"_id,omitempty" bson:"_id,omitempty"`
-	Name  string               `json:"name"`
+	Name  string               `json:"name" validate:"required"`
 	Slug  string               `json:"slug"`
 	Posts []primitive.ObjectID `json:"post_id"`
 }

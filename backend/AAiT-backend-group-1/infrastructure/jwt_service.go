@@ -122,6 +122,22 @@ func (service *JWTTokenService) GenerateVerificationToken(email string) (string,
 	return jwtToken, nil
 }
 
+func (service *JWTTokenService) ValidateVerificationToken(token string) (*jwt.Token, error) {
+	parsedToken, errParse := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+		}
+		return service.AccessSecret, nil
+	})
+	if errParse != nil {
+		return nil, errParse
+	}
+	if !parsedToken.Valid {
+		return nil, fmt.Errorf("token is invalid")
+	}
+	return parsedToken, nil
+}
+
 func (service *JWTTokenService) RevokedToken(token string) error {
 	_, err := service.Collection.DeleteOne(context.TODO(), bson.M{"token": token})
 	return err

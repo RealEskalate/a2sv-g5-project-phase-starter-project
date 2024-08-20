@@ -2,27 +2,29 @@
 import { useGetBalanceHistoryQuery } from "@/lib/service/TransactionService";
 import { useRef, useEffect } from "react";
 import { Chart, ChartData, ChartOptions } from "chart.js/auto";
+import { useSession } from "next-auth/react";
 
 const generateMonths = () => {
   const months = [];
   const currentDate = new Date();
-  
+
   for (let i = 6; i >= 0; i--) {
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+    const date = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - i,
+      1
+    );
     const month = date.toLocaleString("default", { month: "short" });
     months.push(`${month}`);
   }
-  
+
   return months;
 };
-
 
 const aggregateData = (data: { time: string; value: number }[]) => {
   const monthMap: { [key: string]: number } = {};
 
-
   const months = generateMonths();
-  
 
   months.forEach((month) => {
     monthMap[month] = 0;
@@ -52,7 +54,9 @@ export interface ChartRef extends HTMLCanvasElement {
 }
 
 function BalanceHistoryChart() {
-  const { data, isError, isLoading } = useGetBalanceHistoryQuery("eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJzYW1pdGVzdCIsImlhdCI6MTcyNDA1NDU0MiwiZXhwIjoxNzI0MTQwOTQyfQ.Mg31Fn623uFEgDrc8gkAB8u7GgkZqA3U4fTfznz107LTXc8jD6t5G8q-bd1jOWxT");
+  const { data: session, status } = useSession();
+  const accessToken = session?.user.accessToken!;
+  const { data, isError, isLoading } = useGetBalanceHistoryQuery(accessToken);
   const chartRef = useRef<ChartRef | null>(null);
 
   useEffect(() => {
@@ -78,7 +82,12 @@ function BalanceHistoryChart() {
         const chartDataPoints = aggregatedData.map((item) => item.balance);
 
         // Create the linear gradient
-        const gradient = context.createLinearGradient(0, 0, 0, chartItem.height);
+        const gradient = context.createLinearGradient(
+          0,
+          0,
+          0,
+          chartItem.height
+        );
         gradient.addColorStop(0, "rgba(45, 96, 255, 0.25)");
         gradient.addColorStop(1, "rgba(45, 96, 255, 0)");
 
@@ -140,11 +149,23 @@ function BalanceHistoryChart() {
   }, [data]);
 
   if (isLoading) {
-    return <div className="rounded-3xl bg-white p-5 lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[325px] h-[223px]">Loading...</div>;
+    return (
+      <div className="rounded-3xl flex justify-center items-center flex-col flex-initial flex-wrap  bg-white p-5 lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[325px] h-[223px] animate-pulse">
+          <div className="flex flex-row gap-2">
+            <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+            <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
+            <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+          </div>
+      </div>
+    );
   }
 
   if (isError) {
-    return <div className="rounded-3xl bg-white p-5 lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[325px] h-[223px]">Ooops! Error loading balance history.</div>;
+    return (
+      <div className="rounded-3xl bg-white p-5 lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[325px] h-[223px]">
+        Ooops! Error loading balance history.
+      </div>
+    );
   }
 
   return (

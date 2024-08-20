@@ -2,6 +2,7 @@
 import { useRef, useEffect } from "react";
 import { Chart } from "chart.js/auto";
 import { useGetAllTransactionQuery } from "@/lib/service/TransactionService"; 
+import { useSession } from "next-auth/react";
 
 export interface ChartRef extends HTMLCanvasElement {
   chart?: Chart;
@@ -9,7 +10,9 @@ export interface ChartRef extends HTMLCanvasElement {
 
 function WeeklyActivityChart() {
   const chartRef = useRef<ChartRef>(null);
-  const { data, isError, isLoading } = useGetAllTransactionQuery("acessToken");
+  const { data: session, status } = useSession();
+  const accessToken = session?.user.accessToken!;
+  const { data, isError, isLoading } = useGetAllTransactionQuery(accessToken);
 
   const processDataForChart = (transactions: any[]) => {
     const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -116,7 +119,13 @@ function WeeklyActivityChart() {
   }, [data]);
 
   if (isLoading) {
-    return <div className="text-gray-500 border rounded-[22px] bg-white lg:w-[730px] px-5 lg:h-[367px] md:w-[520px] md:h-[299px] w-fit h-[254]">Loading...</div>;
+    return <div className="flex justify-center items-center flex-col flex-initial flex-wrap  bg-white lg:w-[730px] px-5 lg:h-[367px] md:w-[520px] md:h-[299px] w-[325px] h-[254px] rounded-[22px]">
+        <div className="flex flex-row gap-2">
+            <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+            <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
+            <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+          </div>
+    </div>;
   }
 
   if (isError) {

@@ -90,11 +90,17 @@ const Sidebar = ({
 
   // Apply dark mode class directly
   const darkModeClass = isDarkMode ? "dark" : "";
+  const logo = isDarkMode ? "/assets/logo-white.svg" : "/assets/logo-blue.svg";
 
   return (
     <div className="py-6 px-5 w-[99.6%]  h-screen flex flex-col gap-8 border-r border-r-[#E6EFF5] border-white dark:border-r-gray-700 dark:bg-[#232328] relative">
       <div className="flex gap-2 px-[4%] relative">
-        <Image src="/assets/logo.svg" alt="logo" width={36} height={36} />
+        <Image
+          src={logo || "/assets/logo-blue.svg"}
+          alt="logo"
+          width={36}
+          height={36}
+        />
         <h1 className="text-2xl font-extrabold text-[#343C6A] dark:text-white">
           BankDash.
         </h1>

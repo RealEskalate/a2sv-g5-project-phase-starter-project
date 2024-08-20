@@ -10,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   ChartContainer,
@@ -39,9 +39,15 @@ export function Barchart({ weeklyDeposit, weeklyWithdraw }: BarchartProps) {
       color: "#16DBCC",
     },
   };
-    const weekofdays = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"];
-  const income: number[] = [];
-  const Withdraw: number[] = [];
+    const weekofdays =useMemo(()=> ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"],[])
+ const income = useMemo(
+   () => weeklyDeposit.map((deposit) => deposit.amount),
+   [weeklyDeposit]
+ );
+ const Withdraw = useMemo(
+   () => weeklyWithdraw.map((withdraw) => withdraw.amount),
+   [weeklyWithdraw]
+ );
   weeklyDeposit.map((deposit, index) => {
     income.push(deposit.amount);
   });
@@ -59,8 +65,16 @@ export function Barchart({ weeklyDeposit, weeklyWithdraw }: BarchartProps) {
  
 
   useEffect(() => {
+    const newChartData: { day: string; Deposite: number; Withdraw: number }[] = [];
+    weekofdays.map((day, index) => {
+      newChartData.push({
+        day: day,
+        Deposite: income[index],
+        Withdraw: Withdraw[index],
+      });
+    });
     setChartData(newChartData);
-  }, [newChartData]);
+  }, [weeklyDeposit, weeklyWithdraw, weekofdays, income, Withdraw]);
   
   return (
     <Card >

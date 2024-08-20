@@ -12,7 +12,9 @@ import BarChartForAccounts from "./components/BarChartForAccounts";
 import Card from "../components/Page2/Card";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
+import { getCurrentUser } from "@/lib/api/userControl";
+import { getCards } from "@/lib/api/cardController";
+import { GetCardsResponse, Card as CardType } from "@/types/cardController.Interface";
 type DataItem = {
   heading: string;
   text: string;
@@ -26,9 +28,51 @@ type Column = {
   data: DataItem[];
 };
 
+type Data = {
+  access_token: string;
+  data: string;
+  refresh_token: string;
+};
+
+type SessionDataType = {
+  user: Data;
+};
+
 const Page = () => {
-  const [session, setSession] = useState(false);
-  const route = useRouter();
+  const [session, setSession] = useState<Data | null>(null);
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [getCard, setGetCards] = useState<CardType[]>();
+
+  // Getting the session from the server
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = (await getSession()) as SessionDataType | null;
+      if (sessionData && sessionData.user) {
+        setSession(sessionData.user);
+      } else {
+        router.push(
+          `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+        );
+      }
+      setLoading(false);
+    };
+
+    fetchSession();
+  }, [router]);
+
+  // Fetching cards
+  useEffect(() => {
+    const addingData = async () => {
+      if (session?.access_token) {
+        const cardData = await getCards(session?.access_token);
+        console.log("Fetching Complete", cardData.content)
+        setGetCards(cardData.content);
+      }
+    };
+    addingData();
+  });
+
   // Example data for the first ListCard
   const ReusableCard: Column = {
     icon: MdHome,
@@ -114,22 +158,16 @@ const Page = () => {
     })),
   };
 
-  // Getting the session from the server
-  useEffect(() => {
-    const fetchSession = async () => {
-      const sessionData = await getSession();
-      if (sessionData?.user) {
-        console.log("Session Available");
-        setSession(true);
-      }
-    };
+  if (loading) return null; // Don't render anything while loading
 
-    fetchSession();
-  }, []);
-  // getting the session ends here
   if (!session) {
-    route.push("./api/auth/signin");
+    router.push(
+      `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+    );
+    return null;
   }
+
+  console.log("get Card", getCard);
   return (
     <>
       <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5">
@@ -162,17 +200,20 @@ const Page = () => {
                 See All
               </span>
             </div>
-            <Card
-              balance="$5,756"
-              cardHolder="Eddy Cusuma"
-              validThru="12/22"
-              cardNumber="3778 **** **** 1234"
-              filterClass=""
-              bgColor="from-[#4C49ED] to-[#0A06F4]"
-              textColor="text-white"
-              iconBgColor="bg-opacity-10"
-              showIcon={true}
-            ></Card>
+            {getCard && getCard.map((items) => (
+              <Card
+                key={items.id}
+                balance={String(items.balance)}
+                cardHolder={items.cardHolder}
+                validThru={formatDate(items.expiryDate)}
+                cardNumber="3778 **** **** 1234"
+                filterClass=""
+                bgColor="from-[#4C49ED] to-[#0A06F4]"
+                textColor="text-white"
+                iconBgColor="bg-opacity-10"
+                showIcon={true}
+              ></Card>
+            ))}
           </div>
         </div>
 
@@ -198,6 +239,17 @@ const Page = () => {
       </div>
     </>
   );
+};
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  };
+
+  return date.toLocaleDateString("en-US", options);
 };
 
 export default Page;

@@ -9,7 +9,7 @@ import {
   IoSearchOutline,
   IoNotificationsOutline,
 } from "react-icons/io5";
-import { menuItems, logo ,profilepic} from "@/../../public/Icons";
+import { menuItems, logo, profilepic } from "@/../../public/Icons";
 
 import Provider from "@/lib/redux/Provider";
 
@@ -33,16 +33,16 @@ export default function ClientSideComponent({
     <>
       <Provider>
         <html lang="en">
-          <body className="flex gap-2 bg-gray-100">
+          <body className="flex h-screen overflow-hidden">
             <aside
-              className={`fixed min-h-screen top-0 left-0 z-40 w-64  bg-white shadow-md transition-transform transform ${
+              className={`fixed top-0 left-0 z-40 w-64 h-full bg-white shadow-md transition-transform transform ${
                 ishidden ? "translate-x-0" : "-translate-x-full"
-              } md:translate-x-0 md:relative md:w-[33%] lg:w-1/4 md:flex md:flex-col md:gap-6 md:py-4 md:border md:border-[#E6EFF5] md:border-r-2`}
+              } md:translate-x-0 md:relative md:w-[30%] lg:w-[20%] md:flex md:flex-col md:gap-6 md:py-1 md:border md:border-[#E6EFF5]`}
             >
               <div className="ml-5 mt-3 flex items-center gap-8">
-                <div className="flex items-center ">
-                  <Image src={logo} alt="" width={36} height={36} />
-                  <div className="text-[#343C6A] text-2xl font-extrabold font-serif">
+                <div className="flex justify-between items-center">
+                  <Image src={logo} alt="Logo" width={36} height={36} />
+                  <div className="text-[#343C6A] pl-2 md:text-xl md:pl-1 lg:pl-2 lg:text-2xl text-base xl:text-4xl md:text-[21px] font-[800] font-mont">
                     BankDash.
                   </div>
                 </div>
@@ -53,7 +53,7 @@ export default function ClientSideComponent({
                   X
                 </div>
               </div>
-              <ul className="flex flex-col ">
+              <ul className="flex flex-col">
                 {menuItems.map((item) => (
                   <Link href={item.href} key={item.title}>
                     <li
@@ -81,11 +81,12 @@ export default function ClientSideComponent({
                 ))}
               </ul>
             </aside>
-            <div className="w-full md:w-4/5">
-              <nav className="relative flex py-4 px-6 items-center gap-6 w-full  md:h-16">
+
+            <div className="flex flex-col flex-grow h-full overflow-hidden md:w-4/5 lg:w-4/5">
+              <nav className="relative flex py-4 px-6 items-center gap-6 w-full bg-white shadow-md md:h-16">
                 {!ishidden && (
                   <GiHamburgerMenu
-                    className={`md:hidden absolute top-5 left-5 text-3xl`}
+                    className="md:hidden absolute top-5 left-5 text-3xl"
                     onClick={() => setIshidden(true)}
                   />
                 )}
@@ -111,10 +112,17 @@ export default function ClientSideComponent({
                   </div>
                 </div>
                 <div className="m-2 absolute top-0 right-0 rounded-full overflow-hidden w-12">
-                  <img src={profilepic} alt="" className="h-12 w-12" />
+                  <Image
+                    src={profilepic}
+                    alt="Profile Picture"
+                    width={48}
+                    height={48}
+                  />
                 </div>
               </nav>
-              <main className="bg-[#F5F7FA]">{children}</main>
+              <main className="flex-grow overflow-y-auto bg-[#F5F7FA] p-1">
+                {children}
+              </main>
             </div>
           </body>
         </html>

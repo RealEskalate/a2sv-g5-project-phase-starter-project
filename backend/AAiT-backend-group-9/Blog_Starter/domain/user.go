@@ -20,7 +20,7 @@ type User struct {
 	Bio            string             `json:"bio" bson:"bio"`
 	Role           string             `json:"role" bson:"role"`
 	ContactInfo   ContactInfo        `json:"contact_info" bson:"contact_info"` //it requires contact_info in the user profile update requirement given
-	Is_Verified    bool                `json:"is_verified" bson:"is_verified"` //useful for email verification
+	IsActivated   bool                `json:"is_verified" bson:"is_verified"` //useful for email verification
 	AccessToken    string             `json:"accessToken"`
 	RefreshToken   string             `json:"refreshToken"`
 	CreatedAt      time.Time          `json:"timestamp" bson:"timestamp"`
@@ -41,7 +41,7 @@ type UserResponse struct {
 	Bio            string             `json:"bio" bson:"bio"`
 	ContactInfo   ContactInfo        `json:"contact_info" bson:"contact_info"`
 	Role           string             `json:"role" bson:"role"`
-	Is_Verified    bool                `json:"is_verified" bson:"is_verified"` //useful for email verification
+	IsActivated    bool                `json:"is_verified" bson:"is_verified"` //useful for email verification
 	ProfilePicture string             `json:"profile_picture" bson:"profile_picture"`
 }
 
@@ -54,6 +54,12 @@ type UserUpdate struct {
 	ProfilePicture string `json:"profile_picture" bson:"profile_picture"`
 }
 
+type AuthenticatedUser struct {
+	UserID   string
+	Email string
+	Role     string
+}
+
 type UserRepository interface {
 	CreateUser(c context.Context, user *User) (*User, error)
 	GetUserByEmail(c context.Context, email string) (*User, error)
@@ -62,7 +68,7 @@ type UserRepository interface {
 	UpdateProfile(c context.Context, user *UserUpdate, userID string) (*User, error)
 	UpdatePassword(c context.Context, password, userID string) (*User, error)
 	UpdateRole(c context.Context, role, userID string) (*User, error)
-	VerifyEmail(c context.Context, userID string) (*User, error)
+	UpdateSignup(c context.Context, user *User) error
 	UpdateToken(c context.Context, accessToken, refreshToken, userID string) (*User, error)
 	DeleteUser(c context.Context, userID string) error
 }

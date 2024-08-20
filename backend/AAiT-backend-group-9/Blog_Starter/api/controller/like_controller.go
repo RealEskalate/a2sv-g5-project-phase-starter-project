@@ -14,7 +14,7 @@ type LikeController struct {
 
 }
 
-func(lc *LikeController) LikeBlog(c gin.Context){
+func(lc *LikeController) LikeBlog(c *gin.Context){
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*100)
 	defer cancel()
 	var likeRequest domain.Like
@@ -31,7 +31,7 @@ func(lc *LikeController) LikeBlog(c gin.Context){
 	c.JSON(http.StatusOK, likeResponse)
 }
 
-func(lc *LikeController) UnlikeBlog(c gin.Context){
+func(lc *LikeController) UnlikeBlog(c *gin.Context){
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*100)
 	defer cancel()
 	likeID := c.Param("like_id")  // TODO find better ways to get the likeID

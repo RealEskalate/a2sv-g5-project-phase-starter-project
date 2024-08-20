@@ -54,17 +54,10 @@ func (uc *BlogUseCase) GetBlogByID(c context.Context, blogID string) (*domain.Bl
 }
 
 func (uc *BlogUseCase) GetAllBlog(c context.Context, skip int64, limit int64, sortBy string) ([]*domain.Blog, *domain.PaginationMetadata, error) {
-	// chech if th query sortBy is valid which means it must be one of the following
-	/* 	CreatedAt time.Time          `json:"createtimestamp" bson:"createtimestamp"`
 
-	AverageRating float64 `json:"average_rating" bson:"average_rating"` // do some math and modify when rating is called
-	TotalRating   int     `json:"total_rating" bson:"total_rating"`     // add when rating is called
-	ViewCount     int     `json:"view_count" bson:"view_count"`         //add when getbyid is used and blog is viewed
-	LikeCount     int     `json:"like_count" bson:"like_count"`         // add when like is called and substarct when it is unliked
-	CommentCount
-	*/
+	
 	// if not make it default to createtimestamp
-	if sortBy != "createtimestamp" || sortBy != "average_rating" || sortBy != "total_rating" || sortBy != "view_count" || sortBy != "like_count" || sortBy != "comment_count" {
+	if sortBy != "createtimestamp" && sortBy != "average_rating" && sortBy != "total_rating" && sortBy != "view_count" && sortBy != "like_count" && sortBy != "comment_count" {
 		sortBy = "createtimestamp"
 	}
 

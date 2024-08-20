@@ -45,3 +45,18 @@ func (uc *Infranstructure) ValidateToken(token string) (*jwt.Token, error) {
 		return []byte(uc.JWTSecret), nil
 	})
 }
+
+func (uc *Infranstructure) GenerateResetToken(email string) (string, error) {
+	claims := jwt.MapClaims{
+		"email": email,
+		"exp":   time.Now().Add(time.Hour * 1).Unix(), // Token valid for 1 hour
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(uc.JWTSecret))
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
+}

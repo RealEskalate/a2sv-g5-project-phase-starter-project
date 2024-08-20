@@ -13,4 +13,13 @@ type IUserRepository interface {
 	UpdateUser(user *dto.UserUpdate) error
 	PromoteUser(id uuid.UUID, isPromote bool) error
 	GetAllUsersWithName(name string) ([]uuid.UUID, error)
+}package interfaces
+
+import "aait.backend.g10/domain"
+
+type UserRepositoryInterface interface {
+	CreateUser(user *domain.User) error
+	GetUserByEmail(email string) (*domain.User, error)
+	GetUserByUsername(username string) (*domain.User, error)
+	UpdateUser(user *domain.User) error
 }

@@ -1,7 +1,5 @@
 package controller
 
-
-
 import (
 	"log"
 	"net/http"
@@ -10,46 +8,49 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	basecontroller "github.com/group13/blog/delivery/base"
-	dto "github.com/group13/blog/delivery/controller/user/dto"
+	common "github.com/group13/blog/delivery/common/icontroller"
+	"github.com/group13/blog/delivery/controller/dto"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
-	logincommand "github.com/group13/blog/usecase/user/command/login"
-	signupcommand "github.com/group13/blog/usecase/user/command/signup"
 	resetcodevalidate "github.com/group13/blog/usecase/password_reset/code_validator" // Add this line
-	promotcmd "github.com/group13/blog/usecase/user/command/promote"
-	"github.com/group13/blog/usecase/user/result"
 	forgotpassword "github.com/group13/blog/usecase/password_reset/reset"
+	logincommand "github.com/group13/blog/usecase/user/command/login"
+	promotcmd "github.com/group13/blog/usecase/user/command/promote"
+	signupcommand "github.com/group13/blog/usecase/user/command/signup"
+	"github.com/group13/blog/usecase/user/result"
 )
 
-type UserController struct { 
+type UserController struct {
 	basecontroller.BaseHandler
-	promotHandler icmd.IHandler[*promotcmd.Command, bool]
-	loginHandler  icmd.IHandler[*logincommand.LoginCommand, *result.LoginInResult]
-	signupHandler icmd.IHandler[*signupcommand.SignUpCommand, *result.SignUpResult]
-	resetPasswordhandler icmd.IHandler[*resetcodevalidate.Command, bool]
+	promotHandler         icmd.IHandler[*promotcmd.Command, bool]
+	loginHandler          icmd.IHandler[*logincommand.LoginCommand, *result.LoginInResult]
+	signupHandler         icmd.IHandler[*signupcommand.SignUpCommand, *result.SignUpResult]
+	resetPasswordhandler  icmd.IHandler[*resetcodevalidate.Command, bool]
 	forgotPasswordHandler icmd.IHandler[*forgotpassword.Command, bool]
-	validateEmailHandler icmd.IHandler[string, *result.ValidateEmailResult]
+	validateEmailHandler  icmd.IHandler[string, *result.ValidateEmailResult]
 }
+
+var _ common.IController = &UserController{}
 
 type Config struct {
 	basecontroller.BaseHandler
-	PromotHandler icmd.IHandler[*promotcmd.Command, bool]
-	LoginHandler  icmd.IHandler[*logincommand.LoginCommand, *result.LoginInResult]
-	SignupHandler icmd.IHandler[*signupcommand.SignUpCommand, *result.SignUpResult]
-	ResetPasswordHandler icmd.IHandler[*resetcodevalidate.Command, bool]
+	PromotHandler         icmd.IHandler[*promotcmd.Command, bool]
+	LoginHandler          icmd.IHandler[*logincommand.LoginCommand, *result.LoginInResult]
+	SignupHandler         icmd.IHandler[*signupcommand.SignUpCommand, *result.SignUpResult]
+	ResetPasswordHandler  icmd.IHandler[*resetcodevalidate.Command, bool]
 	ForgotPasswordHandler icmd.IHandler[*forgotpassword.Command, bool]
-	validateEmailHander icmd.IHandler[string, *result.ValidateEmailResult]
+	validateEmailHander   icmd.IHandler[string, *result.ValidateEmailResult]
 }
 
 // New creates a new UserController with the given CQRS handler.
 func New(config Config) *UserController {
 	return &UserController{
-		BaseHandler:   config.BaseHandler,
-		promotHandler: config.PromotHandler,
-		loginHandler:  config.LoginHandler,
-		signupHandler: config.SignupHandler,
-		resetPasswordhandler: config.ResetPasswordHandler,
+		BaseHandler:           config.BaseHandler,
+		promotHandler:         config.PromotHandler,
+		loginHandler:          config.LoginHandler,
+		signupHandler:         config.SignupHandler,
+		resetPasswordhandler:  config.ResetPasswordHandler,
 		forgotPasswordHandler: config.ForgotPasswordHandler,
-		validateEmailHandler: config.validateEmailHander,
+		validateEmailHandler:  config.validateEmailHander,
 	}
 }
 
@@ -69,6 +70,7 @@ func (u UserController) RegisterPrivate(router *gin.RouterGroup) {
 
 }
 
+func (u UserController) RegisterProtected(router *gin.RouterGroup) {}
 func (u UserController) RegisterPublic(router *gin.RouterGroup) {
 	router = router.Group("/")
 	router.POST("/api/v1/auth/signup", u.SignUp)
@@ -76,22 +78,18 @@ func (u UserController) RegisterPublic(router *gin.RouterGroup) {
 
 }
 
-
 func (u UserController) SignUp(ctx *gin.Context) {
 
 	var user dto.SignUpDto
 	// bind input files
 	if err := ctx.BindJSON(&user); err != nil {
-
 		u.BaseHandler.Respond(ctx, http.StatusBadRequest, gin.H{"message": "Invalid Input"})
-		log.Println("User Input cannot be bind -- user controller")
 		return
 	}
 
 	log.Println("User inputs bind successfully")
 
 	command := signupcommand.NewSignUpCommand(user.Username, user.FirstName, user.LastName, user.Email, user.Password)
-	// pass to usercases
 	_, err := u.signupHandler.Handle(&command)
 
 	if err != nil {
@@ -128,7 +126,6 @@ func (u UserController) Login(ctx *gin.Context) {
 		return
 	}
 
-	
 	u.RespondWithCookies(ctx, http.StatusOK, res, []*http.Cookie{
 		{
 			Name:     "accessToken",
@@ -142,17 +139,14 @@ func (u UserController) Login(ctx *gin.Context) {
 		{
 			Name:     "refreshToken",
 			Value:    res.Refreshtoekn,
-			Path:    "/",
+			Path:     "/",
 			Domain:   ctx.Request.Host,
 			MaxAge:   48 * 60 * 60,
 			HttpOnly: true,
 			Secure:   true,
-	
 		},
 	})
 }
-	
-
 
 func (u UserController) ForgotPassword(ctx *gin.Context) {
 	var request dto.ForgotPasswordDto
@@ -171,14 +165,14 @@ func (u UserController) ForgotPassword(ctx *gin.Context) {
 		u.BaseHandler.Respond(ctx, http.StatusInternalServerError, gin.H{"message": err.Error()})
 		log.Println("User use case invalidated it -- user controller")
 		return
-	}	
+	}
 	log.Println("Password reset successfully -- controller")
 	u.BaseHandler.Respond(ctx, http.StatusOK, gin.H{"message": "Password Reset successful"})
-	
+
 }
 
 func (u UserController) ResetPassword(ctx *gin.Context) {
-	var request dto.ResetPasswordDto 
+	var request dto.ResetPasswordDto
 	// bind input files
 	if err := ctx.BindJSON(&request); err != nil {
 		u.BaseHandler.Respond(ctx, http.StatusBadRequest, gin.H{"message": "Invalid Input"})
@@ -187,17 +181,16 @@ func (u UserController) ResetPassword(ctx *gin.Context) {
 	}
 
 	// pass to usecase
-	command := resetcodevalidate.NewCommand(request.Code, request.Id )
+	command := resetcodevalidate.NewCommand(request.Code, request.Id)
 	_, err := u.resetPasswordhandler.Handle(command)
 
 	if err != nil {
 		u.BaseHandler.Respond(ctx, http.StatusInternalServerError, gin.H{"message": err.Error()})
 		log.Println("User use case invalidated it -- user controller")
 		return
-	}	
+	}
 	log.Println("User logged in successfully -- controller")
 	u.BaseHandler.Respond(ctx, http.StatusOK, gin.H{"message": "Password Reset successful"})
-	
 
 }
 
@@ -215,7 +208,6 @@ func (u UserController) Logout(ctx *gin.Context) {
 	})
 }
 
-
 func (u UserController) Promte(ctx *gin.Context) {
 	u.ChangeStatus(true, ctx)
 }
@@ -229,7 +221,7 @@ func (u UserController) ChangeStatus(toAdmin bool, ctx *gin.Context) {
 	claims, exists := ctx.Get("userClaims")
 	if !exists {
 		u.BaseHandler.Respond(ctx, http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		
+
 		return
 	}
 
@@ -257,16 +249,14 @@ func (u UserController) ChangeStatus(toAdmin bool, ctx *gin.Context) {
 	_, err = u.promotHandler.Handle(promotcmd.NewCommand(username, toAdmin, promoterId))
 
 	if err != nil {
-	u.BaseHandler.Respond(ctx, http.StatusInternalServerError, gin.H{"message": err.Error()})
+		u.BaseHandler.Respond(ctx, http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
 	log.Println("User logged in successfully -- controller")
 	u.BaseHandler.Respond(ctx, http.StatusNoContent, gin.H{"message": "User status changed successfully"})
-	
+
 }
-
-
 
 func (u UserController) ValidateEmail(ctx *gin.Context) {
 
@@ -279,7 +269,7 @@ func (u UserController) ValidateEmail(ctx *gin.Context) {
 		u.BaseHandler.Respond(ctx, http.StatusInternalServerError, gin.H{"message": err.Error()})
 		log.Println("User use case invalidated it -- user controller")
 		return
-	}   
+	}
 	log.Println("Email validated successfully -- controller")
 	u.BaseHandler.Respond(ctx, http.StatusOK, gin.H{"message": "Email validated successfully"})
 }

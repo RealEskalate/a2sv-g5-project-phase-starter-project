@@ -73,8 +73,9 @@ func (r *Repository) GetCommentById(id uuid.UUID) (*comment.Comment, error) {
 
 // GetCommentsByBlogId retrieves all comment by blogId.
 func (r *Repository) GetCommentsByBlogId(id uuid.UUID) (*[]comment.Comment, error) {
-
+	// id is blog id
 	filter := bson.M{"_id": id}
+
 	var comments []comment.Comment
 
 	cur, err := r.collection.Find(context.Background(), filter)
@@ -91,6 +92,12 @@ func (r *Repository) GetCommentsByBlogId(id uuid.UUID) (*[]comment.Comment, erro
 			return nil, err
 		}
 		comments = append(comments, c)
+	}
+
+	err = cur.Close(context.Background())
+
+	if err != nil {
+		return nil, err
 	}
 
 	return &comments, nil

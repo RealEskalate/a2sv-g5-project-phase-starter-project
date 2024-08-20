@@ -27,7 +27,7 @@ func (h *Handler) Handle(cmd *Command) (bool, error) {
 		return false, err
 	}
 
-	user.UpdateAdminStatus(cmd.ToAdmin)
+	user.UpdateStatus(cmd.ToAdmin)
 	if err := h.userRepo.Save(user); err != nil {
 		return false, err
 	}

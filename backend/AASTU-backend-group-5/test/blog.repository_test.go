@@ -66,7 +66,7 @@ func (suite *BlogRepoTestSuite) TestGetAllBlogs() {
 
 	suite.mockCursor.On("Close", context.TODO()).Return(nil)
 
-	blogs, err := suite.repo.GetBlogDocunents(0 , 10)
+	blogs, err := suite.repo.GetBlogDocunents(0, 10)
 
 	suite.NoError(err)
 	suite.Len(blogs, 1)
@@ -87,7 +87,7 @@ func (suite *BlogRepoTestSuite) TestUpdateBlogById() {
 
 	id := primitive.NewObjectID().Hex()
 	blog := domain.Blog{ID: primitive.NewObjectID(), Title: "updated title"}
-	updatedBlog, err := suite.repo.UpdateBlogDocunent(id , blog)
+	updatedBlog, err := suite.repo.UpdateBlogDocunent(id, blog)
 	suite.NoError(err)
 	suite.Equal("updated title", updatedBlog.Title)
 

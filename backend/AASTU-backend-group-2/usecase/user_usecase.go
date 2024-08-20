@@ -20,6 +20,11 @@ func NewUserUsecase(Userrepo domain.UserRepository, timeout time.Duration) domai
 
 }
 
+func (uuse *UserUsecase) UpdateUserDetails(c context.Context, user *domain.User) error {
+	_, cancel := context.WithTimeout(c, uuse.contextTimeout)
+	defer cancel()
+	return uuse.UserRepo.UpdateUserDetails(user)
+}
 func (uuse *UserUsecase) RegisterUser(c context.Context, user *domain.User) error {
 	return uuse.UserRepo.RegisterUser(user)
 

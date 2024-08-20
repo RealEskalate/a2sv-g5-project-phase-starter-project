@@ -1,6 +1,7 @@
 package infrastructures
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +20,7 @@ func AuthMiddleware(JwtService *JwtService) gin.HandlerFunc {
 			return
 		}
 
-		authPart := strings.Split(authHeader, "")
+		authPart := strings.Split(authHeader, " ")
 
 		if len(authPart) != 2 || strings.ToLower(authPart[0]) != "bearer" {
 			context.JSON(401, gin.H{"message": "Invalid Authoriztion header"})
@@ -48,7 +49,7 @@ func AuthMiddleware(JwtService *JwtService) gin.HandlerFunc {
 		}
 		role := claims["is_admin"]
 		id := claims["id"]
-
+		fmt.Println(role, id)
 		context.Set("is_admin", role)
 		context.Set("id", id)
 

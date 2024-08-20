@@ -18,7 +18,7 @@ func NewRouter(db *mongo.Database) {
 
 	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
 
-	jwt := infrastructures.Jwt{JwtSecret: os.Getenv("jwtSecret")}
+	jwt := infrastructures.Jwt{JwtSecret: os.Getenv("JWT_SECRET")}
 	pwdService := infrastructures.PwdService{}
 	emailService := infrastructures.EmailService{}
 

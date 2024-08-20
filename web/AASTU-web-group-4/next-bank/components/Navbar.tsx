@@ -9,9 +9,9 @@ type NavbarProps = {
 
 export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
   return (
-    <nav className="flex flex-col p-4 bg-white shadow-md md:pl-64">
+    <nav className="flex flex-col p-4 bg-white shadow-md lg:pl-64">
       {/* Mobile View: Hamburger Menu */}
-      <div className="md:hidden flex justify-between items-center mb-2">
+      <div className="lg:hidden flex justify-between items-center mb-2">
         <button onClick={toggleSidebar} aria-label="Toggle Sidebar" className="cursor-pointer focus:outline-none">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
@@ -22,7 +22,7 @@ export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
       </div>
 
       {/* Mobile Search Bar */}
-      <div className="md:hidden relative w-full mt-2">
+      <div className="lg:hidden relative w-full mt-2">
         <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
         <input
           type="text"
@@ -32,7 +32,7 @@ export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
       </div>
 
       {/* Larger Screens: Full Navbar */}
-      <div className="hidden md:flex items-center justify-around w-full">
+      <div className="hidden lg:flex items-center justify-around w-full">
         <div className="text-2xl font-extrabold">{pageTitle}</div>
         <div className="relative w-64"> {/* Fixed width for search bar */}
           <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />

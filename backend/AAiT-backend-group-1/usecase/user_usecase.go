@@ -136,10 +136,6 @@ func (userUC *UserUseCase) ForgotPassword(cxt context.Context, email string) dom
 		return errSession
 	}
 
-	if errSession != nil {
-		return errSession
-	}
-
 	if existingCheck {
 		errDelete := userUC.sessionRepo.DeleteToken(context, existingSession.ID.Hex())
 		if errDelete != nil {

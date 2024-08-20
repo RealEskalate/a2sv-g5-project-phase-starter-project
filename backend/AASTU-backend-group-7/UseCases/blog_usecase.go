@@ -63,11 +63,34 @@ func (uc *blogUsecase) GetComments(c *gin.Context, id primitive.ObjectID) ([]*Do
 	return uc.BlogRepository.GetComments(ctx,id)
 }
 
-func (uc *blogUsecase) GetAllPosts(c *gin.Context) ([]*Domain.Post, error, int) {
+func (uc *blogUsecase) GetAllPosts(c *gin.Context, filter Domain.Filter) ([]*Domain.Post, error, int) {
 	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
 	defer cancel()
-	return uc.BlogRepository.GetAllPosts(ctx)
+	return uc.BlogRepository.GetAllPosts(ctx, filter)
+}
+
+func (uc *blogUsecase) AddTagToPost(c *gin.Context, id primitive.ObjectID, slug string) (error, int) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.AddTagToPost(ctx, id, slug)
+}
+
+func (uc *blogUsecase) LikePost(c *gin.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.LikePost(ctx, id, userID)
 }
 
 
+func (uc *blogUsecase) DislikePost(c *gin.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.DislikePost(ctx, id, userID)
+}
+
+func (uc *blogUsecase) SearchPosts(c *gin.Context, query string) ([]*Domain.Post, error, int) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.SearchPosts(ctx, query)
+}
 

@@ -1,4 +1,4 @@
-package dto
+package commentcontroller
 
 import "github.com/google/uuid"
 

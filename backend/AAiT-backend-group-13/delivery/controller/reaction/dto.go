@@ -1,4 +1,4 @@
-package dto
+package reactioncontroller
 
 import "github.com/google/uuid"
 

@@ -17,10 +17,10 @@ func NewAIUseCase(aiService infrastructure.AIService) domain.AiUsecase {
 	}
 }
 
-func (uc *AIUseCase) GenerateAIContent(ctx context.Context, content string) (string, error) {
+func (uc *AIUseCase) GenerateAIContent(ctx context.Context, content string, preText string) (string, error) {
 	//check the length the content is not empity
 	if len(content) == 0 {
 		return "", errors.New("content is empty")
 	}
-	return uc.aiService.GenerateAIContent(ctx, content)
+	return uc.aiService.GenerateAIContent(ctx, content, preText)
 }

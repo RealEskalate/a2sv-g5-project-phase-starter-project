@@ -11,8 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
-
 type MongoBlogRepository struct {
 	blogsCollection    *mongo.Collection
 	commentsCollection *mongo.Collection
@@ -20,8 +18,6 @@ type MongoBlogRepository struct {
 	viewsCollection    *mongo.Collection
 	tagsCollection     *mongo.Collection
 }
-
-
 
 // NewMongoBlogRepository initializes a new BlogRepository with separate MongoDB collections
 func NewMongoBlogRepository(
@@ -39,6 +35,7 @@ func NewMongoBlogRepository(
 // Blog Operations
 
 func (r *MongoBlogRepository) CreateBlog(ctx context.Context, blog *domain.Blog) error {
+	blog.ID = primitive.NewObjectID()
 	_, err := r.blogsCollection.InsertOne(ctx, blog)
 	return err
 }
@@ -186,6 +183,7 @@ func (r *MongoBlogRepository) RemoveTagFromBlog(ctx context.Context, blogID stri
 // Comment Operations
 
 func (r *MongoBlogRepository) AddComment(ctx context.Context, comment *domain.Comment) error {
+	comment.ID = primitive.NewObjectID()
 	_, err := r.commentsCollection.InsertOne(ctx, comment)
 	return err
 }
@@ -217,6 +215,7 @@ func (r *MongoBlogRepository) GetCommentsByBlogID(ctx context.Context, blogID st
 // Like Operations
 
 func (r *MongoBlogRepository) AddLike(ctx context.Context, like *domain.Like) error {
+	like.ID = primitive.NewObjectID()
 	_, err := r.likesCollection.InsertOne(ctx, like)
 	return err
 }
@@ -248,6 +247,7 @@ func (r *MongoBlogRepository) GetLikesByBlogID(ctx context.Context, blogID strin
 // View Operations
 
 func (r *MongoBlogRepository) AddView(ctx context.Context, view *domain.View) error {
+	view.ID = primitive.NewObjectID()
 	_, err := r.viewsCollection.InsertOne(ctx, view)
 	return err
 }
@@ -276,7 +276,6 @@ func (r *MongoBlogRepository) GetViewsByBlogID(ctx context.Context, blogID strin
 	return views, nil
 }
 
-
 // Tag Operations
 func (r *MongoBlogRepository) GetAllTags(ctx context.Context) ([]*domain.BlogTag, error) {
 	cursor, err := r.tagsCollection.Find(ctx, bson.M{})
@@ -298,6 +297,7 @@ func (r *MongoBlogRepository) GetAllTags(ctx context.Context) ([]*domain.BlogTag
 }
 
 func (r *MongoBlogRepository) CreateTag(ctx context.Context, tag *domain.BlogTag) error {
+	tag.ID = primitive.NewObjectID()
 	_, err := r.tagsCollection.InsertOne(ctx, tag)
 	return err
 }

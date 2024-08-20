@@ -1,15 +1,17 @@
 package routes
 
 import (
-	"go.mongodb.org/mongo-driver/mongo"
-	"github.com/gin-gonic/gin"
-)
+	"blogApp/internal/http/middleware"
 
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
 func RegisterBlogRoutes(blogsCollection, commentsCollection, likesCollection, viewsCollection, tagsCollection *mongo.Collection, router *gin.Engine) {
 	blogHandler := InstantaiteBlogHandler(blogsCollection, commentsCollection, likesCollection, viewsCollection, tagsCollection)
-	blogRoutes := router.Group("/api/v1/blog")
-	tagRoutes := router.Group("/api/v1/tag")
+	blogRoutes := router.Group("/api/v1/blog", middleware.AuthMiddleware())
+	tagRoutes := router.Group("/api/v1/tag", middleware.AuthMiddleware())
+	aiRoutes := router.Group("/api/v1/ai", middleware.AuthMiddleware())
 
 	{
 		blogRoutes.POST("/", blogHandler.CreateBlogHandler)
@@ -27,7 +29,7 @@ func RegisterBlogRoutes(blogsCollection, commentsCollection, likesCollection, vi
 		blogRoutes.GET("/:id/likes", blogHandler.GetLikesByBlogIDHandler)
 		blogRoutes.POST("/:id/views", blogHandler.AddViewHandler)
 		blogRoutes.GET("/:id/views", blogHandler.GetViewsByBlogIDHandler)
-		
+
 	}
 	{
 		tagRoutes.POST("/", blogHandler.CreateTagHandler)
@@ -35,5 +37,9 @@ func RegisterBlogRoutes(blogsCollection, commentsCollection, likesCollection, vi
 		tagRoutes.PUT("/:id", blogHandler.UpdateTagHandler)
 		tagRoutes.DELETE("/:id", blogHandler.DeleteTagHandler)
 		tagRoutes.GET("/", blogHandler.GetAllTagsHandler)
+	}
+	{
+		aiRoutes.POST("/blog_assistant", blogHandler.GetAiBlog)
+		aiRoutes.POST("/moderate_blog", blogHandler.ModerateBlog)
 	}
 }

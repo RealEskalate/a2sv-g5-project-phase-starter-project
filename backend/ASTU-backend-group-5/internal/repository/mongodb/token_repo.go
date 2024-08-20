@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -18,7 +19,7 @@ func NewMongoTokenRepository(collection *mongo.Collection) *MongoTokenRepository
 	return &MongoTokenRepository{collection: collection}
 }
 
-func createIndexes(collection *mongo.Collection) error {
+func CreateIndexes(collection *mongo.Collection) error {
 	indexModels := []mongo.IndexModel{
 		{
 			Keys:    bson.D{{Key: "token", Value: 1}, {Key: "token_type", Value: 1}},
@@ -40,6 +41,7 @@ func (r *MongoTokenRepository) BlacklistToken(ctx context.Context, token string,
 		Expiry:    expiry,
 		CreatedAt: time.Now(),
 	}
+	blacklistedToken.ID = primitive.NewObjectID()
 	_, err := r.collection.InsertOne(ctx, blacklistedToken)
 	return err
 }

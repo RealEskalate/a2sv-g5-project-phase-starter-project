@@ -1,22 +1,25 @@
-'use client'
+"use client";
 import React, { useState } from "react";
 // import EditProfile from './EditProfile';
-import Preference from './preference';
-import Security from './security';
+import Preference from "./preference";
+import Security from "./security";
+import { useSession } from "next-auth/react";
 
-const activeColor = 'text-blue-700';
-const disabledColor = 'text-slate-400';
+const activeColor = "text-blue-700";
+const disabledColor = "text-slate-400";
 
 function Settings() {
-  const [enabled, setEnabled] = useState('Edit Profile');
+  const session = useSession()
+  // console.log(session.data.user,'111')
+  const [enabled, setEnabled] = useState("Edit Profile");
 
   const renderContent = () => {
     switch (enabled) {
       // case 'Edit Profile':
       //   return <EditProfile />;
-      case 'Preference':
+      case "Preference":
         return <Preference />;
-      case 'Security':
+      case "Security":
         return <Security />;
       default:
         return null;
@@ -28,27 +31,37 @@ function Settings() {
       <div className="relative mt-8 md:mt-10">
         <div className="flex gap-10 md:flex-row md:gap-16 lg:gap-20">
           <div
-            className={`cursor-pointer ${enabled === 'Edit Profile' ? `${activeColor} custom-underline` : disabledColor}`}
-            onClick={() => setEnabled('Edit Profile')}
+            className={`cursor-pointer ${
+              enabled === "Edit Profile"
+                ? `${activeColor} custom-underline`
+                : disabledColor
+            }`}
+            onClick={() => setEnabled("Edit Profile")}
           >
             Edit Profile
           </div>
           <div
-            className={`cursor-pointer ${enabled === 'Preference' ? `${activeColor} custom-underline` : disabledColor}`}
-            onClick={() => setEnabled('Preference')}
+            className={`cursor-pointer ${
+              enabled === "Preference"
+                ? `${activeColor} custom-underline`
+                : disabledColor
+            }`}
+            onClick={() => setEnabled("Preference")}
           >
             Preference
           </div>
           <div
-            className={`cursor-pointer ${enabled === 'Security' ? `${activeColor} custom-underline` : disabledColor}`}
-            onClick={() => setEnabled('Security')}
+            className={`cursor-pointer ${
+              enabled === "Security"
+                ? `${activeColor} custom-underline`
+                : disabledColor
+            }`}
+            onClick={() => setEnabled("Security")}
           >
             Security
           </div>
         </div>
-        <div className="mt-10">
-          {renderContent()}
-        </div>
+        <div className="mt-10">{renderContent()}</div>
       </div>
     </div>
   );

@@ -38,7 +38,6 @@ export default function Login() {
     return <div>Please log in</div>;
   }
 
-//   console.log('User from Redux:', user);
 
   return <div> 
 </div>

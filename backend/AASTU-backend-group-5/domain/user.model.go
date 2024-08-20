@@ -32,6 +32,7 @@ type ResponseUser struct {
 type UpdateUser struct {
 	UserName       string `json:"username" bson:"username"`
 	Bio            string `json:"bio" bson:"bio"`
+	VerificationToken string             `json:"verification_token,omitempty" bson:"verification_token,omitempty"`
 	ProfilePicture string `json:"profile_picture" bson:"profile_picture"`
 }
 
@@ -55,6 +56,10 @@ type RegisterUser struct {
 type UpdatePassword struct {
 	Password        string `json:"password" bson:"password"`
 	ConfirmPassword string `json:"confirm_password" bson:"confirm_password"`
+}
+
+type VerifyEmail struct {
+	Email    string `json:"email" bson:"email"`
 }
 
 // from actual user model to response model to be don in usecase

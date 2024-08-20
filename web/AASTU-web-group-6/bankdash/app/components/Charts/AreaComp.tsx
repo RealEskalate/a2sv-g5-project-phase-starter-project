@@ -8,16 +8,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-const chartData = [
-  { month: "Jul", desktop: 20 },
-  { month: "Aug", desktop: 80 },
-  { month: "Sep", desktop: 390 },
-  { month: "Oct", desktop: 500 },
-  { month: "Nov", desktop: 150 },
-  { month: "Dev", desktop: 400 },
-  { month: "January", desktop: 86 },
-];
+import { BalanceType } from "@/app/Redux/slices/TransactionSlice";
 
 const chartConfig = {
   desktop: {
@@ -26,7 +17,36 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function AreaComp() {
+interface dataProps {
+  data: BalanceType[];
+}
+
+export function AreaComp({ data }: dataProps) {
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  // Transforming the API data
+  const chartData = data.map((item) => {
+    const [year, month] = item.time.split("-");
+    return {
+      month: monthNames[parseInt(month) - 1], // Convert month number to month name
+      desktop: item.value, // Assign value to the desktop field
+    };
+  });
+
+  console.log(chartData);
   return (
     <Card className="w-full border-0 shadow-none bg-transparent ">
       <CardContent>

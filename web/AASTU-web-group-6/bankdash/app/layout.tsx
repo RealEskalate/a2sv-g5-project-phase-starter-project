@@ -23,8 +23,7 @@ export default function RootLayout({
   return (
     <SessionWrapper>
       <html lang="en">
-        <body className={`${inter.className} bg-[#f5f7fa]`}>
-          {/* i just add redux provider here */}
+        <body className={`${inter.className} `}>
           <ReduxProvider>
             <LayoutProvider>{children}</LayoutProvider>
           </ReduxProvider>

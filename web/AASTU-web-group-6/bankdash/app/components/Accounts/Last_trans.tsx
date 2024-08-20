@@ -17,16 +17,16 @@ const LastTrans = ({
   amount,
   receiverUserName,
   transactionId,
-  senderUserName
+  senderUserName,
 }: LastTransData) => {
   let amountStr = amount?.toLocaleString();
   let amount_str = ""
   if (amount.startsWith('-')) {
      amount_str = `-$${amountStr.slice(1)}`; 
   } else {
-     amount_str=  `+$${amountStr}`;
+    amount_str = `+$${amountStr}`;
   }
-  
+
   const textColor = amountStr?.startsWith("-")
     ? "text-[#FE5C73]"
     : "text-[#16DBAA]";
@@ -56,21 +56,21 @@ const LastTrans = ({
         <img src={icon} />
       </div>
       <div className="flex flex-col w-[70%] lg:w-[25%]">
-        <p className="font-inter font-medium lg:text-[12px] xl:text-base text-[#232323] ">
+        <p className="font-inter font-medium lg:text-[12px] xl:text-base text-[#232323] dark:text-gray-300">
           {description}
         </p>
-        <p className="font-inter font-normal lg:text-[12px] xl:text-[15px] text-[#718EBF]">
+        <p className="font-inter font-normal lg:text-[12px] xl:text-[15px] text-[#718EBF] dark:text-gray-400">
           {date}
         </p>
       </div>
 
-      <p className="hidden lg:block font-inter font-normal lg:text-[12px] xl:text-base text-[#718EBF] w-[10%]">
+      <p className="hidden lg:block font-inter font-normal lg:text-[12px] xl:text-base text-[#718EBF] dark:text-gray-300 w-[10%]">
         {type}
       </p>
-      <p className="hidden lg:block font-inter font-normal lg:text-[12px] xl:text-base text-[#718EBF] w-[10%]">
+      <p className="hidden lg:block font-inter font-normal lg:text-[12px] xl:text-base text-[#718EBF] dark:text-gray-300 w-[10%]">
         123***
       </p>
-      <p className="hidden lg:block font-inter font-normal lg:text-[12px] xl:text-base text-[#718EBF] w-[15%]">
+      <p className="hidden lg:block font-inter font-normal lg:text-[12px] xl:text-base text-[#718EBF] dark:text-gray-200w-[15%]">
         completed
       </p>
 

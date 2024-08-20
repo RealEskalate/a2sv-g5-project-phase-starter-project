@@ -47,6 +47,5 @@ Sort by:
 - generate content ideas: query for a good blog topic
 
 
-
-### when the user create a blog make it use the newBlog struct
--
+### Comment:
+- /comment/:id where id is the blogId

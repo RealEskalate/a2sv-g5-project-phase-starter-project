@@ -4,7 +4,6 @@ import (
 	domain "blogs/Domain"
 	infrastructure "blogs/Infrastructure"
 	"context"
-	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -27,17 +26,31 @@ func (u *SignupUseCase) Create(c context.Context , user domain.User) interface{}
 		return &domain.ErrorResponse{Message: "All fields are required" , Status: 400}
 	}
 
-	ctx , cancel :=context.WithTimeout(c , u.contextTimeout)
+	// CHECK EMAIL VALIDITY
+	if infrastructure.ValidateEmail(user.Email) != nil {
+		return &domain.ErrorResponse{Message: "Invalid email format", Status: 400}
+	}
+
+	// CHECK PASSWORD VALIDITY
+	if err := infrastructure.ValidatePassword(user.Password); err != nil {
+		return &domain.ErrorResponse{Message: err.Error(), Status: 400}
+	}
+
+
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 	idofNumber := primitive.NewObjectID()
 	user.ID = idofNumber
 
 	// check if user already exists
-	_ , err := u.SignupRepository.FindUserByEmail(ctx , user.Email)
+	existingUser , err := u.SignupRepository.FindUserByEmail(ctx , user.Email)
 	
-	if err == nil {
+	if err == nil && existingUser.Verified {
 		return &domain.ErrorResponse{Message: "User already exists", Status: 400}
+	}else if err == nil && !existingUser.Verified {
+		return u.HandleUnverifiedUser(c , existingUser)
 	}
+
 	// hash the password
 	hashedPassword, err := infrastructure.HashPassword(user.Password)
 
@@ -67,7 +80,7 @@ func (u *SignupUseCase) Create(c context.Context , user domain.User) interface{}
 
 	err = u.SignupRepository.SetOTP(ctx , user.Email , otp)
 
-	fmt.Println(err)
+	
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error saving OTP", Status: 500}
 	}
@@ -208,3 +221,39 @@ func (u *SignupUseCase) ResetPassword(c context.Context , password domain.ResetP
 }
 
 
+
+func (u *SignupUseCase) HandleUnverifiedUser(c context.Context, user domain.User) interface{} {
+	
+	ctx , cancel := context.WithTimeout(c , u.contextTimeout)	
+	defer cancel()
+
+	user.ExpiresAt = time.Now().Add(time.Minute  * 10)
+	_ , err := u.SignupRepository.UpdateUser(ctx , user)
+
+	if err != nil {
+		return &domain.ErrorResponse{Message: "Error in setting Expiration time", Status: 500}
+	}
+	// Generate OTP
+	otp , err := infrastructure.GenerateOTP()
+
+	if err != nil {
+		return &domain.ErrorResponse{Message: "Error generating OTP", Status: 500}
+	}
+	
+	// SaveOTP to the DB
+	err = u.SignupRepository.SetOTP(ctx , user.Email , otp)
+
+	
+	if err != nil {
+		return &domain.ErrorResponse{Message: "Error saving OTP", Status: 500}
+	}
+
+	// Send The email
+	err = infrastructure.SendOTPEmail(user.Email, otp)
+
+	if err != nil { 
+		return &domain.ErrorResponse{Message: "Error sending OTP", Status: 500}
+	}
+
+	return &domain.SuccessResponse{Message: "OTP send to your Email Verify Your Account" ,Data: "" , Status: 201}
+}

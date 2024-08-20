@@ -24,3 +24,4 @@ type ForgotPasswordRequest struct {
 type ResetPasswordRequest struct {
 	Password string `json:"password" validate:"required"`
 }
+

@@ -28,6 +28,4 @@ type CommentDTO struct {
 	Username  string             `bson:"user_id"`
 	CreatedAt time.Time          `bson:"created_at"`
 	UpdatedAt time.Time          `bson:"updated_at"`
-	ViewCount uint               `bson:"view_count"`
-	Comments  []CommentDTO       `bson:"comments"`
 }

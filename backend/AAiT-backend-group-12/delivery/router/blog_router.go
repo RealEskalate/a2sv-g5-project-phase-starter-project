@@ -24,17 +24,10 @@ func NewBlogRouter(collection *mongo.Collection, blogGroup *gin.RouterGroup) {
 	blogGroup.POST("/create", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.CreateBlogHandler)
 	blogGroup.PUT("/:id", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.UpdateBlogHandler)
 	blogGroup.DELETE("/:id", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.DeleteBlogHandler)
-	blogGroup.POST("/", bc.GetBlogHandler)
-	blogGroup.GET("/:id", bc.GetBlogByIDHandler)
-	blogGroup.POST("/update-popularity", bc.TrackBlogPopularityHandler)
-	blogGroup.POST("/generate-content", bc.GenerateContentHandler)
-	blogGroup.POST("/review-content", bc.ReviewContentHandler)
-	blogGroup.POST("/generate-topic", bc.GenerateTopicHandler)
-
-	//router for comment
-	blogGroup.POST("/comment/:id", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.HandleCreateComment)
-	blogGroup.PUT("/comment/:blog_id/:comment_id", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.HandleUpdateComment)
-	blogGroup.DELETE("/comment/:blog_id/:comment_id", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.HandleDeleteComment)
-
-
+	blogGroup.POST("/",middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin),bc.GetBlogHandler)
+	blogGroup.GET("/:id",middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.GetBlogByIDHandler)
+	blogGroup.POST("/update-popularity", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.TrackBlogPopularityHandler)
+	blogGroup.POST("/generate-content",middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.GenerateContentHandler)
+	blogGroup.POST("/review-content",middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.ReviewContentHandler)
+	blogGroup.POST("/generate-topic",middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.GenerateTopicHandler)
 }

@@ -2,6 +2,7 @@
 import { useGetExpensesQuery } from "@/lib/service/TransactionService";
 import { useRef, useEffect } from "react";
 import { Chart } from "chart.js/auto";
+import { useSession } from "next-auth/react";
 
 export interface ChartRef extends HTMLCanvasElement {
   chart?: Chart;
@@ -9,10 +10,9 @@ export interface ChartRef extends HTMLCanvasElement {
 
 function MyExpenseChart() {
   const chartRef = useRef<ChartRef>(null);
-  const access = process.env.ACCESS_TOKEN;
-  const { data, isError, isLoading } = useGetExpensesQuery(
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJzYW1pdGVzdCIsImlhdCI6MTcyMzkwMzIwNywiZXhwIjoxNzIzOTg5NjA3fQ.9oD43mrMrIADSyodH11ija2vLg3U8LVMsEPd7kvSZaVAHbpgItEr02YPkcSFKhCK"
-  );
+  const { data: session, status } = useSession();
+  const accessToken = session?.user.accessToken!;
+  const { data, isError, isLoading } = useGetExpensesQuery(accessToken);
 
   useEffect(() => {
     if (isLoading || isError) return;
@@ -30,7 +30,7 @@ function MyExpenseChart() {
         // Group expenses by month and sum up the amounts
         const expensesByMonth: { [key: string]: number } = {};
 
-        data.data.forEach((expense: { date: string; amount: number; }) => {
+        data.data.forEach((expense: { date: string; amount: number }) => {
           const month = expense.date.substring(0, 7); // e.g., "2024-08"
           if (!expensesByMonth[month]) {
             expensesByMonth[month] = 0;
@@ -42,25 +42,45 @@ function MyExpenseChart() {
         const now = new Date();
         const lastSixMonths = Array.from({ length: 6 }, (_, i) => {
           const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-          return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+          return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+            2,
+            "0"
+          )}`;
         }).reverse();
 
         // Extract labels and summed amounts from the grouped data
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthNames = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
         const labels = lastSixMonths.map((month) => {
           const [year, monthNumber] = month.split("-");
           return monthNames[parseInt(monthNumber, 10) - 1];
         });
-        const amounts = lastSixMonths.map((month) => expensesByMonth[month] || 0);
-        const custommonth = [5,3,1,5,6,7]
-        const customData = custommonth.concat(amounts)
+        const amounts = lastSixMonths.map(
+          (month) => expensesByMonth[month] || 0
+        );
+        const custommonth = [5, 3, 1, 5, 6, 7];
+        const customData = custommonth.concat(amounts);
 
         // Get the current month
         const currentMonth = now.getMonth(); // 0-based index (Jan = 0)
 
         // Set bar colors and highlight the current month
         const barColors = Array(labels.length).fill("#EDF0F7");
-        const currentMonthIndex = labels.findIndex(label => monthNames[currentMonth] === label);
+        const currentMonthIndex = labels.findIndex(
+          (label) => monthNames[currentMonth] === label
+        );
         if (currentMonthIndex !== -1) {
           barColors[currentMonthIndex] = "#16DBCC";
         }
@@ -131,8 +151,12 @@ function MyExpenseChart() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-[225px] w-[350px] bg-white drop-shadow-xl font-medium rounded-[25px]">
-        <p>Loading chart data...</p>
+      <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-[350px] bg-white animate-pulse rounded-[25px]">
+        <div className="flex flex-row gap-2">
+          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
+          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+        </div>
       </div>
     );
   }
@@ -146,7 +170,7 @@ function MyExpenseChart() {
   }
 
   return (
-    <div className="flex flex-col flex-initial flex-wrap gap-[10px] bg-white drop-shadow-xl font-medium rounded-[25px] h-[225px] pt-[45px] w-[350px]">
+    <div className=" gap-[10px] bg-white drop-shadow-xl font-medium rounded-[25px] h-[225px] pt-[45px] w-[350px]">
       <canvas ref={chartRef} />
     </div>
   );

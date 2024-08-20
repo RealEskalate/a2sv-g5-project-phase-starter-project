@@ -40,7 +40,7 @@ func (authenticate *Auth) AuthenticationMiddleware() gin.HandlerFunc{
 		claims, err := ExtractFromToken(auth[1], authenticate.env.AccessTokenSecret)
 		if err != nil{
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"message" : err,
+				"message" : "Unauthorized",
 			})
 			c.Abort()
 			return

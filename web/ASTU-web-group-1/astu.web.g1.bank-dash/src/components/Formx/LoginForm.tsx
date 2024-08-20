@@ -57,7 +57,7 @@ function LoginForm(req: any) {
         const parsedUrl = new URL(result?.url || '/');
         const callbackUrl = parsedUrl.searchParams.get('callbackUrl');
         // console.log('callbackUrl is ', callbackUrl);
-        router.push(callbackUrl || '/opportunities');
+        router.push(callbackUrl || '/bank-dash');
       }
     } catch (error) {
       alert('invalid credentials');

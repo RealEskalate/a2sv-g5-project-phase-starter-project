@@ -1,43 +1,43 @@
 package services
 
 import (
-    "fmt"
-    "net/smtp"
+	"log"
+
+	"gopkg.in/gomail.v2"
 )
 
 type IEmailService interface {
     SendEmail(to string, subject string, body string) error
 }
 
-type SMTPEmailService struct {
-    smtpHost     string
-    smtpPort     string
-    senderEmail  string
-    senderPass   string
+type EmailService struct {
+	smtpHost string
+	smtpPort int
+	username string
+	password string
 }
 
-func NewSMTPEmailService(host, port, email, password string) IEmailService {
-    return &SMTPEmailService{
-        smtpHost:    host,
-        smtpPort:    port,
-        senderEmail: email,
-        senderPass:  password,
+func NewEmailService(smtpHost string, smtpPort int, username, password string) IEmailService {
+    return &EmailService{
+        smtpHost: smtpHost,
+		smtpPort: smtpPort,
+        username: username,
+		password: password,
     }
 }
 
-func (s *SMTPEmailService) SendEmail(to string, subject string, body string) error {
-    auth := smtp.PlainAuth("", s.senderEmail, s.senderPass, s.smtpHost)
-    
-    msg := "From: " + s.senderEmail + "\n" +
-        "To: " + to + "\n" +
-        "Subject: " + subject + "\n\n" +
-        body
+func (e *EmailService) SendEmail(to, subject, body string) error {
+	m := gomail.NewMessage()
+	m.SetHeader("From", e.username)
+	m.SetHeader("To", to)
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/html", body)
 
-    addr := fmt.Sprintf("%s:%s", s.smtpHost, s.smtpPort)
-    
-    if err := smtp.SendMail(addr, auth, s.senderEmail, []string{to}, []byte(msg)); err != nil {
-        return err
-    }
-    return nil
+	d := gomail.NewDialer(e.smtpHost, e.smtpPort, e.username, e.password)
+	if err := d.DialAndSend(m); err != nil {
+		log.Println("Failed to send email:", err)
+		return err
+	}
+	return nil
 }
 

@@ -33,7 +33,9 @@ func (acc *AIContentController) GenerateContentSuggestions(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, contentSuggestion)
+	c.JSON(http.StatusOK, gin.H{
+		"content": contentSuggestion,
+	})
 }
 
 func (acc *AIContentController) SuggestContentImprovements(c *gin.Context) {

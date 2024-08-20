@@ -24,10 +24,8 @@ func App() Application {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer client.Close()
 
 	model := client.GenerativeModel("gemini-1.5-flash")
-	model.ResponseMIMEType = "application/json"
 	app.GenAi = model
 
 	return *app
@@ -35,4 +33,9 @@ func App() Application {
 
 func (app *Application) CloseDBConnection() {
 	CloseMongoDBConnection(app.Mongo)
+}
+
+
+func (app *Application) CloseModelClient(){
+	//TODO: close the client for the ai model
 }

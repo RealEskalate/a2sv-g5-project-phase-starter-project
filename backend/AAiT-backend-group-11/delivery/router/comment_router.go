@@ -19,9 +19,9 @@ func NewCommmentRouter(db *mongo.Database,  group *gin.RouterGroup) {
 	
 
 	
-		group.POST("/:blogId",cc.AddComment)
-		group.GET("/:blogId", cc.GetCommentsByBlogPostId)
-		group.PUT("/:id", cc.UpdateComment)
-		group.DELETE("/:id",  cc.DeleteComment)
+		group.POST(":blogId",cc.AddComment)
+		group.GET(":blogId", cc.GetCommentsByBlogPostId)
+		group.PUT(":id", cc.UpdateComment)
+		group.DELETE(":id",  cc.DeleteComment)
 
 }

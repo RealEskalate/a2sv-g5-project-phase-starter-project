@@ -14,11 +14,12 @@ func Setup(env *bootstrap.Env, db *mongo.Database, gin *gin.Engine, auth middlew
 	
 	publicRouter := gin.Group("")
 
-	privateRouter := publicRouter.Group("")
+	privateRouter := gin.Group("")
 	privateRouter.Use(auth.AuthMiddleware(""))
 	
-	adminRouter := publicRouter.Group("")
+	adminRouter := gin.Group("")
 	adminRouter.Use(auth.AuthMiddleware("admin"))
+	_ = publicRouter
 
 
 	NewBlogRouter(db, publicRouter.Group("/blogs"), model)

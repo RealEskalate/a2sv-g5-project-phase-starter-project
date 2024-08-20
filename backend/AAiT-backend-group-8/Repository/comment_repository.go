@@ -33,7 +33,7 @@ func (repo *CommentRepository) CreateComment(comment *domain.Comment) error {
 
 func (repo *CommentRepository) GetComments(blogID primitive.ObjectID) ([]domain.Comment, error) {
 	var comments []domain.Comment
-	filter := bson.D{{Key: "blogid", Value: blogID}}
+	filter := bson.D{{Key: "blog_id", Value: blogID}}
 	cursor, err := repo.collection.Find(repo.ctx, filter)
 	if err != nil {
 		return nil, errors.New("error reading comments")

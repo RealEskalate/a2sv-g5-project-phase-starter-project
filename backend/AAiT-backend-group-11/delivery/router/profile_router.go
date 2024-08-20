@@ -13,7 +13,7 @@ import (
 func NewProfileRouter(db *mongo.Database, group *gin.RouterGroup) {
 	profile_repo := repository.NewProfileRepository(context.TODO(), db)
 	profile_service := service.NewProfileService(profile_repo)
-	profile_controller := controller.ProfileController{ProfileService: profile_service}
+	profile_controller := controller.NewProfileController(profile_service)
 
 	group.POST("/profile", profile_controller.CreateUserProfile)
 	group.GET("/profile/:userId", profile_controller.GetUserProfile)

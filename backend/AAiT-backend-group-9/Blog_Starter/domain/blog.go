@@ -28,19 +28,13 @@ type Blog struct {
 	CommentCount int `json:"comment_count" bson:"comment_count"` // add when comment is called and substarct when it is deleted	
 }
 
-type BlogCreate struct{
-	UserID  string `json:"user_id" bson:"user_id" binding:"required"`
-	Title   string `json:"title" bson:"title" binding:"required"`
-	Content string `json:"content" bson:"content" binding:"required"`
+type BlogCreate struct {
+	UserID  string   `json:"user_id" bson:"user_id" binding:"required"`
+	Title   string   `json:"title" bson:"title" binding:"required"`
+	Content string   `json:"content" bson:"content" binding:"required"`
 	Tags    []string `json:"tags" bson:"tags" binding:"required"`
 }
 
-type BlogUpdate struct{
-	Title   string `json:"title" bson:"title"`
-	Content string `json:"content" bson:"content"`
-	Tags    []string `json:"tags" bson:"tags"`
-	UpdatedAt    time.Time `json:"updatetimestamp" bson:"updatetimestamp"`	
-}
 
 type BlogFilterRequest struct {
     Tags    			[]string
@@ -54,15 +48,29 @@ type BlogSearchRequest struct {
 	Author			string					`json:"author"`
 }
 
+type BlogUpdate struct {
+	UserID    string    `json:"user_id" bson:"user_id"` // i dont want to update the user id
+	Title     string    `json:"title" bson:"title"`
+	Content   string    `json:"content" bson:"content"`
+	Tags      []string  `json:"tags" bson:"tags"`
+	UpdatedAt time.Time `json:"updatetimestamp" bson:"updatetimestamp"`
+}
+
+type PaginationMetadata struct {
+	TotalRecords int64 `json:"total_records"`
+	TotalPages   int64 `json:"total_pages"`
+	CurrPage     int64 `json:"curr_page"`
+}
+
 type BlogRepository interface {
 	CreateBlog(c context.Context, blog *Blog) (*Blog, error)
 	GetBlogByID(c context.Context, blogID string) (*Blog, error) // add view count when this is called
-	GetAllBlog(c context.Context) ([]*Blog, error)
+	GetAllBlog(c context.Context, skip int64, limit int64, sortBy string) ([]*Blog, *PaginationMetadata, error)
 	UpdateBlog(c context.Context, blog *BlogUpdate, blogID string) (*Blog, error)
 	DeleteBlog(c context.Context, blogID string) error
 	SearchBlogs(context.Context, *BlogSearchRequest)	([]*Blog, error)
 	FilterBlogs(context.Context, *BlogFilterRequest)	([]*Blog, error)
-	IncrementViewCount(c context.Context, blogID string) error
+	IncrementViewCount(c context.Context, blogID string) (*Blog, error)
 	UpdateRating(context.Context, *BlogRating, int) error
 	InsertRating(context.Context, *BlogRating) error
 	DeleteRating(context.Context, *BlogRating) error
@@ -70,13 +78,12 @@ type BlogRepository interface {
 	UpdateCommentCount(c context.Context, blogID string, increment bool) error
 }
 
-type BlogUseCase interface{
+type BlogUseCase interface {
 	CreateBlog(c context.Context, blog *BlogCreate) (*Blog, error)
-	GetBlogByID(c context.Context, blogID string) error
-	GetAllBlog(c context.Context) ([]*Blog, error)
-	UpdateBlog(c context.Context, blog *BlogUpdate, blogID string) (*Blog, error)
-	DeleteBlog(c context.Context, blogID string) error
 	SearchBlogs(context.Context, *BlogSearchRequest)	([]*Blog, error)
 	FilterBlogs(context.Context, *BlogFilterRequest)	([]*Blog, error)
+	GetBlogByID(c context.Context, blogID string) (*Blog, error)
+	GetAllBlog(c context.Context, skip int64, limit int64, sortBy string) ([]*Blog, *PaginationMetadata, error)
+	UpdateBlog(c context.Context, blog *BlogUpdate, blogID string) (*Blog, error)
+	DeleteBlog(c context.Context, blogID string, userId string) error
 }
-

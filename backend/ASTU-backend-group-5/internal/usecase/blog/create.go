@@ -73,3 +73,58 @@ func (u *blogUseCase) AddView(ctx context.Context, view *domain.View) error {
 	}
 	return nil
 }
+// GetAllTags retrieves all blog tags
+func (u *blogUseCase) GetAllTags(ctx context.Context) ([]*domain.BlogTag, error) {
+	tags, err := u.repo.GetAllTags(ctx)
+	if err != nil {
+		log.Printf("Error retrieving blog tags: %v", err)
+		return nil, fmt.Errorf("failed to retrieve blog tags: %w", err)
+	}
+	return tags, nil
+}
+
+// CreateTag creates a new blog tag
+func (u *blogUseCase) CreateTag(ctx context.Context, tag *domain.BlogTag) error {
+	if tag == nil {
+		return errors.New("tag cannot be nil")
+	}
+	err := u.repo.CreateTag(ctx, tag)
+	if err != nil {
+		log.Printf("Error creating blog tag: %v", err)
+		return fmt.Errorf("failed to create blog tag: %w", err)
+	}
+	return nil
+}
+
+// UpdateTag updates an existing blog tag
+func (u *blogUseCase) UpdateTag(ctx context.Context, id string, tag *domain.BlogTag) error {
+	if tag == nil {
+		return errors.New("tag cannot be nil")
+	}
+	err := u.repo.UpdateTag(ctx, id, tag)
+	if err != nil {
+		log.Printf("Error updating blog tag with ID %s: %v", id, err)
+		return fmt.Errorf("failed to update blog tag: %w", err)
+	}
+	return nil
+}
+
+// DeleteTag deletes a blog tag
+func (u *blogUseCase) DeleteTag(ctx context.Context, id string) error {
+	err := u.repo.DeleteTag(ctx, id)
+	if err != nil {
+		log.Printf("Error deleting blog tag with ID %s: %v", id, err)
+		return fmt.Errorf("failed to delete blog tag: %w", err)
+	}
+	return nil
+}
+
+// GetTagByID retrieves a blog tag by ID
+func (u *blogUseCase) GetTagByID(ctx context.Context, id string) (*domain.BlogTag, error) {
+	tag, err := u.repo.GetTagByID(ctx, id)
+	if err != nil {
+		log.Printf("Error retrieving blog tag with ID %s: %v", id, err)
+		return nil, fmt.Errorf("failed to retrieve blog tag: %w", err)
+	}
+	return tag, nil
+}

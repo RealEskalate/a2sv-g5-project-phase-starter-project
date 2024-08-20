@@ -238,3 +238,73 @@ func (h *BlogHandler) GetViewsByBlogIDHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, views)
 }
+
+// Tags Operations
+// GetAllTagsHandler retrieves all tags
+func (h *BlogHandler) GetAllTagsHandler(c *gin.Context) {
+	tags, err := h.UseCase.GetAllTags(context.Background())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, tags)
+}
+
+// CreateTagHandler creates a new tag
+func (h *BlogHandler) CreateTagHandler(c *gin.Context) {
+	var tag domain.BlogTag
+	if err := c.ShouldBindJSON(&tag); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.UseCase.CreateTag(context.Background(), &tag); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, tag)
+}
+
+// UpdateTagHandler updates an existing tag
+func (h *BlogHandler) UpdateTagHandler(c *gin.Context) {
+	id := c.Param("id")
+	var tag domain.BlogTag
+	if err := c.ShouldBindJSON(&tag); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.UseCase.UpdateTag(context.Background(), id, &tag); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, tag)
+}
+
+// DeleteTagHandler deletes a tag by its ID
+func (h *BlogHandler) DeleteTagHandler(c *gin.Context) {
+	id := c.Param("id")
+	if err := h.UseCase.DeleteTag(context.Background(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
+// GetTagByIDHandler retrieves a tag by its ID
+func (h *BlogHandler) GetTagByIDHandler(c *gin.Context) {
+	id := c.Param("id")
+	tag, err := h.UseCase.GetTagByID(context.Background(), id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, tag)
+}
+
+

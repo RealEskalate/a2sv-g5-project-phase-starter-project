@@ -2,9 +2,9 @@ package repository
 
 import (
 	"AAiT-backend-group-6/domain"
-	"AAiT-backend-group-6/infrastructure"
 	"AAiT-backend-group-6/mongo"
 	"context"
+	"reflect"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -14,7 +14,6 @@ import (
 type userRepository struct {
 	database   mongo.Database
 	collection string
-	emailService infrastructure.EmailService
 }
 
 func NewUserRepository(db mongo.Database, collection string) domain.UserRepository {
@@ -32,7 +31,9 @@ func (ur *userRepository) CreateUser(c context.Context, user *domain.User) error
 }
 
 func (ur *userRepository) DeleteUser(c context.Context, id string) error {
-	panic("unimplemented")
+	collection := ur.database.Collection(ur.collection)
+	_, err := collection.DeleteOne(c, bson.M{"_id": id})
+	return err
 }
 
 func (ur *userRepository) GetByEmail(c context.Context, email string) (domain.User, error) {
@@ -84,7 +85,29 @@ func (ur *userRepository) GetUsers(c context.Context) ([]domain.User, error) {
 }
 
 func (ur *userRepository) UpdateUser(c context.Context, user *domain.User) error {
-	panic("unimplemented")
+	collection := ur.database.Collection(ur.collection)
+
+	update := bson.M{}
+    userValue := reflect.ValueOf(user).Elem()
+    userType := reflect.TypeOf(user).Elem()
+
+    for i := 0; i < userValue.NumField(); i++ {
+        field := userValue.Field(i)
+        fieldName := userType.Field(i).Tag.Get("bson")
+
+        if !field.IsZero() && fieldName != "_id" { // Exclude zero values and ID field
+            update[fieldName] = field.Interface()
+        }
+    }
+	filter := bson.D{{Key: "_id", Value: user.ID}}
+
+	_, result := collection.UpdateOne(c, filter, update)
+
+	if result != nil {
+		return result
+	}
+	
+	return nil
 }
 
 func (ur *userRepository) LoginUser(c context.Context, user *domain.User) (domain.User, error) {

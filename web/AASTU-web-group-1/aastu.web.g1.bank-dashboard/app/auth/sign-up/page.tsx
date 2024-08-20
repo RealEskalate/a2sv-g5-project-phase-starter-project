@@ -1,3 +1,4 @@
+import ProfileUpload from "@/app/dashboard/_components/ProfileUpload";
 import SignUpForm from "./signUpForm";
 
 const SignUp = async () => {

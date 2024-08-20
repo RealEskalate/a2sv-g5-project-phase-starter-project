@@ -51,7 +51,7 @@ const CreditCards = () => {
           </h2>
           <ExpenseChart />
         </div>
-        <div className="cardlist w-full lg:w-[67%] flex flex-col gap-6">
+        <div className="cardlist w-full lg:w-[60%] flex flex-col gap-6">
           <h2 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">Card List</h2>
           <>
             {CardData.slice(0, 3).map((card, index) => (
@@ -135,7 +135,7 @@ const CreditCards = () => {
           </h2>
           <AddCard />
         </div>
-        <div className="w-full lg:w-[33%] flex flex-col gap-6">
+        <div className="w-full lg:w-[40%] flex flex-col gap-6">
           <h2 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
             Card Setting
           </h2>

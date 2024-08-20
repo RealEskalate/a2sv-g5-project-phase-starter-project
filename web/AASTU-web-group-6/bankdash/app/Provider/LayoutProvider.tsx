@@ -23,7 +23,7 @@ const LayoutProvider = ({ children }: { children: ReactNode }) => {
   const darkModeClass = isDarkMode ? "dark" : "";
 
   return (
-    <main className={`bg-[#f5f7fa] ${darkModeClass}`}>
+    <main className={`bg-[#f5f7fa] ${darkModeClass} min-h-screen`}>
       {shouldRenderLayout ? (
         <section className={`w-full flex relative dark:bg-[#2D2E36] `}>
           {/* Sidebar */}

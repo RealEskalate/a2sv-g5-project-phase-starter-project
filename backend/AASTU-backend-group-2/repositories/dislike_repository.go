@@ -41,14 +41,14 @@ func (drep *DislikeRepository) GetDisLikes(post_id string) ([]domain.DisLike, er
 func (drep *DislikeRepository) CreateDisLike(user_id string, post_id string) error {
 	var dislike domain.DisLike
 	dislike.UserID, _ = primitive.ObjectIDFromHex(user_id)
-	dislike.PostID, _ = primitive.ObjectIDFromHex(post_id)
+	dislike.BlogID, _ = primitive.ObjectIDFromHex(post_id)
 
 	_, err := drep.dislikecollection.InsertOne(context.TODO(), dislike)
 
 	if err != nil {
 		return err
 	}
-	_, err = drep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": dislike.PostID}, bson.M{"$inc": bson.M{"dislikes": 1}})
+	_, err = drep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": dislike.BlogID}, bson.M{"$inc": bson.M{"dislikes": 1}})
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (drep *DislikeRepository) DeleteDisLike(dislike_id string) error {
 	if err != nil {
 		return err
 	}
-	_, err = drep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": dislike.PostID}, bson.M{"$inc": bson.M{"dislikes": -1}})
+	_, err = drep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": dislike.BlogID}, bson.M{"$inc": bson.M{"dislikes": -1}})
 	if err != nil {
 		return err
 	}

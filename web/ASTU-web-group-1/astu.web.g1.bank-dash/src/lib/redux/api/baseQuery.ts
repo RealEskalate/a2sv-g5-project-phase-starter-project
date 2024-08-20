@@ -16,11 +16,11 @@ export const baseQuery = (baseUrl = '/') => {
           // Decode access token
           const decode: Record<string, any> = jwtDecode(session.accessToken);
           const currentTimestamp = Math.floor(Date.now() / 1000);
-          // console.log('exp', decode, currentTimestamp);
+          console.log('exp', decode, currentTimestamp);
 
           // Check if access token has expired
-          if (decode.exp < currentTimestamp) {
-            // console.log('Token has expired, refreshing token');
+          if (decode.exp > currentTimestamp) {
+            console.log('Token has expired, refreshing token', session.refreshToken);
 
             // Attempt to refresh the token
             const refreshedToken = await fetch(`${baseURL}/auth/refresh_token`, {
@@ -33,7 +33,7 @@ export const baseQuery = (baseUrl = '/') => {
               // console.log('new token');
               if (res.ok) {
                 const data = await res.json();
-                // console.log('is here ', data);
+                console.log('new token ', data);
                 return data;
               }
               return null;

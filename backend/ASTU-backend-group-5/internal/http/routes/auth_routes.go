@@ -20,6 +20,7 @@ func RegisterVerificationRoutes(collection *mongo.Collection, router *gin.Engine
 	{
 		authRoutes.POST("/login", userHandler.Login)
 		authRoutes.POST("/register", userHandler.Register)
+		authRoutes.POST("google-signin", userHandler.GoogleCallback)
 		authRoutes.POST("/verify/request", userHandler.RequestVerifyEmail)
 		authRoutes.GET("/verify/confirm", userHandler.VerifyEmail) //I used this naming to make things clear
 		authRoutes.POST("/reset-password/request", userHandler.ResetPasswordRequest)

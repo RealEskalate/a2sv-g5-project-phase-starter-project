@@ -12,6 +12,7 @@ type UserInterfece interface {
 	VerifyEmail(c *gin.Context)
 	ResetPasswordRequest(c *gin.Context)
 	ResetPassword(c *gin.Context)
+	GoogleSignIn(c *gin.Context)
 	
 
 

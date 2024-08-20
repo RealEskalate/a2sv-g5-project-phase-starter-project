@@ -7,15 +7,17 @@ import (
 	"github.com/google/uuid"
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
-	result "github.com/group13/blog/usecases_sof/user/result"
-	ijwt "github.com/group13/blog/usecases_sof/utils/i_jwt"
-	irepository "github.com/group13/blog/usecases_sof/utils/i_repo"
+	result "github.com/group13/blog/usecase/user/result"
+	irepository "github.com/group13/blog/usecase/common/i_repo"
+	ijwt "github.com/group13/blog/usecase/common/i_jwt"
+
 )
 
 type ValidateEmailHandler struct {
-	repo        irepository.UserRepository
-	hashService ihash.Service
-	jwtService  ijwt.Services
+	repo         irepository.UserRepository
+	hashService 	  ihash.Service
+	jwtService 			ijwt.Service
+
 }
 
 func (h *ValidateEmailHandler) Handle(encryptedValue string) (*result.ValidateEmailResult, error) {

@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,32 +11,22 @@ import (
 func AdminMiddleware(jwtService JWTService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
-		token, claims, err := jwtService.ValidateToken(authHeader)
+		// secret_key := jwtService.GetKey("access")
+		tokenString := strings.TrimPrefix(authHeader,"Bearer ")
+		claims, err := jwtService.ValidateToken(tokenString)
 
-		if err != nil || !token.Valid {
+		if err != nil{
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 
-		isAdmin := claims.Role
-
-		if isAdmin != "is_admin" {
+		if claims.Role != "admin" {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
 
 		c.Next()
 	}
-
-	// return func(c *gin.Context) {
-	// 	role, exists := c.Get("role")
-	// 	if !exists || role != "admin" {
-	// 		c.JSON(http.StatusForbidden, gin.H{"error": "Admin access required"})
-	// 		c.Abort()
-	// 		return
-	// 	}
-	// 	c.Next()
-	// }
 }
 
 // AuthMiddleware checks if the user is authenticated
@@ -48,8 +39,11 @@ func AuthMiddleware(jwtService JWTService) gin.HandlerFunc {
 			return
 		}
 
-		token, claims, err := jwtService.ValidateToken(authHeader)
-		if err != nil || !token.Valid {
+		tokenString := strings.TrimPrefix(authHeader,"Bearer ")
+
+		// secret_key := jwtService.GetKey("access")
+		claims, err := jwtService.ValidateToken(tokenString)
+		if err != nil {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}

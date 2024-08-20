@@ -49,69 +49,8 @@ func (uc *UserController) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Logged in successfully", "token": token, "refresh_token": refreshToken})
 }
 
-func (uc *UserController) Logout(c *gin.Context) {
-	// userID := c.MustGet("userID")
-	// objectID, ok := userID.(primitive.ObjectID)
-	// //the below might not be necessary
-	// if !ok {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid userID type"})
-	// 	return
-	// }
+func (uc *UserController) GetAllUsers(c *gin.Context){
 
-	// err := uc.userUsecase.DeleteRefeshToken(objectID)
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
-	// 	return
-	// }
-
-	c.JSON(http.StatusOK, gin.H{"message": "User logged out successfully"})
-}
-
-func (uc *UserController) RefreshToken(c *gin.Context) {
-	var token domain.RefreshToken
-	if err := c.ShouldBindJSON(&token); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// newToken, err := uc.userUsecase.RefreshToken(&token)
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
-	// 	return
-	// }
-
-	// c.JSON(http.StatusOK, gin.H{"message": "Token refreshed successfully", "token": newToken})
-}
-
-func (uc *UserController) GetProfile(c *gin.Context) {
-	userID := c.MustGet("userID").(primitive.ObjectID)
-	profile, err := uc.userUsecase.GetProfile(userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, profile)
-}
-
-func (uc *UserController) UpdateProfile(c *gin.Context) { //gonna include change password here in update profile
-	userID := c.MustGet("userID").(primitive.ObjectID)
-	var profile domain.Profile
-	if err := c.ShouldBindJSON(&profile); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	updatedProfile, err := uc.userUsecase.UpdateProfile(userID, &profile)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Profile updated successfully", "updatedProfile": updatedProfile})
-}
-
-func (uc *UserController) GetAllUsers(c *gin.Context) {
 	users, err := uc.userUsecase.GetAllUsers()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

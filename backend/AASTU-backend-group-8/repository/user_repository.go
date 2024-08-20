@@ -2,7 +2,8 @@ package repository
 
 import (
 	"context"
-	// "fmt"
+	// "errors"
+	"fmt"
 	"meleket/domain"
 	"time"
 
@@ -29,11 +30,11 @@ func (r *UserRepository) Create(user *domain.User) error {
 }
 
 func (r *UserRepository) GetUserByUsername(username string) (*domain.User, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// defer cancel()
 	var user domain.User
 	// fmt.Printf("Searching for user with username: %s\n", username)
-	err := r.collection.FindOne(ctx, bson.M{"name": username}).Decode(&user)
+	err := r.collection.FindOne(context.TODO(), bson.M{"name": username}).Decode(&user)
 	// fmt.Printf("User found: %+v\n", user)
 	if err != nil {
 		return nil, err
@@ -42,11 +43,11 @@ func (r *UserRepository) GetUserByUsername(username string) (*domain.User, error
 	return &user, nil
 }
 
-func (r *UserRepository) GetUserByEmail(email *string) (*domain.User, error) {
+func (r *UserRepository) GetUserByEmail(email string) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var user domain.User
-	err := r.collection.FindOne(ctx, bson.M{"email": *email}).Decode(&user)
+	err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -75,24 +76,11 @@ func (r *UserRepository) GetAllUsers() ([]*domain.User, error) {
 	return users, err
 }
 
-func (r *UserRepository) UpdateProfile(id primitive.ObjectID, profile *domain.Profile) (*domain.Profile, error) {
-	filter := bson.M{"_id": id}
-	update := bson.M{"$set": profile}
-
-	result := r.collection.FindOneAndUpdate(context.Background(), filter, update)
-	if result.Err() != nil {
-		return nil, result.Err()
-	}
-
-	var decoded domain.Profile
-	if err := result.Decode(&decoded); err != nil {
-		return nil, err
-	}
-
-	profile.ID = decoded.ID
-	profile.UserID = decoded.UserID
-
-	return profile, nil
+func (r *UserRepository) UpdateUser(username string, user *domain.User) error {
+	fmt.Println("Updating user with username: ", username)
+	result := r.collection.FindOneAndUpdate(context.TODO(), bson.M{"name": username}, bson.M{"$set": user})
+	
+	return result.Err()
 }
 
 func (r *UserRepository) DeleteUser(id primitive.ObjectID) error {

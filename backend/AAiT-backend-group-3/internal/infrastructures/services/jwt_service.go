@@ -70,3 +70,4 @@ func (jwtservice *JWTService) ValidateAccessToken(token string) (*jwt.Token, err
 func (jwtservice *JWTService) ValidateRefreshToken(token string) (*jwt.Token, error) {
 	return jwtservice.validator(token)
 }
+

@@ -1,61 +1,11 @@
 import { ServiceType,TopPageCardType } from "@/types/serviceCard";
 import ServiceCard from "@/app/components/service/ServiceCard";
 import TopPageCard from "@/components/ui/TopPageCard"
-import {safety,shooping,lifeinsurance } from "../../../public/Icons";
+import {safety,shooping,lifeinsurance } from "@/../../public/Icons";
+
 
   
 const Service = () =>{
-    const cardData: ServiceType[] = [
-        {
-          name: "Business loans",
-          details: "It is a long established ",
-          numberOfUsers:0,
-          status: "Many publishing",
-          type: "Secondary",
-          icon:"0"
-        },
-        {
-          name: "Checking accounts",
-          details: "It is a long established ",
-          numberOfUsers:0,
-          status: "Many publishing",
-          type: "Secondary",
-          icon:""
-        },
-        {
-          name: "Savings accounts",
-          details: "It is a long established ",
-          numberOfUsers:0,
-          status: "Many publishing",
-          type: "Secondary",
-          icon: ""
-        },
-        {
-          name: "Debit and credit cards",
-          details: "It is a long established ",
-          numberOfUsers:0,
-          status: "Many publishing",
-          type: "Secondary",
-          icon: ""
-        },
-        {
-          name: "Life Insurance",
-          details: "It is a long established ",
-          numberOfUsers:0,
-          status: "Many publishing",
-          type: "Secondary",
-          icon: ""
-        },
-        {
-          name: "Business loans",
-          details: "It is a long established ",
-          numberOfUsers:0,
-          status: "Many publishing",
-          type: "Secondary",
-          icon: ""
-        },
-      ];
-
     const TopCard:TopPageCardType[] =[
         {
             title: "Life Insurance",
@@ -90,17 +40,7 @@ const Service = () =>{
          }
         </div>
         <div className="p-4 font-semibold text-[16px] text-xl text-[#343C6A] mx-2">Bank Services List</div>
-        {cardData.map((card, index:number) => (
-          <ServiceCard
-            key={index}
-            name={card.name}
-            details={card.details}
-            numberOfUsers={card.numberOfUsers}
-            status={card.status}
-            type={card.type}
-            icon={card.icon}
-          />
-        ))}
+          <ServiceCard/>
       </div>
     )
 }

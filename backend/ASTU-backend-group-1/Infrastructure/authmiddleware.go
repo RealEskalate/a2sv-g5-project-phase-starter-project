@@ -14,13 +14,13 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		configjwt,err := config.LoadConfig()
+		configJwt,err := config.LoadConfig()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 			c.Abort()
 			return
 		}
-	var jwtSecret = []byte(configjwt.JWTKey)
+	var jwtSecret = []byte(configJwt.Jwt.JwtKey)
 		authHeader := c.GetHeader("Authorization")
 
 		if authHeader == "" {

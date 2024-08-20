@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/spf13/viper"
+
 )
 
 var EnvConfigs *envConfigs
@@ -15,8 +16,8 @@ func InitiEnvConfigs() {
 type envConfigs struct {
 	LocalServerPort string `mapstructure:"LOCAL_SERVER_PORT"`
 	MongoURI        string `mapstructure:"MONGODB_URL"`
-	JwtSecret 	 string `mapstructure:"JWT_SECRET"`
-	
+	JwtSecret       string `mapstructure:"JWT_SECRET"`
+	GEMINI_API_KEY  string  `mapstructure:"GEMINI_API_KEY"`
 }
 
 func loadEnvVariables() *envConfigs {
@@ -24,7 +25,7 @@ func loadEnvVariables() *envConfigs {
 
 	viper.AddConfigPath(".")
 	viper.SetConfigName("app")
-	viper.SetConfigType("env") 
+	viper.SetConfigType("env")
 
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalf("Error reading config file, %s", err)

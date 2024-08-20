@@ -2,7 +2,7 @@
 export const infoboxListItemsInvestement = [
     {
         name: "Total Invested Amount",
-        value: "$3,000,528",
+        value: "3,000,528",
         icon: "/assets/infobox/total-investement-amount.svg",
     },
     {

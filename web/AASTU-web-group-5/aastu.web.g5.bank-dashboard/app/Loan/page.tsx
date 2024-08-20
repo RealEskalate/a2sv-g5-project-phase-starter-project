@@ -1,11 +1,8 @@
-import React from 'react'
+import React from "react";
+import LoanPage from "./LoanPage";
 
 function page() {
-  return (
-    <div>
-      
-    </div>
-  )
+	return <LoanPage />;
 }
 
-export default page
+export default page;

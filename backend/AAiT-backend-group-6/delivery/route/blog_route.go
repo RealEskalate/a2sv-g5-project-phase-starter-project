@@ -1,4 +1,4 @@
-package routers
+package route
 
 import (
 	delivery "AAiT-backend-group-6/delivery/controller"
@@ -25,8 +25,8 @@ func NewBlogRouter(db mongo.Database, gin *gin.Engine) {
 	publicRoute.POST("/blogs", tc.CreateBlog)
 	publicRoute.PUT("/blogs/:id", tc.UpdateBlog)
 	publicRoute.DELETE("/blogs/:id", tc.DeleteBlog)
-	publicRoute.POST("/blogs/:id", tc.LikeBlog)
-	publicRoute.POST("/blogs/:id", tc.UnlikeBlog)
-	publicRoute.POST("/blogs/:id", tc.CommentBlog)
+	publicRoute.POST("/blogs/:id/like", tc.LikeBlog)
+	publicRoute.POST("/blogs/:id/unlike", tc.UnlikeBlog)
+	publicRoute.POST("/blogs/:id/comment", tc.CommentBlog)
 
 }

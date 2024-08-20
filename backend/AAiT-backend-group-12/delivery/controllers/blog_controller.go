@@ -60,6 +60,14 @@ func (bc *BlogController) UpdateBlogHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
 		return
 	}
+
+	blogValidate.RegisterValidation("MinWord", validateblog.WordCountValidator)
+	
+	if err := blogValidate.Struct(blog); err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
+		return
+	}
+	
 	userName, exists := c.Keys["username"] 
 	if !exists{
 		c.JSON(http.StatusForbidden, gin.H{"message": "coudn't find the username field"})

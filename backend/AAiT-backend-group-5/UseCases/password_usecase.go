@@ -60,13 +60,11 @@ func (sp *setup_password) SendResetEmail(ctx context.Context, email string, rese
 	subject := "Password Reset"
 	body := "Click the link below to reset your password\n" + resetURL + "\n\nThis link will expire in 1 hour"
 
-	// validate email
 	valid := sp.emailService.IsValidEmail(email)
 	if !valid {
 		return models.BadRequest("Invalid email address")
 	}
 
-	// send email
 	err := sp.emailService.SendEmail(email, subject, body)
 	if err != nil {
 		return models.InternalServerError("An error occurred while sending the reset email")

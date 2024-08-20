@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useState } from "react"; // Ensure useState is imported
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { FaTimes } from "react-icons/fa";
@@ -64,7 +65,7 @@ const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolea
                     <Image src={enabled === "user" ? enabledUser : user} alt="User Icon" className="h-[25px] w-[25px]" />
                     <div> Accounts</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("economicInvestment", "/investments")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("economicInvestment", "/Investments")}>
                     <Image src={enabled === "economicInvestment" ? enabledEconomicInvestment : economicInvestment} alt="Investments Icon" className="h-[25px] w-[25px]" />
                     <div> Investments</div>
                 </div>
@@ -72,7 +73,7 @@ const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolea
                     <Image src={enabled === "creditCard" ? enabledCreditCard : creditCard} alt="Credit Card Icon" className="h-[25px] w-[25px]" />
                     <div> Credit Cards</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("loan", "/Loans")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("loan", "/loans")}>
                     <Image src={enabled === "loan" ? enabledLoan : loan} alt="Loan Icon" className="h-[25px] w-[25px]" />
                     <div> Loans</div>
                 </div>

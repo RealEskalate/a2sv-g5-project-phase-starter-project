@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis , Line } from "recharts"
-import InvestmentService from "../../Services/api/investmentApi"
-import { useState , useEffect } from "react"
+import { TrendingUp } from "lucide-react";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Line } from "recharts";
+import InvestmentService from "../../Services/api/investmentApi";
+import { useState, useEffect } from "react";
 
 import {
   Card,
@@ -12,13 +12,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 
 // const chartData = [
 //   { Year: "2016", investment: 5000 },
@@ -35,14 +35,14 @@ const chartConfig = {
     label: "investment",
     color: "hsl(var(--chart-1))",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 interface YearlyInvestment {
-  time: string; 
+  time: string;
   value: number;
 }
 
 interface MonthlyRevenue {
-  time: string; 
+  time: string;
   value: number;
 }
 
@@ -56,17 +56,17 @@ interface YearlyInvestProps {
   data: InvestmentData | undefined;
 }
 
-export function YearlyInvest({data}:YearlyInvestProps) {
-    const chartData = data?.yearlyTotalInvestment?.slice().reverse();
+export function YearlyInvest({ data }: YearlyInvestProps) {
+  const chartData = data?.yearlyTotalInvestment?.slice().reverse();
 
-const chartConfig = {
-  value: {
-    label: "value",
-    color: "hsl(var(--chart-1))",
-  },
-} satisfies ChartConfig
+  const chartConfig = {
+    value: {
+      label: "value",
+      color: "hsl(var(--chart-1))",
+    },
+  } satisfies ChartConfig;
   return (
-    <Card className="rounded-3xl py-5 shadow-lg border-gray-300">
+    <Card className="rounded-3xl py-5 dark:bg-[#232328]">
       <CardContent>
         <ChartContainer config={chartConfig}>
           <AreaChart
@@ -75,7 +75,6 @@ const chartConfig = {
             margin={{
               left: 12,
               right: 12,
-              
             }}
           >
             <CartesianGrid vertical={false} />
@@ -84,13 +83,13 @@ const chartConfig = {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              padding={{left:20}}
+              padding={{ left: 20 }}
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              ticks={[0, 10000, 20000, 30000, 40000]} 
+              ticks={[0, 10000, 20000, 30000, 40000]}
               tickFormatter={(value) => value.toLocaleString()}
             />
             <ChartTooltip
@@ -106,7 +105,7 @@ const chartConfig = {
               strokeWidth={3}
               dot={{
                 fill: "white",
-                r:6
+                r: 6,
               }}
               activeDot={{
                 r: 6,
@@ -115,7 +114,6 @@ const chartConfig = {
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      
     </Card>
-  )
+  );
 }

@@ -9,6 +9,8 @@ require (
 	go.mongodb.org/mongo-driver v1.16.1
 )
 
+require github.com/pkg/errors v0.9.1 // indirect
+
 require (
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect

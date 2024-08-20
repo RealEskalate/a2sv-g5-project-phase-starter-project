@@ -31,6 +31,8 @@ func (cont *LikeController) DeleteLike(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+	requester_id := c.MustGet("id").(uuid.UUID)
+	like.UserID = requester_id
 	err := cont.LikeUseCase.DeleteLike(like)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})

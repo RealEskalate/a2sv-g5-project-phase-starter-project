@@ -97,8 +97,35 @@ func (b *BlogUseCaseImpl) DeleteBlog(ctx context.Context, id, userID string) err
 }
 
 // DeleteComment implements BlogUseCase.
-func (b *BlogUseCaseImpl) DeleteComment(ctx context.Context, id string) error {
-	panic("unimplemented")
+func (b *BlogUseCaseImpl) DeleteComment(ctx context.Context, id, userID string) error {
+	user, err := b.authRepository.GetUserByUsername(ctx, userID) // TODO: Change to GetUserByID
+	if err != nil {
+		return err
+	}
+
+	comment, err := b.blogRepository.GetCommentByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if comment.AuthorID != user.ID {
+		return ErrCommentNotFound
+	}
+
+	err = b.blogRepository.DeleteComment(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	blog, err := b.blogRepository.GetBlogByID(ctx, comment.BlogID)
+	if err != nil {
+		return err
+	}
+
+	blog.DecrementCommentsCount()
+	b.blogRepository.UpdateBlog(ctx, comment.BlogID, blog)
+
+	return nil
 }
 
 // DislikeBlog implements BlogUseCase.

@@ -43,6 +43,13 @@ func (m *MongoCollection) Find(ctx context.Context, filter interface{}, opts ...
 	}
 	return &MongoCursor{Cursor: cursor}, nil
 }
+func (mc *MongoCollection) Aggregate(ctx context.Context, pipeline interface{}) (domain.Cursor, error) {
+	aggregateResult, err := mc.Collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	return &MongoCursor{Cursor: aggregateResult}, err
+}
 
 func (m *MongoCollection) FindOneAndReplace(ctx context.Context, filter, replacement interface{}, opts ...*options.FindOneAndReplaceOptions) domain.SingleResult {
 	result := m.Collection.FindOneAndReplace(ctx, filter, replacement, opts...)
@@ -66,4 +73,3 @@ func (m *MongoCollection) CreateIndex(ctx context.Context, model bson.D, opts ..
 		Keys: model,
 	}
 	return m.Collection.Indexes().CreateOne(ctx, _model, opts...)
-}

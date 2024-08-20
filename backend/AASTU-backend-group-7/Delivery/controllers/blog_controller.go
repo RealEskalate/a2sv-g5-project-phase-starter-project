@@ -3,8 +3,9 @@ package controllers
 import (
 	"blogapp/Domain"
 	"blogapp/Utils"
-	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -42,6 +43,7 @@ func (controller *blogController) CreateBlog(c *gin.Context) {
 	// generate slug
 	newBlogPost.Slug = Utils.GenerateSlug(newBlogPost.Title)
 	//created at and updated at
+	newBlogPost.Tags = []string{}
 	newBlogPost.PublishedAt = time.Now()
 	newBlogPost.UpdatedAt = time.Now()
 
@@ -179,20 +181,25 @@ func (controller *blogController) UpdatePostByID(c *gin.Context) {
 }
 
 func (controller *blogController) GetTags(c *gin.Context) {
-	postID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	// get post id
+	postID, err := primitive.ObjectIDFromHex(c.Param("id")) // convert id to object id
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	tags, err, statusCode := controller.BlogUseCase.GetTags(c, postID)
+
+	// get post by id
+	post, err, statusCode := controller.BlogUseCase.GetPostByID(c, postID)
 	if err != nil {
 		c.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.JSON(200, gin.H{
-		"message": "Tags fetched successfully",
-		"tags":    tags,
+		"message":  "tags fetched successfully",
+		"comments": post.Tags,
 	})
+
 }
 
 func (controller *blogController) GetComments(c *gin.Context) {
@@ -216,10 +223,25 @@ func (controller *blogController) GetComments(c *gin.Context) {
 
 func (controller *blogController) GetAllPosts(c *gin.Context) {
 	queryparams := c.Request.URL.Query()
-	fmt.Println(queryparams)
-	fmt.Println("hehe")
+	filter := Domain.Filter{}
 
-	posts, err, statusCode := controller.BlogUseCase.GetAllPosts(c)
+	// fill in filter values from the request query
+	if len(queryparams) > 0 {
+		filter.Slug = queryparams.Get("slug")
+		filter.AuthorName = queryparams.Get("author_id")
+		filter.Limit, _ = strconv.Atoi(queryparams.Get("limit"))
+		filter.Page, _ = strconv.Atoi(queryparams.Get("page"))
+		filter.Tags = []string{}
+		filter.OrderBy, _ = strconv.Atoi(queryparams.Get("orderBy"))
+		filter.SortBy = queryparams.Get("sortBy")
+	}
+
+	if tags, ok := queryparams["tags"]; ok && len(tags) > 0 {
+		filter.Tags = strings.Split(tags[0], ",") // Splitting by comma to get slice of tags
+	}
+	// fmt.Println(filter.Tags)
+
+	posts, err, statusCode := controller.BlogUseCase.GetAllPosts(c, filter)
 	if err != nil {
 		c.JSON(statusCode, gin.H{"error": err.Error()})
 		return
@@ -229,3 +251,124 @@ func (controller *blogController) GetAllPosts(c *gin.Context) {
 		"posts":   posts,
 	})
 }
+
+func (controller *blogController) AddTagToPost(c *gin.Context) {
+	claims, err := Getclaim(c)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
+	postID, err := primitive.ObjectIDFromHex(c.Param("id")) // convert id to object id
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// get post
+	post, err, statusCode := controller.BlogUseCase.GetPostByID(c, postID)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+
+	// get author id of post
+	authorID := post.AuthorID
+
+	// check if user is author of post
+	isAuthor, err := Utils.IsAuthorOrAdmin(*claims, authorID)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if !isAuthor {
+		c.JSON(401, gin.H{"error": "You are not author of this post"})
+		return
+	}
+
+	var tag Domain.Tag
+	if err := c.ShouldBindJSON(&tag); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	slug := Utils.GenerateSlug(tag.Name)
+
+	err, statusCode = controller.BlogUseCase.AddTagToPost(c, postID, slug)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Tag added successfully",
+	})
+}
+
+func (controller *blogController) LikePost(c *gin.Context) {
+	claims, err := Getclaim(c)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
+	postID, err := primitive.ObjectIDFromHex(c.Param("id")) // convert id to object id
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err, statusCode, message := controller.BlogUseCase.LikePost(c, postID, claims.ID)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": message,
+	})
+}
+
+func (controller *blogController) DislikePost(c *gin.Context) {
+	claims, err := Getclaim(c)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
+	postID, err := primitive.ObjectIDFromHex(c.Param("id")) // convert id to object id
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err, statusCode, message := controller.BlogUseCase.DislikePost(c, postID, claims.ID)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": message,
+	})
+}
+
+func (controller *blogController) SearchPosts(c *gin.Context) {
+	// get search query
+	queryparams := c.Request.URL.Query()
+	searchQuery := queryparams.Get("q")
+
+	posts, err, statusCode := controller.BlogUseCase.SearchPosts(c, searchQuery)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Posts fetched successfully",
+		"posts":   posts,
+	})
+
+}
+
+
+

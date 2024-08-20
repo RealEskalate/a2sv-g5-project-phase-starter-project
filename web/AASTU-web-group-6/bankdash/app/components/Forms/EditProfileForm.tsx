@@ -41,8 +41,8 @@ const EditProfileForm = () => {
   };
 
   return (
-    <div className="content-center w-full flex justify-center gap-x-12 py-4 flex-wrap sm:pt-4 md:pt-8 lg:pt-12 bg-white rounded-lg shadow-md">
-      <div className="flex justify-center  gap-3 w-fit xd:w-full sm:w-fit md:w-fit">
+    <div className="w-full py-8 flex justify-between flex-wrap ">
+      <div className="flex border-2 border-black">
         <div className="relative h-fit flex justify-center">
           <Image
             src="/assets/profile-1.png"
@@ -57,7 +57,7 @@ const EditProfileForm = () => {
         </div>
       </div>
 
-      <form className="mt-8 lg:space-y-6 flex flex-col sm:flex-wrap" onSubmit={handleSubmit(onSubmit)}>
+      <form className="flex flex-col sm:flex-wrap lg:space-y-6 border-2 border-black" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
           <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
             <label htmlFor="name">Your Name</label>
@@ -65,7 +65,7 @@ const EditProfileForm = () => {
               type="text"
               id="name"
               {...register("name")}
-              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              className="sm:w-full md:w-[256px] xl:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
               placeholder="Charlene Reed"
             />
           </div>

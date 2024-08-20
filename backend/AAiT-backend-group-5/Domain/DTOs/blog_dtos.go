@@ -45,8 +45,9 @@ type DeleteBlogRequest struct {
 
 // TrackPopularityRequest represents the payload for tracking blog post popularity
 type TrackPopularityRequest struct {
-	BlogID primitive.ObjectID `json:"blog_id" validate:"required"`
-	Action string             `json:"action" validate:"required"` // like, dislike, view, comment
+	UserID  primitive.ObjectID `bson:"user_id" json:"user_id"`
+	BlogID  primitive.ObjectID `json:"blog_id" validate:"required"`
+	Action  string             `json:"action" validate:"required"`
 }
 
 // TrackPopularityResponse represents the response after tracking blog post popularity

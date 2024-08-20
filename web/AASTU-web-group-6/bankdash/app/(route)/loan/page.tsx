@@ -4,12 +4,11 @@ import { LoanType } from "@/types/LoanValue";
 import Card from "../../components/Accounts/account";
 import loanApi from "@/app/Services/api/loanApi";
 
-const loans: LoanType[] = [];
 
 const Loan = async () => {
-  const accessToken = process.env.NAHOM_TOKEN as string;
-
-  const loanData = await loanApi.getLoan(accessToken);
+  const loanData = await loanApi.getLoan(
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0bmFob20iLCJpYXQiOjE3MjQxNDYwNjgsImV4cCI6MTcyNDIzMjQ2OH0.Y00dc0ACMvkHK5ZYWVsBxK5lk2l5VB_6xnnFAMXrkMjRjl2jxEZHglllGcw_S61p"
+  );
 
   return (
     <div className="px-5 space-y-4 mt-4 w-full h-screen">

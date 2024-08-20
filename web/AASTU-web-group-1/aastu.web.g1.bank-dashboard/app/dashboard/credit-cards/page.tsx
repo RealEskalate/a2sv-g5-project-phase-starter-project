@@ -13,19 +13,22 @@ const CreditCards = () => {
           <h1 className="text-2xl">My Cards</h1>
           <div className="flex flex-row max-y-[200px] overflow-y-auto gap-6 sm:max-x-[500px] md:max-x-[600px]">
             <CreditCard
-              isBlue={true}
+              id="1234"
               balance={5894}
-              creditNumber="3778*** ****1234"
-              name="Eddy Cusuma"
-              textColor="text-white"
+              semiCardNumber="37781234"
+              cardHolder="Ediy Cusuma"
+              expiryDate="2024-08-20T07:06:50.283Z"
+              cardType={"Visa"}
             />
             <CreditCard
-              isBlue={false}
+              id="1234"
               balance={5894}
-              creditNumber="3778*** ****1234"
-              name="Eddy Cusuma"
-              textColor="text-black"
+              semiCardNumber="37781234"
+              cardHolder="Ediy Cusuma"
+              expiryDate="2024-08-20T07:06:50.283Z"
+              cardType={"white"}
             />
+          
             {/* Add more <CreditCard /> components as needed */}
           </div>
         </div>

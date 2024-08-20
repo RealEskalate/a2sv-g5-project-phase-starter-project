@@ -52,18 +52,24 @@ func (ur *userRepository) FindUserByID(c context.Context, id string) (domain.Use
 
 	idHex, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return user, err
+		return domain.User{} , err
 	}
 
 	err = collection.FindOne(c, bson.M{"_id": idHex}).Decode(&user)
-	return user, err
+
+	if err != nil {
+		return domain.User{} , err
+	}
+	
+	return user, nil
+	
 }
 
 // FindUserByUsername implements domain.UserRepository.
 func (ur *userRepository) FindUserByUsername(c context.Context, username string) (domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 	var user domain.User
-	err := collection.FindOne(c, bson.M{"username": user}).Decode(&user)
+	err := collection.FindOne(c, bson.M{"username": username}).Decode(&user)
 	return user, err
 }
 
@@ -73,9 +79,38 @@ func (u *userRepository) ForgotPassword(ctx context.Context, email string, token
 }
 
 // UpdateUser implements domain.UserRepository.
-func (u *userRepository) UpdateUser(ctx context.Context, user domain.User) (domain.User, error) {
-	panic("unimplemented")
+func (ur *userRepository) UpdateUser(ctx context.Context, user domain.User) (domain.User, error) {
+	collection := ur.database.Collection(ur.collection) 
+
+	// changing the id to primitive object type
+	
+	filter := bson.M{"_id": user.ID}       
+	update := bson.M{
+		"$set": bson.M{
+			"full_name":         user.Full_Name,
+			"username":          user.Username,
+			"password":          user.Password,
+			"profile_image_url": user.Profile_image_url,
+			"contact":           user.Contact,
+			"bio":               user.Bio,
+		},
+	}
+
+	_, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	// After updating, fetch the updated user from the database
+	var updatedUser domain.User
+	err = collection.FindOne(ctx, filter).Decode(&updatedUser)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	return updatedUser, nil
 }
+
 
 func (ur *userRepository) AllUsers(c context.Context) ([]domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
@@ -95,4 +130,28 @@ func (ur *userRepository) AllUsers(c context.Context) ([]domain.User, error) {
 	}
 
 	return users, err
+}
+
+
+func (ur *userRepository) PromoteandDemoteUser(c context.Context , id string , role string) (error) {
+	collection := ur.database.Collection(ur.collection)
+
+	idHex, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": idHex}
+	update := bson.M{
+		"$set": bson.M{
+			"role": role,
+		},
+	}
+
+	_, err = collection.UpdateOne(c, filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -38,6 +38,7 @@ type UserRepository interface {
 	DeleteUser(ctx context.Context, id string) error
 	ForgotPassword(ctx context.Context, email string, token string) error
 	AllUsers(c context.Context) ([]User, error) 
+	PromoteandDemoteUser(c context.Context , id string , role string) error
 }
 
 type SignupRepository interface {
@@ -58,13 +59,11 @@ type SignupUseCase interface {
 }
 
 type UserUseCase interface {
-	CreateUser(ctx context.Context, user User) interface{}
-	FindUserByEmail(ctx context.Context, email string) interface{}
-	FindUserByUsername(ctx context.Context, username string) interface{}
-	FindUserByID(ctx context.Context, id string) interface{}
-	UpdateUser(ctx context.Context, user User) interface{}
-	DeleteUser(ctx context.Context, id string) interface{}
-	ForgotPassword(ctx context.Context, email string, token string) interface{}
+	// FindUserByID(ctx context.Context, id string) interface{}
+	UpdateUser(ctx context.Context, user UserUpdateRequest) interface{}
+	// DeleteUser(ctx context.Context, id string) interface{}
+	PromoteandDemoteUser(ctx context.Context, id string, promotion UserPromotionRequest , role string) interface{}
+	
 }
 
 
@@ -72,4 +71,28 @@ type UserUseCase interface {
 
 type UserResponse struct {
 	User   User   `json:"user"`
+}
+
+type UserUpdateRequest struct {
+	ID                string 			 `json:"id"`
+	Full_Name         string 			 `json:"full_name"`
+	Username          string             `json:"username" validate:"required"`
+	Password          string             `json:"password" validate:"required"`
+	Profile_image_url string             `json:"profile_image" `
+	Contact           string             `json:"contact"`
+	Bio               string             `json:"bio"`
+}
+
+type PromotionandDemotion struct {
+	User_id       string 			 `json:"user_id"`
+	Role 		  string 			 `json:"role"`
+}
+
+
+type UserPromotionRequest struct {
+	Action string `json:"action"`
+}
+
+type UserPromotionResponse struct {
+	Message string `json:"message"`
 }

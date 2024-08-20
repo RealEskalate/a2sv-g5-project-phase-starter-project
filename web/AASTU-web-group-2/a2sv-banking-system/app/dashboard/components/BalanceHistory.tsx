@@ -45,7 +45,7 @@ export function BalanceHistory() {
         <div className="w-full">
           <ChartContainer config={chartConfig}>
             <AreaChart
-              width={5}
+              width={500}
               height={300}
               data={chartData}
               className="aspect-square h-60 w-full max-w-[300px]" // Ensure full width within a max limit

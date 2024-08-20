@@ -1,7 +1,31 @@
+'use client'
 import React from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from "next/navigation";
 import InformationCard from './components/InformationCard'
 import BankServiceList from './components/BankServiceList'
-const page = () => {
+import { getSession } from 'next-auth/react';
+const Page = () => {
+  const [session, setSession] = useState(false);
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = await getSession();
+      if (sessionData?.user) {
+        console.log("Session Available");
+        setSession(true);
+      }
+    };
+
+    fetchSession();
+  }, []);
+  // getting the session ends here
+  const router = useRouter();
+    
+  if (!session){
+    router.push('./api/auth/signin');
+    
+    return;
+  }
   return (
     <div className='flex-col bg-[#f5f7fa]'>
       <div className='flex mx-5 my-4 rounded-3xl gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden'>
@@ -171,4 +195,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

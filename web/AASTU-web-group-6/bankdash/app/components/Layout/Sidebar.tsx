@@ -25,7 +25,10 @@ const Sidebar = ({
 
   // Memoizing the isActive function to prevent unnecessary recalculations
   const isActive = useMemo(
-    () => (path: string) => pathname === path,
+    () => (path: string, additionalPaths: string[] = []) => {
+      if (pathname === path) return true;
+      return additionalPaths.some((additionalPath) => pathname === additionalPath);
+    },
     [pathname]
   );
 
@@ -74,10 +77,21 @@ const Sidebar = ({
     },
 
     {
+      label: "My Privileges",
+      url: "/privilages",
+      icon: "/assets/privi-icon.svg",
+      active: "/assets/privi-icon-active.svg",
+    },
+    {
       label: "Settings",
-      url: "/setting",
+      url: "/settings/editprofile",
       icon: "/assets/setting-icon.svg",
       active: "/assets/setting-icon-active.svg",
+      additionalActivePaths: [
+        "/settings/editprofile",
+        "/settings/preference",
+        "/settings/security",
+      ],
     },
     {
       label: "LogOut",
@@ -125,11 +139,17 @@ const Sidebar = ({
           >
             <div
               className={`${
-                isActive(item.url) ? "visible" : "hidden"
+                isActive(item.url, item.additionalActivePaths || [])
+                  ? "visible"
+                  : "hidden"
               } flex w-6 h-[45px] rounded-[32px] bg-[#1814F3] absolute left-[-60px]`}
             ></div>
             <Image
-              src={isActive(item.url) ? item.active : item.icon}
+              src={
+                isActive(item.url, item.additionalActivePaths || [])
+                  ? item.active
+                  : item.icon
+              }
               alt={item.label}
               width={20}
               height={20}

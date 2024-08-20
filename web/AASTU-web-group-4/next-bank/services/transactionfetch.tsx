@@ -1,9 +1,14 @@
-const API_BASE_URL = 'https://your-api-domain.com';
+const API_BASE_URL = "https://bank-dashboard-6acc.onrender.com";
+const token = 
+  "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJheXV1IiwiaWF0IjoxNzI0MTQ5MzgyLCJleHAiOjE3MjQyMzU3ODJ9.ho0P9ZYtpOiDLT810v9r_YAMUwb865p4O4iXIWu0H5ujqjdxbLI_K6lH4m_YOxPm";
 
 // GET /transactions
 export const getAllTransactions = async () => {
-  const response = await fetch(`${API_BASE_URL}/transactions`, {
+  const response = await fetch(`${API_BASE_URL}/transactions?page=${0}&size=${5}`, {
     method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
   return response.json();
 };

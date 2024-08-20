@@ -1,7 +1,7 @@
 package user_controller
 
 import (
-	"blog-api/domain/user"
+	"blog-api/domain"
 
 	"net/http"
 
@@ -9,8 +9,8 @@ import (
 )
 
 func (uc *UserController) PromoteDemoteController(c *gin.Context) {
-	var request user.PromoteDemoteRequest
-	var user_ user.User
+	var request domain.PromoteDemoteRequest
+	var user_ domain.User
 
 	if err := c.ShouldBind(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

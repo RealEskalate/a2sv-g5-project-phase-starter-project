@@ -1,7 +1,7 @@
 package blog_repository
 
 import (
-	domain "blog-api/domain/blog"
+	"blog-api/domain"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"

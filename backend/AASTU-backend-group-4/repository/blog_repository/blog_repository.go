@@ -1,7 +1,7 @@
 package blog_repository
 
 import (
-	domain "blog-api/domain/blog"
+	"blog-api/domain"
 	"blog-api/mongo"
 	"context"
 
@@ -20,9 +20,9 @@ func NewBlogRepository(collection mongo.Collection) domain.BlogRepository {
 }
 
 func (br *BlogRepository) GetBlog(ctx context.Context, blogID primitive.ObjectID) (*domain.Blog, error) {
-	var b domain.Blog
+	var blog domain.Blog
 	filter := bson.M{"_id": blogID}
 
-	err := br.collection.FindOne(ctx, filter).Decode(&b)
-	return &b, err
+	err := br.collection.FindOne(ctx, filter).Decode(&blog)
+	return &blog, err
 }

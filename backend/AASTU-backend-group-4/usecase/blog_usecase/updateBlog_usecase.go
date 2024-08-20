@@ -1,7 +1,7 @@
 package blog_usecase
 
 import (
-	domain "blog-api/domain/blog"
+	"blog-api/domain"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -11,7 +11,7 @@ func (bu *BlogUsecase) UpdateBlog(ctx context.Context, blogID primitive.ObjectID
 	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
 	defer cancel()
 
-	err := bu.repo.UpdateBlog(ctx, blogID, updatedBlog)
+	err := bu.blogRepo.UpdateBlog(ctx, blogID, updatedBlog)
 	if err != nil {
 		return err
 	}

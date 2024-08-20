@@ -3,10 +3,10 @@ package user_usecase
 import (
 	"context"
 
-	"blog-api/domain/user"
+	"blog-api/domain"
 )
 
-func (u *UserUsecase) SignupUsecase(ctx context.Context, user *user.User) error {
+func (u *UserUsecase) SignupUsecase(ctx context.Context, user *domain.User) error {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 

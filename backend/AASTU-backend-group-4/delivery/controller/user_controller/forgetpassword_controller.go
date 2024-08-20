@@ -1,14 +1,14 @@
 package user_controller
 
 import (
-	"blog-api/domain/user"
+	"blog-api/domain"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func (uc *UserController) ForgotPasswordController(c *gin.Context) {
-	var request user.ForgotPasswordRequest
+	var request domain.ForgotPasswordRequest
 
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})

@@ -1,7 +1,7 @@
 package user_repository
 
 import (
-	"blog-api/domain/user"
+	"blog-api/domain"
 	"blog-api/mongo"
 	"context"
 
@@ -9,29 +9,26 @@ import (
 )
 
 type UserRepository struct {
-	database   mongo.Database
-	collection string
+	collection mongo.Collection
 }
 
-func NewUserRepository(db mongo.Database, collection string) *UserRepository {
+func NewUserRepository(collection mongo.Collection) *UserRepository {
 	return &UserRepository{
-		database:   db,
 		collection: collection,
 	}
 }
 
-func (ur *UserRepository) GetByEmail(ctx context.Context, email string) (user.User, error) {
-	var u user.User
-	collection := ur.database.Collection(ur.collection)
+func (ur *UserRepository) GetByEmail(ctx context.Context, email string) (domain.User, error) {
+	var u domain.User
 	filter := bson.M{"email": email}
-	err := collection.FindOne(ctx, filter).Decode(&u)
+	err := ur.collection.FindOne(ctx, filter).Decode(&u)
 	return u, err
 }
 
-func (ur *UserRepository) GetByUsername(ctx context.Context, username string) (user.User, error) {
-	var u user.User
-	collection := ur.database.Collection(ur.collection)
+func (ur *UserRepository) GetByUsername(ctx context.Context, username string) (domain.User, error) {
+	var u domain.User
+
 	filter := bson.M{"username": username}
-	err := collection.FindOne(ctx, filter).Decode(&u)
+	err := ur.collection.FindOne(ctx, filter).Decode(&u)
 	return u, err
 }

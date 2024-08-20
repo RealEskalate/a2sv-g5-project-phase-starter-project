@@ -1,15 +1,14 @@
 package user_repository
 
 import (
-	"blog-api/domain/user"
+	"blog-api/domain"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (ur *UserRepository) UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *user.UpdateRequest) error {
-	collection := ur.database.Collection(ur.collection)
+func (ur *UserRepository) UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *domain.UpdateRequest) error {
 	filter := bson.M{"_id": userID}
 
 	update := bson.M{
@@ -23,6 +22,6 @@ func (ur *UserRepository) UpdateUser(ctx context.Context, userID primitive.Objec
 		},
 	}
 
-	_, err := collection.UpdateOne(ctx, filter, update)
+	_, err := ur.collection.UpdateOne(ctx, filter, update)
 	return err
 }

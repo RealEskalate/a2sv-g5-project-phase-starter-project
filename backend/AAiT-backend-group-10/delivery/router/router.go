@@ -18,11 +18,9 @@ func NewRouter(db *mongo.Database) {
 
 	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
 
-	jwtService := infrastructures.Jwt{JwtSecret: os.Getenv("jwtSecret")}
+	jwt := infrastructures.Jwt{JwtSecret: os.Getenv("jwtSecret")}
 	pwdService := infrastructures.PwdService{}
 	emailService := infrastructures.EmailService{}
-
-	UserRepo := repositories.NewUserRepositoryMongo(db, os.Getenv("USER_COLLECTION"))
 
 	blogRepo := repositories.NewBlogRepository(db, os.Getenv("BLOG_COLLECTION"))
 	blogUseCase := usecases.NewBlogUseCase(blogRepo, userRepo)
@@ -38,7 +36,7 @@ func NewRouter(db *mongo.Database) {
 		LikeUseCase: usecases.NewLikeUseCase(likeRepo),
 	}
 
-	authUsecases := usecases.NewAuthUsecase(UserRepo, jwtService, pwdService, emailService)
+	authUsecases := usecases.NewAuthUsecase(userRepo, jwt, pwdService, emailService)
 	authController := controllers.NewAuthController(authUsecases)
 
 	userUseCase := usecases.NewUserUseCase(userRepo)
@@ -70,7 +68,7 @@ func NewRouter(db *mongo.Database) {
 	router.POST("/refresh-token", authController.RefreshToken)
 	router.POST("/forgot-password", authController.ForgotPassword)
 	router.POST("/reset-password", authController.ResetPassword)
-	
+
 	port := os.Getenv("PORT")
 	router.Run(":" + port)
 }

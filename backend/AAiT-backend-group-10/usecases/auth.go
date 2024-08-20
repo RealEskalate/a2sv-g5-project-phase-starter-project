@@ -22,13 +22,13 @@ type IAuthUsecase interface {
 }
 
 type AuthUsecase struct {
-	userRepository interfaces.UserRepositoryInterface
+	userRepository interfaces.IUserRepository
 	jwtService     infrastructures.Jwt
 	pwdService     infrastructures.PwdService
 	emailService   infrastructures.EmailService
 }
 
-func NewAuthUsecase(ur interfaces.UserRepositoryInterface, jwt infrastructures.Jwt, pwdService infrastructures.PwdService, emailService infrastructures.EmailService) IAuthUsecase {
+func NewAuthUsecase(ur interfaces.IUserRepository, jwt infrastructures.Jwt, pwdService infrastructures.PwdService, emailService infrastructures.EmailService) IAuthUsecase {
 	return &AuthUsecase{
 		userRepository: ur,
 		jwtService:     jwt,
@@ -51,7 +51,7 @@ func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, erro
 		FullName:  User.FullName,
 		Email:     User.Email,
 		Bio:       User.Bio,
-		ID:        uuid.NewString(),
+		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		Password:  hashedPassword,
@@ -94,7 +94,7 @@ func (uc *AuthUsecase) LoginUser(loginUser *dto.LoginUserDTO) (*dto.TokenRespons
 	// Store refresh token in the database
 	user.RefreshToken = refreshToken
 	user.AccessToken = accessToken
-	err = uc.userRepository.UpdateUser(user)
+	err = uc.userRepository.UpdateUserToken(user)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func (uc *AuthUsecase) RefreshTokens(refreshToken string) (*dto.TokenResponseDTO
 	// Update the user's refresh token
 	user.AccessToken = accessToken
 	user.RefreshToken = refreshToken
-	err = uc.userRepository.UpdateUser(user)
+	err = uc.userRepository.UpdateUserToken(user)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +173,7 @@ func (uc *AuthUsecase) ForgotPassword(dto *dto.ForgotPasswordRequestDTO) error {
 
 	user.ResetCode = randomNumber
 	user.ResetToken = resetToken
-	err = uc.userRepository.UpdateUser(user)
+	err = uc.userRepository.UpdateUserToken(user)
 	if err != nil {
 		return err
 	}
@@ -215,5 +215,5 @@ func (uc *AuthUsecase) ResetPassword(dto *dto.ResetPasswordRequestDTO) error {
 	user.ResetCode = 0
 	user.ResetToken = ""
 	user.Password = string(hashedPassword)
-	return uc.userRepository.UpdateUser(user)
+	return uc.userRepository.UpdateUserToken(user)
 }

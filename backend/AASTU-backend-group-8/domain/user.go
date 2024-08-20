@@ -37,6 +37,7 @@ type UserUsecaseInterface interface {
 	GetUserByEmail(email *string) (*User, error)
 	Register(user *User) error
 	Login(user *AuthUser) (string, string, error)
+	LoginWithProvider(user *User) (string, string, error)
 	DeleteRefreshToken(userID primitive.ObjectID) error // Fixed typo here
 	GetProfile(objectID primitive.ObjectID) (*Profile, error)
 	UpdateProfile(objectID primitive.ObjectID, user *Profile) (*Profile, error)

@@ -1,28 +1,34 @@
 package routers
 
-// import (
-// 	"group3-blogApi/delivery/controllers/adminController"
-// 	"group3-blogApi/delivery/controllers/authController"
+import (
+	"group3-blogApi/config/db"
+	"group3-blogApi/delivery/controllers"
+	"group3-blogApi/infrastracture"
+	"group3-blogApi/repository"
+	"group3-blogApi/usecase"
 
-// 	"github.com/gin-gonic/gin"
-// )
+	"github.com/gin-gonic/gin"
+)
 
-// func SetUpAdmin(router *gin.Engine) {
-// 	admin := router.Group("/admin")
-// 	{
-// 		// Admin Routes
-// 		admin.GET("/profile", authMiddleware, adminController.Profile)
-// 		admin.PUT("/update", authMiddleware, adminController.Update)
-// 		admin.POST("/upload-image", authMiddleware, adminController.UploadImage)
-// 		admin.POST("/logout", authMiddleware, authController.Logout)
-// 		admin.POST("/reset-password", authMiddleware, authController.ResetPassword)
-// 		admin.POST("/refresh-token", authController.RefreshToken)
+func SetUpAdmin(router *gin.Engine) {
+	userRepo := repository.NewUserRepositoryImpl(db.UserCollection)
+    userUsecase := usecase.NewUserUsecase(userRepo)
+    adminController := controllers.NewUserController(userUsecase)
+	admin := router.Group("/admin")
+	admin.Use(infrastracture.AuthMiddleware())
+	{
+		// Admin Routes
+		admin.GET("/me",infrastracture.RoleMiddleware("admin"), adminController.GetMyProfile)
+		admin.PUT("/update",infrastracture.RoleMiddleware("admin"), adminController.UpdateMyProfile)
+		admin.POST("/upload-image", infrastracture.RoleMiddleware("admin"),adminController.UploadImage)
+		admin.DELETE("/me", infrastracture.RoleMiddleware("admin"), adminController.DeleteMyAccount)
 
-// 		// User Routes
-// 		admin.GET("/users", authMiddleware, adminController.GetUsers)
-// 		admin.GET("/users/:id", authMiddleware, adminController.GetUser)
-// 		admin.DELETE("/users/:id", authMiddleware, adminController.DeleteUser)
-// 		admin.PUT("/users/:id/role", authMiddleware, adminController.UpdateUserRole)
+
+		// User Routes
+		admin.GET("/users",infrastracture.RoleMiddleware("admin") ,adminController.GetUsers)
+		admin.GET("/users/:id",  infrastracture.RoleMiddleware("admin"),adminController.GetUser)
+		admin.DELETE("/users/:id",  infrastracture.RoleMiddleware("admin"),adminController.DeleteUser)
+		admin.PUT("/users/:id",  infrastracture.RoleMiddleware("admin"),adminController.UpdateUserRole)
 
 // 		// Blog Routes
 // 		admin.GET("/blogs", authMiddleware, adminController.GetBlogs)
@@ -32,5 +38,5 @@ package routers
 // 		admin.DELETE("/blogs/:id", authMiddleware, adminController.DeleteBlog)
 // 		admin.PUT("/blogs/:id/visibility", authMiddleware, adminController.UpdateBlogVisibility)
 
-// 	}
-// }
+	}
+}

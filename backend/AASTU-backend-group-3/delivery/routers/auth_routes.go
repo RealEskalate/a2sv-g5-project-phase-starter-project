@@ -9,7 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetUpAuth(router *gin.Engine) {	
+
+
+func SetUpAuth(router *gin.Engine) {
 
 
 	userRepo := repository.NewUserRepositoryImpl(db.UserCollection)
@@ -21,8 +23,17 @@ func SetUpAuth(router *gin.Engine) {
 		auth.POST("/login", authController.Login)
 		auth.POST("/register", authController.Register)
 		auth.GET("/activate", authController.ActivateAccount)
-		// auth.POST("/continueWithGoogle", authController.continueWithGoogle)
 
 
+		// OAuth``
+		auth.GET("/login/google", authController.HandleGoogleLogin)
+		auth.GET("/callback", authController.HandleGoogleCallback)
+
+
+
+
+		// reset password
+		auth.POST("/reset-password", authController.SendPasswordResetLink)
+		auth.POST("/reset-password/:token", authController.ResetPassword)
 	}
 }

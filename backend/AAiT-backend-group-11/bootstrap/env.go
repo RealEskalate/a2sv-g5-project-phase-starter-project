@@ -21,6 +21,7 @@ type Env struct {
 	RefreshTokenExpiryHour      int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
 	AccessTokenSecret           string `mapstructure:"ACCESS_TOKEN_SECRET"`
 	RefreshTokenSecret          string `mapstructure:"REFRESH_TOKEN_SECRET"`
+	GeminiApiKey 				string `mapstructure:"GEMINI_API_KEY"`
 }
 
 // NewEnv initializes and returns a new instance of the Env struct.

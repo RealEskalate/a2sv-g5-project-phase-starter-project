@@ -6,7 +6,7 @@ interface LastTransData {
   senderUserName: string;
   description: string;
   date: string;
-  amount: number;
+  amount: string;
   receiverUserName: string;
 }
 
@@ -20,9 +20,9 @@ const LastTrans = ({
   senderUserName,
 }: LastTransData) => {
   let amountStr = amount?.toLocaleString();
-  let amount_str = "";
-  if (amount < 0) {
-    amount_str = `-$${amountStr.slice(1)}`;
+  let amount_str = ""
+  if (amount.startsWith('-')) {
+     amount_str = `-$${amountStr.slice(1)}`; 
   } else {
     amount_str = `+$${amountStr}`;
   }
@@ -48,33 +48,33 @@ const LastTrans = ({
   }
 
   return (
-    <div className="flex gap-10 items-center mb-5 pl-4">
+    <div className="flex gap-6 lg:gap-10 items-center mb-5  ">
       <div
         className="border border-solid rounded-2xl w-[55px] h-[55px] flex justify-center items-center"
         style={{ borderColor: color, backgroundColor: color }}
       >
         <img src={icon} />
       </div>
-      <div className="flex flex-col w-[25%]">
-        <p className="font-inter font-medium text-base text-[#232323] dark:text-gray-300">
+      <div className="flex flex-col w-[70%] lg:w-[25%]">
+        <p className="font-inter font-medium lg:text-[12px] xl:text-base text-[#232323] dark:text-gray-300">
           {description}
         </p>
-        <p className="font-inter font-normal text-[15px] text-[#718EBF] dark:text-gray-400">
+        <p className="font-inter font-normal lg:text-[12px] xl:text-[15px] text-[#718EBF] dark:text-gray-400">
           {date}
         </p>
       </div>
 
-      <p className="hidden lg:block font-inter font-normal text-base text-[#718EBF] dark:text-gray-300 w-[15%]">
+      <p className="hidden lg:block font-inter font-normal lg:text-[12px] xl:text-base text-[#718EBF] dark:text-gray-300 w-[10%]">
         {type}
       </p>
-      <p className="hidden lg:block font-inter font-normal text-base text-[#718EBF] dark:text-gray-300 w-[10%]">
+      <p className="hidden lg:block font-inter font-normal lg:text-[12px] xl:text-base text-[#718EBF] dark:text-gray-300 w-[10%]">
         123***
       </p>
-      <p className="hidden lg:block font-inter font-normal text-base text-[#718EBF] dark:text-gray-200w-[10%]">
+      <p className="hidden lg:block font-inter font-normal lg:text-[12px] xl:text-base text-[#718EBF] dark:text-gray-200w-[15%]">
         completed
       </p>
 
-      <p className={`font-inter font-medium text-base ${textColor}`}>
+      <p className={`font-inter font-medium lg:text-[12px] xl:text-base ${textColor} `}>
         {amount_str}
       </p>
     </div>

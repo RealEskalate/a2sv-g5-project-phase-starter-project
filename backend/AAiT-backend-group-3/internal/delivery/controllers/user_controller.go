@@ -1,9 +1,11 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	"AAIT-backend-group-3/internal/usecases"
 	"AAIT-backend-group-3/internal/domain/models"
+	"AAIT-backend-group-3/internal/usecases"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 
@@ -11,12 +13,11 @@ type UserController struct {
 	user_usecase *usecases.UserUsecase
 }
 
-func NewController(u *usecases.UserUsecase) *UserController{
+func NewUserController(u *usecases.UserUsecase) *UserController{
 	return &UserController{
 		user_usecase: u,
 	}
 }
-
 
 func (usecases *UserController) Register(c *gin.Context) {
 	var user *models.User
@@ -60,8 +61,8 @@ func (usecases *UserController) RefreshToken(c *gin.Context) {
         c.JSON(400, gin.H{"error": "Refresh token is required"})
         return
     }
-
-    newAccessToken, err := usecases.user_usecase.RefreshToken(userID.(string), request.RefreshToken)
+	user_id := userID.(primitive.ObjectID)
+    newAccessToken, err := usecases.user_usecase.RefreshToken(user_id, request.RefreshToken)
     if err != nil {
         c.JSON(401, gin.H{"error": err.Error()})
         return

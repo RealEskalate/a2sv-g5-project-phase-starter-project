@@ -2,6 +2,7 @@ package Repositories
 
 import (
 	ps "blogapp/Infrastructure/password_services"
+	"sync"
 
 	"blogapp/Domain"
 	"context"
@@ -21,6 +22,7 @@ type userRepository struct {
 	validator       *validator.Validate
 	collection      Domain.Collection
 	TokenRepository Domain.RefreshRepository
+	mu              sync.RWMutex
 }
 
 func NewUserRepository(_collection Domain.Collection, token_collection Domain.Collection) *userRepository {
@@ -28,16 +30,24 @@ func NewUserRepository(_collection Domain.Collection, token_collection Domain.Co
 		validator:       validator.New(),
 		collection:      _collection,
 		TokenRepository: NewRefreshRepository(token_collection),
+		mu:              sync.RWMutex{},
 	}
 
 }
 
 // create user
-func (as *userRepository) CreateUser(ctx context.Context, user *Domain.User) (Domain.OmitedUser, error, int) {
+func (us *userRepository) CreateUser(ctx context.Context, user *Domain.User) (Domain.OmitedUser, error, int) {
+	us.mu.RLock()
+	defer us.mu.RUnlock()
+	_, err := us.collection.CreateIndex(ctx, bson.D{{"email", 1}})
+	if err != nil {
+		fmt.Println(err)
+		return Domain.OmitedUser{}, err, 500
+	}
 
 	// Check if user email is taken
 	existingUserFilter := bson.D{{"email", user.Email}}
-	existingUserCount, err := as.collection.CountDocuments(ctx, existingUserFilter)
+	existingUserCount, err := us.collection.CountDocuments(ctx, existingUserFilter)
 	if err != nil {
 		return Domain.OmitedUser{}, err, 500
 	}
@@ -50,13 +60,13 @@ func (as *userRepository) CreateUser(ctx context.Context, user *Domain.User) (Do
 		return Domain.OmitedUser{}, err, 500
 	}
 	user.Password = string(hashedPassword)
-	insertResult, err := as.collection.InsertOne(ctx, user)
+	insertResult, err := us.collection.InsertOne(ctx, user)
 	if err != nil {
 		return Domain.OmitedUser{}, err, 500
 	}
 	// Fetch the inserted task
 	var fetched Domain.OmitedUser
-	err = as.collection.FindOne(context.TODO(), bson.D{{"_id", insertResult.InsertedID.(primitive.ObjectID)}}).Decode(&fetched)
+	err = us.collection.FindOne(context.TODO(), bson.D{{"_id", insertResult.InsertedID.(primitive.ObjectID)}}).Decode(&fetched)
 	if err != nil {
 		fmt.Println(err)
 		return Domain.OmitedUser{}, errors.New("User Not Created"), 500
@@ -70,8 +80,15 @@ func (as *userRepository) CreateUser(ctx context.Context, user *Domain.User) (Do
 
 // get all users
 func (us *userRepository) GetUsers(ctx context.Context) ([]*Domain.OmitedUser, error, int) {
-	// us.mu.RLock()
-	// defer us.mu.RUnlock()
+	us.mu.RLock()
+	defer us.mu.RUnlock()
+	var results []*Domain.OmitedUser
+
+	_, err := us.collection.CreateIndex(ctx, bson.D{{"_id", 1}})
+	if err != nil {
+		fmt.Println(err)
+		return results, err, 500
+	}
 
 	// Pass these options to the Find method
 	findOptions := options.Find()
@@ -79,9 +96,8 @@ func (us *userRepository) GetUsers(ctx context.Context) ([]*Domain.OmitedUser, e
 	filter := bson.D{{}}
 
 	// Here's an array in which you can store the decoded documents
-	var results []*Domain.OmitedUser
 
-	// Passing bson.D{{}} as the filter matches all documents in the collection
+	// Passing bson.D{{}} us the filter matches all documents in the collection
 	cur, err := us.collection.Find(ctx, filter, findOptions)
 	if err != nil {
 		log.Fatal("error in finding users", err)
@@ -121,11 +137,18 @@ func (us *userRepository) GetUsers(ctx context.Context) ([]*Domain.OmitedUser, e
 
 // get user by id
 func (us *userRepository) GetUsersById(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
+	us.mu.RLock()
+	defer us.mu.RUnlock()
+	_, err := us.collection.CreateIndex(ctx, bson.D{{"_id", 1}})
+	if err != nil {
+		fmt.Println(err)
+		return Domain.OmitedUser{}, err, 500
+	}
 
 	var filter bson.D
 	filter = bson.D{{"_id", id}}
 	var result Domain.OmitedUser
-	err := us.collection.FindOne(ctx, filter).Decode(&result)
+	err = us.collection.FindOne(ctx, filter).Decode(&result)
 	// # handel this later
 	if err != nil {
 		return Domain.OmitedUser{}, errors.New("User not found"), http.StatusNotFound
@@ -138,7 +161,15 @@ func (us *userRepository) GetUsersById(ctx context.Context, id primitive.ObjectI
 }
 
 // update user by id
+// uncessesary route should be removed
 func (us *userRepository) UpdateUsersById(ctx context.Context, id primitive.ObjectID, user Domain.User, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
+	us.mu.RLock()
+	defer us.mu.RUnlock()
+	_, err := us.collection.CreateIndex(ctx, bson.D{{"_id", 1}})
+	if err != nil {
+		fmt.Println(err)
+		return Domain.OmitedUser{}, err, 500
+	}
 	if current_user.ID != id {
 		return Domain.OmitedUser{}, errors.New("permission denied"), http.StatusForbidden
 	}
@@ -146,15 +177,13 @@ func (us *userRepository) UpdateUsersById(ctx context.Context, id primitive.Obje
 	statusCode := 200
 
 	// Retrieve the existing user
-	NewUser, err, statusCode := us.GetUsersById(ctx, id, current_user)
+	NewUser, err, statusCode = us.GetUsersById(ctx, id, current_user)
 	if err != nil {
 		return Domain.OmitedUser{}, err, 500
 	}
 
 	// Update only the specified fields
-	if user.Email != "" {
-		NewUser.Email = user.Email
-	}
+
 	if user.UserName != "" {
 		NewUser.UserName = user.UserName
 	}
@@ -169,6 +198,9 @@ func (us *userRepository) UpdateUsersById(ctx context.Context, id primitive.Obje
 	}
 	if user.Bio != "" {
 		NewUser.Bio = user.Bio
+	}
+	if user.Name != "" {
+		NewUser.Name = user.Name
 	}
 	if !user.CreatedAt.IsZero() {
 		NewUser.CreatedAt = user.CreatedAt
@@ -207,6 +239,13 @@ func (us *userRepository) UpdateUsersById(ctx context.Context, id primitive.Obje
 
 // delete user by id
 func (us *userRepository) DeleteUsersById(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (error, int) {
+	us.mu.RLock()
+	defer us.mu.RUnlock()
+	_, err := us.collection.CreateIndex(ctx, bson.D{{"_id", 1}})
+	if err != nil {
+		fmt.Println(err)
+		return err, 500
+	}
 
 	filter := bson.D{{"_id", id}}
 	if current_user.Role == "user" && current_user.ID != id {
@@ -233,6 +272,13 @@ func (us *userRepository) DeleteUsersById(ctx context.Context, id primitive.Obje
 }
 
 func (us *userRepository) PromoteUser(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
+	us.mu.RLock()
+	defer us.mu.RUnlock()
+	_, err := us.collection.CreateIndex(ctx, bson.D{{"_id", 1}})
+	if err != nil {
+		fmt.Println(err)
+		return Domain.OmitedUser{}, err, 500
+	}
 	if current_user.Role != "admin" || current_user.ID == id {
 		return Domain.OmitedUser{}, errors.New("permission denied"), http.StatusForbidden
 	}
@@ -260,6 +306,13 @@ func (us *userRepository) PromoteUser(ctx context.Context, id primitive.ObjectID
 }
 
 func (us *userRepository) DemoteUser(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
+	us.mu.RLock()
+	defer us.mu.RUnlock()
+	_, err := us.collection.CreateIndex(ctx, bson.D{{"_", 1}})
+	if err != nil {
+		fmt.Println(err)
+		return Domain.OmitedUser{}, err, 500
+	}
 	if current_user.Role != "admin" || current_user.ID == id {
 		return Domain.OmitedUser{}, errors.New("permission denied"), http.StatusForbidden
 	}
@@ -287,6 +340,13 @@ func (us *userRepository) DemoteUser(ctx context.Context, id primitive.ObjectID,
 }
 
 func (us *userRepository) ChangePassByEmail(ctx context.Context, email string, password string) (Domain.OmitedUser, error, int) {
+	us.mu.RLock()
+	defer us.mu.RUnlock()
+	_, err := us.collection.CreateIndex(ctx, bson.D{{"email", 1}})
+	if err != nil {
+		fmt.Println(err)
+		return Domain.OmitedUser{}, err, 500
+	}
 	statusCode := 200
 	filter := bson.D{{"email", email}}
 	update := bson.D{
@@ -312,9 +372,16 @@ func (us *userRepository) ChangePassByEmail(ctx context.Context, email string, p
 
 // find by email
 func (us *userRepository) FindByEmail(ctx context.Context, email string) (Domain.OmitedUser, error, int) {
+	us.mu.RLock()
+	defer us.mu.RUnlock()
+	_, err := us.collection.CreateIndex(ctx, bson.D{{"email", 1}})
+	if err != nil {
+		fmt.Println(err)
+		return Domain.OmitedUser{}, err, 500
+	}
 	filter := bson.D{{"email", email}}
 	var result Domain.OmitedUser
-	err := us.collection.FindOne(ctx, filter).Decode(&result)
+	err = us.collection.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
 		fmt.Println(err)
 		return Domain.OmitedUser{}, err, 500

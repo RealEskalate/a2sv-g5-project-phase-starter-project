@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sync"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -18,6 +19,7 @@ type profileRepository struct {
 	validator       *validator.Validate
 	collection      Domain.Collection
 	TokenRepository Domain.RefreshRepository
+	mu              sync.RWMutex
 }
 
 func NewProfileRepository(_collection Domain.Collection, token_collection Domain.Collection) *profileRepository {
@@ -26,12 +28,20 @@ func NewProfileRepository(_collection Domain.Collection, token_collection Domain
 
 		collection:      _collection,
 		TokenRepository: NewRefreshRepository(token_collection),
+		mu:              sync.RWMutex{},
 	}
 
 }
 
 // get user by id
 func (ps *profileRepository) GetProfile(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
+	ps.mu.RLock()
+	defer ps.mu.RUnlock()
+	_, err := ps.collection.CreateIndex(ctx, bson.D{{"_id", 1}})
+	if err != nil {
+		fmt.Println(err)
+		return Domain.OmitedUser{}, err, 500
+	}
 	if current_user.ID != id {
 		return Domain.OmitedUser{}, errors.New("permission denied"), http.StatusForbidden
 	}
@@ -39,7 +49,7 @@ func (ps *profileRepository) GetProfile(ctx context.Context, id primitive.Object
 	var filter bson.D
 	filter = bson.D{{"_id", id}}
 	var result Domain.OmitedUser
-	err := ps.collection.FindOne(ctx, filter).Decode(&result)
+	err = ps.collection.FindOne(ctx, filter).Decode(&result)
 	// # handel this later
 	if err != nil {
 		return Domain.OmitedUser{}, errors.New("User not found"), http.StatusNotFound
@@ -49,6 +59,13 @@ func (ps *profileRepository) GetProfile(ctx context.Context, id primitive.Object
 
 // update user by id
 func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.ObjectID, user Domain.User, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
+	ps.mu.RLock()
+	defer ps.mu.RUnlock()
+	_, err := ps.collection.CreateIndex(ctx, bson.D{{"_id", 1}})
+	if err != nil {
+		fmt.Println(err)
+		return Domain.OmitedUser{}, err, 500
+	}
 	if current_user.ID != id {
 		return Domain.OmitedUser{}, errors.New("permission denied"), http.StatusForbidden
 	}
@@ -56,15 +73,12 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 	statusCode := 200
 
 	// Retrieve the existing user
-	NewUser, err, statusCode := ps.GetProfile(ctx, id, current_user)
+	NewUser, err, statusCode = ps.GetProfile(ctx, id, current_user)
 	if err != nil {
 		return Domain.OmitedUser{}, err, 500
 	}
 
 	// Update only the specified fields
-	if user.Email != "" {
-		NewUser.Email = user.Email
-	}
 	if user.UserName != "" {
 		NewUser.UserName = user.UserName
 	}
@@ -87,6 +101,9 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 	}
 	if user.Bio != "" {
 		NewUser.Bio = user.Bio
+	}
+	if user.Name != "" {
+		NewUser.Name = user.Name
 	}
 	if !user.CreatedAt.IsZero() {
 		NewUser.CreatedAt = user.CreatedAt
@@ -125,6 +142,13 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 
 // delete user by id
 func (ps *profileRepository) DeleteProfile(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (error, int) {
+	ps.mu.RLock()
+	defer ps.mu.RUnlock()
+	_, err := ps.collection.CreateIndex(ctx, bson.D{{"_id", 1}})
+	if err != nil {
+		fmt.Println(err)
+		return err, 500
+	}
 
 	filter := bson.D{{"_id", id}}
 	if current_user.ID != id {

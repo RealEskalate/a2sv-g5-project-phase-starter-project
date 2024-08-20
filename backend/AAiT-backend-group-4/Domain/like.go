@@ -28,4 +28,5 @@ type LikeUsecase interface {
 	Dislike(c context.Context, userID string, blogID string) error
 	GetLikesByUser(c context.Context, userID string) error
 	GetLikesByBlog(c context.Context, blogID string) error
+	GetLikeByID(c context.Context, likeID string) (Like, error)
 }

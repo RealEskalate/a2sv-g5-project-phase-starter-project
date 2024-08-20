@@ -6,6 +6,7 @@ import (
 )
 
 type CommentRepositoryInterface interface {
+	GetCommentByID(commentID uuid.UUID) (domain.Comment, error)
 	GetComments(blogID uuid.UUID) ([]domain.Comment, error)
 	GetCommentsCount(blogID uuid.UUID) (int, error)
 	AddComment(comment domain.Comment) error

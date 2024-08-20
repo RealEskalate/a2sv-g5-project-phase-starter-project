@@ -41,9 +41,13 @@ func (userUC *UserUseCase) Register(cxt *gin.Context, user *domain.User) domain.
 	userRepo domain.UserRepository
 }
 
-func NewUserUseCase(userRespository domain.UserRepository) UserUseCase {
+func NewUserUseCase(userRespository domain.UserRepository, sessionRepository domain.SessionRepository, pwdService infrastructure.PasswprdService, jwtService infrastructure.JWTTokenService, mailServ mail.EmailService) UserUseCase {
 	return UserUseCase{
-		userRepo: userRespository,
+		userRepo:        userRespository,
+		sessionRepo:     sessionRepository,
+		passwordService: pwdService,
+		jwtService:      jwtService,
+		mailService:     mailServ,
 	}
 }
 
@@ -151,6 +155,10 @@ func (userUC *UserUseCase) ForgotPassword(cxt context.Context, email string) dom
 		return errSession
 	}
 
+	if errSession != nil {
+		return errSession
+	}
+
 	if existingCheck {
 		errDelete := userUC.sessionRepo.DeleteToken(context, existingSession.ID.Hex())
 		if errDelete != nil {
@@ -217,6 +225,45 @@ func (userUC *UserUseCase) Logout(cxt context.Context, token map[string]string) 
 	}
 
 	return nil
+}
+
+func (userUC *UserUseCase) PromoteUser(cxt context.Context, userID string) domain.Error {
+	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
+	if errTimeout != nil {
+		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
+	}
+	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
+	defer cancel()
+
+	promotion := domain.User{
+		Role: "admin",
+	}
+	return userUC.userRepo.Update(context, userID, &promotion)
+}
+
+func (userUC *UserUseCase) DemoteUser(cxt context.Context, userID string) domain.Error {
+	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
+	if errTimeout != nil {
+		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
+	}
+	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
+	defer cancel()
+
+	promotion := domain.User{
+		Role: "user",
+	}
+	return userUC.userRepo.Update(context, userID, &promotion)
+}
+
+func (userUC *UserUseCase) UpdateProfile(cxt context.Context, userID string, user *domain.User) domain.Error {
+	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
+	if errTimeout != nil {
+		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
+	}
+	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
+	defer cancel()
+
+	return userUC.userRepo.Update(context, userID, user)
 }
 
 func (userUC *UserUseCase) PromoteUser(cxt context.Context, userID string) domain.Error {

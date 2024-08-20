@@ -61,8 +61,13 @@ func (service *JWTTokenService) GenerateRefreshTokenWithPayload(user domain.User
 		"exp": time.Now().Add(time.Minute * 15).Unix(),
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(j.secretKey))
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	jwtToken, err := token.SignedString(service.RefreshSecret)
+	if err != nil {
+		return "", err
+	}
+
+	return jwtToken, nil
 }
 
 func (service *JWTTokenService) ValidateAccessToken(token string) (*jwt.Token, error) {

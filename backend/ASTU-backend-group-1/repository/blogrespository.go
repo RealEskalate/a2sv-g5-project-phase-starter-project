@@ -43,6 +43,7 @@ func CreateBlogQuery(b domain.Blog) bson.M {
 			query["author_id"] = id
 		}
 	}
+	query["date"] = b.Date
 	query["tags"] = b.Tags
 	query["likes"] = []string{}
 	query["dislikes"] = []string{}
@@ -422,7 +423,7 @@ func CreateCommentQuery(r domain.Comment) bson.M {
 	query := bson.M{}
 	query["comment_id"] = primitive.NewObjectID()
 	if r.Content != "" {
-		query["title"] = r.Content
+		query["content"] = r.Content
 	}
 
 	if r.AuthorId != "" {
@@ -517,6 +518,58 @@ func (r *MongoBlogRepository) GetAllComments(blogId string) ([]domain.Comment, e
 	return result.Comments, nil
 
 }
+func (r *MongoBlogRepository) GetBlogById(blogId string) (domain.Blog, error) {
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	filter := bson.M{"_id": bid}
+	var result domain.Blog
+	err = r.collection.FindOne(context.Background(), filter).Decode(&result)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	return result, nil
+
+}
+
+func (r *MongoBlogRepository) GetCommentById(blogId, commentId string) (domain.Comment, error) {
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return domain.Comment{}, err
+	}
+	cid, err := IsValidObjectID(commentId)
+	if err != nil {
+		return domain.Comment{}, err
+	}
+
+	// Filter to match the blog by _id and the comment within the comments array
+	filter := bson.M{
+		"_id": bid,
+		// "comments.comment_id": cid,
+	}
+
+	// Projection to return only the matching comment using $elemMatch
+	projection := bson.M{
+		"comments": bson.M{"$elemMatch": bson.M{"comment_id": cid}},
+	}
+
+	var result struct {
+		Comments []domain.Comment `bson:"comments"`
+	}
+
+	err = r.collection.FindOne(context.Background(), filter, options.FindOne().SetProjection(projection)).Decode(&result)
+	if err != nil {
+		return domain.Comment{}, err
+	}
+
+	if len(result.Comments) == 0 {
+		return domain.Comment{}, fmt.Errorf("comment not found")
+	}
+
+	return result.Comments[0], nil
+}
+
 func IsValidObjectID(id string) (primitive.ObjectID, error) {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

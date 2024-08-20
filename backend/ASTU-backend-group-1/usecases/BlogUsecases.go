@@ -3,8 +3,6 @@ package usecase
 import (
 	"astu-backend-g1/domain"
 	"fmt"
-	"strings"
-	"time"
 )
 
 type BlogUsecase struct {
@@ -15,20 +13,8 @@ func NewBlogUsecase(repo domain.BlogRepository) *BlogUsecase {
 	return &BlogUsecase{blogRepository: repo}
 }
 
-func (uc *BlogUsecase) CreateBLog(title, content, authorId, date, tags string) (domain.Blog, error) {
-	tagList := strings.Split(tags, ",")
-	theDate, err := time.Parse("2006-01-02", date)
-	if err != nil {
-		return domain.Blog{}, err
-	}
-	blogData := domain.Blog{
-		Title:    title,
-		Content:  content,
-		AuthorId: authorId,
-		Date:     theDate,
-		Tags:     tagList,
-	}
-	blog, err := uc.blogRepository.Create(blogData)
+func (uc *BlogUsecase) CreateBLog(blog domain.Blog) (domain.Blog, error) {
+	blog, err := uc.blogRepository.Create(blog)
 	if err != nil {
 		return domain.Blog{}, err
 	}
@@ -42,6 +28,14 @@ func (uc *BlogUsecase) GetAllBlogs() ([]domain.Blog, error) {
 	}
 	return blogs, nil
 }
+func (uc *BlogUsecase) GetBlogByBLogId(blogId string) (domain.Blog, error) {
+	blogs, err := uc.blogRepository.GetBlogById(blogId)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	return blogs, nil
+}
+
 func (uc *BlogUsecase) FindPopularBlog() ([]domain.Blog, error) {
 	blogs, err := uc.blogRepository.FindPopularBlog()
 	if err != nil {
@@ -50,32 +44,7 @@ func (uc *BlogUsecase) FindPopularBlog() ([]domain.Blog, error) {
 	return blogs, nil
 }
 
-func (uc *BlogUsecase) FilterBlogs(title, id, date, tags, authorId string, LikeSort, DislikeSort, CommentSort, ViewSort int) ([]domain.Blog, error) {
-	filter := domain.BlogFilterOption{}
-	if title != "" {
-		filter.Filter.Title = title
-	}
-	if id != "" {
-		filter.Filter.BlogId = id
-	}
-	if date != "" {
-		theDate, err := time.Parse("2006-01-02", date)
-		if err != nil {
-			panic(err)
-		}
-		filter.Filter.Date = theDate
-	}
-	if tags != "" {
-		tagList := strings.Split(tags, ",")
-		filter.Filter.Tags = tagList
-	}
-	if authorId != "" {
-		filter.Filter.AuthorId = authorId
-	}
-	filter.Order.Likes = LikeSort
-	filter.Order.Dislikes = DislikeSort
-	filter.Order.Comments = CommentSort
-	filter.Order.Views = ViewSort
+func (uc *BlogUsecase) FilterBlogs(filter domain.BlogFilterOption) ([]domain.Blog, error) {
 	blogs, err := uc.blogRepository.Get(filter)
 	if err != nil {
 		return []domain.Blog{}, err
@@ -83,30 +52,7 @@ func (uc *BlogUsecase) FilterBlogs(title, id, date, tags, authorId string, LikeS
 	return blogs, nil
 }
 
-func (uc *BlogUsecase) UpdateBLog(blogId, updateTitle, updateContent, updateAuthorId, updateTags, updateLikes, updateView, updateDislikes string) (domain.Blog, error) {
-	updateBlog := domain.Blog{}
-	if updateTitle != "" {
-		updateBlog.Title = updateTitle
-	}
-	if updateContent != "" {
-		updateBlog.Content = updateContent
-	}
-	if updateAuthorId != "" {
-		updateBlog.AuthorId = updateAuthorId
-	}
-	if updateTags != "" {
-		tagList := strings.Split(updateTags, ",")
-		updateBlog.Tags = tagList
-	}
-	if updateLikes != "" {
-		updateBlog.Likes = strings.Split(updateLikes, ",")
-	}
-	if updateView != "" {
-		updateBlog.Views = strings.Split(updateView, ",")
-	}
-	if updateDislikes != "" {
-		updateBlog.Dislikes = strings.Split(updateDislikes, ",")
-	}
+func (uc *BlogUsecase) UpdateBLog(blogId string, updateBlog domain.Blog) (domain.Blog, error) {
 	blog, err := uc.blogRepository.Update(blogId, updateBlog)
 	if err != nil {
 		return domain.Blog{}, err
@@ -188,16 +134,7 @@ func (uc *BlogUsecase) ViewReply(blogId, commentId, replyId, userId string) erro
 	return nil
 }
 
-func (uc *BlogUsecase) AddComment(content, blogId, authorId string) error {
-	comment := domain.Comment{
-		Content:  content,
-		AuthorId: authorId,
-
-		Likes:    []string{},
-		Dislikes: []string{},
-		Views:    []string{},
-		Replies:  []domain.Reply{},
-	}
+func (uc *BlogUsecase) AddComment(blogId string,comment domain.Comment ) error {
 	err := uc.blogRepository.AddComment(blogId, comment)
 	if err != nil {
 		return err
@@ -207,10 +144,18 @@ func (uc *BlogUsecase) AddComment(content, blogId, authorId string) error {
 
 func (uc *BlogUsecase) GetAllComments(blogId string) ([]domain.Comment, error) {
 	comments, err := uc.blogRepository.GetAllComments(blogId)
-    if err!= nil {
-        return []domain.Comment{}, err
-    }
-    return comments, nil
+	if err != nil {
+		return []domain.Comment{}, err
+	}
+	return comments, nil
+}
+
+func (uc *BlogUsecase) GetCommentById(blogId, commentId string) (domain.Comment, error) {
+	comments, err := uc.blogRepository.GetCommentById(blogId, commentId)
+	if err != nil {
+		return domain.Comment{}, err
+	}
+	return comments, nil
 }
 
 // func (uc *BlogUsecase) GetComments()    {

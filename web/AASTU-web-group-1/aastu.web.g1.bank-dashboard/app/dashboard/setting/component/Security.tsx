@@ -3,12 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,8 +14,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { getSession } from "next-auth/react";
+import { toast } from "sonner";
+import { useState } from "react";
 
 const Security = () => {
+  const [loading, setLoading] = useState(false);
   const formSchema = z.object({
     twoFactor: z.boolean().default(true).optional(),
     currentPassword: z
@@ -37,14 +39,50 @@ const Security = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const session = await getSession();
+      const accessToken = session?.user.accessToken;
+      console.log(accessToken);
+
+      if (!accessToken) {
+        throw new Error("No access token found");
+      }
+
+      const formData = {
+        password: values.currentPassword,
+        newPassword: values.newPassword,
+      };
+
+      setLoading(true);
+
+      const res = await fetch(
+        "https://bank-dashboard-6acc.onrender.com/auth/change_password",
+        {
+          method: "POST",
+          body: JSON.stringify(formData),
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      ).then((res) => res.json());
+
+      console.log(res);
+      toast.success(res.message);
+    } catch (error) {
+      console.error("Error changing password:", error);
+      toast.error("Error changing password");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="md:px-16">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="mt-5 ">
+          <div className="mt-5">
             <h1 className="mb-2 text-primaryBlack font-bold">
               Two-factor Authentication
             </h1>
@@ -60,7 +98,7 @@ const Security = () => {
                       onCheckedChange={field.onChange}
                     />
                     <div className="space-y-0.5">
-                      Enable or disable two factor authentication
+                      Enable or disable two-factor authentication
                     </div>
                   </FormItem>
                 )}
@@ -109,10 +147,11 @@ const Security = () => {
             />
           </div>
           <Button
+            disabled={loading}
             type="submit"
             className="mt-5 md:w-auto w-full px-8 float-end bg-primaryBlue text-white"
           >
-            Save
+            {loading ? "Saving..." : "Save"}
           </Button>
         </form>
       </Form>

@@ -12,8 +12,7 @@ type Command struct {
 // NewCommand creates a new Command instance with the given username and promoter ID.
 func NewCommand(username string, toAdmin bool, promoterId uuid.UUID) *Command {
 	return &Command{
-		Username:   username,
-		ToAdmin:    toAdmin,
-		PromoterID: promoterId,
+		Username: username,
+		ToAdmin:  toAdmin,
 	}
 }

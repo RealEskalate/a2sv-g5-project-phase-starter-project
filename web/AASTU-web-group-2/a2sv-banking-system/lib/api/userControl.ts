@@ -1,33 +1,10 @@
 import axios from "axios";
 import User, { Preference } from "../../types/userInterface";
-import { getServerSession } from "next-auth";
-
 // Extend the user type to include accessToken
-interface ExtendedUser {
-  refresh_token: string;
-  data: any; // Assuming `data` contains user information or other details
-  accessToken?: string;
-}
-
-interface ExtendedSession {
-  user?: ExtendedUser;
-}
-
-const fetchSession = async (): Promise<ExtendedSession> => {
-  const session = await getServerSession();
-  return session as ExtendedSession;
-};
-
-const getAccessToken = async (): Promise<string | undefined> => {
-  const session = await fetchSession();
-  return session?.user?.accessToken;
-};
-
 const baseUrl = "https://bank-dashboard-6acc.onrender.com";
 
-export async function userUpdate(user: User) {
+export async function userUpdate(user: User, accessToken: string) {
   try {
-    const accessToken = await getAccessToken();
     const response = await axios.put(baseUrl + "/user/update", user, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -41,9 +18,11 @@ export async function userUpdate(user: User) {
   }
 }
 
-export async function userUpdatePreference(preference: Preference) {
+export async function userUpdatePreference(
+  preference: Preference,
+  accessToken: string
+) {
   try {
-    const accessToken = await getAccessToken();
     const response = await axios.put(
       baseUrl + "/user/update-preference",
       preference,
@@ -61,9 +40,8 @@ export async function userUpdatePreference(preference: Preference) {
   }
 }
 
-export async function getUserByUsername(username: string) {
+export async function getUserByUsername(username: string, accessToken: string) {
   try {
-    const accessToken = await getAccessToken();
     const response = await axios.get(baseUrl + `/user/${username}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -77,9 +55,12 @@ export async function getUserByUsername(username: string) {
   }
 }
 
-export async function getRandomInvestementData(months: number, years: number) {
+export async function getRandomInvestementData(
+  months: number,
+  years: number,
+  accessToken: string
+) {
   try {
-    const accessToken = await getAccessToken();
     const response = await axios.get(
       baseUrl + `/user/random-investment-data?months=${months}&years=${years}`,
       {
@@ -96,9 +77,8 @@ export async function getRandomInvestementData(months: number, years: number) {
   }
 }
 
-export async function getCurrentUser() {
+export async function getCurrentUser(accessToken: string) {
   try {
-    const accessToken = await getAccessToken();
     const response = await axios.get(baseUrl + `/user/current`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,

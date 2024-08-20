@@ -27,6 +27,10 @@ func (uc *userController) GetAllUsers(c *gin.Context) {
 func (uc *userController) GetUserByID(c *gin.Context) {
 	id := c.Param("id")
 	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	user, err := uc.UserUsecase.GetUserByID(c, idInt)
 	if err != nil {

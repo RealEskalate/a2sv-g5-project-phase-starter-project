@@ -169,6 +169,8 @@ func (bc *blogController) AddComment(c *gin.Context) {
 	var comment domain.Comment
 	err = c.BindJSON(&comment)
 
+	comment.UserID = authorIDInt
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return

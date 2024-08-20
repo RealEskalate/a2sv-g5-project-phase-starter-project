@@ -7,11 +7,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (uc *BlogUsecase) GetBlogByID(ctx context.Context, id string) (*domain.Blog, error) {
-    objID, err := primitive.ObjectIDFromHex(id)
-    if err != nil {
-        return nil, err
-    }
+func (bu *BlogUsecase) GetBlogByID(ctx context.Context, id string) (*domain.Blog, error) {
+	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
+	defer cancel()
 
-    return uc.blogRepo.GetBlogByID(context.Background(), objID)
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return bu.blogRepo.GetBlogByID(ctx, objID)
 }

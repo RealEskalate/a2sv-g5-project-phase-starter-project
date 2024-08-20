@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"errors"
+	"fmt"
 	"meleket/domain"
 	"meleket/infrastructure"
 	"meleket/utils"
@@ -58,32 +59,35 @@ func (ou *OTPUsecase) GenerateAndSendOTP(user *domain.User) error {
 }
 
 // verification endpoint
-func (ou *OTPUsecase) VerifyOTP(email, otp string) (*domain.OTP, error) {
-	storeOtp, err := ou.otpRepository.GetOTPByEmail(email)
-	if err != nil {
-		return nil, err
-	}
+func (ou *OTPUsecase) VerifyOTP(email, otp string) (*domain.OTP,error) {
+        fmt.Println("email: ", email)
+        storeOtp, err := ou.otpRepository.GetOTPByEmail(email)
+        if err != nil {
+                return nil, err
+        }
 
-	if time.Now().After(storeOtp.ExpiresAt) {
-		return nil, errors.New("otp expired")
-	}
+        if time.Now().After(storeOtp.ExpiresAt) {
+                return nil, errors.New("otp expired")
+        }
 
-	if storeOtp.Otp != otp {
-		return nil, errors.New("invalid OTP")
-	}
+        if storeOtp.Otp != otp {
+                return nil, errors.New("invalid OTP")
+        }
 
-	// Clean up the used OTP
-	if err = ou.otpRepository.DeleteOTPByEmail(email); err != nil {
-		return nil, errors.New("couldn't delete OTP")
-	}
+        // Clean up the used OTP
+        if err =ou.otpRepository.DeleteOTPByEmail(email); err != nil {
+                return nil, errors.New("couldn't delete OTP")
+        }
 
-	return storeOtp, nil
+        return storeOtp, nil
 }
 
-func (ou *OTPUsecase) ForgotPassword(email *string) error {
-	if !utils.ValidateEmail(*email) {
-		return errors.New("invalid email")
-	}
+func (ou *OTPUsecase) ForgotPassword(email string) error {
+  // panic(email)
+  if !utils.ValidateEmail(email) {
+          return  errors.New("invalid email")
+  }
+
 	user, err := ou.userRepo.GetUserByEmail(email)
 	if err != nil {
 		return errors.New("email not found")

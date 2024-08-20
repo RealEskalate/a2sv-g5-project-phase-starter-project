@@ -19,14 +19,14 @@ type LikeReposiotory interface {
 	Dislike(c context.Context, userId string, blogID string) error
 	RemoveLike(c context.Context, id string) error
 	RemoveDislike(c context.Context, id string) error
-	GetLikesByUser(ctx context.Context, userID string, limit, offset int) ([]Like, error) 
-	GetLikesByBlog(ctx context.Context, blogID string, limit, offset int) ([]Like, error) 
+	GetLikesByUser(ctx context.Context, userID string, limit, offset int) ([]Like, error)
+	GetLikesByBlog(ctx context.Context, blogID string, limit, offset int) ([]Like, error)
+	GetLikeByID(ctx context.Context, id string) (Like, error)
 }
 
 type LikeUsecase interface {
 	Like(c context.Context, userID string, blogID string) error
 	Dislike(c context.Context, userID string, blogID string) error
-	GetLikesByUser(ctx context.Context, userID string, limit, page int) ([]Like, error) 
-	GetLikesByBlog(ctx context.Context, blogID string, limit, page int) ([]Like, error) 
-	GetLikeByID(ctx context.Context, userID string) (Like, error) 
+	GetLikesByUser(ctx context.Context, userID string, limit, page int) ([]Like, error)
+	GetLikesByBlog(ctx context.Context, blogID string, limit, page int) ([]Like, error)
 }

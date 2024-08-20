@@ -12,9 +12,10 @@ type likeUsecase struct {
 	contextTimeouts time.Duration
 }
 
-func NewLikesUsecase(blogrepository domain.BlogRepository, likeRepository domain.LikeReposiotory, timeouts time.Duration) domain.LikeUsecase {
+func NewLikeUsecase(blogRepository domain.BlogRepository, likeRepository domain.LikeReposiotory, timeouts time.Duration) domain.LikeUsecase {
+
 	return &likeUsecase{
-		blogRepositry:   blogrepository,
+		blogRepository:  blogRepository,
 		likeRepository:  likeRepository,
 		contextTimeouts: timeouts,
 	}
@@ -52,37 +53,37 @@ func (lu *likeUsecase) RemoveLike(ctx context.Context, likeID string) error {
 	ctx, cancel := context.WithTimeout(ctx, lu.contextTimeouts)
 	defer cancel()
 
-	like, err := lu.likeReposiotory.GetLikeByID(ctx, likeID)
+	like, err := lu.likeRepository.GetLikeByID(ctx, likeID)
 	if err != nil {
 		return err
 	}
 
-	err := lu.likeReposiotory.RemoveLike(ctx, likeID)
-	if err != nil {
+	errs := lu.likeRepository.RemoveLike(ctx, likeID)
+	if errs != nil {
 		return err
 	}
 
 	blogID := like.BlogID.Hex()
 
-	return lu.blogRepository.UpdateFeedback(ctx, blogID, blogRepository.DecrementLikes)
+	return lu.blogRepository.UpdateFeedback(ctx, blogID, lu.blogRepository.DecrementLikes)
 }
 
 func (lu *likeUsecase) RemoveDislike(ctx context.Context, dislikeID string) error {
 	ctx, cancel := context.WithTimeout(ctx, lu.contextTimeouts)
 	defer cancel()
 
-	err := lu.likeReposiotory.RemoveDislike(ctx, dislikeID)
+	err := lu.likeRepository.RemoveDislike(ctx, dislikeID)
 	if err != nil {
 		return err
 	}
 
-	dislike, err := lu.likeReposiotory.GetLikeByID(ctx, dislikeID)
+	dislike, err := lu.likeRepository.GetLikeByID(ctx, dislikeID)
 	if err != nil {
 		return err
 	}
 	blogID := dislike.BlogID.Hex()
 
-	return lu.blogRepository.UpdateFeedback(ctx, blogID, blogRepository.DecrementDislikes)
+	return lu.blogRepository.UpdateFeedback(ctx, blogID, lu.blogRepository.DecrementDislikes)
 }
 
 func (lu *likeUsecase) GetLikesByUser(ctx context.Context, userID string, limit, page int) ([]domain.Like, error) {
@@ -90,9 +91,11 @@ func (lu *likeUsecase) GetLikesByUser(ctx context.Context, userID string, limit,
 	ctx, cancel := context.WithTimeout(ctx, lu.contextTimeouts)
 	defer cancel()
 
+	offset := (page - 1) * limit
+
 	likes, err := lu.likeRepository.GetLikesByUser(ctx, userID, limit, offset)
 	if err != nil {
-		return []domian.Like{}, err
+		return []domain.Like{}, err
 	}
 
 	return likes, nil
@@ -107,7 +110,7 @@ func (lu *likeUsecase) GetLikesByBlog(ctx context.Context, blogID string, limit,
 
 	likes, err := lu.likeRepository.GetLikesByBlog(ctx, blogID, limit, offset)
 	if err != nil {
-		return []domian.Like{}, err
+		return []domain.Like{}, err
 	}
 
 	return likes, nil

@@ -1,6 +1,8 @@
 package usecases
 
 import (
+	"errors"
+
 	"aait.backend.g10/domain"
 	"aait.backend.g10/usecases/interfaces"
 	"github.com/google/uuid"
@@ -11,11 +13,12 @@ type CommentUsecase struct {
 }
 
 type CommentUsecaseInterface interface {
+	GetCommentByID(commentID uuid.UUID) (domain.Comment, error)
 	GetComments(blogID uuid.UUID) ([]domain.Comment, error)
 	GetCommentsCount(blogID uuid.UUID) (int, error)
 	AddComment(comment domain.Comment) error
 	UpdateComment(commentID uuid.UUID, updatedComment domain.Comment) error
-	DelelteComment(commentID uuid.UUID) error
+	DelelteComment(commentID uuid.UUID, requesterID uuid.UUID, isAdmin bool) error
 }
 
 func NewCommentUsecase(cr interfaces.CommentRepositoryInterface) CommentUsecaseInterface {
@@ -24,13 +27,25 @@ func NewCommentUsecase(cr interfaces.CommentRepositoryInterface) CommentUsecaseI
 	}
 }
 
+// GetCommentByID implements CommentUsecaseInterface.
+func (cu *CommentUsecase) GetCommentByID(commentID uuid.UUID) (domain.Comment, error) {
+	return cu.CommentRepository.GetCommentByID(commentID)
+}
+
 // AddComment implements interfaces.CommentUsecaseInterface.
 func (cu *CommentUsecase) AddComment(comment domain.Comment) error {
 	return cu.CommentRepository.AddComment(comment)
 }
 
 // DelelteComment implements interfaces.CommentUsecaseInterface.
-func (cu *CommentUsecase) DelelteComment(commentID uuid.UUID) error {
+func (cu *CommentUsecase) DelelteComment(commentID uuid.UUID, requesterID uuid.UUID, isAdmin bool) error {
+	originalComment, err := cu.CommentRepository.GetCommentByID(commentID)
+	if err != nil {
+		return err
+	}
+	if originalComment.UserID != requesterID {
+		return errors.New("you are not authorized to delete this comment")
+	}
 	return cu.CommentRepository.DelelteComment(commentID)
 }
 
@@ -45,5 +60,6 @@ func (cu *CommentUsecase) GetCommentsCount(blogID uuid.UUID) (int, error) {
 
 // UpdateComment implements interfaces.CommentUsecaseInterface.
 func (cu *CommentUsecase) UpdateComment(commentID uuid.UUID, updatedComment domain.Comment) error {
+
 	return cu.CommentRepository.UpdateComment(commentID, updatedComment)
 }

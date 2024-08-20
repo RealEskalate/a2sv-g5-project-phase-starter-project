@@ -4,6 +4,7 @@ import (
 	"aait.backend.g10/domain"
 	"aait.backend.g10/usecases/interfaces"
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 )
 
 type LikeUsecase struct {
@@ -11,6 +12,7 @@ type LikeUsecase struct {
 }
 
 type LikeUsecaseInterface interface {
+	GetLike(likeID uuid.UUID) (domain.Like, error)
 	LikeBlog(like domain.Like) error
 	DeleteLike(like domain.Like) error
 	BlogLikeCount(blogID uuid.UUID) (int, error)
@@ -21,6 +23,9 @@ func NewLikeUseCase(likeRepo interfaces.LikeRepositoryInterface) LikeUsecaseInte
 		LikeRepo: likeRepo,
 	}
 }
+func (l *LikeUsecase) GetLike(likeID uuid.UUID) (domain.Like, error) {
+	return l.LikeRepo.GetLike(likeID)
+}
 
 // LikeBlog implements LikeUsecaseInterface.
 func (l *LikeUsecase) LikeBlog(like domain.Like) error {
@@ -29,6 +34,13 @@ func (l *LikeUsecase) LikeBlog(like domain.Like) error {
 
 // DisLikeBlog implements LikeUsecaseInterface.
 func (l *LikeUsecase) DeleteLike(like domain.Like) error {
+	originalLike, err := l.LikeRepo.GetLike(like.ID)
+	if err != nil {
+		return err
+	}
+	if originalLike.UserID != like.UserID {
+		return errors.New("You are not authorized to delete this like")
+	}
 	return l.LikeRepo.DeleteLike(like)
 }
 

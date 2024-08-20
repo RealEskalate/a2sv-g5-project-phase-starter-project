@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"aait.backend.g10/delivery/controllers"
+	"aait.backend.g10/infrastructures"
 	"aait.backend.g10/repositories"
 	"aait.backend.g10/usecases"
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,8 @@ import (
 
 func NewRouter(db *mongo.Database) {
 	router := gin.Default()
+
+	jwtService := infrastructures.JwtService{JwtSecret: os.Getenv("JWT_SECRET")}
 
 	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
 
@@ -32,15 +35,15 @@ func NewRouter(db *mongo.Database) {
 	userUseCase := usecases.NewUserUseCase(userRepo)
 	userController := controllers.NewUserController(userUseCase)
 
-	router.POST("/blogs", blogController.CreateBlog)
-	router.GET("/blogs", blogController.GetAllBlogs)
-	router.GET("/blogs/:id", blogController.GetBlogByID)
-	router.PUT("/blogs/:id", blogController.UpdateBlog)
-	router.DELETE("/blogs/:id", blogController.DeleteBlog)
-	router.PATCH("/blogs/:id/view", blogController.AddView)
-	router.GET("/blogs/search", blogController.SearchBlogs)
+	router.POST("/blogs", infrastructures.AuthMiddleware(&jwtService), blogController.CreateBlog)
+	router.GET("/blogs", infrastructures.AuthMiddleware(&jwtService), blogController.GetAllBlogs)
+	router.GET("/blogs/:id", infrastructures.AuthMiddleware(&jwtService), blogController.GetBlogByID)
+	router.PUT("/blogs/:id", infrastructures.AuthMiddleware(&jwtService), blogController.UpdateBlog)
+	router.DELETE("/blogs/:id", infrastructures.AuthMiddleware(&jwtService), blogController.DeleteBlog)
+	router.PATCH("/blogs/:id/view", infrastructures.AuthMiddleware(&jwtService), blogController.AddView)
+	router.GET("/blogs/search", infrastructures.AuthMiddleware(&jwtService), blogController.SearchBlogs)
 
-	router.PATCH("/users/promote", userController.PromoteUser)
+	router.PATCH("/users/promote", infrastructures.AuthMiddleware(&jwtService), infrastructures.AdminMiddleWare(), userController.PromoteUser)
 
 	router.GET("/comment/:blog_id", commentController.GetComments)
 	router.GET("/comment_count/:blog_id", commentController.GetCommentsCount)

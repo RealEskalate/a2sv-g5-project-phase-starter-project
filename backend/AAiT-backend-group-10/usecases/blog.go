@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"errors"
 	"time"
 
 	"aait.backend.g10/domain"
@@ -14,7 +15,7 @@ type IBlogUseCase interface {
 	GetAllBlogs() ([]*dto.BlogDto, error)
 	GetBlogByID(id uuid.UUID) (*dto.BlogDto, error)
 	UpdateBlog(blog *domain.Blog) error
-	DeleteBlog(id uuid.UUID) error
+	DeleteBlog(id uuid.UUID, requester_id uuid.UUID, is_admin bool) error
 	AddView(id uuid.UUID) error
 	SearchBlogs(filter domain.BlogFilter) ([]dto.BlogDto, int, int, error)
 }
@@ -75,11 +76,27 @@ func (b *BlogUseCase) GetBlogByID(id uuid.UUID) (*dto.BlogDto, error) {
 }
 
 func (b *BlogUseCase) UpdateBlog(blog *domain.Blog) error {
+	existingBlog, err := b.blogRepo.FindByID(blog.ID)
+	if err != nil {
+		return err
+	}
+	if blog.Author != existingBlog.Author {
+		return errors.New("update not authorized")
+	}
 	blog.UpdatedAt = time.Now().UTC()
 	return b.blogRepo.Update(blog)
 }
 
-func (b *BlogUseCase) DeleteBlog(id uuid.UUID) error {
+func (b *BlogUseCase) DeleteBlog(id uuid.UUID, requester_id uuid.UUID, is_admin bool) error {
+	existingBlog, err := b.blogRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	if !is_admin && existingBlog.Author != requester_id {
+		return errors.New("delete not authorized")
+	}
+
 	return b.blogRepo.Delete(id)
 }
 

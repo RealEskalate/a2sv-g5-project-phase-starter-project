@@ -56,6 +56,7 @@ type SignupUseCase interface {
 	VerifyOTP(c context.Context , otp OtpToken) interface{}
 	ForgotPassword(c context.Context , email ForgotPasswordRequest) interface{}
 	ResetPassword(c context.Context , password ResetPasswordRequest , token string) interface{}
+	HandleUnverifiedUser(c context.Context, user User) interface{}
 }
 
 type UserUseCase interface {

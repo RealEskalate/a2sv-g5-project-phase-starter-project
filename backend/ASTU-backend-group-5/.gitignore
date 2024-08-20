@@ -1,4 +1,10 @@
 .env
 tmp
 .air.toml
+<<<<<<< HEAD
+venv
+venv/
+.venv
+=======
 mokery.yml
+>>>>>>> 0c2d7d71d983fd69231fac482da0474769d51edd

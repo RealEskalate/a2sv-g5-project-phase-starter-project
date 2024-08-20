@@ -23,6 +23,7 @@ const Investments = () => {
 
   const token: string =  ` Bearer ${session?.user?.accessToken} `;
   useEffect(() => {
+    
     const fetchInvestmentData = async () => {
       try {
         const response = await axios.get(
@@ -36,6 +37,7 @@ const Investments = () => {
 
         const { totalInvestment, rateOfReturn, yearlyTotalInvestment, monthlyRevenue } =
           response.data.data;
+          console.log(response.data.data, "responce.data.data");
 
         setInvestmentOverview({
           totalAmount: totalInvestment,

@@ -22,11 +22,42 @@ const Accounts = () => {
   const [netBalance, setNetBalance] = useState<number>(0);
   const [invoicesData, setInvoicesData] = useState<any[]>(mockInvoicesData); // Use mock data
   const { data: session } = useSession();
-
+  const [cardData, setCardData] = useState<any[]>([]);
   
   const token: string =  ` Bearer ${session?.user?.accessToken} `;
   console.log(session,11111111,token)
+  const accessToken = session?.user.accessToken;
 
+	const fetchCardData = async (page: number) => {
+		if (!accessToken) {
+			setError("No access token available");
+			setLoading(false);
+			return;
+		}
+
+		try {
+			const response = await fetch(
+				`https://bank-dashboard-6acc.onrender.com/cards?page=${page}&size=3`,
+				{
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+					},
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error("Failed to fetch cards");
+			}
+
+			const data = await response.json();
+			setCardData(data.content || []);
+			setTotalPages(data.totalPages || 0);
+		} catch (error) {
+			setError((error as Error).message);
+		} finally {
+			setLoading(false);
+		}
+	};
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
@@ -179,7 +210,13 @@ const Accounts = () => {
             <p className="text-lg font-semibold">My card</p>
             <p>See all</p>
           </div>
-          <Card />
+          {cardData.map((card, index) => (
+							<Card
+								key={index}
+								cardData={card}
+								cardColor={creditCardColor[index % creditCardColor.length]}
+							/>
+						))}
         </div>
       </div>
 

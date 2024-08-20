@@ -11,4 +11,3 @@ type Session struct {
 	VerificationToken  string             `json:"verification_token" bson:"verification_token"`
 	PasswordResetToken string             `json:"password_reset_token" bson:"password_reset_token"`
 }
-

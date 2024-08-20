@@ -38,6 +38,7 @@ type IUserUsecase interface {
 	UpdateUser(ctx context.Context, id int, user User) (User, error)
 	DeleteUser(ctx context.Context, id int) error
 	AddBlog(ctx context.Context, userID int, blog Blog) (User, error)
+	DeleteBlog(ctx context.Context, userID int, blogID int) (User, error)
 	Login(ctx context.Context, username, password string) (User, error)
 	ForgetPassword(ctx context.Context, email string) error
 	ResetPassword(ctx context.Context, username, password string) error

@@ -13,8 +13,13 @@ type RefreshToken struct {
 	ExpiresAt 	time.Time 			`bson:"expires_at" json:"expires_at"`
 }
 
+type RefreshTokenRequest struct {
+    RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
 type RefreshTokenUsecaseInterface interface {
-    RefreshToken(refreshToken *RefreshToken) (string, error)
+    RefreshToken(userID primitive.ObjectID, role string) (string, error)
+	DeleteRefreshToken(userID primitive.ObjectID) error 
 }
 
 type TokenRepositoryInterface interface {

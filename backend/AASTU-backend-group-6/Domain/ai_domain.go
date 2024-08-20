@@ -19,5 +19,5 @@ type AIUsecase interface {
 }
 
 type AIConfig interface {
-	Ask(ctx context.Context  , question string) (*genai.GenerateContentResponse , error)
+	Ask(ctx context.Context, question string) (*genai.GenerateContentResponse, error)
 }

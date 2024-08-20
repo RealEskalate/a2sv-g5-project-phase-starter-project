@@ -69,9 +69,7 @@ func (u *OauthUseCase)  OauthCallback(c context.Context , query string) (interfa
 	if err != nil { 
 		return &domain.ErrorResponse{Message: "Error getting user info", Status: 500}
 	}
-
 	
-
 	// check if the email already exists
 	existingUser , err := u.signupRepository.FindUserByEmail(ctx, userinfo.Email)
 
@@ -96,15 +94,8 @@ func (u *OauthUseCase)  OauthCallback(c context.Context , query string) (interfa
 			return &domain.ErrorResponse{Message: "Error creating user", Status: 500}
 			
 		} 
-		
 		return &domain.UserResponse{User: createdUser}
 		
-		
 	}
-
-
-
 	return &domain.UserResponse{User: existingUser}
-	
-
 }

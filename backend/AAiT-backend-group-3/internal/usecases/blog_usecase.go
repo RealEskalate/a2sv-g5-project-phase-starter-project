@@ -2,8 +2,7 @@ package usecases
 
 import (
 	"AAIT-backend-group-3/internal/domain/models"
-	"AAIT-backend-group-3/internal/repositories/interfaces"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	repository_interface "AAIT-backend-group-3/internal/repositories/interfaces"
 )
 type BlogUsecase struct {
 	blogRepo repository_interface.BlogRepositoryInterface
@@ -15,11 +14,11 @@ func NewBlogUsecase(blogRepo repository_interface.BlogRepositoryInterface) *Blog
 	}
 }
 
-func (u *BlogUsecase) CreateBlog(blog *models.Blog) error {
-	return u.blogRepo.CreateBlog(blog)
+func (u *BlogUsecase) CreateBlog(blog *models.Blog, authorID string) error {
+	return u.blogRepo.CreateBlog(blog, authorID)
 }
 
-func (u *BlogUsecase) GetBlogByID(blogID primitive.ObjectID) (*models.Blog, error) {
+func (u *BlogUsecase) GetBlogByID(blogID string) (*models.Blog, error) {
 	return u.blogRepo.GetBlogByID(blogID)
 }
 
@@ -27,15 +26,15 @@ func (u *BlogUsecase) GetBlogs(filter map[string]interface{}, search string, pag
 	return u.blogRepo.GetBlogs(filter, search, page, limit)
 }
 
-func (u *BlogUsecase) EditBlog(blogID primitive.ObjectID, newBlog *models.Blog) error {
+func (u *BlogUsecase) EditBlog(blogID string, newBlog *models.Blog) error {
 	return u.blogRepo.EditBlog(blogID, newBlog)
 }
 
-func (u *BlogUsecase) DeleteBlog(blogID primitive.ObjectID) error {
+func (u *BlogUsecase) DeleteBlog(blogID string) error {
 	return u.blogRepo.DeleteBlog(blogID)
 }
 
-func (u *BlogUsecase) AddCommentToTheList(blogID primitive.ObjectID, commentID primitive.ObjectID) error {
+func (u *BlogUsecase) AddCommentToTheList(blogID string, commentID string) error {
 	return u.blogRepo.AddCommentToTheList(blogID, commentID)
 }
 

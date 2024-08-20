@@ -6,5 +6,6 @@ type AuthenticationService interface {
 	RegisterUser(user *entities.User) (*entities.User, error)
 	Login(emailOrUsername, password string) (*entities.RefreshToken,string, error)
 	Logout(userId string) error
+	RefreshAccessToken(token *entities.RefreshToken) (string,error)
 }
 

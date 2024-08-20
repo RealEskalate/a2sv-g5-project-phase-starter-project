@@ -22,12 +22,17 @@ func NewBlogHandler(useCase blog.BlogUseCase) *BlogHandler {
 // CreateBlogHandler creates a new blog post
 func (h *BlogHandler) CreateBlogHandler(c *gin.Context) {
 	var blog domain.Blog
+	claims, err := GetClaims(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	if err := c.ShouldBindJSON(&blog); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	if err := h.UseCase.CreateBlog(context.Background(), &blog); err != nil {
+	// blog.Author = claims.UserID
+	if err := h.UseCase.CreateBlog(context.Background(), &blog, claims.UserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

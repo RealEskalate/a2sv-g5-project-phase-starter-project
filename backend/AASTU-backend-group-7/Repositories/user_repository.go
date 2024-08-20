@@ -161,6 +161,7 @@ func (us *userRepository) GetUsersById(ctx context.Context, id primitive.ObjectI
 }
 
 // update user by id
+// uncessesary route should be removed
 func (us *userRepository) UpdateUsersById(ctx context.Context, id primitive.ObjectID, user Domain.User, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
 	us.mu.RLock()
 	defer us.mu.RUnlock()
@@ -182,9 +183,7 @@ func (us *userRepository) UpdateUsersById(ctx context.Context, id primitive.Obje
 	}
 
 	// Update only the specified fields
-	if user.Email != "" {
-		NewUser.Email = user.Email
-	}
+
 	if user.UserName != "" {
 		NewUser.UserName = user.UserName
 	}
@@ -199,6 +198,9 @@ func (us *userRepository) UpdateUsersById(ctx context.Context, id primitive.Obje
 	}
 	if user.Bio != "" {
 		NewUser.Bio = user.Bio
+	}
+	if user.Name != "" {
+		NewUser.Name = user.Name
 	}
 	if !user.CreatedAt.IsZero() {
 		NewUser.CreatedAt = user.CreatedAt

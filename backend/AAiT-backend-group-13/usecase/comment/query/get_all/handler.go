@@ -1,6 +1,6 @@
 // Package getallqry provides the logic to retrieve all comments by blog ID from the repository.
 // It includes a handler that processes the Get query and returns the corresponding comments.
-package getallqry
+package getallcomqry
 
 import (
 	"github.com/google/uuid"

@@ -1,6 +1,6 @@
 // Package getqry provides the logic to retrieve a specific comment by its ID from the repository.
 // It includes a handler that processes the Get query and returns the corresponding comment.
-package getqry
+package getcomqry
 
 import (
 	"github.com/google/uuid"

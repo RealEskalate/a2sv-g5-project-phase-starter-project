@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	// "fmt"
-	// "fmt"
 	"meleket/domain"
 	"meleket/infrastructure"
 	"net/http"
@@ -53,5 +51,5 @@ func (c *RefreshTokenController) RefreshToken(ctx *gin.Context) {
         return
     }
 
-    ctx.JSON(http.StatusOK, gin.H{"token": newAccessToken})
+	ctx.JSON(http.StatusOK, gin.H{"token": newAccessToken})
 }

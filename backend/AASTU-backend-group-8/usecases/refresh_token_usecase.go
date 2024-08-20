@@ -5,7 +5,6 @@ import (
 	// "fmt"
 	"meleket/domain"
 	"meleket/infrastructure"
-	// "time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -25,6 +24,7 @@ func NewTokenUsecase(tr domain.TokenRepositoryInterface, js infrastructure.JWTSe
 // RefreshToken refreshes a user's JWT token
 func (u *TokenUsecase) RefreshToken(userID primitive.ObjectID, role string) (string, error) {
 	_, err := u.tokenRepo.FindRefreshToken(userID)
+
 	if err != nil {
 		return "", errors.New("invalid refresh token")
 	}

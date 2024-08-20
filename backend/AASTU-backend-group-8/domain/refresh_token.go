@@ -8,9 +8,9 @@ import (
 
 type RefreshToken struct {
 	// username     string    `bson:"token" json:"token"`
-	UserID    	primitive.ObjectID  `bson:"user_id" json:"user_id"`
-	Role 		string 				`bson:"role" json:"role"`
-	ExpiresAt 	time.Time 			`bson:"expires_at" json:"expires_at"`
+	UserID    primitive.ObjectID `bson:"user_id" json:"user_id"`
+	Role      string             `bson:"role" json:"role"`
+	ExpiresAt time.Time          `bson:"expires_at" json:"expires_at"`
 }
 
 type RefreshTokenRequest struct {
@@ -18,14 +18,14 @@ type RefreshTokenRequest struct {
 }
 
 type RefreshTokenUsecaseInterface interface {
-    RefreshToken(userID primitive.ObjectID, role string) (string, error)
+  RefreshToken(userID primitive.ObjectID, role string) (string, error)
 	DeleteRefreshToken(userID primitive.ObjectID) error 
 }
 
 type TokenRepositoryInterface interface {
-    SaveRefreshToken(refreshToken *RefreshToken) error
-    FindRefreshToken(userID primitive.ObjectID) (*RefreshToken, error)
-    DeleteRefreshTokenByUserID(userID primitive.ObjectID) error
+	SaveRefreshToken(refreshToken *RefreshToken) error
+	FindRefreshToken(userID primitive.ObjectID) (*RefreshToken, error)
+	DeleteRefreshTokenByUserID(userID primitive.ObjectID) error
 }
 
 // IsExpired checks if the refresh token is expired

@@ -20,8 +20,8 @@ type JWTService interface {
 // Claims struct to hold JWT claims
 type Claims struct {
 	ID       primitive.ObjectID `json:"id"`
-	Username string `json:"username"`
-	Role     string `json:"role"`
+	Username string             `json:"username"`
+	Role     string             `json:"role"`
 	jwt.StandardClaims
 }
 
@@ -76,7 +76,7 @@ func (j *jwtService) GenerateRefreshToken(userID primitive.ObjectID, role string
 		return "", err
 	}
 
-	return signedToken,nil
+	return signedToken, nil
 }
 
 

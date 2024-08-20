@@ -22,7 +22,7 @@ func NewAIService() utils.AIService {
 
 // GenerateAIContent is a function to generate AI content
 func (ai *AIService) GenerateAIContent(ctx context.Context, content string) (string, error) {
-	API_KEY := "AIzaSyBfy1w8ZR4C6xOq43duYKz4RU1wbmsKl18"
+	API_KEY := "AIzaSyBfy1w8ZR4C6xOq43duYKz4RU1wbmsKl18" // TODO: Add API key to .env file
 	// I need a utility to generate AI service so it accept a content and return ai genereted content
 
 	// Access your API key as an environment variable (see "Set up your API key" above)

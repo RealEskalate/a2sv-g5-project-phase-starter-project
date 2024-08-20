@@ -209,6 +209,7 @@ func (br *blogrepository) GetComments(ctx context.Context, id primitive.ObjectID
 // get all posts
 func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter) ([]*Domain.Post, error, int) {
 	var posts []*Domain.Post
+	fmt.Println("filter", filter)
 
 	// Initialize the filter for MongoDB query
 	pipeline := []bson.M{}
@@ -255,26 +256,26 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 		sortBy = filter.SortBy
 
 		if sortBy == "popularity" {
-			popularity := bson.M{
+			pipeline = append(pipeline, bson.M{
 				"$addFields": bson.M{
 					"popularity": bson.M{
 						"$add": []interface{}{
 							bson.M{"$multiply": []interface{}{"$views", 1}},     // Weight for views
-							bson.M{"$multiply": []interface{}{"$likes", 2}},     // Weight for likes
-							bson.M{"$multiply": []interface{}{"$dislikes", -1}}, // Weight for dislikes
+							bson.M{"$multiply": []interface{}{"$likecount", 2}},     // Weight for likes
+							bson.M{"$multiply": []interface{}{"$dislikecount", -1}}, // Weight for dislikes
 						},
 					},
 				},
-			}
+			})
 
-			sort = bson.M{"popularity": orderBy}
-			pipeline = append(pipeline, popularity)
+			pipeline = append(pipeline, bson.M{"$sort": bson.M{"popularity": -1}})
 		} else {
-			sort = bson.M{sortBy: orderBy}
+			pipeline = append(pipeline, bson.M{"$sort": bson.M{sortBy: orderBy}})
 		}
+	}else {
+		pipeline = append(pipeline, bson.M{"$sort": sort})
 	}
 
-	pipeline = append(pipeline, bson.M{"$sort": sort})
 	pipeline = append(pipeline, bson.M{"$skip": int64((page - 1) * limit)})
 	pipeline = append(pipeline, bson.M{"$limit": int64(limit)})
 

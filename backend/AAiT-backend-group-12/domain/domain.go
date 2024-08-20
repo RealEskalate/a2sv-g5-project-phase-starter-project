@@ -83,7 +83,7 @@ type Comment struct {
 
 
 type NewComment struct{
-	Content   string    `json:"content"`
+	Content   string    `json:"content" validate:"required,min=3"`
 }
 
 
@@ -114,7 +114,7 @@ type BlogRepositoryInterface interface {
 	TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) CodedError
 
 	//Comment related methods
-	FetchComment(ctx context.Context, commentID, blogID string) (Comment, CodedError)
+	// FetchComment(ctx context.Context, commentID, blogID string) (Comment, CodedError)
 	CreateComment(ctx context.Context, comment *Comment, blogID, createdBy string) CodedError
 	UpdateComment(ctx context.Context, comment *NewComment, commentID, blogID, userName string) CodedError
 	DeleteComment(ctx context.Context, commentID, blogID, userName string) CodedError
@@ -134,7 +134,7 @@ type BlogUseCaseInterface interface {
 	GenerateBlogContent(topics []string) (string, error)
 
 	//Comment related methods
-	FindComment(ctx context.Context, commentID, blogID string) (Comment, CodedError)
+	// FindComment(ctx context.Context, commentID, blogID string) (Comment, CodedError)
 	AddComment(ctx context.Context, blogID string, newComment *NewComment, username string) CodedError
 	UpdateComment(ctx context.Context, blogID string, commentID string, comment *NewComment, username string) CodedError
 	DeleteComment(ctx context.Context, blogID, commentID, username string) CodedError

@@ -28,6 +28,38 @@ func (c *userController) Register(ctx *gin.Context) {
 	}
 	ctx.IndentedJSON(http.StatusCreated, gin.H{"message":"Activate your Account in the your email link" })
 }	
+func (c *userController) AccountVerification(ctx *gin.Context) {
+	email := ctx.Query("email")
+	token := ctx.Query("pwd")
+	_, err := c.userUsecase.AccountVerification(email, token)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message":"Account Activated"})
+}
+func (c *userController) ForgetPassword(ctx *gin.Context) {
+	email := ctx.Query("email")
+	_, err := c.userUsecase.ForgetPassword(email)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message":"Password reset token sent to your email"})
+}
+func (c *userController) LoginUser(ctx *gin.Context) {
+	user := &domain.User{}
+	if err := ctx.ShouldBind(user); err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+		return
+	}
+	token, err := c.userUsecase.LoginUser(user.Username, user.Password)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"token": token})
+}
 func (c *userController) GetUsers(ctx *gin.Context) {
 	username := ctx.Query("username")
 	email := ctx.Query("email")

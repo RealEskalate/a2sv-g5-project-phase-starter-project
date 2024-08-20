@@ -46,7 +46,7 @@ func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, authorID string, blog 
 }
 
 // CreateComment implements BlogUseCase.
-func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, comment CreateCommentRequest) error {
+func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, userID string, comment CreateCommentRequest) error {
 	panic("unimplemented")
 }
 

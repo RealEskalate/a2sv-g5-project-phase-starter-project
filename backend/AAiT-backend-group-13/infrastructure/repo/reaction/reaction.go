@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/group13/blog/domain/models/reaction"
+	"github.com/group13/blog/domain/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -24,14 +24,14 @@ func New(client *mongo.Client, dbName, collectionName string) *Repo {
 	}
 }
 
-func (r Repo) Save(reaction reaction.Reaction) error {
+func (r Repo) Save(reaction models.Reaction) error {
 	filter := bson.M{"_id": reaction.ID()}
 	update := bson.M{
 
 		"$set": bson.M{
 			"isLike": reaction.IsLike(),
-			"blogId": reaction.BlogId(),
-			"userId": reaction.UserId(),
+			"blogId": reaction.BlogID(),
+			"userId": reaction.UserID(),
 		},
 	}
 
@@ -53,10 +53,10 @@ func (r Repo) Delete(id uuid.UUID) error {
 }
 
 // Find Reaction By UserId and BlogId
-func (r Repo) FindReactionById(id uuid.UUID) (*reaction.Reaction, error) {
+func (r Repo) FindReactionById(id uuid.UUID) (*models.Reaction, error) {
 	filter := bson.M{"_id": id}
 
-	var reaction reaction.Reaction
+	var reaction models.Reaction
 
 	err := r.collection.FindOne(context.Background(), filter).Decode(&reaction)
 	if err != nil {
@@ -69,9 +69,9 @@ func (r Repo) FindReactionById(id uuid.UUID) (*reaction.Reaction, error) {
 	return &reaction, nil
 }
 
-func (r Repo) FindReactionByBlogId(blogId uuid.UUID) (*[]reaction.Reaction, error) {
+func (r Repo) FindReactionByBlogId(blogId uuid.UUID) (*[]models.Reaction, error) {
 	filter := bson.M{"_id": blogId}
-	var reactions []reaction.Reaction
+	var reactions []models.Reaction
 
 	cur, err := r.collection.Find(context.Background(), filter)
 	if err != nil {
@@ -79,7 +79,7 @@ func (r Repo) FindReactionByBlogId(blogId uuid.UUID) (*[]reaction.Reaction, erro
 	}
 
 	for cur.Next(context.Background()) {
-		var r reaction.Reaction
+		var r models.Reaction
 
 		err := cur.Decode(&r)
 
@@ -92,6 +92,6 @@ func (r Repo) FindReactionByBlogId(blogId uuid.UUID) (*[]reaction.Reaction, erro
 	return &reactions, nil
 }
 
-func (r Repo) FindReactionByUserIdAndBlogId(userId uuid.UUID, blogId uuid.UUID) (*reaction.Reaction, error) {
+func (r Repo) FindReactionByUserIdAndBlogId(userId uuid.UUID, blogId uuid.UUID) (*models.Reaction, error) {
 	return nil, nil
 }

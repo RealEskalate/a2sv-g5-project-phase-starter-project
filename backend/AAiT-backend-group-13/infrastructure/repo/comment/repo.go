@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/group13/blog/domain/models/comment"
+	"github.com/group13/blog/domain/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -25,14 +25,14 @@ func New(client *mongo.Client, dbName, collectionName string) *Repo {
 }
 
 // Save adds a new comment if it does not exist, else updates the existing one.
-func (r *Repo) Save(comment comment.Comment) error {
+func (r *Repo) Save(comment models.Comment) error {
 
-	filter := bson.M{"_id": comment.Id()}
+	filter := bson.M{"_id": comment.ID()}
 	update := bson.M{
 		"$set": bson.M{
 			"content": comment.Content(),
-			"blogId":  comment.BlogId(),
-			"userId":  comment.UserId(),
+			"blogId":  comment.BlogID(),
+			"userId":  comment.UserID(),
 		},
 	}
 
@@ -54,10 +54,10 @@ func (r *Repo) Delete(id uuid.UUID) error {
 }
 
 // GetCommentById retrieves a comment by ID.
-func (r *Repo) GetCommentById(id uuid.UUID) (*comment.Comment, error) {
+func (r *Repo) GetCommentById(id uuid.UUID) (*models.Comment, error) {
 	filter := bson.M{"_id": id}
 
-	var c comment.Comment
+	var c models.Comment
 
 	err := r.collection.FindOne(context.Background(), filter).Decode(&c)
 	if err != nil {
@@ -72,11 +72,10 @@ func (r *Repo) GetCommentById(id uuid.UUID) (*comment.Comment, error) {
 }
 
 // GetCommentsByBlogId retrieves all comment by blogId.
-func (r *Repo) GetCommentsByBlogId(id uuid.UUID) (*[]comment.Comment, error) {
+func (r *Repo) GetCommentsByBlogId(id uuid.UUID) (*[]models.Comment, error) {
 
 	filter := bson.M{"_id": id}
-
-	var comments []comment.Comment
+	var comments []models.Comment
 
 	cur, err := r.collection.Find(context.Background(), filter)
 	if err != nil {
@@ -84,7 +83,7 @@ func (r *Repo) GetCommentsByBlogId(id uuid.UUID) (*[]comment.Comment, error) {
 	}
 
 	for cur.Next(context.Background()) {
-		var c comment.Comment
+		var c models.Comment
 
 		err := cur.Decode(&c)
 

@@ -97,7 +97,7 @@ func (controller *AuthController) HandleLogin(c *gin.Context) {
 	c.JSON(201, domain.Response{"accessToken": acK, "refreshToken": rfK})
 }
 
-// HandleGetUser handles the renew access token endpoint
+// HandleRenewAccessToken handles the renew access token endpoint
 func (controller *AuthController) HandleRenewAccessToken(c *gin.Context) {
 	token, gErr := controller.GetAuthHeader(c)
 	if gErr != nil {
@@ -114,7 +114,7 @@ func (controller *AuthController) HandleRenewAccessToken(c *gin.Context) {
 	c.JSON(200, domain.Response{"accessToken": accessToken})
 }
 
-// HandleGetUser handles the update user endpoint
+// HandleUpdateUser handles the update user endpoint
 func (controller *AuthController) HandleUpdateUser(c *gin.Context) {
 	reqUsername := strings.TrimSpace(c.Param("username"))
 	if reqUsername == "" {
@@ -143,7 +143,7 @@ func (controller *AuthController) HandleUpdateUser(c *gin.Context) {
 	c.JSON(200, domain.Response{"message": "User updated", "data": resData})
 }
 
-// HandleGetUser handles the promote user endpoint
+// HandlePromoteUser handles the promote user endpoint
 func (controller *AuthController) HandlePromoteUser(c *gin.Context) {
 	username := c.Param("username")
 	if username == "" {

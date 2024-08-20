@@ -26,7 +26,7 @@ const formatDate = (dateString: string) => {
 const AllTransactions = () => {
   const dispatch = useDispatch();
   const { transactions, loading, error } = useSelector((state: RootState) => state.transactions);
-  const { data, isLoading, isError } = useGetAllTransactionsQuery({ size: 10, page: 1 });
+  const { data, isLoading, isError } = useGetAllTransactionsQuery({ size: 10, page: 0 });
   useEffect(() => {
     dispatch(setLoading(isLoading));
 

@@ -1,27 +1,22 @@
-"use client"; // Ensure the component is treated as a client component
-
-import React, { useEffect, useState } from "react";
+"use client"
+import React, { useEffect } from "react";
 import { FaRegArrowAltCircleUp, FaRegArrowAltCircleDown } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetAllTransactionsQuery } from "@/lib/redux/api/transactionsApi";
-import {
-  setTransactions,
-  setLoading,
-  setError,
-} from "@/lib/redux/slices/transactionsSlice";
+import { setTransactions, setLoading, setError } from "@/lib/redux/slices/transactionsSlice";
 import { RootState } from "@/lib/redux/store";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
 
-  const formattedDate = date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
+  const formattedDate = date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
   });
 
-  const formattedTime = date.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
+  const formattedTime = date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
     hour12: true,
   });
 
@@ -29,24 +24,14 @@ const formatDate = (dateString: string) => {
 };
 
 const AllTransactions = () => {
-  const [activeTab, setActiveTab] = useState('')
   const dispatch = useDispatch();
-  const { transactions, loading, error } = useSelector(
-    (state: RootState) => state.transactions
-  );
-  const { data, isLoading, isError } = useGetAllTransactionsQuery({
-    size: 10,
-    page: 0,
-  });
-
+  const { transactions, loading, error } = useSelector((state: RootState) => state.transactions);
+  const { data, isLoading, isError } = useGetAllTransactionsQuery({ size: 10, page: 0 });
   useEffect(() => {
     dispatch(setLoading(isLoading));
-    console.log("Data: ", data); 
-    console.log("isLoading: ", isLoading); 
-    console.log("isError: ", isError);
 
     if (data) {
-      dispatch(setTransactions(data.data.content)); 
+      dispatch(setTransactions(data.data.content));
     }
 
     if (isError) {
@@ -76,7 +61,7 @@ const AllTransactions = () => {
             key={index}
             className="grid grid-cols-7 xl:grid-cols-9 border-b min-h-12 items-center text-xs lg:font-medium xl:text-[18px]"
           >
-            <div className="flex items-center gap-2 col-span-5 lg:col-span-2 lg:font-medium">
+            <div className="flex items-center gap-2 col-span-5 lg:col-span-2 lg:font-medium ">
               {transaction.amount < 0 ? (
                 <FaRegArrowAltCircleUp
                   color="#718EBF"
@@ -90,25 +75,19 @@ const AllTransactions = () => {
               )}
               <span>{transaction.description}</span>
             </div>
-            <div className="hidden xl:block xl:col-span-2">
-              {transaction.transactionId}
-            </div>
+            <div className="hidden xl:block xl:col-span-2">{transaction.transactionId}</div>
             <div className="hidden lg:block">{transaction.type}</div>
             <div className="hidden lg:block">{transaction.senderUserName}</div>
-            <div className="hidden lg:block">
-              {formatDate(transaction.date)}
-            </div>
+            <div className="hidden lg:block">{formatDate(transaction.date)}</div>
             <div
               className={`col-span-2 lg:col-span-1 justify-self-end lg:justify-self-auto ${
                 transaction.amount < 0 ? "text-red-500" : "text-green-500"
               }`}
             >
-              {transaction.amount < 0 ? "-" : "+"}$
-              {Math.abs(transaction.amount)}
+              {transaction.amount < 0 ? "-" : "+"}${Math.abs(transaction.amount)}
             </div>
-            <div className="hidden lg:block border p-1 rounded-lg w-auto justify-self-center hover:border-blue-400 hover:cursor-pointer">
-              Download
-            </div>
+            {/* <div className="hidden lg:block">{transaction.receiverUserName}</div> */}
+            <div className="hidden lg:block border p-1 rounded-lg w-auto justify-self-center hover:border-blue-400 hover:cursor-pointer">Download</div>
           </div>
         ))}
       </section>

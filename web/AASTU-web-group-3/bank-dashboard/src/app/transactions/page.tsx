@@ -1,5 +1,5 @@
 import React from "react";
-import AllTransactions from "../components/AllTransactions";
+import AllTransactions from "../components/transaction/AllTransactions";
 import CreditCard from "../components/CreditCard";
 import DashboardBarChart from "../components/Chart/DashboardBarChart";
 

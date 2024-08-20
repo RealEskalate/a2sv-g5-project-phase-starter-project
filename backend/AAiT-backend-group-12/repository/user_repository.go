@@ -192,3 +192,12 @@ func (r *UserRepository) UpdatePassword(c context.Context, username string, newP
 
 	return nil
 }
+
+func (r *UserRepository) DeleteUser(c context.Context, username string) domain.CodedError {
+	_, err := r.collection.DeleteOne(c, bson.D{{Key: "username", Value: username}})
+	if err != nil {
+		return domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return nil
+}

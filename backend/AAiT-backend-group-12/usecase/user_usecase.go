@@ -180,10 +180,9 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 	mail := u.EmailVerificationTemplate(hostUrl, user.Username, verificationData.Token)
 	mailErr := u.SendMail("Blog API", user.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
 	if mailErr != nil {
+		u.userRepository.DeleteUser(c, user.Username)
 		return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)
 	}
-
-	// TODO delete email if sending the mail fails
 
 	return nil
 }

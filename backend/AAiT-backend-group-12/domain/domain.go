@@ -128,6 +128,7 @@ type UserRepositoryInterface interface {
 	VerifyUser(c context.Context, username string) CodedError
 	UpdateVerificationDetails(c context.Context, username string, verificationData VerificationData) CodedError
 	UpdatePassword(c context.Context, username string, newPassword string) CodedError
+	DeleteUser(c context.Context, username string) CodedError
 }
 
 type UserUsecaseInterface interface {

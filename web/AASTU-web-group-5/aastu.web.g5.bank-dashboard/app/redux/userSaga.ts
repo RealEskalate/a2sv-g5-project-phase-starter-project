@@ -5,7 +5,6 @@ import { setUser } from './slice/userSlice';
 
 
 function fetchUserData(username: string, token: string) {
-  console.log(username, token, 'from fetchUserData'); 
   return axios.get(`https://bank-dashboard-6acc.onrender.com/user/${username}`, {
     headers: {
       Authorization: `Bearer ${token}`,

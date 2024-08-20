@@ -2,41 +2,42 @@ export const balance = 1200;
 export const income = 3000;
 export const expense = 1800;
 export const netBalance = 1400;
-
+import User2 from '@/public/assests/icon/Accounts/user2.png'
 import Apple from '@/public/assests/icon/Accounts/Apple.png'
 import Playstation from '@/public/assests/icon/Accounts/playstation1.png'
 import Rectangle from '@/public/assests/icon/Accounts/Rectangle65.png';
-import User2 from '@/public/assests/icon/Accounts/user2.png'
+import Spotify from '@/public/assests/icon/Accounts/Group328.png';
+import Mobile_Service from '@/public/assests/icon/Accounts/Group327.png';
 export const transaction = [
   {
-    
+    image:Spotify,
     name: 'Amazon Purchase',
     date: '2024-08-14',
-    type: 'Shopping',
+    type: 'Debit',
     number: '**** 1234',
     status: 'Completed',
     amount: '-$120.00'
   },
   {
-  
+    image:Mobile_Service,
     name: 'Salary Credit',
     date: '2024-08-13',
-    type: 'Service',
+    type: 'Credit',
     number: '**** 5678',
     status: 'Completed',
     amount: '+$3000.00'
   },
   {
-   
+    image:  User2,
     name: 'Emmily wilson',
     date: '2024-08-12',
-    type: 'Transfer',
+    type: 'Debit',
     number: '**** 9101',
     status: 'Completed',
     amount: '-$15.00'
   },
   {
-   
+    image:User2,
     name: 'Grocery Shopping',
     date: '2024-08-11',
     type: 'Debit',
@@ -45,7 +46,7 @@ export const transaction = [
     amount: '-$85.00'
   },
   {
-  
+    image:User2,
     name: 'Electricity Bill',
     date: '2024-08-10',
     type: 'Debit',

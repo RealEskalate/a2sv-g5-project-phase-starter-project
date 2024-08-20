@@ -21,20 +21,21 @@ func NewBlogUsecase(blogRepository domain.BlogRepository, idConverter domain.IDC
 	}
 }
 
-func (b BlogUsecase) ReactOnBlog(user_id string, reactionType string, blog_id string) domain.ErrorResponse{
+func (b BlogUsecase) ReactOnBlog(user_id string, reactionType string, blog_id string) domain.ErrorResponse {
 	var reaction bool
-	if strings.ToLower(reactionType) == "true"{
+	if strings.ToLower(reactionType) == "true" {
 		reaction = true
-	}else{
+	} else {
 		reaction = false
 	}
 	err := b.blogRepository.ReactOnBlog(user_id, reaction, blog_id)
-	if err != (domain.ErrorResponse{}){
+	if err != (domain.ErrorResponse{}) {
 		return err
 	}
 	return domain.ErrorResponse{}
 
 }
+
 // CommentOnBlog implements domain.BlogRepository.
 func (b BlogUsecase) CommentOnBlog(user_id string, user_name string, comment domain.Comment) error {
 	comment.Commentor_ID = b.idConverter.ToObjectID(user_id)

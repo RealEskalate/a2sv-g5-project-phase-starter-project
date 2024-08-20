@@ -25,9 +25,9 @@ func (l *logoutUsecase) Logout(c context.Context, id string, user_agent string) 
 
 	return l.activeUserRepository.DeleteActiveUser(id, user_agent, ctx)
 }
-func (l *logoutUsecase) CheckActiveUser(c context.Context, id string) (domain.ActiveUser, error) {
+func (l *logoutUsecase) CheckActiveUser(c context.Context, id string, user_agent string) (domain.ActiveUser, error) {
 	ctx, cancel := context.WithTimeout(c, l.contextTimeout)
 	defer cancel()
 
-	return l.activeUserRepository.FindActiveUserById(id, ctx)
+	return l.activeUserRepository.FindActiveUser(id, user_agent, ctx)
 }

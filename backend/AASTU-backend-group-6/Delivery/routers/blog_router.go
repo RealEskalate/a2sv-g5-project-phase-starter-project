@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewBlogrouter(blogRouter *gin.RouterGroup, controller controllers.BlogController, authHandler  gin.HandlerFunc) {
+func NewBlogrouter(blogRouter *gin.RouterGroup, controller controllers.BlogController, authHandler gin.HandlerFunc) {
 	// unprotected
 	//blogRouter.Use(infrastructure.NewAuthMiddleware(*config).AuthenticationMiddleware())
 	blogRouter.GET("/", controller.GetBlogs)
@@ -16,7 +16,7 @@ func NewBlogrouter(blogRouter *gin.RouterGroup, controller controllers.BlogContr
 	blogRouter.GET("/filter", controller.FilterBlogsByTag)
 
 	// protected
-	blogRouter.GET("/my" , authHandler, controller.GetMyBlogs)
+	blogRouter.GET("/my", authHandler, controller.GetMyBlogs)
 	blogRouter.GET("/my/:id", authHandler, controller.GetMyBlogByID)
 
 	blogRouter.POST("/create", authHandler, controller.CreateBlog)

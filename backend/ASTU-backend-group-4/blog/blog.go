@@ -7,6 +7,13 @@ import (
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/pkg/infrastructure"
 )
 
+var weightsToUse = map[string]float32{
+	"views":    0.5,
+	"comments": 0.3,
+	"likes":    0.2,
+	"dislikes": 0.1,
+}
+
 type Blog struct {
 	ID            string    `json:"id,omitempty" bson:"_id,omitempty"`
 	AuthorID      string    `json:"author_id,omitempty"`
@@ -20,6 +27,50 @@ type Blog struct {
 	Popularity    float32   `json:"popularity,omitempty"`
 	CreatedAt     time.Time `json:"created_at,omitempty"`
 	UpdatedAt     time.Time `json:"updated_at,omitempty"`
+}
+
+func (b *Blog) CalculatePopularity() {
+	b.Popularity = float32(
+		float32(b.ViewsCount)*weightsToUse["views"] +
+			float32(b.CommentsCount)*weightsToUse["comments"] +
+			float32(b.LikesCount)*weightsToUse["likes"] -
+			float32(b.DislikesCount)*weightsToUse["dislikes"],
+	)
+}
+
+func (b *Blog) IncrementViewsCount() {
+	b.ViewsCount++
+	b.CalculatePopularity()
+}
+
+func (b *Blog) IncrementCommentsCount() {
+	b.CommentsCount++
+	b.CalculatePopularity()
+}
+
+func (b *Blog) IncrementLikesCount() {
+	b.LikesCount++
+	b.CalculatePopularity()
+}
+
+func (b *Blog) IncrementDislikesCount() {
+	b.DislikesCount++
+	b.CalculatePopularity()
+}
+
+func (b *Blog) DecrementLikesCount() {
+	b.LikesCount--
+	b.CalculatePopularity()
+}
+
+func (b *Blog) DecrementDislikesCount() {
+	b.DislikesCount--
+	b.CalculatePopularity()
+}
+
+func (b *Blog) DecrementCommentsCount() {
+	b.CommentsCount--
+	b.CalculatePopularity()
 }
 
 type Comment struct {

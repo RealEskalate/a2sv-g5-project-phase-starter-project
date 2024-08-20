@@ -1,6 +1,7 @@
-package router
+package route
 
 import (
+	"backend-starter-project/bootstrap"
 	"backend-starter-project/delivery/controller"
 	"backend-starter-project/repository"
 	"backend-starter-project/service"
@@ -10,10 +11,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewAuthRouter(db *mongo.Database, group *gin.RouterGroup) {
+func NewAuthRouter(env *bootstrap.Env,db *mongo.Database, group *gin.RouterGroup) {
 	token_repo := repository.NewTokenRepository(db)
-	acc_tok_secret := ""
-	ref_tok_secret := ""
+	acc_tok_secret := env.AccessTokenSecret
+	ref_tok_secret := env.RefreshTokenSecret
 	user_repo := repository.NewUserRepository(db.Collection("users"))
 	token_service := service.NewTokenService(acc_tok_secret, ref_tok_secret, token_repo, user_repo)
 

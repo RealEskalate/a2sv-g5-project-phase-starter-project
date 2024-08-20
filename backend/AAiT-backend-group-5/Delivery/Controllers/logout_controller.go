@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"strings"
 
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	"github.com/gin-gonic/gin"
@@ -21,18 +20,10 @@ func NewLogoutController(logoutUsecase interfaces.LogoutUsecase, jwtService inte
 }
 
 func (logoutController *LogoutController) Logout(ctx *gin.Context) {
-	// get token from authorization header
-	authHeader := ctx.GetHeader("Authorization")
-	token := strings.TrimPrefix(authHeader, "Bearer ")
+	// get the userId from the context
+	userId := ctx.GetString("id")
 
-	// validate token and get JwtCustom from the token
-	JwtCustom, err := logoutController.JwtService.ValidateToken(token)
-	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid token"})
-		return
-	}
-
-	e := logoutController.LogoutUsecase.LogoutUser(ctx, JwtCustom.ID)
+	e := logoutController.LogoutUsecase.LogoutUser(ctx, userId)
 	if e != nil {
 		ctx.IndentedJSON(e.Code, gin.H{"error": e.Message})
 		return

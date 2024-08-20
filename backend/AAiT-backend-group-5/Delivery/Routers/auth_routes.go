@@ -15,16 +15,16 @@ func NewAuthenticationRouter(env *config.Env, database mongo.Database, group *gi
 
 	url_repository := repository.NewURLRepository(&database)
 	user_repository := repository.NewUserRepository(&database)
+	session_repository := repository.NewSessionRepository(&database)
 
 	jwt_service := infrastructure.NewJwtService(env)
 	password_service := infrastructure.NewPasswordService()
 	email_service := infrastructure.NewEmailService(emailConfig, *env)
 	url_service := infrastructure.NewURLService(env, url_repository)
-	session := repository.NewSessionRepository(&database)
 
 	// instantiate login controller
 	LoginController := &controllers.LoginController{
-		LoginUsecase: usecases.NewLoginUsecase(jwt_service, password_service, user_repository, session),
+		LoginUsecase: usecases.NewLoginUsecase(jwt_service, password_service, user_repository, session_repository),
 		Env:          env,
 	}
 
@@ -34,8 +34,8 @@ func NewAuthenticationRouter(env *config.Env, database mongo.Database, group *gi
 		PasswordUsecase: usecases.NewSetupPassword(url_service, jwt_service, user_repository, email_service, password_service),
 	}
 
-	group.POST("/login", LoginController.Login)
-
 	group.POST("/signup", SignupController.Signup)
-	group.POST("/confirmRegistration:id", SignupController.ConfirmRegistration)
+	group.POST("/confirmRegistration/:id", SignupController.ConfirmRegistration)
+
+	group.POST("/login", LoginController.Login)
 }

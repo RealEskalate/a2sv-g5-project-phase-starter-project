@@ -7,7 +7,7 @@ import (
 )
 
 type URLService interface {
-	GenerateURL(token string) (string, *models.ErrorResponse)
+	GenerateURL(token string, purpose string) (string, *models.ErrorResponse)
 	RemoveURL(short_url_code string) *models.ErrorResponse
 	GetURL(short_url_code string) (*models.URL, *models.ErrorResponse)
 }

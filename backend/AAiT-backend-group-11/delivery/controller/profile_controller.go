@@ -8,7 +8,7 @@ import (
 )
 
 type ProfileController struct {
-	profileService interfaces.ProfileService
+	ProfileService interfaces.ProfileService
 }
 
 func (controller *ProfileController) CreateUserProfile(ctx *gin.Context) {
@@ -24,7 +24,7 @@ func (controller *ProfileController) CreateUserProfile(ctx *gin.Context) {
 
 func (controller *ProfileController) GetUserProfile(ctx *gin.Context) {
 	userId := ctx.Param("userId")
-	profile, err := controller.profileService.GetUserProfile(userId)
+	profile, err := controller.ProfileService.GetUserProfile(userId)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -44,7 +44,7 @@ func (controller *ProfileController) UpdateUserProfile(ctx *gin.Context) {
 
 func (controller *ProfileController) DeleteUserProfile(ctx *gin.Context) {
 	userId := ctx.Param("userId")
-	err := controller.profileService.DeleteUserProfile(userId)
+	err := controller.ProfileService.DeleteUserProfile(userId)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return

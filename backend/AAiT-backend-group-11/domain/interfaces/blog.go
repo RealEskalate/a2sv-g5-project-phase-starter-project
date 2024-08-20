@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"backend-starter-project/domain/entities"
+	"context"
 	"time"
 )
 
@@ -34,8 +35,8 @@ type BlogService interface {
 
 
 type PopularityTrackingService interface {
-    IncrementViewCount(blogPostId string) error
-    LikeBlogPost(blogPostId, userId string) error
-    DislikeBlogPost(blogPostId, userId string) error
-    GetPopularityMetrics(blogPostId string) (map[string]int, error)
+    IncrementViewCount(c context.Context, blogPostId string) error
+    LikeBlogPost(c context.Context, blogPostId, userId string) error
+    DislikeBlogPost(c context.Context, blogPostId, userId string) error
+    GetPopularityMetrics(c context.Context, blogPostId string) (map[string]int, error)
 }

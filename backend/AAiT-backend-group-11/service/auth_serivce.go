@@ -17,6 +17,8 @@ type authService struct {
 	userService          interfaces.UserService
 	tokenRepo              interfaces.RefreshTokenRepository
 	OtpService  interfaces.OTPService
+	passwordService      interfaces.PasswordService
+	tokenService         interfaces.TokenService
 }
 
 // VerifyEmail implements interfaces.AuthenticationService.
@@ -50,8 +52,7 @@ func (service *authService) VerifyEmail(email string, code string) error {
     }
 
     return nil
-	passwordService      interfaces.PasswordService
-	tokenService         interfaces.TokenService
+
 }
 
 func NewAuthService(userService interfaces.UserService, tokenRepo interfaces.RefreshTokenRepository, otpService interfaces.OTPService,
@@ -174,8 +175,20 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
 }
 
 func (service *authService) Login(emailOrUsername, password string) (*entities.RefreshToken, string, error) {
-	//to be implemented
-	return &entities.RefreshToken{}, "", nil
+	user, _ := service.userService.FindUserByEmail(emailOrUsername)
+	err := service.passwordService.ComparePassword(user.Password, password)
+	if err != nil {
+		return nil, "", errors.New("Invalid password")
+	}
+	token, err := service.tokenService.GenerateAccessToken(user)
+	if err != nil {
+		return nil, "", err
+	}
+	refresh_tok, err := service.tokenService.GenerateRefreshToken(user)
+	if err != nil {
+		return nil, "", err
+	}
+	return refresh_tok, token, nil
 }
 
 func (service *authService) Logout(userId string) error {

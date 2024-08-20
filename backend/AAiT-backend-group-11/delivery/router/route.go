@@ -1,4 +1,4 @@
-package route
+package router
 
 import (
 	"backend-starter-project/bootstrap"
@@ -12,5 +12,5 @@ func Setup(env *bootstrap.Env, db *mongo.Database, gin *gin.Engine) {
 	publicRouter := gin.Group("")
 	
 	NewAuthRouter(env, db, publicRouter)
-	
+	NewProfileRouter(db, publicRouter)	
 }

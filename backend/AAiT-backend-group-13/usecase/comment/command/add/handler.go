@@ -32,17 +32,18 @@ func (h *Handler) Handle(cmd *Command) (*comment.Comment, error) {
 		return nil, err
 	}
 
-	err = h.commentRepo.Save(comment)
-
-	if err != nil {
-		return nil, err
-	}
-
 	blog, err := h.blogRepo.GetSingle(cmd.blogId)
 
 	if err != nil {
 		return nil, err
 	}
+
+	err = h.commentRepo.Save(comment)
+
+	if err != nil {
+		return nil, err
+	}
+	
 	blog.UpdateCommentCount(true)
 
 	err = h.blogRepo.Save(blog)

@@ -23,7 +23,7 @@ func NewHandler(reationRepo irepo.Reaction, blogRepo irepo.Blog) *Handler {
 // Handle processes the command to add a new blog to the repository.
 func (h *Handler) Handle(cmd *Command) (bool, error) {
 
-	c, err := h.reactionRepo.FindReactionByUserIdAndBlogId(cmd.BlogId, cmd.BlogId)
+	c, err := h.reactionRepo.FindReactionByUserIdAndBlogId(cmd.UserId, cmd.BlogId)
 
 	if err == nil {
 		err := h.reactionRepo.Delete(c.ID())
@@ -34,7 +34,7 @@ func (h *Handler) Handle(cmd *Command) (bool, error) {
 
 		blog, err := h.bloRepo.GetSingle(cmd.BlogId)
 
-		if err != nil{
+		if err != nil {
 			return false, err
 		}
 
@@ -43,10 +43,8 @@ func (h *Handler) Handle(cmd *Command) (bool, error) {
 		} else {
 			blog.UpdateDisLikeCount(false)
 		}
-	
 
-		
-	} 
+	}
 
 	r := reaction.New(reaction.Config{
 		IsLike: cmd.IsLike,

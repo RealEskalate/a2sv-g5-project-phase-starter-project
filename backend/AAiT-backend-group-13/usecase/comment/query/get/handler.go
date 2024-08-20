@@ -24,5 +24,10 @@ func New(commmentRepo irepo.Comment) *Handler {
 
 // Handle processes the Get query by its ID and returns the corresponding comment.
 func (h *Handler) Handle(id uuid.UUID) (*comment.Comment, error) {
-	return h.repo.GetCommentById(id)
+	c, err := h.repo.GetCommentById(id)
+
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
 }

@@ -162,14 +162,14 @@ function BalanceHistoryChart() {
 
   if (isError) {
     return (
-      <div className="rounded-3xl bg-white p-5 lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[325px] h-[223px]">
+      <div className="rounded-3xl bg-white md:p-5 p-1 lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[325px] h-[223px]">
         Ooops! Error loading balance history.
       </div>
     );
   }
 
   return (
-        <div className="balance-history-chart text-[#718EBF] rounded-3xl bg-white  lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[325px] h-[223px]">
+        <div className="balance-history-chart text-[#718EBF] rounded-3xl bg-white  lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[350px] h-[223px] pt-5">
             <canvas ref={chartRef} className="flex flex-col" />
         </div>
   );

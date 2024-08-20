@@ -1,4 +1,4 @@
-package controllers
+package Controller
 
 import (
 	domain "AAiT-backend-group-8/Domain"

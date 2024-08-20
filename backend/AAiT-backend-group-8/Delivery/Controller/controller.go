@@ -1,4 +1,4 @@
-package controllers
+package Controller
 
 import usecase "AAiT-backend-group-8/Usecase"
 

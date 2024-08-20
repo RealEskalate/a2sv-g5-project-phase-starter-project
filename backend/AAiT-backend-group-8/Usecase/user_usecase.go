@@ -113,7 +113,7 @@ func (uuc *UserUseCaseImpl) GetSingleUser(email string) (*domain.User, error) {
 
 func (uuc *UserUseCaseImpl) RefreshToken(email, refresher string) (string, error) {
 	//Check the validity of the refresher token
-	err := uuc.TokenService.ValidateToken(refresher)
+	_,err := uuc.TokenService.ValidateToken(refresher)
 
 	if err != nil {
 		return "", err
@@ -162,13 +162,11 @@ func (uuc *UserUseCaseImpl) Login(email string, password string) (string, string
 
 	hashedPassword := user.Password
 
-	//Verify the password and the hashedPassword alignment
 	err = uuc.PasswordService.VerifyPassword(hashedPassword, password)
 	if err != nil {
 		return "", "", errors.New("incorrect email or password")
 	}
 
-	//Generate a token for the user
 	tokenExp := time.Now().Add(time.Minute * 5).Unix()
 	token, err := uuc.TokenService.GenerateToken(user.Email, user.Id, user.Role, user.Name, tokenExp)
 
@@ -176,14 +174,12 @@ func (uuc *UserUseCaseImpl) Login(email string, password string) (string, string
 		return "", "", err
 	}
 
-	//Define and Generate a refresher token for the user
 	refresherExp := time.Now().Add(time.Hour * 24 * 30).Unix()
 	refresher, err := uuc.TokenService.GenerateToken(user.Email, user.Id, user.Role, user.Name, refresherExp)
 
 	if err != nil {
 		return "", "", err
 	}
-	//Store the refresher token in the database
 	credentials := domain.Credential{Email: email, Refresher: refresher}
 	err = uuc.TokenRepo.InsertRefresher(credentials)
 
@@ -191,6 +187,81 @@ func (uuc *UserUseCaseImpl) Login(email string, password string) (string, string
 		return "", "", err
 	}
 
-	//return the token and the refresher token
 	return token, refresher, nil
+}
+
+func (uuc *UserUseCaseImpl) GenerateResetPasswordToken(email string) error {
+	user, err := uuc.userRepository.GetUserByEmail(email)
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	resetToken, err := uuc.TokenService.GenerateToken(user.Email, user.Id, "reset_password", "", time.Now().Add(1*time.Hour).Unix())
+	if err != nil {
+		return err
+	}
+
+	err = uuc.MailService.SendPasswordResetEmail(user.Email, resetToken)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (uuc *UserUseCaseImpl) StoreToken(token string) error {
+	claims, err := uuc.TokenService.ValidateToken(token)
+	if err != nil {
+		return errors.New("invalid or expired token")
+	}
+
+	email, ok := claims["email"].(string)
+	if !ok {
+		return errors.New("invalid token payload")
+	}
+
+	err = uuc.userRepository.StoreResetToken(email, token)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (uuc *UserUseCaseImpl) ResetPassword(token string, newPassword string) error {
+	claims, err := uuc.TokenService.ValidateToken(token)
+	if err != nil {
+		return errors.New("invalid or expired token")
+	}
+
+	email, ok := claims["email"].(string)
+	if !ok {
+		return errors.New("invalid token payload")
+	}
+
+	storedToken, err := uuc.userRepository.GetResetTokenByEmail(email)
+	if err != nil {
+		return err
+	}
+
+	if storedToken != token {
+		return errors.New("invalid or mismatched token")
+	}
+
+	hashedPassword, err := uuc.PasswordService.HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+
+	err = uuc.userRepository.UpdatePasswordByEmail(email, hashedPassword)
+	if err != nil {
+		return err
+	}
+
+	err = uuc.userRepository.InvalidateResetToken(email)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

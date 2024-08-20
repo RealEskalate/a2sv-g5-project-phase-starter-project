@@ -28,6 +28,7 @@ const LoginForm: React.FC = () => {
     setIsLoading(true);
       try {
         const loggedInUser = await loginUser(data);
+        
         Cookie.set('accessToken', loggedInUser.data.access_token);
         Cookie.set('refreshToken', loggedInUser.data.refresh_token);
       } catch (error) {

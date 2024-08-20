@@ -61,9 +61,7 @@ func ValidateAndParseToken(rawToken string, secret string) (*jwt.Token, error) {
 	return token, nil
 }
 
-/*
-Get expiry date of the token
-*/
+// GetExpiryDate returns the expiry date of the token
 func GetExpiryDate(token *jwt.Token) (time.Time, domain.CodedError) {
 	expiresAt, ok := token.Claims.(jwt.MapClaims)["expiresAt"]
 	if !ok {
@@ -78,9 +76,7 @@ func GetExpiryDate(token *jwt.Token) (time.Time, domain.CodedError) {
 	return expiresAtTime, nil
 }
 
-/*
-Get username of the token
-*/
+// GetUsername returns the username of the token
 func GetUsername(token *jwt.Token) (string, domain.CodedError) {
 	username, ok := token.Claims.(jwt.MapClaims)["username"]
 	if !ok {
@@ -90,9 +86,7 @@ func GetUsername(token *jwt.Token) (string, domain.CodedError) {
 	return fmt.Sprintf("%v", username), nil
 }
 
-/*
-Get role of the token
-*/
+// GetRole returns the role of the token
 func GetRole(token *jwt.Token) (string, domain.CodedError) {
 	role, ok := token.Claims.(jwt.MapClaims)["role"]
 	if !ok {
@@ -102,9 +96,7 @@ func GetRole(token *jwt.Token) (string, domain.CodedError) {
 	return fmt.Sprintf("%v", role), nil
 }
 
-/*
-Get role of the token
-*/
+// GetTokenType returns the token type of the token
 func GetTokenType(token *jwt.Token) (string, domain.CodedError) {
 	tokenType, ok := token.Claims.(jwt.MapClaims)["tokenType"]
 	if !ok {

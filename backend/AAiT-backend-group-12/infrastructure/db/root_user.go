@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// Creates a root user in the database with the given username and password
 func CreateRootUser(db *mongo.Database, rootUsername string, rootPassword string) error {
 	rootUser := domain.User{
 		Username:   rootUsername,

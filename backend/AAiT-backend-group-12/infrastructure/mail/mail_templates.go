@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// EmailVerificationTemplate returns the HTML template for the email verification email
 func EmailVerificationTemplate(hostUrl string, username string, token string) string {
 	link := hostUrl + "/api/" + env.ENV.ROUTE_PREFIX + "/auth/verify/email/" + username + "/" + token
 	return fmt.Sprintf(`
@@ -81,8 +82,8 @@ func EmailVerificationTemplate(hostUrl string, username string, token string) st
 		</html>`, link, time.Now().Year())
 }
 
+// PasswordResetTemplate returns the HTML template for the password reset email
 func PasswordResetTemplate(hostUrl string, username string, token string) string {
-	// link := hostUrl + "/api/" + env.ENV.ROUTE_PREFIX + "/auth/reset/password/" + username + "/" + token
 	return fmt.Sprintf(`
 		<!DOCTYPE html>
 		<html>

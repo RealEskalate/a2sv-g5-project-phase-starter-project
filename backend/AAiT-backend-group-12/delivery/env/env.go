@@ -11,7 +11,7 @@ import (
 
 var ENV domain.EnvironmentVariables
 
-/* Loads environment variables from .env file and verifies that all required variables are set */
+// Loads environment variables from .env file and verifies that all required variables are set
 func LoadEnvironmentVariables() error {
 	err := godotenv.Load()
 	if err != nil {
@@ -81,7 +81,7 @@ func LoadEnvironmentVariables() error {
 	}
 }
 
-/* Removes the root credentials from the environment */
+// Removes the root credentials from the environment
 func UnsetRootCredentials() {
 	ENV.ROOT_USERNAME = ""
 	ENV.ROOT_PASSWORD = ""

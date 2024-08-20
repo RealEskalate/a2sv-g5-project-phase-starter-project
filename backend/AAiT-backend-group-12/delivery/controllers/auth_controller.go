@@ -14,6 +14,7 @@ type AuthController struct {
 	usecase domain.UserUsecaseInterface
 }
 
+// Returns the HTTP equivalent codes of the domain error codes
 func GetHTTPErrorCode(err domain.CodedError) int {
 	switch err.GetCode() {
 	case domain.ERR_BAD_REQUEST:
@@ -31,10 +32,12 @@ func GetHTTPErrorCode(err domain.CodedError) int {
 	}
 }
 
+// NewAuthController initializes the Auth controller
 func NewAuthController(usecase domain.UserUsecaseInterface) *AuthController {
 	return &AuthController{usecase: usecase}
 }
 
+// Returns the contents of the Authorization header
 func (controller *AuthController) GetAuthHeader(c *gin.Context) (string, error) {
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
@@ -49,6 +52,7 @@ func (controller *AuthController) GetAuthHeader(c *gin.Context) (string, error) 
 	return headerSegments[1], nil
 }
 
+// Returns the domain from the context of the app
 func (controller *AuthController) GetDomain(c *gin.Context) string {
 	scheme := "http"
 	if c.Request.TLS != nil {
@@ -59,6 +63,7 @@ func (controller *AuthController) GetDomain(c *gin.Context) string {
 	return fmt.Sprintf("%s://%s", scheme, host)
 }
 
+// HandleRegister handles the register user endpoint
 func (controller *AuthController) HandleSignup(c *gin.Context) {
 	var newUser domain.User
 	if err := c.BindJSON(&newUser); err != nil {
@@ -75,6 +80,7 @@ func (controller *AuthController) HandleSignup(c *gin.Context) {
 	c.JSON(201, domain.Response{"message": "User created. Please verify your email."})
 }
 
+// HandleLogin handles the login endpoint
 func (controller *AuthController) HandleLogin(c *gin.Context) {
 	var newUser domain.User
 	if err := c.BindJSON(&newUser); err != nil {
@@ -91,6 +97,7 @@ func (controller *AuthController) HandleLogin(c *gin.Context) {
 	c.JSON(201, domain.Response{"accessToken": acK, "refreshToken": rfK})
 }
 
+// HandleGetUser handles the renew access token endpoint
 func (controller *AuthController) HandleRenewAccessToken(c *gin.Context) {
 	token, gErr := controller.GetAuthHeader(c)
 	if gErr != nil {
@@ -107,6 +114,7 @@ func (controller *AuthController) HandleRenewAccessToken(c *gin.Context) {
 	c.JSON(200, domain.Response{"accessToken": accessToken})
 }
 
+// HandleGetUser handles the update user endpoint
 func (controller *AuthController) HandleUpdateUser(c *gin.Context) {
 	reqUsername := strings.TrimSpace(c.Param("username"))
 	if reqUsername == "" {
@@ -135,6 +143,7 @@ func (controller *AuthController) HandleUpdateUser(c *gin.Context) {
 	c.JSON(200, domain.Response{"message": "User updated", "data": resData})
 }
 
+// HandleGetUser handles the promote user endpoint
 func (controller *AuthController) HandlePromoteUser(c *gin.Context) {
 	username := c.Param("username")
 	if username == "" {
@@ -151,6 +160,7 @@ func (controller *AuthController) HandlePromoteUser(c *gin.Context) {
 	c.JSON(200, domain.Response{"message": "User promoted"})
 }
 
+// HandleDemoteUser handles the demote user endpoint
 func (controller *AuthController) HandleDemoteUser(c *gin.Context) {
 	username := c.Param("username")
 	if username == "" {
@@ -167,6 +177,7 @@ func (controller *AuthController) HandleDemoteUser(c *gin.Context) {
 	c.JSON(200, domain.Response{"message": "User demoted"})
 }
 
+// HandleVerifyEmail handles the verify email endpoint
 func (controller *AuthController) HandleVerifyEmail(c *gin.Context) {
 	username := c.Param("username")
 	token := c.Param("token")
@@ -184,6 +195,7 @@ func (controller *AuthController) HandleVerifyEmail(c *gin.Context) {
 	c.JSON(200, domain.Response{"message": "User verified"})
 }
 
+// HandleInitResetPassword handles the init reset password endpoint
 func (controller *AuthController) HandleInitResetPassword(c *gin.Context) {
 	var user domain.User
 	if err := c.BindJSON(&user); err != nil {
@@ -200,6 +212,7 @@ func (controller *AuthController) HandleInitResetPassword(c *gin.Context) {
 	c.JSON(200, domain.Response{"message": "A reset password token has been sent to your email."})
 }
 
+// HandleResetPassword handles the reset password endpoint
 func (controller *AuthController) HandleResetPassword(c *gin.Context) {
 	var resetData dtos.ResetPassword
 	token, err := controller.GetAuthHeader(c)
@@ -222,6 +235,7 @@ func (controller *AuthController) HandleResetPassword(c *gin.Context) {
 	c.JSON(200, domain.Response{"message": "Password reset successful"})
 }
 
+// HandleLogout handles the logout endpoint
 func (controller *AuthController) HandleLogout(c *gin.Context) {
 	authHeader, err := controller.GetAuthHeader(c)
 	if err != nil {
@@ -232,6 +246,7 @@ func (controller *AuthController) HandleLogout(c *gin.Context) {
 	controller.usecase.Logout(c, c.Keys["username"].(string), authHeader)
 }
 
+// HandleGoogleAuth handles the Google OAuth login endpoint
 func (controller *AuthController) HandleGoogleAuth(c *gin.Context) {
 	var response dtos.GoogleResponse
 	if err := c.ShouldBindJSON(&response); err != nil {

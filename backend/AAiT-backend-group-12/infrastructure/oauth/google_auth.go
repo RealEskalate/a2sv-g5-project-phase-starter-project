@@ -7,6 +7,7 @@ import (
 	"github.com/markbates/goth/providers/google"
 )
 
+// NewAuth initializes the Google OAuth provider
 func NewAuth(clientId string, clientSecret string, maxAgeDays int, callbackUrl string) {
 	store := sessions.NewCookieStore([]byte(clientSecret))
 	store.MaxAge(86400 * maxAgeDays)

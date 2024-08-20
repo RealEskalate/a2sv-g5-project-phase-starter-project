@@ -21,6 +21,7 @@ type BlogDTO struct {
 	Comments   []CommentDTO       `bson:"comments"`
 }
 
+// CommentDTO represents the data structure stored in MongoDB for a comment.
 type CommentDTO struct {
 	ID        primitive.ObjectID `bson:"_id"`
 	Content   string             `bson:"content"`

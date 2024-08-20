@@ -3,13 +3,14 @@ import Image from "next/image";
 import white from "../../../public/assets/sim-white-icon.png";
 import gray from "../../../public/assets/sim-gray-icon.png";
 import black from "../../../public/assets/sim-black-icon.png";
-import { Card } from "@/app/Redux/slices/cardSlice";
+import { Card } from "../../Redux/slices/cardSlice";
 
 interface CardType {
   data: Card;
   isBlack: boolean;
   isFade: boolean;
   isSimGray: boolean;
+  className?: string;
 }
 
 export const convertDate = (dateString: string): string => {
@@ -19,14 +20,15 @@ export const convertDate = (dateString: string): string => {
   return `${month}/${year}`;
 };
 
-const VisaCard: React.FC<CardType> = ({ data, isBlack, isFade, isSimGray }) => {
+const VisaCard: React.FC<CardType> = ({ data, isBlack, isFade, isSimGray, className }) => {
+  console.log(data, "Data");
   const cardNo = `${data.semiCardNumber.slice(
     0,
     4
   )} **** **** ${data.semiCardNumber.slice(-4)}`;
   return (
     <div
-      className={`w-full max-h-[242px] font-Lato flex flex-col gap-2 grow rounded-3xl ${
+      className={`w-full max-h-[242px] font-Lato flex flex-col gap-2 grow rounded-3xl ${className} ${
         isBlack
           ? `text-colorBody-1 bg-white dark:bg-[#232328] dark:text-gray-200 dark:border-gray-500 border-solid border-[1px] border-gray-200`
           : isFade

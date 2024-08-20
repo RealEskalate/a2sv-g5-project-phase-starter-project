@@ -4,6 +4,7 @@ import CreditCard from "./CreditCard";
 import CardSettingList from "./CardSettingList";
 import AddCardForm from "./AddCardForm";
 import MainCreditCard from "./MainCreditCard";
+import Card from "../components/Page2/Card";
 
 const HeadingTitle = ({ title }: { title: string }) => {
   return (
@@ -18,23 +19,41 @@ const CreditCards = () => {
     <div className="bg-[#f5f7fb] w-full p-5 gap-5 flex flex-col">
       <div className="flex-col gap-5">
         <HeadingTitle title="My Cards" />
-        <div className="flex-col md:flex-row">
-          {/* <MainCreditCard
-            balance={5756}
+
+        <div className="flex overflow-scroll justify-between">
+          <Card
+            balance="$5,756"
             cardHolder="Eddy Cusuma"
             validThru="12/22"
             cardNumber="3778 **** **** 1234"
-            color1="#407cff"
-            color2="#5997ff"
+            filterClass=""
+            bgColor="from-[#0A06F4] to-[#0A06F4]"
+            textColor="text-white"
+            iconBgColor="bg-opacity-10"
+            showIcon={true}
           />
-          <MainCreditCard
-            balance={5756}
+          <Card
+            balance="$5,756"
             cardHolder="Eddy Cusuma"
             validThru="12/22"
             cardNumber="3778 **** **** 1234"
-            color1="#407cff"
-            color2="#5997ff"
-          /> */}
+            filterClass=""
+            bgColor="from-[#4C49ED] to-[#4C49ED]"
+            textColor="text-white"
+            iconBgColor="bg-opacity-10"
+            showIcon={true}
+          />
+          <Card
+            balance="$5,756"
+            cardHolder="Eddy Cusuma"
+            validThru="12/22"
+            cardNumber="3778 **** **** 1234"
+            filterClass=""
+            bgColor="from-[#FFF] to-[#FFF]"
+            textColor="text-black"
+            iconBgColor="bg-opacity-10"
+            showIcon={true}
+          />
         </div>
       </div>
       <div className="flex flex-col gap-6 md:flex-row">

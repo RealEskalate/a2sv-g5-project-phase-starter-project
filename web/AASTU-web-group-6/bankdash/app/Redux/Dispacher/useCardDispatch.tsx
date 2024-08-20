@@ -15,6 +15,7 @@ const useCardDispatch = (accessToken: string) => {
         if (res) {
           dispatch(setCards(res));
           dispatch(setStatus("succeeded"));
+          console.log(res, "Res")
         }
       } catch (error) {
         dispatch(setError("Failed to fetch cards"));

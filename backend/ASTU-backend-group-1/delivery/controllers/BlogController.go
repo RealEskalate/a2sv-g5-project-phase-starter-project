@@ -39,7 +39,7 @@ func (cont *BlogController) HandleGetAllBlogs(ctx *gin.Context) {
 	}
 
 }
-func (cont *BlogController) HandleGetPopular(ctx *gin.Context) {
+func (cont *BlogController) HandleGetPopularBlog(ctx *gin.Context) {
 
 	blogs, err := cont.usecase.FindPopularBlog()
 	if err != nil {

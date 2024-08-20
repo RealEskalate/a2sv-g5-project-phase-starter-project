@@ -10,28 +10,28 @@ import (
 )
 
 type Service struct{}
+
 func (h *Service) Decode(encryptedText string) (string, error) {
-    key := []byte("thisis32bitlongpassphraseimusing!") // Same key used for encryption
+	key := []byte("thisis32bitlongpassphraseimusing!") // Same key used for encryption
 
-    ciphertext, err := hex.DecodeString(encryptedText)
-    if err != nil {
-        return "", err
-    }
+	ciphertext, err := hex.DecodeString(encryptedText)
+	if err != nil {
+		return "", err
+	}
 
-    block, err := aes.NewCipher(key)
-    if err != nil {
-        return "", err
-    }
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return "", err
+	}
 
-    iv := ciphertext[:aes.BlockSize]
-    ciphertext = ciphertext[aes.BlockSize:]
+	iv := ciphertext[:aes.BlockSize]
+	ciphertext = ciphertext[aes.BlockSize:]
 
-    stream := cipher.NewCFBDecrypter(block, iv)
-    stream.XORKeyStream(ciphertext, ciphertext)
+	stream := cipher.NewCFBDecrypter(block, iv)
+	stream.XORKeyStream(ciphertext, ciphertext)
 
-    return string(ciphertext), nil
+	return string(ciphertext), nil
 }
-
 
 // Hash implements ihash.Service.
 func (s *Service) Hash(word string) (string, error) {

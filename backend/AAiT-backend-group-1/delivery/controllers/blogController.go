@@ -28,9 +28,8 @@ func (bc *blogController) CreateBlog(c *gin.Context) {
 		return
 	}
 	authorID := c.GetString("user_id")
-	// authorUsername := c.GetString("username")
-	// blog.AuthorUsername = authorUsername
-	blog.AuthorUsername = "Anonymous"
+	authorUsername := c.GetString("username")
+	blog.AuthorUsername = authorUsername
 	err := bc.blogUsecase.CreateBlog(&blog, authorID)
 
 	if err != nil {

@@ -3,6 +3,7 @@ package usecases
 import (
 	domain "blogs/Domain"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -21,11 +22,11 @@ func NewBlogUsecase(blogRepository domain.BlogRepository, idConverter domain.IDC
 }
 
 // CommentOnBlog implements domain.BlogRepository.
-func (b BlogUsecase) CommentOnBlog(user_id string, user_name string,  comment domain.Comment) error {
+func (b BlogUsecase) CommentOnBlog(user_id string, user_name string, comment domain.Comment) error {
 	comment.Commentor_ID = b.idConverter.ToObjectID(user_id)
 	comment.Commentor_username = user_name
 	err := b.blogRepository.CommentOnBlog(user_id, user_name, comment)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	return nil
@@ -76,7 +77,7 @@ func (b BlogUsecase) DeleteBlogByID(user_id string, blog_id string, role string)
 }
 
 // FilterBlogsByTag implements domain.BlogRepository.
-func (b BlogUsecase) FilterBlogsByTag(tags []string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
+func (b BlogUsecase) FilterBlogsByTag(tags []string, pageNo string, pageSize string, startDate string, endDate string, popularity string) ([]domain.Blog, domain.Pagination, error) {
 	PageNo, err := strconv.ParseInt(pageNo, 10, 64)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
@@ -85,8 +86,19 @@ func (b BlogUsecase) FilterBlogsByTag(tags []string, pageNo string, pageSize str
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
-
-	blogs, pagination, err := b.blogRepository.FilterBlogsByTag(tags, PageNo, PageSize)
+	startDate = strings.ReplaceAll(startDate, " ", "+")
+	endDate = strings.ReplaceAll(endDate, " ", "+")
+	// layout := "2006-01-02 15:04:05 -0700"
+	StartDate, err := time.Parse(time.RFC3339, startDate)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+	EndDate, err := time.Parse(time.RFC3339, endDate)
+	if err != nil {
+		return []domain.Blog{}, domain.Pagination{}, err
+	}
+	fmt.Println(StartDate, EndDate, "/////////////")
+	blogs, pagination, err := b.blogRepository.FilterBlogsByTag(tags, PageNo, PageSize, StartDate, EndDate, popularity)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	} else {
@@ -101,7 +113,7 @@ func (b BlogUsecase) GetBlogByID(blog_id string) (domain.Blog, error) {
 }
 
 // GetBlogs implements domain.BlogUsecase.
-func (b BlogUsecase) GetBlogs(pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
+func (b BlogUsecase) GetBlogs(pageNo string, pageSize string, popularity string) ([]domain.Blog, domain.Pagination, error) {
 	PageNo, err := strconv.ParseInt(pageNo, 10, 64)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
@@ -111,7 +123,7 @@ func (b BlogUsecase) GetBlogs(pageNo string, pageSize string) ([]domain.Blog, do
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
 
-	blogs, pagination, err := b.blogRepository.GetBlogs(PageNo, PageSize)
+	blogs, pagination, err := b.blogRepository.GetBlogs(PageNo, PageSize, popularity)
 	if err != nil {
 		return nil, domain.Pagination{}, err
 	} else {
@@ -137,7 +149,7 @@ func (b BlogUsecase) GetMyBlogByID(user_id string, blog_id string, role string) 
 }
 
 // GetMyBlogs implements domain.BlogRepository.
-func (b BlogUsecase) GetMyBlogs(user_id string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, error) {
+func (b BlogUsecase) GetMyBlogs(user_id string, pageNo string, pageSize string, popularity string) ([]domain.Blog, domain.Pagination, error) {
 	PageNo, err := strconv.ParseInt(pageNo, 10, 64)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
@@ -147,7 +159,7 @@ func (b BlogUsecase) GetMyBlogs(user_id string, pageNo string, pageSize string) 
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
 
-	myBlogs, pagination, err := b.blogRepository.GetMyBlogs(user_id, PageNo, PageSize)
+	myBlogs, pagination, err := b.blogRepository.GetMyBlogs(user_id, PageNo, PageSize, popularity)
 	if err != nil {
 		return nil, domain.Pagination{}, err
 	} else {
@@ -156,7 +168,7 @@ func (b BlogUsecase) GetMyBlogs(user_id string, pageNo string, pageSize string) 
 }
 
 // SearchBlogByTitleAndAuthor implements domain.BlogRepository.
-func (b BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string) ([]domain.Blog, domain.Pagination, domain.ErrorResponse) {
+func (b BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string, popularity string) ([]domain.Blog, domain.Pagination, domain.ErrorResponse) {
 	if pageNo == "" {
 		pageNo = "0"
 	}
@@ -177,9 +189,9 @@ func (b BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, pag
 			Status:  400,
 		}
 	}
-	blogs, pagination, err := b.blogRepository.SearchBlogByTitleAndAuthor(title, author, pageNO, limit)
+	blogs, pagination, err := b.blogRepository.SearchBlogByTitleAndAuthor(title, author, pageNO, limit, popularity)
 
-	if err != nil{
+	if err != nil {
 		return nil, domain.Pagination{}, domain.ErrorResponse{
 			Message: "internal server error",
 			Status:  500,

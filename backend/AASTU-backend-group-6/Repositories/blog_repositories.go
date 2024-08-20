@@ -31,33 +31,33 @@ func NewBlogRepository(PostCollection mongo.Collection, UserCollection mongo.Col
 }
 
 // CommentOnBlog implements domain.BlogRepository.
-func (b BlogRepository) CommentOnBlog(user_id string, user_name string,  comment domain.Comment) error {
+func (b BlogRepository) CommentOnBlog(user_id string, user_name string, comment domain.Comment) error {
 	timeOut := b.env.ContextTimeout
 	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
 	defer cancel()
 
 	comment.ID = primitive.NewObjectID()
 	fmt.Println(comment)
-	filter := bson.M{"_id" : comment.Blog_ID}
+	filter := bson.M{"_id": comment.Blog_ID}
 
 	updated := bson.M{
 		"$push": bson.M{"comments": comment},
 	}
 	_, err := b.PostCollection.UpdateOne(context, filter, updated)
 	if err != nil {
-		return  errors.New("internal server error")
+		return errors.New("internal server error")
 	}
 	userID, _ := primitive.ObjectIDFromHex(user_id)
 	commentFilter := bson.D{
-        {Key: "_id", Value : userID},
-        {Key : "posts._id", Value: comment.Blog_ID},
-    }
+		{Key: "_id", Value: userID},
+		{Key: "posts._id", Value: comment.Blog_ID},
+	}
 	update := bson.M{
 		"$push": bson.M{"posts.$.comments": comment},
 	}
 	fmt.Println(commentFilter, update)
-    _, err = b.UserCollection.UpdateOne(context, commentFilter, update)
-	if err != nil{
+	_, err = b.UserCollection.UpdateOne(context, commentFilter, update)
+	if err != nil {
 		return errors.New("internal server error")
 	}
 	return nil
@@ -143,9 +143,21 @@ func (b BlogRepository) DeleteBlogByID(user_id string, blog_id string) domain.Er
 }
 
 // FilterBlogsByTag implements domain.BlogRepository.
-func (b BlogRepository) FilterBlogsByTag(tags []string, pageNo int64, pageSize int64) ([]domain.Blog, domain.Pagination, error) {
-	pagination := utils.PaginationByPage(pageNo, pageSize)
-	filter := bson.D{{Key: "tags", Value: bson.D{{Key: "$in", Value: tags}}}}
+
+func (b BlogRepository) FilterBlogsByTag(tags []string, pageNo int64, pageSize int64, startDate time.Time, endDate time.Time, popularity string) ([]domain.Blog, domain.Pagination, error) {
+	pagination := utils.PaginationByPage(pageNo, pageSize, popularity)
+	var filter bson.D
+	if len(tags) > 0 {
+		filter = bson.D{{Key: "tags", Value: bson.D{{Key: "$in", Value: tags}}}}
+	}
+
+	if !startDate.IsZero() && !endDate.IsZero() {
+		filter = append(filter, bson.E{Key: "createdAt", Value: bson.D{
+			{Key: "$gte", Value: startDate},
+			{Key: "$lte", Value: endDate},
+		}})
+	}
+
 	totalResults, err := b.PostCollection.CountDocuments(context.TODO(), filter)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
@@ -191,8 +203,8 @@ func (b BlogRepository) GetBlogByID(blog_id string) (domain.Blog, error) {
 }
 
 // GetBlogs implements domain.BlogRepository.
-func (b BlogRepository) GetBlogs(pageNo int64, pageSize int64) ([]domain.Blog, domain.Pagination, error) {
-	pagination := utils.PaginationByPage(pageNo, pageSize)
+func (b BlogRepository) GetBlogs(pageNo int64, pageSize int64, popularity string) ([]domain.Blog, domain.Pagination, error) {
+	pagination := utils.PaginationByPage(pageNo, pageSize, popularity)
 
 	totalResults, err := b.PostCollection.CountDocuments(context.TODO(), utils.MongoNoFilter())
 	if err != nil {
@@ -246,13 +258,13 @@ func (b BlogRepository) GetMyBlogByID(user_id string, blog_id string) (domain.Bl
 }
 
 // GetMyBlogs implements domain.BlogRepository.
-func (b BlogRepository) GetMyBlogs(user_id string, pageNo int64, pageSize int64) ([]domain.Blog, domain.Pagination, error) {
+func (b BlogRepository) GetMyBlogs(user_id string, pageNo int64, pageSize int64, popularity string) ([]domain.Blog, domain.Pagination, error) {
 	user_object_id, err := primitive.ObjectIDFromHex(user_id)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
 	fmt.Println(user_object_id)
-	pagination := utils.PaginationByPage(pageNo, pageSize)
+	pagination := utils.PaginationByPage(pageNo, pageSize, popularity)
 	totalResults, err := b.PostCollection.CountDocuments(context.TODO(), utils.FilterTaskByUserID(user_object_id))
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
@@ -284,17 +296,18 @@ func (b BlogRepository) GetMyBlogs(user_id string, pageNo int64, pageSize int64)
 }
 
 // SearchBlogByTitleAndAuthor implements domain.BlogRepository.
-func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, pageNo int64, pageSize int64) ([]domain.Blog, domain.Pagination, error) {
+func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, pageNo int64, pageSize int64, popularity string) ([]domain.Blog, domain.Pagination, error) {
 	timeOut := b.env.ContextTimeout
 	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
 	defer cancel()
-	pageOption := utils.PaginationByPage(pageNo, pageSize)
+
+	pageOption := utils.PaginationByPage(pageNo, pageSize, popularity)
 	filter := bson.M{}
 	if title != "" {
 		filter["title"] = bson.M{"$regex": title, "$options": "i"}
 	}
 
-	if author != ""{
+	if author != "" {
 		filter["author"] = bson.M{"$regex": author, "$options": "i"}
 	}
 	totalResults, err := b.PostCollection.CountDocuments(context, filter)

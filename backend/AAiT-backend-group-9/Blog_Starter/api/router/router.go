@@ -10,6 +10,10 @@ import (
 
 func Setup(env *config.Environment, timeout time.Duration, db *mongo.Database, gin *gin.Engine) {
 	publicRouter := gin.Group("")
-
 	NewSignupRouter(timeout, db, publicRouter)
+
+	privateRouter := gin.Group("/api/blog")
+	NewBlogRouter(timeout, db, privateRouter)
+	NewBlogRatingRouter(timeout, db, privateRouter)
+	NewBlogCommentRouter(timeout, db, privateRouter)
 }

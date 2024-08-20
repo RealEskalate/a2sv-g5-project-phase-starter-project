@@ -1,14 +1,18 @@
+'use client'
 import React from "react";
 import ServiceList from "./serviceComponenet/ServiceList";
 import BenefitComp from "./serviceComponenet/BenefitComp";
 import {bankServices} from "@/constants/index";
 import { Icon } from "lucide-react";
 import { servicesList } from "@/constants/index";
+import { useUser } from "@/contexts/UserContext";
 
 
 const Services = () => {
+  const { isDarkMode } = useUser();
   return (
-    <div className="p-4 flex  flex-col border-2 bg-gray-200 w-full h-full gap-5 lg:p-8">
+   
+    <div className={`p-4 flex  flex-col   ${isDarkMode ? "bg-gray-700":"bg-gray-200"} w-full h-full gap-5 lg:p-8`}>
       <div className=" flex gap-3 justify-start w-[100vw] md:w-full overflow-x-scroll scrollbar-hidden md:overflow-hidden lg:justify-between">
         {servicesList.map((items, index) => (
            <BenefitComp items={items} key={index}/>

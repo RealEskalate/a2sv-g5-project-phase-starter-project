@@ -1,3 +1,4 @@
+import { useUser } from "@/contexts/UserContext";
 import { SafteyIcon } from "../serviceIcons/icons";
 import Image from "next/image";
 
@@ -11,6 +12,7 @@ interface Benefitprop {
 }
 const BenefitComp = ({ items }: Benefitprop) => {
   console.log(items.icon);
+  const {isDarkMode} = useUser();
   return (
     <div className="flex p-5 border-2 rounded-2xl bg-white ">
       <div className="ml-3 mr-1 w-10 h-10">

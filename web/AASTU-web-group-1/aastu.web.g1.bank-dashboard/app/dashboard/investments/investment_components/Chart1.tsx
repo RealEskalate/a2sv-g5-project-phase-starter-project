@@ -17,6 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useUser } from "@/contexts/UserContext";
 
 const chartData = [
   { month: "2016", desktop: 5000 },
@@ -35,9 +36,15 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function LineChartComp() {
+  const {isDarkMode} = useUser();
   return (
     <div>
-      <Card className="py-3 rounded-3xl" >
+      <Card
+        className={` ${
+          isDarkMode ? "bg-gray-800 border-none " : "bg-white"
+        }   py-3 rounded-3xl`}
+    
+      >
         <CardContent>
           <ChartContainer config={chartConfig} className="">
             <AreaChart
@@ -47,7 +54,11 @@ export default function LineChartComp() {
                 top: 18,
               }}
             >
-              <CartesianGrid vertical={false} strokeDasharray="3 3" strokeWidth={2}/>
+              <CartesianGrid
+                vertical={false}
+                strokeDasharray="3 3"
+                strokeWidth={2}
+              />
               <XAxis
                 dataKey="month"
                 tickLine={false}
@@ -56,11 +67,10 @@ export default function LineChartComp() {
                 tickFormatter={(value) => value.slice(0, 5)}
               />
               <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) => `$${value}`}
-
-               />
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `$${value}`}
+              />
               <ChartTooltip
                 cursor={false}
                 content={<ChartTooltipContent indicator="dot" hideLabel />}

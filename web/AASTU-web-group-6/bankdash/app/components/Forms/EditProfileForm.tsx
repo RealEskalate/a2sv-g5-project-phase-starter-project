@@ -1,9 +1,10 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
-import { useForm } from "react-hook-form"; // Import React Hook Form
-import User from "path-to-your-user-class"; // Update the path to your User class
+import { useForm } from "react-hook-form"
+import UserService from "@/app/Services/api/userService";
 
 type FormData = {
   name: string;
@@ -21,14 +22,14 @@ type FormData = {
 };
 
 const EditProfileForm = () => {
-  const { register, handleSubmit } = useForm<FormData>(); // Initialize React Hook Form
+  const { register, handleSubmit } = useForm<FormData>();
 
   const onSubmit = async (data: FormData) => {
-    const { confirmPassword, ...userData } = data; // Exclude confirmPassword from userData
+    const { confirmPassword, ...userData } = data; 
     console.log("Updating user profile:", userData);
 
     try {
-      const responseData = await User.update(userData); // Call the update method
+      const responseData = await UserService.update(userData,"accessToken"); // Call the update method
       if (responseData.success) {
         console.log("Profile update successful:", responseData.message);
       } else {
@@ -41,7 +42,7 @@ const EditProfileForm = () => {
 
   return (
     <div className="content-center w-full flex justify-center gap-x-12 py-4 flex-wrap sm:pt-4 md:pt-8 lg:pt-12 bg-white rounded-lg shadow-md">
-      <div className="flex justify-center  gap-3 w-fit sm:w-full md:w-auto">
+      <div className="flex justify-center  gap-3 w-fit xd:w-full sm:w-fit md:w-fit">
         <div className="relative h-fit flex justify-center">
           <Image
             src="/assets/profile-1.png"

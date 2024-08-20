@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import ToggleButton from "../Button/ToggleButton";
-import authService from "../../services/authService"; // Make sure to import authService
+import AuthService from "@/app/Services/api/authService";
 
 const SecurityForm = () => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -20,10 +20,10 @@ const SecurityForm = () => {
     event.preventDefault();
 
     try {
-      const response = await authService.changePassword({
+      const response = await AuthService.changePassword({
         password: currentPassword,
         newPassword: newPassword,
-      });
+      },"accessToken");
       console.log("Password changed:", response);
     } catch (error) {
       console.error("Error changing password:", error);

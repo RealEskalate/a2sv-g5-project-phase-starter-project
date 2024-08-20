@@ -8,17 +8,15 @@ import (
 
 type authService struct {
 	userService          interfaces.UserService
-	tokenRepo            interfaces.RefreshTokenRepository
 	passwordResetService interfaces.PasswordResetService
 	passwordService      interfaces.PasswordService
 	tokenService         interfaces.TokenService
 }
 
-func NewAuthService(userService interfaces.UserService, tokenRepo interfaces.RefreshTokenRepository, passwordResetService interfaces.PasswordResetService,
+func NewAuthService(userService interfaces.UserService, passwordResetService interfaces.PasswordResetService,
 	passService interfaces.PasswordService, tokenService interfaces.TokenService) interfaces.AuthenticationService {
 	return &authService{
 		userService:          userService,
-		tokenRepo:            tokenRepo,
 		tokenService:         tokenService,
 		passwordResetService: passwordResetService,
 		passwordService:      passService,
@@ -51,7 +49,7 @@ func (service *authService) Login(emailOrUsername, password string) (*entities.R
 func (service *authService) Logout(userId string) error {
 
 	//delete the token from database
-	err := service.tokenRepo.DeleteRefreshTokenByUserId(userId)
+	err := service.tokenService.DeleteRefreshTokenByUserId(userId)
 	if err != nil {
 		return err
 	}

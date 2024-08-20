@@ -11,9 +11,12 @@ import (
 type AuthController struct {
 	authService interfaces.AuthenticationService
 }
+func NewAuthController(authService interfaces.AuthenticationService) *AuthController{
+	return &AuthController{authService: authService}
+}
 
-func (controller *AuthController) RegisterUser() {
-
+func (controller *AuthController) RegisterUser(c *gin.Context){
+	
 }
 
 func (controller *AuthController) Login(c *gin.Context) {

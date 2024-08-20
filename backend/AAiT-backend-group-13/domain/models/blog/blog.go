@@ -64,16 +64,13 @@ func New(config Config) (*Blog, error) {
 
 	//returns blog with specified fields
 	return &Blog{
-		id:           uuid.New(),
-		userid:       config.UserId,
-		title:        config.Title,
-		content:      config.Content,
-		tags:         config.Tags,
-		createdDate:  time.Now(),
-		updatedDate:  time.Now(),
-		likeCount:    0,
-		disLikeCount: 0,
-		commentCount: 0,
+		id:          uuid.New(),
+		userid:      config.UserId,
+		title:       config.Title,
+		content:     config.Content,
+		tags:        config.Tags,
+		createdDate: time.Now(),
+		updatedDate: time.Now(),
 	}, nil
 }
 
@@ -195,8 +192,8 @@ func (b *Blog) UpdateTags(config Config) error {
 }
 
 func (b *Blog) UpdateCommentCount(inc bool) error {
-	if b.commentCount == 0 && inc {
-		return errors.New("no comment count")
+	if b.commentCount == 0 && !inc {
+		return errors.New("no comments")
 	}
 	if inc {
 		b.commentCount++
@@ -206,7 +203,7 @@ func (b *Blog) UpdateCommentCount(inc bool) error {
 	return nil
 }
 func (b *Blog) UpdateLikeCount(inc bool) error {
-	if b.likeCount == 0 && inc {
+	if b.likeCount == 0 && !inc {
 		return errors.New("no likes count")
 	}
 	if inc {
@@ -217,7 +214,7 @@ func (b *Blog) UpdateLikeCount(inc bool) error {
 	return nil
 }
 func (b *Blog) UpdateDisLikeCount(inc bool) error {
-	if b.disLikeCount == 0 && inc {
+	if b.disLikeCount == 0 && !inc {
 		return errors.New("no comment count")
 	}
 	if inc {

@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	common "github.com/group13/blog/delivery/common/icontroller"
-	"github.com/group13/blog/delivery/controller/user/dto"
+	"github.com/group13/blog/delivery/controller/dto"
 	er "github.com/group13/blog/domain/errors"
 	blogmodel "github.com/group13/blog/domain/models/blog"
 	addcmd "github.com/group13/blog/usecase/blog/command/add"
@@ -72,8 +72,7 @@ func (c *Controller) addBlog(ctx *gin.Context) {
 		return
 	}
 
-	username := uuid.New()
-	cmd := addcmd.NewCommand(request.Title, request.Content, request.Tags, username)
+	cmd := addcmd.NewCommand(request.Title, request.Content, request.Tags, request.UserId)
 	blog, err := c.addHandler.Handle(cmd)
 	if err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, err)

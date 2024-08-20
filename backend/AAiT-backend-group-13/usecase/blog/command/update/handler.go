@@ -28,7 +28,6 @@ func (h *Handler) Handle(cmd *Command) (*blogmodel.Blog, error) {
 	}
 
 	if cmd.title != "" {
-
 		err = blog.UpdateTitle(blogmodel.Config{
 			Title: cmd.title,
 		})

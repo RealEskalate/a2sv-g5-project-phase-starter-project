@@ -3,12 +3,13 @@ package logincommand
 import (
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
+
 	// icmd "github.com/group13/blog/usecase/usecase/common/cqrs/command"
-	result "github.com/group13/blog/usecase/user/result"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
 	iemail "github.com/group13/blog/usecase/common/i_email"
 	ijwt "github.com/group13/blog/usecase/common/i_jwt"
 	irepo "github.com/group13/blog/usecase/common/i_repo"
+	result "github.com/group13/blog/usecase/user/result"
 )
 
 type LoginHandler struct {
@@ -36,7 +37,6 @@ func NewLoginHandler(config LoginConfig) *LoginHandler {
 
 // Ensure Handler implements icmd.IHandler
 
-
 var _ icmd.IHandler[*LoginCommand, *result.LoginInResult] = &LoginHandler{}
 
 func (h *LoginHandler) Handle(command *LoginCommand) (*result.LoginInResult, error) {
@@ -54,9 +54,6 @@ func (h *LoginHandler) Handle(command *LoginCommand) (*result.LoginInResult, err
 	}
 
 	user.MakeActive()
-	if err := h.repo.Save(user); err != nil {
-		return nil, err
-	}
 
 	token, err := h.jwtService.Generate(user, ijwt.Access)
 	if err != nil {

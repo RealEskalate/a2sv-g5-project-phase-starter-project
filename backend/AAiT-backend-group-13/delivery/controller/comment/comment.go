@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	basecontroller "github.com/group13/blog/delivery/base"
+	common "github.com/group13/blog/delivery/common/icontroller"
+	"github.com/group13/blog/delivery/controller/dto"
 	er "github.com/group13/blog/domain/errors"
 	"github.com/group13/blog/domain/models/comment"
 	addcom "github.com/group13/blog/usecase/comment/command/add"
@@ -19,6 +21,8 @@ type CommentController struct {
 	getcomHandler     icmd.IHandler[uuid.UUID, *comment.Comment]
 	getBlogComHandler icmd.IHandler[uuid.UUID, *[]comment.Comment]
 }
+
+var _ common.IController = &CommentController{}
 
 type Config struct {
 	basecontroller.BaseHandler
@@ -42,8 +46,10 @@ func New(config Config) *CommentController {
 // RegisterPublic registers public routes.
 func (c *CommentController) RegisterPublic(route *gin.RouterGroup) {}
 
-// RegisterPrivate registers private routes.
-func (c *CommentController) RegisterPrivate(route *gin.RouterGroup) {
+func (c *CommentController) RegisterPrivileged(route *gin.RouterGroup) {}
+
+// RegisterProtected registers protected routes.
+func (c *CommentController) RegisterProtected(route *gin.RouterGroup) {
 	comments := route.Group("/blogs")
 	{
 		comments.GET("/:id/comments", c.GetBlogComments)
@@ -57,18 +63,18 @@ func (c *CommentController) GetBlogComments(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 
 	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Id is invalid format"})
+		c.BaseHandler.Respond(ctx, http.StatusBadRequest, gin.H{"error": "Id is invalid format"})
 		return
 	}
 
 	comments, err := c.getBlogComHandler.Handle(id)
 
 	if err != nil {
-		ctx.IndentedJSON(http.StatusNotFound, gin.H{"error": "blog not found"})
+		c.BaseHandler.Respond(ctx, http.StatusNotFound, gin.H{"error": "blog not found"})
 		return
 	}
 
-	ctx.IndentedJSON(http.StatusOK, comments)
+	c.BaseHandler.Respond(ctx, http.StatusOK, comments)
 
 }
 
@@ -76,18 +82,18 @@ func (c *CommentController) GetCommentById(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 
 	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Id is invalid format"})
+		c.BaseHandler.Respond(ctx, http.StatusBadRequest, gin.H{"error": "Id is invalid format"})
 		return
 	}
 
 	comment, err := c.getcomHandler.Handle(id)
 
 	if err != nil {
-		ctx.IndentedJSON(http.StatusNotFound, gin.H{"error": "blog not found"})
+		c.BaseHandler.Respond(ctx, http.StatusNotFound, gin.H{"error": "blog not found"})
 		return
 	}
 
-	ctx.IndentedJSON(http.StatusOK, comment)
+	c.BaseHandler.Respond(ctx, http.StatusOK, comment)
 
 }
 
@@ -95,25 +101,25 @@ func (c *CommentController) AddComment(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 
 	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Id is invalid format"})
+		c.BaseHandler.Respond(ctx, http.StatusBadRequest, gin.H{"error": "Id is invalid format"})
 		return
 	}
-	var coment CommentDto
+	var coment dto.CommentDto
 
 	if err := ctx.ShouldBindJSON(&coment); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, er.NewBadRequest(err.Error()))
+		c.BaseHandler.Respond(ctx, http.StatusBadRequest, er.NewBadRequest(err.Error()))
 		return
 	}
 
-	command := addcom.NewCommand(coment.Content, coment.UserId, id)
+	command := addcom.NewCommand(coment.Content, id, coment.UserId)
 	com, err := c.addcomHandler.Handle(command)
 
 	if err != nil {
-		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "server error"})
+		c.BaseHandler.Respond(ctx, http.StatusInternalServerError, gin.H{"error": "server error"})
 		return
 	}
 
-	ctx.IndentedJSON(http.StatusOK, com)
+	c.BaseHandler.Respond(ctx, http.StatusOK, com)
 
 }
 
@@ -121,17 +127,17 @@ func (c *CommentController) DeleteComment(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 
 	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Id is invalid format"})
-		return
+		c.BaseHandler.Respond(ctx, http.StatusBadRequest, gin.H{"error": "Id is invalid format"})
+
 	}
 
 	_, err = c.deletecomHandler.Handle(id)
 
 	if err != nil {
-		ctx.IndentedJSON(http.StatusNotFound, gin.H{"error": "comment not found"})
+		c.BaseHandler.Respond(ctx, http.StatusNotFound, gin.H{"error": "comment not found"})
 		return
 	}
 
-	ctx.IndentedJSON(http.StatusOK, gin.H{})
+	c.BaseHandler.Respond(ctx, http.StatusOK, gin.H{})
 
 }

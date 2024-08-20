@@ -44,6 +44,43 @@ func (_m *UserRepository) DeleteUser(c context.Context, id primitive.ObjectID) e
 	return r0
 }
 
+// DemoteUser provides a mock function with given fields: c, id
+func (_m *UserRepository) DemoteUser(c context.Context, id primitive.ObjectID) error {
+	ret := _m.Called(c, id)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) error); ok {
+		r0 = rf(c, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// GetAllUsers provides a mock function with given fields: c
+func (_m *UserRepository) GetAllUsers(c context.Context) ([]*domain.User, error) {
+	ret := _m.Called(c)
+
+	var r0 []*domain.User
+	if rf, ok := ret.Get(0).(func(context.Context) []*domain.User); ok {
+		r0 = rf(c)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.User)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(c)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetUserByEmail provides a mock function with given fields: c, email
 func (_m *UserRepository) GetUserByEmail(c context.Context, email string) (*domain.User, error) {
 	ret := _m.Called(c, email)
@@ -111,6 +148,34 @@ func (_m *UserRepository) GetUserByUsername(c context.Context, username string) 
 	}
 
 	return r0, r1
+}
+
+// PromoteUser provides a mock function with given fields: c, id
+func (_m *UserRepository) PromoteUser(c context.Context, id primitive.ObjectID) error {
+	ret := _m.Called(c, id)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) error); ok {
+		r0 = rf(c, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdatePassword provides a mock function with given fields: c, user
+func (_m *UserRepository) UpdatePassword(c context.Context, user *domain.User) error {
+	ret := _m.Called(c, user)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) error); ok {
+		r0 = rf(c, user)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // UpdateUser provides a mock function with given fields: c, user

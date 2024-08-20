@@ -120,7 +120,7 @@ func (r *UserRepository) UpdateUser(c context.Context, username string, user *dt
 	return updatedData, nil
 }
 
-// PromoteUser promotes the user with the provided username
+// ChangeRole changes the role of the user with the provided username
 func (r *UserRepository) ChangeRole(c context.Context, username string, newRole string) domain.CodedError {
 	var user domain.User
 	qres := r.collection.FindOne(c, bson.D{{Key: "username", Value: username}})

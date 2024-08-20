@@ -1,17 +1,17 @@
-import React from 'react';
-import Image from '@/node_modules/next/image';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import React from "react";
+import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 
 const EditProfileForm = () => {
   return (
-    <div className="content-center max-h-[1100px] w-full mt-2 flex justify-between flex-wrap px-4 bg-white rounded-lg shadow-md">
-      <div className="flex justify-center w-full sm:w-auto md:w-auto">
-        <div className="relative h-fit flex">
+    <div className="content-center w-full flex justify-center gap-x-12 py-4 flex-wrap sm:pt-4 md:pt-8 lg:pt-12 bg-white rounded-lg shadow-md">
+      <div className="flex justify-center  gap-3 w-fit sm:w-full md:w-auto">
+        <div className="relative h-fit flex justify-center">
           <Image
             src="/assets/profile-1.png"
-            width={128}
-            height={128}
+            width={132}
+            height={130}
             alt="Profile"
             className="rounded-full mr-4"
           />
@@ -21,108 +21,139 @@ const EditProfileForm = () => {
         </div>
       </div>
 
-      <form className="w-full max-w-[848px] mt-8 space-y-6 flex flex-col">
-        <div className="flex flex-col gap-6">
-          <div className='flex flex-wrap gap-x-6'>
-            <div className='w-full max-w-[318px] md:w-[265px]'>
-              <label className="block text-sm font-medium text-gray-700">Your Name</label>
-              <input
-                type="text"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-              />
-            </div>
-
-            <div className='w-full max-w-[318px] md:w-[265px]'>
-              <label className="block text-sm font-medium text-gray-700">User Name</label>
-              <input
-                type="text"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-              />
-            </div>
+      <form className="mt-8 lg:space-y-6 flex flex-col sm:flex-wrap">
+        <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
+          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
+            <label htmlFor="name" className="">
+              Your Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              placeholder="Charlene Reed"
+            />
           </div>
-
-          <div className='flex flex-wrap gap-x-6'>
-            <div className='w-full max-w-[318px] md:w-[265px]'>
-              <label className="block text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-              />
-            </div>
-
-            <div className='w-full max-w-[318px] md:w-[265px]'>
-              <label className="block text-sm font-medium text-gray-700">Password</label>
-              <input
-                type="password"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-              />
-            </div>
+          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
+            <label htmlFor="username" className="">
+              User Name
+            </label>
+            <input
+              type="text"
+              id="username"
+              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              placeholder="Charlene Reed"
+            />
           </div>
-
-          <div className='flex flex-wrap gap-x-6'>
-            <div className='w-full max-w-[318px] md:w-[265px]'>
-              <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
-              <input
-                type="text"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-              />
-            </div>
-
-            <div className='w-full max-w-[318px] md:w-[265px]'>
-              <label className="block text-sm font-medium text-gray-700">Present Address</label>
-              <input
-                type="text"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-              />
-            </div>
+        </div>
+        <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
+          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
+            <label htmlFor="email" className="">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              placeholder="charlenereed@gmail.com"
+            />
           </div>
-
-          <div className='flex flex-wrap gap-x-6'>
-            <div className='w-full max-w-[318px] md:w-[265px]'>
-              <label className="block text-sm font-medium text-gray-700">Permanent Address</label>
-              <input
-                type="text"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-              />
-            </div>
-
-            <div className='w-full max-w-[318px] md:w-[265px]'>
-              <label className="block text-sm font-medium text-gray-700">City</label>
-              <input
-                type="text"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-              />
-            </div>
+          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
+            <label htmlFor="password" className="">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              placeholder="********"
+            />
           </div>
-
-          <div className='flex flex-wrap gap-x-6'>
-            <div className='w-full max-w-[318px] md:w-[265px]'>
-              <label className="block text-sm font-medium text-gray-700">Postal Code</label>
-              <input
-                type="text"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-              />
-            </div>
-
-            <div className='w-full max-w-[318px] md:w-[265px]'>
-              <label className="block text-sm font-medium text-gray-700">Country</label>
-              <input
-                type="text"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-              />
-            </div>
+        </div>
+        <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
+          <div className="sm:w-full mr-3 md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
+            <label htmlFor="dob" className="">
+              Date of Birth
+            </label>
+            <input
+              type="date"
+              id="dob"
+              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              placeholder="25 January 1990"
+            />
+          </div>
+          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
+            <label htmlFor="present-address" className="">
+              Present Address
+            </label>
+            <input
+              type="text"
+              id="present-address"
+              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              placeholder="San Jose, California, USA"
+            />
+          </div>
+        </div>
+        <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
+          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
+            <label htmlFor="permanent-address" className="">
+              Permanent Address
+            </label>
+            <input
+              type="text"
+              id="permanent-address"
+              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              placeholder="San Jose, California, USA"
+            />
+          </div>
+          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
+            <label htmlFor="city" className="">
+              City
+            </label>
+            <input
+              type="text"
+              id="city"
+              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              placeholder="San Jose"
+            />
+          </div>
+        </div>
+        <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
+          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
+            <label htmlFor="postal-code" className="">
+              Postal Code
+            </label>
+            <input
+              type="text"
+              id="postal-code"
+              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              placeholder="45962"
+            />
+          </div>
+          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
+            <label htmlFor="country" className="">
+              Country
+            </label>
+            <input
+              type="text"
+              id="country"
+              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              placeholder="USA"
+            />
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-        >
-          Save
-        </button>
+        <div className="flex lg:justify-end mt-3 sm:w-full sm:justify-center">
+          <button
+            type="submit"
+            className="w-[192px] py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Save
+          </button>
+        </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
 export default EditProfileForm;

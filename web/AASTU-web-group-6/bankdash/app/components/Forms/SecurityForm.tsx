@@ -1,14 +1,17 @@
-'use client';
-import React from 'react';
-import ToggleButton from '../Button/ToggleButton';
+"use client";
+import React from "react";
+import ToggleButton from "../Button/ToggleButton";
 
 const SecurityForm = () => {
   const handleToggle = (checked: boolean) => {
-    console.log("Two-factor Authentication is now", checked ? "Enabled" : "Disabled");
+    console.log(
+      "Two-factor Authentication is now",
+      checked ? "Enabled" : "Disabled"
+    );
   };
 
   return (
-    <form className="mt-8 space-y-6">
+    <form className="mt-8 space-y-6 px-3 py-4">
       <div className="mt-6">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Two-factor Authentication
@@ -37,7 +40,7 @@ const SecurityForm = () => {
               type="password"
               value=""
               readOnly
-              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm bg-gray-100 dark:bg-gray-700"
+              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
             />
           </div>
 
@@ -49,18 +52,20 @@ const SecurityForm = () => {
               type="password"
               value=""
               readOnly
-              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm bg-gray-100 dark:bg-gray-700"
+              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
             />
           </div>
         </div>
       </div>
 
-      <button
-        type="submit"
-        className="mt-6 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800"
-      >
-        Save
-      </button>
+      <div className="flex lg:justify-end mt-3 xs:w-full sm:justify-center">
+        <button
+          type="submit"
+          className="w-[192px] py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+        >
+          Save
+        </button>
+      </div>
     </form>
   );
 };

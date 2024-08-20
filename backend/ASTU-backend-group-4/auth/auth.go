@@ -28,10 +28,11 @@ type LoginForm struct {
 }
 
 type AuthRepository interface {
-	CreateUser(ctx context.Context, user User) (string, error)
-	UpdateUser(ctx context.Context, id string, user User) (User, error)
+	CreateUser(ctx context.Context, user User) error
+	UpdateUser(ctx context.Context, user User) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
+	GetUserByID(ctx context.Context, id string) (User, error)
 	GetUsers(ctx context.Context) ([]User, error)
 	DeleteUser(ctx context.Context, id string) error
 	RegisterToken(ctx context.Context, token string) error
@@ -40,9 +41,9 @@ type AuthRepository interface {
 }
 
 type AuthServices interface {
-	Login(info LoginForm) (string, error)
-	RegisterUser(user User)
-	UpdateProfile(user User)
+	Login(ctx context.Context, info LoginForm) (string, error)
+	RegisterUser(ctx context.Context, user User) (string, error)
+	UpdateProfile(ctx context.Context, user User) error
 	Activate(userID string, token string)
 	Logout(userID string)
 	GenerateToken(user User) (string, error)

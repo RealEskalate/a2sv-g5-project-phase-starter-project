@@ -20,7 +20,6 @@ export const options: NextAuthOptions = {
         try {
           const response = await login(credentials as { userName: string; password: string });
           if (response.success) {
-            console.log("HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEERRRRRRRRRRRRRRRRREEEEEEEEEEEEEEEEEEEE")
             return response.data; // Return the user data object
           } else {
             return null;

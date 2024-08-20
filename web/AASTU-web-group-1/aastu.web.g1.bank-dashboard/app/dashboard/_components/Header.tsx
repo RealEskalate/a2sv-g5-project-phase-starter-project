@@ -10,16 +10,28 @@ import {
 } from "@/components/ui/popover";
 import Link from "next/link";
 import { Separator } from "@radix-ui/react-select";
+import { useUser } from "@/contexts/UserContext";
 
 const Header = ({ title }: { title: string }) => {
+  const { isDarkMode } = useUser();
   return (
-    <div className="bg-white max-md:hidden">
+    <div className={`max-md:hidden ${isDarkMode ? "border-gray-700 bg-gray-800"  : "bg-white"}`}>
       <div className="flex justify-between px-10 py-4">
-        <h1 className="text-3xl text-primaryBlack font-[600]">{title}</h1>
+        <h1
+          className={`text-3xl font-[600] ${
+            isDarkMode ? "text-white" : "text-primaryBlack"
+          }`}
+        >
+          {title}
+        </h1>
 
         <div className="flex gap-5 items-center">
           {/* Search */}
-          <div className="flex gap-3 bg-[#F5F7FA] p-3 rounded-full">
+          <div
+            className={`flex gap-3 p-3 rounded-full ${
+              isDarkMode ? "bg-gray-800" : "bg-[#F5F7FA]"
+            }`}
+          >
             <Image
               src="/icons/Search.svg"
               width={20}
@@ -27,33 +39,44 @@ const Header = ({ title }: { title: string }) => {
               alt="Search"
             />
             <input
-              className="outline-none bg-[#F5F7FA]"
+              className={`outline-none ${
+                isDarkMode
+                  ? "bg-gray-800 text-white"
+                  : "bg-[#F5F7FA] text-black"
+              }`}
               type="text"
               placeholder="Search for something"
             />
           </div>
 
           {/* Settings */}
-          <div className="bg-[#F5F7FA] p-2 rounded-full cursor-pointer">
+          <div
+            className={`p-2 rounded-full cursor-pointer ${
+              isDarkMode ? "bg-gray-800" : "bg-[#F5F7FA]"
+            }`}
+          >
             <Image
               src="/icons/Settings.svg"
               width={22}
               height={22}
-              alt="Notif"
+              alt="Settings"
             />
           </div>
 
-          <div className="bg-[#F5F7FA] p-2 rounded-full cursor-pointer">
-            {/* Notif */}
+          <div
+            className={`p-2 rounded-full cursor-pointer ${
+              isDarkMode ? "bg-gray-800" : "bg-[#F5F7FA]"
+            }`}
+          >
             <Image
               src="/icons/Notification.svg"
               width={22}
               height={22}
-              alt="Notif"
+              alt="Notification"
             />
           </div>
-          {/* Avatar */}
 
+          {/* Avatar */}
           <Popover>
             <PopoverTrigger>
               <Avatar>
@@ -61,7 +84,11 @@ const Header = ({ title }: { title: string }) => {
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-4">
+            <PopoverContent
+              className={`w-80 p-4 ${
+                isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"
+              }`}
+            >
               <div className="flex items-center gap-4 border-b pb-4">
                 <div className="space-y-1">
                   <h4 className="text-lg font-medium">John Doe</h4>
@@ -73,7 +100,9 @@ const Header = ({ title }: { title: string }) => {
               <div className="mt-4 space-y-2">
                 <Link
                   href="/dashboard/setting/"
-                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${
+                    isDarkMode ? "hover:bg-gray-700" : "hover:bg-muted"
+                  }`}
                   prefetch={false}
                 >
                   <UserIcon className="h-4 w-4" />
@@ -81,7 +110,9 @@ const Header = ({ title }: { title: string }) => {
                 </Link>
                 <Link
                   href="/dashboard/setting/"
-                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${
+                    isDarkMode ? "hover:bg-gray-700" : "hover:bg-muted"
+                  }`}
                   prefetch={false}
                 >
                   <FilePenIcon className="h-4 w-4" />
@@ -89,7 +120,9 @@ const Header = ({ title }: { title: string }) => {
                 </Link>
                 <Link
                   href="/dashboard/setting/"
-                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${
+                    isDarkMode ? "hover:bg-gray-700" : "hover:bg-muted"
+                  }`}
                   prefetch={false}
                 >
                   <SettingsIcon className="h-4 w-4" />
@@ -98,7 +131,9 @@ const Header = ({ title }: { title: string }) => {
                 <Separator />
                 <button
                   onClick={() => signOut({ callbackUrl: "/auth/sign-in" })}
-                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${
+                    isDarkMode ? "hover:bg-gray-700" : "hover:bg-muted"
+                  }`}
                 >
                   <LogOutIcon className="h-4 w-4" />
                   Log Out
@@ -113,6 +148,8 @@ const Header = ({ title }: { title: string }) => {
 };
 
 export default Header;
+
+
 function FilePenIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg

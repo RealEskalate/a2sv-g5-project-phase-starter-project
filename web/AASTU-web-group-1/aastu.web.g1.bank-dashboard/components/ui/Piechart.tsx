@@ -18,6 +18,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useUser } from "@/contexts/UserContext";
 const chartData = [
   { browser: "BRC Bank", visitors: 275, fill: "#1EC6B8" },
   { browser: "ABM Bank", visitors: 200, fill: "#3464F3" },
@@ -48,8 +49,11 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function Donut() {
+  const { isDarkMode } = useUser();
   return (
-    <Card className="flex flex-col">
+    <Card 
+      className=
+      {` ${isDarkMode ? "bg-gray-800 border-none " : "bg-white"}flex flex-col `}>
       <CardHeader className="items-center pb-0"></CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -74,7 +78,6 @@ export function Donut() {
               }: PieSectorDataItem) => (
                 <Sector {...props} outerRadius={outerRadius + 10} />
               )}
-            
             />
           </PieChart>
         </ChartContainer>

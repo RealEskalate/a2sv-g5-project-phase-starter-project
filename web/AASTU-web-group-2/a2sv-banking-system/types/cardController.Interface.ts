@@ -8,7 +8,8 @@ export interface Card {
   
 
   export interface GetCardsResponse {
-    cards: Card[];
+    content: Card[];
+    totalPages: number
   }
   
   export interface PostCardRequest {

@@ -11,14 +11,15 @@ const BASE_URL = 'https://bank-dashboard-6acc.onrender.com';
 
 const getCards = async (token:string, page=0, size=1): Promise<GetCardsResponse> => {
   try {
+    console.log("Fetching")
     const response = await fetch(`${BASE_URL}/cards?page=${page}&size=${size}`, {
       headers: {
         'Authorization': `Bearer ${token}`, // Add the token to the headers
       },
     });
     if (response.status === 200) {
-      const data: Card[] = await response.json();
-      return { cards: data };
+      const data: GetCardsResponse = await response.json();
+      return data ;
     } else {
       throw new Error(`Request failed with status code: ${response.status}`);
     }

@@ -5,41 +5,21 @@ import {
   PostCardResponse,
   GetCardByIdResponse,
 } from "@/types/cardController.Interface";
-import { getServerSession } from "next-auth";
 const BASE_URL = 'https://bank-dashboard-6acc.onrender.com';
 
 // Extend the user type to include accessToken
-interface ExtendedUser {
-  refresh_token: string;
-  data: any; // Assuming `data` contains user information or other details
-  accessToken?: string;
-}
 
-interface ExtendedSession {
-  user?: ExtendedUser;
-}
-
-const fetchSession = async (): Promise<ExtendedSession> => {
-  const session = await getServerSession();
-  return session as ExtendedSession;
-};
-
-const getAccessToken = async (): Promise<string | undefined> => {
-  const session = await fetchSession();
-  return session?.user?.accessToken;
-};
-
-const getCards = async (): Promise<GetCardsResponse> => {
+const getCards = async (token:string, page=0, size=1): Promise<GetCardsResponse> => {
   try {
-    const token = await getAccessToken();
-    const response = await fetch(`${BASE_URL}/cards`, {
+    console.log("Fetching")
+    const response = await fetch(`${BASE_URL}/cards?page=${page}&size=${size}`, {
       headers: {
         'Authorization': `Bearer ${token}`, // Add the token to the headers
       },
     });
     if (response.status === 200) {
-      const data: Card[] = await response.json();
-      return { cards: data };
+      const data: GetCardsResponse = await response.json();
+      return data ;
     } else {
       throw new Error(`Request failed with status code: ${response.status}`);
     }
@@ -49,9 +29,8 @@ const getCards = async (): Promise<GetCardsResponse> => {
   }
 };
 
-const postCard = async (cardDetails: PostCardRequest): Promise<PostCardResponse> => {
+const postCard = async (cardDetails: PostCardRequest, token:string): Promise<PostCardResponse> => {
   try {
-    const token = await getAccessToken();
     const response = await fetch(`${BASE_URL}/cards`, {
       method: 'POST',
       headers: {
@@ -73,9 +52,8 @@ const postCard = async (cardDetails: PostCardRequest): Promise<PostCardResponse>
   }
 };
 
-const getCardById = async (id: string): Promise<GetCardByIdResponse> => {
+const getCardById = async (id: string, token:string): Promise<GetCardByIdResponse> => {
   try {
-    const token = await getAccessToken();
     const response = await fetch(`${BASE_URL}/cards/${id}`, {
       headers: {
         'Authorization': `Bearer ${token}`, // Add the token to the headers
@@ -94,9 +72,8 @@ const getCardById = async (id: string): Promise<GetCardByIdResponse> => {
   }
 };
 
-const deleteCardById = async (id: string): Promise<void> => {
+const deleteCardById = async (id: string, token:string): Promise<void> => {
   try {
-    const token = await getAccessToken();
     const response = await fetch(`${BASE_URL}/cards/${id}`, {
       method: 'DELETE',
       headers: {

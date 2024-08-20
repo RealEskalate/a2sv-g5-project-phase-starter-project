@@ -1,10 +1,14 @@
 package repositories
 
 import (
+	"AAIT-backend-group-3/internal/domain/models"
+	"context"
+	"errors"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"AAIT-backend-group-3/internal/domain/models"
 )
 
 type MongoUserRepository struct {
@@ -56,5 +60,38 @@ func (r *MongoUserRepository) PromoteUser(userID primitive.ObjectID) error {
 
 func (r *MongoUserRepository) DemoteUser(userID primitive.ObjectID) error {
 	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": userID}, bson.M{"$set": bson.M{"role": "user"}})
+	return err
+}
+
+func (r *MongoUserRepository) SaveOTP(userID string, otp string, expiration time.Time) error {
+	_, err := r.collection.InsertOne(context.TODO(), bson.M{
+		"userID":     userID,
+		"otp":        otp,
+		"expiration": expiration,
+	})
+	return err
+}
+
+func (r *MongoUserRepository) ValidateOTP(otp string) (string, error) {
+	var result struct {
+		UserID     string    `bson:"userID"`
+		Expiration time.Time `bson:"expiration"`
+	}
+	err := r.collection.FindOne(context.TODO(), bson.M{"otp": otp}).Decode(&result)
+	if err != nil {
+		return "", errors.New("OTP not found")
+	}
+	if time.Now().After(result.Expiration) {
+		return "", errors.New("OTP expired")
+	}
+	return result.UserID, nil
+}
+
+func (r *MongoUserRepository) UpdatePassword(userID, hashedPassword string) error {
+	_, err := r.collection.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": userID},
+		bson.M{"$set": bson.M{"password": hashedPassword}},
+	)
 	return err
 }

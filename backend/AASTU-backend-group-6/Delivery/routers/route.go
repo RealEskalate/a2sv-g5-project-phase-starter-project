@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Router(server *gin.Engine, config *infrastructure.Config, DB mongo.Database) {
+func Router(server *gin.RouterGroup, config *infrastructure.Config, DB mongo.Database) {
 
 	blog_repo := repositories.NewBlogRepository(DB.Collection(config.BlogCollection), DB.Collection(config.UserCollection), *config)
 	validator := domain.NewValidator()
@@ -24,15 +24,16 @@ func Router(server *gin.Engine, config *infrastructure.Config, DB mongo.Database
 	authHandler := infrastructure.NewAuthMiddleware(*config).AuthenticationMiddleware()
 
 	NewBlogrouter(blogRouter, blog_controller, authHandler)
-	userRouter := server.Group("")
+	authRoute := server.Group("auth")
 	// NewUserrouter(config, DB , userRouter)
 	exp := time.Duration(time.Now().Add(time.Duration(config.RefreshTokenExpiryHour)).Unix())
-	NewSignupRoute(config, DB, userRouter)
-	NewRefreshTokenRouter(config, exp, DB, userRouter)
-	NewLoginRouter(config, exp, DB, userRouter)
+	NewSignupRoute(config, DB, authRoute)
+	NewRefreshTokenRouter(config, exp, DB, authRoute)
+	NewLoginRouter(config, exp, DB, authRoute)
 
-	authUserrouter := userRouter.Use(authHandler)
-	NewLogoutRouter(config, exp, DB, authUserrouter.(*gin.RouterGroup))
+	logout := server.Group("")
+	logout.Use(authHandler)
+	NewLogoutRouter(config, exp, DB, logout)
 
 	oauthRoute := server.Group("")
 	NewOauthRoute(config, DB, oauthRoute)

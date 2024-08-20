@@ -1,6 +1,7 @@
 package test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/RealEskalate/blogpost/domain"
@@ -36,14 +37,13 @@ func (suite *BlogUseCaseTestSuite) TestCreateBlog() {
 
 func (suite *BlogUseCaseTestSuite) TestGetOneBlog() {
 	id := "some-id"
-	expectedBlogs := []domain.Blog{{Title: "Test Blog"}}
+	expectedBlog := domain.Blog{Title: "Test Blog"}
 
-	suite.mockBlogRepo.On("GetOneBlogDocunent", id).Return(expectedBlogs, nil)
+	suite.mockBlogRepo.On("GetOneBlogDocunent", id).Return(expectedBlog, nil)
 
-	blogs, err := suite.blogUseCase.GetOneBlog(id)
+	blog, err := suite.blogUseCase.GetOneBlog(id)
 	suite.NoError(err)
-	suite.Len(blogs, 1)
-	suite.Equal(expectedBlogs[0].Title, blogs.Title)
+	suite.Equal(expectedBlog.Title, blog.Title)
 
 	suite.mockBlogRepo.AssertExpectations(suite.T())
 }
@@ -63,15 +63,71 @@ func (suite *BlogUseCaseTestSuite) TestUpdateBlog() {
 
 func (suite *BlogUseCaseTestSuite) TestDeleteBlog() {
 	id := "some-id"
-	user_id := "some_user_id"
-	suite.mockBlogRepo.On("DeleteBlogDocunent", id).Return(nil)
+	userId := "some_user_id"
 
-	err := suite.blogUseCase.DeleteBlog(id , user_id)
+	suite.mockBlogRepo.On("DeleteBlogDocument", id, userId).Return(nil)
+
+	err := suite.blogUseCase.DeleteBlog(id, userId)
 	suite.NoError(err)
 
 	suite.mockBlogRepo.AssertExpectations(suite.T())
 }
 
+func (suite *BlogUseCaseTestSuite) TestDeleteBlogWithInvalidID() {
+	id := "invalid-id"
+	user_id := "some_user_id"
+	expectedErr := errors.New("blog not found")
+
+	suite.mockBlogRepo.On("DeleteBlogDocument", id, user_id).Return(expectedErr)
+
+	err := suite.blogUseCase.DeleteBlog(id, user_id)
+	suite.Error(err)
+	suite.Equal(expectedErr, err)
+
+	suite.mockBlogRepo.AssertExpectations(suite.T())
+}
+
+func (suite *BlogUseCaseTestSuite) TestDeleteBlogWithUnauthorizedUser() {
+	id := "some-id"
+	user_id := "unauthorized_user_id"
+	expectedErr := errors.New("unauthorized to delete this blog")
+
+	suite.mockBlogRepo.On("DeleteBlogDocument", id, user_id).Return(expectedErr)
+
+	err := suite.blogUseCase.DeleteBlog(id, user_id)
+	suite.Error(err)
+	suite.Equal(expectedErr, err)
+
+	suite.mockBlogRepo.AssertExpectations(suite.T())
+}
+
+func (suite *BlogUseCaseTestSuite) TestDeleteBlogWithEmptyID() {
+	id := ""
+	user_id := "some_user_id"
+	expectedErr := errors.New("invalid blog id")
+
+	suite.mockBlogRepo.On("DeleteBlogDocument", id, user_id).Return(expectedErr)
+
+	err := suite.blogUseCase.DeleteBlog(id, user_id)
+	suite.Error(err)
+	suite.Equal(expectedErr, err)
+
+	suite.mockBlogRepo.AssertExpectations(suite.T())
+}
+
+func (suite *BlogUseCaseTestSuite) TestDeleteBlogWithEmptyUserID() {
+	id := "some-id"
+	user_id := ""
+	expectedErr := errors.New("invalid user id")
+
+	suite.mockBlogRepo.On("DeleteBlogDocument", id, user_id).Return(expectedErr)
+
+	err := suite.blogUseCase.DeleteBlog(id, user_id)
+	suite.Error(err)
+	suite.Equal(expectedErr, err)
+
+	suite.mockBlogRepo.AssertExpectations(suite.T())
+}
 func TestBlogUseCaseTestSuite(t *testing.T) {
 	suite.Run(t, new(BlogUseCaseTestSuite))
 }

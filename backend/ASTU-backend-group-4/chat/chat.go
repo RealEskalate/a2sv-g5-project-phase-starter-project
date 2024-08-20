@@ -28,7 +28,7 @@ type Usecase interface {
 	GenerateChatTitle(ctx context.Context, message Message) (string, error)
 	GetChat(ctx context.Context, chatID string) (Chat, error)
 	GetChats(ctx context.Context, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error)
-	SendMessage(ctx context.Context, chatID string, message Message) error
+	SendMessage(ctx context.Context, chatID string, message Message) (Message, error)
 }
 
 type Repository interface {
@@ -37,4 +37,9 @@ type Repository interface {
 	DeleteChat(ctx context.Context, chatID string) error
 	GetChat(ctx context.Context, chatID string) (Chat, error)
 	GetChats(ctx context.Context, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error)
+}
+
+type AIService interface {
+	SendMessage(ctx context.Context, history []Message) (Message, error)
+	GenerateChatTitle(ctx context.Context, message Message) (Message, error)
 }

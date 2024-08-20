@@ -22,5 +22,5 @@ func NewRefreshRouter(env *config.Env, database mongo.Database, group *gin.Route
 		JwtService:     infrastructure.NewJwtService(env),
 	}
 
-	group.POST("/logout", RefreshController.Refresh)
+	group.GET("/refresh", RefreshController.Refresh)
 }

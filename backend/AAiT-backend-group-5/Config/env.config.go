@@ -22,6 +22,8 @@ type Env struct {
 
 	SERVER_ADDRESS  string `mapstructure:"SERVER_ADDRESS"`
 	CONTEXT_TIMEOUT int    `mapstructure:"CONTEXT_TIMEOUT"`
+
+	GEMINI_API_KEY string `mapstructure:"GEMINI_API_KEY"`
 }
 
 func NewEnv() *Env {
@@ -51,6 +53,7 @@ func NewEnv() *Env {
 	viper.BindEnv("DB_NAME")
 	viper.BindEnv("SERVER_ADDRESS")
 	viper.BindEnv("CONTEXT_TIMEOUT")
+	viper.BindEnv("GEMINI_API_KEY")
 
 	env := Env{}
 

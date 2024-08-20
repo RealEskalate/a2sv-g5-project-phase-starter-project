@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"blogApp/internal/ai"
 	"blogApp/internal/domain"
 	"blogApp/internal/usecase/blog"
 	"context"
@@ -307,4 +308,40 @@ func (h *BlogHandler) GetTagByIDHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, tag)
 }
 
+func (h *BlogHandler) GetAiBlog(c *gin.Context) {
+	userClaims, err := GetClaims(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	userId := userClaims.UserID
 
+	var query string
+	if err := c.ShouldBindJSON(&query); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	blog, err := ai.GetAiBlog(userId, query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, blog)
+
+}
+
+func (h *BlogHandler) ModerateBlog(c *gin.Context) {
+	blog := new(domain.Blog)
+	if err := c.ShouldBindJSON(&blog); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	is_valid, message, err := ai.ModerateBlog(blog.Content, blog.Title)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"is_valid": is_valid, "message": message})
+
+}

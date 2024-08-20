@@ -21,6 +21,7 @@ type Env struct {
 
 	SERVER_ADDRESS  string `mapstructure:"SERVER_ADDRESS"`
 	CONTEXT_TIMEOUT int    `mapstructure:"CONTEXT_TIMEOUT"`
+	REDIS_BLOG_KEY    string `mapstructure:"REDIS_BLOG_KEY"`
 }
 
 func NewEnv() *Env {
@@ -49,6 +50,7 @@ func NewEnv() *Env {
 	viper.BindEnv("DB_NAME")
 	viper.BindEnv("SERVER_ADDRESS")
 	viper.BindEnv("CONTEXT_TIMEOUT")
+	viper.BindEnv("REDIS_BLOG_KEY")
 
 	env := Env{}
 

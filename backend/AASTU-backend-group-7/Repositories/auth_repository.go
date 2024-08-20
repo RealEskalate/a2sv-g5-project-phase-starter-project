@@ -1,8 +1,10 @@
 package Repositories
 
 import (
+	"blogapp/Config"
 	"blogapp/Domain"
 	"blogapp/Dtos"
+	emailservice "blogapp/Infrastructure/email_service"
 	jwtservice "blogapp/Infrastructure/jwt_service"
 	"blogapp/Infrastructure/password_services"
 	"context"
@@ -19,22 +21,20 @@ import (
 	"golang.org/x/oauth2/google"
 )
 
-var GOOGLE_KEY = "1078174695401-jcvnclinh131aqj2saod6hj35706e7vb.apps.googleusercontent.com"
-var GOOGLE_SECRET = "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"
-var GoogleCallback = "http://localhost:3000/callback"
-
 type authRepository struct {
 	UserCollection  Domain.Collection
 	TokenRepository Domain.RefreshRepository
 	oauth2Config    oauth2.Config
+	userRepository  Domain.UserRepository
+	emailservice    emailservice.MailTrapService
 }
 
-func NewAuthRepository(user_collection Domain.Collection, token_collection Domain.Collection) *authRepository {
+func NewAuthRepository(user_collection Domain.Collection, token_collection Domain.Collection, userRepository Domain.UserRepository) *authRepository {
 
 	oauth_config := &oauth2.Config{
-		ClientID:     GOOGLE_KEY,
-		ClientSecret: GOOGLE_SECRET,
-		RedirectURL:  GoogleCallback,
+		ClientID:     Config.GOOGLE_KEY,
+		ClientSecret: Config.GOOGLE_SECRET,
+		RedirectURL:  Config.Google_Callback,
 		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.profile",
 			"https://www.googleapis.com/auth/userinfo.email",
@@ -46,14 +46,16 @@ func NewAuthRepository(user_collection Domain.Collection, token_collection Domai
 		UserCollection:  user_collection,
 		TokenRepository: NewRefreshRepository(token_collection),
 		oauth2Config:    *oauth_config,
+		emailservice:    emailservice.NewMailTrapService(),
+		userRepository:  userRepository,
 	}
 }
 
 // login
-func (au *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.Tokens, error, int) {
+func (ar *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.Tokens, error, int) {
 	filter := bson.D{{"email", user.Email}}
 	var existingUser Domain.User
-	err := au.UserCollection.FindOne(ctx, filter).Decode(&existingUser)
+	err := ar.UserCollection.FindOne(ctx, filter).Decode(&existingUser)
 
 	if err != nil || !password_services.CompareHashAndPasswordCustom(existingUser.Password, user.Password) {
 		fmt.Printf("Login Called:%v, %v", existingUser.Password, user.Password)
@@ -64,11 +66,11 @@ func (au *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.
 		return Domain.Tokens{}, errors.New("Invalid credentials"), http.StatusBadRequest
 	}
 
-	return au.GenerateTokenFromUser(ctx, existingUser)
+	return ar.GenerateTokenFromUser(ctx, existingUser)
 }
 
 // register
-func (au *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserDto) (*Domain.OmitedUser, error, int) {
+func (ar *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserDto) (*Domain.OmitedUser, error, int) {
 
 	// Check if the email is already taken
 	existingUserFilter := bson.D{}
@@ -84,7 +86,7 @@ func (au *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 			{Key: "email", Value: user.Email},
 		}
 	}
-	existingUserCount, err := au.UserCollection.CountDocuments(ctx, existingUserFilter)
+	existingUserCount, err := ar.UserCollection.CountDocuments(ctx, existingUserFilter)
 	if err != nil {
 		fmt.Println("error at count", err)
 		return &Domain.OmitedUser{}, err, 500
@@ -108,7 +110,7 @@ func (au *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 	user.Role = "user"
 	user.CreatedAt = time.Now()
 
-	InsertedID, err := au.UserCollection.InsertOne(ctx, user)
+	InsertedID, err := ar.UserCollection.InsertOne(ctx, user)
 	if err != nil {
 		fmt.Println("error at insert", err)
 		return &Domain.OmitedUser{}, err, 500
@@ -120,7 +122,7 @@ func (au *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 	// Access the InsertedID field from the InsertOneResult struct
 	insertedID := InsertedID.InsertedID.(primitive.ObjectID)
 
-	err = au.UserCollection.FindOne(context.TODO(), bson.D{{"_id", insertedID}}).Decode(&fetched)
+	err = ar.UserCollection.FindOne(context.TODO(), bson.D{{"_id", insertedID}}).Decode(&fetched)
 	if err != nil {
 		fmt.Println(err)
 		return &Domain.OmitedUser{}, errors.New("User Not Created"), 500
@@ -133,30 +135,75 @@ func (au *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 }
 
 // logout
-func (au *authRepository) Logout(ctx context.Context, user_id primitive.ObjectID) (error, int) {
+func (ar *authRepository) Logout(ctx context.Context, user_id primitive.ObjectID) (error, int) {
 	// delete the refresh token
-	err, statusCode := au.TokenRepository.DeleteToken(ctx, user_id)
+	err, statusCode := ar.TokenRepository.DeleteToken(ctx, user_id)
 	if err != nil {
 		return err, statusCode
 	}
 	return nil, 200
 }
 
+func (ar *authRepository) ForgetPassword(ctx context.Context, email string) (error, int) {
+	_, err, status := ar.userRepository.FindByEmail(ctx, email)
+	if err != nil {
+		return err, status
+	}
+	resetToken, err := jwtservice.GenerateToken(email)
+	if err != nil {
+		return err, http.StatusInternalServerError
+	}
+
+	err = ar.emailservice.SendEmail(email, "Reset Password", `Click "http://localhost:8080/auth/forget-password/`+resetToken+`">hereto reset your password.
+`, "reset")
+	if err != nil {
+		return err, http.StatusInternalServerError
+	}
+	return nil, http.StatusOK
+
+}
+
+func (ar *authRepository) ResetPassword(ctx context.Context, email string, password string, resetToken string) (error, int) {
+
+	_, err := jwtservice.VerifyToken(resetToken)
+	if err != nil {
+		return err, http.StatusBadRequest
+	}
+	if password == "" {
+		return errors.New("password is required"), http.StatusBadRequest
+	}
+	err = password_services.CheckPasswordStrength(password)
+	if err != nil {
+		return err, http.StatusBadRequest
+	}
+	hashed, err := password_services.GenerateFromPasswordCustom(password)
+	if err != nil {
+		return err, http.StatusInternalServerError
+	}
+	_, err, _ = ar.userRepository.ChangePassByEmail(ctx, email, hashed)
+	if err != nil {
+		return err, http.StatusInternalServerError
+	}
+	fmt.Println("password:", password, "reset_token", resetToken)
+	return nil, http.StatusOK
+
+}
+
 // google login
-func (au *authRepository) GoogleLogin(ctx context.Context) string {
-	url := au.oauth2Config.AuthCodeURL("state", oauth2.AccessTypeOffline)
+func (ar *authRepository) GoogleLogin(ctx context.Context) string {
+	url := ar.oauth2Config.AuthCodeURL("state", oauth2.AccessTypeOffline)
 	return url
 
 }
 
-func (au *authRepository) CallbackHandler(ctx context.Context, code string) (Domain.Tokens, error, int) {
-	token, err := au.oauth2Config.Exchange(ctx, code)
+func (ar *authRepository) CallbackHandler(ctx context.Context, code string) (Domain.Tokens, error, int) {
+	token, err := ar.oauth2Config.Exchange(ctx, code)
 	if err != nil {
 		return Domain.Tokens{}, errors.New("Couldn't exchange token: "), http.StatusInternalServerError
 
 	}
 
-	client := au.oauth2Config.Client(ctx, token)
+	client := ar.oauth2Config.Client(ctx, token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
 	if err != nil {
 		return Domain.Tokens{}, errors.New("Failed to get user info: "), http.StatusInternalServerError
@@ -172,7 +219,7 @@ func (au *authRepository) CallbackHandler(ctx context.Context, code string) (Dom
 	// check if the user is already registered
 	filter := bson.D{{"email", userInfo["email"]}}
 	var existingUser Domain.User
-	err = au.UserCollection.FindOne(ctx, filter).Decode(&existingUser)
+	err = ar.UserCollection.FindOne(ctx, filter).Decode(&existingUser)
 	if err != nil {
 		// register the user
 		user := Dtos.RegisterUserDto{
@@ -181,21 +228,21 @@ func (au *authRepository) CallbackHandler(ctx context.Context, code string) (Dom
 			ProfilePicture: userInfo["picture"].(string),
 			EmailVerified:  userInfo["email_verified"].(bool),
 		}
-		_, err, _ := au.Register(ctx, &user)
+		_, err, _ := ar.Register(ctx, &user)
 		if err != nil {
 			return Domain.Tokens{}, err, 500
 		}
-		err = au.UserCollection.FindOne(ctx, filter).Decode(&existingUser)
+		err = ar.UserCollection.FindOne(ctx, filter).Decode(&existingUser)
 		if err != nil {
 			return Domain.Tokens{}, err, 500
 		}
 
 	}
-	return au.GenerateTokenFromUser(ctx, existingUser)
+	return ar.GenerateTokenFromUser(ctx, existingUser)
 
 }
 
-func (au *authRepository) GenerateTokenFromUser(ctx context.Context, existingUser Domain.User) (Domain.Tokens, error, int) {
+func (ar *authRepository) GenerateTokenFromUser(ctx context.Context, existingUser Domain.User) (Domain.Tokens, error, int) {
 	filter := bson.D{{Key: "email", Value: existingUser.Email}}
 	// Generate JWT access
 	jwtAccessToken, err := jwtservice.CreateAccessToken(existingUser)
@@ -208,7 +255,7 @@ func (au *authRepository) GenerateTokenFromUser(ctx context.Context, existingUse
 	}
 
 	filter = primitive.D{{"_id", existingUser.ID}}
-	existingTokenCount, err := au.UserCollection.CountDocuments(ctx, filter)
+	existingTokenCount, err := ar.UserCollection.CountDocuments(ctx, filter)
 	fmt.Println("existingTokenCount", existingTokenCount)
 	if err != nil {
 		fmt.Println("error at count", err)
@@ -217,13 +264,13 @@ func (au *authRepository) GenerateTokenFromUser(ctx context.Context, existingUse
 
 	if existingTokenCount > 0 {
 		// update the refresh token
-		err, statusCode := au.TokenRepository.UpdateToken(ctx, refreshToken, existingUser.ID)
+		err, statusCode := ar.TokenRepository.UpdateToken(ctx, refreshToken, existingUser.ID)
 		if err != nil {
 			return Domain.Tokens{}, err, statusCode
 		}
 
 	} else {
-		err, statusCode := au.TokenRepository.StoreToken(ctx, existingUser.ID, refreshToken)
+		err, statusCode := ar.TokenRepository.StoreToken(ctx, existingUser.ID, refreshToken)
 		if err != nil {
 			return Domain.Tokens{}, err, statusCode
 		}
@@ -233,4 +280,14 @@ func (au *authRepository) GenerateTokenFromUser(ctx context.Context, existingUse
 		AccessToken:  jwtAccessToken,
 		RefreshToken: refreshToken,
 	}, nil, 200
+}
+
+func (ar *authRepository) activateUser(ctx context.Context, user_id primitive.ObjectID) error {
+	filter := bson.D{{"_id", user_id}}
+	update := bson.D{{"$set", bson.D{{"email_verified", true}}}}
+	_, err := ar.UserCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -46,6 +46,18 @@ func (a *authUseCase) Logout(c *gin.Context, user_id primitive.ObjectID) (error,
 	return a.AuthRepository.Logout(ctx, user_id)
 }
 
+func (a *authUseCase) ForgetPassword(c *gin.Context, email string) (error, int) {
+	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
+	defer cancel()
+	return a.AuthRepository.ForgetPassword(ctx, email)
+}
+
+func (a *authUseCase) ResetPassword(c *gin.Context, email string, password string, resetToken string) (error, int) {
+	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
+	defer cancel()
+	return a.AuthRepository.ResetPassword(ctx, email, password, resetToken)
+}
+
 func (a *authUseCase) GoogleLogin(c *gin.Context) string {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()

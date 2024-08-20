@@ -3,10 +3,7 @@ package controllers
 import (
 	"blogapp/Domain"
 	"blogapp/Dtos"
-	emailservice "blogapp/Infrastructure/email_service"
 	jwtservice "blogapp/Infrastructure/jwt_service"
-	"blogapp/Infrastructure/password_services"
-	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -16,18 +13,14 @@ import (
 )
 
 type authController struct {
-	AuthUseCase    Domain.AuthUseCase
-	AuthU          Domain.AuthUseCase
-	userRepository Domain.UserRepository
-	emailservice   emailservice.MailTrapService
+	AuthUseCase Domain.AuthUseCase
+	AuthU       Domain.AuthUseCase
 }
 
-func NewAuthController(usecase Domain.AuthUseCase, userRepository Domain.UserRepository) *authController {
+func NewAuthController(usecase Domain.AuthUseCase) *authController {
 
 	return &authController{
-		AuthUseCase:    usecase,
-		emailservice:   emailservice.NewMailTrapService(),
-		userRepository: userRepository,
+		AuthUseCase: usecase,
 	}
 }
 
@@ -105,24 +98,26 @@ func (ac *authController) Logout(c *gin.Context) {
 // sends email with token and reset link
 func (ac *authController) ForgetPassword(c *gin.Context) {
 	email := c.PostForm("email")
-	_, err, status := ac.userRepository.FindByEmail(c, email)
-	if err != nil {
-		c.JSON(status, gin.H{"error": err.Error()})
-		return
-	}
-	resetToken, err := jwtservice.GenerateToken(email)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
+	// 	_, err, status := ac.userRepository.FindByEmail(c, email)
+	// 	if err != nil {
+	// 		c.JSON(status, gin.H{"error": err.Error()})
+	// 		return
+	// 	}
+	// 	resetToken, err := jwtservice.GenerateToken(email)
+	// 	if err != nil {
+	// 		c.JSON(400, gin.H{"error": err.Error()})
+	// 		return
+	// 	}
 
-	err = ac.emailservice.SendEmail(email, "Reset Password", `Click "http://localhost:8080/auth/forget-password/`+resetToken+`">hereto reset your password.
-`, "reset")
+	// 	err = ac.emailservice.SendEmail(email, "Reset Password", `Click "http://localhost:8080/auth/forget-password/`+resetToken+`">hereto reset your password.
+	// `, "reset")
+
+	err, statusCode := ac.AuthUseCase.ForgetPassword(c, email)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	} else {
-		c.JSON(200, gin.H{"message": "reset token stored successfully"})
+		c.JSON(statusCode, gin.H{"message": "reset token sent successfully"})
 	}
 }
 
@@ -133,7 +128,7 @@ const resetTemplate = `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password</title>
+    <title>Reset Password Demo</title>
 </head>
 <body>
     <h1>Reset Password</h1>
@@ -182,40 +177,16 @@ func (ac *authController) ResetPassword(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "password is required"})
 		return
 	}
-	err = ac.ChangePassword(c, email, password, resetToken)
+
+	err, statusCode := ac.AuthUseCase.ResetPassword(c, email, password, resetToken)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		c.IndentedJSON(statusCode, gin.H{"message": err.Error()})
 		return
 	} else {
-		c.IndentedJSON(http.StatusOK, gin.H{"message": "password reset successfully"})
+		c.IndentedJSON(statusCode, gin.H{"message": "password reset successfully"})
 	}
 
 	fmt.Println("password:", password, "reset_token", resetToken)
-}
-
-func (ac *authController) ChangePassword(c *gin.Context, email string, password string, resetToken string) error {
-
-	_, err := jwtservice.VerifyToken(resetToken)
-	if err != nil {
-		return err
-	}
-	if password == "" {
-		return errors.New("password is required")
-	}
-	err = password_services.CheckPasswordStrength(password)
-	if err != nil {
-		return err
-	}
-	hashed, err := password_services.GenerateFromPasswordCustom(password)
-	if err != nil {
-		return err
-	}
-	_, err, _ = ac.userRepository.ChangePassByEmail(c, email, hashed)
-	if err != nil {
-		return err
-	}
-	fmt.Println("password:", password, "reset_token", resetToken)
-	return nil
 }
 
 func (ac *authController) CallbackHandler(c *gin.Context) {
@@ -239,3 +210,28 @@ func (ac *authController) LoginHandlerGoogle(c *gin.Context) {
 	}
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
+
+// func (ac *authController) ChangePassword(c *gin.Context, email string, password string, resetToken string) error {
+
+// 	_, err := jwtservice.VerifyToken(resetToken)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	if password == "" {
+// 		return errors.New("password is required")
+// 	}
+// 	err = password_services.CheckPasswordStrength(password)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	hashed, err := password_services.GenerateFromPasswordCustom(password)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	_, err, _ = ac.userRepository.ChangePassByEmail(c, email, hashed)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	fmt.Println("password:", password, "reset_token", resetToken)
+// 	return nil
+// }

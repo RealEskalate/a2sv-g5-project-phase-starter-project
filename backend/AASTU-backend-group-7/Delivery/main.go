@@ -21,7 +21,7 @@ func main() {
 	// Setuprouter()
 	r := routers.Setuprouter(client)
 	if r != nil {
-		r.Run(":3000")
+		r.Run()
 	} else {
 		log.Fatal("Failed to start server")
 	}

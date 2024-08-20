@@ -20,44 +20,46 @@ func NewUserUsecase(userRepository domain.UserRepository, timeout time.Duration)
 }
 
 func (uu *userUsecase) CreateUser(c context.Context, user *domain.User) error {
-	return nil
+	_, err := uu.userRepository.CreateUser(c, user)
+	return err
 }
 
 func (uu *userUsecase) GetUserByEmail(c context.Context, email string) (*domain.User, error) {
-	return nil, nil
+	return uu.userRepository.GetUserByEmail(c, email)
 }
 
-func (uu *userUsecase)  GetUserById(c context.Context, userId string) (*domain.User, error) {
-	return nil, nil
+func (uu *userUsecase) GetUserById(c context.Context, userId string) (*domain.User, error) {
+	return uu.userRepository.GetUserById(c, userId)
 }
 func (uu *userUsecase) GetUsers(c context.Context) (*[]domain.User, error) {
-	return nil, nil
+	return uu.userRepository.GetUsers(c)
 }
 
-func (uu *userUsecase) UpdateUser(c context.Context, userID string, updatedUser *domain.User) error {
-	return nil
+func (uu *userUsecase) UpdateUser(c context.Context, userID string, updatedUser *domain.UserUpdate) error {
+	_, err := uu.userRepository.UpdateUser(c, userID, updatedUser)
+	return err
 }
 
 func (uu *userUsecase) DeleteUser(c context.Context, userID string) error {
-	return nil
+	return uu.userRepository.DeleteUser(c, userID)
 }
 
 func (uu *userUsecase) IsUserActive(c context.Context, userID string) (bool, error) {
-	return false, nil
+	return uu.userRepository.IsUserActive(c, userID)
 }
 
 func (uu *userUsecase) ResetUserPassword(c context.Context, userID string, resetPassword *domain.ResetPassword) error {
-	return nil
+	return uu.userRepository.ResetUserPassword(c, userID, resetPassword)
 }
 
 func (uu *userUsecase) UpdateUserPassword(c context.Context, userID string, updatePassword *domain.UpdatePassword) error {
-	return nil
+	return uu.userRepository.UpdateUserPassword(c, userID, updatePassword)
 }
 
 func (uu *userUsecase) PromoteUserToAdmin(c context.Context, userID string) error {
-	return nil
+	return uu.userRepository.PromoteUserToAdmin(c, userID)
 }
 
 func (uu *userUsecase) DemoteAdminToUser(c context.Context, userID string) error {
-	return nil
+	return uu.userRepository.DemoteAdminToUser(c, userID)
 }

@@ -32,35 +32,35 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 
 	// Authenticated routes
 	auth := r.Group("/api")
-	// auth.Use(infrastructure.AuthMiddleware(jwtService))
-	// {
-	// User profile routes
-	auth.GET("/profile", userController.GetProfile)
-	auth.PUT("/profile", userController.UpdateProfile)
-	auth.POST("/logout", userController.Logout)
+	auth.Use(infrastructure.AuthMiddleware(jwtService))
+	{
+		// User profile routes
+		auth.GET("/profile", userController.GetProfile)
+		auth.PUT("/profile", userController.UpdateProfile)
+		auth.POST("/logout", userController.Logout)
 
-	// Blog routes
-	auth.POST("/blogs", blogController.CreateBlogPost)
-	auth.GET("/blogs", blogController.GetAllBlogPosts)
-	auth.GET("/blogs/:id", blogController.GetBlogByID)
-	auth.PUT("/blogs/:id", blogController.UpdateBlogPost)
-	// auth.POST("/blogsearch", blogController.SearchBlogPost)
-	auth.DELETE("/blogs/:id", blogController.DeleteBlogPost)
+		// Blog routes
+		auth.POST("/blogs", blogController.CreateBlogPost)
+		auth.GET("/blogs", blogController.GetAllBlogPosts)
+		auth.GET("/blogs/:id", blogController.GetBlogByID)
+		auth.PUT("/blogs/:id", blogController.UpdateBlogPost)
+		// auth.POST("/blogsearch", blogController.SearchBlogPost)
+		auth.DELETE("/blogs/:id", blogController.DeleteBlogPost)
 
-	// Comment routes
-	auth.POST("/blogs/:id/comments", commentController.AddComment)
-	auth.GET("/blogs/:id/comments", commentController.GetCommentsByBlogID)
-	auth.PUT("/comments/:id", commentController.UpdateComment)
-	auth.DELETE("/comments/:id", commentController.DeleteComment)
+		// Comment routes
+		auth.POST("/blogs/:id/comments", commentController.AddComment)
+		auth.GET("/blogs/:id/comments", commentController.GetCommentsByBlogID)
+		auth.PUT("/comments/:id", commentController.UpdateComment)
+		auth.DELETE("/comments/:id", commentController.DeleteComment)
 
-	// Like routes
-	auth.POST("/blogs/:id/likes", likeController.AddLike)
-	auth.GET("/blogs/:id/likes", likeController.GetLikesByBlogID)
-	auth.DELETE("/likes/:id", likeController.RemoveLike)
+		// Like routes
+		auth.POST("/blogs/:id/likes", likeController.AddLike)
+		auth.GET("/blogs/:id/likes", likeController.GetLikesByBlogID)
+		auth.DELETE("/likes/:id", likeController.RemoveLike)
 
-	// Admin-specific routes
-	auth.POST("/getallusers", adminMiddleware, userController.GetAllUsers)
-	auth.PUT("/deleteusers/:id", adminMiddleware, userController.DeleteUser)
+		// Admin-specific routes
+		auth.POST("/getallusers", adminMiddleware, userController.GetAllUsers)
+		auth.PUT("/deleteusers/:id", adminMiddleware, userController.DeleteUser)
 
-	// }
+	}
 }

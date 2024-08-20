@@ -11,6 +11,11 @@ type BlogUsecase struct {
 	blogRepo domain.BlogRepositoryInterface
 }
 
+// SearchBlogPosts implements domain.BlogUsecaseInterface.
+func (u *BlogUsecase) SearchBlogPosts(query *domain.SearchBlogPost) ([]domain.BlogPost, error) {
+	panic("unimplemented")
+}
+
 func NewBlogUsecase(br domain.BlogRepositoryInterface) *BlogUsecase {
 	return &BlogUsecase{blogRepo: br}
 }
@@ -44,10 +49,15 @@ func (u *BlogUsecase) GetBlogByID(id primitive.ObjectID) (*domain.BlogPost, erro
 
 // UpdateBlogPost updates an existing blog post
 func (u *BlogUsecase) UpdateBlogPost(id primitive.ObjectID, blog *domain.BlogPost) (*domain.BlogPost, error) {
+	// Set the ID of the blog to be updated
+	blog.ID = id
+
+	// Call the repository to update the blog post
 	updatedBlog, err := u.blogRepo.Update(blog)
 	if err != nil {
 		return nil, err
 	}
+
 	return updatedBlog, nil
 }
 

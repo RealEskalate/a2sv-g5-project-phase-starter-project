@@ -25,24 +25,22 @@ func (lc *LikeController) AddLike(c *gin.Context) {
 		return
 	}
 
-	// Bind the user ID from the JSON body
-	var likeRequest struct {
-		UserID string `json:"user_id"`
-	}
-
-	if err := c.ShouldBindJSON(&likeRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// Get the user ID from the context (e.g., from JWT or middleware)
+	userID, ok := c.Get("userID")
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not found in context"})
 		return
 	}
 
-	userID, err := primitive.ObjectIDFromHex(likeRequest.UserID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+	// Convert userID to primitive.ObjectID
+	userObjectID, ok := userID.(primitive.ObjectID)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID format"})
 		return
 	}
 
 	// Add the like using the blog ID and user ID
-	err = lc.likeUsecase.AddLike(blogID, userID)
+	err = lc.likeUsecase.AddLike(blogID, userObjectID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"errors"
+	"fmt"
 	"meleket/domain"
 	"meleket/infrastructure"
 	"meleket/utils"
@@ -58,6 +59,8 @@ func (ou *OTPUsecase) GenerateAndSendOTP(user *domain.User) error {
 // verification endpoint
 func (ou *OTPUsecase) VerifyOTP(email, otp string) (*domain.OTP, error) {
 	existingOtp, err := ou.otpRepository.GetOTPByEmail(email)
+	fmt.Println("verify", existingOtp.Otp)
+	fmt.Println(otp)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +68,7 @@ func (ou *OTPUsecase) VerifyOTP(email, otp string) (*domain.OTP, error) {
 	if time.Now().After(existingOtp.ExpiresAt) {
 		return nil, errors.New("otp expired")
 	}
-
+	fmt.Println("verify", existingOtp.Otp, otp)
 	if existingOtp.Otp != otp {
 		return nil, errors.New("invalid OTP")
 	}

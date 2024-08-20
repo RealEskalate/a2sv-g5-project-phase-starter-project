@@ -55,20 +55,30 @@ func (r *BlogRepository) GetBlogByID(id primitive.ObjectID) (*domain.BlogPost, e
 func (r *BlogRepository) Update(blog *domain.BlogPost) (*domain.BlogPost, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	result := r.collection.FindOneAndUpdate(ctx, bson.M{"_id": blog.ID}, blog)
+
+	// Prepare the update data
+	update := bson.M{
+		"$set": bson.M{
+			"title":      blog.Title,
+			"content":    blog.Content,
+			"tags":       blog.Tags,
+			"updated_at": time.Now(),
+		},
+	}
+
+	// Perform the update
+	result := r.collection.FindOneAndUpdate(ctx, bson.M{"_id": blog.ID}, update)
 	if result.Err() != nil {
 		return nil, result.Err()
 	}
 
-	var decoded domain.BlogPost
-	if err := result.Decode(&decoded); err != nil {
+	// Decode the updated blog post
+	var updatedBlog domain.BlogPost
+	if err := result.Decode(&updatedBlog); err != nil {
 		return nil, err
 	}
 
-	blog.ID = decoded.ID
-	blog.AuthorID = decoded.AuthorID
-
-	return blog, nil
+	return &updatedBlog, nil
 }
 
 // Search function here

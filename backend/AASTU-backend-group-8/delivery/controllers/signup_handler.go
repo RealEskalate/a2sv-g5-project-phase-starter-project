@@ -62,7 +62,7 @@ func (sc *SignupController) VerifyOTP(c *gin.Context) {
 	// Verify the OTP
 	existingOtp, err := sc.otpUsecase.VerifyOTP(otpRequest.Email, otpRequest.Otp)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "error1"})
 		return
 	}
 

@@ -63,7 +63,7 @@ func (bc *BlogController) GetBlogByID(c *gin.Context) {
 }
 
 func (bc *BlogController) UpdateBlogPost(c *gin.Context) {
-	id, err := primitive.ObjectIDFromHex(c.Param("id")) // should be updated
+	id, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
 		return
@@ -75,6 +75,7 @@ func (bc *BlogController) UpdateBlogPost(c *gin.Context) {
 		return
 	}
 
+	// Call the usecase to update the blog post
 	updatedBlog, err := bc.blogUsecase.UpdateBlogPost(id, &blog)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

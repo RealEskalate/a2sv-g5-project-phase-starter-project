@@ -49,7 +49,7 @@ const page = () => {
       <div className="flex max-sm:flex-col justify-between">
         <Card
           title="Weekly Activity"
-          className="flex flex-col min-w-[730px] lg:mx-auto h-auto max-md:w-full"
+          className="flex flex-col lg:w-[75%] w-[350px] h-auto"
         >
           <WeeklyActivityChart />
         </Card>
@@ -63,13 +63,13 @@ const page = () => {
       <div className="flex max-sm:flex-col gap-[30px]">
         <Card
           title="Quick Transfer"
-          className="flex flex-col lg:w-1/3 w-full"
+          className="flex flex-col lg:w-1/3 w-[350px]"
         >
           <SendMoney />
         </Card>
         <Card
           title="Balance History"
-          className="flex flex-col max-w-[730px] lg:mx-auto h-auto"
+          className="flex flex-col max-w-[730px] h-auto"
         >
           <BalanceHistoryChart />
         </Card>

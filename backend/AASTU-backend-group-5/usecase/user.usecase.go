@@ -49,7 +49,7 @@ func (usecase *UserUseCase) UpdatePassword(id string , updated_user domain.Updat
 	if updated_user.ConfirmPassword != updated_user.Password {
 		return domain.ResponseUser{} , nil
 	}
-	hashed_password,err := password_hasher.HashPasword(updated_user.Password)
+	hashed_password,err := password_hasher.HashPassword(updated_user.Password)
 	if err != nil {
 		return domain.ResponseUser{}, err
 	}

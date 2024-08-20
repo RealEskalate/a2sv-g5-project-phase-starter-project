@@ -21,6 +21,7 @@ var ENV struct {
 	ROOT_PASSWORD          string
 	SMTP_GMAIL             string
 	SMTP_PASSWORD          string
+	GEMINI_API_KEY	       string
 }
 
 /* Loads environment variables from .env file and verifies that all required variables are set */
@@ -39,6 +40,7 @@ func LoadEnvironmentVariables() error {
 	ENV.ROOT_PASSWORD = os.Getenv("ROOT_PASSWORD")
 	ENV.SMTP_GMAIL = os.Getenv("SMTP_GMAIL")
 	ENV.SMTP_PASSWORD = os.Getenv("SMTP_PASSWORD")
+	ENV.GEMINI_API_KEY = os.Getenv(("GEMINI_API_KEY"))
 	port, err := strconv.ParseInt(os.Getenv("PORT"), 10, 64)
 	if err != nil {
 		return fmt.Errorf("error parsing PORT number: %v", err.Error())
@@ -96,6 +98,9 @@ func LoadEnvironmentVariables() error {
 
 	if ENV.PORT == 0 {
 		return fmt.Errorf("error: couldn't load environment variable 'PORT'")
+	}
+	if ENV.GEMINI_API_KEY == "" {
+		return fmt.Errorf("error: couldn't load environment variable 'GEMINI_API_KEY'")
 	}
 
 	return nil

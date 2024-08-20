@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"blog_api/domain"
+	ai_service "blog_api/infrastructure/ai"
 	"context"
 	"time"
 )
@@ -9,12 +10,14 @@ import (
 type BlogUseCase struct {
 	blogRepo       domain.BlogRepositoryInterface
 	contextTimeOut time.Duration
+	aiService      *ai_service.AIService
 }
 
-func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration) *BlogUseCase {
+func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration, aiService *ai_service.AIService) *BlogUseCase {
 	return &BlogUseCase{
 		blogRepo:       repo,
 		contextTimeOut: t,
+		aiService:      aiService,
 	}
 }
 
@@ -119,4 +122,28 @@ func (b *BlogUseCase) TrackBlogPopularity(ctx context.Context, blogId string, ac
 	defer cancel()
 
 	return b.blogRepo.TrackBlogPopularity(ctx, blogId, action, username)
+}
+
+func (uc *BlogUseCase) GenerateBlogContent(topics []string) (string, error) {
+	content, err := uc.aiService.GenerateContent(topics)
+	if err != nil {
+		return "", err
+	}
+	return content, nil
+}
+
+func (uc *BlogUseCase) ReviewBlogContent(blogContent string) (string, error) {
+	suggestions, err := uc.aiService.ReviewContent(blogContent)
+	if err != nil {
+		return "", err
+	}
+	return suggestions, nil
+}
+func (uc *BlogUseCase) GenerateTrendingTopics(keywords []string) ([]string, error) {
+	// Implement the logic to generate trending topics using AIService or other methods
+	topics, err := uc.aiService.GenerateTrendingTopics(keywords)
+	if err != nil {
+		return nil, err
+	}
+	return topics, nil
 }

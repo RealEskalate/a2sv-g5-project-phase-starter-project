@@ -2,7 +2,6 @@ package usecases
 
 import (
 	"errors"
-	"time"
 
 	"AAIT-backend-group-3/internal/domain/models"
 	"AAIT-backend-group-3/internal/infrastructures/services"
@@ -21,12 +20,13 @@ type UserUsecase struct {
 }
 
 
-func NewUserUsecase(userRepo repository_interface.UserRepositoryInterface, passwordService services.IHashService, validationService services.IValidationService, emailService services.IEmailService) *UserUsecase {
+func NewUserUsecase(userRepo repository_interface.UserRepositoryInterface, passwordService services.IHashService, validationService services.IValidationService, emailService services.IEmailService, jwtService services.IJWT) *UserUsecase {
 	return &UserUsecase{
 		userRepo: userRepo,
 		passwordService: passwordService,
 		validationService: validationService,
 		emailService: emailService,
+		jwtSevices: jwtService,
 	}
 }
 
@@ -67,7 +67,7 @@ func (u *UserUsecase) Login(user *models.User) (string, string, error) {
 
 func (u *UserUsecase) RefreshToken(userId primitive.ObjectID ,refreshTok string ) (string, error) {
 
-	if !u.jwtSevices.ValidateRefreshToken(refreshTok) {
+	if _, err := u.jwtSevices.ValidateRefreshToken(refreshTok); err == nil {
 		return "", errors.New("invalid token")
 	}
 
@@ -111,36 +111,4 @@ func (u *UserUsecase) PromoteUser(userID primitive.ObjectID) error {
 }
 func (u *UserUsecase) DemoteUser(userID primitive.ObjectID) error {
 	return u.userRepo.DemoteUser(userID)
-}
-
-func (u *UserUsecase) SendPasswordResetLink(email string) error {
-	user, err := u.userRepo.GetUserByEmail(email)
-	if err != nil {
-		return errors.New("user not found")
-	}
-
-	otp := services.GenerateOTP()
-
-	err = u.userRepo.SaveOTP(user.ID.Hex(), otp, time.Now().Add(15*time.Minute))
-	if err != nil {
-		return err
-	}
-
-	resetLink := "http://localhost:8080/reset-password?otp="+otp
-
-	return u.emailService.SendEmail(user.Email, "Password Reset", "Click the link to reset your password: "+resetLink)
-}
-
-func (u *UserUsecase) ResetPassword(otp, newPassword string) error {
-	userID, err := u.userRepo.ValidateOTP(otp)
-	if err != nil {
-		return errors.New("invalid or expired OTP")
-	}
-
-	hashedPassword, err := u.passwordService.HashPassword(newPassword)
-	if err != nil {
-		return err
-	}
-
-	return u.userRepo.UpdatePassword(userID, hashedPassword)
 }

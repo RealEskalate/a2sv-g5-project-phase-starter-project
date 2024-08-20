@@ -9,7 +9,7 @@ type IHashService interface{
 
 type PasswordService struct {}
 
-func NewPasswordService(password string) IHashService{
+func NewPasswordService() IHashService{
 	return &PasswordService{}
 }
 

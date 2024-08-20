@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"AAIT-backend-group-3/internal/domain/models"
-	"context"
+	"AAIT-backend-group-3/internal/repositories/interfaces"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -12,7 +12,7 @@ import (
 type MongoUserRepository struct {
 	collection *mongo.Collection
 }
-func NewMongoUserRepository(db *mongo.Database, collectionName string) *MongoUserRepository {
+func NewMongoUserRepository(db *mongo.Database, collectionName string) repository_interface.UserRepositoryInterface {
 	return &MongoUserRepository{
 		collection: db.Collection(collectionName),
 	}
@@ -61,12 +61,11 @@ func (r *MongoUserRepository) DemoteUser(userID primitive.ObjectID) error {
 	return err
 }
 
-func (r *MongoUserRepository) UpdatePassword(ctx context.Context, userID string, hashedPassword string) error {
+func (r *MongoUserRepository) UpdatePassword(userID string, hashedPassword string) error {
 	objID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return err
 	}
-
 	_, err = r.collection.UpdateOne(ctx, bson.M{"_id": objID}, bson.M{"$set": bson.M{"password": hashedPassword}})
 	return err
 }

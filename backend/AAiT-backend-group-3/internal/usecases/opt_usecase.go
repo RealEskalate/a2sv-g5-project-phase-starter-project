@@ -25,7 +25,7 @@ type OtpUsecase struct {
 	redirectURL  string 
 }
 
-func NewForgotPasswordUseCase(otpRepo repository_interface.IOtpRepository,userRepo repository_interface.UserRepositoryInterface,emailSvc services.IEmailService,passSvc services.IHashService,redirectURL string,) IOtpUsecase {
+func NewOtpUseCase(otpRepo repository_interface.IOtpRepository,userRepo repository_interface.UserRepositoryInterface,emailSvc services.IEmailService,passSvc services.IHashService,redirectURL string,) IOtpUsecase {
 	return &OtpUsecase{
 		otpRepo:  otpRepo,
 		userRepo: userRepo,

@@ -2,8 +2,6 @@ package repository_interface
 
 import (
 	"AAIT-backend-group-3/internal/domain/models"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogRepositoryInterface interface {

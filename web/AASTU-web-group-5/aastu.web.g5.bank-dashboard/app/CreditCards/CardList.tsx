@@ -79,7 +79,7 @@ const CardList = ({ cardId }: CardListProps) => {
 	};
 
 	return (
-		<div className="overflow-y-scroll max-h-80">
+		<div className="">
 			{cardListData.map((card, index) => (
 				<div key={card.id} className="list pb-2 p-1">
 					<div className="flex sm:flex-row items-start sm:items-center gap-4 bg-white py-5 px-5 pr-6 rounded-xl sm:justify-between">

@@ -11,8 +11,6 @@ interface LoanCardsProps {
 }
 
 const LoanCards: React.FC<LoanCardsProps> = ({ data = [] }) => {
-	console.log("carddddddddd", data);
-
 	if (!Array.isArray(data)) {
 		console.error("Expected 'data' to be an array but got:", data);
 		return <div>Error loading loan data</div>;

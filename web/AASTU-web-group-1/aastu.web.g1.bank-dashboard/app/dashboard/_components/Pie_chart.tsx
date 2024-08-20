@@ -18,10 +18,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { getallTransactions } from "@/app/dashboard/transactions/component/getTransactions";
 import { TransactionData } from "@/types";
 import { useState,useEffect } from "react";
-
 
 
 
@@ -33,15 +31,9 @@ const categoryTotals ={
 };
 
 
-export function Pie_chart() {
-  const [transactions, setTransactions] = useState<TransactionData[]>([]);
+export function Pie_chart({transactions}:{transactions:TransactionData[]}) {
   const [chartData,setChartData] = useState<{ expense: string; value: number; fill: string; }[]>([]);
-  useEffect(()=>{
-    const fetchTransactions = async () => {
-      const transactions = await getallTransactions(0, 100);
-       setTransactions(transactions || []);}
-       fetchTransactions();
-  },[]);
+ 
 
   useEffect(()=>{
       transactions.map((transaction: TransactionData) => {
@@ -119,7 +111,7 @@ export function Pie_chart() {
 
   return (
     <Card >
-      <CardContent>
+      <CardContent className="p-0">
         <ChartContainer config={chartConfig} className="h-60 w-full ">
         
             <PieChart>
@@ -142,8 +134,7 @@ export function Pie_chart() {
                   formatter={(value: number) =>
                     ` ${value}`
                   }
-                  // stroke="#fff"
-                  // className=" font-bold text-blue "
+               
                 />
               </Pie>
             </PieChart>

@@ -1,0 +1,238 @@
+
+import { getSession } from "next-auth/react";
+import { TransactionProps,RandomBalanceHistory,UserResponse, CardDetails,QuickTransferProps } from "@/types";
+
+export  async function getCreditCards() {
+  try {
+    const session = await getSession();
+    const accessToken = session?.user.accessToken;
+    const res = await fetch(`https://bank-dashboard-6acc.onrender.com/cards`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: null,
+    });
+    if (!res.ok) {
+      throw new Error("failed to get data");
+    }
+    const cards: CardDetails[] = await res.json();
+    return cards;
+  } catch (error) {
+    console.error("An error occurred on card:", error);
+  }
+}
+
+
+export  async function getQuickTransfer(num:number) {
+  try {
+    const session = await getSession();
+    const accessToken = session?.user.accessToken;
+    const res = await fetch(
+      `https://bank-dashboard-6acc.onrender.com/transactions/quick-transfers?number=${num}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: null,
+      }
+    );
+    if (!res.ok) {
+      throw new Error("failed to get data");
+    }
+    const account: QuickTransferProps = await res.json();
+    return account.data;
+  } catch (error) {
+    console.error("An error occurred on card:", error);
+  }
+}
+
+
+
+
+interface Props {
+  type: string;
+  description: string;
+  amount: number;
+  receiverUserName: string;
+}
+
+export  async function addTransactions({
+  type,
+  description,
+  amount,
+  receiverUserName,
+}: Props) {
+  try {
+    const session = await getSession();
+    const accessToken = session?.user.accessToken;
+    const res = await fetch(
+      `https://bank-dashboard-6acc.onrender.com/transactions`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: type,
+          description: description,
+          amount: amount,
+          receiverUserName: receiverUserName,
+        }),
+      }
+    );
+    if (!res.ok) {
+      throw new Error("Failed to get data");
+    }
+    const data = await res.json();
+    alert("Transaction Successful");
+    console.log("res", data);
+  } catch (error) {
+    console.error("An error occurred on card:", error);
+  }
+}
+
+
+export  async function getCurrentUser() {
+  
+    try {
+  const session = await getSession();
+  const accessToken = session?.user.accessToken;
+      const res = await fetch(
+        `https://bank-dashboard-6acc.onrender.com/user/current`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: null,
+        }
+      );
+      if (!res.ok) {
+        throw new Error("failed to get data");
+      }
+
+      const currentUser: UserResponse = await res.json();
+      return currentUser.data;
+    } catch (error) {
+      console.log(error);
+      console.log("An error occurred:", error);
+    }
+ 
+}
+
+
+
+export async function getExpenses(page: number, size: number) {
+  try {
+     const session = await getSession();
+     const accessToken = session?.user.accessToken;
+    const res = await fetch(
+      `https://bank-dashboard-6acc.onrender.com/transactions/expenses?page=${page}&size=${size}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: null,
+      }
+    );
+    if (!res.ok) {
+      throw new Error("faild to fetch data");
+    }
+    const expenses: TransactionProps = await res.json();
+
+    return expenses.data;
+  } catch (error) {
+    console.log("An error occurred:", error);
+   
+  }
+}
+
+
+
+
+export async function getIncomes(page: number, size: number,) {
+  try {
+    const session = await getSession();
+    const accessToken = session?.user.accessToken;
+
+    const res = await fetch(
+      `https://bank-dashboard-6acc.onrender.com/transactions/incomes?page=${page}&size=${size}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: null,
+      }
+    );
+    if (!res.ok) {
+      throw new Error("faild to fetch data");
+    }
+    const incomes: TransactionProps = await res.json();
+
+    return incomes.data;
+  } catch (error) {
+    console.log("An error occurred:", error);
+  }
+}
+
+
+
+
+export default async function getRandomBalance() {
+  
+  try {
+     const session = await getSession();
+     const accessToken = session?.user.accessToken;
+      const res = await fetch(
+        `https://bank-dashboard-6acc.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=7`,
+        {
+            method:"GET",
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
+            },
+            body:null,
+            
+        }
+      );
+      if(!res.ok){
+          throw new Error("faild to fetch data");
+      }
+      const balanceHistory : RandomBalanceHistory= await res.json();
+      return balanceHistory.data;
+  }catch (error) {
+    console.log("An error occurred:", error);
+  
+  }}
+
+
+export async function getallTransactions(page: number, size: number) {
+
+  try {
+     const session = await getSession();
+     const accessToken = session?.user.accessToken;
+    const res = await fetch(
+      `https://bank-dashboard-6acc.onrender.com/transactions?page=${page}&size=${size}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: null,
+      }
+    );
+    if (!res.ok) {
+      throw new Error("faild to fetch data");
+    }
+    const transactions: TransactionProps = await res.json();
+
+
+    return transactions.data;
+  } catch (error) {
+    console.log("An error occurred on transaction:", error);
+  }
+}

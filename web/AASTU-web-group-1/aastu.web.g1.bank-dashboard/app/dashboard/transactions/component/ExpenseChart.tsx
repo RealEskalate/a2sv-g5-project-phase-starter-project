@@ -1,15 +1,10 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, LabelList, Legend, XAxis } from "recharts";
 
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   ChartConfig,
@@ -17,28 +12,38 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { TransactionData } from "@/types";
+import { useEffect, useState } from "react";
 
-const chartData = [
-  { month: "Aug", expense: 10000 },
-  { month: "Sep", expense: 13000 },
-  { month: "Oct", expense: 10000 },
-  { month: "Nov", expense: 5000 },
-  { month: "May", expense: 12500 },
-  { month: "June", expense: 5000 },
-];
+interface ExpenseChartProps {
+  expenses: TransactionData[];
+}
 
-const chartConfig = {
-  desktop: {
-    label: "expense",
-    color: "#16DBCC",
-  },
-} satisfies ChartConfig;
+export function ExpenseChart({expenses}: ExpenseChartProps) {
+ 
+  const [chartData, setChartData] = useState<{ month: string; expense: number }[]>([]);
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
 
-export function ExpenseChart() {
+  useEffect(() => {
+    const newChartData = expenses.map((expense, index) => ({
+      month: monthNames[index],
+      expense: Math.round(expense.amount),
+    }));
+    setChartData(newChartData);
+  }, [expenses]);
+ 
+  
+
+  const chartConfig = {
+    desktop: {
+      label: "expense",
+      color: "#16DBCC",
+    },
+  } satisfies ChartConfig;
   return (
     <Card>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-36 w-full">
+        <ChartContainer config={chartConfig} className="h-40 w-full">
           <BarChart
             accessibilityLayer
             data={chartData}

@@ -10,10 +10,12 @@ import (
 
 type OAuthController struct{}
 
+// NewOAuthController initializes the OAuth controller
 func NewOAuthController() *OAuthController {
 	return &OAuthController{}
 }
 
+// Handler for /auth/google/start
 func (controller *OAuthController) GoogleAuthInit(c *gin.Context) {
 	query := c.Request.URL.Query()
 	query.Add("provider", "google")
@@ -21,6 +23,7 @@ func (controller *OAuthController) GoogleAuthInit(c *gin.Context) {
 	gothic.BeginAuthHandler(c.Writer, c.Request)
 }
 
+// Handler for /auth/google/callback
 func (controller *OAuthController) OAuthCallback(c *gin.Context) {
 	query := c.Request.URL.Query()
 	query.Add("provider", "google")

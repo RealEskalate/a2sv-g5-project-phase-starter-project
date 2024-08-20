@@ -13,6 +13,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+/* Defines a struct with all the necessary data to implement domain.UserUsecaseInterface */
 type UserUsecase struct {
 	userRepository            domain.UserRepositoryInterface
 	cacheRepository           domain.CacheRepositoryInterface
@@ -30,8 +31,10 @@ type UserUsecase struct {
 	ENV                       domain.EnvironmentVariables
 }
 
+/* Regex for validation phone numbers*/
 var PhoneRegex = regexp.MustCompile(`^\+?[1-9][0-9]{7,14}$`)
 
+/* Creates a new instance of UserUsecase */
 func NewUserUsecase(
 	userRepository domain.UserRepositoryInterface,
 	cacheRepository domain.CacheRepositoryInterface,
@@ -65,6 +68,7 @@ func NewUserUsecase(
 	}
 }
 
+/* Validates password length constraints*/
 func (u *UserUsecase) ValidatePassword(password string) domain.CodedError {
 	if len(password) < 8 {
 		return domain.NewError("Password too short", domain.ERR_BAD_REQUEST)
@@ -77,6 +81,7 @@ func (u *UserUsecase) ValidatePassword(password string) domain.CodedError {
 	return nil
 }
 
+/* Validates username content and length constraints*/
 func (u *UserUsecase) ValidateUsername(username string) domain.CodedError {
 	if len(username) < 3 {
 		return domain.NewError("Username too short", domain.ERR_BAD_REQUEST)
@@ -86,9 +91,15 @@ func (u *UserUsecase) ValidateUsername(username string) domain.CodedError {
 		return domain.NewError("Username too short", domain.ERR_BAD_REQUEST)
 	}
 
+	re := regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
+	if !re.MatchString(username) {
+		return domain.NewError("Invalid username: must contain only letters, numbers and underscores", domain.ERR_BAD_REQUEST)
+	}
+
 	return nil
 }
 
+/* Validates email format */
 func (u *UserUsecase) ValidateEmail(email string) domain.CodedError {
 	if _, err := mail.ParseAddress(email); err != nil {
 		return domain.NewError("Invalid email", domain.ERR_BAD_REQUEST)
@@ -97,6 +108,7 @@ func (u *UserUsecase) ValidateEmail(email string) domain.CodedError {
 	return nil
 }
 
+/* Sanitizes user email, username, bio and phonenumber fields */
 func (u *UserUsecase) SantizeUserFields(user *domain.User) {
 	user.Email = strings.TrimSpace(strings.ToLower(user.Email))
 	user.Username = strings.TrimSpace(strings.ToLower(user.Username))
@@ -104,6 +116,7 @@ func (u *UserUsecase) SantizeUserFields(user *domain.User) {
 	user.PhoneNumber = strings.TrimSpace(user.PhoneNumber)
 }
 
+/* Calls sanitization and validation functions and validates bio and phonenumber format */
 func (u *UserUsecase) SanitizeAndValidateNewUser(user *domain.User) domain.CodedError {
 	u.SantizeUserFields(user)
 	user.CreatedAt = time.Now().Round(0)
@@ -134,6 +147,7 @@ func (u *UserUsecase) SanitizeAndValidateNewUser(user *domain.User) domain.Coded
 	return nil
 }
 
+/* Generates a verification struct with the provided fields */
 func (u *UserUsecase) GetVerificationData(c context.Context, username string, verificationType string, expiresAt time.Time, tokenLength int) (domain.VerificationData, domain.CodedError) {
 	var verificationData domain.VerificationData
 	generatedToken, gErr := u.GenerateToken(tokenLength)
@@ -150,6 +164,10 @@ func (u *UserUsecase) GetVerificationData(c context.Context, username string, ve
 	return verificationData, nil
 }
 
+/*
+Creates a new user in the system after sanitizing and validating the user fields. It then sends
+an email to the user with a verification link to verify their email address
+*/
 func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl string) domain.CodedError {
 	err := u.SanitizeAndValidateNewUser(user)
 	if err != nil {
@@ -177,6 +195,7 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 		return err
 	}
 
+	// send email verification link with the template and the generated token
 	mail := u.EmailVerificationTemplate(hostUrl, user.Username, verificationData.Token)
 	mailErr := u.SendMail("Blog API", user.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
 	if mailErr != nil {
@@ -187,6 +206,10 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 	return nil
 }
 
+/*
+Checks if the provided user has the correct credentials and is verified. If the user is verified,
+it signs a new access and refresh token and sets the hashed refresh token in the database.
+*/
 func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, string, domain.CodedError) {
 	u.SantizeUserFields(user)
 	err := u.ValidateUsername(user.Username)
@@ -199,7 +222,6 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 		return "", "", err
 	}
 
-	// if both username and email are empty return an error
 	if user.Email == "" && user.Username == "" {
 		return "", "", domain.NewError("Username or email required", domain.ERR_BAD_REQUEST)
 	}
@@ -214,7 +236,6 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 		return "", "", err
 	}
 
-	// check if the user is verified
 	if !foundUser.IsVerified {
 		return "", "", domain.NewError("User email not verified", domain.ERR_UNAUTHORIZED)
 	}
@@ -224,6 +245,7 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 		return "", "", domain.NewError("Incorrect password", domain.ERR_UNAUTHORIZED)
 	}
 
+	// sign the new access and refresh tokens
 	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
 	if err != nil {
 		return "", "", err
@@ -248,6 +270,10 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 	return accessToken, refreshToken, nil
 }
 
+/*
+Checks if the provided refresh token is valid and not expired. If the token is valid, it signs a new access token.
+If the token is invalid, it returns an error. If the token is expired, it deletes the refresh token from the database
+*/
 func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (string, domain.CodedError) {
 	token, err := u.ValidateAndParseToken(refreshToken, env.ENV.JWT_SECRET_TOKEN)
 	if err != nil {
@@ -309,6 +335,10 @@ func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (
 	return accessToken, nil
 }
 
+/*
+Updates the user details if the user is the owner of the account.
+The user can only update their bio and phonenumber.
+*/
 func (u *UserUsecase) UpdateUser(c context.Context, requestUsername string, tokenUsername string, user *dtos.UpdateUser) (map[string]string, domain.CodedError) {
 	if requestUsername != tokenUsername {
 		return nil, domain.NewError("Only the owner of the account can update its details", domain.ERR_FORBIDDEN)
@@ -325,14 +355,22 @@ func (u *UserUsecase) UpdateUser(c context.Context, requestUsername string, toke
 	return u.userRepository.UpdateUser(c, requestUsername, user)
 }
 
+/* Promotes the user with the provided username to the `admin` role` */
 func (u *UserUsecase) PromoteUser(c context.Context, username string) domain.CodedError {
-	return u.userRepository.ChangeRole(c, username, "admin")
+	return u.userRepository.ChangeRole(c, username, domain.RoleAdmin)
 }
 
+/* Demotes the user with the provided username to the `user` role */
 func (u *UserUsecase) DemoteUser(c context.Context, username string) domain.CodedError {
-	return u.userRepository.ChangeRole(c, username, "user")
+	return u.userRepository.ChangeRole(c, username, domain.RoleUser)
 }
 
+/*
+Verifies the user email address by checking the provided token against the token in the database.
+  - If the token is valid, it sets the user as verified.
+  - If the token is invalid, it returns an error.
+  - If the token is expired, it generates a new token and sends a new email to the user.
+*/
 func (u *UserUsecase) VerifyEmail(c context.Context, username string, token string, hostUrl string) domain.CodedError {
 	username = strings.TrimSpace(username)
 	user, err := u.userRepository.FindUser(c, &domain.User{Username: username})
@@ -371,6 +409,11 @@ func (u *UserUsecase) VerifyEmail(c context.Context, username string, token stri
 	return u.userRepository.VerifyUser(c, username)
 }
 
+/*
+Starts the process of resetting the user password by sending an email with a reset password link
+and a token to the user. The token is stored in the database and is used to verify the user when
+they want to reset their password.
+*/
 func (u *UserUsecase) InitResetPassword(c context.Context, username string, email string, hostUrl string) domain.CodedError {
 	foundUser, err := u.userRepository.FindUser(c, &domain.User{Username: username, Email: email})
 	if err != nil {
@@ -400,6 +443,11 @@ func (u *UserUsecase) InitResetPassword(c context.Context, username string, emai
 	return nil
 }
 
+/*
+Resets the user password by checking the provided token against the token in the database.
+  - If the token is valid, it sets the new password for the user.
+  - If the token is invalid, it returns an error.
+*/
 func (u *UserUsecase) ResetPassword(c context.Context, resetDto dtos.ResetPassword, token string) domain.CodedError {
 	user, err := u.userRepository.FindUser(c, &domain.User{Username: resetDto.Username})
 	if err != nil {
@@ -436,6 +484,10 @@ func (u *UserUsecase) ResetPassword(c context.Context, resetDto dtos.ResetPasswo
 	return nil
 }
 
+/*
+Logs out the user by deleting the refresh token from the database and setting the access token in the
+blacklist cache for a duration equal to the access token lifespan set in the environment variables.
+*/
 func (u *UserUsecase) Logout(c context.Context, username string, accessToken string) domain.CodedError {
 	err := u.cacheRepository.CacheData(accessToken, "", time.Minute*time.Duration(u.ENV.ACCESS_TOKEN_LIFESPAN))
 	if err != nil {
@@ -445,6 +497,11 @@ func (u *UserUsecase) Logout(c context.Context, username string, accessToken str
 	return u.userRepository.SetRefreshToken(c, &domain.User{Username: username}, "")
 }
 
+/*
+Allows the user to obtain access tokens using their google account. If the user does not exist in
+the database, a new user IS NOT created. The user must have an account in the system to be able
+to obtain tokens using this route.
+*/
 func (u *UserUsecase) GoogleOAuthAccess(c context.Context, data *dtos.GoogleResponse) (string, string, domain.CodedError) {
 	foundUser, err := u.userRepository.FindUser(c, &domain.User{Email: data.Email})
 	if err != nil && err.GetCode() == domain.ERR_NOT_FOUND {
@@ -460,6 +517,7 @@ func (u *UserUsecase) GoogleOAuthAccess(c context.Context, data *dtos.GoogleResp
 		return "", "", domain.NewError("User email not verified", domain.ERR_UNAUTHORIZED)
 	}
 
+	// signs the new access and refresh tokens
 	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
 	if err != nil {
 		return "", "", err

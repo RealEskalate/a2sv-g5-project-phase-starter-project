@@ -1,15 +1,18 @@
 package dtos
 
+// A struct to deserialize the request body for the update user endpoint
 type UpdateUser struct {
 	PhoneNumber string `json:"phone_number"`
 	Bio         string `json:"bio"`
 }
 
+// A struct to deserialize the request body for the reset password endpoint
 type ResetPassword struct {
 	Username    string `json:"username" binding:"required"`
 	NewPassword string `json:"newpassword" binding:"required"`
 }
 
+// A struct to deserialize the response from Google OAuth
 type GoogleResponse struct {
 	RawData struct {
 		Email         string `json:"email" binding:"required"`

@@ -16,6 +16,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// NewAuthRouter initalizes the controllers, usecases and repositories before setting up the auth routes
 func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, cacheClient *redis.Client) {
 	userRepository := repository.NewUserRepository(collection)
 	cacheRepoistory := repository.NewCacheRepository(cacheClient)

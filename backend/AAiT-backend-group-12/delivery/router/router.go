@@ -9,12 +9,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// SetupRouter sets up the router with the given port, route prefix, database, and redis client
 func SetupRouter(port int, routePrefix string, db *mongo.Database, redisClient *redis.Client) {
 	router := gin.Default()
 
 	// auth
 	authRouter := router.Group("/api/" + routePrefix + "/auth")
 	NewAuthRouter(db.Collection(domain.CollectionUsers), authRouter, redisClient)
+
+	// oauth
 	oauthRouter := router.Group("/")
 	NewOAuthRouter(oauthRouter)
 

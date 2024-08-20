@@ -1,8 +1,8 @@
 package router
 
 import (
-	"blog_api/repository"
 	"blog_api/delivery/controllers"
+	"blog_api/repository"
 	"blog_api/usecase"
 	"time"
 
@@ -10,9 +10,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// NewBlogRouter initalizes the controllers, usecases and repositories before setting up the blog routes
 func NewBlogRouter(collection *mongo.Collection, blogGroup *gin.RouterGroup) {
 	br := repository.NewBlogRepository(collection)
-	bu := usecase.NewBlogUseCase(br, time.Second * 100)
+	bu := usecase.NewBlogUseCase(br, time.Second*100)
 
 	bc := controllers.NewBlogController(bu)
 

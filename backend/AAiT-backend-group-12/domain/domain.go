@@ -9,14 +9,20 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-/*
-Defines the names of the collections in the DB
-*/
+// Defines the names of the collections in the DB
 const (
 	CollectionUsers = "users"
 	CollectionBlogs = "blogs"
 )
 
+// Defines the names of the roles
+const (
+	RoleUser  = "user"
+	RoleAdmin = "admin"
+	RoleRoot  = "root"
+)
+
+// Defines the types of verification statuses
 const (
 	VerifyEmailType   = "verify_email"
 	ResetPasswordType = "reset_password"
@@ -26,6 +32,7 @@ type Response gin.H
 
 type TokenType *jwt.Token
 
+// Defiens the environment variables used by the API
 type EnvironmentVariables struct {
 	DB_ADDRESS             string
 	DB_NAME                string
@@ -44,12 +51,14 @@ type EnvironmentVariables struct {
 	GOOGLE_CLIENT_SECRET   string
 }
 
+// Defines a struct for verifying the user emails and reseting passwords
 type VerificationData struct {
 	Token     string    `json:"token"`
 	ExpiresAt time.Time `json:"expires_at"`
 	Type      string    `json:"type"`
 }
 
+// Defines a struct for the user entity
 type User struct {
 	Username         string           `json:"username"`
 	Email            string           `json:"email"`
@@ -63,6 +72,7 @@ type User struct {
 	VerificationData VerificationData `json:"verification_data"`
 }
 
+// Defines a struct for the blog entity
 type Blog struct {
 	ID         string    `json:"id"`
 	Title      string    `json:"title"`
@@ -85,6 +95,7 @@ type Comment struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+// Defines a struct for the blog filter options
 type BlogFilterOptions struct {
 	Title         string // Search by title
 	Author        string // Search by author name

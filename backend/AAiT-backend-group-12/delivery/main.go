@@ -46,7 +46,7 @@ func main() {
 		return
 	}
 
-	defer redisClient.Close()
+	defer redis_service.DisconnectStore(redisClient)
 
 	// create google provider for oauth
 	google_auth.NewAuth(env.ENV.GOOGLE_CLIENT_ID, env.ENV.GOOGLE_CLIENT_SECRET, 1, fmt.Sprintf("http://localhost:%v/auth/google/callback", env.ENV.PORT))

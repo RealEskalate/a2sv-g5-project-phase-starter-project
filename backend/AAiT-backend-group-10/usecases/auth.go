@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"errors"
+	"math/rand"
 	"time"
 
 	"aait.backend.g10/domain"
@@ -10,7 +11,6 @@ import (
 	"aait.backend.g10/usecases/interfaces"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type IAuthUsecase interface {
@@ -62,14 +62,8 @@ func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, erro
 	if err != nil {
 		return nil, err
 	}
-	type created struct {
-		ID       string `json:"id"`
-		FullName string `json:"full_name"`
-		Email    string `json:"email"`
-		Bio      string `json:"bio"`
-		ImageUrl string `json:"image_url"`
-	}
-	return &created{
+
+	return &dto.CreatedResponseDto{
 		ID:       user.ID,
 		FullName: user.FullName,
 		Email:    user.Email,
@@ -155,7 +149,8 @@ func (uc *AuthUsecase) RefreshTokens(refreshToken string) (*dto.TokenResponseDTO
 	}
 
 	return &dto.TokenResponseDTO{
-		AccessToken: accessToken,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	}, nil
 }
 
@@ -164,12 +159,24 @@ func (uc *AuthUsecase) ForgotPassword(dto *dto.ForgotPasswordRequestDTO) error {
 	if err != nil || user == nil {
 		return errors.New("user not found")
 	}
+	rand.Seed(time.Now().UnixNano())
 
-	resetToken, err := uc.jwtService.GenerateResetToken(user.Email)
+	min := 10000
+	max := 100000
+
+	randomNumber := rand.Int63n(int64(max-min)) + int64(min)
+	resetToken, err := uc.jwtService.GenerateResetToken(user.Email, randomNumber)
+
 	if err != nil {
 		return err
 	}
 
+	user.ResetCode = randomNumber
+	user.ResetToken = resetToken
+	err = uc.userRepository.UpdateUser(user)
+	if err != nil {
+		return err
+	}
 	return uc.emailService.SendResetEmail(user.Email, resetToken)
 }
 
@@ -180,7 +187,12 @@ func (uc *AuthUsecase) ResetPassword(dto *dto.ResetPasswordRequestDTO) error {
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
+
 	if !ok || !token.Valid {
+		return errors.New("invalid token")
+	}
+	code, ok := claims["code"].(float64)
+	if !ok {
 		return errors.New("invalid token")
 	}
 
@@ -189,12 +201,19 @@ func (uc *AuthUsecase) ResetPassword(dto *dto.ResetPasswordRequestDTO) error {
 	if err != nil || user == nil {
 		return errors.New("user not found")
 	}
+	if user.ResetToken != dto.Token {
+		return errors.New("invalid token")
+	}
+	if user.ResetCode != int64(code) {
+		return errors.New("invalid code")
+	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(dto.NewPassword), bcrypt.DefaultCost)
+	hashedPassword, err := uc.pwdService.HashPassword(dto.NewPassword)
 	if err != nil {
 		return err
 	}
-
+	user.ResetCode = 0
+	user.ResetToken = ""
 	user.Password = string(hashedPassword)
 	return uc.userRepository.UpdateUser(user)
 }

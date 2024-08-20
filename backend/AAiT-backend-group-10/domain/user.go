@@ -30,6 +30,8 @@ type User struct {
 	IsAdmin      bool      `json:"isAdmin" bson:"isAdmin"`
 	AccessToken  string    `json:"accessToken" bson:"accessToken"`
 	RefreshToken string    `json:"refreshToken" bson:"refreshToken"`
+	ResetToken   string    `json:"resetToken" bson:"resetToken"`
+	ResetCode    int64     `json:"resetCode" bson:"resetCode"`
 	Password     string    `json:"password" bson:"password" binding:"required"`
 	CreatedAt    time.Time `json:"created_at" bson:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at" bson:"updated_at"`

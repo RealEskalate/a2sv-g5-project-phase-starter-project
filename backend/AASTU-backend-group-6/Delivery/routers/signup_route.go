@@ -21,21 +21,6 @@ func NewSignupRoute(config *infrastructure.Config, DB mongo.Database, SignupRout
 	}
 
 	SignupRoute.POST("/signup", signup.Signup)
-	// otp verifyer route
 	SignupRoute.POST("/signup/verify" , signup.VerifyOTP)
-	// Google Auth	
-	// SignupRoute.POST("/auth/google" , signup.GoogleAuth)
-
 	SignupRoute.POST("/reset" , signup.ForgotPassword)
-	
-	
-	// SignupRoute.GET("/auth/google")
-	
-
-	// blogRouter.GET("/get")
-	// blogRouter.GET("/get/:id")
-	// blogRouter.PUT("/update/:id")
-	// blogRouter.DELETE("/delete/:id")
-	// blogRouter.POST("/comment/:id")
-
 }

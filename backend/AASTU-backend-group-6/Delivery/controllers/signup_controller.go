@@ -45,9 +45,6 @@ func (s *SignupController) VerifyOTP(c *gin.Context) {
 }
 
 
-
-
-
 func (s *SignupController) ForgotPassword(c *gin.Context) {
 	var userEmail domain.ForgotPasswordRequest
 
@@ -78,6 +75,4 @@ func (s *SignupController) ForgotPassword(c *gin.Context) {
 		HandleResponse(c , response)
 
 	}
-
-
 }

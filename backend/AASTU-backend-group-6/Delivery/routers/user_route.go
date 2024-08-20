@@ -1,18 +1,26 @@
 package routers
 
 import (
+	controllers "blogs/Delivery/controllers"
 	infrastructure "blogs/Infrastructure"
+	repositories "blogs/Repositories"
+	usecases "blogs/Usecases"
 	"blogs/mongo"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func NewUserrouter(config *infrastructure.Config, DB mongo.Database, userRouter *gin.RouterGroup) {
-	// userRouter.POST("/create")
-	userRouter.GET("/get")
-	userRouter.GET("/get/:id")
-	userRouter.PUT("/update/:id")
-	userRouter.DELETE("/delete/:id")
-	userRouter.POST("/comment/:id")
+
+	userRepo := repositories.NewUserRepository(DB , config.UserCollection)
+	
+	userService := usecases.NewUserUseCase(userRepo ,time.Duration(config.ContextTimeout) * time.Second)
+	userController := controllers.NewUserController{
+		UserUsecase: userService,
+	}
+
+	userRouter.PUT("/update/:id" , userController.UpdateUser)
+	userRouter.POST("/promote/:id" , userController.PromoteUser)
 
 }

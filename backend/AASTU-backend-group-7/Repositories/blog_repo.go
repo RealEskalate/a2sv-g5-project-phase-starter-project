@@ -97,7 +97,6 @@ func (br *blogrepository) GetPostByAuthorID(ctx context.Context, authorID primit
 		if err != nil {
 			return nil, err, 500
 		}
-		post.Views++
 		posts = append(posts, post)
 	}
 	// will come back to this after wraping client
@@ -112,12 +111,12 @@ func (br *blogrepository) GetPostByID(ctx context.Context, id primitive.ObjectID
 	var post *Domain.Post
 	filter := bson.D{{"_id", id}}
 	// update views by 1
-	update := bson.D{{"$inc", bson.D{{"views", 1}}}}
-	_, err := br.postCollection.UpdateOne(ctx, filter, update)
-	err = br.postCollection.FindOne(ctx, filter).Decode(&post)
+	err := br.postCollection.FindOne(ctx, filter).Decode(&post)
 	if err != nil {
 		return nil, err, 500
 	}
+	update := bson.D{{"$inc", bson.D{{"views", 1}}}}
+	_, err = br.postCollection.UpdateOne(ctx, filter, update)
 	return post, nil, 200
 }
 
@@ -246,6 +245,7 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 	sort := bson.M{"publishedAt": -1} // Default sort by publishedAt descending
 	if len(filter.Sort) > 0 {
 		for field, value := range filter.Sort {
+	
 			sort = bson.M{field: value} // Override the default sort with the provided field and value
 			break                       // We assume only one field is sorted, so break after the first
 		}
@@ -288,7 +288,7 @@ func (br *blogrepository) AddTagToPost(ctx context.Context, id primitive.ObjectI
 		return err, 500
 	}
 	// update post with tag
-	update := bson.D{{"$push", bson.D{{"tags", tag.ID}}}}
+	update := bson.D{{"$push", bson.D{{"tags", tag.Slug}}}}
 	_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
 	if err != nil {
 		return err, 500

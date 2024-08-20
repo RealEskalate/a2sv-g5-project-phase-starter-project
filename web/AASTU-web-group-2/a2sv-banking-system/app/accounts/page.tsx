@@ -42,7 +42,7 @@ const Page = () => {
   const [session, setSession] = useState<Data | null>(null);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [getCard, setGetCards] = useState<GetCardsResponse>();
+  const [getCard, setGetCards] = useState<CardType[]>();
 
   // Getting the session from the server
   useEffect(() => {
@@ -66,7 +66,8 @@ const Page = () => {
     const addingData = async () => {
       if (session?.access_token) {
         const cardData = await getCards(session?.access_token);
-        setGetCards(cardData);
+        console.log("Fetching Complete", cardData.content)
+        setGetCards(cardData.content);
       }
     };
     addingData();
@@ -199,7 +200,7 @@ const Page = () => {
                 See All
               </span>
             </div>
-            {getCard && getCard.cards.content.map((items:CardType) => (
+            {getCard && getCard.map((items) => (
               <Card
                 key={items.id}
                 balance={String(items.balance)}

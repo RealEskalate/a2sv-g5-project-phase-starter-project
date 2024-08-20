@@ -2,7 +2,7 @@ export const menuItems = [
   { title: "Dashboard", icon: "/icons/home.svg", href: "/dashboard" },
   { title: "Transaction", icon: "/icons/Dolar.svg", href: "/transactions" },
   { title: "Accounts", icon: "/icons/user.svg", href: "/accounts" },
-  { title: "Investments", icon: "/icons/investment.svg", href: "/investments" },
+  { title: "Investments", icon: "/icons/investment.svg", href: "/Investments" },
   { title: "Credit Cards", icon: "/icons/creidtCard.svg", href: "/creditcardpage" },
   { title: "Loans", icon: "/icons/loan.svg", href: "/loans" },
   { title: "Services", icon: "/icons/service.svg", href: "/services" },
@@ -18,3 +18,17 @@ export const safety = '/icons/safety.svg'
 export const shooping = '/icons/shooping.svg'
 export const lifeinsurance = '/icons/life-insurance.svg'
 export const profilepic = '/icons/profilepic.svg'
+
+
+
+export const apple = '/icons/apple.svg'
+export const google = '/icons/google.svg'
+export const tesla = '/icons/tesla.svg'
+export const returnValue = '/icons/returnValue.svg'
+export const nameinvestment = '/icons/nameinvestment.svg'
+export const totalinvestment = '/icons/totalinvestment.svg'
+
+
+
+
+

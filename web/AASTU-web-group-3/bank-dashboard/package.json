@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@canvasjs/react-charts": "^1.0.2",
+    "canvasjs-react-charts": "^1.0.5",
     "@reduxjs/toolkit": "^2.2.7",
     "chart.js": "^4.4.3",
     "class-variance-authority": "^0.7.0",

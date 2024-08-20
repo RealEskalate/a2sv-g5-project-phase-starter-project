@@ -36,7 +36,7 @@ func (ms *MailService) SendPasswordResetEmail(to, token string) error {
 	m.SetHeader("From", "BLOGSAPI@gmail.com")
 	m.SetHeader("To", to)
 	m.SetHeader("Subject", "Password Reset Request")
-m.SetBody("text/plain", fmt.Sprintf("Click here to reset your password: http://localhost:8080/store-token?token=%s", token))
+	m.SetBody("text/plain", fmt.Sprintf("Click here to reset your password: http://localhost:8080/store-token?token=%s", token))
 	d := gomail.NewDialer(
 		"smtp.gmail.com",
 		587,

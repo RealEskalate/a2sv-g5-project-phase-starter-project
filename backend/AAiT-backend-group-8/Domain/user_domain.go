@@ -1,8 +1,8 @@
 package Domain
 
 import (
-	"time"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 type User struct {
@@ -32,7 +32,7 @@ type IUserRepository interface {
 	UpdatePasswordByEmail(email string, newPassword string) error
 	StoreResetToken(email string, resetToken string) error
 	InvalidateResetToken(email string) error
-	GetResetTokenByEmail(email string ) (string, error)
+	GetResetTokenByEmail(email string) (string, error)
 }
 
 type IUserUseCase interface {
@@ -43,7 +43,7 @@ type IUserUseCase interface {
 	RefreshToken(email, refresher string) (string, error)
 	GenerateResetPasswordToken(email string) error
 	ResetPassword(token string, newPassword string) error
-	StoreToken(token string ) error
+	StoreToken(token string) error
 }
 
 type IPasswordService interface {

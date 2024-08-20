@@ -115,7 +115,7 @@ func (uuc *UserUseCaseImpl) GetSingleUser(email string) (*domain.User, error) {
 
 func (uuc *UserUseCaseImpl) RefreshToken(email, refresher string) (string, error) {
 	//Check the validity of the refresher token
-	_,err := uuc.TokenService.ValidateToken(refresher)
+	_, err := uuc.TokenService.ValidateToken(refresher)
 
 	if err != nil {
 		return "", err
@@ -169,7 +169,7 @@ func (uuc *UserUseCaseImpl) Login(email string, password string) (string, string
 	}
 
 	//Generate a token for the user
-	tokenExp := time.Now().Add(time.Minute * 15).Unix()
+	tokenExp := time.Now().Add(time.Hour * 50).Unix()
 	token, err := uuc.TokenService.GenerateToken(user.Email, user.Id, user.Role, user.Name, tokenExp)
 
 	if err != nil {

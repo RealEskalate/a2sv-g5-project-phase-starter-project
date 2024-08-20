@@ -91,60 +91,97 @@ func (blogU *blogUsecase) FetchByBlogID(c context.Context, blogID string )(domai
 
 
 // FetchByBlogAuthor calls FetchByBlogAuthor method in blog repository to retrive a blog writtern by the author using authuthor and pagination metadata
-func (blogU *blogUsecase) FetchByBlogAuthor(c context.Context, authorID string, limit, offset int) (domain.PaginatedBlogs, error) {
+func (blogU *blogUsecase) FetchByBlogAuthor(c context.Context, authorID string, limit, page int) (domain.PaginatedBlogs, error) {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
+
+    if limit <= 0 || page <= 0 {
+        return domain.PaginatedBlogs{}, fmt.Errorf("invalid limit or page number")
+    }
+
+    offset := (page - 1) * limit
 
 	blogs, totalCount, err := blogU.blogRepository.FetchByBlogAuthor(ctx, authorID, limit, offset)
 	if err != nil {
 		return domain.PaginatedBlogs{}, err
 	}
-	totalPages := (totalCount + limit - 1) / limit
-	currentPage := (offset / limit) + 1
 
+	totalPages := (totalCount + limit - 1) / limit
+	currentPage := page
+	nextPage := currentPage + 1
+	previousPage := currentPage - 1
+
+	if previousPage < 1 {
+        previousPage = 0 
+    }
+
+    if nextPage > totalPages {
+        nextPage = 0 
+    }
 
 	return domain.PaginatedBlogs{
-        Blogs: blogs,
-        Pagination: domain.PaginationData{
-            NextPage:     currentPage + 1,
-            PreviousPage: currentPage - 1,
-            CurrentPage:  currentPage,
-            TotalPages:   totalPages,
-            TotalItems:   totalCount,
-        },
-    }, nil
+		Blogs: blogs,
+		Pagination :domain.PaginationData{
+		NextPage:     nextPage,
+		PreviousPage: previousPage,
+		CurrentPage:  currentPage,
+		TotalPages:   totalPages,
+		TotalItems:   totalCount,
+	}}, nil
 }
-
 
 // FetchByBlogTitle calls FetchByBlogTitle method in blog repository to retrive a blog by it's title
 // FetchByBlogTitle fetches blogs by their title and handles pagination
-func (blogU *blogUsecase) FetchByBlogTitle(c context.Context, title string, limit, offset int) (domain.PaginatedBlogs, error) {
+func (blogU *blogUsecase) FetchByBlogTitle(c context.Context, title string, limit, page int) (domain.PaginatedBlogs, error) {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
+
+	if limit <= 0 || page <= 0 {
+        return domain.PaginatedBlogs{}, fmt.Errorf("invalid limit or page number")
+    }
+
+    offset := (page - 1) * limit
 
 	blogs, totalCount, err := blogU.blogRepository.FetchByBlogTitle(ctx, title, limit, offset)
 	if err != nil {
 		return domain.PaginatedBlogs{}, err
 	}
+
 	totalPages := (totalCount + limit - 1) / limit
-	currentPage := (offset / limit) + 1
+	currentPage := page
+	nextPage := currentPage + 1
+	previousPage := currentPage - 1
+
+	if previousPage < 1 {
+        previousPage = 0 
+    }
+
+    if nextPage > totalPages {
+        nextPage = 0 
+    }
+
 
 	return domain.PaginatedBlogs{
-        Blogs: blogs,
-        Pagination: domain.PaginationData{
-            NextPage:     currentPage + 1,
-            PreviousPage: currentPage - 1,
-            CurrentPage:  currentPage,
-            TotalPages:   totalPages,
-            TotalItems:   totalCount,
-        },
-    }, nil
+		Blogs: blogs,
+		Pagination :domain.PaginationData{
+		NextPage:     nextPage,
+		PreviousPage: previousPage,
+		CurrentPage:  currentPage,
+		TotalPages:   totalPages,
+		TotalItems:   totalCount,
+	}}, nil
 }
 
 // FetchAll retrieves all blogs with pagination and metadata
-func (blogU *blogUsecase) FetchAll(c context.Context, limit, offset int) (domain.PaginatedBlogs, error) {
+func (blogU *blogUsecase) FetchAll(c context.Context, limit, page int) (domain.PaginatedBlogs, error) {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
+
+    if limit <= 0 || page <= 0 {
+        return domain.PaginatedBlogs{}, fmt.Errorf("invalid limit or page number")
+    }
+
+    offset := (page - 1) * limit
 
 	blogs, totalCount, err := blogU.blogRepository.FetchAll(ctx, limit, offset)
 	if err != nil {
@@ -152,18 +189,28 @@ func (blogU *blogUsecase) FetchAll(c context.Context, limit, offset int) (domain
 	}
 
 	totalPages := (totalCount + limit - 1) / limit
-	currentPage := (offset / limit) + 1
+	currentPage := page
+	nextPage := currentPage + 1
+	previousPage := currentPage - 1
+
+	if previousPage < 1 {
+        previousPage = 0 
+    }
+
+    if nextPage > totalPages {
+        nextPage = 0 
+    }
+
 
 	return domain.PaginatedBlogs{
-        Blogs: blogs,
-        Pagination: domain.PaginationData{
-            NextPage:     currentPage + 1,
-            PreviousPage: currentPage - 1,
-            CurrentPage:  currentPage,
-            TotalPages:   totalPages,
-            TotalItems:   totalCount,
-        },
-    }, nil
+		Blogs: blogs,
+		Pagination :domain.PaginationData{
+		NextPage:     nextPage,
+		PreviousPage: previousPage,
+		CurrentPage:  currentPage,
+		TotalPages:   totalPages,
+		TotalItems:   totalCount,
+	}}, nil
 }
 
 func (blogU *blogUsecase) FetchByPageAndPopularity(ctx context.Context, limit, page int) (domain.PaginatedBlogs, error) {
@@ -171,7 +218,11 @@ func (blogU *blogUsecase) FetchByPageAndPopularity(ctx context.Context, limit, p
 	defer cancel()
 
 	// Calculate offset
-	offset := (page - 1) * limit
+    if limit <= 0 || page <= 0 {
+        return domain.PaginatedBlogs{}, fmt.Errorf("invalid limit or page number")
+    }
+
+    offset := (page - 1) * limit
 
 	// Fetch blogs and total count
 	blogs, totalCount, err := blogU.blogRepository.FetchByPageAndPopularity(ctx, limit, offset)
@@ -185,12 +236,13 @@ func (blogU *blogUsecase) FetchByPageAndPopularity(ctx context.Context, limit, p
 	nextPage := currentPage + 1
 	previousPage := currentPage - 1
 
-	if nextPage > totalPages {
-		nextPage = 0 // No next page
-	}
 	if previousPage < 1 {
-		previousPage = 0 // No previous page
-	}
+        previousPage = 0 
+    }
+
+    if nextPage > totalPages {
+        nextPage = 0 
+    }
 
 	return domain.PaginatedBlogs{
 		Blogs: blogs,
@@ -208,7 +260,11 @@ func (blogU *blogUsecase) FetchByTags(ctx context.Context, tags []domain.Tag, li
 	defer cancel()
 
 	// Calculate offset
-	offset := (page - 1) * limit
+    if limit <= 0 || page <= 0 {
+        return domain.PaginatedBlogs{}, fmt.Errorf("invalid limit or page number")
+    }
+
+    offset := (page - 1) * limit
 
 	// Fetch blogs and total count
 	blogs, totalCount, err := blogU.blogRepository.FetchByTags(ctx, tags, limit, offset)

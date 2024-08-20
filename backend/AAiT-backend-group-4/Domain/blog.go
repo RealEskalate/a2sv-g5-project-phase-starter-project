@@ -135,11 +135,11 @@ type BlogUsecase interface {
 	// FetchByBlogID retrieves a blog by its ID
 	FetchByBlogID(c context.Context, blogID string) (Blog, error)
 	// FetchAll retrieves all blogs from the collection
-	FetchAll(c context.Context, limit, offset int) (PaginatedBlogs, error)
+	FetchAll(c context.Context, limit, page int) (PaginatedBlogs, error)
 	// FetchByBlogAuthor retrieves blogs by the author's ID
-	FetchByBlogAuthor(c context.Context, authorID string, limit, offset int) (PaginatedBlogs, error) 
+	FetchByBlogAuthor(c context.Context, authorID string, limit, page int) (PaginatedBlogs, error) 
 	// FetchByBlogTitle retrieves blogs by their title
-	FetchByBlogTitle(c context.Context, title string, limit, offset int) (PaginatedBlogs, error)
+	FetchByBlogTitle(c context.Context, title string, limit, page int) (PaginatedBlogs, error)
 
 	FetchByPageAndPopularity(ctx context.Context, limit, page int) (PaginatedBlogs, error)
 

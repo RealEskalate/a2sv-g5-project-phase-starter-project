@@ -48,10 +48,14 @@ type UserUsecase interface {
 	Update(userId string, updateData User) (User, error)
 	Delete(userId string) error
 	AccountVerification(uemail string, confirmationToken string) (string, error)
+	ResetPassword(email string, token string, password string) (string, error) 
+	ForgetPassword(email string) (string, error)
+	LoginUser(uname string,password string) (string, error)
 }
 type Claims struct {
 	ID      string `bson:"_id,omitempty" json:"id,omitempty"`
-	Email   string `json:"username`
+	Email   string `json:"email`
 	IsAdmin bool   `json:"is_admin"`
+	Username string `json:"username"`
 	jwt.StandardClaims
 }

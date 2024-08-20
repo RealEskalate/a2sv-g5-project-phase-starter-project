@@ -5,7 +5,7 @@ import notification from "/public/assets/icons/Group418.png";
 import person from "/public/assets/icons/MaskGroup.png";
 import magnifying from "/public/assets/icons/magnifying-glass.png";
 import Image from "next/image";
-
+import Login from '../../login/page'
 const primary_2 = "rgba(52, 60, 106, 1)";
 const primary_3 = "rgba(45, 96, 255, 1)";
 const sidecolor = "#B1B1B1";
@@ -98,6 +98,7 @@ function NavBar({ toggleSidebar, isSidebarVisible }: { toggleSidebar: () => void
       <div className="block sm:hidden">
         <Mobile toggleSidebar={toggleSidebar} isSidebarVisible={isSidebarVisible} />
       </div>
+      <Login/>
     </>
   );
 }

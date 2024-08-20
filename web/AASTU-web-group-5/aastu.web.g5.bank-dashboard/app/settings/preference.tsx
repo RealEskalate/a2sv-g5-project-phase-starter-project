@@ -6,11 +6,16 @@ import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import Toggle from './toogle';
 import { useSelector, useDispatch } from 'react-redux';
-import { setUser } from '../redux/slice/userSlice'; // Adjust import based on your project structure
+import { setUser } from '../redux/slice/userSlice';
 
 function Preference() {
+
+
   const x = useSelector((state) => state.user);
   console.log(x, 'x');
+  const [successMessage, setSuccessMessage] = useState('');
+
+
 
   const { data: session } = useSession();
   const key: string = session?.user?.accessToken || '';
@@ -45,6 +50,7 @@ function Preference() {
       });
 
       if (response.status === 200) {
+        setSuccessMessage('Preferences updated successfully:!');
         console.log('Preferences updated successfully:', response.data);
         dispatch(setUser(updatedData));
       } else {
@@ -114,6 +120,7 @@ function Preference() {
         </div>
       </div>
       {apiError && <div className="text-red-500 mt-4 text-sm">{apiError}</div>}
+      {successMessage && <div className="text-green-500 mt-2">{successMessage}</div>}
       <div className="flex justify-end mt-16 md:mt-18">
         <button type="submit" className="border-none bg-blue-700 text-white w-full h-12 rounded-full md:w-[12rem] text-[13px] md:text-base">
           Save

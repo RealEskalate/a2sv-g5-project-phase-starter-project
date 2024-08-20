@@ -8,22 +8,18 @@ import (
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
 	result "github.com/group13/blog/usecases_sof/user/result"
-	irepository "github.com/group13/blog/usecases_sof/utils/i_repo"
 	ijwt "github.com/group13/blog/usecases_sof/utils/i_jwt"
+	irepository "github.com/group13/blog/usecases_sof/utils/i_repo"
 )
 
-
-
 type ValidateEmailHandler struct {
-	repo         irepository.UserRepository
-	hashService 	  ihash.Service
-	jwtService 			ijwt.Services
-
+	repo        irepository.UserRepository
+	hashService ihash.Service
+	jwtService  ijwt.Services
 }
 
+func (h *ValidateEmailHandler) Handle(encryptedValue string) (*result.ValidateEmailResult, error) {
 
-func (h *ValidateEmailHandler) Handle(encryptedValue string) (*result.ValidateEmailResult,  error) {
-	
 	decodedUsername, decodedExpiry, decodeduserId := h.decodesecret(encryptedValue)
 	userID, err := uuid.Parse(decodeduserId)
 	if err != nil {
@@ -42,8 +38,8 @@ func (h *ValidateEmailHandler) Handle(encryptedValue string) (*result.ValidateEm
 	if err != nil {
 		return nil, er.NewBadRequest("invalid expiry time")
 	}
-	
-	if decodedUsername != user.Username()  || expiryTime.Before(time.Now()) {
+
+	if decodedUsername != user.Username() || expiryTime.Before(time.Now()) {
 		return nil, er.NewBadRequest("invalid secret")
 	}
 
@@ -63,12 +59,12 @@ func (h *ValidateEmailHandler) Handle(encryptedValue string) (*result.ValidateEm
 		return nil, err
 	}
 	return &result.ValidateEmailResult{
-		Token: token,
-		Refreshtoken: refreshtoken,		
+		Token:        token,
+		Refreshtoken: refreshtoken,
 	}, nil
 }
 
-func(h *ValidateEmailHandler)  decodesecret(secret string) (string, string, string) {
+func (h *ValidateEmailHandler) decodesecret(secret string) (string, string, string) {
 	// Decode the secret value
 	decoded, err := h.hashService.Decode(secret)
 	if err != nil {

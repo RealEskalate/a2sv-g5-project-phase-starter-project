@@ -28,15 +28,15 @@ type BlogUsecaseInterface interface {
 	GetAllBlogPosts() ([]BlogPost, error)
 	GetBlogByID(id primitive.ObjectID) (*BlogPost, error)
 	UpdateBlogPost(id primitive.ObjectID, blog *BlogPost) (*BlogPost, error)
-	SearchBlogPosts(query *SearchBlogPost) ([]BlogPost, error)
+	// SearchBlogPosts(query *SearchBlogPost) ([]BlogPost, error)    TODO
 	DeleteBlogPost(id primitive.ObjectID) error
 }
 
 type BlogRepositoryInterface interface {
 	Save(blog *BlogPost) error
-	FindAll() ([]BlogPost, error)
-	FindByID(id int) (*BlogPost, error)
+	GetAllBlog() ([]BlogPost, error)
+	GetBlogByID(id primitive.ObjectID) (*BlogPost, error)
 	Update(blog *BlogPost) (*BlogPost, error)
-	Search(query string) ([]BlogPost, error)
-	Delete(id int) error
+	// Search(query string) ([]BlogPost, error)
+	Delete(id primitive.ObjectID) error
 }

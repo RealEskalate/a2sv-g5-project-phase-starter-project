@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	mongopagination "github.com/gobeam/mongo-go-pagination"
 )
 
 type userUsecase struct {
@@ -29,10 +30,10 @@ func (uu *userUsecase) GetUserByEmail(c context.Context, email string) (*domain.
 }
 
 func (uu *userUsecase) GetUserById(c context.Context, userId string) (*domain.User, error) {
-	return uu.userRepository.GetUserById(c, userId)
+	return nil, nil
 }
-func (uu *userUsecase) GetUsers(c context.Context) (*[]domain.User, error) {
-	return uu.userRepository.GetUsers(c)
+func (uu *userUsecase) GetUsers(c context.Context, limit int64, page int64) (*[]domain.User, mongopagination.PaginationData, error) {
+	return nil, mongopagination.PaginationData{}, nil
 }
 
 func (uu *userUsecase) UpdateUser(c context.Context, userID string, updatedUser *domain.UserUpdate) error {

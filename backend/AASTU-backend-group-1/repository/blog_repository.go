@@ -75,14 +75,18 @@ func (b *BlogRepository) DeleteBlogByID(id string) error {
 func (b *BlogRepository) SearchBlog(title, author string, tags []string) ([]*domain.Blog, error) {
 	blogs := []*domain.Blog{}
 	filter := bson.M{
-		"title":  title,
-		"author": author,
-		"tags":   bson.M{"$in": tags},
+		"$or": []bson.M{
+			{"title": title},
+			{"author": author},
+			{"tags": bson.M{"$in": tags}},
+		},
 	}
+
 	cursor, err := b.blogCollection.Find(context.Background(), filter)
 	if err != nil {
 		return nil, err
 	}
+
 	for cursor.Next(context.Background()) {
 		var blog domain.Blog
 		err := cursor.Decode(&blog)

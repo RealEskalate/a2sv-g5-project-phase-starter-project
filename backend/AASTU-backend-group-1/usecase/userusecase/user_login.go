@@ -3,23 +3,22 @@ package userusecase
 import (
 	"blogs/config"
 	"blogs/domain"
-	"errors"
 )
 
 func (u *UserUsecase) LoginUser(usernameoremail string, password string) (string, string, error) {
 	user, err := u.UserRepo.GetUserByUsernameorEmail(usernameoremail)
 	if err != nil {
-		return "", "", err
+		return "", "", config.ErrIncorrectPassword
 	}
 
 	if !user.IsVerified {
-		return "", "", errors.New("user is not verified")
+		return "", "", config.ErrUserNotVerified
 	}
 
 	// Compare the hashed password
 	err = config.ComparePassword(user.Password, password)
 	if err != nil {
-		return "", "", errors.New("invalid credentials")
+		return "", "", config.ErrIncorrectPassword
 	}
 
 	// Generate access token

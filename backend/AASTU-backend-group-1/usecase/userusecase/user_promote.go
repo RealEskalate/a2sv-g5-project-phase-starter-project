@@ -1,8 +1,8 @@
 package userusecase
 
 import (
+	"blogs/config"
 	"blogs/domain"
-	"errors"
 )
 
 func (u *UserUsecase) PromoteUser(username string, promoted bool, claims *domain.LoginClaims) error {
@@ -12,18 +12,18 @@ func (u *UserUsecase) PromoteUser(username string, promoted bool, claims *domain
 	}
 
 	if claims.Role != "root" {
-		return errors.New("only root can promote or demote users")
+		return config.ErrUserCantPromote
 	}
 
 	if promoted {
 		if user.Role == "admin" {
-			return errors.New("user is already an admin")
+			return config.ErrAlreadyAdmin
 		}
 
 		user.Role = "admin"
 	} else {
 		if user.Role == "user" {
-			return errors.New("user is already a regular user")
+			return config.ErrAlreadyUser
 		}
 
 		user.Role = "user"

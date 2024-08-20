@@ -1,9 +1,9 @@
 package repository
 
 import (
+	"blogs/config"
 	"blogs/domain"
 	"context"
-	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -38,7 +38,7 @@ func (ur *UserRepository) CheckRoot() error {
 
 	err := ur.userCollection.FindOne(context.TODO(), filter).Decode(&user)
 	if err == nil {
-		return errors.New("root user already exists")
+		return config.ErrRootAlreadyExists
 	}
 
 	if err == mongo.ErrNoDocuments {
@@ -60,7 +60,7 @@ func (ur *UserRepository) CheckUsernameAndEmail(username, email string) error {
 	err := ur.userCollection.FindOne(context.TODO(), filter).Decode(&user)
 
 	if err == nil {
-		return errors.New("username or email already exists")
+		return config.ErrUsernameEmailExists
 	}
 
 	if mongo.ErrNoDocuments != err {
@@ -88,7 +88,7 @@ func (ur *UserRepository) GetUserByUsernameorEmail(usernameoremail string) (*dom
 	err := ur.userCollection.FindOne(context.TODO(), filter).Decode(&user)
 
 	if err == mongo.ErrNoDocuments {
-		return nil, errors.New("user not found")
+		return nil, config.ErrUserNotFound
 	}
 
 	if err != nil {
@@ -138,7 +138,7 @@ func (ur UserRepository) Resetpassword(usernameoremail string, password string) 
 	_, err := ur.userCollection.UpdateOne(context.TODO(), filter, update)
 
 	if err == mongo.ErrNoDocuments {
-		return errors.New("user not found")
+		return config.ErrUserNotFound
 	}
 
 	if err != nil {
@@ -167,7 +167,7 @@ func (ur *UserRepository) GetTokenByUsername(username string) (*domain.Token, er
 	err := ur.tokenCollection.FindOne(context.TODO(), filter).Decode(&token)
 
 	if err == mongo.ErrNoDocuments {
-		return nil, errors.New("token not found")
+		return nil, config.ErrTokenNotFound
 	}
 
 	if err != nil {

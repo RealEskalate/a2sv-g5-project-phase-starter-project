@@ -8,6 +8,7 @@ import { Inter } from "next/font/google";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import notify from "@/utils/notify";
+import { useState } from "react";
 
 const schema = z.object({
   userName: z.string().min(1, { message: "User name field is required" }),
@@ -17,7 +18,9 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 const inter = Inter({ subsets: ["latin"] });
 
+
 const SignIn = () => {
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const {
     register,
@@ -26,6 +29,7 @@ const SignIn = () => {
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (data: any) => {
+    setLoading(true)
     const res = await signIn("credentials", {
       userName: data.userName,
       password: data.password,
@@ -39,6 +43,7 @@ const SignIn = () => {
       notify.success("Successfully logged in");
       router.push("/");
     }
+    setLoading(false)
   };
   return (
     <div
@@ -99,7 +104,13 @@ const SignIn = () => {
             type="submit"
             className={` font-bold text-white text-center bg-[#1814F3] px-6 py-3 rounded-3xl`}
           >
-            Login
+            {loading? (
+              <div
+              className="w-8 h-8 border-4 border-dashed rounded-full animate-spin [animation-duration:3s]  border-white mx-auto"
+            ></div>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
         <div className={` font-normal`}>

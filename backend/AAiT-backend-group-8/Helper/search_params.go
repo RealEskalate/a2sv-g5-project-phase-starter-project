@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const dateLayout = "2006-01-02" // example layout, adjust as needed
+
 func GetSearchParams(ctx *gin.Context) *Domain.SearchCriteria {
 	Title := ctx.Query("title")
 	Author := ctx.Query("author")
@@ -15,7 +17,6 @@ func GetSearchParams(ctx *gin.Context) *Domain.SearchCriteria {
 	EndDateStr := ctx.Query("endDate")
 	MinViewsStr := ctx.Query("minViews")
 	SortBy := ctx.Query("sortBy")
-	Order := ctx.Query("order")
 	PageStr := ctx.Query("page")
 	PageSizeStr := ctx.Query("pageSize")
 
@@ -26,30 +27,34 @@ func GetSearchParams(ctx *gin.Context) *Domain.SearchCriteria {
 	var EndDate time.Time
 	var MinViews int
 
+	// Parse page number with default value
 	Page, err = strconv.Atoi(PageStr)
-	if err != nil {
+	if err != nil || Page <= 0 {
 		Page = 1
 	}
 
-	MinViews, err = strconv.Atoi(MinViewsStr)
+	// Parse page size with default value
+	PageSize, err = strconv.Atoi(PageSizeStr)
+	if err != nil || PageSize <= 0 {
+		PageSize = 10
+	}
 
+	// Parse min views with default value
+	MinViews, err = strconv.Atoi(MinViewsStr)
 	if err != nil {
 		MinViews = 0
 	}
 
-	PageSize, err = strconv.Atoi(PageSizeStr)
+	// Parse start date with default value
+	StartDate, err = time.Parse(dateLayout, StartDateStr)
 	if err != nil {
-		PageSize = 10
+		StartDate = time.Time{} // zero time
 	}
 
-	StartDate, err = time.Parse(time.Layout, StartDateStr)
+	// Parse end date with default value
+	EndDate, err = time.Parse(dateLayout, EndDateStr)
 	if err != nil {
-		StartDate = time.Time{}
-	}
-
-	EndDate, err = time.Parse(time.Layout, EndDateStr)
-	if err != nil {
-		EndDate = time.Now()
+		EndDate = time.Now() // current time
 	}
 
 	return &Domain.SearchCriteria{
@@ -60,7 +65,6 @@ func GetSearchParams(ctx *gin.Context) *Domain.SearchCriteria {
 		EndDate:   EndDate,
 		MinViews:  MinViews,
 		SortBy:    SortBy,
-		Order:     Order,
 		Page:      Page,
 		PageSize:  PageSize,
 	}

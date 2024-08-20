@@ -26,6 +26,46 @@ func NewUserRepository(mongoClient *mongo.Client) domain.UserRepository {
 
 }
 
+func (urepo *UserRepository) UpdateUserDetails(user *domain.User) error {
+
+	filter := bson.M{"_id": user.ID}
+
+	update := bson.M{}
+	setFields := bson.M{}
+
+	if user.Bio != "" {
+		setFields["bio"] = user.Bio
+	}
+
+	if user.Imageuri != "" {
+		setFields["imageurl"] = user.Imageuri
+	}
+
+	if user.Contact != "" {
+		setFields["contact"] = user.Contact
+	}
+
+	if len(setFields) > 0 {
+		update["$set"] = setFields
+	}
+
+	if len(update) == 0 {
+		return fmt.Errorf("no fields to update")
+	}
+
+	result, err := urepo.collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	if result.ModifiedCount == 0 {
+		return fmt.Errorf("user not found")
+	}
+
+	return nil
+
+}
+
 func (urepo *UserRepository) RegisterUser(user *domain.User) error {
 
 	usernameFilter := bson.M{"username": user.UserName}

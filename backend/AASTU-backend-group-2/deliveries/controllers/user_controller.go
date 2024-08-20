@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UserController struct {
@@ -22,6 +23,31 @@ func NewUserController(Usermgr domain.UserUsecase) *UserController {
 	return &UserController{
 		Userusecase: Usermgr,
 	}
+}
+
+// UpdateUserDetails is a controller method to update user details
+func (uc *UserController) UpdateUserDetails(c *gin.Context) {
+	userID, err := primitive.ObjectIDFromHex(c.GetString("userid"))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var user domain.User
+	if err = c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	user.ID = userID
+
+	err = uc.Userusecase.UpdateUserDetails(c, &user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "User details updated successfully"})
 }
 
 // RegisterUser is a controller method to register a user

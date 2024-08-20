@@ -12,6 +12,8 @@ type User struct {
 	UserName     string             `json:"username,omitempty"`
 	Email        string             `json:"email,omitempty"`
 	Imageuri     string             `json:"imageuri,omitempty"`
+	Bio          string             `json:"bio,omitempty"`
+	Contact      string             `json:"contact,omitempty"`
 	Password     string             `json:"password,omitempty"`
 	IsAdmin      bool               `json:"isadmin,omitempty"`
 	JoinedAt     time.Time          `json:"joinedat,omitempty"`
@@ -24,6 +26,7 @@ type RestRequest struct {
 }
 
 type UserUsecase interface {
+	UpdateUserDetails(c context.Context, user *User) error
 	RegisterUser(c context.Context, user *User) error
 	LoginUser(c context.Context, user User) (string, error)
 	ForgotPassword(c context.Context, email string) error
@@ -33,6 +36,7 @@ type UserUsecase interface {
 }
 
 type UserRepository interface {
+	UpdateUserDetails(user *User) error
 	RegisterUser(user *User) error
 	LoginUser(user User) (string, error)
 	ForgotPassword(email string) error

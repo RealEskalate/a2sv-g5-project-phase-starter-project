@@ -72,7 +72,7 @@ const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolea
                     <Image src={enabled === "creditCard" ? enabledCreditCard : creditCard} alt="Credit Card Icon" className="h-[25px] w-[25px]" />
                     <div> Credit Cards</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("loan", "/Loan")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("loan", "/Loans")}>
                     <Image src={enabled === "loan" ? enabledLoan : loan} alt="Loan Icon" className="h-[25px] w-[25px]" />
                     <div> Loans</div>
                 </div>

@@ -15,7 +15,10 @@ type Config struct {
 	Database Database `mapstructure:"database"`
 	Email    Email    `mapstructure:"email"`
 	Port     string   `mapstructure:"port"`
-	JWTKey   string   `mapstructure:"jwt"`
+	Jwt   	Jwt   	`mapstructure:"jwt"`
+}
+type Jwt struct {
+	JwtKey string `mapstructure:"jwtKey"`
 }
 
 func LoadConfig() (*Config, error) {

@@ -17,7 +17,7 @@ func GenerateToken(user *domain.User, pwd string) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	var jwtSecret = []byte(configjwt.JWTKey)
+	var jwtSecret = []byte(configjwt.Jwt.JwtKey)
 
 	// User login logic
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pwd)) != nil {
@@ -31,11 +31,8 @@ func GenerateToken(user *domain.User, pwd string) (string, string, error) {
 		Email:   user.Email,
 		IsAdmin: user.IsAdmin,
 		StandardClaims: jwt.StandardClaims{
-			Audience:  "",
 			ExpiresAt: expirationTime.Unix(),
 			IssuedAt:  time.Now().Unix(),
-			Issuer:    "",
-			Subject:   "",
 		},
 	}
 

@@ -1,4 +1,4 @@
-package usercommand
+package signcommand
 
 import (
 	"crypto/aes"
@@ -8,36 +8,33 @@ import (
 	"fmt"
 	"io"
 	"time"
-
+	usermodel "github.com/group13/blog/domain/models/user"
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
-	usermodel "github.com/group13/blog/domain/models/user"
-
-	// icmd "github.com/group13/blog/usecase/common/cqrs/command"
-	result "github.com/group13/blog/usecases_sof/user/result"
-	icommand "github.com/group13/blog/usecases_sof/utils/command"
-	iemail "github.com/group13/blog/usecases_sof/utils/i_email"
-	ijwt "github.com/group13/blog/usecases_sof/utils/i_jwt"
-	irepository "github.com/group13/blog/usecases_sof/utils/i_repo"
+	result "github.com/group13/blog/usecase/user/result"
+	icmd "github.com/group13/blog/usecase/common/cqrs/command"
+	iemail "github.com/group13/blog/usecase/common/i_email"
+	ijwt "github.com/group13/blog/usecase/common/i_jwt"
+	irepo "github.com/group13/blog/usecase/common/i_repo"
 )
 
 type SignUpHandler struct {
-	repo         irepository.UserRepository
-	jwtService   ijwt.Services
+	repo         irepo.UserRepository
+	jwtService   ijwt.Service
 	hashService  ihash.Service
 	emailService iemail.Service
 }
 
 type SignUpConfig struct {
-	UserRepo     irepository.UserRepository
-	jwtService   ijwt.Services
+	UserRepo     irepo.UserRepository
+	jwtService   ijwt.Service
 	HashService  ihash.Service
 	emailService iemail.Service
 }
 
 
 // Ensure Handler implements icmd.IHandler
-var _ icommand.Ihandler[*SignUpCommand, *result.SignUpResult] = &SignUpHandler{}
+var _ icmd.IHandler[*SignUpCommand, *result.SignUpResult] = &SignUpHandler{}
 
 
 

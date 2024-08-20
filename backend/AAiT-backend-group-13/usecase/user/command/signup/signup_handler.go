@@ -6,9 +6,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"io"
-	"time"
-
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
 	usermodel "github.com/group13/blog/domain/models/user"
@@ -17,6 +14,8 @@ import (
 	ijwt "github.com/group13/blog/usecase/common/i_jwt"
 	irepo "github.com/group13/blog/usecase/common/i_repo"
 	result "github.com/group13/blog/usecase/user/result"
+	"io"
+	"time"
 )
 
 type SignUpHandler struct {
@@ -28,9 +27,9 @@ type SignUpHandler struct {
 
 type SignUpConfig struct {
 	UserRepo     irepo.UserRepository
-	jwtService   ijwt.Service
+	JwtService   ijwt.Service
 	HashService  ihash.Service
-	emailService iemail.Service
+	EmailService iemail.Service
 }
 
 // Ensure Handler implements icmd.IHandler
@@ -39,9 +38,9 @@ var _ icmd.IHandler[*SignUpCommand, *result.SignUpResult] = &SignUpHandler{}
 func NewSignUpHandler(config SignUpConfig) *SignUpHandler {
 	return &SignUpHandler{
 		repo:         config.UserRepo,
-		jwtService:   config.jwtService,
+		jwtService:   config.JwtService,
 		hashService:  config.HashService,
-		emailService: config.emailService,
+		emailService: config.EmailService,
 	}
 }
 

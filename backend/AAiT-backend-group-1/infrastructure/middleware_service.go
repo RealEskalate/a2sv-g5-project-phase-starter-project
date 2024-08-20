@@ -46,7 +46,7 @@ func (m *middlewareService) Authenticate() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-		
+
 		ctx.Set("user_id", claims["user_id"])
 		ctx.Set("username", claims["username"])
 		ctx.Set("role", claims["role"])
@@ -57,7 +57,7 @@ func (m *middlewareService) Authenticate() gin.HandlerFunc {
 	}
 }
 
-func (m *middlewareService) Authorize(role string) gin.HandlerFunc {
+func (m *middlewareService) Authorize(role ...string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		tokenString := ctx.GetHeader("Authorization")
 		tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
@@ -65,7 +65,15 @@ func (m *middlewareService) Authorize(role string) gin.HandlerFunc {
 		claims, _ := token.Claims.(jwt.MapClaims)
 		userRole := claims["role"].(string)
 
-		if userRole != role {
+		validRole := false
+		for _, r := range role {
+			if r == userRole {
+				validRole = true
+				break
+			}
+		}
+
+		if !validRole {
 			ctx.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized for this action"})
 			ctx.Abort()
 			return
@@ -74,3 +82,4 @@ func (m *middlewareService) Authorize(role string) gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+

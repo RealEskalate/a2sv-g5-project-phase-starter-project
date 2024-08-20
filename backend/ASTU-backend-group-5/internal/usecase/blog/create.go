@@ -1,12 +1,16 @@
 package blog
 
 import (
+	"blogApp/internal/ai"
 	"blogApp/internal/domain"
 	"blogApp/internal/repository"
 	"context"
 	"errors"
 	"fmt"
 	"log"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // blogUseCase implements the BlogUseCase interface
@@ -22,12 +26,28 @@ func NewBlogUseCase(repo repository.BlogRepository) BlogUseCase {
 }
 
 // CreateBlog creates a new blog
-func (u *blogUseCase) CreateBlog(ctx context.Context, blog *domain.Blog) error {
+func (u *blogUseCase) CreateBlog(ctx context.Context, blog *domain.Blog, authorId string) error {
 	if blog == nil {
 		return errors.New("blog cannot be nil")
 	}
-	// Add more input validation if necessary
-	err := u.repo.CreateBlog(ctx, blog)
+	Author, err := primitive.ObjectIDFromHex(authorId)
+	if err != nil {
+		log.Printf("Error creating blog: %v", err)
+		return fmt.Errorf("failed to create blog: %w", err)
+	}
+	blog.Author = Author
+	blog.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
+
+	is_valid, message, err := ai.ModerateBlog(blog.Content, blog.Title)
+	if err != nil {
+		log.Printf("Error moderating blog: %v", err)
+		return fmt.Errorf("failed to moderate blog: %w", err)
+	}
+	if !is_valid {
+		return errors.New(message)
+	}
+
+	err = u.repo.CreateBlog(ctx, blog)
 	if err != nil {
 		log.Printf("Error creating blog: %v", err)
 		return fmt.Errorf("failed to create blog: %w", err)
@@ -73,6 +93,7 @@ func (u *blogUseCase) AddView(ctx context.Context, view *domain.View) error {
 	}
 	return nil
 }
+
 // GetAllTags retrieves all blog tags
 func (u *blogUseCase) GetAllTags(ctx context.Context) ([]*domain.BlogTag, error) {
 	tags, err := u.repo.GetAllTags(ctx)

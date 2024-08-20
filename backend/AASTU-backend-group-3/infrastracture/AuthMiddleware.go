@@ -66,14 +66,13 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Set("user_id", claims["user_id"])
 		c.Set("username", claims["username"])
 		c.Set ("role", claims["role"])
+		c.Set("is_activated", claims["is_activated"])
+		fmt.Println(claims,"claims8888888888888888888888888888888888")
 
 		// c.Set("Roles", claims["role"])
 		c.Next()
 	}
 }
-
-
-
 
 
 
@@ -97,3 +96,30 @@ func RoleMiddleware(Role_ string) gin.HandlerFunc {
 	}
 }
 
+func EligibilityMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+
+        // Retrieve the is_activated claim as a boolean
+        isActivated, exists := c.Get("is_activated")
+        if !exists {
+            c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "is_activated not found in claims"})
+            c.Abort()
+            return
+        }
+
+        // Convert to bool if necessary
+        if isActivatedBool, ok := isActivated.(bool); ok {
+            if !isActivatedBool {
+                c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Please activate your account to access this service."})
+                c.Abort()
+                return
+            }
+        } else {
+            c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "is_activated claim is not a valid boolean"})
+            c.Abort()
+            return
+        }
+
+        c.Next()
+    }
+}

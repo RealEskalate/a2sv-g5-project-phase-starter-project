@@ -67,8 +67,8 @@ type Blog struct {
 
 
 type NewBlog struct{
-	Title      string    `json:"title" validate:"required,min=2"`
-	Content    string    `json:"content" validate:"required,min=6"`
+	Title      string    `json:"title" validate:"required,minword=1"`
+	Content    string    `json:"content" validate:"required,minword=25"`
 	Tags       []string  `json:"tags"`
 }
 

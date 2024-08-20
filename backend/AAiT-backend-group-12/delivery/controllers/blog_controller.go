@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"blog_api/domain"
+	validateblog "blog_api/infrastructure/validate_blog"
 	"net/http"
 
 	"log"
@@ -14,7 +15,7 @@ type BlogController struct {
 	blogUseCase domain.BlogUseCaseInterface
 }
 
-var validate = validator.New()
+var blogValidate = validator.New()
 
 func NewBlogController(bu domain.BlogUseCaseInterface) *BlogController {
 	return &BlogController{
@@ -30,7 +31,8 @@ func (bc *BlogController) CreateBlogHandler(c *gin.Context) {
 		return
 	}
 
-	err := validate.Struct(blog)
+	blogValidate.RegisterValidation("MinWord", validateblog.WordCountValidator)
+	err := blogValidate.Struct(blog)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
 		return

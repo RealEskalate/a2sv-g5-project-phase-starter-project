@@ -36,7 +36,7 @@ const chartConfig = {
 export default function Chart2() {
   return (
     <div>
-    <Card className="py-3 rounded-3xl">
+    <Card className="py-3 rounded-3xl border-none">
       <CardContent>
         <ChartContainer config={chartConfig}>
           <LineChart

@@ -2,7 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 export default function InvestmentCard(props:any){
   return (
-    <div className="flex bg-white rounded-3xl mb-2 w-[90%] md:w-full h-[100px] mx-auto p-2">
+    <div className="flex bg-white rounded-3xl mb-2 w-[90%] md:w-full h-[100px] mx-auto p-2 justify-between md:justify-evenly">
       <div className='my-auto w-[15%] md:w-[10%] h-auto'>
         <Image src={props.icon} alt='' width={1} height={1} className='my-auto size-[25px] md:size-[50px] rounded-full'  />
       </div>

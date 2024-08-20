@@ -70,7 +70,7 @@ func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		blogID := c.Param("id")
-		var updatedBlog domain.Blog
+		var updatedBlog domain.BlogUpdate
 		if err := c.ShouldBindJSON(&updatedBlog); err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return

@@ -16,41 +16,13 @@ type ProfileUsecase struct {
 	mock.Mock
 }
 
-// CreateProfile provides a mock function with given fields: c, profile
-func (_m *ProfileUsecase) CreateProfile(c context.Context, profile *domain.Profile) error {
-	ret := _m.Called(c, profile)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.Profile) error); ok {
-		r0 = rf(c, profile)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// DeleteProfile provides a mock function with given fields: c, id
-func (_m *ProfileUsecase) DeleteProfile(c context.Context, id primitive.ObjectID) error {
-	ret := _m.Called(c, id)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) error); ok {
-		r0 = rf(c, id)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// GetProfileByID provides a mock function with given fields: c, id
-func (_m *ProfileUsecase) GetProfileByID(c context.Context, id primitive.ObjectID) (*domain.ProfileResponse, error) {
-	ret := _m.Called(c, id)
+// UpdateProfile provides a mock function with given fields: c, profile, userid
+func (_m *ProfileUsecase) UpdateProfile(c context.Context, profile *domain.Profile, userid primitive.ObjectID) (*domain.ProfileResponse, error) {
+	ret := _m.Called(c, profile, userid)
 
 	var r0 *domain.ProfileResponse
-	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) *domain.ProfileResponse); ok {
-		r0 = rf(c, id)
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.Profile, primitive.ObjectID) *domain.ProfileResponse); ok {
+		r0 = rf(c, profile, userid)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*domain.ProfileResponse)
@@ -58,27 +30,13 @@ func (_m *ProfileUsecase) GetProfileByID(c context.Context, id primitive.ObjectI
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, primitive.ObjectID) error); ok {
-		r1 = rf(c, id)
+	if rf, ok := ret.Get(1).(func(context.Context, *domain.Profile, primitive.ObjectID) error); ok {
+		r1 = rf(c, profile, userid)
 	} else {
 		r1 = ret.Error(1)
 	}
 
 	return r0, r1
-}
-
-// UpdateProfile provides a mock function with given fields: c, profile
-func (_m *ProfileUsecase) UpdateProfile(c context.Context, profile *domain.Profile) error {
-	ret := _m.Called(c, profile)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.Profile) error); ok {
-		r0 = rf(c, profile)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
 }
 
 type mockConstructorTestingTNewProfileUsecase interface {

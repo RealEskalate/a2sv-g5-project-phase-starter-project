@@ -3,11 +3,13 @@ package blog
 import (
 	"context"
 
+	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/auth"
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/pkg/infrastructure"
 )
 
 type BlogUseCaseImpl struct {
 	blogRepository BlogRepository
+	authRepository auth.AuthRepository
 }
 
 func NewBlogUseCaseImpl(blogRepository BlogRepository) BlogUseCase {
@@ -17,22 +19,34 @@ func NewBlogUseCaseImpl(blogRepository BlogRepository) BlogUseCase {
 }
 
 // CreateBlog implements BlogUseCase.
-func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, blog Blog) (Blog, error) {
-	blogId, err := b.blogRepository.CreateBlog(ctx, blog)
+func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, authorID string, blog CreateBlogRequest) (Blog, error) {
+	author, err := b.authRepository.GetUserByUsername(ctx, authorID) // TODO: Change to GetUserByID
 	if err != nil {
 		return Blog{}, err
 	}
 
-	newBlog, err := b.blogRepository.GetBlogByID(ctx, blogId)
+	var newBlog Blog
+	newBlog.AuthorID = author.ID
+	newBlog.Title = blog.Title
+	newBlog.Content = blog.Content
+	newBlog.Tags = blog.Tags
+	newBlog.ViewsCount = 0
+	newBlog.CommentsCount = 0
+	newBlog.LikesCount = 0
+	newBlog.DislikesCount = 0
+	newBlog.Popularity = 0
+
+	blogId, err := b.blogRepository.CreateBlog(ctx, newBlog)
 	if err != nil {
 		return Blog{}, err
 	}
 
+	newBlog.ID = blogId
 	return newBlog, nil
 }
 
 // CreateComment implements BlogUseCase.
-func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, comment Comment) error {
+func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, comment CreateCommentRequest) error {
 	panic("unimplemented")
 }
 
@@ -47,7 +61,7 @@ func (b *BlogUseCaseImpl) DeleteComment(ctx context.Context, id string) error {
 }
 
 // DislikeBlog implements BlogUseCase.
-func (b *BlogUseCaseImpl) DislikeBlog(ctx context.Context, dislike Dislike) error {
+func (b *BlogUseCaseImpl) DislikeBlog(ctx context.Context, userID string, blogID string) error {
 	panic("unimplemented")
 }
 
@@ -67,7 +81,7 @@ func (b *BlogUseCaseImpl) GetCommentsByBlogID(ctx context.Context, blogID string
 }
 
 // LikeBlog implements BlogUseCase.
-func (b *BlogUseCaseImpl) LikeBlog(ctx context.Context, like Like) error {
+func (b *BlogUseCaseImpl) LikeBlog(ctx context.Context, userID string, blogID string) error {
 	panic("unimplemented")
 }
 
@@ -77,6 +91,6 @@ func (b *BlogUseCaseImpl) SearchBlogs(ctx context.Context, query string) (infras
 }
 
 // UpdateBlog implements BlogUseCase.
-func (b *BlogUseCaseImpl) UpdateBlog(ctx context.Context, id string, blog Blog) (Blog, error) {
+func (b *BlogUseCaseImpl) UpdateBlog(ctx context.Context, id string, blog UpdateBlogRequest) (Blog, error) {
 	panic("unimplemented")
 }

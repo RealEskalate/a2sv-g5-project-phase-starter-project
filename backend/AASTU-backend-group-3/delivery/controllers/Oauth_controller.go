@@ -63,9 +63,7 @@ func (uc *UserController) HandleGoogleCallback(c *gin.Context) {
 	var googleUser domain.OAuthUserInfo
 	json.Unmarshal(data, &googleUser)
 
-	// to see the user info
-	// fmt.Println(googleUser,"///////////////////////////////////////")
-
+	
 	googleUser.Provider = domain.Google
 
 	ipAddress := c.ClientIP()

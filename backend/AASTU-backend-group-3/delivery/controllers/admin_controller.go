@@ -13,7 +13,7 @@ func (uc *UserController) GetMyProfile(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, user)
+	c.JSON(200, gin.H{"message": "Welcome to your profile", "user": user})
 }
 
 
@@ -29,7 +29,7 @@ func(uc* UserController) GetUsers(c *gin.Context){
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, users)
+	c.JSON(200, gin.H{"users": users})
 }
 
 func(uc* UserController) GetUser(c *gin.Context){

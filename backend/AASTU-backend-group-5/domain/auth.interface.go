@@ -17,12 +17,10 @@ type AuthUsecase interface {
 	LoginUser(email, password string) (User, string, string, error)
 	OAuthLogin(provider, token string) (User, string, string, error)
 	RefreshTokens(refreshToken string) (string, string, error) 
-	Logout(userID string) error  
 }
 
 type AuthRepository interface{
 	SaveUser(user *User) error
 	FindUserByEmail(email string) (*User, error)
-	FindUserByID(id string) (*User, error)
 	FindUserByOAuthID(provider, oauthID string) (*User, error)
 }

@@ -39,7 +39,7 @@ func GenerateResetToken() (string, error) {
 
 // Sends the password reset email
 func SendResetEmail(to, token string) error {
-    resetLink := fmt.Sprintf("%s/reset-password?token=%s", ServerHost, token)
+    resetLink := fmt.Sprintf("%s/api/v0/reset?token=%s", ServerHost, token)
     body := fmt.Sprintf(`
         Hi,
 
@@ -51,7 +51,7 @@ func SendResetEmail(to, token string) error {
     `, resetLink)
 
     m := gomail.NewMessage()
-    m.SetHeader("From", EmailFrom)
+    m.SetHeader("From", fmt.Sprintf("%s <%s>", "Eskalate G5 Blog Project", EmailFrom))
     m.SetHeader("To", to)
     m.SetHeader("Subject", "Password Reset")
     m.SetBody("text/plain", body)

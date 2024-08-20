@@ -53,7 +53,7 @@ export const options: NextAuthOptions = {
       if (decodedToken && decodedToken.exp !== undefined && decodedToken.exp < currentTime) {
         // If the token is expired, refresh it
         try {
-          const newTokens = await refreshToken();
+          const newTokens = await refreshToken(token.refresh_token);
           token.access_token = newTokens.data;
         } catch (error) {
           console.error("Failed to refresh access token:", error);

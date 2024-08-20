@@ -27,7 +27,10 @@ func (uu *userUsecase) GetUserByEmail(c context.Context, email string) (*domain.
 	return nil, nil
 }
 
-func (uu *userUsecase) GetUser(c context.Context, userID string) (*domain.User, error) {
+func (uu *userUsecase)  GetUserById(c context.Context, userId string) (*domain.User, error) {
+	return nil, nil
+}
+func (uu *userUsecase) GetUsers(c context.Context) (*[]domain.User, error) {
 	return nil, nil
 }
 

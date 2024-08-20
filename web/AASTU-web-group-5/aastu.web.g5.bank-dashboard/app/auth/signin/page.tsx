@@ -41,7 +41,7 @@ const Login = () => {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 p-4">
-      <div className="w-full sm:max-w-lg md:max-w-[70%] lg:max-w-[80%] bg-white p-8 sm:p-12 md:p-16 lg:p-20 rounded-lg shadow-md mt-4">
+      <div className="w-full sm:max-w-lg md:max-w-[70%] lg:max-w-[60%] bg-white p-8 sm:p-12 md:p-16 lg:p-20 rounded-lg shadow-md mt-4">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-10 md:mb-12 text-purple-700 text-center">Login to Your Account</h1>
         {errorMessage && <p className="text-red-500 mb-4 text-center">{errorMessage}</p>}
         <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col items-center gap-4 sm:gap-6 md:gap-8">
@@ -49,7 +49,7 @@ const Login = () => {
             <input
               {...register('userName', { required: 'Username is required' })}
               placeholder="Username"
-              className="input-field w-full sm:max-w-lg md:max-w-[70%] lg:max-w-[80%] bg-blue-50 border border-blue-300 rounded-full p-2 focus:bg-blue-100"
+              className="input-field w-full sm:max-w-lg md:max-w-[70%] lg:max-w-[60%] bg-blue-50 border border-blue-300 rounded-full p-2 focus:bg-blue-100"
             />
             {errors.userName && <p className="error-text text-red-500 mt-2">{errors.userName.message}</p>}
           </div>
@@ -59,14 +59,14 @@ const Login = () => {
               {...register('password', { required: 'Password is required' })}
               type="password"
               placeholder="Password"
-              className="input-field w-full sm:max-w-lg md:max-w-[70%] lg:max-w-[80%] bg-blue-50 border border-blue-300 rounded-full p-2 focus:bg-blue-100"
+              className="input-field w-full sm:max-w-lg md:max-w-[70%] lg:max-w-[60%] bg-blue-50 border border-blue-300 rounded-full p-2 focus:bg-blue-100"
             />
             {errors.password && <p className="error-text text-red-500 mt-2">{errors.password.message}</p>}
           </div>
 
           <button
             type="submit"
-            className="w-full sm:max-w-lg md:max-w-[70%] lg:max-w-[80%] mx-auto py-3 bg-purple-700 text-white font-semibold rounded-full transition duration-300"
+            className="w-full sm:max-w-lg md:max-w-[70%] lg:max-w-[60%] mx-auto py-3 bg-purple-700 text-white font-semibold rounded-full transition duration-300"
           >
             Login
           </button>

@@ -38,23 +38,20 @@ const Register = () => {
     try {
       const response = await axios.post('https://bank-dashboard-6acc.onrender.com/auth/register', data);
       console.log(response.data); // Handle response data if needed
-      router.push('/login'); // Redirect to login page after successful registration
+      router.push('auth/signin'); // Redirect to login page after successful registration
     } catch (error: any) {
       setErrorMessage(error.response?.data?.message || 'Registration failed');
     }
   };
 
   return (
-    
-  <div 
-      className="flex flex-col  items-center min-h-screen bg-gray-100 p-4" 
-    >
-      <div className=' pt-2 bg-green-100 w-[90%] text-center mt-0 '>
-      <h1 className="text-4xl font-bold mb-6 text-purple-700">Create Your Account</h1>
+    <div className="flex flex-col items-center min-h-screen bg-gray-100 p-4">
+      <div className='pt-2 bg-green-100 w-[90%] text-center mt-0'>
+        <h1 className="text-4xl font-bold mb-6 text-purple-700">Create Your Account</h1>
       </div>
-      <div className="flex justify-center w-[90%]  bg-white p-8 rounded-lg shadow-md">
-        {errorMessage && <p className="text-red-500 mb-4 text-center">{errorMessage}</p>}
+      <div className="flex justify-center w-[90%] bg-white p-8 rounded-lg shadow-md">
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-6 w-full">
+          {errorMessage && <p className="text-red-500 mb-4 text-center col-span-1">{errorMessage}</p>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex justify-center">
               <input {...register('name', { required: true })} placeholder="Name" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
@@ -107,8 +104,8 @@ const Register = () => {
             </div>
 
             <div className="flex justify-center">
-              <input {...register('profilePicture', { required: true })} type="file" 
-    accept="image/*"  placeholder="Profile Picture URL" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
+              <input {...register('profilePicture', { required: true })} type="text" 
+              placeholder="Profile Picture URL" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
               {errors.profilePicture && <p className="error-text text-red-500">Profile Picture is required</p>}
             </div>
           </div>
@@ -150,9 +147,7 @@ const Register = () => {
               <option value="UTC-02:00">UTC-02:00</option>
               <option value="UTC-01:00">UTC-01:00</option>
               <option value="UTC+00:00">UTC+00:00</option>
-              
               <option value="UTC+12:00">UTC+12:00</option>
-            
             </select>
             {errors.preference?.timeZone && <p className="error-text text-red-500">Time Zone is required</p>}
           </div>

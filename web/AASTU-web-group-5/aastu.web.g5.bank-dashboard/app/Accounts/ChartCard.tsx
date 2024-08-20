@@ -70,15 +70,15 @@ export default function Component() {
             }
           ),
         ]);
-
-        const expensesData = expensesResponse.data.data;
-        const incomesData = incomesResponse.data.data;
+        console.log("Expenses Response:", expensesResponse.data.data.content);
+        const expensesData = expensesResponse.data.data.content;
+        const incomesData = incomesResponse.data.data.content;
 
        
 
         // Initialize a map to accumulate debited and credited amounts by day
         const dataMap = {
-          Mon: { debited: 200040, credited: 200040 },
+          Mon: { debited: 0, credited: 200040 },
           Tue: { debited: 200040, credited: 0 },
           Wed: { debited: 240040, credited: 200040},
           Thu: { debited: 300023, credited: 2000},

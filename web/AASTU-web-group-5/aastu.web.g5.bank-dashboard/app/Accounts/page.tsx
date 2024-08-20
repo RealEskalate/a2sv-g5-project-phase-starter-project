@@ -37,7 +37,7 @@ const Accounts = () => {
         });
         
         if (response.data.success) {
-          setTransactions(response.data.data.reverse().slice(0,3)); // Store only the 3 most recent transactions
+          setTransactions(response.data.data.content.reverse().slice(0,3)); // Store only the 3 most recent transactions
         }
       } catch (error) {
         console.error('Error fetching transactions:', error);
@@ -64,14 +64,14 @@ const Accounts = () => {
 
     const fetchIncomes = async () => {
       try {
-        const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions/incomes?page=5&size=3', {
+        const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions/incomes?page=0&size=7', {
           headers: {
             Authorization: token,
           },
         });
 
         if (response.data.success) {
-          setIncome(response.data.data.reduce((total: number, income: any) => total + income.amount, 0)); // Calculate total income
+          setIncome(response.data.data.content.reduce((total: number, income: any) => total + income.amount, 0)); // Calculate total income
         }
       } catch (error) {
         console.error('Error fetching incomes:', error);
@@ -87,7 +87,7 @@ const Accounts = () => {
         });
 
         if (response.data.success) {
-          setExpense(response.data.data.reduce((total: number, expense: any) => total + expense.amount, 0)); // Calculate total expense
+          setExpense(response.data.data.content.reduce((total: number, expense: any) => total + expense.amount, 0)); // Calculate total expense
         }
       } catch (error) {
         console.error('Error fetching expenses:', error);

@@ -6,21 +6,21 @@ import { TransactionResponse, TransactionType } from "@/types/TransactionValue";
 const Recent = ({ data }: { data: TransactionType[] }) => {
   return (
     <div className="space-y-7 my-6">
-      <h3 className="font-semibold text-[22px] text-[#343C6A]">
+      <h3 className="font-semibold text-[22px] text-[#343C6A] dark:text-gray-300">
         Recent Transactions
       </h3>
       <div className="flex gap-4 sm:gap-16 px-1 border-b text-[14px] sm:text-[16px] text-[#718EBF] font-semibold overflow-x-auto">
-        <p className="border-[#1814F3] border-b-[3px] pb-2 text-[#1814F3] whitespace-nowrap">
+        <p className="border-[#1814F3] border-b-[3px] pb-2 text-[#1814F3] whitespace-nowrap dark:text-gray-300">
           All Transactions
         </p>
-        <p className="whitespace-nowrap">Income</p>
-        <p className="whitespace-nowrap">Expense</p>
+        <p className="whitespace-nowrap dark:text-gray-300">Income</p>
+        <p className="whitespace-nowrap dark:text-gray-300">Expense</p>
       </div>
       {/* Add a wrapper with overflow-x-auto to enable horizontal scrolling */}
-      <div className="w-full bg-white rounded-[25px] px-8 py-6 overflow-x-auto custom-scrollbar">
+      <div className="w-full bg-white dark:bg-[#232328] rounded-[25px] px-8 py-6 overflow-x-auto custom-scrollbar">
         <table className="border-separate border-spacing-y-4 font-[16px] w-full min-w-[900px] transaction-table">
           <thead>
-            <tr className="text-[#718EBF] text-left">
+            <tr className="text-[#718EBF] text-left dark:text-gray-200">
               <th>Description</th> {/* Always visible */}
               <th className="hidden md:table-cell">Transaction ID</th>{" "}
               {/* Hidden on mobile, visible on tablets and larger */}
@@ -35,7 +35,7 @@ const Recent = ({ data }: { data: TransactionType[] }) => {
               {/* Hidden on mobile, visible on tablets and larger */}
             </tr>
           </thead>
-          <tbody className="text-[#232323] p-8 space-y-4">
+          <tbody className="text-[#232323] dark:text-gray-300 p-8 space-y-4">
             {data.map((transaction: TransactionType, index: number) => (
               <tr key={index}>
                 <td className="flex gap-2 items-center">
@@ -63,15 +63,15 @@ const Recent = ({ data }: { data: TransactionType[] }) => {
                     className={
                       transaction.amount < 0
                         ? "text-[#FE5C73]"
-                        : "text-[#28A745]"
+                        : "text-[#28A745] dark:text-green-400"
                     }
                   >
                     {transaction.amount < 0 ? "-" : "+"}$
                     {Math.abs(transaction.amount)}
                   </p>
                 </td>
-                <td className="hidden md:table-cell">
-                  <p className="table-button">Download</p>
+                <td className="hidden md:table-cell md:text-white">
+                  <button className="table-button">Download</button>
                 </td>{" "}
                 {/* Hidden on mobile, visible on tablets and larger */}
               </tr>

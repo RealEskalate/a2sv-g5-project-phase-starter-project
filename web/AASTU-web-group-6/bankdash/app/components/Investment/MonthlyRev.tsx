@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { CartesianGrid, Line, LineChart, XAxis , YAxis } from "recharts"
+import { TrendingUp } from "lucide-react";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import {
   Card,
@@ -10,20 +10,20 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 interface YearlyInvestment {
-  time: string; 
+  time: string;
   value: number;
 }
 
 interface MonthlyRevenue {
-  time: string; 
+  time: string;
   value: number;
 }
 
@@ -37,32 +37,43 @@ interface YearlyInvestProps {
   data: InvestmentData | undefined;
 }
 function formatMonth(time: string): string {
-  const [month] = time.split('/');
+  const [month] = time.split("/");
   const monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
   const monthIndex = parseInt(month, 10) - 1;
   return monthNames[monthIndex];
 }
 
-export function MonthlyRev({data}:YearlyInvestProps) {
-  
-  const formchartData = data?.monthlyRevenue
-  const chartData = formchartData?.map(item => ({
-    ...item,
-    time: formatMonth(item.time)
-})).slice().reverse();
-  
+export function MonthlyRev({ data }: YearlyInvestProps) {
+  const formchartData = data?.monthlyRevenue;
+  const chartData = formchartData
+    ?.map((item) => ({
+      ...item,
+      time: formatMonth(item.time),
+    }))
+    .slice()
+    .reverse();
+
   const chartConfig = {
     desktop: {
       label: "Desktop",
       color: "hsl(var(--chart-1))",
     },
-  } satisfies ChartConfig
+  } satisfies ChartConfig;
   return (
-    <Card className=" rounded-3xl py-5 shadow-lg border-gray-300">
-      
+    <Card className=" rounded-3xl py-5 dark:bg-[#232328]">
       <CardContent>
         <ChartContainer config={chartConfig}>
           <LineChart
@@ -79,7 +90,7 @@ export function MonthlyRev({data}:YearlyInvestProps) {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              padding={{left:20}}
+              padding={{ left: 20 }}
               tickFormatter={(value) => value.slice(0, 3)}
             />
             <YAxis
@@ -88,7 +99,6 @@ export function MonthlyRev({data}:YearlyInvestProps) {
               tickMargin={8}
               ticks={[0, 2000, 4000, 6000, 8000]}
               tickFormatter={(value) => value.toLocaleString()}
-              
             />
             <ChartTooltip
               cursor={false}
@@ -105,5 +115,5 @@ export function MonthlyRev({data}:YearlyInvestProps) {
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

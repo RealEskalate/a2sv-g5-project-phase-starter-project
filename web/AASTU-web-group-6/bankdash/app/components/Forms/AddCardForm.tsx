@@ -47,11 +47,11 @@ const AddCardForm = () => {
         <div className="flex gap-10">
           <div>
             <div className="flex flex-col">
-              <label className="text-[#232323] text-base font-semibold pb-2">
+              <label className="text-[#232323] text-base font-semibold pb-2 dark:text-gray-300">
                 Card Type
               </label>
               <input
-                className="border border-[#DFEAF2] p-2 rounded-2xl mb-5 w-[285px]"
+                className="dark:bg-gray-700 border-solid border-2 border-blue-50 dark:border-gray-600 placeholder:text-base placeholder:text-[#8BA3CB] dark:placeholder:text-gray-400 focus:outline-none focus:border-blue-200 dark:focus:border-gray-500 p-2 px-3 rounded-lg mb-5 w-[285px]"
                 type="text"
                 placeholder="Classic"
                 {...register("cardType", { required: "Card type is required" })}
@@ -63,11 +63,11 @@ const AddCardForm = () => {
               )}
             </div>
             <div className="flex flex-col">
-              <label className="text-[#232323] text-base font-semibold pb-2">
+              <label className="text-[#232323] text-base font-semibold pb-2 dark:text-gray-300">
                 Balance
               </label>
               <input
-                className="border border-[#DFEAF2] p-2 rounded-2xl"
+                className="dark:bg-gray-700 border-solid border-2 border-blue-50 dark:border-gray-600 placeholder:text-base placeholder:text-[#8BA3CB] dark:placeholder:text-gray-400 focus:outline-none focus:border-blue-200 dark:focus:border-gray-500 p-2 px-3 rounded-lg"
                 type="number"
                 placeholder="0"
                 {...register("balance", {
@@ -84,11 +84,11 @@ const AddCardForm = () => {
           </div>
           <div>
             <div className="flex flex-col">
-              <label className="text-[#232323] text-base font-semibold pb-2">
+              <label className="text-[#232323] text-base font-semibold pb-2 dark:text-gray-300">
                 Name on Card
               </label>
               <input
-                className="border border-[#DFEAF2] p-2 rounded-2xl mb-5 w-[285px]"
+                className="dark:bg-gray-700 border-solid border-2 border-blue-50 dark:border-gray-600 placeholder:text-base placeholder:text-[#8BA3CB] dark:placeholder:text-gray-400 focus:outline-none focus:border-blue-200 dark:focus:border-gray-500 p-2 px-3 rounded-lg mb-5 w-[285px]"
                 type="text"
                 placeholder="John Doe"
                 {...register("cardHolder", {
@@ -102,11 +102,11 @@ const AddCardForm = () => {
               )}
             </div>
             <div className="flex flex-col">
-              <label className="text-[#232323] text-base font-semibold pb-2">
+              <label className="text-[#232323] text-base font-semibold pb-2 dark:text-gray-300">
                 Expiration Date
               </label>
               <input
-                className="border border-[#DFEAF2] p-2 rounded-2xl w-[285px]"
+                className="dark:bg-gray-700 border-solid border-2 border-blue-50 dark:border-gray-600 placeholder:text-base placeholder:text-[#8BA3CB] dark:placeholder:text-gray-400 focus:outline-none focus:border-blue-200 dark:focus:border-gray-500 p-2 px-3 rounded-lg w-[285px]"
                 type="date"
                 {...register("expiryDate", {
                   required: "Expiration date is required",

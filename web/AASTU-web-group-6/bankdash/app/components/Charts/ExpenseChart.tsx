@@ -49,7 +49,7 @@ const chartConfig = {
 
 export default function Component() {
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-[-10px] p-8 bg-white rounded-3xl shadow-sm">
+    <div className="flex w-full flex-col items-center justify-center gap-[-10px] p-8 bg-white dark:bg-[#232328] rounded-3xl shadow-sm">
       <Card className="w-full border-0 shadow-none bg-transparent">
         {" "}
         <ChartContainer

@@ -7,27 +7,20 @@ interface props {
   date: string;
 }
 const InvoiceCard = ({ title, amount, icon, color, date }: props) => {
+const InvoiceCard = ({ title, amount, icon, color, date }: props) => {
   return (
-    <div className="flex justify-between items-center mb-4 lg:mb-8 ">
-      <div className="flex items-center gap-3 ">
-        <div
-          className="border border-solid rounded-2xl  lg:w-[45px] lg:h-[45px] xl:w-[60px] xl:h-[60px] w-[60px] h-[60px] flex justify-center items-center"
-          style={{ borderColor: color, backgroundColor: color }}
-        >
-          <img src={icon} />
+    <div className='flex justify-between items-center mb-8'>
+        <div className='flex items-center gap-3'>
+        <div className="border border-solid rounded-2xl  w-[60px] h-[60px] flex justify-center items-center" style={{borderColor: color , backgroundColor:color}}>
+<img src={icon}/>
+</div>
+<div className='flex flex-col'>
+    <p className='font-inter font-medium text-base text-[#B1B1B1] dark:text-gray-300'>{title}</p>
+    <p className='font-inter font-normal text-[15px] text-[#718EBF] dark:text-gray-400'>{date}</p>
+</div>
         </div>
-        <div className="flex flex-col ">
-          <p className="font-inter font-medium lg:text-[12px] xl:text-base text-base text-[#B1B1B1]  ">
-            {title}
-          </p>
-          <p className="font-inter font-normal lg:text-[12px] xl:text-[15px] text-[15px] text-[#718EBF]">
-            {date}
-          </p>
-        </div>
-      </div>
-      <p className="flex justify-endfont-inter font-normal lg:text-[12px] xl:text-base text-base text-[#718EBF]">
-        {amount}
-      </p>
+        <p className='font-inter font-normal text-base text-[#718EBF] dark:text-blue-400'>{amount}</p>
+      
     </div>
   );
 };

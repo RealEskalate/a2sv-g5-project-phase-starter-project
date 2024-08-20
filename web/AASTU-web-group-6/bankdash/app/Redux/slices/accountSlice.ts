@@ -17,15 +17,25 @@
 //   yearlyTotalInvestment: YearlyInvestment[];
 //   monthlyRevenue: MonthlyRevenue[];
 // }
-
+// interface LastTransData {
+//   transactionId: string;
+//   type: string;
+//   senderUserName: string;
+//   description: string;
+//   date: string;
+//   amount: number;
+//   receiverUserName: string;
+// }
 // interface accountState {
-//   cards: Card[];
+//   income: InvestmentData[];
+//   expense: LastTransData[];
 //   status: "idle" | "loading" | "succeeded" | "failed";
 //   error: string | null;
 // }
 
-// const initialState: CardState = {
-//   cards: [],
+// const initialState: accountState = {
+//   income: [],
+//   expense: [],
 //   status: "idle",
 //   error: null,
 // };
@@ -34,7 +44,10 @@
 //   name: "cards",
 //   initialState,
 //   reducers: {
-//     setCards(state, action: PayloadAction<Card[]>) {
+//     setExpense(state, action: PayloadAction<>) {
+//       state.latTrans = action.payload;
+//     },
+//     setIncome(state, action: PayloadAction<Card[]>) {
 //       state.cards = action.payload;
 //     },
 //     addCard(state, action: PayloadAction<Card>) {

@@ -1,6 +1,7 @@
-package controller
+package controllers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -27,8 +28,9 @@ func (bc *blogController) CreateBlog(c *gin.Context) {
 		return
 	}
 	authorID := c.GetString("user_id")
-	authorUsername := c.GetString("username")
-	blog.AuthorUsername = authorUsername
+	// authorUsername := c.GetString("username")
+	// blog.AuthorUsername = authorUsername
+	blog.AuthorUsername = "Anonymous"
 	err := bc.blogUsecase.CreateBlog(&blog, authorID)
 
 	if err != nil {
@@ -67,7 +69,8 @@ func (bc *blogController) UpdateBlog(c *gin.Context) {
 	if err != nil {
 		c.JSON(err.StatusCode(), gin.H{"error": err.Error()})
 	}
-	c.JSON(http.StatusOK, blog)
+
+	c.JSON(http.StatusOK, gin.H{"message": "blog edited successfully!"})
 }
 
 func (bc *blogController) DeleteBlog(c *gin.Context) {
@@ -191,7 +194,8 @@ func (bc *blogController) EditComment(c *gin.Context) {
 	// Implement the logic for editing a comment
 	var comment domain.Comment
 	var commentID = c.Param("comment_id")
-	blogID := c.Param("blog_id")
+	blogID := c.Param("id")
+	fmt.Println("blog Id controller", blogID)
 	if err := c.ShouldBindJSON(&comment); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

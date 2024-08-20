@@ -40,7 +40,7 @@ export const baseQuery = (baseUrl = '/') => {
             });
 
             // console.log('refreshed token is', refreshedToken);
-            if (refreshedToken) {
+            if (refreshedToken.data) {
               headers.set('Authorization', `Bearer ${refreshedToken.data}`);
               // Update session with new tokens
               session.accessToken = refreshedToken.data;

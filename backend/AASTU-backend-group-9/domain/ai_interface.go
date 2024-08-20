@@ -1,10 +1,12 @@
 package domain
 
 import (
-    "context"
+	"context"
+
+	"github.com/google/generative-ai-go/genai"
 )
 
 // AIUsecase defines the methods for AI content generation.
 type AIUsecase interface {
-    GenerateBlogContent(ctx context.Context, keywords string) (string, error)
+	GenerateBlogContent(ctx context.Context, keywords string) (*genai.GenerateContentResponse, error)
 }

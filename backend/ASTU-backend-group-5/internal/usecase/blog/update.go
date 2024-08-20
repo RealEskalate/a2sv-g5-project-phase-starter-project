@@ -5,10 +5,14 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // UpdateBlog updates an existing blog
 func (u *blogUseCase) UpdateBlog(ctx context.Context, id string, blog *domain.Blog) error {
+	blog.UpdatedAt = primitive.NewDateTimeFromTime(time.Now())
 	err := u.repo.UpdateBlog(ctx, id, blog)
 	if err != nil {
 		log.Printf("Error updating blog with ID %s: %v", id, err)

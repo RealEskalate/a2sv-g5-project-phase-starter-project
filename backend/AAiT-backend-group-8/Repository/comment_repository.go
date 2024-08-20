@@ -11,11 +11,11 @@ import (
 )
 
 type CommentRepository struct {
-	collection mongo.Collection
+	collection *mongo.Collection
 	ctx        context.Context
 }
 
-func NewCommentRepository(collection mongo.Collection, ctx context.Context) *CommentRepository {
+func NewCommentRepository(collection *mongo.Collection, ctx context.Context) *CommentRepository {
 	return &CommentRepository{
 		collection: collection,
 		ctx:        ctx,

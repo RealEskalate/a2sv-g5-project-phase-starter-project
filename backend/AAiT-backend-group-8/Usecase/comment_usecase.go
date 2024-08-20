@@ -5,15 +5,14 @@ import (
 	infrastructure "AAiT-backend-group-8/Infrastructure"
 	repository "AAiT-backend-group-8/Repository"
 	"errors"
-	"log"
 )
 
 type CommentUseCase struct {
-	repository     repository.CommentRepository
-	infrastructure infrastructure.Infrastructure
+	repository     *repository.CommentRepository
+	infrastructure *infrastructure.Infrastructure
 }
 
-func NewCommentUseCase(commentRepository repository.CommentRepository, infrastructure infrastructure.Infrastructure) *CommentUseCase {
+func NewCommentUseCase(commentRepository *repository.CommentRepository, infrastructure *infrastructure.Infrastructure) *CommentUseCase {
 	return &CommentUseCase{
 		repository:     commentRepository,
 		infrastructure: infrastructure,
@@ -75,7 +74,6 @@ func (uc *CommentUseCase) DeleteCommentsOfBlog(blogID string) error {
 	}
 	err = uc.repository.DeleteCommentsOfBlog(primitiveID)
 	if err != nil {
-		log.Fatal(err.Error())
 		return err
 	}
 	return nil

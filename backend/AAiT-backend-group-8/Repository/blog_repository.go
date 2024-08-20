@@ -2,6 +2,7 @@ package repository
 
 import (
 	"AAiT-backend-group-8/Domain"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -35,11 +36,11 @@ func (blogRepository *BlogRepository) Create(blog *Domain.Blog) error {
 	return nil
 }
 
-func (blogRepository *BlogRepository) FindAll(page int, pageSize int, sortBy string) (*[]Domain.Blog, error) {
+func (blogRepository *BlogRepository) FindAll(page int, pageSize int, sortBy string) ([]Domain.Blog, error) {
 	findOptions := options.Find()
-	findOptions.SetSkip(int64(page * int(pageSize)))
+	findOptions.SetSkip(int64((page - 1) * int(pageSize)))
 	findOptions.SetLimit(int64(pageSize))
-	findOptions.SetSort(bson.D{{Key: sortBy, Value: 1}})
+	findOptions.SetSort(bson.D{{Key: sortBy, Value: -1}})
 
 	cur, err := blogRepository.blogs.Find(context.TODO(), bson.D{}, findOptions)
 
@@ -64,8 +65,7 @@ func (blogRepository *BlogRepository) FindAll(page int, pageSize int, sortBy str
 	}
 
 	cur.Close(context.Background())
-
-	return &blogs, nil
+	return blogs, nil
 }
 
 func (blogRepository *BlogRepository) Delete(id string) error {
@@ -174,14 +174,12 @@ func (blogRepository *BlogRepository) UpdateLikeCount(id string, inc bool) error
 	return nil
 }
 
-func (blogRepository BlogRepository) Search(criteria *Domain.SearchCriteria) (*[]Domain.Blog, error) {
+func (blogRepository BlogRepository) Search(criteria *Domain.SearchCriteria) ([]Domain.Blog, error) {
 
-	filter, err := bson.Marshal(criteria)
-	if err != nil {
-		return nil, err
-	}
+	filter, findOptions := BuildBlogFilter(criteria)
 
-	cur, err := blogRepository.blogs.Find(context.Background(), filter)
+	cur, err := blogRepository.blogs.Find(context.Background(), filter, findOptions)
+
 	if err != nil {
 		return nil, err
 	}
@@ -191,6 +189,59 @@ func (blogRepository BlogRepository) Search(criteria *Domain.SearchCriteria) (*[
 		return nil, err
 	}
 
-	return &Blogs, nil
+	fmt.Println(Blogs)
+	return Blogs, nil
 
+}
+
+func BuildBlogFilter(criteria *Domain.SearchCriteria) (bson.M, *options.FindOptions) {
+	filter := bson.M{}
+
+	// Title filter using regex
+	if criteria.Title != "" {
+		filter["title"] = bson.M{"$regex": criteria.Title, "$options": "i"}
+	}
+
+	// Author filter
+	if criteria.Author != "" {
+		filter["author_name"] = criteria.Author
+	}
+
+	// Tags filter using $all to match all specified tags
+	if len(criteria.Tags) > 0 {
+		filter["tags"] = bson.M{"$all": criteria.Tags}
+	}
+
+	// Date range filter
+	if !criteria.StartDate.IsZero() || !criteria.EndDate.IsZero() {
+		dateFilter := bson.M{}
+		if !criteria.StartDate.IsZero() {
+			dateFilter["$gte"] = criteria.StartDate
+		}
+		if !criteria.EndDate.IsZero() {
+			dateFilter["$lte"] = criteria.EndDate
+		}
+		filter["created_at"] = dateFilter
+	}
+
+	// Minimum views filter
+	if criteria.MinViews > 0 {
+		filter["view_count"] = bson.M{"$gte": criteria.MinViews}
+	}
+
+	// Find options for pagination and sorting
+	findOptions := options.Find()
+
+	// Sorting
+	if criteria.SortBy != "" {
+		findOptions.SetSort(bson.M{criteria.SortBy: 1}) // 1 for ascending, -1 for descending
+	}
+
+	// Pagination
+	if criteria.Page > 0 && criteria.PageSize > 0 {
+		findOptions.SetSkip(int64((criteria.Page - 1) * criteria.PageSize))
+		findOptions.SetLimit(int64(criteria.PageSize))
+	}
+
+	return filter, findOptions
 }

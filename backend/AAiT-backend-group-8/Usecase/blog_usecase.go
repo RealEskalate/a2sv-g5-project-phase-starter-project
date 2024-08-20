@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"AAiT-backend-group-8/Domain"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
@@ -13,7 +14,7 @@ func NewBlogUseCase(repo Domain.IBlogRepository) *BlogUseCase {
 	return &BlogUseCase{repo: repo}
 }
 
-func (uc *BlogUseCase) GetAllBlogs(page int, pageSize int, sortBy string) (*[]Domain.Blog, error) {
+func (uc *BlogUseCase) GetAllBlogs(page int, pageSize int, sortBy string) ([]Domain.Blog, error) {
 	blogs, err := uc.repo.FindAll(page, pageSize, sortBy)
 
 	if err != nil {
@@ -25,6 +26,7 @@ func (uc *BlogUseCase) GetAllBlogs(page int, pageSize int, sortBy string) (*[]Do
 
 func (uc *BlogUseCase) CreateBlog(blog *Domain.Blog) error {
 	blog.CreatedAt = time.Now()
+	blog.Id = primitive.NewObjectID()
 	err := uc.repo.Create(blog)
 
 	if err != nil {
@@ -87,7 +89,7 @@ func (uc *BlogUseCase) UpdateBlogLikeCount(id string, inc bool) error {
 	return nil
 }
 
-func (uc *BlogUseCase) SearchBlog(criteria *Domain.SearchCriteria) (*[]Domain.Blog, error) {
+func (uc *BlogUseCase) SearchBlog(criteria *Domain.SearchCriteria) ([]Domain.Blog, error) {
 
 	blogs, err := uc.repo.Search(criteria)
 	if err != nil {

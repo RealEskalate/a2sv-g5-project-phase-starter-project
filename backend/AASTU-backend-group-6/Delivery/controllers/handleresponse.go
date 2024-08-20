@@ -24,8 +24,8 @@ func HandleResponse(c *gin.Context, response interface{}) {
 		c.JSON(http.StatusOK, res)
 	case *domain.AiResponse:
 		c.JSON(http.StatusOK , res)
-	// case *domain.LoginResponse:
-	// 	c.JSON(http.StatusOK , res)
+	case *domain.UserPromotionResponse:
+		c.JSON(http.StatusOK , res)
 	// case *domain.TaskResponse:
 	// 	c.JSON(http.StatusOK , res)
 	// case *domain.TaskSuccessResponse:

@@ -146,4 +146,13 @@ func (r *signupRepository) UpdateUser(c context.Context, user domain.User) (doma
 
 }
 
+func (r *signupRepository) FindUserByUsername(c context.Context, username string) (domain.User , error) {
+	collection := r.database.Collection(r.collection)
+	var user domain.User
+	err := collection.FindOne(c, bson.M{"username": username}).Decode(&user)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return user, nil
+}
 

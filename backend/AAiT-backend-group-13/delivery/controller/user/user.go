@@ -19,7 +19,7 @@ import (
 	"github.com/group13/blog/usecase/user/result"
 )
 
-type Controller struct {
+type UserController struct {
 	basecontroller.BaseHandler
 	promotHandler         icmd.IHandler[*promotcmd.Command, bool]
 	loginHandler          icmd.IHandler[*logincommand.LoginCommand, *result.LoginInResult]
@@ -42,8 +42,8 @@ type Config struct {
 }
 
 // New creates a new UserController with the given CQRS handler.
-func New(config Config) *Controller {
-	return &Controller{
+func New(config Config) *UserController {
+	return &UserController{
 		BaseHandler:           config.BaseHandler,
 		promotHandler:         config.PromotHandler,
 		loginHandler:          config.LoginHandler,
@@ -73,14 +73,15 @@ func (u Controller) RegisterProtected(router *gin.RouterGroup) {
 
 }
 
-func (u Controller) RegisterPublic(router *gin.RouterGroup) {
+func (u UserController) RegisterProtected(router *gin.RouterGroup) {}
+func (u UserController) RegisterPublic(router *gin.RouterGroup) {
 	router = router.Group("/")
 	router.POST("/api/v1/auth/signup", u.SignUp)
 	router.POST("/api/v1/auth/login", u.Login)
 
 }
 
-func (u Controller) SignUp(ctx *gin.Context) {
+func (u UserController) SignUp(ctx *gin.Context) {
 
 	var user dto.SignUpDto
 	// bind input files
@@ -145,7 +146,7 @@ func (u Controller) Login(ctx *gin.Context) {
 	})
 }
 
-func (u Controller) ForgotPassword(ctx *gin.Context) {
+func (u UserController) ForgotPassword(ctx *gin.Context) {
 	var request dto.ForgotPasswordDto
 
 	if err := ctx.BindJSON(&request); err != nil {
@@ -167,7 +168,7 @@ func (u Controller) ForgotPassword(ctx *gin.Context) {
 
 }
 
-func (u Controller) ResetPassword(ctx *gin.Context) {
+func (u UserController) ResetPassword(ctx *gin.Context) {
 	var request dto.ResetPasswordDto
 	// bind input files
 	if err := ctx.BindJSON(&request); err != nil {
@@ -204,7 +205,7 @@ func (u Controller) Logout(ctx *gin.Context) {
 	})
 }
 
-func (u Controller) Promte(ctx *gin.Context) {
+func (u UserController) Promte(ctx *gin.Context) {
 	u.ChangeStatus(true, ctx)
 }
 
@@ -254,7 +255,7 @@ func (u Controller) ChangeStatus(toAdmin bool, ctx *gin.Context) {
 
 }
 
-func (u Controller) ValidateEmail(ctx *gin.Context) {
+func (u UserController) ValidateEmail(ctx *gin.Context) {
 
 	encryptedValue := ctx.Query("secret")
 

@@ -7,15 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type userController struct {
+type UserController struct {
 	userUsecase domain.UserUsecase
 }
 
-func NewUserController(userUsecase domain.UserUsecase) *userController {
-	return &userController{userUsecase: userUsecase}
+func NewUserController(userUsecase domain.UserUsecase) *UserController {
+	return &UserController{userUsecase: userUsecase}
 }
 
-func (c *userController) Register(ctx *gin.Context) {
+func (c *UserController) Register(ctx *gin.Context) {
 	user := domain.User{}
 	if err := ctx.ShouldBind(&user); err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
@@ -28,7 +28,7 @@ func (c *userController) Register(ctx *gin.Context) {
 	}
 	ctx.IndentedJSON(http.StatusCreated, gin.H{"message":"Activate your Account in the your email link" })
 }	
-func (c *userController) AccountVerification(ctx *gin.Context) {
+func (c *UserController) AccountVerification(ctx *gin.Context) {
 	email := ctx.Query("email")
 	token := ctx.Query("pwd")
 	_, err := c.userUsecase.AccountVerification(email, token)
@@ -38,7 +38,7 @@ func (c *userController) AccountVerification(ctx *gin.Context) {
 	}
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message":"Account Activated"})
 }
-func (c *userController) ForgetPassword(ctx *gin.Context) {
+func (c *UserController) ForgetPassword(ctx *gin.Context) {
 	email := ctx.Query("email")
 	_, err := c.userUsecase.ForgetPassword(email)
 	if err != nil {
@@ -47,7 +47,35 @@ func (c *userController) ForgetPassword(ctx *gin.Context) {
 	}
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message":"Password reset token sent to your email"})
 }
-func (c *userController) LoginUser(ctx *gin.Context) {
+func (c *UserController) ResetPassword(ctx *gin.Context) {
+	email := ctx.Query("email")
+	token := ctx.Query("pwd")
+	newpassword := ""
+	if err:= ctx.BindJSON(&newpassword);err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+		return
+	}
+	_, err := c.userUsecase.ResetPassword(email, token, newpassword)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message":"Password Reset Successful"})
+}
+func (c *UserController) ForgetPasswordUser(ctx *gin.Context) {
+	email := ""
+	if err:= ctx.BindJSON(&email);err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+		return
+	}
+	_, err := c.userUsecase.ForgetPassword(email)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message":"Password reset token sent to your email"})
+}
+func (c *UserController) LoginUser(ctx *gin.Context) {
 	user := &domain.User{}
 	if err := ctx.ShouldBind(user); err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
@@ -60,7 +88,7 @@ func (c *userController) LoginUser(ctx *gin.Context) {
 	}
 	ctx.IndentedJSON(http.StatusOK, gin.H{"token": token})
 }
-func (c *userController) GetUsers(ctx *gin.Context) {
+func (c *UserController) GetUsers(ctx *gin.Context) {
 	username := ctx.Query("username")
 	email := ctx.Query("email")
 	if username == "" && email == "" {
@@ -91,7 +119,7 @@ func (c *userController) GetUsers(ctx *gin.Context) {
 	ctx.JSON(http.StatusNotFound, gin.H{"error": "page not found"})
 }
 
-func (c *userController) GetUserByID(ctx *gin.Context) {
+func (c *UserController) GetUserByID(ctx *gin.Context) {
 	userID := ctx.Param("id")
 	user, err := c.userUsecase.GetByID(userID)
 	if err != nil {
@@ -101,7 +129,7 @@ func (c *userController) GetUserByID(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, user)
 }
 
-func (c *userController) DeleteUser(ctx *gin.Context) {
+func (c *UserController) DeleteUser(ctx *gin.Context) {
 	userId := ctx.Param("id")
 	err := c.userUsecase.Delete(userId)
 	if err != nil {
@@ -111,7 +139,7 @@ func (c *userController) DeleteUser(ctx *gin.Context) {
 	ctx.String(http.StatusNoContent, "")
 }
 
-func (c *userController) UpdateUser(ctx *gin.Context) {
+func (c *UserController) UpdateUser(ctx *gin.Context) {
 	userId := ctx.Param("id")
 	updateData := domain.User{}
 	if err := ctx.ShouldBind(updateData); err != nil {

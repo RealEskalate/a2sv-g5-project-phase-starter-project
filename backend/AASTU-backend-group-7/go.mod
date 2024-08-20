@@ -4,7 +4,10 @@ go 1.22.5
 
 require github.com/gin-gonic/gin v1.10.0
 
-require gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+require (
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+)
 
 require (
 	github.com/bytedance/sonic v1.11.6 // indirect
@@ -39,6 +42,7 @@ require (
 	golang.org/x/arch v0.8.0 // indirect
 	golang.org/x/crypto v0.23.0
 	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/oauth2 v0.22.0
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect

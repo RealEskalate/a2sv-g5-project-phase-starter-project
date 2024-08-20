@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"log"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
 	"go.mongodb.org/mongo-driver/bson"
@@ -22,11 +23,29 @@ func NewBlogRepository(db mongo.Database, collection string) domain.BlogReposito
 	}
 }
 
-func (br *blogRepository) GetByTags(c context.Context, tags []string) ([]domain.Blog, error) {
-	return []domain.Blog{}, nil
+func (br *blogRepository) GetByTags(c context.Context, tags []string, limit int64, page int64) ([]domain.Blog, error) {
+	collections := br.database.Collection(br.collection)
+
+	filter := bson.M{"tags": bson.M{"$in": tags}}
+	opts := options.FindOptions{Limit: &limit, Skip: &page}
+
+	cursor, err := collections.Find(c, filter, &opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var blogs []domain.Blog
+
+	if err = cursor.All(c, &blogs); err != nil {
+		return nil, err
+	}
+
+	return blogs, nil
+
 }
 
-func (br *blogRepository) GetAllBlogs(c context.Context) ([]domain.Blog, error) {
+func (br *blogRepository) GetAllBlogs(c context.Context, limit int64, page int64) ([]domain.Blog, error) {
 	collection := br.database.Collection(br.collection)
 
 	cursor, err := collection.Find(c, nil)
@@ -60,11 +79,27 @@ func (br *blogRepository) GetBlogByID(c context.Context, blogID string) (domain.
 		return domain.Blog{}, err
 	}
 
+	// increase the view count
+	// update the popularity
+	blog.ViewCount++
+	blog.UpdatePopularity()
+
+	_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$set": blog})
+
+	if err != nil {
+
+		// we don't want to return an error to the user
+		// because the view count and popularity are not critical to the user
+
+		log.Println(err)
+
+	}
+
 	return blog, nil
 
 }
 
-func (br *blogRepository) Search(c context.Context, searchTerm string) ([]domain.Blog, error) {
+func (br *blogRepository) Search(c context.Context, searchTerm string, limit int64, page int64) ([]domain.Blog, error) {
 	return []domain.Blog{}, nil
 }
 
@@ -122,11 +157,11 @@ func (br *blogRepository) DeleteBlog(c context.Context, blogID string) error {
 
 }
 
-func (br *blogRepository) SortByDate(c context.Context) ([]domain.Blog, error) {
+func (br *blogRepository) SortByDate(c context.Context, limit int64, page int64) ([]domain.Blog, error) {
 	collection := br.database.Collection(br.collection)
 
 	filter := bson.D{}
-	opts := options.Find().SetSort(bson.D{{"created_at", 1}})
+	opts := options.Find().SetSort(bson.D{{"created_at", -1}})
 
 	cursor, err := collection.Find(c, filter, opts)
 
@@ -144,11 +179,11 @@ func (br *blogRepository) SortByDate(c context.Context) ([]domain.Blog, error) {
 
 }
 
-func (br *blogRepository) SortByComment(c context.Context) ([]domain.Blog, error) {
+func (br *blogRepository) SortByComment(c context.Context, limit int64, page int64) ([]domain.Blog, error) {
 	collection := br.database.Collection(br.collection)
 
 	filter := bson.D{}
-	opts := options.Find().SetSort(bson.D{{"comments_count", 1}})
+	opts := options.Find().SetSort(bson.D{{"comments_count", -1}})
 
 	cursor, err := collection.Find(c, filter, opts)
 
@@ -166,11 +201,11 @@ func (br *blogRepository) SortByComment(c context.Context) ([]domain.Blog, error
 
 }
 
-func (br *blogRepository) SortByLikes(c context.Context) ([]domain.Blog, error) {
+func (br *blogRepository) SortByLikes(c context.Context, limit int64, page int64) ([]domain.Blog, error) {
 	collection := br.database.Collection(br.collection)
 
 	filter := bson.D{}
-	opts := options.Find().SetSort(bson.D{{"comments_likes", 1}})
+	opts := options.Find().SetSort(bson.D{{"comments_likes", -1}})
 
 	cursor, err := collection.Find(c, filter, opts)
 
@@ -188,8 +223,23 @@ func (br *blogRepository) SortByLikes(c context.Context) ([]domain.Blog, error) 
 
 }
 
-func (br *blogRepository) GetByPopularity(c context.Context) ([]domain.Blog, error) {
+func (br *blogRepository) GetByPopularity(c context.Context, limit int64, page int64) ([]domain.Blog, error) {
+	collection := br.database.Collection(br.collection)
 
-	return []domain.Blog{}, nil
+	filter := bson.D{}
+	opts := options.Find().SetSort(bson.D{{"popularity", -1}}).SetLimit(limit).SetSkip(limit * page)
 
+	cursor, err := collection.Find(c, filter, opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var blogs []domain.Blog
+
+	if err = cursor.All(c, &blogs); err != nil {
+		return nil, err
+	}
+
+	return blogs, nil
 }

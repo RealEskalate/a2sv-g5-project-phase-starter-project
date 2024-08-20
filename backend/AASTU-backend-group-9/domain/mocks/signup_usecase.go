@@ -127,6 +127,57 @@ func (_m *SignupUsecase) RegisterUser(c context.Context, user *domain.AuthSignup
 	return r0, r1
 }
 
+// SaveRefreshToken provides a mock function with given fields: c, token, id
+func (_m *SignupUsecase) SaveRefreshToken(c context.Context, token string, id primitive.ObjectID) error {
+	ret := _m.Called(c, token, id)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, primitive.ObjectID) error); ok {
+		r0 = rf(c, token, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// SendOTP provides a mock function with given fields: c, user, username, password
+func (_m *SignupUsecase) SendOTP(c context.Context, user *domain.AuthSignup, username string, password string) error {
+	ret := _m.Called(c, user, username, password)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.AuthSignup, string, string) error); ok {
+		r0 = rf(c, user, username, password)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// VerifyOTP provides a mock function with given fields: c, otp
+func (_m *SignupUsecase) VerifyOTP(c context.Context, otp *domain.OTPRequest) (*domain.OTP, error) {
+	ret := _m.Called(c, otp)
+
+	var r0 *domain.OTP
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.OTPRequest) *domain.OTP); ok {
+		r0 = rf(c, otp)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.OTP)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, *domain.OTPRequest) error); ok {
+		r1 = rf(c, otp)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 type mockConstructorTestingTNewSignupUsecase interface {
 	mock.TestingT
 	Cleanup(func())

@@ -16,13 +16,13 @@ type UserUsecase struct {
 	mock.Mock
 }
 
-// CreateUser provides a mock function with given fields: c, user
-func (_m *UserUsecase) CreateUser(c context.Context, user *domain.CreateUser) error {
-	ret := _m.Called(c, user)
+// CreateUser provides a mock function with given fields: c, user, claims
+func (_m *UserUsecase) CreateUser(c context.Context, user *domain.CreateUser, claims *domain.JwtCustomClaims) error {
+	ret := _m.Called(c, user, claims)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.CreateUser) error); ok {
-		r0 = rf(c, user)
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.CreateUser, *domain.JwtCustomClaims) error); ok {
+		r0 = rf(c, user, claims)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -30,13 +30,13 @@ func (_m *UserUsecase) CreateUser(c context.Context, user *domain.CreateUser) er
 	return r0
 }
 
-// DeleteUser provides a mock function with given fields: c, id
-func (_m *UserUsecase) DeleteUser(c context.Context, id primitive.ObjectID) error {
-	ret := _m.Called(c, id)
+// DeleteUser provides a mock function with given fields: c, id, claims
+func (_m *UserUsecase) DeleteUser(c context.Context, id primitive.ObjectID, claims *domain.JwtCustomClaims) error {
+	ret := _m.Called(c, id, claims)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) error); ok {
-		r0 = rf(c, id)
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, *domain.JwtCustomClaims) error); ok {
+		r0 = rf(c, id, claims)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -44,22 +44,36 @@ func (_m *UserUsecase) DeleteUser(c context.Context, id primitive.ObjectID) erro
 	return r0
 }
 
-// DemoteUser provides a mock function with given fields: c, id
-func (_m *UserUsecase) DemoteUser(c context.Context, id primitive.ObjectID) (*domain.Privilage, error) {
-	ret := _m.Called(c, id)
+// DemoteUser provides a mock function with given fields: c, id, claims
+func (_m *UserUsecase) DemoteUser(c context.Context, id primitive.ObjectID, claims *domain.JwtCustomClaims) error {
+	ret := _m.Called(c, id, claims)
 
-	var r0 *domain.Privilage
-	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) *domain.Privilage); ok {
-		r0 = rf(c, id)
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, *domain.JwtCustomClaims) error); ok {
+		r0 = rf(c, id, claims)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// GetAllUsers provides a mock function with given fields: c
+func (_m *UserUsecase) GetAllUsers(c context.Context) ([]*domain.User, error) {
+	ret := _m.Called(c)
+
+	var r0 []*domain.User
+	if rf, ok := ret.Get(0).(func(context.Context) []*domain.User); ok {
+		r0 = rf(c)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.Privilage)
+			r0 = ret.Get(0).([]*domain.User)
 		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, primitive.ObjectID) error); ok {
-		r1 = rf(c, id)
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(c)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -136,45 +150,36 @@ func (_m *UserUsecase) GetUserByUsername(c context.Context, username string) (*d
 	return r0, r1
 }
 
-// PromoteUser provides a mock function with given fields: c, id
-func (_m *UserUsecase) PromoteUser(c context.Context, id primitive.ObjectID) (*domain.Privilage, error) {
-	ret := _m.Called(c, id)
+// PromoteUser provides a mock function with given fields: c, id, claims
+func (_m *UserUsecase) PromoteUser(c context.Context, id primitive.ObjectID, claims *domain.JwtCustomClaims) error {
+	ret := _m.Called(c, id, claims)
 
-	var r0 *domain.Privilage
-	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) *domain.Privilage); ok {
-		r0 = rf(c, id)
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, *domain.JwtCustomClaims) error); ok {
+		r0 = rf(c, id, claims)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.Privilage)
-		}
+		r0 = ret.Error(0)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, primitive.ObjectID) error); ok {
-		r1 = rf(c, id)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
-// UpdateUser provides a mock function with given fields: c, profile
-func (_m *UserUsecase) UpdateUser(c context.Context, profile *domain.Profile) (*domain.ProfileResponse, error) {
-	ret := _m.Called(c, profile)
+// UpdateUser provides a mock function with given fields: c, user, claims, id
+func (_m *UserUsecase) UpdateUser(c context.Context, user *domain.User, claims *domain.JwtCustomClaims, id primitive.ObjectID) (*domain.User, error) {
+	ret := _m.Called(c, user, claims, id)
 
-	var r0 *domain.ProfileResponse
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.Profile) *domain.ProfileResponse); ok {
-		r0 = rf(c, profile)
+	var r0 *domain.User
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.User, *domain.JwtCustomClaims, primitive.ObjectID) *domain.User); ok {
+		r0 = rf(c, user, claims, id)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.ProfileResponse)
+			r0 = ret.Get(0).(*domain.User)
 		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, *domain.Profile) error); ok {
-		r1 = rf(c, profile)
+	if rf, ok := ret.Get(1).(func(context.Context, *domain.User, *domain.JwtCustomClaims, primitive.ObjectID) error); ok {
+		r1 = rf(c, user, claims, id)
 	} else {
 		r1 = ret.Error(1)
 	}

@@ -25,10 +25,29 @@ type BlogFilter struct {
 	} `json:"date_range"`
 }
 
-type RefreshToken struct {
-	// username     string    `bson:"token" json:"token"`
-	UserID    string    `bson:"user_id" json:"user_id"`
-	ExpiresAt time.Time `bson:"expires_at" json:"expires_at"`
+type Comment struct {
+	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	BlogID    primitive.ObjectID `bson:"blog_id"`
+	UserID    primitive.ObjectID `bson:"author_id"`
+	Content   string             `bson:"content"`
+	CreatedAt time.Time          `bson:"created_at"`
+}
+type Like struct {
+	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	BlogID    primitive.ObjectID `bson:"blog_id"`
+	UserID    primitive.ObjectID `bson:"user_id"`
+	CreatedAt time.Time          `bson:"created_at"`
+}
+type LikeUsecaseInterface interface {
+	AddLike(blogID, userID primitive.ObjectID) error
+	RemoveLike(likeID primitive.ObjectID) error
+	GetLikesByBlogID(blogID primitive.ObjectID) ([]Like, error)
+}
+type CommentUsecaseInterface interface {
+	AddComment(comment *Comment) error
+	GetCommentsByBlogID(blogID primitive.ObjectID) ([]Comment, error)
+	UpdateComment(commentID primitive.ObjectID, content string) error
+	DeleteComment(commentID primitive.ObjectID) error
 }
 
 // // IsExpired checks if the refresh token is expired

@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type likeReposiotory struct {
@@ -166,14 +167,18 @@ func (lr *likeReposiotory) RemoveDislike(c context.Context, id string) error {
 	return nil
 }
 
-func (lr *likeReposiotory) GetLikesByUser(c context.Context, userID string) (likes []domain.Like, err error) {
+func (lr *likeReposiotory) GetLikesByUser(c context.Context, userID string, limit, offset int) (likes []domain.Like, err error) {
 	collection := lr.databse.Collection(lr.collection)
 	userPrimitiveID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return []domain.Like{}, err
 	}
 
-	cursor, err := collection.Find(c, bson.M{"user_id": userPrimitiveID})
+	options := options.Find()
+	options.SetLimit(int64(limit))
+	options.SetSkip(int64(offset))
+
+	cursor, err := collection.Find(c, bson.M{"user_id": userPrimitiveID}, options)
 
 	if err != nil {
 		return []domain.Like{}, err
@@ -190,15 +195,8 @@ func (lr *likeReposiotory) GetLikesByUser(c context.Context, userID string) (lik
 
 }
 
-// GetLikesByBlog retrieves a list of likes for a specific blog.
-// It takes a context.Context and a blogID string as parameters.
-// The function returns a slice of domain.Like and an error.
-// The likes are retrieved from the database based on the provided blogID.
-// If the blogID is not a valid hexadecimal string, an error is returned.
-// If there are no likes found for the blog, an empty slice is returned.
-// If there is an error during the retrieval process, an error is returned.
-func (lr *likeReposiotory) GetLikesByBlog(c context.Context, blogID string) (likes []domain.Like, err error) {
-	
+func (lr *likeReposiotory) GetLikesByBlog(c context.Context, blogID string, limit, offset int) (likes []domain.Like, err error) {
+
 	collection := lr.databse.Collection(lr.collection)
 	userPrimitiveID, err := primitive.ObjectIDFromHex(blogID)
 
@@ -206,7 +204,11 @@ func (lr *likeReposiotory) GetLikesByBlog(c context.Context, blogID string) (lik
 		return []domain.Like{}, err
 	}
 
-	cursor, err := collection.Find(c, bson.M{"blog_id": userPrimitiveID})
+	options := options.Find()
+	options.SetLimit(int64(limit))
+	options.SetSkip(int64(offset))
+
+	cursor, err := collection.Find(c, bson.M{"blog_id": userPrimitiveID}, options)
 
 	if err != nil {
 		return []domain.Like{}, err
@@ -233,7 +235,7 @@ func (lr *likeReposiotory) GetLikeByID(c context.Context, likeID string) (domain
 	filter := bson.M{"_id": likeObjectID}
 
 	var like domain.Like
-	
+
 	err = collection.FindOne(c, filter).Decode(&like)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {

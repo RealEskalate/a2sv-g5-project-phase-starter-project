@@ -17,11 +17,6 @@ type blogRepository struct {
 	collection string
 }
 
-// type paginationPage struct {
-// 	NextPage     int
-// 	CurrentPage  int
-// 	PreviousPage int
-// }
 
 // NewBlogRepository creates a new instance of blogRepository
 func NewBlogRepository(db mongo.Database, collection string) domain.BlogRepository {
@@ -31,10 +26,14 @@ func NewBlogRepository(db mongo.Database, collection string) domain.BlogReposito
 	}
 }
 
-func (br *blogRepository) SearchBlogs(c context.Context, filter domain.Filter) ([]domain.Blog, error) {
+// Creates MongoDB filter
+// Creates find options with sorting and pagination
+// Gets the total count of documents matching the filter
+// Return the the filterd blogs and count
+func (br *blogRepository) SearchBlogs(c context.Context, filter domain.Filter, limit, offset int) ([]domain.Blog, int, error) {
 	var blogs []domain.Blog
 
-	// Create MongoDB filter
+	
 	mongoFilter := bson.M{}
 	if filter.AuthorName != nil {
 		mongoFilter["author_info.name"] = *filter.AuthorName
@@ -49,30 +48,37 @@ func (br *blogRepository) SearchBlogs(c context.Context, filter domain.Filter) (
 		mongoFilter["popularity"] = *filter.Popularity
 	}
 
-	// Create find options with sorting
+	
 	findOptions := options.Find()
 	if filter.Sort_By != nil {
 		switch *filter.Sort_By {
 		case domain.FilterParam("date"):
-			findOptions.SetSort(bson.D{{Key: "created_at", Value: 1}}) // 1 for ascending, -1 for descending
+			findOptions.SetSort(bson.D{{Key: "created_at", Value: 1}})
 		case domain.FilterParam("popularity"):
-			findOptions.SetSort(bson.D{{Key: "popularity", Value: -1}}) // -1 for descending
+			findOptions.SetSort(bson.D{{Key: "popularity", Value: -1}})
 		}
 	}
+	findOptions.SetLimit(int64(limit))
+	findOptions.SetSkip(int64(offset))
 
-	// Execute the query
 	cursor, err := br.database.Collection(br.collection).Find(c, mongoFilter, findOptions)
 	if err != nil {
-		return nil, err
+		return []domain.Blog{}, 0, err
 	}
 
 	err = cursor.All(c, &blogs)
 	if err != nil {
-		return nil, err
+		return []domain.Blog{}, 0, err
 	}
 
-	return blogs, nil
+	count, err := br.database.Collection(br.collection).CountDocuments(c, mongoFilter)
+	if err != nil {
+		return []domain.Blog{}, 0, err
+	}
+
+	return blogs, int(count), nil
 }
+
 
 // CreateBlog inserts a new blog into the collection
 func (br *blogRepository) CreateBlog(c context.Context, blog *domain.Blog) error {
@@ -98,110 +104,163 @@ func (br *blogRepository) FetchByBlogID(c context.Context, blogID string) (domai
 	return blog, err
 }
 
-// FetchByBlogAuthor retrieves blogs by the author's ID
-func (br *blogRepository) FetchByBlogAuthor(c context.Context, authorID string) ([]domain.Blog, error) {
+// FetchByBlogAuthor retrieves blogs by the author's ID and the number of blogs by the Author and
+
+func (br *blogRepository) FetchByBlogAuthor(c context.Context, authorID string, limit, offset int) ([]domain.Blog, int, error) {
+
 	collection := br.database.Collection(br.collection)
+	filter := bson.M{"author_info.author_id": authorID}
+	
+	findOptions := options.Find()
+	findOptions.SetLimit(int64(limit))
+	findOptions.SetSkip(int64(offset))
+	
+
+	cursor, err := collection.Find(c, filter, findOptions)
+	if err != nil {
+		return []domain.Blog{}, 0, err
+	}
 
 	var blogs []domain.Blog
-
-	cursor, err := collection.Find(c, bson.M{"author_info.author_id": authorID})
-	if err != nil {
-		return nil, err
-	}
-
 	err = cursor.All(c, &blogs)
-	if blogs == nil {
-		return []domain.Blog{}, err
+	if err != nil {
+		return []domain.Blog{}, 0, err
 	}
 
-	return blogs, err
+	count, err := collection.CountDocuments(c, filter)
+	if err != nil {
+		return []domain.Blog{}, 0, err
+	}
+
+	return blogs, int(count), nil
 }
 
-// FetchByBlogTitle retrieves blogs by their title
-func (br *blogRepository) FetchByBlogTitle(c context.Context, title string) ([]domain.Blog, error) {
+
+// FetchByBlogTitle retrieves blogs by their title with optional pagination
+// MongoDB filter for title search with case-insensitive regex
+// Count total number of documents matching the filter
+func (br *blogRepository) FetchByBlogTitle(c context.Context, title string, limit, offset int) ([]domain.Blog, int, error) {
+
 	collection := br.database.Collection(br.collection)
+	filter := bson.M{"title": bson.M{"$regex": title, "$options": "i"}}
+
+	findOptions := options.Find()
+	findOptions.SetLimit(int64(limit))
+	findOptions.SetSkip(int64(offset))
+
+	cursor, err := collection.Find(c, filter, findOptions)
+	if err != nil {
+		return []domain.Blog{}, 0, err
+	}
 
 	var blogs []domain.Blog
-
-	cursor, err := collection.Find(c, bson.M{"title": bson.M{"$regex": title, "$options": "i"}})
-	if err != nil {
-		return nil, err
-	}
-
 	err = cursor.All(c, &blogs)
-	if blogs == nil {
-		return []domain.Blog{}, err
+	if err != nil {
+		return []domain.Blog{}, 0, err
 	}
 
-	return blogs, err
+	count, err := collection.CountDocuments(c, filter)
+	if err != nil {
+		return []domain.Blog{}, 0, err
+	}
+
+	return blogs, int(count), nil
 }
 
-// FetchAll retrieves all blogs from the collection
-func (br *blogRepository) FetchAll(c context.Context) ([]domain.Blog, error) {
+// FetchAll retrieves all blogs from the collection with optional pagination
+func (br *blogRepository) FetchAll(c context.Context, limit, offset int) ([]domain.Blog, int, error) {
 	collection := br.database.Collection(br.collection)
 
-	var blogs []domain.Blog
+	findOptions := options.Find()
+	findOptions.SetLimit(int64(limit))
+	findOptions.SetSkip(int64(offset))
 
-	cursor, err := collection.Find(c, bson.M{})
+
+	cursor, err := collection.Find(c, bson.M{}, findOptions)
 	if err != nil {
-		return nil, err
+		return []domain.Blog{}, 0, err
 	}
 
+	var blogs []domain.Blog
 	err = cursor.All(c, &blogs)
-	if blogs == nil {
-		return []domain.Blog{}, err
+	if err != nil {
+		return []domain.Blog{}, 0, err
 	}
 
-	return blogs, err
+	count, err := collection.CountDocuments(c, bson.M{})
+	if err != nil {
+		return []domain.Blog{}, 0, err
+	}
+
+	return blogs, int(count), nil
 }
+
+
 
 // FetchByPageAndPopularity retrieves blogs from the collection based on page number and sorts them by popularity
-func (br *blogRepository) FetchByPageAndPopularity(ctx context.Context, pageNumber, pageSize int) ([]domain.Blog, error) {
+func (br *blogRepository) FetchByPageAndPopularity(ctx context.Context, limit, offset int) ([]domain.Blog, int, error) {
 	collection := br.database.Collection(br.collection)
 
 	var blogs []domain.Blog
-	skip := (pageNumber - 1) * pageSize
 
-	// Sort by popularity in descending order and apply pagination
 	cursor, err := collection.Find(
 		ctx,
 		bson.M{},
 		options.Find().
-			SetSkip(int64(skip)).
-			SetLimit(int64(pageSize)).
+			SetSkip(int64(offset)).
+			SetLimit(int64(limit)).
 			SetSort(bson.D{{Key: "popularity", Value: -1}}),
 	)
 	if err != nil {
-		return nil, err
+		return []domain.Blog{}, 0, err
 	}
+	defer cursor.Close(ctx)
 
 	err = cursor.All(ctx, &blogs)
-	if blogs == nil {
-		return []domain.Blog{}, err
+	if err != nil {
+		return []domain.Blog{}, 0, err
+	}
+	totalCount, err := collection.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		return []domain.Blog{}, 0, err
 	}
 
-	return blogs, err
+	return blogs, int(totalCount), nil
 }
 
-// FetchByTags retrieves blogs that have the specified tags
-func (br *blogRepository) FetchByTags(ctx context.Context, tags []domain.Tag) ([]domain.Blog, error) {
+
+
+// FetchByTags retrieves blogs that have the specified tags with pagination
+func (br *blogRepository) FetchByTags(ctx context.Context, tags []domain.Tag, limit, offset int) ([]domain.Blog, int, error) {
 	collection := br.database.Collection(br.collection)
 
 	var blogs []domain.Blog
 
-	// Use the $in operator to match any blog that contains any of the specified tags
-	cursor, err := collection.Find(ctx, bson.M{"tags": bson.M{"$in": tags}})
+	cursor, err := collection.Find(
+		ctx,
+		bson.M{"tags": bson.M{"$in": tags}},
+		options.Find().
+			SetSkip(int64(offset)).
+			SetLimit(int64(limit)),
+	)
 	if err != nil {
-		return nil, err
+		return []domain.Blog{}, 0, err
 	}
+	defer cursor.Close(ctx)
 
 	err = cursor.All(ctx, &blogs)
-	if blogs == nil {
-		return []domain.Blog{}, err
+	if err != nil {
+		return []domain.Blog{}, 0, err
 	}
 
-	return blogs, err
+	totalCount, err := collection.CountDocuments(ctx, bson.M{"tags": bson.M{"$in": tags}})
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return blogs, int(totalCount), nil
 }
+
 
 // UpdateBlog updates a blog in the collection by its ID
 func (br *blogRepository) UpdateBlog(ctx context.Context, id primitive.ObjectID, blog domain.BlogUpdate) error {
@@ -276,12 +335,12 @@ func (br *blogRepository) UpdatePopularity(ctx context.Context, id primitive.Obj
 	return err
 }
 
-func (br *blogRepository) UpdateFeedback(c context.Context, id string, updateFunc func(*domain.Feedback) error) error {
+func (br *blogRepository) UpdateFeedback(ctx context.Context, id string, updateFunc func(*domain.Feedback) error) error {
 
 	filter := bson.M{"_id": id}
 	var blogPost domain.Blog
 
-	err := br.database.Collection(br.collection).FindOne(context.TODO(), filter).Decode(&blogPost)
+	err := br.database.Collection(br.collection).FindOne(ctx, filter).Decode(&blogPost)
 	if err != nil {
 		return err
 	}
@@ -292,7 +351,7 @@ func (br *blogRepository) UpdateFeedback(c context.Context, id string, updateFun
 	}
 
 	update := bson.M{"$set": bson.M{"feedback": blogPost.Feedbacks}}
-	_, err = br.database.Collection(br.collection).UpdateOne(context.TODO(), filter, update)
+	_, err = br.database.Collection(br.collection).UpdateOne(ctx, filter, update)
 
 	return err
 }
@@ -351,10 +410,6 @@ func (br *blogRepository) RemoveComment(feedback *domain.Feedback, requesterUser
 	for _, comment := range feedback.Comments {
 
 		if comment.User_ID == requesterUserID || isAdmin {
-
-			if !isAdmin && comment.User_ID != requesterUserID {
-				return errors.New("unauthorized: you can only remove your own comments or you must be an admin")
-			}
 
 			commentFound = true
 			continue

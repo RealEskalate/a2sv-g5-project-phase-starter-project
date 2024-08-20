@@ -2,7 +2,6 @@ package bootstrap
 
 import "AAiT-backend-group-6/mongo"
 
-
 type Application struct {
 	Env   *Env
 	Mongo mongo.Client
@@ -11,7 +10,9 @@ type Application struct {
 func App() Application {
 	app := &Application{}
 	app.Env = NewEnv()
+	print("me")
 	app.Mongo = NewMongoDatabase(app.Env)
+	print("here")
 	return *app
 }
 

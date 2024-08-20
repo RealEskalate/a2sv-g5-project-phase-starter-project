@@ -18,7 +18,6 @@ var ErrNoDocuments = mongo.ErrNoDocuments
 
 type Database interface {
 	Collection(string) Collection
-	Client() Client
 }
 
 type Collection interface {
@@ -97,11 +96,11 @@ func (d *nullawareDecoder) DecodeValue(dctx bsoncodec.DecodeContext, vr bsonrw.V
 }
 
 func NewClient(connection string) (Client, error) {
+	clientOptions := options.Client().ApplyURI(connection)
 
-	time.Local = time.UTC
-	c, err := mongo.NewClient(options.Client().ApplyURI(connection))
+	client, err := mongo.Connect(context.TODO(), clientOptions)
 
-	return &mongoClient{cl: c}, err
+	return &mongoClient{cl: client}, err
 
 }
 

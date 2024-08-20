@@ -12,21 +12,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// NewProfileRouter is a function that defines all the routes for the profile
-func NewProfileRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
+func NewVerificationRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
 	ur := repository.NewUserRepository(*db, domain.CollectionUser)
-	pc := controller.ProfileController{
+	sc := controller.ProfileController{
 		UserUsecase: usecase.NewUserUsecase(ur, timeout),
 		Env:         env,
 	}
-
-	// group.GET("/profiles", pc.GetProfiles())
-	group.GET("/profiles/:id", pc.GetProfile())
-	group.PUT("/profiles/:id", pc.UpdateProfile())
-	group.PATCH("/profiles/:id", pc.UpdateProfile())
-	group.DELETE("/profiles/:id", pc.DeleteProfile())
-
-	// promote/demote user to admin
-	group.POST("/profiles/:id/promote", pc.PromoteUser())
-	group.POST("/profiles/:id/demote", pc.DemoteUser())
+	// group.POST("/verify-email", sc.VerifyEmail)
+	// group.POST("/forgot-password", sc.ForgotPassword)
+	// group.POST("/reset-password", sc.ResetPassword)
+	group.POST("/reset-password", sc.DemoteUser())
 }

@@ -5,7 +5,7 @@ import React from 'react';
 
 const MyCard = () => {
   const { data, isLoading } = useGetAllCardsQuery();
-  console.log(data, 'card data is');
+  // console.log(data, 'card data is');
 
   return (
     <div>

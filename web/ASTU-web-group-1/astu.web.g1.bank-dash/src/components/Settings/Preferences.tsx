@@ -24,7 +24,6 @@ const Preferences = () => {
     mode: "onTouched",
   });
 
-
   return (
     <div>
       <form action="">

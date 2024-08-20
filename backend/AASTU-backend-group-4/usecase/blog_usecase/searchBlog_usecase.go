@@ -1,7 +1,7 @@
 package blog_usecase
 
 import (
-	"blog-api/domain"
+	domain "blog-api/domain/blog"
 	"context"
 	"errors"
 )
@@ -11,5 +11,5 @@ func (bu *BlogUsecase) SearchBlog(ctx context.Context, title string, author stri
 		return nil, errors.New("at least one search criterion (title or author) must be provided")
 	}
 
-	return bu.blogRepo.SearchBlog(ctx, title, author)
+	return bu.repo.SearchBlog(ctx, title, author)
 }

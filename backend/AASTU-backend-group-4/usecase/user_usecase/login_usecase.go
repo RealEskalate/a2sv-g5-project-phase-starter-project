@@ -1,7 +1,7 @@
 package user_usecase
 
 import (
-	"blog-api/domain"
+	"blog-api/domain/user"
 	"blog-api/infrastructure/auth"
 	"blog-api/infrastructure/bootstrap"
 	"errors"
@@ -10,8 +10,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (uc *UserUsecase) LoginUser(c *gin.Context, loginRequest domain.LoginRequest, Env *bootstrap.Env) (domain.LoginResponse, error) {
-	var u domain.User
+func (uc *UserUsecase) LoginUser(c *gin.Context, loginRequest user.LoginRequest, Env *bootstrap.Env) (user.LoginResponse, error) {
+	var u user.User
 	var err error
 
 	if loginRequest.Email != "" {
@@ -21,26 +21,26 @@ func (uc *UserUsecase) LoginUser(c *gin.Context, loginRequest domain.LoginReques
 	}
 
 	if err != nil {
-		return domain.LoginResponse{}, errors.New("invalid credentials. User not found.")
+		return user.LoginResponse{}, errors.New("invalid credentials. User not found.")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(loginRequest.Password)); err != nil {
-		return domain.LoginResponse{}, errors.New("invalid credentials. Incorrect password.")
+		return user.LoginResponse{}, errors.New("invalid credentials. Incorrect password.")
 	}
 
 	accessToken, err := auth.CreateAccessToken(&u, Env.AccessTokenSecret, Env.AccessTokenExpiryHour)
 	if err != nil {
-		return domain.LoginResponse{}, errors.New("failed to generate access token")
+		return user.LoginResponse{}, errors.New("failed to generate access token")
 	}
 
 	refreshToken, err := auth.CreateRefreshToken(&u, Env.RefreshTokenSecret, Env.RefreshTokenExpiryHour)
 	if err != nil {
-		return domain.LoginResponse{}, errors.New("failed to generate refresh token")
+		return user.LoginResponse{}, errors.New("failed to generate refresh token")
 	}
 
 	u.RefreshToken = refreshToken
 
-	updateRequest := domain.UpdateRequest{
+	updateRequest := user.UpdateRequest{
 		Firstname:          u.Firstname,
 		Lastname:           u.Lastname,
 		Username:           u.Username,
@@ -52,11 +52,11 @@ func (uc *UserUsecase) LoginUser(c *gin.Context, loginRequest domain.LoginReques
 	err = uc.repo.UpdateUser(c, u.ID, &updateRequest)
 
 	if err != nil {
-		return domain.LoginResponse{}, errors.New("failed to update user with refresh token")
+		return user.LoginResponse{}, errors.New("failed to update user with refresh token")
 
 	}
 
-	return domain.LoginResponse{
+	return user.LoginResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil

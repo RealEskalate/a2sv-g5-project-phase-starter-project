@@ -51,7 +51,7 @@ func (r *Repository) Delete(id uuid.UUID) error {
 }
 
 // ListByAuthor retrieves paginated blogs for a specific author, sorted by total interaction.
-func (r *Repository) ListByAuthor(authorId uuid.UUID, lastSeenID *uuid.UUID, lastSeenInteraction *int, ascending bool, limit int) ([]*blogmodel.Blog, error) {
+func (r *Repository) ListByAuthor(authorId uuid.UUID, lastSeenID *uuid.UUID, limit int) ([]*blogmodel.Blog, error) {
 	filter := bson.M{"author_id": authorId}
 
 	pipeline := mongo.Pipeline{
@@ -65,24 +65,20 @@ func (r *Repository) ListByAuthor(authorId uuid.UUID, lastSeenID *uuid.UUID, las
 		}}},
 		// Sorting based on total interaction, creation date, and ID
 		{{Key: "$sort", Value: bson.D{
-			{Key: "totalInteraction", Value: getSortOrder(ascending)},
-			{Key: "created_date", Value: getSortOrder(ascending)},
-			{Key: "_id", Value: getSortOrder(ascending)},
+			{Key: "totalInteraction", Value: getSortOrder(true)},
+			{Key: "created_date", Value: getSortOrder(true)},
+			{Key: "_id", Value: getSortOrder(true)},
 		}}},
 	}
 
 	// Handle pagination using `$match` after sorting
-	if lastSeenID != nil && lastSeenInteraction != nil {
-		comparison := "$lt"
-		if ascending {
-			comparison = "$gt"
-		}
+	if lastSeenID != nil {
+		comparison := "$gt"
 
 		// Add pagination match
 		pipeline = append(pipeline, bson.D{{Key: "$match", Value: bson.M{
 			"$or": bson.A{
-				bson.M{"totalInteraction": bson.M{comparison: *lastSeenInteraction}},
-				bson.M{"totalInteraction": *lastSeenInteraction, "_id": bson.M{comparison: *lastSeenID}},
+				bson.M{"_id": bson.M{comparison: *lastSeenID}},
 			},
 		}}})
 	}
@@ -110,7 +106,7 @@ func (r *Repository) ListByAuthor(authorId uuid.UUID, lastSeenID *uuid.UUID, las
 }
 
 // ListByTotalInteraction retrieves paginated blogs sorted by total interaction.
-func (r *Repository) ListByTotalInteraction(lastSeenID *uuid.UUID, lastSeenInteraction *int, ascending bool, limit int) ([]*blogmodel.Blog, error) {
+func (r *Repository) ListByTotalInteraction(lastSeenID *uuid.UUID, limit int) ([]*blogmodel.Blog, error) {
 	ctx := context.Background()
 
 	// Create the aggregation pipeline
@@ -123,24 +119,20 @@ func (r *Repository) ListByTotalInteraction(lastSeenID *uuid.UUID, lastSeenInter
 		}}},
 		// Sorting based on total interaction, creation date, and ID
 		{{Key: "$sort", Value: bson.D{
-			{Key: "totalInteraction", Value: getSortOrder(ascending)},
-			{Key: "created_date", Value: getSortOrder(ascending)},
-			{Key: "_id", Value: getSortOrder(ascending)},
+			{Key: "totalInteraction", Value: getSortOrder(true)},
+			{Key: "created_date", Value: getSortOrder(true)},
+			{Key: "_id", Value: getSortOrder(true)},
 		}}},
 	}
 
 	// Handle pagination using `$match` after sorting
-	if lastSeenID != nil && lastSeenInteraction != nil {
-		comparison := "$lt"
-		if ascending {
-			comparison = "$gt"
-		}
+	if lastSeenID != nil {
+		comparison := "$gt"
 
 		// Add pagination match
 		pipeline = append(pipeline, bson.D{{Key: "$match", Value: bson.M{
 			"$or": bson.A{
-				bson.M{"totalInteraction": bson.M{comparison: *lastSeenInteraction}},
-				bson.M{"totalInteraction": *lastSeenInteraction, "_id": bson.M{comparison: *lastSeenID}},
+				bson.M{"_id": bson.M{comparison: *lastSeenID}},
 			},
 		}}})
 	}

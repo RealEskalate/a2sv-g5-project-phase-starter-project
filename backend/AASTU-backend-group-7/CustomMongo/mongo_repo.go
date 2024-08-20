@@ -4,6 +4,7 @@ import (
 	domain "blogapp/Domain"
 	"context"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -67,7 +68,8 @@ func (m *MongoCollection) UpdateMany(ctx context.Context, filter, update interfa
 	return m.Collection.UpdateMany(ctx, filter, update, opts...)
 }
 
-// implement indexing.createindex method
-func (m *MongoCollection) CreateIndex(ctx context.Context, model mongo.IndexModel, opts ...*options.CreateIndexesOptions) (string, error) {
-	return m.Collection.Indexes().CreateOne(ctx, model, opts...)
-}
+func (m *MongoCollection) CreateIndex(ctx context.Context, model bson.D, opts ...*options.CreateIndexesOptions) (string, error) {
+	_model := mongo.IndexModel{
+		Keys: model,
+	}
+	return m.Collection.Indexes().CreateOne(ctx, _model, opts...)

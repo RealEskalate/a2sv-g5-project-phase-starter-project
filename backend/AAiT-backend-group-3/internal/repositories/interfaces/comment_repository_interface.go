@@ -5,7 +5,7 @@ import (
 	"AAIT-backend-group-3/internal/domain/models"
 )
 type CommentRepositoryInterface interface {
-	CreateComment(comment *models.Comment) error
+	CreateComment(comment *models.Comment, blogId string) (*models.Comment, error)
 	GetCommentByID(commentID primitive.ObjectID) (*models.Comment, error)
 	EditComment(commentID primitive.ObjectID, newComment *models.Comment ) error
 	DeleteComment(commentID primitive.ObjectID) error

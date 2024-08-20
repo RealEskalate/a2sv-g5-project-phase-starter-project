@@ -18,6 +18,20 @@ func SetupRouter() *gin.Engine {
     // SetUpUser(router)
     // // Admin routes
     // SetUpAdmin(router)
+
+    // // oauth routes
+    SetupOauthRouter(router)
+
+    //public routes
+    SetUpPublicRoutes(router)
+
+    // // user routes
+    SetUpUser(router)
+
+    // // Admin routes
+    SetUpAdmin(router)
+
+
     // // Ai routes
     SetUpAi(router)
     return router

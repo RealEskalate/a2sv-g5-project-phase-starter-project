@@ -181,3 +181,42 @@ func (repository *UserRepository)FilterUserDocument(filter map[string]string) ([
 		}
 	return users,nil
 }
+
+func (repository *UserRepository)PromoteUser(id string) (domain.User , error){
+	pid,err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return domain.User{},err
+	}
+
+	filter := bson.D{{Key: "_id" , Value: pid}}
+	update := bson.D{{Key: "$set" , Value: bson.D{{Key: "is_admin" , Value: true}}}}
+
+	updated_user := repository.Collection.FindOneAndUpdate(context.TODO() , filter , update)
+	var new_user domain.User
+	err  = updated_user.Decode(&new_user)
+	if err != nil {
+		return domain.User{} , err
+	}
+
+	return new_user , nil
+}
+
+
+func (repository *UserRepository)DemoteUser(id string) (domain.User , error){
+	pid,err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return domain.User{},err
+	}
+
+	filter := bson.D{{Key: "_id" , Value: pid}}
+	update := bson.D{{Key: "$set" , Value: bson.D{{Key: "is_admin" , Value: false}}}}
+
+	updated_user := repository.Collection.FindOneAndUpdate(context.TODO() , filter , update)
+	var new_user domain.User
+	err  = updated_user.Decode(&new_user)
+	if err != nil {
+		return domain.User{} , err
+	}
+
+	return new_user , nil
+}

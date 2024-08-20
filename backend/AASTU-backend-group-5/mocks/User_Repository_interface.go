@@ -30,6 +30,34 @@ func (_m *User_Repository_interface) DeleteUserDocument(id string) error {
 	return r0
 }
 
+// DemoteUser provides a mock function with given fields: id
+func (_m *User_Repository_interface) DemoteUser(id string) (domain.User, error) {
+	ret := _m.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DemoteUser")
+	}
+
+	var r0 domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (domain.User, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(string) domain.User); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(domain.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // FilterUserDocument provides a mock function with given fields: filter
 func (_m *User_Repository_interface) FilterUserDocument(filter map[string]string) ([]domain.User, error) {
 	ret := _m.Called(filter)
@@ -111,6 +139,34 @@ func (_m *User_Repository_interface) GetUserDocuments() ([]domain.User, error) {
 
 	if rf, ok := ret.Get(1).(func() error); ok {
 		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// PromoteUser provides a mock function with given fields: id
+func (_m *User_Repository_interface) PromoteUser(id string) (domain.User, error) {
+	ret := _m.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PromoteUser")
+	}
+
+	var r0 domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (domain.User, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(string) domain.User); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(domain.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(id)
 	} else {
 		r1 = ret.Error(1)
 	}

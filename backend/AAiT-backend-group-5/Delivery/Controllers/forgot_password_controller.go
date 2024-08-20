@@ -22,28 +22,28 @@ func NewForgotPasswordController(PasswordUsecase interfaces.PasswordUsecase) *Fo
 func (forgotPasswordController *ForgotPasswordController) ForgotPasswordRequest(ctx *gin.Context) {
 	var request dtos.PasswordResetRequest
 
-	// attempt to bind json payload
+	// attempt to bind IndentedJSON payload
 	err := ctx.ShouldBind(request)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
 		return
 	}
 
 	// generate URL to be sent via email
 	resetURL, e := forgotPasswordController.PasswordUsecase.GenerateResetURL(ctx, request.Email)
 	if e != nil {
-		ctx.JSON(e.Code, e.Error())
+		ctx.IndentedJSON(e.Code, e.Error())
 		return
 	}
 
 	// send confirmation email
 	e = forgotPasswordController.PasswordUsecase.SendResetEmail(ctx, request.Email, resetURL)
 	if e != nil {
-		ctx.JSON(e.Code, e.Error())
+		ctx.IndentedJSON(e.Code, e.Error())
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "confirmation email sent"})
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "confirmation email sent"})
 }
 
 func (forgotPasswordController *ForgotPasswordController) SetNewPassword(ctx *gin.Context) {
@@ -52,7 +52,7 @@ func (forgotPasswordController *ForgotPasswordController) SetNewPassword(ctx *gi
 	// attempt to bind the payload carrying the new password
 	err := ctx.ShouldBind(&setUpPasswordRequest)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errors.New("invalid request"))
+		ctx.IndentedJSON(http.StatusBadRequest, errors.New("invalid request"))
 		return
 	}
 
@@ -61,9 +61,9 @@ func (forgotPasswordController *ForgotPasswordController) SetNewPassword(ctx *gi
 
 	e := forgotPasswordController.PasswordUsecase.SetPassword(ctx, setUpPasswordRequest.Password, shortURLCode)
 	if e != nil {
-		ctx.JSON(e.Code, e.Error())
+		ctx.IndentedJSON(e.Code, e.Error())
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "password reset, login again"})
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "password reset, login again"})
 }

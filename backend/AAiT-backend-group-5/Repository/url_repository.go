@@ -6,6 +6,7 @@ import (
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -20,6 +21,7 @@ func NewURLRepository(db *mongo.Database) interfaces.URLServiceRepository {
 }
 
 func (urlRepo *URL_Repo) SaveURL(url models.URL, ctx context.Context) *models.ErrorResponse {
+	url.ID = primitive.NewObjectID()
 	_, err := urlRepo.Collection.InsertOne(ctx, url)
 	if err != nil {
 		return models.InternalServerError(err.Error())

@@ -20,10 +20,11 @@ func NewAuthenticationRouter(env *config.Env, database mongo.Database, group *gi
 	password_service := infrastructure.NewPasswordService()
 	email_service := infrastructure.NewEmailService(emailConfig, *env)
 	url_service := infrastructure.NewURLService(env, url_repository)
+	session := repository.NewSessionRepository(&database)
 
 	// instantiate login controller
 	LoginController := &controllers.LoginController{
-		LoginUsecase: usecases.NewLoginUsecase(jwt_service, password_service, user_repository),
+		LoginUsecase: usecases.NewLoginUsecase(jwt_service, password_service, user_repository, session),
 		Env:          env,
 	}
 

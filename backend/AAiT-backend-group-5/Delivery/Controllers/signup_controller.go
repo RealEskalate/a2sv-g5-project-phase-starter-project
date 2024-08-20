@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"net/http"
 
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
@@ -25,10 +24,10 @@ func NewSignupController(signupUsecase interfaces.SignupUsecase, passwordUsecase
 func (signupController *SignupController) Signup(ctx *gin.Context) {
 	var userCreateRequest dtos.CreateAccountRequest
 
-	// attempt to bind the json payload
+	// attempt to bind the IndentedJSON payload
 	err := ctx.ShouldBind(&userCreateRequest)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.BadRequest("invalid request"))
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid request payload"})
 		return
 	}
 
@@ -42,11 +41,11 @@ func (signupController *SignupController) Signup(ctx *gin.Context) {
 	// create user
 	e := signupController.SignupUsecase.CreateUser(ctx, newUser)
 	if e != nil {
-		ctx.JSON(e.Code, e.Error())
+		ctx.IndentedJSON(e.Code, gin.H{"error": e.Message})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "check your email"})
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "check your email"})
 }
 
 func (signupController *SignupController) ConfirmRegistration(ctx *gin.Context) {
@@ -55,7 +54,7 @@ func (signupController *SignupController) ConfirmRegistration(ctx *gin.Context) 
 	// attempt to bind the payload carrying the new password
 	err := ctx.ShouldBind(&setUpPasswordRequest)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errors.New("invalid request"))
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid request payload"})
 		return
 	}
 
@@ -64,9 +63,9 @@ func (signupController *SignupController) ConfirmRegistration(ctx *gin.Context) 
 
 	e := signupController.PasswordUsecase.SetPassword(ctx, setUpPasswordRequest.Password, shortURLCode)
 	if e != nil {
-		ctx.JSON(e.Code, e.Error())
+		ctx.IndentedJSON(e.Code, gin.H{"error": e.Message})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "registeration successful, proceed to login"})
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "registeration successful, proceed to login"})
 }

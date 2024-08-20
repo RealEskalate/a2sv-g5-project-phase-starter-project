@@ -62,7 +62,6 @@ func (suite *RefreshUsecaseTestSuite) TestRefreshTokenSuccess() {
 	suite.mockSessionRepo.EXPECT().
 		UpdateToken(suite.ctx, &models.Session{
 			UserID:       userID,
-			AccessToken:  accessToken,
 			RefreshToken: newRefreshToken,
 		}).
 		Return(nil)

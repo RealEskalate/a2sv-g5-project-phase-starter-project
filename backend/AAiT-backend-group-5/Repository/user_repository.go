@@ -53,7 +53,7 @@ func (ur *UserMongoRepository) GetUserByEmailOrUsername(ctx context.Context, use
 	err := ur.Collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, models.NotFound(err.Error())
+			return nil, models.NotFound("user not found")
 		}
 		return nil, models.NotFound(err.Error())
 	}
@@ -71,7 +71,10 @@ func (ur *UserMongoRepository) GetUserByID(ctx context.Context, id string) (*mod
 	var user models.User
 	err = ur.Collection.FindOne(ctx, bson.M{"_id": objID}).Decode(&user)
 	if err != nil {
-		return nil, models.NotFound(err.Error())
+		if err == mongo.ErrNoDocuments {
+			return nil, models.NotFound("user with the given ID not found")
+		}
+		return nil, models.InternalServerError("error fetching user" + err.Error())
 	}
 
 	return &user, models.Nil()

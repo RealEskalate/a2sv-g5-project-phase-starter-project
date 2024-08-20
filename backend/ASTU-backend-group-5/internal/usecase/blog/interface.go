@@ -10,8 +10,8 @@ type BlogUseCase interface {
 	// Blog operations
 	CreateBlog(ctx context.Context, blog *domain.Blog, authorId string) error
 	GetBlogByID(ctx context.Context, id string) (*domain.Blog, error)
-	UpdateBlog(ctx context.Context, id string, blog *domain.Blog) error
-	DeleteBlog(ctx context.Context, id string) error
+	UpdateBlog(ctx context.Context, id string, blog *domain.Blog, authorId string) error
+	DeleteBlog(ctx context.Context, id, userId string) error
 	GetAllBlogs(ctx context.Context) ([]*domain.Blog, error)
 	FilterBlogs(ctx context.Context, filter domain.BlogFilter) ([]*domain.Blog, error)
 	PaginateBlogs(ctx context.Context, filter domain.BlogFilter, page, pageSize int) ([]*domain.Blog, error)

@@ -169,7 +169,7 @@ func (uuc *UserUseCaseImpl) Login(email string, password string) (string, string
 	}
 
 	//Generate a token for the user
-	tokenExp := time.Now().Add(time.Minute * 5).Unix()
+	tokenExp := time.Now().Add(time.Minute * 15).Unix()
 	token, err := uuc.TokenService.GenerateToken(user.Email, user.Id, user.Role, user.Name, tokenExp)
 
 	if err != nil {

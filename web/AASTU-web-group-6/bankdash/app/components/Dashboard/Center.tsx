@@ -50,7 +50,7 @@ const Center = () => {
             </Link>
           </div>
 
-          <div className="flex gap-6 grow w-full scrollbar-hide overflow-x-auto xs:scrollB xs:w-[360] sm:overflow-hidden sm:w-auto">
+          <div className="flex gap-6 grow w-full scrollbar-hide overflow-x-auto xs:scrollB xs:w-[460px] sm:overflow-hidden sm:w-auto">
             <>
               {CardData?.slice(0, 2).map((item, index) => (
                 <VisaCard

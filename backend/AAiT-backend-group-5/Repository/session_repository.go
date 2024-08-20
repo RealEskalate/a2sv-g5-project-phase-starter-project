@@ -21,32 +21,11 @@ func NewSessionRepository(db *mongo.Database) interfaces.SessionRepository {
 
 // SaveToken saves a session token to the database.
 func (sr *SessionRepo) SaveToken(ctx context.Context, session *models.Session) *models.ErrorResponse {
-	var sessionExists models.Session
-	err := sr.Collection.FindOne(ctx, bson.M{"user_id": session.UserID}).Decode(&sessionExists)
-
-	if err == nil {
-		filter := bson.M{"user_id": session.UserID}
-		update := bson.M{
-			"$set": bson.M{
-				"refresh_token": session.RefreshToken,
-			},
-		}
-
-		_, err = sr.Collection.UpdateOne(ctx, filter, update)
-
-		if err != nil {
-			return models.InternalServerError(err.Error())
-		}
-
-		return models.Nil()
-	}
-
-	_, nErr := sr.Collection.InsertOne(ctx, session)
-	if nErr != nil {
+	_, err := sr.Collection.InsertOne(ctx, session)
+	if err != nil {
 		return models.InternalServerError(err.Error())
 	}
 	return models.Nil()
-
 }
 
 // UpdateToken updates an existing session token in the database.
@@ -59,6 +38,7 @@ func (sr *SessionRepo) UpdateToken(ctx context.Context, session *models.Session)
 	}
 
 	_, err := sr.Collection.UpdateOne(ctx, filter, update)
+
 	if err != nil {
 		return models.InternalServerError(err.Error())
 	}

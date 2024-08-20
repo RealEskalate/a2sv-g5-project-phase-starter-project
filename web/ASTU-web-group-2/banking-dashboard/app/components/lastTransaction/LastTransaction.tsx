@@ -26,25 +26,21 @@ function formatDate(date: Date) {
 const LastTransaction = () => {
   let access: string = "";
   const { data: session, status } = useSession();
-  console.log("session data", status);
-  console.log(session);
   useEffect(() => {}, [status, session]);
   if (session) {
     access = session?.user?.accessToken;
   }
 
   const { data, isError, isLoading } = useGetAllTransactionQuery(access);
-  console.log(access);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  let transactions: Item[] = data?.data || defaultItems;
-  console.log("transaction");
-  console.log(transactions);
+  let transactions: { content: Item[]; totalPages: number } =
+    data?.data || defaultItems;
 
-  let items = transactions
+  let items = transactions.content
     .map((transaction) => ({
       ...transaction,
       date: new Date(transaction.date),
@@ -62,14 +58,14 @@ const LastTransaction = () => {
   return (
     // The width depends on the width of container
     <div className="w-[325px] sm:w-[487px] md:w-[730px]  flex flex-col bg-white gap-5 p-5 rounded-3xl">
-      {
-      items.length === 0 
-        &&
+      {items.length === 0 && (
         <div className="flex justify-center">
-
-        <img src = "/assets/bankService/empty-image.png" className="w-[35%]  "/>
-      </div>
-        }
+          <img
+            src="/assets/bankService/empty-image.png"
+            className="w-[35%]  "
+          />
+        </div>
+      )}
       {items.map((item, index) => (
         <div key={index} className="flex items-center justify-between ">
           <div className="flex w-[45px] sm:w-[55px] justify-center mr-5">

@@ -25,7 +25,6 @@ export const options: NextAuthOptions = {
         };
         try {
           const res = await signInUser({ userName, password });
-          console.log("res", res);
           return {
             id: res?.id,
             accessToken: res.access_token,

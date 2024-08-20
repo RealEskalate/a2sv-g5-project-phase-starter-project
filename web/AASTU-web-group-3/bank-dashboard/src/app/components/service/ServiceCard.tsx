@@ -1,48 +1,88 @@
+"use client"
 import Link from "next/link";
 import Image from "next/image";
 import { ServiceType } from "@/types/serviceCard";
 import { menuItems } from "@/../../public/Icons";
+import { useDispatch, useSelector } from "react-redux";
+import { useGetAllServiceQuery } from "@/lib/redux/api/serviceApi";
+import {
+  setService,
+  setLoading,
+  setError,
+} from "@/lib/redux/slices/serviceSlice";
+import { RootState } from "@/lib/redux/store";
+import { useEffect } from "react";
+
+export default function ServiceCard() {
 
 
-export default function ServiceCard({
-    name,
-    details,
-    numberOfUsers,
-    status,
-    type,
-    icon,
-}: ServiceType) {
+  const dispatch = useDispatch();
+  const { service, loading, error } = useSelector(
+    (state: RootState) => state.service
+  );
+
+  console.log(service)
+  const { data, isLoading, isError } = useGetAllServiceQuery({
+    size: 10,
+    page: 0,
+  });
+
+  useEffect(() => {
+    dispatch(setLoading(isLoading));
+
+    if (data) {
+      dispatch(setService(data.data));
+    }
+
+    if (isError) {
+      dispatch(setError("Error loading transactions"));
+    }
+  }, [data, isLoading, isError, dispatch]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
-    <div className="body flex  md:w-auto w-auto h-auto p-2 border-[1px] rounded-[10px] m-2 bg-white">
-      <div className="flex items-center rounded-2xl px-5 bg-[#FFE0EB]">
-        <Image width={18} height={18} src={menuItems[5].icon} alt="aastu"/>
-      </div>
-      <div className="right w-full flex justify-between items-center p-2">
-        <div className="md:w-1/4">
-          <div className="font-normal ">{name}</div>
-          <div className="font-normal text-xs text-[#718EBF]">{details}</div>
+    <>
+    
+      {service.map((card, index: number) => (
+        <div key={index} className="body flex  md:w-auto w-auto h-auto p-2 border-[1px] rounded-[10px] m-2 bg-white">
+          <div className="flex items-center rounded-2xl px-5 bg-[#FFE0EB]">
+            <Image width={18} height={18} src={card.icon} alt="aastu" />
+          </div>
+          <div className="right w-full flex justify-between items-center p-2">
+            <div className="md:w-1/4">
+              <div className="font-normal ">{card.name}</div>
+              <div className="font-normal text-xs text-[#718EBF]">
+                {card.details}
+              </div>
+            </div>
+            <div className="hidden md:block md:w-1/6">
+              <div className="font-medium text-sm md:text-[12px]">Status</div>
+              <div className="font-normal text-xs text-[#718EBF]">{card.status}</div>
+            </div>
+            <div className="hidden md:block md:w-1/6">
+              <div className="font-medium text-sm md:text-[12px]"> Type</div>
+              <div className="font-normal text-xs text-[#718EBF]">{card.type}</div>
+            </div>
+            <div className="hidden md:block md:w-1/6">
+              <div className="font-medium text-sm md:text-[12px]">
+                Number of users
+              </div>
+              <div className="font-normal text-xs text-[#718EBF]">
+                {card.numberOfUsers}
+              </div>
+            </div>
+            {/* <div className="md:px-4 md:py-1 md:border  md:border-[#718EBF] md:rounded-full hover:border-[#1814F3] text-center"> */}
+            <Link
+              href={"/services"}
+              className="md:px-4 md:py-2 md:border  md:border-[#718EBF] md:rounded-full hover:border-[#1814F3] text-center font-normal text-[11px] text-[#1814F3] md:text-[#718EBF] hover:text-[#1814F3]"
+            >
+              View Details
+            </Link>
+          </div>
         </div>
-        <div className="hidden md:block md:w-1/6">
-          <div className="font-medium text-sm md:text-[12px]">Status</div>
-          <div className="font-normal text-xs text-[#718EBF]">{status}</div>
-        </div>
-        <div className="hidden md:block md:w-1/6">
-          <div className="font-medium text-sm md:text-[12px]"> Type</div>
-          <div className="font-normal text-xs text-[#718EBF]">{type}</div>
-        </div>
-        <div className="hidden md:block md:w-1/6">
-          <div className="font-medium text-sm md:text-[12px]">Number of users</div>
-          <div className="font-normal text-xs text-[#718EBF]">{numberOfUsers}</div>
-        </div>
-        {/* <div className="md:px-4 md:py-1 md:border  md:border-[#718EBF] md:rounded-full hover:border-[#1814F3] text-center"> */}
-          <Link
-            href={"/services"}
-            className="md:px-4 md:py-2 md:border  md:border-[#718EBF] md:rounded-full hover:border-[#1814F3] text-center font-normal text-[11px] text-[#1814F3] md:text-[#718EBF] hover:text-[#1814F3]"
-          >
-            View Details
-          </Link>
-        </div>
-      </div>
-    // </div>
+      ))}
+    </>
   );
 }

@@ -16,7 +16,7 @@ func main() {
 	}
 	// fmt.Print(config)
 	DB, client, err := infrastructure.ConnectDB(config.DatabaseUrl, config.DbName)
-
+	fmt.Println("-----", config.GeminiAPIKey)
 	if err != nil {
 		fmt.Print("Error in connectDB")
 	}

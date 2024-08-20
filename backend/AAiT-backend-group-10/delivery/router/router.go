@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"aait.backend.g10/delivery/controllers"
+	inf "aait.backend.g10/infrastructures"
 	"aait.backend.g10/repositories"
 	"aait.backend.g10/usecases"
 	"github.com/gin-gonic/gin"
@@ -32,6 +33,8 @@ func NewRouter(db *mongo.Database) {
 	userUseCase := usecases.NewUserUseCase(userRepo)
 	userController := controllers.NewUserController(userUseCase)
 
+	jwtService := inf.JwtService{JwtSecret: os.Getenv("JWT_SECRET")}
+
 	router.POST("/blogs", blogController.CreateBlog)
 	router.GET("/blogs", blogController.GetAllBlogs)
 	router.GET("/blogs/:id", blogController.GetBlogByID)
@@ -42,15 +45,15 @@ func NewRouter(db *mongo.Database) {
 
 	router.PATCH("/users/promote", userController.PromoteUser)
 
-	router.GET("/comment/:blog_id", commentController.GetComments)
-	router.GET("/comment_count/:blog_id", commentController.GetCommentsCount)
-	router.POST("/comment", commentController.AddComment)
-	router.PUT("/comment/:id", commentController.UpdateComment)
-	router.DELETE("/comment/:id", commentController.DelelteComment)
+	router.GET("/comment/:blog_id", inf.AuthMiddleware(&jwtService), commentController.GetComments)
+	router.GET("/comment_count/:blog_id", inf.AuthMiddleware(&jwtService), commentController.GetCommentsCount)
+	router.POST("/comment", inf.AuthMiddleware(&jwtService), commentController.AddComment)
+	router.PUT("/comment/:id", inf.AuthMiddleware(&jwtService), commentController.UpdateComment)
+	router.DELETE("/comment/:id", inf.AuthMiddleware(&jwtService), commentController.DelelteComment)
 
-	router.PUT("/like", likeController.LikeBlog)
-	router.DELETE("/like", likeController.DeleteLike)
-	router.GET("/like/:blog_id", likeController.BlogLikeCount)
+	router.PUT("/like", inf.AuthMiddleware(&jwtService), likeController.LikeBlog)
+	router.DELETE("/like", inf.AuthMiddleware(&jwtService), likeController.DeleteLike)
+	router.GET("/like/:blog_id", inf.AuthMiddleware(&jwtService), likeController.BlogLikeCount)
 
 	port := os.Getenv("PORT")
 	router.Run(":" + port)

@@ -19,6 +19,14 @@ type LoginController struct {
 	OtpUsecase domain.OtpUsecase
 }
 
+func NewLoginController(LoginUsecase domain.LoginUsecase, OtpUsecase domain.OtpUsecase, UserUsecase  domain.UserUsecase) *LoginController {
+	return &LoginController{
+		LoginUsecase: LoginUsecase,
+		UserUsecase:  UserUsecase,
+		OtpUsecase: OtpUsecase,
+	}
+}
+
 func (lc *LoginController) Login(c *gin.Context){
 	var request domain.UserLogin
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*100)
@@ -52,7 +60,7 @@ func (lc *LoginController) Login(c *gin.Context){
 
 }
 
-func(lc *LoginController) ForgotPassword(c gin.Context){
+func(lc *LoginController) ForgotPassword(c *gin.Context){
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*100)
 	defer cancel()
 	var request domain.ForgotPasswordRequest
@@ -96,7 +104,7 @@ func(lc *LoginController) ForgotPassword(c gin.Context){
 
 }
 
-func (lc *LoginController) UpdatePassword(c gin.Context){
+func (lc *LoginController) UpdatePassword(c *gin.Context){
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 100)
 	defer cancel()
 	var request domain.ChangePasswordRequest

@@ -76,7 +76,7 @@ func (r *BlogRepository) GetAllBlog(c context.Context, skip int64, limit int64, 
 	findOptions := options.Find()
 	findOptions.SetSkip(skip)
 	findOptions.SetLimit(limit)
-	findOptions.SetSort(bson.D{{sortBy, -1}})
+	findOptions.SetSort(bson.D{{Key: sortBy, Value: -1}})
 
 	totalCount, err := collection.CountDocuments(c, bson.D{})
 	if err != nil {
@@ -113,6 +113,9 @@ func (r *BlogRepository) UpdateBlog(c context.Context, blog *domain.BlogUpdate, 
 	// implementation
 	collection := r.db.Collection(r.blogCollection)
 	blogObjectID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return nil, errors.New("invalid blog id")
+	}
 	filter := bson.M{"_id": blogObjectID}
 	update := bson.M{"$set": blog}
 	_, err = collection.UpdateOne(c, filter, update)
@@ -122,10 +125,13 @@ func (r *BlogRepository) UpdateBlog(c context.Context, blog *domain.BlogUpdate, 
 	return &domain.Blog{}, nil
 }
 
-func (r *BlogRepository) DeleteBlog(ctx context.Context, blogID string) error {
+func (r *BlogRepository) DeleteBlog(c context.Context, blogID string) error {
 	// implementation
 	collection := r.db.Collection(r.blogCollection)
 	blogObjectID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return errors.New("invalid blog id")
+	}
 	filter := bson.M{"_id": blogObjectID}
 	_, err = collection.DeleteOne(c, filter)
 	if err != nil {

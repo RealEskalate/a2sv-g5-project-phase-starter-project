@@ -22,7 +22,7 @@ type ResendOTPRequest struct {
 }
 
 type SignupUsecase interface {
-	CreateUser(c context.Context, user *UserSignUp) error // do validation here
+	CreateUser(c context.Context, user *UserSignUp) (*User, error) // do validation here
 	VerifyEmail(c context.Context, req *VerifyEmailRequest) (*UserResponse, error)
-	//TODO:// ResendOTP(c context.Context, req *ResendOTPRequest) error
+	ResendOTP(c context.Context, req *ResendOTPRequest) error
 }

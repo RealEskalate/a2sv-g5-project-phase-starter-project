@@ -1,9 +1,11 @@
-package controllers
+package Controller
 
 import (
 	"AAiT-backend-group-8/Domain"
 	"AAiT-backend-group-8/Helper"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -16,7 +18,18 @@ func (controller *Controller) CreateBlog(ctx *gin.Context) {
 		return
 	}
 
-	err := controller.blogUseCase.CreateBlog(&blog)
+	claims, err := Helper.Parse(ctx)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		log.Fatal("parse claims error: " + err.Error())
+		return
+	}
+
+	blog.AuthorID, _ = primitive.ObjectIDFromHex((*claims)["id"].(string))
+	blog.AuthorName = (*claims)["name"].(string)
+
+	err = controller.blogUseCase.CreateBlog(&blog)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -31,7 +44,7 @@ func (controller *Controller) GetBlogs(ctx *gin.Context) {
 
 	pageStr := ctx.DefaultQuery("page", "1")
 	pageSizeStr := ctx.DefaultQuery("pageSize", "10")
-	sortBy := ctx.DefaultQuery("sortBy", "ViewCount")
+	sortBy := ctx.DefaultQuery("sortBy", "view_count")
 	page, err := strconv.Atoi(pageStr)
 
 	if err != nil {
@@ -53,7 +66,7 @@ func (controller *Controller) GetBlogs(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"blogs": *blogs, "page": page, "pageSize": len(*blogs)})
+	ctx.JSON(http.StatusOK, gin.H{"blogs": blogs, "page": page, "pageSize": len(blogs)})
 
 }
 
@@ -80,12 +93,21 @@ func (controller *Controller) UpdateBlog(ctx *gin.Context) {
 		return
 	}
 
-	err := Helper.Authenticate(ctx, false, &blog)
+	claim, err := Helper.Parse(ctx)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
+
+	if (*claim)["role"] != "admin" && (*claim)["id"] != blog.AuthorID.Hex() {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "You are not authorized to perform this action"})
+		return
+	}
+
+	blog.AuthorID, _ = primitive.ObjectIDFromHex((*claim)["id"].(string))
+	blog.AuthorName = (*claim)["name"].(string)
+
 	err = controller.blogUseCase.UpdateBlog(&blog)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -99,16 +121,20 @@ func (controller *Controller) DeleteBlog(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	blog, err := controller.blogUseCase.GetBlogByID(id)
-
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = Helper.Authenticate(ctx, true, blog)
+	claims, err := Helper.Parse(ctx)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	if id, _ := primitive.ObjectIDFromHex((*claims)["id"].(string)); id != blog.AuthorID && (*claims)["role"].(string) != "admin" {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "You are not authorized to perform this action"})
 		return
 	}
 
@@ -137,5 +163,5 @@ func (controller *Controller) SearchBlog(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"blogs": *blogs})
+	ctx.JSON(http.StatusOK, gin.H{"blogs": blogs})
 }

@@ -6,13 +6,15 @@ import (
 )
 
 type Controller struct {
-	commentUseCase usecase.CommentUseCase
 	blogUseCase    Domain.IBlogUseCase
+	commentUseCase *usecase.CommentUseCase
+	UserUseCase    Domain.IUserUseCase
 }
 
-func NewController(blogCase Domain.IBlogUseCase, commentUseCase usecase.CommentUseCase) *Controller {
+func NewController(blogUseCase Domain.IBlogUseCase, commentUseCase *usecase.CommentUseCase, userUseCase Domain.IUserUseCase) *Controller {
 	return &Controller{
-		blogUseCase:    blogCase,
+		blogUseCase:    blogUseCase,
 		commentUseCase: commentUseCase,
+		UserUseCase:    userUseCase,
 	}
 }

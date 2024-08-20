@@ -14,19 +14,30 @@ var SECRET_KEY = "123456abcd"
 
 func main() {
 	mongoClient := infrastructure.InitMongoDB("mongodb://localhost:27017")
-	user_collection := mongoClient.Database("starterproject").Collection("users")
-	token_collection := mongoClient.Database("starterproject").Collection("token")
+	userCollection := mongoClient.Database("starterproject").Collection("users")
+	tokenCollection := mongoClient.Database("starterproject").Collection("token")
+	blogCollection := mongoClient.Database("starterproject").Collection("blogs")
+	commentCollection := mongoClient.Database("starterproject").Collection("comments")
 
-	userRepo := repository.NewUserRepository(user_collection, context.TODO())
+	userRepo := repository.NewUserRepository(userCollection, context.TODO())
 	ts := infrastructure.NewTokenService(SECRET_KEY)
 	ps := infrastructure.NewPasswordService()
-	tr := repository.NewTokenRepository(token_collection, context.TODO())
+	tr := repository.NewTokenRepository(tokenCollection, context.TODO())
 	ms := infrastructure.NewMailService()
 
-	userUseCase := usecase.NewUserUseCase(userRepo, ts, ps, tr, ms)
+	blogRepo := repository.NewBlogRepository(blogCollection)
+	blogUseCase := usecase.NewBlogUseCase(blogRepo)
 
-	userHandler := Controller.NewUserHandler(userUseCase)
-	r := Router.InitRouter(userHandler)
+	commentRepo := repository.NewCommentRepository(commentCollection, context.TODO())
+	infra := infrastructure.NewInfrastructure()
+
+	commentUseCase := usecase.NewCommentUseCase(commentRepo, infra)
+	userUseCase := usecase.NewUserUseCase(userRepo, ts, ps, tr, ms)
+	controller := Controller.NewController(blogUseCase, commentUseCase, userUseCase)
+
+	//userHandler := Controller.NewUserHandler(userUseCase)
+
+	r := Router.InitRouter(controller)
 
 	r.Run(":8080")
 }

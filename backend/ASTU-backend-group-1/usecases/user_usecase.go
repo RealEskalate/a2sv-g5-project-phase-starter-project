@@ -70,9 +70,10 @@ func (useCase *userUsecase) ResetPassword(email string, token string, password s
 	if err != nil {
 		return "", err
 	}
+	currentTime := time.Now()
 	if user.VerifyToken == token {
 		// Check if token has expired
-		if tokenExpired(user.ExpirationDate) {
+		if  currentTime.After(user.ExpirationDate){
 			return "Token has expired", nil
 		}
 		user.Password, _ = infrastructure.PasswordHasher(password)
@@ -82,11 +83,7 @@ func (useCase *userUsecase) ResetPassword(email string, token string, password s
 	return "Invalid token", nil
 }
 
-// Check if token has expired
-func tokenExpired(expirationDate time.Time) bool {
-	currentTime := time.Now()
-	return currentTime.After(expirationDate)
-}
+
 
 
 func (useCase *userUsecase) GetByID(userID string) (domain.User, error) {

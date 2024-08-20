@@ -1,55 +1,57 @@
 import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
-import {circleWithPen,profilepic} from "@/../../public/Icons"
+import { circleWithPen, profilepic } from "@/../../public/Icons";
+import { useDispatch, useSelector } from "react-redux";
+import { usePutSettingMutation } from "@/lib/redux/api/settingApi";
+import { RootState } from "@/lib/redux/store";
 
-interface FormInput {
+interface FormInput{
   name: string;
-  username: string;
   email: string;
-  password: string;
-  dob: string;
-  presentAddress: string;
+  dateOfBirth: string;
   permanentAddress: string;
-  city: string;
   postalCode: string;
+  username: string;
+  presentAddress: string;
+  city: string;
   country: string;
-  profileImage: FileList;
+  profilePicture: string; // URL of the uploaded image
 }
 
 const EditProfile = () => {
   const { register, handleSubmit, setValue } = useForm<FormInput>({
     defaultValues: {
       name: "",
-      username: "",
       email: "",
-      password: "",
-      dob: "",
-      presentAddress: "",
+      dateOfBirth:"",
       permanentAddress: "",
-      city: "",
       postalCode: "",
+      username: "",
+      presentAddress: "",
+      city: "",
       country: "",
+      profilePicture: "",
     },
   });
+
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state: RootState) => state.service);
+
+  const [putSetting] = usePutSettingMutation();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const onSubmit = async (data: FormInput) => {
-    console.log("Form submitted:", data);
-    const formData = new FormData();
-    Object.keys(data).forEach((key) => {
-      if (key !== "profileImage" || data.profileImage.length > 0) {
-        formData.append(key, (data as any)[key]);
-      }
-    });
-
-    if (data.profileImage && data.profileImage.length > 0) {
-      formData.append("profileImage", data.profileImage[0]);
+    try {
+  
+      
+      await putSetting(data ).unwrap();
+    } catch (err) {
+      console.error(err);
     }
-
-    // Submit the formData object to your server or API
   };
+  
 
   const handleImageClick = () => {
     if (fileInputRef.current) {
@@ -57,64 +59,31 @@ const EditProfile = () => {
     }
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files;
-    if (file && file.length > 0) {
-      setValue("profileImage", file);
-      console.log("Selected file:", file[0]);
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const imageUrl = await uploadImageToCloud(file);
+      setValue("profilePicture", imageUrl);
+    } else {
+      setValue("profilePicture", "");
     }
   };
 
+  // Mock upload function (replace this with actual implementation)
+  const uploadImageToCloud = async (file: File): Promise<string> => {
+    const imageUrl = "https://path-to-your-uploaded-image.com";
+    return imageUrl;
+  };
+
   const formFields = [
-    {
-      id: "name",
-      label: "Your Name",
-      placeholder: "Charlene Reed",
-      type: "text",
-    },
-    {
-      id: "username",
-      label: "User Name",
-      placeholder: "Charlene Reed",
-      type: "text",
-    },
-    {
-      id: "email",
-      label: "Email",
-      placeholder: "charlenereed@gmail.com",
-      type: "email",
-    },
-    {
-      id: "password",
-      label: "Password",
-      placeholder: "**********",
-      type: "password",
-    },
-    {
-      id: "dob",
-      label: "Date of Birth",
-      placeholder: "Enter Date of Birth",
-      type: "date",
-    },
-    {
-      id: "presentAddress",
-      label: "Present Address",
-      placeholder: "San Jose, California, USA",
-      type: "text",
-    },
-    {
-      id: "permanentAddress",
-      label: "Permanent Address",
-      placeholder: "San Jose, California, USA",
-      type: "text",
-    },
+    { id: "name", label: "Your Name", placeholder: "Charlene Reed", type: "text" },
+    { id: "username", label: "User Name", placeholder: "Charlene Reed", type: "text" },
+    { id: "email", label: "Email", placeholder: "charlenereed@gmail.com", type: "email" },
+    { id: "dateOfBirth", label: "Date of Birth", placeholder: "Enter Date of Birth", type: "date" },
+    { id: "presentAddress", label: "Present Address", placeholder: "San Jose, California, USA", type: "text" },
+    { id: "permanentAddress", label: "Permanent Address", placeholder: "San Jose, California, USA", type: "text" },
     { id: "city", label: "City", placeholder: "San Jose", type: "text" },
-    {
-      id: "postalCode",
-      label: "Postal Code",
-      placeholder: "45962",
-      type: "text",
-    },
+    { id: "postalCode", label: "Postal Code", placeholder: "45962", type: "text" },
     { id: "country", label: "Country", placeholder: "USA", type: "text" },
   ];
 
@@ -140,7 +109,6 @@ const EditProfile = () => {
           type="file"
           ref={fileInputRef}
           className="hidden"
-          accept="image/*"
           onChange={handleFileChange}
         />
       </div>
@@ -151,10 +119,7 @@ const EditProfile = () => {
       >
         {formFields.map((field) => (
           <div key={field.id} className="mb-3 w-full md:w-[45%]">
-            <label
-              className="block text-black text-sm  mb-2"
-              htmlFor={field.id}
-            >
+            <label className="block text-black text-sm mb-2" htmlFor={field.id}>
               {field.label}
             </label>
             <input
@@ -163,17 +128,14 @@ const EditProfile = () => {
               id={field.id}
               placeholder={field.placeholder}
               {...register(field.id as keyof FormInput, {
-                required: {
-                  value: true,
-                  message: `${field.label} is required`,
-                },
+                required: `${field.label} is required`,
               })}
             />
           </div>
         ))}
         <div className="flex justify-end w-full">
           <button
-            className=" w-full md:w-1/5 bg-[#1814F3] text-white font-semibold py-2 px-4 rounded-lg focus:outline-none"
+            className="w-full md:w-1/5 bg-[#1814F3] text-white font-semibold py-2 px-4 rounded-lg focus:outline-none"
             type="submit"
           >
             Save
@@ -185,3 +147,4 @@ const EditProfile = () => {
 };
 
 export default EditProfile;
+ 

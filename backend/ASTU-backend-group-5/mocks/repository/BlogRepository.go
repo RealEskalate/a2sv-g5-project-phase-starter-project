@@ -104,12 +104,48 @@ func (_m *BlogRepository) CreateBlog(ctx context.Context, blog *domain.Blog) err
 	return r0
 }
 
+// CreateTag provides a mock function with given fields: ctx, tag
+func (_m *BlogRepository) CreateTag(ctx context.Context, tag *domain.BlogTag) error {
+	ret := _m.Called(ctx, tag)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateTag")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.BlogTag) error); ok {
+		r0 = rf(ctx, tag)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // DeleteBlog provides a mock function with given fields: ctx, id
 func (_m *BlogRepository) DeleteBlog(ctx context.Context, id string) error {
 	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteBlog")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// DeleteTag provides a mock function with given fields: ctx, id
+func (_m *BlogRepository) DeleteTag(ctx context.Context, id string) error {
+	ret := _m.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteTag")
 	}
 
 	var r0 error
@@ -170,6 +206,36 @@ func (_m *BlogRepository) GetAllBlogs(ctx context.Context) ([]*domain.Blog, erro
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*domain.Blog)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetAllTags provides a mock function with given fields: ctx
+func (_m *BlogRepository) GetAllTags(ctx context.Context) ([]*domain.BlogTag, error) {
+	ret := _m.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAllTags")
+	}
+
+	var r0 []*domain.BlogTag
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context) ([]*domain.BlogTag, error)); ok {
+		return rf(ctx)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context) []*domain.BlogTag); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.BlogTag)
 		}
 	}
 
@@ -272,6 +338,36 @@ func (_m *BlogRepository) GetLikesByBlogID(ctx context.Context, blogID string) (
 	return r0, r1
 }
 
+// GetTagByID provides a mock function with given fields: ctx, id
+func (_m *BlogRepository) GetTagByID(ctx context.Context, id string) (*domain.BlogTag, error) {
+	ret := _m.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetTagByID")
+	}
+
+	var r0 *domain.BlogTag
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*domain.BlogTag, error)); ok {
+		return rf(ctx, id)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.BlogTag); ok {
+		r0 = rf(ctx, id)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.BlogTag)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetViewsByBlogID provides a mock function with given fields: ctx, blogID
 func (_m *BlogRepository) GetViewsByBlogID(ctx context.Context, blogID string) ([]*domain.View, error) {
 	ret := _m.Called(ctx, blogID)
@@ -361,6 +457,24 @@ func (_m *BlogRepository) UpdateBlog(ctx context.Context, id string, blog *domai
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, string, *domain.Blog) error); ok {
 		r0 = rf(ctx, id, blog)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateTag provides a mock function with given fields: ctx, id, tag
+func (_m *BlogRepository) UpdateTag(ctx context.Context, id string, tag *domain.BlogTag) error {
+	ret := _m.Called(ctx, id, tag)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateTag")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *domain.BlogTag) error); ok {
+		r0 = rf(ctx, id, tag)
 	} else {
 		r0 = ret.Error(0)
 	}

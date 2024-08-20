@@ -89,6 +89,7 @@ func (r *BlogRepository) GetAllBlog(c context.Context, skip int64, limit int64, 
 	cursor, err := collection.Find(c, bson.D{}, findOptions)
 	if err != nil {
 		return nil, &domain.PaginationMetadata{}, err
+
 	}
 	defer cursor.Close(c)
 
@@ -124,8 +125,9 @@ func (r *BlogRepository) UpdateBlog(c context.Context, blog *domain.BlogUpdate, 
 func (r *BlogRepository) DeleteBlog(ctx context.Context, blogID string) error {
 	// implementation
 	collection := r.db.Collection(r.blogCollection)
-	filter := bson.M{"_id": blogID}
-	_, err := collection.DeleteOne(ctx, filter)
+	blogObjectID, err := primitive.ObjectIDFromHex(blogID)
+	filter := bson.M{"_id": blogObjectID}
+	_, err = collection.DeleteOne(c, filter)
 	if err != nil {
 		return err
 	}

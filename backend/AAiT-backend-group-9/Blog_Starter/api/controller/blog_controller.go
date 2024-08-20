@@ -17,10 +17,11 @@ type BlogController struct {
 	ctx          		context.Context
 }
 
-func NewBlogController(blogUseCase domain.BlogUseCase,blogRatingUseCase domain.BlogRatingUseCase, ctx context.Context) *BlogController {
+func NewBlogController(blogUseCase domain.BlogUseCase,blogRatingUseCase domain.BlogRatingUseCase, blogCommentUseCase domain.CommentUseCase, ctx context.Context) *BlogController {
 	return &BlogController{
 		blogUseCase: blogUseCase,
 		blogratingUSeCase: blogRatingUseCase,
+		blogCommentUsecase: blogCommentUseCase,
 		ctx:           ctx,
 	}
 }
@@ -66,7 +67,6 @@ func (bc *BlogController) GetBlogByID(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, blog)
-
 }
 
 // GetAllBlog godoc

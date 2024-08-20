@@ -7,6 +7,7 @@ import { AiOutlineRetweet } from "react-icons/ai";
 import { GiTakeMyMoney } from "react-icons/gi";
 import  MyInvestment from '@/components/MyInvestment'
 import TrendingStock from '@/components/TrendingStock';
+import { getTrendingCompanies } from '@/services/companygetch';
 
 
   const data = [
@@ -50,7 +51,21 @@ import TrendingStock from '@/components/TrendingStock';
     { slNo: '05.', name: 'Microsoft', price: '$2000', return: '-6%' },
   ];
 
-const Investments = () => {
+const Investments = async () => {
+
+  const fetch = async () => {
+   
+      try {
+        const trendingcomp = await getTrendingCompanies();
+        return trendingcomp
+       
+      } catch (error) {
+        console.error('Login Error:', error);
+      }
+    };
+
+   const  Trendingcomp = fetch()
+
   return (
     <div className={` ${colors.graybg}   flex  flex-col  lg:gap-5 lg:ml-64 lg:pr-6 xl:pr-10 `}>
 

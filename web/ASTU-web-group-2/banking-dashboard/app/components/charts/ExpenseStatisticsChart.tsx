@@ -89,7 +89,6 @@ ${label}`;
 
   return (
     <div className='bg-white shadow-xl rounded-3xl'>
-
       <canvas ref={canvasRef} />
     </div>
   );

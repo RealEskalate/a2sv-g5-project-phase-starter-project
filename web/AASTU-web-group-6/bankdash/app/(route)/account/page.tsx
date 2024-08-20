@@ -12,9 +12,9 @@ export default function Home() {
   const CardData: CardType[] = useAppSelector((state) => state.cards.cards);
 
   return (
-    <div className="w-[96%] flex flex-col grow gap-6 p-8 pt-6">
-      <div className="flex flex-col lg:flex-row gap-7">
-        <div className="flex lg:w-[45%] gap-7">
+    <div className="w-[96%] flex flex-col grow gap-6 p-5 lg:p-8 pt-6">
+      <div className="flex flex-col lg:flex-row gap-6 xl:gap-7">
+        <div className="flex lg:w-[45%] gap-4 xl:gap-7">
           <Card
             title="My Balance"
             amount="$12,750"
@@ -30,7 +30,7 @@ export default function Home() {
             width="w-[45%]"
           />
         </div>
-        <div className="flex  lg:w-[45%] gap-7">
+        <div className="flex  lg:w-[45%] gap-4 xl:gap-7">
           <Card
             title="Expense"
             amount="$3,460"
@@ -50,19 +50,19 @@ export default function Home() {
 
       <div className="flex  flex-col lg:flex-row my-5 justify-between">
         <div className="lg:w-[65%]">
-          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
+          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 dark:text-gray-300">
             Last Transaction
           </p>
-          <div className=" bg-white border rounded-3xl p-3 shadow-lg border-gray-300">
+          <div className=" bg-white dark:bg-[#232328]  rounded-3xl p-3 shadow-lg border-gray-300 sm:text-[12px]">
             <LastTransList />
           </div>
         </div>
         <div className="lg:w-[30%] lg:h-[250px]">
           <div className="flex justify-between">
-            <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
+            <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 dark:text-gray-300">
               My Card
             </p>
-            <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
+            <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 dark:text-gray-300">
               See All
             </p>
           </div>
@@ -81,16 +81,16 @@ export default function Home() {
       </div>
       <div className="flex flex-col lg:flex-row justify-between my-5">
         <div className="lg:w-[65%] lb:h-[364px]">
-          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5">
+          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 dark:text-gray-300">
             Debit & Credit Overview
           </p>
           <DebitCreditOver />
         </div>
         <div className="lg:w-[30%]">
-          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 ">
+          <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 dark:text-gray-300">
             Invoices Sent
           </p>
-          <div className="border border-solid rounded-3xl p-9  bg-white shadow-lg border-gray-300">
+          <div className="rounded-3xl p-3 lg:p-9  bg-white dark:bg-[#232328]">
             <InvoiceCard
               title="Apple Store"
               date="5h ago"

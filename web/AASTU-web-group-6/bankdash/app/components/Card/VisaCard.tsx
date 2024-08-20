@@ -30,7 +30,7 @@ const VisaCard: React.FC<CardType> = ({ data, isBlack, isFade, isSimGray, classN
     <div
       className={`w-full max-h-[242px] font-Lato flex flex-col gap-2 grow rounded-3xl ${className} ${
         isBlack
-          ? "text-colorBody-1 bg-white border-solid border-[1px] border-gray-200"
+          ? `text-colorBody-1 bg-white dark:bg-[#232328] dark:text-gray-200 dark:border-gray-500 border-solid border-[1px] border-gray-200`
           : isFade
           ? "text-white bg-card-gradient-2"
           : "text-white bg-card-gradient-1"

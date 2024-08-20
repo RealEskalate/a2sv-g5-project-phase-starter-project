@@ -13,9 +13,10 @@ import (
 )
 
 type JWTTokenService struct {
-	AccessSecret  string
-	RefreshSecret string
-	Collection    *mongo.Collection
+	AccessSecret    string
+	RefreshSecret   string
+	Collection      *mongo.Collection
+	PasswordService domain.PasswordService
 }
 
 func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User) (string, error) {
@@ -102,10 +103,18 @@ func (service *JWTTokenService) ValidateRefreshToken(token string) (*jwt.Token, 
 	return parsedToken, nil
 }
 
-func (service *JWTTokenService) GenerateVerificationToken(email string) (string, error) {
+func (service *JWTTokenService) GenerateVerificationToken(user *domain.User) (string, error) {
+	hashedPassword, errHash := service.PasswordService.HashPassword(user.Password)
+	if errHash != nil {
+		return "", errHash
+	}
+
 	claim := jwt.MapClaims{
-		"email": email,
-		"exp":   time.Now().Add(time.Minute * 15).Unix(),
+		"username": user.Username,
+		"email":    user.Email,
+		"role":     user.Role,
+		"password": hashedPassword,
+		"exp":      time.Now().Add(time.Minute * 15).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
@@ -132,9 +141,28 @@ func (service *JWTTokenService) ValidateVerificationToken(token string) (*jwt.To
 	if errParse != nil {
 		return nil, errParse
 	}
+
 	if !parsedToken.Valid {
 		return nil, fmt.Errorf("token is invalid")
 	}
+
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("invalid token claims")
+	}
+
+	requiredClaims := []string{"username", "email", "role", "password", "exp"}
+	for _, claim := range requiredClaims {
+		if _, exists := claims[claim]; !exists {
+			return nil, fmt.Errorf("missing required claim: %s", claim)
+		}
+	}
+
+	exp, ok := claims["exp"].(float64)
+	if !ok || time.Now().Unix() > int64(exp) {
+		return nil, fmt.Errorf("token has expired")
+	}
+
 	return parsedToken, nil
 }
 

@@ -205,10 +205,8 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 					</form>
 				</div>
 
-				{error && <p className="text-red-500 text-center py-2">{error}</p>}
-				{success && (
-					<p className="text-green-500 text-center py-2">{success}</p>
-				)}
+				{error && <p className="text-red-500 text-center ">{error}</p>}
+				{success && <p className="text-green-500 text-center ">{success}</p>}
 			</div>
 		</div>
 	);

@@ -15,6 +15,9 @@ type Blog struct {
 	UserID   primitive.ObjectID `bson:"userid,omitempty" json:"userid,omitempty"`
 	Tags     []string           `bson:"tags,omitempty" json:"tags,omitempty"`
 	Date     time.Time          `bson:"date,omitempty" json:"date,omitempty"`
+	Likes    int                `bson:"likes,omitempty" json:"likes,omitempty"`
+	DisLikes int                `bson:"dislikes,omitempty" json:"dislikes,omitempty"`
+	Comments []Comment          `bson:"comment,omitempty" json:"comment,omitempty"`
 }
 
 type BlogUsecase interface {

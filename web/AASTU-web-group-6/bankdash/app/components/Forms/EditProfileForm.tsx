@@ -41,8 +41,8 @@ const EditProfileForm = () => {
   };
 
   return (
-    <div className="w-full py-8 flex justify-between flex-wrap ">
-      <div className="flex border-2 border-black">
+    <div className="w-full py-8 flex justify-around xs:flex-wrap md:flex-nowrap">
+      <div className="flex justify-center xs:w-full md:w-fit md:pl-5">
         <div className="relative h-fit flex justify-center">
           <Image
             src="/assets/profile-1.png"
@@ -57,113 +57,126 @@ const EditProfileForm = () => {
         </div>
       </div>
 
-      <form className="flex flex-col sm:flex-wrap lg:space-y-6 border-2 border-black" onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
-          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="name">Your Name</label>
+      <form className="w-flex flex-col md:justify-around lg:w-[800px] gap-y-5 py-2 xs:px-2 sm:px-0 " onSubmit={handleSubmit(onSubmit)}>
+        
+
+        <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
+          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+            <label className="mb-1 text-slate-800" htmlFor="name">Your Name</label>
             <input
               type="text"
               id="name"
               {...register("name")}
-              className="sm:w-full md:w-[256px] xl:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="Charlene Reed"
             />
           </div>
-          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="username">User Name</label>
+          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+            <label className="mb-1 text-slate-800" htmlFor="username">User Name</label>
             <input
               type="text"
               id="username"
               {...register("username")}
-              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="Charlene Reed"
             />
           </div>
         </div>
-        <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
-          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="email">Email</label>
+
+
+        <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
+          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+            <label className="mb-1 text-slate-800" htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
               {...register("email")}
-              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="charlenereed@gmail.com"
             />
           </div>
-          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="password">Password</label>
+          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+            <label className="mb-1 text-slate-800" htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
               {...register("password")}
-              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="********"
             />
           </div>
         </div>
-        <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
-          <div className="sm:w-full mr-3 md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="dob">Date of Birth</label>
+
+
+
+        <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
+          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+            <label className="mb-1 text-slate-800" htmlFor="dob">Date of Birth</label>
             <input
               type="date"
               id="dob"
               {...register("dateOfBirth")}
-              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="25 January 1990"
             />
           </div>
-          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="present-address">Present Address</label>
+          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+            <label className="mb-1 text-slate-800" htmlFor="present-address">Present Address</label>
             <input
               type="text"
               id="present-address"
               {...register("presentAddress")}
-              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="San Jose, California, USA"
             />
           </div>
         </div>
-        <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
-          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="permanent-address">Permanent Address</label>
+
+
+
+        <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
+          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+            <label className="mb-1 text-slate-800" htmlFor="permanent-address">Permanent Address</label>
             <input
               type="text"
               id="permanent-address"
               {...register("permanentAddress")}
-              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="San Jose, California, USA"
             />
           </div>
-          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="city">City</label>
+          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+            <label className="mb-1 text-slate-800" htmlFor="city">City</label>
             <input
               type="text"
               id="city"
               {...register("city")}
-              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="San Jose"
             />
           </div>
         </div>
-        <div className="flex flex-wrap md:space-x-2 md:mb-2 lg:space-x-8">
-          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="postal-code">Postal Code</label>
+
+
+
+        <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
+          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+            <label className="mb-1 text-slate-800" htmlFor="postal-code">Postal Code</label>
             <input
               type="text"
               id="postal-code"
               {...register("postalCode")}
-              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="45962"
             />
           </div>
-          <div className="sm:w-full md:w-[256px] lg:w-[418px] flex flex-col lg:space-y-3">
-            <label htmlFor="country">Country</label>
+          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+            <label className="mb-1 text-slate-800" htmlFor="country">Country</label>
             <input
               type="text"
               id="country"
               {...register("country")}
-              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="USA"
             />
           </div>

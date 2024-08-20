@@ -4,6 +4,7 @@ import (
 	"blog/config"
 	"blog/database"
 	"blog/delivery/controller"
+	// "go/doc/comment"
 
 	// "blog/domain"
 	"blog/repository"
@@ -18,9 +19,12 @@ import (
 func RegisterBlogRoutes(env *config.Env, timeout time.Duration, db database.Database, router *gin.RouterGroup) {
 
 	blogRepo := repository.NewBlogRepository(db, "blogs")
-	blogUse := usecase.NewBlogUsecase(blogRepo, timeout)
+	popuRepo := repository.NewPopularityRepository(db, "popularity")
+	commentRepo := repository.NewCommentRepository(db, "comments")
+	// blogUse := usecase.NewBlogUsecase(blogRepo, timeout)
+	// popuUse := usecase.NewPopularityUsecase(popuRepo, timeout)
 	blogController := &controller.BlogController{
-		BlogUsecase: blogUse,
+		BlogUsecase: usecase.NewBlogUsecase(blogRepo,popuRepo,commentRepo, timeout),
 		Env:         env,
 	}
 	blogRoutes := router.Group("/blogs")
@@ -36,9 +40,20 @@ func RegisterBlogRoutes(env *config.Env, timeout time.Duration, db database.Data
 		blogRoutes.GET("/filter/date", blogController.FilterBlogsByDate)
 		blogRoutes.GET("/filter/popularity", blogController.FilterBlogsByPopularity)
 		blogRoutes.POST("/:id/view", blogController.TrackView)
-    blogRoutes.POST("/:id/like", blogController.TrackLike)
-    blogRoutes.POST("/:id/dislike", blogController.TrackDislike)
-		blogRoutes.POST("/:id/comment", blogController.AddComment)
+    	blogRoutes.POST("/:id/like", blogController.TrackLike)
+    	blogRoutes.POST("/:id/dislike", blogController.TrackDislike)
+		
 
 	}
+	blogCommentRoutes := router.Group("blogs/:id/comment")
+
+	{
+		blogCommentRoutes.Use(middleware.AuthMidd)
+		blogCommentRoutes.POST("/", blogController.AddComment)
+		blogCommentRoutes.GET("/", blogController.GetComments)
+		blogCommentRoutes.DELETE("/:comment_id", blogController.DeleteComment)
+		blogCommentRoutes.PATCH("/:comment_id", blogController.UpdateComment)
+
+	}
+
 }

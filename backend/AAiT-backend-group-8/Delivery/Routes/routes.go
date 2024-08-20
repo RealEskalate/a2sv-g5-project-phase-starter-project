@@ -16,6 +16,10 @@ func InitRouter(controller *controller.Controller) *gin.Engine {
 	router.POST("/comment/:blogID", controller.CreateComment)
 	router.GET("/comment/:blogID", controller.GetComments)
 	router.PATCH("/comment/:commentID", controller.UpdateComment)
-	router.DELETE("/comment/:commentID", controller.DeleteComment)
+	router.DELETE("/comment/:commentID", controller.DeleteComment)	
+    router.POST("/forgot-password", controller.ForgotPassword)
+	router.GET("/store-token", controller.StoreToken) 
+	router.POST("/reset-password", controller.ResetPassword)
+
 	return router
 }

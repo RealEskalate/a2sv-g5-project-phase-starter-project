@@ -30,4 +30,10 @@ func NewBlogRouter(collection *mongo.Collection, blogGroup *gin.RouterGroup) {
 	blogGroup.POST("/generate-content",middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.GenerateContentHandler)
 	blogGroup.POST("/review-content",middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.ReviewContentHandler)
 	blogGroup.POST("/generate-topic",middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.GenerateTopicHandler)
+
+	// router for comment
+	blogGroup.POST("/comment/:blogId", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.HandleCreateComment)
+	blogGroup.PUT("/comment/:blogId/:commentId", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.HandleUpdateComment)
+	blogGroup.DELETE("/comment/:blogId/:commentId", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, domain.RoleRoot,  domain.RoleUser, domain.RoleAdmin), bc.HandleDeleteComment)
+
 }

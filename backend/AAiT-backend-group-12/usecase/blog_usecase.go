@@ -181,18 +181,6 @@ func (b *BlogUseCase) DeleteComment(ctx context.Context, blogID string, commentI
 
 }
 
-// FindComment implements domain.BlogUseCaseInterface.
-// func (b *BlogUseCase) FindComment(ctx context.Context, commentId string, blogId string) (domain.Comment, domain.CodedError) {
-// 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
-// 	defer cancel()
-
-// 	comment, err := b.blogRepo.FetchComment(ctx, commentId, blogId)
-// 	if err != nil{
-// 		return domain.Comment{}, err
-// 	}
-// 	return comment, nil
-
-// }
 
 // UpdateComment implements domain.BlogUseCaseInterface.
 func (b *BlogUseCase) UpdateComment(ctx context.Context, blogID string, commentID string, comment *domain.NewComment, userName string) domain.CodedError {

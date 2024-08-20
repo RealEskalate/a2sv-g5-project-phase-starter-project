@@ -1,7 +1,8 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
-import { signOut } from "next-auth/react";
+import { getSession, signOut } from "next-auth/react";
 
 import {
   Popover,
@@ -10,8 +11,49 @@ import {
 } from "@/components/ui/popover";
 import Link from "next/link";
 import { Separator } from "@radix-ui/react-select";
+import ky from "ky";
+import { set } from "date-fns";
 
 const Header = ({ title }: { title: string }) => {
+  const [loading, setLoading] = useState(false);
+  const [profileUrl, setProfileUrl] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  useEffect(() => {
+    const fetchUser = async () => {
+      const session = await getSession();
+      const accessToken = session?.user.accessToken;
+      console.log(accessToken);
+
+      if (!accessToken) {
+        throw new Error("No access token found");
+      }
+      setLoading(true);
+
+      try {
+        const res: any = await ky(
+          "https://bank-dashboard-6acc.onrender.com/user/current",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            timeout: 10000,
+          }
+        ).json();
+
+        setProfileUrl(res.data.profilePicture);
+        setName(res.data.name);
+        setEmail(res.data.email);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <div className="bg-white max-md:hidden">
       <div className="flex justify-between px-10 py-4">
@@ -57,17 +99,15 @@ const Header = ({ title }: { title: string }) => {
           <Popover>
             <PopoverTrigger>
               <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarImage src={profileUrl} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </PopoverTrigger>
             <PopoverContent className="w-80 p-4">
               <div className="flex items-center gap-4 border-b pb-4">
                 <div className="space-y-1">
-                  <h4 className="text-lg font-medium">John Doe</h4>
-                  <p className="text-sm text-muted-foreground">
-                    john@example.com
-                  </p>
+                  <h4 className="text-lg font-medium">{name}</h4>
+                  <p className="text-sm text-muted-foreground">{email}</p>
                 </div>
               </div>
               <div className="mt-4 space-y-2">

@@ -12,18 +12,19 @@ import (
 	basecontroller "github.com/group13/blog/delivery/base"
 	dto "github.com/group13/blog/delivery/controller/user/dto"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
+	logincommand "github.com/group13/blog/usecase/user/command/login"
+	signupcommand "github.com/group13/blog/usecase/user/command/signup"
 	resetcodevalidate "github.com/group13/blog/usecase/password_reset/code_validator" // Add this line
 	promotcmd "github.com/group13/blog/usecase/user/command/promote"
-	usercommand "github.com/group13/blog/usecases_sof/user/command"
-	"github.com/group13/blog/usecases_sof/user/result"
+	"github.com/group13/blog/usecase/user/result"
 	forgotpassword "github.com/group13/blog/usecase/password_reset/reset"
 )
 
 type UserController struct { 
 	basecontroller.BaseHandler
 	promotHandler icmd.IHandler[*promotcmd.Command, bool]
-	loginHandler  icmd.IHandler[*usercommand.LoginCommand, *result.LoginInResult]
-	signupHandler icmd.IHandler[*usercommand.SignUpCommand, *result.SignUpResult]
+	loginHandler  icmd.IHandler[*logincommand.LoginCommand, *result.LoginInResult]
+	signupHandler icmd.IHandler[*signupcommand.SignUpCommand, *result.SignUpResult]
 	resetPasswordhandler icmd.IHandler[*resetcodevalidate.Command, bool]
 	forgotPasswordHandler icmd.IHandler[*forgotpassword.Command, bool]
 	validateEmailHandler icmd.IHandler[string, *result.ValidateEmailResult]
@@ -32,8 +33,8 @@ type UserController struct {
 type Config struct {
 	basecontroller.BaseHandler
 	PromotHandler icmd.IHandler[*promotcmd.Command, bool]
-	LoginHandler  icmd.IHandler[*usercommand.LoginCommand, *result.LoginInResult]
-	SignupHandler icmd.IHandler[*usercommand.SignUpCommand, *result.SignUpResult]
+	LoginHandler  icmd.IHandler[*logincommand.LoginCommand, *result.LoginInResult]
+	SignupHandler icmd.IHandler[*signupcommand.SignUpCommand, *result.SignUpResult]
 	ResetPasswordHandler icmd.IHandler[*resetcodevalidate.Command, bool]
 	ForgotPasswordHandler icmd.IHandler[*forgotpassword.Command, bool]
 	validateEmailHander icmd.IHandler[string, *result.ValidateEmailResult]
@@ -89,7 +90,7 @@ func (u UserController) SignUp(ctx *gin.Context) {
 
 	log.Println("User inputs bind successfully")
 
-	command := usercommand.NewSignUpCommand(user.Username, user.FirstName, user.LastName, user.Email, user.Password)
+	command := signupcommand.NewSignUpCommand(user.Username, user.FirstName, user.LastName, user.Email, user.Password)
 	// pass to usercases
 	_, err := u.signupHandler.Handle(&command)
 
@@ -116,7 +117,7 @@ func (u UserController) Login(ctx *gin.Context) {
 		return
 	}
 
-	command := usercommand.NewLoginCommand(user.Username, user.Password)
+	command := logincommand.NewLoginCommand(user.Username, user.Password)
 	// pass to usercases
 	res, err := u.loginHandler.Handle(&command)
 

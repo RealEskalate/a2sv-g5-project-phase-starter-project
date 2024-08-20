@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/group13/blog/delivery/common"
+	common "github.com/group13/blog/delivery/common/icontroller"
 	"github.com/group13/blog/delivery/controller/user/dto"
 	er "github.com/group13/blog/domain/errors"
 	blogmodel "github.com/group13/blog/domain/models/blog"

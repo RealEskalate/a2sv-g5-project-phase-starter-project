@@ -15,8 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { getSession } from "next-auth/react";
+import { toast } from "sonner";
+import { useState } from "react";
 
 const Security = () => {
+  const [loading, setLoading] = useState(false);
   const formSchema = z.object({
     twoFactor: z.boolean().default(true).optional(),
     currentPassword: z
@@ -51,6 +54,8 @@ const Security = () => {
         newPassword: values.newPassword,
       };
 
+      setLoading(true);
+
       const res = await fetch(
         "https://bank-dashboard-6acc.onrender.com/auth/change_password",
         {
@@ -64,8 +69,12 @@ const Security = () => {
       ).then((res) => res.json());
 
       console.log(res);
+      toast.success(res.message);
     } catch (error) {
       console.error("Error changing password:", error);
+      toast.error("Error changing password");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -138,10 +147,11 @@ const Security = () => {
             />
           </div>
           <Button
+            disabled={loading}
             type="submit"
             className="mt-5 md:w-auto w-full px-8 float-end bg-primaryBlue text-white"
           >
-            Save
+            {loading ? "Saving..." : "Save"}
           </Button>
         </form>
       </Form>

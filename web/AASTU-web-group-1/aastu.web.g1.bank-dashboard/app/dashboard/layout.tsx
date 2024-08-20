@@ -6,6 +6,7 @@ import MobileSidebar from "./_components/MobileSidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
 import { sidebarLinks } from "@/constants";
+import { SessionProvider } from "next-auth/react";
 
 export default function RootLayout({
   children,
@@ -17,41 +18,43 @@ export default function RootLayout({
     (item) => item.route === pathname
   )[0].title;
   return (
-    <main className="flex h-screen font-inter bg-[#F5F7FA]">
-      <Sidebar />
-      <div className="w-full flex-grow flex flex-col overflow-x-hidden">
-        <Header title={title} />
+  
+      <main className="flex h-screen font-inter bg-[#F5F7FA]">
+        <Sidebar />
+        <div className="w-full flex-grow flex flex-col overflow-x-hidden">
+          <Header title={title} />
 
-        <div className="flex size-full flex-col">
-          <div className="bg-white flex h-16 items-center justify-between p-5 sm:p-8 md:hidden">
-            <div>
-              <MobileSidebar />
+          <div className="flex size-full flex-col">
+            <div className="bg-white flex h-16 items-center justify-between p-5 sm:p-8 md:hidden">
+              <div>
+                <MobileSidebar />
+              </div>
+              <h1 className="text-[#343C6A] text-xl font-bold">{title}</h1>
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
             </div>
-            <h1 className="text-[#343C6A] text-xl font-bold">{title}</h1>
-            <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </div>
-          <div className="justify-center items-center flex bg-white">
-            <div className="justify-center items-center flex gap-3 bg-[#F5F7FA] p-3 rounded-full md:hidden mb-4 md:mb-0">
-              <Image
-                src="/icons/Search.svg"
-                width={20}
-                height={20}
-                alt="Search"
-              />
-              <input
-                className="outline-none bg-[#F5F7FA]"
-                type="text"
-                placeholder="Search for something"
-              />
+            <div className="justify-center items-center flex bg-white">
+              <div className="justify-center items-center flex gap-3 bg-[#F5F7FA] p-3 rounded-full md:hidden mb-4 md:mb-0">
+                <Image
+                  src="/icons/Search.svg"
+                  width={20}
+                  height={20}
+                  alt="Search"
+                />
+                <input
+                  className="outline-none bg-[#F5F7FA]"
+                  type="text"
+                  placeholder="Search for something"
+                />
+              </div>
             </div>
-          </div>
 
-          {children}
+            {children}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+ 
   );
 }

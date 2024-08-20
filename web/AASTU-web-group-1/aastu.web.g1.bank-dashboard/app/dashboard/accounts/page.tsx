@@ -81,18 +81,20 @@ const Accounts = () => {
           </div>
         </div>
         <div className="md:w-[30%]">
-        <div className="flex justify-between font-inter text-[16px] font-semibold mb-4">
-          <h4>My Cards</h4>
-          <h4>See All</h4>
-        </div>
+          <div className="flex justify-between font-inter text-[16px] font-semibold mb-4">
+            <h4>My Cards</h4>
+            <h4>See All</h4>
+          </div>
           <div className=" mb-4">
             <CreditCard
-              isBlue={true}
+              id="1234"
               balance={5894}
-              creditNumber="3778*** ****1234"
-              name="Eddy Cusuma"
-              textColor="text-white"
+              semiCardNumber="37781234"
+              cardHolder="Ediy Cusuma"
+              expiryDate="2024-08-20T07:06:50.283Z"
+              cardType={"Visa"}
             />
+           
           </div>
         </div>
       </div>

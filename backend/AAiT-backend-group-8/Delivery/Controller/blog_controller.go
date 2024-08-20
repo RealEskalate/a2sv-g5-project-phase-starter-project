@@ -150,7 +150,12 @@ func (controller *Controller) DeleteBlog(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	err = controller.LikeUseCase.DeleteLikesOfBlog(blog.Id.Hex())
 
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Blog deleted"})
 }
 

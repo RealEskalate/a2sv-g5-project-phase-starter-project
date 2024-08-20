@@ -50,7 +50,6 @@ func (controller *Controller) CreateComment(ctx *gin.Context) {
 
 	fmt.Println(comment)
 
-	//!TODO add the name and id of the user to the comment
 	if comment.Body == "" {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "comment body is required"})
 		return
@@ -60,6 +59,12 @@ func (controller *Controller) CreateComment(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	err = controller.blogUseCase.UpdateBlogCommentCount(blogID, true)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	ctx.IndentedJSON(http.StatusCreated, gin.H{"message": "comment created successfully"})
 }
 
@@ -83,12 +88,26 @@ func (controller *Controller) UpdateComment(ctx *gin.Context) {
 }
 
 func (controller *Controller) DeleteComment(ctx *gin.Context) {
+
 	commentID := ctx.Param("commentID")
-	err := controller.commentUseCase.DeleteComment(commentID)
+	comment, err := controller.commentUseCase.GetCommentByID(commentID)
+
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error ": err.Error()})
+		return
+	}
+	err = controller.commentUseCase.DeleteComment(commentID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	err = controller.blogUseCase.UpdateBlogCommentCount(comment.BlogID.Hex(), false)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "comment deleted successfully"})
 }
 

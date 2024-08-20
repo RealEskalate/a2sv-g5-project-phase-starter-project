@@ -7,12 +7,12 @@ import (
 
 type Controller struct {
 	blogUseCase    domain.IBlogUseCase
-	commentUseCase usecase.CommentUseCase
+	commentUseCase *usecase.CommentUseCase
 	UserUsecase    domain.IUserUseCase
-	LikeUseCase    usecase.LikeUseCase
+	LikeUseCase    *usecase.LikeUseCase
 }
 
-func NewController(commentUseCase usecase.CommentUseCase, userUseCase domain.IUserUseCase, likeUseCase usecase.LikeUseCase, blogUseCase domain.IBlogUseCase) *Controller {
+func NewController(commentUseCase *usecase.CommentUseCase, userUseCase domain.IUserUseCase, likeUseCase *usecase.LikeUseCase, blogUseCase domain.IBlogUseCase) *Controller {
 	return &Controller{
 		blogUseCase:    blogUseCase,
 		commentUseCase: commentUseCase,

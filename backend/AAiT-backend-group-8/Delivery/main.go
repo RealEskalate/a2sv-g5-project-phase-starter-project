@@ -1,6 +1,7 @@
 package main
 
 import (
+	controller "AAiT-backend-group-8/Delivery/Controller"
 	Router "AAiT-backend-group-8/Delivery/Routes"
 	"AAiT-backend-group-8/Infrastructure"
 	repository "AAiT-backend-group-8/Repository"
@@ -18,6 +19,7 @@ func main() {
 	tokenCollection := mongoClient.Database("starterproject").Collection("token")
 	blogCollection := mongoClient.Database("starterproject").Collection("blogs")
 	commentCollection := mongoClient.Database("starterproject").Collection("comments")
+	likeCollection := mongoClient.Database("starterproject").Collection("likes")
 
 	userRepo := repository.NewUserRepository(userCollection, context.TODO())
 	ts := infrastructure.NewTokenService(SECRET_KEY)
@@ -32,15 +34,12 @@ func main() {
 
 	commentRepo := repository.NewCommentRepository(commentCollection, context.TODO())
 
-	commentUseCase := usecase.NewCommentUseCase(commentRepo)
+	commentUseCase := usecase.NewCommentUseCase(commentRepo, *infrastructure, ts)
 	userUseCase := usecase.NewUserUseCase(userRepo, ts, ps, tr, ms)
 	likeRepo := repository.NewLikeRepository(likeCollection, context.TODO())
 	likeUseCase := usecase.NewLikeUseCase(*likeRepo, *infrastructure)
-	controller := Controller.NewController(blogUseCase, commentUseCase, userUseCase)
 
-	commentRepo := repository.NewCommentRepository(*commentCollection, context.TODO())
-	commentUseCase := usecase.NewCommentUseCase(*commentRepo, *infrastructure, ts)
-	controller := controller.NewController(*commentUseCase, userUseCase, *likeUseCase)
+	controller := controller.NewController(commentUseCase, userUseCase, likeUseCase, blogUseCase)
 
 	r := Router.InitRouter(controller)
 

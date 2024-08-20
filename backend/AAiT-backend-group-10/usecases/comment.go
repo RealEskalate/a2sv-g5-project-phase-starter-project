@@ -17,7 +17,7 @@ type CommentUsecaseInterface interface {
 	GetComments(blogID uuid.UUID) ([]domain.Comment, error)
 	GetCommentsCount(blogID uuid.UUID) (int, error)
 	AddComment(comment domain.Comment) error
-	UpdateComment(commentID uuid.UUID, updatedComment domain.Comment) error
+	UpdateComment(requester_id uuid.UUID, updatedComment domain.Comment) error
 	DelelteComment(commentID uuid.UUID, requesterID uuid.UUID, isAdmin bool) error
 }
 
@@ -43,7 +43,7 @@ func (cu *CommentUsecase) DelelteComment(commentID uuid.UUID, requesterID uuid.U
 	if err != nil {
 		return err
 	}
-	if originalComment.UserID != requesterID {
+	if originalComment.UserID != requesterID && !isAdmin{
 		return errors.New("you are not authorized to delete this comment")
 	}
 	return cu.CommentRepository.DelelteComment(commentID)
@@ -59,7 +59,13 @@ func (cu *CommentUsecase) GetCommentsCount(blogID uuid.UUID) (int, error) {
 }
 
 // UpdateComment implements interfaces.CommentUsecaseInterface.
-func (cu *CommentUsecase) UpdateComment(commentID uuid.UUID, updatedComment domain.Comment) error {
-
-	return cu.CommentRepository.UpdateComment(commentID, updatedComment)
+func (cu *CommentUsecase) UpdateComment(requester_id uuid.UUID, updatedComment domain.Comment) error {
+	originalComment, err := cu.CommentRepository.GetCommentByID(updatedComment.ID)
+	if err != nil {
+		return err
+	}
+	if originalComment.UserID != requester_id{
+		return errors.New("you are not authorized to delete this comment")
+	}
+	return cu.CommentRepository.UpdateComment(updatedComment)
 }

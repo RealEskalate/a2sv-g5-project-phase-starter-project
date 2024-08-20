@@ -74,11 +74,11 @@ func (cr *CommentRepository) GetCommentsCount(blogID uuid.UUID) (int, error) {
 }
 
 // UpdateComment implements interfaces.CommentRepositoryInterface.
-func (cr *CommentRepository) UpdateComment(commentID uuid.UUID, updatedComment domain.Comment) error {
+func (cr *CommentRepository) UpdateComment(updatedComment domain.Comment) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	filter := bson.D{
-		{Key: "id", Value: commentID},
+		{Key: "id", Value: updatedComment.ID},
 	}
 	update := bson.D{
 		{Key: "$set", Value: bson.D{

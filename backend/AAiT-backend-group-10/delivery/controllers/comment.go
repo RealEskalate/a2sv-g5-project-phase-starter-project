@@ -62,7 +62,8 @@ func (cont *CommentController) UpdateComment(c *gin.Context) {
 	}
 	requesterID := c.MustGet("id").(uuid.UUID)
 	comment.UserID = requesterID
-	err = cont.CommentUsecase.UpdateComment(commentID, comment)
+	comment.ID = commentID
+	err = cont.CommentUsecase.UpdateComment(requesterID, comment)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return

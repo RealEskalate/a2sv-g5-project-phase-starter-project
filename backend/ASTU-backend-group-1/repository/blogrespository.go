@@ -67,9 +67,50 @@ func (r *MongoBlogRepository) Create(b domain.Blog) (domain.Blog, error) {
 	return b, nil
 }
 
+func (r *MongoBlogRepository) FindPopular() ([]domain.Blog, error) {
+	pipeline := mongo.Pipeline{
+		{
+			{"$addFields", bson.D{
+				{"likesCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$likes", bson.A{}}}}}}},
+				{"dislikesCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$dislikes", bson.A{}}}}}}},
+				{"viewsCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$views", bson.A{}}}}}}},
+				{"commentsCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$comments", bson.A{}}}}}}},
+			}},
+		},
+		{
+			{"$sort", bson.D{
+				{"likesCount", -1},
+				{"viewsCount", -1},
+				{"commentsCount", -1},
+				{"dislikesCount", 1},
+			}},
+		},
+	}
+
+	cursor, err := r.collection.Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var blogs []domain.Blog
+	for cursor.Next(context.TODO()) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return nil, err
+		}
+		blogs = append(blogs, blog)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return blogs, nil
+}
 func BuildBlogQueryAndOptions(filterOption domain.BlogFilterOption) bson.M {
 	filter := bson.M{}
-	sort := bson.D{}
+	// sort := bson.D{}
 	findOptions := options.Find()
 
 	if filterOption.Filter.BlogId != "" {
@@ -96,43 +137,6 @@ func BuildBlogQueryAndOptions(filterOption domain.BlogFilterOption) bson.M {
 
 	if len(filterOption.Filter.Tags) > 0 {
 		filter["tags"] = bson.M{"$in": filterOption.Filter.Tags}
-	}
-
-	if filterOption.Order.Likes != 0 {
-		sortOrder := 1
-		if filterOption.Order.Likes == -1 {
-			sortOrder = -1
-		}
-		sort = append(sort, bson.E{"$expr", bson.M{"$size": "$likes"}})
-		sort = append(sort, bson.E{"$size", sortOrder})
-	}
-	if filterOption.Order.Dislikes != 0 {
-		sortOrder := 1
-		if filterOption.Order.Dislikes == -1 {
-			sortOrder = -1
-		}
-		sort = append(sort, bson.E{"$expr", bson.M{"$size": "$dislikes"}})
-		sort = append(sort, bson.E{"$size", sortOrder})
-	}
-	if filterOption.Order.Views != 0 {
-		sortOrder := 1
-		if filterOption.Order.Views == -1 {
-			sortOrder = -1
-		}
-		sort = append(sort, bson.E{"$expr", bson.M{"$size": "$views"}})
-		sort = append(sort, bson.E{"$size", sortOrder})
-	}
-	if filterOption.Order.Comments != 0 {
-		sortOrder := 1
-		if filterOption.Order.Comments == -1 {
-			sortOrder = -1
-		}
-		sort = append(sort, bson.E{"$expr", bson.M{"$size": "$comments"}})
-		sort = append(sort, bson.E{"$size", sortOrder})
-	}
-
-	if len(sort) > 0 {
-		findOptions.SetSort(sort)
 	}
 
 	if filterOption.Pagination.PageSize > 0 {

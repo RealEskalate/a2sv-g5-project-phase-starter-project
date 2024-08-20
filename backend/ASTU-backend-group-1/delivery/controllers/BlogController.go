@@ -39,6 +39,16 @@ func (cont *BlogController) HandleGetAllBlogs(ctx *gin.Context) {
 	}
 
 }
+func (cont *BlogController) HandleGetPopular(ctx *gin.Context) {
+
+	blogs, err := cont.usecase.FindPopularBlog()
+	if err != nil {
+		ctx.IndentedJSON(http.StatusNotFound, err)
+	} else {
+		ctx.IndentedJSON(http.StatusOK, blogs)
+	}
+
+}
 func (cont *BlogController) HandleFilterBlogs(ctx *gin.Context) {
 	title := ctx.PostForm("title")
 	blogid := ctx.PostForm("_id")
@@ -216,9 +226,9 @@ func (cont *BlogController) HandleCommentOnBlog(ctx *gin.Context) {
 
 func (cont *BlogController) HandleGetAllComments(ctx *gin.Context) {
 	comments, err := cont.usecase.GetAllComments(ctx.Param("blogId"))
-    if err!= nil {
-        ctx.IndentedJSON(http.StatusNotFound, err)
-    } else {
-        ctx.IndentedJSON(http.StatusOK, comments)
-    }
+	if err != nil {
+		ctx.IndentedJSON(http.StatusNotFound, err)
+	} else {
+		ctx.IndentedJSON(http.StatusOK, comments)
+	}
 }

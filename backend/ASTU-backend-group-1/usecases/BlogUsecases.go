@@ -42,6 +42,13 @@ func (uc *BlogUsecase) GetAllBlogs() ([]domain.Blog, error) {
 	}
 	return blogs, nil
 }
+func (uc *BlogUsecase) FindPopularBlog() ([]domain.Blog, error) {
+	blogs, err := uc.blogRepository.FindPopular()
+	if err != nil {
+		return []domain.Blog{}, err
+	}
+	return blogs, nil
+}
 
 func (uc *BlogUsecase) FilterBlogs(title, id, date, tags, authorId string, LikeSort, DislikeSort, CommentSort, ViewSort int) ([]domain.Blog, error) {
 	filter := domain.BlogFilterOption{}

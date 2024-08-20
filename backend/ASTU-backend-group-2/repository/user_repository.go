@@ -6,6 +6,7 @@ import (
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -22,25 +23,25 @@ func NewUserRepository(db mongo.Database, collection string) domain.UserReposito
 	}
 }
 
-func (ur *userRepository) CreateUser(c context.Context, user *domain.User)  (*domain.User,error)  {
+func (ur *userRepository) CreateUser(c context.Context, user *domain.User) (*domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 
 	_, err := collection.InsertOne(c, user)
-	if err!=nil{
+	if err != nil {
 		return nil, err
 	}
 
-	return user,err
+	return user, err
 }
 
 func (ur *userRepository) GetUserById(c context.Context, userId string) (*domain.User, error) {
-	collection:= ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.collection)
 	var user domain.User
 	err := collection.FindOne(c, bson.M{"_id": userId}).Decode(&user)
-	if err!=nil{
+	if err != nil {
 		return nil, err
 	}
-	return &user,err
+	return &user, err
 
 }
 
@@ -48,7 +49,7 @@ func (ur *userRepository) GetUserByEmail(c context.Context, email string) (*doma
 	collection := ur.database.Collection(ur.collection)
 	var user domain.User
 	err := collection.FindOne(c, bson.M{"email": email}).Decode(&user)
-	if err!=nil{
+	if err != nil {
 		return nil, err
 	}
 	return &user, err
@@ -58,11 +59,11 @@ func (ur *userRepository) GetUsers(c context.Context) (*[]domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 	var users []domain.User
 	cursor, err := collection.Find(c, bson.M{})
-	if err!=nil{
+	if err != nil {
 		return nil, err
 	}
 	err = cursor.All(c, &users)
-	if err!=nil{
+	if err != nil {
 		return nil, err
 	}
 	return &users, nil
@@ -86,34 +87,34 @@ func (ur *userRepository) RevokeRefreshToken(c context.Context, userID, refreshT
 	return nil
 }
 
-func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *domain.User) (*domain.User,error) {
-	collection:=ur.database.Collection(ur.collection)
-	filter:=bson.M{"_id":userID}
-	update:=bson.M{"$set":updatedUser}
+func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *domain.UserUpdate) (*domain.User, error) {
+	collection := ur.database.Collection(ur.collection)
+	filter := bson.M{"_id": userID}
+	update := bson.M{"$set": updatedUser}
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 
 	var ResultUser domain.User
-	err:=collection.FindOneAndUpdate(c,filter,update,opts).Decode(&ResultUser)
-	if err!=nil{
-		return nil,err
+	err := collection.FindOneAndUpdate(c, filter, update, opts).Decode(&ResultUser)
+	if err != nil {
+		return nil, err
 	}
 
-	return &ResultUser,nil
+	return &ResultUser, nil
 }
 func (ur *userRepository) DeleteUser(c context.Context, userID string) error {
-	collection:=ur.database.Collection(ur.collection)
-	filter:=bson.M{"_id":userID}
-	_,err:=collection.DeleteOne(c,filter)
+	collection := ur.database.Collection(ur.collection)
+	filter := bson.M{"_id": userID}
+	_, err := collection.DeleteOne(c, filter)
 	return err
 }
 func (ur *userRepository) IsUserActive(c context.Context, userID string) (bool, error) {
-	collection:= ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.collection)
 	var user domain.User
 	err := collection.FindOne(c, bson.M{"_id": userID}).Decode(&user)
-	if err!=nil{
+	if err != nil {
 		return false, err
 	}
-	return user.Active,err
+	return user.Active, err
 
 }
 func (ur *userRepository) ResetUserPassword(c context.Context, userID string, resetPassword *domain.ResetPassword) error {

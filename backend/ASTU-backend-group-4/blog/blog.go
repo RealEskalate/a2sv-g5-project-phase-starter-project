@@ -7,17 +7,12 @@ import (
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/pkg/infrastructure"
 )
 
-type Tag struct {
-	ID   string `json:"id,omitempty" bson:"_id,omitempty"`
-	Name string `json:"name,omitempty"`
-}
-
 type Blog struct {
 	ID            string    `json:"id,omitempty" bson:"_id,omitempty"`
 	AuthorID      string    `json:"author_id,omitempty"`
 	Title         string    `json:"title,omitempty"`
 	Content       string    `json:"content,omitempty"`
-	Tags          []Tag     `json:"tags,omitempty"`
+	Tags          []string  `json:"tags,omitempty"`
 	ViewsCount    int       `json:"views_count,omitempty"`
 	CommentsCount int       `json:"comments_count,omitempty"`
 	LikesCount    int       `json:"likes_count,omitempty"`

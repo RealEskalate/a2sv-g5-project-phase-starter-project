@@ -1,26 +1,26 @@
-package usercommand
+package logincommand
 
 import (
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
-	// icmd "github.com/group13/blog/usecase/common/cqrs/command"
-	result "github.com/group13/blog/usecases_sof/user/result"
-	icommand "github.com/group13/blog/usecases_sof/utils/command"
-	iemail "github.com/group13/blog/usecases_sof/utils/i_email"
-	ijwt "github.com/group13/blog/usecases_sof/utils/i_jwt"
-	irepository "github.com/group13/blog/usecases_sof/utils/i_repo"
+	// icmd "github.com/group13/blog/usecase/usecase/common/cqrs/command"
+	result "github.com/group13/blog/usecase/user/result"
+	icmd "github.com/group13/blog/usecase/common/cqrs/command"
+	iemail "github.com/group13/blog/usecase/common/i_email"
+	ijwt "github.com/group13/blog/usecase/common/i_jwt"
+	irepo "github.com/group13/blog/usecase/common/i_repo"
 )
 
 type LoginHandler struct {
-	repo         irepository.UserRepository
-	jwtService   ijwt.Services
+	repo         irepo.UserRepository
+	jwtService   ijwt.Service
 	hashService  ihash.Service
 	emailService iemail.Service
 }
 
 type LoginConfig struct {
-	UserRepo     irepository.UserRepository
-	jwtService   ijwt.Services
+	UserRepo     irepo.UserRepository
+	jwtService   ijwt.Service
 	HashService  ihash.Service
 	emailService iemail.Service
 }
@@ -37,7 +37,7 @@ func NewLoginHandler(config LoginConfig) *LoginHandler {
 // Ensure Handler implements icmd.IHandler
 
 
-var _ icommand.Ihandler[*LoginCommand, *result.LoginInResult] = &LoginHandler{}
+var _ icmd.IHandler[*LoginCommand, *result.LoginInResult] = &LoginHandler{}
 
 func (h *LoginHandler) Handle(command *LoginCommand) (*result.LoginInResult, error) {
 	user, err := h.repo.FindByUsername(command.username)

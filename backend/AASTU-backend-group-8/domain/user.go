@@ -32,20 +32,13 @@ type AuthUser struct {
 	Password string `json:"password"`
 }
 
-type Profile struct {
-	ID        primitive.ObjectID `json:"id" gorm:"primaryKey"`
-	UserID    primitive.ObjectID `json:"user_id"`
-	Bio       string             `json:"bio"`
-	AvatarURL string             `json:"avatar_url"`
-}
-
 type UserUsecaseInterface interface {
-	GetUserByUsername(username *string) (*User, error)
+	GetUserByUsername(username string) (*User, error)
 	GetUserByEmail(email *string) (*User, error)
 	Register(user *User) error
 	Login(user *AuthUser) (string, string, error)
+	LoginWithProvider(user *User) (string, string, error)
 	DeleteRefreshToken(userID primitive.ObjectID) error // Fixed typo here
-	ForgotPassword(email *string) error
 	GetProfile(objectID primitive.ObjectID) (*Profile, error)
 	UpdateProfile(objectID primitive.ObjectID, user *Profile) (*Profile, error)
 	GetAllUsers() ([]*User, error)
@@ -57,7 +50,7 @@ type UserUsecaseInterface interface {
 type UserRepositoryInterface interface {
 	//User operations
 	Create(user *User) error
-	GetUserByUsername(username *string) (*User, error)
+	GetUserByUsername(username string) (*User, error)
 	GetUserByEmail(email *string) (*User, error)
 	GetUserByID(id primitive.ObjectID) (*User, error)
 	GetAllUsers() ([]*User, error)

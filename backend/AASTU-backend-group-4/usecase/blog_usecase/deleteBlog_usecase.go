@@ -11,7 +11,7 @@ func (bu *BlogUsecase) DeleteBlog(ctx context.Context, userID primitive.ObjectID
 	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
 	defer cancel()
 
-	existingBlog, err := bu.repo.GetBlog(ctx, blogID)
+	existingBlog, err := bu.blogRepo.GetBlogByID(ctx, blogID)
 	if err != nil {
 		return err
 	}
@@ -19,7 +19,7 @@ func (bu *BlogUsecase) DeleteBlog(ctx context.Context, userID primitive.ObjectID
 		return errors.New("you do not have permission to delete this blog post")
 	}
 
-	err = bu.repo.DeleteBlog(ctx, blogID)
+	err = bu.blogRepo.DeleteBlog(ctx, blogID)
 	if err != nil {
 		return err
 	}

@@ -1,7 +1,7 @@
 package blog_controller
 
 import (
-	domain "blog-api/domain/blog"
+	"blog-api/domain"
 	"net/http"
 	"time"
 
@@ -19,7 +19,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 		return
 	}
 
-	existingBlog, err := bc.usecase.GetBlog(c.Request.Context(), blogID)
+	existingBlog, err := bc.usecase.GetBlogByID(c.Request.Context(), blogID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Blog post not found"})
 		return

@@ -1,4 +1,4 @@
-package user
+package domain
 
 import (
 	"blog-api/infrastructure/bootstrap"

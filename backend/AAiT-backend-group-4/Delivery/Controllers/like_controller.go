@@ -3,23 +3,47 @@ package controllers
 import (
 	domain "aait-backend-group4/Domain"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 type LikeController struct {
-	LikeUsecase domain.LikeUsecase
+	likeUsecase domain.LikeUsecase
 }
 
-// LikeBlog handles the request to like a blog post.
-// - It retrieves the user ID and blog ID from the request context or parameters.
-// - Calls the Like use case to increment the like count and update the blog's feedback.
-// - Returns success or error responses based on the operation outcome.
-func (lc *LikeController) LikeBlog(c *gin.Context) {
-	blogID := c.Param("blog_id")
-	userID := c.Request.Header.Get("userID")
+// NewLikeController creates a new instance of LikeController
+func NewLikeController(router *gin.Engine, likeUsecase domain.LikeUsecase) {
+	controller := &LikeController{
+		likeUsecase: likeUsecase,
+	}
 
-	if err := lc.LikeUsecase.Like(c, userID, blogID); err != nil {
+	// Define the routes
+	likes := router.Group("/likes")
+	{
+		likes.POST("/", controller.Like)
+		likes.DELETE("/:likeID", controller.RemoveLike)
+		likes.GET("/user/:userID", controller.GetLikesByUser)
+		likes.GET("/blog/:blogID", controller.GetLikesByBlog)
+		likes.POST("/dislike", controller.Dislike)
+		likes.DELETE("/dislike/:dislikeID", controller.RemoveDislike)
+	}
+}
+
+// Like handles the request to like a blog post
+func (lc *LikeController) Like(c *gin.Context) {
+	var request struct {
+		UserID string `json:"user_id" binding:"required"`
+		BlogID string `json:"blog_id" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := lc.likeUsecase.Like(c.Request.Context(), request.UserID, request.BlogID)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -27,15 +51,20 @@ func (lc *LikeController) LikeBlog(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Blog liked successfully"})
 }
 
-// DislikeBlog handles the request to dislike a blog post.
-// - It retrieves the user ID and blog ID from the request context or parameters.
-// - Calls the Dislike use case to increment the dislike count and update the blog's feedback.
-// - Returns success or error responses based on the operation outcome.
-func (lc *LikeController) DislikeBlog(c *gin.Context) {
-	blogID := c.Param("blog_id")
-	userID := c.Request.Header.Get("userID")
+// Dislike handles the request to dislike a blog post
+func (lc *LikeController) Dislike(c *gin.Context) {
+	var request struct {
+		UserID string `json:"user_id" binding:"required"`
+		BlogID string `json:"blog_id" binding:"required"`
+	}
 
-	if err := lc.LikeUsecase.Dislike(c, userID, blogID); err != nil {
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := lc.likeUsecase.Dislike(c.Request.Context(), request.UserID, request.BlogID)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -43,14 +72,17 @@ func (lc *LikeController) DislikeBlog(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Blog disliked successfully"})
 }
 
-// RemoveLike handles the request to remove a like from a blog post.
-// - It retrieves the like ID from the request parameters.
-// - Calls the RemoveLike use case to decrement the like count and update the blog's feedback.
-// - Returns success or error responses based on the operation outcome.
+// RemoveLike handles the request to remove a like from a blog post
 func (lc *LikeController) RemoveLike(c *gin.Context) {
-	likeID := c.Param("like_id")
+	likeID := c.Param("likeID")
 
-	if err := lc.LikeUsecase.RemoveLike(c, likeID); err != nil {
+	if likeID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid like ID"})
+		return
+	}
+
+	err := lc.likeUsecase.RemoveLike(c.Request.Context(), likeID)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -58,14 +90,17 @@ func (lc *LikeController) RemoveLike(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Like removed successfully"})
 }
 
-// RemoveDislike handles the request to remove a dislike from a blog post.
-// - It retrieves the dislike ID from the request parameters.
-// - Calls the RemoveDislike use case to decrement the dislike count and update the blog's feedback.
-// - Returns success or error responses based on the operation outcome.
+// RemoveDislike handles the request to remove a dislike from a blog post
 func (lc *LikeController) RemoveDislike(c *gin.Context) {
-	dislikeID := c.Param("dislike_id")
+	dislikeID := c.Param("dislikeID")
 
-	if err := lc.LikeUsecase.RemoveDislike(c, dislikeID); err != nil {
+	if dislikeID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid dislike ID"})
+		return
+	}
+
+	err := lc.likeUsecase.RemoveDislike(c.Request.Context(), dislikeID)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -73,14 +108,22 @@ func (lc *LikeController) RemoveDislike(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Dislike removed successfully"})
 }
 
-// GetLikesByUser handles the request to retrieve all likes by a user.
-// - It retrieves the user ID from the request context or parameters.
-// - Calls the GetLikesByUser use case to fetch all likes associated with the user.
-// - Returns the list of likes or an error response.
+// GetLikesByUser handles the request to get likes by a specific user
 func (lc *LikeController) GetLikesByUser(c *gin.Context) {
-	userID := c.Param("user_id")
+	userID := c.Param("userID")
+	limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
 
-	likes, err := lc.LikeUsecase.GetLikesByUser(c, userID)
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page"})
+		return
+	}
+
+	likes, err := lc.likeUsecase.GetLikesByUser(c.Request.Context(), userID, limit, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -89,14 +132,22 @@ func (lc *LikeController) GetLikesByUser(c *gin.Context) {
 	c.JSON(http.StatusOK, likes)
 }
 
-// GetLikesByBlog handles the request to retrieve all likes for a blog post.
-// - It retrieves the blog ID from the request context or parameters.
-// - Calls the GetLikesByBlog use case to fetch all likes associated with the blog post.
-// - Returns the list of likes or an error response.
+// GetLikesByBlog handles the request to get likes by a specific blog
 func (lc *LikeController) GetLikesByBlog(c *gin.Context) {
-	blogID := c.Param("blog_id")
+	blogID := c.Param("blogID")
+	limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
 
-	likes, err := lc.LikeUsecase.GetLikesByBlog(c, blogID)
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page"})
+		return
+	}
+
+	likes, err := lc.likeUsecase.GetLikesByBlog(c.Request.Context(), blogID, limit, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

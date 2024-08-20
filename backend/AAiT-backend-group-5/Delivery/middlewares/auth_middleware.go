@@ -1,4 +1,4 @@
-package infrastructure
+package middlewares
 
 import (
 	"net/http"
@@ -6,11 +6,6 @@ import (
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	"github.com/gin-gonic/gin"
 )
-
-// JWTAuthMiddleware is a middleware function that performs JWT authentication.
-// It checks the Authorization header for a valid JWT token and sets the claims to the context.
-// If the token is invalid or missing, it returns an error response.
-// The secret parameter is used to validate the token's signature.
 
 func JWTAuthMiddelware(service interfaces.JwtService) gin.HandlerFunc {
 	return func(c *gin.Context) {

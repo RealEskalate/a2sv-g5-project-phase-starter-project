@@ -60,6 +60,8 @@ func (cont *CommentController) UpdateComment(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+	requesterID := c.MustGet("id").(uuid.UUID)
+	comment.UserID = requesterID
 	err = cont.CommentUsecase.UpdateComment(commentID, comment)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -73,7 +75,9 @@ func (cont *CommentController) DelelteComment(c *gin.Context) {
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid ID"})
 	}
-	if err := cont.CommentUsecase.DelelteComment(commentID); err != nil {
+	requesterID := c.MustGet("id").(uuid.UUID)
+	requesterRole := c.MustGet("is_admin").(bool)
+	if err := cont.CommentUsecase.DelelteComment(commentID, requesterID, requesterRole); err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}

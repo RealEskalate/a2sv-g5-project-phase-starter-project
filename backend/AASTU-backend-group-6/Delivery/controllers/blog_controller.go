@@ -21,6 +21,46 @@ func NewBlogController(BlogUsecase domain.BlogUsecase, validator domain.Validate
 	}
 }
 
+
+// ReactOnBlog implements domain.BlogUsecase.
+func (b BlogController) ReactOnBlog(c *gin.Context) {
+	blog_id := c.Param("id")
+	if blog_id == ":id"{
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Message: "Blog ID required.",
+			Status: http.StatusBadRequest,
+		})
+		return
+	}
+	reactionType := c.Query("isLiked")
+	if strings.ToLower(reactionType) != "true" && strings.ToLower(reactionType) != "false"{
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Message: "Valid reaction type required.",
+			Status: http.StatusBadRequest,
+		})
+		return
+	}
+	userID := c.GetString("user_id")
+	if userID == ""{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status:  http.StatusUnauthorized,
+		})
+		return
+	}
+	err := b.BlogUsecase.ReactOnBlog(userID, reactionType, blog_id)
+	if err != (domain.ErrorResponse{}){
+		c.JSON(err.Status, err)
+		return
+	}
+	c.JSON(http.StatusOK, domain.SuccessResponse{
+		Message: "Reaction saved successfully",
+		Status: http.StatusOK,
+	} )
+}
+
+
+
 // CommentOnBlog implements domain.BlogUsecase.
 func (b BlogController) CommentOnBlog(c *gin.Context) {
 	var comment domain.Comment
@@ -115,8 +155,8 @@ func (b BlogController) DeleteBlogByID(c *gin.Context) {
 		return
 	}
 	userID := c.GetString("user_id")
+	fmt.Println(userID)
 	role := c.GetString("role")
-	fmt.Println(userID, role)
 	if userID == "" || role == "" {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
 			Message: "Authentication failed.",
@@ -211,8 +251,7 @@ func (b BlogController) GetBlogByID(c *gin.Context) {
 		})
 		c.Abort()
 	}
-
-	blog, err := b.BlogUsecase.GetBlogByID(blog_id)
+	blog, err := b.BlogUsecase.GetBlogByID(blog_id, false)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Message: err.Error(),

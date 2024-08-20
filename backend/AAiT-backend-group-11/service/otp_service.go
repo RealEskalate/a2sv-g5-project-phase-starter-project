@@ -29,7 +29,7 @@ func (o *OtpService) InvalidateOtp(otp *entities.OTP) error {
 
 // SaveOtp implements interfaces.OTPService.
 func (o *OtpService) SaveOtp(otp *entities.OTP) error {
-	_, cancel := context.WithTimeout(context.Background(), 5 *time.Second)
+	_, cancel := context.WithTimeout(context.Background(), 55 *time.Second)
 	defer cancel()
 
 	return o.otpRepo.SaveOtp(otp)

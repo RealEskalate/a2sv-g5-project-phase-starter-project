@@ -9,35 +9,44 @@ type userService struct {
 	userRepository interfaces.UserRepository
 }
 
+// MarkUserAsVerified implements interfaces.UserService.
+func (service *userService) MarkUserAsVerified(email string) error {
+	
+	err := service.userRepository.MarkUserAsVerified(email)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func NewUserService(userRepository interfaces.UserRepository) interfaces.UserService {
 	return &userService{
 		userRepository: userRepository,
 	}
 }
 
-func (service *userService) CreateUser(user *entities.User) (*entities.User, error){
+func (service *userService) CreateUser(user *entities.User) (*entities.User, error) {
 	return service.userRepository.CreateUser(user)
 }
 
-func (service *userService) FindUserByEmail(email string) (*entities.User, error){
+func (service *userService) FindUserByEmail(email string) (*entities.User, error) {
 	return service.userRepository.FindUserByEmail(email)
 }
 
-func (service *userService) FindUserById(userId string) (*entities.User, error){
+func (service *userService) FindUserById(userId string) (*entities.User, error) {
 	return service.userRepository.FindUserById(userId)
 }
 
-func (service *userService) UpdateUser(user *entities.User) (*entities.User, error){
+func (service *userService) UpdateUser(user *entities.User) (*entities.User, error) {
 	return service.userRepository.UpdateUser(user)
 }
 
-func (service *userService) DeleteUser(userId string) error{
+func (service *userService) DeleteUser(userId string) error {
 	return service.userRepository.DeleteUser(userId)
 }
 
-
-
-func (service *userService) PromoteUserToAdmin(userId string) error{
+func (service *userService) PromoteUserToAdmin(userId string) error {
 	user, err := service.userRepository.FindUserById(userId)
 	if err != nil {
 		return err
@@ -52,7 +61,7 @@ func (service *userService) PromoteUserToAdmin(userId string) error{
 	return nil
 }
 
-func (service *userService) DemoteUserToRegular(userId string) error{
+func (service *userService) DemoteUserToRegular(userId string) error {
 	user, err := service.userRepository.FindUserById(userId)
 	if err != nil {
 		return err

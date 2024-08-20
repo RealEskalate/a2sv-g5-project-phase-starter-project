@@ -30,6 +30,7 @@ func (ac *AuthController)RegisterUser(c *gin.Context)  {
 		Username: userRequest.Username,
 		Email: userRequest.Email,
 		Password: userRequest.Password,
+		IsVerified: false,
 		Role: "user",
 		Profile: entities.Profile{},
 		CreatedAt: time.Now(),
@@ -46,3 +47,20 @@ func (ac *AuthController)RegisterUser(c *gin.Context)  {
 
 }
 
+func (ac *AuthController) VerifyEmail(c *gin.Context)  {
+
+	var emailVerification entities.EmailVerificationRequest
+
+	if err := c.ShouldBindJSON(&emailVerification); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := ac.AuthService.VerifyEmail(emailVerification.Email, emailVerification.Code)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Email verified successfully"})
+}

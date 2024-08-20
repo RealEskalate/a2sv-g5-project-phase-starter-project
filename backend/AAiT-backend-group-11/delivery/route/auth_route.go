@@ -24,5 +24,6 @@ func NewAuthRouter(env *bootstrap.Env, db *mongo.Database, group *gin.RouterGrou
 	}
 
 	group.POST("/register", ac.RegisterUser)
+	group.POST("/verify-email", ac.VerifyEmail)
 
 }

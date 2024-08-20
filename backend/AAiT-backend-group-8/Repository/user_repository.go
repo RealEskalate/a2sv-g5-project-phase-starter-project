@@ -26,6 +26,7 @@ func (r *UserRepositoryImpl) CreateUser(user *Domain.User) error {
 func (r *UserRepositoryImpl) GetUserByEmail(email string) (*Domain.User, error) {
 	var user Domain.User
 	err := r.db.FindOne(context.Background(), bson.M{"email": email}).Decode(&user)
+	fmt.Println(email,user)
 	return &user, err
 }
 

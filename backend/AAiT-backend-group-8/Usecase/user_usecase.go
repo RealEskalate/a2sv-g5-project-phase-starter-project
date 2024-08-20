@@ -2,6 +2,8 @@ package usecase
 
 import (
 	domain "AAiT-backend-group-8/Domain"
+	"fmt"
+	"log"
 
 	"crypto/rand"
 	"encoding/hex"
@@ -118,19 +120,16 @@ func (uuc *UserUseCaseImpl) RefreshToken(email, refresher string) (string, error
 	if err != nil {
 		return "", err
 	}
-	//Grasp the user's refresher token from the database
 	existingRefresher, err := uuc.TokenRepo.GetRefresher(email)
 
 	if err != nil {
 		return "", err
 	}
 
-	//cross-check the given refresher with the existing one
 	if existingRefresher != refresher {
 		return "", errors.New("invalid refresher token")
 	}
 
-	//get user data from the db
 	var user *domain.User
 	user, err = uuc.userRepository.GetUserByEmail(email)
 
@@ -151,8 +150,10 @@ func (uuc *UserUseCaseImpl) RefreshToken(email, refresher string) (string, error
 
 func (uuc *UserUseCaseImpl) Login(email string, password string) (string, string, error) {
 	//Get user's hashedPassword from the database
+	fmt.Print("email and password", email, password)
 	user, err := uuc.userRepository.GetUserByEmail(email)
 	if err != nil {
+		log.Fatal(err)
 		return "", "", errors.New("incorrect email or password")
 	}
 
@@ -167,7 +168,8 @@ func (uuc *UserUseCaseImpl) Login(email string, password string) (string, string
 		return "", "", errors.New("incorrect email or password")
 	}
 
-	tokenExp := time.Now().Add(time.Minute * 5).Unix()
+	//Generate a token for the user
+	tokenExp := time.Now().Add(time.Minute * 15).Unix()
 	token, err := uuc.TokenService.GenerateToken(user.Email, user.Id, user.Role, user.Name, tokenExp)
 
 	if err != nil {

@@ -22,7 +22,6 @@ func NewTokenRepository(collection *mongo.Collection, ctx context.Context) *Toke
 
 func (tr *TokenRepository) InsertRefresher(credential domain.Credential) error {
 	_, err := tr.Collection.InsertOne(tr.Context, credential)
-
 	return err
 }
 

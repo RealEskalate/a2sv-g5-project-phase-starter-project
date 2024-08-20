@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"errors"
 
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/auth"
 	"go.mongodb.org/mongo-driver/bson"
@@ -41,7 +40,7 @@ func (au *AuthUserImple) CreateUser(ctx context.Context, user auth.User) (string
 func (au *AuthUserImple) UpdateUser(ctx context.Context, user auth.User) (auth.User, error) {
 	userID, err := primitive.ObjectIDFromHex(user.ID)
 	if err != nil {
-		return auth.User{}, errors.New("invalied id")
+		return auth.User{}, auth.ErrIsnvalidID
 	}
 	filter := bson.D{bson.E{Key: "_id", Value: userID}}
 	update := bson.D{{Key: "$set", Value: bson.D{

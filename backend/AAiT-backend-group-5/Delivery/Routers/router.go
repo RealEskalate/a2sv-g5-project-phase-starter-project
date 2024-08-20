@@ -23,4 +23,6 @@ func Setup(env *config.Env, db mongo.Database, gin *gin.Engine) {
 	NewAuthenticationRouter(env, db, publicRouter)
 	NewForgotPasswordRouter(env, db, protectedRouter)
 	NewPromoteDemoteRouter(db, adminRouter)
+
+	NewBlogRouter(env, db, protectedRouter)
 }

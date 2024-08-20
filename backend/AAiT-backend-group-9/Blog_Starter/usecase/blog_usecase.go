@@ -48,9 +48,9 @@ func (uc *BlogUseCase) CreateBlog(c context.Context, blog *domain.BlogCreate) (*
 	return uc.blogRepo.CreateBlog(c, blogModel)
 }
 
-func (uc *BlogUseCase) GetBlogByID(c context.Context, blogID string) (*domain.Blog, error) {
-	// implementation
-	return uc.blogRepo.GetBlogByID(c, blogID)
+func (uc *BlogUseCase) GetBlogByID(c context.Context, blogID string) (*domain.Blog,error) {
+	updatedBlog, err := uc.blogRepo.IncrementViewCount(c, blogID)
+	return updatedBlog, err
 }
 
 func (uc *BlogUseCase) GetAllBlog(c context.Context, skip int64, limit int64, sortBy string) ([]*domain.Blog, *domain.PaginationMetadata, error) {
@@ -119,6 +119,15 @@ func (uc *BlogUseCase) DeleteBlog(c context.Context, blogID string, userId strin
 
 // SearchBlogs implements domain.BlogUseCase.
 
-func (uc *BlogUseCase) SearchBlogs(c context.Context, title string, author string) ([]*domain.Blog, error) {
-	panic("unimplemented")
+func (uc *BlogUseCase) SearchBlogs(ctx context.Context, searchRequest *domain.BlogSearchRequest) ([]*domain.Blog, error) {
+	filteredBlog, err := uc.blogRepo.SearchBlogs(ctx, searchRequest)
+	return filteredBlog, err
+}
+
+func (uc *BlogUseCase) FilterBlogs(ctx context.Context, blogRequest *domain.BlogFilterRequest) ([]*domain.Blog, error) {
+	if blogRequest.Date == nil && blogRequest.Tags == nil && blogRequest.LikeLowerRange == 0 && blogRequest.ViewLowerRange == 0 {
+		return nil, errors.New("invalid request format")
+	}
+	filteredBlog, err := uc.blogRepo.FilterBlogs(ctx, blogRequest)
+	return filteredBlog, err
 }

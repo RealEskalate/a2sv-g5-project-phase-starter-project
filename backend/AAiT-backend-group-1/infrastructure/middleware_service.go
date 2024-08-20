@@ -33,8 +33,7 @@ func (m *middlewareService) Authenticate() gin.HandlerFunc {
 			return
 		}
 
-		tokenString := authParts[1]
-		token, err := m.jwtService.ValidateToken(tokenString)
+		token, err := m.jwtService.ValidateToken(authParts[1])
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			ctx.Abort()

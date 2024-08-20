@@ -12,12 +12,24 @@ type AuthRepository interface {
 	Login(ctx context.Context, user *User) (Tokens, error, int)
 	Register(ctx context.Context, user *Dtos.RegisterUserDto) (*OmitedUser, error, int)
 	Logout(ctx context.Context, user_id primitive.ObjectID) (error, int)
+	GoogleLogin(ctx context.Context) string
+	CallbackHandler(ctx context.Context, code string) (Tokens, error, int)
+	GenerateTokenFromUser(ctx context.Context, existingUser User) (Tokens, error, int)
+	ResetPassword(ctx context.Context, email string, password string, resetToken string) (error, int)
+	ForgetPassword(ctx context.Context, email string) (error, int)
+	ActivateAccount(ctx context.Context, token string) (error, int)
+	SendActivationEmail(email string) (error, int)
 }
 
 type AuthUseCase interface {
 	Login(c *gin.Context, user *User) (Tokens, error, int)
 	Register(c *gin.Context, user *Dtos.RegisterUserDto) (*OmitedUser, error, int)
 	Logout(c *gin.Context, user_id primitive.ObjectID) (error, int)
+	GoogleLogin(c *gin.Context) string
+	CallbackHandler(c *gin.Context, code string) (Tokens, error, int)
+	ResetPassword(c *gin.Context, email string, password string, resetToken string) (error, int)
+	ForgetPassword(c *gin.Context, email string) (error, int)
+	ActivateAccount(c *gin.Context, token string) (error, int)
 }
 
 type RefreshRepository interface {
@@ -78,7 +90,7 @@ type TagRepository interface {
 
 type TagUseCase interface {
 	CreateTag(c *gin.Context, tag *Tag) (error, int)
-	DeleteTag(c *gin.Context, id primitive.ObjectID) (error,int)
+	DeleteTag(c *gin.Context, id primitive.ObjectID) (error, int)
 }
 
 type UserRepository interface {

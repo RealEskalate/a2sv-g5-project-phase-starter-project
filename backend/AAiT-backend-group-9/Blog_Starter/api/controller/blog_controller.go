@@ -2,8 +2,10 @@ package controller
 
 import (
 	"Blog_Starter/domain"
+	"Blog_Starter/utils"
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,7 +36,14 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 	}
 	blogModel, err := bc.blogUseCase.CreateBlog(bc.ctx, &blog)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		// Check for specific errors and return appropriate status codes
+		if err.Error() == "content length should be greater than 10" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		} else if err.Error() == "user not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 	c.JSON(http.StatusCreated, blogModel)
@@ -44,23 +53,36 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 func (bc *BlogController) GetBlogByID(c *gin.Context) {
 	// implementation create a context and pass to the usecase not the gin context
 	blogID := c.Param("blog_id")
-	err := bc.blogUseCase.GetBlogByID(bc.ctx, blogID)
+	blog, err := bc.blogUseCase.GetBlogByID(bc.ctx, blogID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		// Check for specific errors and return appropriate status codes
+		if err.Error() == "invalid blog id" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		} else if err.Error() == "blog not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message" : "view count imcremented"})
+	c.JSON(http.StatusOK, blog)
+
 }
 
 // GetAllBlog godoc
 func (bc *BlogController) GetAllBlog(c *gin.Context) {
+	skipStr := c.Query("skip")
+	limitStr := c.Query("limit")
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	sortBy := c.Query("sort_by")
 	// implementation
-	blogs, err := bc.blogUseCase.GetAllBlog(bc.ctx)
+	blogs, paginationMetadata, err := bc.blogUseCase.GetAllBlog(bc.ctx, skip, limit, sortBy)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, blogs)
+	c.JSON(http.StatusOK, gin.H{"blogs": blogs, "metadata": paginationMetadata})
 }
 
 // UpdateBlog godoc
@@ -73,9 +95,24 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	user, err := utils.CheckUser(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	blog.UserID = user.UserID
+	// call the useCase getBlogByID to check whether the blog exists or not
+
 	blogModel, err := bc.blogUseCase.UpdateBlog(bc.ctx, &blog, blogID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		// Check for specific errors and return appropriate status codes
+		if err.Error() == "blog not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		} else if err.Error() == "user is not the owner of the blog" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 	c.JSON(http.StatusOK, blogModel)
@@ -85,9 +122,22 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	// implementation
 	blogID := c.Param("blog_id")
-	err := bc.blogUseCase.DeleteBlog(bc.ctx, blogID)
+	user, err := utils.CheckUser(c) //TODO: CheckUser is not implemented but used here???
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = bc.blogUseCase.DeleteBlog(bc.ctx, blogID, user.UserID)
+	if err != nil {
+		// Check for specific errors and return appropriate status codes
+		if err.Error() == "blog not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		} else if err.Error() == "user is not the owner of the blog" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 	c.JSON(http.StatusNoContent, nil)

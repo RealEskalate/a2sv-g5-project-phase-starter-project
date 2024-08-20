@@ -217,19 +217,7 @@ func (r *blogRepository) IncrementViews(ctx context.Context, id primitive.Object
     return err
 }
 
-func (r *blogRepository) IncrementLikes(ctx context.Context, id primitive.ObjectID) error {
-    filter := bson.M{"_id": id}
-    update := bson.M{"$inc": bson.M{"likes": 1}}
-    _, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
-    return err
-}
 
-func (r *blogRepository) IncrementDislikes(ctx context.Context, id primitive.ObjectID) error {
-    filter := bson.M{"_id": id}
-    update := bson.M{"$inc": bson.M{"dislikes": 1}}
-    _, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
-    return err
-}
 func (r *blogRepository) AddComment(ctx context.Context, id primitive.ObjectID, comment *domain.Comment) error {
     filter := bson.M{"_id": id}
     update := bson.M{"$push": bson.M{"comments": comment}}
@@ -237,15 +225,29 @@ func (r *blogRepository) AddComment(ctx context.Context, id primitive.ObjectID, 
     return err
 }
 
-func (r *blogRepository) HasUserLiked(ctx context.Context, id primitive.ObjectID, userID string) (bool, error) {
-    filter := bson.M{"_id": id, "likes": userID}
-    count, err := r.database.Collection(r.collection).CountDocuments(ctx, filter)
-    return count > 0, err
-}
 
 func (r *blogRepository) HasUserDisliked(ctx context.Context, id primitive.ObjectID, userID string) (bool, error) {
     filter := bson.M{"_id": id, "dislikes": userID}
     count, err := r.database.Collection(r.collection).CountDocuments(ctx, filter)
     return count > 0, err
 }
+
+
+
+func (r *blogRepository) IncrementPopularity(ctx context.Context, id primitive.ObjectID, metric string) error {
+	filter := bson.M{"_id": id}
+	update := bson.M{"$inc": bson.M{metric: 1}}
+	_, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
+	return err
+}
+
+func (r *blogRepository) DecrementPopularity(ctx context.Context, id primitive.ObjectID, metric string) error {
+	filter := bson.M{"_id": id}
+	update := bson.M{"$inc": bson.M{metric: -1}}
+	_, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
+	return err
+}
+
+
+
 

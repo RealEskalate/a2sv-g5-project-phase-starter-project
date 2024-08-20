@@ -5,13 +5,18 @@ interface Transaction {
   description: string;
   transactionId: string;
   type: string;
-  card: string;
+  card?: string; // Mark this as optional
   date: string;
   amount: string;
-  receipt: string;
+  receipt?: string; // Mark this as optional
 }
 
-const TransactionsList = () => {
+
+interface TransactionsListProps {
+  transactions: Transaction[];
+}
+
+const TransactionsList: React.FC<TransactionsListProps> = ({ transactions }) => {
   const columns: Array<{ Header: string; accessor: keyof Transaction; Cell?: (row: any) => JSX.Element }> = [
     {
       Header: '',
@@ -81,28 +86,16 @@ const TransactionsList = () => {
     },
   ];
 
-  const data: Transaction[] = [
-    {
-      description: 'Spotify Subscription',
-      transactionId: '#12548796',
-      type: 'Shopping',
-      card: '1234 ****',
-      date: '28 Jan, 12.30 AM',
-      amount: '-$2,500',
-      receipt: '',
-    },
-  ];
-
   return (
     <div className="p-4">
       {/* Desktop View */}
       <div className="hidden md:block">
-        <Table columns={columns} data={data} />
+        <Table columns={columns} data={transactions} />
       </div>
       
       {/* Mobile View */}
       <div className="block md:hidden">
-        {data.map((transaction, index) => (
+        {transactions.map((transaction, index) => (
           <div key={index} className="border-b border-gray-200 py-2">
             <div className="flex justify-between items-center">
               <div className="flex items-center">

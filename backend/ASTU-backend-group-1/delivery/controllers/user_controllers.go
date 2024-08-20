@@ -15,6 +15,19 @@ func NewUserController(userUsecase domain.UserUsecase) *userController {
 	return &userController{userUsecase: userUsecase}
 }
 
+func (c *userController) Register(ctx *gin.Context) {
+	user := domain.User{}
+	if err := ctx.ShouldBind(&user); err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+		return
+	}
+	_, err := c.userUsecase.Create(&user)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.IndentedJSON(http.StatusCreated, gin.H{"message":"Activate your Account in the your email link" })
+}	
 func (c *userController) GetUsers(ctx *gin.Context) {
 	username := ctx.Query("username")
 	email := ctx.Query("email")

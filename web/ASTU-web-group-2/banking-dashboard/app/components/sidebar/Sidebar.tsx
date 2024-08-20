@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { sidebarListItems } from "./sidebarListItems";
 import Link from "next/link";
 import Image from "next/image";
@@ -7,6 +7,12 @@ import { usePathname } from "next/navigation";
 
 const Sidebar = ({ isOpen = false, toggleSidebar = () => { } }: { isOpen?: boolean; toggleSidebar?: () => void; }) => {
   const pathname = usePathname();
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const index = sidebarListItems.findIndex(item => item.path === pathname);
+    setActiveIndex(index !== -1 ? index : 0);
+  }, [pathname]);
 
   return (
     <div
@@ -39,20 +45,24 @@ const Sidebar = ({ isOpen = false, toggleSidebar = () => { } }: { isOpen?: boole
           />
         </button>
       </div>
-      <div className="flex flex-col flex-1 overflow-y-auto pt-2">
+      <div className="relative flex flex-col flex-1 overflow-y-auto pt-2 ">
+        {/* Active indicator */}
+        <div
+          className="absolute left-0 h-[60px] w-[6px] bg-[#2D60FF] rounded-r-[10px] transition-transform duration-300"
+          style={{
+            transform: `translateY(${activeIndex * 60}px)`
+          }}
+        ></div>
+        <div className="flex flex-col  h-[100%]">
+
         {sidebarListItems.map((item, index) => (
           <Link key={index} href={item.path}>
             <div
-              className={`flex items-center gap-8 ${
+              className={`flex items-center gap-8 h-[60px] ${
                 pathname === item.path ? "text-[#2D60FF]" : "text-[#B1B1B1]"
               }`}
             >
-              <div
-                className={`h-[60px] w-[6px] ${
-                  pathname === item.path ? "bg-[#2D60FF]" : "bg-transparent"
-                } rounded-r-[10px]`}
-              ></div>
-              <div className="flex gap-8 items-center">
+              <div className="flex gap-8 items-center pl-6">
                 <Image
                   src={pathname === item.path ? item.activeIcon : item.icon}
                   alt={item.name}
@@ -65,11 +75,13 @@ const Sidebar = ({ isOpen = false, toggleSidebar = () => { } }: { isOpen?: boole
                   }`}
                 >
                   {item.name}
+        {/* Sidebar items */}
                 </h1>
               </div>
             </div>
           </Link>
         ))}
+        </div>
       </div>
     </div>
   );

@@ -26,10 +26,10 @@ function YearlyTotalInvestment() {
       if (context) {
         const chartItem = context.canvas;
 
-        // Extract the labels and values from the API response
         const labels = data.data.yearlyTotalInvestment.map((item: { time: any; }) => item.time);
         const values = data.data.yearlyTotalInvestment.map((item: { value: any; }) => item.value);
-
+        labels.reverse();
+        values.reverse();
         const chartData: ChartData<"line"> = {
           labels,
           datasets: [

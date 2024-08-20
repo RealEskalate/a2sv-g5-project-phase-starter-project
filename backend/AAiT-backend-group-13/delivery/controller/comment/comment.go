@@ -43,14 +43,14 @@ func New(config Config) *CommentController {
 // RegisterPublic registers public routes.
 func (c *CommentController) RegisterPublic(route *gin.RouterGroup) {}
 
-// RegisterProtected registers protected routes.
-func (c *CommentController) RegisterProtected(route *gin.RouterGroup) {
-	comments := route.Group("/comments")
+// RegisterPrivate registers private routes.
+func (c *CommentController) RegisterPrivate(route *gin.RouterGroup) {
+	comments := route.Group("/blogs")
 	{
-		comments.GET("blogs/:id/comments",c.GetBlogComments)
-		comments.GET("blogs/:id/comments/:id", c.GetCommentById)
-		comments.POST("blogs/:id/comments",c.AddComment)
-		comments.DELETE("blogs/:id/comments/:id",c.DeleteComment)
+		comments.GET("/:id/comments", c.GetBlogComments)
+		comments.GET("/:id/comments/:id", c.GetCommentById)
+		comments.POST("/:id/comments", c.AddComment)
+		comments.DELETE("/:id/comments/:id", c.DeleteComment)
 	}
 }
 

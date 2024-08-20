@@ -40,15 +40,15 @@ func (c *Controller) RegisterPublic(route *gin.RouterGroup) {}
 
 // RegisterPrivileged registers privileged routes.
 func (c *Controller) RegisterPrivileged(route *gin.RouterGroup) {
-	tasks := route.Group("/tasks")
+	blogs := route.Group("/blogs")
 	{
-		tasks.POST("", c.addBlog)
-		tasks.PUT("/:id", c.updateBlog)
-		tasks.DELETE("/:id", c.deleteBlog)
+		blogs.POST("", c.AddBlog)
+		blogs.PUT("/:id", c.UpdateBlog)
+		blogs.DELETE("/:id", c.DeleteBlog)
 	}
 }
 
-func (c *Controller) addBlog(ctx *gin.Context) {
+func (c *Controller) AddBlog(ctx *gin.Context) {
 	var request dto.BlogDto
 
 	if err := ctx.ShouldBindJSON(&request); err != nil {
@@ -56,20 +56,18 @@ func (c *Controller) addBlog(ctx *gin.Context) {
 		return
 	}
 
-	username := uuid.New()
-
-	cmd := addcmd.NewCommand(request.Title, request.Content, request.Tags, username)
-	task, err := c.addHandler.Handle(cmd)
+	cmd := addcmd.NewCommand(request.Title, request.Content, request.Tags, request.UserId)
+	blog, err := c.addHandler.Handle(cmd)
 
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	ctx.IndentedJSON(http.StatusCreated, task)
+	ctx.IndentedJSON(http.StatusCreated, blog)
 }
 
-func (c *Controller) updateBlog(ctx *gin.Context) {
+func (c *Controller) UpdateBlog(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, er.NewBadRequest("Invalid Id Format"))
@@ -100,7 +98,7 @@ func (c *Controller) updateBlog(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusNoContent, gin.H{})
 }
 
-func (c *Controller) deleteBlog(ctx *gin.Context) {
+func (c *Controller) DeleteBlog(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, er.NewBadRequest("Invalid Id Format"))

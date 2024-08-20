@@ -17,56 +17,57 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { TransactionData } from "@/types";
 
-const initialChartData = [
-  { day: "Sat", Deposite: 186, Withdraw: 80 },
-  { day: "Sun", Deposite: 305, Withdraw: 200 },
-  { day: "Mon", Deposite: 237, Withdraw: 120 },
-  { day: "Tue", Deposite: 73, Withdraw: 190 },
-  { day: "wed", Deposite: 209, Withdraw: 130 },
-  { day: "Thu", Deposite: 214, Withdraw: 140 },
-  { day: "Fri", Deposite: 214, Withdraw: 140 },
-];
+interface BarchartProps {
+  weeklyDeposit: TransactionData[];
+  weeklyWithdraw: TransactionData[];
+}
 
-const chartConfig = {
-  Deposite: {
-    label: "Deposite",
-    color: "#1814F3",
-  },
-  Withdraw: {
-    label: "Withdraw",
-    color: "#16DBCC",
-  },
-};
+export function Barchart({ weeklyDeposit, weeklyWithdraw }: BarchartProps) {
+  const [chartData, setChartData] = useState<
+    { day: string; Deposite: number; Withdraw: number }[]
+  >([]);
+  const newChartData: { day: string; Deposite: number; Withdraw: number }[] = [];
+  const chartConfig = {
+    Deposite: {
+      label: "Deposite",
+      color: "#1814F3",
+    },
+    Withdraw: {
+      label: "Withdraw",
+      color: "#16DBCC",
+    },
+  };
+    const weekofdays = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"];
+  const income: number[] = [];
+  const Withdraw: number[] = [];
+  weeklyDeposit.map((deposit, index) => {
+    income.push(deposit.amount);
+  });
+  weeklyWithdraw.map((withdraw, index) => {
+    Withdraw.push(withdraw.amount);
+  });
+  weekofdays.map((day, index) => {
+    newChartData.push({
+      day: day,
+      Deposite: income[index],
+      Withdraw: Withdraw[index],
+    });
+  });
 
-export function Barchart() {
-  const [chartData, setChartData] = useState(initialChartData);
-  const [chartOptions, setChartOptions] = useState({});
+ 
 
   useEffect(() => {
-    setChartOptions({
-      maintainAspectRatio: false,
-      responsive: true,
-      plugins: {
-        legend: {
-          position: "top",
-          labels: {
-            usePointStyle: true,
-            pointStyle: "circle",
-            boxWidth: 10,
-          },
-        },
-      },
-    });
-  }, []);
-
+    setChartData(newChartData);
+  }, [newChartData]);
+  
   return (
-    <Card>
-      <CardContent >
-        <ChartContainer config={chartConfig} className="h-60 w-full ">
-      
+    <Card >
+      <CardContent className="p-0">
+        <ChartContainer config={chartConfig} className="h-60 w-full">
+        
             <BarChart data={chartData}>
-              <Legend />
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
               <XAxis
                 dataKey="day"
@@ -77,6 +78,7 @@ export function Barchart() {
               />
               <YAxis />
               <Tooltip content={<ChartTooltipContent indicator="dashed" />} />
+              <Legend />
 
               <Bar
                 dataKey="Deposite"
@@ -91,6 +93,7 @@ export function Barchart() {
                 barSize={10}
               />
             </BarChart>
+        
         </ChartContainer>
       </CardContent>
     </Card>

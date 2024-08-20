@@ -66,3 +66,18 @@ export interface BalanceData {
   time: string;
   value: number;
 }
+
+export interface QuickTransferProps {
+  success: boolean;
+  message : string;
+  data : QuickTransferData[];
+}
+
+export interface QuickTransferData {
+  id: string;
+  name: string;
+  username: string;
+  city: string;
+  country: string;
+  profilePicture: string; 
+}

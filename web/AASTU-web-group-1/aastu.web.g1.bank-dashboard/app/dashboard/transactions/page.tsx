@@ -1,46 +1,66 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import CreditCard from "../_components/Credit_Card";
-import { ExpenseChart } from "./component/ExpenseChart";
+
+import { useState, useEffect } from "react";
 import { GrFormPrevious } from "react-icons/gr";
 import { MdNavigateNext } from "react-icons/md";
+import CreditCard from "../_components/Credit_Card";
+import { ExpenseChart } from "./component/ExpenseChart";
 import { ExpenseTable } from "./component/ExpenseTable";
-import { getallTransactions } from "./component/getTransactions";
-import { getIncomes } from "./component/getIncomes";
 import { getExpenses } from "./component/getExpenses";
+import { getIncomes } from "./component/getIncomes";
+import getallTransactions from "./component/getTransactions";
+import getCreditCards from "../_components/getCreditCards";
 import { CardDetails, TransactionData } from "@/types";
-import { getCreditCards } from "./component/getCreditCards";
 
 const Transactions = () => {
   const rowsPerPage = 5;
-  const totalPages = 10;
-  
-  const [activeTab, setActiveTab] = useState<"all" | "income" | "expense">("all");
-  const [currentPage, setCurrentPage] = useState(1); 
+  const totalPages = 10; // You might want to calculate this dynamically based on your data
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"all" | "income" | "expense">(
+    "all"
+  );
+  const [currentPage, setCurrentPage] = useState(1);
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
   const [creditCards, setCreditCards] = useState<CardDetails[]>([]);
+  const [expenses, setExpenses] = useState<TransactionData[]>([]);
+
   useEffect(() => {
     const fetchData = async () => {
-      const res = await getCreditCards();
-      setCreditCards(res || [])
+      try {
+        const [cards, initialExpenses] = await Promise.all([
+          getCreditCards(),
+          getExpenses(0, 6),
+        ]);
+        setCreditCards(cards || []);
+        setExpenses(initialExpenses || []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);
- 
+
+  // Fetch transactions based on active tab and current page
   useEffect(() => {
     const fetchData = async () => {
-      let data;
-      if (activeTab === "all") {
-        data = await getallTransactions(currentPage-1, rowsPerPage);
-      } else if (activeTab === "income") {
-        data = await getIncomes(currentPage-1, rowsPerPage);
-      } else {
-        data = await getExpenses(currentPage-1, rowsPerPage);
+      try {
+        let data;
+        if (activeTab === "all") {
+          data = await getallTransactions(currentPage - 1, rowsPerPage);
+        } else if (activeTab === "income") {
+          data = await getIncomes(currentPage - 1, rowsPerPage);
+        } else {
+          data = await getExpenses(currentPage - 1, rowsPerPage);
+        }
+        setTransactions(data || []);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
       }
-      setTransactions(data || []);
     };
     fetchData();
-  }, [currentPage, rowsPerPage, activeTab]);
+  }, [currentPage, activeTab]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -53,16 +73,19 @@ const Transactions = () => {
   };
 
   const handlePreviousPage = () => {
-    if (currentPage > 0) {
+    if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
 
   const renderPageButtons = () => {
-
-    const pagesToShow = totalPages < 4 ? totalPages : 4;
-
-    const startPage = currentPage <= 2 || totalPages <= 4 ? 1 : currentPage > totalPages - 2 ? totalPages - 3: currentPage - 1;
+    const pagesToShow = Math.min(totalPages, 4);
+    const startPage =
+      currentPage <= 2 || totalPages <= 4
+        ? 1
+        : currentPage > totalPages - 2
+        ? totalPages - 3
+        : currentPage - 1;
 
     return Array.from({ length: pagesToShow }, (_, index) => {
       const page = startPage + index;
@@ -72,7 +95,7 @@ const Transactions = () => {
           onClick={() => handlePageChange(page)}
           className={`${
             page === currentPage ? "text-white bg-blue-600" : "text-blue-600"
-          } hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 me-2 mb-2 align-middle`}
+          } hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 me-2 mb-2`}
         >
           {page}
         </button>
@@ -80,19 +103,27 @@ const Transactions = () => {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-dotted border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-5 space-y-5">
-      <div className="md:flex sm:grid sm:grid-cols-2 space-y-5 md:space-y-0 ">
-        <div className="md:w-2/3 space-y-5  ">
-          <div className="flex justify-between font-inter text-[16px] font-semibold">
+    <div className="p-5 space-y-5 lg:p-10">
+      <div className="lg:flex md:grid md:grid-cols-2 gap-5 space-y-5 md:space-y-0">
+        <div className="lg:w-2/3 space-y-5 ">
+          <div className="flex justify-between font-inter text-[16px] font-semibold mx-3">
             <h4>My Cards</h4>
             <h4>+Add Card</h4>
           </div>
           <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {creditCards.map((card) => (
               <CreditCard
-              key={card.id}
-               id = {card.id}
+                key={card.id}
+                id={card.id}
                 balance={card.balance}
                 semiCardNumber={card.semiCardNumber}
                 cardHolder={card.cardHolder}
@@ -100,23 +131,22 @@ const Transactions = () => {
                 cardType={card.cardType}
               />
             ))}
-         
           </div>
         </div>
-        <div className="space-y-5 md:w-1/3">
+        <div className="lg:w-1/3 space-y-5">
           <div className="font-inter text-[16px] font-semibold">
             <h4>My Expense</h4>
           </div>
-          <div className="px-2 md:p-3 bg-white rounded-xl md:shadow-lg md:border md:border-gray-300">
-            <ExpenseChart />
+          <div className="rounded-xl p-2 pt-1">
+            <ExpenseChart expenses={expenses} />
           </div>
         </div>
       </div>
 
-      <div className="p-5 space-y-5 w-[90%] items-center">
+      <div className="space-y-5 w-full items-center">
         <div className="space-y-5">
-          <h4>Recent Transaction</h4>
-          <div className="space-x-5 justify-start flex">
+          <h4>Recent Transactions</h4>
+          <div className="space-x-5 flex">
             <button onClick={() => setActiveTab("all")}>
               <p
                 className={`border-b-2 text-xs ${
@@ -152,10 +182,10 @@ const Transactions = () => {
             </button>
           </div>
         </div>
-        <ExpenseTable transactions={transactions} />
+        <ExpenseTable transactions={transactions} tab={activeTab} />
       </div>
 
-      <div className="justify-end flex items-center md:space-x-5  space-x-2">
+      <div className="flex justify-end items-center space-x-2">
         <button
           onClick={handlePreviousPage}
           className={`flex ${
@@ -163,11 +193,11 @@ const Transactions = () => {
           }`}
           disabled={currentPage === 1}
         >
-          <GrFormPrevious color="blue-600" size={30} />{" "}
+          <GrFormPrevious size={30} />{" "}
           <p
             className={`align-middle ${
               currentPage === 1 ? "text-gray-400" : "text-blue-600"
-            } `}
+            }`}
           >
             Previous
           </p>
@@ -185,11 +215,11 @@ const Transactions = () => {
           <p
             className={`align-middle ${
               currentPage === totalPages ? "text-gray-400" : "text-blue-600"
-            } `}
+            }`}
           >
             Next
           </p>
-          <MdNavigateNext color="blue-600" size={30} />
+          <MdNavigateNext size={30} />
         </button>
       </div>
     </div>

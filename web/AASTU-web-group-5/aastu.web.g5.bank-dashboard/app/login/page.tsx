@@ -29,5 +29,6 @@ export default function Login() {
 		return <div>Please log in</div>;
 	}
 	console.log(x, "x");
+
 	return <div>Welcome, {x.username}</div>;
 }

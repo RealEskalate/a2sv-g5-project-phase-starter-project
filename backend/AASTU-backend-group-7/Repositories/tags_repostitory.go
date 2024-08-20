@@ -42,3 +42,25 @@ func (repo *tagsRepository) DeleteTag(ctx context.Context, id primitive.ObjectID
 
 	return nil, 200
 }
+
+func (repo *tagsRepository) GetAllTags(ctx context.Context) ([]*Domain.Tag, error, int) {
+	tags := []*Domain.Tag{}
+	cursor, err := repo.tagCollection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err, 500
+	}
+	err = cursor.All(ctx, &tags)
+	if err != nil {
+		return nil, err, 500
+	}
+	return tags, nil, 200
+}
+
+func (repo *tagsRepository) GetTagBySlug(ctx context.Context, slug string) (*Domain.Tag, error, int) {
+	tag := &Domain.Tag{}
+	err := repo.tagCollection.FindOne(ctx, bson.M{"slug": slug}).Decode(tag)
+	if err != nil {
+		return nil, err, 500
+	}
+	return tag, nil, 200
+}

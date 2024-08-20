@@ -58,7 +58,7 @@ type BlogUseCase interface {
 	GetBlogs(ctx context.Context, filterQuery FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
 	SearchBlogs(ctx context.Context, query string) (infrastructure.PaginationResponse[Blog], error)
 	GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
-	CreateComment(ctx context.Context, comment CreateCommentRequest) error
+	CreateComment(ctx context.Context, userID string, comment CreateCommentRequest) error
 	DeleteComment(ctx context.Context, id string) error
 	LikeBlog(ctx context.Context, userID string, blogID string) error
 	DislikeBlog(ctx context.Context, userID string, blogID string) error

@@ -92,21 +92,6 @@ func (r Repo) FindReactionByBlogId(blogId uuid.UUID) (*[]reaction.Reaction, erro
 	return &reactions, nil
 }
 
-func (r *Repository) FindReactionByUserIdAndBlogId(userId, blogId string) (*reaction.Reaction, error) {
-	var reaction reaction.Reaction
-
-	filter := bson.M{
-		"userId": userId,
-		"blogId": blogId,
-	}
-
-	err := r.collection.FindOne(context.Background(), filter).Decode(&reaction)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, nil // No reaction found
-		}
-		return nil, err // Other error occurred
-	}
-
-	return &reaction, nil
+func (r Repo) FindReactionByUserIdAndBlogId(userId uuid.UUID, blogId uuid.UUID) (*reaction.Reaction, error) {
+	return nil, nil
 }

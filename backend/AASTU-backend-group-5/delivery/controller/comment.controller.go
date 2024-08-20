@@ -10,13 +10,11 @@ import (
 
 type CommentController struct {
 	CommentUsecase domain.Comment_Usecase_interface
-	UserUsecase    domain.User_Usecase_interface
 }
 
-func NewCommentController(commentUsecase domain.Comment_Usecase_interface, userUsecase domain.User_Usecase_interface) *CommentController {
+func NewCommentController(commentUsecase domain.Comment_Usecase_interface) *CommentController {
 	return &CommentController{
 		CommentUsecase: commentUsecase,
-		UserUsecase:    userUsecase,
 	}
 }
 
@@ -50,16 +48,16 @@ func (cc *CommentController) CreateComment() gin.HandlerFunc {
 			return
 		}
 
-		claims, exists := c.Get("user")
-		if !exists {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized. Please log in to comment on this post."})
+		var requestBody struct {
+			UserID string `json:"user_id"`
+		}
+
+		if err := c.ShouldBindJSON(&requestBody); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body."})
 			return
 		}
 
-		userClaims := claims.(*domain.Claims)
-		userID := userClaims.UserID
-
-		if err := cc.CommentUsecase.CreateComment(postID, userID); err != nil {
+		if err := cc.CommentUsecase.CreateComment(postID, requestBody.UserID); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add comment. Please try again: " + err.Error()})
 			return
 		}

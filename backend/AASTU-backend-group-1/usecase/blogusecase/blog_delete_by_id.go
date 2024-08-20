@@ -12,7 +12,7 @@ func (b *BlogUsecase) DeleteBlogByID(id string, claim *domain.LoginClaims) error
 	if err != nil {
 		return err
 	}
-	if blog.Author.Username != claim.Username && claim.Role != "admin" {
+	if blog.Author != claim.Username && claim.Role != "admin" {
 		return errors.New("you are not the author of this blog")
 	}
 

@@ -46,3 +46,44 @@ func (l *BlogController) AddLike(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, "like added")
 }
+
+func (l *BlogController) RemoveLike(ctx *gin.Context) {
+	idHex := ctx.Param("id")
+	id, err := primitive.ObjectIDFromHex(idHex)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, "invalid id")
+		return
+	}
+
+	claim, ok := ctx.MustGet("claims").(*domain.LoginClaims)
+
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	err = l.BlogUsecase.RemoveLike(id.Hex(), claim)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	ctx.JSON(http.StatusOK, "like removed")
+}
+
+func (l *BlogController) GetBlogLikes(ctx *gin.Context) {
+	idHex := ctx.Param("id")
+	id, err := primitive.ObjectIDFromHex(idHex)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, "invalid id")
+		return
+	}
+
+	likes, err := l.BlogUsecase.GetBlogLikes(id.Hex())
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	ctx.JSON(http.StatusOK, likes)
+}

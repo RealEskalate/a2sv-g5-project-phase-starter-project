@@ -64,18 +64,23 @@ func privateUserRouter(router *gin.RouterGroup, userController *usercontroller.U
 func privateBlogRouter(router *gin.RouterGroup, blogController *blogcontroller.BlogController) {
 	router.POST("/blogs", blogController.InsertBlog)
 	router.GET("/blogs", blogController.GetBlogs)
-	router.GET("/blogs/:id", func(ctx *gin.Context) {})
-	router.PUT("/blogs/:id", func(ctx *gin.Context) {})
-	router.DELETE("/blogs/:id", func(ctx *gin.Context) {})
+	router.GET("/blogs/:id", blogController.GetBlogByID)
+	router.PUT("/blogs/:id", blogController.UpdateBlogByID)
+	router.DELETE("/blogs/:id", blogController.DeleteLogByID)
 
-	router.POST("/blogs/:id/comments", func(ctx *gin.Context) {})
-	router.GET("/blogs/:id/comments", func(ctx *gin.Context) {})
+	router.POST("/blogs/:id/comments", blogController.AddComment)
+	router.GET("/blogs/:id/comments", blogController.GetBlogComments)
 
-	router.POST("/blogs/:id/likes", func(ctx *gin.Context) {})
-	router.GET("/blogs/:id/likes", func(ctx *gin.Context) {})
+	router.POST("/blogs/:id/likes", blogController.AddLike)
+	router.DELETE("/blogs/:id/likes", blogController.RemoveLike)
+	router.GET("/blogs/:id/likes", blogController.GetBlogLikes)
+
+	router.POST("/blogs/views", blogController.AddView)
+
+	router.GET("/blogs/search", blogController.SearchBlog)
+	router.GET("/blogs/tags", blogController.FilterBlog)
 
 	router.POST("/blogs/[id]/views", func(ctx *gin.Context) {})
-
 	router.POST("/blogs/generate",blogController.GenerateContent)
 }
 

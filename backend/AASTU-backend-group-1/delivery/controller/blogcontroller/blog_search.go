@@ -1,20 +1,26 @@
 package blogcontroller
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func (b *BlogController) SearchBlog(ctx *gin.Context) {
+
 	var search struct {
 		Title  string   `json:"title"`
 		Author string   `json:"author"`
 		Tags   []string `json:"tags"`
 	}
+	   search.Title = ctx.Query("title")
+	   search.Author = ctx.Query("author")
+	   search.Tags = ctx.QueryArray("tags")
 
-	if err := ctx.ShouldBindJSON(&search); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	if search.Title == "" || search.Author == "" || len(search.Tags) == 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": errors.New("title, author and tags are required")})
 		return
 	}
 

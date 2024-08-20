@@ -17,6 +17,11 @@ func (b *BlogUsecase) AddView(view []primitive.ObjectID, claim domain.LoginClaim
 			User:   claim.Username,
 		}
 		views = append(views, &temp)
+
+		err := b.BlogRepo.IncrmentBlogViews(v.Hex())
+		if err != nil {
+			return err
+		}
 	}
 
 	return b.BlogRepo.AddView(views)

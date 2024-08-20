@@ -10,7 +10,7 @@ type Blog struct {
 	ID            primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Title         string             `bson:"title" json:"title" binding:"required"`
 	Content       string             `bson:"content" json:"content" binding:"required"`
-	Author        User               `bson:"author" json:"author"`
+	Author        string             `bson:"author" json:"author"`
 	Tags          []string           `bson:"tags" json:"tags"`
 	CreatedAt     time.Time          `bson:"created_at" json:"created_at"`
 	LastUpdatedAt time.Time          `bson:"updated_at" json:"updated_at"`
@@ -38,7 +38,7 @@ type Comment struct {
 }
 
 type BlogRepository interface {
-	InsertBlog(blog *Blog) error
+	InsertBlog(blog *Blog) (*Blog, error)
 	GetBlogByID(id string) (*Blog, error)
 	UpdateBlogByID(id string, blog *Blog) error
 	DeleteBlogByID(id string) error
@@ -51,10 +51,17 @@ type BlogRepository interface {
 	GetBlogsByPopularity(page, limit int, reverse bool) ([]*Blog, error)
 	GetBlogsByRecent(page, limit int, reverse bool) ([]*Blog, error)
 	GetLikebyAuthorAndBlogID(blogID string, author string) (*Like, error)
+	GetBlogComments(blogID string) ([]*Comment, error)
+	GetBlogLikes(blogID string) ([]*Like, error)
+	IncrmentBlogViews(blogID string) error
+	IncrmentBlogLikes(blogID string) error
+	IncrmentBlogComments(blogID string) error
+	DecrementBlogLikes(blogID string) error
+	RemoveLike(blogID string, author string) error
 }
 
 type BlogUsecase interface {
-	InsertBlog(blog *Blog) error
+	InsertBlog(blog *Blog) (*Blog, error)
 	GetBlogByID(id string) (*Blog, error)
 	UpdateBlogByID(id string, blog *Blog, claim *LoginClaims) error
 	DeleteBlogByID(id string, claim *LoginClaims) error
@@ -64,5 +71,8 @@ type BlogUsecase interface {
 	AddLike(like *Like) error
 	AddComment(comment *Comment) error
 	GetBlogs(sortBy string, page, limit int, reverse bool) ([]*Blog, error)
+	GetBlogComments(blogID string) ([]*Comment, error)
+	GetBlogLikes(blogID string) ([]*Like, error)
+	RemoveLike(id string ,claim *LoginClaims) error
 	GenerateAiContent(prompt string) (string, error)
 }

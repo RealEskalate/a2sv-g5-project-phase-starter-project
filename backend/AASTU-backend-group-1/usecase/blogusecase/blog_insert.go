@@ -5,11 +5,12 @@ import (
 )
 
 // InsertBlog implements domain.BlogUsecase.
-func (b *BlogUsecase) InsertBlog(blog *domain.Blog) error {
-	err := b.BlogRepo.InsertBlog(blog)
+func (b *BlogUsecase) InsertBlog(blog *domain.Blog) (*domain.Blog,error) {
+	newblog,err := b.BlogRepo.InsertBlog(blog)
 	if err != nil {
-		return err
+		return nil,err
 	}
-
-	return nil
+	return newblog,nil
+	
+	
 }

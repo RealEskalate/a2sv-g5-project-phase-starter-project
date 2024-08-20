@@ -6,7 +6,7 @@ import (
 
 	"AAIT-backend-group-3/internal/domain/models"
 	"AAIT-backend-group-3/internal/infrastructures/services"
-	"AAIT-backend-group-3/internal/repositories/interfaces"
+	repository_interface "AAIT-backend-group-3/internal/repositories/interfaces"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -17,6 +17,7 @@ type UserUsecase struct {
 	passwordService services.IHashService
 	validationService services.IValidationService
 	emailService services.IEmailService
+	jwtSevices services.IJWT
 }
 
 
@@ -44,6 +45,44 @@ func (u *UserUsecase) SignUp(user *models.User) error {
 	}
 	user.Password = encryptedPassword
 	return u.userRepo.SignUp(user)
+}
+
+func (u *UserUsecase) Login(user *models.User) (string, string, error) {
+	if _, err := u.validationService.ValidateEmail(user.Email); err != nil {
+		return "", "", err
+	}
+	existingUser, err := u.userRepo.GetUserByEmail(user.Email)
+	if err != nil {
+		return "", "", errors.New("invalid email or password")
+	}
+	if !u.passwordService.CompareHash(existingUser.Password,user.Password, ) {
+		return "","", errors.New("invalid password")
+	}
+
+	accessToken, _ := u.jwtSevices.GenerateAccessToken(existingUser.ID.Hex(), existingUser.Role)
+	refershToken, _ := u.jwtSevices.GenerateRefreshToken(existingUser.ID.Hex(), existingUser.Role)
+
+	return accessToken, refershToken, nil
+}
+
+func (u *UserUsecase) RefreshToken(userId primitive.ObjectID ,refreshTok string ) (string, error) {
+
+	if !u.jwtSevices.ValidateRefreshToken(refreshTok) {
+		return "", errors.New("invalid token")
+	}
+
+	existingUser, err := u.userRepo.GetUserByID(userId)
+	if err != nil {
+		return "", errors.New("user not found")
+	}
+
+	if (existingUser.RefToken != refreshTok) {
+		return "", errors.New("invalid token")
+	}
+
+	accessToken, _ := u.jwtSevices.GenerateAccessToken(existingUser.ID.Hex(), existingUser.Role)
+
+	return accessToken, nil
 }
 
 func (u *UserUsecase) GetUserByID(userID primitive.ObjectID) (*models.User, error) {

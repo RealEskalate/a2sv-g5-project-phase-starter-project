@@ -11,21 +11,19 @@ type refreshUsecase struct {
 	jwtService        interfaces.JwtService
 	sessionRepository interfaces.SessionRepository
 	userRepository    interfaces.UserRepository
-	ctx               context.Context
 }
 
-func NewRefreshUsecase(jwtService interfaces.JwtService, sessionRepository interfaces.SessionRepository, userRepository interfaces.UserRepository, ctx context.Context) interfaces.RefreshUsecase {
+func NewRefreshUsecase(jwtService interfaces.JwtService, sessionRepository interfaces.SessionRepository, userRepository interfaces.UserRepository) interfaces.RefreshUsecase {
 	return &refreshUsecase{
 		jwtService:        jwtService,
 		sessionRepository: sessionRepository,
 		userRepository:    userRepository,
-		ctx:               ctx,
 	}
 }
 
-func (uc *refreshUsecase) RefreshToken(userID string, refreshToken string) (string, *models.ErrorResponse) {
+func (uc *refreshUsecase) RefreshToken(ctx context.Context, userID string, refreshToken string) (string, *models.ErrorResponse) {
 	//get the user session
-	session, err := uc.sessionRepository.GetToken(uc.ctx, userID)
+	session, err := uc.sessionRepository.GetToken(ctx, userID)
 	if err != nil {
 		return "", err
 	}
@@ -35,7 +33,7 @@ func (uc *refreshUsecase) RefreshToken(userID string, refreshToken string) (stri
 		return "", models.Unauthorized("Invalid refresh token")
 	}
 
-	user, err := uc.userRepository.GetUserByID(uc.ctx, userID)
+	user, err := uc.userRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return "", err
 	}
@@ -53,7 +51,7 @@ func (uc *refreshUsecase) RefreshToken(userID string, refreshToken string) (stri
 	}
 
 	// store the new access token
-	err = uc.sessionRepository.UpdateToken(uc.ctx, &newSession)
+	err = uc.sessionRepository.UpdateToken(ctx, &newSession)
 	if err != nil {
 		return "", err
 	}

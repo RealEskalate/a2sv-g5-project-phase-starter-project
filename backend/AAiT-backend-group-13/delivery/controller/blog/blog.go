@@ -23,7 +23,7 @@ type Controller struct {
 	addHandler         icmd.IHandler[*addcmd.Command, *blogmodel.Blog]
 	updateHandler      icmd.IHandler[*updatecmd.Command, *blogmodel.Blog]
 	deleteHandler      icmd.IHandler[uuid.UUID, bool]
-	getMultipleHandler icmd.IHandler[blogqry.GetMultipleQuery, []*blogmodel.Blog]
+	getMultipleHandler icmd.IHandler[*blogqry.GetMultipleQuery, []*blogmodel.Blog]
 }
 
 var _ common.IController = &Controller{}
@@ -33,7 +33,7 @@ type Config struct {
 	AddHandler         icmd.IHandler[*addcmd.Command, *blogmodel.Blog]
 	UpdateHandler      icmd.IHandler[*updatecmd.Command, *blogmodel.Blog]
 	DeleteHandler      icmd.IHandler[uuid.UUID, bool]
-	GetMultipleHandler icmd.IHandler[blogqry.GetMultipleQuery, []*blogmodel.Blog]
+	GetMultipleHandler icmd.IHandler[*blogqry.GetMultipleQuery, []*blogmodel.Blog]
 }
 
 // New creates a new blog Controller with the given dependencies.
@@ -142,7 +142,7 @@ func (c *Controller) getBlogs(ctx *gin.Context) {
 		lastSeenId = uuid.Nil
 	}
 
-	blogs, err := c.getMultipleHandler.Handle(blogqry.GetMultipleQuery{
+	blogs, err := c.getMultipleHandler.Handle(&blogqry.GetMultipleQuery{
 		UserID:     authorId,
 		Limit:      limit,
 		LastSeenID: &lastSeenId,

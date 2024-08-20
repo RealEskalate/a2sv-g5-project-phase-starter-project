@@ -1,30 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faSearch } from "@fortawesome/free-solid-svg-icons";
-import { faBell } from "@fortawesome/free-regular-svg-icons";
+import {
+  faBars,
+  faSearch,
+  faMoon,
+  faSun,
+} from "@fortawesome/free-solid-svg-icons";
+import { useAppDispatch, useAppSelector } from "@/app/Redux/store/store";
+import { setDarkMode, toggleDarkMode } from "@/app/Redux/slices/darkModeSlice";
 
 const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
+  const isDarkMode = useAppSelector((state) => state.darkMode.darkMode);
+  const dispatch = useAppDispatch();
+
+  const onDarkMode = () => {
+    dispatch(toggleDarkMode());
+  };
+
   return (
-    <div className="w-full fixed left-0 z-10 flex flex-row justify-center items-center bg-white sm:px-[4%] sm:gap-[6%] lg:pl-[240px] pr-[3%] py-4">
+    <div className="w-full fixed left-0 z-10 flex flex-row justify-center items-center bg-white dark:bg-[#232328] xs:px-[3%] sm:px-[4%] sm:gap-[6%] lg:pl-[240px] pr-[3%] py-4">
       <button
         onClick={openSidebar}
-        className="bg-[#F5F7FA] rounded-[12px] p-3 py-2 flex items-center hover:bg-[#d0e6f6] lg:hidden"
+        className="bg-[#F5F7FA] dark:bg-gray-600 rounded-[12px] p-3 py-2 flex items-center hover:bg-[#d0e6f6] dark:hover:bg-gray-600 lg:hidden"
       >
-        <FontAwesomeIcon icon={faBars} className="text-2xl text-gray-700" />
+        <FontAwesomeIcon
+          icon={faBars}
+          className="text-2xl text-gray-700 dark:text-gray-300"
+        />
       </button>
-      <h1 className="text-3xl font-semibold text-[#343C6A] sm:hidden lg:block">
+      <h1 className="text-3xl font-semibold text-[#343C6A] dark:text-white xs:hidden sm:hidden lg:block">
         Overview
       </h1>
-      <div className="flex justify-end gap-5 grow">
-        {/* Search */}
-        <div className="relative  flex gap-2 items-center text-base text-[#8BA3CB] sm:grow  lg:grow-0">
+      <div className="flex justify-end gap-5 grow ">
+        <div className="relative flex gap-2 items-center text-base text-[#8BA3CB] dark:text-gray-400 xs:grow xs:fixed xs:top-24 xs:left-2 xs:w-[90%] sm:grow-0 sm:relative sm:top-0 sm:w-fit">
           <FontAwesomeIcon
             icon={faSearch}
             className="absolute left-5 text-xl"
           />
           <input
-            className="w-full  bg-[#F5F7FA] py-2 pl-12 pr-6 rounded-3xl border-solid border-2 border-blue-50 placeholder:text-base placeholder:text-[#8BA3CB] focus:outline-none focus:border-blue-200"
+            className="w-full bg-[#F5F7FA] dark:bg-gray-700 py-2 pl-12 pr-6 rounded-3xl border-solid border-2 border-blue-50 dark:border-gray-600 placeholder:text-base placeholder:text-[#8BA3CB] dark:placeholder:text-gray-400 focus:outline-none focus:border-blue-200 dark:focus:border-gray-500"
             type="text"
             name="search"
             id="search"
@@ -32,16 +47,17 @@ const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
           />
         </div>
 
-        {/* User tool */}
-        <button className="bg-[#F5F7FA] rounded-full p-3">
-          <Image
-            src="/assets/settings 1.svg"
-            alt="setting"
-            width={24}
-            height={24}
+        <button
+          onClick={onDarkMode}
+          className="flex items-center bg-[#F5F7FA] dark:bg-gray-700 rounded-full p-3 hover:bg-gray-200 dark:hover:bg-gray-600 xs:w-[50px]"
+        >
+          <FontAwesomeIcon
+            icon={isDarkMode ? faSun : faMoon}
+            className="text-[#718EBF] dark:text-yellow-400 text-xl px-1"
           />
         </button>
-        <button className="bg-[#F5F7FA] rounded-full p-3">
+
+        <button className="bg-[#F5F7FA] dark:bg-gray-700 rounded-full p-3 xs:hidden md:flex">
           <Image
             src="/assets/bell-icon.svg"
             alt="notification"
@@ -49,7 +65,6 @@ const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
             height={24}
           />
         </button>
-
         <button>
           <Image
             className="rounded-full"

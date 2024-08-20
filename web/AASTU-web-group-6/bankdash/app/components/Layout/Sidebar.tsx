@@ -2,10 +2,16 @@
 
 import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faClose, faSearch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faClose,
+  faRightFromBracket,
+  faSearch,
+} from "@fortawesome/free-solid-svg-icons";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { useAppSelector } from "@/app/Redux/store/store";
 
 const Sidebar = ({
   isOpen,
@@ -66,28 +72,35 @@ const Sidebar = ({
       icon: "/assets/service-icon.svg",
       active: "/assets/service-icon-active.svg",
     },
+
     {
-      label: "My Privileges",
-      url: "/privilages",
-      icon: "/assets/privi-icon.svg",
-      active: "/assets/privi-icon-active.svg",
-    },
-    {
-      label: "Setting",
+      label: "Settings",
       url: "/setting",
       icon: "/assets/setting-icon.svg",
       active: "/assets/setting-icon-active.svg",
     },
+    {
+      label: "LogOut",
+      url: "/login",
+      icon: "/assets/logout-icon.svg",
+      active: "/assets/logout-icon-active.svg",
+    },
   ];
+  const isDarkMode = useAppSelector((state) => state.darkMode.darkMode);
+
+  // Apply dark mode class directly
+  const darkModeClass = isDarkMode ? "dark" : "";
 
   return (
-    <div className="py-6 px-5 w-[99.6%]  h-screen flex flex-col gap-8 border-r border-r-[#E6EFF5] bg-white">
+    <div className="py-6 px-5 w-[99.6%]  h-screen flex flex-col gap-8 border-r border-r-[#E6EFF5] border-white dark:border-r-gray-700 dark:bg-[#232328] relative">
       <div className="flex gap-2 px-[4%] relative">
         <Image src="/assets/logo.svg" alt="logo" width={36} height={36} />
-        <h1 className="text-2xl font-extrabold text-[#343C6A]">BankDash.</h1>
+        <h1 className="text-2xl font-extrabold text-[#343C6A] dark:text-white">
+          BankDash.
+        </h1>
         <button
           onClick={closeSidebar}
-          className="bg-[#F5F7FA] rounded-[12px] p-3 py-2 flex items-center absolute left-64 hover:bg-[#d0e6f6] lg:hidden"
+          className="bg-[#F5F7FA] rounded-[12px] p-3 py-2 flex items-center absolute xs:left-48 md:left-64 hover:bg-[#d0e6f6] lg:hidden"
         >
           <FontAwesomeIcon icon={faClose} className="text-2xl text-gray-700" />
         </button>
@@ -117,7 +130,9 @@ const Sidebar = ({
             />
             <div
               className={`${
-                isActive(item.url) ? "text-[#1814F3]" : "text-[#B1B1B1]"
+                isActive(item.url)
+                  ? "text-[#1814F3] dark:text-white"
+                  : "text-[#B1B1B1]"
               } hover:text-[#1814F3]`}
             >
               {item.label}

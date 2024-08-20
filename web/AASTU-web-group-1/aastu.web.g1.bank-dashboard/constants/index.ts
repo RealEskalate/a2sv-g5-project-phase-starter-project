@@ -38,11 +38,6 @@ export const sidebarLinks = [
         icon: '/icons/Services.svg'
     }, 
     {
-        title: 'My Privileges',
-        route: '/dashboard/my-privileges',
-        icon: '/icons/MyPrivileges.svg'
-    }, 
-    {
         title: 'Setting',
         route: '/dashboard/setting',
         icon: '/icons/Settings.svg'
@@ -76,6 +71,49 @@ export const loanTypes =[
     },
 ]
 
+export const servicesList =[
+    {
+        name: 'Life Insurance',
+        icon: '/servicesIcons/lifeInsurance.svg'
+    },
+    {
+        name: 'Shoping',
+        icon: '/servicesIcons/shopping.svg'
+    },
+    {
+        name: 'Saftey',
+        icon: '/servicesIcons/saftey.svg'
+    },
+    
+]
+
+export const bankServices =[
+    {
+        name: 'Business Loans',
+        icon: '/servicesIcons/lifeinsurance.svg'
+    },
+    {
+        name: 'Checking Account',
+        icon: '/servicesIcons/checkingaccount.svg'
+    },
+    {
+        name: 'Saving',
+        icon: '/servicesIcons/saving.svg'
+    },
+    {
+        name: 'User',
+        icon: '/servicesIcons/user.svg'
+    },
+    {
+        name: 'Life Insurance',
+        icon: '/servicesIcons/lifeinsurance.svg'
+    },
+    {
+        name: 'Business loan',
+        icon: '/servicesIcons/businessloans.svg'
+    },
+]
+    
 export const investmentTypes =[
     {
         name: 'Total Invested Amount',

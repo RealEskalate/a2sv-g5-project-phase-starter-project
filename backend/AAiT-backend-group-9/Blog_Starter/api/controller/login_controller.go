@@ -42,7 +42,9 @@ func (lc *LoginController) Login(c *gin.Context){
 		return
 	}
 
+
 	// TODO: update tokens using the right method
+
 	c.JSON(http.StatusOK, loginResponse)
 	
 

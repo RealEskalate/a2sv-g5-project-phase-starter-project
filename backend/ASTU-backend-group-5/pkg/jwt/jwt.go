@@ -17,9 +17,9 @@ func init() {
 
 	// Retrieve the secret key from the environment variable
 	secretKey = []byte(os.Getenv("JWT_SECRET"))
-	// if len(secretKey) == 0 {
-	// 	panic("JWT_SECRET_KEY environment variable is not set")
-	// }
+	if len(secretKey) == 0 {
+		panic("JWT_SECRET_KEY environment variable is not set")
+	}
 }
 
 // GenerateJWT generates a new JWT token and populates it with the user's ID and email

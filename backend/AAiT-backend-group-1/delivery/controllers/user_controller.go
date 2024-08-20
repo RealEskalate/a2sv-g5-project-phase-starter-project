@@ -28,6 +28,8 @@ func (userController *UserController) Register(cxt *gin.Context) {
 		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errCreate.Error()})
 		return
 	}
+
+
 	cxt.JSON(http.StatusAccepted, gin.H{"Message": "User Successfully Registered"})
 }
 

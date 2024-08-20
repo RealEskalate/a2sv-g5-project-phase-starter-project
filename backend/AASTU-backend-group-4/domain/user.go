@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"blog-api/infrastructure/bootstrap"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -20,8 +21,9 @@ type User struct {
 	Bio                string             `json:"bio" bson:"bio"`
 	ProfilePicture     string             `json:"profile_picture" bson:"profile_picture"` // URL to the profile picture
 	ContactInformation string             `json:"contact_information" bson:"contact_information"`
-  IsAdmin            bool               `json:"isAdmin" bson:"isAdmin"`
-  Active             bool               `json:"active" bson:"active"`
+	IsAdmin            bool               `json:"isAdmin" bson:"isAdmin"`
+	Active             bool               `json:"active" bson:"active"`
+	RefreshToken       string             `json:"refresh_token" bson:"refresh_token"`
 }
 
 type UpdateRequest struct {
@@ -31,6 +33,7 @@ type UpdateRequest struct {
 	Bio                string `json:"bio" bson:"bio"`
 	ProfilePicture     string `json:"profile_picture" bson:"profile_picture"`
 	ContactInformation string `json:"contact_information" bson:"contact_information"`
+	RefreshToken       string `json:"refresh_token" bson:"refresh_token"`
 }
 
 type LoginRequest struct {
@@ -62,6 +65,7 @@ type UserUsecase interface {
 	DeleteRefreshTokenByUserID(ctx context.Context, userID string) error
 	GeneratePasswordResetToken(ctx context.Context, email, resetTokenSecret string, expiryHour int) error
 	ResetPassword(ctx context.Context, resetToken, newPassword, resetTokenSecret string) error
+	LoginUser(ctx context.Context, loginRequest LoginRequest, Env *bootstrap.Env) (LoginResponse, error)
 }
 
 type UserRepository interface {

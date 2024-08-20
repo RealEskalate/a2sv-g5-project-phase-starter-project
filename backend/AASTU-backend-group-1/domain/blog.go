@@ -74,4 +74,5 @@ type BlogUsecase interface {
 	GetBlogComments(blogID string) ([]*Comment, error)
 	GetBlogLikes(blogID string) ([]*Like, error)
 	RemoveLike(id string ,claim *LoginClaims) error
+	GenerateAiContent(prompt string) (string, error)
 }

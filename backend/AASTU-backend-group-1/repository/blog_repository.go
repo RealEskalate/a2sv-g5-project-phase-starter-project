@@ -86,10 +86,12 @@ func (b *BlogRepository) SearchBlog(title, author string, tags []string) ([]*dom
 			{"tags": bson.M{"$in": tags}},
 		},
 	}
+
 	cursor, err := b.blogCollection.Find(context.Background(), filter)
 	if err != nil {
 		return nil, err
 	}
+
 	for cursor.Next(context.Background()) {
 		var blog domain.Blog
 		err := cursor.Decode(&blog)

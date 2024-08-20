@@ -5,11 +5,13 @@ import (
 )
 
 type UserUsecase struct {
-	UserRepo domain.UserRepository
+	UserRepo   domain.UserRepository
+	Oauth2Repo domain.OAuthStateRepository
 }
 
-func NewUserUsecase(ur domain.UserRepository) domain.UserUsecase {
+func NewUserUsecase(ur domain.UserRepository, or domain.OAuthStateRepository) domain.UserUsecase {
 	return &UserUsecase{
-		UserRepo: ur,
+		UserRepo:   ur,
+		Oauth2Repo: or,
 	}
 }

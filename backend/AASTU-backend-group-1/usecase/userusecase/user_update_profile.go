@@ -3,7 +3,6 @@ package userusecase
 import (
 	"blogs/config"
 	"blogs/domain"
-	"errors"
 )
 
 func (u *UserUsecase) UpdateProfile(user *domain.User, claims *domain.LoginClaims) error {
@@ -55,6 +54,23 @@ func (u *UserUsecase) UpdateProfile(user *domain.User, claims *domain.LoginClaim
 		existingUser.Email = user.Email
 	}
 
+	// Check if the username is present and is unique
+	if user.Username != "" {
+		err = config.IsValidUsername(user.Username)
+		if err != nil {
+			return err
+		}
+
+		// Check if the username is unique
+		err = u.UserRepo.CheckUsernameAndEmail(user.Username, existingUser.Email)
+		if err != nil {
+			return err
+		}
+
+		existingUser.Username = user.Username
+	
+	}
+
 	// Check if the password is present and is strong
 	if user.Password != "" {
 		// Validate the password
@@ -74,12 +90,12 @@ func (u *UserUsecase) UpdateProfile(user *domain.User, claims *domain.LoginClaim
 
 	// Check if the role is present
 	if user.Role != "" {
-		return errors.New("role cannot be updated")
+		return config.ErrUpdateRole
 	}
 
 	// Check if the joined date is present
 	if !user.JoinedDate.IsZero() {
-		return errors.New("joined date cannot be updated")
+		return config.ErrUpdateJoined
 	}
 
 	// Update the user profile in the repository

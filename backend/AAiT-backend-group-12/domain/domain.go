@@ -17,6 +17,13 @@ const (
 )
 
 const (
+	RoleUser = "user" 
+	RoleAdmin = "admin"
+	RoleRoot = "root"
+)
+
+
+const (
 	VerifyEmailType   = "verify_email"
 	ResetPasswordType = "reset_password"
 )
@@ -28,6 +35,7 @@ type VerificationData struct {
 	ExpiresAt time.Time `json:"expires_at"`
 	Type      string    `json:"type"`
 }
+
 
 type User struct {
 	Username         string           `json:"username"`
@@ -42,10 +50,11 @@ type User struct {
 	VerificationData VerificationData `json:"verification_data"`
 }
 
+
 type Blog struct {
 	ID         string    `json:"id"`
-	Title      string    `json:"title" validate:"required,min=2"`
-	Content    string    `json:"content" validate:"required,min=6"`
+	Title      string    `json:"title"`
+	Content    string    `json:"content"`
 	Username   string    `json:"username"`
 	Tags       []string  `json:"tags"`
 	CreatedAt  time.Time `json:"created_at"`
@@ -56,13 +65,27 @@ type Blog struct {
 	Comments   []Comment `json:"comment"`
 }
 
-// Comment represents a comment entity in the domain.
+
+type NewBlog struct{
+	Title      string    `json:"title" validate:"required,min=2"`
+	Content    string    `json:"content" validate:"required,min=6"`
+	Tags       []string  `json:"tags"`
+}
+
+
 type Comment struct {
 	ID        string    `json:"id"`
 	Content   string    `json:"content"`
 	Username  string    `json:"username"`
 	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
+
+
+type NewComment struct{
+	Content   string    `json:"content"`
+}
+
 
 type BlogFilterOptions struct {
 	Title         string // Search by title
@@ -80,26 +103,43 @@ type BlogFilterOptions struct {
 	MinViewCount  int    // Filter by minimum view count
 }
 
+
 type BlogRepositoryInterface interface {
+	//Blog related methods
 	FetchBlogPostByID(ctx context.Context, postID string) (*Blog, CodedError)
 	FetchBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, CodedError)
 	InsertBlogPost(ctx context.Context, blog *Blog) CodedError
-	UpdateBlogPost(ctx context.Context, id string, blog *Blog) CodedError
+	UpdateBlogPost(ctx context.Context, id string, blog *NewBlog) CodedError
 	DeleteBlogPost(ctx context.Context, id string) CodedError
 	TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) CodedError
+
+	//Comment related methods
+	FetchComment(ctx context.Context, commentID, blogID string) (Comment, CodedError)
+	CreateComment(ctx context.Context, comment *Comment, blogID, createdBy string) CodedError
+	UpdateComment(ctx context.Context, comment *NewComment, commentID, blogID, userName string) CodedError
+	DeleteComment(ctx context.Context, commentID, blogID, userName string) CodedError
 }
 
+
 type BlogUseCaseInterface interface {
+	//Blog related methods
 	GetBlogPostByID(ctx context.Context, id string) (*Blog, CodedError)
 	GetBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, CodedError)
-	CreateBlogPost(ctx context.Context, blog *Blog) CodedError
-	EditBlogPost(ctx context.Context, id string, blog *Blog) CodedError
-	DeleteBlogPost(ctx context.Context, id string) CodedError
-	TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) CodedError
+	CreateBlogPost(ctx context.Context, blog *NewBlog, createdBy string) CodedError
+	EditBlogPost(ctx context.Context, id string, blog *NewBlog, editedBy string) CodedError
+	DeleteBlogPost(ctx context.Context, id, deletedBy string) CodedError
+	TrackBlogPopularity(ctx context.Context, blogId, action, username string) CodedError
 	GenerateTrendingTopics(keywords []string) ([]string, error)
 	ReviewBlogContent(blogContent string) (string, error)
 	GenerateBlogContent(topics []string) (string, error)
+
+	//Comment related methods
+	FindComment(ctx context.Context, commentID, blogID string) (Comment, CodedError)
+	AddComment(ctx context.Context, blogID string, newComment *NewComment, username string) CodedError
+	UpdateComment(ctx context.Context, blogID string, commentID string, comment *NewComment, username string) CodedError
+	DeleteComment(ctx context.Context, blogID, commentID, username string) CodedError
 }
+
 
 type UserRepositoryInterface interface {
 	CreateUser(c context.Context, user *User) CodedError
@@ -110,6 +150,7 @@ type UserRepositoryInterface interface {
 	VerifyUser(c context.Context, username string) CodedError
 	UpdateVerificationDetails(c context.Context, username string, verificationData VerificationData) CodedError
 }
+
 
 type UserUsecaseInterface interface {
 	Signup(c context.Context, user *User, hostUrl string) CodedError

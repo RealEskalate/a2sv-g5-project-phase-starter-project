@@ -52,6 +52,7 @@ func (userRepo *UserRepository) FindByEmail(cxt context.Context, email string) (
 	}
 	return &fetchedUser, nil
 }
+
 func (userRepo *UserRepository) FindByUsername(cxt context.Context, username string) (*domain.User, domain.Error) {
 	filter := bson.D{{"username", username}}
 	var fetchedUser domain.User

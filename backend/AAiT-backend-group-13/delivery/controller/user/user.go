@@ -1,4 +1,4 @@
-package controller
+package usercontroller
 
 import (
 	"log"
@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	basecontroller "github.com/group13/blog/delivery/base"
 	common "github.com/group13/blog/delivery/common/icontroller"
-	"github.com/group13/blog/delivery/controller/dto"
+	"github.com/group13/blog/delivery/controller/user/dto"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
 	resetcodevalidate "github.com/group13/blog/usecase/password_reset/code_validator" // Add this line
 	forgotpassword "github.com/group13/blog/usecase/password_reset/reset"
@@ -19,7 +19,7 @@ import (
 	"github.com/group13/blog/usecase/user/result"
 )
 
-type UserController struct {
+type Controller struct {
 	basecontroller.BaseHandler
 	promotHandler         icmd.IHandler[*promotcmd.Command, bool]
 	loginHandler          icmd.IHandler[*logincommand.LoginCommand, *result.LoginInResult]
@@ -42,8 +42,8 @@ type Config struct {
 }
 
 // New creates a new UserController with the given CQRS handler.
-func New(config Config) *UserController {
-	return &UserController{
+func New(config Config) *Controller {
+	return &Controller{
 		BaseHandler:           config.BaseHandler,
 		promotHandler:         config.PromotHandler,
 		loginHandler:          config.LoginHandler,
@@ -54,31 +54,33 @@ func New(config Config) *UserController {
 	}
 }
 
-func (u UserController) RegisterPrivileged(router *gin.RouterGroup) {
+var _ common.IController = &Controller{}
+
+func (u Controller) RegisterPrivileged(router *gin.RouterGroup) {
 	router = router.Group("/admin")
 	router.POST("/api/v1/auth/promote", u.Promte)
 	router.POST("/api/v1/auth/demote", u.Demote)
-}
-
-func (u UserController) RegisterPrivate(router *gin.RouterGroup) {
-	router = router.Group("/users")
 	router.POST("/api/v1/auth/forgot-password", u.ForgotPassword)
 	router.POST("/api/v1/auth/reset-password", u.ResetPassword)
+}
+
+func (u Controller) RegisterProtected(router *gin.RouterGroup) {
+	router = router.Group("/users")
+
 	router.POST("POST /api/v1/users/:username/promote", u.Promte)
 	router.POST("POST /api/v1/users/:username/demote", u.Demote)
 	router.GET("POST /api/v1/users/:username/logout", u.Logout)
 
 }
 
-func (u UserController) RegisterProtected(router *gin.RouterGroup) {}
-func (u UserController) RegisterPublic(router *gin.RouterGroup) {
+func (u Controller) RegisterPublic(router *gin.RouterGroup) {
 	router = router.Group("/")
 	router.POST("/api/v1/auth/signup", u.SignUp)
 	router.POST("/api/v1/auth/login", u.Login)
 
 }
 
-func (u UserController) SignUp(ctx *gin.Context) {
+func (u Controller) SignUp(ctx *gin.Context) {
 
 	var user dto.SignUpDto
 	// bind input files
@@ -104,11 +106,8 @@ func (u UserController) SignUp(ctx *gin.Context) {
 
 }
 
-func (u UserController) Login(ctx *gin.Context) {
+func (u Controller) Login(ctx *gin.Context) {
 	var user dto.LoginDto
-	// bind files to user model
-	// bind input files
-
 	if err := ctx.BindJSON(&user); err != nil {
 		u.BaseHandler.Respond(ctx, http.StatusBadRequest, gin.H{"message": "Invalid Input"})
 		log.Println("User Input cannot be bind -- user controller")
@@ -116,10 +115,8 @@ func (u UserController) Login(ctx *gin.Context) {
 	}
 
 	command := logincommand.NewLoginCommand(user.Username, user.Password)
-	// pass to usercases
 	res, err := u.loginHandler.Handle(&command)
 
-	// pass to login usercase
 	if err != nil {
 		u.BaseHandler.Respond(ctx, http.StatusInternalServerError, gin.H{"message": err.Error()})
 		log.Println("User use case invalidated it -- user controller")
@@ -148,16 +145,15 @@ func (u UserController) Login(ctx *gin.Context) {
 	})
 }
 
-func (u UserController) ForgotPassword(ctx *gin.Context) {
+func (u Controller) ForgotPassword(ctx *gin.Context) {
 	var request dto.ForgotPasswordDto
-	// bind input files
+
 	if err := ctx.BindJSON(&request); err != nil {
 		u.BaseHandler.Respond(ctx, http.StatusBadRequest, gin.H{"message": "Invalid Input"})
 		log.Println("User Input cannot be bind -- user controller")
 		return
 	}
 
-	// pass to usecase
 	command := forgotpassword.NewCommand(request.Id, request.Token, request.NewPassword)
 	_, err := u.forgotPasswordHandler.Handle(command)
 
@@ -171,7 +167,7 @@ func (u UserController) ForgotPassword(ctx *gin.Context) {
 
 }
 
-func (u UserController) ResetPassword(ctx *gin.Context) {
+func (u Controller) ResetPassword(ctx *gin.Context) {
 	var request dto.ResetPasswordDto
 	// bind input files
 	if err := ctx.BindJSON(&request); err != nil {
@@ -194,7 +190,7 @@ func (u UserController) ResetPassword(ctx *gin.Context) {
 
 }
 
-func (u UserController) Logout(ctx *gin.Context) {
+func (u Controller) Logout(ctx *gin.Context) {
 	u.RespondWithCookies(ctx, http.StatusNoContent, nil, []*http.Cookie{
 		{
 			Name:     "",
@@ -208,15 +204,15 @@ func (u UserController) Logout(ctx *gin.Context) {
 	})
 }
 
-func (u UserController) Promte(ctx *gin.Context) {
+func (u Controller) Promte(ctx *gin.Context) {
 	u.ChangeStatus(true, ctx)
 }
 
-func (u UserController) Demote(ctx *gin.Context) {
+func (u Controller) Demote(ctx *gin.Context) {
 	u.ChangeStatus(false, ctx)
 }
 
-func (u UserController) ChangeStatus(toAdmin bool, ctx *gin.Context) {
+func (u Controller) ChangeStatus(toAdmin bool, ctx *gin.Context) {
 	username := ctx.Param("id")
 	claims, exists := ctx.Get("userClaims")
 	if !exists {
@@ -258,7 +254,7 @@ func (u UserController) ChangeStatus(toAdmin bool, ctx *gin.Context) {
 
 }
 
-func (u UserController) ValidateEmail(ctx *gin.Context) {
+func (u Controller) ValidateEmail(ctx *gin.Context) {
 
 	encryptedValue := ctx.Query("secret")
 

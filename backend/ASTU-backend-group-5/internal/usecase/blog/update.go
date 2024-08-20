@@ -3,6 +3,7 @@ package blog
 import (
 	"blogApp/internal/domain"
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -11,7 +12,14 @@ import (
 )
 
 // UpdateBlog updates an existing blog
-func (u *blogUseCase) UpdateBlog(ctx context.Context, id string, blog *domain.Blog) error {
+func (u *blogUseCase) UpdateBlog(ctx context.Context, id string, blog *domain.Blog, userID string) error {
+	if blog == nil {
+		return errors.New("blog cannot be nil")
+	}
+	if blog.Author.Hex() != userID {
+		return errors.New("you are not authorized to update this blog")
+	}
+
 	blog.UpdatedAt = primitive.NewDateTimeFromTime(time.Now())
 	err := u.repo.UpdateBlog(ctx, id, blog)
 	if err != nil {

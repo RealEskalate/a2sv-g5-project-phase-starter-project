@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"AAiT-backend-group-6/backend/AAiT-backend-group-6/domain"
-	"AAiT-backend-group-6/backend/AAiT-backend-group-6/mongo"
+	"AAiT-backend-group-6/domain"
+	"AAiT-backend-group-6/mongo"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"

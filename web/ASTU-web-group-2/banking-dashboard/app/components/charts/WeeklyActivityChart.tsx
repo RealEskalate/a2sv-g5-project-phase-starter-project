@@ -142,14 +142,14 @@ function WeeklyActivityChart() {
 
   if (isError) {
     return (
-      <div className="text-gray-500 border rounded-[22px] bg-white lg:w-[730px] px-5 lg:h-[367px] md:w-[520px] md:h-[299px] w-fit h-[254px] p-5">
+      <div className="text-gray-500 border rounded-[22px] bg-white px-5 lg:h-[322px] md:h-[299px] w-fit h-[254px] p-5">
         Ooops! error loading your Activities.
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col text-gray-500 border rounded-[22px] bg-white gap-7 mr-5">
+    <div className=" bg-white lg:w-[730px] px-5 lg:h-[367px] md:w-[520px] md:h-[299px] w-[325px] h-[254px] rounded-[22px]">
       <div className="flex flex-row justify-end gap-2">
         <div className="flex flex-row mx-5 mt-5 gap-1">
           <div className="w-[12px] h-[12px] mt-[6px] border rounded-full bg-[#16DBCC]"></div>
@@ -160,7 +160,7 @@ function WeeklyActivityChart() {
           <div className="">Withdraw</div>
         </div>
       </div>
-      <div className="flex justify-center h-[226px] md:h-[322px] mx-10 pb-5">
+      <div className="flex justify-center h-[226px] md:h-[266px] md:mx-5 lg:mx-10 md:pb-5">
         <canvas ref={chartRef} className="h-fit" />
       </div>
     </div>

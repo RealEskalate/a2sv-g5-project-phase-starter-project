@@ -8,7 +8,11 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func (uc *Infranstructure) GenerateToken(user *domain.User) (string, string, error) {
+type Jwt struct {
+	JwtSecret string
+}
+
+func (s *Jwt) GenerateToken(user *domain.User) (string, string, error) {
 	// Define JWT claims
 	claims := jwt.MapClaims{
 		"email": user.Email,
@@ -18,7 +22,7 @@ func (uc *Infranstructure) GenerateToken(user *domain.User) (string, string, err
 
 	// Create access token
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := accessToken.SignedString([]byte(uc.JWTSecret))
+	tokenString, err := accessToken.SignedString([]byte(s.JwtSecret))
 	if err != nil {
 		return "", "", err
 	}
@@ -29,7 +33,7 @@ func (uc *Infranstructure) GenerateToken(user *domain.User) (string, string, err
 		"exp":   time.Now().Add(time.Hour * 24 * 30).Unix(),
 	}
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
-	refreshTokenString, err := refreshToken.SignedString([]byte(uc.JWTSecret))
+	refreshTokenString, err := refreshToken.SignedString([]byte(s.JwtSecret))
 	if err != nil {
 		return "", "", err
 	}
@@ -37,23 +41,23 @@ func (uc *Infranstructure) GenerateToken(user *domain.User) (string, string, err
 	return tokenString, refreshTokenString, nil
 }
 
-func (uc *Infranstructure) ValidateToken(token string) (*jwt.Token, error) {
+func (s *Jwt) ValidateToken(token string) (*jwt.Token, error) {
 	return jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
-		return []byte(uc.JWTSecret), nil
+		return []byte(s.JwtSecret), nil
 	})
 }
 
-func (uc *Infranstructure) GenerateResetToken(email string) (string, error) {
+func (s *Jwt) GenerateResetToken(email string) (string, error) {
 	claims := jwt.MapClaims{
 		"email": email,
 		"exp":   time.Now().Add(time.Hour * 1).Unix(), // Token valid for 1 hour
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(uc.JWTSecret))
+	tokenString, err := token.SignedString([]byte(s.JwtSecret))
 	if err != nil {
 		return "", err
 	}

@@ -47,14 +47,14 @@ const chartConfig = {
 
 export function PieComp() {
   return (
-    <div className="flex w-full it gap-6 p-8 bg-white rounded-3xl">
+    <div className="flex w-full it gap-6 p-8 bg-white dark:bg-[#232328]  rounded-3xl">
       <Card className="w-full flex flex-col border-0 shadow-none bg-transparent">
         <CardContent className="flex pb-0 p-0">
           <ChartContainer
             config={chartConfig}
             className="sm:w-full lg:w-[330px] lg:h-64"
           >
-            <PieChart className="">
+            <PieChart className=" ">
               <ChartTooltip
                 content={<ChartTooltipContent nameKey="visitors" hideLabel />}
               />
@@ -68,9 +68,10 @@ export function PieComp() {
                 {}
                 <LabelList
                   dataKey="browser"
-                  className="flex flex-col fill-background font-bold text-[13px] text-wrap"
+                  fill="#FFFFFF"
+                  className="font-bold text-[13px] text-wrap "
                   stroke="none"
-                  fontSize={12}
+                  // fontSize={12}
                   formatter={(value: keyof typeof chartConfig) =>
                     chartConfig[value]?.label
                   }

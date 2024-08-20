@@ -107,8 +107,11 @@ export function DebitCreditOver() {
           debit: chartData[day].debit,
           credit: chartData[day].credit,
         }));
-        formattedChartData.reverse();
-        setData(formattedChartData);
+        const currentDayIndex = new Date().getDay();
+        const rotatedChartData = [
+          ...formattedChartData.slice(currentDayIndex + 1),
+          ...formattedChartData.slice(0, currentDayIndex + 1),]
+        setData(rotatedChartData);
         setTotalExpense(expenseSum);
         setTotalIncome(incomeSum);
       } catch (error) {
@@ -118,24 +121,29 @@ export function DebitCreditOver() {
     getData();
   }, []);
   return (
-    <Card className="rounded-3xl shadow-lg border-gray-300   ">
+    <Card className="rounded-3xl shadow-lg dark:bg-[#232328]  ">
       <CardHeader>
         <div className="flex justify-between ">
-          <CardTitle className=" hidden lg:block text-base font-normal font-inter text-[#718EBF]">
-            <span className="text-black">${totalExpense}</span> Debited &{" "}
-            <span className="text-black">${totalIncome}</span> Credited in this
-            Week
+          <CardTitle className="flex gap-2 lg:block lg:text-[12px] xl:text-base text-base font-normal font-inter text-[#718EBF] dark:text-gray-400">
+            <span className="font-semibold text-black dark:text-gray-300">
+              ${totalExpense}
+            </span>{" "}
+            Debited &{" "}
+            <span className="font-semibold text-black dark:text-gray-300">
+              ${totalIncome}
+            </span>{" "}
+            Credited in this Week
           </CardTitle>
           <div className="flex gap-5">
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               <div className="border border-[#4C78FF] w-[15px] h-[15px] rounded-sm bg-[#4C78FF]"></div>
-              <p className="font-inter font-normal text-base text-[#718EBF]">
+              <p className="font-inter font-normal text-base text-[#718EBF] dark:text-gray-300">
                 Debit
               </p>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               <div className="border border-[#FCAA0B] w-[15px] h-[15px] rounded-sm bg-[#FCAA0B]"></div>
-              <p className="font-inter font-normal text-base text-[#718EBF]">
+              <p className="font-inter font-normal text-base text-[#718EBF dark:text-gray-300">
                 Credit
               </p>
             </div>
@@ -143,14 +151,15 @@ export function DebitCreditOver() {
         </div>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[350px] w-[100%]">
+        <ChartContainer config={chartConfig} className="lg:h-[350px] w-[100%]">
           <BarChart accessibilityLayer data={data}>
-            <CartesianGrid vertical={false} className="h-[70%]" />
+            <CartesianGrid vertical={false} className="h-[50%] lg:h-[70%]" />
             <XAxis
               dataKey="day"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              fontSize={10}
               tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip

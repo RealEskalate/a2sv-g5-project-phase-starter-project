@@ -36,16 +36,21 @@ const Center = () => {
 
   return (
     <>
-      <section className="flex gap-6 sm:flex-col lg:flex-row">
-        <div className="cards-container sm:w-full lg:w-[67%] cente-Content flex flex-col gap-6">
+      <section className="flex gap-6 xs:flex-col lg:flex-row">
+        <div className="cards-container sm:w-full lg:w-[67%] cente-Content flex flex-col gap-6 ">
           <div className="card-box flex w-full items-center justify-between">
-            <h1 className="text-xl font-semibold text-colorBody-1">My Cards</h1>
-            <Link href={""} className="text-base font-medium hover:underline">
+            <h1 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
+              My Cards
+            </h1>
+            <Link
+              href={""}
+              className="text-base font-medium hover:underline dark:text-gray-300"
+            >
               SeeAll
             </Link>
           </div>
 
-          <div className="flex gap-6 grow w-full">
+          <div className="flex gap-6 grow w-full scrollbar-hide overflow-x-auto xs:scrollB xs:w-[360] sm:overflow-hidden sm:w-auto">
             <>
               {CardData?.slice(0, 2).map((item, index) => (
                 <VisaCard
@@ -62,18 +67,18 @@ const Center = () => {
         <RecentTr />
       </section>
 
-      <section className="flex gap-6 grow sm:flex-col lg:flex-row">
+      <section className="flex gap-6 grow xs:flex-col  lg:flex-row">
         <div className="Weekly-container w-full cente-Content flex flex-col gap-6 ">
-          <h1 className="flex grow page text-xl font-semibold text-colorBody-1">
+          <h1 className="flex grow page text-xl font-semibold text-colorBody-1 dark:text-gray-300">
             Weekly Activity
           </h1>
-          <div className="flex flex-col min-w-[300px] w-full p-8 py-4 bg-white rounded-3xl border-solid border-[0.1px] shadow-sm">
+          <div className="flex flex-col min-w-[300px] w-full p-8 py-4 bg-white dark:bg-[#232328] rounded-3xl border-solid border-[0.1px] shadow-sm">
             <div className="indiColor w-full flex gap-4 justify-end">
-              <div className="flex gap-2 p-4 items-center">
+              <div className="flex gap-2 p-4 items-center dark:text-gray-200">
                 <div className="circle w-4 h-4 bg-[#1814F3]  rounded-full"></div>
                 Diposit
               </div>
-              <div className="flex gap-2 p-4 items-center">
+              <div className="flex gap-2 p-4 items-center dark:text-gray-200">
                 <div className="circle w-4 h-4 bg-[#16DBCC] rounded-full"></div>
                 Withdraw
               </div>
@@ -90,8 +95,8 @@ const Center = () => {
             </div>
           </div>
         </div>
-        <div className="cards-container sm:w-full lg:w-[40%] items-center flex flex-col gap-6">
-          <h1 className="text-xl font-semibold text-colorBody-1">
+        <div className="cards-container sm:w-full lg:w-[40%] flex flex-col gap-6">
+          <h1 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
             Expense Statistics
           </h1>
           <PieComp />

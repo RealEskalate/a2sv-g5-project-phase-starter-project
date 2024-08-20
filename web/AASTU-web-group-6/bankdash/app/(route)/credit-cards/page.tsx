@@ -28,7 +28,7 @@ const CreditCards = () => {
   return (
     <div className="w-[96%] flex flex-col grow gap-6 p-8 pt-6">
       <div className="cards-container w-full flex flex-col gap-6">
-        <p className="flex grow page text-xl font-semibold text-colorBody-1">
+        <p className="flex grow page text-xl font-semibold text-colorBody-1 dark:text-gray-300">
           My Cards
         </p>
         <div className="flex gap-6 overflow-x-auto sm:scroll-snap-x">
@@ -44,45 +44,102 @@ const CreditCards = () => {
           ))}
         </div>
       </div>
-      <div className="flex flex-col lg:flex-row w-full gap-6">
-        <div className="expense flex w-full lg:w-[33%] flex-col gap-5">
-          <h2 className="text-xl font-semibold text-colorBody-1">
+      <div className="flex flex-col lg:flex-row w-full gap-6 text-nowrap">
+        <div className="expense flex w-full lg:w-[33%] flex-col gap-5 ">
+          <h2 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
             Card Expense Statistics
           </h2>
           <ExpenseChart />
         </div>
         <div className="cardlist w-full lg:w-[67%] flex flex-col gap-6">
-          <h2 className="text-xl font-semibold text-colorBody-1">Card List</h2>
-          {CardData.slice(0, 3).map((card, index) => (
-            <CardList
-              key={card.id}
-              img={imgCont[index]}
-              title={card.cardType}
-              desc="Secondary"
-              colOne="Bank"
-              descOne={card.cardNumber}
-              colTwo="Card Number"
-              descTwo={`**** **** ${card.semiCardNumber}`}
-              colThree="Name on Card"
-              descThree={card.cardHolder}
-              btn="View Details"
-              color={bgCont[index]}
-            />
-          ))}
+          <h2 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">Card List</h2>
+          <>
+            {CardData.slice(0, 3).map((card, index) => (
+              <CardList
+                key={card.id}
+                img={imgCont[index]}
+                title={card.cardType}
+                desc="Secondary"
+                colOne="Bank"
+                descOne={card.cardNumber}
+                colTwo="Card Number"
+                descTwo={`**** **** ${card.semiCardNumber}`}
+                colThree="Name on Card"
+                descThree={card.cardHolder}
+                btn="View Details"
+                color={bgCont[index]}
+              />
+            ))}
+          </>
+
+          {/* <CardList
+                 key={index}
+                 img="/assets/money.svg"
+                 title={data.cardType}
+                 desc="Secondary"
+                 colOne="Bank"
+                 descOne="DBL Bank"
+                 colTwo="Card Number"
+                 descTwo="**** **** 5600"
+                 colThree="Namain Card"
+                 descThree="William"
+                 btn="View Details"
+                 color="bg-blue-100"
+               />; */}
+
+          {/* <CardList
+            img="/assets/money.svg"
+            title="Card Type"
+            desc="Secondary"
+            colOne="Bank"
+            descOne="DBL Bank"
+            colTwo="Card Number"
+            descTwo="**** **** 5600"
+            colThree="Namain Card"
+            descThree="William"
+            btn="View Details"
+            color="bg-blue-100"
+          />
+          <CardList
+            img="/assets/moneyPink.svg"
+            title="Card Type"
+            desc="Secondary"
+            colOne="Bank"
+            descOne="BRC Bank"
+            colTwo="Card Number"
+            descTwo="**** **** 4300"
+            colThree="Namain Card"
+            descThree="Michel"
+            btn="View Details"
+            color="bg-pink-100"
+          />
+          <CardList
+            img="/assets/moneyOrange.svg"
+            title="Card Type"
+            desc="Secondary"
+            colOne="Bank"
+            descOne="ABM Bank"
+            colTwo="Card Number"
+            descTwo="**** **** 7560"
+            colThree="Namain Card"
+            descThree="Edward"
+            btn="View Details"
+            color="bg-orange-100"
+          /> */}
         </div>
       </div>
       <div className="flex flex-col lg:flex-row w-full gap-10">
         <div className="w-full lg:w-[67%] flex flex-col gap-6">
-          <h2 className="text-xl font-semibold text-colorBody-1">
+          <h2 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
             Add New Card
           </h2>
           <AddCard />
         </div>
         <div className="w-full lg:w-[33%] flex flex-col gap-6">
-          <h2 className="text-xl font-semibold text-colorBody-1">
+          <h2 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
             Card Setting
           </h2>
-          <div className="flex flex-col gap-2 rounded-3xl p-4 bg-white">
+          <div className="flex flex-col gap-2 rounded-3xl p-4 bg-white dark:bg-[#232328]">
             <SettingsCard
               img="assets/block-card-orange-icon.svg"
               title="Block Card"

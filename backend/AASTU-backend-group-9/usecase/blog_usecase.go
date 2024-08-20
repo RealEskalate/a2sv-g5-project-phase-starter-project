@@ -13,12 +13,16 @@ import (
 
 type blogUsecase struct {
 	blogRepository domain.BlogRepository
+	popularityRepo domain.PopularityRepository
+	commentRepo    domain.CommentRepository
 	contextTimeout time.Duration
 }
 
-func NewBlogUsecase(blogRepository domain.BlogRepository, timeout time.Duration) domain.BlogUsecase {
+func NewBlogUsecase(blogRepository domain.BlogRepository, popularDB domain.PopularityRepository, comment domain.CommentRepository, timeout time.Duration) domain.BlogUsecase {
 	return &blogUsecase{
 		blogRepository: blogRepository,
+		popularityRepo: popularDB,
+		commentRepo:    comment,
 		contextTimeout: timeout,
 	}
 }
@@ -178,32 +182,112 @@ func (bu *blogUsecase) FilterBlogsByPopularity(ctx context.Context, popularity s
 }
 
 func (bu *blogUsecase) TrackView(ctx context.Context, id primitive.ObjectID) error {
-	return bu.blogRepository.IncrementViews(ctx, id)
+	return bu.blogRepository.IncrementPopularity(ctx, id, "views")
 }
 
-func (bu *blogUsecase) TrackLike(ctx context.Context, id primitive.ObjectID, userID string) error {
-	liked, err := bu.blogRepository.HasUserLiked(ctx, id, userID)
+func (bu *blogUsecase) TrackLike(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) error {
+	liked, err := bu.popularityRepo.HasUserLiked(ctx, id, userID)
 	if err != nil {
 		return err
 	}
 	if liked {
 		return errors.New("user has already liked this post")
 	}
-	return bu.blogRepository.IncrementLikes(ctx, id)
+
+	dislike, err := bu.popularityRepo.HasUserDisliked(ctx, id, userID)
+	if err != nil {
+		return err
+	}
+	if dislike {
+
+		err = bu.blogRepository.DecrementPopularity(ctx, id, "dislikes")
+		if err != nil {
+			return err
+		}
+		err = bu.popularityRepo.UserInteractionsDelete(ctx, domain.UserInteraction{
+			PostID:          id,
+			UserID:          userID,
+			InteractionType: "Dislike",
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	err = bu.popularityRepo.UserInteractionsAdder(ctx, domain.UserInteraction{
+		PostID:          id,
+		UserID:          userID,
+		InteractionType: "Like",
+	})
+	if err != nil {
+		return err
+	}
+	return bu.blogRepository.IncrementPopularity(ctx, id, "likes")
 }
 
-func (bu *blogUsecase) TrackDislike(ctx context.Context, id primitive.ObjectID, userID string) error {
-	disliked, err := bu.blogRepository.HasUserDisliked(ctx, id, userID)
+func (bu *blogUsecase) TrackDislike(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) error {
+	disliked, err := bu.popularityRepo.HasUserDisliked(ctx, id, userID)
 	if err != nil {
 		return err
 	}
 	if disliked {
 		return errors.New("user has already disliked this post")
 	}
-	return bu.blogRepository.IncrementDislikes(ctx, id)
+
+	liked, err := bu.popularityRepo.HasUserLiked(ctx, id, userID)
+	if err != nil {
+		return err
+	}
+
+	if liked {
+
+		err = bu.blogRepository.DecrementPopularity(ctx, id, "likes")
+		if err != nil {
+			return err
+		}
+		err = bu.popularityRepo.UserInteractionsDelete(ctx, domain.UserInteraction{
+			PostID:          id,
+			UserID:          userID,
+			InteractionType: "Like",
+		})
+		if err != nil {
+			return err
+		}
+
+	}
+	err = bu.popularityRepo.UserInteractionsAdder(ctx, domain.UserInteraction{
+		PostID:          id,
+		UserID:          userID,
+		InteractionType: "Dislike",
+	})
+	if err != nil {
+		return err
+	}
+
+	return bu.blogRepository.IncrementPopularity(ctx, id, "dislikes")
 }
 
-func (bu *blogUsecase) AddComment(ctx context.Context, id primitive.ObjectID, comment *domain.Comment) error {
-	return bu.blogRepository.AddComment(ctx, id, comment)
+func (bu *blogUsecase) AddComment(ctx context.Context, post_id primitive.ObjectID, userID primitive.ObjectID, comment *domain.Comment) error {
+	err := bu.blogRepository.IncrementPopularity(ctx, post_id, "comment")
+	if err != nil {
+		return err
+	}
+	return bu.commentRepo.AddComment(ctx, post_id, userID, comment)
 
+}
+
+func (bu *blogUsecase) GetComments(ctx context.Context, post_id primitive.ObjectID) (*domain.Comment, error) {
+	return bu.commentRepo.GetComments(ctx, post_id)
+}
+
+func (bu *blogUsecase) DeleteComment(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID) error {
+	err := bu.commentRepo.DeleteComment(ctx, post_id, comment_id, userID)
+	if err != nil {
+		return err
+	}
+	return bu.blogRepository.DecrementPopularity(ctx, post_id, "comment")
+}
+
+func (bu *blogUsecase) UpdateComment(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID, comment *domain.Comment) error {
+	return bu.commentRepo.UpdateComment(ctx, post_id, comment_id, userID, comment)
 }

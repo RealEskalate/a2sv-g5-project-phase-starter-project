@@ -21,11 +21,13 @@ type Blog struct {
 	Comments  int                `bson:"comments" json:"comments"`
 }
 type Comment struct {
-    ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
-    AuthorID  primitive.ObjectID `bson:"author_id" json:"author_id"`
-    Content   string             `bson:"content" json:"content"`
-    CreatedAt time.Time          `bson:"created_at" json:"created_at"`
+	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	BlogID    primitive.ObjectID `bson:"blog_id" json:"blog_id" `
+	AuthorID  primitive.ObjectID `bson:"author_id" json:"author_id" `
+	Content   string             `bson:"content" json:"content" `
+	CreatedAt time.Time          `bson:"created_at" json:"created_at"`
 }
+
 // BlogCreationRequest is used when creating a new blog post.
 type BlogCreationRequest struct {
 	Title   string   `json:"title" binding:"required"`
@@ -57,11 +59,22 @@ type BlogResponse struct {
 
 // BlogFilters are the filters that can be applied when searching or filtering blog posts.
 type BlogFilters struct {
-	Title     string             `json:"title,omitempty"`
-	Tags      []string           `json:"tags,omitempty"`
-	Date      string             `json:"date,omitempty"`
-	Popularity string           `json:"popularity,omitempty"`
-	AuthorID  primitive.ObjectID `json:"author_id"`
-// PopularityAction represents an action to track popularity metrics like views, likes, or comments.
+	Title      string             `json:"title,omitempty"`
+	Tags       []string           `json:"tags,omitempty"`
+	Date       string             `json:"date,omitempty"`
+	Popularity string             `json:"popularity,omitempty"`
+	AuthorID   primitive.ObjectID `json:"author_id"`
+	// PopularityAction represents an action to track popularity metrics like views, likes, or comments.
 }
 
+type UserInteraction struct {
+	ID              primitive.ObjectID `bson:"_id,omitempty"`
+	UserID          primitive.ObjectID `bson:"user_id"`
+	PostID          primitive.ObjectID `bson:"post_id"`
+	InteractionType string             `bson:"interaction_type"` // "like", "share", etc.
+}
+
+type ResponseComment struct {
+	AuthorID primitive.ObjectID `bson:"author_id" json:"author_id" `
+	Comments string             `json:"comments"`
+}

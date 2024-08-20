@@ -367,3 +367,13 @@ declare interface getBankProps {
 declare interface getBankByAccountIdProps {
   accountId: string;
 }
+
+// the card data types 
+export interface cardType {
+  id: string;
+  cardHolder: string;
+  semiCardNumber: string;
+  cardType: string;
+  balance: number;
+  expiryDate: string;
+}

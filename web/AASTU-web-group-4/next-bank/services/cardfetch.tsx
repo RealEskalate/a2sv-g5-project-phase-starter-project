@@ -1,14 +1,16 @@
 // Get All Cards - GET Request
-export const getAllCards = async () => {
+
+export const getAllCards = async (token: string) => {
     try {
-      const response = await fetch('https://bank-dashboard-6acc.onrender.com/cards', {
+      const response = await fetch('https://bank-dashboard-6acc.onrender.com/cards?page=0&size=10', {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
       });
   
       if (!response.ok) {
+        console.log(response)
         throw new Error('Failed to fetch cards');
       }
   
@@ -21,12 +23,13 @@ export const getAllCards = async () => {
   };
   
   // Get Card by ID - GET Request
-  export const getCardById = async (id: string) => {
+  export const getCardById = async (id: string, token:string) => {
     try {
       const response = await fetch(`https://bank-dashboard-6acc.onrender.com/cards/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
       });
   
@@ -43,12 +46,13 @@ export const getAllCards = async () => {
   };
   
   // Create a New Card - POST Request
-  export const createCard = async (cardData: any) => {
+  export const createCard = async (cardData: any, token: string) => {
     try {
       const response = await fetch('https://bank-dashboard-6acc.onrender.com/cards', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(cardData),
       });
@@ -66,12 +70,13 @@ export const getAllCards = async () => {
   };
   
   // Delete Card by ID - DELETE Request
-  export const deleteCardById = async (id: string) => {
+  export const deleteCardById = async (id: string, token: string) => {
     try {
       const response = await fetch(`https://bank-dashboard-6acc.onrender.com/cards/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
       });
   

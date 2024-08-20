@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"net/http"
 
 	config "github.com/aait.backend.g5.main/backend/Config"
@@ -28,16 +27,16 @@ func (loginController *LoginController) Login(ctx *gin.Context) {
 	// attempt to bind the json payload
 	err := ctx.ShouldBind(&loginRequest)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errors.New("invalid request"))
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	// envode Login_Usecase
 	loginResponse, e := loginController.LoginUsecase.LoginUser(ctx, loginRequest)
 	if e != nil {
-		ctx.JSON(e.Code, e.Error())
+		ctx.IndentedJSON(e.Code, gin.H{"error": e.Message})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, loginResponse)
+	ctx.IndentedJSON(http.StatusOK, loginResponse)
 }

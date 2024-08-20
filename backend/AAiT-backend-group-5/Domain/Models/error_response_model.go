@@ -73,5 +73,5 @@ func UnprocessableEntity(msg string) *ErrorResponse {
 
 
 func Nil() *ErrorResponse{
-	return &ErrorResponse{}
+	return nil
 }

@@ -45,3 +45,7 @@ Sort by:
 - suggest improvement: takes content and title -> performs improvement ands back the data
 - create content: takes content title -> writes the blog content
 - generate content ideas: query for a good blog topic
+
+
+### Comment:
+- /comment/:id where id is the blogId

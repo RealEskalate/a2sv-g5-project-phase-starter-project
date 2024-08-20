@@ -13,6 +13,9 @@ type BlogUseCase struct {
 	aiService      *ai_service.AIService
 }
 
+
+var _ domain.BlogUseCaseInterface = &BlogUseCase{}
+
 func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration, aiService *ai_service.AIService) *BlogUseCase {
 	return &BlogUseCase{
 		blogRepo:       repo,
@@ -22,12 +25,27 @@ func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration, aiServ
 }
 
 // CreateBlogPost implements domain.BlogUseCaseInterface.
-func (b *BlogUseCase) CreateBlogPost(ctx context.Context, blog *domain.Blog) domain.CodedError {
+func (b *BlogUseCase) CreateBlogPost(ctx context.Context, newBlog *domain.NewBlog, createdBy string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
-	blog.CreatedAt = time.Now()
 	defer cancel()
 
-	err := b.blogRepo.InsertBlogPost(ctx, blog)
+	blog := domain.Blog{ // Generate or assign a unique ID
+		Title:      newBlog.Title,
+		Content:    newBlog.Content,
+		Username:   createdBy,          // Set the username of the blog creator
+		Tags:       newBlog.Tags,       // Initialize an empty slice or add tags if available
+		CreatedAt:  time.Now(),         // Set the current time as the creation time
+		UpdatedAt:  time.Now(),         // Set the current time as the updated time
+		ViewCount:  0,                  // Initialize the view count to 0
+		LikedBy:    []string{},         // Initialize an empty slice for LikedBy
+		DislikedBy: []string{},         // Initialize an empty slice for DislikedBy
+		Comments:   []domain.Comment{}, // Initialize an empty slice for Comments
+	}
+
+	blog.CreatedAt = time.Now()
+	blog.Username = createdBy
+
+	err := b.blogRepo.InsertBlogPost(ctx, &blog)
 	if err != nil {
 		return err
 	}
@@ -35,11 +53,17 @@ func (b *BlogUseCase) CreateBlogPost(ctx context.Context, blog *domain.Blog) dom
 }
 
 // DeleteBlogPost implements domain.BlogUseCaseInterface.
-func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string) domain.CodedError {
+func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string, deletedBy string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
-
-	err := b.blogRepo.DeleteBlogPost(ctx, blogId)
+	blog, err := b.blogRepo.FetchBlogPostByID(ctx, blogId)
+	if err != nil {
+		return err
+	}
+	if blog.Username != deletedBy {
+		return domain.NewError("unauthorized request to delete blog", domain.ERR_FORBIDDEN)
+	}
+	err = b.blogRepo.DeleteBlogPost(ctx, blogId)
 	if err != nil {
 		return err
 	}
@@ -47,13 +71,19 @@ func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string) domain.
 }
 
 // EditBlogPost implements domain.BlogUseCaseInterface.
-func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *domain.Blog) domain.CodedError {
+func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *domain.NewBlog, editedBy string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
-	blog.UpdatedAt = time.Now()
+	foundBlog, err := b.blogRepo.FetchBlogPostByID(ctx, blogId)
+	if err != nil {
+		return err
+	}
+	if foundBlog.Username != editedBy {
+		return domain.NewError("unauthorized request to update blog", domain.ERR_FORBIDDEN)
+	}
 
-	err := b.blogRepo.UpdateBlogPost(ctx, blogId, blog)
+	err = b.blogRepo.UpdateBlogPost(ctx, blogId, blog)
 	if err != nil {
 		return err
 	}
@@ -119,4 +149,59 @@ func (uc *BlogUseCase) GenerateTrendingTopics(keywords []string) ([]string, erro
 		return nil, err
 	}
 	return topics, nil
+}
+
+
+// AddComment implements domain.BlogUseCaseInterface.
+func (b *BlogUseCase) AddComment(ctx context.Context, blogID string, newComment *domain.NewComment, userName string) domain.CodedError {
+	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
+	defer cancel()
+
+	comment := &domain.Comment{
+		Content: newComment.Content,
+	}
+
+	err := b.blogRepo.CreateComment(ctx, comment, blogID, userName)
+	if err != nil{
+		return err
+	}
+	return nil
+}
+
+// DeleteComment implements domain.BlogUseCaseInterface.
+func (b *BlogUseCase) DeleteComment(ctx context.Context, blogID string, commentID string, userName string) domain.CodedError {
+	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
+	defer cancel()
+
+	err := b.blogRepo.DeleteComment(ctx, commentID, blogID, userName)
+	if err != nil{
+		return err
+	}
+	return nil
+
+}
+
+// FindComment implements domain.BlogUseCaseInterface.
+func (b *BlogUseCase) FindComment(ctx context.Context, commentId string, blogId string) (domain.Comment, domain.CodedError) {
+	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
+	defer cancel()
+
+	comment, err := b.blogRepo.FetchComment(ctx, commentId, blogId)
+	if err != nil{
+		return domain.Comment{}, err
+	}
+	return comment, nil
+
+}
+
+// UpdateComment implements domain.BlogUseCaseInterface.
+func (b *BlogUseCase) UpdateComment(ctx context.Context, blogID string, commentID string, comment *domain.NewComment, userName string) domain.CodedError {
+	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
+	defer cancel()
+
+	err := b.blogRepo.UpdateComment(ctx, comment,commentID, blogID, userName)
+	if err != nil{
+		return err
+	}
+	return nil
 }

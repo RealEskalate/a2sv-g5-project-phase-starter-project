@@ -4,6 +4,7 @@ import (
 	"blog_api/domain"
 	"blog_api/domain/dtos"
 	"context"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -15,6 +16,7 @@ type BlogRepository struct {
 	// database collection
 	collection *mongo.Collection
 }
+
 
 var _ domain.BlogRepositoryInterface = &BlogRepository{}
 
@@ -150,6 +152,10 @@ func (b *BlogRepository) DeleteBlogPost(ctx context.Context, blogId string) doma
 
 // InsertBlogPost inserts a new blog post into the database.
 func (b *BlogRepository) InsertBlogPost(ctx context.Context, blog *domain.Blog) domain.CodedError {
+	blog.LikedBy = make([]string, 0)
+	blog.DislikedBy = make([]string, 0)
+	blog.Comments = make([]domain.Comment, 0)
+
 	newBlog, err := toDTO(blog)
 	if err != nil {
 		return domain.NewError("Internal server error: "+err.Error(), domain.ERR_INTERNAL_SERVER)
@@ -165,7 +171,7 @@ func (b *BlogRepository) InsertBlogPost(ctx context.Context, blog *domain.Blog) 
 }
 
 // UpdateBlogPost implements domain.BlogRepositoryInterface.
-func (b *BlogRepository) UpdateBlogPost(ctx context.Context, blogId string, blog *domain.Blog) domain.CodedError {
+func (b *BlogRepository) UpdateBlogPost(ctx context.Context, blogId string, blog *domain.NewBlog) domain.CodedError {
 	objID, err := primitive.ObjectIDFromHex(blogId)
 	if err != nil {
 		return domain.NewError("Invalid blog ID", domain.ERR_BAD_REQUEST)
@@ -175,9 +181,10 @@ func (b *BlogRepository) UpdateBlogPost(ctx context.Context, blogId string, blog
 
 	update := bson.M{
 		"$set": bson.M{
-			"title":     blog.Title,
-			"content":   blog.Content,
-			"updatedAt": blog.UpdatedAt,
+			"title":      blog.Title,
+			"content":    blog.Content,
+			"tags":       blog.Tags,
+			"updated_at": time.Now(),
 		},
 	}
 
@@ -238,7 +245,6 @@ func toDomain(blogDTO *dtos.BlogDTO) *domain.Blog {
 
 // Converts Blog domain model to BlogDTO.
 func toDTO(blog *domain.Blog) (*dtos.BlogDTO, error) {
-
 	return &dtos.BlogDTO{
 		Title:      blog.Title,
 		Content:    blog.Content,
@@ -252,4 +258,182 @@ func toDTO(blog *domain.Blog) (*dtos.BlogDTO, error) {
 	}, nil
 }
 
-// Similar functions for User and Comment...
+
+// CreateComment implements domain.BlogRepositoryInterface.
+func (b *BlogRepository) CreateComment(ctx context.Context, comment *domain.Comment, blogId string,  createdBy string) domain.CodedError {
+	// convert blogId to objectID
+	blogID, err := primitive.ObjectIDFromHex(blogId)
+	if err != nil {
+		return domain.NewError("Invalid blog ID", domain.ERR_BAD_REQUEST)
+	}
+
+	//filter the blog using the ID
+	filter := bson.M{"_id": blogID}
+	var foundBlog dtos.BlogDTO
+	err = b.collection.FindOne(ctx, filter).Decode(&foundBlog)
+	if err != nil {
+		if err == mongo.ErrNoDocuments{
+			return domain.NewError("Blog not found", domain.ERR_NOT_FOUND)
+		}
+		return domain.NewError("Internal Server Error", domain.ERR_INTERNAL_SERVER)
+	}
+
+	// create a new commentDTO
+	newComment := dtos.CommentDTO{
+		ID: primitive.NewObjectID(),
+		Content: comment.Content,
+		Username: createdBy,
+		CreatedAt: time.Now(),
+	}
+
+	//// Append the new comment and update the blog
+	foundBlog.Comments = append(foundBlog.Comments, newComment)
+	update := bson.M{"$set": bson.M{"comments": foundBlog.Comments}} 
+
+	result, err := b.collection.UpdateOne(ctx, filter, update)
+	if err != nil{
+		return domain.NewError("Internal Server Error" + err.Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	// Ensure the update affected one document
+	if result.ModifiedCount == 0 {
+		return domain.NewError("No blog was updated", domain.ERR_INTERNAL_SERVER)
+	}
+	
+	return nil
+}
+
+// DeleteComment implements domain.BlogRepositoryInterface.
+func (b *BlogRepository) DeleteComment(ctx context.Context, commentId, blogId, userName string) domain.CodedError {
+	blogID, err := primitive.ObjectIDFromHex(blogId)
+	if err != nil {
+		return domain.NewError("Invalid blog ID", domain.ERR_BAD_REQUEST)
+	}
+
+	//filter the blog using the ID
+	filter := bson.M{"_id": blogID}
+	var foundBlog dtos.BlogDTO
+	err = b.collection.FindOne(ctx, filter).Decode(&foundBlog)
+	if err != nil {
+		if err == mongo.ErrNoDocuments{
+			return domain.NewError("Blog not found" + err.Error(), domain.ERR_NOT_FOUND)
+		}
+		return domain.NewError("Internal Server Error" + err.Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	// Find and delete the comment if it exists and the user is the owner
+	var updatedComments []dtos.CommentDTO
+	commentDeleted := false
+	for _, comment := range foundBlog.Comments {
+		if comment.ID.Hex() == commentId {
+			if comment.Username != userName {
+				return domain.NewError("Unauthorized", domain.ERR_FORBIDDEN)
+			}
+			commentDeleted = true
+			continue //jump the current comment
+		}
+		updatedComments = append(updatedComments, comment)
+	}
+
+	if !commentDeleted {
+		return domain.NewError("Comment not found", domain.ERR_NOT_FOUND)
+	}
+
+	update := bson.M{"$set": bson.M{"comments": updatedComments}} 
+	result, err := b.collection.UpdateOne(ctx, filter, update)
+	if err != nil{
+		return domain.NewError("Internal Server Error" + err.Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	// Ensure the update affected one document
+	if result.ModifiedCount == 0 {
+		return domain.NewError("No blog was updated", domain.ERR_INTERNAL_SERVER)
+	}
+	
+	return nil
+}
+
+// FetchComment implements domain.BlogRepositoryInterface.
+func (b *BlogRepository) FetchComment(ctx context.Context, commentId string, blogId string) (domain.Comment, domain.CodedError) {
+	blogID, err := primitive.ObjectIDFromHex(blogId)
+	if err != nil {
+		return domain.Comment{},  domain.NewError("Invalid blog ID", domain.ERR_BAD_REQUEST)
+	}
+
+	//filter the blog using the ID
+	filter := bson.M{"_id": blogID}
+	var foundBlog dtos.BlogDTO
+	err = b.collection.FindOne(ctx, filter).Decode(&foundBlog)
+	if err != nil {
+		if err == mongo.ErrNoDocuments{
+			return domain.Comment{}, domain.NewError("Blog not found" + err.Error(), domain.ERR_NOT_FOUND)
+		}
+		return domain.Comment{}, domain.NewError("Internal Server Error" + err.Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	// Find and delete the comment if it exists and the user is the owner
+	for _, comment := range foundBlog.Comments {
+		if comment.ID.Hex() == commentId {
+			return domain.Comment{
+				ID: comment.ID.Hex(),
+				Username: comment.Username,
+				Content: comment.Content,
+				CreatedAt: comment.CreatedAt,
+				UpdatedAt: comment.UpdatedAt,
+			}, nil
+		}
+	}
+
+	return domain.Comment{}, domain.NewError("Comment Not Found", domain.ERR_NOT_FOUND)
+}
+
+// UpdateComment implements domain.BlogRepositoryInterface.
+func (b *BlogRepository) UpdateComment(ctx context.Context, updateComment *domain.NewComment, commentId, blogId, userName string) domain.CodedError {
+	blogID, err := primitive.ObjectIDFromHex(blogId)
+	if err != nil {
+		return domain.NewError("Invalid blog ID", domain.ERR_BAD_REQUEST)
+	}
+
+	//filter the blog using the ID
+	filter := bson.M{"_id": blogID}
+	var foundBlog dtos.BlogDTO
+	err = b.collection.FindOne(ctx, filter).Decode(&foundBlog)
+	if err != nil {
+		if err == mongo.ErrNoDocuments{
+			return domain.NewError("Blog not found" + err.Error(), domain.ERR_NOT_FOUND)
+		}
+		return domain.NewError("Internal Server Error" + err.Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	// Find and update the comment if it exists and the user is the owner
+	commentUpdated := false
+	for _, comment := range foundBlog.Comments {
+		if comment.ID.Hex() == commentId {
+			if comment.Username != userName {
+				return domain.NewError("Unauthorized", domain.ERR_FORBIDDEN)
+			}
+			//update the comment
+			comment.Content = updateComment.Content
+			comment.UpdatedAt = time.Now()
+			commentUpdated = true
+			break
+		}
+	}
+
+	if !commentUpdated {
+		return domain.NewError("Comment not found", domain.ERR_NOT_FOUND)
+	}
+
+	update := bson.M{"$set": bson.M{"comments": foundBlog.Comments}} 
+	result, err := b.collection.UpdateOne(ctx, filter, update)
+	if err != nil{
+		return domain.NewError("Internal Server Error" + err.Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	// Ensure the update affected one document
+	if result.ModifiedCount == 0 {
+		return domain.NewError("No blog was updated", domain.ERR_INTERNAL_SERVER)
+	}
+	
+	return nil
+}

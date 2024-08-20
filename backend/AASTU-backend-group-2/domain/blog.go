@@ -11,13 +11,13 @@ type Blog struct {
 	ID       primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Title    string             `bson:"title,omitempty" json:"title,omitempty"`
 	Content  string             `bson:"content,omitempty" json:"content,omitempty"`
+	Imageuri string             `bson:"imageuri,omitempty" json:"imageuri,omitempty"`
 	UserID   primitive.ObjectID `bson:"userid,omitempty" json:"userid,omitempty"`
 	Tags     []string           `bson:"tags,omitempty" json:"tags,omitempty"`
 	Date     time.Time          `bson:"date,omitempty" json:"date,omitempty"`
 	Likes    int                `bson:"likes,omitempty" json:"likes,omitempty"`
 	DisLikes int                `bson:"dislikes,omitempty" json:"dislikes,omitempty"`
 	Comments []Comment          `bson:"comment,omitempty" json:"comment,omitempty"`
-
 }
 
 type BlogUsecase interface {

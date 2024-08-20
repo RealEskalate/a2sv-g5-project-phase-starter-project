@@ -28,6 +28,9 @@ func main() {
 	comcont := controllers.NewCommentController(commuse)
 	aiserv, _ := infrastructure.NewGeminiAIService()
 
+	commrepo := repositories.NewCommentRepository(client)
+	commuse := usecase.NewCommentUsecase(commrepo, time.Second*300)
+
 	blogcont := controllers.NewBlogController(bloguse, likeuse, commuse, disluse, aiserv)
 
 	userrepo := repositories.NewUserRepository(client)

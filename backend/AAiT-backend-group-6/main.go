@@ -1,6 +1,30 @@
 package main
 
 import (
+	"AAiT-backend-group-6/bootstrap"
+	"time"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	app := bootstrap.App()
+
+	env := app.Env
+
+	db := app.Mongo.Database(env.DBName)
+	defer app.CloseDBConnection()
+
+	timeout := time.Duration(env.ContextTimeout) * time.Second
+
+	gin := gin.Default()
+
+	route.Setup(env, timeout, db, gin)
+
+	gin.Run(env.ServerAddress)
+}
+
+import (
 	"AAiT-backend-group-6/backend/AAiT-backend-group-6/delivery"
 	"AAiT-backend-group-6/backend/AAiT-backend-group-6/infrastructure"
 	"AAiT-backend-group-6/backend/AAiT-backend-group-6/mongo"

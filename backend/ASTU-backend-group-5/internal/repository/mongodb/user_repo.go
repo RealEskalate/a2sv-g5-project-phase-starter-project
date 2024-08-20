@@ -121,3 +121,24 @@ func (r *UserRepositoryMongo) IsEmptyCollection(ctx context.Context) (bool, erro
 	}
 	return count == 0, nil
 }
+
+
+// register user
+func (r *UserRepositoryMongo) RegisterUser(ctx context.Context, user *domain.User) (*domain.User, error) {
+	user.ID = primitive.NewObjectID()
+	_, err := r.Collection.InsertOne(ctx, user)
+	return user, err
+}
+
+// google callback
+func (r *UserRepositoryMongo) GoogleCallback(ctx context.Context, code string) (*domain.User, error) {
+	user := &domain.User{}
+	err := r.Collection.FindOne(ctx, bson.M{"google_id": code}).Decode(user)
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}

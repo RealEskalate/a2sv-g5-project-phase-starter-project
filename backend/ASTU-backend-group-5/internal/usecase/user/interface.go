@@ -7,7 +7,6 @@ import (
 type UserUseCaseInterface interface {
 	RegisterUser(user *domain.User) (*domain.User, error)
 	Login(email, password string) (*domain.User, *domain.Token, error)
-
 	RequestEmailVerification(user domain.User) error
 	RequestPasswordResetUsecase(userEmail string) error
 	ResetPassword(token string, password string, email string) error
@@ -25,4 +24,6 @@ type UserUseCaseInterface interface {
 	DemoteFromAdmin(UserId string) error
 	GetAllUsers() ([]*domain.User, error)
 	FilterUsers(filter map[string]interface{}) ([]*domain.User, error)
+
+	GoogleCallback(code string) (*domain.User, *domain.Token, error)
 }

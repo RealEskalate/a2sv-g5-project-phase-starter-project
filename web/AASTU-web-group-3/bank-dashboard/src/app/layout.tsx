@@ -33,7 +33,7 @@ export default function ClientSideComponent({
     <>
       <Provider>
         <html lang="en">
-          <body className="flex gap-2">
+          <body className="flex gap-2 bg-gray-100">
             <aside
               className={`fixed min-h-screen top-0 left-0 z-40 w-64  bg-white shadow-md transition-transform transform ${
                 ishidden ? "translate-x-0" : "-translate-x-full"

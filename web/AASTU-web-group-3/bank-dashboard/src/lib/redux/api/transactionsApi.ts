@@ -4,7 +4,10 @@ import {
   TransactionsResponse,
   TransactionRequest,
   TransactionResponse,
-  TransactionDepositRequest
+  TransactionDepositRequest, 
+  LatestTransferResponse,
+  BalanceHistoryResponse, 
+  MyExpenseResponse
 } from "../types/transactions";
 
 export const transactionsApi = createApi({
@@ -14,6 +17,7 @@ export const transactionsApi = createApi({
     prepareHeaders: async (headers) => {
       const session = await getSession();
       const token = session?.accessToken;
+      console.log('token form rtk query', token)
 
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
@@ -22,10 +26,7 @@ export const transactionsApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getAllTransactions: builder.query<
-      TransactionsResponse,
-      { size: number; page: number }
-    >({
+    getAllTransactions: builder.query<MyExpenseResponse,{ size: number; page: number }>({
       query: ({ size, page }) => `/transactions?size=${size}&page=${page}`,
     }),
 
@@ -33,24 +34,34 @@ export const transactionsApi = createApi({
       query: (id) => `/transactions/${id}`,
     }),
 
-    createTransaction: builder.mutation<
-      TransactionResponse,
-      TransactionRequest
-    >({
+    getRandomBalanceHistory: builder.query<any,{ monthsBeforeFirstTransaction: number }>({
+      query: ({ monthsBeforeFirstTransaction }) =>
+        `/transactions/random-balance-history?monthsBeforeFirstTransaction=${monthsBeforeFirstTransaction}`,
+    }),
+
+
+    getIncomeTransactions: builder.query<TransactionsResponse, { size: number; page: number }>({
+      query: ({ size, page }) =>
+        `/transactions/income?size=${size}&page=${page}`,
+    }),
+
+    getExpenseTransactions: builder.query<MyExpenseResponse, { size: number; page: number }>({
+      query: ({ size, page }) =>
+        `/transactions/expenses?page=${page}&size=${size}`,
+    }),
+
+    createTransaction: builder.mutation<TransactionResponse,TransactionRequest>({
       query: (transaction) => ({
         url: "/transactions",
         method: "POST",
         body: transaction,
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json", 
         },
       }),
     }),
 
-    createTransactionDeposit: builder.mutation<
-    TransactionDepositRequest,
-    TransactionResponse
-    >({
+    createTransactionDeposit: builder.mutation<TransactionResponse,TransactionDepositRequest>({
       query: (deposit) => ({
         url: "/transactions/deposit",
         method: "POST",
@@ -60,12 +71,24 @@ export const transactionsApi = createApi({
         },
       }),
     }),
+    getLatestTransfer: builder.query<LatestTransferResponse, {num:number}>({
+      query: ({num}) => 
+        `/transactions/latest-transfers${num}`,
+    }),
+    getBalanceHistory:builder.query<BalanceHistoryResponse, {}>({
+      query:()=> 'transactions/balance-history'
+    })
   }),
 });
 
 export const {
   useGetAllTransactionsQuery,
-  useGetTransactionByIdQuery, 
+  useGetTransactionByIdQuery,
+  useGetRandomBalanceHistoryQuery,
+  useGetIncomeTransactionsQuery,
+  useGetExpenseTransactionsQuery,
+  useGetLatestTransferQuery, 
   useCreateTransactionMutation,
   useCreateTransactionDepositMutation,
+  useGetBalanceHistoryQuery
 } = transactionsApi;

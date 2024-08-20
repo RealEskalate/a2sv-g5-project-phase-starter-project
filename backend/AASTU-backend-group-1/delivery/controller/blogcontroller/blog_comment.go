@@ -47,3 +47,20 @@ func (l *BlogController) AddComment(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, "comment added")
 }
+
+func (l *BlogController) GetBlogComments(ctx *gin.Context) {
+	idHex := ctx.Param("id")
+	id, err := primitive.ObjectIDFromHex(idHex)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, "invalid id")
+		return
+	}
+
+	comments, err := l.BlogUsecase.GetBlogComments(id.Hex())
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	ctx.JSON(http.StatusOK, comments)
+}

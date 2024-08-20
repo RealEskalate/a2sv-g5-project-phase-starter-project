@@ -28,9 +28,13 @@ func NewBlogRepository(database *mongo.Database) domain.BlogRepository {
 }
 
 // InsertBlog implements domain.BlogRepository.
-func (b *BlogRepository) InsertBlog(blog *domain.Blog) error {
-	_, err := b.blogCollection.InsertOne(context.Background(), blog)
-	return err
+func (b *BlogRepository) InsertBlog(blog *domain.Blog) (*domain.Blog, error) {
+	newblog, err := b.blogCollection.InsertOne(context.Background(), blog)
+	if err != nil {
+		return nil, err
+	}
+	blog.ID = newblog.InsertedID.(primitive.ObjectID)
+	return blog, nil
 }
 
 // GetBlogByID implements domain.BlogRepository.
@@ -72,12 +76,15 @@ func (b *BlogRepository) DeleteBlogByID(id string) error {
 }
 
 // SearchBlog implements domain.BlogRepository.
+
 func (b *BlogRepository) SearchBlog(title, author string, tags []string) ([]*domain.Blog, error) {
 	blogs := []*domain.Blog{}
 	filter := bson.M{
-		"title":  title,
-		"author": author,
-		"tags":   bson.M{"$in": tags},
+		"$or": []bson.M{
+			{"title": title},
+			{"author": author},
+			{"tags": bson.M{"$in": tags}},
+		},
 	}
 	cursor, err := b.blogCollection.Find(context.Background(), filter)
 	if err != nil {
@@ -294,8 +301,103 @@ func (b *BlogRepository) AddLike(like *domain.Like) error {
 
 }
 
+// RemoveLike removes a like by blogID and author from the database.
+func (b *BlogRepository) RemoveLike(blogID string, author string) error {
+    filter := bson.M{"blogid": blogID, "user": author}
+    _, err := b.likeCollection.DeleteOne(context.Background(), filter)
+    return err
+}
+
 // AddComment implements domain.BlogRepository.
 func (b *BlogRepository) AddComment(comment *domain.Comment) error {
 	_, err := b.commentCollection.InsertOne(context.Background(), comment)
+	return err
+}
+
+//GET Single Blog's Comments
+
+func (b *BlogRepository) GetBlogComments(blogID string) ([]*domain.Comment, error) {
+	blogid, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return nil, err
+	}
+
+	var comments []*domain.Comment
+	cursor, err := b.commentCollection.Find(context.Background(), bson.M{"blogid": blogid})
+	if err != nil {
+		return nil, err
+	}
+	for cursor.Next(context.Background()) {
+		var comment domain.Comment
+		err := cursor.Decode(&comment)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, &comment)
+	}
+	return comments, nil
+}
+
+// Get likes for specific blog
+
+func (b *BlogRepository) GetBlogLikes(blogID string) ([]*domain.Like, error) {
+	blogid, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return nil, err
+	}
+
+	var likes []*domain.Like
+	cursor, err := b.likeCollection.Find(context.Background(), bson.M{"blogid": blogid})
+	if err != nil {
+		return nil, err
+	}
+	for cursor.Next(context.Background()) {
+		var like domain.Like
+		err := cursor.Decode(&like)
+		if err != nil {
+			return nil, err
+		}
+		likes = append(likes, &like)
+	}
+	return likes, nil
+}
+
+func (b *BlogRepository) IncrmentBlogViews(blogID string) error {
+	blogid, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.blogCollection.UpdateOne(context.Background(), bson.M{"_id": blogid}, bson.M{"$inc": bson.M{"views_count": 1}})
+	return err
+}
+
+func (b *BlogRepository) IncrmentBlogLikes(blogID string) error {
+	blogid, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.blogCollection.UpdateOne(context.Background(), bson.M{"_id": blogid}, bson.M{"$inc": bson.M{"likes_count": 1}})
+	return err
+}
+
+func (b *BlogRepository) IncrmentBlogComments(blogID string) error {
+	blogid, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.blogCollection.UpdateOne(context.Background(), bson.M{"_id": blogid}, bson.M{"$inc": bson.M{"comments_count": 1}})
+	return err
+}
+
+func (b *BlogRepository) DecrementBlogLikes(blogID string) error {
+	blogid, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.blogCollection.UpdateOne(context.Background(), bson.M{"_id": blogid}, bson.M{"$inc": bson.M{"likes_count": -1}})
 	return err
 }

@@ -9,6 +9,8 @@ import (
 
 func (l *BlogController) UpdateBlogByID(ctx *gin.Context) {
 	id := ctx.Param("id")
+
+	
 	var blog domain.Blog
 	if err := ctx.ShouldBindJSON(&blog); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

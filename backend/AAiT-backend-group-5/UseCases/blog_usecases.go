@@ -239,14 +239,11 @@ func (b *blogUsecase) DeleteBlog(ctx context.Context, deleteBlogReq dtos.DeleteB
 }
 
 func (b *blogUsecase) TrackPopularity(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse {
-	popularityList, _ := b.popularity.GetBlogPopularity(ctx, popularity.BlogID)
 
-	var existingAction *models.PopularityAction
-	for _, action := range popularityList {
-		if action.UserID == popularity.UserID {
-			existingAction = action
-			break
-		}
+	existingAction, err := b.popularity.GetBlogPopularityAction(ctx, popularity.BlogID, popularity.UserID)
+
+	if err != nil {
+		return err
 	}
 
 	if existingAction != nil {

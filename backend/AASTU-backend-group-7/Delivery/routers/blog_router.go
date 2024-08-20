@@ -30,6 +30,12 @@ func BlogRouter() {
 		postRouter.GET("/comments/:id", blogcontroller.GetComments)
 		// get all posts
 		postRouter.GET("/all", blogcontroller.GetAllPosts)
+		// like post
+		postRouter.POST("/like/:id", blogcontroller.LikePost)
+		// dislike post
+		postRouter.POST("/dislike/:id", blogcontroller.DislikePost)
+		// undislike post
+
 
 
 	}
@@ -66,8 +72,8 @@ func BlogRouter() {
 		tagRouter.GET("/all", tagController.GetAllTags)
 		// get tags by slug
 		tagRouter.GET("/get/:slug", tagController.GetTagBySlug)
-		
+		// get posts of a tag by slug
+		tagRouter.GET("/posts/:slug", tagController.GetPostsByTag)
 
-		
 	}
 }

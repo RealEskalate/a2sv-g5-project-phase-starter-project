@@ -75,3 +75,16 @@ func (uc *blogUsecase) AddTagToPost(c *gin.Context, id primitive.ObjectID, slug 
 	return uc.BlogRepository.AddTagToPost(ctx, id, slug)
 }
 
+func (uc *blogUsecase) LikePost(c *gin.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.LikePost(ctx, id, userID)
+}
+
+
+func (uc *blogUsecase) DislikePost(c *gin.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.DislikePost(ctx, id, userID)
+}
+

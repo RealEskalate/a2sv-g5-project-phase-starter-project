@@ -70,7 +70,6 @@ func (br *blogrepository) GetPostBySlug(ctx context.Context, slug string) ([]*Do
 			return nil, err, 500
 		}
 		// increase viwes by 1
-		post.Views++
 		posts = append(posts, post)
 	}
 
@@ -112,11 +111,13 @@ func (br *blogrepository) GetPostByAuthorID(ctx context.Context, authorID primit
 func (br *blogrepository) GetPostByID(ctx context.Context, id primitive.ObjectID) (*Domain.Post, error, int) {
 	var post *Domain.Post
 	filter := bson.D{{"_id", id}}
-	err := br.postCollection.FindOne(ctx, filter).Decode(&post)
+	// update views by 1
+	update := bson.D{{"$inc", bson.D{{"views", 1}}}}
+	_, err := br.postCollection.UpdateOne(ctx, filter, update)
+	err = br.postCollection.FindOne(ctx, filter).Decode(&post)
 	if err != nil {
 		return nil, err, 500
 	}
-	post.Views++
 	return post, nil, 200
 }
 
@@ -160,7 +161,7 @@ func (br *blogrepository) UpdatePostByID(ctx context.Context, id primitive.Objec
 // get tags by from tags field in post collection
 func (br *blogrepository) GetTags(ctx context.Context, id primitive.ObjectID) ([]*Domain.Tag, error, int) {
 	var tags []*Domain.Tag
-	filter := bson.D{{"postid", id}}
+	filter := bson.D{{"_id", id}}
 	cursor, err := br.tagCollection.Find(ctx, filter)
 
 	if err != nil {
@@ -234,7 +235,7 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 	if filter.AuthorName != "" {
 		mongofilter["authorName"] = filter.AuthorName
 	}
-	
+
 	fmt.Println(len(filter.Tags))
 	if len(filter.Tags) > 1 {
 		fmt.Println("hehe", filter.Tags[0])
@@ -299,4 +300,136 @@ func (br *blogrepository) AddTagToPost(ctx context.Context, id primitive.ObjectI
 		return err, 500
 	}
 	return nil, 200
+}
+
+// like post
+func (br *blogrepository) LikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string) {
+	// check if user has already liked post
+	filter := bson.D{{"postid", id}, {"userid", userID}}
+	var likeDislike =&Domain.LikeDislike{}
+	var docExists = true
+	// get like
+	err := br.likeDislikeCollection.FindOne(ctx, filter).Decode(likeDislike)
+	if err != nil {
+		if err.Error() == "mongo: no documents in result" {
+			docExists = false
+		}else{
+
+			return err, 500, ""
+		}
+	}
+
+	// if user has already liked delete like
+	if docExists {
+		_, err = br.likeDislikeCollection.DeleteOne(ctx, filter)
+		if err != nil {
+			return err, 500, ""
+		}
+		var message string
+
+		if likeDislike.IsLike == true {
+			update := bson.D{{"$inc", bson.D{{"likecount", -1}}}}
+			_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
+
+			if err != nil {
+				return err, 500, ""
+			}
+
+			message = "like removed"
+		} else {
+			message = "dislike removed"
+		}
+
+		return nil, 200, message
+	}
+	
+	// like post
+	likeDislike = &Domain.LikeDislike{
+		PostID: id,
+		UserID: userID,
+		IsLike: true,
+	}
+
+	//update like count in post collection
+	update := bson.D{{"$inc", bson.D{{"likecount", 1}}}}
+	_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
+	if err != nil {
+		return err, 500, ""
+	}
+
+	_, err = br.likeDislikeCollection.InsertOne(ctx, likeDislike)
+	if err != nil {
+		return err, 500, ""
+	}
+
+	return nil, 200, "liked successfully"
+}
+
+// dislike post
+func (br *blogrepository) DislikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string) {
+		// check if user has already disliked post
+		filter := bson.D{{"postid", id}, {"userid", userID}}
+		var likeDislike =&Domain.LikeDislike{}
+		var docExists = true
+		// get dislike
+		err := br.likeDislikeCollection.FindOne(ctx, filter).Decode(likeDislike)
+		if err != nil {
+			if err.Error() == "mongo: no documents in result" {
+				docExists = false
+			}else{
+	
+				return err, 500, ""
+			}
+		}
+	
+		// if user has already liked delete like
+		if docExists {
+			_, err = br.likeDislikeCollection.DeleteOne(ctx, filter)
+			if err != nil {
+				return err, 500, ""
+			}
+			var message string
+	
+			if likeDislike.IsLike == true {
+				update := bson.D{{"$inc", bson.D{{"likecount", -1}}}}
+				_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
+	
+				if err != nil {
+					return err, 500, ""
+				}
+	
+				message = "like removed"
+			} else {
+				update := bson.D{{"$inc", bson.D{{"dislikecount", -1}}}}
+				_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
+	
+				if err != nil {
+					return err, 500, ""
+				}
+				message = "dislike removed"
+			}
+	
+			return nil, 200, message
+		}
+		
+		// like post
+		likeDislike = &Domain.LikeDislike{
+			PostID: id,
+			UserID: userID,
+			IsLike: false,
+		}
+	
+		//update dislike count in post collection
+		update := bson.D{{"$inc", bson.D{{"dislikecount", 1}}}}
+		_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
+		if err != nil {
+			return err, 500, ""
+		}
+	
+		_, err = br.likeDislikeCollection.InsertOne(ctx, likeDislike)
+		if err != nil {
+			return err, 500, ""
+		}
+	
+		return nil, 200, "liked successfully"
 }

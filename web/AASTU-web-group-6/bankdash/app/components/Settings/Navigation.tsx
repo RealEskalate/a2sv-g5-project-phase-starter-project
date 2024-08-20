@@ -21,7 +21,7 @@ const Navigation: React.FC = () => {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <div className="flex justify-between items-center border-b pt-4 px-2 min-h-6 max-h-20">
+    <div className="flex justify-between items-center border-b xs:mt-6 sm:mt-2 pt-4 px-2 min-h-6 max-h-20">
       <div className="flex space-x-8 px-7">
         {menuItems.map((item, index) => (
           <button

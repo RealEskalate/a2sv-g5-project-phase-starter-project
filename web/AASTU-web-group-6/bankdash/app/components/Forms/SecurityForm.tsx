@@ -52,7 +52,7 @@ const SecurityForm = () => {
           Change Password
         </label>
         <div className="mt-4 space-y-4">
-          <div>
+          <div className="w-[400px] min-w-72 flex flex-col">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Current Password
             </label>
@@ -60,11 +60,11 @@ const SecurityForm = () => {
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
             />
           </div>
 
-          <div>
+          <div className="w-[400px] min-w-72 flex flex-col">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               New Password
             </label>
@@ -72,7 +72,7 @@ const SecurityForm = () => {
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="sm:w-full md:w-[256px] lg:w-[418px] border-2 border-gray-300 px-5 py-4 rounded-xl"
+              className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
             />
           </div>
         </div>

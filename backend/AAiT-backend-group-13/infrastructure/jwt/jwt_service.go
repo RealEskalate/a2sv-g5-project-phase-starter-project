@@ -3,8 +3,6 @@ package jwt
 
 import (
 	"errors"
-	"fmt"
-	"log"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -43,10 +41,25 @@ func New(config Config) *Service {
   }
 }
 
-
-
 var _ ijwt.Service = &Service{}
 
+// Config holds the configuration for creating a new JWT Service.
+type Config struct {
+	SecretKey string
+	Issuer    string
+	ExpTime   time.Duration
+}
+
+// New creates a new JWT Service with the given configuration.
+func New(config Config) *Service {
+	return &Service{
+		secretKey: config.SecretKey,
+		issuer:    config.Issuer,
+		expTime:   config.ExpTime,
+	}
+}
+
+// Generate creates a new JWT token for the given user.
 func (s *Service) Generate(user *usermodel.User, tokenType string) (string, error) {
 	email := user.Email()
 	name := user.Username()
@@ -85,30 +98,15 @@ func (s *Service) Generate(user *usermodel.User, tokenType string) (string, erro
 		}
 	}
 
-	log.Println("Generating token with claims:", claims)
-	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(jwt_secret_key))
-	if err != nil {
-		log.Println("Error generating token:", err)
-		return "", er.NewUnexpected("couldn't generate token")
-	}
-	log.Println("Generated token:", token)
-
-	return token, nil
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(s.secretKey))
 }
 
-func (s *Service)Decode(token string) (jwt.MapClaims, error) {
-	jwt_secret_key := config.Envs.JWTSecret
-	
-	parsedToken, err := jwt.ParseWithClaims(token, &Service{}, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(jwt_secret_key), nil
-	},
-	)
-
+// Decode parses and validates a JWT token, returning its claims if valid.
+func (s *Service) Decode(tokenString string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenString, s.getSigningKey)
 	if err != nil {
-		return nil, errors.New("wrong Credentails")
+		return nil, err
 	}
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)

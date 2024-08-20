@@ -59,10 +59,6 @@ const AddNewCard: React.FC = () => {
                 id='balanceId'
                 {...register('balance', {
                 required: 'Initial is required',
-                pattern: {
-                    value: /^[-+]?(\d{1,3}(,\d{3})*|\d+)(\.\d{2})?\s*([A-Z]{3}|[$€£¥])$/,
-                    message: 'The balance should be in the following format 278,000,000$',
-                },
                 })}
                 placeholder='27,000$'
                 className='border-[1px] border-[#DFEAF2] rounded-md text-[14px] p-3 w-full outline-none text-[#718EBF] placeholder-[#718EBF]'

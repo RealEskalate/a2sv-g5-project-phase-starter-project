@@ -1,14 +1,19 @@
 package infrastructure
 
 import (
+	bootstrap "aait-backend-group4/Bootstrap"
 	domain "aait-backend-group4/Domain"
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt"
 )
 
-type tokenService struct{}
+type tokenService struct {
+	UserRepository domain.UserRepository
+	Env            *bootstrap.Env
+}
 
 func NewTokenService() domain.TokenInfrastructure {
 	return &tokenService{}
@@ -146,4 +151,48 @@ func (s *tokenService) ExtractClaims(tokenString string, secret string) (map[str
 	claims["exp"] = token.Claims.(jwt.MapClaims)["exp"].(float64)
 
 	return claims, nil
+}
+
+func (s *tokenService) UpdateTokens(id string) (accessToken string, refreshToken string, err error) {
+	userFound, err := s.UserRepository.GetByID(context.Background(), id)
+	if err != nil {
+		return "", "", err
+	}
+
+	user := domain.User{
+		ID:        userFound.ID,
+		Email:     userFound.Email,
+		Username:  userFound.Username,
+		User_Role: userFound.User_Role,
+		Password:  userFound.Password,
+	}
+
+	accessToken, refreshToken, err = s.CreateAllTokens(&user, s.Env.AccessTokenSecret,
+		s.Env.RefreshTokenSecret, s.Env.AccessTokenExpiryMinute, s.Env.RefreshTokenExpiryHour)
+
+	if err != nil {
+		return "", "", err
+	}
+
+	_, err = s.UserRepository.UpdateTokens(context.Background(), userFound.ID.Hex(), accessToken, refreshToken)
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessToken, refreshToken, nil
+
+}
+
+func (s *tokenService) RemoveTokens(id string) error {
+	userFound, err := s.UserRepository.GetByID(context.Background(), id)
+	if err != nil {
+		return err
+	}
+
+	_, err = s.UserRepository.UpdateTokens(context.Background(), userFound.ID.Hex(), "", "")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

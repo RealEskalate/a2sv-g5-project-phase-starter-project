@@ -7,6 +7,8 @@ type TokenInfrastructure interface {
 	ExtractClaims(tokenString string, secret string) (map[string]interface{}, error)
 	ExtractRoleFromToken(tokenString string, secret string) (string, error)
 	CheckTokenExpiry(tokenString string, secret string) (bool, error)
+	UpdateTokens(id string) (accessToken string, refreshToken string, err error)
+	RemoveTokens(id string) error
 }
 
 type PasswordInfrastructure interface {

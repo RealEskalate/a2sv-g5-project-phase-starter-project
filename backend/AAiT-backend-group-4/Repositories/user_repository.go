@@ -68,7 +68,6 @@ func (ur *userRepository) Fetch(c context.Context) ([]domain.User, error) {
 
 	opts := options.Find().SetProjection(bson.D{{Key: "password", Value: 0}})
 	cursor, err := collection.Find(c, bson.D{}, opts)
-
 	if err != nil {
 		return nil, err
 	}

@@ -8,10 +8,11 @@ import (
 
 type BlogRoute struct {
 	usecase controllers.BlogController
+	authController controllers.GeneralAuthorizationController
 }
 
-func NewBlogRoute(usecase controllers.BlogController) *BlogRoute {
-	return &BlogRoute{usecase: usecase}
+func NewBlogRoute(usecase controllers.BlogController,authcontroller controllers.GeneralAuthorizationController) *BlogRoute {
+	return &BlogRoute{usecase: usecase,authController: authcontroller}
 }
 
 func (gr *BlogRoute) GinBlogRouter() {
@@ -19,22 +20,22 @@ func (gr *BlogRoute) GinBlogRouter() {
 	blogRouter := router.Group("/blog")
 	{
 		// INFO:PASSED
-		blogRouter.POST("/new", gr.usecase.HandleCreateBlog)
-		blogRouter.GET("/all", gr.usecase.HandleGetAllBlogs)
-		blogRouter.GET("/popular", gr.usecase.HandleGetPopular)
-		blogRouter.GET("/filter", gr.usecase.HandleFilterBlogs)
-		blogRouter.PATCH("/:blogId", gr.usecase.HandleUpdate)
-		blogRouter.DELETE("/:blogId", gr.usecase.HandleDelete)
-		blogRouter.PATCH("/interact/:type", gr.usecase.HandleBlogLikeOrDislike)
+		blogRouter.POST("/new", gr.authController.UserMiddlewareGin(), gr.usecase.HandleCreateBlog)
+		blogRouter.GET("/all", gr.authController.UserMiddlewareGin(), gr.usecase.HandleGetAllBlogs)
+		blogRouter.GET("/popular", gr.authController.UserMiddlewareGin(), gr.usecase.HandleGetPopularBlog)
+		blogRouter.GET("/filter", gr.authController.UserMiddlewareGin(), gr.usecase.HandleFilterBlogs)
+		blogRouter.PATCH("/:blogId", gr.authController.UserMiddlewareGin(), gr.usecase.HandleUpdate)
+		blogRouter.DELETE("/:blogId", gr.authController.AdminMiddlewareGin(), gr.usecase.HandleDelete)
+		blogRouter.PATCH("/interact/:type", gr.authController.UserMiddlewareGin(), gr.usecase.HandleBlogLikeOrDislike)
 
 	}
 	commentRouter := router.Group("/comment")
 	{
 		// TODO: check if there is a blog with such id
-		commentRouter.PATCH("/new", gr.usecase.HandleCommentOnBlog)
+		commentRouter.PATCH("/new", gr.authController.UserMiddlewareGin(), gr.usecase.HandleCommentOnBlog)
 
-		commentRouter.PATCH("/interact/:type", gr.usecase.HandleCommentLikeOrDislike)
-		commentRouter.GET("/:blogId", gr.usecase.HandleGetAllComments)
+		commentRouter.PATCH("/interact/:type", gr.authController.UserMiddlewareGin(), gr.usecase.HandleCommentLikeOrDislike)
+		commentRouter.GET("/:blogId", gr.authController.UserMiddlewareGin(), gr.usecase.HandleGetAllComments)
 		// INFO:TESTING
 		// INFO:TOBE TESTED
 		// commentRouter.PATCH("/:comment/interact:commentId", gr.usecase.HandleCommentLikeOrDislike)

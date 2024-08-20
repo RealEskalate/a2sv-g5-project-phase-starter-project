@@ -67,7 +67,7 @@ func (r *MongoBlogRepository) Create(b domain.Blog) (domain.Blog, error) {
 	return b, nil
 }
 
-func (r *MongoBlogRepository) FindPopular() ([]domain.Blog, error) {
+func (r *MongoBlogRepository) FindPopularBlog() ([]domain.Blog, error) {
 	pipeline := mongo.Pipeline{
 		{
 			{"$addFields", bson.D{

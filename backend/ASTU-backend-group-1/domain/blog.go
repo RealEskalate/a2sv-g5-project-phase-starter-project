@@ -66,7 +66,7 @@ type BlogRepository interface {
 	Get(opts BlogFilterOption) ([]Blog, error)
 	Update(blogId string, updateData Blog) (Blog, error)
 	Delete(blogId string) error
-	FindPopular() ([]Blog, error)
+	FindPopularBlog() ([]Blog, error)
 
 	// TODO: To like or dislike something you have to view it
 

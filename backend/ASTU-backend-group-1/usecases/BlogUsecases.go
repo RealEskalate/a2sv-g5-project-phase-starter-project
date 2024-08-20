@@ -43,7 +43,7 @@ func (uc *BlogUsecase) GetAllBlogs() ([]domain.Blog, error) {
 	return blogs, nil
 }
 func (uc *BlogUsecase) FindPopularBlog() ([]domain.Blog, error) {
-	blogs, err := uc.blogRepository.FindPopular()
+	blogs, err := uc.blogRepository.FindPopularBlog()
 	if err != nil {
 		return []domain.Blog{}, err
 	}

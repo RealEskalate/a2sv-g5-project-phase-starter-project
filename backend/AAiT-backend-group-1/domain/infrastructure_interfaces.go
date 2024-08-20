@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
@@ -20,6 +22,11 @@ type PasswordService interface {
 
 type MiddlewareService interface {
 	Authenticate() gin.HandlerFunc
-	Authorize() gin.HandlerFunc
+	Authorize(role string) gin.HandlerFunc
 }
 
+type CacheService interface {
+	Set(key string, value string, expiration time.Duration) error
+	Get(key string) (string, error)
+	Delete(key string) error
+}

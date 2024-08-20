@@ -106,7 +106,7 @@ func (bu *blogUseCase) LikeBlog(userID, blogID string) domain.Error {
 
 func (bu *blogUseCase) DisLike(blogID, userID string) domain.Error {
 	// Implement the logic for disliking a blog
-	err := bu.DisLike(blogID , userID)
+	err := bu.blogRepository.DisLike(blogID , userID)
 	if err != nil {
 		return err
 	}

@@ -77,3 +77,13 @@ func (tagController *TagController) GetTagBySlug(c *gin.Context) {
 	c.JSON(http.StatusOK, tag)
 }
 
+// get posts of tag by 
+func (tagController *TagController) GetPostsByTag(c *gin.Context) {
+	slug := c.Param("slug")
+	tag, err,statuscode := tagController.tagUseCase.GetTagBySlug(c,slug)
+	if err != nil {
+		c.JSON(statuscode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, tag.Posts)
+}

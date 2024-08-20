@@ -43,6 +43,8 @@ type BlogRepository interface {
 	GetComments(ctx context.Context, id primitive.ObjectID) ([]*Comment, error, int)
 	GetAllPosts(ctx context.Context, filter Filter) ([]*Post, error, int)
 	AddTagToPost(ctx context.Context, id primitive.ObjectID, slug string) (error, int)
+	LikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int,string)
+	DislikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
 }
 
 type BlogUseCase interface {
@@ -55,6 +57,8 @@ type BlogUseCase interface {
 	GetComments(c *gin.Context, id primitive.ObjectID) ([]*Comment, error, int)
 	GetAllPosts(c *gin.Context,filter Filter) ([]*Post, error, int)
 	AddTagToPost(c *gin.Context, id primitive.ObjectID, slug string) (error, int)
+	LikePost(c *gin.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
+	DislikePost(c *gin.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
 }
 
 type CommentRepository interface {

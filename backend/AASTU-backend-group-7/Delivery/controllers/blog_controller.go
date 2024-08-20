@@ -309,3 +309,53 @@ func (controller *blogController) AddTagToPost(c *gin.Context) {
 		"message": "Tag added successfully",
 	})
 }
+
+func (controller *blogController) LikePost(c *gin.Context) {
+	claims, err := Getclaim(c)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
+	postID, err := primitive.ObjectIDFromHex(c.Param("id")) // convert id to object id
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err, statusCode,message := controller.BlogUseCase.LikePost(c, postID, claims.ID)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": message,
+	})
+}
+
+
+func (controller *blogController) DislikePost(c *gin.Context) {
+	claims, err := Getclaim(c)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
+	postID, err := primitive.ObjectIDFromHex(c.Param("id")) // convert id to object id
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err, statusCode, message := controller.BlogUseCase.DislikePost(c, postID, claims.ID)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": message,
+	})
+}
+

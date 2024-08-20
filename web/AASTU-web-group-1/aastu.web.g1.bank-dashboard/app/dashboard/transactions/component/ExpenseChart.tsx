@@ -22,9 +22,10 @@ interface ExpenseChartProps {
 export function ExpenseChart({expenses}: ExpenseChartProps) {
  
   const [chartData, setChartData] = useState<{ month: string; expense: number }[]>([]);
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+ 
 
   useEffect(() => {
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
     const newChartData = expenses.map((expense, index) => ({
       month: monthNames[index],
       expense: Math.round(expense.amount),

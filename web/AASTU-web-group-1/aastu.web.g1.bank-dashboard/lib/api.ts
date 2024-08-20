@@ -156,7 +156,7 @@ export async function getExpenses(page: number, size: number) {
 
 export async function getIncomes(page: number, size: number,) {
   try {
-    const session = await getSession();
+    const session = await getSession(); 
     const accessToken = session?.user.accessToken;
 
     const res = await fetch(

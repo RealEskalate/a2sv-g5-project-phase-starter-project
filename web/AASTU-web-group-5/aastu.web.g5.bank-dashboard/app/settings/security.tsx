@@ -22,14 +22,16 @@ export default function Security() {
 
     
     console.log(currentPassword,newPassword,1)
+    const data = {currentPassword:currentPassword,newPassword:currentPassword}
     try {
       const response = await fetch(
-        `https://bank-dashboard-6acc.onrender.com/auth/change_password?password=${encodeURIComponent(currentPassword)}&newPassword=${encodeURIComponent(newPassword)}`,
+        `https://bank-dashboard-6acc.onrender.com/auth/change_password?`,
         {     method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${key}`
         },
+        body: JSON.stringify(data)
       });
 
       console.log(response)

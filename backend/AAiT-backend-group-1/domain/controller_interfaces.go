@@ -22,13 +22,14 @@ type BlogController interface {
 	AddComment(c *gin.Context)
 	DeleteComment(c *gin.Context)
 	EditComment(c *gin.Context)
-
 }
 
 type UserController interface {
 	Register(c *gin.Context)
+	VerifyEmail(c *gin.Context)
 	Login(c *gin.Context)
 	ForgotPassword(c *gin.Context)
+	ResetPassword(c *gin.Context)
 	Logout(c *gin.Context)
 	PromoteUser(c *gin.Context)
 	DemoteUser(c *gin.Context)

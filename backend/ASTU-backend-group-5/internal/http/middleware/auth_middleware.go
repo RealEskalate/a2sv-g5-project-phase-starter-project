@@ -16,13 +16,18 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := strings.Split(c.GetHeader("Authorization"), " ")[1]
+		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			respondUnauthorized(c, "Authorization header required")
 			return
 		}
+		authParts := strings.Split(authHeader, " ")
+		if len(authParts) != 2 || strings.ToLower(authParts[0]) != "bearer" {
+			respondUnauthorized(c, "Invalid authorization header")
+			return
+		}
 
-		tokenString := authHeader
+		tokenString := authParts[1]
 		fmt.Println(authHeader)
 		if tokenString == "" {
 			respondUnauthorized(c, "Bearer token required")

@@ -9,9 +9,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// type userController struct {
-// 	UserUseCase domain.UserUseCase
-// }
+type UserController struct {
+	UserUseCase domain.UserUseCase
+}
 
 type LoginRequest struct {
 	Username string `json:"username"`
@@ -35,6 +35,13 @@ func NewUserController(userUseCase domain.UserUseCase) *UserController {
 	}
 }
 
+	Login(c *gin.Context)
+	ForgotPassword(c *gin.Context)
+	ResetPassword(c *gin.Context)
+	Logout(c *gin.Context)
+	PromoteUser(c *gin.Context)
+	DemoteUser(c *gin.Context)
+	UpdateProfile(c *gin.Context)
 func (userController *UserController) Register(cxt *gin.Context) {
 	var registeringUser domain.User
 	errUnmarshal := cxt.ShouldBind(&registeringUser)
@@ -50,22 +57,9 @@ func (userController *UserController) Register(cxt *gin.Context) {
 	cxt.JSON(http.StatusAccepted, gin.H{"Message": "User verification email sent"})
 }
 
-func (userController *UserController) Login(c *gin.Context) {
-	errUnmarshal := cxt.ShouldBind(&loginInfo)
-	if errUnmarshal != nil {
-		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errUnmarshal.Error()})
-		return
-	}
-
-	errRegister := userController.UserUseCase.RegisterEnd(cxt, token)
-	if errRegister != nil {
-		cxt.JSON(errRegister.StatusCode(), gin.H{"Error": errRegister.Error()})
-		return
-	}
-
-	cxt.JSON(http.StatusAccepted, gin.H{"Message": "User email verified successfully "})
+	func (userController *UserController) VerifyEmail(c *gin.Context){
+  var verfyingUser ResetPasswordRequest
 }
-
 func (userController *UserController) Login(cxt *gin.Context) {
 	var loginInfo LoginRequest
 	errUnmarshal := cxt.ShouldBind(&loginInfo)
@@ -191,7 +185,6 @@ func (userController *UserController) UpdateProfile(cxt *gin.Context) {
 	}
 
 	cxt.JSON(http.StatusOK, gin.H{"Message": "User profile updated successfully"})
-
 
 	loginResult, errLogin := userController.UserUseCase.Login(cxt, loginInfo.Username, loginInfo.Password)
 	if errLogin != nil {

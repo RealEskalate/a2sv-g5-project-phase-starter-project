@@ -27,3 +27,10 @@ type LoginUsecase interface {
 	Login(c context.Context, user *UserLogin) (*LoginResponse, error)
 	UpdatePassword(c context.Context, req ChangePasswordRequest, userID string) error
 }
+
+
+type LoginRepository interface{
+	Login(c context.Context, user *UserLogin ) (*LoginResponse, error) // check things here later
+	UpdatePassword(c context.Context, req ChangePasswordRequest, userID string) (error)
+}
+

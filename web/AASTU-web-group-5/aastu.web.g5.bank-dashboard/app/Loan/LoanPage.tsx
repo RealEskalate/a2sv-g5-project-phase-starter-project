@@ -17,7 +17,7 @@ const LoanPage = () => {
 
 	const { data: session, status } = useSession();
 
-	const accessToken = session.user.accessToken;
+	const accessToken = session.user?.accessToken;
 
 	useEffect(() => {
 		const fetchLoanData = async () => {
@@ -51,7 +51,7 @@ const LoanPage = () => {
 		fetchLoanData();
 	}, [accessToken]);
 
-	console.log("loannnnnnnnnn:", loanData);
+	// console.log("loannnnnnnnnn:", loanData);
 
 	return (
 		<div className="p-5 sm:px-10 sm:py-8">

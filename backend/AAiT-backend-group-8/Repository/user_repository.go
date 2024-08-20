@@ -55,3 +55,37 @@ func (r *UserRepositoryImpl) GetUserCount() (int64, error) {
 	}
 	return count, nil
 }
+
+func (r *UserRepositoryImpl) StoreResetToken(email string, resetToken string) error {
+	filter := bson.M{"email": email}
+	update := bson.M{"$set": bson.M{"password_reset_token": resetToken}} // Ensure we're using "password_reset_token"
+
+	_, err := r.db.UpdateOne(r.ctx, filter, update)
+	return err
+}
+
+func (r *UserRepositoryImpl) InvalidateResetToken(email string) error {
+	filter := bson.M{"email": email}
+	update := bson.M{"$unset": bson.M{"password_reset_token": ""}} // Ensure we're unsetting "password_reset_token"
+
+	_, err := r.db.UpdateOne(r.ctx, filter, update)
+	return err
+}
+
+func (r *UserRepositoryImpl) GetResetTokenByEmail(email string) (string, error) {
+	var user Domain.User
+	err := r.db.FindOne(r.ctx, bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		return "", err
+	}
+
+	return user.PasswordResetToken, nil
+}
+
+func (r *UserRepositoryImpl) UpdatePasswordByEmail(email string, newPassword string) error {
+    filter := bson.M{"email": email}
+    update := bson.M{"$set": bson.M{"password": newPassword}}
+
+    _, err := r.db.UpdateOne(r.ctx, filter, update)
+    return err
+}

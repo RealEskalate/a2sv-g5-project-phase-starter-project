@@ -17,16 +17,13 @@ func NewRouter(db *mongo.Database) {
 	jwtService := infrastructures.JwtService{JwtSecret: os.Getenv("JWT_SECRET")}
 
 	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
-	var UserRepo = repositories.NewUserRepositoryMongo(db)
-	var Inf = infrastructures.NewInfrastructure()
-	var UserUsecases = usecases.NewAuthUsecase(UserRepo, Inf)
-	type RouteHandler struct {
-		UserRouter *controllers.UserController
-	}
 
-	var Route = RouteHandler{
-		UserRouter: controllers.NewUserController(UserUsecases),
-	}
+	jwtService := infrastructures.Jwt{JwtSecret: os.Getenv("jwtSecret")}
+	pwdService := infrastructures.PwdService{}
+	emailService := infrastructures.EmailService{}
+
+	UserRepo := repositories.NewUserRepositoryMongo(db, os.Getenv("USER_COLLECTION"))
+
 	blogRepo := repositories.NewBlogRepository(db, os.Getenv("BLOG_COLLECTION"))
 	blogUseCase := usecases.NewBlogUseCase(blogRepo, userRepo)
 	blogController := controllers.NewBlogController(blogUseCase)
@@ -40,6 +37,9 @@ func NewRouter(db *mongo.Database) {
 	likeController := controllers.LikeController{
 		LikeUseCase: usecases.NewLikeUseCase(likeRepo),
 	}
+
+	authUsecases := usecases.NewAuthUsecase(UserRepo, jwtService, pwdService, emailService)
+	authController := controllers.NewAuthController(authUsecases)
 
 	userUseCase := usecases.NewUserUseCase(userRepo)
 	userController := controllers.NewUserController(userUseCase)
@@ -64,13 +64,13 @@ func NewRouter(db *mongo.Database) {
 	router.DELETE("/like", infrastructures.AuthMiddleware(&jwtService), likeController.DeleteLike)
 	router.GET("/like/:blog_id", infrastructures.AuthMiddleware(&jwtService), likeController.BlogLikeCount)
 
-	router.POST("/register", Route.UserRouter.Register)
-	router.POST("/login", Route.UserRouter.Login)
-	router.POST("/refresh", Route.UserRouter.RefreshToken)
-	router.POST("/refresh-token", Route.UserRouter.RefreshToken)
-	router.POST("/forgot-password", Route.UserRouter.ForgotPassword)
-	router.POST("/reset-password", Route.UserRouter.ResetPassword)
-	// port := os.Getenv("PORT")
-	router.Run()
-
+	router.POST("/register", authController.Register)
+	router.POST("/login", authController.Login)
+	router.POST("/refresh", authController.RefreshToken)
+	router.POST("/refresh-token", authController.RefreshToken)
+	router.POST("/forgot-password", authController.ForgotPassword)
+	router.POST("/reset-password", authController.ResetPassword)
+	
+	port := os.Getenv("PORT")
+	router.Run(":" + port)
 }

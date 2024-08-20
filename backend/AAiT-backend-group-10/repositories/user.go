@@ -16,9 +16,9 @@ type UserRepositoryMongo struct {
 	collection *mongo.Collection
 }
 
-func NewUserRepositoryMongo(db *mongo.Database) interfaces.UserRepositoryInterface {
+func NewUserRepositoryMongo(db *mongo.Database, collectionName string) interfaces.UserRepositoryInterface {
 	return &UserRepositoryMongo{
-		collection: db.Collection("Users"),
+		collection: db.Collection(collectionName),
 	}
 }
 

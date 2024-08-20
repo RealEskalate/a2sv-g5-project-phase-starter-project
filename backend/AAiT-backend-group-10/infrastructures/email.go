@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"net/smtp"
 	"os"
-
-	"aait.backend.g10/domain"
 )
 
-func (uc *Infranstructure) SendResetEmail(user *domain.User, resetToken string) error {
+type EmailService struct {
+}
+
+func (s *EmailService) SendResetEmail(email string, resetToken string) error {
 	// var app_password = os.Getenv("SMPT_APP_PASS")
 	var app_email = os.Getenv("SMPT_APP_EMAIL")
 	resetLink := "https://locahost:8080/reset-password?token=" + resetToken
 
 	from := app_email
+	to := email
 
-	to := user.Email
-	fmt.Println(to, from)
 	subject := "Password Reset Request"
 	body := `
 		<html>

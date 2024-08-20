@@ -1,5 +1,7 @@
 package userusecase
 
+import "blogs/config"
+
 func (u *UserUsecase) LogoutUser(username string) error {
 	// Check if the user exists
 	user, err := u.UserRepo.GetUserByUsernameorEmail(username)
@@ -10,6 +12,10 @@ func (u *UserUsecase) LogoutUser(username string) error {
 	// Get the token for the user
 	token, err := u.UserRepo.GetTokenByUsername(user.Username)
 	if err != nil {
+		if err == config.ErrTokenNotFound {
+			return config.ErrUserNotLoggedIn
+		}
+
 		return err
 	}
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"blogs/bootstrap"
+	"blogs/config"
 	"blogs/delivery/router"
 	"context"
 	"log"
@@ -16,6 +17,12 @@ func main() {
 
 	// Initialize environment variables
 	bootstrap.InitEnv()
+
+	// Initialize OAuth2 configuration
+	err := config.InitOauth2()
+	if err != nil {
+		panic(err)
+	}
 
 	// Connect to MongoDB
 	uri, err := bootstrap.GetEnv("MONGO_URI")

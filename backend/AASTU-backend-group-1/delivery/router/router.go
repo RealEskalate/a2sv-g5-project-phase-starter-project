@@ -22,7 +22,8 @@ func getBlogController(database *mongo.Database) *blogcontroller.BlogController 
 
 func getUserController(database *mongo.Database) *usercontroller.UserController {
 	userRepository := repository.NewUserRepository(database)
-	userUsecase := userusecase.NewUserUsecase(userRepository)
+	authRepository := repository.NewOAuthRepository(database)
+	userUsecase := userusecase.NewUserUsecase(userRepository, authRepository)
 	userController := usercontroller.NewUserController(userUsecase)
 
 	err := userUsecase.AddRoot()
@@ -37,8 +38,12 @@ func publicRouter(router *gin.Engine, userController *usercontroller.UserControl
 	router.POST("/users/register", userController.RegisterUser)
 	router.POST("/users/login", userController.LoginUser)
 	router.POST("/users/forgot-password", userController.ForgotPassword)
+
 	router.GET("/users/verify", userController.VerifyUser)
 	router.GET("/users/reset-password", userController.ResetPassword)
+
+	router.GET("/oauth2/login/google", userController.GoogleLogin)
+	router.GET("/oauth2/callback/google", userController.GoogleCallback)
 }
 
 func protectedRouter(router *gin.Engine, userController *usercontroller.UserController) {
@@ -53,6 +58,7 @@ func privateUserRouter(router *gin.RouterGroup, userController *usercontroller.U
 	router.PATCH("/users", userController.UpdateProfile)
 	router.PATCH("/users/promote", userController.PromoteUser)
 	router.POST("/users/logout", userController.LogoutUser)
+
 }
 
 func privateBlogRouter(router *gin.RouterGroup, blogController *blogcontroller.BlogController) {

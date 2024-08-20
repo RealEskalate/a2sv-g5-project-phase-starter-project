@@ -4,20 +4,27 @@ import { colors , logo } from '@/constants';
 import Image from 'next/image';
 import { FaEyeSlash } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
+import { useForm } from 'react-hook-form';
+import { createTransaction } from '@/services/transactionfetch';
+import Cookies from 'js-cookie';
 const TransferPage: React.FC = () => {
-  const [type, setType] = useState('transfer');
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [receiverUserName, setReceiverUserName] = useState('');
   const[visible , setvisible] = useState(false)
+
+  const {register, reset,handleSubmit,formState:{errors}} = useForm();
   let account = 5000
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const onSubmit = async (data: any) => {
+    const Token = Cookies.get('accessToken') ?? "";
+    
+    
+    console.log(data);
+    const res = await createTransaction( data ,Token)
+    console.log(res)
+    if (res.status == 200) {
+      reset()
+    }
 
-    // Process the form data here (e.g., send to server using AJAX)
-    console.log({ type, description, amount, receiverUserName });
 
-    // You can add success/error messages and form reset here
+
   };
 
   
@@ -60,17 +67,20 @@ const TransferPage: React.FC = () => {
          }
         <h1 className="text-center text-gray-800 mb-4">User name</h1>
 
-        <form onSubmit={handleSubmit} className=''>
+        <form onSubmit={handleSubmit(onSubmit)} className=''>
           <div className="mb-4">
             <label htmlFor="type" className="block text-gray-700 text-sm font-bold mb-2">
               Type:
             </label>
             <select
               id="type"
-              value={type}
-              onChange={(e) => setType(e.target.value)}
+              // value={type}
+              {...register('type',{
+                required: "This field is required"
+              })}
+              // onChange={(e) => setType(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
+              // required
             >
               <option value="transfer">Transfer</option>
               <option value="transfer">Shopping</option>
@@ -84,9 +94,12 @@ const TransferPage: React.FC = () => {
               Description (optional):
             </label>
             <textarea
+              {...register('description',{
+                required: "This field is required"
+              } )}
               id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              // value={description}/
+              // onChange={(e) => setDescription(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="Enter a brief description"
             />
@@ -97,10 +110,13 @@ const TransferPage: React.FC = () => {
               Amount:
             </label>
             <input
+              {...register('amount',{
+                required: "This field is required"
+              })}
               type="number"
               id="amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              // value={amount}
+              // onChange={(e) => setAmount(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="Enter amount"
               required
@@ -112,10 +128,13 @@ const TransferPage: React.FC = () => {
               Receiver Username:
             </label>
             <input
+              {...register('receiverUserName',{
+                required: "This field is required"
+              })}
               type="text"
               id="receiverUserName"
-              value={receiverUserName}
-              onChange={(e) => setReceiverUserName(e.target.value)}
+              // value={receiverUserName}
+              // onChange={(e) => setReceiverUserName(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="Enter receiver's username"
               required

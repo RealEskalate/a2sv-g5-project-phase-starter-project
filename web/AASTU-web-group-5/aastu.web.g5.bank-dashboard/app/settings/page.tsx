@@ -1,22 +1,23 @@
 "use client";
 import React, { useState } from "react";
-// import EditProfile from './EditProfile';
+import Profile from './profile';
 import Preference from "./preference";
 import Security from "./security";
 import { useSession } from "next-auth/react";
-
+import { useSelector } from "react-redux";
+import User from '../../type/user'
 const activeColor = "text-blue-700";
 const disabledColor = "text-slate-400";
 
 function Settings() {
+  const user = useSelector((state: { user: User }) => state.user);
   const session = useSession()
-  // console.log(session.data.user,'111')
   const [enabled, setEnabled] = useState("Edit Profile");
 
   const renderContent = () => {
     switch (enabled) {
-      // case 'Edit Profile':
-      //   return <EditProfile />;
+      case 'Edit Profile':
+        return <Profile/>;
       case "Preference":
         return <Preference />;
       case "Security":

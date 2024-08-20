@@ -133,7 +133,10 @@ func (b *BlogController) UpdateBlog(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"errors": errorMessages})
 		return
 	}
+	requester_id := c.MustGet("id").(uuid.UUID)
+
 	blog.ID = id
+	blog.Author = requester_id
 	err = b.BlogUseCase.UpdateBlog(&blog)
 	if err != nil {
 		if err.Error() == "blog not found" {
@@ -154,7 +157,10 @@ func (b *BlogController) DeleteBlog(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	err = b.BlogUseCase.DeleteBlog(id)
+	requester_id := c.MustGet("id").(uuid.UUID)
+	is_admin := c.MustGet("is_admin").(bool)
+
+	err = b.BlogUseCase.DeleteBlog(id, requester_id, is_admin)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

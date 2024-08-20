@@ -23,19 +23,7 @@ func (oc *OtpController) VerifyOtp(c *gin.Context) {
 		return
 	}
 
-	id := c.Param("id")
-
-	if id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID is required"})
-		return
-	}
-
-	userRequest := domain.UserOTPRequest{
-		UserID: id,
-		Email:  otpCode["email"],
-	}
-
-	repsonse, err := oc.OtpUsecase.VerifyOTP(c, &userRequest, otpCode["otp"])
+	repsonse, err := oc.OtpUsecase.VerifyOTP(c, otpCode["email"], otpCode["otp"])
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -53,19 +41,7 @@ func (oc *OtpController) ResendOtp(c *gin.Context) {
 		return
 	}
 
-	id := c.Param("id")
-
-	if id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID is required"})
-		return
-	}
-
-	userRequest := domain.UserOTPRequest{
-		UserID: id,
-		Email:  value["email"],
-	}
-
-	repsonse, err := oc.OtpUsecase.GenerateOTP(c, &userRequest)
+	repsonse, err := oc.OtpUsecase.ResendOTP(c, value["email"])
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

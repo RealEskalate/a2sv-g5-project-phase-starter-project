@@ -23,6 +23,6 @@ func NewOtpRoute(env *bootstrap.Env, timeout time.Duration, db mongo.Database, g
 		Env:        *env,
 	}
 
-	group.POST("/user/verifyAccount/:id", oc.VerifyOtp)
-	group.POST("/user/resendOtp/:id", oc.ResendOtp)
+	group.POST("/user/verifyAccount", oc.VerifyOtp)
+	group.POST("/user/resendOtp", oc.ResendOtp)
 }

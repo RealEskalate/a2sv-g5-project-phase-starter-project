@@ -28,7 +28,8 @@ type OTPVerificationResponse struct {
 
 type OTPUsecase interface {
 	GenerateOTP(c context.Context, user *UserOTPRequest) (otp OTPVerificationResponse, err error)
-	VerifyOTP(c context.Context, user *UserOTPRequest, otp string) (resp OTPVerificationResponse, err error)
+	VerifyOTP(c context.Context, email string, otp string) (resp OTPVerificationResponse, err error)
+	ResendOTP(c context.Context, email string) (resp OTPVerificationResponse, err error)
 }
 
 type OTPRepository interface {

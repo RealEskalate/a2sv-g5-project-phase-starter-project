@@ -43,10 +43,11 @@ func NewLoginUsecase(userRepository domain.UserRepository, tokenService domain.T
 // It then creates access and refresh tokens for the user using the provided secrets and expiry times.
 // The access token and refresh token are returned along with any error that occurred during the process.
 func (lu *loginUsecase) LoginWithIdentifier(c context.Context, identifier string) (accessToken string, refreshToken string, err error) {
-	_, err = Verifier.Verify(identifier)
 	var user domain.User
 
-	if err != nil {
+	val, _ := Verifier.Verify(identifier)
+
+	if !val.Syntax.Valid {
 		user, err = lu.userRepository.GetByUsername(c, identifier)
 		if err != nil {
 			return "", "", fmt.Errorf("user with this username not found")

@@ -99,7 +99,17 @@ func (ou *otpUsecase) GenerateOTP(c context.Context, user *domain.UserOTPRequest
 // If the user update fails, it returns an error indicating that the user could not be verified.
 // Finally, it creates a new OTPVerificationResponse object with the status set to "Verified" and the message set to "Congrats your account is now verified",
 // and returns it along with a nil error.
-func (ou *otpUsecase) VerifyOTP(c context.Context, user *domain.UserOTPRequest, otp string) (resp domain.OTPVerificationResponse, err error) {
+func (ou *otpUsecase) VerifyOTP(c context.Context, email string, otp string) (resp domain.OTPVerificationResponse, err error) {
+	userFound, err := ou.userRepository.GetByEmail(c, email)
+	if err != nil {
+		return domain.OTPVerificationResponse{}, fmt.Errorf("user not found")
+	}
+
+	user := domain.UserOTPRequest{
+		UserID: userFound.ID.Hex(),
+		Email:  userFound.Email,
+	}
+
 	otpFound, err := ou.otpRepository.GetOTPByEmail(c, user.Email)
 	if err != nil {
 		return domain.OTPVerificationResponse{}, fmt.Errorf("otp not found please send a new otp verification request")
@@ -140,4 +150,24 @@ func (ou *otpUsecase) VerifyOTP(c context.Context, user *domain.UserOTPRequest, 
 	}
 
 	return newOtpVerificationResponse, nil
+}
+
+func (ou *otpUsecase) ResendOTP(c context.Context, email string) (resp domain.OTPVerificationResponse, err error) {
+	userFound, err := ou.userRepository.GetByEmail(c, email)
+	if err != nil {
+		return domain.OTPVerificationResponse{}, fmt.Errorf("user not found")
+	}
+
+	user := domain.UserOTPRequest{
+		UserID: userFound.ID.Hex(),
+		Email:  userFound.Email,
+	}
+
+	response, err := ou.GenerateOTP(c, &user)
+
+	if err != nil {
+		return domain.OTPVerificationResponse{}, fmt.Errorf("unable to resend otp")
+	}
+
+	return response, nil
 }

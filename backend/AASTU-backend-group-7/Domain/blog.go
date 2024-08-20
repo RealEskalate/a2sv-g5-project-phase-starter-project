@@ -19,7 +19,7 @@ type Post struct {
 	DislikeCount uint                 `json:"dislike_count"`
 	Popularity   uint                 `json:"popularity"`
 	AuthorID     primitive.ObjectID   `json:"author_id"`
-	Tags         []primitive.ObjectID `json:"tags"`
+	Tags         []string `json:"tags"`
 }
 
 type Comment struct {

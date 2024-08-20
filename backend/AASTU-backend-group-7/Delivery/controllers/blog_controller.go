@@ -44,7 +44,7 @@ func (controller *blogController) CreateBlog(c *gin.Context) {
 	// generate slug
 	newBlogPost.Slug = Utils.GenerateSlug(newBlogPost.Title)
 	//created at and updated at
-	newBlogPost.Tags = []primitive.ObjectID{}
+	newBlogPost.Tags = []string{}
 	newBlogPost.PublishedAt = time.Now()
 	newBlogPost.UpdatedAt = time.Now()
 
@@ -182,20 +182,25 @@ func (controller *blogController) UpdatePostByID(c *gin.Context) {
 }
 
 func (controller *blogController) GetTags(c *gin.Context) {
-	postID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	// get post id
+	postID, err := primitive.ObjectIDFromHex(c.Param("id")) // convert id to object id
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	tags, err, statusCode := controller.BlogUseCase.GetTags(c, postID)
+
+	// get post by id
+	post, err, statusCode := controller.BlogUseCase.GetPostByID(c, postID)
 	if err != nil {
 		c.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.JSON(200, gin.H{
-		"message": "Tags fetched successfully",
-		"tags":    tags,
+		"message":  "tags fetched successfully",
+		"comments": post.Tags,
 	})
+
 }
 
 func (controller *blogController) GetComments(c *gin.Context) {
@@ -358,4 +363,5 @@ func (controller *blogController) DislikePost(c *gin.Context) {
 		"message": message,
 	})
 }
+
 

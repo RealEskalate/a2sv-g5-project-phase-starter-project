@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
 	"go.mongodb.org/mongo-driver/bson"
@@ -54,11 +55,22 @@ func (ur *userRepository) GetByID(c context.Context, userID string) (domain.User
 	return user, err
 }
 
-func (ur *userRepository) RevokeRefreshToken(c context.Context, refreshToken string) error {
+func (ur *userRepository) RevokeRefreshToken(c context.Context, userID, refreshToken string) error {
 	collection := ur.database.Collection(ur.collection)
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return errors.New("object id invalid")
+	}
 
-	_, err := collection.UpdateOne(c, bson.M{"tokens": refreshToken}, bson.M{"$pull": bson.M{"tokens": refreshToken}})
-	return err
+	res, err := collection.UpdateOne(c, bson.M{"_id": objID}, bson.M{"$pull": bson.M{"tokens": refreshToken}})
+
+	if err != nil {
+		return err
+	}
+	if res.MatchedCount < 1 {
+		return errors.New("could't find the specified token from the user")
+	}
+	return nil
 }
 
 func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *domain.User) error {
@@ -71,14 +83,64 @@ func (ur *userRepository) IsUserActive(c context.Context, userID string) (bool, 
 	return false, nil
 }
 func (ur *userRepository) ResetUserPassword(c context.Context, userID string, resetPassword *domain.ResetPassword) error {
+	collection := ur.database.Collection(ur.collection)
+	ObjID, err := primitive.ObjectIDFromHex(userID)
+
+	if err != nil {
+		return errors.New("object id invalid")
+	}
+	res, err := collection.UpdateOne(c, bson.M{"_id": ObjID}, bson.M{"$set": bson.M{"password": resetPassword.NewPassword}})
+	if err != nil {
+		return err
+	}
+	if res.MatchedCount < 1 {
+		return errors.New("could't find the specified user")
+	}
 	return nil
 }
 func (ur *userRepository) UpdateUserPassword(c context.Context, userID string, updatePassword *domain.UpdatePassword) error {
+	collection := ur.database.Collection(ur.collection)
+	ObjID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return errors.New("object id invalid")
+	}
+
+	res, err := collection.UpdateOne(c, bson.M{"_id": ObjID}, bson.M{"$set": bson.M{"password": updatePassword.NewPassword}})
+	if err != nil {
+		return err
+	}
+	if res.MatchedCount < 1 {
+		return errors.New("could't find the specified user")
+	}
 	return nil
 }
 func (ur *userRepository) PromoteUserToAdmin(c context.Context, userID string) error {
+	collection := ur.database.Collection(ur.collection)
+	ObjID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return errors.New("object id invalid")
+	}
+	res, err := collection.UpdateOne(c, bson.M{"_id": ObjID}, bson.M{"$set": bson.M{"role": "admin"}})
+	if err != nil {
+		return err
+	}
+	if res.MatchedCount < 1 {
+		return errors.New("could't find the specified user")
+	}
 	return nil
 }
 func (ur *userRepository) DemoteAdminToUser(c context.Context, userID string) error {
+	collection := ur.database.Collection(ur.collection)
+	ObjID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return errors.New("object id invalid")
+	}
+	res, err := collection.UpdateOne(c, bson.M{"_id": ObjID}, bson.M{"$set": bson.M{"role": "user"}})
+	if err != nil {
+		return err
+	}
+	if res.MatchedCount < 1 {
+		return errors.New("could't find the specified user")
+	}
 	return nil
 }

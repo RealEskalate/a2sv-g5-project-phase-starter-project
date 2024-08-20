@@ -19,7 +19,7 @@ func NewRouter(db *mongo.Database) {
 	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
 	var UserRepo = repositories.NewUserRepositoryMongo(db)
 	var Inf = infrastructures.NewInfrastructure()
-	var UserUsecases = usecases.NewUserUsecase(UserRepo, Inf)
+	var UserUsecases = usecases.NewAuthUsecase(UserRepo, Inf)
 	type RouteHandler struct {
 		UserRouter *controllers.UserController
 	}
@@ -67,7 +67,10 @@ func NewRouter(db *mongo.Database) {
 	router.POST("/register", Route.UserRouter.Register)
 	router.POST("/login", Route.UserRouter.Login)
 	router.POST("/refresh", Route.UserRouter.RefreshToken)
-	port := os.Getenv("PORT")
-	router.Run(":" + port)
+	router.POST("/refresh-token", Route.UserRouter.RefreshToken)
+	router.POST("/forgot-password", Route.UserRouter.ForgotPassword)
+	router.POST("/reset-password", Route.UserRouter.ResetPassword)
+	// port := os.Getenv("PORT")
+	router.Run()
 
 }

@@ -17,6 +17,8 @@ type InfrastructureInterface interface {
 	CheckPasswordHash(password string, hash string) bool
 	GenerateToken(user *domain.User) (string, string, error)
 	ValidateToken(token string) (*jwt.Token, error)
+	GenerateResetToken(email string) (string, error)
+	SendResetEmail(user *domain.User, resetToken string) error
 }
 
 func NewInfrastructure() InfrastructureInterface {

@@ -7,30 +7,41 @@ import (
 
 	"aait.backend.g10/domain"
 	"aait.backend.g10/infrastructures"
-	"aait.backend.g10/repositories"
+	"aait.backend.g10/usecases/interfaces"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
-type UserUsecase interface {
+type ForgotPasswordRequestDTO struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+type ResetPasswordRequestDTO struct {
+	Token       string `json:"token" binding:"required"`
+	NewPassword string `json:"new_password" binding:"required,min=8"`
+}
+type IAuthUsecase interface {
 	RegisterUser(User *domain.RegisterUserDTO) (interface{}, error)
 	LoginUser(dto *domain.LoginUserDTO) (*domain.TokenResponseDTO, error)
 	RefreshTokens(refreshToken string) (*domain.TokenResponseDTO, error)
+	ResetPassword(dto *ResetPasswordRequestDTO) error
+	ForgotPassword(dto *ForgotPasswordRequestDTO) error
 }
 
-type userUsecase struct {
-	userRepository  repositories.UserRepositoryInterface
+type AuthUsecase struct {
+	userRepository  interfaces.UserRepositoryInterface
 	Infranstructure infrastructures.InfrastructureInterface
 }
 
-func NewUserUsecase(ur repositories.UserRepositoryInterface, Infr infrastructures.InfrastructureInterface) UserUsecase {
-	return &userUsecase{
+func NewAuthUsecase(ur interfaces.UserRepositoryInterface, Infr infrastructures.InfrastructureInterface) IAuthUsecase {
+	return &AuthUsecase{
 		userRepository:  ur,
 		Infranstructure: Infr,
 	}
 }
 
-func (u *userUsecase) RegisterUser(User *domain.RegisterUserDTO) (interface{}, error) {
+func (u *AuthUsecase) RegisterUser(User *domain.RegisterUserDTO) (interface{}, error) {
 	existingUser, _ := u.userRepository.GetUserByEmail(User.Email)
 	if existingUser != nil {
 		return nil, errors.New("email already exists")
@@ -71,7 +82,7 @@ func (u *userUsecase) RegisterUser(User *domain.RegisterUserDTO) (interface{}, e
 	}, nil
 }
 
-func (uc *userUsecase) LoginUser(dto *domain.LoginUserDTO) (*domain.TokenResponseDTO, error) {
+func (uc *AuthUsecase) LoginUser(dto *domain.LoginUserDTO) (*domain.TokenResponseDTO, error) {
 	user, err := uc.userRepository.GetUserByEmail(dto.Email)
 	// fmt.Println(user)
 	if err != nil || user == nil {
@@ -101,11 +112,12 @@ func (uc *userUsecase) LoginUser(dto *domain.LoginUserDTO) (*domain.TokenRespons
 	}
 
 	return &domain.TokenResponseDTO{
-		AccessToken: accessToken,
+		RefreshToken: refreshToken,
+		AccessToken:  accessToken,
 	}, nil
 }
 
-func (uc *userUsecase) RefreshTokens(refreshToken string) (*domain.TokenResponseDTO, error) {
+func (uc *AuthUsecase) RefreshTokens(refreshToken string) (*domain.TokenResponseDTO, error) {
 	// Validate the refresh token
 	token, err := uc.Infranstructure.ValidateToken(refreshToken)
 	if err != nil || !token.Valid {
@@ -124,18 +136,22 @@ func (uc *userUsecase) RefreshTokens(refreshToken string) (*domain.TokenResponse
 	}
 
 	// Check if the provided refresh token matches the stored one
+	token, err = uc.Infranstructure.ValidateToken(user.RefreshToken)
+	if err != nil || !token.Valid {
+		return nil, errors.New("login required")
+	}
 	if user.RefreshToken != refreshToken {
 		return nil, errors.New("invalid refresh token")
 	}
 
 	// Generate new tokens
-	accessToken, newRefreshToken, err := uc.Infranstructure.GenerateToken(user)
+	accessToken, _, err := uc.Infranstructure.GenerateToken(user)
 	if err != nil {
 		return nil, err
 	}
 
 	// Update the user's refresh token
-	user.RefreshToken = newRefreshToken
+	user.AccessToken = accessToken
 	err = uc.userRepository.UpdateUser(user)
 	if err != nil {
 		return nil, err
@@ -144,4 +160,44 @@ func (uc *userUsecase) RefreshTokens(refreshToken string) (*domain.TokenResponse
 	return &domain.TokenResponseDTO{
 		AccessToken: accessToken,
 	}, nil
+}
+
+func (uc *AuthUsecase) ForgotPassword(dto *ForgotPasswordRequestDTO) error {
+	user, err := uc.userRepository.GetUserByEmail(dto.Email)
+	if err != nil || user == nil {
+		return errors.New("user not found")
+	}
+
+	resetToken, err := uc.Infranstructure.GenerateResetToken(user.Email)
+	if err != nil {
+		return err
+	}
+
+	return uc.Infranstructure.SendResetEmail(user, resetToken)
+}
+
+func (uc *AuthUsecase) ResetPassword(dto *ResetPasswordRequestDTO) error {
+	token, err := uc.Infranstructure.ValidateToken(dto.Token)
+	if err != nil || !token.Valid {
+		return errors.New("invalid or expired token")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return errors.New("invalid token")
+	}
+
+	email := claims["email"].(string)
+	user, err := uc.userRepository.GetUserByEmail(email)
+	if err != nil || user == nil {
+		return errors.New("user not found")
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(dto.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	user.Password = string(hashedPassword)
+	return uc.userRepository.UpdateUser(user)
 }

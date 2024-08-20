@@ -14,7 +14,6 @@ const BankServicesList = () => {
   const { data: session, status } = useSession();
 
   useEffect(() => {}, [session, status]);
-  console.log(session, status);
 
   if (!session?.user) router.push("/login");
 
@@ -33,11 +32,13 @@ const BankServicesList = () => {
       </div>
     );
   }
-  const data = res.data!;
+  const data = res.data!.content!;
 
   return (
     <div>
-      {!data && <img src='/assets/bankService/empty-image.png' alt='list empty' />}
+      {data.length == 0 && (
+        <img src="/assets/bankService/empty-image.png" alt="list empty" />
+      )}
       <div className="flex flex-col gap-5 max-md:hidden">
         {data.map((bankService: BankServiceType) => (
           <BankService {...bankService} key={bankService.id} />

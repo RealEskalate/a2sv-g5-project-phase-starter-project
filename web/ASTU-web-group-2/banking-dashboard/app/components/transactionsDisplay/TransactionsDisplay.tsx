@@ -65,7 +65,6 @@ const TransactionsDisplay = () => {
   const { data: session, status } = useSession();
 
   useEffect(() => {}, [session, status]);
-  console.log(session, status);
 
   if (!session?.user) router.push("/login");
 
@@ -83,8 +82,7 @@ const TransactionsDisplay = () => {
       </div>
     );
   }
-
-  const data = res.data!;
+  const data = res.data!.content!;
 
   let transactions: TransactionType[] = [];
   for (let transaction of data) {
@@ -96,8 +94,12 @@ const TransactionsDisplay = () => {
       amount: transaction.amount,
     });
   }
-  const deposit = transactions.filter((transaction) => transaction.type.toLowerCase() == "deposit");
-  const expense = transactions.filter((transaction) => transaction.type.toLowerCase() != "deposit");
+  const deposit = transactions.filter(
+    (transaction) => transaction.type.toLowerCase() == "deposit"
+  );
+  const expense = transactions.filter(
+    (transaction) => transaction.type.toLowerCase() != "deposit"
+  );
 
   return (
     <div className={`flex flex-col gap-5 ${inter.className}`}>

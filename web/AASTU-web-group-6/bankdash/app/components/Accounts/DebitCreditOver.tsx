@@ -118,7 +118,7 @@ export function DebitCreditOver() {
     <Card className="rounded-3xl shadow-lg border-gray-300   ">
       <CardHeader>
         <div className="flex justify-between ">
-          <CardTitle className=" hidden lg:block text-base font-normal font-inter text-[#718EBF]">
+          <CardTitle className=" hidden lg:block lg:text-[12px] xl:text-base text-base font-normal font-inter text-[#718EBF]">
             <span className="text-black">${totalExpense}</span> Debited &{" "}
             <span className="text-black">${totalIncome}</span> Credited in this Week
           </CardTitle>
@@ -139,14 +139,15 @@ export function DebitCreditOver() {
         </div>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[350px] w-[100%]">
+        <ChartContainer config={chartConfig} className="lg:h-[350px] w-[100%]">
           <BarChart accessibilityLayer data={data}>
-            <CartesianGrid vertical={false} className="h-[70%]" />
+            <CartesianGrid vertical={false} className="h-[50%] lg:h-[70%]" />
             <XAxis
               dataKey="day"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              fontSize={10}
               tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip

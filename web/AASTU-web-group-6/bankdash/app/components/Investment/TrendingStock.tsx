@@ -9,10 +9,10 @@ const TrendingStock = ({data}:props) => {
     <table className='w-full' >
         <thead>
             <tr className='text-left '>
-                <th className='px-6 py-6 font-medium text-base text-[#718EBF]'>SL No</th>
-                <th className='px-6 py-6 font-medium text-base text-[#718EBF]'>Name</th>
-                <th className='px-6 py-6 font-medium text-base text-[#718EBF]'>Price</th>
-                <th className='px-6 py-6 font-medium text-base text-[#718EBF]'>Return</th>
+                <th className='lg:px-3 xl:px-6 px-6 py-6 font-medium lg:text-[12px] xl:text-base text-[12px] text-[#718EBF]'>SL No</th>
+                <th className='lg:px-3 xl:px-6 px-6 py-6 font-medium lg:text-[12px] xl:text-base text-[12px] text-[#718EBF]'>Name</th>
+                <th className='lg:px-3 xl:px-6 px-6 py-6 font-medium lg:text-[12px] xl:text-base text-[12px] text-[#718EBF]'>Price</th>
+                <th className='lg:px-3 xl:px-6 px-6 py-6 font-medium lg:text-[12px] xl:text-base text-[12px] text-[#718EBF]'>Return</th>
 
             </tr>
         </thead>
@@ -25,8 +25,8 @@ const TrendingStock = ({data}:props) => {
                 ? 'text-[#FE5C73]'
                 : 'text-[#16DBAA]';
               const cellClasses = isLastCell
-                ? `px-6 py-4 whitespace-nowrap font-inter font-normal text-base ${cellColor}`
-                : 'px-6 py-4 whitespace-nowrap font-inter font-normal text-base text-[#232323]';
+                ? `lg:px-3 xl:px-5 px-6 py-4 whitespace-nowrap font-inter font-normal lg:text-[12px] xl:text-base text-[12px] ${cellColor}`
+                : 'lg:px-3 xl:px-5 px-6 py-4 whitespace-nowrap font-inter font-normal lg:text-[12px] xl:text-base text-[12px] text-[#232323]';
 
               return (
                 <td key={cellIndex} className={cellClasses}>

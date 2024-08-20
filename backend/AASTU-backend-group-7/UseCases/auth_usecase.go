@@ -69,3 +69,9 @@ func (a *authUseCase) CallbackHandler(c *gin.Context, code string) (Domain.Token
 	defer cancel()
 	return a.AuthRepository.CallbackHandler(ctx, code)
 }
+
+func (a *authUseCase) ActivateAccount(c *gin.Context, token string) (error, int) {
+	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
+	defer cancel()
+	return a.AuthRepository.ActivateAccount(ctx, token)
+}

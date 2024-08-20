@@ -65,8 +65,16 @@ func (ar *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.
 		fmt.Print(existingUser.Password == hashedPassword)
 		return Domain.Tokens{}, errors.New("Invalid credentials"), http.StatusBadRequest
 	}
-
+	fmt.Println("emailverified :", existingUser.EmailVerified, "email", existingUser.Email)
+	if existingUser.EmailVerified == false {
+		err, statusCode := ar.SendActivationEmail(user.Email)
+		if err != nil {
+			return Domain.Tokens{}, err, statusCode
+		}
+		return Domain.Tokens{}, errors.New("email is not activated , an activation email has been sent"), http.StatusUnauthorized
+	}
 	return ar.GenerateTokenFromUser(ctx, existingUser)
+
 }
 
 // register
@@ -131,7 +139,11 @@ func (ar *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 		return &Domain.OmitedUser{}, errors.New("User Not Created"), 500
 	}
 	fetched.Password = ""
-	return &fetched, nil, 200
+	err, statusCode := ar.SendActivationEmail(fetched.Email)
+	if err != nil {
+		return &fetched, err, statusCode
+	}
+	return &fetched, err, statusCode
 }
 
 // logout
@@ -282,12 +294,42 @@ func (ar *authRepository) GenerateTokenFromUser(ctx context.Context, existingUse
 	}, nil, 200
 }
 
-func (ar *authRepository) activateUser(ctx context.Context, user_id primitive.ObjectID) error {
-	filter := bson.D{{"_id", user_id}}
-	update := bson.D{{"$set", bson.D{{"email_verified", true}}}}
-	_, err := ar.UserCollection.UpdateOne(ctx, filter, update)
+func (ar *authRepository) ActivateAccount(ctx context.Context, token string) (error, int) {
+
+	email, err := jwtservice.VerifyToken(token)
 	if err != nil {
-		return err
+		return err, http.StatusBadRequest
 	}
-	return nil
+	fmt.Println("email:", email, "token:", token)
+
+	filter := bson.D{{"email", email}}
+
+	update := bson.D{{"$set", bson.D{{"email_verified", true}}}}
+	UpdatedResult, err := ar.UserCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err, http.StatusInternalServerError
+	}
+	if UpdatedResult.ModifiedCount == 0 {
+		return errors.New("user does not exist"), 400
+	}
+
+	fmt.Printf("Matched %v documents and updated %v documents.\n", UpdatedResult.MatchedCount, UpdatedResult.ModifiedCount)
+
+	return nil, http.StatusOK
+
+}
+
+func (ar *authRepository) SendActivationEmail(email string) (error, int) {
+
+	activationToken, err := jwtservice.GenerateToken(email)
+	if err != nil {
+		return err, http.StatusInternalServerError
+	}
+
+	err = ar.emailservice.SendEmail(email, "Verify Email", `Click "`+Config.BASE_URL+`/auth/activate/`+activationToken+`"here to verify email.
+`, "reset")
+	if err != nil {
+		return err, http.StatusInternalServerError
+	}
+	return nil, http.StatusOK
 }

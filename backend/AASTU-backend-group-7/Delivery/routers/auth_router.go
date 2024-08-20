@@ -32,5 +32,9 @@ func AuthRouter() {
 		authRouter.POST("/forget-password", authcontroller.ForgetPassword)
 		authRouter.GET("/forget-password/:reset_token", authcontroller.ForgetPasswordForm)
 		authRouter.POST("/forget-password/:reset_token", authcontroller.ResetPassword)
+
+		// activate account
+		authRouter.GET("/activate/:activation_token", authcontroller.ActivateAccount)
+
 	}
 }

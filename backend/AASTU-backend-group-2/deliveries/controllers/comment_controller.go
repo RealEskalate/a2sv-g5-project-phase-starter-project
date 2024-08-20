@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"blog_g2/domain"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,13 +21,17 @@ func NewCommentController(Commmgr domain.CommentUsecase) *CommentController {
 func (cc *CommentController) CreateComment(c *gin.Context) {
 	blogID := c.Param("blog_id")
 
+	log.Println(blogID)
+
 	var comment domain.Comment
 	if err := c.ShouldBindJSON(&comment); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	userID := "extracted_user_id"
+	userID := c.GetString("userid")
+
+	log.Println(blogID)
 
 	err := cc.CommentUsecase.CreateComment(c, blogID, userID, comment)
 	if err != nil {

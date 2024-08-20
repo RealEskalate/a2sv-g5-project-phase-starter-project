@@ -3,6 +3,7 @@ package repositories
 import (
 	"blog_g2/domain"
 	"context"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -36,6 +37,7 @@ func (cr *CommentRepositoryImpl) CreateComment(blogID, userID string, comment do
 		return err
 	}
 	comment.UserID = uid
+	comment.Date = time.Now()
 
 	_, err = cr.collection.InsertOne(context.TODO(), comment)
 	return err

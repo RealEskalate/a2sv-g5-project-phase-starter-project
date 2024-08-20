@@ -24,10 +24,7 @@ func NewLoginUsecase(userRepository domain.UserRepository, activeUserRepository 
 func (lu *loginUsecase) SaveAsActiveUser(user domain.ActiveUser, refreshToken string, c context.Context) error {
 	ctx, cancel := context.WithTimeout(c, lu.contextTimeout)
 	defer cancel()
-	return lu.activeUserRepository.CreateActiveUser(domain.ActiveUser{
-		ID:       user.ID,
-		RefreshToken: refreshToken,
-	}, ctx)
+	return lu.activeUserRepository.CreateActiveUser(user, ctx)
 }
 
 func (lu *loginUsecase) GetUserByEmail(c context.Context, email string) (domain.User, error) {

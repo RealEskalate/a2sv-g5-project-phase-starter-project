@@ -13,14 +13,14 @@ import (
 
 func NewUserrouter(config *infrastructure.Config, DB mongo.Database, userRouter *gin.RouterGroup) {
 
-	userRepo := repositories.NewUserRepository(DB , config.UserCollection)
-	
-	userService := usecases.NewUserUseCase(userRepo ,time.Duration(config.ContextTimeout) * time.Second)
+	userRepo := repositories.NewUserRepository(DB, config.UserCollection)
+
+	userService := usecases.NewUserUseCase(userRepo, time.Duration(config.ContextTimeout)*time.Second)
 	userController := controllers.NewUserController{
 		UserUsecase: userService,
 	}
 
-	userRouter.PUT("/update/:id" , userController.UpdateUser)
-	userRouter.POST("/promote/:id" , userController.PromoteUser)
+	userRouter.PUT("/update/:id", userController.UpdateUser)
+	userRouter.POST("/promote/:id", userController.PromoteUser)
 
 }

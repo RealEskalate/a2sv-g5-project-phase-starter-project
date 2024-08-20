@@ -15,7 +15,7 @@ type LogoutController struct {
 func (l *LogoutController) Logout(c *gin.Context) {
 	id := c.GetString("user_id")
 	// TODO: get id from claims
-	_, err := l.LogoutUsecase.CheckActiveUser(c, id)
+	_, err := l.LogoutUsecase.CheckActiveUser(c, id, c.Request.UserAgent())
 	if err != nil {
 		c.JSON(404, gin.H{"error": "User not found, page not found, login before logout"})
 		return

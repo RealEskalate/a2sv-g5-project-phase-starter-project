@@ -22,7 +22,7 @@ func Router(server *gin.Engine, config *infrastructure.Config, DB mongo.Database
 	blog_controller := controllers.NewBlogController(blog_usecase, validator)
 	blogRouter := server.Group("blogs")
 	authHandler := infrastructure.NewAuthMiddleware(*config).AuthenticationMiddleware()
-	
+
 	NewBlogrouter(blogRouter, blog_controller, authHandler)
 	userRouter := server.Group("")
 	// NewUserrouter(config, DB , userRouter)
@@ -44,5 +44,5 @@ func Router(server *gin.Engine, config *infrastructure.Config, DB mongo.Database
 	userroute := server.Group("/user")
 	userroute.Use(authHandler)
 	NewUserrouter(config, DB, userroute)
-	
+
 }

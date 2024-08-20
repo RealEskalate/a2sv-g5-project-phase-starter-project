@@ -44,7 +44,7 @@ func (l *LikeRepository) UnlikeBlog(likeID primitive.ObjectID) error {
 
 func (l *LikeRepository) GetLikes(blogID primitive.ObjectID) ([]domain.Like, error) {
 	var likes []domain.Like
-	filter := bson.D{{Key: "blogid", Value: blogID}}
+	filter := bson.D{{Key: "blog_id", Value: blogID}}
 	cursor, err := l.collection.Find(l.ctx, filter)
 	if err != nil {
 		return nil, errors.New("error reading likes")
@@ -62,11 +62,13 @@ func (l *LikeRepository) GetLikes(blogID primitive.ObjectID) ([]domain.Like, err
 }
 
 func (l *LikeRepository) CheckIfLiked(userID, blogID primitive.ObjectID) (bool, domain.Like) {
-	filter := bson.D{{Key: "userid", Value: userID}, {Key: "blogid", Value: blogID}}
+	filter := bson.D{{Key: "user_id", Value: userID}, {Key: "blog_id", Value: blogID}}
 	var like domain.Like
-	l.collection.FindOne(l.ctx, filter).Decode(&like)
-	if like.Id == primitive.NewObjectID() {
-		return false, domain.Like{}
+	err := l.collection.FindOne(l.ctx, filter).Decode(&like)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return false, domain.Like{}
+		}
 	}
 	return true, like
 }

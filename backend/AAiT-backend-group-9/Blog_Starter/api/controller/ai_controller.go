@@ -51,7 +51,7 @@ func (ac *AIController) SuggestAIContent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	preText := "refine the following blog post and return it in plain text.Be sure the response is plain text response. the blog is:"
+	preText := "refine the following blog post and return it in plain text. Be sure the response is plain text response. the blog is:"
 	aiContent, err := ac.aiUseCase.GenerateAIContent(ac.ctx, content, preText)
 	if err != nil {
 		if err.Error() == "content is empty" {

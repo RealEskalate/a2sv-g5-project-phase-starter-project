@@ -8,20 +8,17 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type BlogController struct {
 	blogUseCase 		domain.BlogUseCase
-	blogratingUSeCase 	domain.BlogRatingUseCase
-	blogCommentUsecase	domain.CommentUseCase
 	ctx          		context.Context
 }
 
-func NewBlogController(blogUseCase domain.BlogUseCase,blogRatingUseCase domain.BlogRatingUseCase, blogCommentUseCase domain.CommentUseCase, ctx context.Context) *BlogController {
+func NewBlogController(blogUseCase domain.BlogUseCase, ctx context.Context) *BlogController {
 	return &BlogController{
 		blogUseCase: blogUseCase,
-		blogratingUSeCase: blogRatingUseCase,
-		blogCommentUsecase: blogCommentUseCase,
 		ctx:           ctx,
 	}
 }
@@ -144,94 +141,53 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
-func (bc *BlogController) InserttAndUpdateRating(c *gin.Context) {
-	var newRating domain.BlogRatingRequest
-	if err := c.BindJSON(&newRating); err != nil {
+func (bc *BlogController) FilterBlog(c *gin.Context) {
+	var filterReq domain.BlogFilterRequest
+	if err := c.BindJSON(&filterReq); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error" : "invalid request format"})
+		return
 	}
-	
-	if newRating.RatingID != "" {
-		exisitingRating, err := bc.blogratingUSeCase.GetRatingByID(bc.ctx, newRating.RatingID)
-		if exisitingRating != nil {
-			updatedRating, err := bc.blogratingUSeCase.UpdateRating(bc.ctx, newRating.Rating, newRating.RatingID)
-			if err != nil {
-				c.IndentedJSON(http.StatusInternalServerError, gin.H{"error" : "internal server error"})
-				return
-			}
-			c.IndentedJSON(http.StatusOK, gin.H{"updated_rating" : updatedRating})
+
+	filtrationResponse, err := bc.blogUseCase.FilterBlogs(bc.ctx, &filterReq)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"error" : "no matches found"})
 			return
 		}
-		if err != nil {
-			c.IndentedJSON(http.StatusInternalServerError, gin.H{"error" : "internal server error"})
+		if err.Error() == "invalid request format" {
+			c.IndentedJSON(http.StatusBadRequest, gin.H{"error" : err.Error()})
 			return
 		}
-	}
-
-	insertedRating, err := bc.blogratingUSeCase.InsertRating(bc.ctx, &newRating)
-	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error" : "internal server error"})
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{"inserted_rating" : insertedRating})
+	c.IndentedJSON(http.StatusOK, gin.H{"filtered_blogs" : filtrationResponse})
 }
 
-func (bc *BlogController) DeleteRating(c *gin.Context) {
-	var toDelete domain.BlogRatingRequest
-	if err := c.BindJSON(&toDelete); err != nil {
+func (bc *BlogController) SearchBlog(c *gin.Context) {
+	author := c.Query("author")
+	title := c.Query("title")
+	if title == "" && author == "" {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error" : "invalid request format"})
 		return
 	}
 
-	deletedRating, err := bc.blogratingUSeCase.DeleteRating(bc.ctx, toDelete.RatingID)
+	var searchRequest domain.BlogSearchRequest
+	searchRequest.Author = author
+	searchRequest.Title = title
+	searchResult, err := bc.blogUseCase.SearchBlogs(bc.ctx, &searchRequest)
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"error" : "no matches found"})
+			return
+		}
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error" : "internal server error"})
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{"'deleted_rating" : deletedRating})
+	c.IndentedJSON(http.StatusOK, gin.H{"search_result" : searchResult})
+		
 }
 
-func (bc *BlogController) CreateComment(c *gin.Context) {
-	var createdComment domain.CommentRequest
-	if err := c.BindJSON(&createdComment); err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error" : "invalid request format"})
-		return
-	}
-
-	insertedComment, err := bc.blogCommentUsecase.Create(bc.ctx, &createdComment)
-	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error" : "internal server error"})
-		return
-	}
-
-	c.IndentedJSON(http.StatusOK, gin.H{"created_comment" : insertedComment})
-}
-
-func (bc *BlogController) DeleteCommment(c *gin.Context) {
-	commentId := c.Param("comment_id")
-	deletedComment, err := bc.blogCommentUsecase.Delete(bc.ctx, commentId)
-	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error" : "internal server error"})
-		return
-	}
-	
-	c.IndentedJSON(http.StatusOK, gin.H{"deleted_comment" : deletedComment})
-}
-
-func (bc *BlogController) UpdateComment(c *gin.Context) {
-	var updatedComment domain.CommentRequest
-	if err := c.BindJSON(&updatedComment); err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error" : "invalid request format"})
-		return
-	}
-
-	returnedComment, err := bc.blogCommentUsecase.Update(bc.ctx, updatedComment.Content, updatedComment.CommentID)
-	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error" : "internal server error"})
-		return
-	}
-
-	c.IndentedJSON(http.StatusOK, gin.H{"updated_comment" : returnedComment})
-}
 

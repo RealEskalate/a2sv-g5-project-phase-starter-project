@@ -3,6 +3,7 @@ package usecase
 import (
 	"Blog_Starter/domain"
 	"context"
+	"errors"
 	"time"
 )
 
@@ -20,6 +21,11 @@ func NewCommentUseCase(commentRepository domain.CommentRepository, blogRepositor
 
 // Create implements domain.CommentUseCase.
 func (bc *BlogCommentUseCase) Create(ctx context.Context, comment *domain.CommentRequest) (*domain.Comment, error) {
+
+	if len(comment.Content) < 10 {
+		return nil, errors.New("comment content too short")
+	}
+
 	formattedComment := &domain.Comment {
 		UserID: comment.UserID,
 		BlogID: comment.BlogID,
@@ -59,6 +65,9 @@ func (bc *BlogCommentUseCase) GetComments(ctx context.Context, userID string, bl
 
 // Update implements domain.CommentUseCase.
 func (bc *BlogCommentUseCase) Update(ctx context.Context, content string, commentID string) (*domain.Comment, error) {
+	if len(content) < 10 {
+		return nil, errors.New("content too short")
+	}
 	updatedComment, err := bc.CommentRepository.Update(ctx,content,commentID)
 	return updatedComment, err
 }

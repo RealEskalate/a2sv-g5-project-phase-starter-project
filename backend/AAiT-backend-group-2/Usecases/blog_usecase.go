@@ -1,7 +1,7 @@
 package usecases
 
 import (
-	"AAiT-backend-group-2/Domain"
+	domain "AAiT-backend-group-2/Domain"
 	"context"
 	"errors"
 	"time"
@@ -87,4 +87,9 @@ func (u *blogusecase) DeleteBlog(ctx context.Context, author, id string) error {
 		return errors.New("Unauthorized")
 	}
 	return u.blogRepo.Delete(ctx, id)
+}
+
+func (u *blogusecase) Search(ctx context.Context, title string, author string, offset int, limit int) ([]domain.Blog, error) {
+	return u.blogRepo.Search(ctx, title, author, offset, limit)
+
 }

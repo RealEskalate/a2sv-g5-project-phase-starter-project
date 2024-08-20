@@ -32,6 +32,7 @@ type BlogRepository interface {
 	Save(ctx context.Context, blog *Blog) error
 	Update(ctx context.Context, blog *Blog) error
 	Delete(ctx context.Context, id string) error
+	Search(ctx context.Context, title string, author string, offset int, limit int) ([]Blog, error)
 }
 
 type BlogUseCase interface {
@@ -40,7 +41,7 @@ type BlogUseCase interface {
 	CreateBlog(ctx context.Context, req *RequestBlog, author string) error
 	UpdateBlog(ctx context.Context, req *RequestBlog, author, id string) error
 	DeleteBlog(ctx context.Context, author, id string) error
-	SearchBlogs(query, author string) ([]Blog, error)
+	Search(ctx context.Context, title string, author string, offset int, limit int) ([]Blog, error)
 }
 
 // Validate BlogRequest field

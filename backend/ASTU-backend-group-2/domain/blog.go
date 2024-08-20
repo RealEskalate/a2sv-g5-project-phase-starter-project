@@ -22,8 +22,13 @@ type Blog struct {
 	LikeCount     int                `json:"like_count" bson:"like_count"`
 	DislikeCount  int                `json:"dislike_count" bson:"dislike_count"`
 	CommentsCount int                `json:"comments_count" bson:"comments_count"`
+	Popularity    float64            `json:"popularity" bson:"popularity"`
 	CreatedAt     time.Time          `json:"created_at" bson:"created_at"`
 	UpdatedAt     time.Time          `json:"updated_at" bson:"updated_at"`
+}
+
+func (blog *Blog) UpdatePopularity() {
+	blog.Popularity = float64(blog.ViewCount)*0.5 + float64(blog.LikeCount)*0.3 + float64(blog.CommentsCount)*0.2
 }
 
 // defines the structure for the blogs that will be  received from the request when creating and updating
@@ -77,15 +82,15 @@ type Reaction struct {
 
 // BlogRepository defines the methods required for data access related to blogs and comments.
 type BlogRepository interface {
-	GetByTags(c context.Context, tags []string) ([]Blog, error)
-	GetAllBlogs(c context.Context) ([]Blog, error)
+	GetByTags(c context.Context, tags []string, limit int64, page int64) ([]Blog, error)
+	GetAllBlogs(c context.Context, limit int64, page int64) ([]Blog, error)
 	GetBlogByID(c context.Context, blogID string) (Blog, error)
-	GetByPopularity(c context.Context) ([]Blog, error)
-	Search(c context.Context, searchTerm string) ([]Blog, error)
+	GetByPopularity(c context.Context, limit int64, page int64) ([]Blog, error)
+	Search(c context.Context, searchTerm string, limit int64, page int64) ([]Blog, error)
 	CreateBlog(c context.Context, newBlog *Blog) (Blog, error)
 	UpdateBlog(c context.Context, blogID string, updatedBlog *BlogUpdate) (Blog, error)
 	DeleteBlog(c context.Context, blogID string) error
-	SortByDate(c context.Context) ([]Blog, error)
+	SortByDate(c context.Context, limit int64, page int64) ([]Blog, error)
 }
 
 type CommentRepository interface {

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import LoanCards from "./LoanCards";
 import LoanTable from "./LoanTable";
 import { LoanDataProps } from "./loanTypes"; // Import the shared type
+import { useSession } from "next-auth/react";
 
 interface LoanResponse {
 	success: boolean;
@@ -13,8 +14,10 @@ interface LoanResponse {
 
 const LoanPage = () => {
 	const [loanData, setLoanData] = useState<LoanResponse | null>(null);
-	const accessToken =
-		"eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJvbGlrZWwiLCJpYXQiOjE3MjQwNjg1NzcsImV4cCI6MTcyNDE1NDk3N30.Pl5I-B9Afd9HQSJ2wFNZJdJ8nZ5qzIhgvcgyxcyOZr-wz7AEhtZ2Pn--AsdiOzt7";
+
+	const { data: session, status } = useSession();
+
+	const accessToken = session.user.accessToken;
 
 	useEffect(() => {
 		const fetchLoanData = async () => {

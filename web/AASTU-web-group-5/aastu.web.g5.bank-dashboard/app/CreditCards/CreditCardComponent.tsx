@@ -7,13 +7,16 @@ import CardStatistics from "./CardStatistics";
 import AddNewCard from "./AddNewCard";
 import CardSetting from "./CardSetting";
 import creditCardColor from "./cardMockData";
+import { useSession } from "next-auth/react";
 
 const CreditCardComponent: React.FC = () => {
 	const [cardData, setCardData] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const accessToken =
-		"eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJvbGlrZWwiLCJpYXQiOjE3MjQwNjg1NzcsImV4cCI6MTcyNDE1NDk3N30.Pl5I-B9Afd9HQSJ2wFNZJdJ8nZ5qzIhgvcgyxcyOZr-wz7AEhtZ2Pn--AsdiOzt7";
+
+	const { data: session, status } = useSession();
+
+	const accessToken = session.user.accessToken;
 
 	const fetchCardData = async () => {
 		if (!accessToken) {

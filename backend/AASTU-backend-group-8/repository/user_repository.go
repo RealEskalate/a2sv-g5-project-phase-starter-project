@@ -71,7 +71,7 @@ func (r *UserRepository) GetAllUsers() ([]*domain.User, error) {
 	}
 	defer cursor.Close(context.TODO())
 
-	err = cursor.All(context.TODO(),&users)
+	err = cursor.All(context.TODO(), &users)
 
 	return users, err
 }

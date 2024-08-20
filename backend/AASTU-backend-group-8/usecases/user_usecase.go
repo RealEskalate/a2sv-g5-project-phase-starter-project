@@ -11,18 +11,18 @@ import (
 )
 
 type UserUsecase struct {
-	userRepo    domain.UserRepositoryInterface
-	tokenRepo  	domain.TokenRepositoryInterface
-	jwtSvc      infrastructure.JWTService
+	userRepo  domain.UserRepositoryInterface
+	tokenRepo domain.TokenRepositoryInterface
+	jwtSvc    infrastructure.JWTService
 	// passwordSvc infrastructure.PasswordService
 	// emailSvc	infrastructure.EmailService
 }
 
 func NewUserUsecase(ur domain.UserRepositoryInterface,tr domain.TokenRepositoryInterface, jr infrastructure.JWTService) *UserUsecase {
 	return &UserUsecase{
-		userRepo: ur,
+		userRepo:  ur,
 		tokenRepo: tr,
-		jwtSvc: jr,
+		jwtSvc:    jr,
 	}
 }
 
@@ -42,7 +42,6 @@ func (u *UserUsecase) Register(user *domain.User) error {
 	}
 	return nil
 }
-
 
 func (u *UserUsecase) GetUserByUsername(username string) (*domain.User, error) {
 	return u.userRepo.GetUserByUsername(username)
@@ -76,8 +75,35 @@ func (u *UserUsecase) Login(authUser *domain.AuthUser) (string, string, error) {
 	}
 
 	refreshedTokenClaim := &domain.RefreshToken{
-		UserID: user.ID,
-		Role: user.Role,
+		UserID:    user.ID,
+		Role:      user.Role,
+		ExpiresAt: time.Now().Add(time.Hour * 24 * 7),
+	}
+
+	// Save the refresh token in the database
+	err = u.tokenRepo.SaveRefreshToken(refreshedTokenClaim)
+	if err != nil {
+		return "", "", err
+	}
+
+	return token, refreshToken, nil
+}
+
+func (u *UserUsecase) LoginWithProvider(user *domain.User) (string, string, error) {
+	// Generate JWT and refresh tokens for the authenticated user
+	token, err := u.jwtSvc.GenerateToken(user.ID, user.Role)
+	if err != nil {
+		return "", "", err
+	}
+
+	refreshToken, err := u.jwtSvc.GenerateRefreshToken(user.ID, user.Role)
+	if err != nil {
+		return "", "", err
+	}
+
+	refreshedTokenClaim := &domain.RefreshToken{
+		UserID:    user.ID,
+		Role:      user.Role,
 		ExpiresAt: time.Now().Add(time.Hour * 24 * 7),
 	}
 

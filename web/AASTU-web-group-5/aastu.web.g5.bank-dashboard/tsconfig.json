@@ -25,8 +25,13 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/public/*": ["./public/*"]
-    }
+      "@/public/*": ["./public/*"],
+      "@/*": ["./*"]
+    },
+    "noImplicitAny": false, // Allow implicit 'any' types
+    "strictNullChecks": false, // Disable strict null checking
+    "strictPropertyInitialization": false, // Disable strict class property initialization checks
+    "useUnknownInCatchVariables": false // Allow 'any' in catch clauses
   },
   "include": [
     "next-env.d.ts",

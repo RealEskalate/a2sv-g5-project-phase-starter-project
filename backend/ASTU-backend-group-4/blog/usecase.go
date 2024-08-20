@@ -51,7 +51,7 @@ func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, userID, blogID stri
 	if err != nil {
 		return err
 	}
-	_, err = b.blogRepository.GetBlogByID(ctx, blogID)
+	blog, err := b.blogRepository.GetBlogByID(ctx, blogID)
 	if err != nil {
 		return err
 	}
@@ -65,6 +65,9 @@ func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, userID, blogID stri
 	if err != nil {
 		return err
 	}
+
+	blog.IncrementCommentsCount()
+	b.blogRepository.UpdateBlog(ctx, blogID, blog)
 
 	return nil
 }

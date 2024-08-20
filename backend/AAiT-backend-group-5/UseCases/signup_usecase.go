@@ -43,21 +43,21 @@ func (uc *signupUsecase) CreateUser(ctx context.Context, user *models.User) *mod
 	}
 
 	// send the email for varification of the email address
-	token, err := uc.jwtService.CreateAccessToken(*user, 60*60)
+	token, err := uc.jwtService.CreateURLToken(*user, 60*60)
 
 	if err != nil {
 		return models.InternalServerError("Error while creating token")
 	}
 
-	url, uErr := uc.urlService.GenerateURL(token)
+	url, uErr := uc.urlService.GenerateURL(token, "confirmRegistration")
 
 	if uErr != nil {
 		return models.InternalServerError("Error while creating url" + uErr.Error())
 	}
-	
+
 	// send the email
 	subject := "Email Verification"
-	body := "Please click the link below to verify your email address\n" + url + "This link will expire in 1 hour"
+	body := "Please click the link below to verify your email address\n" + url + "\nThis link will expire in 1 hour"
 	e := uc.emailService.SendEmail(user.Email, subject, body)
 
 	if e != nil {

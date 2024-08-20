@@ -23,7 +23,7 @@ func (forgotPasswordController *ForgotPasswordController) ForgotPasswordRequest(
 	var request dtos.PasswordResetRequest
 
 	// attempt to bind IndentedJSON payload
-	err := ctx.ShouldBind(request)
+	err := ctx.ShouldBind(&request)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
 		return
@@ -59,7 +59,7 @@ func (forgotPasswordController *ForgotPasswordController) SetNewPassword(ctx *gi
 	// get short code from the URL
 	shortURLCode := ctx.Param("id")
 
-	e := forgotPasswordController.PasswordUsecase.SetPassword(ctx, setUpPasswordRequest.Password, shortURLCode)
+	e := forgotPasswordController.PasswordUsecase.SetUpdateUserPassword(ctx, shortURLCode, setUpPasswordRequest.Password)
 	if e != nil {
 		ctx.IndentedJSON(e.Code, e.Error())
 		return

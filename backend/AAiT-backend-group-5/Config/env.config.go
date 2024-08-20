@@ -48,6 +48,7 @@ func NewEnv() *Env {
 	viper.BindEnv("SMTP_PASSWORD")
 	viper.BindEnv("SMTP_SENDER_EMAIL")
 	viper.BindEnv("BASE_URL")
+	viper.BindEnv("REDIS_BLOG_KEY")
 	viper.BindEnv("MONGO_URI")
 	viper.BindEnv("DB_NAME")
 	viper.BindEnv("SERVER_ADDRESS")

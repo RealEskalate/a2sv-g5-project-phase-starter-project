@@ -27,7 +27,7 @@ func (urlRepo *URL_Repo) SaveURL(url models.URL, ctx context.Context) *models.Er
 		return models.InternalServerError(err.Error())
 	}
 
-	return models.Nil()
+	return nil
 }
 
 func (urlRepo *URL_Repo) GetURL(short_url_code string, ctx context.Context) (*models.URL, *models.ErrorResponse) {
@@ -41,7 +41,8 @@ func (urlRepo *URL_Repo) GetURL(short_url_code string, ctx context.Context) (*mo
 		}
 		return nil, models.NotFound(err.Error())
 	}
-	return &result, models.Nil()
+
+	return &result, nil
 }
 
 func (urlRepo *URL_Repo) DeleteURL(id string, ctx context.Context) *models.ErrorResponse {
@@ -49,5 +50,5 @@ func (urlRepo *URL_Repo) DeleteURL(id string, ctx context.Context) *models.Error
 	if err != nil {
 		return models.InternalServerError(err.Error())
 	}
-	return models.Nil()
+	return nil
 }

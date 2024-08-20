@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"context"
+	"fmt"
 
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
@@ -20,6 +21,7 @@ func NewLoginUsecase(jwtService interfaces.JwtService, passwordService interface
 		jwtService:      jwtService,
 		passwordService: passwordService,
 		repository:      repository,
+		session:         session,
 	}
 }
 
@@ -49,6 +51,7 @@ func (uc *loginUsecase) LoginUser(ctx context.Context, userReqest dtos.LoginRequ
 		UserID:       user.ID,
 		RefreshToken: refresheToken,
 	}
+	fmt.Println(session)
 	tErr := uc.session.SaveToken(ctx, &session)
 
 	if tErr != nil {

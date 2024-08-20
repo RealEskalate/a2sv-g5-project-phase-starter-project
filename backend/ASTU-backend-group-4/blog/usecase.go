@@ -46,13 +46,54 @@ func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, authorID string, blog 
 }
 
 // CreateComment implements BlogUseCase.
-func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, comment CreateCommentRequest) error {
-	panic("unimplemented")
+func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, userID, blogID string, comment CreateCommentRequest) error {
+	user, err := b.authRepository.GetUserByUsername(ctx, userID) // TODO: Change to GetUserByID
+	if err != nil {
+		return err
+	}
+	blog, err := b.blogRepository.GetBlogByID(ctx, blogID)
+	if err != nil {
+		return err
+	}
+
+	var newComment Comment
+	newComment.AuthorID = user.ID
+	newComment.BlogID = blogID
+	newComment.Content = comment.Content
+
+	_, err = b.blogRepository.CreateComment(ctx, newComment)
+	if err != nil {
+		return err
+	}
+
+	blog.IncrementCommentsCount()
+	b.blogRepository.UpdateBlog(ctx, blogID, blog)
+
+	return nil
 }
 
 // DeleteBlog implements BlogUseCase.
-func (b *BlogUseCaseImpl) DeleteBlog(ctx context.Context, id string) error {
-	panic("unimplemented")
+func (b *BlogUseCaseImpl) DeleteBlog(ctx context.Context, id, userID string) error {
+	user, err := b.authRepository.GetUserByUsername(ctx, userID) // TODO: Change to GetUserByID
+	if err != nil {
+		return err
+	}
+
+	blog, err := b.blogRepository.GetBlogByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if blog.AuthorID != user.ID {
+		return ErrBlogNotFound
+	}
+
+	err = b.blogRepository.DeleteBlog(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // DeleteComment implements BlogUseCase.

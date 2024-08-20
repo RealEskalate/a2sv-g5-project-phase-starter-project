@@ -8,8 +8,8 @@ import (
 )
 
 type IJWT interface {
-	GenerateAccessToken(userId string) (string, error)
-	GenerateRefreshToken(userId string) (string, error)
+	GenerateAccessToken(userId, role string) (string, error)
+	GenerateRefreshToken(userId, role string) (string, error)
 	ValidateAccessToken(token string) (*jwt.Token, error)
 	ValidateRefreshToken(token string) (*jwt.Token, error)
 }
@@ -44,18 +44,20 @@ func (jwtservice *JWTService) validator(tokenString string) (*jwt.Token, error){
 	return nil, errors.New("invalid token")
 }
 
-func (jwtservice *JWTService) GenerateAccessToken(userId string) (string, error) {
+func (jwtservice *JWTService) GenerateAccessToken(userId, role string) (string, error) {
 	claims := jwt.MapClaims{
 		"userId" : userId,
+		"role": role,
 		"exp": time.Now().Add(time.Minute * 15).Unix(),
 	} 
 	accToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return accToken.SignedString([]byte(jwtservice.secretKey))
 }
 
-func (jwtservice *JWTService) GenerateRefreshToken(userId string) (string, error){
+func (jwtservice *JWTService) GenerateRefreshToken(userId, role string) (string, error){
 	claims := jwt.MapClaims{
 		"userId":userId,
+		"role": role,
 		"exp": time.Now().Add(time.Hour * 24 *7).Unix(),
 	}
 

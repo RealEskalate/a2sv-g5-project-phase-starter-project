@@ -2,12 +2,16 @@
 package jwt
 
 import (
-  "errors"
-  "time"
+	"errors"
+	"fmt"
+	"log"
+	"time"
 
-  "github.com/dgrijalva/jwt-go"
-  usermodel "github.com/group13/blog/domain/models/user"
-  ijwt "github.com/group13/blog/usecase/common/i_jwt"
+	"github.com/dgrijalva/jwt-go"
+	config "github.com/group13/blog/config"
+	usermodel "github.com/group13/blog/domain/models/user"
+	ijwt "github.com/group13/blog/usecase/common/i_jwt"
+	er "github.com/group13/blog/domain/errors"
 )
 
 // Service implements the ijwt.IService interface for handling JWT operations.
@@ -56,8 +60,8 @@ func (s *Service) Generate(user *usermodel.User, tokenType string) (string, erro
 			"email":  email, 
 			"name": name,
 			"role": role,
-			 jwt.StandardClaims{
-				 ExpiresAt: time.Now().Add(time.Hour * 5).Unix(),
+			"exp": jwt.StandardClaims{
+				ExpiresAt: time.Now().Add(time.Hour * 5).Unix(),
 			},
 		}
 		} else if tokenType == "refresh" {
@@ -66,7 +70,7 @@ func (s *Service) Generate(user *usermodel.User, tokenType string) (string, erro
 			"email":  email, 
 			"name": name,
 			"role": role,
-			 jwt.StandardClaims{
+			"exp": jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(time.Hour * 168).Unix(),
 			},
 		}
@@ -75,7 +79,7 @@ func (s *Service) Generate(user *usermodel.User, tokenType string) (string, erro
 			"email":  email, 
 			"name": name,
 			"role": role,
-			 jwt.StandardClaims{
+			"exp" :jwt.StandardClaims{
 				 ExpiresAt: time.Now().Add(time.Minute * 15).Unix(),
 			},
 		}
@@ -107,21 +111,19 @@ func (s *Service)Decode(token string) (jwt.MapClaims, error) {
 		return nil, errors.New("wrong Credentails")
 	}
 
-	claims, ok := parsedToken.Claims.(*Service)
-
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, errors.New("wrong Credentails")
+		return nil, errors.New("wrong Credentials")
 	}
 
-	if claims.ExpiresAt < time.Now().Unix() {
-		return nil, errors.New("expired Token")
-	}
+
+
 
 	return jwt.MapClaims{
-		"email":    claims.Email,
-		"username": claims.Username,
-		"role":     claims.Role,
-		"exp":      claims.ExpiresAt,
+		"email":    claims["email"],
+		"username": claims["name"],
+		"role":     claims["role"],
+		"exp":      claims["standardClaims"].(jwt.StandardClaims).ExpiresAt,
 	}, nil
 
 }

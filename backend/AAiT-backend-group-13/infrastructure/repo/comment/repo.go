@@ -11,21 +11,21 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// Repository defines the MongoDB repository for comments.
-type Repository struct {
+// Repo defines the MongoDB repository for comments.
+type Repo struct {
 	collection *mongo.Collection
 }
 
 // New creates a new Repository for managing comments with the given MongoDB client, database name, and collection name.
-func New(client *mongo.Client, dbName, collectionName string) *Repository {
+func New(client *mongo.Client, dbName, collectionName string) *Repo {
 	collection := client.Database(dbName).Collection(collectionName)
-	return &Repository{
+	return &Repo{
 		collection: collection,
 	}
 }
 
 // Save adds a new comment if it does not exist, else updates the existing one.
-func (r *Repository) Save(comment comment.Comment) error {
+func (r *Repo) Save(comment comment.Comment) error {
 
 	filter := bson.M{"_id": comment.Id()}
 	update := bson.M{
@@ -44,7 +44,7 @@ func (r *Repository) Save(comment comment.Comment) error {
 }
 
 // Delete removes a comment by ID.
-func (r *Repository) Delete(id uuid.UUID) error {
+func (r *Repo) Delete(id uuid.UUID) error {
 	filter := bson.M{"_id": id}
 	_, err := r.collection.DeleteOne(context.Background(), filter)
 	if err != nil {
@@ -54,7 +54,7 @@ func (r *Repository) Delete(id uuid.UUID) error {
 }
 
 // GetCommentById retrieves a comment by ID.
-func (r *Repository) GetCommentById(id uuid.UUID) (*comment.Comment, error) {
+func (r *Repo) GetCommentById(id uuid.UUID) (*comment.Comment, error) {
 	filter := bson.M{"_id": id}
 
 	var c comment.Comment
@@ -72,7 +72,7 @@ func (r *Repository) GetCommentById(id uuid.UUID) (*comment.Comment, error) {
 }
 
 // GetCommentsByBlogId retrieves all comment by blogId.
-func (r *Repository) GetCommentsByBlogId(id uuid.UUID) (*[]comment.Comment, error) {
+func (r *Repo) GetCommentsByBlogId(id uuid.UUID) (*[]comment.Comment, error) {
 
 	filter := bson.M{"_id": id}
 	var comments []comment.Comment

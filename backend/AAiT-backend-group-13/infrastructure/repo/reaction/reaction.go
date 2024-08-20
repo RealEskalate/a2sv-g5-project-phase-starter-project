@@ -11,20 +11,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// Repository defines the MongoDB repository for reactions.
-type Repository struct {
+// Repo defines the MongoDB repository for reactions.
+type Repo struct {
 	collection *mongo.Collection
 }
 
 // New creates a new Repository for managing reactions with the given MongoDB client, database name, and collection name.
-func New(client *mongo.Client, dbName, collectionName string) *Repository {
+func New(client *mongo.Client, dbName, collectionName string) *Repo {
 	collection := client.Database(dbName).Collection(collectionName)
-	return &Repository{
+	return &Repo{
 		collection: collection,
 	}
 }
 
-func (r Repository) Save(reaction reaction.Reaction) error {
+func (r Repo) Save(reaction reaction.Reaction) error {
 	filter := bson.M{"_id": reaction.ID()}
 	update := bson.M{
 
@@ -43,7 +43,7 @@ func (r Repository) Save(reaction reaction.Reaction) error {
 }
 
 // Delete removes a reaction by ID.
-func (r Repository) Delete(id uuid.UUID) error {
+func (r Repo) Delete(id uuid.UUID) error {
 	filter := bson.M{"_id": id}
 	_, err := r.collection.DeleteOne(context.Background(), filter)
 	if err != nil {
@@ -53,7 +53,7 @@ func (r Repository) Delete(id uuid.UUID) error {
 }
 
 // Find Reaction By UserId and BlogId
-func (r Repository) FindReactionById(id uuid.UUID) (*reaction.Reaction, error) {
+func (r Repo) FindReactionById(id uuid.UUID) (*reaction.Reaction, error) {
 	filter := bson.M{"_id": id}
 
 	var reaction reaction.Reaction
@@ -69,7 +69,7 @@ func (r Repository) FindReactionById(id uuid.UUID) (*reaction.Reaction, error) {
 	return &reaction, nil
 }
 
-func (r Repository) FindReactionByBlogId(blogId uuid.UUID) (*[]reaction.Reaction, error) {
+func (r Repo) FindReactionByBlogId(blogId uuid.UUID) (*[]reaction.Reaction, error) {
 	filter := bson.M{"_id": blogId}
 	var reactions []reaction.Reaction
 
@@ -92,6 +92,6 @@ func (r Repository) FindReactionByBlogId(blogId uuid.UUID) (*[]reaction.Reaction
 	return &reactions, nil
 }
 
-func (r Repository) FindReactionByUserIdAndBlogId(userId uuid.UUID, blogId uuid.UUID) (*reaction.Reaction, error) {
+func (r Repo) FindReactionByUserIdAndBlogId(userId uuid.UUID, blogId uuid.UUID) (*reaction.Reaction, error) {
 	return nil, nil
 }

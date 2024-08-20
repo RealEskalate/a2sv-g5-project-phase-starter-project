@@ -20,18 +20,16 @@ func NewUserController(u usecases.IUserUseCase) *UserController {
 }
 
 func (u *UserController) PromoteUser(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
-		return
-	}
-	makeAdmin := c.Query("makeAdmin")
-	if makeAdmin != "true" && makeAdmin != "false" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid makeAdmin value"})
+	promote := struct {
+		ID uuid.UUID `json:"id"`
+		isPromote bool `json:"isPromote"`
+	}{}
+	if err := c.BindJSON(&promote); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = u.userUseCase.PromoteUser(id, makeAdmin == "true")
+	err := u.userUseCase.PromoteUser(promote.ID, promote.isPromote)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return

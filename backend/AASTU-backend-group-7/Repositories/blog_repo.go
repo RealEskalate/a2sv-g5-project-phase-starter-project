@@ -9,7 +9,6 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type blogrepository struct {
@@ -212,8 +211,10 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 	var posts []*Domain.Post
 
 	// Initialize the filter for MongoDB query
-	mongofilter := bson.M{}
-	fmt.Println("filter", filter)
+	pipeline := []bson.M{}
+
+	// Build the match stage for filtering
+	matchStage := bson.M{}
 
 	// Set up pagination parameters
 	page := 1
@@ -228,52 +229,64 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 
 	// Add filters based on the filter criteria provided
 	if filter.Slug != "" {
-		mongofilter["slug"] = filter.Slug
+		matchStage["slug"] = filter.Slug
 	}
 
 	if filter.AuthorName != "" {
-		mongofilter["authorName"] = filter.AuthorName
+		matchStage["authorName"] = filter.AuthorName
 	}
 
-	fmt.Println(len(filter.Tags))
 	if len(filter.Tags) > 1 {
-		fmt.Println("hehe", filter.Tags[0])
-		mongofilter["tags"] = bson.M{"$all": filter.Tags} // Filter documents that contain all the specified tags
+		matchStage["tags"] = bson.M{"$all": filter.Tags} // Filter documents that contain all the specified tags
+	}
+
+	if len(matchStage) > 0 {
+		pipeline = append(pipeline, bson.M{"$match": matchStage})
 	}
 
 	// Default sort by publishedAt in descending order
-	sort := bson.M{"publishedAt": -1} // Default sort by publishedAt descending
-	if len(filter.Sort) > 0 {
-		for field, value := range filter.Sort {
-	
-			sort = bson.M{field: value} // Override the default sort with the provided field and value
-			break                       // We assume only one field is sorted, so break after the first
+	orderBy := -1
+	if filter.OrderBy == 1 {
+		orderBy = 1
+	}
+	sortBy := "updatedat"
+	sort := bson.M{sortBy: orderBy}
+	if filter.SortBy != "" {
+		sortBy = filter.SortBy
+
+		if sortBy == "popularity" {
+			popularity := bson.M{
+				"$addFields": bson.M{
+					"popularity": bson.M{
+						"$add": []interface{}{
+							bson.M{"$multiply": []interface{}{"$views", 1}},     // Weight for views
+							bson.M{"$multiply": []interface{}{"$likes", 2}},     // Weight for likes
+							bson.M{"$multiply": []interface{}{"$dislikes", -1}}, // Weight for dislikes
+						},
+					},
+				},
+			}
+
+			sort = bson.M{"popularity": orderBy}
+			pipeline = append(pipeline, popularity)
+		} else {
+			sort = bson.M{sortBy: orderBy}
 		}
 	}
 
-	fmt.Println("filter", mongofilter)
+	pipeline = append(pipeline, bson.M{"$sort": sort})
+	pipeline = append(pipeline, bson.M{"$skip": int64((page - 1) * limit)})
+	pipeline = append(pipeline, bson.M{"$limit": int64(limit)})
 
-	// Calculate the number of documents to skip based on the page number
-	skip := (page - 1) * limit
-
-	// Set up the find options for pagination and sorting
-	findOptions := options.Find()
-	findOptions.SetSkip(int64(skip))
-	findOptions.SetLimit(int64(limit))
-	findOptions.SetSort(sort)
-
-	// Execute the find query with the constructed filter and options
-	cursor, err := br.postCollection.Find(ctx, mongofilter, findOptions)
+	cursor, err := br.postCollection.Aggregate(ctx, pipeline)
 	if err != nil {
 		return nil, err, 500
 	}
 	defer cursor.Close(ctx)
 
-	// Decode all the matching documents into the posts slice
 	if err = cursor.All(ctx, &posts); err != nil {
 		return nil, err, 500
 	}
-
 	// Return the list of posts, nil error, and a 200 status code
 	return posts, nil, 200
 }
@@ -306,14 +319,14 @@ func (br *blogrepository) AddTagToPost(ctx context.Context, id primitive.ObjectI
 func (br *blogrepository) LikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string) {
 	// check if user has already liked post
 	filter := bson.D{{"postid", id}, {"userid", userID}}
-	var likeDislike =&Domain.LikeDislike{}
+	var likeDislike = &Domain.LikeDislike{}
 	var docExists = true
 	// get like
 	err := br.likeDislikeCollection.FindOne(ctx, filter).Decode(likeDislike)
 	if err != nil {
 		if err.Error() == "mongo: no documents in result" {
 			docExists = false
-		}else{
+		} else {
 
 			return err, 500, ""
 		}
@@ -342,7 +355,7 @@ func (br *blogrepository) LikePost(ctx context.Context, id primitive.ObjectID, u
 
 		return nil, 200, message
 	}
-	
+
 	// like post
 	likeDislike = &Domain.LikeDislike{
 		PostID: id,
@@ -367,69 +380,69 @@ func (br *blogrepository) LikePost(ctx context.Context, id primitive.ObjectID, u
 
 // dislike post
 func (br *blogrepository) DislikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string) {
-		// check if user has already disliked post
-		filter := bson.D{{"postid", id}, {"userid", userID}}
-		var likeDislike =&Domain.LikeDislike{}
-		var docExists = true
-		// get dislike
-		err := br.likeDislikeCollection.FindOne(ctx, filter).Decode(likeDislike)
-		if err != nil {
-			if err.Error() == "mongo: no documents in result" {
-				docExists = false
-			}else{
-	
-				return err, 500, ""
-			}
+	// check if user has already disliked post
+	filter := bson.D{{"postid", id}, {"userid", userID}}
+	var likeDislike = &Domain.LikeDislike{}
+	var docExists = true
+	// get dislike
+	err := br.likeDislikeCollection.FindOne(ctx, filter).Decode(likeDislike)
+	if err != nil {
+		if err.Error() == "mongo: no documents in result" {
+			docExists = false
+		} else {
+
+			return err, 500, ""
 		}
-	
-		// if user has already liked delete like
-		if docExists {
-			_, err = br.likeDislikeCollection.DeleteOne(ctx, filter)
+	}
+
+	// if user has already liked delete like
+	if docExists {
+		_, err = br.likeDislikeCollection.DeleteOne(ctx, filter)
+		if err != nil {
+			return err, 500, ""
+		}
+		var message string
+
+		if likeDislike.IsLike == true {
+			update := bson.D{{"$inc", bson.D{{"likecount", -1}}}}
+			_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
+
 			if err != nil {
 				return err, 500, ""
 			}
-			var message string
-	
-			if likeDislike.IsLike == true {
-				update := bson.D{{"$inc", bson.D{{"likecount", -1}}}}
-				_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
-	
-				if err != nil {
-					return err, 500, ""
-				}
-	
-				message = "like removed"
-			} else {
-				update := bson.D{{"$inc", bson.D{{"dislikecount", -1}}}}
-				_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
-	
-				if err != nil {
-					return err, 500, ""
-				}
-				message = "dislike removed"
+
+			message = "like removed"
+		} else {
+			update := bson.D{{"$inc", bson.D{{"dislikecount", -1}}}}
+			_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
+
+			if err != nil {
+				return err, 500, ""
 			}
-	
-			return nil, 200, message
+			message = "dislike removed"
 		}
-		
-		// like post
-		likeDislike = &Domain.LikeDislike{
-			PostID: id,
-			UserID: userID,
-			IsLike: false,
-		}
-	
-		//update dislike count in post collection
-		update := bson.D{{"$inc", bson.D{{"dislikecount", 1}}}}
-		_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
-		if err != nil {
-			return err, 500, ""
-		}
-	
-		_, err = br.likeDislikeCollection.InsertOne(ctx, likeDislike)
-		if err != nil {
-			return err, 500, ""
-		}
-	
-		return nil, 200, "liked successfully"
+
+		return nil, 200, message
+	}
+
+	// like post
+	likeDislike = &Domain.LikeDislike{
+		PostID: id,
+		UserID: userID,
+		IsLike: false,
+	}
+
+	//update dislike count in post collection
+	update := bson.D{{"$inc", bson.D{{"dislikecount", 1}}}}
+	_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
+	if err != nil {
+		return err, 500, ""
+	}
+
+	_, err = br.likeDislikeCollection.InsertOne(ctx, likeDislike)
+	if err != nil {
+		return err, 500, ""
+	}
+
+	return nil, 200, "liked successfully"
 }

@@ -17,5 +17,6 @@ type Filter struct {
 	Page       int
 	Limit      int
 	Tags       []string
-	Sort       map[string]int
+	SortBy     string
+	OrderBy    int
 }

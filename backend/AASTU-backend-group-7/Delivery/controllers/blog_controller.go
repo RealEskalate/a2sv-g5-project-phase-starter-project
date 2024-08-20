@@ -3,7 +3,6 @@ package controllers
 import (
 	"blogapp/Domain"
 	"blogapp/Utils"
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -233,23 +232,14 @@ func (controller *blogController) GetAllPosts(c *gin.Context) {
 		filter.Limit, _ = strconv.Atoi(queryparams.Get("limit"))
 		filter.Page, _ = strconv.Atoi(queryparams.Get("page"))
 		filter.Tags = []string{}
-		filter.Sort = map[string]int{}
+		filter.OrderBy, _ = strconv.Atoi(queryparams.Get("orderBy"))
+		filter.SortBy = queryparams.Get("sortBy")
 	}
 
 	if tags, ok := queryparams["tags"]; ok && len(tags) > 0 {
 		filter.Tags = strings.Split(tags[0], ",") // Splitting by comma to get slice of tags
 	}
 	// fmt.Println(filter.Tags)
-
-	if sort, ok := queryparams["sort"]; ok && len(sort) > 0 {
-		var sortMap map[string]int
-		err := json.Unmarshal([]byte(sort[0]), &sortMap) // Assuming sort is passed as a valid JSON string
-		if err != nil {
-			// handle error, maybe set a default sort or return an error
-		} else {
-			filter.Sort = sortMap
-		}
-	}
 
 	posts, err, statusCode := controller.BlogUseCase.GetAllPosts(c, filter)
 	if err != nil {
@@ -329,7 +319,7 @@ func (controller *blogController) LikePost(c *gin.Context) {
 		return
 	}
 
-	err, statusCode,message := controller.BlogUseCase.LikePost(c, postID, claims.ID)
+	err, statusCode, message := controller.BlogUseCase.LikePost(c, postID, claims.ID)
 	if err != nil {
 		c.JSON(statusCode, gin.H{"error": err.Error()})
 		return
@@ -338,7 +328,6 @@ func (controller *blogController) LikePost(c *gin.Context) {
 		"message": message,
 	})
 }
-
 
 func (controller *blogController) DislikePost(c *gin.Context) {
 	claims, err := Getclaim(c)
@@ -363,5 +352,3 @@ func (controller *blogController) DislikePost(c *gin.Context) {
 		"message": message,
 	})
 }
-
-

@@ -1,8 +1,8 @@
 package custommongo
 
 import (
-	"context"
 	domain "blogapp/Domain"
+	"context"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -42,6 +42,13 @@ func (m *MongoCollection) Find(ctx context.Context, filter interface{}, opts ...
 	}
 	return &MongoCursor{Cursor: cursor}, nil
 }
+func (mc *MongoCollection) Aggregate(ctx context.Context, pipeline interface{}) (domain.Cursor, error) {
+	aggregateResult, err := mc.Collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	return &MongoCursor{Cursor: aggregateResult}, err
+}
 
 func (m *MongoCollection) FindOneAndReplace(ctx context.Context, filter, replacement interface{}, opts ...*options.FindOneAndReplaceOptions) domain.SingleResult {
 	result := m.Collection.FindOneAndReplace(ctx, filter, replacement, opts...)
@@ -49,7 +56,7 @@ func (m *MongoCollection) FindOneAndReplace(ctx context.Context, filter, replace
 }
 
 func (m *MongoCollection) CountDocuments(ctx context.Context, filter interface{}, opts ...*options.CountOptions) (int64, error) {
-    return m.Collection.CountDocuments(ctx, filter, opts...)
+	return m.Collection.CountDocuments(ctx, filter, opts...)
 }
 
 func (m *MongoCollection) UpdateOne(ctx context.Context, filter, update interface{}, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error) {
@@ -58,4 +65,9 @@ func (m *MongoCollection) UpdateOne(ctx context.Context, filter, update interfac
 
 func (m *MongoCollection) UpdateMany(ctx context.Context, filter, update interface{}, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error) {
 	return m.Collection.UpdateMany(ctx, filter, update, opts...)
+}
+
+// implement indexing.createindex method
+func (m *MongoCollection) CreateIndex(ctx context.Context, model mongo.IndexModel, opts ...*options.CreateIndexesOptions) (string, error) {
+	return m.Collection.Indexes().CreateOne(ctx, model, opts...)
 }

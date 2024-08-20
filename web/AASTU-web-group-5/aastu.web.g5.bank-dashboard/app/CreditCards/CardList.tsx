@@ -19,13 +19,20 @@ interface CardListProps {
 	cardId: string[];
 }
 
+  interface ExtendedUser {
+	name?: string;
+	email?: string;
+	image?: string;
+	accessToken?: string;
+  }
+
 const CardList = ({ cardId }: CardListProps) => {
 	const { data: session, status } = useSession();
-
+	const user = session?.user as ExtendedUser;
 	const [cardListData, setCardListData] = useState<CardListData[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const accessToken = session.user.accessToken;
+	const accessToken = user?.accessToken;
 
 	const fetchCardListData = async () => {
 		if (!accessToken) {

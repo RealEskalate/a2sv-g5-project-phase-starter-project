@@ -8,15 +8,21 @@ import AddNewCard from "./AddNewCard";
 import CardSetting from "./CardSetting";
 import creditCardColor from "./cardMockData";
 import { useSession } from "next-auth/react";
-
+interface ExtendedUser {
+    name?: string;
+    email?: string;
+    image?: string;
+    accessToken?: string;
+    }
 const CreditCardComponent: React.FC = () => {
 	const [cardData, setCardData] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
 	const { data: session, status } = useSession();
+	const user = session.user as ExtendedUser
 
-	const accessToken = session.user.accessToken;
+	const accessToken = user.accessToken;
 
 	const fetchCardData = async () => {
 		if (!accessToken) {

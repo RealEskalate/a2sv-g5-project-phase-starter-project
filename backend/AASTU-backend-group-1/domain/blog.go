@@ -14,6 +14,9 @@ type Blog struct {
 	Tags          []string           `bson:"tags" json:"tags"`
 	CreatedAt     time.Time          `bson:"created_at" json:"created_at"`
 	LastUpdatedAt time.Time          `bson:"updated_at" json:"updated_at"`
+	ViewsCount    int                `bson:"views_count" json:"views_count"`
+	LikesCount    int                `bson:"likes_count" json:"likes_count"`
+	CommentsCount int                `bson:"comments_count" json:"comments_count"`
 }
 
 type View struct {

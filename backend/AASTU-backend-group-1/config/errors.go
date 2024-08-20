@@ -29,19 +29,21 @@ var (
 	ErrUserNotFound          = errors.New("user not found")
 	ErrTokenNotFound         = errors.New("token not found")
 	ErrTokenBlacklisted      = errors.New("token is blacklisted and is no longer valid")
+	ErrUserNotLoggedIn       = errors.New("user is not logged in")
+	ErrStateExpired          = errors.New("state has expired")
 )
 
 func GetStatusCode(err error) int {
 	switch err {
 	case nil:
 		return http.StatusOK
-	case ErrInvalidToken, ErrUserNotVerified, ErrIncorrectPassword, ErrTokenBlacklisted:
+	case ErrInvalidToken, ErrUserNotVerified, ErrIncorrectPassword, ErrTokenBlacklisted, ErrStateExpired:
 		return http.StatusUnauthorized
 	case ErrInvalidUsernameLength, ErrInvalidUsernameChar, ErrInvalidEmailLength, ErrInvalidEmailFormat, ErrInvalidPasswordLength, ErrPasswordNoUppercase, ErrPasswordNoLowercase, ErrPasswordNoNumber, ErrPasswordNoSpecialChar:
 		return http.StatusBadRequest
 	case ErrUserCantPromote, ErrAlreadyAdmin, ErrAlreadyUser, ErrUpdateRole, ErrUpdateJoined:
 		return http.StatusForbidden
-	case ErrAlreadyVerified, ErrRootAlreadyExists, ErrUsernameEmailExists:
+	case ErrAlreadyVerified, ErrRootAlreadyExists, ErrUsernameEmailExists, ErrUserNotLoggedIn:
 		return http.StatusConflict
 	case ErrUserNotFound, ErrTokenNotFound:
 		return http.StatusNotFound

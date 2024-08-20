@@ -21,6 +21,12 @@ type Token struct {
 	ExpiresAt int64  `json:"expires_at" bson:"expires_at"`
 }
 
+type OAuthState struct {
+	ID        string    `bson:"_id"`
+	CreatedAt time.Time `bson:"created_at"`
+	ExpiresAt time.Time `bson:"expires_at"`
+}
+
 type UserRepository interface {
 	CheckUsernameAndEmail(username, email string) error
 	RegisterUser(user *User) error
@@ -44,4 +50,12 @@ type UserUsecase interface {
 	VerifyUser(token string) error
 	AddRoot() error
 	RefreshToken(claims *LoginClaims) (string, error)
+	GoogleLogin() (string, error)
+	GoogleCallback(state, code string) (string, string, error)
+}
+
+type OAuthStateRepository interface {
+	InsertState(state *OAuthState) error
+	GetState(stateString string) (*OAuthState, error)
+	DeleteState(state *OAuthState) error
 }

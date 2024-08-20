@@ -10,6 +10,7 @@ interface CardType {
   isBlack: boolean;
   isFade: boolean;
   isSimGray: boolean;
+  className?: string;
 }
 
 export const convertDate = (dateString: string): string => {
@@ -19,15 +20,15 @@ export const convertDate = (dateString: string): string => {
   return `${month}/${year}`;
 };
 
-const VisaCard: React.FC<CardType> = ({ data, isBlack, isFade, isSimGray }) => {
-  console.log(data, "Data")
+const VisaCard: React.FC<CardType> = ({ data, isBlack, isFade, isSimGray, className }) => {
+  console.log(data, "Data");
   const cardNo = `${data.semiCardNumber.slice(
     0,
     4
   )} **** **** ${data.semiCardNumber.slice(-4)}`;
   return (
     <div
-      className={`w-full max-h-[242px] font-Lato flex flex-col gap-2 grow rounded-3xl ${
+      className={`w-full max-h-[242px] font-Lato flex flex-col gap-2 grow rounded-3xl ${className} ${
         isBlack
           ? "text-colorBody-1 bg-white border-solid border-[1px] border-gray-200"
           : isFade

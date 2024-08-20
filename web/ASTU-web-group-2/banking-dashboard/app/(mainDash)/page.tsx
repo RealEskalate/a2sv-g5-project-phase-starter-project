@@ -10,9 +10,10 @@ import SendMoney from "../components/sendMoney/SendMoney";
 import BalanceHistoryChart from "../components/charts/BalanceHistoryChart";
 const page = () => {
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex max-sm:flex-col gap-[30px]">
+    <div className="flex flex-col gap-2  pb-5">
+      <div className="flex max-sm:flex-col justify-between">
         <CardForCreditCards
+          className="flex flex-col lg:w-[730px] lg:h-[300px] max-md:w-[350px]"
           title="Credit Cards"
           button="See All"
           link="/credit-cards"
@@ -40,21 +41,21 @@ const page = () => {
         </CardForCreditCards>
         <Card
           title="Recent Transactions"
-          className="max-w-[350px] lg:mx-auto h-auto"
+          className="max-w-[350px]  h-auto"
         >
           <RecentTransaction />
         </Card>
       </div>
-      <div className="flex max-sm:flex-col gap-[30px]">
+      <div className="flex max-sm:flex-col justify-between">
         <Card
           title="Weekly Activity"
-          className="flex flex-col min-w-[730px] lg:mx-auto h-auto max-md:w-full"
+          className="flex flex-col lg:w-[75%] w-[350px] h-auto"
         >
           <WeeklyActivityChart />
         </Card>
         <Card
           title="Expense Statistics"
-          className="flex flex-col max-w-[350px] lg:mx-auto h-auto"
+          className="max-w-[350px]  h-auto"
         >
           <ExpenseStatisticsChart />
         </Card>
@@ -62,13 +63,13 @@ const page = () => {
       <div className="flex max-sm:flex-col gap-[30px]">
         <Card
           title="Quick Transfer"
-          className="flex flex-col max-w-[350px] lg:mx-auto h-auto"
+          className="flex flex-col lg:w-1/3 w-[350px]"
         >
           <SendMoney />
         </Card>
         <Card
           title="Balance History"
-          className="flex flex-col max-w-[730px] lg:mx-auto h-auto"
+          className="flex flex-col max-w-[730px] h-auto"
         >
           <BalanceHistoryChart />
         </Card>

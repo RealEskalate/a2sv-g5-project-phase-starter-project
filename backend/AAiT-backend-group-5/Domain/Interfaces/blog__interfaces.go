@@ -18,7 +18,6 @@ type BlogRepository interface {
 	AddComment(ctx context.Context, comment models.Comment) *models.ErrorResponse
 	GetComments(ctx context.Context, blogID string) ([]models.Comment, *models.ErrorResponse)
 	GetPopularity(ctx context.Context, blogID string) (*models.Popularity, *models.ErrorResponse)
-	TrackPopularity(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse
 	IncreaseView(ctx context.Context, blogID string) *models.ErrorResponse
 }
 

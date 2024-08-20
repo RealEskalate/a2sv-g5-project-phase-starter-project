@@ -21,6 +21,20 @@ func NewBlogUsecase(blogRepository domain.BlogRepository, idConverter domain.IDC
 	}
 }
 
+func (b BlogUsecase) ReactOnBlog(user_id string, reactionType string, blog_id string) domain.ErrorResponse{
+	var reaction bool
+	if strings.ToLower(reactionType) == "true"{
+		reaction = true
+	}else{
+		reaction = false
+	}
+	err := b.blogRepository.ReactOnBlog(user_id, reaction, blog_id)
+	if err != (domain.ErrorResponse{}){
+		return err
+	}
+	return domain.ErrorResponse{}
+
+}
 // CommentOnBlog implements domain.BlogRepository.
 func (b BlogUsecase) CommentOnBlog(user_id string, user_name string, comment domain.Comment) error {
 	comment.Commentor_ID = b.idConverter.ToObjectID(user_id)
@@ -40,7 +54,7 @@ func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog, role string) (
 		blog.Tags = make([]string, 0)
 	}
 	if len(blog.Comments) == 0 {
-		blog.Tags = make([]string, 0)
+		blog.Comments = make([]domain.Comment, 0)
 	}
 	newBlog, err := b.blogRepository.CreateBlog(user_id, blog, role)
 	if err != nil {
@@ -52,7 +66,7 @@ func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog, role string) (
 // DeleteBlogByID implements domain.BlogRepository.
 func (b BlogUsecase) DeleteBlogByID(user_id string, blog_id string, role string) domain.ErrorResponse {
 	var errResponse domain.ErrorResponse
-	blog, err := b.blogRepository.GetBlogByID(blog_id)
+	blog, err := b.blogRepository.GetBlogByID(blog_id, true)
 	if err != nil {
 		return domain.ErrorResponse{
 			Message: "internal server error",
@@ -107,8 +121,8 @@ func (b BlogUsecase) FilterBlogsByTag(tags []string, pageNo string, pageSize str
 }
 
 // GetBlogByID implements domain.BlogRepository.
-func (b BlogUsecase) GetBlogByID(blog_id string) (domain.Blog, error) {
-	blog, err := b.blogRepository.GetBlogByID(blog_id)
+func (b BlogUsecase) GetBlogByID(blog_id string, isCalled bool) (domain.Blog, error) {
+	blog, err := b.blogRepository.GetBlogByID(blog_id, isCalled)
 	return blog, err
 }
 
@@ -208,7 +222,7 @@ func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.
 	if strings.ToLower(role) == "admin" {
 		updated_blog, err = b.blogRepository.UpdateBlogByID(user_id, blog_id, blog)
 	} else {
-		existing_blog, err := b.GetBlogByID(blog_id)
+		existing_blog, err := b.GetBlogByID(blog_id, true)
 		if err != nil {
 			return domain.Blog{}, err
 		} else {

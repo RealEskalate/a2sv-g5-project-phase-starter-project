@@ -30,7 +30,7 @@ function MyExpenseChart() {
         // Group expenses by month and sum up the amounts
         const expensesByMonth: { [key: string]: number } = {};
 
-        data.data.forEach((expense: { date: string; amount: number }) => {
+        data.data.content.forEach((expense: { date: string; amount: number }) => {
           const month = expense.date.substring(0, 7); // e.g., "2024-08"
           if (!expensesByMonth[month]) {
             expensesByMonth[month] = 0;

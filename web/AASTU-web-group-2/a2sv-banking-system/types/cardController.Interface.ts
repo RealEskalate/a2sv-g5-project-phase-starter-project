@@ -1,14 +1,12 @@
 export interface Card {
-    id?: string;
+    id: string;
     balance: number;
     cardHolder: string;
     expiryDate: string;
-    cardNumber?: string;
-    passcode?: string;
     cardType: string;
-    userId?: string;
   }
   
+
   export interface GetCardsResponse {
     cards: Card[];
   }

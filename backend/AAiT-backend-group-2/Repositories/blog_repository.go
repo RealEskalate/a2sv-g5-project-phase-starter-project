@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 
-	"AAiT-backend-group-2/Domain"
+	domain "AAiT-backend-group-2/Domain"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -163,4 +163,35 @@ func (b *blogRepository) Delete(ctx context.Context, id string) error {
 		return err
 	}
 	return nil
+}
+
+func (b *blogRepository) Search(ctx context.Context, title string, author string, offset int, limit int) ([]domain.Blog, error) {
+	filter := bson.M{}
+
+	if title != "" {
+		filter["title"] = bson.M{"$regex": title, "$options": "i"}
+
+	}
+
+	if author != "" {
+		filter["author"] = bson.M{"$regex": author, "$options": "i"}
+
+	}
+
+	findOptions := options.Find().SetSkip(int64(offset)).SetLimit(int64(limit))
+
+	cursor, err := b.blogCollection.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(ctx)
+
+	var blogs []domain.Blog
+	if err := cursor.All(ctx, &blogs); err != nil {
+		return nil, err
+	}
+
+	return blogs, nil
+
 }

@@ -1,7 +1,8 @@
 package controllers
 
 import (
-	"AAiT-backend-group-2/Domain"
+	domain "AAiT-backend-group-2/Domain"
+	"context"
 	"net/http"
 	"strconv"
 
@@ -124,4 +125,33 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Blog deleted successfully"})
+}
+
+
+func (bc *BlogController) Search(c *gin.Context)  {
+	title := c.Query("title")
+	author := c.Query("author")
+	offsetStr := c.Query("offset")
+	limitStr := c.Query("limit")
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		offset = 0
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		limit = 10
+	}
+
+	blogs, err := bc.blogUseCase.Search(context.Background(), title, author, offset, limit)
+	if err != nil {
+		 c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+	}
+
+	 c.JSON(http.StatusOK, gin.H{"blogs": blogs})
+
+
+	
 }

@@ -33,7 +33,7 @@ func (m *middlewareService) Authenticate() gin.HandlerFunc {
 			return
 		}
 
-		token, err := m.jwtService.ValidateToken(authParts[1])
+		token, err := m.jwtService.ValidateAccessToken(authParts[1])
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			ctx.Abort()
@@ -61,7 +61,7 @@ func (m *middlewareService) Authorize(role string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		tokenString := ctx.GetHeader("Authorization")
 		tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
-		token, _ := m.jwtService.ValidateToken(tokenString)
+		token, _ := m.jwtService.ValidateAccessToken(tokenString)
 		claims, _ := token.Claims.(jwt.MapClaims)
 		userRole := claims["role"].(string)
 

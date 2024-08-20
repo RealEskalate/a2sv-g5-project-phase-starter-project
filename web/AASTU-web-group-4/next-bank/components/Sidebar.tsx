@@ -16,7 +16,7 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       {/* Sidebar for Mobile Screens */}
       <div
         className={`fixed top-0 left-0 z-40 flex flex-col w-64 h-full bg-white shadow-lg p-4 transition-transform duration-300
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:hidden`}
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:hidden`}
       >
         {/* Close Button - Only visible on mobile */}
         <button
@@ -47,7 +47,7 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 
       {/* Sidebar for Large Screens */}
       <div
-        className="hidden md:flex fixed top-0 left-0 z-20 flex flex-col w-64 h-full bg-white shadow-lg p-4"
+        className="hidden lg:flex fixed top-0 left-0 z-20 flex flex-col w-64 h-full bg-white shadow-lg p-4"
       >
         <div className="text-2xl font-bold mb-6">Next Bank</div>
         <div className="space-y-4 flex-1">

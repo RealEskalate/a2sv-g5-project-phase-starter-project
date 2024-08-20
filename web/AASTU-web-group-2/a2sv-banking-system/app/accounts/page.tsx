@@ -13,7 +13,8 @@ import Card from "../components/Page2/Card";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { getCurrentUser } from "@/lib/api/userControl";
-
+import { getCards } from "@/lib/api/cardController";
+import { GetCardsResponse, Card as CardType } from "@/types/cardController.Interface";
 type DataItem = {
   heading: string;
   text: string;
@@ -41,7 +42,7 @@ const Page = () => {
   const [session, setSession] = useState<Data | null>(null);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [currentUser, setCurrentUser] = useState();
+  const [getCard, setGetCards] = useState<GetCardsResponse>();
 
   // Getting the session from the server
   useEffect(() => {
@@ -60,14 +61,15 @@ const Page = () => {
     fetchSession();
   }, [router]);
 
+  // Fetching cards
   useEffect(() => {
     const addingData = async () => {
-      if(session?.access_token){
-        const response = await getCurrentUser(session?.access_token)
-        setCurrentUser(response);
+      if (session?.access_token) {
+        const cardData = await getCards(session?.access_token);
+        setGetCards(cardData);
       }
     };
-    addingData()
+    addingData();
   });
 
   // Example data for the first ListCard
@@ -163,7 +165,8 @@ const Page = () => {
     );
     return null;
   }
-  // console.log({currentUser})
+
+  console.log("get Card", getCard);
   return (
     <>
       <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5">
@@ -196,17 +199,20 @@ const Page = () => {
                 See All
               </span>
             </div>
-            <Card
-              balance="$5,756"
-              cardHolder="Eddy Cusuma"
-              validThru="12/22"
-              cardNumber="3778 **** **** 1234"
-              filterClass=""
-              bgColor="from-[#4C49ED] to-[#0A06F4]"
-              textColor="text-white"
-              iconBgColor="bg-opacity-10"
-              showIcon={true}
-            ></Card>
+            {getCard && getCard.cards.content.map((items:CardType) => (
+              <Card
+                key={items.id}
+                balance={String(items.balance)}
+                cardHolder={items.cardHolder}
+                validThru={formatDate(items.expiryDate)}
+                cardNumber="3778 **** **** 1234"
+                filterClass=""
+                bgColor="from-[#4C49ED] to-[#0A06F4]"
+                textColor="text-white"
+                iconBgColor="bg-opacity-10"
+                showIcon={true}
+              ></Card>
+            ))}
           </div>
         </div>
 
@@ -232,6 +238,17 @@ const Page = () => {
       </div>
     </>
   );
+};
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  };
+
+  return date.toLocaleDateString("en-US", options);
 };
 
 export default Page;

@@ -9,9 +9,9 @@ const BASE_URL = 'https://bank-dashboard-6acc.onrender.com';
 
 // Extend the user type to include accessToken
 
-const getCards = async (token:string): Promise<GetCardsResponse> => {
+const getCards = async (token:string, page=0, size=1): Promise<GetCardsResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/cards`, {
+    const response = await fetch(`${BASE_URL}/cards?page=${page}&size=${size}`, {
       headers: {
         'Authorization': `Bearer ${token}`, // Add the token to the headers
       },

@@ -47,6 +47,7 @@ func (urepo *UserRepository) RegisterUser(user *domain.User) error {
 	}
 
 	user.ID = primitive.NewObjectID()
+	user.IsVerified = false
 
 	password, err := infrastructure.PasswordHasher(user.Password)
 
@@ -54,9 +55,27 @@ func (urepo *UserRepository) RegisterUser(user *domain.User) error {
 		return err
 	}
 
+	err = infrastructure.UserVerification(user.Email)
+	if err != nil {
+		return err
+	}
+
 	user.Password = password
 	_, err = urepo.collection.InsertOne(context.TODO(), user)
 
+	return err
+}
+
+func (urepo *UserRepository) VerifyUserEmail(token string) error {
+	email, err := infrastructure.VerifyToken(token)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"email": email}
+	update := bson.M{"$set": bson.M{"isVerified": true}}
+
+	_, err = urepo.collection.UpdateOne(context.TODO(), filter, update)
 	return err
 }
 

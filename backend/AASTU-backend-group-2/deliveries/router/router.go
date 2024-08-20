@@ -11,6 +11,7 @@ import (
 func SetRouter(router *gin.Engine, com *controllers.CommentController, c *controllers.BlogController, cu *controllers.UserController, client *mongo.Client) {
 
 	router.POST("/user/register", cu.RegisterUser)
+	router.POST("/user/verify-email", cu.VerifyEmail)
 	router.POST("/user/login", cu.LoginUser)
 	router.GET("/logout", middleware.AuthMiddleware(client), cu.LogoutUser)
 

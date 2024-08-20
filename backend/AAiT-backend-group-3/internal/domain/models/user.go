@@ -15,5 +15,4 @@ type User struct {
     CreatedAt time.Time          `bson:"created_at" json:"created_at"`
     UpdatedAt time.Time          `bson:"updated_at" json:"updated_at"`
     RefToken  string             `bson:"ref_token,omitempty" json:"ref_token"`
-    otp       string             `bson:"otp,omitempty" json:"otp"`
 }

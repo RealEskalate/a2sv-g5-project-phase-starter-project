@@ -13,7 +13,10 @@ func (u *blogUseCase) DeleteBlog(ctx context.Context, id string, userId string) 
 		log.Printf("Error retrieving blog with ID %s: %v", id, err)
 		return fmt.Errorf("failed to retrieve blog: %w", err)
 	}
-
+	if blog == nil {
+		log.Printf("Blog with ID %s not found", id)
+		return fmt.Errorf("blog not found")
+	}
 	if blog.Author.Hex() != userId {
 		return fmt.Errorf("you are not authorized to delete this blog")
 	}

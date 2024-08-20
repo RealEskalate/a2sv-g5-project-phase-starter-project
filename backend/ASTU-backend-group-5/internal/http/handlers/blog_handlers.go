@@ -90,7 +90,7 @@ func (h *BlogHandler) DeleteBlogHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(http.StatusNoContent, gin.H{"message": "Blog deleted successfully"})
 }
 
 // GetAllBlogsHandler retrieves all blog posts
@@ -173,13 +173,20 @@ func (h *BlogHandler) RemoveTagFromBlogHandler(c *gin.Context) {
 
 // AddCommentHandler adds a comment to a blog post
 func (h *BlogHandler) AddCommentHandler(c *gin.Context) {
+
 	var comment domain.Comment
+
+	userClaims, err := GetClaims(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	if err := c.ShouldBindJSON(&comment); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.UseCase.AddComment(context.Background(), &comment); err != nil {
+	if err := h.UseCase.AddComment(context.Background(), &comment, userClaims.UserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -203,12 +210,19 @@ func (h *BlogHandler) GetCommentsByBlogIDHandler(c *gin.Context) {
 // AddLikeHandler adds a like to a blog post
 func (h *BlogHandler) AddLikeHandler(c *gin.Context) {
 	var like domain.Like
+
+	userClaims, err := GetClaims(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	if err := c.ShouldBindJSON(&like); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.UseCase.AddLike(context.Background(), &like); err != nil {
+	if err := h.UseCase.AddLike(context.Background(), &like, userClaims.UserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -232,12 +246,19 @@ func (h *BlogHandler) GetLikesByBlogIDHandler(c *gin.Context) {
 // AddViewHandler adds a view to a blog post
 func (h *BlogHandler) AddViewHandler(c *gin.Context) {
 	var view domain.View
+
+	userClaims, err := GetClaims(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	if err := c.ShouldBindJSON(&view); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.UseCase.AddView(context.Background(), &view); err != nil {
+	if err := h.UseCase.AddView(context.Background(), &view, userClaims.UserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

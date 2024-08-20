@@ -2,7 +2,7 @@ package config
 
 import "fmt"
 
-func ConficBody(to string, token string) (string, string) {
+func ConfigBody(to string, token string) (string, string) {
 	subject := "Email Verification"
 	body := fmt.Sprintf(
 	`

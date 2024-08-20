@@ -28,7 +28,7 @@ func (uc *EmailVUsecase) SendVerifyEmail(id string , vuser domain.VerifyEmail) e
 	if err != nil {
 		return err
 	}
-	subject,body := config.ConficBody(vuser.Email , token)
+	subject,body := config.ConfigBody(vuser.Email , token)
 
 	err = emailservices.SendVerificationEmail(vuser.Email, subject , body)
 	if err != nil {

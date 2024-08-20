@@ -12,9 +12,10 @@ type loginUsecase struct {
 	jwtService      interfaces.JwtService
 	passwordService interfaces.PasswordService
 	repository      interfaces.UserRepository
+	session         interfaces.SessionRepository
 }
 
-func NewLoginUsecase(jwtService interfaces.JwtService, passwordService interfaces.PasswordService, repository interfaces.UserRepository) interfaces.LoginUsecase {
+func NewLoginUsecase(jwtService interfaces.JwtService, passwordService interfaces.PasswordService, repository interfaces.UserRepository, session interfaces.SessionRepository) interfaces.LoginUsecase {
 	return &loginUsecase{
 		jwtService:      jwtService,
 		passwordService: passwordService,
@@ -44,11 +45,11 @@ func (uc *loginUsecase) LoginUser(ctx context.Context, userReqest dtos.LoginRequ
 	}
 
 	// save the refresh token
-	err = uc.repository.StoreAccessToken(ctx, user.ID, accessToken)
-	tErr := uc.repository.StoreRefreshToken(ctx, user.ID, refresheToken)
-	if err != nil {
-		return nil, err
+	session := models.Session{
+		UserID:       user.ID,
+		RefreshToken: refresheToken,
 	}
+	tErr := uc.session.SaveToken(ctx, &session)
 
 	if tErr != nil {
 		return nil, tErr

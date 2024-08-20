@@ -20,7 +20,7 @@ func (promoteDemoteController *PromoteDemoteController) PromoteUser(ctx *gin.Con
 
 	e := promoteDemoteController.PromoteDemoteUC.PromoteUser(ctx, userID)
 	if e != nil {
-		ctx.JSON(e.Code, e.Error())
+		ctx.IndentedJSON(e.Code, e.Error())
 	}
 }
 
@@ -29,6 +29,6 @@ func (promoteDemoteController *PromoteDemoteController) DemoteUser(ctx *gin.Cont
 
 	e := promoteDemoteController.PromoteDemoteUC.DemoteUser(ctx, userID)
 	if e != nil {
-		ctx.JSON(e.Code, e.Error())
+		ctx.IndentedJSON(e.Code, e.Error())
 	}
 }

@@ -23,7 +23,7 @@ type Message struct {
 }
 
 type Usecase interface {
-	CreateChat(ctx context.Context, userID string) (Chat, error)
+	CreateChat(ctx context.Context, form CreateChatForm) (Chat, error)
 	DeleteChat(ctx context.Context, chatID string) error
 	GenerateChatTitle(ctx context.Context, message Message) (string, error)
 	GetChat(ctx context.Context, chatID string) (Chat, error)

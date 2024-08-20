@@ -32,8 +32,8 @@ type PaginationData struct {
 }
 
 type PaginatedBlogs struct {
-    Blogs      []Blog  `json:"blogs"`
-    Pagination PaginationData `json:"pagination"`
+	Blogs      []Blog         `json:"blogs"`
+	Pagination PaginationData `json:"pagination"`
 }
 
 type Author struct {
@@ -94,14 +94,14 @@ type BlogRepository interface {
 	// FetchByBlogID retrieves a blog by its ID
 	FetchByBlogID(c context.Context, blogID string) (Blog, error)
 	// FetchAll retrieves all blogs from the collection
-	FetchAll(c context.Context, limit, offset int) ([]Blog, int, error) 
+	FetchAll(c context.Context, limit, offset int) ([]Blog, int, error)
 	// FetchByBlogAuthor retrieves blogs by the author's ID
-	FetchByBlogAuthor(c context.Context, authorID string, limit, offset int) ([] Blog, int, error) 
+	FetchByBlogAuthor(c context.Context, authorID string, limit, offset int) ([]Blog, int, error)
 	// FetchByBlogTitle retrieves blogs by their title
-	FetchByBlogTitle(c context.Context, title string, limit, offset int) ([] Blog, int, error)
+	FetchByBlogTitle(c context.Context, title string, limit, offset int) ([]Blog, int, error)
 
-	FetchByPageAndPopularity(ctx context.Context, limit, offset int) ([]Blog, int, error) 
-	FetchByTags(ctx context.Context, tags []Tag, limit, offset int) ([]Blog, int, error) 
+	FetchByPageAndPopularity(ctx context.Context, limit, offset int) ([]Blog, int, error)
+	FetchByTags(ctx context.Context, tags []Tag, limit, offset int) ([]Blog, int, error)
 	// UpdateBlog updates a blog in the collection by its ID
 	UpdateBlog(ctx context.Context, id primitive.ObjectID, blog BlogUpdate) error
 	// DeleteBlog deletes a blog from the collection by its ID
@@ -116,16 +116,16 @@ type BlogRepository interface {
 	// AddLikes adds the number of Likes in the feedback field found in the blog info
 	IncrementLikes(feedback *Feedback) error
 	// DecrementsLikes decrements the number of likes from the feedback field of the blog
-	DecrementLikes(feedback *Feedback) error 
+	DecrementLikes(feedback *Feedback) error
 	// IncrementDislikes Increments the number of Dislikes from the feedback field of the blog
-	IncrementDislike(feedback *Feedback) error 
+	IncrementDislike(feedback *Feedback) error
 	// DecrementDislikes decrements the number of Dislikes from the feedback field of the blog
 	DecrementDislikes(feedback *Feedback) error
-	// AddComent adds a comment in to a blog feedback section 
+	// AddComent adds a comment in to a blog feedback section
 	AddComment(feedback *Feedback, comment Comment) error
 	// UpdateComment updates a comment using the comment's user id and blogs id
-	UpdateComment(feedback *Feedback, updatedComment Comment, userID string) error 
-	// RemoveComents removes a comment in a blog feedback section using the removing users id 
+	UpdateComment(feedback *Feedback, updatedComment Comment, userID string) error
+	// RemoveComents removes a comment in a blog feedback section using the removing users id
 	RemoveComment(feedback *Feedback, requesterUserID string, isAdmin bool) error
 }
 
@@ -135,11 +135,11 @@ type BlogUsecase interface {
 	// FetchByBlogID retrieves a blog by its ID
 	FetchByBlogID(c context.Context, blogID string) (Blog, error)
 	// FetchAll retrieves all blogs from the collection
-	FetchAll(c context.Context, limit, offset int) (PaginatedBlogs, error)
+	FetchAll(c context.Context, limit, page int) (PaginatedBlogs, error)
 	// FetchByBlogAuthor retrieves blogs by the author's ID
-	FetchByBlogAuthor(c context.Context, authorID string, limit, offset int) (PaginatedBlogs, error) 
+	FetchByBlogAuthor(c context.Context, authorID string, limit, page int) (PaginatedBlogs, error)
 	// FetchByBlogTitle retrieves blogs by their title
-	FetchByBlogTitle(c context.Context, title string, limit, offset int) (PaginatedBlogs, error)
+	FetchByBlogTitle(c context.Context, title string, limit, page int) (PaginatedBlogs, error)
 
 	FetchByPageAndPopularity(ctx context.Context, limit, page int) (PaginatedBlogs, error)
 
@@ -151,12 +151,10 @@ type BlogUsecase interface {
 	DeleteBlog(ctx context.Context, id primitive.ObjectID, deletingID string) error
 
 	SearchBlogs(c context.Context, filter Filter, limit, page int) (PaginatedBlogs, error)
-	// AddComent adds a comment in to a blog feedback section 
+	// AddComent adds a comment in to a blog feedback section
 	AddComment(ctx context.Context, blogID string, comment Comment) error
 	// UpdateComment updates a comment using the comment's user id
 	UpdateComment(c context.Context, blogID primitive.ObjectID, userID string, updatedComment Comment) error
-	// RemoveComents removes a comment in a blog feedback section using the removing users id 
+	// RemoveComents removes a comment in a blog feedback section using the removing users id
 	RemoveComment(ctx context.Context, blogID primitive.ObjectID, requesterUserID string) error
-	
-
 }

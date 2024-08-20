@@ -21,7 +21,7 @@ type LikeReposiotory interface {
 	RemoveDislike(c context.Context, id string) error
 	GetLikesByUser(ctx context.Context, userID string, limit, offset int) ([]Like, error)
 	GetLikesByBlog(ctx context.Context, blogID string, limit, offset int) ([]Like, error)
-	GetLikeByID(ctx context.Context, id string) (Like, error)
+	GetLikeByID(c context.Context, likeID string) (Like, error)
 }
 
 type LikeUsecase interface {

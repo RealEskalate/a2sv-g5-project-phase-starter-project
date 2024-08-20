@@ -72,7 +72,6 @@ func (userUC *UserUseCase) Login(cxt context.Context, username, password string)
 		return map[string]string{}, &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
 	}
 
-
 	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
 	defer cancel()
 
@@ -243,4 +242,3 @@ func (userUC *UserUseCase) UpdateProfile(cxt context.Context, userID string, use
 
 	return userUC.userRepo.Update(context, userID, user)
 }
-

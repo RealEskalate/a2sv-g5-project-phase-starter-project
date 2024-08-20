@@ -27,24 +27,24 @@ const QuickTransfer = () => {
   };
 
   return (
-    <div className="flex flex-col py-4 items-start gap-3 w-[100%]">
+    <div className="flex bg-white rounded-2xl flex-col py-4 items-start gap-3 w-[100%]">
       
 
-      <div className="flex justify-between h-35 w-[100%] px-2">
+      <div className="flex justify-between items-center h-35 w-[100%] px-2">
         <div
           onClick={handlePrev}
-          className={`w-[50px] h-[50px] rounded-full ${colors.white} flex justify-center items-center shadow-lg cursor-pointer`}
+          className={`w-[40px] h-[40px] rounded-full ${colors.white} flex justify-center items-center shadow-lg cursor-pointer`}
         >
           <span className="text-gray-500">&lt;</span>
         </div>
 
-        <div className="flex overflow-hidden gap-2">
+        <div className="flex py-6 overflow-hidden gap-2">
   {dummyData.slice(currentIndex, currentIndex + 3).map((item, index) => (
     <div key={index} className="flex flex-col gap-2 flex-1">
       <Image
         src={item.imageSrc}
-        width={50}
-        height={50}
+        width={70}
+        height={70}
         className="rounded-full"
         alt={item.name}
       />
@@ -68,7 +68,7 @@ const QuickTransfer = () => {
 
         <div
           onClick={handleNext}
-          className={`w-[50px] h-[50px] rounded-full ${colors.white} flex justify-center items-center shadow-lg cursor-pointer`}
+          className={`w-[40px] h-[40px] rounded-full ${colors.white} flex justify-center items-center shadow-lg cursor-pointer`}
         >
           <span className="text-gray-500">&gt;</span>
         </div>

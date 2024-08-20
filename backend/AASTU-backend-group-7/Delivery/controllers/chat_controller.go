@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"blogapp/Config"
 	groqservice "blogapp/Infrastructure/groq_services"
 	"net/http"
 
@@ -13,7 +14,7 @@ type chatController struct {
 
 func NewChatController() *chatController {
 
-	groqAI := groqservice.NewGroqAI("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")
+	groqAI := groqservice.NewGroqAI(Config.GROQ_API_KEY)
 	return &chatController{
 		groqservice: groqAI,
 	}

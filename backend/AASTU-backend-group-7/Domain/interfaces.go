@@ -15,6 +15,8 @@ type AuthRepository interface {
 	GoogleLogin(ctx context.Context) string
 	CallbackHandler(ctx context.Context, code string) (Tokens, error, int)
 	GenerateTokenFromUser(ctx context.Context, existingUser User) (Tokens, error, int)
+	ResetPassword(ctx context.Context, email string, password string, resetToken string) (error, int)
+	ForgetPassword(ctx context.Context, email string) (error, int)
 }
 
 type AuthUseCase interface {
@@ -23,6 +25,8 @@ type AuthUseCase interface {
 	Logout(c *gin.Context, user_id primitive.ObjectID) (error, int)
 	GoogleLogin(c *gin.Context) string
 	CallbackHandler(c *gin.Context, code string) (Tokens, error, int)
+	ResetPassword(c *gin.Context, email string, password string, resetToken string) (error, int)
+	ForgetPassword(c *gin.Context, email string) (error, int)
 }
 
 type RefreshRepository interface {

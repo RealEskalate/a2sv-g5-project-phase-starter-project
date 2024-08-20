@@ -8,29 +8,29 @@ import (
 )
 
 func AuthRouter() {
-	authRouter := Router.Group("")
+	authRouter := Router.Group("/auth")
 	{
 		userRepo := Repositories.NewUserRepository(BlogCollections.Users, BlogCollections.RefreshTokens)
 
 		// generate new auth repo
-		authrepo := Repositories.NewAuthRepository(BlogCollections.Users, BlogCollections.RefreshTokens)
+		authrepo := Repositories.NewAuthRepository(BlogCollections.Users, BlogCollections.RefreshTokens, userRepo)
 		authusecase := usecases.NewAuthUseCase(authrepo)
-		authcontroller := controllers.NewAuthController(authusecase, userRepo)
+		authcontroller := controllers.NewAuthController(authusecase)
 
 		// register
-		authRouter.POST("/auth/register", authcontroller.Register)
+		authRouter.POST("/register", authcontroller.Register)
 		//login
-		authRouter.POST("/auth/login", authcontroller.Login)
+		authRouter.POST("/login", authcontroller.Login)
 
 		// oauth login with google
-		authRouter.GET("/auth/login/google", authcontroller.LoginHandlerGoogle)
+		authRouter.GET("/login/google", authcontroller.LoginHandlerGoogle)
 		authRouter.GET("/callback", authcontroller.CallbackHandler)
 
 		//logout
-		authRouter.GET("/auth/logout", auth_middleware.AuthMiddleware(), authcontroller.Logout)
+		authRouter.GET("/logout", auth_middleware.AuthMiddleware(), authcontroller.Logout)
 		// forget password
-		authRouter.POST("/auth/forget-password", authcontroller.ForgetPassword)
-		authRouter.GET("/auth/forget-password/:reset_token", authcontroller.ForgetPasswordForm)
-		authRouter.POST("/auth/forget-password/:reset_token", authcontroller.ResetPassword)
+		authRouter.POST("/forget-password", authcontroller.ForgetPassword)
+		authRouter.GET("/forget-password/:reset_token", authcontroller.ForgetPasswordForm)
+		authRouter.POST("/forget-password/:reset_token", authcontroller.ResetPassword)
 	}
 }

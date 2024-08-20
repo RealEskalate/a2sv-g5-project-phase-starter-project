@@ -1,11 +1,10 @@
 package usercontroller
 
 import (
+	"blogs/config"
 	"blogs/domain"
 	"log"
 	"net/http"
-	"path/filepath"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,29 +19,24 @@ func (u *UserController) UpdateProfile(ctx *gin.Context) {
 	// Initialize avatarPath
 	avatarPath := ""
 
-	// Check if MultipartForm is not nil before accessing it
-	if ctx.Request.MultipartForm != nil {
-		// Check if the "avatar" field exists in the form data
-		if _, headerExists := ctx.Request.MultipartForm.File["avatar"]; headerExists {
-			// Attempt to get the file from the request
-			fileHeader, err := ctx.FormFile("avatar")
+	// Check if a file was uploaded
+	file, err := ctx.FormFile("avatar")
+	if err != nil && err != http.ErrMissingFile {
+		// Handle the error only if it's not because the file is missing
+		log.Println("Error retrieving file:", err)
+		ctx.JSON(http.StatusBadRequest, "Error uploading file")
+		return
+	}
 
-			// Check if a file was uploaded
-			if err == nil && fileHeader != nil {
-				// A file was uploaded, process it
-				filename := filepath.Base(fileHeader.Filename)
-				avatarPath = filepath.Join("uploads", filename)
-
-				if err := ctx.SaveUploadedFile(fileHeader, avatarPath); err != nil {
-					ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save the file"})
-					return
-				}
-			} else if err != http.ErrMissingFile && err != nil {
-				// If the error is not due to a missing file, handle it
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": "Error uploading file"})
-				return
-			}
+	if file != nil {
+		// Upload to Cloudinary and get the URL
+		avatarPath, err = config.UploadToCloudinary(file)
+		if err != nil {
+			log.Println("Error uploading file to Cloudinary:", err)
+			ctx.JSON(http.StatusInternalServerError, "Internal server error")
+			return
 		}
+		log.Println("Avatar successfully uploaded to Cloudinary:", avatarPath)
 	}
 
 	// Handle other form data
@@ -56,7 +50,7 @@ func (u *UserController) UpdateProfile(ctx *gin.Context) {
 		Address   string `form:"address"`
 	}
 
-	err := ctx.ShouldBind(&userData)
+	err = ctx.ShouldBind(&userData)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
@@ -76,6 +70,7 @@ func (u *UserController) UpdateProfile(ctx *gin.Context) {
 	// If a new avatar was uploaded, update the Avatar field
 	if avatarPath != "" {
 		user.Avatar = avatarPath
+		log.Println("Avatar path set for user:", user.Avatar) // Log the avatar in user object
 	}
 
 	err = u.UserUsecase.UpdateProfile(user, claims)

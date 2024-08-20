@@ -61,4 +61,5 @@ type BlogUsecase interface {
 	AddLike(like *Like) error
 	AddComment(comment *Comment) error
 	GetBlogs(sortBy string, page, limit int, reverse bool) ([]*Blog, error)
+	GenerateAiContent(prompt string) (string, error)
 }

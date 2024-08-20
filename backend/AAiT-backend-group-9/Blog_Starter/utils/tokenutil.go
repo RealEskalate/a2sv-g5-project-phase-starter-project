@@ -2,7 +2,6 @@ package utils
 
 import (
 	"Blog_Starter/domain"
-	"context"
 
 	"github.com/golang-jwt/jwt"
 )
@@ -11,6 +10,7 @@ import (
 type JwtCustomClaims struct {
     UserID string `json:"user_id"`
     Email  string `json:"email"`
+    Role   string `json:"role"`
     jwt.StandardClaims
 }
 
@@ -23,7 +23,7 @@ type JwtCustomRefreshClaims struct {
 type TokenManager interface {
     CreateAccessToken(user *domain.User, secret string, expiry int) (string, error)
     CreateRefreshToken(user *domain.User, secret string, expiry int) (string, error)
-    InvalidateAccessToken(ctx context.Context, token string) error
-    InvalidateRefreshToken(ctx context.Context, token string) error
+    ExtractIDFromToken(requestToken string, secret string) (string, error)
+    ExtractRoleFromToken(requestToken string, secret string) (string, error)
 }
 

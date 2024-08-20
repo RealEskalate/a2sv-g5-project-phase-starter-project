@@ -17,6 +17,7 @@ func SendEmail(toEmail string, title string, body string, hashedpwd string) erro
 	//in route to handle email related confirmation is domain/confirmation/:email/:pwd
 	//also make
 	link := "http://localhost:8000/confirmation/email/" + toEmail + "/pwd/" + hashedpwd + "/"
+	
 	message := `
 	<!DOCTYPE html>
 	<html>

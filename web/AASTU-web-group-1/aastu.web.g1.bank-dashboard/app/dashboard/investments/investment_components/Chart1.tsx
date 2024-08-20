@@ -37,9 +37,9 @@ const chartConfig = {
 export default function LineChartComp() {
   return (
     <div>
-      <Card className="py-3 rounded-3xl" >
+      <Card className="py-3 rounded-3xl border-none " >
         <CardContent>
-          <ChartContainer config={chartConfig} className="">
+          <ChartContainer config={chartConfig}>
             <AreaChart
               accessibilityLayer
               data={chartData}

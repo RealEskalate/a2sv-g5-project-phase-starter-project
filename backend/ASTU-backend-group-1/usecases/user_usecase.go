@@ -55,7 +55,8 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 	expirationTime := time.Now().Add(20 * time.Minute)
 	user.ExpirationDate = expirationTime
 	useCase.userRepository.Update(user.ID, user)
-	err = infrastructure.SendEmail(user.Email, "Password Reset", "This is the password reset link: ", string(confirmationToken))
+	link := "http://localhost:8000/resetpassword/?email=" + user.Email + "&pwd=" + string(confirmationToken) + "/"
+	err = infrastructure.SendEmail(user.Email, "Password Reset", "This is the password reset link: ",link)
 	if err != nil {
 		return "", err
 	}
@@ -139,7 +140,8 @@ func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	}
 	u.VerifyToken = string(confirmationToken)
 	nUser, err := useCase.userRepository.Create(u)
-	err = infrastructure.SendEmail(u.Email, "Registration Confirmation", "This sign up Confirmation email to verify: ", string(confirmationToken))
+	link := "http://localhost:8000/accountVerification/?email=" + u.Email + "&pwd=" + string(confirmationToken) + "/"
+	err = infrastructure.SendEmail(u.Email, "Registration Confirmation", "This sign up Confirmation email to verify: ", link)
 	
 	if err != nil {
 		return nUser, err

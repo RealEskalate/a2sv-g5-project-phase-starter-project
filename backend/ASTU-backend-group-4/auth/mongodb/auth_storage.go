@@ -33,13 +33,13 @@ func NewAuthTokenImple(tokencollection *mongo.Collection, ctx context.Context) A
 func (au *AuthUserImple) CreateUser(ctx context.Context, user auth.User) (string, error) {
 	result, err := au.usercollection.InsertOne(ctx, user)
 	if err != nil {
-		return "", auth.FailToCreateUser
+		return "", auth.ErrFailToCreateUser
 	}
 	return result.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func (au *AuthUserImple) UpdateUser(ctx context.Context, id string, user auth.User) (auth.User, error) {
-	userID, err := primitive.ObjectIDFromHex(id)
+func (au *AuthUserImple) UpdateUser(ctx context.Context, user auth.User) (auth.User, error) {
+	userID, err := primitive.ObjectIDFromHex(user.ID)
 	if err != nil {
 		return auth.User{}, errors.New("invalied id")
 	}
@@ -70,6 +70,18 @@ func (au *AuthUserImple) GetUserByUsername(ctx context.Context, username string)
 
 	if err != nil {
 		return auth.User{}, auth.ErrNoUserWithUsername
+	}
+	return user, nil
+}
+
+func (au *AuthUserImple) GetUserByID(ctx context.Context, id string) (auth.User, error) {
+	var user auth.User
+
+	filter := bson.D{bson.E{Key: "id", Value: id}}
+	err := au.usercollection.FindOne(ctx, filter).Decode(&user)
+
+	if err != nil {
+		return auth.User{}, auth.ErrNoUserWithId
 	}
 	return user, nil
 }

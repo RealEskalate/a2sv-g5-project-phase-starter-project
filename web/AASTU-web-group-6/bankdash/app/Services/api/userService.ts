@@ -11,6 +11,22 @@ interface UserResponseValue{
     data: UserValue
 }
 
+interface UserUpdateValue {
+
+  name: string;
+  email: string;
+  dateOfBirth: string;
+  permanentAddress: string;
+  postalCode: string;
+  username: string;
+  password: string;
+  presentAddress: string;
+  city: string;
+  country: string;
+  profilePicture: string;
+
+}
+
 interface UserPreferenceResponseValue{
     
     success: boolean,
@@ -71,7 +87,7 @@ const handleRequest = async (
 };
 
 class UserService {
-  public static update(formData: UserValue, accessToken: string): Promise<UserResponseValue> {
+  public static update(formData: UserUpdateValue, accessToken: string): Promise<UserResponseValue> {
     return handleRequest("PUT", `${API_URL}/update`, formData, accessToken);
   }
 

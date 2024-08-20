@@ -69,6 +69,8 @@ func privateBlogRouter(router *gin.RouterGroup, blogController *blogcontroller.B
 	router.GET("/blogs/:id/likes", func(ctx *gin.Context) {})
 
 	router.POST("/blogs/[id]/views", func(ctx *gin.Context) {})
+
+	router.POST("/blogs/generate",blogController.GenerateContent)
 }
 
 func SetupRouter(mongoClient *mongo.Client) *gin.Engine {

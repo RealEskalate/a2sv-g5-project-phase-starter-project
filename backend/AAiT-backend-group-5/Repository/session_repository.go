@@ -36,6 +36,7 @@ func (sr *SessionRepo) UpdateToken(ctx context.Context, session *models.Session)
 			"refresh_token": session.RefreshToken,
 		},
 	}
+
 	_, err := sr.Collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return models.InternalServerError(err.Error())

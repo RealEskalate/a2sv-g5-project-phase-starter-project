@@ -27,5 +27,5 @@ func NewForgotPasswordRouter(env *config.Env, database mongo.Database, group *gi
 	}
 
 	group.POST("/forgotPassword", ForgotPasswordController.ForgotPasswordRequest)
-	group.POST("/resetPassword", ForgotPasswordController.SetNewPassword)
+	group.POST("/resetPassword/:id", ForgotPasswordController.SetNewPassword)
 }

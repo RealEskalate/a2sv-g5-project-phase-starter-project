@@ -24,7 +24,7 @@ func NewURLService(env *config.Env, repo interfaces.URLServiceRepository) interf
 	}
 }
 
-func (uc *urlService) GenerateURL(token string) (string, *models.ErrorResponse) {
+func (uc *urlService) GenerateURL(token string, purpose string) (string, *models.ErrorResponse) {
 	short_url_code := uuid.New().String()
 	baseUrl := uc.env.BASE_URL
 
@@ -38,7 +38,7 @@ func (uc *urlService) GenerateURL(token string) (string, *models.ErrorResponse) 
 		return "", models.InternalServerError("Error while saving the URL")
 	}
 
-	return baseUrl + "/" + short_url_code, nil
+	return baseUrl + "/" + purpose + "/" + short_url_code, nil
 
 }
 
@@ -53,6 +53,7 @@ func (uc *urlService) RemoveURL(short_url_code string) *models.ErrorResponse {
 }
 
 func (uc *urlService) GetURL(short_url_code string) (*models.URL, *models.ErrorResponse) {
+	fmt.Println(short_url_code)
 	url, err := uc.repo.GetURL(short_url_code, uc.ctx)
 
 	if err != nil {

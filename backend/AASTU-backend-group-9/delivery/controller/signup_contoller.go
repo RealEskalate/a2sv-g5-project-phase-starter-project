@@ -73,6 +73,7 @@ func (sc *SignupController) Register(c *gin.Context, user domain.AuthSignup) {
 	sc.Token(c, user, *userID)
 }
 func (sc *SignupController) Token(c *gin.Context, user domain.AuthSignup, userID primitive.ObjectID) {
+	user.UserID = userID
 	Accesstoken, err := sc.SignupUsecase.CreateAccessToken(&user, sc.Env.AccessTokenSecret, sc.Env.AccessTokenExpiryHour)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

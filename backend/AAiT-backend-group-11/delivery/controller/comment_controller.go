@@ -1,4 +1,4 @@
-package controllers
+package controller
 
 import (
 	"net/http"
@@ -27,7 +27,7 @@ func (cc *CommentController) AddComment(c *gin.Context) {
 		return
 	}
 
-	comment.BlogPostID, _ = primitive.ObjectIDFromHex(c.Param("blogPostId"))
+	comment.BlogPostID, _ = primitive.ObjectIDFromHex(c.Param("blogId"))
 	comment.AuthorID, _ = primitive.ObjectIDFromHex(c.GetString("userId"))
 
 	createdComment, err := cc.commentService.AddComment(&comment)
@@ -40,7 +40,7 @@ func (cc *CommentController) AddComment(c *gin.Context) {
 }
 
 func (cc *CommentController) DeleteComment(c *gin.Context) {
-	commentId := c.Param("commentId")
+	commentId := c.Param("id")
 	err := cc.commentService.DeleteComment(commentId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -51,7 +51,7 @@ func (cc *CommentController) DeleteComment(c *gin.Context) {
 }
 
 func (cc *CommentController) GetCommentsByBlogPostId(c *gin.Context) {
-	blogPostId := c.Param("blogPostId")
+	blogPostId := c.Param("blogId")
 
 	comments, err := cc.commentService.GetCommentsByBlogPostId(blogPostId)
 	if err != nil {
@@ -69,7 +69,7 @@ func (cc *CommentController) UpdateComment(c *gin.Context) {
 		return
 	}
 
-	comment.ID, _ = primitive.ObjectIDFromHex(c.Param("commentId"))
+	comment.ID, _ = primitive.ObjectIDFromHex(c.Param("id"))
 
 	updatedComment, err := cc.commentService.UpdateComment(&comment)
 	if err != nil {

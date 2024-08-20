@@ -108,3 +108,33 @@ func ValidateToken(tokenString string) (*domain.Claims, error) {
 
 	return claims, nil
 }
+// VerifyGoogleToken
+func VerifyGoogleToken(token string) (*domain.User, error) {
+	// Verify the token
+	user, err := verifyGoogleIDToken(token)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+// verifyGoogleIDToken is a function that verifies the Google ID token
+func verifyGoogleIDToken(token string) (*domain.User, error) {
+	// Verify the token
+	claims := &domain.Claims{}
+	parsedToken, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return secretKey, nil
+	})
+	if err != nil || !parsedToken.Valid {
+		return nil, err
+	}
+
+	// Extract user information from the claims
+	user := &domain.User{
+		Email:    claims.Email,
+		Role:     claims.Role,
+	}
+
+	return user, nil
+}

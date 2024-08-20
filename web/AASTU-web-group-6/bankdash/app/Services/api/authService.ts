@@ -58,10 +58,10 @@ const handleRequest = async <T>(
       method,
       url: endpoint,
       data,
-      // headers: {
-      //   Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
-      //   "Content-Type": "application/json",
-      // },
+      headers: {
+        Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
+        "Content-Type": "application/json",
+      },
     });
     console.log(response)
     return response.data as T;

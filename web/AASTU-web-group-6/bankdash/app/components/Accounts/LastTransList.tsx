@@ -13,6 +13,24 @@ interface LastTransData {
   amount: number;
   receiverUserName: string;
 }
+function formatAmount(amount:number) {
+  if (amount >= 1_000_000_000_000) {
+    
+    return `${(amount / 1_000_000_000_000).toFixed(1)}T`;
+  } else if (amount >= 1_000_000_000) {
+    
+    return `${(amount / 1_000_000_000).toFixed(1)}B`;
+  } else if (amount >= 1_000_000) {
+    
+    return `${(amount / 1_000_000).toFixed(1)}M`;
+  } else if (amount >= 1_000) {
+    
+    return `${(amount / 1_000).toFixed(1)}k`;
+  } else {
+    
+    return amount.toLocaleString();
+  }
+}
 
 const LastTransList = () => {
   const [data, setData] = useState<LastTransData[]>([]);
@@ -73,7 +91,7 @@ const LastTransList = () => {
           senderUserName={transaction.senderUserName}
           description={transaction.description}
           date={transaction.date}
-          amount={transaction.amount}
+          amount={formatAmount(transaction.amount)}
           receiverUserName={transaction.receiverUserName}
         />
       ))}

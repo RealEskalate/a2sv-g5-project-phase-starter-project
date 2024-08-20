@@ -7,9 +7,11 @@ import (
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/pkg/infrastructure"
 )
 
-type Tag struct {
-	ID   string `json:"id,omitempty" bson:"_id,omitempty"`
-	Name string `json:"name,omitempty"`
+var weightsToUse = map[string]float32{
+	"views":    0.5,
+	"comments": 0.3,
+	"likes":    0.2,
+	"dislikes": 0.1,
 }
 
 type Blog struct {
@@ -17,7 +19,7 @@ type Blog struct {
 	AuthorID      string    `json:"author_id,omitempty"`
 	Title         string    `json:"title,omitempty"`
 	Content       string    `json:"content,omitempty"`
-	Tags          []Tag     `json:"tags,omitempty"`
+	Tags          []string  `json:"tags,omitempty"`
 	ViewsCount    int       `json:"views_count,omitempty"`
 	CommentsCount int       `json:"comments_count,omitempty"`
 	LikesCount    int       `json:"likes_count,omitempty"`
@@ -25,6 +27,50 @@ type Blog struct {
 	Popularity    float32   `json:"popularity,omitempty"`
 	CreatedAt     time.Time `json:"created_at,omitempty"`
 	UpdatedAt     time.Time `json:"updated_at,omitempty"`
+}
+
+func (b *Blog) CalculatePopularity() {
+	b.Popularity = float32(
+		float32(b.ViewsCount)*weightsToUse["views"] +
+			float32(b.CommentsCount)*weightsToUse["comments"] +
+			float32(b.LikesCount)*weightsToUse["likes"] -
+			float32(b.DislikesCount)*weightsToUse["dislikes"],
+	)
+}
+
+func (b *Blog) IncrementViewsCount() {
+	b.ViewsCount++
+	b.CalculatePopularity()
+}
+
+func (b *Blog) IncrementCommentsCount() {
+	b.CommentsCount++
+	b.CalculatePopularity()
+}
+
+func (b *Blog) IncrementLikesCount() {
+	b.LikesCount++
+	b.CalculatePopularity()
+}
+
+func (b *Blog) IncrementDislikesCount() {
+	b.DislikesCount++
+	b.CalculatePopularity()
+}
+
+func (b *Blog) DecrementLikesCount() {
+	b.LikesCount--
+	b.CalculatePopularity()
+}
+
+func (b *Blog) DecrementDislikesCount() {
+	b.DislikesCount--
+	b.CalculatePopularity()
+}
+
+func (b *Blog) DecrementCommentsCount() {
+	b.CommentsCount--
+	b.CalculatePopularity()
 }
 
 type Comment struct {
@@ -56,17 +102,17 @@ type FilterQuery struct {
 }
 
 type BlogUseCase interface {
-	CreateBlog(ctx context.Context, blog Blog) (Blog, error)
-	UpdateBlog(ctx context.Context, id string, blog Blog) (Blog, error)
-	DeleteBlog(ctx context.Context, id string) error
+	CreateBlog(ctx context.Context, authorID string, blog CreateBlogRequest) (Blog, error)
+	UpdateBlog(ctx context.Context, id string, blog UpdateBlogRequest) (Blog, error)
+	DeleteBlog(ctx context.Context, id, userID string) error
 	GetBlogByID(ctx context.Context, id string) (Blog, error)
 	GetBlogs(ctx context.Context, filterQuery FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
 	SearchBlogs(ctx context.Context, query string) (infrastructure.PaginationResponse[Blog], error)
 	GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
-	CreateComment(ctx context.Context, comment Comment) error
+	CreateComment(ctx context.Context, userID, blogId string, comment CreateCommentRequest) error
 	DeleteComment(ctx context.Context, id string) error
-	LikeBlog(ctx context.Context, like Like) error
-	DislikeBlog(ctx context.Context, dislike Dislike) error
+	LikeBlog(ctx context.Context, userID string, blogID string) error
+	DislikeBlog(ctx context.Context, userID string, blogID string) error
 }
 
 type BlogRepository interface {

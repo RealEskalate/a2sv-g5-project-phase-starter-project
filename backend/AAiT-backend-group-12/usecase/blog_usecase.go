@@ -13,7 +13,6 @@ type BlogUseCase struct {
 	aiService      *ai_service.AIService
 }
 
-
 var _ domain.BlogUseCaseInterface = &BlogUseCase{}
 
 func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration, aiService *ai_service.AIService) *BlogUseCase {
@@ -103,9 +102,9 @@ func (b *BlogUseCase) GetBlogPosts(ctx context.Context, filters domain.BlogFilte
 		filters.PostsPerPage = 10 // Default to 10 posts per page
 	}
 
-	// Set default sorting if not provided
+	// default to sorting by creation date if it's not provided
 	if filters.SortBy == "" {
-		filters.SortBy = "created_at" // Default sort by creation date
+		filters.SortBy = "created_at"
 		filters.SortDirection = "desc"
 	}
 
@@ -120,11 +119,11 @@ func (b *BlogUseCase) GetBlogPostByID(ctx context.Context, blogID string) (*doma
 	return b.blogRepo.FetchBlogPostByID(context, blogID)
 }
 
-func (b *BlogUseCase) TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) domain.CodedError {
+func (b *BlogUseCase) TrackBlogPopularity(ctx context.Context, blogId string, action string, state bool, username string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
-	return b.blogRepo.TrackBlogPopularity(ctx, blogId, action, username)
+	return b.blogRepo.TrackBlogPopularity(ctx, blogId, action,state, username)
 }
 
 func (uc *BlogUseCase) GenerateBlogContent(topics []string) (string, error) {
@@ -151,7 +150,6 @@ func (uc *BlogUseCase) GenerateTrendingTopics(keywords []string) ([]string, erro
 	return topics, nil
 }
 
-
 // AddComment implements domain.BlogUseCaseInterface.
 func (b *BlogUseCase) AddComment(ctx context.Context, blogID string, newComment *domain.NewComment, userName string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
@@ -162,7 +160,7 @@ func (b *BlogUseCase) AddComment(ctx context.Context, blogID string, newComment 
 	}
 
 	err := b.blogRepo.CreateComment(ctx, comment, blogID, userName)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	return nil
@@ -174,7 +172,7 @@ func (b *BlogUseCase) DeleteComment(ctx context.Context, blogID string, commentI
 	defer cancel()
 
 	err := b.blogRepo.DeleteComment(ctx, commentID, blogID, userName)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	return nil
@@ -199,8 +197,8 @@ func (b *BlogUseCase) UpdateComment(ctx context.Context, blogID string, commentI
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
-	err := b.blogRepo.UpdateComment(ctx, comment,commentID, blogID, userName)
-	if err != nil{
+	err := b.blogRepo.UpdateComment(ctx, comment, commentID, blogID, userName)
+	if err != nil {
 		return err
 	}
 	return nil

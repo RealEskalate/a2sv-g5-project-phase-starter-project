@@ -91,7 +91,7 @@ func (b *blogUsecase) CreateBlog(c context.Context, newBlog *domain.Blog) (domai
 	return blog, nil
 }
 
-func (b *blogUsecase) UpdateBlog(c context.Context, blogID string, updatedBlog *domain.Blog) (domain.Blog, error) {
+func (b *blogUsecase) UpdateBlog(c context.Context, blogID string, updatedBlog *domain.BlogUpdate) (domain.Blog, error) {
 	ctx, cancel := context.WithTimeout(c, b.contextTimeout)
 	defer cancel()
 

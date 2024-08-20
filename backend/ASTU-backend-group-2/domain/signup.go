@@ -2,7 +2,6 @@ package domain
 
 import "context"
 
-
 type SignupRequest struct {
 	FirstName  string `json:"first_name" bson:"first_name" binding:"required,min=3,max=30"`
 	LastName   string `json:"last_name" bson:"last_name" binding:"max=30"`
@@ -17,7 +16,7 @@ type SignupResponse struct {
 }
 
 type SignupUsecase interface {
-	Create(c context.Context, user *User) (*User,error)
+	Create(c context.Context, user *User) (*User, error)
 	GetUserByEmail(c context.Context, email string) (User, error)
 	CreateAccessToken(user *User, secret string, expiry int) (accessToken string, err error)
 	CreateRefreshToken(user *User, secret string, expiry int) (refreshToken string, err error)

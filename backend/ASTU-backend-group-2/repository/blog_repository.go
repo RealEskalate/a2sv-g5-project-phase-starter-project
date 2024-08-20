@@ -80,7 +80,7 @@ func (br *blogRepository) CreateBlog(c context.Context, newBlog *domain.Blog) (d
 	return *newBlog, nil
 }
 
-func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBlog *domain.Blog) (domain.Blog, error) {
+func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBlog *domain.BlogUpdate) (domain.Blog, error) {
 	collection := br.database.Collection(br.collection)
 
 	ID, err := primitive.ObjectIDFromHex(blogID)
@@ -94,8 +94,12 @@ func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBl
 	if err != nil {
 		return domain.Blog{}, err
 	}
+	blog, err := br.GetBlogByID(c, blogID)
+	if err != nil {
+		return domain.Blog{}, err
+	}
 
-	return *updatedBlog, nil
+	return blog, nil
 
 }
 

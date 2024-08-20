@@ -1,4 +1,3 @@
-import React from 'react';
 import GoogleIcon from '../../../public/assets/icons/google-icon.svg';
 import ChangePinIcon from '../../../public/assets/icons/change-pin-icon.svg';
 import BlockIcon from '../../../public/assets/icons/block-card-icon.svg';

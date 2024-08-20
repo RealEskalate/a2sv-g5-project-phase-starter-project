@@ -22,22 +22,26 @@ const Security = () => {
 
       <Titles title="Change Password" />
 
-      <InputGroup
-        id="password"
-        label="Current Password"
-        inputType="password"
-        registerName="password"
-        register={undefined}
-        placeholder="*********************"
-      />
-      <InputGroup
-        id="newPassword"
-        label="New Password"
-        inputType="password"
-        registerName="newPassword"
-        register={undefined}
-        placeholder="*********************"
-      />
+      <div className="w-full md:w-1/2">
+        <InputGroup
+          id="password"
+          label="Current Password"
+          inputType="password"
+          registerName="password"
+          register={undefined}
+          placeholder="*********************"
+        />
+      </div>
+      <div className="w-full md:w-1/2">
+        <InputGroup
+          id="newPassword"
+          label="New Password"
+          inputType="password"
+          registerName="newPassword"
+          register={undefined}
+          placeholder="*********************"
+        />
+      </div>
 
       <div className="flex justify-end">
         <button

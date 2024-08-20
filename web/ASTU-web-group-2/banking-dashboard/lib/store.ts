@@ -1,31 +1,29 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { transactionApi } from "./service/TransactionService";
-import { bankApi } from "./service/BankService";
-import { userApi } from "./service/UserService";
-import { loanApi } from "./service/LoanService";
-import { companyApi } from "./service/CompanyService";
+import { configureStore } from '@reduxjs/toolkit';
+import userReducer from './features/userSlice/userSlice';
+import { transactionApi } from '../lib/service/TransactionService';
+import { bankApi } from '../lib/service/BankService';
+import { userApi } from '../lib/service/UserService';
+import { loanApi } from '../lib/service/LoanService';
+import { companyApi } from '../lib/service/CompanyService';
 
-export const store = () => {
-  return configureStore({
-    reducer: {
-      [transactionApi.reducerPath]: transactionApi.reducer,
-      [bankApi.reducerPath]: bankApi.reducer,
-      [userApi.reducerPath]: userApi.reducer,
-      [loanApi.reducerPath]: loanApi.reducer,
-      [companyApi.reducerPath]: companyApi.reducer,
-      // Add your reducer path this way
-    },
-    middleware: (getDefaultMiddleWare) =>
-      getDefaultMiddleWare().concat(
-        transactionApi.middleware,
-        bankApi.middleware,
-        userApi.middleware,
-        loanApi.middleware,
-        companyApi.middleware
-      ), // Add the middleware beside the transactionAPi.middleware by adding a comma
-  });
-};
+export const store = configureStore({
+  reducer: {
+    user: userReducer,  // Add the user reducer
+    [transactionApi.reducerPath]: transactionApi.reducer,
+    [bankApi.reducerPath]: bankApi.reducer,
+    [userApi.reducerPath]: userApi.reducer,
+    [loanApi.reducerPath]: loanApi.reducer,
+    [companyApi.reducerPath]: companyApi.reducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(
+      transactionApi.middleware,
+      bankApi.middleware,
+      userApi.middleware,
+      loanApi.middleware,
+      companyApi.middleware
+    ),
+});
 
-export type AppStore = ReturnType<typeof store>;
-export type RootState = ReturnType<AppStore["getState"]>;
-export type AppDispatch = AppStore["dispatch"];
+export type AppStore = typeof store;export type RootState = ReturnType<AppStore['getState']>;
+export type AppDispatch = AppStore['dispatch'];

@@ -1,8 +1,15 @@
+'use client';
+import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ToggleSwitch from './ToggleSwitch'; // Import the ToggleSwitch component
-
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/lib/store';
+import { setUser } from '@/lib/features/userSlice/userSlice'; // Adjust the import path as needed
+import { useSession } from 'next-auth/react';
+import { useUpdatePreferenceMutation } from '@/lib/service/UserService';
+import notify from '@/utils/notify';
 // Define the Yup schema for validation
 const schema = Yup.object().shape({
   currency: Yup.string().required('Currency is required'),
@@ -21,32 +28,68 @@ interface FormValues {
 }
 
 const YourFormComponent = () => {
+  const dispatch = useDispatch();
 
+  // Get the user preferences from the Redux store
+  const user = useSelector((state: RootState) => state.user.user);
+
+  // Set up form with default values from Redux store
   const { control, handleSubmit, register, formState: { errors } } = useForm<FormValues>({
     resolver: yupResolver(schema),
+    defaultValues: {
+      currency: user?.preference?.currency || '',
+      timeZone: user?.preference?.timeZone || '',
+      sentOrReceiveDigitalCurrency: user?.preference?.sentOrReceiveDigitalCurrency || false,
+      receiveMerchantOrder: user?.preference?.receiveMerchantOrder || false,
+      accountRecommendations: user?.preference?.accountRecommendations || false,
+     
+    },
   });
+  const [updatePreference] = useUpdatePreferenceMutation() // Use the mutation hook
+  const { data: session, status } = useSession();
 
   // Handle form submission
-  const onSubmit = (data: FormValues) => {
-    const formattedData = {
-      preference: {
-        currency: data.currency,
-        sentOrReceiveDigitalCurrency: data.sentOrReceiveDigitalCurrency,
-        receiveMerchantOrder: data.receiveMerchantOrder,
-        accountRecommendations: data.accountRecommendations,
-        timeZone: data.timeZone,
-        twoFactorAuthentication: true, // You can set this based on your needs
-      },
-    };
-    console.log(formattedData);
+  const onSubmit = async(data: FormValues) => {
+    if (user && user.id) {
+      const updatedUser = {
+        ...user,
+        preference: {
+          ...data,
+          twoFactorAuthentication: user.preference?.twoFactorAuthentication ?? true,
+          accountRecommendations:false
+        },
+      };
+      
+      try {
+        if (session?.user?.accessToken) {
+          console.log("Updated User:",  session?.user?.accessToken);
+          const response = await updatePreference({
+            accessToken: session?.user?.accessToken,
+            updatedPreference: updatedUser.preference,
+          }).unwrap();
+          console.log("Updated User:", response);
+          dispatch(setUser(updatedUser));
+          notify.success("Profile updated successfully");
+          // Show success message or handle successful update
+        } else {
+          notify.error("Access token is missing");
+          
+          throw new Error("Access token is missing");
+  
+        }
+      } catch (error) {
+        console.error("Failed to update user:", error);
+        // Show error message or handle error
+      }
+    }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-      <div className='flex max-md:grid items-center justify-center space-x-4'>
-        <div className='w-full'>
-          <label className='block mb-1 font-400 text-[16px] text-[#232323] capitalize'>
-            Currency
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+      <div className='w-full'>
+      <label className='block mb-1 font-400 text-[16px] text-[#232323] capitalize'>
+      Currency
           </label>
           <input
             placeholder={`USD`}
@@ -109,13 +152,14 @@ const YourFormComponent = () => {
           )}
         />
       </div>
-    
-      <button
-        type='submit'
-        className='px-4 py-2 bg-blue-500 text-white rounded-lg'
-      >
-        Submit
-      </button>
+      <div className='flex justify-end'>
+        <button
+          type='submit'
+          className='w-full md:w-auto px-4 py-2 bg-[#1814F3] text-white rounded-lg'
+        >
+          Save Changes
+        </button>
+      </div>
     </form>
   );
 };

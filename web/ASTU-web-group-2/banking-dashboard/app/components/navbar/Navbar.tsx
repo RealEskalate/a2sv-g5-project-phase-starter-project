@@ -53,7 +53,7 @@ const Navbar = () => {
   const capitalizeFirstLetter = (text: string) => {
     if (!text || text === "/") return 'Dashboard';
     text = text.replace('-', ' ');
-    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    return text.charAt(1).toUpperCase() + text.slice(2).toLowerCase();
   };
 
   const title = capitalizeFirstLetter(pathname);
@@ -63,9 +63,7 @@ const Navbar = () => {
   if (!user) {
     return <p>Loading user data...</p>;
   }
-  else{
-    console.log("rrrrrrrr",user)
-  }
+
   return (
     <>
       <header className="fixed top-0 md:left-[240px] max-md:left-0 right-0 bg-white shadow-md z-40 max-md:h-[140px]">
@@ -83,7 +81,7 @@ const Navbar = () => {
 
           <div className="flex-grow flex justify-start max-md:justify-center">
             <p className="font-semibold text-[20px] sm:text-[25px] text-[#343C6A]">
-              {title}
+              {title.slice(0)}
             </p>
           </div>
 
@@ -132,7 +130,6 @@ const Navbar = () => {
             <div 
               className="relative" 
               ref={dropdownRef}
-              onClick={() =>signOut({callbackUrl:"/login"})}
               
               >
               <Image
@@ -146,12 +143,13 @@ const Navbar = () => {
 
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50 border-[1px] border-[#afafaf]">
-                  <Link href="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Settings
-                  </Link>
-                  <Link href="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                
+                  <div 
+                    onClick={() =>signOut({callbackUrl:"/login"})}
+
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Logout
-                  </Link>
+                  </div>
                 </div>
               )}
             </div>

@@ -3,12 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,14 +14,20 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import ky, { HTTPError } from "ky";
+import { useState } from "react";
+import { toast } from "sonner";
+import { getSession } from "next-auth/react";
+import { Currency } from "lucide-react";
 
 const Preferences = () => {
+  const [loading, setLoading] = useState(false);
   const formSchema = z.object({
-    digitalCurrency: z.boolean().default(true).optional(),
-    merchantOrder: z.boolean().default(false).optional(),
-    recommendation: z.boolean().default(true).optional(),
-    currency: z.string(),
-    timeZone: z.string(),
+    sentOrReceiveDigitalCurrency: z.boolean().default(true).optional(),
+    receiveMerchantOrder: z.boolean().default(false).optional(),
+    accountRecommendations: z.boolean().default(true).optional(),
+    currency: z.string().min(1, "Currency is required"),
+    timeZone: z.string().min(1, "Time Zone is required"),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -31,15 +35,42 @@ const Preferences = () => {
     defaultValues: {
       currency: "",
       timeZone: "",
-      digitalCurrency: true,
-      merchantOrder: false,
-      recommendation: true,
+      sentOrReceiveDigitalCurrency: true,
+      receiveMerchantOrder: false,
+      accountRecommendations: true,
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
-  }
+    setLoading(true);
+    try {
+      const session = await getSession();
+      const accessToken = session?.user.accessToken;
+      const res = await ky.put(
+        "https://bank-dashboard-6acc.onrender.com/user/update-preference",
+        {
+          json: { ...values, twoFactorAuthentication: false },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      const data = await res.json();
+      console.log("Response", data);
+      toast("Update Successful");
+    } catch (err) {
+      if (err instanceof HTTPError && err.response) {
+        const errorResponse = await err.response.json();
+        console.error("Error Response", errorResponse);
+      }
+      console.error("Console Error", err);
+      toast("Update Unsuccessful");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="md:px-16">
       <Form {...form}>
@@ -81,12 +112,12 @@ const Preferences = () => {
             />
           </div>
 
-          <div className="mt-5 ">
+          <div className="mt-5">
             <h1 className="mb-2 text-primaryBlack font-bold">Notification</h1>
             <div className="flex flex-col gap-2">
               <FormField
                 control={form.control}
-                name="digitalCurrency"
+                name="sentOrReceiveDigitalCurrency"
                 render={({ field }) => (
                   <FormItem className="flex items-end gap-2">
                     <Switch
@@ -94,16 +125,16 @@ const Preferences = () => {
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
-                    <div className="space-y-0.5">
+                    <label htmlFor={field.name} className="space-y-0.5">
                       I send or receive digital currency
-                    </div>
+                    </label>
                   </FormItem>
                 )}
               />
 
               <FormField
                 control={form.control}
-                name="merchantOrder"
+                name="receiveMerchantOrder"
                 render={({ field }) => (
                   <FormItem className="flex items-end gap-2">
                     <Switch
@@ -111,34 +142,37 @@ const Preferences = () => {
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
-                    <div className="space-y-0.5">I receive merchant order</div>
+                    <label htmlFor={field.name} className="space-y-0.5">
+                      I receive merchant order
+                    </label>
                   </FormItem>
                 )}
               />
 
               <FormField
                 control={form.control}
-                name="recommendation"
+                name="accountRecommendations"
                 render={({ field }) => (
-                  <FormItem className="flex items-center md:items-end gap-2 ">
+                  <FormItem className="flex items-center md:items-end gap-2">
                     <Switch
                       className="data-[state=checked]:bg-[#16DBCC]"
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
-                    <div className="space-y-0.5">
-                      There are recommendation for my account
-                    </div>
+                    <label htmlFor={field.name} className="space-y-0.5">
+                      There are recommendations for my account
+                    </label>
                   </FormItem>
                 )}
               />
             </div>
           </div>
           <Button
+            disabled={loading}
             type="submit"
             className="mt-5 md:w-auto w-full px-8 float-end bg-primaryBlue text-white"
           >
-            Save
+            {loading ? "Loading..." : "Save"}
           </Button>
         </form>
       </Form>

@@ -5,6 +5,6 @@ type ForgotPassword struct {
 }
 
 type ResetPassword struct {
-	OTP      string `json:"otp" binding:"required"`
-	Password string `json:"password" binding:"required,min=8"`
+	Otp     string `json:"otp" binding:"required"`
+	NewPassword string `json:"password" binding:"required,min=8"`
 }

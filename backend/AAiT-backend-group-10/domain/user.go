@@ -1,14 +1,20 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type User struct {
-	ID           uuid.UUID `json:"id,omitempty" bson:"id,omitempty"`
-	Email        string    `json:"email" bson:"email" validate:"required,email,unique"`
-	Password     string    `json:"password" bson:"password" validate:"required,strong,min=8"`
-	FullName     string    `json:"full_name" bson:"full_name" validate:"required"`
-	Bio          string    `json:"bio,omitempty" bson:"bio,omitempty"`
-	ImageURL     string    `json:"image_url,omitempty" bson:"image_url,omitempty"`
-	IsAdmin      bool      `json:"is_admin" bson:"is_admin"`
-	RefreshToken string    `json:"refresh_token" bson:"refresh_token"`
+	ID           uuid.UUID    `json:"id" bson:"_id,omitempty"`
+	FullName     string    `json:"fullname" bson:"fullname" binding:"required"`
+	Email        string    `json:"email" bson:"email" binding:"required,email"`
+	Bio          string    `json:"bio" bson:"bio"`
+	ImageURL     string    `json:"imageUrl" bson:"imageUrl"`
+	IsAdmin      bool      `json:"isAdmin" bson:"isAdmin"`
+	RefreshToken string    `json:"refreshToken" bson:"refreshToken"`
+	Password     string    `json:"password" bson:"password" binding:"required"`
+	CreatedAt    time.Time `json:"created_at" bson:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at" bson:"updated_at"`
 }

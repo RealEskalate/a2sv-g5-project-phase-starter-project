@@ -13,8 +13,10 @@ import (
 func NewRouter(db *mongo.Database) {
 	router := gin.Default()
 
+	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
+
 	blogRepo := repositories.NewBlogRepository(db, os.Getenv("BLOG_COLLECTION"))
-	blogUseCase := usecases.NewBlogUseCase(blogRepo)
+	blogUseCase := usecases.NewBlogUseCase(blogRepo, userRepo)
 	blogController := controllers.NewBlogController(blogUseCase)
 
 	commentRepo := repositories.NewCommentRepository(db, os.Getenv("COMMENT_COLLECTION_NAME"))
@@ -27,6 +29,9 @@ func NewRouter(db *mongo.Database) {
 		LikeUseCase: usecases.NewLikeUseCase(likeRepo),
 	}
 
+	userUseCase := usecases.NewUserUseCase(userRepo)
+	userController := controllers.NewUserController(userUseCase)
+
 	router.POST("/blogs", blogController.CreateBlog)
 	router.GET("/blogs", blogController.GetAllBlogs)
 	router.GET("/blogs/:id", blogController.GetBlogByID)
@@ -34,6 +39,8 @@ func NewRouter(db *mongo.Database) {
 	router.DELETE("/blogs/:id", blogController.DeleteBlog)
 	router.PATCH("/blogs/:id/view", blogController.AddView)
 	router.GET("/blogs/search", blogController.SearchBlogs)
+
+	router.PATCH("/users/promote", userController.PromoteUser)
 
 	router.GET("/comment/:blog_id", commentController.GetComments)
 	router.GET("/comment_count/:blog_id", commentController.GetCommentsCount)

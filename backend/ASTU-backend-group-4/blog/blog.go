@@ -110,7 +110,7 @@ type BlogUseCase interface {
 	SearchBlogs(ctx context.Context, query string) (infrastructure.PaginationResponse[Blog], error)
 	GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
 	CreateComment(ctx context.Context, userID, blogId string, comment CreateCommentRequest) error
-	DeleteComment(ctx context.Context, id string) error
+	DeleteComment(ctx context.Context, id, userID string) error
 	LikeBlog(ctx context.Context, userID string, blogID string) error
 	DislikeBlog(ctx context.Context, userID string, blogID string) error
 }
@@ -124,6 +124,7 @@ type BlogRepository interface {
 	SearchBlogs(ctx context.Context, query string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
 	GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
 	CreateComment(ctx context.Context, comment Comment) (string, error)
+	GetCommentByID(ctx context.Context, id string) (Comment, error)
 	DeleteComment(ctx context.Context, id string) error
 	LikeBlog(ctx context.Context, like Like) error
 	DislikeBlog(ctx context.Context, dislike Dislike) error

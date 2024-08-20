@@ -19,8 +19,8 @@ type User struct {
 }
 
 type Credential struct {
-	Email     string
-	Refresher string
+	Email     string `json:"email" bson:"email"`
+	Refresher string `json:"refresher" bson:"refresher"`
 }
 
 type IUserRepository interface {
@@ -52,7 +52,8 @@ type IPasswordService interface {
 }
 type ITokenService interface {
 	GenerateToken(email string, id primitive.ObjectID, role, name string, expiryDuration int64) (string, error)
-	ValidateToken(string) (map[string]interface{}, error)
+	ValidateToken(token string) error
+	GetClaimsOfToken(token string) (map[string]interface{}, error)
 }
 
 type ITokenRepository interface {

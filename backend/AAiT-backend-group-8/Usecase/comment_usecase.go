@@ -11,12 +11,14 @@ import (
 type CommentUseCase struct {
 	repository     repository.CommentRepository
 	infrastructure infrastructure.Infrastructure
+	tokenService   domain.ITokenService
 }
 
-func NewCommentUseCase(commentRepository repository.CommentRepository, infrastructure infrastructure.Infrastructure) *CommentUseCase {
+func NewCommentUseCase(commentRepository repository.CommentRepository, infrastructure infrastructure.Infrastructure, tokenService domain.ITokenService) *CommentUseCase {
 	return &CommentUseCase{
 		repository:     commentRepository,
 		infrastructure: infrastructure,
+		tokenService:   tokenService,
 	}
 }
 
@@ -59,8 +61,13 @@ func (uc *CommentUseCase) DeleteComment(commentID string) error {
 	return nil
 }
 
-func (uc *CommentUseCase) UpdateComment(comment *domain.Comment) error {
-	err := uc.repository.UpdateComment(comment)
+func (uc *CommentUseCase) UpdateComment(comment *domain.Comment, commentID string) error {
+	primitive, err := uc.infrastructure.ConvertToPrimitiveObjectID(commentID)
+	if err != nil {
+		return errors.New("invalid comment id")
+	}
+	comment.Id = primitive
+	err = uc.repository.UpdateComment(comment)
 	if err != nil {
 		return err
 	}
@@ -81,7 +88,26 @@ func (uc *CommentUseCase) DeleteCommentsOfBlog(blogID string) error {
 	return nil
 }
 
-func (uc *CommentUseCase) DecodeToken(tokenStr string, secretKey []byte) (string, error) {
+func (uc *CommentUseCase) DecodeToken(tokenStr string) (string, string, error) {
 	// Parse the token
-	return "adkfj3239rdjs", nil
+	myMap, err := uc.tokenService.GetClaimsOfToken(tokenStr)
+	if err != nil {
+		return "", "", err
+	}
+	if myMap == nil {
+		return "", "", errors.New("invalid token - from decode token")
+	}
+
+	// Assert the types of the values to string
+	id, ok := myMap["id"].(string)
+	if !ok {
+		return "", "", errors.New("invalid token - id claim is not a string")
+	}
+
+	name, ok := myMap["name"].(string)
+	if !ok {
+		return "", "", errors.New("invalid token - name claim is not a string")
+	}
+
+	return id, name, nil
 }

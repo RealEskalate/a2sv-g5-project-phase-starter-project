@@ -1,21 +1,14 @@
-package Controller
+package controller
 
 import (
 	"AAiT-backend-group-8/Domain"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-type UserHandler struct {
-	UserUsecase Domain.IUserUseCase
-}
-
-func NewUserHandler(userUseCase Domain.IUserUseCase) *UserHandler {
-	return &UserHandler{UserUsecase: userUseCase}
-}
-
-func (h *UserHandler) RegisterUser(c *gin.Context) {
+func (h *Controller) RegisterUser(c *gin.Context) {
 	var user Domain.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -35,7 +28,7 @@ func (h *UserHandler) RegisterUser(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Registration successful. Check your email for verification link."})
 }
 
-func (h *UserHandler) VerifyEmail(c *gin.Context) {
+func (h *Controller) VerifyEmail(c *gin.Context) {
 	token := c.Query("token")
 	if token == "" {
 		c.JSON(400, gin.H{"error": "Invalid token"})
@@ -51,13 +44,14 @@ func (h *UserHandler) VerifyEmail(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Email verified successfully"})
 }
 
-func (h *UserHandler) Login(c *gin.Context) {
-	type email_pass struct {
+func (h *Controller) Login(c *gin.Context) {
+	// Corrected struct with exported fields
+	type EmailPass struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
 
-	var ep email_pass
+	var ep EmailPass
 
 	if err := c.ShouldBindJSON(&ep); err != nil {
 		c.JSON(400, gin.H{"message": "invalid request payload"})

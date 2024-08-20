@@ -24,9 +24,8 @@ func main() {
 	viewCollection := mongo.ViewsCollection
 	tagCollection := mongo.TagsCollection
 
-
 	router := gin.Default()
 
-	routes.SetUpRoute(router,blogCollection,commentCollection,likeCollection,viewCollection,tagCollection, userCollection)
-	router.Run(confs.APP_DOMAIN)
+	routes.SetUpRoute(router, blogCollection, commentCollection, likeCollection, viewCollection, tagCollection, userCollection)
+	router.Run(":" + confs.GO_PORT)
 }

@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"blogApp/internal/ai"
 	"blogApp/internal/domain"
 	"blogApp/internal/usecase/blog"
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -21,12 +23,17 @@ func NewBlogHandler(useCase blog.BlogUseCase) *BlogHandler {
 // CreateBlogHandler creates a new blog post
 func (h *BlogHandler) CreateBlogHandler(c *gin.Context) {
 	var blog domain.Blog
+	claims, err := GetClaims(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	if err := c.ShouldBindJSON(&blog); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	if err := h.UseCase.CreateBlog(context.Background(), &blog); err != nil {
+	// blog.Author = claims.UserID
+	if err := h.UseCase.CreateBlog(context.Background(), &blog, claims.UserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -49,13 +56,20 @@ func (h *BlogHandler) GetBlogByIDHandler(c *gin.Context) {
 // UpdateBlogHandler updates an existing blog post
 func (h *BlogHandler) UpdateBlogHandler(c *gin.Context) {
 	id := c.Param("id")
+
+	userClaims, err := GetClaims(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	var blog domain.Blog
 	if err := c.ShouldBindJSON(&blog); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.UseCase.UpdateBlog(context.Background(), id, &blog); err != nil {
+	if err := h.UseCase.UpdateBlog(context.Background(), id, &blog, userClaims.UserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -66,7 +80,12 @@ func (h *BlogHandler) UpdateBlogHandler(c *gin.Context) {
 // DeleteBlogHandler deletes a blog post by its ID
 func (h *BlogHandler) DeleteBlogHandler(c *gin.Context) {
 	id := c.Param("id")
-	if err := h.UseCase.DeleteBlog(context.Background(), id); err != nil {
+	userClaims, err := GetClaims(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if err := h.UseCase.DeleteBlog(context.Background(), id, userClaims.UserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -307,4 +326,44 @@ func (h *BlogHandler) GetTagByIDHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, tag)
 }
 
+func (h *BlogHandler) GetAiBlog(c *gin.Context) {
+	userClaims, err := GetClaims(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	userId := userClaims.UserID
 
+	var body struct {
+		Query string `json:"query"`
+	}
+
+	if err := c.BindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println(body)
+
+	blog, err := ai.GetAiBlog(userId, body.Query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, blog)
+
+}
+
+func (h *BlogHandler) ModerateBlog(c *gin.Context) {
+	blog := new(domain.Blog)
+	if err := c.ShouldBindJSON(&blog); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	is_valid, message, err := ai.ModerateBlog(blog.Content, blog.Title)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"is_valid": is_valid, "message": message})
+
+}

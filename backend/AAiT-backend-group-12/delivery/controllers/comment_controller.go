@@ -4,8 +4,9 @@ import (
 	"blog_api/domain"
 	"net/http"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
-
+var validate = validator.New()
 
 func (bc *BlogController) HandleCreateComment(c *gin.Context) {
 	var comment domain.NewComment

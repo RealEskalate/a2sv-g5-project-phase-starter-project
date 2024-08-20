@@ -5,18 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9996af41-55a0-460d-845b-7ada4516534b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Delivery/Controller/like_controller.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Delivery/tmp/runner-build" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Infrastructure/password_services.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Delivery/Controller/blog_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/Delivery/Controller/blog_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Delivery/Controller/comment_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/Delivery/Controller/comment_controller.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Delivery/Controller/controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/Delivery/Controller/controller.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Delivery/Controller/user_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/Delivery/Controller/user_controller.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Delivery/Routes/routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/Delivery/Routes/routes.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Delivery/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/Delivery/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/blog_domain.go" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/blog_domain.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Helper/authenticator.go" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/authenticator.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Helper/search_params.go" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/search_params.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Repository/blog_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/Repository/blog_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/comment_domain.go" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/comment_domain.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/user_domain.go" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/user_domain.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Infrastructure/jwt_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/Infrastructure/jwt_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Infrastructure/send_email.go" beforeDir="false" afterPath="$PROJECT_DIR$/Infrastructure/send_email.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Repository/comment_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/Repository/comment_repository.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Usecase/blog_usecase.go" beforeDir="false" afterPath="$PROJECT_DIR$/Usecase/blog_usecase.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Repository/like_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/Repository/like_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Repository/token_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/Repository/token_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Repository/user_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/Repository/user_repository.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Usecase/comment_usecase.go" beforeDir="false" afterPath="$PROJECT_DIR$/Usecase/comment_usecase.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Usecase/like_usecase.go" beforeDir="false" afterPath="$PROJECT_DIR$/Usecase/like_usecase.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Usecase/user_usecase.go" beforeDir="false" afterPath="$PROJECT_DIR$/Usecase/user_usecase.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -58,23 +66,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultGoTemplateProperty": "Go File",
-    "Go Build.go build main.go.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.go.formatter.settings.were.checked": "true",
-    "RunOnceActivity.go.migrated.go.modules.settings": "true",
-    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
-    "git-widget-placeholder": "#906 on aait.backend.g8.main.abdulazez.blog",
-    "go.import.settings.migrated": "true",
-    "last_opened_file_path": "/home/abza",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
+    &quot;Go Build.go build main.go.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;#906 on Merging aait.backend.g8.main.abdulazez.blog&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/abza&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="AAiT-backend-group-8" />

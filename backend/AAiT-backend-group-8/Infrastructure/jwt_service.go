@@ -2,7 +2,7 @@ package infrastructure
 
 import (
 	domain "AAiT-backend-group-8/Domain"
-
+	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -29,18 +29,40 @@ func (ts *TokenService) GenerateToken(email string, id primitive.ObjectID, name 
 	return jwtToken, err
 }
 
-func (ts *TokenService) ValidateToken(tokenString string) error {
-	token, err := jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
+func (ts *TokenService) ValidateToken(tokenString string) (map[string]interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(ts.SecretKey), nil
 	})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if _, ok := token.Claims.(*jwt.MapClaims); ok && token.Valid {
-		return nil
+	claims, ok := token.Claims.(*jwt.MapClaims)
+	if ok && token.Valid {
+		return *claims, nil
 	}
 
-	return err
+	return nil, errors.New("invalid token")
+}
+
+func (ts *TokenService) GetClaimsOfToken(tokenString string) (map[string]interface{}, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(ts.SecretKey), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if ok && token.Valid {
+		return claims, nil
+	}
+	// chnange claims to norma map
+	myMap := make(map[string]interface{})
+	for key, value := range claims {
+		myMap[key] = value
+	}
+	return myMap, err
 }

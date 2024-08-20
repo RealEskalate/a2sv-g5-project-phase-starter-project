@@ -1,16 +1,19 @@
-package Controller
+package controller
 
 import (
 	domain "AAiT-backend-group-8/Domain"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (controller *Controller) GetComments(ctx *gin.Context) {
 	blogID := ctx.Param("blogID")
+	fmt.Print(blogID)
 	comments, err := controller.commentUseCase.GetComments(blogID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -27,7 +30,7 @@ func (controller *Controller) CreateComment(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	_, err = controller.commentUseCase.DecodeToken(token, []byte("secret"))
+	userID, name, err := controller.commentUseCase.DecodeToken(token)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -37,8 +40,17 @@ func (controller *Controller) CreateComment(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	//!TODO add the name and id of the user to the comment
+	primUserId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	comment.AuthorID = primUserId
+	comment.AuthorName = name
 
+	fmt.Println(comment)
+
+	//!TODO add the name and id of the user to the comment
 	if comment.Body == "" {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "comment body is required"})
 		return
@@ -52,6 +64,7 @@ func (controller *Controller) CreateComment(ctx *gin.Context) {
 }
 
 func (controller *Controller) UpdateComment(ctx *gin.Context) {
+	commentID := ctx.Param("commentID")
 	var comment domain.Comment
 	if err := ctx.BindJSON(&comment); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -61,7 +74,7 @@ func (controller *Controller) UpdateComment(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "comment body is required"})
 		return
 	}
-	err := controller.commentUseCase.UpdateComment(&comment)
+	err := controller.commentUseCase.UpdateComment(&comment, commentID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

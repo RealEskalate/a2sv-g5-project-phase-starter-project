@@ -5,6 +5,7 @@ import (
 	infrastructure "AAiT-backend-group-8/Infrastructure"
 	repository "AAiT-backend-group-8/Repository"
 	"errors"
+	"fmt"
 )
 
 type LikeUseCase struct {
@@ -19,6 +20,18 @@ func NewLikeUseCase(likeRepository repository.LikeRepository, infrastructure inf
 	}
 }
 
+func (uc *LikeUseCase) GetLikes(blogID string) ([]domain.Like, error) {
+	blogIDPrim, err := uc.infrastructure.ConvertToPrimitiveObjectID(blogID)
+	if err != nil {
+		return nil, errors.New("invalid blog id")
+	}
+	likes, err := uc.repository.GetLikes(blogIDPrim)
+	if err != nil {
+		return nil, err
+	}
+	return likes, nil
+}
+
 func (uc *LikeUseCase) LikeComment(userID string, blogID string) (bool, error) {
 	userIDPrim, err := uc.infrastructure.ConvertToPrimitiveObjectID(userID)
 	if err != nil {
@@ -29,12 +42,14 @@ func (uc *LikeUseCase) LikeComment(userID string, blogID string) (bool, error) {
 		return false, errors.New("invalid blog id")
 	}
 	ok, like := uc.repository.CheckIfLiked(userIDPrim, blogIDPrim)
+	fmt.Print(ok)
 
 	// user has already like , so dislike it
 	if ok {
 		uc.repository.UnlikeBlog(like.Id)
 		return false, nil // succesfully unliked
 	}
+
 	// user has not liked, so like it
 	likeObj := domain.Like{
 		UserID: userIDPrim,

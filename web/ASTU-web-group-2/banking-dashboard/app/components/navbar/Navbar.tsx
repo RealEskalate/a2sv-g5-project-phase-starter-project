@@ -1,25 +1,67 @@
-"use client";
+'use client';
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Sidebar from "../sidebar/Sidebar"; // Import Sidebar component
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { title } from "process";
-
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import { signOut } from "next-auth/react";
 
 const Navbar = () => {
+  // Access the user data from Redux store
+  const user = useSelector((state: RootState) => state.user.user);
+
+  // State for sidebar visibility
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // State for dropdown visibility
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Reference for the dropdown
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup the event listener
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
+
+  // Toggle sidebar visibility
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+    setIsSidebarOpen(prev => !prev);
   };
-  const pathname = usePathname()
-  const capitalizeFirstLetter = (text:string) => {
-    if (!text || text == "/") return 'Dashboard';
-    text = text.replace('-', ' ')
-    return text.charAt(1).toUpperCase() + text.slice(2).toLowerCase();
+
+  // Toggle dropdown visibility
+  const toggleDropdown = () => {
+    setIsDropdownOpen(prev => !prev);
   };
+
+  // Get the current pathname from next/navigation
+  const pathname = usePathname();
+
+  // Function to capitalize the first letter of the page title
+  const capitalizeFirstLetter = (text: string) => {
+    if (!text || text === "/") return 'Dashboard';
+    text = text.replace('-', ' ');
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  };
+
   const title = capitalizeFirstLetter(pathname);
+
+  // Render loading state or user information
+  if (!user) {
+    return <p>Loading user data...</p>;
+  }
 
   return (
     <>
@@ -27,7 +69,7 @@ const Navbar = () => {
         <div className="flex w-full items-center justify-between px-4 py-2">
           <div className="flex items-center">
             <Image
-              src={"/assets/navbar/hamburger.svg"}
+              src="/assets/navbar/hamburger.svg"
               width={25}
               height={25}
               alt="hamburger"
@@ -42,10 +84,10 @@ const Navbar = () => {
             </p>
           </div>
 
-          <div className="hidden sm:flex gap-5 items-center">
+          <div className="hidden sm:flex gap-5 items-center relative">
             <div className="search-div bg-[#F5F7FA] flex items-center rounded-full h-[50px] px-4 py-2 w-full max-w-[400px] mx-auto">
               <Image
-                src={"/assets/navbar/magnifying-glass.svg"}
+                src="/assets/navbar/magnifying-glass.svg"
                 width={20}
                 height={20}
                 alt="magnifying-glass"
@@ -63,7 +105,7 @@ const Navbar = () => {
               className="bg-[#F5F7FA] rounded-full flex justify-center items-center"
             >
               <Image
-                src={"/assets/navbar/settings.svg"}
+                src="/assets/navbar/settings.svg"
                 width={50}
                 height={50}
                 alt="settings"
@@ -76,7 +118,7 @@ const Navbar = () => {
               className="bg-[#F5F7FA] rounded-full flex justify-center items-center"
             >
               <Image
-                src={"/assets/navbar/notification.svg"}
+                src="/assets/navbar/notification.svg"
                 width={50}
                 height={50}
                 alt="notification"
@@ -84,24 +126,38 @@ const Navbar = () => {
               />
             </Link>
 
-            <Link
-              href="/settings"
-              className="flex items-center gap-3 bg-[#F5F7FA] rounded-full"
-            >
+            <div 
+              className="relative" 
+              ref={dropdownRef}
+              onClick={() =>signOut({callbackUrl:"/login"})}
+              
+              >
               <Image
-                src={"/assets/navbar/default-image.svg"}
+                src={user.profilePicture}
                 width={50}
                 height={50}
                 alt="profile-picture"
-                className="object-fill rounded-full"
+                className="object-fill rounded-full cursor-pointer"
+                onClick={toggleDropdown}
               />
-            </Link>
+
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50 border-[1px] border-[#afafaf]">
+                  <Link href="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Settings
+                  </Link>
+                  <Link href="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Logout
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         <div className="search-div flex w-4/5 sm:hidden bg-[#F5F7FA] items-center rounded-full pl-5 pr-5 pt-3 pb-3 mt-2 mx-auto">
           <Image
-            src={"/assets/navbar/magnifying-glass.svg"}
+            src="/assets/navbar/magnifying-glass.svg"
             width={20}
             height={20}
             alt="magnifying-glass"

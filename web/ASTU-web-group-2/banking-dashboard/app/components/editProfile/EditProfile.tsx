@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import FormComponent from "./FormComponent"; // Adjust the import path as necessary
 import YourFormComponent from "./Preference";
 import ProfileSecurity from "../profileSecurity/profileSecurity";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 
 interface Preference {
   currency: string;
@@ -52,6 +54,8 @@ const defaultMainData: MainData = {
 };
 
 const EditProfile = () => {
+  const user = useSelector((state: RootState) => state.user.user);
+  
   const [activeTab, setActiveTab] = useState<number>(0);
   const tabs = ["Edit Profile", "Preferences", "Security"];
   const [mainData, setMainData] = useState<MainData>(defaultMainData);
@@ -81,7 +85,7 @@ const EditProfile = () => {
           />
         </div>
         {activeTab == 0 && (
-          <FormComponent setMainData={setMainData} mainData={mainData} />
+          <FormComponent />
         )}
 
         {activeTab == 1 && <YourFormComponent />}

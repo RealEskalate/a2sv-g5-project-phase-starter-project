@@ -18,7 +18,7 @@ const SpotifyIcon = () => (
       xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"
       viewBox="0 0 16 16"
-      className="w-4 h-4 text-teal-600"
+      className="w-full h-full text-teal-600"
     >
       <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm3.749 11.45a.62.62 0 01-.852.198c-2.34-1.396-5.292-1.71-8.756-.932a.623.623 0 11-.278-1.218c3.75-.86 6.993-.498 9.552 1.092a.623.623 0 01.198.86zm1.02-2.306a.778.778 0 01-1.067.247c-2.692-1.605-6.812-2.07-10.008-1.123a.777.777 0 11-.432-1.492c3.527-.956 8.068-.423 11.087 1.298.367.218.484.69.247 1.07zm.084-2.26c-3.009-1.782-7.802-2.27-10.603-1.235a.937.937 0 01-.585-1.78c3.27-1.076 8.608-.539 12.163 1.455a.938.938 0 01-.975 1.607z" />
     </svg>
@@ -31,7 +31,7 @@ const MobileIcon = () => (
       xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"
       viewBox="0 0 16 16"
-      className="w-4 h-4 text-indigo-600"
+      className="w-full h-full text-indigo-600"
     >
       <path d="M11 1H5a2 2 0 00-2 2v10a2 2 0 002 2h6a2 2 0 002-2V3a2 2 0 00-2-2zm-3 13a1 1 0 110-2 1 1 0 010 2zm3-3H5V4h6v7z" />
     </svg>
@@ -44,7 +44,7 @@ const UserIcon = () => (
       xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"
       viewBox="0 0 16 16"
-      className="w-4 h-4 text-pink-600"
+      className="w-full h-full text-pink-600"
     >
       <path
         fillRule="evenodd"
@@ -60,7 +60,7 @@ const TransactionCard: React.FC<{ transaction: Transaction }> = ({ transaction }
     <div className="flex flex-col pt-4 md:flex-row gap-4 gap-y-6 w-auto rounded-2xl shadow-none border-none">
       {/* Desktop View */}
       <div className="hidden md:flex items-center">
-        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-4">
+        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-4">
           {transaction.icon}
         </div>
         <div className="w-40 truncate"> {/* Fixed width with truncation */}

@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	err := godotenv.Load("/home/yordanos/Desktop/a2sv-g5-project-phase-starter-project/backend/AAiT-backend-group-10/.env")
+	err := godotenv.Load("../.env")
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}

@@ -46,8 +46,27 @@ func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, authorID string, blog 
 }
 
 // CreateComment implements BlogUseCase.
-func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, userID string, comment CreateCommentRequest) error {
-	panic("unimplemented")
+func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, userID, blogID string, comment CreateCommentRequest) error {
+	user, err := b.authRepository.GetUserByUsername(ctx, userID) // TODO: Change to GetUserByID
+	if err != nil {
+		return err
+	}
+	_, err = b.blogRepository.GetBlogByID(ctx, blogID)
+	if err != nil {
+		return err
+	}
+
+	var newComment Comment
+	newComment.AuthorID = user.ID
+	newComment.BlogID = blogID
+	newComment.Content = comment.Content
+
+	_, err = b.blogRepository.CreateComment(ctx, newComment)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // DeleteBlog implements BlogUseCase.

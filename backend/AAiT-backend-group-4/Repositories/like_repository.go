@@ -168,8 +168,10 @@ func (lr *likeReposiotory) GetLikesByUser(c context.Context, userID string) (lik
 }
 
 func (lr *likeReposiotory) GetLikesByBlog(c context.Context, blogID string) (likes []domain.Like, err error) {
+	
 	collection := lr.databse.Collection(lr.collection)
 	userPrimitiveID, err := primitive.ObjectIDFromHex(blogID)
+
 	if err != nil {
 		return []domain.Like{}, err
 	}

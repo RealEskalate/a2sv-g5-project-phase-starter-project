@@ -48,7 +48,7 @@ export default function Component() {
 
 
   return (
-    <Card className="flex flex-col w-full h-[350px]">
+    <Card className="flex flex-col w-full ">
       <CardHeader className="flex justify-between">
         <div className="flex flex-row justify-between space-x-4">
           <div className="hidden md:flex text-sm font-normal">

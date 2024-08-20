@@ -38,7 +38,8 @@ export default function Component() {
     <Card className="w-[100%] flex items-end justify-start ">
       <CardContent className=" p-0 w-[100%] flex items-end justify-start " >
         <ChartContainer className="w-[100%] " config={chartConfig}>
-          <BarChart className="w-[100%]" accessibilityLayer data={chartData}>
+              
+              <BarChart className="w-[100%]" accessibilityLayer barSize={10} data={chartData} >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"

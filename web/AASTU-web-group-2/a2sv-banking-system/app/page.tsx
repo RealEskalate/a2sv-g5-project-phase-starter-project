@@ -5,8 +5,7 @@ const page = async () => {
   const session = await getServerSession(options);
 
   if (!session) {
-    console.log("NO SESSION")
-    redirect("/api/auth/signin");
+    redirect(`/api/auth/signin?callbackUrl=${encodeURIComponent('/dashboard')}`);
 
   } else {
     console.log(session)

@@ -2,22 +2,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { JWT } from 'next-auth/jwt';
 import { NextAuthOptions, Session } from 'next-auth';
 import { login } from "@/lib/api/authenticationController";
-interface User {
-  refresh_token: string;
-  accessToken: string;
-  data: string;
-}
-
-interface MyToken extends JWT {
-  refresh_token?: string;
-  accessToken?: string;
-  data?: string;
-}
-
-// interface MySession extends Session {
-//   user: User;
-// }
-
 export const options: NextAuthOptions = {
   session: {
     strategy: "jwt", // Use JWT for session strategy

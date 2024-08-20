@@ -19,7 +19,6 @@ interface SidebarProps {
   toggle: boolean;
   handleClose: () => void;
 }
-
 const Sidebar = ({ toggle, handleClose }: SidebarProps) => {
   const router = useRouter();
   const [active, setActive] = useState("Dashboard");
@@ -75,7 +74,7 @@ const Sidebar = ({ toggle, handleClose }: SidebarProps) => {
     },
   ];
 
-  const handleNav = (destination: string) => {
+  const handleNav = async (destination: string) => {
     router.push(destination);
   };
   const handleActive = (element: string) => {

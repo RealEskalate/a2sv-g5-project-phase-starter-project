@@ -217,3 +217,25 @@ func (ac *authController) ChangePassword(c *gin.Context, email string, password 
 	fmt.Println("password:", password, "reset_token", resetToken)
 	return nil
 }
+
+func (ac *authController) CallbackHandler(c *gin.Context) {
+	code := c.Query("code")
+	token, err, statusCode := ac.AuthUseCase.CallbackHandler(c, code)
+	if err != nil {
+		c.IndentedJSON(statusCode, gin.H{"error": err.Error()})
+	} else {
+		//success
+		c.IndentedJSON(http.StatusOK, gin.H{"message": "User logged in successfully",
+			"acess_token":   token.AccessToken,
+			"refresh_token": token.RefreshToken})
+	}
+}
+
+func (ac *authController) LoginHandlerGoogle(c *gin.Context) {
+	url := ac.AuthUseCase.GoogleLogin(c)
+	if url == "" {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error generating google login url"})
+		return
+	}
+	c.Redirect(http.StatusTemporaryRedirect, url)
+}

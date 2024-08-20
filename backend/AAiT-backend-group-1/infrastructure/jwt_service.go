@@ -1,44 +1,113 @@
 package infrastructure
 
 import (
-	"errors"
+	"context"
+	"fmt"
 	"time"
 
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
 	"github.com/dgrijalva/jwt-go"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type jwtService struct {
-	secretKey string
-	issuer    string
+type JWTTokenService struct {
+	AccessSecret  string
+	RefreshSecret string
+	Collection    *mongo.Collection
 }
 
-func NewJwtService(secretKey, issuer string) domain.JwtService {
-	return &jwtService{secretKey: secretKey, issuer: issuer}
+func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User) (string, error) {
+	claim := jwt.MapClaims{
+		"user_id":  user.ID.Hex(),
+		"username": user.Username,
+		"role":     user.Role,
+		"exp":      time.Now().Add(time.Minute * 15).Unix(),
+		"iat":      time.Now().Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	jwtToken, err := token.SignedString(service.AccessSecret)
+	if err != nil {
+		return "", err
+	}
+	return jwtToken, nil
 }
 
-func (j *jwtService) GenerateToken(user *domain.User) (string, error) {
-	claims := jwt.MapClaims{}
-	claims["user_id"] = user.ID
-	claims["username"] = user.Username
-	claims["role"] = user.Role
-	claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
-	claims["iss"] = j.issuer 
+func (service *JWTTokenService) GenerateRefreshTokenWithPayload(user domain.User) (string, error) {
+	claim := jwt.MapClaims{
+		"id":  user.ID,
+		"exp": time.Now().Add(time.Minute * 15).Unix(),
+	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(j.secretKey))
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	jwtToken, err := token.SignedString(service.RefreshSecret)
+	if err != nil {
+		return "", err
+	}
+
+	_, errInsert := service.Collection.InsertOne(context.TODO(), bson.M{"token": jwtToken})
+	if errInsert != nil {
+		return "", errInsert
+	}
+
+	return jwtToken, nil
 }
 
-func (j *jwtService) ValidateToken(token string) (*jwt.Token, error) {
-	return jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("Invalid token")
+func (service *JWTTokenService) ValidateAccessToken(token string) (*jwt.Token, error) {
+	parsedToken, errParse := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
-
-		if _, ok := token.Claims.(jwt.MapClaims); !ok {
-			return nil, errors.New("Invalid token")
-		}
-
-		return []byte(j.secretKey), nil
+		return service.AccessSecret, nil
 	})
+	if errParse != nil {
+		return nil, errParse
+	}
+	if !parsedToken.Valid {
+		return nil, fmt.Errorf("token is invalid")
+	}
+	return parsedToken, nil
+}
+
+func (service *JWTTokenService) ValidateRefreshToken(token string) (*jwt.Token, error) {
+	parsedToken, errParse := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+		}
+		return service.AccessSecret, nil
+	})
+	if errParse != nil {
+		return nil, errParse
+	}
+	if !parsedToken.Valid {
+		return nil, fmt.Errorf("token is invalid")
+	}
+	return parsedToken, nil
+}
+
+func (service *JWTTokenService) GenerateVerificationToken(email string) (string, error) {
+	claim := jwt.MapClaims{
+		"email": email,
+		"exp":   time.Now().Add(time.Minute * 15).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	jwtToken, err := token.SignedString(service.RefreshSecret)
+	if err != nil {
+		return "", err
+	}
+
+	_, errInsert := service.Collection.InsertOne(context.TODO(), bson.M{"token": jwtToken})
+	if errInsert != nil {
+		return "", errInsert
+	}
+
+	return jwtToken, nil
+}
+
+func (service *JWTTokenService) RevokedToken(token string) error {
+	_, err := service.Collection.DeleteOne(context.TODO(), bson.M{"token": token})
+	return err
 }

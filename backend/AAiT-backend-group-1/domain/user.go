@@ -18,32 +18,31 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type User struct {
-	ID             uuid.UUID `json:"id"`
-	Username       string    `json:"username"`
-	Email          string    `json:"email"`
-	Password       string    `json:"password"`
-	Role           string    `json:"role"`
-	ProfilePictureUrl string    `json:"profile_picture"`
-	Bio            string    `json:"bio"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	ID                primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Username          string             `json:"username"`
+	Email             string             `json:"email"`
+	Password          string             `json:"password"`
+	Role              string             `json:"role"`
+	ProfilePictureUrl string             `json:"profile_picture"`
+	Bio               string             `json:"bio"`
+	CreatedAt         time.Time          `json:"created_at"`
+	UpdatedAt         time.Time          `json:"updated_at"`
 }
 
 func NewUser(username, email, password, profilePictureUrl, bio string) *User {
 	return &User{
-		ID:             uuid.New(),
-		Username:       username,
-		Email:          email,
-		Password:       password,
-		Role:           "User",
+		Username:          username,
+		Email:             email,
+		Password:          password,
+		Role:              "User",
 		ProfilePictureUrl: profilePictureUrl,
-		Bio:            bio,
-		CreatedAt:      time.Now(),
-		UpdatedAt:      time.Now(),
+		Bio:               bio,
+		CreatedAt:         time.Now(),
+		UpdatedAt:         time.Now(),
 	}
 }
 
@@ -84,3 +83,4 @@ func IsStrongPassword(password string) bool {
 
 	return hasUpper && hasLower && hasNumber && hasSpecial
 }
+

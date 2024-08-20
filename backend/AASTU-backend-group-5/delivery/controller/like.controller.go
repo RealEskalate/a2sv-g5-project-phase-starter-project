@@ -50,14 +50,7 @@ func (lc *LikeController) CreateLike() gin.HandlerFunc {
 			return
 		}
 
-		claims, exists := c.Get("user")
-		if !exists {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized. Please log in to like this post."})
-			return
-		}
-
-		userClaims := claims.(*domain.Claims)
-		userID := userClaims.UserID
+		userID := c.Param("user_id") // Assuming user_id is passed as a param or handled by middleware
 
 		if err := lc.LikeUsecase.CreateLike(userID, postID); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to like the post. Please try again: " + err.Error()})

@@ -50,14 +50,7 @@ func (dc *DislikeController) CreateDisLike() gin.HandlerFunc {
 			return
 		}
 
-		claims, exists := c.Get("user")
-		if !exists {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized. Please log in to dislike this post."})
-			return
-		}
-
-		userClaims := claims.(*domain.Claims)
-		userID := userClaims.UserID
+		userID := c.Param("user_id") // Assuming user_id is passed as a param or retrieved by the middleware
 
 		if err := dc.DislikeUsecase.CreateDisLike(userID, postID); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to dislike the post. Please try again: " + err.Error()})

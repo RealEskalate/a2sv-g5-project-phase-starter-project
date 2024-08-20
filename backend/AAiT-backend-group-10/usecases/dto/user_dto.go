@@ -16,3 +16,11 @@ type TokenResponseDTO struct {
 	RefreshToken string `json:"refresh_token"`
 	AccessToken  string `json:"access_token"`
 }
+
+type CreatedResponseDto struct {
+	ID       string `json:"id"`
+	FullName string `json:"full_name"`
+	Email    string `json:"email"`
+	Bio      string `json:"bio"`
+	ImageUrl string `json:"image_url"`
+}

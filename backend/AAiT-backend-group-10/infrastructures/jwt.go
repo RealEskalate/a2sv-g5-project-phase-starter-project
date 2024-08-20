@@ -50,10 +50,11 @@ func (s *Jwt) ValidateToken(token string) (*jwt.Token, error) {
 	})
 }
 
-func (s *Jwt) GenerateResetToken(email string) (string, error) {
+func (s *Jwt) GenerateResetToken(email string, code int64) (string, error) {
 	claims := jwt.MapClaims{
 		"email": email,
-		"exp":   time.Now().Add(time.Hour * 1).Unix(), // Token valid for 1 hour
+		"exp":   time.Now().Add(time.Hour * 1).Unix(),
+		"code":  code,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

@@ -8,7 +8,7 @@ import (
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
 	usermodel "github.com/group13/blog/domain/models/user"
-	irepo "github.com/group13/blog/usecases_sof/utils/i_repo"
+	irepo "github.com/group13/blog/usecase/common/i_repo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

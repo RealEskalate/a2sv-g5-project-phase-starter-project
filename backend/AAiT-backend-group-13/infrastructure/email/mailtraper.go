@@ -15,7 +15,7 @@ func (es *MailTrapService) Send(mail iemail.Mail) error {
 		m.SetHeader("To", reciever)
 	}
 	m.SetHeader("Subject", "Activate your account")
-	m.SetBody("text/html", mail.HtmlBody)
+	m.SetBody("text/html", mail.Body)
 
 	d := gomail.NewDialer("sandbox.smtp.mailtrap.io", 587, "91f20fe8a3a824", "d468719b417627")
 

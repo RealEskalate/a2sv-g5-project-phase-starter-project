@@ -10,7 +10,7 @@ import (
 	"github.com/group13/blog/config"
 	"github.com/group13/blog/domain/errors"
 	usermodel "github.com/group13/blog/domain/models/user"
-	ijwt "github.com/group13/blog/usecases_sof/utils/i_jwt"
+	ijwt "github.com/group13/blog/usecase/common/i_jwt"
 )
 
 type Service struct {
@@ -22,7 +22,7 @@ type Service struct {
 
 
 
-var _ ijwt.Services = &Service{}
+var _ ijwt.Service = &Service{}
 
 func (s *Service) Generate(user *usermodel.User, tokenType string) (string, error) {
 	email := user.Email()

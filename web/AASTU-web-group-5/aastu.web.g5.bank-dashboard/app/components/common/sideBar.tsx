@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useState } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -25,9 +25,9 @@ import enabledSettingsSolid from "/public/assets/icons/enabled/settings solid 1.
 import enabledTransfer from "/public/assets/icons/enabled/transfer 1.svg";
 import enabledUser from "/public/assets/icons/enabled/user 3 1.svg";
 
-const primary_2 = 'rgba(52, 60, 106, 1)';
-const primary_3 = 'rgba(45, 96, 255, 1)';
-const sidecolor = '#B1B1B1';
+const primary_2 = "rgba(52, 60, 106, 1)";
+const primary_3 = "rgba(45, 96, 255, 1)";
+const sidecolor = "#B1B1B1";
 
 const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolean, toggleSidebar: () => void }) => {
     const pathname = usePathname() || 'Dashboard';
@@ -72,7 +72,7 @@ const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolea
                     <Image src={enabled === "creditCard" ? enabledCreditCard : creditCard} alt="Credit Card Icon" className="h-[25px] w-[25px]" />
                     <div> Credit Cards</div>
                 </div>
-                <div className="flex gap-[23px]" onClick={() => handleIconClick("loan", "/loans")}>
+                <div className="flex gap-[23px]" onClick={() => handleIconClick("loan", "/Loans")}>
                     <Image src={enabled === "loan" ? enabledLoan : loan} alt="Loan Icon" className="h-[25px] w-[25px]" />
                     <div> Loans</div>
                 </div>

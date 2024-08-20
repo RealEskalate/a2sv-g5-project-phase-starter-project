@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { useForm, FieldValues } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import UserValue from "@/types/UserValue";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,7 +47,6 @@ const SignUpForm = () => {
     handleSubmit,
     trigger,
     formState: { errors },
-    getValues,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
@@ -55,7 +54,7 @@ const SignUpForm = () => {
   const onSubmit = async (data: FormData) => {
     console.log(data);
     const { confirmPassword, ...userData } = data;
-    console.log(data);
+    console.log("Signup successful:", userData);
     try {
       const responseData = await AuthService.register(userData);
       console.log(responseData);
@@ -70,25 +69,19 @@ const SignUpForm = () => {
   };
 
   const nextStep = async () => {
-    const fieldsToValidate =
+    const fieldsToValidate: (keyof FormData | `preference.${keyof FormData["preference"]}`)[] =
       step === 1
-        ? ["name", "email", "password", "confirmPassword"]
+        ? ["name", "email", "username", "password", "confirmPassword"]
         : step === 2
-        ? [
-            "permanentAddress",
-            "postalCode",
-            "presentAddress",
-            "city",
-            "country",
-          ]
+        ? ["permanentAddress", "postalCode", "presentAddress", "city", "country"]
         : ["profilePicture", "preference.currency", "preference.timeZone"];
-
+  
     const isStepValid = await trigger(fieldsToValidate);
     if (isStepValid) {
       setStep((prev) => prev + 1);
     }
   };
-  console.log(errors);
+
   const prevStep = () => setStep((prev) => prev - 1);
 
   return (
@@ -99,7 +92,7 @@ const SignUpForm = () => {
       <h2 className="text-2xl font-bold mb-4">Signup</h2>
 
       {step === 1 && (
-        <>
+        <div key={1}>
           <h3 className="text-xl font-semibold mb-4">Basic Information</h3>
           <div>
             <label className="block">Name</label>
@@ -152,11 +145,11 @@ const SignUpForm = () => {
               <p className="text-red-500">{errors.confirmPassword.message}</p>
             )}
           </div>
-        </>
+        </div>
       )}
 
       {step === 2 && (
-        <>
+        <div key={2}>
           <h3 className="text-xl font-semibold mb-4">Address Information</h3>
           <div>
             <label className="block">Permanent Address</label>
@@ -197,11 +190,11 @@ const SignUpForm = () => {
               <p className="text-red-500">{errors.country.message}</p>
             )}
           </div>
-        </>
+        </div>
       )}
 
       {step === 3 && (
-        <>
+        <div key={3}>
           <h3 className="text-xl font-semibold mb-4">Personal Information</h3>
           <div>
             <label className="block">Profile Picture URL</label>
@@ -302,35 +295,35 @@ const SignUpForm = () => {
               </p>
             )}
           </div>
-        </>
+        </div>
       )}
 
-      <div className="flex justify-between">
+      <div className="flex justify-between mt-4">
         {step > 1 && (
           <button
             type="button"
             onClick={prevStep}
-            className="py-2 px-4 bg-gray-500 text-white rounded"
+            className="bg-gray-200 px-4 py-2 rounded-md"
           >
             Previous
           </button>
         )}
-        {step < 3 && (
+        {step < 3 ? (
           <button
             type="button"
             onClick={nextStep}
-            className="py-2 px-4 bg-blue-500 text-white rounded"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md"
           >
             Next
           </button>
+        ) : (
+          <button
+            type="submit"
+            className="bg-green-500 text-white px-4 py-2 rounded-md"
+          >
+            Submit
+          </button>
         )}
-        {step === 3 && <p> hi </p>}
-        <button
-          type="submit"
-          className="py-2 px-4 bg-green-500 text-white rounded"
-        >
-          Submit
-        </button>
       </div>
     </form>
   );

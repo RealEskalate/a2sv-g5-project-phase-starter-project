@@ -6,7 +6,7 @@ interface props {
   color: string;
   date: string;
 }
-const InvoiceCard = ({ title, amount, icon, color, date }: props) => {
+// const InvoiceCard = ({ title, amount, icon, color, date }: props) => {
 const InvoiceCard = ({ title, amount, icon, color, date }: props) => {
   return (
     <div className='flex justify-between items-center mb-8'>

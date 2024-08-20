@@ -52,7 +52,7 @@ type IPasswordService interface {
 }
 type ITokenService interface {
 	GenerateToken(email string, id primitive.ObjectID, role, name string, expiryDuration int64) (string, error)
-	ValidateToken(token string) error
+	ValidateToken(string) (map[string]interface{}, error)
 	GetClaimsOfToken(token string) (map[string]interface{}, error)
 }
 

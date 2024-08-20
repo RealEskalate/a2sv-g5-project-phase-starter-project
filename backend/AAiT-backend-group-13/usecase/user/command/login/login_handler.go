@@ -4,11 +4,11 @@ import (
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
 	// icmd "github.com/group13/blog/usecase/usecase/common/cqrs/command"
-	result "github.com/group13/blog/usecase/user/result"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
 	iemail "github.com/group13/blog/usecase/common/i_email"
 	ijwt "github.com/group13/blog/usecase/common/i_jwt"
 	irepo "github.com/group13/blog/usecase/common/i_repo"
+	result "github.com/group13/blog/usecase/user/result"
 )
 
 type LoginHandler struct {
@@ -20,22 +20,21 @@ type LoginHandler struct {
 
 type LoginConfig struct {
 	UserRepo     irepo.UserRepository
-	jwtService   ijwt.Service
+	JwtService   ijwt.Service
 	HashService  ihash.Service
-	emailService iemail.Service
+	EmailService iemail.Service
 }
 
 func NewLoginHandler(config LoginConfig) *LoginHandler {
 	return &LoginHandler{
 		repo:         config.UserRepo,
-		jwtService:   config.jwtService,
+		jwtService:   config.JwtService,
 		hashService:  config.HashService,
-		emailService: config.emailService,
+		emailService: config.EmailService,
 	}
 }
 
 // Ensure Handler implements icmd.IHandler
-
 
 var _ icmd.IHandler[*LoginCommand, *result.LoginInResult] = &LoginHandler{}
 

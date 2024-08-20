@@ -2,13 +2,15 @@ package route
 
 import (
 	"blog/config"
-	"blog/delivery/middleware"
 	"blog/database"
+	"blog/delivery/middleware"
 	"time"
+
 	"github.com/gin-gonic/gin"
+	"github.com/google/generative-ai-go/genai"
 )
 
-func Setup(env *config.Env, timeout time.Duration, db database.Database, gin *gin.Engine) {
+func Setup(env *config.Env, timeout time.Duration, db database.Database, gin *gin.Engine, ai *genai.Client) {
 	publicRouter := gin.Group("")
 	// All Public APIs
 	NewSignupRouter(env, timeout, db, publicRouter)
@@ -21,9 +23,8 @@ func Setup(env *config.Env, timeout time.Duration, db database.Database, gin *gi
 	// Middleware to verify AccessToken
 	protectedRouter.Use(middleware.AuthMidd)
 	// All Private APIs
-  NewProfileRouter(env, timeout, db, protectedRouter)
+	NewProfileRouter(env, timeout, db, protectedRouter)
 	NewLogoutRouter(env, timeout, db, protectedRouter)
-	RegisterAIRoutes(env, timeout, protectedRouter)
-  
+	RegisterAIRoutes(env, timeout, protectedRouter, ai)
 
 }

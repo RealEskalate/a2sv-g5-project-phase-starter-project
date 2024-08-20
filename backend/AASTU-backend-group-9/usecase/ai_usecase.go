@@ -1,68 +1,31 @@
 package usecase
 
 import (
-    "context"
-    "blog/domain"
-    "net/http"
-    "bytes"
-    "encoding/json"
-    "errors"
-    "io"
-    "time"
+	"blog/domain"
+	"context"
+	"time"
+
+	"github.com/google/generative-ai-go/genai"
 )
 
 type aiUsecase struct {
-    apiKey         string
-    contextTimeout time.Duration
+	contextTimeout time.Duration
+	client         *genai.Client
 }
 
-func NewAIUsecase(apiKey string, timeout time.Duration) domain.AIUsecase {
-    return &aiUsecase{
-        apiKey:         apiKey,
-        contextTimeout: timeout,
-    }
+func NewAIUsecase(timeout time.Duration, client *genai.Client) domain.AIUsecase {
+	return &aiUsecase{
+		contextTimeout: timeout,
+		client:         client,
+	}
 }
 
-func (au *aiUsecase) GenerateBlogContent(ctx context.Context, keywords string) (string, error) {
-    ctx, cancel := context.WithTimeout(ctx, au.contextTimeout)
-    defer cancel()
-
-    requestBody, err := json.Marshal(map[string]string{
-        "prompt": keywords,
-        "max_tokens": "150",
-    })
+func (au *aiUsecase) GenerateBlogContent(ctx context.Context, keywords string) (*genai.GenerateContentResponse, error) {
+	model := au.client.GenerativeModel("gemini-1.5-flash")
+	resp, err := model.GenerateContent(ctx, genai.Text(keywords))
     if err != nil {
-        return "", err
+        return nil, err
     }
 
-    req, err := http.NewRequest("POST", "https://api.openai.com/v1/engines/davinci-codex/completions", bytes.NewBuffer(requestBody))
-    if err != nil {
-        return "", err
-    }
-    req.Header.Set("Content-Type", "application/json")
-    req.Header.Set("Authorization", "Bearer "+au.apiKey)
-
-    client := &http.Client{}
-	req = req.WithContext(ctx)
-    resp, err := client.Do(req)
-    if err != nil {
-        return "", err
-    }
-    defer resp.Body.Close()
-
-    body, err := io.ReadAll(resp.Body)
-    if err != nil {
-        return "", err
-    }
-
-    var result map[string]interface{}
-    json.Unmarshal(body, &result)
-
-    if choices, ok := result["choices"].([]interface{}); ok && len(choices) > 0 {
-        if text, ok := choices[0].(map[string]interface{})["text"].(string); ok {
-            return text, nil
-        }
-    }
-
-    return "", errors.New("failed to generate content")
+    return resp, nil
 }

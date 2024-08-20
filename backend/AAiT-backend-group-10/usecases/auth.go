@@ -8,9 +8,9 @@ import (
 	"aait.backend.g10/infrastructures"
 	"aait.backend.g10/usecases/dto"
 	"aait.backend.g10/usecases/interfaces"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"github.com/golang-jwt/jwt/v4"
 )
 
 type IAuthUsecase interface {
@@ -22,18 +22,18 @@ type IAuthUsecase interface {
 }
 
 type AuthUsecase struct {
-	userRepository  interfaces.UserRepositoryInterface
-	jwtService infrastructures.Jwt
-	pwdService infrastructures.PwdService
-	emailService infrastructures.EmailService
+	userRepository interfaces.UserRepositoryInterface
+	jwtService     infrastructures.Jwt
+	pwdService     infrastructures.PwdService
+	emailService   infrastructures.EmailService
 }
 
 func NewAuthUsecase(ur interfaces.UserRepositoryInterface, jwt infrastructures.Jwt, pwdService infrastructures.PwdService, emailService infrastructures.EmailService) IAuthUsecase {
 	return &AuthUsecase{
-		userRepository:  ur,
-		jwtService: jwt,
-		pwdService: pwdService,
-		emailService: emailService,
+		userRepository: ur,
+		jwtService:     jwt,
+		pwdService:     pwdService,
+		emailService:   emailService,
 	}
 }
 
@@ -141,13 +141,14 @@ func (uc *AuthUsecase) RefreshTokens(refreshToken string) (*dto.TokenResponseDTO
 	}
 
 	// Generate new tokens
-	accessToken, _, err := uc.jwtService.GenerateToken(user)
+	accessToken, refreshToken, err := uc.jwtService.GenerateToken(user)
 	if err != nil {
 		return nil, err
 	}
 
 	// Update the user's refresh token
 	user.AccessToken = accessToken
+	user.RefreshToken = refreshToken
 	err = uc.userRepository.UpdateUser(user)
 	if err != nil {
 		return nil, err

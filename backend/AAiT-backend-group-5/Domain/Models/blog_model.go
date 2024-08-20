@@ -16,6 +16,7 @@ type Blog struct {
 	Slug      string             `bson:"slug" json:"slug"`
 	CreatedAt time.Time          `bson:"created_at,omitempty" json:"created_at,omitempty"`
 	UpdatedAt time.Time          `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
+	ViewCount int                `bson:"view_count"`
 }
 
 // Comment struct represents a comment on a blog post

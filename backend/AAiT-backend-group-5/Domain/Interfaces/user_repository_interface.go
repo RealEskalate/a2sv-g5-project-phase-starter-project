@@ -18,8 +18,4 @@ type UserRepository interface {
 
 	PromoteUser(ctx context.Context, userID string) *models.ErrorResponse
 	DemoteUser(ctx context.Context, userID string) *models.ErrorResponse
-
-	StoreAccessToken(ctx context.Context, userID string, token string) *models.ErrorResponse
-	StoreRefreshToken(ctx context.Context, userID string, token string) *models.ErrorResponse
-	DeleteTokensFromDB(ctx context.Context, userID string) *models.ErrorResponse
 }

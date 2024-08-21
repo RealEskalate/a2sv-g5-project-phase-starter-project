@@ -4,7 +4,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/internal/emailutil"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/internal/tokenutil"
 )
 
@@ -20,6 +22,14 @@ func NewSignupUsecase(userRepository domain.UserRepository, timeout time.Duratio
 	}
 }
 
+func (su *signupUsecase)GetUserById(c context.Context, userId string) (*domain.User, error) {
+	user,err:=su.userRepository.GetUserById(c,userId)
+	return user,err
+}
+func (su *signupUsecase) ActivateUser(c context.Context, userID string) error {
+	_, err := su.userRepository.ActivateUser(c, userID)
+	return err
+}
 func (su *signupUsecase) Create(c context.Context, user *domain.User) (*domain.User,error) {
 	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
 	defer cancel()
@@ -46,4 +56,12 @@ func (su *signupUsecase) CreateAccessToken(user *domain.User, secret string, exp
 
 func (su *signupUsecase) CreateRefreshToken(user *domain.User, secret string, expiry int) (refreshToken string, err error) {
 	return tokenutil.CreateRefreshToken(user, secret, expiry)
+}
+
+func (su *signupUsecase) CreateVerificationToken(user *domain.User, secret string, expiry int) (refreshToken string, err error) {
+	return tokenutil.CreateVerificationToken(user, secret, expiry)
+}
+
+func (su *signupUsecase) SendVerificationEmail(recipientEmail string,encodedToken string,env *bootstrap.Env) (err error) {
+return emailutil.SendVerificationEmail(recipientEmail,encodedToken,env)
 }

@@ -54,6 +54,10 @@ func (uu *userUsecase) IsUserActive(c context.Context, userID string) (bool, err
 	return uu.userRepository.IsUserActive(c, userID)
 }
 
+func (uu *userUsecase) IsOwner(c context.Context) (bool, error) {
+	return uu.userRepository.IsOwner(c)
+}
+
 func (uu *userUsecase) ResetUserPassword(c context.Context, userID string, resetPassword *domain.ResetPassword) error {
 	return uu.userRepository.ResetUserPassword(c, userID, resetPassword)
 }

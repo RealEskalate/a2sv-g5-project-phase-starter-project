@@ -22,6 +22,7 @@ import (
 	blogqry "github.com/group13/blog/usecase/blog/query"
 	passwordreset "github.com/group13/blog/usecase/password_reset"
 	usercmd "github.com/group13/blog/usecase/user/command"
+	userqry "github.com/group13/blog/usecase/user/query"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -88,7 +89,7 @@ func initRepos(cfg config.Config, mongoClient *mongo.Client) (*userrepo.Repo, *b
 
 func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtService *jwt.Service, mailService *email.MailTrapService) *usercontroller.UserController {
 	promoteHandler := usercmd.NewPromoteHandler(userRepo)
-	loginHandler := usercmd.NewLoginHandler(usercmd.LoginConfig{
+	loginHandler := userqry.NewLoginHandler(userqry.LoginConfig{
 		UserRepo:     userRepo,
 		HashService:  hashService,
 		JwtService:   jwtService,
@@ -101,8 +102,8 @@ func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtS
 		EmailService: mailService,
 	})
 	resetPasswordHandler := passwordreset.NewResetHandler(userRepo, hashService, jwtService)
-	resetCodeSendHandler := passwordreset.NewSendcodeHandler(userRepo)
-	validateCodeHandler := passwordreset.NewValidateCodeHandler(userRepo, jwtService)
+	resetCodeSendHandler := passwordreset.NewSendcodeHandler(userRepo, mailService, hashService)
+	validateCodeHandler := passwordreset.NewValidateCodeHandler(userRepo, jwtService, hashService)
 	validateEmailHandler := usercmd.NewValidateEmailHandler(userRepo, hashService, jwtService)
 
 	return usercontroller.New(usercontroller.Config{

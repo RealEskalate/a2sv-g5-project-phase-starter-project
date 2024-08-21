@@ -38,7 +38,7 @@ const Register = () => {
     try {
       const response = await axios.post('https://bank-dashboard-6acc.onrender.com/auth/register', data);
       console.log(response.data); // Handle response data if needed
-      router.push('auth/signin'); // Redirect to login page after successful registration
+      router.push('/auth/signin'); // Redirect to login page after successful registration
     } catch (error: any) {
       setErrorMessage(error.response?.data?.message || 'Registration failed');
     }

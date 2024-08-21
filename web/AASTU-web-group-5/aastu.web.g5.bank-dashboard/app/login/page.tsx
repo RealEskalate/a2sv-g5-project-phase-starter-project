@@ -2,33 +2,44 @@
 import { useSession } from "next-auth/react";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect } from "react";
-
+import User from '../../type/user'
+interface ExtendedUser {
+	name?: string;
+	email?: string;
+	image?: string;
+	accessToken?: string;
+  }
 export default function Login() {
-	const { data: session, status } = useSession();
-	const x = useSelector((state) => state.user);
 
-	const dispatch = useDispatch();
+  const { data: session, status } = useSession();
+  const user = useSelector((state: { user: User }) => state.user);
+  const users = session?.user as ExtendedUser;
 
-	useEffect(() => {
-		if (status === "authenticated" && session?.user?.accessToken) {
-			dispatch({
-				type: "USER_FETCH_REQUESTED",
-				payload: {
-					userName: session.user.name,
-					accessToken: session.user.accessToken,
-				},
-			});
-		}
-	}, [status, session, dispatch]);
+  const dispatch = useDispatch();
 
-	if (status === "loading") {
-		return <div>Loading...</div>;
-	}
+  useEffect(() => {
+    if (status === "authenticated" && users?.accessToken) {
+      console.log('Dispatching USER_FETCH_REQUESTED');
+      dispatch({
+        type: "USER_FETCH_REQUESTED",
+        payload: {
+          userName: session.user.name,
+          accessToken: users.accessToken,
+        },
+      });
+    }
+  }, [status, session, dispatch]);
 
-	if (status === "unauthenticated") {
-		return <div>Please log in</div>;
-	}
-	console.log(x, "x");
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
 
-	return <div>Welcome, {x.username}</div>;
+  if (status === "unauthenticated") {
+    return <div>Please log in</div>;
+  }
+
+
+  return <div> 
+</div>
+
 }

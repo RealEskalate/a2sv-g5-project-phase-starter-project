@@ -1,7 +1,8 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import AuthService from "@/app/Services/api/authService";
-import { User } from "./route";
+import { Userx } from "./route";
+import LoginValue from "@/types/LoginValue";
 
 export const options: NextAuthOptions = {
   session: {
@@ -15,10 +16,13 @@ export const options: NextAuthOptions = {
     CredentialsProvider({
       type: "credentials",
       credentials: {},
-      async authorize(credentials) {
+      async authorize(credentials:LoginValue | null): Promise<User | null> {
+        // Cast credentials to the expected LoginValue type
+
         if (!credentials) {
           return null;
         }
+
         const response = await AuthService.login(credentials);
         if (response.success) {
           const data: any = response.data;
@@ -27,9 +31,9 @@ export const options: NextAuthOptions = {
           const userData: User = {
             refreshToken: data.refresh_token,
             accessToken: data.access_token,
+            id: ""
           };
 
-          // Return the user object with tokens
           return userData;
         } else {
           return null;

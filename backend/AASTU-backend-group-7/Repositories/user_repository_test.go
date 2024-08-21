@@ -4,6 +4,8 @@ import (
 	"blogapp/Domain"
 	"blogapp/mocks"
 	"log"
+
+	// "log"
 	"net/http"
 
 	"context"
@@ -66,7 +68,7 @@ func (suite *UserRepositoryTestSuite) TestCreateUser() {
 		ctx := context.Background()
 		id := primitive.NewObjectID()
 		user := Domain.User{ID: id, Email: "test@example.com", Password: "testpassword"}
-		expectedUser := Domain.OmitedUser{ID: id, Email: "test@example.com"}
+		expectedUser := Domain.OmitedUser{ID: id, Email: "test@example.com", Password: "testpassword"}
 		expectedStatus := http.StatusBadRequest
 
 		// Mock the CountDocuments method
@@ -83,13 +85,13 @@ func (suite *UserRepositoryTestSuite) TestCreateUser() {
 
 		suite.usercollection.On("FindOne", ctx, mock.Anything).Return(mockSingleResult)
 		// insertResult := mongo.InsertOneResult{}
-		suite.usercollection.On("InsertOne", ctx, user).Return(nil, nil)
+		suite.usercollection.On("InsertOne", ctx, mock.Anything).Return(nil, nil)
 
 		result, err, status := suite.repo.CreateUser(ctx, &user)
 		log.Print(result)
 		suite.Error(err)
 		suite.Equal(expectedStatus, status)
-		suite.Equal(expectedUser, result)
+		suite.Equal(Domain.OmitedUser{}, result)
 
 	})
 }

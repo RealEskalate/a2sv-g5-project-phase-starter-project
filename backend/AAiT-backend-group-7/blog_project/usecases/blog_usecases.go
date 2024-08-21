@@ -4,17 +4,18 @@ import (
 	"context"
 	"errors"
 	"sort"
-
 	"blog_project/domain"
 )
 
 type BlogUsecases struct {
+	AiService   domain.AiService
 	BlogRepo    domain.IBlogRepository
 	UserUsecase domain.IUserUsecase
 }
 
-func NewBlogUsecase(blogrepo domain.IBlogRepository, userusecase domain.IUserUsecase) domain.IBlogUsecase {
+func NewBlogUsecase(aiService domain.AiService , blogrepo domain.IBlogRepository, userusecase domain.IUserUsecase) domain.IBlogUsecase {
 	return &BlogUsecases{
+		AiService:  aiService,
 		BlogRepo:    blogrepo,
 		UserUsecase: userusecase,
 	}
@@ -274,4 +275,9 @@ func (u *BlogUsecases) AddComent(ctx context.Context, blogID int, authorID int, 
 	}
 
 	return blog, nil
+}
+
+
+func (u *BlogUsecases) AiRecommendation(ctx context.Context, content string) (string, error) {
+	return u.AiService.GenerateContent(ctx, content)
 }

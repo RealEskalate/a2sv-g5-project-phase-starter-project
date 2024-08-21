@@ -59,6 +59,7 @@ type IBlogUsecase interface {
 	LikeBlog(ctx context.Context, blogID int, authorID int) (Blog, error)
 	DislikeBlog(ctx context.Context, blogID int, authorID int) (Blog, error)
 	Search(ctx context.Context, author string, tags []string, title string) ([]Blog, error)
+	AiRecommendation(ctx context.Context, content string) (string, error)
 }
 
 type IBlogController interface {
@@ -70,4 +71,9 @@ type IBlogController interface {
 	LikeBlog(c *gin.Context)
 	DislikeBlog(c *gin.Context)
 	Search(c *gin.Context)
+	AiRecommendation(c *gin.Context)
+}
+
+type AiService interface {
+	GenerateContent(ctx context.Context, content string) (string, error)
 }

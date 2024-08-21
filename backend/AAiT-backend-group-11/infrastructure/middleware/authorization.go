@@ -3,6 +3,7 @@ package middleware
 import (
 	"backend-starter-project/domain/interfaces"
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 
@@ -33,6 +34,7 @@ func (middleware *authMiddleware) AuthMiddleware(role string) gin.HandlerFunc {
 				return
 			}
 		}
+
 
 		if header == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing"})
@@ -69,6 +71,8 @@ func (middleware *authMiddleware) AuthMiddleware(role string) gin.HandlerFunc {
 				return
 			}
 		}
+
+		log.Println(claims)
 
 		c.Set("userId", claims["userId"])
 		c.Set("role", claims["role"])

@@ -41,20 +41,26 @@ func (sc *SignupController) Signup(c *gin.Context) {
 
 	request.Password = string(encryptedPassword)
 
+	IsOwner,err:=sc.SignupUsecase.IsOwner(c)
+	if err!=nil{
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
+		return
+	}
+
 	user := domain.User{
 		ID:        primitive.NewObjectID(),
 		FirstName: request.FirstName,
 		LastName:  request.LastName,
 		Email:     request.Email,
 		Password:  request.Password,
+		Active:    false,
+		Bio:       request.Bio,
+		ProfileImg: request.ProfileImg,
+		IsOwner:   IsOwner,
+		Role:      "user",
 	}
 
-	_, err = sc.SignupUsecase.Create(c, &user)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
-		return
-	}
+	
 
 	accessToken, err := sc.SignupUsecase.CreateAccessToken(&user, sc.Env.AccessTokenSecret, sc.Env.AccessTokenExpiryHour)
 	if err != nil {
@@ -63,6 +69,14 @@ func (sc *SignupController) Signup(c *gin.Context) {
 	}
 
 	refreshToken, err := sc.SignupUsecase.CreateRefreshToken(&user, sc.Env.RefreshTokenSecret, sc.Env.RefreshTokenExpiryHour)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
+		return
+	}
+	user.Tokens = append(user.Tokens, accessToken, refreshToken)
+
+	_, err = sc.SignupUsecase.Create(c, &user)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return

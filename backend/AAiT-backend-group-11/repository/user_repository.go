@@ -89,3 +89,21 @@ func (repo *userRepository) UpdateUser(user *entities.User) (*entities.User, err
 
 }
 
+// MarkUserAsVerified implements interfaces.UserRepository.
+func (repo *userRepository) MarkUserAsVerified(email string) error {
+	user, err := repo.FindUserByEmail(email)
+
+	if err != nil {
+		return err
+	}
+	
+	update := bson.M{"$set": bson.M{"isVerified": true}}
+
+	_, err = repo.collection.UpdateOne(context.Background(), bson.M{"_id": user.ID}, update)
+    if err != nil {
+        return err
+    }
+
+	return nil
+
+}

@@ -2,9 +2,9 @@ package controllers
 
 import (
 	domain "blogs/Domain"
-	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,27 +21,26 @@ func NewBlogController(BlogUsecase domain.BlogUsecase, validator domain.Validate
 	}
 }
 
-
 // ReactOnBlog implements domain.BlogUsecase.
 func (b BlogController) ReactOnBlog(c *gin.Context) {
 	blog_id := c.Param("id")
-	if blog_id == ":id"{
+	if blog_id == ":id" {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: "Blog ID required.",
-			Status: http.StatusBadRequest,
+			Status:  http.StatusBadRequest,
 		})
 		return
 	}
 	reactionType := c.Query("isLiked")
-	if strings.ToLower(reactionType) != "true" && strings.ToLower(reactionType) != "false"{
+	if strings.ToLower(reactionType) != "true" && strings.ToLower(reactionType) != "false" {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: "Valid reaction type required.",
-			Status: http.StatusBadRequest,
+			Status:  http.StatusBadRequest,
 		})
 		return
 	}
 	userID := c.GetString("user_id")
-	if userID == ""{
+	if userID == "" {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
 			Message: "Authentication failed.",
 			Status:  http.StatusUnauthorized,
@@ -49,17 +48,15 @@ func (b BlogController) ReactOnBlog(c *gin.Context) {
 		return
 	}
 	err := b.BlogUsecase.ReactOnBlog(userID, reactionType, blog_id)
-	if err != (domain.ErrorResponse{}){
+	if err != (domain.ErrorResponse{}) {
 		c.JSON(err.Status, err)
 		return
 	}
 	c.JSON(http.StatusOK, domain.SuccessResponse{
 		Message: "Reaction saved successfully",
-		Status: http.StatusOK,
-	} )
+		Status:  http.StatusOK,
+	})
 }
-
-
 
 // CommentOnBlog implements domain.BlogUsecase.
 func (b BlogController) CommentOnBlog(c *gin.Context) {
@@ -155,7 +152,6 @@ func (b BlogController) DeleteBlogByID(c *gin.Context) {
 		return
 	}
 	userID := c.GetString("user_id")
-	fmt.Println(userID)
 	role := c.GetString("role")
 	if userID == "" || role == "" {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
@@ -188,22 +184,23 @@ func (b BlogController) FilterBlogsByTag(c *gin.Context) {
 		pageSize = "0"
 	}
 
-	startdate := c.Query("startDate")
+	startDate := c.Query("startDate")
 	endDate := c.Query("endDate")
-	fmt.Println(startdate, endDate, "////////controller")
 
-	if startdate == "" || endDate == "" {
-		if !(startdate == "" && endDate == "") {
+	if startDate == "" || endDate == "" {
+		if !(startDate == "" && endDate == "") {
 			c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 				Status:  http.StatusBadRequest,
 				Message: "start and end date must be set together",
 			})
 			c.Abort()
+		} else {
+			startDate = time.Unix(0, 0).Format(time.RFC3339)
+			endDate = time.Now().Format(time.RFC3339)
 		}
 	}
 
 	tagsParam := c.Query("tags")
-	fmt.Println(tagsParam, len(tagsParam), "/\\")
 	var tags []string
 	if tagsParam != "" {
 		tags = strings.Split(tagsParam, ",")
@@ -213,6 +210,7 @@ func (b BlogController) FilterBlogsByTag(c *gin.Context) {
 				Message: "tags should not empty",
 			})
 			c.Abort()
+			return
 		}
 	} else {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
@@ -220,9 +218,10 @@ func (b BlogController) FilterBlogsByTag(c *gin.Context) {
 			Message: "tags should not empty",
 		})
 		c.Abort()
+		return
 	}
 	popularity := c.Query("popularity")
-	blogs, pagination, err := b.BlogUsecase.FilterBlogsByTag(tags, pageNo, pageSize, startdate, endDate, popularity)
+	blogs, pagination, err := b.BlogUsecase.FilterBlogsByTag(tags, pageNo, pageSize, startDate, endDate, popularity)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Status:  http.StatusInternalServerError,

@@ -8,12 +8,12 @@ import (
 )
 
 type ContentSuggestionController struct {
-	AI_Service interfaces.ContentSuggester
+	AISuggestionUsecase interfaces.AIContentSuggestionUsecase
 }
 
-func NewContentSuggestionController(AI_Service interfaces.ContentSuggester) *ContentSuggestionController {
+func NewContentSuggestionController(suggestionUsecase interfaces.AIContentSuggestionUsecase) *ContentSuggestionController {
 	return &ContentSuggestionController{
-		AI_Service: AI_Service,
+		AISuggestionUsecase: suggestionUsecase,
 	}
 }
 
@@ -24,7 +24,7 @@ func (suggestionController *ContentSuggestionController) HandleSuggestion(ctx *g
 		return
 	}
 
-	suggestion, err := suggestionController.AI_Service.SuggestContent(query)
+	suggestion, err := suggestionController.AISuggestionUsecase.SuggestContent(query)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

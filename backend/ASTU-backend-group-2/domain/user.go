@@ -79,6 +79,8 @@ type UserUsecase interface {
 
 type UserRepository interface {
 	CreateUser(c context.Context, user *User) (*User, error)
+	IsOwner(c context.Context) (bool, error)
+	UpdateRefreshToken(c context.Context, userID string, refreshToken string) error
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
 	GetUsers(c context.Context, limit int64, page int64) (*[]User, mongopagination.PaginationData, error)

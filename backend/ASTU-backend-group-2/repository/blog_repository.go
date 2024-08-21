@@ -193,3 +193,50 @@ func getFilteredBlog(c context.Context, collection *mongo.Collection, limit int6
 
 	return blogs, paginatedData.Pagination, nil
 }
+func (br *blogRepository) UpdateLikeCount(c context.Context, blogID string, increment bool) error {
+
+	collection := br.database.Collection(br.collection)
+
+	ID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return err
+	}
+
+	if increment {
+		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"like_count": 1}})
+	} else {
+		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"like_count": -1}})
+	}
+
+	return err
+}
+func (br *blogRepository) UpdateDislikeCount(c context.Context, blogID string, increment bool) error {
+
+	collection := br.database.Collection(br.collection)
+
+	ID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return err
+	}
+
+	if increment {
+		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"dislike_count": 1}})
+	} else {
+		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"dislike_count": -1}})
+	}
+	return err
+}
+func (br *blogRepository) UpdateCommentCount(c context.Context, blogID string, increment bool) error {
+	collection := br.database.Collection(br.collection)
+	ID, err := primitive.ObjectIDFromHex(blogID)
+
+	if err != nil {
+		return err
+	}
+	if increment {
+		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"comments_count": 1}})
+	} else {
+		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"comments_count": -1}})
+	}
+	return err
+}

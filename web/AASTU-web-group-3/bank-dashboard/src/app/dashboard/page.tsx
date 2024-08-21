@@ -5,12 +5,12 @@ import emanuel from "../../../public/images/emanuel-minca-jYv069cQuB8-unsplash 1
 import julia from "../../../public/images/pexels-julia-volk-5273755 1.png";
 import marcel from "../../../public/images/marcel-strauss-Uc_tOqa_jDY-unsplash 1.png";
 import paypal from "../../../public/images/iconfinder_paypal_payment_pay_5340264 1.png";
-import deposit from "../../../public/images/iconfinder_business_finance_money-13_2784281 1.png"
+import deposit from "../../../public/images/iconfinder_business_finance_money-13_2784281 1.png";
 import dollar from "../../../public/images/iconfinder_6_4753731 1.png";
 import BarChart from "../components/barchart";
 import PieChart from "../components/PieChart";
-import LineChart from "../components/LineChart";
 import CreditCard from "../components/CreditCard";
+import {AreaChartComponent} from "../components/AreaChartComponent";
 
 const imageData = [
   { src: julia.src, alt: "julia", name: "Livia Bator", position: "CEO" },
@@ -52,7 +52,6 @@ const HomePage: React.FC = () => {
   return (
     <div className="bg-[#F5F7FA] min-h-screen p-5">
       <div className="lg:flex lg:space-x-8">
-        
         <div className="lg:w-2/3 lg:flex lg:space-x-8 overflow-x-auto flex bg-[#F5F7Fa]">
           <div className="flex-shrink rounded-lg w-full h-60 lg:h-56 lg:w-1/2 lg:rounded-r-none">
             <CreditCard
@@ -78,9 +77,12 @@ const HomePage: React.FC = () => {
         </div>
 
         <div className="mt-5 lg:mt-0 lg:w-1/3 lg:bg-white lg:p-5 lg:rounded-lg lg:border lg:shadow-md lg:h-56">
-          <h3 className="text-lg font-semibold">Recent Transactions</h3>
+          <h3 className="font-semibold text-sm">Recent Transaction</h3>
           {transactionData.map((transaction, index) => (
-            <div key={index} className="flex justify-between items-center mt-3">
+            <div
+              key={index}
+              className="flex justify-between items-center mt-3 text-sm"
+            >
               <div className="flex items-center space-x-2">
                 <div
                   className={`relative ${transaction.backgroundColor} w-12 h-12 rounded-full flex items-center justify-center`}
@@ -155,8 +157,8 @@ const HomePage: React.FC = () => {
 
         <div className="mt-5 lg:mt-0 lg:w-1/2 lg:bg-white lg:p-5 lg:rounded-lg lg:border lg:shadow-md">
           <h3 className="text-lg font-semibold">Balance History</h3>
-          <div className="h-52 bg-white rounded-lg">
-            <LineChart />
+          <div className="lg:w-1/2 w-full h-64 lg:h-80">
+            <AreaChartComponent />
           </div>
         </div>
       </div>

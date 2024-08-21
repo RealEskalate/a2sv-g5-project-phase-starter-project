@@ -50,6 +50,7 @@ type EnvironmentVariables struct {
 	GEMINI_API_KEY         string
 	GOOGLE_CLIENT_ID       string
 	GOOGLE_CLIENT_SECRET   string
+	CACHE_EXPIRATION       int
 }
 
 // Defines a struct for verifying the user emails and reseting passwords
@@ -195,4 +196,5 @@ type UserUsecaseInterface interface {
 type CacheRepositoryInterface interface {
 	CacheData(key string, value string, expiration time.Duration) CodedError
 	IsCached(key string) bool
+	GetCacheData(key string) (string, CodedError)
 }

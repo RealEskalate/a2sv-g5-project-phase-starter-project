@@ -84,6 +84,22 @@ func (uc *UserController) RegisterUser(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "User registered successfully", "user": user})
 }
 
+func (uc *UserController) VerifyEmail(c *gin.Context) {
+	token := c.Query("token")
+	if token == "" {
+		c.JSON(http.StatusBadRequest, "Token is required")
+		return
+	}
+
+	err := uc.Userusecase.VerifyUserEmail(c, token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Email verified successfully"})
+}
+
 // LoginUser is a controller method to login a user
 func (uc *UserController) LoginUser(c *gin.Context) {
 
@@ -130,9 +146,6 @@ func (uc *UserController) ResetPassword(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "Token is required")
 		return
 	}
-
-	// Log the token for debugging purposes
-	fmt.Printf("Received Token: %s\n", token)
 
 	var info domain.RestRequest
 	if err := c.BindJSON(&info); err != nil {

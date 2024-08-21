@@ -18,6 +18,7 @@ type User struct {
 	IsAdmin      bool               `json:"isadmin,omitempty"`
 	JoinedAt     time.Time          `json:"joinedat,omitempty"`
 	RefreshToken string             `json:"refreshtoken,omitempty"`
+	IsVerified   bool               `json:"isVerified,omitempty"`
 }
 
 type RestRequest struct {
@@ -33,6 +34,7 @@ type UserUsecase interface {
 	LogoutUser(c context.Context, uid string) error
 	PromoteDemoteUser(c context.Context, userid string, isAdmin bool) error
 	ResetPassword(c context.Context, token string, newPassword string) error
+	VerifyUserEmail(c context.Context, token string) error
 }
 
 type UserRepository interface {
@@ -43,4 +45,5 @@ type UserRepository interface {
 	LogoutUser(uid string) error
 	PromoteDemoteUser(userid string, isAdmin bool) error
 	ResetPassword(token string, newPassword string) error
+	VerifyUserEmail(token string) error
 }

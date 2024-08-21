@@ -2,13 +2,11 @@ package middleware
 
 import (
 	"blog_api/domain"
-	jwt_service "blog_api/infrastructure/jwt"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
 )
 
 func MiddlewareError(c *gin.Context, statusCode int, message string) {
@@ -26,7 +24,7 @@ WORKFLOW:
   - Checks the role of the user associated with the token
   - Calls `c.Next()` if the querying user has permission to access the endpoint
 */
-func AuthMiddlewareWithRoles(secret string, ValidateToken func(string, string) (*jwt.Token, error), cacheRepository domain.CacheRepositoryInterface, validRoles ...string) gin.HandlerFunc {
+func AuthMiddlewareWithRoles(secret string, jwtService domain.JWTServiceInterface, cacheRepository domain.CacheRepositoryInterface, validRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// obtain token from the request header
 		authHeader := c.GetHeader("Authorization")
@@ -49,14 +47,14 @@ func AuthMiddlewareWithRoles(secret string, ValidateToken func(string, string) (
 		}
 
 		// parses token with the correct signing method and checks for errors and token validity
-		token, validErr := ValidateToken(headerSegments[1], secret)
+		token, validErr := jwtService.ValidateAndParseToken(headerSegments[1])
 		if validErr != nil {
 			MiddlewareError(c, 401, validErr.Error())
 			return
 		}
 
 		// check whether the token is an accessToken
-		tokenType, err := jwt_service.GetTokenType(token)
+		tokenType, err := jwtService.GetTokenType(token)
 		if err != nil {
 			MiddlewareError(c, 401, err.Error())
 			return
@@ -68,7 +66,7 @@ func AuthMiddlewareWithRoles(secret string, ValidateToken func(string, string) (
 		}
 
 		// check the expiry date of the token
-		expiresAtTime, err := jwt_service.GetExpiryDate(token)
+		expiresAtTime, err := jwtService.GetExpiryDate(token)
 		if err != nil {
 			MiddlewareError(c, 401, err.Error())
 			return
@@ -80,14 +78,14 @@ func AuthMiddlewareWithRoles(secret string, ValidateToken func(string, string) (
 		}
 
 		// get the role from the claims of the JWT
-		userRole, err := jwt_service.GetRole(token)
+		userRole, err := jwtService.GetRole(token)
 		if err != nil {
 			MiddlewareError(c, 401, err.Error())
 			return
 		}
 
 		// get the username from the claims of the JWT
-		username, err := jwt_service.GetUsername(token)
+		username, err := jwtService.GetUsername(token)
 		if err != nil {
 			MiddlewareError(c, 401, err.Error())
 			return

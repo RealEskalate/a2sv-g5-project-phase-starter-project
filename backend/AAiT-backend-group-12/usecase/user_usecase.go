@@ -9,8 +9,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
-	"github.com/golang-jwt/jwt"
 )
 
 /* Defines a struct with all the necessary data to implement domain.UserUsecaseInterface */
@@ -21,11 +19,7 @@ type UserUsecase struct {
 	EmailVerificationTemplate func(string, string, string) string
 	PasswordResetTemplate     func(string, string, string) string
 	SendMail                  func(string, string, string, string, string) error
-	SignJWTWithPayload        func(string, string, string, time.Duration, string) (string, domain.CodedError)
-	GetTokenType              func(*jwt.Token) (string, domain.CodedError)
-	GetUsername               func(*jwt.Token) (string, domain.CodedError)
-	GetExpiryDate             func(*jwt.Token) (time.Time, domain.CodedError)
-	ValidateAndParseToken     func(string, string) (*jwt.Token, error)
+	JWTService                domain.JWTServiceInterface
 	HashString                func(string) (string, domain.CodedError)
 	ValidateHashedString      func(string, string) domain.CodedError
 	VerifyIdToken             func(string, string, string) error
@@ -44,11 +38,7 @@ func NewUserUsecase(
 	EmailVerificationTemplate func(string, string, string) string,
 	PasswordResetTemplate func(string, string, string) string,
 	SendMail func(string, string, string, string, string) error,
-	SignJWTWithPayload func(string, string, string, time.Duration, string) (string, domain.CodedError),
-	GetTokenType func(*jwt.Token) (string, domain.CodedError),
-	GetUsername func(*jwt.Token) (string, domain.CodedError),
-	GetExpiryDate func(*jwt.Token) (time.Time, domain.CodedError),
-	ValidateAndParseToken func(string, string) (*jwt.Token, error),
+	JWTService domain.JWTServiceInterface,
 	HashString func(string) (string, domain.CodedError),
 	ValidateHashedString func(string, string) domain.CodedError,
 	VerifyIdToken func(string, string, string) error,
@@ -61,11 +51,7 @@ func NewUserUsecase(
 		EmailVerificationTemplate: EmailVerificationTemplate,
 		PasswordResetTemplate:     PasswordResetTemplate,
 		SendMail:                  SendMail,
-		SignJWTWithPayload:        SignJWTWithPayload,
-		GetTokenType:              GetTokenType,
-		GetUsername:               GetUsername,
-		GetExpiryDate:             GetExpiryDate,
-		ValidateAndParseToken:     ValidateAndParseToken,
+		JWTService:                JWTService,
 		HashString:                HashString,
 		ValidateHashedString:      ValidateHashedString,
 		VerifyIdToken:             VerifyIdToken,
@@ -308,12 +294,12 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 	}
 
 	// sign the new access and refresh tokens
-	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", "", err
 	}
 
-	refreshToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(env.ENV.REFRESH_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	refreshToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(env.ENV.REFRESH_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", "", err
 	}
@@ -358,12 +344,12 @@ func (u *UserUsecase) OAuthLogin(c context.Context, data *dtos.GoogleResponse) (
 	}
 
 	// signs the new access and refresh tokens
-	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", "", err
 	}
 
-	refreshToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(env.ENV.REFRESH_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	refreshToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(env.ENV.REFRESH_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", "", err
 	}
@@ -387,13 +373,13 @@ Checks if the provided refresh token is valid and not expired. If the token is v
 If the token is invalid, it returns an error. If the token is expired, it deletes the refresh token from the database
 */
 func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (string, domain.CodedError) {
-	token, err := u.ValidateAndParseToken(refreshToken, env.ENV.JWT_SECRET_TOKEN)
+	token, err := u.JWTService.ValidateAndParseToken(refreshToken)
 	if err != nil {
 		return "", domain.NewError("Invalid token", domain.ERR_UNAUTHORIZED)
 	}
 
 	// check whether the token is a refreshToken
-	tokenType, err := u.GetTokenType(token)
+	tokenType, err := u.JWTService.GetTokenType(token)
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
 	}
@@ -403,13 +389,13 @@ func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (
 	}
 
 	// get the username from the token
-	username, err := u.GetUsername(token)
+	username, err := u.JWTService.GetUsername(token)
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
 	}
 
 	// check expiry date of the refresh token
-	expiresAtTime, err := u.GetExpiryDate(token)
+	expiresAtTime, err := u.JWTService.GetExpiryDate(token)
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
 	}
@@ -439,7 +425,7 @@ func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (
 		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
 	}
 
-	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
 	}

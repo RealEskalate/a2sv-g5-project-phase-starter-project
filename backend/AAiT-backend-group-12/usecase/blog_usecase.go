@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"blog_api/domain"
-	ai_service "blog_api/infrastructure/ai"
 	"context"
 	"time"
 )
@@ -10,12 +9,10 @@ import (
 type BlogUseCase struct {
 	blogRepo       domain.BlogRepositoryInterface
 	contextTimeOut time.Duration
-	aiService      *ai_service.AIService
+	aiService      domain.AIServicesInterface
 }
 
-var _ domain.BlogUseCaseInterface = &BlogUseCase{}
-
-func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration, aiService *ai_service.AIService) *BlogUseCase {
+func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration, aiService domain.AIServicesInterface) *BlogUseCase {
 	return &BlogUseCase{
 		blogRepo:       repo,
 		contextTimeOut: t,
@@ -55,7 +52,7 @@ func (b *BlogUseCase) CreateBlogPost(ctx context.Context, newBlog *domain.NewBlo
 func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string, deletedBy string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
-	blog, err := b.blogRepo.FetchBlogPostByID(ctx, blogId,false)
+	blog, err := b.blogRepo.FetchBlogPostByID(ctx, blogId, false)
 	if err != nil {
 		return err
 	}
@@ -123,7 +120,7 @@ func (b *BlogUseCase) TrackBlogPopularity(ctx context.Context, blogId string, ac
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
-	return b.blogRepo.TrackBlogPopularity(ctx, blogId, action,state, username)
+	return b.blogRepo.TrackBlogPopularity(ctx, blogId, action, state, username)
 }
 
 func (uc *BlogUseCase) GenerateBlogContent(topics []string) (string, error) {
@@ -178,7 +175,6 @@ func (b *BlogUseCase) DeleteComment(ctx context.Context, blogID string, commentI
 	return nil
 
 }
-
 
 // UpdateComment implements domain.BlogUseCaseInterface.
 func (b *BlogUseCase) UpdateComment(ctx context.Context, blogID string, commentID string, comment *domain.NewComment, userName string) domain.CodedError {

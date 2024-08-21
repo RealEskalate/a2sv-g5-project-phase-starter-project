@@ -23,6 +23,7 @@ func (r *UserRoute) UserRoutes() *gin.RouterGroup {
 	userrouter.POST("/register", r.handler.Register)
 	userrouter.GET("/verify?email=:email&pwd=:pwd", r.handler.AccountVerification)
 	userrouter.POST("/login", r.handler.LoginUser)
+	userrouter.GET("/logout", r.handler.LogoutUser)
 	userrouter.GET("/forgetPassword", r.handler.ForgetPassword)
 	userrouter.POST("/resetPassword?email=:email&pwd=:pwd", r.handler.ResetPassword)
 	return userrouter

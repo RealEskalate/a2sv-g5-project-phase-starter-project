@@ -35,7 +35,7 @@ func (u *UserUsecase) DeleteUser(c context.Context, userID string, password stri
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return errors.New("password incorrect")
 	}
-	
+
 	err = u.userRepo.DeleteUser(ctx, userID)
 	if err != nil {
 		return err
@@ -165,7 +165,8 @@ func (u *UserUsecase) DemoteUser(c context.Context, userID string) error {
 
 }
 
-// UpdateUser implements domain.UserUsecase.
+// UpdateUser implements domain.UserUsecase. bbbb
+
 func (u *UserUsecase) UpdateUser(c context.Context, user *domain.UserUpdate, userID string) (*domain.UserResponse, error) {
 	panic("unimplemented")
 }

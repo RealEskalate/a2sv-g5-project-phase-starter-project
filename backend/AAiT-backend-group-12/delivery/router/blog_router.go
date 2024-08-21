@@ -19,7 +19,7 @@ import (
 func NewBlogRouter(collection *mongo.Collection, cacheClient *redis.Client, blogGroup *gin.RouterGroup) {
 	br := repository.NewBlogRepository(collection)
 	cacheRepoistory := repository.NewCacheRepository(cacheClient)
-	bu := usecase.NewBlogUseCase(br, time.Second*100, ai_service.NewAIService(env.ENV.GEMINI_API_KEY))
+	bu := usecase.NewBlogUseCase(br, time.Second*100, ai_service.NewAIService(env.ENV.GEMINI_API_KEY),cacheRepoistory, env.ENV)
 
 	bc := controllers.NewBlogController(bu)
 

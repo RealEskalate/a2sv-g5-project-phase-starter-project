@@ -20,6 +20,8 @@ func BlogRouter() {
 		postRouter.GET("/getbyid/:id", blogcontroller.GetPostByID)
 		postRouter.GET("/getbyauthor/:authorID", blogcontroller.GetPostByAuthorID)
 		postRouter.PUT("/update/:id", blogcontroller.UpdatePostByID)
+		// delete post
+		postRouter.DELETE("/delete/:id", blogcontroller.DeletePost)
 		
 		postRouter.PUT("/tags/:id", blogcontroller.AddTagToPost)
 		

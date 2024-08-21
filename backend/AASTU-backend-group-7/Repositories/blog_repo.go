@@ -532,3 +532,39 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 	}
 	return posts, nil, 200, paginationMetaData
 }
+
+// delete post by id
+func (br *blogrepository) DeletePost(ctx context.Context, id primitive.ObjectID) (error, int) {
+	filter := bson.D{{"_id", id}}
+	_, err := br.postCollection.DeleteOne(ctx, filter)
+	if err != nil {
+		if err.Error() != "mongo: no documents in result" {
+			return err, 500
+		}
+	}
+	// delete comments
+	filter = bson.D{{"postid", id}}
+	_, err = br.commentColection.DeleteMany(ctx, filter)
+	if err != nil {
+		if err.Error() != "mongo: no documents in result" {
+			return err, 500
+		}
+	}
+
+	// delete likes and dislikes
+	filter = bson.D{{"postid", id}}
+	_, err = br.likeDislikeCollection.DeleteMany(ctx, filter)
+	if err != nil {
+		return err, 500
+	}
+
+	// delete post id from tags whose field posts is an array contains the post ids
+	filter = bson.D{{"posts", id}}
+	update := bson.D{{"$pull", bson.D{{"posts", id}}}}
+	_, err = br.tagCollection.UpdateMany(ctx, filter, update)
+	if err != nil {
+		return err, 500
+	}
+
+	return nil, 200
+}

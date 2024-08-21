@@ -375,3 +375,49 @@ func (controller *blogController) SearchPosts(c *gin.Context) {
 	})
 
 }
+
+// delete post
+func (controller *blogController) DeletePost(c *gin.Context) {
+	claims, err := Getclaim(c)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
+	id, err := primitive.ObjectIDFromHex(c.Param("id")) // convert id to object id
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// get post
+	post, err, statusCode := controller.BlogUseCase.GetPostByID(c, id)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+
+	// get author id of post
+	authorID := post.AuthorID
+
+	// check if user is author of post
+	isAuthor, err := Utils.IsAuthorOrAdmin(*claims, authorID)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if !isAuthor {
+		c.JSON(401, gin.H{"error": "You are not author of this post"})
+		return
+	}
+
+	err, statusCode = controller.BlogUseCase.DeletePost(c, id)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Post deleted successfully",
+	})
+}

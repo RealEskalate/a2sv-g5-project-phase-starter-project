@@ -74,3 +74,7 @@ func (m *MongoCollection) CreateIndex(ctx context.Context, model bson.D, opts ..
 	}
 	return m.Collection.Indexes().CreateOne(ctx, _model, opts...)
 }
+
+func (m *MongoCollection) DeleteMany(ctx context.Context, filter interface{}, opts ...*options.DeleteOptions) (*mongo.DeleteResult, error) {
+	return m.Collection.DeleteMany(ctx, filter, opts...)
+}

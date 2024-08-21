@@ -58,6 +58,7 @@ type BlogRepository interface {
 	LikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
 	DislikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
 	SearchPosts(ctx context.Context, query string, filter Filter) ([]*Post, error, int, PaginationMetaData)
+	DeletePost(ctx context.Context, id primitive.ObjectID) (error, int)
 }
 
 type BlogUseCase interface {
@@ -73,6 +74,7 @@ type BlogUseCase interface {
 	LikePost(c *gin.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
 	DislikePost(c *gin.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
 	SearchPosts(c *gin.Context, query string, filter Filter) ([]*Post, error, int, PaginationMetaData)
+	DeletePost(c *gin.Context, id primitive.ObjectID) (error, int)
 }
 
 type CommentRepository interface {

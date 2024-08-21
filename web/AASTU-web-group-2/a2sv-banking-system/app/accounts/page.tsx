@@ -21,7 +21,7 @@ import {
   getTransactionIncomes,
   getTransactionsExpenses,
 } from "@/lib/api/transactionController";
-import { PaginatedTransactionsResponse } from "@/types/transactionController.interface";
+// import { PaginatedTransactionsResponse } from "@/types/transactionController.interface";
 
 type DataItem = {
   heading: string;

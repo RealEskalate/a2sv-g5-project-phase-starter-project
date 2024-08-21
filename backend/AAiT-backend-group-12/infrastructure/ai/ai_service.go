@@ -84,12 +84,12 @@ func (s *AIService) ReviewContent(blogContent string) (string, error) {
 	return suggestions, nil
 }
 func cleanText(value interface{}) string {
-    text := extractText(value)
+	text := extractText(value)
 
-    cleanedText := strings.ReplaceAll(strings.ReplaceAll(text, "**", ""), "*", "")
-    cleanedText = strings.ReplaceAll(cleanedText, "\n\n", "\n")
+	cleanedText := strings.ReplaceAll(strings.ReplaceAll(text, "**", ""), "*", "")
+	cleanedText = strings.ReplaceAll(cleanedText, "\n\n", "\n")
 
-    return cleanedText
+	return cleanedText
 }
 func extractText(value interface{}) string {
 	v := reflect.ValueOf(value)

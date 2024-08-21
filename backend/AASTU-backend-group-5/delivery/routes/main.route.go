@@ -3,7 +3,6 @@ package routes
 import (
 	"github.com/RealEskalate/blogpost/config"
 	"github.com/RealEskalate/blogpost/database"
-	"github.com/RealEskalate/blogpost/repository"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,6 +13,10 @@ func SetUp(router *gin.Engine) {
 	userCollection := &database.MongoCollection{
 		Collection: clinect.Client.Database("BlogPost").Collection("Users"),
 	}
+	blogCollection := &database.MongoCollection{
+		Collection: clinect.Client.Database("BlogPost").Collection("Blogs"),
+	}
+
 	stateCollection := &database.MongoCollection{
 		Collection: clinect.Client.Database("BlogPost").Collection("States"),
 	}
@@ -22,11 +25,10 @@ func SetUp(router *gin.Engine) {
 	verifiRoute := router.Group("")
 	uplaodRoute := router.Group("")
 	authRoute := router.Group("")
+  blogRot := router.Group("")
 
-	userrepo := repository.NewUserRepository(userCollection)
-	NewUploadRoute(uplaodRoute , *userrepo)
-	NewVerifyEmialRoute(verifiRoute , userCollection)	
+	NewBlogRoutes(blogRot, blogCollection, userCollection)
 	NewAiRequestRoute(aiRoute)
 	NewUserRoute(userRoute, userCollection)
-	NewAuthRoute(authRoute, userCollection, stateCollection)
+  NewAuthRoute(authRoute, userCollection, stateCollection)
 }

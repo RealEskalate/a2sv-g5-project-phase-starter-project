@@ -25,18 +25,6 @@ func (cont *CommentController) GetComments(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"comments": comments})
 }
-func (cont *CommentController) GetCommentsCount(c *gin.Context) {
-	blogID, err := uuid.Parse(c.Param("blog_id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
-	}
-	commentCount, cerr := cont.CommentUsecase.GetCommentsCount(blogID)
-	if cerr != nil {
-		c.JSON(cerr.StatusCode, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"comment count": commentCount})
-}
 
 func (cont *CommentController) AddComment(c *gin.Context) {
 	var comment domain.Comment
@@ -44,6 +32,12 @@ func (cont *CommentController) AddComment(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	commenterId, err := uuid.Parse(c.MustGet("id").(string))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+	}
+	comment.CommenterID = commenterId
 	cerr := cont.CommentUsecase.AddComment(comment)
 	if cerr != nil {
 		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
@@ -62,25 +56,31 @@ func (cont *CommentController) UpdateComment(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	requesterID := c.MustGet("id").(uuid.UUID)
-	comment.UserID = requesterID
+	requesterID, err := uuid.Parse(c.MustGet("id").(string))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+	}
+	comment.CommenterID = requesterID
 	comment.ID = commentID
 	cerr := cont.CommentUsecase.UpdateComment(requesterID, comment)
 	if cerr != nil {
-		c.JSON(cerr.StatusCode, gin.H{"error": err.Error()})
+		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Comment updated successfully"})
 }
 
-func (cont *CommentController) DelelteComment(c *gin.Context) {
+func (cont *CommentController) DeleteComment(c *gin.Context) {
 	commentID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 	}
-	requesterID := c.MustGet("id").(uuid.UUID)
+	requesterID, err := uuid.Parse(c.MustGet("id").(string))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+	}
 	requesterRole := c.MustGet("is_admin").(bool)
-	if cerr := cont.CommentUsecase.DelelteComment(commentID, requesterID, requesterRole); err != nil {
+	if cerr := cont.CommentUsecase.DeleteComment(commentID, requesterID, requesterRole); err != nil {
 		c.JSON(cerr.StatusCode, gin.H{"error": err.Error()})
 		return
 	}

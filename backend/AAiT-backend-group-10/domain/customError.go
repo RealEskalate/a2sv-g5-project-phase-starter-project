@@ -7,7 +7,7 @@ type CustomError struct {
 
 // Error implements error.
 func (c *CustomError) Error() string {
-	panic("unimplemented")
+	return c.Message
 }
 
 func NewCustomError(message string, statusCode int) *CustomError {
@@ -76,7 +76,7 @@ var (
 	ErrTokenParsingFailed           = NewCustomError("Failed to parse token", 401)
 	ErrResetTokenGenerationFailed   = NewCustomError("Failed to generate reset token", 500)
 )
-var(
+var (
 	// Password-related errors
 	ErrPasswordHashingFailed = NewCustomError("Failed to hash password", 500)
 

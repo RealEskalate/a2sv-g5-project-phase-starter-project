@@ -15,7 +15,7 @@ type ChatUsecase struct {
 
 var validate = validator.New()
 
-func (usecase *ChatUsecase) NewUsecase(repository Repository, aiService AIService) *ChatUsecase {
+func NewUsecase(repository Repository, aiService AIService) *ChatUsecase {
 	return &ChatUsecase{
 		Repository: repository,
 		AIService:  aiService,
@@ -85,7 +85,7 @@ func (usecase *ChatUsecase) GetChat(ctx context.Context, form DefaultChatForm) (
 	return chat, nil
 }
 
-func (usecase *ChatUsecase) GetChats(ctx context.Context, form UserIDForm, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error){
+func (usecase *ChatUsecase) GetChats(ctx context.Context, form DefaultChatForm, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error){
 	if err := infrastructure.Validate(validate, form); err != nil{
 		return infrastructure.PaginationResponse[Chat]{}, err
 	}

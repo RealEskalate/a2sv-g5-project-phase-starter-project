@@ -61,7 +61,7 @@ type UserUsecase interface {
 	GetUserById(c context.Context, userId string) (*User, error)
 
 	GetUsers(c context.Context, limit int64, page int64) (*[]User, mongopagination.PaginationData, error)
-	UpdateUser(c context.Context, userID string, updatedUser *User) error
+	UpdateUser(c context.Context, userID string, updatedUser *UserUpdate) error
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)
 

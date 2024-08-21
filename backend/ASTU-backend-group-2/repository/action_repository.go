@@ -1,22 +1,108 @@
 package repository
 
-import "go.mongodb.org/mongo-driver/mongo"
+import (
+	"context"
+	"errors"
 
-type ActionRepository struct {
-	// This is a struct that will hold the mongo client and the collections
-	// This will be used to interact with the database
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
-	// This is the mongo collection that will be used to interact with the database
+type reactionRepository struct {
+	db         *mongo.Database
 	Collection *mongo.Collection
 }
 
-func NewActionRepository(client *mongo.Client) *ActionRepository {
-	// This is a function that will return a new instance of the ActionRepository struct
-	// This will be used to interact with the database
-
-	// This will return a new instance of the ActionRepository struct
-	return &ActionRepository{
-		// This will set the Collection field to the action collection from the database
-		Collection: client.Database("blogApp").Collection("actions"),
+func NewReactionRepository(database *mongo.Database, collection string) domain.ReactionRepository {
+	return reactionRepository{
+		db:         database,
+		Collection: database.Collection(domain.CollectionReaction),
 	}
+}
+
+/*
+
+ */
+// GetReaction implements domain.ReactionRepository.
+func (ar reactionRepository) GetReaction(c context.Context, blogID string, userID string) (domain.Reaction, error) {
+	userObjID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return domain.Reaction{}, errors.New("invalid user ID")
+	}
+
+	blogObjID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return domain.Reaction{}, errors.New("invalid blog ID")
+	}
+
+	var reaction domain.Reaction
+	filter := bson.M{"blog_id": blogObjID, "user_id": userObjID}
+	mongoRes := ar.Collection.FindOne(c, filter)
+
+	if err := mongoRes.Decode(&reaction); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return domain.Reaction{}, errors.New("reaction not found")
+		}
+		return domain.Reaction{}, err
+	}
+
+	return reaction, nil
+}
+
+// ToggelLike implements domain.ReactionRepository.
+func (ar reactionRepository) ToggelLike(c context.Context, blogID string, userID string) error {
+	reaction, err := ar.GetReaction(c, blogID, userID)
+	if err != nil {
+		return err
+	}
+	reaction.Disliked = false
+	reaction.Liked = !reaction.Liked
+
+	//rewrite the whole document by the update
+	userObjID, err := primitive.ObjectIDFromHex(userID)
+	blogObjID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return errors.New("object id invalid")
+	}
+	filter := bson.M{"blog_id": blogObjID, "user_id": userObjID}
+	update := bson.M{"$set": reaction}
+
+	res, err := ar.Collection.UpdateOne(c, filter, update)
+	if err != nil {
+		return errors.New("error while updating the reaction")
+	}
+	if res.ModifiedCount < 1 {
+		return errors.New("could't find the reaction")
+	}
+	return nil
+}
+
+// ToggleDislike implements domain.ReactionRepository.
+func (ar reactionRepository) ToggleDislike(c context.Context, blogID string, userID string) error {
+	reaction, err := ar.GetReaction(c, blogID, userID)
+	if err != nil {
+		return err
+	}
+	reaction.Disliked = !reaction.Disliked
+	reaction.Liked = false
+
+	//rewrite the whole document by the update
+	userObjID, err := primitive.ObjectIDFromHex(userID)
+	blogObjID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return errors.New("object id invalid")
+	}
+	filter := bson.M{"blog_id": blogObjID, "user_id": userObjID}
+	update := bson.M{"$set": reaction}
+
+	res, err := ar.Collection.UpdateOne(c, filter, update)
+	if err != nil {
+		return errors.New("error while updating the reaction")
+	}
+	if res.ModifiedCount < 1 {
+		return errors.New("could't find the reaction")
+	}
+	return nil
 }

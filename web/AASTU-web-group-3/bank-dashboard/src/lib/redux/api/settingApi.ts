@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getSession } from "next-auth/react";
 import { settingPutUserResponse, settingPutUserRequest, Preference } from "../types/setting";
+import { url } from "inspector";
+import { METHODS } from "http";
 
 export const settingApi = createApi({
   reducerPath: "settingApi",
@@ -38,10 +40,22 @@ export const settingApi = createApi({
         },
       }),
     }),
+
+    getCurrentUser: builder.query<settingPutUserResponse, void>({
+      query: () => ({
+        url: `/user/current`,
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
   }),
+}),
+
 });
 
 export const {
   usePutSettingMutation,
-  usePutPreferenceMutation
+  usePutPreferenceMutation,
+  useGetCurrentUserQuery
 } = settingApi;

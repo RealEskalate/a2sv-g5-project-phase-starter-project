@@ -11,7 +11,17 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func CreateChatHandler(chatUsecase chat.Usecase) gin.HandlerFunc{
+type ChatHandler struct{
+	chatUsecase chat.Usecase
+}
+
+func NewChatHandler(chatUsecase chat.Usecase) *ChatHandler{
+	return &ChatHandler{
+		chatUsecase: chatUsecase,
+	}
+}
+
+func (chatHandler *ChatHandler) CreateChatHandler(chatUsecase chat.Usecase) gin.HandlerFunc{
 	return func(c *gin.Context) {
 			var form chat.CreateChatForm
 			if err := c.ShouldBindJSON(&form); err != nil{

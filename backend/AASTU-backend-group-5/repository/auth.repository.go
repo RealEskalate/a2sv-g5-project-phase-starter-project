@@ -26,16 +26,16 @@ func (repo *AuthRepo) EnsureIndexes() error {
 }
 
 func NewAuthRepo(coll database.CollectionInterface) (*AuthRepo, error) {
-	UR := &AuthRepo{
+	AR := &AuthRepo{
 		Collection : coll,
 	}
 
 	// Ensure indexes are created
-	if err := UR.EnsureIndexes(); err != nil {
+	if err := AR.EnsureIndexes(); err != nil {
 		return nil, err
 	}
 
-	return UR, nil
+	return AR, nil
 }
 
 func (repo *AuthRepo) SaveUser(user *domain.User) error {
@@ -56,20 +56,5 @@ func (repo *AuthRepo) FindUserByEmail(email string) (*domain.User, error) {
 	return &user, nil
 }
 
-func (repo *AuthRepo) FindUserByOAuthID(provider, oauthID string) (*domain.User, error) {
-	var user domain.User
-	err := repo.Collection.FindOne(context.TODO(), bson.M{
-		"oauth_provider": provider,
-		"oauth_id":       oauthID,
-	}).Decode(&user)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, errors.New("user not found")
-		}
-		return nil, err
-	}
-
-	return &user, nil
-}
 
 

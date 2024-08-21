@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
@@ -79,43 +80,6 @@ func (br *BlogMongoRepository) GetBlogs(ctx context.Context, page int) ([]*model
 
 	if err := cursor.Err(); err != nil {
 		return nil, models.InternalServerError("Cursor error occurred while retrieving blogs")
-	}
-
-	return blogs, models.Nil()
-}
-
-func (br *BlogMongoRepository) SearchBlogs(ctx context.Context, filter dtos.FilterBlogRequest) ([]*models.Blog, *models.ErrorResponse) {
-	query := bson.M{}
-
-	if filter.Title != "" {
-		query["title"] = bson.M{"$regex": filter.Title, "$options": "i"}
-	}
-
-	if len(filter.Tags) > 0 {
-		query["tags"] = bson.M{"$in": filter.Tags}
-	}
-
-	if filter.AuthorName != "" {
-		query["author_name"] = bson.M{"$regex": filter.AuthorName, "$options": "i"}
-	}
-
-	cursor, err := br.BlogCollection.Find(ctx, query)
-	if err != nil {
-		return nil, models.InternalServerError("Failed to search blogs")
-	}
-	defer cursor.Close(ctx)
-
-	var blogs []*models.Blog
-	for cursor.Next(ctx) {
-		var blog models.Blog
-		if err := cursor.Decode(&blog); err != nil {
-			return nil, models.InternalServerError("Failed to decode blog")
-		}
-		blogs = append(blogs, &blog)
-	}
-
-	if err := cursor.Err(); err != nil {
-		return nil, models.InternalServerError("Cursor error occurred while searching blogs")
 	}
 
 	return blogs, models.Nil()
@@ -199,4 +163,101 @@ func (br *BlogMongoRepository) GetPopularity(ctx context.Context, blogID string)
 
 	return &popularity, models.Nil()
 
+}
+func (br *BlogMongoRepository) SearchBlogsByPopularity(ctx context.Context, filter dtos.FilterBlogRequest, blogs_slice map[string]*models.Blog) ([]*models.Blog, *models.ErrorResponse) {
+
+	query_two := bson.M{}
+	// this
+	if filter.LikeCount > 0 {
+		query_two["like_count"] = bson.M{"$gte": filter.LikeCount}
+	}
+
+	if filter.DislikeCount > 0 {
+		query_two["dislike_count"] = bson.M{"$gte": filter.DislikeCount}
+	}
+
+	if filter.ViewCount > 0 {
+		query_two["view_count"] = bson.M{"$gte": filter.ViewCount}
+	}
+
+	cursor, err := br.BlogActionCollection.Find(ctx, query_two)
+	if err != nil {
+		return nil, models.InternalServerError("Failed to search blogs by popularity")
+	}
+
+	var blogIDs []string
+	for cursor.Next(ctx) {
+		var popularity models.Popularity
+		if err := cursor.Decode(&popularity); err != nil {
+			return nil, models.InternalServerError("Failed to decode popularity")
+		}
+		blogIDs = append(blogIDs, popularity.BlogID)
+	}
+
+	log.Println(blogIDs, "blogIDs akjfdigastfaeua akbfkjbfa askjfba")
+	if err := cursor.Err(); err != nil {
+		return nil, models.InternalServerError("Cursor error occurred while searching blogs by popularity")
+	}
+
+	var blogs []*models.Blog
+
+	for _, id := range blogIDs {
+		if blog, ok := blogs_slice[id]; ok {
+			blogs = append(blogs, blog)
+		}
+	}
+
+	log.Println(blogs, "blogs akjfdigastfaeua akbfkjbfa askjfba")
+
+	return blogs, models.Nil()
+
+}
+
+func (br *BlogMongoRepository) SearchBlogs(ctx context.Context, filter dtos.FilterBlogRequest) ([]*models.Blog, *models.ErrorResponse) {
+	query_one := bson.M{}
+
+	if filter.Title != "" {
+		query_one["title"] = bson.M{"$regex": filter.Title, "$options": "i"}
+	}
+
+	if len(filter.Tags) > 0 {
+		query_one["tags"] = bson.M{"$in": filter.Tags}
+	}
+
+	if filter.AuthorID != "" {
+		query_one["author_id"] = bson.M{"$eq": filter.AuthorID}
+	}
+
+	var blogs = make(map[string]*models.Blog)
+
+	cursor, err := br.BlogCollection.Find(ctx, query_one)
+
+	if err != nil {
+		return nil, models.InternalServerError("Failed to search blogs")
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var blog models.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return nil, models.InternalServerError("Failed to decode blog")
+		}
+
+		blogs[blog.ID] = &blog
+
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, models.InternalServerError("Cursor error occurred while searching blogs")
+	}
+
+	log.Println(blogs, "blogs akjfdigastfaeu")
+
+	anotherBlog, anotheBlogErr := br.SearchBlogsByPopularity(ctx, filter, blogs)
+
+	if anotheBlogErr != nil {
+		return nil, anotheBlogErr
+	}
+
+	return anotherBlog, models.Nil()
 }

@@ -43,6 +43,7 @@ type TrackPopularityRequest struct {
 type FilterBlogRequest struct {
 	Title        string   `json:"title,omitempty"`
 	AuthorName   string   `json:"author_name,omitempty"`
+	AuthorID	 string   `json:"author_id,omitempty"`
 	Tags         []string `json:"tags,omitempty"`
 	Date         string   `json:"date,omitempty"`
 	ViewCount    int      `bson:"view_count" json:"view_count"`

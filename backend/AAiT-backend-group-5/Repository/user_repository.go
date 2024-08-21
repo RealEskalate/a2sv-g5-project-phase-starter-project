@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 	"errors"
-	"time"
 	"log"
+	"time"
 
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
@@ -30,7 +30,6 @@ func NewUserRepository(db *mongo.Database) interfaces.UserRepository {
 
 func (ur *UserMongoRepository) CreateUser(ctx context.Context, user *models.User) *models.ErrorResponse {
 
-	
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
@@ -51,6 +50,21 @@ func (ur *UserMongoRepository) GetUserByEmailOrUsername(ctx context.Context, use
 			{"email": email},
 		},
 	}
+
+	err := ur.Collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, models.NotFound("user not found")
+		}
+		return nil, models.NotFound(err.Error())
+	}
+
+	return &user, nil
+}
+
+func (ur *UserMongoRepository) GetUserByName(ctx context.Context, name string) (*models.User, *models.ErrorResponse) {
+	var user models.User
+	filter := bson.M{"name": name}
 
 	err := ur.Collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
@@ -169,4 +183,3 @@ func (ur *UserMongoRepository) DemoteUser(ctx context.Context, userID string) *m
 	err := ur.updateUserRole(ctx, userID, "user")
 	return err
 }
-

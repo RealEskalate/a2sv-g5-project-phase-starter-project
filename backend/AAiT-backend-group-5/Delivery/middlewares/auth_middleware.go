@@ -7,12 +7,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func JWTAuthMiddelware(service interfaces.JwtService) gin.HandlerFunc {
+type AuthMiddleware struct {
+	JwtService interfaces.JwtService
+	repo       interfaces.SessionRepository
+}
+
+func NewJwtAuthMiddleware(jwtService interfaces.JwtService,
+	repo interfaces.SessionRepository,
+) AuthMiddleware {
+	return AuthMiddleware{
+		JwtService: jwtService,
+		repo:       repo,
+	}
+}
+
+func (j *AuthMiddleware) JWTAuthMiddelware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		authHeader := c.Request.Header.Get("Authorization")
 
-		auth_parts, err := service.ValidateAuthHeader(authHeader)
+		auth_parts, err := j.JwtService.ValidateAuthHeader(authHeader)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
@@ -21,8 +35,23 @@ func JWTAuthMiddelware(service interfaces.JwtService) gin.HandlerFunc {
 
 		// check if token is authorized
 		tokenString := auth_parts[1]
-		authorizedToken, err := service.ValidateToken(tokenString)
+		authorizedToken, err := j.JwtService.ValidateToken(tokenString)
 		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.Abort()
+			return
+		}
+
+		// check if token is in the database
+		session, nErr := j.repo.GetToken(c, authorizedToken.ID)
+
+		if nErr != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.Abort()
+			return
+		}
+
+		if session.RefreshToken != tokenString {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return

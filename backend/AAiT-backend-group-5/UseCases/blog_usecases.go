@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"strconv"
 	"log"
+	"strconv"
 
 	config "github.com/aait.backend.g5.main/backend/Config"
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
@@ -118,6 +118,19 @@ func (b *blogUsecase) GetBlogs(ctx context.Context, page int) ([]*dtos.BlogRespo
 }
 
 func (b *blogUsecase) SearchBlogs(ctx context.Context, filter dtos.FilterBlogRequest) ([]*dtos.BlogResponse, *models.ErrorResponse) {
+
+	if filter.AuthorName != "" {
+
+		author, Err := b.userRepo.GetUserByName(ctx, filter.AuthorName)
+
+		if Err != nil {
+			return nil, Err
+		}
+
+		filter.AuthorID = author.ID
+
+	}
+
 	searchJson, err := json.Marshal(filter)
 
 	if err != nil {

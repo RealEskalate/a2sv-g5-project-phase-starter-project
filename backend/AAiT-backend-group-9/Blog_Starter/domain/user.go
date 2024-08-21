@@ -23,6 +23,8 @@ type User struct {
 	Role           string             `json:"role" bson:"role"`
 	ContactInfo    ContactInfo        `json:"contact_info" bson:"contact_info"` //it requires contact_info in the user profile update requirement given
 	IsActivated    bool               `json:"is_verified" bson:"is_verified"`   //useful for email verification
+	ContactInfo    ContactInfo        `json:"contact_info" bson:"contact_info"` //it requires contact_info in the user profile update requirement given
+	IsActivated    bool               `json:"is_verified" bson:"is_verified"`   //useful for email verification
 	AccessToken    string             `json:"accessToken"`
 	RefreshToken   string             `json:"refreshToken"`
 	CreatedAt      time.Time          `json:"created_at" bson:"createtimestamp"`
@@ -31,7 +33,7 @@ type User struct {
 }
 
 type ContactInfo struct {
-	Phone   string `json:"phone" bson:"phone"`
+	Phone     string `json:"phone" bson:"phone"`
 	Address string `json:"address" bson:"address"`
 }
 
@@ -41,22 +43,24 @@ type UserResponse struct {
 	Email          string             `json:"email" bson:"email"`
 	Name           string             `json:"name" bson:"name"`
 	Bio            string             `json:"bio" bson:"bio"`
-	ContactInfo    ContactInfo        `json:"contact_info" bson:"contact_info"`
+	ContactInfo     ContactInfo        `json:"contact_info" bson:"contact_info"`
 	Role           string             `json:"role" bson:"role"`
+	IsActivated    bool               `json:"is_verified" bson:"is_verified"` //useful for email verification
 	IsActivated    bool               `json:"is_verified" bson:"is_verified"` //useful for email verification
 	ProfilePicture string             `json:"profile_picture" bson:"profile_picture"`
 }
 
 type UserUpdate struct {
-	Username       string      `json:"username" bson:"username"`
-	Email          string      `json:"email" bson:"email"`
-	Name           string      `json:"name" bson:"name"`
-	Bio            string      `json:"bio" bson:"bio"`
-	ContactInfo    ContactInfo `json:"contact_info" bson:"contact_info"`
-	ProfilePicture string      `json:"profile_picture" bson:"profile_picture"`
+	Username    string      `json:"username" bson:"username"`
+	Name        string      `json:"name" bson:"name"`
+	Bio         string      `json:"bio" bson:"bio"`
+	ContactInfo ContactInfo `json:"contact_info" bson:"contact_info"`
 }
 
 type AuthenticatedUser struct {
+	UserID string
+	Email  string
+	Role   string
 	UserID string
 	Email  string
 	Role   string
@@ -68,6 +72,7 @@ type UserRepository interface {
 	GetUserByID(c context.Context, userID string) (*User, error)
 	GetAllUser(c context.Context) ([]*User, error)
 	UpdateProfile(c context.Context, user *UserUpdate, userID string) (*User, error)
+	UpdateProfilePicture(c context.Context, profilePicPath string, userID string) (*User, error)
 	UpdatePassword(c context.Context, password, userID string) (*User, error)
 	UpdateRole(c context.Context, role, userID string) (*User, error)
 	UpdateSignup(c context.Context, user *User) error
@@ -85,7 +90,7 @@ type UserUsecase interface {
 	DemoteUser(c context.Context, userID string) error                  //superAdmin privilage
 
 	UpdateUser(c context.Context, user *UserUpdate, userID string) (*UserResponse, error)
-}
+	UpdateProfilePicture(c context.Context, profilePicPath string, userID string) (*UserResponse, error)}
 
 // ValidateEmail checks if the email format is valid
 func ValidateEmail(email string) error {

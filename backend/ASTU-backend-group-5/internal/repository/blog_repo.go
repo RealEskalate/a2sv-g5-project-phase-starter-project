@@ -40,8 +40,8 @@ type BlogRepository interface {
 	DeleteTag(ctx context.Context, id string) error
 	GetTagByID(ctx context.Context, id string) (*domain.BlogTag, error)
 
-	HasUserLikedBlog(ctx context.Context, blogID string, userID string) (bool, error)
-	HasUserViewedBlog(ctx context.Context, blogID string, userID string) (bool, error)
+	HasUserLikedBlog(ctx context.Context, userId string, blogId string) (bool, error)
+	HasUserViewedBlog(ctx context.Context, userId string, blogId string) (bool, error)
 
 	RemoveLike(ctx context.Context, likeId primitive.ObjectID) error
 	DeleteComment(ctx context.Context, commentId primitive.ObjectID) error

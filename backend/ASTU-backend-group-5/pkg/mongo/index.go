@@ -21,3 +21,6 @@ package mongo
 // if err != nil {
 //     log.Fatal(err)
 // }
+
+//index for keywod search
+//db.Blogs.createIndex({ title: "text", content: "text", "tags.name": "text" })

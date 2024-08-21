@@ -2,14 +2,11 @@ package domain
 
 import "context"
 
+//TODO: do email and password validation here
 type UserSignUp struct {
 	Username       string `json:"username" bson:"username" binding:"required" `
 	Email          string `json:"email" bson:"email" binding:"required"`
 	Password       string `json:"password" bson:"password" binding:"required"`
-	Name           string `json:"name" bson:"name"`
-	Bio            string `json:"bio" bson:"bio"`
-	ContactInfo    ContactInfo `json:"contact_info" bson:"contact_info"`
-	ProfilePicture string `json:"profile_picture" bson:"profile_picture"`
 }
 
 type VerifyEmailRequest struct {
@@ -20,6 +17,7 @@ type VerifyEmailRequest struct {
 type ResendOTPRequest struct {
 	Email string `form:"email" binding:"required,email"`
 }
+
 
 type SignupUsecase interface {
 	CreateUser(c context.Context, user *UserSignUp) (*User, error) // do validation here

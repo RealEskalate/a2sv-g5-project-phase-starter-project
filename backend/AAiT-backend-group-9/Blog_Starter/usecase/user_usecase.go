@@ -3,7 +3,10 @@ package usecase
 import (
 	"Blog_Starter/domain"
 	"context"
+	"errors"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserUsecase struct {
@@ -19,10 +22,25 @@ func NewUserUsecase(userRepo domain.UserRepository, timeout time.Duration) domai
 }
 
 // DeleteUser implements domain.UserUsecase.
-func (u *UserUsecase) DeleteUser(c context.Context, userID string) error {
+func (u *UserUsecase) DeleteUser(c context.Context, userID string, password string) error {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
-	return u.userRepo.DeleteUser(ctx, userID)
+	// check if the incoming password and users password are the same
+	user, err := u.userRepo.GetUserByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	//compare the hashed password
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return errors.New("password incorrect")
+	}
+	
+	err = u.userRepo.DeleteUser(ctx, userID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetAllUser implements domain.UserUsecase.
@@ -95,12 +113,56 @@ func (u *UserUsecase) GetUserByID(c context.Context, userID string) (*domain.Use
 
 // PromoteUser implements domain.UserUsecase.
 func (u *UserUsecase) PromoteUser(c context.Context, userID string) error {
-	panic("unimplemented")
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	user, err := u.userRepo.GetUserByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	if user.Role == "admin" {
+		return errors.New("user already has an admin role")
+	}
+
+	user, err = u.userRepo.UpdateRole(ctx, "admin", userID)
+	if err != nil {
+		return err
+	}
+
+	if user.Role != "admin" {
+		return err
+	}
+
+	return nil
+
 }
 
 // DemoteUser implements domain.UserUsecase.
 func (u *UserUsecase) DemoteUser(c context.Context, userID string) error {
-	panic("unimplemented")
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	user, err := u.userRepo.GetUserByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	if user.Role == "user" {
+		return errors.New("user already has a user role")
+	}
+
+	_, err = u.userRepo.UpdateRole(ctx, "user", userID)
+	if err != nil {
+		return err
+	}
+
+	if user.Role != "user" {
+		return err
+	}
+
+	return nil
+
 }
 
 // UpdateUser implements domain.UserUsecase.

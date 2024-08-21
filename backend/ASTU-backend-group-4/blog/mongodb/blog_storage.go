@@ -197,7 +197,7 @@ func (b *BlogStorage) GetBlogByID(ctx context.Context, id string) (blogDomain.Bl
 }
 
 // GetBlogs implements BlogRepository.
-func (b *BlogStorage) GetBlogs(ctx context.Context, filterQuery blogDomain.FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[blogDomain.Blog], error) {
+func (b *BlogStorage) GetBlogs(ctx context.Context, filterQuery blogDomain.FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[blogDomain.BlogSummary], error) {
 	filter := bson.D{}
 
 	if filterQuery.Tags != nil {
@@ -222,22 +222,23 @@ func (b *BlogStorage) GetBlogs(ctx context.Context, filterQuery blogDomain.Filte
 	findOptions.SetSkip(int64(pagination.Limit*pagination.Page - 1))
 	findOptions.SetLimit(int64(pagination.Limit))
 	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+	findOptions.SetProjection(bson.D{{Key: "content", Value: 0}})
 
 	count, err := b.db.Collection(blogCollection).CountDocuments(ctx, filter)
 	if err != nil {
-		return infrastructure.PaginationResponse[blogDomain.Blog]{}, err
+		return infrastructure.PaginationResponse[blogDomain.BlogSummary]{}, err
 	}
 
 	cursor, err := b.db.Collection(blogCollection).Find(ctx, filter, findOptions)
 	if err != nil {
 		log.Default().Printf("Failed to get blogs: %v", err)
-		return infrastructure.PaginationResponse[blogDomain.Blog]{}, blogDomain.ErrUnabletoGetBlogs
+		return infrastructure.PaginationResponse[blogDomain.BlogSummary]{}, blogDomain.ErrUnabletoGetBlogs
 	}
 
-	var blogs []blogDomain.Blog
+	var blogs []blogDomain.BlogSummary
 	cursor.All(ctx, &blogs)
 
-	return infrastructure.NewPaginationResponse[blogDomain.Blog](pagination.Limit, pagination.Page, count, blogs), nil
+	return infrastructure.NewPaginationResponse[blogDomain.BlogSummary](pagination.Limit, pagination.Page, count, blogs), nil
 }
 
 // GetCommentsByBlogID implements BlogRepository.
@@ -283,7 +284,7 @@ func (b *BlogStorage) LikeBlog(ctx context.Context, like blogDomain.Like) error 
 }
 
 // SearchBlogs implements BlogRepository.
-func (b *BlogStorage) SearchBlogs(ctx context.Context, query string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[blogDomain.Blog], error) {
+func (b *BlogStorage) SearchBlogs(ctx context.Context, query string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[blogDomain.BlogSummary], error) {
 	filter := bson.D{{Key: "$text", Value: bson.D{
 		{Key: "$search", Value: query},
 		{Key: "$caseSensitive", Value: false},
@@ -293,22 +294,23 @@ func (b *BlogStorage) SearchBlogs(ctx context.Context, query string, pagination 
 	findOptions.SetSkip(int64(pagination.Limit*pagination.Page - 1))
 	findOptions.SetLimit(int64(pagination.Limit))
 	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+	findOptions.SetProjection(bson.D{{Key: "content", Value: 0}})
 
 	count, err := b.db.Collection(blogCollection).CountDocuments(ctx, filter)
 	if err != nil {
-		return infrastructure.PaginationResponse[blogDomain.Blog]{}, err
+		return infrastructure.PaginationResponse[blogDomain.BlogSummary]{}, err
 	}
 
 	cursor, err := b.db.Collection(blogCollection).Find(ctx, filter, findOptions)
 	if err != nil {
 		log.Default().Printf("Failed to search blogs: %v", err)
-		return infrastructure.PaginationResponse[blogDomain.Blog]{}, blogDomain.ErrUnabletoSearchBlogs
+		return infrastructure.PaginationResponse[blogDomain.BlogSummary]{}, blogDomain.ErrUnabletoSearchBlogs
 	}
 
-	var blogs []blogDomain.Blog
+	var blogs []blogDomain.BlogSummary
 	cursor.All(ctx, &blogs)
 
-	return infrastructure.NewPaginationResponse[blogDomain.Blog](pagination.Limit, pagination.Page, count, blogs), nil
+	return infrastructure.NewPaginationResponse[blogDomain.BlogSummary](pagination.Limit, pagination.Page, count, blogs), nil
 }
 
 // UpdateBlog implements BlogRepository.

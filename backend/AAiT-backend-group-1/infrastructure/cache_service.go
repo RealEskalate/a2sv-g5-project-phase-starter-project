@@ -11,6 +11,8 @@ type CacheService interface {
 	Set(key string, value interface{}, expiration time.Duration) error
 	Get(key string) (string, error)
 	Delete(key string) error
+	Increment(key string) error
+	Decrement(key string) error
 }
 
 type cacheService struct {
@@ -31,6 +33,15 @@ func NewcacheService(redisAddr, redisPassword string, redisDB int) CacheService 
 		ctx:    context.Background(),
 	}
 }
+
+func (cs *cacheService) Increment(key string) error {
+    return cs.client.Incr(cs.ctx, key).Err()
+}
+
+func (cs *cacheService) Decrement(key string) error {
+    return cs.client.Decr(cs.ctx, key).Err()
+}
+
 
 // Set sets a value in the cache with an optional expiration time.
 func (cs *cacheService) Set(key string, value interface{}, expiration time.Duration) error {

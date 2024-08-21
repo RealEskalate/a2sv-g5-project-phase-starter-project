@@ -40,8 +40,9 @@ func (bc *blogController) CreateBlog(c *gin.Context) {
 }
 
 func (bc *blogController) GetBlog(c *gin.Context) {
+	authorID := c.GetString("user_id")
 	id := c.Param("id")
-	blog, err := bc.blogUsecase.GetBlog(id)
+	blog, err := bc.blogUsecase.GetBlog(id , authorID)
 	if err != nil {
 		c.JSON(err.StatusCode(), gin.H{"error": err.Error()})
 	}
@@ -50,7 +51,11 @@ func (bc *blogController) GetBlog(c *gin.Context) {
 }
 
 func (bc *blogController) GetBlogs(c *gin.Context) {
-	blogs, err := bc.blogUsecase.GetBlogs()
+	page_number := c.Query("p")
+	if page_number == "" {
+		page_number = "1"
+	}
+	blogs, err := bc.blogUsecase.GetBlogs(page_number)
 	if err != nil {
 		c.JSON(err.StatusCode(), gin.H{"error": err.Error()})
 	}
@@ -64,7 +69,8 @@ func (bc *blogController) UpdateBlog(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := bc.blogUsecase.UpdateBlog(id, &blog)
+	userID := c.GetString("user_id")
+	err := bc.blogUsecase.UpdateBlog(id, &blog , userID)
 	if err != nil {
 		c.JSON(err.StatusCode(), gin.H{"error": err.Error()})
 	}
@@ -84,7 +90,8 @@ func (bc *blogController) DeleteBlog(c *gin.Context) {
 func (bc *blogController) SearchBlogsByTitle(c *gin.Context) {
 	// Implement the logic for searching blogs
 	title := c.Query("title")
-	blogs, err := bc.blogUsecase.SearchBlogsByTitle(title)
+	page_number := c.Query("p")
+	blogs, err := bc.blogUsecase.SearchBlogsByTitle(title , page_number)
 	if err != nil {
 		c.JSON(err.StatusCode(), err.Error())
 		return
@@ -96,7 +103,8 @@ func (bc *blogController) SearchBlogsByTitle(c *gin.Context) {
 func (bc *blogController) SearchBlogsByAuthor(c *gin.Context) {
 	// Implement the logic for searching blogs by author
 	author := c.Query("author")
-	blogs, err := bc.blogUsecase.SearchBlogsByAuthor(author)
+	page_number := c.Query("p")
+	blogs, err := bc.blogUsecase.SearchBlogsByAuthor(author , page_number)
 	if err != nil {
 		c.JSON(err.StatusCode(), err.Error())
 		return

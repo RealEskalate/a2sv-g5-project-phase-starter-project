@@ -21,12 +21,12 @@ type SessionRepository interface {
 }
 type BlogRepository interface {
 	FindById(id string) (*Blog, Error)
-	FindAll() ([]Blog, Error)
+	FindAll(page_number string) ([]Blog, Error)
 	Create(blog *Blog ) (*Blog, Error)
 	Update(blogID string , blog *Blog) (*Blog, Error)
 	Delete(id string) Error
-	SearchByTitle(title string) ([]Blog, Error)
-	SearchByAuthor(author string) ([]Blog, Error)
+	SearchByTitle(title string , page_number string) ([]Blog, Error)
+	SearchByAuthor(author string , page_number string) ([]Blog, Error)
 	Filter(filters map[string]interface{}) ([]Blog, Error)
 	AddComment(blogID string, comment *Comment) Error
 	DeleteComment(blogID, commentID string) Error

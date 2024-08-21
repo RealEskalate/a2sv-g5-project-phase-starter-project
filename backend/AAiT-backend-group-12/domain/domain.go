@@ -24,6 +24,12 @@ const (
 
 // Defines the types of verification statuses
 const (
+	RoleUser  = "user"
+	RoleAdmin = "admin"
+	RoleRoot  = "root"
+)
+
+const (
 	VerifyEmailType   = "verify_email"
 	ResetPasswordType = "reset_password"
 )
@@ -87,47 +93,81 @@ type Blog struct {
 	Comments   []Comment `json:"comment"`
 }
 
-// Comment represents a comment entity in the domain.
+
+type NewBlog struct{
+	Title      string    `json:"title" validate:"required,MinWord=1"`
+	Content    string    `json:"content" validate:"required,MinWord=25"`
+	Tags       []string  `json:"tags"`
+}
+
 type Comment struct {
 	ID        string    `json:"id"`
 	Content   string    `json:"content"`
 	Username  string    `json:"username"`
 	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type NewComment struct {
+	Content string `json:"content" validate:"required,min=3"`
 }
 
 // Defines a struct for the blog filter options
 type BlogFilterOptions struct {
-	Title         string // Search by title
-	Author        string // Search by author name
-	Tags          []string
-	DateFrom      time.Time
-	DateTo        time.Time
-	SortBy        string // Sort by criteria: date, like count, dislike count, view count
-	SortDirection string // Sort direction: asc, desc
-	Page          int    // Pagination: Page number
-	PostsPerPage  int    // Pagination: Posts per page
-	MinLikes      int    // Filter by minimum likes
-	MinDislikes   int    // Filter by minimum dislikes
-	MinComments   int    // Filter by minimum comments
-	MinViewCount  int    // Filter by minimum view count
+	Title         string    `json:"title"`  // Search by title
+	Author        string    `json:"author"` // Search by author name
+	Tags          []string  `json:"tags"`   // Filter by tag
+	DateFrom      time.Time `json:"dateFrom"`
+	DateTo        time.Time `json:"dateTo"`
+	SortBy        string    `json:"sortBy"`        // Sort by criteria: created_at, like_count, dislike_count, view_count
+	SortDirection string    `json:"sortDirection"` // Sort direction: asc, desc
+	Page          int       `json:"page"`          // Pagination: Page number
+	PostsPerPage  int       `json:"postsPerPage"`  // Pagination: Posts per page
+	MinLikes      int       `json:"minLikes"`      // Filter by minimum likes
+	MinDislikes   int       `json:"minDislikes"`   // Filter by minimum dislikes
+	MinComments   int       `json:"minComments"`   // Filter by minimum comments
+	MinViewCount  int       `json:"minViewCount"`  // Filter by minimum view count
+}
+
+// the data sent through the body when making a request to like or dislike a blog
+type LikeOrDislikeRequest struct {
+	BlogID  string `json:"blogID" validate:"required"`
+	State   bool `json:"state" validate:"required"`
 }
 
 type BlogRepositoryInterface interface {
-	FetchBlogPostByID(ctx context.Context, postID string) (*Blog, CodedError)
+	//Blog related methods
+	FetchBlogPostByID(ctx context.Context, postID string, incrementView bool) (*Blog, CodedError)
 	FetchBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, CodedError)
 	InsertBlogPost(ctx context.Context, blog *Blog) CodedError
-	UpdateBlogPost(ctx context.Context, id string, blog *Blog) CodedError
+	UpdateBlogPost(ctx context.Context, id string, blog *NewBlog) CodedError
 	DeleteBlogPost(ctx context.Context, id string) CodedError
-	TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) CodedError
+	TrackBlogPopularity(ctx context.Context, blogId string, action string,state bool, username string) CodedError
+
+	//Comment related methods
+	// FetchComment(ctx context.Context, commentID, blogID string) (Comment, CodedError)
+	CreateComment(ctx context.Context, comment *Comment, blogID, createdBy string) CodedError
+	UpdateComment(ctx context.Context, comment *NewComment, commentID, blogID, userName string) CodedError
+	DeleteComment(ctx context.Context, commentID, blogID, userName string) CodedError
 }
 
 type BlogUseCaseInterface interface {
+	//Blog related methods
 	GetBlogPostByID(ctx context.Context, id string) (*Blog, CodedError)
 	GetBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, CodedError)
-	CreateBlogPost(ctx context.Context, blog *Blog) CodedError
-	EditBlogPost(ctx context.Context, id string, blog *Blog) CodedError
-	DeleteBlogPost(ctx context.Context, id string) CodedError
-	TrackBlogPopularity(ctx context.Context, blogId string, action string, username string) CodedError
+	CreateBlogPost(ctx context.Context, blog *NewBlog, createdBy string) CodedError
+	EditBlogPost(ctx context.Context, id string, blog *NewBlog, editedBy string) CodedError
+	DeleteBlogPost(ctx context.Context, id, deletedBy string) CodedError
+	TrackBlogPopularity(ctx context.Context, blogId string, action string, state bool, username string) CodedError
+	GenerateTrendingTopics(keywords []string) ([]string, error)
+	ReviewBlogContent(blogContent string) (string, error)
+	GenerateBlogContent(topics []string) (string, error)
+
+	//Comment related methods
+	// FindComment(ctx context.Context, commentID, blogID string) (Comment, CodedError)
+	AddComment(ctx context.Context, blogID string, newComment *NewComment, username string) CodedError
+	UpdateComment(ctx context.Context, blogID string, commentID string, comment *NewComment, username string) CodedError
+	DeleteComment(ctx context.Context, blogID, commentID, username string) CodedError
 }
 
 type UserRepositoryInterface interface {

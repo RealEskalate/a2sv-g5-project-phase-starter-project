@@ -2,6 +2,8 @@ package router
 
 import (
 	"blog_api/delivery/controllers"
+	"blog_api/delivery/env"
+	ai_service "blog_api/infrastructure/ai"
 	"blog_api/repository"
 	"blog_api/usecase"
 	"time"
@@ -14,6 +16,7 @@ import (
 func NewBlogRouter(collection *mongo.Collection, blogGroup *gin.RouterGroup) {
 	br := repository.NewBlogRepository(collection)
 	bu := usecase.NewBlogUseCase(br, time.Second*100)
+	bu := usecase.NewBlogUseCase(br, time.Second*100, ai_service.NewAIService(env.ENV.GEMINI_API_KEY))
 
 	bc := controllers.NewBlogController(bu)
 

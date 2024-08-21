@@ -3,19 +3,29 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pie, PieChart, Tooltip, Cell, Sector } from "recharts";
+import { useSession } from 'next-auth/react';
 
 const PieChartComponent: React.FC = () => {
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
-
+  interface ExtendedUser {
+    name?: string;
+    email?: string;
+    image?: string;
+    accessToken?: string;
+    }
+    const { data: session, status } = useSession();
+    const user = session?.user as ExtendedUser;
+    const accessToken = user?.accessToken;
+    
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions/expenses?page=0&size=10', {
           headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
         setData(response.data.data);

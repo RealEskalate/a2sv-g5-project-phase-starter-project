@@ -318,7 +318,8 @@ func (_m *UserUsecase) Update(userId string, updateData domain.User) (domain.Use
 func NewUserUsecase(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *UserUsecase {
+},
+) *UserUsecase {
 	mock := &UserUsecase{}
 	mock.Mock.Test(t)
 

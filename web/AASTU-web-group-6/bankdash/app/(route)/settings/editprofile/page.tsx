@@ -4,8 +4,8 @@ import React from "react";
 
 const ProfilePage: React.FC = () => {
   return (
-    <div className="w-full mt-2 px-10 py-7 flex flex-col ">
-      <div className="bg-white dark:bg-[#232328] rounded-xl min-h-screen">
+    <div className="w-full mt-2 flex flex-col justify-start items-center ">
+      <div className="bg-white  p-4 dark:bg-[#232328] rounded-xl min-h-screen w-[80%]">
         <Navigation />
         <EditProfileForm />
       </div>

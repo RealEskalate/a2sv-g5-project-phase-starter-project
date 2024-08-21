@@ -11,7 +11,10 @@ export interface TransactionDataType {
 export interface TransactionResponseType {
   success: boolean;
   message: string;
-  data: TransactionDataType[];
+  data: {
+    content: TransactionDataType[];
+    totalPages: number;
+  };
 }
 
 export interface singleTransactionResponseType {

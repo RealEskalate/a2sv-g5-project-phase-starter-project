@@ -26,11 +26,12 @@ func NewBlogRouter(env *config.Env, database mongo.Database, group *gin.RouterGr
 
 	blogController := controllers.NewBlogController(blogUsecase)
 
-	group.POST("/createBlog", blogController.CreateBlogController)
-	group.GET("/getBlog/:id", blogController.GetBlogController)
-	group.GET("/getBlogs", blogController.GetBlogsController)
-	group.PUT("/updateBlog/:id", blogController.UpdateBlogController)
-	group.DELETE("/deleteBlog/:id", blogController.DeleteBlogController)
-	group.POST("/action", blogController.TrackPopularityController)
-	group.POST("/filter", blogController.SearchBlogsController)
+	group.POST("/blog", blogController.CreateBlogController)
+	group.GET("/blog/:id", blogController.GetBlogController)
+	group.GET("/blogs", blogController.GetBlogsController)
+	group.PUT("/blog/:id", blogController.UpdateBlogController)
+	group.DELETE("/blog/:id", blogController.DeleteBlogController)
+
+	group.POST("/blog/action/:id", blogController.TrackPopularityController)
+	group.GET("/blog/filter", blogController.SearchBlogsController)
 }

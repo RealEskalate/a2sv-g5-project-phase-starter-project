@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import BarGraph from "@/app/components/Transaction/BarGraph";
 import Recent from "@/app/components/Transaction/Recent";
 import Pagination from "@/app/components/Transaction/Pagination";
@@ -7,13 +7,19 @@ import VisaCard from "@/app/components/Card/VisaCard";
 import { TransactionType, ChartData } from "@/types/TransactionValue";
 import { useAppSelector } from "@/app/Redux/store/store";
 import { Card } from "../../Redux/slices/cardSlice";
-
+import { getExpense } from "@/app/Services/api/fetchTransaction";
 const Transaction = () => {
+  const [expenseData, setExpenseData] = useState<TransactionType[]>([]);
   const CardData: Card[] = useAppSelector((state) => state.cards.cards);
-  const expenseData: TransactionType[] = useAppSelector(
-    (state) => state.transactions.expense
-  );
+  // const expenseData: TransactionType[] = useAppSelector(
+  //   (state) => state.transactions.expense
+  // );
 
+  const fetchExpense = async () => {
+    const res = await getExpense(0, 100);
+    setExpenseData(res);
+  };
+  fetchExpense()
   const cardColor = [false, true];
 
   const convertToChartData = (data: TransactionType[]): ChartData[] => {
@@ -46,7 +52,7 @@ const Transaction = () => {
   };
 
   const chartData = convertToChartData(expenseData);
-
+  // console.log(chartData, 'chart');
   return (
     <div className="pt-4 px-3 sm:px-6 md:px-8 lg:px-10 w-full">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
@@ -83,7 +89,6 @@ const Transaction = () => {
         </div>
       </div>
       <Recent />
-      <Pagination />
     </div>
   );
 };

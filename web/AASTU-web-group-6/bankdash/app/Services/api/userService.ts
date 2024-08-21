@@ -2,13 +2,13 @@ import axios from "axios";
 import UserValue from "@/types/UserValue";
 import UserPreferenceValue from "@/types/UserPreferenceValue";
 
-const API_URL = "https://bank-dashboard-6acc.onrender.com/user";
+const API_URL = "https://bank-dashboard-1tst.onrender.com/user";
 
-interface UserResponseValue{
+interface UserResponseValue {
 
-    success: boolean,
-    message: string,
-    data: UserValue
+  success: boolean,
+  message: string,
+  data: UserValue
 }
 
 interface UserUpdateValue {
@@ -27,37 +27,37 @@ interface UserUpdateValue {
 
 }
 
-interface UserPreferenceResponseValue{
-    
-    success: boolean,
-    message: string,
-    data: UserPreferenceValue
-    
+interface UserPreferenceResponseValue {
+
+  success: boolean,
+  message: string,
+  data: UserPreferenceValue
+
 }
 
 interface YearlyInvestmentValue {
-    time: string;
-    value: number;
-  }
-  
-  interface MonthlyRevenueValue {
-    time: string;
-    value: number;
-  }
-  
-  interface InvestmentDataValue {
-    totalInvestment: number;
-    rateOfReturn: number;
-    yearlyTotalInvestment: YearlyInvestmentValue[];
-    monthlyRevenue: MonthlyRevenueValue[];
-  }
-  
-  interface InvestmentResponseValue {
-    success: boolean;
-    message: string;
-    data: InvestmentDataValue;
-  }
-  
+  time: string;
+  value: number;
+}
+
+interface MonthlyRevenueValue {
+  time: string;
+  value: number;
+}
+
+interface InvestmentDataValue {
+  totalInvestment: number;
+  rateOfReturn: number;
+  yearlyTotalInvestment: YearlyInvestmentValue[];
+  monthlyRevenue: MonthlyRevenueValue[];
+}
+
+interface InvestmentResponseValue {
+  success: boolean;
+  message: string;
+  data: InvestmentDataValue;
+}
+
 
 const handleRequest = async (
   method: string,
@@ -102,7 +102,7 @@ class UserService {
     return handleRequest("GET", `${API_URL}/${query}`, undefined, accessToken);
   }
 
-  public static randomInvestmentData(years:number,months:number,accessToken: string): Promise<InvestmentResponseValue> {
+  public static randomInvestmentData(years: number, months: number, accessToken: string): Promise<InvestmentResponseValue> {
     return handleRequest("GET", `${API_URL}/random-investment-data?years=${years}&months=${months}`, undefined, accessToken);
   }
 

@@ -3,7 +3,7 @@ import {PostTransactionRequest, PaginatedTransactionsResponse, QuickTransferData
 import { getServerSession } from "next-auth";
 interface ExtendedUser {
   refresh_token: string;
-  data: any; // Assuming `data` contains user information or other details
+  data: any; 
   accessToken?: string;
 }
 
@@ -110,6 +110,7 @@ const getTransactions = async (page= 0, size = 1, token: string): Promise<GetTra
         throw new Error(`Request failed with status code: ${response.status}`);
       }
     } catch (error) {
+
       console.error('Error fetching transaction:', error);
       throw error;
     }
@@ -224,5 +225,6 @@ const getTransactions = async (page= 0, size = 1, token: string): Promise<GetTra
       throw error;
     }
   };
+
 
   export {getBalanceHistory, getRandomBalanceHistory, getQuickTransfers, getTransactionById, getTransactionIncomes, getTransactions, getTransactionsExpenses, postTransactionsDeposit, postTransaction}

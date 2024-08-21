@@ -1,7 +1,7 @@
 // authenticationController.ts
 import { RegisterRequest, RegisterResponse, RefreshTokenResponse, LoginRequest, LoginResponse, ChangePasswordRequest, ChangePasswordResponse } from '@/types/authenticationController.interface';
 
-const BASE_URL = 'https://bank-dashboard-6acc.onrender.com'
+const BASE_URL = 'https://bank-dashboard-1tst.onrender.com'
 
 
 const register = async (userDetails: RegisterRequest): Promise<RegisterResponse> => {
@@ -26,7 +26,7 @@ const register = async (userDetails: RegisterRequest): Promise<RegisterResponse>
   }
 };
 
-const refreshToken = async (refresh_token:string): Promise<RefreshTokenResponse> => {
+const refreshToken = async (refresh_token:string): Promise<string> => {
     try {
       const response = await fetch(`${BASE_URL}/auth/refresh_token`, {
         method: 'POST',
@@ -37,7 +37,7 @@ const refreshToken = async (refresh_token:string): Promise<RefreshTokenResponse>
   
       if (response.status === 200) {
         const data: RefreshTokenResponse = await response.json();
-        return data;
+        return data.data;
       } else {
         throw new Error(`Failed to refresh token. Status code: ${response.status}`);
       }

@@ -107,7 +107,10 @@ func (userController *UserController) ResetPassword(cxt *gin.Context) {
 		return
 	}
 
-	errReset := userController.UserUseCase.ResetPassword(cxt, resetInfo.Token)
+	resetToken := cxt.Param("token")
+	resetInfo.Token = resetToken
+
+	errReset := userController.UserUseCase.ResetPassword(cxt, resetInfo.NewPasswor, resetInfo.ConfirmPassword, resetInfo.Token)
 	if errReset != nil {
 		cxt.JSON(errReset.StatusCode(), gin.H{"Error": errReset.Error()})
 		return

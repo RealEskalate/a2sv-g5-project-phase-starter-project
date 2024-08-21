@@ -94,13 +94,13 @@ func (ur *userRepository) RevokeRefreshToken(c context.Context, userID, refreshT
 	return nil
 }
 
-func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *domain.UserUpdate) (*domain.UserOut,error) {
+func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *domain.User) (*domain.User,error) {
 	collection:=ur.database.Collection(ur.collection)
 	filter:=bson.M{"_id":userID}
 	update:=bson.M{"$set":updatedUser}	
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 
-	var ResultUser domain.UserOut
+	var ResultUser domain.User
 	err:=collection.FindOneAndUpdate(c,filter,update,opts).Decode(&ResultUser)
 	if err!=nil{
 		return nil,err

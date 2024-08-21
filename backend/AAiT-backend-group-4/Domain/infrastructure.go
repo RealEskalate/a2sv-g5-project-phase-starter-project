@@ -9,6 +9,7 @@ type TokenInfrastructure interface {
 	CheckTokenExpiry(tokenString string, secret string) (bool, error)
 	UpdateTokens(id string) (accessToken string, refreshToken string, err error)
 	RemoveTokens(id string) error
+	ExtractUserIDFromToken(tokenString string) (string, error) 
 }
 
 type PasswordInfrastructure interface {

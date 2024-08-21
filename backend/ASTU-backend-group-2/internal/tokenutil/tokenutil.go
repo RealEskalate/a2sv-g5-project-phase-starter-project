@@ -25,6 +25,22 @@ func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToke
 	return t, err
 }
 
+func CreateVerificationToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
+	exp := time.Now().Add(time.Hour * time.Duration(expiry))
+	claims := &domain.JwtCustomClaims{
+		Name: user.FirstName + " " + user.LastName,
+		ID:   user.ID.Hex(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(exp),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	t, err := token.SignedString([]byte(secret))
+	if err != nil {
+		return "", err
+	}
+	return t, err
+}
 func CreateRefreshToken(user *domain.User, secret string, expiry int) (refreshToken string, err error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry))
 	claimsRefresh := &domain.JwtCustomRefreshClaims{
@@ -44,7 +60,7 @@ func CreateRefreshToken(user *domain.User, secret string, expiry int) (refreshTo
 func IsAuthorized(requestToken string, secret string) (bool, error) {
 	_, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(secret), nil
 	})

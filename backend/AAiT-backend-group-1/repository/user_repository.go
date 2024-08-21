@@ -13,17 +13,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type UserRepository struct {
+type userRepository struct {
 	collection *mongo.Collection
 }
 
 func NewUserRespository(collection *mongo.Collection) domain.UserRepository {
-	return &UserRepository{
+	return &userRepository{
 		collection: collection,
 	}
 }
 
-func (userRepo *UserRepository) FindById(ctx context.Context, id string) (*domain.User, domain.Error) {
+func (userRepo *userRepository) FindById(ctx context.Context, id string) (*domain.User, domain.Error) {
 	userID, errIDParse := primitive.ObjectIDFromHex(id)
 	if errIDParse != nil {
 		return &domain.User{}, &domain.CustomError{Message: fmt.Sprintf("error parsing the user id. %v \n", errIDParse.Error()), Code: http.StatusInternalServerError}
@@ -40,8 +40,8 @@ func (userRepo *UserRepository) FindById(ctx context.Context, id string) (*domai
 	return &fetchedUser, nil
 }
 
-func (userRepo *UserRepository) FindByEmail(cxt context.Context, email string) (*domain.User, domain.Error) {
-	filter := bson.D{{"email", email}}
+func (userRepo *userRepository) FindByEmail(cxt context.Context, email string) (*domain.User, domain.Error) {
+	filter := bson.D{{Key: "email", Value: email}}
 	var fetchedUser domain.User
 	errFetchUser := userRepo.collection.FindOne(cxt, filter).Decode(&fetchedUser)
 	if errFetchUser != nil {
@@ -53,10 +53,12 @@ func (userRepo *UserRepository) FindByEmail(cxt context.Context, email string) (
 	return &fetchedUser, nil
 }
 
-func (userRepo *UserRepository) FindByUsername(cxt context.Context, username string) (*domain.User, domain.Error) {
-	filter := bson.D{{"username", username}}
+func (userRepo *userRepository) FindByUsername(cxt context.Context, username string) (*domain.User, domain.Error) {
+	filter := bson.D{{Key: "username", Value: username}}
+
 	var fetchedUser domain.User
 	errFetchUser := userRepo.collection.FindOne(cxt, filter).Decode(&fetchedUser)
+
 	if errFetchUser != nil {
 		if errors.Is(errFetchUser, mongo.ErrNoDocuments) {
 			return &domain.User{}, &domain.CustomError{Message: fmt.Sprintf("user not found. %v \n", errFetchUser.Error()), Code: http.StatusNotFound}
@@ -65,9 +67,9 @@ func (userRepo *UserRepository) FindByUsername(cxt context.Context, username str
 	}
 	return &fetchedUser, nil
 }
-func (userRepo *UserRepository) FindAll(cxt context.Context) ([]domain.User, domain.Error) {
+func (userRepo *userRepository) FindAll(cxt context.Context) ([]domain.User, domain.Error) {
 	filter := bson.D{}
-	opts := options.Find().SetSort(bson.D{{"username", 1}})
+	opts := options.Find().SetSort(bson.D{{Key: "username", Value: 1}})
 	var fetchedUsers []domain.User
 	cursor, errFetchUsers := userRepo.collection.Find(cxt, filter, opts)
 	if errFetchUsers != nil {
@@ -81,7 +83,7 @@ func (userRepo *UserRepository) FindAll(cxt context.Context) ([]domain.User, dom
 	return fetchedUsers, nil
 }
 
-func (userRepo *UserRepository) Create(cxt context.Context, user *domain.User) (*domain.User, domain.Error) {
+func (userRepo *userRepository) Create(cxt context.Context, user *domain.User) (*domain.User, domain.Error) {
 	insertResult, errInsert := userRepo.collection.InsertOne(cxt, user)
 	if errInsert != nil {
 		if mongo.IsDuplicateKeyError(errInsert) {
@@ -97,7 +99,7 @@ func (userRepo *UserRepository) Create(cxt context.Context, user *domain.User) (
 	return user, nil
 }
 
-func (userRepo *UserRepository) Update(cxt context.Context, id string, user *domain.User) domain.Error {
+func (userRepo *userRepository) Update(cxt context.Context, id string, user *domain.User) domain.Error {
 	updateID, errIDParse := primitive.ObjectIDFromHex(id)
 	if errIDParse != nil {
 		return &domain.CustomError{Message: fmt.Sprintf("error parsing the user id. %v \n", errIDParse.Error()), Code: http.StatusInternalServerError}
@@ -118,7 +120,7 @@ func (userRepo *UserRepository) Update(cxt context.Context, id string, user *dom
 	return nil
 }
 
-func (userRepo *UserRepository) Delete(cxt context.Context, id string) domain.Error {
+func (userRepo *userRepository) Delete(cxt context.Context, id string) domain.Error {
 	deleteID, errIDParse := primitive.ObjectIDFromHex(id)
 	if errIDParse != nil {
 		return &domain.CustomError{Message: fmt.Sprintf("error parsing the user id. %v \n", errIDParse.Error()), Code: http.StatusInternalServerError}

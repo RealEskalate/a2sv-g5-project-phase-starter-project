@@ -21,21 +21,20 @@ func NewChatHandler(chatUsecase chat.Usecase) *ChatHandler{
 	}
 }
 
-func (chatHandler *ChatHandler) CreateChatHandler(chatUsecase chat.Usecase) gin.HandlerFunc{
-	return func(c *gin.Context) {
-			var form chat.CreateChatForm
-			if err := c.ShouldBindJSON(&form); err != nil{
-				c.JSON(http.StatusBadRequest, gin.H{"error":err.Error()})
-				return
-			}
-			
-			newChat, err := chatUsecase.CreateChat(context.TODO(), form)
-			var validationError validator.ValidationErrors
-			if errors.As(err, &validationError){
-				errs := infrastructure.ReturnErrorResponse(err)
-				c.JSON(http.StatusBadRequest, errs)
-			}
-
-			c.JSON(http.StatusCreated, newChat)
+func (chatHandler *ChatHandler) CreateChatHandler(c *gin.Context){
+	var form chat.CreateChatForm
+	if err := c.ShouldBindJSON(&form); err != nil{
+		c.JSON(http.StatusBadRequest, gin.H{"error":err.Error()})
+		return
 	}
+	
+	newChat, err := chatHandler.chatUsecase.CreateChat(context.TODO(), form)
+	var validationError validator.ValidationErrors
+	if errors.As(err, &validationError){
+		errs := infrastructure.ReturnErrorResponse(err)
+		c.JSON(http.StatusBadRequest, errs)
+	}
+
+	c.JSON(http.StatusCreated, newChat)
+	
 }

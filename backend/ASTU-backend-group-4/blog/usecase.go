@@ -24,7 +24,7 @@ func NewBlogUseCaseImpl(blogRepository BlogRepository, authRepository auth.AuthR
 // CreateBlog implements BlogUseCase.
 func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, authorID string, blog CreateBlogRequest) (Blog, error) {
 	validate := validator.New()
-	err := validate.Struct(blog)
+	err := infrastructure.Validate(validate, blog)
 	if err != nil {
 		return Blog{}, err
 	}
@@ -59,7 +59,7 @@ func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, authorID string, blog 
 // CreateComment implements BlogUseCase.
 func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, userID, blogID string, comment CreateCommentRequest) error {
 	validate := validator.New()
-	err := validate.Struct(comment)
+	err := infrastructure.Validate(validate, comment)
 	if err != nil {
 		return err
 	}

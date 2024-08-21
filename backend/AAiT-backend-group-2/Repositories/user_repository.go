@@ -2,7 +2,6 @@ package repositories
 
 import (
 	domain "AAiT-backend-group-2/Domain"
-	infrastructure "AAiT-backend-group-2/Infrastructure"
 	"context"
 	"errors"
 	"fmt"
@@ -14,19 +13,19 @@ import (
 )
 
 type userRepository struct {
-	collection *mongo.Collection
-	jwtService infrastructure.JWTService
+	userCollection *mongo.Collection
+	tokenCollection *mongo.Collection
 }
 
-func NewUserRepository(db *mongo.Database, jwtService infrastructure.JWTService)  domain.UserRepository{
+func NewUserRepository(db *mongo.Database)  domain.UserRepository{
 	return &userRepository{
-			collection: db.Collection("users"),
-			jwtService: jwtService,
+			userCollection: db.Collection("users"),
+			tokenCollection: db.Collection("resetTokens"),
 	}
 }
 
 func (ur *userRepository) FindAll(c context.Context) ([]domain.User, error) {
-	cursor, err := ur.collection.Find(c, bson.M{})
+	cursor, err := ur.userCollection.Find(c, bson.M{})
 
 	if err != nil {
 		return nil, err
@@ -34,9 +33,8 @@ func (ur *userRepository) FindAll(c context.Context) ([]domain.User, error) {
 
 	var users []domain.User
 
-	err = cursor.All(c, &users)
-
-	if err != nil {
+	
+	if err := cursor.All(c, &users); err != nil {
 		return nil, err
 	}
 
@@ -54,7 +52,7 @@ func (ur *userRepository) FindByID(c context.Context, id string) (*domain.User, 
 
 	filter := bson.M{"_id": objectID}
 
-	err = ur.collection.FindOne(c, filter).Decode(&user)
+	err = ur.userCollection.FindOne(c, filter).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -63,45 +61,39 @@ func (ur *userRepository) FindByID(c context.Context, id string) (*domain.User, 
 
 }
 
-func (ur *userRepository) Save(c context.Context, user domain.User) error {
-	hashedPassword, err := infrastructure.GeneratePasswordHash(user.Password)
+func (ur *userRepository) FindByEmailOrUsername(c context.Context, emailOrUsername string) (*domain.User, error) {
+	filter := bson.M{
+		"$or": []bson.M{
+			{"email": emailOrUsername},
+			{"username": emailOrUsername},
+		},
+	}
+
+	var user domain.User
+	err := ur.userCollection.FindOne(c, filter).Decode(&user)
 	if err != nil {
-		return errors.New("internal server error: failed to hash password")
-	}
-
-	count, err := ur.collection.CountDocuments(context.Background(), bson.M{})
-	if err != nil {
-		return errors.New("internal server error: failed to count documents")
-	}
-
-	if count == 0 {
-		user.Role = "admin"
-	} else {
-		user.Role = "user"
-	}
-
-	filter := bson.M{"email": user.Email}
-	err = ur.collection.FindOne(context.Background(), filter).Err()
-
-	if err == mongo.ErrNoDocuments {
-		user.Password = hashedPassword
-		user.CreatedAt = time.Now()
-		user.UpdateAt = time.Now()
-		_, insertErr := ur.collection.InsertOne(context.Background(), user)
-		if insertErr != nil {
-			return errors.New("internal server error: failed to insert user")
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("user not found")
 		}
-		return nil
+		return nil, err
 	}
 
-	if err == nil {
-		return fmt.Errorf("user already exists")
-	}
-
-	return errors.New("internal server error: failed to check if user exists")
+	return &user, nil
 }
 
-func (ur *userRepository) Update(c context.Context, id string, user *domain.User) error {
+
+func (ur *userRepository) Save(c context.Context, user domain.User) error {
+	_, err := ur.userCollection.InsertOne(c, user)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+	
+
+func (ur *userRepository) Update(c context.Context, id string, updateData domain.UpdateData) error {
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return errors.New("invalid id")
@@ -109,16 +101,12 @@ func (ur *userRepository) Update(c context.Context, id string, user *domain.User
 
 	filter := bson.M{"_id": objectID}
 
+
 	update := bson.M{
-		"$set": bson.M{
-			"username": user.Username,
-			"password": user.Password,
-			"update_at": user.UpdateAt,
-			"profile": user.Profile,
-		},
+		"$set": updateData,
 	}
 
-	_, err = ur.collection.UpdateOne(c, filter, update)
+	_, err = ur.userCollection.UpdateOne(c, filter, update)
 	if err != nil {
 		return err
 	}
@@ -133,7 +121,7 @@ func (ur *userRepository) Delete(c context.Context, id string) error {
 	}
 	filter := bson.M{"_id": objectID}
 
-	_, err = ur.collection.DeleteOne(c, filter)
+	_, err = ur.userCollection.DeleteOne(c, filter)
 	if err != nil {
 		return err
 	}
@@ -141,54 +129,28 @@ func (ur *userRepository) Delete(c context.Context, id string) error {
 	return nil
 }
 
-func (ur *userRepository) Login(c context.Context, user *domain.User) (map[string]string, error) {
-	filter := bson.M{"email": user.Email}
-	var existingUser domain.User
+func (ur *userRepository) CountDocuments(c context.Context) (int64, error) {
 
-	err := ur.collection.FindOne(context.Background(), filter).Decode(&existingUser)
+	count, err := ur.userCollection.CountDocuments(c, bson.M{})
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
-
-	isSame := infrastructure.ComparePasswordHash(user.Password, existingUser.Password)
-
-	if !isSame {
-		return nil, errors.New("invalid email or password")
-	}
-
-	jwtToken, err := ur.jwtService.GenerateToken(existingUser.ID.String(), existingUser.Email, existingUser.Role, 24 * 60 * 60 * 30)
-
-	if err != nil {
-		return nil, errors.New("inernal serever error")
-	}
-
-	return jwtToken, nil
+	return count, nil
 }
 
-func (ur *userRepository) RefreshToken(c context.Context, refreshToken string) (map[string]string, error) {
-	accessToken, err := ur.jwtService.RenewToken(refreshToken)
-	
-	if err != nil {
-		return nil, errors.New("internal server error")
-	}
-
-	return map[string]string{
-		"access_token": accessToken,
-		"refresh_token": refreshToken,
-	}, nil
-}
-
-func (ur *userRepository) PromoteUser(c context.Context, id string) error {
+func (ur *userRepository) PromoteUser(c context.Context, id string, updateData domain.UpdateData) error {
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return errors.New("invalid id")
 	}
 
 	filter := bson.M{"_id": objectID}
-	update := bson.M{"$set": bson.M{"role": "admin"}}
+	update := bson.M{
+		"$set": updateData,
+	}
 
-	_, err = ur.collection.UpdateOne(context.Background(), filter, update)
+	_, err = ur.userCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return errors.New("internal server error")
 	}
@@ -196,18 +158,88 @@ func (ur *userRepository) PromoteUser(c context.Context, id string) error {
 	return nil
 }
 
-func (ur *userRepository) DemoteAdmin(c context.Context, id string) error {
+func (ur *userRepository) DemoteAdmin(c context.Context, id string, updateData domain.UpdateData) error {
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return errors.New("invalid id")
 	}
 
 	filter := bson.M{"_id": objectID}
-	update := bson.M{"$set": bson.M{"role": "user"}}
+	update := bson.M{
+		"$set": updateData,
+	}
 
-	_, err = ur.collection.UpdateOne(context.Background(), filter, update)
+	_, err = ur.userCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return errors.New("internal server error")
+	}
+
+	return nil
+}
+
+func (ur *userRepository) ForgotPassword(c context.Context, email string, token string) (string, error) {
+	user, err := ur.FindByEmailOrUsername(c, email)
+	if err != nil {
+		return "", err
+	}
+
+	if user == nil {
+		return "", errors.New("user not found")
+	}
+
+	resetToken := domain.ResetToken{
+		Token:     token,
+		UserID:    user.ID.Hex(),
+		ExpiresAt: time.Now().Add(15 * time.Minute),
+	}
+
+	_, err = ur.tokenCollection.InsertOne(c, resetToken)
+	if err != nil {
+		return "", err
+	}
+
+	return resetToken.Token, nil
+}
+
+
+
+func (ur *userRepository) ValidateResetToken(c context.Context, userID, token string) error {
+	var resetToken domain.ResetToken
+
+	filter := bson.M{
+		"userid": userID,
+	}
+
+	err := ur.tokenCollection.FindOne(c, filter).Decode(&resetToken)
+
+	if err != nil {
+		return errors.New("invalid token")
+	}
+
+	fmt.Println("refreshToken", resetToken.Token, userID)
+	fmt.Println("token", token)
+
+	if resetToken.Token != token {
+		return errors.New("invalid token")
+	}
+
+	if time.Now().After(resetToken.ExpiresAt) {
+		return errors.New("token expired")
+	}
+
+	return nil
+	
+}
+
+func (ur *userRepository) InvalidateResetToken(c context.Context, userID string) error {
+	filter := bson.M{
+		"userid": userID,
+	}
+
+	_, err := ur.tokenCollection.DeleteMany(c,filter)
+	
+	if err != nil {
+		return err
 	}
 
 	return nil

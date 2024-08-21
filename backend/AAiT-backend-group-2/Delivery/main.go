@@ -1,41 +1,36 @@
 package main
 
 import (
-	"AAiT-backend-group-2/Delivery/controllers"
 	"AAiT-backend-group-2/Delivery/routers"
 	"AAiT-backend-group-2/Infrastructure"
-	"AAiT-backend-group-2/Repositories"
-	"AAiT-backend-group-2/Usecases"
+	"AAiT-backend-group-2/config"
 	"context"
 	"log"
-	"os"
 
-	"github.com/joho/godotenv"
+	"github.com/gin-gonic/gin"
 )
 
 
 
 func main() {
-	err := godotenv.Load()
+	configs, err := config.LoadConfig(".")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("Failed to load .env file")
 	}
-	
-	mongoConfig := infrastructure.NewMongoDBConfig(os.Getenv("MONGO_URI"), os.Getenv("MONGO_DB"))
-	mongoClient, err := mongoConfig.Connect()
-	
+
+	mongoConfig := infrastructure.NewMongoDBConfig(configs.DBURI, configs.DbName)
+	mongoClient, err := mongoConfig.Connect()	
 	if err != nil {
 		log.Fatal("Failed to connect to MongoDB")
 	}
 	defer mongoClient.Disconnect(context.TODO())
 
-	db := mongoClient.Database(os.Getenv("MONGO_DB"))
-	blogRepo := repositories.NewBlogRepository(db)
-	blogUseCase := usecases.NewBlogUsecase(blogRepo)
-	blogController := controllers.NewBlogController(blogUseCase)
+	db := mongoClient.Database(configs.DbName)
 
-	router := routers.SetupRouter(blogController)
+	r := gin.Default()
 
-	router.Run(":8080")
+	routers.SetupRouter(db, r, &configs)
+
+	r.Run(":8080")
 
 }

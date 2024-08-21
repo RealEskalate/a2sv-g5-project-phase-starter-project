@@ -24,14 +24,30 @@ func (u *commentUsecase) CreateComment(comment *domain.Comment) (*domain.Comment
 	return u.commentRepo.CreateComment(comment)
 }
 
-func (u *commentUsecase) UpdateComment(comment *domain.Comment) (*domain.Comment, error) {
+func (u *commentUsecase) UpdateComment(comment *domain.Comment, role_, userId string) (*domain.Comment, error) {
+	existingComment, err := u.GetCommentByID(comment.ID.Hex())
+	if err != nil {
+		return nil, err
+	}
+	if existingComment.UserID.Hex() != userId || role_ != "admin" {
+		return nil, errors.New("unauthorized")
+	}
 	if comment.ID.IsZero() {
 		return nil, errors.New("invalid comment ID")
 	}
 	return u.commentRepo.UpdateComment(comment)
 }
 
-func (u *commentUsecase) DeleteComment(commentID string) (*domain.Comment, error) {
+func (u *commentUsecase) DeleteComment(commentID, role_, UserID string) (*domain.Comment, error) {
+	existingComment, err := u.GetCommentByID(commentID)
+	if err != nil {
+		return nil, err
+	}
+	if existingComment.UserID.Hex() != UserID || role_ != "admin" {
+		return nil, errors.New("unauthorized")
+	}
+
+
 	objID, err := primitive.ObjectIDFromHex(commentID)
 	if err != nil {
 		return nil, errors.New("invalid comment ID")
@@ -73,18 +89,33 @@ func (u *commentUsecase) CreateReply(reply *domain.Reply) (*domain.Reply, error)
 	return u.commentRepo.CreateReply(reply)
 }
 
-func (u *commentUsecase) UpdateReply(reply *domain.Reply) (*domain.Reply, error) {
+func (u *commentUsecase) UpdateReply(reply *domain.Reply, userID string) (*domain.Reply, error) {
+	existingReply, err := u.commentRepo.GetReplyByID(reply.ID)
+	if err != nil {
+		return nil, err
+	}
+	if existingReply.UserID != userID {
+		return nil, errors.New("unauthorized")
+	}
 	if reply.ID.IsZero() {
 		return nil, errors.New("invalid reply ID")
 	}
 	return u.commentRepo.UpdateReply(reply)
 }
 
-func (u *commentUsecase) DeleteReply(replyID string) (*domain.Reply, error) {
+func (u *commentUsecase) DeleteReply(replyID, role_, UserID string) (*domain.Reply, error) {
 	objID, err := primitive.ObjectIDFromHex(replyID)
 	if err != nil {
 		return nil, errors.New("invalid reply ID")
 	}
+	existingReply, err := u.commentRepo.GetReplyByID(objID)
+	if err != nil {
+		return nil, err
+	}
+	if existingReply.UserID != UserID || role_ != "admin" {
+		return nil, errors.New("unauthorized")
+	}
+	
 	return u.commentRepo.DeleteReply(objID)
 }
 

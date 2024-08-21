@@ -31,20 +31,20 @@ func (uc *UserController) PromoteDemoteController(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "You must specify the username or email of the User."})
 		return
 	}
-
+	var action string
 	if request.Action == "promote" {
-		user_.IsAdmin = true
+		action = "promote"
 	} else if request.Action == "demote" {
-		user_.IsAdmin = false
+		action = "demote"
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Action must be specified (i.e promote or demote)"})
 		return
 	}
 
-	// if err := uc.UpdateUser(c, user_.ID, user_); err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	return
-	// }
+	if err := uc.usecase.PromoteDemote(c, user_.ID, action); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Status updated successfully", "User": user_})
 }

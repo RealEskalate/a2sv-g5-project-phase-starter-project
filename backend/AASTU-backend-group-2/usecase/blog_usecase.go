@@ -26,23 +26,23 @@ func (br *BlogUsecase) CreateBlog(c context.Context, blog *domain.Blog) error {
 	return br.BlogRepo.CreateBlog(blog)
 }
 
-func (br *BlogUsecase) RetrieveBlog(c context.Context, page int) ([]domain.Blog, error) {
+func (br *BlogUsecase) RetrieveBlog(c context.Context, page int, sortby string, dire string) ([]domain.Blog, error) {
 	_, cancel := context.WithTimeout(c, br.contextTimeout)
 	defer cancel()
 
-	return br.BlogRepo.RetrieveBlog(page)
+	return br.BlogRepo.RetrieveBlog(page, sortby, dire)
 }
 
-func (br *BlogUsecase) UpdateBlog(c context.Context, updatedblog domain.Blog, blogID string) error {
+func (br *BlogUsecase) UpdateBlog(c context.Context, updatedblog domain.Blog, blogID string, isadmin bool, userid string) error {
 	_, cancel := context.WithTimeout(c, br.contextTimeout)
 	defer cancel()
-	return br.BlogRepo.UpdateBlog(updatedblog, blogID)
+	return br.BlogRepo.UpdateBlog(updatedblog, blogID, isadmin, userid)
 }
 
-func (br *BlogUsecase) DeleteBlog(c context.Context, blogID string) error {
+func (br *BlogUsecase) DeleteBlog(c context.Context, blogID string, isadmin bool, userid string) error {
 	_, cancel := context.WithTimeout(c, br.contextTimeout)
 	defer cancel()
-	return br.BlogRepo.DeleteBlog(blogID)
+	return br.BlogRepo.DeleteBlog(blogID, isadmin, userid)
 
 }
 

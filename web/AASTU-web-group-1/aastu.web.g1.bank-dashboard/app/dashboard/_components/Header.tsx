@@ -71,13 +71,9 @@ const Header = ({ title }: { title: string }) => {
           {title}
         </h1>
 
-        <div className="flex gap-5 items-center">
+        <div className={`flex gap-5 items-center `}>
           {/* Search */}
-          <div
-            className={`flex gap-3 p-3 rounded-full ${
-              isDarkMode ? "bg-gray-800" : "bg-[#F5F7FA]"
-            }`}
-          >
+          <div className={`flex gap-3 p-3 rounded-full bg-[#F5F7FA] `}>
             <Image
               src="/icons/Search.svg"
               width={20}
@@ -85,11 +81,7 @@ const Header = ({ title }: { title: string }) => {
               alt="Search"
             />
             <input
-              className={`outline-none ${
-                isDarkMode
-                  ? "bg-gray-800 text-white"
-                  : "bg-[#F5F7FA] text-black"
-              }`}
+              className={`outline-none bg-[#F5F7FA]`}
               type="text"
               placeholder="Search for something"
             />

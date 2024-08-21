@@ -1,7 +1,7 @@
 package infrastructures
 
 import (
-	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +15,7 @@ func AuthMiddleware(JwtService *JwtService) gin.HandlerFunc {
 		authHeader := context.GetHeader("Authorization")
 
 		if authHeader == "" {
-			context.JSON(401, gin.H{"Error": "Authoriztion header is required"})
+			context.JSON(http.StatusUnauthorized, gin.H{"Error": "Authorization header is required"})
 			context.Abort()
 			return
 		}
@@ -23,7 +23,7 @@ func AuthMiddleware(JwtService *JwtService) gin.HandlerFunc {
 		authPart := strings.Split(authHeader, " ")
 
 		if len(authPart) != 2 || strings.ToLower(authPart[0]) != "bearer" {
-			context.JSON(401, gin.H{"message": "Invalid Authoriztion header"})
+			context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid Authoriztion header"})
 			context.Abort()
 			return
 		}
@@ -36,20 +36,25 @@ func AuthMiddleware(JwtService *JwtService) gin.HandlerFunc {
 			if err != nil {
 				errMsg = err.Error()
 			}
-			context.JSON(401, gin.H{"error": errMsg})
+			context.JSON(http.StatusUnauthorized, gin.H{"error": errMsg})
 			context.Abort()
 			return
 		}
 
 		claims, ok := JwtService.FindClaim(token)
 		if !ok {
-			context.JSON(401, gin.H{"error": "Invalid token claims"})
+			context.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
 			context.Abort()
 			return
 		}
 		role := claims["is_admin"]
 		id := claims["id"]
-		fmt.Println(role, id)
+
+		if role == nil || id == nil {
+			context.JSON(401, gin.H{"error": "Invalid token claims"})
+			context.Abort()
+			return
+		}
 		context.Set("is_admin", role)
 		context.Set("id", id)
 
@@ -61,7 +66,7 @@ func AdminMiddleWare() gin.HandlerFunc {
 		defer context.Next()
 		is_admin, exists := context.Get("is_admin")
 		if !exists || is_admin != true {
-			context.JSON(403, gin.H{"message": "Sorry, you are not eligible for this"})
+			context.JSON(http.StatusForbidden, gin.H{"message": "Sorry, you are not eligible for this"})
 			context.Abort()
 			return
 		}

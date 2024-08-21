@@ -20,7 +20,7 @@ func SetupRouter(blogController domain.IBlogController, userController domain.IU
 	blogs.POST("/:blog_id/:author_id/like", blogController.LikeBlog)
 	blogs.POST("/:blog_id/:author_id/dislike", blogController.DislikeBlog)
 	blogs.POST("/search", blogController.Search)
-
+	blogs.POST("/GenerateContent", blogController.AiRecommendation)
 	users := r.Group("/users")
 
 	users.GET("/", userController.GetAllUsers)

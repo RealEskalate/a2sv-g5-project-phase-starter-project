@@ -7,8 +7,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogUsecase struct {
@@ -59,12 +57,6 @@ func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog, role string) (
 	if len(blog.Comments) == 0 {
 		blog.Comments = make([]domain.Comment, 0)
 	}
-	if len(blog.DisLikes) == 0 {
-		blog.DisLikes = make([]primitive.ObjectID, 0)
-	}
-	if len(blog.Likes) == 0 {
-		blog.Likes = make([]primitive.ObjectID, 0)
-	}
 	if blog.Blog_image == "" {
 		blog.Blog_image = "https://media.istockphoto.com/id/922745190/photo/blogging-blog-concepts-ideas-with-worktable.jpg?s=2048x2048&w=is&k=20&c=QNKuhWRD7f0P5hybe28_AHo_Wh6W93McWY157Vmmh4Q="
 	}
@@ -114,6 +106,7 @@ func (b BlogUsecase) FilterBlogsByTag(tags []string, pageNo string, pageSize str
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
+
 	startDate = strings.ReplaceAll(startDate, " ", "+")
 	endDate = strings.ReplaceAll(endDate, " ", "+")
 	// layout := "2006-01-02 15:04:05 -0700"
@@ -125,6 +118,7 @@ func (b BlogUsecase) FilterBlogsByTag(tags []string, pageNo string, pageSize str
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
+
 	fmt.Println(StartDate, EndDate, "/////////////")
 	blogs, pagination, err := b.blogRepository.FilterBlogsByTag(tags, PageNo, PageSize, StartDate, EndDate, popularity)
 	if err != nil {

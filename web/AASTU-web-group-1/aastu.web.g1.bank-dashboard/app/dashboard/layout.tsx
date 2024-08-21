@@ -32,7 +32,7 @@ export default function RootLayout({
         <div className="flex size-full flex-col">
           <div
             className={`${
-              isDarkMode ? "bg-gray-800" : "bg-white"
+              isDarkMode ? "bg-gray-800" : "bg-[#F5F7FA]"
             } flex h-16 items-center justify-between p-5 sm:p-8 md:hidden`}
           >
             <div>
@@ -46,7 +46,7 @@ export default function RootLayout({
           </div>
           <div
             className={`justify-center items-center flex ${
-              isDarkMode ? "bg-gray-800" : "bg-white"
+              isDarkMode ? "bg-gray-800" : "bg-[#F5F7FA]"
             }`}
           >
             <div

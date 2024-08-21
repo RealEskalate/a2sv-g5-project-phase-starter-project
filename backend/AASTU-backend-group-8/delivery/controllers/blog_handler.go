@@ -28,16 +28,18 @@ func (bc *BlogController) CreateBlogPost(c *gin.Context) {
 	blog.CreatedAt = time.Now()
 	blog.UpdatedAt = time.Now()
 
-	// autherID := c.MustGet("userID").(primitive.ObjectID)
-	// blog.AuthorID = autherID
+	autherID := c.MustGet("userID").(primitive.ObjectID)
+	fmt.Println("Author ID: ", autherID)
+	blog.AuthorID = autherID
 
-	createdBlog, err := bc.blogUsecase.CreateBlogPost(&blog)
+	BlogID, err := bc.blogUsecase.CreateBlogPost(&blog)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Blog post created successfully", "id": createdBlog})
+
 }
 
 func (bc *BlogController) GetAllBlogPosts(c *gin.Context) {

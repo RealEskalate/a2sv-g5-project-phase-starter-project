@@ -18,7 +18,7 @@ import (
 
 type UserControllerTestSuite struct {
 	suite.Suite
-	userController *userController
+	userController *UserController
 	userUsecase    *mocks.UserUsecase
 	data           []domain.User
 }
@@ -146,7 +146,34 @@ func (suite *UserControllerTestSuite) TestGetUserByID() {
 		assert.Contains(w.Body.String(), expectedError.Error())
 	})
 }
-
+func (suite *UserControllerTestSuite) TestRegisterUser() {
+	assert := assert.New(suite.T())
+	suite.Run("success", func() {
+		user := suite.data[0]
+		suite.userUsecase.On("Create", mock.AnythingOfType("*domain.User")).Return(user, nil).Once()
+		w := httptest.NewRecorder()
+		data, err := json.Marshal(user)
+		ctx, _ := gin.CreateTestContext(w)
+		req, _ := http.NewRequest("POST", "/register", bytes.NewBuffer(data))
+		assert.Nil(err)
+		ctx.Request = req
+		suite.userController.Register(ctx)
+		assert.Equal(http.StatusCreated, w.Code)
+		
+	})
+}
+func (suite *UserControllerTestSuite) TestAccountVerification() {
+	assert := assert.New(suite.T())
+	suite.Run("success", func() {
+		suite.userUsecase.On("AccountVerification", "alksdjfwe@gmail.com", "aslkdfj23").Return("token", nil).Once()
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+		req, _ := http.NewRequest("POST", "/accountverification?email=alksdjfwe@gmail.com&pwd=aslkdfj23",nil)
+		ctx.Request = req
+		suite.userController.AccountVerification(ctx)
+		assert.Equal(http.StatusOK, w.Code)
+	})
+}
 func (suite *UserControllerTestSuite) TestDeleteUser() {
 	assert := assert.New(suite.T())
 	suite.T().Parallel()

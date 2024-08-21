@@ -3,79 +3,62 @@ package controller
 import (
 	"net/http"
 
-	"github.com/RealEskalate/blogpost/domain"
+	"github.com/RealEskalate/blogpost/usecase"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type LikeController struct {
-	LikeUsecase domain.Like_Usecase_interface
-	UserUsecase domain.User_Usecase_interface
+	LikeUseCase *usecase.LikeUseCase
 }
 
-func NewLikeController(likeUsecase domain.Like_Usecase_interface, userUsecase domain.User_Usecase_interface) *LikeController {
+func NewLikeController(likeUseCase *usecase.LikeUseCase) *LikeController {
 	return &LikeController{
-		LikeUsecase: likeUsecase,
-		UserUsecase: userUsecase,
+		LikeUseCase: likeUseCase,
 	}
 }
 
-func (lc *LikeController) GetLikes() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		postID := c.Param("post_id")
-
-		_, err := primitive.ObjectIDFromHex(postID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID format. Please provide a valid post ID."})
-			return
-		}
-
-		likes, err := lc.LikeUsecase.GetLikes(postID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve likes. Please try again: " + err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"message": "Likes retrieved successfully!", "likes": likes})
+func (BC *LikeController) GetLikes(ctx *gin.Context) {
+	post_id := ctx.Param("post_id")
+	likes, err := BC.LikeUseCase.GetLikes(post_id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	ctx.JSON(http.StatusOK, likes)
 }
 
-func (lc *LikeController) CreateLike() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		postID := c.Param("post_id")
+func (BC *LikeController) CreateLike(ctx *gin.Context) {
+	user_id := ctx.Param("user_id")
+	post_id := ctx.Param("post_id")
 
-		_, err := primitive.ObjectIDFromHex(postID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID format. Please provide a valid post ID."})
-			return
-		}
-
-		userID := c.Param("user_id") // Assuming user_id is passed as a param or handled by middleware
-
-		if err := lc.LikeUsecase.CreateLike(userID, postID); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to like the post. Please try again: " + err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"message": "Post liked successfully!"})
+	err := BC.LikeUseCase.CreateLike(user_id, post_id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "like added successfully"})
 }
 
-func (lc *LikeController) DeleteLike() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		likeID := c.Param("like_id")
+func (BC *LikeController) ToggleLike(ctx *gin.Context) {
+	user_id := ctx.Param("user_id")
+	post_id := ctx.Param("post_id")
 
-		_, err := primitive.ObjectIDFromHex(likeID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid like ID format. Please provide a valid like ID."})
-			return
-		}
-
-		if err := lc.LikeUsecase.DeleteLike(likeID); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete like. Please try again: " + err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"message": "Like deleted successfully!"})
+	err := BC.LikeUseCase.ToggleLike(user_id, post_id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	ctx.JSON(http.StatusOK, gin.H{"status": "like toggled successfully"})
+}
+
+func (BC *LikeController) RemoveLike(ctx *gin.Context) {
+	user_id := ctx.Param("user_id")
+	post_id := ctx.Param("post_id")
+
+	err := BC.LikeUseCase.RemoveLike(user_id, post_id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"status": "like removed successfully"})
 }

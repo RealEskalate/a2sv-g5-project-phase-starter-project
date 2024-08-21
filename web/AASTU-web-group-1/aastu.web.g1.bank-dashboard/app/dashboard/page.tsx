@@ -48,6 +48,7 @@ const MainDashboard = () => {
   const [selectedProfile, setSelectedProfile] =
     useState<QuickTransferData | null>(null);
   const [amount, setAmount] = useState<string>("");
+  const [sendLoading,setSendLoading] = useState(false)
   let totalCreditcardpage;
   const handleProfileSelect = (account: QuickTransferData) => {
     setSelectedProfile(account);
@@ -60,7 +61,7 @@ const MainDashboard = () => {
   const handleSend = async () => {
     if (selectedProfile) {
       console.log("Sending to:", selectedProfile.username, "Amount:", amount);
-      setLoading(true); 
+      setSendLoading(true); 
       const result: boolean | undefined = await addTransactions({
         type: "transfer",
         amount: parseInt(amount),
@@ -73,6 +74,7 @@ const MainDashboard = () => {
       }
       else{
         toast("failed sending");}
+        setLoading(true); 
     }
   };
 
@@ -305,16 +307,21 @@ const MainDashboard = () => {
                 />
                 <button
                   className={`
-              ${isDarkMode ? "bg-[#3B6EE2]" : "bg-[#1814F3]"}
-              text-white
-              rounded-full
-              px-4
-              h-[40px]
-              ml-2
-              flex
-              items-center
-              space-x-2
-            `}
+    ${
+      isDarkMode
+        ? "bg-[#3B6EE2] hover:bg-[#2A56B8]"
+        : "bg-[#1814F3] hover:bg-[#0F0DC7]"
+    }
+    text-white
+    rounded-full
+    px-4
+    h-[40px]
+    ml-2
+    flex
+    items-center
+    space-x-2
+    transition-all duration-300 ease-in-out
+  `}
                   onClick={handleSend}
                   disabled={!selectedProfile || !amount}
                 >
@@ -344,7 +351,7 @@ const MainDashboard = () => {
           </div>
         </div>
       </div>
-      {loading && (
+      {sendLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
           <div role="status">
             <svg

@@ -54,7 +54,7 @@ const CreditCard: React.FC<CardDetails> = ({
             ${balance}
           </p>
         </div>
-        <FcSimCardChip size={30} />
+        <FcSimCardChip size={50} />
       </div>
 
       <div className="flex px-5">
@@ -82,7 +82,7 @@ const CreditCard: React.FC<CardDetails> = ({
 
      
         <div
-          className={`flex justify-between px-5 items-center  py-5 backdrop-blur-[3px] bg-gradient-to-b from-white/30 to-white/5 rounded-b-3xl`}
+          className={`flex justify-between px-5 items-center space-y-1  py-5 backdrop-blur-[3px] bg-gradient-to-r from-white/30 to-white/5 rounded-b-3xl`}
         >
           <p
             className={`text-[15px] md:text-[16px] ${textColor} font-lato font-semibold w-[80%]`}

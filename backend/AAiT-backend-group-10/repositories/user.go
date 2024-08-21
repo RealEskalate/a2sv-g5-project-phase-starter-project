@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"aait.backend.g10/domain"
@@ -23,12 +22,15 @@ func NewUserRepository(db *mongo.Database, collectionName string) *UserRepositor
 	}
 }
 
-func (r *UserRepository) CreateUser(user *domain.User) error {
+func (r *UserRepository) CreateUser(user *domain.User) *domain.CustomError {
 	_, err := r.collection.InsertOne(context.Background(), user)
-	return err
+	if err != nil {
+		return domain.ErrUserCreationFailed
+	}
+	return nil
 }
 
-func (r *UserRepository) GetUserByID(id uuid.UUID) (*domain.User, error) {
+func (r *UserRepository) GetUserByID(id uuid.UUID) (*domain.User, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -37,32 +39,35 @@ func (r *UserRepository) GetUserByID(id uuid.UUID) (*domain.User, error) {
 	err := r.collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, errors.New("user not found")
+			return nil, domain.ErrUserNotFound
 		}
-		return nil, err
+		return nil, domain.ErrUserCreationFailed 
 	}
 	return &user, nil
 }
 
-func (r *UserRepository) GetUserByEmail(email string) (*domain.User, error) {
+func (r *UserRepository) GetUserByEmail(email string) (*domain.User, *domain.CustomError) {
 	var user domain.User
 	err := r.collection.FindOne(context.Background(), bson.M{"email": email}).Decode(&user)
-	if err == mongo.ErrNoDocuments {
-		return nil, errors.New("user not found")
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, domain.ErrUserNotFound
+		}
+		return nil, domain.ErrUserCreationFailed
 	}
-	return &user, err
+	return &user, nil
 }
 
-func (r *UserRepository) GetUserByUsername(username string) (*domain.User, error) {
+func (r *UserRepository) GetUserByUsername(username string) (*domain.User, *domain.CustomError) {
 	var user domain.User
 	err := r.collection.FindOne(context.Background(), bson.M{"username": username}).Decode(&user)
 	if err == mongo.ErrNoDocuments {
-		return nil, errors.New("user not found")
+		return nil, domain.ErrUserNotFound
 	}
-	return &user, err
+	return &user, nil
 }
 
-func (r *UserRepository) UpdateUserToken(user *domain.User) error {
+func (r *UserRepository) UpdateUserToken(user *domain.User) *domain.CustomError {
 	user.UpdatedAt = time.Now()
 	_, err := r.collection.UpdateOne(
 		context.Background(),
@@ -72,10 +77,14 @@ func (r *UserRepository) UpdateUserToken(user *domain.User) error {
 		},
 		options.Update().SetUpsert(false),
 	)
-	return err
+	if err != nil {
+		return domain.ErrUserTokenUpdateFailed
+	}
+
+	return nil
 }
 
-func (r *UserRepository) UpdateUser(user *dto.UserUpdate) error {
+func (r *UserRepository) UpdateUser(user *dto.UserUpdate) *domain.CustomError {
 	update := bson.D{}
 	if user.FullName != "" {
 		update = append(update, bson.E{Key: "fullname", Value: user.FullName})
@@ -97,11 +106,11 @@ func (r *UserRepository) UpdateUser(user *dto.UserUpdate) error {
 	filter := bson.D{{Key: "_id", Value: user.ID}}
 	_, err := r.collection.UpdateOne(ctx, filter, bson.D{{Key: "$set", Value: update}})
 	if err != nil {
-		return err
+		return domain.ErrUserUpdateFailed
 	}
 	return nil
 }
-func (r *UserRepository) PromoteUser(id uuid.UUID, isPromote bool) error {
+func (r *UserRepository) PromoteUser(id uuid.UUID, isPromote bool) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -109,24 +118,24 @@ func (r *UserRepository) PromoteUser(id uuid.UUID, isPromote bool) error {
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "isAdmin", Value: isPromote}}}}
 	result, err := r.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
-		return err
+		return domain.ErrUserPromotionFailed
 	}
 
 	if result.MatchedCount == 0 {
-		return errors.New("username not found")
+		return domain.ErrUserNotFound
 	} 
 
 	return nil
 }
 
-func (r *UserRepository) GetAllUsersWithName(name string) ([]uuid.UUID, error) {
+func (r *UserRepository) GetAllUsersWithName(name string) ([]uuid.UUID, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	filter := bson.D{{Key: "fullname", Value: bson.D{{Key: "$regex", Value: name}, {Key: "$options", Value: "i"}}}}
 	cursor, err := r.collection.Find(ctx, filter)
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrUserFetchFailed
 	}
 	defer cursor.Close(ctx)
 
@@ -134,13 +143,13 @@ func (r *UserRepository) GetAllUsersWithName(name string) ([]uuid.UUID, error) {
 	for cursor.Next(ctx) {
 		var user domain.User
 		if err := cursor.Decode(&user); err != nil {
-			return nil, err
+			return nil, domain.ErrUserCursorDecodeFailed
 		}
 		userIDs = append(userIDs, user.ID)
 	}
 
 	if err := cursor.Err(); err != nil {
-		return nil, err
+		return nil, domain.ErrUserCursorDecodeFailed
 	}
 
 	return userIDs, nil

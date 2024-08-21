@@ -29,13 +29,13 @@ func (u *UserController) PromoteUser(c *gin.Context) {
 		return
 	}
 
-	err := u.userUseCase.PromoteUser(promote.ID, promote.IsPromote)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	cerr := u.userUseCase.PromoteUser(promote.ID, promote.IsPromote)
+	if cerr != nil {
+		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "User promoted successfully"})	
+	c.JSON(http.StatusOK, gin.H{"message": "User promoted successfully"})	
 }
 
 func (u *UserController) UpdateProfile(c *gin.Context) {
@@ -50,11 +50,11 @@ func (u *UserController) UpdateProfile(c *gin.Context) {
 		return
 	}
 	user.ID = id
-	err = u.userUseCase.UpdateUser(&user)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	cerr := u.userUseCase.UpdateUser(&user)
+	if cerr != nil {
+		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "User profile updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "User profile updated successfully"})
 }

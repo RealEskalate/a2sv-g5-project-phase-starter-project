@@ -6,8 +6,8 @@ import (
 )
 
 type LikeRepositoryInterface interface {
-	GetLike(likeID uuid.UUID) (domain.Like, error)
-	LikeBlog(like domain.Like) error
-	DeleteLike(like domain.Like) error
-	BlogLikeCount(blogID uuid.UUID) (int, error)
+	GetLike(likeID uuid.UUID) (domain.Like, *domain.CustomError)
+	LikeBlog(like domain.Like) *domain.CustomError
+	DeleteLike(like domain.Like) *domain.CustomError
+	BlogLikeCount(blogID uuid.UUID) (int, *domain.CustomError)
 }

@@ -22,58 +22,55 @@ func NewBlogController(b usecases.IBlogUseCase) *BlogController {
 	}
 }
 
-
 func (b *BlogController) CreateBlog(c *gin.Context) {
 	var blog domain.Blog
 	if err := c.ShouldBindJSON(&blog); err != nil {
 		var validationErrors validator.ValidationErrors
 		if errors, ok := err.(validator.ValidationErrors); ok {
-		  validationErrors = errors
+			validationErrors = errors
 		}
 		errorMessages := make(map[string]string)
 		for _, e := range validationErrors {
-	
-		  field := e.Field()
-		  switch field {
-		  case "Title":
-			errorMessages["title"] = "Title is required."
-		  case "Content":
-			errorMessages["content"] = "Content is required."
-		  case "Author":
-			errorMessages["author"] = "Author is required."
-		  case "Tags":
-			errorMessages["tags"] = "Tags is required."
-		  }
+
+			field := e.Field()
+			switch field {
+			case "Title":
+				errorMessages["title"] = "Title is required."
+			case "Content":
+				errorMessages["content"] = "Content is required."
+			case "Author":
+				errorMessages["author"] = "Author is required."
+			case "Tags":
+				errorMessages["tags"] = "Tags is required."
+			}
 		}
 
 		if len(errorMessages) == 0 {
 			errorMessages["json"] = "Invalid JSON"
 		}
-	
+
 		c.JSON(http.StatusBadRequest, gin.H{"errors": errorMessages})
 		return
 	}
 
 	newBlog, err := b.BlogUseCase.CreateBlog(&blog)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusCreated, newBlog)
 }
 
-
 func (b *BlogController) GetAllBlogs(c *gin.Context) {
 	blogs, err := b.BlogUseCase.GetAllBlogs()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, blogs)
 }
-
 
 func (b *BlogController) GetBlogByID(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
@@ -81,19 +78,14 @@ func (b *BlogController) GetBlogByID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	blog, err := b.BlogUseCase.GetBlogByID(id)
-	if err != nil {
-		if err.Error() == "blog not found" {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Blog Not Found"})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
+	blog, cerr := b.BlogUseCase.GetBlogByID(id)
+	if cerr != nil {
+		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, blog)
 }
-
 
 func (b *BlogController) UpdateBlog(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
@@ -105,31 +97,31 @@ func (b *BlogController) UpdateBlog(c *gin.Context) {
 	if err := c.ShouldBindJSON(&blog); err != nil {
 		var validationErrors validator.ValidationErrors
 		if errors, ok := err.(validator.ValidationErrors); ok {
-		  validationErrors = errors
+			validationErrors = errors
 		}
-	
+
 		errorMessages := make(map[string]string)
 		for _, e := range validationErrors {
-	
-		  field := e.Field()
-		  switch field {
-		  case "Title":
-			errorMessages["title"] = "Title is required."
-		  case "Content":
-			errorMessages["content"] = "Content is required."
-	
-		  case "Author":
-			errorMessages["author"] = "Author is required."
-	
-		  case "Tags":
-			errorMessages["tags"] = "Tags is required."
-		  }
+
+			field := e.Field()
+			switch field {
+			case "Title":
+				errorMessages["title"] = "Title is required."
+			case "Content":
+				errorMessages["content"] = "Content is required."
+
+			case "Author":
+				errorMessages["author"] = "Author is required."
+
+			case "Tags":
+				errorMessages["tags"] = "Tags is required."
+			}
 		}
 
 		if len(errorMessages) == 0 {
 			errorMessages["json"] = "Invalid JSON"
 		}
-	
+
 		c.JSON(http.StatusBadRequest, gin.H{"errors": errorMessages})
 		return
 	}
@@ -137,19 +129,14 @@ func (b *BlogController) UpdateBlog(c *gin.Context) {
 
 	blog.ID = id
 	blog.Author = requester_id
-	err = b.BlogUseCase.UpdateBlog(&blog)
-	if err != nil {
-		if err.Error() == "blog not found" {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Blog Not Found"})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
+	cerr := b.BlogUseCase.UpdateBlog(&blog)
+	if cerr != nil {
+		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Blog updated successfully"})
 }
-
 
 func (b *BlogController) DeleteBlog(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
@@ -160,15 +147,14 @@ func (b *BlogController) DeleteBlog(c *gin.Context) {
 	requester_id := c.MustGet("id").(uuid.UUID)
 	is_admin := c.MustGet("is_admin").(bool)
 
-	err = b.BlogUseCase.DeleteBlog(id, requester_id, is_admin)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	cerr := b.BlogUseCase.DeleteBlog(id, requester_id, is_admin)
+	if cerr != nil {
+		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Blog deleted successfully"})
 }
-
 
 func (b *BlogController) AddView(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
@@ -176,25 +162,20 @@ func (b *BlogController) AddView(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	err = b.BlogUseCase.AddView(id)
-	if err != nil {
-		if err.Error() == "blog not found" {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Blog Not Found"})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
+	cerr := b.BlogUseCase.AddView(id)
+	if cerr != nil {
+		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "View added successfully"})
 }
 
-
 func (b *BlogController) SearchBlogs(c *gin.Context) {
 	filter := domain.BlogFilter{
-		Title:  		 c.Query("title"),
-		SortBy: 		 c.Query("sortBy"),
-		Author: 		 c.Query("author"),
+		Title:  c.Query("title"),
+		SortBy: c.Query("sortBy"),
+		Author: c.Query("author"),
 	}
 
 	tagsParam := c.Query("tags")
@@ -209,7 +190,7 @@ func (b *BlogController) SearchBlogs(c *gin.Context) {
 
 		filter.Tags = tags
 	}
-	
+
 	page, err := strconv.Atoi(c.Query("page"))
 	if err != nil || page <= 0 {
 		page = 1 // Default to the first page if not provided or invalid
@@ -221,9 +202,9 @@ func (b *BlogController) SearchBlogs(c *gin.Context) {
 	filter.Page = page
 	filter.PageSize = limit
 
-	blogs, totalPages, totalCount, err := b.BlogUseCase.SearchBlogs(filter)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	blogs, totalPages, totalCount, cerr := b.BlogUseCase.SearchBlogs(filter)
+	if cerr != nil {
+		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return
 	}
 

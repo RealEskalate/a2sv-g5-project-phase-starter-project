@@ -20,7 +20,7 @@ func NewLikeRepository(db *mongo.Database, collectionName string) *LikeRepositor
 		Collection: collection,
 	}
 }
-func (l *LikeRepository) GetLike(likeID uuid.UUID) (domain.Like, error) {
+func (l *LikeRepository) GetLike(likeID uuid.UUID) (domain.Like, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -29,11 +29,17 @@ func (l *LikeRepository) GetLike(likeID uuid.UUID) (domain.Like, error) {
 	}
 	var like domain.Like
 	err := l.Collection.FindOne(ctx, filter).Decode(&like)
-	return like, err
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return like, domain.ErrLikeNotFound
+		}
+		return like, domain.ErrLikeCountFetchFailed
+	}
+	return like, nil
 }
 
 // LikeBlog implements usecases.LikeUsecaseInterface.
-func (l *LikeRepository) LikeBlog(like domain.Like) error {
+func (l *LikeRepository) LikeBlog(like domain.Like) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -45,19 +51,26 @@ func (l *LikeRepository) LikeBlog(like domain.Like) error {
 	var existingLike domain.Like
 	err := l.Collection.FindOne(ctx, filter).Decode(&existingLike)
 	if err == mongo.ErrNoDocuments {
-		// Insert a new document
 		like.ID = uuid.New()
 		_, err = l.Collection.InsertOne(ctx, like)
+		if err != nil {
+			return domain.ErrLikeCreationFailed
+		}
 	} else if err == nil {
 		// Update the existing document
 		update := bson.D{{Key: "$set", Value: bson.D{{Key: "is_like", Value: like.IsLike}}}}
 		_, err = l.Collection.UpdateOne(ctx, filter, update)
+		if err != nil {
+			return domain.ErrLikeUpdateFailed
+		}
+	} else {
+		return domain.ErrLikeCountFetchFailed
 	}
-	return err
+	return nil
 }
 
 // DeleteBlog implements usecases.LikeUsecaseInterface.
-func (l *LikeRepository) DeleteLike(like domain.Like) error {
+func (l *LikeRepository) DeleteLike(like domain.Like) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -65,11 +78,14 @@ func (l *LikeRepository) DeleteLike(like domain.Like) error {
 		{Key: "blog_id", Value: like.BlogID},
 		{Key: "user_id", Value: like.UserID},
 	}
-	_, err := l.Collection.DeleteOne(ctx, filter)
-	return err
+	result, err := l.Collection.DeleteOne(ctx, filter)
+	if err != nil || result.DeletedCount == 0 {
+		return domain.ErrLikeDeletionFailed
+	}
+	return nil
 }
 
-func (l *LikeRepository) BlogLikeCount(blog_id uuid.UUID) (int, error) {
+func (l *LikeRepository) BlogLikeCount(blog_id uuid.UUID) (int, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -77,5 +93,8 @@ func (l *LikeRepository) BlogLikeCount(blog_id uuid.UUID) (int, error) {
 		{Key: "blog_id", Value: blog_id},
 	}
 	count, err := l.Collection.CountDocuments(ctx, filter)
-	return int(count), err
+	if err != nil {
+		return 0, domain.ErrLikeCountFetchFailed
+	}
+	return int(count), nil
 }

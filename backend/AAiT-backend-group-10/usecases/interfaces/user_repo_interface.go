@@ -7,13 +7,13 @@ import (
 )
 
 type IUserRepository interface {
-	CreateUser(user *domain.User) error
-	GetUserByEmail(email string) (*domain.User, error)
-	GetUserByID(id uuid.UUID) (*domain.User, error)
-	GetUserByUsername(username string) (*domain.User, error)
-	UpdateUser(user *dto.UserUpdate) error
-	PromoteUser(id uuid.UUID, isPromote bool) error
-	GetAllUsersWithName(name string) ([]uuid.UUID, error)
-	UpdateUserToken(user *domain.User) error
+	CreateUser(user *domain.User) *domain.CustomError
+	GetUserByEmail(email string) (*domain.User, *domain.CustomError)
+	GetUserByID(id uuid.UUID) (*domain.User, *domain.CustomError)
+	GetUserByUsername(username string) (*domain.User, *domain.CustomError)
+	UpdateUser(user *dto.UserUpdate) *domain.CustomError
+	PromoteUser(id uuid.UUID, isPromote bool) *domain.CustomError
+	GetAllUsersWithName(name string) ([]uuid.UUID, *domain.CustomError)
+	UpdateUserToken(user *domain.User) *domain.CustomError
 }
 

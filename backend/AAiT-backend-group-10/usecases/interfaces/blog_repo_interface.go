@@ -6,11 +6,11 @@ import (
 )
 
 type IBlogRepository interface {
-	Create(blog *domain.Blog) error
-	FindAll() ([]domain.Blog, error)
-	FindByID(id uuid.UUID) (*domain.Blog, error)
-	Update(blog *domain.Blog) error
-	Delete(id uuid.UUID) error
-	AddView(id uuid.UUID) error
-	Search(filter domain.BlogFilter) ([]domain.Blog, int, error)
+	Create(blog *domain.Blog) *domain.CustomError
+	FindAll() ([]domain.Blog, *domain.CustomError)
+	FindByID(id uuid.UUID) (*domain.Blog, *domain.CustomError)
+	Update(blog *domain.Blog) *domain.CustomError
+	Delete(id uuid.UUID) *domain.CustomError
+	AddView(id uuid.UUID) *domain.CustomError
+	Search(filter domain.BlogFilter) ([]domain.Blog, int, *domain.CustomError)
 }

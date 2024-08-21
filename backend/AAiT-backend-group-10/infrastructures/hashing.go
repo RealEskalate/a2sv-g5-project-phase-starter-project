@@ -3,15 +3,19 @@ package infrastructures
 import (
 	"fmt"
 
+	"aait.backend.g10/domain"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type PwdService struct {
 }
 
-func (s *PwdService) HashPassword(password string) (string, error) {
+func (s *PwdService) HashPassword(password string) (string, *domain.CustomError) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return string(bytes), err
+	if err != nil {
+		return "", domain.ErrPasswordHashingFailed
+	}
+	return string(bytes), nil
 }
 
 func (s *PwdService) CheckPasswordHash(password string, hash string) bool {

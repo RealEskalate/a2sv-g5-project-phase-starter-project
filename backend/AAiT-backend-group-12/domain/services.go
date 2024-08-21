@@ -22,3 +22,9 @@ type JWTServiceInterface interface {
 	GetRole(token *jwt.Token) (string, CodedError)
 	GetTokenType(token *jwt.Token) (string, CodedError)
 }
+
+type MailServiceInterface interface {
+	SendMail(from string, to string, mailContent string) error
+	EmailVerificationTemplate(hostUrl string, username string, token string) string
+	PasswordResetTemplate(hostUrl string, username string, token string) string
+}

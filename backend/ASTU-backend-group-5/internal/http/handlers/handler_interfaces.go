@@ -1,7 +1,7 @@
 package handlers
 
 import (
-    "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
 // Handler defines the interface for all HTTP handlers.
@@ -13,7 +13,4 @@ type UserInterfece interface {
 	ResetPasswordRequest(c *gin.Context)
 	ResetPassword(c *gin.Context)
 	GoogleSignIn(c *gin.Context)
-	
-
-
 }

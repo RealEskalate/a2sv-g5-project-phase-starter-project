@@ -1,7 +1,11 @@
+"use client";
 import React from "react";
 import LoanCard from "./LoanCard";
+import { useGetDetailActiveLoansQuery } from "@/lib/redux/slices/activeLoanSlice";
 
 const Loansitem = () => {
+  const { data, isLoading } = useGetDetailActiveLoansQuery();
+  const allData = data?.data;
   return (
     <div
       className="flex overflow-x-auto justify-around overflow-clip whitespace-nowrap w-full"
@@ -13,17 +17,17 @@ const Loansitem = () => {
       <LoanCard
         image={"/assets/icons/personal.svg"}
         name={"Personal Loans"}
-        amount={`$${50000}`}
+        amount={`$${allData?.personalLoan.toLocaleString()}`}
       />
       <LoanCard
         image={"/assets/icons/bag.svg"}
         name={"Corporate Loans"}
-        amount={`$${100000}`}
+        amount={`$${allData?.corporateLoan.toLocaleString()}`}
       />
       <LoanCard
         image={"/assets/icons/businesstrack.svg"}
         name={"Business Loans"}
-        amount={`$${500000}`}
+        amount={`$${allData?.businessLoan.toLocaleString()}`}
       />
       <LoanCard
         image={"/assets/icons/customLoan.svg"}

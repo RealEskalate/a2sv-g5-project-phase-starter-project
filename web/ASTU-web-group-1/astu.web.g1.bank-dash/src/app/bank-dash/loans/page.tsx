@@ -6,8 +6,8 @@ import { Store } from "lucide-react";
 export default function page() {
   return (
     <div className="flex flex-col gap-5">
-      <Loansitem />
       <StoreProvider>
+        <Loansitem />
         <ActiveLoansOverviewTable />
       </StoreProvider>
     </div>

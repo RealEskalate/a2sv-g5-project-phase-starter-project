@@ -1,7 +1,6 @@
-package controllers
+package infrastructure
 
 import (
-	infrastructure "astu-backend-g1/Infrastructure"
 	"net/http"
 
 	"astu-backend-g1/config" // Add this line to import the missing package
@@ -10,10 +9,10 @@ import (
 )
 
 type AuthController struct {
-	auth infrastructure.GeneralAuthorizer
+	auth GeneralAuthorizer
 }
 
-func NewAuthController(auth infrastructure.GeneralAuthorizer) GeneralAuthorizationController {
+func NewAuthController(auth GeneralAuthorizer) GeneralAuthorizationController {
 	return &AuthController{
 		auth: auth,
 	}

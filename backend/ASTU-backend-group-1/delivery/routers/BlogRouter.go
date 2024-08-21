@@ -2,16 +2,18 @@ package router
 
 import (
 	"astu-backend-g1/delivery/controllers"
+	infrastructure "astu-backend-g1/Infrastructure"
+	
 
 	"github.com/gin-gonic/gin"
 )
 
 type BlogRoute struct {
 	usecase        controllers.BlogController
-	authController controllers.GeneralAuthorizationController
+	authController infrastructure.GeneralAuthorizationController
 }
 
-func NewBlogRoute(usecase controllers.BlogController, authcontroller controllers.GeneralAuthorizationController) *BlogRoute {
+func NewBlogRoute(usecase controllers.BlogController, authcontroller infrastructure.GeneralAuthorizationController) *BlogRoute {
 	return &BlogRoute{usecase: usecase, authController: authcontroller}
 }
 

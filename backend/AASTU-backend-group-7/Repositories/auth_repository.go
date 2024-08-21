@@ -288,7 +288,7 @@ func (ar *authRepository) GenerateTokenFromUser(ctx context.Context, existingUse
 	ar.mu.RLock()
 	defer ar.mu.RUnlock()
 
-	filter := bson.D{{Key: "email", Value: existingUser.Email}}
+	// filter := bson.D{{Key: "email", Value: existingUser.Email}}
 	// Generate JWT access
 	jwtAccessToken, err := jwtservice.CreateAccessToken(existingUser)
 	if err != nil {
@@ -299,15 +299,14 @@ func (ar *authRepository) GenerateTokenFromUser(ctx context.Context, existingUse
 		return Domain.Tokens{}, err, 500
 	}
 
-	filter = primitive.D{{"_id", existingUser.ID}}
-	existingTokenCount, err := ar.UserCollection.CountDocuments(ctx, filter)
-	fmt.Println("existingTokenCount", existingTokenCount)
-	if err != nil {
+	// filter := primitive.D{{"_id", existingUser.ID}}
+	existingToken, err, statusCode:= ar.TokenRepository.FindToken(ctx, existingUser.ID)
+	if err != nil && err.Error() != "mongo: no documents in result" {
 		fmt.Println("error at count", err)
-		return Domain.Tokens{}, err, 500
+		return Domain.Tokens{}, err, statusCode
 	}
 
-	if existingTokenCount > 0 {
+	if existingToken != "" {
 		// update the refresh token
 		err, statusCode := ar.TokenRepository.UpdateToken(ctx, refreshToken, existingUser.ID)
 		if err != nil {

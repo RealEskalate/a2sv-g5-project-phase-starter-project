@@ -60,7 +60,7 @@ func (r *RefreshRepository) FindToken(ctx context.Context, userid primitive.Obje
 	filter := primitive.D{{"_id", userid}}
 	token := Domain.RefreshToken{}
 	err := r.collection.FindOne(ctx, filter).Decode(&token)
-	if err != nil {
+	if err != nil && err.Error() != "mongo: no documents in result" {
 		fmt.Println(err)
 		return "", err, 500
 	}

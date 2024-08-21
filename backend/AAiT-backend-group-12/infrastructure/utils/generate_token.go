@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// GenerateToken generates a random token of the specified length
 func GenerateToken(length int) (string, error) {
 	token := make([]byte, length)
 

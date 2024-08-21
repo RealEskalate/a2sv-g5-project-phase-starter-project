@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// Creates a root user in the database with the given username and password
 func CreateRootUser(db *mongo.Database, rootUsername string, rootPassword string) error {
 	rootUser := domain.User{
 		Username:   rootUsername,
@@ -36,6 +37,11 @@ func CreateRootUser(db *mongo.Database, rootUsername string, rootPassword string
 	_, derr = collection.InsertOne(context.Background(), rootUser)
 	if derr != nil {
 		return fmt.Errorf("error creating root users: " + derr.Error())
+	}
+
+	res := collection.FindOneAndUpdate(context.Background(), bson.D{{Key: "username", Value: rootUsername}}, bson.D{{Key: "$unset", Value: bson.D{{Key: "verificationdata", Value: ""}}}})
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
 	}
 
 	fmt.Println("Root user created successfully")

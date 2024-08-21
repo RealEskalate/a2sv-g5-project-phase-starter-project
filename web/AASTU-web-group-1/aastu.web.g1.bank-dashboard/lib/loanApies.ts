@@ -4,7 +4,7 @@ export  async function getLoansAll() {
     try {
         const session = await getSession();
         const accessToken = session?.user.accessToken;
-        const response = await fetch(`https://bank-dashboard-6acc.onrender.com/active-loans/all`, {
+        const response = await fetch(`https://bank-dashboard-1tst.onrender.com/active-loans/all`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${accessToken}`,

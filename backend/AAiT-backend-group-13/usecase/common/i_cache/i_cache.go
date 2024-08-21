@@ -1,4 +1,4 @@
-package icache 
+package cache 
 
 
 type ICache interface {

@@ -2,11 +2,13 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"meleket/domain"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type BlogRepository struct {
@@ -22,29 +24,46 @@ func NewBlogRepository(col domain.Collection) *BlogRepository {
 	return &BlogRepository{collection: col}
 }
 
-func (r *BlogRepository) Save(blog *domain.BlogPost) (interface{},error) {
+func (r *BlogRepository) Save(blog *domain.BlogPost) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	createdBlog, err := r.collection.InsertOne(ctx, blog)
-	return createdBlog.InsertedID,err
+	res, err := r.collection.InsertOne(ctx, blog)
+	if err != nil {
+		return "", err
+	}
+	return res.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func (r *BlogRepository) GetAllBlog() ([]domain.BlogPost, error) {
+func (r *BlogRepository) GetAllBlog(pagination domain.Pagination, sortBy string, sortOrder int) ([]domain.BlogPost, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
 	var blogs []domain.BlogPost
-	cursor, err := r.collection.Find(ctx, bson.M{})
+	skip := (pagination.Page - 1) * pagination.Limit
+
+	// Define the sorting options based on the input
+	sortOptions := bson.D{{sortBy, sortOrder}}
+
+	findOptions := options.Find()
+	findOptions.SetLimit(int64(pagination.Limit))
+	findOptions.SetSkip(int64(skip))
+	findOptions.SetSort(sortOptions) // Use the dynamic sort option
+
+	cursor, err := r.collection.Find(ctx, bson.M{}, findOptions)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
 
-	err = cursor.All(context.TODO(), &blogs)
+	if err = cursor.All(ctx, &blogs); err != nil {
+		return nil, err
+	}
 
-	return blogs, err
+	return blogs, nil
 }
 
 func (r *BlogRepository) GetBlogByID(id primitive.ObjectID) (*domain.BlogPost, error) {
+	fmt.Println(id)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var blog domain.BlogPost
@@ -52,10 +71,17 @@ func (r *BlogRepository) GetBlogByID(id primitive.ObjectID) (*domain.BlogPost, e
 	return &blog, err
 }
 
-func (r *BlogRepository) Update(blog *domain.BlogPost) (*domain.BlogPost, error) {
+func (r *BlogRepository) Update(id primitive.ObjectID, blog *domain.BlogPost) (*domain.BlogPost, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	result := r.collection.FindOneAndUpdate(ctx, bson.M{"_id": blog.ID}, blog)
+	result := r.collection.FindOneAndUpdate(
+		ctx,
+		bson.M{"_id": id}, // The filter to find the document by its ID
+		bson.M{
+			"$set": blog, // Use $set to update the fields in the document
+		},
+	)
+	fmt.Println(result)
 	if result.Err() != nil {
 		return nil, result.Err()
 	}

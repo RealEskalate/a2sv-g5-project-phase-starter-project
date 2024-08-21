@@ -1,0 +1,15 @@
+const UserIcon = () => (
+  <div className="w-6 h-6 rounded-full bg-pink-100 flex items-center justify-center">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+      className="w-full h-full text-pink-600"
+    >
+      <path
+        fillRule="evenodd"
+        d="M8 8a3 3 0 100-6 3 3 0 000 6zm3.5 3c-1.38 0-2.629.56-3.5 1.463A5.978 5.978 0 004.5 11C2.57 11 1 12.57 1 14.5V15h14v-.5c0-1.93-1.57-3.5-3.5-3.5z"
+      />
+    </svg>
+  </div>
+);

@@ -81,3 +81,43 @@ const accountDatas: BalanceCardProps[] = [
   },
 ];
 
+
+// import { useState, useEffect } from "react";
+// import { currentuser } from "@/services/userupdate";
+// import { BalanceCard } from './smallCard';
+
+
+
+// const App: React.FC = () => {
+//   const [balance, setBalance] = useState("");
+
+//   useEffect(() => {
+//     const fetchBalance = async () => {
+//       try {
+//         const balanceInfo = await currentuser();
+//         console.log(balanceInfo)
+
+//         if (Array.isArray(balanceInfo.data.content)) {
+//           setBalance(balanceInfo.data.content);
+//         } else {
+//           console.error("Transaction data is not an array");
+//         }
+//       } catch (error) {
+//         console.error("Failed to fetch transactions", error);
+//       }
+//     };
+
+//     fetchBalance();
+//   }, []);
+
+//   return (
+//     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+//       {accountDatas.map((accountData, index) => (
+//         <BalanceCard key={index} accountData={accountData} />
+//       ))}
+//     </div>
+//   );
+// };
+
+// export default App;
+

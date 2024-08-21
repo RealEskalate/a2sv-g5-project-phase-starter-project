@@ -1,7 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import { BarChartComponent } from "./components/BarChartComponent";
+<<<<<<< HEAD
+// import { TableComponent } from "./components/TableComponent";
+=======
 import { TableComponent } from "./components/TableComponent";
+>>>>>>> aastu.web.g5.main
 import Card from "../components/common/card";
 import dummyData from "./components/dummyData"; // Adjust the path as needed
 import columns from "./components/columns"; // Adjust the path as needed
@@ -93,7 +97,12 @@ const Transactions: React.FC = () => {
 
         <div className="hidden lg:flex flex-col w-full">
           {/* Render TableComponent for desktop and tablet */}
+<<<<<<< HEAD
+          {/* <TableComponent columns={columns} data={dummyData} /> */}
+          <p>Table here</p>
+=======
           <TableComponent columns={columns} data={dummyData} />
+>>>>>>> aastu.web.g5.main
         </div>
 
         <div className="lg:hidden flex flex-col w-full">

@@ -58,8 +58,8 @@ func (uc *BlogUsecase) UpdateBLog(blogId string, updateBlog domain.Blog) (domain
 	}
 	return blog, nil
 }
-func (uc *BlogUsecase) DeleteBLog(blogId string) error {
-	err := uc.blogRepository.DeleteBlog(blogId)
+func (uc *BlogUsecase) DeleteBLog(blogId ,authorId string) error {
+	err := uc.blogRepository.DeleteBlog(blogId, authorId)
 	if err != nil {
 		return err
 	}

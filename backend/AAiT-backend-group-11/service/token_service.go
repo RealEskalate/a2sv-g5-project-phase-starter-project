@@ -71,9 +71,9 @@ func (service *tokenService) GenerateAccessToken(user *entities.User) (string, e
 			"userId": user.ID.Hex(),
 			"email":  user.Email,
 			"role":   user.Role,
-			"exp":    time.Now().Add(time.Hour).Unix(),
+			"exp":    time.Now().Add(time.Hour * 300).Unix(),
 		})
-	accessToken, err := token.SignedString(service.accessTokenSecret)
+	accessToken, err := token.SignedString([]byte(service.accessTokenSecret))
 	if err != nil {
 		return "", err
 	}
@@ -90,7 +90,7 @@ func (service *tokenService) GenerateRefreshToken(user *entities.User) (*entitie
 			"role":  user.Role,
 			"exp":   time.Now().Add(time.Hour * 24 * 30).Unix(),
 		})
-	refreshToken, err := token.SignedString(service.refreshTokenSecret)
+	refreshToken, err := token.SignedString([]byte(service.refreshTokenSecret))
 	if err != nil {
 		return &entities.RefreshToken{}, err
 	}
@@ -163,16 +163,18 @@ func (service *tokenService) VerifyRefreshToken(token string) error {
 }
 
 func (service *tokenService) GetClaimsFromToken(token string) map[string]string {
+	
 	Token, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(service.refreshTokenSecret), nil
+		return []byte(service.accessTokenSecret), nil
 	})
 
 	if err != nil {
 		return map[string]string{}
 	}
+
 
 	if claims, ok := Token.Claims.(jwt.MapClaims); ok && Token.Valid {
 		resp := make(map[string]string)
@@ -181,6 +183,7 @@ func (service *tokenService) GetClaimsFromToken(token string) map[string]string 
 		}
 		return resp
 	}
+
 	return map[string]string{}
 }
 

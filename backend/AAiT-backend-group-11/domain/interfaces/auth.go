@@ -7,5 +7,6 @@ type AuthenticationService interface {
 	Login(emailOrUsername, password string) (*entities.RefreshToken,string, error)
 	Logout(userId string) error
 	RefreshAccessToken(token *entities.RefreshToken) (string,error)
+	VerifyEmail(email string, code string) error
 }
 

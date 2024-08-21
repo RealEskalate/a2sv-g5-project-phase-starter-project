@@ -8,6 +8,7 @@ type UserRepository interface {
 	FindUserById(userId string) (*entities.User, error)
 	UpdateUser(user *entities.User) (*entities.User, error)
 	DeleteUser(userId string) error
+	MarkUserAsVerified(email string) error
 }
 
 type UserService interface {
@@ -18,4 +19,5 @@ type UserService interface {
 	DeleteUser(userId string) error
 	PromoteUserToAdmin(userId string) error
 	DemoteUserToRegular(userId string) error
+	MarkUserAsVerified(email string) error
 }

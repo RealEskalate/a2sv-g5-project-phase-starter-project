@@ -7,6 +7,7 @@ type CommentRepository interface {
 	DeleteComment(commentId string) error
 	GetCommentsByBlogPostId(blogPostId string) ([]entities.Comment, error)
 	UpdateComment(comment *entities.Comment) (*entities.Comment, error)
+	GetCommentById(commentId string) (*entities.Comment, error)
 }
 
 type CommentService interface {

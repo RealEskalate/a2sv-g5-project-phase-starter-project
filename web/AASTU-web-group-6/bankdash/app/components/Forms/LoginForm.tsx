@@ -20,16 +20,11 @@ const LoginForm = () => {
   const onSubmit = async (data: LoginValue) => {
     setLoading(true);
     setError("");
-    const result = await signIn("credentials", {
-      redirect: false,
-      userName: data.userName,
-      password: data.password,
-    });
-
     const result = await signIn("credentials",{
       redirect: false,
       userName: data.userName,
-      password: data.password
+      password: data.password,
+      
     })
 
     console.log(result)
@@ -39,7 +34,6 @@ const LoginForm = () => {
       setError("Invalid Credential");
       setLoading(false);
     } else {
-      console.log("Login Successful:", result);
       router.push("/");
     }
   };

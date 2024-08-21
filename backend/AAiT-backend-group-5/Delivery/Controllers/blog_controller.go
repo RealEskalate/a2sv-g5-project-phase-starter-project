@@ -19,18 +19,8 @@ func NewBlogController(usecase interfaces.BlogUsecase) interfaces.BlogController
 	}
 }
 
-func (c *blogController) getAuthorID(ctx *gin.Context) (string, bool) {
-	authorID, ok := ctx.Get("id")
-	if !ok {
-		return "", false
-	}
-
-	authorIDStr, ok := authorID.(string)
-	if !ok {
-		return "", false
-	}
-
-	return authorIDStr, true
+func (c *blogController) getAuthorID(ctx *gin.Context) string {
+	return ctx.GetString("id")
 }
 
 func (c *blogController) CreateBlogController(ctx *gin.Context) {
@@ -41,12 +31,7 @@ func (c *blogController) CreateBlogController(ctx *gin.Context) {
 		return
 	}
 
-	authorID, ok := c.getAuthorID(ctx)
-
-	if !ok {
-		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
+	authorID := c.getAuthorID(ctx)
 
 	blog := models.Blog{
 		Title:    newBlog.Title,
@@ -116,11 +101,7 @@ func (c *blogController) UpdateBlogController(ctx *gin.Context) {
 		return
 	}
 
-	authorID, ok := c.getAuthorID(ctx)
-	if !ok {
-		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
+	authorID := c.getAuthorID(ctx)
 
 	blog := models.Blog{
 		ID:       blogID,
@@ -142,12 +123,7 @@ func (c *blogController) UpdateBlogController(ctx *gin.Context) {
 
 func (c *blogController) DeleteBlogController(ctx *gin.Context) {
 	blogID := ctx.Param("id")
-	authorID, ok := c.getAuthorID(ctx)
-
-	if !ok {
-		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
+	authorID := c.getAuthorID(ctx)
 
 	deleteBlogReq := dtos.DeleteBlogRequest{
 		BlogID:   blogID,
@@ -170,11 +146,7 @@ func (c *blogController) TrackPopularityController(ctx *gin.Context) {
 		return
 	}
 
-	userID, ok := c.getAuthorID(ctx)
-	if !ok {
-		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
+	userID := c.getAuthorID(ctx)
 
 	blogPopularity.UserID = userID
 	if err := c.usecase.TrackPopularity(ctx, blogPopularity); err != nil {
@@ -193,13 +165,7 @@ func (c *blogController) AddCommentController(ctx *gin.Context) {
 		return
 	}
 
-	userID, ok := c.getAuthorID(ctx)
-
-	if !ok {
-		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
+	userID := c.getAuthorID(ctx)
 	comment.UserID = userID
 	if err := c.usecase.AddComment(ctx, comment); err != nil {
 		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})

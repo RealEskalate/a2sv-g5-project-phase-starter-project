@@ -18,7 +18,6 @@ import (
 	ijwt "github.com/group13/blog/usecase/common/i_jwt"
 	irepo "github.com/group13/blog/usecase/common/i_repo"
 	result "github.com/group13/blog/usecase/user/result"
-	
 )
 
 // SignUpHandler handles user sign-up logic.
@@ -56,7 +55,7 @@ func NewSignUpHandler(config SignUpConfig) *SignUpHandler {
 func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, error) {
 	log.Println("Starting sign-up process")
 
-	cfg := models.UserConfig{
+	user, err := models.NewUser(models.UserConfig{
 		Username:       command.username,
 		Email:          command.email,
 		PlainPassword:  command.password,
@@ -64,9 +63,7 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 		LastName:       command.lastName,
 		IsAdmin:        false,
 		PasswordHasher: h.hashService,
-	}
-
-	user, err := models.NewUser(cfg)
+	})
 	if err != nil {
 		log.Printf("Error creating new user: %v", err)
 		return nil, err
@@ -102,7 +99,7 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 	log.Printf("Email %s is available", user.Email())
 
 	// Generate a validation link
-	validationLink, err := h.GenerateValidationLink(*user)
+	validationLink, err := h.generateValidationLink(*user)
 	if err != nil {
 		log.Printf("Error generating validation link: %v", err)
 		return nil, err
@@ -134,8 +131,8 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 	}, nil
 }
 
-// GenerateValidationLink creates a validation link for the user with encryption.
-func (h *SignUpHandler) GenerateValidationLink(user models.User) (string, error) {
+// generateValidationLink creates a validation link for the user with encryption.
+func (h *SignUpHandler) generateValidationLink(user models.User) (string, error) {
 	log.Printf("Generating validation link for user %s", user.Username())
 
 	userID := user.ID().String()
@@ -149,7 +146,7 @@ func (h *SignUpHandler) GenerateValidationLink(user models.User) (string, error)
 		return "", er.NewUnexpected("failed to encrypt value")
 	}
 
-	validationLink := fmt.Sprintf("https://localhost:8080/validate?=%s", encryptedValue)
+	validationLink := fmt.Sprintf("http://localhost:8080/api/v1/auth/validateEmail?secret?=%s", encryptedValue)
 	log.Printf("Validation link generated: %s", validationLink)
 	return validationLink, nil
 }

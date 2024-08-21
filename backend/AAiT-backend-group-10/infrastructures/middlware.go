@@ -66,7 +66,7 @@ func AdminMiddleWare() gin.HandlerFunc {
 		defer context.Next()
 		is_admin, exists := context.Get("is_admin")
 		if !exists || is_admin != true {
-			context.JSON(http.StatusForbidden, gin.H{"message": "Sorry, you are not eligible for this"})
+			context.JSON(http.StatusForbidden, gin.H{"message": "Sorry, you must be an admin"})
 			context.Abort()
 			return
 		}

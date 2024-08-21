@@ -14,7 +14,7 @@ func JWTAuthMiddelware(service interfaces.JwtService) gin.HandlerFunc {
 
 		auth_parts, err := service.ValidateAuthHeader(authHeader)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, err.Error())
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}
@@ -23,7 +23,7 @@ func JWTAuthMiddelware(service interfaces.JwtService) gin.HandlerFunc {
 		tokenString := auth_parts[1]
 		authorizedToken, err := service.ValidateToken(tokenString)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, err.Error())
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}

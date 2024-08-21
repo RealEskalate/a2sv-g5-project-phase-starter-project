@@ -32,4 +32,5 @@ func Setup(env *config.Env, db mongo.Database, gin *gin.Engine) {
 	NewAISuggestionRouter(db, env, protectedRouter)
 
 	NewPromoteDemoteRouter(db, adminRouter)
+	NewBlogCommentRouter(env, db, protectedRouter, redisClient)
 }

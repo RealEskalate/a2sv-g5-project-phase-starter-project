@@ -19,9 +19,10 @@ func NewBlogRouter(env *config.Env, database mongo.Database, group *gin.RouterGr
 	popularity_repository := repository.NewBlogPopularityActionRepository(&database)
 	user_repository := repository.NewUserRepository(&database)
 	blog_repository := repository.NewBlogRepository(&database)
+	blog_comment_repository := repository.NewBlogCommentRepository(&database)
 	cacheService := infrastructure.NewRedisCache(redisClient)
-	helper := utils.NewBlogHelper()
-	blogUsecase := usecases.NewblogUsecase(blog_repository, cacheService, *env, time.Hour*24, helper, user_repository, popularity_repository)
+	helper := utils.NewBlogHelper(blog_repository, cacheService, time.Duration(time.Hour*24), blog_comment_repository)
+	blogUsecase := usecases.NewblogUsecase(blog_repository, cacheService, *env, time.Hour*24, helper, user_repository, popularity_repository, blog_comment_repository)
 
 	blogController := controllers.NewBlogController(blogUsecase)
 
@@ -32,5 +33,4 @@ func NewBlogRouter(env *config.Env, database mongo.Database, group *gin.RouterGr
 	group.DELETE("/deleteBlog/:id", blogController.DeleteBlogController)
 	group.POST("/action", blogController.TrackPopularityController)
 	group.POST("/filter", blogController.SearchBlogsController)
-	group.POST("/comment", blogController.AddCommentController)
 }

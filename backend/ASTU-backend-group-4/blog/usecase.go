@@ -141,7 +141,7 @@ func (b *BlogUseCaseImpl) DeleteComment(ctx context.Context, id, userID string) 
 
 // DislikeBlog implements BlogUseCase.
 func (b *BlogUseCaseImpl) DislikeBlog(ctx context.Context, userID string, blogID string) error {
-	user, err := b.authRepository.GetUserByUsername(ctx, userID) // TODO: Change to GetUserByID
+	user, err := b.authRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return err
 	}
@@ -216,7 +216,7 @@ func (b *BlogUseCaseImpl) GetCommentsByBlogID(ctx context.Context, blogID string
 
 // LikeBlog implements BlogUseCase.
 func (b *BlogUseCaseImpl) LikeBlog(ctx context.Context, userID string, blogID string) error {
-	user, err := b.authRepository.GetUserByUsername(ctx, userID) // TODO: Change to GetUserByID
+	user, err := b.authRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return err
 	}
@@ -264,7 +264,7 @@ func (b *BlogUseCaseImpl) SearchBlogs(ctx context.Context, query string, paginat
 
 // UpdateBlog implements BlogUseCase.
 func (b *BlogUseCaseImpl) UpdateBlog(ctx context.Context, id, userID string, blog UpdateBlogRequest) (Blog, error) {
-	user, err := b.authRepository.GetUserByUsername(ctx, userID) // TODO: Change to GetUserByID
+	user, err := b.authRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return Blog{}, err
 	}

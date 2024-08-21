@@ -21,7 +21,7 @@ import {
   getTransactionIncomes,
   getTransactionsExpenses,
 } from "@/lib/api/transactionController";
-
+import Loading from "./components/Loading";
 type DataItem = {
   heading: string;
   text: string;
@@ -64,7 +64,9 @@ const Page = () => {
         if (sessionData && sessionData.user) {
           setSession(sessionData.user);
         } else {
-          router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
+          router.push(
+            `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+          );
         }
       } catch (error) {
         console.error("Error fetching session:", error);
@@ -72,42 +74,47 @@ const Page = () => {
         setLoading(false);
       }
     };
-  
+
     fetchSession();
   }, [router]);
-  
+
   // Combined fetching data to reduce multiple useEffect hooks
   useEffect(() => {
     const fetchData = async () => {
       if (!access_token) return;
-  
+
       try {
         // Fetch Cards
         const cardData = await getCards(access_token);
         setGetCards(cardData.content);
-  
+
         // Fetch Balance
         const currentUser = await getCurrentUser(access_token);
         setCurrentUser(currentUser);
-  
+
         // Fetch Income
         const incomeData = await getTransactionIncomes(0, 1, access_token);
-        const totalIncome = incomeData.data.content.reduce((sum: number, item: any) => sum + item.amount, 0);
+        const totalIncome = incomeData.data.content.reduce(
+          (sum: number, item: any) => sum + item.amount,
+          0
+        );
         setIncome(totalIncome);
-  
+
         // Fetch Expense
         const expenseData = await getTransactionsExpenses(0, 1, access_token);
-        const totalExpense = expenseData.data.content.reduce((sum: number, item: any) => sum + item.amount, 0);
+        const totalExpense = expenseData.data.content.reduce(
+          (sum: number, item: any) => sum + item.amount,
+          0
+        );
         setExpense(totalExpense);
-  
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-  
+
     fetchData();
   }, [access_token]);
-  
+
   // Example data for the first ListCard
   const ReusableCard: Column = {
     icon: MdHome,
@@ -195,7 +202,11 @@ const Page = () => {
     })),
   };
 
-  if (loading) return null; // Don't render anything while loading
+  if (loading) {
+    return <Loading></Loading>;
+  }
+
+  // Don't render anything while loading
 
   if (!session) {
     router.push(
@@ -237,7 +248,7 @@ const Page = () => {
                 See All
               </span>
             </div>
-            {getCard &&
+            {getCard ? (
               getCard.map((items) => (
                 <Card
                   key={items.id}
@@ -251,7 +262,39 @@ const Page = () => {
                   iconBgColor="bg-opacity-10"
                   showIcon={true}
                 ></Card>
-              ))}
+              ))
+            ) : (
+              <div className="border rounded-3xl my-4 mx-2 animate-pulse">
+                <div className="relative w-full bg-gradient-to-b from-gray-300 to-gray-500 text-transparent rounded-3xl shadow-md h-[230px] min-w-[350px]">
+                  <div className="flex justify-between items-start px-6 pt-6">
+                    <div>
+                      <p className="text-xs font-semibold bg-gray-400 rounded w-16 h-4 mb-2"></p>
+                      <p className="text-xl font-medium bg-gray-400 rounded w-24 h-6"></p>
+                    </div>
+                    <div className="w-8 h-8 bg-gray-400 rounded-full"></div>
+                  </div>
+
+                  <div className="flex justify-between gap-12 mt-4 px-6">
+                    <div>
+                      <p className="text-xs font-medium bg-gray-400 rounded w-16 h-4 mb-2"></p>
+                      <p className="font-medium text-base bg-gray-400 rounded w-24 h-6"></p>
+                    </div>
+                    <div className="pr-8">
+                      <p className="text-xs font-medium bg-gray-400 rounded w-16 h-4 mb-2"></p>
+                      <p className="font-medium text-base md:text-lg bg-gray-400 rounded w-24 h-6"></p>
+                    </div>
+                  </div>
+
+                  <div className="relative mt-8 flex justify-between py-4 items-center">
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-white/30 to-transparent z-0"></div>
+                    <div className="relative z-10 text-base font-medium px-6 bg-gray-400 rounded w-40 h-6"></div>
+                    <div className="flex justify-end relative z-10 px-6">
+                      <div className="w-12 h-12 bg-gray-400 rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

@@ -1,9 +1,16 @@
 package dtos
 
+// Defines a struct for storing profile picture data
+type ProfilePicture struct {
+	FileName string `json:"file_name"`
+	IsLocal  bool   `json:"-"`
+}
+
 // A struct to deserialize the request body for the update user endpoint
 type UpdateUser struct {
-	PhoneNumber string `json:"phone_number"`
-	Bio         string `json:"bio"`
+	PhoneNumber    string         `json:"phone_number"`
+	Bio            string         `json:"bio"`
+	ProfilePicture ProfilePicture `json:"profile_picture"`
 }
 
 // A struct to deserialize the request body for the reset password endpoint

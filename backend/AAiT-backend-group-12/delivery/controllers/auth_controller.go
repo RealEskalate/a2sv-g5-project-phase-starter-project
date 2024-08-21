@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AuthController struct {
-	usecase domain.UserUsecaseInterface
+	usecase    domain.UserUsecaseInterface
+	DeleteFile func(filePath string) error
 }
 
 // Returns the HTTP equivalent codes of the domain error codes
@@ -33,8 +35,8 @@ func GetHTTPErrorCode(err domain.CodedError) int {
 }
 
 // NewAuthController initializes the Auth controller
-func NewAuthController(usecase domain.UserUsecaseInterface) *AuthController {
-	return &AuthController{usecase: usecase}
+func NewAuthController(usecase domain.UserUsecaseInterface, DeleteFile func(string) error) *AuthController {
+	return &AuthController{usecase: usecase, DeleteFile: DeleteFile}
 }
 
 // Returns the contents of the Authorization header
@@ -65,16 +67,34 @@ func (controller *AuthController) GetDomain(c *gin.Context) string {
 
 // HandleRegister handles the register user endpoint
 func (controller *AuthController) HandleSignup(c *gin.Context) {
-	var newUser domain.User
-	if err := c.BindJSON(&newUser); err != nil {
-		c.JSON(http.StatusBadRequest, domain.Response{"error": "Invalid input"})
-		return
+	newUser := domain.User{
+		Username:    c.Request.PostFormValue("username"),
+		Email:       c.Request.PostFormValue("email"),
+		Password:    c.Request.PostFormValue("password"),
+		Bio:         c.Request.PostFormValue("bio"),
+		PhoneNumber: c.Request.PostFormValue("phone_number"),
+	}
+	file, fileErr := c.FormFile("profile_picture")
+	if fileErr == nil {
+		fileSegs := strings.Split(file.Filename, ".")
+		fileExt := fileSegs[len(fileSegs)-1]
+		if fileExt != "jpg" && fileExt != "jpeg" && fileExt != "png" {
+			c.JSON(http.StatusBadRequest, domain.Response{"error": "Invalid file format. Only jpg, jpeg and png are allowed"})
+			return
+		}
+
+		newUser.ProfilePicture.FileName = fmt.Sprintf("%v_%s.%s", time.Now().Unix(), newUser.Username, fileExt)
+		newUser.ProfilePicture.IsLocal = true
 	}
 
 	err := controller.usecase.Signup(c, &newUser, controller.GetDomain(c))
 	if err != nil {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return
+	}
+
+	if fileErr == nil {
+		c.SaveUploadedFile(file, "./local/"+newUser.ProfilePicture.FileName)
 	}
 
 	c.JSON(201, domain.Response{"message": "User created. Please verify your email."})
@@ -122,10 +142,24 @@ func (controller *AuthController) HandleUpdateUser(c *gin.Context) {
 		return
 	}
 
-	var updatedUser dtos.UpdateUser
-	if err := c.BindJSON(&updatedUser); err != nil {
-		c.JSON(http.StatusBadRequest, domain.Response{"error": "Invalid input"})
-		return
+	updatedUser := dtos.UpdateUser{
+		Bio:            c.Request.PostFormValue("bio"),
+		PhoneNumber:    c.Request.PostFormValue("phone_number"),
+		ProfilePicture: dtos.ProfilePicture{},
+	}
+
+	file, fileErr := c.FormFile("profile_picture")
+	if fileErr == nil {
+		fileSegs := strings.Split(file.Filename, ".")
+		fileExt := fileSegs[len(fileSegs)-1]
+		if fileExt != "jpg" && fileExt != "jpeg" && fileExt != "png" {
+			c.JSON(http.StatusBadRequest, domain.Response{"error": "Invalid file format. Only jpg, jpeg and png are allowed"})
+			return
+		}
+
+		updatedUser.ProfilePicture.FileName = fmt.Sprintf("%v_%s.%s", time.Now().Unix(), reqUsername, fileExt)
+		updatedUser.ProfilePicture.IsLocal = true
+		c.SaveUploadedFile(file, "./local/"+updatedUser.ProfilePicture.FileName)
 	}
 
 	tokenUsername, ok := c.Keys["username"]
@@ -136,6 +170,7 @@ func (controller *AuthController) HandleUpdateUser(c *gin.Context) {
 
 	resData, err := controller.usecase.UpdateUser(c, reqUsername, tokenUsername.(string), &updatedUser)
 	if err != nil {
+		controller.DeleteFile("./local/" + updatedUser.ProfilePicture.FileName)
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return
 	}

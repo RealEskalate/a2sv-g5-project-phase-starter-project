@@ -1,30 +1,37 @@
 package blogcontroller
 
 import (
+	"blogs/config"
 	"blogs/domain"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func (l *BlogController) DeleteLogByID(ctx *gin.Context) {
+func (b *BlogController) DeleteLogByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	claims, ok := ctx.MustGet("claims").(*domain.LoginClaims)
-
 	if !ok {
-		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		log.Println("Error getting claims")
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
 
-	err := l.BlogUsecase.DeleteBlogByID(id, claims)
-
+	err := b.BlogUsecase.DeleteBlogByID(id, claims)
 	if err != nil {
+		code := config.GetStatusCode(err)
 
-		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		if code == http.StatusInternalServerError {
+			log.Println(err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+			return
+		}
+
+		ctx.JSON(code, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, "log deleted")
-
+	ctx.JSON(http.StatusNoContent, nil)
 }

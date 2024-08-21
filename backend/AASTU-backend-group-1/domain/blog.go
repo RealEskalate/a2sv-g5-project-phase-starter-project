@@ -63,7 +63,7 @@ type BlogRepository interface {
 type BlogUsecase interface {
 	InsertBlog(blog *Blog) (*Blog, error)
 	GetBlogByID(id string) (*Blog, error)
-	UpdateBlogByID(id string, blog *Blog, claim *LoginClaims) error
+	UpdateBlogByID(id string, blog *Blog, claim *LoginClaims) (*Blog, error)
 	DeleteBlogByID(id string, claim *LoginClaims) error
 	SearchBlog(title, author string, tags []string) ([]*Blog, error)
 	FilterBlog(tags []string, dateFrom, dateTo time.Time) ([]*Blog, error)
@@ -73,6 +73,6 @@ type BlogUsecase interface {
 	GetBlogs(sortBy string, page, limit int, reverse bool) ([]*Blog, error)
 	GetBlogComments(blogID string) ([]*Comment, error)
 	GetBlogLikes(blogID string) ([]*Like, error)
-	RemoveLike(id string ,claim *LoginClaims) error
+	RemoveLike(id string, claim *LoginClaims) error
 	GenerateAiContent(prompt string) (string, error)
 }

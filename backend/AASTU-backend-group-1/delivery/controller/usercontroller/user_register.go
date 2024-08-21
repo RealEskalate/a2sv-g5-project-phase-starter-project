@@ -3,6 +3,7 @@ package usercontroller
 import (
 	"blogs/config"
 	"blogs/domain"
+	"log"
 	"net/http"
 	"time"
 
@@ -11,17 +12,17 @@ import (
 
 func (u *UserController) RegisterUser(ctx *gin.Context) {
 	var userData struct {
-		FirstName string `json:"firstname"`
-		LastName  string `json:"lastname"`
-		Username  string `json:"username" `
-		Password  string `json:"password"`
-		Email     string `json:"email"`
-		Bio       string `json:"bio"`
-		Avatar    string `json:"avatar"`
-		Address   string `json:"address"`
+		FirstName string `form:"firstname"`
+		LastName  string `form:"lastname"`
+		Username  string `form:"username" `
+		Password  string `form:"password"`
+		Email     string `form:"email"`
+		Bio       string `form:"bio"`
+		Avatar    string `form:"avatar"`
+		Address   string `form:"address"`
 	}
 
-	err := ctx.ShouldBindJSON(&userData)
+	err := ctx.ShouldBind(&userData)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
@@ -61,6 +62,7 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 		code := config.GetStatusCode(err)
 
 		if code == http.StatusInternalServerError {
+			log.Println(err)
 			ctx.JSON(code, gin.H{"error": "Internal server error"})
 			return
 		}
@@ -70,6 +72,6 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "user registered successfully",
+		"message": "verification email has been sent successfully",
 	})
 }

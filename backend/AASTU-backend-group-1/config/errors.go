@@ -31,6 +31,12 @@ var (
 	ErrTokenBlacklisted      = errors.New("token is blacklisted and is no longer valid")
 	ErrUserNotLoggedIn       = errors.New("user is not logged in")
 	ErrStateExpired          = errors.New("state has expired")
+	ErrBlogNotFound          = errors.New("blog not found")
+	ErrLikeNotFound          = errors.New("like not found")
+	ErrCommentNotFound       = errors.New("comment not found")
+	ErrBlogOrLikeNotFound    = errors.New("blog or like not found")
+	ErrOnlyAuthorOrAdminDel  = errors.New("only author or admin can delete the blog")
+	ErrOnlyAuthorUpdates     = errors.New("only author can update the blog")
 )
 
 func GetStatusCode(err error) int {
@@ -41,11 +47,11 @@ func GetStatusCode(err error) int {
 		return http.StatusUnauthorized
 	case ErrInvalidUsernameLength, ErrInvalidUsernameChar, ErrInvalidEmailLength, ErrInvalidEmailFormat, ErrInvalidPasswordLength, ErrPasswordNoUppercase, ErrPasswordNoLowercase, ErrPasswordNoNumber, ErrPasswordNoSpecialChar:
 		return http.StatusBadRequest
-	case ErrUserCantPromote, ErrAlreadyAdmin, ErrAlreadyUser, ErrUpdateRole, ErrUpdateJoined:
+	case ErrUserCantPromote, ErrAlreadyAdmin, ErrAlreadyUser, ErrUpdateRole, ErrUpdateJoined, ErrOnlyAuthorOrAdminDel, ErrOnlyAuthorUpdates:
 		return http.StatusForbidden
 	case ErrAlreadyVerified, ErrRootAlreadyExists, ErrUsernameEmailExists, ErrUserNotLoggedIn:
 		return http.StatusConflict
-	case ErrUserNotFound, ErrTokenNotFound:
+	case ErrUserNotFound, ErrTokenNotFound, ErrBlogNotFound, ErrLikeNotFound, ErrCommentNotFound, ErrBlogOrLikeNotFound:
 		return http.StatusNotFound
 	default:
 		return http.StatusInternalServerError

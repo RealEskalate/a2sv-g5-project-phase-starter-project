@@ -1,21 +1,29 @@
 package blogusecase
 
 import (
+	"blogs/config"
 	"blogs/domain"
 	"errors"
 	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // UpdateBlogByID implements domain.BlogUsecase.
-func (b *BlogUsecase) UpdateBlogByID(id string, newblog *domain.Blog, claim *domain.LoginClaims) error {
-
+func (b *BlogUsecase) UpdateBlogByID(id string, newblog *domain.Blog, claim *domain.LoginClaims) (*domain.Blog, error) {
 	blog, err := b.BlogRepo.GetBlogByID(id)
 	if err != nil {
-		return err
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, config.ErrBlogNotFound
+		}
+
+		return nil, err
 	}
+
 	if blog.Author != claim.Username {
-		return errors.New("you are not the author of this blog")
+		return nil, config.ErrOnlyAuthorUpdates
 	}
+
 	newblog.Author = blog.Author
 	newblog.CreatedAt = blog.CreatedAt
 	newblog.LastUpdatedAt = time.Now()
@@ -23,10 +31,11 @@ func (b *BlogUsecase) UpdateBlogByID(id string, newblog *domain.Blog, claim *dom
 	newblog.CommentsCount = blog.CommentsCount
 	newblog.LikesCount = blog.LikesCount
 	newblog.ViewsCount = blog.ViewsCount
+
 	err = b.BlogRepo.UpdateBlogByID(id, newblog)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return newblog, nil
 }

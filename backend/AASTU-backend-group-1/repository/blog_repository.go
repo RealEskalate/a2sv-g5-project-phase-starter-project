@@ -305,9 +305,14 @@ func (b *BlogRepository) AddLike(like *domain.Like) error {
 
 // RemoveLike removes a like by blogID and author from the database.
 func (b *BlogRepository) RemoveLike(blogID string, author string) error {
-    filter := bson.M{"blogid": blogID, "user": author}
-    _, err := b.likeCollection.DeleteOne(context.Background(), filter)
-    return err
+	id, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return err
+	}
+	filter := bson.M{"blogid": id, "user": author}
+
+	_, err = b.likeCollection.DeleteOne(context.Background(), filter)
+	return err
 }
 
 // AddComment implements domain.BlogRepository.

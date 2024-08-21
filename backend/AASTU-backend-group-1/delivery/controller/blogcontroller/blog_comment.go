@@ -1,7 +1,9 @@
 package blogcontroller
 
 import (
+	"blogs/config"
 	"blogs/domain"
+	"log"
 	"net/http"
 	"time"
 
@@ -13,7 +15,7 @@ func (l *BlogController) AddComment(ctx *gin.Context) {
 	idHex := ctx.Param("id")
 	id, err := primitive.ObjectIDFromHex(idHex)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, "invalid id")
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
 
@@ -22,13 +24,20 @@ func (l *BlogController) AddComment(ctx *gin.Context) {
 	}
 
 	if err := ctx.ShouldBindJSON(&comment); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
-	claim, ok := ctx.MustGet("claims").(*domain.LoginClaims)
 
+	if comment.Content == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "content cannot be empty"})
+		return
+	}
+
+	claim, ok := ctx.MustGet("claims").(*domain.LoginClaims)
 	if !ok {
-		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		log.Println("Error getting claims")
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		return
 	}
 
@@ -41,26 +50,49 @@ func (l *BlogController) AddComment(ctx *gin.Context) {
 
 	err = l.BlogUsecase.AddComment(&newcomment)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		code := config.GetStatusCode(err)
+
+		if code == http.StatusInternalServerError {
+			log.Println(err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+			return
+		}
+
+		ctx.JSON(code, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, "comment added")
+	ctx.JSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
 }
 
 func (l *BlogController) GetBlogComments(ctx *gin.Context) {
 	idHex := ctx.Param("id")
 	id, err := primitive.ObjectIDFromHex(idHex)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, "invalid id")
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
 
 	comments, err := l.BlogUsecase.GetBlogComments(id.Hex())
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		code := config.GetStatusCode(err)
+
+		if code == http.StatusInternalServerError {
+			log.Println(err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+			return
+		}
+
+		ctx.JSON(code, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, comments)
+	if len(comments) == 0 {
+		comments = []*domain.Comment{}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":   comments,
+		"counts": len(comments),
+	})
 }

@@ -22,13 +22,22 @@ export function LineGraphComponent() {
   const [chartData, setChartData] = useState<{ time: string, value: number }[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
+  interface ExtendedUser {
+    name?: string;
+    email?: string;
+    image?: string;
+    accessToken?: string;
+    }
+    const { data: session, status } = useSession();
+    const user = session?.user as ExtendedUser;
+  
+    const accessToken = user?.accessToken;
   useEffect(() => {
     const fetchChartData = async () => {
       try {
         const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions/balance-history', {
           headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
         if (response.data.success) {

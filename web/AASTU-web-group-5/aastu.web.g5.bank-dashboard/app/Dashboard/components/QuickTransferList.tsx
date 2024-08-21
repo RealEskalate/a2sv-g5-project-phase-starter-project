@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { QuickTransferCard } from './QuickTransferCard';
+import { useSession } from 'next-auth/react';
 
 interface Transfer {
   id: string;
@@ -18,14 +19,23 @@ export const QuickTransferList = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  interface ExtendedUser {
+    name?: string;
+    email?: string;
+    image?: string;
+    accessToken?: string;
+    }
+    const { data: session, status } = useSession();
+    const user = session?.user as ExtendedUser;
+  
+    const accessToken = user?.accessToken;  useEffect(() => {
     const fetchTransfers = async () => {
       try {
         const response = await axios.get<{ data: Transfer[] }>(
           'https://bank-dashboard-6acc.onrender.com/transactions/latest-transfers?number=3', 
           {
             headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`,
+              Authorization: `Bearer ${accessToken}`,
             },
           }
         );

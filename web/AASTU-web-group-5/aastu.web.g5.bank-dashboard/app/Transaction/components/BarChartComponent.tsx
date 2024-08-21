@@ -5,6 +5,7 @@ import axios from "axios";
 import { Bar, BarChart, CartesianGrid, XAxis, Cell, LabelList } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { useSession } from "next-auth/react";
 
 const chartConfig = {
   desktop: {
@@ -26,13 +27,21 @@ export function BarChartComponent() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
+  interface ExtendedUser {
+    name?: string;
+    email?: string;
+    image?: string;
+    accessToken?: string;
+    }
+    const { data: session, status } = useSession();
+    const user = session?.user as ExtendedUser;
+    const accessToken = user?.accessToken;
   useEffect(() => {
     const fetchChartData = async () => {
       try {
         const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions/expenses?page=0&size=10', {
           headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
         if (response.data.success) {

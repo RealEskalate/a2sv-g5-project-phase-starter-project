@@ -2,11 +2,15 @@
 import React from "react";
 import Example from '../components/barchart';
 import CreditCard from "../components/CreditCard";
+import Image from "next/image";
+import {spotify,user,mobileService,returnValue,nameinvestment,totalinvestment, apple} from '@/../../public/Icons'
+
 
 interface CardProps {
   title: string;
   salary: number;
   index: number;
+  icon:string
 }
 
 interface Transaction {
@@ -17,19 +21,20 @@ interface Transaction {
   status: string;
   value: number;
   date: string;
+  icon:string;
 }
 
 const dataCorner: CardProps[] = [
-  { title: "My Balance", salary: 12000, index: 1 },
-  { title: "Income", salary: 5600, index: 2 },
-  { title: "Expense", salary: 3460, index: 3 },
-  { title: "Total Saving", salary: 7920, index: 4 },
+  { icon:nameinvestment, title: "My Balance", salary: 12000, index: 1 },
+  {icon:spotify, title: "Income", salary: 5600, index: 2 },
+  { icon:totalinvestment, title: "Expense", salary: 3460, index: 3 },
+  { icon:returnValue, title: "Total Saving", salary: 7920, index: 4 },
 ];
 
 const transactions: Transaction[] = [
-  { index: 5, title: "Spotify Subscription", jobtitle: "Shopping", creditcard: "1234****", status: "Pending", value: 150, date: "25 Jan 2021" },
-  { index: 6, title: "Mobile Service", jobtitle: "Service", creditcard: "1234****", status: "Pending", value: 1200, date: "15 Feb 2021" },
-  { index: 7, title: "Grocery Shopping", jobtitle: "Supermarket", creditcard: "1234****", status: "Completed", value: 350, date: "10 Mar 2021" },
+  {icon:spotify, index: 5, title: "Spotify Subscription", jobtitle: "Shopping", creditcard: "1234****", status: "Pending", value: 150, date: "25 Jan 2021" },
+  { icon:mobileService,index: 6, title: "Mobile Service", jobtitle: "Service", creditcard: "1234****", status: "Pending", value: 1200, date: "15 Feb 2021" },
+  {icon:user, index: 7, title: "Grocery Shopping", jobtitle: "Supermarket", creditcard: "1234****", status: "Completed", value: 350, date: "10 Mar 2021" },
 ];
 
 const Page: React.FC = () => {
@@ -39,7 +44,7 @@ const Page: React.FC = () => {
         {dataCorner.map((card) => (
           <div key={card.index} className="flex justify-center items-center h-[85px] rounded-2xl shadow-xl bg-white p-4">
             <div className="flex items-center">
-              <img className="w-8 h-8 text-gray-500 mr-4" src={`/images/${card.index}.png`} alt="Image Icon" />
+              <Image width={28} height={28} className=" text-gray-500 mr-4" src={card.icon} alt="Image Icon" />
               <div>
                 <h3 className="text-gray-500 text-sm">{card.title}</h3>
                 <p className="text-black text-2xl font-bold">${card.salary.toLocaleString()}</p>
@@ -59,7 +64,7 @@ const Page: React.FC = () => {
             {transactions.map((transaction) => (
               <div key={transaction.index} className="flex items-center p-4 bg-white rounded-lg shadow-sm">
                 <div className="p-3 rounded-full">
-                  <img src={`/images/${transaction.index}.png`} alt={`${transaction.status} Icon`} className="w-12 h-12" />
+                  <Image width={20} height={20} src={transaction.icon} alt={`${transaction.status} Icon`} className="w-12 h-12" />
                 </div>
                 <div className="flex-grow flex flex-col ml-4">
                   <div className="flex items-center justify-between mb-1">
@@ -115,7 +120,7 @@ const Page: React.FC = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <div className="bg-[#DCFAF8] w-12 h-12 rounded-2xl flex items-center justify-center">
-                  <img src={`/images/apple.png`} alt="Deposit Icon" />
+                  <Image width={20} height={20} src={apple} alt="Deposit Icon" />
                 </div>
                 <div className="flex flex-col">
                   <p className="text-sm font-light text-gray-400">Apple Store</p>
@@ -129,7 +134,7 @@ const Page: React.FC = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <div className="bg-[#FFF5D9] w-12 h-12 rounded-2xl flex items-center justify-center">
-                  <img src={`/images/u.png`} alt="Spotify" className="w-6 h-6 object-contain" />
+                  <Image width={20} height={20} src={spotify} alt="Spotify" className="w-6 h-6 object-contain" />
                 </div>
                 <div className="flex flex-col">
                   <p className="text-sm font-light text-gray-400">Michael</p>
@@ -143,7 +148,7 @@ const Page: React.FC = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <div className="bg-[#E7EDFF] w-12 h-12 rounded-2xl flex items-center justify-center">
-                  <img src={`/images/p.png`} alt="Playstation" className="w-6 h-6 object-contain" />
+                  <Image width={20} height={20} src={spotify} alt="Playstation" className="w-6 h-6 object-contain" />
                 </div>
                 <div className="flex flex-col">
                   <p className="text-sm font-light text-gray-400">Playstation</p>
@@ -157,7 +162,7 @@ const Page: React.FC = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <div className="bg-[#FFE0EB] w-12 h-12 rounded-2xl flex items-center justify-center">
-                  <img src={`/images/v.png`} alt="William" className="w-6 h-6 object-contain" />
+                  <Image width={20} height={20} src={spotify} alt="William" className="w-6 h-6 object-contain" />
                 </div>
                 <div className="flex flex-col">
                   <p className="text-sm font-light text-gray-400">William</p>

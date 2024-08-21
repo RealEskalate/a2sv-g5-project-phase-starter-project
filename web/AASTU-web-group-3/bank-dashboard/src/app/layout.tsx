@@ -120,7 +120,7 @@ export default function ClientSideComponent({
                   />
                 </div>
               </nav>
-              <main className="flex-grow overflow-y-auto bg-[#F5F7FA] p-1">
+              <main className="flex-grow overflow-y-auto bg-[#F5F7FA] p-1 pb-5">
                 {children}
               </main>
             </div>

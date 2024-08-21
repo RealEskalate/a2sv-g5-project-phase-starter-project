@@ -29,6 +29,12 @@ export const nameinvestment = '/icons/nameinvestment.svg'
 export const totalinvestment = '/icons/totalinvestment.svg'
 
 
+export const spotify = '/icons/apple.svg'
+export const mobileService = '/icons/google.svg'
+export const user = '/icons/tesla.svg'
+
+
+
 
 
 

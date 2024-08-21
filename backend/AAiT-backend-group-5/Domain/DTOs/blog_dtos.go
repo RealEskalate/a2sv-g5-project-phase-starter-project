@@ -35,16 +35,10 @@ type DeleteBlogRequest struct {
 }
 
 type TrackPopularityRequest struct {
-<<<<<<< HEAD
-	BlogID string `json:"blog_id" validate:"required"`
-	Action string `json:"action" validate:"required"`
-	UserID string `json:"user_id" validate:"required"`
-=======
 	BlogID  string `json:"blog_id" validate:"required"`
 	UserID  string `json:"user_id"`
 	Action  string `json:"action" validate:"required"` // like, dislike, view, comment
 	Comment string `json:"comment"`
->>>>>>> f6022233 (finish blog controller)
 }
 
 type FilterBlogRequest struct {

@@ -94,6 +94,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 			"error": "Unauthorized",
 		})
 	}
+	
 	var req domain.RequestBlog
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})

@@ -17,6 +17,7 @@ import (
 	iemail "github.com/group13/blog/usecase/common/i_email"
 	ijwt "github.com/group13/blog/usecase/common/i_jwt"
 	irepo "github.com/group13/blog/usecase/common/i_repo"
+	icache "github.com/group13/blog/usecase/common/i_cache"
 	result "github.com/group13/blog/usecase/user/result"
 	
 )
@@ -27,6 +28,7 @@ type SignUpHandler struct {
 	jwtService   ijwt.Service
 	hashService  ihash.Service
 	emailService iemail.Service
+	cacheService icache.ICache
 }
 
 // SignUpConfig holds the configuration for creating a SignUpHandler.
@@ -35,6 +37,7 @@ type SignUpConfig struct {
 	JwtService   ijwt.Service
 	HashService  ihash.Service
 	EmailService iemail.Service
+	CacheService icache.ICache
 }
 
 // Ensure SignUpHandler implements icmd.IHandler.
@@ -47,6 +50,7 @@ func NewSignUpHandler(config SignUpConfig) *SignUpHandler {
 		jwtService:   config.JwtService,
 		hashService:  config.HashService,
 		emailService: config.EmailService,
+		cacheService: config.CacheService,
 	}
 }
 
@@ -181,3 +185,4 @@ func encrypt(plainText string) (string, error) {
 	log.Println("Value encrypted successfully")
 	return encryptedValue, nil
 }
+

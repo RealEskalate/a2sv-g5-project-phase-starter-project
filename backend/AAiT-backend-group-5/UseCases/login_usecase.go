@@ -51,6 +51,7 @@ func (uc *loginUsecase) LoginUser(ctx context.Context, userReqest dtos.LoginRequ
 	session := models.Session{
 		UserID:       user.ID,
 		RefreshToken: refresheToken,
+		AccessToken: accessToken,
 	}
 
 	userToken, _ := uc.session.GetToken(ctx, user.ID)

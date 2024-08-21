@@ -22,6 +22,8 @@ func Setup(env *config.Env, db mongo.Database, gin *gin.Engine) {
 	adminRouter := gin.Group("")
 	redisClient := config.NewRedisClient(*env, context.Background())
 
+	refreshGroup := publicRouter.Group("")
+	refreshGroup.Use(jwtMiddleware.JWTRefreshAuthMiddelware())
 	protectedRouter.Use(jwtMiddleware.JWTAuthMiddelware())
 
 	adminRouter.Use(
@@ -32,7 +34,7 @@ func Setup(env *config.Env, db mongo.Database, gin *gin.Engine) {
 	NewAuthenticationRouter(env, db, publicRouter)
 	NewForgotPasswordRouter(env, db, protectedRouter)
 	NewLogoutRouter(env, db, protectedRouter)
-	NewRefreshRouter(env, db, protectedRouter)
+	NewRefreshRouter(env, db, refreshGroup)
 	NewPromoteDemoteRouter(db, adminRouter)
 
 	NewBlogRouter(env, db, protectedRouter, redisClient)

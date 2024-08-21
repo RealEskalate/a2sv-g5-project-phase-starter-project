@@ -6,7 +6,6 @@ import (
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -30,6 +29,7 @@ func (sr *SessionRepo) SaveToken(ctx context.Context, session *models.Session) *
 		update := bson.M{
 			"$set": bson.M{
 				"refresh_token": session.RefreshToken,
+				"access_token":  session.AccessToken,
 			},
 		}
 
@@ -56,6 +56,7 @@ func (sr *SessionRepo) UpdateToken(ctx context.Context, session *models.Session)
 	update := bson.M{
 		"$set": bson.M{
 			"refresh_token": session.RefreshToken,
+			"access_token":  session.AccessToken,
 		},
 	}
 
@@ -69,12 +70,9 @@ func (sr *SessionRepo) UpdateToken(ctx context.Context, session *models.Session)
 
 // RemoveToken removes a session token from the database based on the user ID.
 func (sr *SessionRepo) RemoveToken(ctx context.Context, userID string) *models.ErrorResponse {
-	objID, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return models.InternalServerError(err.Error())
-	}
-	filter := bson.M{"user_id": objID}
-	_, err = sr.Collection.DeleteOne(ctx, filter)
+
+	filter := bson.M{"user_id": userID}
+	_, err := sr.Collection.DeleteOne(ctx, filter)
 	if err != nil {
 		return models.InternalServerError(err.Error())
 	}

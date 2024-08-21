@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -11,4 +13,9 @@ type UserClaims struct {
 	Name    string
 	Email   string
 	IsAdmin bool
+}
+
+type State struct{
+	StateID string `json:"id" bson:"_id"`
+	ExpiresAT time.Time `json:"expiresat" bson:"expiresat"`
 }

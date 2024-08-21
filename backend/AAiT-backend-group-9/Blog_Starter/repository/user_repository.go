@@ -3,7 +3,9 @@ package repository
 import (
 	"Blog_Starter/domain"
 	"context"
+	"time"
 
+	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -122,15 +124,63 @@ func (u *UserRepository) UpdatePassword(c context.Context, password string, user
 }
 
 // UpdateProfile implements domain.UserRepository.
-func (u *UserRepository) UpdateProfile(c context.Context, user *domain.UserUpdate, userID string) (*domain.User, error) {
-	panic("unimplemented")
+func (u *UserRepository) UpdateProfile(c context.Context, userUpdate *domain.UserUpdate, userID string) (*domain.User, error) {
+	collection := u.database.Collection(u.collection)
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return &domain.User{}, errors.New("invalid user ID format")
+	}
+	update := bson.M{
+		"$set": bson.M{
+			"username":     userUpdate.Username,
+			"name":         userUpdate.Name,
+			"bio":          userUpdate.Bio,
+			"contact_info": userUpdate.ContactInfo,
+			"updated_at":   primitive.NewDateTimeFromTime(time.Now()), // Update the timestamp
+		},
+	}
+
+	filter := bson.M{"_id": objID}
+	opts := options.Update().SetUpsert(false) // SetUpsert(false) means we don't want to create a new document if it doesn't exist
+
+	_, err = collection.UpdateOne(c, filter, update, opts)
+	if err != nil {
+		return &domain.User{}, err
+	}
+	// fetch the data after updating and return it insted of calling another repository interface try to keep the code DRY
+	return u.GetUserByID(c, userID)
+
+}
+
+func (u *UserRepository) UpdateProfilePicture(c context.Context, profilePicPath string, userID string) (*domain.User, error) {
+	// update the profile picture
+	collection := u.database.Collection(u.collection)
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return &domain.User{}, errors.New("invalid user ID format")
+	}
+	update := bson.M{
+		"$set": bson.M{
+			"profile_picture": profilePicPath,
+		},
+	}
+
+	filter := bson.M{"_id": objID}
+	opts := options.Update().SetUpsert(false) // SetUpsert(false) means we don't want to create a new document if it doesn't exist
+
+	_, err = collection.UpdateOne(c, filter, update, opts)
+	if err != nil {
+		return &domain.User{}, err
+	}
+
+	return u.GetUserByID(c, userID)
+
 }
 
 // UpdateToken implements domain.UserRepository.
 func (u *UserRepository) UpdateToken(c context.Context, accessToken string, refreshToken string, userID string) (*domain.User, error) {
 	panic("unimplemented")
 }
-
 
 // UpdateRole implements domain.UserRepository.
 func (u *UserRepository) UpdateRole(c context.Context, role string, userID string) (*domain.User, error) {
@@ -151,5 +201,3 @@ func (u *UserRepository) UpdateRole(c context.Context, role string, userID strin
 
 	return u.GetUserByID(c, userID)
 }
-
-

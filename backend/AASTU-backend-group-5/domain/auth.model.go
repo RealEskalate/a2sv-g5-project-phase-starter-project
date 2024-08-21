@@ -12,3 +12,9 @@ type UserClaims struct {
 	Email   string
 	IsAdmin bool
 }
+
+type EmailUserClaims struct {
+	jwt.StandardClaims
+	ID    primitive.ObjectID `json:"_id"`
+	Email string             `json:"email"`
+}

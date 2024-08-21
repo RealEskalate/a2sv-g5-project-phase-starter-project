@@ -3,10 +3,8 @@ package controller
 import (
 	"Blog_Starter/domain"
 	"Blog_Starter/utils"
-	"fmt"
 	"net/http"
 	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -31,6 +29,7 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	blogModel, err := bc.blogUseCase.CreateBlog(c, &blog)
 	if err != nil {
 		// Check for specific errors and return appropriate status codes
@@ -49,7 +48,7 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 // GetBlogByID godoc
 func (bc *BlogController) GetBlogByID(c *gin.Context) {
 	// implementation create a context and pass to the usecase not the gin context
-	blogID := c.Param("blog_id")
+	blogID := c.Param("id")
 	blog, err := bc.blogUseCase.GetBlogByID(c, blogID)
 	if err != nil {
 		// Check for specific errors and return appropriate status codes
@@ -84,7 +83,7 @@ func (bc *BlogController) GetAllBlog(c *gin.Context) {
 // UpdateBlog godoc
 func (bc *BlogController) UpdateBlog(c *gin.Context) {
 	// implementation
-	blogID := c.Param("blog_id")
+	blogID := c.Param("id")
 	var blog domain.BlogUpdate
 	err := c.ShouldBindJSON(&blog)
 	if err != nil {
@@ -97,7 +96,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 		return
 	}
 	blog.UserID = user.UserID
-	// call the useCase getBlogByID to check whether the blog exists or not
+	//call the useCase getBlogByID to check whether the blog exists or not
 
 	blogModel, err := bc.blogUseCase.UpdateBlog(c, &blog, blogID)
 	if err != nil {
@@ -117,7 +116,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 // DeleteBlog godoc
 func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	// implementation
-	blogID := c.Param("blog_id")
+	blogID := c.Param("id")
 	user, err := utils.CheckUser(c) //TODO: CheckUser is not implemented but used here???
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -174,8 +173,6 @@ func (bc *BlogController) SearchBlog(c *gin.Context) {
 	var searchRequest domain.BlogSearchRequest
 	searchRequest.Author = author
 	searchRequest.Title = title
-
-	fmt.Println(searchRequest)
 	searchResult, err := bc.blogUseCase.SearchBlogs(c, &searchRequest)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -189,5 +186,3 @@ func (bc *BlogController) SearchBlog(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, gin.H{"search_result" : searchResult})
 		
 }
-
-

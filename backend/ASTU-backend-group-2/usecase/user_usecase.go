@@ -20,9 +20,8 @@ func NewUserUsecase(userRepository domain.UserRepository, timeout time.Duration)
 	}
 }
 
-func (uu *userUsecase) CreateUser(c context.Context, user *domain.User) error {
-	_, err := uu.userRepository.CreateUser(c, user)
-	return err
+func (uu *userUsecase) CreateUser(c context.Context, user *domain.User) (*domain.User, error) {
+	return uu.userRepository.CreateUser(c, user)
 }
 
 func (uu *userUsecase) GetUserByEmail(c context.Context, email string) (*domain.User, error) {
@@ -41,12 +40,21 @@ func (uu *userUsecase) UpdateUser(c context.Context, userID string, updatedUser 
 	return err
 }
 
+func (uu *userUsecase) ActivateUser(c context.Context, userID string) error {
+	_, err := uu.userRepository.ActivateUser(c, userID)
+	return err
+}
+
 func (uu *userUsecase) DeleteUser(c context.Context, userID string) error {
 	return uu.userRepository.DeleteUser(c, userID)
 }
 
 func (uu *userUsecase) IsUserActive(c context.Context, userID string) (bool, error) {
 	return uu.userRepository.IsUserActive(c, userID)
+}
+
+func (uu *userUsecase) IsOwner(c context.Context) (bool, error) {
+	return uu.userRepository.IsOwner(c)
 }
 
 func (uu *userUsecase) ResetUserPassword(c context.Context, userID string, resetPassword *domain.ResetPassword) error {

@@ -12,19 +12,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewVerificationRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
+func NewOAuthRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
 	ur := repository.NewUserRepository(*db, domain.CollectionUser)
-	// sc := controller.ProfileController{
-	// 	UserUsecase: usecase.NewUserUsecase(ur, timeout),
-	// 	Env:         env,
-	// }
-	suc := controller.SignupController{
-		SignupUsecase: usecase.NewSignupUsecase(ur, timeout),
-		Env:           env,
+	oc := controller.OAuthController{
+		UserUsecase:  usecase.NewUserUsecase(ur, timeout),
+		LoginUsecase: usecase.NewLoginUsecase(ur, timeout),
+		Env:          env,
 	}
-	// group.POST("/signup", suc.Signup)
-	group.POST("/verify-email/:Verificationtoken", suc.VerifyEmail)
-	// group.POST("/forgot-password", sc.ForgotPassword)
-	// group.POST("/reset-password", sc.ResetPassword)
-	// group.POST("/reset-password", sc.DemoteUser())
+	group.POST("/auth/:provider", oc.OAuthLogin())
+	group.POST("/auth/:provider/callback", oc.OAuthCallback())
+	group.POST("/logout/:provider", oc.OAuthLogout())
 }

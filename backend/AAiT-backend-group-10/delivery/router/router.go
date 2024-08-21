@@ -37,7 +37,7 @@ func NewRouter(db *mongo.Database) {
 	}
 
 	authUsecases := usecases.NewAuthUsecase(userRepo, jwt, pwdService, emailService)
-	authController := controllers.NewAuthController(authUsecases, usecases.GoogleOAuthConfig)
+	authController := controllers.NewAuthController(authUsecases, controllers.GoogleOAuthConfig)
 
 	userUseCase := usecases.NewUserUseCase(userRepo)
 	userController := controllers.NewUserController(userUseCase)

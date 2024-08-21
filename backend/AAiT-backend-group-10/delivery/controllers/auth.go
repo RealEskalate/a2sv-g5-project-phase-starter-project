@@ -146,7 +146,7 @@ func (uc *AuthController) HandleGoogleCallback(ctx *gin.Context) {
 	if ok {
 		userInfo.ImageURL = picture
 	}
-	accesstoken, refreshtoken, errs := uc.userUsecase.HandleGoogleCallback(userInfo)
+	accesstoken, refreshtoken, errs := uc.UserUsecase.HandleGoogleCallback(userInfo)
 	if errs != nil {
 		ctx.IndentedJSON(400, gin.H{
 			"message": errs.Error(),

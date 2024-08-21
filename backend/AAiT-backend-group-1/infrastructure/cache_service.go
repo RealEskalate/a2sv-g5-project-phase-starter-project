@@ -22,8 +22,8 @@ type cacheService struct {
 func NewcacheService(redisAddr, redisPassword string, redisDB int) CacheService {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     redisAddr,
-		Password: redisPassword, 
-		DB:       redisDB,       
+		Password: redisPassword, // no password set
+		DB:       redisDB,       // use default DB
 	})
 
 	return &cacheService{

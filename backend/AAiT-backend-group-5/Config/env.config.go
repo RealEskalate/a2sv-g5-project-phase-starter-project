@@ -8,16 +8,17 @@ import (
 )
 
 type Env struct {
-	JWT_SECRET        string `mapstructure:"JWT_SECRET"`
-	SMTP_SERVER       string `mapstructure:"SMTP_SERVER"`
-	SMTP_PORT         string `mapstructure:"SMTP_PORT"`
-	SMTP_USERNAME     string `mapstructure:"SMTP_USERNAME"`
-	SMTP_PASSWORD     string `mapstructure:"SMTP_PASSWORD"`
-	SMTP_SENDER_EMAIL string `mapstructure:"SMTP_SENDER_EMAIL"`
-	BASE_URL          string `mapstructure:"BASE_URL"`
-
-	MONGO_URI string `mapstructure:"MONGO_URI"`
-	DB_NAME   string `mapstructure:"DB_NAME"`
+	JWT_SECRET                string `mapstructure:"JWT_SECRET"`
+	SMTP_SERVER               string `mapstructure:"SMTP_SERVER"`
+	SMTP_PORT                 string `mapstructure:"SMTP_PORT"`
+	SMTP_USERNAME             string `mapstructure:"SMTP_USERNAME"`
+	SMTP_PASSWORD             string `mapstructure:"SMTP_PASSWORD"`
+	SMTP_SENDER_EMAIL         string `mapstructure:"SMTP_SENDER_EMAIL"`
+	BASE_URL                  string `mapstructure:"BASE_URL"`
+	ACCESS_TOKEN_EXPIRY_HOUR  int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
+	REFRESH_TOKEN_EXPIRY_HOUR int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
+	MONGO_URI                 string `mapstructure:"MONGO_URI"`
+	DB_NAME                   string `mapstructure:"DB_NAME"`
 
 	SERVER_ADDRESS  string `mapstructure:"SERVER_ADDRESS"`
 	CONTEXT_TIMEOUT int    `mapstructure:"CONTEXT_TIMEOUT"`
@@ -26,7 +27,6 @@ type Env struct {
 	REDIS_DB_ADDRESS  string `mapstructure:"REDIS_DB_ADDRESS"`
 	REDIS_DB_PASSWORD string `mapstructure:"REDIS_DB_PASSWORD"`
 	REDIS_DB          int    `mapstructure:"REDIS_DB"`
-	REDIS_BLOG_KEY    string `mapstructure:"REDIS_BLOG_KEY"`
 }
 
 func NewEnv() *Env {
@@ -57,6 +57,8 @@ func NewEnv() *Env {
 	viper.BindEnv("REDIS_DB_ADDRESS")
 	viper.BindEnv("REDIS_DB_PASSWORD")
 	viper.BindEnv("REDIS_DB")
+	viper.BindEnv("ACCESS_TOKEN_EXPIRY_HOUR")
+	viper.BindEnv("REFRESH_TOKEN_EXPIRY_HOUR")
 
 	env := Env{}
 

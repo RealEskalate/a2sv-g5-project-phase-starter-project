@@ -24,9 +24,9 @@ type CreateBlogRequest struct {
 }
 
 type UpdateBlogRequest struct {
-	Title    string             `json:"title,omitempty"`
-	Content  string             `json:"content,omitempty"`
-	Tags     []string           `json:"tags,omitempty"`
+	Title   string   `json:"title,omitempty"`
+	Content string   `json:"content,omitempty"`
+	Tags    []string `json:"tags,omitempty"`
 }
 
 type DeleteBlogRequest struct {

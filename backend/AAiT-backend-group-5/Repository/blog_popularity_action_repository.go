@@ -27,7 +27,7 @@ func NewBlogPopularityActionRepository(db *mongo.Database) interfaces.BlogPopula
 }
 
 
-func (br *BlogPupularityActionRepo) Like(ctx context.Context, popularityAction dtos.TrackPopularityRequest,popularity models.Popularity) *models.ErrorResponse{
+func (br *BlogPupularityActionRepo) Like(ctx context.Context, popularityAction dtos.TrackPopularityRequest) *models.ErrorResponse{
 	filter := bson.M{"blog_id": popularityAction.BlogID, "user_id": popularityAction.UserID}
 	update := bson.M{"$set": bson.M{"action": popularityAction.Action}}
 	opts := options.Update().SetUpsert(true)
@@ -37,7 +37,7 @@ func (br *BlogPupularityActionRepo) Like(ctx context.Context, popularityAction d
 		return models.InternalServerError(err.Error())
 	}
 	
-	bfilter := bson.M{"blog_id": popularity.BlogID}
+	bfilter := bson.M{"blog_id": popularityAction.BlogID}
 	bupdateInc := bson.M{
 		"$inc": bson.M{
 			"like_count": 1,
@@ -50,7 +50,7 @@ func (br *BlogPupularityActionRepo) Like(ctx context.Context, popularityAction d
 	}
 	return models.Nil()
 }
-func (br *BlogPupularityActionRepo) Dislike(ctx context.Context, popularityAction dtos.TrackPopularityRequest,popularity models.Popularity) *models.ErrorResponse{
+func (br *BlogPupularityActionRepo) Dislike(ctx context.Context, popularityAction dtos.TrackPopularityRequest) *models.ErrorResponse{
 	filter := bson.M{"blog_id": popularityAction.BlogID, "user_id": popularityAction.UserID}
 	update := bson.M{"$set": bson.M{"action": popularityAction.Action}}
 	opts := options.Update().SetUpsert(true)
@@ -60,7 +60,7 @@ func (br *BlogPupularityActionRepo) Dislike(ctx context.Context, popularityActio
 		return models.InternalServerError(err.Error())
 	}
 	
-	bfilter := bson.M{"blog_id": popularity.BlogID}
+	bfilter := bson.M{"blog_id": popularityAction.BlogID}
 	bupdateInc := bson.M{
 		"$inc": bson.M{
 			"dislike_count": 1,
@@ -94,14 +94,14 @@ func (br *BlogPupularityActionRepo) GetBlogPopularityAction(ctx context.Context,
 }
 
 
-func (br *BlogPupularityActionRepo) UndoLike(ctx context.Context, popularityAction dtos.TrackPopularityRequest,popularity models.Popularity) *models.ErrorResponse{
+func (br *BlogPupularityActionRepo) UndoLike(ctx context.Context, popularityAction dtos.TrackPopularityRequest) *models.ErrorResponse{
 	filter := bson.M{"blog_id": popularityAction.BlogID, "user_id": popularityAction.UserID}
 	_, err := br.BlogUserActionCollection.DeleteOne(ctx, filter)
 	if err != nil{
 		return models.InternalServerError(err.Error())
 	}
 	
-	bfilter := bson.M{"blog_id": popularity.BlogID}
+	bfilter := bson.M{"blog_id": popularityAction.BlogID}
 	bupdateInc := bson.M{
 		"$inc": bson.M{
 			"like_count": -1,
@@ -113,14 +113,14 @@ func (br *BlogPupularityActionRepo) UndoLike(ctx context.Context, popularityActi
 	}
 	return models.Nil()
 }
-func (br *BlogPupularityActionRepo) UndoDislike(ctx context.Context, popularityAction dtos.TrackPopularityRequest,popularity models.Popularity) *models.ErrorResponse{
+func (br *BlogPupularityActionRepo) UndoDislike(ctx context.Context, popularityAction dtos.TrackPopularityRequest) *models.ErrorResponse{
 	filter := bson.M{"blog_id": popularityAction.BlogID, "user_id": popularityAction.UserID}
 	_, err := br.BlogUserActionCollection.DeleteOne(ctx, filter)
 	if err != nil{
 		return models.InternalServerError(err.Error())
 	}
 	
-	bfilter := bson.M{"blog_id": popularity.BlogID}
+	bfilter := bson.M{"blog_id": popularityAction.BlogID}
 	bupdateInc := bson.M{
 		"$inc": bson.M{
 			"dislike_count": -1,
@@ -132,6 +132,5 @@ func (br *BlogPupularityActionRepo) UndoDislike(ctx context.Context, popularityA
 	}
 	return models.Nil()
 }
-
 
 

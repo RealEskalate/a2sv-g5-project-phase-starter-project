@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"net/http"
 
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
@@ -32,14 +31,14 @@ func (forgotPasswordController *ForgotPasswordController) ForgotPasswordRequest(
 	// generate URL to be sent via email
 	resetURL, e := forgotPasswordController.PasswordUsecase.GenerateResetURL(ctx, request.Email)
 	if e != nil {
-		ctx.IndentedJSON(e.Code, e.Error())
+		ctx.IndentedJSON(e.Code, gin.H{"error": e.Error()})
 		return
 	}
 
 	// send confirmation email
 	e = forgotPasswordController.PasswordUsecase.SendResetEmail(ctx, request.Email, resetURL)
 	if e != nil {
-		ctx.IndentedJSON(e.Code, e.Error())
+		ctx.IndentedJSON(e.Code, gin.H{"error": e.Error()})
 		return
 	}
 
@@ -52,7 +51,7 @@ func (forgotPasswordController *ForgotPasswordController) SetNewPassword(ctx *gi
 	// attempt to bind the payload carrying the new password
 	err := ctx.ShouldBind(&setUpPasswordRequest)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, errors.New("invalid request"))
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
 		return
 	}
 
@@ -61,7 +60,7 @@ func (forgotPasswordController *ForgotPasswordController) SetNewPassword(ctx *gi
 
 	e := forgotPasswordController.PasswordUsecase.SetUpdateUserPassword(ctx, shortURLCode, setUpPasswordRequest.Password)
 	if e != nil {
-		ctx.IndentedJSON(e.Code, e.Error())
+		ctx.IndentedJSON(e.Code, gin.H{"error": e.Error()})
 		return
 	}
 

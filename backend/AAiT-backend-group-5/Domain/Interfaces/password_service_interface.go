@@ -9,7 +9,7 @@ import (
 type PasswordService interface {
 	EncryptPassword(password string) (string, error)
 	ValidatePassword(password string, hashedPassword string) bool
-	ValidatePasswordStrength(password, email, name, username string) *models.ErrorResponse
+	ValidatePasswordStrength(password string) *models.ErrorResponse
 }
 
 type PasswordUsecase interface {

@@ -16,7 +16,7 @@ import (
 
 func NewBlogRouter(env *config.Env, database mongo.Database, group *gin.RouterGroup, redisClient *redis.Client) {
 
-	popularity_repository := repository.NewPopularityRepository(&database)
+	popularity_repository := repository.NewBlogPopularityActionRepository(&database)
 	user_repository := repository.NewUserRepository(&database)
 	blog_repository := repository.NewBlogRepository(&database)
 	cacheService := infrastructure.NewRedisCache(redisClient)

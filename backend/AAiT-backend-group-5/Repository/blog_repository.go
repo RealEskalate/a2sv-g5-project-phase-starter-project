@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
@@ -14,13 +15,13 @@ import (
 )
 
 type BlogMongoRepository struct {
-	BlogCollection    *mongo.Collection
+	BlogCollection       *mongo.Collection
 	BlogActionCollection *mongo.Collection
 }
 
 func NewBlogRepository(db *mongo.Database) interfaces.BlogRepository {
 	return &BlogMongoRepository{
-		BlogCollection:    db.Collection("blogs"),
+		BlogCollection:       db.Collection("blogs"),
 		BlogActionCollection: db.Collection("blog-action"),
 	}
 }
@@ -40,15 +41,21 @@ func (br *BlogMongoRepository) CreateBlog(ctx context.Context, blog *models.Blog
 
 func (br *BlogMongoRepository) GetBlog(ctx context.Context, id string) (*models.Blog, *models.ErrorResponse) {
 	objID, err := primitive.ObjectIDFromHex(id)
+
+	log.Println(objID, "This is the object ID")
 	if err != nil {
 		return nil, models.BadRequest("Invalid blog ID")
 	}
 
-	filter := bson.M{"_id": objID}
+	filter := bson.M{"_id": id}
+
 	var blog models.Blog
-	err = br.BlogCollection.FindOne(ctx, filter).Decode(&blog)
-	if err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) {
+	nErr := br.BlogCollection.FindOne(ctx, filter).Decode(&blog)
+
+	log.Println(nErr, "This is the error from repository")
+
+	if nErr != nil {
+		if errors.Is(nErr, mongo.ErrNoDocuments) {
 			return nil, models.NotFound("Blog not found")
 		}
 		return nil, models.InternalServerError("Failed to retrieve blog")
@@ -135,7 +142,7 @@ func (br *BlogMongoRepository) UpdateBlog(ctx context.Context, blogID string, bl
 		updateFields["slug"] = blog.Slug
 	}
 	if blog.AuthorID != "" {
-	updateFields["author_id"] = blog.AuthorID
+		updateFields["author_id"] = blog.AuthorID
 	}
 
 	updateFields["updated_at"] = blog.UpdatedAt
@@ -160,7 +167,6 @@ func (br *BlogMongoRepository) UpdateBlog(ctx context.Context, blogID string, bl
 
 	return models.Nil()
 }
-
 
 func (br *BlogMongoRepository) DeleteBlog(ctx context.Context, id string) *models.ErrorResponse {
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -214,10 +220,9 @@ func (br *BlogMongoRepository) IncreaseView(ctx context.Context, blogID string) 
 	return models.Nil()
 }
 
-
-func (br *BlogMongoRepository) GetComments(ctx context.Context, blogID string) ([]models.Comment, *models.ErrorResponse){
+func (br *BlogMongoRepository) GetComments(ctx context.Context, blogID string) ([]models.Comment, *models.ErrorResponse) {
 	ID, err := primitive.ObjectIDFromHex(blogID)
-	if err != nil{
+	if err != nil {
 		return nil, models.BadRequest("invalid blog id")
 	}
 
@@ -241,9 +246,9 @@ func (br *BlogMongoRepository) GetComments(ctx context.Context, blogID string) (
 	}
 	return comments, models.Nil()
 }
-func (br *BlogMongoRepository) GetPopularity(ctx context.Context, blogID string) (*models.Popularity, *models.ErrorResponse){
+func (br *BlogMongoRepository) GetPopularity(ctx context.Context, blogID string) (*models.Popularity, *models.ErrorResponse) {
 	ID, err := primitive.ObjectIDFromHex(blogID)
-	if err != nil{
+	if err != nil {
 		return nil, models.BadRequest("invalid blog id")
 	}
 
@@ -257,5 +262,5 @@ func (br *BlogMongoRepository) GetPopularity(ctx context.Context, blogID string)
 	}
 
 	return &popularity, models.Nil()
-	
+
 }

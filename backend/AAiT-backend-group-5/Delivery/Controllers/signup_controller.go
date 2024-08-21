@@ -45,7 +45,7 @@ func (signupController *SignupController) Signup(ctx *gin.Context) {
 		return
 	}
 
-	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "check your email"})
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "An email verfication link has been sent to your email"})
 }
 
 func (signupController *SignupController) ConfirmRegistration(ctx *gin.Context) {

@@ -2,8 +2,8 @@ package usecases
 
 import (
 	"context"
-	"fmt"
 
+	config "github.com/aait.backend.g5.main/backend/Config"
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
@@ -14,14 +14,16 @@ type loginUsecase struct {
 	passwordService interfaces.PasswordService
 	repository      interfaces.UserRepository
 	session         interfaces.SessionRepository
+	env             config.Env
 }
 
-func NewLoginUsecase(jwtService interfaces.JwtService, passwordService interfaces.PasswordService, repository interfaces.UserRepository, session interfaces.SessionRepository) interfaces.LoginUsecase {
+func NewLoginUsecase(jwtService interfaces.JwtService, passwordService interfaces.PasswordService, repository interfaces.UserRepository, session interfaces.SessionRepository, env config.Env) interfaces.LoginUsecase {
 	return &loginUsecase{
 		jwtService:      jwtService,
 		passwordService: passwordService,
 		repository:      repository,
 		session:         session,
+		env:             env,
 	}
 }
 
@@ -39,8 +41,8 @@ func (uc *loginUsecase) LoginUser(ctx context.Context, userReqest dtos.LoginRequ
 	}
 
 	// generate access token
-	accessToken, aErr := uc.GenerateAccessToken(user, 15)
-	refresheToken, rErr := uc.GenerateRefreshToken(user, 15)
+	accessToken, aErr := uc.GenerateAccessToken(user, uc.env.ACCESS_TOKEN_EXPIRY_HOUR)
+	refresheToken, rErr := uc.GenerateRefreshToken(user, uc.env.REFRESH_TOKEN_EXPIRY_HOUR)
 
 	if aErr != nil || rErr != nil {
 		return nil, models.InternalServerError("Something went wrong")
@@ -51,11 +53,17 @@ func (uc *loginUsecase) LoginUser(ctx context.Context, userReqest dtos.LoginRequ
 		UserID:       user.ID,
 		RefreshToken: refresheToken,
 	}
-	fmt.Println(session)
-	tErr := uc.session.SaveToken(ctx, &session)
 
-	if tErr != nil {
-		return nil, tErr
+	userToken, _ := uc.session.GetToken(ctx, user.ID)
+
+	if userToken != nil {
+		if tErr := uc.session.UpdateToken(ctx, &session); tErr != nil {
+			return nil, tErr
+		}
+	} else {
+		if tErr := uc.session.SaveToken(ctx, &session); tErr != nil {
+			return nil, tErr
+		}
 	}
 
 	return &dtos.LoginResponse{

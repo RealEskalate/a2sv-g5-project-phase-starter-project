@@ -90,8 +90,8 @@ func (sp *setup_password) SetNewUserPassword(ctx context.Context, shortURlCode s
 	}
 
 	// check if password is too short
-	if len(password) < 6 {
-		return models.Forbidden("password is too short")
+	if err := sp.passwordService.ValidatePasswordStrength(password); err != nil {
+		return models.Forbidden("password is too weak")
 	}
 
 	// hash password
@@ -138,14 +138,14 @@ func (sp *setup_password) SetUpdateUserPassword(ctx context.Context, shortURlCod
 	}
 
 	// get user data
-	u, uErr := sp.jwtService.ValidateToken(urls.Token)
+	u, uErr := sp.jwtService.ValidateURLToken(urls.Token)
 	if uErr != nil {
 		return models.BadRequest("Invalid token")
 	}
 
 	// check if password is too short
-	if len(password) < 6 {
-		return models.Forbidden("password is too short")
+	if err := sp.passwordService.ValidatePasswordStrength(password); err != nil {
+		return models.Forbidden(err.Message)
 	}
 
 	// hash password

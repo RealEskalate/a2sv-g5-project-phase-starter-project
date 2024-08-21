@@ -44,11 +44,11 @@ type BlogController interface {
 }
 
 type BlogPopularityActionRepository interface {
-	Like(ctx context.Context, popularityAction dtos.TrackPopularityRequest, popularity models.Popularity) *models.ErrorResponse
-	Dislike(ctx context.Context, popularityAction dtos.TrackPopularityRequest,popularity models.Popularity) *models.ErrorResponse
+	Like(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse
+	Dislike(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse
 	GetBlogPopularityAction(ctx context.Context, blogID string, userID string) (*models.PopularityAction, *models.ErrorResponse)
-	UndoLike(ctx context.Context, popularityAction dtos.TrackPopularityRequest,popularity models.Popularity) *models.ErrorResponse
-	UndoDislike(ctx context.Context, popularityAction dtos.TrackPopularityRequest,popularity models.Popularity) *models.ErrorResponse
+	UndoLike(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse
+	UndoDislike(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse
 }
 
 type BlogHelper interface {

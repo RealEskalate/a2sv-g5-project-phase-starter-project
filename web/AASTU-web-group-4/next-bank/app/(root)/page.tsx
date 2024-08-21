@@ -45,30 +45,7 @@ const page = () => {
             <h1 className="font-bold text-2xl">Recent Transaction</h1>
           </div>
           <div className="flex flex-col rounded-2xl pr-2 w-[100%]">
-            <RecentTransaction
-              icon={logo.RT1}
-              color={colors.lightorange}
-              colortext={colors.textred}
-              name="deposit from my"
-              date="23 january 2023"
-              amount="-850"
-            />
-            <RecentTransaction
-              icon={logo.RT2}
-              color={colors.lightblue}
-              colortext={colors.textgreen}
-              name="deposit from my"
-              date="23 january 2023"
-              amount="+2500"
-            />
-            <RecentTransaction
-              icon={logo.RT3}
-              color={colors.lightgreen}
-              colortext={colors.textgreen}
-              name="deposit from my"
-              date="23 january 2023"
-              amount="+5400"
-            />
+            <RecentTransaction/>
           </div>
         </div>
       </div>

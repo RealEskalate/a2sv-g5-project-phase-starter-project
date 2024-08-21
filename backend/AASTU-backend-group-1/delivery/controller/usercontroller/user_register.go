@@ -11,22 +11,49 @@ import (
 )
 
 func (u *UserController) RegisterUser(ctx *gin.Context) {
+
+	// Initialize avatarPath
+	avatarPath := ""
+
+	// Check if a file was uploaded
+	file, err := ctx.FormFile("avatar")
+	if err != nil && err != http.ErrMissingFile {
+		// Handle the error only if it's not because the file is missing
+		log.Println("Error retrieving file:", err)
+		ctx.JSON(http.StatusBadRequest, "Error uploading file")
+		return
+	}
+
+	if file != nil {
+		// Upload to Cloudinary and get the URL
+		avatarPath, err = config.UploadToCloudinary(file)
+		if err != nil {
+			log.Println("Error uploading file to Cloudinary:", err)
+			ctx.JSON(http.StatusInternalServerError, "Internal server error")
+			return
+		}
+		log.Println("Avatar successfully uploaded to Cloudinary:", avatarPath)
+	}
+
 	var userData struct {
 		FirstName string `form:"firstname"`
 		LastName  string `form:"lastname"`
-		Username  string `form:"username" `
+		Bio       string `form:"bio"`
+		Username  string `form:"username"`
 		Password  string `form:"password"`
 		Email     string `form:"email"`
-		Bio       string `form:"bio"`
-		Avatar    string `form:"avatar"`
 		Address   string `form:"address"`
+		Avatar	string `form:"avatar"`
 	}
 
-	err := ctx.ShouldBind(&userData)
+	err = ctx.ShouldBind(&userData)
 	if err != nil {
+		log.Print(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
+
+	log.Println("User data:", userData)
 
 	if userData.Username == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "username is required"})
@@ -55,6 +82,11 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 		Role:       "user",
 		JoinedDate: time.Now(),
 		IsVerified: false,
+	}
+
+	if avatarPath != "" {
+		user.Avatar = avatarPath
+		log.Println("Avatar path set for user:", user.Avatar) // Log the avatar in user object
 	}
 
 	err = u.UserUsecase.RegisterUser(user)

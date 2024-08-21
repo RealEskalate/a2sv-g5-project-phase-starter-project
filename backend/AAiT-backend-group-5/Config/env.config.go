@@ -8,6 +8,7 @@ import (
 )
 
 type Env struct {
+<<<<<<< HEAD
 	JWT_SECRET                string `mapstructure:"JWT_SECRET"`
 	SMTP_SERVER               string `mapstructure:"SMTP_SERVER"`
 	SMTP_PORT                 string `mapstructure:"SMTP_PORT"`
@@ -27,6 +28,16 @@ type Env struct {
 	REDIS_DB_ADDRESS  string `mapstructure:"REDIS_DB_ADDRESS"`
 	REDIS_DB_PASSWORD string `mapstructure:"REDIS_DB_PASSWORD"`
 	REDIS_DB          int    `mapstructure:"REDIS_DB"`
+=======
+	JWT_SECRET        string `mapstructure:"JWT_SECRET"`
+	SMTP_SERVER       string `mapstructure:"SMTP_SERVER"`
+	SMTP_PORT         string `mapstructure:"SMTP_PORT"`
+	SMTP_USERNAME     string `mapstructure:"SMTP_USERNAME"`
+	SMTP_PASSWORD     string `mapstructure:"SMTP_PASSWORD"`
+	SMTP_SENDER_EMAIL string `mapstructure:"SMTP_SENDER_EMAIL"`
+	BASE_URL          string `mapstructure:"BASE_URL"`
+	REDIS_BLOG_KEY    string `mapstructure:"REDIS_BLOG_KEY"`
+>>>>>>> a580660a (blog usecase with cache update.aait.backend.g5.dawit)
 }
 
 func NewEnv() *Env {
@@ -49,6 +60,7 @@ func NewEnv() *Env {
 	viper.BindEnv("SMTP_PASSWORD")
 	viper.BindEnv("SMTP_SENDER_EMAIL")
 	viper.BindEnv("BASE_URL")
+<<<<<<< HEAD
 	viper.BindEnv("MONGO_URI")
 	viper.BindEnv("DB_NAME")
 	viper.BindEnv("SERVER_ADDRESS")
@@ -59,6 +71,9 @@ func NewEnv() *Env {
 	viper.BindEnv("REDIS_DB")
 	viper.BindEnv("ACCESS_TOKEN_EXPIRY_HOUR")
 	viper.BindEnv("REFRESH_TOKEN_EXPIRY_HOUR")
+=======
+	viper.BindEnv("REDIS_BLOG_KEY")
+>>>>>>> a580660a (blog usecase with cache update.aait.backend.g5.dawit)
 
 	env := Env{}
 

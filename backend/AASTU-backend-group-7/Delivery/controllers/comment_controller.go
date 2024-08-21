@@ -3,9 +3,12 @@ package controllers
 import (
 	"blogapp/Domain"
 	"blogapp/Utils"
+	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -38,6 +41,15 @@ func (cc *CommentController) CommentOnPost(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
+	// validate comment
+	v := validator.New()
+	if err := v.Struct(comment); err != nil {
+		fmt.Printf(err.Error())
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid or missing data", "error": err.Error()})
+		return
+	}
+	
 	comment.ID = primitive.NewObjectID()
 	comment.PostID = objID
 	comment.AuthorID = claim.ID
@@ -116,7 +128,7 @@ func (cc *CommentController) EditComment(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"message": "Comment updated successfully",
-		"comment": *comment,})
+		"comment": *comment})
 }
 
 func (cc *CommentController) GetUserComments(c *gin.Context) {
@@ -136,7 +148,7 @@ func (cc *CommentController) GetUserComments(c *gin.Context) {
 	c.JSON(200, gin.H{"comments": comments})
 }
 
-func (cc *CommentController) GetMyComments(c *gin.Context){
+func (cc *CommentController) GetMyComments(c *gin.Context) {
 	claims, err := Getclaim(c)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})

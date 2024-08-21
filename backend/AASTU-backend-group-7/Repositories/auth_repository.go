@@ -60,15 +60,11 @@ func NewAuthRepository(user_collection Domain.Collection, token_collection Domai
 func (ar *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.Tokens, error, int) {
 	ar.mu.RLock()
 	defer ar.mu.RUnlock()
-	_, err := ar.UserCollection.CreateIndex(ctx, bson.D{{"email", 1}})
-	if err != nil {
-		fmt.Println(err)
-		return Domain.Tokens{}, err, 500
-	}
+	
 
 	filter := bson.D{{"email", user.Email}}
 	var existingUser Domain.User
-	err = ar.UserCollection.FindOne(ctx, filter).Decode(&existingUser)
+	err := ar.UserCollection.FindOne(ctx, filter).Decode(&existingUser)
 
 	if err != nil || !password_services.CompareHashAndPasswordCustom(existingUser.Password, user.Password) {
 		fmt.Printf("Login Called:%v, %v", existingUser.Password, user.Password)
@@ -94,14 +90,10 @@ func (ar *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.
 func (ar *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserDto) (*Domain.OmitedUser, error, int) {
 	ar.mu.RLock()
 	defer ar.mu.RUnlock()
-	_, err := ar.UserCollection.CreateIndex(ctx, bson.D{{"email", 1}})
-	if err != nil {
-		fmt.Println(err)
-		return &Domain.OmitedUser{}, err, 500
-	}
+	
 
 	// Validate the user input
-	err = ar.validator.Struct(user)
+	err := ar.validator.Struct(user)
 	if err != nil {
 		return &Domain.OmitedUser{}, err, http.StatusBadRequest
 	}
@@ -175,11 +167,7 @@ func (ar *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 func (ar *authRepository) Logout(ctx context.Context, user_id primitive.ObjectID) (error, int) {
 	ar.mu.RLock()
 	defer ar.mu.RUnlock()
-	_, err := ar.UserCollection.CreateIndex(ctx, bson.D{{"_id", 1}})
-	if err != nil {
-		fmt.Println(err)
-		return err, 500
-	}
+
 	// delete the refresh token
 	err, statusCode := ar.TokenRepository.DeleteToken(ctx, user_id)
 	if err != nil {
@@ -248,11 +236,6 @@ func (ar *authRepository) GoogleLogin(ctx context.Context) string {
 func (ar *authRepository) CallbackHandler(ctx context.Context, code string) (Domain.Tokens, error, int) {
 	ar.mu.RLock()
 	defer ar.mu.RUnlock()
-	_, err := ar.UserCollection.CreateIndex(ctx, bson.D{{"email", 1}})
-	if err != nil {
-		fmt.Println(err)
-		return Domain.Tokens{}, err, 500
-	}
 	token, err := ar.oauth2Config.Exchange(ctx, code)
 	if err != nil {
 		return Domain.Tokens{}, errors.New("Couldn't exchange token: "), http.StatusInternalServerError
@@ -301,11 +284,6 @@ func (ar *authRepository) CallbackHandler(ctx context.Context, code string) (Dom
 func (ar *authRepository) GenerateTokenFromUser(ctx context.Context, existingUser Domain.User) (Domain.Tokens, error, int) {
 	ar.mu.RLock()
 	defer ar.mu.RUnlock()
-	_, err := ar.UserCollection.CreateIndex(ctx, bson.D{{"email", 1}})
-	if err != nil {
-		fmt.Println(err)
-		return Domain.Tokens{}, err, 500
-	}
 	filter := bson.D{{Key: "email", Value: existingUser.Email}}
 	// Generate JWT access
 	jwtAccessToken, err := jwtservice.CreateAccessToken(existingUser)
@@ -316,11 +294,7 @@ func (ar *authRepository) GenerateTokenFromUser(ctx context.Context, existingUse
 	if err != nil {
 		return Domain.Tokens{}, err, 500
 	}
-	_, err = ar.UserCollection.CreateIndex(ctx, bson.D{{"_id", 1}})
-	if err != nil {
-		fmt.Println(err)
-		return Domain.Tokens{}, err, 500
-	}
+
 
 	filter = primitive.D{{"_id", existingUser.ID}}
 	existingTokenCount, err := ar.UserCollection.CountDocuments(ctx, filter)
@@ -353,11 +327,7 @@ func (ar *authRepository) GenerateTokenFromUser(ctx context.Context, existingUse
 func (ar *authRepository) ActivateAccount(ctx context.Context, token string) (error, int) {
 	ar.mu.RLock()
 	defer ar.mu.RUnlock()
-	_, err := ar.UserCollection.CreateIndex(ctx, bson.D{{"email", 1}})
-	if err != nil {
-		fmt.Println(err)
-		return err, 500
-	}
+	
 	email, err := jwtservice.VerifyToken(token)
 	if err != nil {
 		return err, http.StatusBadRequest

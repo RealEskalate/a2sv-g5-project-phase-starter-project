@@ -3,12 +3,14 @@ package controllers
 import (
 	"blogapp/Domain"
 	"blogapp/Utils"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -34,6 +36,14 @@ func (controller *blogController) CreateBlog(c *gin.Context) {
 	var newBlogPost = &Domain.Post{}
 	if err := c.ShouldBindJSON(&newBlogPost); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	// validate post
+	v := validator.New()
+	if err := v.Struct(newBlogPost); err != nil {
+		fmt.Printf(err.Error())
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid or missing data", "error": err.Error()})
 		return
 	}
 
@@ -361,7 +371,6 @@ func (controller *blogController) SearchPosts(c *gin.Context) {
 	filter := Domain.Filter{}
 	filter.Limit, _ = strconv.Atoi(queryparams.Get("limit"))
 	filter.Page, _ = strconv.Atoi(queryparams.Get("page"))
-
 
 	posts, err, statusCode, paginationMetaData := controller.BlogUseCase.SearchPosts(c, searchQuery, filter)
 	if err != nil {

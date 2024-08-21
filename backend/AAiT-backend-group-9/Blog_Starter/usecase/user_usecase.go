@@ -35,7 +35,7 @@ func (u *UserUsecase) DeleteUser(c context.Context, userID string, password stri
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return errors.New("password incorrect")
 	}
-	
+
 	err = u.userRepo.DeleteUser(ctx, userID)
 	if err != nil {
 		return err
@@ -167,5 +167,50 @@ func (u *UserUsecase) DemoteUser(c context.Context, userID string) error {
 
 // UpdateUser implements domain.UserUsecase.
 func (u *UserUsecase) UpdateUser(c context.Context, user *domain.UserUpdate, userID string) (*domain.UserResponse, error) {
-	panic("unimplemented")
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+	_, err := u.userRepo.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	updatedUser, err := u.userRepo.UpdateProfile(ctx, user, userID)
+	if err != nil {
+		return nil, err
+	}
+	return &domain.UserResponse{
+		UserID:         updatedUser.UserID,
+		Username:       updatedUser.Username,
+		Email:          updatedUser.Email,
+		Name:           updatedUser.Name,
+		Bio:            updatedUser.Bio,
+		ContactInfo:    updatedUser.ContactInfo,
+		Role:           updatedUser.Role,
+		IsActivated:    updatedUser.IsActivated,
+		ProfilePicture: updatedUser.ProfilePicture,
+	}, nil
+}
+
+// UpdateProfilePicture implements domain.UserUsecase.
+func (u *UserUsecase) UpdateProfilePicture(c context.Context, profilePicPath string, userID string) (*domain.UserResponse, error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+	_, err := u.userRepo.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	updatedUser, err := u.userRepo.UpdateProfilePicture(ctx, profilePicPath, userID)
+	if err != nil {
+		return nil, err
+	}
+	return &domain.UserResponse{
+		UserID:         updatedUser.UserID,
+		Username:       updatedUser.Username,
+		Email:          updatedUser.Email,
+		Name:           updatedUser.Name,
+		Bio:            updatedUser.Bio,
+		ContactInfo:    updatedUser.ContactInfo,
+		Role:           updatedUser.Role,
+		IsActivated:    updatedUser.IsActivated,
+		ProfilePicture: updatedUser.ProfilePicture,
+	}, nil
 }

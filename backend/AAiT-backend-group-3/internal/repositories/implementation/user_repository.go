@@ -20,19 +20,16 @@ func NewMongoUserRepository(db *mongo.Database, collectionName string) repositor
 }
 
 func (r *MongoUserRepository) SignUp(user *models.User) (*models.User, error) {
-	var insertedUser models.User
-	result, err := r.collection.InsertOne(ctx, user)
+	if user.ID == primitive.NilObjectID {
+		user.ID = primitive.NewObjectID()
+	}
+	_, err := r.collection.InsertOne(ctx, user)
 	if err != nil {
 		return nil, err
 	}
-	err = r.collection.FindOne(ctx, bson.M{"_id":result.InsertedID}).Decode(&insertedUser)
-	if err != nil {
-        return nil, err
-    }
-    return &insertedUser, nil
+	return user, nil
 }
-
-func (r *MongoUserRepository) GetUserByID(id primitive.ObjectID) (*models.User, error) {
+func (r *MongoUserRepository) GetUserByID(id string) (*models.User, error) {
 	var user models.User
 	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
 	if err != nil {
@@ -65,22 +62,22 @@ func (r *MongoUserRepository) GetUserByEmail(email string) (*models.User, error)
 	return &user, nil
 }
 
-func (r *MongoUserRepository) DeleteUser(id primitive.ObjectID) error {
+func (r *MongoUserRepository) DeleteUser(id string) error {
 	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": id})
 	return err
 }
 
-func (r *MongoUserRepository) UpdateProfile(id primitive.ObjectID, user *models.User) error {
+func (r *MongoUserRepository) UpdateProfile(id string, user *models.User) error {
 	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": user})
 	return err
 }
 
-func (r *MongoUserRepository) PromoteUser(userID primitive.ObjectID) error {
+func (r *MongoUserRepository) PromoteUser(userID string) error {
 	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": userID}, bson.M{"$set": bson.M{"role": "admin"}})
 	return err
 }
 
-func (r *MongoUserRepository) DemoteUser(userID primitive.ObjectID) error {
+func (r *MongoUserRepository) DemoteUser(userID string) error {
 	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": userID}, bson.M{"$set": bson.M{"role": "user"}})
 	return err
 }

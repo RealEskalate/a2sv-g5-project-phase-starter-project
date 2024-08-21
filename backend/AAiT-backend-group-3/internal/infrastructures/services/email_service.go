@@ -9,6 +9,7 @@ import (
 type IEmailService interface {
     SendResetEmail(to, subject, body string) error
 	SendVerificationEmail(to, subject, body string) error
+	SendEmail(to, subject, body string) error
 }
 
 type EmailService struct {

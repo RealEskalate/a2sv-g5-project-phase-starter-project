@@ -4,14 +4,24 @@ import (
 	"errors"
 	"fmt"
 	"time"
-
 	"AAIT-backend-group-3/internal/domain/models"
 	"AAIT-backend-group-3/internal/infrastructures/services"
-	repository_interface "AAIT-backend-group-3/internal/repositories/interfaces"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"AAIT-backend-group-3/internal/repositories/interfaces"
 )
 
+type UserUsecaseInterface interface {
+	SignUp(user *models.User) (*models.User, error)
+	Login(user *models.User) (string, string, error)
+	RefreshToken(refreshToken string) (string, error)
+	GetUserByID(userID string) (*models.User, error)
+	GetUserByEmail(email string) (*models.User, error)
+	DeleteUser(userID string) error
+	UpdateProfile(userID string, user *models.User) error
+	PromoteUser(userID string) error
+	DemoteUser(userID string) error
+	VerifyEmailToken(token string) (string, string, error)
+	
+}
 
 type UserUsecase struct {
 	userRepo repository_interface.UserRepositoryInterface
@@ -21,8 +31,7 @@ type UserUsecase struct {
 	jwtSevices services.IJWT
 }
 
-
-func NewUserUsecase(userRepo repository_interface.UserRepositoryInterface, passwordService services.IHashService, validationService services.IValidationService, emailService services.IEmailService, jwtService services.IJWT) *UserUsecase {
+func NewUserUsecase(userRepo repository_interface.UserRepositoryInterface, passwordService services.IHashService, validationService services.IValidationService, emailService services.IEmailService, jwtService services.IJWT) UserUsecaseInterface {
 	return &UserUsecase{
 		userRepo: userRepo,
 		passwordService: passwordService,
@@ -33,10 +42,10 @@ func NewUserUsecase(userRepo repository_interface.UserRepositoryInterface, passw
 }
 
 
-func (u *UserUsecase) SignUp(user *models.User) error {
+func (u *UserUsecase) SignUp(user *models.User) (*models.User, error) {
 	users, err := u.userRepo.GetAllUsers()
 	if err != nil {
-		return  errors.New("error while fetching")
+		return nil, err
 	}
 	if len(users) == 0 {
 		user.Role = "ADMIN"
@@ -44,20 +53,20 @@ func (u *UserUsecase) SignUp(user *models.User) error {
 		user.Role = "USER"
 		existingUser, _ := u.userRepo.GetUserByEmail(user.Email)
 		if existingUser != nil {
-			return errors.New("user already exists")
+			return nil, err
 		}
 	}
 
 	if _, err := u.validationService.ValidatePassword(user.Password); err != nil {
-		return err
+		return nil, err
 	}
 	if _, err := u.validationService.ValidateEmail(user.Email); err != nil {
-		return err
+		return nil, err
 	}
 
 	encryptedPassword, err := u.passwordService.HashPassword(user.Password)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	user.Password = encryptedPassword
 	user.CreatedAt = time.Now()
@@ -65,19 +74,19 @@ func (u *UserUsecase) SignUp(user *models.User) error {
 
 	regUser, err := u.userRepo.SignUp(user)
 	if err != nil {
-		return errors.New(err.Error())
+		return nil, err
 	}
 
 	verificationToken, err := u.jwtSevices.GenerateVerificationToken(regUser.ID.Hex())	
 	if err != nil {
-		return errors.New("can't generate verification token")
+		return nil, err
 	}
 	verificationLink := fmt.Sprintf("https://localhost:8080/verify-email?token=%s", verificationToken)
 
 	user.VerificationToken = verificationToken
 	user.TokenExp = time.Now().Add(24 * time.Hour)
 
-	u.userRepo.UpdateProfile(regUser.ID, user)
+	u.userRepo.UpdateProfile(regUser.ID.Hex(), user)
 
 	subject := "Email Verification"
 	body := fmt.Sprintf(`
@@ -88,9 +97,9 @@ func (u *UserUsecase) SignUp(user *models.User) error {
 
 	err = u.emailService.SendVerificationEmail(regUser.Email, subject, body)
 	if err != nil {
-		return errors.New(err.Error())
+		return nil, err
 	}
-	return nil 
+	return user, nil 
 }
 
 
@@ -118,8 +127,7 @@ func (u *UserUsecase) RefreshToken(refreshTok string ) (string, error) {
 		return "", errors.New(err.Error())
 	}
 
-	user_id, _ := primitive.ObjectIDFromHex(userId)
-	existingUser, err := u.userRepo.GetUserByID(user_id)
+	existingUser, err := u.userRepo.GetUserByID(userId)
 	if err != nil {
 		return "", errors.New("user not found")
 	}
@@ -138,9 +146,7 @@ func (u *UserUsecase) VerifyEmailToken(token string) (string, string, error) {
 	if err != nil {
 		return "","", errors.New(err.Error())
 	}
-
-	user_id, _ := primitive.ObjectIDFromHex(userId)
-	user, err := u.userRepo.GetUserByID(user_id)
+	user, err := u.userRepo.GetUserByID(userId)
 	if err != nil {
 		return "", "", errors.New("invalid or expired token")
 	}
@@ -157,7 +163,7 @@ func (u *UserUsecase) VerifyEmailToken(token string) (string, string, error) {
 	user.TokenExp = time.Time{}
 	user.RefToken = refershToken
 
-	err = u.userRepo.UpdateProfile(user.ID, user)
+	err = u.userRepo.UpdateProfile(user.ID.Hex(), user)
 	if err != nil {
 		return "", "", err
 	}
@@ -165,7 +171,7 @@ func (u *UserUsecase) VerifyEmailToken(token string) (string, string, error) {
 	return accessToken, refershToken, nil
 }
 
-func (u *UserUsecase) GetUserByID(userID primitive.ObjectID) (*models.User, error) {
+func (u *UserUsecase) GetUserByID(userID string) (*models.User, error) {
 	return u.userRepo.GetUserByID(userID)
 }
 
@@ -176,19 +182,19 @@ func (u *UserUsecase) GetUserByEmail(email string) (*models.User, error) {
 	return u.userRepo.GetUserByEmail(email)
 }
 
-func (u *UserUsecase) DeleteUser(userID primitive.ObjectID) error {
+func (u *UserUsecase) DeleteUser(userID string) error {
 	return u.userRepo.DeleteUser(userID)
 }
 
-func (u *UserUsecase) UpdateProfile(userID primitive.ObjectID, user *models.User) error {
+func (u *UserUsecase) UpdateProfile(userID string, user *models.User) error {
 	if _, err := u.validationService.ValidateEmail(user.Email); err != nil {
 		return err
 	}
 	return u.userRepo.UpdateProfile(userID, user)
 }
-func (u *UserUsecase) PromoteUser(userID primitive.ObjectID) error {
+func (u *UserUsecase) PromoteUser(userID string) error {
 	return u.userRepo.PromoteUser(userID)
 }
-func (u *UserUsecase) DemoteUser(userID primitive.ObjectID) error {
+func (u *UserUsecase) DemoteUser(userID string) error {
 	return u.userRepo.DemoteUser(userID)
 }

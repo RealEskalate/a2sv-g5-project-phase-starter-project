@@ -20,6 +20,11 @@ const LoginForm = () => {
   const onSubmit = async (data: LoginValue) => {
     setLoading(true);
     setError("");
+    const result = await signIn("credentials", {
+      redirect: false,
+      userName: data.userName,
+      password: data.password,
+    });
 
     const result = await signIn("credentials",{
       redirect: false,
@@ -30,8 +35,8 @@ const LoginForm = () => {
     console.log(result)
 
     if (result?.error) {
-      console.log(result.error)
-      setError(result.error);
+      console.log(result);
+      setError("Invalid Credential");
       setLoading(false);
     } else {
       console.log("Login Successful:", result);
@@ -53,6 +58,8 @@ const LoginForm = () => {
         className="pt-3 flex flex-col gap-2 "
         onSubmit={handleSubmit(onSubmit)}
       >
+        {error && <p className="text-[#1814F3] mt-2 text-center">{error}</p>}
+
         <div className="mt-3 flex flex-col">
           <label className="mb-1 text-slate-500" htmlFor="userName">
             UserName
@@ -91,7 +98,6 @@ const LoginForm = () => {
           <button type="submit" disabled={loading} className="text-white">
             {loading ? "Loading..." : "Login"}
           </button>
-          {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
       </form>
 

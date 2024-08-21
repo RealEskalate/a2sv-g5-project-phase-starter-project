@@ -21,11 +21,11 @@ func (uc *UserUsecase) LoginUser(c *gin.Context, loginRequest domain.LoginReques
 	}
 
 	if err != nil {
-		return domain.LoginResponse{}, errors.New("invalid credentials. User not found.")
+		return domain.LoginResponse{}, errors.New("invalid credentials. User not found")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(loginRequest.Password)); err != nil {
-		return domain.LoginResponse{}, errors.New("invalid credentials. Incorrect password.")
+		return domain.LoginResponse{}, errors.New("invalid credentials. Incorrect password")
 	}
 
 	accessToken, err := auth.CreateAccessToken(&u, Env.AccessTokenSecret, Env.AccessTokenExpiryHour)

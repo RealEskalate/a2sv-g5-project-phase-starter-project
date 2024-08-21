@@ -4,9 +4,10 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (ur *UserRepository) UpdatePassword(ctx context.Context, userID string, newPassword string) error {
+func (ur *UserRepository) UpdatePassword(ctx context.Context, userID primitive.ObjectID, newPassword string) error {
 	filter := bson.M{"_id": userID}
 	update := bson.M{
 		"$set": bson.M{

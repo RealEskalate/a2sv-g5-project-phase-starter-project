@@ -1,6 +1,10 @@
 package domain
 
-import "context"
+import (
+	"context"
+
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
+)
 
 type SignupRequest struct {
 	FirstName  string `json:"first_name" bson:"first_name" binding:"required,min=3,max=30"`
@@ -17,8 +21,12 @@ type SignupResponse struct {
 
 type SignupUsecase interface {
 	Create(c context.Context, user *User) (*User, error)
+	ActivateUser(c context.Context, userID string) error
 	IsOwner(c context.Context) (bool,error)
+	GetUserById(c context.Context, userId string) (*User, error)
 	GetUserByEmail(c context.Context, email string) (User, error)
+	CreateVerificationToken(user *User, secret string, expiry int) (accessToken string, err error)
 	CreateAccessToken(user *User, secret string, expiry int) (accessToken string, err error)
 	CreateRefreshToken(user *User, secret string, expiry int) (refreshToken string, err error)
+	SendVerificationEmail(recipientEmail string,encodedToken string,env *bootstrap.Env) (err error)
 }

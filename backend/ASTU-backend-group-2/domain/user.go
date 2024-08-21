@@ -69,7 +69,7 @@ type UserUsecase interface {
 	ActivateUser(c context.Context, userID string) error
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)
-
+	IsOwner(c context.Context) (bool, error)
 	ResetUserPassword(c context.Context, userID string, resetPassword *ResetPassword) error
 	UpdateUserPassword(c context.Context, userID string, updatePassword *UpdatePassword) error
 

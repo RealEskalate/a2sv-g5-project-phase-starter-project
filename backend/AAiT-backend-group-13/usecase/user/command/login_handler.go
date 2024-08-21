@@ -1,6 +1,8 @@
 package usercmd
 
 import (
+	"log"
+
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
@@ -42,13 +44,15 @@ var _ icmd.IHandler[*LoginCommand, *result.LoginInResult] = &LoginHandler{}
 // Handle processes the login command and returns the login result with tokens.
 func (h *LoginHandler) Handle(command *LoginCommand) (*result.LoginInResult, error) {
 	// Find user by username
+	log.Printf("Finding user by username: %s", command)
 	user, err := h.repo.FindByUsername(command.username)
-	if err != nil {
+	if user.Username() == "" || err != nil {
 		return nil, er.NewNotFound("user not found")
 	}
 
 	// Verify password
-	ok, err := h.hashService.Match(command.password, user.PasswordHash())
+	log.Println(user, "found this user", user.PasswordHash(), "now checking password")
+	ok, err := h.hashService.Match(user.PasswordHash(), command.password )
 	if err != nil {
 		return nil, err
 	}

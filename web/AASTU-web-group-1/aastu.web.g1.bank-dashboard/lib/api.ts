@@ -1,6 +1,6 @@
 
 import { getSession } from "next-auth/react";
-import { TransactionProps,RandomBalanceHistory,UserResponse, CreditCardProps,QuickTransferProps } from "@/types";
+import { TransactionProps,RandomBalanceHistory,UserResponse, CreditCardProps,QuickTransferProps, TransactionResponse } from "@/types";
 
 export  async function getCreditCards(page: number, size: number) {
     try {
@@ -87,9 +87,8 @@ export  async function addTransactions({
     if (!res.ok) {
       throw new Error("Failed to get data");
     }
-    const data = await res.json();
-    alert("Transaction Successful");
-    console.log("res", data);
+  
+    return true;
   } catch (error) {
     console.error("An error occurred on card:", error);
   }

@@ -23,6 +23,7 @@ import getRandomBalance, { addTransactions, getallTransactions, getCreditCards, 
 import { Loading } from "./_components/Loading";
 import {useUser} from "@/contexts/UserContext"
 import Link from "next/link";
+import { toast } from "sonner";
 
 const MainDashboard = () => {
   const {isDarkMode} = useUser();
@@ -56,10 +57,20 @@ const MainDashboard = () => {
     setAmount(e.target.value);
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (selectedProfile) {
       console.log("Sending to:", selectedProfile.username, "Amount:", amount);
-      addTransactions({type:"transfer",amount:parseInt(amount),receiverUserName:selectedProfile.username,description:"Quick Transfer",})
+      const result: boolean | undefined = await addTransactions({
+        type: "transfer",
+        amount: parseInt(amount),
+        receiverUserName: selectedProfile.username,
+        description: "Quick Transfer",
+      });
+      if (result) {
+        toast("sucess sending");
+      }
+      else{
+        toast("failed sending");}
     }
   };
 
@@ -108,11 +119,7 @@ const MainDashboard = () => {
             <h4>My Cards</h4>
 
             <h4>
-              <Link href="/dashboard/credit-cards/">
-              
-                  See All
-               
-              </Link>
+              <Link href="/dashboard/credit-cards/">See All</Link>
             </h4>
           </div>
           <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -136,7 +143,8 @@ const MainDashboard = () => {
             <h4>Recent Transactions</h4>
           </div>
           <div
-            className={`space-y-3 p-3 md:p-5  ${
+            // min-w-[300px] sm:h-56 md:min-w-[320px]  ${bgColor} rounded-2xl pt-3 space-y-6
+            className={`space-y-5 p-3 md:p-5 md:h-[200px] lg:w-[350px] lg:h-[220px] ${
               isDarkMode
                 ? "bg-gray-800 text-white border-gray-600"
                 : "bg-white text-black"

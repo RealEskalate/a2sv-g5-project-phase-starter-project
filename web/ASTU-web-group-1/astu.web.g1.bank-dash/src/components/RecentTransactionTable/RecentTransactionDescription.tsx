@@ -19,7 +19,7 @@ const RecentTransactionDescription = ({
         )}
       </div>
       <div>
-        <p>{description}</p>
+        <p >{description}</p>
       </div>
     </div>
   );

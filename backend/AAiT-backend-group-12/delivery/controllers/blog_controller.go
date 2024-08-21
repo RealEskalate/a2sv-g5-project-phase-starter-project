@@ -2,10 +2,9 @@ package controllers
 
 import (
 	"blog_api/domain"
+	validateblog "blog_api/infrastructure/validate_blog"
 	"net/http"
-
 	"log"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
@@ -14,7 +13,7 @@ type BlogController struct {
 	blogUseCase domain.BlogUseCaseInterface
 }
 
-var validate = validator.New()
+var blogValidate = validator.New()
 
 func NewBlogController(bu domain.BlogUseCaseInterface) *BlogController {
 	return &BlogController{
@@ -30,7 +29,8 @@ func (bc *BlogController) CreateBlogHandler(c *gin.Context) {
 		return
 	}
 
-	err := validate.Struct(blog)
+	blogValidate.RegisterValidation("MinWord", validateblog.WordCountValidator)
+	err := blogValidate.Struct(blog)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
 		return
@@ -47,7 +47,7 @@ func (bc *BlogController) CreateBlogHandler(c *gin.Context) {
 		c.JSON(GetHTTPErrorCode(newErr), domain.Response{"error": newErr.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, domain.Response{"message": "blog created successfully"})
+	c.JSON(http.StatusCreated, domain.Response{"message": "blog created successfully"})
 }
 
 // UpdateBlogHandler handles the HTTP request to update a blog post.
@@ -58,8 +58,16 @@ func (bc *BlogController) UpdateBlogHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
 		return
 	}
-	userName, exists := c.Keys["username"]
-	if !exists {
+
+	blogValidate.RegisterValidation("MinWord", validateblog.WordCountValidator)
+	
+	if err := blogValidate.Struct(blog); err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
+		return
+	}
+	
+	userName, exists := c.Keys["username"] 
+	if !exists{
 		c.JSON(http.StatusForbidden, gin.H{"message": "coudn't find the username field"})
 		return
 	}

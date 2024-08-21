@@ -50,7 +50,7 @@ func (s *AIService) GenerateContent(topics []string) (string, error) {
 		return "No content parts found", nil
 	}
 
-	generatedContent := extractText(resp.Candidates[0].Content.Parts[0])
+	generatedContent := cleanText(resp.Candidates[0].Content.Parts[0])
 	if generatedContent == "" {
 		return "Content extraction failed", nil
 	}
@@ -76,14 +76,21 @@ func (s *AIService) ReviewContent(blogContent string) (string, error) {
 		return "No content parts found", nil
 	}
 
-	suggestions := extractText(resp.Candidates[0].Content.Parts[0])
+	suggestions := cleanText(resp.Candidates[0].Content.Parts[0])
 	if suggestions == "" {
 		return "Suggestions extraction failed", nil
 	}
 
 	return suggestions, nil
 }
+func cleanText(value interface{}) string {
+    text := extractText(value)
 
+    cleanedText := strings.ReplaceAll(strings.ReplaceAll(text, "**", ""), "*", "")
+    cleanedText = strings.ReplaceAll(cleanedText, "\n\n", "\n")
+
+    return cleanedText
+}
 func extractText(value interface{}) string {
 	v := reflect.ValueOf(value)
 
@@ -119,7 +126,7 @@ func (s *AIService) GenerateTrendingTopics(keywords []string) ([]string, error) 
 		return nil, fmt.Errorf("no topics generated")
 	}
 
-	generatedText := extractText(resp.Candidates[0].Content.Parts[0])
+	generatedText := cleanText(resp.Candidates[0].Content.Parts[0])
 	topics := strings.Split(generatedText, "\n") // Assuming the AI returns a list separated by newlines
 
 	return topics, nil

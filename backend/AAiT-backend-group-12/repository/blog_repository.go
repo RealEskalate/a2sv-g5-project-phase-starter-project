@@ -393,7 +393,7 @@ func (b *BlogRepository) UpdateComment(ctx context.Context, updateComment *domai
 	for i := range foundBlog.Comments {
 		if foundBlog.Comments[i].ID.Hex() == commentId {
 			if foundBlog.Comments[i].Username != userName {
-				return domain.NewError("Unauthorized", domain.ERR_FORBIDDEN)
+				return domain.NewError("Unauthorized request for update", domain.ERR_FORBIDDEN)
 			}
 			// Update the comment
 			foundBlog.Comments[i].Content = updateComment.Content

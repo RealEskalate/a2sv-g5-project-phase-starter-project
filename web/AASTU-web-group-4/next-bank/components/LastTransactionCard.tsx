@@ -59,7 +59,7 @@ const TransactionCard: React.FC<{ transaction: Transaction }> = ({ transaction }
   return (
     <div className="flex flex-col pt-4 md:flex-row gap-4 gap-y-6 w-auto rounded-2xl shadow-none border-none">
       {/* Desktop View */}
-      <div className="hidden md:flex items-center">
+      <div className="hidden lg:flex items-center">
         <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-4">
           {transaction.icon}
         </div>
@@ -68,23 +68,23 @@ const TransactionCard: React.FC<{ transaction: Transaction }> = ({ transaction }
           <p className="text-sm text-gray-500 truncate">{transaction.date}</p>
         </div>
       </div>
-      <div className="hidden md:flex items-center w-24 truncate">
+      <div className="hidden lg:flex items-center w-24 truncate">
         <p className="text-sm font-medium text-gray-600 truncate">{transaction.type}</p>
       </div>
-      <div className="hidden md:flex items-center w-32 truncate"> 
+      <div className="hidden lg:flex items-center w-32 truncate"> 
         <p className="text-sm text-gray-500 truncate">{transaction.card}</p>
       </div>
-      <div className="hidden md:flex items-center w-20 truncate">
+      <div className="hidden lg:flex items-center w-20 truncate">
         <p className="truncate">{transaction.status}</p>
       </div>
-      <div className="hidden md:flex items-center justify-end w-24 truncate">
+      <div className="hidden lg:flex items-center justify-end w-24 truncate">
         <p className={`text-lg ${transaction.amount.startsWith('+') ? 'text-green-500' : 'text-red-500'} truncate`}>
           {transaction.amount}
         </p>
       </div>
       
       {/* Mobile View */}
-      <div className="md:hidden flex justify-between flex-row w-full">
+      <div className="lg:hidden flex justify-between flex-row w-full">
         <div className="flex items-center">
           <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-4">
             {transaction.icon}
@@ -138,7 +138,7 @@ const transactions: Transaction[] = [
 // App Component
 const App: React.FC = () => {
   return (
-    <div className="p-3 gap-4 flex-1 h-auto bg-gray-50">
+    <div className="p-3 gap-4 flex-1  bg-gray-50">
       {transactions.map((transaction, index) => (
         <TransactionCard key={index} transaction={transaction} />
       ))}

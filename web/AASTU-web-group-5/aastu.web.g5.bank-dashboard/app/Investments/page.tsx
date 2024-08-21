@@ -63,21 +63,21 @@ const Investments = () => {
           <Image height={44} width={44} src={TotalAmmount_img} alt="balance" />
           <div>
             <p>Total Invested Amount</p>
-            <p className="text-xl font-semibold">${investmentOverview.totalAmount}</p>
+            <p className="text-xl font-semibold">${investmentOverview.totalAmount.toFixed(2)}</p>
           </div>
         </div>
         <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
           <Image height={44} width={44} src={Number_img} alt="balance" />
           <div>
             <p>Number of Investments</p>
-            <p className="text-xl font-semibold">{investmentOverview.numberOfInvestments}</p>
+            <p className="text-xl font-semibold">{investmentOverview.numberOfInvestments.toFixed(2)}</p>
           </div>
         </div>
         <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
           <Image height={44} width={44} src={Rate_img} alt="balance" />
           <div>
             <p>Rate of Return</p>
-            <p className="text-xl font-semibold">{investmentOverview.rateOfReturn}%</p>
+            <p className="text-xl font-semibold">{investmentOverview.rateOfReturn.toFixed(2)}%</p>
           </div>
         </div>
       </div>

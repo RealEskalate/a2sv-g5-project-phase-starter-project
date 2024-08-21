@@ -53,60 +53,60 @@ const Register = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-6 w-full">
           {errorMessage && <p className="text-red-500 mb-4 text-center col-span-1">{errorMessage}</p>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center">
               <input {...register('name', { required: true })} placeholder="Name" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
-              {errors.name && <p className="error-text text-red-500">Name is required</p>}
+              {errors.name && <p className="error-text text-red-500 mt-1">Name is required</p>}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center">
               <input {...register('email', { required: true })} type="email" placeholder="Email" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
-              {errors.email && <p className="error-text text-red-500">Email is required</p>}
+              {errors.email && <p className="error-text text-red-500 mt-1">Email is required</p>}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center">
               <input {...register('dateOfBirth', { required: true })} type="date" placeholder="Date of Birth" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
-              {errors.dateOfBirth && <p className="error-text text-red-500">Date of Birth is required</p>}
+              {errors.dateOfBirth && <p className="error-text text-red-500 mt-1">Date of Birth is required</p>}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center">
               <input {...register('permanentAddress', { required: true })} placeholder="Permanent Address" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
-              {errors.permanentAddress && <p className="error-text text-red-500">Permanent Address is required</p>}
+              {errors.permanentAddress && <p className="error-text text-red-500 mt-1">Permanent Address is required</p>}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center">
               <input {...register('postalCode', { required: true })} placeholder="Postal Code" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
-              {errors.postalCode && <p className="error-text text-red-500">Postal Code is required</p>}
+              {errors.postalCode && <p className="error-text text-red-500 mt-1">Postal Code is required</p>}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center">
               <input {...register('username', { required: true })} placeholder="Username" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
-              {errors.username && <p className="error-text text-red-500">Username is required</p>}
+              {errors.username && <p className="error-text text-red-500 mt-1">Username is required</p>}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center">
               <input {...register('password', { required: true })} type="password" placeholder="Password" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
-              {errors.password && <p className="error-text text-red-500">Password is required</p>}
+              {errors.password && <p className="error-text text-red-500 mt-1">Password is required</p>}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center">
               <input {...register('presentAddress', { required: true })} placeholder="Present Address" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
-              {errors.presentAddress && <p className="error-text text-red-500">Present Address is required</p>}
+              {errors.presentAddress && <p className="error-text text-red-500 mt-1">Present Address is required</p>}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center">
               <input {...register('city', { required: true })} placeholder="City" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
-              {errors.city && <p className="error-text text-red-500">City is required</p>}
+              {errors.city && <p className="error-text text-red-500 mt-1">City is required</p>}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center">
               <input {...register('country', { required: true })} placeholder="Country" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
-              {errors.country && <p className="error-text text-red-500">Country is required</p>}
+              {errors.country && <p className="error-text text-red-500 mt-1">Country is required</p>}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center">
               <input {...register('profilePicture', { required: true })} type="text" 
               placeholder="Profile Picture URL" className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100" />
-              {errors.profilePicture && <p className="error-text text-red-500">Profile Picture is required</p>}
+              {errors.profilePicture && <p className="error-text text-red-500 mt-1">Profile Picture is required</p>}
             </div>
           </div>
           <div className="flex justify-center">
@@ -114,7 +114,7 @@ const Register = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex justify-center">
+          <div className="flex flex-col items-center">
             <select 
               {...register('preference.currency', { required: true })} 
               className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100"
@@ -125,10 +125,10 @@ const Register = () => {
               <option value="GBP">GBP</option>
               <option value="JPY">JPY</option>
             </select>
-            {errors.preference?.currency && <p className="error-text text-red-500">Currency is required</p>}
+            {errors.preference?.currency && <p className="error-text text-red-500 mt-1">Currency is required</p>}
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex flex-col items-center">
             <select 
               {...register('preference.timeZone', { required: true })} 
               className="input-field w-[80%] bg-blue-50 border border-blue-300 rounded-md p-2 transition duration-300 ease-in-out focus:bg-blue-100"
@@ -149,7 +149,7 @@ const Register = () => {
               <option value="UTC+00:00">UTC+00:00</option>
               <option value="UTC+12:00">UTC+12:00</option>
             </select>
-            {errors.preference?.timeZone && <p className="error-text text-red-500">Time Zone is required</p>}
+            {errors.preference?.timeZone && <p className="error-text text-red-500 mt-1">Time Zone is required</p>}
           </div>
           </div>
 

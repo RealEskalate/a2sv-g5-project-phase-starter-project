@@ -64,6 +64,8 @@ func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, userID, blogID stri
 	newComment.AuthorID = user.ID
 	newComment.BlogID = blogID
 	newComment.Content = comment.Content
+	newComment.CreatedAt = time.Now()
+	newComment.UpdatedAt = time.Now()
 
 	_, err = b.blogRepository.CreateComment(ctx, newComment)
 	if err != nil {

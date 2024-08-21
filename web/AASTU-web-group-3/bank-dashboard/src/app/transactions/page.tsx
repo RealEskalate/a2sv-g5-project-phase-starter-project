@@ -1,19 +1,20 @@
 import React from "react";
-import AllTransactions from "../components/transaction/AllTransactions";
+import AllTransactions from "../components/transactions/AllTransactions";
 import CreditCard from "../components/CreditCard";
 import DashboardBarChart from "../components/Chart/DashboardBarChart";
+import RecentTransactions from '../components/transactions/RecentTransactions';
 
 const TransactionsPage = () => {
   return (
-    <section className="w-[98%]">
-      <div className="credit-cards expenses flex flex-col lg:flex-row justify-between">
-        <div className="lg:w-[65%]  rounded-xl bg-[#F5F7FA] p-1">
-          <div className="credit-card-info flex justify-between px-4 h-20 items-center">
+    <section className="xl:w-11/12 xl:mx-4">
+      <div className="credit-cards expenses flex flex-col lg:flex-row justify-between lg:gap-1 xl:gap-6 ">
+        <div className="lg:w-[65%] rounded-xl bg-[#F5F7FA]">
+          <div className="credit-card-info flex justify-between  h-20 items-center ">
             <h1 className="font-semibold text-[#343C6A]">My cards</h1>
             <h1 className="font-semibold text-[#343C6A]">+Add Card</h1>
           </div>
-          <div className="cards flex gap-2 lg:flex-row overflow-x-auto overflow-y-hidden no-scrollbar   h-56 lg:h-52  lg:justify-between lg:px-4 ">
-            <div className="credit-card min-w-72 max-w-88 flex-shrink-0 lg:w-[45%]">
+          <div className="cards flex gap-5 lg:gap-1  lg:flex-row overflow-x-auto overflow-y-hidden no-scrollbar h-56 lg:justify-between xl:gap-10">
+            <div className=" flex-shrink-0 min-w-60 w-73 lg:w-60 lg:h-48 xl:w-96  xl:h-56 items-center">
               <CreditCard
                 name="Karthik P"
                 balance="$5,756"
@@ -23,7 +24,7 @@ const TransactionsPage = () => {
                 textColor="text-white"
               />
             </div>
-            <div className="credit-card min-w-72 max-w-88 flex-shrink-0 lg:w-[45%]">
+            <div className="flex-shrink-0 min-w-60  w-73 lg:w-60 lg:h-48 xl:w-96  xl:h-56">
               <CreditCard
                 name="Karthik P"
                 balance="$5,756"
@@ -33,7 +34,7 @@ const TransactionsPage = () => {
                 textColor="text-black"
               />
             </div>
-            <div className="credit-card min-w-72 max-w-88 flex-shrink-0 lg:w-[45%]">
+            <div className="flex-shrink-0 min-w-60 w-73 lg:w-60 lg:h-48 xl:w-96  xl:h-56">
               <CreditCard
                 name="Karthik P"
                 balance="$5,756"
@@ -43,13 +44,12 @@ const TransactionsPage = () => {
                 textColor="text-white"
               />
             </div>
-
-            {/* Add more cards here if needed */}
           </div>
         </div>
-        <DashboardBarChart />
+          <DashboardBarChart />
       </div>
-      <AllTransactions />
+      <RecentTransactions/>
+
     </section>
   );
 };

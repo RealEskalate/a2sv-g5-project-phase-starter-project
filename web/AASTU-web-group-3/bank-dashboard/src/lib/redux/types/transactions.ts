@@ -34,6 +34,56 @@ export interface TransactionDepositRequest{
   amount:number;
 }
 
-export interface TransactionDepositResponse{
+interface Transfer{
+  id: string,
+  name: string,
+  username: string,
+  city: string,
+  country: string,
+  profilePicture: string
+}
 
+export interface LatestTransferResponse{
+  success: true,
+  message: string,
+  data: Transfer[]
+}
+
+export interface BalanceData{
+  time: string
+  value: number
+}
+export interface BalanceHistoryResponse{
+  success: true,
+  message: string,
+  data: BalanceData[]
+}
+
+export interface MyExpenseResponse{
+  success: boolean;
+  message: string;
+  data: {
+    content: Transaction[];
+    totalPages: number;
+  };
+
+}
+
+export interface IncomeResponse{
+  success: boolean,
+  message: string,
+  data: {
+    content: [
+      {
+        transactionId: string,
+        type: string,
+        senderUserName: string,
+        description: string,
+        date:string,
+        amount: number,
+        receiverUserName: string
+      }
+    ],
+    totalPages: number
+  }
 }

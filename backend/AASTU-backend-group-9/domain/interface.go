@@ -30,7 +30,7 @@ type UserUsecase interface {
 	CreateUser(c context.Context, user *CreateUser,claims *JwtCustomClaims) error
 	PromoteUser(c context.Context, id primitive.ObjectID,claims *JwtCustomClaims) error
 	DemoteUser(c context.Context, id primitive.ObjectID,claims *JwtCustomClaims) error
-	UpdateUser(c context.Context, user *User,claims *JwtCustomClaims, id primitive.ObjectID) (*User, error)
+	UpdateUser(c context.Context, user *User,claims *JwtCustomClaims, existinguser *User) (*User, error)
 	DeleteUser(c context.Context, id primitive.ObjectID,claims *JwtCustomClaims) error
 }
 

@@ -16,6 +16,7 @@ type AuthSignup struct {
 	Username  		string `json:"username" binding:"required"`
 	Email           string `json:"email" binding:"required"`
 	Password        string `json:"password"`
+	Role 		    string `json:"role"`
 }
 
 type SignUpResponse struct {

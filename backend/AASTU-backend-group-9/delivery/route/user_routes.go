@@ -20,7 +20,7 @@ func NewUserRouter(env *config.Env, timeout time.Duration, db database.Database,
 		Env:           env,
 	}
 	group.POST("/create_user", uc.CreateUser)
-	group.PUT("/update_user/:id", uc.UpdateUser)
+	group.PATCH("/update_user/:id", uc.UpdateUser)
 	group.DELETE("/delete_user/:id", uc.DeleteUser)
 	group.GET("/get_user/:id", uc.GetUser)
 	group.GET("/get_all_users", uc.GetUsers)

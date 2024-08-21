@@ -162,7 +162,7 @@ const Sidebar = ({
                   isActive(item.url, item.additionalActivePaths || [])
                     ? "visible"
                     : "hidden"
-                } flex w-6 h-[45px] rounded-[32px] bg-[#1814F3] absolute left-[-60px]`}
+                } flex z-20 w-6 h-[45px] rounded-[32px] bg-[#1814F3] absolute md:left-[-40px]`}
               ></div>
               <Image
                 src={

@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 
+
 const API_BASE_URL = 'https://bank-dashboard-6acc.onrender.com';
 const token = Cookies.get('accessToken')
 
@@ -19,6 +20,22 @@ export const getAllTransactions = async () => {
   }
 };
 
+const token = Cookies.get('accessToken')
+const API_BASE_URL = "https://bank-dashboard-6acc.onrender.com";
+
+
+// GET /transactions
+export const getAllTransactions = async (page:any , size:any) => {
+  const response = await fetch(`${API_BASE_URL}/transactions?page=${page}&size=${size}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.json();}
+
+
+
 // POST /transactions
 export const createTransaction = async (transactionData: any, accessToken: string) => {
   try {
@@ -26,7 +43,7 @@ export const createTransaction = async (transactionData: any, accessToken: strin
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(transactionData),
     });
@@ -113,12 +130,12 @@ export const getLatestTransfers = async (accessToken: string, number: number) =>
 };
 
 // GET /transactions/incomes
-export const getIncomes = async (accessToken: string) => {
+export const getIncomes = async ( page:any , size:any) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/transactions/incomes`, {
+    const response = await fetch(`${API_BASE_URL}/transactions/incomes?page=${page}&size=${size}`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.json();
@@ -129,12 +146,12 @@ export const getIncomes = async (accessToken: string) => {
 };
 
 // GET /transactions/expenses
-export const getExpenses = async (accessToken: string) => {
+export const getExpenses = async ( page:any , size:any) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/transactions/expenses`, {
+    const response = await fetch(`${API_BASE_URL}/transactions/expenses?page=${page}&size=${size}`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.json();
@@ -150,7 +167,7 @@ export const getBalanceHistory = async (accessToken: string) => {
     const response = await fetch(`${API_BASE_URL}/transactions/balance-history`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.json();

@@ -93,7 +93,7 @@ func (uc *UserController) VerifyEmail(c *gin.Context) {
 
 	err := uc.Userusecase.VerifyUserEmail(c, token)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, "Failed to verify user")
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 

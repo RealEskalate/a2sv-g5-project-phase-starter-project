@@ -106,8 +106,13 @@ func PasswordValidator(password string) error {
 
 func UserVerification(email string) error {
 	secretKey := DotEnvLoader("Reset_Password")
+
+	// Generate a token valid for 1 hour
 	hashedEmail = sha256.Sum256([]byte(email))
 
 	token := passwordreset.NewToken(email, time.Hour*1, hashedEmail[:], []byte(secretKey))
-	return sendResetEmail(email, token)
+	if err := sendResetEmail(email, token); err != nil {
+		return err
+	}
+	return nil
 }

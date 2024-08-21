@@ -60,7 +60,7 @@ type ResetPassword struct {
 }
 
 type UserUsecase interface {
-	CreateUser(c context.Context, user *User) error
+	CreateUser(c context.Context, user *User) (*User, error)
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
 

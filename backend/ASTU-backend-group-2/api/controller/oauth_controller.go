@@ -37,7 +37,41 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 		dbUser, err := oc.UserUsecase.GetUserByEmail(context.TODO(), user.Email)
 
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+			// User does not exist, create user
+
+			// Check if user is owner, if user to be created is the first user, set as owner
+			_, meta, err := oc.UserUsecase.GetUsers(context.TODO(), 5, 1)
+
+			if err != nil {
+				c.JSON(500, gin.H{"error": err.Error()})
+				return
+			}
+
+			var isOwner bool
+
+			if meta.Total == 0 {
+				// First user, set as owner
+				isOwner = true
+			}
+
+			insertUser := domain.User{
+				Email:      user.Email,
+				FirstName:  user.FirstName,
+				LastName:   user.LastName,
+				Active:     true,
+				ProfileImg: user.AvatarURL,
+				IsOwner:    isOwner,
+				Password:   "",
+				Role:       "user",
+			}
+
+			dbUser, err = oc.UserUsecase.CreateUser(context.TODO(), &insertUser)
+
+			if err != nil {
+				c.JSON(500, gin.H{"error": err.Error()})
+				return
+			}
+
 		}
 
 		accessToken, err := oc.LoginUsecase.CreateAccessToken(dbUser, oc.Env.AccessTokenSecret, oc.Env.AccessTokenExpiryHour)
@@ -53,6 +87,8 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
+
+		err = oc.LoginUsecase.UpdateRefreshToken(c.Request.Context(), dbUser.ID.Hex(), refreshToken)
 
 		loginResponse := domain.LoginResponse{
 			AccessToken:  accessToken,

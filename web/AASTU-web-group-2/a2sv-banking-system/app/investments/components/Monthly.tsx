@@ -112,7 +112,7 @@ export default function Monthly() {
   }, [access_token]);
 
   if (loading || Loading) return <div>Loading...</div>;
-  console.log(data);
+  // console.log(data);
   const { monthlyRevenue } = data;
   return (
     <Card className="bg-white rounded-3xl border-none ">

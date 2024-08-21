@@ -12,7 +12,7 @@ type Blog struct {
 	Title      string             `bson:"title" json:"title"`
 	Content    string             `bson:"content" json:"content"`
 	AuthorID   primitive.ObjectID `bson:"author_id" json:"author_id"`
-	AuthorName string             `bson:"title" json:"author"`
+	AuthorName string             `bson:"author" json:"author"`
 	Tags       []string           `bson:"tags" json:"tags"`
 	CreatedAt  time.Time          `bson:"created_at" json:"created_at"`
 	UpdatedAt  time.Time          `bson:"updated_at" json:"updated_at"`

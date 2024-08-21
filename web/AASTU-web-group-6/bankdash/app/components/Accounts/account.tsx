@@ -10,7 +10,7 @@ interface props {
 const Card = ({ title, amount, icon, color, width }: props) => {
   return (
     <div
-      className={`flex w-[100%] lg:${width}  justify-center items-center rounded-3xl p-6 gap-2 md:gap-4 lg:gap-6 bg-white dark:bg-[#232328] `}
+      className={`flex w-[100%] lg:${width}  justify-center items-center rounded-3xl p-4 gap-2 lg:gap-7 bg-white dark:bg-[#232328] `}
     >
       <div
         className="border  flex justify-center items-center rounded-full w-[45px] h-[45px] lg:w-[70px] lg:h-[70px]"

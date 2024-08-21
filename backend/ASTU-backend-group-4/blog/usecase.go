@@ -242,8 +242,13 @@ func (b *BlogUseCaseImpl) LikeBlog(ctx context.Context, userID string, blogID st
 }
 
 // SearchBlogs implements BlogUseCase.
-func (b *BlogUseCaseImpl) SearchBlogs(ctx context.Context, query string) (infrastructure.PaginationResponse[Blog], error) {
-	panic("unimplemented")
+func (b *BlogUseCaseImpl) SearchBlogs(ctx context.Context, query string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error) {
+	blogs, err := b.blogRepository.SearchBlogs(ctx, query, pagination)
+	if err != nil {
+		return infrastructure.PaginationResponse[Blog]{}, err
+	}
+
+	return blogs, nil
 }
 
 // UpdateBlog implements BlogUseCase.

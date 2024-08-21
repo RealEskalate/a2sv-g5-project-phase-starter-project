@@ -4,6 +4,8 @@ import (
 	"blogApp/internal/domain"
 	"blogApp/internal/usecase/user"
 	"blogApp/pkg/checker"
+	"fmt"
+
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -116,7 +118,6 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 }
-
 func (h *UserHandler) UpdateUser(c *gin.Context) {
 	var user domain.User
 	claims, exists := c.Get("claims")
@@ -130,16 +131,23 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+	// Bind JSON data to user struct first
+	if err := c.ShouldBind(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user.ID, _ = primitive.ObjectIDFromHex(userClaims.UserID)
-
-	err := h.UserUsecase.UpdateUser(&user)
-
+	// fmt.Println(userClaims.UserID)
+	objectID, err := primitive.ObjectIDFromHex(userClaims.UserID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "err.Error()"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	user.ID = objectID
+	fmt.Println(user)
+
+	err = h.UserUsecase.UpdateUser(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

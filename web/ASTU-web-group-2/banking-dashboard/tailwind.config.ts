@@ -20,6 +20,11 @@ const config: Config = {
       boxShadow: {
         "custom-shadow": "4px 4px 18px -2px rgba(231, 228, 232, 0.8)",
       },
+      scrollbarHide: {
+        '::-webkit-scrollbar': { display: 'none' },
+        '-ms-overflow-style': 'none',  /* IE and Edge */
+        'scrollbar-width': 'none',  /* Firefox */
+      }
     },
   },
   plugins: [],

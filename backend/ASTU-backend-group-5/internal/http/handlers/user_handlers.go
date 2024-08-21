@@ -3,6 +3,7 @@ package handlers
 import (
 	"blogApp/internal/domain"
 	"blogApp/internal/usecase/user"
+	"blogApp/pkg/checker"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -51,6 +52,16 @@ func (h *UserHandler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email and password are required"})
 		return
 	}
+	if err := checker.IsValidEmail(user.Email); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := checker.IsValidPassword(user.Password); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	user, err := h.UserUsecase.RegisterUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

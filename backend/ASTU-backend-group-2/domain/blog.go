@@ -102,9 +102,10 @@ type CommentRepository interface {
 	DeleteComment(c context.Context, blogID, commentID string) error
 }
 
-type LikeRepository interface {
-	LikeBlog(c context.Context, blogID, userID string) error
-	DislikeBlog(c context.Context, blogID, userID string) error
+type ReactionRepository interface {
+	GetReaction(c context.Context, blogID, userID string) (Reaction, error)
+	ToggelLike(c context.Context, blogID, userID string) error
+	ToggleDislike(c context.Context, blogID, userID string) error
 }
 
 type BlogUsecase interface {
@@ -127,7 +128,7 @@ type CommentUsecase interface {
 	DeleteComment(c context.Context, blogID, commentID string) error
 }
 
-type LikeUsecase interface {
-	LikeBlog(c context.Context, blogID, userID string) error
-	DislikeBlog(c context.Context, blogID, userID string) error
+type ReactionUsecase interface {
+	ToggleLike(c context.Context, blogID, userID string) error
+	ToogleDislike(c context.Context, blogID, userID string) error
 }

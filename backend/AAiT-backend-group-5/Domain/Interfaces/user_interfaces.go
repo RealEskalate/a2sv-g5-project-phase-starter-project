@@ -11,10 +11,12 @@ type UserRepository interface {
 	CreateUser(ctx context.Context, user *models.User) *models.ErrorResponse
 	GetUserByEmailOrUsername(ctx context.Context, username string, email string) (*models.User, *models.ErrorResponse)
 	GetUserByID(ctx context.Context, id string) (*models.User, *models.ErrorResponse)
+	GetUserByName(ctx context.Context, name string) (*models.User, *models.ErrorResponse)
 	UpdateUser(ctx context.Context, user *models.User, id string) *models.ErrorResponse
 	DeleteUser(ctx context.Context, userID string) *models.ErrorResponse
 	PromoteUser(ctx context.Context, userID string) *models.ErrorResponse
 	DemoteUser(ctx context.Context, userID string) *models.ErrorResponse
+
 }
 
 type PromoteDemoteUserUsecase interface {

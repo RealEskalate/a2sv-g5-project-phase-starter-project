@@ -91,9 +91,9 @@ func (c *blogController) SearchBlogsController(ctx *gin.Context) {
 	title := ctx.DefaultQuery("title", "")
 	authorName := ctx.DefaultQuery("author_name", "")
 	date := ctx.DefaultQuery("date", "")
-	viewCount := ctx.DefaultQuery("view_count", "0")
-	likeCount := ctx.DefaultQuery("like_count", "0")
-	dislikeCount := ctx.DefaultQuery("dislike_count", "0")
+	viewCount := ctx.DefaultQuery("view_count", "-1")
+	likeCount := ctx.DefaultQuery("like_count", "-1")
+	dislikeCount := ctx.DefaultQuery("dislike_count", "-1")
 	tags := ctx.DefaultQuery("tags", "")
 
 	viewCountInt, _ := strconv.Atoi(viewCount)

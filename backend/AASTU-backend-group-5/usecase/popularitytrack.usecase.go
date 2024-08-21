@@ -12,6 +12,6 @@ func NewBlogPopularityUsecase(repo domain.BlogPopularityRepository) domain.BlogP
 	return &BlogPopularityUsecase{repo: repo}
 }
 
-func (bpu *BlogPopularityUsecase) GetSortedPopularBlogs(sortBy string, sortOrder int) ([]domain.Blog, error) {
+func (bpu *BlogPopularityUsecase) GetSortedPopularBlogs(sortBy []domain.SortBy, sortOrder []domain.SortOrder) ([]domain.Blog, error) {
 	return bpu.repo.GetPopularBlogs(sortBy, sortOrder)
 }

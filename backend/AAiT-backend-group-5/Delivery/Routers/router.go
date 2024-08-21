@@ -24,6 +24,7 @@ func Setup(env *config.Env, db mongo.Database, gin *gin.Engine) {
 
 	refreshGroup := publicRouter.Group("")
 	refreshGroup.Use(jwtMiddleware.JWTRefreshAuthMiddelware())
+
 	protectedRouter.Use(jwtMiddleware.JWTAuthMiddelware())
 
 	adminRouter.Use(

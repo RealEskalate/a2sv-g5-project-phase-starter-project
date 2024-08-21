@@ -34,7 +34,6 @@ func (j *AuthMiddleware) JWTAuthMiddelware() gin.HandlerFunc {
 			return
 		}
 
-		// check if token is authorized
 		tokenString := auth_parts[1]
 		authorizedToken, err := j.JwtService.ValidateToken(tokenString)
 		if err != nil {
@@ -43,7 +42,6 @@ func (j *AuthMiddleware) JWTAuthMiddelware() gin.HandlerFunc {
 			return
 		}
 
-		// check if token is in the database
 		session, nErr := j.repo.GetToken(c, authorizedToken.ID)
 
 		if nErr != nil {
@@ -58,7 +56,6 @@ func (j *AuthMiddleware) JWTAuthMiddelware() gin.HandlerFunc {
 			return
 		}
 
-		// set the claims to the context
 		c.Set("id", authorizedToken.ID)
 		c.Set("email", authorizedToken.Email)
 		c.Set("role", authorizedToken.Role)
@@ -79,7 +76,6 @@ func (j *AuthMiddleware) JWTRefreshAuthMiddelware() gin.HandlerFunc {
 			return
 		}
 
-		// check if token is authorized
 		tokenString := auth_parts[1]
 		authorizedToken, err := j.JwtService.ValidateToken(tokenString)
 		if err != nil {
@@ -88,7 +84,6 @@ func (j *AuthMiddleware) JWTRefreshAuthMiddelware() gin.HandlerFunc {
 			return
 		}
 
-		// check if token is in the database
 		_, nErr := j.repo.GetToken(c, authorizedToken.ID)
 
 		if nErr != nil {
@@ -97,7 +92,6 @@ func (j *AuthMiddleware) JWTRefreshAuthMiddelware() gin.HandlerFunc {
 			return
 		}
 
-		// set the claims to the context
 		c.Set("id", authorizedToken.ID)
 		c.Set("email", authorizedToken.Email)
 		c.Set("role", authorizedToken.Role)

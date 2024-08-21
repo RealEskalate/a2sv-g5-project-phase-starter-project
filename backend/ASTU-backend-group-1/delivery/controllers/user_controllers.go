@@ -94,6 +94,17 @@ func (c *UserController) LoginUser(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, gin.H{"token": token})
 }
 
+//logout user
+
+func (c *UserController) LogoutUser(ctx *gin.Context) {
+	email := ctx.MustGet("email").(string)
+	err := c.userUsecase.Logout(email)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
+	
+}
 
 
 func (c *UserController) GetUsers(ctx *gin.Context) {

@@ -6,22 +6,26 @@ import (
 	config "github.com/aait.backend.g5.main/backend/Config"
 	middlewares "github.com/aait.backend.g5.main/backend/Delivery/middlewares"
 	infrastructure "github.com/aait.backend.g5.main/backend/Infrastructure"
+	repository "github.com/aait.backend.g5.main/backend/Repository"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func Setup(env *config.Env, db mongo.Database, gin *gin.Engine) {
+	jwt_service := infrastructure.NewJwtService(env)
+	session_repo := repository.NewSessionRepository(&db)
+	jwtMiddleware := middlewares.NewJwtAuthMiddleware(jwt_service, session_repo)
+
 	publicRouter := gin.Group("")
 	protectedRouter := gin.Group("")
 	adminRouter := gin.Group("")
 	redisClient := config.NewRedisClient(*env, context.Background())
 
-	jwt_service := infrastructure.NewJwtService(env)
-	protectedRouter.Use(middlewares.JWTAuthMiddelware(jwt_service))
+	protectedRouter.Use(jwtMiddleware.JWTAuthMiddelware())
 
 	adminRouter.Use(
-		middlewares.JWTAuthMiddelware(jwt_service),
+		jwtMiddleware.JWTAuthMiddelware(),
 		middlewares.AuthenticateAdmin(),
 	)
 

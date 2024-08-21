@@ -2,8 +2,9 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
+
 	"group3-blogApi/domain"
+
 )
 
 type BlogUsecaseImpl struct {
@@ -17,7 +18,6 @@ func NewBlogUsecase(blogRepo domain.BlogRepository) domain.BlogUsecase {
 }
 
 func (uc *BlogUsecaseImpl) CreateBlog(username, userID string, blog domain.Blog) (domain.Blog, error) {
-	
 
 	// Set the author ID to the provided user ID
 	blog.AuthorID = userID
@@ -32,7 +32,7 @@ func (uc *BlogUsecaseImpl) CreateBlog(username, userID string, blog domain.Blog)
 	return newBlog, nil
 }
 
-func (uc *BlogUsecaseImpl) DeleteBlog(role,userId,  id string) (domain.Blog, error) {
+func (uc *BlogUsecaseImpl) DeleteBlog(role, userId, id string) (domain.Blog, error) {
 	if role != "admin" {
 		existingBlog, err := uc.blogRepo.GetBlogByID(id)
 		if err != nil {
@@ -43,7 +43,6 @@ func (uc *BlogUsecaseImpl) DeleteBlog(role,userId,  id string) (domain.Blog, err
 		}
 	}
 
-
 	blog, err := uc.blogRepo.DeleteBlog(id)
 	if err != nil {
 		return domain.Blog{}, err
@@ -51,14 +50,13 @@ func (uc *BlogUsecaseImpl) DeleteBlog(role,userId,  id string) (domain.Blog, err
 	return blog, nil
 }
 
-func (uc *BlogUsecaseImpl) UpdateBlog(blog domain.Blog,role string, blogId string) (domain.Blog, error) {
+func (uc *BlogUsecaseImpl) UpdateBlog(blog domain.Blog, role string, blogId string) (domain.Blog, error) {
 	existingBlog, err := uc.blogRepo.GetBlogByID(blogId)
 	if err != nil {
 		return domain.Blog{}, err
 	}
-	fmt.Println(existingBlog.AuthorID, blog.AuthorID, "0000000000000000000000000000000000000000")
 	if existingBlog.AuthorID != blog.AuthorID {
-		return domain.Blog{}, errors.New("unauthorized to update blog")	
+		return domain.Blog{}, errors.New("unauthorized to update blog")
 	}
 	blog, err = uc.blogRepo.UpdateBlog(blog, blogId)
 	if err != nil {
@@ -75,9 +73,8 @@ func (uc *BlogUsecaseImpl) GetBlogByID(id string) (domain.Blog, error) {
 	return blog, nil
 }
 
-
-func (uc *BlogUsecaseImpl) GetBlogs(page, limit int64, sortBy , tag, authorName string) ([]domain.Blog, error) {
-	blogs, err := uc.blogRepo.GetBlogs( page, limit, sortBy, tag, authorName)
+func (uc *BlogUsecaseImpl) GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]domain.Blog, error) {
+	blogs, err := uc.blogRepo.GetBlogs(page, limit, sortBy, tag, authorName)
 	if err != nil {
 		return nil, err
 	}
@@ -91,23 +88,3 @@ func (uc *BlogUsecaseImpl) GetUserBlogs(userID string) ([]domain.Blog, error) {
 	}
 	return blogs, nil
 }
-
-
-// like and dislike
-
-// func (uc *BlogUsecaseImpl) LikeBlog(userID, blogID string) error {
-// 	err := uc.blogRepo.LikeBlog(userID, blogID)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-
-
-// func (uc *BlogUsecaseImpl) DislikeBlog(userID, blogID string) error {
-// 	err := uc.blogRepo.DislikeBlog(userID, blogID)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }

@@ -24,7 +24,7 @@ WORKFLOW:
   - Checks the role of the user associated with the token
   - Calls `c.Next()` if the querying user has permission to access the endpoint
 */
-func AuthMiddlewareWithRoles(secret string, jwtService domain.JWTServiceInterface, cacheRepository domain.CacheRepositoryInterface, validRoles ...string) gin.HandlerFunc {
+func AuthMiddlewareWithRoles(jwtService domain.JWTServiceInterface, cacheRepository domain.CacheRepositoryInterface, validRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// obtain token from the request header
 		authHeader := c.GetHeader("Authorization")

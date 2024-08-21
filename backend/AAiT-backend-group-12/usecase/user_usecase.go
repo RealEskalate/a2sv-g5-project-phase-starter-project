@@ -13,16 +13,15 @@ import (
 
 /* Defines a struct with all the necessary data to implement domain.UserUsecaseInterface */
 type UserUsecase struct {
-	userRepository       domain.UserRepositoryInterface
-	cacheRepository      domain.CacheRepositoryInterface
-	GenerateToken        func(int) (string, error)
-	MailService          domain.MailServiceInterface
-	JWTService           domain.JWTServiceInterface
-	HashString           func(string) (string, domain.CodedError)
-	ValidateHashedString func(string, string) domain.CodedError
-	VerifyIdToken        func(string, string, string) error
-	DeleteFile           func(string) error
-	ENV                  domain.EnvironmentVariables
+	userRepository  domain.UserRepositoryInterface
+	cacheRepository domain.CacheRepositoryInterface
+	GenerateToken   func(int) (string, error)
+	MailService     domain.MailServiceInterface
+	JWTService      domain.JWTServiceInterface
+	HashingService  domain.HashingServiceInterface
+	VerifyIdToken   func(string, string, string) error
+	DeleteFile      func(string) error
+	ENV             domain.EnvironmentVariables
 }
 
 /* Regex for validation phone numbers*/
@@ -35,22 +34,20 @@ func NewUserUsecase(
 	GenerateToken func(int) (string, error),
 	MailService domain.MailServiceInterface,
 	JWTService domain.JWTServiceInterface,
-	HashString func(string) (string, domain.CodedError),
-	ValidateHashedString func(string, string) domain.CodedError,
+	HashingService domain.HashingServiceInterface,
 	VerifyIdToken func(string, string, string) error,
 	DeleteFile func(string) error,
 	ENV domain.EnvironmentVariables) *UserUsecase {
 	return &UserUsecase{
-		userRepository:       userRepository,
-		cacheRepository:      cacheRepository,
-		GenerateToken:        GenerateToken,
-		MailService:          MailService,
-		JWTService:           JWTService,
-		HashString:           HashString,
-		ValidateHashedString: ValidateHashedString,
-		VerifyIdToken:        VerifyIdToken,
-		DeleteFile:           DeleteFile,
-		ENV:                  ENV,
+		userRepository:  userRepository,
+		cacheRepository: cacheRepository,
+		GenerateToken:   GenerateToken,
+		MailService:     MailService,
+		JWTService:      JWTService,
+		HashingService:  HashingService,
+		VerifyIdToken:   VerifyIdToken,
+		DeleteFile:      DeleteFile,
+		ENV:             ENV,
 	}
 }
 
@@ -160,7 +157,7 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 		return err
 	}
 
-	hashedPwd, err := u.HashString(user.Password)
+	hashedPwd, err := u.HashingService.HashString(user.Password)
 	if err != nil {
 		return domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
 	}
@@ -229,7 +226,7 @@ func (u *UserUsecase) OAuthSignup(c context.Context, data *dtos.GoogleResponse, 
 		return err
 	}
 
-	hashedPwd, err := u.HashString(newUser.Password)
+	hashedPwd, err := u.HashingService.HashString(newUser.Password)
 	if err != nil {
 		return domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
 	}
@@ -282,7 +279,7 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 		return "", "", domain.NewError("User email not verified", domain.ERR_UNAUTHORIZED)
 	}
 
-	err = u.ValidateHashedString(foundUser.Password, user.Password)
+	err = u.HashingService.ValidateHashedString(foundUser.Password, user.Password)
 	if err != nil {
 		return "", "", domain.NewError("Incorrect password", domain.ERR_UNAUTHORIZED)
 	}
@@ -299,7 +296,7 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 	}
 
 	// set the new refresh token in the database after hashing it
-	hashedRefreshToken, err := u.HashString(strings.Split(refreshToken, ".")[2])
+	hashedRefreshToken, err := u.HashingService.HashString(strings.Split(refreshToken, ".")[2])
 	if err != nil {
 		return "", "", domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
@@ -349,7 +346,7 @@ func (u *UserUsecase) OAuthLogin(c context.Context, data *dtos.GoogleResponse) (
 	}
 
 	// set the new refresh token in the database after hashing it
-	hashedRefreshToken, err := u.HashString(strings.Split(refreshToken, ".")[2])
+	hashedRefreshToken, err := u.HashingService.HashString(strings.Split(refreshToken, ".")[2])
 	if err != nil {
 		return "", "", domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
@@ -414,7 +411,7 @@ func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (
 		return "", domain.NewError("User not found", domain.ERR_NOT_FOUND)
 	}
 
-	err = u.ValidateHashedString(foundUser.RefreshToken, strings.Split(refreshToken, ".")[2])
+	err = u.HashingService.ValidateHashedString(foundUser.RefreshToken, strings.Split(refreshToken, ".")[2])
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
 	}
@@ -568,7 +565,7 @@ func (u *UserUsecase) ResetPassword(c context.Context, resetDto dtos.ResetPasswo
 		return err
 	}
 
-	hashedPwd, err := u.HashString(resetDto.NewPassword)
+	hashedPwd, err := u.HashingService.HashString(resetDto.NewPassword)
 	if err != nil {
 		return domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
 	}

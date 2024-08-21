@@ -28,3 +28,8 @@ type MailServiceInterface interface {
 	EmailVerificationTemplate(hostUrl string, username string, token string) string
 	PasswordResetTemplate(hostUrl string, username string, token string) string
 }
+
+type HashingServiceInterface interface {
+	HashString(password string) (string, CodedError)
+	ValidateHashedString(hashedString string, plaintextString string) CodedError
+}

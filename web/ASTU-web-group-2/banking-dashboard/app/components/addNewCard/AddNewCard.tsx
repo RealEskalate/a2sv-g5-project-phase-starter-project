@@ -4,8 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAddCreditCardMutation } from "@/lib/service/CardService";
 import { useSession } from "next-auth/react";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import notify from "@/utils/notify";
 
 // Define the Zod schema for form validation
 const addCardSchema = z.object({
@@ -43,20 +42,16 @@ const AddNewCard = () => {
     });
 
     if (res && res.data && res.data.id) {
-      // Display success toast
-      toast.success("Card successfully added!");
+      notify.success("Card successfully added!");
       // Store the card ID in local storage
-      console.log("Card ID stored in local storage:", res.data.id);
     } else {
       // Handle failure case
-      toast.error("Failed to add card.");
+      notify.error("Failed to add card.");
     }
   };
 
   return (
     <div className="w-[730px] h-[440px] ml-290px mt-849px bg-white rounded-[25px]">
-      {/* ToastContainer to display toast messages */}
-      <ToastContainer />
       <p className="pl-[30px] pt-[27px] text-[#718EBF] font-normal text-[16px] leading-[26px]">
         Credit Card generally means a plastic card issued by Scheduled
         Commercial Banks assigned to a Cardholder, with a credit limit, that can

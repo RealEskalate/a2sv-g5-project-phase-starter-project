@@ -6,6 +6,7 @@ import (
 
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/auth"
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/pkg/infrastructure"
+	"github.com/go-playground/validator/v10"
 )
 
 type BlogUseCaseImpl struct {
@@ -22,6 +23,12 @@ func NewBlogUseCaseImpl(blogRepository BlogRepository, authRepository auth.AuthR
 
 // CreateBlog implements BlogUseCase.
 func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, authorID string, blog CreateBlogRequest) (Blog, error) {
+	validate := validator.New()
+	err := validate.Struct(blog)
+	if err != nil {
+		return Blog{}, err
+	}
+
 	author, err := b.authRepository.GetUserByID(ctx, authorID)
 	if err != nil {
 		return Blog{}, err

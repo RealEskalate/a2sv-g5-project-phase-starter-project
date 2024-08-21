@@ -2,7 +2,12 @@
 import { useAppDispatch } from "@/app/Redux/store/store";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { addCard, setStatus, setError, Card } from "../../Redux/slices/cardSlice";
+import {
+  addCard,
+  setStatus,
+  setError,
+  Card,
+} from "../../Redux/slices/cardSlice";
 import CardService from "@/app/Services/api/CardService";
 import { useSession } from "next-auth/react";
 
@@ -12,9 +17,7 @@ const AddCardForm = () => {
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
   const dispatch = useAppDispatch();
-  const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyMzgzMDIxNiwiZXhwIjoxNzIzOTE2NjE2fQ.c5zYX74xJyowvSM8pmN4W8Aw6pMyiJjs9JOP__Cjy9J80EHlOS6gX2yJpcwSdBwF";
-
+  const accessToken = session?.accessToken as string;
   const onSubmit = async (data: Card) => {
     const cardData = {
       balance: data.balance,
@@ -39,7 +42,11 @@ const AddCardForm = () => {
 
   return (
     <div className="p-4 sm:p-8">
-      <form className="w-full max-w-4xl mx-auto" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form
+        className="w-full max-w-4xl mx-auto"
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+      >
         <div className="flex flex-col gap-6 sm:flex-row sm:gap-10">
           <div className="flex flex-col w-full sm:w-1/2">
             <label className="text-[#232323] text-base font-semibold pb-2 dark:text-gray-300">

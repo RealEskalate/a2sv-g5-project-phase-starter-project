@@ -12,10 +12,11 @@ const useCardDispatch = (accessToken: string) => {
       try {
         dispatch(setStatus("loading"));
         const res: any = await CardService.getAllCards(accessToken);
+        console.log(res.content, "myfggggggggggggggg");
+
         if (res) {
-          dispatch(setCards(res));
+          dispatch(setCards(res.content));
           dispatch(setStatus("succeeded"));
-          console.log(res, "Res")
         }
       } catch (error) {
         dispatch(setError("Failed to fetch cards"));

@@ -47,7 +47,6 @@ func (u *AuthUsecase) RegisterUser(input domain.RegisterUser) (domain.User, erro
         IsVerified:        false, 
         OAuthProvider:     "",
         OAuthID:           "",
-        VerificationToken: "", 
     }
 
     err = u.AuthRepo.SaveUser(&user)

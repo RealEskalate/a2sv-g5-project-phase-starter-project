@@ -240,9 +240,10 @@ func (userUC *userUseCase) ForgotPassword(cxt *gin.Context, email string) domain
 		}
 	}
 
-	errEmail := userUC.mailService.SendPasswordResetEmail(email, existingUser.Username, fmt.Sprintf(os.Getenv("RESET_PASSWORD_PATH"), passwordResetToken))
-	if errEmail != nil {
-		return &domain.CustomError{Message: errEmail.Error(), Code: http.StatusInternalServerError}
+	errorEmail := userUC.mailService.SendPasswordResetEmail(existingUser.Email, existingSession.Username, fmt.Sprintf(os.Getenv("RESET_PATH"), passwordResetToken, resetCode), fmt.Sprintf("%v", resetCode))
+
+	if errorEmail != nil {
+		return &domain.CustomError{Message: errorEmail.Error(), Code: http.StatusInternalServerError}
 	}
 
 	return nil

@@ -5,6 +5,9 @@ import (
 	"blogApp/internal/usecase/user"
 	"blogApp/pkg/checker"
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
 
 	"net/http"
 
@@ -119,23 +122,59 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 }
 func (h *UserHandler) UpdateUser(c *gin.Context) {
-	var user domain.User
-	claims, exists := c.Get("claims")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-		return
-	}
-	userClaims, ok := claims.(*domain.Claims)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-		return
-	}
+    var user domain.User
+    claims, exists := c.Get("claims")
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+        return
+    }
+    userClaims, ok := claims.(*domain.Claims)
+    if !ok {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+        return
+    }
+	// Handle the file upload separately
+	file, header, err := c.Request.FormFile("profile_pic")
+	if err == nil {
+		defer file.Close()
 
-	// Bind JSON data to user struct first
-	if err := c.ShouldBind(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		// Create the upload folder if it doesn't exist
+		uploadPath := "uploads"
+		if _, err := os.Stat(uploadPath); os.IsNotExist(err) {
+			if err := os.Mkdir(uploadPath, os.ModePerm); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create upload folder"})
+				return
+			}
+		}
+
+		// Save the file with a unique name
+		fileName := fmt.Sprintf("%s_%s", primitive.NewObjectID().Hex(), header.Filename)
+		filePath := filepath.Join(uploadPath, fileName)
+
+		out, err := os.Create(filePath)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+			return
+		}
+		defer out.Close()
+
+		if _, err := io.Copy(out, file); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+			return
+		}
+
+		// Update the user's profile with the new profile picture URL
+		user.Profile.ProfileUrl = fmt.Sprintf("/%s/%s", uploadPath, fileName)
+		fmt.Println(user.Profile.ProfileUrl)
+	} else if err != http.ErrMissingFile {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to upload file"})
 		return
 	}
+	user.UserName = c.PostForm("username")
+
+
+
+    
 	// fmt.Println(userClaims.UserID)
 	objectID, err := primitive.ObjectIDFromHex(userClaims.UserID)
 	if err != nil {
@@ -143,18 +182,19 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 	user.ID = objectID
-	fmt.Println(user)
+	
+  
 
-	err = h.UserUsecase.UpdateUser(&user)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+    err = h.UserUsecase.UpdateUser(&user)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
 
-	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+    c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
 
-// GoogleCallback is a handler that handles the google oauth callback
+//  GoogleCallback is a handler that handles the google oauth callback
 func (h *UserHandler) GoogleCallback(c *gin.Context) {
 	code := c.Query("code")
 	user, token, err := h.UserUsecase.GoogleCallback(code)

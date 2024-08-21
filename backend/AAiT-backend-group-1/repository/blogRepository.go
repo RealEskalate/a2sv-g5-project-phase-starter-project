@@ -193,7 +193,7 @@ func (r *blogRepository) Filter(filters map[string]interface{}) ([]domain.Blog, 
 
 	if popular, ok := filters["popular"].(bool); ok && popular {
 		mongoFilter["$or"] = []bson.M{
-			bson.M{"view_count": bson.M{"$gte": 10}},
+			{"view_count": bson.M{"$gte": 10}},
 		}
 	}
 

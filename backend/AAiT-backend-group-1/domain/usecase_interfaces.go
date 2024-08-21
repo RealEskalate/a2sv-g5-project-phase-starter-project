@@ -15,7 +15,7 @@ type UserUseCase interface {
 	ResetPassword(cxt *gin.Context, newPassword, confirmPassword, token string) Error
 	Logout(context context.Context, token map[string]string) Error
 	PromoteUser(context context.Context, userID string) Error
-	DemoteUser(context context.Context, userID string) Error
+	DemoteUser(cxt context.Context, userID string) Error
 	UpdateProfile(context context.Context, userID string, user *User) Error
 }
 

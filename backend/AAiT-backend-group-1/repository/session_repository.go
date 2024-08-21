@@ -13,16 +13,16 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type SessionRepository struct {
+type sessionRepository struct {
 	collection *mongo.Collection
 }
 
 func NewSessionRespository(collection *mongo.Collection) domain.SessionRepository {
-	return &SessionRepository{
+	return &sessionRepository{
 		collection: collection,
 	}
 }
-func (sessionRepo *SessionRepository) FindTokenById(cxt context.Context, id string) (*domain.Session, domain.Error) {
+func (sessionRepo sessionRepository) FindTokenById(cxt context.Context, id string) (*domain.Session, domain.Error) {
 	sessionID, errIDParse := primitive.ObjectIDFromHex(id)
 	if errIDParse != nil {
 		return &domain.Session{}, &domain.CustomError{Message: fmt.Sprintf("error parsing the session id. %v \n", errIDParse.Error()), Code: http.StatusInternalServerError}
@@ -39,7 +39,7 @@ func (sessionRepo *SessionRepository) FindTokenById(cxt context.Context, id stri
 	return &fetchedSession, nil
 }
 
-func (sessionRepo *SessionRepository) FindTokenByUserUsername(cxt context.Context, userID string) (*domain.Session, bool, domain.Error) {
+func (sessionRepo sessionRepository) FindTokenByUserUsername(cxt context.Context, userID string) (*domain.Session, bool, domain.Error) {
 	user_id, errIDParse := primitive.ObjectIDFromHex(userID)
 	if errIDParse != nil {
 		return &domain.Session{}, false, &domain.CustomError{Message: fmt.Sprintf("error parsing the user id. %v \n", errIDParse.Error()), Code: http.StatusInternalServerError}
@@ -56,7 +56,7 @@ func (sessionRepo *SessionRepository) FindTokenByUserUsername(cxt context.Contex
 	return &fetchedSession, true, nil
 }
 
-func (sessionRepo *SessionRepository) CreateToken(cxt context.Context, session *domain.Session) (*domain.Session, domain.Error) {
+func (sessionRepo sessionRepository) CreateToken(cxt context.Context, session *domain.Session) (*domain.Session, domain.Error) {
 	insertResult, errInsert := sessionRepo.collection.InsertOne(cxt, session)
 	if errInsert != nil {
 		if mongo.IsDuplicateKeyError(errInsert) {
@@ -72,7 +72,7 @@ func (sessionRepo *SessionRepository) CreateToken(cxt context.Context, session *
 	return session, nil
 }
 
-func (sessionRepo *SessionRepository) UpdateToken(cxt context.Context, id string, session *domain.Session) domain.Error {
+func (sessionRepo sessionRepository) UpdateToken(cxt context.Context, id string, session *domain.Session) domain.Error {
 	updateID, errIDParse := primitive.ObjectIDFromHex(id)
 	if errIDParse != nil {
 		return &domain.CustomError{Message: fmt.Sprintf("error parsing the session id. %v \n", errIDParse.Error()), Code: http.StatusInternalServerError}
@@ -93,7 +93,7 @@ func (sessionRepo *SessionRepository) UpdateToken(cxt context.Context, id string
 	return nil
 }
 
-func (sessionRepo *SessionRepository) DeleteToken(cxt context.Context, id string) domain.Error {
+func (sessionRepo sessionRepository) DeleteToken(cxt context.Context, id string) domain.Error {
 	deleteID, errIDParse := primitive.ObjectIDFromHex(id)
 	if errIDParse != nil {
 		return &domain.CustomError{Message: fmt.Sprintf("error parsing the session id. %v \n", errIDParse.Error()), Code: http.StatusInternalServerError}

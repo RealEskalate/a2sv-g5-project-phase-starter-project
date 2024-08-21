@@ -4,8 +4,8 @@ import { TableDemo } from "./LoanComponents/Table/columns";
 import { loanTypes } from "@/constants";
 const Loans = () => {
   return (
-    <div className="bg-slate-100 md:px-4">
-      <div className="flex gap-2 overflow-x-scroll scrollbar-hidden my-3 scroll md:w-[76%] md:mx-auto">
+    <div className="bg-transparent md:px-4">
+      <div className="flex gap-2 overflow-x-scroll scrollbar-hidden my-3 scroll md:w-[90%] md:mx-auto">
         {loanTypes.map((item) => (
           <div className="my-2" key={item.name}>
             <Card {...item} />

@@ -131,89 +131,84 @@ func (bc *MongoBlogRepository) GetBlogByID(id string) (domain.Blog, error) {
 }
 
 func (bc *MongoBlogRepository) GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]domain.Blog, error) {
-	var blogs []domain.Blog
+    var blogs []domain.Blog
 
-	// Create a filter map
-	filter := bson.M{}
+    // Create a filter map
+    filter := bson.M{}
 
-	// Add tag to the filter if provided
-	if tag != "" {
-		filter["tags"] = bson.M{"$in": []string{tag}}
-	}
+    // Add tag to the filter if provided
+    if tag != "" {
+        filter["tags"] = bson.M{"$in": []string{tag}}
+    }
 
-	// Add authorName to the filter if provided
-	if authorName != "" {
-		filter["authorName"] = authorName
-	}
+    // Add authorName to the filter if provided
+    if authorName != "" {
+        filter["autorname"] = authorName
+    }
 
-	// Set up options for sorting and pagination
-	findOptions := options.Find()
+    // Set up options for sorting and pagination
+    findOptions := options.Find()
 
-	// Sort by the specified field if provided, otherwise default to "createdAt" descending
-	if sortBy != "" {
-		if sortBy == "likes" {
-			findOptions.SetSort(bson.D{{Key: "likesCount", Value: -1}})
-		} else if sortBy == "popularity" {
-			// sort by viewscount and likes count
-			findOptions.SetSort(bson.D{{Key: "views", Value: -1}, {Key: "likesCount", Value: -1}})
-		}
-	} else {
-		findOptions.SetSort(bson.D{{Key: "createdAt", Value: -1}})
-	}
+    if sortBy != "" {
+        findOptions.SetSort(bson.D{{Key: sortBy, Value: -1}})
+    } else {
+        findOptions.SetSort(bson.D{{Key: "createdAt", Value: -1}})
+    }
 
-	// Set the limit and skip options for pagination
-	if limit > 0 {
-		findOptions.SetLimit(limit)
-		findOptions.SetSkip((page - 1) * limit)
-	}
+    // Set the limit and skip options for pagination
+    if limit > 0 {
+        findOptions.SetLimit(limit)
+        findOptions.SetSkip((page - 1) * limit)
+    }
 
-	// Execute the query
-	cursor, err := bc.collection.Find(context.Background(), filter, findOptions)
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(context.Background())
+    // Execute the query
+    cursor, err := bc.collection.Find(context.Background(), filter, findOptions)
+    if err != nil {
+        return nil, err
+    }
+    defer cursor.Close(context.Background())
 
-	// Decode all matching documents into the blogs slice
-	if err = cursor.All(context.Background(), &blogs); err != nil {
-		return nil, err
-	}
+    // Decode all matching documents into the blogs slice
+    if err = cursor.All(context.Background(), &blogs); err != nil {
+        return nil, err
+    }
 
-	// Reuse the context and filter for like/dislike counting
-	ctx := context.Background()
-	LikeCollection := db.LikeCollection
+    // Reuse the context and filter for like/dislike counting
+    ctx := context.Background()
+    LikeCollection := db.LikeCollection
 
-	for i := range blogs {
-		blog := &blogs[i]
-		likes := 0
-		dislikes := 0
+    for i := range blogs {
+        blog := &blogs[i]
+        likes := 0
+        dislikes := 0
 
-		reactionFilter := bson.M{"post_id": blog.ID.Hex()}
-		var totalPostReactions []domain.Like
+        reactionFilter := bson.M{"post_id": blog.ID.Hex()}
+        var totalPostReactions []domain.Like
 
-		cursor, err := LikeCollection.Find(ctx, reactionFilter)
-		if err != nil {
-			return nil, err
-		}
-		defer cursor.Close(ctx)
+        cursor, err := LikeCollection.Find(ctx, reactionFilter)
+        if err != nil {
+            return nil, err
+        }
+        defer cursor.Close(ctx)
 
-		if err = cursor.All(ctx, &totalPostReactions); err != nil {
-			return nil, err
-		}
+        if err = cursor.All(ctx, &totalPostReactions); err != nil {
+            return nil, err
+        }
 
-		for _, reaction := range totalPostReactions {
-			if reaction.Type == "like" {
-				likes++
-			} else if reaction.Type == "dislike" {
-				dislikes++
-			}
-		}
+        for _, reaction := range totalPostReactions {
+            if reaction.Type == "like" {
+                likes++
+            } else if reaction.Type == "dislike" {
+                dislikes++
+            }
+        }
 
-		blog.LikesCount = likes
-		blog.DislikesCount = dislikes
-	}
+        blog.LikesCount = likes
+        blog.DislikesCount = dislikes
+    }
 
-	return blogs, nil
+    return blogs, nil
+
 }
 
 func (bc *MongoBlogRepository) GetUserBlogs(userID string) ([]domain.Blog, error) {

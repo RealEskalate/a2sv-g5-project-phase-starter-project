@@ -9,12 +9,7 @@ import (
 )
 
 func SetUpAi(router *gin.Engine) {
-	// Load .env key
-	// err := godotenv.Load("cmd/app.env")
-	// if err != nil {
-	// 	log.Fatal("Error loading .env key")
-	// }
-
+	
 	geminiApiKey := config.EnvConfigs.GEMINI_API_KEY
 
 	// Initialize the use case

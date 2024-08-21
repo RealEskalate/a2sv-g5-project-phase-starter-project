@@ -10,7 +10,7 @@ func SetupRouter() *gin.Engine {
 
 
     // auth routes
-    // SetUpAuth(router)
+    SetUpAuth(router)
 
     // // public routes
     // SetPublicRoutes(router)

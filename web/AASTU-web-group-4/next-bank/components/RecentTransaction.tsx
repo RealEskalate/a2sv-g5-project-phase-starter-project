@@ -5,6 +5,9 @@ import { useEffect, useState } from 'react';
 import displaytransaction from './displaytransaction';
 import Pagination from '@/components/Pagination';
 import { getAllTransactions , getIncomes , getExpenses} from '@/services/transactionfetch';
+
+
+
 const RecentTransactions = () => {
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
   const [currentPage, setCurrentPage] = useState(0);
@@ -34,8 +37,8 @@ const RecentTransactions = () => {
      try{
       const[response , response2 , response3] = await Promise.all([
         getAllTransactions( currentPage , ITEMS_PER_PAGE),
-        getIncomes( currentPage , ITEMS_PER_PAGE),
-        getExpenses(currentPage , ITEMS_PER_PAGE),
+        getIncomes(currentPage , ITEMS_PER_PAGE),
+        getExpenses(currentPage , ITEMS_PER_PAGE ),
 
       ])
       

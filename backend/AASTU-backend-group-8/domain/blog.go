@@ -8,7 +8,7 @@ import (
 
 type BlogPost struct {
 	// ID          string      `json:"id" gorm:"primaryKey"`
-	ID        primitive.ObjectID `json:"id"  bson:"_id,omitempty"`
+	ID        primitive.ObjectID `json:"_id"  bson:"_id,omitempty"`
 	Title     string             `json:"title" validate:"required,min=5,max=255"`
 	Content   string             `json:"content" validate:"required"`
 	AuthorID  primitive.ObjectID `json:"author_id"` // Foreign key to User model
@@ -24,7 +24,7 @@ type SearchBlogPost struct {
 }
 
 type BlogUsecaseInterface interface {
-	CreateBlogPost(blog *BlogPost) (*BlogPost, error)
+	CreateBlogPost(blog *BlogPost) (interface{}, error)
 	GetAllBlogPosts() ([]BlogPost, error)
 	GetBlogByID(id primitive.ObjectID) (*BlogPost, error)
 	UpdateBlogPost(id primitive.ObjectID, blog *BlogPost) (*BlogPost, error)
@@ -35,7 +35,7 @@ type BlogUsecaseInterface interface {
 // domain/blog_repository_interface.go
 
 type BlogRepositoryInterface interface {
-	Save(blog *BlogPost) error
+	Save(blog *BlogPost) (interface{},error)
 	GetAllBlog() ([]BlogPost, error)
 	GetBlogByID(id primitive.ObjectID) (*BlogPost, error)
 	Update(blog *BlogPost) (*BlogPost, error)

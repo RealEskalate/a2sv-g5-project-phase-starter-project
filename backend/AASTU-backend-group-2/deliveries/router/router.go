@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func SetRouter(router *gin.Engine, com *controllers.CommentController, c *controllers.BlogController, cu *controllers.UserController, client *mongo.Client) {
+func SetRouter(router *gin.Engine, com *controllers.CommentController, c *controllers.BlogController, cu *controllers.UserController, oc *controllers.OAuthController, client *mongo.Client) {
 
 	router.POST("/user/register", cu.RegisterUser)
 	router.POST("/user/verify-email", cu.VerifyEmail)
@@ -17,6 +17,10 @@ func SetRouter(router *gin.Engine, com *controllers.CommentController, c *contro
 
 	router.POST("/forget-password", cu.ForgotPassword)
 	router.POST("/reset-password", cu.ResetPassword)
+
+	// Google OAuth Routes
+	router.GET("/auth/google", oc.HandleGoogleLogin)
+	router.GET("/oauth2/callback", oc.HandleGoogleCallback)
 
 	router.POST("/generate", middleware.AuthMiddleware(client), c.GeneratePost)
 	router.POST("/file", middleware.AuthMiddleware(client), controllers.FileUpload)

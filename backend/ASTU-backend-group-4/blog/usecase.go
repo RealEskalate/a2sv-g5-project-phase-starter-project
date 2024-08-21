@@ -135,7 +135,16 @@ func (b *BlogUseCaseImpl) DislikeBlog(ctx context.Context, userID string, blogID
 
 // GetBlogByID implements BlogUseCase.
 func (b *BlogUseCaseImpl) GetBlogByID(ctx context.Context, id string) (Blog, error) {
-	panic("unimplemented")
+	blog, err := b.blogRepository.GetBlogByID(ctx, id)
+	if err != nil {
+		return Blog{}, err
+	}
+
+	blog.IncrementViewsCount()
+	blog.CalculatePopularity()
+	b.blogRepository.UpdateBlog(ctx, id, blog)
+
+	return blog, nil
 }
 
 // GetBlogs implements BlogUseCase.

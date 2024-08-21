@@ -1,257 +1,111 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import DescriptionCard from "@/app/components/Card/DescriptionCard";
+import ServicesCard from "@/app/components/Card/ServicesCard";
 import axios from "axios";
-import React from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useSession } from "next-auth/react";
 
-interface FormValues {
+interface BankService {
+  id: string;
   name: string;
   details: string;
   numberOfUsers: number;
   status: string;
   type: string;
   icon: string;
+  colors: string;
 }
 
-interface props {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const StatusOptions = ["Dormant", "Active"];
-const typeOptions = ["Transfer", "Credited", "Deposit"];
-const iconOptions = [
-  {
-    label: "Money",
-    value:
-      "https://firebasestorage.googleapis.com/v0/b/a2sv-bankdash.appspot.com/o/services1.svg?alt=media&token=2810c596-369f-4b81-a59b-cef25dcad766",
-  },
-  {
-    label: "Suitcase",
-    value:
-      "https://firebasestorage.googleapis.com/v0/b/a2sv-bankdash.appspot.com/o/services2.svg?alt=media&token=cc928266-c815-43d7-a863-589979748d14",
-  },
-  {
-    label: "Levels",
-    value:
-      "https://firebasestorage.googleapis.com/v0/b/a2sv-bankdash.appspot.com/o/services3.svg?alt=media&token=0a1a971e-9c38-4715-8b0f-8888aa394a43",
-  },
-  {
-    label: "User",
-    value:
-      "https://firebasestorage.googleapis.com/v0/b/a2sv-bankdash.appspot.com/o/services4.svg?alt=media&token=b5171ef3-e0d0-4a30-a0b6-ba7d5fd591e0",
-  },
-  {
-    label: "Safety",
-    value:
-      "https://firebasestorage.googleapis.com/v0/b/a2sv-bankdash.appspot.com/o/services5.svg?alt=media&token=2bb3b832-f172-4ac1-acc5-ca5fe69eebf8",
-  },
-];
-
-const ModalService = ({ isOpen, onClose }: props) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormValues>({
-    defaultValues: {
-      status: "Dormant",
-      type: "Transfer",
-      icon: iconOptions[0].value,
-    },
-  });
-
-  const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiZXRzZWxvdCIsImlhdCI6MTcyNDIwNzUzMCwiZXhwIjoxNzI0MjkzOTMwfQ.3BqG6j5y2ts1WXajtWBI7C2eEx3UNFV-fPjMokVJ-cN-z48sy40yhMBuvZOoJblr";
-
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    const formData = JSON.stringify({ ...data, type: "transfer" });
+const Services = () => {
+  const { data: session } = useSession();
+  const colors = [
+    "bg-orange-100",
+    "bg-pink-100",
+    "bg-blue-100",
+    "bg-green-100",
+    "bg-pink-100",
+  ];
+  const [services, setServices] = useState<BankService[]>([]);
+  const [pageNumber, setPageNumber] = useState(1);
+  const accessToken = session?.accessToken as string;
+  async function fetchData(accessToken: string) {
     try {
-      const response = await axios.post(
-        "https://bank-dashboard-6acc.onrender.com/bank-services",
-        formData,
+      const response = await axios.get(
+        `https://bank-dashboard-6acc.onrender.com/bank-services?page=0&size=5`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
           },
         }
       );
-      console.log("Addition successful", response.data.data.content);
-      onClose();
+      setServices(response.data.data.content);
+      console.log(services);
     } catch (error) {
-      console.error("Error occurred:", error);
-      alert("There was an issue adding your request. Please try again.");
+      console.error("There was a problem with the axios request:", error);
     }
-  };
+  }
+
+  useEffect(() => {
+    fetchData(accessToken);
+  }, []);
 
   return (
-    <form
-      className="flex flex-col space-y-4 p-2 bg-white rounded-lg max-h-[70vh] overflow-y-auto scrollbar-hide"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <div className="flex justify-between">
-        <p className="text-base font-semibold">Add Service</p>
-        <button className="text-right" onClick={onClose}>
-          <CloseIcon />
-        </button>
-      </div>
-
-      <div>
-        <label
-          htmlFor="name"
-          className="block text-md font-medium text-gray-700"
-        >
-          Service Name
-        </label>
-        <input
-          {...register("name", {
-            required: "Receiver username is required",
-          })}
-          type="text"
-          placeholder="Enter Service Name"
-          className="mt-1 p-3 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm placeholder:text-xs"
-        />
-        {errors.name && (
-          <span className="text-red-600 text-sm">{errors.name.message}</span>
-        )}
-      </div>
-
-      <div>
-        <label
-          htmlFor="details"
-          className="block text-md font-medium text-gray-700"
-        >
-          Details
-        </label>
-        <input
-          {...register("details", { required: "Details is required" })}
-          type="text"
-          placeholder="Enter Details"
-          className="mt-1 p-3 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm placeholder:text-xs"
-        />
-        {errors.details && (
-          <span className="text-red-600 text-sm">{errors.details.message}</span>
-        )}
-      </div>
-
-      <div className="flex gap-4">
-        <div>
-          <label
-            htmlFor="numberOfUsers"
-            className="block text-md font-medium text-gray-700"
-          >
-            Number of Users
-          </label>
-          <input
-            {...register("numberOfUsers", {
-              required: "Number of users is required",
-            })}
-            type="number"
-            placeholder="Enter No. of Users"
-            className="mt-1 p-3 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm placeholder:text-xs"
+    <div className="w-[96%] xxs:pt-4 xs:pt-20 md:pt-5 lg:pt-0">
+      <div className="ml-5 lg:ml-0 ">
+        <div className="mr-5 lg:mr-0 flex gap-4 overflow-x-auto lg:overflow-x-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:pl-10 lg:pt-10 w-full">
+          {/* <div className="w-[100%] lg:w-[350px] flex-shrink-0"> */}
+          <ServicesCard
+            img="/assets/lifeInsurance.svg"
+            title="Life Insurance"
+            desc="Unlimited Protection"
           />
-          {errors.numberOfUsers && (
-            <span className="text-red-600 text-sm">
-              {errors.numberOfUsers.message}
-            </span>
-          )}
+          {/* </div> */}
+          {/* <div className="w-[100%] lg:w-[350px] flex-shrink-0"> */}
+          <ServicesCard
+            img="/assets/shoppingBag.svg"
+            title="Shopping"
+            desc="Buy. Think. Grow"
+          />
+          {/* </div> */}
+          {/* <div className="w-[100%] lg:w-[350px] flex-shrink-0"> */}
+          <ServicesCard
+            img="/assets/safety.svg"
+            title="Safety"
+            desc="We are your allies"
+          />
         </div>
+        {/* </div> */}
 
         <div>
-          <label
-            htmlFor="status"
-            className="block text-md font-medium text-gray-700"
-          >
-            Status
-          </label>
-          <select
-            {...register("status", { required: "Status is required" })}
-            className="mt-1 p-3 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          >
-            {StatusOptions.map((item, index) => (
-              <option key={index} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-          {errors.status && (
-            <span className="text-red-600 text-sm">
-              {errors.status.message}
-            </span>
-          )}
-        </div>
-
-        <div>
-          <label
-            htmlFor="type"
-            className="block text-md font-medium text-gray-700"
-          >
-            Type
-          </label>
-          <select
-            {...register("type", { required: "Type is required" })}
-            className="mt-1 p-3 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          >
-            {typeOptions.map((item, index) => (
-              <option key={index} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-          {errors.type && (
-            <span className="text-red-600 text-sm">{errors.type.message}</span>
-          )}
+          <p className="font-semibold text-[22px] text-[#343C6A] pt-5 pb-5 lg:p-10 ">
+            Bank Services List
+          </p>
+          <div className="w-full flex flex-col grow items-start px-4">
+            {services.length > 0 ? (
+              services.map((service, index) => (
+                <DescriptionCard
+                  key={service.id}
+                  img={service.icon}
+                  title={service.name}
+                  desc={service.details}
+                  colOne="Number of Users"
+                  descOne={service.numberOfUsers}
+                  colTwo="Status"
+                  descTwo={service.status}
+                  colThree="Type"
+                  descThree={service.type}
+                  btn="View Details"
+                  color={colors[index]}
+                />
+              ))
+            ) : (
+              <p className="pl-10">No services available</p>
+            )}
+          </div>
         </div>
       </div>
-
-      <div>
-        <label
-          htmlFor="icon"
-          className="block text-md font-medium text-gray-700"
-        >
-          Icon
-        </label>
-        <select
-          {...register("icon", { required: "Icon is required" })}
-          className="mt-1 p-3 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-        >
-          {iconOptions.map((item, index) => (
-            <option key={index} value={item.value}>
-              {item.label}
-            </option>
-          ))}
-        </select>
-        {errors.icon && (
-          <span className="text-red-600 text-sm">{errors.icon.message}</span>
-        )}
-      </div>
-
-      <button
-        type="submit"
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        Add Service
-      </button>
-    </form>
+    </div>
   );
 };
 
-function CloseIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="1.5"
-      stroke="currentColor"
-      className="size-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M6 18 18 6M6 6l12 12"
-      />
-    </svg>
-  );
-}
-
-export default ModalService;
+export default Services;

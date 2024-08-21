@@ -22,6 +22,7 @@ const (
 	RoleRoot  = "root"
 )
 
+// Defines the types of verification data
 const (
 	VerifyEmailType   = "verify_email"
 	ResetPasswordType = "reset_password"
@@ -61,16 +62,17 @@ type VerificationData struct {
 
 // Defines a struct for the user entity
 type User struct {
-	Username         string           `json:"username"`
-	Email            string           `json:"email"`
-	Password         string           `json:"password"`
-	PhoneNumber      string           `json:"phone_number"`
-	Bio              string           `json:"bio"`
-	Role             string           `json:"role"`
-	CreatedAt        time.Time        `json:"created_at"`
-	RefreshToken     string           `json:"refresh_token"`
-	IsVerified       bool             `json:"is_verified"`
-	VerificationData VerificationData `json:"verification_data"`
+	Username         string              `json:"username"`
+	Email            string              `json:"email"`
+	Password         string              `json:"password"`
+	PhoneNumber      string              `json:"phone_number"`
+	Bio              string              `json:"bio"`
+	ProfilePicture   dtos.ProfilePicture `json:"-"`
+	Role             string              `json:"role"`
+	CreatedAt        time.Time           `json:"created_at"`
+	RefreshToken     string              `json:"refresh_token"`
+	IsVerified       bool                `json:"is_verified"`
+	VerificationData VerificationData    `json:"verification_data"`
 }
 
 // Defines a struct for the blog entity
@@ -168,7 +170,7 @@ type UserRepositoryInterface interface {
 	CreateUser(c context.Context, user *User) CodedError
 	FindUser(c context.Context, user *User) (User, CodedError)
 	SetRefreshToken(c context.Context, user *User, newRefreshToken string) CodedError
-	UpdateUser(c context.Context, username string, user *dtos.UpdateUser) (map[string]string, CodedError)
+	UpdateUser(c context.Context, username string, user *dtos.UpdateUser) (map[string]string, string, CodedError)
 	ChangeRole(c context.Context, username string, newRole string) CodedError
 	VerifyUser(c context.Context, username string) CodedError
 	UpdateVerificationDetails(c context.Context, username string, verificationData VerificationData) CodedError

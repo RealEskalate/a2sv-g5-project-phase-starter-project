@@ -5,6 +5,7 @@ import (
 	"blog_api/delivery/env"
 	"blog_api/domain"
 	"blog_api/infrastructure/cryptography"
+	"blog_api/infrastructure/fs"
 	jwt_service "blog_api/infrastructure/jwt"
 	mail_service "blog_api/infrastructure/mail"
 	"blog_api/infrastructure/middleware"
@@ -37,10 +38,11 @@ func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, cac
 		cryptography.HashString,
 		cryptography.ValidateHashedString,
 		google_auth.VerifyIdToken,
+		fs.DeleteFile,
 		env.ENV,
 	)
 
-	controller := controllers.NewAuthController(usecase)
+	controller := controllers.NewAuthController(usecase, fs.DeleteFile)
 
 	authGroup.POST("/signup", controller.HandleSignup)
 	authGroup.GET("/verify/email/:username/:token", controller.HandleVerifyEmail)

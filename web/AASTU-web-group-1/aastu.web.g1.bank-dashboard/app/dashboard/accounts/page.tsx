@@ -1,13 +1,57 @@
-"use client"
+"use client";
 import CreditCard from "../_components/Credit_Card";
 import InfoCard from "./components/InfoCard";
 import LastTransaction from "./components/LastTransaction";
 import { ChartWeekly } from "@/components/ui/BarchartWeekly";
 import Invoices from "./components/Invoices";
 import { useUser } from "@/contexts/UserContext";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { CardDetails } from "@/types";
+import { BalanceData } from "@/types";
+import { TransactionContent } from "@/types";
+import getRandomBalance, {
+  getallTransactions,
+  getCreditCards,
+} from "@/lib/api";
+import { setLogger } from "react-query";
+import { Loading } from "../_components/Loading";
+
+
 
 const Accounts = () => {
   const { isDarkMode } = useUser();
+  const [recentTransactions, setRecentTransactions] = useState<
+  TransactionContent[]
+  >([]);
+  const [creditCards, setCreditCards] = useState<CardDetails[]>([]);
+  const [balance, setBalanceHistory] = useState<BalanceData[]>([]);
+  const [loading, setLoading] = useState(true);
+  let totalCreditcardpage;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getCreditCards(0, 1);
+        const recent = await getallTransactions(0, 3);
+        const balance = await getRandomBalance();
+
+        setCreditCards(res?.content || []);
+        totalCreditcardpage = res?.totalPages;
+        setBalanceHistory(balance || []);
+        setRecentTransactions(recent?.content || []);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading){
+    return (
+      <Loading />
+    );
+  }
+
   return (
     <div
       className={`p-5 md:pr-20 ${
@@ -117,18 +161,21 @@ const Accounts = () => {
             <h4
               className={`text-blue-500 ${isDarkMode ? "text-blue-300" : ""}`}
             >
-              See All
+              <Link href="/dashboard/credit-cards/">See All</Link>
             </h4>
           </div>
           <div className="mb-4">
-            <CreditCard
-              id="1234"
-              balance={5894}
-              semiCardNumber="37781234"
-              cardHolder="Ediy Cusuma"
-              expiryDate="2024-08-20T07:06:50.283Z"
-              cardType={"Visa"}
-            />
+          {creditCards.map((card) => (
+              <CreditCard
+                key={card.id}
+                id={card.id}
+                balance={card.balance}
+                semiCardNumber={card.semiCardNumber}
+                cardHolder={card.cardHolder}
+                expiryDate={card.expiryDate}
+                cardType={card.cardType}
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -147,7 +194,9 @@ const Accounts = () => {
           <div>
             <h1 className="text-xl mb-4">Invoices Sent</h1>
             <div
-              className={`rounded-xl ${isDarkMode ? "bg-gray-800" : "bg-white"}`}
+              className={`rounded-xl ${
+                isDarkMode ? "bg-gray-800" : "bg-white"
+              }`}
             >
               <Invoices
                 image="/icons/apple.svg"

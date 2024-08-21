@@ -130,7 +130,43 @@ func (b *BlogUseCaseImpl) DeleteComment(ctx context.Context, id, userID string) 
 
 // DislikeBlog implements BlogUseCase.
 func (b *BlogUseCaseImpl) DislikeBlog(ctx context.Context, userID string, blogID string) error {
-	panic("unimplemented")
+	user, err := b.authRepository.GetUserByUsername(ctx, userID) // TODO: Change to GetUserByID
+	if err != nil {
+		return err
+	}
+
+	blog, err := b.blogRepository.GetBlogByID(ctx, blogID)
+	if err != nil {
+		return err
+	}
+
+	err = b.blogRepository.UnlikeBlog(ctx, Like{
+		BlogID: blogID,
+		UserID: user.ID,
+	})
+
+	if err === nil{
+		blog.DecrementLikesCount()
+	}
+
+	err = b.blogRepository.DislikeBlog(ctx, Dislike{
+		BlogID: blogID,
+		UserID: user.ID,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	blog.IncrementDislikesCount()
+	blog.CalculatePopularity()
+
+	err = b.blogRepository.UpdateBlog(ctx, blogID, blog)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // GetBlogByID implements BlogUseCase.

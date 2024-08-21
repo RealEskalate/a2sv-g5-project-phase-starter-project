@@ -94,6 +94,8 @@ func (c *UserController) LoginUser(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, gin.H{"token": token})
 }
 
+
+
 func (c *UserController) GetUsers(ctx *gin.Context) {
 	username := ctx.Query("username")
 	email := ctx.Query("email")

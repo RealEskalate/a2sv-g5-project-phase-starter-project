@@ -1,11 +1,19 @@
 package Utils
 
 import (
+	"blogapp/Config"
 	"blogapp/Domain"
+	"context"
 	"encoding/json"
+	"log"
+	"mime/multipart"
 	"strings"
+	"time"
+
 	// "errors"
 
+	"github.com/cloudinary/cloudinary-go"
+	"github.com/cloudinary/cloudinary-go/api/uploader"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -52,6 +60,34 @@ func IsAuthorOrAdmin(claim Domain.AccessClaims, authorID primitive.ObjectID) (bo
 	}
 
 	return false, nil
+}
+
+func getCurrentTimeString() string {
+	// Get the current time
+	currentTime := time.Now()
+
+	// Format the time as a string
+	timeString := currentTime.Format("2006-01-02 15:04:05")
+
+	return timeString
+}
+
+func SetProfilePicture(file *multipart.FileHeader) (string, error) {
+
+	cld, err := cloudinary.NewFromURL("cloudinary://" + Config.Cloud_api_key + ":" + Config.Cloud_api_secret + "@dncnqaztp")
+	if err != nil {
+		log.Println("i am here")
+		return "", err
+	}
+	// Upload the my_picture.jpg image and set the PublicID to "my_image".
+	
+	var ctx = context.Background()
+	resp, err := cld.Upload.Upload(ctx, file, uploader.UploadParams{PublicID: "my_Avatar" + file.Filename + getCurrentTimeString()})
+	if err != nil {
+		log.Println("i am here too")
+		return "", err
+	}
+	return resp.SecureURL, nil
 }
 
 // func ExtractUser(c *gin.Context) (Domain.OmitedUser, error) {

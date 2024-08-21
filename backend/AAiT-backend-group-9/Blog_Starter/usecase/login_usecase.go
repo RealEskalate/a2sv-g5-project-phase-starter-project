@@ -12,16 +12,14 @@ import (
 
 
 type LoginUseCase struct {
-	LoginRepository domain.LoginRepository
 	UserRepository domain.UserRepository
 	TokenManager utils.TokenManager
 	ContextTimeout  time.Duration
 }
 
 
-func NewLoginUseCase(loginRepository domain.LoginRepository, userRepository domain.UserRepository,tokenManager utils.TokenManager ,timeout time.Duration) domain.LoginUsecase {
+func NewLoginUseCase(loginRepository , userRepository domain.UserRepository,tokenManager utils.TokenManager ,timeout time.Duration) domain.LoginUsecase {
 	return &LoginUseCase{
-		LoginRepository: loginRepository,
 		UserRepository: userRepository,
 		TokenManager: tokenManager,
 		ContextTimeout:  timeout,
@@ -57,7 +55,12 @@ func (l *LoginUseCase) Login(c context.Context, req *domain.UserLogin) (*domain.
 		return nil, err
 	}
 
-	return l.LoginRepository.Login(ctx, req)	
+	var loginResponse domain.LoginResponse
+	loginResponse.AccessToken = user.AccessToken
+	loginResponse.RefreshToken = user.RefreshToken
+	loginResponse.UserID = user.UserID.String()
+
+	return &loginResponse, nil
 
 
 }
@@ -66,6 +69,10 @@ func (l *LoginUseCase) Login(c context.Context, req *domain.UserLogin) (*domain.
 func (l *LoginUseCase) UpdatePassword(c context.Context, req domain.ChangePasswordRequest, userID string) error {
 	ctx, cancel := context.WithTimeout(c, l.ContextTimeout )
 	defer cancel()
-	return l.LoginRepository.UpdatePassword(ctx, req, userID)
+	_,err:=  l.UserRepository.UpdatePassword(ctx, req.Password, userID)
+	if err!=nil{
+		return err
+	}
+	return nil
 }
 

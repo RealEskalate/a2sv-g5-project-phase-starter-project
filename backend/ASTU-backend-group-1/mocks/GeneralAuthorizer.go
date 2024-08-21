@@ -50,6 +50,24 @@ func (_m *GeneralAuthorizer) AdminAuth(anyClaim interface{}) bool {
 	return r0
 }
 
+// OwnerAuth provides a mock function with given fields: anyClaim, author_id
+func (_m *GeneralAuthorizer) OwnerAuth(anyClaim interface{}, author_id string) bool {
+	ret := _m.Called(anyClaim, author_id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for OwnerAuth")
+	}
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func(interface{}, string) bool); ok {
+		r0 = rf(anyClaim, author_id)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	return r0
+}
+
 // UserAuth provides a mock function with given fields: anyClaim
 func (_m *GeneralAuthorizer) UserAuth(anyClaim interface{}) bool {
 	ret := _m.Called(anyClaim)

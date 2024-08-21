@@ -4,6 +4,7 @@ package mocks
 
 import (
 	gin "github.com/gin-gonic/gin"
+
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -38,6 +39,26 @@ func (_m *GeneralAuthorizationController) AuthMiddlewareGIn() gin.HandlerFunc {
 
 	if len(ret) == 0 {
 		panic("no return value specified for AuthMiddlewareGIn")
+	}
+
+	var r0 gin.HandlerFunc
+	if rf, ok := ret.Get(0).(func() gin.HandlerFunc); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(gin.HandlerFunc)
+		}
+	}
+
+	return r0
+}
+
+// AuthorMiddlewareGin provides a mock function with given fields:
+func (_m *GeneralAuthorizationController) AuthorMiddlewareGin() gin.HandlerFunc {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for AuthorMiddlewareGin")
 	}
 
 	var r0 gin.HandlerFunc

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import DescriptionCard from "@/app/components/Card/DescriptionCard";
 import ServicesCard from "@/app/components/Card/ServicesCard";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import ModalService from "@/app/components/Card/ModalService";
 
 interface BankService {
@@ -17,6 +18,7 @@ interface BankService {
 }
 
 const Services = () => {
+  const { data: session } = useSession();
   const colors = [
     "bg-orange-100",
     "bg-pink-100",

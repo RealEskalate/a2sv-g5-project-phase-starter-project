@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import DescriptionCard from "@/app/components/Card/DescriptionCard";
 import ServicesCard from "@/app/components/Card/ServicesCard";
 import axios from "axios";
+import { useSession } from "next-auth/react";
+import ModalService from "@/app/components/Card/ModalService";
 
 interface BankService {
   id: string;
@@ -16,6 +18,7 @@ interface BankService {
 }
 
 const Services = () => {
+  const { data: session } = useSession();
   const colors = [
     "bg-orange-100",
     "bg-pink-100",
@@ -25,13 +28,19 @@ const Services = () => {
   ];
   const [services, setServices] = useState<BankService[]>([]);
   const [pageNumber, setPageNumber] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleModalToggle = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
   const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiZXRzZWxvdCIsImlhdCI6MTcyNDE1NjE5MywiZXhwIjoxNzI0MjQyNTkzfQ.x6tV4QOyUslrkXYJrRfWZjwD8MBgQaRx5UyV0qR0byV68wwf2rVPkWkgu3VZRFpA";
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiZXRzZWxvdCIsImlhdCI6MTcyNDIwNzUzMCwiZXhwIjoxNzI0MjkzOTMwfQ.3BqG6j5y2ts1WXajtWBI7C2eEx3UNFV-fPjMokVJ-cN-z48sy40yhMBuvZOoJblr";
 
   async function fetchData(accessToken: string) {
     try {
       const response = await axios.get(
-        `https://bank-dashboard-6acc.onrender.com/bank-services?page=0&size=5`,
+        `https://bank-dashboard-6acc.onrender.com/bank-services?page=0&size=50`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -77,9 +86,40 @@ const Services = () => {
         {/* </div> */}
 
         <div>
-          <p className="font-semibold text-[22px] text-[#343C6A] pt-5 pb-5 lg:p-10 ">
-            Bank Services List
-          </p>
+          <div className="flex justify-between">
+            <p className="font-semibold text-[22px] text-[#343C6A] pt-5 pb-5 lg:p-10 ">
+              Bank Services List
+            </p>
+            <div
+              className={`flex items-center text-base text-[#718EBF] dark:bg-gray-700 dark:text-gray-400 rounded-[50px] py-1 pl-6 grow justify-end ${
+                isModalOpen ? "blur-sm" : ""
+              }`}
+            >
+              <button
+                onClick={handleModalToggle}
+                className="bg-blue-600 text-white p-3 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                type="button"
+              >
+                Add
+              </button>
+            </div>
+            {isModalOpen && (
+              <div
+                className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50 backdrop-blur-sm"
+                onClick={handleModalToggle}
+              >
+                <div
+                  className="relative bg-white p-6 rounded-lg shadow-lg max-w-lg w-full"
+                  onClick={(e) => e.stopPropagation()} // Prevent modal from closing when clicking inside it
+                >
+                  <ModalService
+                    isOpen={isModalOpen}
+                    onClose={handleModalToggle}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
           <div className="w-full flex flex-col grow items-start px-4">
             {services.length > 0 ? (
               services.map((service, index) => (

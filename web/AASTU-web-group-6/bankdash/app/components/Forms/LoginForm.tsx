@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import LoginValue from "@/types/LoginValue";
-import AuthService from "@/app/Services/api/authService";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 
 const LoginForm = () => {
@@ -20,20 +20,19 @@ const LoginForm = () => {
   const onSubmit = async (data: LoginValue) => {
     setLoading(true);
     setError("");
+    const result = await signIn("credentials", {
+      redirect: false,
+      userName: data.userName,
+      password: data.password,
+    });
 
-    try {
-      const response = await AuthService.login(data);
-      if (response.success) {
-        console.log("Login successful:", response.message);
-        router.push("/");
-      } else {
-        setError(response.message);
-        setLoading(false);
-      }
-    } catch (err) {
-      setError("An error occurred during login.");
-      console.error(err);
+    if (result?.error) {
+      console.log(result);
+      setError("Invalid Credential");
       setLoading(false);
+    } else {
+      console.log("Login Successful:", result);
+      router.push("/");
     }
   };
 
@@ -51,6 +50,8 @@ const LoginForm = () => {
         className="pt-3 flex flex-col gap-2 "
         onSubmit={handleSubmit(onSubmit)}
       >
+        {error && <p className="text-[#1814F3] mt-2 text-center">{error}</p>}
+
         <div className="mt-3 flex flex-col">
           <label className="mb-1 text-slate-500" htmlFor="userName">
             UserName
@@ -89,7 +90,6 @@ const LoginForm = () => {
           <button type="submit" disabled={loading} className="text-white">
             {loading ? "Loading..." : "Login"}
           </button>
-          {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
       </form>
 

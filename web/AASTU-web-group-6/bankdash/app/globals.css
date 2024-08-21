@@ -186,11 +186,22 @@ th {
   align-content: center;
 }
 
-.signup-input{
+.signup-input {
   width: 100%;
   padding: 6px;
   border-bottom: 1px solid;
 }
-.signup-input:active{
+.signup-input:active {
   border: 0px;
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 }

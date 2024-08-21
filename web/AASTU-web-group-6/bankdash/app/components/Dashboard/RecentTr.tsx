@@ -47,7 +47,9 @@ const RecentTr = () => {
             key={key}
             className="recentTr w-full flex gap-4 items-center justify-center"
           >
-            <div className={`{icon flex items-center rounded-full p-4 `}>
+            <div
+              className={`{icon flex items-center rounded-full p-4 ${dummyTr[key].color}`}
+            >
               <Image src={dummyTr[key].icon} alt="" width={28} height={28} />
             </div>
             <div className="flex flex-col gap-1 ">

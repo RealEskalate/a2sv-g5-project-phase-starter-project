@@ -16,7 +16,9 @@ func NewBlogController(blogUsecase domain.IBlogUsecase) domain.IBlogController {
 }
 
 func (bc *blogController) GetAllBlogs(c *gin.Context) {
-	blogs, err := bc.BlogUsecase.GetAllBlogs(c)
+	sortOrder := c.DefaultQuery("sort", "DESC") // Default to "DESC" if not specified
+
+	blogs, err := bc.BlogUsecase.GetAllBlogs(c, sortOrder)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return

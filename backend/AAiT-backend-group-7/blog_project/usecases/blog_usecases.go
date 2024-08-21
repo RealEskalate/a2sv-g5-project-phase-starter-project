@@ -3,6 +3,7 @@ package usecases
 import (
 	"context"
 	"errors"
+	"sort"
 
 	"blog_project/domain"
 )
@@ -19,8 +20,44 @@ func NewBlogUsecase(blogrepo domain.IBlogRepository, userusecase domain.IUserUse
 	}
 }
 
-func (u *BlogUsecases) GetAllBlogs(ctx context.Context) ([]domain.Blog, error) {
-	return u.BlogRepo.GetAllBlogs(ctx)
+func (u *BlogUsecases) GetAllBlogs(ctx context.Context, sortOrder string) ([]domain.Blog, error) {
+	blogs, err := u.BlogRepo.GetAllBlogs(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// create a slice to hold blogs with their popularity
+	type blogWithPopularity struct {
+		Blog       domain.Blog
+		Popularity int
+	}
+
+	blogWithPopularityList := make([]blogWithPopularity, len(blogs))
+
+	// calculate popularity for each blog and store it along with the blog
+	for i, blog := range blogs {
+		popularity := len(blog.Likes) - len(blog.Dislikes) + 2*len(blog.Comments)
+		blogWithPopularityList[i] = blogWithPopularity{Blog: blog, Popularity: popularity}
+	}
+
+	// sort blogs by popularity
+	if sortOrder == "ASC" {
+		sort.Slice(blogWithPopularityList, func(i, j int) bool {
+			return blogWithPopularityList[i].Popularity < blogWithPopularityList[j].Popularity
+		})
+	} else {
+		sort.Slice(blogWithPopularityList, func(i, j int) bool {
+			return blogWithPopularityList[i].Popularity > blogWithPopularityList[j].Popularity
+		})
+	}
+
+	// extract sorted blogs from the blogWithPopularity slice
+	sortedBlogs := make([]domain.Blog, len(blogs))
+	for i, bw := range blogWithPopularityList {
+		sortedBlogs[i] = bw.Blog
+	}
+
+	return sortedBlogs, nil
 }
 
 func (u *BlogUsecases) GetBlogByID(ctx context.Context, id int) (domain.Blog, error) {

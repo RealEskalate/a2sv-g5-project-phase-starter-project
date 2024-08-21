@@ -50,7 +50,7 @@ type IBlogRepository interface {
 }
 
 type IBlogUsecase interface {
-	GetAllBlogs(ctx context.Context) ([]Blog, error)
+	GetAllBlogs(ctx context.Context, sortOrder string) ([]Blog, error)
 	GetBlogByID(ctx context.Context, id int) (Blog, error)
 	CreateBlog(ctx context.Context, blog Blog) (Blog, error)
 	UpdateBlog(ctx context.Context, id int, blog Blog) (Blog, error)

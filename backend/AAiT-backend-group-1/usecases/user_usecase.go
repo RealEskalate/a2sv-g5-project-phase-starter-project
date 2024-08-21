@@ -207,6 +207,11 @@ func (userUC *userUseCase) ForgotPassword(cxt *gin.Context, email string) domain
 		return domain.CustomError{Message: err.Error(), Code: http.StatusInternalServerError}
 	}
 
+	resetCode, errCode := utils.GenerateTokenWithLength(6)
+	if errCode != nil {
+		return &domain.CustomError{Message: errCode.Error(), Code: http.StatusInternalServerError}
+	}
+
 	passwordResetToken, errToken := userUC.jwtService.GenerateResetToken(email)
 	if errToken != nil {
 		return &domain.CustomError{Message: errToken.Error(), Code: http.StatusInternalServerError}
@@ -274,7 +279,7 @@ func (userUC *userUseCase) ResetPassword(cxt *gin.Context, newPassword, confirmP
 		return &domain.CustomError{Message: "session not found", Code: http.StatusNotFound}
 	}
 
-	if session.PasswordResetToken != token {
+	if session.PasswordResetToken != token || session.ResetPasswordToken != code {
 		return &domain.CustomError{Message: "invalid token", Code: http.StatusUnauthorized}
 	}
 

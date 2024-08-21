@@ -22,9 +22,10 @@ func Setup(env *bootstrap.Env, db *mongo.Database, gin *gin.Engine, auth middlew
 	_ = publicRouter
 
 
-	NewBlogRouter(db, publicRouter.Group("/blogs"), model)
-	NewCommmentRouter(db, publicRouter.Group("/comments"))	
+	NewBlogRouter(db, privateRouter.Group("/blogs"), model)
+	NewCommmentRouter(db, privateRouter.Group("/comments"))	
 	NewAuthRouter(env,db, publicRouter.Group("/auth"))
+	NewProfileRouter(db, privateRouter.Group("/user"))
 
 	gin.Run(":8080")
 }

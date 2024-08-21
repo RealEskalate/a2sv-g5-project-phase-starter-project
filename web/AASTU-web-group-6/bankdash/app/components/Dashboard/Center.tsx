@@ -17,6 +17,7 @@ import {
 
 const Center = () => {
   const { data: session } = useSession();
+  console.log("Session",session)
   const accessToken =
     "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyNDE2MzgyMCwiZXhwIjoxNzI0MjUwMjIwfQ.lmocKv2waPGaLomXHYev8fk-G6eviPjD47rfuUk0ffsmtk__kWElrkz1iB2en20g";
 

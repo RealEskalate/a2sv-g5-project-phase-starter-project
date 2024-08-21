@@ -2,7 +2,7 @@ package controller
 
 import (
 	"Blog_Starter/domain"
-	"Blog_Starter/utils"
+	EmailUtil "Blog_Starter/utils"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
 
 type SignUpController struct {
 	signUpUsecase domain.SignupUsecase
@@ -75,7 +76,7 @@ func (s *SignUpController) SignUp(c *gin.Context) {
 	emailSubject := "Verify Your Email"
 
 	// Generate the email body using the template function
-	emailBody := utils.GenerateEmailTemplate("Account Verification", emailContent)
+	emailBody := EmailUtil.GenerateEmailTemplate("Account Verification", emailContent)
 
 	// Create the email template
 	emailTemplate := domain.EmailTemplate{
@@ -83,7 +84,7 @@ func (s *SignUpController) SignUp(c *gin.Context) {
 		Body:    emailBody,
 	}
 
-	err = utils.SendEmail(UserSignUp.Email, emailTemplate.Subject, emailTemplate.Body)
+	err = EmailUtil.SendTestEmail(UserSignUp.Email, emailTemplate.Subject, emailTemplate.Body)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -175,7 +176,7 @@ func (s *SignUpController) ResendOTP(c *gin.Context) {
 	emailSubject := "Verify Your Email"
 
 	// Generate the email body using the template function
-	emailBody := utils.GenerateEmailTemplate("Account Verification", emailContent)
+	emailBody := EmailUtil.GenerateEmailTemplate("Account Verification", emailContent)
 
 	// Create the email template
 	emailTemplate := domain.EmailTemplate{
@@ -183,7 +184,7 @@ func (s *SignUpController) ResendOTP(c *gin.Context) {
 		Body:    emailBody,
 	}
 
-	err = utils.SendEmail(ResendOTPRequest.Email, emailTemplate.Subject, emailTemplate.Body)
+	err = EmailUtil.SendTestEmail(ResendOTPRequest.Email, emailTemplate.Subject, emailTemplate.Body)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

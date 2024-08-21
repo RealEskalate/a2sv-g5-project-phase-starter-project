@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/smtp"
 	"os"
 
 	"golang.org/x/oauth2"
@@ -189,4 +190,27 @@ func GenerateEmailTemplate(header, content string) string {
 	</html>`
 
 	return tmpl
+}
+
+
+// SendTestEmail sends an email with the given subject and body to the specified email address.
+func SendTestEmail(email string, subject string, body string) error {
+    // Construct the MIME message
+    msg := "To: " + email + "\r\n" +
+        "Subject: " + subject + "\r\n" +
+        "MIME-Version: 1.0\r\n" +
+        "Content-Type: text/html; charset=\"utf-8\"\r\n" +
+        "\r\n" +
+        body
+
+    // SMTP authentication
+    auth := smtp.PlainAuth("", "bisratbnegus@gmail.com", "fvok nerz zdgv iutz", "smtp.gmail.com")
+
+    // Send the email
+    err := smtp.SendMail("smtp.gmail.com:587", auth, "bisratbnegus@gmail.com", []string{email}, []byte(msg))
+    if err != nil {
+        fmt.Println(err)
+        return err
+    }
+    return nil
 }

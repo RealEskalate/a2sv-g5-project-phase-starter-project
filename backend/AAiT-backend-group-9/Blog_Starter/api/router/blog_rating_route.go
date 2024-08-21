@@ -8,13 +8,15 @@ import (
 	"time"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
+	"Blog_Starter/config"
 )
 
-func NewBlogRatingRouter(timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
+func NewBlogRatingRouter(env *config.Env , timeout time.Duration, db *mongo.Client, group *gin.RouterGroup) {
+	database := db.Database(env.DBName) // Replace with your actual database name
 
-	bra := repository.NewBlogRatingRepository(db, domain.CollectionRating)
-	br := repository.NewBlogRepository(db, domain.CollectionBlog)
-	bru := usecase.NewBlogRatingUseCase(bra, br, 100*time.Second)
+	bra := repository.NewBlogRatingRepository(database, domain.CollectionRating)
+	br := repository.NewBlogRepository(database, domain.CollectionBlog)
+	bru := usecase.NewBlogRatingUseCase(bra, br, timeout)
 	brc := controller.NewBlogRatingController(bru, timeout)
 
 	group.POST("/rating/:blog_id", brc.InserttAndUpdateRating)

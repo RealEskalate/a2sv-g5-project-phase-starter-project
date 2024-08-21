@@ -94,3 +94,9 @@ func (uc *blogUsecase) SearchPosts(c *gin.Context, query string, filter Domain.F
 	return uc.BlogRepository.SearchPosts(ctx, query, filter)
 }
 
+func (uc *blogUsecase) DeletePost(c *gin.Context, id primitive.ObjectID) (error, int) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.DeletePost(ctx, id)
+}
+

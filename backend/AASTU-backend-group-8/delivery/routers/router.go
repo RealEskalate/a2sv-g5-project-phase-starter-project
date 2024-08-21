@@ -15,6 +15,7 @@ import (
 )
 
 func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, refreshTokenUsecase *usecases.TokenUsecase, jwtService infrastructure.JWTService, likeUsecase *usecases.LikeUsecase, commentUsecase *usecases.CommentUsecase, tokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase) {
+	r.Static("/public", "./uploads")
 
 	// Initialize controllers
 	signupController := controllers.NewSignupController(userUsecase, otpUsecase)
@@ -24,7 +25,7 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 	refreshTokenController := controllers.NewRefreshTokenController(userUsecase, refreshTokenUsecase, jwtService)
 	forgotPasswordController := controllers.NewForgotPasswordController(userUsecase, otpUsecase)
 	logoutController := controllers.NewLogoutController(refreshTokenUsecase)
-  
+
 	commentController := controllers.NewCommentController(commentUsecase)
 	likeController := controllers.NewLikeController(likeUsecase)
 

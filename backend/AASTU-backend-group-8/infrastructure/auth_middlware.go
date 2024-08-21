@@ -12,10 +12,10 @@ func AdminMiddleware(jwtService JWTService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		// secret_key := jwtService.GetKey("access")
-		tokenString := strings.TrimPrefix(authHeader,"Bearer ")
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		claims, err := jwtService.ValidateToken(tokenString)
 
-		if err != nil{
+		if err != nil {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
@@ -39,7 +39,7 @@ func AuthMiddleware(jwtService JWTService) gin.HandlerFunc {
 			return
 		}
 
-		tokenString := strings.TrimPrefix(authHeader,"Bearer ")
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
 		// secret_key := jwtService.GetKey("access")
 		claims, err := jwtService.ValidateToken(tokenString)

@@ -16,6 +16,7 @@ import {
 import { BalanceType } from "@/app/Redux/slices/TransactionSlice";
 import ModalTrans from "../Forms/SendMoneyForm";
 import TransactionService from "@/app/Services/api/transactionApi";
+import { useSession } from "next-auth/react";
 interface quickType {
   id: string;
   name: string;
@@ -27,7 +28,7 @@ interface quickType {
 
 const Bottom = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-
+  const {data:session} = useSession();
   const handleScroll = () => {
     if (containerRef.current) {
       containerRef.current.scrollLeft += 200; 
@@ -49,12 +50,11 @@ const Bottom = () => {
   const [quickData, setQuickData] = useState<quickType[]>([]);
   const [username , setUsername] = useState<string>("");
   const [amount , setAmount] = useState<number>(0);
+  const accessToken = session?.accessToken as string;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const accessToken =
-          "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjQyMjYyNjgsImV4cCI6MTcyNDMxMjY2OH0.NpLfcO08R6vtIpsC9CerKswpYJqIqkMtZidQKyj3sxAMwKKnZF7YLR1wWPV2iA65";
         const data = await TransactionService.getQuickTransfer(accessToken);
         setQuickData(data);
         console.log(quickData, "quick");

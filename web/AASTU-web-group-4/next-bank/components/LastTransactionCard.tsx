@@ -11,7 +11,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const transactionData = await getAllTransactions(); 
+        const transactionData = await getAllTransactions(0, 5); 
         const current = await currentuser();
         setCurrentUser(current.data.name)
 

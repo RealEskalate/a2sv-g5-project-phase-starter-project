@@ -15,7 +15,7 @@ import { useGetExpenseTransactionsQuery } from "@/lib/redux/api/transactionsApi"
 
 export default function DashboardBarChart() {
   const { data, isLoading, isError } = useGetExpenseTransactionsQuery({
-    size: 10, // Adjust the size to fetch all relevant data
+    size: 10, 
     page: 0,
   });
 
@@ -26,7 +26,7 @@ export default function DashboardBarChart() {
 
     for (let i = 6; i >= 0; i--) {
       const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-      days.push(day.toLocaleString("default", { weekday: "short", day: "numeric" }));
+      days.push(day.toLocaleString("default", { weekday: "short" })); // Removed 'day: "numeric"'
     }
 
     return days;
@@ -41,8 +41,7 @@ export default function DashboardBarChart() {
     // Iterate over data.data.content
     data.data.content.forEach((transaction) => {
       const day = new Date(transaction.date).toLocaleString("default", {
-        weekday: "short",
-        day: "numeric",
+        weekday: "short", // Removed 'day: "numeric"'
       });
 
       if (dailyExpenses[day]) {
@@ -54,7 +53,7 @@ export default function DashboardBarChart() {
 
     return sevenDays.map((day) => ({
       day,
-      expense: Math.abs(dailyExpenses[day] || 0), 
+      expense: Math.abs(dailyExpenses[day] || 0),
     }));
   }, [data, isLoading, isError, sevenDays]);
 
@@ -69,11 +68,11 @@ export default function DashboardBarChart() {
   };
 
   return (
-    <div className="flex flex-col w-full lg:w-1/3">
+    <div className="flex flex-col  lg:w-1/3 justify-center lg:justify-start">
       <h1 className="font-semibold text-[#343C6A] h-20 flex items-center mx-2">
         My Expense
       </h1>
-      <Card className="xl:w-[90%] mx-2 min-h-48">
+      <Card className="w-full xl:w-[90%]">
         <CardContent>
           {isLoading ? (
             <p>Loading...</p>
@@ -82,7 +81,7 @@ export default function DashboardBarChart() {
           ) : (
             <ChartContainer
               config={{ expense: { label: "Expenses", color: "#EDF0F7" } }}
-              className="w-full px-1"
+              className="w-full h-60 px-1 lg:h-44 xl:h-52"
             >
               <BarChart accessibilityLayer data={chartData}>
                 <CartesianGrid vertical={false} />

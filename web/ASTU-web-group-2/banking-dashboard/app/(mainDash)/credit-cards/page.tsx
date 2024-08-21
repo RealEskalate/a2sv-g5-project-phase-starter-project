@@ -8,7 +8,11 @@ import CardExpenseStatisticsChart from "../../components/charts/CardExpenseStati
 import AddNewCard from "../../components/addNewCard/AddNewCard";
 import CardSetting from "../../components/CardSetting/CardSetting";
 import CardForCreditCards from "@/app/components/card/CardForCreditCards";
-import { CardData, formatCardNumber, card } from "../page";
+import {
+  CardData,
+  formatCardNumber,
+  card,
+} from "../../components/cardDisplay/CardDisplay";
 import {
   useGetAllCardInfoQuery,
   useRetiriveCardInfoQuery,

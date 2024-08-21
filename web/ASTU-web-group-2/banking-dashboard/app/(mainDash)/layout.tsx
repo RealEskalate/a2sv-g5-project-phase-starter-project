@@ -49,7 +49,7 @@ const Layout = ({ children, title = 'My Next.js App' }: { children: React.ReactN
         <Navbar />
         <div className="flex flex-1">
           <Sidebar />
-          <main className="max-md:pt-[100px] flex-1 p-4 mt-[60px] lg:ml-[240px] sm:ml-[240px] ml-0 bg-[#E6EFF5]">
+          <main className="max-md:pt-[100px] flex-1 p-4 mt-[60px] lg:ml-[240px] sm:ml-[240px] ml-0 bg-[#F5F7FA]">
             {children}
           </main>
         </div>

@@ -47,7 +47,7 @@ func main() {
 	userRepo := repositories.NewMongoUserRepository(dbClient.Database, "users")
 	otpRepo := repositories.NewMongoOtpRepository(dbClient.Database, "otps")
 	blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs")
-	// commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
+	commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
 
 	//services
 	emailSvc := services.NewEmailService(smtpHost, smtpPort, userName, passWord)
@@ -62,13 +62,13 @@ func main() {
 	userUsecase := usecases.NewUserUsecase(userRepo, passSvc, validationSvc, emailSvc, jwtSvc)
 	otpUsecase := usecases.NewOtpUseCase(otpRepo, userRepo, emailSvc, passSvc, "http://localhost:8080", validationSvc)
 	blogService := usecases.NewBlogUsecase(blogRepo)
-	// commentService := service.NewCommentService(commentRepo)
+	commentService := usecases.NewCommentUsecase(commentRepo)
 
 	// controllers
 	userController := controllers.NewUserController(userUsecase)
 	otpController := controllers.NewOTPController(otpUsecase)
 	blogController := controllers.NewBlogController(blogService)
-	// commentController := delivery.NewCommentController(commentService)
+	commentController := controllers.NewCommentController(commentService)
 
 	router := gin.New()
 	router.Use(gin.Logger())
@@ -76,6 +76,7 @@ func main() {
 	// routers
 	routers.CreateUserRouter(router, userController, otpController)
 	routers.CreateBlogRouter(router, blogController, authMiddleware)
+	routers.CreateCommentRouter(router, commentController, authMiddleware)
 	if err := router.Run(":" + os.Getenv("PORT")); err!= nil{
 		log.Fatal(err)
 	}

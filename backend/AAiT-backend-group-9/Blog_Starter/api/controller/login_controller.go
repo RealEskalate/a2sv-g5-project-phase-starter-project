@@ -2,6 +2,7 @@ package controller
 
 import (
 	"Blog_Starter/domain"
+	"Blog_Starter/utils"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -39,18 +40,12 @@ func (lc *LoginController) Login(c *gin.Context){
 
 	request.Email = strings.ToLower(request.Email)
 	
-
-	loginResponse,err := lc.LoginUsecase.Login(c, &request)
+	 ctx := c.Request.Context()
+	loginResponse,err := lc.LoginUsecase.Login(ctx, &request)
 	if err!=nil{
 		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
 		return
 	}
-
-
-	// TODO: update tokens using the right method
-	
-
-
 	c.JSON(http.StatusOK, loginResponse)
 
 }
@@ -95,25 +90,54 @@ func(lc *LoginController) ForgotPassword(c *gin.Context){
 		return
 	}
 	// TODO send email to user 
+	emailContent := `
+	<p>reset your password. please insert the following code in the required field to reset your password:</p>
+	<h3>` + code + `</h3>
+	<p><strong>This verification code is valid for 5 minutes.</strong> Please enter it on the reset Password page to proceed.</p>
+	<p>If you did not sign up for the BlogApp, please ignore this email.</p>`
+	// Create the email subject
+	emailSubject := "Reset your password "
+
+	// Generate the email body using the template function
+	emailBody := utils.GenerateEmailTemplate("Reset Password ", emailContent)
+	// Create the email template
+	emailTemplate := domain.EmailTemplate{
+		Subject: emailSubject,
+		Body:    emailBody,
+	}
+	err = utils.SendTestEmail(request.Email, emailTemplate.Subject, emailTemplate.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"success": "Message sent successfully"})
+
 
 }
 
-func (lc *LoginController) UpdatePassword(c *gin.Context){
+func (lc *LoginController) UpdatePassword(c *gin.Context) {
+    var request domain.ChangePasswordRequest
+    if err := c.BindJSON(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request to update password"})
+        return
+    }
 
-	var request domain.ChangePasswordRequest
-	err:= c.BindJSON(&request)
-	if err!=nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request to update password"})
-		return
-	}
-	userID := c.Param("user_id")
-	err2:= lc.LoginUsecase.UpdatePassword(c,request,userID)
-	if err2!=nil{
-		c.JSON(http.StatusInternalServerError, gin.H{"error" : "password not updated"})
-		return 
-	}
-	c.JSON(http.StatusOK, gin.H{"success" : "password  updated"})
+    userResponse, err := lc.UserUsecase.GetUserByEmail(c, request.Email)
+    if err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+        return
+    }
+    userID := userResponse.UserID.String()
 
+    // Convert gin.Context to standard context.Context
+    ctx := c.Request.Context()
+
+    if err := lc.LoginUsecase.UpdatePassword(ctx, request, userID); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"success": "Password updated successfully"})
 }
 
 

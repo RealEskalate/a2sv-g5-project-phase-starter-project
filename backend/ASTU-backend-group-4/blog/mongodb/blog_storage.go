@@ -61,7 +61,18 @@ func (b *BlogStorage) DeleteDislikesByBlogID(ctx context.Context, blogID string)
 
 // DeleteLikesByBlogID implements blog.BlogRepository.
 func (b *BlogStorage) DeleteLikesByBlogID(ctx context.Context, blogID string) error {
-	panic("unimplemented")
+	blogIDPrimitive, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return blogDomain.ErrInvalidID
+	}
+
+	filter := bson.D{{Key: "blog_id", Value: blogIDPrimitive}}
+	_, err = b.db.Collection(likeCollection).DeleteMany(ctx, filter)
+	if err != nil {
+		return blogDomain.ErrUnableToDeleteLikes
+	}
+
+	return nil
 }
 
 // GetCommentByID implements blog.BlogRepository.

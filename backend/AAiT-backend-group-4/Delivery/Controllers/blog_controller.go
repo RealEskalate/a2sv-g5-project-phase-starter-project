@@ -3,6 +3,7 @@ package controllers
 import (
 	domain "aait-backend-group4/Domain"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -84,9 +85,20 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Blog deleted successfully"})
 }
 
-// FetchAll handles fetching all blogs
+// FetchAll handles fetching all blogs with pagination
 func (bc *BlogController) FetchAll(c *gin.Context) {
-	blogs, err := bc.BlogUsecase.FetchAll(c)
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil || limit <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil || page <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		return
+	}
+
+	blogs, err := bc.BlogUsecase.FetchAll(c, limit, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -95,11 +107,71 @@ func (bc *BlogController) FetchAll(c *gin.Context) {
 	c.JSON(http.StatusOK, blogs)
 }
 
-// FetchByBlogAuthor handles fetching blogs by a specific author
+// FetchByPageAndPopularity handles fetching blogs by page and popularity
+func (bc *BlogController) FetchByPageAndPopularity(c *gin.Context) {
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil || limit <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil || page <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		return
+	}
+
+	blogs, err := bc.BlogUsecase.FetchByPageAndPopularity(c, limit, page)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, blogs)
+}
+
+// FetchByBlogAuthor handles fetching blogs by author ID
 func (bc *BlogController) FetchByBlogAuthor(c *gin.Context) {
 	authorID := c.Param("author_id")
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil || limit <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil || page <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		return
+	}
 
-	blogs, err := bc.BlogUsecase.FetchByBlogAuthor(c, authorID)
+	blogs, err := bc.BlogUsecase.FetchByBlogAuthor(c, authorID, limit, page)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, blogs)
+}
+
+// FetchByTags handles fetching blogs by tags
+func (bc *BlogController) FetchByTags(c *gin.Context) {
+	var tags []domain.Tag
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil || limit <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil || page <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&tags); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	blogs, err := bc.BlogUsecase.FetchByTags(c, tags, limit, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -110,8 +182,19 @@ func (bc *BlogController) FetchByBlogAuthor(c *gin.Context) {
 
 // FetchByBlogTitle handles fetching blogs by title
 func (bc *BlogController) FetchByBlogTitle(c *gin.Context) {
-	title := c.Param("title")
-	blogs, err := bc.BlogUsecase.FetchByBlogTitle(c, title)
+	title := c.Query("title")
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil || limit <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil || page <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		return
+	}
+
+	blogs, err := bc.BlogUsecase.FetchByBlogTitle(c, title, limit, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -180,39 +263,26 @@ func (bc *BlogController) RemoveComment(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Comment removed successfully"})
 }
 
-// UpdateFeedback handles updating feedback on a blog
-func (bc *BlogController) UpdateFeedback(c *gin.Context) {
-	blogID := c.Param("id")
-	var feedback domain.Feedback
-
-	if err := c.ShouldBindJSON(&feedback); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	updateFunc := func(fb *domain.Feedback) error {
-		*fb = feedback
-		return nil
-	}
-
-	if err := bc.BlogUsecase.UpdateFeedback(c, blogID, updateFunc); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Feedback updated successfully"})
-}
-
-// SearchBlogs handles searching for blogs based on a filter
+// SearchBlogs handles the search of blogs based on filters
 func (bc *BlogController) SearchBlogs(c *gin.Context) {
 	var filter domain.Filter
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil || limit <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil || page <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		return
+	}
 
-	if err := c.ShouldBindQuery(&filter); err != nil {
+	if err := c.ShouldBindJSON(&filter); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	blogs, err := bc.BlogUsecase.SearchBlogs(c, filter)
+	blogs, err := bc.BlogUsecase.SearchBlogs(c, filter, limit, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

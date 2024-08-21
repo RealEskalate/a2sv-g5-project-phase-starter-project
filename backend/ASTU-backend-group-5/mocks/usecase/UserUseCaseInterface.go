@@ -47,7 +47,7 @@ func (_m *UserUseCaseInterface) DeleteUser(id string) error {
 	}
 
 	return r0
-}
+} 
 
 // DemoteFromAdmin provides a mock function with given fields: UserId
 func (_m *UserUseCaseInterface) DemoteFromAdmin(UserId string) error {
@@ -256,6 +256,17 @@ func (_m *UserUseCaseInterface) Login(email string, password string) (*domain.Us
 	return r0, r1, r2
 }
 
+
+// GoogleCallback provides a mock function with given fields: code
+func (_m *UserUseCaseInterface) GoogleCallback(code string) (*domain.User, *domain.Token, error) {
+	ret := _m.Called(code)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GoogleCallback")
+	}
+	return nil, nil, nil
+}
+
 // PromoteToAdmin provides a mock function with given fields: UserId
 func (_m *UserUseCaseInterface) PromoteToAdmin(UserId string) error {
 	ret := _m.Called(UserId)
@@ -407,3 +418,4 @@ func NewUserUseCaseInterface(t interface {
 
 	return mock
 }
+

@@ -1,7 +1,7 @@
 package blog
 
 import (
-	//"blogApp/internal/ai"
+	"blogApp/internal/ai"
 	"blogApp/internal/domain"
 	"blogApp/internal/repository"
 	"context"
@@ -56,11 +56,20 @@ func (u *blogUseCase) CreateBlog(ctx context.Context, blog *domain.Blog, authorI
 }
 
 // AddComment adds a comment to a blog
-func (u *blogUseCase) AddComment(ctx context.Context, comment *domain.Comment) error {
+func (u *blogUseCase) AddComment(ctx context.Context, comment *domain.Comment, userId string) error {
 	if comment == nil {
 		return errors.New("comment cannot be nil")
 	}
-	err := u.repo.AddComment(ctx, comment)
+	comment.UserID, _ = primitive.ObjectIDFromHex(userId)
+
+	blogObjectID, err := primitive.ObjectIDFromHex(comment.BlogID.Hex())
+	if err != nil {
+		return fmt.Errorf("invalid blog ID: %w", err)
+	}
+	comment.BlogID = blogObjectID
+
+	err = u.repo.AddComment(ctx, comment)
+
 	if err != nil {
 		log.Printf("Error adding comment to blog with ID %s: %v", comment.BlogID.Hex(), err)
 		return fmt.Errorf("failed to add comment: %w", err)
@@ -69,10 +78,15 @@ func (u *blogUseCase) AddComment(ctx context.Context, comment *domain.Comment) e
 }
 
 // AddLike adds a like to a blog
-func (u *blogUseCase) AddLike(ctx context.Context, like *domain.Like) error {
+func (u *blogUseCase) AddLike(ctx context.Context, like *domain.Like, userId string) error {
 	if like == nil {
 		return errors.New("like cannot be nil")
 	}
+	alreadyLiked, _ := u.repo.HasUserLikedBlog(ctx, userId, like.BlogID.Hex())
+	if alreadyLiked {
+		return nil
+	}
+	like.UserID, _ = primitive.ObjectIDFromHex(userId)
 	err := u.repo.AddLike(ctx, like)
 	if err != nil {
 		log.Printf("Error adding like to blog with ID %s: %v", like.BlogID.Hex(), err)
@@ -82,10 +96,15 @@ func (u *blogUseCase) AddLike(ctx context.Context, like *domain.Like) error {
 }
 
 // AddView adds a view to a blog
-func (u *blogUseCase) AddView(ctx context.Context, view *domain.View) error {
+func (u *blogUseCase) AddView(ctx context.Context, view *domain.View, userId string) error {
 	if view == nil {
 		return errors.New("view cannot be nil")
 	}
+	AlreadyViewed, _ := u.repo.HasUserViewedBlog(ctx, userId, view.BlogID.Hex())
+	if AlreadyViewed {
+		return nil
+	}
+	view.UserID, _ = primitive.ObjectIDFromHex(userId)
 	err := u.repo.AddView(ctx, view)
 	if err != nil {
 		log.Printf("Error adding view to blog with ID %s: %v", view.BlogID.Hex(), err)

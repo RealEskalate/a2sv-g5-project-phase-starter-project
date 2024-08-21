@@ -21,7 +21,7 @@ func NewTokenHandler(tokenUseCase usecase.TokenUsecase) *TokenHandler {
 }
 
 func (h *TokenHandler) RefreshToken(c *gin.Context) {
-	refreshToken := c.GetHeader("Authorization")
+	refreshToken := strings.Split(c.GetHeader("Authorization"), " ")[1]
 	if refreshToken == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Refresh token required"})
 		return

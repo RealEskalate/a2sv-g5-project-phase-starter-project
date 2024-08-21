@@ -2,10 +2,12 @@ package routes
 
 import (
 	"blogApp/internal/http/handlers"
+	BlogHandler "blogApp/internal/http/handlers/blog"
 	"blogApp/internal/repository/mongodb"
 	"blogApp/internal/usecase"
-	"blogApp/internal/usecase/user"
 	"blogApp/internal/usecase/blog"
+	"blogApp/internal/usecase/user"
+
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -22,11 +24,9 @@ func InstantaiteTokenUsecase(collection *mongo.Collection) *usecase.TokenUsecase
 	return tokenUsecase
 }
 
-
-func InstantaiteBlogHandler(blogsCollection, commentsCollection, likesCollection, viewsCollection, tagsCollection *mongo.Collection) *handlers.BlogHandler {
+func InstantaiteBlogHandler(blogsCollection, commentsCollection, likesCollection, viewsCollection, tagsCollection *mongo.Collection) *BlogHandler.BlogHandler {
 	blogRepo := mongodb.NewMongoBlogRepository(blogsCollection, commentsCollection, likesCollection, viewsCollection, tagsCollection)
 	blogUsecase := blog.NewBlogUseCase(blogRepo)
-	blogHandler := handlers.NewBlogHandler(blogUsecase)
+	blogHandler := BlogHandler.NewBlogHandler(blogUsecase)
 	return blogHandler
 }
-

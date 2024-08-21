@@ -32,7 +32,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
 		return
 	}
-	
+
 	err := uc.UserUsecase.CreateUser(c, &user, &claims)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Internal server error"})
@@ -50,8 +50,8 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	existingUser, _ := uc.UserUsecase.GetUserByID(c, objectID)
-	if existingUser == nil {
+	existingUser, err := uc.UserUsecase.GetUserByID(c, objectID)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
@@ -60,18 +60,18 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if user.Email != existingUser.Email{
+	if user.Email != existingUser.Email {
 		print(user.Email)
 		// print(existingUser.Email)
-		euser,_ := uc.UserUsecase.GetUserByEmail(c,user.Email)
+		euser, _ := uc.UserUsecase.GetUserByEmail(c, user.Email)
 		if euser != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
 			return
-		} 
+		}
 	}
 	if user.Username != existingUser.Username {
-		euser,_ := uc.UserUsecase.GetUserByUsername(c,user.Username)
-		if euser!=nil {
+		euser, _ := uc.UserUsecase.GetUserByUsername(c, user.Username)
+		if euser != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
 			return
 		}
@@ -93,12 +93,12 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	existingUser, _ := uc.UserUsecase.GetUserByID(c, objectID)
-	if existingUser == nil {
+	_, err = uc.UserUsecase.GetUserByID(c, objectID)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
-	
+
 	err = uc.UserUsecase.DeleteUser(c, objectID, &claims)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -115,8 +115,8 @@ func (uc *UserController) GetUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user, _ := uc.UserUsecase.GetUserByID(c, objectID)
-	if user == nil {
+	user, err := uc.UserUsecase.GetUserByID(c, objectID)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
@@ -125,8 +125,8 @@ func (uc *UserController) GetUser(c *gin.Context) {
 
 // GetUsers gets all users
 func (uc *UserController) GetUsers(c *gin.Context) {
-	users, _ := uc.UserUsecase.GetAllUsers(c)
-	if users == nil {
+	users, err := uc.UserUsecase.GetAllUsers(c)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No users found"})
 		return
 	}
@@ -142,8 +142,8 @@ func (uc *UserController) PromoteUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	existingUser, _ := uc.UserUsecase.GetUserByID(c, objectID)
-	if existingUser == nil {
+	_, err = uc.UserUsecase.GetUserByID(c, objectID)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
@@ -164,8 +164,8 @@ func (uc *UserController) DemoteUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	existingUser, _ := uc.UserUsecase.GetUserByID(c, objectID)
-	if existingUser == nil {
+	_, err = uc.UserUsecase.GetUserByID(c, objectID)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}

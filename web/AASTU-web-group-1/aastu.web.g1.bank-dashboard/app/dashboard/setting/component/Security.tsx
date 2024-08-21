@@ -57,7 +57,7 @@ const Security = () => {
       setLoading(true);
 
       const res = await fetch(
-        "https://bank-dashboard-6acc.onrender.com/auth/change_password",
+        "https://bank-dashboard-1tst.onrender.com/auth/change_password",
         {
           method: "POST",
           body: JSON.stringify(formData),

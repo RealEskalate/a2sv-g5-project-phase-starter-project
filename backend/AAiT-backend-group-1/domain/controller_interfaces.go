@@ -2,7 +2,6 @@ package domain
 
 import "github.com/gin-gonic/gin"
 
-
 type BlogController interface {
 	CreateBlog(c *gin.Context)
 	GetBlog(c *gin.Context)
@@ -17,13 +16,14 @@ type BlogController interface {
 	AddComment(c *gin.Context)
 	DeleteComment(c *gin.Context)
 	EditComment(c *gin.Context)
-
 }
 
 type UserController interface {
 	Register(c *gin.Context)
+	VerifyEmail(cxt *gin.Context)
 	Login(c *gin.Context)
 	ForgotPassword(c *gin.Context)
+	ResetPassword(cxt *gin.Context)
 	Logout(c *gin.Context)
 	PromoteUser(c *gin.Context)
 	DemoteUser(c *gin.Context)

@@ -46,6 +46,7 @@ func SetupRouter(userController domain.UserController, blogController domain.Blo
 		userRoutes.POST("/promote", userController.PromoteUser)
 		userRoutes.POST("/demote", userController.DemoteUser)
 		userRoutes.POST("/update/:id", userController.UpdateProfile).Use(authMiddleware.Authenticate())
+		userRoutes.POST("/upload_profile_picture", userController.ImageUpload)
 	}
 
 	// blog assistant related routes

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"mime/multipart"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,7 @@ type UserUseCase interface {
 	PromoteUser(context context.Context, userID string) Error
 	DemoteUser(context context.Context, userID string) Error
 	UpdateProfile(context context.Context, userID string, user *User) Error
+	ImageUpload(cxt *gin.Context, file *multipart.File, header *multipart.FileHeader) Error
 }
 
 type BlogUseCase interface {

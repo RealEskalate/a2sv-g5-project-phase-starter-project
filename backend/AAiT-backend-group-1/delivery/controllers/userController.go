@@ -197,3 +197,19 @@ func (userController *UserController) UpdateProfile(cxt *gin.Context) {
 	cxt.JSON(http.StatusOK, gin.H{"Message": "User profile updated successfully"})
 
 }
+
+func (userController *UserController) ImageUpload(cxt *gin.Context) {
+	file, header, errFile := cxt.Request.FormFile("profile_picture")
+	if errFile != nil {
+		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errFile.Error()})
+		return
+	}
+	defer file.Close()
+
+	errUpload := userController.UserUseCase.ImageUpload(cxt, &file, header)
+	if errUpload != nil {
+		cxt.JSON(errUpload.StatusCode(), gin.H{"Error": errUpload.Error()})
+		return
+	}
+	cxt.JSON(http.StatusOK, gin.H{"Message": "Image uploaded successfully"})
+}

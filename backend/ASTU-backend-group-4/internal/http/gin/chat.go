@@ -38,8 +38,36 @@ func (chatHandler *ChatHandler) CreateChatHandler(c *gin.Context){
 	if errors.As(err, &validationError){
 		errs := infrastructure.ReturnErrorResponse(err)
 		c.JSON(http.StatusBadRequest, errs)
+		return
+	}
+
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"internal server error"})
+		return
 	}
 
 	c.JSON(http.StatusCreated, newChat)
 	
+}
+
+
+func (chatHandler *ChatHandler) GetChatHandler(c *gin.Context){
+	form := chat.DefaultChatForm{
+		ChatID: c.Param("id"),
+		UserID: c.Value("user_id").(string),
+	}
+
+	retrievedChat, err := chatHandler.chatUsecase.GetChat(context.TODO(), form)
+	var validationError validator.ValidationErrors
+	if errors.As(err, &validationError){
+		errs := infrastructure.ReturnErrorResponse(err)
+		c.JSON(http.StatusBadRequest, errs)
+	}
+
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, retrievedChat)
 }

@@ -70,10 +70,7 @@ const CreditCardsPage = () => {
         >
           <AddNewCard />
         </Card>
-        <Card
-          title="Card Setting"
-          className="flex flex-col w-[350px]  h-auto"
-        >
+        <Card title="Card Setting" className="flex flex-col w-[350px]  h-auto">
           <CardSetting />
         </Card>
       </div>

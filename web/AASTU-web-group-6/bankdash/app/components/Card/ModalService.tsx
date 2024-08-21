@@ -1,71 +1,36 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import DescriptionCard from "@/app/components/Card/DescriptionCard";
+import ServicesCard from "@/app/components/Card/ServicesCard";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import React from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useSession } from "next-auth/react";
 
-interface FormValues {
+interface BankService {
+  id: string;
   name: string;
   details: string;
   numberOfUsers: number;
   status: string;
   type: string;
   icon: string;
+  colors: string;
 }
 
-interface props {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const StatusOptions = ["Dormant", "Active"];
-const typeOptions = ["Transfer", "Credited", "Deposit"];
-const iconOptions = [
-  {
-    label: "Money",
-    value:
-      "https://firebasestorage.googleapis.com/v0/b/a2sv-bankdash.appspot.com/o/services1.svg?alt=media&token=2810c596-369f-4b81-a59b-cef25dcad766",
-  },
-  {
-    label: "Suitcase",
-    value:
-      "https://firebasestorage.googleapis.com/v0/b/a2sv-bankdash.appspot.com/o/services2.svg?alt=media&token=cc928266-c815-43d7-a863-589979748d14",
-  },
-  {
-    label: "Levels",
-    value:
-      "https://firebasestorage.googleapis.com/v0/b/a2sv-bankdash.appspot.com/o/services3.svg?alt=media&token=0a1a971e-9c38-4715-8b0f-8888aa394a43",
-  },
-  {
-    label: "User",
-    value:
-      "https://firebasestorage.googleapis.com/v0/b/a2sv-bankdash.appspot.com/o/services4.svg?alt=media&token=b5171ef3-e0d0-4a30-a0b6-ba7d5fd591e0",
-  },
-  {
-    label: "Safety",
-    value:
-      "https://firebasestorage.googleapis.com/v0/b/a2sv-bankdash.appspot.com/o/services5.svg?alt=media&token=2bb3b832-f172-4ac1-acc5-ca5fe69eebf8",
-  },
-];
-
-const ModalService = ({ isOpen, onClose }: props) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormValues>({
-    defaultValues: {
-      status: "Dormant",
-      type: "Transfer",
-      icon: iconOptions[0].value,
-    },
-  });
-
-  const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiZXRzZWxvdCIsImlhdCI6MTcyNDIwNzUzMCwiZXhwIjoxNzI0MjkzOTMwfQ.3BqG6j5y2ts1WXajtWBI7C2eEx3UNFV-fPjMokVJ-cN-z48sy40yhMBuvZOoJblr";
-
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    const formData = JSON.stringify({ ...data, type: "transfer" });
+const Services = () => {
+  const { data: session } = useSession();
+  const colors = [
+    "bg-orange-100",
+    "bg-pink-100",
+    "bg-blue-100",
+    "bg-green-100",
+    "bg-pink-100",
+  ];
+  const [services, setServices] = useState<BankService[]>([]);
+  const [pageNumber, setPageNumber] = useState(1);
+  const accessToken = session?.accessToken as string;
+  async function fetchData(accessToken: string) {
     try {
       const response = await axios.post(
         "https://bank-dashboard-1tst.onrender.com/bank-services",
@@ -73,17 +38,19 @@ const ModalService = ({ isOpen, onClose }: props) => {
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
           },
         }
       );
-      console.log("Addition successful", response.data.data.content);
-      onClose();
+      setServices(response.data.data.content);
+      console.log(services);
     } catch (error) {
-      console.error("Error occurred:", error);
-      alert("There was an issue adding your request. Please try again.");
+      console.error("There was a problem with the axios request:", error);
     }
-  };
+  }
+
+  useEffect(() => {
+    fetchData(accessToken);
+  }, []);
 
   return (
     <form
@@ -159,6 +126,7 @@ const ModalService = ({ isOpen, onClose }: props) => {
             </span>
           )}
         </div>
+        {/* </div> */}
 
         <div>
           <label
@@ -239,23 +207,4 @@ const ModalService = ({ isOpen, onClose }: props) => {
   );
 };
 
-function CloseIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="1.5"
-      stroke="currentColor"
-      className="size-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M6 18 18 6M6 6l12 12"
-      />
-    </svg>
-  );
-}
-
-export default ModalService;
+export default Services;

@@ -1,51 +1,92 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import { TransactionType } from "@/types/TransactionValue";
-import { useAppSelector } from "@/app/Redux/store/store";
 import Download from "./Download";
+import Pagination from "./Pagination";
+import {
+  getExpense,
+  getIncome,
+  getTransaction,
+} from "@/app/Services/api/fetchTransaction";
 
 const Recent = () => {
+  const [expenseData, setExpenseData] = useState<TransactionType[]>([]);
+  const [incomeData, setIncomeData] = useState<TransactionType[]>([]);
+  const [allData, setAllData] = useState<TransactionType[]>([]);
   const [selectedTab, setSelectedTab] = useState<"All" | "Income" | "Expense">(
     "All"
   );
-  const TranData: TransactionType[] = useAppSelector(
-    (state) => state.transactions.transactions
-  );
-  const expenseData: TransactionType[] = useAppSelector(
-    (state) => state.transactions.expense
-  );
-  const incomeData: TransactionType[] = useAppSelector(
-    (state) => state.transactions.income
-  );
+  const [currentPage, setCurrentPage] = useState(0);
+  const [reset, setReset] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setReset(!reset);
+  }, [selectedTab]);
+
+  useEffect(() => {
+    setLoading(true);
+    if (selectedTab === "Expense") {
+      fetchExpense();
+    } else if (selectedTab === "Income") {
+      fetchIncome();
+    } else if (selectedTab === "All") {
+      fetchAllTransactions();
+    }
+  }, [selectedTab, currentPage]);
+
+  const fetchExpense = async () => {
+    const res = await getExpense(currentPage);
+    setExpenseData(res);
+    setLoading(false);
+  };
+
+  const fetchIncome = async () => {
+    const res = await getIncome(currentPage);
+    setIncomeData(res);
+    setLoading(false);
+  };
+
+  const fetchAllTransactions = async () => {
+    const res = await getTransaction(currentPage);
+    setAllData(res);
+    setLoading(false);
+  };
+
+  const updatePage = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
   const dataToDisplay =
     selectedTab === "Income"
       ? incomeData
       : selectedTab === "Expense"
       ? expenseData
-      : TranData;
+      : allData;
 
   return (
     <div className="space-y-7 my-6">
       <h3 className="font-semibold text-[22px] text-[#343C6A] dark:text-gray-300">
         Recent Transactions
       </h3>
+      {/* Tab Selection */}
       <div className="flex gap-4 sm:gap-16 px-1 border-b text-[14px] sm:text-[16px] text-[#718EBF] font-semibold overflow-x-auto">
+        {/* Tab Buttons */}
         <button
           className={`dark:text-gray-300 ${
             selectedTab === "All"
               ? "border-[#1814F3] border-b-[3px] pb-2 text-[#1814F3] whitespace-nowrap"
-              : "text-red-100"
+              : "text-[#232323]"
           }`}
           onClick={() => setSelectedTab("All")}
         >
-          All Transaction
+          All Transactions
         </button>
         <button
           className={`dark:text-gray-300 ${
             selectedTab === "Income"
               ? "border-[#1814F3] border-b-[3px] pb-2 text-[#1814F3] whitespace-nowrap"
-              : "text-red-100"
+              : "text-[#232323]"
           }`}
           onClick={() => setSelectedTab("Income")}
         >
@@ -55,14 +96,15 @@ const Recent = () => {
           className={`dark:text-gray-300 ${
             selectedTab === "Expense"
               ? "border-[#1814F3] border-b-[3px] pb-2 text-[#1814F3] whitespace-nowrap"
-              : "text-red-100"
+              : "text-[#232323]"
           }`}
           onClick={() => setSelectedTab("Expense")}
         >
           Expense
         </button>
       </div>
-      {/* Add a wrapper with overflow-x-auto to enable horizontal scrolling */}
+
+      {/* Transaction Table */}
       <div className="w-full bg-white dark:bg-[#232328] rounded-[25px] px-8 py-6 overflow-x-auto custom-scrollbar">
         <table className="border-separate border-spacing-y-4 font-[16px] w-full min-w-[1000px] transaction-table sm:min-w-full">
           <thead>
@@ -77,57 +119,83 @@ const Recent = () => {
             </tr>
           </thead>
           <tbody className="text-[#232323] dark:text-gray-300 p-8 space-y-4">
-            {dataToDisplay.map(
-              (transaction: TransactionType, index: number) => (
-                <tr key={index}>
-                  <td className="flex gap-2 items-center">
-                    <ArrowUpCircleIcon className="transaction-icon" />
-                    {transaction.description}
-                  </td>
-                  <td className="hidden md:table-cell">
-                    {transaction.transactionId}
-                  </td>{" "}
-                  {/* Hidden on mobile, visible on tablets and larger */}
-                  <td className="hidden md:table-cell">
-                    {transaction.type}
-                  </td>{" "}
-                  {/* Hidden on mobile, visible on tablets and larger */}
-                  <td className="hidden lg:table-cell">
-                    {transaction.type}
-                  </td>{" "}
-                  {/* Hidden on mobile, visible on tablets and larger */}
-                  <td className="hidden lg:table-cell">
-                    {transaction.date}
-                  </td>{" "}
-                  {/* Hidden on mobile, visible on tablets and larger */}
-                  <td>
-                    <p
-                      className={
-                        selectedTab === "Expense" ||
-                        transaction.type !== "deposit"
-                          ? "text-[#FE5C73]"
-                          : "text-[#28A745] dark:text-green-400"
-                      }
-                    >
-                      {selectedTab === "Expense" ||
-                      transaction.type !== "deposit"
-                        ? "-"
-                        : "+"}
-                      ${Math.abs(transaction.amount)}
-                    </p>
-                  </td>
-                  <td className="hidden md:table-cell md:text-white">
-                    <Download
-                      transactionId={transaction.transactionId}
-                      transaction={transaction}
-                    />
-                  </td>
-                </tr>
-              )
-            )}
+            {loading
+              ? Array.from({ length: 5 }).map((_, index) => (
+                  <tr key={index} className="animate-pulse">
+                    <td className="flex gap-2 items-center">
+                      <div className="w-4 h-4 bg-gray-300 rounded-sm dark:bg-gray-600" />
+                      <div className="h-4 bg-gray-300 rounded dark:bg-gray-600 w-3/4" />
+                    </td>
+                    <td className="hidden md:table-cell">
+                      <div className="h-4 bg-gray-300 rounded dark:bg-gray-600 w-3/4" />
+                    </td>
+                    <td className="hidden md:table-cell">
+                      <div className="h-4 bg-gray-300 rounded dark:bg-gray-600 w-3/4" />
+                    </td>
+                    <td className="hidden lg:table-cell">
+                      <div className="h-4 bg-gray-300 rounded dark:bg-gray-600 w-3/4" />
+                    </td>
+                    <td className="hidden lg:table-cell">
+                      <div className="h-4 bg-gray-300 rounded dark:bg-gray-600 w-3/4" />
+                    </td>
+                    <td>
+                      <div className="h-4 bg-gray-300 rounded dark:bg-gray-600 w-3/4" />
+                    </td>
+                    <td className="hidden md:table-cell">
+                      <div className="h-4 bg-gray-300 rounded dark:bg-gray-600 w-3/4" />
+                    </td>
+                  </tr>
+                ))
+              : dataToDisplay.map(
+                  (transaction: TransactionType, index: number) => (
+                    <tr key={index}>
+                      <td className="flex gap-2 items-center">
+                        <ArrowUpCircleIcon className="transaction-icon" />
+                        {transaction.description}
+                      </td>
+                      <td className="hidden md:table-cell">
+                        {transaction.transactionId}
+                      </td>
+                      <td className="hidden md:table-cell">
+                        {transaction.type}
+                      </td>
+                      <td className="hidden lg:table-cell">
+                        {transaction.type}
+                      </td>
+                      <td className="hidden lg:table-cell">
+                        {transaction.date}
+                      </td>
+                      <td>
+                        <p
+                          className={
+                            selectedTab === "Expense" ||
+                            transaction.type !== "deposit"
+                              ? "text-[#FE5C73]"
+                              : "text-[#28A745] dark:text-green-400"
+                          }
+                        >
+                          {selectedTab === "Expense" ||
+                          transaction.type !== "deposit"
+                            ? "-"
+                            : "+"}
+                          ${Math.abs(transaction.amount)}
+                        </p>
+                      </td>
+                      <td className="hidden md:table-cell md:text-white">
+                        <Download
+                          transactionId={transaction.transactionId}
+                          transaction={transaction}
+                        />
+                      </td>
+                    </tr>
+                  )
+                )}
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      <Pagination updatePage={updatePage} start={reset} />
     </div>
   );
 };

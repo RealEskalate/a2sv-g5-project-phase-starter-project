@@ -79,7 +79,7 @@ const handleRequest = async <T>(
 class AuthService {
   public static register(formData: UserValue): Promise<RegisterResponse> {
 
-    
+
     return handleRequest<RegisterResponse>(
       "POST",
       `${API_URL}/register`,

@@ -154,3 +154,6 @@ func initBlogController(blogRepo *blogrepo.Repo, cacheService *cache.ICache) *bl
 		GetMultipleHandler: getMultipleHandler,
 	})
 }
+
+
+

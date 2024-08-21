@@ -51,7 +51,7 @@ func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, authorID string, blog 
 
 // CreateComment implements BlogUseCase.
 func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, userID, blogID string, comment CreateCommentRequest) error {
-	user, err := b.authRepository.GetUserByUsername(ctx, userID) // TODO: Change to GetUserByID
+	user, err := b.authRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return err
 	}

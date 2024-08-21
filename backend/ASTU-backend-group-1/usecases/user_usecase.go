@@ -5,6 +5,7 @@ import (
 	"astu-backend-g1/domain"
 	"crypto/rand"
 	"errors"
+	"fmt"
 	"math/big"
 	"time"
 )
@@ -36,7 +37,7 @@ func (useCase *userUsecase) LoginUser(uname string, password string) (string, er
 		return "", err
 	}
 	user.RefreshToken = refreshToken
-	useCase.userRepository.Update(user.ID, user)
+	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken})
 
 	return accesstoken, nil
 }
@@ -75,11 +76,9 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 	// adding the token to the user
 	user.VerifyToken = string(confirmationToken)
 
-	// Add 20 minutes to the current time
-	expirationTime := time.Now().Add(20 * time.Minute)
-	user.ExpirationDate = expirationTime
-	useCase.userRepository.Update(user.ID, user)
-	link := "http://localhost:8000/resetpassword/?email=" + user.Email + "&token=" + string(confirmationToken) + "/"
+	expirationTime := time.Now().Add(2 * time.Hour)
+	useCase.userRepository.Update(user.ID, domain.User{VerifyToken: string(confirmationToken), ExpirationDate: expirationTime})
+	link := "http://localhost:8000/users/resetPassword/?email=" + user.Email + "&token=" + string(confirmationToken)
 	err = infrastructure.SendEmail(user.Email, "Password Reset", "This is the password reset link: ", link)
 	if err != nil {
 		return "", err
@@ -95,20 +94,21 @@ func (useCase *userUsecase) ResetPassword(email string, token string, password s
 	if err != nil {
 		return "", err
 	}
-	if user.IsActive == false {
+	if !user.IsActive {
 		return "", errors.New("Account not activated")
 	}
-	currentTime := time.Now()
 	if user.VerifyToken == token {
-		// Check if token has expired
-		if currentTime.After(user.ExpirationDate) {
-			return "Token has expired", nil
+		if user.ExpirationDate.Before(time.Now()) {
+			return "Token has expired", fmt.Errorf("Token expired")
 		}
 		user.Password, _ = infrastructure.PasswordHasher(password)
-		useCase.userRepository.Update(user.ID, user)
+		_, err := useCase.userRepository.Update(user.ID, domain.User{Password: user.Password})
+		if err != nil {
+			return "password has not been updated", err
+		}
 		return "Password reset successful", nil
 	}
-	return "Invalid token", nil
+	return "Invalid token", fmt.Errorf("Invalid token")
 }
 
 func (useCase *userUsecase) GetByID(userID string) (domain.User, error) {
@@ -127,16 +127,20 @@ func (useCase *userUsecase) GetByUsername(username string) (domain.User, error) 
 
 // function for account verification
 
-func (useCase *userUsecase) AccountVerification(uemail string, confirmationToken string) error {
+func (useCase *userUsecase) AccountVerification(uemail string, confirmationToken string) (string, error) {
 	filter := domain.UserFilter{Email: uemail}
 	opts := domain.UserFilterOption{Filter: filter}
-	users, err := useCase.userRepository.
+	users, err := useCase.userRepository.Get(opts)
 	if users[0].VerifyToken == confirmationToken {
-
+		accesstoken, refreshToken, err := infrastructure.GenerateToken(&users[0], users[0].Password)
+		if err != nil {
+			return "", err
+		}
 		users[0].IsActive = true
+		users[0].RefreshToken = refreshToken
 		useCase.userRepository.Update(users[0].ID, users[0])
 
-		return nil
+		return accesstoken, nil
 
 	}
 	return err
@@ -152,7 +156,6 @@ func (useCase *userUsecase) GetByEmail(email string) (domain.User, error) {
 func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	u.Password, _ = infrastructure.PasswordHasher(u.Password)
 	u.IsActive = false
-
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	confirmationToken := make([]byte, 64)
 	charsetLength := big.NewInt(int64(len(charset)))
@@ -163,8 +166,10 @@ func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	}
 	u.VerifyToken = string(confirmationToken)
 	nUser, err := useCase.userRepository.Create(u)
-	link := "http://localhost:8000/accountVerification/?email=" + u.Email + "&token=" + string(confirmationToken) + "/"
-	err = infrastructure.SendEmail(u.Email, "Registration Confirmation", "This sign up Confirmation email to verify: ", link)
+	if !nUser.IsAdmin {
+		link := "`http://localhost:8000/`users/accountVerification/?email=" + u.Email + "&token=" + string(confirmationToken)
+		err = infrastructure.SendEmail(u.Email, "Registration Confirmation", "This sign up Confirmation email to verify: ", link)
+	}
 	if err != nil {
 		return nUser, err
 	}

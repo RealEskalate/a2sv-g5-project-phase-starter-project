@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"AAiT-backend-group-2/Infrastructure/dtos"
 	"context"
 	"time"
 
@@ -16,6 +17,8 @@ type User struct {
 	CreatedAt time.Time 			`bson:"created_at" json:"created_at"`
 	UpdateAt  time.Time     		`bson:"update_at" json:"update_at"`
 	Profile   UserProfile 			`bson:"profile" json:"profile"`
+	RefreshToken string 			`bson:"refresh_token" json:"refresh_token"`
+
 }
 
 type UserProfile struct {
@@ -24,26 +27,35 @@ type UserProfile struct {
 	ContactInfo string 		`bson:"contact_info" json:"contact_info"`
 }
 
+type UpdateData map[string]interface{}
+
 type UserUsecase interface {
 	GetAllUsers(c context.Context) ([]User, error)
 	GetUserByID(c context.Context, id string) (*User, error)
 	CreateUser(c context.Context, user User) error
 	UpdateUser(c context.Context, id string, user *User) error
 	DeleteUser(c context.Context, id string) error
-	Login(c context.Context, user *User) (map[string]string, error)
+	Login(c context.Context, loginDto *dtos.LoginDTO) (map[string]string, error)
 	PromoteUser(c context.Context, id string) error
 	DemoteAdmin(c context.Context, id string) error
-	RefreshToken(c context.Context, token string) (map[string]string, error)
+	RefreshToken(c context.Context, token string) (string, error)
+	Logout(c context.Context, id string) error
+	ForgotPassword(c context.Context, userId, email string) error
+	ResetPassword(c context.Context, userId string, passwordResetDto *dtos.PasswordResetDto) error
+	ChangePassword(c context.Context, userId string, changePasswordDto *dtos.ChangePasswordDto) error
 }
 
 type UserRepository interface {
 	FindAll(c context.Context) ([]User, error)
 	FindByID(c context.Context, id string) (*User, error)
+	FindByEmailOrUsername(c context.Context, emailOrUsername string) (*User, error)
+	CountDocuments(c context.Context) (int64, error)
 	Save(c context.Context, user User) error
-	Update(c context.Context, id string, user *User) error
+	Update(c context.Context, id string, updateData UpdateData) error
 	Delete(c context.Context, id string) error
-	Login(c context.Context, user *User) (map[string]string, error)
-	PromoteUser(c context.Context, id string) error
-	DemoteAdmin(c context.Context, id string) error
-	RefreshToken(c context.Context, token string) (map[string]string, error)
+	PromoteUser(c context.Context, id string, updateData UpdateData) error
+	DemoteAdmin(c context.Context, id string, updateData UpdateData) error
+	ForgotPassword(c context.Context, email ,token string) (string, error)
+	ValidateResetToken(c context.Context, userID, token string) error
+	InvalidateResetToken(c context.Context, userID string) error
 }

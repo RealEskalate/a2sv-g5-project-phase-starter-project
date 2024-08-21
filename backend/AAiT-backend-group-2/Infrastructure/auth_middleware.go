@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"AAiT-backend-group-2/Infrastructure/services"
 	"net/http"
 	"strings"
 
@@ -25,19 +26,18 @@ func AuthMiddleWare(jwtSecret string) gin.HandlerFunc {
 			return
 		}
 
-		jwtService := NewJWTService([]byte(jwtSecret))
+		jwtService := services.NewJWTService([]byte(jwtSecret))
 
 		jwtToken := authParts[1]
-		_, err := jwtService.ValidateToken(jwtToken)
+		claims, err := jwtService.ValidateToken(jwtToken, "access_token")
 		if err != nil {
 			c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			c.Abort()
 			return
 		}
 
-		// c.Set("userID", claims["userID"])
-		// c.Set("role", claims["role"])
-
+		c.Set("userID", claims["userID"])
+		c.Set("role", claims["role"])
 
 		c.Next()
 	}

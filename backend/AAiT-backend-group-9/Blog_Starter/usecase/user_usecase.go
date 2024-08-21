@@ -165,7 +165,8 @@ func (u *UserUsecase) DemoteUser(c context.Context, userID string) error {
 
 }
 
-// UpdateUser implements domain.UserUsecase.
+// UpdateUser implements domain.UserUsecase. bbbb
+
 func (u *UserUsecase) UpdateUser(c context.Context, user *domain.UserUpdate, userID string) (*domain.UserResponse, error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()

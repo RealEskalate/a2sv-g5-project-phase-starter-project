@@ -36,3 +36,13 @@ func (r *CacheRepository) IsCached(key string) bool {
 
 	return status.Val() == 1
 }
+
+/* Retrieves the cached data for a given key */
+func (r *CacheRepository) GetCacheData(key string) (string, domain.CodedError) {
+	status := r.cacheClient.Get(key)
+	if status.Err() != nil {
+		return "", domain.NewError(status.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return status.Val(), nil
+}

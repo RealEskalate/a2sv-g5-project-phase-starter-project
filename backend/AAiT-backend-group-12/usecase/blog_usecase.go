@@ -4,22 +4,30 @@ import (
 	"blog_api/domain"
 	ai_service "blog_api/infrastructure/ai"
 	"context"
+	"encoding/json"
+	"fmt"
+	"sort"
+	"strings"
 	"time"
 )
 
 type BlogUseCase struct {
-	blogRepo       domain.BlogRepositoryInterface
-	contextTimeOut time.Duration
-	aiService      *ai_service.AIService
+	blogRepo        domain.BlogRepositoryInterface
+	contextTimeOut  time.Duration
+	aiService       *ai_service.AIService
+	cacheRepository domain.CacheRepositoryInterface
+	ENV             domain.EnvironmentVariables
 }
 
 var _ domain.BlogUseCaseInterface = &BlogUseCase{}
 
-func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration, aiService *ai_service.AIService) *BlogUseCase {
+func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration, aiService *ai_service.AIService, cacheRepository domain.CacheRepositoryInterface, ENV domain.EnvironmentVariables) *BlogUseCase {
 	return &BlogUseCase{
-		blogRepo:       repo,
-		contextTimeOut: t,
-		aiService:      aiService,
+		blogRepo:        repo,
+		contextTimeOut:  t,
+		aiService:       aiService,
+		cacheRepository: cacheRepository,
+		ENV:             ENV,
 	}
 }
 
@@ -55,7 +63,7 @@ func (b *BlogUseCase) CreateBlogPost(ctx context.Context, newBlog *domain.NewBlo
 func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string, deletedBy string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
-	blog, err := b.blogRepo.FetchBlogPostByID(ctx, blogId,false)
+	blog, err := b.blogRepo.FetchBlogPostByID(ctx, blogId, false)
 	if err != nil {
 		return err
 	}
@@ -94,6 +102,44 @@ func (b *BlogUseCase) GetBlogPosts(ctx context.Context, filters domain.BlogFilte
 	context, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
+	// Sort the tags to ensure consistent order
+	sortedTags := make([]string, len(filters.Tags))
+	copy(sortedTags, filters.Tags)
+	sort.Strings(sortedTags)
+
+	// Join the sorted tags
+	tagsKey := strings.Join(sortedTags, ",")
+
+	cacheKey := fmt.Sprintf(
+		"blogs_%s_%s_%s_%s_%s_%s_%d_%d_%s_%d_%d_%d_%d",
+		filters.Title,
+		filters.Author,
+		tagsKey,
+		filters.DateFrom.Format("2006-01-02"), // Format the time to a string
+		filters.DateTo.Format("2006-01-02"),
+		filters.SortBy,
+		filters.Page,
+		filters.PostsPerPage,
+		filters.SortDirection,
+		filters.MinLikes,
+		filters.MinDislikes,
+		filters.MinComments,
+		filters.MinViewCount,
+	)
+
+	// Check if the data is cached
+	if b.cacheRepository.IsCached(cacheKey) {
+		// Get the cached data
+		cachedData, err := b.cacheRepository.GetCacheData(cacheKey)
+		if err == nil {
+			// Unmarshal the cached data to the required format and return
+			var cachedBlogs []domain.Blog
+			err := json.Unmarshal([]byte(cachedData), &cachedBlogs)
+			if err == nil {
+				return cachedBlogs, len(cachedBlogs), nil
+			}
+		}
+	}
 	// Set default pagination if not provided
 	if filters.Page <= 0 {
 		filters.Page = 1
@@ -108,7 +154,17 @@ func (b *BlogUseCase) GetBlogPosts(ctx context.Context, filters domain.BlogFilte
 		filters.SortDirection = "desc"
 	}
 
-	return b.blogRepo.FetchBlogPosts(context, filters)
+	// Fetch data from the database
+	blogs, total, err := b.blogRepo.FetchBlogPosts(context, filters)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Cache the data
+	cachedBlogs, _ := json.Marshal(blogs)
+	_ = b.cacheRepository.CacheData(cacheKey, string(cachedBlogs), time.Minute*time.Duration(b.ENV.CACHE_EXPIRATION))
+
+	return blogs, total, nil
 }
 
 // FetchBlogPostByID retrieves a single blog post by its ID and increments its view count.
@@ -116,14 +172,41 @@ func (b *BlogUseCase) GetBlogPostByID(ctx context.Context, blogID string) (*doma
 	context, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
-	return b.blogRepo.FetchBlogPostByID(context, blogID, true)
+	// Generate a unique cache key for the blog post ID
+	cacheKey := "blog:" + blogID
+
+	// Check if the data is cached
+	if b.cacheRepository.IsCached(cacheKey) {
+		// Get the cached data
+		cachedData, err := b.cacheRepository.GetCacheData(cacheKey)
+		if err == nil {
+			// Unmarshal the cached data to the required format and return
+			var cachedBlog domain.Blog
+			err := json.Unmarshal([]byte(cachedData), &cachedBlog)
+			if err == nil {
+				return &cachedBlog, nil
+			}
+		}
+	}
+
+	// Fetch data from the database
+	blog, err := b.blogRepo.FetchBlogPostByID(context, blogID, true)
+	if err != nil {
+		return nil, err
+	}
+
+	// Cache the data
+	cachedBlog, _ := json.Marshal(blog)
+	_ = b.cacheRepository.CacheData(cacheKey, string(cachedBlog), time.Minute*time.Duration(b.ENV.CACHE_EXPIRATION))
+
+	return blog, nil
 }
 
 func (b *BlogUseCase) TrackBlogPopularity(ctx context.Context, blogId string, action string, state bool, username string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
-	return b.blogRepo.TrackBlogPopularity(ctx, blogId, action,state, username)
+	return b.blogRepo.TrackBlogPopularity(ctx, blogId, action, state, username)
 }
 
 func (uc *BlogUseCase) GenerateBlogContent(topics []string) (string, error) {
@@ -178,7 +261,6 @@ func (b *BlogUseCase) DeleteComment(ctx context.Context, blogID string, commentI
 	return nil
 
 }
-
 
 // UpdateComment implements domain.BlogUseCaseInterface.
 func (b *BlogUseCase) UpdateComment(ctx context.Context, blogID string, commentID string, comment *domain.NewComment, userName string) domain.CodedError {

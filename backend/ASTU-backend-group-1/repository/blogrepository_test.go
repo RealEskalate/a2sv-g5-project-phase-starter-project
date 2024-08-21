@@ -2,19 +2,16 @@ package repository
 
 // import (
 // 	"astu-backend-g1/domain"
-	// "testing"
-	// "time"
+// "testing"
+// "time"
 
-	// "github.com/stretchr/testify/assert"
-	// "github.com/stretchr/testify/mock"
-	// "github.com/stretchr/testify/suite"
-	// mongomocks "github.com/sv-tools/mongoifc/mocks/mockery"
-	// "go.mongodb.org/mongo-driver/bson/primitive"
-	// "go.mongodb.org/mongo-driver/mongo"
+// "github.com/stretchr/testify/assert"
+// "github.com/stretchr/testify/mock"
+// "github.com/stretchr/testify/suite"
+// mongomocks "github.com/sv-tools/mongoifc/mocks/mockery"
+// "go.mongodb.org/mongo-driver/bson/primitive"
+// "go.mongodb.org/mongo-driver/mongo"
 // )
-
-
-
 
 // var mockBlogs = []domain.Blog{
 // 	{Id: "1", Title: "title 1", Content: "content 1", AuthorID: "author 1", Date: time.Now(), Tags: []string{"tag1"}},
@@ -28,8 +25,6 @@ package repository
 // 	{Id: "9", Title: "title 9", Content: "content 9", AuthorID: "author 9", Date: time.Now(), Tags: []string{"tag9"}},
 // 	{Id: "10", Title: "title 10", Content: "content 10", AuthorID: "author 10", Date: time.Now(), Tags: []string{"tag10"}},
 // }
-
-
 
 // type BlogRespositoryTestSuite struct {
 // 	suite.Suite

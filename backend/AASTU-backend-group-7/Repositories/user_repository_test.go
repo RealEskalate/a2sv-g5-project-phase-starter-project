@@ -3,6 +3,7 @@ package Repositories_test
 import (
 	"blogapp/Domain"
 	"blogapp/mocks"
+	"log"
 	"net/http"
 
 	"context"
@@ -44,106 +45,121 @@ func (suite *UserRepositoryTestSuite) TearDownTest() {
 	// suite.refreshcollection.Drop(context.Background())
 }
 func (suite *UserRepositoryTestSuite) TestCreateUser() {
-	ctx := context.Background()
-	user := Domain.User{Email: "test@example.com", Password: "testpassword"}
-	// expectedUser := Domain.OmitedUser{ID: primitive.NewObjectID(), Email: "test@example.com"}
-	// expecte_dErr := errors.New("Email is already taken")
-	expectedStatus := http.StatusBadRequest
+	suite.Run("TestCreateUser", func() {
+		ctx := context.Background()
+		user := Domain.User{Email: "test@example.com", Password: "testpassword"}
+		// expectedUser := Domain.OmitedUser{ID: primitive.NewObjectID(), Email: "test@example.com"}
+		// expecte_dErr := errors.New("Email is already taken")
+		expectedStatus := http.StatusBadRequest
 
-	// Mock the CountDocuments method
-	var count int64 = 1
-	suite.usercollection.On("CountDocuments", ctx, bson.D{{"email", user.Email}}).Return(count, nil)
+		// Mock the CountDocuments method
+		var count int64 = 1
+		suite.usercollection.On("CountDocuments", ctx, bson.D{{"email", user.Email}}).Return(count, nil)
 
-	result, err, status := suite.repo.CreateUser(ctx, &user)
+		result, err, status := suite.repo.CreateUser(ctx, &user)
 
-	suite.Error(err)
-	suite.Equal(expectedStatus, status)
-	suite.Equal(Domain.OmitedUser{}, result)
-}
-
-// func (suite *UserRepositoryTestSuite) TestCreateUser_NewUser() {
-// 	ctx := context.Background()
-// 	user := Domain.User{Email: "test@example.com", Password: "testpassword"}
-// 	expectedUser := Domain.OmitedUser{ID: primitive.NewObjectID(), Email: "test@example.com"}
-// 	expectedErr := nil
-// 	expectedStatus := http.StatusOK
-
-// 	// Mock the CountDocuments method
-// 	mockCollection := new(mocks.Collection)
-// 	suite.usercollection = mockCollection
-// 	mockCollection.On("CountDocuments", ctx, bson.D{{"email", user.Email}}).Return(0, nil)
-
-// 	result, err, status := suite.repo.CreateUser(ctx, &user)
-
-// 	suite.NoError(err)
-// 	suite.Equal(expectedStatus, status)
-// 	suite.Equal(expectedUser, result)
-// }
-
-func (suite *UserRepositoryTestSuite) TestGetUsersByIdFail() {
-	// loged user isnot and admin and the user to be fetched is not the loged in user
-	ctx := context.Background()
-	id := primitive.NewObjectID()
-	currentUser := Domain.AccessClaims{ID: primitive.NewObjectID(), Role: "user"}
-	expectedUser := Domain.OmitedUser{ID: id}
-
-	mockSingleResult := new(mocks.SingleResult)
-	mockSingleResult.On("Decode", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
-		userPtr := args.Get(0).(*Domain.OmitedUser)
-		*userPtr = expectedUser
+		suite.Error(err)
+		suite.Equal(expectedStatus, status)
+		suite.Equal(Domain.OmitedUser{}, result)
 	})
+	suite.Run("TestCreateUse_success", func() {
+		ctx := context.Background()
+		id := primitive.NewObjectID()
+		user := Domain.User{ID: id, Email: "test@example.com", Password: "testpassword"}
+		expectedUser := Domain.OmitedUser{ID: id, Email: "test@example.com"}
+		expectedStatus := http.StatusBadRequest
 
-	suite.usercollection.On("FindOne", ctx, bson.D{{"_id", id}}).Return(mockSingleResult)
+		// Mock the CountDocuments method
+		var count int64 = 0
+		suite.usercollection.On("CountDocuments", ctx, bson.D{{"email", user.Email}}).Return(count, nil)
 
-	result, err, status := suite.repo.GetUsersById(ctx, id, currentUser)
+		//
 
-	suite.Error(err)
-	suite.Equal(http.StatusForbidden, status)
-	suite.Equal(Domain.OmitedUser{}, result)
-}
+		mockSingleResult := new(mocks.SingleResult)
+		mockSingleResult.On("Decode", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+			userPtr := args.Get(0).(*Domain.OmitedUser)
+			*userPtr = expectedUser
+		})
 
-func (suite *UserRepositoryTestSuite) TestGetUsersByIdPass() {
-	// loged user is an admin
-	ctx := context.Background()
-	id := primitive.NewObjectID()
-	currentUser := Domain.AccessClaims{ID: primitive.NewObjectID(), Role: "admin"}
-	expectedUser := Domain.OmitedUser{ID: id}
+		suite.usercollection.On("FindOne", ctx, mock.Anything).Return(mockSingleResult)
+		// insertResult := mongo.InsertOneResult{}
+		suite.usercollection.On("InsertOne", ctx, user).Return(nil, nil)
 
-	mockSingleResult := new(mocks.SingleResult)
-	mockSingleResult.On("Decode", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
-		userPtr := args.Get(0).(*Domain.OmitedUser)
-		*userPtr = expectedUser
+		result, err, status := suite.repo.CreateUser(ctx, &user)
+		log.Print(result)
+		suite.Error(err)
+		suite.Equal(expectedStatus, status)
+		suite.Equal(expectedUser, result)
+
 	})
-
-	suite.usercollection.On("FindOne", ctx, bson.D{{"_id", id}}).Return(mockSingleResult)
-
-	result, err, status := suite.repo.GetUsersById(ctx, id, currentUser)
-
-	suite.NoError(err)
-	suite.Equal(http.StatusOK, status)
-	suite.Equal(expectedUser, result)
 }
 
 func (suite *UserRepositoryTestSuite) TestGetUsersById() {
-	// match loged in user with the user to be fetched
-	ctx := context.Background()
-	id := primitive.NewObjectID()
-	currentUser := Domain.AccessClaims{ID: id, Role: "user"}
-	expectedUser := Domain.OmitedUser{ID: id}
+	suite.Run("Get_User_Success", func() {
+		// match loged in user with the user to be fetched
+		ctx := context.Background()
+		id := primitive.NewObjectID()
+		currentUser := Domain.AccessClaims{ID: id, Role: "user"}
+		expectedUser := Domain.OmitedUser{ID: id}
 
-	mockSingleResult := new(mocks.SingleResult)
-	mockSingleResult.On("Decode", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
-		userPtr := args.Get(0).(*Domain.OmitedUser)
-		*userPtr = expectedUser
+		mockSingleResult := new(mocks.SingleResult)
+		mockSingleResult.On("Decode", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+			userPtr := args.Get(0).(*Domain.OmitedUser)
+			*userPtr = expectedUser
+		})
+
+		suite.usercollection.On("FindOne", ctx, bson.D{{"_id", id}}).Return(mockSingleResult)
+
+		result, err, status := suite.repo.GetUsersById(ctx, id, currentUser)
+
+		suite.Nil(err)
+		suite.Equal(http.StatusOK, status)
+		suite.Equal(expectedUser, result)
 	})
 
-	suite.usercollection.On("FindOne", ctx, bson.D{{"_id", id}}).Return(mockSingleResult)
+	suite.Run("Get_User_Fail", func() {
+		// loged user isnot and admin and the user to be fetched is not the loged in user
+		ctx := context.Background()
+		id := primitive.NewObjectID()
+		currentUser := Domain.AccessClaims{ID: primitive.NewObjectID(), Role: "user"}
+		expectedUser := Domain.OmitedUser{ID: id}
 
-	result, err, status := suite.repo.GetUsersById(ctx, id, currentUser)
+		mockSingleResult := new(mocks.SingleResult)
+		mockSingleResult.On("Decode", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+			userPtr := args.Get(0).(*Domain.OmitedUser)
+			*userPtr = expectedUser
+		})
 
-	suite.Nil(err)
-	suite.Equal(http.StatusOK, status)
-	suite.Equal(expectedUser, result)
+		suite.usercollection.On("FindOne", ctx, bson.D{{"_id", id}}).Return(mockSingleResult)
+
+		result, err, status := suite.repo.GetUsersById(ctx, id, currentUser)
+
+		suite.Error(err)
+		suite.Equal(http.StatusForbidden, status)
+		suite.Equal(Domain.OmitedUser{}, result)
+	})
+	suite.Run("Get_User_Success_admin", func() {
+		// loged user is an admin
+		ctx := context.Background()
+		id := primitive.NewObjectID()
+		currentUser := Domain.AccessClaims{ID: primitive.NewObjectID(), Role: "admin"}
+		expectedUser := Domain.OmitedUser{ID: id}
+
+		mockSingleResult := new(mocks.SingleResult)
+		mockSingleResult.On("Decode", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+			userPtr := args.Get(0).(*Domain.OmitedUser)
+			*userPtr = expectedUser
+		})
+
+		suite.usercollection.On("FindOne", ctx, bson.D{{"_id", id}}).Return(mockSingleResult)
+
+		result, err, status := suite.repo.GetUsersById(ctx, id, currentUser)
+
+		suite.NoError(err)
+		suite.Equal(http.StatusOK, status)
+		suite.Equal(expectedUser, result)
+	})
+
 }
 
 func TestUserRepository(t *testing.T) {

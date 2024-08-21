@@ -20,8 +20,9 @@ import { Loading } from "../_components/Loading";
 
 
 const Accounts = () => {
+  const { isDarkMode } = useUser();
   const [recentTransactions, setRecentTransactions] = useState<
-    TransactionContent[]
+  TransactionContent[]
   >([]);
   const [creditCards, setCreditCards] = useState<CardDetails[]>([]);
   const [balance, setBalanceHistory] = useState<BalanceData[]>([]);
@@ -51,7 +52,6 @@ const Accounts = () => {
     );
   }
 
-  const { isDarkMode } = useUser();
   return (
     <div
       className={`p-5 md:pr-20 ${

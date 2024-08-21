@@ -56,14 +56,19 @@ func (ur *userRepository) UpdateRefreshToken(c context.Context, userID string, r
 func (ur *userRepository) GetUserById(c context.Context, userId string) (*domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 	var user domain.User
+
 	id, err := primitive.ObjectIDFromHex(userId)
+
 	if err != nil {
 		return nil, err
 	}
+
 	err = collection.FindOne(c, bson.M{"_id": id}).Decode(&user)
+
 	if err != nil {
 		return nil, err
 	}
+
 	return &user, err
 
 }
@@ -128,6 +133,7 @@ func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUs
 
 	var ResultUser domain.User
 	err = collection.FindOneAndUpdate(c, filter, update, opts).Decode(&ResultUser)
+
 	if err != nil {
 		return nil, err
 	}
@@ -148,6 +154,7 @@ func (ur *userRepository) ActivateUser(c context.Context, userID string) (*domai
 
 	var ResultUser domain.User
 	err = collection.FindOneAndUpdate(c, filter, update, opts).Decode(&ResultUser)
+
 	if err != nil {
 		return nil, err
 	}

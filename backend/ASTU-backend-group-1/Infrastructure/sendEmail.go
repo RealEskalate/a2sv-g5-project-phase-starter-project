@@ -6,17 +6,15 @@ import (
 	"net/smtp"
 )
 
-func SendEmail(toEmail string, title string, body string, hashedpwd string) error {
+func SendEmail(toEmail string, title string, body string, link string) error {
 	config, err := config.LoadConfig()
-	log.Println(config)
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println(config.Email.EmailKey, config.Port)
 
 	//in route to handle email related confirmation is domain/confirmation/:email/:pwd
 	//also make
-	link := "http://localhost:8000/confirmation/email/" + toEmail + "/pwd/" + hashedpwd + "/"
+
 	message := `
 	<!DOCTYPE html>
 	<html>

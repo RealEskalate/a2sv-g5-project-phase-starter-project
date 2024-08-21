@@ -127,21 +127,14 @@ func (useCase *userUsecase) GetByUsername(username string) (domain.User, error) 
 
 // function for account verification
 
-func (useCase *userUsecase) AccountVerification(uemail string, confirmationToken string) (string, error) {
-	filter := domain.UserFilter{Email: uemail}
-	opts := domain.UserFilterOption{Filter: filter}
-	users, err := useCase.userRepository.Get(opts)
-	if users[0].VerifyToken == confirmationToken {
-		accesstoken, refreshToken, err := infrastructure.GenerateToken(&users[0], users[0].Password)
-		if err != nil {
-			return "", err
-		}
-		users[0].IsActive = true
-		users[0].RefreshToken = refreshToken
-		useCase.userRepository.Update(users[0].ID, users[0])
-
-		return accesstoken, nil
-
+func (useCase *userUsecase) AccountVerification(uemail string, confirmationToken string) error {
+	user, err := useCase.GetByEmail(uemail)
+	fmt.Println("usecase:", user.VerifyToken, confirmationToken)
+	if user.VerifyToken == confirmationToken {
+		_, err := useCase.userRepository.Update(user.ID, domain.User{IsActive: true})
+		return err
+	} else {
+		return errors.New("Invalid token")
 	}
 	return err
 }

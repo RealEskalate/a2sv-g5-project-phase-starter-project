@@ -2,7 +2,6 @@ package controllers
 
 import (
 	domain "blogs/Domain"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -104,7 +103,6 @@ func (b BlogController) CreateBlog(c *gin.Context) {
 	var blog domain.Blog
 	userID := c.GetString("user_id")
 	role := c.GetString("role")
-	fmt.Println(userID, role, "**********")
 	if userID == "" || role == "" {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
 			Message: "Authentication failed.",
@@ -154,7 +152,6 @@ func (b BlogController) DeleteBlogByID(c *gin.Context) {
 		return
 	}
 	userID := c.GetString("user_id")
-	fmt.Println(userID)
 	role := c.GetString("role")
 	if userID == "" || role == "" {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
@@ -189,7 +186,6 @@ func (b BlogController) FilterBlogsByTag(c *gin.Context) {
 
 	startDate := c.Query("startDate")
 	endDate := c.Query("endDate")
-	fmt.Println(startDate, endDate, "////////controller")
 
 	if startDate == "" || endDate == "" {
 		if !(startDate == "" && endDate == "") {
@@ -205,7 +201,6 @@ func (b BlogController) FilterBlogsByTag(c *gin.Context) {
 	}
 
 	tagsParam := c.Query("tags")
-	fmt.Println(tagsParam, len(tagsParam), "/\\")
 	var tags []string
 	if tagsParam != "" {
 		tags = strings.Split(tagsParam, ",")

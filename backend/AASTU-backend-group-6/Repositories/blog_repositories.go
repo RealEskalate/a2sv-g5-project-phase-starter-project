@@ -7,7 +7,6 @@ import (
 	"blogs/mongo"
 	"context"
 	"errors"
-	"fmt"
 	"math"
 	"strings"
 	"time"
@@ -200,7 +199,6 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string
 	uid, err := primitive.ObjectIDFromHex(user_id)
 
 	if err != nil {
-		fmt.Println("1")
 		return domain.Blog{}, errors.New("internal server error")
 	}
 	filter := bson.M{"_id": blog.Creater_id}
@@ -215,7 +213,6 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string
 	}
 	_, err = b.PostCollection.InsertOne(context, blog)
 	if err != nil {
-		fmt.Println("2")
 		return domain.Blog{}, errors.New("internal server error")
 	}
 	update := bson.M{
@@ -223,7 +220,6 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string
 	}
 	_, err = b.UserCollection.UpdateOne(context, filter, update)
 	if err != nil {
-		fmt.Println(err.Error())
 		return domain.Blog{}, errors.New("internal server error")
 	}
 	return blog, nil
@@ -397,7 +393,6 @@ func (b BlogRepository) GetMyBlogs(user_id string, pageNo int64, pageSize int64,
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
-	fmt.Println(user_object_id)
 	pagination := utils.PaginationByPage(pageNo, pageSize, popularity)
 	totalResults, err := b.PostCollection.CountDocuments(context.TODO(), utils.FilterTaskByUserID(user_object_id))
 	if err != nil {

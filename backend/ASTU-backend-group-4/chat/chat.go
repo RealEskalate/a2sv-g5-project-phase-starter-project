@@ -27,7 +27,7 @@ type Usecase interface {
 	DeleteChat(ctx context.Context, form DefaultChatForm) error
 	GenerateChatTitle(ctx context.Context, form TextForm) (string, error)
 	GetChat(ctx context.Context, form DefaultChatForm) (Chat, error)
-	GetChats(ctx context.Context, form DefaultChatForm) (infrastructure.PaginationResponse[Chat], error)
+	GetChats(ctx context.Context, form DefaultChatForm, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error)
 	SendMessage(ctx context.Context, chatForm DefaultChatForm, textForm TextForm) (Message, error)
 }
 

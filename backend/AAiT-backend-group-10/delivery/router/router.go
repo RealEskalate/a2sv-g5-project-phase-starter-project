@@ -18,7 +18,6 @@ func NewRouter(db *mongo.Database) {
 
 	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
 
-	jwt := infrastructures.Jwt{JwtSecret: os.Getenv("JWT_SECRET")}
 	pwdService := infrastructures.PwdService{}
 	emailService := infrastructures.EmailService{}
 
@@ -36,7 +35,7 @@ func NewRouter(db *mongo.Database) {
 		LikeUseCase: usecases.NewLikeUseCase(likeRepo),
 	}
 
-	authUsecases := usecases.NewAuthUsecase(userRepo, jwt, pwdService, emailService)
+	authUsecases := usecases.NewAuthUsecase(userRepo, jwtService, pwdService, emailService)
 	authController := controllers.NewAuthController(authUsecases, controllers.GoogleOAuthConfig)
 
 	userUseCase := usecases.NewUserUseCase(userRepo)

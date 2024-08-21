@@ -24,12 +24,12 @@ type IAuthUsecase interface {
 
 type AuthUsecase struct {
 	userRepository interfaces.IUserRepository
-	jwtService     infrastructures.Jwt
+	jwtService     infrastructures.JwtService
 	pwdService     infrastructures.PwdService
 	emailService   infrastructures.EmailService
 }
 
-func NewAuthUsecase(ur interfaces.IUserRepository, jwt infrastructures.Jwt, pwdService infrastructures.PwdService, emailService infrastructures.EmailService) IAuthUsecase {
+func NewAuthUsecase(ur interfaces.IUserRepository, jwt infrastructures.JwtService, pwdService infrastructures.PwdService, emailService infrastructures.EmailService) IAuthUsecase {
 	return &AuthUsecase{
 		userRepository: ur,
 		jwtService:     jwt,

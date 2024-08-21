@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"AAIT-backend-group-3/internal/domain/models"
+	"AAIT-backend-group-3/internal/repositories/interfaces"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,7 +16,7 @@ type MongoBlogRepository struct {
 	collection *mongo.Collection
 }
 
-func NewMongoBlogRepository(db *mongo.Database, collectionName string) *MongoBlogRepository {
+func NewMongoBlogRepository(db *mongo.Database, collectionName string) repository_interface.BlogRepositoryInterface {
 	return &MongoBlogRepository{
 		collection: db.Collection(collectionName),
 	}

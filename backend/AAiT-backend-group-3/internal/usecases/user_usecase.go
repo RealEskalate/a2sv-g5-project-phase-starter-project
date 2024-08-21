@@ -2,6 +2,8 @@ package usecases
 
 import (
 	"errors"
+	"fmt"
+	"time"
 
 	"AAIT-backend-group-3/internal/domain/models"
 	"AAIT-backend-group-3/internal/infrastructures/services"
@@ -32,20 +34,65 @@ func NewUserUsecase(userRepo repository_interface.UserRepositoryInterface, passw
 
 
 func (u *UserUsecase) SignUp(user *models.User) error {
+	users, err := u.userRepo.GetAllUsers()
+	if err != nil {
+		return  errors.New("error while fetching")
+	}
+	if len(users) == 0 {
+		user.Role = "ADMIN"
+	} else {
+		user.Role = "USER"
+		existingUser, _ := u.userRepo.GetUserByEmail(user.Email)
+		if existingUser != nil {
+			return errors.New("user already exists")
+		}
+	}
 
-	if _,err := u.validationService.ValidatePassword(user.Password); err != nil {
+	if _, err := u.validationService.ValidatePassword(user.Password); err != nil {
 		return err
 	}
-	if _,err := u.validationService.ValidateEmail(user.Email); err != nil {
+	if _, err := u.validationService.ValidateEmail(user.Email); err != nil {
 		return err
 	}
+
 	encryptedPassword, err := u.passwordService.HashPassword(user.Password)
 	if err != nil {
 		return err
 	}
 	user.Password = encryptedPassword
-	return u.userRepo.SignUp(user)
+	user.CreatedAt = time.Now()
+	user.IsVerified = false 
+
+	regUser, err := u.userRepo.SignUp(user)
+	if err != nil {
+		return errors.New(err.Error())
+	}
+
+	verificationToken, err := u.jwtSevices.GenerateVerificationToken(regUser.ID.Hex())	
+	if err != nil {
+		return errors.New("can't generate verification token")
+	}
+	verificationLink := fmt.Sprintf("https://localhost:8080/verify-email?token=%s", verificationToken)
+
+	user.VerificationToken = verificationToken
+	user.TokenExp = time.Now().Add(24 * time.Hour)
+
+	u.userRepo.UpdateProfile(regUser.ID, user)
+
+	subject := "Email Verification"
+	body := fmt.Sprintf(`
+		<h1>Email Verification</h1>
+		<p>To verify your email, you can click on the following link:</p>
+		<a href="%s">Verify email</a>
+	`, verificationLink)
+
+	err = u.emailService.SendVerificationEmail(regUser.Email, subject, body)
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	return nil 
 }
+
 
 func (u *UserUsecase) Login(user *models.User) (string, string, error) {
 	if _, err := u.validationService.ValidateEmail(user.Email); err != nil {
@@ -65,13 +112,14 @@ func (u *UserUsecase) Login(user *models.User) (string, string, error) {
 	return accessToken, refershToken, nil
 }
 
-func (u *UserUsecase) RefreshToken(userId primitive.ObjectID ,refreshTok string ) (string, error) {
-
-	if _, err := u.jwtSevices.ValidateRefreshToken(refreshTok); err == nil {
-		return "", errors.New("invalid token")
+func (u *UserUsecase) RefreshToken(refreshTok string ) (string, error) {
+	userId, err := u.jwtSevices.ValidateRefreshToken(refreshTok)
+	if err != nil {
+		return "", errors.New(err.Error())
 	}
 
-	existingUser, err := u.userRepo.GetUserByID(userId)
+	user_id, _ := primitive.ObjectIDFromHex(userId)
+	existingUser, err := u.userRepo.GetUserByID(user_id)
 	if err != nil {
 		return "", errors.New("user not found")
 	}
@@ -83,6 +131,38 @@ func (u *UserUsecase) RefreshToken(userId primitive.ObjectID ,refreshTok string 
 	accessToken, _ := u.jwtSevices.GenerateAccessToken(existingUser.ID.Hex(), existingUser.Role)
 
 	return accessToken, nil
+}
+
+func (u *UserUsecase) VerifyEmailToken(token string) (string, string, error) {
+	userId, err := u.jwtSevices.ValidateVerificationToken(token)
+	if err != nil {
+		return "","", errors.New(err.Error())
+	}
+
+	user_id, _ := primitive.ObjectIDFromHex(userId)
+	user, err := u.userRepo.GetUserByID(user_id)
+	if err != nil {
+		return "", "", errors.New("invalid or expired token")
+	}
+
+	if time.Now().After(user.TokenExp) {
+		return "", "", errors.New("token expired")
+	}
+
+	accessToken, _ := u.jwtSevices.GenerateAccessToken(user.ID.Hex(), user.Role)
+	refershToken, _ := u.jwtSevices.GenerateRefreshToken(user.ID.Hex(), user.Role)
+
+	user.IsVerified = true
+	user.VerificationToken = "" 
+	user.TokenExp = time.Time{}
+	user.RefToken = refershToken
+
+	err = u.userRepo.UpdateProfile(user.ID, user)
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessToken, refershToken, nil
 }
 
 func (u *UserUsecase) GetUserByID(userID primitive.ObjectID) (*models.User, error) {

@@ -65,7 +65,7 @@ func (u *OtpUsecase) GenerateAndSendOtp(ctx context.Context, email string) error
 		<a href="%s">Reset Password</a>
 	`, otp, resetLink)
 
-	err = u.emailSvc.SendEmail(email, subject, body)
+	err = u.emailSvc.SendResetEmail(email, subject, body)
 	if err != nil {
 		return err
 	}

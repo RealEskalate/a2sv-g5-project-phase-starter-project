@@ -3,6 +3,8 @@ package repository
 import (
 	"blogApp/internal/domain"
 	"context"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogRepository interface {
@@ -37,4 +39,13 @@ type BlogRepository interface {
 	UpdateTag(ctx context.Context, id string, tag *domain.BlogTag) error
 	DeleteTag(ctx context.Context, id string) error
 	GetTagByID(ctx context.Context, id string) (*domain.BlogTag, error)
+
+	HasUserLikedBlog(ctx context.Context, userId string, blogId string) (bool, error)
+	HasUserViewedBlog(ctx context.Context, userId string, blogId string) (bool, error)
+
+	RemoveLike(ctx context.Context, likeId primitive.ObjectID) error
+	DeleteComment(ctx context.Context, commentId primitive.ObjectID) error
+
+	GetLikeById(ctx context.Context, likeId string) (*domain.Like, error)
+	GetCommentById(ctx context.Context, commentId string) (*domain.Comment, error)
 }

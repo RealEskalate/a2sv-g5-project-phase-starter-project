@@ -1,5 +1,7 @@
 package domain
 
+import "net/http"
+
 type CustomError struct {
 	Message    string
 	StatusCode int
@@ -19,67 +21,67 @@ func NewCustomError(message string, statusCode int) *CustomError {
 
 // Blog-related errors
 var (
-	ErrBlogNotFound           = NewCustomError("Blog not found", 404)
-	ErrDuplicateBlogID        = NewCustomError("Duplicate blog ID", 409)
-	ErrBlogInsertFailed       = NewCustomError("Failed to insert blog", 500)
-	ErrBlogUpdateFailed       = NewCustomError("Failed to update blog", 500)
-	ErrBlogDeleteFailed       = NewCustomError("Failed to delete blog", 500)
-	ErrBlogFetchFailed        = NewCustomError("Failed to fetch blog(s)", 500)
-	ErrBlogCursorDecodeFailed = NewCustomError("Failed to decode blog data", 500)
-	ErrBlogCountFailed        = NewCustomError("Failed to get blog count for pagination", 500)
+	ErrBlogNotFound           = NewCustomError("Blog not found", http.StatusNotFound)
+	ErrDuplicateBlogID        = NewCustomError("Duplicate blog ID", http.StatusConflict)
+	ErrBlogInsertFailed       = NewCustomError("Failed to insert blog", http.StatusInternalServerError)
+	ErrBlogUpdateFailed       = NewCustomError("Failed to update blog", http.StatusInternalServerError)
+	ErrBlogDeleteFailed       = NewCustomError("Failed to delete blog", http.StatusInternalServerError)
+	ErrBlogFetchFailed        = NewCustomError("Failed to fetch blog(s)", http.StatusInternalServerError)
+	ErrBlogCursorDecodeFailed = NewCustomError("Failed to decode blog data", http.StatusInternalServerError)
+	ErrBlogCountFailed        = NewCustomError("Failed to get blog count for pagination", http.StatusInternalServerError)
 )
 
 // User-related errors
 var (
-	ErrUserNotFound           = NewCustomError("User not found", 404)
+	ErrUserNotFound           = NewCustomError("User not found", http.StatusNotFound)
 	ErrUserEmailExists        = NewCustomError("Email already exists", 409)
-	ErrUserCreationFailed     = NewCustomError("Failed to create user", 500)
-	ErrUserUpdateFailed       = NewCustomError("Failed to update user", 500)
-	ErrUserPromotionFailed    = NewCustomError("Failed to promote user", 500)
-	ErrUserFetchFailed        = NewCustomError("Failed to fetch users", 500)
-	ErrUserCursorDecodeFailed = NewCustomError("Failed to decode user data", 500)
+	ErrUserCreationFailed     = NewCustomError("Failed to create user", http.StatusInternalServerError)
+	ErrUserUpdateFailed       = NewCustomError("Failed to update user", http.StatusInternalServerError)
+	ErrUserPromotionFailed    = NewCustomError("Failed to promote user", http.StatusInternalServerError)
+	ErrUserFetchFailed        = NewCustomError("Failed to fetch users", http.StatusInternalServerError)
+	ErrUserCursorDecodeFailed = NewCustomError("Failed to decode user data", http.StatusInternalServerError)
 )
 
 // auth-related errors
 var (
-	ErrUserTokenUpdateFailed   = NewCustomError("Failed to update user tokens", 500)
-	ErrInvalidCredentials      = NewCustomError("Invalid email or password", 401)
-	ErrInvalidToken            = NewCustomError("Invalid token", 401)
-	ErrInvalidRefreshToken     = NewCustomError("Invalid refresh token", 401)
-	ErrInvalidResetCode        = NewCustomError("Invalid reset code", 400)
-	ErrUnAuthorized            = NewCustomError("Unauthorized access", 401)
-	ErrUnexpectedSigningMethod = NewCustomError("Unexpected signing method", 500)
+	ErrUserTokenUpdateFailed   = NewCustomError("Failed to update user tokens", http.StatusInternalServerError)
+	ErrInvalidCredentials      = NewCustomError("Invalid email or password", http.StatusUnauthorized)
+	ErrInvalidToken            = NewCustomError("Invalid token", http.StatusUnauthorized)
+	ErrInvalidRefreshToken     = NewCustomError("Invalid refresh token", http.StatusUnauthorized)
+	ErrInvalidResetCode        = NewCustomError("Invalid reset code", http.StatusBadRequest)
+	ErrUnAuthorized            = NewCustomError("Unauthorized access", http.StatusUnauthorized)
+	ErrUnexpectedSigningMethod = NewCustomError("Unexpected signing method", http.StatusInternalServerError)
 )
 
 // Comment-related errors
 var (
-	ErrCommentNotFound       = NewCustomError("Comment not found", 404)
-	ErrCommentCreationFailed = NewCustomError("Failed to create comment", 500)
-	ErrCommentUpdateFailed   = NewCustomError("Failed to update comment", 500)
-	ErrCommentDeletionFailed = NewCustomError("Failed to delete comment", 500)
-	ErrCommentFetchFailed    = NewCustomError("Failed to fetch comments", 500)
+	ErrCommentNotFound       = NewCustomError("Comment not found", http.StatusNotFound)
+	ErrCommentCreationFailed = NewCustomError("Failed to create comment", http.StatusInternalServerError)
+	ErrCommentUpdateFailed   = NewCustomError("Failed to update comment", http.StatusInternalServerError)
+	ErrCommentDeletionFailed = NewCustomError("Failed to delete comment", http.StatusInternalServerError)
+	ErrCommentFetchFailed    = NewCustomError("Failed to fetch comments", http.StatusInternalServerError)
 )
 
 // Like-related errors
 var (
-	ErrLikeNotFound         = NewCustomError("Like not found", 404)
-	ErrLikeCreationFailed   = NewCustomError("Failed to like the blog", 500)
-	ErrLikeUpdateFailed     = NewCustomError("Failed to update like status", 500)
-	ErrLikeDeletionFailed   = NewCustomError("Failed to delete like", 500)
-	ErrLikeCountFetchFailed = NewCustomError("Failed to fetch like count", 500)
+	ErrLikeNotFound         = NewCustomError("Like not found", http.StatusNotFound)
+	ErrLikeCreationFailed   = NewCustomError("Failed to like the blog", http.StatusInternalServerError)
+	ErrLikeUpdateFailed     = NewCustomError("Failed to update like status", http.StatusInternalServerError)
+	ErrLikeDeletionFailed   = NewCustomError("Failed to delete like", http.StatusInternalServerError)
+	ErrLikeCountFetchFailed = NewCustomError("Failed to fetch like count", http.StatusInternalServerError)
 )
 
 // JWT-related errors
 var (
-	ErrTokenGenerationFailed        = NewCustomError("Failed to generate token", 500)
-	ErrRefreshTokenGenerationFailed = NewCustomError("Failed to generate refresh token", 500)
-	ErrTokenParsingFailed           = NewCustomError("Failed to parse token", 401)
-	ErrResetTokenGenerationFailed   = NewCustomError("Failed to generate reset token", 500)
+	ErrTokenGenerationFailed        = NewCustomError("Failed to generate token", http.StatusInternalServerError)
+	ErrRefreshTokenGenerationFailed = NewCustomError("Failed to generate refresh token", http.StatusInternalServerError)
+	ErrTokenParsingFailed           = NewCustomError("Failed to parse token", http.StatusUnauthorized)
+	ErrResetTokenGenerationFailed   = NewCustomError("Failed to generate reset token", http.StatusInternalServerError)
 )
 var (
 	// Password-related errors
-	ErrPasswordHashingFailed = NewCustomError("Failed to hash password", 500)
+	ErrPasswordHashingFailed = NewCustomError("Failed to hash password", http.StatusInternalServerError)
 
 	// Email-related errors
-	ErrEmailSendingFailed = NewCustomError("Failed to send email", 500)
+	ErrEmailSendingFailed = NewCustomError("Failed to send email", http.StatusInternalServerError)
 )

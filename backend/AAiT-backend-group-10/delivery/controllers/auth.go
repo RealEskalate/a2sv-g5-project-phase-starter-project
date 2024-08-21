@@ -32,7 +32,7 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, user)
+	c.JSON(http.StatusOK, user)
 }
 
 func (uc *AuthController) Login(c *gin.Context) {
@@ -44,7 +44,7 @@ func (uc *AuthController) Login(c *gin.Context) {
 
 	tokens, err := uc.userUsecase.LoginUser(&loginDTO)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -60,7 +60,7 @@ func (uc *AuthController) RefreshToken(c *gin.Context) {
 
 	tokens, err := uc.userUsecase.RefreshTokens(refreshToken.RefreshToken)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -76,7 +76,7 @@ func (uc *AuthController) ForgotPassword(c *gin.Context) {
 
 	err := uc.userUsecase.ForgotPassword(&forgotPasswordDTO)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -92,7 +92,7 @@ func (uc *AuthController) ResetPassword(c *gin.Context) {
 
 	err := uc.userUsecase.ResetPassword(&resetPasswordDTO)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
 		return
 	}
 

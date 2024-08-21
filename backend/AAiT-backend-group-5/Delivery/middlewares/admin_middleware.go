@@ -6,6 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/aait.backend.g5.dawit.blog_usecase_1
 func AuthenticateAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// get user role from the context

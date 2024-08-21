@@ -122,9 +122,15 @@ func (bc *MongoBlogRepository) GetBlogByID(id string) (domain.Blog, error) {
     blog.LikesCount = likes
     blog.DislikesCount = dislikes
     
+    update := bson.M{"$inc": bson.M{"views": 1}}
+    _, err = bc.collection.UpdateOne(context.Background(), filter, update)
+    if err != nil {
+        return domain.Blog{}, err
+    }
 
     return blog, nil
 }
+
 func (bc *MongoBlogRepository) GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]domain.Blog, error) {
     var blogs []domain.Blog
 

@@ -19,14 +19,21 @@ import { Transaction } from "./_components/Transaction";
 import { Pie_chart } from "@/app/dashboard/_components/Pie_chart";
 import { BalanceAreachart } from "./transactions/component/balanceChart";
 import { Barchart } from "./transactions/component/weeklyActivityChart";
-import getRandomBalance, { addTransactions, getallTransactions, getCreditCards, getExpenses, getIncomes, getQuickTransfer } from "@/lib/api";
+import getRandomBalance, {
+  addTransactions,
+  getallTransactions,
+  getCreditCards,
+  getExpenses,
+  getIncomes,
+  getQuickTransfer,
+} from "@/lib/api";
 import { Loading } from "./_components/Loading";
-import {useUser} from "@/contexts/UserContext"
+import { useUser } from "@/contexts/UserContext";
 import Link from "next/link";
 import { toast } from "sonner";
-
+import { ModalTrans } from "./_components/ModalTrans";
 const MainDashboard = () => {
-  const {isDarkMode} = useUser();
+  const { isDarkMode } = useUser();
   const QuickTransferSection = useRef<HTMLDivElement | null>(null);
 
   const scrollCards = (scrollOffset: number) => {
@@ -43,12 +50,15 @@ const MainDashboard = () => {
   const [transactions, setTransactions] = useState<TransactionContent[]>([]);
   const [balanceHistory, setBalanceHistory] = useState<BalanceData[]>([]);
   const [weeklyIncome, setWeeklyIncome] = useState<TransactionContent[]>([]);
-  const [weeklyWithdraw, setWeeklyWithdraw] = useState<TransactionContent[]>([]);
+  const [weeklyWithdraw, setWeeklyWithdraw] = useState<TransactionContent[]>(
+    []
+  );
   const [quickTransfer, setQuickTransfer] = useState<QuickTransferData[]>([]);
   const [selectedProfile, setSelectedProfile] =
     useState<QuickTransferData | null>(null);
   const [amount, setAmount] = useState<string>("");
-  const [sendLoading,setSendLoading] = useState(false)
+  const [sendLoading, setSendLoading] = useState(false);
+  const [isModalOpen,setIsModalOpen] = useState(false)
   let totalCreditcardpage;
   const handleProfileSelect = (account: QuickTransferData) => {
     setSelectedProfile(account);
@@ -58,30 +68,34 @@ const MainDashboard = () => {
     setAmount(e.target.value);
   };
 
+  const handleModalToggle = ()=>{
+    setIsModalOpen(!isModalOpen);
+  }
+
   const handleSend = async () => {
     if (selectedProfile) {
       console.log("Sending to:", selectedProfile.username, "Amount:", amount);
-      setSendLoading(true); 
+      setSendLoading(true);
       const result: boolean | undefined = await addTransactions({
         type: "transfer",
         amount: parseInt(amount),
         receiverUserName: selectedProfile.username,
         description: "Quick Transfer",
       });
-      setLoading(false); 
+      setLoading(false);
       if (result) {
         toast("sucess sending");
+      } else {
+        toast("failed sending");
       }
-      else{
-        toast("failed sending");}
-        setLoading(true); 
+      setLoading(true);
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getCreditCards(0,2);
+        const res = await getCreditCards(0, 2);
         const recent = await getallTransactions(0, 3);
         const statistics = await getallTransactions(0, 100);
         const BalanceHistory = await getRandomBalance();
@@ -104,9 +118,7 @@ const MainDashboard = () => {
   }, []);
 
   if (loading) {
-    return (
-      <Loading/>
-    );
+    return <Loading />;
   }
 
   return (
@@ -322,13 +334,29 @@ const MainDashboard = () => {
     space-x-2
     transition-all duration-300 ease-in-out
   `}
-                  onClick={handleSend}
+                  onClick={handleModalToggle}
                   disabled={!selectedProfile || !amount}
                 >
                   <p>Send</p>
                   <PiTelegramLogoLight />
                 </button>
               </div>
+              {isModalOpen && (
+                <div
+                  className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50 backdrop-blur-sm"
+                  onClick={handleModalToggle}
+                >
+                  <div
+                    className="relative bg-white p-6 rounded-lg shadow-lg max-w-md w-full"
+                    onClick={(e) => e.stopPropagation()} // Prevent modal from closing when clicking inside it
+                  >
+                    <ModalTrans
+                      isOpen={isModalOpen}
+                      onClose={handleModalToggle}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -351,7 +379,7 @@ const MainDashboard = () => {
           </div>
         </div>
       </div>
-      {sendLoading && (
+      {/* {sendLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
           <div role="status">
             <svg
@@ -373,7 +401,7 @@ const MainDashboard = () => {
             <span className="sr-only">Loading...</span>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

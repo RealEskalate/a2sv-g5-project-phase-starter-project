@@ -89,26 +89,6 @@ export async function addTransactions({
   }
 }
 
-<<<<<<< HEAD
-
-export  async function getCurrentUser() {
-  
-    try {
-  const session = await getSession();
-  const accessToken = session?.user.accessToken;
-      const res = await fetch(
-        `https://bank-dashboard-1tst.onrender.com/user/current`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: null,
-        }
-      );
-      if (!res.ok) {
-        throw new Error("failed to get data");
-=======
 export async function getCurrentUser() {
   try {
     const session = await getSession();
@@ -121,7 +101,6 @@ export async function getCurrentUser() {
           Authorization: `Bearer ${accessToken}`,
         },
         body: null,
->>>>>>> 707d322aa54c2366a0da8808968d45e91b303571
       }
     );
     if (!res.ok) {
@@ -189,23 +168,6 @@ export async function getIncomes(page: number, size: number) {
 
 export default async function getRandomBalance() {
   try {
-<<<<<<< HEAD
-     const session = await getSession();
-     const accessToken = session?.user.accessToken;
-      const res = await fetch(
-        `https://bank-dashboard-1tst.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=7`,
-        {
-            method:"GET",
-            headers:{
-                Authorization: `Bearer ${accessToken}`,
-            },
-            body:null,
-            
-        }
-      );
-      if(!res.ok){
-          throw new Error("faild to fetch data");
-=======
     const session = await getSession();
     const accessToken = session?.user.accessToken;
     const res = await fetch(
@@ -216,7 +178,6 @@ export default async function getRandomBalance() {
           Authorization: `Bearer ${accessToken}`,
         },
         body: null,
->>>>>>> 707d322aa54c2366a0da8808968d45e91b303571
       }
     );
     if (!res.ok) {

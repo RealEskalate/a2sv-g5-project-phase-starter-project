@@ -1,4 +1,5 @@
 a2sv-g5-project-phase-starter-project.code-workspace
 backend/ASTU-backend-group-1/main/main.go
 backend/ASTU-backend-group-1/domain/sampleBlogGenerator.go
+backend/ASTU-backend-group-1/yene_main/
 backend/ASTU-backend-group-1/config.yaml

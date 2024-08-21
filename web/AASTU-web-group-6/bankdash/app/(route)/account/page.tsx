@@ -12,9 +12,9 @@ export default function Home() {
   const CardData: CardType[] = useAppSelector((state) => state.cards.cards);
 
   return (
-    <div className="w-full flex flex-col justify-center grow gap-6 p-5 lg:p-8 pt-6">
-      <div className="flex flex-col xxs:overflow-x-auto md:overflow-hidden lg:flex-row gap-6 xl:gap-7">
-        <div className="flex scrollbar-hide overflow-x-scroll lg:w-[100%] gap-4 xl:gap-7">
+    <div className="w-[96%] flex flex-col grow gap-6 p-5 lg:p-8 pt-6">
+      <div className="flex flex-col lg:flex-row gap-6 xl:gap-7 pt-16 sm:pt-0">
+        <div className="flex lg:w-[45%] gap-4 xl:gap-7">
           <Card
             title="My Balance"
             amount="$12,750"
@@ -88,7 +88,7 @@ export default function Home() {
           <p className="font-inter font-semibold text-[22px] text-[#333B69] mb-5 dark:text-gray-300">
             Invoices Sent
           </p>
-          <div className="rounded-3xl p-3 lg:p-9  bg-white dark:bg-[#232328]">
+          <div className="rounded-3xl p-9 lg:p-3 xl:p-9  bg-white dark:bg-[#232328]">
             <InvoiceCard
               title="Apple Store"
               date="5h ago"

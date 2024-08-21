@@ -1,9 +1,20 @@
-import React from 'react';
-import { Carousel, CarouselItem, CarouselContent } from '@/components/ui/carousel';
-import { loanData, activeLoans } from '@/constants/index';
-import Link from 'next/link';
+'use client'
 
-// Custom LoanCard component to adjust title and description styles
+import React, { useEffect, useState } from 'react';
+import { Carousel, CarouselItem, CarouselContent } from '@/components/ui/carousel';
+import { loanCardMapping } from '@/constants/index';
+import Link from 'next/link';
+import { getMyLoans, getLoanDetailData } from '@/services/activeloan';
+import CustomLoans from '@/public/icons/CustomLoans';
+
+interface LoanCard {
+  icon: (props: any) => JSX.Element; // Define the icon type
+  title: string;
+  loanAmount: string;
+}
+
+
+
 const LoanCard: React.FC<{ icon: React.FC<React.SVGProps<SVGSVGElement>>; title: string; description: string }> = ({
   icon: Icon,
   title,
@@ -19,9 +30,58 @@ const LoanCard: React.FC<{ icon: React.FC<React.SVGProps<SVGSVGElement>>; title:
 );
 
 const LoansPage: React.FC = () => {
-  const totalLoanMoney = activeLoans.reduce((total, loan) => total + parseInt(loan.loanMoney.replace(/[$,]/g, '')), 0);
-  const totalLeftToRepay = activeLoans.reduce((total, loan) => total + parseInt(loan.leftToRepay.replace(/[$,]/g, '')), 0);
-  const totalInstallment = activeLoans.reduce((total, loan) => total + parseInt(loan.installment.replace(/[$,]/g, '')), 0);
+  
+  const [loanCards, setLoanCards] = useState<{ icon: React.FC; title: string; loanAmount: string }[]>([]);  
+  const [loans, setLoans] = useState([])
+
+  useEffect(() => {
+    const fetchLoans = async () => {
+
+      try {
+        const response = await getMyLoans();
+        // console.log("Response: ", response)
+        setLoans(response.data)
+      } catch (error) {
+        console.error("Error fetching the loans: ", error)
+      }
+    }
+    fetchLoans();
+  }, [])
+
+// Fetching loan card data
+useEffect(() => {
+  const fetchLoanCard = async () => {
+    try {
+      const response = await getLoanDetailData();
+      const { data } = response;
+
+      // Map the API data to the loan cards with icons and titles
+      const loanCard = loanCardMapping.map((loan) => ({
+        icon: loan.icon,
+        title: loan.title,
+        loanAmount: `$${data[loan.descriptionKey]?.toLocaleString() || 0}`,
+      }));
+
+      // Add the constant Custom Loans card
+      loanCard.push({
+        icon: CustomLoans,
+        title: 'Custom Loans',
+        loanAmount: 'Choose loans', // Or any default value you want for the constant card
+      });
+
+      setLoanCards(loanCard);
+    } catch (error) {
+      console.error('Error fetching the loan card data:', error);
+    }
+  };
+
+  fetchLoanCard();
+}, []);
+
+
+  const totalLoanMoney = loans.reduce((total, loan: any) => total + parseInt(loan.loanAmount), 0);
+  const totalLeftToRepay = loans.reduce((total, loan: any) => total + parseInt(loan.amountLeftToRepay), 0);
+  const totalInstallment = loans.reduce((total, loan: any) => total + parseInt(loan.installment), 0);
 
   return (
     <div className="mx-auto max-w-sm sm:ml-80 sm:max-w-[1110px]">
@@ -30,10 +90,10 @@ const LoansPage: React.FC = () => {
       <div className="block md:hidden">
         <Carousel>
           <CarouselContent className="p-6 ">
-            {loanData.map((loan, index) => (
+            {loanCards.map((loanItem, index) => (
               <CarouselItem key={index} className="w-[240px] h-[85px] mx-auto mr-4 flex-none">
                 <div className="shadow-lg p-4 rounded-md flex items-center h-full">
-                  <LoanCard icon={loan.icon} title={loan.title} description={loan.description} />
+                  <LoanCard icon={loanItem.icon} title={loanItem.title} description={loanItem.loanAmount} />
                 </div>
               </CarouselItem>
             ))}
@@ -53,10 +113,10 @@ const LoansPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {activeLoans.map((loan, index) => (
+                {loans.map((loan: any, index) => (
                   <tr key={index}>
-                    <td className="border-t px-4 py-2">{loan.loanMoney}</td>
-                    <td className="border-t px-4 py-2">{loan.leftToRepay}</td>
+                    <td className="border-t px-4 py-2">{loan.loanAmount}</td>
+                    <td className="border-t px-4 py-2">{loan.amountLeftToRepay}</td>
                     <td className="border-t px-4 py-2">
                       <Link href="#" className="text-purple-900 border border-purple-900 rounded-full px-4 py-1">
                         Repay
@@ -78,10 +138,10 @@ const LoansPage: React.FC = () => {
       {/* Desktop and Tablet View */}
       <div className="hidden md:block sm:w-[1110px] ">
         <div className="flex p-5 mb-8">
-          {loanData.map((loan, index) => (
+          {loanCards.map((loanItem, index) => (
             <div key={index} className="w-[255px] h-[120px] shadow-lg p-5 rounded-lg mr-6 flex items-center">
               <div className="">
-                <LoanCard icon={loan.icon} title={loan.title} description={loan.description} />
+                <LoanCard icon={loanItem.icon} title={loanItem.title} description={loanItem.loanAmount} />
               </div>
             </div>
           ))}
@@ -104,11 +164,11 @@ const LoansPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {activeLoans.map((loan, index) => (
+                {loans.map((loan: any, index) => (
                   <tr key={index} className="text-sm leading-6">
                     <td className="border-t px-4 py-2">{index + 1}</td>
-                    <td className="border-t px-4 py-2">{loan.loanMoney}</td>
-                    <td className="border-t px-4 py-2">{loan.leftToRepay}</td>
+                    <td className="border-t px-4 py-2">{loan.loanAmount}</td>
+                    <td className="border-t px-4 py-2">{loan.amountLeftToRepay}</td>
                     <td className="border-t px-4 py-2">{loan.duration}</td>
                     <td className="border-t px-4 py-2">{loan.interestRate}</td>
                     <td className="border-t px-4 py-2">{loan.installment}</td>

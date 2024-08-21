@@ -21,17 +21,17 @@ type OTPRequest struct {
 	Email string `json:"email"`
 }
 
-type OTPResetPassword struct{
-	Otp   string `json:"otp"`
-	Email string `json:"email"`
+type OTPResetPassword struct {
+	Otp      string `json:"otp"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
 type OTPUsecaseInterface interface {
-  GenerateAndSendOTP(user *User) error
-  VerifyOTP(email, otp string)(*OTP, error)
+	GenerateAndSendOTP(user *User) error
+	VerifyOTP(email, otp string) (*OTP, error)
 	ForgotPassword(email string) error
-
+}
 type OTPRepositoryInterface interface {
 	StoreOTP(otp *OTP) error
 	GetOTPByEmail(email string) (*OTP, error)

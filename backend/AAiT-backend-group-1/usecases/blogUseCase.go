@@ -145,4 +145,3 @@ func (bu *blogUseCase) Like(blogID, userID string) domain.Error {
 	// Implement the logic for liking a blog
 	return nil
 }
-

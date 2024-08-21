@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const API_URL = "https://bank-dashboard-6acc.onrender.com/transactions"; // Adjust this to match your actual API base URL
+const API_URL = "https://bank-dashboard-1tst.onrender.com/transactions"; // Adjust this to match your actual API base URL
 const extension = "/balance-history";
 const API_URL_expense =
-  "https://bank-dashboard-6acc.onrender.com/transactions/expenses";
+  "https://bank-dashboard-1tst.onrender.com/transactions/expenses";
 const API_URL_income =
-  "https://bank-dashboard-6acc.onrender.com/transactions/incomes";
+  "https://bank-dashboard-1tst.onrender.com/transactions/incomes";
 interface TransactionType {
   transactionId: string;
   type: string;

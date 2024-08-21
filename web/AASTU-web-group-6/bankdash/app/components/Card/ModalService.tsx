@@ -31,7 +31,7 @@ const Services = () => {
   async function fetchData(accessToken: string) {
     try {
       const response = await axios.get(
-        `https://bank-dashboard-6acc.onrender.com/bank-services?page=0&size=5`,
+        `https://bank-dashboard-1tst.onrender.com/bank-services?page=0&size=5`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

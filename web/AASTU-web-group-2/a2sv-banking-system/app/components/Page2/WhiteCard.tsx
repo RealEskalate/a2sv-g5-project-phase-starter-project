@@ -13,6 +13,7 @@ const WhiteCard = () => {
       textColor="text-black"
       iconBgColor="bg-opacity-10"
       showIcon={true}
+     
     />
   );
 };

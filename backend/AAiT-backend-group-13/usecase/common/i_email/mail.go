@@ -2,31 +2,30 @@ package iemail
 
 import "fmt"
 
-
 type Mail struct {
-  From    string
-  To      []string
-  Subject string
-  Body    string
-  Data    string
+	From    string
+	To      []string
+	Subject string
+	Body    string
+	Data    string
 }
 
 func NewMail(from string, to []string, subject, body, data string) *Mail {
-  return &Mail{
-    From:    from,
-    To:      to,
-    Subject: subject,
-    Body:    body,
-    Data:    data,
-  }
+	return &Mail{
+		From:    from,
+		To:      to,
+		Subject: subject,
+		Body:    body,
+		Data:    data,
+	}
 }
 
 func NewSignUpEmail(data string, to []string, link string) *Mail {
-    return &Mail{
-      From:    "no-reply@example.com",
-      To:      to,
-      Subject: "Welcome to EBS Blog!",
-      Body: fmt.Sprintf(`
+	return &Mail{
+		From:    "no-reply@example.com",
+		To:      to,
+		Subject: "Welcome to EBS Blog!",
+		Body: fmt.Sprintf(`
         <!DOCTYPE html>
         <html>
         <head>
@@ -43,8 +42,29 @@ func NewSignUpEmail(data string, to []string, link string) *Mail {
         </body>
         </html>
       `, link),
-      Data: data,
-    }
-  }
-  
+		Data: data,
+	}
+}
 
+func NewResetPasswordEmail(to []string, code string) *Mail {
+	return &Mail{
+		From:    "no-reply@example.com",
+		To:      to,
+		Subject: "Reset Your Password",
+		Body: fmt.Sprintf(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Reset Your Password</title>
+      </head>
+      <body>
+        <p>Hi there,</p>
+        <p>We received a request to reset your password. Use the code below to reset your password:</p>
+        <p style="text-align: center; font-size: 24px; font-weight: bold;">%s</p>
+        <p>If you did not request a password reset, please ignore this email.</p>
+        <p>Best regards,<br>EBS Blog Team</p>
+      </body>
+      </html>
+    `, code),
+	}
+}

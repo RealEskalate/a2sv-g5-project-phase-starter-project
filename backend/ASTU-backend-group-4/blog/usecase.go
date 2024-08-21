@@ -247,6 +247,37 @@ func (b *BlogUseCaseImpl) SearchBlogs(ctx context.Context, query string) (infras
 }
 
 // UpdateBlog implements BlogUseCase.
-func (b *BlogUseCaseImpl) UpdateBlog(ctx context.Context, id string, blog UpdateBlogRequest) (Blog, error) {
-	panic("unimplemented")
+func (b *BlogUseCaseImpl) UpdateBlog(ctx context.Context, id, userID string, blog UpdateBlogRequest) (Blog, error) {
+	user, err := b.authRepository.GetUserByUsername(ctx, userID) // TODO: Change to GetUserByID
+	if err != nil {
+		return Blog{}, err
+	}
+
+	oldBlog, err := b.blogRepository.GetBlogByID(ctx, id)
+	if err != nil {
+		return Blog{}, err
+	}
+
+	if oldBlog.AuthorID != user.ID || !user.IsAdmin {
+		return Blog{}, ErrBlogNotFound
+	}
+
+	var updatedBlog Blog
+	updatedBlog.ID = id
+	updatedBlog.AuthorID = oldBlog.AuthorID
+	updatedBlog.Title = blog.Title
+	updatedBlog.Content = blog.Content
+	updatedBlog.Tags = blog.Tags
+	updatedBlog.ViewsCount = oldBlog.ViewsCount
+	updatedBlog.CommentsCount = oldBlog.CommentsCount
+	updatedBlog.LikesCount = oldBlog.LikesCount
+	updatedBlog.DislikesCount = oldBlog.DislikesCount
+	updatedBlog.Popularity = oldBlog.Popularity
+
+	err = b.blogRepository.UpdateBlog(ctx, id, updatedBlog)
+	if err != nil {
+		return Blog{}, err
+	}
+
+	return updatedBlog, nil
 }

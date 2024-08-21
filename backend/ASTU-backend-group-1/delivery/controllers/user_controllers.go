@@ -26,8 +26,9 @@ func (c *UserController) Register(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.IndentedJSON(http.StatusCreated, gin.H{"message":"Activate your Account in the your email link" })
-}	
+	ctx.IndentedJSON(http.StatusCreated, gin.H{"message": "Activate your Account in the your email link"})
+}
+
 func (c *UserController) AccountVerification(ctx *gin.Context) {
 	email := ctx.Query("email")
 	token := ctx.Query("pwd")
@@ -36,8 +37,9 @@ func (c *UserController) AccountVerification(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, gin.H{"message":"Account Activated"})
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Account Activated"})
 }
+
 func (c *UserController) ForgetPassword(ctx *gin.Context) {
 	email := ctx.Query("email")
 	_, err := c.userUsecase.ForgetPassword(email)
@@ -45,13 +47,14 @@ func (c *UserController) ForgetPassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, gin.H{"message":"Password reset token sent to your email"})
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Password reset token sent to your email"})
 }
+
 func (c *UserController) ResetPassword(ctx *gin.Context) {
 	email := ctx.Query("email")
 	token := ctx.Query("token")
 	newpassword := ""
-	if err:= ctx.BindJSON(&newpassword);err != nil {
+	if err := ctx.BindJSON(&newpassword); err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
@@ -60,11 +63,12 @@ func (c *UserController) ResetPassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, gin.H{"message":"Password Reset Successful"})
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Password Reset Successful"})
 }
+
 func (c *UserController) ForgetPasswordUser(ctx *gin.Context) {
 	email := ""
-	if err:= ctx.BindJSON(&email);err != nil {
+	if err := ctx.BindJSON(&email); err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
@@ -73,8 +77,9 @@ func (c *UserController) ForgetPasswordUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, gin.H{"message":"Password reset token sent to your email"})
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Password reset token sent to your email"})
 }
+
 func (c *UserController) LoginUser(ctx *gin.Context) {
 	user := &domain.User{}
 	if err := ctx.ShouldBind(user); err != nil {
@@ -88,6 +93,7 @@ func (c *UserController) LoginUser(ctx *gin.Context) {
 	}
 	ctx.IndentedJSON(http.StatusOK, gin.H{"token": token})
 }
+
 func (c *UserController) GetUsers(ctx *gin.Context) {
 	username := ctx.Query("username")
 	email := ctx.Query("email")

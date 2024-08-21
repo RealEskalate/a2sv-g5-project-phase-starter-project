@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"Blog_Starter/config"
 	"Blog_Starter/utils"
 	"context"
 	"encoding/json"
@@ -25,7 +26,7 @@ func (ai *AIService) GenerateAIContent(ctx context.Context, content string, preT
 	// Access your API key as an environment variable (see "Set up your API key" above)
 
 	// TODO: Add API key to .env file
-	API_KEY := "AIzaSyBfy1w8ZR4C6xOq43duYKz4RU1wbmsKl18"
+	API_KEY := config.NewEnv().APIKEY
 	// I need a utility to generate AI segirvice so it accept a content and return ai genereted content
 
 	// Access your API key as an environment variable (see "Set up your API key" above)

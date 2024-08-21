@@ -1,40 +1,42 @@
 package main
 
 import (
-    "log"
-    "time"
+	"log"
+	"time"
 
-    route "Blog_Starter/api/router"
-    "Blog_Starter/config"
+	route "Blog_Starter/api/router"
+	"Blog_Starter/config"
 
-    "github.com/gin-contrib/cors"
-    "github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-    // Load environment variables
-    env := config.NewEnv()
+	// Load environment variables
+	env := config.NewEnv()
 
-    // Initialize MongoDB client
-    db := config.NewMongoDatabase(env)
-    defer config.CloseMongoDBConnection(db)
+	// Initialize MongoDB client
+	db := config.NewMongoDatabase(env)
+	defer config.CloseMongoDBConnection(db)
 
-    // Set up the Gin router
-    router := gin.Default()
+	// Set up the Gin router
 
-    // Global CORS configuration
-    config := cors.DefaultConfig()
-    config.AllowOrigins = []string{"*"}
-    config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
-    config.AllowHeaders = []string{"Origin", "Authorization", "Content-Type"}
-    router.Use(cors.New(config))
+	router := gin.Default()
+	router.Static("/upload", "./upload")
 
-    // Set up routes
-    timeout := time.Duration(env.ContextTimeout) * time.Second
-    route.Setup(env, timeout, db, router)
+	// Global CORS configuration
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"*"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
+	config.AllowHeaders = []string{"Origin", "Authorization", "Content-Type"}
+	router.Use(cors.New(config))
 
-    // Run the server
-    if err := router.Run("localhost:" + env.DBPort); err != nil {
-        log.Fatalf("Failed to run server: %v", err)
-    }
+	// Set up routes
+	timeout := time.Duration(env.ContextTimeout) * time.Second
+	route.Setup(env, timeout, db, router)
+
+	// Run the server
+	if err := router.Run("localhost:" + env.DBPort); err != nil {
+		log.Fatalf("Failed to run server: %v", err)
+	}
 }

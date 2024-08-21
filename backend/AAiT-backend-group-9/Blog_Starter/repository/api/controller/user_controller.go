@@ -18,7 +18,7 @@ func NewUserController(userUsecase domain.UserUsecase) *UserController {
 	}
 }
 
-func (uc *UserController) GetAllUsers(c *gin.Context,) {
+func (uc *UserController) GetAllUsers(c *gin.Context) {
 	// Get authenticated user from gin context
 	user, err := utils.CheckUser(c)
 	if err != nil {
@@ -111,7 +111,6 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 		return
 	}
 
-
 	if user.Role != "user" && user.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: Only a user or admin can delete their account"})
 		return
@@ -125,5 +124,68 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted"})
 
-	
+}
+
+func (uc *UserController) UpdateUser(c *gin.Context) {
+	// Get authenticated user from gin context
+	user, err := utils.CheckUser(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	var userUpdate domain.UserUpdate
+
+	if err := c.ShouldBindJSON(&userUpdate); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	updatedUser, err := uc.userUsecase.UpdateUser(c, &userUpdate, user.UserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": updatedUser})
+}
+
+func (uc *UserController) UpdateProfilePicture(c *gin.Context) {
+	// Get authenticated user from gin context
+	user, err := utils.CheckUser(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	profilePicPath, ok := c.Get("profile_picture")
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	updatedUser, err := uc.userUsecase.UpdateProfilePicture(c, profilePicPath.(string), user.UserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": updatedUser})
+}
+
+func (uc *UserController) DeleteProfilePicture(c *gin.Context) {
+	// Get authenticated user from gin context
+	user, err := utils.CheckUser(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	updatedUser, err := uc.userUsecase.UpdateProfilePicture(c, "", user.UserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": updatedUser})
 }

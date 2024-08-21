@@ -6,28 +6,19 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	icache "github.com/group13/blog/usecase/common/i_cache"
 )
 
 type redisCache struct {
-	host      string
-	port      string
-	expiryDay time.Duration
 	client    *redis.Client
+	expiryDay time.Duration
 }
 
-var _ icache.ICache = &redisCache{}
+var _ ICache = &redisCache{}
 
-func NewRedisCache(host string, port string, expiryDay time.Duration, db int) icache.ICache {
+func NewRedisCache(client *redis.Client, expiryDay time.Duration) ICache {
 	return &redisCache{
-		host:      host,
-		port:      port,
-		expiryDay: expiryDay,
-		client: redis.NewClient(&redis.Options{
-			Addr:     host + ":" + port,
-			Password: "",
-			DB:       db,
-		}),
+		client: client,
+		expiryDay: time.Second * expiryDay,
 	}
 }
 

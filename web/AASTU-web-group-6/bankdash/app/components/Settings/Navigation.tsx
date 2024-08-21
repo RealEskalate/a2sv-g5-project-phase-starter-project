@@ -27,8 +27,8 @@ const Navigation: React.FC = () => {
           <button
             key={index}
             onClick={() => router.push(item.url)}
-            className={`border-b-4 rounded cursor-pointer w-24 ${
-              isActive(item.url) ? "border-blue-800" : "border-transparent"
+            className={`border-b-4 rounded cursor-pointer w-24 dark:text-white ${
+              isActive(item.url) ? "border-[#1814F3]" : "border-transparent"
             }`}
           >
             {item.label}

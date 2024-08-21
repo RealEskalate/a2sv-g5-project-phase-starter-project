@@ -19,11 +19,12 @@ const AddCardForm = () => {
   const dispatch = useAppDispatch();
   const accessToken = session?.accessToken as string;
   const onSubmit = async (data: Card) => {
+    console.log("form", data);
     const cardData = {
       balance: data.balance,
       cardHolder: data.cardHolder,
       expiryDate: data.expiryDate,
-      passcode: "123456",
+      passcode: "137456",
       cardType: data.cardType,
     };
 

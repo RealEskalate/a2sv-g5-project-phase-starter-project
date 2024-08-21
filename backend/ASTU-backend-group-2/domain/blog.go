@@ -92,6 +92,9 @@ type BlogRepository interface {
 	UpdateBlog(c context.Context, blogID string, updatedBlog *BlogUpdate) (Blog, error)
 	DeleteBlog(c context.Context, blogID string) error
 	SortByDate(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
+	UpdateLikeCount(c context.Context, blogID string, increment bool) error
+	UpdateDislikeCount(c context.Context, blogID string, increment bool) error
+	UpdateCommentCount(c context.Context, blogID string, increment bool) error
 }
 
 type CommentRepository interface {
@@ -102,9 +105,9 @@ type CommentRepository interface {
 	DeleteComment(c context.Context, blogID, commentID string) error
 }
 
-type LikeRepository interface {
-	LikeBlog(c context.Context, blogID, userID string) error
-	DislikeBlog(c context.Context, blogID, userID string) error
+type ReactionRepository interface {
+	GetReaction(c context.Context, blogID, userID string) (Reaction, error)
+	UpdateReaction(c context.Context, blogID, userID string, reaction Reaction) error
 }
 
 type BlogUsecase interface {
@@ -127,7 +130,7 @@ type CommentUsecase interface {
 	DeleteComment(c context.Context, blogID, commentID string) error
 }
 
-type LikeUsecase interface {
-	LikeBlog(c context.Context, blogID, userID string) error
-	DislikeBlog(c context.Context, blogID, userID string) error
+type ReactionUsecase interface {
+	ToggleLike(c context.Context, blogID, userID string) error
+	ToogleDislike(c context.Context, blogID, userID string) error
 }

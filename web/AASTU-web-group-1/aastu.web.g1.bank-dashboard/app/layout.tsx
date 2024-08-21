@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "BankDash",
   description: "The best banking platform",
-  icons: "./icons/logo.png",
+  icons: { icon: "/icons/logo.png" },
 };
 
 export default function RootLayout({
@@ -19,12 +19,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-     
-
+      <head>
+        <link rel="icon" href="/icons/logo.png" />
+      </head>
       <Toaster />
-      <body className={`inter.className `}> 
-        <UserProvider>{children}  </UserProvider></body>
-    
+      <body className={`inter.className`}>
+        <UserProvider>{children} </UserProvider>
+      </body>
     </html>
   );
 }

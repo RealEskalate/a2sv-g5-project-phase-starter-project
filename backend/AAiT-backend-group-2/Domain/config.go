@@ -10,4 +10,5 @@ type Config struct {
 	EmailPort   	string 			`mapstructure:"EMAIL_PORT"`
 	SenderEmail 	string 			`mapstructure:"SENDER_EMAIL"`
 	SenderPassword	string			`mapstructure:"SENDER_PASSWORD"`
+	CloudinaryUrl 	string			`mapstructure:"CLOUDINARY_URL"`
 }

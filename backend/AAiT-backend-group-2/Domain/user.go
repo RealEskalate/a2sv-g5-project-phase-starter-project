@@ -43,6 +43,7 @@ type UserUsecase interface {
 	ForgotPassword(c context.Context, userId, email string) error
 	ResetPassword(c context.Context, userId string, passwordResetDto *dtos.PasswordResetDto) error
 	ChangePassword(c context.Context, userId string, changePasswordDto *dtos.ChangePasswordDto) error
+	UpdateProfile(c context.Context, userId string, updateProfileDto *dtos.UpdateProfileDto) error
 }
 
 type UserRepository interface {

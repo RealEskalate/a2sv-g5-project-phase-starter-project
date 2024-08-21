@@ -18,10 +18,11 @@ func NewUserRouter(db *mongo.Database, group *gin.RouterGroup, configs *domain.C
 	
 	jwtService := services.NewJWTService([]byte(configs.SecretKey))
 	emailService := services.NewEmailService(configs.EmailHost, configs.EmailPort, configs.SenderEmail, configs.SenderPassword)
+	imageService := services.NewImageService(configs.CloudinaryUrl)
 	validatorService := services.NewValidatorService()
 	userRepo := repositories.NewUserRepository(db)
 
-	userUsecase := usecases.NewUserUsecase(userRepo, jwtService, emailService, 10*time.Second, validatorService)
+	userUsecase := usecases.NewUserUsecase(userRepo, jwtService, emailService, imageService, 10*time.Second, validatorService)
 
 	userController := controllers.NewUserController(userUsecase)
 
@@ -33,7 +34,8 @@ func NewUserRouter(db *mongo.Database, group *gin.RouterGroup, configs *domain.C
 		userRoutes.DELETE("/users/:id", userController.DeleteUser)
 		userRoutes.POST("/users/forgot-password", userController.ForgotPassword)
 		userRoutes.POST("/users/reset-password", userController.ResetPassword)
-		userRoutes.POST("/users/change-password", userController.ChangePassword)
+		userRoutes.PUT("/users/change-password", userController.ChangePassword)
+		userRoutes.PUT("/users/update-profile", userController.UpdateProfile)
 	}
 
 	adminRoutes := group.Group("/admin")

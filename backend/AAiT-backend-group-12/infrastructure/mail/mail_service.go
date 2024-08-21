@@ -7,6 +7,7 @@ import (
 	"github.com/jordan-wright/email"
 )
 
+// SendMail sends an email to the specified address using the provided SMTP credentials
 func SendMail(from string, to string, smtpAddress string, smtpPassword string, mailContent string) error {
 	e := email.NewEmail()
 	e.From = fmt.Sprintf("%s <%s>", from, smtpAddress)

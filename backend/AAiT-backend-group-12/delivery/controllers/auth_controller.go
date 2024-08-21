@@ -4,6 +4,7 @@ import (
 	"blog_api/domain"
 	"blog_api/domain/dtos"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -13,27 +14,45 @@ type AuthController struct {
 	usecase domain.UserUsecaseInterface
 }
 
+// Returns the HTTP equivalent codes of the domain error codes
 func GetHTTPErrorCode(err domain.CodedError) int {
 	switch err.GetCode() {
 	case domain.ERR_BAD_REQUEST:
-		return 400
+		return http.StatusBadRequest
 	case domain.ERR_UNAUTHORIZED:
-		return 401
+		return http.StatusUnauthorized
 	case domain.ERR_FORBIDDEN:
-		return 403
+		return http.StatusForbidden
 	case domain.ERR_NOT_FOUND:
-		return 404
+		return http.StatusNotFound
 	case domain.ERR_CONFLICT:
-		return 409
+		return http.StatusConflict
 	default:
-		return 500
+		return http.StatusInternalServerError
 	}
 }
 
+// NewAuthController initializes the Auth controller
 func NewAuthController(usecase domain.UserUsecaseInterface) *AuthController {
 	return &AuthController{usecase: usecase}
 }
 
+// Returns the contents of the Authorization header
+func (controller *AuthController) GetAuthHeader(c *gin.Context) (string, error) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		return "", fmt.Errorf("authorization header not found")
+	}
+
+	headerSegments := strings.Split(authHeader, " ")
+	if len(headerSegments) != 2 || strings.ToLower(headerSegments[0]) != "bearer" {
+		return "", fmt.Errorf("authorization header is invalid")
+	}
+
+	return headerSegments[1], nil
+}
+
+// Returns the domain from the context of the app
 func (controller *AuthController) GetDomain(c *gin.Context) string {
 	scheme := "http"
 	if c.Request.TLS != nil {
@@ -44,10 +63,11 @@ func (controller *AuthController) GetDomain(c *gin.Context) string {
 	return fmt.Sprintf("%s://%s", scheme, host)
 }
 
+// HandleRegister handles the register user endpoint
 func (controller *AuthController) HandleSignup(c *gin.Context) {
 	var newUser domain.User
 	if err := c.BindJSON(&newUser); err != nil {
-		c.JSON(400, domain.Response{"error": "Invalid input"})
+		c.JSON(http.StatusBadRequest, domain.Response{"error": "Invalid input"})
 		return
 	}
 
@@ -60,10 +80,11 @@ func (controller *AuthController) HandleSignup(c *gin.Context) {
 	c.JSON(201, domain.Response{"message": "User created. Please verify your email."})
 }
 
+// HandleLogin handles the login endpoint
 func (controller *AuthController) HandleLogin(c *gin.Context) {
 	var newUser domain.User
 	if err := c.BindJSON(&newUser); err != nil {
-		c.JSON(400, domain.Response{"error": "Invalid input"})
+		c.JSON(http.StatusBadRequest, domain.Response{"error": "Invalid input"})
 		return
 	}
 
@@ -76,21 +97,15 @@ func (controller *AuthController) HandleLogin(c *gin.Context) {
 	c.JSON(201, domain.Response{"accessToken": acK, "refreshToken": rfK})
 }
 
+// HandleRenewAccessToken handles the renew access token endpoint
 func (controller *AuthController) HandleRenewAccessToken(c *gin.Context) {
-	// obtain token from the request header
-	authHeader := c.GetHeader("Authorization")
-	if authHeader == "" {
-		c.JSON(401, domain.Response{"error": "Authorization header not found"})
+	token, gErr := controller.GetAuthHeader(c)
+	if gErr != nil {
+		c.JSON(http.StatusUnauthorized, domain.Response{"error": gErr.Error()})
 		return
 	}
 
-	headerSegments := strings.Split(authHeader, " ")
-	if len(headerSegments) != 2 || strings.ToLower(headerSegments[0]) != "bearer" {
-		c.JSON(401, domain.Response{"error": "Authorization header is invalid"})
-		return
-	}
-
-	accessToken, err := controller.usecase.RenewAccessToken(c, headerSegments[1])
+	accessToken, err := controller.usecase.RenewAccessToken(c, token)
 	if err != nil {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return
@@ -99,22 +114,23 @@ func (controller *AuthController) HandleRenewAccessToken(c *gin.Context) {
 	c.JSON(200, domain.Response{"accessToken": accessToken})
 }
 
+// HandleUpdateUser handles the update user endpoint
 func (controller *AuthController) HandleUpdateUser(c *gin.Context) {
 	reqUsername := strings.TrimSpace(c.Param("username"))
 	if reqUsername == "" {
-		c.JSON(400, domain.Response{"error": "Username is required"})
+		c.JSON(http.StatusBadRequest, domain.Response{"error": "Username is required"})
 		return
 	}
 
 	var updatedUser dtos.UpdateUser
 	if err := c.BindJSON(&updatedUser); err != nil {
-		c.JSON(400, domain.Response{"error": "Invalid input"})
+		c.JSON(http.StatusBadRequest, domain.Response{"error": "Invalid input"})
 		return
 	}
 
 	tokenUsername, ok := c.Keys["username"]
 	if !ok {
-		c.JSON(400, domain.Response{"error": "Username not found in token"})
+		c.JSON(http.StatusBadRequest, domain.Response{"error": "Username not found in token"})
 		return
 	}
 
@@ -127,6 +143,7 @@ func (controller *AuthController) HandleUpdateUser(c *gin.Context) {
 	c.JSON(200, domain.Response{"message": "User updated", "data": resData})
 }
 
+// HandlePromoteUser handles the promote user endpoint
 func (controller *AuthController) HandlePromoteUser(c *gin.Context) {
 	username := c.Param("username")
 	if username == "" {
@@ -143,6 +160,7 @@ func (controller *AuthController) HandlePromoteUser(c *gin.Context) {
 	c.JSON(200, domain.Response{"message": "User promoted"})
 }
 
+// HandleDemoteUser handles the demote user endpoint
 func (controller *AuthController) HandleDemoteUser(c *gin.Context) {
 	username := c.Param("username")
 	if username == "" {
@@ -159,6 +177,7 @@ func (controller *AuthController) HandleDemoteUser(c *gin.Context) {
 	c.JSON(200, domain.Response{"message": "User demoted"})
 }
 
+// HandleVerifyEmail handles the verify email endpoint
 func (controller *AuthController) HandleVerifyEmail(c *gin.Context) {
 	username := c.Param("username")
 	token := c.Param("token")
@@ -174,4 +193,89 @@ func (controller *AuthController) HandleVerifyEmail(c *gin.Context) {
 	}
 
 	c.JSON(200, domain.Response{"message": "User verified"})
+}
+
+// HandleInitResetPassword handles the init reset password endpoint
+func (controller *AuthController) HandleInitResetPassword(c *gin.Context) {
+	var user domain.User
+	if err := c.BindJSON(&user); err != nil {
+		c.JSON(400, domain.Response{"error": "Invalid input " + err.Error()})
+		return
+	}
+
+	uErr := controller.usecase.InitResetPassword(c, user.Username, user.Email, controller.GetDomain(c))
+	if uErr != nil {
+		c.JSON(GetHTTPErrorCode(uErr), domain.Response{"error": uErr.Error()})
+		return
+	}
+
+	c.JSON(200, domain.Response{"message": "A reset password token has been sent to your email."})
+}
+
+// HandleResetPassword handles the reset password endpoint
+func (controller *AuthController) HandleResetPassword(c *gin.Context) {
+	var resetData dtos.ResetPassword
+	token, err := controller.GetAuthHeader(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, domain.Response{"error": err.Error()})
+		return
+	}
+
+	if err = c.BindJSON(&resetData); err != nil {
+		c.JSON(400, domain.Response{"error": "Invalid input " + err.Error()})
+		return
+	}
+
+	uErr := controller.usecase.ResetPassword(c, resetData, token)
+	if uErr != nil {
+		c.JSON(GetHTTPErrorCode(uErr), domain.Response{"error": uErr.Error()})
+		return
+	}
+
+	c.JSON(200, domain.Response{"message": "Password reset successful"})
+}
+
+// HandleLogout handles the logout endpoint
+func (controller *AuthController) HandleLogout(c *gin.Context) {
+	authHeader, err := controller.GetAuthHeader(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, domain.Response{"error": err.Error()})
+		return
+	}
+
+	controller.usecase.Logout(c, c.Keys["username"].(string), authHeader)
+}
+
+// HandleGoogleLogin handles the Google OAuth login endpoint
+func (controller *AuthController) HandleGoogleLogin(c *gin.Context) {
+	var response dtos.GoogleResponse
+	if err := c.ShouldBindJSON(&response); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	acK, rfK, err := controller.usecase.OAuthLogin(c, &response)
+	if err != nil {
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, domain.Response{"accessToken": acK, "refreshToken": rfK})
+}
+
+// HandleGoogleSignup handles the Google OAuth signup endpoint
+func (controller *AuthController) HandleGoogleSignup(c *gin.Context) {
+	var requestData dtos.GoogleSignup
+	if err := c.ShouldBindJSON(&requestData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	sErr := controller.usecase.OAuthSignup(c, &requestData.GoogleResponse, &requestData.UserData)
+	if sErr != nil {
+		c.JSON(GetHTTPErrorCode(sErr), domain.Response{"error": sErr.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, domain.Response{"message": "User created."})
 }

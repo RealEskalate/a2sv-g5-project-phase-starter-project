@@ -10,21 +10,26 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+/* Defines a struct with all the necessary data to implement domain.UserRepositoryInterface */
 type UserRepository struct {
 	collection *mongo.Collection
 }
 
+// NewUserRepository initializes the User repository
 func NewUserRepository(collection *mongo.Collection) *UserRepository {
 	return &UserRepository{collection: collection}
 }
 
+// CreateUser creates a new user in the database
 func (r *UserRepository) CreateUser(c context.Context, user *domain.User) domain.CodedError {
 	_, err := r.collection.InsertOne(c, user)
 
+	// check for duplicate emails
 	if mongo.IsDuplicateKeyError(err) && strings.Contains(err.Error(), "email") {
 		return *domain.NewError("email already taken", domain.ERR_BAD_REQUEST)
 	}
 
+	// check for duplicate usernames
 	if mongo.IsDuplicateKeyError(err) && strings.Contains(err.Error(), "username") {
 		return *domain.NewError("username already taken", domain.ERR_BAD_REQUEST)
 	}
@@ -36,8 +41,11 @@ func (r *UserRepository) CreateUser(c context.Context, user *domain.User) domain
 	return nil
 }
 
+// FindUser finds a user using the provided email and username. Returns the user if found, otherwise returns an error
 func (r *UserRepository) FindUser(c context.Context, user *domain.User) (domain.User, domain.CodedError) {
 	var foundUser domain.User
+
+	// check for either the username or the email
 	filter := bson.M{
 		"$or": []bson.M{
 			{"username": user.Username},
@@ -61,7 +69,9 @@ func (r *UserRepository) FindUser(c context.Context, user *domain.User) (domain.
 	return foundUser, nil
 }
 
+// SetRefreshToken sets the refresh token for the user
 func (r *UserRepository) SetRefreshToken(c context.Context, user *domain.User, newRefreshToken string) domain.CodedError {
+	// check for either the username or the email
 	filter := bson.M{
 		"$or": []bson.M{
 			{"username": user.Username},
@@ -83,6 +93,7 @@ func (r *UserRepository) SetRefreshToken(c context.Context, user *domain.User, n
 	return nil
 }
 
+// UpdateUser updates the user associated with the provided username with the provided data
 func (r *UserRepository) UpdateUser(c context.Context, username string, user *dtos.UpdateUser) (map[string]string, domain.CodedError) {
 	var updatedData = make(map[string]string)
 	var updates = bson.D{}
@@ -109,6 +120,7 @@ func (r *UserRepository) UpdateUser(c context.Context, username string, user *dt
 	return updatedData, nil
 }
 
+// ChangeRole changes the role of the user with the provided username
 func (r *UserRepository) ChangeRole(c context.Context, username string, newRole string) domain.CodedError {
 	var user domain.User
 	qres := r.collection.FindOne(c, bson.D{{Key: "username", Value: username}})
@@ -124,6 +136,7 @@ func (r *UserRepository) ChangeRole(c context.Context, username string, newRole 
 		return domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
 
+	// check if the user is the root user
 	if user.Role == "root" {
 		return domain.NewError("Cannot change the role of the root user", domain.ERR_FORBIDDEN)
 	}
@@ -144,6 +157,7 @@ func (r *UserRepository) ChangeRole(c context.Context, username string, newRole 
 	return nil
 }
 
+// UpdateVerificationDetails updates the verification details of the user with the provided username
 func (r *UserRepository) UpdateVerificationDetails(c context.Context, username string, verificationData domain.VerificationData) domain.CodedError {
 	res := r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$set", Value: bson.D{{Key: "verificationdata", Value: verificationData}}}})
 	if res.Err() == mongo.ErrNoDocuments {
@@ -157,6 +171,7 @@ func (r *UserRepository) UpdateVerificationDetails(c context.Context, username s
 	return nil
 }
 
+// VerifyUser sets the IsVerified field of the user with the provided username to true
 func (r *UserRepository) VerifyUser(c context.Context, username string) domain.CodedError {
 	res := r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$set", Value: bson.D{{Key: "isverified", Value: true}}}})
 	if res.Err() == mongo.ErrNoDocuments {
@@ -170,6 +185,35 @@ func (r *UserRepository) VerifyUser(c context.Context, username string) domain.C
 	res = r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$unset", Value: bson.D{{Key: "verificationdata", Value: ""}}}})
 	if res.Err() != nil {
 		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return nil
+}
+
+// UpdatePassword updates the password of the user with the provided username
+func (r *UserRepository) UpdatePassword(c context.Context, username string, newPassword string) domain.CodedError {
+	res := r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$set", Value: bson.D{{Key: "password", Value: newPassword}}}})
+	if res.Err() == mongo.ErrNoDocuments {
+		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	res = r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$unset", Value: bson.D{{Key: "verificationdata", Value: ""}}}})
+	if res.Err() != nil {
+		return domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	return nil
+}
+
+// DeleteUser deletes the user with the provided username
+func (r *UserRepository) DeleteUser(c context.Context, username string) domain.CodedError {
+	_, err := r.collection.DeleteOne(c, bson.D{{Key: "username", Value: username}})
+	if err != nil {
+		return domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
 
 	return nil

@@ -6,16 +6,16 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 )
 
-/*
-Defines the names of the collections in the DB
-*/
+// Defines the names of the collections in the DB
 const (
 	CollectionUsers = "users"
 	CollectionBlogs = "blogs"
 )
 
+// Defines the names of the roles
 const (
 	RoleUser  = "user"
 	RoleAdmin = "admin"
@@ -29,12 +29,36 @@ const (
 
 type Response gin.H
 
+type TokenType *jwt.Token
+
+// Defiens the environment variables used by the API
+type EnvironmentVariables struct {
+	DB_ADDRESS             string
+	DB_NAME                string
+	TEST_DB_NAME           string
+	JWT_SECRET_TOKEN       string
+	ACCESS_TOKEN_LIFESPAN  int
+	REFRESH_TOKEN_LIFESPAN int
+	PORT                   int
+	ROUTE_PREFIX           string
+	ROOT_USERNAME          string
+	ROOT_PASSWORD          string
+	SMTP_GMAIL             string
+	SMTP_PASSWORD          string
+	REDIS_URL              string
+	GEMINI_API_KEY         string
+	GOOGLE_CLIENT_ID       string
+	GOOGLE_CLIENT_SECRET   string
+}
+
+// Defines a struct for verifying the user emails and reseting passwords
 type VerificationData struct {
 	Token     string    `json:"token"`
 	ExpiresAt time.Time `json:"expires_at"`
 	Type      string    `json:"type"`
 }
 
+// Defines a struct for the user entity
 type User struct {
 	Username         string           `json:"username"`
 	Email            string           `json:"email"`
@@ -48,6 +72,7 @@ type User struct {
 	VerificationData VerificationData `json:"verification_data"`
 }
 
+// Defines a struct for the blog entity
 type Blog struct {
 	ID         string    `json:"id"`
 	Title      string    `json:"title"`
@@ -62,11 +87,10 @@ type Blog struct {
 	Comments   []Comment `json:"comment"`
 }
 
-
-type NewBlog struct{
-	Title      string    `json:"title" validate:"required,MinWord=1"`
-	Content    string    `json:"content" validate:"required,MinWord=25"`
-	Tags       []string  `json:"tags"`
+type NewBlog struct {
+	Title   string   `json:"title" validate:"required,MinWord=1"`
+	Content string   `json:"content" validate:"required,MinWord=25"`
+	Tags    []string `json:"tags"`
 }
 
 type Comment struct {
@@ -81,6 +105,7 @@ type NewComment struct {
 	Content string `json:"content" validate:"required,min=3"`
 }
 
+// Defines a struct for the blog filter options
 type BlogFilterOptions struct {
 	Title         string    `json:"title"`  // Search by title
 	Author        string    `json:"author"` // Search by author name
@@ -99,8 +124,8 @@ type BlogFilterOptions struct {
 
 // the data sent through the body when making a request to like or dislike a blog
 type LikeOrDislikeRequest struct {
-	BlogID  string `json:"blogID" validate:"required"`
-	State   bool `json:"state" validate:"required"`
+	BlogID string `json:"blogID" validate:"required"`
+	State  bool   `json:"state" validate:"required"`
 }
 
 type BlogRepositoryInterface interface {
@@ -110,7 +135,7 @@ type BlogRepositoryInterface interface {
 	InsertBlogPost(ctx context.Context, blog *Blog) CodedError
 	UpdateBlogPost(ctx context.Context, id string, blog *NewBlog) CodedError
 	DeleteBlogPost(ctx context.Context, id string) CodedError
-	TrackBlogPopularity(ctx context.Context, blogId string, action string,state bool, username string) CodedError
+	TrackBlogPopularity(ctx context.Context, blogId string, action string, state bool, username string) CodedError
 
 	//Comment related methods
 	// FetchComment(ctx context.Context, commentID, blogID string) (Comment, CodedError)
@@ -146,6 +171,8 @@ type UserRepositoryInterface interface {
 	ChangeRole(c context.Context, username string, newRole string) CodedError
 	VerifyUser(c context.Context, username string) CodedError
 	UpdateVerificationDetails(c context.Context, username string, verificationData VerificationData) CodedError
+	UpdatePassword(c context.Context, username string, newPassword string) CodedError
+	DeleteUser(c context.Context, username string) CodedError
 }
 
 type UserUsecaseInterface interface {
@@ -156,4 +183,14 @@ type UserUsecaseInterface interface {
 	PromoteUser(c context.Context, username string) CodedError
 	DemoteUser(c context.Context, username string) CodedError
 	VerifyEmail(c context.Context, username string, token string, hostUrl string) CodedError
+	InitResetPassword(c context.Context, username string, email string, hostUrl string) CodedError
+	ResetPassword(c context.Context, resetDto dtos.ResetPassword, token string) CodedError
+	Logout(c context.Context, username string, accessToken string) CodedError
+	OAuthLogin(c context.Context, data *dtos.GoogleResponse) (string, string, CodedError)
+	OAuthSignup(c context.Context, data *dtos.GoogleResponse, userCreds *dtos.OAuthSignup) CodedError
+}
+
+type CacheRepositoryInterface interface {
+	CacheData(key string, value string, expiration time.Duration) CodedError
+	IsCached(key string) bool
 }

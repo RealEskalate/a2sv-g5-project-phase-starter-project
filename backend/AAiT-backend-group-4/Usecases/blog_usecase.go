@@ -128,43 +128,16 @@ func (blogU *blogUsecase) FetchByBlogAuthor(c context.Context, authorID string, 
 
 // FetchByBlogTitle calls FetchByBlogTitle method in blog repository to retrive a blog by it's title
 // FetchByBlogTitle fetches blogs by their title and handles pagination
-func (blogU *blogUsecase) FetchByBlogTitle(c context.Context, title string, limit, page int) (domain.PaginatedBlogs, error) {
+func (blogU *blogUsecase) FetchByBlogTitle(c context.Context, title string) (domain.Blog, error) {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
 
-	if limit <= 0 || page <= 0 {
-		return domain.PaginatedBlogs{}, fmt.Errorf("invalid limit or page number")
-	}
-
-	offset := (page - 1) * limit
-
-	blogs, totalCount, err := blogU.blogRepository.FetchByBlogTitle(ctx, title, limit, offset)
+	blog, err := blogU.blogRepository.FetchByBlogTitle(ctx, title)
 	if err != nil {
-		return domain.PaginatedBlogs{}, err
-	}
+		return domain.Blog{}, err}
+	
 
-	totalPages := (totalCount + limit - 1) / limit
-	currentPage := page
-	nextPage := currentPage + 1
-	previousPage := currentPage - 1
-
-	if previousPage < 1 {
-		previousPage = 0
-	}
-
-	if nextPage > totalPages {
-		nextPage = 0
-	}
-
-	return domain.PaginatedBlogs{
-		Blogs: blogs,
-		Pagination: domain.PaginationData{
-			NextPage:     nextPage,
-			PreviousPage: previousPage,
-			CurrentPage:  currentPage,
-			TotalPages:   totalPages,
-			TotalItems:   totalCount,
-		}}, nil
+	return blog, nil
 }
 
 // FetchAll retrieves all blogs with pagination and metadata

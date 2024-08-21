@@ -2,7 +2,7 @@ package usecases
 
 import (
 	"context"
-	"aait-backend-group4/domain"
+	"aait-backend-group4/Domain"
 )
 
 type logoutUsecase struct {

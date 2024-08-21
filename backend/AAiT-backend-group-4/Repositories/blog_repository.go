@@ -139,32 +139,23 @@ func (br *blogRepository) FetchByBlogAuthor(c context.Context, authorID string, 
 // FetchByBlogTitle retrieves blogs by their title with optional pagination
 // MongoDB filter for title search with case-insensitive regex
 // Count total number of documents matching the filter
-func (br *blogRepository) FetchByBlogTitle(c context.Context, title string, limit, offset int) ([]domain.Blog, int, error) {
+func (br *blogRepository) FetchByBlogTitle(c context.Context, title string,) (domain.Blog, error) {
 
 	collection := br.database.Collection(br.collection)
 	filter := bson.M{"title": bson.M{"$regex": title, "$options": "i"}}
 
-	findOptions := options.Find()
-	findOptions.SetLimit(int64(limit))
-	findOptions.SetSkip(int64(offset))
-
-	cursor, err := collection.Find(c, filter, findOptions)
+	cursor, err := collection.Find(c, filter)
 	if err != nil {
-		return []domain.Blog{}, 0, err
+		return domain.Blog{}, err
 	}
 
-	var blogs []domain.Blog
+	var blogs domain.Blog
 	err = cursor.All(c, &blogs)
 	if err != nil {
-		return []domain.Blog{}, 0, err
+		return domain.Blog{},err
 	}
 
-	count, err := collection.CountDocuments(c, filter)
-	if err != nil {
-		return []domain.Blog{}, 0, err
-	}
-
-	return blogs, int(count), nil
+	return blogs, nil
 }
 
 // FetchAll retrieves all blogs from the collection with optional pagination

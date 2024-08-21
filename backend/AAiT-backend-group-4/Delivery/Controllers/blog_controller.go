@@ -97,6 +97,7 @@ func (bc *BlogController) FetchAll(c *gin.Context) {
 
 // FetchByBlogAuthor handles fetching blogs by a specific author
 func (bc *BlogController) FetchByBlogAuthor(c *gin.Context) {
+	
 	authorID := c.Param("author_id")
 
 	blogs, err := bc.BlogUsecase.FetchByBlogAuthor(c, authorID)

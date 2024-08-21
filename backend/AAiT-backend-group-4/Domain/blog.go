@@ -98,7 +98,7 @@ type BlogRepository interface {
 	// FetchByBlogAuthor retrieves blogs by the author's ID
 	FetchByBlogAuthor(c context.Context, authorID string, limit, offset int) ([]Blog, int, error)
 	// FetchByBlogTitle retrieves blogs by their title
-	FetchByBlogTitle(c context.Context, title string, limit, offset int) ([]Blog, int, error)
+	FetchByBlogTitle(c context.Context, title string) (Blog, error)
 
 	FetchByPageAndPopularity(ctx context.Context, limit, offset int) ([]Blog, int, error)
 	FetchByTags(ctx context.Context, tags []Tag, limit, offset int) ([]Blog, int, error)
@@ -139,7 +139,7 @@ type BlogUsecase interface {
 	// FetchByBlogAuthor retrieves blogs by the author's ID
 	FetchByBlogAuthor(c context.Context, authorID string, limit, page int) (PaginatedBlogs, error)
 	// FetchByBlogTitle retrieves blogs by their title
-	FetchByBlogTitle(c context.Context, title string, limit, page int) (PaginatedBlogs, error)
+	FetchByBlogTitle(c context.Context, title string) (Blog, error)
 
 	FetchByPageAndPopularity(ctx context.Context, limit, page int) (PaginatedBlogs, error)
 

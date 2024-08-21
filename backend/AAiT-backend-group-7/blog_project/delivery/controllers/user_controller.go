@@ -131,12 +131,12 @@ func (uc *userController) Login(c *gin.Context) {
 		return
 	}
 
-	newUser, err := uc.UserUsecase.Login(c, user.Username, user.Password)
+	accessToken, refreshToken, err := uc.UserUsecase.Login(c, user.Username, user.Password)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, newUser)
+	c.JSON(200, gin.H{"access token": accessToken, "refresh token": refreshToken})
 }
 
 func (uc *userController) Logout(c *gin.Context) {
@@ -200,5 +200,12 @@ func (uc *userController) DemoteUser(c *gin.Context) {
 }
 
 func (uc *userController) RefreshToken(c *gin.Context) {
+	refreshToken := c.Param("refresh_token")
+	newtoken, err := uc.UserUsecase.RefreshToken(c, refreshToken)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Token refreshed successfully", "new token": newtoken})
 
 }

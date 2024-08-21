@@ -2,11 +2,15 @@ package usecases
 
 import (
 	"blog_project/domain"
+	"blog_project/infrastructure"
 	"context"
 	"errors"
+	"os"
 	"regexp"
 	"sync/atomic"
 	"time"
+
+	"github.com/golang-jwt/jwt"
 )
 
 type UserUsecase struct {
@@ -58,7 +62,12 @@ func (u *UserUsecase) CreateUser(ctx context.Context, user domain.User) (domain.
 		return domain.User{}, errors.New("invalid password, must contain at least one uppercase letter, one lowercase letter, one number, one special character, and minimum length of 8")
 	}
 
-	// user.Password = infrastructure.HashPassword(user.Password)
+	hashedPassword, err := infrastructure.HashPassword(user.Password)
+	if err != nil {
+		return domain.User{}, errors.New(err.Error())
+	}
+
+	user.Password = hashedPassword
 
 	user.ID = generateUniqueID()
 
@@ -94,28 +103,52 @@ func (u *UserUsecase) DeleteBlog(ctx context.Context, userID int, blogID int) (d
 	return u.UserRepo.UpdateUser(ctx, userID, user)
 }
 
-func (u *UserUsecase) Login(ctx context.Context, username, password string) (domain.User, error) {
+func (u *UserUsecase) Login(ctx context.Context, username, password string) (string, string, error) {
 	user, err := u.UserRepo.SearchByUsername(ctx, username)
 	if err != nil || user.ID == 0 {
-		return domain.User{}, errors.New("invalid credentials")
+		return "", "", errors.New("invalid credentials")
 	}
 
-	// // Assume infrastructure is implemented to verify passwords
-	// if !infrastructure.VerifyPassword(user.Password, password) {
-	// 	return domain.User{}, errors.New("invalid credentials")
-	// }
+	err = infrastructure.ComparePasswords(user.Password, password)
+	if err != nil {
+		return "", "", errors.New("invalid credentials")
+	}
 
-	// token, err := infrastructure.GenerateToken(user.Username)
-	// if err != nil {
-	// 	return domain.User{}, err
-	// }
+	token, err := infrastructure.GenerateJWTAccessToken(&user, os.Getenv("jwt_secret"), 1)
+	if err != nil {
+		return "", "", err
+	}
 
-	// _, err = u.UserRepo.CreateToken(ctx, user.Username, token)
-	// if err != nil {
-	// 	return domain.User{}, err
-	// }
+	refreshToken, err := infrastructure.GenerateJWTRefreshToken(&user, os.Getenv("jwt_secret"), 5)
 
-	return user, nil
+	if err != nil {
+		return "", "", err
+	}
+
+	err = u.UserRepo.StoreRefreshToken(ctx, user.ID, refreshToken)
+	if err != nil {
+		return "", "", err
+	}
+
+	return token, refreshToken, nil
+}
+
+func (u *UserUsecase) RefreshToken(ctx context.Context, refreshToken string) (string, error) {
+	validatedToken, err := infrastructure.ValidateToken(refreshToken, os.Getenv("jwt_secret"))
+	if err != nil {
+		return "", errors.New("invalid token")
+	}
+
+	userID := validatedToken.Claims.(jwt.MapClaims)["id"].(int)
+
+	user, err := u.UserRepo.GetUserByID(ctx, userID)
+	if err != nil {
+		return "", errors.New("user not found")
+	}
+
+	newToken, err := infrastructure.GenerateJWTAccessToken(&user, os.Getenv("jwt_secret"), 1)
+
+	return newToken, nil
 }
 
 func (u *UserUsecase) ForgetPassword(ctx context.Context, email string) error {

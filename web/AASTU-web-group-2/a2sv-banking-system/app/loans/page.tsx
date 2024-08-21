@@ -1,4 +1,10 @@
 import Card1 from "./components/Card1";
+import { getServerSession } from "next-auth";
+import { options } from "../api/auth/[...nextauth]/options";
+import {
+  activeloansall,
+  activeloansdetaildata,
+} from "./back/ActiveLoanController";
 import {
   Table,
   TableBody,
@@ -9,97 +15,66 @@ import {
   TableFooter,
   TableRow,
 } from "@/app/loans/components/table";
-const invoices = [
-  {
-    slno: "01",
-    loanmoney: "$100,000",
-    Lefttorepay: "$40,500",
-    duration: "8 Months",
-    interestrate: "12%",
-    installment: "$2,000 / month",
-    repay: "Repay",
-  },
-  {
-    slno: "02",
-    loanmoney: "$500,000",
-    Lefttorepay: "$250,000",
-    duration: "36 Months",
-    interestrate: "10%",
-    installment: "$8,000 / month",
-    repay: "Repay",
-  },
-  {
-    slno: "03",
-    loanmoney: "$900,000",
-    Lefttorepay: "$40,500",
-    duration: "12 Months",
-    interestrate: "12%",
-    installment: "$5,000 / month%",
-    repay: "Repay",
-  },
-  {
-    slno: "04",
-    loanmoney: "$50,000",
-    Lefttorepay: "$40,500",
-    duration: "25 Months",
-    interestrate: "5%",
-    installment: "$2,000 / month",
-    repay: "Repay",
-  },
-  {
-    slno: "05",
-    loanmoney: "$50,000",
-    Lefttorepay: "$40,500",
-    duration: "5 Months",
-    interestrate: "16%",
-    installment: "$10,000 / month",
-    repay: "Repay",
-  },
-  {
-    slno: "06",
-    loanmoney: "$80,000",
-    Lefttorepay: "$25,500",
-    duration: "14 Months",
-    interestrate: "8%",
-    installment: "$2,000 / month",
-    repay: "Repay",
-  },
-  {
-    slno: "07",
-    loanmoney: "$12,000",
-    Lefttorepay: "$5,500",
-    duration: "9 Months",
-    interestrate: "13%",
-    installment: "$500 / month",
-    repay: "Repay",
-  },
-  {
-    slno: "08",
-    loanmoney: "$160,000",
-    Lefttorepay: "$100,800",
-    duration: "3 Months",
-    interestrate: "12%",
-    installment: "$900 / month",
-    repay: "Repay",
-  },
-  {
-    slno: "Total",
-    loanmoney: "$125,0000",
-    Lefttorepay: "$750,000",
-    duration: "",
-    interestrate: "",
-    installment: "$50,000 / month",
-    repay: "",
-  },
-];
 
-export default function Home() {
+const loanid = "66c3054e80b7cf4a6c2f7709";
+// const token ="eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJsc2FqZGxzanNuIiwiaWF0IjoxNzI0MTU1NzkzLCJleHAiOjE3MjQyNDIxOTN9.wi7oRgF81zMp1v8tPzRPmAj4GOLaYy4bV_TMVvtWmzg2mjrTThiruT_Fswcyu1eq";
+
+interface invoices {
+  serialNumber: string;
+  loanAmount: number;
+  amountLeftToRepay: number;
+  duration: number;
+  interestRate: number;
+  installment: number;
+  type: string;
+  activeLoneStatus: string;
+  userId: string;
+}
+interface loantype {
+  personalLoan: number;
+  businessLoan: number;
+  corporateLoan: number;
+}
+type ISODateString = string;
+
+interface DefaultSession {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    access_token?: string | any;
+  };
+  expires: ISODateString;
+}
+export default async function Home() {
+  const seasion: DefaultSession | null = await getServerSession(options);
+  const f = await activeloansall(seasion?.user?.access_token);
+  // const f = await activeloansall(token);
+  // console.log("asa1111", f);
+  const data: loantype = await activeloansdetaildata(
+    seasion?.user?.access_token
+  );
+  // console.log("s", data);
+
   return (
-    <div className="bg-gray-100 p-6">
+    // <main className="mt-16 ml-72">
+    <div className="bg-gray-100 p-6 ">
       <div className="flex justify-between gap-8 overflow-x-auto [&::-webkit-scrollbar]:hidden">
-        <Card1 text="Personal Loans" img="/personal.png" num="$50,000" />
-        <Card1 text="Corporate Loans" img="/corporate.png" num="$100,000" />
-        <Card1 text="Business Loans" img="/business.png" num="$500,000" />
+        <Card1
+          text="Personal Loans"
+          img="/personal.png"
+          num={data.personalLoan}
+        />
+        <Card1
+          text="Corporate Loans"
+          img="/corporate.png"
+          num={data.corporateLoan}
+        />
+        <Card1
+          text="Business Loans"
+          img="/business.png"
+          num={data.businessLoan}
+        />
         <Card1 text="Custom Loans" img="/custom.png" num="Choose Money" />
       </div>
       <div className="my-4 text-2xl font-bold text-[#333B69]">
@@ -126,38 +101,38 @@ export default function Home() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {invoices.map((invoice) => (
-            <TableRow key={invoice.slno}>
+          {f.map((invoice: invoices) => (
+            <TableRow key={invoice.serialNumber}>
               <TableCell
                 className={
-                  invoice.slno !== "Total"
+                  invoice.serialNumber !== "Total"
                     ? "font-medium text-[#232323] hidden md:table-cell"
                     : "font-medium text-[#FE5C73] hidden md:table-cell"
                 }
               >
-                {invoice.slno}
+                {invoice.serialNumber}
               </TableCell>
               <TableCell
                 className={
-                  invoice.slno !== "Total"
+                  invoice.serialNumber !== "Total"
                     ? "font-medium text-[#232323]"
                     : "font-medium text-[#FE5C73]"
                 }
               >
-                {invoice.loanmoney}
+                {invoice.loanAmount}
               </TableCell>
               <TableCell
                 className={
-                  invoice.slno !== "Total"
+                  invoice.serialNumber !== "Total"
                     ? "font-medium text-[#232323]"
                     : "font-medium text-[#FE5C73]"
                 }
               >
-                {invoice.Lefttorepay}
+                {invoice.amountLeftToRepay}
               </TableCell>
               <TableCell
                 className={
-                  invoice.slno !== "Total"
+                  invoice.serialNumber !== "Total"
                     ? "font-medium text-[#232323] hidden md:table-cell"
                     : "font-medium text-[#FE5C73] hidden md:table-cell"
                 }
@@ -166,47 +141,46 @@ export default function Home() {
               </TableCell>
               <TableCell
                 className={
-                  invoice.slno !== "Total"
+                  invoice.serialNumber !== "Total"
                     ? "font-medium text-[#232323] hidden md:table-cell"
                     : "font-medium text-[#FE5C73] hidden md:table-cell"
                 }
               >
-                {invoice.interestrate}
+                {invoice.interestRate}
               </TableCell>
               <TableCell
                 className={
-                  invoice.slno !== "Total"
+                  invoice.serialNumber !== "Total"
                     ? "font-medium text-[#232323] hidden md:table-cell"
                     : "font-medium text-[#FE5C73] hidden md:table-cell"
                 }
               >
                 {invoice.installment}
               </TableCell>
-              {invoice.repay !== "" && (
-                <TableCell className="text-center ">
-                  <div
+              <TableCell className="text-center ">
+                <div
+                  className={
+                    invoice.serialNumber !== "01"
+                      ? "border-2 rounded-full border-[#1814F3] md:border-[#232323] w-full h-full py-1 px-3"
+                      : "border-2 rounded-full border-[#1814F3] w-full h-full py-1 px-3"
+                  }
+                >
+                  <button
                     className={
-                      invoice.slno !== "01"
-                        ? "border-2 rounded-full border-[#1814F3] md:border-[#232323] w-full h-full py-1 px-3"
-                        : "border-2 rounded-full border-[#1814F3] w-full h-full py-1 px-3"
+                      invoice.serialNumber !== "01"
+                        ? "text-[#1814F3] md:text-[#232323] font-bold"
+                        : "text-[#1814F3] font-semibold"
                     }
                   >
-                    <button
-                      className={
-                        invoice.slno !== "01"
-                          ? "text-[#1814F3] md:text-[#232323] font-bold"
-                          : "text-[#1814F3] font-semibold"
-                      }
-                    >
-                      {invoice.repay}
-                    </button>{" "}
-                  </div>
-                </TableCell>
-              )}
+                    repay
+                  </button>{" "}
+                </div>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </div>
+    // </main>
   );
 }

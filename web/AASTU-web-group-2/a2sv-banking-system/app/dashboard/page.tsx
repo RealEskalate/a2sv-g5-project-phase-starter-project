@@ -67,7 +67,7 @@ export default function Home() {
   useEffect(() => {
     const addingData = async () => {
       if (session?.access_token) {
-        const cardData = await getCards(session?.access_token);
+        const cardData = await getCards(session?.access_token, 0, 3);
         console.log("Fetching Complete", cardData.content)
         setGetCards(cardData.content);
       }
@@ -75,19 +75,15 @@ export default function Home() {
     addingData();
   });
 
-  if (!session)
-    {
-      console.log("hello")
-    }
   if (loading) return null; // Don't render anything while loading
 
 
-  // if (!session) {
-  //   router.push(
-  //     `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
-  //   );
-  //   return null;
-  // }
+  if (!session) {
+    router.push(
+      `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+    );
+    return null;
+  }
   return (
     <div className="h-screen w-screen ">
 
@@ -103,31 +99,22 @@ export default function Home() {
           <div className="flex-col">
 
             <div className="flex">
-              <div className="min-w-max min-h-max">
+              <div className="flex min-w-max min-h-max [&::-webkit-scrollbar]:hidden">
+              {getCard &&
+              getCard.map((items, index) => (
                 <CreditCard
-                  balance="$5,756"
-                  cardHolder="Eddy Cusuma"
-                  validThru="12/22"
+                  key={items.id}
+                  balance={String(items.balance)}
+                  cardHolder={items.cardHolder}
+                  validThru={formatDate(items.expiryDate)}
                   cardNumber="3778 **** **** 1234"
                   filterClass=""
-                  bgColor="from-[#4C49ED] to-[#0A06F4]"
-                  textColor="text-white"
+                  bgColor={index % 2 === 0 ? "from-[#4C49ED] to-[#0A06F4]" : "bg-white"}
+                  textColor={index%2 == 0 ? "text-white": "text-black"}
                   iconBgColor="bg-opacity-10"
                   showIcon={true}
-                />
-              </div>
-              <div className="min-w-max min-h-max [&::-webkit-scrollbar]:hidden">
-                <CreditCard
-                  balance="$5,756"
-                  cardHolder="Eddy Cusuma"
-                  validThru="12/22"
-                  cardNumber="3778 **** **** 1234"
-                  filterClass=""
-                  bgColor="bg-white"
-                  textColor="text-black"
-                  iconBgColor="bg-black"
-                  showIcon={true}
-                />
+                ></CreditCard>
+              ))}  
               </div>
             </div>
           </div>
@@ -153,54 +140,21 @@ export default function Home() {
               <h1 className="mx-4 my-4 font-bold text-[#343C6A] text-lg">See All</h1>
             </div>
             <div className="flex space-x-6 overflow-x-auto [&::-webkit-scrollbar]:hidden">
-              <div className="flex-shrink-0">
+              {getCard &&
+              getCard.map((items, index) => (
                 <CreditCard
-                  balance="$5,756"
-                  cardHolder="Eddy Cusuma"
-                  validThru="12/22"
+                  key={items.id}
+                  balance={String(items.balance)}
+                  cardHolder={items.cardHolder}
+                  validThru={formatDate(items.expiryDate)}
                   cardNumber="3778 **** **** 1234"
-                  bgColor="from-[#4C49ED] to-[#0A06F4]"
-                  textColor="text-white"
+                  filterClass=""
+                  bgColor={index % 2 === 0 ? "from-[#4C49ED] to-[#0A06F4]" : "bg-white"}
+                  textColor={index%2 == 0 ? "text-white": "text-black"}
                   iconBgColor="bg-opacity-10"
                   showIcon={true}
-                />
-              </div>
-              <div className="flex-shrink-0">
-                <CreditCard
-                  balance="$5,756"
-                  cardHolder="Eddy Cusuma"
-                  validThru="12/22"
-                  cardNumber="3778 **** **** 1234"
-                  bgColor="bg-white"
-                  textColor="text-black"
-                  iconBgColor="bg-black"
-                  showIcon={true}
-                />
-              </div>
-              <div className="flex-shrink-0">
-                <CreditCard
-                  balance="$5,756"
-                  cardHolder="Eddy Cusuma"
-                  validThru="12/22"
-                  cardNumber="3778 **** **** 1234"
-                  bgColor="from-[#4C49ED] to-[#0A06F4]"
-                  textColor="text-white"
-                  iconBgColor="bg-opacity-10"
-                  showIcon={true}
-                />
-              </div>
-              <div className="flex-shrink-0">
-                <CreditCard
-                  balance="$5,756"
-                  cardHolder="Eddy Cusuma"
-                  validThru="12/22"
-                  cardNumber="3778 **** **** 1234"
-                  bgColor="from-[#4C49ED] to-[#0A06F4]"
-                  textColor="text-white"
-                  iconBgColor="bg-opacity-10"
-                  showIcon={true}
-                />
-              </div>
+                ></CreditCard>
+              ))}   
             </div>
           </div>
   
@@ -238,3 +192,14 @@ export default function Home() {
   );
 
 }
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  };
+
+  return date.toLocaleDateString("en-US", options);
+};

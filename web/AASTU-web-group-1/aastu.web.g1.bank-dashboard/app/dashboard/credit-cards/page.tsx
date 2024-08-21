@@ -5,17 +5,12 @@ import Cardinfo from "./components/Cardinfo";
 import CardSetting from "./components/CardSetting";
 import InputForm from "./components/InputForm";
 import { useUser } from "@/contexts/UserContext";
-import { useEffect, useRef, useState } from "react";
-// import { Loading } from "../_components/Loading";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { CardDetails } from "@/types";
-import { getCreditCards, getExpenses, getIncomes } from "@/lib/api";
-import { Loading } from "../_components/Loading";
 
 const CreditCards = () => {
   const { isDarkMode } = useUser();
   const formSectionRef = useRef<HTMLDivElement>(null);
-  const [creditCards, setCreditCards] = useState<CardDetails[]>([]);
 
   useEffect(() => {
     // Check for hash in URL and scroll to the target section
@@ -23,28 +18,6 @@ const CreditCards = () => {
       formSectionRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, []);
-  let totalCreditcardpage;
-
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await getCreditCards(0, 50);
-        const incomes = await getIncomes(0, 7);
-        const withdraw = await getExpenses(0, 7);
-        setCreditCards(res?.content || []);
-        totalCreditcardpage = res?.totalPages;
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return <Loading />;
-  }
-
   return (
     <div
       className={`p-3 ${
@@ -58,17 +31,22 @@ const CreditCards = () => {
           My Cards
         </h1>
         <div className="flex flex-row max-y-[200px] overflow-y-auto gap-6 sm:max-x-[500px] md:max-x-[600px]">
-          {creditCards.map((card) => (
-            <CreditCard
-              key={card.id}
-              id={card.id}
-              balance={card.balance}
-              semiCardNumber={card.semiCardNumber}
-              cardHolder={card.cardHolder}
-              expiryDate={card.expiryDate}
-              cardType={card.cardType}
-            />
-          ))}
+          <CreditCard
+            id="1234"
+            balance={5894}
+            semiCardNumber="37781234"
+            cardHolder="Ediy Cusuma"
+            expiryDate="2024-08-20T07:06:50.283Z"
+            cardType={"Visa"}
+          />
+          <CreditCard
+            id="1234"
+            balance={5894}
+            semiCardNumber="37781234"
+            cardHolder="Ediy Cusuma"
+            expiryDate="2024-08-20T07:06:50.283Z"
+            cardType={"white"}
+          />
         </div>
       </div>
       <div className="p-3">

@@ -87,12 +87,6 @@ export default function Sidebar() {
     }
   };
 
-  const handleClickOutside = (e: any) => {
-    if (e.target.classList.contains('backdrop-blur-sm')) {
-      dispatch(toggleHamburgerMenu());
-    }
-  };
-
   return (
     <>
       <aside

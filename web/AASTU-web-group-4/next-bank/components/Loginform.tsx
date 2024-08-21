@@ -30,6 +30,7 @@ const LoginForm: React.FC = () => {
         const loggedInUser = await loginUser(data);
         Cookie.set('accessToken', loggedInUser.data.access_token);
         Cookie.set('refreshToken', loggedInUser.data.refresh_token);
+        console.log("successful login:", loggedInUser);
       } catch (error) {
         console.error('Login Error:', error);
       }

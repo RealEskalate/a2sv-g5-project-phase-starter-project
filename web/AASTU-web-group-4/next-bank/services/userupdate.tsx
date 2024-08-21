@@ -1,4 +1,10 @@
+
+
+import Cookie from "js-cookie"; 
+
+
 // Update User Details - PUT Request
+const token = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJxd2VyIiwiaWF0IjoxNzI0MTYwODE2LCJleHAiOjE3MjQyNDcyMTZ9.8oamqbNzsvfWaoaeFd31FgD_TOyIxPiVOCxSkNBVya8ZVSjGQBuZEJjKgQ-crwRD"
 export const updateUserDetails = async (userData: any) => {
   try {
     const response = await fetch(
@@ -7,12 +13,15 @@ export const updateUserDetails = async (userData: any) => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+  
         },
         body: JSON.stringify(userData),
       }
     );
 
     if (!response.ok) {
+      console.log(userData,response)
       throw new Error("Failed to update user details");
     }
 
@@ -31,7 +40,9 @@ export const updatePreference = async (userData: any) => {
       {
         method: "PUT",
         headers: {
+  
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(userData),
       }
@@ -121,3 +132,5 @@ export const currentuser = async (userId: string) => {
   }
 };
 // You can add more API functions similarly...
+
+

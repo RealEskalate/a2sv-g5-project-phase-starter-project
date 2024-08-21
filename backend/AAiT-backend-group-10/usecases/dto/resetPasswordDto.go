@@ -2,5 +2,5 @@ package dto
 
 type ResetPasswordRequestDTO struct {
 	Token       string `json:"token" binding:"required"`
-	NewPassword string `json:"new_password" binding:"required,min=8"`
+	NewPassword string `json:"new_password" binding:"required"`
 }

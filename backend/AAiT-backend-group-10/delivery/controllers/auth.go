@@ -39,7 +39,7 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusCreated, user)
 }
 
 func (uc *AuthController) Login(c *gin.Context) {

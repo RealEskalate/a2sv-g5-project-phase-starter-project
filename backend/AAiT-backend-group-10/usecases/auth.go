@@ -189,12 +189,12 @@ func (uc *AuthUsecase) ForgotPassword(dto *dto.ForgotPasswordRequestDTO) *domain
 	if err != nil || user == nil {
 		return domain.ErrUserNotFound
 	}
-	rand.Seed(time.Now().UnixNano())
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	min := 10000
 	max := 100000
 
-	randomNumber := rand.Int63n(int64(max-min)) + int64(min)
+	randomNumber := r.Int63n(int64(max-min)) + int64(min)
 	resetToken, err := uc.jwtService.GenerateResetToken(user.Email, randomNumber)
 
 	if err != nil {

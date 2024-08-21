@@ -268,10 +268,14 @@ func (b *BlogStorage) UpdateBlog(ctx context.Context, id string, blog blogDomain
 // UnlikeBlog implements BlogRepository.
 func (b *BlogStorage) UnlikeBlog(ctx context.Context, like blogDomain.Like) error {
 	filter := bson.D{{Key: "blog_id", Value: like.BlogID}, {Key: "user_id", Value: like.UserID}}
-	_, err := b.db.Collection(likeCollection).DeleteOne(ctx, filter)
+	result, err := b.db.Collection(likeCollection).DeleteOne(ctx, filter)
 	if err != nil {
 		log.Default().Printf("Failed to unlike blog: %v", err)
 		return blogDomain.ErrUnableToUnLikeBlog
+	}
+
+	if result.DeletedCount == 0 {
+		return blogDomain.ErrLikeNotFound
 	}
 
 	return nil
@@ -279,10 +283,15 @@ func (b *BlogStorage) UnlikeBlog(ctx context.Context, like blogDomain.Like) erro
 
 // UndislikeBlog implements BlogRepository.
 func (b *BlogStorage) UndislikeBlog(ctx context.Context, dislike blogDomain.Dislike) error {
-	_, err := b.db.Collection(dislikeCollection).DeleteOne(ctx, dislike)
+	filter := bson.D{{Key: "blog_id", Value: dislike.BlogID}, {Key: "user_id", Value: dislike.UserID}}
+	result, err := b.db.Collection(dislikeCollection).DeleteOne(ctx, filter)
 	if err != nil {
 		log.Default().Printf("Failed to unlike blog: %v", err)
 		return blogDomain.ErrUnableToUnDislikeBlog
+	}
+
+	if result.DeletedCount == 0 {
+		return blogDomain.ErrDislikeNotFound
 	}
 
 	return nil

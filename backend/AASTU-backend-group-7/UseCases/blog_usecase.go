@@ -63,7 +63,7 @@ func (uc *blogUsecase) GetComments(c *gin.Context, id primitive.ObjectID) ([]*Do
 	return uc.BlogRepository.GetComments(ctx,id)
 }
 
-func (uc *blogUsecase) GetAllPosts(c *gin.Context, filter Domain.Filter) ([]*Domain.Post, error, int) {
+func (uc *blogUsecase) GetAllPosts(c *gin.Context, filter Domain.Filter) ([]*Domain.Post, error, int, Domain.PaginationMetaData) {
 	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
 	defer cancel()
 	return uc.BlogRepository.GetAllPosts(ctx, filter)
@@ -88,9 +88,15 @@ func (uc *blogUsecase) DislikePost(c *gin.Context, id primitive.ObjectID, userID
 	return uc.BlogRepository.DislikePost(ctx, id, userID)
 }
 
-func (uc *blogUsecase) SearchPosts(c *gin.Context, query string) ([]*Domain.Post, error, int) {
+func (uc *blogUsecase) SearchPosts(c *gin.Context, query string, filter Domain.Filter) ([]*Domain.Post, error, int, Domain.PaginationMetaData) {
 	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
 	defer cancel()
-	return uc.BlogRepository.SearchPosts(ctx, query)
+	return uc.BlogRepository.SearchPosts(ctx, query, filter)
+}
+
+func (uc *blogUsecase) DeletePost(c *gin.Context, id primitive.ObjectID) (error, int) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.BlogRepository.DeletePost(ctx, id)
 }
 

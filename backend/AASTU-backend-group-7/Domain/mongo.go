@@ -18,8 +18,9 @@ type Collection interface {
 	CountDocuments(ctx context.Context, filter interface{}, opts ...*options.CountOptions) (int64, error)
 	UpdateOne(ctx context.Context, filter, update interface{}, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error)
 	UpdateMany(ctx context.Context, filter, update interface{}, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error)
-  Aggregate(ctx context.Context, pipeline interface{}) (Cursor, error)
-  CreateIndex(ctx context.Context, model bson.D, opts ...*options.CreateIndexesOptions) (string, error)
+	Aggregate(ctx context.Context, pipeline interface{}) (Cursor, error)
+	CreateIndex(ctx context.Context, model bson.D, opts ...*options.CreateIndexesOptions) (string, error)
+	DeleteMany (ctx context.Context, filter interface{}, opts ...*options.DeleteOptions) (*mongo.DeleteResult, error)
 }
 
 type Cursor interface {

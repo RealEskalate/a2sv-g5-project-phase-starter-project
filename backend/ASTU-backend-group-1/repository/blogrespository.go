@@ -3,7 +3,7 @@ package repository
 import (
 	"astu-backend-g1/domain"
 	"context"
-	"fmt"
+	"errors"
 	"log"
 	"time"
 
@@ -43,6 +43,7 @@ func CreateBlogQuery(b domain.Blog) bson.M {
 			query["author_id"] = id
 		}
 	}
+	query["date"] = b.Date
 	query["tags"] = b.Tags
 	query["likes"] = []string{}
 	query["dislikes"] = []string{}
@@ -52,13 +53,12 @@ func CreateBlogQuery(b domain.Blog) bson.M {
 	return query
 }
 
-func (r *MongoBlogRepository) Create(b domain.Blog) (domain.Blog, error) {
+func (r *MongoBlogRepository) CreateBlog(b domain.Blog) (domain.Blog, error) {
 	b.Id = primitive.NewObjectID().Hex()
 	b.Date = time.Now()
 
 	create := CreateBlogQuery(b)
 
-	fmt.Println("the blog", b, "the creat", create)
 	_, err := r.collection.InsertOne(context.Background(), create)
 	if err != nil {
 		log.Printf("Failed to create blog: %v", err)
@@ -67,9 +67,50 @@ func (r *MongoBlogRepository) Create(b domain.Blog) (domain.Blog, error) {
 	return b, nil
 }
 
+func (r *MongoBlogRepository) FindPopularBlog() ([]domain.Blog, error) {
+	pipeline := mongo.Pipeline{
+		{
+			{"$addFields", bson.D{
+				{"likesCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$likes", bson.A{}}}}}}},
+				{"dislikesCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$dislikes", bson.A{}}}}}}},
+				{"viewsCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$views", bson.A{}}}}}}},
+				{"commentsCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$comments", bson.A{}}}}}}},
+			}},
+		},
+		{
+			{"$sort", bson.D{
+				{"likesCount", -1},
+				{"viewsCount", -1},
+				{"commentsCount", -1},
+				{"dislikesCount", 1},
+			}},
+		},
+	}
+
+	cursor, err := r.collection.Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var blogs []domain.Blog
+	for cursor.Next(context.TODO()) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return nil, err
+		}
+		blogs = append(blogs, blog)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return blogs, nil
+}
 func BuildBlogQueryAndOptions(filterOption domain.BlogFilterOption) bson.M {
 	filter := bson.M{}
-	sort := bson.D{}
+	// sort := bson.D{}
 	findOptions := options.Find()
 
 	if filterOption.Filter.BlogId != "" {
@@ -98,43 +139,6 @@ func BuildBlogQueryAndOptions(filterOption domain.BlogFilterOption) bson.M {
 		filter["tags"] = bson.M{"$in": filterOption.Filter.Tags}
 	}
 
-	if filterOption.Order.Likes != 0 {
-		sortOrder := 1
-		if filterOption.Order.Likes == -1 {
-			sortOrder = -1
-		}
-		sort = append(sort, bson.E{"$expr", bson.M{"$size": "$likes"}})
-		sort = append(sort, bson.E{"$size", sortOrder})
-	}
-	if filterOption.Order.Dislikes != 0 {
-		sortOrder := 1
-		if filterOption.Order.Dislikes == -1 {
-			sortOrder = -1
-		}
-		sort = append(sort, bson.E{"$expr", bson.M{"$size": "$dislikes"}})
-		sort = append(sort, bson.E{"$size", sortOrder})
-	}
-	if filterOption.Order.Views != 0 {
-		sortOrder := 1
-		if filterOption.Order.Views == -1 {
-			sortOrder = -1
-		}
-		sort = append(sort, bson.E{"$expr", bson.M{"$size": "$views"}})
-		sort = append(sort, bson.E{"$size", sortOrder})
-	}
-	if filterOption.Order.Comments != 0 {
-		sortOrder := 1
-		if filterOption.Order.Comments == -1 {
-			sortOrder = -1
-		}
-		sort = append(sort, bson.E{"$expr", bson.M{"$size": "$comments"}})
-		sort = append(sort, bson.E{"$size", sortOrder})
-	}
-
-	if len(sort) > 0 {
-		findOptions.SetSort(sort)
-	}
-
 	if filterOption.Pagination.PageSize > 0 {
 		findOptions.SetLimit(int64(filterOption.Pagination.PageSize))
 	}
@@ -142,12 +146,10 @@ func BuildBlogQueryAndOptions(filterOption domain.BlogFilterOption) bson.M {
 		findOptions.SetSkip(int64((filterOption.Pagination.Page - 1) * filterOption.Pagination.PageSize))
 	}
 
-	fmt.Println("this i the find options created by the filter", findOptions, filterOption)
-	fmt.Println("this i the filter  created by the filter", filter, filterOption)
 	return filter
 }
 
-func (r *MongoBlogRepository) Get(opts domain.BlogFilterOption) ([]domain.Blog, error) {
+func (r *MongoBlogRepository) GetBlog(opts domain.BlogFilterOption) ([]domain.Blog, error) {
 	filter := BuildBlogQueryAndOptions(opts)
 
 	cursor, err := r.collection.Find(context.Background(), filter)
@@ -187,7 +189,6 @@ func UpdateBlogQuery(b domain.Blog) bson.M {
 
 		id, err := IsValidObjectID(b.AuthorId)
 		if err != nil {
-			fmt.Println("update author id error: ", err)
 		} else {
 			update["author_id"] = id
 		}
@@ -212,14 +213,12 @@ func UpdateBlogQuery(b domain.Blog) bson.M {
 
 		update["dislikes"] = b.Dislikes
 	}
-	fmt.Println("this is the update bson.m", update)
 	return update
 }
 
-func (r *MongoBlogRepository) Update(strBlogId string, updateData domain.Blog) (domain.Blog, error) {
+func (r *MongoBlogRepository) UpdateBlog(strBlogId string, updateData domain.Blog) (domain.Blog, error) {
 	blogId, err := IsValidObjectID(strBlogId)
 	if err != nil {
-		fmt.Println("invalid blog id: ", strBlogId, err)
 		return domain.Blog{}, err
 	}
 	filter := bson.M{"_id": blogId}
@@ -228,13 +227,12 @@ func (r *MongoBlogRepository) Update(strBlogId string, updateData domain.Blog) (
 	result, err := r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil || result.MatchedCount == 0 {
 		log.Printf("Failed to update blog with ID %s: %v", blogId, err)
-		return domain.Blog{}, fmt.Errorf("failed to update blog: %v", err)
 	}
 
 	return updateData, nil
 }
 
-func (r *MongoBlogRepository) Delete(blogId string) error {
+func (r *MongoBlogRepository) DeleteBlog(blogId string) error {
 	id, err := IsValidObjectID(blogId)
 	if err != nil {
 		return err
@@ -244,26 +242,59 @@ func (r *MongoBlogRepository) Delete(blogId string) error {
 	result, err := r.collection.DeleteOne(context.Background(), filter)
 	if err != nil || result.DeletedCount == 0 {
 		log.Printf("Failed to delete blog with ID %s: %v", blogId, err)
-		return fmt.Errorf("failed to delete blog: %v", err)
 	}
 
 	return nil
 }
 
-func (r *MongoBlogRepository) LikeBlog(blogId, userId string) error {
+func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int) error {
+
 	id, err := IsValidObjectID(blogId)
 	if err != nil {
-		fmt.Println("invalid blog ID: ", blogId)
 		return err
 	}
 	uid, err := IsValidObjectID(userId)
 	if err != nil {
-		fmt.Println("invalid user ID: ", userId)
 		return err
 	}
 
 	filter := bson.M{"_id": id}
-	update := bson.M{"$addToSet": bson.M{"likes": uid}}
+	update := bson.M{}
+	if like == 1 {
+		result := bson.M{}
+		dislikeFinder := bson.M{"_id": id, "dislikes": uid}
+		err := r.collection.FindOne(context.TODO(), dislikeFinder).Decode(&result)
+		if err == nil {
+			// INFO: the user have disliked this blog previously
+			_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
+				"$pull": bson.M{
+					"dislikes": uid,
+				},
+			})
+			if err != nil {
+				return err
+			}
+		}
+		update["$addToSet"] = bson.M{"likes": uid, "view": uid}
+	} else if like == -1 {
+		result := bson.M{}
+		likeFinder := bson.M{"_id": id, "likes": uid}
+		err := r.collection.FindOne(context.TODO(), likeFinder).Decode(&result)
+		if err == nil {
+			// INFO: the user have disliked this blog previously
+			_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
+				"$pull": bson.M{
+					"likes": uid,
+				},
+			})
+			if err != nil {
+				return err
+			}
+		}
+		update["$addToSet"] = bson.M{"dislikes": uid, "view": uid}
+	} else {
+		update["$addToSet"] = bson.M{"view": uid}
+	}
 
 	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
@@ -273,45 +304,107 @@ func (r *MongoBlogRepository) LikeBlog(blogId, userId string) error {
 
 	return nil
 }
+func (r *MongoBlogRepository) GetBlogById(blogId string) (domain.Blog, error) {
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	filter := bson.M{"_id": bid}
+	var result domain.Blog
+	err = r.collection.FindOne(context.Background(), filter).Decode(&result)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	return result, nil
 
-func (r *MongoBlogRepository) DislikeBlog(blogId, userId string) error {
-	id, err := IsValidObjectID(blogId)
-	if err != nil {
-		return err
-	}
-	uid, err := IsValidObjectID(userId)
-	if err != nil {
-		return err
-	}
-	// todo:check is the user has done the opposite task that is liking
-	filter := bson.M{"_id": id}
-	update := bson.M{"$addToSet": bson.M{"dislikes": uid}}
-
-	_, err = r.collection.UpdateOne(context.Background(), filter, update)
-	if err != nil {
-		log.Printf("Failed to dislike blog: %v", err)
-		return err
-	}
-	return nil
 }
 
-func (r *MongoBlogRepository) AddView(blogId, userId string) error {
+func (r *MongoBlogRepository) GetCommentById(blogId, commentId string) (domain.Comment, error) {
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return domain.Comment{}, err
+	}
+	cid, err := IsValidObjectID(commentId)
+	if err != nil {
+		return domain.Comment{}, err
+	}
+
+	filter := bson.M{
+		"_id": bid,
+	}
+
+	projection := bson.M{
+		"comments": bson.M{"$elemMatch": bson.M{"comment_id": cid}},
+	}
+
+	var result struct {
+		Comments []domain.Comment `bson:"comments"`
+	}
+
+	err = r.collection.FindOne(context.Background(), filter, options.FindOne().SetProjection(projection)).Decode(&result)
+	if err != nil {
+		return domain.Comment{}, err
+	}
+
+	if len(result.Comments) == 0 {
+	}
+
+	return result.Comments[0], nil
+}
+
+func (r *MongoBlogRepository) LikeOrDislikeComment(blogId, commentId, userId string, like int) error {
 	id, err := IsValidObjectID(blogId)
 	if err != nil {
 		return err
 	}
-
-	filter := bson.M{"_id": id}
+	cid, err := IsValidObjectID(commentId)
+	if err != nil {
+		return err
+	}
 	uid, err := IsValidObjectID(userId)
 	if err != nil {
 		return err
 	}
-
-	update := bson.M{"$addToSet": bson.M{"views": uid}}
-
+	filter := bson.M{"_id": id, "comments.comment_id": cid}
+	update := bson.M{}
+	if like == 1 {
+		result := bson.M{}
+		likeFinder := bson.M{"_id": id, "comments.comment_id": cid, "comments.dislikes": uid}
+		err := r.collection.FindOne(context.TODO(), likeFinder).Decode(&result)
+		if err == nil {
+			// INFO: the user have disliked this blog previously
+			_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
+				"$pull": bson.M{
+					"comments.$.dislikes": uid,
+				},
+			})
+			if err != nil {
+				return err
+			}
+		}
+		update["$addToSet"] = bson.M{"comments.$.likes": uid, "comments.$.views": uid}
+	} else if like == -1 {
+		result := bson.M{}
+		likeFinder := bson.M{"_id": id, "comments.comment_id": cid, "comments.likes": uid}
+		err := r.collection.FindOne(context.TODO(), likeFinder).Decode(&result)
+		if err == nil {
+			// INFO: the user have liked this Comment previously
+			_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
+				"$pull": bson.M{
+					"comments.$.likes": uid,
+				},
+			})
+			if err != nil {
+				return err
+			}
+		}
+		update["$addToSet"] = bson.M{"comments.$.dislikes": uid, "comments.$.views": uid}
+	} else {
+		update["$addToSet"] = bson.M{"comments.$.views": uid}
+	}
 	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		log.Printf("Failed to add view: %v", err)
+		log.Printf("Failed to like blog: %v", err)
 		return err
 	}
 
@@ -323,7 +416,7 @@ func CreateCommentQuery(r domain.Comment) bson.M {
 	query := bson.M{}
 	query["comment_id"] = primitive.NewObjectID()
 	if r.Content != "" {
-		query["title"] = r.Content
+		query["content"] = r.Content
 	}
 
 	if r.AuthorId != "" {
@@ -380,6 +473,134 @@ func CreateReplyQuery(c domain.Reply) bson.M {
 	return query
 }
 
+func (r *MongoBlogRepository) GetAllComments(blogId string) ([]domain.Comment, error) {
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return []domain.Comment{}, err
+	}
+	filter := bson.M{"_id": bid}
+	projection := bson.M{"comments": 1, "_id": 0}
+	var result struct {
+		Comments []domain.Comment `bson:"comments"`
+	}
+	err = r.collection.FindOne(context.Background(), filter, options.FindOne().SetProjection(projection)).Decode(&result)
+	if err != nil {
+		return []domain.Comment{}, err
+	}
+	return result.Comments, nil
+
+}
+
+func (r *MongoBlogRepository) LikeOrDislikeReply(blogId, commentId, replyId, userId string, like int) error {
+	id, err := IsValidObjectID(blogId)
+	if err != nil {
+		return err
+	}
+	cid, err := IsValidObjectID(commentId)
+	if err != nil {
+		return err
+	}
+	rid, err := IsValidObjectID(replyId)
+	if err != nil {
+		return err
+	}
+	uid, err := IsValidObjectID(userId)
+	if err != nil {
+		return err
+	}
+	filter := bson.M{"_id": id, "comments.comment_id": cid, "replies.reply_id": rid}
+	update := bson.M{}
+	if like == 1 {
+		update["$addToSet"] = bson.M{"likes": uid, "view": uid}
+	} else if like == -1 {
+		update["$addToSet"] = bson.M{"dislikes": uid, "view": uid}
+	} else {
+		update["$addToSet"] = bson.M{"view": uid}
+	}
+
+	_, err = r.collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		log.Printf("Failed to like blog: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func (r *MongoBlogRepository) GetAllRepliesForComment(blogId, commentId string) ([]domain.Reply, error) {
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return nil, err
+	}
+	cid, err := IsValidObjectID(commentId)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": bid, "comments.comment_id": cid}
+	projection := bson.M{
+		"comments.$": 1,
+	}
+
+	var result struct {
+		Comments []struct {
+			Replies []domain.Reply `bson:"replies"`
+		} `bson:"comments"`
+	}
+
+	err = r.collection.FindOne(context.Background(), filter, options.FindOne().SetProjection(projection)).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(result.Comments) > 0 {
+		return result.Comments[0].Replies, nil
+	}
+
+	return nil, errors.New("no comments found")
+}
+func (r *MongoBlogRepository) GetReplyById(blogId, commentId, replyId string) (domain.Reply, error) {
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return domain.Reply{}, err
+	}
+	cid, err := IsValidObjectID(commentId)
+	if err != nil {
+		return domain.Reply{}, err
+	}
+
+	filter := bson.M{
+		"_id":                 bid,
+		"comments.comment_id": cid,
+	}
+
+	projection := bson.M{
+		"comments.$": 1, 
+	}
+
+	var result struct {
+		Comments []struct {
+			CommentID string         `bson:"comment_id"`
+			Replies   []domain.Reply `bson:"replies"`
+		} `bson:"comments"`
+	}
+
+	err = r.collection.FindOne(context.Background(), filter, options.FindOne().SetProjection(projection)).Decode(&result)
+	if err != nil {
+		return domain.Reply{}, err
+	}
+
+	if len(result.Comments) > 0 {
+		for _, reply := range result.Comments[0].Replies {
+			if reply.ReplyId == replyId{
+				return reply, nil
+			}
+		}
+	}
+
+	return domain.Reply{}, errors.New("reply not found")
+
+}
 func (r *MongoBlogRepository) ReplyToComment(blogId, commentId string, reply domain.Reply) error {
 	id, err := IsValidObjectID(blogId)
 	if err != nil {
@@ -401,7 +622,6 @@ func (r *MongoBlogRepository) ReplyToComment(blogId, commentId string, reply dom
 
 	return nil
 }
-
 func IsValidObjectID(id string) (primitive.ObjectID, error) {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

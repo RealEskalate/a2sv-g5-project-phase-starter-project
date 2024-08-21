@@ -3,6 +3,7 @@ package usercontroller
 import (
 	"blogs/config"
 	"blogs/domain"
+	"log"
 	"net/http"
 	"time"
 
@@ -10,6 +11,30 @@ import (
 )
 
 func (u *UserController) RegisterUser(ctx *gin.Context) {
+
+	// Initialize avatarPath
+	avatarPath := ""
+
+	// Check if a file was uploaded
+	file, err := ctx.FormFile("avatar")
+	if err != nil && err != http.ErrMissingFile {
+		// Handle the error only if it's not because the file is missing
+		log.Println("Error retrieving file:", err)
+		ctx.JSON(http.StatusBadRequest, "Error uploading file")
+		return
+	}
+
+	if file != nil {
+		// Upload to Cloudinary and get the URL
+		avatarPath, err = config.UploadToCloudinary(file)
+		if err != nil {
+			log.Println("Error uploading file to Cloudinary:", err)
+			ctx.JSON(http.StatusInternalServerError, "Internal server error")
+			return
+		}
+		log.Println("Avatar successfully uploaded to Cloudinary:", avatarPath)
+	}
+
 	var userData struct {
 		FirstName string `json:"firstname"`
 		LastName  string `json:"lastname"`
@@ -21,7 +46,7 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 		Address   string `json:"address"`
 	}
 
-	err := ctx.ShouldBindJSON(&userData)
+	err = ctx.ShouldBindJSON(&userData)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
@@ -54,6 +79,11 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 		Role:       "user",
 		JoinedDate: time.Now(),
 		IsVerified: false,
+	}
+
+	if avatarPath != "" {
+		user.Avatar = avatarPath
+		log.Println("Avatar path set for user:", user.Avatar) // Log the avatar in user object
 	}
 
 	err = u.UserUsecase.RegisterUser(user)

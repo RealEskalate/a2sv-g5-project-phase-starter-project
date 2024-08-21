@@ -1,9 +1,11 @@
 package router
 
 import (
+	"blogs/config"
 	"blogs/delivery/controller/blogcontroller"
 	"blogs/delivery/controller/usercontroller"
 	"blogs/delivery/middleware"
+	"blogs/domain"
 	"blogs/repository"
 	"blogs/usecase/blogusecase"
 	"blogs/usecase/userusecase"
@@ -13,15 +15,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func getBlogController(database *mongo.Database) *blogcontroller.BlogController {
-	blogRepository := repository.NewBlogRepository(database)
+func getBlogController(database *mongo.Database,cache domain.Cache) *blogcontroller.BlogController {
+	blogRepository := repository.NewBlogRepository(database,cache)
 	blogUsecase := blogusecase.NewBlogUsecase(blogRepository)
 	blogController := blogcontroller.NewBlogController(blogUsecase)
 	return blogController
 }
 
-func getUserController(database *mongo.Database) *usercontroller.UserController {
-	userRepository := repository.NewUserRepository(database)
+func getUserController(database *mongo.Database,cache domain.Cache) *usercontroller.UserController {
+	userRepository := repository.NewUserRepository(database, cache)
 	authRepository := repository.NewOAuthRepository(database)
 	userUsecase := userusecase.NewUserUsecase(userRepository, authRepository)
 	userController := usercontroller.NewUserController(userUsecase)
@@ -85,13 +87,14 @@ func privateBlogRouter(router *gin.RouterGroup, blogController *blogcontroller.B
 }
 
 func SetupRouter(mongoClient *mongo.Client) *gin.Engine {
+	cache := config.NewRedisCache()
 	router := gin.Default()
 
 	router.Use(cors.Default())
 
 	database := mongoClient.Database("blog")
-	blogController := getBlogController(database)
-	userController := getUserController(database)
+	blogController := getBlogController(database,cache)
+	userController := getUserController(database,cache)
 
 	publicRouter(router, userController)
 	protectedRouter(router, userController)

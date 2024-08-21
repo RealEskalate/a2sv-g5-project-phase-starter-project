@@ -4,6 +4,7 @@ import (
 	"blogs/config"
 	"blogs/domain"
 	"context"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -12,12 +13,14 @@ import (
 type UserRepository struct {
 	userCollection  *mongo.Collection
 	tokenCollection *mongo.Collection
+	cache domain.Cache
 }
 
-func NewUserRepository(db *mongo.Database) domain.UserRepository {
+func NewUserRepository(db *mongo.Database,cache domain.Cache) domain.UserRepository {
 	return &UserRepository{
 		userCollection:  db.Collection("users"),
 		tokenCollection: db.Collection("tokens"),
+		cache: cache,
 	}
 }
 
@@ -49,6 +52,7 @@ func (ur *UserRepository) CheckRoot() error {
 }
 
 func (ur *UserRepository) CheckUsernameAndEmail(username, email string) error {
+
 	var user domain.User
 	filter := bson.M{
 		"$or": []bson.M{
@@ -82,10 +86,21 @@ func (ur *UserRepository) RegisterUser(user *domain.User) error {
 }
 
 func (ur *UserRepository) GetUserByUsernameorEmail(usernameoremail string) (*domain.User, error) {
+	cachedKey := fmt.Sprintf("user:%s", usernameoremail)
+	cachedUser, err := ur.cache.GetCache(cachedKey)
+	if err == nil && cachedUser != "" {
+		var user domain.User
+		err := bson.UnmarshalExtJSON([]byte(cachedUser),true,&user)
+		if err != nil {
+			return nil, err
+		}
+		return &user, nil
+	}
+		
 	var user domain.User
 	filter := filterUser(usernameoremail)
 
-	err := ur.userCollection.FindOne(context.TODO(), filter).Decode(&user)
+	err = ur.userCollection.FindOne(context.TODO(), filter).Decode(&user)
 
 	if err == mongo.ErrNoDocuments {
 		return nil, config.ErrUserNotFound
@@ -94,6 +109,15 @@ func (ur *UserRepository) GetUserByUsernameorEmail(usernameoremail string) (*dom
 	if err != nil {
 		return nil, err
 	}
+
+	userJSON, err := bson.MarshalExtJSON(user,true,true)
+	if err == nil {
+		err = ur.cache.SetCache(cachedKey,string(userJSON))
+		if err != nil {
+			return nil, err
+		}
+	}
+
 
 	return &user, nil
 }
@@ -159,12 +183,22 @@ func (ur *UserRepository) InsertToken(token *domain.Token) error {
 }
 
 func (ur *UserRepository) GetTokenByUsername(username string) (*domain.Token, error) {
+	cacheKey := fmt.Sprintf(`token:%s`, username)
+	cachedToken, err := ur.cache.GetCache(cacheKey)
+	if err == nil && cachedToken != "" {
+		var token domain.Token
+		err := bson.UnmarshalExtJSON([]byte(cachedToken),true,&token)
+		if err != nil {
+			return nil, err
+		}
+		return &token, nil
+	}
 	var token domain.Token
 	filter := bson.M{
 		"username": username,
 	}
 
-	err := ur.tokenCollection.FindOne(context.TODO(), filter).Decode(&token)
+	err = ur.tokenCollection.FindOne(context.TODO(), filter).Decode(&token)
 
 	if err == mongo.ErrNoDocuments {
 		return nil, config.ErrTokenNotFound
@@ -173,6 +207,15 @@ func (ur *UserRepository) GetTokenByUsername(username string) (*domain.Token, er
 	if err != nil {
 		return nil, err
 	}
+
+	tokenJSON, err := bson.MarshalExtJSON(token,true,true)
+	if err == nil {
+		err = ur.cache.SetCache(cacheKey,string(tokenJSON))
+		if err != nil {
+			return nil, err
+		}
+	}
+	
 
 	return &token, nil
 }

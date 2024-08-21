@@ -146,24 +146,24 @@ func (bu *blogUsecase) SearchBlogs(ctx context.Context, title string, author str
     return blogs, nil
 }
 
-func (bu *blogUsecase) FilterBlogsByTags(ctx context.Context, tags []string) ([]*domain.Blog, error) {
-	blogs, err := bu.blogRepository.FilterBlogsByTags(ctx, tags)
-	if err != nil {
-		return nil, err
-	}
-	return blogs, nil
-}
+// func (bu *blogUsecase) FilterBlogsByTags(ctx context.Context, tags []string) ([]*domain.Blog, error) {
+// 	blogs, err := bu.blogRepository.FilterBlogsByTags(ctx, tags)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return blogs, nil
+// }
 
-func (bu *blogUsecase) FilterBlogsByDate(ctx context.Context, date string) ([]*domain.Blog, error) {
-	blogs, err := bu.blogRepository.FilterBlogsByDate(ctx, date)
-	if err != nil {
-		return nil, err
-	}
-	return blogs, nil
-}
+// func (bu *blogUsecase) FilterBlogsByDate(ctx context.Context, date string) ([]*domain.Blog, error) {
+// 	blogs, err := bu.blogRepository.FilterBlogsByDate(ctx, date)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return blogs, nil
+// }
 
-func (bu *blogUsecase) FilterBlogsByPopularity(ctx context.Context, popularity string) ([]*domain.Blog, error) {
-	blogs, err := bu.blogRepository.FilterBlogsByPopularity(ctx, popularity)
+func (bu *blogUsecase) FilterBlogs(ctx context.Context, popularity string,tags []string, date string) ([]*domain.Blog, error) {
+	blogs, err := bu.blogRepository.FilterBlogs(ctx, popularity,tags, date)
 	if err != nil {
 		return nil, err
 	}

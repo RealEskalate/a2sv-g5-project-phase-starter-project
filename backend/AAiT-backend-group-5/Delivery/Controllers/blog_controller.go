@@ -135,6 +135,11 @@ func (c *blogController) DeleteBlogController(ctx *gin.Context) {
 	blogID := ctx.Param("id")
 	authorID := c.getAuthorID(ctx)
 
+	if authorID == "" {
+		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
 	deleteBlogReq := dtos.DeleteBlogRequest{
 		BlogID:   blogID,
 		AuthorID: authorID,

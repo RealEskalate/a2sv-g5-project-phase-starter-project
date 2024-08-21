@@ -11,7 +11,6 @@ import (
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
-	"github.com/mitchellh/mapstructure"
 )
 
 type blogUsecase struct {
@@ -45,118 +44,7 @@ func NewblogUsecase(
 	}
 }
 
-func (b *blogUsecase) getBlogs(ctx context.Context, data []*models.Blog) ([]*dtos.BlogResponse, *models.ErrorResponse) {
-	var response []*dtos.BlogResponse
 
-	for _, blog := range data {
-		blogComments, commentErr := b.fetchComments(ctx, blog.ID)
-		if commentErr != nil {
-			return nil, commentErr
-		}
-
-		blogPopularity, popularityErr := b.fetchPopularity(ctx, blog.ID)
-		if popularityErr != nil {
-			return nil, popularityErr
-		}
-
-		response = append(response, &dtos.BlogResponse{
-			Blog:       *blog,
-			Comments:   blogComments,
-			Popularity: *blogPopularity,
-		})
-	}
-
-	return response, nil
-}
-
-func (b *blogUsecase) fetchComments(ctx context.Context, blogID string) ([]models.Comment, *models.ErrorResponse) {
-	comments, err := b.repository.GetComments(ctx, blogID)
-	if err != nil {
-		if err.Code == 404 {
-			return []models.Comment{}, nil
-		}
-		return nil, err
-	}
-	return comments, nil
-}
-
-func (b *blogUsecase) fetchPopularity(ctx context.Context, blogID string) (*models.Popularity, *models.ErrorResponse) {
-	popularity, err := b.repository.GetPopularity(ctx, blogID)
-	if err != nil {
-		if err.Code == 404 {
-			return &models.Popularity{}, nil
-		}
-		return nil, err
-	}
-	return popularity, nil
-}
-
-func (b *blogUsecase) fetchFromCacheOrRepo(ctx context.Context, cacheKey string, fetchFromRepo func() (interface{}, *models.ErrorResponse)) (interface{}, *models.ErrorResponse) {
-	cachedData, err := b.cacheService.Get(ctx, cacheKey)
-
-	if err == redis.Nil {
-		// Fetch from repository if cache is empty
-		data, repoErr := fetchFromRepo()
-		if repoErr != nil {
-			return nil, repoErr
-		}
-
-		dataJSON, marshalErr := b.helper.Marshal(data)
-		if marshalErr != nil {
-			return nil, models.InternalServerError("Error while marshalling data")
-		}
-		b.cacheService.Set(ctx, cacheKey, string(dataJSON), b.cacheTTL)
-
-		return data, nil
-	} else if err != nil {
-		return nil, models.InternalServerError("Error while fetching data from cache")
-	}
-
-	var blog models.Blog
-	if unmarshalErr := json.Unmarshal([]byte(cachedData), &blog); unmarshalErr != nil {
-		return nil, models.InternalServerError("Error while unmarshalling data from cache")
-	}
-
-	return &blog, nil
-}
-
-func (b *blogUsecase) fetchFromCacheOrRepoBlogs(ctx context.Context, cacheKey string, fetchFromRepo func() (interface{}, *models.ErrorResponse)) (interface{}, *models.ErrorResponse) {
-	cachedData, err := b.cacheService.Get(ctx, cacheKey)
-
-	if err == redis.Nil {
-		data, repoErr := fetchFromRepo()
-
-		if repoErr != nil {
-			return nil, repoErr
-		}
-
-		dataJSON, marshalErr := b.helper.Marshal(data)
-		if marshalErr != nil {
-			return nil, models.InternalServerError("Error while marshalling data")
-		}
-		b.cacheService.Set(ctx, cacheKey, string(dataJSON), b.cacheTTL)
-
-		return data, nil
-	} else if err != nil {
-		return nil, models.InternalServerError("Error while fetching data from cache")
-	}
-
-	var result []map[string]interface{}
-	if unmarshalErr := json.Unmarshal([]byte(cachedData), &result); unmarshalErr != nil {
-		return nil, models.InternalServerError("Error while unmarshalling data from cache")
-	}
-
-	var blogs []*models.Blog
-	for _, item := range result {
-		var blog models.Blog
-		if err := mapstructure.Decode(item, &blog); err != nil {
-			return nil, models.InternalServerError("Error while converting cached data to Blog struct")
-		}
-		blogs = append(blogs, &blog)
-	}
-
-	return blogs, nil
-}
 
 func (b *blogUsecase) CreateBlog(ctx context.Context, blog *models.Blog) (*dtos.BlogResponse, *models.ErrorResponse) {
 	slug := b.helper.CreateSlug(blog.Title)
@@ -180,7 +68,7 @@ func (b *blogUsecase) CreateBlog(ctx context.Context, blog *models.Blog) (*dtos.
 }
 
 func (b *blogUsecase) GetBlog(ctx context.Context, id string) (*dtos.BlogResponse, *models.ErrorResponse) {
-	data, err := b.fetchFromCacheOrRepo(ctx, id, func() (interface{}, *models.ErrorResponse) {
+	data, err := b.helper.FetchFromCacheOrRepo(ctx, id, func() (interface{}, *models.ErrorResponse) {
 		return b.repository.GetBlog(ctx, id)
 	})
 
@@ -190,12 +78,12 @@ func (b *blogUsecase) GetBlog(ctx context.Context, id string) (*dtos.BlogRespons
 
 	blog := *data.(*models.Blog)
 
-	blogComments, commentErr := b.fetchComments(ctx, blog.ID)
+	blogComments, commentErr := b.helper.FetchComments(ctx, blog.ID)
 	if commentErr != nil {
 		return nil, commentErr
 	}
 
-	blogPopularity, popularityErr := b.fetchPopularity(ctx, blog.ID)
+	blogPopularity, popularityErr := b.helper.FetchPopularity(ctx, blog.ID)
 	if popularityErr != nil {
 		return nil, popularityErr
 	}
@@ -208,7 +96,7 @@ func (b *blogUsecase) GetBlog(ctx context.Context, id string) (*dtos.BlogRespons
 }
 
 func (b *blogUsecase) GetBlogs(ctx context.Context, page int) ([]*dtos.BlogResponse, *models.ErrorResponse) {
-	data, err := b.fetchFromCacheOrRepoBlogs(ctx, b.env.REDIS_BLOG_KEY, func() (interface{}, *models.ErrorResponse) {
+	data, err := b.helper.FetchFromCacheOrRepoBlogs(ctx, b.env.REDIS_BLOG_KEY, func() (interface{}, *models.ErrorResponse) {
 		return b.repository.GetBlogs(ctx, page)
 	})
 
@@ -221,7 +109,7 @@ func (b *blogUsecase) GetBlogs(ctx context.Context, page int) ([]*dtos.BlogRespo
 		return nil, &models.ErrorResponse{Message: "Data type mismatch: expected []*models.Blog"}
 	}
 
-	return b.getBlogs(ctx, blogs)
+	return b.helper.GetBlogs(ctx, blogs)
 }
 
 func (b *blogUsecase) SearchBlogs(ctx context.Context, filter dtos.FilterBlogRequest) ([]*dtos.BlogResponse, *models.ErrorResponse) {
@@ -236,7 +124,7 @@ func (b *blogUsecase) SearchBlogs(ctx context.Context, filter dtos.FilterBlogReq
 	if sErr == redis.Nil {
 		blogs, nErr := b.repository.SearchBlogs(ctx, filter)
 
-		resBlogs, rErr := b.getBlogs(ctx, blogs)
+		resBlogs, rErr := b.helper.GetBlogs(ctx, blogs)
 
 		if nErr != nil {
 			return nil, nErr
@@ -259,7 +147,7 @@ func (b *blogUsecase) SearchBlogs(ctx context.Context, filter dtos.FilterBlogReq
 		return nil, models.InternalServerError("Error while unmarshalling search query from cache")
 	}
 
-	return b.getBlogs(ctx, blogs)
+	return b.helper.GetBlogs(ctx, blogs)
 }
 
 func (b *blogUsecase) UpdateBlog(ctx context.Context, blogID string, blog *models.Blog) *models.ErrorResponse {

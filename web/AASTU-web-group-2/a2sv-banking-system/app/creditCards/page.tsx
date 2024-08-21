@@ -20,7 +20,7 @@ const HeadingTitle = ({ title }: { title: string }) => {
 
 const CreditCards = () => {
   const [cards, setCards] = useState<Card1[]>([]);
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
 
   // useEffect(() => {
   //   async function fetch() {

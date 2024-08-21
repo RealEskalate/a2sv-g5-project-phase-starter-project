@@ -14,7 +14,7 @@ import {
 export const transactionsApi = createApi({
   reducerPath: "transactionsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-6acc.onrender.com",
+    baseUrl: "https://bank-dashboard-1tst.onrender.com",
     prepareHeaders: async (headers) => {
       const session = await getSession();
       const token = session?.accessToken;
@@ -77,8 +77,12 @@ export const transactionsApi = createApi({
         `/transactions/latest-transfers${num}`,
     }),
     getBalanceHistory:builder.query<BalanceHistoryResponse, {}>({
-      query:()=> 'transactions/balance-history'
-    })
+      query:()=> '/transactions/balance-history'
+    }),
+    getQuickTransfers:builder.query<BalanceHistoryResponse, {num:number}>({
+      query:({num})=> `/transactions/quick-transfers/${num}`
+    }),
+    
   }),
 });
 

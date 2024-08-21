@@ -3,6 +3,7 @@ package handlers
 import (
 	"blogApp/internal/domain"
 	"blogApp/internal/usecase/user"
+	"blogApp/pkg/checker"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -51,6 +52,16 @@ func (h *UserHandler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email and password are required"})
 		return
 	}
+	if err := checker.IsValidEmail(user.Email); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := checker.IsValidPassword(user.Password); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	user, err := h.UserUsecase.RegisterUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -125,12 +136,30 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
+	
+
 	err := h.UserUsecase.UpdateUser(&user)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "err.Error()"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+}
+
+//  GoogleCallback is a handler that handles the google oauth callback
+func (h *UserHandler) GoogleCallback(c *gin.Context) {
+	code := c.Query("code")
+	user, token, err := h.UserUsecase.GoogleCallback(code)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"id":    user.ID,
+		"email": user.Email,
+		"role":  user.Role,
+		"token": token,
+	})
 }

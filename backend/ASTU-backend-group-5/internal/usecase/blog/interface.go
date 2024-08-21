@@ -21,15 +21,15 @@ type BlogUseCase interface {
 	RemoveTagFromBlog(ctx context.Context, blogID string, tagID string) error
 
 	// Comment operations
-	AddComment(ctx context.Context, comment *domain.Comment) error
+	AddComment(ctx context.Context, comment *domain.Comment, userId string) error
 	GetCommentsByBlogID(ctx context.Context, blogID string) ([]*domain.Comment, error)
 
 	// Like operations
-	AddLike(ctx context.Context, like *domain.Like) error
+	AddLike(ctx context.Context, like *domain.Like, userId string) error
 	GetLikesByBlogID(ctx context.Context, blogID string) ([]*domain.Like, error)
 
 	// View operations
-	AddView(ctx context.Context, view *domain.View) error
+	AddView(ctx context.Context, view *domain.View, userId string) error
 	GetViewsByBlogID(ctx context.Context, blogID string) ([]*domain.View, error)
 
 	// Tag operations
@@ -38,4 +38,7 @@ type BlogUseCase interface {
 	UpdateTag(ctx context.Context, id string, tag *domain.BlogTag) error
 	DeleteTag(ctx context.Context, id string) error
 	GetTagByID(ctx context.Context, id string) (*domain.BlogTag, error)
+
+	DeleteComment(ctx context.Context, comment, userId string) error
+	RemoveLike(ctx context.Context, likeId, userId string) error
 }

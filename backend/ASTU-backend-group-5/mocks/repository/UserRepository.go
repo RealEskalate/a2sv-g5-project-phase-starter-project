@@ -14,6 +14,16 @@ type UserRepository struct {
 	mock.Mock
 }
 
+// GoogleCallback implements repository.UserRepository.
+func (_m *UserRepository) GoogleCallback(ctx context.Context, code string) (*domain.User, error) {
+	panic("unimplemented")
+}
+
+// RegisterUser implements repository.UserRepository.
+func (_m *UserRepository) RegisterUser(ctx context.Context, user *domain.User) (*domain.User, error) {
+	panic("unimplemented")
+}
+
 // CreateUser provides a mock function with given fields: ctx, user
 func (_m *UserRepository) CreateUser(ctx context.Context, user *domain.User) error {
 	ret := _m.Called(ctx, user)

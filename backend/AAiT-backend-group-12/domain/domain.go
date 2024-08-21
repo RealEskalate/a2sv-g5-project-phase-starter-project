@@ -105,7 +105,7 @@ type LikeOrDislikeRequest struct {
 
 type BlogRepositoryInterface interface {
 	//Blog related methods
-	FetchBlogPostByID(ctx context.Context, postID string) (*Blog, CodedError)
+	FetchBlogPostByID(ctx context.Context, postID string, incrementView bool) (*Blog, CodedError)
 	FetchBlogPosts(ctx context.Context, filters BlogFilterOptions) ([]Blog, int, CodedError)
 	InsertBlogPost(ctx context.Context, blog *Blog) CodedError
 	UpdateBlogPost(ctx context.Context, id string, blog *NewBlog) CodedError

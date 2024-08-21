@@ -2,6 +2,7 @@ package blog
 
 import (
 	"context"
+	"time"
 
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/auth"
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/pkg/infrastructure"
@@ -36,6 +37,8 @@ func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, authorID string, blog 
 	newBlog.LikesCount = 0
 	newBlog.DislikesCount = 0
 	newBlog.Popularity = 0
+	newBlog.CreatedAt = time.Now()
+	newBlog.UpdatedAt = time.Now()
 
 	blogId, err := b.blogRepository.CreateBlog(ctx, newBlog)
 	if err != nil {

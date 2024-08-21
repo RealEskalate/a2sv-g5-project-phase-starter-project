@@ -16,7 +16,7 @@ import { useUser } from "@/contexts/UserContext";
 import ky from "ky";
 
 const Header = ({ title }: { title: string }) => {
-const { isDarkMode, setIsDarkMode } = useUser();
+  const { isDarkMode, setIsDarkMode } = useUser();
   const [loading, setLoading] = useState(false);
   const [profileUrl, setProfileUrl] = useState("");
   const [name, setName] = useState("");
@@ -34,7 +34,7 @@ const { isDarkMode, setIsDarkMode } = useUser();
 
       try {
         const res: any = await ky(
-          "https://bank-dashboard-6acc.onrender.com/user/current",
+          "https://bank-dashboard-1tst.onrender.com/user/current",
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -191,7 +191,6 @@ const { isDarkMode, setIsDarkMode } = useUser();
 };
 
 export default Header;
-
 
 function FilePenIcon(props: React.SVGProps<SVGSVGElement>) {
   return (

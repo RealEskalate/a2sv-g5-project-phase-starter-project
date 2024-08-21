@@ -4,6 +4,7 @@ import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
 	"context"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -25,24 +26,32 @@ func NewBlogRepository(collection *mongo.Collection, ctx context.Context) interf
 }
 
 func (br *blogRepository) CreateBlogPost(blogPost *entities.BlogPost, userId string) (*entities.BlogPost, error) {
+	log.Println(userId)
 	userObjectId, err := primitive.ObjectIDFromHex(userId)
+	
 	if err != nil {
 		return nil, err
 	}
 
-	//add blog author and timestamps
-	blogPost.AuthorID = userObjectId
+	// Initialize LikedBy and Viewers as empty arrays
+	blogPost.LikedBy = []primitive.ObjectID{}
+	blogPost.Viewers = []primitive.ObjectID{}
 
+	// Add blog author and timestamps
+	blogPost.AuthorID = userObjectId
 	blogPost.CreatedAt = time.Now()
 	blogPost.UpdatedAt = time.Now()
 
-	_, err = br.collection.InsertOne(br.ctx, blogPost)
+	returnedResult, err := br.collection.InsertOne(br.ctx, blogPost)
 	if err != nil {
 		return nil, err
 	}
 
+	blogPost.ID = returnedResult.InsertedID.(primitive.ObjectID)
+
 	return blogPost, nil
 }
+
 
 func (br *blogRepository) GetBlogPostById(blogPostId string) (*entities.BlogPost, error) {
 	objID, err := primitive.ObjectIDFromHex(blogPostId)
@@ -65,10 +74,21 @@ func (br *blogRepository) GetBlogPostById(blogPostId string) (*entities.BlogPost
 func (br *blogRepository) UpdateBlogPost(blogPost *entities.BlogPost) (*entities.BlogPost, error) {
 	blogPost.UpdatedAt = time.Now()
 
-	filter := bson.M{"_id": blogPost.ID}
-	update := bson.M{
-		"$set": blogPost,
+	// Create a dynamic update map
+	update := bson.M{"$set": bson.M{}}
+
+	// Add only non-null fields to the update map
+	if blogPost.Title != "" {
+		update["$set"].(bson.M)["title"] = blogPost.Title
 	}
+	if blogPost.Content != "" {
+		update["$set"].(bson.M)["content"] = blogPost.Content
+	}
+	if blogPost.Tags != nil {
+		update["$set"].(bson.M)["tags"] = blogPost.Tags
+	}
+
+	filter := bson.M{"_id": blogPost.ID}
 
 	_, err := br.collection.UpdateOne(br.ctx, filter, update)
 	if err != nil {
@@ -77,6 +97,7 @@ func (br *blogRepository) UpdateBlogPost(blogPost *entities.BlogPost) (*entities
 
 	return blogPost, nil
 }
+
 
 func (br *blogRepository) DeleteBlogPost(blogPostId string) error {
 	objID, err := primitive.ObjectIDFromHex(blogPostId)

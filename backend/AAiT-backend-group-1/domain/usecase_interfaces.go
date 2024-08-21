@@ -33,7 +33,7 @@ type BlogUseCase interface {
 }
 
 type BlogAssistantUseCase interface {
-	GenerateBlog(keywords []string, tone, audience string) (string, Error)
-	EnhanceBlog(content, command string) (string, Error)
-	SuggestBlog(industry string) ([]string, Error)
+	GenerateBlog(keywords []string, tone, audience string) (map[string]interface{}, Error)
+	EnhanceBlog(content, command string) (map[string]interface{}, Error)
+	SuggestBlog(industry string) ([]map[string]interface{}, Error)
 }

@@ -394,6 +394,66 @@ func (suite *UserControllerSuite) TestFilterUser_Error() {
 	suite.JSONEq(`{"error": "not found"}`, w.Body.String())
 }
 
+func (suite *UserControllerSuite) TestPromoteUser() {
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPut, "/promote/", nil)
+
+	id:= "user_id"
+	suite.usecase.On("PromoteUser", id).Return(domain.User{}, nil)
+
+	handler := suite.controller.FilterUser()
+	handler(c)
+
+	suite.Equal(200, w.Code)
+	suite.JSONEq(`{"error": "not found"}`, w.Body.String())
+}
+
+func (suite *UserControllerSuite) TestPromoteUser_Error() {
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPut, "/promote/", nil)
+
+	id:= "user_id"
+	suite.usecase.On("PromoteUser", id).Return(nil, errors.New("failed to filter users"))
+
+	handler := suite.controller.FilterUser()
+	handler(c)
+
+	suite.Equal(400, w.Code)
+	suite.JSONEq(`{"error": "not found"}`, w.Body.String())
+}
+
+func (suite *UserControllerSuite) TestDemoteUser() {
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPut, "/promote/", nil)
+
+	id:= "user_id"
+	suite.usecase.On("DemoteUser", id).Return(domain.User{}, nil)
+
+	handler := suite.controller.FilterUser()
+	handler(c)
+
+	suite.Equal(200, w.Code)
+	suite.JSONEq(`{"error": "not found"}`, w.Body.String())
+}
+
+func (suite *UserControllerSuite) TestDemoteUser_Error() {
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPut, "/promote/", nil)
+
+	id:= "user_id"
+	suite.usecase.On("DemoteUser", id).Return(nil, errors.New("failed to filter users"))
+
+	handler := suite.controller.FilterUser()
+	handler(c)
+
+	suite.Equal(200, w.Code)
+	suite.JSONEq(`{"error": "not found"}`, w.Body.String())
+}
+
 func TestUserController(t *testing.T) {
 	suite.Run(t, new(UserControllerSuite))
 }

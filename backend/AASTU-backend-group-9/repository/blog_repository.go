@@ -201,12 +201,12 @@ func (r *blogRepository) FilterBlogsByPopularity(ctx context.Context, popularity
 	return blogs, nil
 }
 
-func (r *blogRepository) IncrementViews(ctx context.Context, id primitive.ObjectID) error {
-	filter := bson.M{"_id": id}
-	update := bson.M{"$inc": bson.M{"views": 1}}
-	_, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
-	return err
-}
+// func (r *blogRepository) IncrementViews(ctx context.Context, id primitive.ObjectID) error {
+// 	filter := bson.M{"_id": id}
+// 	update := bson.M{"$inc": bson.M{"views": 1}}
+// 	_, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
+// 	return err
+// }
 
 // func (r *blogRepository) IncrementLikes(ctx context.Context, id primitive.ObjectID) error {
 //     filter := bson.M{"_id": id}

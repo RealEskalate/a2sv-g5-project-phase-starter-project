@@ -65,6 +65,7 @@ func CreateRootUser(client *database.Client, env *Env) error {
 	rootUser := domain.User{
 		ID:       primitive.NewObjectID(),
 		Username: env.RootUsername,
+		Email:    "email@gmail.com",
 		Password: env.RootPassword,
 		Role:     "root",
 	}

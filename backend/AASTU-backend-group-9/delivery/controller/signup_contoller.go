@@ -61,6 +61,7 @@ func (sc *SignupController) VerifyOTP(c *gin.Context) {
 		Username: otpresponse.Username,
 		Email:    otpresponse.Email,
 		Password: otpresponse.Password,
+		Role:     "user",
 	}
 	sc.Register(c, user)
 }
@@ -154,6 +155,7 @@ func (sc *SignupController) GoogleCallback(c *gin.Context) {
 	regstr := domain.AuthSignup{
 		Username: username,
 		Email:    email,
+		Role:    "user",
 	}
 	sc.Register(c, regstr)
 }

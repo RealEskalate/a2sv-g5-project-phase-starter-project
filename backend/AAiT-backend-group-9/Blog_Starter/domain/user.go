@@ -2,11 +2,12 @@ package domain
 
 import (
 	"context"
+	"errors"
+	"regexp"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
-
 
 const (
 	CollectionUser = "users"
@@ -20,8 +21,8 @@ type User struct {
 	Name           string             `json:"name" bson:"name"`
 	Bio            string             `json:"bio" bson:"bio"`
 	Role           string             `json:"role" bson:"role"`
-	ContactInfo   ContactInfo        `json:"contact_info" bson:"contact_info"` //it requires contact_info in the user profile update requirement given
-	IsActivated   bool                `json:"is_verified" bson:"is_verified"` //useful for email verification
+	ContactInfo    ContactInfo        `json:"contact_info" bson:"contact_info"` //it requires contact_info in the user profile update requirement given
+	IsActivated    bool               `json:"is_verified" bson:"is_verified"`   //useful for email verification
 	AccessToken    string             `json:"accessToken"`
 	RefreshToken   string             `json:"refreshToken"`
 	CreatedAt      time.Time          `json:"created_at" bson:"createtimestamp"`
@@ -30,7 +31,7 @@ type User struct {
 }
 
 type ContactInfo struct {
-	Phone string `json:"phone" bson:"phone"`
+	Phone   string `json:"phone" bson:"phone"`
 	Address string `json:"address" bson:"address"`
 }
 
@@ -40,25 +41,25 @@ type UserResponse struct {
 	Email          string             `json:"email" bson:"email"`
 	Name           string             `json:"name" bson:"name"`
 	Bio            string             `json:"bio" bson:"bio"`
-	ContactInfo   ContactInfo        `json:"contact_info" bson:"contact_info"`
+	ContactInfo    ContactInfo        `json:"contact_info" bson:"contact_info"`
 	Role           string             `json:"role" bson:"role"`
-	IsActivated    bool                `json:"is_verified" bson:"is_verified"` //useful for email verification
+	IsActivated    bool               `json:"is_verified" bson:"is_verified"` //useful for email verification
 	ProfilePicture string             `json:"profile_picture" bson:"profile_picture"`
 }
 
 type UserUpdate struct {
-	Username       string `json:"username" bson:"username"`
-	Email          string `json:"email" bson:"email"`
-	Name           string `json:"name" bson:"name"`
-	Bio            string `json:"bio" bson:"bio"`
-	ContactInfo   ContactInfo `json:"contact_info" bson:"contact_info"`
-	ProfilePicture string `json:"profile_picture" bson:"profile_picture"`
+	Username       string      `json:"username" bson:"username"`
+	Email          string      `json:"email" bson:"email"`
+	Name           string      `json:"name" bson:"name"`
+	Bio            string      `json:"bio" bson:"bio"`
+	ContactInfo    ContactInfo `json:"contact_info" bson:"contact_info"`
+	ProfilePicture string      `json:"profile_picture" bson:"profile_picture"`
 }
 
 type AuthenticatedUser struct {
-	UserID   string
-	Email string
-	Role     string
+	UserID string
+	Email  string
+	Role   string
 }
 
 type UserRepository interface {
@@ -78,11 +79,54 @@ type UserUsecase interface {
 	GetUserByEmail(c context.Context, email string) (*UserResponse, error)
 	GetUserByID(c context.Context, userID string) (*UserResponse, error)
 
-	GetAllUser(c context.Context) ([]*UserResponse, error) //superAdmin privilage
-	DeleteUser(c context.Context, userID string, password string) error  //superAdmin,Admin,User privilage
-	PromoteUser(c context.Context, userID string) error //superAdmin privilage
-	DemoteUser(c context.Context, userID string) error //superAdmin privilage
+	GetAllUser(c context.Context) ([]*UserResponse, error)              //superAdmin privilage
+	DeleteUser(c context.Context, userID string, password string) error //superAdmin,Admin,User privilage
+	PromoteUser(c context.Context, userID string) error                 //superAdmin privilage
+	DemoteUser(c context.Context, userID string) error                  //superAdmin privilage
 
 	UpdateUser(c context.Context, user *UserUpdate, userID string) (*UserResponse, error)
+}
 
+// ValidateEmail checks if the email format is valid
+func ValidateEmail(email string) error {
+	re := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	if !re.MatchString(email) {
+		return errors.New("invalid email format")
+	}
+	return nil
+}
+
+// ValidatePassword checks if the password meets the strength requirements
+func ValidatePassword(password string) error {
+	if len(password) < 8 {
+		return errors.New("password must be at least 8 characters long")
+	}
+	re := regexp.MustCompile(`[A-Z]`)
+	if !re.MatchString(password) {
+		return errors.New("password must contain at least one uppercase letter")
+	}
+	re = regexp.MustCompile(`[a-z]`)
+	if !re.MatchString(password) {
+		return errors.New("password must contain at least one lowercase letter")
+	}
+	re = regexp.MustCompile(`[0-9]`)
+	if !re.MatchString(password) {
+		return errors.New("password must contain at least one digit")
+	}
+	re = regexp.MustCompile(`[!@#\$%\^&\*]`)
+	if !re.MatchString(password) {
+		return errors.New("password must contain at least one special character")
+	}
+	return nil
+}
+
+// Validate validates the UserSignUp struct
+func (u *UserSignUp) Validate(email, password string) error {
+	if err := ValidateEmail(email); err != nil {
+		return err
+	}
+	if err := ValidatePassword(password); err != nil {
+		return err
+	}
+	return nil
 }

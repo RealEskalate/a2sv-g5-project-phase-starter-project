@@ -5,6 +5,7 @@ import (
 
 	"aait.backend.g10/domain"
 	"aait.backend.g10/usecases"
+	"aait.backend.g10/usecases/dto"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -19,6 +20,12 @@ func (cont *LikeController) LikeBlog(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	reacterId, err := uuid.Parse(c.MustGet("id").(string))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+	}
+	like.ReacterID = reacterId
 	cerr := cont.LikeUseCase.LikeBlog(like)
 	if cerr != nil {
 		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
@@ -28,31 +35,20 @@ func (cont *LikeController) LikeBlog(c *gin.Context) {
 }
 
 func (cont *LikeController) DeleteLike(c *gin.Context) {
-	var like domain.Like
+	var like dto.UnlikeDto
 	if err := c.BindJSON(&like); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	requester_id := c.MustGet("id").(uuid.UUID)
-	like.UserID = requester_id
+	requester_id, err := uuid.Parse(c.MustGet("id").(string))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+	}
+	like.ReacterID = requester_id
 	cerr := cont.LikeUseCase.DeleteLike(like)
 	if cerr != nil {
 		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Like deleted successfully"})
-}
-
-func (cont *LikeController) BlogLikeCount(c *gin.Context) {
-	blogID, err := uuid.Parse(c.Param("blog_id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
-		return
-	}
-	count, cerr := cont.LikeUseCase.BlogLikeCount(blogID)
-	if cerr != nil {
-		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"like count": count})
 }

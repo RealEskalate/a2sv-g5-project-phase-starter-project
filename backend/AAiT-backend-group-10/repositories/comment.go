@@ -39,7 +39,6 @@ func (cr *CommentRepository) GetCommentByID(commentID uuid.UUID) (domain.Comment
 func (cr *CommentRepository) AddComment(comment domain.Comment) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	comment.ID = uuid.New()
 	_, err := cr.Collection.InsertOne(ctx, comment)
 	if err != nil {
 		return domain.ErrCommentCreationFailed

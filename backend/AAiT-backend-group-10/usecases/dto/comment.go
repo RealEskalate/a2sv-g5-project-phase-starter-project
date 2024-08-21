@@ -6,19 +6,19 @@ import (
 )
 
 type CommentDto struct {
-	ID        uuid.UUID `json:"id,omitempty"`
-	BlogID    uuid.UUID `json:"blog_id"`
-	UserID    uuid.UUID `json:"user_id"`
-	Commenter string    `json:"commenter"`
-	Comment   string    `json:"comment"`
+	ID        	  uuid.UUID `json:"id,omitempty"`
+	BlogID    	  uuid.UUID `json:"blog_id"`
+	CommenterID   uuid.UUID `json:"commenter_id"`
+	Commenter 	  string    `json:"commenter"`
+	Comment   	  string    `json:"comment"`
 }
 
 func NewCommentDto(comment domain.Comment, commenter string) *CommentDto {
 	return &CommentDto{
-		ID:        comment.ID,
-		BlogID:    comment.BlogID,
-		UserID:    comment.CommenterID,
-		Commenter: commenter,
-		Comment:   comment.Comment,
+		ID:        		comment.ID,
+		BlogID:    		comment.BlogID,
+		CommenterID:    comment.CommenterID,
+		Commenter: 		commenter,
+		Comment:   		comment.Comment,
 	}
 }

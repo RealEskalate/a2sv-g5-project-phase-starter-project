@@ -5,8 +5,8 @@ import (
 )
 
 type Like struct {
-	ID     uuid.UUID `json:"id,omitempty" bson:"id,omitempty"`
-	IsLike bool      `json:"is_like" bson:"is_like"`
-	UserID uuid.UUID `json:"user_id" bson:"user_id"`
-	BlogID uuid.UUID `json:"blog_id" bson:"blog_id"`
+	ID        uuid.UUID `json:"id,omitempty" bson:"_id,omitempty"`
+	IsLike    *bool      `json:"is_like" bson:"is_like" binding:"required"`
+	ReacterID uuid.UUID `json:"reacter_id" bson:"reacter_id"`
+	BlogID    uuid.UUID `json:"blog_id" bson:"blog_id" binding:"required"`
 }

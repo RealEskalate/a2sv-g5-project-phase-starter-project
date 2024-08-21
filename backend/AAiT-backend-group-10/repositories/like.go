@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"aait.backend.g10/domain"
+	"aait.backend.g10/usecases/dto"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,12 +21,13 @@ func NewLikeRepository(db *mongo.Database, collectionName string) *LikeRepositor
 		Collection: collection,
 	}
 }
-func (l *LikeRepository) GetLike(likeID uuid.UUID) (domain.Like, *domain.CustomError) {
+func (l *LikeRepository) GetLike(blogID uuid.UUID, reacterID uuid.UUID) (domain.Like, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	filter := bson.D{
-		{Key: "id", Value: likeID},
+		{Key: "blog_id", Value: blogID},
+		{Key: "reacter_id", Value: reacterID},
 	}
 	var like domain.Like
 	err := l.Collection.FindOne(ctx, filter).Decode(&like)
@@ -45,13 +47,12 @@ func (l *LikeRepository) LikeBlog(like domain.Like) *domain.CustomError {
 
 	filter := bson.D{
 		{Key: "blog_id", Value: like.BlogID},
-		{Key: "user_id", Value: like.UserID},
+		{Key: "reacter_id", Value: like.ReacterID},
 	}
 
 	var existingLike domain.Like
 	err := l.Collection.FindOne(ctx, filter).Decode(&existingLike)
 	if err == mongo.ErrNoDocuments {
-		like.ID = uuid.New()
 		_, err = l.Collection.InsertOne(ctx, like)
 		if err != nil {
 			return domain.ErrLikeCreationFailed
@@ -64,23 +65,25 @@ func (l *LikeRepository) LikeBlog(like domain.Like) *domain.CustomError {
 			return domain.ErrLikeUpdateFailed
 		}
 	} else {
-		return domain.ErrLikeCountFetchFailed
+		return domain.ErrLikeCreationFailed
 	}
 	return nil
 }
 
 // DeleteBlog implements usecases.LikeUsecaseInterface.
-func (l *LikeRepository) DeleteLike(like domain.Like) *domain.CustomError {
+func (l *LikeRepository) DeleteLike(like dto.UnlikeDto) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	filter := bson.D{
 		{Key: "blog_id", Value: like.BlogID},
-		{Key: "user_id", Value: like.UserID},
+		{Key: "reacter_id", Value: like.ReacterID},
 	}
 	result, err := l.Collection.DeleteOne(ctx, filter)
-	if err != nil || result.DeletedCount == 0 {
+	if err != nil {
 		return domain.ErrLikeDeletionFailed
+	} else if result.DeletedCount == 0 {
+		return domain.ErrLikeNotFound
 	}
 	return nil
 }

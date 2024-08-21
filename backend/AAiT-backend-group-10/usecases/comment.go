@@ -42,6 +42,7 @@ func (cu *CommentUsecase) GetCommentByID(commentID uuid.UUID) (*dto.CommentDto, 
 
 // AddComment implements interfaces.CommentUsecaseInterface.
 func (cu *CommentUsecase) AddComment(comment domain.Comment) *domain.CustomError {
+	comment.ID = uuid.New()
 	return cu.CommentRepository.AddComment(comment)
 }
 

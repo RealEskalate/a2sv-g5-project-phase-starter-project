@@ -49,10 +49,10 @@ export function AreaComp({ data }: dataProps) {
   console.log(chartData);
   return (
     <Card className="w-full border-0 shadow-none bg-transparent ">
-      <CardContent>
+      <CardContent className="p-0">
         <ChartContainer
           config={chartConfig}
-          className="barHeight w-full min-h-[100px] h-52"
+          className=" w-full min-h-[100px] h-52"
         >
           <AreaChart
             accessibilityLayer

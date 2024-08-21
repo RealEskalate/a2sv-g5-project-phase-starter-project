@@ -1,19 +1,19 @@
 package main
 
 import (
-	"context"
 	infrastructure "astu-backend-g1/Infrastructure"
 	"astu-backend-g1/delivery/controllers"
-	"astu-backend-g1/delivery/routers"
+	router "astu-backend-g1/delivery/routers"
 	"astu-backend-g1/repository"
-	"astu-backend-g1/usecases"
+	usecase "astu-backend-g1/usecases"
+	"context"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOptions := options.Client().ApplyURI("mongodb+srv://Legend:AmIHDrlwCqmxgjy2@pycluster.ajv4lb8.mongodb.net/?retryWrites=true&w=majority&appName=pycluster")
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		panic(err)

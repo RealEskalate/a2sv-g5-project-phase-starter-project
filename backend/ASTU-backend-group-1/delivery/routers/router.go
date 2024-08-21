@@ -30,6 +30,7 @@ func (gr *MainRouter) GinBlogRouter() {
 		userrouter.POST("/login", gr.handler.LoginUser)
 		userrouter.GET("/forgetPassword", gr.handler.ForgetPassword)
 		userrouter.POST("/resetPassword", gr.handler.ResetPassword)
+		userrouter.GET("/logout", gr.handler.LogoutUser)
 	}
 	blogRouter := router.Group("/blogs")
 	{

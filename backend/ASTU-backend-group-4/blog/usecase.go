@@ -195,7 +195,12 @@ func (b *BlogUseCaseImpl) GetBlogs(ctx context.Context, filterQuery FilterQuery,
 
 // GetCommentsByBlogID implements BlogUseCase.
 func (b *BlogUseCaseImpl) GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error) {
-	panic("unimplemented")
+	comments, err := b.blogRepository.GetCommentsByBlogID(ctx, blogID, pagination)
+	if err != nil {
+		return infrastructure.PaginationResponse[Comment]{}, err
+	}
+
+	return comments, nil
 }
 
 // LikeBlog implements BlogUseCase.

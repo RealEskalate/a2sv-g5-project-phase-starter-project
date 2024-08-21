@@ -14,12 +14,23 @@ import (
 func NewRouter(db *mongo.Database) {
 	router := gin.Default()
 
+	//load email configuration from .env
+	email := os.Getenv("EMAIL")
+	password := os.Getenv("EMAIL_PASSWORD")
+	username := os.Getenv("EMAIL_USERNAME")
+	host := os.Getenv("EMAIL_HOST")
+
 	jwtService := infrastructures.JwtService{JwtSecret: os.Getenv("JWT_SECRET")}
 
 	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
 
 	pwdService := infrastructures.PwdService{}
-	emailService := infrastructures.EmailService{}
+	emailService := infrastructures.EmailService{
+		AppEmail:    email,
+		AppPass: 	 password,
+		AppUsername: username,
+		AppHost:     host,
+	}
 
 	blogRepo := repositories.NewBlogRepository(db, os.Getenv("BLOG_COLLECTION"))
 	blogUseCase := usecases.NewBlogUseCase(blogRepo, userRepo)
@@ -63,7 +74,6 @@ func NewRouter(db *mongo.Database) {
 
 	router.POST("/register", authController.Register)
 	router.POST("/login", authController.Login)
-	router.POST("/refresh", authController.RefreshToken)
 	router.POST("/refresh-token", authController.RefreshToken)
 	router.POST("/forgot-password", authController.ForgotPassword)
 	router.POST("/reset-password", authController.ResetPassword)

@@ -3,20 +3,20 @@ package infrastructures
 import (
 	"fmt"
 	"net/smtp"
-	"os"
-
 	"aait.backend.g10/domain"
 )
 
 type EmailService struct {
+	AppEmail	string
+	AppUsername string
+	AppPass  	string
+	AppHost  	string
 }
 
 func (s *EmailService) SendResetEmail(email string, resetToken string) *domain.CustomError {
-	// var app_password = os.Getenv("SMPT_APP_PASS")
-	var app_email = os.Getenv("SMPT_APP_EMAIL")
-	resetLink := "https://locahost:8080/reset-password?token=" + resetToken
+	resetLink := "https://localhost:8080/reset-password?token=" + resetToken
 
-	from := app_email
+	from := s.AppEmail
 	to := email
 
 	subject := "Password Reset Request"
@@ -62,8 +62,8 @@ func (s *EmailService) SendResetEmail(email string, resetToken string) *domain.C
 	message += body
 
 	// Example using Gmail's SMTP server
-	auth := smtp.PlainAuth("", "8fba770eab09f1", "95295f54db5e69", "sandbox.smtp.mailtrap.io")
-	err := smtp.SendMail("sandbox.smtp.mailtrap.io:587", auth, "8fba770eab09f1", []string{to}, []byte(message))
+	auth := smtp.PlainAuth("", s.AppUsername, s.AppPass, s.AppHost)
+	err := smtp.SendMail(s.AppHost+":587", auth, s.AppUsername, []string{to}, []byte(message))
 	if err != nil {
 		fmt.Println(err)
 		return domain.ErrEmailSendingFailed

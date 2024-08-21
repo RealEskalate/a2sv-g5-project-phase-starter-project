@@ -1,0 +1,149 @@
+import axios from "axios";
+import React from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+
+interface FormValues {
+  receiverUserName: string;
+  amount: number;
+  description: string;
+}
+interface props {
+  isOpen: boolean;
+  onClose: () => void;
+  userName : string
+  amount :number
+}
+const ModalTrans = ({ isOpen, onClose , userName ,amount }: props) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>();
+  const accessToken =
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjQyMjYyNjgsImV4cCI6MTcyNDMxMjY2OH0.NpLfcO08R6vtIpsC9CerKswpYJqIqkMtZidQKyj3sxAMwKKnZF7YLR1wWPV2iA65";
+
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    const formData = JSON.stringify({ ...data, type: "transfer" });
+    try {
+      const response = await axios.post(
+        "https://bank-dashboard-6acc.onrender.com/transactions",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Transaction successful", response.data);
+      onClose();
+    } catch (error) {
+      console.error("Error occurred:", error);
+      alert(
+        "There was an issue processing your transaction. Please try again."
+      );
+    }
+  };
+  return (
+    <form
+      className="flex flex-col space-y-4 p-4 bg-white rounded-lg"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <div className="flex justify-between">
+        <p className="text-base font-semibold">Quick Transfer</p>
+        <button className="text-right" onClick={onClose}>
+          <CloseIcon />
+        </button>
+      </div>
+      <div>
+        <label
+          htmlFor="receiverUserName"
+          className="block text-md font-medium text-gray-700"
+        >
+          Receiver Username
+        </label>
+        <input
+          {...register("receiverUserName", {
+            required: "Receiver username is required",
+          })}
+          type="text"
+          placeholder="Enter Receiver Username "
+          defaultValue={userName}
+          className="mt-1 p-3 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm placeholder:text-xs"
+        />
+        {errors.receiverUserName && (
+          <span className="text-red-600 text-sm">
+            {errors.receiverUserName.message}
+          </span>
+        )}
+      </div>
+
+      <div>
+        <label
+          htmlFor="amount"
+          className="block text-md font-medium text-gray-700"
+        >
+          Amount
+        </label>
+        <input
+          {...register("amount", { required: "Amount is required" })}
+          type="number"
+          placeholder="Enter Amount "
+          defaultValue={amount}
+          className="mt-1 p-3 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm placeholder:text-xs"
+        />
+        {errors.amount && (
+          <span className="text-red-600 text-sm">{errors.amount.message}</span>
+        )}
+      </div>
+
+      <div>
+        <label
+          htmlFor="description"
+          className="block text-md font-medium text-gray-700"
+        >
+          Reason
+        </label>
+        <input
+          {...register("description", { required: "Reason is required" })}
+          type="text"
+          placeholder="Enter Reason "
+          className="mt-1 p-3 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm placeholder:text-xs"
+        />
+        {errors.description && (
+          <span className="text-red-600 text-sm">
+            {errors.description.message}
+          </span>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        Send
+      </button>
+    </form>
+  );
+};
+
+function CloseIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      className="size-6"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M6 18 18 6M6 6l12 12"
+      />
+    </svg>
+  );
+}
+
+export default ModalTrans;

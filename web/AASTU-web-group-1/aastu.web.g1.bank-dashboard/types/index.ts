@@ -44,6 +44,12 @@ export interface TransactionData {
   
 }
 
+export interface TransactionResponse {
+  success: boolean;
+  message : string;
+  data : TransactionContent;
+}
+
 
 
 export interface TransactionProps {

@@ -12,7 +12,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func AuthMiddleware() gin.HandlerFunc {
+func AuthenticationMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		configJwt, err := config.LoadConfig()
 		if err != nil {

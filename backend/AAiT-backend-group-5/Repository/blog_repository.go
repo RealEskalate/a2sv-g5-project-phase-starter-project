@@ -52,7 +52,7 @@ func (br *BlogMongoRepository) GetBlog(ctx context.Context, id string) (*models.
 	return &blog, models.Nil()
 }
 
-func (br *BlogMongoRepository) GetBlogs(ctx context.Context) ([]*models.Blog, *models.ErrorResponse) {
+func (br *BlogMongoRepository) GetBlogs(ctx context.Context , page int) ([]*models.Blog, *models.ErrorResponse) {
 	cursor, err := br.BlogCollection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, models.InternalServerError("Failed to retrieve blogs")

@@ -19,7 +19,7 @@ type cacheService struct {
 }
 
 // NewcacheService creates a new cacheService instance.
-func NewcacheService(redisAddr, redisPassword string, redisDB int) CacheService {
+func NewCacheService(redisAddr, redisPassword string, redisDB int) CacheService {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     redisAddr,
 		Password: redisPassword,

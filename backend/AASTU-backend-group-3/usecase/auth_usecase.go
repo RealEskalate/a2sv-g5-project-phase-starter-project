@@ -133,13 +133,13 @@ func (u *UserUsecase) RefreshToken(userID, deviceID, token string) (domain.LogIn
 	for i, rt := range user.RefreshTokens {
 		if rt.Token == token && rt.DeviceID == deviceID {
 
-			_, tokenErr := infrastracture.RefreshToken(token)
+			// _, tokenErr := infrastracture.RefreshToken(token)
 			user.RefreshTokens = append(user.RefreshTokens[:i], user.RefreshTokens[i+1:]...)
 
 			
-			if tokenErr != nil {
-				return domain.LogInResponse{}, errors.New("invalid token")
-			}
+			// if tokenErr != nil {
+			// 	return domain.LogInResponse{}, errors.New("invalid token")
+			// }
 
 			refreshToken, err := u.TokenGen.GenerateRefreshToken(user)
 			if err != nil {

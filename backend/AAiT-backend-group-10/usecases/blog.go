@@ -1,7 +1,6 @@
 package usecases
 
 import (
-	"errors"
 	"time"
 
 	"aait.backend.g10/domain"
@@ -11,13 +10,13 @@ import (
 )
 
 type IBlogUseCase interface {
-	CreateBlog(blog *domain.Blog) (*dto.BlogDto, error)
-	GetAllBlogs() ([]*dto.BlogDto, error)
-	GetBlogByID(id uuid.UUID) (*dto.BlogDto, error)
-	UpdateBlog(blog *domain.Blog) error
-	DeleteBlog(id uuid.UUID, requester_id uuid.UUID, is_admin bool) error
-	AddView(id uuid.UUID) error
-	SearchBlogs(filter domain.BlogFilter) ([]dto.BlogDto, int, int, error)
+	CreateBlog(blog *domain.Blog) (*dto.BlogDto, *domain.CustomError)
+	GetAllBlogs() ([]*dto.BlogDto, *domain.CustomError)
+	GetBlogByID(id uuid.UUID) (*dto.BlogDto, *domain.CustomError)
+	UpdateBlog(blog *domain.Blog) *domain.CustomError
+	DeleteBlog(id uuid.UUID, requester_id uuid.UUID, is_admin bool) *domain.CustomError
+	AddView(id uuid.UUID) *domain.CustomError
+	SearchBlogs(filter domain.BlogFilter) ([]dto.BlogDto, int, int, *domain.CustomError)
 }
 
 type BlogUseCase struct {
@@ -32,7 +31,7 @@ func NewBlogUseCase(bRepo interfaces.IBlogRepository, uRepo interfaces.IUserRepo
 	}
 }
 
-func (b *BlogUseCase) CreateBlog(blog *domain.Blog) (*dto.BlogDto, error) {
+func (b *BlogUseCase) CreateBlog(blog *domain.Blog) (*dto.BlogDto, *domain.CustomError) {
 	blog.ID = uuid.New()
 	blog.CreatedAt = time.Now().UTC()
 	blog.UpdatedAt = time.Now().UTC()
@@ -47,7 +46,7 @@ func (b *BlogUseCase) CreateBlog(blog *domain.Blog) (*dto.BlogDto, error) {
 	return dto.NewBlogDto(*blog, *author), nil
 }
 
-func (b *BlogUseCase) GetAllBlogs() ([]*dto.BlogDto, error) {
+func (b *BlogUseCase) GetAllBlogs() ([]*dto.BlogDto, *domain.CustomError) {
 	blogs, err := b.blogRepo.FindAll()
 	if err != nil {
 		return nil, err
@@ -63,7 +62,7 @@ func (b *BlogUseCase) GetAllBlogs() ([]*dto.BlogDto, error) {
 	return changedBlogs, nil
 }
 
-func (b *BlogUseCase) GetBlogByID(id uuid.UUID) (*dto.BlogDto, error) {
+func (b *BlogUseCase) GetBlogByID(id uuid.UUID) (*dto.BlogDto, *domain.CustomError) {
 	blog, err := b.blogRepo.FindByID(id)
 	if err != nil {
 		return nil, err
@@ -75,36 +74,36 @@ func (b *BlogUseCase) GetBlogByID(id uuid.UUID) (*dto.BlogDto, error) {
 	return dto.NewBlogDto(*blog, *author), nil
 }
 
-func (b *BlogUseCase) UpdateBlog(blog *domain.Blog) error {
+func (b *BlogUseCase) UpdateBlog(blog *domain.Blog) *domain.CustomError {
 	existingBlog, err := b.blogRepo.FindByID(blog.ID)
 	if err != nil {
 		return err
 	}
 	if blog.Author != existingBlog.Author {
-		return errors.New("update not authorized")
+		return domain.ErrUnAuthorized
 	}
 	blog.UpdatedAt = time.Now().UTC()
 	return b.blogRepo.Update(blog)
 }
 
-func (b *BlogUseCase) DeleteBlog(id uuid.UUID, requester_id uuid.UUID, is_admin bool) error {
+func (b *BlogUseCase) DeleteBlog(id uuid.UUID, requester_id uuid.UUID, is_admin bool) *domain.CustomError {
 	existingBlog, err := b.blogRepo.FindByID(id)
 	if err != nil {
 		return err
 	}
 
 	if !is_admin && existingBlog.Author != requester_id {
-		return errors.New("delete not authorized")
+		return domain.ErrUnAuthorized
 	}
 
 	return b.blogRepo.Delete(id)
 }
 
-func (b *BlogUseCase) AddView(id uuid.UUID) error {
+func (b *BlogUseCase) AddView(id uuid.UUID) *domain.CustomError {
 	return b.blogRepo.AddView(id)
 }
 
-func (b *BlogUseCase) SearchBlogs(filter domain.BlogFilter) ([]dto.BlogDto, int, int, error) {
+func (b *BlogUseCase) SearchBlogs(filter domain.BlogFilter) ([]dto.BlogDto, int, int, *domain.CustomError) {
 	if filter.SortBy == "" {
 		filter.SortBy = "recent" // Default sort by most recent
 	}

@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"aait.backend.g10/domain"
@@ -21,7 +20,7 @@ func NewBlogRepository(db *mongo.Database, collectionName string) *BlogRepositor
 	return &BlogRepository{collection}
 }
 
-func (r *BlogRepository) Create(blog *domain.Blog) error {
+func (r *BlogRepository) Create(blog *domain.Blog) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	
@@ -33,32 +32,32 @@ func (r *BlogRepository) Create(blog *domain.Blog) error {
 			// If a duplicate key error occurs, generate a new ID and try again
 			continue
 		} else if err != nil {
-			return err
+			return domain.ErrBlogInsertFailed
 		}
 		return  nil
 	}
 }
 
 
-func (r *BlogRepository) FindAll() ([]domain.Blog, error) {
+func (r *BlogRepository) FindAll() ([]domain.Blog, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	
 	cursor, err := r.collection.Find(ctx, bson.D{{}})
 	if err != nil {
-		return nil, err
+		return nil,domain.ErrBlogFetchFailed
 	}
 	defer cursor.Close(ctx)
 	
 	var blogs = make([]domain.Blog, 0)  
 	if err := cursor.All(ctx, &blogs); err != nil {
-		return nil, err
+		return nil, domain.ErrBlogCursorDecodeFailed
 	}
 	
 	return blogs, nil
 }
 
-func (r *BlogRepository) FindByID(id uuid.UUID) (*domain.Blog, error) {
+func (r *BlogRepository) FindByID(id uuid.UUID) (*domain.Blog, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	
@@ -69,15 +68,15 @@ func (r *BlogRepository) FindByID(id uuid.UUID) (*domain.Blog, error) {
 	err := r.collection.FindOne(ctx, filter).Decode(&blog)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, errors.New("blog not found")
+			return nil, domain.ErrBlogNotFound
 		  }
-		  return nil, err
+		  return nil, domain.ErrBlogFetchFailed
 	}
 	
 	return &blog, nil
 }
 
-func (r *BlogRepository) Update(blog *domain.Blog) error {
+func (r *BlogRepository) Update(blog *domain.Blog) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	
@@ -92,15 +91,15 @@ func (r *BlogRepository) Update(blog *domain.Blog) error {
 	result := r.collection.FindOneAndUpdate(ctx, filter, update)
 	if result.Err() != nil {
 		if result.Err() == mongo.ErrNoDocuments {
-			return errors.New("blog not found")
+			return domain.ErrBlogNotFound
 		}
-		return result.Err()
+		return domain.ErrBlogUpdateFailed
 	}
 	
 	return nil
 }
 
-func (r *BlogRepository) Delete(id uuid.UUID) error {
+func (r *BlogRepository) Delete(id uuid.UUID) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	
@@ -109,15 +108,15 @@ func (r *BlogRepository) Delete(id uuid.UUID) error {
 	_, err := r.collection.DeleteOne(ctx, filter)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return errors.New("blog not found")
+			return domain.ErrBlogNotFound
 		}
-		return err
+		return domain.ErrBlogDeleteFailed
 	}
 	
 	return nil
 }
 
-func (r *BlogRepository) AddView(id uuid.UUID) error {
+func (r *BlogRepository) AddView(id uuid.UUID) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	
@@ -127,15 +126,15 @@ func (r *BlogRepository) AddView(id uuid.UUID) error {
 	result := r.collection.FindOneAndUpdate(ctx, filter, update)
 	if result.Err() != nil {
 		if result.Err() == mongo.ErrNoDocuments {
-			return errors.New("blog not found")
+			return domain.ErrBlogNotFound
 		}
-		return result.Err()
+		return domain.ErrBlogUpdateFailed
 	}
 	
 	return nil
 }
 
-func (r *BlogRepository) Search(filter domain.BlogFilter) ([]domain.Blog, int, error) {
+func (r *BlogRepository) Search(filter domain.BlogFilter) ([]domain.Blog, int, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -166,19 +165,19 @@ func (r *BlogRepository) Search(filter domain.BlogFilter) ([]domain.Blog, int, e
 
 	cursor, err := r.collection.Find(ctx, query, findOptions)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, domain.ErrBlogNotFound
 	}
 	defer cursor.Close(ctx)
 
 	var blogs []domain.Blog
 	if err = cursor.All(ctx, &blogs); err != nil {
-		return nil, 0, err
+		return nil, 0, domain.ErrBlogCursorDecodeFailed
 	}
 
 	// Get the total count for pagination
 	count, err := r.collection.CountDocuments(ctx, query)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, domain.ErrBlogCountFailed
 	}
 
 	return blogs, int(count), nil

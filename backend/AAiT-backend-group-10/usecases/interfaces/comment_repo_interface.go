@@ -6,10 +6,10 @@ import (
 )
 
 type CommentRepositoryInterface interface {
-	GetCommentByID(commentID uuid.UUID) (domain.Comment, error)
-	GetComments(blogID uuid.UUID) ([]domain.Comment, error)
-	GetCommentsCount(blogID uuid.UUID) (int, error)
-	AddComment(comment domain.Comment) error
-	UpdateComment(updatedComment domain.Comment) error
-	DelelteComment(commentID uuid.UUID) error
+	GetCommentByID(commentID uuid.UUID) (domain.Comment, *domain.CustomError)
+	GetComments(blogID uuid.UUID) ([]domain.Comment, *domain.CustomError)
+	GetCommentsCount(blogID uuid.UUID) (int, *domain.CustomError)
+	AddComment(comment domain.Comment) *domain.CustomError
+	UpdateComment(updatedComment domain.Comment) *domain.CustomError
+	DelelteComment(commentID uuid.UUID) *domain.CustomError
 }

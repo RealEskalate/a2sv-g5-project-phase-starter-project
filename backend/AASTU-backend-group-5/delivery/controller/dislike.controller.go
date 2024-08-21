@@ -3,79 +3,62 @@ package controller
 import (
 	"net/http"
 
-	"github.com/RealEskalate/blogpost/domain"
+	"github.com/RealEskalate/blogpost/usecase"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type DislikeController struct {
-	DislikeUsecase domain.DisLike_Usecase_interface
-	UserUsecase    domain.User_Usecase_interface
+	DislikeUseCase *usecase.DislikeUseCase
 }
 
-func NewDislikeController(dislikeUsecase domain.DisLike_Usecase_interface, userUsecase domain.User_Usecase_interface) *DislikeController {
+func NewDislikeController(dislikeUseCase *usecase.DislikeUseCase) *DislikeController {
 	return &DislikeController{
-		DislikeUsecase: dislikeUsecase,
-		UserUsecase:    userUsecase,
+		DislikeUseCase: dislikeUseCase,
 	}
 }
 
-func (dc *DislikeController) GetDisLikes() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		postID := c.Param("post_id")
-
-		_, err := primitive.ObjectIDFromHex(postID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID format. Please provide a valid post ID."})
-			return
-		}
-
-		dislikes, err := dc.DislikeUsecase.GetDisLikes(postID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve dislikes. Please try again: " + err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"message": "Dislikes retrieved successfully!", "dislikes": dislikes})
+func (BC *DislikeController) GetDislikes(ctx *gin.Context) {
+	post_id := ctx.Param("post_id")
+	dislikes, err := BC.DislikeUseCase.GetDislikes(post_id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	ctx.JSON(http.StatusOK, dislikes)
 }
 
-func (dc *DislikeController) CreateDisLike() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		postID := c.Param("post_id")
+func (BC *DislikeController) CreateDislike(ctx *gin.Context) {
+	user_id := ctx.Param("user_id")
+	post_id := ctx.Param("post_id")
 
-		_, err := primitive.ObjectIDFromHex(postID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID format. Please provide a valid post ID."})
-			return
-		}
-
-		userID := c.Param("user_id") // Assuming user_id is passed as a param or retrieved by the middleware
-
-		if err := dc.DislikeUsecase.CreateDisLike(userID, postID); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to dislike the post. Please try again: " + err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"message": "Post disliked successfully!"})
+	err := BC.DislikeUseCase.CreateDislike(user_id, post_id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "dislike added successfully"})
 }
 
-func (dc *DislikeController) DeleteDisLike() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		dislikeID := c.Param("dislike_id")
+func (BC *DislikeController) ToggleDislike(ctx *gin.Context) {
+	user_id := ctx.Param("user_id")
+	post_id := ctx.Param("post_id")
 
-		_, err := primitive.ObjectIDFromHex(dislikeID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid dislike ID format. Please provide a valid dislike ID."})
-			return
-		}
-
-		if err := dc.DislikeUsecase.DeleteDisLike(dislikeID); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete dislike. Please try again: " + err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"message": "Dislike deleted successfully!"})
+	err := BC.DislikeUseCase.ToggleDislike(user_id, post_id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	ctx.JSON(http.StatusOK, gin.H{"status": "dislike toggled successfully"})
+}
+
+func (BC *DislikeController) RemoveDislike(ctx *gin.Context) {
+	user_id := ctx.Param("user_id")
+	post_id := ctx.Param("post_id")
+
+	err := BC.DislikeUseCase.RemoveDislike(user_id, post_id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"status": "dislike removed successfully"})
 }

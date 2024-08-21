@@ -30,7 +30,7 @@ func (uu *userUsecase) GetUserByEmail(c context.Context, email string) (*domain.
 }
 
 func (uu *userUsecase) GetUserById(c context.Context, userId string) (*domain.User, error) {
-	return nil, nil
+	return uu.userRepository.GetUserById(c, userId)
 }
 func (uu *userUsecase) GetUsers(c context.Context, limit int64, page int64) (*[]domain.User, mongopagination.PaginationData, error) {
 	return nil, mongopagination.PaginationData{}, nil

@@ -12,7 +12,7 @@ export const Transaction = ({
   const { isDarkMode } = useUser();
   return (
     <div
-      className={`flex justify-between items-center space-x-3 ${
+      className={`flex justify-between items-center space-x-3 md:m-2 ${
         isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"
       }`}
     >

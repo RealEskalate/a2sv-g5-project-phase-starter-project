@@ -1,11 +1,18 @@
 package infrastructure
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
+	"golang.org/x/crypto/bcrypt"
+)
 
-type PasswprdService struct {
+type passwordService struct {
 }
 
-func (service *PasswprdService) HashPassword(password string) (string, error) {
+func NewPasswordService() domain.PasswordService {
+	return &passwordService{}
+}
+
+func (service *passwordService) HashPassword(password string) (string, error) {
 	hashedPassword, errHash := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if errHash != nil {
 		return "", errHash
@@ -13,7 +20,7 @@ func (service *PasswprdService) HashPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func (service *PasswprdService) ComparePassword(hashedPassword, password string) (bool, error) {
+func (service *passwordService) ComparePassword(hashedPassword, password string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
 		return false, err

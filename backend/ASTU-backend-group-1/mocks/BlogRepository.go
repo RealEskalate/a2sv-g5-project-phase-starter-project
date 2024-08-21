@@ -31,30 +31,12 @@ func (_m *BlogRepository) AddComment(blogId string, comment domain.Comment) erro
 	return r0
 }
 
-// AddView provides a mock function with given fields: blogId, userId
-func (_m *BlogRepository) AddView(blogId string, userId string) error {
-	ret := _m.Called(blogId, userId)
-
-	if len(ret) == 0 {
-		panic("no return value specified for AddView")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string) error); ok {
-		r0 = rf(blogId, userId)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// Create provides a mock function with given fields: b
-func (_m *BlogRepository) Create(b domain.Blog) (domain.Blog, error) {
+// CreateBlog provides a mock function with given fields: b
+func (_m *BlogRepository) CreateBlog(b domain.Blog) (domain.Blog, error) {
 	ret := _m.Called(b)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Create")
+		panic("no return value specified for CreateBlog")
 	}
 
 	var r0 domain.Blog
@@ -77,12 +59,12 @@ func (_m *BlogRepository) Create(b domain.Blog) (domain.Blog, error) {
 	return r0, r1
 }
 
-// Delete provides a mock function with given fields: blogId
-func (_m *BlogRepository) Delete(blogId string) error {
+// DeleteBlog provides a mock function with given fields: blogId
+func (_m *BlogRepository) DeleteBlog(blogId string) error {
 	ret := _m.Called(blogId)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Delete")
+		panic("no return value specified for DeleteBlog")
 	}
 
 	var r0 error
@@ -95,30 +77,102 @@ func (_m *BlogRepository) Delete(blogId string) error {
 	return r0
 }
 
-// DislikeBlog provides a mock function with given fields: blogId, userId
-func (_m *BlogRepository) DislikeBlog(blogId string, userId string) error {
-	ret := _m.Called(blogId, userId)
+// FindPopularBlog provides a mock function with given fields:
+func (_m *BlogRepository) FindPopularBlog() ([]domain.Blog, error) {
+	ret := _m.Called()
 
 	if len(ret) == 0 {
-		panic("no return value specified for DislikeBlog")
+		panic("no return value specified for FindPopularBlog")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string) error); ok {
-		r0 = rf(blogId, userId)
+	var r0 []domain.Blog
+	var r1 error
+	if rf, ok := ret.Get(0).(func() ([]domain.Blog, error)); ok {
+		return rf()
+	}
+	if rf, ok := ret.Get(0).(func() []domain.Blog); ok {
+		r0 = rf()
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.Blog)
+		}
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
-// Get provides a mock function with given fields: opts
-func (_m *BlogRepository) Get(opts domain.BlogFilterOption) ([]domain.Blog, error) {
+// GetAllComments provides a mock function with given fields: blogId
+func (_m *BlogRepository) GetAllComments(blogId string) ([]domain.Comment, error) {
+	ret := _m.Called(blogId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAllComments")
+	}
+
+	var r0 []domain.Comment
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) ([]domain.Comment, error)); ok {
+		return rf(blogId)
+	}
+	if rf, ok := ret.Get(0).(func(string) []domain.Comment); ok {
+		r0 = rf(blogId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.Comment)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(blogId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetAllRepliesForComment provides a mock function with given fields: blogId, commentId
+func (_m *BlogRepository) GetAllRepliesForComment(blogId string, commentId string) ([]domain.Reply, error) {
+	ret := _m.Called(blogId, commentId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAllRepliesForComment")
+	}
+
+	var r0 []domain.Reply
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string) ([]domain.Reply, error)); ok {
+		return rf(blogId, commentId)
+	}
+	if rf, ok := ret.Get(0).(func(string, string) []domain.Reply); ok {
+		r0 = rf(blogId, commentId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.Reply)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(blogId, commentId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetBlog provides a mock function with given fields: opts
+func (_m *BlogRepository) GetBlog(opts domain.BlogFilterOption) ([]domain.Blog, error) {
 	ret := _m.Called(opts)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Get")
+		panic("no return value specified for GetBlog")
 	}
 
 	var r0 []domain.Blog
@@ -143,17 +197,137 @@ func (_m *BlogRepository) Get(opts domain.BlogFilterOption) ([]domain.Blog, erro
 	return r0, r1
 }
 
-// LikeBlog provides a mock function with given fields: blogId, userId
-func (_m *BlogRepository) LikeBlog(blogId string, userId string) error {
-	ret := _m.Called(blogId, userId)
+// GetBlogById provides a mock function with given fields: blogid
+func (_m *BlogRepository) GetBlogById(blogid string) (domain.Blog, error) {
+	ret := _m.Called(blogid)
 
 	if len(ret) == 0 {
-		panic("no return value specified for LikeBlog")
+		panic("no return value specified for GetBlogById")
+	}
+
+	var r0 domain.Blog
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (domain.Blog, error)); ok {
+		return rf(blogid)
+	}
+	if rf, ok := ret.Get(0).(func(string) domain.Blog); ok {
+		r0 = rf(blogid)
+	} else {
+		r0 = ret.Get(0).(domain.Blog)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(blogid)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetCommentById provides a mock function with given fields: blogId, commentId
+func (_m *BlogRepository) GetCommentById(blogId string, commentId string) (domain.Comment, error) {
+	ret := _m.Called(blogId, commentId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetCommentById")
+	}
+
+	var r0 domain.Comment
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string) (domain.Comment, error)); ok {
+		return rf(blogId, commentId)
+	}
+	if rf, ok := ret.Get(0).(func(string, string) domain.Comment); ok {
+		r0 = rf(blogId, commentId)
+	} else {
+		r0 = ret.Get(0).(domain.Comment)
+	}
+
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(blogId, commentId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetReplyById provides a mock function with given fields: blogId, commentId, replyId
+func (_m *BlogRepository) GetReplyById(blogId string, commentId string, replyId string) (domain.Reply, error) {
+	ret := _m.Called(blogId, commentId, replyId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetReplyById")
+	}
+
+	var r0 domain.Reply
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string, string) (domain.Reply, error)); ok {
+		return rf(blogId, commentId, replyId)
+	}
+	if rf, ok := ret.Get(0).(func(string, string, string) domain.Reply); ok {
+		r0 = rf(blogId, commentId, replyId)
+	} else {
+		r0 = ret.Get(0).(domain.Reply)
+	}
+
+	if rf, ok := ret.Get(1).(func(string, string, string) error); ok {
+		r1 = rf(blogId, commentId, replyId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// LikeOrDislikeBlog provides a mock function with given fields: blogId, userId, like
+func (_m *BlogRepository) LikeOrDislikeBlog(blogId string, userId string, like int) error {
+	ret := _m.Called(blogId, userId, like)
+
+	if len(ret) == 0 {
+		panic("no return value specified for LikeOrDislikeBlog")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string) error); ok {
-		r0 = rf(blogId, userId)
+	if rf, ok := ret.Get(0).(func(string, string, int) error); ok {
+		r0 = rf(blogId, userId, like)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// LikeOrDislikeComment provides a mock function with given fields: blogId, commentId, userId, like
+func (_m *BlogRepository) LikeOrDislikeComment(blogId string, commentId string, userId string, like int) error {
+	ret := _m.Called(blogId, commentId, userId, like)
+
+	if len(ret) == 0 {
+		panic("no return value specified for LikeOrDislikeComment")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string, string, int) error); ok {
+		r0 = rf(blogId, commentId, userId, like)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// LikeOrDislikeReply provides a mock function with given fields: blogId, commentId, replyId, userId, like
+func (_m *BlogRepository) LikeOrDislikeReply(blogId string, commentId string, replyId string, userId string, like int) error {
+	ret := _m.Called(blogId, commentId, replyId, userId, like)
+
+	if len(ret) == 0 {
+		panic("no return value specified for LikeOrDislikeReply")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string, string, string, int) error); ok {
+		r0 = rf(blogId, commentId, replyId, userId, like)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -179,12 +353,12 @@ func (_m *BlogRepository) ReplyToComment(blogId string, commentId string, reply 
 	return r0
 }
 
-// Update provides a mock function with given fields: blogId, updateData
-func (_m *BlogRepository) Update(blogId string, updateData domain.Blog) (domain.Blog, error) {
+// UpdateBlog provides a mock function with given fields: blogId, updateData
+func (_m *BlogRepository) UpdateBlog(blogId string, updateData domain.Blog) (domain.Blog, error) {
 	ret := _m.Called(blogId, updateData)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Update")
+		panic("no return value specified for UpdateBlog")
 	}
 
 	var r0 domain.Blog

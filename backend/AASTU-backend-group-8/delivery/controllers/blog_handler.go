@@ -38,7 +38,7 @@ func (bc *BlogController) CreateBlogPost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Blog post created successfully", "id": createdBlog})
+	c.JSON(http.StatusCreated, gin.H{"message": "Blog post created successfully", "id": BlogID})
 
 }
 

@@ -21,6 +21,7 @@ type UserUseCase struct {
 	passwordService infrastructure.PasswprdService
 	jwtService      infrastructure.JWTTokenService
 	mailService     mail.EmailService
+	redisService    domain.CacheService
 }
 
 type ResetPasswordRequest struct {
@@ -29,13 +30,14 @@ type ResetPasswordRequest struct {
 	Token           string
 }
 
-func NewUserUseCase(userRespository domain.UserRepository, sessionRepository domain.SessionRepository, pwdService infrastructure.PasswprdService, jwtService infrastructure.JWTTokenService, mailServ mail.EmailService) UserUseCase {
+func NewUserUseCase(userRespository domain.UserRepository, sessionRepository domain.SessionRepository, pwdService infrastructure.PasswprdService, jwtService infrastructure.JWTTokenService, mailServ mail.EmailService, redisServer domain.CacheService) UserUseCase {
 	return UserUseCase{
 		userRepo:        userRespository,
 		sessionRepo:     sessionRepository,
 		passwordService: pwdService,
 		jwtService:      jwtService,
 		mailService:     mailServ,
+		redisService:    redisServer,
 	}
 }
 
@@ -285,6 +287,11 @@ func (userUC *UserUseCase) Logout(cxt context.Context, token map[string]string) 
 	}
 
 	// invalidate the access token by adding it to the blacklist, redis can be used for this
+	errRedis := userUC.redisService.Set(accessToken, "blacklisted", time.Minute*15)
+	if errRedis != nil {
+		return &domain.CustomError{Message: errRedis.Error(), Code: http.StatusInternalServerError}
+	}
+
 	parsedToken, err := userUC.jwtService.ValidateAccessToken(accessToken)
 	if err != nil {
 		return &domain.CustomError{Message: err.Error(), Code: http.StatusUnauthorized}

@@ -57,7 +57,7 @@ func (r *CommentRepository) DeleteComment(ctx context.Context, post_id primitive
 		return err
 	}
 	if comment.AuthorID != userID {
-		return errors.New("You are not authorized to delete this comment")
+		return errors.New("you are not authorized to delete this comment")
 	}
 
 	_, err = collection.DeleteOne(ctx, bson.M{"_id": comment_id})
@@ -72,9 +72,9 @@ func (r *CommentRepository) UpdateComment(ctx context.Context, post_id primitive
 	if err != nil {
 		return err
 	}
-	if oldComment.AuthorID != userID {
-		return errors.New("You are not authorized to update this comment")
-	}
+	// if oldComment.AuthorID != userID {
+	// 	return errors.New("you are not authorized to update this comment")
+	// }
 	_, err = collection.UpdateOne(ctx, bson.M{"_id": comment_id}, bson.M{"$set": bson.M{"content": comment.Content}})
 	return err
 }

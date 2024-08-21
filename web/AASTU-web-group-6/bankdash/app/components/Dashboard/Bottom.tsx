@@ -20,7 +20,7 @@ const Bottom = () => {
   );
 
   return (
-    <section className="Botom flex gap-6 xs:flex-col lg:flex-row ">
+    <section className="Botom flex gap-6 xxs:flex-col lg:flex-row ">
       <div className="cards-container sm:w-full lg:w-[45%]  center-content flex flex-col gap-6">
         <h1 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
           Expense Statistics
@@ -92,7 +92,7 @@ const Bottom = () => {
           Balance History
         </h1>
 
-        <div className="flex w-full gap-6 p-8 bg-white dark:bg-[#232328] dark:border-gray-500 rounded-3xl border-solid border-gray-200 border-[0.5px] shadow-sm xs:w-[85%] sm:w-full">
+        <div className="flex w-full  xxs:gap-0 lg:gap-6 p-8 bg-white dark:bg-[#232328] dark:border-gray-500 rounded-3xl border-solid border-gray-200 border-[0.5px] shadow-sm xs:w-[96%] sm:w-full">
           <div className="leftCanva pb-10 flex flex-col items-end justify-between text-sm text-[#718EBF]">
             <span>400</span>
             <span>300</span>

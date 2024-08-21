@@ -21,17 +21,20 @@ const useTranDispatch = (accessToken: string) => {
         const transaction: any = await TransactionService.getTransactions(
           accessToken
         );
+
         const history: any = await TransactionService.balanceHistory(
           accessToken
         );
-        const expense = await TransactionService.getExpenseData(accessToken);
-        const income = await TransactionService.getIncomeData(accessToken);
+        const expense: any = await TransactionService.getExpenseData(
+          accessToken
+        );
+        const income: any = await TransactionService.getIncomeData(accessToken);
 
         if (transaction) {
-          dispatch(setTran(transaction));
+          dispatch(setTran(transaction.content));
           dispatch(setBalHist(history));
-          dispatch(setExpense(expense));
-          dispatch(setIncome(income));
+          dispatch(setExpense(expense.content));
+          dispatch(setIncome(income.content));
           dispatch(setStatus("succeeded"));
         }
       } catch (error) {

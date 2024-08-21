@@ -43,15 +43,15 @@ const handler = NextAuth({
 
             // Ensure the returned object conforms to the User type
             const user: User = {
-              id: data.data.access_token,  // Assuming access_token is used as ID, adjust as needed
-              name: data.message,  // Adjust as needed based on response structure
+              id: data.data.access_token, // Assuming access_token is used as ID, adjust as needed
+              name: data.message, // Adjust as needed based on response structure
               accessToken: data.data.access_token,
               // Populate other fields as necessary
             };
 
-            return user;  // Return the user object
+            return user; // Return the user object
           } else {
-            return null;  // Return null if authentication fails
+            return null; // Return null if authentication fails
           }
         } catch (err) {
           console.error(err);
@@ -63,7 +63,7 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.accessToken = user.accessToken;  // Set access token in JWT token
+        token.accessToken = user.accessToken; // Set access token in JWT token
       }
       return token;
     },
@@ -71,6 +71,9 @@ const handler = NextAuth({
       session.accessToken = (token as { accessToken?: string }).accessToken; // Attach access token to session
       return session;
     },
+  },
+  pages: {
+    error: "/error",
   },
 });
 

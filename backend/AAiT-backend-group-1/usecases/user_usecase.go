@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
+	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/utils"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -57,10 +58,10 @@ func (userUC *userUseCase) RegisterStart(cxt *gin.Context, user *domain.User) do
 	}
 
 	existingUser, errRepo := userUC.userRepo.FindByEmail(context, user.Email)
-	if errRepo != nil &&  errRepo.StatusCode() != http.StatusNotFound {
+	if errRepo != nil && errRepo.StatusCode() != http.StatusNotFound {
 		return errRepo
 	}
-	if existingUser.Email != "" {
+	if existingUser.Email != "" && errRepo.StatusCode() != http.StatusNotFound {
 		return &domain.CustomError{Message: "Email already exists", Code: http.StatusBadRequest}
 	}
 
@@ -68,8 +69,7 @@ func (userUC *userUseCase) RegisterStart(cxt *gin.Context, user *domain.User) do
 	if errRepo != nil && errRepo.StatusCode() != http.StatusNotFound {
 		return errRepo
 	}
-
-	if existingUser.Username != "" {
+	if existingUser.Username != "" && errRepo.StatusCode() != http.StatusNotFound {
 		return &domain.CustomError{Message: "Username already exists", Code: http.StatusBadRequest}
 	}
 
@@ -126,7 +126,7 @@ func (userUC *userUseCase) RegisterEnd(cxt *gin.Context, token string) domain.Er
 	return nil
 }
 
-func (userUC *UserUseCase) Login(cxt *gin.Context, username, password string) (map[string]string, domain.Error) {
+func (userUC *userUseCase) Login(cxt *gin.Context, username, password string) (map[string]string, domain.Error) {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return map[string]string{}, &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -173,7 +173,7 @@ func (userUC *UserUseCase) Login(cxt *gin.Context, username, password string) (m
 	return map[string]string{"access_token": accessToken, "refresh_token": refreshToken}, nil
 }
 
-func (userUC *UserUseCase) ForgotPassword(cxt *gin.Context, email string) domain.Error {
+func (userUC *userUseCase) ForgotPassword(cxt *gin.Context, email string) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -223,7 +223,7 @@ func (userUC *UserUseCase) ForgotPassword(cxt *gin.Context, email string) domain
 	return nil
 }
 
-func (userUC *userUseCase) ResetPassword( cxt *gin.Context, newPassword, confirmPassword, token string) domain.Error {
+func (userUC *userUseCase) ResetPassword(cxt *gin.Context, newPassword, confirmPassword, token string) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -274,7 +274,7 @@ func (userUC *userUseCase) ResetPassword( cxt *gin.Context, newPassword, confirm
 	return nil
 }
 
-func (userUC *UserUseCase) Logout(cxt *gin.Context, token map[string]string) domain.Error {
+func (userUC *userUseCase) Logout(cxt *gin.Context, token map[string]string) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -324,8 +324,7 @@ func (userUC *UserUseCase) Logout(cxt *gin.Context, token map[string]string) dom
 	return nil
 }
 
-
-func (userUC *UserUseCase) PromoteUser(cxt *gin.Context, userID string) domain.Error {ckend.g1.main
+func (userUC *userUseCase) PromoteUser(cxt *gin.Context, userID string) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -339,7 +338,7 @@ func (userUC *UserUseCase) PromoteUser(cxt *gin.Context, userID string) domain.E
 	return userUC.userRepo.Update(context, userID, &promotion)
 }
 
-func (userUC *UserUseCase) DemoteUser(cxt *gin.Context, userID string) domain.Error {
+func (userUC *userUseCase) DemoteUser(cxt *gin.Context, userID string) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -353,7 +352,7 @@ func (userUC *UserUseCase) DemoteUser(cxt *gin.Context, userID string) domain.Er
 	return userUC.userRepo.Update(context, userID, &promotion)
 }
 
-func (userUC *UserUseCase) UpdateProfile(cxt *gin.Context, userID string, user *domain.User) domain.Error {
+func (userUC *userUseCase) UpdateProfile(cxt *gin.Context, userID string, user *domain.User) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -364,7 +363,7 @@ func (userUC *UserUseCase) UpdateProfile(cxt *gin.Context, userID string, user *
 	return userUC.userRepo.Update(context, userID, user)
 }
 
-func (userUC *UserUseCase) ImageUpload(cxt *gin.Context, file *multipart.File, header *multipart.FileHeader) domain.Error {
+func (userUC *userUseCase) ImageUpload(cxt *gin.Context, file *multipart.File, header *multipart.FileHeader) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}

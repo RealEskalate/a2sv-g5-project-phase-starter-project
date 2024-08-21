@@ -14,8 +14,9 @@ import (
 func NewUserrouter(config *infrastructure.Config, DB mongo.Database, userRouter *gin.RouterGroup) {
 
 	userRepo := repositories.NewUserRepository(DB, config.UserCollection)
+	passwordService := &infrastructure.DefaultPasswordService{}
 
-	userService := usecases.NewUserUseCase(userRepo, time.Duration(config.ContextTimeout)*time.Second)
+	userService := usecases.NewUserUseCase(userRepo, time.Duration(config.ContextTimeout)*time.Second , passwordService)
 	userController := controllers.NewUserController{
 		UserUsecase: userService,
 	}

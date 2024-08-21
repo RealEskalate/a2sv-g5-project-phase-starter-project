@@ -1,10 +1,10 @@
 const API_BASE_URL = "https://bank-dashboard-6acc.onrender.com";
 const token = 
-  "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJheXV1IiwiaWF0IjoxNzI0MTQ5MzgyLCJleHAiOjE3MjQyMzU3ODJ9.ho0P9ZYtpOiDLT810v9r_YAMUwb865p4O4iXIWu0H5ujqjdxbLI_K6lH4m_YOxPm";
+  "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJheXV1IiwiaWF0IjoxNzI0MjI5NzE2LCJleHAiOjE3MjQzMTYxMTZ9.O1xowGSVBSADXmeawQLaOSnPwhG9A5xfpG10lRiQK3kcUgCRuWO83SJAygldVFub";
 
 // GET /transactions
-export const getAllTransactions = async () => {
-  const response = await fetch(`${API_BASE_URL}/transactions?page=${0}&size=${5}`, {
+export const getAllTransactions = async (page:any , size:any) => {
+  const response = await fetch(`${API_BASE_URL}/transactions?page=${page}&size=${size}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -62,17 +62,23 @@ export const getLatestTransfers = async () => {
 };
 
 // GET /transactions/incomes
-export const getIncomes = async () => {
-  const response = await fetch(`${API_BASE_URL}/transactions/incomes`, {
+export const getIncomes = async (page:any , size:any) => {
+  const response = await fetch(`${API_BASE_URL}/transactions/incomes?page=${page}&size=${size}`, {
     method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
   return response.json();
 };
 
 // GET /transactions/expenses
-export const getExpenses = async () => {
-  const response = await fetch(`${API_BASE_URL}/transactions/expenses`, {
+export const getExpenses = async (page:any , size:any) => {
+  const response = await fetch(`${API_BASE_URL}/transactions/expenses?page=${page}&size=${size}`, {
     method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
   return response.json();
 };

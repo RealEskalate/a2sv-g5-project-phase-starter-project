@@ -1,15 +1,10 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import axios from "axios";
-import LoginResponseValue from "@/types/LoginResponseValue";
+import AuthService from "@/app/Services/api/authService";
 
-// Define User type based on what NextAuth expects
 interface User {
-  id: string;
-  name?: string;
-  email?: string;
+  refreshToken: string;
   accessToken: string;
-  // other fields as required
 }
 
 const handler = NextAuth({
@@ -20,42 +15,31 @@ const handler = NextAuth({
         userName: { label: "UserName", type: "text", placeholder: "jondoe" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
+        console.log("Authorize called with credentials:", credentials);
+
         if (!credentials) {
-          return null; // Return null if credentials are undefined
+          return null;
         }
 
-        const { userName, password } = credentials;
-
         try {
-          const response = await axios.post(
-            "https://bank-dashboard-6acc.onrender.com/auth/login",
-            { userName, password },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
+          const response = await AuthService.login(credentials);
+          if (response.success) {
 
-          if (response.status === 200) {
-            const data: LoginResponseValue = response.data;
+            const data: any = response.data;
 
-            // Ensure the returned object conforms to the User type
-            const user: User = {
-              id: data.data.access_token, // Assuming access_token is used as ID, adjust as needed
-              name: data.message, // Adjust as needed based on response structure
-              accessToken: data.data.access_token,
-              // Populate other fields as necessary
+            const userData: User = {
+              refreshToken: data.refresh_token,
+              accessToken: data.access_token,
             };
 
-            return user; // Return the user object
+            return userData;
           } else {
-            return null; // Return null if authentication fails
+            return null;
           }
-        } catch (err) {
-          console.error(err);
-          return null; // Return null in case of any error during the authentication process
+        } catch (error) {
+          console.error("Login error:", error);
+          return null;
         }
       },
     }),
@@ -63,12 +47,14 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.accessToken = user.accessToken; // Set access token in JWT token
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
       }
       return token;
     },
     async session({ session, token }) {
-      session.accessToken = (token as { accessToken?: string }).accessToken; // Attach access token to session
+      session.accessToken = token.accessToken;
+      session.refreshToken = token.refreshToken;
       return session;
     },
   },

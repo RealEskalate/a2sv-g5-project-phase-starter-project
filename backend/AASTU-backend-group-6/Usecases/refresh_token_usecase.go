@@ -13,10 +13,11 @@ type refreshTokenUsecase struct {
 	contextTimeout       time.Duration
 }
 
-func NewRefreshTokenUsecase(userRepository domain.UserRepository, timeout time.Duration) domain.RefreshTokenUsecase {
+func NewRefreshTokenUsecase(userRepository domain.UserRepository, activeUserrepo domain.ActiveUserRepository, timeout time.Duration) domain.RefreshTokenUsecase {
 	return &refreshTokenUsecase{
-		userRepository: userRepository,
-		contextTimeout: timeout,
+		userRepository:       userRepository,
+		activeUserRepository: activeUserrepo,
+		contextTimeout:       timeout,
 	}
 }
 
@@ -37,8 +38,6 @@ func (r *refreshTokenUsecase) CheckActiveUser(c context.Context, id string, user
 }
 
 // checkActiveUser implements domain.RefreshTokenUsecase.
-
-// CreateAccessToken implements domain.RefreshTokenUsecase.
 func (r *refreshTokenUsecase) CreateAccessToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
 	return infrastructure.CreateAccessToken(user, secret, expiry)
 }

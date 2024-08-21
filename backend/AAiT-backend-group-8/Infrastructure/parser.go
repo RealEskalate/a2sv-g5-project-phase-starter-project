@@ -1,4 +1,4 @@
-package Helper
+package infrastructure
 
 import (
 	"errors"

@@ -48,7 +48,7 @@ func (uc *UserController) Login(c *gin.Context) {
 	}
 	accessTkn, refreshTkn, err := uc.user_usecase.Login(user)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(500, gin.H{"error":err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{"accessToken": accessTkn, "refreshToken": refreshTkn})

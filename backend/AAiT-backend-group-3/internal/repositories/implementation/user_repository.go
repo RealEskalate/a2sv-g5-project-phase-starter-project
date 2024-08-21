@@ -3,6 +3,7 @@ package repositories
 import (
 	"AAIT-backend-group-3/internal/domain/models"
 	"AAIT-backend-group-3/internal/repositories/interfaces"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -29,9 +30,14 @@ func (r *MongoUserRepository) SignUp(user *models.User) (*models.User, error) {
 	}
 	return user, nil
 }
+
 func (r *MongoUserRepository) GetUserByID(id string) (*models.User, error) {
+	user_id, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
 	var user models.User
-	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
+	err = r.collection.FindOne(ctx, bson.M{"_id": user_id}).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +74,11 @@ func (r *MongoUserRepository) DeleteUser(id string) error {
 }
 
 func (r *MongoUserRepository) UpdateProfile(id string, user *models.User) error {
-	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": user})
+	user_id, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	_, err = r.collection.UpdateOne(ctx, bson.M{"_id": user_id}, bson.M{"$set": user})
 	return err
 }
 

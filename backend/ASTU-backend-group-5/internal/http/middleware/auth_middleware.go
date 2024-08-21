@@ -7,7 +7,6 @@ import (
 	"blogApp/pkg/jwt"
 	"blogApp/pkg/mongo"
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -28,7 +27,6 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		tokenString := authParts[1]
-		fmt.Println(authHeader)
 		if tokenString == "" {
 			respondUnauthorized(c, "Bearer token required")
 			return

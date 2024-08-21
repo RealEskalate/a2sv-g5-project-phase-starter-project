@@ -23,7 +23,7 @@ export default function CreditCard({
     backgroundImg === "bg-white" ? "text-[#718EBF]" : "text-[#ffffff95]";
   return (
     <div
-      className={`w-full h-48 m-auto ${backgroundImg} ${textColor} rounded-3xl relative  shadow-2xl`}
+      className={`w-full h-48 m-auto ${backgroundImg} ${textColor} rounded-3xl relative`}
     >
       <div className="w-full absolute top-4">
         <div className="flex justify-between px-5 py-1">

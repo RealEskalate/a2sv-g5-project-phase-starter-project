@@ -1,99 +1,120 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis, Cell } from "recharts"
+import { useState, useMemo } from "react";
+import { Bar, BarChart, CartesianGrid, XAxis, Cell } from "recharts";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 
-const chartData = [
-  { month: "January", desktop: 186},
-  { month: "February", desktop: 305},
-  { month: "March", desktop: 237},
-  { month: "April", desktop: 73},
-  { month: "May", desktop: 209},
-  { month: "June", desktop: 214},
-]
-
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "#EDF0F7", // Default color for bars
-  },
-
-} satisfies ChartConfig
+import { useGetExpenseTransactionsQuery } from "@/lib/redux/api/transactionsApi";
 
 export default function DashboardBarChart() {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null)
+  const { data, isLoading, isError } = useGetExpenseTransactionsQuery({
+    size: 10, // Adjust the size to fetch all relevant data
+    page: 0,
+  });
+
+  // Generate the last seven days including today
+  const sevenDays = useMemo(() => {
+    const days = [];
+    const now = new Date();
+
+    for (let i = 6; i >= 0; i--) {
+      const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      days.push(day.toLocaleString("default", { weekday: "short", day: "numeric" }));
+    }
+
+    return days;
+  }, []);
+
+  // Process the data
+  const chartData = useMemo(() => {
+    if (!data || isLoading || isError) return [];
+
+    const dailyExpenses: Record<string, number> = {};
+
+    // Iterate over data.data.content
+    data.data.content.forEach((transaction) => {
+      const day = new Date(transaction.date).toLocaleString("default", {
+        weekday: "short",
+        day: "numeric",
+      });
+
+      if (dailyExpenses[day]) {
+        dailyExpenses[day] += transaction.amount;
+      } else {
+        dailyExpenses[day] = transaction.amount;
+      }
+    });
+
+    return sevenDays.map((day) => ({
+      day,
+      expense: Math.abs(dailyExpenses[day] || 0), 
+    }));
+  }, [data, isLoading, isError, sevenDays]);
+
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const handleMouseOver = (index: number) => {
-    setActiveIndex(index)
-  }
+    setActiveIndex(index);
+  };
 
   const handleMouseOut = () => {
-    setActiveIndex(null)
-  }
+    setActiveIndex(null);
+  };
 
   return (
-    <Card className=" w-full lg:w-1/3 mr-2">
-      <CardHeader>
-        <CardTitle>My Expenses</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
-      </CardHeader>
-
-      <CardContent>
-          <ChartContainer config={chartConfig} className="max-h-48 w-full px-1">
-            <BarChart accessibilityLayer data={chartData}>
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                tickMargin={10}
-                axisLine={false}
-                tickFormatter={(value) => value.slice(0, 3)}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent indicator="dashed" />}
-              />
-              <Bar dataKey="desktop" radius={8}>
-                {chartData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={
-                      index === activeIndex
-                        ? "#16DBCC" // Hover color
-                        : chartConfig.desktop.color // Default color
-                    }
-                    onMouseOver={() => handleMouseOver(index)}
-                    onMouseOut={handleMouseOut}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        {/* <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div> */}
-      </CardFooter>
-    </Card>
-  )
+    <div className="flex flex-col w-full lg:w-1/3">
+      <h1 className="font-semibold text-[#343C6A] h-20 flex items-center mx-2">
+        My Expense
+      </h1>
+      <Card className="xl:w-[90%] mx-2 min-h-48">
+        <CardContent>
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : isError ? (
+            <p>Error loading data</p>
+          ) : (
+            <ChartContainer
+              config={{ expense: { label: "Expenses", color: "#EDF0F7" } }}
+              className="w-full px-1"
+            >
+              <BarChart accessibilityLayer data={chartData}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="day"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="dashed" />}
+                />
+                <Bar dataKey="expense" radius={8}>
+                  {chartData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={
+                        index === activeIndex
+                          ? "#16DBCC" // Hover color
+                          : "#EDF0F7" // Default color
+                      }
+                      onMouseOver={() => handleMouseOver(index)}
+                      onMouseOut={handleMouseOut}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

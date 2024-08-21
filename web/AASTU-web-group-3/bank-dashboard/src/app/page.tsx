@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import img from "./images/profile.png";
 import emanuel from "../../public/images/emanuel-minca-jYv069cQuB8-unsplash 1.png";
 import julia from "../../public/images/pexels-julia-volk-5273755 1.png";
@@ -9,8 +10,8 @@ import deposit from "../../public/images/iconfinder_business_finance_money-13_27
 import dollar from "../../public/images/iconfinder_6_4753731 1.png";
 import BarChart from "./components/barchart";
 import PieChart from "./components/PieChart";
-import CreditCard from "./components/CreditCard";
 import { AreaChartComponent } from "./components/AreaChartComponent";
+import CreditCard from "./components/CreditCard";
 
 const imageData = [
   { src: julia.src, alt: "julia", name: "Livia Bator", position: "CEO" },
@@ -75,30 +76,30 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-5 lg:mt-0 lg:w-1/3 lg:bg-white lg:p-5 lg:rounded-lg lg:border lg:shadow-md lg:h-56">
-          <h3 className="text-lg font-semibold">Recent Transactions</h3>
-          {transactionData.map((transaction, index) => (
-            <div key={index} className="flex justify-between items-center mt-3">
-              <div className="flex items-center space-x-2">
-                <div
-                  className={`relative ${transaction.backgroundColor} w-12 h-12 rounded-full flex items-center justify-center`}
+      <div className="mt-5 lg:mt-0 lg:w-1/3 lg:bg-white lg:p-5 lg:rounded-lg lg:border lg:shadow-md lg:h-56">
+        <h3 className="text-lg font-semibold">Recent Transactions</h3>
+        {transactionData.map((transaction, index) => (
+          <div key={index} className="flex justify-between items-center mt-3">
+            <div className="flex items-center space-x-2">
+              <div
+                className={`relative ${transaction.backgroundColor} w-12 h-12 rounded-full flex items-center justify-center`}
                 >
-                  <img src={transaction.src} alt={transaction.alt} />
-                </div>
-                <div className="flex flex-col">
-                  <p className="text-sm font-medium">{transaction.title}</p>
-                  <small className="text-xs text-gray-500">
-                    {transaction.date}
-                  </small>
-                </div>
+                <Image width ={100} height={100} src={transaction.src} alt={transaction.alt} />
               </div>
-              <p className={`${transaction.amountColor} font-semibold ml-auto`}>
-                {transaction.amount}
-              </p>
+              <div className="flex flex-col">
+                <p className="text-sm font-medium">{transaction.title}</p>
+                <small className="text-xs text-gray-500">
+                  {transaction.date}
+                </small>
+              </div>
             </div>
-          ))}
-        </div>
+            <p className={`${transaction.amountColor} font-semibold ml-auto`}>
+              {transaction.amount}
+            </p>
+          </div>
+        ))}
       </div>
+        </div>
 
       <div className="mt-5 lg:flex lg:space-x-8">
         <div className="lg:w-2/3 lg:bg-white lg:p-5 lg:rounded-lg lg:border lg:shadow-md">
@@ -116,13 +117,15 @@ const HomePage: React.FC = () => {
       </div>
 
       <div className="mt-5 lg:flex lg:space-x-8">
-        <div className="lg:w-1/2 lg:bg-white lg:p-5 lg:rounded-lg lg:border lg:shadow-md lg:h-64">
+        <div className="lg:w-1/2 lg:bg-white lg:p-5 lg:rounded-lg lg:border lg:shadow-md">
           <h3 className="text-lg font-semibold">Quick Transfer</h3>
           <div className="flex justify-center mt-3 space-x-16">
             {imageData.map((image, index) => (
               <div key={index} className="flex flex-col items-center">
                 <div className="w-12 h-12 bg-gray-300 rounded-full overflow-hidden">
-                  <img
+                  <Image
+                    width={100}
+                    height={100}
                     src={image.src}
                     alt={image.alt}
                     className="w-full h-full object-cover"

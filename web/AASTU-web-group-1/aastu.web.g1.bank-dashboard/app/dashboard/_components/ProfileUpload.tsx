@@ -19,7 +19,7 @@ const ProfileUpload = ({
     if (e.target.files) {
       const selectedFile = e.target.files[0];
       setFile(selectedFile);
-      handleUpload(selectedFile); // Automatically start the upload when a file is selected
+      handleUpload(selectedFile); 
     }
   };
 
@@ -29,16 +29,16 @@ const ProfileUpload = ({
 
     uploadTask.on(
       "state_changed",
-      (snapshot) => {
+      (snapshot:any) => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setProgress(progress);
       },
-      (error) => {
+      (error:any) => {
         console.error("Upload failed:", error);
       },
       () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+        getDownloadURL(uploadTask.snapshot.ref).then((url:any) => {
           setDownloadURL(url);
           setProfilePictureUrl(url);
           console.log("File available at", url);

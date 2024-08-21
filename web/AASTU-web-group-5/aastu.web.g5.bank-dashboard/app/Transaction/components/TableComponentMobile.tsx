@@ -16,6 +16,7 @@ interface TableCardProps {
 }
 
 const TableCard: React.FC<TableCardProps> = ({ data }) => {
+  console.log(data, 'data')
   const [currentPage, setCurrentPage] = useState<number>(0);
 
   // Paginate data

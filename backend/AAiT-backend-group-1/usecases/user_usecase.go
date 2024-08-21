@@ -208,7 +208,7 @@ func (userUC *UserUseCase) ForgotPassword(cxt context.Context, email string) dom
 		}
 	}
 
-	errEmail := userUC.mailService.SendPasswordResetEmail(email, existingUser.Username, fmt.Sprintf("http://localhost:8080/user/reset/%s", passwordResetToken))
+	errEmail := userUC.mailService.SendPasswordResetEmail(email, existingUser.Username, fmt.Sprintf("http://localhost:8080/reset/%s", passwordResetToken))
 	if errEmail != nil {
 		return &domain.CustomError{Message: errEmail.Error(), Code: http.StatusInternalServerError}
 	}
@@ -301,7 +301,9 @@ func (userUC *UserUseCase) Logout(cxt context.Context, token map[string]string) 
 	}
 
 	if existenceCheck {
-		errDelete := userUC.sessionRepo.DeleteToken(context, existingRefreshToken.ID.Hex())
+		errDelete := userUC.sessionRepo.UpdateToken(context, existingRefreshToken.ID.Hex(), &domain.Session{
+			RefreshToken: "",
+		})
 		if errDelete != nil {
 			return &domain.CustomError{Message: "error while deleting existingSession", Code: http.StatusUnauthorized}
 		}

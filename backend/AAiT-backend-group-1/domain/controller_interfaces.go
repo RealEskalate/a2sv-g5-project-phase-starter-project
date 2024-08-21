@@ -2,11 +2,6 @@ package domain
 
 import "github.com/gin-gonic/gin"
 
-type ApiControllers interface {
-	BlogController
-	UserController
-	BlogAssisstantController
-}
 
 type BlogController interface {
 	CreateBlog(c *gin.Context)
@@ -35,7 +30,7 @@ type UserController interface {
 	UpdateProfile(c *gin.Context)
 }
 
-type BlogAssisstantController interface {
+type BlogAssistantController interface {
 	GenerateBlog(c *gin.Context)
 	EnhanceBlog(c *gin.Context)
 	SuggestBlog(c *gin.Context)

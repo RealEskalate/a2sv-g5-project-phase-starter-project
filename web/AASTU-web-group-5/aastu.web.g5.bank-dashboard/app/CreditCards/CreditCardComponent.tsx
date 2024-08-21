@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {FaGreaterThan,FaLessThan} from 'react-icons/fa'
+import { FaGreaterThan, FaLessThan } from "react-icons/fa";
 import Card from "../components/common/card";
 import CardList from "./CardList";
 import CardStatistics from "./CardStatistics";
@@ -10,11 +10,11 @@ import CardSetting from "./CardSetting";
 import creditCardColor from "./cardMockData";
 import { useSession } from "next-auth/react";
 interface ExtendedUser {
-    name?: string;
-    email?: string;
-    image?: string;
-    accessToken?: string;
-    }
+	name?: string;
+	email?: string;
+	image?: string;
+	accessToken?: string;
+}
 const CreditCardComponent: React.FC = () => {
 	const [cardData, setCardData] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ const CreditCardComponent: React.FC = () => {
 	const [totalPages, setTotalPages] = useState(0);
 
 	const { data: session, status } = useSession();
-	const user = session.user as ExtendedUser
+	const user = session.user as ExtendedUser;
 
 	const accessToken = user.accessToken;
 

@@ -134,27 +134,16 @@ func (bu *blogUsecase) DeleteBlog(ctx context.Context, id primitive.ObjectID) er
 // domain/usecase.go
 // controller/blog_controller.go
 // usecase/blog_usecase.go
-func (bu *blogUsecase) SearchBlogs(ctx context.Context, query string, filters *domain.BlogFilters) ([]*domain.BlogResponse, error) {
+func (bu *blogUsecase) SearchBlogs(ctx context.Context, title string, author string) (*[]domain.Blog, error) {
 	// Implement the search functionality here
-	blogs, err := bu.blogRepository.SearchBlogs(ctx, query, filters)
+	blogs, err := bu.blogRepository.SearchBlogs(ctx, title, author)
 	if err != nil {
-		return nil, err
-	}
+        return nil, err
+    }
 
-	var blogResponses []*domain.BlogResponse
-	for _, blog := range blogs {
-		blogResponses = append(blogResponses, &domain.BlogResponse{
-			ID:        blog.ID,
-			Title:     blog.Title,
-			Content:   blog.Content,
-			Tags:      blog.Tags,
-			CreatedAt: blog.CreatedAt,
-			UpdatedAt: blog.UpdatedAt,
-			AuthorID:  blog.AuthorID,
-		})
-	}
+    // Apply additional business logic if necessary
 
-	return blogResponses, nil
+    return blogs, nil
 }
 
 func (bu *blogUsecase) FilterBlogsByTags(ctx context.Context, tags []string) ([]*domain.Blog, error) {

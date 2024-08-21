@@ -68,7 +68,7 @@ func AdminMiddleware() gin.HandlerFunc {
 
 		role := strings.ToLower(userClaims["role"].(string))
 
-		if role != "admin" && role != "superadmin" {
+		if role != "admin" && role != "super-admin" {
 			c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
 			c.Abort()
 			return
@@ -93,7 +93,7 @@ func SuperAdminMiddleware() gin.HandlerFunc {
 
 		role := strings.ToLower(userClaims["role"].(string))
 
-		if role != "superadmin" {
+		if role != "super-admin" {
 			c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
 			c.Abort()
 			return

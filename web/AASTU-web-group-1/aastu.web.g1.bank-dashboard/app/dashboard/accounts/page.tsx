@@ -199,7 +199,7 @@ const Accounts = () => {
               }`}
             >
               <Invoices
-                image="/icons/apple.svg"
+                image="/icons/eaten.svg"
                 title="Apple Store"
                 date="5h ago"
                 expense={450}

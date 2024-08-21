@@ -172,20 +172,4 @@ func (c *blogController) TrackPopularityController(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Popularity tracked successfully"})
 }
 
-func (c *blogController) AddCommentController(ctx *gin.Context) {
-	var comment models.Comment
 
-	if err := ctx.ShouldBind(&comment); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
-		return
-	}
-
-	userID := c.getAuthorID(ctx)
-	comment.UserID = userID
-	if err := c.usecase.AddComment(ctx, comment); err != nil {
-		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})
-		return
-	}
-
-	ctx.IndentedJSON(http.StatusCreated, gin.H{"message": "Comment added successfully"})
-}

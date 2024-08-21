@@ -30,4 +30,5 @@ func Setup(env *config.Env, db mongo.Database, gin *gin.Engine) {
 	NewLogoutRouter(env, db, protectedRouter)
 	NewPromoteDemoteRouter(db, adminRouter)
 	NewBlogRouter(env, db, protectedRouter, redisClient)
+	NewBlogCommentRouter(env, db, protectedRouter, redisClient)
 }

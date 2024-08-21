@@ -9,7 +9,7 @@ import TrendingStock from "../../components/TrendingStock/TrendingStock";
 
 const InvestmentsPage = () => {
   return (
-    <div className="flex flex-col gap-2 pb-5">
+    <div className="grid grid-cols-1 gap-2 pb-5">
       <InfoboxForInvestementPage />
       <div className="grid grid-cols-2 max-md:grid-cols-1  gap-4 p-4 w-auto">
         <Card

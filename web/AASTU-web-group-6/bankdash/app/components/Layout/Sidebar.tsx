@@ -15,6 +15,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/app/Redux/store/store";
 import { toggleDarkMode } from "@/app/Redux/slices/darkModeSlice";
+import { signOut } from "next-auth/react";
 
 const Sidebar = ({
   isOpen,
@@ -152,8 +153,12 @@ const Sidebar = ({
             )}
             <button
               onClick={() => {
-                router.push(item.url);
-                closeSidebar();
+                if (index == 8) {
+                  signOut({ redirect: true, callbackUrl: "/login" });
+                } else {
+                  router.push(item.url);
+                  closeSidebar();
+                }
               }}
               className="flex items-center gap-x-6 relative py-3"
             >
@@ -162,7 +167,7 @@ const Sidebar = ({
                   isActive(item.url, item.additionalActivePaths || [])
                     ? "visible"
                     : "hidden"
-                } flex w-6 h-[45px] rounded-[32px] bg-[#1814F3] absolute left-[-60px]`}
+                } flex z-20 w-6 h-[45px] rounded-[32px] bg-[#1814F3] absolute md:left-[-40px]`}
               ></div>
               <Image
                 src={

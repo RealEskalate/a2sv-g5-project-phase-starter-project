@@ -11,9 +11,7 @@ import { Card } from "@/app/Redux/slices/cardSlice";
 
 const CreditCards = () => {
   const { data: session } = useSession();
-  const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyMzgzMDIxNiwiZXhwIjoxNzIzOTE2NjE2fQ.c5zYX74xJyowvSM8pmN4W8Aw6pMyiJjs9JOP__Cjy9J80EHlOS6gX2yJpcwSdBwF";
-
+  const accessToken = session?.accessToken as string;
   const CardData: Card[] = useAppSelector((state) => state.cards.cards);
   const imgCont = [
     "assets/block-card-blue-icon.svg",
@@ -52,7 +50,9 @@ const CreditCards = () => {
           <ExpenseChart />
         </div>
         <div className="cardlist w-full lg:w-[60%] flex flex-col gap-6">
-          <h2 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">Card List</h2>
+          <h2 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
+            Card List
+          </h2>
           <>
             {CardData.slice(0, 3).map((card, index) => (
               <CardList

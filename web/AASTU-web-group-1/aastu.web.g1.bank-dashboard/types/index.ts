@@ -29,8 +29,7 @@ export interface UserResponse {
   message: string;
   data: UserData;
 }
-
-export interface TransactionData {
+export interface TransactionContent{
   transactionId: string;
   type: "shopping" | "transfer" | "service" | "deposit";
   senderUserName: string;
@@ -39,14 +38,24 @@ export interface TransactionData {
   amount: number;
   receiverUserName: string;
 }
+export interface TransactionData {
+  content:TransactionContent[]
+  totalPages:number
+  
+}
+
 
 
 export interface TransactionProps {
   success: boolean;
   message : string;
-  data : TransactionData[];
+  data : TransactionData;
 }
 
+export interface CreditCardProps{
+    content : CardDetails[]
+    totalPages:number
+}
 export interface CardDetails {
   id: string;
   cardHolder: string;

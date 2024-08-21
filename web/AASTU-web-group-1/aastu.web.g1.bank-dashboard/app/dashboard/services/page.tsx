@@ -5,6 +5,7 @@ import BenefitComp from "./serviceComponenet/BenefitComp";
 import { bankServices } from "@/constants/index";
 import { servicesList } from "@/constants/index";
 import { getSession } from "next-auth/react";
+import { useUser } from "@/contexts/UserContext";
 
 // Type definition for a single bank service
 interface BankService {
@@ -56,10 +57,15 @@ const Services = () => {
 
     fetchBankServices();
   }, []);
+  const { isDarkMode } = useUser();
 
   return (
-    <div className="p-4 flex flex-col w-full gap-5 lg:p-8">
-      <div className="flex gap-3 justify-start w-[100vw] md:w-full overflow-x-scroll scrollbar-hidden md:overflow-hidden lg:justify-between">
+    <div
+      className={`p-4 flex  flex-col   ${
+        isDarkMode ? "bg-gray-700" : "bg-gray-200"
+      } w-full h-full gap-5 lg:p-8`}
+    >
+      <div className=" flex gap-3 justify-start w-[100vw] md:w-full overflow-x-scroll scrollbar-hidden md:overflow-hidden lg:justify-between">
         {servicesList.map((items, index) => (
           <BenefitComp items={items} key={index} />
         ))}

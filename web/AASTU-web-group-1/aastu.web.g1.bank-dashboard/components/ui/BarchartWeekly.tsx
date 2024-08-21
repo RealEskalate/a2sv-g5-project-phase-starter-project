@@ -17,6 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { useUser } from "@/contexts/UserContext"
 const chartData = [
   { days: "Sunday", desktop: 186, mobile: 80 },
   { days: "Monday", desktop: 305, mobile: 200 },
@@ -39,13 +40,25 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function ChartWeekly() {
+  const { isDarkMode } = useUser();
   return (
-    <Card>
+    <Card
+      className={` ${
+        isDarkMode ? "bg-gray-800 border-none " : "bg-white"
+      } `}
+    >
       <CardHeader>
-        <CardDescription className="hidden md:block"> $7,560 <span className="text-[#718EBF]">Debited</span>  & $5,420 <span className="text-[#718EBF]">Credited</span> in this Week </CardDescription>
+        <CardDescription className="hidden md:block">
+          {" "}
+          $7,560 <span className="text-[#718EBF]">Debited</span> & $5,420{" "}
+          <span className="text-[#718EBF]">Credited</span> in this Week{" "}
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="lg:w-[800px] sm:w-[600px] w-[300px] h-60 " >
+        <ChartContainer
+          config={chartConfig}
+          className="lg:w-[800px] sm:w-[600px] w-[300px] h-60 "
+        >
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
@@ -64,7 +77,6 @@ export function ChartWeekly() {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      
     </Card>
-  )
+  );
 }

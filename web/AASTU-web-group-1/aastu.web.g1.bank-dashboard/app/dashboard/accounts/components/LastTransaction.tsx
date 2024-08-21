@@ -1,6 +1,7 @@
+import { useUser } from "@/contexts/UserContext";
 import Image from "next/image";
 
-interface prop {
+interface Prop {
   image: string;
   alttext: string;
   description: string;
@@ -11,6 +12,7 @@ interface prop {
   colorimg: string;
   date: string;
 }
+
 const LastTransaction = ({
   image,
   alttext,
@@ -21,8 +23,17 @@ const LastTransaction = ({
   type,
   account,
   status,
-}: prop) => {
-  const color = transaction < 0 ? "text-red-500" : "text-green-500";
+}: Prop) => {
+  const { isDarkMode } = useUser();
+
+  // Determine color and background based on dark mode
+  const containerClass = isDarkMode
+    ? "bg-gray-800 text-gray-100"
+    : "bg-white text-gray-800";
+  const colorClass = isDarkMode
+    ? `${colorimg} bg-opacity-40`
+    : `${colorimg} bg-opacity-25`;
+  const textColor = isDarkMode ? "text-gray-400" : "text-[#718EBF]";
 
   // Format the transaction value with a "+" or "-" sign
   const formattedTransaction =
@@ -33,17 +44,17 @@ const LastTransaction = ({
     );
 
   return (
-    <div>
-      <div className="md:grid md:grid-cols-6 justify-between flex grid-cols-2 bg-white rounded-xl mb-2 mt-4 items-center min-w-[325px]">
+    <div className={`rounded-xl mb-2 mt-4 min-w-[325px] ${containerClass}`}>
+      <div className="md:grid md:grid-cols-6 flex grid-cols-2 items-center">
         <div className="flex flex-initial col-span-2 m-3">
           <div
-            className={`${colorimg} bg-opacity-25 font-semibold py-1 px-2 rounded-lg  text-sm w-[45px]`}
+            className={`${colorClass} font-semibold py-1 px-2 rounded-lg text-sm w-[45px]`}
           >
-            <Image src={`${image}`} alt={alttext} width={27} height={18} />
+            <Image src={image} alt={alttext} width={27} height={18} />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col ml-3">
             <div>{description}</div>
-            <div className="text-[#718EBF]">{date}</div>
+            <div className={`text-sm ${textColor}`}>{date}</div>
           </div>
         </div>
         <div className="hidden md:block flex-initial w-[2/12]">{type}</div>

@@ -5,25 +5,28 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/contexts/UserContext";
+
 import { getSession, signOut } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ky from "ky";
-import { set } from "date-fns";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
 const Sidebar = () => {
   const [profileUrl, setProfileUrl] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { isDarkMode } = useUser(); // Get the dark mode state
+
   useEffect(() => {
     const fetchUser = async () => {
       const session = await getSession();
       const accessToken = session?.user.accessToken;
-      console.log(accessToken);
       setIsLoading(true);
       if (!accessToken) {
         throw new Error("No access token found");
@@ -52,17 +55,27 @@ const Sidebar = () => {
 
     fetchUser();
   }, []);
+
   const pathname = usePathname();
 
   return (
     <div
-      className="sticky left-0 top-0 h-screen border-r border-gray-200 bg-white pt-4 text-white max-md:hidden 
-    sm:p-2 xl:p-4 2xl:w-[300px] flex flex-col justify-between"
+      className={cn(
+        "sticky left-0 top-0 h-screen border-r pt-4 max-md:hidden sm:p-2 xl:p-4 2xl:w-[300px] flex flex-col justify-between",
+        isDarkMode
+          ? "bg-gray-800 border-gray-700 text-white"
+          : "bg-white border-gray-200 text-black"
+      )}
     >
       <div>
         <div className="flex items-center gap-2 p-3 pb-8">
           <Image src="/icons/logo.png" width={25} height={25} alt="logo" />
-          <h1 className="text-primaryBlack font-[900] text-[1.5rem]">
+          <h1
+            className={cn(
+              "font-[900] text-[1.5rem]",
+              isDarkMode ? "text-white" : "text-primaryBlack"
+            )}
+          >
             BankDash.
           </h1>
         </div>
@@ -78,8 +91,11 @@ const Sidebar = () => {
                 className={cn(
                   "flex gap-6 items-center py-1 md:p-3 2xl:px-4 pl-0 justify-center xl:justify-start",
                   {
-                    "border-l-4 bg-nav-focus border-orange-1 border-primaryBlue":
-                      isActive,
+                    "border-l-4 bg-nav-focus border-orange-1":
+                      isActive && !isDarkMode,
+                    "border-l-4 bg-gray-800 border-blue-500":
+                      isActive && isDarkMode,
+                    "text-gray-400": !isActive && isDarkMode,
                   }
                 )}
               >
@@ -90,11 +106,14 @@ const Sidebar = () => {
                   height={20}
                   className={cn({
                     "filter-custom-blue": isActive,
+                    invert: isDarkMode,
                   })}
                 />
                 <p
-                  className={cn("text-sm text-[#B1B1B1] font-semibold", {
-                    "text-primaryBlue": isActive,
+                  className={cn("text-sm font-semibold", {
+                    "text-primaryBlue": isActive && !isDarkMode,
+                    "text-blue-500": isActive && isDarkMode,
+                    "text-[#B1B1B1]": !isActive && !isDarkMode,
                   })}
                 >
                   {link.title}
@@ -104,7 +123,12 @@ const Sidebar = () => {
           })}
         </div>
       </div>
-      <div className=" text-black hover:bg-neutral-200 cursor-pointer rounded-full p-3 transition-all duration-500">
+      <div
+        className={cn(
+          "cursor-pointer rounded-full p-3 transition-all duration-500",
+          isDarkMode ? "hover:bg-gray-800" : "hover:bg-neutral-200"
+        )}
+      >
         <Popover>
           <PopoverTrigger className="flex items-center gap-4">
             <Avatar>
@@ -124,11 +148,19 @@ const Sidebar = () => {
             )}
           </PopoverTrigger>
 
-          <PopoverContent className="w-80 p-2">
+          <PopoverContent
+            className={cn(
+              "w-80 p-2",
+              isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"
+            )}
+          >
             <div className="mt-4 space-y-2">
               <Link
                 href="/dashboard/setting/"
-                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+                className={cn(
+                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium",
+                  isDarkMode ? "hover:bg-gray-700" : "hover:bg-muted"
+                )}
                 prefetch={false}
               >
                 <FilePenIcon className="h-4 w-4" />
@@ -136,7 +168,10 @@ const Sidebar = () => {
               </Link>
               <button
                 onClick={() => signOut({ callbackUrl: "/auth/sign-in" })}
-                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+                className={cn(
+                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium",
+                  isDarkMode ? "hover:bg-gray-700 text-white" : "hover:bg-muted"
+                )}
               >
                 <LogOutIcon className="h-4 w-4" />
                 Log Out

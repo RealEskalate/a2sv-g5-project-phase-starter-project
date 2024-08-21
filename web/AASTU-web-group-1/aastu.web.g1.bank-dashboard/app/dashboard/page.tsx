@@ -9,20 +9,23 @@ import {
   BalanceData,
   CardDetails,
   QuickTransferData,
+  TransactionContent,
   TransactionData,
 } from "@/types";
 import { PiTelegramLogoLight } from "react-icons/pi";
 import CreditCard from "./_components/Credit_Card";
 import { Profile } from "./_components/Profile";
 import { Transaction } from "./_components/Transaction";
-
 import { Pie_chart } from "@/app/dashboard/_components/Pie_chart";
 import { BalanceAreachart } from "./transactions/component/balanceChart";
 import { Barchart } from "./transactions/component/weeklyActivityChart";
 import getRandomBalance, { addTransactions, getallTransactions, getCreditCards, getExpenses, getIncomes, getQuickTransfer } from "@/lib/api";
-
+import { Loading } from "./_components/Loading";
+import {useUser} from "@/contexts/UserContext"
+import Link from "next/link";
 
 const MainDashboard = () => {
+  const {isDarkMode} = useUser();
   const QuickTransferSection = useRef<HTMLDivElement | null>(null);
 
   const scrollCards = (scrollOffset: number) => {
@@ -34,17 +37,17 @@ const MainDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [creditCards, setCreditCards] = useState<CardDetails[]>([]);
   const [recentTransactions, setRecentTransactions] = useState<
-    TransactionData[]
+    TransactionContent[]
   >([]);
-  const [transactions, setTransactions] = useState<TransactionData[]>([]);
+  const [transactions, setTransactions] = useState<TransactionContent[]>([]);
   const [balanceHistory, setBalanceHistory] = useState<BalanceData[]>([]);
-  const [weeklyIncome, setWeeklyIncome] = useState<TransactionData[]>([]);
-  const [weeklyWithdraw, setWeeklyWithdraw] = useState<TransactionData[]>([]);
+  const [weeklyIncome, setWeeklyIncome] = useState<TransactionContent[]>([]);
+  const [weeklyWithdraw, setWeeklyWithdraw] = useState<TransactionContent[]>([]);
   const [quickTransfer, setQuickTransfer] = useState<QuickTransferData[]>([]);
   const [selectedProfile, setSelectedProfile] =
     useState<QuickTransferData | null>(null);
   const [amount, setAmount] = useState<string>("");
-
+  let totalCreditcardpage;
   const handleProfileSelect = (account: QuickTransferData) => {
     setSelectedProfile(account);
   };
@@ -63,19 +66,20 @@ const MainDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getCreditCards();
+        const res = await getCreditCards(0,2);
         const recent = await getallTransactions(0, 3);
         const statistics = await getallTransactions(0, 100);
         const BalanceHistory = await getRandomBalance();
         const incomes = await getIncomes(0, 7);
         const withdraw = await getExpenses(0, 7);
         const accounts = await getQuickTransfer(7);
-        setCreditCards(res || []);
-        setRecentTransactions(recent || []);
-        setTransactions(statistics || []);
+        setCreditCards(res?.content || []);
+        totalCreditcardpage = res?.totalPages;
+        setRecentTransactions(recent?.content || []);
+        setTransactions(statistics?.content || []);
         setBalanceHistory(BalanceHistory || []);
-        setWeeklyIncome(incomes || []);
-        setWeeklyWithdraw(withdraw || []);
+        setWeeklyIncome(incomes?.content || []);
+        setWeeklyWithdraw(withdraw?.content || []);
         setQuickTransfer(accounts || []);
       } finally {
         setLoading(false);
@@ -86,21 +90,30 @@ const MainDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-dotted border-blue-600"></div>
-      </div>
+      <Loading/>
     );
   }
 
   return (
-    <div className="p-5 space-y-5">
+    <div
+      className={`p-5 space-y-5 ${
+        isDarkMode ? "bg-gray-700 text-white" : "bg-[#F5F7FA] text-black"
+      }`}
+    >
       {/* First Row: My Cards and Recent Transactions */}
       <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
         {/* My Cards Section */}
         <div className="md:w-2/3 space-y-5">
           <div className="flex justify-between font-inter text-[16px] font-semibold">
             <h4>My Cards</h4>
-            <h4>See All</h4>
+
+            <h4>
+              <Link href="/dashboard/credit-cards/">
+              
+                  See All
+               
+              </Link>
+            </h4>
           </div>
           <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {creditCards.map((card) => (
@@ -118,11 +131,20 @@ const MainDashboard = () => {
         </div>
 
         {/* Recent Transactions Section */}
-        <div className="space-y-3 md:space-y-5 w-full md:w-1/3">
+        <div className="space-y-5 md:space-y-5 w-full md:w-1/3">
           <div className="font-inter text-[16px] font-semibold">
             <h4>Recent Transactions</h4>
           </div>
-          <div className="space-y-3 p-3 md:p-5 bg-white rounded-xl shadow-lg border border-gray-300">
+          <div
+            className={`space-y-3 p-3 md:p-5  ${
+              isDarkMode
+                ? "bg-gray-800 text-white border-gray-600"
+                : "bg-white text-black"
+            }
+        rounded-xl
+        md:shadow-lg
+          `}
+          >
             {recentTransactions.map((transaction) => (
               <Transaction
                 key={transaction.transactionId}
@@ -146,7 +168,13 @@ const MainDashboard = () => {
           <div className="font-inter text-[16px] font-semibold">
             <h4>Weekly Activity</h4>
           </div>
-          <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300">
+          <div
+            className={`${
+              isDarkMode
+                ? "bg-gray-800 text-white border-gray-600"
+                : "bg-white text-black "
+            }  md:shadow-lg  rounded-xl `}
+          >
             <Barchart
               weeklyDeposit={weeklyIncome}
               weeklyWithdraw={weeklyWithdraw}
@@ -159,7 +187,7 @@ const MainDashboard = () => {
           <div className="font-inter text-[16px] font-semibold">
             <h4>Expense Statistics</h4>
           </div>
-          <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300">
+          <div className="bg-white rounded-xl md:shadow-lg ">
             <Pie_chart transactions={transactions} />
           </div>
         </div>
@@ -172,16 +200,35 @@ const MainDashboard = () => {
           <div className="font-inter text-[16px] font-semibold">
             <h4>Quick Transfer</h4>
           </div>
-          <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300 p-5 space-y-5">
+          <div
+            className={`
+        ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"}
+        rounded-xl
+        md:shadow-lg
+  
+        p-5
+        space-y-5
+      `}
+          >
             <div>
               <button
-                className="float-right hover:bg-blue-500 rounded-xl"
+                className={`
+            float-right
+            hover:bg-blue-500
+            rounded-xl
+            ${isDarkMode ? "hover:bg-blue-600" : "hover:bg-blue-500"}
+          `}
                 onClick={() => scrollCards(200)}
               >
                 <IoChevronForwardCircleOutline size={20} />
               </button>
               <button
-                className="float-left hover:bg-blue-500 rounded-xl"
+                className={`
+            float-left
+            hover:bg-blue-500
+            rounded-xl
+            ${isDarkMode ? "hover:bg-blue-600" : "hover:bg-blue-500"}
+          `}
                 onClick={() => scrollCards(-200)}
               >
                 <IoChevronBackCircleOutline size={20} />
@@ -190,7 +237,16 @@ const MainDashboard = () => {
 
             <div
               ref={QuickTransferSection}
-              className="flex max-w-[300px] space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+              className={`
+          flex
+          max-w-[300px]
+          space-x-5
+          overflow-x-auto
+          [&::-webkit-scrollbar]:hidden
+          [-ms-overflow-style:none]
+          [scrollbar-width:none]
+        
+        `}
             >
               {quickTransfer.map((account) => (
                 <Profile
@@ -198,19 +254,39 @@ const MainDashboard = () => {
                   image="/images/avatar2.svg"
                   name={account.name}
                   job="Director"
-                  isSelected={selectedProfile?.id === account.id} 
-                  onClick={() => handleProfileSelect(account)} 
+                  isSelected={selectedProfile?.id === account.id}
+                  onClick={() => handleProfileSelect(account)}
                 />
               ))}
             </div>
             <div className="flex space-x-10 h-[40px] items-center">
-              <h4 className="font-inter text-[12px] text-[#718EBF]">
+              <h4
+                className={`
+            font-inter
+            text-[12px]
+            ${isDarkMode ? "text-[#9AA1B4]" : "text-[#718EBF]"}
+          `}
+              >
                 Write Amount
               </h4>
-              <div className="bg-gray-200 rounded-3xl flex items-center">
+              <div
+                className={`
+            rounded-3xl
+            flex
+            items-center
+            ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}
+          `}
+              >
                 <input
                   type="number"
-                  className="w-[90px] h-[40px] rounded-full bg-gray-200 px-3"
+                  className={`
+              w-[90px]
+              h-[40px]
+              rounded-full
+              ${isDarkMode ? "bg-gray-600" : "bg-gray-200"}
+              px-3
+              ${isDarkMode ? "text-white" : "text-black"}
+            `}
                   placeholder="525.50"
                   value={amount}
                   step="0.01" // Allows decimal numbers with two decimal places
@@ -218,7 +294,17 @@ const MainDashboard = () => {
                   onChange={handleAmountChange}
                 />
                 <button
-                  className="bg-[#1814F3] text-white rounded-full px-4 h-[40px] ml-2 flex items-center space-x-2"
+                  className={`
+              ${isDarkMode ? "bg-[#3B6EE2]" : "bg-[#1814F3]"}
+              text-white
+              rounded-full
+              px-4
+              h-[40px]
+              ml-2
+              flex
+              items-center
+              space-x-2
+            `}
                   onClick={handleSend}
                   disabled={!selectedProfile || !amount}
                 >
@@ -235,7 +321,16 @@ const MainDashboard = () => {
           <div className="font-inter text-[16px] font-semibold">
             <h4>Balance History</h4>
           </div>
-          <div className="bg-white rounded-xl md:shadow-lg md:border md:border-gray-300 p-5">
+          <div
+            className={`
+        ${isDarkMode ? "bg-gray-800  shadow-md" : "bg-white  shadow-lg"}
+        rounded-xl
+        md:shadow
+        transition-all
+        duration-300
+        
+      `}
+          >
             <BalanceAreachart balanceHistory={balanceHistory} />
           </div>
         </div>

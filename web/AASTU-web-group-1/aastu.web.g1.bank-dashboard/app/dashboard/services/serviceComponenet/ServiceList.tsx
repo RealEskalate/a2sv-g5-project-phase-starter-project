@@ -1,3 +1,4 @@
+import { useUser } from "@/contexts/UserContext";
 import { LoansIcon } from "../serviceIcons/icons";
 import Image from "next/image";
 
@@ -6,8 +7,10 @@ interface itemProp {
   name: string;
 }
 const ServiceList = ({ icon, name }: itemProp) => {
+  const {isDarkMode} = useUser();
   return (
-    <div className="flex justify-between items-center border-2 p-3 md:p5 rounded-xl bg-white">
+    
+    <div className={`flex justify-between items-center p-3 md:p5 rounded-xl ${isDarkMode ? "bg-gray-800":"bg-white border-2 "} `}>
       <div className="flex ml-1  gap-1">
         <div>
           <Image

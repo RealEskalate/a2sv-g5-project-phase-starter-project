@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"blog_api/domain"
-	validateblog "blog_api/infrastructure/validate_blog"
-	"net/http"
+	"blog_api/infrastructure/utils"
 	"log"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
@@ -29,7 +30,7 @@ func (bc *BlogController) CreateBlogHandler(c *gin.Context) {
 		return
 	}
 
-	blogValidate.RegisterValidation("MinWord", validateblog.WordCountValidator)
+	blogValidate.RegisterValidation("MinWord", utils.WordCountValidator)
 	err := blogValidate.Struct(blog)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
@@ -59,15 +60,15 @@ func (bc *BlogController) UpdateBlogHandler(c *gin.Context) {
 		return
 	}
 
-	blogValidate.RegisterValidation("MinWord", validateblog.WordCountValidator)
-	
+	blogValidate.RegisterValidation("MinWord", utils.WordCountValidator)
+
 	if err := blogValidate.Struct(blog); err != nil {
 		c.JSON(http.StatusBadRequest, domain.Response{"error": err.Error()})
 		return
 	}
-	
-	userName, exists := c.Keys["username"] 
-	if !exists{
+
+	userName, exists := c.Keys["username"]
+	if !exists {
 		c.JSON(http.StatusForbidden, gin.H{"message": "coudn't find the username field"})
 		return
 	}
@@ -111,7 +112,7 @@ func (bc *BlogController) GetBlogHandler(c *gin.Context) {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return
 	}
-	
+
 	if len(blogs) == 0 {
 		c.JSON(404, domain.Response{"message": "No blog found"})
 		return
@@ -143,12 +144,12 @@ func (bc *BlogController) GetBlogByIDHandler(c *gin.Context) {
 // handles like request.
 func (bc *BlogController) BlogLikeHandler(c *gin.Context) {
 	var requestBody domain.LikeOrDislikeRequest
-	
+
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, domain.Response{"error": "Invalid input data"})
 		return
 	}
-	
+
 	// extract the username from the context
 	userName, exists := c.Keys["username"]
 	if !exists {
@@ -157,7 +158,7 @@ func (bc *BlogController) BlogLikeHandler(c *gin.Context) {
 	}
 
 	userNameStr := userName.(string)
-	err := bc.blogUseCase.TrackBlogPopularity(c, requestBody.BlogID, "like",requestBody.State, userNameStr)
+	err := bc.blogUseCase.TrackBlogPopularity(c, requestBody.BlogID, "like", requestBody.State, userNameStr)
 	if err != nil {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return
@@ -169,12 +170,12 @@ func (bc *BlogController) BlogLikeHandler(c *gin.Context) {
 // handles like request.
 func (bc *BlogController) BlogDisLikeHandler(c *gin.Context) {
 	var requestBody domain.LikeOrDislikeRequest
-	
+
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, domain.Response{"error": "Invalid input data"})
 		return
 	}
-	
+
 	// extract the username from the context
 	userName, exists := c.Keys["username"]
 	if !exists {
@@ -183,7 +184,7 @@ func (bc *BlogController) BlogDisLikeHandler(c *gin.Context) {
 	}
 
 	userNameStr := userName.(string)
-	err := bc.blogUseCase.TrackBlogPopularity(c, requestBody.BlogID, "dislike",requestBody.State, userNameStr)
+	err := bc.blogUseCase.TrackBlogPopularity(c, requestBody.BlogID, "dislike", requestBody.State, userNameStr)
 	if err != nil {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return

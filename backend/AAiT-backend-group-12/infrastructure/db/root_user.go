@@ -2,7 +2,6 @@ package initdb
 
 import (
 	"blog_api/domain"
-	"blog_api/infrastructure/cryptography"
 	"context"
 	"fmt"
 	"time"
@@ -12,7 +11,7 @@ import (
 )
 
 // Creates a root user in the database with the given username and password
-func CreateRootUser(db *mongo.Database, rootUsername string, rootPassword string) error {
+func CreateRootUser(db *mongo.Database, rootUsername string, rootPassword string, hashService domain.HashingServiceInterface) error {
 	rootUser := domain.User{
 		Username:   rootUsername,
 		Email:      "root@root.root",
@@ -22,7 +21,7 @@ func CreateRootUser(db *mongo.Database, rootUsername string, rootPassword string
 		IsVerified: true,
 	}
 
-	hashedPwd, err := cryptography.HashString(rootUser.Password)
+	hashedPwd, err := hashService.HashString(rootUser.Password)
 	if err != nil {
 		return fmt.Errorf("error hashing root user password: " + err.Error())
 	}

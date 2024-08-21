@@ -11,11 +11,13 @@ import (
 	option "google.golang.org/api/option"
 )
 
+// AIService provides an interface to interact with the AI service.
 type AIService struct {
 	model *genai.GenerativeModel
 	ctx   context.Context
 }
 
+// NewAIService creates a new AIService instance with the provided API key.
 func NewAIService(apiKey string) *AIService {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
@@ -50,7 +52,7 @@ func (s *AIService) GenerateContent(topics []string) (string, error) {
 		return "No content parts found", nil
 	}
 
-	generatedContent := cleanText(resp.Candidates[0].Content.Parts[0])
+	generatedContent := s.CleanText(resp.Candidates[0].Content.Parts[0])
 	if generatedContent == "" {
 		return "Content extraction failed", nil
 	}
@@ -76,22 +78,25 @@ func (s *AIService) ReviewContent(blogContent string) (string, error) {
 		return "No content parts found", nil
 	}
 
-	suggestions := cleanText(resp.Candidates[0].Content.Parts[0])
+	suggestions := s.CleanText(resp.Candidates[0].Content.Parts[0])
 	if suggestions == "" {
 		return "Suggestions extraction failed", nil
 	}
 
 	return suggestions, nil
 }
-func cleanText(value interface{}) string {
-	text := extractText(value)
+
+func (s *AIService) CleanText(value interface{}) string {
+	text := s.ExtractText(value)
 
 	cleanedText := strings.ReplaceAll(strings.ReplaceAll(text, "**", ""), "*", "")
 	cleanedText = strings.ReplaceAll(cleanedText, "\n\n", "\n")
 
 	return cleanedText
 }
-func extractText(value interface{}) string {
+
+// extractText extracts the 'Text' field from a struct or returns the string value directly.
+func (s *AIService) ExtractText(value interface{}) string {
 	v := reflect.ValueOf(value)
 
 	switch v.Kind() {
@@ -104,7 +109,6 @@ func extractText(value interface{}) string {
 		return field.String()
 
 	case reflect.String:
-		// Directly return the string if it's a string type
 		return v.String()
 
 	default:
@@ -112,6 +116,8 @@ func extractText(value interface{}) string {
 		return ""
 	}
 }
+
+// GenerateTrendingTopics generates a list of trending blog topics based on the provided keywords.
 func (s *AIService) GenerateTrendingTopics(keywords []string) ([]string, error) {
 	prompt := "Based on the following keywords: " + strings.Join(keywords, ", ") +
 		", generate a list of trending blog topics that are currently popular."
@@ -126,7 +132,7 @@ func (s *AIService) GenerateTrendingTopics(keywords []string) ([]string, error) 
 		return nil, fmt.Errorf("no topics generated")
 	}
 
-	generatedText := cleanText(resp.Candidates[0].Content.Parts[0])
+	generatedText := s.CleanText(resp.Candidates[0].Content.Parts[0])
 	topics := strings.Split(generatedText, "\n") // Assuming the AI returns a list separated by newlines
 
 	return topics, nil

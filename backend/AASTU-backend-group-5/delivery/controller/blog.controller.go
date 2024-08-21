@@ -23,17 +23,22 @@ func NewBlogController(blogUsecase domain.Blog_Usecase_interface, userUsecase do
 
 func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var blog domain.Blog
+		var blog domain.PostBlog
 		if err := c.BindJSON(&blog); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse request. Ensure the blog data is correct: " + err.Error()})
 			return
 		}
 
-		blog.ID = primitive.NewObjectID()
+		iuser, _ := c.Get("user")
+		user := domain.User{}
+		if iuser != nil {
+			user = iuser.(domain.User)
+		}
 
+		blog.Owner = user
 		createdBlog, err := bc.BlogUsecase.CreateBlog(blog)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to add blog post. Please ensure all required fields are filled: " + err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to add blog post: " + err.Error()})
 			return
 		}
 
@@ -43,7 +48,6 @@ func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 
 func (bc *BlogController) GetMyBlogs() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
 		blogs, err := bc.BlogUsecase.GetBlogs(0, 0)
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Failed to retrieve your blog posts. Please try again later: " + err.Error()})
@@ -73,15 +77,15 @@ func (bc *BlogController) GetOneBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		idStr := c.Param("id")
 
-		_, err := primitive.ObjectIDFromHex(idStr)
+		id, err := primitive.ObjectIDFromHex(idStr)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format. Please provide a valid blog ID."})
 			return
 		}
 
-		blog, err := bc.BlogUsecase.GetOneBlog(idStr)
+		blog, err := bc.BlogUsecase.GetOneBlog(id.Hex())
 		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Blog post not found. Please ensure the blog ID is correct: " + err.Error()})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Blog post not found: " + err.Error()})
 			return
 		}
 
@@ -100,15 +104,16 @@ func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 		}
 
 		var blog domain.Blog
-		blog.ID = id
 		if err := c.BindJSON(&blog); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse request. Ensure the blog data is correct: " + err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse request: " + err.Error()})
 			return
 		}
 
-		updatedBlog, err := bc.BlogUsecase.UpdateBlog(idStr, blog)
+		blog.ID = id
+
+		updatedBlog, err := bc.BlogUsecase.UpdateBlog(id.Hex(), blog)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to update blog post. Please ensure all required fields are filled: " + err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to update blog post: " + err.Error()})
 			return
 		}
 
@@ -120,8 +125,14 @@ func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		idStr := c.Param("id")
 
-		if err := bc.BlogUsecase.DeleteBlog(idStr, ""); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to delete blog post. Please try again: " + err.Error()})
+		id, err := primitive.ObjectIDFromHex(idStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format. Please provide a valid blog ID."})
+			return
+		}
+
+		if err := bc.BlogUsecase.DeleteBlog(id.Hex(), ""); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to delete blog post: " + err.Error()})
 			return
 		}
 

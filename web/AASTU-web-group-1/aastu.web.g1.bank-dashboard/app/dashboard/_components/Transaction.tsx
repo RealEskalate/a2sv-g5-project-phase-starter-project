@@ -1,24 +1,36 @@
-import { TransactionData } from "@/types";
+
+import { TransactionContent } from "@/types";
 import Image from "next/image";
 import { Dateformat } from "../transactions/component/utils";
-
+import { useUser } from "@/contexts/UserContext";
 export const Transaction = ({
   date,
   amount,
   type,
   description,
-}: TransactionData) => {
+}: TransactionContent) => {
+  const { isDarkMode } = useUser();
   return (
-    <div className="flex justify-between items-center space-x-3">
+    <div
+      className={`flex justify-between items-center space-x-3 ${
+        isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"
+      }`}
+    >
       <div className="flex items-center space-x-3 min-w-0">
         <div
-          className={`flex items-center justify-center ${
+          className={`flex items-center justify-center rounded-full w-8 h-8 flex-shrink-0 ${
             type === "shopping"
-              ? "bg-yellow-100"
+              ? isDarkMode
+                ? "bg-yellow-700"
+                : "bg-yellow-100"
               : type === "transfer"
-              ? "bg-indigo-100"
+              ? isDarkMode
+                ? "bg-indigo-700"
+                : "bg-indigo-100"
+              : isDarkMode
+              ? "bg-green-700"
               : "bg-green-100"
-          } rounded-full w-8 h-8 flex-shrink-0`}
+          }`}
         >
           <Image
             src={

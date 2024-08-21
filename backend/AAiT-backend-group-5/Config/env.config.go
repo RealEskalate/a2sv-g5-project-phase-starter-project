@@ -30,7 +30,7 @@ type Env struct {
 }
 
 func NewEnv() *Env {
-	projectRoot, err := filepath.Abs(filepath.Join(".."))
+	projectRoot, err := filepath.Abs(filepath.Join(""))
 
 	if err != nil {
 		log.Fatalf("Error getting project root path: %v", err)

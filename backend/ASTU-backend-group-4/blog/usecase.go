@@ -298,6 +298,12 @@ func (b *BlogUseCaseImpl) SearchBlogs(ctx context.Context, query string, paginat
 
 // UpdateBlog implements BlogUseCase.
 func (b *BlogUseCaseImpl) UpdateBlog(ctx context.Context, id, userID string, blog UpdateBlogRequest) (Blog, error) {
+	validate := validator.New()
+	err := infrastructure.Validate(validate, blog)
+	if err != nil {
+		return Blog{}, err
+	}
+
 	user, err := b.authRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return Blog{}, err

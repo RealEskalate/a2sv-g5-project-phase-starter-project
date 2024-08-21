@@ -39,7 +39,7 @@ func GenerateResetToken() (string, error) {
 
 // Sends the password reset email
 func SendResetEmail(to, token string) error {
-    resetLink := fmt.Sprintf("%s/api/v0/reset?token=%s", ServerHost, token)
+    resetLink := fmt.Sprintf("%s/api/v0/auth/reset?token=%s", ServerHost, token)
     body := fmt.Sprintf(`
         Hi,
 

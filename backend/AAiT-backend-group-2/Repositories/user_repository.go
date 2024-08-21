@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type userRepository struct {
@@ -25,7 +26,17 @@ func NewUserRepository(db *mongo.Database)  domain.UserRepository{
 }
 
 func (ur *userRepository) FindAll(c context.Context) ([]domain.User, error) {
-	cursor, err := ur.userCollection.Find(c, bson.M{})
+	opts := options.Find().SetProjection(bson.M{
+        "_id":       1,
+        "username":  1,
+		"email":     1,
+		"role":      1,
+		"profile":   1,
+		"createdAt": 1,
+		"updateAt":  1,
+    })
+	
+	cursor, err := ur.userCollection.Find(c, bson.M{}, opts)
 
 	if err != nil {
 		return nil, err
@@ -42,6 +53,16 @@ func (ur *userRepository) FindAll(c context.Context) ([]domain.User, error) {
 }
 
 func (ur *userRepository) FindByID(c context.Context, id string) (*domain.User, error) {
+	opts := options.FindOne().SetProjection(bson.M{
+        "_id":       1,
+        "username":  1,
+		"email":     1,
+		"role":      1,
+		"profile":   1,
+		"createdAt": 1,
+		"updateAt":  1,
+    })
+
 	objectID, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
@@ -52,7 +73,7 @@ func (ur *userRepository) FindByID(c context.Context, id string) (*domain.User, 
 
 	filter := bson.M{"_id": objectID}
 
-	err = ur.userCollection.FindOne(c, filter).Decode(&user)
+	err = ur.userCollection.FindOne(c, filter, opts).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -62,6 +83,17 @@ func (ur *userRepository) FindByID(c context.Context, id string) (*domain.User, 
 }
 
 func (ur *userRepository) FindByEmailOrUsername(c context.Context, emailOrUsername string) (*domain.User, error) {
+	opts := options.FindOne().SetProjection(bson.M{
+        "_id":       1,
+        "username":  1,
+		"email":     1,
+		"role":      1,
+		"profile":   1,
+		"createdAt": 1,
+		"updateAt":  1,
+		"password":  1,
+    })
+
 	filter := bson.M{
 		"$or": []bson.M{
 			{"email": emailOrUsername},
@@ -70,7 +102,7 @@ func (ur *userRepository) FindByEmailOrUsername(c context.Context, emailOrUserna
 	}
 
 	var user domain.User
-	err := ur.userCollection.FindOne(c, filter).Decode(&user)
+	err := ur.userCollection.FindOne(c, filter, opts).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.New("user not found")

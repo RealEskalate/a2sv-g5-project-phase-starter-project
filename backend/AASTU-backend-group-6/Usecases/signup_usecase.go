@@ -11,12 +11,15 @@ import (
 
 type SignupUseCase struct {
 	SignupRepository domain.SignupRepository
-	contextTimeout   time.Duration
+	contextTimeout time.Duration
+	passwordService domain.PasswordService
+
 }
 
-func NewSignupUseCase(SignupRepository domain.SignupRepository, timeout time.Duration) domain.SignupUseCase {
+func NewSignupUseCase(SignupRepository domain.SignupRepository , timeout time.Duration , passwordService domain.PasswordService) domain.SignupUseCase {
 	return &SignupUseCase{SignupRepository: SignupRepository,
-		contextTimeout: timeout}
+							contextTimeout: timeout,
+							passwordService: passwordService,}	
 }
 
 func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} {
@@ -26,12 +29,12 @@ func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} 
 	}
 
 	// CHECK EMAIL VALIDITY
-	if infrastructure.ValidateEmail(user.Email) != nil {
+	if u.passwordService.ValidateEmail(user.Email) != nil {
 		return &domain.ErrorResponse{Message: "Invalid email format", Status: 400}
 	}
 
 	// CHECK PASSWORD VALIDITY
-	if err := infrastructure.ValidatePassword(user.Password); err != nil {
+	if err := u.passwordService.ValidatePassword(user.Password); err != nil {
 		return &domain.ErrorResponse{Message: err.Error(), Status: 400}
 	}
 
@@ -50,7 +53,7 @@ func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} 
 	}
 
 	// hash the password
-	hashedPassword, err := infrastructure.HashPassword(user.Password)
+	hashedPassword, err := u.passwordService.HashPassword(user.Password)
 
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error hashing password", Status: 500}
@@ -58,8 +61,8 @@ func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} 
 
 	user.Password = hashedPassword
 
-	// 15 minute for expiration
-	user.ExpiresAt = time.Now().Add(time.Minute * 10)
+	// 15 minute for expiration 
+	user.ExpiresAt = time.Now().Add(time.Minute  * 5)
 
 	// send OTP
 	otp, err := infrastructure.GenerateOTP()
@@ -169,7 +172,7 @@ func (u *SignupUseCase) ForgotPassword(c context.Context, email domain.ForgotPas
 func (u *SignupUseCase) ResetPassword(c context.Context, password domain.ResetPasswordRequest, token string) interface{} {
 
 	// check the password validity
-	if err := infrastructure.ValidatePassword(password.Password); err != nil {
+	if err := u.passwordService.ValidatePassword(password.Password); err != nil {
 		return &domain.ErrorResponse{Message: err.Error(), Status: 400}
 	}
 
@@ -189,7 +192,7 @@ func (u *SignupUseCase) ResetPassword(c context.Context, password domain.ResetPa
 	if time.Now().After(user.ResetPasswordExpires) {
 		return &domain.ErrorResponse{Message: "Reset token expired", Status: 400}
 	}
-	hashedPassword, err := infrastructure.HashPassword(password.Password)
+	hashedPassword, err := u.passwordService.HashPassword(password.Password)
 
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error hashing password", Status: 500}
@@ -219,7 +222,9 @@ func (u *SignupUseCase) HandleUnverifiedUser(c context.Context, user domain.User
 	// check if the user send the register button again Not to send the OTP again before the expiration time
 
 	if time.Now().Before(user.ExpiresAt) {
-		return &domain.ErrorResponse{Message: "OTP already sent", Status: 400}
+		difftime := user.ExpiresAt.Sub(time.Now())
+		return &domain.ErrorResponse{Message: "Otp already Sent Please wait for " + difftime.String() + " to resend OTP", Status: 400}
+
 	}
 
 	user.ExpiresAt = time.Now().Add(time.Minute * 10)

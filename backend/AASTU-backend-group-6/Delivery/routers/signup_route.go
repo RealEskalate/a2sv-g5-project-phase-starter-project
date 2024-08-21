@@ -14,8 +14,9 @@ import (
 func NewSignupRoute(config *infrastructure.Config, DB mongo.Database, SignupRoute *gin.RouterGroup) {
 
 	repo := repositories.NewSignupRepository(DB, config.UserCollection)
+	passwordService := infrastructure.NewPasswordService()
 
-	usecase := usecases.NewSignupUseCase(repo, time.Duration(config.ContextTimeout)*time.Second)
+	usecase := usecases.NewSignupUseCase(repo, time.Duration(config.ContextTimeout)*time.Second , passwordService)
 	signup := controllers.SignupController{
 		SignupUsecase: usecase,
 	}
@@ -23,4 +24,6 @@ func NewSignupRoute(config *infrastructure.Config, DB mongo.Database, SignupRout
 	SignupRoute.POST("/signup", signup.Signup)
 	SignupRoute.POST("/signup/verify", signup.VerifyOTP)
 	SignupRoute.POST("/reset", signup.ForgotPassword)
+	// SignupRoute.POST("/resendotp", signup.ForgotPassword)
+	
 }

@@ -10,8 +10,7 @@ import (
 
 func main() {
 	server := gin.Default()
-	
-	
+
 	config, err := infrastructure.LoadEnv()
 	if err != nil {
 		fmt.Print("Error in env.load")

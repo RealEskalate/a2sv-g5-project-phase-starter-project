@@ -5,10 +5,12 @@ import { transactionsApi } from "./api/transactionsApi";
 import { serviceApi } from "./api/serviceApi";
 import { settingApi } from "./api/settingApi";
 import { loansApi } from "./api/loansApi";
+import { cardsApi } from "./api/cardsApi";
 import transactionsReducer from "./slices/transactionsSlice";
 import loansReducer from "./slices/loansSlice";
 import settingReducer from "./slices/settingSlice";
 import serviceReducer from "./slices/serviceSlice";
+import cardsReducer from './slices/cardsSlice'
 
 export const store = configureStore({
   reducer: {
@@ -17,10 +19,12 @@ export const store = configureStore({
     [serviceApi.reducerPath]: serviceApi.reducer,
     [settingApi.reducerPath]: settingApi.reducer,
     [loansApi.reducerPath]: loansApi.reducer,
+    [cardsApi.reducerPath]:cardsApi.reducer,
     transactions: transactionsReducer, 
     service: serviceReducer, 
     setting: settingReducer, 
     loans: loansReducer,
+    cards:cardsReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -28,7 +32,8 @@ export const store = configureStore({
       transactionsApi.middleware,
       serviceApi.middleware,
       settingApi.middleware,
-      loansApi.middleware
+      loansApi.middleware,
+      cardsApi.middleware
     ),
 });
 

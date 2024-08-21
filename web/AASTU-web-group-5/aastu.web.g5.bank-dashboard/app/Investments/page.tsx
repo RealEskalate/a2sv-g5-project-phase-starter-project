@@ -6,7 +6,7 @@ import TotalAmmount_img from "@/public/assests/icon/Investments/Group303.png";
 import Number_img from "@/public/assests/icon/Investments/Group305.png";
 import Rate_img from "@/public/assests/icon/Investments/Group307.png";
 import ChartCard_Invest from "./ChartCard_Invest";
-import MonthlyRevenueChart from "./MonthlyRevenueChart";
+import MonthlyRevenueChart from './MonthlyRevenueChart'
 import { tradingStockData, investmentsData } from "./mockData";
 import { useSession } from "next-auth/react";
 

@@ -1,21 +1,17 @@
 "use client";
 
 import React from 'react';
-import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, TooltipProps, ResponsiveContainer } from "recharts";
+import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Card, CardContent } from "../../@/components/ui/card";
 
-const yearlyInvestmentData = [
-  { year: "2020", totalInvestment: "$10,000" },
-  { year: "2021", totalInvestment: "$12,000" },
-  { year: "2022", totalInvestment: "$9,000" },
-  { year: "2023", totalInvestment: "$15,000" },
-  { year: "2024", totalInvestment: "$13,000" },
-].map(item => ({
-  ...item,
-  totalInvestment: Number(item.totalInvestment.replace(/[^0-9.-]+/g, "")),
-}));
+interface YearlyInvestmentData {
+  time: string;
+  value: number;
+}
 
-console.log("Yearly Investment Data:", yearlyInvestmentData);
+interface ChartCardInvestProps {
+  data: YearlyInvestmentData[];
+}
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
@@ -31,7 +27,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
   return null;
 };
 
-export default function YearlyInvestmentChart() {
+export default function ChartCard_Invest({ data }: ChartCardInvestProps) {
   return (
     <Card style={{ height: '100%' }}>
       <CardContent style={{ height: '100%' }}>
@@ -41,22 +37,21 @@ export default function YearlyInvestmentChart() {
               margin={{
                 top: 5, right: 30, left: 20, bottom: 5,
               }}
-              data={yearlyInvestmentData}
+              data={data}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
-                dataKey="year" 
+                dataKey="time" 
                 axisLine={false} 
-                tickFormatter={(value) => `${value}`} 
-                tickMargin={10} // Add margin between axis line and tick text
+                tickMargin={10} 
               />
               <YAxis 
                 axisLine={false} 
                 tickFormatter={(value) => `$${value.toLocaleString()}`} 
-                tickMargin={10} // Add margin between axis line and tick text
+                tickMargin={10} 
               />
               <Tooltip content={<CustomTooltip />} />
-              <Line type="linear" dataKey="totalInvestment" stroke="#ff7300" strokeWidth={3} />
+              <Line type="linear" dataKey="value" stroke="#ff7300" strokeWidth={3} />
             </LineChart>
           </ResponsiveContainer>
         </div>

@@ -1,7 +1,7 @@
 package infrastructure
 
 import (
-	domain "AAiT-backend-group-8/Domain"
+	interfaces "AAiT-backend-group-8/Interfaces"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -11,7 +11,7 @@ type TokenService struct {
 	SecretKey string
 }
 
-func NewTokenService(secretKey string) domain.ITokenService {
+func NewTokenService(secretKey string) interfaces.ITokenService {
 	return &TokenService{SecretKey: secretKey}
 }
 
@@ -59,7 +59,7 @@ func (ts *TokenService) GetClaimsOfToken(tokenString string) (map[string]interfa
 	if ok && token.Valid {
 		return claims, nil
 	}
-	// chnange claims to norma map
+	// change claims to norma map
 	myMap := make(map[string]interface{})
 	for key, value := range claims {
 		myMap[key] = value

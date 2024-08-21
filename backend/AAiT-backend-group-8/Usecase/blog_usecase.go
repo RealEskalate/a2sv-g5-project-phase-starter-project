@@ -2,15 +2,16 @@ package usecase
 
 import (
 	"AAiT-backend-group-8/Domain"
+	interfaces "AAiT-backend-group-8/Interfaces"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
 type BlogUseCase struct {
-	repo Domain.IBlogRepository
+	repo interfaces.IBlogRepository
 }
 
-func NewBlogUseCase(repo Domain.IBlogRepository) *BlogUseCase {
+func NewBlogUseCase(repo interfaces.IBlogRepository) *BlogUseCase {
 	return &BlogUseCase{repo: repo}
 }
 

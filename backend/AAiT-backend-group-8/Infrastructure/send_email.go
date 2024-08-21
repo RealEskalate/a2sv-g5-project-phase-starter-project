@@ -1,7 +1,7 @@
 package infrastructure
 
 import (
-	"AAiT-backend-group-8/Domain"
+	interfaces "AAiT-backend-group-8/Interfaces"
 	"fmt"
 
 	"gopkg.in/gomail.v2"
@@ -10,7 +10,7 @@ import (
 type MailService struct {
 }
 
-func NewMailService() Domain.IMailService {
+func NewMailService() interfaces.IMailService {
 	return &MailService{}
 }
 

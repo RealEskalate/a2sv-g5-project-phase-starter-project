@@ -3,12 +3,10 @@ package usecase
 import (
 	domain "AAiT-backend-group-8/Domain"
 	interfaces "AAiT-backend-group-8/Interfaces"
-	"fmt"
-	"log"
-
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -70,7 +68,7 @@ func (userUseCase *UserUseCaseImpl) RegisterUser(user *domain.User) error {
 	}
 
 	if userCount == 0 {
-		user.Role = "superadmin"
+		user.Role = "super-admin"
 	} else {
 		user.Role = "user" // Default role for non-first users
 	}
@@ -154,7 +152,6 @@ func (userUseCase *UserUseCaseImpl) Login(email string, password string) (string
 	fmt.Print("email and password", email, password)
 	user, err := userUseCase.userRepository.GetUserByEmail(email)
 	if err != nil {
-		log.Fatal(err)
 		return "", "", errors.New("incorrect email or password")
 	}
 

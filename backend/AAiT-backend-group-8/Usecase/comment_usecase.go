@@ -3,17 +3,18 @@ package usecase
 import (
 	domain "AAiT-backend-group-8/Domain"
 	infrastructure "AAiT-backend-group-8/Infrastructure"
-	repository "AAiT-backend-group-8/Repository"
+	repository "AAiT-backend-group-8/Infrastructure/mongodb"
+	interfaces "AAiT-backend-group-8/Interfaces"
 	"errors"
 )
 
 type CommentUseCase struct {
 	repository     *repository.CommentRepository
 	infrastructure infrastructure.Infrastructure
-	tokenService   domain.ITokenService
+	tokenService   interfaces.ITokenService
 }
 
-func NewCommentUseCase(commentRepository *repository.CommentRepository, infrastructure infrastructure.Infrastructure, tokenService domain.ITokenService) *CommentUseCase {
+func NewCommentUseCase(commentRepository *repository.CommentRepository, infrastructure infrastructure.Infrastructure, tokenService interfaces.ITokenService) *CommentUseCase {
 	return &CommentUseCase{
 		repository:     commentRepository,
 		infrastructure: infrastructure,

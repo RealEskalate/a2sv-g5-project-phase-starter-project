@@ -1,7 +1,7 @@
 package infrastructure
 
 import (
-	"AAiT-backend-group-8/Domain"
+	interfaces "AAiT-backend-group-8/Interfaces"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -9,7 +9,7 @@ import (
 type PasswordService struct {
 }
 
-func NewPasswordService() Domain.IPasswordService {
+func NewPasswordService() interfaces.IPasswordService {
 	return &PasswordService{}
 }
 

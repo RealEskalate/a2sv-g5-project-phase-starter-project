@@ -2,7 +2,7 @@ package controller
 
 import (
 	"AAiT-backend-group-8/Domain"
-	"AAiT-backend-group-8/Helper"
+	"AAiT-backend-group-8/Infrastructure"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
@@ -18,7 +18,7 @@ func (controller *Controller) CreateBlog(ctx *gin.Context) {
 		return
 	}
 
-	claims, err := Helper.Parse(ctx)
+	claims, err := infrastructure.Parse(ctx)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -93,7 +93,7 @@ func (controller *Controller) UpdateBlog(ctx *gin.Context) {
 		return
 	}
 
-	claim, err := Helper.Parse(ctx)
+	claim, err := infrastructure.Parse(ctx)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -126,7 +126,7 @@ func (controller *Controller) DeleteBlog(ctx *gin.Context) {
 		return
 	}
 
-	claims, err := Helper.Parse(ctx)
+	claims, err := infrastructure.Parse(ctx)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -160,7 +160,7 @@ func (controller *Controller) DeleteBlog(ctx *gin.Context) {
 }
 
 func (controller *Controller) SearchBlog(ctx *gin.Context) {
-	searchParams := Helper.GetSearchParams(ctx)
+	searchParams := infrastructure.GetSearchParams(ctx)
 	blogs, err := controller.blogUseCase.SearchBlog(searchParams)
 
 	if err != nil {

@@ -11,14 +11,14 @@ type UserRoute struct {
 	//middelware gin.HandlerFunc
 }
 
-func NewUserRoute(router *gin.Engine, handler controllers.UserController) *UserRoute{
+func NewUserRoute(router *gin.Engine, handler controllers.UserController) *UserRoute {
 	return &UserRoute{
 		handler: handler,
 	}
 }
 
-func (r *UserRoute) UserRoutes() *gin.RouterGroup{
-	ro:=gin.Default()
+func (r *UserRoute) UserRoutes() *gin.RouterGroup {
+	ro := gin.Default()
 	userrouter := ro.Group("/user")
 	userrouter.POST("/register", r.handler.Register)
 	userrouter.GET("/verify?email=:email&pwd=:pwd", r.handler.AccountVerification)

@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"log"
 	"net/http"
 
 	"astu-backend-g1/config" // Add this line to import the missing package
@@ -28,6 +29,7 @@ func (ac *AuthController) AuthMiddlewareGIn() gin.HandlerFunc {
 		var secretKey = jwtconfig.Jwt.JwtKey
 		tokenString := c.GetHeader("Authorization")
 		claims := ac.auth.AUTH(tokenString, secretKey)
+		log.Println(claims)
 		if claims != nil {
 			c.Set("claims", claims)
 			c.Next()

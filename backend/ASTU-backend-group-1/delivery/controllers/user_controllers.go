@@ -101,11 +101,10 @@ func (c *UserController) LoginUser(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, gin.H{"access_token": access_token})
 }
 
-<<<<<<< HEAD
 //logout user
 
 func (c *UserController) LogoutUser(ctx *gin.Context) {
-	email := ctx.MustGet("email").(string)
+	email := ctx.MustGet("claims").(*domain.Claims).Email
 	err := c.userUsecase.Logout(email)
 	if err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
@@ -115,8 +114,6 @@ func (c *UserController) LogoutUser(ctx *gin.Context) {
 }
 
 
-=======
->>>>>>> a457418af877aa2e60dfe88f31c300f4a0a7a44e
 func (c *UserController) GetUsers(ctx *gin.Context) {
 	username := ctx.Query("username")
 	email := ctx.Query("email")

@@ -3,6 +3,7 @@ module aait.backend.g10
 go 1.22.5
 
 require (
+	github.com/cloudinary/cloudinary-go v1.7.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/uuid v1.6.0
@@ -13,6 +14,13 @@ require (
 	google.golang.org/api v0.193.0
 )
 
+<<<<<<< HEAD
+=======
+require (
+	github.com/creasty/defaults v1.7.0 // indirect
+	github.com/gorilla/schema v1.4.1
+
+>>>>>>> adb759457 (aait.backend.g10.Yordanos: add image upload)
 require (
 	cloud.google.com/go v0.115.1 // indirect
 	cloud.google.com/go/ai v0.8.0 // indirect
@@ -46,6 +54,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240725223205-93522f1f2a9f // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
 	google.golang.org/grpc v1.65.0 // indirect
+)
 )
 
 require (

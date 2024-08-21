@@ -55,4 +55,10 @@ type BlogHelper interface {
 	CreateSlug(blogTitle string) string
 	Marshal(data interface{}) (string, *models.ErrorResponse)
 	Unmarshal(dataJSON string, result interface{}) *models.ErrorResponse
+	GetBlogs(ctx context.Context, data []*models.Blog) ([]*dtos.BlogResponse, *models.ErrorResponse)
+	FetchComments(ctx context.Context, blogID string) ([]models.Comment, *models.ErrorResponse)
+	FetchPopularity(ctx context.Context, blogID string) (*models.Popularity, *models.ErrorResponse)
+	FetchFromCacheOrRepo(ctx context.Context, cacheKey string, fetchFromRepo func() (interface{}, *models.ErrorResponse)) (interface{}, *models.ErrorResponse)
+
+	FetchFromCacheOrRepoBlogs(ctx context.Context, cacheKey string, fetchFromRepo func() (interface{}, *models.ErrorResponse)) (interface{}, *models.ErrorResponse)
 }

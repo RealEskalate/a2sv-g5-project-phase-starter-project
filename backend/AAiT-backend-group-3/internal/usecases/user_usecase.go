@@ -9,6 +9,7 @@ import (
 	"AAIT-backend-group-3/internal/infrastructures/services"
 	repository_interface "AAIT-backend-group-3/internal/repositories/interfaces"
 
+	"github.com/golang-jwt/jwt/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -108,6 +109,46 @@ func (u *UserUsecase) Login(user *models.User) (string, string, error) {
 		return "", "", errors.New(err.Error())
 	}
 	return accessToken, refershToken, nil
+}
+
+
+func (u *UserUsecase) Logout(token string) error {
+	parsedToken, err := u.jwtSevices.ValidateAccessToken(token)
+	if err != nil {
+		return err
+	}
+
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return errors.New("invalid token claims")
+	}
+
+	expiration, ok := claims["exp"].(float64)
+	if !ok {
+		return errors.New("invalid expiration time in token claims")
+	}
+
+	remTime := time.Until(time.Unix(int64(expiration), 0))
+	if remTime <= 0 {
+		return errors.New("token has already expired")
+	}
+
+	err = u.userRepo.BlacklistToken(token, remTime)
+	if err != nil {
+		return err
+	}
+
+	existingUser, err := u.userRepo.GetUserByID(claims["userId"].(string))
+	if err != nil {
+		return err
+	}
+
+	existingUser.RefToken = ""
+	err = u.userRepo.UpdateProfile(existingUser.ID.Hex(), existingUser)
+	if err != nil {
+		return errors.New("failed to update user profile")
+	}
+	return nil
 }
 
 func (u *UserUsecase) RefreshToken(refreshTok string ) (string, error) {

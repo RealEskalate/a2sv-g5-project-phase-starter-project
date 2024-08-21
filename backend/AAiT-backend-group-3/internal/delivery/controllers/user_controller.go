@@ -3,6 +3,7 @@ package controllers
 import (
 	"AAIT-backend-group-3/internal/domain/models"
 	"AAIT-backend-group-3/internal/usecases"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -79,4 +80,25 @@ func (uc *UserController) VerifyEmail(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{"message": "Email successfully verified", "access_token": accTkn, "refresh_token":refTkn})
+}
+
+func (uc *UserController) Logout(c *gin.Context){
+	token, ok := c.Get("token")
+	if !ok {
+		c.JSON(400, gin.H{"error": "Missing token"})
+		return
+	}
+	tokenStr, ok := token.(string)
+	fmt.Println(tokenStr)
+	
+	if !ok {
+		c.JSON(500, gin.H{"error": "Invalid token format"})
+		return
+	}
+	err := uc.user_usecase.Logout(tokenStr)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to logout"})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Successfully logged out"})
 }

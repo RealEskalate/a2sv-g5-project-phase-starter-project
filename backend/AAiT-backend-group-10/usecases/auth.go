@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"errors"
 	"math/rand"
 	"time"
 
@@ -18,6 +19,7 @@ type IAuthUsecase interface {
 	RefreshTokens(refreshToken string) (*dto.TokenResponseDTO, *domain.CustomError)
 	ResetPassword(dto *dto.ResetPasswordRequestDTO) *domain.CustomError
 	ForgotPassword(dto *dto.ForgotPasswordRequestDTO) *domain.CustomError
+	HandleGoogleCallback(userDto *domain.User) (string, string, error)
 }
 
 type AuthUsecase struct {
@@ -38,7 +40,8 @@ func NewAuthUsecase(ur interfaces.IUserRepository, jwt infrastructures.Jwt, pwdS
 
 func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, *domain.CustomError) {
 	existingUser, _ := u.userRepository.GetUserByEmail(User.Email)
-	if existingUser != nil {
+
+	if existingUser != nil && !existingUser.GoogleSignIn {
 		return nil, domain.ErrUserEmailExists
 	}
 
@@ -55,6 +58,25 @@ func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, *dom
 		UpdatedAt: time.Now(),
 		Password:  hashedPassword,
 		IsAdmin:   false,
+	}
+	if existingUser != nil && existingUser.GoogleSignIn {
+		existingUser.Password = hashedPassword
+		existingUser.FullName = User.FullName
+		existingUser.Email = User.Email
+		existingUser.Bio = User.Bio
+		existingUser.UpdatedAt = time.Now()
+		existingUser.GoogleSignIn = false
+		err = u.userRepository.UpdateUserToken(existingUser)
+		if err != nil {
+			return nil, errors.New(err.Error())
+		}
+		return &dto.CreatedResponseDto{
+			ID:       existingUser.ID,
+			FullName: existingUser.FullName,
+			Email:    existingUser.Email,
+			Bio:      existingUser.Bio,
+			ImageUrl: existingUser.ImageURL,
+		}, nil
 	}
 
 	err = u.userRepository.CreateUser(user)
@@ -79,6 +101,9 @@ func (uc *AuthUsecase) LoginUser(loginUser *dto.LoginUserDTO) (*dto.TokenRespons
 	}
 
 	// Check password
+	if user.GoogleSignIn {
+		return nil, errors.New("please create account")
+	}
 	errs := uc.pwdService.CheckPasswordHash(loginUser.Password, user.Password)
 	if !errs {
 		return nil, domain.ErrInvalidCredentials
@@ -215,4 +240,50 @@ func (uc *AuthUsecase) ResetPassword(dto *dto.ResetPasswordRequestDTO) *domain.C
 	user.ResetToken = ""
 	user.Password = string(hashedPassword)
 	return uc.userRepository.UpdateUserToken(user)
+}
+
+func (uc *AuthUsecase) HandleGoogleCallback(userDto *domain.User) (string, string, error) {
+	// Get the authorization code from the query parameters
+
+	// Handle the user info (e.g., create a new user, login the user, etc.)
+	user, errs := uc.userRepository.GetUserByEmail(userDto.Email)
+	if errs != nil && errs.Error() != "user not found" {
+		fmt.Println(errs.Error())
+		return "", "", errors.New(errs.Error() + "getuserbyemail")
+	}
+	if user != nil {
+		if !user.GoogleSignIn {
+			return "", "", errors.New("login required")
+		}
+		accessToken, refreshToken, err := uc.jwtService.GenerateToken(user)
+		if err != nil {
+			return "", "", errors.New(err.Error())
+		}
+		user.AccessToken = accessToken
+		user.RefreshToken = refreshToken
+		err = uc.userRepository.UpdateUserToken(user)
+		if err != nil {
+			fmt.Println(errs.Error())
+
+			return "", "", errors.New(err.Error() + "update user")
+		}
+		return accessToken, refreshToken, nil
+	}
+
+	accessToken, refreshToken, err := uc.jwtService.GenerateToken(userDto)
+	if err != nil {
+		return "", "", errors.New("failed to generate token")
+	}
+	userDto.AccessToken = accessToken
+	userDto.RefreshToken = refreshToken
+	userDto.ID = uuid.New()
+	userDto.CreatedAt = time.Now()
+	userDto.UpdatedAt = time.Now()
+	err = uc.userRepository.CreateUser(userDto)
+	if err != nil {
+		return "", "", errors.New("failed to register user")
+	}
+	return accessToken, refreshToken, nil
+	// For example, redirect to the home page with the user info
+	// c.Redirect(http.StatusTemporaryRedirect, "/")
 }

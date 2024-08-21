@@ -5,9 +5,9 @@ import (
 )
 
 type Reply struct {
-	ReplyId  string `json:"reply_id,omitempty" bson:"reply_id,omitempty"`
-	AuthorId string `json:"author_id,omitempty" bson:"author_id,omitempty"`
-	Content  string `json:"content,omitempty" bson:"content,omitempty"`
+	ReplyId  string `json:"reply_id,omitempty" bson:"reply_id,omitempty" `
+	AuthorId string `json:"author_id,omitempty" bson:"author_id,omitempty" binding:"required"`
+	Content  string `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
 
 	Likes    []string `json:"likes,omitempty" bson:"likes,omitempty"`
 	Dislikes []string `json:"dislikes,omitempty" bson:"dislikes,omitempty"`
@@ -16,9 +16,9 @@ type Reply struct {
 }
 
 type Comment struct {
-	Content   string `json:"content,omitempty" bson:"content,omitempty"`
-	AuthorId  string `json:"author_id,omitempty" bson:"author_id,omitempty"`
-	CommentId string `json:"comment_id,omitempty" bson:"comment_id,omitempty"`
+	CommentId string `json:"comment_id,omitempty" bson:"comment_id,omitempty" `
+	AuthorId  string `json:"author_id,omitempty" bson:"author_id,omitempty" binding:"required"`
+	Content   string `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
 
 	Likes    []string `json:"likes,omitempty" bson:"likes,omitempty"`
 	Dislikes []string `json:"dislikes,omitempty" bson:"dislikes,omitempty"`
@@ -28,48 +28,52 @@ type Comment struct {
 
 type Blog struct {
 	Id       string    `json:"id,omitempty" bson:"_id,omitempty"`
-	Title    string    `json:"title,omitempty" bson:"title,omitempty"`
-	Content  string    `json:"content,omitempty" bson:"content,omitempty"`
-	AuthorId string    `json:"author_id,omitempty" bson:"author_id,omitempty"`
-	Date     time.Time `json:"date,omitempty" bson:"date,omitempty"`
-	Tags     []string  `json:"tags,omitempty" bson:"tags,omitempty"`
+	AuthorId string    `json:"author_id,omitempty" bson:"author_id,omitempty" binding:"required"`
+	Title    string    `json:"title,omitempty" bson:"title,omitempty" binding:"required"`
+	Content  string    `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
+	Date     time.Time `json:"date,omitempty" bson:"date,omitempty" binding:"required"`
+	Tags     []string  `json:"tags,omitempty" bson:"tags,omitempty" binding:"required"`
 
-	Likes    []string  `json:"likes,omitempty" bson:"likes,omitempty"`
-	Dislikes []string  `json:"dislikes,omitempty" bson:"dislikes,omitempty"`
+	Likes    []string  `json:"likes,omitempty" bson:"likes,omitempty"  `
+	Dislikes []string  `json:"dislikes,omitempty" bson:"dislikes,omitempty"  `
 	Comments []Comment `json:"comments,omitempty" bson:"comments,omitempty"`
-	Views    []string  `json:"views,omitempty" bson:"views,omitempty"`
+	Views    []string  `json:"views,omitempty" bson:"views,omitempty"  `
 }
 
 type BlogFilters struct {
 	BlogId   string    `json:"blog_id,omitempty" bson:"_id,omitempty"`
-	Title    string    `json:"title,omitempty" bson:"title,omitempty"`
 	AuthorId string    `json:"author_id,omitempty" bson:"author_id,omitempty"`
+	Title    string    `json:"title,omitempty" bson:"title,omitempty"`
 	Date     time.Time `json:"date,omitempty" bson:"date,omitempty"`
 	Tags     []string  `json:"tags,omitempty" bson:"tags,omitempty"`
 }
 
-type BlogSortOption struct {
-	Likes    int `json:"likes,omitempty" bson:"likes,omitempty"`
-	Dislikes int `json:"dislikes,omitempty" bson:"dislikes,omitempty"`
-	Comments int `json:"comments,omitempty" bson:"comments,omitempty"`
-	Views    int `json:"views,omitempty" bson:"views,omitempty"`
-}
-
 type BlogFilterOption struct {
-	Filter     BlogFilters
-	Order      BlogSortOption
-	Pagination PaginationInfo
+	Filter     BlogFilters    `json:"filter,omitempty" `
+	Pagination PaginationInfo `json:"pagination,omitempty"`
 }
 
 type BlogRepository interface {
-	Create(b Blog) (Blog, error)
-	Get(opts BlogFilterOption) ([]Blog, error)
-	Update(blogId string, updateData Blog) (Blog, error)
-	Delete(blogId string) error
+	CreateBlog(b Blog) (Blog, error)
+	GetBlog(opts BlogFilterOption) ([]Blog, error)
+	UpdateBlog(blogId string, updateData Blog) (Blog, error)
+	DeleteBlog(blogId string) error
+	FindPopularBlog() ([]Blog, error)
+	GetBlogById(blogid string) (Blog, error)
+	LikeOrDislikeBlog(blogId, userId string, like int) error
 
-	LikeBlog(blogId, userId string) error
-	DislikeBlog(blogId, userId string) error
+	// TODO: To like or dislike something you have to view it
+
+	// information: 1 for like -1,for dislike others,view
+
+	// TODO: to comment or reply to comment you have to view the blog then the comment
 	AddComment(blogId string, comment Comment) error
+	GetAllComments(blogId string) ([]Comment, error)
+	GetCommentById(blogId, commentId string) (Comment, error)
+	LikeOrDislikeComment(blogId, commentId, userId string, like int) error
+
 	ReplyToComment(blogId, commentId string, reply Reply) error
-	AddView(blogId, userId string) error
+	GetAllRepliesForComment(blogId, commentId string) ([]Reply, error)
+	GetReplyById(blogId, commentId, replyId string) (Reply, error)
+	LikeOrDislikeReply(blogId, commentId, replyId, userId string, like int) error
 }

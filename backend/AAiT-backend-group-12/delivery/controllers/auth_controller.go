@@ -246,19 +246,36 @@ func (controller *AuthController) HandleLogout(c *gin.Context) {
 	controller.usecase.Logout(c, c.Keys["username"].(string), authHeader)
 }
 
-// HandleGoogleAuth handles the Google OAuth login endpoint
-func (controller *AuthController) HandleGoogleAuth(c *gin.Context) {
+// HandleGoogleLogin handles the Google OAuth login endpoint
+func (controller *AuthController) HandleGoogleLogin(c *gin.Context) {
 	var response dtos.GoogleResponse
 	if err := c.ShouldBindJSON(&response); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	acK, rfK, err := controller.usecase.GoogleOAuthAccess(c, &response)
+	acK, rfK, err := controller.usecase.OAuthLogin(c, &response)
 	if err != nil {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 		return
 	}
 
-	c.JSON(201, domain.Response{"accessToken": acK, "refreshToken": rfK})
+	c.JSON(http.StatusCreated, domain.Response{"accessToken": acK, "refreshToken": rfK})
+}
+
+// HandleGoogleSignup handles the Google OAuth signup endpoint
+func (controller *AuthController) HandleGoogleSignup(c *gin.Context) {
+	var requestData dtos.GoogleSignup
+	if err := c.ShouldBindJSON(&requestData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	sErr := controller.usecase.OAuthSignup(c, &requestData.GoogleResponse, &requestData.UserData)
+	if sErr != nil {
+		c.JSON(GetHTTPErrorCode(sErr), domain.Response{"error": sErr.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, domain.Response{"message": "User created."})
 }

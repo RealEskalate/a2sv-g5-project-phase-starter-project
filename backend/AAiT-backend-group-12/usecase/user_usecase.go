@@ -28,6 +28,7 @@ type UserUsecase struct {
 	ValidateAndParseToken     func(string, string) (*jwt.Token, error)
 	HashString                func(string) (string, domain.CodedError)
 	ValidateHashedString      func(string, string) domain.CodedError
+	VerifyIdToken             func(string, string, string) error
 	ENV                       domain.EnvironmentVariables
 }
 
@@ -49,6 +50,7 @@ func NewUserUsecase(
 	ValidateAndParseToken func(string, string) (*jwt.Token, error),
 	HashString func(string) (string, domain.CodedError),
 	ValidateHashedString func(string, string) domain.CodedError,
+	VerifyIdToken func(string, string, string) error,
 	ENV domain.EnvironmentVariables) *UserUsecase {
 	return &UserUsecase{
 		userRepository:            userRepository,
@@ -64,6 +66,7 @@ func NewUserUsecase(
 		ValidateAndParseToken:     ValidateAndParseToken,
 		HashString:                HashString,
 		ValidateHashedString:      ValidateHashedString,
+		VerifyIdToken:             VerifyIdToken,
 		ENV:                       ENV,
 	}
 }
@@ -186,7 +189,7 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 
 	user.VerificationData = verificationData
 	user.Password = hashedPwd
-	user.Role = "user"
+	user.Role = domain.RoleUser
 	user.IsVerified = false
 	user.CreatedAt = time.Now().Round(0)
 
@@ -203,6 +206,58 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 		return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)
 	}
 
+	return nil
+}
+
+/*
+Creates a new user in the system from a google oauth request, a valid user name and a password
+if the user does not exist in the system.
+*/
+func (u *UserUsecase) OAuthSignup(c context.Context, data *dtos.GoogleResponse, userCreds *dtos.OAuthSignup) domain.CodedError {
+	newUser := &domain.User{
+		Username: userCreds.Username,
+		Email:    data.RawData.Email,
+		Password: userCreds.Password,
+	}
+
+	// verify ID token with the google API
+	vErr := u.VerifyIdToken(data.IDToken, data.Email, env.ENV.GOOGLE_CLIENT_ID)
+	if vErr != nil {
+		return domain.NewError(vErr.Error(), domain.ERR_UNAUTHORIZED)
+	}
+
+	u.SantizeUserFields(newUser)
+	err := u.ValidateUsername(newUser.Username)
+	if err != nil {
+		return err
+	}
+
+	err = u.ValidateEmail(newUser.Email)
+	if err != nil {
+		return err
+	}
+
+	err = u.ValidatePassword(newUser.Password)
+	if err != nil {
+		return err
+	}
+
+	hashedPwd, err := u.HashString(newUser.Password)
+	if err != nil {
+		return domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
+	}
+
+	newUser.Password = hashedPwd
+	newUser.Role = domain.RoleUser
+	newUser.IsVerified = true
+	newUser.CreatedAt = time.Now().Round(0)
+
+	err = u.userRepository.CreateUser(c, newUser)
+	if err != nil {
+		return err
+	}
+
+	u.userRepository.VerifyUser(c, newUser.Username)
 	return nil
 }
 
@@ -263,6 +318,56 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 	}
 
 	err = u.userRepository.SetRefreshToken(c, user, hashedRefreshToken)
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessToken, refreshToken, nil
+}
+
+/*
+Allows the user to obtain access tokens using their google account. If the user does not exist in
+the database, a new user IS NOT created. The user must have an account in the system to be able
+to obtain tokens using this route.
+*/
+func (u *UserUsecase) OAuthLogin(c context.Context, data *dtos.GoogleResponse) (string, string, domain.CodedError) {
+	foundUser, err := u.userRepository.FindUser(c, &domain.User{Email: data.Email})
+	if err != nil && err.GetCode() == domain.ERR_NOT_FOUND {
+		return "", "", err
+	}
+
+	// verify ID token with the google API
+	vErr := u.VerifyIdToken(data.IDToken, data.Email, env.ENV.GOOGLE_CLIENT_ID)
+	if vErr != nil {
+		return "", "", domain.NewError(vErr.Error(), domain.ERR_UNAUTHORIZED)
+	}
+
+	if err != nil {
+		return "", "", err
+	}
+
+	if !foundUser.IsVerified {
+		return "", "", domain.NewError("User email not verified", domain.ERR_UNAUTHORIZED)
+	}
+
+	// signs the new access and refresh tokens
+	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	if err != nil {
+		return "", "", err
+	}
+
+	refreshToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(env.ENV.REFRESH_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
+	if err != nil {
+		return "", "", err
+	}
+
+	// set the new refresh token in the database after hashing it
+	hashedRefreshToken, err := u.HashString(strings.Split(refreshToken, ".")[2])
+	if err != nil {
+		return "", "", domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
+	}
+
+	err = u.userRepository.SetRefreshToken(c, &foundUser, hashedRefreshToken)
 	if err != nil {
 		return "", "", err
 	}
@@ -495,49 +600,4 @@ func (u *UserUsecase) Logout(c context.Context, username string, accessToken str
 	}
 
 	return u.userRepository.SetRefreshToken(c, &domain.User{Username: username}, "")
-}
-
-/*
-Allows the user to obtain access tokens using their google account. If the user does not exist in
-the database, a new user IS NOT created. The user must have an account in the system to be able
-to obtain tokens using this route.
-*/
-func (u *UserUsecase) GoogleOAuthAccess(c context.Context, data *dtos.GoogleResponse) (string, string, domain.CodedError) {
-	foundUser, err := u.userRepository.FindUser(c, &domain.User{Email: data.Email})
-	if err != nil && err.GetCode() == domain.ERR_NOT_FOUND {
-		// TODO create a new user if the email does not exist
-		return "", "", err
-	}
-
-	if err != nil {
-		return "", "", err
-	}
-
-	if !foundUser.IsVerified {
-		return "", "", domain.NewError("User email not verified", domain.ERR_UNAUTHORIZED)
-	}
-
-	// signs the new access and refresh tokens
-	accessToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
-	if err != nil {
-		return "", "", err
-	}
-
-	refreshToken, err := u.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(env.ENV.REFRESH_TOKEN_LIFESPAN), env.ENV.JWT_SECRET_TOKEN)
-	if err != nil {
-		return "", "", err
-	}
-
-	// set the new refresh token in the database after hashing it
-	hashedRefreshToken, err := u.HashString(strings.Split(refreshToken, ".")[2])
-	if err != nil {
-		return "", "", domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
-	}
-
-	err = u.userRepository.SetRefreshToken(c, &foundUser, hashedRefreshToken)
-	if err != nil {
-		return "", "", err
-	}
-
-	return accessToken, refreshToken, nil
 }

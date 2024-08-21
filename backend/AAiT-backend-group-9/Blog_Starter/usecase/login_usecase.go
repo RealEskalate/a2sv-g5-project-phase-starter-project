@@ -19,7 +19,7 @@ type LoginUseCase struct {
 }
 
 
-func NewLoginUseCase(loginRepository , userRepository domain.UserRepository,tokenManager utils.TokenManager ,timeout time.Duration) domain.LoginUsecase {
+func NewLoginUseCase(  userRepository domain.UserRepository,tokenManager utils.TokenManager ,timeout time.Duration) domain.LoginUsecase {
 	return &LoginUseCase{
 		UserRepository: userRepository,
 		TokenManager: tokenManager,

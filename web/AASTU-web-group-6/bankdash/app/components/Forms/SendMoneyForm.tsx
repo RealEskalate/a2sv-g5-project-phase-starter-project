@@ -1,6 +1,9 @@
 import axios from "axios";
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/options";
+
 
 interface FormValues {
   receiverUserName: string;
@@ -13,17 +16,18 @@ interface props {
   userName : string
   amount :number
 }
-const ModalTrans = ({ isOpen, onClose , userName ,amount }: props) => {
+const ModalTrans = async ({ isOpen, onClose , userName ,amount }: props) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
-  const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjQyMjYyNjgsImV4cCI6MTcyNDMxMjY2OH0.NpLfcO08R6vtIpsC9CerKswpYJqIqkMtZidQKyj3sxAMwKKnZF7YLR1wWPV2iA65";
+  const session = await getServerSession(options);
+  const accessToken = session?.accessToken as string;
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const formData = JSON.stringify({ ...data, type: "transfer" });
+    // change to tranService
     try {
       const response = await axios.post(
         "https://bank-dashboard-6acc.onrender.com/transactions",

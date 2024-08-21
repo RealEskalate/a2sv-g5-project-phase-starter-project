@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"meleket/domain"
 	"net/http"
+	"os/exec"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth/gothic"
@@ -51,14 +53,30 @@ func (o *OauthHandler) CallbackHandler(c *gin.Context) {
 	}
 
 	if _, err := o.usecases.GetUserByEmail(&user.Email); err != nil {
-		err := o.usecases.Register(&domain.User{Email: user.Email, Name: user.Name})
+		user.Name = strings.Split(user.Email, "@")[0]
+		uuid, err := exec.Command("uuidgen").Output()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.Status(http.StatusCreated)
+		user.Name = user.Name + "-" + strings.TrimSpace(string(uuid))
+
+		err = o.usecases.Register(&domain.User{Email: user.Email, Name: user.Name, IsOAuth: true, Role: "user"})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		token, refreshToken, err := o.usecases.LoginWithProvider(&domain.User{Email: user.Email})
+		fmt.Println("token: ", token)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"errori": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"token": token, "refresh_token": refreshToken})
 		return
 	}
+	fmt.Println("user: ", user)
 
 	token, refreshToken, err := o.usecases.LoginWithProvider(&domain.User{Email: user.Email})
 	fmt.Println("token: ", token)

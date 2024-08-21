@@ -1,4 +1,25 @@
 import Cookies from "js-cookie";
+
+
+const API_BASE_URL = 'https://bank-dashboard-6acc.onrender.com';
+const token = Cookies.get('accessToken')
+
+// GET /transactions
+export const getAllTransactions = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/transactions`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching all transactions:', error);
+    throw error;
+  }
+};
+
 const token = Cookies.get('accessToken')
 const API_BASE_URL = "https://bank-dashboard-6acc.onrender.com";
 
@@ -12,9 +33,6 @@ export const getAllTransactions = async (page:any , size:any) => {
     },
   });
   return response.json();}
-
-
-
 
 
 
@@ -72,20 +90,28 @@ export const getTransactionById = async (id: any, accessToken: string) => {
 };
 
 // GET /transactions/random-balance-history
-export const getRandomBalanceHistory = async (accessToken: string) => {
+export const getRandomBalanceHistory = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/transactions/random-balance-history`, {
+    const response = await fetch(`${API_BASE_URL}/transactions/random-balance-history?monthsBeforeFirstTransaction=12`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
+
+    // Check if the response is OK (status code 200-299)
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    // Parse the response JSON
     return response.json();
   } catch (error) {
     console.error('Error fetching random balance history:', error);
     throw error;
   }
 };
+
 
 // GET /transactions/latest-transfers
 export const getLatestTransfers = async (accessToken: string, number: number) => {

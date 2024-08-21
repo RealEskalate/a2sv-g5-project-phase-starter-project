@@ -35,17 +35,17 @@ const TransferPage: React.FC = () => {
   }
   
   return (
-    <div className=" container  flex flex-col items-center justify-center max-h-screen h-screen  md:flex-row  md:h-full bg-gray-100 p-0  lg:ml-45 lg:p-8 lg:max-h-full lg:gap-10 lg:mb-24 ">
+    <div className=" container  flex flex-col items-center max-h-screen h-screen  md:flex-row  md:h-full bg-gray-100 p-0  md:ml-45 md:p-8 md:max-h-full md:gap-10 md:mb-24 ">
       
         <Image
         src={logo.transfer}
         alt="next logo"
         width={500}
         height={100}
-        className="lg:ml-72  hidden lg:block"
+        className="md:ml-72  hidden lg:block"
       />
       
-      <div className=" p-8 rounded-lg w-[70%] sm:w-[50%]   lg:w-3/7 ">
+      <div className=" p-8 rounded-lg max-w-full md:w-2/6 ">
         {visible && (
          <div className='text-center text-2xl font-bold p-4 flex justify-center gap-6  '>
             <p >

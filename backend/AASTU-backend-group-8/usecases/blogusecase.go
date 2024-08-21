@@ -16,12 +16,12 @@ func NewBlogUsecase(br domain.BlogRepositoryInterface) *BlogUsecase {
 }
 
 // CreateBlogPost creates a new blog post
-func (u *BlogUsecase) CreateBlogPost(blog *domain.BlogPost) (*domain.BlogPost, error) {
-	err := u.blogRepo.Save(blog)
+func (u *BlogUsecase) CreateBlogPost(blog *domain.BlogPost) (interface{}, error) {
+	id,err := u.blogRepo.Save(blog)
 	if err != nil {
 		return nil, err
 	}
-	return blog, nil
+	return id, nil
 }
 
 // GetAllBlogPosts retrieves all blog posts

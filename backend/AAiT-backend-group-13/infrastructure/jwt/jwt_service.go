@@ -8,122 +8,98 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	config "github.com/group13/blog/config"
-	usermodel "github.com/group13/blog/domain/models/user"
-	ijwt "github.com/group13/blog/usecase/common/i_jwt"
 	er "github.com/group13/blog/domain/errors"
+	"github.com/group13/blog/domain/models"
+	ijwt "github.com/group13/blog/usecase/common/i_jwt"
 )
 
 // Service implements the ijwt.IService interface for handling JWT operations.
 type Service struct {
-  secretKey string
-  issuer    string
-  expTime   time.Duration
-  refreshExpTime time.Duration
-  jwt.StandardClaims
+	secretKey      string
+	issuer         string
+	expTime        time.Duration
+	refreshExpTime time.Duration
 }
 
+// Ensure Service implements the ijwt.Service interface.
 var _ ijwt.Service = &Service{}
 
 // Config holds the configuration for creating a new JWT Service.
 type Config struct {
-  SecretKey string
-  Issuer    string
-  ExpTime   time.Duration
-  RefreshExpTime time.Duration
+	SecretKey      string
+	Issuer         string
+	ExpTime        time.Duration
+	RefreshExpTime time.Duration
 }
 
 // New creates a new JWT Service with the given configuration.
 func New(config Config) *Service {
-  return &Service{
-    secretKey: config.SecretKey,
-    issuer:    config.Issuer,
-    expTime:   config.ExpTime,
-	refreshExpTime: config.RefreshExpTime,
-  }
+	return &Service{
+		secretKey:      config.SecretKey,
+		issuer:         config.Issuer,
+		expTime:        config.ExpTime,
+		refreshExpTime: config.RefreshExpTime,
+	}
 }
 
-
-
-var _ ijwt.Service = &Service{}
-
-func (s *Service) Generate(user *usermodel.User, tokenType string) (string, error) {
+// Generate creates a new JWT token based on the provided user and token type.
+func (s *Service) Generate(user *models.User, tokenType string) (string, error) {
 	email := user.Email()
 	name := user.Username()
 	role := user.IsAdmin()
-	var claims jwt.Claims
 
-	jwt_secret_key := config.Envs.JWTSecret
+	var expTime time.Duration
 
-	if tokenType == "access" {
-		claims = jwt.MapClaims{
-			"email":  email, 
-			"name": name,
-			"role": role,
-			"exp": jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(time.Hour * 5).Unix(),
-			},
-		}
-		} else if tokenType == "refresh" {
-
-		claims = jwt.MapClaims{
-			"email":  email, 
-			"name": name,
-			"role": role,
-			"exp": jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(time.Hour * 168).Unix(),
-			},
-		}
-	} else {
-		claims = jwt.MapClaims{
-			"email":  email, 
-			"name": name,
-			"role": role,
-			"exp" :jwt.StandardClaims{
-				 ExpiresAt: time.Now().Add(time.Minute * 15).Unix(),
-			},
-		}
+	switch tokenType {
+	case "access":
+		expTime = s.expTime
+	case "refresh":
+		expTime = s.refreshExpTime
+	default:
+		expTime = time.Minute * 15
 	}
 
-	log.Println("Generating token with claims:", claims)
-	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(jwt_secret_key))
+	claims := jwt.StandardClaims{
+		ExpiresAt: time.Now().Add(expTime).Unix(),
+		Issuer:    s.issuer,
+	}
+
+	tokenClaims := jwt.MapClaims{
+		"email":  email,
+		"name":   name,
+		"role":   role,
+		"exp":    claims.ExpiresAt,
+		"issuer": claims.Issuer,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenClaims)
+	signedToken, err := token.SignedString([]byte(s.secretKey))
 	if err != nil {
 		log.Println("Error generating token:", err)
 		return "", er.NewUnexpected("couldn't generate token")
 	}
-	log.Println("Generated token:", token)
 
-	return token, nil
+	log.Println("Generated token:", signedToken)
+	return signedToken, nil
 }
 
-func (s *Service)Decode(token string) (jwt.MapClaims, error) {
-	jwt_secret_key := config.Envs.JWTSecret
-	
-	parsedToken, err := jwt.ParseWithClaims(token, &Service{}, func(token *jwt.Token) (interface{}, error) {
+// Decode parses and validates the JWT token and returns its claims.
+func (s *Service) Decode(tokenString string) (jwt.MapClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(jwt_secret_key), nil
-	},
-	)
+		return []byte(s.secretKey), nil
+	})
 
 	if err != nil {
-		return nil, errors.New("wrong Credentails")
+		return nil, errors.New("invalid token: " + err.Error())
 	}
 
-	claims, ok := parsedToken.Claims.(jwt.MapClaims)
-	if !ok {
-		return nil, errors.New("wrong Credentials")
+	claims, ok := token.Claims.(*jwt.MapClaims)
+	if !ok || !token.Valid {
+		return nil, errors.New("invalid token claims")
 	}
 
-
-
-
-	return jwt.MapClaims{
-		"email":    claims["email"],
-		"username": claims["name"],
-		"role":     claims["role"],
-		"exp":      claims["standardClaims"].(jwt.StandardClaims).ExpiresAt,
-	}, nil
-
+	return *claims, nil
 }

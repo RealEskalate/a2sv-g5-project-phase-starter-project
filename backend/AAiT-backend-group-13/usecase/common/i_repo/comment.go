@@ -3,19 +3,18 @@ package irepo
 
 import (
 	"github.com/google/uuid"
-	"github.com/group13/blog/domain/models/comment"
+	"github.com/group13/blog/domain/models"
 )
 
 // Comment defines methods to manage comment in the store.
 type Comment interface {
-	Save(*comment.Comment) error
+	Save(*models.Comment) error
 
 	// Delete removes a comment by ID.
 	Delete(id uuid.UUID) error
 
 	// GetSingle returns a comment by ID.
-	GetCommentsByBlogId(id uuid.UUID) (*[]comment.Comment, error)
+	GetCommentsByBlogId(id uuid.UUID) (*[]models.Comment, error)
 
-	GetCommentById(id uuid.UUID) (*comment.Comment, error)
-
+	GetCommentById(id uuid.UUID) (*models.Comment, error)
 }

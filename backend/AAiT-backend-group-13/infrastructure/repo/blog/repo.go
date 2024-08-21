@@ -5,27 +5,27 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	blogmodel "github.com/group13/blog/domain/models/blog"
+	"github.com/group13/blog/domain/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// Repository defines the MongoDB repository for blogs.
-type Repository struct {
+// Repo defines the MongoDB repository for blogs.
+type Repo struct {
 	collection *mongo.Collection
 }
 
 // New creates a new Repository for managing blogs with the given MongoDB client, database name, and collection name.
-func New(client *mongo.Client, dbName, collectionName string) *Repository {
+func New(client *mongo.Client, dbName, collectionName string) *Repo {
 	collection := client.Database(dbName).Collection(collectionName)
-	return &Repository{
+	return &Repo{
 		collection: collection,
 	}
 }
 
 // Save adds a new blog if it does not exist, else updates the existing one.
-func (r *Repository) Save(blog *blogmodel.Blog) error {
+func (r *Repo) Save(blog *models.Blog) error {
 	// Convert the blogmodel.Blog to BlogDTO
 	blogDTO := FromBlog(blog)
 
@@ -41,7 +41,7 @@ func (r *Repository) Save(blog *blogmodel.Blog) error {
 }
 
 // Delete removes a blog by ID.
-func (r *Repository) Delete(id uuid.UUID) error {
+func (r *Repo) Delete(id uuid.UUID) error {
 	filter := bson.M{"_id": id}
 	_, err := r.collection.DeleteOne(context.Background(), filter)
 	if err != nil {
@@ -51,7 +51,7 @@ func (r *Repository) Delete(id uuid.UUID) error {
 }
 
 // ListByAuthor retrieves paginated blogs for a specific author, sorted by total interaction.
-func (r *Repository) ListByAuthor(authorId uuid.UUID, lastSeenID *uuid.UUID, limit int) ([]*blogmodel.Blog, error) {
+func (r *Repo) ListByAuthor(authorId uuid.UUID, lastSeenID *uuid.UUID, limit int) ([]*models.Blog, error) {
 	filter := bson.M{"author_id": authorId}
 
 	pipeline := mongo.Pipeline{
@@ -97,7 +97,7 @@ func (r *Repository) ListByAuthor(authorId uuid.UUID, lastSeenID *uuid.UUID, lim
 	}
 
 	// Convert BlogDTOs back to blogmodel.Blog
-	var blogs []*blogmodel.Blog
+	var blogs []*models.Blog
 	for _, dto := range blogDTOs {
 		blogs = append(blogs, toBlogModel(dto))
 	}
@@ -106,7 +106,7 @@ func (r *Repository) ListByAuthor(authorId uuid.UUID, lastSeenID *uuid.UUID, lim
 }
 
 // ListByTotalInteraction retrieves paginated blogs sorted by total interaction.
-func (r *Repository) ListByTotalInteraction(lastSeenID *uuid.UUID, limit int) ([]*blogmodel.Blog, error) {
+func (r *Repo) ListByTotalInteraction(lastSeenID *uuid.UUID, limit int) ([]*models.Blog, error) {
 	ctx := context.Background()
 
 	// Create the aggregation pipeline
@@ -153,7 +153,7 @@ func (r *Repository) ListByTotalInteraction(lastSeenID *uuid.UUID, limit int) ([
 	}
 
 	// Convert BlogDTOs back to blogmodel.Blog
-	var blogs []*blogmodel.Blog
+	var blogs []*models.Blog
 	for _, dto := range blogDTOs {
 		blogs = append(blogs, toBlogModel(dto))
 	}
@@ -162,7 +162,7 @@ func (r *Repository) ListByTotalInteraction(lastSeenID *uuid.UUID, limit int) ([
 }
 
 // GetSingle returns a blog by ID.
-func (r *Repository) GetSingle(id uuid.UUID) (*blogmodel.Blog, error) {
+func (r *Repo) GetSingle(id uuid.UUID) (*models.Blog, error) {
 	filter := bson.M{"_id": id}
 	var blogDTO BlogDTO
 	err := r.collection.FindOne(context.Background(), filter).Decode(&blogDTO)
@@ -187,17 +187,17 @@ func getSortOrder(ascending bool) int {
 }
 
 // toBlogModel converts a BlogDTO to a blogmodel.Blog.
-func toBlogModel(dto *BlogDTO) *blogmodel.Blog {
-	blog, _ := blogmodel.Map(blogmodel.MapConfig{
-		Id:           dto.ID,
-		UserId:       dto.AuthorID,
+func toBlogModel(dto *BlogDTO) *models.Blog {
+	blog := models.MapBlog(models.MapBlogConfig{
+		ID:           dto.ID,
+		UserID:       dto.AuthorID,
 		Title:        dto.Title,
 		Content:      dto.Content,
 		Tags:         dto.Tags,
 		CreatedDate:  dto.CreatedDate,
 		UpdatedDate:  dto.UpdatedDate,
 		LikeCount:    dto.LikeCount,
-		DisLikeCount: dto.DisLikeCount,
+		DislikeCount: dto.DisLikeCount,
 		CommentCount: dto.CommentCount,
 	})
 	return blog

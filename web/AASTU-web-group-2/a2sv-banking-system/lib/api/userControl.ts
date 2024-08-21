@@ -85,7 +85,7 @@ export async function getCurrentUser(accessToken: string) {
         "Content-Type": "application/json",
       },
     });
-    return response.data.data;
+    return response.data.data as User;
   } catch (error) {
     console.error("Error fetching current user:", error);
     throw error;

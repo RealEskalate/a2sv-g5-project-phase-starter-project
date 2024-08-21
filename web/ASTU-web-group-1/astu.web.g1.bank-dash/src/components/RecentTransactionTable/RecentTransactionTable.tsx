@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import TableButton from "../TableButton/TableButton";
 import RecentTransactionDescription from "./RecentTransactionDescription";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useGetAllTransactionsQuery } from "@/lib/redux/slices/transactionSlice";
 
-const data = [
+const datax = [
   {
     id: 1,
     description: "Payment for order",
@@ -78,15 +79,27 @@ const data = [
 ];
 
 const RecentTransactionTable = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [currentButton, setCurrentButton] = useState("all-transaction");
+  const [pageData,setPageData]=useState([])
   const rowsPerPage = 5;
 
-  // Calculate total pages
-  const totalPages = Math.ceil(data.length / rowsPerPage);
+  
+  const {data , error,isLoading} = useGetAllTransactionsQuery(String(currentPage));
+  // console.log("data is",data,String(currentPage),data?.data.content.length);
 
-  // Get current page data
-  const currentData = data.slice(
+  // Calculate total pages
+  if (isLoading) {
+    return <div>Loading...</div>; // Display loading state
+  }
+
+  if (!data?.data?.content) {
+    return <div>No transactions found.</div>; // Handle case when no data is returned
+  }
+  const totalPages = Math.ceil(datax.length / rowsPerPage);
+
+  // Get current page datax
+  const currentDatax = datax.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
@@ -194,32 +207,31 @@ const RecentTransactionTable = () => {
               </tr>
             </thead>
             <tbody className="text-12px xl:text-16px text-gray-dark cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700">
-
-              {currentData.map((data, index) => (
+              {data.data.content.map((datax, index) => (
                 <tr
                   key={index}
                   className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   <td className="py-3">
                     <RecentTransactionDescription
-                      amount={data.amount}
-                      description={data.description}
+                      amount={datax.amount}
+                      description={datax.description}
                     />
                   </td>
                   <td className="hidden md:table-cell py-3">
-                    {data.transactionId}
+                    {datax.transactionId}
                   </td>
-                  <td className="hidden md:table-cell py-3">{data.type}</td>
+                  <td className="hidden md:table-cell py-3">{datax.type}</td>
                   <td className="hidden md:table-cell py-3">
-                    {data.card.slice(0, 4) + " ****"}
+                    {"1234" + " ****"}
                   </td>
-                  <td className="hidden md:table-cell py-3">{data.date}</td>
+                  <td className="hidden md:table-cell py-3">{datax.date}</td>
                   <td
                     className={`py-3 ${
-                      data.amount < 0 ? "text-candyPink" : "text-mintGreen"
+                      datax.amount < 0 ? "text-candyPink" : "text-mintGreen"
                     }`}
                   >
-                    {data.amount < 0 ? "-$" + data.amount : "+$" + data.amount}
+                    {datax.amount < 0 ? "-$" + datax.amount : "+$" + datax.amount}
                   </td>
                   <td className="hidden md:table-cell py-3 w-24 md:w-32">
                     <TableButton

@@ -90,9 +90,6 @@ func (u *OtpUsecase) ResetPassword(ctx context.Context, userID string, newPasswo
 		return err
 	}
 	
-	if err != nil {
-		return err
-	}
 	var newUser *models.User
 	newUser, err = u.userRepo.GetUserByID(userID)
 	if err != nil {

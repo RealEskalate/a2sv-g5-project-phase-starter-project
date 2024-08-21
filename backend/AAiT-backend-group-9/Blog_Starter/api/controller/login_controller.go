@@ -50,6 +50,8 @@ func (lc *LoginController) Login(c *gin.Context){
 
 }
 
+
+
 func(lc *LoginController) ForgotPassword(c *gin.Context){
 
 	var request domain.ForgotPasswordRequest

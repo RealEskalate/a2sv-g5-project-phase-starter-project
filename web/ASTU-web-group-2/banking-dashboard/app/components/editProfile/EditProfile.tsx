@@ -55,38 +55,37 @@ const defaultMainData: MainData = {
 
 const EditProfile = () => {
   const user = useSelector((state: RootState) => state.user.user);
-  
+
   const [activeTab, setActiveTab] = useState<number>(0);
   const tabs = ["Edit Profile", "Preferences", "Security"];
   const [mainData, setMainData] = useState<MainData>(defaultMainData);
 
   return (
-    <div className="flex flex-col items-center p-6 ">
+    <div className="flex flex-col items-center p-6">
       <div className="bg-white rounded-[25px] p-[1rem] grid gap-[2rem] w-full">
-        <div className="mb-6 w-[30%] max-md:w-[40%] relative">
+        <div className="mb-6 relative flex justify-start gap-4">
           <ul className="flex justify-around list-none p-0">
             {tabs.map((tab, index) => (
-              <li
-                key={index}
-                className={`cursor-pointer p-2 font-[500] text-[16px] ${
-                  activeTab === index
-                    ? "text-blue-700 font-bold"
-                    : "text-[#718EBF]"
-                }`}
-                onClick={() => setActiveTab(index)}
-              >
-                {tab}
-              </li>
+              <div className="flex flex-col">
+                <li
+                  key={index}
+                  className={`cursor-pointer p-2 font-[500] text-[16px] ${
+                    activeTab === index
+                      ? "text-blue-700 font-bold"
+                      : "text-[#718EBF]"
+                  } relative`}
+                  onClick={() => setActiveTab(index)}
+                >
+                  {tab}
+                  {activeTab === index && (
+                    <div className="absolute bottom-0 left-0 w-full h-[3px] rounded-t-[1rem] bg-[#1814F3] transition-all duration-300"></div>
+                  )}
+                </li>
+              </div>
             ))}
           </ul>
-          <div
-            className="absolute bottom-0 left-2 w-1/3 h-[3px] rounded-t-[1rem] bg-[#1814F3] transition-all duration-300"
-            style={{ transform: `translateX(${activeTab * 100}%)` }}
-          />
         </div>
-        {activeTab == 0 && (
-          <FormComponent />
-        )}
+        {activeTab == 0 && <FormComponent />}
 
         {activeTab == 1 && <YourFormComponent />}
         {activeTab == 2 && <ProfileSecurity />}

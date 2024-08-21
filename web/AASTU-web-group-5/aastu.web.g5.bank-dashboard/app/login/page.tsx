@@ -38,7 +38,7 @@ export default function Login() {
     return <div>Please log in</div>;
   }
 
-
+  console.log('user', user);
   return <div> 
 </div>
 

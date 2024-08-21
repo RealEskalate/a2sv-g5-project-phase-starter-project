@@ -21,9 +21,7 @@ func (useCase *userUsecase) Get() ([]domain.User, error) {
 	return useCase.userRepository.Get(domain.UserFilterOption{})
 }
 
-
 // function for login user
-
 
 func (useCase *userUsecase) LoginUser(uname string, password string) (string, error) {
 	user, err := useCase.GetByUsername(uname)
@@ -45,7 +43,7 @@ func (useCase *userUsecase) LoginUser(uname string, password string) (string, er
 
 //function for logout user
 
-func (useCase *userUsecase) Logout(email string) error{
+func (useCase *userUsecase) Logout(email string) error {
 	user, err := useCase.GetByEmail(email)
 	if err != nil {
 		return err
@@ -55,9 +53,7 @@ func (useCase *userUsecase) Logout(email string) error{
 	return nil
 }
 
-
 // function for forget password
-
 
 func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 	user, err := useCase.GetByEmail(email)
@@ -92,10 +88,7 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 	return "Password reset token sent to your email", nil
 }
 
-
-
 // handle password reset
-
 
 func (useCase *userUsecase) ResetPassword(email string, token string, password string) (string, error) {
 	user, err := useCase.GetByEmail(email)
@@ -118,18 +111,12 @@ func (useCase *userUsecase) ResetPassword(email string, token string, password s
 	return "Invalid token", nil
 }
 
-
-
-
 func (useCase *userUsecase) GetByID(userID string) (domain.User, error) {
 	filter := domain.UserFilter{UserId: userID}
 	opts := domain.UserFilterOption{Filter: filter}
 	users, err := useCase.userRepository.Get(opts)
 	return users[0], err
 }
-
-
-
 
 func (useCase *userUsecase) GetByUsername(username string) (domain.User, error) {
 	filter := domain.UserFilter{Username: username}
@@ -138,31 +125,22 @@ func (useCase *userUsecase) GetByUsername(username string) (domain.User, error) 
 	return users[0], err
 }
 
-
-
 // function for account verification
 
-func (useCase *userUsecase) AccountVerification(uemail string, confirmationToken string) (string, error) {
+func (useCase *userUsecase) AccountVerification(uemail string, confirmationToken string) error {
 	filter := domain.UserFilter{Email: uemail}
 	opts := domain.UserFilterOption{Filter: filter}
-	users, err := useCase.userRepository.Get(opts)
+	users, err := useCase.userRepository.
 	if users[0].VerifyToken == confirmationToken {
-		accesstoken, refreshToken, err := infrastructure.GenerateToken(&users[0], users[0].Password)
-		if err != nil {
-			return "", err
-		}
+
 		users[0].IsActive = true
-		users[0].RefreshToken = refreshToken
 		useCase.userRepository.Update(users[0].ID, users[0])
 
-		return accesstoken, nil
+		return nil
 
 	}
-	return "", err
+	return err
 }
-
-
-
 
 func (useCase *userUsecase) GetByEmail(email string) (domain.User, error) {
 	filter := domain.UserFilter{Email: email}
@@ -170,9 +148,6 @@ func (useCase *userUsecase) GetByEmail(email string) (domain.User, error) {
 	users, err := useCase.userRepository.Get(opts)
 	return users[0], err
 }
-
-
-
 
 func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	u.Password, _ = infrastructure.PasswordHasher(u.Password)
@@ -196,15 +171,9 @@ func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	return nUser, err
 }
 
-
-
-
 func (useCase *userUsecase) Update(userId string, updateData domain.User) (domain.User, error) {
 	return useCase.userRepository.Update(userId, updateData)
 }
-
-
-
 
 func (useCase *userUsecase) Delete(userId string) error {
 	return useCase.userRepository.Delete(userId)

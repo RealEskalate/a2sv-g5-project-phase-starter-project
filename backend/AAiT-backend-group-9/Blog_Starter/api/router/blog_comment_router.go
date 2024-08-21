@@ -17,7 +17,7 @@ func NewBlogCommentRouter(timeout time.Duration, db *mongo.Database, group *gin.
 	defer cancel()
 
 	cr := repository.NewCommentRepository(db, domain.CollectionComment, &ctx)
-	br := repository.NewBlogRepository(db, domain.CollectionBlog, &ctx)
+	br := repository.NewBlogRepository(db, domain.CollectionBlog)
 	bcu := usecase.NewCommentUseCase(cr, br)
 	cc := controller.NewBlogCommentController(bcu, ctx)
 

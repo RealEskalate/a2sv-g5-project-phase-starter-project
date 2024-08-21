@@ -23,7 +23,7 @@ type Blog struct {
 	UpdatedAt    time.Time `json:"updatetimestamp" bson:"updatetimestamp"`
 	AverageRating float64 `json:"average_rating" bson:"average_rating"` // do some math and modify when rating is called
 	TotalRating int `json:"total_rating" bson:"total_rating"` // add when rating is called
-	RatingCount int `json:"rating_count" bson:"total_rating"`
+	RatingCount int `json:"rating_count" bson:"rating_count"`
 	ViewCount int `json:"view_count" bson:"view_count"`  //add when getbyid is used and blog is viewed
 	LikeCount int `json:"like_count" bson:"like_count"`  // add when like is called and substarct when it is unliked
 	CommentCount int `json:"comment_count" bson:"comment_count"` // add when comment is called and substarct when it is deleted	
@@ -39,10 +39,10 @@ type BlogCreate struct {
 
 
 type BlogFilterRequest struct {
-    Tags    			[]string
-	LikeLowerRange		uint
-	ViewLowerRange		uint
-    Date    			*time.Time
+	Tags					[]string						`json:"tags"`
+	LikeLowerRange			uint							`json:"like_lower_range"`
+	ViewLowerRange			uint							`json:"view_lower_range"`
+	Date					*time.Time						`json:"date"`
 }
 
 type BlogSearchRequest struct {

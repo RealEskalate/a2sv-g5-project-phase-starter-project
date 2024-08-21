@@ -182,14 +182,14 @@ const EditProfileForm = () => {
           </div>
         </div>
 
-        <div className="flex lg:justify-end mt-3 sm:w-full sm:justify-center">
-          <button
-            type="submit"
-            className="w-[192px] py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-          >
-            Save
-          </button>
-        </div>
+        <div className="flex lg:justify-end mt-3 sm:w-full sm:justify-end">
+        <button
+          type="submit"
+          className="xs:w-full xs:mx-2 sm:w-[192px] py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+        >
+          Save
+        </button>
+      </div>
       </form>
     </div>
   );

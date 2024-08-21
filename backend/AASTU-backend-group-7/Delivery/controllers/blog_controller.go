@@ -241,7 +241,7 @@ func (controller *blogController) GetAllPosts(c *gin.Context) {
 	}
 	// fmt.Println(filter.Tags)
 
-	posts, err, statusCode := controller.BlogUseCase.GetAllPosts(c, filter)
+	posts, err, statusCode, paginationMetaData := controller.BlogUseCase.GetAllPosts(c, filter)
 	if err != nil {
 		c.JSON(statusCode, gin.H{"error": err.Error()})
 		return
@@ -249,6 +249,7 @@ func (controller *blogController) GetAllPosts(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "Posts fetched successfully",
 		"posts":   posts,
+		"meta":    paginationMetaData,
 	})
 }
 
@@ -357,8 +358,12 @@ func (controller *blogController) SearchPosts(c *gin.Context) {
 	// get search query
 	queryparams := c.Request.URL.Query()
 	searchQuery := queryparams.Get("q")
+	filter := Domain.Filter{}
+	filter.Limit, _ = strconv.Atoi(queryparams.Get("limit"))
+	filter.Page, _ = strconv.Atoi(queryparams.Get("page"))
 
-	posts, err, statusCode := controller.BlogUseCase.SearchPosts(c, searchQuery)
+
+	posts, err, statusCode, paginationMetaData := controller.BlogUseCase.SearchPosts(c, searchQuery, filter)
 	if err != nil {
 		c.JSON(statusCode, gin.H{"error": err.Error()})
 		return
@@ -366,9 +371,7 @@ func (controller *blogController) SearchPosts(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "Posts fetched successfully",
 		"posts":   posts,
+		"meta":    paginationMetaData,
 	})
 
 }
-
-
-

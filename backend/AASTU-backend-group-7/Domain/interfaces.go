@@ -53,11 +53,11 @@ type BlogRepository interface {
 	UpdatePostByID(ctx context.Context, id primitive.ObjectID, post *Post) (error, int)
 	GetTags(ctx context.Context, id primitive.ObjectID) ([]*Tag, error, int)
 	GetComments(ctx context.Context, id primitive.ObjectID) ([]*Comment, error, int)
-	GetAllPosts(ctx context.Context, filter Filter) ([]*Post, error, int)
+	GetAllPosts(ctx context.Context, filter Filter) ([]*Post, error, int, PaginationMetaData)
 	AddTagToPost(ctx context.Context, id primitive.ObjectID, slug string) (error, int)
-	LikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int,string)
+	LikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
 	DislikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
-	SearchPosts(ctx context.Context, query string) ([]*Post, error, int)
+	SearchPosts(ctx context.Context, query string, filter Filter) ([]*Post, error, int, PaginationMetaData)
 }
 
 type BlogUseCase interface {
@@ -68,11 +68,11 @@ type BlogUseCase interface {
 	UpdatePostByID(c *gin.Context, id primitive.ObjectID, post *Post) (error, int)
 	GetTags(c *gin.Context, id primitive.ObjectID) ([]*Tag, error, int)
 	GetComments(c *gin.Context, id primitive.ObjectID) ([]*Comment, error, int)
-	GetAllPosts(c *gin.Context,filter Filter) ([]*Post, error, int)
+	GetAllPosts(c *gin.Context, filter Filter) ([]*Post, error, int, PaginationMetaData)
 	AddTagToPost(c *gin.Context, id primitive.ObjectID, slug string) (error, int)
 	LikePost(c *gin.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
 	DislikePost(c *gin.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string)
-	SearchPosts(c *gin.Context, query string) ([]*Post, error, int)
+	SearchPosts(c *gin.Context, query string, filter Filter) ([]*Post, error, int, PaginationMetaData)
 }
 
 type CommentRepository interface {
@@ -100,7 +100,7 @@ type TagRepository interface {
 
 type TagUseCase interface {
 	CreateTag(c *gin.Context, tag *Tag) (error, int)
-	DeleteTag(c *gin.Context, id primitive.ObjectID) (error,int)
+	DeleteTag(c *gin.Context, id primitive.ObjectID) (error, int)
 	GetTagBySlug(c *gin.Context, slug string) (*Tag, error, int)
 	GetAllTags(c *gin.Context) ([]*Tag, error, int)
 }

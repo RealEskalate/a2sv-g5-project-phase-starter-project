@@ -3,7 +3,7 @@ package main
 import (
 	controller "AAiT-backend-group-8/Delivery/Controller"
 	Router "AAiT-backend-group-8/Delivery/Routes"
-	"AAiT-backend-group-8/Infrastructure"
+	infrastructure "AAiT-backend-group-8/Infrastructure"
 	repository "AAiT-backend-group-8/Repository"
 	usecase "AAiT-backend-group-8/Usecase"
 

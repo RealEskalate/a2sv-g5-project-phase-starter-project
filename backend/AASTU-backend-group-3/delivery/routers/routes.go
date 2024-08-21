@@ -38,6 +38,9 @@ func SetupRouter() *gin.Engine {
 
     // Like and Dislike routes
     SetUpLike(router)
+
+    // Comment routes
+    SetUpComment(router)
    
 
 

@@ -1,6 +1,7 @@
 package passwordreset
 
 import (
+	"log"
 	"math/rand"
 	"time"
 
@@ -26,7 +27,8 @@ func NewSendcodeHandler(userrepo irepo.UserRepository) *SendcodeHandler {
 // Handle generates and sets a password reset code for the user identified by the given email.
 // It returns the expiration time of the reset code or an error if the process fails.
 func (h *SendcodeHandler) Handle(email string) (time.Time, error) {
-	user, err := h.userrepo.FindByUsername(email)
+	log.Println("Finding user by username")
+	user, err := h.userrepo.FindByEmail(email)
 	if err != nil {
 		return time.Now(), er.NewUnauthorized(err.Error())
 	}

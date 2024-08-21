@@ -2,6 +2,7 @@ package userrepo
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -25,8 +26,8 @@ func (u *Repo) FindByEmail(email string) (*models.User, error) {
 
 	filter := bson.M{"email": email}
 
-	var user models.User
-	err := u.collection.FindOne(ctx, filter).Decode(&user)
+	var userDTO UserDTO
+	err := u.collection.FindOne(ctx, filter).Decode(&userDTO)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, er.UserNotFound
@@ -34,7 +35,7 @@ func (u *Repo) FindByEmail(email string) (*models.User, error) {
 		return nil, er.NewUnexpected(err.Error())
 	}
 
-	return &user, nil
+	return ToUser(&userDTO), nil
 }
 
 // Ensure Repo implements irepo.User.
@@ -52,23 +53,24 @@ func NewRepo(client *mongo.Client, dbName, collectionName string) *Repo {
 // If the user already exists, it updates the existing record.
 // If the user does not exist, it adds a new record.
 func (u *Repo) Save(user *models.User) error {
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	filter := bson.M{"_id": user.ID()}
+	userDTO := FromUser(user) // Convert to DTO
+
+	filter := bson.M{"_id": userDTO.ID}
 
 	update := bson.M{
 		"$set": bson.M{
-			"firstName":    user.FirstName(),
-			"lastName":     user.LastName(),
-			"username":     user.Username(),
-			"isAdmin":      user.IsAdmin(),
-			"email":        user.Email(),
-			"passwordHash": user.PasswordHash(),
-			"createdAt":    user.CreatedAt(),
+			"firstName":    userDTO.FirstName,
+			"lastName":     userDTO.LastName,
+			"username":     userDTO.Username,
+			"isAdmin":      userDTO.IsAdmin,
+			"email":        userDTO.Email,
+			"passwordHash": userDTO.Password,
+			"createdAt":    userDTO.CreatedAt,
 			"updatedAt":    time.Now(),
-			"isActive":     user.IsActive(),
+			"isActive":     userDTO.IsActive,
 		},
 	}
 
@@ -91,8 +93,8 @@ func (u *Repo) FindById(id uuid.UUID) (*models.User, error) {
 
 	filter := bson.M{"_id": id}
 
-	var user models.User
-	err := u.collection.FindOne(ctx, filter).Decode(&user)
+	var userDTO UserDTO
+	err := u.collection.FindOne(ctx, filter).Decode(&userDTO)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, er.UserNotFound
@@ -100,7 +102,7 @@ func (u *Repo) FindById(id uuid.UUID) (*models.User, error) {
 		return nil, er.NewUnexpected(err.Error())
 	}
 
-	return &user, nil
+	return ToUser(&userDTO), nil
 }
 
 func (u *Repo) FindByUsername(username string) (*models.User, error) {
@@ -108,15 +110,16 @@ func (u *Repo) FindByUsername(username string) (*models.User, error) {
 	defer cancel()
 
 	filter := bson.M{"username": username}
+	log.Printf("finding user by username: %v", filter)
 
-	var user models.User
-	err := u.collection.FindOne(ctx, filter).Decode(&user)
+	var userDTO UserDTO
+	err := u.collection.FindOne(ctx, filter).Decode(&userDTO)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, er.UserNotFound
 		}
 		return nil, er.NewUnexpected(err.Error())
 	}
-
-	return &user, nil
+	log.Printf("found this user at findby username: %v", userDTO)
+	return ToUser(&userDTO), nil
 }

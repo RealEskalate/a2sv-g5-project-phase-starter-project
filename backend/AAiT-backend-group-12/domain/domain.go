@@ -62,10 +62,11 @@ type Blog struct {
 	Comments   []Comment `json:"comment"`
 }
 
-type NewBlog struct {
-	Title   string   `json:"title" validate:"required,min=2"`
-	Content string   `json:"content" validate:"required,min=6"`
-	Tags    []string `json:"tags"`
+
+type NewBlog struct{
+	Title      string    `json:"title" validate:"required,MinWord=1"`
+	Content    string    `json:"content" validate:"required,MinWord=25"`
+	Tags       []string  `json:"tags"`
 }
 
 type Comment struct {

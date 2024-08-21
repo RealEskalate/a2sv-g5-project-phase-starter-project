@@ -4,8 +4,9 @@ import (
 	"blog_api/domain"
 	"net/http"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
-
+var validate = validator.New()
 
 func (bc *BlogController) HandleCreateComment(c *gin.Context) {
 	var comment domain.NewComment
@@ -25,10 +26,10 @@ func (bc *BlogController) HandleCreateComment(c *gin.Context) {
 		return 
 	}
 	created_By := userName.(string)
-	blogID := c.Param("id")
+	blogID := c.Param("blogId")
 	err := bc.blogUseCase.AddComment(c, blogID, &comment, created_By)
 	if err != nil{
-		c.JSON(GetHTTPErrorCode(err), err.Error())
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 	}
 	c.JSON(http.StatusCreated, gin.H{"message": "created successfully" })
 
@@ -52,12 +53,12 @@ func (bc *BlogController) HandleUpdateComment(c *gin.Context) {
 		return 
 	}
 	updateBy := userName.(string)
-	blogID := c.Param("blog_id")
-	commentID := c.Param("comment_id")
+	blogID := c.Param("blogId")
+	commentID := c.Param("commentId")
 	err := bc.blogUseCase.UpdateComment(c, blogID, commentID, &comment, updateBy)
 
 	if err != nil{
-		c.JSON(GetHTTPErrorCode(err), err.Error())
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 	}
 
 	c.JSON(http.StatusNoContent, gin.H{"message": "updated successfully"})
@@ -69,13 +70,13 @@ func (bc *BlogController) HandleDeleteComment(c *gin.Context) {
 		c.JSON(http.StatusForbidden, gin.H{"message": "coudn't find the username field"})
 		return 
 	}
-	deleteBy := userName.(string)
-	blogID := c.Param("blog_id")
-	commentID := c.Param("comment_id")
-	err := bc.blogUseCase.DeleteComment(c, blogID, commentID, deleteBy)
 
+	deleteBy := userName.(string)
+	blogID := c.Param("blogId")
+	commentID := c.Param("commentId")
+	err := bc.blogUseCase.DeleteComment(c, blogID, commentID, deleteBy)
 	if err != nil{
-		c.JSON(GetHTTPErrorCode(err), err.Error())
+		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 	}
 
 	c.JSON(http.StatusNoContent, gin.H{"message": "updated successfully"})

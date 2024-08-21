@@ -23,15 +23,17 @@ type OtpUsecase struct {
 	emailSvc services.IEmailService
 	passSvc services.IHashService
 	redirectURL  string 
+	validationSvc services.IValidationService
 }
 
-func NewOtpUseCase(otpRepo repository_interface.IOtpRepository,userRepo repository_interface.UserRepositoryInterface,emailSvc services.IEmailService,passSvc services.IHashService,redirectURL string,) IOtpUsecase {
+func NewOtpUseCase(otpRepo repository_interface.IOtpRepository,userRepo repository_interface.UserRepositoryInterface,emailSvc services.IEmailService,passSvc services.IHashService,redirectURL string, validationSvc services.IValidationService) IOtpUsecase {
 	return &OtpUsecase{
 		otpRepo:  otpRepo,
 		userRepo: userRepo,
 		emailSvc: emailSvc,
 		redirectURL:  redirectURL,
 		passSvc: passSvc,
+		validationSvc: validationSvc,
 	}
 }
 
@@ -54,18 +56,9 @@ func (u *OtpUsecase) GenerateAndSendOtp(ctx context.Context, email string) error
 		return err
 	}
 
-	resetLink := fmt.Sprintf("%s/reset-password?otp=%s", u.redirectURL, otp)
+	resetLink := fmt.Sprintf("%s/auth/reset-password?otp=%s", u.redirectURL, otp)
 
-	subject := "Password Reset Request"
-	body := fmt.Sprintf(`
-		<h1>Password Reset</h1>
-		<p>To reset your password, use the following OTP:</p>
-		<p><strong>%s</strong></p>
-		<p>Or click on the link below:</p>
-		<a href="%s">Reset Password</a>
-	`, otp, resetLink)
-
-	err = u.emailSvc.SendResetEmail(email, subject, body)
+	err = u.emailSvc.SendResetEmail(user.Email, resetLink)
 	if err != nil {
 		return err
 	}
@@ -87,12 +80,27 @@ func (u *OtpUsecase) ValidateOtp(ctx context.Context, otp string) (*models.OtpEn
 }
 
 func (u *OtpUsecase) ResetPassword(ctx context.Context, userID string, newPassword string) error {
+
+	if _, err := u.validationSvc.ValidatePassword(newPassword); err != nil {
+		return err
+	}
+
 	hashedPassword, err := u.passSvc.HashPassword(newPassword)
 	if err != nil {
 		return err
 	}
-
-	err = u.userRepo.UpdatePassword(userID, string(hashedPassword))
+	
+	if err != nil {
+		return err
+	}
+	var newUser *models.User
+	newUser, err = u.userRepo.GetUserByID(userID)
+	if err != nil {
+		return errors.New("user not found")
+	}
+	
+	newUser.Password = hashedPassword
+	err = u.userRepo.UpdateProfile(userID, newUser)
 	if err != nil {
 		return err
 	}

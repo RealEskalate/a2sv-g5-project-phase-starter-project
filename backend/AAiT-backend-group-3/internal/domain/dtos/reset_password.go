@@ -5,6 +5,5 @@ type ForgotPassword struct {
 }
 
 type ResetPassword struct {
-	Otp     string `bson:"otp" json:"otp"`
-	NewPassword string `bson:"new_password" json:"password"`
+	NewPassword string `bson:"new_password" json:"new_password"`
 }

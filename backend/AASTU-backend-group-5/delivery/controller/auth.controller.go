@@ -25,7 +25,7 @@ func (ac *AuthController) SignUp() gin.HandlerFunc {
 
         user, err := ac.AuthUsecase.RegisterUser(input)
         if err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
+            c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
             return
         }
 
@@ -91,7 +91,7 @@ func (ac *AuthController) Refresh() gin.HandlerFunc {
 
         accessToken, newRefreshToken, err := ac.AuthUsecase.RefreshTokens(refreshToken)
         if err != nil {
-            c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+            c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
             return
         }
 
@@ -160,7 +160,7 @@ func (ac *AuthController) GoogleCallBack() gin.HandlerFunc{
         })
 
         c.JSON(http.StatusOK, gin.H{
-            "user": user,
+            "user": domain.CreateResponseUser(*user),
             "access_token":  accessToken,
         })
     }

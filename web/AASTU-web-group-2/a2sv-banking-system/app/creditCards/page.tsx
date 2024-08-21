@@ -8,7 +8,9 @@ import MainCreditCard from "./MainCreditCard";
 import Card from "../components/Page2/Card";
 import { Card as Card1 } from "../../types/cardController.Interface";
 import { getCards } from "@/lib/api/cardController";
-import { useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
+import router from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const HeadingTitle = ({ title }: { title: string }) => {
   return (
@@ -17,18 +19,70 @@ const HeadingTitle = ({ title }: { title: string }) => {
     </h1>
   );
 };
+type Data = {
+  access_token: string;
+  data: string;
+  refresh_token: string;
+};
 
+type SessionDataType = {
+  user: Data;
+};
 const CreditCards = () => {
+  const [session, setSession] = useState<Data | null>(null);
   const [cards, setCards] = useState<Card1[]>([]);
-  // const { data: session } = useSession();
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  // useEffect(() => {
-  //   async function fetch() {
-  //     const data = await getCards(session?.user?.access_token);
-  //     console.log(data);
-  //     setCards(data.content);
-  //   }
-  // }, []);
+  const convertToDate = (date: string) => {
+    const year = date.slice(2, 4);
+    const month = date.slice(5, 7);
+
+    return month + "/" + year;
+  };
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = (await getSession()) as SessionDataType | null;
+      if (sessionData && sessionData.user) {
+        setSession(sessionData.user);
+      } else {
+        router.push(
+          `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+        );
+      }
+    };
+
+    fetchSession();
+  }, [router]);
+
+  useEffect(() => {
+    if (session == null) {
+      return;
+    }
+    async function fetch() {
+      const data = await getCards(session?.access_token!, 0, 700);
+      data.content.reverse();
+      setCards(data.content);
+      setLoading(false);
+    }
+    fetch();
+  }, [session]);
+
+  const decideColor = (index: number) => {
+    const remainder = index % 3;
+    if (remainder == 0) {
+      return ["from-[#0A06F4] to-[#0A06F4]", "text-white"];
+    } else if (remainder == 1) {
+      return ["from-[#4C49ED] to-[#4C49ED]", "text-white"];
+    } else {
+      return ["from-[#FFF] to-[#FFF]", "text-black"];
+    }
+  };
+  const handleAddition = (card: Card1) => {
+    const newCards = [card, ...cards];
+    setCards(newCards);
+  };
+  if (loading) return null; // Don't render anything while loading
 
   return (
     <div className="bg-[#f5f7fb] w-full p-5 gap-5 flex flex-col">
@@ -36,39 +90,26 @@ const CreditCards = () => {
         <HeadingTitle title="My Cards" />
 
         <div className="flex overflow-scroll justify-between">
-          <Card
-            balance="$5,756"
-            cardHolder="Eddy Cusuma"
-            validThru="12/22"
-            cardNumber="3778 **** **** 1234"
-            filterClass=""
-            bgColor="from-[#0A06F4] to-[#0A06F4]"
-            textColor="text-white"
-            iconBgColor="bg-opacity-10"
-            showIcon={true}
-          />
-          <Card
-            balance="$5,756"
-            cardHolder="Eddy Cusuma"
-            validThru="12/22"
-            cardNumber="3778 **** **** 1234"
-            filterClass=""
-            bgColor="from-[#4C49ED] to-[#4C49ED]"
-            textColor="text-white"
-            iconBgColor="bg-opacity-10"
-            showIcon={true}
-          />
-          <Card
-            balance="$5,756"
-            cardHolder="Eddy Cusuma"
-            validThru="12/22"
-            cardNumber="3778 **** **** 1234"
-            filterClass=""
-            bgColor="from-[#FFF] to-[#FFF]"
-            textColor="text-black"
-            iconBgColor="bg-opacity-10"
-            showIcon={true}
-          />
+          {cards.map((card, index) => {
+            const [bgColor, textColor] = decideColor(index);
+
+            if (index <= 2) {
+              return (
+                <Card
+                  balance={card.balance.toString()}
+                  cardHolder={card.cardHolder}
+                  validThru={convertToDate(card.expiryDate)}
+                  cardNumber={card.id}
+                  filterClass=""
+                  bgColor={bgColor}
+                  textColor={textColor}
+                  iconBgColor="bg-opacity-10"
+                  showIcon={true}
+                  key={index}
+                />
+              );
+            }
+          })}
         </div>
       </div>
       <div className="flex flex-col gap-6 md:flex-row">
@@ -78,44 +119,33 @@ const CreditCards = () => {
         </div>
         <div className="flex flex-col gap-3 md:justify-between w-full h-full">
           <HeadingTitle title="Card List" />
-          <CreditCard
-            icon={<img src="card1.svg" />}
-            linkUrl=""
-            data={[
-              ["Card Type", "Secondary"],
-              ["Card Type", "Secondary"],
-              ["Card Type", "Secondary"],
-              ["Card Type", "Secondary"],
-            ]}
-          />
-
-          <CreditCard
-            icon={<img src="card1.svg" />}
-            linkUrl=""
-            data={[
-              ["Card Type", "Secondary"],
-              ["Card Type", "Secondary"],
-              ["Card Type", "Secondary"],
-              ["Card Type", "Secondary"],
-            ]}
-          />
-          <CreditCard
-            icon={<img src="card1.svg" />}
-            linkUrl=""
-            data={[
-              ["Card Type", "Secondary"],
-              ["Card Type", "Secondary"],
-              ["Card Type", "Secondary"],
-              ["Card Type", "Secondary"],
-            ]}
-          />
+          <div className="overflow-y-auto h-80 flex flex-col gap-4">
+            {cards.map((card, index) => {
+              return (
+                <CreditCard
+                  icon={<img src="card1.svg" />}
+                  linkUrl=""
+                  data={[
+                    ["Card Type", card.cardType],
+                    ["Balance", card.balance.toString()],
+                    ["Card Number", card.cardType],
+                    ["Card Expiry", convertToDate(card.expiryDate)],
+                  ]}
+                  key={index}
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
 
       <div className="flex flex-col gap-6 md:flex-row">
         <div className="flex flex-col gap-5">
           <HeadingTitle title="Add New Card" />
-          <AddCardForm />
+          <AddCardForm
+            access_token={session?.access_token!}
+            handleAddition={handleAddition}
+          />
         </div>
         <div className="flex flex-col gap-5 min-w-64 h-full">
           <HeadingTitle title="Card Setting" />

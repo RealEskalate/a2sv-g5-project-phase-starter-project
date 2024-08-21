@@ -13,6 +13,7 @@ var Client *mongo.Client
 var BlogCollection *mongo.Collection
 var UserCollection *mongo.Collection
 var LikeCollection *mongo.Collection
+var CommentCollection *mongo.Collection
 
 func ConnectDB(connectionString string) {
 
@@ -36,4 +37,6 @@ func ConnectDB(connectionString string) {
     BlogCollection = client.Database("Starter_blog").Collection("Blogs")
     UserCollection = client.Database("Starter_blog").Collection("users")
     LikeCollection = client.Database("Starter_blog").Collection("likes")
+    CommentCollection = client.Database("Starter_blog").Collection("comments")
+
 }

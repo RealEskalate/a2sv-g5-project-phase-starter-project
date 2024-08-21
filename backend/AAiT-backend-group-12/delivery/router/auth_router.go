@@ -23,6 +23,7 @@ import (
 func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, cacheClient *redis.Client) {
 	userRepository := repository.NewUserRepository(collection)
 	cacheRepoistory := repository.NewCacheRepository(cacheClient)
+	jwtService := jwt_service.NewJWTService(env.ENV.JWT_SECRET_TOKEN)
 	usecase := usecase.NewUserUsecase(
 		userRepository,
 		cacheRepoistory,
@@ -30,11 +31,7 @@ func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, cac
 		mail_service.EmailVerificationTemplate,
 		mail_service.PasswordResetTemplate,
 		mail_service.SendMail,
-		jwt_service.SignJWTWithPayload,
-		jwt_service.GetTokenType,
-		jwt_service.GetUsername,
-		jwt_service.GetExpiryDate,
-		jwt_service.ValidateAndParseToken,
+		jwtService,
 		cryptography.HashString,
 		cryptography.ValidateHashedString,
 		google_auth.VerifyIdToken,
@@ -49,12 +46,12 @@ func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, cac
 
 	authGroup.POST("/login", controller.HandleLogin)
 	authGroup.POST("/renew-token", controller.HandleRenewAccessToken)
-	authGroup.POST("/logout", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, domain.RoleUser, domain.RoleAdmin, domain.RoleRoot), controller.HandleLogout)
+	authGroup.POST("/logout", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwtService, cacheRepoistory, domain.RoleUser, domain.RoleAdmin, domain.RoleRoot), controller.HandleLogout)
 
-	authGroup.PATCH("/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, domain.RoleUser), controller.HandleUpdateUser)
+	authGroup.PATCH("/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwtService, cacheRepoistory, domain.RoleUser), controller.HandleUpdateUser)
 
-	authGroup.PATCH("/promote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, domain.RoleAdmin, domain.RoleRoot), controller.HandlePromoteUser)
-	authGroup.PATCH("/demote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, domain.RoleRoot), controller.HandleDemoteUser)
+	authGroup.PATCH("/promote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwtService, cacheRepoistory, domain.RoleAdmin, domain.RoleRoot), controller.HandlePromoteUser)
+	authGroup.PATCH("/demote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwtService, cacheRepoistory, domain.RoleRoot), controller.HandleDemoteUser)
 
 	authGroup.POST("/forgot-password", controller.HandleInitResetPassword)
 	authGroup.POST("/reset-password", controller.HandleResetPassword)

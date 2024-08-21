@@ -8,12 +8,22 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+// JWTService provides an interface to interact with JWT tokens
+type JWTService struct {
+	secret string
+}
+
+// NewJWTService creates a new JWTService with the given secret
+func NewJWTService(secret string) *JWTService {
+	return &JWTService{secret: secret}
+}
+
 /*
 Creates and signs a JWT with the username, role and tokenLifeSpan as the
 payloads. Returns the signed token if there aren't any errors.
 */
-func SignJWTWithPayload(username string, role string, tokenType string, tokenLifeSpan time.Duration, secret string) (string, domain.CodedError) {
-	if secret == "" {
+func (s *JWTService) SignJWTWithPayload(username string, role string, tokenType string, tokenLifeSpan time.Duration) (string, domain.CodedError) {
+	if s.secret == "" {
 		return "", domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
@@ -21,7 +31,7 @@ func SignJWTWithPayload(username string, role string, tokenType string, tokenLif
 		return "", domain.NewError("Invalid token type field", domain.ERR_INTERNAL_SERVER)
 	}
 
-	jwtSecret := []byte(secret)
+	jwtSecret := []byte(s.secret)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username":  username,
 		"role":      role,
@@ -40,14 +50,14 @@ func SignJWTWithPayload(username string, role string, tokenType string, tokenLif
 Parses the JWT token with the HMAC signing method and returns a pointer
 to a jwt.Token struct if the token is valid and not tampered with.
 */
-func ValidateAndParseToken(rawToken string, secret string) (*jwt.Token, error) {
+func (s *JWTService) ValidateAndParseToken(rawToken string) (*jwt.Token, error) {
 	token, err := jwt.Parse(rawToken, func(t *jwt.Token) (interface{}, error) {
 		_, ok := t.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 
-		return []byte(secret), nil
+		return []byte(s.secret), nil
 	})
 
 	if err != nil {
@@ -62,7 +72,7 @@ func ValidateAndParseToken(rawToken string, secret string) (*jwt.Token, error) {
 }
 
 // GetExpiryDate returns the expiry date of the token
-func GetExpiryDate(token *jwt.Token) (time.Time, domain.CodedError) {
+func (s *JWTService) GetExpiryDate(token *jwt.Token) (time.Time, domain.CodedError) {
 	expiresAt, ok := token.Claims.(jwt.MapClaims)["expiresAt"]
 	if !ok {
 		return time.Now(), domain.NewError("Invalid token: Expiry date not found", domain.ERR_UNAUTHORIZED)
@@ -77,7 +87,7 @@ func GetExpiryDate(token *jwt.Token) (time.Time, domain.CodedError) {
 }
 
 // GetUsername returns the username of the token
-func GetUsername(token *jwt.Token) (string, domain.CodedError) {
+func (s *JWTService) GetUsername(token *jwt.Token) (string, domain.CodedError) {
 	username, ok := token.Claims.(jwt.MapClaims)["username"]
 	if !ok {
 		return "", domain.NewError("Invalid token: Username not found", domain.ERR_UNAUTHORIZED)
@@ -87,7 +97,7 @@ func GetUsername(token *jwt.Token) (string, domain.CodedError) {
 }
 
 // GetRole returns the role of the token
-func GetRole(token *jwt.Token) (string, domain.CodedError) {
+func (s *JWTService) GetRole(token *jwt.Token) (string, domain.CodedError) {
 	role, ok := token.Claims.(jwt.MapClaims)["role"]
 	if !ok {
 		return "", domain.NewError("Invalid token: Role not found", domain.ERR_UNAUTHORIZED)
@@ -97,7 +107,7 @@ func GetRole(token *jwt.Token) (string, domain.CodedError) {
 }
 
 // GetTokenType returns the token type of the token
-func GetTokenType(token *jwt.Token) (string, domain.CodedError) {
+func (s *JWTService) GetTokenType(token *jwt.Token) (string, domain.CodedError) {
 	tokenType, ok := token.Claims.(jwt.MapClaims)["tokenType"]
 	if !ok {
 		return "", domain.NewError("Invalid token: TokenType not found", domain.ERR_UNAUTHORIZED)

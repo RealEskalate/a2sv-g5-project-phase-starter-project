@@ -14,7 +14,6 @@ func Parse(ctx *gin.Context) (*jwt.MapClaims, error) {
 	authParts := strings.Split(authHeader, " ")
 
 	if len(authParts) != 2 || strings.ToLower(authParts[0]) != "bearer" {
-		log.Fatal("invalid authorization header")
 		return nil, errors.New("invalid header")
 	}
 
@@ -33,6 +32,5 @@ func Parse(ctx *gin.Context) (*jwt.MapClaims, error) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return &claims, nil
 	}
-	log.Fatal("final error")
 	return nil, errors.New("invalid header")
 }

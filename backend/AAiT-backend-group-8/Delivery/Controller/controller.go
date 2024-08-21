@@ -1,22 +1,22 @@
 package controller
 
 import (
-	domain "AAiT-backend-group-8/Domain"
+	interfaces "AAiT-backend-group-8/Interfaces"
 	usecase "AAiT-backend-group-8/Usecase"
 )
 
 type Controller struct {
-	blogUseCase    domain.IBlogUseCase
+	blogUseCase    interfaces.IBlogUseCase
 	commentUseCase *usecase.CommentUseCase
-	UserUsecase    domain.IUserUseCase
+	UserUseCase    interfaces.IUserUseCase
 	LikeUseCase    *usecase.LikeUseCase
 }
 
-func NewController(commentUseCase *usecase.CommentUseCase, userUseCase domain.IUserUseCase, likeUseCase *usecase.LikeUseCase, blogUseCase domain.IBlogUseCase) *Controller {
+func NewController(commentUseCase *usecase.CommentUseCase, userUseCase interfaces.IUserUseCase, likeUseCase *usecase.LikeUseCase, blogUseCase interfaces.IBlogUseCase) *Controller {
 	return &Controller{
 		blogUseCase:    blogUseCase,
 		commentUseCase: commentUseCase,
-		UserUsecase:    userUseCase,
+		UserUseCase:    userUseCase,
 		LikeUseCase:    likeUseCase,
 	}
 }

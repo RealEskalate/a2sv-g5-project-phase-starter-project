@@ -34,11 +34,33 @@ func (ur *userRepository) CreateUser(c context.Context, user *domain.User) (*dom
 
 	return user, err
 }
-
+func (ur *userRepository) IsOwner(c context.Context) (bool,error) {
+	collection := ur.database.Collection(ur.collection)
+	count,err:=collection.CountDocuments(context.TODO(), bson.M{})
+	if err!=nil{
+		return false,err
+	}
+	return count==0,nil
+}
+func (ur *userRepository) UpdateRefreshToken(c context.Context, userID string, refreshToken string) error{
+	collection := ur.database.Collection(ur.collection)
+	id,err:=primitive.ObjectIDFromHex(userID)
+	if err!=nil{
+		return err
+	}
+	filter := bson.M{"_id": id}
+	_, err = collection.UpdateOne(c, filter, bson.M{"$push": bson.M{"tokens": refreshToken}})
+	return err
+}
+ 
 func (ur *userRepository) GetUserById(c context.Context, userId string) (*domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 	var user domain.User
-	err := collection.FindOne(c, bson.M{"_id": userId}).Decode(&user)
+	id,err:=primitive.ObjectIDFromHex(userId)
+	if err!=nil{
+		return nil, err
+	}
+	err = collection.FindOne(c, bson.M{"_id": id}).Decode(&user)
 	if err != nil {
 		return nil, err
 	}

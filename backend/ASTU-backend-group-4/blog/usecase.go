@@ -73,6 +73,7 @@ func (b *BlogUseCaseImpl) CreateComment(ctx context.Context, userID, blogID stri
 	}
 
 	blog.IncrementCommentsCount()
+	blog.CalculatePopularity()
 	b.blogRepository.UpdateBlog(ctx, blogID, blog)
 
 	return nil
@@ -98,6 +99,10 @@ func (b *BlogUseCaseImpl) DeleteBlog(ctx context.Context, id, userID string) err
 	if err != nil {
 		return err
 	}
+
+	b.blogRepository.DeleteCommentsByBlogID(ctx, id)
+	b.blogRepository.DeleteLikesByBlogID(ctx, id)
+	b.blogRepository.DeleteDislikesByBlogID(ctx, id)
 
 	return nil
 }

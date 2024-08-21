@@ -16,11 +16,11 @@ func RegisterAdminUserRoutes(userCollection *mongo.Collection, router *gin.Engin
 	adminRoute := router.Group("/api/v1/admin")
 	adminRoute.Use(middleware.AuthMiddleware(), middleware.AdminMiddleware())
 	{
-		adminRoute.PUT("/promote/:id", middleware.OwnerMiddleware(), userHandler.PromoteToAdmin)
-		adminRoute.PUT("/demote/:id", userHandler.DemoteUser)
+		adminRoute.PUT("/user/promote/:id", middleware.OwnerMiddleware(), userHandler.PromoteToAdmin)
+		adminRoute.PUT("/user/demote/:id", userHandler.DemoteUser)
 		adminRoute.GET("/users", userHandler.GetAllUsers)
-		adminRoute.DELETE("/delete/:id", userHandler.AdminRemoveUser)
-		adminRoute.GET("/users/:id", userHandler.GetUser)
+		adminRoute.DELETE("/user/:id", userHandler.AdminRemoveUser)
+		adminRoute.GET("/user/:id", userHandler.GetUser)
 		adminRoute.GET("/users/filtered", userHandler.FilterUsers)
 	}
 

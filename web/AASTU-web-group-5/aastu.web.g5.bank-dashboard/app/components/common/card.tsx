@@ -14,7 +14,6 @@ interface CardProps {
 }
 
 const Card: React.FC<CardProps> = ({ cardData, cardColor }) => {
-	// Format expiry date to YYYY-MM-DD
 	function formatExpiryDate(expiryDate: string) {
 		const date = new Date(expiryDate);
 		const day = String(date.getDate()).padStart(2, "0");

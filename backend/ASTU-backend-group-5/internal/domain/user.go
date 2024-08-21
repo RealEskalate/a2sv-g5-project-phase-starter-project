@@ -24,3 +24,12 @@ type User struct {
 	Updated  primitive.DateTime `bson:"updated" json:"updated"`
 	Verified bool               `bson:"verified" json:"verified"`
 }
+
+type GoogleUser struct {
+	ID            string `json:"id"`
+	Email         string `json:"email"`
+	VerifiedEmail bool   `json:"verified_email"`
+	Picture       string `json:"picture"`
+	GivenName     string `json:"given_name"`
+	FamilyName    string `json:"family_name"`
+}

@@ -37,8 +37,8 @@ export default function Component() {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const incomeData = await getIncomes();
-        const expenseData = await getExpenses();
+        const incomeData = await getIncomes(0, 5);
+        const expenseData = await getExpenses(0, 5);
 
         const incomeArray = incomeData.data.content;
         const expenseArray = expenseData.data.content;
@@ -130,8 +130,10 @@ setChartData(newChartData);
       <CardHeader className="flex justify-between">
         <div className="flex flex-row justify-between space-x-4">
           <div className="hidden md:flex text-sm font-normal">
-            <span className="font-bold">${totalDebit}</span> Debited &{" "}
-            <span className="font-bold"> ${totalCredit}</span> Credited this Week
+            <span className="font-bold">${totalDebit}</span>&nbsp;Debited
+            &&nbsp;
+            <span className="font-bold"> ${totalCredit}</span>&nbsp;Credited in
+            this Week
           </div>
           <div className="flex px-3 text-right">
             <span className="w-4 h-4 rounded-xl" style={{ backgroundColor: chartConfig.debit.color }}></span>

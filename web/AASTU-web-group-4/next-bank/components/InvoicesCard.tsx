@@ -16,7 +16,7 @@ const InvoicesCard: React.FC = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const transactionData = await getExpenses(); 
+        const transactionData = await getExpenses(0, 5); 
 
         if (Array.isArray(transactionData.data.content)) {
           setTransactions(transactionData.data.content);

@@ -103,7 +103,7 @@ type FilterQuery struct {
 
 type BlogUseCase interface {
 	CreateBlog(ctx context.Context, authorID string, blog CreateBlogRequest) (Blog, error)
-	UpdateBlog(ctx context.Context, id string, blog UpdateBlogRequest) (Blog, error)
+	UpdateBlog(ctx context.Context, id, userID string, blog UpdateBlogRequest) (Blog, error)
 	DeleteBlog(ctx context.Context, id, userID string) error
 	GetBlogByID(ctx context.Context, id string) (Blog, error)
 	GetBlogs(ctx context.Context, filterQuery FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)

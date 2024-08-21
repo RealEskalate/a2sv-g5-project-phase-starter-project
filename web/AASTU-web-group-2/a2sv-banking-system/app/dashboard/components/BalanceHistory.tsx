@@ -35,15 +35,15 @@ const chartConfig = {
 
 export function BalanceHistory() {
   return (
-    <Card className="my-4 mx-4 rounded-3xl flex-grow">
+    <Card className="my-4 mx-4 rounded-3xl flex-grow md:w-[73%]">
       <CardHeader>
         <CardTitle className="text-[#343C6A] font-bold text-xl">
           Balance History
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="w-full">
-          <ChartContainer config={chartConfig}>
+        <div className="w-full ">
+          <ChartContainer config={chartConfig} className="md:h-28 md:w-full">
             <AreaChart
               width={5}
               height={300}

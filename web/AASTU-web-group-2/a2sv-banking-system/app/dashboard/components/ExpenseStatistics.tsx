@@ -53,7 +53,7 @@ const chartConfig = {
 
 export function ExpenseStatistics() {
   return (
-    <Card className="mx-4 my-6   flex-grow rounded-3xl">
+    <Card className="mx-4 my-6 md:my-0 flex-grow rounded-3xl">
       <CardHeader className="items-left pb-0">
         <CardTitle className="text-[#343C6A] font-bold text-xl md:hidden">
           Expense Statistics

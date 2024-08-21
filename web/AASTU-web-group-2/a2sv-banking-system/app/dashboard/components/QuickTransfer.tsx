@@ -3,8 +3,8 @@ import ImageComponent from "../components/ImageComponent"
 export default function Home() {
   const newLocal = "M1 1L7.5 7.5L1 14";
   return (
-    <div className = " border rounded-3xl my-4 mx-4">
-      <p className="text-[#343C6A] font-bold mx-3 py-3 text-xl">Quick Transfers</p>
+    <div className = " border rounded-3xl my-4 mx-4 bg-white">
+      <p className="text-[#343C6A] font-bold mx-3 py-3 text-xl md:hidden">Quick Transfers</p>
       <div className="flex flex-col gap-3 px-5 py-5">
         {/*  Image Component  */}
             <div className="flex py-2 justify-between items-center">

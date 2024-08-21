@@ -1,9 +1,9 @@
-import {PostTransactionRequest, PaginatedTransactionsResponse, QuickTransferData, QuickTransferResponse, BalanceHistoryData, BalanceHistoryResponse, GetTransactionById, TransactionResponse, TransactionData, GetTransactionsResponse, PostTransactionResponse, PostDepositTransactionRequest} from "../../types/transactionContoller.interface"
-
+import {PostTransactionRequest, PaginatedTransactionsResponse, QuickTransferData, QuickTransferResponse, BalanceHistoryData, BalanceHistoryResponse, GetTransactionByID, TransactionResponse, TransactionData, GetTransactionsResponse, PostTransactionResponse, PostDepositTransactionRequest} from "@/types/transactionController.interface"
+// Extend the user type to include accessToken
 import { getServerSession } from "next-auth";
 interface ExtendedUser {
   refresh_token: string;
-  data: any; 
+  data: any; // Assuming `data` contains user information or other details
   accessToken?: string;
 }
 
@@ -22,9 +22,9 @@ const getAccessToken = async (): Promise<string | undefined> => {
   return session?.user?.accessToken;
 };
 
-const getTransactions = async (page: number, size: number): Promise<GetTransactionsResponse> => {
+const getTransactions = async (page: 0, size: 1, token: string): Promise<GetTransactionsResponse> => {
     try {
-      const token = await getAccessToken();
+      // const token = await getAccessToken();
       const response = await fetch(`${BASE_URL}/transactions?page=${page}&size=${size}`, {
         method: 'GET',
         headers: {
@@ -45,9 +45,9 @@ const getTransactions = async (page: number, size: number): Promise<GetTransacti
     }
   };
 
-  const postTransaction = async (transactionDetails: PostTransactionRequest): Promise<PostTransactionResponse> => {
+  const postTransaction = async (transactionDetails: PostTransactionRequest, token:string): Promise<PostTransactionResponse> => {
     try {
-      const token = await getAccessToken();
+      // const token = await getAccessToken();
       const response = await fetch(`${BASE_URL}/transactions`, {
         method: 'POST',
         headers: {
@@ -69,9 +69,9 @@ const getTransactions = async (page: number, size: number): Promise<GetTransacti
     }
   };
   
-  const postTransactionsDeposit = async (transactionDetails: PostDepositTransactionRequest): Promise<TransactionResponse> => {
+  const postTransactionsDeposit = async (transactionDetails: PostDepositTransactionRequest, token:string): Promise<TransactionResponse> => {
     try {
-      const token = await getAccessToken();
+      // const token = await getAccessToken();
       const response = await fetch(`${BASE_URL}/transactions/deposit`, {
         method: 'POST',
         headers: {
@@ -92,9 +92,9 @@ const getTransactions = async (page: number, size: number): Promise<GetTransacti
       throw error;
     }
   };
-  const getTransactionById = async (transactionId: string): Promise<GetTransactionById> => {
+  const getTransactionById = async (transactionId: string, token:string): Promise<GetTransactionByID> => {
     try {
-      const token = await getAccessToken();
+      // const token = await getAccessToken();
       const response = await fetch(`${BASE_URL}/transactions/${transactionId}`, {
         method: 'GET',
         headers: {
@@ -113,12 +113,10 @@ const getTransactions = async (page: number, size: number): Promise<GetTransacti
       console.error('Error fetching transaction:', error);
       throw error;
     }
-
-    
   };
-  const getRandomBalanceHistory = async (monthsBeforeFirstTransaction: number): Promise<BalanceHistoryResponse> => {
+  const getRandomBalanceHistory = async (monthsBeforeFirstTransaction: number, token: string): Promise<BalanceHistoryResponse> => {
     try {
-      const token = await getAccessToken();
+      // const token = await getAccessToken();
       const response = await fetch(`${BASE_URL}/transactions/random-balance-history?monthsBeforeFirstTransaction=${monthsBeforeFirstTransaction}`, {
         method: 'GET',
         headers: {
@@ -138,9 +136,9 @@ const getTransactions = async (page: number, size: number): Promise<GetTransacti
       throw error;
     }
   };
-  const getQuickTransfers = async (inputInteger: number): Promise<QuickTransferResponse> => {
+  const getQuickTransfers = async (inputInteger: number, token:string): Promise<QuickTransferResponse> => {
     try {
-      const token = await getAccessToken();
+      // const token = await getAccessToken();
       const response = await fetch(`${BASE_URL}/transactions/quick-transfers?input=${inputInteger}`, {
         method: 'GET',
         headers: {
@@ -160,9 +158,9 @@ const getTransactions = async (page: number, size: number): Promise<GetTransacti
       throw error;
     }
   };
-  const getTransactionIncomes = async (page: number, size: number): Promise<PaginatedTransactionsResponse> => {
+  const getTransactionIncomes = async (page: number, size: number, token:string): Promise<PaginatedTransactionsResponse> => {
     try {
-      const token = await getAccessToken();
+      // const token = await getAccessToken();
       const response = await fetch(`${BASE_URL}/transactions/incomes?page=${page}&size=${size}`, {
         method: 'GET',
         headers: {
@@ -182,9 +180,9 @@ const getTransactions = async (page: number, size: number): Promise<GetTransacti
       throw error;
     }
   };
-  const getTransactionsExpenses = async (page: number, size: number): Promise<PaginatedTransactionsResponse> => {
+  const getTransactionsExpenses = async (page: number, size: number, token:string): Promise<PaginatedTransactionsResponse> => {
     try {
-      const token = await getAccessToken();
+      // const token = await getAccessToken();
       const response = await fetch(`${BASE_URL}/transactions/expenses?page=${page}&size=${size}`, {
         method: 'GET',
         headers: {
@@ -204,9 +202,9 @@ const getTransactions = async (page: number, size: number): Promise<GetTransacti
       throw error;
     }
   };
-  const getBalanceHistory = async (monthsBeforeFirstTransaction: number): Promise<BalanceHistoryResponse> => {
+  const getBalanceHistory = async (monthsBeforeFirstTransaction: number, token:string): Promise<BalanceHistoryResponse> => {
     try {
-      const token = await getAccessToken();
+      // const token = await getAccessToken();
       const response = await fetch(`${BASE_URL}/transactions/balance-history`, {
         method: 'GET',
         headers: {

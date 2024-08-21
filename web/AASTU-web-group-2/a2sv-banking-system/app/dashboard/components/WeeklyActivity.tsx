@@ -39,7 +39,7 @@ const chartConfig = {
 
 export function WeeklyActivity() {
   return (
-    <Card className="my-4 mx-4 rounded-3xl flex-grow">
+    <Card className=" mx-4 rounded-3xl flex-grow">
       <CardHeader>
         <CardTitle className="text-[#343C6A] font-bold text-xl md:hidden">
           Weekly Activity

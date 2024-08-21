@@ -2,11 +2,11 @@ import React from 'react'
 
 const RecentTransaction = () => {
   return (
-    <div className='my-4 flex flex-col w-full h-full : rounded-3xl md:border bg-[#ffffff]'>
-      <div className='px-4 py-4 '>
+    <div className=' border mx-4 my-4 flex flex-col md:w-[65%] md:ml-8 md:h-full md:px-4 rounded-3xl md:border bg-[#ffffff]'>
+      <div className='px-4 py-4 flex-grow-0'>
         <h1 className="text-[#343C6A] font-bold text-xl md:hidden">Recent Transaction</h1>
         <div className='flex flex-col gap-2 py-4 text-sm  '>
-          <div className='flex gap-5 items-center justify-between mx-2 '>
+          <div className='flex gap-5 items-center justify-between mx-2 my-2'>
             <div className = "flex items-center gap-5">
               <div className="flex items-center rounded-full min-h-12 min-w-12 justify-center  bg-[#FFF5D9]">
               

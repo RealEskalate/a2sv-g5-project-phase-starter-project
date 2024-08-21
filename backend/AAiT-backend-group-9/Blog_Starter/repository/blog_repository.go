@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 	"math"
-
+	"time"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -60,6 +60,7 @@ func (r *BlogRepository) GetBlogByID(ctx context.Context, blogID string) (*domai
 	filter := bson.M{"_id": blogObjectID}
 	var blog domain.Blog
 	err = collection.FindOne(ctx, filter).Decode(&blog)
+	fmt.Println(err)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.New("blog not found")
@@ -114,6 +115,7 @@ func (r *BlogRepository) UpdateBlog(c context.Context, blog *domain.BlogUpdate, 
 	// implementation
 	collection := r.db.Collection(r.blogCollection)
 	blogObjectID, err := primitive.ObjectIDFromHex(blogID)
+	blog.UpdatedAt = time.Now()
 	if err != nil {
 		return nil, errors.New("invalid blog id")
 	}
@@ -123,7 +125,13 @@ func (r *BlogRepository) UpdateBlog(c context.Context, blog *domain.BlogUpdate, 
 	if err != nil {
 		return nil, err
 	}
-	return &domain.Blog{}, nil
+
+	var updatedBlog domain.Blog
+	err = collection.FindOne(c, filter).Decode(&updatedBlog)
+	if err != nil {
+		return nil, err
+	}
+	return &updatedBlog, nil
 }
 
 func (r *BlogRepository) DeleteBlog(c context.Context, blogID string) error {

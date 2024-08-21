@@ -2,20 +2,21 @@ package controller
 
 import (
 	"Blog_Starter/domain"
-	"context"
 	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 )
 
 type BlogCommentController struct {
 	blogCommentUsecase	domain.CommentUseCase
-	ctx          		context.Context
+	timeout				time.Duration
 }
 
-func NewBlogCommentController(blogCommentUseCase domain.CommentUseCase, ctx context.Context) *BlogCommentController {
+func NewBlogCommentController(blogCommentUseCase domain.CommentUseCase, timeout time.Duration) *BlogCommentController {
 	return &BlogCommentController{
 		blogCommentUsecase: blogCommentUseCase,
-		ctx:           ctx,
+		timeout : timeout,
 	}
 }
 
@@ -26,7 +27,7 @@ func (bc *BlogCommentController) CreateComment(c *gin.Context) {
 		return
 	}
 
-	insertedComment, err := bc.blogCommentUsecase.Create(bc.ctx, &createdComment)
+	insertedComment, err := bc.blogCommentUsecase.Create(c, &createdComment)
 	if err != nil {
 		if err.Error() == "comment content too short" {
 			c.IndentedJSON(http.StatusBadRequest,gin.H{"error" : err.Error()})
@@ -40,8 +41,8 @@ func (bc *BlogCommentController) CreateComment(c *gin.Context) {
 }
 
 func (bc *BlogCommentController) DeleteCommment(c *gin.Context) {
-	commentId := c.Param("comment_id")
-	deletedComment, err := bc.blogCommentUsecase.Delete(bc.ctx, commentId)
+	commentId := c.Param("id")
+	deletedComment, err := bc.blogCommentUsecase.Delete(c, commentId)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error" : "internal server error"})
 		return
@@ -57,7 +58,7 @@ func (bc *BlogCommentController) UpdateComment(c *gin.Context) {
 		return
 	}
 
-	returnedComment, err := bc.blogCommentUsecase.Update(bc.ctx, updatedComment.Content, updatedComment.CommentID)
+	returnedComment, err := bc.blogCommentUsecase.Update(c, updatedComment.Content, updatedComment.CommentID)
 	if err != nil {
 		if err.Error() == "content too short" {
 			c.IndentedJSON(http.StatusBadRequest, gin.H{"error" : "comment content too short"})

@@ -19,10 +19,11 @@ type JWTTokenService struct {
 
 func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User) (string, error) {
 	claim := jwt.MapClaims{
-		"id":   user.ID,
-		"role": user.Role,
-		"exp":  time.Now().Add(time.Minute * 15).Unix(),
-		"iat":  time.Now().Unix(),
+		"user_id":  user.ID,
+		"username": user.Username,
+		"role":     user.Role,
+		"exp":      time.Now().Add(time.Minute * 15).Unix(),
+		"iat":      time.Now().Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)

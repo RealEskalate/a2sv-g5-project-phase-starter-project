@@ -28,6 +28,7 @@ type UserController interface {
 	PromoteUser(c *gin.Context)
 	DemoteUser(c *gin.Context)
 	UpdateProfile(c *gin.Context)
+	ImageUpload(c *gin.Context)
 }
 
 type BlogAssistantController interface {

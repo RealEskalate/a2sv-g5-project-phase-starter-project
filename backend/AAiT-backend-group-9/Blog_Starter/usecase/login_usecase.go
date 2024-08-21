@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"Blog_Starter/config"
 	"Blog_Starter/domain"
 	"Blog_Starter/utils"
 	"context"
@@ -30,6 +31,7 @@ func NewLoginUseCase(loginRepository , userRepository domain.UserRepository,toke
 func (l *LoginUseCase) Login(c context.Context, req *domain.UserLogin) (*domain.LoginResponse, error) {
 	ctx, cancel:= context.WithTimeout(c, l.ContextTimeout)
 	defer cancel()
+	env := config.NewEnv()
 	user,err:= l.UserRepository.GetUserByEmail(ctx, req.Email)
 	if err != nil {
 		return nil, err
@@ -41,11 +43,11 @@ func (l *LoginUseCase) Login(c context.Context, req *domain.UserLogin) (*domain.
 	if user.Password!= string(hashedPassword){
 		return nil, fmt.Errorf("password incorrect")
 	}
-	accessToken,err:= l.TokenManager.CreateAccessToken(user,"secret", 1)
+	accessToken,err:= l.TokenManager.CreateAccessToken(user,env.AccessTokenSecret, 1)
 	if err!=nil{
 		return nil, err
 	}
-	refreshToken,err := l.TokenManager.CreateRefreshToken(user, "secret", int(24))
+	refreshToken,err := l.TokenManager.CreateRefreshToken(user, env.RefreshTokenSecret, int(24))
 	if err!=nil{
 		return nil, err
 	}

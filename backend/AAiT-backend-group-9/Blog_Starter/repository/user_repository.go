@@ -120,7 +120,18 @@ func (u *UserRepository) GetUserByID(c context.Context, userID string) (*domain.
 
 // UpdatePassword implements domain.UserRepository.
 func (u *UserRepository) UpdatePassword(c context.Context, password string, userID string) (*domain.User, error) {
-	panic("unimplemented")
+	collection:= u.database.Collection(u.collection)
+	hexId, err := primitive.ObjectIDFromHex(userID)
+	if err!=nil{
+		return nil,err
+	}
+	filter:= bson.M{"_id": hexId }
+	update:= bson.M{"password": password}
+	_,err= collection.UpdateOne(c,filter, update)
+	if err!=nil{
+		return nil, err
+	}
+	return u.GetUserByID(c,userID)
 }
 
 // UpdateProfile implements domain.UserRepository.
@@ -179,7 +190,18 @@ func (u *UserRepository) UpdateProfilePicture(c context.Context, profilePicPath 
 
 // UpdateToken implements domain.UserRepository.
 func (u *UserRepository) UpdateToken(c context.Context, accessToken string, refreshToken string, userID string) (*domain.User, error) {
-	panic("unimplemented")
+	collection:= u.database.Collection(u.collection)
+	idHex,err:= primitive.ObjectIDFromHex(userID)
+	if err!=nil{
+		return nil, err
+	}
+	filter:= bson.M{"_id":idHex}
+	update:=bson.M{"access_token":accessToken, "refresh_token": refreshToken}
+	_,err = collection.UpdateOne(c, filter, update)
+	if err!=nil{
+		return nil,err
+	}
+	return u.GetUserByID(c,userID)
 }
 
 // UpdateRole implements domain.UserRepository.

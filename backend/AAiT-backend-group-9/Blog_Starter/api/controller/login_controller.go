@@ -38,20 +38,18 @@ func (lc *LoginController) Login(c *gin.Context){
 	}
 
 	request.Email = strings.ToLower(request.Email)
-	_,err = lc.UserUsecase.GetUserByEmail(c, request.Email)
-	if err !=nil{
-		c.JSON(http.StatusNotFound, gin.H{"error" : "email not found during login"})
-		return
-	}
+	
 
 	loginResponse,err := lc.LoginUsecase.Login(c, &request)
 	if err!=nil{
-		c.JSON(http.StatusInternalServerError, gin.H{"error" : "email or password not found"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
 		return
 	}
 
 
 	// TODO: update tokens using the right method
+	
+
 
 	c.JSON(http.StatusOK, loginResponse)
 

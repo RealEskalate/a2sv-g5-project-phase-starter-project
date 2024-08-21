@@ -66,6 +66,7 @@ type UserUsecase interface {
 	GeneratePasswordResetToken(ctx context.Context, email, resetTokenSecret string, expiryHour int) error
 	ResetPassword(ctx context.Context, resetToken, newPassword, resetTokenSecret string) error
 	LoginUser(ctx context.Context, loginRequest LoginRequest, Env *bootstrap.Env) (LoginResponse, error)
+	PromoteDemote(ctx context.Context, userID primitive.ObjectID, action string) error
 }
 
 type UserRepository interface {
@@ -74,7 +75,8 @@ type UserRepository interface {
 	UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *UpdateRequest) error
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)
-	DeleteRefreshTokenByUserID(ctx context.Context, userID string) error // used in logout
-	StoreResetToken(ctx context.Context, userID string, resetToken string, expiryHour int) error
-	UpdatePassword(ctx context.Context, userID string, newPassword string) error
+	DeleteRefreshTokenByUserID(ctx context.Context, userID primitive.ObjectID) error // used in logout
+	StoreResetToken(ctx context.Context, userID primitive.ObjectID, resetToken string, expiryHour int) error
+	UpdatePassword(ctx context.Context, userID primitive.ObjectID, newPassword string) error
+	PromoteDemote(ctx context.Context, userID primitive.ObjectID, action string) error
 }

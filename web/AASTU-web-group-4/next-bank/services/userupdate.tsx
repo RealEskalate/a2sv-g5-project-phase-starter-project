@@ -1,18 +1,17 @@
-import Cookie from "js-cookie"
+import Cookie from "js-cookie";
 
 // Update User Details - PUT Request
+const token = Cookie.get("accessToken"); // Replace with the actual token
 
 export const updateUserDetails = async (userData: any) => {
   try {
-    const token = Cookie.get("accessToken"); // Replace with the actual token
-
     const response = await fetch(
       "https://bank-dashboard-6acc.onrender.com/user/update",
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, // Include the token in the header
+          Authorization: `Bearer ${token}`, // Include the token in the header
         },
         body: JSON.stringify(userData),
       }
@@ -31,7 +30,6 @@ export const updateUserDetails = async (userData: any) => {
   }
 };
 
-
 export const updatePreference = async (userData: any) => {
   try {
     const response = await fetch(
@@ -40,6 +38,7 @@ export const updatePreference = async (userData: any) => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(userData),
       }

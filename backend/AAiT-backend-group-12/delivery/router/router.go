@@ -13,6 +13,9 @@ import (
 func SetupRouter(port int, routePrefix string, db *mongo.Database, redisClient *redis.Client) {
 	router := gin.Default()
 
+	// serve static assets
+	router.Static("/assets", "./local")
+
 	// auth
 	authRouter := router.Group("/api/" + routePrefix + "/auth")
 	NewAuthRouter(db.Collection(domain.CollectionUsers), authRouter, redisClient)

@@ -29,6 +29,7 @@ type UserUsecase struct {
 	HashString                func(string) (string, domain.CodedError)
 	ValidateHashedString      func(string, string) domain.CodedError
 	VerifyIdToken             func(string, string, string) error
+	DeleteFile                func(string) error
 	ENV                       domain.EnvironmentVariables
 }
 
@@ -51,6 +52,7 @@ func NewUserUsecase(
 	HashString func(string) (string, domain.CodedError),
 	ValidateHashedString func(string, string) domain.CodedError,
 	VerifyIdToken func(string, string, string) error,
+	DeleteFile func(string) error,
 	ENV domain.EnvironmentVariables) *UserUsecase {
 	return &UserUsecase{
 		userRepository:            userRepository,
@@ -67,6 +69,7 @@ func NewUserUsecase(
 		HashString:                HashString,
 		ValidateHashedString:      ValidateHashedString,
 		VerifyIdToken:             VerifyIdToken,
+		DeleteFile:                DeleteFile,
 		ENV:                       ENV,
 	}
 }
@@ -218,6 +221,10 @@ func (u *UserUsecase) OAuthSignup(c context.Context, data *dtos.GoogleResponse, 
 		Username: userCreds.Username,
 		Email:    data.RawData.Email,
 		Password: userCreds.Password,
+		ProfilePicture: dtos.ProfilePicture{
+			FileName: data.RawData.Picture,
+			IsLocal:  false,
+		},
 	}
 
 	// verify ID token with the google API
@@ -453,11 +460,16 @@ func (u *UserUsecase) UpdateUser(c context.Context, requestUsername string, toke
 		return nil, domain.NewError("Invalid phone number: must be informat +XXXXXXXXXX", domain.ERR_BAD_REQUEST)
 	}
 
-	if user.Bio == "" && user.PhoneNumber == "" {
+	if user.Bio == "" && user.PhoneNumber == "" && user.ProfilePicture.FileName == "" {
 		return nil, domain.NewError("No fields to update", domain.ERR_BAD_REQUEST)
 	}
 
-	return u.userRepository.UpdateUser(c, requestUsername, user)
+	res, oldPicture, err := u.userRepository.UpdateUser(c, requestUsername, user)
+	if oldPicture != "" {
+		u.DeleteFile("./local/" + oldPicture)
+	}
+
+	return res, err
 }
 
 /* Promotes the user with the provided username to the `admin` role` */

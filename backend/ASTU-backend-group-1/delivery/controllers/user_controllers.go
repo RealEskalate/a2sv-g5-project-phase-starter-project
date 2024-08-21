@@ -31,8 +31,8 @@ func (c *UserController) Register(ctx *gin.Context) {
 
 func (c *UserController) AccountVerification(ctx *gin.Context) {
 	email := ctx.Query("email")
-	token := ctx.Query("pwd")
-	_, err := c.userUsecase.AccountVerification(email, token)
+	token := ctx.Query("token")
+	err := c.userUsecase.AccountVerification(email, token)
 	if err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
@@ -53,12 +53,19 @@ func (c *UserController) ForgetPassword(ctx *gin.Context) {
 func (c *UserController) ResetPassword(ctx *gin.Context) {
 	email := ctx.Query("email")
 	token := ctx.Query("token")
-	newpassword := ""
-	if err := ctx.BindJSON(&newpassword); err != nil {
+	newPassword := struct {
+		Password        string `json:"password"`
+		ConfirmPassword string `json:"confirm_password"`
+	}{}
+	if err := ctx.BindJSON(&newPassword); err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	_, err := c.userUsecase.ResetPassword(email, token, newpassword)
+	if newPassword.Password != newPassword.ConfirmPassword {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": "the password and confirm password should be the same"})
+		return
+	}
+	_, err := c.userUsecase.ResetPassword(email, token, newPassword.Password)
 	if err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
@@ -86,15 +93,13 @@ func (c *UserController) LoginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	token, err := c.userUsecase.LoginUser(user.Username, user.Password)
+	access_token, err := c.userUsecase.LoginUser(user.Username, user.Password)
 	if err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, gin.H{"token": token})
+	ctx.IndentedJSON(http.StatusOK, gin.H{"access_token": access_token})
 }
-
-
 
 func (c *UserController) GetUsers(ctx *gin.Context) {
 	username := ctx.Query("username")

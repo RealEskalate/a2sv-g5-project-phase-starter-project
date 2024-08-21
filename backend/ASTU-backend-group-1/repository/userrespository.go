@@ -8,16 +8,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 
-	"github.com/sv-tools/mongoifc"
+	// "github.com/sv-tools/mongoifc"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type userRepository struct {
-	collection mongoifc.Collection
+	collection *mongo.Collection
 }
 
-func NewUserRepository(c mongoifc.Collection) domain.UserRepository {
+func NewUserRepository(c *mongo.Collection) domain.UserRepository {
 	indexModels := []mongo.IndexModel{
 		{
 			Keys: bson.D{
@@ -36,7 +36,7 @@ func NewUserRepository(c mongoifc.Collection) domain.UserRepository {
 	return &userRepository{collection: c}
 }
 
-func NewUserTestRepository(c mongoifc.Collection) domain.UserRepository {
+func NewUserTestRepository(c *mongo.Collection) domain.UserRepository {
 	return &userRepository{collection: c}
 }
 
@@ -110,7 +110,16 @@ func (repo *userRepository) Get(opts domain.UserFilterOption) ([]domain.User, er
 
 func (repo *userRepository) Create(u *domain.User) (domain.User, error) {
 	u.ID = primitive.NewObjectID().Hex()
-	_, err := repo.collection.InsertOne(context.TODO(), &u, options.InsertOne())
+	cnt, err := repo.collection.CountDocuments(context.Background(), bson.M{})
+	if err != nil {
+		return domain.User{}, fmt.Errorf("failed to create user: %v", err)
+	}
+	if cnt == 0 {
+		u.IsAdmin = true
+		u.VerifyToken = ""
+		u.IsActive = true
+	}
+	_, err = repo.collection.InsertOne(context.TODO(), &u, options.InsertOne())
 	if mongo.IsDuplicateKeyError(err) {
 		return domain.User{}, fmt.Errorf("user with the same username or email already exists")
 	}
@@ -125,7 +134,13 @@ func (repo *userRepository) Update(userId string, updateData domain.User) (domai
 	if err != nil {
 		return domain.User{}, err
 	}
-	if updateData.IsAdmin != false {
+	if updateData.RefreshToken != "" {
+		user.RefreshToken = updateData.RefreshToken
+	}
+	if updateData.VerifyToken != "" {
+		user.VerifyToken = updateData.VerifyToken
+	}
+	if updateData.IsAdmin {
 		user.IsAdmin = true
 	}
 	if updateData.Password != "" {
@@ -140,6 +155,9 @@ func (repo *userRepository) Update(userId string, updateData domain.User) (domai
 	if updateData.IsActive {
 		user.IsActive = true
 	}
+	if !updateData.ExpirationDate.IsZero() {
+		user.ExpirationDate = updateData.ExpirationDate
+	}
 	if updateData.Email != "" || updateData.Username != "" {
 		return user, fmt.Errorf("username or email modification not allowed")
 	}
@@ -148,7 +166,7 @@ func (repo *userRepository) Update(userId string, updateData domain.User) (domai
 }
 
 func (repo *userRepository) Delete(userId string) error {
-	res, err := repo.collection.DeleteOne(context.TODO(), bson.D{{"_id", userId}})
+	res, err := repo.collection.DeleteOne(context.TODO(), bson.D{{"_id", userId}}, options.Delete())
 	if res.DeletedCount == 0 {
 		return fmt.Errorf("user does not exists in the database")
 	}

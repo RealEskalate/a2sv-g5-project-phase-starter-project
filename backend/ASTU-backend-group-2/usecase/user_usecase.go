@@ -36,7 +36,7 @@ func (uu *userUsecase) GetUsers(c context.Context, limit int64, page int64) (*[]
 	return nil, mongopagination.PaginationData{}, nil
 }
 
-func (uu *userUsecase) UpdateUser(c context.Context, userID string, updatedUser *domain.UserUpdate) error {
+func (uu *userUsecase) UpdateUser(c context.Context, userID string, updatedUser *domain.User) error {
 	_, err := uu.userRepository.UpdateUser(c, userID, updatedUser)
 	return err
 }

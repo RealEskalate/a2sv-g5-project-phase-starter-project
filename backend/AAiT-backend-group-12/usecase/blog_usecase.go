@@ -18,7 +18,7 @@ type BlogUseCase struct {
 	ENV             domain.EnvironmentVariables
 }
 
-func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration, aiService domain.AIServicesInterface) *BlogUseCase {
+func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration, aiService domain.AIServicesInterface, cacheRepository domain.CacheRepositoryInterface, ENV domain.EnvironmentVariables) *BlogUseCase {
 	return &BlogUseCase{
 		blogRepo:        repo,
 		contextTimeOut:  t,

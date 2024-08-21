@@ -19,7 +19,7 @@ const Contact = () => {
   const onSubmit = async (data: FormValues) => {
     await signIn("credentials", {
       redirect: true,
-      callbackUrl: "/dashboard",
+      // callbackUrl: "/dashboard",
       userName: data.username,
       password: data.password,
     });

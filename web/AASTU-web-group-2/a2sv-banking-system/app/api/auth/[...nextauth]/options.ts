@@ -1,7 +1,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
-import { JWT } from 'next-auth/jwt';
-import { NextAuthOptions, Session } from 'next-auth';
-import { login } from "@/lib/api/authenticationController";
+import { NextAuthOptions } from 'next-auth';
+import { login, refreshToken } from "@/lib/api/authenticationController";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 export const options: NextAuthOptions = {
   session: {
     strategy: "jwt", // Use JWT for session strategy
@@ -20,10 +20,8 @@ export const options: NextAuthOptions = {
         try {
           const response = await login(credentials as { userName: string; password: string });
           if (response.success) {
-            console.log("successful Response");
             return response.data; // Return the user data object
           } else {
-            console.log("DIDN'T GET A SUCCESSFUL RESPONSE");
             return null;
           }
         } catch (error) {
@@ -43,15 +41,30 @@ export const options: NextAuthOptions = {
     // Store the user information in the JWT token
     async jwt({ token, user }: any) {
       if (user) {
-        token.accessToken = user.accessToken;
+        token.access_token = user.access_token;
         token.data = user.data;     // Assuming the user object has a 'name' field
         token.refresh_token = user.refresh_token
       }
+      
+      // Decode the access token to check expiry
+      const decodedToken = jwtDecode<JwtPayload>(token.access_token);
+      const currentTime = Date.now() / 1000;
+
+      if (decodedToken && decodedToken.exp !== undefined && decodedToken.exp < currentTime) {
+        // If the token is expired, refresh it
+        try {
+          const newTokens = await refreshToken(token.refresh_token);
+          token.access_token = newTokens.data;
+        } catch (error) {
+          console.error("Failed to refresh access token:", error);
+        }
+      }
+
       return token;
     },
     // Make custom user data available in the session
     async session({ session, token }: any) {
-      session.user.accessToken = token.accessToken;
+      session.user.access_token = token.access_token;
       session.user.data = token.data;
       session.user.refresh_token = token.refresh_token;
       return session;

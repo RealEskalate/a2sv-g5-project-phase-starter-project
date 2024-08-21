@@ -208,28 +208,6 @@ func (bc *BlogController) RemoveComment(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Comment removed successfully"})
 }
 
-// UpdateFeedback handles updating feedback on a blog
-// func (bc *BlogController) UpdateFeedback(c *gin.Context) {
-// 	blogID := c.Param("id")
-// 	var feedback domain.Feedback
-
-// 	if err := c.ShouldBindJSON(&feedback); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	updateFunc := func(fb *domain.Feedback) error {
-		// *fb = feedback
-// 		return nil
-// 	}
-
-// 	if err := bc.BlogUsecase.UpdateFeedback(c, blogID, updateFunc); err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, gin.H{"message": "Feedback updated successfully"})
-// }
 
 // SearchBlogs handles searching for blogs based on a filter
 func (bc *BlogController) SearchBlogs(c *gin.Context) {

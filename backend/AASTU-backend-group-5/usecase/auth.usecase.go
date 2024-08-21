@@ -18,9 +18,10 @@ type AuthUsecase struct {
 	OAuthSrv      domain.OAuthService
 }
 
-func NewAuthUsecase(authRepo domain.AuthRepository, passwordSrv domain.PasswordService, tokenSrv domain.TokenService, oauthSrv domain.OAuthService) *AuthUsecase {
+func NewAuthUsecase(authRepo domain.AuthRepository,stateRepo domain.StateRepository, passwordSrv domain.PasswordService, tokenSrv domain.TokenService, oauthSrv domain.OAuthService) *AuthUsecase {
 	return &AuthUsecase{
 		AuthRepo:    authRepo,
+        StateRepo:   stateRepo,
 		PasswordSrv: passwordSrv,
 		TokenSrv:    tokenSrv,
 		OAuthSrv:    oauthSrv,

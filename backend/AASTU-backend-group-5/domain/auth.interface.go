@@ -16,7 +16,7 @@ type AuthUsecase interface {
 	LoginUser(string, string) (User, string, string, error)
 	GoogleLogin() (string, error)
 	GoogleCallBack(string, string)(*User, string, string, error)
-	RefreshTokens(refreshToken string) (string, string, error) 
+	RefreshTokens(string) (string, string, error) 
 }
 
 type AuthRepository interface{

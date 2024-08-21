@@ -66,7 +66,7 @@ func (userUC *UserUseCase) RegisterStart(cxt *gin.Context, user *domain.User) do
 		return &domain.CustomError{Message: "Username already exists", Code: http.StatusBadRequest}
 	}
 
-	verificationToken, errVerification := userUC.jwtService.GenerateVerificationToken(user)
+	verificationToken, errVerification := userUC.jwtService.GenerateVerificationToken(*user)
 	if errVerification != nil {
 		return &domain.CustomError{Message: errVerification.Error(), Code: http.StatusInternalServerError}
 	}
@@ -76,7 +76,7 @@ func (userUC *UserUseCase) RegisterStart(cxt *gin.Context, user *domain.User) do
 		VerificationToken: verificationToken,
 	})
 
-	errEmail := userUC.mailService.SendVerificationEmail(user.Email, user.Username, fmt.Sprintf("http://localhost:8080/verify/%s", verificationToken))
+	errEmail := userUC.mailService.SendVerificationEmail(user.Email, user.Username, fmt.Sprintf("http://localhost:8080/user/verify/%s", verificationToken))
 
 	if errEmail != nil {
 		return &domain.CustomError{Message: errEmail.Error(), Code: http.StatusInternalServerError}
@@ -189,25 +189,23 @@ func (userUC *UserUseCase) ForgotPassword(cxt context.Context, email string) dom
 		return errSession
 	}
 
-	if errSession != nil {
-		return errSession
-	}
-
 	if existingCheck {
-		errUpdate := userUC.sessionRepo.UpdateToken(context, existingSession.ID.Hex(), &domain.Session{PasswordResetToken: passwordResetToken})
+		errUpdate := userUC.sessionRepo.UpdateToken(context, existingSession.ID.Hex(), &domain.Session{
+			PasswordResetToken: passwordResetToken,
+			RefreshToken:       "",
+		})
 		if errUpdate != nil {
 			return errUpdate
 		}
-	}
-
-	_, errCreatingToken := userUC.sessionRepo.CreateToken(context, &domain.Session{
-		ID:                 existingUser.ID,
-		Username:           existingSession.Username,
-		PasswordResetToken: passwordResetToken,
-	})
-
-	if errCreatingToken != nil {
-		return errCreatingToken
+	} else {
+		_, errCreatingToken := userUC.sessionRepo.CreateToken(context, &domain.Session{
+			ID:                 existingUser.ID,
+			Username:           existingSession.Username,
+			PasswordResetToken: passwordResetToken,
+		})
+		if errCreatingToken != nil {
+			return errCreatingToken
+		}
 	}
 
 	errEmail := userUC.mailService.SendPasswordResetEmail(email, existingUser.Username, fmt.Sprintf("http://localhost:8080/reset/%s", passwordResetToken))
@@ -303,7 +301,9 @@ func (userUC *UserUseCase) Logout(cxt context.Context, token map[string]string) 
 	}
 
 	if existenceCheck {
-		errDelete := userUC.sessionRepo.DeleteToken(context, existingRefreshToken.ID.Hex())
+		errDelete := userUC.sessionRepo.UpdateToken(context, existingRefreshToken.ID.Hex(), &domain.Session{
+			RefreshToken: "",
+		})
 		if errDelete != nil {
 			return &domain.CustomError{Message: "error while deleting existingSession", Code: http.StatusUnauthorized}
 		}

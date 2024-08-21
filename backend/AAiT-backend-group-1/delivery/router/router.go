@@ -4,7 +4,6 @@ import (
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/infrastructure"
 	"github.com/gin-gonic/gin"
-
 )
 
 func SetupRouter(userController domain.UserController, blogController domain.BlogController, blogAssistantController domain.BlogAssistantController, jwtService domain.JwtService) *gin.Engine {
@@ -41,6 +40,19 @@ func SetupRouter(userController domain.UserController, blogController domain.Blo
 		blogRoutes.POST("/:id/comments", blogController.AddComment)
 		blogRoutes.DELETE("/:id/comments/:comment_id", blogController.DeleteComment)
 		blogRoutes.PUT("/:id/comments/:comment_id", blogController.EditComment)
+	}
+
+	userRoutes := r.Group("/user")
+	{
+		userRoutes.POST("/", userController.Register)
+		userRoutes.GET("/verify/:token", userController.VerifyEmail)
+		userRoutes.POST("/login", userController.Login)
+		userRoutes.POST("/forgot_password", userController.ForgotPassword)
+		userRoutes.POST("/reset/:token", userController.ResetPassword)
+		userRoutes.POST("/logout", userController.Logout)
+		userRoutes.POST("/promote", userController.PromoteUser)
+		userRoutes.POST("/demote", userController.DemoteUser)
+		userRoutes.POST("/update/:id", userController.UpdateProfile)
 	}
 
 	// blog assistant related routes

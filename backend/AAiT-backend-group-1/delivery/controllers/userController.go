@@ -9,10 +9,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type UserController struct {
-	UserUseCase domain.UserUseCase
-}
-
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -29,28 +25,32 @@ type LogoutRequest struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-func NewUserController(userUseCase domain.UserUseCase) *UserController {
-	return &UserController{
+type userController struct {
+	UserUseCase domain.UserUseCase
+}
+
+func NewUserController(userUseCase domain.UserUseCase) domain.UserController {
+	return &userController{
 		UserUseCase: userUseCase,
 	}
 }
 
-func (userController *UserController) Register(cxt *gin.Context) {
+func (userController *userController) Register(cxt *gin.Context) {
 	var registeringUser domain.User
 	errUnmarshal := cxt.ShouldBind(&registeringUser)
 	if errUnmarshal != nil {
-		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errUnmarshal.Error()})
+		cxt.JSON(http.StatusBadRequest, gin.H{"Edrror": errUnmarshal.Error()})
 		return
 	}
 	errCreate := userController.UserUseCase.RegisterStart(cxt, &registeringUser)
 	if errCreate != nil {
-		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errCreate.Error()})
+		cxt.JSON(errCreate.StatusCode(), gin.H{"Errojgr": errCreate.Error()})
 		return
 	}
 	cxt.JSON(http.StatusAccepted, gin.H{"Message": "User verification email sent"})
 }
 
-func (userController *UserController) VerifyEmail(cxt *gin.Context) {
+func (userController *userController) VerifyEmail(cxt *gin.Context) {
 	var token string
 	errUnmarshal := cxt.ShouldBind(&token)
 	if errUnmarshal != nil {
@@ -67,7 +67,7 @@ func (userController *UserController) VerifyEmail(cxt *gin.Context) {
 	cxt.JSON(http.StatusAccepted, gin.H{"Message": "User email verified successfully "})
 }
 
-func (userController *UserController) Login(cxt *gin.Context) {
+func (userController *userController) Login(cxt *gin.Context) {
 	var loginInfo LoginRequest
 	errUnmarshal := cxt.ShouldBind(&loginInfo)
 	if errUnmarshal != nil {
@@ -84,7 +84,7 @@ func (userController *UserController) Login(cxt *gin.Context) {
 	cxt.JSON(http.StatusOK, gin.H{"data": loginResult})
 }
 
-func (userController *UserController) ForgotPassword(cxt *gin.Context) {
+func (userController *userController) ForgotPassword(cxt *gin.Context) {
 	var email string
 	errUnmarshal := cxt.ShouldBind(&email)
 	if errUnmarshal != nil {
@@ -99,7 +99,7 @@ func (userController *UserController) ForgotPassword(cxt *gin.Context) {
 	cxt.JSON(http.StatusOK, gin.H{"Message": fmt.Sprintf("Reset link have been sent to the email %v", email)})
 }
 
-func (userController *UserController) ResetPassword(cxt *gin.Context) {
+func (userController *userController) ResetPassword(cxt *gin.Context) {
 	var resetInfo ResetPasswordRequest
 	errUnmarshal := cxt.ShouldBind(&resetInfo)
 	if errUnmarshal != nil {
@@ -120,7 +120,7 @@ func (userController *UserController) ResetPassword(cxt *gin.Context) {
 
 }
 
-func (userController *UserController) Logout(cxt *gin.Context) {
+func (userController *userController) Logout(cxt *gin.Context) {
 	var logoutInfo LogoutRequest
 	errUnmarshal := cxt.ShouldBind(&logoutInfo)
 	if errUnmarshal != nil {
@@ -142,7 +142,7 @@ func (userController *UserController) Logout(cxt *gin.Context) {
 
 }
 
-func (userController *UserController) PromoteUser(cxt *gin.Context) {
+func (userController *userController) PromoteUser(cxt *gin.Context) {
 	var updateID string
 	errUnmarshal := cxt.ShouldBind(&updateID)
 	if errUnmarshal != nil {
@@ -159,7 +159,7 @@ func (userController *UserController) PromoteUser(cxt *gin.Context) {
 	cxt.JSON(http.StatusOK, gin.H{"Message": "User promoted successfully"})
 }
 
-func (userController *UserController) DemoteUser(cxt *gin.Context) {
+func (userController *userController) DemoteUser(cxt *gin.Context) {
 	var updateID string
 	errUnmarshal := cxt.ShouldBind(&updateID)
 	if errUnmarshal != nil {
@@ -176,7 +176,7 @@ func (userController *UserController) DemoteUser(cxt *gin.Context) {
 	cxt.JSON(http.StatusOK, gin.H{"Message": "User demoted successfully"})
 }
 
-func (userController *UserController) UpdateProfile(cxt *gin.Context) {
+func (userController *userController) UpdateProfile(cxt *gin.Context) {
 	var updateInfo domain.User
 	errUnmarshal := cxt.ShouldBind(&updateInfo)
 	if errUnmarshal != nil {

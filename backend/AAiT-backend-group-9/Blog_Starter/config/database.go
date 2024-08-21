@@ -1,44 +1,44 @@
 package config
 
 import (
-	"context"
-	"fmt"
-	"log"
-	"sync"
-	"time"
+    "context"
+    "log"
+    "time"
 
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+    "go.mongodb.org/mongo-driver/mongo"
+    "go.mongodb.org/mongo-driver/mongo/options"
+    "go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
+func NewMongoDatabase(env *Env) *mongo.Client {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
 
-var (
-    mongoClient *mongo.Client
-    once        sync.Once
-)
+    mongodbURI := env.DBUri
 
-// GetMongoClient returns a singleton instance of the MongoDB client.
-func GetClient(uri string, dbName string) (*mongo.Database, error) {
-    var err error
-    once.Do(func() {
-        clientOptions := options.Client().ApplyURI(uri)
-        ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-        defer cancel()
+    clientOptions := options.Client().ApplyURI(mongodbURI)
+    client, err := mongo.Connect(ctx, clientOptions)
+    if err != nil {
+        log.Fatal(err)
+    }
 
-        mongoClient, err = mongo.Connect(ctx, clientOptions)
-        if err != nil {
-            log.Fatal(err)
-        }
+    err = client.Ping(ctx, readpref.Primary())
+    if err != nil {
+        log.Fatal(err)
+    }
 
+    return client
+}
 
-        err = mongoClient.Ping(ctx, nil)
-        if err != nil {
-            log.Fatal(err)
-        }
+func CloseMongoDBConnection(client *mongo.Client) {
+    if client == nil {
+        return
+    }
 
-        fmt.Println("Successfully connected to MongoDB")
-    })
+    err := client.Disconnect(context.TODO())
+    if err != nil {
+        log.Fatal(err)
+    }
 
-    // Replace "your_database" with the name of your database
-    return mongoClient.Database(dbName), err
+    log.Println("Connection to MongoDB closed.")
 }

@@ -9,6 +9,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+type AuthStorage struct {
+	AuthTokenImple
+	AuthUserImple
+}
 type AuthUserImple struct {
 	usercollection *mongo.Collection
 }
@@ -17,15 +21,14 @@ type AuthTokenImple struct {
 	tokencollection *mongo.Collection
 }
 
-func NewAuthUserImple(usercollection *mongo.Collection, ctx context.Context) AuthUserImple {
-	return AuthUserImple{
-		usercollection: usercollection,
-	}
-}
-
-func NewAuthTokenImple(tokencollection *mongo.Collection, ctx context.Context) AuthTokenImple {
-	return AuthTokenImple{
-		tokencollection: tokencollection,
+func NewAuthStorage(usercollection *mongo.Collection, tokencollection *mongo.Collection) auth.AuthRepository {
+	return &AuthStorage{
+		AuthTokenImple: AuthTokenImple{
+			tokencollection: tokencollection,
+		},
+		AuthUserImple: AuthUserImple{
+			usercollection: usercollection,
+		},
 	}
 }
 
@@ -138,23 +141,24 @@ func (au *AuthUserImple) DeleteUser(ctx context.Context, id string) error {
 	return nil
 }
 
-func (at *AuthTokenImple) RegisterToken(ctx context.Context, token string) error {
+func (at *AuthTokenImple) RegisterRefreshToken(ctx context.Context, userId string, token string) error {
 	_, err := at.tokencollection.InsertOne(ctx, token)
 	return err
 }
 
-func (at *AuthTokenImple) GetToken(ctx context.Context, token string) (string, error) {
-	var tk auth.Token
+func (at *AuthTokenImple) GetRefreshToken(ctx context.Context, userId string) (string, error) {
+	var token auth.Token
 
-	filter := bson.D{bson.E{Key: "tokenstring", Value: token}}
-	err := at.tokencollection.FindOne(ctx, filter).Decode(&tk)
+	filter := bson.D{bson.E{Key: "userid", Value: userId}}
+	err := at.tokencollection.FindOne(ctx, filter).Decode(&token)
+
 	if err != nil {
 		return "", err
 	}
-	return tk.TokenString, nil
+	return token.RefreshToken, nil
 }
 
-func (at *AuthTokenImple) DeleteToken(ctx context.Context, token string) error {
+func (at *AuthTokenImple) DeleteRefreshToken(ctx context.Context, token string) error {
 	filter := bson.D{bson.E{Key: "tokenstring"}}
 	result, err := at.tokencollection.DeleteOne(ctx, filter)
 	if err != nil {

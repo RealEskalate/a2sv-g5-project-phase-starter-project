@@ -18,8 +18,9 @@ type User struct {
 }
 
 type Token struct {
-	ID          string `json:"id" bson:"_id"`
-	TokenString string `json:"tokenstring"`
+	ID           string `json:"id" bson:"_id"`
+	UserId       string `json:"userid"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 type LoginForm struct {
@@ -28,23 +29,24 @@ type LoginForm struct {
 }
 
 type AuthRepository interface {
-	CreateUser(ctx context.Context, user User) error
+	CreateUser(ctx context.Context, user User) (string, error)
 	UpdateUser(ctx context.Context, user User) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserByID(ctx context.Context, id string) (User, error)
 	GetUsers(ctx context.Context) ([]User, error)
 	DeleteUser(ctx context.Context, id string) error
-	RegisterToken(ctx context.Context, token string) error
-	GetToken(ctx context.Context, token string) (Token, error)
-	DeleteToken(ctx context.Context, token string) error
+	RegisterRefreshToken(ctx context.Context, userId string, token string) error
+	GetRefreshToken(ctx context.Context, token string) (string, error)
+	DeleteRefreshToken(ctx context.Context, token string) error
 }
 
 type AuthServices interface {
-	Login(ctx context.Context, info LoginForm) (string, error)
-	RegisterUser(ctx context.Context, user User) (string, error)
+	Login(ctx context.Context, info LoginForm) (string, string, error)
+	RegisterUser(ctx context.Context, user User) error
 	UpdateProfile(ctx context.Context, user User) error
-	Activate(userID string, token string)
-	Logout(userID string)
-	GenerateToken(user User) (string, error)
+	Activate(ctx context.Context, userID string, token string) error
+	Logout(ctx context.Context, userID string)
+	GenerateToken(user User, tokentype string) (string, error)
+	GenerateActivateToken(hashedpassword string, updatedat time.Time) (string, error)
 }

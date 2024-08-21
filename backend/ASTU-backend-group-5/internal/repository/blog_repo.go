@@ -48,4 +48,6 @@ type BlogRepository interface {
 
 	GetLikeById(ctx context.Context, likeId string) (*domain.Like, error)
 	GetCommentById(ctx context.Context, commentId string) (*domain.Comment, error)
+
+	FindBlogs(ctx context.Context, filter domain.BlogFilter, page, pageSize int) ([]*domain.Blog, int, error)
 }

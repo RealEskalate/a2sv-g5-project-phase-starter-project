@@ -31,8 +31,8 @@ func (u *UserUsecase) Login(email string, password string) (*domain.User, *domai
 	// if user.Password != hashedPassword {
 	// 	return nil, nil, errors.New("invalid credentials")
 	// }
-	accessToken, err := jwt.GenerateJWT(user.ID.Hex(), user.UserName, user.Email,  user.Role)
-	
+	accessToken, err := jwt.GenerateJWT(user.ID.Hex(), user.UserName, user.Email, user.Role)
+
 	if err != nil {
 		return nil, nil, err
 	}

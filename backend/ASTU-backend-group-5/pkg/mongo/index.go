@@ -1,26 +1,16 @@
 package mongo
 
-// indexModel := mongo.IndexModel{
-//     Keys: bson.D{
-//         {Key: "token", Value: 1},
-//         {Key: "token_type", Value: 1},
-//     },
-//     Options: options.Index().SetUnique(true),
-// }
-// _, err := collection.Indexes().CreateOne(context.Background(), indexModel)
-// if err != nil {
-//     log.Fatal(err)
-// }
+// func (r *mongo.MongoBlogRepository) CreateTextIndex(ctx context.Context) error {
+// 	collection := r.blogsCollection
 
-// // TTL index on expiry
-// ttlIndex := mongo.IndexModel{
-//     Keys:    bson.M{"expiry": 1},
-//     Options: options.Index().SetExpireAfterSeconds(0),
-// }
-// _, err = collection.Indexes().CreateOne(context.Background(), ttlIndex)
-// if err != nil {
-//     log.Fatal(err)
-// }
+// 	indexModel := mongo.IndexModel{
+// 		Keys: bson.D{
+// 			{Key: "title", Value: "text"},   // Index on the title field
+// 			{Key: "content", Value: "text"}, // Index on the content field
+// 			// Add other fields as needed
+// 		},
+// 	}
 
-//index for keywod search
-//db.Blogs.createIndex({ title: "text", content: "text", "tags.name": "text" })
+// 	_, err := collection.Indexes().CreateOne(ctx, indexModel)
+// 	return err
+// }

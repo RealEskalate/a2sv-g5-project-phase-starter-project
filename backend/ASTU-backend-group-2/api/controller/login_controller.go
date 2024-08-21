@@ -2,7 +2,6 @@ package controller
 
 import (
 	"net/http"
-
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
@@ -46,6 +45,9 @@ func (lc *LoginController) Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
+
+	err=lc.LoginUsecase.UpdateRefreshToken(c.Request.Context(), user.ID.Hex(),refreshToken)
+
 
 	loginResponse := domain.LoginResponse{
 		AccessToken:  accessToken,

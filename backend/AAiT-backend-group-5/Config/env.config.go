@@ -19,6 +19,9 @@ type Env struct {
 	MONGO_URI string `mapstructure:"MONGO_URI"`
 	DB_NAME   string `mapstructure:"DB_NAME"`
 
+	ACCESS_TOKEN_EXPIRY_HOUR  int `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
+	REFRESH_TOKEN_EXPIRY_HOUR int `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
+
 	SERVER_ADDRESS  string `mapstructure:"SERVER_ADDRESS"`
 	CONTEXT_TIMEOUT int    `mapstructure:"CONTEXT_TIMEOUT"`
 
@@ -49,7 +52,6 @@ func NewEnv() *Env {
 	viper.BindEnv("SMTP_PASSWORD")
 	viper.BindEnv("SMTP_SENDER_EMAIL")
 	viper.BindEnv("BASE_URL")
-	viper.BindEnv("REDIS_BLOG_KEY")
 	viper.BindEnv("MONGO_URI")
 	viper.BindEnv("DB_NAME")
 	viper.BindEnv("SERVER_ADDRESS")
@@ -59,6 +61,8 @@ func NewEnv() *Env {
 	viper.BindEnv("REDIS_DB_ADDRESS")
 	viper.BindEnv("REDIS_DB_PASSWORD")
 	viper.BindEnv("REDIS_DB")
+	viper.BindEnv("ACCESS_TOKEN_EXPIRY_HOUR")
+	viper.BindEnv("REFRESH_TOKEN_EXPIRY_HOUR")
 
 	env := Env{}
 

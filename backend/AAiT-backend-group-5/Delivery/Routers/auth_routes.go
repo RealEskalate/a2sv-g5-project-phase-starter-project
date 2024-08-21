@@ -24,7 +24,7 @@ func NewAuthenticationRouter(env *config.Env, database mongo.Database, group *gi
 
 	// instantiate login controller
 	LoginController := &controllers.LoginController{
-		LoginUsecase: usecases.NewLoginUsecase(jwt_service, password_service, user_repository, session_repository),
+		LoginUsecase: usecases.NewLoginUsecase(jwt_service, password_service, user_repository, session_repository, *env),
 		Env:          env,
 	}
 

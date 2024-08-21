@@ -68,7 +68,10 @@ func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, *dom
 		existingUser.GoogleSignIn = false
 		err = u.userRepository.UpdateUserToken(existingUser)
 		if err != nil {
-			return nil, errors.New(err.Error())
+			return nil, &domain.CustomError{
+				Message:    err.Error(),
+				StatusCode: 400,
+			}
 		}
 		return &dto.CreatedResponseDto{
 			ID:       existingUser.ID,
@@ -102,7 +105,10 @@ func (uc *AuthUsecase) LoginUser(loginUser *dto.LoginUserDTO) (*dto.TokenRespons
 
 	// Check password
 	if user.GoogleSignIn {
-		return nil, errors.New("please create account")
+		return nil, &domain.CustomError{
+			Message:    "please create account",
+			StatusCode: 400,
+		}
 	}
 	errs := uc.pwdService.CheckPasswordHash(loginUser.Password, user.Password)
 	if !errs {
@@ -247,9 +253,8 @@ func (uc *AuthUsecase) HandleGoogleCallback(userDto *domain.User) (string, strin
 
 	// Handle the user info (e.g., create a new user, login the user, etc.)
 	user, errs := uc.userRepository.GetUserByEmail(userDto.Email)
-	if errs != nil && errs.Error() != "user not found" {
-		fmt.Println(errs.Error())
-		return "", "", errors.New(errs.Error() + "getuserbyemail")
+	if errs != nil && errs.Message != "User not found" {
+		return "", "", errors.New(errs.Message)
 	}
 	if user != nil {
 		if !user.GoogleSignIn {
@@ -257,15 +262,14 @@ func (uc *AuthUsecase) HandleGoogleCallback(userDto *domain.User) (string, strin
 		}
 		accessToken, refreshToken, err := uc.jwtService.GenerateToken(user)
 		if err != nil {
-			return "", "", errors.New(err.Error())
+			return "", "", errors.New(err.Message)
 		}
 		user.AccessToken = accessToken
 		user.RefreshToken = refreshToken
 		err = uc.userRepository.UpdateUserToken(user)
 		if err != nil {
-			fmt.Println(errs.Error())
 
-			return "", "", errors.New(err.Error() + "update user")
+			return "", "", errors.New(err.Message)
 		}
 		return accessToken, refreshToken, nil
 	}

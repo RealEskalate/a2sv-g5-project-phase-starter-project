@@ -22,6 +22,7 @@ type Env struct {
 	AccessTokenSecret           string `mapstructure:"ACCESS_TOKEN_SECRET"`
 	RefreshTokenSecret          string `mapstructure:"REFRESH_TOKEN_SECRET"`
 	GeminiApiKey 				string `mapstructure:"GEMINI_API_KEY"`
+	RedisAddress				string `mapstructure:"REDIS_ADDRESS"`
 }
 
 // NewEnv initializes and returns a new instance of the Env struct.

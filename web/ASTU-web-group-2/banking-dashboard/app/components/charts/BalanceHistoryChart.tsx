@@ -150,7 +150,7 @@ function BalanceHistoryChart() {
 
   if (isLoading) {
     return (
-      <div className="rounded-3xl flex justify-center items-center flex-col flex-initial flex-wrap  bg-white p-5 lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[325px] h-[223px] animate-pulse">
+      <div className="rounded-3xl flex justify-center items-center flex-col flex-initial flex-wrap  bg-white p-5 h-[300px] animate-pulse">
           <div className="flex flex-row gap-2">
             <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
             <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
@@ -162,15 +162,15 @@ function BalanceHistoryChart() {
 
   if (isError) {
     return (
-      <div className="rounded-3xl bg-white md:p-5 p-1 lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[325px] h-[223px]">
+      <div className="balance-history-chart text-[#718EBF] rounded-3xl bg-white  w-full h-[300px] pt-5">
         Ooops! Error loading balance history.
       </div>
     );
   }
 
   return (
-        <div className="balance-history-chart text-[#718EBF] rounded-3xl bg-white  lg:w-[635px] lg:h-[276px] md:w-[423px] md:h-[200px] w-[350px] h-[223px] pt-5">
-            <canvas ref={chartRef} className="flex flex-col" />
+        <div className="balance-history-chart text-[#718EBF] rounded-3xl bg-white  w-full md:h-[300px] h-[250] pt-5 flex justify-center items-center">
+            <canvas ref={chartRef} className=" w-full" />
         </div>
   );
 }

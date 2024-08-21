@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -61,20 +62,20 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
 	deleteUser := func() error {
 		return service.userService.DeleteUser(user.ID.Hex())
 	}
-
+	
 	// Generate a random number between 10000 and 99999 (inclusive).
 	randNum := rand.Intn(99999-10000+1) + 10000
-
+	
 	// Format the code as a 5-digit string with leading zeros.
 	code := fmt.Sprintf("%05d", randNum)
-
+	
 	// Create a new OTP object with the email and code.
 	otp := entities.OTP{
 		Email:      user.Email,
 		Code:       code,
 		Expiration: time.Now().Add(5 * time.Minute),
 	}
-
+	
 	// Retrieve existing OTP for the email
 	oldOtp, err := service.otpService.GetOtpByEmail(user.Email)
 	if err == nil {
@@ -90,18 +91,18 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
 			}
 		}
 		otp.ID = oldOtp.ID
-	} else {
-		otp.ID = primitive.NewObjectID()
-	}
-
-	// Save the new OTP
-	err = service.otpService.SaveOtp(&otp)
-	if err != nil {
-		deleteErr := deleteUser() // Attempt to delete the user
-		if deleteErr != nil {
-			return nil, fmt.Errorf("failed to save OTP and delete user: %v", deleteErr)
+		} else {
+			otp.ID = primitive.NewObjectID()
 		}
-		return nil, err
+		
+		// Save the new OTP
+		err = service.otpService.SaveOtp(&otp)
+		if err != nil {
+			deleteErr := deleteUser() // Attempt to delete the user
+			if deleteErr != nil {
+				return nil, fmt.Errorf("failed to save OTP and delete user: %v", deleteErr)
+			}
+			return nil, err
 	}
 
 	emailContent := `
@@ -135,6 +136,8 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
 		if deleteErr != nil {
 			return nil, fmt.Errorf("failed to send email and delete user: %v", deleteErr)
 		}
+		log.Println("sfsfsdfsfsdfs")
+
 		return nil, err
 	}
 

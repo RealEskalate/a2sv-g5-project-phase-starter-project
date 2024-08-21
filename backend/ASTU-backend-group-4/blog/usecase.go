@@ -104,7 +104,7 @@ func (b *BlogUseCaseImpl) DeleteBlog(ctx context.Context, id, userID string) err
 
 // DeleteComment implements BlogUseCase.
 func (b *BlogUseCaseImpl) DeleteComment(ctx context.Context, id, userID string) error {
-	user, err := b.authRepository.GetUserByUsername(ctx, userID) // TODO: Change to GetUserByID
+	user, err := b.authRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return err
 	}

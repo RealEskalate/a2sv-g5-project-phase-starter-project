@@ -60,7 +60,7 @@ func main() {
 
 	//usecases
 	userUsecase := usecases.NewUserUsecase(userRepo, passSvc, validationSvc, emailSvc, jwtSvc)
-	otpUsecase := usecases.NewOtpUseCase(otpRepo, userRepo, emailSvc, passSvc, "http://localhost:8080")
+	otpUsecase := usecases.NewOtpUseCase(otpRepo, userRepo, emailSvc, passSvc, "http://localhost:8080", validationSvc)
 	blogService := usecases.NewBlogUsecase(blogRepo)
 	// commentService := service.NewCommentService(commentRepo)
 

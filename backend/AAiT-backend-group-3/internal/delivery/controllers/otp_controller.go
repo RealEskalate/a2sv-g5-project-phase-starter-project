@@ -1,10 +1,12 @@
 package controllers
 
 import (
-	"net/http"
-	"context"
-	"AAIT-backend-group-3/internal/usecases"
 	"AAIT-backend-group-3/internal/domain/dtos"
+	"AAIT-backend-group-3/internal/usecases"
+	"context"
+	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 type IOTPController interface {
@@ -37,17 +39,22 @@ func (c *OTPController) ForgotPassword(ctx *gin.Context) {
 }
 
 func (c *OTPController) ResetPassword(ctx *gin.Context) {
+	otp := ctx.Query("otp")
+	if otp == "" {
+		ctx.JSON(400, gin.H{"error": "Missing token"})
+		return
+	}
 	var req dtos.ResetPassword
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	otpEntry, err := c.useCase.ValidateOtp(context.Background(), req.Otp)
+	otpEntry, err := c.useCase.ValidateOtp(context.Background(), otp)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	fmt.Println("NewPassword", req.NewPassword)
 	err = c.useCase.ResetPassword(context.Background(), otpEntry.UserID, req.NewPassword)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

@@ -47,7 +47,6 @@ func (v *ValidationService) ValidateEmail(email string) (bool, error) {
     if !emailRegex.MatchString(email) {
         return false, errors.New("invalid email format")
     }
-
     return true, nil
 }
 

@@ -4,6 +4,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAddCreditCardMutation } from "@/lib/service/CardService";
 import { useSession } from "next-auth/react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 // Define the Zod schema for form validation
 const addCardSchema = z.object({
   cardHolder: z.string().min(1, "Card Holder is required"),
@@ -23,6 +26,8 @@ const AddNewCard = () => {
     resolver: zodResolver(addCardSchema),
   });
   const [addNewCard] = useAddCreditCardMutation();
+  const session = useSession();
+
   const onSubmit = async (data: AddCardFormValues) => {
     const formattedData = {
       balance: data.balance,
@@ -30,25 +35,28 @@ const AddNewCard = () => {
       expiryDate: new Date(data.expiryDate).toISOString(),
       cardType: data.cardType,
     };
-    const session = useSession();
     const accessToken = session.data?.user.accessToken || "";
     const res = await addNewCard({
       ...formattedData,
       passcode: "56789",
       accessToken: accessToken,
     });
-    console.log("res", res);
 
-    // Handle form submission, e.g., send `formattedData` to an API
     if (res && res.data && res.data.id) {
+      // Display success toast
+      toast.success("Card successfully added!");
       // Store the card ID in local storage
-
       console.log("Card ID stored in local storage:", res.data.id);
+    } else {
+      // Handle failure case
+      toast.error("Failed to add card.");
     }
   };
 
   return (
     <div className="w-[730px] h-[440px] ml-290px mt-849px bg-white rounded-[25px]">
+      {/* ToastContainer to display toast messages */}
+      <ToastContainer />
       <p className="pl-[30px] pt-[27px] text-[#718EBF] font-normal text-[16px] leading-[26px]">
         Credit Card generally means a plastic card issued by Scheduled
         Commercial Banks assigned to a Cardholder, with a credit limit, that can

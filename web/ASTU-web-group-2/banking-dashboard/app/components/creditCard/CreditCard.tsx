@@ -129,7 +129,7 @@ const CreditCard = ({
       >
         <p
           className={`font-semibold  ${
-            isHovered ? "text-[20px]" : "text-[22px]"
+            isHovered ? "text-[20px]" : "text-[20px]"
           } max-sm:text-[10px] leading-[26.4px] `}
           style={{ color: textColor }}
           onMouseEnter={() => setIsHovered(true)}

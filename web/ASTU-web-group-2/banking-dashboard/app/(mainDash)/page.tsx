@@ -10,16 +10,17 @@ import SendMoney from "../components/sendMoney/SendMoney";
 import BalanceHistoryChart from "../components/charts/BalanceHistoryChart";
 import { useState, useEffect } from "react";
 import {
-  useGetAllCardsQuery,
+  useGetAllCardInfoQuery,
   useRetiriveCardInfoQuery,
 } from "@/lib/service/CardService";
 
 import { useSession } from "next-auth/react";
-interface card {
+import { useRouter } from "next/navigation";
+export interface card {
   card: string;
   id: string;
 }
-interface CardData {
+export interface CardData {
   id: string;
   cardHolder: string;
   semiCardNumber: string;
@@ -28,22 +29,42 @@ interface CardData {
   expiryDate: string;
 }
 
-const formatCardNumber = (number: string): string => {
+export const formatCardNumber = (number: string): string => {
   return number.replace(/(\d{4})(?=\d)/g, "$1 ");
 };
 
 const page = () => {
-  const session = useSession();
-  const token = session.data?.user.accessToken || "";
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {}, [status, session]);
+  console.log(session, status);
+  if (!session?.user) router.push("/login");
+
   const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
-  console.log(token);
+
+  const token = session?.user.accessToken || "";
+  console.log("accesstoken: ", token);
+
   const {
-    data: allCardsData,
+    data: allCardsDataWithContent,
     isLoading: isLoadingAllCards,
     isError: isErrorAllCards,
-  } = useGetAllCardsQuery({
+  } = useGetAllCardInfoQuery({
     token: token,
+    size: 10,
   });
+
+  useEffect(() => {
+    if (allCardsDataWithContent) {
+      const allCardsData = allCardsDataWithContent.content;
+      if (allCardsData) {
+        setSelectedCardIds(
+          allCardsData.slice(0, 2).map((card: card) => card.id)
+        );
+      }
+    }
+  }, [allCardsDataWithContent]); // This effect runs only when allCardsDataWithContent changes
 
   const {
     data: cardInfoData,
@@ -58,17 +79,6 @@ const page = () => {
       skip: selectedCardIds.length === 0,
     }
   );
-
-  useEffect(() => {
-    if (allCardsData) {
-      setSelectedCardIds(allCardsData.slice(0, 2).map((card: card) => card.id));
-    }
-  }, [allCardsData]);
-
-  useEffect(() => {
-    console.log("All Cards Data:", allCardsData);
-    console.log("Card Info Data:", cardInfoData);
-  }, [allCardsData, cardInfoData]);
 
   if (isLoadingAllCards || isLoadingCardInfo) {
     return (
@@ -87,6 +97,9 @@ const page = () => {
     return <div>Error loading data</div>;
   }
   console.log("ehllo");
+  console.log("the data we want to see: ", allCardsDataWithContent);
+  console.log("the data we don't want to see: ", cardInfoData);
+  const allCardsData = allCardsDataWithContent.content!;
   return (
     <div className="flex flex-col gap-2  pb-5">
       <div className="flex max-sm:flex-col justify-between">

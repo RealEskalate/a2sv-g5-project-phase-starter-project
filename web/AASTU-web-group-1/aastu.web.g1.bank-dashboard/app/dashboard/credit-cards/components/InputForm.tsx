@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cardSchema } from "@/schema";
 import { postCards } from "@/lib/api";
+import { toast } from "sonner";
 
 
 
@@ -25,9 +26,13 @@ const InputForm = () => {
     
     try {
       const updatedForm = {...data,balance:300}
+      console.log(updatedForm);
+      
       await postCards(updatedForm);
+      toast("Card was submitted succesfully")
     } catch (error) {
       console.error("Failed to submit form:", error);
+      toast("Card submission failed")
     }
   };
 

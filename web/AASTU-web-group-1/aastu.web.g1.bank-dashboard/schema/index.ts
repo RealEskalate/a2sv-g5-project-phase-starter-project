@@ -17,9 +17,6 @@ export const formSchema = z.object({
   userName: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
-  }),
   presentAddress: z.string().min(5, {
     message: "Present Address must be at least 5 characters.",
   }),
@@ -71,7 +68,8 @@ export const cardSchema = z.object({
     .max(50, "Name on card must be less than 50 characters"),
     passcode: z
     .string()
-    .regex(/^\d{16}$/, "Card number must be 16 digits"),
+    .min(4,"minimum is 4 characters")
+    .max(6,"maximum is 6 characters"),
   expiryDate: z
     .string()
     .refine((date) => {

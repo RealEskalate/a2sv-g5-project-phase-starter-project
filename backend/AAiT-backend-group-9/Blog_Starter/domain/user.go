@@ -120,13 +120,25 @@ func ValidatePassword(password string) error {
 	return nil
 }
 
+
 // Validate validates the UserSignUp struct
-func (u *UserSignUp) Validate(email, password string) error {
-	if err := ValidateEmail(email); err != nil {
-		return err
-	}
-	if err := ValidatePassword(password); err != nil {
-		return err
-	}
-	return nil
+func (u *UserSignUp) Validate() error {
+    if err := ValidateEmail(u.Email); err != nil {
+        return err
+    }
+    if err := ValidatePassword(u.Password); err != nil {
+        return err
+    }
+    return nil
+}
+
+// Validate validates the UserLogin struct
+func (u *UserLogin) Validate() error {
+    if err := ValidateEmail(u.Email); err != nil {
+        return err
+    }
+    if err := ValidatePassword(u.Password); err != nil {
+        return err
+    }
+    return nil
 }

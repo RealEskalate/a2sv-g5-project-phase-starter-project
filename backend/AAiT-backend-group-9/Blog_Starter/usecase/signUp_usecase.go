@@ -28,6 +28,12 @@ func NewSignUpUsecase(userRepo domain.UserRepository, timeout time.Duration) dom
 func (s *SignupUsecase) CreateUser(c context.Context, user *domain.UserSignUp) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(c, s.contextTimeout)
 	defer cancel()
+
+	user.Email = strings.ToLower(user.Email)
+	err := user.Validate()
+	if err != nil {
+		return nil, err
+	}
 	
 	//TODO: validation check
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -36,7 +42,7 @@ func (s *SignupUsecase) CreateUser(c context.Context, user *domain.UserSignUp) (
 	}
 
 	user.Password = string(hashedPassword)
-	user.Email = strings.ToLower(user.Email)
+	
 
 	userCreate, err := s.userRepo.GetUserByEmail(ctx, user.Email)
 	if err != nil {

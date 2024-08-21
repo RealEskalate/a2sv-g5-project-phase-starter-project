@@ -3,16 +3,27 @@ package service
 import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
+	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
+
+	"github.com/go-redis/redis/v8"
 )
 
 type blogService struct {
 	blogRepository interfaces.BlogRepository
+	redisClient    *redis.Client
+	cacheTTL       time.Duration
 }
 
-func NewBlogService(blogRepository interfaces.BlogRepository) interfaces.BlogService {
-	return &blogService{blogRepository: blogRepository}
+func NewBlogService(blogRepository interfaces.BlogRepository, redisClient *redis.Client, cacheTTL time.Duration) interfaces.BlogService {
+	return &blogService{
+		blogRepository: blogRepository,
+		redisClient:    redisClient,
+		cacheTTL:       cacheTTL,
+	}
 }
 
 func (bs *blogService) CreateBlogPost(blogPost *entities.BlogPost, userId string) (*entities.BlogPost, error) {
@@ -87,9 +98,22 @@ func (bs *blogService) DeleteBlogPost(blogPostId,userId,role string) error {
 	return nil
 }
 
+func (bs *blogService) GetBlogPosts(page, pageSize int, sortBy string) ([]entities.BlogPost, int, error) {
+	cacheKey := fmt.Sprintf("blogposts:page=%d:size=%d:sort=%s", page, pageSize, sortBy)
+	ctx := context.Background()
 
-func (bs *blogService) GetBlogPosts( page, pageSize int, sortBy string) ([]entities.BlogPost, int, error) {
+	// Check if cached data exists
+	cachedData, err := bs.redisClient.Get(ctx, cacheKey).Result()
+	if err == nil {
+		var cachedPosts []entities.BlogPost
+		err := json.Unmarshal([]byte(cachedData), &cachedPosts)
+		if err == nil {
+			totalPosts, _ := bs.blogRepository.CountBlogPosts()
+			return cachedPosts, totalPosts, nil
+		}
+	}
 
+	// If no cache or error, fetch from repository
 	blogPosts, err := bs.blogRepository.GetBlogPosts(page, pageSize, sortBy)
 	if err != nil {
 		return nil, 0, err
@@ -100,24 +124,70 @@ func (bs *blogService) GetBlogPosts( page, pageSize int, sortBy string) ([]entit
 		return nil, 0, err
 	}
 
-	return blogPosts, totalPosts, nil
+	dataToCache, err := json.Marshal(blogPosts)
+	if err == nil {
+		bs.redisClient.Set(ctx, cacheKey, dataToCache, bs.cacheTTL).Err()
+	}
 
+	return blogPosts, totalPosts, nil
 }
 
+
 func (bs *blogService) SearchBlogPosts(criteria string, tags []string, startDate, endDate time.Time) ([]entities.BlogPost, error) {
+	cacheKey := fmt.Sprintf("search:criteria=%s:tags=%v:start=%s:end=%s", criteria, tags, startDate, endDate)
+	ctx := context.Background()
+
+	// Check if cached data exists
+	cachedData, err := bs.redisClient.Get(ctx, cacheKey).Result()
+	if err == nil {
+		var cachedPosts []entities.BlogPost
+		err := json.Unmarshal([]byte(cachedData), &cachedPosts)
+		if err == nil {
+			return cachedPosts, nil
+		}
+	}
+
+	// If no cache or error, fetch from repository
 	blogPosts, err := bs.blogRepository.SearchBlogPosts(criteria, tags, startDate, endDate)
 	if err != nil {
 		return nil, err
 	}
 
+	// Cache the result
+	dataToCache, err := json.Marshal(blogPosts)
+	if err == nil {
+		bs.redisClient.Set(ctx, cacheKey, dataToCache, bs.cacheTTL).Err()
+	}
+
 	return blogPosts, nil
 }
 
-func (s *blogService) FilterBlogPosts(tags []string, dateRange []time.Time, sortBy string) ([]entities.BlogPost, error) {
 
+
+func (s *blogService) FilterBlogPosts(tags []string, dateRange []time.Time, sortBy string) ([]entities.BlogPost, error) {
+	cacheKey := fmt.Sprintf("filter:tags=%v:dateRange=%v:sort=%s", tags, dateRange, sortBy)
+	ctx := context.Background()
+
+	// Check if cached data exists
+	cachedData, err := s.redisClient.Get(ctx, cacheKey).Result()
+	if err == nil {
+		var cachedPosts []entities.BlogPost
+		err := json.Unmarshal([]byte(cachedData), &cachedPosts)
+		if err == nil {
+			return cachedPosts, nil
+		}
+	}
+
+	// If no cache or error, fetch from repository
 	blogPosts, err := s.blogRepository.FilterBlogPosts(tags, dateRange, sortBy)
 	if err != nil {
 		return nil, err
+	}
+
+	// Cache the result
+	dataToCache, err := json.Marshal(blogPosts)
+	if err == nil {
+		s.redisClient.Set(ctx, cacheKey, dataToCache, s.cacheTTL).Err()
 	}
 
 	return blogPosts, nil

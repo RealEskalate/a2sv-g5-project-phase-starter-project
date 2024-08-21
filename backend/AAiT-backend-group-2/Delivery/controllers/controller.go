@@ -23,12 +23,12 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	author := c.GetString("user_id")
+	author := c.GetString("userID")
 	if author == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	err := bc.blogUseCase.CreateBlog(c.Request.Context(), &req, "author")
+	err := bc.blogUseCase.CreateBlog(c.Request.Context(), &req, author)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -87,7 +87,7 @@ func (bc *BlogController) GetBlogByID(c *gin.Context) {
 
 func (bc *BlogController) UpdateBlog(c *gin.Context) {
 	id := c.Param("id")
-	author := c.GetString("user_id")
+	author := c.GetString("userID")
 
 	if author == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -100,7 +100,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	err := bc.blogUseCase.UpdateBlog(c.Request.Context(), &req, "author", id)
+	err := bc.blogUseCase.UpdateBlog(c.Request.Context(), &req, author, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -110,7 +110,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 
 func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	id := c.Param("id")
-	author := c.GetString("user_id")
+	author := c.GetString("userID")
 	role := c.GetString("role")
 
 	if author == "" && (role == "" || role != "admin") {
@@ -124,4 +124,21 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Blog deleted successfully"})
+}
+
+func (bc *BlogController) FilterBlogs(c *gin.Context) {
+	tags:= c.QueryArray("tags")
+	startDate := c.Query("startDate")
+	endDate := c.Query("endDate")
+	sortBy := c.DefaultQuery("sortBy","created_at")
+
+	blogs,err := bc.blogUseCase.FilterBlogs(c.Request.Context(), tags ,startDate,endDate, sortBy)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{
+			"error":err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK,gin.H{"data":blogs})
 }

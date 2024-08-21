@@ -94,3 +94,12 @@ func (u *blogusecase) DeleteBlog(ctx context.Context, author,id string) error {
 	}
 	return u.blogRepo.Delete(ctx,id)
 }
+
+
+func(u *blogusecase) FilterBlogs(ctx context.Context,tags []string, startDate, endDate,sortBy string)  ([]domain.Blog,error) {
+	blogs, err := u.blogRepo.Filter(ctx,tags,startDate,endDate,sortBy)
+	if err != nil {
+		return nil,err
+	}
+	return blogs, nil
+}

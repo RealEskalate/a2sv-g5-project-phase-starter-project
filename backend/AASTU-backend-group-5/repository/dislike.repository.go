@@ -44,7 +44,7 @@ func (DR *DislikeRepository) GetDisLikes(post_id string) ([]domain.DisLike, erro
 func (DR *DislikeRepository) CreateDisLike(user_id string, post_id string) error {
 	userObjectID, err := primitive.ObjectIDFromHex(user_id)
 	if err != nil {
-		return err // Return an error if the conversion fails
+		return err
 	}
 
 	postObjectID, err := primitive.ObjectIDFromHex(post_id)

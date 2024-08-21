@@ -3,6 +3,7 @@ package main
 import (
 	"blog_api/delivery/env"
 	"blog_api/delivery/router"
+	"blog_api/infrastructure/cryptography"
 	initdb "blog_api/infrastructure/db"
 	google_auth "blog_api/infrastructure/oauth"
 	redis_service "blog_api/infrastructure/redis"
@@ -26,7 +27,9 @@ func main() {
 	}
 	database := mongoClient.Database(env.ENV.DB_NAME)
 
-	err = initdb.CreateRootUser(database, env.ENV.ROOT_USERNAME, env.ENV.ROOT_PASSWORD)
+	// create root user
+	hashingService := cryptography.NewHashingService()
+	err = initdb.CreateRootUser(database, env.ENV.ROOT_USERNAME, env.ENV.ROOT_PASSWORD, hashingService)
 	if err != nil {
 		log.Fatal(err.Error())
 		return

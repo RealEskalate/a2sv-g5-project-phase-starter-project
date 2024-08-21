@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"blog_api/domain"
-	ai_service "blog_api/infrastructure/ai"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -14,14 +13,12 @@ import (
 type BlogUseCase struct {
 	blogRepo        domain.BlogRepositoryInterface
 	contextTimeOut  time.Duration
-	aiService       *ai_service.AIService
+	aiService       domain.AIServicesInterface
 	cacheRepository domain.CacheRepositoryInterface
 	ENV             domain.EnvironmentVariables
 }
 
-var _ domain.BlogUseCaseInterface = &BlogUseCase{}
-
-func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration, aiService *ai_service.AIService, cacheRepository domain.CacheRepositoryInterface, ENV domain.EnvironmentVariables) *BlogUseCase {
+func NewBlogUseCase(repo domain.BlogRepositoryInterface, t time.Duration, aiService domain.AIServicesInterface, cacheRepository domain.CacheRepositoryInterface, ENV domain.EnvironmentVariables) *BlogUseCase {
 	return &BlogUseCase{
 		blogRepo:        repo,
 		contextTimeOut:  t,

@@ -13,6 +13,7 @@ type TokenService interface {
 }
 
 type OAuthService interface {
-	VerifyOAuthToken(provider, token string) (string, error)
-	GetUserDataFromProvider(provider, token string) (User, error)
+	GetGoogleLoginURL(string) string
+	HandleGoogleCallback(string) (*User, error)
+	GetState() State
 }

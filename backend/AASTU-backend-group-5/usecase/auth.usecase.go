@@ -1,9 +1,10 @@
 package usecase
 
 import (
-	// "errors"
+	"errors"
 	"fmt"
-	// "time"
+	"strings"
+	"time"
 
 	"github.com/RealEskalate/blogpost/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -11,6 +12,7 @@ import (
 
 type AuthUsecase struct {
 	AuthRepo      domain.AuthRepository
+    StateRepo     domain.StateRepository
 	PasswordSrv   domain.PasswordService
 	TokenSrv      domain.TokenService
 	OAuthSrv      domain.OAuthService
@@ -108,10 +110,51 @@ func (u *AuthUsecase) RefreshTokens(refreshToken string) (string, string, error)
     return newAccessToken, newRefreshToken, nil
 }
 
-// func (u *AuthUsecase) OAuthSignUp(provider, token string) (domain.User, string, string, error) {
-	
-// }
+func (u *AuthUsecase) GoogleLogin() (string, error) {
+	state := u.OAuthSrv.GetState()
+	err := u.StateRepo.InsertState(state)
+	if err != nil {
+		return "", err
+	}
+	return u.OAuthSrv.GetGoogleLoginURL(state.StateID), nil
+}
 
-// func (u *AuthUsecase) OAuthLogin(provider, token string) (domain.User, string, string, error) {
-	
-// }
+func (u *AuthUsecase) GoogleCallBack(stateID, code string) (*domain.User, string, string, error) {
+	state, err := u.StateRepo.GetState(stateID)
+	if err != nil {
+		return nil, "", "", err
+	}
+
+	if time.Now().After(state.ExpiresAT) {
+		return nil, "", "", errors.New("state expired")
+	}
+
+	user, err := u.OAuthSrv.HandleGoogleCallback(code)
+	if err != nil {
+		return nil, "", "", err
+	}
+
+	_, err = u.AuthRepo.FindUserByEmail(user.Email)
+	if err != nil && strings.Contains(err.Error(), "not found"){
+		err = u.AuthRepo.SaveUser(user)
+		if err != nil {
+			return nil, "", "", err
+		}
+	}else if err != nil{
+        return nil, "", "", err
+    }
+
+	accessToken, err := u.TokenSrv.GenerateAccessToken(*user)
+
+	if err != nil {
+		return nil, "", "", err
+	}
+
+	refreshToken, err := u.TokenSrv.GenerateRefreshToken(*user)
+
+	if err != nil {
+		return nil, "", "", err
+	}
+
+	return user, accessToken, refreshToken, nil
+}

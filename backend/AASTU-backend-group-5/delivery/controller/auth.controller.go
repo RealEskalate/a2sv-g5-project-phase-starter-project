@@ -108,4 +108,61 @@ func (ac *AuthController) Refresh() gin.HandlerFunc {
     }
 }
 
+func (ac *AuthController) GoogleLogIn() gin.HandlerFunc{
+    return func (c *gin.Context) {
+        url, err := ac.AuthUsecase.GoogleLogin()
+    
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{
+                "error": "Internal server error",
+            })
+            return
+        }
+    
+        c.Redirect(http.StatusTemporaryRedirect, url)
+    }
+}
+
+
+func (ac *AuthController) GoogleCallBack() gin.HandlerFunc{
+    return func (c *gin.Context) {
+        state := c.Query("state")
+        code := c.Query("code")
+    
+        if state == "" {
+            c.JSON(http.StatusBadRequest, gin.H{
+                "error": "State is required",
+            })
+            return
+        }
+    
+        if code == "" {
+            c.JSON(http.StatusBadRequest, gin.H{
+                "error": "Code is required",
+            })
+            return
+        }
+    
+        user, accessToken, refreshToken, err := ac.AuthUsecase.GoogleCallBack(state, code)
+    
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{
+                "error": err.Error(),
+            })
+            return
+        }
+
+        http.SetCookie(c.Writer, &http.Cookie{
+            Name:     "refresh_token",
+            Value:    refreshToken,
+            Path:     "/",
+            HttpOnly: true,
+        })
+
+        c.JSON(http.StatusOK, gin.H{
+            "user": user,
+            "access_token":  accessToken,
+        })
+    }
+}
 

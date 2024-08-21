@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -37,7 +38,6 @@ func NewProfileRepository(_collection Domain.Collection, token_collection Domain
 func (ps *profileRepository) GetProfile(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
 	ps.mu.RLock()
 	defer ps.mu.RUnlock()
-	
 	if current_user.ID != id {
 		return Domain.OmitedUser{}, errors.New("permission denied"), http.StatusForbidden
 	}
@@ -57,7 +57,6 @@ func (ps *profileRepository) GetProfile(ctx context.Context, id primitive.Object
 func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.ObjectID, user Domain.User, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
 	ps.mu.RLock()
 	defer ps.mu.RUnlock()
-	
 	if current_user.ID != id {
 		return Domain.OmitedUser{}, errors.New("permission denied"), http.StatusForbidden
 	}
@@ -97,9 +96,8 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 	if user.Name != "" {
 		NewUser.Name = user.Name
 	}
+	NewUser.UpdatedAt = time.Now()
 
-	NewUser.UpdatedAt = user.UpdatedAt
-	fmt.Println(id)
 	filter := bson.D{{"_id", id}}
 	update := bson.D{
 		{"$set", bson.D{

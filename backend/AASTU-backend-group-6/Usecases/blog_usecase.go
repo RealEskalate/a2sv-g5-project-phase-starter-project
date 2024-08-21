@@ -3,7 +3,6 @@ package usecases
 import (
 	domain "blogs/Domain"
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -49,14 +48,21 @@ func (b BlogUsecase) CommentOnBlog(user_id string, user_name string, comment dom
 
 // CreateBlog implements domain.BlogRepository.
 func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog, role string) (domain.Blog, error) {
-	blog.CreatedAt = time.Now()
-	blog.UpdatedAt = time.Now()
+	if blog.CreatedAt.IsZero() && blog.UpdatedAt.IsZero() {
+		blog.CreatedAt = time.Now()
+		blog.UpdatedAt = time.Now()
+	}
 	if len(blog.Tags) == 0 {
 		blog.Tags = make([]string, 0)
 	}
 	if len(blog.Comments) == 0 {
 		blog.Comments = make([]domain.Comment, 0)
 	}
+	if blog.Blog_image == "" {
+		blog.Blog_image = "https://media.istockphoto.com/id/922745190/photo/blogging-blog-concepts-ideas-with-worktable.jpg?s=2048x2048&w=is&k=20&c=QNKuhWRD7f0P5hybe28_AHo_Wh6W93McWY157Vmmh4Q="
+	}
+	blog.ViewCount = 0
+	blog.Popularity = 0
 	newBlog, err := b.blogRepository.CreateBlog(user_id, blog, role)
 	if err != nil {
 		return domain.Blog{}, err
@@ -101,9 +107,9 @@ func (b BlogUsecase) FilterBlogsByTag(tags []string, pageNo string, pageSize str
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
+
 	startDate = strings.ReplaceAll(startDate, " ", "+")
 	endDate = strings.ReplaceAll(endDate, " ", "+")
-	// layout := "2006-01-02 15:04:05 -0700"
 	StartDate, err := time.Parse(time.RFC3339, startDate)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
@@ -112,7 +118,7 @@ func (b BlogUsecase) FilterBlogsByTag(tags []string, pageNo string, pageSize str
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
-	fmt.Println(StartDate, EndDate, "/////////////")
+
 	blogs, pagination, err := b.blogRepository.FilterBlogsByTag(tags, PageNo, PageSize, StartDate, EndDate, popularity)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
@@ -197,14 +203,14 @@ func (b BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, pag
 			Status:  400,
 		}
 	}
-	limit, err := strconv.ParseInt(pageSize, 10, 64)
+	PageSize, err := strconv.ParseInt(pageSize, 10, 64)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, domain.ErrorResponse{
 			Message: "invalid page size",
 			Status:  400,
 		}
 	}
-	blogs, pagination, err := b.blogRepository.SearchBlogByTitleAndAuthor(title, author, pageNO, limit, popularity)
+	blogs, pagination, err := b.blogRepository.SearchBlogByTitleAndAuthor(title, author, pageNO, PageSize, popularity)
 
 	if err != nil {
 		return nil, domain.Pagination{}, domain.ErrorResponse{

@@ -72,21 +72,14 @@ func (u *UserUsecase) SignUp(user *models.User) error {
 	if err != nil {
 		return errors.New("can't generate verification token")
 	}
-	verificationLink := fmt.Sprintf("https://localhost:8080/verify-email?token=%s", verificationToken)
+	verificationLink := fmt.Sprintf("http://localhost:8080/auth/verify-email?token=%s", verificationToken)
 
 	user.VerificationToken = verificationToken
 	user.TokenExp = time.Now().Add(24 * time.Hour)
 
-	u.userRepo.UpdateProfile(regUser.ID, user)
+	u.userRepo.UpdateProfile(regUser.ID.Hex(), user)
 
-	subject := "Email Verification"
-	body := fmt.Sprintf(`
-		<h1>Email Verification</h1>
-		<p>To verify your email, you can click on the following link:</p>
-		<a href="%s">Verify email</a>
-	`, verificationLink)
-
-	err = u.emailService.SendVerificationEmail(regUser.Email, subject, body)
+	err = u.emailService.SendVerificationEmail(user.Email, verificationLink)
 	if err != nil {
 		return errors.New(err.Error())
 	}
@@ -96,7 +89,7 @@ func (u *UserUsecase) SignUp(user *models.User) error {
 
 func (u *UserUsecase) Login(user *models.User) (string, string, error) {
 	if _, err := u.validationService.ValidateEmail(user.Email); err != nil {
-		return "", "", err
+		return "", "", errors.New(err.Error())
 	}
 	existingUser, err := u.userRepo.GetUserByEmail(user.Email)
 	if err != nil {
@@ -109,6 +102,11 @@ func (u *UserUsecase) Login(user *models.User) (string, string, error) {
 	accessToken, _ := u.jwtSevices.GenerateAccessToken(existingUser.ID.Hex(), existingUser.Role)
 	refershToken, _ := u.jwtSevices.GenerateRefreshToken(existingUser.ID.Hex(), existingUser.Role)
 
+	existingUser.RefToken = refershToken
+	err = u.userRepo.UpdateProfile(existingUser.ID.Hex(), existingUser)
+	if  err != nil {
+		return "", "", errors.New(err.Error())
+	}
 	return accessToken, refershToken, nil
 }
 
@@ -119,7 +117,7 @@ func (u *UserUsecase) RefreshToken(refreshTok string ) (string, error) {
 	}
 
 	user_id, _ := primitive.ObjectIDFromHex(userId)
-	existingUser, err := u.userRepo.GetUserByID(user_id)
+	existingUser, err := u.userRepo.GetUserByID(user_id.Hex())
 	if err != nil {
 		return "", errors.New("user not found")
 	}
@@ -127,9 +125,7 @@ func (u *UserUsecase) RefreshToken(refreshTok string ) (string, error) {
 	if (existingUser.RefToken != refreshTok) {
 		return "", errors.New("invalid token")
 	}
-
 	accessToken, _ := u.jwtSevices.GenerateAccessToken(existingUser.ID.Hex(), existingUser.Role)
-
 	return accessToken, nil
 }
 
@@ -140,7 +136,7 @@ func (u *UserUsecase) VerifyEmailToken(token string) (string, string, error) {
 	}
 
 	user_id, _ := primitive.ObjectIDFromHex(userId)
-	user, err := u.userRepo.GetUserByID(user_id)
+	user, err := u.userRepo.GetUserByID(user_id.Hex())
 	if err != nil {
 		return "", "", errors.New("invalid or expired token")
 	}
@@ -157,7 +153,7 @@ func (u *UserUsecase) VerifyEmailToken(token string) (string, string, error) {
 	user.TokenExp = time.Time{}
 	user.RefToken = refershToken
 
-	err = u.userRepo.UpdateProfile(user.ID, user)
+	err = u.userRepo.UpdateProfile(user.ID.Hex(), user)
 	if err != nil {
 		return "", "", err
 	}
@@ -166,7 +162,7 @@ func (u *UserUsecase) VerifyEmailToken(token string) (string, string, error) {
 }
 
 func (u *UserUsecase) GetUserByID(userID primitive.ObjectID) (*models.User, error) {
-	return u.userRepo.GetUserByID(userID)
+	return u.userRepo.GetUserByID(userID.Hex())
 }
 
 func (u *UserUsecase) GetUserByEmail(email string) (*models.User, error) {
@@ -184,7 +180,7 @@ func (u *UserUsecase) UpdateProfile(userID primitive.ObjectID, user *models.User
 	if _, err := u.validationService.ValidateEmail(user.Email); err != nil {
 		return err
 	}
-	return u.userRepo.UpdateProfile(userID, user)
+	return u.userRepo.UpdateProfile(userID.Hex(), user)
 }
 func (u *UserUsecase) PromoteUser(userID primitive.ObjectID) error {
 	return u.userRepo.PromoteUser(userID)

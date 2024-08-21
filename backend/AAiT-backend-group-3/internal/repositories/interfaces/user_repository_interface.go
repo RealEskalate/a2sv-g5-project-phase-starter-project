@@ -7,11 +7,11 @@ import (
 )
 type UserRepositoryInterface interface {
 	SignUp(user *models.User) (*models.User, error)
-	GetUserByID(id primitive.ObjectID) (*models.User, error)
+	GetUserByID(id string) (*models.User, error)
 	GetAllUsers() ([]*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
 	DeleteUser(id primitive.ObjectID) error
-	UpdateProfile(id primitive.ObjectID, user *models.User) error
+	UpdateProfile(id string, user *models.User) error
     PromoteUser(userID primitive.ObjectID) error
     DemoteUser(userID primitive.ObjectID) error
 	UpdatePassword(userID string, hashedPassword string) error

@@ -17,10 +17,9 @@ import {
 
 const Center = () => {
   const { data: session } = useSession();
-  console.log(session, "session");
-  const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyNDE2MzgyMCwiZXhwIjoxNzI0MjUwMjIwfQ.lmocKv2waPGaLomXHYev8fk-G6eviPjD47rfuUk0ffsmtk__kWElrkz1iB2en20g";
+  const accessToken = session?.accessToken as string;
 
+  console.log(session?.accessToken, "token");
   // Update initial card and tran data using the custom hook
   useCardDispatch(accessToken);
   useTranDispatch(accessToken);

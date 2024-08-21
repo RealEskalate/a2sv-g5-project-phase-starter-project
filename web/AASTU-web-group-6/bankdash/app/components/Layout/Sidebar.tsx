@@ -15,6 +15,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/app/Redux/store/store";
 import { toggleDarkMode } from "@/app/Redux/slices/darkModeSlice";
+import { signOut } from "next-auth/react";
 
 const Sidebar = ({
   isOpen,
@@ -152,8 +153,12 @@ const Sidebar = ({
             )}
             <button
               onClick={() => {
-                router.push(item.url);
-                closeSidebar();
+                if (index == 8) {
+                  signOut({ redirect: true, callbackUrl: "/login" });
+                } else {
+                  router.push(item.url);
+                  closeSidebar();
+                }
               }}
               className="flex items-center gap-x-6 relative py-3"
             >

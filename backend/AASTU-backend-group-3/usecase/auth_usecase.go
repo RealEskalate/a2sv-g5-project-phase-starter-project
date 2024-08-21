@@ -2,106 +2,121 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 	"group3-blogApi/domain"
 	"group3-blogApi/infrastracture"
 	"time"
 )
 
+
 func (u *UserUsecase) Login(user *domain.User, deviceID string) (domain.LogInResponse, error) {
-	existingUser, err := u.UserRepo.Login(user)
-	if err != nil {
-		return domain.LogInResponse{}, errors.New("invalid credentials")
-	}
-	if !infrastracture.CheckPasswordHash(user.Password, existingUser.Password) {
-		return domain.LogInResponse{}, errors.New("invalid credentials")
-	}
+    if u.UserRepo == nil {
+        return domain.LogInResponse{}, errors.New("UserRepo is not initialized")
+    }
+    if u.PasswordSvc == nil {
+        return domain.LogInResponse{}, errors.New("PasswordSvc is not initialized")
+    }
+    if u.TokenGen == nil {
+        return domain.LogInResponse{}, errors.New("TokenGen is not initialized")
+    }
 
-	refreshToken, err := infrastracture.GenerateRefreshToken(existingUser)
-	if err != nil {
-		return domain.LogInResponse{}, err
-	}
+    existingUser, err := u.UserRepo.Login(user)
+    if err != nil {
+        return domain.LogInResponse{}, errors.New("invalid credentials")
+    }
 
-	newRefreshToken := domain.RefreshToken{
-		Token:     refreshToken,
-		DeviceID:  deviceID,
-		CreatedAt: time.Now(),
-	}
+    if !u.PasswordSvc.CheckPasswordHash(user.Password, existingUser.Password) {
+        return domain.LogInResponse{}, errors.New("invalid credentials")
+    }
 
-	existingUser.RefreshTokens = append(existingUser.RefreshTokens, newRefreshToken)
+    refreshToken, err := u.TokenGen.GenerateRefreshToken(*existingUser)
+    if err != nil {
+        return domain.LogInResponse{}, err
+    }
 
-	err = u.UserRepo.UpdateUser(existingUser)
-	if err != nil {
-		return domain.LogInResponse{}, err
-	}
+    newRefreshToken := domain.RefreshToken{
+        Token:     refreshToken,
+        DeviceID:  deviceID,
+        CreatedAt: time.Now(),
+    }
 
-	accessToken, err := infrastracture.GenerateToken(*existingUser)
-	if err != nil {
-		return domain.LogInResponse{}, err
-	}
-	LogInResponse := domain.LogInResponse{
-		AccessToken:  accessToken,
-		RefreshToken: newRefreshToken.Token,
-	}
+    existingUser.RefreshTokens = append(existingUser.RefreshTokens, newRefreshToken)
 
-	return LogInResponse, nil
+    err = u.UserRepo.UpdateUser(existingUser)
+    if err != nil {
+        return domain.LogInResponse{}, err
+    }
+
+    accessToken, err := u.TokenGen.GenerateToken(*existingUser)
+    if err != nil {
+        return domain.LogInResponse{}, err
+    }
+
+    return domain.LogInResponse{
+        AccessToken:  accessToken,
+        RefreshToken: newRefreshToken.Token,
+    }, nil
 }
 
-func (au *UserUsecase) Logout(userID, deviceID, token string) error {
-	user, err := au.UserRepo.GetUserByID(userID)
+
+func (u *UserUsecase) Logout(userID, deviceID, token string) error {
+	user, err := u.UserRepo.GetUserByID(userID)
 	if err != nil {
 		return errors.New("user not found")
 	}
+
 	for i, rt := range user.RefreshTokens {
 		if rt.Token == token && rt.DeviceID == deviceID {
 			user.RefreshTokens = append(user.RefreshTokens[:i], user.RefreshTokens[i+1:]...)
-			err = au.UserRepo.UpdateUser(&user)
+			err = u.UserRepo.UpdateUser(&user)
 			if err != nil {
 				return err
 			}
 			return nil
 		}
 	}
+
 	return errors.New("invalid token")
 }
 
-func (au *UserUsecase) LogoutAllDevices(userID string) error {
-	user, err := au.UserRepo.GetUserByID(userID)
+func (u *UserUsecase) LogoutAllDevices(userID string) error {
+	user, err := u.UserRepo.GetUserByID(userID)
 	if err != nil {
 		return errors.New("user not found")
 	}
 	user.RefreshTokens = []domain.RefreshToken{}
-	err = au.UserRepo.UpdateUser(&user)
+	err = u.UserRepo.UpdateUser(&user)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-// logout a specific device with deviceId
-func (au *UserUsecase) LogoutDevice(userID, deviceID string) error {
-	user, err := au.UserRepo.GetUserByID(userID)
+func (u *UserUsecase) LogoutDevice(userID, deviceID string) error {
+	user, err := u.UserRepo.GetUserByID(userID)
 	if err != nil {
 		return errors.New("user not found")
 	}
+
 	for i, rt := range user.RefreshTokens {
 		if rt.DeviceID == deviceID {
 			user.RefreshTokens = append(user.RefreshTokens[:i], user.RefreshTokens[i+1:]...)
-			err = au.UserRepo.UpdateUser(&user)
+			err = u.UserRepo.UpdateUser(&user)
 			if err != nil {
 				return err
 			}
 			return nil
 		}
 	}
+
 	return errors.New("device not found")
 }
 
-func (au *UserUsecase) GetDevices(userID string) ([]string, error) {
-	user, err := au.UserRepo.GetUserByID(userID)
+func (u *UserUsecase) GetDevices(userID string) ([]string, error) {
+	user, err := u.UserRepo.GetUserByID(userID)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}
+
 	var devices []string
 	for _, rt := range user.RefreshTokens {
 		devices = append(devices, rt.DeviceID)
@@ -109,15 +124,15 @@ func (au *UserUsecase) GetDevices(userID string) ([]string, error) {
 	return devices, nil
 }
 
-func (au *UserUsecase) RefreshToken(userID, deviceID, token string) (domain.LogInResponse, error) {
-	user, err := au.UserRepo.GetUserByID(userID)
+func (u *UserUsecase) RefreshToken(userID, deviceID, token string) (domain.LogInResponse, error) {
+	user, err := u.UserRepo.GetUserByID(userID)
 	if err != nil {
 		return domain.LogInResponse{}, errors.New("user not found")
 	}
 
 	for _, rt := range user.RefreshTokens {
 		if rt.Token == token && rt.DeviceID == deviceID {
-			_, tokenErr := infrastracture.RefreshToken(token)
+			_, tokenErr := u.TokenGen.RefreshToken(token)
 			for i, v := range user.RefreshTokens {
 				if v.Token == token {
 					user.RefreshTokens = append(user.RefreshTokens[:i], user.RefreshTokens[i+1:]...)
@@ -126,10 +141,10 @@ func (au *UserUsecase) RefreshToken(userID, deviceID, token string) (domain.LogI
 			}
 			
 			if tokenErr != nil {
-
 				return domain.LogInResponse{}, errors.New("invalid token")
 			}
-			refreshToken, err := infrastracture.GenerateRefreshToken(&user)
+
+			refreshToken, err := u.TokenGen.GenerateRefreshToken(user)
 			if err != nil {
 				return domain.LogInResponse{}, err
 			}
@@ -141,24 +156,27 @@ func (au *UserUsecase) RefreshToken(userID, deviceID, token string) (domain.LogI
 			}
 
 			user.RefreshTokens = append(user.RefreshTokens, newRefreshToken)
-			err = au.UserRepo.UpdateUser(&user)
+			err = u.UserRepo.UpdateUser(&user)
 			if err != nil {
 				return domain.LogInResponse{}, err
 			}
 
-			accessToken, err := infrastracture.GenerateToken(user)
+			accessToken, err := u.TokenGen.GenerateToken(user)
+			if err != nil {
+				return domain.LogInResponse{}, err
+			}
 
 			return domain.LogInResponse{
 				AccessToken:  accessToken,
 				RefreshToken: newRefreshToken.Token,
-			}, err
+			}, nil
 		}
 	}
 
 	return domain.LogInResponse{}, errors.New("invalid token")
 }
-func (au *UserUsecase) Register(user domain.User) error {
 
+func (u *UserUsecase) Register(user domain.User) error {
 	if user.Username == "" || user.Email == "" || user.Password == "" {
 		return errors.New("all fields are required")
 	}
@@ -171,8 +189,7 @@ func (au *UserUsecase) Register(user domain.User) error {
 		return errors.New("password must contain at least one uppercase letter, one lowercase letter, one digit, one special character and minimum length of 8 characters")
 	}
 
-	_, err := au.UserRepo.GetUserByUsernameOrEmail(user.Username, user.Email)
-
+	_, err := u.UserRepo.GetUserByUsernameOrEmail(user.Username, user.Email)
 	if err == nil {
 		return errors.New("username or email already exists")
 	}
@@ -180,21 +197,22 @@ func (au *UserUsecase) Register(user domain.User) error {
 	user.Role = "user"
 
 	// Hash password
-	hashedPassword, err := infrastracture.HashPassword(user.Password)
-	token, err2 := infrastracture.GenerateActivationToken()
-
+	hashedPassword, err := u.PasswordSvc.HashPassword(user.Password)
 	if err != nil {
 		return errors.New("could not hash password")
 	}
-	if err2 != nil {
+
+	token, err := infrastracture.GenerateActivationToken()
+	if err != nil {
 		return errors.New("could not generate activation token")
 	}
+
 	user.Password = hashedPassword
 	user.ActivationToken = token
 	user.TokenCreatedAt = time.Now()
 
 	// Create user account in the database
-	err = au.UserRepo.Register(user)
+	err = u.UserRepo.Register(user)
 	if err != nil {
 		return err
 	}
@@ -208,21 +226,16 @@ func (au *UserUsecase) Register(user domain.User) error {
 	return nil
 }
 
-func (au *UserUsecase) GetUserByUsernameOrEmail(username, email string) (domain.User, error) {
-	return au.UserRepo.GetUserByUsernameOrEmail(username, email)
+func (u *UserUsecase) GetUserByUsernameOrEmail(username, email string) (domain.User, error) {
+	return u.UserRepo.GetUserByUsernameOrEmail(username, email)
 }
 
-func (au *UserUsecase) AccountActivation(token string, email string) error {
-	return au.UserRepo.AccountActivation(token, email)
+func (u *UserUsecase) AccountActivation(token string, email string) error {
+	return u.UserRepo.AccountActivation(token, email)
 }
 
-
-
-
-// reset password
-
-func (uc *UserUsecase) SendPasswordResetLink(email string) error {
-	user, err := uc.UserRepo.GetUserByEmail(email)
+func (u *UserUsecase) SendPasswordResetLink(email string) error {
+	user, err := u.UserRepo.GetUserByEmail(email)
 	if err != nil {
 		return errors.New("user not found")
 	}
@@ -236,20 +249,22 @@ func (uc *UserUsecase) SendPasswordResetLink(email string) error {
 	user.TokenCreatedAt = time.Now()
 
 	// Save the reset token in the database
-	err = uc.UserRepo.UpdateUser(&user)
+	err = u.UserRepo.UpdateUser(&user)
 	if err != nil {
 		return errors.New("failed to save reset token")
 	}
 
 	// Send the email with the reset link (implement your email logic)
-	
-	infrastracture.SendResetLink(user.Email, resetToken)
+	err = infrastracture.SendResetLink(user.Email, resetToken)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func (uc *UserUsecase) ResetPassword(token, newPassword string) error {
-	user, err := uc.UserRepo.GetUserByResetToken(token)
+func (u *UserUsecase) ResetPassword(token, newPassword string) error {
+	user, err := u.UserRepo.GetUserByResetToken(token)
 	if err != nil {
 		return errors.New("invalid or expired token")
 	}
@@ -258,21 +273,21 @@ func (uc *UserUsecase) ResetPassword(token, newPassword string) error {
 		return errors.New("token has expired")
 	}
 
-	// Update the user's password
-	fmt.Println("newPassword////////////", newPassword)
-	hashedPassword, err  := infrastracture.HashPassword(newPassword)
-	user.Password = hashedPassword
+	hashedPassword, err := u.PasswordSvc.HashPassword(newPassword)
 	if err != nil {
 		return errors.New("could not hash password")
 	}
 
+	user.Password = hashedPassword
 	user.PasswordResetToken = ""
 	user.TokenCreatedAt = time.Time{}
 
-	err = uc.UserRepo.UpdateUser(&user)
+	err = u.UserRepo.UpdateUser(&user)
 	if err != nil {
 		return errors.New("failed to reset password")
 	}
 
 	return nil
 }
+
+

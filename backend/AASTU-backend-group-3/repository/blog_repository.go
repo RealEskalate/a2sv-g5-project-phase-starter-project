@@ -138,13 +138,12 @@ func (bc *MongoBlogRepository) GetBlogs(page, limit int64, sortBy, tag, authorNa
 
     // Add authorName to the filter if provided
     if authorName != "" {
-        filter["authorName"] = authorName
+        filter["autorname"] = authorName
     }
 
     // Set up options for sorting and pagination
     findOptions := options.Find()
 
-    // Sort by the specified field if provided, otherwise default to "createdAt" descending
     if sortBy != "" {
         findOptions.SetSort(bson.D{{Key: sortBy, Value: -1}})
     } else {

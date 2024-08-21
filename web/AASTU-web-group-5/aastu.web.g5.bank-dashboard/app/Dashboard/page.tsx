@@ -1,31 +1,38 @@
 "use client"
 import React from 'react';
-import { RecentTransactionCard } from "./components/RecentTransactionCard";
+import { useSession } from 'next-auth/react';
+
+import RecentTransactionCard from "./components/RecentTransactionCard";
 import { QuickTransferList } from './components/QuickTransferList';
-import { PieChartComponent } from './components/PieChartComponent';
+import PieChartComponent   from './components/PieChartComponent';
 import { BarchartComponent } from './components/BarchartComponent';
 import { LineGraphComponent } from './components/LineGraphComponent';
 import Link from 'next/link';
-import Card from '../components/common/card';
-import Chip_card1 from "@/public/assets/image/Chip_Card1.png";
-import Chip_card3 from "@/public/assets/image/Chip_Card3.png";
+// import Chip_card1 from "@/public/assets/im`age/Chip_Card1.png";
+// import Chip_card3 from "@/public/assets/image/Chip_Card3.png";
 
-const creditCardColor = {
-  cardOne: {
-    cardBgColor: "bg-blue-500 rounded-3xl text-white",
-    bottomBgColor: "flex justify-between p-4 bg-blue-400 rounded-bl-3xl rounded-br-3xl",
-    imageCreditCard: Chip_card1,
-    grayCircleColor: false,
-  },
-  cardThree: {
-    cardBgColor: "bg-white rounded-3xl text-black",
-    bottomBgColor: "",
-    imageCreditCard: Chip_card3,
-    grayCircleColor: true,
-  },
-};
+// const creditCardColor = {
+//   cardOne: {
+//     cardBgColor: "bg-blue-500 rounded-3xl text-white",
+//     bottomBgColor: "flex justify-between p-4 bg-blue-400 rounded-bl-3xl rounded-br-3xl",
+//     imageCreditCard: Chip_card1,
+//     grayCircleColor: false,
+//   },
+//   cardThree: {
+//     cardBgColor: "bg-white rounded-3xl text-black",
+//     bottomBgColor: "",
+//     imageCreditCard: Chip_card3,
+//     grayCircleColor: true,
+//   },
+// };
 
 function Dashboard() {
+
+  const { data: session, status } = useSession();
+
+  const users = session?.user ;
+  console.log(users,111)
+
   return (
     <div className='flex flex-col bg-[#f9f9f9]'>
       {/* Main content */}
@@ -44,15 +51,15 @@ function Dashboard() {
                   </div>
                   <div className='overflow-x-auto mt-4'>
                     <div className='flex gap-4'>
-                      <Card creditCardColor={creditCardColor.cardOne} />
-                      <Card creditCardColor={creditCardColor.cardThree} />
+                      {/* <Card creditCardColor={creditCardColor.cardOne} />
+                      <Card creditCardColor={creditCardColor.cardThree} /> */}
                     </div>
                   </div>
                 </div>
               </div>
               <div className='flex-1 p-4 rounded-lg'>
                 
-                  <RecentTransactionCard/>
+                <RecentTransactionCard/>
                 
               </div>
             </div>

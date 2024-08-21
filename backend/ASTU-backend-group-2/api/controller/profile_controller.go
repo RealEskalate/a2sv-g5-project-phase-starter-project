@@ -37,7 +37,7 @@ func (pc *ProfileController) GetProfile() gin.HandlerFunc {
 func (pc *ProfileController) UpdateProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.Param("id")
-		var user domain.UserUpdate
+		var user domain.User
 		if err := c.ShouldBindJSON(&user); err != nil {
 			c.JSON(400, domain.ErrorResponse{Message: err.Error()})
 			return

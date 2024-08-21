@@ -20,9 +20,8 @@ func NewUserUsecase(userRepository domain.UserRepository, timeout time.Duration)
 	}
 }
 
-func (uu *userUsecase) CreateUser(c context.Context, user *domain.User) error {
-	_, err := uu.userRepository.CreateUser(c, user)
-	return err
+func (uu *userUsecase) CreateUser(c context.Context, user *domain.User) (*domain.User, error) {
+	return uu.userRepository.CreateUser(c, user)
 }
 
 func (uu *userUsecase) GetUserByEmail(c context.Context, email string) (*domain.User, error) {

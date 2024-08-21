@@ -12,17 +12,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// func AuthHandlers(r *gin.Engine, ctrl controller.AuthHandlers) {
-
-// 	r.POST("/login", ctrl.Login())
-// 	r.POST("/logout", ctrl.Logout())
-// 	r.POST("/signup", ctrl.Signup())
-// 	r.POST("/forgot-password", ctrl.ForgotPassword())
-
-// 	r.POST("/reset-password/:id/:token", ctrl.ResetPassword())
-// 	r.GET("verify-email", ctrl.VerifyEmail())
-// }
-
 func NewSignupRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
 	ur := repository.NewUserRepository(*db, domain.CollectionUser)
 	sc := controller.SignupController{

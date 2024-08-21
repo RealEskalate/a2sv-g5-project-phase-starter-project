@@ -11,7 +11,9 @@ type IJWT interface {
 	GenerateAccessToken(userId, role string) (string, error)
 	GenerateRefreshToken(userId, role string) (string, error)
 	ValidateAccessToken(token string) (*jwt.Token, error)
-	ValidateRefreshToken(token string) (*jwt.Token, error)
+	ValidateRefreshToken(token string) (string, error)
+	GenerateVerificationToken(token string) (string, error)
+	ValidateVerificationToken(token string) (string, error)
 }
 
 type JWTService struct{
@@ -69,7 +71,50 @@ func (jwtservice *JWTService) ValidateAccessToken(token string) (*jwt.Token, err
 	return jwtservice.validator(token)
 }
 
-func (jwtservice *JWTService) ValidateRefreshToken(token string) (*jwt.Token, error) {
-	return jwtservice.validator(token)
+func (jwtservice *JWTService) ValidateRefreshToken(token string) (string, error) {
+	Token, err := jwtservice.validator(token)
+	if err != nil {
+		return "", err
+	}	
+
+	claims, ok := Token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", err
+	}
+
+	userId, ok := claims["userId"].(string)
+	if !ok {
+		return "", err
+	}
+
+	return userId, nil
 }
 
+
+func (jwtservice *JWTService) GenerateVerificationToken(userId string) (string, error){
+	claims := jwt.MapClaims{
+		"userId" : userId,
+		"exp": time.Now().Add(time.Minute * 15).Unix(),
+	} 
+	accToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return accToken.SignedString([]byte(jwtservice.secretKey))	
+}
+
+func (jwtservice *JWTService) ValidateVerificationToken(token string) (string, error) {
+	Token, err := jwtservice.validator(token)
+	if err != nil {
+		return "", err
+	}	
+
+	claims, ok := Token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", err
+	}
+
+	userId, ok := claims["userId"].(string)
+	if !ok {
+		return "", err
+	}
+
+	return userId, nil
+}

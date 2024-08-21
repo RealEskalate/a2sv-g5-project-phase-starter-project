@@ -5,7 +5,6 @@ import (
 	"AAIT-backend-group-3/internal/usecases"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 
@@ -27,10 +26,12 @@ func (usecases *UserController) Register(c *gin.Context) {
 		return 
 	}
 	err = usecases.user_usecase.SignUp(user)
+
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		c.JSON(500, gin.H{"error": err.Error()})
+		return 
 	}
-	c.JSON(200, gin.H{"message": "User registered successfully"})
+	c.JSON(200, gin.H{"message":"verification email sent successfully"})
 }
 
 func (usecases *UserController) Login(c *gin.Context) {
@@ -49,11 +50,6 @@ func (usecases *UserController) Login(c *gin.Context) {
 
 
 func (usecases *UserController) RefreshToken(c *gin.Context) {
-    userID, exists := c.Get("userID")
-    if !exists {
-        c.JSON(401, gin.H{"error": "User ID not found in request"})
-        return
-    }
     var request struct {
         RefreshToken string `json:"refresh_token" binding:"required"`
     }
@@ -61,11 +57,26 @@ func (usecases *UserController) RefreshToken(c *gin.Context) {
         c.JSON(400, gin.H{"error": "Refresh token is required"})
         return
     }
-	user_id := userID.(primitive.ObjectID)
-    newAccessToken, err := usecases.user_usecase.RefreshToken(user_id, request.RefreshToken)
+
+    newAccessToken, err := usecases.user_usecase.RefreshToken(request.RefreshToken)
     if err != nil {
         c.JSON(401, gin.H{"error": err.Error()})
         return
     }
     c.JSON(200, gin.H{"access_token": newAccessToken})
+}
+
+func (uc *UserController) VerifyEmail(c *gin.Context) {
+	token := c.Query("token")
+	if token == "" {
+		c.JSON(400, gin.H{"error": "Missing token"})
+		return
+	}
+
+	accTkn, refTkn, err := uc.user_usecase.VerifyEmailToken(token)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Email successfully verified", "access_token": accTkn, "refresh_token":refTkn})
 }

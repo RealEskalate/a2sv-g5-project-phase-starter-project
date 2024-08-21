@@ -4,6 +4,7 @@ import (
 	"AAIT-backend-group-3/internal/delivery/controllers"
 	"AAIT-backend-group-3/internal/delivery/routers"
 	"AAIT-backend-group-3/internal/infrastructures/database"
+	"AAIT-backend-group-3/internal/infrastructures/middlewares"
 	"AAIT-backend-group-3/internal/infrastructures/services"
 	"AAIT-backend-group-3/internal/usecases"
 	"context"
@@ -27,7 +28,7 @@ func main() {
 	dbName := os.Getenv("DB_NAME")
 	secretKey := os.Getenv("SECRET_KEY")
 	smtpPortStr := os.Getenv("SMTP_PORT")
-	userName := os.Getenv("USER_NAME")
+	userName := os.Getenv("USERNAME")
 	smtpHost := os.Getenv("SMTP_HOST")
 	passWord := os.Getenv("PASSWORD")
 	
@@ -45,7 +46,7 @@ func main() {
 	//repositories
 	userRepo := repositories.NewMongoUserRepository(dbClient.Database, "users")
 	otpRepo := repositories.NewMongoOtpRepository(dbClient.Database, "otps")
-	// blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs")
+	blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs")
 	// commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
 
 	//services
@@ -54,26 +55,29 @@ func main() {
 	validationSvc := services.NewValidationService()
 	jwtSvc := services.NewJWTService(secretKey)
 
+	//middlewares
+	authMiddleware := middlewares.NewAuthMiddleware(jwtSvc)
+
 	//usecases
 	userUsecase := usecases.NewUserUsecase(userRepo, passSvc, validationSvc, emailSvc, jwtSvc)
 	otpUsecase := usecases.NewOtpUseCase(otpRepo, userRepo, emailSvc, passSvc, "http://localhost:8080")
-	// blogService := service.NewBlogService(blogRepo)
+	blogService := usecases.NewBlogUsecase(blogRepo)
 	// commentService := service.NewCommentService(commentRepo)
 
 	// controllers
 	userController := controllers.NewUserController(userUsecase)
 	otpController := controllers.NewOTPController(otpUsecase)
-	// blogController := delivery.NewBlogController(blogService)
+	blogController := controllers.NewBlogController(blogService)
 	// commentController := delivery.NewCommentController(commentService)
 
 	router := gin.New()
 	router.Use(gin.Logger())
 
-	// routes
+	// routers
 	routers.CreateUserRouter(router, userController, otpController)
+	routers.CreateBlogRouter(router, blogController, authMiddleware)
 	if err := router.Run(":" + os.Getenv("PORT")); err!= nil{
 		log.Fatal(err)
 	}
-
 	fmt.Println("server connnected")
 }

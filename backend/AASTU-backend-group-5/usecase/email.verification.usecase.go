@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"errors"
+
 	"github.com/RealEskalate/blogpost/config"
 	"github.com/RealEskalate/blogpost/domain"
 	"github.com/RealEskalate/blogpost/infrastructure/emailservices"
@@ -13,14 +15,21 @@ type EmailVUsecase struct{
 	repository.EmailVRepo
 }
 
+func NewEmailVUsecase(user_usecase *UserUseCase , email_repo *repository.EmailVRepo)*EmailVUsecase {
+	return &EmailVUsecase{
+		UserUseCase: *user_usecase,
+		EmailVRepo:* email_repo,
+	}
+}
+
 func (uc *EmailVUsecase) SendVerifyEmail(id string , vuser domain.VerifyEmail) error {
 	user,err := uc.UserRepo.GetUserDocumentByID(id)
 	if err != nil {
 		return err
 	}
 
-	if user.VerificationToken != "" {
-		return nil
+	if user.IsVerified {
+		return errors.New("user already verified")
 	}
 
 	var tokenizer tokenservice.VerifyToken

@@ -11,6 +11,12 @@ type EmailVRepo struct{
 	UserRepository
 }
 
+func NewEmailVRepo(user_repo UserRepository)*EmailVRepo {
+	return &EmailVRepo{
+		UserRepository: user_repo,
+	}
+}
+
 func (repo *EmailVRepo) VerifyUser(id string) error {
 	objID,_ := primitive.ObjectIDFromHex(id) 
 	filter := bson.D{{Key: "_id" , Value: objID}}

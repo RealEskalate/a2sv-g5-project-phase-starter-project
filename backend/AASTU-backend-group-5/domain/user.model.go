@@ -9,7 +9,7 @@ type User struct {
 	ID                primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	UserName          string             `json:"username" bson:"username"`
 	Bio               string             `json:"bio" bson:"bio"`
-	ProfilePicture    Media              `json:"profile_picture" bson:"profile_picture"`
+	ProfilePicture    Media              `json:"profile_picture,omitempty" bson:"profile_picture,omitempty"`
 	Email             string             `json:"email" bson:"email"`
 	Is_Admin          bool               `json:"is_admin" bson:"is_admin"`
 	Password          string             `json:"password,omitempty" bson:"password,omitempty"`
@@ -24,7 +24,7 @@ type ResponseUser struct {
 	ID             string `json:"_id" bson:"_id"`
 	UserName       string `json:"username" bson:"username"`
 	Bio            string `json:"bio" bson:"bio"`
-	ProfilePicture Media  `json:"profile_picture" bson:"profile_picture"`
+	ProfilePicture Media  `json:"profile_picture,omitempty" bson:"profile_picture,omitempty"`
 	Email          string `json:"email" bson:"email"`
 	Is_Admin       bool   `json:"is_admin" bson:"is_admin"`
 }

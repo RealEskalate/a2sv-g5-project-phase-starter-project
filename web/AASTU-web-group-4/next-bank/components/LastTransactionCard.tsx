@@ -57,9 +57,9 @@ const UserIcon = () => (
 // Transaction Card Component
 const TransactionCard: React.FC<{ transaction: Transaction }> = ({ transaction }) => {
   return (
-    <div className="flex flex-col pt-4 md:flex-row gap-4 gap-y-6 w-auto rounded-2xl shadow-none border-none">
+    <div className="flex justify-between flex-col pt-4 md:flex-row gap-4 gap-y-6 w-auto rounded-2xl shadow-none border-none">
       {/* Desktop View */}
-      <div className="hidden lg:flex items-center">
+      <div className="hidden lg:flex items-center ">
         <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-4">
           {transaction.icon}
         </div>

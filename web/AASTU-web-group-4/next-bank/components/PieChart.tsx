@@ -15,11 +15,10 @@ import {
 import { useEffect, useState } from "react"
 
 const chartData = [
-  { category: "Entertainment", amount: 275, fill: "hsl(210, 100%, 40%)" },  // Dim Blue
-  { category: "Shopping", amount: 200, fill: "hsl(120, 100%, 30%)" },       // Dim Green
-  { category: "Groceries", amount: 187, fill: "hsl(30, 100%, 40%)" },       // Dim Orange
-  { category: "Bills", amount: 173, fill: "hsl(0, 80%, 40%)" },             // Dim Red
-  { category: "Other", amount: 90, fill: "hsl(60, 100%, 40%)" },            // Dim Yellow
+  { category: "Entertainment", amount: 375, fill: "#3C4264 " },  // Dim Blue
+  { category: "Shopping", amount: 200, fill: "#FF8900 " },       // Dim Green
+  { category: "Groceries", amount: 387, fill: "#FF00FF " },       // Dim Orange
+  { category: "Bills", amount: 173, fill: "#001BFF " },             // Dim Red
 ]
 
 
@@ -45,11 +44,9 @@ export default function Component() {
     }
     },[])
   return (
-    <Card className=" md:py-20 ">
-      <CardHeader className="items-center pb-0">
-        
-      </CardHeader>
-      <CardContent className="flex-1 pb-0">
+    <Card className=" w-[100%] md:py-14 ">
+
+      <CardContent className=" w-[100%] ">
         <ChartContainer
           className="mx-auto my- max-h-[90%] "
           config={{}}
@@ -64,7 +61,7 @@ export default function Component() {
               nameKey="category"
               cx="50%"
               cy="50%"
-              outerRadius={100}
+              outerRadius={80}
               style={{stroke: "none"}}
               // className="md:"
               labelLine={false}

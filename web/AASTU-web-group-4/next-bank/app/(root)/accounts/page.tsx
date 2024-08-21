@@ -31,7 +31,7 @@ const Accounts = () => {
             </div>
           </div>
           <div className="lg:col-span-3 flex flex-col h-full">
-            <div className="mb-3 flex justify-between items-center text-lg font-semibold">
+            <div className="mb-3 flex justify-between gap-0 md:gap-56 lg:justify-between lg:gap-0  md:justify-start items-center text-lg font-semibold">
               <h2>My Card</h2>
               <a href="/credit-card" className="font-normal self-end">
                 See All

@@ -1,12 +1,16 @@
+import Cookies from "js-cookie";
+
+
 const API_BASE_URL = 'https://bank-dashboard-6acc.onrender.com';
+const token = Cookies.get('accessToken')
 
 // GET /transactions
-export const getAllTransactions = async (accessToken: string) => {
+export const getAllTransactionsss = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/transactions`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.json();
@@ -16,6 +20,19 @@ export const getAllTransactions = async (accessToken: string) => {
   }
 };
 
+
+// GET /transactions
+export const getAllTransactions = async (page:any , size:any) => {
+  const response = await fetch(`${API_BASE_URL}/transactions?page=${page}&size=${size}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.json();}
+
+
+
 // POST /transactions
 export const createTransaction = async (transactionData: any, accessToken: string) => {
   try {
@@ -23,7 +40,7 @@ export const createTransaction = async (transactionData: any, accessToken: strin
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(transactionData),
     });
@@ -70,20 +87,28 @@ export const getTransactionById = async (id: any, accessToken: string) => {
 };
 
 // GET /transactions/random-balance-history
-export const getRandomBalanceHistory = async (accessToken: string) => {
+export const getRandomBalanceHistory = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/transactions/random-balance-history`, {
+    const response = await fetch(`${API_BASE_URL}/transactions/random-balance-history?monthsBeforeFirstTransaction=12`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
+
+    // Check if the response is OK (status code 200-299)
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    // Parse the response JSON
     return response.json();
   } catch (error) {
     console.error('Error fetching random balance history:', error);
     throw error;
   }
 };
+
 
 // GET /transactions/latest-transfers
 export const getLatestTransfers = async (accessToken: string, number: number) => {
@@ -102,12 +127,12 @@ export const getLatestTransfers = async (accessToken: string, number: number) =>
 };
 
 // GET /transactions/incomes
-export const getIncomes = async (accessToken: string) => {
+export const getIncomes = async ( page:any , size:any) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/transactions/incomes`, {
+    const response = await fetch(`${API_BASE_URL}/transactions/incomes?page=${page}&size=${size}`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.json();
@@ -118,12 +143,12 @@ export const getIncomes = async (accessToken: string) => {
 };
 
 // GET /transactions/expenses
-export const getExpenses = async (accessToken: string) => {
+export const getExpenses = async ( page:any , size:any) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/transactions/expenses`, {
+    const response = await fetch(`${API_BASE_URL}/transactions/expenses?page=${page}&size=${size}`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.json();
@@ -139,7 +164,7 @@ export const getBalanceHistory = async (accessToken: string) => {
     const response = await fetch(`${API_BASE_URL}/transactions/balance-history`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.json();

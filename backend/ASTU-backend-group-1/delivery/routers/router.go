@@ -89,13 +89,3 @@ func (gr *MainRouter) GinBlogRouter() {
 	router.Run(":8000")
 }
 
-// func (r *UserRoute) UserRoutes() *gin.RouterGroup {
-// 	ro := gin.Default()
-// 	userrouter := ro.Group("/user")
-// 	userrouter.POST("/register", r.handler.Register)
-// 	userrouter.GET("/verify?email=:email&pwd=:pwd", r.handler.AccountVerification)
-// 	userrouter.POST("/login", r.handler.LoginUser)
-// 	userrouter.GET("/forgetPassword", r.handler.ForgetPassword)
-// 	userrouter.POST("/resetPassword?email=:email&pwd=:pwd", r.handler.ResetPassword)
-// 	return userrouter
-// }

@@ -4,7 +4,12 @@ import RecentTransactionTable from '@/components/RecentTransactionTable/RecentTr
 import { Plus } from 'lucide-react';
 import MyExpence from '@/components/Charts/MyExpence';
 import StoreProvider from '@/providers/StoreProvider';
-export default function page() {
+interface idParamsType{
+  params:{
+    transactionId:string;
+  }
+}
+export default function page({params}:idParamsType) {
   return (
     <div className='flex flex-col gap-5'>
       <div className='flex flex-col lg:flex-row gap-6'>
@@ -31,7 +36,7 @@ export default function page() {
       </div>
       <div>
         <StoreProvider>
-        <RecentTransactionTable />
+        <RecentTransactionTable  />
         </StoreProvider>
       </div>
     </div>

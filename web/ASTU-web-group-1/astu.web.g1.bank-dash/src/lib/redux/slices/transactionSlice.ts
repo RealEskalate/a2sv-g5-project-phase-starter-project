@@ -1,7 +1,6 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { session } from '@/session';
-import { get } from 'http';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from '../api/baseQuery';
+import { TransactionResponseType } from '@/types/transaction.types';
 
 const size = 5;
 
@@ -9,7 +8,7 @@ export const transactionApi = createApi({
   reducerPath: 'transactionApi',
   baseQuery: baseQuery(),
   endpoints: (builder) => ({
-    getAllTransactions: builder.query<void, string>({
+    getAllTransactions: builder.query<TransactionResponseType, string>({
       query: (page) => `/transactions?page=${page}&size=${size}`,
     }),
     getTransactionById: builder.query<void, string>({

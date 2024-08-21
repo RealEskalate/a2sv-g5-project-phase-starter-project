@@ -26,7 +26,7 @@ type PasswordService interface {
 
 type MiddlewareService interface {
 	Authenticate() gin.HandlerFunc
-	Authorize(role string) gin.HandlerFunc
+	Authorize(role ...string) gin.HandlerFunc
 }
 
 type CacheService interface {

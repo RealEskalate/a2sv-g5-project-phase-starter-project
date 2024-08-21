@@ -9,13 +9,6 @@ import (
 func SetupRouter(userController domain.UserController, blogController domain.BlogController, blogAssistantController domain.BlogAssistantController, jwtService domain.JwtService) *gin.Engine {
 	r := gin.Default()
 
-	// Public routes
-	r.POST("/register", userController.Register)
-	r.POST("/login", userController.Login)
-	r.POST("/forgot-password", userController.ForgotPassword)
-	r.POST("/logout", userController.Logout)
-	r.PUT("/update-profile", userController.UpdateProfile)
-
 	// Protected routes
 	authMiddleware := infrastructure.NewMiddlewareService(jwtService)
 	r.Use(authMiddleware.Authenticate())
@@ -49,10 +42,10 @@ func SetupRouter(userController domain.UserController, blogController domain.Blo
 		userRoutes.POST("/login", userController.Login)
 		userRoutes.POST("/forgot_password", userController.ForgotPassword)
 		userRoutes.POST("/reset/:token", userController.ResetPassword)
-		userRoutes.POST("/logout", userController.Logout)
+		userRoutes.POST("/logout", userController.Logout).Use(authMiddleware.Authenticate())
 		userRoutes.POST("/promote", userController.PromoteUser)
 		userRoutes.POST("/demote", userController.DemoteUser)
-		userRoutes.POST("/update/:id", userController.UpdateProfile)
+		userRoutes.POST("/update/:id", userController.UpdateProfile).Use(authMiddleware.Authenticate())
 	}
 
 	// blog assistant related routes

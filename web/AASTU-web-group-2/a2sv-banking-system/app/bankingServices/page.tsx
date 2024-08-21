@@ -5,26 +5,63 @@ import { useRouter } from "next/navigation";
 import InformationCard from './components/InformationCard'
 import BankServiceList from './components/BankServiceList'
 import { getSession } from 'next-auth/react';
+import { IconType } from 'react-icons';
+// import { useRouter } from "next/navigation";
+import { GetCardsResponse, Card as CardType } from "@/types/cardController.Interface";
+
+type DataItem = {
+  heading: string;
+  text: string;
+  headingStyle: string;
+  dataStyle: string;
+};
+
+type Column = {
+  icon: IconType;
+  iconStyle: string;
+  data: DataItem[];
+};
+
+type Data = {
+  access_token: string;
+  data: string;
+  refresh_token: string;
+};
+
+type SessionDataType = {
+  user: Data;
+};
 const Page = () => {
-  const [session, setSession] = useState(false);
+  const [session, setSession] = useState<Data | null>(null);
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [getCard, setGetCards] = useState<CardType[]>();
+  const route = useRouter();
   useEffect(() => {
     const fetchSession = async () => {
-      const sessionData = await getSession();
-      if (sessionData?.user) {
-        console.log("Session Available");
-        setSession(true);
+      const sessionData = (await getSession()) as SessionDataType | null;
+      if (sessionData && sessionData.user) {
+        setSession(sessionData.user);
+      } else {
+        router.push(
+          `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+        );
       }
+      setLoading(false);
     };
 
     fetchSession();
-  }, []);
+  }, [router]);
   // getting the session ends here
-  const router = useRouter();
     
-  if (!session){
-    router.push('./api/auth/signin');
-    
-    return;
+  if (loading) return null; // Don't render anything while loading
+
+
+  if (!session) {
+    router.push(
+      `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+    );
+    return null;
   }
   return (
     <div className='flex-col bg-[#f5f7fa]'>

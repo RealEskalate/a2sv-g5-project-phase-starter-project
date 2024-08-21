@@ -1,7 +1,6 @@
 'use client'
 import {Table,TableBody, TableCell, TableFooter, TableHead,TableHeader,TableRow,} from "@/components/ui/table"
 import {getLoansAll} from '@/lib/loanApies';
-
 import { useState, useEffect, Suspense } from "react";
 
 function Loading(){
@@ -78,6 +77,6 @@ export function TableDemo() {
           </TableFooter>
 
         </Table>
-        ))
+    ))
     
 }

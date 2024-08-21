@@ -17,6 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { useUser } from "@/contexts/UserContext"
 const chartData = [
   { month: "January", desktop: 186 },
   { month: "February", desktop: 305 },
@@ -34,37 +35,46 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export default function Chart2() {
+  const {isDarkMode} = useUser();
   return (
     <div>
-    <Card className="py-3 rounded-3xl border-none">
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <LineChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              top:18,
-            }}
-          >
-            <CartesianGrid vertical={false} strokeDasharray="3 3" strokeWidth={2} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 5)}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) => `$${value}`}
-
-               />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Area
+      <Card
+        className={` ${
+          isDarkMode ? "bg-gray-800 border-none " : "bg-white"
+        } py-3 rounded-3xl`}
+      
+      >
+        <CardContent>
+          <ChartContainer config={chartConfig}>
+            <LineChart
+              accessibilityLayer
+              data={chartData}
+              margin={{
+                top: 18,
+              }}
+            >
+              <CartesianGrid
+                vertical={false}
+                strokeDasharray="3 3"
+                strokeWidth={2}
+              />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickFormatter={(value) => value.slice(0, 5)}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `$${value}`}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Area
                 dataKey="desktop"
                 type="linear"
                 fill="white"
@@ -80,18 +90,17 @@ export default function Chart2() {
                   r: 4,
                 }}
               />
-            <Line
-              dataKey="desktop"
-              type="natural"
-              stroke="#16DBCC"
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
-
+              <Line
+                dataKey="desktop"
+                type="natural"
+                stroke="#16DBCC"
+                strokeWidth={2}
+                dot={false}
+              />
+            </LineChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
     </div>
-  )
+  );
 }

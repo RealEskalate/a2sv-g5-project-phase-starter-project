@@ -43,7 +43,6 @@ func main() {
 	}
 	fmt.Println("Connected to MongoDB!", dbClient.Database.Name())
 
-
 	//services
 	emailSvc := services.NewEmailService(smtpHost, smtpPort, userName, passWord)
 	passSvc := services.NewPasswordService()
@@ -51,11 +50,12 @@ func main() {
 	jwtSvc := services.NewJWTService(secretKey)
 	cacheSvc := services.NewCacheService("localhost:6379", "", 0)
 
+
 	//repositories
 	userRepo := repositories.NewMongoUserRepository(dbClient.Database, "users", cacheSvc)
 	otpRepo := repositories.NewMongoOtpRepository(dbClient.Database, "otps")
-	blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs")
-	// commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
+	blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs", cacheSvc)
+	commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
 
 
 	//middlewares
@@ -65,15 +65,16 @@ func main() {
 	//usecases
 	userUsecase := usecases.NewUserUsecase(userRepo, passSvc, validationSvc, emailSvc, jwtSvc)
 	otpUsecase := usecases.NewOtpUseCase(otpRepo, userRepo, emailSvc, passSvc, "http://localhost:8080", validationSvc)
-	blogService := usecases.NewBlogUsecase(blogRepo, cacheSvc)
-	// commentService := service.NewCommentService(commentRepo)
+	blogService := usecases.NewBlogUsecase(blogRepo)
+	commentService := usecases.NewCommentUsecase(commentRepo)
 
 
 	// controllers
 	userController := controllers.NewUserController(userUsecase)
 	otpController := controllers.NewOTPController(otpUsecase)
 	blogController := controllers.NewBlogController(blogService)
-	// commentController := delivery.NewCommentController(commentService)
+	commentController := controllers.NewCommentController(commentService)
+
 
 	router := gin.New()
 	router.Use(gin.Logger())
@@ -82,8 +83,8 @@ func main() {
 	// routers
 	routers.CreateUserRouter(router, userController, otpController, authMiddleware)
 	routers.CreateBlogRouter(router, blogController, authMiddleware)
+	routers.CreateCommentRouter(router, commentController, authMiddleware)
 	if err := router.Run(":" + os.Getenv("PORT")); err!= nil{
 		log.Fatal(err)
 	}
-	fmt.Println("server connnected")
 }

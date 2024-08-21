@@ -13,7 +13,9 @@ func (u *UserController) LoginUser(ctx *gin.Context) {
 		Email    string `json:"email"`
 		Username string `json:"username"`
 		Password string `json:"password"`
-	}
+	}	
+
+
 
 	err := ctx.ShouldBindJSON(&userData)
 	if err != nil {
@@ -30,6 +32,7 @@ func (u *UserController) LoginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "password is required"})
 		return
 	}
+
 
 	var accessToken, refreshToken string
 	if userData.Email != "" {

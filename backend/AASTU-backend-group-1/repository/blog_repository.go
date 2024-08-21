@@ -3,6 +3,8 @@ package repository
 import (
 	"blogs/domain"
 	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,24 +13,42 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func getCachedUser(cache domain.Cache, key string) (*domain.User, error) {
+	cachedUser, err := cache.GetCache(key)
+	if err != nil {
+		return nil, err
+	}
+
+	var user domain.User
+	err = bson.UnmarshalExtJSON([]byte(cachedUser), true, &user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 type BlogRepository struct {
 	blogCollection    *mongo.Collection
 	viewCollection    *mongo.Collection
 	likeCollection    *mongo.Collection
 	commentCollection *mongo.Collection
+	cache 		   domain.Cache
 }
 
-func NewBlogRepository(database *mongo.Database) domain.BlogRepository {
+func NewBlogRepository(database *mongo.Database, cache domain.Cache) domain.BlogRepository {
 	return &BlogRepository{
 		blogCollection:    database.Collection("blog"),
 		viewCollection:    database.Collection("view"),
 		likeCollection:    database.Collection("like"),
 		commentCollection: database.Collection("comment"),
+		cache: cache,
 	}
 }
 
 // InsertBlog implements domain.BlogRepository.
 func (b *BlogRepository) InsertBlog(blog *domain.Blog) (*domain.Blog, error) {
+	
 	newblog, err := b.blogCollection.InsertOne(context.Background(), blog)
 	if err != nil {
 		return nil, err
@@ -39,6 +59,10 @@ func (b *BlogRepository) InsertBlog(blog *domain.Blog) (*domain.Blog, error) {
 
 // GetBlogByID implements domain.BlogRepository.
 func (b *BlogRepository) GetBlogByID(id string) (*domain.Blog, error) {
+	cacheKey := fmt.Sprintf("blog:%s", id)
+	getCachedUser(b.cache, cacheKey)
+
+
 	blogid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
@@ -48,6 +72,11 @@ func (b *BlogRepository) GetBlogByID(id string) (*domain.Blog, error) {
 	err = b.blogCollection.FindOne(context.Background(), bson.M{"_id": blogid}).Decode(&blog)
 	if err != nil {
 		return nil, err
+	}
+
+	blogJson,err := bson.MarshalExtJSON(blog, true, true)
+	if err == nil {
+		_ = b.cache.SetCache(cacheKey, string(blogJson))
 	}
 
 	return &blog, nil
@@ -78,6 +107,20 @@ func (b *BlogRepository) DeleteBlogByID(id string) error {
 // SearchBlog implements domain.BlogRepository.
 
 func (b *BlogRepository) SearchBlog(title, author string, tags []string) ([]*domain.Blog, error) {
+	//implement caching for search
+	cachekey := fmt.Sprintf("search:%s:%s:%s", title, author, strings.Join(tags, ","))
+	cachedPost , err := b.cache.GetCache(cachekey)
+
+	if err == nil && cachedPost != "" {
+		var blogs []*domain.Blog
+		err = bson.UnmarshalExtJSON([]byte(cachedPost), true, &blogs)
+		if err != nil {
+			return nil, err
+		}
+		return blogs, nil
+	}
+
+	
 	blogs := []*domain.Blog{}
 	filter := bson.M{
 		"$or": []bson.M{
@@ -100,11 +143,32 @@ func (b *BlogRepository) SearchBlog(title, author string, tags []string) ([]*dom
 		}
 		blogs = append(blogs, &blog)
 	}
+
+	blogsJSON, err := bson.MarshalExtJSON(blogs, true, true)
+	if err == nil {
+		_ = b.cache.SetCache(cachekey, string(blogsJSON))
+	}
+
+
+
 	return blogs, nil
 }
 
 // FilterBlog implements domain.BlogRepository.
 func (b *BlogRepository) FilterBlog(tags []string, dateFrom time.Time, dateTo time.Time) ([]*domain.Blog, error) {
+	//implement caching for filter
+	cacheKey := fmt.Sprintf("filter:%s:%s:%s", strings.Join(tags, ","), dateFrom, dateTo)
+	cachedPost , err := b.cache.GetCache(cacheKey)
+
+	if err == nil && cachedPost != "" {
+		var blogs []*domain.Blog
+		err = bson.UnmarshalExtJSON([]byte(cachedPost), true, &blogs)
+		if err != nil {
+			return nil, err
+		}
+		return blogs, nil
+	}
+
 	blogs := []*domain.Blog{}
 	filter := bson.M{
 		"tags": bson.M{"$in": tags},
@@ -123,10 +187,30 @@ func (b *BlogRepository) FilterBlog(tags []string, dateFrom time.Time, dateTo ti
 		}
 		blogs = append(blogs, &blog)
 	}
+
+	blogJSON, err := bson.MarshalExtJSON(blogs, true, true)
+	if err == nil {
+		// Store in cache if marshalling is successful
+		_ = b.cache.SetCache(cacheKey, string(blogJSON))
+	}
+
+
 	return blogs, nil
 }
 
 func (b *BlogRepository) GetBlogsByPopularity(page, limit int, reverse bool) ([]*domain.Blog, error) {
+	cacheKey := fmt.Sprintf("blogs:popularity:page=%d:limit=%d:reverse=%v", page, limit, reverse)
+
+	// Check cache first
+	cachedBlogs, err := b.cache.GetCache(cacheKey)
+	if err == nil && cachedBlogs != "" {
+		var blogs []*domain.Blog
+		err = bson.UnmarshalExtJSON([]byte(cachedBlogs), true, &blogs)
+		if err == nil {
+			return blogs, nil
+		}
+	}
+
 	var blogs []*domain.Blog
 
 	// Calculate how many documents to skip
@@ -138,64 +222,19 @@ func (b *BlogRepository) GetBlogsByPopularity(page, limit int, reverse bool) ([]
 
 	// MongoDB aggregation pipeline with pagination
 	pipeline := mongo.Pipeline{
-		bson.D{
-			{Key: "$lookup", Value: bson.D{
-				{Key: "from", Value: "likes"},
-				{Key: "localField", Value: "_id"},
-				{Key: "foreignField", Value: "blogid"},
-				{Key: "as", Value: "likes"},
-			}},
-		},
-		bson.D{
-			{Key: "$lookup", Value: bson.D{
-				{Key: "from", Value: "views"},
-				{Key: "localField", Value: "_id"},
-				{Key: "foreignField", Value: "blogid"},
-				{Key: "as", Value: "views"},
-			}},
-		},
-		bson.D{
-			{Key: "$lookup", Value: bson.D{
-				{Key: "from", Value: "comments"},
-				{Key: "localField", Value: "_id"},
-				{Key: "foreignField", Value: "blogid"},
-				{Key: "as", Value: "comments"},
-			}},
-		},
-		bson.D{
-			{Key: "$addFields", Value: bson.D{
-				{Key: "likesCount", Value: bson.D{
-					{Key: "$size", Value: bson.D{
-						{Key: "$filter", Value: bson.D{
-							{Key: "input", Value: "$likes"}, // Correct array name from lookup
-							{Key: "as", Value: "like"},
-							{Key: "cond", Value: bson.D{
-								{Key: "$eq", Value: bson.A{"$$like.like", true}}, // Counting only likes with `like: true`
-							}},
-						}},
-					}},
-				}},
-				{Key: "viewsCount", Value: bson.D{
-					{Key: "$size", Value: "$views"}, // Count the number of views
-				}},
-				{Key: "commentsCount", Value: bson.D{
-					{Key: "$size", Value: "$comments"}, // Count the number of comments
-				}},
-			}},
-		},
 		// Add popularityScore field based on weights for views, likes, comments
 		bson.D{
 			{Key: "$addFields", Value: bson.D{
 				{Key: "popularityScore", Value: bson.D{
 					{Key: "$add", Value: bson.A{
-						bson.D{{Key: "$multiply", Value: bson.A{"$viewsCount", 0.5}}},
-						bson.D{{Key: "$multiply", Value: bson.A{"$likesCount", 1}}},
-						bson.D{{Key: "$multiply", Value: bson.A{"$commentsCount", 2}}},
+						bson.D{{Key: "$multiply", Value: bson.A{"$views_count", 0.5}}},
+						bson.D{{Key: "$multiply", Value: bson.A{"$likes_count", 1}}},
+						bson.D{{Key: "$multiply", Value: bson.A{"$comments_count", 2}}},
 					}},
 				}},
 			}},
 		},
-		// Sort by popularity score in descending order
+		// Sort by popularity score
 		bson.D{
 			{Key: "$sort", Value: bson.D{
 				{Key: "popularityScore", Value: sortOrder},
@@ -222,10 +261,30 @@ func (b *BlogRepository) GetBlogsByPopularity(page, limit int, reverse bool) ([]
 		return nil, err
 	}
 
+	// Cache the result
+	blogJSON, err := bson.MarshalExtJSON(blogs, true, true)
+	if err == nil {
+		// Store in cache if marshalling is successful
+		_ = b.cache.SetCache(cacheKey, string(blogJSON))
+	}
+
 	return blogs, nil
 }
 
+
+
 func (b *BlogRepository) GetBlogsByRecent(page, limit int, reverse bool) ([]*domain.Blog, error) {
+	cacheKey := fmt.Sprintf("blogs:recent:page=%d:limit=%d:reverse=%v", page, limit, reverse)
+	cachedPost , err := b.cache.GetCache(cacheKey)
+
+	if err == nil && cachedPost != "" {
+		var blogs []*domain.Blog
+		err = bson.UnmarshalExtJSON([]byte(cachedPost), true, &blogs)
+		if err == nil {
+			return blogs, nil
+		}
+	}
+
 	var blogs []*domain.Blog
 
 	// Calculate the number of documents to skip for pagination
@@ -259,6 +318,13 @@ func (b *BlogRepository) GetBlogsByRecent(page, limit int, reverse bool) ([]*dom
 	// Check if the cursor encountered any errors
 	if err := cursor.Err(); err != nil {
 		return nil, err
+	}
+
+	// Cache the result
+	blogJSON, err := bson.MarshalExtJSON(blogs, true, true)
+	if err == nil {
+		// Store in cache if marshalling is successful
+		_ = b.cache.SetCache(cacheKey, string(blogJSON))
 	}
 
 	return blogs, nil
@@ -305,10 +371,16 @@ func (b *BlogRepository) AddLike(like *domain.Like) error {
 
 // RemoveLike removes a like by blogID and author from the database.
 func (b *BlogRepository) RemoveLike(blogID string, author string) error {
-    filter := bson.M{"blogid": blogID, "user": author}
-    _, err := b.likeCollection.DeleteOne(context.Background(), filter)
-    return err
-}
+	id, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+	  return err
+	}
+	filter := bson.M{"blogid": id, "user": author}
+  
+	_, err = b.likeCollection.DeleteOne(context.Background(), filter)
+	return err
+  }
+  
 
 // AddComment implements domain.BlogRepository.
 func (b *BlogRepository) AddComment(comment *domain.Comment) error {
@@ -319,6 +391,16 @@ func (b *BlogRepository) AddComment(comment *domain.Comment) error {
 //GET Single Blog's Comments
 
 func (b *BlogRepository) GetBlogComments(blogID string) ([]*domain.Comment, error) {
+	cacheKey := fmt.Sprintf("comments:%s", blogID)
+	cachedPost , err := b.cache.GetCache(cacheKey)
+	if err == nil && cachedPost != "" {
+		var comments []*domain.Comment
+		err = bson.UnmarshalExtJSON([]byte(cachedPost), true, &comments)
+		if err == nil {
+			return comments, nil
+		}
+	}
+		
 	blogid, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return nil, err
@@ -337,12 +419,27 @@ func (b *BlogRepository) GetBlogComments(blogID string) ([]*domain.Comment, erro
 		}
 		comments = append(comments, &comment)
 	}
+
+	commentsJSON, err := bson.MarshalExtJSON(comments, true, true)
+	if err == nil {
+		_ = b.cache.SetCache(cacheKey, string(commentsJSON))
+	}
+
 	return comments, nil
 }
 
 // Get likes for specific blog
 
 func (b *BlogRepository) GetBlogLikes(blogID string) ([]*domain.Like, error) {
+	cacheKey := fmt.Sprintf("likes:%s", blogID)
+	cachedLike , err := b.cache.GetCache(cacheKey)
+	if err == nil && cachedLike != "" {
+		var likes []*domain.Like
+		err = bson.UnmarshalExtJSON([]byte(cachedLike), true, &likes)
+		if err == nil {
+			return likes, nil
+		}	
+	}
 	blogid, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return nil, err
@@ -360,6 +457,11 @@ func (b *BlogRepository) GetBlogLikes(blogID string) ([]*domain.Like, error) {
 			return nil, err
 		}
 		likes = append(likes, &like)
+	}
+
+	likesJSON, err := bson.MarshalExtJSON(likes, true, true)
+	if err == nil {
+		_ = b.cache.SetCache(cacheKey, string(likesJSON))
 	}
 	return likes, nil
 }

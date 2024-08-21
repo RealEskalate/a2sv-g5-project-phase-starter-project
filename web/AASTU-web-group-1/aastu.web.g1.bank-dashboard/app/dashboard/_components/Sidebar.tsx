@@ -91,14 +91,17 @@ const Sidebar = () => {
                 className={cn(
                   "flex gap-6 items-center py-1 md:p-3 2xl:px-4 pl-0 justify-center xl:justify-start",
                   {
-                    "border-l-4 bg-nav-focus border-orange-1":
-                      isActive && !isDarkMode,
-                    "border-l-4 bg-gray-800 border-blue-500":
-                      isActive && isDarkMode,
+                    "bg-nav-focus": isActive && !isDarkMode,
+                    "": isActive && isDarkMode,
                     "text-gray-400": !isActive && isDarkMode,
                   }
                 )}
               >
+                <div
+                  className={`${
+                    isActive ? "visible" : "hidden"
+                  } flex w-6 h-[55px] rounded-[32px] bg-[#1814F3] absolute left-[-20px]`}
+                ></div>
                 <Image
                   src={link.icon}
                   alt={link.title}
@@ -106,7 +109,7 @@ const Sidebar = () => {
                   height={20}
                   className={cn({
                     "filter-custom-blue": isActive,
-                    invert: isDarkMode,
+                    "filter-custom-white": !isActive && isDarkMode,
                   })}
                 />
                 <p
@@ -125,7 +128,7 @@ const Sidebar = () => {
       </div>
       <div
         className={cn(
-          "cursor-pointer rounded-full p-3 transition-all duration-500",
+          "cursor-pointer rounded-full p-1 w-[70%] transition-all duration-500",
           isDarkMode ? "hover:bg-gray-800" : "hover:bg-neutral-200"
         )}
       >
@@ -139,10 +142,9 @@ const Sidebar = () => {
             {isLoading ? (
               "Loading..."
             ) : (
-              <div className="flex gap-4 border-b">
+              <div className="flex gap-4">
                 <div className="space-y-1 text-left">
                   <h4 className="text-sm font-medium">{name}</h4>
-                  <p className="text-sm text-muted-foreground">{email}</p>
                 </div>
               </div>
             )}

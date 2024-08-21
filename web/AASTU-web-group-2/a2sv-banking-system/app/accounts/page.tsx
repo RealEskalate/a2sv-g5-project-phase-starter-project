@@ -15,12 +15,12 @@ import { useRouter } from "next/navigation";
 import { getCards } from "@/lib/api/cardController";
 import { Card as CardType } from "@/types/cardController.Interface";
 import { getCurrentUser } from "@/lib/api/userControl";
-import {UserInfo} from "@/types/userInterface";
+import { UserInfo } from "@/types/userInterface";
+import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
 import {
   getTransactionIncomes,
   getTransactionsExpenses,
 } from "@/lib/api/transactionController";
-// import { PaginatedTransactionsResponse } from "@/types/transactionController.interface";
 
 type DataItem = {
   heading: string;
@@ -47,88 +47,67 @@ type SessionDataType = {
 
 const Page = () => {
   const [session, setSession] = useState<Data | null>(null);
+  const [access_token, setAccess_token] = useState("");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [getCard, setGetCards] = useState<CardType[]>();
   const [currentUser, setCurrentUser] = useState<UserInfo>();
   const [income, setIncome] = useState(0);
   const [expense, setExpense] = useState(0);
-  // Getting the session from the server
+
+  // Getting the session from the server and Access Token From Refresh
   useEffect(() => {
     const fetchSession = async () => {
-      const sessionData = (await getSession()) as SessionDataType | null;
-      if (sessionData && sessionData.user) {
-        setSession(sessionData.user);
-      } else {
-        router.push(
-          `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
-        );
+      try {
+        const sessionData = (await getSession()) as SessionDataType | null;
+        setAccess_token(await Refresh());
+        if (sessionData && sessionData.user) {
+          setSession(sessionData.user);
+        } else {
+          router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
+        }
+      } catch (error) {
+        console.error("Error fetching session:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
-
+  
     fetchSession();
   }, [router]);
-
-  // Fetching cards
+  
+  // Combined fetching data to reduce multiple useEffect hooks
   useEffect(() => {
-    const addingData = async () => {
-      if (session?.access_token) {
-        const cardData = await getCards(session?.access_token);
-        console.log("Fetching Complete", cardData.content);
+    const fetchData = async () => {
+      if (!access_token) return;
+  
+      try {
+        // Fetch Cards
+        const cardData = await getCards(access_token);
         setGetCards(cardData.content);
+  
+        // Fetch Balance
+        const currentUser = await getCurrentUser(access_token);
+        setCurrentUser(currentUser);
+  
+        // Fetch Income
+        const incomeData = await getTransactionIncomes(0, 1, access_token);
+        const totalIncome = incomeData.data.content.reduce((sum: number, item: any) => sum + item.amount, 0);
+        setIncome(totalIncome);
+  
+        // Fetch Expense
+        const expenseData = await getTransactionsExpenses(0, 1, access_token);
+        const totalExpense = expenseData.data.content.reduce((sum: number, item: any) => sum + item.amount, 0);
+        setExpense(totalExpense);
+  
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
     };
-    addingData();
-  });
-
-  // Fetching Balance
-  useEffect(() => {
-    const addingData = async () => {
-      if (session?.access_token) {
-        const current = await getCurrentUser(session?.access_token);
-        setCurrentUser(current);
-      }
-    };
-    addingData();
-  });
-
-  // Fetching Income
-  useEffect(() => {
-    const addingData = async () => {
-      if (session?.access_token) {
-        const current = await getTransactionIncomes(
-          0,
-          1,
-          session?.access_token
-        );
-        console.log("INCOME", current.data);
-        current.data.content.map((items: any) => {
-          setIncome(income + items.amount);
-        });
-      }
-    };
-    addingData();
-  });
-
-  // Fetching Expense
-  useEffect(() => {
-    const addingData = async () => {
-      if (session?.access_token) {
-        const current = await getTransactionsExpenses(
-          0,
-          1,
-          session?.access_token
-        );
-        console.log("Expense", current.data);
-        current.data.content.map((items: any) => {
-          setExpense(expense + items.amount);
-        });
-      }
-    };
-    addingData();
-  });
-  // console.log("USER, ", currentUser)
+  
+    fetchData();
+  }, [access_token]);
+  
   // Example data for the first ListCard
   const ReusableCard: Column = {
     icon: MdHome,
@@ -225,7 +204,6 @@ const Page = () => {
     return null;
   }
 
-  console.log("get Card", getCard);
   return (
     <>
       <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5">

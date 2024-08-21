@@ -32,25 +32,25 @@ const Table = <T extends {}>({ columns, data }: TableProps<T>) => {
 
           {/* Table Body */}
           <tbody className="bg-white divide-y divide-[#E6EFF5]">
-            {data.map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {columns.map((column, colIndex) => (
-                  <td
-                    key={colIndex}
-                    className={`px-6 py-4 whitespace-nowrap font-normal text-xs sm:text-sm ${
-                      column.accessor === 'description' || column.accessor === 'amount'
-                        ? ''
-                        : 'hidden sm:table-cell' // Hide columns on small screens
-                    }`}
-                  >
-                    {column.Cell
-                      ? column.Cell(row)
-                      : (row[column.accessor] as unknown as React.ReactNode)}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
+  {(data || []).map((row, rowIndex) => (
+    <tr key={rowIndex}>
+      {columns.map((column, colIndex) => (
+        <td
+          key={colIndex}
+          className={`px-6 py-4 whitespace-nowrap font-normal text-xs sm:text-sm ${
+            column.accessor === 'description' || column.accessor === 'amount'
+              ? ''
+              : 'hidden sm:table-cell' 
+          }`}
+        >
+          {column.Cell
+            ? column.Cell(row)
+            : (row[column.accessor] as unknown as React.ReactNode)}
+        </td>
+      ))}
+    </tr>
+  ))}
+</tbody>
         </table>
       </div>
     </div>

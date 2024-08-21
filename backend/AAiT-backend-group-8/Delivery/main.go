@@ -4,44 +4,47 @@ import (
 	controller "AAiT-backend-group-8/Delivery/Controller"
 	Router "AAiT-backend-group-8/Delivery/Routes"
 	"AAiT-backend-group-8/Infrastructure"
-	repository "AAiT-backend-group-8/Repository"
+	"AAiT-backend-group-8/Infrastructure/mongodb"
 	usecase "AAiT-backend-group-8/Usecase"
 
 	"context"
 )
 
-var SECRET_KEY = "123456abcd"
+var SecretKey = "123456abed"
 
 func main() {
-	mongoClient := infrastructure.InitMongoDB("mongodb://localhost:27017")
+	mongoClient := mongodb.InitMongoDB("mongodb://localhost:27017")
 
-	userCollection := mongoClient.Database("starterproject").Collection("users")
-	tokenCollection := mongoClient.Database("starterproject").Collection("token")
-	blogCollection := mongoClient.Database("starterproject").Collection("blogs")
-	commentCollection := mongoClient.Database("starterproject").Collection("comments")
-	likeCollection := mongoClient.Database("starterproject").Collection("likes")
+	userCollection := mongoClient.Database("starter-project").Collection("users")
+	tokenCollection := mongoClient.Database("starter-project").Collection("token")
+	blogCollection := mongoClient.Database("starter-project").Collection("blogs")
+	commentCollection := mongoClient.Database("starter-project").Collection("comments")
+	likeCollection := mongoClient.Database("starter-project").Collection("likes")
 
-	userRepo := repository.NewUserRepository(userCollection, context.TODO())
-	ts := infrastructure.NewTokenService(SECRET_KEY)
+	userRepo := mongodb.NewUserRepository(userCollection, context.TODO())
+	ts := infrastructure.NewTokenService(SecretKey)
 	ps := infrastructure.NewPasswordService()
-	tr := repository.NewTokenRepository(tokenCollection, context.TODO())
+	tr := mongodb.NewTokenRepository(tokenCollection, context.TODO())
 	ms := infrastructure.NewMailService()
 	//	ts := infrastructure.NewTokenService(SECRET_KEY)
-	infrastructure := infrastructure.NewInfrastructure()
+	infra := infrastructure.NewInfrastructure()
 
-	blogRepo := repository.NewBlogRepository(blogCollection)
+	blogRepo := mongodb.NewBlogRepository(blogCollection)
 	blogUseCase := usecase.NewBlogUseCase(blogRepo)
 
-	commentRepo := repository.NewCommentRepository(commentCollection, context.TODO())
+	commentRepo := mongodb.NewCommentRepository(commentCollection, context.TODO())
 
-	commentUseCase := usecase.NewCommentUseCase(commentRepo, *infrastructure, ts)
+	commentUseCase := usecase.NewCommentUseCase(commentRepo, *infra, ts)
 	userUseCase := usecase.NewUserUseCase(userRepo, ts, ps, tr, ms)
-	likeRepo := repository.NewLikeRepository(likeCollection, context.TODO())
-	likeUseCase := usecase.NewLikeUseCase(*likeRepo, *infrastructure)
+	likeRepo := mongodb.NewLikeRepository(likeCollection, context.TODO())
+	likeUseCase := usecase.NewLikeUseCase(*likeRepo, *infra)
 
-	controller := controller.NewController(commentUseCase, userUseCase, likeUseCase, blogUseCase)
+	ctrl := controller.NewController(commentUseCase, userUseCase, likeUseCase, blogUseCase)
 
-	r := Router.InitRouter(controller)
+	r := Router.InitRouter(ctrl)
 
-	r.Run(":8080")
+	err := r.Run(":8080")
+	if err != nil {
+		panic(err)
+	}
 }

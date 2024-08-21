@@ -30,27 +30,3 @@ type SearchCriteria struct {
 	Page      int       `form:"page" bson:"page" json:"page"`
 	PageSize  int       `form:"pageSize" bson:"page_size" json:"page_size"`
 }
-
-type IBlogRepository interface {
-	Search(criteria *SearchCriteria) ([]Blog, error)
-	Create(blog *Blog) error
-	UpdateCommentCount(id string, inc bool) error
-	UpdateLikeCount(id string, inc bool) error
-	FindAll(page int, pageSize int, sortBy string) ([]Blog, error)
-	FindByID(ID string) (*Blog, error)
-	Delete(ID string) error
-	UpdateViewCount(id string) error
-	Update(blog *Blog) error
-}
-
-type IBlogUseCase interface {
-	SearchBlog(criteria *SearchCriteria) ([]Blog, error)
-	CreateBlog(blog *Blog) error
-	UpdateBlogViewCount(id string) error
-	UpdateBlogCommentCount(id string, inc bool) error
-	UpdateBlogLikeCount(id string, inc bool) error
-	GetAllBlogs(page int, pageSize int, sortBy string) ([]Blog, error)
-	GetBlogByID(ID string) (*Blog, error)
-	DeleteBlog(ID string) error
-	UpdateBlog(blog *Blog) error
-}

@@ -40,14 +40,14 @@ type CommentRepository interface {
 
 type CommentUsecase interface {
 	CreateComment(comment *Comment) (*Comment, error)
-	UpdateComment(comment *Comment) (*Comment, error)
-	DeleteComment(commentID string) (*Comment, error)
+	UpdateComment(comment *Comment, role_, userID string) (*Comment, error)
+	DeleteComment(commentID, role_, userID string) (*Comment, error)
 	GetCommentByID(commentID string) (*Comment, error)
 	GetComments(postID string, page, limit int) ([]Comment, error)
 	
 	CreateReply(reply *Reply) (*Reply, error)
-	UpdateReply(reply *Reply) (*Reply, error)
-	DeleteReply(replyID string) (*Reply, error)
+	UpdateReply(reply *Reply, userID string) (*Reply, error)
+	DeleteReply(replyID , role_ , userID string) (*Reply, error)
 	GetReplies(commentID string, page, limit int) ([]Reply, error)
 
 	LikeComment(commentID string, userID string) error

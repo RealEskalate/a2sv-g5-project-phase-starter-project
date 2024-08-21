@@ -7,7 +7,7 @@ const RecentTr = () => {
   const transdata: TransactionType[] = useAppSelector(
     (state) => state.transactions.transactions
   );
-  console.log(transdata, "lates data");
+  // console.log(transdata, "lates data");
 
   const dummyTr: any = [
     {

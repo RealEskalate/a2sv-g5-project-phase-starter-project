@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import LoginValue from '@/types/LoginValue';
-import AuthService from '@/app/Services/api/authService';
+import { signIn } from 'next-auth/react';
 
 const LoginForm = () => {
   const [error, setError] = useState("");
@@ -14,21 +14,22 @@ const LoginForm = () => {
 
   const onSubmit = async (data: LoginValue) => {
     setLoading(true);
-    setError("");  
+    setError("");
+    console.log("login")
 
-    try {
-      const response = await AuthService.login(data);
-      if (response.success) {
-        console.log("Login successful:", response.message);
-        router.push("/");
-      } else {
-        setError(response.message);
-        setLoading(false);
-      }
-    } catch (err) {
-      setError("An error occurred during login.");
-      console.error(err);
+    const result = await signIn("credentials", {
+      redirect: false,
+      userName: data.userName,
+      password: data.password,
+    });
+
+    if (result?.error) {
+      console.log(result.error)
+      setError(result.error);
       setLoading(false);
+    } else {
+      console.log("Login Successful:", result);
+      router.push("/");
     }
   };
 

@@ -20,61 +20,76 @@ func NewCommentRepository(db *mongo.Database, collectionName string) *CommentRep
 		Collection: collection,
 	}
 }
-func (cr *CommentRepository) GetCommentByID(commentID uuid.UUID) (domain.Comment, error) {
+func (cr *CommentRepository) GetCommentByID(commentID uuid.UUID) (domain.Comment, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	filter := bson.D{{Key: "id", Value: commentID}}
 	var comment domain.Comment
 	err := cr.Collection.FindOne(ctx, filter).Decode(&comment)
-	return comment, err
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return comment, domain.ErrCommentNotFound
+		}
+		return comment, domain.ErrCommentFetchFailed
+	}
+	return comment, nil
 }
 
 // AddComment implements interfaces.CommentRepositoryInterface.
-func (cr *CommentRepository) AddComment(comment domain.Comment) error {
+func (cr *CommentRepository) AddComment(comment domain.Comment) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	comment.ID = uuid.New()
 	_, err := cr.Collection.InsertOne(ctx, comment)
-	return err
+	if err != nil {
+		return domain.ErrCommentCreationFailed
+	}
+	return nil
 }
 
 // DelelteComment implements interfaces.CommentRepositoryInterface.
-func (cr *CommentRepository) DelelteComment(commentID uuid.UUID) error {
+func (cr *CommentRepository) DelelteComment(commentID uuid.UUID) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	filter := bson.D{
 		{Key: "id", Value: commentID},
 	}
-	_, err := cr.Collection.DeleteOne(ctx, filter)
-	return err
+	result, err := cr.Collection.DeleteOne(ctx, filter)
+	if err != nil || result.DeletedCount == 0 {
+		return domain.ErrCommentDeletionFailed
+	}
+	return nil
 }
 
 // GetComments implements interfaces.CommentRepositoryInterface.
-func (cr *CommentRepository) GetComments(blogID uuid.UUID) ([]domain.Comment, error) {
+func (cr *CommentRepository) GetComments(blogID uuid.UUID) ([]domain.Comment, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	filter := bson.D{{Key: "blog_id", Value: blogID}}
 	cursor, err := cr.Collection.Find(ctx, filter)
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrCommentFetchFailed
 	}
 	var comments []domain.Comment
 	if err = cursor.All(ctx, &comments); err != nil {
-		return nil, err
+		return nil, domain.ErrCommentFetchFailed
 	}
 	return comments, nil
 }
 
-func (cr *CommentRepository) GetCommentsCount(blogID uuid.UUID) (int, error) {
+func (cr *CommentRepository) GetCommentsCount(blogID uuid.UUID) (int, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	filter := bson.D{{Key: "blog_id", Value: blogID}}
 	count, err := cr.Collection.CountDocuments(ctx, filter)
-	return int(count), err
+	if err != nil {
+		return 0, domain.ErrCommentFetchFailed
+	}
+	return int(count), nil
 }
 
 // UpdateComment implements interfaces.CommentRepositoryInterface.
-func (cr *CommentRepository) UpdateComment(updatedComment domain.Comment) error {
+func (cr *CommentRepository) UpdateComment(updatedComment domain.Comment) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	filter := bson.D{
@@ -86,5 +101,8 @@ func (cr *CommentRepository) UpdateComment(updatedComment domain.Comment) error 
 		}},
 	}
 	_, err := cr.Collection.UpdateOne(ctx, filter, update)
-	return err
+	if err != nil {
+		return domain.ErrCommentUpdateFailed
+	}
+	return nil
 }

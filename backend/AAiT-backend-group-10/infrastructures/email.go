@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"net/smtp"
 	"os"
+
+	"aait.backend.g10/domain"
 )
 
 type EmailService struct {
 }
 
-func (s *EmailService) SendResetEmail(email string, resetToken string) error {
+func (s *EmailService) SendResetEmail(email string, resetToken string) *domain.CustomError {
 	// var app_password = os.Getenv("SMPT_APP_PASS")
 	var app_email = os.Getenv("SMPT_APP_EMAIL")
 	resetLink := "https://locahost:8080/reset-password?token=" + resetToken
@@ -62,6 +64,10 @@ func (s *EmailService) SendResetEmail(email string, resetToken string) error {
 	// Example using Gmail's SMTP server
 	auth := smtp.PlainAuth("", "8fba770eab09f1", "95295f54db5e69", "sandbox.smtp.mailtrap.io")
 	err := smtp.SendMail("sandbox.smtp.mailtrap.io:587", auth, "8fba770eab09f1", []string{to}, []byte(message))
-	fmt.Println(err)
-	return err
+	if err != nil {
+		fmt.Println(err)
+		return domain.ErrEmailSendingFailed
+	}
+
+	return nil
 }

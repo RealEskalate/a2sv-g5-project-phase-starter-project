@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { colors } from '@/constants';
-import { getAllTransactions } from '@/services/transactionfetch';
+import { getAllTransactionsss } from '@/services/transactionfetch';
 import LifeInsuranceIcon from '@/public/icons/LifeInsuranceIcon';
 import ShoppingIcon from '@/public/icons/ShoppingIcon';
 import SavingAccountsIcon from '@/public/icons/SavingAccountsIcon';
@@ -14,7 +14,7 @@ const RecentTransaction = () => {
   useEffect(() => {
     const fetchRecentTransaction = async () => {
       try {
-        const response = await getAllTransactions();
+        const response = await getAllTransactionsss();
         setRecentTransaction(response.data.content);
       } catch (error) {
         console.error("Error fetching the recent transactions: ", error);

@@ -9,7 +9,9 @@ import { useState, useEffect } from "react";
 import useUserDispatch from "@/app/Redux/Dispacher/useUserDispach";
 import { useAppSelector } from "@/app/Redux/store/store";
 import { InvestmentData } from "@/app/Redux/slices/userSlice";
+import { useSession } from "next-auth/react";
 const InvestmentPage = () => {
+  const { data: session } = useSession();
   const data1 = [
     ["01.", "Trivago", "$520", "+5%"],
     [" 02.", "Canon", "$480", " +10%"],
@@ -20,8 +22,7 @@ const InvestmentPage = () => {
   const [data, setData] = useState<InvestmentData>();
   const [error, setError] = useState<string>("");
 
-  const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyNDE2Nzc2NiwiZXhwIjoxNzI0MjU0MTY2fQ.AIG9ss3XGUA3sOEJHOVwdkP7RJS0SbWcjGGe8FoAuMZmOywhutvl2CyyNDDc4qzz";
+  const accessToken = session?.accessToken as string;
 
   useUserDispatch(accessToken);
   const investmentData: InvestmentData = useAppSelector(

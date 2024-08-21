@@ -5,3 +5,7 @@ database:
 email:
   key: <google app key>
 port: <port number>
+jwt: <jwt key>
+gemini:
+  api_key: <your-gemini-key>
+  model: <gemini-model-name>

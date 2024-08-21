@@ -16,14 +16,14 @@ import {
 import { getServerSession } from "next-auth";
 interface ExtendedUser {
   refresh_token: string;
-  data: any; 
+  data: any;
   accessToken?: string;
 }
 
 interface ExtendedSession {
   user?: ExtendedUser;
 }
-const BASE_URL = "https://bank-dashboard-1tst.onrender.com";
+const BASE_URL = "https://bank-dashboard-6acc.onrender.com";
 
 const fetchSession = async (): Promise<ExtendedSession> => {
   const session = await getServerSession();
@@ -37,7 +37,7 @@ const getAccessToken = async (): Promise<string | undefined> => {
 
 const getTransactions = async (
   page: 0,
-  size: 1,
+  size: 100,
   token: string
 ): Promise<GetTransactionsResponse> => {
   try {
@@ -46,11 +46,6 @@ const getTransactions = async (
       `${BASE_URL}/transactions?page=${page}&size=${size}`,
       {
         method: "GET",
-const getTransactions = async (page: 0, size: 100, token: string): Promise<GetTransactionsResponse> => {
-    try {
-      // const token = await getAccessToken();
-      const response = await fetch(`${BASE_URL}/transactions?page=${page}&size=${size}`, {
-        method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -158,81 +153,6 @@ const getRandomBalanceHistory = async (
       `${BASE_URL}/transactions/random-balance-history?monthsBeforeFirstTransaction=${monthsBeforeFirstTransaction}`,
       {
         method: "GET",
-  const postTransaction = async (transactionDetails: PostTransactionRequest, token:string): Promise<PostTransactionResponse> => {
-    try {
-      // const token = await getAccessToken();
-      const response = await fetch(`${BASE_URL}/transactions`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(transactionDetails),
-      });
-  
-      if (response.status === 200) {
-        const data: PostTransactionResponse = await response.json();
-        return data;
-      } else {
-        throw new Error(`Request failed with status code: ${response.status}`);
-      }
-    } catch (error) {
-      console.error('Error posting transaction:', error);
-      throw error;
-    }
-  };
-  
-  const postTransactionsDeposit = async (transactionDetails: PostDepositTransactionRequest, token:string): Promise<TransactionResponse> => {
-    try {
-      // const token = await getAccessToken();
-      const response = await fetch(`${BASE_URL}/transactions/deposit`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(transactionDetails),
-      });
-  
-      if (response.status === 200) {
-        const data: TransactionResponse = await response.json();
-        return data;
-      } else {
-        throw new Error(`Request failed with status code: ${response.status}`);
-      }
-    } catch (error) {
-      console.error('Error posting transaction:', error);
-      throw error;
-    }
-  };
-  const getTransactionById = async (transactionId: string, token:string): Promise<GetTransactionByID> => {
-    try {
-      // const token = await getAccessToken();
-      const response = await fetch(`${BASE_URL}/transactions/${transactionId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (response.status === 200) {
-        const data: TransactionResponse = await response.json();
-        return data;
-      } else {
-        throw new Error(`Request failed with status code: ${response.status}`);
-      }
-    } catch (error) {
-
-      console.error('Error fetching transaction:', error);
-      throw error;
-    }
-  };
-  const getRandomBalanceHistory = async (monthsBeforeFirstTransaction: number, token: string): Promise<BalanceHistoryResponse> => {
-    try {
-      // const token = await getAccessToken();
-      const response = await fetch(`${BASE_URL}/transactions/random-balance-history?monthsBeforeFirstTransaction=${monthsBeforeFirstTransaction}`, {
-        method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -362,42 +282,6 @@ const getBalanceHistory = async (
     throw error;
   }
 };
-      });
-  
-      if (response.status === 200) {
-        const data: PaginatedTransactionsResponse = await response.json();
-        return data;
-      } else {
-        throw new Error(`Request failed with status code: ${response.status}`);
-      }
-    } catch (error) {
-      console.error('Error fetching paginated transactions:', error);
-      throw error;
-    }
-  };
-  const getBalanceHistory = async (monthsBeforeFirstTransaction: number, token:string): Promise<BalanceHistoryResponse> => {
-    try {
-      // const token = await getAccessToken();
-      const response = await fetch(`${BASE_URL}/transactions/balance-history`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (response.status === 200) {
-        const data: BalanceHistoryResponse = await response.json();
-        return data;
-      } else {
-        throw new Error(`Request failed with status code: ${response.status}`);
-      }
-    } catch (error) {
-      console.error('Error fetching balance history:', error);
-      throw error;
-    }
-  };
-
 
 export {
   getBalanceHistory,
@@ -410,5 +294,3 @@ export {
   postTransactionsDeposit,
   postTransaction,
 };
-
-  export {getBalanceHistory, getRandomBalanceHistory, getQuickTransfers, getTransactionById, getTransactionIncomes, getTransactions, getTransactionsExpenses, postTransactionsDeposit, postTransaction}

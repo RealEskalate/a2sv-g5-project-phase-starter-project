@@ -18,20 +18,17 @@ func (b *BlogController) InsertBlog(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&blog); err != nil {
 		log.Println(err)
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "invalid request",
-		})
-
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
 
 	if blog.Title == "" {
-		ctx.JSON(http.StatusBadRequest, "title is required")
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "title is required"})
 		return
 	}
 
 	if blog.Content == "" {
-		ctx.JSON(http.StatusBadRequest, "content is required")
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "content is required"})
 		return
 	}
 
@@ -40,16 +37,15 @@ func (b *BlogController) InsertBlog(ctx *gin.Context) {
 	}
 
 	claim, ok := ctx.MustGet("claims").(*domain.LoginClaims)
-
 	if !ok {
-		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
 
 	blogData := &domain.Blog{
 		Title:         blog.Title,
 		Content:       blog.Content,
-		Author: 	  claim.Username,
+		Author:        claim.Username,
 		Tags:          blog.Tags,
 		CreatedAt:     time.Now(),
 		LastUpdatedAt: time.Now(),
@@ -58,14 +54,11 @@ func (b *BlogController) InsertBlog(ctx *gin.Context) {
 		CommentsCount: 0,
 	}
 
-	newblog,err := b.BlogUsecase.InsertBlog(blogData)
+	newblog, err := b.BlogUsecase.InsertBlog(blogData)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, newblog)
-
-
-
+	ctx.JSON(http.StatusCreated, newblog)
 }

@@ -381,7 +381,6 @@ func (b *BlogRepository) RemoveLike(blogID string, author string) error {
 	return err
   }
   
-
 // AddComment implements domain.BlogRepository.
 func (b *BlogRepository) AddComment(comment *domain.Comment) error {
 	_, err := b.commentCollection.InsertOne(context.Background(), comment)

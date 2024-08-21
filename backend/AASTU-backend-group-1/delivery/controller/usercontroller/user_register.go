@@ -104,6 +104,6 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "user registered successfully",
+		"message": "verification email has been sent successfully",
 	})
 }

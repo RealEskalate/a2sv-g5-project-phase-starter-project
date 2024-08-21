@@ -51,17 +51,15 @@ func GenerateAIContent(prompt string) (string, error) {
 	}
 
 	if resp != nil {
-
 		for _, candcandidates := range generateResponse.Candidates {
 			content := candcandidates.Content
 			parts := content.Parts
 			for _, part := range parts {
 				generatedText += part
-
 			}
-
 		}
 	}
+
 	return generatedText, nil
 
 }

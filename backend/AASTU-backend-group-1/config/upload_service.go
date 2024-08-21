@@ -11,14 +11,18 @@ import (
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 )
 
-func GenerateUid() string {
+var GenerateUid = func() string {
 	return time.Now().Format("20060102150405")
 }
 
 func UploadToCloudinary(file *multipart.FileHeader) (string, error) {
-
 	// Create Cloudinary instance
-	cloudinaryURL,err := bootstrap.GetEnv("CLOUDINARY_URL")
+	cloudinaryURL, err := bootstrap.GetEnv("CLOUDINARY_URL")
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+
 	cld, err := cloudinary.NewFromURL(cloudinaryURL)
 	if err != nil {
 		log.Fatal(err)

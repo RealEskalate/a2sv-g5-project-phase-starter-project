@@ -153,19 +153,3 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
-
-// GoogleCallback is a handler that handles the google oauth callback
-func (h *UserHandler) GoogleCallback(c *gin.Context) {
-	code := c.Query("code")
-	user, token, err := h.UserUsecase.GoogleCallback(code)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"id":    user.ID,
-		"email": user.Email,
-		"role":  user.Role,
-		"token": token,
-	})
-}

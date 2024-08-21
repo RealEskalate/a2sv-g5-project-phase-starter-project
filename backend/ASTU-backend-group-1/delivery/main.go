@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	// "go.mongodb.org/mongo-driver/bson"
-	// "go.mongodb.org/mongo-driver/bson/primitive"
 	infrastructure "astu-backend-g1/Infrastructure"
 	"astu-backend-g1/delivery/controllers"
 	"astu-backend-g1/delivery/routers"

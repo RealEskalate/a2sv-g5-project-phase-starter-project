@@ -43,26 +43,31 @@ func main() {
 	}
 	fmt.Println("Connected to MongoDB!", dbClient.Database.Name())
 
-	//repositories
-	userRepo := repositories.NewMongoUserRepository(dbClient.Database, "users")
-	otpRepo := repositories.NewMongoOtpRepository(dbClient.Database, "otps")
-	blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs")
-	// commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
 
 	//services
 	emailSvc := services.NewEmailService(smtpHost, smtpPort, userName, passWord)
 	passSvc := services.NewPasswordService()
 	validationSvc := services.NewValidationService()
 	jwtSvc := services.NewJWTService(secretKey)
+	cacheSvc := services.NewCacheService("localhost:6379", "", 0)
+
+	//repositories
+	userRepo := repositories.NewMongoUserRepository(dbClient.Database, "users", cacheSvc)
+	otpRepo := repositories.NewMongoOtpRepository(dbClient.Database, "otps")
+	blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs")
+	// commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
+
 
 	//middlewares
-	authMiddleware := middlewares.NewAuthMiddleware(jwtSvc)
+	authMiddleware := middlewares.NewAuthMiddleware(jwtSvc, cacheSvc)
+
 
 	//usecases
 	userUsecase := usecases.NewUserUsecase(userRepo, passSvc, validationSvc, emailSvc, jwtSvc)
 	otpUsecase := usecases.NewOtpUseCase(otpRepo, userRepo, emailSvc, passSvc, "http://localhost:8080", validationSvc)
-	blogService := usecases.NewBlogUsecase(blogRepo)
+	blogService := usecases.NewBlogUsecase(blogRepo, cacheSvc)
 	// commentService := service.NewCommentService(commentRepo)
+
 
 	// controllers
 	userController := controllers.NewUserController(userUsecase)
@@ -73,8 +78,9 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 
+
 	// routers
-	routers.CreateUserRouter(router, userController, otpController)
+	routers.CreateUserRouter(router, userController, otpController, authMiddleware)
 	routers.CreateBlogRouter(router, blogController, authMiddleware)
 	if err := router.Run(":" + os.Getenv("PORT")); err!= nil{
 		log.Fatal(err)

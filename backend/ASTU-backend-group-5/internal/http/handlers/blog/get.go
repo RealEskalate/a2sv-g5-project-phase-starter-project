@@ -3,6 +3,7 @@ package blog
 import (
 	"blogApp/internal/domain"
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -62,7 +63,12 @@ func (h *BlogHandler) PaginateBlogsHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, blogs)
+	nextPageURL := fmt.Sprintf("%s?page=%d&pageSize=%d", c.Request.URL.Path, page+1, pageSize)
+	previousPageURL := ""
+	if page > 1 {
+		previousPageURL = fmt.Sprintf("%s?page=%d&pageSize=%d", c.Request.URL.Path, page, pageSize)
+	}
+	c.JSON(http.StatusOK, gin.H{"blogs": blogs, "nextPageURL": nextPageURL, "previousPageURL": previousPageURL})
 }
 
 func (h *BlogHandler) GetCommentsByBlogIDHandler(c *gin.Context) {

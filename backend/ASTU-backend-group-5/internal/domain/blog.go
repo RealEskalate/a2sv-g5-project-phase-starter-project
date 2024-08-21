@@ -52,6 +52,8 @@ type BlogFilter struct {
 	Title     *string             // Filter by Title (exact or partial match)
 	DateRange *DateRange          // Filter by Creation Date Range
 	Content   *string             // Filter by Content (exact or partial match)
+	Keyword   *string             // Filter by keyword in title, content, or tags
+
 }
 
 // DateRange represents a time range for filtering

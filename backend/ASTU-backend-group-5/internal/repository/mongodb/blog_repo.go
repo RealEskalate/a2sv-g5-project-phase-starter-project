@@ -342,34 +342,34 @@ func (r *MongoBlogRepository) GetTagByID(ctx context.Context, id string) (*domai
 	return &tag, nil
 }
 
-func (r *MongoBlogRepository) HasUserLikedBlog(ctx context.Context, blogID string, userID string) (bool, error) {
-	objectID, err := primitive.ObjectIDFromHex(blogID)
+func (r *MongoBlogRepository) HasUserLikedBlog(ctx context.Context, userID string, blogID string) (bool, error) {
+	userIdObj, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return true, err
 	}
-	objectID2, err := primitive.ObjectIDFromHex(userID)
+	blogIdObj, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return true, err
 	}
 
-	count, err := r.likesCollection.CountDocuments(ctx, bson.M{"blog_id": objectID, "user_id": objectID2})
+	count, err := r.likesCollection.CountDocuments(ctx, bson.M{"blog_id": blogIdObj, "user_id": userIdObj})
 	if err != nil {
 		return true, err
 	}
 	return count > 0, nil
 }
 
-func (r *MongoBlogRepository) HasUserViewedBlog(ctx context.Context, blogID string, userID string) (bool, error) {
-	objectID, err := primitive.ObjectIDFromHex(blogID)
+func (r *MongoBlogRepository) HasUserViewedBlog(ctx context.Context, userID string, blogID string) (bool, error) {
+	userIdObj, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return true, err
 	}
-	objectID2, err := primitive.ObjectIDFromHex(userID)
+	blogIdObj, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return true, err
 	}
 
-	count, err := r.viewsCollection.CountDocuments(ctx, bson.M{"blog_id": objectID, "user_id": objectID2})
+	count, err := r.viewsCollection.CountDocuments(ctx, bson.M{"blog_id": blogIdObj, "user_id": userIdObj})
 	if err != nil {
 		return true, err
 	}

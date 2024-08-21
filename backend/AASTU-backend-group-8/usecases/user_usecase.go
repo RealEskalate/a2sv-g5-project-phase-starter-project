@@ -18,7 +18,7 @@ type UserUsecase struct {
 	// emailSvc	infrastructure.EmailService
 }
 
-func NewUserUsecase(ur domain.UserRepositoryInterface,tr domain.TokenRepositoryInterface, jr infrastructure.JWTService) *UserUsecase {
+func NewUserUsecase(ur domain.UserRepositoryInterface, tr domain.TokenRepositoryInterface, jr infrastructure.JWTService) *UserUsecase {
 	return &UserUsecase{
 		userRepo:  ur,
 		tokenRepo: tr,
@@ -58,6 +58,8 @@ func (u *UserUsecase) Login(authUser *domain.AuthUser) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
+
+	fmt.Println("user: ", user)
 
 	if err := infrastructure.CheckPasswordHash(user.Password, authUser.Password); err != nil {
 		return "", "", errors.New("invalid username or password2")
@@ -116,19 +118,19 @@ func (u *UserUsecase) LoginWithProvider(user *domain.User) (string, string, erro
 	return token, refreshToken, nil
 }
 
-func (u *UserUsecase) UpdateUser(username , newPassword string) error {
+func (u *UserUsecase) UpdateUser(username, newPassword string) error {
 	existingUser, err := u.userRepo.GetUserByUsername(username)
 	if err != nil {
 		return err
 	}
-	
+
 	hashedPassword, err := infrastructure.HashPassword(newPassword)
 	if err != nil {
 		return err
 	}
 	existingUser.Password = hashedPassword
 
-	return u.userRepo.UpdateUser(username,existingUser)
+	return u.userRepo.UpdateUser(username, existingUser)
 }
 
 func (u *UserUsecase) GetAllUsers() ([]*domain.User, error) {

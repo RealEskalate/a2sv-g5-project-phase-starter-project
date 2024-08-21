@@ -14,7 +14,7 @@ import Logo from '../../../public/assets/icons/logo-icon.svg';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/hoooks';
-import { toggleHamburgerMenu } from '@/lib/redux/slices/uiSlice';
+import { hideMenu, toggleHamburgerMenu } from '@/lib/redux/slices/uiSlice';
 
 const data = [
   {
@@ -78,7 +78,13 @@ export default function Sidebar() {
   const hamburgerMenu = useAppSelector((state) => state.ui.hamburgerMenu);
   const dispatch = useAppDispatch();
   const handleClick = () => {
-    dispatch(toggleHamburgerMenu());
+    dispatch(hideMenu());
+  };
+
+  const handleClickOutside = (e: any) => {
+    if (e.target.classList.contains('backdrop-blur-sm')) {
+      dispatch(toggleHamburgerMenu());
+    }
   };
 
   const handleClickOutside = (e: any) => {

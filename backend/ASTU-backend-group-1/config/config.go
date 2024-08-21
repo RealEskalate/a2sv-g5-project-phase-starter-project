@@ -2,6 +2,10 @@ package config
 
 import "github.com/spf13/viper"
 
+type Gemini struct {
+	ApiKey string `mapstructure:"api_key"`
+	Model  string `mapstructure:"model"`
+}
 type Database struct {
 	Username string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
@@ -15,7 +19,8 @@ type Config struct {
 	Database Database `mapstructure:"database"`
 	Email    Email    `mapstructure:"email"`
 	Port     string   `mapstructure:"port"`
-	Jwt   	Jwt   	`mapstructure:"jwt"`
+	Jwt      Jwt      `mapstructure:"jwt"`
+	Gemini   Gemini   `mapstructure:"gemini"`
 }
 type Jwt struct {
 	JwtKey string `mapstructure:"jwtKey"`

@@ -7,7 +7,7 @@ import (
 )
 
 func Refine(content string) (string, error) {
-	prompt := fmt.Sprintf(`Refine this blog: %v`, content)
+	prompt := fmt.Sprintf(`Please refine the following content to make it more engaging, clear, and concise. Focus on improving the flow, enhancing readability, and ensuring that the main points are emphasized effectively. Feel free to rephrase sentences, restructure paragraphs, and add any necessary transitions. The tone should remain professional yet approachable. And make sure that you don add any title please and no comments.: %v`, content)
 	config, err := config.LoadConfig()
 	if err != nil {
 		return "", err

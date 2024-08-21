@@ -8,7 +8,7 @@ func ConfigBody(to string, token string) (string, string) {
 	`
 	<h2>Verify Your Email</h2>
 	<p>Click the link below to verify your email:</p>
-	<a href="http://localhost:8080/verify-email?token=%s">Verify Email</a>
+	<a href="http://localhost:8080/api/verify-email/%s">Verify Email</a>
 	`,token)
 
 	return subject,body

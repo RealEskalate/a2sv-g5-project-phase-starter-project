@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/RealEskalate/blogpost/domain"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/joho/godotenv"
 	gmail "gopkg.in/gomail.v2"
 )
@@ -19,9 +19,10 @@ func SendVerificationEmail(to, subject, body string) error {
 		log.Panic("Failed to load .env" , err.Error())
 	}
 
-	username := os.Getenv("USERNAME")
+	username := os.Getenv("USER_EMAIL")
 	password := os.Getenv("EMAIL_PASS")
 
+	log.Println(password , username , "hhhhhhhhhhhhh")
 	m := gmail.NewMessage()
 	m.SetHeader("From", username)
 	m.SetHeader("To", to)
@@ -45,9 +46,10 @@ func IsValidVerificationToken(strtoken string) (string , error) {
 		return "",nil
 	}
 	var SecretKey = []byte(os.Getenv("SECRETKEY"))
-	token , err := jwt.ParseWithClaims(strtoken , domain.EmailUserClaims{} ,func(t *jwt.Token) (interface{}, error) {
+	token , err := jwt.ParseWithClaims(strtoken, &domain.EmailUserClaims{} ,func(t *jwt.Token) (interface{}, error) {
 		return SecretKey, nil
 	})
+
 	if err != nil {
 		return "" , err
 	}

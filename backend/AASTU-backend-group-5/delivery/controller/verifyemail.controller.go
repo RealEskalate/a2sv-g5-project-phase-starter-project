@@ -13,6 +13,12 @@ type EmailVControler struct{
 	email_uc usecase.EmailVUsecase
 }
 
+func NewEmailVController(email_usecase usecase.EmailVUsecase) *EmailVControler {
+	return &EmailVControler{
+		email_uc: email_usecase,
+	}
+}
+
 func (ctrl *EmailVControler) SendVerificationEmail() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var model domain.VerifyEmail
@@ -22,7 +28,7 @@ func (ctrl *EmailVControler) SendVerificationEmail() gin.HandlerFunc {
 		}
 		id := ctx.Param("id")
 		if err := ctrl.email_uc.SendVerifyEmail(id , model); err  != nil {
-			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : err.Error()})
+			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"errorss" : err.Error()})
 			return 
 		}
 
@@ -33,6 +39,11 @@ func (ctrl *EmailVControler) SendVerificationEmail() gin.HandlerFunc {
 func (ctrl *EmailVControler) VerifyEmail() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.Param("token")
-		ctrl.email_uc.VerifyUser(token)
+		err := ctrl.email_uc.VerifyUser(token)
+		if err != nil {
+			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : err.Error()})
+			return
+		}
+		ctx.IndentedJSON(http.StatusAccepted , gin.H{"message":"Verified"})
 	}
 }

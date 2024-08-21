@@ -3,8 +3,10 @@ package tokenservice
 import (
 	"log"
 	"os"
+	"time"
+
 	"github.com/RealEskalate/blogpost/domain"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -21,6 +23,7 @@ func (VerifyToken) GenrateToken(id string , email string) (string, error) {
 	itoken := jwt.NewWithClaims(jwt.SigningMethodHS256, domain.EmailUserClaims{
 		ID:    obJID,
 		Email: email,
+		StandardClaims: jwt.StandardClaims{ExpiresAt: time.Now().Add(time.Hour * 24).Unix()},
 	})
 	token, err := itoken.SignedString(SecretKey)
 	if err != nil {

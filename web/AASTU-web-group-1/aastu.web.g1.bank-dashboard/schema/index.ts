@@ -59,3 +59,24 @@ export const signInSchema = z.object({
   userName: z.string().min(2).max(50),
   password: z.string().min(2),
 });
+
+export const cardSchema = z.object({
+  cardType: z
+    .string()
+    .min(1, "Card type is required")
+    .max(20, "Card type must be less than 20 characters"),
+  cardHolder: z
+    .string()
+    .min(1, "Name on card is required")
+    .max(50, "Name on card must be less than 50 characters"),
+    passcode: z
+    .string()
+    .regex(/^\d{16}$/, "Card number must be 16 digits"),
+  expiryDate: z
+    .string()
+    .refine((date) => {
+      const today = new Date();
+      const expiry = new Date(date);
+      return expiry > today;
+    }, "Expiration date must be in the future"),
+});

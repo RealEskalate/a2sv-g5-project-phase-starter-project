@@ -146,6 +146,7 @@ func (suite *UserControllerTestSuite) TestGetUserByID() {
 		assert.Contains(w.Body.String(), expectedError.Error())
 	})
 }
+
 func (suite *UserControllerTestSuite) TestRegisterUser() {
 	assert := assert.New(suite.T())
 	suite.Run("success", func() {
@@ -159,21 +160,22 @@ func (suite *UserControllerTestSuite) TestRegisterUser() {
 		ctx.Request = req
 		suite.userController.Register(ctx)
 		assert.Equal(http.StatusCreated, w.Code)
-		
 	})
 }
+
 func (suite *UserControllerTestSuite) TestAccountVerification() {
 	assert := assert.New(suite.T())
 	suite.Run("success", func() {
 		suite.userUsecase.On("AccountVerification", "alksdjfwe@gmail.com", "aslkdfj23").Return("token", nil).Once()
 		w := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(w)
-		req, _ := http.NewRequest("POST", "/accountverification?email=alksdjfwe@gmail.com&pwd=aslkdfj23",nil)
+		req, _ := http.NewRequest("POST", "/accountverification?email=alksdjfwe@gmail.com&pwd=aslkdfj23", nil)
 		ctx.Request = req
 		suite.userController.AccountVerification(ctx)
 		assert.Equal(http.StatusOK, w.Code)
 	})
 }
+
 func (suite *UserControllerTestSuite) TestDeleteUser() {
 	assert := assert.New(suite.T())
 	suite.T().Parallel()

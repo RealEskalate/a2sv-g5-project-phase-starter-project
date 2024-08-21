@@ -2,6 +2,10 @@
 
 import { TrendingUp } from "lucide-react";
 import { LabelList, Pie, PieChart } from "recharts";
+import { useState, useEffect } from "react";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 import {
   Card,
   CardContent,
@@ -16,42 +20,106 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import {
+  getTransactionIncomes,
+  getTransactionsExpenses,
+} from "@/lib/api/transactionController";
 
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
+const initialChartData = [
+  { browser: "shopping", visitors: 0, fill: "var(--color-shopping)" },
+  { browser: "transfer", visitors: 0, fill: "var(--color-transfer)" },
+  { browser: "other", visitors: 0, fill: "var(--color-other)" },
 ];
 
 const chartConfig = {
   visitors: {
     label: "Visitors",
   },
-  chrome: {
-    label: "Chrome",
+  shopping: {
+    label: "Shopping",
     color: "hsl(var(--chart-1))",
   },
-  safari: {
-    label: "Safari",
+  transfer: {
+    label: "Transfer",
     color: "hsl(var(--chart-2))",
-  },
-  firefox: {
-    label: "Firefox",
-    color: "hsl(var(--chart-3))",
-  },
-  edge: {
-    label: "Edge",
-    color: "hsl(var(--chart-4))",
   },
   other: {
     label: "Other",
-    color: "hsl(var(--chart-5))",
+    color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig;
+type Data = {
+  access_token: string;
+  data: string;
+  refresh_token: string;
+};
 
+type SessionDataType = {
+  user: Data;
+};
 export function ExpenseStatistics() {
+  const [chartData, setChartData] = useState(initialChartData);
+  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<Data | null>(null);
+  const router = useRouter();
+
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = (await getSession()) as SessionDataType | null;
+      if (sessionData && sessionData.user) {
+        setSession(sessionData.user);
+      } else {
+        router.push(
+          `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+        );
+      }
+      setLoading(false);
+    };
+
+    fetchSession();
+  }, [router]);
+
+
+
+  useEffect(() => {
+    const fetchAndProcessExpenses = async () => {
+      try {
+        const sessionToken = session?.access_token;
+        if (sessionToken) {
+          const { data } = await getTransactionsExpenses(0, 1, sessionToken);
+          
+          const typeAmounts: { [key: string]: number } = {
+            shopping: 0,
+            transfer: 0,
+            other: 0,
+          };
+
+          data.content.forEach((transaction: any) => {
+            if (typeAmounts.hasOwnProperty(transaction.type)) {
+              typeAmounts[transaction.type] += transaction.amount;
+            } else {
+              typeAmounts.other += transaction.amount; // If type is not predefined, add to "other"
+            }
+          });
+
+          setChartData([
+            { browser: "shopping", visitors: typeAmounts.shopping, fill: "var(--color-shopping)" },
+            { browser: "transfer", visitors: typeAmounts.transfer, fill: "var(--color-transfer)" },
+            { browser: "other", visitors: typeAmounts.other, fill: "var(--color-other)" },
+          ]);
+
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching expenses:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchAndProcessExpenses();
+  }, []);
+
   return (
     <Card className="mx-4 my-6 md:my-0 flex-grow rounded-3xl">
       <CardHeader className="items-left pb-0">
@@ -61,31 +129,35 @@ export function ExpenseStatistics() {
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <div className="flex justify-center items-center">
-          <ChartContainer 
-            config={chartConfig}
-            className="aspect-square h-72 w-full max-w-[300px]" // Ensure full width within a max limit
-          >
-            <PieChart>
-              <ChartTooltip
-                content={<ChartTooltipContent nameKey="visitors" hideLabel />}
-              />
-              <Pie
-                data={chartData}
-                dataKey="visitors"
-                paddingAngle={5} // Adds margin between the slices
-              >
-                <LabelList
-                  dataKey="browser"
-                  className="fill-background"
-                  stroke="none"
-                  fontSize={12}
-                  formatter={(value: keyof typeof chartConfig) =>
-                    chartConfig[value]?.label
-                  }
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <ChartContainer 
+              config={chartConfig}
+              className="aspect-square h-72 w-full max-w-[300px]" // Ensure full width within a max limit
+            >
+              <PieChart>
+                <ChartTooltip
+                  content={<ChartTooltipContent nameKey="visitors" hideLabel />}
                 />
-              </Pie>
-            </PieChart>
-          </ChartContainer>
+                <Pie
+                  data={chartData}
+                  dataKey="visitors"
+                  paddingAngle={5} // Adds margin between the slices
+                >
+                  <LabelList
+                    dataKey="browser"
+                    className="fill-background"
+                    stroke="none"
+                    fontSize={12}
+                    formatter={(value: keyof typeof chartConfig) =>
+                      chartConfig[value]?.label
+                    }
+                  />
+                </Pie>
+              </PieChart>
+            </ChartContainer>
+          )}
         </div>
       </CardContent>
     </Card>

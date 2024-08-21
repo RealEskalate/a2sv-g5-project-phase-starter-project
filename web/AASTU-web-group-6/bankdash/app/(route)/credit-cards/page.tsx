@@ -29,7 +29,7 @@ const CreditCards = () => {
         <p className="flex grow page text-xl font-semibold text-colorBody-1 dark:text-gray-300">
           My Cards
         </p>
-        <div className="flex gap-6 overflow-x-auto sm:scroll-snap-x">
+        <div className="flex gap-6 overflow-x-auto sm:scroll-snap-x overflow-y-hidden scrollbar-hide">
           {CardData?.slice(0, 3).map((item, index) => (
             <VisaCard
               key={index}

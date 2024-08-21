@@ -36,6 +36,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         Lato: "Lato",
+        Inter: "Inter",
       },
       colors: {
         border: "hsl(var(--border))",

@@ -1,3 +1,5 @@
+import { faX } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -66,7 +68,7 @@ const ModalService = ({ isOpen, onClose }: props) => {
     const formData = JSON.stringify({ ...data, type: "transfer" });
     try {
       const response = await axios.post(
-        "https://bank-dashboard-6acc.onrender.com/bank-services",
+        "https://bank-dashboard-1tst.onrender.com/bank-services",
         formData,
         {
           headers: {
@@ -85,20 +87,22 @@ const ModalService = ({ isOpen, onClose }: props) => {
 
   return (
     <form
-      className="flex flex-col space-y-4 p-2 bg-white rounded-lg max-h-[70vh] overflow-y-auto scrollbar-hide"
+      className="flex flex-col space-y-4 p-2 rounded-lg max-h-[70vh] overflow-y-auto scrollbar-hide"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="flex justify-between">
-        <p className="text-base font-semibold">Add Service</p>
+        <p className="text-base font-semibold dark:text-gray-200">
+          Add Service
+        </p>
         <button className="text-right" onClick={onClose}>
-          <CloseIcon />
+          <FontAwesomeIcon icon={faX} className="dark:text-white" />
         </button>
       </div>
 
       <div>
         <label
           htmlFor="name"
-          className="block text-md font-medium text-gray-700"
+          className="block text-md font-medium text-gray-700 dark:text-gray-300"
         >
           Service Name
         </label>
@@ -118,7 +122,7 @@ const ModalService = ({ isOpen, onClose }: props) => {
       <div>
         <label
           htmlFor="details"
-          className="block text-md font-medium text-gray-700"
+          className="block text-md font-medium text-gray-700 dark:text-gray-300"
         >
           Details
         </label>
@@ -137,7 +141,7 @@ const ModalService = ({ isOpen, onClose }: props) => {
         <div>
           <label
             htmlFor="numberOfUsers"
-            className="block text-md font-medium text-gray-700"
+            className="block text-md font-medium text-gray-700 dark:text-gray-300"
           >
             Number of Users
           </label>
@@ -159,7 +163,7 @@ const ModalService = ({ isOpen, onClose }: props) => {
         <div>
           <label
             htmlFor="status"
-            className="block text-md font-medium text-gray-700"
+            className="block text-md font-medium text-gray-700 dark:text-gray-300"
           >
             Status
           </label>
@@ -183,7 +187,7 @@ const ModalService = ({ isOpen, onClose }: props) => {
         <div>
           <label
             htmlFor="type"
-            className="block text-md font-medium text-gray-700"
+            className="block text-md font-medium text-gray-700 dark:text-gray-300"
           >
             Type
           </label>
@@ -206,7 +210,7 @@ const ModalService = ({ isOpen, onClose }: props) => {
       <div>
         <label
           htmlFor="icon"
-          className="block text-md font-medium text-gray-700"
+          className="block text-md font-medium text-gray-700 dark:text-gray-300"
         >
           Icon
         </label>

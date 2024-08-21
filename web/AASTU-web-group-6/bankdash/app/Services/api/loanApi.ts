@@ -2,7 +2,7 @@ import axios from "axios";
 import { LoanType, ApiResponse } from "@/types/LoanValue";
 
 const API_URL =
-  "https://bank-dashboard-6acc.onrender.com/active-loans/my-loans"; // Adjust this to match your actual API base URL
+  "https://bank-dashboard-1tst.onrender.com/active-loans/my-loans"; // Adjust this to match your actual API base URL
 
 const handleRequest = async (
   method: string,

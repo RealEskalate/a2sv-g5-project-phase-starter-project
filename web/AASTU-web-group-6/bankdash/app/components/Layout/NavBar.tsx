@@ -38,7 +38,7 @@ const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
   const currentPageTitle = pageTitles[pathname] || "Overview";
 
   return (
-    <div className="w-full fixed left-0 z-10 flex flex-row justify-center items-center bg-white dark:bg-[#232328] xxs:px-[3%] sm:px-[4%] sm:gap-[6%] lg:pl-[240px] pr-[3%] py-4">
+    <div className="w-full font-inter fixed left-0 z-10 flex flex-row justify-center items-center bg-white dark:bg-[#232328] xxs:px-[3%] sm:px-[4%] sm:gap-[6%] lg:pl-[240px] pr-[3%] py-4">
       <button
         onClick={openSidebar}
         className="bg-[#F5F7FA] dark:bg-gray-600 rounded-[12px] p-3 py-2 flex items-center hover:bg-[#d0e6f6] dark:hover:bg-gray-600 lg:hidden"

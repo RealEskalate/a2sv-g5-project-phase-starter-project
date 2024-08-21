@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import DescriptionCard from "@/app/components/Card/DescriptionCard";
+import DescriptionCard from "@/app/components/Shimmer/DescriptionCard";
 import ServicesCard from "@/app/components/Card/ServicesCard";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -19,6 +19,7 @@ interface BankService {
 
 const Services = () => {
   const { data: session } = useSession();
+  const li = [1, 2, 3, 4];
   const colors = [
     "bg-orange-100",
     "bg-pink-100",
@@ -34,13 +35,11 @@ const Services = () => {
     setIsModalOpen(!isModalOpen);
   };
 
-  const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiZXRzZWxvdCIsImlhdCI6MTcyNDIwNzUzMCwiZXhwIjoxNzI0MjkzOTMwfQ.3BqG6j5y2ts1WXajtWBI7C2eEx3UNFV-fPjMokVJ-cN-z48sy40yhMBuvZOoJblr";
-
+  const accessToken = session?.accessToken as string;
   async function fetchData(accessToken: string) {
     try {
       const response = await axios.get(
-        `https://bank-dashboard-6acc.onrender.com/bank-services?page=0&size=50`,
+        `https://bank-dashboard-1tst.onrender.com/bank-services?page=0&size=50`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -87,17 +86,17 @@ const Services = () => {
 
         <div>
           <div className="flex justify-between">
-            <p className="font-semibold text-[22px] text-[#343C6A] pt-5 pb-5 lg:p-10 ">
+            <p className="font-semibold text-[22px] text-[#343C6A] dark:text-gray-300 pt-5 pb-5 lg:p-10 ">
               Bank Services List
             </p>
             <div
-              className={`flex items-center text-base text-[#718EBF] dark:bg-gray-700 dark:text-gray-400 rounded-[50px] py-1 pl-6 grow justify-end ${
+              className={`flex items-center text-base text-[#718EBF] dark:text-gray-400 rounded-[50px] py-1 pl-6 grow justify-end ${
                 isModalOpen ? "blur-sm" : ""
               }`}
             >
               <button
                 onClick={handleModalToggle}
-                className="bg-blue-600 text-white p-3 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className=" text-white p-3 px-6 rounded-lg shadow-md bg-[#1814F3] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="button"
               >
                 Add
@@ -105,11 +104,11 @@ const Services = () => {
             </div>
             {isModalOpen && (
               <div
-                className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50 backdrop-blur-sm"
+                className="fixed inset-0 z-50 flex justify-center items-center bg-black dark:bg-white dark:bg-opacity-[4%] dark:border-white dark:border-[1px] bg-opacity-50 backdrop-blur-sm"
                 onClick={handleModalToggle}
               >
                 <div
-                  className="relative bg-white p-6 rounded-lg shadow-lg max-w-lg w-full"
+                  className="relative bg-white dark:bg-[#232328] p-6 rounded-lg shadow-lg max-w-lg w-full"
                   onClick={(e) => e.stopPropagation()} // Prevent modal from closing when clicking inside it
                 >
                   <ModalService
@@ -139,7 +138,11 @@ const Services = () => {
                 />
               ))
             ) : (
-              <p className="pl-10">No services available</p>
+              <div className="w-full flex flex-col px-6 gap-2">
+                {li.map((item, key) => (
+                  <DescriptionCard key={key} />
+                ))}
+              </div>
             )}
           </div>
         </div>

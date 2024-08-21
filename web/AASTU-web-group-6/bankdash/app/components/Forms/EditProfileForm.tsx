@@ -41,7 +41,7 @@ const EditProfileForm = () => {
   };
 
   return (
-    <div className="w-full py-8 flex justify-around xs:flex-wrap md:flex-nowrap">
+    <div className="w-full py-8 flex gap-3 xs:flex-wrap md:flex-nowrap">
       <div className="flex justify-center xs:w-full md:w-fit md:pl-5">
         <div className="relative h-fit flex justify-center">
           <Image
@@ -49,7 +49,7 @@ const EditProfileForm = () => {
             width={132}
             height={130}
             alt="Profile"
-            className="rounded-full mr-4"
+            className="rounded-full mr-4 border-2 border-solid border-gray-600 dark:border-2 dark:border-gray-100"
           />
           <button className="absolute bottom-3 right-1 px-2 py-1 bg-[#1814F3] text-white rounded-full">
             <FontAwesomeIcon icon={faPencilAlt} className="text-lg" />
@@ -58,31 +58,37 @@ const EditProfileForm = () => {
       </div>
 
       <form
-        className="w-flex flex-col md:justify-around lg:w-[800px] gap-y-5 py-2 xs:px-2 sm:px-0 "
+        className="w-flex flex-col md:justify-around lg:w-[800px] py-2 xs:px-2 sm:px-0 "
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
           <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
-            <label className="mb-1 text-slate-800" htmlFor="name">
+            <label
+              className="mb-1 text-slate-800 dark:text-gray-300"
+              htmlFor="name"
+            >
               Your Name
             </label>
             <input
               type="text"
               id="name"
               {...register("name")}
-              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-600 dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
+              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-700  dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="Charlene Reed"
             />
           </div>
           <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
-            <label className="mb-1 text-slate-800" htmlFor="username">
+            <label
+              className="mb-1 text-slate-800 dark:text-gray-300"
+              htmlFor="username"
+            >
               User Name
             </label>
             <input
               type="text"
               id="username"
               {...register("username")}
-              className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
+              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="Charlene Reed"
             />
           </div>
@@ -90,26 +96,32 @@ const EditProfileForm = () => {
 
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
           <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
-            <label className="mb-1 text-slate-800" htmlFor="email">
+            <label
+              className="mb-1 text-slate-800 dark:text-gray-300"
+              htmlFor="email"
+            >
               Email
             </label>
             <input
               type="email"
               id="email"
               {...register("email")}
-              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-600 dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
+              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-700  dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="charlenereed@gmail.com"
             />
           </div>
           <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
-            <label className="mb-1 text-slate-800" htmlFor="password">
+            <label
+              className="mb-1 text-slate-800 dark:text-gray-300"
+              htmlFor="password"
+            >
               Password
             </label>
             <input
               type="password"
               id="password"
               {...register("password")}
-              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-600 dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
+              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-700  dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="********"
             />
           </div>
@@ -117,26 +129,32 @@ const EditProfileForm = () => {
 
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
           <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
-            <label className="mb-1 text-slate-800" htmlFor="dob">
+            <label
+              className="mb-1 text-slate-800 dark:text-gray-300"
+              htmlFor="dob"
+            >
               Date of Birth
             </label>
             <input
               type="date"
               id="dob"
               {...register("dateOfBirth")}
-              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-600 dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
+              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-700  dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="25 January 1990"
             />
           </div>
           <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
-            <label className="mb-1 text-slate-800" htmlFor="present-address">
+            <label
+              className="mb-1 text-slate-800 dark:text-gray-300"
+              htmlFor="present-address"
+            >
               Present Address
             </label>
             <input
               type="text"
               id="present-address"
               {...register("presentAddress")}
-              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-600 dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
+              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-700  dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="San Jose, California, USA"
             />
           </div>
@@ -144,26 +162,32 @@ const EditProfileForm = () => {
 
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
           <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
-            <label className="mb-1 text-slate-800" htmlFor="permanent-address">
+            <label
+              className="mb-1 text-slate-800 dark:text-gray-300"
+              htmlFor="permanent-address"
+            >
               Permanent Address
             </label>
             <input
               type="text"
               id="permanent-address"
               {...register("permanentAddress")}
-              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-600 dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
+              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-700  dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="San Jose, California, USA"
             />
           </div>
           <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
-            <label className="mb-1 text-slate-800" htmlFor="city">
+            <label
+              className="mb-1 text-slate-800 dark:text-gray-300"
+              htmlFor="city"
+            >
               City
             </label>
             <input
               type="text"
               id="city"
               {...register("city")}
-              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-600 dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
+              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-700  dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="San Jose"
             />
           </div>
@@ -171,7 +195,10 @@ const EditProfileForm = () => {
 
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
           <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
-            <label className="mb-1 text-slate-800" htmlFor="postal-code">
+            <label
+              className="mb-1 text-slate-800 dark:text-gray-300"
+              htmlFor="postal-code"
+            >
               Postal Code
             </label>
             <input
@@ -183,25 +210,30 @@ const EditProfileForm = () => {
             />
           </div>
           <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
-            <label className="mb-1 text-slate-800" htmlFor="country">
+            <label
+              className="mb-1 text-slate-800 dark:text-gray-300"
+              htmlFor="country"
+            >
               Country
             </label>
             <input
               type="text"
               id="country"
               {...register("country")}
-              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-600 dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
+              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-700   dark:border-gray-600 placeholder:text
+
+-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="USA"
             />
           </div>
         </div>
 
-        <div className="flex lg:justify-end mt-3 sm:w-full sm:justify-end">
+        <div className="mt-6">
           <button
+            className="px-4 py-2 bg-[#1814F3] text-white rounded-md hover:bg-[#0702db] transition-all duration-300"
             type="submit"
-            className="xs:w-full xs:mx-2 sm:w-[192px] py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
           >
-            Save
+            Save Changes
           </button>
         </div>
       </form>

@@ -41,6 +41,11 @@ func (uu *userUsecase) UpdateUser(c context.Context, userID string, updatedUser 
 	return err
 }
 
+func (uu *userUsecase) ActivateUser(c context.Context, userID string) error {
+	_, err := uu.userRepository.ActivateUser(c, userID)
+	return err
+}
+
 func (uu *userUsecase) DeleteUser(c context.Context, userID string) error {
 	return uu.userRepository.DeleteUser(c, userID)
 }

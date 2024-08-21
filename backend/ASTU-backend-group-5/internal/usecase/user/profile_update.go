@@ -9,12 +9,15 @@ import (
 )
 
 func (u *UserUsecase) UpdateUser(user *domain.User) error {
-	userId := user.ID
-	dbUser, err := u.repo.FindUserByEmail(context.Background(), userId.Hex())
+	email := user.Email
+	dbUser, err := u.repo.FindUserByEmail(context.Background(),email)
 	if err != nil {
 		return err
 	}
 	dbUser.Profile = user.Profile
+	dbUser.UserName = user.UserName
+	dbUser.Email = user.Email
+
 	dbUser.Updated = primitive.NewDateTimeFromTime(time.Now())
 	return u.repo.UpdateUser(context.Background(), dbUser)
 }

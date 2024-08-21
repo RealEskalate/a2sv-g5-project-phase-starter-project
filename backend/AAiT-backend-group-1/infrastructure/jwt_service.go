@@ -17,6 +17,10 @@ type JWTTokenService struct {
 	Collection    *mongo.Collection
 }
 
+func NewJWTTokenService(accessSecret, refreshSecret string, collection *mongo.Collection) domain.JwtService {
+	return &JWTTokenService{ AccessSecret: accessSecret, RefreshSecret: refreshSecret, Collection: collection }
+}
+
 func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User) (string, error) {
 	claim := jwt.MapClaims{
 		"user_id":  user.ID,

@@ -13,7 +13,7 @@ func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToke
 	exp := time.Now().Add(time.Hour * time.Duration(expiry))
 
 	// Create claims
-	role := user.Role
+	var role string
 	if user.Role == "" {
 		role = "user"
 	}

@@ -1,9 +1,10 @@
 package middleware
 
 import (
-    "net/http"
-    "github.com/gin-gonic/gin"
-    "blogApp/internal/domain"
+	"blogApp/internal/domain"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func AdminMiddleware() gin.HandlerFunc {
@@ -21,6 +22,7 @@ func AdminMiddleware() gin.HandlerFunc {
             c.Abort()
             return
         }
+
 
         if userClaims.Role != "admin" && userClaims.Role != "owner" {
             c.JSON(http.StatusForbidden, gin.H{"error": "Admin access required"})

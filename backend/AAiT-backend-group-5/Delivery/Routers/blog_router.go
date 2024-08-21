@@ -20,7 +20,7 @@ func NewBlogRouter(env *config.Env, database mongo.Database, group *gin.RouterGr
 	user_repository := repository.NewUserRepository(&database)
 	blog_repository := repository.NewBlogRepository(&database)
 	cacheService := infrastructure.NewRedisCache(redisClient)
-	helper := utils.NewBlogHelper()
+	helper := utils.NewBlogHelper(blog_repository, cacheService, time.Hour*24)
 	blogUsecase := usecases.NewblogUsecase(blog_repository, cacheService, *env, time.Hour*24, helper, user_repository, popularity_repository)
 
 	blogController := controllers.NewBlogController(blogUsecase)

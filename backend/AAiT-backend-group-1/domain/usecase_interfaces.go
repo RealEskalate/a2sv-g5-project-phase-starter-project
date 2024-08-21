@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"mime/multipart"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,16 +18,17 @@ type UserUseCase interface {
 	PromoteUser(context context.Context, userID string) Error
 	DemoteUser(cxt context.Context, userID string) Error
 	UpdateProfile(context context.Context, userID string, user *User) Error
+	ImageUpload(cxt *gin.Context, file *multipart.File, header *multipart.FileHeader) Error
 }
 
 type BlogUseCase interface {
 	CreateBlog(blog *Blog, authorID string) Error
-	GetBlog(blogID string) (*Blog, Error)
-	GetBlogs() ([]Blog, Error)
-	UpdateBlog(blogID string, blog *Blog) Error
+	GetBlog(blogID string , userID string) (*Blog, Error)
+	GetBlogs(page_number string) ([]Blog, Error)
+	UpdateBlog(blogID string, blog *Blog , userId string) Error
 	DeleteBlog(blogID string) Error
-	SearchBlogsByTitle(title string) ([]Blog, Error)
-	SearchBlogsByAuthor(author string) ([]Blog, Error)
+	SearchBlogsByTitle(title string , page_number string) ([]Blog, Error)
+	SearchBlogsByAuthor(author string, page_number string) ([]Blog, Error)
 	FilterBlogs(tags []string, dateAfter time.Time, popular bool) ([]Blog, Error)
 	LikeBlog(userID, blogID string) Error
 	AddComment(blogID string, comment *Comment) Error

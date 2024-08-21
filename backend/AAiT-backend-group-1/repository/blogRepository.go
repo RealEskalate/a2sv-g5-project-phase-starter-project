@@ -2,12 +2,14 @@ package repository
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type blogRepository struct {
@@ -51,8 +53,24 @@ func (r *blogRepository) FindById(id string) (*domain.Blog, domain.Error) {
 	return &blog, nil
 }
 
-func (r *blogRepository) FindAll() ([]domain.Blog, domain.Error) {
-	cursor, err := r.collection.Find(r.ctx, bson.M{})
+func (r *blogRepository) FindAll(page_number string) ([]domain.Blog, domain.Error) {
+	// Convert page_number to integer
+	page, err := strconv.Atoi(page_number)
+	if err != nil || page < 1 {
+		return nil, &domain.CustomError{Code: 400, Message: "Invalid page number"}
+	}
+
+	// Set limit and calculate offset (skip)
+	limit := 15
+	offset := (page - 1) * limit
+
+	// MongoDB find options
+	findOptions := options.Find()
+	findOptions.SetLimit(int64(limit))
+	findOptions.SetSkip(int64(offset))
+
+	// Perform the query with pagination
+	cursor, err := r.collection.Find(r.ctx, bson.M{}, findOptions)
 	if err != nil {
 		return nil, &domain.CustomError{Code: 500, Message: "Internal Server Error"}
 	}
@@ -75,6 +93,7 @@ func (r *blogRepository) FindAll() ([]domain.Blog, domain.Error) {
 
 	return blogs, nil
 }
+
 
 func (r *blogRepository) Update(blogID string, blog *domain.Blog) (*domain.Blog, domain.Error) {
     // Convert the string ID to a primitive.ObjectID
@@ -138,16 +157,35 @@ func (r *blogRepository) Delete(id string) domain.Error {
 	return nil
 }
 
-func (r *blogRepository) SearchByTitle(title string) ([]domain.Blog, domain.Error) {
-	// Implement the Search method here
+func (r *blogRepository) SearchByTitle(title string, page_number string) ([]domain.Blog, domain.Error) {
+	// Convert page_number to integer
+	page, err := strconv.Atoi(page_number)
+	if err != nil || page < 1 {
+		return nil, &domain.CustomError{Code: 400, Message: "Invalid page number"}
+	}
+
+	// Set limit and calculate offset (skip)
+	limit := 15
+	offset := (page - 1) * limit
+
+	// Create a filter to search by title with case-insensitive matching
 	titleFilter := bson.M{"title": primitive.Regex{Pattern: title, Options: "i"}}
-	cursor, err := r.collection.Find(r.ctx, titleFilter)
+
+	// MongoDB find options
+	findOptions := options.Find()
+	findOptions.SetLimit(int64(limit))
+	findOptions.SetSkip(int64(offset))
+
+	// Perform the query with pagination
+	cursor, err := r.collection.Find(r.ctx, titleFilter, findOptions)
 	if err != nil {
 		return nil, &domain.CustomError{Code: 500, Message: "Internal Server Error"}
 	}
 
 	defer cursor.Close(r.ctx)
+
 	var blogs []domain.Blog
+
 	for cursor.Next(r.ctx) {
 		var blog domain.Blog
 		if err := cursor.Decode(&blog); err != nil {
@@ -155,18 +193,43 @@ func (r *blogRepository) SearchByTitle(title string) ([]domain.Blog, domain.Erro
 		}
 		blogs = append(blogs, blog)
 	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, &domain.CustomError{Code: 500, Message: "Internal Server Error"}
+	}
+
 	return blogs, nil
 }
 
-func (r *blogRepository) SearchByAuthor(author string) ([]domain.Blog, domain.Error) {
+func (r *blogRepository) SearchByAuthor(author string, page_number string) ([]domain.Blog, domain.Error) {
+	// Convert page_number to integer
+	page, err := strconv.Atoi(page_number)
+	if err != nil || page < 1 {
+		return nil, &domain.CustomError{Code: 400, Message: "Invalid page number"}
+	}
+
+	// Set limit and calculate offset (skip)
+	limit := 15
+	offset := (page - 1) * limit
+
+	// Create a filter to search by author with case-insensitive matching
 	authorFilter := bson.M{"author_username": primitive.Regex{Pattern: author, Options: "i"}}
-	cursor, err := r.collection.Find(r.ctx, authorFilter)
+
+	// MongoDB find options
+	findOptions := options.Find()
+	findOptions.SetLimit(int64(limit))
+	findOptions.SetSkip(int64(offset))
+
+	// Perform the query with pagination
+	cursor, err := r.collection.Find(r.ctx, authorFilter, findOptions)
 	if err != nil {
 		return nil, &domain.CustomError{Code: 500, Message: "Internal Server Error"}
 	}
 
 	defer cursor.Close(r.ctx)
+
 	var blogs []domain.Blog
+
 	for cursor.Next(r.ctx) {
 		var blog domain.Blog
 		if err := cursor.Decode(&blog); err != nil {
@@ -174,9 +237,13 @@ func (r *blogRepository) SearchByAuthor(author string) ([]domain.Blog, domain.Er
 		}
 		blogs = append(blogs, blog)
 	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, &domain.CustomError{Code: 500, Message: "Internal Server Error"}
+	}
+
 	return blogs, nil
 }
-
 func (r *blogRepository) Filter(filters map[string]interface{}) ([]domain.Blog, domain.Error) {
     // Initialize the MongoDB filter
     mongoFilter := bson.M{}

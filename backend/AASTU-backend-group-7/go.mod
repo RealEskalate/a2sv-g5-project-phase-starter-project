@@ -5,13 +5,17 @@ go 1.22.5
 require (
 	github.com/cloudinary/cloudinary-go v1.7.0
 	github.com/gin-gonic/gin v1.10.0
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/creasty/defaults v1.7.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/gorilla/schema v1.4.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
 

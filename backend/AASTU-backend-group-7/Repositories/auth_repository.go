@@ -50,7 +50,7 @@ func NewAuthRepository(user_collection Domain.Collection, token_collection Domai
 		UserCollection:  user_collection,
 		TokenRepository: NewRefreshRepository(token_collection),
 		oauth2Config:    *oauth_config,
-		emailservice:    emailservice.NewMailTrapService(),
+		emailservice:    emailservice.NewMailService(),
 		userRepository:  userRepository,
 		mu:              sync.RWMutex{},
 	}
@@ -60,7 +60,6 @@ func NewAuthRepository(user_collection Domain.Collection, token_collection Domai
 func (ar *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.Tokens, error, int) {
 	ar.mu.RLock()
 	defer ar.mu.RUnlock()
-	
 
 	filter := bson.D{{"email", user.Email}}
 	var existingUser Domain.User
@@ -78,6 +77,7 @@ func (ar *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.
 	if existingUser.EmailVerified == false {
 		err, statusCode := ar.SendActivationEmail(user.Email)
 		if err != nil {
+			fmt.Println("error at sending email", err)
 			return Domain.Tokens{}, err, statusCode
 		}
 		return Domain.Tokens{}, errors.New("email is not activated , an activation email has been sent"), http.StatusUnauthorized
@@ -90,7 +90,6 @@ func (ar *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.
 func (ar *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserDto) (*Domain.OmitedUser, error, int) {
 	ar.mu.RLock()
 	defer ar.mu.RUnlock()
-	
 
 	// Validate the user input
 	err := ar.validator.Struct(user)
@@ -236,6 +235,7 @@ func (ar *authRepository) GoogleLogin(ctx context.Context) string {
 func (ar *authRepository) CallbackHandler(ctx context.Context, code string) (Domain.Tokens, error, int) {
 	ar.mu.RLock()
 	defer ar.mu.RUnlock()
+
 	token, err := ar.oauth2Config.Exchange(ctx, code)
 	if err != nil {
 		return Domain.Tokens{}, errors.New("Couldn't exchange token: "), http.StatusInternalServerError
@@ -262,10 +262,12 @@ func (ar *authRepository) CallbackHandler(ctx context.Context, code string) (Dom
 	if err != nil {
 		// register the user
 		user := Dtos.RegisterUserDto{
+			Name:           userInfo["name"].(string),
 			Email:          userInfo["email"].(string),
 			UserName:       userInfo["name"].(string),
 			ProfilePicture: userInfo["picture"].(string),
 			EmailVerified:  userInfo["email_verified"].(bool),
+			Password:       "test" + userInfo["sub"].(string),
 		}
 		_, err, _ := ar.Register(ctx, &user)
 		if err != nil {
@@ -284,6 +286,7 @@ func (ar *authRepository) CallbackHandler(ctx context.Context, code string) (Dom
 func (ar *authRepository) GenerateTokenFromUser(ctx context.Context, existingUser Domain.User) (Domain.Tokens, error, int) {
 	ar.mu.RLock()
 	defer ar.mu.RUnlock()
+
 	filter := bson.D{{Key: "email", Value: existingUser.Email}}
 	// Generate JWT access
 	jwtAccessToken, err := jwtservice.CreateAccessToken(existingUser)
@@ -294,7 +297,6 @@ func (ar *authRepository) GenerateTokenFromUser(ctx context.Context, existingUse
 	if err != nil {
 		return Domain.Tokens{}, err, 500
 	}
-
 
 	filter = primitive.D{{"_id", existingUser.ID}}
 	existingTokenCount, err := ar.UserCollection.CountDocuments(ctx, filter)
@@ -327,7 +329,6 @@ func (ar *authRepository) GenerateTokenFromUser(ctx context.Context, existingUse
 func (ar *authRepository) ActivateAccount(ctx context.Context, token string) (error, int) {
 	ar.mu.RLock()
 	defer ar.mu.RUnlock()
-	
 	email, err := jwtservice.VerifyToken(token)
 	if err != nil {
 		return err, http.StatusBadRequest
@@ -336,7 +337,12 @@ func (ar *authRepository) ActivateAccount(ctx context.Context, token string) (er
 
 	filter := bson.D{{"email", email}}
 
-	update := bson.D{{"$set", bson.D{{"email_verified", true}}}}
+	update := bson.D{
+		{"$set", bson.D{
+			{"email_verified", true},
+			{"created_at", time.Now()},
+		}},
+	}
 	UpdatedResult, err := ar.UserCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err, http.StatusInternalServerError

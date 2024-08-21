@@ -1,7 +1,6 @@
 package emailservice
 
 import (
-	"blogapp/Config"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -9,61 +8,50 @@ import (
 )
 
 var (
-	fromEmail = "mailtrap@demomailtrap.com"
-	fromName  = "Mailtrap Blog Test"
+	YOUR_SERVICE_ID  = "service_67ycmnl"
+	YOUR_TEMPLATE_ID = "template_fh4miqh"
+	YOUR_PUBLIC_KEY  = "7MAmpSKJ-QMOiOhFH"
 )
 
-// MailTrapService defines methods for interacting with the Mailtrap API
-type MailTrapService interface {
+type MailService interface {
 	SendEmail(toEmail string, subject string, text string, category string) error
-	// GetEmailMessages(emailAddress string) ([]byte, error)
-	// DeleteEmailMessage(emailAddress, messageID string) error
 }
 
-// mailTrapService implements the MailTrapService interface
-type mailTrapService struct {
+type mailService struct {
 	apiToken string
 }
 
-// NewMailTrapService creates a new instance of mailTrapService
-func NewMailTrapService() *mailTrapService {
-	return &mailTrapService{
-		apiToken: Config.Mail_TRAP_API_KEY,
-	}
+func NewMailService() *mailService {
+	return &mailService{}
 }
-
-// SendEmail sends an email using the Mailtrap API
-func (s *mailTrapService) SendEmail(toEmail string, subject string, text string, category string) error {
-	url := "https://send.api.mailtrap.io/api/send"
+func (s *mailService) SendEmail(toEmail string, subject string, text string, category string) error {
+	url := "https://api.emailjs.com/api/v1.0/email/send"
 	headers := map[string]string{
-		"Authorization": "Bearer " + s.apiToken,
-		"Content-Type":  "application/json",
+		"Content-Type": "application/json",
 	}
 
-	emailPayload := map[string]interface{}{
-		"from": map[string]string{
-			"email": fromEmail,
-			"name":  fromName,
+	data := map[string]interface{}{
+		"service_id":  YOUR_SERVICE_ID,
+		"template_id": YOUR_TEMPLATE_ID,
+		"user_id":     YOUR_PUBLIC_KEY,
+		"template_params": map[string]string{
+			"message":  text,
+			"subject":  subject,
+			"category": category,
+			"to_email": toEmail,
 		},
-		"to": []map[string]string{
-			{
-				"email": toEmail,
-			},
-		},
-		"subject":  subject,
-		"text":     text,
-		"category": category,
 	}
 
-	jsonPayload, err := json.Marshal(emailPayload)
+	jsonPayload, err := json.Marshal(data)
 	if err != nil {
-		return err
+		return fmt.Errorf("error marshaling json: %v", err)
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonPayload))
 	if err != nil {
-		return err
+		return fmt.Errorf("error creating request: %v", err)
 	}
+
 	for key, value := range headers {
 		req.Header.Set(key, value)
 	}
@@ -71,14 +59,17 @@ func (s *mailTrapService) SendEmail(toEmail string, subject string, text string,
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return fmt.Errorf("error sending email: %s", resp.Status)
+		var responseBody map[string]interface{}
+		if err := json.NewDecoder(resp.Body).Decode(&responseBody); err != nil {
+			return fmt.Errorf("error reading response: %s", resp.Status)
+		}
+		return fmt.Errorf("error sending email: %s", responseBody["message"])
 	}
+
 	return nil
 }
-
-// Optionally implement GetEmailMessages and DeleteEmailMessage here

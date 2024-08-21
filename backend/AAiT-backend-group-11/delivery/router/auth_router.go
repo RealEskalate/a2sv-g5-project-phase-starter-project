@@ -27,10 +27,11 @@ func NewAuthRouter(env *bootstrap.Env,db *mongo.Database, group *gin.RouterGroup
 	auth_service := service.NewAuthService(user_service, pass_reset_service, pass_service, token_service, otpService)
 	auth_controller := controller.NewAuthController(auth_service)
 
-	group.POST("/login", auth_controller.Login)
-	group.POST("/logout", auth_controller.Logout)
-	group.POST("/refresh", auth_controller.RefreshAccessToken)
-	group.POST("/register", auth_controller.RegisterUser)
+
+	group.POST("login", auth_controller.Login)
+	group.POST("logout", auth_controller.Logout)
+	group.POST("refresh", auth_controller.RefreshAccessToken)
+	group.POST("register", auth_controller.RegisterUser)
 	group.POST("/verify-email", auth_controller.VerifyEmail)
 
 }

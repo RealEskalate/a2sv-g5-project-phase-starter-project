@@ -4,6 +4,7 @@ import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
 	"context"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -25,24 +26,32 @@ func NewBlogRepository(collection *mongo.Collection, ctx context.Context) interf
 }
 
 func (br *blogRepository) CreateBlogPost(blogPost *entities.BlogPost, userId string) (*entities.BlogPost, error) {
+	log.Println(userId)
 	userObjectId, err := primitive.ObjectIDFromHex(userId)
+	
 	if err != nil {
 		return nil, err
 	}
 
-	//add blog author and timestamps
-	blogPost.AuthorID = userObjectId
+	// Initialize LikedBy and Viewers as empty arrays
+	blogPost.LikedBy = []primitive.ObjectID{}
+	blogPost.Viewers = []primitive.ObjectID{}
 
+	// Add blog author and timestamps
+	blogPost.AuthorID = userObjectId
 	blogPost.CreatedAt = time.Now()
 	blogPost.UpdatedAt = time.Now()
 
-	_, err = br.collection.InsertOne(br.ctx, blogPost)
+	returnedResult, err := br.collection.InsertOne(br.ctx, blogPost)
 	if err != nil {
 		return nil, err
 	}
 
+	blogPost.ID = returnedResult.InsertedID.(primitive.ObjectID)
+
 	return blogPost, nil
 }
+
 
 func (br *blogRepository) GetBlogPostById(blogPostId string) (*entities.BlogPost, error) {
 	objID, err := primitive.ObjectIDFromHex(blogPostId)
@@ -65,10 +74,21 @@ func (br *blogRepository) GetBlogPostById(blogPostId string) (*entities.BlogPost
 func (br *blogRepository) UpdateBlogPost(blogPost *entities.BlogPost) (*entities.BlogPost, error) {
 	blogPost.UpdatedAt = time.Now()
 
-	filter := bson.M{"_id": blogPost.ID}
-	update := bson.M{
-		"$set": blogPost,
+	// Create a dynamic update map
+	update := bson.M{"$set": bson.M{}}
+
+	// Add only non-null fields to the update map
+	if blogPost.Title != "" {
+		update["$set"].(bson.M)["title"] = blogPost.Title
 	}
+	if blogPost.Content != "" {
+		update["$set"].(bson.M)["content"] = blogPost.Content
+	}
+	if blogPost.Tags != nil {
+		update["$set"].(bson.M)["tags"] = blogPost.Tags
+	}
+
+	filter := bson.M{"_id": blogPost.ID}
 
 	_, err := br.collection.UpdateOne(br.ctx, filter, update)
 	if err != nil {
@@ -77,6 +97,7 @@ func (br *blogRepository) UpdateBlogPost(blogPost *entities.BlogPost) (*entities
 
 	return blogPost, nil
 }
+
 
 func (br *blogRepository) DeleteBlogPost(blogPostId string) error {
 	objID, err := primitive.ObjectIDFromHex(blogPostId)
@@ -208,7 +229,6 @@ func (br *blogRepository) FilterBlogPosts(tags []string, dateRange []time.Time, 
 }
 
 func (br *blogRepository) LikeBlogPost(postID, userID string) error {
-
 	postObjectID, err := primitive.ObjectIDFromHex(postID)
 	if err != nil {
 		return err
@@ -219,7 +239,11 @@ func (br *blogRepository) LikeBlogPost(postID, userID string) error {
 		return err
 	}
 
-	filter := bson.M{"_id": postObjectID}
+	filter := bson.M{"_id": postObjectID,
+	"likedBy": bson.M{
+		"$ne": userObjectID, // $ne checks if the user is NOT in the likedby list
+	},
+}
 	update := bson.M{
 		"$addToSet": bson.M{"likedBy": userObjectID},
 		"$inc":      bson.M{"likeCount": 1},
@@ -240,7 +264,6 @@ func (br *blogRepository) LikeBlogPost(postID, userID string) error {
 
 	return nil
 }
-
 func (br *blogRepository) DislikeBlogPost(postID, userID string) error {
 
 	postObjectID, err := primitive.ObjectIDFromHex(postID)
@@ -253,17 +276,24 @@ func (br *blogRepository) DislikeBlogPost(postID, userID string) error {
 		return err
 	}
 
+	// Create a filter that matches the post ID and checks if the user is in the likedBy array
 	filter := bson.M{
-		"_id":     postObjectID,
-		"likedBy": userObjectID,
+		"_id": postObjectID,
+		"likedBy": bson.M{
+			"$eq": userObjectID, // Check if the user is in the likedBy list
+		},
 	}
+
+	// Define the update to remove the user from the likedBy array and decrement the likeCount
 	update := bson.M{
-		"$pull": bson.M{"likedBy": userID},
+		"$pull": bson.M{"likedBy": userObjectID},
 		"$inc":  bson.M{"likeCount": -1},
 	}
 
-	// Update the document only if the user's ID is in the likedBy array
+	// Set options to return the updated document
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+
+	// Perform the update operation
 	var updatedPost entities.BlogPost
 	err = br.collection.FindOneAndUpdate(br.ctx, filter, update, opts).Decode(&updatedPost)
 
@@ -281,33 +311,39 @@ func (br *blogRepository) DislikeBlogPost(postID, userID string) error {
 
 func (br *blogRepository) IncrementViewPost(postID, userID string) error {
 
-	postObjectID, err := primitive.ObjectIDFromHex(postID)
-	if err != nil {
-		return err
-	}
+    postObjectID, err := primitive.ObjectIDFromHex(postID)
+    if err != nil {
+        return err
+    }
 
-	userObjectID, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return err
-	}
+    userObjectID, err := primitive.ObjectIDFromHex(userID)
+    if err != nil {
+        return err
+    }
 
-	filter := bson.M{"_id": postObjectID}
-	update := bson.M{
-		"$addToSet": bson.M{"viewers": userObjectID}, // Add the user ID to viewers if not already present
-		"$inc":      bson.M{"viewCount": 1},          // Increment the view count
-	}
+    filter := bson.M{
+        "_id": postObjectID,
+        "viewers": bson.M{
+            "$ne": userObjectID, // $ne checks if the user is NOT in the viewers list
+        },
+    }
 
-	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-	var updatedPost entities.BlogPost
-	err = br.collection.FindOneAndUpdate(br.ctx, filter, update, opts).Decode(&updatedPost)
+    update := bson.M{
+        "$addToSet": bson.M{"viewers": userObjectID},
+        "$inc":      bson.M{"viewCount": 1},        
+    }
 
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil
-		}
-		return err
-	}
-	return nil
+    opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+    var updatedPost entities.BlogPost
+    err = br.collection.FindOneAndUpdate(br.ctx, filter, update, opts).Decode(&updatedPost)
+
+    if err != nil {
+        if err == mongo.ErrNoDocuments {
+            return nil
+        }
+        return err
+    }
+    return nil
 }
 
 
@@ -318,4 +354,26 @@ func (br *blogRepository) CountBlogPosts() (int, error) {
 	}
 
 	return int(count), nil
+}
+
+
+func (br * blogRepository) ChangeCommentCount(blogPostId string, val int) error {
+
+	objId, err := primitive.ObjectIDFromHex(blogPostId)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{
+        "_id": objId,
+    }
+
+	update := bson.M{
+		"$inc":      bson.M{"commentCount": val},        
+	}	
+
+	_ = br.collection.FindOneAndUpdate(br.ctx, filter, update)
+
+	
+	return nil
 }

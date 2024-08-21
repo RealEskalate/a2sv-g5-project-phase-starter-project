@@ -53,12 +53,13 @@ func (controller *AuthController) Login(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
 	refreshToken, accessToken, err := controller.authService.Login(user.Email, user.Password)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	c.Header("Authorization", "Bearer "+accessToken)
+	c.JSON(200, gin.H{"access_token": accessToken})
 	c.SetCookie("refresh_token", refreshToken.Token, int(refreshToken.ExpiresAt.Unix()), "/", "localhost", false, true)
 }
 

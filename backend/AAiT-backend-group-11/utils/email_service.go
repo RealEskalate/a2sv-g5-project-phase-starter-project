@@ -22,6 +22,7 @@ type emailService struct {
 // VerifyEmailAddress implements interfaces.EmailService.
 func (e *emailService) VerifyEmailAddress(emailAddress string) (bool, error) {
     err := checkmail.ValidateHostAndUser(e.smtpServer, e.sender, emailAddress)
+
     if err != nil {
         if smtpErr, ok := err.(checkmail.SmtpError); ok {
             // Print detailed SMTP error and return false
@@ -133,6 +134,7 @@ func (e *emailService) SendEmail(emailAddress string, subject string, body strin
 		"Content-Type: text/html; charset=\"utf-8\"\r\n" +
 		"\r\n" + body
 
+	log.Println(emailAddress)
 	// Send the email.
 	err := smtp.SendMail(
 		"smtp.gmail.com:587",
@@ -141,6 +143,7 @@ func (e *emailService) SendEmail(emailAddress string, subject string, body strin
 		[]string{emailAddress},
 		[]byte(msg),
 	)
+
 
 	if err != nil {
 		return fmt.Errorf("failed to send email: %v", err)

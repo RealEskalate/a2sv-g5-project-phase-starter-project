@@ -123,10 +123,13 @@ type BlogRepository interface {
 	GetBlogs(ctx context.Context, filterQuery FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
 	SearchBlogs(ctx context.Context, query string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error)
 	GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error)
+	DeleteCommentsByBlogID(ctx context.Context, blogID string) error
 	CreateComment(ctx context.Context, comment Comment) (string, error)
 	GetCommentByID(ctx context.Context, id string) (Comment, error)
 	DeleteComment(ctx context.Context, id string) error
 	LikeBlog(ctx context.Context, like Like) error
+	DeleteLikesByBlogID(ctx context.Context, blogID string) error
+	DeleteDislikesByBlogID(ctx context.Context, blogID string) error
 	DislikeBlog(ctx context.Context, dislike Dislike) error
 	UnlikeBlog(ctx context.Context, like Like) error
 	UndislikeBlog(ctx context.Context, dislike Dislike) error

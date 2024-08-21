@@ -1,18 +1,12 @@
 import { getSession } from "next-auth/react";
-import {
-  TransactionProps,
-  RandomBalanceHistory,
-  UserResponse,
-  CardDetails,
-  QuickTransferProps,
-} from "@/types";
-import { log } from "console";
+import { TransactionProps,RandomBalanceHistory,UserResponse, CreditCardProps,QuickTransferProps } from "@/types";
 
-export async function getCreditCards() {
-  try {
+export  async function getCreditCards(page: number, size: number) {
+    try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
-    const res = await fetch(`https://bank-dashboard-6acc.onrender.com/cards`, {
+    console.log("bbvvv",URL)
+    const res = await fetch(`https://bank-dashboard-6acc.onrender.com/cards?page=${page}&size=${size}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -22,7 +16,7 @@ export async function getCreditCards() {
     if (!res.ok) {
       throw new Error("failed to get data");
     }
-    const cards: CardDetails[] = await res.json();
+    const cards: CreditCardProps = await res.json();
     return cards;
   } catch (error) {
     console.error("An error occurred on card:", error);

@@ -1,3 +1,4 @@
+'use client'
 import { CardDetails } from "@/types";
 import Image from "next/image";
 import React from "react";
@@ -6,6 +7,7 @@ import {
   formatDateString,
   maskCardNumber,
 } from "../transactions/component/utils";
+import { useUser } from "@/contexts/UserContext";
 
 const CreditCard: React.FC<CardDetails> = ({
   cardHolder,
@@ -31,12 +33,13 @@ const CreditCard: React.FC<CardDetails> = ({
       textColor = "text-black";
       break;
     default:
-      bgColor = "bg-white"; // Default white background
+      bgColor = "bg-white"; 
       textColor = "text-black";
   }
+  const {isDarkMode} = useUser();
   return (
     <div
-      className={` min-w-[300px] h-55 ${bgColor} rounded-2xl pt-3 space-y-5 border border-gray-300`}
+      className={` min-w-[300px] h-55 ${bgColor} rounded-2xl pt-3 space-y-5 ${!isDarkMode ? "border border-gray-300":""} `}
     >
       <div className="flex justify-between px-5">
         <div className={`block ${textColor} space-y-[1px]`}>

@@ -15,6 +15,7 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, gin *g
 	// All Public APIs
 	NewSignupRouter(env, timeout, db, publicRouter)
 	NewLoginRouter(env, timeout, db, publicRouter)
+	NewOAuthRouter(env, timeout, db, publicRouter)
 	NewRefreshTokenRouter(env, timeout, db, publicRouter)
 	NewVerificationRouter(env, timeout, db, publicRouter)
 	NewPublicBlogsRouter(env, timeout, db, publicRouter)

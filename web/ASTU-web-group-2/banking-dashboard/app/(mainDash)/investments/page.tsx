@@ -11,7 +11,7 @@ const InvestmentsPage = () => {
   return (
     <div className="grid grid-cols-1 gap-2 pb-5">
       <InfoboxForInvestementPage />
-      <div className="grid grid-cols-2 max-md:grid-cols-1  gap-4 p-4 w-auto">
+      <div className="grid lg:grid-cols-2 max-md:grid-cols-1  gap-7 p-4 w-auto">
         <Card
           title="Yearly Total Investment"
           className=""
@@ -25,7 +25,7 @@ const InvestmentsPage = () => {
           <MonthlyRevenueChart />
         </Card>
       </div>
-      <div className="grid grid-cols-[6fr_4fr] max-md:grid-cols-1  gap-4 p-4 w-auto">
+      <div className="grid lg:grid-cols-[6fr_4fr] max-md:grid-cols-1  gap-7 p-4 w-auto">
         <Card
           title="My Investment"
           className=""

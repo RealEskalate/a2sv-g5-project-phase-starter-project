@@ -88,7 +88,7 @@ function CardExpenseStatisticsChart() {
               display: false,
             },
           },
-          cutout: "30%", // Move the cutout here
+          cutout: "30%",
         };
 
         const combinedChart = new Chart(context, {
@@ -110,31 +110,31 @@ function CardExpenseStatisticsChart() {
   }, []);
 
   return (
-    <div className="bg-white lg:w-[350px] lg:h-[310px] md:w-[231px] md:h-[231px] rounded-[28px] text-[#718EBF]">
-      <div className="pt-6 pb-1 md:w-[150px] md:h-[150px] md:ml-[40px] lg:w-[200px] lg:h-[200px] lg:ml-[75px]">
-        <canvas ref={chartRef} width="200" height="200" />
+    <div className="grid grid-cols-1 bg-white rounded-[28px] text-[#718EBF] h-[310px]">
+      <div className="pt-6 pb-1 h-48">
+        <canvas ref={chartRef}/>
       </div>
       <div className="grid grid-cols-[1fr_1fr] mx-4 pl-5 md:pl-1 md:mx-1 md:text-[15px] lg:mx-4 lg:pl-5">
         <div className="grid grid-cols-[1fr_6fr] m-1">
           <div className="w-4 h-4 bg-[#4C78FF] rounded-full mx-1 mt-1"></div>
           <div>
-            <p className="">DBL Bank</p>
+            <p>DBL Bank</p>
           </div>
         </div>
         <div className="grid grid-cols-[1fr_6fr] m-1 ">
-          <div className="w-4 h-4 bg-red-400 rounded-full  mx-1 mt-1"></div>
+          <div className="w-4 h-4 bg-red-400 rounded-full mx-1 mt-1"></div>
           <div>
             <p>BRC Bank</p>
           </div>
         </div>
         <div className="grid grid-cols-[1fr_6fr] m-1">
-          <div className="w-4 h-4 bg-[#16DBCC] rounded-full  mx-1 mt-1"></div>
+          <div className="w-4 h-4 bg-[#16DBCC] rounded-full mx-1 mt-1"></div>
           <div>
             <p>ABM Bank</p>
           </div>
         </div>
         <div className="grid grid-cols-[1fr_6fr] m-1">
-          <div className="w-4 h-4 bg-[#FFBB38] rounded-full  mx-1 mt-1"></div>
+          <div className="w-4 h-4 bg-[#FFBB38] rounded-full mx-1 mt-1"></div>
           <div>
             <p>MCP Bank</p>
           </div>

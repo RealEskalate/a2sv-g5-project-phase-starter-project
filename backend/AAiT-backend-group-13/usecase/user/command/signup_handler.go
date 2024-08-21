@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"log"
 	"time"
 
 	er "github.com/group13/blog/domain/errors"
@@ -17,6 +18,7 @@ import (
 	ijwt "github.com/group13/blog/usecase/common/i_jwt"
 	irepo "github.com/group13/blog/usecase/common/i_repo"
 	result "github.com/group13/blog/usecase/user/result"
+	
 )
 
 // SignUpHandler handles user sign-up logic.
@@ -52,6 +54,8 @@ func NewSignUpHandler(config SignUpConfig) *SignUpHandler {
 // It creates a new user, checks for conflicts in username and email,
 // generates a validation link, and sends a sign-up email.
 func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, error) {
+	log.Println("Starting sign-up process")
+
 	cfg := models.UserConfig{
 		Username:       command.username,
 		Email:          command.email,
@@ -64,42 +68,62 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 
 	user, err := models.NewUser(cfg)
 	if err != nil {
+		log.Printf("Error creating new user: %v", err)
 		return nil, err
 	}
+	log.Println("New user created")
 
 	// Check if the username is already taken
-	if res, err := h.repo.FindByUsername(user.Username()); res != nil || err != nil {
-		if err == nil {
-			err = er.NewConflict("username taken")
+	res, err := h.repo.FindByUsername(user.Username())
+	if err != nil {
+		if err != er.UserNotFound {
+			log.Printf("Error finding user by username: %v", err.Error())
+			return nil, err
 		}
-		return nil, err
+	} else if res != nil {
+		log.Printf("Username %s is already taken", user.Username())
+		return nil, er.NewConflict("username taken")
 	}
 
+	log.Printf("Username %s is available", user.Username())
+
 	// Check if the email is already registered
-	if res, err := h.repo.FindByEmail(user.Email()); res != nil || err != nil {
-		if err == nil {
-			err = er.NewConflict("email already exists")
+	res, err = h.repo.FindByEmail(user.Email())
+	if err != nil {
+		if err != er.UserNotFound {
+			log.Printf("Error finding user by email: %v", err)
+			return nil, err
 		}
-		return nil, err
+	} else if res != nil {
+		log.Printf("Email %s is already registered", user.Email())
+		return nil, er.NewConflict("email already exists")
 	}
+
+	log.Printf("Email %s is available", user.Email())
 
 	// Generate a validation link
 	validationLink, err := h.GenerateValidationLink(*user)
 	if err != nil {
+		log.Printf("Error generating validation link: %v", err)
 		return nil, err
 	}
+	log.Println("Validation link generated")
 
 	// Send the sign-up email
 	mails := []string{user.Email()}
 	mail := iemail.NewSignUpEmail("", mails, validationLink)
 	if err := h.emailService.Send(mail); err != nil {
+		log.Printf("Error sending sign-up email: %v", err)
 		return nil, err
 	}
+	log.Println("Sign-up email sent")
 
 	// Save the new user
 	if err := h.repo.Save(user); err != nil {
+		log.Printf("Error saving new user: %v", err)
 		return nil, err
 	}
+	log.Printf("New user %s saved successfully", user.Username())
 
 	return &result.SignUpResult{
 		ID:        user.ID(),
@@ -112,6 +136,8 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 
 // GenerateValidationLink creates a validation link for the user with encryption.
 func (h *SignUpHandler) GenerateValidationLink(user models.User) (string, error) {
+	log.Printf("Generating validation link for user %s", user.Username())
+
 	userID := user.ID().String()
 	expiryDay := time.Now().Add(time.Hour * 24).Format(time.RFC3339)
 	username := user.Username()
@@ -119,19 +145,24 @@ func (h *SignUpHandler) GenerateValidationLink(user models.User) (string, error)
 
 	encryptedValue, err := encrypt(value)
 	if err != nil {
+		log.Printf("Error encrypting validation link: %v", err)
 		return "", er.NewUnexpected("failed to encrypt value")
 	}
 
 	validationLink := fmt.Sprintf("https://localhost:8080/validate?=%s", encryptedValue)
+	log.Printf("Validation link generated: %s", validationLink)
 	return validationLink, nil
 }
 
 // encrypt encrypts a plain text value using AES-256 encryption.
 func encrypt(plainText string) (string, error) {
-	key := []byte("thisis32bitlongpassphraseimusing!") // 32 bytes key for AES-256
+	log.Println("Encrypting value")
+
+	key := []byte("thisis32bitlongpassphraseimusig!") // 32 bytes key for AES-256
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
+		log.Printf("Error creating AES cipher: %v", err)
 		return "", err
 	}
 
@@ -139,11 +170,14 @@ func encrypt(plainText string) (string, error) {
 	iv := ciphertext[:aes.BlockSize]
 
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+		log.Printf("Error reading random bytes: %v", err)
 		return "", err
 	}
 
 	stream := cipher.NewCFBEncrypter(block, iv)
 	stream.XORKeyStream(ciphertext[aes.BlockSize:], []byte(plainText))
 
-	return hex.EncodeToString(ciphertext), nil
+	encryptedValue := hex.EncodeToString(ciphertext)
+	log.Println("Value encrypted successfully")
+	return encryptedValue, nil
 }

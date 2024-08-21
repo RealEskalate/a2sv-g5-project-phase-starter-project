@@ -99,6 +99,7 @@ func (u *UserController) login(ctx *gin.Context) {
 		log.Println("User input could not be bound -- UserController")
 		return
 	}
+	log.Printf("User: %v", user)
 
 	command := usercmd.NewLoginCommand(user.Username, user.Password)
 	res, err := u.loginHandler.Handle(command)

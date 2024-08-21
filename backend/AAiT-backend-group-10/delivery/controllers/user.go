@@ -21,8 +21,8 @@ func NewUserController(u usecases.IUserUseCase) *UserController {
 
 func (u *UserController) PromoteUser(c *gin.Context) {
 	promote := struct {
-		ID uuid.UUID `json:"id" binding:"required"`
-		IsPromote *bool `json:"is_promote" binding:"required"`
+		ID        uuid.UUID `json:"id" binding:"required"`
+		IsPromote *bool      `json:"is_promote" binding:"required"`
 	}{}
 	if err := c.BindJSON(&promote); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -36,7 +36,7 @@ func (u *UserController) PromoteUser(c *gin.Context) {
 	}
 
 	if *promote.IsPromote {
-		c.JSON(http.StatusOK, gin.H{"message": "User promoted successfully"})	
+		c.JSON(http.StatusOK, gin.H{"message": "User promoted successfully"})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "User demoted successfully"})	
 	}
@@ -80,4 +80,24 @@ func (u *UserController) GetUserByID(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, user)
+}
+
+func (uc *UserController) UploadProfilePic(c *gin.Context) {
+	// Get the user's ID from context (or from session, JWT token, etc.)
+	userID, _ := c.Get("id")
+	// Assuming the user ID is passed as a URL parameter
+
+	// Retrieve the file from the form data
+	file, header, err := c.Request.FormFile("profile_pic")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to upload file" + "c.request"})
+		return
+	}
+	defer file.Close()
+	filePath, errs := uc.userUseCase.UploadProfilePic(userID.(uuid.UUID), &file, header)
+	if errs != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": errs.Message})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Profile picture uploaded successfully", "profile_pic_url": filePath})
 }

@@ -12,16 +12,17 @@ import (
 	"google.golang.org/api/idtoken"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type AuthController struct {
-	userUsecase  usecases.IAuthUsecase
+	UserUsecase  usecases.IAuthUsecase
 	googleConfig *oauth2.Config
 }
 
 func NewAuthController(uc usecases.IAuthUsecase, googleConfig *oauth2.Config) *AuthController {
 	return &AuthController{
-		userUsecase:  uc,
+		UserUsecase:  uc,
 		googleConfig: googleConfig,
 	}
 }
@@ -33,7 +34,7 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	user, err := ctrl.userUsecase.RegisterUser(&userDTO)
+	user, err := ctrl.UserUsecase.RegisterUser(&userDTO)
 	if err != nil {
 		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
 		return
@@ -49,7 +50,7 @@ func (uc *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	tokens, err := uc.userUsecase.LoginUser(&loginDTO)
+	tokens, err := uc.UserUsecase.LoginUser(&loginDTO)
 	if err != nil {
 		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
 		return
@@ -65,7 +66,7 @@ func (uc *AuthController) RefreshToken(c *gin.Context) {
 		return
 	}
 
-	tokens, err := uc.userUsecase.RefreshTokens(refreshToken.RefreshToken)
+	tokens, err := uc.UserUsecase.RefreshTokens(refreshToken.RefreshToken)
 	if err != nil {
 		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
 		return
@@ -81,7 +82,7 @@ func (uc *AuthController) ForgotPassword(c *gin.Context) {
 		return
 	}
 
-	err := uc.userUsecase.ForgotPassword(&forgotPasswordDTO)
+	err := uc.UserUsecase.ForgotPassword(&forgotPasswordDTO)
 	if err != nil {
 		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
 		return
@@ -97,7 +98,7 @@ func (uc *AuthController) ResetPassword(c *gin.Context) {
 		return
 	}
 
-	err := uc.userUsecase.ResetPassword(&resetPasswordDTO)
+	err := uc.UserUsecase.ResetPassword(&resetPasswordDTO)
 	if err != nil {
 		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
 		return
@@ -162,4 +163,22 @@ func (uc *AuthController) HandleGoogleLogin(c *gin.Context) {
 	// Redirect to Google login page
 	url := uc.googleConfig.AuthCodeURL("state-token")
 	c.Redirect(http.StatusTemporaryRedirect, url)
+}
+
+func (uc *AuthController) VerifyUserAccessToken(ctx *gin.Context) {
+	token, _ := ctx.Get("token")
+	userId, _ := ctx.Get("id")
+
+	user, err := uc.UserUsecase.VerifyUserAccessToken(token.(string), userId.(uuid.UUID))
+	if err != nil {
+		ctx.JSON(err.StatusCode, gin.H{"error": err.Error()})
+		ctx.Abort()
+		return
+	}
+	if !user {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		ctx.Abort()
+		return
+	}
+	ctx.Next()
 }

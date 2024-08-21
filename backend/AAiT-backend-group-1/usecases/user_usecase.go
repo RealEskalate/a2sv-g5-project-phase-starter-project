@@ -3,6 +3,7 @@ package usecases
 import (
 	"context"
 	"fmt"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"strconv"
@@ -11,6 +12,8 @@ import (
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type userUseCase struct {
@@ -80,7 +83,7 @@ func (userUC *userUseCase) RegisterStart(cxt *gin.Context, user *domain.User) do
 		VerificationToken: verificationToken,
 	})
 
-	errEmail := userUC.mailService.SendVerificationEmail(user.Email, user.Username, fmt.Sprintf("http://localhost:8080/user/verify/%s", verificationToken))
+	errEmail := userUC.mailService.SendVerificationEmail(user.Email, user.Username, fmt.Sprintf(os.Getenv("VERIFY_PATH"), verificationToken))
 
 	if errEmail != nil {
 		return &domain.CustomError{Message: errEmail.Error(), Code: http.StatusInternalServerError}
@@ -123,7 +126,7 @@ func (userUC *userUseCase) RegisterEnd(cxt *gin.Context, token string) domain.Er
 	return nil
 }
 
-func (userUC *userUseCase) Login(cxt context.Context, username, password string) (map[string]string, domain.Error) {
+func (userUC *UserUseCase) Login(cxt *gin.Context, username, password string) (map[string]string, domain.Error) {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return map[string]string{}, &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -170,7 +173,7 @@ func (userUC *userUseCase) Login(cxt context.Context, username, password string)
 	return map[string]string{"access_token": accessToken, "refresh_token": refreshToken}, nil
 }
 
-func (userUC *userUseCase) ForgotPassword(cxt context.Context, email string) domain.Error {
+func (userUC *UserUseCase) ForgotPassword(cxt *gin.Context, email string) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -271,7 +274,7 @@ func (userUC *userUseCase) ResetPassword( cxt *gin.Context, newPassword, confirm
 	return nil
 }
 
-func (userUC *userUseCase) Logout(cxt context.Context, token map[string]string) domain.Error {
+func (userUC *UserUseCase) Logout(cxt *gin.Context, token map[string]string) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -321,7 +324,8 @@ func (userUC *userUseCase) Logout(cxt context.Context, token map[string]string) 
 	return nil
 }
 
-func (userUC *userUseCase) PromoteUser(cxt context.Context, userID string) domain.Error {
+
+func (userUC *UserUseCase) PromoteUser(cxt *gin.Context, userID string) domain.Error {ckend.g1.main
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -335,7 +339,7 @@ func (userUC *userUseCase) PromoteUser(cxt context.Context, userID string) domai
 	return userUC.userRepo.Update(context, userID, &promotion)
 }
 
-func (userUC *userUseCase) DemoteUser(cxt context.Context, userID string) domain.Error {
+func (userUC *UserUseCase) DemoteUser(cxt *gin.Context, userID string) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -349,7 +353,7 @@ func (userUC *userUseCase) DemoteUser(cxt context.Context, userID string) domain
 	return userUC.userRepo.Update(context, userID, &promotion)
 }
 
-func (userUC *userUseCase) UpdateProfile(cxt context.Context, userID string, user *domain.User) domain.Error {
+func (userUC *UserUseCase) UpdateProfile(cxt *gin.Context, userID string, user *domain.User) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -358,4 +362,39 @@ func (userUC *userUseCase) UpdateProfile(cxt context.Context, userID string, use
 	defer cancel()
 
 	return userUC.userRepo.Update(context, userID, user)
+}
+
+func (userUC *UserUseCase) ImageUpload(cxt *gin.Context, file *multipart.File, header *multipart.FileHeader) domain.Error {
+	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
+	if errTimeout != nil {
+		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
+	}
+	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
+	defer cancel()
+
+	if valid := utils.IsValidFileFormat(header, "image/png", "image/jpeg"); !valid {
+		cxt.JSON(http.StatusBadRequest, gin.H{"Error": "Invalid file format"})
+	}
+	filename := fmt.Sprintf("%s%s", uuid.New().String(), header.Filename)
+
+	delivery_url, errSave := utils.SaveImage(*file, filename, context)
+	if errSave != nil {
+		return &domain.CustomError{Message: errSave.Error(), Code: http.StatusInternalServerError}
+	}
+
+	userID, _ := cxt.Get("user_id")
+	primimitiveUserID, _ := primitive.ObjectIDFromHex(userID.(string))
+	photo := domain.Photo{
+		UserID:     primimitiveUserID,
+		Filename:   filename,
+		FilePath:   delivery_url,
+		UploadedAt: time.Now(),
+	}
+
+	user, errUser := userUC.userRepo.FindById(context, userID.(string))
+	if errUser != nil {
+		return &domain.CustomError{Message: errUser.Error(), Code: http.StatusInternalServerError}
+	}
+	user.ProfilePictureUrl = photo
+	return nil
 }

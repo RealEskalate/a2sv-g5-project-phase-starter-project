@@ -47,6 +47,8 @@ func SetupRouter(userController domain.UserController, blogController domain.Blo
 
 		userRoutes.POST("/logout", userController.Logout).Use(authMiddleware.Authenticate())
 		userRoutes.POST("/update/:id", userController.UpdateProfile).Use(authMiddleware.Authenticate())
+		userRoutes.POST("/upload_profile_picture", userController.ImageUpload)
+	}
 
 		userRoutes.POST("/promote", userController.PromoteUser).Use(authMiddleware.Authenticate()).Use(authMiddleware.Authorize("admin"))
 		userRoutes.POST("/demote", userController.DemoteUser).Use(authMiddleware.Authenticate()).Use(authMiddleware.Authorize("admin"))

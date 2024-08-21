@@ -14,13 +14,21 @@ type User struct {
 	Email             string             `json:"email"`
 	Password          string             `json:"password"`
 	Role              string             `json:"role"`
-	ProfilePictureUrl string             `json:"profile_picture"`
+	ProfilePictureUrl Photo              `json:"profile_picture"`
 	Bio               string             `json:"bio"`
 	CreatedAt         time.Time          `json:"created_at"`
 	UpdatedAt         time.Time          `json:"updated_at"`
 }
 
-func NewUser(username, email, password, profilePictureUrl, bio string) *User {
+type Photo struct {
+	ID         primitive.ObjectID `bson:"_id,omitempty"`
+	UserID     primitive.ObjectID `bson:"user_id"`
+	Filename   string             `bson:"filename"`
+	FilePath   string             `bson:"file_path"`
+	UploadedAt time.Time          `bson:"uploaded_at"`
+}
+
+func NewUser(username, email, password, bio string, profilePictureUrl Photo) *User {
 	return &User{
 		Username:          username,
 		Email:             email,

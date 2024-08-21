@@ -29,6 +29,13 @@ func (lu *loginUsecase) GetUserByEmail(c context.Context, email string) (domain.
 	}
 	return *user, nil
 }
+func (lu *loginUsecase) UpdateRefreshToken(c context.Context, userID string, refreshToken string) error {
+	err := lu.userRepository.UpdateRefreshToken(c, userID, refreshToken)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func (lu *loginUsecase) CreateAccessToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
 	return tokenutil.CreateAccessToken(user, secret, expiry)

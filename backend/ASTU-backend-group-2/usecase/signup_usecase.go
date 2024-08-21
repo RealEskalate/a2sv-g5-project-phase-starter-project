@@ -26,6 +26,10 @@ func (su *signupUsecase) Create(c context.Context, user *domain.User) (*domain.U
 	return su.userRepository.CreateUser(ctx, user)
 }
 
+func (su *signupUsecase) IsOwner(ctx context.Context) (bool,error) {
+	result,err:=su.userRepository.IsOwner(ctx)
+	return result,err
+}
 func (su *signupUsecase) GetUserByEmail(c context.Context, email string) (domain.User, error) {
 	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
 	defer cancel()

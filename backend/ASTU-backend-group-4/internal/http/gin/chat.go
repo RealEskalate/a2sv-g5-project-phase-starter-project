@@ -22,13 +22,18 @@ func NewChatHandler(chatUsecase chat.Usecase) *ChatHandler{
 }
 
 func (chatHandler *ChatHandler) CreateChatHandler(c *gin.Context){
-	var form chat.CreateChatForm
-	if err := c.ShouldBindJSON(&form); err != nil{
+	var textForm chat.TextForm
+	if err := c.ShouldBindJSON(&textForm); err != nil{
 		c.JSON(http.StatusBadRequest, gin.H{"error":err.Error()})
 		return
 	}
+
+	createChatForm := chat.CreateChatForm{
+		UserID: c.Value("user_id").(string),
+		Title: textForm.Text,
+	}
 	
-	newChat, err := chatHandler.chatUsecase.CreateChat(context.TODO(), form)
+	newChat, err := chatHandler.chatUsecase.CreateChat(context.TODO(), createChatForm)
 	var validationError validator.ValidationErrors
 	if errors.As(err, &validationError){
 		errs := infrastructure.ReturnErrorResponse(err)

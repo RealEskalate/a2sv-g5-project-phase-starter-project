@@ -10,15 +10,29 @@ import (
 )
 
 type middlewareService struct {
-	jwtService domain.JwtService
+	jwtService   domain.JwtService
+	redisService domain.CacheService
 }
 
-func NewMiddlewareService(jwtService domain.JwtService) domain.MiddlewareService {
-	return &middlewareService{jwtService: jwtService}
+type LogoutRequest struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
+func NewMiddlewareService(jwtService domain.JwtService, cacheService domain.CacheService) domain.MiddlewareService {
+	return &middlewareService{jwtService: jwtService, redisService: cacheService}
 }
 
 func (m *middlewareService) Authenticate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		var body LogoutRequest
+		errUnmarshall := ctx.ShouldBind(&body)
+		if errUnmarshall != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": errUnmarshall.Error()})
+			ctx.Abort()
+			return
+		}
+
 		authHeader := ctx.GetHeader("Authorization")
 		if authHeader == "" {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "authorization header is required"})
@@ -29,6 +43,24 @@ func (m *middlewareService) Authenticate() gin.HandlerFunc {
 		authParts := strings.Split(authHeader, " ")
 		if len(authParts) != 2 || strings.ToLower(authParts[0]) != "bearer" {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid authorization header"})
+			ctx.Abort()
+			return
+		}
+
+		if body.AccessToken != authParts[1] {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid access token"})
+			ctx.Abort()
+			return
+		}
+
+		blacklisted, errRedis := m.redisService.Get(body.AccessToken) // check if token is blacklisted
+		if errRedis != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": errRedis.Error()})
+			ctx.Abort()
+			return
+		}
+		if blacklisted != "" {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "token is blacklisted"})
 			ctx.Abort()
 			return
 		}

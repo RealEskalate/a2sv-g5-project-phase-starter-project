@@ -68,3 +68,22 @@ export interface MyExpenseResponse{
   };
 
 }
+
+export interface IncomeResponse{
+  success: boolean,
+  message: string,
+  data: {
+    content: [
+      {
+        transactionId: string,
+        type: string,
+        senderUserName: string,
+        description: string,
+        date:string,
+        amount: number,
+        receiverUserName: string
+      }
+    ],
+    totalPages: number
+  }
+}

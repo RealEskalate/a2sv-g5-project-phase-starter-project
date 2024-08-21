@@ -7,7 +7,8 @@ import {
   TransactionDepositRequest, 
   LatestTransferResponse,
   BalanceHistoryResponse, 
-  MyExpenseResponse
+  MyExpenseResponse, 
+  IncomeResponse
 } from "../types/transactions";
 
 export const transactionsApi = createApi({
@@ -27,7 +28,7 @@ export const transactionsApi = createApi({
   }),
   endpoints: (builder) => ({
     getAllTransactions: builder.query<MyExpenseResponse,{ size: number; page: number }>({
-      query: ({ size, page }) => `/transactions?size=${size}&page=${page}`,
+      query: ({ size, page }) => `/transactions?page=${page}&size=${size}`,
     }),
 
     getTransactionById: builder.query<TransactionResponse, string>({
@@ -40,9 +41,9 @@ export const transactionsApi = createApi({
     }),
 
 
-    getIncomeTransactions: builder.query<TransactionsResponse, { size: number; page: number }>({
+    getIncomeTransactions: builder.query<IncomeResponse, { size: number; page: number }>({
       query: ({ size, page }) =>
-        `/transactions/income?size=${size}&page=${page}`,
+        `/transactions/incomes?page=${page}&size=${size}`,
     }),
 
     getExpenseTransactions: builder.query<MyExpenseResponse, { size: number; page: number }>({

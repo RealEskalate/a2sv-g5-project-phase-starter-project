@@ -16,6 +16,8 @@ var GROQ_API_KEY string
 var GOOGLE_KEY string
 var GOOGLE_SECRET string
 var Google_Callback string
+var Cloud_api_key string
+var Cloud_api_secret string
 
 func Envinit() {
 
@@ -53,6 +55,14 @@ func Envinit() {
 	Mail_TRAP_API_KEY = os.Getenv("Mail_TRAP_API_KEY")
 	if Mail_TRAP_API_KEY == "" {
 		log.Fatal("Mail_TRAP_API_KEY is not set")
+	}
+	Cloud_api_key= os.Getenv("Cloud_api_key")
+	if Mail_TRAP_API_KEY == "" {
+		log.Fatal("Cloud_api_key is not set")
+	}
+	Cloud_api_secret= os.Getenv("Cloud_api_secret")
+	if Mail_TRAP_API_KEY == "" {
+		log.Fatal("Cloud_api_secret is not set")
 	}
 
 }

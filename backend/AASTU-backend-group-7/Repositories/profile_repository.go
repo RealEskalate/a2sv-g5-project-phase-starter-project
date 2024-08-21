@@ -97,13 +97,9 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 	if user.Name != "" {
 		NewUser.Name = user.Name
 	}
-	if !user.CreatedAt.IsZero() {
-		NewUser.CreatedAt = user.CreatedAt
-	}
-	if !user.UpdatedAt.IsZero() {
-		NewUser.UpdatedAt = user.UpdatedAt
-	}
 
+	NewUser.UpdatedAt = user.UpdatedAt
+	fmt.Println(id)
 	filter := bson.D{{"_id", id}}
 	update := bson.D{
 		{"$set", bson.D{
@@ -124,7 +120,7 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 	}
 	if updateResult.ModifiedCount == 0 {
 		statusCode = 400
-		return Domain.OmitedUser{}, errors.New("user does not exist"), statusCode
+		return Domain.OmitedUser{}, errors.New("user does not exist or no changes"), statusCode
 	}
 
 	fmt.Printf("Matched %v documents and updated %v documents.\n", updateResult.MatchedCount, updateResult.ModifiedCount)

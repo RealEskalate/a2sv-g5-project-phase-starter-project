@@ -20,7 +20,7 @@ func ProfileRouter() {
 
 		// get all users
 		profileRouter.GET("/", profile_controller.GetProfile)
-		profileRouter.PUT("/", profile_controller.UpdateProfile)
+		profileRouter.PATCH("/", profile_controller.UpdateProfile)
 		profileRouter.DELETE("/", profile_controller.DeleteProfile)
 
 	}

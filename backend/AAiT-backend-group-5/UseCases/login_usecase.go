@@ -45,16 +45,25 @@ func (uc *loginUsecase) LoginUser(ctx context.Context, userReqest dtos.LoginRequ
 		return nil, models.InternalServerError("Something went wrong")
 	}
 
-	// save the refresh token
 	session := models.Session{
 		UserID:       user.ID,
 		RefreshToken: refresheToken,
 	}
 
-	tErr := uc.session.SaveToken(ctx, &session)
+	existToken, eErr := uc.session.GetToken(ctx, user.ID)
 
-	if tErr != nil {
-		return nil, tErr
+	if eErr != nil {
+		return nil, eErr
+	}
+
+	if existToken != nil {
+		if tErr := uc.session.UpdateToken(ctx, &session); tErr != nil {
+			return nil, tErr
+		}
+	} else {
+		if tErr := uc.session.SaveToken(ctx, &session); tErr != nil {
+			return nil, tErr
+		}
 	}
 
 	return &dtos.LoginResponse{

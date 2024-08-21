@@ -24,14 +24,12 @@ func NewLoginController(loginUsecase interfaces.LoginUsecase, env *config.Env) *
 func (loginController *LoginController) Login(ctx *gin.Context) {
 	var loginRequest dtos.LoginRequest
 
-	// attempt to bind the json payload
 	err := ctx.ShouldBind(&loginRequest)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// envode Login_Usecase
 	loginResponse, e := loginController.LoginUsecase.LoginUser(ctx, loginRequest)
 	if e != nil {
 		ctx.IndentedJSON(e.Code, gin.H{"error": e.Message})

@@ -45,11 +45,9 @@ func (j *JwtService) CreateAccessToken(user models.User, expTim int) (accessToke
 }
 
 func (j *JwtService) CreateRefreshToken(user models.User, expTim int) (refreshToken string, err error) {
-	// Set the expiration time for the refresh token, e.g., 7 days
 	expTime := time.Now().Add(time.Hour * time.Duration(expTim)).Unix()
 	secret := []byte(j.Env.JWT_SECRET)
 
-	// Define the claims for the refresh token
 	claims := &models.JWTCustome{
 		ID: user.ID,
 		StandardClaims: jwt.StandardClaims{
@@ -57,7 +55,6 @@ func (j *JwtService) CreateRefreshToken(user models.User, expTim int) (refreshTo
 		},
 	}
 
-	// Create the token with the specified signing method and claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	refreshToken, err = token.SignedString(secret)
 

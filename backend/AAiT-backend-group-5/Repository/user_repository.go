@@ -163,3 +163,4 @@ func (ur *UserMongoRepository) DemoteUser(ctx context.Context, userID string) *m
 	err := ur.updateUserRole(ctx, userID, "user")
 	return err
 }
+

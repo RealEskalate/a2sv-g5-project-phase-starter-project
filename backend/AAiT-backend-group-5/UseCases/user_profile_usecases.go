@@ -28,14 +28,6 @@ func (uc *userProfileUpdateUsecase) UpdateUserProfile(ctx context.Context, userI
 		return err
 	}
 
-	// Update the user profile
-	if user.Username != "" {
-		existUser.Username = user.Username
-	}
-	if user.Name != "" {
-		existUser.Name = user.Name
-	}
-
 	if user.Password != "" {
 		// Hash the password
 		hashedPassword, err := uc.passwordService.EncryptPassword(user.Password)

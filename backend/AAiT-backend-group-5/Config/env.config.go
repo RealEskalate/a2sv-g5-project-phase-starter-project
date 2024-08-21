@@ -15,7 +15,6 @@ type Env struct {
 	SMTP_PASSWORD     string `mapstructure:"SMTP_PASSWORD"`
 	SMTP_SENDER_EMAIL string `mapstructure:"SMTP_SENDER_EMAIL"`
 	BASE_URL          string `mapstructure:"BASE_URL"`
-	REDIS_BLOG_KEY    string `mapstructure:"REDIS_BLOG_KEY"`
 
 	MONGO_URI string `mapstructure:"MONGO_URI"`
 	DB_NAME   string `mapstructure:"DB_NAME"`
@@ -23,7 +22,11 @@ type Env struct {
 	SERVER_ADDRESS  string `mapstructure:"SERVER_ADDRESS"`
 	CONTEXT_TIMEOUT int    `mapstructure:"CONTEXT_TIMEOUT"`
 
-	GEMINI_API_KEY string `mapstructure:"GEMINI_API_KEY"`
+	GEMINI_API_KEY    string `mapstructure:"GEMINI_API_KEY"`
+	REDIS_BLOG_KEY    string `mapstructure:"REDIS_BLOG_KEY"`
+	REDIS_DB_ADDRESS  string `mapstructure:"REDIS_DB_ADDRESS"`
+	REDIS_DB_PASSWORD string `mapstructure:"REDIS_DB_PASSWORD"`
+	REDIS_DB          int    `mapstructure:"REDIS_DB"`
 }
 
 func NewEnv() *Env {
@@ -33,14 +36,12 @@ func NewEnv() *Env {
 		log.Fatalf("Error getting project root path: %v", err)
 	}
 
-	// Set the path to the .env file
 	viper.SetConfigFile(filepath.Join(projectRoot, ".env"))
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalf("Error reading .env file: %v", err)
 	}
-	// Explicitly bind environment variables to the struct fields
 	viper.BindEnv("JWT_SECRET")
 	viper.BindEnv("SMTP_SERVER")
 	viper.BindEnv("SMTP_PORT")
@@ -54,6 +55,10 @@ func NewEnv() *Env {
 	viper.BindEnv("SERVER_ADDRESS")
 	viper.BindEnv("CONTEXT_TIMEOUT")
 	viper.BindEnv("GEMINI_API_KEY")
+	viper.BindEnv("REDIS_BLOG_KEY")
+	viper.BindEnv("REDIS_DB_ADDRESS")
+	viper.BindEnv("REDIS_DB_PASSWORD")
+	viper.BindEnv("REDIS_DB")
 
 	env := Env{}
 

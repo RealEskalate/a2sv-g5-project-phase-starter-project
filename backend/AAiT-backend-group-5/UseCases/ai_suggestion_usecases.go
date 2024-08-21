@@ -16,12 +16,6 @@ type AISuggestionUsecase struct {
 }
 
 func NewAISuggestionUsecase(client *genai.Client, blogRepository interfaces.BlogRepository) interfaces.AIContentSuggestionUsecase {
-	// ctx := context.Background()
-	// client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 	return &AISuggestionUsecase{
 		Model:          client.GenerativeModel("gemini-1.5-flash"),
 		BlogRepository: blogRepository,

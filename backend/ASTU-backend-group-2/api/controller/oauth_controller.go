@@ -39,20 +39,7 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 		if err != nil {
 			// User does not exist, create user
 
-			// Check if user is owner, if user to be created is the first user, set as owner
-			_, meta, err := oc.UserUsecase.GetUsers(context.TODO(), 5, 1)
-
-			if err != nil {
-				c.JSON(500, gin.H{"error": err.Error()})
-				return
-			}
-
-			var isOwner bool
-
-			if meta.Total == 0 {
-				// First user, set as owner
-				isOwner = true
-			}
+			isOwner, err := oc.UserUsecase.IsOwner(context.TODO())
 
 			insertUser := domain.User{
 				Email:      user.Email,

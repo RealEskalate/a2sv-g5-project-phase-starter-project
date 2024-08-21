@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"astu-backend-g1/domain"
 	"context"
 	"net/http"
 	"strings"
@@ -62,11 +63,16 @@ func (am *AuthMiddleware) AdminAuth(anyClaim any) bool {
 	return StringIsAdmin == "true"
 }
 
-//	func (am *AuthMiddleware) OwnerAuth(anyClaim any) bool {
-//		claims := anyClaim.(jwt.MapClaims)
-//		isOwner := claims["IsOwner"].(string)
-//		return isOwner == "true"
-//	}
+func (am *AuthMiddleware) OwnerAuth(anyClaim any, blogId string) bool {
+	var blog domain.Blog
+	err := am.collection.FindOne(context.TODO(), bson.M{"_id": blogId}).Decode(&blog)
+	if err != nil {
+		return false
+	}
+	claims := anyClaim.(jwt.MapClaims)
+	return claims["id"] == blog.AuthorId
+}
+
 func (am *AuthMiddleware) UserAuth(anyClaim any) bool {
 	claims := anyClaim.(jwt.MapClaims)
 	IsAdmin := strings.ToLower(claims["IsAdmin"].(string))

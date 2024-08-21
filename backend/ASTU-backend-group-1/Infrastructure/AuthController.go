@@ -19,7 +19,7 @@ func NewAuthController(auth GeneralAuthorizer) GeneralAuthorizationController {
 }
 func (ac *AuthController) AuthMiddlewareGIn() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		jwtconfig,err := config.LoadConfig()
+		jwtconfig, err := config.LoadConfig()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 			c.Abort()
@@ -34,7 +34,7 @@ func (ac *AuthController) AuthMiddlewareGIn() gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		c.Abort() 
+		c.Abort()
 	}
 
 }
@@ -71,6 +71,27 @@ func (ac *AuthController) UserMiddlewareGin() gin.HandlerFunc {
 			c.JSON(http.StatusForbidden, gin.H{"error": "you must log in first"})
 			c.Abort()
 			return
+		}
+		c.Next()
+	}
+}
+func (ac *AuthController) AuthorMiddlewareGin() gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+		defer func() {
+			if r := recover(); r != nil {
+				c.JSON(http.StatusForbidden, gin.H{"error": "UnAuthorized", "message": "must be the author to do such task"})
+				c.Abort()
+			}
+		}()
+		claims := c.MustGet("claims")
+		if !ac.auth.UserAuth(claims) {
+			c.JSON(http.StatusForbidden, gin.H{"error": "you must log in first"})
+			c.Abort()
+			return
+		}
+		if !ac.auth.OwnerAuth(claims,c.Param("_id")) {
+
 		}
 		c.Next()
 	}

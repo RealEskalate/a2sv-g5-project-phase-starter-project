@@ -86,7 +86,7 @@ const RecentTransactionTable = () => {
 
   
   const {data , error,isLoading} = useGetAllTransactionsQuery(String(currentPage));
-  console.log("data is",data,String(currentPage),data?.data.content.length);
+  // console.log("data is",data,String(currentPage),data?.data.content.length);
 
   // Calculate total pages
   if (isLoading) {

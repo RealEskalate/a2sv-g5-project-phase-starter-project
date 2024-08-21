@@ -41,7 +41,7 @@ func AuthMiddleware(JwtService *JwtService) gin.HandlerFunc {
 			return
 		}
 
-		claims, ok := FindClaim(token)
+		claims, ok := JwtService.FindClaim(token)
 		if !ok {
 			context.JSON(401, gin.H{"error": "Invalid token claims"})
 			context.Abort()

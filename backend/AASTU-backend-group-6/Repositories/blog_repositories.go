@@ -29,70 +29,69 @@ func NewBlogRepository(PostCollection mongo.Collection, UserCollection mongo.Col
 		env:            env,
 	}
 }
- 
+
 // ReactOnBlog implements domain.BlogRepository.
-func (b BlogRepository) ReactOnBlog(user_id string, reactionType bool, blog_id string) domain.ErrorResponse{
+func (b BlogRepository) ReactOnBlog(user_id string, reactionType bool, blog_id string) domain.ErrorResponse {
 	timeOut := b.env.ContextTimeout
-	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)* 20 * time.Second)
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*20*time.Second)
 	defer cancel()
 
 	blogID, blogErr := primitive.ObjectIDFromHex(blog_id)
 	userID, userErr := primitive.ObjectIDFromHex(user_id)
-	if blogErr != nil || userErr != nil{
+	if blogErr != nil || userErr != nil {
 		return domain.ErrorResponse{
 			Message: "Internal server error",
-			Status: 500,
+			Status:  500,
 		}
 	}
 	post, err := b.GetBlogByID(blog_id, true)
-    if err != nil {
-        return domain.ErrorResponse{
+	if err != nil {
+		return domain.ErrorResponse{
 			Message: "blog not found",
-			Status: 404,
+			Status:  404,
 		}
-    }
+	}
 	isLiked, isDisliked := utils.IsAlreadyReacted(&post, userID)
 	filter, update := utils.FilterReactionBlog([]primitive.ObjectID{userID, blogID}, reactionType, isLiked, isDisliked)
-	if len(filter) == 0 || len(update) == 0{
+	if len(filter) == 0 || len(update) == 0 {
 		return domain.ErrorResponse{
 			Message: "Reaction already done",
-			Status: 400,
+			Status:  400,
 		}
 	}
 	_, err = b.PostCollection.UpdateOne(context, filter, update)
-	if err != nil{
+	if err != nil {
 		return domain.ErrorResponse{
 			Message: "Internal server error",
-			Status: 500,
+			Status:  500,
 		}
 	}
 	filter, update = utils.FilterReactionUser([]primitive.ObjectID{post.Creater_id, userID, blogID}, reactionType, isLiked, isDisliked)
 	_, err = b.UserCollection.UpdateOne(context, filter, update)
-	if err != nil{
+	if err != nil {
 		return domain.ErrorResponse{
 			Message: "Internal server error",
-			Status: 500,
+			Status:  500,
 		}
 	}
-	if reactionType{
+	if reactionType {
 		_ = b.UpdatePopularity(blog_id, "like")
-	}else{
+	} else {
 		_ = b.UpdatePopularity(blog_id, "dislike")
 	}
 	return domain.ErrorResponse{}
 }
 
-
 // Update popularity implements domain.BlogRepository.
 func (b BlogRepository) UpdatePopularity(blog_id string, rateType string) error {
 	var result domain.Blog
-    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-    blogID, err := primitive.ObjectIDFromHex(blog_id)
-    if err != nil {
-        return errors.New("internal server error")
-    }
+	blogID, err := primitive.ObjectIDFromHex(blog_id)
+	if err != nil {
+		return errors.New("internal server error")
+	}
 	increment := utils.PopularityRate(rateType)
 	filter := bson.M{"_id": blogID}
 	err = b.PostCollection.FindOne(context.TODO(), filter).Decode(&result)
@@ -101,55 +100,56 @@ func (b BlogRepository) UpdatePopularity(blog_id string, rateType string) error 
 	}
 	update := bson.M{"$inc": bson.M{"popularity": increment}}
 
-    _, err = b.PostCollection.UpdateOne(ctx, filter, update)
-    if err != nil {
-        return errors.New("internal server error")
-    }
+	_, err = b.PostCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return errors.New("internal server error")
+	}
 	userFilter := bson.D{
-        {Key: "_id", Value : result.Creater_id},
-        {Key : "posts._id", Value: blogID},
-    }
+		{Key: "_id", Value: result.Creater_id},
+		{Key: "posts._id", Value: blogID},
+	}
 	update = bson.M{"$inc": bson.M{"posts.$.popularity": increment}}
 	_, err = b.UserCollection.UpdateOne(ctx, userFilter, update)
-    if err != nil {
-        return errors.New("internal server error")
-    }
-    return nil
+	if err != nil {
+		return errors.New("internal server error")
+	}
+	return nil
 }
 
 // IncrementOnBlog implements domain.BlogRepository.
 func (b BlogRepository) IncrementViewCount(blog_id string) error {
 	var result domain.Blog
-    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-    blogID, err := primitive.ObjectIDFromHex(blog_id)
-    if err != nil {
-        return errors.New("internal server error")
-    }
+	blogID, err := primitive.ObjectIDFromHex(blog_id)
+	if err != nil {
+		return errors.New("internal server error")
+	}
 	filter := bson.M{"_id": blogID}
 	err = b.PostCollection.FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
 		return errors.New("internal server error")
 	}
 
-    update := bson.M{"$inc": bson.M{"view_count": 1}}
+	update := bson.M{"$inc": bson.M{"view_count": 1}}
 
-    _, err = b.PostCollection.UpdateOne(ctx, filter, update)
-    if err != nil {
-        return errors.New("internal server error")
-    }
+	_, err = b.PostCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return errors.New("internal server error")
+	}
 	userFilter := bson.D{
-        {Key: "_id", Value : result.Creater_id},
-        {Key : "posts._id", Value: blogID},
-    }
+		{Key: "_id", Value: result.Creater_id},
+		{Key: "posts._id", Value: blogID},
+	}
 	update = bson.M{"$inc": bson.M{"posts.$.view_count": 1}}
 	_, err = b.UserCollection.UpdateOne(ctx, userFilter, update)
-    if err != nil {
-        return errors.New("internal server error")
-    }
-    return nil
+	if err != nil {
+		return errors.New("internal server error")
+	}
+	return nil
 }
+
 // CommentOnBlog implements domain.BlogRepository.
 func (b BlogRepository) CommentOnBlog(user_id string, user_name string, comment domain.Comment) error {
 	timeOut := b.env.ContextTimeout
@@ -157,7 +157,7 @@ func (b BlogRepository) CommentOnBlog(user_id string, user_name string, comment 
 	defer cancel()
 
 	comment.ID = primitive.NewObjectID()
-	filter := bson.M{"_id" : comment.Blog_ID}
+	filter := bson.M{"_id": comment.Blog_ID}
 
 	filter = bson.M{"_id": comment.Blog_ID}
 
@@ -200,6 +200,7 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string
 	uid, err := primitive.ObjectIDFromHex(user_id)
 
 	if err != nil {
+		fmt.Println("1")
 		return domain.Blog{}, errors.New("internal server error")
 	}
 	filter := bson.M{"_id": blog.Creater_id}
@@ -214,6 +215,7 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string
 	}
 	_, err = b.PostCollection.InsertOne(context, blog)
 	if err != nil {
+		fmt.Println("2")
 		return domain.Blog{}, errors.New("internal server error")
 	}
 	update := bson.M{
@@ -221,6 +223,7 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string
 	}
 	_, err = b.UserCollection.UpdateOne(context, filter, update)
 	if err != nil {
+		fmt.Println(err.Error())
 		return domain.Blog{}, errors.New("internal server error")
 	}
 	return blog, nil
@@ -325,7 +328,7 @@ func (b BlogRepository) GetBlogByID(blog_id string, isCalled bool) (domain.Blog,
 	if err := b.PostCollection.FindOne(context.TODO(), primitive.D{{Key: "_id", Value: blog_object_id}}).Decode(&blog); err != nil {
 		return domain.Blog{}, err
 	} else {
-		if !isCalled{
+		if !isCalled {
 			_ = b.UpdatePopularity(blog_id, "view")
 			_ = b.IncrementViewCount(blog_id)
 		}

@@ -209,6 +209,13 @@ func (b *BlogUseCaseImpl) GetBlogByID(ctx context.Context, id string) (Blog, err
 
 // GetBlogs implements BlogUseCase.
 func (b *BlogUseCaseImpl) GetBlogs(ctx context.Context, filterQuery FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error) {
+	if pagination.Limit == 0 {
+		pagination.Limit = 10
+	}
+	if pagination.Page == 0 {
+		pagination.Page = 1
+	}
+
 	blogs, err := b.blogRepository.GetBlogs(ctx, filterQuery, pagination)
 	if err != nil {
 		return infrastructure.PaginationResponse[Blog]{}, err
@@ -219,6 +226,13 @@ func (b *BlogUseCaseImpl) GetBlogs(ctx context.Context, filterQuery FilterQuery,
 
 // GetCommentsByBlogID implements BlogUseCase.
 func (b *BlogUseCaseImpl) GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Comment], error) {
+	if pagination.Limit == 0 {
+		pagination.Limit = 10
+	}
+	if pagination.Page == 0 {
+		pagination.Page = 1
+	}
+
 	comments, err := b.blogRepository.GetCommentsByBlogID(ctx, blogID, pagination)
 	if err != nil {
 		return infrastructure.PaginationResponse[Comment]{}, err
@@ -267,6 +281,13 @@ func (b *BlogUseCaseImpl) LikeBlog(ctx context.Context, userID string, blogID st
 
 // SearchBlogs implements BlogUseCase.
 func (b *BlogUseCaseImpl) SearchBlogs(ctx context.Context, query string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error) {
+	if pagination.Limit == 0 {
+		pagination.Limit = 10
+	}
+	if pagination.Page == 0 {
+		pagination.Page = 1
+	}
+
 	blogs, err := b.blogRepository.SearchBlogs(ctx, query, pagination)
 	if err != nil {
 		return infrastructure.PaginationResponse[Blog]{}, err

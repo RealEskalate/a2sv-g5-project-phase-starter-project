@@ -5,12 +5,23 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
+
+var struct_validator = validator.New()
 
 func (controller *Controller) RegisterUser(c *gin.Context) {
 	var user Domain.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	struct_validator.RegisterValidation("password", passwordValidation)
+	struct_err := struct_validator.Struct(user)
+
+	if struct_err != nil{
+		c.JSON(400, gin.H{"error" : struct_err.Error()})
 		return
 	}
 
@@ -141,4 +152,63 @@ func (controller *Controller) ResetPassword(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "Password reset successful"})
+}
+
+func (controller *Controller) PromoteUser(c *gin.Context) {
+	email := c.Param("email")
+
+	err := controller.UserUsecase.PromoteUser(email)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "User promoted successfully"})
+}
+
+func (controller *Controller) DemoteUser(c *gin.Context) {
+	email := c.Param("email")
+
+	err := controller.UserUsecase.DemoteUser(email)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "User demoted successfully"})
+}
+
+func (controller *Controller) DeleteUser(c *gin.Context) {
+	email := c.Param("email")
+
+	err := controller.UserUsecase.DeleteUser(email)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+}
+
+func (controller *Controller) Logout(c *gin.Context) {
+	var cred Domain.Credential
+
+	err := c.ShouldBindJSON(cred)
+
+	if err != nil{
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error" : "invalid request payload"})
+		return
+	}
+
+	err = controller.UserUsecase.Logout(cred.Email, cred.Refresher)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "email not found"})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "refresher deleted successfully"})
 }

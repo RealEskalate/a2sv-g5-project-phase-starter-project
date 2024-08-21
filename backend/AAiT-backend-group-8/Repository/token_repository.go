@@ -25,18 +25,12 @@ func (tr *TokenRepository) InsertRefresher(credential domain.Credential) error {
 	return err
 }
 
-func (tr *TokenRepository) GetRefresher(email string) (string, error) {
+func (tr *TokenRepository) CheckRefresher(email, refresher string) error {
 	var existingCredential domain.Credential
 
-	filter := bson.D{{Key: "email", Value: email}}
+	filter := bson.M{"email" : email, "refresher" : refresher}
 
-	err := tr.Collection.FindOne(tr.Context, filter).Decode(&existingCredential)
-
-	if err != nil {
-		return "", err
-	}
-
-	return existingCredential.Refresher, err
+	return tr.Collection.FindOne(tr.Context, filter).Decode(&existingCredential)
 }
 
 func (tr *TokenRepository) StoreResetToken(email string, token string) error {
@@ -52,5 +46,30 @@ func (tr *TokenRepository) InvalidateResetToken(email string) error {
 	update := bson.M{"$unset": bson.M{"reset_token": ""}}
 
 	_, err := tr.Collection.UpdateOne(tr.Context, filter, update)
+	return err
+}
+
+func (tr *TokenRepository) UpdateRefresher(email, refresher string) error {
+	filter := bson.M{"email": email}
+	update := bson.M{"$set": bson.M{"refresher": refresher}}
+
+	_, err := tr.Collection.UpdateOne(tr.Context, filter, update)
+
+	return err
+}
+
+func (tr *TokenRepository) DeleteRefresher(email, refresher string) error {
+	filter := bson.M{"email" : email, "refresher" : refresher}
+
+	_, err := tr.Collection.DeleteMany(tr.Context, filter)
+
+	return err
+}
+
+func (tr *TokenRepository) DeleteAllRefreshers(email string) error{
+	filter := bson.M{"email": email}
+
+	_, err := tr.Collection.DeleteOne(tr.Context, filter)
+
 	return err
 }

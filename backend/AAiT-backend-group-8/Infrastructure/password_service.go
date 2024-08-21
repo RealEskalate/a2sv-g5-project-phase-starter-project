@@ -1,4 +1,4 @@
-package infrastructure
+package Infrastructure
 
 import (
 	"AAiT-backend-group-8/Domain"

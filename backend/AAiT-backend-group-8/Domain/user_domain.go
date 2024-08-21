@@ -1,15 +1,17 @@
 package Domain
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type User struct {
 	Id                 primitive.ObjectID `bson:"_id,omitempty"`
-	Name               string             `bson:"name"`
-	Email              string             `bson:"email"`
-	Password           string             `bson:"password"`
+	Name               string             `bson:"name" validate:"required,min=2,max=50"`
+	LastName           string             `bson:"last_name" validate:"reqiured,min=2,max=50"`
+	Email              string             `bson:"email" validate:"required,email"`
+	Password           string             `bson:"password" validate:"required"`
 	Role               string             `bson:"role"`
 	ImageUrl           string             `bson:"image_url"`
 	CreatedAt          time.Time          `bson:"created_at"`
@@ -33,6 +35,9 @@ type IUserRepository interface {
 	StoreResetToken(email string, resetToken string) error
 	InvalidateResetToken(email string) error
 	GetResetTokenByEmail(email string) (string, error)
+	DeleteUser(email string) error
+	PromoteUser(email string) error
+	DemoteUser(email string) error
 }
 
 type IUserUseCase interface {
@@ -40,10 +45,15 @@ type IUserUseCase interface {
 	GetSingleUser(email string) (*User, error)
 	RegisterUser(user *User) error
 	VerifyEmail(token string) error
+	DeleteUser(email string) error
+	PromoteUser(email string) error
+	DemoteUser(email string) error
 	RefreshToken(email, refresher string) (string, error)
 	GenerateResetPasswordToken(email string) error
 	ResetPassword(token string, newPassword string) error
 	StoreToken(token string) error
+	Logout(email, refresher string) error
+	// DeleteRefresher(email, refresher string) error
 }
 
 type IPasswordService interface {
@@ -58,9 +68,12 @@ type ITokenService interface {
 
 type ITokenRepository interface {
 	InsertRefresher(credential Credential) error
-	GetRefresher(email string) (string, error)
+	CheckRefresher(email, refresher string) error
 	InvalidateResetToken(email string) error
 	StoreResetToken(email string, resetToken string) error
+	UpdateRefresher(email, refresher string) error
+	DeleteRefresher(email, refresher string) error
+	DeleteAllRefreshers(email string) error
 }
 
 type IMailService interface {

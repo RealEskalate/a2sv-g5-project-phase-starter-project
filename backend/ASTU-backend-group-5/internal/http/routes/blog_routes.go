@@ -23,14 +23,18 @@ func RegisterBlogRoutes(blogsCollection, commentsCollection, likesCollection, vi
 		blogRoutes.GET("/paginate", blogHandler.PaginateBlogsHandler)
 		blogRoutes.POST("/:id/tags", blogHandler.AddTagToBlogHandler)
 		blogRoutes.DELETE("/:id/tags/:tagId", blogHandler.RemoveTagFromBlogHandler)
-		blogRoutes.POST("/:id/comments", blogHandler.AddCommentHandler)
+		blogRoutes.POST("/comments", blogHandler.AddCommentHandler)
 		blogRoutes.GET("/:id/comments", blogHandler.GetCommentsByBlogIDHandler)
-		blogRoutes.POST("/:id/likes", blogHandler.AddLikeHandler)
+
+		blogRoutes.POST("/likes", blogHandler.AddLikeHandler)
 		blogRoutes.GET("/:id/likes", blogHandler.GetLikesByBlogIDHandler)
-		blogRoutes.POST("/:id/views", blogHandler.AddViewHandler)
+		blogRoutes.POST("/views", blogHandler.AddViewHandler)
 		blogRoutes.GET("/:id/views", blogHandler.GetViewsByBlogIDHandler)
+		blogRoutes.DELETE("/comments/:commentId", blogHandler.DeleteLikeHandler)
+		// blogRoutes.GET("")
 
 	}
+
 	{
 		tagRoutes.POST("/", blogHandler.CreateTagHandler)
 		tagRoutes.GET("/:id", blogHandler.GetTagByIDHandler)

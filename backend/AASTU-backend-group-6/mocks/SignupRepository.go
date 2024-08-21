@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	domain "blogs/domain"
+	domain "blogs/Domain"
 	context "context"
 
 	mock "github.com/stretchr/testify/mock"

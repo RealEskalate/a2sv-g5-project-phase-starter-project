@@ -1,13 +1,13 @@
 package routers
 
 import (
+	"github.com/gin-gonic/gin"
+
 	"group3-blogApi/config/db"
 	"group3-blogApi/delivery/controllers"
 	"group3-blogApi/infrastracture"
 	"group3-blogApi/repository"
 	"group3-blogApi/usecase"
-
-	"github.com/gin-gonic/gin"
 )
 
 func SetUpUser(router *gin.Engine) {
@@ -16,23 +16,20 @@ func SetUpUser(router *gin.Engine) {
 	userUsecase := usecase.NewUserUsecase(userRepo)
 	authController := controllers.NewUserController(userUsecase)
 
-	blogRepo := repository.NewBlogRepositoryImpl(db.BlogCollection)
-	blogUsecase := usecase.NewBlogUsecase(blogRepo)
-	blogController := controllers.NewBlogController(blogUsecase)
+	// blogRepo := repository.NewBlogRepositoryImpl(db.BlogCollection)
+	// blogUsecase := usecase.NewBlogUsecase(blogRepo)
+	// blogController := controllers.NewBlogController(blogUsecase)
 
 	user := router.Group("/user")
 	user.Use(infrastracture.AuthMiddleware())
 
 	{
-		user.GET("/me",  authController.GetMyProfile)
+		user.GET("/me", authController.GetMyProfile)
 		user.PUT("/update", authController.UpdateMyProfile)
 		user.POST("/upload-image", authController.UploadImage)
-		user.DELETE("/me",  authController.DeleteMyAccount)
-	
-
+		user.DELETE("/me", authController.DeleteMyAccount)
 
 		// Logout Routes
-	
 
 		user.POST("/refresh-token", authController.RefreshToken)
 

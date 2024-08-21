@@ -1,11 +1,16 @@
-import React from 'react'
-import QuickTransfer from "@/app/dashboard/components/QuickTransfer"
-const page = () => {
-  return (
-    <div>
-        <QuickTransfer />
-    </div>
-  )
-}
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { options } from "./api/auth/[...nextauth]/options";
+const page = async () => {
+  const session = await getServerSession(options);
 
-export default page
+  if (!session) {
+    redirect(`/api/auth/signin?callbackUrl=${encodeURIComponent('/dashboard')}`);
+
+  } else {
+    console.log(session)
+    redirect("./dashboard");
+  }
+};
+
+export default page;

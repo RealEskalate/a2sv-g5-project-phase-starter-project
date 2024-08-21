@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import {
   MdHome,
   MdSettings,
@@ -8,7 +9,9 @@ import {
 import ListCard from "./components/ListCard";
 import { IconType } from "react-icons";
 import BarChartForAccounts from "./components/BarChartForAccounts";
-import EditProfile from "../components/EditProfile";
+import Card from "../components/Page2/Card";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type DataItem = {
   heading: string;
@@ -24,6 +27,8 @@ type Column = {
 };
 
 const Page = () => {
+  const [session, setSession] = useState(false);
+  const route = useRouter();
   // Example data for the first ListCard
   const ReusableCard: Column = {
     icon: MdHome,
@@ -109,6 +114,22 @@ const Page = () => {
     })),
   };
 
+  // Getting the session from the server
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = await getSession();
+      if (sessionData?.user) {
+        console.log("Session Available");
+        setSession(true);
+      }
+    };
+
+    fetchSession();
+  }, []);
+  // getting the session ends here
+  if (!session) {
+    route.push("./api/auth/signin");
+  }
   return (
     <>
       <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5">
@@ -132,10 +153,26 @@ const Page = () => {
               <ListCard column={transaction2} width={"w-full"} />
             </div>
           </div>
-          <div className="md:w-1/2">
-            <span className="text-xl text-[#333B69] font-semibold">
-              Card Goes Here
-            </span>
+          <div className="md:w-1/2 gap-1 flex flex-col">
+            <div className="flex justify-between mr-2">
+              <span className="text-xl text-[#333B69] font-semibold">
+                My Card
+              </span>
+              <span className="text-sm text-[#333B69] font-semibold">
+                See All
+              </span>
+            </div>
+            <Card
+              balance="$5,756"
+              cardHolder="Eddy Cusuma"
+              validThru="12/22"
+              cardNumber="3778 **** **** 1234"
+              filterClass=""
+              bgColor="from-[#4C49ED] to-[#0A06F4]"
+              textColor="text-white"
+              iconBgColor="bg-opacity-10"
+              showIcon={true}
+            ></Card>
           </div>
         </div>
 

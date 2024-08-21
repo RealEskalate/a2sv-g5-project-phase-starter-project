@@ -1,22 +1,20 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
-
+import { TrendingUp } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 
 const chartData = [
   { month: "Saturday", desktop: 186, mobile: 80 },
@@ -26,7 +24,7 @@ const chartData = [
   { month: "Wednesday", desktop: 209, mobile: 130 },
   { month: "Thursday", desktop: 214, mobile: 140 },
   { month: "Friday", desktop: 214, mobile: 140 },
-]
+];
 
 const chartConfig = {
   desktop: {
@@ -37,24 +35,35 @@ const chartConfig = {
     label: "Mobile",
     color: "#16dbcc", // Color for mobile bars
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function WeeklyActivity() {
   return (
-    <Card className="my-4 mx-4 rounded-3xl">
+    <Card className="my-4 mx-4 rounded-3xl flex-grow">
       <CardHeader>
-        <CardTitle className="text-[#343C6A] font-bold text-xl">Weekly Activity</CardTitle>
-        {/* <CardDescription>January - June 2024</CardDescription> */}
+        <CardTitle className="text-[#343C6A] font-bold text-xl md:hidden">
+          Weekly Activity
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart data={chartData}>
-          <CartesianGrid 
-                vertical={false} 
-                strokeDasharray="none" // Remove dashed lines for solid lines
-                stroke="#E0E0E0" // Lighter grey color for the grid lines
-                strokeWidth={0.5} // Thinner lines for a lighter appearance
-                />
+      <CardContent className="flex justify-center items-center">
+        <ChartContainer
+          config={chartConfig}
+          className="w-full h-60 max-w-[800-px]" // Adjust the width to ensure proper fitting
+        >
+          <BarChart
+            data={chartData}
+            width={800}
+            height={400}
+            margin={{
+              top: 10, right: 30, left: 0, bottom: 0, // Adjust margins if needed
+            }}
+          >
+            <CartesianGrid
+              vertical={false}
+              strokeDasharray="none" // Remove dashed lines for solid lines
+              stroke="#E0E0E0" // Lighter grey color for the grid lines
+              strokeWidth={0.5} // Thinner lines for a lighter appearance
+            />
             <YAxis
               tickCount={6}
               tickFormatter={(value) => value}
@@ -75,27 +84,11 @@ export function WeeklyActivity() {
               cursor={false}
               content={<ChartTooltipContent indicator="dashed" />}
             />
-            <Bar 
-              dataKey="desktop" 
-              fill="#1814f3" // Updated color for desktop bars
-              radius={4} 
-            />
-            <Bar 
-              dataKey="mobile" 
-              fill="#16dbcc" // Updated color for mobile bars
-              radius={4} 
-            />
+            <Bar dataKey="desktop" fill={chartConfig.desktop.color} radius={4} />
+            <Bar dataKey="mobile" fill={chartConfig.mobile.color} radius={4} />
           </BarChart>
         </ChartContainer>
       </CardContent>
-      {/* <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter> */}
     </Card>
-  )
+  );
 }

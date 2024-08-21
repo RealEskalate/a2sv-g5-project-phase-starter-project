@@ -8,16 +8,16 @@ interface Props {
 }
 const CreditCard = ({ icon, data, linkUrl }: Props) => {
   return (
-    <div className="flex justify-between gap-6 items-center bg-white p-3 lg:p-4 rounded-2xl shadow-sm">
+    <div className="flex justify-around items-center bg-white p-3 lg:p-4 rounded-2xl shadow-sm">
       {icon}
-      <div className="flex gap-8">
+      <div className="flex gap-6">
         {data.map((data, index) => {
           return (
-            <div className={`${index > 1 && "hidden"} lg:block`} key={index}>
-              <p className="text-[#232323] font-medium text-sm w-20">
+            <div className={`${index > 1 && "hidden"}  lg:block`} key={index}>
+              <p className="text-[#232323] font-medium text-sm w-20 lg:text-base">
                 {data[0]}
               </p>
-              <p className="text-[#8297c0] text-xs">{data[1]}</p>
+              <p className="text-[#8297c0] text-xs lg:text-sm">{data[1]}</p>
             </div>
           );
         })}

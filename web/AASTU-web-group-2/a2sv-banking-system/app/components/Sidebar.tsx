@@ -19,7 +19,6 @@ interface SidebarProps {
   toggle: boolean;
   handleClose: () => void;
 }
-
 const Sidebar = ({ toggle, handleClose }: SidebarProps) => {
   const router = useRouter();
   const [active, setActive] = useState("Dashboard");
@@ -69,19 +68,13 @@ const Sidebar = ({ toggle, handleClose }: SidebarProps) => {
     },
     {
       id: 8,
-      text: "Privileges",
-      destination: "./privileges",
-      icon: MdStar,
-    },
-    {
-      id: 9,
       text: "Settings",
       destination: "./bankingSettings",
       icon: MdSettings,
     },
   ];
 
-  const handleNav = (destination: string) => {
+  const handleNav = async (destination: string) => {
     router.push(destination);
   };
   const handleActive = (element: string) => {
@@ -91,7 +84,7 @@ const Sidebar = ({ toggle, handleClose }: SidebarProps) => {
 
   return (
     <>
-      <div className="hidden md:flex md:flex-col md:gap-5 py-7 border-r h-svh">
+      <div className="hidden md:flex md:flex-col md:gap-5 py-7 border-r h-svh sticky top-0">
         <div className="px-5 py-2">
           <Image src="/Logo.png" width={183} height={36} alt="Logo" />
         </div>

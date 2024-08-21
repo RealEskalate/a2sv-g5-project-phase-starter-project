@@ -2,7 +2,6 @@ package infrastructure
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -35,23 +34,19 @@ func (am *AuthMiddleware) AUTH(tokenString, secretKey string) jwt.Claims {
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && claims.Valid() == nil {
 		if claims["exp"].(int64) < time.Now().Unix() {
-			fmt.Println("the access token is expired")
 			// todo: check if  there is un expired refresh token in the token collection
 			var refreshToken jwt.Token
 			err := am.collection.FindOne(context.TODO(), bson.M{"_id": claims["ID"]}).Decode(&refreshToken)
 			if err != nil {
-				fmt.Println("failed to find valid refresh token in the token collection")
 				return nil
 			}
 			refreshClaim, ok := refreshToken.Claims.(jwt.MapClaims)
 			if ok {
 				if refreshClaim["exp"].(int64) < time.Now().Unix() {
-					fmt.Println("refresh token is expired")
 
 					am.collection.DeleteOne(context.TODO(), bson.M{"_id": claims["ID"]})
 					return nil
 				}
-				fmt.Println("the token is refreshed you have 1 minutes")
 				claims["exp"] = time.Now().Add(1 * time.Minute).Unix()
 				return claims
 			}

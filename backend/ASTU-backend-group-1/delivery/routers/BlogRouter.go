@@ -19,40 +19,33 @@ func (gr *BlogRoute) GinBlogRouter() {
 	router := gin.Default()
 	blogRouter := router.Group("/blogs")
 	{
-		// INFO:PASSED
-		// blogRouter.POST("/", gr.authController.UserMiddlewareGin(), gr.usecase.HandleCreateBlog)
-		// blogRouter.GET("/", gr.authController.UserMiddlewareGin(), gr.usecase.HandleGetAllBlogs)
-		// blogRouter.GET("/popular", gr.authController.UserMiddlewareGin(), gr.usecase.HandleGetPopularBlog)
-		// blogRouter.GET("/filter", gr.authController.UserMiddlewareGin(), gr.usecase.HandleFilterBlogs)
-
-		// blogRouter.PATCH("/:blogId", gr.authController.UserMiddlewareGin(), gr.usecase.HandleUpdate)
-		// blogRouter.DELETE("/:blogId", gr.authController.AdminMiddlewareGin(), gr.usecase.HandleDelete)
-		// blogRouter.POST("/:blogId/interact/:type", gr.authController.UserMiddlewareGin(), gr.usecase.HandleBlogLikeOrDislike)
-
-		// // TODO: check if there is a blog with such id
-		// blogRouter.POST("/:blogId/comments/:commentId/interact/:type", gr.authController.UserMiddlewareGin(), gr.usecase.HandleCommentLikeOrDislike)
-		// blogRouter.GET("/:blogId/comments/:commentId", gr.authController.UserMiddlewareGin(), gr.usecase.HandleGetCommentById)
-		// blogRouter.GET("/:blogId/comments/", gr.authController.UserMiddlewareGin(), gr.usecase.HandleGetAllComments)
-		// blogRouter.POST("/:blogId/comments", gr.authController.UserMiddlewareGin(), gr.usecase.HandleCommentOnBlog)
-		
 		blogRouter.POST("/", gr.usecase.HandleCreateBlog)
 		blogRouter.GET("/", gr.usecase.HandleGetAllBlogs)
-		blogRouter.GET("/:blogId", gr.usecase.HandleGetBlogById)
 		blogRouter.GET("/popular", gr.usecase.HandleGetPopularBlog)
 		blogRouter.GET("/filter", gr.usecase.HandleFilterBlogs)
-
-		blogRouter.PATCH("/:blogId", gr.usecase.HandleUpdate)
-		blogRouter.DELETE("/:blogId", gr.authController.AdminMiddlewareGin(), gr.usecase.HandleDelete)
+		blogRouter.GET("/:blogId", gr.usecase.HandleGetBlogById)
+		blogRouter.PATCH("/:blogId", gr.usecase.HandleBlogUpdate)
+		blogRouter.DELETE("/:blogId", gr.authController.AdminMiddlewareGin(), gr.usecase.HandleBlogDelete)
 		blogRouter.POST("/:blogId/interact/:type", gr.usecase.HandleBlogLikeOrDislike)
 
 		// TODO: check if there is a blog with such id
-		blogRouter.POST("/:blogId/comments/:commentId/interact/:type", gr.usecase.HandleCommentLikeOrDislike)
-		blogRouter.GET("/:blogId/comments/:commentId", gr.usecase.HandleGetCommentById)
-		blogRouter.GET("/:blogId/comments/", gr.usecase.HandleGetAllComments)
-		blogRouter.POST("/:blogId/comments", gr.usecase.HandleCommentOnBlog)
-		// INFO:TESTING
-		// INFO:TOBE TESTED
-		blogRouter.POST("/comments/:commentId/interact/:type", gr.usecase.HandleCommentLikeOrDislike)
+		commentRouter := blogRouter.Group("/:blogId/comments")
+		{
+			commentRouter.GET("/", gr.usecase.HandleGetAllComments)
+			commentRouter.POST("/", gr.usecase.HandleCommentOnBlog)
+			commentRouter.GET("/:commentId", gr.usecase.HandleGetCommentById)
+			commentRouter.POST("/:commentId/interact/:type", gr.usecase.HandleCommentLikeOrDislike)
+
+			repliesRouter := commentRouter.Group("/:commentId/replies")
+			{
+				repliesRouter.GET("/", gr.usecase.HandleGetAllRepliesForComment)
+				repliesRouter.POST("/", gr.usecase.HandleReplyOnComment)
+				repliesRouter.GET("/:replyId", gr.usecase.HandleGetReplyById)
+				// todo: test the below functions
+				repliesRouter.POST("/:replyId/interact/:type", gr.usecase.HandleReplyLikeOrDislike)
+			}
+		}
+
 	}
 	router.GET("", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{"message": "Welcome to Blog API get"})

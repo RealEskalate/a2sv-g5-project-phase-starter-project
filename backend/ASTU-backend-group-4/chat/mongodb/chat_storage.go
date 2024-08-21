@@ -96,19 +96,20 @@ func (chatRepository *ChatRepository) GetChat(ctx context.Context, chatID string
 	return retrievedChat, nil
 }
 
-func (chatRepository *ChatRepository) GetChats(ctx context.Context, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[chat.Chat], error) {
+func (chatRepository *ChatRepository) GetChats(ctx context.Context, userID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[chat.Chat], error) {
 	collection := chatRepository.Database.Collection(collectionName)
 	findOptions := options.Find()
 	findOptions.SetSkip(int64(pagination.Page-1) * int64(pagination.Limit))
 	findOptions.SetLimit(int64(pagination.Limit))
+	filter := bson.M{"user_id":userID}
 
-	count, err := collection.CountDocuments(ctx, bson.M{})
+	count, err := collection.CountDocuments(ctx, filter)
 	if err != nil {
 		return infrastructure.PaginationResponse[chat.Chat]{}, err
 	}
 
 	totalPages := int(math.Ceil(float64(count) / float64(int64(pagination.Limit))))
-	cursor, err := collection.Find(ctx, bson.M{}, findOptions)
+	cursor, err := collection.Find(ctx, filter, findOptions)
 	if err != nil {
 		return infrastructure.PaginationResponse[chat.Chat]{}, err
 	}

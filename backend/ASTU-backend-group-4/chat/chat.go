@@ -23,12 +23,12 @@ type Message struct {
 }
 
 type Usecase interface {
-	CreateChat(ctx context.Context, userID, title string) (Chat, error)
-	DeleteChat(ctx context.Context, chatID string) error
-	GenerateChatTitle(ctx context.Context, message Message) (string, error)
-	GetChat(ctx context.Context, chatID string) (Chat, error)
-	GetChats(ctx context.Context, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error)
-	SendMessage(ctx context.Context, chatID string, message Message) error
+	CreateChat(ctx context.Context, form CreateChatForm) (Chat, error)
+	DeleteChat(ctx context.Context, form DefaultChatForm) error
+	GenerateChatTitle(ctx context.Context, form TextForm) (string, error)
+	GetChat(ctx context.Context, form DefaultChatForm) (Chat, error)
+	GetChats(ctx context.Context, form DefaultChatForm, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error)
+	SendMessage(ctx context.Context, chatForm DefaultChatForm, textForm TextForm) (Message, error)
 }
 
 type Repository interface {
@@ -36,5 +36,10 @@ type Repository interface {
 	CreateChat(ctx context.Context, chat Chat) (Chat, error)
 	DeleteChat(ctx context.Context, chatID string) error
 	GetChat(ctx context.Context, chatID string) (Chat, error)
-	GetChats(ctx context.Context, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error)
+	GetChats(ctx context.Context, userID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error)
+}
+
+type AIService interface {
+	SendMessage(ctx context.Context, history []Message, message Message) (Message, error)
+	GenerateChatTitle(ctx context.Context, text string) (string, error)
 }

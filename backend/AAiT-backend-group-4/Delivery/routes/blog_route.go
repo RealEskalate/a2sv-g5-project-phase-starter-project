@@ -36,9 +36,9 @@ func NewBlogRoute(env *bootstrap.Env, timeout time.Duration, db mongo.Database, 
 		blogRoutes.POST("/tags", bc.FetchByTags)
 		blogRoutes.GET("/search", bc.SearchBlogs)
 		blogRoutes.GET("/title", bc.FetchByBlogTitle)
-		blogRoutes.POST("/:id/comments", bc.AddComment)
-		blogRoutes.PUT("/:id/comments", bc.UpdateComment)
-		blogRoutes.DELETE("/:id/comments", bc.RemoveComment)
+		blogRoutes.POST("/comments/:id", bc.AddComment)
+		blogRoutes.PUT("/comments/:id", bc.UpdateComment)
+		blogRoutes.DELETE("/comments/:id", bc.RemoveComment)
 	}
 
 }

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	domain "aait-backend-group4/Domain"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -187,7 +188,7 @@ func (bc *BlogController) FetchByBlogTitle(c *gin.Context) {
 	title := c.Query("title")
 	limit, err := strconv.Atoi(c.Query("limit"))
 	if err != nil || limit <= 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		limit = 10
 		return
 	}
 	page, err := strconv.Atoi(c.Query("page"))
@@ -208,14 +209,18 @@ func (bc *BlogController) FetchByBlogTitle(c *gin.Context) {
 // AddComment handles adding a comment to a blog
 func (bc *BlogController) AddComment(c *gin.Context) {
 	var comment domain.Comment
-	userID := c.Request.Header.Get("userID")
+	id := c.Param("id")
 
+	log.Printf("blog id %v", id)
 	if err := c.ShouldBindJSON(&comment); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := bc.BlogUsecase.AddComment(c, userID, comment); err != nil {
+	comment.Date = time.Now()
+	log.Printf("comment %v", comment)
+
+	if err := bc.BlogUsecase.AddComment(c, id, comment); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

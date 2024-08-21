@@ -17,7 +17,6 @@ type blogRepository struct {
 	collection string
 }
 
-
 // NewBlogRepository creates a new instance of blogRepository
 func NewBlogRepository(db mongo.Database, collection string) domain.BlogRepository {
 	return &blogRepository{
@@ -33,7 +32,6 @@ func NewBlogRepository(db mongo.Database, collection string) domain.BlogReposito
 func (br *blogRepository) SearchBlogs(c context.Context, filter domain.Filter, limit, offset int) ([]domain.Blog, int, error) {
 	var blogs []domain.Blog
 
-	
 	mongoFilter := bson.M{}
 	if filter.AuthorName != nil {
 		mongoFilter["author_info.name"] = *filter.AuthorName
@@ -48,7 +46,6 @@ func (br *blogRepository) SearchBlogs(c context.Context, filter domain.Filter, l
 		mongoFilter["popularity"] = *filter.Popularity
 	}
 
-	
 	findOptions := options.Find()
 	if filter.Sort_By != nil {
 		switch *filter.Sort_By {
@@ -78,7 +75,6 @@ func (br *blogRepository) SearchBlogs(c context.Context, filter domain.Filter, l
 
 	return blogs, int(count), nil
 }
-
 
 // CreateBlog inserts a new blog into the collection
 func (br *blogRepository) CreateBlog(c context.Context, blog *domain.Blog) error {
@@ -110,11 +106,10 @@ func (br *blogRepository) FetchByBlogAuthor(c context.Context, authorID string, 
 
 	collection := br.database.Collection(br.collection)
 	filter := bson.M{"author_info.author_id": authorID}
-	
+
 	findOptions := options.Find()
 	findOptions.SetLimit(int64(limit))
 	findOptions.SetSkip(int64(offset))
-	
 
 	cursor, err := collection.Find(c, filter, findOptions)
 	if err != nil {
@@ -134,7 +129,6 @@ func (br *blogRepository) FetchByBlogAuthor(c context.Context, authorID string, 
 
 	return blogs, int(count), nil
 }
-
 
 // FetchByBlogTitle retrieves blogs by their title with optional pagination
 // MongoDB filter for title search with case-insensitive regex
@@ -175,7 +169,6 @@ func (br *blogRepository) FetchAll(c context.Context, limit, offset int) ([]doma
 	findOptions.SetLimit(int64(limit))
 	findOptions.SetSkip(int64(offset))
 
-
 	cursor, err := collection.Find(c, bson.M{}, findOptions)
 	if err != nil {
 		return []domain.Blog{}, 0, err
@@ -194,8 +187,6 @@ func (br *blogRepository) FetchAll(c context.Context, limit, offset int) ([]doma
 
 	return blogs, int(count), nil
 }
-
-
 
 // FetchByPageAndPopularity retrieves blogs from the collection based on page number and sorts them by popularity
 func (br *blogRepository) FetchByPageAndPopularity(ctx context.Context, limit, offset int) ([]domain.Blog, int, error) {
@@ -228,8 +219,6 @@ func (br *blogRepository) FetchByPageAndPopularity(ctx context.Context, limit, o
 	return blogs, int(totalCount), nil
 }
 
-
-
 // FetchByTags retrieves blogs that have the specified tags with pagination
 func (br *blogRepository) FetchByTags(ctx context.Context, tags []domain.Tag, limit, offset int) ([]domain.Blog, int, error) {
 	collection := br.database.Collection(br.collection)
@@ -260,7 +249,6 @@ func (br *blogRepository) FetchByTags(ctx context.Context, tags []domain.Tag, li
 
 	return blogs, int(totalCount), nil
 }
-
 
 // UpdateBlog updates a blog in the collection by its ID
 func (br *blogRepository) UpdateBlog(ctx context.Context, id primitive.ObjectID, blog domain.BlogUpdate) error {
@@ -336,11 +324,14 @@ func (br *blogRepository) UpdatePopularity(ctx context.Context, id primitive.Obj
 }
 
 func (br *blogRepository) UpdateFeedback(ctx context.Context, id string, updateFunc func(*domain.Feedback) error) error {
-
-	filter := bson.M{"_id": id}
+	new_id, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	filter := bson.M{"_id": new_id}
 	var blogPost domain.Blog
 
-	err := br.database.Collection(br.collection).FindOne(ctx, filter).Decode(&blogPost)
+	err = br.database.Collection(br.collection).FindOne(ctx, filter).Decode(&blogPost)
 	if err != nil {
 		return err
 	}
@@ -350,7 +341,7 @@ func (br *blogRepository) UpdateFeedback(ctx context.Context, id string, updateF
 		return err
 	}
 
-	update := bson.M{"$set": bson.M{"feedback": blogPost.Feedbacks}}
+	update := bson.M{"$set": bson.M{"feedbacks": blogPost.Feedbacks}}
 	_, err = br.database.Collection(br.collection).UpdateOne(ctx, filter, update)
 
 	return err
@@ -358,27 +349,27 @@ func (br *blogRepository) UpdateFeedback(ctx context.Context, id string, updateF
 
 // Increments the number of likes in the blogs feedback
 func (br *blogRepository) IncrementLikes(feedback *domain.Feedback) error {
-	feedback.Likes ++
+	feedback.Likes++
 	return nil
 }
+
 // Decrement the number of likes in the blogs feedback
 func (br *blogRepository) DecrementLikes(feedback *domain.Feedback) error {
-	feedback.Dislikes --
+	feedback.Dislikes--
 	return nil
 }
 
 // Increments the number of dislikes in the blogs feedback
 func (br *blogRepository) IncrementDislike(feedback *domain.Feedback) error {
-	feedback.Dislikes ++
+	feedback.Dislikes++
 	return nil
 }
 
 // Decement the number of dislikes in the blogs feedback
-func (br *blogRepository) DecrementDislikes(feedback *domain.Feedback) error{
-	feedback.Dislikes --
+func (br *blogRepository) DecrementDislikes(feedback *domain.Feedback) error {
+	feedback.Dislikes--
 	return nil
 }
-
 
 // adds a comment in to the feedback list of the blog
 func (br *blogRepository) AddComment(feedback *domain.Feedback, comment domain.Comment) error {
@@ -387,20 +378,20 @@ func (br *blogRepository) AddComment(feedback *domain.Feedback, comment domain.C
 }
 
 func (br *blogRepository) UpdateComment(feedback *domain.Feedback, updatedComment domain.Comment, userID string) error {
-        commentIndex := -1
-        for i, comment := range feedback.Comments {
-            if comment.User_ID == userID {
-                commentIndex = i
-                break
-            }
-        }
+	commentIndex := -1
+	for i, comment := range feedback.Comments {
+		if comment.User_ID == userID {
+			commentIndex = i
+			break
+		}
+	}
 
-        if commentIndex == -1 {
-            return errors.New("unauthorized: you can only update your own comments or must be an admin")
-        }
+	if commentIndex == -1 {
+		return errors.New("unauthorized: you can only update your own comments or must be an admin")
+	}
 
-        feedback.Comments[commentIndex] = updatedComment
-        return nil
+	feedback.Comments[commentIndex] = updatedComment
+	return nil
 }
 
 func (br *blogRepository) RemoveComment(feedback *domain.Feedback, requesterUserID string, isAdmin bool) error {

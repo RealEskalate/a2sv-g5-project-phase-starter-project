@@ -1,62 +1,194 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { sidebarLinks } from "@/constants";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { getSession, signOut } from "next-auth/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ky from "ky";
+import { set } from "date-fns";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 const Sidebar = () => {
+  const [profileUrl, setProfileUrl] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const session = await getSession();
+      const accessToken = session?.user.accessToken;
+      console.log(accessToken);
+      setIsLoading(true);
+      if (!accessToken) {
+        throw new Error("No access token found");
+      }
+
+      try {
+        const res: any = await ky(
+          "https://bank-dashboard-6acc.onrender.com/user/current",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            timeout: 10000,
+          }
+        ).json();
+
+        setProfileUrl(res.data.profilePicture);
+        setName(res.data.name);
+        setEmail(res.data.email);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
   const pathname = usePathname();
+
   return (
     <div
       className="sticky left-0 top-0 h-screen border-r border-gray-200 bg-white pt-4 text-white max-md:hidden 
-    sm:p-2 xl:p-4 2xl:w-[300px]"
+    sm:p-2 xl:p-4 2xl:w-[300px] flex flex-col justify-between"
     >
-      <div className="flex items-center gap-2 p-3 pb-8">
-        <Image src="/icons/logo.png" width={25} height={25} alt="logo" />
-        <h1 className="text-primaryBlack font-[900] text-[1.5rem]">
-          BankDash.
-        </h1>
-      </div>
-      <div className="flex flex-col gap-2">
-        {sidebarLinks.map((link, index) => {
-          const isActive =
-            pathname === link.route ||
-            pathname.startsWith(`dashboard/${link.route}/`);
-          return (
-            <Link
-              href={link.route}
-              key={link.title}
-              className={cn(
-                "flex gap-6 items-center py-1 md:p-3 2xl:px-4 pl-0 justify-center xl:justify-start",
-                {
-                  "border-l-4 bg-nav-focus border-orange-1 border-primaryBlue":
-                    isActive,
-                }
-              )}
-            >
-              <Image
-                src={link.icon}
-                alt={link.title}
-                width={20}
-                height={20}
-                className={cn({
-                  "filter-custom-blue": isActive,
-                })}
-              />
-              <p
-                className={cn("text-sm text-[#B1B1B1] font-semibold", {
-                  "text-primaryBlue": isActive,
-                })}
+      <div>
+        <div className="flex items-center gap-2 p-3 pb-8">
+          <Image src="/icons/logo.png" width={25} height={25} alt="logo" />
+          <h1 className="text-primaryBlack font-[900] text-[1.5rem]">
+            BankDash.
+          </h1>
+        </div>
+        <div className="flex flex-col gap-2">
+          {sidebarLinks.map((link, index) => {
+            const isActive =
+              pathname === link.route ||
+              pathname.startsWith(`dashboard/${link.route}/`);
+            return (
+              <Link
+                href={link.route}
+                key={link.title}
+                className={cn(
+                  "flex gap-6 items-center py-1 md:p-3 2xl:px-4 pl-0 justify-center xl:justify-start",
+                  {
+                    "border-l-4 bg-nav-focus border-orange-1 border-primaryBlue":
+                      isActive,
+                  }
+                )}
               >
-                {link.title}
-              </p>
-            </Link>
-          );
-        })}
+                <Image
+                  src={link.icon}
+                  alt={link.title}
+                  width={20}
+                  height={20}
+                  className={cn({
+                    "filter-custom-blue": isActive,
+                  })}
+                />
+                <p
+                  className={cn("text-sm text-[#B1B1B1] font-semibold", {
+                    "text-primaryBlue": isActive,
+                  })}
+                >
+                  {link.title}
+                </p>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+      <div className=" text-black hover:bg-neutral-200 cursor-pointer rounded-full p-3 transition-all duration-500">
+        <Popover>
+          <PopoverTrigger className="flex items-center gap-4">
+            <Avatar>
+              <AvatarImage src={profileUrl} />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+
+            {isLoading ? (
+              "Loading..."
+            ) : (
+              <div className="flex gap-4 border-b">
+                <div className="space-y-1 text-left">
+                  <h4 className="text-sm font-medium">{name}</h4>
+                  <p className="text-sm text-muted-foreground">{email}</p>
+                </div>
+              </div>
+            )}
+          </PopoverTrigger>
+
+          <PopoverContent className="w-80 p-2">
+            <div className="mt-4 space-y-2">
+              <Link
+                href="/dashboard/setting/"
+                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+                prefetch={false}
+              >
+                <FilePenIcon className="h-4 w-4" />
+                Edit Profile
+              </Link>
+              <button
+                onClick={() => signOut({ callbackUrl: "/auth/sign-in" })}
+                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+              >
+                <LogOutIcon className="h-4 w-4" />
+                Log Out
+              </button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );
 };
 
 export default Sidebar;
+
+function FilePenIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10" />
+      <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+      <path d="M10.4 12.6a2 2 0 1 1 3 3L8 21l-4 1 1-4Z" />
+    </svg>
+  );
+}
+
+function LogOutIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" x2="9" y1="12" y2="12" />
+    </svg>
+  );
+}

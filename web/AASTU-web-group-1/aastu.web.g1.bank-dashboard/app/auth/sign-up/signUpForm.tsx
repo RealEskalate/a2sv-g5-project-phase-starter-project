@@ -27,10 +27,12 @@ import Link from "next/link";
 import { signUpSchema } from "@/schema/index";
 import ky from "ky";
 import { useRouter } from "next/navigation";
+import ProfileUpload from "@/app/dashboard/_components/ProfileUpload";
 
 export const SignUpForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [profilePictureUrl, setProfilePictureUrl] = useState("");
   const router = useRouter();
 
   const form = useForm({
@@ -61,9 +63,15 @@ export const SignUpForm = () => {
   const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
     setLoading(true);
     try {
+      const payload = {
+        ...values,
+        profilePicture: profilePictureUrl,
+      };
+
+      console.log(payload);
       const res: { success: boolean; message: string } = await ky
         .post("https://bank-dashboard-6acc.onrender.com/auth/register", {
-          json: values,
+          json: payload,
         })
         .json();
       if (res.success) {
@@ -306,7 +314,7 @@ export const SignUpForm = () => {
             )}
           />
           {/* Profile Picture */}
-          <FormField
+          {/* <FormField
             control={form.control}
             name="profilePicture"
             render={({ field }: { field: object }) => (
@@ -322,7 +330,12 @@ export const SignUpForm = () => {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
+          <div>
+            <label>Profile Picture</label>
+
+            <ProfileUpload setProfilePictureUrl={setProfilePictureUrl} />
+          </div>
           <div className="flex gap-5">
             {/* Preferences - Currency */}
             <FormField

@@ -55,6 +55,10 @@ func (ur *userRepository) UpdateRefreshToken(c context.Context, userID string, r
 
 func (ur *userRepository) GetUserById(c context.Context, userId string) (*domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
+	objID, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		return nil, errors.New("object id invalid")
+	}
 	var user domain.User
 	id, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {
@@ -118,22 +122,51 @@ func (ur *userRepository) RevokeRefreshToken(c context.Context, userID, refreshT
 
 func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *domain.User) (*domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
-	filter := bson.M{"_id": userID}
+	id, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return nil, errors.New("object id invalid")
+	}
+	filter := bson.M{"_id": id}
 	update := bson.M{"$set": updatedUser}
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 
 	var ResultUser domain.User
-	err := collection.FindOneAndUpdate(c, filter, update, opts).Decode(&ResultUser)
+	err = collection.FindOneAndUpdate(c, filter, update, opts).Decode(&ResultUser)
 	if err != nil {
 		return nil, err
 	}
 
 	return &ResultUser, nil
 }
+
+func (ur *userRepository) ActivateUser(c context.Context, userID string) (*domain.User, error) {
+	collection := ur.database.Collection(ur.collection)
+	id, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return nil, errors.New("object id invalid")
+	}
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": bson.M{"active": true}}
+
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+
+	var ResultUser domain.User
+	err = collection.FindOneAndUpdate(c, filter, update, opts).Decode(&ResultUser)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ResultUser, nil
+}
+
 func (ur *userRepository) DeleteUser(c context.Context, userID string) error {
 	collection := ur.database.Collection(ur.collection)
-	filter := bson.M{"_id": userID}
-	_, err := collection.DeleteOne(c, filter)
+	id, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return errors.New("object id invalid")
+	}
+	filter := bson.M{"_id": id}
+	_, err = collection.DeleteOne(c, filter)
 	return err
 }
 func (ur *userRepository) IsUserActive(c context.Context, userID string) (bool, error) {

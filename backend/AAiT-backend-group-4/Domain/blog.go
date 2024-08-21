@@ -48,6 +48,7 @@ type Comment struct {
 	Date      time.Time `json:"date"`
 }
 
+
 type Feedback struct {
 	View_count int       `json:"view_count"`
 	Dislikes   int       `json:"dislikes"`
@@ -101,6 +102,7 @@ type BlogRepository interface {
 	FetchByBlogTitle(c context.Context, title string) (Blog, error)
 
 	FetchByPageAndPopularity(ctx context.Context, limit, offset int) ([]Blog, int, error)
+
 	FetchByTags(ctx context.Context, tags []Tag, limit, offset int) ([]Blog, int, error)
 	// UpdateBlog updates a blog in the collection by its ID
 	UpdateBlog(ctx context.Context, id primitive.ObjectID, blog BlogUpdate) error
@@ -111,8 +113,9 @@ type BlogRepository interface {
 	// UserIsAuthor checks if a user is the author of a blog by their user ID and the blog ID
 	UserIsAuthor(ctx context.Context, blogID primitive.ObjectID, userID string) (bool, error)
 	// UpdateFeedback retrives blogs by it's id and updates it's feedback
-	UpdateFeedback(ctx context.Context, id string, updateFunc func(*Feedback) error) error
+	UpdateFeedback(ctx context.Context, blogID string, updateFunc func(*Feedback) error) error
 
+	UpdatePopularity(ctx context.Context, id primitive.ObjectID, popularity float64) error
 	// AddLikes adds the number of Likes in the feedback field found in the blog info
 	IncrementLikes(feedback *Feedback) error
 	// DecrementsLikes decrements the number of likes from the feedback field of the blog

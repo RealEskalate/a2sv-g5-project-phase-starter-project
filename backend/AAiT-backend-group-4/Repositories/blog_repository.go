@@ -4,7 +4,6 @@ import (
 	domain "aait-backend-group4/Domain"
 	"context"
 	"errors"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,14 +14,16 @@ import (
 type blogRepository struct {
 	database   mongo.Database
 	collection string
+	Popularity domain.PopularityService
 }
 
 
 // NewBlogRepository creates a new instance of blogRepository
-func NewBlogRepository(db mongo.Database, collection string) domain.BlogRepository {
+func NewBlogRepository(db mongo.Database, collection string, popularity domain.PopularityService) domain.BlogRepository {
 	return &blogRepository{
 		database:   db,
 		collection: collection,
+		Popularity: popularity,
 	}
 }
 
@@ -99,6 +100,13 @@ func (br *blogRepository) FetchByBlogID(c context.Context, blogID string) (domai
 	if err != nil {
 		return blog, err
 	}
+	blog.Feedbacks.View_count ++
+	newPopularity := br.Popularity.CalculatePopularity(blog.Feedbacks)
+
+    err = br.UpdatePopularity(c, blog.ID, newPopularity)
+    if err != nil {
+        return domain.Blog{}, err
+    }
 
 	err = collection.FindOne(c, bson.M{"_id": idHex}).Decode(&blog)
 	return blog, err
@@ -132,6 +140,7 @@ func (br *blogRepository) FetchByBlogAuthor(c context.Context, authorID string, 
 		return []domain.Blog{}, 0, err
 	}
 
+
 	return blogs, int(count), nil
 }
 
@@ -149,13 +158,20 @@ func (br *blogRepository) FetchByBlogTitle(c context.Context, title string,) (do
 		return domain.Blog{}, err
 	}
 
-	var blogs domain.Blog
-	err = cursor.All(c, &blogs)
+	var blog domain.Blog
+	err = cursor.All(c, &blog)
 	if err != nil {
 		return domain.Blog{},err
 	}
+	blog.Feedbacks.View_count ++
+	newPopularity := br.Popularity.CalculatePopularity(blog.Feedbacks)
 
-	return blogs, nil
+    err = br.UpdatePopularity(c, blog.ID, newPopularity)
+    if err != nil {
+        return domain.Blog{}, err
+    }
+
+	return blog, nil
 }
 
 // FetchAll retrieves all blogs from the collection with optional pagination
@@ -326,12 +342,17 @@ func (br *blogRepository) UpdatePopularity(ctx context.Context, id primitive.Obj
 	return err
 }
 
-func (br *blogRepository) UpdateFeedback(ctx context.Context, id string, updateFunc func(*domain.Feedback) error) error {
+func (br *blogRepository) UpdateFeedback(ctx context.Context, blogID string, updateFunc func(*domain.Feedback) error) error {
+
+	id, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil{
+		return err
+	}
 
 	filter := bson.M{"_id": id}
 	var blogPost domain.Blog
 
-	err := br.database.Collection(br.collection).FindOne(ctx, filter).Decode(&blogPost)
+	err = br.database.Collection(br.collection).FindOne(ctx, filter).Decode(&blogPost)
 	if err != nil {
 		return err
 	}
@@ -340,6 +361,14 @@ func (br *blogRepository) UpdateFeedback(ctx context.Context, id string, updateF
 	if err != nil {
 		return err
 	}
+	
+	newPopularity := br.Popularity.CalculatePopularity(blogPost.Feedbacks)
+
+    err = br.UpdatePopularity(ctx, blogPost.ID, newPopularity)
+    if err != nil {
+        return err
+    }
+
 
 	update := bson.M{"$set": bson.M{"feedback": blogPost.Feedbacks}}
 	_, err = br.database.Collection(br.collection).UpdateOne(ctx, filter, update)

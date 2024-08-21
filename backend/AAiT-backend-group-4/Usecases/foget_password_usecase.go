@@ -12,6 +12,7 @@ type forgotPasswordUsecase struct {
     OTPRepository           domain.OTPRepository
     OTPService              domain.OtpInfrastructure
     PasswordInfrastructure domain.PasswordInfrastructure
+    OTPUsecase              domain.OTPUsecase
 }
 
 func NewForgotPasswordUsecase(
@@ -19,12 +20,15 @@ func NewForgotPasswordUsecase(
     otpRepo domain.OTPRepository,
     otpService domain.OtpInfrastructure,
     passwordInfrastructure domain.PasswordInfrastructure,
+    otpUsecase domain.OTPUsecase,
 ) domain.ForgotPasswordUsecase {
     return &forgotPasswordUsecase{
         UserRepository:          userRepo,
         OTPRepository:           otpRepo,
         OTPService:              otpService,
         PasswordInfrastructure: passwordInfrastructure,
+        OTPUsecase:             otpUsecase,
+
     }
 }
 
@@ -37,64 +41,51 @@ func (u *forgotPasswordUsecase) ForgotPassword(ctx context.Context, request doma
         return domain.ForgotPasswordResponse{}, err
     }
 
-    otpCode, err := u.OTPService.CreateOTP(&domain.UserOTPRequest{
+    // Use the OTPService to generate an OTP and send it via email
+    otpRequest := &domain.UserOTPRequest{
         UserID: user.ID.Hex(),
         Email:  user.Email,
-    })
+    }
+    otpResponse, err := u.OTPUsecase.GenerateOTP(ctx, otpRequest)
     if err != nil {
         return domain.ForgotPasswordResponse{}, err
     }
 
-    hashedOTPCode, err := u.PasswordInfrastructure.HashPassword(otpCode)
-    if err != nil {
-        return domain.ForgotPasswordResponse{}, err
-    }
+    // The OTPService.GenerateOTP already handles OTP creation and sending
 
-    otpRecord := domain.UserOTPVerification{
-        ID:         user.ID,
-        User_ID:    user.ID.Hex(),
-        Email:      user.Email,
-        OTP:        hashedOTPCode,
-        Created_At: time.Now(),
-        Expires_At: time.Now().Add(15 * time.Minute),
-    }
-
-
-    err = u.OTPRepository.CreateOTP(ctx, &otpRecord)
-    if err != nil {
-        return domain.ForgotPasswordResponse{}, err
-    }
-
-    return domain.ForgotPasswordResponse{Message: "Password reset OTP generated successfully"}, nil
+    return domain.ForgotPasswordResponse{Message: otpResponse.Message}, nil
 }
 
-
 func (u *forgotPasswordUsecase) ResetPassword(ctx context.Context, request domain.ResetPasswordRequest) (domain.ResetPasswordResponse, error) {
-
+    // Fetch the OTP record
     otpRecord, err := u.OTPRepository.GetOTPByEmail(ctx, request.Email)
     if err != nil || time.Now().After(otpRecord.Expires_At) {
         return domain.ResetPasswordResponse{}, errors.New("invalid or expired OTP")
     }
 
+    // Compare the provided OTP with the stored OTP
     err = u.PasswordInfrastructure.ComparePasswords(request.OTP, otpRecord.OTP)
     if err != nil {
         return domain.ResetPasswordResponse{}, errors.New("incorrect OTP")
     }
 
+    // Hash the new password
     hashedPassword, err := u.PasswordInfrastructure.HashPassword(request.NewPassword)
     if err != nil {
         return domain.ResetPasswordResponse{}, err
     }
 
+    // Fetch the user to update their password
     user, err := u.UserRepository.GetByEmail(ctx, request.Email)
     if err != nil {
         return domain.ResetPasswordResponse{}, err
     }
 
+    // Update the user's password and clear OTP related fields
     updates := map[string]interface{}{
-        "password":            hashedPassword,
+        "password":             hashedPassword,
         "password_reset_token": "",
-        "token_expiry":         time.Time{}, 
+        "token_expiry":         time.Time{},
     }
 
     err = u.UserRepository.UpdatePasswordTokens(ctx, user.ID.Hex(), updates)
@@ -102,6 +93,7 @@ func (u *forgotPasswordUsecase) ResetPassword(ctx context.Context, request domai
         return domain.ResetPasswordResponse{}, err
     }
 
+    // Delete the OTP record after successful password reset
     err = u.OTPRepository.DeleteOTPByEmail(ctx, request.Email)
     if err != nil {
         return domain.ResetPasswordResponse{}, err

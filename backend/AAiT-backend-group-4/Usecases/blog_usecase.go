@@ -320,14 +320,15 @@ func (blogU *blogUsecase) DeleteBlog(c context.Context, id primitive.ObjectID, d
 
 // AddComment function calls the AddComment function in blog repository using user Id
 // Then adds it to the feedback filed of the blog using updateFeedback method
-func (blogU *blogUsecase) AddComment(c context.Context, userID string, comment domain.Comment) error {
+func (blogU *blogUsecase) AddComment(c context.Context, blogID string, comment domain.Comment) error {
 
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
+	
 	addCommentFunc := func(feedback *domain.Feedback) error {
 		return blogU.blogRepository.AddComment(feedback, comment)
 	}
-	return blogU.blogRepository.UpdateFeedback(ctx, userID, addCommentFunc)
+	return blogU.blogRepository.UpdateFeedback(ctx, blogID, addCommentFunc)
 }
 
 // UpdateComment function calls the UpdateComment function in blog repository using user Id

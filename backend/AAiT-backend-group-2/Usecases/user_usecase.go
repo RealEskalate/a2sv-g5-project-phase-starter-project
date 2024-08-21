@@ -16,15 +16,17 @@ type userUsecase struct {
 	userRepository domain.UserRepository
 	jwtService services.JWTService
 	emailService *services.EmailService
+	imageService *services.ImageService
 	contextTimeout time.Duration
 	validator *services.ValidatorService
 }
 
-func NewUserUsecase(userRepository domain.UserRepository, jwtService services.JWTService, emailService *services.EmailService, timeout time.Duration, validator *services.ValidatorService) domain.UserUsecase {
+func NewUserUsecase(userRepository domain.UserRepository, jwtService services.JWTService, emailService *services.EmailService, imageService *services.ImageService, timeout time.Duration, validator *services.ValidatorService) domain.UserUsecase {
 	return &userUsecase{
 		userRepository: userRepository,
 		jwtService: jwtService,
 		emailService: emailService,
+		imageService: imageService,
 		contextTimeout: timeout,
 		validator: validator,
 	}
@@ -47,6 +49,16 @@ func (uu *userUsecase) GetUserByID(c context.Context, id string) (*domain.User, 
 func (uu *userUsecase) CreateUser(c context.Context, user domain.User) error {
 	if err := services.ValidateStruct(uu.validator, user); err != nil {
 		return fmt.Errorf("validation error: %v", err.Error())
+	}
+
+	_, err := uu.userRepository.FindByEmailOrUsername(c, user.Email)
+	if err == nil {
+		return errors.New("email already exists")
+	}
+
+	_, err = uu.userRepository.FindByEmailOrUsername(c, user.Username)
+	if err == nil {
+		return errors.New("username already exists")
 	}
 
 	hashedPassword, err := services.GeneratePasswordHash(user.Password)
@@ -111,7 +123,7 @@ func (uu *userUsecase) Login(c context.Context, loginDto *dtos.LoginDTO) (map[st
 		return nil, errors.New("invalid email or password")
 	}
 
-	tokens, err := uu.jwtService.GenerateToken(user.ID.Hex(), user.Email, user.Role, 3*time.Minute, 24*time.Hour)
+	tokens, err := uu.jwtService.GenerateToken(user.ID.Hex(), user.Email, user.Role, 15*time.Minute, 24*time.Hour)
 	if err != nil {
 		return nil, errors.New("internal server error: failed to generate token")
 	}
@@ -279,6 +291,7 @@ func (uu *userUsecase) ChangePassword(c context.Context, userId string, changePa
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
+
 	if changePasswordDto.NewPassword != changePasswordDto.ConfirmPassword {
 		return errors.New("password don't match")
 	}
@@ -307,6 +320,60 @@ func (uu *userUsecase) ChangePassword(c context.Context, userId string, changePa
 
 	if err := uu.userRepository.Update(ctx, user.ID.Hex(), updateData); err != nil {
 		return errors.New("internal server error")
+	}
+
+	return nil
+}
+
+
+func (uu *userUsecase) UpdateProfile(c context.Context, userId string, updateProfileDto *dtos.UpdateProfileDto) error {
+	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
+	defer cancel()
+
+	if err := services.ValidateStruct(uu.validator, updateProfileDto); err != nil {
+		return fmt.Errorf("validation error: %v", err.Error())
+	}
+
+	existingUser, err := uu.userRepository.FindByEmailOrUsername(c, updateProfileDto.UserProfile.Username)
+	if err == nil && existingUser != nil && existingUser.ID.Hex() != userId {
+		return errors.New("username already exists")
+	}
+
+	user, err := uu.userRepository.FindByID(c, userId)
+	if err != nil || user == nil {
+		return errors.New("user not found")
+	}
+
+	if user.ID.Hex() != userId {
+		return errors.New("unatuhorized")
+	}
+
+	var imageUrl string
+
+	if updateProfileDto.Avatar != nil {
+		_, err := uu.imageService.SaveProfileImage(updateProfileDto)
+		if err != nil {
+			return errors.New("internal server error")
+		}
+
+		url, err := uu.imageService.UploadImage(c, updateProfileDto.Avatar)
+		imageUrl = url
+		if err != nil {
+			return errors.New("internal server error")
+		}
+	}
+
+	updateData := map[string]interface{}{
+		"username": user.Username,
+		"profile": domain.UserProfile{
+			Bio: updateProfileDto.UserProfile.Bio,
+			ProfilePic: imageUrl,
+			ContactInfo: updateProfileDto.UserProfile.ContactInfo,
+		},
+	}
+
+	if err := uu.userRepository.Update(ctx, user.ID.Hex(), updateData); err != nil {
+		return err
 	}
 
 	return nil

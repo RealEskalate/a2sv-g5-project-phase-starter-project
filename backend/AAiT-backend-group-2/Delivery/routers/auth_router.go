@@ -18,8 +18,9 @@ func NewAuthRouter(db *mongo.Database, group *gin.RouterGroup, configs *domain.C
 	validatorService := services.NewValidatorService()
 	userRepo := repositories.NewUserRepository(db)
 	emailService := services.NewEmailService(configs.EmailHost, configs.EmailPort, configs.SenderEmail, configs.SenderPassword)
+	imageService := services.NewImageService(configs.CloudinaryUrl)
 
-	userUsecase := usecases.NewUserUsecase(userRepo, jwtService, emailService, 10*time.Second, validatorService)
+	userUsecase := usecases.NewUserUsecase(userRepo, jwtService, emailService, imageService, 10*time.Second, validatorService)
 
 	authController := controllers.NewAuthController(userUsecase)
 

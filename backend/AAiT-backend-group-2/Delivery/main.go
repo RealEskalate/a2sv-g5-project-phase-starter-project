@@ -3,7 +3,7 @@ package main
 import (
 	"AAiT-backend-group-2/Delivery/routers"
 	"AAiT-backend-group-2/Infrastructure"
-	"AAiT-backend-group-2/config"
+	"AAiT-backend-group-2/Config"
 	"context"
 	"log"
 
@@ -28,6 +28,8 @@ func main() {
 	db := mongoClient.Database(configs.DbName)
 
 	r := gin.Default()
+
+	r.MaxMultipartMemory = 4 << 20 // 4 MiB
 
 	routers.SetupRouter(db, r, &configs)
 

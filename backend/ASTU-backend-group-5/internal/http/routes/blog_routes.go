@@ -22,7 +22,7 @@ func RegisterBlogRoutes(blogsCollection, commentsCollection, likesCollection, vi
 		blogRoutes.GET("/filter", blogHandler.FilterBlogsHandler)
 		blogRoutes.GET("/paginate", blogHandler.PaginateBlogsHandler)
 		blogRoutes.POST("/:id/tags", blogHandler.AddTagToBlogHandler)
-		blogRoutes.DELETE("/:id/tags/:tagId", blogHandler.RemoveTagFromBlogHandler)
+		blogRoutes.DELETE("/:id/tags/:id", blogHandler.RemoveTagFromBlogHandler)
 		blogRoutes.POST("/comments", blogHandler.AddCommentHandler)
 		blogRoutes.GET("/:id/comments", blogHandler.GetCommentsByBlogIDHandler)
 		blogRoutes.GET("/search", blogHandler.SearchBlogsHandler)
@@ -38,10 +38,11 @@ func RegisterBlogRoutes(blogsCollection, commentsCollection, likesCollection, vi
 	}
 
 	{
-		tagRoutes.POST("/", blogHandler.CreateTagHandler)
+		tagRoutes.POST("/", middleware.AdminMiddleware(), blogHandler.CreateTagHandler)
+		tagRoutes.PUT("/:id", middleware.AdminMiddleware(), blogHandler.UpdateTagHandler)
+		tagRoutes.DELETE("/:id", middleware.AdminMiddleware(), blogHandler.DeleteTagHandler)
+
 		tagRoutes.GET("/:id", blogHandler.GetTagByIDHandler)
-		tagRoutes.PUT("/:id", blogHandler.UpdateTagHandler)
-		tagRoutes.DELETE("/:id", blogHandler.DeleteTagHandler)
 		tagRoutes.GET("/", blogHandler.GetAllTagsHandler)
 	}
 	{

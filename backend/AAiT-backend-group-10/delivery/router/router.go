@@ -69,7 +69,6 @@ func NewRouter(db *mongo.Database) {
 
 	router.PUT("/like", infrastructures.AuthMiddleware(&jwtService), likeController.LikeBlog)
 	router.DELETE("/like", infrastructures.AuthMiddleware(&jwtService), likeController.DeleteLike)
-	router.GET("/like/:blog_id", infrastructures.AuthMiddleware(&jwtService), likeController.BlogLikeCount)
 
 	router.POST("/register", authController.Register)
 	router.POST("/login", authController.Login)

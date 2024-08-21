@@ -37,11 +37,7 @@ func NewProfileRepository(_collection Domain.Collection, token_collection Domain
 func (ps *profileRepository) GetProfile(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
 	ps.mu.RLock()
 	defer ps.mu.RUnlock()
-	_, err := ps.collection.CreateIndex(ctx, bson.D{{"_id", 1}})
-	if err != nil {
-		fmt.Println(err)
-		return Domain.OmitedUser{}, err, 500
-	}
+	
 	if current_user.ID != id {
 		return Domain.OmitedUser{}, errors.New("permission denied"), http.StatusForbidden
 	}
@@ -49,7 +45,7 @@ func (ps *profileRepository) GetProfile(ctx context.Context, id primitive.Object
 	var filter bson.D
 	filter = bson.D{{"_id", id}}
 	var result Domain.OmitedUser
-	err = ps.collection.FindOne(ctx, filter).Decode(&result)
+	err := ps.collection.FindOne(ctx, filter).Decode(&result)
 	// # handel this later
 	if err != nil {
 		return Domain.OmitedUser{}, errors.New("User not found"), http.StatusNotFound
@@ -61,11 +57,7 @@ func (ps *profileRepository) GetProfile(ctx context.Context, id primitive.Object
 func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.ObjectID, user Domain.User, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
 	ps.mu.RLock()
 	defer ps.mu.RUnlock()
-	_, err := ps.collection.CreateIndex(ctx, bson.D{{"_id", 1}})
-	if err != nil {
-		fmt.Println(err)
-		return Domain.OmitedUser{}, err, 500
-	}
+	
 	if current_user.ID != id {
 		return Domain.OmitedUser{}, errors.New("permission denied"), http.StatusForbidden
 	}
@@ -73,7 +65,7 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 	statusCode := 200
 
 	// Retrieve the existing user
-	NewUser, err, statusCode = ps.GetProfile(ctx, id, current_user)
+	NewUser, err, statusCode := ps.GetProfile(ctx, id, current_user)
 	if err != nil {
 		return Domain.OmitedUser{}, err, 500
 	}
@@ -105,13 +97,9 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 	if user.Name != "" {
 		NewUser.Name = user.Name
 	}
-	if !user.CreatedAt.IsZero() {
-		NewUser.CreatedAt = user.CreatedAt
-	}
-	if !user.UpdatedAt.IsZero() {
-		NewUser.UpdatedAt = user.UpdatedAt
-	}
 
+	NewUser.UpdatedAt = user.UpdatedAt
+	fmt.Println(id)
 	filter := bson.D{{"_id", id}}
 	update := bson.D{
 		{"$set", bson.D{
@@ -132,7 +120,7 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 	}
 	if updateResult.ModifiedCount == 0 {
 		statusCode = 400
-		return Domain.OmitedUser{}, errors.New("user does not exist"), statusCode
+		return Domain.OmitedUser{}, errors.New("user does not exist or no changes"), statusCode
 	}
 
 	fmt.Printf("Matched %v documents and updated %v documents.\n", updateResult.MatchedCount, updateResult.ModifiedCount)
@@ -144,11 +132,6 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 func (ps *profileRepository) DeleteProfile(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (error, int) {
 	ps.mu.RLock()
 	defer ps.mu.RUnlock()
-	_, err := ps.collection.CreateIndex(ctx, bson.D{{"_id", 1}})
-	if err != nil {
-		fmt.Println(err)
-		return err, 500
-	}
 
 	filter := bson.D{{"_id", id}}
 	if current_user.ID != id {

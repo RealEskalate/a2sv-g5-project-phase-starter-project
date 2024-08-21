@@ -68,6 +68,24 @@ type ResetPasswordRequest struct {
 	Email string `json:"email"`
 }
 
+type TokenGenerator interface {
+    GenerateToken(user User) (string, error)
+    GenerateRefreshToken(user User) (string, error)
+	RefreshToken(token string) (string, error)
+}
+
+type TokenVerifier interface {
+	VerifyToken(token string) (*User, error)
+	VerifyRefreshToken(token string) (*User, error)
+}
+
+type PasswordService interface {
+	HashPassword(password string) (string, error)
+	CheckPasswordHash(password, hash string) bool
+}
+
+
+
 
 
 type UserUsecase interface {
@@ -100,41 +118,12 @@ type UserUsecase interface {
 
 
 
-	// // Admin only
-	// DeleteUser( userID string) (User, error)
 	UpdateUserRole(  userID, role string) (User, error)
 
 
-	// GetUserByEmail(email string) (User, error)
-	// FindOrCreateUserByGoogleID(oauthUserInfo OAuthUserInfo) (*User, error)
-	// FindOrCreateUserByGoogleID(googleID string, email string, deviceID string) (*User, error)
-
-	// ForgotPassword(email string) error
-	// ResetPassword(token, newPassword string) error
-	// RefreshToken(token string) (string, error)
-	// Logout(userID string) error
-
-	// for user profile
-	// GetUsers(ctx context.Context) ([]User, error)
-	// GetUser(ctx context.Context, userID string) (User, error)
-	// GetUserBlogs(ctx context.Context, userID string) ([]Blog, error)
-	// UpdateProfile(ctx context.Context, user User) error
-	// UploadImage(ctx context.Context, userID string, imagePath string) error
-	// DeleteMyAccount(ctx context.Context, userID string) error
-	
-	// // Admin only
-	// DeleteUser(ctx context.Context, userID string) (User, error)
-	// UpdateUserRole(ctx context.Context, userID, role string) (User, error)
 }
 
-// type AuthUsecase interface {
-// 	Login(ctx context.Context, email, password string) (string, error)
-// 	Register(ctx context.Context, user User) error
-// 	ForgotPassword(ctx context.Context, email string) error
-// 	ResetPassword(ctx context.Context, token, newPassword string) error
-// 	RefreshToken(ctx context.Context, token string) (string, error)
-// 	Logout(ctx context.Context, userID string) error
-// }
+
 
 type UserRepository interface {
 	// for every user
@@ -164,16 +153,9 @@ type UserRepository interface {
 	// // GetUserBlogs(ctx context.Context, userID string) ([]Blog, error)
 
 	// // Admin only
-	// DeleteUser( userID string) (User, error)
 	UpdateUserRole(  userID, role string) (User, error)
+
+
 
 }
 
-// type AuthRepository interface {
-// 	Login(ctx context.Context, email, password string) (string, error)
-// 	Register(ctx context.Context, user User) error
-// 	ForgotPassword(ctx context.Context, email string) error
-// 	ResetPassword(ctx context.Context, token, newPassword string) error
-// 	RefreshToken(ctx context.Context, token string) (string, error)
-// 	Logout(ctx context.Context, userID string) error
-// }

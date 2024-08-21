@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -74,10 +75,16 @@ func (r *CommentRepository) GetCommentByID(id primitive.ObjectID) (*domain.Comme
 }
 
 func (r *CommentRepository) GetCommentsByPostID(postID string, page, limit int64) ([]*domain.Comment, error) {
-	filter := bson.M{"postId": postID}
+	objID , err:= primitive.ObjectIDFromHex(postID)
+	if err != nil {
+		return nil, err
+	}
+	
+	filter := bson.M{"postId": objID}
 	opts := options.Find().SetSkip((page - 1) * limit).SetLimit(limit)
+	
 
-	cursor, err := r.collection.Find(nil, filter, opts)
+	cursor, err := r.collection.Find(context.Background(), filter, opts)
 	if err != nil {
 		return nil, err
 	}

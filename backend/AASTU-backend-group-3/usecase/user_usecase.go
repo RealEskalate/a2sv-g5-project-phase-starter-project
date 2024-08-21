@@ -3,10 +3,15 @@ package usecase
 import "group3-blogApi/domain"
 
 type UserUsecase struct {
-	UserRepo domain.UserRepository
+	UserRepo       domain.UserRepository
+	TokenGen       domain.TokenGenerator
+	PasswordSvc    domain.PasswordService
 }
 
-func NewUserUsecase(userRepo domain.UserRepository) domain.UserUsecase {
-	return &UserUsecase{UserRepo: userRepo}
+func NewUserUsecase(userRepo domain.UserRepository, tokenGen domain.TokenGenerator, passwordSvc domain.PasswordService) domain.UserUsecase {
+	return &UserUsecase{
+		UserRepo:    userRepo,
+		TokenGen:    tokenGen,
+		PasswordSvc: passwordSvc,
+	}
 }
-

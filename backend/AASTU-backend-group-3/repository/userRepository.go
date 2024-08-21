@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepositoryImpl struct {
@@ -142,3 +143,18 @@ func (ur *UserRepositoryImpl) GetUserByResetToken(token string) (domain.User, er
 	return user, nil
 }
 
+
+
+
+// password Hashing
+
+func(uc *UserRepositoryImpl )HashPasswordRepo(password string) (string, error){
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+
+func (uc *UserRepositoryImpl) CheckPasswordHashRepo(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	
+	return err == nil
+}

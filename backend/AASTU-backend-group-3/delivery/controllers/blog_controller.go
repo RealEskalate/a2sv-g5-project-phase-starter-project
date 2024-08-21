@@ -36,8 +36,8 @@ func (c *BlogController) CreateBlog(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message":      "Blog deleted successfully",
-		"deleted_blog": newBlog,
+		"message": "Blog created successfully",
+		"Created_blog": newBlog,
 	})
 
 }
@@ -99,8 +99,8 @@ func (c *BlogController) GetBlogByID(ctx *gin.Context) {
 }
 
 func (c *BlogController) GetBlogs(ctx *gin.Context) {
-	var page int64 = 1  // Default to page 1
-	var limit int64 = 2 // Default to limit 10
+	var page int64 = 1   // Default to page 1
+	var limit int64 = 2 // Default to limit 2
 	var sortBy string
 	var tag string
 	var authorName string
@@ -148,32 +148,4 @@ func (c *BlogController) GetUserBlogs(ctx *gin.Context) {
 	})
 }
 
-// // like and dislike
 
-// func (c *BlogController) LikeBlog(ctx *gin.Context) {
-// 	blogID := ctx.Param("id")
-// 	userID := ctx.GetString("user_id")
-
-// 	if err := c.blogUsecase.LikeBlog(userID, blogID); err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	ctx.JSON(http.StatusOK, gin.H{
-// 		"message": "Blog liked successfully",
-// 	})
-// }
-
-// func (c *BlogController) DislikeBlog(ctx *gin.Context) {
-// 	blogID := ctx.Param("id")
-// 	userID := ctx.GetString("user_id")
-
-// 	if err := c.blogUsecase.DislikeBlog(userID, blogID); err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	ctx.JSON(http.StatusOK, gin.H{
-// 		"message": "Blog disliked successfully",
-// 	})
-// }

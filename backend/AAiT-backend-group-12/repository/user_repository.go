@@ -94,7 +94,12 @@ func (r *UserRepository) SetRefreshToken(c context.Context, user *domain.User, n
 }
 
 // UpdateUser updates the user associated with the provided username with the provided data
-func (r *UserRepository) UpdateUser(c context.Context, username string, user *dtos.UpdateUser) (map[string]string, domain.CodedError) {
+func (r *UserRepository) UpdateUser(c context.Context, username string, user *dtos.UpdateUser) (map[string]string, string, domain.CodedError) {
+	foundUser, qErr := r.FindUser(c, &domain.User{Username: username})
+	if qErr != nil {
+		return nil, "", qErr
+	}
+
 	var updatedData = make(map[string]string)
 	var updates = bson.D{}
 
@@ -108,16 +113,26 @@ func (r *UserRepository) UpdateUser(c context.Context, username string, user *dt
 		updates = append(updates, bson.E{Key: "phonenumber", Value: user.PhoneNumber})
 	}
 
+	if user.ProfilePicture.FileName != "" {
+		updatedData["profilepicture"] = user.ProfilePicture.FileName
+		updates = append(updates, bson.E{Key: "profilepicture", Value: bson.D{{Key: "filename", Value: user.ProfilePicture.FileName}, {Key: "islocal", Value: user.ProfilePicture.IsLocal}}})
+	}
+
 	res := r.collection.FindOneAndUpdate(c, bson.D{{Key: "username", Value: username}}, bson.D{{Key: "$set", Value: updates}})
 	if res.Err() != nil && res.Err() == mongo.ErrNoDocuments {
-		return updatedData, domain.NewError("User not found", domain.ERR_NOT_FOUND)
+		return updatedData, "", domain.NewError("User not found", domain.ERR_NOT_FOUND)
 	}
 
 	if res.Err() != nil {
-		return updatedData, domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
+		return updatedData, "", domain.NewError(res.Err().Error(), domain.ERR_INTERNAL_SERVER)
 	}
 
-	return updatedData, nil
+	// return the name of the file if the profile picture is local
+	if user.ProfilePicture.IsLocal {
+		return updatedData, foundUser.ProfilePicture.FileName, nil
+	}
+
+	return updatedData, "", nil
 }
 
 // ChangeRole changes the role of the user with the provided username

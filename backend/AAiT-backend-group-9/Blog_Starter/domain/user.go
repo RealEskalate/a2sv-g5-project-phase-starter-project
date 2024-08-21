@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+
 const (
 	CollectionUser = "users"
 )
@@ -23,8 +24,8 @@ type User struct {
 	IsActivated   bool                `json:"is_verified" bson:"is_verified"` //useful for email verification
 	AccessToken    string             `json:"accessToken"`
 	RefreshToken   string             `json:"refreshToken"`
-	CreatedAt      time.Time          `json:"timestamp" bson:"timestamp"`
-	UpdatedAt      time.Time          `json:"updated_at" bson:"timestamp"`
+	CreatedAt      time.Time          `json:"created_at" bson:"createtimestamp"`
+	UpdatedAt      time.Time          `json:"updated_at" bson:"updatetimestamp"`
 	ProfilePicture string             `json:"profile_picture" bson:"profile_picture"`
 }
 

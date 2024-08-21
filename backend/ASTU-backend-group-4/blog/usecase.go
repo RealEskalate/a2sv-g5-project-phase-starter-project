@@ -21,7 +21,7 @@ func NewBlogUseCaseImpl(blogRepository BlogRepository, authRepository auth.AuthR
 
 // CreateBlog implements BlogUseCase.
 func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, authorID string, blog CreateBlogRequest) (Blog, error) {
-	author, err := b.authRepository.GetUserByUsername(ctx, authorID) // TODO: Change to GetUserByID
+	author, err := b.authRepository.GetUserByID(ctx, authorID)
 	if err != nil {
 		return Blog{}, err
 	}

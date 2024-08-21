@@ -1,27 +1,27 @@
-<<<<<<< HEAD
 'use client';
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import axios from 'axios';
 import Card from '../components/common/card';
 import ChartCard from './ChartCard';
 import { balance as mockBalance, invoicesData as mockInvoicesData } from './mockData';
-=======
-import React from 'react';
-import Image from 'next/image';
-import Card from '../components/common/card';
-import ChartCard from './ChartCard';
-import { balance, income, expense, netBalance, transaction, invoicesData } from './mockData';
->>>>>>> aastu.web.g5.main
 import Balance_img from '@/public/assests/icon/Accounts/Group494.png';
 import Income_img from '@/public/assests/icon/Accounts/Group400.png';
 import Expense_img from '@/public/assests/icon/Accounts/Group402.png';
 import TotalSaving_img from '@/public/assests/icon/Accounts/Group401.png';
-<<<<<<< HEAD
 import Shopping from '@/public/assests/icon/Accounts/Group328.png';
 import Service from '@/public/assests/icon/Accounts/Group327.png';
 import Transfer from '@/public/assests/icon/Accounts/user2.png';
 import { useSession } from 'next-auth/react';
+import creditCardColor from '../CreditCards/cardMockData';
+
+interface ExtendedUser {
+  name?: string;
+  email?: string;
+  image?: string;
+  accessToken?: string;
+}
 
 const Accounts = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -30,13 +30,55 @@ const Accounts = () => {
   const [expense, setExpense] = useState<number>(0);
   const [netBalance, setNetBalance] = useState<number>(0);
   const [invoicesData, setInvoicesData] = useState<any[]>(mockInvoicesData); // Use mock data
-  const { data: session } = useSession();
-
+  const [cardData, setCardData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { data: session, status } = useSession();
   
-  const token: string =  ` Bearer ${session?.user?.accessToken} `;
-  console.log(session,11111111,token)
+  const router = useRouter();
+  const fetchCardData = async (page: number) => {
+    if (!session || !session.user) {
+      setError("No session or user available");
+      setLoading(false);
+      return;
+    }
+
+    const user = session.user as ExtendedUser;
+    const accessToken = user.accessToken;
+
+    try {
+      const response = await fetch(
+        `https://bank-dashboard-6acc.onrender.com/cards?page=${page}&size=3`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch cards");
+      }
+
+      const data = await response.json();
+      setCardData(data.content || []);
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
+    if (!session || !session.user) {
+      setError("No session or user available");
+      setLoading(false);
+      return;
+    }
+
+    const user = session.user as ExtendedUser;
+    const token = `Bearer ${user.accessToken}`;
+
     const fetchTransactions = async () => {
       try {
         const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions?page=0&size=10', {
@@ -44,9 +86,9 @@ const Accounts = () => {
             Authorization: token,
           },
         });
-        
+
         if (response.data.success) {
-          setTransactions(response.data.data.content.reverse().slice(0,3)); // Store only the 3 most recent transactions
+          setTransactions(response.data.data.content.reverse().slice(0, 3)); // Store only the 3 most recent transactions
         }
       } catch (error) {
         console.error('Error fetching transactions:', error);
@@ -60,11 +102,11 @@ const Accounts = () => {
             Authorization: token,
           },
         });
-        
+
         if (response.data.success) {
           const latestBalance = response.data.data[response.data.data.length - 1]?.value;
-          setBalance(latestBalance);
-          setNetBalance(latestBalance + income - expense); // Adjust according to your logic
+          setBalance(Math.trunc(latestBalance));
+      setNetBalance(Math.trunc(latestBalance + income - expense)); // Adjust according to your logic
         }
       } catch (error) {
         console.error('Error fetching balance data:', error);
@@ -107,88 +149,106 @@ const Accounts = () => {
     fetchBalanceData();
     fetchIncomes();
     fetchExpenses();
-  }, [income, expense]);
+    fetchCardData(0);
+  }, [session, income, expense]);
+
+  if (loading) {
+    return <p className="text-center py-5 text-blue-500">Loading...</p>;
+  }
+  if (error) {
+    return <p className="py-5">Error: {error}</p>;
+  }
 
   return (
-    <div className="bg-[#F5F7FA] space-y-8 mx-auto pt-3 px-4 md:px-8 lg:px-16 max-w-full overflow-hidden">
+    <div className="bg-[#F5F7FA] space-y-8  pt-3 px-4 lg:px-16 w-full overflow-hidden">
       {/* Balance and Overview */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
           <Image height={44} width={44} src={Balance_img} alt="balance" />
           <div>
-            <p className="text-sm md:text-lg font-semibold">My balance</p>
-            <p className="text-base md:text-xl">${balance.toFixed(2)}</p>
+            <p className="text-sm md:text-lg lg:text-xl font-semibold">My balance</p>
+            <p className="text-base md:text-xl lg:text-2xl break-all">${Math.round(balance)}</p>
           </div>
         </div>
         <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
           <Image height={44} width={44} src={Income_img} alt="income" />
           <div>
-            <p className="text-sm md:text-lg font-semibold">Income</p>
-            <p className="text-base md:text-xl">${income.toFixed(2)}</p>
+            <p className="text-sm md:text-lg lg:text-xl font-semibold">Income</p>
+            <p className="text-base md:text-xl lg:text-2xl break-all">${Math.round(income)}</p>
           </div>
         </div>
         <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
           <Image height={44} width={44} src={Expense_img} alt="expense" />
           <div>
-            <p className="text-sm md:text-lg font-semibold">Expense</p>
-            <p className="text-base md:text-xl">${expense.toFixed(2)}</p>
+            <p className="text-sm md:text-lg lg:text-xl font-semibold">Expense</p>
+            <p className="text-base md:text-xl lg:text-2xl break-all">${Math.round(expense)}</p>
           </div>
         </div>
         <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
           <Image height={44} width={44} src={TotalSaving_img} alt="total saving" />
           <div>
-            <p className="text-sm md:text-lg font-semibold">Total saving</p>
-            <p className="text-base md:text-xl">${netBalance.toFixed(2)}</p>
+            <p className="text-sm md:text-lg lg:text-xl font-semibold">Total saving</p>
+            <p className="text-base md:text-xl lg:text-2xl break-all">${Math.round(netBalance)}</p>
           </div>
         </div>
       </div>
 
-      {/* Last Transactions and Card */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <div className="p-4 bg-white rounded-lg lg:col-span-2 space-y-7">
-          <p className="text-lg font-semibold">Last transactions</p>
-          {transactions.map((transaction, index) => (
-            <div key={index} className="flex items-center pr-4 space-x-4 mb-4">
-              <Image
-                height={44}
-                width={44}
-                src={
-                  transaction.type === 'shopping'
-                    ? Shopping
-                    : transaction.type === 'service'
-                    ? Service
-                    : Transfer
-                }
-                alt="transaction"
-                className="rounded-full object-cover"
-              />
-              <div className="flex-1">
-                <p className="font-semibold text-sm md:text-base">{transaction.description}</p>
-                <p className="text-xs md:text-sm text-gray-500">{transaction.date}</p>
-              </div>
-              <p className="flex-1 text-xs md:text-sm break-words">{transaction.type}</p>
-              <p className="flex-1 text-xs md:text-sm break-words">
-                {transaction.transactionId ? `${transaction.transactionId.slice(0, 4)}***` : 'N/A'}
-              </p>
-              <p className="flex-1 text-xs md:text-sm break-words">{transaction.receiverUserName}</p>
-              <p className="flex-1 text-xs md:text-sm break-words">
-                {transaction.amount < 0 ? (
-                  <span className="text-red-500">-${Math.abs(transaction.amount)}</span>
-                ) : (
-                  <span className="text-green-500">+${transaction.amount}</span>
-                )}
-              </p>
+
+          {/* Last Transactions and Card */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="p-4 bg-white rounded-lg lg:col-span-2 space-y-7">
+              <p className="text-lg font-semibold">Last transactions</p>
+              {transactions.map((transaction, index) => (
+                <div key={index} className="flex items-center pr-4 space-x-4 mb-4">
+                  <Image
+                    height={44}
+                    width={44}
+                    src={
+                      transaction.type === 'shopping'
+                        ? Shopping
+                        : transaction.type === 'service'
+                        ? Service
+                        : Transfer
+                    }
+                    alt="transaction"
+                    className="rounded-full object-cover"
+                  />
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm md:text-base">{transaction.description}</p>
+                    <p className="text-xs md:text-sm text-gray-500">{transaction.date}</p>
+                  </div>
+                  <p className="flex-1 text-xs md:text-sm break-words">{transaction.type}</p>
+                  <p className="flex-1 text-xs md:text-sm break-words">
+                    {transaction.transactionId ? `${transaction.transactionId.slice(0, 4)}***` : 'N/A'}
+                  </p>
+                  <p className="flex-1 text-xs md:text-sm break-words">{transaction.receiverUserName}</p>
+                  <p className="flex-1 text-xs md:text-sm break-words">
+                    {transaction.amount < 0 ? (
+                      <span className="text-red-500">-${Math.abs(transaction.amount)}</span>
+                    ) : (
+                      <span className="text-green-500">+${transaction.amount}</span>
+                    )}
+                  </p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
         {/* Hidden on small screens */}
-        <div className="hidden lg:block bg-white rounded-lg">
+        <div className=" bg-white rounded-lg">
           <div className="flex justify-between p-2">
             <p className="text-lg font-semibold">My card</p>
-            <p>See all</p>
+            <button onClick={() => router.push('/CreditCards')} className="text-blue-500">See All</button>
+              
           </div>
-          <Card />
+          <div  className='flex flex-col'>
+          {cardData.length > 0 && (
+              <Card
+                key={0}
+                cardData={cardData[0]}
+                cardColor={creditCardColor[0 % creditCardColor.length]}
+              />
+            )}
+          </div>
         </div>
       </div>
 
@@ -202,7 +262,7 @@ const Accounts = () => {
         </div>
 
         {/* Invoices Sent */}
-        <div className="p-4 bg-gray-100 rounded-lg">
+        <div className=" w-full bg-gray-100 rounded-lg">
           <p className="text-lg font-semibold">Invoices sent</p>
           <div className="p-4 rounded-lg shadow h-[364px] bg-white">
             {invoicesData.slice(0, 4).map((data, index) => (
@@ -225,112 +285,3 @@ const Accounts = () => {
 };
 
 export default Accounts;
-=======
-
-const Accounts = () => {
-  // Get the 3 most recent transactions
-  const recentTransactions = transaction.slice(0, 3);
-
-  // Get the 4 most recent invoices
-  const recentInvoices = invoicesData.slice(0, 4);
-
-  return (
-    <div className=" bg-[#F5F7FA] space-y-8 mx-auto pt-3 px-4 md:px-8 lg:px-16 max-w-full overflow-hidden">
-      {/* Balance and Overview */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
-          <Image height={44} width={44} src={Balance_img} alt='balance' />
-          <div>
-            <p className="text-sm md:text-lg font-semibold">My balance</p>
-            <p className="text-base md:text-xl">${balance}</p>
-          </div>
-        </div>
-        <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
-          <Image height={44} width={44} src={Income_img} alt='income' />
-          <div>
-            <p className="text-sm md:text-lg font-semibold">Income</p>
-            <p className="text-base md:text-xl">${income}</p>
-          </div>
-        </div>
-        <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
-          <Image height={44} width={44} src={Expense_img} alt='expense' />
-          <div>
-            <p className="text-sm md:text-lg font-semibold">Expense</p>
-            <p className="text-base md:text-xl">${expense}</p>
-          </div>
-        </div>
-        <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
-          <Image height={44} width={44} src={TotalSaving_img} alt='total saving' />
-          <div>
-            <p className="text-sm md:text-lg font-semibold">Total saving</p>
-            <p className="text-base md:text-xl">${netBalance}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Last Transactions and Card */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="p-4 bg-white rounded-lg lg:col-span-2">
-          <p className="text-lg font-semibold">Last transactions</p>
-          {recentTransactions.map((transaction, index) => (
-            <div key={index} className="flex items-center space-x-4 mb-4">
-              <Image height={44} width={44} src={transaction.image} alt='transaction' className="rounded-full object-cover" />
-              <div className="flex-1">
-                <p className="font-semibold text-sm md:text-base">{transaction.name}</p>
-                <p className="text-xs md:text-sm text-gray-500">{transaction.date}</p>
-              </div>
-              <p className="flex-1 text-xs md:text-sm break-words">{transaction.type}</p>
-              <p className="flex-1 text-xs md:text-sm break-words">{transaction.number}</p>
-              <p className="flex-1 text-xs md:text-sm break-words">{transaction.status}</p>
-              <p className="flex-1 text-xs md:text-sm break-words">{transaction.amount}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Hidden on small screens */}
-        <div className="hidden lg:block bg-white rounded-lg">
-          <div className="flex justify-between p-2">
-            <p className="text-lg font-semibold">My card</p>
-            <p>See all</p>
-          </div>
-          <Card />
-        </div>
-      </div>
-
-      {/* Debit and Credit Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="p-4 bg-gray-100 rounded-lg lg:col-span-2">
-          <p className="text-lg font-semibold">Debit and credit overview</p>
-          <div className="p-1  bg-white rounded-lg shadow">
-           
-              {/* Implement the bar graph here */}
-              <ChartCard />
-            
-          </div>
-        </div>
-
-        {/* Invoices Sent */}
-        <div className="p-4 bg-gray-100 rounded-lg">
-          <p className="text-lg font-semibold">Invoices sent</p>
-          <div className="p-4 rounded-lg shadow h-[364px] bg-white">
-            {recentInvoices.map((data, index) => (
-              <div key={index} className="flex items-center justify-between space-x-8 mb-4">
-                <div className='flex items-center justify-between space-x-8 mb-4'>
-                <Image height={44} width={44} src={data.image} alt='invoice' className="rounded-full object-cover" />
-                <div>
-                  <p className="font-semibold text-sm md:text-base">{data.name}</p>
-                  <p className="text-xs md:text-sm text-gray-500">{data.date}</p>
-                </div>
-                </div>
-                <p className="font-semibold text-sm md:text-base">{data.amount}</p>
-            </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default Accounts;
->>>>>>> aastu.web.g5.main

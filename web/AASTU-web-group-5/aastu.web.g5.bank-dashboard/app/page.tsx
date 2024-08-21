@@ -7,9 +7,7 @@ export default function Home() {
   return (
     <div>
      
-      <Link href="/auth/signup">
-        <button className="btn-primary bg-slate-600">Sign Up</button>
-      </Link>
+     
       <Investments />
       <Accounts />
     </div>

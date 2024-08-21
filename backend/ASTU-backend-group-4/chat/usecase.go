@@ -43,7 +43,7 @@ func (usecase *ChatUsecase) CreateChat(ctx context.Context, form CreateChatForm)
 	return newChat, nil
 }
 
-func (usecase *ChatUsecase) DeleteChat(ctx context.Context, form DefalutChatForm) error{
+func (usecase *ChatUsecase) DeleteChat(ctx context.Context, form DefaultChatForm) error{
 	if err := infrastructure.Validate(validate, form); err != nil{
 		return err
 	}	
@@ -68,7 +68,7 @@ func (usecase *ChatUsecase) GenerateChatTitle(ctx context.Context, form TextForm
 	return usecase.AIService.GenerateChatTitle(ctx, form.Text)
 }
 
-func (usecase *ChatUsecase) GetChat(ctx context.Context, form DefalutChatForm) (Chat, error){
+func (usecase *ChatUsecase) GetChat(ctx context.Context, form DefaultChatForm) (Chat, error){
 	if err := infrastructure.Validate(validate, form); err != nil{
 		return Chat{}, err
 	}
@@ -93,7 +93,7 @@ func (usecase *ChatUsecase) GetChats(ctx context.Context, form UserIDForm, pagin
 	return usecase.Repository.GetChats(ctx, form.UserID, pagination)
 }
 
-func (usecase *ChatUsecase) SendMessage(ctx context.Context, chatForm DefalutChatForm, textForm TextForm) (Message, error){
+func (usecase *ChatUsecase) SendMessage(ctx context.Context, chatForm DefaultChatForm, textForm TextForm) (Message, error){
 	if err := infrastructure.Validate(validate, chatForm); err != nil{
 		return Message{}, err
 	}

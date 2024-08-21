@@ -9,7 +9,7 @@ type TextForm struct {
 	Text string `json:"text,omitempty" validate:"required,min=2,max=30"`
 }
 
-type DefalutChatForm struct {
+type DefaultChatForm struct {
 	ChatID string `json:"chat_id,omitempty" validate:"required,hexadecimal"`
 	UserID string `json:"user_id,omitempty" validate:"required,hexadecimal"`
 }

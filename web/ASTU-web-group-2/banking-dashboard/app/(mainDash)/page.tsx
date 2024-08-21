@@ -10,15 +10,15 @@ import SendMoney from "../components/sendMoney/SendMoney";
 import BalanceHistoryChart from "../components/charts/BalanceHistoryChart";
 const page = () => {
   return (
-    <div className="flex flex-col gap-2  pb-5">
-      <div className="flex max-sm:flex-col justify-between">
+    <div className="grid grid-cols-1 gap-2 pb-5">
+      <div className="grid lg:grid-cols-[2fr_1fr] max-md:grid-cols-1  gap-7 p-4 w-auto">
         <CardForCreditCards
-          className="flex flex-col lg:w-[730px] lg:h-[300px] max-md:w-[350px]"
+          className="overflow-x-auto"
           title="Credit Cards"
           button="See All"
           link="/credit-cards"
         >
-          <div className="flex  gap-[30px]">
+          <div className="flex  gap-7  rounded-lg overflow-x-auto scrollbar-hide">
             <div>
               <CreditCard
                 balance={1250}
@@ -37,39 +37,49 @@ const page = () => {
                 cardType="tertiary" // Can be "primary", "secondary", or "tertiary"
               />
             </div>
+            <div>
+              <CreditCard
+                balance={1250}
+                cardHolder="John Doe"
+                expiryDate="12/24"
+                cardNumber="1234 5678 9012 3456"
+                cardType="secondary" // Can be "primary", "secondary", or "tertiary"
+              />
+            </div>
+            
           </div>
         </CardForCreditCards>
         <Card
           title="Recent Transactions"
-          className="max-w-[350px]  h-auto"
+          className=" h-auto"
         >
           <RecentTransaction />
         </Card>
       </div>
-      <div className="flex max-sm:flex-col justify-between">
+      <div className="grid lg:grid-cols-[8fr_4fr] max-md:grid-cols-1  gap-7 p-4 w-auto">
         <Card
           title="Weekly Activity"
-          className="flex flex-col lg:w-[75%] w-[350px] h-auto"
+          className="w-fill h-full"
         >
           <WeeklyActivityChart />
         </Card>
         <Card
           title="Expense Statistics"
-          className="max-w-[350px]  h-auto"
+          className="w-fill h-full"
         >
           <ExpenseStatisticsChart />
         </Card>
       </div>
-      <div className="flex max-sm:flex-col gap-[30px]">
+      <div className="grid lg:grid-cols-[2fr_3fr] max-md:grid-cols-1  gap-7 p-4 w-auto">
         <Card
           title="Quick Transfer"
-          className="flex flex-col lg:w-1/3 w-[350px]"
+          className="w-fill h-full"
         >
           <SendMoney />
         </Card>
         <Card
           title="Balance History"
-          className="flex flex-col max-w-[730px] h-auto"
+          className=""
         >
           <BalanceHistoryChart />
         </Card>

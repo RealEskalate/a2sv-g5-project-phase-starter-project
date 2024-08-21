@@ -88,7 +88,7 @@ ${label}`;
   }, []);
 
   return (
-    <div className='bg-white shadow-xl rounded-3xl lg:w-[350px] lg:h-[322px]'>
+    <div className='bg-white  rounded-3xl lg:h-[322px] h-[261px] flex justify-center items-center'>
       <canvas ref={canvasRef} />
     </div>
   );

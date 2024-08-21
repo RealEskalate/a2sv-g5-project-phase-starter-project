@@ -13,6 +13,12 @@ export default function Home() {
 			<Accounts />
 		</div>
 	);
+	return (
+		<div>
+			<Investments />
+			<Accounts />
+		</div>
+	);
 }
 
 // export default function Home() {

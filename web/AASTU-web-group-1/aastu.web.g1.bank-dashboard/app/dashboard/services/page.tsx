@@ -1,8 +1,8 @@
 "use client";
-import React, { useState, useEffect, Suspense } from "react";
+
+import React, { useState, useEffect } from "react";
 import ServiceList from "./serviceComponenet/ServiceList";
 import BenefitComp from "./serviceComponenet/BenefitComp";
-import { bankServices } from "@/constants/index";
 import { servicesList } from "@/constants/index";
 import { getSession } from "next-auth/react";
 import { useUser } from "@/contexts/UserContext";
@@ -57,33 +57,34 @@ const Services = () => {
 
     fetchBankServices();
   }, []);
+
   const { isDarkMode } = useUser();
 
   return (
     <div
-      className={`p-4 flex  flex-col   ${
-        isDarkMode ? "bg-gray-700" : "bg-gray-200"
-      } w-full h-full gap-5 lg:p-8`}
+      className={`p-4 flex flex-col w-full h-full gap-5 lg:p-8 ${
+        isDarkMode ? "bg-gray-800 text-gray-300" : "bg-gray-200 text-gray-900"
+      }`}
     >
-      <div className=" flex gap-3 justify-start w-[100vw] md:w-full overflow-x-scroll scrollbar-hidden md:overflow-hidden lg:justify-between">
+      <div className="flex gap-3 justify-start w-[100vw] md:w-full overflow-x-scroll scrollbar-hidden md:overflow-hidden lg:justify-between">
         {servicesList.map((items, index) => (
           <BenefitComp items={items} key={index} />
         ))}
       </div>
 
       <div className="flex flex-col gap-[7px]">
-        <h1 className="font-semibold text-lg text-[#343C6A]">
+        <h1
+          className={`font-semibold text-lg ${
+            isDarkMode ? "text-gray-300" : "text-gray-900"
+          }`}
+        >
           Bank Services List
         </h1>
         {loading ? (
           <div>Loading...</div>
         ) : (
           bankServices.map((items, index) => (
-            <ServiceList
-              icon={items.icon} // Use the icon provided in the data
-              name={items.name}
-              key={index}
-            />
+            <ServiceList icon={items.icon} name={items.name} key={index} />
           ))
         )}
       </div>

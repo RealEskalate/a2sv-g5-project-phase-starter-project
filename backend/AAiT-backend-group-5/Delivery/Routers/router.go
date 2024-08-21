@@ -2,6 +2,7 @@ package routers
 
 import (
 	config "github.com/aait.backend.g5.main/backend/Config"
+	middelwares "github.com/aait.backend.g5.main/backend/Delivery/middlewares"
 	infrastructure "github.com/aait.backend.g5.main/backend/Infrastructure"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -13,11 +14,11 @@ func Setup(env *config.Env, db mongo.Database, gin *gin.Engine) {
 	adminRouter := gin.Group("")
 
 	jwt_service := infrastructure.NewJwtService(env)
-	protectedRouter.Use(infrastructure.JWTAuthMiddelware(jwt_service))
+	protectedRouter.Use(middelwares.JWTAuthMiddelware(jwt_service))
 
 	adminRouter.Use(
-		infrastructure.JWTAuthMiddelware(jwt_service),
-		infrastructure.AuthenticateAdmin(),
+		middelwares.JWTAuthMiddelware(jwt_service),
+		middelwares.AuthenticateAdmin(),
 	)
 
 	NewAuthenticationRouter(env, db, publicRouter)

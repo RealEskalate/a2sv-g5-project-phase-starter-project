@@ -48,7 +48,7 @@ const LastTransaction = ({
       <div className="md:grid md:grid-cols-6 flex grid-cols-2 items-center">
         <div className="flex flex-initial col-span-2 m-3">
           <div
-            className={`${colorClass} font-semibold py-1 px-2 rounded-lg text-sm w-[45px]`}
+            className={`${colorClass} font-semibold py-2 px-2 rounded-lg text-sm w-[45px]`}
           >
             <Image src={image} alt={alttext} width={27} height={18} />
           </div>

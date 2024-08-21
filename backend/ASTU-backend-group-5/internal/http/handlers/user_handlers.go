@@ -4,7 +4,10 @@ import (
 	"blogApp/internal/domain"
 	"blogApp/internal/usecase/user"
 	"blogApp/pkg/checker"
+	"fmt"
+	
 	"net/http"
+	
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -116,36 +119,43 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 }
-
 func (h *UserHandler) UpdateUser(c *gin.Context) {
-	var user domain.User
-	claims, exists := c.Get("claims")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-		return
-	}
-	userClaims, ok := claims.(*domain.Claims)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-		return
-	}
-	user.ID, _ = primitive.ObjectIDFromHex(userClaims.UserID)
-
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
-		return
-	}
-
+    var user domain.User
+    claims, exists := c.Get("claims")
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+        return
+    }
+    userClaims, ok := claims.(*domain.Claims)
+    if !ok {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+        return
+    }
 	
 
-	err := h.UserUsecase.UpdateUser(&user)
-
+    // Bind JSON data to user struct first
+    if err := c.ShouldBind(&user); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+	// fmt.Println(userClaims.UserID)
+	objectID, err := primitive.ObjectIDFromHex(userClaims.UserID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "err.Error()"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	user.ID = objectID
+	fmt.Println(user)
+	
+  
 
-	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+    err = h.UserUsecase.UpdateUser(&user)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
 
 //  GoogleCallback is a handler that handles the google oauth callback

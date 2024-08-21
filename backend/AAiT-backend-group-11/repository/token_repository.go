@@ -24,6 +24,7 @@ func (tr *tokenRepository) CreateRefreshToken(token *entities.RefreshToken) (*en
 	userID := token.UserID
 	
 	filter := bson.D{{"userId", userID}}
+	
 	existed := tr.Collection.FindOne(context.TODO(), filter)
 	if existed.Err() != nil {
 		_, err := tr.Collection.InsertOne(context.TODO(), token)
@@ -40,6 +41,7 @@ func (tr *tokenRepository) FindRefreshTokenByUserId(user_id string) (*entities.R
 	if err != nil {
 		return nil,err
 	}
+
 	filter := bson.D{{"userId", userID}}
 
 	result := tr.Collection.FindOne(context.TODO(), filter)
@@ -59,7 +61,9 @@ func (tr *tokenRepository) DeleteRefreshTokenByUserId(user_id string) error {
 	if err != nil {
 		return err
 	}
+
 	filter := bson.D{{"userId", userID}}
+
 	result := tr.Collection.FindOneAndDelete(context.TODO(), filter)
 	if result.Err() != nil {
 		return result.Err()

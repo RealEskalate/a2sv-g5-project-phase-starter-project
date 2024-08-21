@@ -3,7 +3,8 @@ package controllers
 import (
 	infrastructure "astu-backend-g1/Infrastructure"
 	"net/http"
-	"os"
+
+	"astu-backend-g1/config" // Add this line to import the missing package
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,7 +20,13 @@ func NewAuthController(auth infrastructure.GeneralAuthorizer) GeneralAuthorizati
 }
 func (ac *AuthController) AuthMiddlewareGIn() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var secretKey = os.Getenv("JWT_KEY")
+		jwtconfig,err := config.LoadConfig()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+			c.Abort()
+			return
+		}
+		var secretKey = jwtconfig.Jwt.JwtKey
 		tokenString := c.GetHeader("Authorization")
 		claims := ac.auth.AUTH(tokenString, secretKey)
 		if claims != nil {

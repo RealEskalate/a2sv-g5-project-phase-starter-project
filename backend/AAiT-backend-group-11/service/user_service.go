@@ -15,6 +15,11 @@ func NewUserService(userRepository interfaces.UserRepository) interfaces.UserSer
 	}
 }
 
+// MarkUserAsVerified implements interfaces.UserService.
+func (service *userService) MarkUserAsVerified(email string) error {
+	return service.userRepository.MarkUserAsVerified(email)
+}
+
 func (service *userService) CreateUser(user *entities.User) (*entities.User, error){
 	return service.userRepository.CreateUser(user)
 }

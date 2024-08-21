@@ -25,6 +25,7 @@ func NewBlogController(blogService interfaces.BlogService) *BlogController {
 func (bc *BlogController) CreateBlogPost(c *gin.Context) {
     
 	var blogPost entities.BlogPost
+	
 	userId, ok := c.Get("userId")
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
@@ -92,7 +93,12 @@ func (bc *BlogController) GetBlogPosts(c *gin.Context) {
 func (bc *BlogController) UpdateBlogPost(c *gin.Context) {
 	// Parse the blog post ID from the URL
 	blogPostId := c.Param("id")
-	userId := c.GetString("userId")
+	userId,ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+		return
+	}
+
 	objID, err := primitive.ObjectIDFromHex(blogPostId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog post ID"})
@@ -110,7 +116,7 @@ func (bc *BlogController) UpdateBlogPost(c *gin.Context) {
 	blogPost.ID = objID
 
 	// Update the blog post
-	updatedBlogPost, err := bc.blogService.UpdateBlogPost(&blogPost,userId)
+	updatedBlogPost, err := bc.blogService.UpdateBlogPost(&blogPost,userId.(string))
 	if err != nil {
 		if errors.Is(err, errors.New("unauthorized: only the author can update this post")) {
 			c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to update this blog post"})

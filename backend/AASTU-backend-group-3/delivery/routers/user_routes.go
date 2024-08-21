@@ -11,32 +11,37 @@ import (
 )
 
 func SetUpUser(router *gin.Engine) {
-	//user routes
+	// Initialize repository
 	userRepo := repository.NewUserRepositoryImpl(db.UserCollection)
-	userUsecase := usecase.NewUserUsecase(userRepo)
+
+	// Initialize token generator and password service
+	tokenGen := infrastracture.NewTokenGenerator() 
+	passwordService := infrastracture.NewPasswordService()
+
+	// Initialize usecase with token generator and password service
+	userUsecase := usecase.NewUserUsecase(userRepo, tokenGen, passwordService)
+
+	// Initialize controller with usecase
 	authController := controllers.NewUserController(userUsecase)
 
-	// blogRepo := repository.NewBlogRepositoryImpl(db.BlogCollection)
-	// blogUsecase := usecase.NewBlogUsecase(blogRepo)
-	// blogController := controllers.NewBlogController(blogUsecase)
-
+	// Set up user routes
 	user := router.Group("/user")
-	user.POST("/refresh-token", authController.RefreshToken)
-	user.Use(infrastracture.AuthMiddleware())
+	user.Use(infrastracture.AuthMiddleware()) 
 
+	user.POST("/refresh-token", authController.RefreshToken)
+
+	// Protected routes
 	{
 		user.GET("/me", authController.GetMyProfile)
 		user.PUT("/update", authController.UpdateMyProfile)
 		user.POST("/upload-image", authController.UploadImage)
 		user.DELETE("/me", authController.DeleteMyAccount)
 
-		// Logout Routes
 
-
+		// Logout routes
 		user.POST("/logout", authController.Logout)
-		user.GET("logout-all", authController.LogoutAll)
+		user.GET("/logout-all", authController.LogoutAll)
 		user.GET("/devices/logout", authController.LogoutDevice)
 		user.GET("/devices", authController.GetDevices)
-
 	}
 }

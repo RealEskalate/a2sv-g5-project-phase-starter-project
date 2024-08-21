@@ -19,7 +19,6 @@ func NewBlogUsecase(blogRepo domain.BlogRepository) domain.BlogUsecase {
 
 func (uc *BlogUsecaseImpl) CreateBlog(username, userID string, blog domain.Blog) (domain.Blog, error) {
 
-	// Set the author ID to the provided user ID
 	blog.AuthorID = userID
 
 	// Insert the blog post into the collection
@@ -88,3 +87,4 @@ func (uc *BlogUsecaseImpl) GetUserBlogs(userID string) ([]domain.Blog, error) {
 	}
 	return blogs, nil
 }
+

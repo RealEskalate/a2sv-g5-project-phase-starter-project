@@ -122,11 +122,6 @@ func (br *BlogMongoRepository) SearchBlogs(ctx context.Context, filter dtos.Filt
 }
 
 func (br *BlogMongoRepository) UpdateBlog(ctx context.Context, blogID string, blog *models.Blog) *models.ErrorResponse {
-	objID, err := primitive.ObjectIDFromHex(blogID)
-	if err != nil {
-		return models.BadRequest("Invalid blog ID")
-	}
-
 	updateFields := bson.M{}
 	blog.UpdatedAt = time.Now()
 
@@ -156,9 +151,9 @@ func (br *BlogMongoRepository) UpdateBlog(ctx context.Context, blogID string, bl
 		}
 	}
 
-	filter := bson.M{"_id": objID}
+	filter := bson.M{"_id": blogID}
 
-	_, err = br.BlogCollection.UpdateOne(ctx, filter, update)
+	_, err := br.BlogCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return models.InternalServerError("Failed to update blog")
 	}
@@ -175,78 +170,26 @@ func (br *BlogMongoRepository) DeleteBlog(ctx context.Context, id string) *model
 	return models.Nil()
 }
 
-func (br *BlogMongoRepository) AddComment(ctx context.Context, comment models.Comment) *models.ErrorResponse {
-	blogID := comment.BlogID
-	comment.ID = primitive.NewObjectID().Hex()
-	comment.CreatedAt = time.Now()
-	comment.BlogID = blogID
-
-	filter := bson.M{"_id": blogID}
-	update := bson.M{
-		"$push": bson.M{
-			"comments": comment,
-		},
-	}
-
-	_, err := br.BlogCollection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		return models.InternalServerError("Failed to add comment")
-	}
-	return models.Nil()
-}
-
 func (br *BlogMongoRepository) IncreaseView(ctx context.Context, blogID string) *models.ErrorResponse {
-	objID, err := primitive.ObjectIDFromHex(blogID)
-	if err != nil {
-		return models.BadRequest("Invalid blog ID")
-	}
 
-	filter := bson.M{"_id": objID}
+	filter := bson.M{"blog_id": blogID}
 	update := bson.M{
 		"$inc": bson.M{"view_count": 1},
 	}
 
-	_, err = br.BlogCollection.UpdateOne(ctx, filter, update)
+	option := options.Update().SetUpsert(true)
+
+	_, err := br.BlogActionCollection.UpdateOne(ctx, filter, update, option)
 	if err != nil {
 		return models.InternalServerError("Failed to increase view count")
 	}
 	return models.Nil()
 }
 
-func (br *BlogMongoRepository) GetComments(ctx context.Context, blogID string) ([]models.Comment, *models.ErrorResponse) {
-	ID, err := primitive.ObjectIDFromHex(blogID)
-	if err != nil {
-		return nil, models.BadRequest("invalid blog id")
-	}
-
-	cursor, err := br.BlogCollection.Find(ctx, bson.M{"_id": ID})
-	if err != nil {
-		return nil, models.InternalServerError("Failed to retrieve comments")
-	}
-	defer cursor.Close(ctx)
-
-	var comments []models.Comment
-	for cursor.Next(ctx) {
-		var comment models.Comment
-		if err := cursor.Decode(&comment); err != nil {
-			return nil, models.InternalServerError("Failed to decode comments")
-		}
-		comments = append(comments, comment)
-	}
-
-	if err := cursor.Err(); err != nil {
-		return nil, models.InternalServerError("Cursor error occurred while retrieving comments")
-	}
-	return comments, models.Nil()
-}
 func (br *BlogMongoRepository) GetPopularity(ctx context.Context, blogID string) (*models.Popularity, *models.ErrorResponse) {
-	ID, err := primitive.ObjectIDFromHex(blogID)
-	if err != nil {
-		return nil, models.BadRequest("invalid blog id")
-	}
 
 	var popularity models.Popularity
-	err = br.BlogActionCollection.FindOne(ctx, bson.M{"blog_id": ID}).Decode(&popularity)
+	err := br.BlogActionCollection.FindOne(ctx, bson.M{"blog_id": blogID}).Decode(&popularity)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, models.NotFound("no popularity information for the provided blog")

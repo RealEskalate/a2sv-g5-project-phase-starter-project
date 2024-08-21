@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"time"
+	"log"
 
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
@@ -29,6 +30,7 @@ func NewUserRepository(db *mongo.Database) interfaces.UserRepository {
 
 func (ur *UserMongoRepository) CreateUser(ctx context.Context, user *models.User) *models.ErrorResponse {
 
+	
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
@@ -63,6 +65,8 @@ func (ur *UserMongoRepository) GetUserByEmailOrUsername(ctx context.Context, use
 
 // GetUserByID fetches a user by their ID.
 func (ur *UserMongoRepository) GetUserByID(ctx context.Context, id string) (*models.User, *models.ErrorResponse) {
+
+	log.Println("GetUserByID", id)
 	objID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, models.InternalServerError(err.Error())
@@ -76,6 +80,8 @@ func (ur *UserMongoRepository) GetUserByID(ctx context.Context, id string) (*mod
 		}
 		return nil, models.InternalServerError("error fetching user" + err.Error())
 	}
+
+	user.ID = objID.Hex()
 
 	return &user, nil
 }

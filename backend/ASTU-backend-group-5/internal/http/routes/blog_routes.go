@@ -25,6 +25,7 @@ func RegisterBlogRoutes(blogsCollection, commentsCollection, likesCollection, vi
 		blogRoutes.DELETE("/:id/tags/:tagId", blogHandler.RemoveTagFromBlogHandler)
 		blogRoutes.POST("/comments", blogHandler.AddCommentHandler)
 		blogRoutes.GET("/:id/comments", blogHandler.GetCommentsByBlogIDHandler)
+		blogRoutes.GET("/search", blogHandler.SearchBlogsHandler)
 
 		blogRoutes.POST("/likes", blogHandler.AddLikeHandler)
 		blogRoutes.GET("/:id/likes", blogHandler.GetLikesByBlogIDHandler)

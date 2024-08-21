@@ -41,4 +41,5 @@ type BlogUseCase interface {
 
 	DeleteComment(ctx context.Context, comment, userId string) error
 	RemoveLike(ctx context.Context, likeId, userId string) error
+	SearchBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int) ([]*domain.Blog, int, error)
 }

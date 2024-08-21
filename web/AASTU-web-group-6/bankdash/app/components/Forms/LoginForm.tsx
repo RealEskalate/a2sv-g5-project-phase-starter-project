@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import LoginValue from "@/types/LoginValue";
-import AuthService from "@/app/Services/api/authService";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 
 const LoginForm = () => {
@@ -21,19 +21,13 @@ const LoginForm = () => {
     setLoading(true);
     setError("");
 
-    try {
-      const response = await AuthService.login(data);
-      if (response.success) {
-        console.log("Login successful:", response.message);
-        router.push("/");
-      } else {
-        setError(response.message);
-        setLoading(false);
-      }
-    } catch (err) {
-      setError("An error occurred during login.");
-      console.error(err);
+    if (result?.error) {
+      console.log(result.error)
+      setError(result.error);
       setLoading(false);
+    } else {
+      console.log("Login Successful:", result);
+      router.push("/");
     }
   };
 

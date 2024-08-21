@@ -7,6 +7,7 @@ import (
 	jwt_service "blog_api/infrastructure/jwt"
 	mail_service "blog_api/infrastructure/mail"
 	"blog_api/infrastructure/middleware"
+	google_auth "blog_api/infrastructure/oauth"
 	"blog_api/infrastructure/utils"
 	"blog_api/repository"
 	"blog_api/usecase"
@@ -34,6 +35,7 @@ func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, cac
 		jwt_service.ValidateAndParseToken,
 		cryptography.HashString,
 		cryptography.ValidateHashedString,
+		google_auth.VerifyIdToken,
 		env.ENV,
 	)
 
@@ -54,5 +56,6 @@ func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, cac
 	authGroup.POST("/forgot-password", controller.HandleInitResetPassword)
 	authGroup.POST("/reset-password", controller.HandleResetPassword)
 
-	authGroup.POST("/google/parse", controller.HandleGoogleAuth)
+	authGroup.POST("/google/login", controller.HandleGoogleLogin)
+	authGroup.POST("/google/signup", controller.HandleGoogleSignup)
 }

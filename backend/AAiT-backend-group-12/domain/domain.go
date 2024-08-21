@@ -153,7 +153,8 @@ type UserUsecaseInterface interface {
 	InitResetPassword(c context.Context, username string, email string, hostUrl string) CodedError
 	ResetPassword(c context.Context, resetDto dtos.ResetPassword, token string) CodedError
 	Logout(c context.Context, username string, accessToken string) CodedError
-	GoogleOAuthAccess(c context.Context, data *dtos.GoogleResponse) (string, string, CodedError)
+	OAuthLogin(c context.Context, data *dtos.GoogleResponse) (string, string, CodedError)
+	OAuthSignup(c context.Context, data *dtos.GoogleResponse, userCreds *dtos.OAuthSignup) CodedError
 }
 
 type CacheRepositoryInterface interface {

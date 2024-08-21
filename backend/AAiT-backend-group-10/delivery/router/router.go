@@ -61,6 +61,7 @@ func NewRouter(db *mongo.Database) {
 	router.GET("/blogs/search", infrastructures.AuthMiddleware(&jwtService), blogController.SearchBlogs)
 
 	router.PATCH("/users/promote", infrastructures.AuthMiddleware(&jwtService), infrastructures.AdminMiddleWare(), userController.PromoteUser)
+	router.PUT("/users/:id", infrastructures.AuthMiddleware(&jwtService), userController.UpdateProfile)
 
 	router.GET("/comment/:blog_id", infrastructures.AuthMiddleware(&jwtService), commentController.GetComments)
 	router.POST("/comment", infrastructures.AuthMiddleware(&jwtService), commentController.AddComment)

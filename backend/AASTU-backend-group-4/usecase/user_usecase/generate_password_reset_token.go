@@ -18,7 +18,7 @@ func (u *UserUsecase) GeneratePasswordResetToken(ctx context.Context, email, res
 	}
 
 	// Store the reset token in the database
-	err = u.repo.StoreResetToken(ctx, user.ID.Hex(), resetToken, expiryHour)
+	err = u.repo.StoreResetToken(ctx, user.ID, resetToken, expiryHour)
 	if err != nil {
 		return err
 	}

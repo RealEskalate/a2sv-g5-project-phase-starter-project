@@ -4,9 +4,10 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (ur *UserRepository) StoreResetToken(ctx context.Context, userID string, resetToken string, expiryHour int) error {
+func (ur *UserRepository) StoreResetToken(ctx context.Context, userID primitive.ObjectID, resetToken string, expiryHour int) error {
 	filter := bson.M{"_id": userID}
 	update := bson.M{
 		"$set": bson.M{

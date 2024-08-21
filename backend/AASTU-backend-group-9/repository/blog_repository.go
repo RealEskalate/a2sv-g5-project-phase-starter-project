@@ -89,57 +89,32 @@ func (r *blogRepository) DeleteBlog(ctx context.Context, id primitive.ObjectID) 
 
 // Repositories/blog_repository.go
 // SearchBlogs searches for blogs based on query and filters.
-func (r *blogRepository) SearchBlogs(ctx context.Context, query string, filters *domain.BlogFilters) ([]*domain.Blog, error) {
-	var blogs []*domain.Blog
+func (r *blogRepository) SearchBlogs(ctx context.Context, title string, author string) (*[]domain.Blog, error) {
+	filter := bson.M{}
 
+	// Add search filters based on the provided title and author
+	if title != "" {
+		filter["title"] = bson.M{"$regex": title, "$options": "i"}
+	}
+	if author != "" {
+		filter["author"] = bson.M{"$regex": author, "$options": "i"}
+	}
+
+	var blogs []domain.Blog
 	collection := r.database.Collection(r.collection)
-
-	// Construct the search query
-	searchQuery := bson.M{}
-	if query != "" {
-		searchQuery["$text"] = bson.M{"$search": query}
-	}
-
-	// Add filters if provided
-	if filters != nil {
-		if filters.AuthorID != (primitive.ObjectID{}) { // Check if AuthorID is the zero value
-			searchQuery["author_id"] = filters.AuthorID
-		}
-		if len(filters.Tags) > 0 {
-			searchQuery["tags"] = bson.M{"$in": filters.Tags}
-		}
-		if filters.Title != "" {
-			searchQuery["title"] = bson.M{"$regex": filters.Title, "$options": "i"} // Case-insensitive search
-		}
-		if filters.Date != "" {
-			searchQuery["date"] = filters.Date
-		}
-		if filters.Popularity != "" {
-			searchQuery["popularity"] = filters.Popularity
-		}
-	}
-
-	// Find matching documents
-	cursor, err := collection.Find(ctx, searchQuery)
+	cursor, err := collection.Find(context.Background(), filter)
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(ctx)
+	defer cursor.Close(context.Background())
 
-	for cursor.Next(ctx) {
-		var blog domain.Blog
-		if err := cursor.Decode(&blog); err != nil {
-			return nil, err
-		}
-		blogs = append(blogs, &blog)
-	}
-
-	// Ensure cursor is not closed with an error
-	if err := cursor.Close(ctx); err != nil {
+	// Decode the cursor results into the blogs slice
+	if err = cursor.All(context.Background(), &blogs); err != nil {
 		return nil, err
 	}
 
-	return blogs, nil
+	return &blogs, nil
+
 }
 
 func (r *blogRepository) FilterBlogsByTags(ctx context.Context, tags []string) ([]*domain.Blog, error) {
@@ -190,11 +165,26 @@ func (r *blogRepository) FilterBlogsByDate(ctx context.Context, date string) ([]
 
 func (r *blogRepository) FilterBlogsByPopularity(ctx context.Context, popularity string) ([]*domain.Blog, error) {
 	var blogs []*domain.Blog
+
+	// Define a filter without conditions initially
+	filter := bson.M{}
+
+	// Define sort options based on popularity
+	sortOptions := bson.D{}
+
+	if popularity != "" {
+		switch popularity {
+		case "most_viewed":
+			// Sort by views in descending order
+			sortOptions = bson.D{{Key: "views", Value: -1}}
+		case "most_liked":
+			// Sort by likes in descending order
+			sortOptions = bson.D{{Key: "likes", Value: -1}}
+		}
+	}
+
 	collection := r.database.Collection(r.collection)
-
-	filter := bson.M{"popularity": popularity}
-
-	cursor, err := collection.Find(ctx, filter)
+	cursor, err := collection.Find(ctx, filter, options.Find().SetSort(sortOptions))
 	if err != nil {
 		return nil, err
 	}
@@ -210,29 +200,59 @@ func (r *blogRepository) FilterBlogsByPopularity(ctx context.Context, popularity
 
 	return blogs, nil
 }
+
 func (r *blogRepository) IncrementViews(ctx context.Context, id primitive.ObjectID) error {
-    filter := bson.M{"_id": id}
-    update := bson.M{"$inc": bson.M{"views": 1}}
-    _, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
-    return err
+	filter := bson.M{"_id": id}
+	update := bson.M{"$inc": bson.M{"views": 1}}
+	_, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
+	return err
 }
 
+// func (r *blogRepository) IncrementLikes(ctx context.Context, id primitive.ObjectID) error {
+//     filter := bson.M{"_id": id}
+//     update := bson.M{"$inc": bson.M{"likes": 1}}
+//     _, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
+//     return err
+// }
 
+//	func (r *blogRepository) IncrementDislikes(ctx context.Context, id primitive.ObjectID) error {
+//	    filter := bson.M{"_id": id}
+//	    update := bson.M{"$inc": bson.M{"dislikes": 1}}
+//	    _, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
+//	    return err
+//	}
 func (r *blogRepository) AddComment(ctx context.Context, id primitive.ObjectID, comment *domain.Comment) error {
-    filter := bson.M{"_id": id}
-    update := bson.M{"$push": bson.M{"comments": comment}}
-    _, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
-    return err
+	filter := bson.M{"_id": id}
+	update := bson.M{"$push": bson.M{"comments": comment}}
+	_, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
+	return err
 }
 
+// func (r *blogRepository) HasUserLiked(ctx context.Context, id primitive.ObjectID, userID string) (bool, error) {
+//     filter := bson.M{"_id": id, "likes": userID}
+//     count, err := r.database.Collection(r.collection).CountDocuments(ctx, filter)
+//     return count > 0, err
+// }
 
 func (r *blogRepository) HasUserDisliked(ctx context.Context, id primitive.ObjectID, userID string) (bool, error) {
-    filter := bson.M{"_id": id, "dislikes": userID}
-    count, err := r.database.Collection(r.collection).CountDocuments(ctx, filter)
-    return count > 0, err
+	filter := bson.M{"_id": id, "dislikes": userID}
+	count, err := r.database.Collection(r.collection).CountDocuments(ctx, filter)
+	return count > 0, err
 }
 
+// func (r *blogRepository) DecrementLikes(ctx context.Context, id primitive.ObjectID) error {
+// 	filter := bson.M{"_id": id}
+// 	update := bson.M{"$inc": bson.M{"likes": -1}}
+// 	_, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
+// 	return err
+// }
 
+// func (r *blogRepository) DecrementDislikes(ctx context.Context, id primitive.ObjectID) error {
+// 	filter := bson.M{"_id": id}
+// 	update := bson.M{"$inc": bson.M{"dislikes": -1}}
+// 	_, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
+// 	return err
+// }
 
 func (r *blogRepository) IncrementPopularity(ctx context.Context, id primitive.ObjectID, metric string) error {
 	filter := bson.M{"_id": id}
@@ -247,7 +267,3 @@ func (r *blogRepository) DecrementPopularity(ctx context.Context, id primitive.O
 	_, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
 	return err
 }
-
-
-
-

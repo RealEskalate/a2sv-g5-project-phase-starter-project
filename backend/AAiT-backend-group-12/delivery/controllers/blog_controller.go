@@ -4,9 +4,7 @@ import (
 	"blog_api/domain"
 	validateblog "blog_api/infrastructure/validate_blog"
 	"net/http"
-
 	"log"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )

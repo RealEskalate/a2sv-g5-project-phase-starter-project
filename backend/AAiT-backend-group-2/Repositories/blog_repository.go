@@ -3,10 +3,10 @@ package repositories
 import (
 	"context"
 
+	"AAiT-backend-group-2/Domain"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"AAiT-backend-group-2/Domain"
 )
 
 type blogRepository struct {
@@ -162,4 +162,90 @@ func (b *blogRepository) Delete(ctx context.Context, id string) error {
 		return err
 	}
 	return nil
+}
+
+func (b *blogRepository) Filter(ctx context.Context, tags []string, startDate, endDated, sortBy string) ([]domain.Blog, error) {
+	filter := bson.M{}
+
+	if len(tags) > 0 {
+		filter["tags"] = bson.M{"$in": tags}
+	}
+
+	if startDate != "" && endDated != "" {
+		filter["created_at"] = bson.M{"$gte": startDate, "$lte": endDated}
+	} else if startDate != "" {
+		filter["created_at"] = bson.M{"$gte": startDate}
+	} else if endDated != "" {
+		filter["created_at"] = bson.M{"$lte": endDated}
+	}
+
+	var sort bson.D
+	switch sortBy {
+	case "view_count":
+		sort = bson.D{{Key: "view_count", Value: -1}}
+	case "like_count":
+		sort = bson.D{{Key: "like_count", Value: -1}}
+	case "dislike_count":
+		sort = bson.D{{Key: "dislike_count", Value: -1}}
+	case "created_at":
+		sort = bson.D{{Key: "created_at", Value: -1}}
+	case "updated_at":
+		sort = bson.D{{Key: "updated_at", Value: -1}}
+	default:
+		sort = bson.D{{Key: "created_at", Value: -1}}
+	}
+
+	blogs := []domain.Blog{}
+
+	session, err := b.blogCollection.Database().Client().StartSession()
+	if err != nil {
+		return nil, err
+	}
+	defer session.EndSession(ctx)
+
+	_, err = session.WithTransaction(ctx, func(sessCtx mongo.SessionContext) (interface{}, error) {
+
+		cursor, err := b.blogCollection.Find(sessCtx, filter, options.Find().SetSort(sort))
+
+		if err != nil {
+			return nil, err
+		}
+
+		if err = cursor.All(sessCtx, &blogs); err != nil {
+			return nil, err
+		}
+
+		for i := range blogs {
+			commentsCursor, err := b.commentCollection.Find(sessCtx, bson.M{"blog_id": blogs[i].ID})
+			if err != nil {
+				return nil, err
+			}
+
+			var comments []domain.Comment
+			if err = commentsCursor.All(sessCtx, &comments); err != nil {
+				return nil, err
+			}
+			blogs[i].Comments = comments
+
+
+			likesCursor, err := b.likeCollection.Find(sessCtx, bson.M{"blog_id": blogs[i].ID})
+			if err != nil {
+				return nil, err
+			}
+			var likes []domain.Like
+			if err = likesCursor.All(sessCtx, &likes); err != nil {
+				return nil, err
+			}
+			blogs[i].LikeCount = len(likes)
+			
+		}
+
+		return nil, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return blogs, nil
 }

@@ -32,6 +32,7 @@ type BlogRepository interface {
 	Save(ctx context.Context, blog *Blog) error
 	Update(ctx context.Context, blog *Blog) error
 	Delete(ctx context.Context, id string) error
+	Filter(ctx context.Context,tags []string, startDate,endDate,sortBy string) ([]Blog,error) 
 }
 
 type BlogUseCase interface {
@@ -40,6 +41,7 @@ type BlogUseCase interface {
     CreateBlog(ctx context.Context, req *RequestBlog, author string) error
     UpdateBlog(ctx context.Context, req *RequestBlog, author,id string) error
     DeleteBlog(ctx context.Context, author,id string) error
+	FilterBlogs(ctx context.Context,tags []string,startDate,endDate,sortBy string) ([]Blog,error)
 }
 
 

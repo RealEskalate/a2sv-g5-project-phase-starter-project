@@ -115,15 +115,10 @@ func (au *UserUsecase) RefreshToken(userID, deviceID, token string) (domain.LogI
 		return domain.LogInResponse{}, errors.New("user not found")
 	}
 
-	for _, rt := range user.RefreshTokens {
+	for i, rt := range user.RefreshTokens {
 		if rt.Token == token && rt.DeviceID == deviceID {
 			_, tokenErr := infrastracture.RefreshToken(token)
-			for i, v := range user.RefreshTokens {
-				if v.Token == token {
-					user.RefreshTokens = append(user.RefreshTokens[:i], user.RefreshTokens[i+1:]...)
-					break
-				}
-			}
+			user.RefreshTokens = append(user.RefreshTokens[:i], user.RefreshTokens[i+1:]...)
 			
 			if tokenErr != nil {
 
@@ -152,6 +147,7 @@ func (au *UserUsecase) RefreshToken(userID, deviceID, token string) (domain.LogI
 				AccessToken:  accessToken,
 				RefreshToken: newRefreshToken.Token,
 			}, err
+			
 		}
 	}
 

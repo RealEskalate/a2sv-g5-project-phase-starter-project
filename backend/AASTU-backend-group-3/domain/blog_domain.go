@@ -20,6 +20,7 @@ type Blog struct {
     DislikesCount int       `json:"dislikes_count"` // Number of dislikes the blog post has received
     ViewCount     int       `json:"view_count"`     // Number of views the blog post has received
     CommentsCount int       `json:"comments_count"` // Number of comments the blog post has received
+	Comment 	 []Comment `json:"comments"`
 	Visibility     string    `bson:"visibility"`
 }
 

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import LoanCards from "./LoanCards";
 import LoanTable from "./LoanTable";
-import { LoanDataProps } from "./loanTypes"; // Import the shared type
+import { LoanDataProps } from "./loanTypes";
 import { useSession } from "next-auth/react";
 
 interface LoanResponse {
@@ -12,12 +12,20 @@ interface LoanResponse {
 	data: LoanDataProps[];
 }
 
+interface ExtendedUser {
+	name?: string;
+	email?: string;
+	image?: string;
+	accessToken?: string;
+}
+
 const LoanPage = () => {
 	const [loanData, setLoanData] = useState<LoanResponse | null>(null);
+	const { data: session } = useSession();
+	console.log(session, "session from loan");
 
-	const { data: session, status } = useSession();
-
-	const accessToken = session.user?.accessToken;
+	const user = session?.user as ExtendedUser | undefined;
+	const accessToken = user?.accessToken;
 
 	useEffect(() => {
 		const fetchLoanData = async () => {
@@ -48,10 +56,10 @@ const LoanPage = () => {
 			}
 		};
 
-		fetchLoanData();
+		if (accessToken) {
+			fetchLoanData();
+		}
 	}, [accessToken]);
-
-	// console.log("loannnnnnnnnn:", loanData);
 
 	return (
 		<div className="p-5 sm:px-10 sm:py-8">

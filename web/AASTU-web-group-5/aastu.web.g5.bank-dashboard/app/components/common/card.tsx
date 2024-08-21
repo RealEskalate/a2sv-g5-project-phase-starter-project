@@ -29,8 +29,11 @@ const Card: React.FC<CardProps> = ({ cardData, cardColor }) => {
 		return `${firstNum} **** **** ${lastNum}`;
 	};
 
-	const dateFormat = formatExpiryDate(cardData.expiryDate);
-	const formattedCardNumber = formatCardNumber(cardData.semiCardNumber);
+	// const dateFormat = formatExpiryDate(cardData.expiryDate);
+	// const formattedCardNumber = formatCardNumber(cardData.semiCardNumber);
+
+	console.log("carrrrrrrrrrr:", cardData);
+	console.log("colorrrrrrrrrr:", cardColor);
 
 	return (
 		<div className="w-[33%]">
@@ -51,11 +54,11 @@ const Card: React.FC<CardProps> = ({ cardData, cardColor }) => {
 					</div>
 					<div>
 						<div className="text-sm opacity-70">VALID THRU</div>
-						<div>{dateFormat}</div>
+						<div>{"12/15"}</div>
 					</div>
 				</div>
 				<div className={cardColor.bottomBgColor}>
-					<div className="text-xl">{formattedCardNumber}</div>
+					<div className="text-xl">{"*** *** 1234"}</div>
 					<div className="flex">
 						<div
 							className={`w-8 h-8 rounded-full ${

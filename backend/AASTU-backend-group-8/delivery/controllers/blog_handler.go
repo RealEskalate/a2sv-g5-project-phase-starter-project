@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"meleket/domain"
 	"net/http"
 
@@ -23,16 +24,17 @@ func (bc *BlogController) CreateBlogPost(c *gin.Context) {
 		return
 	}
 
-	// autherID := c.MustGet("userID").(primitive.ObjectID)
-	// blog.AuthorID = autherID
+	autherID := c.MustGet("userID").(primitive.ObjectID)
+	fmt.Println("Author ID: ", autherID)
+	blog.AuthorID = autherID
 
-	createdBlog, err := bc.blogUsecase.CreateBlogPost(&blog)
+	BlogID, err := bc.blogUsecase.CreateBlogPost(&blog)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	c.JSON(http.StatusCreated, gin.H{"message": "Blog post created successfully", "blog": createdBlog})
+	blog.ID = BlogID.(primitive.ObjectID)
+	c.JSON(http.StatusCreated, gin.H{"message": "Blog post created successfully", "blog": blog})
 }
 
 func (bc *BlogController) GetAllBlogPosts(c *gin.Context) {

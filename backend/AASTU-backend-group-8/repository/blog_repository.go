@@ -22,11 +22,11 @@ func NewBlogRepository(col domain.Collection) *BlogRepository {
 	return &BlogRepository{collection: col}
 }
 
-func (r *BlogRepository) Save(blog *domain.BlogPost) error {
+func (r *BlogRepository) Save(blog *domain.BlogPost) (interface{},error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	_, err := r.collection.InsertOne(ctx, blog)
-	return err
+	createdBlog, err := r.collection.InsertOne(ctx, blog)
+	return createdBlog.InsertedID,err
 }
 
 func (r *BlogRepository) GetAllBlog() ([]domain.BlogPost, error) {

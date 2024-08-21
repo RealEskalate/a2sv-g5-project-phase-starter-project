@@ -19,4 +19,3 @@ func NewValidator() *StructValidator {
 func (v *StructValidator) ValidateStruct(model interface{}) error {
 	return v.validator.Struct(model)
 }
-

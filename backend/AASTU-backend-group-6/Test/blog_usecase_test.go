@@ -1,435 +1,192 @@
 package test
 
-// package controllers_test
+import (
+	domain "blogs/Domain"
+	usecases "blogs/Usecases"
+	"blogs/mocks"
+	"log"
+	"strings"
+	"testing"
+	"time"
 
-// import (
-// 	"bytes"
-// 	"encoding/json"
-// 	"errors"
-// 	"fmt"
-// 	"net/http"
-// 	"net/http/httptest"
-// 	"testing"
-// 	"time"
+	"github.com/stretchr/testify/suite"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
-// 	controllers "task_manager/Delivery/Controllers"
-// 	domain "task_manager/Domain"
-// 	"task_manager/mocks"
+type BlogUsecaseSuite struct {
+	suite.Suite
+	repo        mocks.BlogRepository
+	blogUsecase domain.BlogUsecase
+	idConverter mocks.IDConverterInterface
+}
 
-// 	"github.com/gin-gonic/gin"
-// 	"github.com/stretchr/testify/assert"
-// 	"github.com/stretchr/testify/suite"
-// 	"go.mongodb.org/mongo-driver/bson/primitive"
-// )
+func (suite *BlogUsecaseSuite) SetupTest() {
+	suite.repo = *new(mocks.BlogRepository)
+	suite.idConverter = *new(mocks.IDConverterInterface)
+	suite.blogUsecase = usecases.NewBlogUsecase(&suite.repo, &suite.idConverter)
+}
 
-// type ControllerTestSuite struct {
-// 	suite.Suite
-// 	mockTaskUseCase *mocks.TaskUseCase
-// 	mockUserUseCase *mocks.UserUseCase
-// 	router          *gin.Engine
-// 	controller *controllers.Controller
-// }
+func (suite *BlogUsecaseSuite) TestReactOnBlog() {
+	suite.repo.On("ReactOnBlog", "1", true, "1").Return(domain.ErrorResponse{})
 
-// func MockAuthMiddleware(role string, userID string) gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-// 		c.Set("role", role)
-// 		c.Set("user_id", userID)
-// 		c.Next()
-// 	}
-// }
+	err := suite.blogUsecase.ReactOnBlog("1", "true", "1")
+	// log.Default(err)
+	suite.IsTypef(err, domain.ErrorResponse{}, "should be similar in Type")
+	suite.Equal(err, domain.ErrorResponse{}, "should be equal")
+	// suite.NotEqual(err, domain.ErrorResponse{})
+	suite.repo.AssertExpectations(suite.T())
+}
+func (suite *BlogUsecaseSuite) TestCommentOnBlog() {
+	newID, _ := primitive.ObjectIDFromHex("1")
+	comment := domain.Comment{
+		Commentor_ID:       newID,
+		Commentor_username: "name",
+	}
+	suite.repo.On("CommentOnBlog", "1", "name", comment).Return(nil)
+	suite.idConverter.On("ToObjectID", "1").Return(newID)
 
-// func (suite *ControllerTestSuite) SetupTest() {
-// 	suite.mockTaskUseCase = new(mocks.TaskUseCase)
-// 	suite.mockUserUseCase = new(mocks.UserUseCase)
-// 	suite.router = gin.Default()
-// 	controller := controllers.NewController(suite.mockUserUseCase, suite.mockTaskUseCase)
-// 	suite.controller = controller
-// }
-// func (suite *ControllerTestSuite) TestGetAllTaskHandler_UserSuccess() {
-// 	mockTasks := []domain.Task{
-// 		{
-// 			ID: primitive.NewObjectID(),
-// 			Title: "Nothing",
-// 			Description: "Something",
-// 			DueDate: time.Now(),
-// 			Status: "Pending",
-// 			UserId: primitive.NewObjectID(),
-// 		},
-// 		{
-// 			ID: primitive.NewObjectID(),
-// 			Title: "Nothing",
-// 			Description: "Something",
-// 			DueDate: time.Now(),
-// 			Status: "In Progress",
-// 			UserId: primitive.NewObjectID(),
-// 		},
-// 	}
+	err := suite.blogUsecase.CommentOnBlog("1", "name", comment)
 
-// 	suite.router.GET("/tasks", MockAuthMiddleware("USER", "user123"), suite.controller.GetAllTaskHandler)
+	suite.IsTypef(err, nil, "should be similar in Type")
+	suite.Equal(err, nil, "should be equal")
+	// suite.NotEqual(err, errors.New(""))
+	suite.repo.AssertExpectations(suite.T())
 
-// 	suite.mockTaskUseCase.On("GetAllTasks", "USER", "user123").Return(mockTasks, nil)
+}
+func (suite *BlogUsecaseSuite) TestCreateBlog() {
+	id, _ := primitive.ObjectIDFromHex("1")
+	blog := domain.Blog{
+		Author:     "Eyerusalem",
+		Title:      "my blogs",
+		Content:    "This is my first blog",
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+		Tags:       make([]string, 1),
+		Comments:   make([]domain.Comment, 1),
+		Creater_id: id,
+		Blog_image: "https://media.istockphoto.com/id/922745190/photo/blogging-blog-concepts-ideas-with-worktable.jpg?s=2048x2048&w=is&k=20&c=QNKuhWRD7f0P5hybe28_AHo_Wh6W93McWY157Vmmh4Q=",
+	}
 
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest("GET", "/tasks", nil)
-// 	suite.router.ServeHTTP(w, req)
+	suite.repo.On("CreateBlog", "1", blog, "user").Return(blog, nil)
 
-// 	suite.Equal(http.StatusOK, w.Code)
-// 	suite.Contains(w.Body.String(), "Nothing")
-// 	suite.Contains(w.Body.String(), "Something")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
+	newBlog, err := suite.blogUsecase.CreateBlog("1", blog, "user")
+	suite.Assert().IsType(newBlog, domain.Blog{}, "must be of the same type")
+	suite.Nil(err, "should no be nil")
+	suite.repo.AssertExpectations(suite.T())
+}
+func (suite *BlogUsecaseSuite) TestDeleteBlogByID() {
+	id, _ := primitive.ObjectIDFromHex("1")
+	blog := domain.Blog{
+		Author:     "Eyerusalem",
+		Title:      "my blogs",
+		Content:    "This is my first blog",
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+		Tags:       make([]string, 1),
+		Comments:   make([]domain.Comment, 1),
+		Creater_id: id,
+		Blog_image: "https://media.istockphoto.com/id/922745190/photo/blogging-blog-concepts-ideas-with-worktable.jpg?s=2048x2048&w=is&k=20&c=QNKuhWRD7f0P5hybe28_AHo_Wh6W93McWY157Vmmh4Q=",
+	}
 
-// func (suite *ControllerTestSuite) TestGetAllTaskHandler_UserNoTasks() {
-// 	suite.router.GET("/tasks", MockAuthMiddleware("USER", "user123"), suite.controller.GetAllTaskHandler)
-// 	suite.mockTaskUseCase.On("GetAllTasks", "USER", "user123").Return([]domain.Task{}, nil)
+	suite.repo.On("GetBlogByID", "1", true).Return(blog, nil)
+	suite.idConverter.On("ToString", blog.Creater_id).Return("1")
+	suite.repo.On("DeleteBlogByID", "1", "1").Return(domain.ErrorResponse{})
 
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest("GET", "/tasks", nil)
-// 	suite.router.ServeHTTP(w, req)
+	errResponse := suite.blogUsecase.DeleteBlogByID("1", "1", "user")
+	suite.IsType(errResponse, domain.ErrorResponse{}, "should of the same type")
+	suite.repo.AssertExpectations(suite.T())
+}
 
-// 	suite.Equal(http.StatusOK, w.Code)
-// 	suite.Contains(w.Body.String(), "Task not found")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
-// func (suite *ControllerTestSuite) TestGetAllTaskHandler_AdminSuccess() {
-// 	mockTasks := []domain.Task{
-// 		{
-// 			ID: primitive.NewObjectID(),
-// 			Title: "Admin Task 1",
-// 			Description: "Admin Description 1",
-// 			DueDate: time.Now(),
-// 			Status: "Pending",
-// 			UserId: primitive.NewObjectID(),
-// 		},
-// 	}
-// 	suite.router.GET("/tasks", MockAuthMiddleware("ADMIN", "admin123"), suite.controller.GetAllTaskHandler)
-// 	suite.mockTaskUseCase.On("GetAllTasks", "ADMIN", "").Return(mockTasks, nil)
+func (suite *BlogUsecaseSuite) TestFilterBlogsByTag() {
+	startDate := strings.ReplaceAll("2024-08-21T08:04:55.859+00:00", " ", "+")
+	endDate := strings.ReplaceAll("2024-08-21T08:04:55.859+00:00", " ", "+")
+	StartDate, err := time.Parse(time.RFC3339, startDate)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	EndDate, err := time.Parse(time.RFC3339, endDate)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	suite.repo.On("FilterBlogsByTag", []string{}, int64(1), int64(1), StartDate, EndDate, "").Return([]domain.Blog{}, domain.Pagination{}, nil)
 
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest("GET", "/tasks", nil)
-// 	suite.router.ServeHTTP(w, req)
+	blogs, pagination, err := suite.blogUsecase.FilterBlogsByTag([]string{}, "1", "1", "2024-08-21T08:04:55.859 00:00", "2024-08-21T08:04:55.859 00:00", "")
 
-// 	suite.Equal(http.StatusOK, w.Code)
-// 	suite.Contains(w.Body.String(), "Admin Task 1")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
+	suite.IsType(blogs, []domain.Blog{}, "should have the same value")
+	suite.IsType(pagination, domain.Pagination{}, "should have the same value")
+	suite.Nil(err, "should have nil value")
 
-// func (suite *ControllerTestSuite) TestGetAllTaskHandler_AdminError() {
-// 	suite.mockTaskUseCase.On("GetAllTasks", "ADMIN", "").Return(nil, errors.New("error fetching tasks"))
-// 	suite.router.GET("/tasks", MockAuthMiddleware("ADMIN", "admin123"), suite.controller.GetAllTaskHandler)
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest("GET", "/tasks", nil)
-// 	suite.router.ServeHTTP(w, req)
-// 	suite.Equal(http.StatusBadRequest, w.Code)
-// 	suite.Contains(w.Body.String(), "error fetching tasks")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
+	suite.repo.AssertExpectations(suite.T())
+}
 
-// func (suite *ControllerTestSuite) TestTaskByIdHandler_UserSuccess() {
-// 	task_id := primitive.NewObjectID()
-// 	mockTask := domain.Task{
-// 		ID: task_id,
-// 		Title: "User Task",
-// 		Description: "User Task Description",
-// 		DueDate: time.Now(),
-// 		Status: "Pending",
-// 		UserId: primitive.NewObjectID(),
-// 	}
+func (suite *BlogUsecaseSuite) TestGetBlogByID() {
+	suite.repo.On("GetBlogByID", "1", true).Return(domain.Blog{}, nil)
 
-// 	suite.mockTaskUseCase.On("GetTaskById", task_id.Hex(), "user123", "USER").Return(mockTask, nil)
-// 	suite.router.GET("/tasks/:id",  MockAuthMiddleware("USER", "user123"), suite.controller.TaskByIdHandler)
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest("GET", "/tasks/"+mockTask.ID.Hex(), nil)
-// 	suite.router.ServeHTTP(w, req)
+	blog, err := suite.blogUsecase.GetBlogByID("1", true)
+	suite.IsType(blog, domain.Blog{}, "should be equal")
+	suite.Nil(err, "should be nil")
 
-// 	suite.Equal(http.StatusOK, w.Code)
-// 	suite.Contains(w.Body.String(), "User Task")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
+	suite.repo.AssertExpectations(suite.T())
+}
+func (suite *BlogUsecaseSuite) TestGetBlogs() {
+	suite.repo.On("GetBlogs", int64(1), int64(1), "").Return([]domain.Blog{}, domain.Pagination{}, nil)
+	blogs, pagination, err := suite.blogUsecase.GetBlogs("1", "1", "")
 
-// func (suite *ControllerTestSuite) TestTaskByIdHandler_UserNotFound() {
-// 	suite.mockTaskUseCase.On("GetTaskById", "id", "user123", "USER").Return(domain.Task{}, errors.New("task not found"))
-// 	suite.router.GET("/tasks/:id", MockAuthMiddleware("USER", "user123"), suite.controller.TaskByIdHandler)
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest("GET", "/tasks/id", nil)
-// 	suite.router.ServeHTTP(w, req)
-// 	suite.Equal(http.StatusNotFound, w.Code)
-// 	suite.Contains(w.Body.String(), "task not found")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
+	suite.IsType(blogs, []domain.Blog{}, "should be equal")
+	suite.IsType(blogs, []domain.Blog{}, "should be equal")
+	suite.IsType(pagination, domain.Pagination{}, "should be equal")
+	suite.Nil(err, "should be nil")
+	suite.repo.AssertExpectations(suite.T())
+}
 
-// func (suite *ControllerTestSuite) TestTaskByIdHandler_AdminSuccess() {
-// 	taskID := primitive.NewObjectID()
-// 	mockTask := domain.Task{
-// 		ID:          taskID,
-// 		Title:       "Admin Task",
-// 		Description: "Admin Task Description",
-// 		DueDate:     time.Now(),
-// 		Status:      "Pending",
-// 		UserId:      primitive.NewObjectID(),
-// 	}
-// 	suite.router.GET("/tasks/:id", MockAuthMiddleware("ADMIN", "admin123"), suite.controller.TaskByIdHandler)
-// 	suite.mockTaskUseCase.On("GetTaskById", taskID.Hex(), "", "ADMIN").Return(mockTask, nil)
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest("GET", "/tasks/"+mockTask.ID.Hex(), nil)
-// 	suite.router.ServeHTTP(w, req)
-// 	suite.Equal(http.StatusOK, w.Code)
-// 	suite.Contains(w.Body.String(), "Admin Task")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
+func (suite *BlogUsecaseSuite) TestGetMyBlogByID() {
+	id, _ := primitive.ObjectIDFromHex("66c59fa762c7e4ec02998609")
+	blog := domain.Blog{
+		Creater_id: id,
+	}
+	suite.repo.On("GetMyBlogByID", "66c59fa762c7e4ec02998609", "1").Return(blog, nil)
+	blog, err := suite.blogUsecase.GetMyBlogByID(blog.Creater_id.Hex(), "1", "user")
+	suite.IsType(blog, domain.Blog{}, "should be equal")
+	suite.Nil(err, "should be nil")
+	suite.repo.AssertExpectations(suite.T())
+}
 
-// func (suite *ControllerTestSuite) TestTaskByIdHandler_AdminNotFound() {
-// 	suite.mockTaskUseCase.On("GetTaskById", "id", "", "ADMIN").Return(domain.Task{}, errors.New("task not found"))
-// 	suite.router.GET("/tasks/:id", MockAuthMiddleware("ADMIN", "admin123"), suite.controller.TaskByIdHandler)
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest("GET", "/tasks/id", nil)
-// 	req.Header.Set("role", "ADMIN")
-// 	req.Header.Set("user_id", "admin123")
-// 	suite.router.ServeHTTP(w, req)
+func (suite *BlogUsecaseSuite) TestGetMyBlogs() {
+	suite.repo.On("GetMyBlogs", "1", int64(1), int64(1), "").Return([]domain.Blog{}, domain.Pagination{}, nil)
+	blogs, pagination, err := suite.blogUsecase.GetMyBlogs("1", "1", "1", "")
 
-// 	assert.Equal(suite.T(), http.StatusNotFound, w.Code)
-// 	assert.Contains(suite.T(), w.Body.String(), "task not found")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
+	suite.IsType(blogs, []domain.Blog{}, "should be equal")
+	suite.IsType(pagination, domain.Pagination{}, "should be equal")
+	suite.Nil(err, "should be nil")
+	suite.repo.AssertExpectations(suite.T())
+}
 
-// func (suite *ControllerTestSuite) TestCreateTaskHandler_UserSuccess() {
-// 	task_id := primitive.NewObjectID()
-// 	user_id := primitive.NewObjectID()
-// 	fixedTime := time.Date(2024, time.August, 14, 10, 21, 23, 0, time.UTC)
-// 	mockTask := domain.Task{
-// 		ID: task_id,
-// 		Title: "New Task",
-// 		Description: "A new task to be completed",
-// 		DueDate: fixedTime,
-// 		Status: "Pending",
-// 	}
-// 	suite.mockTaskUseCase.On("CreateTask", mockTask, user_id.Hex(), "USER").Return(task_id, nil)
-// 	suite.router.POST("/tasks", MockAuthMiddleware("USER", user_id.Hex()), suite.controller.CreateTaskHandler)
-// 	body, _ := json.Marshal(mockTask)
-// 	fmt.Println(bytes.NewBuffer(body))
-// 	req, _ := http.NewRequest("POST", "/tasks", bytes.NewBuffer(body))
-// 	req.Header.Set("Content-Type", "application/json")
-// 	w := httptest.NewRecorder()
-// 	suite.router.ServeHTTP(w, req)
-// 	suite.Equal(http.StatusCreated, w.Code)
-// 	suite.Contains(w.Body.String(), task_id.Hex())
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
+func (suite *BlogUsecaseSuite) TestSearchBlogByTitleAndAuthor() {
+	suite.repo.On("SearchBlogByTitleAndAuthor", "x", "y", int64(1), int64(1), "").Return([]domain.Blog{}, domain.Pagination{}, nil)
+	blogs, pagination, err := suite.blogUsecase.SearchBlogByTitleAndAuthor("x", "y", "1", "1", "")
 
-// func (suite *ControllerTestSuite) TestCreateTaskHandler_UserFailure() {
-// 	task_id := primitive.NewObjectID()
-// 	user_id := primitive.NewObjectID()
-// 	fixedTime := time.Date(2024, time.August, 14, 10, 21, 23, 0, time.UTC)
-// 	mockTask := domain.Task{
-// 		ID: task_id,
-// 		Title: "New Task",
-// 		Description: "A new task to be completed",
-// 		DueDate: fixedTime,
-// 		Status: "Pending",
-// 	}
-// 	suite.mockTaskUseCase.On("CreateTask", mockTask, user_id.Hex(), "USER").Return(nil, errors.New("Error"))
-// 	suite.router.POST("/tasks", MockAuthMiddleware("USER", user_id.Hex()), suite.controller.CreateTaskHandler)
-// 	body, _ := json.Marshal(mockTask)
-// 	req, _ := http.NewRequest("POST", "/tasks", bytes.NewBuffer(body))
-// 	req.Header.Set("Content-Type", "application/json")
-// 	w := httptest.NewRecorder()
-// 	suite.router.ServeHTTP(w, req)
-// 	suite.Equal(http.StatusNotFound, w.Code)
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
+	suite.IsType(blogs, []domain.Blog{}, "should be equal")
+	suite.IsType(pagination, domain.Pagination{}, "should be equal")
+	suite.IsType(err, domain.ErrorResponse{}, "should be equal")
+	suite.Equal(err.Status, 0, "should be equal")
+	suite.repo.AssertExpectations(suite.T())
+}
 
-// func (suite *ControllerTestSuite) TestUpdateTaskHandler_UserSuccess() {
-// 	task_id := primitive.NewObjectID()
-// 	user_id := primitive.NewObjectID()
-// 	fixedTime := time.Date(2024, time.August, 14, 10, 21, 23, 0, time.UTC)
-// 	mockTask := domain.Task{
-// 		ID: task_id,
-// 		Title: "New Task",
-// 		Description: "A new task to be completed",
-// 		DueDate: fixedTime,
-// 		Status: "Pending",
-// 		UserId: user_id,
-// 	}
-// 	suite.router.PUT("/tasks/:id", MockAuthMiddleware("USER", user_id.Hex()), suite.controller.UpdateTaskHandler)
-// 	suite.mockTaskUseCase.On("UpdateTask", task_id.Hex(), user_id.Hex(), "USER", mockTask).Return(true, nil)
-// 	body, _ := json.Marshal(mockTask)
-// 	fmt.Println(bytes.NewBuffer(body))
-// 	req, _ := http.NewRequest("PUT", "/tasks/"+task_id.Hex(), bytes.NewBuffer(body))
-// 	req.Header.Set("Content-Type", "application/json")
-// 	w := httptest.NewRecorder()
-// 	suite.router.ServeHTTP(w, req)
-// 	suite.Equal(http.StatusOK, w.Code)
-// 	suite.Contains(w.Body.String(), "Task updated successfully")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
+func (suite *BlogUsecaseSuite) TestUpdateBlogByID() {
+	id, _ := primitive.ObjectIDFromHex("66c59fa762c7e4ec02998609")
+	blog := domain.Blog{
+		Creater_id: id,
+	}
+	suite.repo.On("UpdateBlogByID", "66c59fa762c7e4ec02998609", "1", blog).Return(blog, nil)
+	suite.repo.On("GetBlogByID", "1", true).Return(blog, nil)
+	blog, err := suite.blogUsecase.UpdateBlogByID("66c59fa762c7e4ec02998609", "1", blog, "user")
 
-// func (suite *ControllerTestSuite) TestCreateTaskHandler_Failure() {
-// 	task_id := primitive.NewObjectID()
-// 	user_id := primitive.NewObjectID()
-// 	suite.router.PUT("/tasks/:id", MockAuthMiddleware("USER", user_id.Hex()), suite.controller.UpdateTaskHandler)
-// 	suite.mockTaskUseCase.On("UpdateTask", task_id.Hex(), user_id.Hex(), "USER", domain.Task{}).Return(false, errors.New("Error"))
-// 	body, _ := json.Marshal(domain.Task{})
-// 	fmt.Println(bytes.NewBuffer(body))
-// 	req, _ := http.NewRequest("PUT", "/tasks/"+task_id.Hex(), bytes.NewBuffer(body))
-// 	req.Header.Set("Content-Type", "application/json")
-// 	w := httptest.NewRecorder()
-// 	suite.router.ServeHTTP(w, req)
-// 	suite.Equal(http.StatusNotFound, w.Code)
-// 	suite.Contains(w.Body.String(), "Error")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
+	suite.IsType(blog, domain.Blog{}, "should be equal")
+	suite.Nil(err, "should be nil")
 
-// func (suite *ControllerTestSuite) TestDeleteTaskHandler_UserSuccess() {
-// 	suite.mockTaskUseCase.On("DeleteTaskById", "id", "user123", "USER").Return(true, nil)
-// 	suite.router.DELETE("/tasks/:id", MockAuthMiddleware("USER", "user123"), suite.controller.DeleteTaskHandler)
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest("DELETE", "/tasks/id", nil)
-// 	suite.router.ServeHTTP(w, req)
+	suite.repo.AssertExpectations(suite.T())
+}
 
-// 	suite.Equal(http.StatusOK, w.Code)
-// 	suite.Contains(w.Body.String(), "Task deleted")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
-
-// func (suite *ControllerTestSuite) TestDeleteTaskHandler_UserNotFound() {
-// 	suite.mockTaskUseCase.On("DeleteTaskById", "id", "user123", "USER").Return(false, nil)
-// 	suite.router.DELETE("/tasks/:id", MockAuthMiddleware("USER", "user123"), suite.controller.DeleteTaskHandler)
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest("DELETE", "/tasks/id", nil)
-// 	suite.router.ServeHTTP(w, req)
-
-// 	suite.Equal(http.StatusNotFound, w.Code)
-// 	suite.Contains(w.Body.String(), "Task not found")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
-
-// func (suite *ControllerTestSuite) TestDeleteTaskHandler_AdminSuccess() {
-// 	suite.mockTaskUseCase.On("DeleteTaskById", "id", "", "ADMIN").Return(true, nil)
-// 	suite.router.DELETE("/tasks/:id", MockAuthMiddleware("ADMIN", "admin123"), suite.controller.DeleteTaskHandler)
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest("DELETE", "/tasks/id", nil)
-// 	suite.router.ServeHTTP(w, req)
-
-// 	suite.Equal(http.StatusOK, w.Code)
-// 	suite.Contains(w.Body.String(), "Task deleted")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// }
-
-// func (suite *ControllerTestSuite) TestDeleteTaskHandler_AdminNotFound() {
-
-// 	suite.mockTaskUseCase.On("DeleteTaskById", "id", "", "ADMIN").Return(false, nil)
-// 	suite.router.DELETE("/tasks/:id", MockAuthMiddleware("ADMIN", "admin123"), suite.controller.DeleteTaskHandler)
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest("DELETE", "/tasks/id", nil)
-// 	suite.router.ServeHTTP(w, req)
-
-// 	assert.Equal(suite.T(), http.StatusNotFound, w.Code)
-// 	assert.Contains(suite.T(), w.Body.String(), "Task not found")
-// 	suite.mockTaskUseCase.AssertExpectations(suite.T())
-// 	suite.mockTaskUseCase.On("DeleteTaskById", "someid", "admin123", "ADMIN").Return(false, nil)
-// }
-
-// func (suite *ControllerTestSuite) TestUserRegisterHandler_UserSuccess() {
-// 	mockUser := domain.User{
-// 		UserName: "user123",
-// 		Password: "password",
-// 		Role:     "USER",
-// 	}
-// 	suite.mockUserUseCase.On("Register", mockUser).Return("user_id", nil)
-// 	suite.router.POST("/register", suite.controller.UserRegisterHandler)
-// 	w := httptest.NewRecorder()
-// 	body, err := json.Marshal(mockUser)
-// 	suite.Nil(err)
-
-// 	req, _ := http.NewRequest("POST", "/register", bytes.NewReader(body))
-// 	req.Header.Set("Content-Type", "application/json")
-
-// 	suite.router.ServeHTTP(w, req)
-
-// 	suite.Equal(http.StatusOK, w.Code)
-// 	suite.Contains(w.Body.String(), "user_id")
-// 	suite.Contains(w.Body.String(), "SignedUp Successfully.")
-// 	suite.mockUserUseCase.AssertExpectations(suite.T())
-// }
-
-// func (suite *ControllerTestSuite) TestUserRegisterHandler_UserInvalidCredentials() {
-// 	suite.mockUserUseCase.On("Register", domain.User{}).Return(nil, errors.New("invalid credentials"))
-
-// 	suite.router.POST("/register", suite.controller.UserRegisterHandler)
-// 	w := httptest.NewRecorder()
-// 	reqBody := `{"userName":"","password":"","role":""}`
-// 	req, err := http.NewRequest("POST", "/register", bytes.NewReader([]byte(reqBody)))
-// 	suite.Nil(err)
-// 	req.Header.Set("Content-Type", "application/json")
-// 	suite.router.ServeHTTP(w, req)
-// 	suite.Equal(http.StatusBadRequest, w.Code)
-// 	suite.Contains(w.Body.String(), "invalid credential")
-// }
-
-// func (suite *ControllerTestSuite) TestUserRegisterHandler_EmptyCredentials() {
-// 	suite.mockUserUseCase.On("Register", domain.User{}).Return(nil, errors.New("invalid credentials"))
-// 	suite.router.POST("/register", suite.controller.UserRegisterHandler)
-// 	w := httptest.NewRecorder()
-// 	req, err := http.NewRequest("POST", "/register", nil)
-// 	suite.Nil(err)
-// 	req.Header.Set("Content-Type", "application/json")
-// 	suite.router.ServeHTTP(w, req)
-// 	suite.Equal(http.StatusBadRequest, w.Code)
-// 	suite.Contains(w.Body.String(), "Invalid credential")
-// }
-
-// func (suite *ControllerTestSuite) TestUserRegisterHandler_UserUsernameInUse() {
-// 	mockUser := domain.User{
-// 		UserName: "user123",
-// 		Password: "password",
-// 		Role:     "USER",
-// 	}
-// 	suite.mockUserUseCase.On("Register", mockUser).Return(nil, errors.New("username already in use"))
-// 	suite.router.POST("/register", suite.controller.UserRegisterHandler)
-// 	w := httptest.NewRecorder()
-// 	reqBody := `{"userName":"user123","password":"password","role":"USER"}`
-// 	req, err := http.NewRequest("POST", "/register", bytes.NewReader([]byte(reqBody)))
-// 	suite.Nil(err)
-// 	req.Header.Set("Content-Type", "application/json")
-// 	suite.router.ServeHTTP(w, req)
-// 	suite.Equal(http.StatusBadRequest, w.Code)
-// 	suite.Contains(w.Body.String(), "username already in use")
-// }
-
-// func (suite *ControllerTestSuite) TestUserLoginHandler_UserSuccess() {
-// 	mockUser := domain.User{
-// 		UserName: "user123",
-// 		Password: "password",
-// 	}
-// 	suite.mockUserUseCase.On("Login", mockUser).Return("valid token", nil)
-// 	suite.router.POST("/login", suite.controller.UserLoginHandler)
-// 	w := httptest.NewRecorder()
-// 	body, err := json.Marshal(mockUser)
-// 	suite.Nil(err)
-
-// 	req, _ := http.NewRequest("POST", "/login", bytes.NewReader(body))
-// 	req.Header.Set("Content-Type", "application/json")
-
-// 	suite.router.ServeHTTP(w, req)
-
-// 	suite.Equal(http.StatusOK, w.Code)
-// 	suite.Contains(w.Body.String(), "valid token")
-// 	suite.Contains(w.Body.String(), "Logged successfully")
-// 	suite.mockUserUseCase.AssertExpectations(suite.T())
-// }
-
-// func (suite *ControllerTestSuite) TestUserLoginHandler_UserInvalidCredentials() {
-// 	suite.mockUserUseCase.On("Login", domain.User{}).Return("", errors.New("invalid credentials"))
-// 	suite.router.POST("/login", suite.controller.UserLoginHandler)
-// 	w := httptest.NewRecorder()
-// 	req, err := http.NewRequest("POST", "/login", nil)
-// 	suite.Nil(err)
-// 	req.Header.Set("Content-Type", "application/json")
-// 	suite.router.ServeHTTP(w, req)
-// 	suite.Equal(http.StatusBadRequest, w.Code)
-// 	suite.Contains(w.Body.String(), "Invalid credential")
-// }
-
-// func TestControllerTestSuite(t *testing.T) {
-// 	suite.Run(t, new(ControllerTestSuite))
-// }
+func TestBloBlogUsecaseSuite(t *testing.T) {
+	suite.Run(t, new(BlogUsecaseSuite))
+}

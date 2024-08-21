@@ -108,8 +108,7 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 			{"role", NewUser.Role},
 			{"profile_picture", NewUser.ProfilePicture},
 			{"bio", NewUser.Bio},
-			{"created_at", NewUser.CreatedAt},
-			{"updated_at", NewUser.UpdatedAt},
+			{"updatedat", NewUser.UpdatedAt},
 		}},
 	}
 

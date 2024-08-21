@@ -15,6 +15,7 @@ import (
 )
 
 func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, refreshTokenUsecase *usecases.TokenUsecase, jwtService infrastructure.JWTService, likeUsecase *usecases.LikeUsecase, commentUsecase *usecases.CommentUsecase, tokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase) {
+	r.MaxMultipartMemory = 8 << 20 // 8 MB
 	r.Static("/public", "./uploads")
 
 	// Initialize controllers

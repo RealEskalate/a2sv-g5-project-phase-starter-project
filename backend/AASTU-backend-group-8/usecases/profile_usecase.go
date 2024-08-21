@@ -3,6 +3,7 @@ package usecases
 import (
 	"fmt"
 	"meleket/domain"
+	"meleket/infrastructure"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -18,13 +19,18 @@ func NewProfileUsecase(tr domain.ProfileRepository) domain.ProfileUsecase {
 	}
 }
 
-func (r *ProfileUsecase) SaveProfile(profile *domain.Profile) error {
+func (r *ProfileUsecase) SaveProfile(profile *domain.ProfileGet) error {
 	objid, err := primitive.ObjectIDFromHex(profile.UserID)
 	fmt.Println(objid)
 	if err != nil {
 		return err
 	}
-	return r.profileRepo.SaveProfile(profile)
+	path, err := infrastructure.SaveAvatar(profile.Avatar)
+	if err != nil {
+		return err
+	}
+	profiledb := &domain.Profile{UserID: profile.UserID, Bio: profile.Bio, AvatarURL: path}
+	return r.profileRepo.SaveProfile(profiledb)
 }
 
 func (r *ProfileUsecase) FindProfile(userID string) (*domain.Profile, error) {
@@ -35,11 +41,16 @@ func (r *ProfileUsecase) DeleteProfile(userID string) error {
 	return r.profileRepo.DeleteProfile(userID)
 }
 
-func (r *ProfileUsecase) UpdateProfile(profile *domain.Profile) error {
+func (r *ProfileUsecase) UpdateProfile(profile *domain.ProfileGet) error {
 	objid, err := primitive.ObjectIDFromHex(profile.UserID)
 	fmt.Println(objid)
 	if err != nil {
 		return err
 	}
-	return r.profileRepo.UpdateProfile(profile)
+	path, err := infrastructure.SaveAvatar(profile.Avatar)
+	if err != nil {
+		return err
+	}
+	profiledb := &domain.Profile{UserID: profile.UserID, Bio: profile.Bio, AvatarURL: path}
+	return r.profileRepo.UpdateProfile(profiledb)
 }

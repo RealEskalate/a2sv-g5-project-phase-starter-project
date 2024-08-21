@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 func main() {
 	app := bootstrap.App()
 
@@ -25,10 +24,6 @@ func main() {
 	route.Setup(env, timeout, db, gin, redisClient)
 	gin.Run(env.ServerAddress)
 }
-
-
-
-
 
 // func main() {
 // 	// let's create a new database connection

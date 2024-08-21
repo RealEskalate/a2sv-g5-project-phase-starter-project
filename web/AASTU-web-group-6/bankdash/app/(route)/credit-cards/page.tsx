@@ -11,9 +11,7 @@ import { Card } from "@/app/Redux/slices/cardSlice";
 
 const CreditCards = () => {
   const { data: session } = useSession();
-  const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyMzgzMDIxNiwiZXhwIjoxNzIzOTE2NjE2fQ.c5zYX74xJyowvSM8pmN4W8Aw6pMyiJjs9JOP__Cjy9J80EHlOS6gX2yJpcwSdBwF";
-
+  const accessToken = session?.accessToken as string;
   const CardData: Card[] = useAppSelector((state) => state.cards.cards);
   const imgCont = [
     "assets/block-card-blue-icon.svg",
@@ -24,34 +22,34 @@ const CreditCards = () => {
   const isBlack = [false, false, true];
   const isFade = [true, false, false];
   const isSimGray = [false, false, true];
+
   return (
     <div className="w-[96%] flex flex-col grow gap-6 p-8 pt-6">
-      <div className="cards-container w-full cente-Content flex flex-col gap-6">
+      <div className="cards-container w-full flex flex-col gap-6">
         <p className="flex grow page text-xl font-semibold text-colorBody-1 dark:text-gray-300">
           My Cards
         </p>
-        <div className="flex gap-6">
-          <>
-            {CardData?.slice(0, 3).map((item, index) => (
-              <VisaCard
-                key={index}
-                data={item}
-                isBlack={isBlack[index] || false}
-                isFade={isFade[index] || false}
-                isSimGray={isSimGray[index] || false}
-              />
-            ))}
-          </>
+        <div className="flex gap-6 overflow-x-auto sm:scroll-snap-x">
+          {CardData?.slice(0, 3).map((item, index) => (
+            <VisaCard
+              key={index}
+              data={item}
+              isBlack={isBlack[index] || false}
+              isFade={isFade[index] || false}
+              isSimGray={isSimGray[index] || false}
+              className="flex-shrink-0 sm:w-auto"
+            />
+          ))}
         </div>
       </div>
-      <div className="flex w-full gap-6 text-nowrap">
-        <div className="expense flex w-[33%] flex-col gap-5 ">
+      <div className="flex flex-col lg:flex-row w-full gap-6 text-nowrap">
+        <div className="expense flex w-full lg:w-[33%] flex-col gap-5 ">
           <h2 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
             Card Expense Statistics
           </h2>
           <ExpenseChart />
         </div>
-        <div className="cardlist w-[67%] flex flex-col gap-6">
+        <div className="cardlist w-full lg:w-[60%] flex flex-col gap-6">
           <h2 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
             Card List
           </h2>
@@ -130,14 +128,14 @@ const CreditCards = () => {
           /> */}
         </div>
       </div>
-      <div className="flex w-full gap-10">
-        <div className="w-[67%] flex flex-col gap-6">
+      <div className="flex flex-col lg:flex-row w-full gap-10">
+        <div className="w-full lg:w-[67%] flex flex-col gap-6">
           <h2 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
             Add New Card
           </h2>
           <AddCard />
         </div>
-        <div className="w-[33%] flex flex-col gap-6">
+        <div className="w-full lg:w-[40%] flex flex-col gap-6">
           <h2 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
             Card Setting
           </h2>

@@ -63,6 +63,7 @@ const handleRequest = async <T>(
         "Content-Type": "application/json",
       },
     });
+    console.log(response)
     return response.data as T;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -76,9 +77,9 @@ const handleRequest = async <T>(
 
 // AuthService class
 class AuthService {
-  public static register(
-    formData: UserValue
-  ): Promise<RegisterResponse> {
+  public static register(formData: UserValue): Promise<RegisterResponse> {
+
+    
     return handleRequest<RegisterResponse>(
       "POST",
       `${API_URL}/register`,

@@ -9,7 +9,9 @@ import { useState, useEffect } from "react";
 import useUserDispatch from "@/app/Redux/Dispacher/useUserDispach";
 import { useAppSelector } from "@/app/Redux/store/store";
 import { InvestmentData } from "@/app/Redux/slices/userSlice";
+import { useSession } from "next-auth/react";
 const InvestmentPage = () => {
+  const { data: session } = useSession();
   const data1 = [
     ["01.", "Trivago", "$520", "+5%"],
     [" 02.", "Canon", "$480", " +10%"],

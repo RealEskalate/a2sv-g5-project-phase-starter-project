@@ -20,30 +20,28 @@ export default function Home() {
             amount="$12,750"
             color="#FFF5D9"
             icon="/assets/money-tag 1.svg"
-            width="w-[45%]"
+            width="w-full"
           />
           <Card
             title="Income"
             amount="$5,600"
             color="#E7EDFF"
             icon="/assets/expense.svg"
-            width="w-[45%]"
+            width="w-full"
           />
-        </div>
-        <div className="flex  lg:w-[45%] gap-4 xl:gap-7">
           <Card
             title="Expense"
             amount="$3,460"
             color="#FFE0EB"
             icon="/assets/income.svg"
-            width="w-[45%]"
+            width="w-full"
           />
           <Card
             title="Total Saving"
             amount="$7,920"
             color="#DCFAF8"
             icon="/assets/saving.svg"
-            width="w-[45%]"
+            width="w-full"
           />
         </div>
       </div>

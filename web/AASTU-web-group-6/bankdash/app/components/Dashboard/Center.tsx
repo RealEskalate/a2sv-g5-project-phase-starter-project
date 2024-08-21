@@ -17,9 +17,9 @@ import {
 
 const Center = () => {
   const { data: session } = useSession();
-  const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyNDA1OTg3NCwiZXhwIjoxNzI0MTQ2Mjc0fQ.WaIY6V_s4DOLHr5xWeAhzJJf-QYudYl4xBNVunA4rd8tJnobKUgsSlWk7tSyRpbZ";
+  const accessToken = session?.accessToken as string;
 
+  console.log(session?.accessToken, "token");
   // Update initial card and tran data using the custom hook
   useCardDispatch(accessToken);
   useTranDispatch(accessToken);
@@ -30,14 +30,10 @@ const Center = () => {
   );
   const cardColor = [false, true];
 
-  // console.log(CardData, "from redux");
-  // console.log(TranData, "from redux Tr");
-  // console.log(BalanceData, "from redux Bala");
-
   return (
     <>
-      <section className="flex gap-6 xs:flex-col lg:flex-row">
-        <div className="cards-container sm:w-full lg:w-[67%] cente-Content flex flex-col gap-6 ">
+      <section className="flex gap-6 overflow-x-hidden xxs:flex-col lg:flex-row">
+        <div className="cards-container xxs:w-full lg:w-[67%] cente-Content flex flex-col xxs:gap-4 md:gap-6 ">
           <div className="card-box flex w-full items-center justify-between">
             <h1 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
               My Cards
@@ -50,7 +46,7 @@ const Center = () => {
             </Link>
           </div>
 
-          <div className="flex gap-6 grow w-full scrollbar-hide overflow-x-auto xs:scrollB xs:w-[360] sm:overflow-hidden sm:w-auto">
+          <div className="flex gap-6 py-2 grow scrollbar-hide xxs:justify-start xxs:overflow-x-auto sm:overflow-hidden sm:w-full sm:overflow-x-hidden">
             <>
               {CardData?.slice(0, 2).map((item, index) => (
                 <VisaCard
@@ -67,7 +63,7 @@ const Center = () => {
         <RecentTr />
       </section>
 
-      <section className="flex gap-6 grow xs:flex-col  lg:flex-row">
+      <section className="flex gap-6 grow xxs:flex-col  lg:flex-row">
         <div className="Weekly-container w-full cente-Content flex flex-col gap-6 ">
           <h1 className="flex grow page text-xl font-semibold text-colorBody-1 dark:text-gray-300">
             Weekly Activity

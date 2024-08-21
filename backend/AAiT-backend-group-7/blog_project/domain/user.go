@@ -39,11 +39,12 @@ type IUserUsecase interface {
 	DeleteUser(ctx context.Context, id int) error
 	AddBlog(ctx context.Context, userID int, blog Blog) (User, error)
 	DeleteBlog(ctx context.Context, userID int, blogID int) (User, error)
-	Login(ctx context.Context, username, password string) (User, error)
+	Login(ctx context.Context, username, password string) (string, string, error)
 	ForgetPassword(ctx context.Context, email string) error
 	ResetPassword(ctx context.Context, username, password string) error
 	PromoteUser(ctx context.Context, userID int) (User, error)
 	DemoteUser(ctx context.Context, userID int) (User, error)
+	RefreshToken(ctx context.Context, refreshToken string) (string, error)
 }
 
 type IUserController interface {

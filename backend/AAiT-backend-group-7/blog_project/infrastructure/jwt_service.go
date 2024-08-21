@@ -8,6 +8,7 @@ import (
 
 	"blog_project/domain"
 )
+
 func GenerateJWTAccessToken(user *domain.User, accessTokenSecret string, accessTokenExpiryHour int) (string, error) {
 	// Set token expiry time
 	expirationTime := time.Now().Add(time.Hour * time.Duration(accessTokenExpiryHour)).Unix()
@@ -34,49 +35,49 @@ func GenerateJWTAccessToken(user *domain.User, accessTokenSecret string, accessT
 }
 
 func GenerateJWTRefreshToken(user *domain.User, refreshTokenSecret string, refreshTokenExpiryHours int) (string, error) {
-    // Set token expiry time
-    expirationTime := time.Now().Add(time.Hour * time.Duration(refreshTokenExpiryHours)).Unix()
+	// Set token expiry time
+	expirationTime := time.Now().Add(time.Hour * time.Duration(refreshTokenExpiryHours)).Unix()
 
-    // Create JWT claims with minimal information
-    claimsRefresh := jwt.MapClaims{
-        "id":  user.ID,
-        "exp": expirationTime,
-        "iat": time.Now().Unix(), // Issued at claim
-    }
+	// Create JWT claims with minimal information
+	claimsRefresh := jwt.MapClaims{
+		"id":  user.ID,
+		"exp": expirationTime,
+		"iat": time.Now().Unix(), // Issued at claim
+	}
 
-    // Create the refresh token with claims and signing method
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claimsRefresh)
+	// Create the refresh token with claims and signing method
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claimsRefresh)
 
-    // Sign the token with the secret
-    refreshToken, err := token.SignedString([]byte(refreshTokenSecret))
-    if err != nil {
-        return "", err
-    }
+	// Sign the token with the secret
+	refreshToken, err := token.SignedString([]byte(refreshTokenSecret))
+	if err != nil {
+		return "", err
+	}
 
-    return refreshToken, nil
+	return refreshToken, nil
 }
-func IsAuthorized(requestToken string, secret string) (bool, error) {
-    token, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
-        // Verify the signing method
-        if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-            return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-        }
-        return []byte(secret), nil
-    })
+func ValidateToken(requestToken string, secret string) (*jwt.Token, error) {
+	token, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
+		// Verify the signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(secret), nil
+	})
 
-    if err != nil {
-        return false, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    // Check if the token is valid and contains claims
-    if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-        if exp, ok := claims["exp"].(float64); ok {
-            if time.Unix(int64(exp), 0).Before(time.Now()) {
-                return false, fmt.Errorf("token has expired")
-            }
-        }
-        return true, nil
-    }
+	// Check if the token is valid and contains claims
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if exp, ok := claims["exp"].(float64); ok {
+			if time.Unix(int64(exp), 0).Before(time.Now()) {
+				return nil, fmt.Errorf("token has expired")
+			}
+		}
+		return nil, nil
+	}
 
-    return false, fmt.Errorf("invalid token")
+	return token, nil
 }

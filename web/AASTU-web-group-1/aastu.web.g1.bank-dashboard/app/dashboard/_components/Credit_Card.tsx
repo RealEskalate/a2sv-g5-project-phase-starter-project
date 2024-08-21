@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { CardDetails } from "@/types";
 import Image from "next/image";
 import React from "react";
@@ -33,50 +33,59 @@ const CreditCard: React.FC<CardDetails> = ({
       textColor = "text-black";
       break;
     default:
-      bgColor = "bg-white"; 
+      bgColor = "bg-white";
       textColor = "text-black";
   }
-  const {isDarkMode} = useUser();
+
+  const { isDarkMode } = useUser();
+
   return (
     <div
-      className={` min-w-[300px] h-55 ${bgColor} rounded-2xl pt-3 space-y-5 ${!isDarkMode ? "border border-gray-300":""} `}
+      className={`min-w-[300px] h-56  md:w-[350px] md:h-[220px] ${bgColor} rounded-3xl pt-3 sm:space-y-8 md:space-y-6 ${
+        !isDarkMode ? "border border-gray-300" : ""
+      }`}
     >
       <div className="flex justify-between px-5">
-        <div className={`block ${textColor} space-y-[1px]`}>
-          <p className="text-[11px] font-lato font-normal ">Balance</p>
-          <p className="text-[16px] font-lato font-semibold">${balance}</p>
+        <div className={`block ${textColor} space-y-1`}>
+          <p className="text-[11px] md:text-[12px] font-lato font-normal">
+            Balance
+          </p>
+          <p className="text-[16px] md:text-[18px] font-lato font-semibold">
+            ${balance}
+          </p>
         </div>
-        <FcSimCardChip size={30} />
+        <FcSimCardChip size={50} />
       </div>
 
       <div className="flex px-5">
-        <div className="w-[60%] block space-y-[1px]">
-          <p className="text-[10px] text-gray-400 gont-lato font-normal">
+        <div className="w-[60%] block space-y-1">
+          <p className="text-[10px] md:text-[11px] text-gray-400 font-lato font-normal">
             CARD HOLDER
           </p>
-          <p className={`text-[13px] ${textColor} font-lato font-semibold`}>
+          <p
+            className={`text-[13px] md:text-[14px] ${textColor} font-lato font-semibold`}
+          >
             {cardHolder}
           </p>
         </div>
-        <div className="block space-y-[1px]">
-          <p className="text-[10px] text-gray-400 font-lato font-normal">
+        <div className="block space-y-1">
+          <p className="text-[10px] md:text-[11px] text-gray-400 font-lato font-normal">
             Exp. Date
           </p>
-          <p className={`text-[13px] ${textColor} font-lato font-semibold`}>
+          <p
+            className={`text-[13px] md:text-[14px] ${textColor} font-lato font-semibold`}
+          >
             {formatDateString(expiryDate)}
           </p>
         </div>
       </div>
 
-      <div className="relative">
+     
         <div
-          className={`absolute top-0 left-0 w-full h-1/3 backdrop-blur-[1px] bg-gradient-to-b from-white/30 to-transparent
-           ${bgColor === "bg-white" ? "border-t" : ""}`}
-        ></div>
-
-        <div className="relative flex justify-between px-5 items-center py-5">
+          className={`flex justify-between px-5 items-center md:space-y-1  py-5 backdrop-blur-[3px] bg-gradient-to-r from-white/30 to-white/5 rounded-b-3xl`}
+        >
           <p
-            className={`text-[15px] ${textColor} font-lato font-semibold w-[80%]`}
+            className={`text-[15px] md:text-[16px] ${textColor} font-lato font-semibold w-[80%]`}
           >
             {maskCardNumber(semiCardNumber)}
           </p>
@@ -87,11 +96,11 @@ const CreditCard: React.FC<CardDetails> = ({
                 : "/icons/cardgray.svg"
             }`}
             alt={"transaction"}
-            width={27}
-            height={18}
+            width={30}
+            height={20}
           />
         </div>
-      </div>
+    
     </div>
   );
 };

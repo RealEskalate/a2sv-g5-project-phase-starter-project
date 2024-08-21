@@ -15,7 +15,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined)
 export const UserProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
- const [isDarkMode,setIsDarkMode] = useState<boolean>(true)
+ const [isDarkMode,setIsDarkMode] = useState<boolean>(false)
   return (
     <UserContext.Provider value={{ isDarkMode, setIsDarkMode }}>
       {children}

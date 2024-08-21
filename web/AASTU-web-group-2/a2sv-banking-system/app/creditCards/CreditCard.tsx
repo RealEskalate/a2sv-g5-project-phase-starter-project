@@ -10,11 +10,11 @@ const CreditCard = ({ icon, data, linkUrl }: Props) => {
   return (
     <div className="flex justify-around items-center bg-white p-3 lg:p-4 rounded-2xl shadow-sm">
       {icon}
-      <div className="flex gap-6">
+      <div className="flex gap-9">
         {data.map((data, index) => {
           return (
             <div className={`${index > 1 && "hidden"}  lg:block`} key={index}>
-              <p className="text-[#232323] font-medium text-sm w-20 lg:text-base">
+              <p className="text-[#232323] font-medium text-sm lg:text-base">
                 {data[0]}
               </p>
               <p className="text-[#8297c0] text-xs lg:text-sm">{data[1]}</p>

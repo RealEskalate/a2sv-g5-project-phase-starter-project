@@ -21,7 +21,7 @@ const InvestmentPage = () => {
   const [error, setError] = useState<string>("");
 
   const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyNDA1OTg3NCwiZXhwIjoxNzI0MTQ2Mjc0fQ.WaIY6V_s4DOLHr5xWeAhzJJf-QYudYl4xBNVunA4rd8tJnobKUgsSlWk7tSyRpbZ";
+    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuYXR0eSIsImlhdCI6MTcyNDE2Nzc2NiwiZXhwIjoxNzI0MjU0MTY2fQ.AIG9ss3XGUA3sOEJHOVwdkP7RJS0SbWcjGGe8FoAuMZmOywhutvl2CyyNDDc4qzz";
 
   useUserDispatch(accessToken);
   const investmentData: InvestmentData = useAppSelector(

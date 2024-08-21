@@ -29,25 +29,25 @@ const DescriptionCard: React.FC<DescriptionCardProps> = ({
 }) => {
   console.log(img);
   return (
-    <div className="lg:ml-10 mb-5 flex items-center justify-between h-24 bg-white gap-5 border rounded-3xl lg:w-[1300px]">
+    <div className="mb-5 flex items-center grow justify-between h-24 bg-white gap-5 border rounded-3xl xs:w-full md:w-full lg:w-full">
       <div className={`{icon rounded-full p-3 ${color} ml-4`}>
         <img src={img} alt="" />
       </div>
-      <div>
-        <p className="font-semibold text-base text-[#232323] lg:-ml-36">
+      <div className="flex flex-col">
+        <p className="font-semibold text-base text-[#232323] ">
           {title}
         </p>
-        <p className="text-[#718EBF] lg:-ml-36 text-[15px]">{desc}</p>
+        <p className="text-[#718EBF] text-[15px]">{desc}</p>
       </div>
-      <div className="hidden lg:block">
+      <div className=" flex flex-col hidden lg:flex">
         <p className="font-semibold text-base text-[#232323]">{colOne}</p>
         <p className="text-[#718EBF] text-[15px]">{descOne}</p>
       </div>
-      <div className="hidden lg:block">
+      <div className="flex flex-col hidden lg:flex">
         <p className="font-semibold text-base text-[#232323]">{colTwo}</p>
         <p className="text-[#718EBF] text-[15px]">{descTwo}</p>
       </div>
-      <div className="hidden lg:block">
+      <div className="flex flex-col hidden lg:flex">
         <p className="font-semibold text-base text-[#232323]">{colThree}</p>
         <p className="text-[#718EBF] text-[15px]">{descThree}</p>
       </div>

@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type BlogMongoRepository struct {
@@ -53,7 +54,15 @@ func (br *BlogMongoRepository) GetBlog(ctx context.Context, id string) (*models.
 }
 
 func (br *BlogMongoRepository) GetBlogs(ctx context.Context , page int) ([]*models.Blog, *models.ErrorResponse) {
-	cursor, err := br.BlogCollection.Find(ctx, bson.M{})
+	pageSize := 10
+	skip := (page - 1) * pageSize
+
+	// Define find options with limit and skip for pagination
+	findOptions := options.Find()
+	findOptions.SetLimit(int64(pageSize))
+	findOptions.SetSkip(int64(skip))
+
+	cursor, err := br.BlogCollection.Find(ctx, bson.M{}, findOptions)
 	if err != nil {
 		return nil, models.InternalServerError("Failed to retrieve blogs")
 	}
@@ -158,13 +167,8 @@ func (br *BlogMongoRepository) UpdateBlog(ctx context.Context, blogID string, bl
 }
 
 func (br *BlogMongoRepository) DeleteBlog(ctx context.Context, id string) *models.ErrorResponse {
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return models.BadRequest("Invalid blog ID")
-	}
-
-	filter := bson.M{"_id": objID}
-	_, err = br.BlogCollection.DeleteOne(ctx, filter)
+	filter := bson.M{"_id": id}
+	_, err := br.BlogCollection.DeleteOne(ctx, filter)
 	if err != nil {
 		return models.InternalServerError("Failed to delete blog")
 	}

@@ -3,14 +3,18 @@ package userusecase
 import (
 	"blogs/config"
 	"blogs/domain"
+	"log"
 )
 
 func (u *UserUsecase) LoginUser(usernameoremail string, password string) (string, string, error) {
 	user, err := u.UserRepo.GetUserByUsernameorEmail(usernameoremail)
 	if err != nil {
+		log.Println(err,"email or username not found")
 		return "", "", config.ErrIncorrectPassword
 	}
 
+
+	// Check if the user is verified
 	if !user.IsVerified {
 		return "", "", config.ErrUserNotVerified
 	}
@@ -18,6 +22,7 @@ func (u *UserUsecase) LoginUser(usernameoremail string, password string) (string
 	// Compare the hashed password
 	err = config.ComparePassword(user.Password, password)
 	if err != nil {
+		log.Println(err,"password incorrect")
 		return "", "", config.ErrIncorrectPassword
 	}
 

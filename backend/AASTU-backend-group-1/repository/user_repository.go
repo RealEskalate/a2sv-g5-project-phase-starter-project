@@ -5,6 +5,7 @@ import (
 	"blogs/domain"
 	"context"
 	"fmt"
+	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -88,6 +89,9 @@ func (ur *UserRepository) RegisterUser(user *domain.User) error {
 func (ur *UserRepository) GetUserByUsernameorEmail(usernameoremail string) (*domain.User, error) {
 	cachedKey := fmt.Sprintf("user:%s", usernameoremail)
 	cachedUser, err := ur.cache.GetCache(cachedKey)
+	if err != nil {
+		log.Println(err,"error getting cache top")
+	}
 	if err == nil && cachedUser != "" {
 		var user domain.User
 		err := bson.UnmarshalExtJSON([]byte(cachedUser),true,&user)
@@ -113,6 +117,8 @@ func (ur *UserRepository) GetUserByUsernameorEmail(usernameoremail string) (*dom
 	userJSON, err := bson.MarshalExtJSON(user,true,true)
 	if err == nil {
 		err = ur.cache.SetCache(cachedKey,string(userJSON))
+		log.Println(err,"error setting cache")
+		log.Println(cachedUser,"cached user")
 		if err != nil {
 			return nil, err
 		}
@@ -215,7 +221,7 @@ func (ur *UserRepository) GetTokenByUsername(username string) (*domain.Token, er
 			return nil, err
 		}
 	}
-	
+
 
 	return &token, nil
 }

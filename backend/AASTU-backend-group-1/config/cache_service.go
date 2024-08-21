@@ -1,30 +1,32 @@
 package config
 
 import (
-	"github.com/go-redis/redis/v8"
 	"context"
-)
+	// "log"
 
+	"github.com/go-redis/redis/v8"
+)
 
 type RedisCache struct {
 	client *redis.Client
-	ctx   context.Context
+	ctx    context.Context
 }
 
 func NewRedisCache() *RedisCache {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost :6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
 	})
 
 	return &RedisCache{
 		client: rdb,
-		ctx:   context.Background(),
+		ctx:    context.Background(),
 	}
 }
 
 func (r *RedisCache) GetCache(key string) (string, error) {
+
 	val, err := r.client.Get(r.ctx, key).Result()
 	if err != nil {
 		return "", err
@@ -33,6 +35,7 @@ func (r *RedisCache) GetCache(key string) (string, error) {
 }
 
 func (r *RedisCache) SetCache(key string, value string) error {
+
 	err := r.client.Set(r.ctx, key, value, 0).Err()
 	if err != nil {
 		return err
@@ -41,6 +44,7 @@ func (r *RedisCache) SetCache(key string, value string) error {
 }
 
 func (r *RedisCache) DeleteCache(key string) error {
+
 	err := r.client.Del(r.ctx, key).Err()
 	if err != nil {
 		return err

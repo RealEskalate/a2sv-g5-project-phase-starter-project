@@ -209,10 +209,8 @@ func (b *BlogRepository) GetBlogsByPopularity(page, limit int, reverse bool) ([]
 		if err == nil {
 			return blogs, nil
 		}
-		// Handle unmarshalling error if needed (optional)
 	}
 
-	// Proceed to database query if cache miss
 	var blogs []*domain.Blog
 
 	// Calculate how many documents to skip
@@ -224,64 +222,19 @@ func (b *BlogRepository) GetBlogsByPopularity(page, limit int, reverse bool) ([]
 
 	// MongoDB aggregation pipeline with pagination
 	pipeline := mongo.Pipeline{
-		bson.D{
-			{Key: "$lookup", Value: bson.D{
-				{Key: "from", Value: "likes"},
-				{Key: "localField", Value: "_id"},
-				{Key: "foreignField", Value: "blogid"},
-				{Key: "as", Value: "likes"},
-			}},
-		},
-		bson.D{
-			{Key: "$lookup", Value: bson.D{
-				{Key: "from", Value: "views"},
-				{Key: "localField", Value: "_id"},
-				{Key: "foreignField", Value: "blogid"},
-				{Key: "as", Value: "views"},
-			}},
-		},
-		bson.D{
-			{Key: "$lookup", Value: bson.D{
-				{Key: "from", Value: "comments"},
-				{Key: "localField", Value: "_id"},
-				{Key: "foreignField", Value: "blogid"},
-				{Key: "as", Value: "comments"},
-			}},
-		},
-		bson.D{
-			{Key: "$addFields", Value: bson.D{
-				{Key: "likesCount", Value: bson.D{
-					{Key: "$size", Value: bson.D{
-						{Key: "$filter", Value: bson.D{
-							{Key: "input", Value: "$likes"}, // Correct array name from lookup
-							{Key: "as", Value: "like"},
-							{Key: "cond", Value: bson.D{
-								{Key: "$eq", Value: bson.A{"$$like.like", true}}, // Counting only likes with `like: true`
-							}},
-						}},
-					}},
-				}},
-				{Key: "viewsCount", Value: bson.D{
-					{Key: "$size", Value: "$views"}, // Count the number of views
-				}},
-				{Key: "commentsCount", Value: bson.D{
-					{Key: "$size", Value: "$comments"}, // Count the number of comments
-				}},
-			}},
-		},
 		// Add popularityScore field based on weights for views, likes, comments
 		bson.D{
 			{Key: "$addFields", Value: bson.D{
 				{Key: "popularityScore", Value: bson.D{
 					{Key: "$add", Value: bson.A{
-						bson.D{{Key: "$multiply", Value: bson.A{"$viewsCount", 0.5}}},
-						bson.D{{Key: "$multiply", Value: bson.A{"$likesCount", 1}}},
-						bson.D{{Key: "$multiply", Value: bson.A{"$commentsCount", 2}}},
+						bson.D{{Key: "$multiply", Value: bson.A{"$views_count", 0.5}}},
+						bson.D{{Key: "$multiply", Value: bson.A{"$likes_count", 1}}},
+						bson.D{{Key: "$multiply", Value: bson.A{"$comments_count", 2}}},
 					}},
 				}},
 			}},
 		},
-		// Sort by popularity score in descending order
+		// Sort by popularity score
 		bson.D{
 			{Key: "$sort", Value: bson.D{
 				{Key: "popularityScore", Value: sortOrder},
@@ -317,6 +270,7 @@ func (b *BlogRepository) GetBlogsByPopularity(page, limit int, reverse bool) ([]
 
 	return blogs, nil
 }
+
 
 
 func (b *BlogRepository) GetBlogsByRecent(page, limit int, reverse bool) ([]*domain.Blog, error) {
@@ -417,10 +371,16 @@ func (b *BlogRepository) AddLike(like *domain.Like) error {
 
 // RemoveLike removes a like by blogID and author from the database.
 func (b *BlogRepository) RemoveLike(blogID string, author string) error {
-    filter := bson.M{"blogid": blogID, "user": author}
-    _, err := b.likeCollection.DeleteOne(context.Background(), filter)
-    return err
-}
+	id, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+	  return err
+	}
+	filter := bson.M{"blogid": id, "user": author}
+  
+	_, err = b.likeCollection.DeleteOne(context.Background(), filter)
+	return err
+  }
+  
 
 // AddComment implements domain.BlogRepository.
 func (b *BlogRepository) AddComment(comment *domain.Comment) error {

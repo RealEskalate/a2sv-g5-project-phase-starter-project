@@ -36,21 +36,24 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 	}
 
 	var userData struct {
-		FirstName string `json:"firstname"`
-		LastName  string `json:"lastname"`
-		Username  string `json:"username" `
-		Password  string `json:"password"`
-		Email     string `json:"email"`
-		Bio       string `json:"bio"`
-		Avatar    string `json:"avatar"`
-		Address   string `json:"address"`
+		FirstName string `form:"firstname"`
+		LastName  string `form:"lastname"`
+		Bio       string `form:"bio"`
+		Username  string `form:"username"`
+		Password  string `form:"password"`
+		Email     string `form:"email"`
+		Address   string `form:"address"`
+		Avatar	string `form:"avatar"`
 	}
 
-	err = ctx.ShouldBindJSON(&userData)
+	err = ctx.ShouldBind(&userData)
 	if err != nil {
+		log.Print(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
+
+	log.Println("User data:", userData)
 
 	if userData.Username == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "username is required"})
@@ -91,6 +94,7 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 		code := config.GetStatusCode(err)
 
 		if code == http.StatusInternalServerError {
+			log.Println(err)
 			ctx.JSON(code, gin.H{"error": "Internal server error"})
 			return
 		}

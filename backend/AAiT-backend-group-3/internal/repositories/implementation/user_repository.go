@@ -12,15 +12,24 @@ import (
 type MongoUserRepository struct {
 	collection *mongo.Collection
 }
+
 func NewMongoUserRepository(db *mongo.Database, collectionName string) repository_interface.UserRepositoryInterface {
 	return &MongoUserRepository{
 		collection: db.Collection(collectionName),
 	}
 }
 
-func (r *MongoUserRepository) SignUp(user *models.User) error {
-	_, err := r.collection.InsertOne(ctx, user)
-	return err
+func (r *MongoUserRepository) SignUp(user *models.User) (*models.User, error) {
+	var insertedUser models.User
+	result, err := r.collection.InsertOne(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	err = r.collection.FindOne(ctx, bson.M{"_id":result.InsertedID}).Decode(&insertedUser)
+	if err != nil {
+        return nil, err
+    }
+    return &insertedUser, nil
 }
 
 func (r *MongoUserRepository) GetUserByID(id primitive.ObjectID) (*models.User, error) {
@@ -30,6 +39,21 @@ func (r *MongoUserRepository) GetUserByID(id primitive.ObjectID) (*models.User, 
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (repo *MongoUserRepository) GetAllUsers() ([]*models.User, error) {
+    var users []*models.User
+    cursor, err := repo.collection.Find(ctx, bson.M{})
+    if err != nil {
+        return nil, err
+    }
+    defer cursor.Close(ctx) 
+
+    err = cursor.All(ctx, &users)
+    if err != nil {
+        return nil, err
+    }
+    return users, nil
 }
 
 func (r *MongoUserRepository) GetUserByEmail(email string) (*models.User, error) {

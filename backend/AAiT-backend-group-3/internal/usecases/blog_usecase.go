@@ -3,6 +3,8 @@ package usecases
 import (
 	"AAIT-backend-group-3/internal/domain/models"
 	repository_interface "AAIT-backend-group-3/internal/repositories/interfaces"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 type BlogUsecase struct {
 	blogRepo repository_interface.BlogRepositoryInterface
@@ -19,7 +21,11 @@ func (u *BlogUsecase) CreateBlog(blog *models.Blog, authorID string) error {
 }
 
 func (u *BlogUsecase) GetBlogByID(blogID string) (*models.Blog, error) {
-	return u.blogRepo.GetBlogByID(blogID)
+	blog_id, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return nil, err
+	}
+	return u.blogRepo.GetBlogByID(blog_id)
 }
 
 func (u *BlogUsecase) GetBlogs(filter map[string]interface{}, search string, page int, limit int) ([]*models.Blog, error) {

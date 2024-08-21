@@ -3,7 +3,6 @@ package infrastructure
 import (
 	"context"
 	"fmt"
-	"log"
 
 	config "github.com/aait.backend.g5.main/backend/Config"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
@@ -35,8 +34,8 @@ func (uc *urlService) GenerateURL(token string, purpose string) (string, *models
 	}
 
 	if err := uc.repo.SaveURL(url, uc.ctx); err != nil {
-		log.Println("Error while saving the URL" + err.Error())
-		return "", models.InternalServerError("Error while saving the URL" + err.Error())
+		fmt.Println("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+		return "", models.InternalServerError("Error while saving the URL")
 	}
 
 	return baseUrl + "/" + purpose + "/" + short_url_code, nil

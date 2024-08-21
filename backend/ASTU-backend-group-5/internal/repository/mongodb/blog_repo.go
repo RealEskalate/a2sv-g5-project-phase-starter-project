@@ -65,6 +65,7 @@ func (r *MongoBlogRepository) UpdateBlog(ctx context.Context, id string, blog *d
 
 	filter := bson.M{"_id": objectID}
 	update := bson.M{"$set": blog}
+	blog.ID = objectID
 	_, err = r.blogsCollection.UpdateOne(ctx, filter, update)
 	return err
 }
@@ -339,4 +340,80 @@ func (r *MongoBlogRepository) GetTagByID(ctx context.Context, id string) (*domai
 		return nil, err
 	}
 	return &tag, nil
+}
+
+func (r *MongoBlogRepository) HasUserLikedBlog(ctx context.Context, userID string, blogID string) (bool, error) {
+	userIdObj, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return true, err
+	}
+	blogIdObj, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return true, err
+	}
+
+	count, err := r.likesCollection.CountDocuments(ctx, bson.M{"blog_id": blogIdObj, "user_id": userIdObj})
+	if err != nil {
+		return true, err
+	}
+	return count > 0, nil
+}
+
+func (r *MongoBlogRepository) HasUserViewedBlog(ctx context.Context, userID string, blogID string) (bool, error) {
+	userIdObj, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return true, err
+	}
+	blogIdObj, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return true, err
+	}
+
+	count, err := r.viewsCollection.CountDocuments(ctx, bson.M{"blog_id": blogIdObj, "user_id": userIdObj})
+	if err != nil {
+		return true, err
+	}
+
+	return count > 0, nil
+}
+
+func (r *MongoBlogRepository) RemoveLike(ctx context.Context, likeId primitive.ObjectID) error {
+	_, err := r.likesCollection.DeleteOne(ctx, bson.M{"_id": likeId})
+	return err
+
+}
+
+func (r *MongoBlogRepository) DeleteComment(ctx context.Context, commentId primitive.ObjectID) error {
+	_, err := r.commentsCollection.DeleteOne(ctx, bson.M{"_id": commentId})
+	return err
+}
+
+func (r *MongoBlogRepository) GetLikeById(ctx context.Context, likeId string) (*domain.Like, error) {
+	objectId, _ := primitive.ObjectIDFromHex(likeId)
+	var like domain.Like
+	err := r.likesCollection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&like)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &like, nil
+}
+
+func (r *MongoBlogRepository) GetCommentById(ctx context.Context, commentId string) (*domain.Comment, error) {
+	objectID, err := primitive.ObjectIDFromHex(commentId)
+	if err != nil {
+		return nil, err
+	}
+
+	var comment domain.Comment
+	err = r.commentsCollection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&comment)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &comment, nil
 }

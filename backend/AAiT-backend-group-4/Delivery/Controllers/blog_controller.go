@@ -4,6 +4,7 @@ import (
 	domain "aait-backend-group4/Domain"
 	"net/http"
 	"time"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -86,7 +87,21 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 
 // FetchAll handles fetching all blogs
 func (bc *BlogController) FetchAll(c *gin.Context) {
-	blogs, err := bc.BlogUsecase.FetchAll(c)
+
+	limitParam := c.DefaultQuery("limit", "10") 
+	pageParam := c.DefaultQuery("page", "1") 
+
+	limit, err := strconv.Atoi(limitParam)
+	if err != nil || limit <= 0 {
+		limit = 10 
+	}
+
+	page, err := strconv.Atoi(pageParam)
+	if err != nil || page <= 0 {
+		page = 1 
+	}
+
+	blogs, err := bc.BlogUsecase.FetchAll(c, limit, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -99,8 +114,20 @@ func (bc *BlogController) FetchAll(c *gin.Context) {
 func (bc *BlogController) FetchByBlogAuthor(c *gin.Context) {
 	
 	authorID := c.Param("author_id")
+	limitParam := c.DefaultQuery("limit", "10") 
+	pageParam := c.DefaultQuery("page", "1") 
 
-	blogs, err := bc.BlogUsecase.FetchByBlogAuthor(c, authorID)
+	limit, err := strconv.Atoi(limitParam)
+	if err != nil || limit <= 0 {
+		limit = 10 
+	}
+
+	page, err := strconv.Atoi(pageParam)
+	if err != nil || page <= 0 {
+		page = 1 
+	}
+
+	blogs, err := bc.BlogUsecase.FetchByBlogAuthor(c, authorID, limit, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -182,30 +209,44 @@ func (bc *BlogController) RemoveComment(c *gin.Context) {
 }
 
 // UpdateFeedback handles updating feedback on a blog
-func (bc *BlogController) UpdateFeedback(c *gin.Context) {
-	blogID := c.Param("id")
-	var feedback domain.Feedback
+// func (bc *BlogController) UpdateFeedback(c *gin.Context) {
+// 	blogID := c.Param("id")
+// 	var feedback domain.Feedback
 
-	if err := c.ShouldBindJSON(&feedback); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+// 	if err := c.ShouldBindJSON(&feedback); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	updateFunc := func(fb *domain.Feedback) error {
-		*fb = feedback
-		return nil
-	}
+// 	updateFunc := func(fb *domain.Feedback) error {
+		// *fb = feedback
+// 		return nil
+// 	}
 
-	if err := bc.BlogUsecase.UpdateFeedback(c, blogID, updateFunc); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+// 	if err := bc.BlogUsecase.UpdateFeedback(c, blogID, updateFunc); err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Feedback updated successfully"})
-}
+// 	c.JSON(http.StatusOK, gin.H{"message": "Feedback updated successfully"})
+// }
 
 // SearchBlogs handles searching for blogs based on a filter
 func (bc *BlogController) SearchBlogs(c *gin.Context) {
+
+	limitParam := c.DefaultQuery("limit", "10") 
+	pageParam := c.DefaultQuery("page", "1") 
+
+	limit, err := strconv.Atoi(limitParam)
+	if err != nil || limit <= 0 {
+		limit = 10 
+	}
+
+	page, err := strconv.Atoi(pageParam)
+	if err != nil || page <= 0 {
+		page = 1 
+	}
+
 	var filter domain.Filter
 
 	if err := c.ShouldBindQuery(&filter); err != nil {
@@ -213,7 +254,7 @@ func (bc *BlogController) SearchBlogs(c *gin.Context) {
 		return
 	}
 
-	blogs, err := bc.BlogUsecase.SearchBlogs(c, filter)
+	blogs, err := bc.BlogUsecase.SearchBlogs(c, filter, limit, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

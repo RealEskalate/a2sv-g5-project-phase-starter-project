@@ -6,15 +6,18 @@ import (
 	"Blog_Starter/repository"
 	"Blog_Starter/usecase"
 	"time"
+	"Blog_Starter/config"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewBlogCommentRouter(timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
+func NewBlogCommentRouter(env *config.Env, timeout time.Duration, db *mongo.Client, group *gin.RouterGroup) {
 
-	cr := repository.NewCommentRepository(db, domain.CollectionComment)
-	br := repository.NewBlogRepository(db, domain.CollectionBlog)
-	bcu := usecase.NewCommentUseCase(cr, br, 100*time.Second)
+	database := db.Database(env.DBName) // Replace with your actual database name
+
+	cr := repository.NewCommentRepository(database, domain.CollectionComment)
+	br := repository.NewBlogRepository(database, domain.CollectionBlog)
+	bcu := usecase.NewCommentUseCase(cr, br, timeout)
 	cc := controller.NewBlogCommentController(bcu, timeout)
 
 	group.POST("/comment", cc.CreateComment)

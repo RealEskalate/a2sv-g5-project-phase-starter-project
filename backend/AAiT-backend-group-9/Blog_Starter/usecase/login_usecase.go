@@ -10,6 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+
 type LoginUseCase struct {
 	LoginRepository domain.LoginRepository
 	UserRepository domain.UserRepository

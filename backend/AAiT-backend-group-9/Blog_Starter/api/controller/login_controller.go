@@ -2,7 +2,6 @@ package controller
 
 import (
 	"Blog_Starter/domain"
-	"context"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -19,6 +18,7 @@ type LoginController struct {
 	OtpUsecase domain.OtpUsecase
 }
 
+
 func NewLoginController(LoginUsecase domain.LoginUsecase, OtpUsecase domain.OtpUsecase, UserUsecase  domain.UserUsecase) *LoginController {
 	return &LoginController{
 		LoginUsecase: LoginUsecase,
@@ -29,22 +29,22 @@ func NewLoginController(LoginUsecase domain.LoginUsecase, OtpUsecase domain.OtpU
 
 func (lc *LoginController) Login(c *gin.Context){
 	var request domain.UserLogin
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*100)
-	defer cancel()
+	
 	err:= c.BindJSON(&request)
 	if err!= nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error" : "cannot bind login request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error" : "Invalid request"})
 		return
 
 	}
+
 	request.Email = strings.ToLower(request.Email)
-	_,err2:= lc.UserUsecase.GetUserByEmail(ctx, request.Email)
-	if err2!=nil{
+	_,err = lc.UserUsecase.GetUserByEmail(c, request.Email)
+	if err !=nil{
 		c.JSON(http.StatusNotFound, gin.H{"error" : "email not found during login"})
 		return
 	}
 
-	loginResponse,err := lc.LoginUsecase.Login(ctx, &request)
+	loginResponse,err := lc.LoginUsecase.Login(c, &request)
 	if err!=nil{
 		c.JSON(http.StatusInternalServerError, gin.H{"error" : "email or password not found"})
 		return
@@ -54,15 +54,11 @@ func (lc *LoginController) Login(c *gin.Context){
 	// TODO: update tokens using the right method
 
 	c.JSON(http.StatusOK, loginResponse)
-	
-
-
 
 }
 
 func(lc *LoginController) ForgotPassword(c *gin.Context){
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*100)
-	defer cancel()
+
 	var request domain.ForgotPasswordRequest
 	err:= c.BindJSON(&request)
 	if err!=nil{
@@ -70,7 +66,7 @@ func(lc *LoginController) ForgotPassword(c *gin.Context){
 		return
 	}
 	request.Email = strings.ToLower(request.Email)
-	user, err := lc.UserUsecase.GetUserByEmail(ctx, request.Email)
+	user, err := lc.UserUsecase.GetUserByEmail(c, request.Email)
 	if err != nil {
 		c.JSON(http.StatusNotFound,gin.H{"error": "user not found with given email"})
 		return
@@ -87,7 +83,7 @@ func(lc *LoginController) ForgotPassword(c *gin.Context){
 		Expiration: time.Now().Add(5 * time.Minute),
 	}
 
-	oldOtp, err := lc.OtpUsecase.GetOtpByEmail(ctx, request.Email)
+	oldOtp, err := lc.OtpUsecase.GetOtpByEmail(c, request.Email)
 	if err == nil {
 		otp.ID = oldOtp.ID
 	} else {
@@ -95,7 +91,7 @@ func(lc *LoginController) ForgotPassword(c *gin.Context){
 	}
 
 	// Save OTP to database
-	err = lc.OtpUsecase.SaveOtp(ctx, &otp)
+	err = lc.OtpUsecase.SaveOtp(c, &otp)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error" : "couldnt save otp"})
 		return
@@ -105,8 +101,7 @@ func(lc *LoginController) ForgotPassword(c *gin.Context){
 }
 
 func (lc *LoginController) UpdatePassword(c *gin.Context){
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 100)
-	defer cancel()
+
 	var request domain.ChangePasswordRequest
 	err:= c.BindJSON(&request)
 	if err!=nil{
@@ -114,7 +109,7 @@ func (lc *LoginController) UpdatePassword(c *gin.Context){
 		return
 	}
 	userID := c.Param("user_id")
-	err2:= lc.LoginUsecase.UpdatePassword(ctx,request,userID)
+	err2:= lc.LoginUsecase.UpdatePassword(c,request,userID)
 	if err2!=nil{
 		c.JSON(http.StatusInternalServerError, gin.H{"error" : "password not updated"})
 		return 

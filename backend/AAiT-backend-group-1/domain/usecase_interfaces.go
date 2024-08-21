@@ -12,7 +12,7 @@ type UserUseCase interface {
 	RegisterEnd(cxt *gin.Context, token string) Error
 	Login(context context.Context, username, password string) (map[string]string, Error)
 	ForgotPassword(context context.Context, email string) Error
-	ResetPassword(newPassword, confirmPassword, token string, cxt *gin.Context) Error
+	ResetPassword(cxt *gin.Context, newPassword, confirmPassword, token string) Error
 	Logout(context context.Context, token map[string]string) Error
 	PromoteUser(context context.Context, userID string) Error
 	DemoteUser(context context.Context, userID string) Error
@@ -41,4 +41,3 @@ type BlogAssistantUseCase interface {
 	EnhanceBlog(content, command string) (map[string]interface{}, Error)
 	SuggestBlog(industry string) ([]map[string]interface{}, Error)
 }
-

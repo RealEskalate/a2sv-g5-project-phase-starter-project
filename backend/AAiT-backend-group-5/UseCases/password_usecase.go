@@ -63,13 +63,11 @@ func (sp *setup_password) SendResetEmail(ctx context.Context, email string, rese
 	subject := "Password Reset"
 	body := "Click the link below to reset your password\n" + resetURL + "\nThis link will expire in 1 hour"
 
-	// validate email
 	valid := sp.emailService.IsValidEmail(email)
 	if !valid {
 		return models.BadRequest("Invalid email address")
 	}
 
-	// send email
 	err := sp.emailService.SendEmail(email, subject, body)
 	if err != nil {
 		return models.InternalServerError("An error occurred while sending the reset email")
@@ -85,24 +83,20 @@ func (sp *setup_password) SetNewUserPassword(ctx context.Context, shortURlCode s
 		return tErr
 	}
 
-	// get user data
 	u, uErr := sp.jwtService.ValidateURLToken(urls.Token)
 	if uErr != nil {
 		return models.BadRequest("Invalid token")
 	}
 
-	// check if password is too short
-	if len(password) < 6 {
-		return models.Forbidden("password is too short")
+	if err := sp.passwordService.ValidatePasswordStrength(password, u.Email, u.Name, u.Username); err != nil {
+		return err
 	}
 
-	// hash password
 	hashedPassword, hErr := sp.passwordService.EncryptPassword(password)
 	if hErr != nil {
 		return models.InternalServerError("An error occurred while setting the password")
 	}
 
-	// populate fields for the new user
 	newUser := models.User{
 		Name:     u.Name,
 		Username: u.Username,
@@ -140,14 +134,14 @@ func (sp *setup_password) SetUpdateUserPassword(ctx context.Context, shortURlCod
 	}
 
 	// get user data
-	u, uErr := sp.jwtService.ValidateToken(urls.Token)
+	u, uErr := sp.jwtService.ValidateURLToken(urls.Token)
 	if uErr != nil {
 		return models.BadRequest("Invalid token")
 	}
 
 	// check if password is too short
-	if len(password) < 6 {
-		return models.Forbidden("password is too short")
+	if err := sp.passwordService.ValidatePasswordStrength(password, u.Email, u.Name, u.Username); err != nil {
+		return err
 	}
 
 	// hash password

@@ -5,7 +5,7 @@ const API_BASE_URL = 'https://bank-dashboard-6acc.onrender.com';
 const token = Cookies.get('accessToken')
 
 // GET /transactions
-export const getAllTransactions = async () => {
+export const getAllTransactionsss = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/transactions`, {
       method: 'GET',
@@ -19,9 +19,6 @@ export const getAllTransactions = async () => {
     throw error;
   }
 };
-
-const token = Cookies.get('accessToken')
-const API_BASE_URL = "https://bank-dashboard-6acc.onrender.com";
 
 
 // GET /transactions

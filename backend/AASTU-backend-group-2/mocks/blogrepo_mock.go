@@ -32,17 +32,17 @@ func (_m *BlogRepository) CreateBlog(blog *domain.Blog) error {
 	return r0
 }
 
-// DeleteBlog provides a mock function with given fields: blogID
-func (_m *BlogRepository) DeleteBlog(blogID string) error {
-	ret := _m.Called(blogID)
+// DeleteBlog provides a mock function with given fields: blogID, isadmin, userid
+func (_m *BlogRepository) DeleteBlog(blogID string, isadmin bool, userid string) error {
+	ret := _m.Called(blogID, isadmin, userid)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteBlog")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(blogID)
+	if rf, ok := ret.Get(0).(func(string, bool, string) error); ok {
+		r0 = rf(blogID, isadmin, userid)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -80,9 +80,9 @@ func (_m *BlogRepository) FilterBlog(tag []string, date time.Time) ([]domain.Blo
 	return r0, r1
 }
 
-// RetrieveBlog provides a mock function with given fields: pgnum
-func (_m *BlogRepository) RetrieveBlog(pgnum int) ([]domain.Blog, error) {
-	ret := _m.Called(pgnum)
+// RetrieveBlog provides a mock function with given fields: pgnum, sortby, dir
+func (_m *BlogRepository) RetrieveBlog(pgnum int, sortby string, dir string) ([]domain.Blog, error) {
+	ret := _m.Called(pgnum, sortby, dir)
 
 	if len(ret) == 0 {
 		panic("no return value specified for RetrieveBlog")
@@ -90,19 +90,19 @@ func (_m *BlogRepository) RetrieveBlog(pgnum int) ([]domain.Blog, error) {
 
 	var r0 []domain.Blog
 	var r1 error
-	if rf, ok := ret.Get(0).(func(int) ([]domain.Blog, error)); ok {
-		return rf(pgnum)
+	if rf, ok := ret.Get(0).(func(int, string, string) ([]domain.Blog, error)); ok {
+		return rf(pgnum, sortby, dir)
 	}
-	if rf, ok := ret.Get(0).(func(int) []domain.Blog); ok {
-		r0 = rf(pgnum)
+	if rf, ok := ret.Get(0).(func(int, string, string) []domain.Blog); ok {
+		r0 = rf(pgnum, sortby, dir)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.Blog)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(int) error); ok {
-		r1 = rf(pgnum)
+	if rf, ok := ret.Get(1).(func(int, string, string) error); ok {
+		r1 = rf(pgnum, sortby, dir)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -140,17 +140,17 @@ func (_m *BlogRepository) SearchBlog(postName string, authorName string) ([]doma
 	return r0, r1
 }
 
-// UpdateBlog provides a mock function with given fields: updatedblog, blogID
-func (_m *BlogRepository) UpdateBlog(updatedblog domain.Blog, blogID string) error {
-	ret := _m.Called(updatedblog, blogID)
+// UpdateBlog provides a mock function with given fields: updatedblog, blogID, isadmin, userid
+func (_m *BlogRepository) UpdateBlog(updatedblog domain.Blog, blogID string, isadmin bool, userid string) error {
+	ret := _m.Called(updatedblog, blogID, isadmin, userid)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateBlog")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(domain.Blog, string) error); ok {
-		r0 = rf(updatedblog, blogID)
+	if rf, ok := ret.Get(0).(func(domain.Blog, string, bool, string) error); ok {
+		r0 = rf(updatedblog, blogID, isadmin, userid)
 	} else {
 		r0 = ret.Error(0)
 	}

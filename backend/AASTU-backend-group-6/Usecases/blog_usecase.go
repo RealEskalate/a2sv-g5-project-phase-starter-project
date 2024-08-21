@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogUsecase struct {
@@ -57,6 +59,17 @@ func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog, role string) (
 	if len(blog.Comments) == 0 {
 		blog.Comments = make([]domain.Comment, 0)
 	}
+	if len(blog.DisLikes) == 0 {
+		blog.DisLikes = make([]primitive.ObjectID, 0)
+	}
+	if len(blog.Likes) == 0 {
+		blog.Likes = make([]primitive.ObjectID, 0)
+	}
+	if blog.Blog_image == "" {
+		blog.Blog_image = "https://media.istockphoto.com/id/922745190/photo/blogging-blog-concepts-ideas-with-worktable.jpg?s=2048x2048&w=is&k=20&c=QNKuhWRD7f0P5hybe28_AHo_Wh6W93McWY157Vmmh4Q="
+	}
+	blog.ViewCount = 0
+	blog.Popularity = 0
 	newBlog, err := b.blogRepository.CreateBlog(user_id, blog, role)
 	if err != nil {
 		return domain.Blog{}, err

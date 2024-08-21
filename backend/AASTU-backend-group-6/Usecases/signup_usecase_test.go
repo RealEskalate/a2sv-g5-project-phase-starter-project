@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	infrastructure "blogs/Infrastructure"
 	"blogs/mocks"
 	"context"
 	"errors"
@@ -8,7 +9,7 @@ import (
 	"time"
 
 	domain "blogs/Domain"
-
+	// Replace "Path/To" with the actual path to the passwordService package
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 )
@@ -23,7 +24,7 @@ type SignupUsecaseTestSuite struct {
 func (suite *SignupUsecaseTestSuite) SetupTest() {
 	suite.mockSignupRepo = new(mocks.SignupRepository)
 	suite.contextTimeout = time.Second * 5
-	suite.SignupUsecaseTestSuite = NewSignupUseCase(suite.mockSignupRepo, suite.contextTimeout)
+	suite.SignupUsecaseTestSuite = NewSignupUseCase(suite.mockSignupRepo, suite.contextTimeout, infrastructure.NewPasswordService())
 }
 func (suite *SignupUsecaseTestSuite) TestCreate() {
 	suite.Run("TestSuccess", func() {
@@ -196,13 +197,13 @@ func (suite *SignupUsecaseTestSuite) TestHandleUnverifiedUser() {
 		}
 		suite.mockSignupRepo.On("UpdateUser", mock.Anything, mock.Anything).Return(domain.User{}, nil).Once()
 		suite.mockSignupRepo.On("SetOTP", mock.Anything, user.Email, mock.AnythingOfType("string")).Return(nil).Once()
-		
+
 		result := suite.SignupUsecaseTestSuite.HandleUnverifiedUser(context.TODO(), user)
 		suite.Equal(result, &domain.SuccessResponse{Message: "OTP send to your Email Verify Your Account", Data: "", Status: 201})
 		suite.mockSignupRepo.AssertExpectations(suite.T())
 		suite.mockSignupRepo.AssertCalled(suite.T(), "UpdateUser", mock.Anything, mock.Anything)
 		suite.mockSignupRepo.AssertCalled(suite.T(), "SetOTP", mock.Anything, user.Email, mock.AnythingOfType("string"))
-	
+
 	})
 	suite.Run("TestError", func() {
 		user := domain.User{

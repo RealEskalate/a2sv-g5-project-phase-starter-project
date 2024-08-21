@@ -13,18 +13,16 @@ import (
 
 /* Defines a struct with all the necessary data to implement domain.UserUsecaseInterface */
 type UserUsecase struct {
-	userRepository            domain.UserRepositoryInterface
-	cacheRepository           domain.CacheRepositoryInterface
-	GenerateToken             func(int) (string, error)
-	EmailVerificationTemplate func(string, string, string) string
-	PasswordResetTemplate     func(string, string, string) string
-	SendMail                  func(string, string, string, string, string) error
-	JWTService                domain.JWTServiceInterface
-	HashString                func(string) (string, domain.CodedError)
-	ValidateHashedString      func(string, string) domain.CodedError
-	VerifyIdToken             func(string, string, string) error
-	DeleteFile                func(string) error
-	ENV                       domain.EnvironmentVariables
+	userRepository       domain.UserRepositoryInterface
+	cacheRepository      domain.CacheRepositoryInterface
+	GenerateToken        func(int) (string, error)
+	MailService          domain.MailServiceInterface
+	JWTService           domain.JWTServiceInterface
+	HashString           func(string) (string, domain.CodedError)
+	ValidateHashedString func(string, string) domain.CodedError
+	VerifyIdToken        func(string, string, string) error
+	DeleteFile           func(string) error
+	ENV                  domain.EnvironmentVariables
 }
 
 /* Regex for validation phone numbers*/
@@ -35,9 +33,7 @@ func NewUserUsecase(
 	userRepository domain.UserRepositoryInterface,
 	cacheRepository domain.CacheRepositoryInterface,
 	GenerateToken func(int) (string, error),
-	EmailVerificationTemplate func(string, string, string) string,
-	PasswordResetTemplate func(string, string, string) string,
-	SendMail func(string, string, string, string, string) error,
+	MailService domain.MailServiceInterface,
 	JWTService domain.JWTServiceInterface,
 	HashString func(string) (string, domain.CodedError),
 	ValidateHashedString func(string, string) domain.CodedError,
@@ -45,18 +41,16 @@ func NewUserUsecase(
 	DeleteFile func(string) error,
 	ENV domain.EnvironmentVariables) *UserUsecase {
 	return &UserUsecase{
-		userRepository:            userRepository,
-		cacheRepository:           cacheRepository,
-		GenerateToken:             GenerateToken,
-		EmailVerificationTemplate: EmailVerificationTemplate,
-		PasswordResetTemplate:     PasswordResetTemplate,
-		SendMail:                  SendMail,
-		JWTService:                JWTService,
-		HashString:                HashString,
-		ValidateHashedString:      ValidateHashedString,
-		VerifyIdToken:             VerifyIdToken,
-		DeleteFile:                DeleteFile,
-		ENV:                       ENV,
+		userRepository:       userRepository,
+		cacheRepository:      cacheRepository,
+		GenerateToken:        GenerateToken,
+		MailService:          MailService,
+		JWTService:           JWTService,
+		HashString:           HashString,
+		ValidateHashedString: ValidateHashedString,
+		VerifyIdToken:        VerifyIdToken,
+		DeleteFile:           DeleteFile,
+		ENV:                  ENV,
 	}
 }
 
@@ -188,8 +182,8 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 	}
 
 	// send email verification link with the template and the generated token
-	mail := u.EmailVerificationTemplate(hostUrl, user.Username, verificationData.Token)
-	mailErr := u.SendMail("Blog API", user.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
+	mail := u.MailService.EmailVerificationTemplate(hostUrl, user.Username, verificationData.Token)
+	mailErr := u.MailService.SendMail("Blog API", user.Email, mail)
 	if mailErr != nil {
 		u.userRepository.DeleteUser(c, user.Username)
 		return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)
@@ -500,8 +494,8 @@ func (u *UserUsecase) VerifyEmail(c context.Context, username string, token stri
 			return err
 		}
 
-		mail := u.EmailVerificationTemplate(hostUrl, username, verificationData.Token)
-		mailErr := u.SendMail("Blog API", user.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
+		mail := u.MailService.EmailVerificationTemplate(hostUrl, username, verificationData.Token)
+		mailErr := u.MailService.SendMail("Blog API", user.Email, mail)
 		if mailErr != nil {
 			return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)
 		}
@@ -537,8 +531,8 @@ func (u *UserUsecase) InitResetPassword(c context.Context, username string, emai
 		return err
 	}
 
-	mail := u.PasswordResetTemplate(hostUrl, username, verificationData.Token)
-	mailErr := u.SendMail("Blog API", foundUser.Email, env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD, mail)
+	mail := u.MailService.PasswordResetTemplate(hostUrl, username, verificationData.Token)
+	mailErr := u.MailService.SendMail("Blog API", foundUser.Email, mail)
 	if mailErr != nil {
 		return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)
 	}

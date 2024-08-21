@@ -24,13 +24,12 @@ func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, cac
 	userRepository := repository.NewUserRepository(collection)
 	cacheRepoistory := repository.NewCacheRepository(cacheClient)
 	jwtService := jwt_service.NewJWTService(env.ENV.JWT_SECRET_TOKEN)
+	mailService := mail_service.NewMailService(env.ENV.SMTP_GMAIL, env.ENV.SMTP_PASSWORD)
 	usecase := usecase.NewUserUsecase(
 		userRepository,
 		cacheRepoistory,
 		utils.GenerateToken,
-		mail_service.EmailVerificationTemplate,
-		mail_service.PasswordResetTemplate,
-		mail_service.SendMail,
+		mailService,
 		jwtService,
 		cryptography.HashString,
 		cryptography.ValidateHashedString,

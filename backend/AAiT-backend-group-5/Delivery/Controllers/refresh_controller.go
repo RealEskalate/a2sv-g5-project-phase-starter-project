@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
@@ -23,10 +22,8 @@ func NewRefreshController(refreshUsecase interfaces.RefreshUsecase, jwtService i
 func (refreshController *RefreshController) Refresh(ctx *gin.Context) {
 	// get the userId from the context
 	userId := ctx.GetString("id")
-	fmt.Println(userId)
 
 	authHeader := ctx.GetHeader("Authorization")
-	fmt.Println(authHeader)
 	authParts, err := refreshController.JwtService.ValidateAuthHeader(authHeader)
 
 	if err != nil {

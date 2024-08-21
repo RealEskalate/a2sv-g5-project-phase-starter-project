@@ -19,8 +19,6 @@ func NewBlogCommentRouter(env *config.Env, database mongo.Database, group *gin.R
 	blogCommentUsecase := usecases.NewCommentUsecase(blog_comment_repository, blog_repository, cacheService)
 	blogCommentController := controllers.NewBlogCommentController(blogCommentUsecase)
 
-	
-
 	group.POST("/comment/:blogID", blogCommentController.AddCommentController)
 	group.GET("/comments/:blogID", blogCommentController.GetCommentsController)
 	group.GET("/comment/:commentID", blogCommentController.GetCommentController)

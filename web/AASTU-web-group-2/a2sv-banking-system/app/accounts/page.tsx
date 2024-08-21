@@ -15,8 +15,7 @@ import { useRouter } from "next/navigation";
 import { getCards } from "@/lib/api/cardController";
 import { Card as CardType } from "@/types/cardController.Interface";
 import { getCurrentUser } from "@/lib/api/userControl";
-import User from "@/types/userInterface";
-import Preference from "@/types/userInterface";
+import {UserInfo} from "@/types/userInterface";
 import {
   getTransactionIncomes,
   getTransactionsExpenses,
@@ -51,7 +50,7 @@ const Page = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [getCard, setGetCards] = useState<CardType[]>();
-  const [currentUser, setCurrentUser] = useState();
+  const [currentUser, setCurrentUser] = useState<UserInfo>();
   const [income, setIncome] = useState(0);
   const [expense, setExpense] = useState(0);
   // Getting the session from the server
@@ -137,7 +136,7 @@ const Page = () => {
     data: [
       {
         heading: "My Balance",
-        text: currentUser?.accountBalance ?? "",
+        text: String(currentUser?.accountBalance) ?? "",
         headingStyle: "text-sm font-bold text-nowrap text-[#718EBF]",
         dataStyle: "text-xs text-nowrap",
       },

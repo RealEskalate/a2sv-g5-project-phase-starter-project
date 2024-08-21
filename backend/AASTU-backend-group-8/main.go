@@ -49,6 +49,10 @@ func main() {
 
 	jwtService := infrastructure.NewJWTService(os.Getenv("JWT_SECRET"), "Kal", os.Getenv("JWT_REFRESH_SECRET"))
 
+
+	aiService := infrastructure.NewAIService() 
+	aiUsecase := usecases.NewAIUsecase(aiService)
+
 	userUsecase := usecases.NewUserUsecase(userRepo, tokenRepo, jwtService)
 	tokenUsecase := usecases.NewTokenUsecase(tokenRepo, jwtService)
 	blogUsecase := usecases.NewBlogUsecase(blogRepo)
@@ -57,11 +61,15 @@ func main() {
 	commentUsecase := usecases.NewCommentUsecase(commentRepo)
 	likeUsecase := usecases.NewLikeUsecase(likeRepo)
 
+	//controllers
+	aiHandler := controllers.NewAIHandler(aiUsecase)
 	profileHandler := controllers.NewProfileHandler(profileUsecase)
 
-	// passwordService := infrastructure.NewPasswordService()
 
 	r := gin.Default()
+
+	routers.AIRouter(r, aiHandler,jwtService)
+
 	profileRouter := routers.NewProfileRouter(profileHandler, r)
 	profileRouter.InitProfileRoutes(r.Group("/api/v1"))
 	routers.InitRoutes(r, blogUsecase, userUsecase, tokenUsecase, jwtService, likeUsecase, commentUsecase, tokenUsecase, otpUsecase)

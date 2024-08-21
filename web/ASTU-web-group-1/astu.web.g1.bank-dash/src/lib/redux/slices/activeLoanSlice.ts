@@ -1,12 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "../api/baseQuery";
-import { ActiveLoanResponseType } from "@/types/active-loan.types";
+import { ActiveLoanResponseType, ActiveLoansDetailResponseType } from "@/types/active-loan.types";
 
 export const activeLoanApi = createApi({
   reducerPath: "activeLoanApi",
   baseQuery: baseQuery(),
   endpoints: (builder) => ({
-    getAllActiveLoans: builder.query<void, void>({
+    getAllActiveLoans: builder.query<ActiveLoanResponseType, void>({
       query: () => `/active-loans/all`,
     }),
     getActiveLoanById: builder.query<void, string>({
@@ -17,7 +17,7 @@ export const activeLoanApi = createApi({
       query: () => `/active-loans/my-loans`,
     }),
 
-    getDetailActiveLoans: builder.query<void, void>({
+    getDetailActiveLoans: builder.query<ActiveLoansDetailResponseType, void>({
       query: () => `/active-loans/detail-data`,
     }),
 

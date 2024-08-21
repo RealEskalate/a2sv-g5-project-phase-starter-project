@@ -2,15 +2,12 @@
 import { ActiveLoanDataType } from "@/types/active-loan.types";
 import TableButton from "../TableButton/TableButton";
 import { useGetAllActiveLoansQuery } from "@/lib/redux/slices/activeLoanSlice";
-import { log } from "console";
 
 const ActiveLoansOverviewTable = () => {
   const { data, isLoading } = useGetAllActiveLoansQuery();
-  console.log("the data is ", data);
 
   const allData: ActiveLoanDataType[] | null =
     data?.data?.filter((data) => data.activeLoneStatus === "approved") || [];
-  console.log("the table data is ", allData);
 
   const totalLoanAmount = allData.reduce(
     (sum, data) => sum + data.loanAmount,
@@ -64,10 +61,12 @@ const ActiveLoansOverviewTable = () => {
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <td className="hidden md:table-cell py-3">
-                  {String(index + 1).padStart(2, "0")}
+                  {String(index + 1).padStart(2, "0")}.
                 </td>
-                <td className="py-3">${data.loanAmount}</td>
-                <td className="py-3">${data.amountLeftToRepay}</td>
+                <td className="py-3">${data.loanAmount.toLocaleString()}</td>
+                <td className="py-3">
+                  ${data.amountLeftToRepay.toLocaleString()}
+                </td>
                 <td className="hidden lg:table-cell py-3">
                   {data.duration} Months
                 </td>
@@ -75,7 +74,7 @@ const ActiveLoansOverviewTable = () => {
                   {data.interestRate}%
                 </td>
                 <td className="hidden min-[900px]:table-cell py-3">
-                  ${data.installment.toFixed(2)} /Month
+                  ${Number(data.installment.toFixed(2)).toLocaleString()} /Month
                 </td>
                 <td className="py-3 w-24 md:w-32 ">
                   <TableButton text="Repay" classname="px-6" />
@@ -94,7 +93,7 @@ const ActiveLoansOverviewTable = () => {
               <td className="hidden md:table-cell py-3 md:py-6"></td>
               <td className="hidden md:table-cell py-3 md:py-6"></td>
               <td className="hidden min-[900px]:table-cell py-3 md:py-6">
-                ${totalInstallment.toFixed(2).toLocaleString()} / month
+                ${Number(totalInstallment.toFixed(2)).toLocaleString()} / month
               </td>
               <td className="py-3 md:py-6 whitespace-nowrap"></td>
             </tr>

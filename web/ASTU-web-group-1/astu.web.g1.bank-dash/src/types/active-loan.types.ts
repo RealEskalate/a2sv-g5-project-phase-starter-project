@@ -21,3 +21,13 @@ export interface singleActiveLoanResponseType {
   message: string;
   data: ActiveLoanDataType;
 }
+
+export interface ActiveLoansDetailResponseType {
+  success: boolean;
+  message: string;
+  data: {
+    personalLoan: number;
+    businessLoan: number;
+    corporateLoan: number;
+  }
+}

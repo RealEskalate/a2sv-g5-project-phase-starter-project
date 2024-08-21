@@ -55,10 +55,6 @@ func (ur *userRepository) UpdateRefreshToken(c context.Context, userID string, r
 
 func (ur *userRepository) GetUserById(c context.Context, userId string) (*domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
-	objID, err := primitive.ObjectIDFromHex(userId)
-	if err != nil {
-		return nil, errors.New("object id invalid")
-	}
 	var user domain.User
 	id, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {

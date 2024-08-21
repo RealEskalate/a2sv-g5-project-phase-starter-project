@@ -145,7 +145,7 @@ func (b *BlogUseCaseImpl) DislikeBlog(ctx context.Context, userID string, blogID
 		UserID: user.ID,
 	})
 
-	if err === nil{
+	if err == nil{
 		blog.DecrementLikesCount()
 	}
 

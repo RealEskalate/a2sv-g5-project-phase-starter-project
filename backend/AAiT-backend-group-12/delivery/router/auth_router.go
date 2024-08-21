@@ -3,6 +3,7 @@ package router
 import (
 	"blog_api/delivery/controllers"
 	"blog_api/delivery/env"
+	"blog_api/domain"
 	"blog_api/infrastructure/cryptography"
 	jwt_service "blog_api/infrastructure/jwt"
 	mail_service "blog_api/infrastructure/mail"
@@ -46,12 +47,12 @@ func NewAuthRouter(collection *mongo.Collection, authGroup *gin.RouterGroup, cac
 
 	authGroup.POST("/login", controller.HandleLogin)
 	authGroup.POST("/renew-token", controller.HandleRenewAccessToken)
-	authGroup.POST("/logout", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, "user", "admin", "root"), controller.HandleLogout)
+	authGroup.POST("/logout", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, domain.RoleUser, domain.RoleAdmin, domain.RoleRoot), controller.HandleLogout)
 
-	authGroup.PATCH("/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, "user"), controller.HandleUpdateUser)
+	authGroup.PATCH("/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, domain.RoleUser), controller.HandleUpdateUser)
 
-	authGroup.PATCH("/promote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, "admin", "root"), controller.HandlePromoteUser)
-	authGroup.PATCH("/demote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, "root"), controller.HandleDemoteUser)
+	authGroup.PATCH("/promote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, domain.RoleAdmin, domain.RoleRoot), controller.HandlePromoteUser)
+	authGroup.PATCH("/demote/:username", middleware.AuthMiddlewareWithRoles(env.ENV.JWT_SECRET_TOKEN, jwt_service.ValidateAndParseToken, cacheRepoistory, domain.RoleRoot), controller.HandleDemoteUser)
 
 	authGroup.POST("/forgot-password", controller.HandleInitResetPassword)
 	authGroup.POST("/reset-password", controller.HandleResetPassword)

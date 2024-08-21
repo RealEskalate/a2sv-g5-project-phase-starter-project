@@ -22,13 +22,6 @@ const (
 	RoleRoot  = "root"
 )
 
-// Defines the types of verification statuses
-const (
-	RoleUser  = "user"
-	RoleAdmin = "admin"
-	RoleRoot  = "root"
-)
-
 const (
 	VerifyEmailType   = "verify_email"
 	ResetPasswordType = "reset_password"
@@ -53,6 +46,7 @@ type EnvironmentVariables struct {
 	SMTP_GMAIL             string
 	SMTP_PASSWORD          string
 	REDIS_URL              string
+	GEMINI_API_KEY         string
 	GOOGLE_CLIENT_ID       string
 	GOOGLE_CLIENT_SECRET   string
 }
@@ -93,11 +87,10 @@ type Blog struct {
 	Comments   []Comment `json:"comment"`
 }
 
-
-type NewBlog struct{
-	Title      string    `json:"title" validate:"required,MinWord=1"`
-	Content    string    `json:"content" validate:"required,MinWord=25"`
-	Tags       []string  `json:"tags"`
+type NewBlog struct {
+	Title   string   `json:"title" validate:"required,MinWord=1"`
+	Content string   `json:"content" validate:"required,MinWord=25"`
+	Tags    []string `json:"tags"`
 }
 
 type Comment struct {
@@ -131,8 +124,8 @@ type BlogFilterOptions struct {
 
 // the data sent through the body when making a request to like or dislike a blog
 type LikeOrDislikeRequest struct {
-	BlogID  string `json:"blogID" validate:"required"`
-	State   bool `json:"state" validate:"required"`
+	BlogID string `json:"blogID" validate:"required"`
+	State  bool   `json:"state" validate:"required"`
 }
 
 type BlogRepositoryInterface interface {
@@ -142,7 +135,7 @@ type BlogRepositoryInterface interface {
 	InsertBlogPost(ctx context.Context, blog *Blog) CodedError
 	UpdateBlogPost(ctx context.Context, id string, blog *NewBlog) CodedError
 	DeleteBlogPost(ctx context.Context, id string) CodedError
-	TrackBlogPopularity(ctx context.Context, blogId string, action string,state bool, username string) CodedError
+	TrackBlogPopularity(ctx context.Context, blogId string, action string, state bool, username string) CodedError
 
 	//Comment related methods
 	// FetchComment(ctx context.Context, commentID, blogID string) (Comment, CodedError)

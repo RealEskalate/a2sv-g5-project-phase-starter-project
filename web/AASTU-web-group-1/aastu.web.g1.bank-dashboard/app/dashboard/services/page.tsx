@@ -62,17 +62,17 @@ const Services = () => {
 
   return (
     <div
-      className={`p-4 flex flex-col w-full h-full gap-5 lg:p-8 ${
-        isDarkMode ? "bg-gray-800 text-gray-300" : "bg-gray-200 text-gray-900"
+      className={`p-4 flex flex-col w-full gap-5 lg:p-8 ${
+        isDarkMode ? "bg-gray-800 text-gray-300" : "text-gray-900"
       }`}
     >
-      <div className="flex gap-3 justify-start w-[100vw] md:w-full overflow-x-scroll scrollbar-hidden md:overflow-hidden lg:justify-between">
+      <div className="flex gap-3 justify-start w-[100vw] md:w-full overflow-x-scroll scrollbar-hidden md:overflow-hidden lg:justify-start lg:gap-16 ">
         {servicesList.map((items, index) => (
           <BenefitComp items={items} key={index} />
         ))}
       </div>
 
-      <div className="flex flex-col gap-[7px]">
+      <div className="flex flex-col gap-[7px] md:gap-4">
         <h1
           className={`font-semibold text-lg ${
             isDarkMode ? "text-gray-300" : "text-gray-900"
@@ -84,7 +84,12 @@ const Services = () => {
           <div>Loading...</div>
         ) : (
           bankServices.map((items, index) => (
-            <ServiceList icon={items.icon} name={items.name} key={index} />
+            <ServiceList
+              icon={items.icon}
+              name={items.name}
+              details={items.details}
+              key={index}
+            />
           ))
         )}
       </div>

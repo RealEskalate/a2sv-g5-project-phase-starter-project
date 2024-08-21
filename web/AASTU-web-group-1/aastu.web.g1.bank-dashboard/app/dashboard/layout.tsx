@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
 import { sidebarLinks } from "@/constants";
 import { SessionProvider } from "next-auth/react";
+import { useUser } from "@/contexts/UserContext";
 
 export default function RootLayout({
   children,
@@ -17,9 +18,10 @@ export default function RootLayout({
   const title: string = sidebarLinks.filter(
     (item) => item.route === pathname
   )[0].title;
+  const { isDarkMode } = useUser();
   return (
   
-      <main className="flex h-screen font-inter bg-[#F5F7FA]">
+      <main className={`flex h-screen font-inter ${isDarkMode ? "bg-gray-700" : "bg-[#F5F7FA]"} `}>
         <Sidebar />
         <div className="w-full flex-grow flex flex-col overflow-x-hidden">
           <Header title={title} />

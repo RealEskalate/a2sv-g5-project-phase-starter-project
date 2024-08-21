@@ -9,11 +9,13 @@ import (
 	"github.com/jordan-wright/email"
 )
 
+// MailService provides an interface to interact with email services
 type MailService struct {
 	smtpAddress  string
 	smtpPassword string
 }
 
+// NewMailService creates a new MailService with the provided SMTP credentials
 func NewMailService(smtpAddress string, smtpPassword string) *MailService {
 	return &MailService{smtpAddress: smtpAddress, smtpPassword: smtpPassword}
 }

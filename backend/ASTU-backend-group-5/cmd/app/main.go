@@ -26,7 +26,7 @@ func main() {
 
 	router := gin.Default()
 	// Serve static files from the "upload" directory
-	router.Static("/upload", "./upload")
+	router.Static("/uploads", "./uploads")
 	routes.SetUpRoute(router, blogCollection, commentCollection, likeCollection, viewCollection, tagCollection, userCollection)
 	router.Run(":" + confs.GO_PORT)
 }

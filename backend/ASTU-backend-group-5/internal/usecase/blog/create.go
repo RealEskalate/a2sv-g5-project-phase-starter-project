@@ -140,6 +140,7 @@ func (u *blogUseCase) UpdateTag(ctx context.Context, id string, tag *domain.Blog
 	if tag == nil {
 		return errors.New("tag cannot be nil")
 	}
+	tag.ID, _ = primitive.ObjectIDFromHex(id)
 	err := u.repo.UpdateTag(ctx, id, tag)
 	if err != nil {
 		log.Printf("Error updating blog tag with ID %s: %v", id, err)

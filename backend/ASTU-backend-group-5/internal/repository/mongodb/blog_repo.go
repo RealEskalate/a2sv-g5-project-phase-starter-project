@@ -417,3 +417,43 @@ func (r *MongoBlogRepository) GetCommentById(ctx context.Context, commentId stri
 	}
 	return &comment, nil
 }
+
+func (r *MongoBlogRepository) FindBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int) ([]*domain.Blog, int, error) {
+	collection := r.blogsCollection
+
+	query := bson.M{}
+
+	if filter.AuthorID != nil {
+		query["ownerID"] = *filter.AuthorID
+	}
+
+	if filter.Tags != nil && len(filter.Tags) > 0 {
+		query["tags.name"] = bson.M{"$in": filter.Tags}
+	}
+
+	if filter.Keyword != nil {
+		query["$text"] = bson.M{"$search": *filter.Keyword}
+	}
+
+	opr := options.Find().
+		SetSkip(int64((page - 1) * pageSize)).
+		SetLimit(int64(pageSize))
+
+	cursor, err := collection.Find(ctx, query, opr)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer cursor.Close(ctx)
+
+	var blogs []*domain.Blog
+	if err := cursor.All(ctx, &blogs); err != nil {
+		return nil, 0, err
+	}
+
+	count, err := collection.CountDocuments(ctx, query)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return blogs, int(count), nil
+}

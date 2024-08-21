@@ -1,4 +1,4 @@
-package handlers
+package account
 
 import (
 	"blogApp/internal/domain"
@@ -121,23 +121,18 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 }
-
 func (h *UserHandler) UpdateUser(c *gin.Context) {
-	var user domain.User
-
-	// Retrieve claims from the context
-	claims, exists := c.Get("claims")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-		return
-	}
-
-	userClaims, ok := claims.(*domain.Claims)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-		return
-	}
-
+    var user domain.User
+    claims, exists := c.Get("claims")
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+        return
+    }
+    userClaims, ok := claims.(*domain.Claims)
+    if !ok {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+        return
+    }
 	// Handle the file upload separately
 	file, header, err := c.Request.FormFile("profile_pic")
 	if err == nil {
@@ -170,36 +165,34 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 
 		// Update the user's profile with the new profile picture URL
 		user.Profile.ProfileUrl = fmt.Sprintf("/%s/%s", uploadPath, fileName)
+		fmt.Println(user.Profile.ProfileUrl)
 	} else if err != http.ErrMissingFile {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to upload file"})
 		return
 	}
-
-	// Update the user's profile with the form data
 	user.UserName = c.PostForm("username")
-	user.Email = c.PostForm("email")
-	user.Profile.FirstName = c.PostForm("first_name")
-	user.Profile.LastName = c.PostForm("last_name")
-	
 
-	// Set the user ID from claims
+
+
+    
+	// fmt.Println(userClaims.UserID)
 	objectID, err := primitive.ObjectIDFromHex(userClaims.UserID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	user.ID = objectID
+	
+  
 
-	// Update the user in the database
-	err = h.UserUsecase.UpdateUser(&user)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+    err = h.UserUsecase.UpdateUser(&user)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
 
-	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+    c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
-
 
 //  GoogleCallback is a handler that handles the google oauth callback
 func (h *UserHandler) GoogleCallback(c *gin.Context) {

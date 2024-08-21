@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"blogApp/internal/http/handlers"
+	"blogApp/internal/http/handlers/token"
 	"blogApp/internal/repository/mongodb"
 	"blogApp/internal/usecase"
 	localmongo "blogApp/pkg/mongo"
@@ -29,7 +29,7 @@ func RegisterVerificationRoutes(collection *mongo.Collection, router *gin.Engine
 		//logout and refresh
 		tokenRepo := mongodb.NewMongoTokenRepository(localmongo.TokenCollection)
 		tokenUsecase := usecase.NewTokenUsecase(tokenRepo)
-		TokenHandler := handlers.NewTokenHandler(*tokenUsecase)
+		TokenHandler := token.NewTokenHandler(*tokenUsecase)
 
 		r2 := authRoutes.Group("/")
 		r2.POST("/logout", TokenHandler.LogOut)

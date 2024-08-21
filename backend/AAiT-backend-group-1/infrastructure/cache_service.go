@@ -1,4 +1,4 @@
-package cache
+package infrastructure
 
 import (
 	"context"
@@ -22,8 +22,8 @@ type cacheService struct {
 func NewcacheService(redisAddr, redisPassword string, redisDB int) CacheService {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     redisAddr,
-		Password: redisPassword, 
-		DB:       redisDB,       
+		Password: redisPassword,
+		DB:       redisDB,
 	})
 
 	return &cacheService{

@@ -24,6 +24,8 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 	}
 
 	blog.ID = primitive.NewObjectID()
+	blog.Popularity = 0
+	blog.Feedbacks = domain.Feedback{}
 	blog.Created_At = time.Now()
 	blog.Updated_At = time.Now()
 

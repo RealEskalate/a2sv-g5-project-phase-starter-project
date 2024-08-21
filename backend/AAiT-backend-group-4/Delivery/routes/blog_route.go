@@ -24,13 +24,10 @@ func NewBlogRoute(env *bootstrap.Env, timeout time.Duration, db mongo.Database, 
 		BlogUsecase: blogUsecase,
 	}
 
-	// Set up the router
-	router := gin.Default()
-
 	// Define the blog routes with pagination considerations
-	blogRoutes := router.Group("/blogs")
+	blogRoutes := group.Group("/blogs")
 	{
-		blogRoutes.POST("/", bc.CreateBlog)
+		blogRoutes.POST("", bc.CreateBlog)
 		blogRoutes.PUT("/:id", bc.UpdateBlog)
 		blogRoutes.DELETE("/:id", bc.DeleteBlog)
 		blogRoutes.GET("/", bc.FetchAll)
@@ -44,6 +41,4 @@ func NewBlogRoute(env *bootstrap.Env, timeout time.Duration, db mongo.Database, 
 		blogRoutes.DELETE("/:id/comments", bc.RemoveComment)
 	}
 
-	// Start the server
-	router.Run(":8080")
 }

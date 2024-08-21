@@ -21,6 +21,14 @@ const LoginForm = () => {
     setLoading(true);
     setError("");
 
+    const result = await signIn("credentials",{
+      redirect: false,
+      userName: data.userName,
+      password: data.password
+    })
+
+    console.log(result)
+
     if (result?.error) {
       console.log(result.error)
       setError(result.error);

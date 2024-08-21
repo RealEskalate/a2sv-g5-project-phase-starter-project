@@ -11,12 +11,13 @@ const handler = NextAuth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
+      // type: "credentials",
       credentials: {
         userName: { label: "UserName", type: "text", placeholder: "jondoe" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("Authorize called with credentials:", credentials);
+        // console.log("Authorize called with credentials:", credentials);
 
         if (!credentials) {
           return null;
@@ -59,6 +60,7 @@ const handler = NextAuth({
     },
   },
   pages: {
+    signIn:"/login",
     error: "/error",
   },
 });

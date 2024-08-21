@@ -11,6 +11,7 @@ import (
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
+	"github.com/mitchellh/mapstructure"
 )
 
 type blogUsecase struct {
@@ -100,7 +101,6 @@ func (b *blogUsecase) fetchFromCacheOrRepo(ctx context.Context, cacheKey string,
 			return nil, repoErr
 		}
 
-		// Marshal and store in cache
 		dataJSON, marshalErr := b.helper.Marshal(data)
 		if marshalErr != nil {
 			return nil, models.InternalServerError("Error while marshalling data")
@@ -112,7 +112,6 @@ func (b *blogUsecase) fetchFromCacheOrRepo(ctx context.Context, cacheKey string,
 		return nil, models.InternalServerError("Error while fetching data from cache")
 	}
 
-	// Unmarshal directly into the expected struct
 	var blog models.Blog
 	if unmarshalErr := json.Unmarshal([]byte(cachedData), &blog); unmarshalErr != nil {
 		return nil, models.InternalServerError("Error while unmarshalling data from cache")
@@ -121,7 +120,43 @@ func (b *blogUsecase) fetchFromCacheOrRepo(ctx context.Context, cacheKey string,
 	return &blog, nil
 }
 
+func (b *blogUsecase) fetchFromCacheOrRepoBlogs(ctx context.Context, cacheKey string, fetchFromRepo func() (interface{}, *models.ErrorResponse)) (interface{}, *models.ErrorResponse) {
+	cachedData, err := b.cacheService.Get(ctx, cacheKey)
 
+	if err == redis.Nil {
+		data, repoErr := fetchFromRepo()
+
+		if repoErr != nil {
+			return nil, repoErr
+		}
+
+		dataJSON, marshalErr := b.helper.Marshal(data)
+		if marshalErr != nil {
+			return nil, models.InternalServerError("Error while marshalling data")
+		}
+		b.cacheService.Set(ctx, cacheKey, string(dataJSON), b.cacheTTL)
+
+		return data, nil
+	} else if err != nil {
+		return nil, models.InternalServerError("Error while fetching data from cache")
+	}
+
+	var result []map[string]interface{}
+	if unmarshalErr := json.Unmarshal([]byte(cachedData), &result); unmarshalErr != nil {
+		return nil, models.InternalServerError("Error while unmarshalling data from cache")
+	}
+
+	var blogs []*models.Blog
+	for _, item := range result {
+		var blog models.Blog
+		if err := mapstructure.Decode(item, &blog); err != nil {
+			return nil, models.InternalServerError("Error while converting cached data to Blog struct")
+		}
+		blogs = append(blogs, &blog)
+	}
+
+	return blogs, nil
+}
 
 func (b *blogUsecase) CreateBlog(ctx context.Context, blog *models.Blog) (*dtos.BlogResponse, *models.ErrorResponse) {
 	slug := b.helper.CreateSlug(blog.Title)
@@ -172,9 +207,9 @@ func (b *blogUsecase) GetBlog(ctx context.Context, id string) (*dtos.BlogRespons
 	}, nil
 }
 
-func (b *blogUsecase) GetBlogs(ctx context.Context) ([]*dtos.BlogResponse, *models.ErrorResponse) {
-	data, err := b.fetchFromCacheOrRepo(ctx, b.env.REDIS_BLOG_KEY, func() (interface{}, *models.ErrorResponse) {
-		return b.repository.GetBlogs(ctx)
+func (b *blogUsecase) GetBlogs(ctx context.Context, page int) ([]*dtos.BlogResponse, *models.ErrorResponse) {
+	data, err := b.fetchFromCacheOrRepoBlogs(ctx, b.env.REDIS_BLOG_KEY, func() (interface{}, *models.ErrorResponse) {
+		return b.repository.GetBlogs(ctx, page)
 	})
 
 	if err != nil {
@@ -269,10 +304,9 @@ func (b *blogUsecase) DeleteBlog(ctx context.Context, deleteBlogReq dtos.DeleteB
 		return models.InternalServerError("Error while deleting blog from cache")
 	}
 
-	blogs, _ := b.repository.GetBlogs(ctx)
-	blogsJSON, _ := b.helper.Marshal(blogs)
-	b.cacheService.Set(ctx, b.env.REDIS_BLOG_KEY, string(blogsJSON), b.cacheTTL)
-
+	if err := b.cacheService.Delete(ctx, b.env.REDIS_BLOG_KEY); err != nil {
+		return models.InternalServerError("Error while Invalidating blog from cache")
+	}
 	return nil
 }
 

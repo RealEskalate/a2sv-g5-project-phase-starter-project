@@ -11,7 +11,7 @@ import (
 type BlogRepository interface {
 	CreateBlog(ctx context.Context, blog *models.Blog) (*models.Blog, *models.ErrorResponse)
 	GetBlog(ctx context.Context, id string) (*models.Blog, *models.ErrorResponse)
-	GetBlogs(ctx context.Context) ([]*models.Blog, *models.ErrorResponse)
+	GetBlogs(ctx context.Context, page int) ([]*models.Blog, *models.ErrorResponse)
 	SearchBlogs(ctx context.Context, filter dtos.FilterBlogRequest) ([]*models.Blog, *models.ErrorResponse)
 	UpdateBlog(ctx context.Context, blogID string, blog *models.Blog) *models.ErrorResponse
 	DeleteBlog(ctx context.Context, id string) *models.ErrorResponse
@@ -24,7 +24,7 @@ type BlogRepository interface {
 type BlogUsecase interface {
 	CreateBlog(ctx context.Context, blog *models.Blog) (*dtos.BlogResponse, *models.ErrorResponse)
 	GetBlog(ctx context.Context, id string) (*dtos.BlogResponse, *models.ErrorResponse)
-	GetBlogs(ctx context.Context) ([]*dtos.BlogResponse, *models.ErrorResponse)
+	GetBlogs(ctx context.Context, page int) ([]*dtos.BlogResponse, *models.ErrorResponse)
 	SearchBlogs(ctx context.Context, filter dtos.FilterBlogRequest) ([]*dtos.BlogResponse, *models.ErrorResponse)
 	UpdateBlog(ctx context.Context, blogID string, blog *models.Blog) *models.ErrorResponse
 	DeleteBlog(ctx context.Context, deleteBlogReq dtos.DeleteBlogRequest) *models.ErrorResponse

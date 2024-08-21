@@ -73,7 +73,6 @@ export function YearlyInvest({ data }: YearlyInvestProps) {
             accessibilityLayer
             data={chartData}
             margin={{
-              left: 12,
               right: 12,
             }}
           >
@@ -83,7 +82,7 @@ export function YearlyInvest({ data }: YearlyInvestProps) {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              padding={{ left: 20 }}
+              padding={{ left: 10}}
             />
             <YAxis
               tickLine={false}

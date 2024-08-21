@@ -43,7 +43,7 @@ func (ar reactionRepository) GetReaction(c context.Context, blogID string, userI
 
 	if err := mongoRes.Decode(&reaction); err != nil {
 		if err == mongo.ErrNoDocuments {
-			return domain.Reaction{}, errors.New("reaction not found")
+			return domain.Reaction{}, mongo.ErrNoDocuments
 		}
 		return domain.Reaction{}, err
 	}
@@ -61,7 +61,10 @@ func (ar reactionRepository) ToggelLike(c context.Context, blogID string, userID
 	reaction.Liked = !reaction.Liked
 
 	//rewrite the whole document by the update
-	userObjID, err := primitive.ObjectIDFromHex(userID)
+	userObjID, err2 := primitive.ObjectIDFromHex(userID)
+	if err2 != nil {
+		return errors.New("object id invalid")
+	}
 	blogObjID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return errors.New("object id invalid")
@@ -97,6 +100,27 @@ func (ar reactionRepository) ToggleDislike(c context.Context, blogID string, use
 	filter := bson.M{"blog_id": blogObjID, "user_id": userObjID}
 	update := bson.M{"$set": reaction}
 
+	res, err := ar.Collection.UpdateOne(c, filter, update)
+	if err != nil {
+		return errors.New("error while updating the reaction")
+	}
+	if res.ModifiedCount < 1 {
+		return errors.New("could't find the reaction")
+	}
+	return nil
+}
+func (ar reactionRepository) UpdateReaction(c context.Context, blogID string, userID string, reaction domain.Reaction) error {
+	userObjID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return errors.New("invalid user ID")
+	}
+
+	blogObjID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return errors.New("invalid blog ID")
+	}
+	filter := bson.M{"blog_id": blogObjID, "user_id": userObjID}
+	update := bson.M{"$set": reaction}
 	res, err := ar.Collection.UpdateOne(c, filter, update)
 	if err != nil {
 		return errors.New("error while updating the reaction")

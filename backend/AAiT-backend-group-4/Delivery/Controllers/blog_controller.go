@@ -292,3 +292,25 @@ func (bc *BlogController) SearchBlogs(c *gin.Context) {
 
 	c.JSON(http.StatusOK, blogs)
 }
+
+// FetchByBlogID handles fetching a single blog by its ID
+func (bc *BlogController) FetchByBlogID(c *gin.Context) {
+	blogID := c.Param("id")
+	objectID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
+		return
+	}
+
+	blog, err := bc.BlogUsecase.FetchByBlogID(c, objectID.Hex())
+	if err != nil {
+		if err.Error() == "not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Blog post not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "An error occurred"})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, blog)
+}

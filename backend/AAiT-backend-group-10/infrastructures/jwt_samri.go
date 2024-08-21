@@ -1,7 +1,6 @@
 package infrastructures
 
 import (
-	"fmt"
 	"time"
 
 	"aait.backend.g10/domain"
@@ -13,7 +12,7 @@ type JwtService struct {
 }	
 
 
-func (s *JwtService) GenerateToken(user domain.User) (string, error) {
+func (s *JwtService) GenerateToken(user domain.User) (string, *domain.CustomError) {
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, &jwt.StandardClaims{
 		ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
 	})
@@ -25,21 +24,24 @@ func (s *JwtService) GenerateToken(user domain.User) (string, error) {
 
 	jwt_token, err := token.SignedString([]byte(s.JwtSecret))
 	if err != nil {
-		return "", err
+		return "", domain.ErrTokenGenerationFailed
 	}
 	return jwt_token, nil
 }
 
-func (s *JwtService) CheckToken(authPart string) (*jwt.Token, error) {
+func (s *JwtService) CheckToken(authPart string) (*jwt.Token, *domain.CustomError) {
 	token, err := jwt.Parse(authPart, func(token *jwt.Token) (interface{}, error) {
+		// Validate the signing method
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			return nil, domain.ErrUnexpectedSigningMethod
 		}
 		return []byte(s.JwtSecret), nil
 	})
+
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrTokenParsingFailed
 	}
+
 	return token, nil
 }
 

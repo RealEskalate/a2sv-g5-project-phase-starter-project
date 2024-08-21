@@ -1,7 +1,6 @@
 package usecases
 
 import (
-	"errors"
 	"math/rand"
 	"time"
 
@@ -14,11 +13,11 @@ import (
 )
 
 type IAuthUsecase interface {
-	RegisterUser(User *dto.RegisterUserDTO) (interface{}, error)
-	LoginUser(dto *dto.LoginUserDTO) (*dto.TokenResponseDTO, error)
-	RefreshTokens(refreshToken string) (*dto.TokenResponseDTO, error)
-	ResetPassword(dto *dto.ResetPasswordRequestDTO) error
-	ForgotPassword(dto *dto.ForgotPasswordRequestDTO) error
+	RegisterUser(User *dto.RegisterUserDTO) (interface{}, *domain.CustomError)
+	LoginUser(dto *dto.LoginUserDTO) (*dto.TokenResponseDTO, *domain.CustomError)
+	RefreshTokens(refreshToken string) (*dto.TokenResponseDTO, *domain.CustomError)
+	ResetPassword(dto *dto.ResetPasswordRequestDTO) *domain.CustomError
+	ForgotPassword(dto *dto.ForgotPasswordRequestDTO) *domain.CustomError
 }
 
 type AuthUsecase struct {
@@ -37,10 +36,10 @@ func NewAuthUsecase(ur interfaces.IUserRepository, jwt infrastructures.Jwt, pwdS
 	}
 }
 
-func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, error) {
+func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, *domain.CustomError) {
 	existingUser, _ := u.userRepository.GetUserByEmail(User.Email)
 	if existingUser != nil {
-		return nil, errors.New("email already exists")
+		return nil, domain.ErrUserEmailExists
 	}
 
 	hashedPassword, err := u.pwdService.HashPassword(User.Password)
@@ -60,7 +59,7 @@ func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, erro
 
 	err = u.userRepository.CreateUser(user)
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrUserCreationFailed
 	}
 
 	return &dto.CreatedResponseDto{
@@ -72,17 +71,17 @@ func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, erro
 	}, nil
 }
 
-func (uc *AuthUsecase) LoginUser(loginUser *dto.LoginUserDTO) (*dto.TokenResponseDTO, error) {
+func (uc *AuthUsecase) LoginUser(loginUser *dto.LoginUserDTO) (*dto.TokenResponseDTO, *domain.CustomError) {
 	user, err := uc.userRepository.GetUserByEmail(loginUser.Email)
 	// fmt.Println(user)
 	if err != nil || user == nil {
-		return nil, errors.New("invalid email or password")
+		return nil, domain.ErrInvalidCredentials
 	}
 
 	// Check password
 	errs := uc.pwdService.CheckPasswordHash(loginUser.Password, user.Password)
 	if !errs {
-		return nil, errors.New("invalid email or password")
+		return nil, domain.ErrInvalidCredentials
 	}
 
 	// Generate tokens
@@ -107,31 +106,31 @@ func (uc *AuthUsecase) LoginUser(loginUser *dto.LoginUserDTO) (*dto.TokenRespons
 	return tokenResponse, nil
 }
 
-func (uc *AuthUsecase) RefreshTokens(refreshToken string) (*dto.TokenResponseDTO, error) {
+func (uc *AuthUsecase) RefreshTokens(refreshToken string) (*dto.TokenResponseDTO, *domain.CustomError) {
 	// Validate the refresh token
 	token, err := uc.jwtService.ValidateToken(refreshToken)
 	if err != nil || !token.Valid {
-		return nil, errors.New("invalid refresh token")
+		return nil, domain.ErrInvalidToken
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		return nil, errors.New("invalid refresh token")
+		return nil, domain.ErrInvalidRefreshToken
 	}
 
 	email := claims["email"].(string)
 	user, err := uc.userRepository.GetUserByEmail(email)
 	if err != nil || user == nil {
-		return nil, errors.New("user not found")
+		return nil, domain.ErrUserNotFound
 	}
 
 	// Check if the provided refresh token matches the stored one
 	token, err = uc.jwtService.ValidateToken(user.RefreshToken)
 	if err != nil || !token.Valid {
-		return nil, errors.New("login required")
+		return nil, domain.ErrInvalidToken
 	}
 	if user.RefreshToken != refreshToken {
-		return nil, errors.New("invalid refresh token")
+		return nil, domain.ErrInvalidRefreshToken
 	}
 
 	// Generate new tokens
@@ -154,10 +153,10 @@ func (uc *AuthUsecase) RefreshTokens(refreshToken string) (*dto.TokenResponseDTO
 	}, nil
 }
 
-func (uc *AuthUsecase) ForgotPassword(dto *dto.ForgotPasswordRequestDTO) error {
+func (uc *AuthUsecase) ForgotPassword(dto *dto.ForgotPasswordRequestDTO) *domain.CustomError {
 	user, err := uc.userRepository.GetUserByEmail(dto.Email)
 	if err != nil || user == nil {
-		return errors.New("user not found")
+		return domain.ErrUserNotFound
 	}
 	rand.Seed(time.Now().UnixNano())
 
@@ -180,32 +179,32 @@ func (uc *AuthUsecase) ForgotPassword(dto *dto.ForgotPasswordRequestDTO) error {
 	return uc.emailService.SendResetEmail(user.Email, resetToken)
 }
 
-func (uc *AuthUsecase) ResetPassword(dto *dto.ResetPasswordRequestDTO) error {
+func (uc *AuthUsecase) ResetPassword(dto *dto.ResetPasswordRequestDTO) *domain.CustomError {
 	token, err := uc.jwtService.ValidateToken(dto.Token)
 	if err != nil || !token.Valid {
-		return errors.New("invalid or expired token")
+		return domain.ErrUserNotFound
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if !ok || !token.Valid {
-		return errors.New("invalid token")
+		return domain.ErrInvalidToken
 	}
 	code, ok := claims["code"].(float64)
 	if !ok {
-		return errors.New("invalid token")
+		return domain.ErrInvalidToken
 	}
 
 	email := claims["email"].(string)
 	user, err := uc.userRepository.GetUserByEmail(email)
 	if err != nil || user == nil {
-		return errors.New("user not found")
+		return domain.ErrUserNotFound
 	}
 	if user.ResetToken != dto.Token {
-		return errors.New("invalid token")
+		return domain.ErrInvalidToken
 	}
 	if user.ResetCode != int64(code) {
-		return errors.New("invalid code")
+		return domain.ErrInvalidResetCode
 	}
 
 	hashedPassword, err := uc.pwdService.HashPassword(dto.NewPassword)

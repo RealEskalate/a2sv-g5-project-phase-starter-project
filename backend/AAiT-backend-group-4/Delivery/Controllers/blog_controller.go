@@ -91,6 +91,7 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 // FetchAll handles fetching all blogs with pagination
 func (bc *BlogController) FetchAll(c *gin.Context) {
 	limit, err := strconv.Atoi(c.Query("limit"))
+
 	if err != nil || limit <= 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
 		return
@@ -239,6 +240,8 @@ func (bc *BlogController) UpdateComment(c *gin.Context) {
 	userID := c.Request.Header.Get("userID")
 	var updatedComment domain.Comment
 
+	updatedComment.Date = time.Now()
+
 	if err := c.ShouldBindJSON(&updatedComment); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -284,9 +287,41 @@ func (bc *BlogController) SearchBlogs(c *gin.Context) {
 		return
 	}
 
-	if err := c.ShouldBindJSON(&filter); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	// Extract filter parameters from query
+	authorName := c.Query("authorName")
+	if authorName != "" {
+		filter.AuthorName = &authorName
+	}
+
+	tags := c.QueryArray("tags")
+	if len(tags) > 0 {
+		var tagObjects []domain.Tag
+		for _, tag := range tags {
+			tagObjects = append(tagObjects, domain.Tag(tag))
+		}
+		filter.Tags = &tagObjects
+	}
+
+	blogTitle := c.Query("blogTitle")
+	if blogTitle != "" {
+		filter.BlogTitle = &blogTitle
+	}
+
+	popularity, err := strconv.ParseFloat(c.Query("popularity"), 64)
+	if err == nil {
+		filter.Popularity = &popularity
+	}
+
+	sortByField := c.Query("sortByField")
+	sortByOrder := c.Query("sortByOrder")
+	if sortByField != "" {
+		sortBy := domain.FilterParam(sortByField)
+		filter.Sort_By = &sortBy
+	}
+
+	if sortByOrder != "" {
+		sortBy := domain.FilterParam(sortByOrder)
+		filter.Sort_By = &sortBy
 	}
 
 	blogs, err := bc.BlogUsecase.SearchBlogs(c, filter, limit, page)

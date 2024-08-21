@@ -13,11 +13,14 @@ import Card from "../components/Page2/Card";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { getCards } from "@/lib/api/cardController";
-import {Card as CardType } from "@/types/cardController.Interface";
-import {getCurrentUser} from "@/lib/api/userControl"
-import User from "@/types/userInterface" 
-import Preference from "@/types/userInterface"
-import {getTransactionIncomes, getTransactionsExpenses} from "@/lib/api/transactionController"
+import { Card as CardType } from "@/types/cardController.Interface";
+import { getCurrentUser } from "@/lib/api/userControl";
+import User from "@/types/userInterface";
+import Preference from "@/types/userInterface";
+import {
+  getTransactionIncomes,
+  getTransactionsExpenses,
+} from "@/lib/api/transactionController";
 import { PaginatedTransactionsResponse } from "@/types/transactionController.interface";
 
 type DataItem = {
@@ -26,7 +29,7 @@ type DataItem = {
   headingStyle: string;
   dataStyle: string;
 };
- 
+
 type Column = {
   icon: IconType;
   iconStyle: string;
@@ -48,9 +51,9 @@ const Page = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [getCard, setGetCards] = useState<CardType[]>();
-  const [currentUser, setCurrentUser] = useState()
-  const [income, setIncome] = useState(0)
-  const [expense, setExpense] = useState(0)
+  const [currentUser, setCurrentUser] = useState();
+  const [income, setIncome] = useState(0);
+  const [expense, setExpense] = useState(0);
   // Getting the session from the server
   useEffect(() => {
     const fetchSession = async () => {
@@ -73,7 +76,7 @@ const Page = () => {
     const addingData = async () => {
       if (session?.access_token) {
         const cardData = await getCards(session?.access_token);
-        console.log("Fetching Complete", cardData.content)
+        console.log("Fetching Complete", cardData.content);
         setGetCards(cardData.content);
       }
     };
@@ -91,33 +94,41 @@ const Page = () => {
     addingData();
   });
 
-    // Fetching Income
-    useEffect(() => {
-      const addingData = async () => {
-        if (session?.access_token) {
-          const current = await getTransactionIncomes(0, 1, session?.access_token);
-          console.log("INCOME", current.data)
-          current.data.content.map((items: any) => {
-            setIncome(income + items.amount);
-          })
-        }
-      };
-      addingData();
-    });
+  // Fetching Income
+  useEffect(() => {
+    const addingData = async () => {
+      if (session?.access_token) {
+        const current = await getTransactionIncomes(
+          0,
+          1,
+          session?.access_token
+        );
+        console.log("INCOME", current.data);
+        current.data.content.map((items: any) => {
+          setIncome(income + items.amount);
+        });
+      }
+    };
+    addingData();
+  });
 
-    // Fetching Expense
-    useEffect(() => {
-      const addingData = async () => {
-        if (session?.access_token) {
-          const current = await getTransactionsExpenses(0, 1, session?.access_token);
-          console.log("Expense", current.data)
-          current.data.content.map((items: any) => {
-            setExpense(expense + items.amount);
-          })
-        }
-      };
-      addingData();
-    });
+  // Fetching Expense
+  useEffect(() => {
+    const addingData = async () => {
+      if (session?.access_token) {
+        const current = await getTransactionsExpenses(
+          0,
+          1,
+          session?.access_token
+        );
+        console.log("Expense", current.data);
+        current.data.content.map((items: any) => {
+          setExpense(expense + items.amount);
+        });
+      }
+    };
+    addingData();
+  });
   // console.log("USER, ", currentUser)
   // Example data for the first ListCard
   const ReusableCard: Column = {
@@ -139,7 +150,7 @@ const Page = () => {
     iconStyle: "text-[#396AFF] bg-[#E7EDFF]", // Updating the iconStyle
     data: ReusableCard.data.map((item) => ({
       ...item,
-      text:String(income),
+      text: String(income),
       heading: "Income", // Updating the heading
     })),
   };
@@ -249,20 +260,21 @@ const Page = () => {
                 See All
               </span>
             </div>
-            {getCard && getCard.map((items) => (
-              <Card
-                key={items.id}
-                balance={String(items.balance)}
-                cardHolder={items.cardHolder}
-                validThru={formatDate(items.expiryDate)}
-                cardNumber="3778 **** **** 1234"
-                filterClass=""
-                bgColor="from-[#4C49ED] to-[#0A06F4]"
-                textColor="text-white"
-                iconBgColor="bg-opacity-10"
-                showIcon={true}
-              ></Card>
-            ))}
+            {getCard &&
+              getCard.map((items) => (
+                <Card
+                  key={items.id}
+                  balance={String(items.balance)}
+                  cardHolder={items.cardHolder}
+                  validThru={formatDate(items.expiryDate)}
+                  cardNumber="3778 **** **** 1234"
+                  filterClass=""
+                  bgColor="from-[#4C49ED] to-[#0A06F4]"
+                  textColor="text-white"
+                  iconBgColor="bg-opacity-10"
+                  showIcon={true}
+                ></Card>
+              ))}
           </div>
         </div>
 

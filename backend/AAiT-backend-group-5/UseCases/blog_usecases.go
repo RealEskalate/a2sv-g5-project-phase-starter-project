@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"time"
-	"log"
 
 	"github.com/go-redis/redis/v8"
 	"strconv"
+	"log"
 
 	config "github.com/aait.backend.g5.main/backend/Config"
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
@@ -58,11 +58,9 @@ func (b *blogUsecase) CreateBlog(ctx context.Context, blog *models.Blog) (*dtos.
 	if err != nil {
 		return nil, err
 	}
-
-	if err := b.cacheService.Delete(ctx, b.env.REDIS_BLOG_KEY); err != nil {
-		return nil, models.InternalServerError("Error while Invalidating blog from cache")
+	if err := b.cacheService.InvalidateAllBlogCaches(ctx); err != nil {
+		return nil, models.InternalServerError("Error while invalidating all blog caches")
 	}
-
 	return &dtos.BlogResponse{
 		Blog:       *newBlog,
 		Comments:   []models.Comment{},
@@ -80,6 +78,9 @@ func (b *blogUsecase) GetBlog(ctx context.Context, id string) (*dtos.BlogRespons
 	}
 
 	blog := *data.(*models.Blog)
+	if err := b.repository.IncreaseView(ctx, blog.ID); err != nil {
+		return nil, err
+	}
 
 	blogComments, commentErr := b.helper.FetchComments(ctx, blog.ID)
 	if commentErr != nil {
@@ -160,13 +161,9 @@ func (b *blogUsecase) UpdateBlog(ctx context.Context, blogID string, blog *model
 		return err
 	}
 
-	if err := b.cacheService.Delete(ctx, blogID); err != nil {
-		return models.InternalServerError("Error while deleting blog from cache")
+	if err := b.cacheService.InvalidateAllBlogCaches(ctx); err != nil {
+		return models.InternalServerError("Error while invalidating all blog caches")
 	}
-
-	updatedBlog, _ := b.repository.GetBlog(ctx, blogID)
-	dataJSON, _ := b.helper.Marshal(updatedBlog)
-	b.cacheService.Set(ctx, blogID, string(dataJSON), b.cacheTTL)
 
 	return nil
 }
@@ -176,10 +173,6 @@ func (b *blogUsecase) DeleteBlog(ctx context.Context, deleteBlogReq dtos.DeleteB
 	blog, err := b.repository.GetBlog(ctx, deleteBlogReq.BlogID)
 	user, uErr := b.userRepo.GetUserByID(ctx, deleteBlogReq.AuthorID)
 
-
-	log.Println("blog", blog)
-	log.Println("user", deleteBlogReq.AuthorID)
-
 	if err != nil {
 		return err
 	}
@@ -188,7 +181,7 @@ func (b *blogUsecase) DeleteBlog(ctx context.Context, deleteBlogReq dtos.DeleteB
 		return uErr
 	}
 
-	if blog.AuthorID != deleteBlogReq.AuthorID || user.Role != "admin" {
+	if blog.AuthorID != deleteBlogReq.AuthorID && user.Role != models.RoleAdmin {
 		return models.Unauthorized("You are not authorized to delete this blog")
 	}
 
@@ -201,12 +194,8 @@ func (b *blogUsecase) DeleteBlog(ctx context.Context, deleteBlogReq dtos.DeleteB
 		return err
 	}
 
-	if err := b.cacheService.Delete(ctx, b.env.REDIS_BLOG_KEY); err != nil {
-		return models.InternalServerError("Error while deleting blog from cache")
-	}
-
-	if err := b.cacheService.Delete(ctx, b.env.REDIS_BLOG_KEY); err != nil {
-		return models.InternalServerError("Error while Invalidating blog from cache")
+	if err := b.cacheService.InvalidateAllBlogCaches(ctx); err != nil {
+		return models.InternalServerError("Error while invalidating all blog caches")
 	}
 
 	return nil
@@ -214,11 +203,9 @@ func (b *blogUsecase) DeleteBlog(ctx context.Context, deleteBlogReq dtos.DeleteB
 
 func (b *blogUsecase) TrackPopularity(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse {
 
-	existingAction, err := b.popularity.GetBlogPopularityAction(ctx, popularity.BlogID, popularity.UserID)
+	existingAction, _ := b.popularity.GetBlogPopularityAction(ctx, popularity.BlogID, popularity.UserID)
 
-	if err != nil {
-		return err
-	}
+	log.Println(existingAction, "existingAction")
 
 	if existingAction != nil {
 		if existingAction.Action == popularity.Action {

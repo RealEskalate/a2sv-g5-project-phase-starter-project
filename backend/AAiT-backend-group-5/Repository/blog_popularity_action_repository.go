@@ -7,7 +7,6 @@ import (
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -70,19 +69,14 @@ func (br *BlogPupularityActionRepo) Dislike(ctx context.Context, popularityActio
 	return models.Nil()
 }
 func (br *BlogPupularityActionRepo) GetBlogPopularityAction(ctx context.Context, blogID string, userID string) (*models.PopularityAction, *models.ErrorResponse) {
-	objID, err := primitive.ObjectIDFromHex(blogID)
-	userObjID, rerr := primitive.ObjectIDFromHex(userID)
 
-	if err != nil || rerr != nil {
-		return nil, models.InternalServerError("invalid id")
-	}
 	filter := bson.M{
-		"blog_id": objID,
-		"user_id": userObjID,
+		"blog_id": blogID,
+		"user_id": userID,
 	}
 
 	var popInfo models.PopularityAction
-	err = br.BlogUserActionCollection.FindOne(ctx, filter).Decode(&popInfo)
+	err := br.BlogUserActionCollection.FindOne(ctx, filter).Decode(&popInfo)
 	if err != nil {
 		return nil, models.InternalServerError(err.Error())
 	}

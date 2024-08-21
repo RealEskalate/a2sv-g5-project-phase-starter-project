@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
@@ -85,12 +87,36 @@ func (c *blogController) GetBlogsController(ctx *gin.Context) {
 }
 
 func (c *blogController) SearchBlogsController(ctx *gin.Context) {
-	var filter dtos.FilterBlogRequest
 
-	if err := ctx.ShouldBind(&filter); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
-		return
+	title := ctx.DefaultQuery("title", "")
+	authorName := ctx.DefaultQuery("author_name", "")
+	date := ctx.DefaultQuery("date", "")
+	viewCount := ctx.DefaultQuery("view_count", "0")
+	likeCount := ctx.DefaultQuery("like_count", "0")
+	dislikeCount := ctx.DefaultQuery("dislike_count", "0")
+	tags := ctx.DefaultQuery("tags", "")
+
+	viewCountInt, _ := strconv.Atoi(viewCount)
+	likeCountInt, _ := strconv.Atoi(likeCount)
+	dislikeCountInt, _ := strconv.Atoi(dislikeCount)
+
+	tagsSlice := []string{}
+	if tags != "" {
+		tagsSlice = strings.Split(tags, ",")
 	}
+
+	filter := dtos.FilterBlogRequest{
+		Title:        title,
+		AuthorName:   authorName,
+		Date:         date,
+		ViewCount:    viewCountInt,
+		LikeCount:    likeCountInt,
+		DislikeCount: dislikeCountInt,
+		Tags:         tagsSlice,
+	}
+
+	log.Println(title, "filter")
+	log.Println(tags, "filter")
 
 	blogs, err := c.usecase.SearchBlogs(ctx, filter)
 
@@ -100,8 +126,8 @@ func (c *blogController) SearchBlogsController(ctx *gin.Context) {
 	}
 
 	ctx.IndentedJSON(http.StatusOK, gin.H{"data": blogs})
-
 }
+
 func (c *blogController) UpdateBlogController(ctx *gin.Context) {
 	var updateBlog dtos.UpdateBlogRequest
 	blogID := ctx.Param("id")
@@ -110,6 +136,8 @@ func (c *blogController) UpdateBlogController(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
+
+	log.Println(updateBlog, "updateBlog")
 
 	authorID := c.getAuthorID(ctx)
 
@@ -162,8 +190,11 @@ func (c *blogController) TrackPopularityController(ctx *gin.Context) {
 	}
 
 	userID := c.getAuthorID(ctx)
+	blogID := ctx.Param("id")
 
 	blogPopularity.UserID = userID
+	blogPopularity.BlogID = blogID
+
 	if err := c.usecase.TrackPopularity(ctx, blogPopularity); err != nil {
 		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})
 		return
@@ -171,5 +202,3 @@ func (c *blogController) TrackPopularityController(ctx *gin.Context) {
 
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Popularity tracked successfully"})
 }
-
-

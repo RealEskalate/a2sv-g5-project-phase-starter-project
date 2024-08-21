@@ -24,11 +24,11 @@ type Message struct {
 
 type Usecase interface {
 	CreateChat(ctx context.Context, form CreateChatForm) (Chat, error)
-	DeleteChat(ctx context.Context, form DefalutChatForm) error
+	DeleteChat(ctx context.Context, form DefaultChatForm) error
 	GenerateChatTitle(ctx context.Context, form TextForm) (string, error)
-	GetChat(ctx context.Context, form DefalutChatForm) (Chat, error)
-	GetChats(ctx context.Context, form DefalutChatForm) (infrastructure.PaginationResponse[Chat], error)
-	SendMessage(ctx context.Context, chatForm DefalutChatForm, textForm TextForm) (Message, error)
+	GetChat(ctx context.Context, form DefaultChatForm) (Chat, error)
+	GetChats(ctx context.Context, form DefaultChatForm) (infrastructure.PaginationResponse[Chat], error)
+	SendMessage(ctx context.Context, chatForm DefaultChatForm, textForm TextForm) (Message, error)
 }
 
 type Repository interface {

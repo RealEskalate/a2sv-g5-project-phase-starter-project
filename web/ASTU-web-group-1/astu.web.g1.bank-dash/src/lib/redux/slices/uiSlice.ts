@@ -11,8 +11,11 @@ export const uiSlice = createSlice({
     toggleHamburgerMenu: (state) => {
       state.hamburgerMenu = !state.hamburgerMenu;
     },
+    hideMenu: (state) => {
+      state.hamburgerMenu = false;
+    },
   },
 });
 
-export const { toggleHamburgerMenu } = uiSlice.actions;
+export const { toggleHamburgerMenu, hideMenu } = uiSlice.actions;
 export default uiSlice.reducer;

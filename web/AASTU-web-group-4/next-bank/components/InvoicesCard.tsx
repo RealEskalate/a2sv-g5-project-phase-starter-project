@@ -59,7 +59,7 @@ const TransactionList: React.FC = () => {
           />
         </div>
         <div className="flex-1 px-4">
-          <div className="text-gray-800 font-medium">{transaction.name}</div>
+          <div className="text-gray-800 font-medium w-[60px] truncate">{transaction.name}</div>
           <div className="text-gray-400 text-sm">{transaction.time}</div>
         </div>
         <div className="text-gray-800 font-semibold">{transaction.amount}</div>

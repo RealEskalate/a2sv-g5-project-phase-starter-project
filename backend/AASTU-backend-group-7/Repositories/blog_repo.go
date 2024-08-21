@@ -365,7 +365,7 @@ func (br *blogrepository) DislikePost(ctx context.Context, id primitive.ObjectID
 		return err, 500, ""
 	}
 
-	return nil, 200, "liked successfully"
+	return nil, 200, "disliked successfully"
 }
 
 // search posts

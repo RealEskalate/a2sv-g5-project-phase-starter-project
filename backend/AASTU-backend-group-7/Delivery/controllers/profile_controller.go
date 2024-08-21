@@ -49,11 +49,11 @@ func (uc *profile_controller) UpdateProfile(c *gin.Context) {
 	// 	return
 	// }
 	// get profile picture image from request
-	file, err := c.FormFile("profilepicture")
-	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	file, _ := c.FormFile("profilepicture")
+	// if err != nil {
+	// 	c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
 	var user Domain.User
 	user.ID = logeduser.ID

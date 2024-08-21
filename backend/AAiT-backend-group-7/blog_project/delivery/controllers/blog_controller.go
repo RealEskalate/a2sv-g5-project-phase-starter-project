@@ -202,3 +202,24 @@ func (bc *blogController) Search(c *gin.Context) {
 	c.JSON(200, blogs)
 
 }
+
+
+func (bc *blogController) AiRecommendation(c *gin.Context) {
+	var content string
+
+	err := c.BindJSON(&content)
+
+	if 	err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	recommendation, err := bc.BlogUsecase.AiRecommendation(c, content)
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, recommendation)
+
+}

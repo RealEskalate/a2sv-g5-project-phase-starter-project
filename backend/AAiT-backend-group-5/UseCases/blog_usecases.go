@@ -45,16 +45,15 @@ func NewblogUsecase(
 }
 
 func (b *blogUsecase) getBlogs(ctx context.Context, data []*models.Blog) ([]*dtos.BlogResponse, *models.ErrorResponse) {
-	response := []*dtos.BlogResponse{}
+	var response []*dtos.BlogResponse
 
 	for _, blog := range data {
-		blogComments, commentErr := b.repository.GetComments(ctx, blog.ID)
-		blogPopularity, popularityErr := b.repository.GetPopularity(ctx, blog.ID)
-
+		blogComments, commentErr := b.fetchComments(ctx, blog.ID)
 		if commentErr != nil {
 			return nil, commentErr
 		}
 
+		blogPopularity, popularityErr := b.fetchPopularity(ctx, blog.ID)
 		if popularityErr != nil {
 			return nil, popularityErr
 		}
@@ -64,22 +63,48 @@ func (b *blogUsecase) getBlogs(ctx context.Context, data []*models.Blog) ([]*dto
 			Comments:   blogComments,
 			Popularity: *blogPopularity,
 		})
-
 	}
 
 	return response, nil
+}
+
+func (b *blogUsecase) fetchComments(ctx context.Context, blogID string) ([]models.Comment, *models.ErrorResponse) {
+	comments, err := b.repository.GetComments(ctx, blogID)
+	if err != nil {
+		if err.Code == 404 {
+			return []models.Comment{}, nil
+		}
+		return nil, err
+	}
+	return comments, nil
+}
+
+func (b *blogUsecase) fetchPopularity(ctx context.Context, blogID string) (*models.Popularity, *models.ErrorResponse) {
+	popularity, err := b.repository.GetPopularity(ctx, blogID)
+	if err != nil {
+		if err.Code == 404 {
+			return &models.Popularity{}, nil
+		}
+		return nil, err
+	}
+	return popularity, nil
 }
 
 func (b *blogUsecase) fetchFromCacheOrRepo(ctx context.Context, cacheKey string, fetchFromRepo func() (interface{}, *models.ErrorResponse)) (interface{}, *models.ErrorResponse) {
 	cachedData, err := b.cacheService.Get(ctx, cacheKey)
 
 	if err == redis.Nil {
+		// Fetch from repository if cache is empty
 		data, repoErr := fetchFromRepo()
 		if repoErr != nil {
 			return nil, repoErr
 		}
 
-		dataJSON, _ := b.helper.Marshal(data)
+		// Marshal and store in cache
+		dataJSON, marshalErr := b.helper.Marshal(data)
+		if marshalErr != nil {
+			return nil, models.InternalServerError("Error while marshalling data")
+		}
 		b.cacheService.Set(ctx, cacheKey, string(dataJSON), b.cacheTTL)
 
 		return data, nil
@@ -87,13 +112,16 @@ func (b *blogUsecase) fetchFromCacheOrRepo(ctx context.Context, cacheKey string,
 		return nil, models.InternalServerError("Error while fetching data from cache")
 	}
 
-	var result interface{}
-	if err := b.helper.Unmarshal(cachedData, &result); err != nil {
+	// Unmarshal directly into the expected struct
+	var blog models.Blog
+	if unmarshalErr := json.Unmarshal([]byte(cachedData), &blog); unmarshalErr != nil {
 		return nil, models.InternalServerError("Error while unmarshalling data from cache")
 	}
 
-	return result, nil
+	return &blog, nil
 }
+
+
 
 func (b *blogUsecase) CreateBlog(ctx context.Context, blog *models.Blog) (*dtos.BlogResponse, *models.ErrorResponse) {
 	slug := b.helper.CreateSlug(blog.Title)
@@ -103,6 +131,10 @@ func (b *blogUsecase) CreateBlog(ctx context.Context, blog *models.Blog) (*dtos.
 
 	if err != nil {
 		return nil, err
+	}
+
+	if err := b.cacheService.Delete(ctx, b.env.REDIS_BLOG_KEY); err != nil {
+		return nil, models.InternalServerError("Error while Invalidating blog from cache")
 	}
 
 	return &dtos.BlogResponse{
@@ -121,19 +153,20 @@ func (b *blogUsecase) GetBlog(ctx context.Context, id string) (*dtos.BlogRespons
 		return nil, err
 	}
 
-	blogComments, commentErr := b.repository.GetComments(ctx, id)
-	blogPopularity, popularityErr := b.repository.GetPopularity(ctx, id)
+	blog := *data.(*models.Blog)
 
+	blogComments, commentErr := b.fetchComments(ctx, blog.ID)
 	if commentErr != nil {
 		return nil, commentErr
 	}
 
+	blogPopularity, popularityErr := b.fetchPopularity(ctx, blog.ID)
 	if popularityErr != nil {
 		return nil, popularityErr
 	}
 
 	return &dtos.BlogResponse{
-		Blog:       *data.(*models.Blog),
+		Blog:       blog,
 		Comments:   blogComments,
 		Popularity: *blogPopularity,
 	}, nil
@@ -148,7 +181,12 @@ func (b *blogUsecase) GetBlogs(ctx context.Context) ([]*dtos.BlogResponse, *mode
 		return nil, err
 	}
 
-	return b.getBlogs(ctx, data.([]*models.Blog))
+	blogs, ok := data.([]*models.Blog)
+	if !ok {
+		return nil, &models.ErrorResponse{Message: "Data type mismatch: expected []*models.Blog"}
+	}
+
+	return b.getBlogs(ctx, blogs)
 }
 
 func (b *blogUsecase) SearchBlogs(ctx context.Context, filter dtos.FilterBlogRequest) ([]*dtos.BlogResponse, *models.ErrorResponse) {

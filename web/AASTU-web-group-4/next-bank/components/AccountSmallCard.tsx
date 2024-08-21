@@ -1,77 +1,6 @@
-// import Image from 'next/image';
-// import Saving from '@/public/icons/Saving';
-
-// interface BalanceCardProps {
-//   imageSrc: string;
-//   altText: string;
-//   title: string;
-//   balance: string;
-// }
-
-// const BalanceCard: React.FC<{ accountData: BalanceCardProps }> = ({ accountData }) => {
-//   return (
-//     <div className="bg-white rounded-lg shadow-md p-3 flex items-center space-x-3 w-full">
-//       {/* Icon */}
-//       <div className="bg-yellow-100 rounded-xl p-2">
-//         <Image 
-//           src={accountData.imageSrc} // Replace with your icon path
-//           alt={accountData.altText}
-//           width={20}
-//           height={40}
-//         />
-//       </div>
-
-//       {/* Balance Details */}
-//       <div>
-//         <p className="text-blue-500 text-xs">{accountData.title}</p>
-//         <p className="text-black text-lg font-bold">{accountData.balance}</p>
-//       </div>
-//     </div>
-//   );
-// }
-
-// const accountDatas: BalanceCardProps[] = [
-//   {
-//     imageSrc: "/icons/money_bag.jsx",
-//     altText: "Money Bag Icon",
-//     title: "My Balance",
-//     balance: "$12,750",
-//   },
-//   {
-//     imageSrc: "/icons/LifeInsuranceIcon.jsx",
-//     altText: "Income Icon",
-//     title: "Income",
-//     balance: "$5,600",
-//   },
-//   {
-//     imageSrc: "/icons/expense.jsx",
-//     altText: "Expense Icon",
-//     title: "Expense",
-//     balance: "$3,460",
-//   },
-//   {
-//     imageSrc: "Saving",
-//     altText: "Savings Icon",
-//     title: "Total Saving",
-//     balance: "$7,920",
-//   }
-// ];
-
-// const App: React.FC = () => {
-//   return (
-//     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-//       {accountDatas.map((accountData, index) => (
-//         <BalanceCard key={index} accountData={accountData} />
-//       ))}
-//     </div>
-//   );
-// };
-
-
-// export default App;
-
-import React from 'react';
 import Image from 'next/image';  
+import { useState, useEffect } from "react";
+import { getAllBankServices, getBankServiceById } from "@/services/bankseervice";
 
 interface BalanceCardProps {
   iconSrc: string; // Path to the image source
@@ -106,6 +35,21 @@ const BalanceCard: React.FC<{ accountData: BalanceCardProps }> = ({ accountData 
   );
 };
 
+
+const App: React.FC = () => {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+      {accountDatas.map((accountData, index) => (
+        <BalanceCard key={index} accountData={accountData} />
+      ))}
+    </div>
+  );
+};
+
+export default App;
+
+
+
 const accountDatas: BalanceCardProps[] = [
   {
     iconSrc: '/Images/1.png',
@@ -137,14 +81,43 @@ const accountDatas: BalanceCardProps[] = [
   },
 ];
 
-const App: React.FC = () => {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-      {accountDatas.map((accountData, index) => (
-        <BalanceCard key={index} accountData={accountData} />
-      ))}
-    </div>
-  );
-};
 
-export default App;
+// import { useState, useEffect } from "react";
+// import { currentuser } from "@/services/userupdate";
+// import { BalanceCard } from './smallCard';
+
+
+
+// const App: React.FC = () => {
+//   const [balance, setBalance] = useState("");
+
+//   useEffect(() => {
+//     const fetchBalance = async () => {
+//       try {
+//         const balanceInfo = await currentuser();
+//         console.log(balanceInfo)
+
+//         if (Array.isArray(balanceInfo.data.content)) {
+//           setBalance(balanceInfo.data.content);
+//         } else {
+//           console.error("Transaction data is not an array");
+//         }
+//       } catch (error) {
+//         console.error("Failed to fetch transactions", error);
+//       }
+//     };
+
+//     fetchBalance();
+//   }, []);
+
+//   return (
+//     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+//       {accountDatas.map((accountData, index) => (
+//         <BalanceCard key={index} accountData={accountData} />
+//       ))}
+//     </div>
+//   );
+// };
+
+// export default App;
+

@@ -73,3 +73,4 @@ export const searchBankServices = async (queryParams: any) => {
   );
   return response.json();
 };
+

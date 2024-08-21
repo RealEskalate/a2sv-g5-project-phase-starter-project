@@ -1,3 +1,7 @@
+import Cookie from "js-cookie"
+
+const API_BASE_URL = "https://bank-dashboard-6acc.onrender.com";
+const token = Cookie.get("accessToken")
 // Update User Details - PUT Request
 export const updateUserDetails = async (userData: any) => {
   try {
@@ -97,7 +101,7 @@ export const randominvestmentdata = async (userId: string) => {
   }
 };
 
-export const currentuser = async (userId: string) => {
+export const currentuser = async () => {
   try {
     const response = await fetch(
       `https://bank-dashboard-6acc.onrender.com/user/current`,
@@ -105,15 +109,19 @@ export const currentuser = async (userId: string) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       }
     );
 
     if (!response.ok) {
+      console.log("current user fetch :", response)
       throw new Error("Failed to fetch user details");
     }
 
     const data = await response.json();
+    console.log("succesful current user response:", data)
+
     return data;
   } catch (error) {
     console.error("Error:", error);

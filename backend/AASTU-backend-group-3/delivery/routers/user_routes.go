@@ -1,13 +1,13 @@
 package routers
 
 import (
+	"github.com/gin-gonic/gin"
+
 	"group3-blogApi/config/db"
 	"group3-blogApi/delivery/controllers"
 	"group3-blogApi/infrastracture"
 	"group3-blogApi/repository"
 	"group3-blogApi/usecase"
-
-	"github.com/gin-gonic/gin"
 )
 
 func SetUpUser(router *gin.Engine) {
@@ -36,6 +36,7 @@ func SetUpUser(router *gin.Engine) {
 		user.PUT("/update", authController.UpdateMyProfile)
 		user.POST("/upload-image", authController.UploadImage)
 		user.DELETE("/me", authController.DeleteMyAccount)
+
 
 		// Logout routes
 		user.POST("/logout", authController.Logout)

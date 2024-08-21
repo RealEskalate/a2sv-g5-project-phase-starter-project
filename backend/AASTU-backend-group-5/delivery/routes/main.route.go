@@ -16,12 +16,19 @@ func SetUp(router *gin.Engine) {
 	blogCollection := &database.MongoCollection{
 		Collection: clinect.Client.Database("BlogPost").Collection("Blogs"),
 	}
+
+	stateCollection := &database.MongoCollection{
+		Collection: clinect.Client.Database("BlogPost").Collection("States"),
+	}
 	aiRoute := router.Group("")
 	userRoute := router.Group("")
-	blogRot := router.Group("")
+	verifiRoute := router.Group("")
+	uplaodRoute := router.Group("")
+	authRoute := router.Group("")
+  blogRot := router.Group("")
 
 	NewBlogRoutes(blogRot, blogCollection, userCollection)
 	NewAiRequestRoute(aiRoute)
 	NewUserRoute(userRoute, userCollection)
-
+  NewAuthRoute(authRoute, userCollection, stateCollection)
 }

@@ -13,7 +13,7 @@ type TokenService_imp struct {
 	RefreshTokenSecret      string
 }
 
-func NewTokenService(accessSecret, refreshSecret, verificationSecret, resetSecret string) *TokenService_imp {
+func NewTokenService(accessSecret, refreshSecret string) *TokenService_imp {
 	return &TokenService_imp{
 		AccessTokenSecret:       accessSecret,
 		RefreshTokenSecret:      refreshSecret,
@@ -49,7 +49,7 @@ func (t *TokenService_imp) GenerateRefreshToken(user domain.User) (string, error
 }
 
 func (t *TokenService_imp) ValidateAccessToken(tokenStr string) (*domain.User, error) {
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &domain.UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(t.AccessTokenSecret), nil
 	})
 
@@ -72,7 +72,7 @@ func (t *TokenService_imp) ValidateAccessToken(tokenStr string) (*domain.User, e
 
 
 func (t *TokenService_imp) ValidateRefreshToken(tokenStr string) (*domain.User, error) {
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &domain.UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(t.RefreshTokenSecret), nil
 	})
 

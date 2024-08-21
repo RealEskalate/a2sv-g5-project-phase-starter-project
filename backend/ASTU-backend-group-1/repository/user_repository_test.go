@@ -15,6 +15,7 @@ import (
 
 var (
 	expectedUser = &domain.User{
+		ID:        "1",
 		Username:  "johndoe",
 		Email:     "johndoe@example.com",
 		FirstName: "John",

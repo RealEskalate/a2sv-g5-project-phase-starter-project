@@ -2,4 +2,8 @@ database:
   username: <your-database-username> 
   password: <your-database-password> 
   uri: <your-database-uri>
-
+email:
+  key: "nenbydebhwkqanpf"
+port: "http://localhost:8000/"
+jwt:
+  jwtKey: "starterproject"

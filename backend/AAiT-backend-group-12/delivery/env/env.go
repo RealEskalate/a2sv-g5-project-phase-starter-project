@@ -30,6 +30,7 @@ func LoadEnvironmentVariables() error {
 	ENV.REDIS_URL = os.Getenv("REDIS_URL")
 	ENV.GOOGLE_CLIENT_ID = os.Getenv("GOOGLE_CLIENT_ID")
 	ENV.GOOGLE_CLIENT_SECRET = os.Getenv("GOOGLE_CLIENT_SECRET")
+	ENV.GEMINI_API_KEY = os.Getenv(("GEMINI_API_KEY"))
 	port, err := strconv.ParseInt(os.Getenv("PORT"), 10, 64)
 	if err != nil {
 		return fmt.Errorf("error parsing PORT number: %v", err.Error())
@@ -79,6 +80,12 @@ func LoadEnvironmentVariables() error {
 	default:
 		return nil
 	}
+	}
+	if ENV.GEMINI_API_KEY == "" {
+		return fmt.Errorf("error: couldn't load environment variable 'GEMINI_API_KEY'")
+	}
+
+	return nil
 }
 
 // Removes the root credentials from the environment

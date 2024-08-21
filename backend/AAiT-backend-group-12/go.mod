@@ -8,6 +8,7 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/sessions v1.3.0
+	github.com/google/generative-ai-go v0.17.0
 	github.com/joho/godotenv v1.5.1
 	github.com/markbates/goth v1.80.0
 	go.mongodb.org/mongo-driver v1.16.1

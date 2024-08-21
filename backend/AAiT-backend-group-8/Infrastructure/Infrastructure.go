@@ -17,6 +17,6 @@ func (inf *Infrastructure) GetCurrentTime() time.Time {
 	return time.Now()
 }
 
-func (int *Infrastructure) ConvertToPrimitiveObjectID(id string) (primitive.ObjectID, error) {
+func (inf *Infrastructure) ConvertToPrimitiveObjectID(id string) (primitive.ObjectID, error) {
 	return primitive.ObjectIDFromHex(id)
 }

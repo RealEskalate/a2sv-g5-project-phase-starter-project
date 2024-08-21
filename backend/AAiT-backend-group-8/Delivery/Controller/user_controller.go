@@ -2,6 +2,7 @@ package controller
 
 import (
 	"AAiT-backend-group-8/Domain"
+
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,7 +26,7 @@ func (controller *Controller) RegisterUser(c *gin.Context) {
 		return
 	}
 
-	err := controller.UserUsecase.RegisterUser(&user)
+	err := controller.UserUseCase.RegisterUser(&user)
 	if err != nil {
 		if err.Error() == "email already exists" {
 			c.JSON(400, gin.H{"error": err.Error()})
@@ -45,7 +46,7 @@ func (controller *Controller) VerifyEmail(c *gin.Context) {
 		return
 	}
 
-	err := controller.UserUsecase.VerifyEmail(token)
+	err := controller.UserUseCase.VerifyEmail(token)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -68,7 +69,7 @@ func (controller *Controller) Login(c *gin.Context) {
 		return
 	}
 
-	token, refresher, err := controller.UserUsecase.Login(ep.Email, ep.Password)
+	token, refresher, err := controller.UserUseCase.Login(ep.Email, ep.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -80,13 +81,13 @@ func (controller *Controller) Login(c *gin.Context) {
 func (controller *Controller) RefreshToken(c *gin.Context) {
 	var cred Domain.Credential
 
-	bind_err := c.BindJSON(&cred)
-	if bind_err != nil {
+	bindErr := c.BindJSON(&cred)
+	if bindErr != nil {
 		c.IndentedJSON(400, gin.H{"message": "invalid request payload"})
 		return
 	}
 
-	token, err := controller.UserUsecase.RefreshToken(cred.Email, cred.Refresher)
+	token, err := controller.UserUseCase.RefreshToken(cred.Email, cred.Refresher)
 	if err != nil {
 		c.IndentedJSON(400, gin.H{"message": "invalid refresh token "})
 	}
@@ -101,7 +102,7 @@ func (controller *Controller) ForgotPassword(c *gin.Context) {
 		return
 	}
 
-	err := controller.UserUsecase.GenerateResetPasswordToken(email)
+	err := controller.UserUseCase.GenerateResetPasswordToken(email)
 	if err != nil {
 		if err.Error() == "user not found" {
 			c.JSON(404, gin.H{"error": "User not found"})
@@ -121,7 +122,7 @@ func (controller *Controller) StoreToken(c *gin.Context) {
 		return
 	}
 
-	err := controller.UserUsecase.StoreToken(token)
+	err := controller.UserUseCase.StoreToken(token)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -141,7 +142,7 @@ func (controller *Controller) ResetPassword(c *gin.Context) {
 		return
 	}
 
-	err := controller.UserUsecase.ResetPassword(payload.Token, payload.NewPassword)
+	err := controller.UserUseCase.ResetPassword(payload.Token, payload.NewPassword)
 	if err != nil {
 		if err.Error() == "invalid or expired token" || err.Error() == "invalid token payload" || err.Error() == "invalid or mismatched token" {
 			c.JSON(400, gin.H{"error": err.Error()})
@@ -157,7 +158,7 @@ func (controller *Controller) ResetPassword(c *gin.Context) {
 func (controller *Controller) PromoteUser(c *gin.Context) {
 	email := c.Param("email")
 
-	err := controller.UserUsecase.PromoteUser(email)
+	err := controller.UserUseCase.PromoteUser(email)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -170,7 +171,7 @@ func (controller *Controller) PromoteUser(c *gin.Context) {
 func (controller *Controller) DemoteUser(c *gin.Context) {
 	email := c.Param("email")
 
-	err := controller.UserUsecase.DemoteUser(email)
+	err := controller.UserUseCase.DemoteUser(email)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -183,7 +184,7 @@ func (controller *Controller) DemoteUser(c *gin.Context) {
 func (controller *Controller) DeleteUser(c *gin.Context) {
 	email := c.Param("email")
 
-	err := controller.UserUsecase.DeleteUser(email)
+	err := controller.UserUseCase.DeleteUser(email)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -203,7 +204,7 @@ func (controller *Controller) Logout(c *gin.Context) {
 		return
 	}
 
-	err = controller.UserUsecase.Logout(cred.Email, cred.Refresher)
+	err = controller.UserUseCase.Logout(cred.Email, cred.Refresher)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "email not found"})

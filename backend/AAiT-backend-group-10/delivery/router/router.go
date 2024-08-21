@@ -37,7 +37,7 @@ func NewRouter(db *mongo.Database) {
 	}
 
 	authUsecases := usecases.NewAuthUsecase(userRepo, jwt, pwdService, emailService)
-	authController := controllers.NewAuthController(authUsecases)
+	authController := controllers.NewAuthController(authUsecases, usecases.GoogleOAuthConfig)
 
 	userUseCase := usecases.NewUserUseCase(userRepo)
 	userController := controllers.NewUserController(userUseCase)
@@ -68,6 +68,8 @@ func NewRouter(db *mongo.Database) {
 	router.POST("/refresh-token", authController.RefreshToken)
 	router.POST("/forgot-password", authController.ForgotPassword)
 	router.POST("/reset-password", authController.ResetPassword)
+	router.GET("/auth/google", authController.HandleGoogleLogin)
+	router.GET("/auth/google/callback", authController.HandleGoogleCallback)
 
 	port := os.Getenv("PORT")
 	router.Run(":" + port)

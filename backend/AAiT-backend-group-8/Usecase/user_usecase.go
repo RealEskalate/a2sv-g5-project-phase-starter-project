@@ -2,6 +2,7 @@ package usecase
 
 import (
 	domain "AAiT-backend-group-8/Domain"
+	interfaces "AAiT-backend-group-8/Interfaces"
 
 	"crypto/rand"
 	"encoding/hex"
@@ -28,14 +29,14 @@ func hashPassword(password string) (string, error) {
 }
 
 type UserUseCaseImpl struct {
-	userRepository  domain.IUserRepository
-	TokenService    domain.ITokenService
-	PasswordService domain.IPasswordService
-	TokenRepo       domain.ITokenRepository
-	MailService     domain.IMailService
+	userRepository  interfaces.IUserRepository
+	TokenService    interfaces.ITokenService
+	PasswordService interfaces.IPasswordService
+	TokenRepo       interfaces.ITokenRepository
+	MailService     interfaces.IMailService
 }
 
-func NewUserUseCase(userRepo domain.IUserRepository, ts domain.ITokenService, ps domain.IPasswordService, tr domain.ITokenRepository, ms domain.IMailService) *UserUseCaseImpl {
+func NewUserUseCase(userRepo interfaces.IUserRepository, ts interfaces.ITokenService, ps interfaces.IPasswordService, tr interfaces.ITokenRepository, ms interfaces.IMailService) *UserUseCaseImpl {
 	return &UserUseCaseImpl{userRepository: userRepo, TokenService: ts, PasswordService: ps, TokenRepo: tr, MailService: ms}
 }
 

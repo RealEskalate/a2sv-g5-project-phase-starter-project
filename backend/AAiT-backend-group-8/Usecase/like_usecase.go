@@ -3,7 +3,7 @@ package usecase
 import (
 	domain "AAiT-backend-group-8/Domain"
 	infrastructure "AAiT-backend-group-8/Infrastructure"
-	repository "AAiT-backend-group-8/Repository"
+	repository "AAiT-backend-group-8/Infrastructure/mongodb"
 	"errors"
 	"fmt"
 )
@@ -46,8 +46,11 @@ func (uc *LikeUseCase) LikeComment(userID string, blogID string) (bool, error) {
 
 	// user has already like , so dislike it
 	if ok {
-		uc.repository.UnlikeBlog(like.Id)
-		return false, nil // succesfully unliked
+		err = uc.repository.UnlikeBlog(like.Id)
+		if err != nil {
+			return true, err
+		}
+		return false, nil // successfully unliked
 	}
 
 	// user has not liked, so like it
@@ -59,7 +62,7 @@ func (uc *LikeUseCase) LikeComment(userID string, blogID string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	// succesfully liked
+	// successfully liked
 	return true, nil
 }
 func (uc *LikeUseCase) DeleteLikesOfBlog(blogID string) error {

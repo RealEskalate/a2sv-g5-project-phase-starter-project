@@ -39,7 +39,7 @@ export default function Form() {
                         <input
                             type="text"
                             id="userName"
-                            className="border rounded-md w-full h-12 border-[#CCCCF5] p-2"
+                            className="border rounded-md w-full h-12 border-[#CCCCF5] p-2 bg-white"
                             {...register("userName", {
                 
                                 required: {
@@ -55,7 +55,7 @@ export default function Form() {
                         <input
                             type="password"
                             id="password"
-                            className="border rounded-md w-full h-12 border-[#CCCCF5] p-2"
+                            className="border rounded-md w-full h-12 border-[#CCCCF5] p-2 bg-white"
                             {...register("password", {
                                 required: {
                                     value: true,

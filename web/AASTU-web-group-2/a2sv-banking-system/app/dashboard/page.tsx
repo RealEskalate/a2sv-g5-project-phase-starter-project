@@ -1,5 +1,6 @@
 'use client'
 import Image from "next/image";
+import { IconType } from "react-icons";
 import { useEffect, useState } from "react";
 import ImageComponent from "./components/ImageComponent";
 import Reviving from "./components/QuickTransfer";
@@ -10,28 +11,83 @@ import RecentTransaction from "./components/RecentTransaction";
 import CreditCard from "./components/CreditCard";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { getCards } from "@/lib/api/cardController";
+import { GetCardsResponse, Card as CardType } from "@/types/cardController.Interface";
+
+
 // import {RecentTransaction} from "@/components/RecentTransaction"
+type DataItem = {
+  heading: string;
+  text: string;
+  headingStyle: string;
+  dataStyle: string;
+};
+
+type Column = {
+  icon: IconType;
+  iconStyle: string;
+  data: DataItem[];
+};
+
+type Data = {
+  access_token: string;
+  data: string;
+  refresh_token: string;
+};
+
+type SessionDataType = {
+  user: Data;
+};
 
 export default function Home() {
-  const [session, setSession] = useState(false);
+  const [session, setSession] = useState<Data | null>(null);
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [getCard, setGetCards] = useState<CardType[]>();
   const route = useRouter();
+
+  // getting the session ends here
   useEffect(() => {
     const fetchSession = async () => {
-      const sessionData = await getSession();
-      if (sessionData?.user) {
-        setSession(true);
+      const sessionData = (await getSession()) as SessionDataType | null;
+      if (sessionData && sessionData.user) {
+        setSession(sessionData.user);
       } else {
-        route.push(`./api/auth/signin?callbackUrl=${encodeURIComponent('/accounts')}`);
+        router.push(
+          `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+        );
       }
-      setLoading(false); // Set loading to false after session check
+      setLoading(false);
     };
 
     fetchSession();
-  }, [route]); // Add router as a dependency
-  // getting the session ends here
+  }, [router]);
 
-  
+  // Fetching cards
+  useEffect(() => {
+    const addingData = async () => {
+      if (session?.access_token) {
+        const cardData = await getCards(session?.access_token);
+        console.log("Fetching Complete", cardData.content)
+        setGetCards(cardData.content);
+      }
+    };
+    addingData();
+  });
+
+  if (!session)
+    {
+      console.log("hello")
+    }
+  if (loading) return null; // Don't render anything while loading
+
+
+  // if (!session) {
+  //   router.push(
+  //     `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+  //   );
+  //   return null;
+  // }
   return (
     <div className="h-screen w-screen ">
 

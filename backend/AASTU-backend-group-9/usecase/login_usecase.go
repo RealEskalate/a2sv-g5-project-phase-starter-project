@@ -43,11 +43,11 @@ func (lu *loginUsecase) AuthenticateUser(c context.Context, login *domain.AuthLo
 }
 
 func (lu *loginUsecase) CreateAccessToken(user *domain.User, secret string, expiry int) (string, error) {
-	return tokenutil.CreateAccessToken(&domain.AuthSignup{Email: user.Email, Username: user.Username, UserID: user.ID}, secret, expiry)
+	return tokenutil.CreateAccessToken(&domain.AuthSignup{Email: user.Email, Username: user.Username, UserID: user.ID, Role: string(user.Role)}, secret, expiry)
 }
 
 func (lu *loginUsecase) CreateRefreshToken(user *domain.User, secret string, expiry int) (string, error) {
-	return tokenutil.CreateRefreshToken(&domain.AuthSignup{Username: user.Username, Email: user.Email, UserID: user.ID}, secret, expiry)
+	return tokenutil.CreateRefreshToken(&domain.AuthSignup{Username: user.Username, Email: user.Email, UserID: user.ID,Role: string(user.Role)}, secret, expiry)
 }
 
 func (lu *loginUsecase) SaveRefreshToken(c context.Context, token *domain.Token) error {

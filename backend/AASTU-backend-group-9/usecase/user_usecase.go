@@ -44,13 +44,41 @@ func (uc *UserUsecase) CreateUser(c context.Context, user *domain.CreateUser, cl
 	return uc.userRepository.CreateUser(ctx, &aduser)
 }
 
-func (uc *UserUsecase) UpdateUser(c context.Context, user *domain.User, claims *domain.JwtCustomClaims, id primitive.ObjectID) (*domain.User, error) {
+func (uc *UserUsecase) UpdateUser(c context.Context, user *domain.User, claims *domain.JwtCustomClaims, existinguser *domain.User) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
 	defer cancel()
-	user.ID = id
+	user.ID = existinguser.ID
 	_err := userutil.CanManipulateUser(claims, user, "update")
 	if _err != nil {
 		return nil, errors.New(_err.Message)
+	}
+	if user.Email == ""{
+		user.Email = existinguser.Email
+	}
+	if user.Username == ""{
+		user.Username = existinguser.Username
+	}
+	if user.Password == ""{
+		user.Password = existinguser.Password
+	}
+	user.Password,_ = userutil.HashPassword(user.Password)
+	if user.Role == ""{
+		user.Role = existinguser.Role
+	}
+	if user.First_Name == ""{
+		user.First_Name = existinguser.First_Name
+	}
+	if user.Last_Name == ""{
+		user.Last_Name = existinguser.Last_Name
+	}
+	if user.Bio == ""{
+		user.Bio = existinguser.Bio
+	}
+	if user.Profile_Picture == ""{
+		user.Profile_Picture = existinguser.Profile_Picture
+	}
+	if len(user.Contact_Info) == 0{
+		user.Contact_Info = existinguser.Contact_Info
 	}
 	if !userutil.ValidateEmail(user.Email) {
 		return nil, errors.New("invalid email")

@@ -3,7 +3,6 @@ package Domain
 import (
 	"context"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -19,8 +18,9 @@ type Collection interface {
 	UpdateOne(ctx context.Context, filter, update interface{}, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error)
 	UpdateMany(ctx context.Context, filter, update interface{}, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error)
 	Aggregate(ctx context.Context, pipeline interface{}) (Cursor, error)
-	CreateIndex(ctx context.Context, model bson.D, opts ...*options.CreateIndexesOptions) (string, error)
-	DeleteMany (ctx context.Context, filter interface{}, opts ...*options.DeleteOptions) (*mongo.DeleteResult, error)
+	CreateIndexes(ctx context.Context, models []mongo.IndexModel, opts ...*options.CreateIndexesOptions) ([]string, error)
+	// CreateUniqueIndex(ctx context.Context, model bson.D, opts ...*options.CreateIndexesOptions) (string, error)
+	DeleteMany(ctx context.Context, filter interface{}, opts ...*options.DeleteOptions) (*mongo.DeleteResult, error)
 }
 
 type Cursor interface {

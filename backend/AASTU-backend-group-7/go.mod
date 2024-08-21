@@ -6,6 +6,10 @@ require github.com/gin-gonic/gin v1.10.0
 
 require (
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
+	github.com/cloudinary/cloudinary-go/v2 v2.9.0 // indirect
+	github.com/creasty/defaults v1.7.0 // indirect
+	github.com/google/uuid v1.5.0 // indirect
+	github.com/gorilla/schema v1.4.1 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
 

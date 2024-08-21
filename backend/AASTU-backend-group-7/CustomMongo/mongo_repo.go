@@ -4,7 +4,6 @@ import (
 	domain "blogapp/Domain"
 	"context"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -68,12 +67,17 @@ func (m *MongoCollection) UpdateMany(ctx context.Context, filter, update interfa
 	return m.Collection.UpdateMany(ctx, filter, update, opts...)
 }
 
-func (m *MongoCollection) CreateIndex(ctx context.Context, model bson.D, opts ...*options.CreateIndexesOptions) (string, error) {
-	_model := mongo.IndexModel{
-		Keys: model,
-	}
-	return m.Collection.Indexes().CreateOne(ctx, _model, opts...)
+func (m *MongoCollection) CreateIndexes(ctx context.Context, models []mongo.IndexModel, opts ...*options.CreateIndexesOptions) ([]string, error) {
+	return m.Collection.Indexes().CreateMany(ctx, models, opts...)
 }
+
+// func (m *MongoCollection) CreateUniqueIndex(ctx context.Context, model bson.D, opts ...*options.CreateIndexesOptions) (string, error) {
+// 	_model := mongo.IndexModel{
+// 		Keys: model,
+// 		Options: options.Index().SetUnique(true), // make index unique
+// 	}
+// 	return m.Collection.Indexes().CreateOne(ctx, _model, opts...)
+// }
 
 func (m *MongoCollection) DeleteMany(ctx context.Context, filter interface{}, opts ...*options.DeleteOptions) (*mongo.DeleteResult, error) {
 	return m.Collection.DeleteMany(ctx, filter, opts...)

@@ -4,6 +4,7 @@ import (
 	"group3-blogApi/config"
 	"group3-blogApi/domain"
 	"time"
+
 	"github.com/golang-jwt/jwt"
 )
 
@@ -18,6 +19,7 @@ func GenerateToken(user domain.User) (string, error) {
 		UserID:     user.ID.Hex(),
 		Role:       user.Role,
 		Username:   user.Username,
+		IsActivated: user.IsActive,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * time.Duration(AccessTokenExpiryHour)).Unix(),
 		},
@@ -55,6 +57,7 @@ func GenerateRefreshToken(user *domain.User) (string, error) {
 		UserID:     user.ID.Hex(),
 		Role:       user.Role,
 		Username:   user.Username,
+		IsActivated: user.IsActive,
 
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * time.Duration(expiry)).Unix(),

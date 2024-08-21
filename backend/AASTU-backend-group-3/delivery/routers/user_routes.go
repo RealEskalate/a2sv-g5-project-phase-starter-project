@@ -21,6 +21,7 @@ func SetUpUser(router *gin.Engine) {
 	// blogController := controllers.NewBlogController(blogUsecase)
 
 	user := router.Group("/user")
+	user.POST("/refresh-token", authController.RefreshToken)
 	user.Use(infrastracture.AuthMiddleware())
 
 	{
@@ -31,7 +32,6 @@ func SetUpUser(router *gin.Engine) {
 
 		// Logout Routes
 
-		user.POST("/refresh-token", authController.RefreshToken)
 
 		user.POST("/logout", authController.Logout)
 		user.GET("logout-all", authController.LogoutAll)

@@ -32,6 +32,15 @@ func SetupRouter() *gin.Engine {
     SetUpAdmin(router)
 
 
+
+    // Blog routes
+    SetUpBlog(router)
+
+    // Like and Dislike routes
+    SetUpLike(router)
+   
+
+
     // // Ai routes
     SetUpAi(router)
     return router

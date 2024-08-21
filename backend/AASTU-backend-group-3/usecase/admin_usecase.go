@@ -56,7 +56,7 @@ func (uc *UserUsecase)UploadImage (userID string, imagePath string) error{
 
 func (uc *UserUsecase)UpdateMyProfile(user domain.User, UserID string) error{
 	if user.Bio == "" || user.Username == "" {
-		return errors.New("Bio and Username are required")
+		return errors.New("bio and username are required")
 	}
 	
 	err := uc.UserRepo.UpdateMyProfile(user, UserID)

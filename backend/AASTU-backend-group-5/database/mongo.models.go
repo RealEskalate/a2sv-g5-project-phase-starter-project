@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -22,17 +23,13 @@ func (c *MongoCursor) Close(ctx context.Context) error {
 	return c.Cursor.Close(ctx)
 }
 
-
-
-
 type MongoIndexView struct {
 	mongo.IndexView
 }
 
-func (MI *MongoIndexView) CreateOne(ctx context.Context, model mongo.IndexModel, opts ...*options.CreateIndexesOptions) (string, error){
-	return MI.IndexView.CreateOne(ctx, model , opts ...)
+func (MI *MongoIndexView) CreateOne(ctx context.Context, model mongo.IndexModel, opts ...*options.CreateIndexesOptions) (string, error) {
+	return MI.IndexView.CreateOne(ctx, model, opts...)
 }
-
 
 type MongoSingleResult struct {
 	*mongo.SingleResult
@@ -42,7 +39,6 @@ type MongoDeleteResult struct {
 	*mongo.DeleteResult
 }
 
-
 func (r *MongoSingleResult) Decode(v interface{}) error {
 	return r.SingleResult.Decode(v)
 }
@@ -50,8 +46,6 @@ func (r *MongoSingleResult) Decode(v interface{}) error {
 func (r *MongoDeleteResult) DeletedCount() int64 {
 	return r.DeleteResult.DeletedCount
 }
-
-
 
 type MongoCollection struct {
 	*mongo.Collection
@@ -74,7 +68,7 @@ func (c *MongoCollection) UpdateOne(ctx context.Context, filter interface{}, upd
 	return c.Collection.UpdateOne(ctx, filter, update, opts...)
 }
 func (c *MongoCollection) FindOneAndUpdate(ctx context.Context, filter interface{}, update interface{}, opts ...*options.FindOneAndUpdateOptions) SingleResultInterface {
-	return c.Collection.FindOneAndUpdate(context.TODO() , filter , update, opts...)
+	return c.Collection.FindOneAndUpdate(context.TODO(), filter, update, opts...)
 }
 
 func (c *MongoCollection) DeleteOne(ctx context.Context, filter interface{}, opts ...*options.DeleteOptions) (DeleteResultInterface, error) {
@@ -84,4 +78,7 @@ func (c *MongoCollection) DeleteOne(ctx context.Context, filter interface{}, opt
 
 func (c *MongoCollection) Indexes() IndexView {
 	return &MongoIndexView{IndexView: c.Collection.Indexes()}
+}
+func (c *MongoCollection) CountDocuments(ctx context.Context, filter interface{}, opts ...*options.CountOptions) (int64, error) {
+	return c.Collection.CountDocuments(ctx, filter, opts...)
 }

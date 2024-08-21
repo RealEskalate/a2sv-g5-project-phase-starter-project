@@ -83,6 +83,9 @@ func (r *MongoUserRepository) GetUserByEmail(email string) (*models.User, error)
 
 func (r *MongoUserRepository) DeleteUser(id string) error {
 	user_id, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
 	_, err = r.collection.DeleteOne(ctx, bson.M{"_id": user_id})
 	return err
 }
@@ -99,12 +102,18 @@ func (r *MongoUserRepository) UpdateProfile(id string, user *models.User) error 
 
 func (r *MongoUserRepository) PromoteUser(userID string) error {
 	user_id, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
 	_, err = r.collection.UpdateOne(ctx, bson.M{"_id": user_id}, bson.M{"$set": bson.M{"role": "admin"}})
 	return err
 }
 
 func (r *MongoUserRepository) DemoteUser(userID string) error {
 	user_id, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
 	_, err = r.collection.UpdateOne(ctx, bson.M{"_id": user_id}, bson.M{"$set": bson.M{"role": "user"}})
 	return err
 }

@@ -126,12 +126,30 @@ func (u *UserRepository) UpdateProfile(c context.Context, user *domain.UserUpdat
 	panic("unimplemented")
 }
 
-// UpdateRole implements domain.UserRepository.
-func (u *UserRepository) UpdateRole(c context.Context, role string, userID string) (*domain.User, error) {
-	panic("unimplemented")
-}
-
 // UpdateToken implements domain.UserRepository.
 func (u *UserRepository) UpdateToken(c context.Context, accessToken string, refreshToken string, userID string) (*domain.User, error) {
 	panic("unimplemented")
 }
+
+
+// UpdateRole implements domain.UserRepository.
+func (u *UserRepository) UpdateRole(c context.Context, role string, userID string) (*domain.User, error) {
+	collection := u.database.Collection(u.collection)
+
+	idHex, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": idHex}
+	update := bson.M{"$set": bson.M{"role": role}}
+
+	_, err = collection.UpdateOne(c, filter, update)
+	if err != nil {
+		return nil, err
+	}
+
+	return u.GetUserByID(c, userID)
+}
+
+

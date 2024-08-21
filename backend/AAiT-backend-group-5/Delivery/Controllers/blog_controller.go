@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
@@ -64,7 +65,16 @@ func (c *blogController) GetBlogController(ctx *gin.Context) {
 }
 
 func (c *blogController) GetBlogsController(ctx *gin.Context) {
-	blogs, err := c.usecase.GetBlogs(ctx)
+	page := ctx.DefaultQuery("page", "1")
+
+	pageInt, ok := strconv.Atoi(page)
+
+	if ok != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		return
+	}
+
+	blogs, err := c.usecase.GetBlogs(ctx, pageInt)
 
 	if err != nil {
 		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})
@@ -125,6 +135,11 @@ func (c *blogController) DeleteBlogController(ctx *gin.Context) {
 	blogID := ctx.Param("id")
 	authorID := c.getAuthorID(ctx)
 
+	if authorID == "" {
+		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
 	deleteBlogReq := dtos.DeleteBlogRequest{
 		BlogID:   blogID,
 		AuthorID: authorID,
@@ -157,20 +172,4 @@ func (c *blogController) TrackPopularityController(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Popularity tracked successfully"})
 }
 
-func (c *blogController) AddCommentController(ctx *gin.Context) {
-	var comment models.Comment
 
-	if err := ctx.ShouldBind(&comment); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
-		return
-	}
-
-	userID := c.getAuthorID(ctx)
-	comment.UserID = userID
-	if err := c.usecase.AddComment(ctx, comment); err != nil {
-		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})
-		return
-	}
-
-	ctx.IndentedJSON(http.StatusCreated, gin.H{"message": "Comment added successfully"})
-}

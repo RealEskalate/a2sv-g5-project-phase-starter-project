@@ -24,9 +24,9 @@ type CreateBlogRequest struct {
 }
 
 type UpdateBlogRequest struct {
-	Title    string             `json:"title,omitempty"`
-	Content  string             `json:"content,omitempty"`
-	Tags     []string           `json:"tags,omitempty"`
+	Title   string   `json:"title,omitempty"`
+	Content string   `json:"content,omitempty"`
+	Tags    []string `json:"tags,omitempty"`
 }
 
 type DeleteBlogRequest struct {
@@ -53,4 +53,12 @@ type FilterBlogRequest struct {
 type CustomeError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
+}
+
+type CommentUpdateRequest struct {
+	Content string `json:"content" validate:"required"`
+}
+
+type CommentCreateRequest struct {
+	Content string `bson:"content" json:"content" validate:"required"`
 }

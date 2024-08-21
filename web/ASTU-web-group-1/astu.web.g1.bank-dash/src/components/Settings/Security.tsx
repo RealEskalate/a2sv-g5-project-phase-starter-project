@@ -1,7 +1,9 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+'use client'
 import InputGroup from "../Form/InputGroup";
 import ToggleInput from "../Form/ToggleInput";
+
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 const securitySchema = z.object({
@@ -13,11 +15,13 @@ const securitySchema = z.object({
     .string()
     .min(6, "New password must be at least 6 characters long"),
 });
+
 const Titles = ({ title }: { title: string }) => {
   return <h2 className="text-17px font-semibold text-[#333b69]">{title}</h2>;
 };
 
 const Security = () => {
+
   const {
     register,
     handleSubmit,
@@ -27,15 +31,19 @@ const Security = () => {
     mode: "onTouched",
   });
 
+  const onSubmit = (data: any) => {
+    console.log("Form Data:", data);
+  };
+
   return (
-    <div>
+    <form action="" onSubmit={handleSubmit(onSubmit)}>
       <Titles title="Two-factor Authentication" />
 
       <ToggleInput
         label="I send or receive digital currency"
         inputType="checkbox"
         id="email"
-        registerName="email"
+        registerName="sendOrReceiveDigitalCurrency"
         register={register}
         placeholder="Email"
         currentState={true}
@@ -72,7 +80,7 @@ const Security = () => {
           Submit
         </button>
       </div>
-    </div>
+    </form>
   );
 };
 

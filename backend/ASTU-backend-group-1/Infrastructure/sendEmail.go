@@ -6,7 +6,7 @@ import (
 	"net/smtp"
 )
 
-func SendEmail(toEmail string, title string, body string,link string) error {
+func SendEmail(toEmail string, title string, body string, link string) error {
 	config, err := config.LoadConfig()
 	if err != nil {
 		log.Println(err)
@@ -15,7 +15,6 @@ func SendEmail(toEmail string, title string, body string,link string) error {
 	//in route to handle email related confirmation is domain/confirmation/:email/:pwd
 	//also make
 
-	
 	message := `
 	<!DOCTYPE html>
 	<html>

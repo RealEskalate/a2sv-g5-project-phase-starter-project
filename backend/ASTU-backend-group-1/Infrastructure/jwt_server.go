@@ -13,11 +13,11 @@ import (
 
 // Genratetoken generates a JWT token for the given user and password.
 func GenerateToken(user *domain.User, pwd string) (string, string, error) {
-	configjwt,err := config.LoadConfig()
+	configjwt, err := config.LoadConfig()
 	if err != nil {
 		return "", "", err
 	}
-	var jwtSecret = []byte(configjwt.Jwt.JwtKey)
+	jwtSecret := []byte(configjwt.Jwt.JwtKey)
 
 	// User login logic
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pwd)) != nil {

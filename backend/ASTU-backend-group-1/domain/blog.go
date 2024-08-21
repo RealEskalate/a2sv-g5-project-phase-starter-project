@@ -5,7 +5,7 @@ import (
 )
 
 type Reply struct {
-	ReplyId       string `json:"reply_id,omitempty" bson:"reply_id,omitempty"`
+	ReplyId  string `json:"reply_id,omitempty" bson:"reply_id,omitempty"`
 	AuthorId string `json:"author_id,omitempty" bson:"author_id,omitempty"`
 	Content  string `json:"content,omitempty" bson:"content,omitempty"`
 
@@ -16,10 +16,9 @@ type Reply struct {
 }
 
 type Comment struct {
-
-	Content  string   `json:"content,omitempty" bson:"content,omitempty"`
-	AuthorId string   `json:"author_id,omitempty" bson:"author_id,omitempty"`
-	CommentId string   `json:"comment_id,omitempty" bson:"comment_id,omitempty"`
+	Content   string `json:"content,omitempty" bson:"content,omitempty"`
+	AuthorId  string `json:"author_id,omitempty" bson:"author_id,omitempty"`
+	CommentId string `json:"comment_id,omitempty" bson:"comment_id,omitempty"`
 
 	Likes    []string `json:"likes,omitempty" bson:"likes,omitempty"`
 	Dislikes []string `json:"dislikes,omitempty" bson:"dislikes,omitempty"`
@@ -68,11 +67,9 @@ type BlogRepository interface {
 	Update(blogId string, updateData Blog) (Blog, error)
 	Delete(blogId string) error
 
-
 	LikeBlog(blogId, userId string) error
 	DislikeBlog(blogId, userId string) error
 	AddComment(blogId string, comment Comment) error
 	ReplyToComment(blogId, commentId string, reply Reply) error
 	AddView(blogId, userId string) error
-	
 }

@@ -14,13 +14,13 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		configJwt,err := config.LoadConfig()
+		configJwt, err := config.LoadConfig()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 			c.Abort()
 			return
 		}
-	var jwtSecret = []byte(configJwt.Jwt.JwtKey)
+		var jwtSecret = []byte(configJwt.Jwt.JwtKey)
 		authHeader := c.GetHeader("Authorization")
 
 		if authHeader == "" {
@@ -51,7 +51,6 @@ func AuthMiddleware() gin.HandlerFunc {
 			// Extract the claims
 			if claims, ok := token.Claims.(*domain.Claims); ok && token.Valid {
 
-				
 				c.Set("id", claims.ID)
 				c.Set("username", claims.Username)
 				c.Set("isAdmin", claims.IsAdmin)

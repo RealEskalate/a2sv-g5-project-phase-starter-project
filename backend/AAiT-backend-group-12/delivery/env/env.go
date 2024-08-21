@@ -77,15 +77,11 @@ func LoadEnvironmentVariables() error {
 		return fmt.Errorf("error: couldn't load environment variable 'GOOGLE_CLIENT_ID'")
 	case ENV.GOOGLE_CLIENT_SECRET == "":
 		return fmt.Errorf("error: couldn't load environment variable 'GOOGLE_CLIENT_SECRET'")
+	case ENV.GEMINI_API_KEY == "":
+		return fmt.Errorf("error: couldn't load environment variable 'GEMINI_API_KEY'")
 	default:
 		return nil
 	}
-	}
-	if ENV.GEMINI_API_KEY == "" {
-		return fmt.Errorf("error: couldn't load environment variable 'GEMINI_API_KEY'")
-	}
-
-	return nil
 }
 
 // Removes the root credentials from the environment

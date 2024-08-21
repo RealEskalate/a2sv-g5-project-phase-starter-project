@@ -23,7 +23,7 @@ func SetupRouter(port int, routePrefix string, db *mongo.Database, redisClient *
 
 	// blog
 	blogAuthor := router.Group("/api/" + routePrefix + "/blogs")
-	NewBlogRouter(db.Collection(domain.CollectionBlogs), blogAuthor)
+	NewBlogRouter(db.Collection(domain.CollectionBlogs), redisClient, blogAuthor)
 
 	router.Run(fmt.Sprintf(":%v", port))
 }

@@ -4,6 +4,7 @@ import LastTransactionCard from "@/components/LastTransactionCard";
 import DesktopCreditCard from "@/components/DesktopCreditCard";
 import InvoicesCard from "@/components/InvoicesCard";
 import AccountBarChart from "@/components/AccountBarChart";
+import CreditCard from "@/components/CreditCard";
 
 const Accounts = () => {
   return (
@@ -23,22 +24,22 @@ const Accounts = () => {
           {/* </div> */}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 sm:gap-8 mb-8">
-          <div className="lg:col-span-7 flex flex-col">
+        <div className="grid grid-cols-1 md:grid-cols-10 gap-4 sm:gap-8 mb-8">
+          <div className="md:col-span-7 flex flex-col">
             <h2 className="text-lg font-semibold mb-3">Last Transaction</h2>
-            <div className="flex-1 flex items-stretch">
+            <div className=" ">
               <LastTransactionCard />
             </div>
           </div>
-          <div className="lg:col-span-3 flex flex-col h-full">
-            <div className="mb-3 flex justify-between gap-0 md:gap-56 lg:justify-between lg:gap-0  md:justify-start items-center text-lg font-semibold">
+          <div className="md:col-span-3 flex flex-col h-full">
+            <div className="mb-3 flex md:justify-between gap-24  md:gap-0 justify-start  items-center text-lg font-semibold">
               <h2>My Card</h2>
               <a href="/credit-card" className="font-normal self-end">
                 See All
               </a>
             </div>
-            <div className="flex flex-1 items-stretch">
-              <DesktopCreditCard bgColor="bg-blue-700" textColor="text-white" />
+            <div className=" ">
+              <CreditCard backgroundColor="bg-blue-700" />
             </div>
           </div>
         </div>
@@ -49,13 +50,13 @@ const Accounts = () => {
             <h2 className="text-lg font-semibold mb-4">
               Debit & Credit Overview
             </h2>
-            <div className="flex-1 flex items-stretch">
+            <div className="">
               <AccountBarChart />
             </div>
           </div>
           <div className="lg:col-span-3 flex flex-col">
             <h2 className="text-lg font-semibold mb-4">Invoices Sent</h2>
-            <div className="flex-1 flex items-stretch">
+            <div className="">
               <InvoicesCard />
             </div>
           </div>

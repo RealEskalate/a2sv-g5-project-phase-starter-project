@@ -78,7 +78,7 @@ const TransactionCard: React.FC<{ transaction: Transaction }> = ({ transaction }
         <p className="truncate">{transaction.status}</p>
       </div>
       <div className="hidden lg:flex items-center justify-end w-24 truncate">
-        <p className={`text-lg ${transaction.amount.startsWith('+') ? 'text-green-500' : 'text-red-500'} truncate`}>
+        <p className={`text-lg ${transaction.amount.startsWith('+') ? 'text-green-500' : 'text-red-500'} `}>
           {transaction.amount}
         </p>
       </div>

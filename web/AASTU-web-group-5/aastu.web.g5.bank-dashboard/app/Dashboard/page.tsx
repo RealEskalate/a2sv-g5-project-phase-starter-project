@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Card from '../components/common/card';
 import Chip_card1 from "@/public/assets/image/Chip_Card1.png";
 import Chip_card3 from "@/public/assets/image/Chip_Card3.png";
+import { useSession } from 'next-auth/react';
 
 const creditCardColor = {
   cardOne: {
@@ -26,6 +27,13 @@ const creditCardColor = {
 };
 
 function Dashboard() {
+
+
+  const { data: session, status } = useSession();
+
+  const users = session?.user ;
+  console.log(users,111)
+
   return (
     <div className='flex flex-col bg-[#f9f9f9]'>
       {/* Main content */}

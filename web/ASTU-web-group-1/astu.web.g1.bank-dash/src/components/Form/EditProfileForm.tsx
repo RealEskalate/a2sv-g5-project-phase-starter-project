@@ -1,5 +1,7 @@
-import { useForm } from "react-hook-form";
+'use client'
 import InputGroup from "./InputGroup";
+
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -18,6 +20,7 @@ const editProfileSchema = z.object({
   country: z.string().min(1, "Country is required"),
 });
 
+
 const EditProfileForm = () => {
   const {
     register,
@@ -25,12 +28,15 @@ const EditProfileForm = () => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(editProfileSchema),
-    mode: "onTouched",
   });
+
+  const onSubmit = (data: any) => {
+    console.log(data);
+  };  
 
   return (
     <div className="w-full">
-      <form action="">
+      <form action="" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col md:flex-row md:space-x-5">
           <InputGroup
             id="name"

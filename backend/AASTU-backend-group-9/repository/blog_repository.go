@@ -117,58 +117,66 @@ func (r *blogRepository) SearchBlogs(ctx context.Context, title string, author s
 
 }
 
-func (r *blogRepository) FilterBlogsByTags(ctx context.Context, tags []string) ([]*domain.Blog, error) {
-	var blogs []*domain.Blog
-	collection := r.database.Collection(r.collection)
+// func (r *blogRepository) FilterBlogsByTags(ctx context.Context, tags []string) ([]*domain.Blog, error) {
+// 	var blogs []*domain.Blog
+// 	collection := r.database.Collection(r.collection)
 
-	filter := bson.M{"tags": bson.M{"$in": tags}}
+// 	filter := bson.M{"tags": bson.M{"$in": tags}}
 
-	cursor, err := collection.Find(ctx, filter)
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(ctx)
+// 	cursor, err := collection.Find(ctx, filter)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer cursor.Close(ctx)
 
-	for cursor.Next(ctx) {
-		var blog domain.Blog
-		if err := cursor.Decode(&blog); err != nil {
-			return nil, err
-		}
-		blogs = append(blogs, &blog)
-	}
+// 	for cursor.Next(ctx) {
+// 		var blog domain.Blog
+// 		if err := cursor.Decode(&blog); err != nil {
+// 			return nil, err
+// 		}
+// 		blogs = append(blogs, &blog)
+// 	}
 
-	return blogs, nil
-}
+// 	return blogs, nil
+// }
 
-func (r *blogRepository) FilterBlogsByDate(ctx context.Context, date string) ([]*domain.Blog, error) {
-	var blogs []*domain.Blog
-	collection := r.database.Collection(r.collection)
+// func (r *blogRepository) FilterBlogsByDate(ctx context.Context, date string) ([]*domain.Blog, error) {
+// 	var blogs []*domain.Blog
+// 	collection := r.database.Collection(r.collection)
 
-	filter := bson.M{"date": date}
+// 	filter := bson.M{"date": date}
 
-	cursor, err := collection.Find(ctx, filter)
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(ctx)
+// 	cursor, err := collection.Find(ctx, filter)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer cursor.Close(ctx)
 
-	for cursor.Next(ctx) {
-		var blog domain.Blog
-		if err := cursor.Decode(&blog); err != nil {
-			return nil, err
-		}
-		blogs = append(blogs, &blog)
-	}
+// 	for cursor.Next(ctx) {
+// 		var blog domain.Blog
+// 		if err := cursor.Decode(&blog); err != nil {
+// 			return nil, err
+// 		}
+// 		blogs = append(blogs, &blog)
+// 	}
 
-	return blogs, nil
-}
+// 	return blogs, nil
+// }
 
-func (r *blogRepository) FilterBlogsByPopularity(ctx context.Context, popularity string) ([]*domain.Blog, error) {
+func (r *blogRepository) FilterBlogs(ctx context.Context, popularity string, tags []string, date string) ([]*domain.Blog, error) {
 	var blogs []*domain.Blog
 
 	// Define a filter without conditions initially
 	filter := bson.M{}
 
+	if len(tags) > 0 {
+		filter["tags"] = bson.M{"$in": tags}
+	}
+
+	// Add filters based on date (assuming date is stored as a string, adjust if necessary)
+	if date != "" {
+		filter["date"] = date
+	}
 	// Define sort options based on popularity
 	sortOptions := bson.D{}
 

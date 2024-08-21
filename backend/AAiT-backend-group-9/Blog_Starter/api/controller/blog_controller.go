@@ -3,7 +3,7 @@ package controller
 import (
 	"Blog_Starter/domain"
 	"Blog_Starter/utils"
-	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -13,13 +13,11 @@ import (
 
 type BlogController struct {
 	blogUseCase 		domain.BlogUseCase
-	ctx          		context.Context
 }
 
-func NewBlogController(blogUseCase domain.BlogUseCase, ctx context.Context) *BlogController {
+func NewBlogController(blogUseCase domain.BlogUseCase) *BlogController {
 	return &BlogController{
 		blogUseCase: blogUseCase,
-		ctx:           ctx,
 	}
 }
 
@@ -33,7 +31,7 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	blogModel, err := bc.blogUseCase.CreateBlog(bc.ctx, &blog)
+	blogModel, err := bc.blogUseCase.CreateBlog(c, &blog)
 	if err != nil {
 		// Check for specific errors and return appropriate status codes
 		if err.Error() == "content length should be greater than 10" {
@@ -52,7 +50,7 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 func (bc *BlogController) GetBlogByID(c *gin.Context) {
 	// implementation create a context and pass to the usecase not the gin context
 	blogID := c.Param("blog_id")
-	blog, err := bc.blogUseCase.GetBlogByID(bc.ctx, blogID)
+	blog, err := bc.blogUseCase.GetBlogByID(c, blogID)
 	if err != nil {
 		// Check for specific errors and return appropriate status codes
 		if err.Error() == "invalid blog id" {
@@ -75,7 +73,7 @@ func (bc *BlogController) GetAllBlog(c *gin.Context) {
 	limit, _ := strconv.ParseInt(limitStr, 10, 64)
 	sortBy := c.Query("sort_by")
 	// implementation
-	blogs, paginationMetadata, err := bc.blogUseCase.GetAllBlog(bc.ctx, skip, limit, sortBy)
+	blogs, paginationMetadata, err := bc.blogUseCase.GetAllBlog(c, skip, limit, sortBy)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -101,7 +99,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 	blog.UserID = user.UserID
 	// call the useCase getBlogByID to check whether the blog exists or not
 
-	blogModel, err := bc.blogUseCase.UpdateBlog(bc.ctx, &blog, blogID)
+	blogModel, err := bc.blogUseCase.UpdateBlog(c, &blog, blogID)
 	if err != nil {
 		// Check for specific errors and return appropriate status codes
 		if err.Error() == "blog not found" {
@@ -126,7 +124,7 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 		return
 	}
 
-	err = bc.blogUseCase.DeleteBlog(bc.ctx, blogID, user.UserID)
+	err = bc.blogUseCase.DeleteBlog(c, blogID, user.UserID)
 	if err != nil {
 		// Check for specific errors and return appropriate status codes
 		if err.Error() == "blog not found" {
@@ -148,7 +146,7 @@ func (bc *BlogController) FilterBlog(c *gin.Context) {
 		return
 	}
 
-	filtrationResponse, err := bc.blogUseCase.FilterBlogs(bc.ctx, &filterReq)
+	filtrationResponse, err := bc.blogUseCase.FilterBlogs(c, &filterReq)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			c.IndentedJSON(http.StatusNotFound, gin.H{"error" : "no matches found"})
@@ -176,7 +174,9 @@ func (bc *BlogController) SearchBlog(c *gin.Context) {
 	var searchRequest domain.BlogSearchRequest
 	searchRequest.Author = author
 	searchRequest.Title = title
-	searchResult, err := bc.blogUseCase.SearchBlogs(bc.ctx, &searchRequest)
+
+	fmt.Println(searchRequest)
+	searchResult, err := bc.blogUseCase.SearchBlogs(c, &searchRequest)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			c.IndentedJSON(http.StatusNotFound, gin.H{"error" : "no matches found"})

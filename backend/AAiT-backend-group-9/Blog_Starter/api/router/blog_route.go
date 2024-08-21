@@ -5,7 +5,6 @@ import (
 	"Blog_Starter/domain"
 	"Blog_Starter/repository"
 	"Blog_Starter/usecase"
-	"context"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,12 +13,10 @@ import (
 
 func NewBlogRouter(timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel() 
-	br := repository.NewBlogRepository(db, domain.CollectionBlog, &ctx)
+	br := repository.NewBlogRepository(db, domain.CollectionBlog)
 	ur := repository.NewUserRepository(db, domain.CollectionUser)
-	bu := usecase.NewBlogUseCase(br, ur)
-	bc := controller.NewBlogController(bu, ctx)
+	bu := usecase.NewBlogUseCase(br, ur, 100 * time.Second)
+	bc := controller.NewBlogController(bu)
 
 	group.POST("/create", bc.CreateBlog)
 	group.GET("/", bc.GetAllBlog)

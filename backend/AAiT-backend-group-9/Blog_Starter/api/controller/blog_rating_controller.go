@@ -2,33 +2,36 @@ package controller
 
 import (
 	"Blog_Starter/domain"
-	"context"
+	"time"
 	"net/http"
 	"github.com/gin-gonic/gin"
 )
 
 type BlogRatingController struct {
 	blogratingUSeCase 	domain.BlogRatingUseCase
-	ctx          		context.Context
+	timeout        		time.Duration
 }
 
-func NewBlogRatingController(blogRatingUseCase domain.BlogRatingUseCase, ctx context.Context) *BlogRatingController {
+func NewBlogRatingController(blogRatingUseCase domain.BlogRatingUseCase, timeout time.Duration) *BlogRatingController {
 	return &BlogRatingController{
 		blogratingUSeCase: blogRatingUseCase,
-		ctx:           ctx,
+		timeout : timeout,
 	}
 }
 
 func (bc *BlogRatingController) InserttAndUpdateRating(c *gin.Context) {
 	var newRating domain.BlogRatingRequest
+	blogID := c.Param("blog_id")
 	if err := c.BindJSON(&newRating); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error" : "invalid request format"})
 	}
-	
+
+
+	newRating.BlogID = blogID
 	if newRating.RatingID != "" {
-		exisitingRating, err := bc.blogratingUSeCase.GetRatingByID(bc.ctx, newRating.RatingID)
+		exisitingRating, err := bc.blogratingUSeCase.GetRatingByID(c, newRating.RatingID)
 		if exisitingRating != nil {
-			updatedRating, err := bc.blogratingUSeCase.UpdateRating(bc.ctx, newRating.Rating, newRating.RatingID)
+			updatedRating, err := bc.blogratingUSeCase.UpdateRating(c, newRating.Rating, newRating.RatingID)
 			if err != nil {
 				c.IndentedJSON(http.StatusInternalServerError, gin.H{"error" : "internal server error"})
 				return
@@ -42,7 +45,7 @@ func (bc *BlogRatingController) InserttAndUpdateRating(c *gin.Context) {
 		}
 	}
 
-	insertedRating, err := bc.blogratingUSeCase.InsertRating(bc.ctx, &newRating)
+	insertedRating, err := bc.blogratingUSeCase.InsertRating(c, &newRating)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error" : "internal server error"})
 		return
@@ -53,12 +56,9 @@ func (bc *BlogRatingController) InserttAndUpdateRating(c *gin.Context) {
 
 func (bc *BlogRatingController) DeleteRating(c *gin.Context) {
 	var toDelete domain.BlogRatingRequest
-	if err := c.BindJSON(&toDelete); err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error" : "invalid request format"})
-		return
-	}
-
-	deletedRating, err := bc.blogratingUSeCase.DeleteRating(bc.ctx, toDelete.RatingID)
+	ratingID := c.Param("rating_id")
+	toDelete.RatingID = ratingID
+	deletedRating, err := bc.blogratingUSeCase.DeleteRating(c, toDelete.RatingID)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error" : "internal server error"})
 		return

@@ -11,5 +11,5 @@ type CommentRepositoryInterface interface {
 	GetCommentsCount(blogID uuid.UUID) (int, *domain.CustomError)
 	AddComment(comment domain.Comment) *domain.CustomError
 	UpdateComment(updatedComment domain.Comment) *domain.CustomError
-	DelelteComment(commentID uuid.UUID) *domain.CustomError
+	DeleteComment(commentID uuid.UUID) *domain.CustomError
 }

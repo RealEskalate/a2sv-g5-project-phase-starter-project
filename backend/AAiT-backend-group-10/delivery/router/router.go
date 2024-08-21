@@ -38,7 +38,7 @@ func NewRouter(db *mongo.Database) {
 
 	commentRepo := repositories.NewCommentRepository(db, os.Getenv("COMMENT_COLLECTION_NAME"))
 	commentController := controllers.CommentController{
-		CommentUsecase: usecases.NewCommentUsecase(commentRepo),
+		CommentUsecase: usecases.NewCommentUsecase(commentRepo, userRepo),
 	}
 
 	likeRepo := repositories.NewLikeRepository(db, os.Getenv("LIKE_COLLECTION_NAME"))
@@ -63,10 +63,9 @@ func NewRouter(db *mongo.Database) {
 	router.PATCH("/users/promote", infrastructures.AuthMiddleware(&jwtService), infrastructures.AdminMiddleWare(), userController.PromoteUser)
 
 	router.GET("/comment/:blog_id", infrastructures.AuthMiddleware(&jwtService), commentController.GetComments)
-	router.GET("/comment_count/:blog_id", infrastructures.AuthMiddleware(&jwtService), commentController.GetCommentsCount)
 	router.POST("/comment", infrastructures.AuthMiddleware(&jwtService), commentController.AddComment)
 	router.PUT("/comment/:id", infrastructures.AuthMiddleware(&jwtService), commentController.UpdateComment)
-	router.DELETE("/comment/:id", infrastructures.AuthMiddleware(&jwtService), commentController.DelelteComment)
+	router.DELETE("/comment/:id", infrastructures.AuthMiddleware(&jwtService), commentController.DeleteComment)
 
 	router.PUT("/like", infrastructures.AuthMiddleware(&jwtService), likeController.LikeBlog)
 	router.DELETE("/like", infrastructures.AuthMiddleware(&jwtService), likeController.DeleteLike)

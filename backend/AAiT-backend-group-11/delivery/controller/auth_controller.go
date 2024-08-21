@@ -13,9 +13,12 @@ import (
 
 type AuthController struct {
 	authService interfaces.AuthenticationService
+	passwordResetService interfaces.PasswordResetService
 }
-func NewAuthController(authService interfaces.AuthenticationService) *AuthController{
-	return &AuthController{authService: authService}
+func NewAuthController(authService interfaces.AuthenticationService, passwordResetService interfaces.PasswordResetService) *AuthController{
+	return &AuthController{
+		authService: authService,
+		passwordResetService: passwordResetService}
 }
 
 func (controller *AuthController) RegisterUser(c *gin.Context){
@@ -96,4 +99,36 @@ func (controller *AuthController) VerifyEmail(c *gin.Context)  {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Email verified successfully"})
+}
+
+func (controller *AuthController) RequestPasswordReset(c *gin.Context) {
+	var forgetPasswordRequest entities.ForgetPasswordRequest
+	if err := c.ShouldBindJSON(&forgetPasswordRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := controller.passwordResetService.RequestPasswordReset(forgetPasswordRequest.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password reset link sent to your email"})
+}
+
+func (controller *AuthController) ResetPassword(c *gin.Context) {
+	var passwordReset entities.PasswordReset
+	if err := c.ShouldBindJSON(&passwordReset); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := controller.passwordResetService.ResetPassword(passwordReset.Token, passwordReset.NewPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password reset successfully"})
 }

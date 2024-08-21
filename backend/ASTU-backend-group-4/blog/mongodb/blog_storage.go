@@ -23,8 +23,39 @@ type BlogStorage struct {
 	db *mongo.Database
 }
 
-func NewBlogStorage(db *mongo.Database) *BlogStorage {
+func NewBlogStorage(db *mongo.Database) blogDomain.BlogRepository {
 	return &BlogStorage{db: db}
+}
+
+// DeleteCommentsByBlogID implements blog.BlogRepository.
+func (b *BlogStorage) DeleteCommentsByBlogID(ctx context.Context, blogID string) error {
+	blogIDPrimitive, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return blogDomain.ErrInvalidID
+	}
+
+	filter := bson.D{{Key: "blog_id", Value: blogIDPrimitive}}
+	_, err = b.db.Collection(commentCollection).DeleteMany(ctx, filter)
+	if err != nil {
+		return blogDomain.ErrUnableToDeleteComments
+	}
+
+	return nil
+}
+
+// DeleteDislikesByBlogID implements blog.BlogRepository.
+func (b *BlogStorage) DeleteDislikesByBlogID(ctx context.Context, blogID string) error {
+	panic("unimplemented")
+}
+
+// DeleteLikesByBlogID implements blog.BlogRepository.
+func (b *BlogStorage) DeleteLikesByBlogID(ctx context.Context, blogID string) error {
+	panic("unimplemented")
+}
+
+// GetCommentByID implements blog.BlogRepository.
+func (b *BlogStorage) GetCommentByID(ctx context.Context, id string) (blogDomain.Comment, error) {
+	panic("unimplemented")
 }
 
 // CreateBlog implements BlogRepository.

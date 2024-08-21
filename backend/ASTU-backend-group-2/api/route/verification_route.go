@@ -14,12 +14,17 @@ import (
 
 func NewVerificationRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
 	ur := repository.NewUserRepository(*db, domain.CollectionUser)
-	sc := controller.ProfileController{
-		UserUsecase: usecase.NewUserUsecase(ur, timeout),
-		Env:         env,
+	// sc := controller.ProfileController{
+	// 	UserUsecase: usecase.NewUserUsecase(ur, timeout),
+	// 	Env:         env,
+	// }
+	suc := controller.SignupController{
+		SignupUsecase: usecase.NewSignupUsecase(ur, timeout),
+		Env:           env,
 	}
-	// group.POST("/verify-email", sc.VerifyEmail)
+	// group.POST("/signup", suc.Signup)
+	group.POST("/verify-email/:Verificationtoken", suc.VerifyEmail)
 	// group.POST("/forgot-password", sc.ForgotPassword)
 	// group.POST("/reset-password", sc.ResetPassword)
-	group.POST("/reset-password", sc.DemoteUser())
+	// group.POST("/reset-password", sc.DemoteUser())
 }

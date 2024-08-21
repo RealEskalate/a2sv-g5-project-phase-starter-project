@@ -1,9 +1,11 @@
 package passwordreset
 
 import (
+	"strconv"
 	"time"
 
 	er "github.com/group13/blog/domain/errors"
+	ihash "github.com/group13/blog/domain/i_hash"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
 	ijwt "github.com/group13/blog/usecase/common/i_jwt"
 	irepo "github.com/group13/blog/usecase/common/i_repo"
@@ -11,18 +13,20 @@ import (
 
 // ValidateCodeHandler handles the validation of password reset codes.
 type ValidateCodeHandler struct {
-	userRepo   irepo.UserRepository
-	jwtService ijwt.Service
+	userRepo    irepo.UserRepository
+	jwtService  ijwt.Service
+	hashService ihash.Service
 }
 
 // Ensure ValidateCodeHandler implements the icmd.IHandler interface.
 var _ icmd.IHandler[*ValidateCodeCommand, string] = &ValidateCodeHandler{}
 
 // NewValidateCodeHandler creates a new instance of ValidateCodeHandler.
-func NewValidateCodeHandler(userRepo irepo.UserRepository, jwtService ijwt.Service) *ValidateCodeHandler {
+func NewValidateCodeHandler(userRepo irepo.UserRepository, jwtService ijwt.Service, hashService ihash.Service) *ValidateCodeHandler {
 	return &ValidateCodeHandler{
-		userRepo:   userRepo,
-		jwtService: jwtService,
+		userRepo:    userRepo,
+		jwtService:  jwtService,
+		hashService: hashService,
 	}
 }
 
@@ -34,15 +38,21 @@ func (h *ValidateCodeHandler) Handle(cmd *ValidateCodeCommand) (string, error) {
 		return "", er.NewUnauthorized(err.Error())
 	}
 
+	code := strconv.Itoa(cmd.code)
+
 	resetCode := user.ResetCode()
-	if resetCode == nil || resetCode.Code != cmd.code || resetCode.Expr.Before(time.Now()) {
+	if resetCode == nil || resetCode.Expr.Before(time.Now()) {
 		return "", er.NewUnauthorized("invalid or expired code")
 	}
 
-	if err := user.UpdateResetCode(nil); err != nil {
+	isMatch, err := h.hashService.Match(resetCode.CodeHash, code)
+	if err != nil {
 		return "", err
+	} else if !isMatch {
+		return "", er.NewUnauthorized("invalid or expired code")
 	}
 
+	user.RemoveResetCode()
 	if err := h.userRepo.Save(user); err != nil {
 		return "", err
 	}

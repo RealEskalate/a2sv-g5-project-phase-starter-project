@@ -9,28 +9,26 @@ import (
 	basecontroller "github.com/group13/blog/delivery/controller/base"
 	er "github.com/group13/blog/domain/errors"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
-	updatereaction "github.com/group13/blog/usecase/reaction/command/update"
+	reactioncmd "github.com/group13/blog/usecase/reaction/command"
 )
 
 type ReactionController struct {
 	basecontroller.BaseHandler
-	updateReactionHandler icmd.IHandler[*updatereaction.Handler, bool]
+	updateReactionHandler icmd.IHandler[*reactioncmd.UpdateCommand, bool]
 	deleteReactionHandler icmd.IHandler[uuid.UUID, bool]
 }
 
 var _ common.IController = &ReactionController{}
 
 type Config struct {
-	updateReactionHandler icmd.IHandler[*updatereaction.Command, bool]
+	updateReactionHandler icmd.IHandler[*reactioncmd.UpdateCommand, bool]
 	deleteReactionHandler icmd.IHandler[uuid.UUID, bool]
-	basecontroller        basecontroller.BaseHandler
 }
 
 func New(config Config) *ReactionController {
 	return &ReactionController{
 		updateReactionHandler: config.updateReactionHandler,
 		deleteReactionHandler: config.deleteReactionHandler,
-		BaseController:        config.basecontroller,
 	}
 }
 
@@ -58,14 +56,14 @@ func (r ReactionController) UpdateReaction(c *gin.Context) {
 		r.Respond(c, http.StatusBadRequest, gin.H{"error": "Id is not valid"})
 		return
 	}
-	var reaction dto.ReactionDto
+	var reaction ReactionDto
 
 	if err := c.ShouldBindJSON(&reaction); err != nil {
 		r.Respond(c, http.StatusBadRequest, er.NewBadRequest(err.Error()))
 		return
 	}
 
-	command := updatereaction.NewCommand(reaction.IsLike, id, reaction.UserId)
+	command := reactioncmd.NewUpdateCommand(reaction.IsLike, id, reaction.UserId)
 
 	_, err = r.updateReactionHandler.Handle(command)
 

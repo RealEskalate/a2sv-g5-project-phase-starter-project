@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/group13/blog/delivery/common"
 	basecontroller "github.com/group13/blog/delivery/controller/base"
 	er "github.com/group13/blog/domain/errors"
 	"github.com/group13/blog/domain/models"
@@ -100,7 +101,7 @@ func (c *CommentController) AddComment(ctx *gin.Context) {
 		c.BaseHandler.Respond(ctx, http.StatusBadRequest, gin.H{"error": "Id is invalid format"})
 		return
 	}
-	var coment dto.CommentDto
+	var coment CommentDto
 
 	if err := ctx.ShouldBindJSON(&coment); err != nil {
 		c.BaseHandler.Respond(ctx, http.StatusBadRequest, er.NewBadRequest(err.Error()))

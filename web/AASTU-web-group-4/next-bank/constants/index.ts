@@ -16,69 +16,26 @@ import {
 } from "react-icons/fa";
 
 
-export const loanData = [
-  { icon: PersonalLoans, title: 'Personal Loans', description: '$50,000' },
-  { icon: CorporateLoans, title: 'Corporate Loans', description: '$100,000' },
-  { icon: BusinessLoans, title: 'Business Loans', description: '$500,000' },
-  { icon: CustomLoans, title: 'Custom Loans', description: 'Choose Loans' },
-];
 
-export const activeLoans = [
+// Define a mapping for your loan types
+export const loanCardMapping = [
   {
-    loanMoney: '$5,000',
-    leftToRepay: '$2,500',
-    duration: '4 Months',
-    interestRate: '12%',
-    installment: '$1,250 / month',
+    type: 'Personal Loan',
+    icon: PersonalLoans,
+    title: 'Personal Loans',
+    descriptionKey: 'personalLoan',
   },
   {
-    loanMoney: '$8,000',
-    leftToRepay: '$6,000',
-    duration: '8 Months',
-    interestRate: '10%',
-    installment: '$1,000 / month',
+    type: 'Corporate Loan',
+    icon: CorporateLoans,
+    title: 'Corporate Loans',
+    descriptionKey: 'corporateLoan',
   },
   {
-    loanMoney: '$3,000',
-    leftToRepay: '$1,500',
-    duration: '3 Months',
-    interestRate: '15%',
-    installment: '$500 / month',
-  },
-  {
-    loanMoney: '$7,000',
-    leftToRepay: '$4,200',
-    duration: '6 Months',
-    interestRate: '8%',
-    installment: '$1,166.67 / month',
-  },
-  {
-    loanMoney: '$9,000',
-    leftToRepay: '$7,000',
-    duration: '10 Months',
-    interestRate: '11%',
-    installment: '$900 / month',
-  },
-  {
-    loanMoney: '$4,500',
-    leftToRepay: '$3,000',
-    duration: '5 Months',
-    interestRate: '13%',
-    installment: '$900 / month',
-  },
-  {
-    loanMoney: '$6,000',
-    leftToRepay: '$3,600',
-    duration: '7 Months',
-    interestRate: '9%',
-    installment: '$857.14 / month',
-  },
-  {
-    loanMoney: '$2,500',
-    leftToRepay: '$1,200',
-    duration: '2 Months',
-    interestRate: '14%',
-    installment: '$600 / month',
+    type: 'Business Loan',
+    icon: BusinessLoans,
+    title: 'Business Loans',
+    descriptionKey: 'businessLoan',
   },
 ];
 
@@ -276,9 +233,9 @@ export const creditcardstyles = [{
 export const colors = {
   blue: 'bg-[#1814F3]',
   white: 'bg-white',
-  textwhite : 'text-[#ffffff]',
   navbartext:' text-[#343C6A]',
   black: 'bg-[#000000]',
+  textwhite: 'text-white',
   textblack: 'text-[#232323]',
   textred: 'text-[#FF4B4A]',
   textgreen: 'text-[#41D4A8]',
@@ -303,6 +260,7 @@ export const logo = {
   RT1 : '/icons/RT1.png',
   RT2 : '/icons/RT2.png',
   RT3 : '/icons/RT3.png',
+  transfer : '/icons/transfer2.png',
 }
 
 export const textColors = {

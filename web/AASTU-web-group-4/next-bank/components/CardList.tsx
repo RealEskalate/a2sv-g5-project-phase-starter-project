@@ -41,7 +41,7 @@ const CardList = () => {
 
 
   return (
-    <div className="max-h-[300px] w-full overflow-y-scroll px-4 py-4 scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400">
+    <div className="max-h-[400px] lg:w-[730px] md:w-[487px] w-[325] overflow-y-scroll pr-6 py-4 scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-blue-400">
       {cards.map((card, index) => (
        <div
        key={index}

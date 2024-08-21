@@ -1,4 +1,4 @@
-import { Bar, BarChart, XAxis } from "recharts";
+import { Bar, BarChart, ResponsiveContainer, XAxis } from "recharts";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import {
@@ -35,26 +35,42 @@ const chartConfig = {
 
 export default function Component() {
   const [bottomMargin, setBottomMargin] = useState(90);
+  const [barSize, setBarSize] = useState(20);
   
   useEffect(() => {
     const handleResize = () => {
-      setBottomMargin(window.innerWidth < 768 ? 1 : 90);
+      // setBottomMargin(window.innerWidth < 768 ? 1 : 90);
+      const width = window.innerWidth;
+
+      if (width < 768) { 
+        // Mobile screens
+        setBottomMargin(20);
+        setBarSize(10);
+      } else if (width >= 768 && width < 1024) { 
+        // Tablet screens (iPad Pro)
+        setBottomMargin(40);
+        setBarSize(15);
+      } else { 
+        // Larger screens
+        setBottomMargin(90);
+        setBarSize(20);
+      }
     };
 
-    window .addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     handleResize();
-    return() => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-
   return (
-    <Card className="flex flex-col w-full h-[350px]">
+    <Card className="flex flex-col w-full h-full">
       <CardHeader className="flex justify-between">
         <div className="flex flex-row justify-between space-x-4">
           <div className="hidden md:flex text-sm font-normal">
-            <span className="font-bold">${totalDebit}</span> Debited &{" "}
-            <span className="font-bold"> ${totalCredit}</span> Credited in this
-            Week
+            <span className="font-bold">${totalDebit}</span>&nbsp;Debited
+            &&nbsp;
+            <span className="font-bold"> ${totalCredit}</span>&nbsp;Credited in
+            this Week
           </div>
           <div className="flex px-3 text-right">
             <span
@@ -73,12 +89,14 @@ export default function Component() {
       </CardHeader>
       <CardContent className="flex-1">
         <ChartContainer config={chartConfig} className="p-0">
+          <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={chartData}
             barCategoryGap="10%"
             barGap={5}
-            barSize={20} // Adjusted bar size
-            height={200} // Adjusted height
+            barSize={barSize} // Adjusted bar size
+            // barSize={20} // Adjusted bar size
+            // height={200} // Adjusted height
             margin={{ top: 10, right: 20, left: 20, bottom: bottomMargin }} // Reduced top margin
           >
             <XAxis dataKey="day" axisLine={true} tickLine={false} />
@@ -97,6 +115,7 @@ export default function Component() {
               radius={[5, 5, 0, 0]}
             />
           </BarChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
     </Card>

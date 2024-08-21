@@ -1,27 +1,12 @@
 "use client"
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
-import { TbBackground } from "react-icons/tb"
+import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts"
+import { Card, CardContent } from "@/components/ui/card"
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { useEffect, useState } from "react"
+import { getRandomBalanceHistory } from "@/services/transactionfetch"
 
-const chartData = [
-  { month: "January", balance: 186 },
-  { month: "February", balance: 305 },
-  { month: "March", balance: 237 },
-  { month: "April", balance: 73 },
-  { month: "May", balance: 209 },
-  { month: "June", balance: 214 },
-]
+// Mapping of numeric month values to month names
+const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 const chartConfig = {
   balance: {
@@ -29,34 +14,64 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-
 export default function LineChart() {
-  return (
-    <Card >
-      <CardHeader>
+  const [lineChartData, setLineChartData] = useState([]);
+
+  useEffect(() => {
+    const fetchLineChart = async () => {
+      try {
+        const response = await getRandomBalanceHistory();
         
-      </CardHeader>
+        // Check if the response contains the expected data
+        if (response && response.data) {
+          // Map API data to chart data structure
+          const mappedData = response.data.map((item: { time: string, value: number }) => {
+            const monthIndex = parseInt(item.time.split("-")[1]) - 1; // Extract month as an index (0-11)
+            return {
+              month: monthNames[monthIndex],
+              balance: item.value,
+            };
+          });
+
+          // Log the mapped data to the console
+          // console.log("Mapped Data: ", mappedData);
+
+          // Set the mapped data to state
+          setLineChartData(mappedData);
+        } else {
+          console.error("Unexpected API response structure: ", response);
+        }
+      } catch (error) {
+        console.error("Error fetching the random balance history: ", error);
+      }
+    };
+    fetchLineChart();
+  }, []);
+
+  return (
+    <Card className="w-[100%] rounded-2xl">
       <CardContent>
-        <ChartContainer config={chartConfig} 
-            style={{height:'300px' , width:'600px'}}
+        <ChartContainer 
+          config={chartConfig}
+          className="w-[100%]"
         >
           <AreaChart
             accessibilityLayer
-            data={chartData}
-            
-            margin={{
-              left: 12,
-              right: 12,
-            }}
+            data={lineChartData}  // Use fetched data here
           >
+            <defs>
+              <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={chartConfig.balance.color} stopOpacity={0.2} />
+                <stop offset="100%" stopColor={chartConfig.balance.color} stopOpacity={0.05} />
+              </linearGradient>
+            </defs>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
               tickLine={false}
               axisLine={true}
               tickMargin={8}
-              // style={{height:'50px' , width:'200px'}}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => value.slice(0, 3)} // Show only the first 3 characters of the month
             />
             <YAxis dataKey="balance" axisLine={true} />
             <ChartTooltip
@@ -66,10 +81,12 @@ export default function LineChart() {
             <Area
               dataKey="balance"
               type="natural"
-              fill={chartConfig.balance.color}
-              fillOpacity={0.4}
+              fill="url(#colorBalance)"
               stroke={chartConfig.balance.color}
+              fillOpacity={1}
+              strokeWidth={3}
             />
+            <Legend verticalAlign="top" height={36} />
           </AreaChart>
         </ChartContainer>
       </CardContent>

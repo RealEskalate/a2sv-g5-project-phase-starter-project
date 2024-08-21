@@ -26,13 +26,16 @@ func NewBlogRepository(coll *mongo.Collection) *BlogRepository {
 }
 
 // FetchBlogPostByID retrieves a blog post by its ID and increments the view count.
-func (b *BlogRepository) FetchBlogPostByID(ctx context.Context, blogId string) (*domain.Blog, domain.CodedError) {
+func (b *BlogRepository) FetchBlogPostByID(ctx context.Context, blogId string, incrementView bool) (*domain.Blog, domain.CodedError) {
 	objID, err := primitive.ObjectIDFromHex(blogId)
 	if err != nil {
 		return nil, domain.NewError("Invalid blog ID", domain.ERR_BAD_REQUEST)
 	}
 	filter := bson.D{{Key: "_id", Value: objID}}
-	update := bson.D{{Key: "$inc", Value: bson.D{{Key: "view_count", Value: 1}}}}
+	update := bson.D{{}}
+	if incrementView {
+		update = bson.D{{Key: "$inc", Value: bson.D{{Key: "view_count", Value: 1}}}}
+	}
 
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 

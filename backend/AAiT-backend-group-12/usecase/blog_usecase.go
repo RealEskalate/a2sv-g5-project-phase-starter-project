@@ -55,7 +55,7 @@ func (b *BlogUseCase) CreateBlogPost(ctx context.Context, newBlog *domain.NewBlo
 func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string, deletedBy string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
-	blog, err := b.blogRepo.FetchBlogPostByID(ctx, blogId)
+	blog, err := b.blogRepo.FetchBlogPostByID(ctx, blogId,false)
 	if err != nil {
 		return err
 	}
@@ -74,7 +74,7 @@ func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *dom
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
-	foundBlog, err := b.blogRepo.FetchBlogPostByID(ctx, blogId)
+	foundBlog, err := b.blogRepo.FetchBlogPostByID(ctx, blogId, false)
 	if err != nil {
 		return err
 	}
@@ -116,7 +116,7 @@ func (b *BlogUseCase) GetBlogPostByID(ctx context.Context, blogID string) (*doma
 	context, cancel := context.WithTimeout(ctx, b.contextTimeOut)
 	defer cancel()
 
-	return b.blogRepo.FetchBlogPostByID(context, blogID)
+	return b.blogRepo.FetchBlogPostByID(context, blogID, true)
 }
 
 func (b *BlogUseCase) TrackBlogPopularity(ctx context.Context, blogId string, action string, state bool, username string) domain.CodedError {

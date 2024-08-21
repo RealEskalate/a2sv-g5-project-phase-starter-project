@@ -10,12 +10,13 @@ import (
 	usecases "github.com/aait.backend.g5.main/backend/UseCases"
 	"github.com/gin-gonic/gin"
 	"github.com/google/generative-ai-go/genai"
+	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/api/option"
 )
 
-func NewAISuggestionRouter(env *config.Env, group *gin.RouterGroup) {
+func NewAISuggestionRouter(db mongo.Database, env *config.Env, group *gin.RouterGroup) {
 	client, err := genai.NewClient(context.Background(), option.WithAPIKey(env.GEMINI_API_KEY))
-	blog_repo := repository.NewBlogRepository()
+	blog_repo := repository.NewBlogRepository(&db)
 
 	if err != nil {
 		log.Fatal(err)
@@ -27,4 +28,5 @@ func NewAISuggestionRouter(env *config.Env, group *gin.RouterGroup) {
 	}
 
 	group.GET("/suggestContent", AISuggestionController.HandleSuggestion)
+	group.GET("/improveContent/:id", AISuggestionController.HandleContentImprovement)
 }

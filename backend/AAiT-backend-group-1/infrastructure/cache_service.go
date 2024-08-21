@@ -8,7 +8,7 @@ import (
 )
 
 type CacheService interface {
-	Set(key, value string, expiration time.Duration) error
+	Set(key string, value interface{}, expiration time.Duration) error
 	Get(key string) (string, error)
 	Delete(key string) error
 }
@@ -33,7 +33,7 @@ func NewcacheService(redisAddr, redisPassword string, redisDB int) CacheService 
 }
 
 // Set sets a value in the cache with an optional expiration time.
-func (cs *cacheService) Set(key, value string, expiration time.Duration) error {
+func (cs *cacheService) Set(key string, value interface{}, expiration time.Duration) error {
 	err := cs.client.Set(cs.ctx, key, value, expiration).Err()
 	if err != nil {
 		return err

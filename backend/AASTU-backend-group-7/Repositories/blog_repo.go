@@ -265,6 +265,12 @@ func (br *blogrepository) LikePost(ctx context.Context, id primitive.ObjectID, u
 
 			message = "like removed"
 		} else {
+			update := bson.D{{"$inc", bson.D{{"dislikecount", -1}}}}
+			_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
+
+			if err != nil {
+				return err, 500, ""
+			}
 			message = "dislike removed"
 		}
 

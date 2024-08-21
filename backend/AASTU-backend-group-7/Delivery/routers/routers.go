@@ -72,8 +72,33 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	}
 	// generate custom comment collection
 	customCommentCol := custommongo.NewMongoCollection(comments)
+	indexModels = []mongo.IndexModel{
+		{
+			Keys:    bson.D{{Key: "postid", Value: 1}}, // index in ascending order
+		},
+		{
+			Keys:    bson.D{{Key: "authorid", Value: 1}}, // index in ascending order
+		},
+	}
+	_, err = customCommentCol.CreateIndexes(context.Background(), indexModels)
+	if err != nil {
+		panic(err)
+	}
+
 	customlikesDislikesCol := custommongo.NewMongoCollection(likesDislikes)
-	
+	indexModels = []mongo.IndexModel{
+		{
+			Keys:    bson.D{{Key: "postid", Value: 1}}, // index in ascending order
+		},
+		{
+			Keys:    bson.D{{Key: "userid", Value: 1}}, // index in ascending order
+		},
+	}
+	_, err = customlikesDislikesCol.CreateIndexes(context.Background(), indexModels)
+	if err != nil {
+		panic(err)
+	}
+
 	// generate custom tag collection
 	customTagCol := custommongo.NewMongoCollection(tags)
 	indexModels = []mongo.IndexModel{

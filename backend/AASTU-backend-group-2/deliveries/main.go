@@ -13,6 +13,7 @@ import (
 
 func main() {
 	client := infrastructure.MongoDBInit() //mongodb initialization
+	infrastructure.InitGoogleOAuthConfig()
 
 	blogrepo := repositories.NewBlogRepository(client)
 	bloguse := usecase.NewBlogUsecase(blogrepo, time.Second*300)
@@ -33,10 +34,11 @@ func main() {
 	userrepo := repositories.NewUserRepository(client)
 	useruse := usecase.NewUserUsecase(userrepo, time.Second*300)
 	usercont := controllers.NewUserController(useruse)
+	oauthController := controllers.NewOAuthController(useruse)
 
 	//the router gateway
 	r := gin.Default()
-	router.SetRouter(r, comcont, blogcont, usercont, client)
-	r.Run("localhost:8080")
+	router.SetRouter(r, comcont, blogcont, usercont, oauthController, client)
+	r.Run("127.0.0.1:8080")
 
 }

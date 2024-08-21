@@ -1,19 +1,16 @@
 package result
 
 import (
-
 	"github.com/google/uuid"
 )
 
 type SignUpResult struct {
-	ID       uuid.UUID 
-	Username string    
-	FirstName string 
-	LastName string    
-	IsAdmin  bool
-
+	ID        uuid.UUID
+	Username  string
+	FirstName string
+	LastName  string
+	IsAdmin   bool
 }
-
 
 func NewSignUpResult(ID uuid.UUID, Username string, firstName string, lastName string, IsAdmin bool) SignUpResult {
 	return SignUpResult{
@@ -25,29 +22,26 @@ func NewSignUpResult(ID uuid.UUID, Username string, firstName string, lastName s
 	}
 }
 
-
-type LoginInResult struct {	
-	Token string 
-	Refreshtoekn string 
+type LoginInResult struct {
+	Token        string
+	RefreshToken string
 }
 
-func NewLoginInResult(token string, refreshtoekn string) LoginInResult {
+func NewLoginInResult(token string, refreshToken string) LoginInResult {
 	return LoginInResult{
-		Token: token,
-		Refreshtoekn: refreshtoekn,
+		Token:        token,
+		RefreshToken: refreshToken,
 	}
 }
 
-
 type ValidateEmailResult struct {
-	Token string 
+	Token        string
 	Refreshtoken string
 }
 
-
 func NewValidateEmailResult(token string, refreshtoken string) ValidateEmailResult {
-		return ValidateEmailResult{
-			Token:        token,
-			Refreshtoken: refreshtoken,
-		}
+	return ValidateEmailResult{
+		Token:        token,
+		Refreshtoken: refreshtoken,
+	}
 }

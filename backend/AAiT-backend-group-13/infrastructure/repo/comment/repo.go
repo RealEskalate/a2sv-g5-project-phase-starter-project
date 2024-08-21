@@ -5,34 +5,34 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/group13/blog/domain/models/comment"
+	"github.com/group13/blog/domain/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// Repository defines the MongoDB repository for comments.
-type Repository struct {
+// Repo defines the MongoDB repository for comments.
+type Repo struct {
 	collection *mongo.Collection
 }
 
 // New creates a new Repository for managing comments with the given MongoDB client, database name, and collection name.
-func New(client *mongo.Client, dbName, collectionName string) *Repository {
+func New(client *mongo.Client, dbName, collectionName string) *Repo {
 	collection := client.Database(dbName).Collection(collectionName)
-	return &Repository{
+	return &Repo{
 		collection: collection,
 	}
 }
 
 // Save adds a new comment if it does not exist, else updates the existing one.
-func (r *Repository) Save(comment comment.Comment) error {
+func (r *Repo) Save(comment models.Comment) error {
 
-	filter := bson.M{"_id": comment.Id()}
+	filter := bson.M{"_id": comment.ID()}
 	update := bson.M{
 		"$set": bson.M{
 			"content": comment.Content(),
-			"blogId":  comment.BlogId(),
-			"userId":  comment.UserId(),
+			"blogId":  comment.BlogID(),
+			"userId":  comment.UserID(),
 		},
 	}
 
@@ -44,7 +44,7 @@ func (r *Repository) Save(comment comment.Comment) error {
 }
 
 // Delete removes a comment by ID.
-func (r *Repository) Delete(id uuid.UUID) error {
+func (r *Repo) Delete(id uuid.UUID) error {
 	filter := bson.M{"_id": id}
 	_, err := r.collection.DeleteOne(context.Background(), filter)
 	if err != nil {
@@ -54,10 +54,10 @@ func (r *Repository) Delete(id uuid.UUID) error {
 }
 
 // GetCommentById retrieves a comment by ID.
-func (r *Repository) GetCommentById(id uuid.UUID) (*comment.Comment, error) {
+func (r *Repo) GetCommentById(id uuid.UUID) (*models.Comment, error) {
 	filter := bson.M{"_id": id}
 
-	var c comment.Comment
+	var c models.Comment
 
 	err := r.collection.FindOne(context.Background(), filter).Decode(&c)
 	if err != nil {
@@ -72,11 +72,10 @@ func (r *Repository) GetCommentById(id uuid.UUID) (*comment.Comment, error) {
 }
 
 // GetCommentsByBlogId retrieves all comment by blogId.
-func (r *Repository) GetCommentsByBlogId(id uuid.UUID) (*[]comment.Comment, error) {
-	// id is blog id
-	filter := bson.M{"_id": id}
+func (r *Repo) GetCommentsByBlogId(id uuid.UUID) (*[]models.Comment, error) {
 
-	var comments []comment.Comment
+	filter := bson.M{"_id": id}
+	var comments []models.Comment
 
 	cur, err := r.collection.Find(context.Background(), filter)
 	if err != nil {
@@ -84,7 +83,7 @@ func (r *Repository) GetCommentsByBlogId(id uuid.UUID) (*[]comment.Comment, erro
 	}
 
 	for cur.Next(context.Background()) {
-		var c comment.Comment
+		var c models.Comment
 
 		err := cur.Decode(&c)
 

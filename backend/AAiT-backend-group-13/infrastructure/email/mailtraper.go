@@ -8,7 +8,7 @@ import (
 type MailTrapService struct {
 }
 
-func (es *MailTrapService) Send(mail iemail.Mail) error {
+func (es *MailTrapService) Send(mail *iemail.Mail) error {
 	m := gomail.NewMessage()
 	m.SetHeader("From", "no-reply@onlinemarketplace.com")
 	for _, reciever := range mail.To {

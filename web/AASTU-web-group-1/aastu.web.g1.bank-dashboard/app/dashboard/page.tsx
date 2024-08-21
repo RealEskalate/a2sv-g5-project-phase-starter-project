@@ -22,6 +22,7 @@ import { Barchart } from "./transactions/component/weeklyActivityChart";
 import getRandomBalance, { addTransactions, getallTransactions, getCreditCards, getExpenses, getIncomes, getQuickTransfer } from "@/lib/api";
 import { Loading } from "./_components/Loading";
 import {useUser} from "@/contexts/UserContext"
+import Link from "next/link";
 
 const MainDashboard = () => {
   const {isDarkMode} = useUser();
@@ -105,7 +106,14 @@ const MainDashboard = () => {
         <div className="md:w-2/3 space-y-5">
           <div className="flex justify-between font-inter text-[16px] font-semibold">
             <h4>My Cards</h4>
-            <h4>See All</h4>
+
+            <h4>
+              <Link href="/dashboard/credit-cards/">
+              
+                  See All
+               
+              </Link>
+            </h4>
           </div>
           <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {creditCards.map((card) => (
@@ -315,11 +323,7 @@ const MainDashboard = () => {
           </div>
           <div
             className={`
-        ${
-          isDarkMode
-            ? "bg-gray-800  shadow-md"
-            : "bg-white  shadow-lg"
-        }
+        ${isDarkMode ? "bg-gray-800  shadow-md" : "bg-white  shadow-lg"}
         rounded-xl
         md:shadow
         transition-all

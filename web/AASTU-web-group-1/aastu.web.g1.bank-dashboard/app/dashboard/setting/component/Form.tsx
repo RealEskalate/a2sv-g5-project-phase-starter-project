@@ -23,8 +23,30 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { useEffect, useState } from "react";
+import ky from "ky";
+import { getSession } from "next-auth/react";
 
-export function ProfileForm() {
+interface FormData {
+  name: string;
+  email: string;
+  dateOfBirth: string;
+  permanentAddress: string;
+  postalCode: string;
+  presentAddress: string;
+  city: string;
+  country: string;
+  username: string;
+  password: string;
+}
+
+interface ProfileFormProps {
+  formData: FormData;
+}
+
+export function ProfileForm({ formData }: ProfileFormProps) {
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,8 +61,42 @@ export function ProfileForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  useEffect(() => {
+    if (formData) {
+      form.reset({
+        userName: formData.username,
+        email: formData.email,
+        dateOfBirth: formData.dateOfBirth,
+        permanentAddress: formData.permanentAddress,
+        postalCode: formData.postalCode,
+        presentAddress: formData.presentAddress,
+        city: formData.city,
+        country: formData.country,
+        name: formData.name,
+      });
+    }
+  }, [formData, form]);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
+    try {
+      const session = await getSession();
+      const accessToken = session?.user.accessToken;
+      const res = ky
+        .put("https://bank-dashboard-6acc.onrender.com/user/update", {
+          json: values,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .json();
+
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -229,31 +285,14 @@ export function ProfileForm() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem className="mb-1">
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="rounded-2xl"
-                      type="password"
-                      placeholder="Password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
         </div>
         <Button
+          disabled={loading}
           type="submit"
           className="md:w-auto w-full px-8 float-end bg-primaryBlue text-white"
         >
-          Save
+          {loading ? "Saving..." : "Save"}
         </Button>
       </form>
     </Form>

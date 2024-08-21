@@ -5,10 +5,19 @@ import Cardinfo from "./components/Cardinfo";
 import CardSetting from "./components/CardSetting";
 import InputForm from "./components/InputForm";
 import { useUser } from "@/contexts/UserContext";
+import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 const CreditCards = () => {
   const { isDarkMode } = useUser();
+  const formSectionRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    // Check for hash in URL and scroll to the target section
+    if (window.location.hash === "#add-card") {
+      formSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
   return (
     <div
       className={`p-3 ${

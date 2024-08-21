@@ -5,8 +5,9 @@ import { createContext, ReactNode, useContext, useState } from "react";
 
 
 
-interface UserContextType{
-    isDarkMode:boolean;
+interface UserContextType {
+  isDarkMode: boolean;
+  setIsDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined)
@@ -16,7 +17,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
  const [isDarkMode,setIsDarkMode] = useState<boolean>(true)
   return (
-    <UserContext.Provider value={{isDarkMode}}>
+    <UserContext.Provider value={{ isDarkMode, setIsDarkMode }}>
       {children}
     </UserContext.Provider>
   );

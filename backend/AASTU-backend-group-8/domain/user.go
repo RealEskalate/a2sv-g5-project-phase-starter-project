@@ -39,11 +39,9 @@ type UserUsecaseInterface interface {
 	Login(user *AuthUser) (string, string, error)
 
 	LoginWithProvider(user *User) (string, string, error)
-	GetProfile(objectID primitive.ObjectID) (*Profile, error)
-	UpdateProfile(objectID primitive.ObjectID, user *Profile) (*Profile, error)
 
 	GetAllUsers() ([]*User, error)
-	UpdateUser(username , newPassword string) error
+	UpdateUser(username, newPassword string) error
 	DeleteUser(objectID primitive.ObjectID) error
 }
 

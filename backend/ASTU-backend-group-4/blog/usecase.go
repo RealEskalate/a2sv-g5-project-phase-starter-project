@@ -12,9 +12,10 @@ type BlogUseCaseImpl struct {
 	authRepository auth.AuthRepository
 }
 
-func NewBlogUseCaseImpl(blogRepository BlogRepository) BlogUseCase {
+func NewBlogUseCaseImpl(blogRepository BlogRepository, authRepository auth.AuthRepository) BlogUseCase {
 	return &BlogUseCaseImpl{
 		blogRepository: blogRepository,
+		authRepository: authRepository,
 	}
 }
 

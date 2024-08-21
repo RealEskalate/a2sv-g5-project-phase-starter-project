@@ -1,10 +1,9 @@
 package usecase
 
 import (
-	"context"
 	"errors"
+	"fmt"
 	"group3-blogApi/domain"
-	"log"
 )
 
 type BlogUsecaseImpl struct {
@@ -17,77 +16,98 @@ func NewBlogUsecase(blogRepo domain.BlogRepository) domain.BlogUsecase {
 	}
 }
 
-func (uc *BlogUsecaseImpl) CreateBlog(ctx context.Context, blog domain.Blog) (string, error) {
-	id, err := uc.blogRepo.CreateBlog(ctx, blog)
+func (uc *BlogUsecaseImpl) CreateBlog(username, userID string, blog domain.Blog) (domain.Blog, error) {
+	
+
+	// Set the author ID to the provided user ID
+	blog.AuthorID = userID
+
+	// Insert the blog post into the collection
+	newBlog, err := uc.blogRepo.CreateBlog(username, userID, blog)
 	if err != nil {
-		log.Printf("Error creating blog: %v", err)
-		return "", errors.New("failed          to create blog")
+		return domain.Blog{}, err
 	}
-	return id, nil
+
+	// Return the ID of the newly created blog post
+	return newBlog, nil
 }
 
-func (uc *BlogUsecaseImpl) GetBlogByID(ctx context.Context, id string) (*domain.Blog, error) {
-	blog, err := uc.blogRepo.GetBlogByID(ctx, id)
-	if err != nil {
-		log.Printf("Error retrieving blog by ID: %v", err)
-		return nil, errors.New("failed to retrieve blog")
+func (uc *BlogUsecaseImpl) DeleteBlog(role,userId,  id string) (domain.Blog, error) {
+	if role != "admin" {
+		existingBlog, err := uc.blogRepo.GetBlogByID(id)
+		if err != nil {
+			return domain.Blog{}, err
+		}
+		if existingBlog.AuthorID != userId {
+			return domain.Blog{}, errors.New("unauthorized to delete blog")
+		}
 	}
-	// if blog == nil {
-	// 	return nil, errors.New("blog not found")
-	// }
+
+
+	blog, err := uc.blogRepo.DeleteBlog(id)
+	if err != nil {
+		return domain.Blog{}, err
+	}
 	return blog, nil
 }
 
-func (uc *BlogUsecaseImpl) UpdateBlog(ctx context.Context, blog domain.Blog) error {
-	err := uc.blogRepo.UpdateBlog(ctx, blog)
+func (uc *BlogUsecaseImpl) UpdateBlog(blog domain.Blog,role string, blogId string) (domain.Blog, error) {
+	existingBlog, err := uc.blogRepo.GetBlogByID(blogId)
 	if err != nil {
-		log.Printf("Error updating blog: %v", err)
-		return errors.New("failed to update blog")
+		return domain.Blog{}, err
 	}
-	return nil
-}
-
-func (uc *BlogUsecaseImpl) DeleteBlog(ctx context.Context, id string) error {
-	err := uc.blogRepo.DeleteBlog(ctx, id)
-	if err != nil {
-		log.Printf("Error deleting blog: %v", err)
-		return errors.New("failed to delete blog")
+	fmt.Println(existingBlog.AuthorID, blog.AuthorID, "0000000000000000000000000000000000000000")
+	if existingBlog.AuthorID != blog.AuthorID {
+		return domain.Blog{}, errors.New("unauthorized to update blog")	
 	}
-	return nil
-}
-
-func (uc *BlogUsecaseImpl) GetBlogs(ctx context.Context, offset int64, limit int64, sortBy string) ([]domain.Blog, error) {
-    blogs, err := uc.blogRepo.GetBlogs(ctx, offset, limit, sortBy)
-    if err != nil {
-        return nil, err
-    }
-    return blogs, nil
-}
-
-
-func (uc *BlogUsecaseImpl) SearchBlogs(ctx context.Context, query string, filters map[string]interface{}) ([]domain.Blog, error) {
-	blogs, err := uc.blogRepo.SearchBlogs(ctx, query, filters)
+	blog, err = uc.blogRepo.UpdateBlog(blog, blogId)
 	if err != nil {
-		log.Printf("Error searching blogs: %v", err)
-		return nil, errors.New("failed to search blogs")
+		return domain.Blog{}, err
+	}
+	return blog, nil
+}
+
+func (uc *BlogUsecaseImpl) GetBlogByID(id string) (domain.Blog, error) {
+	blog, err := uc.blogRepo.GetBlogByID(id)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	return blog, nil
+}
+
+
+func (uc *BlogUsecaseImpl) GetBlogs(page, limit int64, sortBy , tag, authorName string) ([]domain.Blog, error) {
+	blogs, err := uc.blogRepo.GetBlogs( page, limit, sortBy, tag, authorName)
+	if err != nil {
+		return nil, err
 	}
 	return blogs, nil
 }
 
-func (uc *BlogUsecaseImpl) FilterBlogs(ctx context.Context, filters map[string]interface{}, sortBy string) ([]domain.Blog, error) {
-	blogs, err := uc.blogRepo.FilterBlogs(ctx, filters, sortBy)
+func (uc *BlogUsecaseImpl) GetUserBlogs(userID string) ([]domain.Blog, error) {
+	blogs, err := uc.blogRepo.GetUserBlogs(userID)
 	if err != nil {
-		log.Printf("Error filtering blogs: %v", err)
-		return nil, errors.New("failed to filter blogs")
+		return nil, err
 	}
 	return blogs, nil
 }
 
-func (uc *BlogUsecaseImpl) TrackPopularity(ctx context.Context, blogID string, action string) error {
-	err := uc.blogRepo.TrackPopularity(ctx, blogID, action)
-	if err != nil {
-		log.Printf("Error tracking blog popularity: %v", err)
-		return errors.New("failed to track blog popularity")
-	}
-	return nil
-}
+
+// like and dislike
+
+// func (uc *BlogUsecaseImpl) LikeBlog(userID, blogID string) error {
+// 	err := uc.blogRepo.LikeBlog(userID, blogID)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
+
+
+// func (uc *BlogUsecaseImpl) DislikeBlog(userID, blogID string) error {
+// 	err := uc.blogRepo.DislikeBlog(userID, blogID)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }

@@ -22,6 +22,7 @@ type JwtCustomClaims struct {
 	UserID     string `json:"user_id"`
 	Role       string `json:"role"`
 	Username   string `json:"username"`
+	IsActivated bool `json:"is_activated"`
 
 	jwt.StandardClaims
 }

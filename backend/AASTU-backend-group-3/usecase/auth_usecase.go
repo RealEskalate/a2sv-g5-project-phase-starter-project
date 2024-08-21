@@ -117,7 +117,7 @@ func (au *UserUsecase) RefreshToken(userID, deviceID, token string) (domain.LogI
 
 	for _, rt := range user.RefreshTokens {
 		if rt.Token == token && rt.DeviceID == deviceID {
-			t, tokenErr := infrastracture.RefreshToken(token)
+			_, tokenErr := infrastracture.RefreshToken(token)
 			for i, v := range user.RefreshTokens {
 				if v.Token == token {
 					user.RefreshTokens = append(user.RefreshTokens[:i], user.RefreshTokens[i+1:]...)
@@ -146,8 +146,10 @@ func (au *UserUsecase) RefreshToken(userID, deviceID, token string) (domain.LogI
 				return domain.LogInResponse{}, err
 			}
 
+			accessToken, err := infrastracture.GenerateToken(user)
+
 			return domain.LogInResponse{
-				AccessToken:  t,
+				AccessToken:  accessToken,
 				RefreshToken: newRefreshToken.Token,
 			}, err
 		}

@@ -2,14 +2,14 @@ package repository
 
 import (
 	// "aastu-backend-group-3/domain"
-    "fmt"
-    "log"
+
 	"context"
 	"errors"
+	"group3-blogApi/config/db"
 	"group3-blogApi/domain"
-	"time"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -25,192 +25,236 @@ func NewBlogRepositoryImpl(coll *mongo.Collection) domain.BlogRepository {
 }
 
 // CreateBlog creates a new blog post
-func (r *MongoBlogRepository) CreateBlog(ctx context.Context, blog domain.Blog) (string, error) {
-    blog.CreatedAt = time.Now()
-    blog.UpdatedAt = time.Now()
+func (bc *MongoBlogRepository) CreateBlog(username, userID string, blog domain.Blog) (domain.Blog, error) {
 
-    result, err := r.collection.InsertOne(ctx, blog)
+    blog.AuthorID = userID
+    blog.AutorName = username
+    _, err := bc.collection.InsertOne(context.Background(),  blog)
     if err != nil {
-        return "", err
+        return domain.Blog{}, err
     }
 
-    // Convert the inserted ID to a string
-    id := result.InsertedID.(primitive.ObjectID).Hex()
-
-    return id, nil
+    return blog, nil
+     
 }
 
-// GetBlogByID retrieves a blog post by its ID
-func (r *MongoBlogRepository) GetBlogByID(ctx context.Context, id string) (*domain.Blog, error) {
-    
+func(bc *MongoBlogRepository) DeleteBlog(id string)(domain.Blog, error){
     objectID,err := primitive.ObjectIDFromHex(id)
     if err != nil {
-        return nil, err // Return an error if the ID is not a valid ObjectID
-    }
+        return domain.Blog{}, err   
+      }
     filter := bson.M{"_id": objectID}
     var blog domain.Blog
     
-    er := r.collection.FindOne(ctx, filter).Decode(&blog)
+    er := bc.collection.FindOneAndDelete(context.Background(), filter).Decode(&blog)
     if er != nil {
         if er == mongo.ErrNoDocuments {
-            return nil, nil // domain.Blog not found
+            return domain.Blog{}, errors.New("blog not found") 
         }
-        return nil, er
+        return domain.Blog{}, err
     }
 
-    return &blog, nil
+    return blog, nil
 }
 
-// UpdateBlog updates an existing blog post
-func (r *MongoBlogRepository) UpdateBlog(ctx context.Context, blog domain.Blog) error {
-    filter := bson.M{"id": blog.ID}
-    update := bson.M{
-        "$set": bson.M{
-            "title":         blog.Title,
-            "content":       blog.Content,
-            "tags":          blog.Tags,
-            "updated_at":    time.Now(),
-            "likes_count":   blog.LikesCount,
-            "dislikes_count": blog.DislikesCount,
-            "view_count":    blog.ViewCount,
-            "comments_count": blog.CommentsCount,
-        },
-    }
 
-    result, err := r.collection.UpdateOne(ctx, filter, update)
+func(bc *MongoBlogRepository) UpdateBlog(blog domain.Blog, blogId string)(domain.Blog, error){
+    objectID,err := primitive.ObjectIDFromHex(blogId)
     if err != nil {
-        return err
+        return domain.Blog{}, err   
+      }
+    filter := bson.M{"_id": objectID}
+    var newBlog domain.Blog
+    
+    er := bc.collection.FindOneAndReplace(context.Background(), filter, blog).Decode(&newBlog)
+    if er != nil {
+        if er == mongo.ErrNoDocuments {
+            return domain.Blog{}, errors.New("blog not found") 
+        }
+        return domain.Blog{}, err
     }
 
-    if result.MatchedCount == 0 {
-        return errors.New("blog not found")
-    }
-
-    return nil
+    return newBlog, nil
 }
 
-// DeleteBlog deletes a blog post by its ID
-func (r *MongoBlogRepository) DeleteBlog(ctx context.Context, id string) error {
-    filter := bson.M{"id": id}
-    result, err := r.collection.DeleteOne(ctx, filter)
+func (bc *MongoBlogRepository) GetBlogByID(id string) (domain.Blog, error) {
+    objectID,err := primitive.ObjectIDFromHex(id)
     if err != nil {
-        return err
+        return domain.Blog{}, err   
+      }
+    filter := bson.M{"_id": objectID}
+    var blog domain.Blog
+    
+    er := bc.collection.FindOne(context.Background(), filter).Decode(&blog)
+    if er != nil {
+        if er == mongo.ErrNoDocuments {
+            return domain.Blog{}, errors.New("blog not found") 
+        }
+        return domain.Blog{}, err
     }
+    ctx := context.Background()
+    LikeCollection := db.LikeCollection
 
-    if result.DeletedCount == 0 {
-        return errors.New("blog not found")
-    }
+    likes := 0
+    dislikes := 0
 
-    return nil
-}
+    reactionFilter := bson.M{"post_id": blog.ID.Hex()}
+    var totalPostReactions []domain.Like
 
-// GetBlogs retrieves a list of blogs with pagination and sorting
-func (r *MongoBlogRepository) GetBlogs(ctx context.Context, offset int64, limit int64, sortBy string) ([]domain.Blog, error) {
-    var blogs []domain.Blog
-
-    // Define sorting options
-    sortOptions := bson.D{{Key: sortBy, Value: -1}}
-
-    // Attempt to find blogs with the provided parameters
-    cursor, err := r.collection.Find(ctx, bson.M{}, &options.FindOptions{
-        Skip:  &offset,
-        Limit: &limit,
-        Sort:  sortOptions,
-    })
+    cursor, err := LikeCollection.Find(ctx, reactionFilter)
     if err != nil {
-        // Log the error with context and return it
-        log.Printf("Error finding blogs: %v. Parameters - SortBy: %s, Offset: %d, Limit: %d", err, sortBy, offset, limit)
-        return nil, fmt.Errorf("failed to find blogs. Please check the parameters and try again")
+        return domain.Blog{}, err
     }
     defer cursor.Close(ctx)
 
-    // Attempt to decode the cursor results into the blogs slice
-    if err = cursor.All(ctx, &blogs); err != nil {
-        // Log the error with context and return it
-        log.Printf("Error decoding blogs from cursor: %v", err)
-        return nil, fmt.Errorf("failed to process blogs data. Please try again later")
+    if err = cursor.All(ctx, &totalPostReactions); err != nil {
+        return domain.Blog{}, err
     }
 
-    return blogs, nil
-}
-
-// SearchBlogs searches for blogs based on a query and additional filters
-func (r *MongoBlogRepository) SearchBlogs(ctx context.Context, query string, filters map[string]interface{}) ([]domain.Blog, error) {
-    var blogs []domain.Blog
-    filter := bson.M{"$text": bson.M{"$search": query}}
-
-    if len(filters) > 0 {
-        for key, value := range filters {
-            filter[key] = value
+    for _, reaction := range totalPostReactions {
+        if reaction.Type == "like" {
+            likes++
+        } else if reaction.Type == "dislike" {
+            dislikes++
         }
     }
 
-    cursor, err := r.collection.Find(ctx, filter)
-    if err != nil {
-        return nil, err
-    }
-    defer cursor.Close(ctx)
+    blog.LikesCount = likes
+    blog.DislikesCount = dislikes
+    
 
-    if err = cursor.All(ctx, &blogs); err != nil {
-        return nil, err
-    }
-
-    return blogs, nil
+    return blog, nil
 }
-
-// FilterBlogs filters blogs by tags, date, or popularity
-func (r *MongoBlogRepository) FilterBlogs(ctx context.Context, filters map[string]interface{}, sortBy string) ([]domain.Blog, error) {
+func (bc *MongoBlogRepository) GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]domain.Blog, error) {
     var blogs []domain.Blog
+
+    // Create a filter map
     filter := bson.M{}
 
-    if len(filters) > 0 {
-        for key, value := range filters {
-            filter[key] = value
-        }
+    // Add tag to the filter if provided
+    if tag != "" {
+        filter["tags"] = bson.M{"$in": []string{tag}}
     }
 
-    sortOptions := bson.D{{Key: sortBy, Value: -1}}
-    cursor, err := r.collection.Find(ctx, filter, &options.FindOptions{
-        Sort: sortOptions,
-    })
+    // Add authorName to the filter if provided
+    if authorName != "" {
+        filter["authorName"] = authorName
+    }
+
+    // Set up options for sorting and pagination
+    findOptions := options.Find()
+
+    // Sort by the specified field if provided, otherwise default to "createdAt" descending
+    if sortBy != "" {
+        findOptions.SetSort(bson.D{{Key: sortBy, Value: -1}})
+    } else {
+        findOptions.SetSort(bson.D{{Key: "createdAt", Value: -1}})
+    }
+
+    // Set the limit and skip options for pagination
+    if limit > 0 {
+        findOptions.SetLimit(limit)
+        findOptions.SetSkip((page - 1) * limit)
+    }
+
+    // Execute the query
+    cursor, err := bc.collection.Find(context.Background(), filter, findOptions)
     if err != nil {
         return nil, err
     }
-    defer cursor.Close(ctx)
+    defer cursor.Close(context.Background())
 
-    if err = cursor.All(ctx, &blogs); err != nil {
+    // Decode all matching documents into the blogs slice
+    if err = cursor.All(context.Background(), &blogs); err != nil {
         return nil, err
+    }
+
+    // Reuse the context and filter for like/dislike counting
+    ctx := context.Background()
+    LikeCollection := db.LikeCollection
+
+    for i := range blogs {
+        blog := &blogs[i]
+        likes := 0
+        dislikes := 0
+
+        reactionFilter := bson.M{"post_id": blog.ID.Hex()}
+        var totalPostReactions []domain.Like
+
+        cursor, err := LikeCollection.Find(ctx, reactionFilter)
+        if err != nil {
+            return nil, err
+        }
+        defer cursor.Close(ctx)
+
+        if err = cursor.All(ctx, &totalPostReactions); err != nil {
+            return nil, err
+        }
+
+        for _, reaction := range totalPostReactions {
+            if reaction.Type == "like" {
+                likes++
+            } else if reaction.Type == "dislike" {
+                dislikes++
+            }
+        }
+
+        blog.LikesCount = likes
+        blog.DislikesCount = dislikes
     }
 
     return blogs, nil
 }
 
-// TrackPopularity updates the popularity metrics for a blog post
-func (r *MongoBlogRepository) TrackPopularity(ctx context.Context, blogID string, action string) error {
-    filter := bson.M{"id": blogID}
-    var update bson.M
 
-    switch action {
-    case "view":
-        update = bson.M{"$inc": bson.M{"view_count": 1}}
-    case "like":
-        update = bson.M{"$inc": bson.M{"likes_count": 1}}
-    case "dislike":
-        update = bson.M{"$inc": bson.M{"dislikes_count": 1}}
-    case "comment":
-        update = bson.M{"$inc": bson.M{"comments_count": 1}}
-    default:
-        return errors.New("invalid action")
-    }
 
-    result, err := r.collection.UpdateOne(ctx, filter, update)
+func (bc *MongoBlogRepository) GetUserBlogs(userID string) ([]domain.Blog, error) {
+    var blogs []domain.Blog
+    opts := options.Find().SetSort(bson.D{{Key: "createdAt", Value: -1}})
+    cursor, err := bc.collection.Find(context.Background(), bson.M{"authorid": userID}, opts)
+
     if err != nil {
-        return err
+        return nil, err
+    }
+    defer cursor.Close(context.Background())
+
+    if err = cursor.All(context.Background(), &blogs); err != nil {
+        return nil, err
+    }
+    ctx := context.Background()
+    LikeCollection := db.LikeCollection
+
+    for i := range blogs {
+        blog := &blogs[i]
+        likes := 0
+        dislikes := 0
+
+        reactionFilter := bson.M{"post_id": blog.ID.Hex()}
+        var totalPostReactions []domain.Like
+
+        cursor, err := LikeCollection.Find(ctx, reactionFilter)
+        if err != nil {
+            return nil, err
+        }
+        defer cursor.Close(ctx)
+
+        if err = cursor.All(ctx, &totalPostReactions); err != nil {
+            return nil, err
+        }
+
+        for _, reaction := range totalPostReactions {
+            if reaction.Type == "like" {
+                likes++
+            } else if reaction.Type == "dislike" {
+                dislikes++
+            }
+        }
+
+        blog.LikesCount = likes
+        blog.DislikesCount = dislikes
     }
 
-    if result.MatchedCount == 0 {
-        return errors.New("blog not found")
-    }
 
-    return nil
+    return blogs, nil
 }
+

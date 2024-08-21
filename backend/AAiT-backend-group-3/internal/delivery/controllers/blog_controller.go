@@ -5,68 +5,70 @@ import (
 	"AAIT-backend-group-3/internal/usecases"
 	"strconv"
 	"strings"
-
 	"github.com/gin-gonic/gin"
 )
 
-
-type BlogController struct {
-	blog_usecase *usecases.BlogUsecase
+type BlogControllerInterface interface {
+	CreateBlog(c *gin.Context)
+	GetBlogByID(c *gin.Context)
+	GetBlogs(c *gin.Context)
+	UpdateBlog(c *gin.Context)
+	DeleteBlog(c *gin.Context)
+	LikeBlog(c *gin.Context)
+	ViewBlog(c *gin.Context)
 }
 
+type BlogController struct {
+	blog_usecase usecases.BlogUsecaseInterface
+}
 
-func NewBlogController(u *usecases.BlogUsecase) *BlogController{
+func NewBlogController(u usecases.BlogUsecaseInterface) BlogControllerInterface {
 	return &BlogController{
 		blog_usecase: u,
 	}
 }
 
-// @Todo: set the AuthorID for the blog, get the author from the token
-func (blogController *BlogController) CreateBlog(c *gin.Context) {
+func (bc *BlogController) CreateBlog(c *gin.Context) {
 	var req models.Blog
-
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-
-	// get the author from the token
 	claims, _ := c.Get("claims")
 	authorID := claims.(map[string]interface{})["id"].(string)
 
-	err := blogController.blog_usecase.CreateBlog(&req, authorID)
+	blog, err := bc.blog_usecase.CreateBlog(&req, authorID)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to create blog"})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "Blog created"})
+	c.JSON(200, gin.H{"blog_id": blog})
 }
 
-func (blogController *BlogController) GetBlogByID(c *gin.Context) {
-	blogId := c.Param("id")
+func (bc *BlogController) GetBlogByID(c *gin.Context) {
+	blogID := c.Param("id")
 
-	existingBlog, err := blogController.blog_usecase.GetBlogByID(blogId)
+	existingBlog, err := bc.blog_usecase.GetBlogByID(blogID)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to get blog"})
 		return
 	}
-
+	
 	c.JSON(200, gin.H{"blog": existingBlog})
 }
 
-func (blogController *BlogController) GetBlogs(c *gin.Context) {
-
+func (bc *BlogController) GetBlogs(c *gin.Context) {
 	filters := c.QueryMap("filter")
 	search := c.Query("search")
-	page, err := strconv.Atoi(c.Query("page"))
-	limit, err := strconv.Atoi(c.Query("limit"))
-	if err != nil{
-		c.JSON(500, gin.H{"error": "Invalid limit or page number"})
+	page, err1 := strconv.Atoi(c.Query("page"))
+	limit, err2 := strconv.Atoi(c.Query("limit"))
+	if err1 != nil || err2 != nil {
+		c.JSON(400, gin.H{"error": "Invalid limit or page number"})
 		return
 	}
-	filterMap := make(map[string]interface{})
 
+	filterMap := make(map[string]interface{})
 	for _, filter := range filters {
 		keyValue := strings.SplitN(filter, ":", 2)
 		if len(keyValue) == 2 {
@@ -74,7 +76,7 @@ func (blogController *BlogController) GetBlogs(c *gin.Context) {
 		}
 	}
 
-	blogs, err := blogController.blog_usecase.GetBlogs(filterMap, search, page, limit)
+	blogs, err := bc.blog_usecase.GetBlogs(filterMap, search, page, limit)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to get blogs"})
 		return
@@ -83,8 +85,8 @@ func (blogController *BlogController) GetBlogs(c *gin.Context) {
 	c.JSON(200, gin.H{"blogs": blogs})
 }
 
-func (blogController *BlogController) EditBlog(c *gin.Context) {
-	blogId := c.Param("id")
+func (bc *BlogController) UpdateBlog(c *gin.Context) {
+	blogID := c.Param("id")
 	var req models.Blog
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -92,23 +94,51 @@ func (blogController *BlogController) EditBlog(c *gin.Context) {
 		return
 	}
 
-	err := blogController.blog_usecase.EditBlog(blogId, &req)
+	err := bc.blog_usecase.UpdateBlog(blogID, &req)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to edit blog"})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "Blog edited"})
+	c.JSON(200, gin.H{"message": "Blog updated successfully"})
 }
 
-func (blogController *BlogController) DeleteBlog(c *gin.Context) {
-	blogId := c.Param("id")
+func (bc *BlogController) DeleteBlog(c *gin.Context) {
+	blogID := c.Param("id")
 
-	err := blogController.blog_usecase.DeleteBlog(blogId)
+	err := bc.blog_usecase.DeleteBlog(blogID)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to delete blog"})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "Blog deleted"})
+	c.JSON(200, gin.H{"message": "Blog deleted successfully"})
+}
+
+func (bc *BlogController) LikeBlog(c *gin.Context) {
+	var requestBody struct {
+		UserID string `json:"user_id"`
+	}
+	if err := c.BindJSON(&requestBody); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	blogID := c.Param("id")
+	if err := bc.blog_usecase.LikeBlog(blogID, requestBody.UserID); err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Blog liked successfully"})
+}
+
+func (bc *BlogController) ViewBlog(c *gin.Context) {
+	blogID := c.Param("id")
+	if err := bc.blog_usecase.ViewBlog(blogID); err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Blog view recorded successfully"})
 }

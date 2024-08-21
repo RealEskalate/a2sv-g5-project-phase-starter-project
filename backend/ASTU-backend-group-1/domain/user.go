@@ -46,7 +46,7 @@ type UserUsecase interface {
 	Create(u *User) (User, error)
 	Update(userId string, updateData User) (User, error)
 	Delete(userId string) error
-	AccountVerification(uemail string, confirmationToken string) (string, error)
+	AccountVerification(uemail string, confirmationToken string) error
 	ResetPassword(email string, token string, password string) (string, error)
 	ForgetPassword(email string) (string, error)
 	LoginUser(uname string, password string) (string, error)

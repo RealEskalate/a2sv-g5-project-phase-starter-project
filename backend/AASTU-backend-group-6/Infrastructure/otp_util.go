@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"crypto/rand"
 	"fmt"
+	"math/big"
 	"net/http"
 	"time"
 
@@ -30,11 +31,22 @@ const (
 
 // Generates a secure random OTP
 func GenerateOTP() (string, error) {
-	bytes := make([]byte, 3) // 3 bytes = 24 bits = 6 digits
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
+	const length = 6
+	otp := ""
+
+	for i := 0; i < length; i++ {
+		// Generate a random number between 0 and 9
+		n, err := rand.Int(rand.Reader, big.NewInt(10))
+		if err != nil {
+			return "", err
+		}
+
+		// Append the digit to the OTP string
+		otp += fmt.Sprintf("%d", n.Int64())
 	}
-	return fmt.Sprintf("%06d", int(bytes[0])%1000000), nil
+
+	return otp, nil
+
 }
 
 // Sends the OTP email
@@ -49,7 +61,7 @@ var  SendOTPEmail = func(to, otp string) error {
 	`, otp)
 
 	m := gomail.NewMessage()
-	m.SetHeader("From", emailFrom)
+	m.SetHeader("From", fmt.Sprintf("%s <%s>", "Eskalate G5 Blog Project", emailFrom))
 	m.SetHeader("To", to)
 	m.SetHeader("Subject", "Your OTP Code")
 	m.SetBody("text/plain", body)

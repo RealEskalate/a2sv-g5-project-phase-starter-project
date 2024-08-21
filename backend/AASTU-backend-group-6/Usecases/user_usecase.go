@@ -2,7 +2,6 @@ package usecases
 
 import (
 	domain "blogs/Domain"
-	infrastructure "blogs/Infrastructure"
 	"context"
 	"time"
 )
@@ -10,13 +9,16 @@ import (
 type UserUseCase struct {
 	UserRepository domain.UserRepository
 	contextTimeout time.Duration
+	passwordService domain.PasswordService
 	
 }
 
-func NewUserUseCase(UserRepository domain.UserRepository, timeout time.Duration) domain.UserUseCase {
-	return &UserUseCase{UserRepository: UserRepository,
+func NewUserUseCase(UserRepository domain.UserRepository, timeout time.Duration , passwordService domain.PasswordService) domain.UserUseCase {
+	return &UserUseCase{
+		UserRepository: UserRepository,
 		contextTimeout: timeout,
-		}
+		passwordService: passwordService,
+	}
 }
 
 
@@ -55,11 +57,11 @@ func (uc *UserUseCase) UpdateUser(c context.Context, req domain.UserUpdateReques
 		if getUser.GoogleID == "" {
 
 			// Validate the password
-			if err := infrastructure.ValidatePassword(req.Password); err != nil {
+			if err := uc.passwordService.ValidatePassword(req.Password); err != nil {
 				return &domain.ErrorResponse{Message: err.Error(), Status: 400}
 			}
 			
-			hashedpassword , err := infrastructure.HashPassword(req.Password)
+			hashedpassword , err := uc.passwordService.HashPassword(req.Password)
 			if err != nil{
 				return &domain.ErrorResponse{Message: "Error in hashing the passeword" , Status:500}
 			}

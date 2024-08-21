@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"time"
+	"log"
 
 	"github.com/go-redis/redis/v8"
+	"strconv"
 
 	config "github.com/aait.backend.g5.main/backend/Config"
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
@@ -17,6 +19,7 @@ type blogUsecase struct {
 	repository   interfaces.BlogRepository
 	userRepo     interfaces.UserRepository
 	popularity   interfaces.BlogPopularityActionRepository
+	comment      interfaces.BlogCommentRepository
 	cacheService interfaces.RedisCache
 	env          config.Env
 	cacheTTL     time.Duration
@@ -31,6 +34,7 @@ func NewblogUsecase(
 	helper interfaces.BlogHelper,
 	userRepo interfaces.UserRepository,
 	popularity interfaces.BlogPopularityActionRepository,
+	comment interfaces.BlogCommentRepository,
 ) interfaces.BlogUsecase {
 
 	return &blogUsecase{
@@ -41,10 +45,9 @@ func NewblogUsecase(
 		helper:       helper,
 		userRepo:     userRepo,
 		popularity:   popularity,
+		comment:      comment,
 	}
 }
-
-
 
 func (b *blogUsecase) CreateBlog(ctx context.Context, blog *models.Blog) (*dtos.BlogResponse, *models.ErrorResponse) {
 	slug := b.helper.CreateSlug(blog.Title)
@@ -96,7 +99,8 @@ func (b *blogUsecase) GetBlog(ctx context.Context, id string) (*dtos.BlogRespons
 }
 
 func (b *blogUsecase) GetBlogs(ctx context.Context, page int) ([]*dtos.BlogResponse, *models.ErrorResponse) {
-	data, err := b.helper.FetchFromCacheOrRepoBlogs(ctx, b.env.REDIS_BLOG_KEY, func() (interface{}, *models.ErrorResponse) {
+
+	data, err := b.helper.FetchFromCacheOrRepoBlogs(ctx, strconv.Itoa(page), func() (interface{}, *models.ErrorResponse) {
 		return b.repository.GetBlogs(ctx, page)
 	})
 
@@ -171,6 +175,11 @@ func (b *blogUsecase) DeleteBlog(ctx context.Context, deleteBlogReq dtos.DeleteB
 
 	blog, err := b.repository.GetBlog(ctx, deleteBlogReq.BlogID)
 	user, uErr := b.userRepo.GetUserByID(ctx, deleteBlogReq.AuthorID)
+
+
+	log.Println("blog", blog)
+	log.Println("user", deleteBlogReq.AuthorID)
+
 	if err != nil {
 		return err
 	}
@@ -184,6 +193,10 @@ func (b *blogUsecase) DeleteBlog(ctx context.Context, deleteBlogReq dtos.DeleteB
 	}
 
 	id := deleteBlogReq.BlogID
+	if err := b.comment.DeleteComments(ctx, id); err != nil {
+		return err
+	}
+
 	if err := b.repository.DeleteBlog(ctx, id); err != nil {
 		return err
 	}
@@ -195,6 +208,7 @@ func (b *blogUsecase) DeleteBlog(ctx context.Context, deleteBlogReq dtos.DeleteB
 	if err := b.cacheService.Delete(ctx, b.env.REDIS_BLOG_KEY); err != nil {
 		return models.InternalServerError("Error while Invalidating blog from cache")
 	}
+
 	return nil
 }
 
@@ -255,8 +269,4 @@ func (b *blogUsecase) TrackPopularity(ctx context.Context, popularity dtos.Track
 	}
 
 	return nil
-}
-
-func (b *blogUsecase) AddComment(ctx context.Context, comment models.Comment) *models.ErrorResponse {
-	return b.repository.AddComment(ctx, comment)
 }

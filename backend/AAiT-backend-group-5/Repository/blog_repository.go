@@ -53,7 +53,7 @@ func (br *BlogMongoRepository) GetBlog(ctx context.Context, id string) (*models.
 	return &blog, models.Nil()
 }
 
-func (br *BlogMongoRepository) GetBlogs(ctx context.Context , page int) ([]*models.Blog, *models.ErrorResponse) {
+func (br *BlogMongoRepository) GetBlogs(ctx context.Context, page int) ([]*models.Blog, *models.ErrorResponse) {
 	pageSize := 10
 	skip := (page - 1) * pageSize
 

@@ -15,15 +15,24 @@ import (
 )
 
 type blogHelper struct {
-	repository   interfaces.BlogRepository
-	cacheService interfaces.RedisCache
-	cacheTTL     time.Duration
+	blogRepository    interfaces.BlogRepository
+	cacheService      interfaces.RedisCache
+	cacheTTL          time.Duration
+	commentRepository interfaces.BlogCommentRepository
 }
 
-func NewBlogHelper(repository interfaces.BlogRepository, cacheService interfaces.RedisCache, cacheTTL time.Duration) interfaces.BlogHelper {
+func NewBlogHelper(
+	blogRepository interfaces.BlogRepository,
+	cacheService interfaces.RedisCache,
+	cacheTTL time.Duration,
+	commentRepository interfaces.BlogCommentRepository,
+
+) interfaces.BlogHelper {
 	return &blogHelper{
-		repository:   repository,
-		cacheService: cacheService,
+		blogRepository:    blogRepository,
+		cacheService:      cacheService,
+		cacheTTL:          cacheTTL,
+		commentRepository: commentRepository,
 	}
 }
 
@@ -77,7 +86,7 @@ func (b *blogHelper) GetBlogs(ctx context.Context, data []*models.Blog) ([]*dtos
 }
 
 func (b *blogHelper) FetchComments(ctx context.Context, blogID string) ([]models.Comment, *models.ErrorResponse) {
-	comments, err := b.repository.GetComments(ctx, blogID)
+	comments, err := b.commentRepository.GetComments(ctx, blogID)
 	if err != nil {
 		if err.Code == 404 {
 			return []models.Comment{}, nil
@@ -88,7 +97,7 @@ func (b *blogHelper) FetchComments(ctx context.Context, blogID string) ([]models
 }
 
 func (b *blogHelper) FetchPopularity(ctx context.Context, blogID string) (*models.Popularity, *models.ErrorResponse) {
-	popularity, err := b.repository.GetPopularity(ctx, blogID)
+	popularity, err := b.blogRepository.GetPopularity(ctx, blogID)
 	if err != nil {
 		if err.Code == 404 {
 			return &models.Popularity{}, nil

@@ -49,7 +49,7 @@ export default function RootLayout({
 									<Sidebar isSidebarVisible={isSidebarVisible} toggleSidebar={toggleSidebar} />
 								</div>
 								<div className="flex flex-col w-full">
-									<NavBar toggleSidebar={toggleSidebar} isSidebarVisible={isSidebarVisible} toggleDarkMode={toggleDarkMode} darkmode={darkmode} />
+									<NavBar toggleSidebar={toggleSidebar} isSidebarVisible={isSidebarVisible} />
 									<main>{children}</main>
 								</div>
 							</div>

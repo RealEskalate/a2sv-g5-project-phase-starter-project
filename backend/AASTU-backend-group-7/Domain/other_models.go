@@ -20,3 +20,10 @@ type Filter struct {
 	SortBy     string
 	OrderBy    int
 }
+
+type PaginationMetaData struct {
+	TotalRecords int
+	TotalPages   int
+	PageSize     int
+	CurrentPage  int
+}

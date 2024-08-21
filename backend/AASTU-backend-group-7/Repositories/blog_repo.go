@@ -9,6 +9,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type blogrepository struct {
@@ -46,7 +47,6 @@ func (br *blogrepository) CreateBlog(ctx context.Context, post *Domain.Post) (er
 		fmt.Println("error at insert", err)
 		return err, 500
 	}
-	
 
 	return nil, 200
 }
@@ -206,92 +206,6 @@ func (br *blogrepository) GetComments(ctx context.Context, id primitive.ObjectID
 	return comments, nil, 200
 }
 
-// get all posts
-func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter) ([]*Domain.Post, error, int) {
-	var posts []*Domain.Post
-	fmt.Println("filter", filter)
-
-	// Initialize the filter for MongoDB query
-	pipeline := []bson.M{}
-
-	// Build the match stage for filtering
-	matchStage := bson.M{}
-
-	// Set up pagination parameters
-	page := 1
-	if filter.Page > 1 {
-		page = filter.Page
-	}
-
-	limit := 20
-	if filter.Limit > 0 {
-		limit = filter.Limit
-	}
-
-	// Add filters based on the filter criteria provided
-	if filter.Slug != "" {
-		matchStage["slug"] = filter.Slug
-	}
-
-	if filter.AuthorName != "" {
-		matchStage["authorName"] = filter.AuthorName
-	}
-
-	if len(filter.Tags) > 1 {
-		matchStage["tags"] = bson.M{"$all": filter.Tags} // Filter documents that contain all the specified tags
-	}
-
-	if len(matchStage) > 0 {
-		pipeline = append(pipeline, bson.M{"$match": matchStage})
-	}
-
-	// Default sort by publishedAt in descending order
-	orderBy := -1
-	if filter.OrderBy == 1 {
-		orderBy = 1
-	}
-	sortBy := "updatedat"
-	sort := bson.M{sortBy: orderBy}
-	if filter.SortBy != "" {
-		sortBy = filter.SortBy
-
-		if sortBy == "popularity" {
-			pipeline = append(pipeline, bson.M{
-				"$addFields": bson.M{
-					"popularity": bson.M{
-						"$add": []interface{}{
-							bson.M{"$multiply": []interface{}{"$views", 1}},     // Weight for views
-							bson.M{"$multiply": []interface{}{"$likecount", 2}},     // Weight for likes
-							bson.M{"$multiply": []interface{}{"$dislikecount", -1}}, // Weight for dislikes
-						},
-					},
-				},
-			})
-
-			pipeline = append(pipeline, bson.M{"$sort": bson.M{"popularity": -1}})
-		} else {
-			pipeline = append(pipeline, bson.M{"$sort": bson.M{sortBy: orderBy}})
-		}
-	}else {
-		pipeline = append(pipeline, bson.M{"$sort": sort})
-	}
-
-	pipeline = append(pipeline, bson.M{"$skip": int64((page - 1) * limit)})
-	pipeline = append(pipeline, bson.M{"$limit": int64(limit)})
-
-	cursor, err := br.postCollection.Aggregate(ctx, pipeline)
-	if err != nil {
-		return nil, err, 500
-	}
-	defer cursor.Close(ctx)
-
-	if err = cursor.All(ctx, &posts); err != nil {
-		return nil, err, 500
-	}
-	// Return the list of posts, nil error, and a 200 status code
-	return posts, nil, 200
-}
-
 // add tag to post
 func (br *blogrepository) AddTagToPost(ctx context.Context, id primitive.ObjectID, slug string) (error, int) {
 	// get tag by slug
@@ -449,30 +363,208 @@ func (br *blogrepository) DislikePost(ctx context.Context, id primitive.ObjectID
 }
 
 // search posts
-func (br *blogrepository) SearchPosts(ctx context.Context, query string) ([]*Domain.Post, error, int) {
+func (br *blogrepository) SearchPosts(ctx context.Context, query string, pagefilter Domain.Filter) ([]*Domain.Post, error, int, Domain.PaginationMetaData) {
 	// search posts by title or author name using the query
 	var posts []*Domain.Post
+
+	// Default limit is 20 if not provided
+	limit := 20
+	if pagefilter.Limit > 0 {
+		limit = pagefilter.Limit
+	}
+
+	// Default to page 1 if not provided
+	page := 1
+	if pagefilter.Page > 1 {
+		page = pagefilter.Page
+	}
+
+	// Calculate the skip value based on the page number
+	skip := (page - 1) * limit
+
+	// Filter to search for the query in title or author name
 	filter := bson.D{{"$or", bson.A{
 		bson.D{{"title", primitive.Regex{Pattern: query, Options: "i"}}},
 		bson.D{{"authorname", primitive.Regex{Pattern: query, Options: "i"}}},
 	}}}
-	cursor, err := br.postCollection.Find(ctx, filter)
 
+	// Count the total number of documents that match the filter
+	totalCount, err := br.postCollection.CountDocuments(ctx, filter)
 	if err != nil {
-		return nil, err, 500
+		return nil, err, 500, Domain.PaginationMetaData{}
+	}
+
+	// Calculate the total number of pages
+	totalPages := (int(totalCount) + limit - 1) / limit
+
+	// Set up find options with limit and skip for pagination
+	findOptions := options.Find()
+	findOptions.SetSkip(int64(skip))
+	findOptions.SetLimit(int64(limit))
+
+	// Execute the query with the filter and pagination options
+	cursor, err := br.postCollection.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, err, 500, Domain.PaginationMetaData{}
 	}
 	defer cursor.Close(ctx)
 
+	// Decode the documents into the posts slice
 	for cursor.Next(ctx) {
-		var post *Domain.Post
+		var post Domain.Post
 		err := cursor.Decode(&post)
 		if err != nil {
-			return nil, err, 500
+			return nil, err, 500, Domain.PaginationMetaData{}
 		}
-		posts = append(posts, post)
+		posts = append(posts, &post)
 	}
+
+	// Check if there was an error during cursor iteration
 	if err := cursor.Err(); err != nil {
-		return nil, err, 500
+		return nil, err, 500, Domain.PaginationMetaData{}
 	}
-	return posts, nil, 200
+
+	paginationMetaData := Domain.PaginationMetaData{
+		TotalRecords: int(totalCount),
+		TotalPages:   totalPages,
+		PageSize:     limit,
+		CurrentPage:  page,
+	}
+
+	// Return the posts, total pages, and status code
+	return posts, nil, 200, paginationMetaData
+}
+
+// get all posts
+func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter) ([]*Domain.Post, error, int, Domain.PaginationMetaData) {
+	var posts []*Domain.Post
+
+	// Initialize the filter for MongoDB query
+	pipeline := []bson.M{}
+
+	// Build the match stage for filtering
+	matchStage := bson.M{}
+	countfilter := bson.M{}
+
+	// Set up pagination parameters
+	page := 1
+	if filter.Page > 1 {
+		page = filter.Page
+	}
+
+	limit := 20
+	if filter.Limit > 0 {
+		limit = filter.Limit
+	}
+
+	// Add filters based on the filter criteria provided
+	if filter.Slug != "" {
+		matchStage["slug"] = filter.Slug
+		countfilter["slug"] = filter.Slug
+	}
+
+	if filter.AuthorName != "" {
+		matchStage["authorName"] = filter.AuthorName
+		countfilter["authorName"] = filter.AuthorName
+	}
+
+	if len(filter.Tags) > 1 {
+		matchStage["tags"] = bson.M{"$all": filter.Tags} // Filter documents that contain all the specified tags
+		countfilter["tags"] = bson.M{"$all": filter.Tags}
+	}
+
+	// count the number of documents that match the filter criteria
+	count, err := br.postCollection.CountDocuments(ctx, countfilter)
+
+	if len(matchStage) > 0 {
+		pipeline = append(pipeline, bson.M{"$match": matchStage})
+	}
+
+	// Default sort by publishedAt in descending order
+	orderBy := -1
+	if filter.OrderBy == 1 {
+		orderBy = 1
+	}
+	sortBy := "updatedat"
+	sort := bson.M{sortBy: orderBy}
+	if filter.SortBy != "" {
+		sortBy = filter.SortBy
+
+		if sortBy == "popularity" {
+			pipeline = append(pipeline, bson.M{
+				"$addFields": bson.M{
+					"popularity": bson.M{
+						"$add": []interface{}{
+							bson.M{"$multiply": []interface{}{"$views", 1}},         // Weight for views
+							bson.M{"$multiply": []interface{}{"$likecount", 2}},     // Weight for likes
+							bson.M{"$multiply": []interface{}{"$dislikecount", -1}}, // Weight for dislikes
+						},
+					},
+				},
+			})
+
+			pipeline = append(pipeline, bson.M{"$sort": bson.M{"popularity": -1}})
+		} else {
+			pipeline = append(pipeline, bson.M{"$sort": bson.M{sortBy: orderBy}})
+		}
+	} else {
+		pipeline = append(pipeline, bson.M{"$sort": sort})
+	}
+
+	pipeline = append(pipeline, bson.M{"$skip": int64((page - 1) * limit)})
+	pipeline = append(pipeline, bson.M{"$limit": int64(limit)})
+
+	cursor, err := br.postCollection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err, 500, Domain.PaginationMetaData{}
+	}
+	defer cursor.Close(ctx)
+
+	if err = cursor.All(ctx, &posts); err != nil {
+		return nil, err, 500, Domain.PaginationMetaData{}
+	}
+	// Return the list of posts, nil error, and a 200 status code
+	paginationMetaData := Domain.PaginationMetaData{
+		TotalRecords: int(count),
+		TotalPages:   int(count / int64(limit)),
+		PageSize:     limit,
+		CurrentPage:  page,
+	}
+	return posts, nil, 200, paginationMetaData
+}
+
+// delete post by id
+func (br *blogrepository) DeletePost(ctx context.Context, id primitive.ObjectID) (error, int) {
+	filter := bson.D{{"_id", id}}
+	_, err := br.postCollection.DeleteOne(ctx, filter)
+	if err != nil {
+		if err.Error() != "mongo: no documents in result" {
+			return err, 500
+		}
+	}
+	// delete comments
+	filter = bson.D{{"postid", id}}
+	_, err = br.commentColection.DeleteMany(ctx, filter)
+	if err != nil {
+		if err.Error() != "mongo: no documents in result" {
+			return err, 500
+		}
+	}
+
+	// delete likes and dislikes
+	filter = bson.D{{"postid", id}}
+	_, err = br.likeDislikeCollection.DeleteMany(ctx, filter)
+	if err != nil {
+		return err, 500
+	}
+
+	// delete post id from tags whose field posts is an array contains the post ids
+	filter = bson.D{{"posts", id}}
+	update := bson.D{{"$pull", bson.D{{"posts", id}}}}
+	_, err = br.tagCollection.UpdateMany(ctx, filter, update)
+	if err != nil {
+		return err, 500
+	}
+
+	return nil, 200
 }

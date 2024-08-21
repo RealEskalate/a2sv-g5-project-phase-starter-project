@@ -133,6 +133,7 @@ func (ar *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 	user.Password = string(hashedPassword)
 	user.Role = "user"
 	user.CreatedAt = time.Now()
+	user.UpdatedAt = time.Now()
 
 	InsertedID, err := ar.UserCollection.InsertOne(ctx, user)
 	if err != nil {

@@ -19,3 +19,9 @@ type State struct{
 	StateID string `json:"id" bson:"_id"`
 	ExpiresAT time.Time `json:"expiresat" bson:"expiresat"`
 }
+
+type EmailUserClaims struct {
+	jwt.StandardClaims
+	ID    primitive.ObjectID `json:"_id"`
+	Email string             `json:"email"`
+}

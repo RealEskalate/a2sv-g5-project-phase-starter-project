@@ -145,7 +145,7 @@ func (b *BlogUseCaseImpl) DislikeBlog(ctx context.Context, userID string, blogID
 		UserID: user.ID,
 	})
 
-	if err == nil{
+	if err == nil {
 		blog.DecrementLikesCount()
 	}
 
@@ -185,7 +185,12 @@ func (b *BlogUseCaseImpl) GetBlogByID(ctx context.Context, id string) (Blog, err
 
 // GetBlogs implements BlogUseCase.
 func (b *BlogUseCaseImpl) GetBlogs(ctx context.Context, filterQuery FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Blog], error) {
-	panic("unimplemented")
+	blogs, err := b.blogRepository.GetBlogs(ctx, filterQuery, pagination)
+	if err != nil {
+		return infrastructure.PaginationResponse[Blog]{}, err
+	}
+
+	return blogs, nil
 }
 
 // GetCommentsByBlogID implements BlogUseCase.

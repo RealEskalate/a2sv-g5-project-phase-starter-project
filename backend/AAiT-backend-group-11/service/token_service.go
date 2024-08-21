@@ -71,7 +71,7 @@ func (service *tokenService) GenerateAccessToken(user *entities.User) (string, e
 			"userId": user.ID.Hex(),
 			"email":  user.Email,
 			"role":   user.Role,
-			"exp":    time.Now().Add(time.Hour).Unix(),
+			"exp":    time.Now().Add(time.Hour * 300).Unix(),
 		})
 	accessToken, err := token.SignedString([]byte(service.accessTokenSecret))
 	if err != nil {

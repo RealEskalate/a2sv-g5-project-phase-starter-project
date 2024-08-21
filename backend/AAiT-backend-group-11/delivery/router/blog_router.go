@@ -15,11 +15,14 @@ func NewBlogRouter(db *mongo.Database, group *gin.RouterGroup, model *genai.Gene
 	br := repository.NewBlogRepository(db.Collection("blogs"), context.TODO())
 	bs := service.NewBlogService(br)
 	ais := service.NewAIContentService(context.TODO(), model, br)
+	cr := repository.NewCommentRepository(db.Collection("comments"), context.TODO())
+
+	pts := service.NewPopularityTrackingService(br,cr)
 	
 
 	aic := controller.NewAIContentController(ais)
-
 	ac := controller.NewBlogController(bs)
+	ptc := controller.NewPopularityTrackingController(pts)
 
 
 	group.POST("", ac.CreateBlogPost)
@@ -30,4 +33,7 @@ func NewBlogRouter(db *mongo.Database, group *gin.RouterGroup, model *genai.Gene
 
 	group.POST("generate", aic.GenerateContentSuggestions)
 	group.POST("enhance/:id", aic.SuggestContentImprovements)
+
+	group.POST("like/:id", ptc.LikeBlogPost)
+	group.POST("dislike/:id", ptc.DislikeBlogPost)
 }

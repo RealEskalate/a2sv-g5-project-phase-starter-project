@@ -16,12 +16,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// NewBlogRouter initializes the controllers, usecases and repositories before setting up the blog and comment routes
 func NewBlogRouter(collection *mongo.Collection, cacheClient *redis.Client, blogGroup *gin.RouterGroup) {
 	br := repository.NewBlogRepository(collection)
 	cacheRepoistory := repository.NewCacheRepository(cacheClient)
 	jwtService := jwt_service.NewJWTService(env.ENV.JWT_SECRET_TOKEN)
-	bu := usecase.NewBlogUseCase(br, time.Second*100, ai_service.NewAIService(env.ENV.GEMINI_API_KEY))
-
+	bu := usecase.NewBlogUseCase(br, time.Second*100, ai_service.NewAIService(env.ENV.GEMINI_API_KEY), cacheRepoistory, env.ENV)
 	bc := controllers.NewBlogController(bu)
 
 	blogGroup.POST("/create", middleware.AuthMiddlewareWithRoles(jwtService, cacheRepoistory, domain.RoleRoot, domain.RoleUser, domain.RoleAdmin), bc.CreateBlogHandler)
@@ -39,5 +39,4 @@ func NewBlogRouter(collection *mongo.Collection, cacheClient *redis.Client, blog
 	blogGroup.POST("/comment/:blogId", middleware.AuthMiddlewareWithRoles(jwtService, cacheRepoistory, domain.RoleRoot, domain.RoleUser, domain.RoleAdmin), bc.HandleCreateComment)
 	blogGroup.PUT("/comment/:blogId/:commentId", middleware.AuthMiddlewareWithRoles(jwtService, cacheRepoistory, domain.RoleRoot, domain.RoleUser, domain.RoleAdmin), bc.HandleUpdateComment)
 	blogGroup.DELETE("/comment/:blogId/:commentId", middleware.AuthMiddlewareWithRoles(jwtService, cacheRepoistory, domain.RoleRoot, domain.RoleUser, domain.RoleAdmin), bc.HandleDeleteComment)
-
 }

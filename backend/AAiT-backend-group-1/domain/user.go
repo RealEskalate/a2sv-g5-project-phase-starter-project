@@ -46,6 +46,14 @@ func (u *User) Validate() error {
 		return errors.New("invalid email")
 	}
 
+	if IsValidDomain(u.Email) {
+		return errors.New("invalid email")
+	}
+
+	if HasMXRecord(u.Email) {
+		return errors.New("inactive email")
+	}
+
 	// if IsValidDomain(u.Email) {
 	// 	return errors.New("invalid email domain")
 	// }

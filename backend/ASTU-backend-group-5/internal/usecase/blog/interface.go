@@ -38,4 +38,7 @@ type BlogUseCase interface {
 	UpdateTag(ctx context.Context, id string, tag *domain.BlogTag) error
 	DeleteTag(ctx context.Context, id string) error
 	GetTagByID(ctx context.Context, id string) (*domain.BlogTag, error)
+
+	DeleteComment(ctx context.Context, comment, userId string) error
+	RemoveLike(ctx context.Context, likeId, userId string) error
 }

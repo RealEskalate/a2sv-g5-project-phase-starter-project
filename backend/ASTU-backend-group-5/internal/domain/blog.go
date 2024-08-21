@@ -28,6 +28,8 @@ type Comment struct {
 	BlogID    primitive.ObjectID `json:"blog_id" bson:"blog_id"`       // ID of blog
 	Content   string             `json:"content" bson:"content"`       // Content of the comment
 	CreatedAt primitive.DateTime `json:"created_at" bson:"created_at"` // Timestamp for when the comment was created
+	ReplyToId primitive.ObjectID `json:"reply_to" bson:"reply_to"`     // ID of comment
+
 }
 
 type Like struct {

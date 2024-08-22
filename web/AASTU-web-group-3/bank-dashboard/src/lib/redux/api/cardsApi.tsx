@@ -11,11 +11,11 @@ import {
 export const cardsApi = createApi({
   reducerPath: "cardsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-1tst.onrender.com",
+    baseUrl: "https://bank-dashboard-o9tl.onrender.com",
     prepareHeaders: async (headers) => {
       const session = await getSession();
       const token = session?.accessToken;
-      
+
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
@@ -23,7 +23,10 @@ export const cardsApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getCards: builder.query<PaginatedCardsResponse, { page: number; size: number }>({
+    getCards: builder.query<
+      PaginatedCardsResponse,
+      { page: number; size: number }
+    >({
       query: ({ page, size }) => `/cards?page=${page}&size=${size}`,
     }),
 

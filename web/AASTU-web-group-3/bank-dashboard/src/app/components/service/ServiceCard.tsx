@@ -12,6 +12,7 @@ import {
 } from "@/lib/redux/slices/serviceSlice";
 import { RootState } from "@/lib/redux/store";
 import { useEffect } from "react";
+import Loading from "@/app/loading";
 
 export default function ServiceCard() {
 
@@ -39,7 +40,7 @@ export default function ServiceCard() {
     }
   }, [data, isLoading, isError, dispatch]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
   if (error) return <div>{error}</div>;
 
   return (

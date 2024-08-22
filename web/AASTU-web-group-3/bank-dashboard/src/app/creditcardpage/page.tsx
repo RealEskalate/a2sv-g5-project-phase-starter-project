@@ -10,44 +10,28 @@ import {
   useCreateCardMutation,
 } from "../../lib/redux/api/cardsApi";
 import { Card } from "../../lib/redux/types/cards";
+import Loading from "../loading";
 
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Add 1 because months are zero-indexed
-  const year = date.getFullYear().toString().slice(-2); // Get the last two digits of the year
-  return `${month}/${year}`;
-}
-
-function formatCardNumber(cardNumber: string): string {
-  const start = cardNumber.slice(0, 4);
-  const end = cardNumber.slice(-4);
-  return `${start} **** **** ${end}`;
-}
-
-function formatBalance(balance: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(balance);
-}
-
-const cardStyles = [
-  {
+const cardStyles = {
+  Primary: {
     backgroundImg:
       "bg-[linear-gradient(107.38deg,#2D60FF_2.61%,#539BFF_101.2%)]",
     textColor: "text-white",
   },
-  {
+  Secondary: {
     backgroundImg:
       "bg-[linear-gradient(107.38deg,#4C49ED_2.61%,#0A06F4_101.2%)]",
     textColor: "text-white",
   },
-  {
-    backgroundImg: "bg-white",
+  Visa: {
+    backgroundImg: "bg-black",
+    textColor: "text-white",
+  },
+  Debit: {
+    backgroundImg: "bg-gray-200",
     textColor: "text-black",
   },
-];
+};
 
 const CreditCardPage = () => {
   const { data, error, isLoading } = useGetCardsQuery({ page: 0, size: 10 });
@@ -58,6 +42,7 @@ const CreditCardPage = () => {
   const [password, setPassword] = useState("");
 
   const [expirationDate, setExpirationDate] = useState("");
+  const [balance, setBalance] = useState(0);
 
   const handleAddCard = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -67,7 +52,7 @@ const CreditCardPage = () => {
         cardType: cardType,
         cardHolder: nameOnCard,
         expiryDate: expirationDate,
-        balance: 1000,
+        balance: balance,
         passcode: password,
       }).unwrap();
 
@@ -76,48 +61,51 @@ const CreditCardPage = () => {
       setPassword("");
       setNameOnCard("");
       setExpirationDate("");
+      setBalance(0);
     } catch (error) {
       console.error("Failed to add new card", error);
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loading />;
   if (error) return <div>Error fetching cards</div>;
   return (
     <div className="body bg-[#F5F7FA] w-full h-full overflow-y-auto pb-5 m-0">
-      <div className="cards m-2 bg-[#F5F7FA]  p-1">
-        <div className="credit-card-info flex  px-4 h-20 items-center">
+      <div className="cards m-2 bg-[#F5F7FA] ">
+        <div className="credit-card-info flex md:pl-0 px-3  h-20 items-center">
           <h1 className="font-semibold text-[#343C6A] text-[16px] md:text-[22px] ml-4">
             My cards
           </h1>
         </div>
 
-        <div className="creditcards  flex justify-evenly gap-5 lg:flex-row overflow-x-auto overflow-y-hidden no-scrollbar  h-56  lg:justify-between lg:px-4 ">
+        <div className="creditcards flex  gap-5 lg:flex-row overflow-x-auto overflow-y-hidden no-scrollbar  h-56  lg:justify-start lg:px-4 ">
           {data?.content.map((card: Card, index: number) => {
-            const style = cardStyles[index % cardStyles.length];
+            const style =
+              cardStyles[card.cardType as keyof typeof cardStyles] ||
+              cardStyles.Primary;
+
             return (
               <div
                 key={index}
-                className="credit-card min-w-72 max-w-88 flex-shrink-0"
+                className="credit-card min-h-80 w-[360px] max-w-72 md:max-w-96 flex-shrink-0"
               >
                 <CreditCard
                   name={card.cardHolder}
-                  balance={formatBalance(card.balance)}
-                  cardNumber={formatCardNumber(card.semiCardNumber)}
-                  validDate={formatDate(card.expiryDate)}
+                  balance={String(card.balance)}
+                  cardNumber={card.semiCardNumber}
+                  validDate={card.expiryDate}
                   backgroundImg={style.backgroundImg}
                   textColor={style.textColor}
                 />
               </div>
             );
           })}
-
         </div>
       </div>
 
       <div className="statandlist md:flex">
         <div className="md:w-[30%] md:mx-4">
-          <p className="p-4 font-semibold text-[16px] leading-[19.36px] text-[#343C6A] mx-2">
+          <p className="p-4 md:pl-0 font-semibold text-[16px] leading-[19.36px] text-[#343C6A] mx-2">
             Card Expense Statistics
           </p>
           <div className="piechart flex md:h-[230px] md:mx-2 items-center h-auto bg-white rounded-[15px] mx-5 px-8">
@@ -126,7 +114,7 @@ const CreditCardPage = () => {
         </div>
 
         <div className="md:w-[70%]">
-          <p className="p-4 md:pb-2 font-semibold text-[16px] leading-[19.36px] text-[#343C6A] mx-2">
+          <p className="p-4 md:pl-0 md:pb-2 font-semibold text-[16px] leading-[19.36px] text-[#343C6A] mx-2">
             Card List
           </p>
           <div className="cardList w-auto h-auto mx-4 md:mx-0">
@@ -147,20 +135,27 @@ const CreditCardPage = () => {
               that can be used to purchase goods and services on credit or
               obtain cash advances.
             </p>
-            <div className="flex flex-col md:w-[50%] ">
+            <div className="flex flex-col md:w-[50%]">
               <label htmlFor="CardType" className="md:text-xs md:font-normal">
                 Card Type
               </label>
-              <input
-                type="text"
+              <select
                 name="CardType"
                 id="CardType"
-                placeholder="Classic"
                 value={cardType}
                 onChange={(e) => setCardType(e.target.value)}
-                className="border-[1px] md:w-[90%] w-auto  h-[40px] rounded-[10px] p-3 md:text-xs"
-              />
+                className="border-[1px] md:w-[90%] w-auto h-[40px] rounded-[10px] p-2 md:text-xs"
+              >
+                <option value="" disabled>
+                  Select Card Type
+                </option>
+                <option value="Primary">Primary</option>
+                <option value="Secondary">Secondary</option>
+                <option value="Visa">Visa</option>
+                <option value="Debit">Debit</option>
+              </select>
             </div>
+
             <div className="flex flex-col md:w-[50%] ">
               <label htmlFor="nameoncard" className="md:text-xs md:font-normal">
                 Name On Card
@@ -176,14 +171,14 @@ const CreditCardPage = () => {
               />
             </div>
             <div className="flex flex-col md:w-[50%] ">
-              <label htmlFor="cardnumber" className="md:text-xs md:font-normal">
-                Card Number
+              <label htmlFor="Password" className="md:text-xs md:font-normal">
+                Password
               </label>
               <input
                 type="text"
-                name="cardnumber"
-                id="cardnumber"
-                placeholder="**** **** **** ****"
+                name="Password"
+                id="Password"
+                placeholder="******"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="border-[1px] md:w-[90%] w-auto h-[40px] rounded-[10px] p-3 md:text-xs"
@@ -205,22 +200,37 @@ const CreditCardPage = () => {
                 className="border-[1px] md:w-[90%] w-auto h-[40px] rounded-[10px] p-3 md:text-xs"
               />
             </div>
-
-            <button
-              type="submit"
-              onClick={handleAddCard}
-              disabled={isCreating}
-              className="border-2 md:w-[30%] bg-[#1814F3] text-white w-auto  h-[40px] rounded-[9px]"
-            >
-              {isCreating ? "Adding..." : "Add Card"}
-            </button>
+            <div className="md:flex md:w-full">
+              <div className="flex flex-col md:w-[50%]">
+                <label htmlFor="balance" className="md:text-xs md:font-normal">
+                  Balance
+                </label>
+                <input
+                  type="text"
+                  name="balance"
+                  id="balance"
+                  placeholder="1000.00"
+                  // defaultValue={balance}
+                  onChange={(e) => setBalance(parseFloat(e.target.value))}
+                  className="border-[1px] md:w-[90%] w-auto h-[40px] rounded-[10px] p-3 md:text-xs"
+                />
+              </div>
+              <button
+                type="submit"
+                onClick={handleAddCard}
+                disabled={isCreating}
+                className="mt-6 md:mx-0 border-[1px] md:font-normal md:w-[45%] w-full h-[40px]  md:my-4 bg-[#1814F3] text-white rounded-[10px]   md:text-xs"
+              >
+                {isCreating ? "Adding..." : "Add Card"}
+              </button>
+            </div>
           </form>
         </div>
-        <div className="card setting md:w-[35%]  md:mr-8">
-          <div className="p-5 font-semibold text-[16px] leading-[19.36px] text-[#343C6A] mx-2 ">
+        <div className="card setting md:w-[35%]  md:mr-8 m-auto">
+          <div className="p-5 md:pl-0 font-semibold text-[16px] leading-[19.36px] text-[#343C6A] mx-2 ">
             Card Setting
           </div>
-          <div className="flex flex-col justify-around self-center md:w-full md:mx-2 w-auto p-4 h-[325px] border-[1px] rounded-[15px] bg-white mx-6 ">
+          <div className="flex flex-col justify-between md:w-full md:mx-2 w-auto p-4 h-[325px] border-[1px] rounded-[15px] bg-white mx-6">
             <div className="blockcard md:pl-0 flex w-auto h-[45px] pl-5  ">
               <div className="left">
                 <svg
@@ -241,9 +251,9 @@ const CreditCardPage = () => {
                   />{" "}
                 </svg>
               </div>
-              <div className="right flex-row  w-auto h-[36px] p-2 pl-3">
-                <div className="w-[73px] font-medium text-sm">Block Card</div>
-                <div className="w-[140px] font-normal text-xs text-[#718EBF]">
+              <div className="right flex-row  w-auto h-auto p-2 pl-3">
+                <div className="w-auto font-medium text-sm">Block Card</div>
+                <div className="w-auto font-normal text-xs text-[#718EBF]">
                   Instantly block your card
                 </div>
               </div>
@@ -269,11 +279,11 @@ const CreditCardPage = () => {
                   />
                 </svg>
               </div>
-              <div className="right flex-row  w-auto h-[36px] p-2 pl-3">
-                <div className="w-[116px] font-medium text-sm">
+              <div className="right flex-row  w-auto  p-2 pl-3">
+                <div className="w-auto font-medium text-sm">
                   Change Pin Code
                 </div>
-                <div className="w-[140px] font-normal text-[11px] text-[#718EBF]">
+                <div className="w-auto font-normal text-[11px] text-[#718EBF]">
                   Withdraw without any card
                 </div>
               </div>
@@ -307,11 +317,11 @@ const CreditCardPage = () => {
                   </defs>
                 </svg>
               </div>
-              <div className="right flex-row  w-auto h-[36px] p-2 pl-3">
-                <div className="w-[125px] font-medium text-sm">
+              <div className="right flex-row  w-auto  p-2 pl-3">
+                <div className="w-auto font-medium text-sm">
                   Add to Google Pay
                 </div>
-                <div className="w-[140px] font-normal text-[11px] text-[#718EBF]">
+                <div className="w-auto font-normal text-[11px] text-[#718EBF]">
                   Withdraw without any card
                 </div>
               </div>
@@ -326,11 +336,11 @@ const CreditCardPage = () => {
                   height={45}
                 />
               </div>
-              <div className="right flex-row  w-auto h-[36px] p-2 pl-3">
-                <div className="w-[125px] font-medium text-sm">
+              <div className="right flex-row  w-auto  p-2 pl-3">
+                <div className="w-auto font-medium text-sm">
                   Add to Apple Pay
                 </div>
-                <div className="w-[140px] font-normal text-[11px] text-[#718EBF]">
+                <div className="w-auto font-normal text-[11px] text-[#718EBF]">
                   Withdraw without any card
                 </div>
               </div>
@@ -345,11 +355,11 @@ const CreditCardPage = () => {
                   height={45}
                 />
               </div>
-              <div className="right flex-row  w-auto h-[36px] p-2 pl-3">
+              <div className="right flex-row  w-auto  p-2 pl-3">
                 <div className="w-[127px] font-medium text-sm">
                   Add to Apple Store
                 </div>
-                <div className="w-[140px] font-normal text-[11px] text-[#718EBF]">
+                <div className="w-auto font-normal text-[11px] text-[#718EBF]">
                   Withdraw without any card
                 </div>
               </div>

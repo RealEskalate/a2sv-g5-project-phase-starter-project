@@ -15,12 +15,13 @@ import (
 )
 
 var MockUserData = []domain.User{
-	{Username: "testuser1", Email: "testuser1@gmail.com", Password: "password"},
-	{Username: "testuser2", Email: "testuser2@gmail.com", Password: "password"},
-	{Username: "testuser3", Email: "testuser3@gmail.com", Password: "password"},
-	{Username: "testuser4", Email: "testuser4@gmail.com", Password: "password"},
-	{Username: "testuser5", Email: "testuser5@gmail.com", Password: "password"},
-	{Username: "testuser6", Email: "testuser6@gmail.com", Password: "password"},
+	{Username: "testuser1", Email: "testuser1@gmail.com", Password: "password", Role: domain.RoleUser},
+	{Username: "testuser2", Email: "testuser2@gmail.com", Password: "password", Role: domain.RoleUser},
+	{Username: "testuser3", Email: "testuser3@gmail.com", Password: "password", Role: domain.RoleUser},
+	{Username: "testuser4", Email: "testuser4@gmail.com", Password: "password", Role: domain.RoleAdmin},
+	{Username: "testuser5", Email: "testuser5@gmail.com", Password: "password", Role: domain.RoleAdmin},
+	{Username: "testuser6", Email: "testuser6@gmail.com", Password: "password", Role: domain.RoleAdmin},
+	{Username: "rootUser", Email: "testuser7@gmail.com", Password: "password", Role: domain.RoleRoot},
 }
 
 type UserRepositoryTestSuite struct {
@@ -240,6 +241,66 @@ func (suite *UserRepositoryTestSuite) TestUpdateUser_Positive_LocalProfilePictur
 	suite.Equal(updates.Bio, updatedDataFromDB.Bio, "bio matches")
 	suite.Equal(updates.ProfilePicture.FileName, updatedDataFromDB.ProfilePicture.FileName, "profile picture matches")
 	suite.Equal(updates.ProfilePicture.IsLocal, updatedDataFromDB.ProfilePicture.IsLocal, "profile picture is local")
+}
+
+func (suite *UserRepositoryTestSuite) TestUpdateUser_Negative_UserNotFound() {
+	username := "this one doesnt exist"
+	updates := dtos.UpdateUser{
+		PhoneNumber: "2511234567890",
+		Bio:         "new bio",
+		ProfilePicture: dtos.ProfilePicture{
+			FileName: "newfile.jpg",
+			IsLocal:  true,
+		},
+	}
+	updatedData, oldFile, err := suite.UserRepository.UpdateUser(context.Background(), username, &updates)
+	suite.Equal("", oldFile, "old file name matches")
+	suite.Equal(len(updatedData), 0, "no data updated")
+	suite.NotNil(err, "error when updating user")
+	suite.Equal(err.GetCode(), domain.ERR_NOT_FOUND, "error code is not found")
+}
+
+func (suite *UserRepositoryTestSuite) TestChangeRole_Positive() {
+	user := MockUserData[0]
+	suite.UserRepository.CreateUser(context.Background(), &user)
+
+	newRole := "custom_rolies"
+	err := suite.UserRepository.ChangeRole(context.Background(), user.Username, newRole)
+	suite.Nil(err, "no error when changing role")
+
+	// check with the user in the DB
+	var updatedDataFromDB domain.User
+	suite.collection.FindOne(context.Background(), bson.M{"username": user.Username}).Decode(&updatedDataFromDB)
+	suite.Equal(newRole, updatedDataFromDB.Role, "role matches")
+	suite.Equal(user.Username, updatedDataFromDB.Username, "username matches")
+	suite.Equal(user.Email, updatedDataFromDB.Email, "email matches")
+	suite.Equal(user.Password, updatedDataFromDB.Password, "password matches")
+}
+
+func (suite *UserRepositoryTestSuite) TestChangeRole_Negative_CantChangeRoot() {
+	user := MockUserData[len(MockUserData)-1]
+	suite.UserRepository.CreateUser(context.Background(), &user)
+
+	newRole := "custom_rolies"
+	err := suite.UserRepository.ChangeRole(context.Background(), user.Username, newRole)
+	suite.NotNil(err, "error when changing role")
+
+	// check with the user in the DB
+	var updatedDataFromDB domain.User
+	suite.collection.FindOne(context.Background(), bson.M{"username": user.Username}).Decode(&updatedDataFromDB)
+	suite.NotEqual(newRole, updatedDataFromDB.Role, "role not updated")
+	suite.Equal(user.Role, updatedDataFromDB.Role, "old role unaffected")
+	suite.Equal(user.Username, updatedDataFromDB.Username, "username matches")
+	suite.Equal(user.Email, updatedDataFromDB.Email, "email matches")
+	suite.Equal(user.Password, updatedDataFromDB.Password, "password matches")
+}
+
+func (suite *UserRepositoryTestSuite) TestChangeRole_Negative_UserNotFound() {
+	user := MockUserData[0]
+	newRole := "custom_rolies"
+	err := suite.UserRepository.ChangeRole(context.Background(), user.Username, newRole)
+	suite.NotNil(err, "error when changing role")
+	suite.Equal(err.GetCode(), domain.ERR_NOT_FOUND, "error code is not found")
 }
 
 func (suite *UserRepositoryTestSuite) TeardownSuite() {

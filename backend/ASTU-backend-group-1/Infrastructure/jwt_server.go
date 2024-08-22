@@ -11,7 +11,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Genratetoken generates a JWT token for the given user and password.
 func GenerateToken(user *domain.User, pwd string) (string, string, error) {
 	configjwt, err := config.LoadConfig()
 	if err != nil {
@@ -19,13 +18,11 @@ func GenerateToken(user *domain.User, pwd string) (string, string, error) {
 	}
 	jwtSecret := []byte(configjwt.Jwt.JwtKey)
 
-	// User login logic
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pwd)) != nil {
-		return "", "", errors.New("Invalid username or password")
+		return "", "", errors.New("invalid username or password")
 	}
 
-	// Access token
-	expirationTime := time.Now().Add(2 * time.Minute)
+	expirationTime := time.Now().Add(10 * time.Minute)
 	claims := &domain.Claims{
 		ID:       user.ID,
 		Email:    user.Email,
@@ -43,8 +40,7 @@ func GenerateToken(user *domain.User, pwd string) (string, string, error) {
 		return "", "", err
 	}
 
-	// Refresh token
-	expirationTime = time.Now().Add(3 * time.Hour)
+	expirationTime = time.Now().Add(1 * time.Hour)
 	claims.ExpiresAt = expirationTime.Unix()
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	refreshTokenString, err := refreshToken.SignedString(jwtSecret)

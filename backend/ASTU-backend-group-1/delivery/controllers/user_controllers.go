@@ -189,7 +189,7 @@ func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
 
 	var jwtSecret = []byte(configJwt.Jwt.JwtKey)
 	type Pass struct {
-		pwd string `json:"pwd"`
+		Password string `json:"password"`
 	}
 	var NUID Pass
 	err = ctx.ShouldBindJSON(&NUID)
@@ -217,12 +217,14 @@ func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
 				return
 			}
 			// User login logic
-			if bcrypt.CompareHashAndPassword([]byte(TheUser.Password), []byte(NUID.pwd)) != nil {
-				ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": err})
+			fmt.Println("this is the user", TheUser)
+			fmt.Println("this is the NUID", NUID)
+			if bcrypt.CompareHashAndPassword([]byte(TheUser.Password), []byte(NUID.Password)) != nil {
+				ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "password is incorrect"})
 				return
 			}
 
-			newToken, refresh, err := infrastructure.GenerateToken(&TheUser, NUID.pwd)
+			newToken, refresh, err := infrastructure.GenerateToken(&TheUser, NUID.Password)
 			if err != nil {
 				ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err})
 				return

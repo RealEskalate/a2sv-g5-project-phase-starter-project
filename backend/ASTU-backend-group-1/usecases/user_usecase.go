@@ -5,7 +5,6 @@ import (
 	"astu-backend-g1/domain"
 	"crypto/rand"
 	"errors"
-	"fmt"
 	"math/big"
 	"time"
 )
@@ -22,7 +21,6 @@ func (useCase *userUsecase) Get() ([]domain.User, error) {
 	return useCase.userRepository.Get(domain.UserFilterOption{})
 }
 
-// function for login user
 
 func (useCase *userUsecase) LoginUser(uname string, password string) (string, error) {
 	user, err := useCase.GetByUsername(uname)
@@ -42,7 +40,6 @@ func (useCase *userUsecase) LoginUser(uname string, password string) (string, er
 	return accesstoken, nil
 }
 
-//function for logout user
 
 func (useCase *userUsecase) Logout(email string) error {
 	user, err := useCase.GetByEmail(email)
@@ -54,7 +51,6 @@ func (useCase *userUsecase) Logout(email string) error {
 	return nil
 }
 
-// function for forget password
 
 func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 	user, err := useCase.GetByEmail(email)
@@ -73,7 +69,6 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 		confirmationToken[i] = charset[num.Int64()]
 	}
 
-	// adding the token to the user
 	user.VerifyToken = string(confirmationToken)
 
 	expirationTime := time.Now().Add(2 * time.Hour)
@@ -87,7 +82,6 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 	return "Password reset token sent to your email", nil
 }
 
-// handle password reset
 
 func (useCase *userUsecase) ResetPassword(email string, token string, password string) (string, error) {
 	user, err := useCase.GetByEmail(email)
@@ -99,7 +93,7 @@ func (useCase *userUsecase) ResetPassword(email string, token string, password s
 	}
 	if user.VerifyToken == token {
 		if user.ExpirationDate.Before(time.Now()) {
-			return "Token has expired", fmt.Errorf("Token expired")
+			return "Token has expired", errors.New("Token expired")
 		}
 		user.Password, _ = infrastructure.PasswordHasher(password)
 		_, err := useCase.userRepository.Update(user.ID, domain.User{Password: user.Password})
@@ -108,7 +102,7 @@ func (useCase *userUsecase) ResetPassword(email string, token string, password s
 		}
 		return "Password reset successful", nil
 	}
-	return "Invalid token", fmt.Errorf("Invalid token")
+	return "Invalid token", errors.New("Invalid token")
 }
 
 func (useCase *userUsecase) GetByID(userID string) (domain.User, error) {
@@ -129,14 +123,15 @@ func (useCase *userUsecase) GetByUsername(username string) (domain.User, error) 
 
 func (useCase *userUsecase) AccountVerification(uemail string, confirmationToken string) error {
 	user, err := useCase.GetByEmail(uemail)
-	fmt.Println("usecase:", user.VerifyToken, confirmationToken)
+	if err!= nil{
+		return err
+	}
 	if user.VerifyToken == confirmationToken {
 		_, err := useCase.userRepository.Update(user.ID, domain.User{IsActive: true})
 		return err
 	} else {
-		return errors.New("Invalid token")
+		return errors.New("invalid token")
 	}
-	return err
 }
 
 func (useCase *userUsecase) GetByEmail(email string) (domain.User, error) {

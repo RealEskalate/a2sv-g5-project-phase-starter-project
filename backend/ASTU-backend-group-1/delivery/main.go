@@ -20,13 +20,11 @@ func main() {
 	}
 	blogCollections := client.Database("BlogAPI").Collection("Blogs")
 	userCollections := client.Database("BlogAPI").Collection("Users")
-	// auth := infrastructure.NewAuthMiddleware(userCollections)
-	// auther := infrastructure.GeneralAuthorizer(auth)
-	authController := infrastructure.NewAuthController()
 	_ = client.Database("BlogAPI").Collection("Tokens")
 	blogRepo := repository.NewBlogRepository(blogCollections)
 	blogUsecase := usecase.NewBlogUsecase(blogRepo)
 	blogController := controllers.NewBlogController(*blogUsecase)
+	authController := infrastructure.NewAuthController(blogRepo)
 	userRepo := repository.NewUserRepository(userCollections)
 	userUsecase, err := usecase.NewUserUsecase(userRepo)
 	if err != nil {

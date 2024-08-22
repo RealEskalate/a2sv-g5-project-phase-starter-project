@@ -1,6 +1,13 @@
 import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import app from "@/app/firebase";
 import { circleWithPen, profilepic } from "@/../../public/Icons";
 import { useDispatch, useSelector } from "react-redux";
 import { usePutSettingMutation } from "@/lib/redux/api/settingApi";
@@ -19,7 +26,9 @@ interface FormInput{
   profilePicture: string; // URL of the uploaded image
 }
 
+
 const EditProfile = () => {
+
   const { register, handleSubmit, setValue } = useForm<FormInput>({
     defaultValues: {
       name: "",
@@ -63,6 +72,7 @@ const EditProfile = () => {
     const file = event.target.files?.[0];
     if (file) {
       const imageUrl = await uploadImageToCloud(file);
+      console.log(imageUrl)
       setValue("profilePicture", imageUrl);
     } else {
       setValue("profilePicture", "");
@@ -71,8 +81,34 @@ const EditProfile = () => {
 
   // Mock upload function (replace this with actual implementation)
   const uploadImageToCloud = async (file: File): Promise<string> => {
-    const imageUrl = "https://path-to-your-uploaded-image.com";
-    return imageUrl;
+    const storage = getStorage(app);
+    const storageRef = ref(storage, file.name);
+  
+    const uploadTask = uploadBytesResumable(storageRef, file);
+  
+    return new Promise((resolve, reject) => {
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`Upload is ${progress}% done`);
+        },
+        (error) => {
+          console.error("Error during upload:", error);
+          reject(error);
+        },
+        async () => {
+          try {
+            const url = await getDownloadURL(uploadTask.snapshot.ref);
+            console.log("File available at", url);
+            resolve(url);
+          } catch (err) {
+            console.error("Error getting download URL:", err);
+            reject(err);
+          }
+        }
+      );
+    });
   };
 
   const formFields = [

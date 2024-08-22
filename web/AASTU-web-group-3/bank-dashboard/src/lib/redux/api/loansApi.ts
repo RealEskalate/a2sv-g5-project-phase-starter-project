@@ -44,7 +44,7 @@ interface LoanDetailDataResponse {
 export const loansApi = createApi({
   reducerPath: 'loansApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-1tst.onrender.com",
+    baseUrl: 'https://bank-dashboard-1tst.onrender.com',
     prepareHeaders: async (headers, { getState }) => {
       const session = await getSession()
       const token = session?.accessToken

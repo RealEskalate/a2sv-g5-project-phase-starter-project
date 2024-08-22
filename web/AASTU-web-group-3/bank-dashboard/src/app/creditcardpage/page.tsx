@@ -49,7 +49,7 @@ const cardStyles = [
   },
 ];
 
-const creditCardPage = () => {
+const CreditCardPage = () => {
   const { data, error, isLoading } = useGetCardsQuery({ page: 0, size: 10 });
   const [createCard, { isLoading: isCreating }] = useCreateCardMutation();
 
@@ -361,4 +361,4 @@ const creditCardPage = () => {
   );
 };
 
-export default creditCardPage;
+export default CreditCardPage;

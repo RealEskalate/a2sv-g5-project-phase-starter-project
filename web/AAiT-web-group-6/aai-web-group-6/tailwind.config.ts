@@ -14,13 +14,13 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       colors: {
-        customBlue: '#718EBF', // Example custom color
-        customGreen: '#17BF63', // Another custom color
-        customGray: {
-          light: '#F7FAFC',
-          DEFAULT: '#E2E8F0',
-          dark: '#4A5568',
-        },}
+        customBlue: '#718EBF',
+        light_blue: '#E7EDFF',
+        light_yellow:'#FFF5D9',
+        light_green:'#DCFAF8',
+        light_pink:'#FFE0EB',
+        
+      }
     },
   },
   plugins: [],

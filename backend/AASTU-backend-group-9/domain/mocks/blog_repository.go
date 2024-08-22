@@ -44,6 +44,20 @@ func (_m *BlogRepository) CreateBlog(ctx context.Context, blog *domain.Blog) err
 	return r0
 }
 
+// DecrementPopularity provides a mock function with given fields: ctx, id, metric
+func (_m *BlogRepository) DecrementPopularity(ctx context.Context, id primitive.ObjectID, metric string) error {
+	ret := _m.Called(ctx, id, metric)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, string) error); ok {
+		r0 = rf(ctx, id, metric)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // DeleteBlog provides a mock function with given fields: ctx, id
 func (_m *BlogRepository) DeleteBlog(ctx context.Context, id primitive.ObjectID) error {
 	ret := _m.Called(ctx, id)
@@ -194,34 +208,13 @@ func (_m *BlogRepository) HasUserDisliked(ctx context.Context, id primitive.Obje
 	return r0, r1
 }
 
-// HasUserLiked provides a mock function with given fields: ctx, id, userID
-func (_m *BlogRepository) HasUserLiked(ctx context.Context, id primitive.ObjectID, userID string) (bool, error) {
-	ret := _m.Called(ctx, id, userID)
-
-	var r0 bool
-	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, string) bool); ok {
-		r0 = rf(ctx, id, userID)
-	} else {
-		r0 = ret.Get(0).(bool)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, primitive.ObjectID, string) error); ok {
-		r1 = rf(ctx, id, userID)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// IncrementDislikes provides a mock function with given fields: ctx, id
-func (_m *BlogRepository) IncrementDislikes(ctx context.Context, id primitive.ObjectID) error {
-	ret := _m.Called(ctx, id)
+// IncrementPopularity provides a mock function with given fields: ctx, id, metric
+func (_m *BlogRepository) IncrementPopularity(ctx context.Context, id primitive.ObjectID, metric string) error {
+	ret := _m.Called(ctx, id, metric)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) error); ok {
-		r0 = rf(ctx, id)
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, string) error); ok {
+		r0 = rf(ctx, id, metric)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -229,50 +222,22 @@ func (_m *BlogRepository) IncrementDislikes(ctx context.Context, id primitive.Ob
 	return r0
 }
 
-// IncrementLikes provides a mock function with given fields: ctx, id
-func (_m *BlogRepository) IncrementLikes(ctx context.Context, id primitive.ObjectID) error {
-	ret := _m.Called(ctx, id)
+// SearchBlogs provides a mock function with given fields: ctx, title, author
+func (_m *BlogRepository) SearchBlogs(ctx context.Context, title string, author string) (*[]domain.Blog, error) {
+	ret := _m.Called(ctx, title, author)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) error); ok {
-		r0 = rf(ctx, id)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// IncrementViews provides a mock function with given fields: ctx, id
-func (_m *BlogRepository) IncrementViews(ctx context.Context, id primitive.ObjectID) error {
-	ret := _m.Called(ctx, id)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) error); ok {
-		r0 = rf(ctx, id)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// SearchBlogs provides a mock function with given fields: ctx, query, filters
-func (_m *BlogRepository) SearchBlogs(ctx context.Context, query string, filters *domain.BlogFilters) ([]*domain.Blog, error) {
-	ret := _m.Called(ctx, query, filters)
-
-	var r0 []*domain.Blog
-	if rf, ok := ret.Get(0).(func(context.Context, string, *domain.BlogFilters) []*domain.Blog); ok {
-		r0 = rf(ctx, query, filters)
+	var r0 *[]domain.Blog
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *[]domain.Blog); ok {
+		r0 = rf(ctx, title, author)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Blog)
+			r0 = ret.Get(0).(*[]domain.Blog)
 		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, string, *domain.BlogFilters) error); ok {
-		r1 = rf(ctx, query, filters)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, title, author)
 	} else {
 		r1 = ret.Error(1)
 	}

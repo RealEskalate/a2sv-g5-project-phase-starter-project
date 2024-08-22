@@ -45,13 +45,9 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 func (uc *UserController) UpdateUser(c *gin.Context) {
 	claims := c.MustGet("claim").(domain.JwtCustomClaims)
 	id := c.Param("id")
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	existingUser, err := uc.UserUsecase.GetUserByID(c, objectID)
-	if err != nil {
+	objectID, _ := primitive.ObjectIDFromHex(id)
+	existingUser, _ := uc.UserUsecase.GetUserByID(c, objectID)
+	if existingUser == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
@@ -70,9 +66,9 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 		}
 	}
 	if user.Username != existingUser.Username {
-		euser, _ := uc.UserUsecase.GetUserByUsername(c, user.Username)
-		if euser != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
+		euser,_ := uc.UserUsecase.GetUserByUsername(c,user.Username)
+		if euser!=nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
 			return
 		}
 	}
@@ -88,18 +84,14 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 func (uc *UserController) DeleteUser(c *gin.Context) {
 	claims := c.MustGet("claim").(domain.JwtCustomClaims)
 	id := c.Param("id")
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	_, err = uc.UserUsecase.GetUserByID(c, objectID)
-	if err != nil {
+	objectID, _ := primitive.ObjectIDFromHex(id)
+	existingUser, _ := uc.UserUsecase.GetUserByID(c, objectID)
+	if existingUser == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
-
-	err = uc.UserUsecase.DeleteUser(c, objectID, &claims)
+	
+	err := uc.UserUsecase.DeleteUser(c, objectID, &claims)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -110,13 +102,9 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 // GetUser gets a user
 func (uc *UserController) GetUser(c *gin.Context) {
 	id := c.Param("id")
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	user, err := uc.UserUsecase.GetUserByID(c, objectID)
-	if err != nil {
+	objectID, _ := primitive.ObjectIDFromHex(id)
+	user, _ := uc.UserUsecase.GetUserByID(c, objectID)
+	if user == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
@@ -137,17 +125,13 @@ func (uc *UserController) GetUsers(c *gin.Context) {
 func (uc *UserController) PromoteUser(c *gin.Context) {
 	claims := c.MustGet("claim").(domain.JwtCustomClaims)
 	id := c.Param("id")
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	_, err = uc.UserUsecase.GetUserByID(c, objectID)
-	if err != nil {
+	objectID, _ := primitive.ObjectIDFromHex(id)
+	existingUser, _ := uc.UserUsecase.GetUserByID(c, objectID)
+	if existingUser == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
-	err = uc.UserUsecase.PromoteUser(c, objectID, &claims)
+	err := uc.UserUsecase.PromoteUser(c, objectID, &claims)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -159,17 +143,14 @@ func (uc *UserController) PromoteUser(c *gin.Context) {
 func (uc *UserController) DemoteUser(c *gin.Context) {
 	claims := c.MustGet("claim").(domain.JwtCustomClaims)
 	id := c.Param("id")
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	_, err = uc.UserUsecase.GetUserByID(c, objectID)
-	if err != nil {
+	objectID, _ := primitive.ObjectIDFromHex(id)
+	existingUser, _ := uc.UserUsecase.GetUserByID(c, objectID)
+	if existingUser == nil {
+
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
-	err = uc.UserUsecase.DemoteUser(c, objectID, &claims)
+	err := uc.UserUsecase.DemoteUser(c, objectID, &claims)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

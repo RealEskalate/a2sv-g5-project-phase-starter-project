@@ -50,7 +50,8 @@ func GenerateOTP() (string, error) {
 }
 
 // Sends the OTP email
-func SendOTPEmail(to, otp string) error {
+
+var  SendOTPEmail = func(to, otp string) error {
 	body := fmt.Sprintf(`
 		Hi,
 

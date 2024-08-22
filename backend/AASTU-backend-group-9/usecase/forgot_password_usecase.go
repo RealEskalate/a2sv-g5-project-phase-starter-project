@@ -35,7 +35,7 @@ func (fpu *forgotPasswordUsecase) SendResetOTP(c context.Context, email string, 
     // Check if the email exists
     user, err := fpu.userRepository.GetUserByEmail(ctx, email)
     if err != nil {
-        return err
+        return errors.New("email not found")
     }
     if user == nil {
         return errors.New("email not found")

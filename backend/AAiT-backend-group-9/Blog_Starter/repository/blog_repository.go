@@ -20,7 +20,7 @@ type BlogRepository struct {
 // DeleteRating implements domain.BlogRepository.
 // InsertRating implements domain.BlogRepository
 
-func NewBlogRepository(db *mongo.Database, blogCollection string, c *context.Context) domain.BlogRepository {
+func NewBlogRepository(db *mongo.Database, blogCollection string) domain.BlogRepository {
 	return &BlogRepository{
 		db:             db,
 		blogCollection: blogCollection,
@@ -246,8 +246,6 @@ func (sr *BlogRepository) SearchBlogs(ctx context.Context, searchRequest *domain
 	return searchedBlogs, nil
 }
 
-
-
 func (sr *BlogRepository) InsertRating(ctx context.Context, insertedRating *domain.BlogRating) error {
 	objectID, err := primitive.ObjectIDFromHex(insertedRating.BlogID)
 	if err != nil {
@@ -344,7 +342,7 @@ func (sr *BlogRepository) DeleteRating(ctx context.Context, deletedRating *domai
 		return err
 	}
 	collection := sr.db.Collection(sr.blogCollection)
-	filter := bson.M{"_id" : objectID}
+	filter := bson.M{"_id": objectID}
 	update := bson.D{{Key: "$inc", Value: bson.D{
 		{Key: "total_rating", Value: -deletedRating.Rating},
 		{Key: "rating_count", Value: -1},
@@ -387,18 +385,18 @@ func (sr *BlogRepository) UpdateCommentCount(ctx context.Context, blogID string,
 	}
 
 	collection := sr.db.Collection(sr.blogCollection)
-	filter := bson.M{"_id" : objectID}
+	filter := bson.M{"_id": objectID}
 	update := bson.D{{}}
 	if increment {
 		update = bson.D{{
-			Key : "$inc", Value: bson.D{
-				{Key : "comment_count", Value : 1},
+			Key: "$inc", Value: bson.D{
+				{Key: "comment_count", Value: 1},
 			},
 		}}
 	} else {
 		update = bson.D{{
-			Key : "$inc", Value: bson.D{
-				{Key : "comment_count", Value : -1},
+			Key: "$inc", Value: bson.D{
+				{Key: "comment_count", Value: -1},
 			},
 		}}
 	}
@@ -409,8 +407,8 @@ func (sr *BlogRepository) UpdateCommentCount(ctx context.Context, blogID string,
 
 // UpdateLikeCount implements domain.BlogRepository.
 
-func(b *BlogRepository) UpdateLikeCount(c context.Context, blogID string, isIncrement bool) error {
-	collection:= b.db.Collection(b.blogCollection)
+func (b *BlogRepository) UpdateLikeCount(c context.Context, blogID string, isIncrement bool) error {
+	collection := b.db.Collection(b.blogCollection)
 	var update int
 	if isIncrement {
 		update = 1

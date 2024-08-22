@@ -65,7 +65,7 @@ func (b *BlogUseCase) DeleteBlogPost(ctx context.Context, blogId string, deleted
 		return err
 	}
 	if blog.Username != deletedBy {
-		return domain.NewError("unauthorized request to delete blog", domain.ERR_FORBIDDEN)
+		return domain.NewError(domain.ERR_FORBIDDEN, domain.ERR_FORBIDDEN)
 	}
 	err = b.blogRepo.DeleteBlogPost(ctx, blogId)
 	if err != nil {
@@ -84,7 +84,7 @@ func (b *BlogUseCase) EditBlogPost(ctx context.Context, blogId string, blog *dom
 		return err
 	}
 	if foundBlog.Username != editedBy {
-		return domain.NewError("unauthorized request to update blog", domain.ERR_FORBIDDEN)
+		return domain.NewError(domain.ERR_FORBIDDEN, domain.ERR_FORBIDDEN)
 	}
 
 	err = b.blogRepo.UpdateBlogPost(ctx, blogId, blog)

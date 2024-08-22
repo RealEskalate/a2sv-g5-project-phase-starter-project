@@ -183,3 +183,30 @@ func (chatHandler *ChatHandler) GenerateChatTitleHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, title)
 }
+
+func (chatHandler *ChatHandler) DeleteChatHandler(c *gin.Context) {
+	form := chat.DefaultChatForm{
+		ChatID: c.Param("id"),
+		UserID: c.Value("user_id").(string),
+	}
+
+	err := chatHandler.chatUsecase.DeleteChat(c.Request.Context(), form)
+	var validationError validator.ValidationErrors
+	if errors.As(err, &validationError) {
+		errs := infrastructure.ReturnErrorResponse(err)
+		c.JSON(http.StatusBadRequest, errs)
+		return
+	}
+
+	if err == chat.ErrChatNotFound {
+		c.JSON(http.StatusNotFound, err.Error())
+		return
+	}
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}	
+
+	c.JSON(http.StatusOK, gin.H{"message": "chat deleted successfully"})
+}

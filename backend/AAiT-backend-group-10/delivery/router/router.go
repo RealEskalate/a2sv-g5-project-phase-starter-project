@@ -1,6 +1,7 @@
 package router
 
 import (
+	"context"
 	"os"
 
 	"aait.backend.g10/delivery/controllers"
@@ -24,11 +25,12 @@ func NewRouter(db *mongo.Database, redisClient *redis.Client) {
 	jwtService := infrastructures.JwtService{JwtSecret: os.Getenv("JWT_SECRET")}
 
 	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
+	cacheRepo := infrastructures.NewCacheRepo(redisClient, context.Background())
 
 	pwdService := infrastructures.PwdService{}
 	emailService := infrastructures.EmailService{
 		AppEmail:    email,
-		AppPass: 	 password,
+		AppPass:     password,
 		AppUsername: username,
 		AppHost:     host,
 	}
@@ -40,12 +42,12 @@ func NewRouter(db *mongo.Database, redisClient *redis.Client) {
 
 	commentRepo := repositories.NewCommentRepository(db, os.Getenv("COMMENT_COLLECTION_NAME"))
 	commentController := controllers.CommentController{
-		CommentUsecase: usecases.NewCommentUsecase(commentRepo, userRepo),
+		CommentUsecase: usecases.NewCommentUsecase(commentRepo, userRepo, cacheRepo),
 	}
 
 	likeRepo := repositories.NewLikeRepository(db, os.Getenv("LIKE_COLLECTION_NAME"))
 	likeController := controllers.LikeController{
-		LikeUseCase: usecases.NewLikeUseCase(likeRepo),
+		LikeUseCase: usecases.NewLikeUseCase(likeRepo, cacheRepo),
 	}
 
 	authUsecases := usecases.NewAuthUsecase(userRepo, jwtService, pwdService, emailService)

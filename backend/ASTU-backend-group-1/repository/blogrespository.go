@@ -107,7 +107,7 @@ func (r *MongoBlogRepository) FindPopularBlog() ([]domain.Blog, error) {
 
 	return blogs, nil
 }
-func BuildBlogQueryAndOptions(filterOption domain.BlogFilterOption) bson.M {
+func BuildBlogQueryAndOptions(filterOption domain.BlogFilterOption) (bson.M, *options.FindOptions) {
 	filter := bson.M{}
 	findOptions := options.Find()
 
@@ -144,13 +144,13 @@ func BuildBlogQueryAndOptions(filterOption domain.BlogFilterOption) bson.M {
 		findOptions.SetSkip(int64((filterOption.Pagination.Page - 1) * filterOption.Pagination.PageSize))
 	}
 
-	return filter
+	return filter, findOptions
 }
 
 func (r *MongoBlogRepository) GetBlog(opts domain.BlogFilterOption) ([]domain.Blog, error) {
-	filter := BuildBlogQueryAndOptions(opts)
+	filter, filteroptions := BuildBlogQueryAndOptions(opts)
 
-	cursor, err := r.collection.Find(context.Background(), filter)
+	cursor, err := r.collection.Find(context.Background(), filter, filteroptions)
 	if err != nil {
 		return nil, err
 	}

@@ -47,6 +47,7 @@ type BlogFilters struct {
 	Tags     []string  `json:"tags,omitempty" bson:"tags,omitempty"`
 }
 
+
 type BlogFilterOption struct {
 	Filter     BlogFilters    `json:"filter,omitempty" `
 	Pagination PaginationInfo `json:"pagination,omitempty"`

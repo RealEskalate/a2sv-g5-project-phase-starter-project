@@ -5,6 +5,7 @@ import (
 	"astu-backend-g1/domain"
 	usecase "astu-backend-g1/usecases"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,7 +40,21 @@ func (cont *BlogController) HandleCreateBlog(ctx *gin.Context) {
 }
 func (cont *BlogController) HandleGetAllBlogs(ctx *gin.Context) {
 
-	blogs, err := cont.usecase.GetAllBlogs()
+	page := ctx.Query("page")
+	ipage, err := strconv.Atoi(page)
+	if err != nil || ipage < 1 {
+		ipage = 1
+	}
+	pageSize := ctx.Query("pageSize")
+	ipageSize, err := strconv.Atoi(pageSize)
+	if err != nil || ipageSize < 1 {
+		ipageSize = 5
+	}
+	x := domain.BlogFilterOption{}
+	x.Pagination.Page = ipage
+	x.Pagination.PageSize = ipageSize
+
+	blogs, err := cont.usecase.FilterBlogs(x)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {

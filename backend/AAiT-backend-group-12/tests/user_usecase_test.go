@@ -324,6 +324,8 @@ func (suite *UserUsecaseTestSuite) TestSignup_Positive() {
 	suite.Equal(user.Role, domain.RoleUser)
 
 	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockMailService.AssertExpectations(suite.T())
 }
 
 func (suite *UserUsecaseTestSuite) TestSignup_Negative_HashError() {
@@ -338,6 +340,7 @@ func (suite *UserUsecaseTestSuite) TestSignup_Negative_HashError() {
 	suite.NotNil(uErr, "error during hash")
 	suite.Equal(uErr.GetCode(), domain.ERR_INTERNAL_SERVER)
 	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
 }
 
 func (suite *UserUsecaseTestSuite) TestSignup_Negative_RepositoryErr() {
@@ -354,6 +357,7 @@ func (suite *UserUsecaseTestSuite) TestSignup_Negative_RepositoryErr() {
 	suite.Equal(err.Error(), sampleErr.Error())
 
 	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
 }
 
 func (suite *UserUsecaseTestSuite) TestSignup_Negative_MailError() {
@@ -376,6 +380,8 @@ func (suite *UserUsecaseTestSuite) TestSignup_Negative_MailError() {
 	suite.Equal(err.GetCode(), domain.ERR_INTERNAL_SERVER)
 
 	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockMailService.AssertExpectations(suite.T())
 }
 
 func (suite *UserUsecaseTestSuite) TestOAuthSignup_Positive() {
@@ -394,6 +400,7 @@ func (suite *UserUsecaseTestSuite) TestOAuthSignup_Positive() {
 	err := suite.Usecase.OAuthSignup(context.Background(), &google_res, &oauthDto)
 	suite.Nil(err, "error should be nil")
 	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
 }
 
 func (suite *UserUsecaseTestSuite) TestOAuthSignup_Negative_VerificationError() {
@@ -428,6 +435,7 @@ func (suite *UserUsecaseTestSuite) TestOAuthSignup_Negative_HashError() {
 	suite.NotNil(err, "error should not be nil")
 	suite.Equal(err.GetCode(), domain.ERR_INTERNAL_SERVER)
 	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
 }
 func (suite *UserUsecaseTestSuite) TestOAuthSignup_RepositoryError() {
 	user := TEST_USER
@@ -447,7 +455,21 @@ func (suite *UserUsecaseTestSuite) TestOAuthSignup_RepositoryError() {
 	suite.Equal(err.GetCode(), sampleErr.GetCode())
 	suite.Equal(err.Error(), sampleErr.Error())
 	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
 }
+
+// func (suite *UserUsecaseTestSuite) TestLogin_Positive() {
+// 	user := TEST_USER
+// 	user.IsVerified = true
+// 	suite.Usecase.SantizeUserFields(&user)
+
+// 	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{
+// 		Username: user.Username,
+// 		Email:    user.Email,
+// 	}).Return(&user, nil).Once()
+
+// 	suite.mockUserRepository.AssertExpectations(suite.T())
+// }
 
 func TestUserUsecase(t *testing.T) {
 	suite.Run(t, new(UserUsecaseTestSuite))

@@ -5,6 +5,7 @@ import (
 	"AAiT-backend-group-6/mongo"
 	"context"
 	"reflect"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -36,35 +37,35 @@ func (ur *userRepository) DeleteUser(c context.Context, id string) error {
 	return err
 }
 
-func (ur *userRepository) GetByEmail(c context.Context, email string) (domain.User, error) {
+func (ur *userRepository) GetUserByEmail(c context.Context, email string) (*domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 	var user domain.User
 	err := collection.FindOne(c, bson.M{"email": email}).Decode(&user)
-	return user, err
+	return &user, err
 }
 
-func (ur *userRepository) GetByUsername(c context.Context, username string) (domain.User, error) {
+func (ur *userRepository) GetUserByUsername(c context.Context, username string) (*domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 	var user domain.User
 	err := collection.FindOne(c, bson.M{"username": username}).Decode(&user)
-	return user, err
+	return &user, err
 }
 
-func (ur *userRepository) GetByID(c context.Context, id string) (domain.User, error) {
+func (ur *userRepository) GetUserByID(c context.Context, id string) (*domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 
 	var user domain.User
 
 	idHex, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return user, err
+		return &user, err
 	}
 
 	err = collection.FindOne(c, bson.M{"_id": idHex}).Decode(&user)
-	return user, err
+	return &user, err
 }
 
-func (ur *userRepository) GetUsers(c context.Context) ([]domain.User, error) {
+func (ur *userRepository) GetUsers(c context.Context) ([]*domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 
 	opts := options.Find().SetProjection(bson.D{{Key: "password", Value: 0}})
@@ -74,11 +75,11 @@ func (ur *userRepository) GetUsers(c context.Context) ([]domain.User, error) {
 		return nil, err
 	}
 
-	var users []domain.User
+	var users []*domain.User
 
 	err = cursor.All(c, &users)
 	if users == nil {
-		return []domain.User{}, err
+		return []*domain.User{}, err
 	}
 
 	return users, err
@@ -86,19 +87,34 @@ func (ur *userRepository) GetUsers(c context.Context) ([]domain.User, error) {
 
 func (ur *userRepository) UpdateUser(c context.Context, user *domain.User) error {
 	collection := ur.database.Collection(ur.collection)
-
-	update := bson.M{}
+	setElements := bson.M{}
     userValue := reflect.ValueOf(user).Elem()
-    userType := reflect.TypeOf(user).Elem()
+    userType := userValue.Type()
 
-    for i := 0; i < userValue.NumField(); i++ {
-        field := userValue.Field(i)
-        fieldName := userType.Field(i).Tag.Get("bson")
+    for i := 0; i < userType.NumField(); i++ {
+        field := userType.Field(i)
+        jsonTag := field.Tag.Get("json")
 
-        if !field.IsZero() && fieldName != "_id" { // Exclude zero values and ID field
-            update[fieldName] = field.Interface()
+        // Get the actual value of the field
+        fieldValue := userValue.Field(i)
+
+		if jsonTag == "token" || jsonTag == "refresh_token" {
+			setElements[jsonTag] = fieldValue.Interface()
+			continue
+		}
+
+		if jsonTag == "_id" || jsonTag == "" {
+            continue
+        }
+        // Check for zero value and skip if so
+        if !reflect.DeepEqual(fieldValue.Interface(), reflect.Zero(fieldValue.Type()).Interface()) {
+            setElements[jsonTag] = fieldValue.Interface()
         }
     }
+
+	setElements["updated_at"] = time.Now()
+
+	update := bson.D{{Key: "$set", Value: setElements}}
 	filter := bson.D{{Key: "_id", Value: user.ID}}
 
 	_, result := collection.UpdateOne(c, filter, update)
@@ -109,9 +125,3 @@ func (ur *userRepository) UpdateUser(c context.Context, user *domain.User) error
 	
 	return nil
 }
-
-func (ur *userRepository) LoginUser(c context.Context, user *domain.User) (domain.User, error) {
-	panic("unimplemented")
-}
-
-

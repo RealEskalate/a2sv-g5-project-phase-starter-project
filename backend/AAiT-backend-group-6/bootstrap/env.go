@@ -10,6 +10,8 @@ import (
 )
 
 type Env struct {
+	GEMINIAPIKEY		   string `mapstructure:"GEMINIAPIKEY"`
+	REDISADDR              string `mapstructure:"REDISADDR"`
 	AppEnv                 string `mapstructure:"APP_ENV"`
 	ServerAddress          string `mapstructure:"SERVER_ADDRESS"`
 	ContextTimeout         int    `mapstructure:"CONTEXT_TIMEOUT"`

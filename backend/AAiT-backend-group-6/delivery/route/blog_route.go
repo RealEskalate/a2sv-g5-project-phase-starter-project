@@ -4,33 +4,21 @@ import (
 	"AAiT-backend-group-6/delivery/controller"
 	"AAiT-backend-group-6/domain"
 	"AAiT-backend-group-6/mongo"
+	"AAiT-backend-group-6/redis"
 	"AAiT-backend-group-6/repository"
 	"AAiT-backend-group-6/usecase"
 
 	"github.com/gin-gonic/gin"
 )
 
-// func NewSignupRouter(env *bootstrap.Env, timeout time.Duration, db mongo.Database, group *gin.RouterGroup) {
-// 	emailService := infrastructure.NewEmailService(env.SmtpServer, env.Mail, env.MailPassword)
-// 	ur := repository.NewUserRepository(db, domain.UserCollection)
-// 	su := usecase.NewSignupUsecase(ur, timeout, *emailService)
-// 	sc := controller.SignupController{
-// 		SignupUsecase: su,
-// 		Env:           env,
-// 	}
-
-// 	group.POST("/signup", sc.Signup)
-// }
-
-func NewBlogRouter(db mongo.Database, gin *gin.Engine) {
+func NewBlogRouter(db mongo.Database, gin *gin.Engine, redisClient redis.Client) {
 	tr := repository.NewBlogRepository(db, domain.CollectionBlogs)
 	tu := usecase.NewBlogUseCase(tr)
-	tc := controller.BlogController{
-		BlogUsecase: tu,
-	}
+	tc := controller.NewBlogController(tu, redisClient)
+	
 	// protectedRoute := gin.Group("")
 	publicRoute := gin.Group("")
-	// protectedRoute.Use(infrastructure.AdminOnlyMiddleware(), infrastructure.JWTAuthMiddleware())
+	// protectedRoute.Use(infrastructure.AdminOnlMiddleware(), infrastructure.JWTAuthMiddleware())
 	publicRoute.GET("/blogs", tc.GetBlogs)
 	publicRoute.GET("/blogs/:id", tc.GetBlog)
 	publicRoute.POST("/blogs", tc.CreateBlog)

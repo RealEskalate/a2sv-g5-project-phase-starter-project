@@ -21,7 +21,7 @@ const initialState: TransactionsState = {
 };
 
 // Replace with your actual API endpoint
-const API_URL = 'https://bank-dashboard-6acc.onrender.com/transactions';
+const API_URL = 'https://bank-dashboard-o9tl.onrender.com/transactions';
 
 export const getRecentTransactions = createAsyncThunk(
   'transactions/getRecentTransactions',

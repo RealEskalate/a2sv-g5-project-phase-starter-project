@@ -22,10 +22,10 @@ export const QuickTransferList = () => {
     const fetchTransfers = async () => {
       try {
         const response = await axios.get<{ data: Transfer[] }>(
-          'https://bank-dashboard-6acc.onrender.com/transactions/latest-transfers?number=3', 
+          'https://astu-bank-dashboard.onrender.com/transactions/quick-transfers?number=3', 
           {
             headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`,
+              Authorization: `Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZHVnbmEiLCJpYXQiOjE3MjQzMzMyNDcsImV4cCI6MTcyNDQxOTY0N30.5lTJSlmznH3Dzg8BmHuyMSvET55kVMqHhENd76U0q3mX1LZtP7W8HTXy4mb2pV0s`,
             },
           }
         );
@@ -80,3 +80,5 @@ export const QuickTransferList = () => {
     </div>
   );
 };
+
+export default QuickTransferList;

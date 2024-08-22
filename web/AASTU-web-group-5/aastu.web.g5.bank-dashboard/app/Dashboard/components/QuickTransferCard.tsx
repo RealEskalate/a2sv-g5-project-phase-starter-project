@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import profilePic from '@/public/assets/image/Group 346.png'
 
 interface QuickTransferCardProps {
   username: string;
@@ -10,7 +11,7 @@ export const QuickTransferCard: React.FC<QuickTransferCardProps> = ({ username, 
   return (
     <div className="flex items-center space-x-4 p-2 bg-white rounded-lg shadow">
       <Image
-        src={profilePicture}
+        src={profilePic}
         alt={`${username}'s profile picture`}
         width={44}
         height={44}
@@ -20,3 +21,4 @@ export const QuickTransferCard: React.FC<QuickTransferCardProps> = ({ username, 
     </div>
   );
 };
+export default QuickTransferCard;

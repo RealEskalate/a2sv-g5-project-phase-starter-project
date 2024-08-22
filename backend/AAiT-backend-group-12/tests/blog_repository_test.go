@@ -1,4 +1,4 @@
-package repository_test
+package tests
 
 import (
 	"blog_api/delivery/env"
@@ -26,7 +26,7 @@ type BlogRepositorySuite struct {
 
 // SetupSuite initializes the test database and repository
 func (suite *BlogRepositorySuite) SetupSuite() {
-	err := env.LoadEnvironmentVariables()
+	err := env.LoadEnvironmentVariables("../.env")
 	suite.Require().NoError(err)
 
 	// connect to mongodb
@@ -44,8 +44,8 @@ func (suite *BlogRepositorySuite) SetupSuite() {
 	}
 }
 
-// TearDownSuite cleans up the database after tests
-func (suite *BlogRepositorySuite) TearDownSuite() {
+// cleans up the database before each test
+func (suite *BlogRepositorySuite) SetupTest() {
 	if suite.cleanup != nil {
 		suite.cleanup()
 	}
@@ -53,6 +53,7 @@ func (suite *BlogRepositorySuite) TearDownSuite() {
 
 // TestFetchBlogPostByID tests the FetchBlogPostByID method
 func (suite *BlogRepositorySuite) TestFetchBlogPostByIDSuccess() {
+	// Prepare a test blog post
 	blogID := primitive.NewObjectID()
 	blog := dtos.BlogDTO{
 		ID:        blogID,
@@ -65,22 +66,60 @@ func (suite *BlogRepositorySuite) TestFetchBlogPostByIDSuccess() {
 		ViewCount: 10,
 	}
 
-	// Insert a test blog post
+	// Insert the test blog post
 	_, err := suite.database.Collection(domain.CollectionBlogs).InsertOne(context.TODO(), blog)
 	suite.Require().NoError(err)
 
-	// Success scenario
+	// Success scenario with incrementView = true
+	fetchedBlog, err := suite.repository.FetchBlogPostByID(context.TODO(), blogID.Hex(), true)
+	suite.Require().NoError(err)
+	suite.NotNil(fetchedBlog)
+	suite.Equal(blog.Title, fetchedBlog.Title)
+	suite.Equal(blog.ViewCount+1, fetchedBlog.ViewCount) // ViewCount should be incremented by 1
+}
+
+func (suite *BlogRepositorySuite) TestFetchBlogPostByIDNoIncrement() {
+	// Prepare a test blog post
+	blogID := primitive.NewObjectID()
+	blog := dtos.BlogDTO{
+		ID:        blogID,
+		Title:     "Test Blog",
+		Content:   "This is a test blog.",
+		Username:  "testuser",
+		Tags:      []string{"go", "mongodb"},
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		ViewCount: 10,
+	}
+
+	// Insert the test blog post
+	_, err := suite.database.Collection(domain.CollectionBlogs).InsertOne(context.TODO(), blog)
+	suite.Require().NoError(err)
+
+	// Success scenario with incrementView = false
 	fetchedBlog, err := suite.repository.FetchBlogPostByID(context.TODO(), blogID.Hex(), false)
 	suite.Require().NoError(err)
 	suite.NotNil(fetchedBlog)
 	suite.Equal(blog.Title, fetchedBlog.Title)
+	suite.Equal(blog.ViewCount, fetchedBlog.ViewCount) // ViewCount should not be incremented
 }
 
-func (suite *BlogRepositorySuite) TestFetchBlogPostByIDFailure() {
-	// Failure scenario: Blog not found
-	_, err := suite.repository.FetchBlogPostByID(context.TODO(), primitive.NewObjectID().Hex(), false)
-	suite.Require().Error(err)
-	suite.Equal(mongo.ErrNoDocuments, err)
+func (suite *BlogRepositorySuite) TestFetchBlogPostByIDInvalidID() {
+	// Failure scenario with invalid ID
+	invalidID := "invalidID"
+	fetchedBlog, err := suite.repository.FetchBlogPostByID(context.TODO(), invalidID, true)
+	suite.Nil(fetchedBlog)
+	suite.Equal(domain.ERR_BAD_REQUEST, err.GetCode())
+	suite.Equal("Invalid blog ID", err.Error())
+}
+
+func (suite *BlogRepositorySuite) TestFetchBlogPostByIDNotFound() {
+	// Failure scenario with a non-existent blog ID
+	nonExistentID := primitive.NewObjectID().Hex()
+	fetchedBlog, err := suite.repository.FetchBlogPostByID(context.TODO(), nonExistentID, true)
+	suite.Nil(fetchedBlog)
+	suite.Equal(domain.ERR_NOT_FOUND, err.GetCode())
+	suite.Equal("Blog post not found", err.Error())
 }
 
 // TestDeleteBlogPost tests the DeleteBlogPost method
@@ -107,6 +146,13 @@ func (suite *BlogRepositorySuite) TestDeleteBlogPostSuccess() {
 	var result dtos.BlogDTO
 	err = suite.database.Collection(domain.CollectionBlogs).FindOne(context.TODO(), bson.M{"_id": blogID}).Decode(&result)
 	suite.Equal(mongo.ErrNoDocuments, err)
+}
+
+func (suite *BlogRepositorySuite) TestDeleteBlogPostInvalidID() {
+	invalidID := "invalidID"
+	err := suite.repository.DeleteBlogPost(context.TODO(), invalidID)
+	suite.Equal(domain.ERR_BAD_REQUEST, err.GetCode())
+	suite.Equal("Invalid blog ID", err.Error())
 }
 
 // TestInsertBlogPost tests the InsertBlogPost method
@@ -167,6 +213,18 @@ func (suite *BlogRepositorySuite) TestUpdateBlogPostSuccess() {
 	suite.ElementsMatch(updateData.Tags, updatedBlog.Tags)
 }
 
+func (suite *BlogRepositorySuite) TestUpdateBlogPostInvalidID() {
+	invalidID := "invalidID"
+	updateData := &domain.NewBlog{
+		Title:   "New Title",
+		Content: "Updated content.",
+		Tags:    []string{"new"},
+	}
+	err := suite.repository.UpdateBlogPost(context.TODO(), invalidID, updateData)
+	suite.Equal(domain.ERR_BAD_REQUEST, err.GetCode())
+	suite.Equal("Invalid blog ID", err.Error())
+}
+
 // TestFetchBlogPosts tests the FetchBlogPosts method with various filters
 func (suite *BlogRepositorySuite) TestFetchBlogPostsByTitle() {
 	blog := dtos.BlogDTO{
@@ -178,6 +236,8 @@ func (suite *BlogRepositorySuite) TestFetchBlogPostsByTitle() {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		ViewCount: 50,
+		LikedBy: []string{"user2"},
+		DislikedBy: []string{"user3"},
 	}
 
 	// Insert a test blog post
@@ -201,6 +261,8 @@ func (suite *BlogRepositorySuite) TestFetchBlogPostsByTag() {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		ViewCount: 20,
+		LikedBy: []string{"user2"},
+		DislikedBy: []string{"user3"},
 	}
 
 	// Insert a test blog post
@@ -224,6 +286,8 @@ func (suite *BlogRepositorySuite) TestFetchBlogPostsByMultipleFilters() {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		ViewCount: 50,
+		LikedBy: []string{"user2"},
+		DislikedBy: []string{"user3"},
 	}
 
 	// Insert a test blog post
@@ -260,6 +324,8 @@ func (suite *BlogRepositorySuite) TestTrackBlogPopularitySuccessLike() {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		ViewCount: 5,
+		LikedBy: []string{"user2"},
+		DislikedBy: []string{"user3"},
 	}
 
 	// Insert the blog post
@@ -296,6 +362,7 @@ func (suite *BlogRepositorySuite) TestTrackBlogPopularitySuccessDislike() {
 		UpdatedAt: time.Now(),
 		ViewCount: 5,
 		LikedBy:   []string{"testuser"},
+		DislikedBy: []string{},
 	}
 
 	// Insert the blog post

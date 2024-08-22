@@ -11,11 +11,11 @@ interface LoginFormData {
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
-  const router = useRouter();
+  const router = useRouter(); 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const onSubmit = async (data: LoginFormData) => {
-    setErrorMessage(null); // Reset error message
+    setErrorMessage(null); 
 
     try {
       const result = await signIn('credentials', {
@@ -23,12 +23,12 @@ const Login = () => {
         userName: data.userName,
         password: data.password,
       });
-
+      
+console.log(result,'result')
       if (result?.error) {
-        setErrorMessage(result.error);
+        setErrorMessage('');
       } else if (result?.ok) {
-        // Redirect to home page if sign-in was successful
-        router.push('/');
+        router.push('/Services');
       } else {
         // Handle unexpected cases
         setErrorMessage('Unexpected response from server.');
@@ -73,7 +73,7 @@ const Login = () => {
         </form>
 
         <p className="mt-8 text-center">
-          Don't have an account? <a href="/auth/signup" className="text-blue-500">Sign up</a>
+          Don&apos; t have an account? <a href="/auth/signup" className="text-blue-500">Sign up</a>
         </p>
       </div>
     </div>

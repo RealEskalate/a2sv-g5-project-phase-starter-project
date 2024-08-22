@@ -6,18 +6,20 @@ import CreditCard from "../components/CreditCard";
 import BarChart from "../components/barchart";
 import PieChart from "../components/PieChart";
 import LineChart from "../components/LineChart";
-import {Transaction} from "@/lib/redux/types/transactions"
-import dollar from "../../../public/images/iconfinder_6_4753731 1.png"
+import { Transaction } from "@/lib/redux/types/transactions";
+import dollar from "../../../public/images/iconfinder_6_4753731 1.png";
+import Loading from "../loading";
+import NotFound from "../not-found";
 
 const HomePage: React.FC = () => {
   const { data: transactionsData, isLoading } = useGetAllTransactionsQuery({
-    size: 3, 
+    size: 3,
     page: 0,
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loading />;
 
-  const getTransactionAmount = (transaction:Transaction) => {
+  const getTransactionAmount = (transaction: Transaction) => {
     switch (transaction.type) {
       case "shopping":
       case "transfer":
@@ -30,7 +32,7 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const getAmountStyle = (transaction:Transaction) => {
+  const getAmountStyle = (transaction: Transaction) => {
     switch (transaction.type) {
       case "shopping":
       case "transfer":
@@ -84,11 +86,19 @@ const HomePage: React.FC = () => {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-sm font-medium">{transaction.description}</p>
-                  <small className="text-xs text-gray-500">{transaction.date}</small>
+                  <p className="text-sm font-medium">
+                    {transaction.description}
+                  </p>
+                  <small className="text-xs text-gray-500">
+                    {transaction.date}
+                  </small>
                 </div>
               </div>
-              <p className={`font-semibold ml-auto ${getAmountStyle(transaction)}`}>
+              <p
+                className={`font-semibold ml-auto ${getAmountStyle(
+                  transaction
+                )}`}
+              >
                 {getTransactionAmount(transaction)}
               </p>
             </div>
@@ -123,6 +133,8 @@ const HomePage: React.FC = () => {
           <div className="h-52 bg-white rounded-lg">
             <LineChart />
           </div>
+          {/* <Loading /> */}
+          {/* <NotFound /> */}
         </div>
       </div>
     </div>
@@ -130,4 +142,3 @@ const HomePage: React.FC = () => {
 };
 
 export default HomePage;
-

@@ -7,7 +7,7 @@ import { METHODS } from "http";
 export const settingApi = createApi({
   reducerPath: "settingApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-1tst.onrender.com",
+    baseUrl: "https://bank-dashboard-o9tl.onrender.com",
     prepareHeaders: async (headers) => {
       const session = await getSession();
       const token = session?.accessToken;

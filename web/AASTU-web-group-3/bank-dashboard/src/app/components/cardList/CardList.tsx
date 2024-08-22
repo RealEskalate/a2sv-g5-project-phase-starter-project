@@ -6,6 +6,7 @@ import {
   useDeleteCardMutation,
   useGetCardsQuery,
 } from "@/lib/redux/api/cardsApi";
+import Loading from "@/app/loading";
 
 function formatCardNumber(cardNumber: string): string {
   const start = cardNumber.slice(0, 4);
@@ -22,7 +23,7 @@ const colorOptions = [
 const CardListPage = () => {
   const { data, error, isLoading } = useGetCardsQuery({ page: 0, size: 10 });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loading/>;
   if (error) return <div>Error fetching cards</div>;
 
   // const cardData: CardData[] = [

@@ -3,6 +3,7 @@ import React, { ReactNode } from "react";
 import { FaUser, FaBriefcase, } from "react-icons/fa";
 import { FaScrewdriverWrench } from "react-icons/fa6";
 import { useGetLoanDetailDataQuery } from "@/lib/redux/api/loansApi";
+import Loading from "@/app/loading";
 
 interface LoanProps {
   name: string;
@@ -16,7 +17,7 @@ const Card = () => {
     useGetLoanDetailDataQuery();
 
   if (isLoadingDetail) {
-    return <div className="text-center">Loading...</div>;
+    return <Loading />;
   }
 
   if (!detailLoans || !detailLoans.success) {

@@ -26,6 +26,11 @@ const SideList = ({ sideitem, onDrawerClose }: SideLProps) => {
   const isActive = sideitem.link === pathname;
 
 
+  const activeClass = 'text-blue-600'; 
+  const defaultClass = sideitem.available ? 'text-gray-600' : 'text-gray-400'; 
+  const hoverClass = 'hover:bg-gray-200 hover:text-blue-600';
+
+
 
   return (
     <div>
@@ -51,7 +56,7 @@ const SideList = ({ sideitem, onDrawerClose }: SideLProps) => {
       <Link href={sideitem.link} passHref style={{ textDecoration: 'none', flex: 1 }}>
         <div
           onClick={onDrawerClose}
-          className='flex items-center gap-5 py-2 rounded-md min-w-5'
+          className={`flex items-center gap-5 py-2 px-2 rounded-lg min-w-5 ${isActive ? activeClass : defaultClass} ${hoverClass}`}
           style={{
             color: isActive ? 'primary.main' : sideitem.available ? '#757575' : '#BDBDBD',
             transition: 'color 0.35s ease',

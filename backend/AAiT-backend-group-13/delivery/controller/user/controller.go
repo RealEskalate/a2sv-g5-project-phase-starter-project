@@ -75,15 +75,17 @@ func (u UserController) RegisterPublic(router *gin.RouterGroup) {
 }
 
 func (u *UserController) signUp(ctx *gin.Context) {
-	var user SignUpDto
-	if err := ctx.BindJSON(&user); err != nil {
+	var request SignUpDto
+	if err := ctx.BindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, "Invalid Input")
 		return
 	}
 
-	command := usercmd.NewSignUpCommand(user.Username, user.FirstName, user.LastName, user.Email, user.Password)
+	log.Printf("Started creating new account for user with username %s -- UserController", request.Username)
+	command := usercmd.NewSignUpCommand(request.Username, request.FirstName, request.LastName, request.Email, request.Password)
 	_, err := u.signupHandler.Handle(command)
 	if err != nil {
+		log.Println("User signed up failed -- UserController")
 		u.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
 		return
 	}
@@ -93,15 +95,15 @@ func (u *UserController) signUp(ctx *gin.Context) {
 }
 
 func (u *UserController) login(ctx *gin.Context) {
-	var user LoginDto
-	if err := ctx.BindJSON(&user); err != nil {
+	var request LoginDto
+	if err := ctx.BindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, "Invalid Input")
 		log.Println("User input could not be bound -- UserController")
 		return
 	}
-	log.Printf("User: %v", user)
+	log.Printf("login in user %s -- UserController", request.Username)
 
-	command := userqry.NewLoginQuery(user.Username, user.Password)
+	command := userqry.NewLoginQuery(request.Username, request.Password)
 	res, err := u.loginHandler.Handle(command)
 	if err != nil {
 		u.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))

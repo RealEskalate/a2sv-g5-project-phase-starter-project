@@ -43,7 +43,7 @@ var _ icmd.IHandler[*LoginQuery, *result.LoginInResult] = &LoginHandler{}
 
 // Handle processes the login command and returns the login result with tokens.
 func (h *LoginHandler) Handle(command *LoginQuery) (*result.LoginInResult, error) {
-	log.Printf("Finding user by username: %s", command)
+	log.Printf("Finding user by username: %s -- LoginHandler", command)
 	user, err := h.repo.FindByUsername(command.username)
 	if user.Username() == "" || err != nil {
 		return nil, er.NewUnauthorized("user not found")
@@ -54,13 +54,13 @@ func (h *LoginHandler) Handle(command *LoginQuery) (*result.LoginInResult, error
 	log.Println(user, "found this user", user.PasswordHash(), "now checking password")
 	ok, err := h.hashService.Match(user.PasswordHash(), command.password)
 	if err != nil {
+		log.Printf("Error matching password %v", err)
 		return nil, err
 	}
 	if !ok {
+		log.Println("password didnot match")
 		return nil, er.NewUnauthorized("password is incorrect")
 	}
-
-	user.MakeActive()
 
 	token, err := h.jwtService.Generate(user, ijwt.Access)
 	if err != nil {

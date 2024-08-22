@@ -1,6 +1,8 @@
 package email
 
 import (
+	"log"
+
 	iemail "github.com/group13/blog/usecase/common/i_email"
 	"gopkg.in/gomail.v2"
 )
@@ -9,6 +11,7 @@ type MailTrapService struct {
 }
 
 func (es *MailTrapService) Send(mail *iemail.Mail) error {
+	log.Printf("sending mail to %v -- MailTrapService", mail.To)
 	m := gomail.NewMessage()
 	m.SetHeader("From", "no-reply@onlinemarketplace.com")
 	for _, reciever := range mail.To {

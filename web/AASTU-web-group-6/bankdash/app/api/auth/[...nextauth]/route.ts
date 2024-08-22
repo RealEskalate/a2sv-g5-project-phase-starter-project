@@ -1,8 +1,7 @@
 import NextAuth from "next-auth";
 import { options } from "./options";
 
-export interface Userx {
-  id: string;
+export interface User {
   refreshToken: string;
   accessToken: string;
 }

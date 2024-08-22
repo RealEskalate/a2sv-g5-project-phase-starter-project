@@ -1,8 +1,22 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import AuthService from "@/app/Services/api/authService";
-import { Userx } from "./route";
-import LoginValue from "@/types/LoginValue";
+
+// Define or import your User and Token types
+interface User {
+  refreshToken: string;
+  accessToken: string;
+}
+
+interface Token {
+  accessToken?: string;
+  refreshToken?: string;
+}
+
+interface Session {
+  accessToken?: string;
+  refreshToken?: string;
+}
 
 export const options: NextAuthOptions = {
   session: {
@@ -16,9 +30,7 @@ export const options: NextAuthOptions = {
     CredentialsProvider({
       type: "credentials",
       credentials: {},
-      async authorize(credentials:LoginValue | null): Promise<User | null> {
-        // Cast credentials to the expected LoginValue type
-
+      async authorize(credentials) {
         if (!credentials) {
           return null;
         }
@@ -26,12 +38,11 @@ export const options: NextAuthOptions = {
         const response = await AuthService.login(credentials);
         if (response.success) {
           const data: any = response.data;
+          console.log("Response",data)
 
-          // Define the user object with the required fields
           const userData: User = {
             refreshToken: data.refresh_token,
             accessToken: data.access_token,
-            id: ""
           };
 
           return userData;
@@ -43,15 +54,15 @@ export const options: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // If a user was returned by the `authorize` function, merge tokens
+      console.log("USER",user)
       if (user) {
-        token.accessToken = user.accessToken;
-        token.refreshToken = user.refreshToken;
+        // Cast user to the User type
+        token.accessToken = user.accessToken as string;
+        token.refreshToken = user.refreshToken as string;
       }
       return token;
     },
     async session({ session, token }) {
-      // Add tokens to session object
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
       return session;

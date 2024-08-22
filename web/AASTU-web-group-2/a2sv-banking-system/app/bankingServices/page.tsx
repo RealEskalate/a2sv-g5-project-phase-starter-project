@@ -86,11 +86,11 @@ const Page = () => {
         cardBgColor="bg-[#ffffff]"
       />
             <InformationCard
-        logoBgColor="#fff5d9"
-        logo={
-<svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M15.3125 17.275L14.2463 5.56875C14.2175 5.24625 13.9475 5 13.6238 5H11.7488V3.75C11.7488 2.745 11.3588 1.8025 10.6525 1.09625C9.95752 0.4 8.99002 0 7.99877 0C5.93127 0 4.24877 1.6825 4.24877 3.75V5H2.37377C2.05002 5 1.78002 5.24625 1.75127 5.56875L0.687524 17.2738C0.623774 17.9725 0.858775 18.6688 1.33127 19.1863C1.80377 19.7038 2.47627 20 3.17752 20H12.8213C13.5213 20 14.1938 19.7038 14.6663 19.1875C15.14 18.67 15.3738 17.9725 15.3125 17.275ZM10.4988 5H5.49877V3.75C5.49877 2.37125 6.62002 1.25 7.99877 1.25C8.66127 1.25 9.30627 1.515 9.76877 1.97875C10.24 2.45 10.4988 3.07875 10.4988 3.75V5Z" fill="#FFBB38"/>
-</svg>
+                  logoBgColor="#fff5d9"
+                  logo={
+          <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15.3125 17.275L14.2463 5.56875C14.2175 5.24625 13.9475 5 13.6238 5H11.7488V3.75C11.7488 2.745 11.3588 1.8025 10.6525 1.09625C9.95752 0.4 8.99002 0 7.99877 0C5.93127 0 4.24877 1.6825 4.24877 3.75V5H2.37377C2.05002 5 1.78002 5.24625 1.75127 5.56875L0.687524 17.2738C0.623774 17.9725 0.858775 18.6688 1.33127 19.1863C1.80377 19.7038 2.47627 20 3.17752 20H12.8213C13.5213 20 14.1938 19.7038 14.6663 19.1875C15.14 18.67 15.3738 17.9725 15.3125 17.275ZM10.4988 5H5.49877V3.75C5.49877 2.37125 6.62002 1.25 7.99877 1.25C8.66127 1.25 9.30627 1.515 9.76877 1.97875C10.24 2.45 10.4988 3.07875 10.4988 3.75V5Z" fill="#FFBB38"/>
+          </svg>
 
         }
         title="Shopping"
@@ -192,7 +192,7 @@ const Page = () => {
             ]}
             viewDetailsLink="https://example.com/details"
           />
-                    <BankServiceList
+            <BankServiceList
             logoBgColor="bg-[#DCFAF8]"
             logoSvg={(
               <svg className="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
@@ -208,21 +208,21 @@ const Page = () => {
             ]}
             viewDetailsLink="https://example.com/details"
           />
-                    <BankServiceList
-            logoBgColor="bg-[#FFE0EB]"
-            logoSvg={(
-              <svg className="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                {/* Custom SVG content */}
-              </svg>
-            )}
-            serviceName="Custom Service"
-            serviceDescription="This is a custom description"
-            additionalServices={[
-              { name: "Service 1", description: "Service 1 Description" },
-              { name: "Service 2", description: "Service 2 Description" },
-              { name: "Service 3", description: "Service 3 Description" },
-            ]}
-            viewDetailsLink="https://example.com/details"
+            <BankServiceList
+                logoBgColor="bg-[#FFE0EB]"
+                logoSvg={(
+                  <svg className="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                    {/* Custom SVG content */}
+                  </svg>
+                )}
+                serviceName="Custom Service"
+                serviceDescription="This is a custom description"
+                additionalServices={[
+                  { name: "Service 1", description: "Service 1 Description" },
+                  { name: "Service 2", description: "Service 2 Description" },
+                  { name: "Service 3", description: "Service 3 Description" },
+                ]}
+                viewDetailsLink="https://example.com/details"
           />
       </div>
 

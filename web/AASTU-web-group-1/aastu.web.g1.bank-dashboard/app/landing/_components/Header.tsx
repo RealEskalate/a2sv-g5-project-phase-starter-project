@@ -19,7 +19,7 @@ const Header = () => {
 
       <div className="flex gap-8 font-normal text-lg">
         <Link href="/dashboard">Dashboard</Link>
-        <Link href="/dashboard">Solution</Link>
+        <Link href="/dashboard">Team</Link>
         <Link href="/dashboard">Community</Link>
         <Link href="/dashboard">About</Link>
       </div>

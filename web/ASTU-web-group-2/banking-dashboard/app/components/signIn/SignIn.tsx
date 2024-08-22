@@ -40,7 +40,7 @@ const SignIn = () => {
     } else {
       console.log("response: ", res);
       notify.success("Successfully logged in");
-      router.push("/");
+      router.push("/dashboard");
     }
     setLoading(false);
   };

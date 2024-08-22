@@ -34,17 +34,17 @@ func (_m *BlogUsecase) CreateBlog(c context.Context, blog *domain.Blog) error {
 	return r0
 }
 
-// DeleteBlog provides a mock function with given fields: c, blogID
-func (_m *BlogUsecase) DeleteBlog(c context.Context, blogID string) error {
-	ret := _m.Called(c, blogID)
+// DeleteBlog provides a mock function with given fields: c, blogID, isadmin, userid
+func (_m *BlogUsecase) DeleteBlog(c context.Context, blogID string, isadmin bool, userid string) error {
+	ret := _m.Called(c, blogID, isadmin, userid)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteBlog")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
-		r0 = rf(c, blogID)
+	if rf, ok := ret.Get(0).(func(context.Context, string, bool, string) error); ok {
+		r0 = rf(c, blogID, isadmin, userid)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -82,9 +82,9 @@ func (_m *BlogUsecase) FilterBlog(c context.Context, tag []string, date time.Tim
 	return r0, r1
 }
 
-// RetrieveBlog provides a mock function with given fields: c, page
-func (_m *BlogUsecase) RetrieveBlog(c context.Context, page int) ([]domain.Blog, error) {
-	ret := _m.Called(c, page)
+// RetrieveBlog provides a mock function with given fields: c, page, sortby, dir
+func (_m *BlogUsecase) RetrieveBlog(c context.Context, page int, sortby string, dir string) ([]domain.Blog, error) {
+	ret := _m.Called(c, page, sortby, dir)
 
 	if len(ret) == 0 {
 		panic("no return value specified for RetrieveBlog")
@@ -92,19 +92,19 @@ func (_m *BlogUsecase) RetrieveBlog(c context.Context, page int) ([]domain.Blog,
 
 	var r0 []domain.Blog
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int) ([]domain.Blog, error)); ok {
-		return rf(c, page)
+	if rf, ok := ret.Get(0).(func(context.Context, int, string, string) ([]domain.Blog, error)); ok {
+		return rf(c, page, sortby, dir)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int) []domain.Blog); ok {
-		r0 = rf(c, page)
+	if rf, ok := ret.Get(0).(func(context.Context, int, string, string) []domain.Blog); ok {
+		r0 = rf(c, page, sortby, dir)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.Blog)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = rf(c, page)
+	if rf, ok := ret.Get(1).(func(context.Context, int, string, string) error); ok {
+		r1 = rf(c, page, sortby, dir)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -142,17 +142,17 @@ func (_m *BlogUsecase) SearchBlog(c context.Context, postName string, authorName
 	return r0, r1
 }
 
-// UpdateBlog provides a mock function with given fields: c, updatedblog, blogID
-func (_m *BlogUsecase) UpdateBlog(c context.Context, updatedblog domain.Blog, blogID string) error {
-	ret := _m.Called(c, updatedblog, blogID)
+// UpdateBlog provides a mock function with given fields: c, updatedblog, blogID, isadmin, userid
+func (_m *BlogUsecase) UpdateBlog(c context.Context, updatedblog domain.Blog, blogID string, isadmin bool, userid string) error {
+	ret := _m.Called(c, updatedblog, blogID, isadmin, userid)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateBlog")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, domain.Blog, string) error); ok {
-		r0 = rf(c, updatedblog, blogID)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.Blog, string, bool, string) error); ok {
+		r0 = rf(c, updatedblog, blogID, isadmin, userid)
 	} else {
 		r0 = ret.Error(0)
 	}

@@ -39,38 +39,129 @@ func (br *BlogRepository) CreateBlog(blog *domain.Blog) error {
 	return nil
 }
 
-func (br *BlogRepository) RetrieveBlog(pgnum int) ([]domain.Blog, error) {
+func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) ([]domain.Blog, error) {
 	if pgnum == 0 {
 		pgnum = 1
 	}
+	sorto := -1
 	skip := perpage * (pgnum - 1)
-	findoptions := options.Find()
-	findoptions.SetSkip(int64(skip))
-	findoptions.SetLimit(perpage)
-	findoptions.SetSort(bson.D{{Key: "date", Value: -1}})
 
-	cursor, err := br.collection.Find(context.Background(), bson.D{}, findoptions)
-
-	if err != nil {
-		return nil, err
+	if direct == "" {
+		direct = "desc"
 	}
 
-	var blogs []domain.Blog
-
-	if err = cursor.All(context.Background(), &blogs); err != nil {
-		return nil, err
+	if direct != "asc" && direct != "desc" {
+		return nil, errors.New("invalid direct parameter")
 	}
-	return blogs, nil
+
+	if direct == "asc" {
+		sorto = 1
+	}
+
+	if sortby == "" {
+		sortby = "date"
+	}
+
+	if sortby != "date" && sortby != "popularity" {
+		return nil, errors.New("invalid sortby parameter")
+	}
+
+	if sortby == "popularity" {
+
+		pipeline := mongo.Pipeline{
+			{
+				{Key: "$addFields", Value: bson.D{
+					{Key: "popularityScore", Value: bson.D{
+						{Key: "$add", Value: bson.A{
+							bson.D{{Key: "$multiply", Value: bson.A{"$likes", 1}}},
+							bson.D{{Key: "$multiply", Value: bson.A{"$dislikes", 1}}},
+							bson.D{{Key: "$multiply", Value: bson.A{"$comment", 2}}},
+						}},
+					}},
+				}},
+			},
+			{{
+				Key:   "$sort",
+				Value: bson.D{{Key: "popularityScore", Value: sorto}},
+			}},
+			{{
+				Key:   "$skip",
+				Value: int64(skip),
+			}},
+			{{
+				Key:   "$limit",
+				Value: int64(perpage),
+			}},
+		}
+
+		cursor, err := br.collection.Aggregate(context.Background(), pipeline)
+		if err != nil {
+			return nil, err
+		}
+
+		var blogs []domain.Blog
+
+		if err = cursor.All(context.Background(), &blogs); err != nil {
+			return nil, err
+		}
+
+		return blogs, nil
+
+	} else if sortby == "date" {
+		findoptions := options.Find()
+		findoptions.SetSkip(int64(skip))
+		findoptions.SetLimit(perpage)
+		findoptions.SetSort(bson.D{{Key: "date", Value: sorto}})
+
+		cursor, err := br.collection.Find(context.Background(), bson.D{}, findoptions)
+		if err != nil {
+			return nil, err
+		}
+
+		var blogs []domain.Blog
+		if err = cursor.All(context.Background(), &blogs); err != nil {
+			return nil, err
+		}
+		return blogs, nil
+	}
+
+	return nil, errors.New("no blogs found")
+
 }
 
-func (br *BlogRepository) UpdateBlog(updatedblog domain.Blog, blogID string) error {
+func (br *BlogRepository) UpdateBlog(updatedBlog domain.Blog, blogID string, isAdmin bool, userid string) error {
+	// Convert the blogID to a MongoDB ObjectID
 	ID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return err
 	}
 
-	updatedblog.ID = ID
-	bsonModel, err := bson.Marshal(updatedblog)
+	// Convert the blogID to a MongoDB ObjectID
+	userID, err := primitive.ObjectIDFromHex(userid)
+	if err != nil {
+		return err
+	}
+
+	// Retrieve the existing blog by its ID
+	var existingBlog domain.Blog
+	filter := bson.D{{Key: "_id", Value: ID}}
+
+	err = br.collection.FindOne(context.TODO(), filter).Decode(&existingBlog)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return errors.New("blog not found")
+		}
+		return err
+	}
+
+	// Check if the user is an admin or the owner of the blog
+	if !isAdmin && existingBlog.UserID != userID {
+		return errors.New("permission denied: you do not have the right to update this blog")
+	}
+
+	// Proceed to update the blog
+	updatedBlog.ID = ID
+	bsonModel, err := bson.Marshal(updatedBlog)
 	if err != nil {
 		return err
 	}
@@ -81,9 +172,7 @@ func (br *BlogRepository) UpdateBlog(updatedblog domain.Blog, blogID string) err
 		return err
 	}
 
-	filter := bson.D{{Key: "_id", Value: ID}}
 	update := bson.D{{Key: "$set", Value: blog}}
-
 	_, err = br.collection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return err
@@ -92,10 +181,33 @@ func (br *BlogRepository) UpdateBlog(updatedblog domain.Blog, blogID string) err
 	return nil
 }
 
-func (br *BlogRepository) DeleteBlog(blogID string) error {
+func (br *BlogRepository) DeleteBlog(blogID string, isAdmin bool, userid string) error {
+	// Convert the blogID to a MongoDB ObjectID
 	ID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return err
+	}
+	// Convert the blogID to a MongoDB ObjectID
+	userID, err := primitive.ObjectIDFromHex(userid)
+	if err != nil {
+		return err
+	}
+
+	// Retrieve the existing blog by its ID
+	var existingBlog domain.Blog
+	filter := bson.D{{Key: "_id", Value: ID}}
+
+	err = br.collection.FindOne(context.TODO(), filter).Decode(&existingBlog)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return errors.New("blog not found")
+		}
+		return err
+	}
+
+	// Check if the user is an admin or the owner of the blog
+	if !isAdmin && existingBlog.UserID != userID {
+		return errors.New("permission denied: you do not have the right to update this blog")
 	}
 
 	query := bson.M{"_id": ID}

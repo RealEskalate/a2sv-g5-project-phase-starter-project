@@ -92,7 +92,7 @@ func (u *UserUsecase) ValidateUsername(username string) domain.CodedError {
 	}
 
 	if len(username) > 20 {
-		return domain.NewError("Username too short", domain.ERR_BAD_REQUEST)
+		return domain.NewError("Username too long", domain.ERR_BAD_REQUEST)
 	}
 
 	re := regexp.MustCompile(`^[a-zA-Z0-9_]+$`)

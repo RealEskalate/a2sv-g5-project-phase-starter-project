@@ -1,4 +1,4 @@
-package usecases
+package ai_usecase
 
 import (
 	domain "AAiT-backend-group-2/Domain"

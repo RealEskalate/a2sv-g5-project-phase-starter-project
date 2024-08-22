@@ -7,6 +7,7 @@ const token = Cookies.get('accessToken')
 // GET /transactions
 export const getAllTransactionsss = async () => {
   try {
+    console.log(token)
     const response = await fetch(`${API_BASE_URL}/transactions`, {
       method: 'GET',
       headers: {

@@ -38,15 +38,15 @@ func (lc *LoginController) Login(c *gin.Context){
 
 	}
 
-	err= request.Validate()
-	if err!=nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	}
 
 	request.Email = strings.ToLower(request.Email)
 	
 	loginResponse,err := lc.LoginUsecase.Login(c, &request)
 	if err!=nil{
+		if err.Error() == "mongo: no documents in result"{
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
 		return
 	}

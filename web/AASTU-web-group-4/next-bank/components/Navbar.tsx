@@ -1,8 +1,12 @@
+"use client";
 import { FC, useState } from 'react';
 import Image from 'next/image';
 import { FaSearch, FaCog, FaBell } from 'react-icons/fa';
-
 import Link from 'next/link';
+import { signOut } from 'next-auth/react';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+import { DropdownMenuDemo } from './dropdown';
 
 type NavbarProps = {
   pageTitle: string;
@@ -11,20 +15,18 @@ type NavbarProps = {
 
 export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
   const [isOpen, setIsOpen] = useState(false);
-  
+  const router = useRouter(); // Initialize router here
 
   const toggleDropdown = () => {
-    setIsOpen((prev:any) => !prev);
+    setIsOpen(prev => !prev);
   };
 
-  const handleSignOut = () => {
-    // Sign-out logic here
-  };
+  
 
   const handleSettings = () => {
     // Navigate to settings page or open settings modal
-
   };
+
   return (
     <nav className="flex flex-col p-4 bg-white shadow-md lg:pl-64">
       {/* Mobile View: Hamburger Menu */}
@@ -35,8 +37,7 @@ export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
           </svg>
         </button>
         <div className="text-xl font-bold flex-1 text-center">{pageTitle}</div>
-        <Image src="/Images/profilepic.jpeg" alt="User Profile" width={32} height={32} className="rounded-full aspect-square object-cover" />
-        
+        <DropdownMenuDemo />
       </div>
 
       {/* Mobile Search Bar */}
@@ -52,7 +53,7 @@ export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
       {/* Larger Screens: Full Navbar */}
       <div className="hidden lg:flex items-center justify-around w-full">
         <div className="text-2xl font-extrabold">{pageTitle}</div>
-        <div className="relative w-64"> {/* Fixed width for search bar */}
+        <div className="relative w-64">
           <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
           <input
             type="text"
@@ -61,46 +62,37 @@ export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
           />
         </div>
         <div className="flex items-center gap-4">
-         
           <div className="flex items-center rounded-full bg-gray-100 p-2">
             <FaBell className="text-red-600" size={20} />
           </div>
           <div className="relative inline-block">
+            <div >
+                <DropdownMenuDemo />
+            </div>
 
-      <div onClick={toggleDropdown}>
-        <Image
-          src="/Images/profilepic.jpeg"
-          alt="User Profile"
-          width={30}
-          height={30}
-          className="rounded-full aspect-square object-cover cursor-pointer"
-        />
-      </div>
-
-      {isOpen && (
-        <div className="absolute left-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-          <Link href={'../setting'} passHref>
-          <button
-            onClick={handleSettings}
-            className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100"
-          >
-             <div className="flex items-center rounded-full bg-gray-100 p-2">
-            <FaCog className="text-blue-800" size={20} />
-          </div>                        
-            Settings
-          </button>
-          </Link>
-          
-          <button
-            
-            className="flex items-center w-full px-12 py-2 text-gray-700 hover:bg-gray-100 text-red-600"
-          >
-            
-            Sign Out
-          </button>
-        </div>
-      )}
-    </div>
+            {isOpen && (
+              <div className="absolute left-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                <Link href="../setting" passHref>
+                  <button
+                    onClick={handleSettings}
+                    className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    <div className="flex items-center rounded-full bg-gray-100 p-2">
+                      <FaCog className="text-blue-800" size={20} />
+                    </div>                        
+                    Settings
+                  </button>
+                </Link>
+                
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center w-full px-12 py-2 text-gray-700 hover:bg-gray-100 text-red-600"
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>

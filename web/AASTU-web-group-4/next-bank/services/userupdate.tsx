@@ -1,4 +1,6 @@
+import Cookies from "js-cookie";
 // Update User Details - PUT Request
+const token = Cookies.get("accessToken");
 export const updateUserDetails = async (userData: any) => {
   try {
     const response = await fetch(
@@ -97,14 +99,15 @@ export const randominvestmentdata = async (userId: string) => {
   }
 };
 
-export const currentuser = async (userId: string) => {
+export const currentuser = async () => {
   try {
     const response = await fetch(
-      `https://bank-dashboard-6acc.onrender.com/user/current`,
+      `https://bank-dashboard-1tst.onrender.com/user/current`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       }
     );

@@ -1,7 +1,7 @@
 // Register User - POST Request
 export const registerUser = async (userData: any) => {
     try {
-      const response = await fetch('https://bank-dashboard-6acc.onrender.com/auth/register', {
+      const response = await fetch('https://bank-dashboard-1tst.onrender.com', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export const registerUser = async (userData: any) => {
   // Login User - POST Request
   export const loginUser = async (loginData: any) => {
     try {
-      const response = await fetch('https://bank-dashboard-6acc.onrender.com/auth/login', {
+      const response = await fetch('https://bank-dashboard-o9tl.onrender.com/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

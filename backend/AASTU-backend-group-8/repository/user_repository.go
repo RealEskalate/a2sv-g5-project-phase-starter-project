@@ -5,6 +5,7 @@ import (
 	// "errors"
 	"fmt"
 	"meleket/domain"
+	"sync"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,17 +15,21 @@ import (
 
 type UserRepository struct {
 	collection domain.Collection
+	mutex              sync.RWMutex
 }
 
 func NewUserRepository(col domain.Collection) *UserRepository {
 	return &UserRepository{
 		collection: col,
+		mutex:		sync.RWMutex{},
 	}
 }
 
 func (r *UserRepository) Create(user *domain.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
 	_, err := r.collection.InsertOne(ctx, user)
 	return err
 }
@@ -77,6 +82,8 @@ func (r *UserRepository) GetAllUsers() ([]*domain.User, error) {
 }
 
 func (r *UserRepository) UpdateUser(username string, user *domain.User) error {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
 	fmt.Println("Updating user with username: ", username)
 	result := r.collection.FindOneAndUpdate(context.TODO(), bson.M{"name": username}, bson.M{"$set": user})
 	
@@ -84,6 +91,8 @@ func (r *UserRepository) UpdateUser(username string, user *domain.User) error {
 }
 
 func (r *UserRepository) DeleteUser(id primitive.ObjectID) error {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
 	_, err := r.collection.DeleteOne(context.TODO(), bson.M{"_id": id})
 	return err
 }

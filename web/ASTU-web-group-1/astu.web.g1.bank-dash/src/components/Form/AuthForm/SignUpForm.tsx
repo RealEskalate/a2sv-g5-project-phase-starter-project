@@ -29,7 +29,13 @@ const stepTwoSchema = z.object({
   presentAddress: z.string().min(1, 'Present address is required'),
   city: z.string().min(1, 'City is required'),
   country: z.string().min(1, 'Country is required'),
-
+  // profilePicture: z
+  //   .instanceof(File)
+  //   .refine((file) => file.size <= 10 * 1024 * 1024, "Max file size is 10MB")
+  //   .refine(
+  //     (file) => ["image/jpeg", "image/jpg", "image/png"].includes(file.type),
+  //     "Only JPEG/PNG files are accepted"
+  //   ),
   currency: z.string().min(1, 'Currency is required'),
   timeZone: z.string().min(1, 'Time zone is required'),
 });
@@ -51,6 +57,24 @@ const SignUpForm = () => {
     mode: 'onTouched',
   });
 
+  const handleFileChange = (e: any) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setprevFormData((prevFormData) => ({
+          ...prevFormData,
+          profilePicture: reader.result as string,
+        }));
+      };
+
+      reader.readAsDataURL(file);
+    } else {
+      console.log('No data');
+    }
+  };
+
   const onSubmit = async (data: any) => {
     if (step < steps.length - 1) {
       setprevFormData((prevFormData) => ({ ...prevFormData, ...data }));
@@ -64,7 +88,6 @@ const SignUpForm = () => {
         presentAddress: data.presentAddress,
         city: data.city,
         country: data.country,
-        profilePicture: '/images/67sdfsd6f7s8d6fa8s6fsgf_s6fs7',
         preference: {
           currency: data.currency,
           sentOrReceiveDigitalCurrency: true,
@@ -74,24 +97,26 @@ const SignUpForm = () => {
           twoFactorAuthentication: true,
         },
       };
-      // console.log("Returned and combined values", finalData);
 
-      const res = fetch('https://bank-dashboard-6acc.onrender.com/auth/register', {
+      console.log('Returned and combined values', finalData);
+
+      const res = await fetch('https://bank-dashboard-1tst.onrender.com/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(finalData),
       });
-      res.then((res) => {
-        if (res.ok) {
-          console.log('User created successfully');
-          router.push('/api/auth/signin');
-        }
-        if (!res.ok) {
-          console.log('Failed to create user');
-        }
-      });
+
+      // res.then(res) => {
+      if (res.ok) {
+        console.log('User created successfully');
+        router.push('/api/auth/signin');
+      }
+      if (!res.ok) {
+        console.log('Failed to create user');
+      }
+      // })
     }
   };
 
@@ -99,7 +124,7 @@ const SignUpForm = () => {
 
   return (
     <form
-      className='flex flex-col items-center w-full md:w-10/12 justify-center p-6 rounded-2xl bg-slate-50'
+      className='flex flex-col items-center w-full lg:w-10/12 justify-center p-6 rounded-2xl bg-slate-50'
       onSubmit={handleSubmit(onSubmit)}
     >
       <p className='text-[#333B69] pb-3 text-20px text-left font-semibold w-full'>Register</p>
@@ -228,6 +253,21 @@ const SignUpForm = () => {
               placeholder='Enter Country'
               errorMessage={errors?.country?.message as string}
             />
+
+            <div className='w-full space-y-1 my-3'>
+              <label htmlFor='profilePicture' className='gray-dark text-16px'>
+                Profile Picture <br />
+              </label>
+              <input
+                type='file'
+                id='profilePicture'
+                placeholder='Select Profile'
+                // {...register(profilePicture)}
+                onChange={handleFileChange}
+                className='w-full border-2 border-[#DFEAF2] p-5 py-3 rounded-xl placeholder:text-blue-steel focus:border-blue-steel outline-none'
+              />
+              {/* {errorMessage && <p className="text-red-400"> {errorMessage} </p>} */}
+            </div>
           </div>
 
           <div className='w-full md:flex md:gap-4 '>

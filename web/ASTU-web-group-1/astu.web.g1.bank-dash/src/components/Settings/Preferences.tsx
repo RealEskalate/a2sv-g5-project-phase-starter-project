@@ -2,8 +2,28 @@
 import React from "react";
 import InputGroup from "../Form/InputGroup";
 import ToggleInput from "../Form/ToggleInput";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
+const preferencesSchema = z.object({
+  currency: z.enum(["USD", "Birr"]).default("USD"), // Assuming these are the available options
+  timeZone: z.string().min(1, "Time Zone is required"),
+  sendOrReceiveDigitalCurrency: z.boolean(),
+  receiveMerchantOrder: z.boolean(),
+  accountRecommendations: z.boolean(),
+});
 const Preferences = () => {
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(preferencesSchema),
+    mode: "onTouched",
+  });
+
   return (
     <div>
       <form action="">
@@ -28,7 +48,7 @@ const Preferences = () => {
             label="Time Zone"
             inputType="text"
             registerName="timeZone"
-            register={undefined}
+            register={register}
             placeholder="(GMT-1200) International Date Line West"
           />
         </div>
@@ -40,7 +60,7 @@ const Preferences = () => {
           inputType="checkbox"
           id="email"
           registerName="email"
-          register={undefined}
+          register={register}
           placeholder="Email"
           currentState={true}
         />
@@ -49,7 +69,7 @@ const Preferences = () => {
           inputType="checkbox"
           id="email"
           registerName="email"
-          register={undefined}
+          register={register}
           placeholder="Email"
           currentState={false}
         />
@@ -58,7 +78,7 @@ const Preferences = () => {
           inputType="checkbox"
           id="email"
           registerName="email"
-          register={undefined}
+          register={register}
           placeholder="Email"
           currentState={true}
         />
@@ -68,7 +88,7 @@ const Preferences = () => {
             type="submit"
             className="bg-[#1814f3] text-white px-10 py-2 rounded-lg w-full md:w-auto mt-4"
           >
-            Submit
+            Save
           </button>
         </div>
       </form>

@@ -3,10 +3,11 @@ import { jwtDecode } from 'jwt-decode'; // Corrected import for jwt-decode
 import { getSession, signOut } from 'next-auth/react';
 
 export const baseQuery = (baseUrl = '/') => {
+  // console.log('first base url is ', process.env.BACKEND_URL);
   return fetchBaseQuery({
-    baseUrl: 'https://bank-dashboard-6acc.onrender.com',
+    baseUrl: 'https://bank-dashboard-1tst.onrender.com',
     prepareHeaders: async (headers) => {
-      const baseURL = 'https://bank-dashboard-6acc.onrender.com';
+      const baseURL = 'https://bank-dashboard-1tst.onrender.com';
 
       const session = await getSession();
       // console.log('session from baseQuery', session);

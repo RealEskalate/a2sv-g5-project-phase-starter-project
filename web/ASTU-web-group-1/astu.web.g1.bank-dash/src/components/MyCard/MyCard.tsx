@@ -4,8 +4,8 @@ import Image from 'next/image';
 import React from 'react';
 
 const MyCard = () => {
-  const { data, isLoading } = useGetAllCardsQuery();
-  // console.log(data, 'card data is');
+  const { data, isLoading } = useGetAllCardsQuery({ page: 0, size: 5 });
+  console.log(data, 'card data is');
 
   return (
     <div>

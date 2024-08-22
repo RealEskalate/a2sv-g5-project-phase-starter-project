@@ -14,7 +14,7 @@ type SessionDataType = {
 export default async function Refresh(): Promise<string> {
   const session = (await getSession()) as SessionDataType | null
   if (!session?.user?.access_token || !session?.user?.refresh_token) {
-    throw new Error("No access token or refresh token available");
+    return ""
     // return null
   }
   const accessToken = session.user.access_token;

@@ -2,6 +2,7 @@ package infrastructures
 
 import (
 	"context"
+	"time"
 
 	"aait.backend.g10/domain"
 	"github.com/go-redis/redis/v8"
@@ -19,8 +20,8 @@ func NewCacheRepo(client *redis.Client, ctx context.Context) *CacheRepo {
 	}
 }
 
-func (c *CacheRepo) Set(key string, value string) *domain.CustomError {
-	err := c.Client.Set(c.Ctx, key, value, 0).Err()
+func (c *CacheRepo) Set(key string, value string, expiry_time time.Duration) *domain.CustomError {
+	err := c.Client.Set(c.Ctx, key, value, expiry_time).Err()
 	if err != nil {
 		return domain.ErrCacheSetFailed
 	}

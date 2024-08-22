@@ -8,10 +8,11 @@ import (
 	"aait.backend.g10/repositories"
 	"aait.backend.g10/usecases"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewRouter(db *mongo.Database) {
+func NewRouter(db *mongo.Database, redisClient *redis.Client) {
 	router := gin.Default()
 
 	//load email configuration from .env

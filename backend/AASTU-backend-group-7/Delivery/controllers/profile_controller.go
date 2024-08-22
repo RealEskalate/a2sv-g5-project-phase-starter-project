@@ -9,17 +9,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type profile_controller struct {
+type Profile_controller struct {
 	userUseCase Domain.ProfileUseCases
 }
 
-func NewProfileController(service_reference Domain.ProfileUseCases) *profile_controller {
-	return &profile_controller{
+func NewProfileController(service_reference Domain.ProfileUseCases) *Profile_controller {
+	return &Profile_controller{
 		userUseCase: service_reference,
 	}
 }
 
-func (uc *profile_controller) GetProfile(c *gin.Context) {
+func (uc *Profile_controller) GetProfile(c *gin.Context) {
 	cur_user, err := Getclaim(c)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid token"})
@@ -34,7 +34,7 @@ func (uc *profile_controller) GetProfile(c *gin.Context) {
 	}
 }
 
-func (uc *profile_controller) UpdateProfile(c *gin.Context) {
+func (uc *Profile_controller) UpdateProfile(c *gin.Context) {
 
 	logeduser, err := Getclaim(c)
 	if err != nil {
@@ -80,7 +80,7 @@ func (uc *profile_controller) UpdateProfile(c *gin.Context) {
 	}
 }
 
-func (uc *profile_controller) DeleteProfile(c *gin.Context) {
+func (uc *Profile_controller) DeleteProfile(c *gin.Context) {
 	user, err := Getclaim(c)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid token"})

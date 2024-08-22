@@ -14,7 +14,7 @@ export const authOptions = {
 			async authorize(credentials) {
 				console.log(creditCardColor,'credentails')
 				const res = await fetch(
-					"https://bank-dashboard-6acc.onrender.com/auth/login",
+					"https://bank-dashboard-1tst.onrender.com/auth/login",
 					{
 						method: "POST",
 						headers: {

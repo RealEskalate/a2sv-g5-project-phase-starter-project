@@ -13,7 +13,7 @@ const authOptions = {
       },
       authorize: async (credentials) => {
         try {
-          const response = await axios.post('https://bank-dashboard-6acc.onrender.com/auth/login', {
+          const response = await axios.post('https://bank-dashboard-1tst.onrender.com/auth/login', {
             userName: credentials.userName,
             password: credentials.password
           });

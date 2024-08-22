@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import SidebarItem from "./SidebarItem";
-import ClickOutside from "../ClickOutside";
 import useLocalStorage from "@/src/hooks/UseLocalStorage";
 import Home from "../../../public/iconI.png";
 import Transaction from "../../../public/iconII.png";
@@ -44,9 +43,8 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
 
   return (
-    <ClickOutside onClick={() => setSidebarOpen(false)}>
       <aside
-        className={`pt-6 fixed left-0  top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-white duration-300 ease-linear lg:translate-x-0 ${
+        className={`pt-6 border-r-2 border-[#E6EFF5] left-0 min-w-52 md:w-64 sm:top-0 z-9999 flex h-screen flex-col overflow-y-hidden bg-white duration-300 ease-linear  sm:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -63,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             aria-controls="sidebar"
-            className="block lg:hidden"
+            className="block sm:hidden"
           >
             <svg
               className="fill-current"
@@ -86,9 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           <nav className="mt-5 px-4 py-4 lg:mt-9 lg:px-6">
             {menuGroups.map((group, groupIndex) => (
               <div key={groupIndex}>
-                {/* <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
-                  {group.name}
-                </h3> */}
+                
                 <ul className="mb-6 flex flex-col gap-1.5">
                   {group.menuItems.map((menuItem, menuIndex) => (
                     <SidebarItem
@@ -104,7 +100,8 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           </nav>
         </div>
       </aside>
-    </ClickOutside>
+      
+    
   );
 };
 

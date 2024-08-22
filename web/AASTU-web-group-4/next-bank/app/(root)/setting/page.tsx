@@ -14,13 +14,30 @@ const SettingsPage = () => {
         {/* Sidebar content */}
       </aside>
 
-      <div className="p-4 lg:p-10">
-        <div className="flex flex-wrap justify-center lg:justify-start mb-4 space-x-4">
-          <button className={`py-2 px-4 ${activeTab === 'editProfile' ? 'bg-blue-800 text-white' : 'bg-gray-200'}`} onClick={() => setActiveTab('editProfile')}>Edit Profile</button>
-          <button className={`py-2 px-4 ${activeTab === 'preference' ? 'bg-blue-800 text-white' : 'bg-gray-200'}`} onClick={() => setActiveTab('preference')}>Preference</button>
-          <button className={`py-2 px-4 ${activeTab === 'security' ? 'bg-blue-800 text-white' : 'bg-gray-200'}`} onClick={() => setActiveTab('security')}>Security</button>
+      <div className="p-4 lg:p-10 w-full">
+        {/* Tabs */}
+        <div className="flex justify-start gap-4 space-x-8 border-b-2 border-gray-200 mb-4">
+          <button
+            className={`py-2 text-lg ${activeTab === 'editProfile' ? 'border-b-4 border-blue-800 text-black font-semibold' : 'text-gray-500'}`}
+            onClick={() => setActiveTab('editProfile')}
+          >
+            Edit Profile
+          </button>
+          <button
+            className={`py-2 text-lg ${activeTab === 'preference' ? 'border-b-4 border-blue-800 text-black font-semibold' : 'text-gray-500'}`}
+            onClick={() => setActiveTab('preference')}
+          >
+            Preference
+          </button>
+          <button
+            className={`py-2 text-lg ${activeTab === 'security' ? 'border-b-4 border-blue-800 text-black font-semibold' : 'text-gray-500'}`}
+            onClick={() => setActiveTab('security')}
+          >
+            Security
+          </button>
         </div>
 
+        {/* Tab Content */}
         <div>
           {activeTab === 'editProfile' && <EditProfile />}
           {activeTab === 'preference' && <Preference />}

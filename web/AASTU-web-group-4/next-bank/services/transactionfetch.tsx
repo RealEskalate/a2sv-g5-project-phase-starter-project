@@ -1,10 +1,11 @@
-const API_BASE_URL = "https://bank-dashboard-1tst.onrender.com";
+const API_BASE_URL = "https://bank-dashboard-o9tl.onrender.com";
 // GET /transactions
 import Cookies from "js-cookie";
 
-const token = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJxd2VyIiwiaWF0IjoxNzI0MzE0NzM5LCJleHAiOjE3MjQ0MDExMzl9.B5Avsv1ZUX-DSf7PGwwIRNyAlKk_UAPsy2B9C-geCLtYSOMPOjDYeu9nRkHjT3z7";
+const token =
+  "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJxd2VyIiwiaWF0IjoxNzI0MzE0NzM5LCJleHAiOjE3MjQ0MDExMzl9.B5Avsv1ZUX-DSf7PGwwIRNyAlKk_UAPsy2B9C-geCLtYSOMPOjDYeu9nRkHjT3z7";
 
-export const getAllTransactionsss = async (token:string) => {
+export const getAllTransactionsss = async (token: string) => {
   try {
     const response = await fetch(`${API_BASE_URL}/transactions`, {
       method: "GET",
@@ -20,7 +21,11 @@ export const getAllTransactionsss = async (token:string) => {
 };
 
 // GET /transactions
-export const getAllTransactions = async (page: any, size: any,tokens : string) => {
+export const getAllTransactions = async (
+  page: any,
+  size: any,
+  tokens: string
+) => {
   console.log("hello:", token);
   const response = await fetch(
     `${API_BASE_URL}/transactions?page=${page}&size=${size}`,

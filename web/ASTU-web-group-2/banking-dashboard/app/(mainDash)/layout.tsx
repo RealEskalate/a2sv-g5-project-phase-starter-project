@@ -5,11 +5,13 @@ import Navbar from '../components/navbar/Navbar';
 import Sidebar from '../components/sidebar/Sidebar';
 import { Inter } from 'next/font/google';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // Correct import
 import { useGetCurrentUserQuery } from '@/lib/service/UserService';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '@/lib/store'; // Adjust path as necessary
-import { setUser } from '@/lib/features/userSlice/userSlice'; // Adjust path as necessary
+import { RootState, AppDispatch } from '@/lib/store';
+import { setUser } from '@/lib/features/userSlice/userSlice';
+import { isTokenExpired } from '@/utils/authUtils';
+import { useRefreshAccessTokenMutation } from '@/lib/service/authentication';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,15 +21,54 @@ const Layout = ({ children, title = 'My Next.js App' }: { children: React.ReactN
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.user.user);
 
+  const [refreshAccessToken, { isLoading: isRefreshing }] = useRefreshAccessTokenMutation();
+
   const { data: userData, isLoading } = useGetCurrentUserQuery(session?.user?.accessToken ?? '', {
     skip: !session?.user?.accessToken,
   });
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
+    // console.log("step one")
+    const fetchUserData = async () => {
+    // console.log("step two")
+
+      try {
+        const refreshToken = session?.user?.refreshToken;
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
+
+        const refreshData = await refreshAccessToken(refreshToken); 
+        const newAccessToken = refreshData.data.data;
+
+        if (newAccessToken) {
+          session.user.accessToken = newAccessToken;
+        } else {
+          throw new Error('Failed to refresh access token');
+        }
+      } catch (error) {
+        console.error('Failed to refresh access token:', error);
+        router.push('/login');
+      }
+    };
+    if (session){
+
+      console.log(isTokenExpired(session.user.accessToken))
     }
-  }, [status, router]);
+    if (session && isTokenExpired(session.user.accessToken)) {
+      fetchUserData();
+    }if (session?.user?.accessToken){
+
+      console.log("session",session,isTokenExpired(session.user.accessToken))
+    }
+    if (status == "unauthenticated" && (!session)){
+
+      router.push('/login'); 
+
+    }
+    
+   
+  }, [session, router, refreshAccessToken]);
 
   useEffect(() => {
     if (userData?.data) {
@@ -35,9 +76,6 @@ const Layout = ({ children, title = 'My Next.js App' }: { children: React.ReactN
     }
   }, [userData, dispatch]);
 
-  if (status === 'loading' || isLoading) {
-    return <p>Loading...</p>;
-  }
 
   return (
     <>

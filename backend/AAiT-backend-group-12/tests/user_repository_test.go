@@ -3,6 +3,7 @@ package tests
 import (
 	"blog_api/delivery/env"
 	"blog_api/domain"
+	"blog_api/domain/dtos"
 	initdb "blog_api/infrastructure/db"
 	"blog_api/repository"
 	"context"
@@ -175,6 +176,70 @@ func (suite *UserRepositoryTestSuite) TestSetRefreshToken_Negative() {
 	err := suite.UserRepository.SetRefreshToken(context.Background(), &user, newRefreshToken)
 	suite.NotNil(err, "no error when setting refresh token")
 	suite.Equal(err.GetCode(), domain.ERR_NOT_FOUND, "error code is not found")
+}
+
+func (suite *UserRepositoryTestSuite) TestUpdateUser_Positive_NonlocalProfilePicture() {
+	user := MockUserData[0]
+	originalImage := "oldfile.jpg"
+	user.ProfilePicture.IsLocal = false
+	user.ProfilePicture.FileName = originalImage
+	suite.UserRepository.CreateUser(context.Background(), &user)
+
+	updates := dtos.UpdateUser{
+		PhoneNumber: "2511234567890",
+		Bio:         "new bio",
+		ProfilePicture: dtos.ProfilePicture{
+			FileName: "newfile.jpg",
+			IsLocal:  true,
+		},
+	}
+	updatedData, oldFile, err := suite.UserRepository.UpdateUser(context.Background(), user.Username, &updates)
+	suite.Nil(err, "no error when updating user")
+	suite.Equal(updates.PhoneNumber, updatedData["phonenumber"], "phone number matches")
+	suite.Equal(updates.Bio, updatedData["bio"], "bio matches")
+	suite.Equal(updates.ProfilePicture.FileName, updatedData["profilepicture"], "profile picture matches")
+	suite.Equal(updates.ProfilePicture.IsLocal, true, "profile picture is local")
+	suite.Equal("", oldFile, "old file name matches")
+
+	// check with the user in the DB
+	var updatedDataFromDB domain.User
+	suite.collection.FindOne(context.Background(), bson.M{"username": user.Username}).Decode(&updatedDataFromDB)
+	suite.Equal(updates.PhoneNumber, updatedDataFromDB.PhoneNumber, "phone number matches")
+	suite.Equal(updates.Bio, updatedDataFromDB.Bio, "bio matches")
+	suite.Equal(updates.ProfilePicture.FileName, updatedDataFromDB.ProfilePicture.FileName, "profile picture matches")
+	suite.Equal(updates.ProfilePicture.IsLocal, updatedDataFromDB.ProfilePicture.IsLocal, "profile picture is local")
+}
+
+func (suite *UserRepositoryTestSuite) TestUpdateUser_Positive_LocalProfilePicture() {
+	user := MockUserData[0]
+	originalImage := "oldfile.jpg"
+	user.ProfilePicture.IsLocal = true
+	user.ProfilePicture.FileName = originalImage
+	suite.UserRepository.CreateUser(context.Background(), &user)
+
+	updates := dtos.UpdateUser{
+		PhoneNumber: "2511234567890",
+		Bio:         "new bio",
+		ProfilePicture: dtos.ProfilePicture{
+			FileName: "newfile.jpg",
+			IsLocal:  true,
+		},
+	}
+	updatedData, oldFile, err := suite.UserRepository.UpdateUser(context.Background(), user.Username, &updates)
+	suite.Nil(err, "no error when updating user")
+	suite.Equal(updates.PhoneNumber, updatedData["phonenumber"], "phone number matches")
+	suite.Equal(updates.Bio, updatedData["bio"], "bio matches")
+	suite.Equal(updates.ProfilePicture.FileName, updatedData["profilepicture"], "profile picture matches")
+	suite.Equal(updates.ProfilePicture.IsLocal, true, "profile picture is local")
+	suite.Equal(originalImage, oldFile, "old file name matches")
+
+	// check with the user in the DB
+	var updatedDataFromDB domain.User
+	suite.collection.FindOne(context.Background(), bson.M{"username": user.Username}).Decode(&updatedDataFromDB)
+	suite.Equal(updates.PhoneNumber, updatedDataFromDB.PhoneNumber, "phone number matches")
+	suite.Equal(updates.Bio, updatedDataFromDB.Bio, "bio matches")
+	suite.Equal(updates.ProfilePicture.FileName, updatedDataFromDB.ProfilePicture.FileName, "profile picture matches")
+	suite.Equal(updates.ProfilePicture.IsLocal, updatedDataFromDB.ProfilePicture.IsLocal, "profile picture is local")
 }
 
 func (suite *UserRepositoryTestSuite) TeardownSuite() {

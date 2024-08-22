@@ -25,7 +25,7 @@ const ActiveLoansOverview = () => {
   }
 
   return (
-    <div className="bg-white rounded-3xl w-full h-max-[466px] sm:w-max-[743px] sm:h-max-[500px] md:h-max-[625px] md:w-max-[1110px] p-3">
+    <div className="bg-white rounded-3xl w-full h-max-[466px] sm:h-max-[500px] md:h-max-[625px]  p-3">
       {loans.length === 0 ? (
         <div className="flex justify-center">
           <img

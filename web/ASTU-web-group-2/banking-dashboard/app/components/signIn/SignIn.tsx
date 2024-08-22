@@ -18,7 +18,6 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 const inter = Inter({ subsets: ["latin"] });
 
-
 const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -29,26 +28,26 @@ const SignIn = () => {
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (data: any) => {
-    setLoading(true)
+    setLoading(true);
     const res = await signIn("credentials", {
       userName: data.userName,
       password: data.password,
       redirect: false,
     });
     if (!res?.ok) {
-      alert("Invalid Credentials");
+      notify.error("Invalid Credentials");
       router.push("/login");
     } else {
       console.log("response: ", res);
       notify.success("Successfully logged in");
       router.push("/");
     }
-    setLoading(false)
+    setLoading(false);
   };
   return (
     <div
       className={`${inter.className} flex justify-center pt-[34px] pb-[50px] rounded-3xl `}
-    > 
+    >
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-6">
           <div className={`text-center text-[32px] font-black text-[#25324B]`}>
@@ -104,10 +103,8 @@ const SignIn = () => {
             type="submit"
             className={` font-bold text-white text-center bg-[#1814F3] px-6 py-3 rounded-3xl`}
           >
-            {loading? (
-              <div
-              className="w-8 h-8 border-4 border-dashed rounded-full animate-spin [animation-duration:3s]  border-white mx-auto"
-            ></div>
+            {loading ? (
+              <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin [animation-duration:3s]  border-white mx-auto"></div>
             ) : (
               "Login"
             )}

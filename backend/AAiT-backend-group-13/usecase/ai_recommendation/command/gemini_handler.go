@@ -1,26 +1,26 @@
-package gemini
+package geminiService
 
 import (
 	"context"
-	"os"
 	"github.com/google/generative-ai-go/genai"
-	"google.golang.org/api/option"
+	icmd "github.com/group13/blog/usecase/common/cqrs/command"
 )
 
-type ReccomendationHandler struct {
-	model genai.GenerativeModel
+type RecomendationHandler struct {
+	model *genai.GenerativeModel
+
+}
+var _ icmd.IHandler[*RecommendationCommand, *genai.GenerateContentResponse] = &RecomendationHandler{}
+
+func NewReccomendationHandler(model *genai.GenerativeModel ) *RecomendationHandler  {
+	return &RecomendationHandler{
+	model: model,
+}
 }
 
-func NewReccomendationHandler() *ReccomendationHandler {
-	return &ReccomendationHandler{}
-}
-
-func (h *ReccomendationHandler) Handle(cmd *RecommendationCommand) (*genai.GenerateContentResponse, error) {
+func (h *RecomendationHandler) Handle(cmd *RecommendationCommand) (*genai.GenerateContentResponse, error) {	
 	ctx := context.Background()
-	client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("GOOGLE_API_KEY")))
-	model := client.GenerativeModel("gemini-1.5-flash")
-
-	resp, err := model.GenerateContent(
+	resp, err := h.model.GenerateContent(
 		ctx,
 		genai.Text(*cmd.request),        
 	)

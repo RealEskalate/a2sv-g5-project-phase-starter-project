@@ -1,15 +1,19 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
+	
 	"strconv"
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/google/generative-ai-go/genai"
 	"github.com/group13/blog/config"
 	"github.com/group13/blog/delivery/common"
 	blogcontroller "github.com/group13/blog/delivery/controller/blog"
+	"github.com/group13/blog/delivery/controller/gemini"
 	usercontroller "github.com/group13/blog/delivery/controller/user"
 	"github.com/group13/blog/delivery/router"
 	cache "github.com/group13/blog/infrastructure/cache"
@@ -24,9 +28,11 @@ import (
 	blogcmd "github.com/group13/blog/usecase/blog/command"
 	blogqry "github.com/group13/blog/usecase/blog/query"
 	passwordreset "github.com/group13/blog/usecase/password_reset"
+	geminiService "github.com/group13/blog/usecase/ai_recommendation/command"
 	usercmd "github.com/group13/blog/usecase/user/command"
 	userqry "github.com/group13/blog/usecase/user/query"
 	"go.mongodb.org/mongo-driver/mongo"
+	"google.golang.org/api/option"
 )
 
 // main is the entry point for the application.
@@ -37,7 +43,9 @@ func main() {
 	// Initialize MongoDB client and perform migrations
 	mongoClient := initDB(cfg)
 	cacheClient := initCache(cfg)
+	geminiModel := initGeminiClient(cfg)
 
+	recommendationHandler := geminiService.NewReccomendationHandler(geminiModel)
 	// Initialize services
 	userRepo, blogRepo, _, _ := initRepos(cfg, mongoClient)
 	jwtService := jwt.New(
@@ -50,14 +58,14 @@ func main() {
 	emailService := &email.MailTrapService{}
 
 	// init controllers
-	userController := initUserController(userRepo, hashService, jwtService, emailService)
+	userController := initUserController(userRepo, hashService, jwtService, emailService, recommendationHandler)
 	blogController := initBlogController(blogRepo, cacheClient)
-
+	geminiController := initGeminiController(recommendationHandler)
 	// Router configuration
 	routerConfig := router.Config{
 		Addr:        fmt.Sprintf(":%s", cfg.ServerPort),
 		BaseURL:     "/api",
-		Controllers: []common.IController{userController, blogController},
+		Controllers: []common.IController{userController, blogController,geminiController},
 		JwtService:  jwtService,
 	}
 	r := router.NewRouter(routerConfig)
@@ -108,7 +116,30 @@ func initCache(cfg config.Config) *cache.RedisCache {
 	return redisClient
 }
 
-func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtService *jwt.Service, mailService *email.MailTrapService) *usercontroller.UserController {
+
+func initGeminiClient(cfg config.Config) *genai.GenerativeModel{
+	ctx := context.Background()
+	key := cfg.Google_Api_Key
+	if key == "" {
+		log.Fatalf("Error: Google API Key not found")
+	}
+
+	client, err := genai.NewClient(ctx, option.WithAPIKey(key))
+	
+	if err != nil {
+		log.Printf("Error Gemini client not created: %v", err)
+	}
+
+	model := client.GenerativeModel("gemini-1.5-pro-latest")
+	model.SetTemperature(0.9)
+	model.SetTopP(0.5)
+	model.SetTopK(20)
+	model.SetMaxOutputTokens(30)
+	return model
+
+
+}
+func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtService *jwt.Service, mailService *email.MailTrapService, geminiHandler *geminiService.RecomendationHandler) *usercontroller.UserController {
 	promoteHandler := usercmd.NewPromoteHandler(userRepo)
 	loginHandler := userqry.NewLoginHandler(userqry.LoginConfig{
 		UserRepo:     userRepo,
@@ -122,6 +153,8 @@ func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtS
 		JwtService:   jwtService,
 		EmailService: mailService,
 	})
+	// aiController := gemini.NewAiController(geminiHandler)
+	
 	resetPasswordHandler := passwordreset.NewResetHandler(userRepo, hashService, jwtService)
 	resetCodeSendHandler := passwordreset.NewSendcodeHandler(userRepo, mailService, hashService)
 	validateCodeHandler := passwordreset.NewValidateCodeHandler(userRepo, jwtService, hashService)
@@ -136,6 +169,7 @@ func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtS
 		ValidateCodeHandler:  validateCodeHandler,
 		ValidateEmailHandler: validateEmailHandler,
 	})
+
 }
 
 func initBlogController(blogRepo *blogrepo.Repo, cacheService *cache.RedisCache) *blogcontroller.Controller {
@@ -151,3 +185,11 @@ func initBlogController(blogRepo *blogrepo.Repo, cacheService *cache.RedisCache)
 		GetMultipleHandler: getMultipleHandler,
 	})
 }
+
+func initGeminiController(geminiHandler *geminiService.RecomendationHandler) *gemini.Controller {
+	return gemini.NewAiController(geminiHandler)
+}
+
+
+
+

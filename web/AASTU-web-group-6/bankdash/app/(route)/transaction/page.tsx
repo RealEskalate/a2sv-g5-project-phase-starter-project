@@ -8,6 +8,7 @@ import { useAppSelector } from "@/app/Redux/store/store";
 import { Card } from "../../Redux/slices/cardSlice";
 import { getExpense } from "@/app/Services/api/fetchTransaction";
 import { useSession } from "next-auth/react";
+import { ShimmerVisaCard } from "@/app/components/Shimmer/ShimmerVisa";
 const Transaction = () => {
   const { data: session } = useSession();
   const accessToken = session?.accessToken as string;
@@ -72,15 +73,22 @@ const Transaction = () => {
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-8 min-w-[900px] min-h-[170px]">
               <>
-                {CardData?.map((item, index) => (
-                  <VisaCard
-                    key={index}
-                    data={item}
-                    isBlack={cardColor[index] || false}
-                    isFade={false}
-                    isSimGray={false}
-                  />
-                ))}
+                {CardData.length > 0 ? (
+                  CardData?.slice(0, 2).map((item, index) => (
+                    <VisaCard
+                      key={index}
+                      data={item}
+                      isBlack={cardColor[index] || false}
+                      isFade={false}
+                      isSimGray={false}
+                    />
+                  ))
+                ) : (
+                  <div className="w-full flex gap-6 ">
+                    <ShimmerVisaCard />
+                    <ShimmerVisaCard />
+                  </div>
+                )}
               </>
             </div>
           </div>

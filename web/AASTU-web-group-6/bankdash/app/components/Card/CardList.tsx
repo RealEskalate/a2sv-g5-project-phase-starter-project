@@ -30,7 +30,7 @@ const CardList: React.FC<ListCardProps> = ({
 }) => {
   return (
     <div>
-      <div className="ml-10 mb-5 flex items-center justify-between h-24 bg-white dark:bg-[#232328] gap-5 lg:gap-5 xl:gap-5 border rounded-3xl">
+      <div className="flex items-center justify-between h-24 bg-white dark:bg-[#232328] gap-5 lg:gap-5 xl:gap-5 border rounded-3xl">
         <div className={`{icon rounded-full p-3 ${color} ml-4`}>
           <img src={img} alt="" />
         </div>

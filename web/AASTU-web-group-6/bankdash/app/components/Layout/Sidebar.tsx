@@ -12,6 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/app/Redux/store/store";
 import { toggleDarkMode } from "@/app/Redux/slices/darkModeSlice";
@@ -50,50 +51,42 @@ const Sidebar = ({
     {
       label: "Dashboard",
       url: "/",
-      icon: "/assets/home-icon.svg",
-      active: "/assets/home-icon-active.svg",
+      icon: "icon-home",
     },
     {
       label: "Transactions",
       url: "/transaction",
-      icon: "/assets/transfer-icon.svg",
-      active: "/assets/transfer-icon-active.svg",
+      icon: "icon-transfer",
     },
     {
       label: "Accounts",
       url: "/account",
-      icon: "/assets/account-icon.svg",
-      active: "/assets/account-icon-active.svg",
+      icon: "icon-account",
     },
     {
       label: "Investments",
       url: "/investment",
-      icon: "/assets/invest-icon.svg",
-      active: "/assets/invest-icon-active.svg",
+      icon: "icon-investment",
     },
     {
       label: "Credit Cards",
       url: "/credit-cards",
-      icon: "/assets/card-icon.svg",
-      active: "/assets/card-icon-active.svg",
+      icon: "icon-card",
     },
     {
       label: "Loans",
       url: "/loan",
-      icon: "/assets/loan-icon.svg",
-      active: "/assets/loan-icon-active.svg",
+      icon: "icon-loan",
     },
     {
       label: "Services",
       url: "/service",
-      icon: "/assets/service-icon.svg",
-      active: "/assets/service-icon-active.svg",
+      icon: "icon-service",
     },
     {
       label: "Settings",
       url: "/settings/editprofile",
-      icon: "/assets/setting-icon.svg",
-      active: "/assets/setting-icon-active.svg",
+      icon: "icon-setting",
       additionalActivePaths: [
         "/settings/editprofile",
         "/settings/preference",
@@ -103,8 +96,7 @@ const Sidebar = ({
     {
       label: "LogOut",
       url: "/login",
-      icon: "/assets/logout-icon.svg",
-      active: "/assets/logout-icon-active.svg",
+      icon: "icon-logout",
     },
   ];
 
@@ -151,44 +143,75 @@ const Sidebar = ({
                 </span>
               </button>
             )}
-            <button
-              onClick={() => {
-                if (index == 8) {
-                  signOut({ redirect: true, callbackUrl: "/login" });
-                } else {
-                  router.push(item.url);
-                  closeSidebar();
+            {item.label === "LogOut" ? (
+              <button
+                onClick={() =>
+                  signOut({ redirect: true, callbackUrl: "/login" })
                 }
-              }}
-              className="flex items-center gap-x-6 relative py-3"
-            >
-              <div
-                className={`${
-                  isActive(item.url, item.additionalActivePaths || [])
-                    ? "visible"
-                    : "hidden"
-                } flex z-20 w-6 h-[45px] rounded-[32px] bg-[#1814F3] absolute md:left-[-40px]`}
-              ></div>
-              <Image
-                src={
-                  isActive(item.url, item.additionalActivePaths || [])
-                    ? item.active
-                    : item.icon
-                }
-                alt={item.label}
-                width={20}
-                height={20}
-              />
-              <div
-                className={`${
-                  isActive(item.url)
-                    ? "text-[#1814F3] dark:text-white"
-                    : "text-[#B1B1B1]"
-                } hover:text-[#1814F3]`}
+                className="flex items-center gap-x-6 relative py-3"
               >
-                {item.label}
-              </div>
-            </button>
+                <div
+                  className={`${
+                    isActive(item.url) ? "visible" : "hidden"
+                  } flex z-20 w-6 h-[45px] rounded-[32px] bg-[#1814F3] absolute md:left-[-40px]`}
+                ></div>
+                <i
+                  className={item.icon}
+                  style={{
+                    color: `${
+                      isActive(item.url)
+                        ? isDarkMode
+                          ? "white"
+                          : "blue"
+                        : "#B1B1B1"
+                    }`,
+                  }}
+                />
+                <div
+                  className={`${
+                    isActive(item.url)
+                      ? "text-[#1814F3] dark:text-white"
+                      : "text-[#B1B1B1]"
+                  } hover:text-[#1814F3]`}
+                >
+                  {item.label}
+                </div>
+              </button>
+            ) : (
+              <Link href={item.url} passHref>
+                <button
+                  onClick={closeSidebar}
+                  className="flex items-center gap-x-6 relative py-3"
+                >
+                  <div
+                    className={`${
+                      isActive(item.url) ? "visible" : "hidden"
+                    } flex z-20 w-6 h-[45px] rounded-[32px] bg-[#1814F3] absolute md:left-[-40px]`}
+                  ></div>
+                  <i
+                    className={item.icon}
+                    style={{
+                      color: `${
+                        isActive(item.url)
+                          ? isDarkMode
+                            ? "white"
+                            : "blue"
+                          : "#B1B1B1"
+                      }`,
+                    }}
+                  />
+                  <div
+                    className={`${
+                      isActive(item.url)
+                        ? "text-[#1814F3] dark:text-white"
+                        : "text-[#B1B1B1]"
+                    } hover:text-[#1814F3]`}
+                  >
+                    {item.label}
+                  </div>
+                </button>
+              </Link>
+            )}
           </div>
         ))}
       </div>

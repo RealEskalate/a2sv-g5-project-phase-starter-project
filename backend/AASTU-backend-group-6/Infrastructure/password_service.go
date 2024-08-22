@@ -11,7 +11,7 @@ import (
 type DefaultPasswordService struct{}
 
 func NewPasswordService() domain.PasswordService {
-    return &DefaultPasswordService{}
+	return &DefaultPasswordService{}
 }
 
 // HashPassword hashes the given password using bcrypt algorithm.
@@ -30,7 +30,7 @@ func (d *DefaultPasswordService) ComparePassword(password, hashedPassword string
 	return err == nil
 }
 
-func (d *DefaultPasswordService)ValidateEmail(email string) error {
+func (d *DefaultPasswordService) ValidateEmail(email string) error {
 	// Basic email validation regex
 	regex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 	if !regex.MatchString(email) {
@@ -70,4 +70,3 @@ func (d *DefaultPasswordService) ValidatePassword(password string) error {
 
 	return nil
 }
-

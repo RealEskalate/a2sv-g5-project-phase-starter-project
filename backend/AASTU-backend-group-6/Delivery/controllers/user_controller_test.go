@@ -1,7 +1,7 @@
 package controllers_test
 
 import (
-	"blogs/Delivery/controllers"
+	controllers "blogs/Delivery/controllers"
 	domain "blogs/Domain"
 	"blogs/mocks"
 	"bytes"

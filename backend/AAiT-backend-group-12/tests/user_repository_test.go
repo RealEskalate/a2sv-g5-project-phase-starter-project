@@ -367,6 +367,34 @@ func (suite *UserRepositoryTestSuite) TestVerifyUser_Negative_UserNotFound() {
 	suite.Equal(err.GetCode(), domain.ERR_NOT_FOUND, "error code is not found")
 }
 
+func (suite *UserRepositoryTestSuite) TestUpdatePassword_Positive() {
+	user := MockUserData[0]
+	suite.UserRepository.CreateUser(context.Background(), &user)
+	newPassword := "newpassword121983"
+
+	err := suite.UserRepository.UpdatePassword(context.Background(), user.Username, newPassword)
+	suite.Nil(err, "no error when updating password")
+
+	// check from the DB
+	var userAfter domain.User
+	suite.collection.FindOne(context.Background(), bson.M{"username": user.Username}).Decode(&userAfter)
+	suite.Equal(newPassword, userAfter.Password, "password matches")
+}
+
+func (suite *UserRepositoryTestSuite) TestUpdatePassword_Negative() {
+	user := MockUserData[0]
+	suite.UserRepository.CreateUser(context.Background(), &user)
+	newPassword := "newpassword121983"
+
+	err := suite.UserRepository.UpdatePassword(context.Background(), user.Username, newPassword)
+	suite.Nil(err, "no error when updating password")
+
+	// check from the DB
+	var userAfter domain.User
+	suite.collection.FindOne(context.Background(), bson.M{"username": user.Username}).Decode(&userAfter)
+	suite.Equal(newPassword, userAfter.Password, "password matches")
+}
+
 func (suite *UserRepositoryTestSuite) TeardownSuite() {
 	initdb.DisconnectDB(suite.client)
 }

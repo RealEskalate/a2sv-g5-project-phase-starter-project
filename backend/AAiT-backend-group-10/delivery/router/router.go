@@ -1,6 +1,7 @@
 package router
 
 import (
+	"context"
 	"os"
 
 	"aait.backend.g10/delivery/controllers"
@@ -24,6 +25,7 @@ func NewRouter(db *mongo.Database, redisClient *redis.Client) {
 	jwtService := infrastructures.JwtService{JwtSecret: os.Getenv("JWT_SECRET")}
 
 	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
+	cacheRepo := infrastructures.NewCacheRepo(redisClient, context.Background())
 
 	pwdService := infrastructures.PwdService{}
 	emailService := infrastructures.EmailService{
@@ -33,10 +35,6 @@ func NewRouter(db *mongo.Database, redisClient *redis.Client) {
 		AppHost:     host,
 	}
 	aiService := infrastructures.NewAIService(os.Getenv("GEMINI_API_KEY"))
-
-	blogRepo := repositories.NewBlogRepository(db, os.Getenv("BLOG_COLLECTION"))
-	blogUseCase := usecases.NewBlogUseCase(blogRepo, userRepo, aiService)
-	blogController := controllers.NewBlogController(blogUseCase)
 
 	commentRepo := repositories.NewCommentRepository(db, os.Getenv("COMMENT_COLLECTION_NAME"))
 	commentController := controllers.CommentController{
@@ -53,6 +51,10 @@ func NewRouter(db *mongo.Database, redisClient *redis.Client) {
 
 	userUseCase := usecases.NewUserUseCase(userRepo)
 	userController := controllers.NewUserController(userUseCase)
+
+	blogRepo := repositories.NewBlogRepository(db, os.Getenv("BLOG_COLLECTION"))
+	blogUseCase := usecases.NewBlogUseCase(blogRepo, userRepo, likeRepo, commentRepo, aiService, cacheRepo)
+	blogController := controllers.NewBlogController(blogUseCase)
 
 	router.POST("/blogs", infrastructures.AuthMiddleware(&jwtService), blogController.CreateBlog)
 	router.GET("/blogs", infrastructures.AuthMiddleware(&jwtService), blogController.GetAllBlogs)

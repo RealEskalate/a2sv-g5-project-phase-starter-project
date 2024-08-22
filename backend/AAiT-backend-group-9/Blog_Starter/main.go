@@ -6,7 +6,6 @@ import (
 
 	route "Blog_Starter/api/router"
 	"Blog_Starter/config"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )

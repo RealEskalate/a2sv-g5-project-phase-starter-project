@@ -16,7 +16,7 @@ type BlogRatingRepository struct {
 }
 
 
-func NewBlogRatingRepository(dataBase *mongo.Database, ratingCollection string, ctx *context.Context) domain.BlogRatingRepository {
+func NewBlogRatingRepository(dataBase *mongo.Database, ratingCollection string) domain.BlogRatingRepository {
 	return &BlogRatingRepository{
 		DataBase:         dataBase,
 		ratingCollection: ratingCollection,

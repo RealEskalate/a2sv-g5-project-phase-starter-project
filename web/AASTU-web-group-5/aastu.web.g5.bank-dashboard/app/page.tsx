@@ -1,21 +1,15 @@
-// app/page.tsx
-'use client'
+'use client';
+import { useSession } from "next-auth/react";
+import Investments from "./Investments/page";
+import Signin from "./auth/signin/page";
 
-import React from 'react'
-import Services from './Services/page'  // Ensure this path is correct
-import Settings from './Settings/page 1/page'  // Ensure this path is correct
+export default function Home() {
+  const { status } = useSession();
 
-const Home = () => {
   return (
-    <div> 
-       {/*  <div>
-        <Services/>
-      </div>  */}
-      <div> 
-        <Settings/>
-      </div> 
+    <div className="p-4">
+      {/* Render Investments if authenticated, otherwise render Signin */}
+      {status === "authenticated" ? <Investments /> : <Signin />}
     </div>
-  )
+  );
 }
-
-export default Home

@@ -60,21 +60,25 @@
 }
 
 @layer base {
-	* {
-		/* @apply border-border; */
-	}
-	body {
-		/* @apply bg-background text-foreground; */
-		/* background: #f5f7fc; */
-	}
+  * {
+      @apply border-border;
+  }
+  body {
+      @apply bg-background text-foreground;
+      background: #f5f7fc;
+  }
+}
+
+.custom-underline {
+  position: relative;
 }
 
 .custom-underline::after {
-	content: "";
-	position: absolute;
-	left: 0;
-	bottom: -2px; /* Adjust this value to add space between text and underline */
-	width: 100%;
-	height: 2px; /* Adjust this value to change the underline thickness */
-	background-color: currentColor;
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px; /* Adjust space between text and underline */
+  width: 100%;
+  height: 2px; /* Adjust underline thickness */
+  background-color: currentColor;
 }

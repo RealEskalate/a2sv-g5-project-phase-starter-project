@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@tanstack/react-table": "^8.20.1",
+    "react-hook-form": "^7.52.2",
+    "axios": "^1.7.4"
+  }
+}

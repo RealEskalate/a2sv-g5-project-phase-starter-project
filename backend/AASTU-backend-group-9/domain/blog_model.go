@@ -8,17 +8,18 @@ import (
 
 // Blog represents the blog entity.
 type Blog struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
-	Title     string             `bson:"title" json:"title"`
-	Content   string             `bson:"content" json:"content"`
-	AuthorID  primitive.ObjectID `bson:"author_id" json:"author_id"`
-	Tags      []string           `bson:"tags" json:"tags"`
-	CreatedAt time.Time          `bson:"created_at" json:"created_at"`
-	UpdatedAt time.Time          `bson:"updated_at" json:"updated_at"`
-	Views     int                `bson:"views" json:"views"`
-	Likes     int                `bson:"likes" json:"likes"`
-	Dislikes  int                `bson:"dislikes" json:"dislikes"`
-	Comments  int                `bson:"comments" json:"comments"`
+	ID         primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	Title      string             `bson:"title" json:"title"`
+	Content    string             `bson:"content" json:"content"`
+	AuthorID   primitive.ObjectID `bson:"author_id" json:"author_id"`
+	AuthorName string             `bson:"author" json:"author"`
+	Tags       []string           `bson:"tags" json:"tags"`
+	CreatedAt  time.Time          `bson:"created_at" json:"created_at"`
+	UpdatedAt  time.Time          `bson:"updated_at" json:"updated_at"`
+	Views      int                `bson:"views" json:"views"`
+	Likes      int                `bson:"likes" json:"likes"`
+	Dislikes   int                `bson:"dislikes" json:"dislikes"`
+	Comments   int                `bson:"comments" json:"comments"`
 }
 type Comment struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
@@ -30,9 +31,10 @@ type Comment struct {
 
 // BlogCreationRequest is used when creating a new blog post.
 type BlogCreationRequest struct {
-	Title   string   `json:"title" binding:"required"`
-	Content string   `json:"content" binding:"required"`
-	Tags    []string `json:"tags"`
+	Title      string   `json:"title" binding:"required"`
+	Content    string   `json:"content" binding:"required"`
+	Tags       []string `json:"tags"`
+	AuthorName string   `bson:"title" json:"author"`
 }
 
 // BlogUpdateRequest is used when updating an existing blog post.

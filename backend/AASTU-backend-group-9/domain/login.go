@@ -5,10 +5,10 @@ import (
 )
 
 type AuthLogin struct {
-	UserID          primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
-	Username  		string `json:"username" binding:"required"`
-	Email           string `json:"email" binding:"required"`
-	Password        string `json:"password"`
+	UserID   primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	Username string             `json:"username"`
+	Email    string             `json:"email" binding:"required"`
+	Password string             `json:"password"`
 }
 
 type LoginResponse struct {

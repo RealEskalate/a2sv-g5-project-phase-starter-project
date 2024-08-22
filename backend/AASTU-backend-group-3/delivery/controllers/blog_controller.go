@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"group3-blogApi/domain"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+
+	"group3-blogApi/domain"
 )
 
 type BlogController struct {
@@ -18,7 +19,6 @@ func NewBlogController(blogUsecase domain.BlogUsecase) *BlogController {
 	}
 }
 
-
 func (c *BlogController) CreateBlog(ctx *gin.Context) {
 	var blog domain.Blog
 	if err := ctx.ShouldBindJSON(&blog); err != nil {
@@ -29,8 +29,7 @@ func (c *BlogController) CreateBlog(ctx *gin.Context) {
 	userID := ctx.GetString("user_id")
 	username := ctx.GetString("username")
 
-
-	newBlog, err := c.blogUsecase.CreateBlog(username,userID, blog)
+	newBlog, err := c.blogUsecase.CreateBlog(username, userID, blog)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -40,27 +39,23 @@ func (c *BlogController) CreateBlog(ctx *gin.Context) {
 		"message": "Blog created successfully",
 		"Created_blog": newBlog,
 	})
-	
-   
+
 }
 
-func(c *BlogController)DeleteBlog(ctx *gin.Context){
+func (c *BlogController) DeleteBlog(ctx *gin.Context) {
 	id := ctx.Param("id")
-	role := ctx.GetString("role")	
+	role := ctx.GetString("role")
 	userId := ctx.GetString("user_id")
-	newBlog, err := c.blogUsecase.DeleteBlog(role, userId ,id)
+	newBlog, err := c.blogUsecase.DeleteBlog(role, userId, id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.JSON(200, gin.H{
-		"message": "Blog deleted successfully",
+		"message":      "Blog deleted successfully",
 		"Deleted Blog": newBlog,
 	})
 }
-
-
-
 
 func (c *BlogController) UpdateBlog(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -73,20 +68,16 @@ func (c *BlogController) UpdateBlog(ctx *gin.Context) {
 	}
 	blog.AuthorID = ctx.GetString("user_id")
 
-
-	if _,err := c.blogUsecase.UpdateBlog(blog,ctx.GetString("role") , id); err != nil {
+	if _, err := c.blogUsecase.UpdateBlog(blog, ctx.GetString("role"), id); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
-	
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Blog updated successfully", 
+		"message":      "Blog updated successfully",
 		"Updated Blog": blog,
 	})
 }
-
 
 func (c *BlogController) GetBlogByID(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -106,7 +97,6 @@ func (c *BlogController) GetBlogByID(ctx *gin.Context) {
 		"blog":    blog,
 	})
 }
-
 
 func (c *BlogController) GetBlogs(ctx *gin.Context) {
 	var page int64 = 1   // Default to page 1
@@ -139,10 +129,9 @@ func (c *BlogController) GetBlogs(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Blogs retrieved successfully",
-		"blogs":    blogs,
+		"blogs":   blogs,
 	})
 }
-
 
 func (c *BlogController) GetUserBlogs(ctx *gin.Context) {
 	userID := ctx.Param("id")
@@ -155,7 +144,7 @@ func (c *BlogController) GetUserBlogs(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "User blogs retrieved successfully",
-		"blogs":    blogs,
+		"blogs":   blogs,
 	})
 }
 

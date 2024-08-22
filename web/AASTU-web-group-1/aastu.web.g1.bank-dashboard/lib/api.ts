@@ -95,7 +95,7 @@ export async function getCurrentUser() {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
     const res = await fetch(
-      `https://bank-dashboard-6acc.onrender.com/user/current`,
+      `https://bank-dashboard-1tst.onrender.com/user/current`,
       {
         method: "GET",
         headers: {
@@ -172,7 +172,7 @@ export default async function getRandomBalance() {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
     const res = await fetch(
-      `https://bank-dashboard-6acc.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=7`,
+      `https://bank-dashboard-1tst.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=7`,
       {
         method: "GET",
         headers: {
@@ -233,7 +233,7 @@ export async function postCards({
   try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
-    const res = await fetch(`https://bank-dashboard-6acc.onrender.com/cards`, {
+    const res = await fetch(`https://bank-dashboard-1tst.onrender.com/cards`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -263,7 +263,7 @@ export async function getbalance(){
     const session = await getSession();
     const accessToken = session?.user.accessToken;
     const res = await fetch(
-      `https://bank-dashboard-6acc.onrender.com/transactions/balance-history`,
+      `https://bank-dashboard-1tst.onrender.com/transactions/balance-history`,
       {
         method: "GET",
         headers:{

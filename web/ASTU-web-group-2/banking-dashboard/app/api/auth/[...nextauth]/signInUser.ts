@@ -3,7 +3,6 @@ async function signInUser({ userName, password }: any) {
 
   try {
     const response = await fetch(
-
       "https://astu-bank-dashboard.onrender.com/auth/login",
 
       {

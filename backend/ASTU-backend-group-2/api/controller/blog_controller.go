@@ -2,6 +2,8 @@ package controller
 
 import (
 	"context"
+	"strconv"
+	"time"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
@@ -30,12 +32,33 @@ type BlogController struct {
 
 func (bc *BlogController) GetBlogs() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		blogs, err := bc.BlogUsecase.GetAllBlogs(context.Background())
+
+		page, _ := strconv.ParseInt(c.Query("page"), 10, 64)
+		dateFrom, _ := time.Parse(time.RFC3339, c.Query("date_from"))
+		dateTo, _ := time.Parse(time.RFC3339, c.Query("date_to"))
+		tags, _ := c.GetQueryArray("tags")
+		popularityFrom, _ := strconv.Atoi(c.Query("popularity_from"))
+		popularityTo, _ := strconv.Atoi(c.Query("popularity_to"))
+
+		var blogFilter domain.BlogFilter
+
+		blogFilter = domain.BlogFilter{
+			Title:          c.Query("title"),
+			Tags:           tags,
+			DateFrom:       dateFrom,
+			DateTo:         dateTo,
+			Limit:          10, // 10 pages perfilter
+			Pages:          page,
+			PopularityFrom: popularityFrom,
+			PopularityTo:   popularityTo,
+		}
+
+		blogs, pagination, err := bc.BlogUsecase.GetAllBlogs(context.Background(), blogFilter)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(200, blogs)
+		c.JSON(200, gin.H{"blogs": blogs, "pageination": pagination})
 	}
 }
 
@@ -93,5 +116,58 @@ func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 			return
 		}
 		c.JSON(204, nil)
+	}
+}
+func (bc *BlogController) GetByTags() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tags := c.Query("tags")
+		limit, _ := strconv.ParseInt(c.Query("limit"), 10, 64)
+		page, _ := strconv.ParseInt(c.Query("page"), 10, 64)
+
+		blogs, pagination, err := bc.BlogUsecase.GetByTags(context.TODO(), []string{tags}, limit, page)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, gin.H{"blogs": blogs, "pageination": pagination})
+	}
+}
+
+func (bc *BlogController) GetbyPopularity() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		limit, _ := strconv.ParseInt(c.Query("limit"), 10, 64)
+		page, _ := strconv.ParseInt(c.Query("page"), 10, 64)
+		blogs, pagination, err := bc.BlogUsecase.GetByPopularity(context.Background(), limit, page)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, gin.H{"blogs": blogs, "pageination": pagination})
+	}
+}
+func (bc *BlogController) Search() gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+		searchTerm := c.Query("search")
+		limit, _ := strconv.ParseInt(c.Query("limit"), 10, 64)
+		page, _ := strconv.ParseInt(c.Query("page"), 10, 64)
+		blogs, pagination, err := bc.BlogUsecase.Search(context.Background(), searchTerm, limit, page)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, gin.H{"blogs": blogs, "pageination": pagination})
+	}
+}
+func (bc *BlogController) SortByDate() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		limit, _ := strconv.ParseInt(c.Query("limit"), 10, 64)
+		page, _ := strconv.ParseInt(c.Query("page"), 10, 64)
+		blogs, pagination, err := bc.BlogUsecase.SortByDate(context.Background(), limit, page)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, gin.H{"blogs": blogs, "pageination": pagination})
 	}
 }

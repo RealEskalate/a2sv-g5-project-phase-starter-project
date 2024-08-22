@@ -31,10 +31,23 @@ func (br *blogRepository) GetByTags(c context.Context, tags []string, limit int6
 	return getFilteredBlog(c, collection, limit, page, filter)
 }
 
-func (br *blogRepository) GetAllBlogs(c context.Context, limit int64, page int64) ([]domain.Blog, mongopagination.PaginationData, error) {
+func (br *blogRepository) GetAllBlogs(c context.Context, filter bson.M, blogFilter domain.BlogFilter) ([]domain.Blog, mongopagination.PaginationData, error) {
 	collection := br.database.Collection(br.collection)
 
-	return getFilteredBlog(c, collection, limit, page, bson.M{})
+	return getFiltered(c, collection, filter, blogFilter)
+}
+
+// utility filteration function that used to filter the blogs based on the user query
+func getFiltered(c context.Context, coll *mongo.Collection, filter bson.M, blogFilter domain.BlogFilter) ([]domain.Blog, mongopagination.PaginationData, error) {
+	var blogs []domain.Blog
+
+	paginatedData, err := mongopagination.New(coll).Context(c).Limit(10).Page(blogFilter.Pages).Decode(&blogs).Aggregate(filter)
+
+	if err != nil {
+		return []domain.Blog{}, mongopagination.PaginationData{}, err
+	}
+
+	return blogs, paginatedData.Pagination, nil
 }
 
 func (br *blogRepository) GetBlogByID(c context.Context, blogID string) (domain.Blog, error) {

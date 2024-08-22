@@ -46,4 +46,9 @@ func NewPublicBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.D
 
 	group.GET("/blogs", bc.GetBlogs())
 	group.GET("/blogs/:id", bc.GetBlog())
+	group.GET("blogs/popular", bc.GetbyPopularity())
+
+	group.GET("/blogs/tags/", bc.GetByTags())
+	group.GET("/blogs/search/", bc.Search())
+	group.GET("/blogs/recent", bc.SortByDate())
 }

@@ -1,9 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import process from "process";
 
 export const bankApi = createApi({
   reducerPath: "bankDash",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-6acc.onrender.com",
+    baseUrl: "https://bank-dashboard-1tst.onrender.com",
+    
   }),
   endpoints: (builder) => ({
     getBankService: builder.query({

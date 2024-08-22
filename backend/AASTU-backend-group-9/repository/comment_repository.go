@@ -41,7 +41,11 @@ func (r *CommentRepository) GetComments(ctx context.Context, post_id primitive.O
 	var blog domain.Comment
 	collection := r.commentdb.Collection(r.collection)
 
-	err := collection.FindOne(ctx, bson.M{"blog_id": post_id}).Decode(&blog)
+	cursor, err := collection.Find(ctx, bson.M{"blog_id": post_id})
+	if err != nil {
+		return nil, err
+	}
+	err = cursor.Decode(&blog)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +55,7 @@ func (r *CommentRepository) GetComments(ctx context.Context, post_id primitive.O
 func (r *CommentRepository) DeleteComment(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID) error {
 	var comment domain.Comment
 	collection := r.commentdb.Collection(r.collection)
-	err := collection.FindOne(ctx, bson.M{"_id": comment_id}).Decode(&comment)
+	err := collection.FindOne(ctx, bson.M{"_id": comment_id, "blog_id": post_id}).Decode(&comment)
 
 	if err != nil {
 		return err
@@ -67,14 +71,14 @@ func (r *CommentRepository) DeleteComment(ctx context.Context, post_id primitive
 func (r *CommentRepository) UpdateComment(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID, comment *domain.Comment) error {
 	var oldComment domain.Comment
 	collection := r.commentdb.Collection(r.collection)
-	err := collection.FindOne(ctx, bson.M{"_id": comment_id}).Decode(&oldComment)
+	err := collection.FindOne(ctx, bson.M{"_id": comment_id, "blog_id": post_id}).Decode(&oldComment)
 
 	if err != nil {
 		return err
 	}
-	// if oldComment.AuthorID != userID {
-	// 	return errors.New("you are not authorized to update this comment")
-	// }
+	if oldComment.AuthorID != userID {
+		return errors.New("you are not authorized to update this comment")
+	}
 	_, err = collection.UpdateOne(ctx, bson.M{"_id": comment_id}, bson.M{"$set": bson.M{"content": comment.Content}})
 	return err
 }

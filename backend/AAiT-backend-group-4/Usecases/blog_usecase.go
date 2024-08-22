@@ -3,23 +3,29 @@ package usecases
 import (
 	domain "aait-backend-group4/Domain"
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
+	"strings"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type blogUsecase struct {
 	blogRepository  domain.BlogRepository
 	userRepository  domain.UserRepository
+	RedisClient     *redis.Client
 	contextTimeouts time.Duration
 }
 
 // NewBlogUsecase creates a new instance of blogUsecase and returns it
-func NewBlogUsecase(blogRepository domain.BlogRepository, userRepository domain.UserRepository, timeout time.Duration) domain.BlogUsecase {
+func NewBlogUsecase(blogRepository domain.BlogRepository, userRepository domain.UserRepository, timeout time.Duration, rc *redis.Client) domain.BlogUsecase {
 	return &blogUsecase{
 		blogRepository:  blogRepository,
 		userRepository:  userRepository,
+		RedisClient:     rc,
 		contextTimeouts: timeout,
 	}
 }
@@ -81,7 +87,35 @@ func (blogU *blogUsecase) FetchByBlogID(c context.Context, blogID string) (domai
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
 
-	return blogU.blogRepository.FetchByBlogID(ctx, blogID)
+	// Generate cache key
+	cacheKey := fmt.Sprintf("blog:%s", blogID)
+	// Check cache
+	val, err := blogU.RedisClient.Get(ctx, cacheKey).Result()
+	if err == nil {
+		var cachedBlog domain.Blog
+		if err := json.Unmarshal([]byte(val), &cachedBlog); err == nil {
+			log.Println("Cache hit")
+			return cachedBlog, nil
+		} else {
+			log.Printf("Error unmarshalling json: %v", err)
+		}
+	} else {
+		log.Printf("Error getting value from Redis: %v", err)
+	}
+	returnedValue, err := blogU.blogRepository.FetchByBlogID(ctx, blogID)
+	if err == nil {
+		log.Println("Cache miss")
+		// Update cache
+		blogsJson, err := json.Marshal(returnedValue)
+		if err == nil {
+			expiration := 5 * time.Minute
+			if err := blogU.RedisClient.Set(ctx, cacheKey, blogsJson, expiration).Err(); err != nil {
+				log.Printf("Failed to update cache: %v", err)
+			}
+		}
+	}
+
+	return returnedValue, err
 }
 
 // FetchAll calls FetchAll in repository to fetch all blogs in the database
@@ -176,6 +210,23 @@ func (blogU *blogUsecase) FetchAll(c context.Context, limit, page int) (domain.P
 		return domain.PaginatedBlogs{}, fmt.Errorf("invalid limit or page number")
 	}
 
+	// Geberate a cache key
+	cacheKey := fmt.Sprintf("blogs:limit=%d:page=%d", limit, page)
+
+	// Check cache
+	val, err := blogU.RedisClient.Get(ctx, cacheKey).Result()
+	if err == nil {
+		var cachedBlogs domain.PaginatedBlogs
+		if err := json.Unmarshal([]byte(val), &cachedBlogs); err == nil {
+			log.Println("Cache hit")
+			return cachedBlogs, nil
+		} else {
+			log.Printf("Error unmarshalling json: %v", err)
+		}
+	} else {
+		log.Printf("Error getting value from Redis: %v", err)
+	}
+
 	offset := (page - 1) * limit
 
 	blogs, totalCount, err := blogU.blogRepository.FetchAll(ctx, limit, offset)
@@ -196,7 +247,7 @@ func (blogU *blogUsecase) FetchAll(c context.Context, limit, page int) (domain.P
 		nextPage = 0
 	}
 
-	return domain.PaginatedBlogs{
+	returnedValue := domain.PaginatedBlogs{
 		Blogs: blogs,
 		Pagination: domain.PaginationData{
 			NextPage:     nextPage,
@@ -204,7 +255,19 @@ func (blogU *blogUsecase) FetchAll(c context.Context, limit, page int) (domain.P
 			CurrentPage:  currentPage,
 			TotalPages:   totalPages,
 			TotalItems:   totalCount,
-		}}, nil
+		},
+	}
+
+	// Update cache
+	blogsJson, err := json.Marshal(returnedValue)
+	if err == nil {
+		expiration := 5 * time.Minute
+		if err := blogU.RedisClient.Set(ctx, cacheKey, blogsJson, expiration).Err(); err != nil {
+			log.Printf("Failed to update cache: %v", err)
+		}
+	}
+	log.Println("Cache miss")
+	return returnedValue, nil
 }
 
 func (blogU *blogUsecase) FetchByPageAndPopularity(ctx context.Context, limit, page int) (domain.PaginatedBlogs, error) {
@@ -258,6 +321,30 @@ func (blogU *blogUsecase) FetchByTags(ctx context.Context, tags []domain.Tag, li
 		return domain.PaginatedBlogs{}, fmt.Errorf("invalid limit or page number")
 	}
 
+	// / Convert []domain.Tag to []string
+	tagStrings := make([]string, len(tags))
+	for i, tag := range tags {
+		tagStrings[i] = string(tag) // Assuming domain.Tag has a Name field
+	}
+
+	tagsString := strings.Join(tagStrings, ",")
+	// Geberate a cache key
+	cacheKey := fmt.Sprintf("blogs:limit=%d:page=%d&tags=%v", limit, page, tagsString)
+
+	// Check cache
+	val, err := blogU.RedisClient.Get(ctx, cacheKey).Result()
+	if err == nil {
+		var cachedBlogs domain.PaginatedBlogs
+		if err := json.Unmarshal([]byte(val), &cachedBlogs); err == nil {
+			log.Println("Cache hit")
+			return cachedBlogs, nil
+		} else {
+			log.Printf("Error unmarshalling json: %v", err)
+		}
+	} else {
+		log.Printf("Error getting value from Redis: %v", err)
+	}
+
 	offset := (page - 1) * limit
 
 	// Fetch blogs and total count
@@ -279,7 +366,7 @@ func (blogU *blogUsecase) FetchByTags(ctx context.Context, tags []domain.Tag, li
 		previousPage = 0 // No previous page
 	}
 
-	return domain.PaginatedBlogs{
+	returnedValue := domain.PaginatedBlogs{
 		Blogs: blogs,
 		Pagination: domain.PaginationData{
 			NextPage:     nextPage,
@@ -287,7 +374,19 @@ func (blogU *blogUsecase) FetchByTags(ctx context.Context, tags []domain.Tag, li
 			CurrentPage:  currentPage,
 			TotalPages:   totalPages,
 			TotalItems:   totalCount,
-		}}, nil
+		},
+	}
+	// Update cache
+	blogsJson, err := json.Marshal(returnedValue)
+	if err == nil {
+		expiration := 5 * time.Minute
+		if err := blogU.RedisClient.Set(ctx, cacheKey, blogsJson, expiration).Err(); err != nil {
+			log.Printf("Failed to update cache: %v", err)
+		}
+	}
+	log.Println("Cache miss")
+
+	return returnedValue, nil
 }
 
 // UpdateBlog checks whether the blog to be updated exists

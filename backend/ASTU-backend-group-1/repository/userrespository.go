@@ -5,19 +5,18 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/sv-tools/mongoifc"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-
-	// "github.com/sv-tools/mongoifc"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type userRepository struct {
-	collection *mongo.Collection
+	collection mongoifc.Collection
 }
 
-func NewUserRepository(c *mongo.Collection) domain.UserRepository {
+func NewUserRepository(c mongoifc.Collection) domain.UserRepository {
 	indexModels := []mongo.IndexModel{
 		{
 			Keys: bson.D{
@@ -31,12 +30,13 @@ func NewUserRepository(c *mongo.Collection) domain.UserRepository {
 			Options: options.Index().SetUnique(true),
 		},
 	}
+	
 	c.Indexes().CreateOne(context.TODO(), indexModels[0])
 	c.Indexes().CreateOne(context.TODO(), indexModels[1])
 	return &userRepository{collection: c}
 }
 
-func NewUserTestRepository(c *mongo.Collection) domain.UserRepository {
+func NewUserTestRepository(c mongoifc.Collection) domain.UserRepository {
 	return &userRepository{collection: c}
 }
 

@@ -21,6 +21,7 @@ type UserControllerTestSuite struct {
 	userController *UserController
 	userUsecase    *mocks.UserUsecase
 	data           []domain.User
+
 }
 
 func (suite *UserControllerTestSuite) SetupSuite() {
@@ -166,10 +167,10 @@ func (suite *UserControllerTestSuite) TestRegisterUser() {
 func (suite *UserControllerTestSuite) TestAccountVerification() {
 	assert := assert.New(suite.T())
 	suite.Run("success", func() {
-		suite.userUsecase.On("AccountVerification", "alksdjfwe@gmail.com", "aslkdfj23").Return("token", nil).Once()
+		suite.userUsecase.On("AccountVerification", "alksdjfwe@gmail.com", "aslkdfj23").Return(nil).Once()
 		w := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(w)
-		req, _ := http.NewRequest("POST", "/accountverification?email=alksdjfwe@gmail.com&pwd=aslkdfj23", nil)
+		req, _ := http.NewRequest("POST", "/accountverification?email=alksdjfwe@gmail.com&token=aslkdfj23", nil)
 		ctx.Request = req
 		suite.userController.AccountVerification(ctx)
 		assert.Equal(http.StatusOK, w.Code)

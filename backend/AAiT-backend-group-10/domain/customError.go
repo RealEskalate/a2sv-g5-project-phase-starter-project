@@ -75,7 +75,7 @@ var (
 var (
 	ErrTokenGenerationFailed        = NewCustomError("Failed to generate token", http.StatusInternalServerError)
 	ErrRefreshTokenGenerationFailed = NewCustomError("Failed to generate refresh token", http.StatusInternalServerError)
-	ErrTokenParsingFailed           = NewCustomError("Failed to parse token", http.StatusUnauthorized)
+	ErrTokenParsingFailed           = NewCustomError("Invalid token", http.StatusUnauthorized)
 	ErrResetTokenGenerationFailed   = NewCustomError("Failed to generate reset token", http.StatusInternalServerError)
 )
 var (

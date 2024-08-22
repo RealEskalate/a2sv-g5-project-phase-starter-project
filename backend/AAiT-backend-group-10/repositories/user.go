@@ -53,7 +53,7 @@ func (r *UserRepository) GetUserByEmail(email string) (*domain.User, *domain.Cus
 		if err == mongo.ErrNoDocuments {
 			return nil, domain.ErrUserNotFound
 		}
-		return nil, domain.ErrUserCreationFailed
+		return nil, domain.ErrUserFetchFailed
 	}
 	return &user, nil
 }

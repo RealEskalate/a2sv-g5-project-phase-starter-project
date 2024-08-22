@@ -21,21 +21,25 @@ func NewUserController(u usecases.IUserUseCase) *UserController {
 
 func (u *UserController) PromoteUser(c *gin.Context) {
 	promote := struct {
-		ID uuid.UUID `json:"id"`
-		IsPromote bool `json:"isPromote"`
+		ID uuid.UUID `json:"id" binding:"required"`
+		IsPromote *bool `json:"is_promote" binding:"required"`
 	}{}
 	if err := c.BindJSON(&promote); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	cerr := u.userUseCase.PromoteUser(promote.ID, promote.IsPromote)
+	cerr := u.userUseCase.PromoteUser(promote.ID, *promote.IsPromote)
 	if cerr != nil {
 		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User promoted successfully"})	
+	if *promote.IsPromote {
+		c.JSON(http.StatusOK, gin.H{"message": "User promoted successfully"})	
+	} else {
+		c.JSON(http.StatusOK, gin.H{"message": "User demoted successfully"})	
+	}
 }
 
 func (u *UserController) UpdateProfile(c *gin.Context) {
@@ -49,8 +53,13 @@ func (u *UserController) UpdateProfile(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	requester_id, err := uuid.Parse(c.MustGet("id").(string))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
 	user.ID = id
-	cerr := u.userUseCase.UpdateUser(&user)
+	cerr := u.userUseCase.UpdateUser(requester_id, &user)
 	if cerr != nil {
 		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return

@@ -7,16 +7,17 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type Jwt struct {
+type JwtService struct {
 	JwtSecret string
 }
 
-func (s *Jwt) GenerateToken(user *domain.User) (string, string, *domain.CustomError) {
+func (s *JwtService) GenerateToken(user *domain.User) (string, string, *domain.CustomError) {
 	// Define JWT claims
 	claims := jwt.MapClaims{
+		"id": user.ID,
 		"email": user.Email,
 		"exp":   time.Now().Add(time.Hour * 1).Unix(), // 1 hour expiration
-		"admin": user.IsAdmin,
+		"is_admin": user.IsAdmin,
 	}
 
 	// Create access token
@@ -40,7 +41,7 @@ func (s *Jwt) GenerateToken(user *domain.User) (string, string, *domain.CustomEr
 	return tokenString, refreshTokenString, nil
 }
 
-func (s *Jwt) ValidateToken(token string) (*jwt.Token, *domain.CustomError) {
+func (s *JwtService) ValidateToken(token string) (*jwt.Token, *domain.CustomError) {
 	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, domain.ErrUnexpectedSigningMethod
@@ -55,7 +56,7 @@ func (s *Jwt) ValidateToken(token string) (*jwt.Token, *domain.CustomError) {
 	return parsedToken, nil
 }
 
-func (s *Jwt) GenerateResetToken(email string, code int64) (string, *domain.CustomError) {
+func (s *JwtService) GenerateResetToken(email string, code int64) (string, *domain.CustomError) {
 	claims := jwt.MapClaims{
 		"email": email,
 		"exp":   time.Now().Add(time.Hour * 1).Unix(),
@@ -69,4 +70,25 @@ func (s *Jwt) GenerateResetToken(email string, code int64) (string, *domain.Cust
 	}
 
 	return tokenString, nil
+}
+
+func (s *JwtService) CheckToken(authPart string) (*jwt.Token, *domain.CustomError) {
+	token, err := jwt.Parse(authPart, func(token *jwt.Token) (interface{}, error) {
+		// Validate the signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, domain.ErrUnexpectedSigningMethod
+		}
+		return []byte(s.JwtSecret), nil
+	})
+
+	if err != nil {
+		return nil, domain.ErrTokenParsingFailed
+	}
+
+	return token, nil
+}
+
+func (s *JwtService) FindClaim(token *jwt.Token) (jwt.MapClaims, bool) {
+	claims, ok := token.Claims.(jwt.MapClaims)
+	return claims, ok
 }

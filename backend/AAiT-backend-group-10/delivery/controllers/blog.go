@@ -53,9 +53,15 @@ func (b *BlogController) CreateBlog(c *gin.Context) {
 		return
 	}
 
-	newBlog, err := b.BlogUseCase.CreateBlog(&blog)
+	id, err := uuid.Parse(c.MustGet("id").(string))
 	if err != nil {
-		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	blog.Author = id
+	newBlog, cerr := b.BlogUseCase.CreateBlog(&blog)
+	if cerr != nil {
+		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return
 	}
 
@@ -88,7 +94,7 @@ func (b *BlogController) GetBlogByID(c *gin.Context) {
 }
 
 func (b *BlogController) UpdateBlog(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	blogId, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
@@ -125,9 +131,13 @@ func (b *BlogController) UpdateBlog(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"errors": errorMessages})
 		return
 	}
-	requester_id := c.MustGet("id").(uuid.UUID)
+	requester_id, err := uuid.Parse(c.MustGet("id").(string))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
 
-	blog.ID = id
+	blog.ID = blogId
 	blog.Author = requester_id
 	cerr := b.BlogUseCase.UpdateBlog(&blog)
 	if cerr != nil {
@@ -139,15 +149,19 @@ func (b *BlogController) UpdateBlog(c *gin.Context) {
 }
 
 func (b *BlogController) DeleteBlog(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	blogId, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	requester_id := c.MustGet("id").(uuid.UUID)
+	requester_id, err := uuid.Parse(c.MustGet("id").(string))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
 	is_admin := c.MustGet("is_admin").(bool)
 
-	cerr := b.BlogUseCase.DeleteBlog(id, requester_id, is_admin)
+	cerr := b.BlogUseCase.DeleteBlog(blogId, requester_id, is_admin)
 	if cerr != nil {
 		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return

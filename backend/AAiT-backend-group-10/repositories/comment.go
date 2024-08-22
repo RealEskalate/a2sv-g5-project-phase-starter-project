@@ -23,7 +23,7 @@ func NewCommentRepository(db *mongo.Database, collectionName string) *CommentRep
 func (cr *CommentRepository) GetCommentByID(commentID uuid.UUID) (domain.Comment, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	filter := bson.D{{Key: "id", Value: commentID}}
+	filter := bson.D{{Key: "_id", Value: commentID}}
 	var comment domain.Comment
 	err := cr.Collection.FindOne(ctx, filter).Decode(&comment)
 	if err != nil {
@@ -39,7 +39,6 @@ func (cr *CommentRepository) GetCommentByID(commentID uuid.UUID) (domain.Comment
 func (cr *CommentRepository) AddComment(comment domain.Comment) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	comment.ID = uuid.New()
 	_, err := cr.Collection.InsertOne(ctx, comment)
 	if err != nil {
 		return domain.ErrCommentCreationFailed
@@ -48,11 +47,11 @@ func (cr *CommentRepository) AddComment(comment domain.Comment) *domain.CustomEr
 }
 
 // DelelteComment implements interfaces.CommentRepositoryInterface.
-func (cr *CommentRepository) DelelteComment(commentID uuid.UUID) *domain.CustomError {
+func (cr *CommentRepository) DeleteComment(commentID uuid.UUID) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	filter := bson.D{
-		{Key: "id", Value: commentID},
+		{Key: "_id", Value: commentID},
 	}
 	result, err := cr.Collection.DeleteOne(ctx, filter)
 	if err != nil || result.DeletedCount == 0 {
@@ -93,7 +92,7 @@ func (cr *CommentRepository) UpdateComment(updatedComment domain.Comment) *domai
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	filter := bson.D{
-		{Key: "id", Value: updatedComment.ID},
+		{Key: "_id", Value: updatedComment.ID},
 	}
 	update := bson.D{
 		{Key: "$set", Value: bson.D{

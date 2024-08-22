@@ -84,8 +84,9 @@ func (c *Controller) addBlog(ctx *gin.Context) {
 		c.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
 		return
 	}
-
-	ctx.IndentedJSON(http.StatusCreated, blog)
+	baseURL := fmt.Sprintf("http://%s", ctx.Request.Host)
+	resourceLocation := fmt.Sprintf("%s%s/%s", baseURL, ctx.Request.URL.Path, blog.ID().String())
+	c.RespondWithLocation(ctx, http.StatusCreated, nil, resourceLocation)
 }
 
 func (c *Controller) updateBlog(ctx *gin.Context) {

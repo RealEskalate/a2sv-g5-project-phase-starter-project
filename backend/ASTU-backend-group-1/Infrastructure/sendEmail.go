@@ -29,13 +29,16 @@ func SendEmail(toEmail string, title string, body string, link string) error {
 	</body>
 	</html>
 	`
+	
+	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+
 	key := config.Email.EmailKey
 	host := "smtp.gmail.com"
 	auth := smtp.PlainAuth("", "abel.wendmu@a2sv.org", key, "smtp.gmail.com")
 
 	port := "587"
 	address := host + ":" + port
-	messages := []byte(message)
+	messages := []byte(mime+message)
 
 	err = smtp.SendMail(address, auth, "abel.wendmu@a2sv.org", []string{toEmail}, messages)
 	if err != nil {

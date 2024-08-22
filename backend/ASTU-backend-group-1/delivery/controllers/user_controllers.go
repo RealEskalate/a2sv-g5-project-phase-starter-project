@@ -4,27 +4,22 @@ import (
 	infrastructure "astu-backend-g1/Infrastructure"
 	"astu-backend-g1/config"
 	"astu-backend-g1/domain"
-	"context"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserController struct {
 	userUsecase    domain.UserUsecase
-	userCollection *mongo.Collection
 }
 
-func NewUserController(userUsecase domain.UserUsecase, userCollection *mongo.Collection) *UserController {
+func NewUserController(userUsecase domain.UserUsecase) *UserController {
 	return &UserController{
 		userUsecase:    userUsecase,
-		userCollection: userCollection,
 	}
 
 }
@@ -114,6 +109,19 @@ func (c *UserController) LoginUser(ctx *gin.Context) {
 	}
 	ctx.IndentedJSON(http.StatusOK, gin.H{"access_token": access_token})
 }
+
+//logout user
+
+func (c *UserController) LogoutUser(ctx *gin.Context) {
+	email := ctx.MustGet("claims").(*domain.Claims).Email
+	err := c.userUsecase.Logout(email)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
+	
+}
+
 
 func (c *UserController) GetUsers(ctx *gin.Context) {
 	username := ctx.Query("username")
@@ -207,7 +215,11 @@ func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
 		fmt.Println("this is the refresh claims", refreshClaims)
 
 		if refreshClaims.ExpiresAt < time.Now().Unix() {
-			c.userCollection.UpdateOne(context.TODO(), bson.M{"_id": TheUser.ID}, domain.User{RefreshToken: ""})
+
+			_,err :=c.userUsecase.Update(TheUser.ID,domain.User{RefreshToken: ""})
+			if err != nil{
+				ctx.JSON(http.StatusInternalServerError,gin.H{"error":err})
+			}
 			ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "refresh token is expired"})
 			return
 		}
@@ -231,8 +243,12 @@ func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
 			}
 			ctx.IndentedJSON(200, gin.H{"refreshed access token": newToken})
 			TheUser.RefreshToken = refresh
-			c.userCollection.UpdateOne(context.TODO(), bson.M{"_id": TheUser.ID}, domain.User{RefreshToken: refresh})
-			return
+			_,err = c.userUsecase.Update(TheUser.ID,domain.User{RefreshToken: refresh})
+			if err != nil{
+				ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": err})
+				return
+			}
+			
 		} else {
 			ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Token is expired"})
 		}

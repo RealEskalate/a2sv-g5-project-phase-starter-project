@@ -6,6 +6,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/sv-tools/mongoifc"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -13,10 +14,10 @@ import (
 )
 
 type MongoBlogRepository struct {
-	collection *mongo.Collection
+	collection mongoifc.Collection
 }
 
-func NewBlogRepository(collection *mongo.Collection) domain.BlogRepository {
+func NewBlogRepository(collection mongoifc.Collection) domain.BlogRepository {
 	return &MongoBlogRepository{
 		collection: collection,
 	}

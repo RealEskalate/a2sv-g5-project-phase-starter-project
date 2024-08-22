@@ -21,6 +21,7 @@ func NewMainRouter(uc controllers.UserController, bc controllers.BlogController,
 	}
 }
 func (gr *MainRouter) GinBlogRouter() {
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.GET("blogs/", gr.blogController.HandleGetAllBlogs)
 	router.GET("blogs/popular", gr.blogController.HandleGetPopularBlog)
@@ -34,6 +35,7 @@ func (gr *MainRouter) GinBlogRouter() {
 		userrouter.POST("/login", gr.handler.LoginUser)
 		userrouter.GET("/forgetPassword", gr.handler.ForgetPassword)
 		userrouter.POST("/resetPassword", gr.handler.ResetPassword)
+		userrouter.GET("/logout", gr.handler.LogoutUser)
 		userrouter.POST("/:uid/refresh", gr.handler.RefreshAccessToken)
 	}
 	blogRouter := router.Group("/blogs")

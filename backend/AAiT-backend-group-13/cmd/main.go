@@ -6,6 +6,9 @@ import (
 	"strconv"
 	"time"
 
+	
+
+	"github.com/go-redis/redis/v8"
 	"github.com/group13/blog/config"
 	"github.com/group13/blog/delivery/common"
 	blogcontroller "github.com/group13/blog/delivery/controller/blog"
@@ -21,11 +24,10 @@ import (
 	userrepo "github.com/group13/blog/infrastructure/repo/user"
 	blogcmd "github.com/group13/blog/usecase/blog/command"
 	blogqry "github.com/group13/blog/usecase/blog/query"
+	cache "github.com/group13/blog/infrastructure/cache"
 	passwordreset "github.com/group13/blog/usecase/password_reset"
 	usercmd "github.com/group13/blog/usecase/user/command"
-	cache "github.com/group13/blog/usecase/common/i_cache"
 	"go.mongodb.org/mongo-driver/mongo"
-	"github.com/go-redis/redis/v8"
 )
 
 // main is the entry point for the application.
@@ -90,10 +92,8 @@ func initRepos(cfg config.Config, mongoClient *mongo.Client) (*userrepo.Repo, *b
 	return userRepo, blogRepo, commentRepo, reactionRepo
 }
 
-
-
-func initCache(cfg config.Config) *cache.ICache {
-	host, err := strconv.ParseInt(cfg.Cache_host, 10, 32)
+func initCache(cfg config.Config) *cache.RedisCache  {
+	host, err := strconv.ParseInt(cfg.Cache_port, 10, 32)
 	if err != nil {
 		log.Fatalf("Error parsing cache db: %v", err)
 	}
@@ -101,15 +101,13 @@ func initCache(cfg config.Config) *cache.ICache {
 	// Initialize the cache
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", cfg.Cache_host, cfg.Cache_port),
-		Password: "", 
+		Password: "",
 		DB:       int(host),
 	})
 
 	redisClient := cache.NewRedisCache(client, cfg.Blog_cache_expiry)
-	return &redisClient
+	return redisClient
 }
-
-
 
 func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtService *jwt.Service, mailService *email.MailTrapService) *usercontroller.UserController {
 	promoteHandler := usercmd.NewPromoteHandler(userRepo)
@@ -141,7 +139,7 @@ func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtS
 	})
 }
 
-func initBlogController(blogRepo *blogrepo.Repo, cacheService *cache.ICache) *blogcontroller.Controller {
+func initBlogController(blogRepo *blogrepo.Repo, cacheService *cache.RedisCache) *blogcontroller.Controller {
 	addHandler := blogcmd.NewAddHandler(blogRepo)
 	updateHandler := blogcmd.NewUpdateHandler(blogRepo)
 	deleteHandler := blogcmd.NewDeleteHandler(blogRepo)
@@ -154,6 +152,3 @@ func initBlogController(blogRepo *blogrepo.Repo, cacheService *cache.ICache) *bl
 		GetMultipleHandler: getMultipleHandler,
 	})
 }
-
-
-

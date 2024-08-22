@@ -35,7 +35,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 
 	err := uc.UserUsecase.CreateUser(c, &user, &claims)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Internal server error"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "User created successfully"})

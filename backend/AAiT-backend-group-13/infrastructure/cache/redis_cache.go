@@ -6,24 +6,25 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	icache "github.com/group13/blog/usecase/common/i_cache"
 )
 
-type redisCache struct {
+type RedisCache struct {
 	client    *redis.Client
 	expiryDay time.Duration
 }
 
-var _ ICache = &redisCache{}
+var _ icache.ICache = &RedisCache{}
 
-func NewRedisCache(client *redis.Client, expiryDay time.Duration) ICache {
-	return &redisCache{
+func NewRedisCache(client *redis.Client, expiryDay time.Duration) *RedisCache {
+	return &RedisCache{
 		client: client,
 		expiryDay: time.Second * expiryDay,
 	}
 }
 
 
-func (r *redisCache) Get(key string) (interface{}, error) {
+func (r *RedisCache) Get(key string) (interface{}, error) {
 	val, err := r.client.Get(context.Background(), key).Result()
 	if err != nil {
 		if err == redis.Nil {
@@ -42,7 +43,7 @@ func (r *redisCache) Get(key string) (interface{}, error) {
 }
 
 
-func (r *redisCache) Set(key string, value interface{}) error {
+func (r *RedisCache) Set(key string, value interface{}) error {
 	jsonData, err := json.Marshal(value)
 	if err != nil {
 		return err 

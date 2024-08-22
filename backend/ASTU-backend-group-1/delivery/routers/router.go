@@ -21,6 +21,7 @@ func NewMainRouter(uc controllers.UserController, bc controllers.BlogController,
 	}
 }
 func (gr *MainRouter) GinBlogRouter() {
+	// gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.GET("blogs/", gr.blogController.HandleGetAllBlogs)
 	router.GET("blogs/popular", gr.blogController.HandleGetPopularBlog)
@@ -34,15 +35,16 @@ func (gr *MainRouter) GinBlogRouter() {
 		userrouter.POST("/login", gr.handler.LoginUser)
 		userrouter.GET("/forgetPassword", gr.handler.ForgetPassword)
 		userrouter.POST("/resetPassword", gr.handler.ResetPassword)
+		userrouter.GET("/logout", gr.handler.LogoutUser)
 		userrouter.POST("/:uid/refresh", gr.handler.RefreshAccessToken)
 	}
 	blogRouter := router.Group("/blogs")
 	blogRouter.Use(gr.authController.AuthenticationMiddleware())
 	{
 		blogRouter.POST("/", gr.authController.USERMiddleware(), gr.blogController.HandleCreateBlog)
-		blogRouter.PATCH("/:blogId", gr.authController.ADMINMiddleware(), gr.blogController.HandleBlogUpdate)
-		blogRouter.DELETE("/:blogId", gr.authController.ADMINMiddleware(), gr.blogController.HandleBlogDelete)
-		blogRouter.POST("/:blogId/interact/:type", gr.authController.USERMiddleware(), gr.blogController.HandleBlogLikeOrDislike)
+		blogRouter.PATCH("/:blogId", gr.authController.OWNERMiddleware(), gr.blogController.HandleBlogUpdate)
+		blogRouter.DELETE("/:blogId", gr.authController.OWNERMiddleware(), gr.blogController.HandleBlogDelete)
+		blogRouter.POST("/:blogId/:type", gr.authController.USERMiddleware(), gr.blogController.HandleBlogLikeOrDislike)
 
 		// TODO: check if there is a blog with such id
 		commentRouter := blogRouter.Group("/:blogId/comments")
@@ -51,7 +53,7 @@ func (gr *MainRouter) GinBlogRouter() {
 			commentRouter.GET("/", gr.blogController.HandleGetAllComments)
 			commentRouter.POST("/", gr.blogController.HandleCommentOnBlog)
 			commentRouter.GET("/:commentId", gr.blogController.HandleGetCommentById)
-			commentRouter.POST("/:commentId/interact/:type", gr.blogController.HandleCommentLikeOrDislike)
+			commentRouter.POST("/:commentId/:type", gr.blogController.HandleCommentLikeOrDislike)
 
 			repliesRouter := commentRouter.Group("/:commentId/replies")
 			repliesRouter.Use(gr.authController.USERMiddleware())
@@ -60,7 +62,7 @@ func (gr *MainRouter) GinBlogRouter() {
 				repliesRouter.POST("/", gr.blogController.HandleReplyOnComment)
 				repliesRouter.GET("/:replyId", gr.blogController.HandleGetReplyById)
 				// todo: test the below functions
-				repliesRouter.POST("/:replyId/interact/:type", gr.blogController.HandleReplyLikeOrDislike)
+				repliesRouter.POST("/:replyId/:type", gr.blogController.HandleReplyLikeOrDislike)
 			}
 		}
 

@@ -4,9 +4,9 @@ import (
 	"astu-backend-g1/domain"
 	"context"
 	"errors"
-	"log"
 	"time"
 
+	"github.com/sv-tools/mongoifc"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,10 +14,10 @@ import (
 )
 
 type MongoBlogRepository struct {
-	collection *mongo.Collection
+	collection mongoifc.Collection
 }
 
-func NewBlogRepository(collection *mongo.Collection) domain.BlogRepository {
+func NewBlogRepository(collection mongoifc.Collection) domain.BlogRepository {
 	return &MongoBlogRepository{
 		collection: collection,
 	}
@@ -61,7 +61,6 @@ func (r *MongoBlogRepository) CreateBlog(b domain.Blog) (domain.Blog, error) {
 
 	_, err := r.collection.InsertOne(context.Background(), create)
 	if err != nil {
-		log.Printf("Failed to create blog: %v", err)
 		return domain.Blog{}, err
 	}
 	return b, nil
@@ -70,19 +69,19 @@ func (r *MongoBlogRepository) CreateBlog(b domain.Blog) (domain.Blog, error) {
 func (r *MongoBlogRepository) FindPopularBlog() ([]domain.Blog, error) {
 	pipeline := mongo.Pipeline{
 		{
-			{"$addFields", bson.D{
-				{"likesCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$likes", bson.A{}}}}}}},
-				{"dislikesCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$dislikes", bson.A{}}}}}}},
-				{"viewsCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$views", bson.A{}}}}}}},
-				{"commentsCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$comments", bson.A{}}}}}}},
+			{Key: "$addFields", Value: bson.D{
+				{Key: "likesCount", Value: bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$likes", bson.A{}}}}}}},
+				{Key: "dislikesCount", Value: bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$dislikes", bson.A{}}}}}}},
+				{Key: "viewsCount", Value: bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$views", bson.A{}}}}}}},
+				{Key: "commentsCount", Value: bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$comments", bson.A{}}}}}}},
 			}},
 		},
 		{
-			{"$sort", bson.D{
-				{"likesCount", -1},
-				{"viewsCount", -1},
-				{"commentsCount", -1},
-				{"dislikesCount", 1},
+			{Key: "$sort", Value: bson.D{
+				{Key: "likesCount", Value: -1},
+				{Key: "viewsCount", Value: -1},
+				{Key: "commentsCount", Value: -1},
+				{Key: "dislikesCount", Value: 1},
 			}},
 		},
 	}
@@ -110,7 +109,6 @@ func (r *MongoBlogRepository) FindPopularBlog() ([]domain.Blog, error) {
 }
 func BuildBlogQueryAndOptions(filterOption domain.BlogFilterOption) bson.M {
 	filter := bson.M{}
-	// sort := bson.D{}
 	findOptions := options.Find()
 
 	if filterOption.Filter.BlogId != "" {
@@ -154,7 +152,6 @@ func (r *MongoBlogRepository) GetBlog(opts domain.BlogFilterOption) ([]domain.Bl
 
 	cursor, err := r.collection.Find(context.Background(), filter)
 	if err != nil {
-		log.Printf("Failed to fetch blogs: %v", err)
 		return nil, err
 	}
 	defer cursor.Close(context.Background())
@@ -163,14 +160,12 @@ func (r *MongoBlogRepository) GetBlog(opts domain.BlogFilterOption) ([]domain.Bl
 	for cursor.Next(context.Background()) {
 		var blog domain.Blog
 		if err := cursor.Decode(&blog); err != nil {
-			log.Printf("Failed to decode blog: %v", err)
 			return nil, err
 		}
 		blogs = append(blogs, blog)
 	}
 
 	if err := cursor.Err(); err != nil {
-		log.Printf("Cursor error: %v", err)
 		return nil, err
 	}
 
@@ -226,7 +221,7 @@ func (r *MongoBlogRepository) UpdateBlog(strBlogId string, updateData domain.Blo
 
 	result, err := r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil || result.MatchedCount == 0 {
-		log.Printf("Failed to update blog with ID %s: %v", blogId, err)
+		return domain.Blog{}, errors.New("Failed to delete blog with ID" + strBlogId + ":" + err.Error())
 	}
 
 	return updateData, nil
@@ -242,7 +237,6 @@ func (r *MongoBlogRepository) DeleteBlog(blogId, authorId string) error {
 	var blog domain.Blog
 	err = r.collection.FindOne(context.Background(), filter).Decode(&blog)
 	if err != nil {
-		log.Printf("Failed to find blog with ID %s: %v", blogId, err)
 		return err
 	}
 	if blog.AuthorId != authorId {
@@ -250,7 +244,7 @@ func (r *MongoBlogRepository) DeleteBlog(blogId, authorId string) error {
 	}
 	result, err := r.collection.DeleteOne(context.Background(), filter)
 	if err != nil || result.DeletedCount == 0 {
-		log.Printf("Failed to delete blog with ID %s: %v", blogId, err)
+		return errors.New("Failed to delete blog with ID" + blogId + ":" + err.Error())
 	}
 	return nil
 }
@@ -273,7 +267,6 @@ func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int)
 		dislikeFinder := bson.M{"_id": id, "dislikes": uid}
 		err := r.collection.FindOne(context.TODO(), dislikeFinder).Decode(&result)
 		if err == nil {
-			// INFO: the user have disliked this blog previously
 			_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
 				"$pull": bson.M{
 					"dislikes": uid,
@@ -289,7 +282,6 @@ func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int)
 		likeFinder := bson.M{"_id": id, "likes": uid}
 		err := r.collection.FindOne(context.TODO(), likeFinder).Decode(&result)
 		if err == nil {
-			// INFO: the user have disliked this blog previously
 			_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
 				"$pull": bson.M{
 					"likes": uid,
@@ -306,7 +298,6 @@ func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int)
 
 	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		log.Printf("Failed to like blog: %v", err)
 		return err
 	}
 
@@ -380,7 +371,6 @@ func (r *MongoBlogRepository) LikeOrDislikeComment(blogId, commentId, userId str
 		likeFinder := bson.M{"_id": id, "comments.comment_id": cid, "comments.dislikes": uid}
 		err := r.collection.FindOne(context.TODO(), likeFinder).Decode(&result)
 		if err == nil {
-			// INFO: the user have disliked this blog previously
 			_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
 				"$pull": bson.M{
 					"comments.$.dislikes": uid,
@@ -396,7 +386,6 @@ func (r *MongoBlogRepository) LikeOrDislikeComment(blogId, commentId, userId str
 		likeFinder := bson.M{"_id": id, "comments.comment_id": cid, "comments.likes": uid}
 		err := r.collection.FindOne(context.TODO(), likeFinder).Decode(&result)
 		if err == nil {
-			// INFO: the user have liked this Comment previously
 			_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
 				"$pull": bson.M{
 					"comments.$.likes": uid,
@@ -412,7 +401,6 @@ func (r *MongoBlogRepository) LikeOrDislikeComment(blogId, commentId, userId str
 	}
 	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		log.Printf("Failed to like blog: %v", err)
 		return err
 	}
 
@@ -453,7 +441,6 @@ func (r *MongoBlogRepository) AddComment(blogId string, comment domain.Comment) 
 
 	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		log.Printf("Failed to add comment: %v", err)
 		return err
 	}
 	return nil
@@ -516,19 +503,34 @@ func (r *MongoBlogRepository) LikeOrDislikeReply(blogId, commentId, replyId, use
 	if err != nil {
 		return err
 	}
-	filter := bson.M{"_id": id, "comments.comment_id": cid, "replies.reply_id": rid}
-	update := bson.M{}
-	if like == 1 {
-		update["$addToSet"] = bson.M{"likes": uid, "view": uid}
-	} else if like == -1 {
-		update["$addToSet"] = bson.M{"dislikes": uid, "view": uid}
-	} else {
-		update["$addToSet"] = bson.M{"view": uid}
+
+	filter := bson.M{
+		"_id":                       id,
+		"comments.comment_id":       cid,
+		"comments.replies.reply_id": rid,
 	}
 
-	_, err = r.collection.UpdateOne(context.Background(), filter, update)
+	update := bson.M{
+		"$addToSet": bson.M{"view": uid},
+		"$pull":     bson.M{},
+	}
+
+	if like == 1 {
+		update["$pull"] = bson.M{"comments.$[].replies.$[reply].dislikes": uid}
+		update["$addToSet"] = bson.M{"comments.$[].replies.$[reply].likes": uid}
+	} else if like == -1 {
+		update["$pull"] = bson.M{"comments.$[].replies.$[reply].likes": uid}
+		update["$addToSet"] = bson.M{"comments.$[].replies.$[reply].dislikes": uid}
+	} else {
+		update["$addToSet"] = bson.M{"comments.$[].replies.$[reply].views": uid}
+	}
+
+	updateOptions := options.Update().SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{bson.M{"reply.reply_id": rid}},
+	})
+
+	_, err = r.collection.UpdateOne(context.Background(), filter, update, updateOptions)
 	if err != nil {
-		log.Printf("Failed to like blog: %v", err)
 		return err
 	}
 
@@ -624,7 +626,6 @@ func (r *MongoBlogRepository) ReplyToComment(blogId, commentId string, reply dom
 
 	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		log.Printf("Failed to reply to comment: %v", err)
 		return err
 	}
 

@@ -19,6 +19,6 @@ func NewBlogRatingRouter(env *config.Env , timeout time.Duration, db *mongo.Clie
 	bru := usecase.NewBlogRatingUseCase(bra, br, timeout)
 	brc := controller.NewBlogRatingController(bru, timeout)
 
-	group.POST("/rating/:blog_id", brc.InserttAndUpdateRating)
-	group.DELETE("/rating/:rating_id", brc.DeleteRating)
+	group.POST("/rating/:id", brc.InsertAndUpdateRating)
+	group.DELETE("/rating/:id", brc.DeleteRating)
 }

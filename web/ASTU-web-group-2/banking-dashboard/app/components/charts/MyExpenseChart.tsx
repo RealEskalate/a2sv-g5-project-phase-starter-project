@@ -171,7 +171,7 @@ function MyExpenseChart() {
 
   return (
 
-    <div className="flex  flex-col flex-initial flex-wrap gap-[10px] bg-white  font-medium rounded-[25px] h-[225px] pt-[45px] w-full">
+    <div className="flex  flex-col flex-initial flex-wrap gap-[10px] bg-white  font-medium rounded-[25px] h-[225px] pt-[45px] w-full justify-center items-center">
       <canvas ref={chartRef}  className="w-full h-full"/>
     </div>
   );

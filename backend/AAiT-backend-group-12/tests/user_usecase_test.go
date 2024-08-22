@@ -131,6 +131,36 @@ func (suite *UserUsecaseTestSuite) TestValidatePassword_Negative_NoSpecialCharac
 	suite.Contains(err.Error(), "special")
 }
 
+func (suite *UserUsecaseTestSuite) TestValidateUsername_Positive() {
+	testUsername := "12timid_"
+	err := suite.Usecase.ValidateUsername(testUsername)
+	suite.Nil(err)
+}
+
+func (suite *UserUsecaseTestSuite) TestValidateUsername_Negative_TooShort() {
+	testUsername := "ti"
+	err := suite.Usecase.ValidateUsername(testUsername)
+	suite.NotNil(err)
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.Contains(err.Error(), "short")
+}
+
+func (suite *UserUsecaseTestSuite) TestValidateUsername_Negative_TooLong() {
+	testUsername := strings.Repeat("a", 100)
+	err := suite.Usecase.ValidateUsername(testUsername)
+	suite.NotNil(err)
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.Contains(err.Error(), "long")
+}
+
+func (suite *UserUsecaseTestSuite) TestValidateUsername_Negative_NoSpecialCharacters() {
+	testUsername := "timid-"
+	err := suite.Usecase.ValidateUsername(testUsername)
+	suite.NotNil(err)
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.Contains(err.Error(), "must contain only")
+}
+
 func TestUserUsecase(t *testing.T) {
 	suite.Run(t, new(UserUsecaseTestSuite))
 }

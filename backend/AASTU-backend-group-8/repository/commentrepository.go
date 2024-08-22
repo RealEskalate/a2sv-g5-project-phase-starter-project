@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"meleket/domain"
+	"sync"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,6 +12,7 @@ import (
 
 type CommentRepository struct {
 	collection domain.Collection
+	mutex 	sync.RWMutex
 }
 type CommentRepositoryInterface interface {
 	AddComment(comment *domain.Comment) error
@@ -20,12 +22,18 @@ type CommentRepositoryInterface interface {
 }
 
 func NewCommentRepository(col domain.Collection) *CommentRepository {
-	return &CommentRepository{collection: col}
+	return &CommentRepository{
+		collection: col,
+		mutex: sync.RWMutex{},
+	}
 }
 
 func (r *CommentRepository) AddComment(comment *domain.Comment) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
 
 	_, err := r.collection.InsertOne(ctx, comment)
 	return err
@@ -55,6 +63,9 @@ func (r *CommentRepository) UpdateComment(commentID primitive.ObjectID, content 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	filter := bson.M{"_id": commentID}
 	update := bson.M{"$set": bson.M{"content": content}}
 	_, err := r.collection.UpdateOne(ctx, filter, update)
@@ -64,6 +75,9 @@ func (r *CommentRepository) UpdateComment(commentID primitive.ObjectID, content 
 func (r *CommentRepository) DeleteComment(commentID primitive.ObjectID) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
 
 	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": commentID})
 	return err

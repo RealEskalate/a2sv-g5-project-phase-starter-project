@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"meleket/domain"
+	"sync"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,6 +12,7 @@ import (
 
 type LikeRepository struct {
 	collection domain.Collection
+	mutex 	sync.RWMutex
 }
 
 type LikeRepositoryInterface interface {
@@ -20,12 +22,18 @@ type LikeRepositoryInterface interface {
 }
 
 func NewLikeRepository(col domain.Collection) *LikeRepository {
-	return &LikeRepository{collection: col}
+	return &LikeRepository{
+		collection: col,
+		mutex: sync.RWMutex{},
+	}
 }
 
 func (r *LikeRepository) AddLike(like *domain.Like) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
 
 	_, err := r.collection.InsertOne(ctx, like)
 	return err
@@ -34,6 +42,9 @@ func (r *LikeRepository) AddLike(like *domain.Like) error {
 func (r *LikeRepository) RemoveLike(likeID primitive.ObjectID) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
 
 	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": likeID})
 	return err

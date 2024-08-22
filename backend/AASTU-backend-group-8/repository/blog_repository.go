@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"meleket/domain"
+	"sync"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,6 +14,7 @@ import (
 
 type BlogRepository struct {
 	collection domain.Collection
+	mutex 	sync.RWMutex
 }
 
 // // Search implements domain.BlogRepositoryInterface.
@@ -21,12 +23,19 @@ type BlogRepository struct {
 // }
 
 func NewBlogRepository(col domain.Collection) *BlogRepository {
-	return &BlogRepository{collection: col}
+	return &BlogRepository{
+		collection: col,
+		mutex: sync.RWMutex{},
+}
 }
 
 func (r *BlogRepository) Save(blog *domain.BlogPost) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	res, err := r.collection.InsertOne(ctx, blog)
 	if err != nil {
 		return "", err
@@ -74,6 +83,10 @@ func (r *BlogRepository) GetBlogByID(id primitive.ObjectID) (*domain.BlogPost, e
 func (r *BlogRepository) Update(id primitive.ObjectID, blog *domain.BlogPost) (*domain.BlogPost, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	result := r.collection.FindOneAndUpdate(
 		ctx,
 		bson.M{"_id": id}, // The filter to find the document by its ID
@@ -82,6 +95,7 @@ func (r *BlogRepository) Update(id primitive.ObjectID, blog *domain.BlogPost) (*
 		},
 	)
 	fmt.Println(result)
+
 	if result.Err() != nil {
 		return nil, result.Err()
 	}
@@ -102,6 +116,10 @@ func (r *BlogRepository) Update(id primitive.ObjectID, blog *domain.BlogPost) (*
 func (r *BlogRepository) Delete(id primitive.ObjectID) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": id})
 	return err
 }

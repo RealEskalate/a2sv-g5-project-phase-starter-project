@@ -51,7 +51,7 @@ func (tr *tokenRepository) FindRefreshTokenByUserId(user_id string) (*entities.R
 		return nil, result.Err()
 	}
 	var token entities.RefreshToken
-	err := result.Decode(&token)
+	err = result.Decode(&token)
 	if err != nil {
 		return nil, err
 	}

@@ -39,4 +39,5 @@ func NewAuthRouter(env *bootstrap.Env, db *mongo.Database, group *gin.RouterGrou
 	group.POST("/verify-email", auth_controller.VerifyEmail)
 	group.POST("/forgot-password", auth_controller.RequestPasswordReset)
 	group.POST("/reset-password", auth_controller.ResetPassword)
+	group.POST("/resend-otp", auth_controller.ResendOtp)
 }

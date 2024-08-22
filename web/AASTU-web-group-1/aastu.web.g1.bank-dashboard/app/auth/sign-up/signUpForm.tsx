@@ -79,7 +79,7 @@ export const SignUpForm = () => {
 
       console.log(payload);
       const res: { success: boolean; message: string } = await ky
-        .post("https://bank-dashboard-1tst.onrender.com/auth/register", {
+        .post("https://bank-dashboard-o9tl.onrender.com/auth/register", {
           json: payload,
         })
         .json();

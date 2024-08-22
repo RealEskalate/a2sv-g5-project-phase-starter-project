@@ -34,7 +34,7 @@ const Header = ({ title }: { title: string }) => {
 
       try {
         const res: any = await ky(
-          "https://bank-dashboard-1tst.onrender.com/user/current",
+          "https://bank-dashboard-o9tl.onrender.com/user/current",
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -81,7 +81,7 @@ const Header = ({ title }: { title: string }) => {
               alt="Search"
             />
             <input
-              className={`outline-none bg-[#F5F7FA]`}
+              className="bg-[#F5F7FA] outline-none border-none"
               type="text"
               placeholder="Search for something"
             />

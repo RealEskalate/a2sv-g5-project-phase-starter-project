@@ -44,15 +44,12 @@ const EditProfile = () => {
       }
 
       try {
-        const res: any = await ky(
-          "https://bank-dashboard-1tst.onrender.com/user/current",
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-            timeout: 10000,
-          }
-        ).json();
+        const res: any = await ky(`${process.env.BASE_URL}/user/current`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          timeout: 10000,
+        }).json();
         setProfilePic(res.data.profilePicture);
 
         setFormData((prevFormData) => ({

@@ -4,6 +4,7 @@ import (
 	domain "blogs/Domain"
 	infrastructure "blogs/Infrastructure"
 	"context"
+	"strconv"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -223,7 +224,8 @@ func (u *SignupUseCase) HandleUnverifiedUser(c context.Context, user domain.User
 
 	if time.Now().Before(user.ExpiresAt) {
 		difftime := user.ExpiresAt.Sub(time.Now())
-		return &domain.ErrorResponse{Message: "Otp already Sent Please wait for " + difftime.String() + " to resend OTP", Status: 400}
+
+		return &domain.ErrorResponse{Message: "Otp already Sent Please wait for " + strconv.FormatFloat(difftime.Minutes(), 'f', -1, 64) + " to resend OTP", Status: 400}
 
 	}
 

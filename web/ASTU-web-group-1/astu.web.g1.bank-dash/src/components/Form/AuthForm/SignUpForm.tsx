@@ -100,14 +100,16 @@ const SignUpForm = () => {
 
       console.log('Returned and combined values', finalData);
 
-      const res = await fetch('https://astu-bank-dashboard.onrender.com', {
-
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(finalData),
-      });
+      const res = await fetch(
+        "https://astu-bank-dashboard.onrender.com/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(finalData),
+        }
+      );
 
       // res.then(res) => {
       if (res.ok) {

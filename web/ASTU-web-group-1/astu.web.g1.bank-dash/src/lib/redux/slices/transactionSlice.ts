@@ -17,7 +17,7 @@ export const transactionApi = createApi({
       query: (page) => `/transactions/incomes?page=${page.page}&size=${page.size}`,
     }),
     getTransactionExpense: builder.query<TransactionResponseType, pageSize>({
-      query: (page) => `/transactions/expense?page=${page.page}&size=${page.size}`,
+      query: (page) => `/transactions/expenses?page=${page.page}&size=${page.size}`,
     }),
     postDeposit: builder.mutation<
       void,

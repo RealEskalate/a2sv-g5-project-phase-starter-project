@@ -52,7 +52,7 @@ func main() {
 		jwt.Config{
 			SecretKey: config.Envs.JWTSecret,
 			Issuer:    config.Envs.ServerHost,
-			ExpTime:   time.Duration(config.Envs.JWTExpirationInSeconds) * time.Second,
+			ExpTime:   config.Envs.JWTExpirationInSeconds,
 		})
 	hashService := &hash.Service{}
 	emailService := &email.MailTrapService{}

@@ -88,7 +88,7 @@ func (sp *setup_password) SetNewUserPassword(ctx context.Context, shortURlCode s
 		return models.BadRequest("Invalid token")
 	}
 
-	if err := sp.passwordService.ValidatePasswordStrength(password, u.Email, u.Name, u.Username); err != nil {
+	if err := sp.passwordService.ValidatePasswordStrength(password); err != nil {
 		return err
 	}
 
@@ -140,7 +140,7 @@ func (sp *setup_password) SetUpdateUserPassword(ctx context.Context, shortURlCod
 	}
 
 	// check if password is too short
-	if err := sp.passwordService.ValidatePasswordStrength(password, u.Email, u.Name, u.Username); err != nil {
+	if err := sp.passwordService.ValidatePasswordStrength(password); err != nil {
 		return err
 	}
 

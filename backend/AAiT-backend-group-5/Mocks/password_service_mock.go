@@ -65,17 +65,17 @@ func (mr *MockPasswordServiceMockRecorder) ValidatePassword(password, hashedPass
 }
 
 // ValidatePasswordStrength mocks base method.
-func (m *MockPasswordService) ValidatePasswordStrength(password, email, name, username string) *models.ErrorResponse {
+func (m *MockPasswordService) ValidatePasswordStrength(password string) *models.ErrorResponse {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ValidatePasswordStrength", password, email, name, username)
+	ret := m.ctrl.Call(m, "ValidatePasswordStrength", password)
 	ret0, _ := ret[0].(*models.ErrorResponse)
 	return ret0
 }
 
 // ValidatePasswordStrength indicates an expected call of ValidatePasswordStrength.
-func (mr *MockPasswordServiceMockRecorder) ValidatePasswordStrength(password, email, name, username interface{}) *gomock.Call {
+func (mr *MockPasswordServiceMockRecorder) ValidatePasswordStrength(password interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidatePasswordStrength", reflect.TypeOf((*MockPasswordService)(nil).ValidatePasswordStrength), password, email, name, username)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidatePasswordStrength", reflect.TypeOf((*MockPasswordService)(nil).ValidatePasswordStrength), password)
 }
 
 // MockPasswordUsecase is a mock of PasswordUsecase interface.

@@ -14,7 +14,7 @@ func NewUserProfileRouter(database mongo.Database, group *gin.RouterGroup) {
 	user_repo := repository.NewUserRepository(&database)
 	password_service := infrastructure.NewPasswordService()
 
-	// instantiate PromoteDemote controller
+	// instantiate userProfile_controller
 	UserProfileController := &controllers.UserProfileController{
 		UserProfileUC: usecases.NewUserProfileUpdateUsecase(user_repo, password_service),
 	}

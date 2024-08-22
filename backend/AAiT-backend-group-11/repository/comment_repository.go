@@ -84,7 +84,9 @@ func (cr *commentRepository) UpdateComment( comment *entities.Comment) (*entitie
 
 	filter := bson.M{"_id": comment.ID}
 	update := bson.M{
-		"$set": comment,
+		"$set": bson.M{
+			"content": comment.Content,
+		},
 	}
 
 	_, err := cr.collection.UpdateOne(cr.ctx, filter, update)
@@ -93,4 +95,17 @@ func (cr *commentRepository) UpdateComment( comment *entities.Comment) (*entitie
 	}
 
 	return comment, nil
+}
+
+
+func (cr * commentRepository) GetCommentById(commentId string) (*entities.Comment, error){
+	objID,err := primitive.ObjectIDFromHex(commentId)
+	if err != nil {
+		return nil, err}
+	var comment entities.Comment
+	err = cr.collection.FindOne(cr.ctx, bson.M{"_id": objID}).Decode(&comment)
+	if err != nil {
+		return nil, err
+	}
+	return &comment, nil
 }

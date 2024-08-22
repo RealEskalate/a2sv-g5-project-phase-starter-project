@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewAuthRouter(env *bootstrap.Env,db *mongo.Database, group *gin.RouterGroup) {
+func NewAuthRouter(env *bootstrap.Env, db *mongo.Database, group *gin.RouterGroup) {
 	token_repo := repository.NewTokenRepository(db)
 	acc_tok_secret := env.AccessTokenSecret
 	ref_tok_secret := env.RefreshTokenSecret
@@ -31,10 +31,11 @@ func NewAuthRouter(env *bootstrap.Env,db *mongo.Database, group *gin.RouterGroup
 	auth_service := service.NewAuthService(user_service, pass_reset_service, pass_service, token_service, otpService)
 	auth_controller := controller.NewAuthController(auth_service, pass_reset_service)
 
-	group.POST("/login", auth_controller.Login)
-	group.POST("/logout", auth_controller.Logout)
-	group.POST("/refresh", auth_controller.RefreshAccessToken)
-	group.POST("/register", auth_controller.RegisterUser)
+
+	group.POST("login", auth_controller.Login)
+	group.POST("logout", auth_controller.Logout)
+	group.POST("refresh", auth_controller.RefreshAccessToken)
+	group.POST("register", auth_controller.RegisterUser)
 	group.POST("/verify-email", auth_controller.VerifyEmail)
 	group.POST("/forgot-password", auth_controller.RequestPasswordReset)
 	group.POST("/reset-password", auth_controller.ResetPassword)

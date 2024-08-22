@@ -2,7 +2,6 @@ package service
 
 import (
 	"backend-starter-project/domain/interfaces"
-	"context"
 )
 
 type popularityTrackingService struct {
@@ -14,7 +13,7 @@ func NewPopularityTrackingService( blogRepository interfaces.BlogRepository, com
 	return &popularityTrackingService{blogRepository: blogRepository}
 }
 
-func (pts *popularityTrackingService) IncrementViewCount(c context.Context,blogPostId string) error {
+func (pts *popularityTrackingService) IncrementViewCount(blogPostId string) error {
 		//check if the user sees the post previously before incrementing
 		blog,err := pts.blogRepository.GetBlogPostById(blogPostId)
 		if err != nil {
@@ -28,7 +27,7 @@ func (pts *popularityTrackingService) IncrementViewCount(c context.Context,blogP
 		return nil
 }
 
-func (pts *popularityTrackingService) LikeBlogPost(c context.Context,blogPostId, userId string) error {
+func (pts *popularityTrackingService) LikeBlogPost(blogPostId, userId string) error {
 		err := pts.blogRepository.LikeBlogPost(blogPostId, userId)
 		if err != nil {
 			return err
@@ -36,7 +35,7 @@ func (pts *popularityTrackingService) LikeBlogPost(c context.Context,blogPostId,
 		return nil
 }
 
-func (pts *popularityTrackingService) DislikeBlogPost(c context.Context,blogPostId, userId string) error {
+func (pts *popularityTrackingService) DislikeBlogPost(blogPostId, userId string) error {
 		err := pts.blogRepository.DislikeBlogPost(blogPostId, userId)
 		if err != nil {
 			return err
@@ -45,7 +44,7 @@ func (pts *popularityTrackingService) DislikeBlogPost(c context.Context,blogPost
 		
 }
 
-func (pts *popularityTrackingService) GetPopularityMetrics(c context.Context,blogPostId string) (map[string]int, error) {
+func (pts *popularityTrackingService) GetPopularityMetrics(blogPostId string) (map[string]int, error) {
 		//get the popularity metrics of the blog post
 		blog,err := pts.blogRepository.GetBlogPostById(blogPostId)
 		if err != nil {

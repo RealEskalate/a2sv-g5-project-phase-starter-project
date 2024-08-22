@@ -4,6 +4,7 @@ import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
 	"errors"
+	"log"
 )
 
 type commentService struct {
@@ -23,6 +24,7 @@ func NewCommentService(cr interfaces.CommentRepository, br interfaces.BlogReposi
 func (cs *commentService) AddComment(comment *entities.Comment) (*entities.Comment, error) {
 	// Check if the user exists by authorId
 	userExists, err := cs.userRepository.FindUserById(comment.AuthorID.Hex())
+	log.Println(comment.AuthorID.Hex())
 	if userExists == nil || err != nil {
 		return nil, errors.New("user not found")
 	}
@@ -30,16 +32,34 @@ func (cs *commentService) AddComment(comment *entities.Comment) (*entities.Comme
 	// Check if the blog post exists by blogPostId
 	blogExists, err := cs.blogRepository.GetBlogPostById(comment.BlogPostID.Hex())
 
+
 	if blogExists == nil || err != nil{
 		return nil, errors.New("blog post not found")
 	}
 
-	return cs.commentRepository.AddComment(comment)
+	res,err :=  cs.commentRepository.AddComment(comment)
+	if err != nil{
+		return nil, err
+	}
+	cs.blogRepository.ChangeCommentCount(comment.BlogPostID.Hex(), 1)
+
+	return res,nil
 }
 
 
 func (cs *commentService) DeleteComment( commentId string) error {
-	return cs.commentRepository.DeleteComment( commentId)
+	comment,err := cs.commentRepository.GetCommentById(commentId) 
+	
+	err = cs.commentRepository.DeleteComment(commentId)
+	if err != nil{
+		return err
+	}
+	err = cs.blogRepository.ChangeCommentCount(comment.BlogPostID.Hex(), -1)
+	if err != nil{
+		return err
+	}
+	return nil
+
 }
 
 func (cs *commentService) GetCommentsByBlogPostId( blogPostId string) ([]entities.Comment, error) {

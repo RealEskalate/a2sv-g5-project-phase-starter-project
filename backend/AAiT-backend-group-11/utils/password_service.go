@@ -2,6 +2,7 @@ package utils
 
 import (
 	"backend-starter-project/domain/interfaces"
+	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -13,6 +14,7 @@ func NewPasswordService() interfaces.PasswordService {
 }
 
 func (service *passwordService) ComparePassword(hashedPassword, password string) error {
+	fmt.Println(hashedPassword, password)
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	return err
 }

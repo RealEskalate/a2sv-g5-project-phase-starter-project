@@ -37,6 +37,7 @@ func (tr *tokenRepository) CreateRefreshToken(token *entities.RefreshToken) (*en
 }
 
 func (tr *tokenRepository) FindRefreshTokenByUserId(user_id string) (*entities.RefreshToken, error) {
+
 	userID, err := primitive.ObjectIDFromHex(user_id)
 	if err != nil {
 		return nil,err
@@ -44,12 +45,13 @@ func (tr *tokenRepository) FindRefreshTokenByUserId(user_id string) (*entities.R
 
 	filter := bson.D{{"userId", userID}}
 
+
 	result := tr.Collection.FindOne(context.TODO(), filter)
 	if result.Err() != nil {
 		return nil, result.Err()
 	}
 	var token entities.RefreshToken
-	err = result.Decode(&token)
+	err := result.Decode(&token)
 	if err != nil {
 		return nil, err
 	}

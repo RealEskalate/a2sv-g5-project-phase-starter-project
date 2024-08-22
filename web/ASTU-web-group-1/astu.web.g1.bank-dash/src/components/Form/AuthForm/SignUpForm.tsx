@@ -101,7 +101,7 @@ const SignUpForm = () => {
       console.log("Returned and combined values", finalData);
 
       const res = await fetch(
-        "https://bank-dashboard-6acc.onrender.com/auth/register",
+        "https://astu-bank-dashboard.onrender.com/auth/register",
         {
           method: "POST",
           headers: {

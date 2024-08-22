@@ -178,10 +178,10 @@ func (b BlogController) FilterBlogsByTag(c *gin.Context) {
 	pageSize := c.Query("pageSize")
 
 	if pageNo == "" {
-		pageNo = "0"
+		pageNo = "1"
 	}
 	if pageSize == "" {
-		pageSize = "0"
+		pageSize = "1"
 	}
 
 	startDate := c.Query("startDate")
@@ -273,10 +273,10 @@ func (b BlogController) GetBlogs(c *gin.Context) {
 	popularity := c.Query("popularity")
 
 	if pageNo == "" {
-		pageNo = "0"
+		pageNo = "1"
 	}
 	if pageSize == "" {
-		pageSize = "0"
+		pageSize = "1"
 	}
 
 	blogs, pagination, err := b.BlogUsecase.GetBlogs(pageNo, pageSize, popularity)
@@ -329,10 +329,10 @@ func (b BlogController) GetMyBlogs(c *gin.Context) {
 	pageSize := c.Query("pageSize")
 	popularity := c.Query("popularity")
 	if pageNo == "" {
-		pageNo = "0"
+		pageNo = "1"
 	}
 	if pageSize == "" {
-		pageSize = "0"
+		pageSize = "1"
 	}
 
 	// user_id, user_id_existes := c.Get("id")
@@ -363,6 +363,14 @@ func (b BlogController) SearchBlogByTitleAndAuthor(c *gin.Context) {
 	author := c.Query("author")
 	pageNo := c.Query("pageNo")
 	pageSize := c.Query("pageSize")
+
+	if pageNo == "" {
+		pageNo = "1"
+	}
+	if pageSize == "" {
+		pageSize = "1"
+	}
+
 	popularity := c.Query("popularity")
 	blogs, pagination, err := b.BlogUsecase.SearchBlogByTitleAndAuthor(title, author, pageNo, pageSize, popularity)
 

@@ -1,6 +1,9 @@
 package usecases
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"aait.backend.g10/domain"
 	"aait.backend.g10/usecases/dto"
 	"aait.backend.g10/usecases/interfaces"
@@ -18,12 +21,14 @@ type CommentUsecaseInterface interface {
 type CommentUsecase struct {
 	CommentRepository interfaces.CommentRepositoryInterface
 	userRepo          interfaces.IUserRepository
+	CacheRepo       interfaces.CacheRepoInterface
 }
 
-func NewCommentUsecase(cr interfaces.CommentRepositoryInterface, ur interfaces.IUserRepository) *CommentUsecase {
+func NewCommentUsecase(cr interfaces.CommentRepositoryInterface, ur interfaces.IUserRepository, cacheRepo interfaces.CacheRepoInterface) *CommentUsecase {
 	return &CommentUsecase{
 		CommentRepository: cr,
 		userRepo:          ur,
+		CacheRepo:       cacheRepo,
 	}
 }
 
@@ -43,7 +48,14 @@ func (cu *CommentUsecase) GetCommentByID(commentID uuid.UUID) (*dto.CommentDto, 
 // AddComment implements interfaces.CommentUsecaseInterface.
 func (cu *CommentUsecase) AddComment(comment domain.Comment) *domain.CustomError {
 	comment.ID = uuid.New()
-	return cu.CommentRepository.AddComment(comment)
+	err := cu.CommentRepository.AddComment(comment)
+	if err != nil {
+		return err
+	}
+	cacheKey := fmt.Sprintf("Comments:%s", comment.BlogID)
+	_ = cu.CacheRepo.Delete(cacheKey)
+	
+	return nil
 }
 
 // DeleteComment implements interfaces.CommentUsecaseInterface.
@@ -55,11 +67,28 @@ func (cu *CommentUsecase) DeleteComment(commentID uuid.UUID, requesterID uuid.UU
 	if originalComment.CommenterID != requesterID && !isAdmin {
 		return domain.ErrUnAuthorized
 	}
-	return cu.CommentRepository.DeleteComment(commentID)
+	err = cu.CommentRepository.DeleteComment(commentID)
+	if err != nil {
+		return err
+	}
+	cacheKey := fmt.Sprintf("Comments:%s", originalComment.BlogID)
+	_ = cu.CacheRepo.Delete(cacheKey)
+
+	return nil
 }
 
 // GetComments implements interfaces.CommentUsecaseInterface.
 func (cu *CommentUsecase) GetComments(blogID uuid.UUID) ([]*dto.CommentDto, *domain.CustomError) {
+	cacheKey := fmt.Sprintf("Comments:%s", blogID)
+	cachedComments, err := cu.CacheRepo.Get(cacheKey)
+	if err == nil && cachedComments != "" {
+		var commentDtos []*dto.CommentDto
+		err := json.Unmarshal([]byte(cachedComments), &commentDtos)
+		if err == nil {
+			return commentDtos, nil
+		}
+	}
+	
 	comments, err := cu.CommentRepository.GetComments(blogID)
 	if err != nil {
 		return nil, err
@@ -74,6 +103,11 @@ func (cu *CommentUsecase) GetComments(blogID uuid.UUID) ([]*dto.CommentDto, *dom
 		changedComments[i] = dto.NewCommentDto(comment, commenter.FullName)
 	}
 
+	commentsJson, cerr := json.Marshal(changedComments)
+	if cerr == nil {
+		_ = cu.CacheRepo.Set(cacheKey, string(commentsJson), 0)
+	}
+
 	return changedComments, nil
 }
 
@@ -86,5 +120,14 @@ func (cu *CommentUsecase) UpdateComment(requester_id uuid.UUID, updatedComment d
 	if originalComment.CommenterID != requester_id {
 		return domain.ErrUnAuthorized
 	}
-	return cu.CommentRepository.UpdateComment(updatedComment)
+	err = cu.CommentRepository.UpdateComment(updatedComment)
+	if err != nil {
+		return err
+	}
+	cacheKey := fmt.Sprintf("Comments:%s", updatedComment.BlogID)
+	err = cu.CacheRepo.Delete(cacheKey)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -44,7 +44,7 @@ func (c *CacheRepo) Delete(key string) *domain.CustomError {
 	return nil
 }
 
-func (c *CacheRepo) Increment(key string) error {
+func (c *CacheRepo) Increment(key string) *domain.CustomError {
 	_, err := c.Client.Incr(c.Ctx, key).Result()
 	if err != nil {
 		return domain.ErrCacheIncrementFailed

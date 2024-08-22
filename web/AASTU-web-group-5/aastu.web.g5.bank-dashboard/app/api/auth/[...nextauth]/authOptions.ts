@@ -2,7 +2,7 @@ import NextAuth, { User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { JWT } from "next-auth/jwt"; // Import the JWT type
 import creditCardColor from "@/app/CreditCards/cardMockData";
-console.log('authOptions')
+console.log("authOptions");
 export const authOptions = {
 	providers: [
 		CredentialsProvider({
@@ -12,9 +12,9 @@ export const authOptions = {
 				password: { label: "Password", type: "password" },
 			},
 			async authorize(credentials) {
-				console.log(creditCardColor,'credentails')
+				console.log(creditCardColor, "credentails");
 				const res = await fetch(
-					"https://bank-dashboard-6acc.onrender.com/auth/login",
+					"https://bank-dashboard-1tst.onrender.com/auth/login",
 					{
 						method: "POST",
 						headers: {

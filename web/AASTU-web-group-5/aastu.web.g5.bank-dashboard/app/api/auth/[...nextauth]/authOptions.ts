@@ -47,7 +47,7 @@ const authOptions:AuthOptions = {
 				session.user.accessToken = token.accessToken;
 				session.user.refreshToken = token.refreshToken;
 			}
-			console.log("sesssssssssss: ", session);
+			// console.log("sesssssssssss: ", session);
 			return session;
 		},
 		async jwt({ token, user }: { token: JWT; user }) {

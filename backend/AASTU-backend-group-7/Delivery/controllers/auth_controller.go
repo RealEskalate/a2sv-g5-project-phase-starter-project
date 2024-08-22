@@ -12,20 +12,20 @@ import (
 	"github.com/go-playground/validator"
 )
 
-type authController struct {
+type AuthController struct {
 	AuthUseCase Domain.AuthUseCase
 	AuthU       Domain.AuthUseCase
 }
 
-func NewAuthController(usecase Domain.AuthUseCase) *authController {
+func NewAuthController(usecase Domain.AuthUseCase) *AuthController {
 
-	return &authController{
+	return &AuthController{
 		AuthUseCase: usecase,
 	}
 }
 
 // login
-func (ac *authController) Login(c *gin.Context) {
+func (ac *AuthController) Login(c *gin.Context) {
 	var newUser Domain.User
 	v := validator.New()
 	if err := c.ShouldBindJSON(&newUser); err != nil {
@@ -50,7 +50,7 @@ func (ac *authController) Login(c *gin.Context) {
 }
 
 // register
-func (ac *authController) Register(c *gin.Context) {
+func (ac *AuthController) Register(c *gin.Context) {
 	// return error
 	var newUser Dtos.RegisterUserDto
 	v := validator.New()
@@ -77,7 +77,7 @@ func (ac *authController) Register(c *gin.Context) {
 }
 
 // logout
-func (ac *authController) Logout(c *gin.Context) {
+func (ac *AuthController) Logout(c *gin.Context) {
 	// return error
 	// get the access token from the header
 	claims, err := Getclaim(c)
@@ -96,7 +96,7 @@ func (ac *authController) Logout(c *gin.Context) {
 }
 
 // sends email with token and reset link
-func (ac *authController) ForgetPassword(c *gin.Context) {
+func (ac *AuthController) ForgetPassword(c *gin.Context) {
 	email := c.PostForm("email")
 	err, statusCode := ac.AuthUseCase.ForgetPassword(c, email)
 	if err != nil {
@@ -129,7 +129,7 @@ const resetTemplate = `
 `
 
 // ForgetPasswordForm handles the rendering of the reset password form
-func (ac *authController) ForgetPasswordForm(c *gin.Context) {
+func (ac *AuthController) ForgetPasswordForm(c *gin.Context) {
 	resetToken := c.Params.ByName("reset_token")
 	_, err := jwtservice.VerifyToken(resetToken)
 	if err != nil {
@@ -150,7 +150,7 @@ func (ac *authController) ForgetPasswordForm(c *gin.Context) {
 }
 
 // reset password
-func (ac *authController) ResetPassword(c *gin.Context) {
+func (ac *AuthController) ResetPassword(c *gin.Context) {
 	// extracts token and new_password from the request if correct update the password
 	resetToken := c.Params.ByName("reset_token")
 	email, err := jwtservice.VerifyToken(resetToken)
@@ -175,7 +175,7 @@ func (ac *authController) ResetPassword(c *gin.Context) {
 	fmt.Println("password:", password, "reset_token", resetToken)
 }
 
-func (ac *authController) CallbackHandler(c *gin.Context) {
+func (ac *AuthController) CallbackHandler(c *gin.Context) {
 	code := c.Query("code")
 	token, err, statusCode := ac.AuthUseCase.CallbackHandler(c, code)
 	if err != nil {
@@ -188,7 +188,7 @@ func (ac *authController) CallbackHandler(c *gin.Context) {
 	}
 }
 
-func (ac *authController) LoginHandlerGoogle(c *gin.Context) {
+func (ac *AuthController) LoginHandlerGoogle(c *gin.Context) {
 	url := ac.AuthUseCase.GoogleLogin(c)
 	if url == "" {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error generating google login url"})
@@ -197,7 +197,7 @@ func (ac *authController) LoginHandlerGoogle(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
-func (ac *authController) ActivateAccount(c *gin.Context) {
+func (ac *AuthController) ActivateAccount(c *gin.Context) {
 	activationToken := c.Params.ByName("activation_token")
 	err, statusCode := ac.AuthUseCase.ActivateAccount(c, activationToken)
 	if err != nil {

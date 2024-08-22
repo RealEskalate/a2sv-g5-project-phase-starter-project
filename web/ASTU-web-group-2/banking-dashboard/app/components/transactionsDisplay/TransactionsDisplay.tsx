@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import TransactionsTable from "../transactionsTable/TransactionsTable";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useGetAllTransactionQuery } from "@/lib/service/TransactionService";
 import { TransactionType } from "../transaction/Transaction";
 
@@ -12,13 +11,11 @@ const TransactionsDisplay = () => {
   const [chooseIndex, setChooseIndex] = useState(0);
   const [focusedPage, setFocusedPage] = useState(1);
 
-  const router = useRouter();
 
   const { data: session, status } = useSession();
 
   useEffect(() => {}, [session, status]);
 
-  if (!session?.user) router.push("/login");
 
   const accessToken = session?.user.accessToken!;
 

@@ -2,18 +2,14 @@
 import React, { useEffect } from "react";
 import InfoboxCard from "./InfoboxCard";
 import { infoboxForLoans } from "./infoboxListItemsLoans";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useGetMyLoansDetailQuery } from "@/lib/service/LoanService";
 
 const InfoboxForLoans = () => {
-  const router = useRouter();
 
   const { data: session, status } = useSession();
 
   useEffect(() => {}, [session, status]);
-
-  if (!session?.user) router.push("/login");
 
   const accessToken = session?.user.accessToken!;
 

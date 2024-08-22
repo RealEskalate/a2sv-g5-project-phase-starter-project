@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type BlogControllerInterface interface {
@@ -86,22 +87,34 @@ func (bc *BlogController) GetBlogs(c *gin.Context) {
 }
 
 func (bc *BlogController) UpdateBlog(c *gin.Context) {
-	blogID := c.Param("id")
-	var req models.Blog
+    blogID := c.Param("id")
+    var req models.Blog
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+    existingBlog, err := bc.blog_usecase.GetBlogByID(blogID)
+    if err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Blog not found"})
+        return
+    }
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
+    userID := c.GetString("userID")
+    if existingBlog.AuthorID.Hex() != userID {
+        c.JSON(http.StatusForbidden, gin.H{"error": "You can only update your own blog"})
+        return
+    }
 
-	err := bc.blog_usecase.UpdateBlog(blogID, &req)
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to edit blog"})
-		return
-	}
 
-	c.JSON(200, gin.H{"message": "Blog updated successfully"})
+    err = bc.blog_usecase.UpdateBlog(blogID, &req)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to edit blog"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Blog updated successfully"})
 }
+
 
 func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	blogID := c.Param("id")

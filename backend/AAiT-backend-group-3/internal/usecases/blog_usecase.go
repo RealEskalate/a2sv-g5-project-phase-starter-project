@@ -21,16 +21,26 @@ type BlogUsecaseInterface interface {
 
 type BlogUsecase struct {
 	blogRepo repository_interface.BlogRepositoryInterface
+	tagRepo  repository_interface.TagRepositoryInterface
 }
 
-func NewBlogUsecase(blogRepo repository_interface.BlogRepositoryInterface) BlogUsecaseInterface {
+func NewBlogUsecase(blogRepo repository_interface.BlogRepositoryInterface, tagRepo repository_interface.TagRepositoryInterface) BlogUsecaseInterface {
 	return &BlogUsecase{
 		blogRepo: blogRepo,
+		tagRepo:  tagRepo,
 	}
 }
 
 func (u *BlogUsecase) CreateBlog(blog *models.Blog, authorID string) (string, error) {
-	return u.blogRepo.CreateBlog(blog, authorID)
+	blogID, err := u.blogRepo.CreateBlog(blog, authorID)
+	if err != nil {
+		return "", err
+	}
+	err = u.tagRepo.AddBlogToTheTagList(blog.Tags, blogID)
+	if err != nil {
+		return "", err
+	}
+	return blogID, nil
 }
 
 func (u *BlogUsecase) GetBlogByID(blogID string) (*models.Blog, error) {
@@ -42,16 +52,53 @@ func (u *BlogUsecase) GetBlogs(filter map[string]interface{}, search string, pag
 }
 
 func (u *BlogUsecase) UpdateBlog(blogID string, newBlog *models.Blog) error {
+	existingBlog, err := u.blogRepo.GetBlogByID(blogID)
+	if err != nil {
+		return err
+	}
+
+	newBlog.Views = existingBlog.Views
+	newBlog.PopularityScore = existingBlog.PopularityScore
+	newBlog.CreatedAt = existingBlog.CreatedAt
+	newBlog.UpdatedAt = time.Now()
+	newBlog.Likes = existingBlog.Likes
+	newBlog.Comments = existingBlog.Comments
+
+	if newBlog.Title == "" {
+		newBlog.Title = existingBlog.Title
+	}
+	if newBlog.Tags == nil {
+		newBlog.Tags = existingBlog.Tags
+	} else if !equalTags(newBlog.Tags, existingBlog.Tags) {
+		err = u.tagRepo.RemoveBlogFromTagList(existingBlog.Tags, blogID)
+		if err != nil {
+			return err
+		}
+		err = u.tagRepo.AddBlogToTheTagList(newBlog.Tags, blogID)
+		if err != nil {
+			return err
+		}
+	}
+
 	return u.blogRepo.UpdateBlog(blogID, newBlog)
 }
 
 func (u *BlogUsecase) DeleteBlog(blogID string) error {
+	blog, err := u.blogRepo.GetBlogByID(blogID)
+	if err != nil {
+		return err
+	}
+
+	err = u.tagRepo.RemoveBlogFromTagList(blog.Tags, blogID)
+	if err != nil {
+		return err
+	}
+
 	return u.blogRepo.DeleteBlog(blogID)
 }
 
 func (u *BlogUsecase) AddCommentToTheList(blogID string, commentID string) error {
 	return u.blogRepo.AddCommentToTheList(blogID, commentID)
-
 }
 
 func (u *BlogUsecase) GetBlogsByAuthorID(authorID string) ([]*models.Blog, error) {
@@ -132,4 +179,19 @@ func (u *BlogUsecase) ViewBlog(blogID string) error {
 		}
 	}
 	return nil
+}
+func equalTags(tags1, tags2 []string) bool {
+	if len(tags1) != len(tags2) {
+		return false
+	}
+	tagMap := make(map[string]bool, len(tags1))
+	for _, tag := range tags1 {
+		tagMap[tag] = true
+	}
+	for _, tag := range tags2 {
+		if !tagMap[tag] {
+			return false
+		}
+	}
+	return true
 }

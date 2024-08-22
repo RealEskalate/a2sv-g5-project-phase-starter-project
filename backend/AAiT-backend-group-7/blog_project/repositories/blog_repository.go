@@ -5,40 +5,50 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"time"
+
+	"blog_project/domain"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	"blog_project/domain"
 )
 
 type blogRepository struct {
 	collection *mongo.Collection
+	cache      domain.Cache
 }
 
-func NewBlogRepository(collection *mongo.Collection) domain.IBlogRepository {
-	return &blogRepository{collection: collection}
+func NewBlogRepository(collection *mongo.Collection, cache domain.Cache) domain.IBlogRepository {
+	return &blogRepository{
+		collection: collection,
+		cache:      cache,
+	}
 }
 
 func (blogRepo *blogRepository) GetAllBlogs(ctx context.Context) ([]domain.Blog, error) {
+	cacheKey := "blogs:all"
+	var blogs []domain.Blog
+
+	// Check cache
+	err := blogRepo.cache.Get(ctx, cacheKey, &blogs)
+	if err == nil {
+		return blogs, nil
+	}
+
+	// Fetch from DB if cache is empty
 	cursor, err := blogRepo.collection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
-
 	defer cursor.Close(ctx)
-
-	var blogs []domain.Blog
 
 	for cursor.Next(ctx) {
 		var blog domain.Blog
-
 		if err := cursor.Decode(&blog); err != nil {
 			return nil, err
 		}
-
 		blogs = append(blogs, blog)
 	}
 
@@ -46,34 +56,37 @@ func (blogRepo *blogRepository) GetAllBlogs(ctx context.Context) ([]domain.Blog,
 		return nil, err
 	}
 
-	if len(blogs) == 0 {
-		return []domain.Blog{}, nil
+	// Cache the result if blogs are found
+	if len(blogs) > 0 {
+		blogRepo.cache.Set(ctx, cacheKey, blogs, 1*time.Hour)
 	}
 
 	return blogs, nil
 }
 
 func (blogRepo *blogRepository) GetBlogsByPage(ctx context.Context, offset, limit int) ([]domain.Blog, error) {
-	findOptions := options.Find()
-	findOptions.SetSkip(int64(offset))
-	findOptions.SetLimit(int64(limit))
+	cacheKey := fmt.Sprintf("blogs:page:%d:%d", offset, limit)
+	var blogs []domain.Blog
 
+	// Check cache
+	err := blogRepo.cache.Get(ctx, cacheKey, &blogs)
+	if err == nil {
+		return blogs, nil
+	}
+
+	// Fetch from DB if cache is empty
+	findOptions := options.Find().SetSkip(int64(offset)).SetLimit(int64(limit))
 	cursor, err := blogRepo.collection.Find(ctx, bson.M{}, findOptions)
 	if err != nil {
 		return nil, err
 	}
-
 	defer cursor.Close(ctx)
-
-	var blogs []domain.Blog
 
 	for cursor.Next(ctx) {
 		var blog domain.Blog
-
 		if err := cursor.Decode(&blog); err != nil {
 			return nil, err
 		}
-
 		blogs = append(blogs, blog)
 	}
 
@@ -81,17 +94,26 @@ func (blogRepo *blogRepository) GetBlogsByPage(ctx context.Context, offset, limi
 		return nil, err
 	}
 
-	if len(blogs) == 0 {
-		return []domain.Blog{}, nil
+	// Cache the result if blogs are found
+	if len(blogs) > 0 {
+		blogRepo.cache.Set(ctx, cacheKey, blogs, 1*time.Hour)
 	}
 
 	return blogs, nil
 }
 
 func (blogRepo *blogRepository) GetBlogByID(ctx context.Context, id int) (domain.Blog, error) {
+	cacheKey := fmt.Sprintf("blog:%d", id)
 	var blog domain.Blog
 
-	err := blogRepo.collection.FindOne(ctx, bson.M{"id": id}).Decode(&blog)
+	// Check cache
+	err := blogRepo.cache.Get(ctx, cacheKey, &blog)
+	if err == nil {
+		return blog, nil
+	}
+
+	// Fetch from DB if cache is empty
+	err = blogRepo.collection.FindOne(ctx, bson.M{"id": id}).Decode(&blog)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return domain.Blog{}, errors.New("blog not found")
@@ -99,6 +121,8 @@ func (blogRepo *blogRepository) GetBlogByID(ctx context.Context, id int) (domain
 		return domain.Blog{}, err
 	}
 
+	// Cache the result
+	blogRepo.cache.Set(ctx, cacheKey, blog, 1*time.Hour)
 	return blog, nil
 }
 
@@ -108,17 +132,26 @@ func (blogRepo *blogRepository) CreateBlog(ctx context.Context, blog domain.Blog
 		return domain.Blog{}, err
 	}
 
+	cacheKey := fmt.Sprintf("blog:%d", blog.ID)
+
+	// Cache the new blog
+	blogRepo.cache.Set(ctx, cacheKey, blog, 1*time.Hour)
+
+	// Invalidate related caches
+	blogRepo.cache.Del(ctx, "blogs:all")
+	blogRepo.invalidatePaginationAndSearchCaches(ctx)
+
 	return blog, nil
 }
 
 func (blogRepo *blogRepository) UpdateBlog(ctx context.Context, id int, blog domain.Blog) (domain.Blog, error) {
 	var updatedBlog domain.Blog
 
+	// Update in DB
 	result := blogRepo.collection.FindOneAndUpdate(
 		ctx,
 		bson.M{"id": id},
 		bson.M{"$set": blog},
-		// options to return the updated blog
 		options.FindOneAndUpdate().SetReturnDocument(options.After),
 	)
 
@@ -127,9 +160,17 @@ func (blogRepo *blogRepository) UpdateBlog(ctx context.Context, id int, blog dom
 		if err == mongo.ErrNoDocuments {
 			return domain.Blog{}, errors.New("blog not found")
 		}
-
 		return domain.Blog{}, err
 	}
+
+	cacheKey := fmt.Sprintf("blog:%d", id)
+
+	// Update the cache for the updated blog
+	blogRepo.cache.Set(ctx, cacheKey, updatedBlog, 1*time.Hour)
+
+	// Invalidate related caches
+	blogRepo.cache.Del(ctx, "blogs:all")
+	blogRepo.invalidatePaginationAndSearchCaches(ctx)
 
 	return updatedBlog, nil
 }
@@ -144,76 +185,36 @@ func (blogRepo *blogRepository) DeleteBlog(ctx context.Context, id int) error {
 		return errors.New("blog not found")
 	}
 
+	cacheKey := fmt.Sprintf("blog:%d", id)
+
+	// Invalidate the cache for the deleted blog
+	blogRepo.cache.Del(ctx, cacheKey)
+
+	// Invalidate related caches
+	blogRepo.cache.Del(ctx, "blogs:all")
+	blogRepo.invalidatePaginationAndSearchCaches(ctx)
+
 	return nil
 }
 
 func (blogRepo *blogRepository) SearchByTitle(ctx context.Context, title string) ([]domain.Blog, error) {
-	// a case-insensitive regex search
+	cacheKey := fmt.Sprintf("blogs:search:title:%s", title)
+	var blogs []domain.Blog
+
+	// Check cache
+	err := blogRepo.cache.Get(ctx, cacheKey, &blogs)
+	if err == nil {
+		return blogs, nil
+	}
+
+	// Fetch from DB if cache is empty
 	filter := bson.M{"title": bson.M{"$regex": primitive.Regex{Pattern: "^" + regexp.QuoteMeta(title) + "$", Options: "i"}}}
-
-	// Limit the number of results to prevent overwhelming response
-	opts := options.Find().SetLimit(100)
-
-	cursor, err := blogRepo.collection.Find(ctx, filter, opts)
-	if err != nil {
-		return nil, fmt.Errorf("error finding blogs: %w", err)
-	}
-
-	defer cursor.Close(ctx)
-
-	var blogs []domain.Blog
-	if err := cursor.All(ctx, &blogs); err != nil {
-		return nil, fmt.Errorf("error decoding blogs: %w", err)
-	}
-
-	if len(blogs) == 0 {
-		return nil, errors.New("no blog found")
-	}
-
-	return blogs, nil
-}
-
-func (blogRepo *blogRepository) SearchByTags(ctx context.Context, tags []string) ([]domain.Blog, error) {
-	if len(tags) == 0 {
-		return nil, errors.New("no tags provided")
-	}
-
-	// Create a filter that matches any of the provided tags
-	filter := bson.M{"tags": bson.M{"$in": tags}}
-
-	// Limit the number of results to prevent overwhelming response
-	opts := options.Find().SetLimit(100)
-
-	cursor, err := blogRepo.collection.Find(ctx, filter, opts)
-	if err != nil {
-		return nil, fmt.Errorf("error finding blogs by tags: %w", err)
-	}
-	defer cursor.Close(ctx)
-
-	var blogs []domain.Blog
-	if err := cursor.All(ctx, &blogs); err != nil {
-		return nil, fmt.Errorf("error decoding blogs: %w", err)
-	}
-
-	if len(blogs) == 0 {
-		return nil, errors.New("no blogs found with the provided tags")
-	}
-
-	return blogs, nil
-}
-
-func (blogRepo *blogRepository) SearchByAuthor(ctx context.Context, author string) ([]domain.Blog, error) {
-	// Limit the number of results to prevent overwhelming response
-	opts := options.Find().SetLimit(100)
-
-	cursor, err := blogRepo.collection.Find(ctx, bson.M{"username": author}, opts)
-
+	cursor, err := blogRepo.collection.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
 
-	var blogs []domain.Blog
 	for cursor.Next(ctx) {
 		var blog domain.Blog
 		if err := cursor.Decode(&blog); err != nil {
@@ -226,9 +227,94 @@ func (blogRepo *blogRepository) SearchByAuthor(ctx context.Context, author strin
 		return nil, err
 	}
 
-	if len(blogs) == 0 {
-		return nil, errors.New("no blogs found for the given author")
+	// Cache the result if blogs are found
+	if len(blogs) > 0 {
+		blogRepo.cache.Set(ctx, cacheKey, blogs, 1*time.Hour)
 	}
 
 	return blogs, nil
+}
+
+func (blogRepo *blogRepository) SearchByTags(ctx context.Context, tags []string) ([]domain.Blog, error) {
+	cacheKey := fmt.Sprintf("blogs:search:tags:%v", tags)
+	var blogs []domain.Blog
+
+	// Check cache
+	err := blogRepo.cache.Get(ctx, cacheKey, &blogs)
+	if err == nil {
+		return blogs, nil
+	}
+
+	// Fetch from DB if cache is empty
+	filter := bson.M{"tags": bson.M{"$in": tags}}
+	cursor, err := blogRepo.collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return nil, err
+		}
+		blogs = append(blogs, blog)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	// Cache the result if blogs are found
+	if len(blogs) > 0 {
+		blogRepo.cache.Set(ctx, cacheKey, blogs, 1*time.Hour)
+	}
+
+	return blogs, nil
+}
+
+func (blogRepo *blogRepository) SearchByAuthor(ctx context.Context, author string) ([]domain.Blog, error) {
+	cacheKey := fmt.Sprintf("blogs:search:author:%s", author)
+	var blogs []domain.Blog
+
+	// Check cache
+	err := blogRepo.cache.Get(ctx, cacheKey, &blogs)
+	if err == nil {
+		return blogs, nil
+	}
+
+	// Fetch from DB if cache is empty
+	cursor, err := blogRepo.collection.Find(ctx, bson.M{"author": author})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return nil, err
+		}
+		blogs = append(blogs, blog)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	// Cache the result if blogs are found
+	if len(blogs) > 0 {
+		blogRepo.cache.Set(ctx, cacheKey, blogs, 1*time.Hour)
+	}
+
+	return blogs, nil
+}
+
+// Helper function to invalidate pagination and search caches
+func (blogRepo *blogRepository) invalidatePaginationAndSearchCaches(ctx context.Context) {
+	// Invalidate all pagination caches
+	blogRepo.cache.DelByPattern(ctx, "blogs:page:*")
+
+	// Invalidate search caches
+	blogRepo.cache.DelByPattern(ctx, "blogs:search:*")
 }

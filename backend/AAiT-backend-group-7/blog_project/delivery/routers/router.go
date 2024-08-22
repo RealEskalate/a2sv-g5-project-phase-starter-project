@@ -2,6 +2,7 @@ package routers
 
 import (
 	"blog_project/domain"
+	"os"
 
 	"blog_project/infrastructure"
 
@@ -14,7 +15,7 @@ func SetupRouter(blogController domain.IBlogController, userController domain.IU
 
 	blogs := r.Group("/blogs")
 
-	// blogs.Use(infrastructure.JwtAuthMiddleware(os.Getenv("jwt_secret")))
+	blogs.Use(infrastructure.JwtAuthMiddleware(os.Getenv("jwt_secret")))
 	{
 		// http://localhost:8080/blogs?sort=DESC&page=1&limit=10
 		blogs.GET("/", blogController.GetAllBlogs)
@@ -35,7 +36,7 @@ func SetupRouter(blogController domain.IBlogController, userController domain.IU
 	users.POST("/forget-password/:email", userController.ForgetPassword)
 	users.POST("/reset-password/:username/:password", userController.ResetPassword)
 
-	// users.Use(infrastructure.JwtAuthMiddleware(os.Getenv("jwt_secret")))
+	users.Use(infrastructure.JwtAuthMiddleware(os.Getenv("jwt_secret")))
 	{
 		users.GET("/", userController.GetAllUsers)
 		users.GET("/:id", userController.GetUserByID)

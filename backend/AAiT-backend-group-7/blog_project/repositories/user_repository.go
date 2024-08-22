@@ -4,6 +4,8 @@ import (
 	"blog_project/domain"
 	"context"
 	"errors"
+	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -12,20 +14,30 @@ import (
 
 type userRepository struct {
 	collection *mongo.Collection
+	cache domain.Cache
 }
 
-func NewUserRepository(collection *mongo.Collection) domain.IUserRepository {
-	return &userRepository{collection: collection}
+func NewUserRepository(collection *mongo.Collection, cache domain.Cache) domain.IUserRepository {
+	return &userRepository{
+		collection: collection,
+		cache: cache,
+	}
 }
 
 func (userRepo *userRepository) GetAllUsers(ctx context.Context) ([]domain.User, error) {
+	cacheKey := "users:all"
+	var users []domain.User
+	err := userRepo.cache.Get(ctx, cacheKey, &users)
+	if err == nil {
+		return users, nil
+	}
+
 	cursor, err := userRepo.collection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
 
-	var users []domain.User
 	for cursor.Next(ctx) {
 		var user domain.User
 		if err := cursor.Decode(&user); err != nil {
@@ -34,8 +46,8 @@ func (userRepo *userRepository) GetAllUsers(ctx context.Context) ([]domain.User,
 		users = append(users, user)
 	}
 
-	if err := cursor.Err(); err != nil {
-		return nil, err
+	if len(users) > 0 {
+		userRepo.cache.Set(ctx, cacheKey, users, 1*time.Hour)
 	}
 
 	return users, nil
@@ -43,6 +55,12 @@ func (userRepo *userRepository) GetAllUsers(ctx context.Context) ([]domain.User,
 
 func (userRepo *userRepository) GetUserByID(ctx context.Context, id int) (domain.User, error) {
 	var user domain.User
+	cacheKey := fmt.Sprintf("user:%d", id)
+	err := userRepo.cache.Get(ctx, cacheKey, &user)
+
+	if err == nil {
+		return user, nil
+	}
 	result := userRepo.collection.FindOne(ctx, bson.M{"id": id})
 
 	if err := result.Decode(&user); err != nil {
@@ -52,6 +70,7 @@ func (userRepo *userRepository) GetUserByID(ctx context.Context, id int) (domain
 		return domain.User{}, err
 	}
 
+	userRepo.cache.Set(ctx, cacheKey, user, 1*time.Hour)
 	return user, nil
 }
 
@@ -61,11 +80,8 @@ func (userRepo *userRepository) CreateUser(ctx context.Context, user domain.User
 		return domain.User{}, err
 	}
 
-	// if id, ok := result.InsertedID.(int); ok {
-	// 	user.ID = id
-	// } else {
-	// 	return domain.User{}, errors.New("failed to convert inserted ID to int")
-	// }
+	// Invalidate the cache for all users
+	userRepo.cache.Del(ctx, "users:all")
 
 	return user, nil
 }
@@ -86,8 +102,26 @@ func (userRepo *userRepository) UpdateUser(ctx context.Context, id int, user dom
 		return domain.User{}, err
 	}
 
+	// Invalidate the cache for the updated user and related cache entries
+	cacheKey := fmt.Sprintf("user:%d", id)
+	userRepo.cache.Del(ctx, cacheKey)
+
+	// Invalidate cache entries by username and email if those fields were updated
+	if user.Username != "" {
+		cacheKeyByUsername := fmt.Sprintf("user:username:%s", user.Username)
+		userRepo.cache.Del(ctx, cacheKeyByUsername)
+	}
+	if user.Email != "" {
+		cacheKeyByEmail := fmt.Sprintf("user:email:%s", user.Email)
+		userRepo.cache.Del(ctx, cacheKeyByEmail)
+	}
+
+	// Invalidate the cache for all users
+	userRepo.cache.Del(ctx, "users:all")
+
 	return updatedUser, nil
 }
+
 
 func (userRepo *userRepository) DeleteUser(ctx context.Context, id int) error {
 	result, err := userRepo.collection.DeleteOne(ctx, bson.M{"id": id})
@@ -99,12 +133,36 @@ func (userRepo *userRepository) DeleteUser(ctx context.Context, id int) error {
 		return errors.New("user not found")
 	}
 
+	// Invalidate the cache for the deleted user and related cache entries
+	cacheKey := fmt.Sprintf("user:%d", id)
+	userRepo.cache.Del(ctx, cacheKey)
+
+	// Also invalidate cache by username and email
+	var user domain.User
+	err = userRepo.collection.FindOne(ctx, bson.M{"id": id}).Decode(&user)
+	if err == nil {
+		cacheKeyByUsername := fmt.Sprintf("user:username:%s", user.Username)
+		userRepo.cache.Del(ctx, cacheKeyByUsername)
+
+		cacheKeyByEmail := fmt.Sprintf("user:email:%s", user.Email)
+		userRepo.cache.Del(ctx, cacheKeyByEmail)
+	}
+
+	// Invalidate the cache for all users
+	userRepo.cache.Del(ctx, "users:all")
+
 	return nil
 }
 
 func (userRepo *userRepository) SearchByUsername(ctx context.Context, username string) (domain.User, error) {
+	cacheKey := fmt.Sprintf("user:username:%s", username)
 	var user domain.User
-	err := userRepo.collection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
+	err := userRepo.cache.Get(ctx, cacheKey, &user)
+	if err == nil {
+		return user, nil
+	}
+
+	err = userRepo.collection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return domain.User{}, errors.New("user not found")
@@ -112,12 +170,19 @@ func (userRepo *userRepository) SearchByUsername(ctx context.Context, username s
 		return domain.User{}, err
 	}
 
+	userRepo.cache.Set(ctx, cacheKey, user, 1*time.Hour)
 	return user, nil
 }
 
 func (userRepo *userRepository) SearchByEmail(ctx context.Context, email string) (domain.User, error) {
+	cacheKey := fmt.Sprintf("user:email:%s", email)
 	var user domain.User
-	err := userRepo.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	err := userRepo.cache.Get(ctx, cacheKey, &user)
+	if err == nil {
+		return user, nil
+	}
+
+	err = userRepo.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return domain.User{}, errors.New("user not found")
@@ -125,6 +190,7 @@ func (userRepo *userRepository) SearchByEmail(ctx context.Context, email string)
 		return domain.User{}, err
 	}
 
+	userRepo.cache.Set(ctx, cacheKey, user, 1*time.Hour)
 	return user, nil
 }
 
@@ -144,9 +210,15 @@ func (userRepo *userRepository) AddBlog(ctx context.Context, userID int, blog do
 		return domain.User{}, err
 	}
 
+	// Invalidate the cache for this user and related cache keys
+	cacheKey := fmt.Sprintf("user:%d", userID)
+	userRepo.cache.Del(ctx, cacheKey)
+
+	// Invalidate the cache for all users if relevant
+	userRepo.cache.Del(ctx, "users:all")
+
 	return user, nil
 }
-
 func (userRepo *userRepository) StoreRefreshToken(ctx context.Context, userID int, refreshToken string) error {
 	_, err := userRepo.collection.UpdateOne(ctx, bson.M{"id": userID}, bson.M{"$set": bson.M{"refresh_token": refreshToken}})
 	return err

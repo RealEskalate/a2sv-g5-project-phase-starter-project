@@ -3,7 +3,7 @@ package controllers
 import (
 	"AAIT-backend-group-3/internal/domain/models"
 	"AAIT-backend-group-3/internal/usecases"
-
+	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,21 +23,26 @@ func NewUserController(u usecases.UserUsecaseInterface) UserControllerInterface 
 		user_usecase: u,
 	}
 }
-
 func (uc *UserController) Register(c *gin.Context) {
-	var user *models.User
-	err := c.ShouldBindJSON(&user)
-	if err != nil {
-		c.JSON(400, gin.H{"message": "invalid json format"})
-		return
-	}
-	registeredUser, err := uc.user_usecase.SignUp(user)
+    var user *models.User
+    err := c.ShouldBindJSON(&user)
+    if err != nil {
+        fmt.Println("Error binding JSON:", err)
+        c.JSON(400, gin.H{"message": "invalid json format"})
+        return
+    }
 
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(200, gin.H{"user": registeredUser.ID.Hex()})
+    fmt.Println("User data received:", user)
+
+    registeredUser, err := uc.user_usecase.SignUp(user)
+    if err != nil {
+        fmt.Println("Error during SignUp:", err)
+        c.JSON(500, gin.H{"error": err.Error()})
+        return
+    }
+
+    fmt.Println("User registered successfully with ID:", registeredUser.ID.Hex())
+    c.JSON(200, gin.H{"user": registeredUser.ID.Hex()})
 }
 
 func (uc *UserController) Login(c *gin.Context) {

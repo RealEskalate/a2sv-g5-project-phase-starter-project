@@ -3,6 +3,8 @@ package domain
 import (
 	"context"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const (
@@ -10,10 +12,10 @@ const (
 )
 
 type Like struct {
-	LikeID string `json:"like_id" bson:"_id"`
-	UserID string `json:"user_id" bson:"user_id"`
-	BlogID string `json:"blog_id" bson:"blog_id"`
-	CreatedAt   time.Time `json:"createtimestamp" bson:"createtimestamp"`
+	LikeID 		primitive.ObjectID 	`json:"like_id" bson:"_id"`
+	UserID 		string 			  	`json:"user_id" bson:"user_id"`
+	BlogID	    string 			  	`json:"blog_id" bson:"blog_id"`
+	CreatedAt   time.Time 	  		`json:"createtimestamp" bson:"createtimestamp"`
 
 }
 

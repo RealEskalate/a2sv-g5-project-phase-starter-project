@@ -4,7 +4,7 @@ import { Console } from "console";
 export const registerUser = async (userData: any) => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-1tst.onrender.com/auth/register",
+      "https://bank-dashboard-o9tl.onrender.com/auth/register",
       {
         method: "POST",
         headers: {
@@ -30,7 +30,7 @@ export const registerUser = async (userData: any) => {
 export const refreshToken = async (tokenData: any) => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-1tst.onrender.com/auth/refresh_token",
+      "https://bank-dashboard-o9tl.onrender.com/auth/refresh_token",
       {
         method: "POST",
         headers: {
@@ -56,7 +56,7 @@ export const refreshToken = async (tokenData: any) => {
 export const loginUser = async (loginData: any) => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-1tst.onrender.com/auth/login",
+      "https://bank-dashboard-o9tl.onrender.com/auth/login",
       {
         method: "POST",
         headers: {
@@ -82,7 +82,7 @@ export const loginUser = async (loginData: any) => {
 export const changePassword = async (passwordData: any) => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-1tst.onrender.com/auth/change_password",
+      "https://bank-dashboard-o9tl.onrender.com/auth/change_password",
       {
         method: "POST",
         headers: {

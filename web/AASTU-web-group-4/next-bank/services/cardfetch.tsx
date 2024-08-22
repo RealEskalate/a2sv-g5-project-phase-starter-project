@@ -2,7 +2,8 @@
 export const getAllCards = async () => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-1tst.onrender.com/cards",
+      "https://bank-dashboard-o9tl.onrender.com
+/cards",
       {
         method: "GET",
         headers: {
@@ -27,7 +28,8 @@ export const getAllCards = async () => {
 export const getCardById = async (id: string) => {
   try {
     const response = await fetch(
-      `https://bank-dashboard-1tst.onrender.com/cards/${id}`,
+      `https://bank-dashboard-o9tl.onrender.com
+/cards/${id}`,
       {
         method: "GET",
         headers: {
@@ -52,7 +54,8 @@ export const getCardById = async (id: string) => {
 export const createCard = async (cardData: any) => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-1tst.onrender.com/cards",
+      "https://bank-dashboard-o9tl.onrender.com
+/cards",
       {
         method: "POST",
         headers: {
@@ -78,7 +81,8 @@ export const createCard = async (cardData: any) => {
 export const deleteCardById = async (id: string) => {
   try {
     const response = await fetch(
-      `https://bank-dashboard-1tst.onrender.com/cards/${id}`,
+      `https://bank-dashboard-o9tl.onrender.com
+/cards/${id}`,
       {
         method: "DELETE",
         headers: {

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"log"
 
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	"github.com/gin-gonic/gin"
@@ -23,8 +22,6 @@ func NewLogoutController(logoutUsecase interfaces.LogoutUsecase, jwtService inte
 func (logoutController *LogoutController) Logout(ctx *gin.Context) {
 	// get the userId from the context
 	userId := ctx.GetString("id")
-
-	log.Println("userId", userId)
 
 	e := logoutController.LogoutUsecase.LogoutUser(ctx, userId)
 	if e != nil {

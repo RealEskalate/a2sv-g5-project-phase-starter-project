@@ -59,17 +59,17 @@ func (_m *BlogRepository) CreateBlog(b domain.Blog) (domain.Blog, error) {
 	return r0, r1
 }
 
-// DeleteBlog provides a mock function with given fields: blogId
-func (_m *BlogRepository) DeleteBlog(blogId string) error {
-	ret := _m.Called(blogId)
+// DeleteBlog provides a mock function with given fields: blogId, authorId
+func (_m *BlogRepository) DeleteBlog(blogId string, authorId string) error {
+	ret := _m.Called(blogId, authorId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteBlog")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(blogId)
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(blogId, authorId)
 	} else {
 		r0 = ret.Error(0)
 	}

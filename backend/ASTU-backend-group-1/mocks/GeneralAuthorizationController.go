@@ -13,12 +13,12 @@ type GeneralAuthorizationController struct {
 	mock.Mock
 }
 
-// AdminMiddlewareGin provides a mock function with given fields:
-func (_m *GeneralAuthorizationController) AdminMiddlewareGin() gin.HandlerFunc {
+// ADMINMiddleware provides a mock function with given fields:
+func (_m *GeneralAuthorizationController) ADMINMiddleware() gin.HandlerFunc {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
-		panic("no return value specified for AdminMiddlewareGin")
+		panic("no return value specified for ADMINMiddleware")
 	}
 
 	var r0 gin.HandlerFunc
@@ -33,12 +33,12 @@ func (_m *GeneralAuthorizationController) AdminMiddlewareGin() gin.HandlerFunc {
 	return r0
 }
 
-// AuthMiddlewareGIn provides a mock function with given fields:
-func (_m *GeneralAuthorizationController) AuthMiddlewareGIn() gin.HandlerFunc {
+// AuthenticationMiddleware provides a mock function with given fields:
+func (_m *GeneralAuthorizationController) AuthenticationMiddleware() gin.HandlerFunc {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
-		panic("no return value specified for AuthMiddlewareGIn")
+		panic("no return value specified for AuthenticationMiddleware")
 	}
 
 	var r0 gin.HandlerFunc
@@ -53,32 +53,12 @@ func (_m *GeneralAuthorizationController) AuthMiddlewareGIn() gin.HandlerFunc {
 	return r0
 }
 
-// AuthorMiddlewareGin provides a mock function with given fields:
-func (_m *GeneralAuthorizationController) AuthorMiddlewareGin() gin.HandlerFunc {
+// USERMiddleware provides a mock function with given fields:
+func (_m *GeneralAuthorizationController) USERMiddleware() gin.HandlerFunc {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
-		panic("no return value specified for AuthorMiddlewareGin")
-	}
-
-	var r0 gin.HandlerFunc
-	if rf, ok := ret.Get(0).(func() gin.HandlerFunc); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(gin.HandlerFunc)
-		}
-	}
-
-	return r0
-}
-
-// UserMiddlewareGin provides a mock function with given fields:
-func (_m *GeneralAuthorizationController) UserMiddlewareGin() gin.HandlerFunc {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for UserMiddlewareGin")
+		panic("no return value specified for USERMiddleware")
 	}
 
 	var r0 gin.HandlerFunc

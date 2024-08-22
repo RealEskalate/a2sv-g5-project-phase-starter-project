@@ -5,10 +5,7 @@ import (
 )
 
 type GeneralAuthorizationController interface {
-	// AuthMiddlewareGIn() gin.HandlerFunc
-	// AdminMiddlewareGin() gin.HandlerFunc
-	// UserMiddlewareGin() gin.HandlerFunc
-	// AuthorMiddlewareGin() gin.HandlerFunc
+
 	AuthenticationMiddleware() gin.HandlerFunc
 	ADMINMiddleware() gin.HandlerFunc
 	USERMiddleware() gin.HandlerFunc

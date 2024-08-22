@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} ${lato.className} flex`}>
+      <body className={`${inter.className} ${lato.className} flex w-full`}>
         <Navigation>
           {children}
         </Navigation>

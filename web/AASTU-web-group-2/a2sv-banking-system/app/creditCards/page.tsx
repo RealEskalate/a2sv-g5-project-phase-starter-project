@@ -11,6 +11,7 @@ import { getCards } from "@/lib/api/cardController";
 import { getSession } from "next-auth/react";
 import router from "next/navigation";
 import { useRouter } from "next/navigation";
+import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
 
 const HeadingTitle = ({ title }: { title: string }) => {
   return (
@@ -19,17 +20,9 @@ const HeadingTitle = ({ title }: { title: string }) => {
     </h1>
   );
 };
-type Data = {
-  access_token: string;
-  data: string;
-  refresh_token: string;
-};
 
-type SessionDataType = {
-  user: Data;
-};
 const CreditCards = () => {
-  const [session, setSession] = useState<Data | null>(null);
+  const [accessToken, setAccessToken] = useState<string>("");
   const [cards, setCards] = useState<Card1[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -42,9 +35,9 @@ const CreditCards = () => {
   };
   useEffect(() => {
     const fetchSession = async () => {
-      const sessionData = (await getSession()) as SessionDataType | null;
-      if (sessionData && sessionData.user) {
-        setSession(sessionData.user);
+      const access_token = await Refresh();
+      if (access_token) {
+        setAccessToken(access_token);
       } else {
         router.push(
           `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
@@ -56,17 +49,17 @@ const CreditCards = () => {
   }, [router]);
 
   useEffect(() => {
-    if (session == null) {
+    if (accessToken == "") {
       return;
     }
     async function fetch() {
-      const data = await getCards(session?.access_token!, 0, 700);
+      const data = await getCards(accessToken, 0, 700);
       data.content.reverse();
       setCards(data.content);
       setLoading(false);
     }
     fetch();
-  }, [session]);
+  }, [accessToken]);
 
   const decideColor = (index: number) => {
     const remainder = index % 3;
@@ -82,14 +75,14 @@ const CreditCards = () => {
     const newCards = [card, ...cards];
     setCards(newCards);
   };
-  if (loading) return null; // Don't render anything while loading
+  if (loading) return null;
 
   return (
     <div className="bg-[#f5f7fb] w-full p-5 gap-5 flex flex-col">
       <div className="flex-col gap-5">
         <HeadingTitle title="My Cards" />
 
-        <div className="flex overflow-scroll justify-between">
+        <div className="flex overflow-scroll justify-between [&::-webkit-scrollbar]:hidden">
           {cards.map((card, index) => {
             const [bgColor, textColor] = decideColor(index);
 
@@ -119,7 +112,7 @@ const CreditCards = () => {
         </div>
         <div className="flex flex-col gap-3 md:justify-between w-full h-full">
           <HeadingTitle title="Card List" />
-          <div className="overflow-y-auto h-80 flex flex-col gap-4">
+          <div className="overflow-y-auto h-80 flex flex-col gap-4 [&::-webkit-scrollbar]:hidden">
             {cards.map((card, index) => {
               return (
                 <CreditCard
@@ -143,7 +136,7 @@ const CreditCards = () => {
         <div className="flex flex-col gap-5">
           <HeadingTitle title="Add New Card" />
           <AddCardForm
-            access_token={session?.access_token!}
+            access_token={accessToken}
             handleAddition={handleAddition}
           />
         </div>

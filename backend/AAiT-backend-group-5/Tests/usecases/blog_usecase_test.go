@@ -2,12 +2,12 @@ package usecases_test
 
 import (
 	"context"
-	"encoding/json"
+	// "encoding/json"
 	"strconv"
 	"testing"
 	"time"
 
-	"github.com/go-redis/redis/v8"
+	// "github.com/go-redis/redis/v8"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 
@@ -145,15 +145,8 @@ func (suite *BlogUsecaseTestSuite) TestGetBlogs_Success() {
 func (suite *BlogUsecaseTestSuite) TestSearchBlogs_Success() {
 	ctx := context.Background()
 	filter := dtos.FilterBlogRequest{}
-	searchJson, _ := json.Marshal(filter)
-	cachedBlogs := "[]"
 	blogs := []*models.Blog{{}}
 	blogResponse := []*dtos.BlogResponse{{}}
-
-	suite.cacheServiceMock.
-		EXPECT().
-		Get(ctx, string(searchJson)).
-		Return(cachedBlogs, redis.Nil)
 
 	suite.repositoryMock.
 		EXPECT().
@@ -164,16 +157,6 @@ func (suite *BlogUsecaseTestSuite) TestSearchBlogs_Success() {
 		EXPECT().
 		GetBlogs(ctx, blogs).
 		Return(blogResponse, nil)
-
-	suite.blogHelperMock.
-		EXPECT().
-		Marshal(gomock.Any()).
-		Return("mocked_json", nil)
-
-	suite.cacheServiceMock.
-		EXPECT().
-		Set(ctx, string(searchJson), gomock.Any(), time.Minute).
-		Return(nil)
 
 	result, err := suite.blogUsecase.SearchBlogs(ctx, filter)
 	suite.Nil(err)

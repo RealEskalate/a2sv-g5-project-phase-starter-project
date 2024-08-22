@@ -109,7 +109,7 @@ function DebitCreditOverviewChart() {
           <div className="">Credit</div>
         </div>
       </div>
-      <div className="weekly-activity-chart h-[263px] flex justify-center">
+      <div className="weekly-activity-chart h-[263px] w-full flex justify-center">
         <canvas ref={chartRef} />
       </div>
     </div>

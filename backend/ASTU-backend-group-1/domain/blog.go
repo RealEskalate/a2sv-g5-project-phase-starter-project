@@ -6,18 +6,17 @@ import (
 
 type Reply struct {
 	ReplyId  string `json:"reply_id,omitempty" bson:"reply_id,omitempty" `
-	AuthorId string `json:"author_id,omitempty" bson:"author_id,omitempty" binding:"required"`
+	AuthorId string `json:"author_id,omitempty" bson:"author_id,omitempty"`
 	Content  string `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
 
 	Likes    []string `json:"likes,omitempty" bson:"likes,omitempty"`
 	Dislikes []string `json:"dislikes,omitempty" bson:"dislikes,omitempty"`
-	Replies  []Reply  `json:"replies,omitempty" bson:"replies,omitempty"`
 	Views    []string `json:"views,omitempty" bson:"views,omitempty"`
 }
 
 type Comment struct {
 	CommentId string `json:"comment_id,omitempty" bson:"comment_id,omitempty" `
-	AuthorId  string `json:"author_id,omitempty" bson:"author_id,omitempty" binding:"required"`
+	AuthorId  string `json:"author_id,omitempty" bson:"author_id,omitempty"`
 	Content   string `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
 
 	Likes    []string `json:"likes,omitempty" bson:"likes,omitempty"`
@@ -57,7 +56,7 @@ type BlogRepository interface {
 	CreateBlog(b Blog) (Blog, error)
 	GetBlog(opts BlogFilterOption) ([]Blog, error)
 	UpdateBlog(blogId string, updateData Blog) (Blog, error)
-	DeleteBlog(blogId,authorId string) error
+	DeleteBlog(blogId, authorId string) error
 	FindPopularBlog() ([]Blog, error)
 	GetBlogById(blogid string) (Blog, error)
 	LikeOrDislikeBlog(blogId, userId string, like int) error

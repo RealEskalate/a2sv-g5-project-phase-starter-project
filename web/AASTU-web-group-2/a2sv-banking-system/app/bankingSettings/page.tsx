@@ -1,26 +1,103 @@
 "use client";
-import React, { useState } from 'react';
-import Tabs from "../components/Tabs";
-import TextInput from '../components/TextInput';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { getSession } from "next-auth/react";
+import Tabs from '../components/Tabs';
 import NotificationToggle from '../components/NotificationToggle';
 import EditProfile from '../components/EditProfile';
 import SecuritySetting from '../components/SecuritySetting';
+import { getCurrentUser, userUpdatePreference } from '../../lib/api/userControl';
+import User, { Preference } from '../../types/userInterface';
+
+type Data = {
+  access_token: string;
+  data: string;
+  refresh_token: string;
+};
+
+type SessionDataType = {
+  user: Data;
+};
 
 const SettingsPage: React.FC = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<SessionDataType | null>(null);
   const [activeTab, setActiveTab] = useState<string>('Preferences');
-  const [notifications, setNotifications] = useState({
-    digitalCurrency: true,
-    merchantOrders: false,
-    recommendations: true
+  const [user, setUser] = useState<User | null>(null);
+  const [notifications, setNotifications] = useState<Preference>({
+    currency: "Enter your currency",
+    sentOrReceiveDigitalCurrency: true,
+    receiveMerchantOrder: false,
+    accountRecommendations: true,
+    timeZone: "Enter your time zone",
+    twoFactorAuthentication: false,
   });
 
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
+  useEffect(() => {
+    const fetchSessionAndUser = async () => {
+      setLoading(true);
+      const sessionData = (await getSession()) as SessionDataType | null;
+
+      if (sessionData && sessionData.user) {
+        setSession(sessionData);
+        try {
+          const userData = await getCurrentUser(sessionData.user.access_token);
+          setUser(userData);
+          setNotifications(userData.preference); 
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      } else {
+        router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
+      }
+      setLoading(false);
+    };
+
+    fetchSessionAndUser();
+  }, [router]);
+
+  const handleTabChange = (tab: string) => setActiveTab(tab);
+
+  const handleNotificationChange = (key: keyof Preference, value: boolean | string) => {
+    setNotifications(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleNotificationChange = (key: keyof typeof notifications, checked: boolean) => {
-    setNotifications(prev => ({ ...prev, [key]: checked }));
+  const handleTextInputChange = (key: keyof Preference, value: string) => {
+    setNotifications(prev => ({ ...prev, [key]: value }));
   };
+
+  const handlePreferencesUpdate = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      if (session?.user?.access_token) {
+        await userUpdatePreference(notifications, session.user.access_token);
+        alert('Preferences updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating preferences:', error);
+      alert('Failed to update preferences.');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen bg-gray-50">
+        <main className="flex-1 p-4 md:p-8">
+          <div className="bg-white p-6 rounded-2xl shadow-md">
+            <div className="animate-pulse">
+              <div className="space-y-4">
+                <div className="h-12 bg-gray-200 rounded-lg"></div>
+                <div className="h-12 bg-gray-200 rounded-lg"></div>
+                <div className="h-12 bg-gray-200 rounded-lg"></div>
+                <div className="h-12 bg-gray-200 rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -34,32 +111,54 @@ const SettingsPage: React.FC = () => {
 
           <div className="mt-6">
             {activeTab === 'Preferences' && (
-              <form>
+              <form onSubmit={handlePreferencesUpdate}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <TextInput id="currency-input" label="Currency" value="USD" readOnly />
-                  <TextInput id="timezone-input" label="Time Zone" value="(GMT-12:00) International Date Line West" readOnly />
+                  <div>
+                    <label htmlFor="currency-input" className="block text-sm font-medium text-[#232323]">Currency</label>
+                    <input
+                      type="text"
+                      id="currency-input"
+                      title="Currency"
+                      className="mt-1 block w-full border border-[#DFEAF2] rounded-full shadow-sm px-4 py-2 text-[#718EBF]"
+                      value={notifications.currency || ""}  
+                      placeholder="Enter your currency"
+                      onChange={(e) => handleTextInputChange('currency', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="timezone-input" className="block text-sm font-medium text-[#232323]">Time Zone</label>
+                    <input
+                      type="text"
+                      id="timezone-input"
+                      title="Time Zone"
+                      className="mt-1 block w-full border border-[#DFEAF2] rounded-full shadow-sm px-4 py-2 text-[#718EBF]"
+                      value={notifications.timeZone || ""}  
+                      placeholder="Enter your time zone"
+                      onChange={(e) => handleTextInputChange('timeZone', e.target.value)}
+                    />
+                  </div>
                 </div>
 
                 <div className="mt-6">
-                  <label className="block text-sm font-medium text-[#333B69]">Notification</label>
+                  <label className="block text-sm font-medium text-[#333B69]">Notifications</label>
                   <div className="flex flex-col mt-4 gap-4">
                     <NotificationToggle
                       id="notification1"
-                      label="I send or receive digital currency"
-                      checked={notifications.digitalCurrency}
-                      onChange={(checked) => handleNotificationChange('digitalCurrency', checked)}
+                      label="Send/Receive Digital Currency"
+                      checked={notifications.sentOrReceiveDigitalCurrency}
+                      onChange={(checked) => handleNotificationChange('sentOrReceiveDigitalCurrency', checked)}
                     />
                     <NotificationToggle
                       id="notification2"
-                      label="I receive merchant orders"
-                      checked={notifications.merchantOrders}
-                      onChange={(checked) => handleNotificationChange('merchantOrders', checked)}
+                      label="Receive Merchant Orders"
+                      checked={notifications.receiveMerchantOrder}
+                      onChange={(checked) => handleNotificationChange('receiveMerchantOrder', checked)}
                     />
                     <NotificationToggle
                       id="notification3"
-                      label="There are recommendations for my account"
-                      checked={notifications.recommendations}
-                      onChange={(checked) => handleNotificationChange('recommendations', checked)}
+                      label="Account Recommendations"
+                      checked={notifications.accountRecommendations}
+                      onChange={(checked) => handleNotificationChange('accountRecommendations', checked)}
                     />
                   </div>
                 </div>
@@ -75,17 +174,8 @@ const SettingsPage: React.FC = () => {
               </form>
             )}
 
-            {activeTab === 'Edit Profile' && (
-              <div>
-                <EditProfile />
-              </div>
-            )}
-
-            {activeTab === 'Security' && (
-              <div>
-                <SecuritySetting />
-              </div>
-            )}
+            {activeTab === 'Edit Profile' && user && <EditProfile/>}
+            {activeTab === 'Security' && <SecuritySetting />}
           </div>
         </div>
       </main>

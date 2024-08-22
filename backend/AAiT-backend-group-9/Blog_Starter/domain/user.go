@@ -133,16 +133,7 @@ func (u *UserSignUp) Validate() error {
     return nil
 }
 
-// Validate validates the UserLogin struct
-func (u *UserLogin) Validate() error {
-    if err := ValidateEmail(u.Email); err != nil {
-        return err
-    }
-    if err := ValidatePassword(u.Password); err != nil {
-        return err
-    }
-    return nil
-}
+
 func (u *ChangePasswordRequest) Validate() error {
     if err := ValidateEmail(u.Email); err != nil {
         return err

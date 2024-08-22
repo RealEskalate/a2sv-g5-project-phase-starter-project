@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { currentuser } from "@/services/userupdate";
+import { currentUser } from "@/services/userupdate";
 import { BalanceCard } from './smallCard';
 
 interface BalanceCardProps {
@@ -16,7 +16,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        const balanceInfo = await currentuser();
+        const balanceInfo = await currentUser();
         const fetchedBalance = `$${balanceInfo.data.accountBalance}`;
 
         const updatedBalances: BalanceCardProps[] = [

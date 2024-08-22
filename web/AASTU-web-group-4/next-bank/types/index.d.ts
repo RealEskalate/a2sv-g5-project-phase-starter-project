@@ -10,6 +10,7 @@ export interface User {
   presentAddress: string;
   city: string;
   country: string;
+  currency: string;
   profilePicture: string;
   preference: {
     currency: string;

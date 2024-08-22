@@ -66,7 +66,7 @@ func (u UserController) RegisterPrivileged(router *gin.RouterGroup) {
 func (u UserController) RegisterProtected(router *gin.RouterGroup) {
 	router = router.Group("/auth")
 	router.POST("/:username/logout", u.logout)
-	router.PUT("/update", u.updateProfile)
+	router.PUT("/update/:id", u.updateProfile)
 }
 func (u UserController) RegisterPublic(router *gin.RouterGroup) {
 	router = router.Group("/auth")
@@ -285,6 +285,14 @@ func (u UserController) validateEmail(ctx *gin.Context) {
 
 func (u UserController) updateProfile(ctx *gin.Context) {
 	var request UpdateProfileDto
+	userid  := ctx.Param("id")
+	if userid == "" {
+		ctx.JSON(http.StatusBadRequest, "Invalid Input")
+		log.Println("User input could not be bound -- UserController")
+		return
+	}
+
+
 	if err := ctx.BindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, "Invalid Input")
 		log.Println("User input could not be bound -- UserController")
@@ -292,18 +300,7 @@ func (u UserController) updateProfile(ctx *gin.Context) {
 	}
 
 
-	if request.Username == "" {
-		u.Problem(ctx, errapi.NewBadRequest("username is required"))
-		return
-	}
-
-	if request.Email == "" {
-		u.Problem(ctx, errapi.NewBadRequest("email is required"))
-		return
-	}
-
-
-	command := usercmd.NewUpdateProfileCommand( request.Username, request.FirstName, request.LastName, request.Email, request.Password)
+	command := usercmd.NewUpdateProfileCommand( request.Username, request.FirstName, request.LastName, request.Email, request.Password, userid)
 	_, err := u.updateProfileHandler.Handle(command)
 	if err != nil {
 		u.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))

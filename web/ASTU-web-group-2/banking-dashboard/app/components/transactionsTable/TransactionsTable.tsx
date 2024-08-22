@@ -8,9 +8,9 @@ export interface TransactionTypeArray {
 const inter = Inter({ subsets: ["latin"] });
 const TransactionsTable: React.FC<TransactionTypeArray> = ({transactions}) => {
   return (
-    <div className="overflow-x-auto">
-      <table className=" bg-white max-md:hidden rounded-3xl shadow-sm">
-        <thead>
+    <div className="overflow-x-auto w-full">
+      <table className=" bg-white max-md:hidden rounded-3xl shadow-sm w-full">
+        <thead className="w-full">
           <tr className={`text-left text-[#718EBF] ${inter.className}`}>
             <th className="py-3 px-6 font-medium">Description</th>
             <th className="py-3 px-6 font-medium">Transaction ID</th>

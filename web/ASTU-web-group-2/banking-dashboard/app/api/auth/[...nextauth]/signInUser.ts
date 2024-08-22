@@ -1,9 +1,10 @@
 async function signInUser({ userName, password }: any) {
   const data = { userName, password }; // Your data object
-
+  const url = process.env.BASE_URL
+  console.log(url)
   try {
     const response = await fetch(
-      "https://bank-dashboard-6acc.onrender.com/auth/login",
+      `${url}/auth/login`,
       {
         method: "POST",
         headers: {

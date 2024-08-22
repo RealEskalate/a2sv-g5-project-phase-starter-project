@@ -8,46 +8,19 @@ import RecentTransaction from "../components/recent-transaction/RecentTransactio
 import ExpenseStatisticsChart from "../components/charts/ExpenseStatisticsChart";
 import SendMoney from "../components/sendMoney/SendMoney";
 import BalanceHistoryChart from "../components/charts/BalanceHistoryChart";
+import CardDisplay from "../components/cardDisplay/CardDisplay";
 const page = () => {
   return (
     <div className="grid grid-cols-1 gap-2 pb-5">
       <div className="grid lg:grid-cols-[2fr_1fr] max-md:grid-cols-1  gap-7 p-4 w-auto">
         <CardForCreditCards
-          className="overflow-x-auto"
+          className="overflow-x-auto scroll-hide"
           title="Credit Cards"
           button="See All"
           link="/credit-cards"
         >
-          <div className="flex  gap-7  rounded-lg overflow-x-auto scrollbar-hide">
-            <div>
-              <CreditCard
-                balance={1250}
-                cardHolder="John Doe"
-                expiryDate="12/24"
-                cardNumber="1234 5678 9012 3456"
-                cardType="primary" // Can be "primary", "secondary", or "tertiary"
-              />
-            </div>
-            <div>
-              <CreditCard
-                balance={1250}
-                cardHolder="John Doe"
-                expiryDate="12/24"
-                cardNumber="1234 5678 9012 3456"
-                cardType="tertiary" // Can be "primary", "secondary", or "tertiary"
-              />
-            </div>
-            <div>
-              <CreditCard
-                balance={1250}
-                cardHolder="John Doe"
-                expiryDate="12/24"
-                cardNumber="1234 5678 9012 3456"
-                cardType="secondary" // Can be "primary", "secondary", or "tertiary"
-              />
-            </div>
-            
-          </div>
+          <CardDisplay numofcard={3} />
+
         </CardForCreditCards>
         <Card
           title="Recent Transactions"

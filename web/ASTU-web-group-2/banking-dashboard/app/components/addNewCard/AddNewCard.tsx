@@ -1,6 +1,55 @@
 import React from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAddCreditCardMutation } from "@/lib/service/CardService";
+import { useSession } from "next-auth/react";
+import notify from "@/utils/notify";
+
+// Define the Zod schema for form validation
+const addCardSchema = z.object({
+  cardHolder: z.string().min(1, "Card Holder is required"),
+  balance: z.number().min(0, "Balance must be greater than or equal to 0"),
+  expiryDate: z.string().min(1, "Expiration Date is required"),
+  cardType: z.string().min(1, "Card Type is required"),
+});
+
+type AddCardFormValues = z.infer<typeof addCardSchema>;
 
 const AddNewCard = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AddCardFormValues>({
+    resolver: zodResolver(addCardSchema),
+  });
+  const [addNewCard] = useAddCreditCardMutation();
+  const session = useSession();
+
+  const onSubmit = async (data: AddCardFormValues) => {
+    const formattedData = {
+      balance: data.balance,
+      cardHolder: data.cardHolder,
+      expiryDate: new Date(data.expiryDate).toISOString(),
+      cardType: data.cardType,
+    };
+    const accessToken = session.data?.user.accessToken || "";
+    const res = await addNewCard({
+      ...formattedData,
+      passcode: "56789",
+      accessToken: accessToken,
+    });
+
+    if (res && res.data && res.data.id) {
+      notify.success("Card successfully added!");
+      // Store the card ID in local storage
+    } else {
+      // Handle failure case
+      notify.error("Failed to add card.");
+    }
+  };
+
   return (
     <div className="bg-white rounded-3xl grid grid-cols-1 gap-6 p-6">
       <p className="text-[#718EBF] font-normal text-base leading-6">
@@ -69,3 +118,4 @@ const AddNewCard = () => {
 };
 
 export default AddNewCard;
+

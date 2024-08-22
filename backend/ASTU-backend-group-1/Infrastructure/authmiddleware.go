@@ -4,7 +4,6 @@ import (
 	"astu-backend-g1/config"
 	"astu-backend-g1/domain"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -13,84 +12,51 @@ import (
 )
 
 type AuthController struct {
+	blogRepo domain.BlogRepository
 }
 
-func NewAuthController() GeneralAuthorizationController {
-	return &AuthController{}
+func NewAuthController(blogRepo domain.BlogRepository) GeneralAuthorizationController {
+	return &AuthController{
+		blogRepo: blogRepo,
+	}
 }
 
 func (ac *AuthController) AuthenticationMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println("this is the authorization middleware")
-		configJwt, err := config.LoadConfig()
-		if err != nil {
+		defer func() {
+			if r := recover(); r != nil {
+				c.JSON(http.StatusForbidden, gin.H{"error": "unexpected error"})
+				c.Abort()
+			}
+		}()
+		claims, err := GetClaims(c)
+		if err != nil{
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			c.Abort()
-			return
+            c.Abort()
+            return
 		}
-		var jwtSecret = []byte(configJwt.Jwt.JwtKey)
-		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-			c.Abort()
-			return
-		}
-		fmt.Println(authHeader)
-		tokenString := strings.Split(authHeader, " ")[1]
-		token, err := jwt.ParseWithClaims(tokenString, &domain.Claims{}, func(token *jwt.Token) (interface{}, error) {
-			return jwtSecret, nil
-		})
-		fmt.Println(tokenString)
-		if err != nil {
-			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
-			c.Abort()
-			return
-		}
-		if claims, ok := token.Claims.(*domain.Claims); ok && token.Valid {
-			fmt.Println("this is a valid claim", claims)
-			c.Set("claims", claims)
-			c.Next()
-		}
-		fmt.Println("invalid token")
-
-		c.AbortWithStatusJSON(http.StatusForbidden, errors.New("invalid token"))
-		c.Abort()
+		c.Set("claims", claims)
+		c.Next()
 	}
 }
 
 func (ac *AuthController) ADMINMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		configJwt, err := config.LoadConfig()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
-			c.Abort()
-			return
-		}
-		var jwtSecret = []byte(configJwt.Jwt.JwtKey)
-		authHeader := c.GetHeader("Authorization")
-
-		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
-			c.Abort()
-			return
-		}
-
-		tokenString := strings.Split(authHeader, " ")[1]
-
-		token, err := jwt.ParseWithClaims(tokenString, &domain.Claims{}, func(token *jwt.Token) (interface{}, error) {
-			return jwtSecret, nil
-		})
-
-		if err != nil {
-			c.JSON(http.StatusForbidden, err)
-			c.Abort()
-			return
-		}
-		if claims, ok := token.Claims.(*domain.Claims); ok && token.Valid {
-			if claims.IsAdmin {
-				c.Next()
-				return
+		defer func() {
+			if r := recover(); r != nil {
+				c.JSON(http.StatusForbidden, gin.H{"error": "unexpected error"})
+				c.Abort()
 			}
+		}()
+		claims, err := GetClaims(c)
+		if err != nil{
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+            c.Abort()
+            return
+		}
+		if claims.IsAdmin {
+			c.Next()
+			return
 		}
 		c.AbortWithStatusJSON(http.StatusForbidden, errors.New("invalid token"))
 		c.Abort()
@@ -99,70 +65,83 @@ func (ac *AuthController) ADMINMiddleware() gin.HandlerFunc {
 
 func (ac *AuthController) USERMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println("user middleware")
-		configJwt, err := config.LoadConfig()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
-			c.Abort()
-			return
-		}
-		var jwtSecret = []byte(configJwt.Jwt.JwtKey)
-		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
-			c.Abort()
-			return
-		}
-
-		tokenString := strings.Split(authHeader, " ")[1]
-
-		token, err := jwt.ParseWithClaims(tokenString, &domain.Claims{}, func(token *jwt.Token) (interface{}, error) {
-			return jwtSecret, nil
-		})
-		fmt.Println("this is token: ", token)
-		if err != nil {
-			c.JSON(http.StatusForbidden, err)
-			c.Abort()
-			return
-		}
-		if claims, ok := token.Claims.(*domain.Claims); ok && token.Valid {
-			fmt.Println("this is claims: ", claims)
-			if claims.IsActive {
-				c.Next()
-				return
-			} else {
-				c.AbortWithStatusJSON(http.StatusForbidden, errors.New("invalid token"))
+		defer func() {
+			if r := recover(); r != nil {
+				c.JSON(http.StatusForbidden, gin.H{"error": "unexpected error"})
 				c.Abort()
-				return
 			}
+		}()
+		claim, err := GetClaims(c)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Abort()
+			return
+		}
+		if claim.IsActive {
+			c.Next()
+			return
 		}
 		c.AbortWithStatusJSON(http.StatusForbidden, errors.New("invalid token"))
 		c.Abort()
 	}
+
 }
 
-func GetClaims(c *gin.Context) (domain.Claims, error) {
+func (ac *AuthController) OWNERMiddleware() gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+		defer func() {
+			if r := recover(); r != nil {
+				c.JSON(http.StatusForbidden, gin.H{"error": "unexpected error"})
+				c.Abort()
+			}
+		}()
+		claim, err := GetClaims(c)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Abort()
+			return
+		}
+		blogId := c.Param("blogId")
+		blog, err := ac.blogRepo.GetBlogById(blogId)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Abort()
+			return
+		}
+		if blog.AuthorId == claim.ID {
+			c.Next()
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusForbidden, errors.New("unauthorized,neither an admin nor an author"))
+	}
+}
+func GetClaims(c *gin.Context) (*domain.Claims, error) {
 	configJwt, err := config.LoadConfig()
 	if err != nil {
-		return domain.Claims{}, err
+		return &domain.Claims{}, err
 	}
 	var jwtSecret = []byte(configJwt.Jwt.JwtKey)
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
-		return domain.Claims{}, errors.New("missing authorization header")
+		return &domain.Claims{}, errors.New("missing authorization header")
 	}
 
-	tokenString := strings.Split(authHeader, " ")[1]
+	TokenString := strings.Split(authHeader, " ")
+		if len(TokenString) != 2 || TokenString[0] != "Bearer" {
+			return  &domain.Claims{}, errors.New("invalid token format")
+		}
+		tokenString := TokenString[1]
 
 	token, err := jwt.ParseWithClaims(tokenString, &domain.Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return jwtSecret, nil
 	})
 
 	if err != nil {
-		return domain.Claims{}, err
+		return &domain.Claims{}, err
 	}
 	if claims, ok := token.Claims.(*domain.Claims); ok && token.Valid {
-		return *claims, err
+		return claims, err
 	}
-	return domain.Claims{}, errors.New("invalid token")
+	return &domain.Claims{}, errors.New("invalid token")
 }

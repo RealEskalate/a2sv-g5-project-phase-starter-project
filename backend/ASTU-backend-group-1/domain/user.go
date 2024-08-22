@@ -63,6 +63,7 @@ type UserUsecase interface {
 	ResetPassword(email string, token string, password string) (string, error)
 	ForgetPassword(email string) (string, error)
 	LoginUser(uname string, password string) (string, error)
+	Logout(email string) error
 }
 type Claims struct {
 	ID       string `bson:"_id,omitempty" json:"id,omitempty"`

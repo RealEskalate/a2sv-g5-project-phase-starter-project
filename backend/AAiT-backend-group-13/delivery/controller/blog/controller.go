@@ -3,25 +3,31 @@ package blogcontroller
 import (
 	"encoding/base64"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/group13/blog/delivery/common"
+	basecontroller "github.com/group13/blog/delivery/controller/base"
+	errapi "github.com/group13/blog/delivery/errors"
 	er "github.com/group13/blog/domain/errors"
 	"github.com/group13/blog/domain/models"
 	blogcmd "github.com/group13/blog/usecase/blog/command"
 	blogqry "github.com/group13/blog/usecase/blog/query"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
+	iqry "github.com/group13/blog/usecase/common/cqrs/query"
 )
 
 // Controller handles HTTP requests related to blogs.
 type Controller struct {
+	basecontroller.BaseHandler
 	addHandler         icmd.IHandler[*blogcmd.AddCommand, *models.Blog]
 	updateHandler      icmd.IHandler[*blogcmd.UpdateCommand, *models.Blog]
 	deleteHandler      icmd.IHandler[uuid.UUID, bool]
 	getMultipleHandler icmd.IHandler[*blogqry.GetMultipleQuery, []*models.Blog]
+	getHandler         iqry.IHandler[uuid.UUID, *models.Blog]
 }
 
 var _ common.IController = &Controller{}
@@ -32,6 +38,7 @@ type Config struct {
 	UpdateHandler      icmd.IHandler[*blogcmd.UpdateCommand, *models.Blog]
 	DeleteHandler      icmd.IHandler[uuid.UUID, bool]
 	GetMultipleHandler icmd.IHandler[*blogqry.GetMultipleQuery, []*models.Blog]
+	GetHandler         iqry.IHandler[uuid.UUID, *models.Blog]
 }
 
 // New creates a new blog Controller with the given dependencies.
@@ -41,6 +48,7 @@ func New(config Config) *Controller {
 		updateHandler:      config.UpdateHandler,
 		deleteHandler:      config.DeleteHandler,
 		getMultipleHandler: config.GetMultipleHandler,
+		getHandler:         config.GetHandler,
 	}
 }
 
@@ -151,11 +159,21 @@ func (c *Controller) getBlogs(ctx *gin.Context) {
 }
 
 func (c *Controller) getBlogById(ctx *gin.Context) {
-	_, err := uuid.Parse(ctx.Param("id"))
+	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
 		c.respondWithError(ctx, http.StatusBadRequest, er.NewValidation("Invalid Id Format"))
 		return
 	}
+
+	log.Printf("Serving Get blog by id for %v -- Blogcontroller", id)
+	blog, err := c.getHandler.Handle(id)
+	if err != nil {
+		log.Printf("Fetched Blog unsuccessfull %s -- BlogController", err.Error())
+		c.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
+	}
+	log.Printf("Fetched Blog for %v successfull -- BlogController", id)
+
+	c.Respond(ctx, http.StatusOK, FromBlog(blog))
 }
 
 // extractBlogQueryParams extracts and validates query parameters for blog queries.

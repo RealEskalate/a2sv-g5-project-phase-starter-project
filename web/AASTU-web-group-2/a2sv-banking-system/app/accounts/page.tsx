@@ -53,6 +53,7 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [getCard, setGetCards] = useState<CardType[]>();
   const [currentUser, setCurrentUser] = useState<UserInfo>();
+  const [balance, setBalance] = useState(0)
   const [income, setIncome] = useState(0);
   const [expense, setExpense] = useState(0);
 
@@ -92,6 +93,7 @@ const Page = () => {
         // Fetch Balance
         const currentUser = await getCurrentUser(access_token);
         setCurrentUser(currentUser);
+        setBalance(currentUser.accountBalance)
 
         // Fetch Income
         const incomeData = await getTransactionIncomes(0, 1, access_token);
@@ -123,9 +125,7 @@ const Page = () => {
     data: [
       {
         heading: "My Balance",
-        text: currentUser?.accountBalance
-          ? String(currentUser?.accountBalance)
-          : "0",
+        text: String(balance),
         headingStyle: "text-sm font-bold text-nowrap text-[#718EBF]",
         dataStyle: "text-xs text-nowrap",
       },
@@ -223,22 +223,22 @@ const Page = () => {
       <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5">
         <div>
           <div className="flex flex-wrap gap-2">
-            {currentUser ? (
+            {balance || balance == 0 ? (
               <ListCard column={ReusableCard} width={"w-[48%] md:w-[23%]"} />
             ) : (
               <ListCardLoading></ListCardLoading>
             )}
-            {income ? (
+            {(income || income == 0 )? (
               <ListCard column={card1} width={"w-[48%] md:w-[23%]"} />
             ) : (
               <ListCardLoading></ListCardLoading>
             )}
-            {expense ? (
+            {(expense || expense == 0) ? (
               <ListCard column={card2} width={"w-[48%] md:w-[23%]"} />
             ) : (
               <ListCardLoading></ListCardLoading>
             )}
-            {currentUser ? (
+            {(balance || balance == 0) ? (
               <ListCard column={card3} width={"w-[48%] md:w-[23%]"} />
             ) : (
               <ListCardLoading></ListCardLoading>

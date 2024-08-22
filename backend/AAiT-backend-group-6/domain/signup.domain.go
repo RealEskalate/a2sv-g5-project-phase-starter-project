@@ -5,10 +5,10 @@ import (
 )
 
 type SignupRequest struct {
-	Name     	string `form:"name" binding:"required"`
-	Username    string `form:"username" binding:"required"`
-	Email    	string `form:"email" binding:"required,email"`
-	Password 	string `form:"password" binding:"required"`
+	Name     	string `json:"name" binding:"required"`
+	Username    string `json:"username" binding:"required"`
+	Email    	string `json:"email" binding:"required,email"`
+	Password 	string `json:"password" binding:"required"`
 }
 
 type SignupResponse struct {
@@ -16,10 +16,14 @@ type SignupResponse struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
+type VerifyEmailRequest struct{
+	Email    	        string `form:"email" binding:"required,email"`
+	Verification_code 	string `json:"verification_code"`
+}
+
 type SignupUsecase interface {
 	Create(c context.Context, user *User) error
-	GetUserByEmail(c context.Context, email string) (User, error)
-	GetUserByUsername(c context.Context, username string) (User, error)
+	VerifyEmail(c context.Context, email string, code string) error
 	CreateAccessToken(user *User, secret string, expiry int) (accessToken string, err error)
 	CreateRefreshToken(user *User, secret string, expiry int) (refreshToken string, err error)
 }

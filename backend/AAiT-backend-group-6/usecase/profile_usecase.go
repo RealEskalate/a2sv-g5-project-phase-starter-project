@@ -22,12 +22,11 @@ func (pu *profileUsecase) UpdateProfile(c context.Context, userID string, profil
 	panic("unimplemented")
 }
 
-
 func (pu *profileUsecase) GetProfileByID(c context.Context, userID string) (*domain.Profile, error) {
 	ctx, cancel := context.WithTimeout(c, pu.contextTimeout)
 	defer cancel()
 
-	user, err := pu.userRepository.GetByID(ctx, userID)
+	user, err := pu.userRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

@@ -5,6 +5,7 @@ import (
 	"AAiT-backend-group-6/infrastructure"
 	"AAiT-backend-group-6/utils"
 	"context"
+	"errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -28,11 +29,6 @@ func (su *signupUsecase) Create(c context.Context, user *domain.User) error {
 	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
 	defer cancel()
 
-	validationErr := infrastructure.ValidateUser(user)
-	if validationErr != nil{
-		return validationErr
-	}
-
 	password := infrastructure.HashPassword(user.Password)
 	created_at, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 	updated_at, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
@@ -42,14 +38,16 @@ func (su *signupUsecase) Create(c context.Context, user *domain.User) error {
 	if err != nil {
 		return err
     }
-	verification_code := code
+	verification_code := infrastructure.HashPassword(code)
     verification_code_expiry := time.Now().Add(24 * time.Hour) // Code expires in 24 hours
 
 	user = &domain.User{
 		ID:       primitive.NewObjectID(),
 		Name:     user.Name,
 		Email:    user.Email,
+		Username: user.Username,
 		Password: password,
+		User_type: "USER",
 		Created_at: created_at,
 		Updated_at: updated_at,
 		Is_active: false,
@@ -62,20 +60,35 @@ func (su *signupUsecase) Create(c context.Context, user *domain.User) error {
 		return err
 	}
 
-	return su.emailService.SendEmail(user.Email, user.Name, user.VerificationCode)
+	msg := su.emailService.EmailVerificationMsg(user.Email, user.Name, code)
+
+	return su.emailService.SendEmail(user.Email, msg)
 	
 }
 
-func (su *signupUsecase) GetUserByEmail(c context.Context, email string) (domain.User, error) {
-	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
-	defer cancel()
-	return su.userRepository.GetByEmail(ctx, email)
-}
 
-func (su *signupUsecase) GetUserByUsername(c context.Context, username string) (domain.User, error) {
+func (su *signupUsecase) VerifyEmail(c context.Context, email string, code string) error {
 	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
 	defer cancel()
-	return su.userRepository.GetByUsername(ctx, username)
+
+	user, err := su.userRepository.GetUserByEmail(ctx, email)
+	if err != nil {
+		return err
+	}
+
+	if user.Is_active{
+		return errors.New("this accout is already verified")
+	}
+
+	if err := infrastructure.VerifyPassword(code, user.VerificationCode); err != nil{
+		return err
+	}
+
+	if time.Now().After(user.VerificationCodeExpiry) {
+		return errors.New("verification code has expired")
+	}
+
+	return nil
 }
 
 func (su *signupUsecase) CreateAccessToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {

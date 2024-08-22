@@ -12,8 +12,8 @@ import (
 var ENV domain.EnvironmentVariables
 
 // Loads environment variables from .env file and verifies that all required variables are set
-func LoadEnvironmentVariables() error {
-	err := godotenv.Load()
+func LoadEnvironmentVariables(filename string) error {
+	err := godotenv.Load(filename)
 	if err != nil {
 		return fmt.Errorf("error: %v", err.Error())
 	}

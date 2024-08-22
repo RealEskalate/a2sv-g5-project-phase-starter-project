@@ -17,11 +17,6 @@ import (
 	repository "github.com/aait.backend.g5.main/backend/Repository"
 )
 
-func matchTime(t time.Time) interface{} {
-	return mock.MatchedBy(func(arg time.Time) bool {
-		return true // Allow any time.Time value
-	})
-}
 
 type BlogRepositorySuite struct {
 	suite.Suite

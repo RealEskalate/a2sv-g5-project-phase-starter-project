@@ -1,7 +1,7 @@
+# A2SV G5 Starter Project Phase Repository
 
-# A2SV G5 Starter Project Phase Repository 
+Welcome to the A2SV G5 Starter Project Phase Repository!. This repository serves as a central hub for all the projects developed during the A2SV starter project phase at AAIT, AASTU and ASTU.
 
-Welcome to the A2SV G5 Starter Project Phase Repository!. This repository serves as a central hub for all the projects developed during the A2SV starter project phase at  AAIT, AASTU and ASTU.
 ## Table of Contents
 
 - [Overview](#overview)
@@ -35,11 +35,13 @@ starter-project-phase-repo/
 To get started with the Group Name Web Project, follow these steps:
 
 1. Clone this repository to your local machine:
+
    ```
    git clone https://github.com/RealEskalate/a2sv-g5-project-phase-starter-project.git
    ```
 
 2. Navigate to the specific project directory:
+
    ```
    cd web/group-name
    ```
@@ -48,8 +50,6 @@ To get started with the Group Name Web Project, follow these steps:
 
 ## Git Guidelines
 
-
 Refer to [Git Guidelines](docs/git.md)
 
 Thank you for being a part of the A2SV journey. Together, we can make a positive impact on society through technology and innovation.
-

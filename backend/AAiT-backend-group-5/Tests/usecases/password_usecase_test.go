@@ -193,7 +193,7 @@ func (suite *SetupPasswordTestSuite) TestSetNewUserPassword_Success() {
 
 	suite.passwordServiceMock.
 		EXPECT().
-		ValidatePasswordStrength(password, user.Email, user.Name, user.Username).
+		ValidatePasswordStrength(password).
 		Return(nil)
 
 	suite.passwordServiceMock.
@@ -258,7 +258,7 @@ func (suite *SetupPasswordTestSuite) TestSetNewUserPassword_UserAlreadyExists() 
 
 	suite.passwordServiceMock.
 		EXPECT().
-		ValidatePasswordStrength(password, user.Email, user.Name, user.Username).
+		ValidatePasswordStrength(password).
 		Return(nil)
 
 	suite.passwordServiceMock.
@@ -315,7 +315,7 @@ func (suite *SetupPasswordTestSuite) TestSetUpdateUserPassword_Success() {
 
 	suite.passwordServiceMock.
 		EXPECT().
-		ValidatePasswordStrength(password, user.Email, user.Name, user.Username).
+		ValidatePasswordStrength(password).
 		Return(nil)
 
 	suite.passwordServiceMock.

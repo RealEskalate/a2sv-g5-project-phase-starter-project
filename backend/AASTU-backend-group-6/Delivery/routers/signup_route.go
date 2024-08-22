@@ -24,6 +24,8 @@ func NewSignupRoute(config *infrastructure.Config, DB mongo.Database, SignupRout
 	SignupRoute.POST("/signup", signup.Signup)
 	SignupRoute.POST("/signup/verify", signup.VerifyOTP)
 	SignupRoute.POST("/reset", signup.ForgotPassword)
-	// SignupRoute.POST("/resendotp", signup.ForgotPassword)
+	SignupRoute.POST("/resend", signup.ResendOTP)
+	
+
 	
 }

@@ -134,12 +134,19 @@ func (u *SignupUseCase) ForgotPassword(c context.Context, email domain.ForgotPas
 	defer cancel()
 
 	// check if user exists
-	_, err := u.SignupRepository.FindUserByEmail(ctx, email.Email)
+	existing , err := u.SignupRepository.FindUserByEmail(ctx, email.Email)
 	if err != nil {
 		return &domain.ErrorResponse{Message: "User not found", Status: 404}
 	}
 
 	// generate token
+
+	// check if token is already set and the expiration time is not passed
+	if existing.ResetPasswordToken != "" && time.Now().Before(existing.ResetPasswordExpires) {
+		difftime := existing.ResetPasswordExpires.Sub(time.Now())
+		return &domain.ErrorResponse{Message: "Reset token already sent Please wait for " + strconv.FormatFloat(difftime.Minutes(), 'f', -1, 64) + " to resend reset token", Status: 400}
+	}
+
 
 	token, err := infrastructure.GenerateResetToken()
 
@@ -215,11 +222,23 @@ func (u *SignupUseCase) ResetPassword(c context.Context, password domain.ResetPa
 	return &domain.SuccessResponse{Message: "Password Reset Sucessfully", Status: 200}
 }
 
+
+
 func (u *SignupUseCase) HandleUnverifiedUser(c context.Context, user domain.User) interface{} {
 
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
+	if user.Username == "" {
+		existingUser , err  := u.SignupRepository.FindUserByEmail(ctx, user.Email)
+		if err != nil {
+			return &domain.ErrorResponse{Message: "User not found", Status: 404}
+		}
+		user = existingUser
+	}
+	if user.Verified{
+		return &domain.ErrorResponse{Message: "User already verified", Status: 400}
+	}
 	// check if the user send the register button again Not to send the OTP again before the expiration time
 
 	if time.Now().Before(user.ExpiresAt) {
@@ -258,3 +277,4 @@ func (u *SignupUseCase) HandleUnverifiedUser(c context.Context, user domain.User
 
 	return &domain.SuccessResponse{Message: "OTP send to your Email Verify Your Account", Data: "", Status: 201}
 }
+

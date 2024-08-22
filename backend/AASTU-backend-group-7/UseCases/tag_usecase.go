@@ -9,39 +9,38 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type tagsUseCase struct {
+type TagsUseCase struct {
 	tagRepository  Domain.TagRepository
 	contextTimeout time.Duration
 }
 
-func NewTagsUseCase(repo Domain.TagRepository) *tagsUseCase {
-	return &tagsUseCase{
+func NewTagsUseCase(repo Domain.TagRepository) *TagsUseCase {
+	return &TagsUseCase{
 		tagRepository:  repo,
 		contextTimeout: time.Second * 10,
 	}
 }
 
-func (usecase *tagsUseCase) CreateTag(c *gin.Context, tag *Domain.Tag) (error, int) {
+func (usecase *TagsUseCase) CreateTag(c *gin.Context, tag *Domain.Tag) (error, int) {
 	ctx, cancel := context.WithTimeout(c, usecase.contextTimeout)
 	defer cancel()
 	return usecase.tagRepository.CreateTag(ctx, tag)
 }
 
-func (usecase *tagsUseCase) DeleteTag(c *gin.Context, id primitive.ObjectID) (error, int) {
+func (usecase *TagsUseCase) DeleteTag(c *gin.Context, id primitive.ObjectID) (error, int) {
 	ctx, cancel := context.WithTimeout(c, usecase.contextTimeout)
 	defer cancel()
 	return usecase.tagRepository.DeleteTag(ctx, id)
 }
 
-func (usecase *tagsUseCase) GetAllTags(c *gin.Context) ([]*Domain.Tag, error, int) {
+func (usecase *TagsUseCase) GetAllTags(c *gin.Context) ([]*Domain.Tag, error, int) {
 	ctx, cancel := context.WithTimeout(c, usecase.contextTimeout)
 	defer cancel()
 	return usecase.tagRepository.GetAllTags(ctx)
 }
 
-func (usecase *tagsUseCase) GetTagBySlug(c *gin.Context, slug string) (*Domain.Tag, error, int) {
+func (usecase *TagsUseCase) GetTagBySlug(c *gin.Context, slug string) (*Domain.Tag, error, int) {
 	ctx, cancel := context.WithTimeout(c, usecase.contextTimeout)
 	defer cancel()
 	return usecase.tagRepository.GetTagBySlug(ctx, slug)
 }
-

@@ -3,7 +3,7 @@ async function signInUser({ userName, password }: any) {
 
   try {
     const response = await fetch(
-      `${process.env.BASE_URL}/auth/login`,
+      "https://astu-bank-dashboard.onrender.com/auth/login",
 
       {
         method: "POST",

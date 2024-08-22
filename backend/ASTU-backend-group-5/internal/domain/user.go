@@ -33,3 +33,34 @@ type GoogleUser struct {
 	GivenName     string `json:"given_name"`
 	FamilyName    string `json:"family_name"`
 }
+
+type GetUserDTO struct {
+	ID       primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"` // MongoDB ObjectID
+	UserName string             `bson:"username" json:"username" form:"username"`
+	Email    string             `bson:"email" json:"email" form:"email"`
+	Profile  UserProfile        `bson:"profile" json:"profile" form:"profile"`
+	Role     string             `bson:"role" json:"role" form:"role"`
+	Created  primitive.DateTime `bson:"created" json:"created" form:"created"`
+	Updated  primitive.DateTime `bson:"updated" json:"updated" form:"updated"`
+	Verified bool               `bson:"verified" json:"verified" form:"verified"`
+}
+
+type CreateUserDTO struct {
+	UserName string
+	Email    string
+	Password string
+}
+
+type UpdateUserDTO struct {
+	UserName string      `bson:"username" json:"username" form:"username"`
+	Profile  UserProfile `bson:"profile" json:"profile" form:"profile"`
+}
+
+type UpdateUserPasswordDTO struct {
+	Password string `bson:"password" json:"password" form:"password"`
+}
+
+type LoginUserDTO struct {
+	Email    string
+	Password string
+}

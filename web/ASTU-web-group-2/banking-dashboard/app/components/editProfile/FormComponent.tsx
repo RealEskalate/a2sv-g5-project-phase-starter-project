@@ -40,7 +40,7 @@ const schema = yup.object().shape({
 const FormComponent: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
   const dispatch = useDispatch();
-  const [updateUser] = useUpdateUserMutation(); // Use the mutation hook
+  const [updateUser, {isLoading,isError}] = useUpdateUserMutation(); // Use the mutation hook
 
   const [selectedImage, setSelectedImage] = useState<string | null>(user?.profilePicture || null);
 
@@ -190,6 +190,7 @@ const FormComponent: React.FC = () => {
       className="flex justify-end mt-6">
         <button type="submit" 
           className='w-full md:w-auto px-4 py-2 bg-[#1814F3] text-white rounded-lg'
+          disabled = {isLoading}
           >
           Save Changes
         </button>

@@ -5,7 +5,11 @@ import { bankApi } from '../lib/service/BankService';
 import { userApi } from '../lib/service/UserService';
 import { loanApi } from '../lib/service/LoanService';
 import { companyApi } from '../lib/service/CompanyService';
+
 import { CreditCardInfoApi } from './service/CardService';
+
+import {authenticationApi} from '../lib/service/authentication';
+
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +20,7 @@ export const store = configureStore({
     [loanApi.reducerPath]: loanApi.reducer,
     [companyApi.reducerPath]: companyApi.reducer,
     [CreditCardInfoApi.reducerPath]: CreditCardInfoApi.reducer,
+    [authenticationApi.reducerPath]: authenticationApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -25,6 +30,7 @@ export const store = configureStore({
       loanApi.middleware,
       companyApi.middleware,
       CreditCardInfoApi.middleware,
+      authenticationApi.middleware,
     ),
 });
 

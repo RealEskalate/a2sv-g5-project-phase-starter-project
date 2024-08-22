@@ -27,9 +27,9 @@ func InitRouter(controller *controller.Controller) *gin.Engine {
 	router.PATCH("/comment/:commentID", infrastructure.UserMiddleware(SECRET_KEY), controller.UpdateComment)
 	router.DELETE("/comment/:commentID", infrastructure.UserMiddleware(SECRET_KEY), controller.DeleteComment)
 
-	router.POST("/forgot-password", infrastructure.UserMiddleware(SECRET_KEY), controller.ForgotPassword)
-	router.GET("/store-token", infrastructure.UserMiddleware(SECRET_KEY), controller.StoreToken)
-	router.POST("/reset-password", infrastructure.UserMiddleware(SECRET_KEY), controller.ResetPassword)
+	router.POST("/forgot-password", controller.ForgotPassword)
+	router.GET("/store-token", controller.StoreToken)
+	router.POST("/reset-password",controller.ResetPassword)
 
 	router.POST("/like/:blogID", infrastructure.UserMiddleware(SECRET_KEY), controller.LikeBlog)
 	router.GET("/like/:blogID", infrastructure.UserMiddleware(SECRET_KEY), controller.GetLikes)

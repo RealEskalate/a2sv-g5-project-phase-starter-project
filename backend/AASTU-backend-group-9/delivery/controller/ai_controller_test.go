@@ -44,8 +44,8 @@ func (suite *AIControllerSuite) TestGenerateContent() {
 			Keywords string `json:"keywords" binding:"required"`
 		}
 		request.Keywords = "test"
-		resp := genai.GenerateContentResponse{}
-		suite.AIUsecase.On("GenerateBlogContent", mock.Anything, request.Keywords).Return(&resp, nil).Once()
+		resp := []genai.Part{}
+		suite.AIUsecase.On("GenerateBlogContent", mock.Anything, request.Keywords).Return(resp, nil).Once()
 		payload, _ := json.Marshal(request)
 		req, _ := http.NewRequest(http.MethodPost, "/generate_content", bytes.NewBuffer(payload))
 		c.Request = req

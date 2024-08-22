@@ -11,9 +11,9 @@ interface prop {
 const Invoices = ({ image, title, date, expense, color }: prop) => {
   return (
     <div className="flex justify-between max-w-screen-sm min-w-[325px]">
-      <div className="flex flex-initial w-[3/12] m-3">
+      <div className="flex flex-initial w-[3/12] m-3 gap-2">
         <div
-          className={`${color} bg-opacity-25 font-semibold py-1 px-2 rounded-lg  text-sm w-[45px]`}
+          className={`${color} bg-opacity-25 font-semibold py-2 px-2 rounded-lg  text-sm w-[45px]`}
         >
           <Image src={`${image}`} alt={title} width={27} height={18} />
         </div>

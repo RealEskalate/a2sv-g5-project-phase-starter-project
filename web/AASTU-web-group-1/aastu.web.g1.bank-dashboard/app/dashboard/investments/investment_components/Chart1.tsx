@@ -38,13 +38,7 @@ const chartConfig = {
 export default function LineChartComp() {
   const {isDarkMode} = useUser();
   return (
-    <div>
-      <Card
-        className={` ${
-          isDarkMode ? "bg-gray-800 border-none " : "bg-white"
-        }   py-3 rounded-3xl`}
-    
-      >
+      <Card className={`${isDarkMode ? "bg-gray-800 border-none " : "bg-white"}  py-3 rounded-3xl md:min-w-[500px]`} >
         <CardContent>
           <ChartContainer config={chartConfig} className="">
             <AreaChart
@@ -95,6 +89,5 @@ export default function LineChartComp() {
           </ChartContainer>
         </CardContent>
       </Card>
-    </div>
   );
 }

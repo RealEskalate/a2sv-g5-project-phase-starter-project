@@ -17,36 +17,36 @@ func NewBlogUseCase(blogRepo domain.BlogRepository) domain.BlogUseCase {
 	}
 }
 
-func (uc *blogUseCase) CreateBlog(blog *domain.Blog) error {
-	return uc.blogRepo.CreateBlog(context.Background(), blog)
+func (uc *blogUseCase) CreateBlog(c context.Context, blog *domain.Blog) (domain.Blog, error) {
+	return uc.blogRepo.CreateBlog(c, blog)
 }
 
-func (uc *blogUseCase) GetBlog(id string) (*domain.Blog, error) {
-	return uc.blogRepo.GetBlog(context.Background(), id)
+func (uc *blogUseCase) GetBlog(c context.Context, id string) (*domain.Blog, error) {
+	return uc.blogRepo.GetBlog(c, id)
 }
 
-func (uc *blogUseCase) GetBlogs(pagination *domain.Pagination) ([]*domain.Blog, error) {
-	return uc.blogRepo.GetBlogs(context.Background(), pagination)
+func (uc *blogUseCase) GetBlogs(c context.Context, pagination *domain.Pagination) ([]*domain.Blog, error) {
+	return uc.blogRepo.GetBlogs(c, pagination)
 }
 
-func (uc *blogUseCase) UpdateBlog(blog *domain.Blog, blogID string) error {
+func (uc *blogUseCase) UpdateBlog(c context.Context, blog *domain.Blog, blogID string) error {
 	// Ensure the blog ID is set
 	blog.ID, _ = primitive.ObjectIDFromHex(blogID)
-	return uc.blogRepo.UpdateBlog(context.Background(), blog)
+	return uc.blogRepo.UpdateBlog(c, blog)
 }
 
-func (uc *blogUseCase) DeleteBlog(id string) error {
-	return uc.blogRepo.DeleteBlog(context.Background(), id)
+func (uc *blogUseCase) DeleteBlog(c context.Context, id string) error {
+	return uc.blogRepo.DeleteBlog(c, id)
 }
 
-func (uc *blogUseCase) LikeBlog(blogID string, userID string) error {
-	return uc.blogRepo.LikeBlog(context.Background(), blogID, userID)
+func (uc *blogUseCase) LikeBlog(c context.Context, blogID string, userID string) error {
+	return uc.blogRepo.LikeBlog(c, blogID, userID)
 }
 
-func (uc *blogUseCase) UnlikeBlog(blogID string, userID string) error {
-	return uc.blogRepo.UnlikeBlog(context.Background(), blogID, userID)
+func (uc *blogUseCase) UnlikeBlog(c context.Context, blogID string, userID string) error {
+	return uc.blogRepo.UnlikeBlog(c, blogID, userID)
 }
 
-func (uc *blogUseCase) CommentBlog(blogID string, comment *domain.Comment) error {
-	return uc.blogRepo.CommentBlog(context.Background(), blogID, comment)
+func (uc *blogUseCase) CommentBlog(c context.Context, blogID string, comment *domain.Comment) error {
+	return uc.blogRepo.CommentBlog(c, blogID, comment)
 }

@@ -3,12 +3,14 @@ package mongo
 import (
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/bsoncodec"
 	"go.mongodb.org/mongo-driver/bson/bsonrw"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -169,11 +171,27 @@ func (mc *mongoCollection) UpdateOne(ctx context.Context, filter interface{}, up
 }
 
 func (mc *mongoCollection) InsertOne(ctx context.Context, document interface{}) (interface{}, error) {
+	if mc.coll == nil {
+		return nil, errors.New("mongo collection is nil")
+	}
+
+	if document == nil || reflect.ValueOf(document).Kind() != reflect.Ptr {
+		return nil, errors.New("document must be a non-nil pointer to a struct")
+	}
+
 	doc := reflect.ValueOf(document).Elem()
 
-	// check if the provided interface is a struct
 	if doc.Kind() != reflect.Struct {
-		return 0, errors.New("not a struct")
+		return nil, errors.New("document is not a struct")
+	}
+
+	// Handle the ID field
+	idField := doc.FieldByName("ID")
+	if idField.IsValid() && idField.Type() == reflect.TypeOf(primitive.ObjectID{}) {
+		// Set to a new ObjectID if it's the zero value
+		if idField.Interface().(primitive.ObjectID).IsZero() {
+			idField.Set(reflect.ValueOf(primitive.NewObjectID()))
+		}
 	}
 
 	now := time.Now()
@@ -191,8 +209,11 @@ func (mc *mongoCollection) InsertOne(ctx context.Context, document interface{}) 
 	}
 
 	id, err := mc.coll.InsertOne(ctx, document)
-	//TODO: add error handling for id.InsertedID
-	return id.InsertedID, err
+	if err != nil {
+		return nil, fmt.Errorf("failed to insert document: %w", err)
+	}
+
+	return id.InsertedID, nil
 }
 
 func (mc *mongoCollection) InsertMany(ctx context.Context, document []interface{}) ([]interface{}, error) {

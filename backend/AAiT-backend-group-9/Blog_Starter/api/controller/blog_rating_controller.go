@@ -2,8 +2,9 @@ package controller
 
 import (
 	"Blog_Starter/domain"
-	"time"
+	"Blog_Starter/utils"
 	"net/http"
+	"time"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,14 +20,20 @@ func NewBlogRatingController(blogRatingUseCase domain.BlogRatingUseCase, timeout
 	}
 }
 
-func (bc *BlogRatingController) InserttAndUpdateRating(c *gin.Context) {
+func (bc *BlogRatingController) InsertAndUpdateRating(c *gin.Context) {
 	var newRating domain.BlogRatingRequest
-	blogID := c.Param("blog_id")
+	blogID := c.Param("id")
 	if err := c.BindJSON(&newRating); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error" : "invalid request format"})
 	}
 
-
+	user, err := utils.CheckUser(c)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error" : err.Error()})
+		return
+	}
+	
+	newRating.UserID = user.UserID
 	newRating.BlogID = blogID
 	if newRating.RatingID != "" {
 		exisitingRating, err := bc.blogratingUSeCase.GetRatingByID(c, newRating.RatingID)
@@ -55,10 +62,9 @@ func (bc *BlogRatingController) InserttAndUpdateRating(c *gin.Context) {
 }
 
 func (bc *BlogRatingController) DeleteRating(c *gin.Context) {
-	var toDelete domain.BlogRatingRequest
-	ratingID := c.Param("rating_id")
-	toDelete.RatingID = ratingID
-	deletedRating, err := bc.blogratingUSeCase.DeleteRating(c, toDelete.RatingID)
+
+	ratingID := c.Param("id")
+	deletedRating, err := bc.blogratingUSeCase.DeleteRating(c, ratingID)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error" : "internal server error"})
 		return

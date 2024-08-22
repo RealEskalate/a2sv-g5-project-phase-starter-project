@@ -33,7 +33,7 @@ func (uc *BlogUseCase) CreateBlog(c context.Context, blog *domain.BlogCreate) (*
 		return nil, errors.New("content length should be greater than 10")
 	}
 
-	// check the user existance
+	// check the user existence
 	user, err := uc.userRepo.GetUserByID(ctx, blog.UserID)
 	if err != nil {
 		return nil, errors.New("user not found")
@@ -101,7 +101,7 @@ func (uc *BlogUseCase) UpdateBlog(c context.Context, blog *domain.BlogUpdate, bl
 	return uc.blogRepo.UpdateBlog(ctx, updatedBlog, blogID)
 }
 
-func (uc *BlogUseCase) DeleteBlog(c context.Context, blogID string, userId string) error {
+func (uc *BlogUseCase) DeleteBlog(c context.Context, blogID string, userId string, role string) error {
 	// implementation
 	// check if the user is the owner of the blog
 	ctx, cancel := context.WithTimeout(c, uc.timeout)
@@ -116,7 +116,7 @@ func (uc *BlogUseCase) DeleteBlog(c context.Context, blogID string, userId strin
 		return err
 	}
 
-	if existedBlog.UserID != blogUserId {
+	if existedBlog.UserID != blogUserId  && role != "admin" && role != "superAdmin"{
 		return errors.New("user is not the owner of the blog")
 	}
 

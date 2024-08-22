@@ -97,7 +97,6 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 	}
 	blog.UserID = user.UserID
 	//call the useCase getBlogByID to check whether the blog exists or not
-
 	blogModel, err := bc.blogUseCase.UpdateBlog(c, &blog, blogID)
 	if err != nil {
 		// Check for specific errors and return appropriate status codes
@@ -117,13 +116,13 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	// implementation
 	blogID := c.Param("id")
-	user, err := utils.CheckUser(c) //TODO: CheckUser is not implemented but used here???
+	user, err := utils.CheckUser(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = bc.blogUseCase.DeleteBlog(c, blogID, user.UserID)
+	err = bc.blogUseCase.DeleteBlog(c, blogID, user.UserID, user.Role)
 	if err != nil {
 		// Check for specific errors and return appropriate status codes
 		if err.Error() == "blog not found" {

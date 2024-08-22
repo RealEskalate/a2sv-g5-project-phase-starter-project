@@ -425,13 +425,18 @@ func (sr *BlogRepository) UpdateCommentCount(ctx context.Context, blogID string,
 
 func(b *BlogRepository) UpdateLikeCount(c context.Context, blogID string, isIncrement bool) error {
 	collection:= b.db.Collection(b.blogCollection)
+	objectID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return err
+	}
+	
 	var update int
 	if isIncrement {
 		update = 1
 	} else {
 		update = -1
 	}
-	_, err := collection.UpdateOne(c, bson.M{"_id": blogID}, bson.M{"$inc": bson.M{"like_count": update}})
+	_, err = collection.UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$inc": bson.M{"like_count": update}})
 	if err != nil {
 		return err
 	}

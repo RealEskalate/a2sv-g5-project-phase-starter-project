@@ -87,5 +87,5 @@ type BlogUseCase interface {
 	GetBlogByID(c context.Context, blogID string) (*Blog, error)
 	GetAllBlog(c context.Context, skip int64, limit int64, sortBy string) ([]*Blog, *PaginationMetadata, error)
 	UpdateBlog(c context.Context, blog *BlogUpdate, blogID string) (*Blog, error)
-	DeleteBlog(c context.Context, blogID string, userId string) error
+	DeleteBlog(c context.Context, blogID string, userId string, role string) error
 }

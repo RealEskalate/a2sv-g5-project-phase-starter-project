@@ -124,7 +124,7 @@ const SignUpForm = () => {
 
   return (
     <form
-      className='flex flex-col items-center w-full lg:w-10/12 justify-center p-6 rounded-2xl bg-slate-50'
+      className='flex flex-col items-center w-full lg:w-10/12 justify-center py-6 p-4 lg:p-6 rounded-2xl bg-white'
       onSubmit={handleSubmit(onSubmit)}
     >
       <p className='text-[#333B69] pb-3 text-20px text-left font-semibold w-full'>Register</p>

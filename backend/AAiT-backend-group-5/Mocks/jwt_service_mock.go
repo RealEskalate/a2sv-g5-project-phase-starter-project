@@ -7,7 +7,7 @@ package mocks
 import (
 	reflect "reflect"
 
-	Models "github.com/aait.backend.g5.main/backend/Domain/Models"
+	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -35,7 +35,7 @@ func (m *MockJwtService) EXPECT() *MockJwtServiceMockRecorder {
 }
 
 // CreateAccessToken mocks base method.
-func (m *MockJwtService) CreateAccessToken(user Models.User, expTime int) (string, error) {
+func (m *MockJwtService) CreateAccessToken(user models.User, expTime int) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAccessToken", user, expTime)
 	ret0, _ := ret[0].(string)
@@ -50,7 +50,7 @@ func (mr *MockJwtServiceMockRecorder) CreateAccessToken(user, expTime interface{
 }
 
 // CreateRefreshToken mocks base method.
-func (m *MockJwtService) CreateRefreshToken(user Models.User, expTime int) (string, error) {
+func (m *MockJwtService) CreateRefreshToken(user models.User, expTime int) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateRefreshToken", user, expTime)
 	ret0, _ := ret[0].(string)
@@ -62,6 +62,21 @@ func (m *MockJwtService) CreateRefreshToken(user Models.User, expTime int) (stri
 func (mr *MockJwtServiceMockRecorder) CreateRefreshToken(user, expTime interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRefreshToken", reflect.TypeOf((*MockJwtService)(nil).CreateRefreshToken), user, expTime)
+}
+
+// CreateURLToken mocks base method.
+func (m *MockJwtService) CreateURLToken(user models.User, expTime int) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateURLToken", user, expTime)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateURLToken indicates an expected call of CreateURLToken.
+func (mr *MockJwtServiceMockRecorder) CreateURLToken(user, expTime interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateURLToken", reflect.TypeOf((*MockJwtService)(nil).CreateURLToken), user, expTime)
 }
 
 // ValidateAuthHeader mocks base method.
@@ -80,10 +95,10 @@ func (mr *MockJwtServiceMockRecorder) ValidateAuthHeader(authHeader interface{})
 }
 
 // ValidateToken mocks base method.
-func (m *MockJwtService) ValidateToken(tokenStr string) (*Models.JWTCustome, error) {
+func (m *MockJwtService) ValidateToken(tokenStr string) (*models.JWTCustome, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ValidateToken", tokenStr)
-	ret0, _ := ret[0].(*Models.JWTCustome)
+	ret0, _ := ret[0].(*models.JWTCustome)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -92,4 +107,19 @@ func (m *MockJwtService) ValidateToken(tokenStr string) (*Models.JWTCustome, err
 func (mr *MockJwtServiceMockRecorder) ValidateToken(tokenStr interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateToken", reflect.TypeOf((*MockJwtService)(nil).ValidateToken), tokenStr)
+}
+
+// ValidateURLToken mocks base method.
+func (m *MockJwtService) ValidateURLToken(tokenStr string) (*models.URLTokenCustom, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidateURLToken", tokenStr)
+	ret0, _ := ret[0].(*models.URLTokenCustom)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ValidateURLToken indicates an expected call of ValidateURLToken.
+func (mr *MockJwtServiceMockRecorder) ValidateURLToken(tokenStr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateURLToken", reflect.TypeOf((*MockJwtService)(nil).ValidateURLToken), tokenStr)
 }

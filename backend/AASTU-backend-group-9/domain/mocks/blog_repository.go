@@ -72,13 +72,13 @@ func (_m *BlogRepository) DeleteBlog(ctx context.Context, id primitive.ObjectID)
 	return r0
 }
 
-// FilterBlogsByDate provides a mock function with given fields: ctx, date
-func (_m *BlogRepository) FilterBlogsByDate(ctx context.Context, date string) ([]*domain.Blog, error) {
-	ret := _m.Called(ctx, date)
+// FilterBlogs provides a mock function with given fields: ctx, popularity, tags, date
+func (_m *BlogRepository) FilterBlogs(ctx context.Context, popularity string, tags []string, date string) ([]*domain.Blog, error) {
+	ret := _m.Called(ctx, popularity, tags, date)
 
 	var r0 []*domain.Blog
-	if rf, ok := ret.Get(0).(func(context.Context, string) []*domain.Blog); ok {
-		r0 = rf(ctx, date)
+	if rf, ok := ret.Get(0).(func(context.Context, string, []string, string) []*domain.Blog); ok {
+		r0 = rf(ctx, popularity, tags, date)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*domain.Blog)
@@ -86,54 +86,8 @@ func (_m *BlogRepository) FilterBlogsByDate(ctx context.Context, date string) ([
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(ctx, date)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// FilterBlogsByPopularity provides a mock function with given fields: ctx, popularity
-func (_m *BlogRepository) FilterBlogsByPopularity(ctx context.Context, popularity string) ([]*domain.Blog, error) {
-	ret := _m.Called(ctx, popularity)
-
-	var r0 []*domain.Blog
-	if rf, ok := ret.Get(0).(func(context.Context, string) []*domain.Blog); ok {
-		r0 = rf(ctx, popularity)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Blog)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(ctx, popularity)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// FilterBlogsByTags provides a mock function with given fields: ctx, tags
-func (_m *BlogRepository) FilterBlogsByTags(ctx context.Context, tags []string) ([]*domain.Blog, error) {
-	ret := _m.Called(ctx, tags)
-
-	var r0 []*domain.Blog
-	if rf, ok := ret.Get(0).(func(context.Context, []string) []*domain.Blog); ok {
-		r0 = rf(ctx, tags)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Blog)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, []string) error); ok {
-		r1 = rf(ctx, tags)
+	if rf, ok := ret.Get(1).(func(context.Context, string, []string, string) error); ok {
+		r1 = rf(ctx, popularity, tags, date)
 	} else {
 		r1 = ret.Error(1)
 	}

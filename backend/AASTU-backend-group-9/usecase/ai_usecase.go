@@ -20,7 +20,7 @@ func NewAIUsecase(timeout time.Duration, client *genai.Client) domain.AIUsecase 
 	}
 }
 
-func (au *aiUsecase) GenerateBlogContent(ctx context.Context, keywords string) (*genai.GenerateContentResponse, error) {
+func (au *aiUsecase) GenerateBlogContent(ctx context.Context, keywords string) ([]genai.Part, error) {
 	model := au.client.GenerativeModel("gemini-1.5-pro-latest")
 	model.SetTemperature(0.9)
 	model.SetTopP(0.5)
@@ -33,5 +33,5 @@ func (au *aiUsecase) GenerateBlogContent(ctx context.Context, keywords string) (
         return nil, err
     }
 
-    return resp, nil
+    return resp.Candidates[0].Content.Parts,nil
 }

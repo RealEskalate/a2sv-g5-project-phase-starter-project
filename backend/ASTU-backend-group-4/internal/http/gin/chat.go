@@ -62,6 +62,12 @@ func (chatHandler *ChatHandler) GetChatHandler(c *gin.Context){
 	if errors.As(err, &validationError){
 		errs := infrastructure.ReturnErrorResponse(err)
 		c.JSON(http.StatusBadRequest, errs)
+		return
+	}
+
+	if err == chat.ErrChatNotFound{
+		c.JSON(http.StatusBadRequest, err.Error)
+		return
 	}
 
 	if err != nil{

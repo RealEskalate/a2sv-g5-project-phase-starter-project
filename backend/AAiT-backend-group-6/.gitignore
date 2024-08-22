@@ -4,4 +4,8 @@ bin/
 .idea
 .env
 .vscode
+<<<<<<< HEAD
 tmp/
+=======
+.tmp
+>>>>>>> 1da572c6 (Add unwanted files in .gitignore)

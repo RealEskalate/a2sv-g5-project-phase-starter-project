@@ -27,7 +27,7 @@ const CardForCreditCards = ({
           {button}
         </Link>
       </div>
-      <div className="flex flex-wrap gap-4 ">{children}</div>
+      <div className="flex flex-wrap gap-4 overflow-x-auto scrollbar-hide">{children}</div>
     </div>
   );
 };

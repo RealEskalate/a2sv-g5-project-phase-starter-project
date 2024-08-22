@@ -5,6 +5,7 @@ import { bankApi } from '../lib/service/BankService';
 import { userApi } from '../lib/service/UserService';
 import { loanApi } from '../lib/service/LoanService';
 import { companyApi } from '../lib/service/CompanyService';
+import { CreditCardInfoApi } from './service/CardService';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     [userApi.reducerPath]: userApi.reducer,
     [loanApi.reducerPath]: loanApi.reducer,
     [companyApi.reducerPath]: companyApi.reducer,
+    [CreditCardInfoApi.reducerPath]: CreditCardInfoApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -21,7 +23,8 @@ export const store = configureStore({
       bankApi.middleware,
       userApi.middleware,
       loanApi.middleware,
-      companyApi.middleware
+      companyApi.middleware,
+      CreditCardInfoApi.middleware,
     ),
 });
 

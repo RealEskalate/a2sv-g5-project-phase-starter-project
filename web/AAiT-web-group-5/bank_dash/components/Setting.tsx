@@ -2,7 +2,7 @@ import { CiSettings } from "react-icons/ci";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { LuCalendarCheck } from "react-icons/lu";
 
-export default function Seting() {
+export default function Setting() {
   return (
     <div className="flex gap-3">
       <button

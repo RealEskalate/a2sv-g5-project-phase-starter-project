@@ -59,6 +59,17 @@ func (suite *CommentUseCaseTestSuite) TestDeleteComment() {
 	suite.mockCommentRepo.AssertExpectations(suite.T())
 }
 
+func (suite *CommentUseCaseTestSuite) TestUpdateComment() {
+	commentID := "comment-id"
+
+	suite.mockCommentRepo.On("UpdateComment", commentID).Return(nil)
+
+	err := suite.commentUseCase.UpdateComment(commentID)
+	suite.NoError(err)
+
+	suite.mockCommentRepo.AssertExpectations(suite.T())
+}
+
 func TestCommentUseCaseTestSuite(t *testing.T) {
 	suite.Run(t, new(CommentUseCaseTestSuite))
 }

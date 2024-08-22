@@ -50,4 +50,5 @@ func NewBlogRoutes(group *gin.RouterGroup, blog_collection database.CollectionIn
 	group.GET("api/my-blog",LoggedInmiddleWare , mustOwn , ctrl.GetMyBlogs())
 	group.PUT("api/blog/",LoggedInmiddleWare , mustOwn ,ctrl.UpdateBlog())
 	group.DELETE("api/blog/",LoggedInmiddleWare, mustOwn ,ctrl.DeleteBlog())
+
 }

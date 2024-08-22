@@ -12,12 +12,12 @@ type Blog_Repository_interface struct {
 	mock.Mock
 }
 
-// CreateBlogDocunent provides a mock function with given fields: blog
-func (_m *Blog_Repository_interface) CreateBlogDocunent(blog domain.Blog) (domain.Blog, error) {
+// CreateBlogDocument provides a mock function with given fields: blog
+func (_m *Blog_Repository_interface) CreateBlogDocument(blog domain.Blog) (domain.Blog, error) {
 	ret := _m.Called(blog)
 
 	if len(ret) == 0 {
-		panic("no return value specified for CreateBlogDocunent")
+		panic("no return value specified for CreateBlogDocument")
 	}
 
 	var r0 domain.Blog
@@ -40,17 +40,17 @@ func (_m *Blog_Repository_interface) CreateBlogDocunent(blog domain.Blog) (domai
 	return r0, r1
 }
 
-// DeleteBlogDocument provides a mock function with given fields: id, userID
-func (_m *Blog_Repository_interface) DeleteBlogDocument(id string, userID string) error {
-	ret := _m.Called(id, userID)
+// DeleteBlogDocument provides a mock function with given fields: id
+func (_m *Blog_Repository_interface) DeleteBlogDocument(id string) error {
+	ret := _m.Called(id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteBlogDocument")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string) error); ok {
-		r0 = rf(id, userID)
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(id)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -58,29 +58,29 @@ func (_m *Blog_Repository_interface) DeleteBlogDocument(id string, userID string
 	return r0
 }
 
-// FilterBlogDocunent provides a mock function with given fields: _a0
-func (_m *Blog_Repository_interface) FilterBlogDocunent(_a0 map[string]string) ([]domain.Blog, error) {
-	ret := _m.Called(_a0)
+// FilterBlogDocument provides a mock function with given fields: filters
+func (_m *Blog_Repository_interface) FilterBlogDocument(filters map[string]interface{}) ([]domain.Blog, error) {
+	ret := _m.Called(filters)
 
 	if len(ret) == 0 {
-		panic("no return value specified for FilterBlogDocunent")
+		panic("no return value specified for FilterBlogDocument")
 	}
 
 	var r0 []domain.Blog
 	var r1 error
-	if rf, ok := ret.Get(0).(func(map[string]string) ([]domain.Blog, error)); ok {
-		return rf(_a0)
+	if rf, ok := ret.Get(0).(func(map[string]interface{}) ([]domain.Blog, error)); ok {
+		return rf(filters)
 	}
-	if rf, ok := ret.Get(0).(func(map[string]string) []domain.Blog); ok {
-		r0 = rf(_a0)
+	if rf, ok := ret.Get(0).(func(map[string]interface{}) []domain.Blog); ok {
+		r0 = rf(filters)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.Blog)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(map[string]string) error); ok {
-		r1 = rf(_a0)
+	if rf, ok := ret.Get(1).(func(map[string]interface{}) error); ok {
+		r1 = rf(filters)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -88,12 +88,12 @@ func (_m *Blog_Repository_interface) FilterBlogDocunent(_a0 map[string]string) (
 	return r0, r1
 }
 
-// GetBlogDocunents provides a mock function with given fields: offset, limit
-func (_m *Blog_Repository_interface) GetBlogDocunents(offset int, limit int) ([]domain.Blog, error) {
+// GetBlogDocuments provides a mock function with given fields: offset, limit
+func (_m *Blog_Repository_interface) GetBlogDocuments(offset int, limit int) ([]domain.Blog, error) {
 	ret := _m.Called(offset, limit)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetBlogDocunents")
+		panic("no return value specified for GetBlogDocuments")
 	}
 
 	var r0 []domain.Blog
@@ -118,12 +118,12 @@ func (_m *Blog_Repository_interface) GetBlogDocunents(offset int, limit int) ([]
 	return r0, r1
 }
 
-// GetOneBlogDocunent provides a mock function with given fields: id
-func (_m *Blog_Repository_interface) GetOneBlogDocunent(id string) (domain.Blog, error) {
+// GetOneBlogDocument provides a mock function with given fields: id
+func (_m *Blog_Repository_interface) GetOneBlogDocument(id string) (domain.Blog, error) {
 	ret := _m.Called(id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetOneBlogDocunent")
+		panic("no return value specified for GetOneBlogDocument")
 	}
 
 	var r0 domain.Blog
@@ -146,12 +146,12 @@ func (_m *Blog_Repository_interface) GetOneBlogDocunent(id string) (domain.Blog,
 	return r0, r1
 }
 
-// UpdateBlogDocunent provides a mock function with given fields: id, blog
-func (_m *Blog_Repository_interface) UpdateBlogDocunent(id string, blog domain.Blog) (domain.Blog, error) {
+// UpdateBlogDocument provides a mock function with given fields: id, blog
+func (_m *Blog_Repository_interface) UpdateBlogDocument(id string, blog domain.Blog) (domain.Blog, error) {
 	ret := _m.Called(id, blog)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UpdateBlogDocunent")
+		panic("no return value specified for UpdateBlogDocument")
 	}
 
 	var r0 domain.Blog

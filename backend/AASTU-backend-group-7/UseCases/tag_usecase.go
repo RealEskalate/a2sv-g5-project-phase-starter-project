@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type TagsUseCase struct {
@@ -27,10 +26,10 @@ func (usecase *TagsUseCase) CreateTag(c *gin.Context, tag *Domain.Tag) (error, i
 	return usecase.tagRepository.CreateTag(ctx, tag)
 }
 
-func (usecase *TagsUseCase) DeleteTag(c *gin.Context, id primitive.ObjectID) (error, int) {
+func (usecase *tagsUseCase) DeleteTag(c *gin.Context, slug string) (error, int) {
 	ctx, cancel := context.WithTimeout(c, usecase.contextTimeout)
 	defer cancel()
-	return usecase.tagRepository.DeleteTag(ctx, id)
+	return usecase.tagRepository.DeleteTag(ctx, slug)
 }
 
 func (usecase *TagsUseCase) GetAllTags(c *gin.Context) ([]*Domain.Tag, error, int) {

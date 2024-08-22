@@ -38,10 +38,14 @@ func (lc *LoginController) Login(c *gin.Context){
 
 	}
 
+	err= request.Validate()
+	if err!=nil{
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
 	request.Email = strings.ToLower(request.Email)
 	
-	 ctx := c.Request.Context()
-	loginResponse,err := lc.LoginUsecase.Login(ctx, &request)
+	loginResponse,err := lc.LoginUsecase.Login(c, &request)
 	if err!=nil{
 		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
 		return
@@ -57,15 +61,29 @@ func(lc *LoginController) ForgotPassword(c *gin.Context){
 	var request domain.ForgotPasswordRequest
 	err:= c.BindJSON(&request)
 	if err!=nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error": "bad email request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
+
 	request.Email = strings.ToLower(request.Email)
+	err = domain.ValidateEmail(request.Email)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	user, err := lc.UserUsecase.GetUserByEmail(c, request.Email)
 	if err != nil {
 		c.JSON(http.StatusNotFound,gin.H{"error": "user not found with given email"})
 		return
 	}
+	
+	if !user.IsActivated{
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user is not activated, Verify your email"})
+		return
+	}
+
+
 	// Generate a random number between 0 and 9999 (inclusive).
 	randNumber := rand.Intn(10000)
 
@@ -112,7 +130,7 @@ func(lc *LoginController) ForgotPassword(c *gin.Context){
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"success": "Message sent successfully"})
+	c.JSON(http.StatusOK, gin.H{"success": "password reset otp sent successfully"})
 
 
 }
@@ -123,18 +141,39 @@ func (lc *LoginController) UpdatePassword(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request to update password"})
         return
     }
+	request.Email = strings.ToLower(request.Email)
+	err := request.Validate()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
     userResponse, err := lc.UserUsecase.GetUserByEmail(c, request.Email)
     if err != nil {
         c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
         return
     }
-    userID := userResponse.UserID.String()
+	otp, err := lc.OtpUsecase.GetOtpByEmail(c, request.Email)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No OTP requested with the given email"})
+		return
+	}
+
+	if request.OTP != otp.Otp {
+		// Otp from request doesn't match stored Otp or Otp has already been used
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Otp"})
+		return
+	} else if time.Now().After(otp.Expiration) {
+		// Otp is correct but has expired
+		c.JSON(http.StatusForbidden, gin.H{"error": "Otp Expired"})
+		return
+	}
+
+    userID := userResponse.UserID.Hex()
 
     // Convert gin.Context to standard context.Context
-    ctx := c.Request.Context()
 
-    if err := lc.LoginUsecase.UpdatePassword(ctx, request, userID); err != nil {
+    if err := lc.LoginUsecase.UpdatePassword(c, request, userID); err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
         return
     }

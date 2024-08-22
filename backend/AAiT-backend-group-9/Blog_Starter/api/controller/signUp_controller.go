@@ -33,6 +33,11 @@ func (s *SignUpController) SignUp(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
+		
+	err := UserSignUp.Validate()
+	if err!=nil{
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
 
 	user, err := s.signUpUsecase.CreateUser(c, &UserSignUp)
 	if err != nil {
@@ -49,7 +54,7 @@ func (s *SignUpController) SignUp(c *gin.Context) {
 	otp := domain.Otp{
 		Email:      user.Email,
 		Otp:        code,
-		Expiration: time.Now().Add(3 * time.Minute),
+		Expiration: time.Now().Add(5 * time.Minute),
 	}
 
 	oldOtp, err := s.otpUsecase.GetOtpByEmail(c, UserSignUp.Email)
@@ -156,7 +161,7 @@ func (s *SignUpController) ResendOTP(c *gin.Context) {
 	code := fmt.Sprintf("%04d", randNumber)
 
 	otp.Otp = code
-	otp.Expiration = time.Now().Add(1 * time.Minute)
+	otp.Expiration = time.Now().Add(5 * time.Minute)
 
 
 	// Save OTP to database

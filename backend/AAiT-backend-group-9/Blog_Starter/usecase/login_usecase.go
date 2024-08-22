@@ -5,6 +5,7 @@ import (
 	"Blog_Starter/domain"
 	"Blog_Starter/utils"
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -16,24 +17,31 @@ type LoginUseCase struct {
 	UserRepository domain.UserRepository
 	TokenManager utils.TokenManager
 	ContextTimeout  time.Duration
+    Env  *config.Env
+
 }
 
 
-func NewLoginUseCase(  userRepository domain.UserRepository,tokenManager utils.TokenManager ,timeout time.Duration) domain.LoginUsecase {
+func NewLoginUseCase(  userRepository domain.UserRepository,tokenManager utils.TokenManager ,timeout time.Duration, env *config.Env) domain.LoginUsecase {
 	return &LoginUseCase{
 		UserRepository: userRepository,
 		TokenManager: tokenManager,
 		ContextTimeout:  timeout,
+        Env: env,
 	}
 }
 // Login implements domain.LoginUsecase.
 func (l *LoginUseCase) Login(c context.Context, req *domain.UserLogin) (*domain.LoginResponse, error) {
     ctx, cancel := context.WithTimeout(c, l.ContextTimeout)
     defer cancel()
-    env := config.NewEnv()
+
     user, err := l.UserRepository.GetUserByEmail(ctx, req.Email)
     if err != nil {
         return nil, err
+    }
+
+    if !user.IsActivated{
+        return nil,errors.New("user is not activated, Verify your email")
     }
 
     // Compare the hashed password with the plain text password
@@ -42,16 +50,16 @@ func (l *LoginUseCase) Login(c context.Context, req *domain.UserLogin) (*domain.
         return nil, fmt.Errorf("password incorrect")
     }
 
-    accessToken, err := l.TokenManager.CreateAccessToken(user, env.AccessTokenSecret, 1)
+    accessToken, err := l.TokenManager.CreateAccessToken(user, l.Env.AccessTokenSecret, l.Env.AccessTokenExpiryHour)
     if err != nil {
         return nil, err
     }
-    refreshToken, err := l.TokenManager.CreateRefreshToken(user, env.RefreshTokenSecret, 24)
+    refreshToken, err := l.TokenManager.CreateRefreshToken(user, l.Env.RefreshTokenSecret, l.Env.RefreshTokenExpiryHour)
     if err != nil {
         return nil, err
     }
-
-    _, err = l.UserRepository.UpdateToken(ctx, accessToken, refreshToken, user.UserID.String())
+    userID :=user.UserID.Hex() 
+    _, err = l.UserRepository.UpdateToken(ctx, accessToken, refreshToken, userID)
     if err != nil {
         return nil, err
     }
@@ -59,15 +67,16 @@ func (l *LoginUseCase) Login(c context.Context, req *domain.UserLogin) (*domain.
     var loginResponse domain.LoginResponse
     loginResponse.AccessToken = accessToken
     loginResponse.RefreshToken = refreshToken
-    loginResponse.UserID = user.UserID.String()
+    loginResponse.UserID = userID
 
     return &loginResponse, nil
 }
+
+
 // UpdatePassword implements domain.LoginUsecase.
 func (l *LoginUseCase) UpdatePassword(c context.Context, req domain.ChangePasswordRequest, userID string) error {
     ctx, cancel := context.WithTimeout(c, l.ContextTimeout)
     defer cancel()
-
     // Hash the new password
     hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
     if err != nil {
@@ -82,3 +91,7 @@ func (l *LoginUseCase) UpdatePassword(c context.Context, req domain.ChangePasswo
 
     return nil
 }
+
+
+
+

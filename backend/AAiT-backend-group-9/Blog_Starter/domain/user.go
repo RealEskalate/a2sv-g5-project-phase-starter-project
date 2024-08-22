@@ -2,6 +2,8 @@ package domain
 
 import (
 	"context"
+	"errors"
+	"regexp"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -82,4 +84,71 @@ type UserUsecase interface {
 	DemoteUser(c context.Context, userID string) error                  //superAdmin privilage
 	UpdateUser(c context.Context, user *UserUpdate, userID string) (*UserResponse, error)
 	UpdateProfilePicture(c context.Context, profilePicPath string, userID string) (*UserResponse, error)
+}
+
+
+
+// ValidateEmail checks if the email format is valid
+func ValidateEmail(email string) error {
+	re := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	if !re.MatchString(email) {
+		return errors.New("invalid email format")
+	}
+	return nil
+}
+
+// ValidatePassword checks if the password meets the strength requirements
+func ValidatePassword(password string) error {
+	if len(password) < 8 {
+		return errors.New("password must be at least 8 characters long")
+	}
+	re := regexp.MustCompile(`[A-Z]`)
+	if !re.MatchString(password) {
+		return errors.New("password must contain at least one uppercase letter")
+	}
+	re = regexp.MustCompile(`[a-z]`)
+	if !re.MatchString(password) {
+		return errors.New("password must contain at least one lowercase letter")
+	}
+	re = regexp.MustCompile(`[0-9]`)
+	if !re.MatchString(password) {
+		return errors.New("password must contain at least one digit")
+	}
+	re = regexp.MustCompile(`[!@#\$%\^&\*]`)
+	if !re.MatchString(password) {
+		return errors.New("password must contain at least one special character")
+	}
+	return nil
+}
+
+
+// Validate validates the UserSignUp struct
+func (u *UserSignUp) Validate() error {
+    if err := ValidateEmail(u.Email); err != nil {
+        return err
+    }
+    if err := ValidatePassword(u.Password); err != nil {
+        return err
+    }
+    return nil
+}
+
+// Validate validates the UserLogin struct
+func (u *UserLogin) Validate() error {
+    if err := ValidateEmail(u.Email); err != nil {
+        return err
+    }
+    if err := ValidatePassword(u.Password); err != nil {
+        return err
+    }
+    return nil
+}
+func (u *ChangePasswordRequest) Validate() error {
+    if err := ValidateEmail(u.Email); err != nil {
+        return err
+    }
+    if err := ValidatePassword(u.Password); err != nil {
+        return err
+    }
+    return nil
 }

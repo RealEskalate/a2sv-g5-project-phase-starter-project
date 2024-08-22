@@ -1,9 +1,12 @@
 "use client";
+import { useGetAllCardsQuery } from "@/lib/redux/slices/cardSlice";
 import Image from "next/image";
 import React from "react";
 
 const MyCard = () => {
-  // console.log(data, 'card data is');
+  const { data, isLoading } = useGetAllCardsQuery({ page: 0, size: 5 });
+  console.log(data, 'card data is');
+
   return (
     <div>
       <div className="w-[280px] h-[175px] bg-grad-end text-white  border rounded-3xl flex flex-col justify-between">

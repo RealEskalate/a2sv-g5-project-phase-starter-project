@@ -229,3 +229,38 @@ func (b *BlogController) SearchBlogs(c *gin.Context) {
 		"totalCount":  totalCount,
 	})
 }
+
+
+func (b *BlogController) GenerateBlogContent(c *gin.Context) {
+    var req domain.BlogContentRequest
+
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    content, cerr := b.BlogUseCase.GenerateBlogContent(req)
+    if cerr != nil {
+        c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, content)
+}
+
+func (b *BlogController) SuggestImprovements(c *gin.Context) {
+	var req domain.SuggestionRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	suggestions, cerr := b.BlogUseCase.SuggestImprovements(req.Content)
+	if cerr != nil {
+		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, suggestions)
+}

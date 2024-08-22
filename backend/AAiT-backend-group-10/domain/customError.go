@@ -85,3 +85,8 @@ var (
 	// Email-related errors
 	ErrEmailSendingFailed = NewCustomError("Failed to send email", http.StatusInternalServerError)
 )
+
+// Ai-related errors
+var (
+	ErrAiContentGenerationFailed = NewCustomError("Failed to generate content", http.StatusInternalServerError)
+)

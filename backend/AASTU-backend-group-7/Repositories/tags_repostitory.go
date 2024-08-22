@@ -5,22 +5,21 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type tagsRepository struct {
+type TagRepository struct {
 	tagCollection  Domain.Collection
 	postCollection Domain.Collection
 }
 
-func NewTagsRepository(blogCollection Domain.BlogCollections) *tagsRepository {
-	return &tagsRepository{
+func NewTagRepository(blogCollection Domain.BlogCollections) *TagRepository {
+	return &TagRepository{
 		tagCollection:  blogCollection.Tags,
 		postCollection: blogCollection.Posts,
 	}
 }
 
-func (repo *tagsRepository) CreateTag(ctx context.Context, tag *Domain.Tag) (error, int) {
+func (repo *TagRepository) CreateTag(ctx context.Context, tag *Domain.Tag) (error, int) {
 	// get tag by slug
 	_, err := repo.tagCollection.InsertOne(ctx, tag)
 	if err != nil {
@@ -29,13 +28,16 @@ func (repo *tagsRepository) CreateTag(ctx context.Context, tag *Domain.Tag) (err
 	return nil, 201
 }
 
-func (repo *tagsRepository) DeleteTag(ctx context.Context, id primitive.ObjectID) (error, int) {
-	_, err := repo.tagCollection.DeleteOne(ctx, id)
+func (repo *TagRepository) DeleteTag(ctx context.Context, slug string) (error, int) {
+
+	// delete tag by slug
+	_, err := repo.tagCollection.DeleteOne(ctx, bson.M{"slug": slug})
 	if err != nil {
 		return err, 500
 	}
+
 	// delete tag from all posts
-	_, err = repo.postCollection.UpdateMany(ctx, bson.M{"tags": id}, bson.M{"$pull": bson.M{"tags": id}})
+	_, err = repo.postCollection.UpdateMany(ctx, bson.M{}, bson.M{"$pull": bson.M{"tags": slug}})
 	if err != nil {
 		return err, 500
 	}
@@ -43,7 +45,7 @@ func (repo *tagsRepository) DeleteTag(ctx context.Context, id primitive.ObjectID
 	return nil, 200
 }
 
-func (repo *tagsRepository) GetAllTags(ctx context.Context) ([]*Domain.Tag, error, int) {
+func (repo *TagRepository) GetAllTags(ctx context.Context) ([]*Domain.Tag, error, int) {
 	tags := []*Domain.Tag{}
 	cursor, err := repo.tagCollection.Find(ctx, bson.M{})
 	if err != nil {
@@ -56,7 +58,7 @@ func (repo *tagsRepository) GetAllTags(ctx context.Context) ([]*Domain.Tag, erro
 	return tags, nil, 200
 }
 
-func (repo *tagsRepository) GetTagBySlug(ctx context.Context, slug string) (*Domain.Tag, error, int) {
+func (repo *TagRepository) GetTagBySlug(ctx context.Context, slug string) (*Domain.Tag, error, int) {
 	tag := &Domain.Tag{}
 	err := repo.tagCollection.FindOne(ctx, bson.M{"slug": slug}).Decode(tag)
 	if err != nil {

@@ -55,6 +55,8 @@ dependencies:
   internet_connection_checker:
   injectable:
   flutter_secure_storage:
+  file_picker: ^8.1.2
+  record: ^5.1.2
 
 
 

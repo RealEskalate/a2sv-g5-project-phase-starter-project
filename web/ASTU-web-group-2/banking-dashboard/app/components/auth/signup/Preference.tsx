@@ -49,7 +49,7 @@ const YourFormComponent: React.FC<YourFormComponentProps> = ({ setMainData, main
       accountRecommendations: mainData.preference?.accountRecommendations || false,
     },
   });
-  const [signUp] = useSignUpMutation();
+  const [signUp,{isLoading}] = useSignUpMutation();
   
   const onSubmit = async (data: FormValues) => {
     const formattedData = {
@@ -156,6 +156,7 @@ const YourFormComponent: React.FC<YourFormComponentProps> = ({ setMainData, main
         <button
           type='submit'
           className='w-full md:w-auto px-4 py-2 bg-blue-500 text-white rounded-lg'
+          disabled = {isLoading}
         >
           Register
         </button>

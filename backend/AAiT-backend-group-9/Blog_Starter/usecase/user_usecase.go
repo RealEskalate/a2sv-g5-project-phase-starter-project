@@ -47,6 +47,7 @@ func (u *UserUsecase) DeleteUser(c context.Context, userID string, password stri
 func (u *UserUsecase) GetAllUser(c context.Context) ([]*domain.UserResponse, error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
+
 	users, err := u.userRepo.GetAllUser(ctx)
 	if err != nil {
 		return nil, err
@@ -170,10 +171,12 @@ func (u *UserUsecase) DemoteUser(c context.Context, userID string) error {
 func (u *UserUsecase) UpdateUser(c context.Context, user *domain.UserUpdate, userID string) (*domain.UserResponse, error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
+
 	_, err := u.userRepo.GetUserByID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
+
 	updatedUser, err := u.userRepo.UpdateProfile(ctx, user, userID)
 	if err != nil {
 		return nil, err
@@ -195,10 +198,12 @@ func (u *UserUsecase) UpdateUser(c context.Context, user *domain.UserUpdate, use
 func (u *UserUsecase) UpdateProfilePicture(c context.Context, profilePicPath string, userID string) (*domain.UserResponse, error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
+
 	_, err := u.userRepo.GetUserByID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
+	
 	updatedUser, err := u.userRepo.UpdateProfilePicture(ctx, profilePicPath, userID)
 	if err != nil {
 		return nil, err

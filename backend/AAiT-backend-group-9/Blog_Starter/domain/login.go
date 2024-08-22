@@ -27,6 +27,7 @@ type ChangePasswordRequest struct {
 type LoginUsecase interface {
 	Login(c context.Context, user *UserLogin) (*LoginResponse, error)
 	UpdatePassword(c context.Context, req ChangePasswordRequest, userID string) error
+	LogOut(c context.Context, userID string) error
 }
 
 

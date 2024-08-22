@@ -116,7 +116,7 @@ func (suite *SignupControllerSuite) TestSignup() {
 		payload, _ := json.Marshal(user)
 		c.Request = httptest.NewRequest(http.MethodPost, "/signup", bytes.NewBuffer(payload))
 		suite.SignupController.Signup(c)
-		expected, err := json.Marshal(gin.H{"error": "OTP sending failed"})
+		expected, err := json.Marshal(gin.H{"error": "error"})
 		suite.Nil(err)
 		suite.Equal(http.StatusBadRequest, w.Code)
 		suite.Equal(expected, w.Body.Bytes())

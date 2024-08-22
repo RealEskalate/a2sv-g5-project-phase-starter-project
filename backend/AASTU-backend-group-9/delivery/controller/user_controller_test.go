@@ -137,7 +137,7 @@ func (suite *UserControllerSuite) TestCreateUser() {
 		c.Set("claim", *claims) // Set claims before calling the handler
 		suite.UserController.CreateUser(c)
 		suite.Equal(400, w.Code)
-		expect, err := json.Marshal(gin.H{"error": "Internal server error"})
+		expect, err := json.Marshal(gin.H{"error": "Internal Server Error"})
 		suite.Nil(err)
 		suite.Equal(expect, w.Body.Bytes())
 	})

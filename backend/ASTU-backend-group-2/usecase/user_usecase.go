@@ -80,3 +80,10 @@ func (uu *userUsecase) DemoteAdminToUser(c context.Context, userID string) error
 	}
 	return uu.userRepository.DemoteAdminToUser(c, userID)
 }
+func (uu *userUsecase) UpdateProfilePicture(c context.Context, userID string, filename string) error {
+	_, err := uu.GetUserById(c, userID)
+	if err != nil {
+		return err
+	}
+	return uu.userRepository.UpdateProfilePicture(c, userID, filename)
+}

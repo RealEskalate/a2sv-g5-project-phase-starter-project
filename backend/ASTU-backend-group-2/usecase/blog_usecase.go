@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
@@ -34,40 +35,45 @@ func (b *blogUsecase) GetByTags(c context.Context, tags []string, limit int64, p
 	return blogs, meta, nil
 }
 func BlogFilterOption(filter domain.BlogFilter) (bson.M, *options.FindOptions) {
-	query := bson.M{}
+
+	query := bson.M{
+		"$match": bson.M{},
+	}
+	semiquery := query["$match"].(bson.M)
 
 	// Title filter
 	if filter.Title != "" {
-		query["title"] = bson.M{"$regex": filter.Title, "$options": "i"} // case-insensitive search
+		semiquery["title"] = bson.M{"$regex": filter.Title, "$options": "i"} // case-insensitive search
 	}
 
 	// Tags filter
 	if len(filter.Tags) > 0 {
-		query["tags"] = bson.M{"$in": filter.Tags}
+		semiquery["tags"] = bson.M{"$in": filter.Tags}
 	}
 
 	// Date range filter
 	if !filter.DateFrom.IsZero() && !filter.DateTo.IsZero() {
-		query["created_at"] = bson.M{
+		semiquery["created_at"] = bson.M{
 			"$gte": filter.DateFrom,
 			"$lte": filter.DateTo,
 		}
 	} else if !filter.DateFrom.IsZero() {
-		query["created_at"] = bson.M{"$gte": filter.DateFrom}
+		semiquery["created_at"] = bson.M{"$gte": filter.DateFrom}
 	} else if !filter.DateTo.IsZero() {
-		query["created_at"] = bson.M{"$lte": filter.DateTo}
+		semiquery["created_at"] = bson.M{"$lte": filter.DateTo}
 	}
 
 	// Popularity filter
 	if filter.PopularityFrom > 0 && filter.PopularityTo > 0 {
-		query["popularity"] = bson.M{
+		semiquery["popularity"] = bson.M{
+
 			"$gte": filter.PopularityFrom,
 			"$lte": filter.PopularityTo,
 		}
 	} else if filter.PopularityFrom > 0 {
-		query["popularity"] = bson.M{"$gte": filter.PopularityFrom}
+		semiquery["popularity"] = bson.M{"$gte": filter.PopularityFrom}
 	} else if filter.PopularityTo > 0 {
-		query["popularity"] = bson.M{"$lte": filter.PopularityTo}
+		semiquery["popularity"] = bson.M{"$lte": filter.PopularityTo}
 	}
 
 	// Pagination
@@ -79,6 +85,7 @@ func BlogFilterOption(filter domain.BlogFilter) (bson.M, *options.FindOptions) {
 		skip := (filter.Pages - 1) * filter.Limit
 		findOptions.SetSkip(skip)
 	}
+	log.Println(query)
 	return query, findOptions
 
 }

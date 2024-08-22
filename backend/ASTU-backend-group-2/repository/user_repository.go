@@ -244,3 +244,15 @@ func (ur *userRepository) DemoteAdminToUser(c context.Context, userID string) er
 	}
 	return nil
 }
+func (ur *userRepository) UpdateProfilePicture(c context.Context, userID string, filename string) error {
+	collection := ur.database.Collection(ur.collection)
+	ObjID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return errors.New("object id invalid")
+	}
+	res, err := collection.UpdateOne(c, bson.M{"_id": ObjID}, bson.M{"$set": bson.M{"profile_img": filename}})
+	if res.ModifiedCount < 1 {
+		return errors.New("couldn't update profie")
+	}
+	return nil
+}

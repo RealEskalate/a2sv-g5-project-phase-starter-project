@@ -19,19 +19,17 @@ func RoleBasedAuth(protected bool) gin.HandlerFunc {
 		var claims = domain.UserClaims{}
 		authSplit := strings.Split(auth, " ")
 		_, err := jwt.ParseWithClaims(authSplit[1], &claims, func(token *jwt.Token) (interface{}, error) {
-			return "", nil
+			return []byte("accessblahblah"), nil
 		})
 
 		if err != nil {
 			c.IndentedJSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			c.Abort()
 			return
 		}
 
 		user := domain.UserClaims{
-			ID: claims.ID, 
-			Name: claims.Name, 
-			Email: claims.Email, 
-			IsAdmin: claims.IsAdmin}
+			ID: claims.ID,}
 
 		if claims.IsAdmin {
 			c.Set("filter", bson.M{})
@@ -53,7 +51,6 @@ func RoleBasedAuth(protected bool) gin.HandlerFunc {
 			c.Set("filter", bson.M{"user._id": claims.ID})
 		}
 
-		c.Set("user", user)
 		c.Next()
 	}
 

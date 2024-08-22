@@ -45,7 +45,14 @@ func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 
 func (bc *BlogController) GetMyBlogs() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		blogs, err := bc.BlogUsecase.GetBlogs(0, 0)
+		iuser,_ := c.Get("user")
+		user := iuser.(domain.ResponseUser)
+		
+		id := user.ID
+		filter := make(map[string]interface{})
+		filter["owner._id"] = id
+
+		blogs, err := bc.BlogUsecase.FilterBlog(filter)
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Failed to retrieve your blog posts. Please try again later: " + err.Error()})
 			return

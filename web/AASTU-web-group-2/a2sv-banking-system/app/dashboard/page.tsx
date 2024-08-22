@@ -13,6 +13,7 @@ import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { getCards } from "@/lib/api/cardController";
 import { GetCardsResponse, Card as CardType } from "@/types/cardController.Interface";
+import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
 
 
 // import {RecentTransaction} from "@/components/RecentTransaction"
@@ -41,23 +42,29 @@ type SessionDataType = {
 
 export default function Home() {
   const [session, setSession] = useState<Data | null>(null);
+  const [access_token, setAccess_token] = useState("");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [getCard, setGetCards] = useState<CardType[]>();
-  const route = useRouter();
 
   // getting the session ends here
   useEffect(() => {
     const fetchSession = async () => {
-      const sessionData = (await getSession()) as SessionDataType | null;
-      if (sessionData && sessionData.user) {
-        setSession(sessionData.user);
-      } else {
-        router.push(
-          `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
-        );
+      try {
+        const sessionData = (await getSession()) as SessionDataType | null;
+        setAccess_token(await Refresh());
+        if (sessionData && sessionData.user) {
+          setSession(sessionData.user);
+        } else {
+          router.push(
+            `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching session:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchSession();
@@ -66,8 +73,9 @@ export default function Home() {
   // Fetching cards
   useEffect(() => {
     const addingData = async () => {
-      if (session?.access_token) {
-        const cardData = await getCards(session?.access_token, 0, 3);
+      if (!access_token) return;
+      if (access_token) {
+        const cardData = await getCards(access_token, 0, 3);
         console.log("Fetching Complete", cardData.content)
         setGetCards(cardData.content);
       }

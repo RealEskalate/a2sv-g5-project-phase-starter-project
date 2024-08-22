@@ -4,4 +4,4 @@ tmp
 venv
 venv/
 .venv
-uploads
+mokery.yml

@@ -46,8 +46,8 @@ func (suite *userHandlerSuite) TestRegister_Positive() {
 	userID := primitive.NewObjectID()
 	user := &domain.User{
 		ID:       userID,
-		Email:    "johndoe@example.com",
-		Password: "password123",
+		Email:    "johndoe@gmail.com",
+		Password: "Password123@@",
 	}
 
 	suite.usecase.On("RegisterUser", user).Return(user, nil)
@@ -58,11 +58,14 @@ func (suite *userHandlerSuite) TestRegister_Positive() {
 	response, err := http.Post(fmt.Sprintf("%s/register", suite.testingServer.URL), "application/json", bytes.NewBuffer(requestBody))
 	suite.NoError(err, "no error when calling the endpoint")
 	defer response.Body.Close()
-
+	
 	var responseBody map[string]interface{}
 	err = json.NewDecoder(response.Body).Decode(&responseBody)
+	
 	suite.NoError(err, "cannot unmarshal response body")
 
+	
+	//fmt.Println(err, ".............................++++++++++++++++++++++++++++++==========================..........................................................................")
 	suite.Equal(http.StatusOK, response.StatusCode)
 	suite.Equal(userID.Hex(), responseBody["id"])
 	suite.Equal(user.Email, responseBody["email"])
@@ -74,9 +77,8 @@ func (suite *userHandlerSuite) TestLogin_Positive() {
 	userID := primitive.NewObjectID()
 	user := &domain.User{
 		ID:       userID,
-		Email:    "johndoe@example.com",
-		Password: "password123",
-		Role:     "user",
+		Email:    "johndoe@gmail.com",
+		Password: "Password123@@@",
 	}
 
 	token := &domain.Token{

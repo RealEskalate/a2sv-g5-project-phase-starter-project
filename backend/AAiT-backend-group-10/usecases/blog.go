@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"net/http"
 	"time"
 
 	"aait.backend.g10/domain"
@@ -17,17 +18,21 @@ type IBlogUseCase interface {
 	DeleteBlog(id uuid.UUID, requester_id uuid.UUID, is_admin bool) *domain.CustomError
 	AddView(id uuid.UUID) *domain.CustomError
 	SearchBlogs(filter domain.BlogFilter) ([]dto.BlogDto, int, int, *domain.CustomError)
+	GenerateBlogContent(req domain.BlogContentRequest) (*domain.BlogContentResponse, *domain.CustomError)
+	SuggestImprovements(content string) (*domain.SuggestionResponse, *domain.CustomError)
 }
 
 type BlogUseCase struct {
 	blogRepo interfaces.IBlogRepository
 	userRepo interfaces.IUserRepository
+	aiService interfaces.IAIService
 }
 
-func NewBlogUseCase(bRepo interfaces.IBlogRepository, uRepo interfaces.IUserRepository) *BlogUseCase {
+func NewBlogUseCase(bRepo interfaces.IBlogRepository, uRepo interfaces.IUserRepository, aiService interfaces.IAIService) *BlogUseCase {
 	return &BlogUseCase{
 		blogRepo: bRepo,
 		userRepo: uRepo,
+		aiService: aiService,
 	}
 }
 
@@ -133,4 +138,22 @@ func (b *BlogUseCase) SearchBlogs(filter domain.BlogFilter) ([]dto.BlogDto, int,
 		changedBlogs[i] = *dto.NewBlogDto(blog, *author)
 	}
 	return changedBlogs, totalPages, totalCount, nil	
+}
+
+func (b *BlogUseCase) GenerateBlogContent(req domain.BlogContentRequest) (*domain.BlogContentResponse, *domain.CustomError) {
+	aiResponse, err := b.aiService.GenerateContent(req.Topic, req.Keywords)
+    if err != nil {
+		return nil, domain.NewCustomError(err.Error(), http.StatusInternalServerError)
+    }
+
+    return aiResponse, nil		
+}
+
+func (b *BlogUseCase) SuggestImprovements(content string) (*domain.SuggestionResponse, *domain.CustomError) {
+	aiResponse, err := b.aiService.SuggestImprovements(content)
+	if err != nil {
+		return nil, domain.NewCustomError(err.Error(), http.StatusInternalServerError)
+	}
+
+	return aiResponse, nil
 }

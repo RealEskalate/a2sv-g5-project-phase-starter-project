@@ -12,7 +12,7 @@ type UserUseCase interface {
 	RegisterEnd(cxt *gin.Context, token string) Error
 	Login(context *gin.Context, username, password string) (map[string]string, Error)
 	ForgotPassword(context *gin.Context, email string) Error
-	ResetPassword(cxt *gin.Context, newPassword, confirmPassword, token string) Error
+	ResetPassword(cxt *gin.Context, newPassword, confirmPassword, token string, resetCode int) Error
 	Logout(cxt *gin.Context, token map[string]string) Error
 	PromoteUser(cxt *gin.Context, userID string) Error
 	DemoteUser(cxt *gin.Context, userID string) Error

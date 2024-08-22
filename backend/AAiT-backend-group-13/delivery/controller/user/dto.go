@@ -26,3 +26,10 @@ type ResetPasswordDto struct {
 type ForgotPasswordDto struct {
 	Email string `json:"email" binding:"required"`
 }
+
+type UserInfo struct {
+	Email         string `json:"email"`
+	VerifiedEmail bool   `json:"verified_email"`
+	GivenName     string `json:"given_name"`
+	FamilyName    string `json:"family_name"`
+}

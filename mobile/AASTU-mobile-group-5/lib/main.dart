@@ -29,7 +29,7 @@ import 'service_locator.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setupLocator();
-  runApp(ProfileWidget());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

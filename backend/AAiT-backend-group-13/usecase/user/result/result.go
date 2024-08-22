@@ -48,3 +48,16 @@ func NewValidateEmailResult(token string, refreshtoken string) ValidateEmailResu
 		Refreshtoken: refreshtoken,
 	}
 }
+
+
+type UpdateProfileResult struct {
+	message string
+}
+
+
+
+func NewUpdateProfileResult(message string) UpdateProfileResult {
+	return UpdateProfileResult{
+		message: message,
+	}
+}

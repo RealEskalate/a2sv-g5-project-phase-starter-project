@@ -32,7 +32,7 @@ func (s *BlogUseCasetestSuite) TearDownTest() {
 // TestRunSuite runs the test suite
 func TestRunSuite(t *testing.T) {
 	suite.Run(t, new(BlogUseCasetestSuite))
-	// suite.Run(t, new(UserUseCasetestSuite))
+	suite.Run(t, new(UserUseCasetestSuite))
 }
 
 // TestCreateBlog tests the CreateBlog method

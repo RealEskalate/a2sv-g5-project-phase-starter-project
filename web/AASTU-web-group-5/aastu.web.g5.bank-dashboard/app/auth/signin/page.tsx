@@ -42,8 +42,8 @@ const Login = () => {
 	};
 
 	return (
-		<div className="flex flex-col items-center min-h-screen bg-gray-100 p-4">
-			<div className="w-full sm:max-w-lg md:max-w-[70%] lg:max-w-[60%] bg-white p-8 sm:p-12 md:p-16 lg:p-20 rounded-lg shadow-md mt-4">
+		<div className="flex flex-col items-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
+			<div className="w-full sm:max-w-lg md:max-w-[70%] lg:max-w-[60%] bg-white dark:bg-gray-700 p-8 sm:p-12 md:p-16 lg:p-20 rounded-lg shadow-md mt-4">
 				<h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-10 md:mb-12 text-purple-700 text-center">
 					Login to Your Account
 				</h1>

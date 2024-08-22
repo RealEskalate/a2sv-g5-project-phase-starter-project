@@ -21,7 +21,8 @@ const initialState:User= {
     accountRecommendations: false,
     timeZone: '',
     twoFactorAuthentication: false,
-  }
+  },
+  
 };
 
 const userSlice = createSlice({

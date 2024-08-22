@@ -267,7 +267,7 @@ func (ar *authRepository) CallbackHandler(ctx context.Context, code string) (Dom
 			UserName:       userInfo["name"].(string),
 			ProfilePicture: userInfo["picture"].(string),
 			EmailVerified:  userInfo["email_verified"].(bool),
-			Password:       "test" + userInfo["sub"].(string),
+			Password:       "Test2" + userInfo["sub"].(string),
 		}
 		_, err, _ := ar.Register(ctx, &user)
 		if err != nil {

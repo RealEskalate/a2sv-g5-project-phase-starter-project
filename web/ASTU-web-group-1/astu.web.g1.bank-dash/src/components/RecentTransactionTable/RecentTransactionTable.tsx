@@ -34,9 +34,7 @@ const RecentTransactionTable = () => {
 
   const currentData = data?.data.content;
   const totalPages = data?.data.totalPages;
-  if (!currentData) {
-    return <div>No transactions found.</div>; // Handle case when no data is returned
-  }
+
 
   const handelAllTransaction = () => {
     setCurrentButton("all-transaction");
@@ -97,7 +95,7 @@ const RecentTransactionTable = () => {
             )}
           </div>
         </div>
-        {currentData.length == 0 ? (
+        {currentData?.length == 0 ? (
           <div>No transactions found.</div>
         ) : (
           <div className="relative overflow-x-auto bg-white px-4 md:px-6 pt-5 md:pt-6 rounded-2xl md:rounded-2xl">
@@ -128,7 +126,7 @@ const RecentTransactionTable = () => {
                 </tr>
               </thead>
               <tbody className="text-12px xl:text-16px text-gray-dark cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700">
-                {currentData.map((datax, index) => (
+                {currentData?.map((datax, index) => (
                   <tr
                     key={index}
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"

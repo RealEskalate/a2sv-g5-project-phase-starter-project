@@ -3,7 +3,6 @@ import { baseQuery } from '../api/baseQuery';
 import { TransactionResponseType } from '@/types/transaction.types';
 import { pageSize } from '@/types/page-size.type';
 
-
 export const transactionApi = createApi({
   reducerPath: 'transactionApi',
   baseQuery: baseQuery(),

@@ -8,10 +8,10 @@ export default function Page() {
     <>
       <div className='bg-white w-screen h-screen flex justify-around items-center'>
         <div className='text-center hidden min-[800px]:block'>
-          <h1 className='text-slate-800 text-4xl font-poppins font-[900]'>Welcome To Akil</h1>
+          <h1 className='text-indigo-900 text-4xl font-poppins font-[900]'>Welcome To Bank-Dash</h1>
           <div className='w-[35vw] h-[60vh] relative'>
             <Image
-              src='/assets/welcome.png'
+              src='/assets/images/welcome-page.png'
               alt='hello'
               layout='fill'
               objectFit='cover'

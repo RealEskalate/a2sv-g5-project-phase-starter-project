@@ -4,6 +4,7 @@ import signInUser from "./signInUser";
 import { NextAuthOptions } from "next-auth";
 
 export const options: NextAuthOptions = {
+  secret : process.env.AUTH_SECRET,
   providers: [
     CredentialsProvider({
       type: "credentials",

@@ -151,7 +151,7 @@ function MyExpenseChart() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-[350px] bg-white animate-pulse rounded-[25px]">
+      <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-full bg-white animate-pulse rounded-[25px]">
         <div className="flex flex-row gap-2">
           <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
           <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
@@ -171,7 +171,7 @@ function MyExpenseChart() {
 
   return (
 
-    <div className="flex  flex-col flex-initial flex-wrap gap-[10px] bg-white drop-shadow-xl font-medium rounded-[25px] h-[225px] pt-[45px] w-[350px]">
+    <div className="flex  flex-col flex-initial flex-wrap gap-[10px] bg-white  font-medium rounded-[25px] h-[225px] pt-[45px] w-full">
       <canvas ref={chartRef}  className="w-full h-full"/>
     </div>
   );

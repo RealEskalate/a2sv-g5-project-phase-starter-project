@@ -54,7 +54,7 @@ const TransactionsDisplay = () => {
   );
 
   return (
-    <div className={`flex flex-col gap-5 ${inter.className}`}>
+    <div className={`flex flex-col gap-5 w-full ${inter.className}`}>
       <div className="flex gap-12 text-[#718EBF] font-medium border-b border-[#EBEEF2] pl-6">
         <button
           onClick={() => setChooseIndex(0)}

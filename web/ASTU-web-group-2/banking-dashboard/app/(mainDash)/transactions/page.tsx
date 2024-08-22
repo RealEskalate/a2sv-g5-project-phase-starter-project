@@ -4,44 +4,26 @@ import CreditCard from "../../components/creditCard/CreditCard";
 import Card from "../../components/card/Card";
 import MyExpenseChart from "../../components/charts/MyExpenseChart";
 import TransactionsDisplay from "../../components/transactionsDisplay/TransactionsDisplay";
+import CardDisplay from "@/app/components/cardDisplay/CardDisplay";
 
 const TransactionPage = () => {
   return (
-    <div className="flex flex-col gap-2  pb-5">
-      <div className="flex max-sm:flex-col justify-between">
+    <div className="grid grid-cols-1 pb-5 w-full">
+      <div className="grid lg:grid-cols-[2fr_1fr] max-md:grid-cols-1  gap-7 p-4 w-auto">
         <CardForCreditCards
-          className="flex flex-col lg:w-[730px] lg:h-[300px] max-md:w-[350px]"
+          className="overflow-x-auto"
           title="Credit Cards"
           button="+ Add Card"
           link="/credit-cards"
         >
-          <div className="flex gap-[30px]">
-            <div>
-              <CreditCard
-                balance={1250}
-                cardHolder="John Doe"
-                expiryDate="12/24"
-                cardNumber="1234 5678 9012 3456"
-                cardType="primary" // Can be "primary", "secondary", or "tertiary"
-              />
-            </div>
-            <div>
-              <CreditCard
-                balance={1250}
-                cardHolder="John Doe"
-                expiryDate="12/24"
-                cardNumber="1234 5678 9012 3456"
-                cardType="tertiary" // Can be "primary", "secondary", or "tertiary"
-              />
-            </div>
-          </div>
+          <CardDisplay />
         </CardForCreditCards>
-        <Card title="My Expense" className="w-[350px]  h-auto lg:pl-6 pl-0">
+        <Card title="My Expense" className="">
           <MyExpenseChart />
         </Card>
       </div>
 
-      <Card title="Recent Transactions" className="flex flex-col w-[100%]">
+      <Card title="Recent Transactions" className="w-full">
         <TransactionsDisplay />
       </Card>
     </div>

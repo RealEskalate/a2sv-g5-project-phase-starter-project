@@ -1,0 +1,13 @@
+{
+    "statusCode": 200,
+    "message": "",
+    "data": [
+      {
+        "id": "66b0b23928f63adda72ab38a",
+        "name": "PC",
+        "description": "long description",
+        "price": 123,
+        "imageUrl": "https://res.cloudinary.com/g5-mobile-track/image/upload/v1722855993/images/soyhb68osjiemyy2btte.png"
+      }
+    ]
+  }

@@ -20,5 +20,6 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db mongo.Database, gin *gi
 	NewPromoteRoute(env, timeout, db, publicRouter)
 	NewOtpRoute(env, timeout, db, publicRouter)
 	NewBlogRoute(env, timeout, db, publicRouter, rc)
+	NewLikeRoute(env, timeout, db, publicRouter)
 	NewForgotPasswordRoute(env, timeout, db, publicRouter)
 }

@@ -18,7 +18,7 @@ func NewLikeRoute(env *bootstrap.Env, timeout time.Duration, db mongo.Database, 
 	blogRepo := repositories.NewBlogRepository(db, env.BlogCollection)
 
 	// Initialize use cases
-	likeUsecase := usecases.NewLikeUsecase( blogRepo, likeRepo, timeout)
+	likeUsecase := usecases.NewLikeUsecase(blogRepo, likeRepo, timeout)
 
 	// Initialize the controller with the use case
 	lctrl := controllers.LikeController{
@@ -28,7 +28,7 @@ func NewLikeRoute(env *bootstrap.Env, timeout time.Duration, db mongo.Database, 
 	// Define the like and dislike routes
 	likeRoutes := group.Group("/blogs")
 	{
-		likeRoutes.POST("/:blog_id/like/:user_id", lctrl.Like)      // Route for adding a like
-		likeRoutes.POST("/:blog_id/dislike/:user_id", lctrl.Dislike) // Route for adding a dislike
+		likeRoutes.POST("/like/:blog_id/:user_id", lctrl.Like)       // Route for adding a like
+		likeRoutes.POST("/dislike/:blog_id/:user_id", lctrl.Dislike) // Route for adding a dislike
 	}
 }

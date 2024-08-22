@@ -106,6 +106,12 @@ func (br *blogRepository) FetchByBlogID(c context.Context, blogID string) (domai
 	if err != nil {
 		return blog, err
 	}
+
+	err = collection.FindOne(c, bson.M{"_id": idHex}).Decode(&blog)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+
 	blog.Feedbacks.View_count++
 	newPopularity := CalculatePopularity(&blog.Feedbacks)
 
@@ -114,7 +120,8 @@ func (br *blogRepository) FetchByBlogID(c context.Context, blogID string) (domai
 		return domain.Blog{}, err
 	}
 
-	err = collection.FindOne(c, bson.M{"_id": idHex}).Decode(&blog)
+	err = br.UpdateBlog(c, blog.ID, domain.BlogUpdate{Feedbacks: &blog.Feedbacks})
+
 	return blog, err
 }
 
@@ -159,9 +166,13 @@ func (br *blogRepository) FetchByBlogTitle(c context.Context, title string) (dom
 	}
 
 	var blog domain.Blog
-	err = cursor.All(c, &blog)
-	if err != nil {
-		return domain.Blog{}, err
+	if cursor.Next(c) {
+		err = cursor.Decode(&blog)
+		if err != nil {
+			return domain.Blog{}, err
+		}
+	} else {
+		return domain.Blog{}, errors.New("no blog found with the given title")
 	}
 	blog.Feedbacks.View_count++
 	newPopularity := CalculatePopularity(&blog.Feedbacks)
@@ -171,7 +182,9 @@ func (br *blogRepository) FetchByBlogTitle(c context.Context, title string) (dom
 		return domain.Blog{}, err
 	}
 
-	return blog, nil
+	err = br.UpdateBlog(c, blog.ID, domain.BlogUpdate{Feedbacks: &blog.Feedbacks})
+
+	return blog, err
 }
 
 // FetchAll retrieves all blogs from the collection with optional pagination.

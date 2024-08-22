@@ -2,6 +2,7 @@ package controllers
 
 import (
 	domain "aait-backend-group4/Domain"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -218,7 +219,7 @@ func (bc *BlogController) FetchByTags(c *gin.Context) {
 // It retrieves the title from the query and calls the usecase to get the blogs matching the title.
 func (bc *BlogController) FetchByBlogTitle(c *gin.Context) {
 	title := c.Query("title")
-
+	log.Printf("Received request to fetch blogs with title: %s", title)
 	// Call the usecase to fetch blogs by title
 	blogs, err := bc.BlogUsecase.FetchByBlogTitle(c, title)
 	if err != nil {

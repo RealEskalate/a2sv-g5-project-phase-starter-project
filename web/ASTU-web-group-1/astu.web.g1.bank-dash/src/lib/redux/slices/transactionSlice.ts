@@ -4,7 +4,7 @@ import { get } from 'http';
 import { baseQuery } from '../api/baseQuery';
 import { TransactionResponseType } from '@/types/transaction.types';
 
-const size = 5;
+const size = 1;
 
 export const transactionApi = createApi({
   reducerPath: 'transactionApi',

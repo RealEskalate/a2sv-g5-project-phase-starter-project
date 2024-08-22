@@ -63,7 +63,7 @@ func BlogRouter() {
 
 	tagRouter := Router.Group("/tags", auth_middleware.AuthMiddleware(), auth_middleware.IsAdminMiddleware())
 	{
-		tagRepo := Repositories.NewTagsRepository(BlogCollections)
+		tagRepo := Repositories.NewTagRepository(BlogCollections)
 		tagUsecase := usecases.NewTagsUseCase(tagRepo)
 		tagController := controllers.NewTagsController(tagUsecase)
 

@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 )
 
 var ctx = context.TODO()
@@ -52,7 +53,6 @@ func (r *MongoBlogRepository) GetBlogByID(blogID string) (*models.Blog, error) {
 
 func (r *MongoBlogRepository) GetBlogs(filter map[string]interface{}, search string, page int, limit int) ([]*models.Blog, error) {
 	var blogs []*models.Blog
-
 	filterBson := bson.M{}
 	if search != "" {
 		filterBson["$text"] = bson.M{"$search": search}
@@ -87,6 +87,7 @@ func (r *MongoBlogRepository) GetBlogs(filter map[string]interface{}, search str
 
 func (r *MongoBlogRepository) UpdateBlog(blogId string, newBlog *models.Blog) error {
 	blogID, _ := primitive.ObjectIDFromHex(blogId)
+	newBlog.UpdatedAt = time.Now()
 
 	_, err := r.collection.UpdateOne(
 		ctx,
@@ -95,6 +96,7 @@ func (r *MongoBlogRepository) UpdateBlog(blogId string, newBlog *models.Blog) er
 	)
 	return err
 }
+
 
 func (r *MongoBlogRepository) DeleteBlog(blogId string) error {
 	blogID, _ := primitive.ObjectIDFromHex(blogId)

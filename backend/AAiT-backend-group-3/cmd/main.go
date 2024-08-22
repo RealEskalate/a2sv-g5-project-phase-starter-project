@@ -58,6 +58,7 @@ func main() {
 	otpRepo := repositories.NewMongoOtpRepository(dbClient.Database, "otps")
 	blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs")
 	commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
+	tagRep := repositories.NewMongoTagRepository(dbClient.Database, "tags")
 
 	//services
 	emailSvc := services.NewEmailService(smtpHost, smtpPort, userName, passWord)
@@ -72,7 +73,7 @@ func main() {
 	//usecases
 	userUsecase := usecases.NewUserUsecase(userRepo, passSvc, validationSvc, emailSvc, jwtSvc)
 	otpUsecase := usecases.NewOtpUseCase(otpRepo, userRepo, emailSvc, passSvc, "http://localhost:8080", validationSvc)
-	blogService := usecases.NewBlogUsecase(blogRepo)
+	blogService := usecases.NewBlogUsecase(blogRepo, tagRep)
 	commentService := usecases.NewCommentUsecase(commentRepo)
 	aiHelperUsecase := usecases.NewAiHelperUsecase(aiService)
 

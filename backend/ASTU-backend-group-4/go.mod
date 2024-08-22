@@ -3,6 +3,7 @@ module github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4
 go 1.22.5
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-playground/validator/v10 v10.22.0

@@ -72,7 +72,7 @@ type UserUsecase interface {
 	IsOwner(c context.Context) (bool, error)
 	ResetUserPassword(c context.Context, userID string, resetPassword *ResetPassword) error
 	UpdateUserPassword(c context.Context, userID string, updatePassword *UpdatePassword) error
-
+	
 	PromoteUserToAdmin(c context.Context, userID string) error
 	DemoteAdminToUser(c context.Context, userID string) error
 }

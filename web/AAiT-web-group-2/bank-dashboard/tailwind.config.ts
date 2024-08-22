@@ -49,6 +49,10 @@ const config: Config = {
       borderRadius: {
         "my-card-radius": "25px",
       },
+      screens: {
+        'max-sm': {'max': '380px'},  
+        'max-md' :{'max': '1025px'}
+      },
     },
   },
   plugins: [],

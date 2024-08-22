@@ -56,7 +56,7 @@ func (service *emailService) SendVerificationEmail(to, name, verificationLink st
 	return service.SendMail(to, "Email Verification", "verification.html", data)
 }
 
-func (service *EmailService) SendPasswordResetEmail(to, name, resetLink, resetCode string) error {
+func (service *emailService) SendPasswordResetEmail(to, name, resetLink, resetCode string) error {
 	data := map[string]string{
 		"Name":      name,
 		"ResetLink": resetLink,

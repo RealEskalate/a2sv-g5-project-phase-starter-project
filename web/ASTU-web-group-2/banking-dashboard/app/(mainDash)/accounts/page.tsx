@@ -82,7 +82,7 @@ const AccountsPage = () => {
   console.log("the data we don't want to see: ", cardInfoData);
   const allCardsData = allCardsDataWithContent.content!;
   return (
-    <div className="flex flex-col gap-2  pb-5">
+    <div className="grid grid-cols-1 gap-2 pb-5">
       <Infobox />
       <div className="flex max-sm:flex-col justify-between gap-8">
         <Card

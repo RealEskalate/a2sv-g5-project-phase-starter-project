@@ -111,7 +111,8 @@ func (u *UserController) login(ctx *gin.Context) {
 		return
 	}
 
-	u.RespondWithCookies(ctx, http.StatusOK, nil, []*http.Cookie{
+	responseBody := NewLoginResponse(res)
+	u.RespondWithCookies(ctx, http.StatusOK, responseBody, []*http.Cookie{
 		{
 			Name:     "accessToken",
 			Value:    res.Token,

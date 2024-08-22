@@ -23,7 +23,7 @@ interface ExtendedUser {
 interface ExtendedSession {
   user?: ExtendedUser;
 }
-const BASE_URL = "https://bank-dashboard-1tst.onrender.com/";
+const BASE_URL = "https://bank-dashboard-1tst.onrender.com";
 
 const fetchSession = async (): Promise<ExtendedSession> => {
   const session = await getServerSession();
@@ -229,8 +229,8 @@ const getTransactionIncomes = async (
   }
 };
 const getTransactionsExpenses = async (
-  page: number,
-  size: number,
+  page : number,
+  size : number,
   token: string
 ): Promise<PaginatedTransactionsResponse> => {
   try {

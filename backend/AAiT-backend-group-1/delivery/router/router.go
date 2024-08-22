@@ -2,16 +2,11 @@ package router
 
 import (
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
-	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/infrastructure"
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(userController domain.UserController, blogController domain.BlogController, blogAssistantController domain.BlogAssistantController, jwtService domain.JwtService) *gin.Engine {
+func SetupRouter(userController domain.UserController, blogController domain.BlogController, blogAssistantController domain.BlogAssistantController, authMiddleware domain.MiddlewareService) *gin.Engine {
 	r := gin.Default()
-
-	// Protected routes
-	authMiddleware := infrastructure.NewMiddlewareService(jwtService)
-	r.Use(authMiddleware.Authenticate())
 
 	// user related routes
 	r.POST("/promote", authMiddleware.Authorize("admin"), userController.PromoteUser)
@@ -20,6 +15,8 @@ func SetupRouter(userController domain.UserController, blogController domain.Blo
 	// Blog routes
 	blogRoutes := r.Group("/blogs")
 	{
+		blogRoutes.Use(authMiddleware.Authenticate())
+
 		blogRoutes.POST("/", blogController.CreateBlog)
 		blogRoutes.GET("/:id", blogController.GetBlog)
 		blogRoutes.GET("/", blogController.GetBlogs)
@@ -33,26 +30,28 @@ func SetupRouter(userController domain.UserController, blogController domain.Blo
 		blogRoutes.POST("/:id/comments", blogController.AddComment)
 		blogRoutes.DELETE("/:id/comments/:comment_id", blogController.DeleteComment)
 		blogRoutes.PUT("/:id/comments/:comment_id", blogController.EditComment)
+
+		// blog assistant related routes
+		blogRoutes.POST("/generate", blogAssistantController.GenerateBlog)
+		blogRoutes.POST("/enhance", blogAssistantController.EnhanceBlog)
+		blogRoutes.GET("/suggest", blogAssistantController.SuggestBlog)
 	}
 
 	userRoutes := r.Group("/user")
 	{
-		userRoutes.POST("/", userController.Register)
+		userRoutes.POST("/register", userController.Register)
 		userRoutes.GET("/verify/:token", userController.VerifyEmail)
 		userRoutes.POST("/login", userController.Login)
 		userRoutes.POST("/forgot_password", userController.ForgotPassword)
 		userRoutes.POST("/reset/:token", userController.ResetPassword)
-		userRoutes.POST("/logout", userController.Logout).Use(authMiddleware.Authenticate())
-		userRoutes.POST("/promote", userController.PromoteUser)
-		userRoutes.POST("/demote", userController.DemoteUser)
-		userRoutes.POST("/update/:id", userController.UpdateProfile).Use(authMiddleware.Authenticate())
-		userRoutes.POST("/upload_profile_picture", userController.ImageUpload)
-	}
 
-	// blog assistant related routes
-	r.POST("/generate-blog", blogAssistantController.GenerateBlog)
-	r.POST("/enhance-blog", blogAssistantController.EnhanceBlog)
-	r.GET("/suggest-blog", blogAssistantController.SuggestBlog)
+		userRoutes.POST("/logout", authMiddleware.Authenticate(), userController.Logout)
+		userRoutes.POST("/update/:id", authMiddleware.Authenticate(), userController.UpdateProfile)
+		userRoutes.POST("/upload_profile_picture", authMiddleware.Authenticate(), userController.ImageUpload)
+
+		userRoutes.POST("/promote", authMiddleware.Authenticate(), authMiddleware.Authorize("admin"), userController.PromoteUser)
+		userRoutes.POST("/demote", authMiddleware.Authenticate(), authMiddleware.Authorize("admin"), userController.DemoteUser)
+	}
 
 	return r
 }

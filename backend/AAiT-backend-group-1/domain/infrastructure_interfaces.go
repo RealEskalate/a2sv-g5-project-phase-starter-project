@@ -10,7 +10,7 @@ import (
 type JwtService interface {
 	GenerateAccessTokenWithPayload(user User) (string, error)
 	GenerateRefreshTokenWithPayload(user User) (string, error)
-	GenerateVerificationToken(user User)
+	GenerateVerificationToken(user User) (string, error)
 	GenerateResetToken(email string) (string, error)
 	ValidateVerificationToken(token string) (*jwt.Token, error)
 	ValidateAccessToken(token string) (*jwt.Token, error)
@@ -30,7 +30,14 @@ type MiddlewareService interface {
 }
 
 type CacheService interface {
-	Set(key string, value string, expiration time.Duration) error
+	Set(key string, value interface{}, expiration time.Duration) error
 	Get(key string) (string, error)
 	Delete(key string) error
 }
+
+type EmailService interface {
+	SendMail(to, subject, templateName string, body interface{}) error
+	SendVerificationEmail(to, name, verificationLink string) error
+	SendPasswordResetEmail(to, name, resetLink, resetCode string) error
+}
+

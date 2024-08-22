@@ -6,25 +6,31 @@ import (
 	"html/template"
 	"net/smtp"
 	"os"
+
+	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
 )
 
-type EmailService struct {
+type emailService struct {
 	auth smtp.Auth
 }
 
-func NewEmailService() *EmailService {
+func NewEmailService() domain.EmailService {
 	auth := smtp.PlainAuth(
 		"",
 		os.Getenv("SMTP_EMAIL"),
 		os.Getenv("SMTP_PASSWORD"),
 		"smtp.gmail.com",
 	)
-	return &EmailService{auth: auth}
+	return &emailService{auth: auth}
 }
 
-func (service *EmailService) SendMail(to, subject, templateName string, body interface{}) error {
+func (service *emailService) SendMail(to, subject, templateName string, body interface{}) error {
 	from := os.Getenv("SMTP_EMAIL")
-	tmplt, errLoadingTmplt := template.ParseFiles("templates/" + templateName)
+	currdir, errdir := os.Getwd()
+	if errdir != nil {
+		return errdir
+	}
+	tmplt, errLoadingTmplt := template.ParseFiles(currdir + "/infrastructure/mail/templates/" + templateName)
 	if errLoadingTmplt != nil {
 		return fmt.Errorf("error loading the template: %v", errLoadingTmplt)
 	}
@@ -41,7 +47,7 @@ func (service *EmailService) SendMail(to, subject, templateName string, body int
 	return nil
 }
 
-func (service *EmailService) SendVerificationEmail(to, name, verificationLink string) error {
+func (service *emailService) SendVerificationEmail(to, name, verificationLink string) error {
 	data := map[string]string{
 		"Name":             name,
 		"VerificationLink": verificationLink,
@@ -50,10 +56,11 @@ func (service *EmailService) SendVerificationEmail(to, name, verificationLink st
 	return service.SendMail(to, "Email Verification", "verification.html", data)
 }
 
-func (service *EmailService) SendPasswordResetEmail(to, name, resetLink string) error {
+func (service *emailService) SendPasswordResetEmail(to, name, resetLink, resetCode string) error {
 	data := map[string]string{
 		"Name":      name,
 		"ResetLink": resetLink,
+		"ResetCode": resetCode,
 	}
 
 	return service.SendMail(to, "Password Reset", "password_reset.html", data)

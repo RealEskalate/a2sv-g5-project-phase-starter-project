@@ -63,7 +63,7 @@ func (u *AuthUsecase) LoginUser(email, password string) (domain.User, string, st
     foundUser, err := u.AuthRepo.FindUserByEmail(email)
     if err != nil {
         return user, "", "", err
-    }
+    }   
 
     if foundUser == nil {
         return user, "", "", fmt.Errorf("user not found")

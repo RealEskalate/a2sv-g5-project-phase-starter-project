@@ -5,7 +5,6 @@ import (
 	"backend-starter-project/domain/interfaces"
 	"context"
 	"errors"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -28,9 +27,8 @@ func (repo profileRepository) GetUserProfile(user_id string) (*entities.Profile,
 	}
 
 	filter := bson.D{{"userId", userID}}
-	fmt.Println("user id from profile repo", user_id,userID)
 	user := repo.collection.FindOne(context.TODO(), filter)
-	if user.Err() != nil {
+	if err = user.Err(); err != nil {
 		return &entities.Profile{}, errors.New("couldn't find the profile")
 	}
 
@@ -48,14 +46,13 @@ func (repo profileRepository) CreateUserProfile(profile *entities.Profile) (*ent
 	if profile.UserID == primitive.NilObjectID {
 		return nil, errors.New("user id is required")
 	}
-	if existed:=repo.collection.FindOne(repo.context, bson.D{{"userId", profile.UserID}});existed.Err()==nil{
+	if existed := repo.collection.FindOne(repo.context, bson.D{{"userId", profile.UserID}}); existed.Err() == nil {
 		return nil, errors.New("profile already exists")
 	}
-	response, err := repo.collection.InsertOne(repo.context, profile)
+	_, err := repo.collection.InsertOne(repo.context, profile)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("profile service response", response)
 	return profile, nil
 }
 
@@ -66,7 +63,7 @@ func (repo profileRepository) UpdateUserProfile(profile *entities.Profile) (*ent
 	}
 	filter := bson.D{{"userId", user_id}}
 
-	data:=bson.D{
+	data := bson.D{
 		{"$set", bson.D{
 			{"bio", profile.Bio},
 			{"profilePicture", profile.ProfilePicture},

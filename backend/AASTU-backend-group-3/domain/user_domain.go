@@ -100,6 +100,9 @@ type UserUsecase interface {
 	LogoutDevice(userID, deviceID string) error
 	GetDevices(userID string) ([]string, error)
 
+
+	ActivateAccountMe(Email string) error
+
 	// for google oauth
 	OAuthLogin(oauthUserInfo OAuthUserInfo, deviceID string) (LogInResponse, error)
 
@@ -139,6 +142,9 @@ type UserRepository interface {
 	FindOrCreateUserByGoogleID(oauthUserInfo OAuthUserInfo, deviceID string ) (*User, error)
 	GetUserByResetToken(token string) (User, error)
 	GetUserByEmail(email string) (User, error)
+
+
+	// ActivateAccountMe(Email string) error
 
 
 	// // for user profile

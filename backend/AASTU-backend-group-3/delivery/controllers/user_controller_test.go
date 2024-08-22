@@ -38,8 +38,6 @@ func setupRouterUser(userUsecase domain.UserUsecase) *gin.Engine {
 	r.POST("/logoutDevice", userController.LogoutDevice)
 	r.POST("/register", userController.Register)
 
-
-
 	return r
 }
 
@@ -71,7 +69,6 @@ func TestLogoutAll(t *testing.T) {
 		assert.Contains(t, w.Body.String(), "Logged out from all devices")
 	})
 }
-
 
 func TestLogoutDevice(t *testing.T) {
 	mockUsecase := new(mocks.UserUsecase)
@@ -147,11 +144,9 @@ func TestLogin(t *testing.T) {
 		r.ServeHTTP(w, req)
 
 		assert.Equal(t, 500, w.Code)
-		
+
 	})
 }
-
-
 
 func TestRegister(t *testing.T) {
 	mockUsecase := new(mocks.UserUsecase)
@@ -200,11 +195,9 @@ func TestRegister(t *testing.T) {
 	})
 }
 
-
-
 func TestGetMyProfile(t *testing.T) {
     mockUserUsecase := new(mocks.UserUsecase)
-    
+
     // Use a consistent ObjectID
     objID := "66c65e453009f61066250647" // Explicitly set this ID to ensure consistency
 	num, _ := primitive.ObjectIDFromHex(objID)
@@ -223,7 +216,7 @@ func TestGetMyProfile(t *testing.T) {
 
     // Setup the router
     r := gin.Default()
-    
+
     // Middleware to simulate setting user_id in the context
     r.Use(func(c *gin.Context) {
         c.Set("user_id", objID) // Use the same consistent user ID
@@ -281,7 +274,6 @@ func TestGetUsers(t *testing.T) {
     mockUserUsecase.AssertExpectations(t)
 }
 
-
 func TestGetUser(t *testing.T) {
 	mockUsecase := new(mocks.UserUsecase)
 	r := setupRouterUser(mockUsecase)
@@ -338,8 +330,6 @@ func TestGetUser(t *testing.T) {
 	})
 }
 
-
-
 func TestDeleteUser(t *testing.T) {
 	mockUsecase := new(mocks.UserUsecase)
 	r := setupRouterUser(mockUsecase)
@@ -393,11 +383,9 @@ func TestDeleteUser(t *testing.T) {
 		r.ServeHTTP(w, req)
 
 		assert.Equal(t,401 , w.Code)
-		
+
 	})
 }
-
-
 
 func TestUpdateUserRole(t *testing.T) {
 	mockUsecase := new(mocks.UserUsecase)
@@ -428,7 +416,7 @@ func TestUpdateUserRole(t *testing.T) {
 		})
 
 		// Missing role field
-		body := `{}` 
+		body := `{}`
 		req, _ := http.NewRequest(http.MethodPut, "/users/12345/role", strings.NewReader(body))
 		req.Header.Set("Content-Type", "application/json")
 		w := httptest.NewRecorder()
@@ -478,7 +466,6 @@ func TestUpdateUserRole(t *testing.T) {
 		assert.Contains(t, w.Body.String(), "admin")
 	})
 }
-
 
 func TestDeleteMyAccount(t *testing.T) {
 	mockUsecase := new(mocks.UserUsecase)

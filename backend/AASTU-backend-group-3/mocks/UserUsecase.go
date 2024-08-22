@@ -31,6 +31,24 @@ func (_m *UserUsecase) AccountActivation(token string, email string) error {
 	return r0
 }
 
+// ActivateAccountMe provides a mock function with given fields: Email
+func (_m *UserUsecase) ActivateAccountMe(Email string) error {
+	ret := _m.Called(Email)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ActivateAccountMe")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(Email)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // DeleteMyAccount provides a mock function with given fields: userID
 func (_m *UserUsecase) DeleteMyAccount(userID string) error {
 	ret := _m.Called(userID)

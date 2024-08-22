@@ -133,6 +133,18 @@ func (uc *UserController) Register(c *gin.Context) {
 
 }
 
+func (uc* UserController) ActivateAccountMe(c *gin.Context) {
+	userID := c.GetString("user_id")
+
+	err := uc.UserUsecase.ActivateAccountMe(userID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Check your email."})
+}
+
 
 func (uc *UserController) ActivateAccount(c *gin.Context) {
 	token := c.Query("token")

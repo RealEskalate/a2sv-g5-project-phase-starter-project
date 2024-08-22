@@ -16,30 +16,30 @@ func Setup(env *config.Env, db mongo.Database, gin *gin.Engine) {
 	jwt_service := infrastructure.NewJwtService(env)
 	session_repo := repository.NewSessionRepository(&db)
 	jwtMiddleware := middlewares.NewJwtAuthMiddleware(jwt_service, session_repo)
-
-	publicRouter := gin.Group("")
-	protectedRouter := gin.Group("")
-	adminRouter := gin.Group("")
 	redisClient := config.NewRedisClient(*env, context.Background())
 
-	refreshGroup := publicRouter.Group("")
-	refreshGroup.Use(jwtMiddleware.JWTRefreshAuthMiddelware())
+	publicRoute := gin.Group("")
+	protectedRoute := gin.Group("")
+	adminRoute := gin.Group("")
+	refreshRoute := publicRoute.Group("")
 
-	protectedRouter.Use(jwtMiddleware.JWTAuthMiddelware())
-
-	adminRouter.Use(
+	refreshRoute.Use(jwtMiddleware.JWTRefreshAuthMiddelware())
+	protectedRoute.Use(jwtMiddleware.JWTAuthMiddelware())
+	adminRoute.Use(
 		jwtMiddleware.JWTAuthMiddelware(),
 		middlewares.AuthenticateAdmin(),
 	)
 
-	NewAuthenticationRouter(env, db, publicRouter)
-	NewForgotPasswordRouter(env, db, protectedRouter)
-	NewLogoutRouter(env, db, protectedRouter)
-	NewRefreshRouter(env, db, refreshGroup)
-	NewPromoteDemoteRouter(db, adminRouter)
+	NewAuthenticationRouter(env, db, publicRoute)
+	NewForgotPasswordRouter(env, db, protectedRoute)
+	NewLogoutRouter(env, db, protectedRoute)
+	NewRefreshRouter(env, db, refreshRoute)
 
-	NewBlogRouter(env, db, protectedRouter, redisClient)
-	NewBlogCommentRouter(env, db, protectedRouter, redisClient)
+	NewUserProfileRouter(db, protectedRoute)
+	NewPromoteDemoteRouter(db, adminRoute)
 
-	NewAISuggestionRouter(db, env, protectedRouter)
+	NewBlogRouter(env, db, protectedRoute, redisClient)
+	NewBlogCommentRouter(env, db, protectedRoute, redisClient)
+
+	NewAISuggestionRouter(db, env, protectedRoute)
 }

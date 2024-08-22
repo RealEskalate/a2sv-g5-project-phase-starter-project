@@ -8,6 +8,8 @@ import VisaCard from "@/app/components/Card/VisaCard";
 import { useAppSelector } from "@/app/Redux/store/store";
 import { useSession } from "next-auth/react";
 import { Card } from "@/app/Redux/slices/cardSlice";
+import { ShimmerVisaCard } from "@/app/components/Shimmer/ShimmerVisa";
+import ShimmerCard from "@/app/components/Shimmer/SimmerCard";
 
 const CreditCards = () => {
   const { data: session } = useSession();
@@ -29,17 +31,25 @@ const CreditCards = () => {
         <p className="flex grow page text-xl font-semibold text-colorBody-1 dark:text-gray-300">
           My Cards
         </p>
-        <div className="flex gap-6 overflow-x-auto sm:scroll-snap-x">
-          {CardData?.slice(0, 3).map((item, index) => (
-            <VisaCard
-              key={index}
-              data={item}
-              isBlack={isBlack[index] || false}
-              isFade={isFade[index] || false}
-              isSimGray={isSimGray[index] || false}
-              className="flex-shrink-0 sm:w-auto"
-            />
-          ))}
+        <div className="flex gap-6 overflow-x-auto sm:scroll-snap-x overflow-y-hidden scrollbar-hide">
+          {CardData.length > 0 ? (
+            CardData?.slice(0, 3).map((item, index) => (
+              <VisaCard
+                key={index}
+                data={item}
+                isBlack={isBlack[index] || false}
+                isFade={isFade[index] || false}
+                isSimGray={isSimGray[index] || false}
+                className="flex-shrink-0 sm:w-auto"
+              />
+            ))
+          ) : (
+            <div className="w-full flex gap-6 ">
+              <ShimmerVisaCard />
+              <ShimmerVisaCard />
+              <ShimmerVisaCard />
+            </div>
+          )}
         </div>
       </div>
       <div className="flex flex-col lg:flex-row w-full gap-6 text-nowrap">
@@ -53,79 +63,32 @@ const CreditCards = () => {
           <h2 className="text-xl font-semibold text-colorBody-1 dark:text-gray-300">
             Card List
           </h2>
-          <>
-            {CardData.slice(0, 3).map((card, index) => (
-              <CardList
-                key={card.id}
-                img={imgCont[index]}
-                title={card.cardType}
-                desc="Secondary"
-                colOne="Bank"
-                descOne={card.cardNumber}
-                colTwo="Card Number"
-                descTwo={`**** **** ${card.semiCardNumber}`}
-                colThree="Name on Card"
-                descThree={card.cardHolder}
-                btn="View Details"
-                color={bgCont[index]}
-              />
-            ))}
-          </>
-
-          {/* <CardList
-                 key={index}
-                 img="/assets/money.svg"
-                 title={data.cardType}
-                 desc="Secondary"
-                 colOne="Bank"
-                 descOne="DBL Bank"
-                 colTwo="Card Number"
-                 descTwo="**** **** 5600"
-                 colThree="Namain Card"
-                 descThree="William"
-                 btn="View Details"
-                 color="bg-blue-100"
-               />; */}
-
-          {/* <CardList
-            img="/assets/money.svg"
-            title="Card Type"
-            desc="Secondary"
-            colOne="Bank"
-            descOne="DBL Bank"
-            colTwo="Card Number"
-            descTwo="**** **** 5600"
-            colThree="Namain Card"
-            descThree="William"
-            btn="View Details"
-            color="bg-blue-100"
-          />
-          <CardList
-            img="/assets/moneyPink.svg"
-            title="Card Type"
-            desc="Secondary"
-            colOne="Bank"
-            descOne="BRC Bank"
-            colTwo="Card Number"
-            descTwo="**** **** 4300"
-            colThree="Namain Card"
-            descThree="Michel"
-            btn="View Details"
-            color="bg-pink-100"
-          />
-          <CardList
-            img="/assets/moneyOrange.svg"
-            title="Card Type"
-            desc="Secondary"
-            colOne="Bank"
-            descOne="ABM Bank"
-            colTwo="Card Number"
-            descTwo="**** **** 7560"
-            colThree="Namain Card"
-            descThree="Edward"
-            btn="View Details"
-            color="bg-orange-100"
-          /> */}
+          <div className="flex flex-col gap-6">
+            {CardData.length > 0 || undefined ? (
+              CardData.slice(0, 3).map((card, index) => (
+                <CardList
+                  key={card.id}
+                  img={imgCont[index]}
+                  title={card.cardType}
+                  desc="Secondary"
+                  colOne="Bank"
+                  descOne={card.cardNumber}
+                  colTwo="Card Number"
+                  descTwo={`**** **** ${card.semiCardNumber}`}
+                  colThree="Name on Card"
+                  descThree={card.cardHolder}
+                  btn="View Details"
+                  color={bgCont[index]}
+                />
+              ))
+            ) : (
+              <div className="w-full flex flex-col gap-6 ">
+                <ShimmerCard />
+                <ShimmerCard />
+                <ShimmerCard />
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <div className="flex flex-col lg:flex-row w-full gap-10">

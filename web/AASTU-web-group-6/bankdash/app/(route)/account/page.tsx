@@ -8,6 +8,7 @@ import { Card as CardType } from "@/app/Redux/slices/cardSlice";
 import { useAppSelector } from "@/app/Redux/store/store";
 import LastTrans from "@/app/components/Accounts/Last_trans";
 import { TransactionType } from "@/app/Redux/slices/TransactionSlice";
+import { ShimmerVisaCard } from "@/app/components/Shimmer/ShimmerVisa";
 export default function Home() {
   const CardData: CardType[] = useAppSelector((state) => state.cards.cards);
 
@@ -65,15 +66,21 @@ export default function Home() {
             </p>
           </div>
           <>
-            {CardData?.slice(0, 1).map((item, index) => (
-              <VisaCard
-                key={index}
-                data={item}
-                isBlack={false}
-                isFade={false}
-                isSimGray={false}
-              />
-            ))}
+            {CardData.length > 0 ? (
+              CardData?.slice(0, 1).map((item, index) => (
+                <VisaCard
+                  key={index}
+                  data={item}
+                  isBlack={false}
+                  isFade={false}
+                  isSimGray={false}
+                />
+              ))
+            ) : (
+              <div className="w-full flex gap-6 ">
+                <ShimmerVisaCard />
+              </div>
+            )}
           </>
         </div>
       </div>

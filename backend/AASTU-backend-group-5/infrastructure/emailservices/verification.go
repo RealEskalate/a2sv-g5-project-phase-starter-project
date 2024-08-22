@@ -22,7 +22,6 @@ func SendVerificationEmail(to, subject, body string) error {
 	username := os.Getenv("USER_EMAIL")
 	password := os.Getenv("EMAIL_PASS")
 
-	log.Println(password , username , "hhhhhhhhhhhhh")
 	m := gmail.NewMessage()
 	m.SetHeader("From", username)
 	m.SetHeader("To", to)

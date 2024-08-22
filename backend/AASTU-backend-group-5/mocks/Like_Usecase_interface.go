@@ -30,24 +30,6 @@ func (_m *Like_Usecase_interface) CreateLike(user_id string, post_id string) err
 	return r0
 }
 
-// DeleteLike provides a mock function with given fields: like_id
-func (_m *Like_Usecase_interface) DeleteLike(like_id string) error {
-	ret := _m.Called(like_id)
-
-	if len(ret) == 0 {
-		panic("no return value specified for DeleteLike")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(like_id)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // GetLikes provides a mock function with given fields: post_id
 func (_m *Like_Usecase_interface) GetLikes(post_id string) ([]domain.Like, error) {
 	ret := _m.Called(post_id)
@@ -76,6 +58,42 @@ func (_m *Like_Usecase_interface) GetLikes(post_id string) ([]domain.Like, error
 	}
 
 	return r0, r1
+}
+
+// RemoveLike provides a mock function with given fields: user_id, post_id
+func (_m *Like_Usecase_interface) RemoveLike(user_id string, post_id string) error {
+	ret := _m.Called(user_id, post_id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for RemoveLike")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(user_id, post_id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// ToggleLike provides a mock function with given fields: user_id, post_id
+func (_m *Like_Usecase_interface) ToggleLike(user_id string, post_id string) error {
+	ret := _m.Called(user_id, post_id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ToggleLike")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(user_id, post_id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // NewLike_Usecase_interface creates a new instance of Like_Usecase_interface. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

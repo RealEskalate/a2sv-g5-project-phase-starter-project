@@ -20,7 +20,7 @@ func NewBlogRoutes(group *gin.RouterGroup, blog_collection database.CollectionIn
 	group.GET("/my-blog", ctrl.GetMyBlogs())
 	group.GET("/blog/:id", ctrl.GetOneBlog())
 	group.POST("/blog/", ctrl.CreateBlog())
-	group.PUT("/blog/", ctrl.UpdateBlog())
+	group.PUT("/blog/:id", ctrl.UpdateBlog())
 	group.DELETE("/blog/:id", ctrl.DeleteBlog())
 	group.GET("/search-blog/", ctrl.FilterBlogs())
 }

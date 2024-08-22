@@ -165,3 +165,24 @@ func (userRepo *userRepository) ValidateRefreshToken(ctx context.Context, userID
 
 	return true, nil
 }
+
+func (userRepo *userRepository) GetRefreshToken(ctx context.Context, userID int) (string, error) {
+	var user map[string]interface{}
+
+	// Find the user document with the given ID and decode it into a map
+	err := userRepo.collection.FindOne(ctx, bson.M{"id": userID}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return "", errors.New("user not found")
+		}
+		return "", err
+	}
+
+	// Extract the refresh token from the user document
+	refreshToken, ok := user["refresh_token"].(string)
+	if !ok {
+		return "", errors.New("refresh token not found or invalid")
+	}
+
+	return refreshToken, nil
+}

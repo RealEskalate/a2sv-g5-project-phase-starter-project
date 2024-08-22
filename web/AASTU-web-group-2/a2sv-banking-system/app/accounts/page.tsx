@@ -53,7 +53,7 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [getCard, setGetCards] = useState<CardType[]>();
   const [currentUser, setCurrentUser] = useState<UserInfo>();
-  const [balance, setBalance] = useState("Loading...")
+  const [balance, setBalance] = useState("Loading...");
   const [income, setIncome] = useState("Loading...");
   const [expense, setExpense] = useState("Loading...");
 
@@ -65,11 +65,12 @@ const Page = () => {
         setAccess_token(await Refresh());
         if (sessionData && sessionData.user) {
           setSession(sessionData.user);
-        } else {
-          router.push(
-            `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
-          );
-        }
+        } 
+        // else {
+        //   router.push(
+        //     `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+        //   );
+        // }
       } catch (error) {
         console.error("Error fetching session:", error);
       } finally {
@@ -93,7 +94,7 @@ const Page = () => {
         // Fetch Balance
         const currentUser = await getCurrentUser(access_token);
         setCurrentUser(currentUser);
-        setBalance(currentUser.accountBalance)
+        setBalance(currentUser.accountBalance);
 
         // Fetch Income
         const incomeData = await getTransactionIncomes(0, 1, access_token);
@@ -101,7 +102,7 @@ const Page = () => {
           (sum: number, item: any) => sum + item.amount,
           0
         );
-        setIncome(String("0"))
+        setIncome(String("0"));
         setIncome(String(totalIncome));
 
         // Fetch Expense
@@ -110,7 +111,7 @@ const Page = () => {
           (sum: number, item: any) => sum + item.amount,
           0
         );
-        setExpense("0")
+        setExpense("0");
         setExpense(String(totalExpense));
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -213,35 +214,52 @@ const Page = () => {
 
   // Don't render anything while loading
 
-  if (!session) {
-    router.push(
-      `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
-    );
-    return null;
-  }
+  // if (!session) {
+  //   router.push(
+  //     `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+  //   );
+  //   return null;
+  // }
 
   return (
     <>
-      <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5">
+      <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5 dark:bg-[#020817]">
         <div>
           <div className="flex flex-wrap gap-2">
-            {(balance || income == "Loading")? (
-              <ListCard column={ReusableCard} width={"w-[48%] md:w-[23%]"} />
+            {balance || income == "Loading" ? (
+              <ListCard
+                column={ReusableCard}
+                width={"w-[48%] md:w-[23%]"}
+                darkMode={"dark:border dark:border-[#333B69]"}
+              />
             ) : (
               <ListCardLoading></ListCardLoading>
             )}
-            {(income || income == "Loading" )? (
-              <ListCard column={card1} width={"w-[48%] md:w-[23%]"} />
+
+            {income || income == "Loading" ? (
+              <ListCard
+                column={card1}
+                width={"w-[48%] md:w-[23%]"}
+                darkMode={"dark:border dark:border-[#333B69]"}
+              />
             ) : (
               <ListCardLoading></ListCardLoading>
             )}
-            {(expense || expense == "Loading") ? (
-              <ListCard column={card2} width={"w-[48%] md:w-[23%]"} />
+            {expense || expense == "Loading" ? (
+              <ListCard
+                column={card2}
+                width={"w-[48%] md:w-[23%]"}
+                darkMode={"dark:border dark:border-[#333B69]"}
+              />
             ) : (
               <ListCardLoading></ListCardLoading>
             )}
-            {(balance || balance == "Loading") ? (
-              <ListCard column={card3} width={"w-[48%] md:w-[23%]"} />
+            {balance || balance == "Loading" ? (
+              <ListCard
+                column={card3}
+                width={"w-[48%] md:w-[23%]"}
+                darkMode={"dark:border dark:border-[#333B69]"}
+              />
             ) : (
               <ListCardLoading></ListCardLoading>
             )}
@@ -250,22 +268,26 @@ const Page = () => {
 
         <div className="flex flex-col md:flex-row gap-5">
           <div className="flex flex-col gap-5 md:w-1/2">
-            <span className="text-xl text-[#333B69] font-semibold">
+            <span className="text-xl text-[#333B69] font-semibold dark:text-[#9faaeb]">
               Last Transaction
             </span>
-            <div className="bg-white flex flex-col justify-between rounded-2xl">
-              <ListCard column={ReusableLastTransaction} width={"w-full"} />
-              <ListCard column={transaction1} width={"w-full"} />
-              <ListCard column={transaction2} width={"w-full"} />
+            <div className="bg-white flex flex-col justify-between rounded-2xl dark:bg-[#020817] dark:border dark:border-[#333B69]">
+              <ListCard
+                column={ReusableLastTransaction}
+                width={"w-full"}
+                darkMode={""}
+              />
+              <ListCard column={transaction1} width={"w-full"} darkMode={""} />
+              <ListCard column={transaction2} width={"w-full"} darkMode={""} />
             </div>
           </div>
 
           <div className="md:w-1/2 gap-1 flex flex-col">
             <div className="flex justify-between mr-2">
-              <span className="text-xl text-[#333B69] font-semibold">
+              <span className="text-xl text-[#333B69] font-semibold dark:text-[#9faaeb]">
                 My Card
               </span>
-              <span className="text-sm text-[#333B69] font-semibold">
+              <span className="text-sm text-[#333B69] font-semibold dark:text-[#9faaeb]">
                 See All
               </span>
             </div>
@@ -285,32 +307,32 @@ const Page = () => {
                 ></Card>
               ))
             ) : (
-              <div className="border rounded-3xl my-4 mx-2 animate-pulse">
-                <div className="relative w-full bg-gradient-to-b from-gray-200 to-gray-300 text-transparent rounded-3xl shadow-md h-[230px] min-w-[350px]">
+              <div className="border dark:border-[#333B69] rounded-3xl my-4 mx-2 animate-pulse">
+                <div className="relative w-full bg-gradient-to-b from-gray-200 dark:from-[#333B69] to-gray-300 dark:to-[#555B85] text-transparent rounded-3xl shadow-md h-[230px] min-w-[350px]">
                   <div className="flex justify-between items-start px-6 pt-6">
                     <div>
-                      <p className="text-xs font-semibold bg-gray-300 rounded w-16 h-4 mb-2"></p>
-                      <p className="text-xl font-medium bg-gray-300 rounded w-24 h-6"></p>
+                      <p className="text-xs font-semibold bg-gray-300 dark:bg-[#555B85] rounded w-16 h-4 mb-2"></p>
+                      <p className="text-xl font-medium bg-gray-300 dark:bg-[#555B85] rounded w-24 h-6"></p>
                     </div>
-                    <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+                    <div className="w-8 h-8 bg-gray-300 dark:bg-[#555B85] rounded-full"></div>
                   </div>
 
                   <div className="flex justify-between gap-12 mt-4 px-6">
                     <div>
-                      <p className="text-xs font-medium bg-gray-300 rounded w-16 h-4 mb-2"></p>
-                      <p className="font-medium text-base bg-gray-300 rounded w-24 h-6"></p>
+                      <p className="text-xs font-medium bg-gray-300 dark:bg-[#555B85] rounded w-16 h-4 mb-2"></p>
+                      <p className="font-medium text-base bg-gray-300 dark:bg-[#555B85] rounded w-24 h-6"></p>
                     </div>
                     <div className="pr-8">
-                      <p className="text-xs font-medium bg-gray-300 rounded w-16 h-4 mb-2"></p>
-                      <p className="font-medium text-base md:text-lg bg-gray-300 rounded w-24 h-6"></p>
+                      <p className="text-xs font-medium bg-gray-300 dark:bg-[#555B85] rounded w-16 h-4 mb-2"></p>
+                      <p className="font-medium text-base md:text-lg bg-gray-300 dark:bg-[#555B85] rounded w-24 h-6"></p>
                     </div>
                   </div>
 
                   <div className="relative mt-8 flex justify-between py-4 items-center">
-                    <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-white/20 to-transparent z-0"></div>
-                    <div className="ml-4 relative z-10 text-base font-medium px-6 bg-gray-300 rounded w-40 h-6"></div>
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-white/20 dark:from-gray-700/20 to-transparent z-0"></div>
+                    <div className="ml-4 relative z-10 text-base font-medium px-6 bg-gray-300 dark:bg-[#555B85] rounded w-40 h-6"></div>
                     <div className="flex justify-end relative z-10 px-6">
-                      <div className="w-10 h-10 bg-gray-300 rounded-full "></div>
+                      <div className="w-10 h-10 bg-gray-300 dark:bg-[#555B85] rounded-full "></div>
                     </div>
                   </div>
                 </div>
@@ -321,20 +343,24 @@ const Page = () => {
 
         <div className="flex flex-col md:flex-row gap-5">
           <div className="flex flex-col gap-5 md:w-1/2">
-            <span className="text-xl text-[#333B69] font-semibold">
+            <span className="text-xl text-[#333B69] font-semibold dark:text-[#9faaeb]">
               Debit & Credit Overview
             </span>
             <BarChartForAccounts></BarChartForAccounts>
           </div>
           <div className="flex flex-col gap-5 md:w-1/2">
-            <span className="text-xl text-[#333B69] font-semibold">
+            <span className="text-xl text-[#333B69] font-semibold dark:text-[#9faaeb]">
               Invoice Sent
             </span>
-            <div className="bg-white flex flex-col justify-between rounded-2xl">
-              <ListCard column={ReusableLastTransaction} width={"w-full"} />
-              <ListCard column={transaction1} width={"w-full"} />
-              <ListCard column={transaction2} width={"w-full"} />
-              <ListCard column={transaction2} width={"w-full"} />
+            <div className="bg-white flex flex-col justify-between rounded-2xl dark:border dark:bg-[#020817] dark:border-[#333B69]">
+              <ListCard
+                column={ReusableLastTransaction}
+                width={"w-full"}
+                darkMode={""}
+              />
+              <ListCard column={transaction1} width={"w-full"} darkMode={""} />
+              <ListCard column={transaction2} width={"w-full"} darkMode={""} />
+              <ListCard column={transaction2} width={"w-full"} darkMode={""} />
             </div>
           </div>
         </div>

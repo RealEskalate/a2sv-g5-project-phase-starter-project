@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/auth"
 	blogDomain "github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/blog"
@@ -91,6 +92,198 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 			log.Default().Println("Error trying to delete blog", err, "ID:", blogID)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		}
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+func (bc *BlogController) GetBlogByID(c *gin.Context) {
+	blogID := c.Param("id")
+
+	blog, err := bc.blogUseCase.GetBlogByID(c.Request.Context(), blogID)
+	if err != nil {
+		if errors.Is(err, blogDomain.ErrBlogNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, err)
+		} else {
+			log.Default().Println("Error trying to get blog by ID", err, "ID:", blogID)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, blog)
+}
+
+func (bc *BlogController) GetBlogs(c *gin.Context) {
+	var filterQuery blogDomain.FilterQuery
+	popularity, err := strconv.ParseFloat(c.Query("popularity"), 32)
+	filterQuery.CreatedAtFrom = c.Query("created_at_from")
+	filterQuery.CreatedAtTo = c.Query("created_at_to")
+	filterQuery.Tags = c.QueryArray("tags")
+	filterQuery.Popularity = float32(popularity)
+
+	var pagination infrastructure.PaginationRequest
+	pagination.Limit, _ = strconv.Atoi(c.Query("limit"))
+	pagination.Page, _ = strconv.Atoi(c.Query("page"))
+
+	blogs, err := bc.blogUseCase.GetBlogs(c.Request.Context(), filterQuery, pagination)
+	if err != nil {
+		log.Default().Println("Error trying to get blogs", err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, blogs)
+}
+
+func (bc *BlogController) SearchBlogs(c *gin.Context) {
+	query := c.Query("query")
+
+	var pagination infrastructure.PaginationRequest
+	pagination.Limit, _ = strconv.Atoi(c.Query("limit"))
+	pagination.Page, _ = strconv.Atoi(c.Query("page"))
+
+	blogs, err := bc.blogUseCase.SearchBlogs(c.Request.Context(), query, pagination)
+	if err != nil {
+		log.Default().Println("Error trying to search blogs", err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, blogs)
+}
+
+func (bc *BlogController) GetCommentsByBlogID(c *gin.Context) {
+	blogID := c.Param("id")
+	var pagination infrastructure.PaginationRequest
+	pagination.Limit, _ = strconv.Atoi(c.Query("limit"))
+	pagination.Page, _ = strconv.Atoi(c.Query("page"))
+
+	comments, err := bc.blogUseCase.GetCommentsByBlogID(c.Request.Context(), blogID, pagination)
+	if err != nil {
+		if errors.Is(err, blogDomain.ErrBlogNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, err)
+		} else {
+			log.Default().Println("Error trying to get comments by blog ID", err, "ID:", blogID)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, comments)
+}
+
+func (bc *BlogController) CreateComment(c *gin.Context) {
+	userID := c.Value("userID").(string)
+	blogID := c.Param("id")
+
+	var comment blogDomain.CreateCommentRequest
+	if err := c.ShouldBindJSON(&comment); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := bc.blogUseCase.CreateComment(c.Request.Context(), userID, blogID, comment)
+	if err != nil {
+		if errors.As(err, validator.ValidationErrors{}) {
+			c.AbortWithStatusJSON(http.StatusBadRequest, infrastructure.ReturnErrorResponse(err))
+		} else if errors.Is(err, auth.ErrNoUserWithId) {
+			c.AbortWithStatusJSON(http.StatusNotFound, err)
+		} else if errors.Is(err, blogDomain.ErrBlogNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, err)
+		} else {
+			log.Default().Println("Error trying to create comment", err, "comment", comment)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		}
+		return
+	}
+
+	c.Status(http.StatusCreated)
+}
+
+func (bc *BlogController) DeleteComment(c *gin.Context) {
+	commentID := c.Param("comment_id")
+	userID := c.Value("userID").(string)
+
+	err := bc.blogUseCase.DeleteComment(c.Request.Context(), commentID, userID)
+	if err != nil {
+		if errors.Is(err, auth.ErrNoUserWithId) {
+			c.AbortWithStatusJSON(http.StatusNotFound, err)
+		} else if errors.Is(err, blogDomain.ErrCommentNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, err)
+		} else {
+			log.Default().Println("Error trying to delete comment", err, "ID:", commentID)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		}
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+func (bc *BlogController) LikeBlog(c *gin.Context) {
+	userID := c.Value("userID").(string)
+	blogID := c.Param("id")
+
+	err := bc.blogUseCase.LikeBlog(c.Request.Context(), userID, blogID)
+	if err != nil {
+		if errors.Is(err, auth.ErrNoUserWithId) {
+			c.AbortWithStatusJSON(http.StatusNotFound, err)
+		} else if errors.Is(err, blogDomain.ErrBlogNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, err)
+		} else {
+			log.Default().Println("Error trying to like blog", err, "ID:", blogID)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		}
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+func (bc *BlogController) DislikeBlog(c *gin.Context) {
+	userID := c.Value("userID").(string)
+	blogID := c.Param("id")
+
+	err := bc.blogUseCase.DislikeBlog(c.Request.Context(), userID, blogID)
+	if err != nil {
+		if errors.Is(err, auth.ErrNoUserWithId) {
+			c.AbortWithStatusJSON(http.StatusNotFound, err)
+		} else if errors.Is(err, blogDomain.ErrBlogNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, err)
+		} else {
+			log.Default().Println("Error trying to dislike blog", err, "ID:", blogID)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		}
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+func (bc *BlogController) UnLikeBlog(c *gin.Context) {
+	userID := c.Value("userID").(string)
+	blogID := c.Param("id")
+
+	err := bc.blogUseCase.UnLikeBlog(c.Request.Context(), userID, blogID)
+	if err != nil {
+		log.Default().Println("Error trying to unlike blog", err, "ID:", blogID)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+func (bc *BlogController) UnDislikeBlog(c *gin.Context) {
+	userID := c.Value("userID").(string)
+	blogID := c.Param("id")
+
+	err := bc.blogUseCase.UnDislikeBlog(c.Request.Context(), userID, blogID)
+	if err != nil {
+		log.Default().Println("Error trying to undislike blog", err, "ID:", blogID)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return
 	}
 

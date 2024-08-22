@@ -112,7 +112,7 @@ type FilterQuery struct {
 	Tags          []string
 	CreatedAtFrom string
 	CreatedAtTo   string
-	Popularity    int
+	Popularity    float32
 }
 
 type BlogUseCase interface {
@@ -126,7 +126,9 @@ type BlogUseCase interface {
 	CreateComment(ctx context.Context, userID, blogId string, comment CreateCommentRequest) error
 	DeleteComment(ctx context.Context, id, userID string) error
 	LikeBlog(ctx context.Context, userID string, blogID string) error
+	UnLikeBlog(ctx context.Context, userID string, blogID string) error
 	DislikeBlog(ctx context.Context, userID string, blogID string) error
+	UnDislikeBlog(ctx context.Context, userID string, blogID string) error
 }
 
 type BlogRepository interface {

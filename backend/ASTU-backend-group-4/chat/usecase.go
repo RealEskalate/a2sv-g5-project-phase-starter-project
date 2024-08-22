@@ -22,14 +22,14 @@ func NewUsecase(repository Repository, aiService AIService) *ChatUsecase {
 	}
 }
 
-func (usecase *ChatUsecase) CreateChat(ctx context.Context, form CreateChatForm) (Chat, error) {
+func (usecase *ChatUsecase) CreateChat(ctx context.Context, form UserIDForm) (Chat, error) {
 	err := infrastructure.Validate(validate, form)
 	if err != nil{
 		return Chat{}, err
 	}
 
 	newChat := Chat{
-		Title: form.Title,
+		Title: "New Chat",
 		UserID: form.UserID,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -122,6 +122,14 @@ func (usecase *ChatUsecase) SendMessage(ctx context.Context, chatForm DefaultCha
 		Text: textForm.Text,
 		Role: "user",
 		SentAt: time.Now(),
+	}
+
+	if chat.History == nil{
+		title, err := usecase.AIService.GenerateChatTitle(ctx, textForm.Text)
+		if err != nil{
+			return Message{}, err
+		}
+		chat.Title = title
 	}
 
 	response, err := usecase.AIService.SendMessage(ctx, chat.History, message)

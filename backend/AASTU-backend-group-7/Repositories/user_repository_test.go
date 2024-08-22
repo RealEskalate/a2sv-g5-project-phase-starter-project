@@ -18,7 +18,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 
-	repo "blogapp/Repositories"
+	// repo "blogapp/Repositories"
 )
 
 type UserRepositoryTestSuite struct {
@@ -37,10 +37,10 @@ func (suite *UserRepositoryTestSuite) SetupTest() {
 	suite.usercollection = _usercollection
 	_refreshcollection := new(mocks.Collection)
 	suite.refreshcollection = _refreshcollection
-	repo := repo.NewUserRepository(_usercollection, _refreshcollection)
+	// repo := repo.NewUserRepository(_usercollection, _refreshcollection)
 
 	// suite.collection = collection
-	suite.repo = repo
+	// suite.repo = repo
 }
 
 func (suite *UserRepositoryTestSuite) TearDownTest() {

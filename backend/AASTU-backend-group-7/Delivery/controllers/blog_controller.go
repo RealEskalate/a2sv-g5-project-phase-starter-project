@@ -238,7 +238,7 @@ func (controller *blogController) GetAllPosts(c *gin.Context) {
 	// fill in filter values from the request query
 	if len(queryparams) > 0 {
 		filter.Slug = queryparams.Get("slug")
-		filter.AuthorName = queryparams.Get("author_id")
+		filter.AuthorName = queryparams.Get("authorName")
 		filter.Limit, _ = strconv.Atoi(queryparams.Get("limit"))
 		filter.Page, _ = strconv.Atoi(queryparams.Get("page"))
 		filter.Tags = []string{}

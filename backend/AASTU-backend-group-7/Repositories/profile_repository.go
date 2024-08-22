@@ -103,11 +103,11 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 		{"$set", bson.D{
 			{"email", NewUser.Email},
 			{"userName", NewUser.UserName},
+			{"name", NewUser.Name},
 			{"role", NewUser.Role},
 			{"profile_picture", NewUser.ProfilePicture},
 			{"bio", NewUser.Bio},
-			{"created_at", NewUser.CreatedAt},
-			{"updated_at", NewUser.UpdatedAt},
+			{"updatedat", NewUser.UpdatedAt},
 		}},
 	}
 

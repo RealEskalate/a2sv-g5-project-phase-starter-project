@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"log"
 	"mime/multipart"
+	"net/http"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -73,20 +75,42 @@ func getCurrentTimeString() string {
 }
 
 func SetProfilePicture(file *multipart.FileHeader) (string, error) {
+	// Supported file types
+	supportedTypes := map[string]bool{
+		".jpg":  true,
+		".jpeg": true,
+		".png":  true,
+		".gif":  true,
+		".bmp":  true,
+	}
+
+	ext := strings.ToLower(filepath.Ext(file.Filename))
+	if !supportedTypes[ext] {
+		log.Println("Unsupported file type:", ext)
+		return "", http.ErrNotSupported
+	}
 
 	cld, err := cloudinary.NewFromURL("cloudinary://" + Config.Cloud_api_key + ":" + Config.Cloud_api_secret + "@dncnqaztp")
 	if err != nil {
-		log.Println("i am here")
+		log.Println("Cloudinary config error:", err)
 		return "", err
 	}
-	// Upload the my_picture.jpg image and set the PublicID to "my_image".
-	
-	var ctx = context.Background()
-	resp, err := cld.Upload.Upload(ctx, file, uploader.UploadParams{PublicID: "my_Avatar" + file.Filename + getCurrentTimeString()})
+
+	// Context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	// Upload parameters with dynamic public ID
+	uploadParams := uploader.UploadParams{
+		PublicID: "my_PP_" + file.Filename + getCurrentTimeString(),
+	}
+
+	resp, err := cld.Upload.Upload(ctx, file, uploadParams)
 	if err != nil {
-		log.Println("i am here too")
+		log.Println("Upload error:", err)
 		return "", err
 	}
+
 	return resp.SecureURL, nil
 }
 

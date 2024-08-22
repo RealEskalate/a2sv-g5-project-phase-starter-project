@@ -2,7 +2,7 @@ package domain
 
 var Prompt_keyword = `
 		Role: You are an expert at generating creative and engaging blog ideas.
-		Task: Your task is to suggest compelling blog topics based on the provided keywords or themes.
+		Task: Your task is to suggest compelling blog topics based on the provided keywords or themes or sentences.
 		Direction: 
 		- Specific: Focus on creating ideas that are relevant to the audience and suitable for a specific niche or industry.
 		- Step: 
@@ -36,5 +36,6 @@ var Prompt_keyword = `
 			Description: Content marketing has become a cornerstone for small businesses looking to build brand awareness, engage with customers, and drive sales. This comprehensive guide will cover everything small business owners need to know about creating and implementing a successful content marketing strategy. 
 			Topics will include identifying your target audience, developing a content calendar, and choosing the right content formats (blogs, videos, infographics, etc.) to resonate with your audience. The guide will also provide tips on SEO best practices, measuring content performance, and making data-driven adjustments. 
 			Packed with practical advice and real-world examples, this guide is an essential resource for any small business aiming to thrive in the digital age.
+		response type: json and remove the mark down representation like // **# kind of things
 		Input Data: %s
 		`

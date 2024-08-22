@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const HeroImage = () => {
   return (
-    <div className="p-4 lg:mx-32 bg-gray-200 border-2 rounded-3xl">
+    <div className="p-4 lg:mx-32 bg-gray-200 border-2 rounded-3xl mb-32">
       <div className="relative h-[100vh] rounded-xl">
         <Image
           src="/dashboard.png"

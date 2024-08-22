@@ -74,26 +74,26 @@ const RecentTransactions = () => {
   return (
     <div className="p-4 md:ml-64">
       {/* Tabs */}
-      <div className="flex flex-wrap mb-4">
+      <div className="flex flex-wrap mb-4 dark:text-blue-500">
         <button
           onClick={() => {setFilter('all') , setall(true) , setincoming(false) , setexpense(false)}
 
         }
-          className={`font-bold px-4 py-2 rounded-t-lg ${filter === 'all' ? 'border-b-2 border-blue-500' : 'text-gray-600'}`}
+          className={`font-bold px-4 py-2 rounded-t-lg ${filter === 'all' ? 'border-b-2 border-blue-500' : 'text-white'}`}
         >
           All Transactions
         </button>
         <button
           onClick={() => {setFilter('income'), setincoming(true) , setall(false) , setexpense(false)}
           }
-          className={`font-bold px-4 py-2 rounded-t-lg ${filter === 'income' ? 'border-b-2 border-blue-500' : 'text-gray-600'}`}
+          className={`font-bold px-4 py-2 rounded-t-lg ${filter === 'income' ? 'border-b-2 border-blue-500' : 'text-white'}`}
         
           >
           Income
         </button>
         <button
           onClick={() =>{ setFilter('expense') ,setexpense(true) , setall(false) , setincoming(false)}}
-          className={`font-bold px-4 py-2 rounded-t-lg ${filter === 'expense' ? 'border-b-2 border-blue-500' : 'text-gray-600'}`}
+          className={`font-bold px-4 py-2 rounded-t-lg ${filter === 'expense' ? 'border-b-2 border-blue-500' : 'text-white'}`}
         >
           Expenses
         </button>

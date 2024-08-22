@@ -77,7 +77,7 @@ const QuickTransfer = () => {
   }
 
   return (
-    <div className="flex bg-white rounded-2xl flex-col py-4 items-start gap-3 w-[100%]">
+    <div className="flex bg-white rounded-2xl flex-col py-4 items-start gap-3 w-[100%]  dark:bg-dark text-gray-900 dark:text-white">
       <div className="flex justify-between items-center h-35 w-[100%] px-2">
         <div
           onClick={handlePrev}

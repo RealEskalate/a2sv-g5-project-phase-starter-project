@@ -38,7 +38,7 @@ const page = () => {
           <PieChartComponent/>
         </div>
       </div>
-      <div className="grid grid-cols-12 gap-8 px-4 h-[300px]">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 px-4 h-[300px]">
         <div className=" col-span-5 my-auto space-y-4 py-6 flex flex-col items-start">
           <p className='font-bold'>Quick transfer</p>
           <TransferComponent />

@@ -1,3 +1,5 @@
+import { Console } from "console";
+
 // Register User - POST Request
 export const registerUser = async (userData: any) => {
   try {

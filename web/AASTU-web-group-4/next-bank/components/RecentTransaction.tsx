@@ -109,7 +109,7 @@ const RecentTransactions = () => {
 
   return (
     <div className="p-4 md:ml-64">
-      <div className="flex flex-wrap mb-4">
+      <div className="flex flex-wrap mb-4 dark:text-blue-500">
         <button
           onClick={() => {
             setFilter("all");

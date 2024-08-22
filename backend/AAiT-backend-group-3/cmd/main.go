@@ -53,6 +53,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+
 	//services
 	emailSvc := services.NewEmailService(smtpHost, smtpPort, userName, passWord)
 	passSvc := services.NewPasswordService()
@@ -60,14 +61,14 @@ func main() {
 	jwtSvc := services.NewJWTService(secretKey)
 	cacheSvc := services.NewCacheService("localhost:6379", "", 0)
 
+	aiService := services.NewAiService(gemini_client)
 
 	//repositories
 	userRepo := repositories.NewMongoUserRepository(dbClient.Database, "users", cacheSvc)
 	otpRepo := repositories.NewMongoOtpRepository(dbClient.Database, "otps")
-	blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs", cacheSvc)
+	blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs",cacheSvc)
 	commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
-
-	aiService := services.NewAiService(gemini_client)
+	tagRep := repositories.NewMongoTagRepository(dbClient.Database, "tags")
 
 	//middlewares
 	authMiddleware := middlewares.NewAuthMiddleware(jwtSvc, cacheSvc)
@@ -76,7 +77,7 @@ func main() {
 	//usecases
 	userUsecase := usecases.NewUserUsecase(userRepo, passSvc, validationSvc, emailSvc, jwtSvc)
 	otpUsecase := usecases.NewOtpUseCase(otpRepo, userRepo, emailSvc, passSvc, "http://localhost:8080", validationSvc)
-	blogService := usecases.NewBlogUsecase(blogRepo)
+	blogService := usecases.NewBlogUsecase(blogRepo, tagRep)
 	commentService := usecases.NewCommentUsecase(commentRepo)
 	aiHelperUsecase := usecases.NewAiHelperUsecase(aiService)
 

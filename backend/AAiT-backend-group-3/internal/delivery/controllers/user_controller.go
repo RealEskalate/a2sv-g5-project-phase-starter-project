@@ -4,7 +4,6 @@ import (
 	"AAIT-backend-group-3/internal/domain/models"
 	"AAIT-backend-group-3/internal/usecases"
 	"fmt"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,7 +23,6 @@ func NewUserController(u usecases.UserUsecaseInterface) UserControllerInterface 
 		user_usecase: u,
 	}
 }
-
 func (uc *UserController) Register(c *gin.Context) {
 	var user *models.User
 	err := c.ShouldBindJSON(&user)

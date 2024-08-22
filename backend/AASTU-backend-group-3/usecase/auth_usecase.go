@@ -37,9 +37,18 @@ func (u *UserUsecase) Login(user *domain.User, deviceID string) (domain.LogInRes
         Token:     refreshToken,
         DeviceID:  deviceID,
         CreatedAt: time.Now(),
-    }
-
-    existingUser.RefreshTokens = append(existingUser.RefreshTokens, newRefreshToken)
+    }	
+	
+	for i, rt := range existingUser.RefreshTokens {
+		if rt.DeviceID == deviceID  {
+			existingUser.RefreshTokens = append(existingUser.RefreshTokens[:i], existingUser.RefreshTokens[i+1:]...)
+			break
+		}
+	}
+	
+	existingUser.RefreshTokens = append(existingUser.RefreshTokens, newRefreshToken)
+	
+	
 
     err = u.UserRepo.UpdateUser(existingUser)
     if err != nil {

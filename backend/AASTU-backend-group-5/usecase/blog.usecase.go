@@ -43,6 +43,14 @@ func (uc *BlogUseCase) GetBlogs(limit int, page_number int) ([]domain.Blog, erro
 	}
 	return blogs, nil
 }
+func (uc *BlogUseCase) GetMyBlogs(filter map[string]interface{}) ([]domain.Blog, error) {
+	blogs,err := uc.BlogRepo.FilterBlogDocument(filter)
+	if err != nil {
+		return []domain.Blog{}, err
+	}
+	return blogs, nil
+}
+
 func (uc *BlogUseCase) GetOneBlog(id string) (domain.Blog, error) {
 	blogs, err := uc.BlogRepo.GetOneBlogDocument(id)
 	if err != nil {

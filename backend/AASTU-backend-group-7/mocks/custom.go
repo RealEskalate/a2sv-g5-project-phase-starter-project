@@ -9,9 +9,12 @@ import (
 // get sample tag
 func GetSampleTag() *Domain.Tag {
 	return &Domain.Tag{
-		ID:   primitive.NewObjectID(),
-		Name: "sample tag",
-		Slug: "sample-tag",
+		// create id of type object id of 123456789
+
+		
+		Name:  "sample tag",
+		Slug:  "sample-tag",
+		Posts: []primitive.ObjectID{},
 	}
 }
 

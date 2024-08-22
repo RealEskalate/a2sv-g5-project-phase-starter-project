@@ -90,3 +90,12 @@ var (
 var (
 	ErrAiContentGenerationFailed = NewCustomError("Failed to generate content", http.StatusInternalServerError)
 )
+
+// Cache-related errors
+var (
+	ErrCacheSetFailed       = NewCustomError("Failed to set cache", http.StatusInternalServerError)
+	ErrCacheNotFound        = NewCustomError("Cache not found", http.StatusNotFound)
+	ErrCacheDeleteFailed    = NewCustomError("Failed to delete cache", http.StatusInternalServerError)
+	ErrCacheIncrementFailed = NewCustomError("Failed to increment cache", http.StatusInternalServerError)
+	ErrCacheDecrementFailed = NewCustomError("Failed to decrement cache", http.StatusInternalServerError)
+)

@@ -26,12 +26,12 @@ func (r *UserRepository) CreateUser(c context.Context, user *domain.User) domain
 
 	// check for duplicate emails
 	if mongo.IsDuplicateKeyError(err) && strings.Contains(err.Error(), "email") {
-		return *domain.NewError("email already taken", domain.ERR_BAD_REQUEST)
+		return *domain.NewError("email already taken", domain.ERR_CONFLICT)
 	}
 
 	// check for duplicate usernames
 	if mongo.IsDuplicateKeyError(err) && strings.Contains(err.Error(), "username") {
-		return *domain.NewError("username already taken", domain.ERR_BAD_REQUEST)
+		return *domain.NewError("username already taken", domain.ERR_CONFLICT)
 	}
 
 	if err != nil {

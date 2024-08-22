@@ -60,6 +60,27 @@ func (suite *UserRepositoryTestSuite) TestCreateUser_Positive() {
 	suite.Equal(user.Password, createdUser.Password, "password matches")
 }
 
+func (suite *UserRepositoryTestSuite) TestCreateUser_Negative_DuplicateEmail() {
+	user := domain.User{
+		Username: "testuser",
+		Email:    "user@gmail.com",
+		Password: "password",
+	}
+
+	err := suite.UserRepository.CreateUser(context.Background(), &user)
+	suite.Nil(err, "no error when creating user")
+
+	newUser := domain.User{
+		Username: "newtestuser",
+		Email:    user.Email,
+		Password: "password",
+	}
+	err = suite.UserRepository.CreateUser(context.Background(), &newUser)
+
+	suite.NotNil(err, "error when creating user with duplicate email")
+	suite.Equal(err.GetCode(), domain.ERR_CONFLICT, "error code is conflict")
+}
+
 func (suite *UserRepositoryTestSuite) TeardownSuite() {
 	initdb.DisconnectDB(suite.client)
 }

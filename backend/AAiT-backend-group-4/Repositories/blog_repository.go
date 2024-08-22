@@ -2,6 +2,7 @@ package repositories
 
 import (
 	domain "aait-backend-group4/Domain"
+	popularity "aait-backend-group4/Infrastructure"
 	"context"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,16 +15,14 @@ import (
 type blogRepository struct {
 	database   mongo.Database
 	collection string
-	Popularity domain.PopularityService
 }
 
 // NewBlogRepository creates a new instance of blogRepository
-// It initializes the blogRepository with a database, collection name, and a popularity service.
-func NewBlogRepository(db mongo.Database, collection string, popularity domain.PopularityService) domain.BlogRepository {
+// It initializes the blogRepository with a database, collection name.
+func NewBlogRepository(db mongo.Database, collection string) domain.BlogRepository {
 	return &blogRepository{
 		database:   db,
 		collection: collection,
-		Popularity: popularity,
 	}
 }
 
@@ -102,7 +101,7 @@ func (br *blogRepository) FetchByBlogID(c context.Context, blogID string) (domai
 		return blog, err
 	}
 	blog.Feedbacks.View_count++
-	newPopularity := br.Popularity.CalculatePopularity(blog.Feedbacks)
+	newPopularity := popularity.CalculatePopularity(&blog.Feedbacks)
 
 	err = br.UpdatePopularity(c, blog.ID, newPopularity)
 	if err != nil {
@@ -159,7 +158,7 @@ func (br *blogRepository) FetchByBlogTitle(c context.Context, title string) (dom
 		return domain.Blog{}, err
 	}
 	blog.Feedbacks.View_count++
-	newPopularity := br.Popularity.CalculatePopularity(blog.Feedbacks)
+	newPopularity := popularity.CalculatePopularity(&blog.Feedbacks)
 
 	err = br.UpdatePopularity(c, blog.ID, newPopularity)
 	if err != nil {
@@ -359,7 +358,7 @@ func (br *blogRepository) UpdateFeedback(ctx context.Context, blogID string, upd
 		return err
 	}
 	
-	newPopularity := br.Popularity.CalculatePopularity(blogPost.Feedbacks)
+	newPopularity := popularity.CalculatePopularity(&blogPost.Feedbacks)
 
 	err = br.UpdatePopularity(ctx, blogPost.ID, newPopularity)
 	if err != nil {

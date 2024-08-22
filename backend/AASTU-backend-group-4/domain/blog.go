@@ -25,10 +25,12 @@ type Blog struct {
 type BlogUsecase interface {
 	GenerateAIContent(ctx context.Context, prompt string) (*genai.GenerateContentResponse, error)
 	CreateBlog(ctx context.Context, blog *Blog) (*Blog, error)
+	CreateComment(ctx context.Context, comment *CommentRequest) (*Blog, error)
 	GetBlogs(ctx context.Context, page, limit int, sortBy string) ([]Blog, int, error)
 	UpdateBlog(ctx context.Context, blogID primitive.ObjectID, updatedBlog *Blog) error
 	GetBlogByID(ctx context.Context, blogID primitive.ObjectID) (*Blog, error)
 	DeleteBlog(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID, isAdmin bool) error
+	DeleteComment(ctx context.Context, userID primitive.ObjectID, commentID primitive.ObjectID, isAdmin bool) error
 	SearchBlog(ctx context.Context, filter map[string]string) ([]*Blog, error)
 	FilterBlog(ctx context.Context, filter FilterRequest) ([]*Blog, error)
 }

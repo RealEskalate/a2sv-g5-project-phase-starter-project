@@ -1,10 +1,10 @@
 import Cookies from "js-cookie";
 
 
-const API_BASE_URL = 'https://bank-dashboard-6acc.onrender.com';
+const API_BASE_URL = 'https://bank-dashboard-o9tl.onrender.com';
 const token = Cookies.get('accessToken')
 
-// GET /transactions
+// GET /transactionshttps://bank-dashboard-1tst.onrender.com
 export const getAllTransactionsss = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/transactions`, {
@@ -116,7 +116,7 @@ export const getLatestTransfers = async (accessToken: string, number: number) =>
     const response = await fetch(`${API_BASE_URL}/transactions/quick-transfers?number=${number}`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.json();

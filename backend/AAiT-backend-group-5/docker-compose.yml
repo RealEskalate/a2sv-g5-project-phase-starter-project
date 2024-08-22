@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongo_blog
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+  redis:
+    image: redis:latest
+    container_name: redis_blog
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: solo1221/blog-app:v0.1
+    container_name: blog-app
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+      - redis
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    name: app-network
+    driver: bridge
+
+volumes:
+  mongo-data:

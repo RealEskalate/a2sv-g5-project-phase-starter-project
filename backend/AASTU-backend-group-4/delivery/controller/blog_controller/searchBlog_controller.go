@@ -7,10 +7,15 @@ import (
 )
 
 func (bc *BlogController) SearchBlog(c *gin.Context) {
-	title := c.Query("title")
-	author := c.Query("author")
+	filter := make(map[string]string)
+	filter["title"] = c.Query("title")
+	filter["author"] = c.Query("author")
+	if filter["title"] == "" && filter["author"] == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "at least one search criterion (title or author) must be provided"})
+		return
+	}
 
-	blogs, err := bc.usecase.SearchBlog(c.Request.Context(), title, author)
+	blogs, err := bc.usecase.SearchBlog(c, filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to search blogs"})
 		return

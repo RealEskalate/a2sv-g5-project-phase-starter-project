@@ -101,13 +101,13 @@ const SignUpForm = () => {
       console.log('Returned and combined values', finalData);
 
       const res = await fetch('https://astu-bank-dashboard.onrender.com', {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(finalData),
       });
-      console.log('res from sign up', res);
 
       // res.then(res) => {
       if (res.ok) {
@@ -125,7 +125,7 @@ const SignUpForm = () => {
 
   return (
     <form
-      className='flex flex-col items-center w-full lg:w-10/12 justify-center p-6 rounded-2xl bg-slate-50'
+      className='flex flex-col items-center w-full lg:w-10/12 justify-center py-6 p-4 lg:p-6 rounded-2xl bg-white'
       onSubmit={handleSubmit(onSubmit)}
     >
       <p className='text-[#333B69] pb-3 text-20px text-left font-semibold w-full'>Register</p>

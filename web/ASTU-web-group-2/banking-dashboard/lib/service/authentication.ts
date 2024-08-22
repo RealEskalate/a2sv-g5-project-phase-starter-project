@@ -16,8 +16,7 @@ export const authenticationApi = createApi({
         },
       }),
     }),
-  
   }),
 });
 
-export const {  useRefreshAccessTokenMutation} = authenticationApi;
+export const { useRefreshAccessTokenMutation } = authenticationApi;

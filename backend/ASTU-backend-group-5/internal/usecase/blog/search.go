@@ -30,3 +30,7 @@ func (u *blogUseCase) PaginateBlogs(ctx context.Context, filter domain.BlogFilte
 	}
 	return blogs, nil
 }
+
+func (u *blogUseCase) SearchBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int) ([]*domain.Blog, int, error) {
+	return u.repo.FindBlogs(ctx, filter, page, pageSize)
+}

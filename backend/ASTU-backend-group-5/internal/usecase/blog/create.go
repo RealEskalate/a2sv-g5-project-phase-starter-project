@@ -39,10 +39,10 @@ func (u *blogUseCase) CreateBlog(ctx context.Context, blog *domain.Blog, authorI
 	blog.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
 
 	//is_valid, message, err := ai.ModerateBlog(blog.Content, blog.Title)
-	if err != nil {
-		log.Printf("Error moderating blog: %v", err)
-		return fmt.Errorf("failed to moderate blog: %w", err)
-	}
+	// if err != nil {
+	// 	log.Printf("Error moderating blog: %v", err)
+	// 	return fmt.Errorf("failed to moderate blog: %w", err)
+	// }
 	// if !is_valid {
 	// 	return errors.New(message)
 	// }
@@ -141,6 +141,7 @@ func (u *blogUseCase) UpdateTag(ctx context.Context, id string, tag *domain.Blog
 	if tag == nil {
 		return errors.New("tag cannot be nil")
 	}
+	tag.ID, _ = primitive.ObjectIDFromHex(id)
 	err := u.repo.UpdateTag(ctx, id, tag)
 	if err != nil {
 		log.Printf("Error updating blog tag with ID %s: %v", id, err)

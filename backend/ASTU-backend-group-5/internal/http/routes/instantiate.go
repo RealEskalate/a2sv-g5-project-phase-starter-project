@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"blogApp/internal/http/handlers"
+	"blogApp/internal/http/handlers/account"
 	BlogHandler "blogApp/internal/http/handlers/blog"
 	"blogApp/internal/repository/mongodb"
 	"blogApp/internal/usecase"
@@ -11,10 +11,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func InstantaiteUserHandler(collection *mongo.Collection) *handlers.UserHandler {
+func InstantaiteUserHandler(collection *mongo.Collection) *account.UserHandler {
 	userRepo := &mongodb.UserRepositoryMongo{Collection: collection}
 	userUsecase := user.NewUserUsecase(userRepo)
-	userHandler := handlers.NewUserHandler(userUsecase)
+	userHandler := account.NewUserHandler(userUsecase)
 	return userHandler
 }
 

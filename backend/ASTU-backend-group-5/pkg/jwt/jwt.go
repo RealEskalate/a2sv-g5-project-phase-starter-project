@@ -26,7 +26,7 @@ func init() {
 
 // GenerateJWT generates a new JWT token and populates it with the user's ID and email
 
-func GenerateJWT(userID, email, role, username string) (string, error) {
+func GenerateJWT(userID, email, username, role string) (string, error) {
 	ACCESS_TOKEN_LIFE_TIME := 2 * 24 * time.Hour
 
 	Config, err := config.Load()

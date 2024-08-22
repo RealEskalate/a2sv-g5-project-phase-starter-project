@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func SetRouter(router *gin.Engine, com *controllers.CommentController, c *controllers.BlogController, cu *controllers.UserController, oc *controllers.OAuthController, client *mongo.Client) {
+func SetRouter(router *gin.Engine, com *controllers.CommentController, c *controllers.BlogController, cu *controllers.UserController, oc *controllers.OAuthController, client *mongo.Client, lc *controllers.LikeController, dsl *controllers.DisLikeController) {
 
 	router.POST("/user/register", cu.RegisterUser)
 	router.POST("/user/verify-email", cu.VerifyEmail)
@@ -23,7 +23,7 @@ func SetRouter(router *gin.Engine, com *controllers.CommentController, c *contro
 	router.GET("/oauth2/callback", oc.HandleGoogleCallback)
 
 	router.POST("/generate", middleware.AuthMiddleware(client), c.GeneratePost)
-	router.POST("/file", middleware.AuthMiddleware(client), controllers.FileUpload)
+	router.POST("/file", middleware.AuthMiddleware(client), c.FileUpload)
 
 	r := router.Group("/blog")
 	r.Use(middleware.AuthMiddleware(client))
@@ -39,6 +39,15 @@ func SetRouter(router *gin.Engine, com *controllers.CommentController, c *contro
 		r.GET("/comment/:blog_id", com.GetComment)
 		r.PUT("/comment/:blog_id/:id", com.UpdateComment)
 		r.DELETE("/comment/:blog_id/:id", com.DeleteComment)
+
+		r.POST("/like/:postID", lc.CreateLike)
+		r.DELETE("/like/:postID", lc.DeleteLike)
+		r.GET("/like/:postID", lc.GetLikes)
+
+		r.POST("/dislike/:postID", dsl.CreateDisLike)
+		r.DELETE("/dislike/:postID", dsl.DeleteDisLike)
+		r.GET("/dislike/:postID", dsl.GetDisLikes)
+
 	}
 
 }

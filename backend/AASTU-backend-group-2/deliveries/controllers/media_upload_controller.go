@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-func FileUpload(c *gin.Context) {
+func (h *BlogController) FileUpload(c *gin.Context) {
 	//upload
 	formHeader, err := c.FormFile("file")
 	if err != nil {
@@ -35,7 +35,7 @@ func FileUpload(c *gin.Context) {
 		return
 	}
 
-	uploadUrl, err := infrastructure.NewMediaUpload().FileUpload(infrastructure.File{File: formFile})
+	uploadUrl, err := h.Medcont.FileUpload(infrastructure.File{File: formFile})
 	if err != nil {
 		c.JSON(
 			http.StatusInternalServerError,

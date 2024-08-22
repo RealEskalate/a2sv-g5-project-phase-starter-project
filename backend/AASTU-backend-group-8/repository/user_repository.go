@@ -87,3 +87,11 @@ func (r *UserRepository) DeleteUser(id primitive.ObjectID) error {
 	_, err := r.collection.DeleteOne(context.TODO(), bson.M{"_id": id})
 	return err
 }
+
+func (r *UserRepository) UpdateRole(username string, role string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := r.collection.UpdateOne(ctx, bson.M{"name": username}, bson.M{"$set": bson.M{"role": role}})
+	return err
+}

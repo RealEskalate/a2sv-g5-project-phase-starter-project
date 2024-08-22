@@ -92,7 +92,7 @@ func (s *SignUpController) SignUp(c *gin.Context) {
 
 	err = EmailUtil.SendTestEmail(UserSignUp.Email, emailTemplate.Subject, emailTemplate.Body)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"errorss": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

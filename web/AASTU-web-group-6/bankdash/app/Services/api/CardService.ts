@@ -1,7 +1,7 @@
 // src/services/cardService.ts
 import axios from "axios";
 
-const API_URL = "https://bank-dashboard-6acc.onrender.com/cards"; // Adjust this to match your actual API base URL
+const API_URL = "https://bank-dashboard-1tst.onrender.com/cards"; // Adjust this to match your actual API base URL
 
 interface Card {
   id?: string;
@@ -30,7 +30,7 @@ const handleRequest = async (
         "Content-Type": "application/json",
       },
     });
-    console.log(response.data, "all data");
+    // console.log(response.data, "all data");
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

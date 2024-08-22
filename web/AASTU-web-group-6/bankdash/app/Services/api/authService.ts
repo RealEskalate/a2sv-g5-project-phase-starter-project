@@ -2,7 +2,7 @@ import LoginValue from "@/types/LoginValue";
 import UserValue from "@/types/UserValue";
 import axios from "axios";
 
-const API_URL = "https://bank-dashboard-6acc.onrender.com/auth";
+const API_URL = "https://bank-dashboard-1tst.onrender.com/auth";
 
 // Request & Response Interfaces
 
@@ -79,7 +79,7 @@ const handleRequest = async <T>(
 class AuthService {
   public static register(formData: UserValue): Promise<RegisterResponse> {
 
-    
+
     return handleRequest<RegisterResponse>(
       "POST",
       `${API_URL}/register`,

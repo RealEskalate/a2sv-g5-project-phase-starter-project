@@ -80,7 +80,7 @@ export function MonthlyRev({ data }: YearlyInvestProps) {
             accessibilityLayer
             data={chartData}
             margin={{
-              left: 12,
+             
               right: 12,
             }}
           >

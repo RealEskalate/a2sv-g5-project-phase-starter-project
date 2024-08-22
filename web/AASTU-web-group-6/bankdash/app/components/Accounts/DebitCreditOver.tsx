@@ -123,8 +123,8 @@ export function DebitCreditOver() {
   return (
     <Card className="rounded-3xl shadow-lg dark:bg-[#232328]  ">
       <CardHeader>
-        <div className="flex justify-between ">
-          <CardTitle className="flex gap-2 lg:block lg:text-[12px] xl:text-base text-base font-normal font-inter text-[#718EBF] dark:text-gray-400">
+        <div className="flex justify-end lg:justify-between ">
+          <CardTitle className="hidden gap-2 lg:block lg:text-[12px] xl:text-base text-base font-normal font-inter text-[#718EBF] dark:text-gray-400">
             <span className="font-semibold text-black dark:text-gray-300">
               ${totalExpense}
             </span>{" "}
@@ -134,7 +134,7 @@ export function DebitCreditOver() {
             </span>{" "}
             Credited in this Week
           </CardTitle>
-          <div className="flex gap-5">
+          <div className="flex gap-5 ">
             <div className="flex items-center gap-2">
               <div className="border border-[#4C78FF] w-[15px] h-[15px] rounded-sm bg-[#4C78FF]"></div>
               <p className="font-inter font-normal text-base text-[#718EBF] dark:text-gray-300">
@@ -143,7 +143,7 @@ export function DebitCreditOver() {
             </div>
             <div className="flex items-center gap-2">
               <div className="border border-[#FCAA0B] w-[15px] h-[15px] rounded-sm bg-[#FCAA0B]"></div>
-              <p className="font-inter font-normal text-base text-[#718EBF dark:text-gray-300">
+              <p className="font-inter font-normal text-base text-[#718EBF] dark:text-gray-300">
                 Credit
               </p>
             </div>

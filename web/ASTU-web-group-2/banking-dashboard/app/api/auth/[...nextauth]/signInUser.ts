@@ -3,10 +3,6 @@ async function signInUser({ userName, password }: any) {
 
   try {
     const response = await fetch(
-<<<<<<< HEAD
-
-=======
->>>>>>> df7412d5a7cf02a4ba73c728ff86bcb98555c1ab
       "https://astu-bank-dashboard.onrender.com/auth/login",
 
       {

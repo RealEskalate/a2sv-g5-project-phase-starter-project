@@ -22,7 +22,7 @@ func NewMongoDatabase(env *Env) *mongo.Client {
 	mongodbURI := fmt.Sprintf("mongodb+srv://%s:%s@%s", dbUser, dbPass, dbHost)
 
 	if dbUser == "" || dbPass == "" {
-		mongodbURI = fmt.Sprintf("mongodb+srv://%s:%s", dbHost, dbPort)
+		mongodbURI = fmt.Sprintf("mongodb://%s:%s", dbHost, dbPort)
 	}
 
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongodbURI))

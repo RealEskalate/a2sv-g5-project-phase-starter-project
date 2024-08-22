@@ -72,7 +72,7 @@ type UserUsecase interface {
 	IsOwner(c context.Context) (bool, error)
 	ResetUserPassword(c context.Context, userID string, resetPassword *ResetPassword) error
 	UpdateUserPassword(c context.Context, userID string, updatePassword *UpdatePassword) error
-	
+	UpdateProfilePicture(c context.Context, userID string, filename string) error
 	PromoteUserToAdmin(c context.Context, userID string) error
 	DemoteAdminToUser(c context.Context, userID string) error
 }
@@ -89,6 +89,7 @@ type UserRepository interface {
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)
 	RevokeRefreshToken(c context.Context, userID, refreshToken string) error
+	UpdateProfilePicture(c context.Context, userID string, filename string) error
 
 	ResetUserPassword(c context.Context, userID string, resetPassword *ResetPassword) error
 	UpdateUserPassword(c context.Context, userID string, updatePassword *UpdatePassword) error

@@ -1,4 +1,4 @@
-package user_test
+package usecase_test
 
 
 import (
@@ -132,6 +132,7 @@ func (suite *UserUsecaseSuite) TestLogin_InvalidPassword_Negative() {
 	suite.EqualError(err, "invalid credentials")
 	suite.repository.AssertExpectations(suite.T())
 }
+
 
 
 func TestUserUsecaseSuite(t *testing.T) {

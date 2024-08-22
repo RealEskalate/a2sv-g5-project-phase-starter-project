@@ -85,9 +85,16 @@ func (usecase *ChatUsecase) GetChat(ctx context.Context, form DefaultChatForm) (
 	return chat, nil
 }
 
-func (usecase *ChatUsecase) GetChats(ctx context.Context, form DefaultChatForm, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error){
+func (usecase *ChatUsecase) GetChats(ctx context.Context, form UserIDForm, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error){
 	if err := infrastructure.Validate(validate, form); err != nil{
 		return infrastructure.PaginationResponse[Chat]{}, err
+	}
+
+	if pagination.Limit == 0{
+		pagination.Limit = 10
+	}
+	if pagination.Page == 0{
+		pagination.Page = 1
 	}
 	
 	return usecase.Repository.GetChats(ctx, form.UserID, pagination)

@@ -37,8 +37,7 @@ func (gr *MainRouter) GinBlogRouter() {
 	router.GET("blogs/:blogId", gr.blogController.HandleGetBlogById)
 	userrouter := router.Group("/users")
 	{
-		userrouter.GET("/", gr.handler.GetUsers)
-		userrouter.GET("/:id", gr.handler.GetUsers)
+	
 		userrouter.POST("/register", gr.handler.Register)
 		userrouter.GET("/accountVerification", gr.handler.AccountVerification)
 		userrouter.POST("/login", gr.handler.LoginUser)
@@ -46,6 +45,8 @@ func (gr *MainRouter) GinBlogRouter() {
 		userrouter.POST("/resetPassword", gr.handler.ResetPassword)
 		userrouter.GET("/logout", gr.handler.LogoutUser)
 		userrouter.POST("/:uid/refresh", gr.handler.RefreshAccessToken)
+		userrouter.GET("/", gr.handler.GetUsers)
+		userrouter.GET("/:id", gr.handler.GetUsers)
 	}
 	blogRouter := router.Group("/blogs")
 

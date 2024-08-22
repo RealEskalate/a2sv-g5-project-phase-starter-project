@@ -31,6 +31,8 @@ build/
 *.swp
 *~
 
+test.go
+
 # macOS specific files
 .DS_Store
 
@@ -55,3 +57,5 @@ tmp/
 # Go mod files
 go.sum
 makefile
+tmp/
+.air.toml

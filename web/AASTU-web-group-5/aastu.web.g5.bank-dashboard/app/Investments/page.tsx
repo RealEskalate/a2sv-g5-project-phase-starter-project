@@ -27,7 +27,7 @@ const Investments = () => {
     const fetchInvestmentData = async () => {
       try {
         const response = await axios.get(
-          "https://bank-dashboard-6acc.onrender.com/user/random-investment-data?years=3&months=5",
+          "https://bank-dashboard-1tst.onrender.com/user/random-investment-data?years=3&months=5",
           {
             headers: {
               Authorization: token, // Make sure to add your token here
@@ -56,7 +56,7 @@ const Investments = () => {
   }, []);
 
   return (
-    <div className="bg-[#F5F7FA] space-y-8 mx-auto pt-3 px-4 md:px-8 lg:px-16 max-w-full overflow-hidden">
+    <div className="bg-[#F5F7FA] space-y-8 ml-[30px] pt-3    w-full overflow-hidden">
       {/* Row 1: Investment Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">

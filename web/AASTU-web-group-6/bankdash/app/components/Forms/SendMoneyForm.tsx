@@ -29,7 +29,7 @@ const ModalTrans = async ({ isOpen, onClose, userName, amount }: props) => {
     // change to tranService
     try {
       const response = await axios.post(
-        "https://bank-dashboard-1tst.onrender.com/transactions",
+        "https://bank-dashboard-o9tl.onrender.com/transactions",
         formData,
         {
           headers: {

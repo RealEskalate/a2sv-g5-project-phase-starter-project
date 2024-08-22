@@ -70,7 +70,7 @@ const ModalService = ({ isOpen, onClose }: props) => {
     const formData = JSON.stringify(data);
     try {
       const response = await axios.post(
-        "https://bank-dashboard-1tst.onrender.com/bank-services",
+        "https://bank-dashboard-o9tl.onrender.com/bank-services",
         formData,
         {
           headers: {
@@ -282,7 +282,7 @@ export default ModalService;
 //   async function fetchData(accessToken: string) {
 //     try {
 //       const response = await axios.post(
-//         "https://bank-dashboard-1tst.onrender.com/bank-services",
+//         "https://bank-dashboard-o9tl.onrender.com/bank-services",
 //         formData,
 //         {
 //           headers: {

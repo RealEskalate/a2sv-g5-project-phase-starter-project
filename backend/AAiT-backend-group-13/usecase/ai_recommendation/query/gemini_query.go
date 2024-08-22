@@ -1,10 +1,8 @@
 package geminiService
 
-import "github.com/google/generative-ai-go/genai"
 
 type RecommendationCommand struct {
 	request *string
-	client *genai.Client
 
 }
 

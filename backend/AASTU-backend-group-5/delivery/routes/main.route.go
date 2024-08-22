@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/RealEskalate/blogpost/config"
 	"github.com/RealEskalate/blogpost/database"
+	"github.com/RealEskalate/blogpost/repository"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,19 +18,32 @@ func SetUp(router *gin.Engine) {
 		Collection: clinect.Client.Database("BlogPost").Collection("Blogs"),
 	}
 
+  
+ 	stateCollection := &database.MongoCollection{
+		Collection: clinect.Client.Database("BlogPost").Collection("States"),
+	}
+	userrepo := repository.NewUserRepository(userCollection)
+  
 	aiRoute := router.Group("")
 	userRoute := router.Group("")
-	blogRoute := router.Group("")
-	popularityRoute := router.Group("")
+	verifiRoute := router.Group("")
+	uplaodRoute := router.Group("")
+	authRoute := router.Group("")
+  blogRot := router.Group("")
+  popularityRoute := router.Group("")
 	likeRoute := router.Group("")
 	dislikeRoute := router.Group("")
 	commentRoute := router.Group("")
 
-	NewBlogRoutes(blogRoute, blogCollection, userCollection)
+	NewUploadRoute(uplaodRoute , *userrepo)
+	NewVerifyEmialRoute(verifiRoute , userCollection)	
+	NewBlogRoutes(blogRot, blogCollection, userCollection)
 	NewAiRequestRoute(aiRoute)
 	NewUserRoute(userRoute, userCollection)
-	NewPopularityRoutes(popularityRoute, blogCollection)
+  NewAuthRoute(authRoute, userCollection, stateCollection)
+  NewPopularityRoutes(popularityRoute, blogCollection)
 	NewLikeRoutes(likeRoute, blogCollection)
 	NewDislikeRoutes(dislikeRoute, blogCollection)
 	NewCommentRoutes(commentRoute, blogCollection)
+
 }

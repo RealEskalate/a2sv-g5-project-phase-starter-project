@@ -10,7 +10,10 @@ export interface BankServiceDataType {
 export interface BankServiceResponseType {
   success: boolean;
   message: string;
-  data: BankServiceDataType[];
+  data: {
+    content: BankServiceDataType[];
+    totalPages: number;
+  };
 }
 
 export interface singleBankServiceResponseType {

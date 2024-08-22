@@ -8,7 +8,6 @@ import { useGetBankServiceQuery } from "@/lib/service/BankService";
 import { useSession } from "next-auth/react";
 
 const BankServicesList = () => {
-
   const { data: session, status } = useSession();
 
   useEffect(() => {}, [session, status]);
@@ -17,8 +16,8 @@ const BankServicesList = () => {
 
   const { data: res, isLoading } = useGetBankServiceQuery({
     accessToken: accessToken,
-    size: 6,
-    page: 1,
+    size: 10,
+    page: 0,
   });
 
   if (isLoading) {

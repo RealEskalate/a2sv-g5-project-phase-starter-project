@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const authenticationApi = createApi({
   reducerPath: "authentication",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-1tst.onrender.com",
+    baseUrl: process.env.BASE_URL,
   }),
 
   endpoints: (builder) => ({
@@ -16,8 +16,7 @@ export const authenticationApi = createApi({
         },
       }),
     }),
-  
   }),
 });
 
-export const {  useRefreshAccessTokenMutation} = authenticationApi;
+export const { useRefreshAccessTokenMutation } = authenticationApi;

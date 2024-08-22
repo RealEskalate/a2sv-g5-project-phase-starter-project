@@ -21,13 +21,10 @@ func NewLogoutUsecase(jwtService interfaces.JwtService, repository interfaces.Se
 
 func (uc *logoutUsecase) LogoutUser(ctx context.Context, userID string) *models.ErrorResponse {
 
-	// Remove the token from the repository
 	if err := uc.repository.RemoveToken(ctx, userID); err != nil {
 		return models.InternalServerError("Error removing user token")
 	}
 
-	// Successful logout
 	return nil
 }
 
-// 34.220.223.84

@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	Models "github.com/aait.backend.g5.main/backend/Domain/Models"
+	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -64,6 +64,20 @@ func (mr *MockPasswordServiceMockRecorder) ValidatePassword(password, hashedPass
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidatePassword", reflect.TypeOf((*MockPasswordService)(nil).ValidatePassword), password, hashedPassword)
 }
 
+// ValidatePasswordStrength mocks base method.
+func (m *MockPasswordService) ValidatePasswordStrength(password, email, name, username string) *models.ErrorResponse {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidatePasswordStrength", password, email, name, username)
+	ret0, _ := ret[0].(*models.ErrorResponse)
+	return ret0
+}
+
+// ValidatePasswordStrength indicates an expected call of ValidatePasswordStrength.
+func (mr *MockPasswordServiceMockRecorder) ValidatePasswordStrength(password, email, name, username interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidatePasswordStrength", reflect.TypeOf((*MockPasswordService)(nil).ValidatePasswordStrength), password, email, name, username)
+}
+
 // MockPasswordUsecase is a mock of PasswordUsecase interface.
 type MockPasswordUsecase struct {
 	ctrl     *gomock.Controller
@@ -88,11 +102,11 @@ func (m *MockPasswordUsecase) EXPECT() *MockPasswordUsecaseMockRecorder {
 }
 
 // GenerateResetURL mocks base method.
-func (m *MockPasswordUsecase) GenerateResetURL(ctx context.Context, email string) (string, *Models.ErrorResponse) {
+func (m *MockPasswordUsecase) GenerateResetURL(ctx context.Context, email string) (string, *models.ErrorResponse) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GenerateResetURL", ctx, email)
 	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(*Models.ErrorResponse)
+	ret1, _ := ret[1].(*models.ErrorResponse)
 	return ret0, ret1
 }
 
@@ -103,10 +117,10 @@ func (mr *MockPasswordUsecaseMockRecorder) GenerateResetURL(ctx, email interface
 }
 
 // SendResetEmail mocks base method.
-func (m *MockPasswordUsecase) SendResetEmail(ctx context.Context, email, resetURL string) *Models.ErrorResponse {
+func (m *MockPasswordUsecase) SendResetEmail(ctx context.Context, email, resetURL string) *models.ErrorResponse {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SendResetEmail", ctx, email, resetURL)
-	ret0, _ := ret[0].(*Models.ErrorResponse)
+	ret0, _ := ret[0].(*models.ErrorResponse)
 	return ret0
 }
 
@@ -116,16 +130,30 @@ func (mr *MockPasswordUsecaseMockRecorder) SendResetEmail(ctx, email, resetURL i
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendResetEmail", reflect.TypeOf((*MockPasswordUsecase)(nil).SendResetEmail), ctx, email, resetURL)
 }
 
-// SetPassword mocks base method.
-func (m *MockPasswordUsecase) SetPassword(ctx context.Context, shortURlCode, password string) *Models.ErrorResponse {
+// SetNewUserPassword mocks base method.
+func (m *MockPasswordUsecase) SetNewUserPassword(ctx context.Context, shortURlCode, password string) *models.ErrorResponse {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SetPassword", ctx, shortURlCode, password)
-	ret0, _ := ret[0].(*Models.ErrorResponse)
+	ret := m.ctrl.Call(m, "SetNewUserPassword", ctx, shortURlCode, password)
+	ret0, _ := ret[0].(*models.ErrorResponse)
 	return ret0
 }
 
-// SetPassword indicates an expected call of SetPassword.
-func (mr *MockPasswordUsecaseMockRecorder) SetPassword(ctx, shortURlCode, password interface{}) *gomock.Call {
+// SetNewUserPassword indicates an expected call of SetNewUserPassword.
+func (mr *MockPasswordUsecaseMockRecorder) SetNewUserPassword(ctx, shortURlCode, password interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetPassword", reflect.TypeOf((*MockPasswordUsecase)(nil).SetPassword), ctx, shortURlCode, password)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetNewUserPassword", reflect.TypeOf((*MockPasswordUsecase)(nil).SetNewUserPassword), ctx, shortURlCode, password)
+}
+
+// SetUpdateUserPassword mocks base method.
+func (m *MockPasswordUsecase) SetUpdateUserPassword(ctx context.Context, shortURlCode, password string) *models.ErrorResponse {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetUpdateUserPassword", ctx, shortURlCode, password)
+	ret0, _ := ret[0].(*models.ErrorResponse)
+	return ret0
+}
+
+// SetUpdateUserPassword indicates an expected call of SetUpdateUserPassword.
+func (mr *MockPasswordUsecaseMockRecorder) SetUpdateUserPassword(ctx, shortURlCode, password interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetUpdateUserPassword", reflect.TypeOf((*MockPasswordUsecase)(nil).SetUpdateUserPassword), ctx, shortURlCode, password)
 }

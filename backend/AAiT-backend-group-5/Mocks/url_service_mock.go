@@ -36,18 +36,18 @@ func (m *MockURLService) EXPECT() *MockURLServiceMockRecorder {
 }
 
 // GenerateURL mocks base method.
-func (m *MockURLService) GenerateURL(token string) (string, *models.ErrorResponse) {
+func (m *MockURLService) GenerateURL(token, purpose string) (string, *models.ErrorResponse) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateURL", token)
+	ret := m.ctrl.Call(m, "GenerateURL", token, purpose)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(*models.ErrorResponse)
 	return ret0, ret1
 }
 
 // GenerateURL indicates an expected call of GenerateURL.
-func (mr *MockURLServiceMockRecorder) GenerateURL(token interface{}) *gomock.Call {
+func (mr *MockURLServiceMockRecorder) GenerateURL(token, purpose interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateURL", reflect.TypeOf((*MockURLService)(nil).GenerateURL), token)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateURL", reflect.TypeOf((*MockURLService)(nil).GenerateURL), token, purpose)
 }
 
 // GetURL mocks base method.
@@ -103,12 +103,11 @@ func (m *MockURLServiceRepository) EXPECT() *MockURLServiceRepositoryMockRecorde
 }
 
 // DeleteURL mocks base method.
-func (m *MockURLServiceRepository) DeleteURL(id string, ctx context.Context) (*models.URL, *models.ErrorResponse) {
+func (m *MockURLServiceRepository) DeleteURL(id string, ctx context.Context) *models.ErrorResponse {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteURL", id, ctx)
-	ret0, _ := ret[0].(*models.URL)
-	ret1, _ := ret[1].(*models.ErrorResponse)
-	return ret0, ret1
+	ret0, _ := ret[0].(*models.ErrorResponse)
+	return ret0
 }
 
 // DeleteURL indicates an expected call of DeleteURL.

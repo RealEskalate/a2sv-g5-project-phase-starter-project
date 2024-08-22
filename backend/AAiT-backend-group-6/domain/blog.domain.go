@@ -10,6 +10,9 @@ import (
 const (
 	CollectionBlogs = "blogs"
 )
+const (
+	CollectionComments = "comments"
+)
 
 type Blog struct {
 	ID        primitive.ObjectID `json:"id" bson:"_id"`
@@ -30,7 +33,7 @@ type Like struct {
 
 type Comment struct {
 	ID        primitive.ObjectID `json:"id" bson:"_id"`
-	AuthorID  primitive.ObjectID `json:"author" bson:"author"`
+	Author    User               `json:"author" bson:"author"`
 	BlogID    primitive.ObjectID `json:"blog_id" bson:"blog_id"`
 	Content   string             `json:"content" bson:"content"`
 	CreatedAt time.Time          `json:"created_at" bson:"created_at"`

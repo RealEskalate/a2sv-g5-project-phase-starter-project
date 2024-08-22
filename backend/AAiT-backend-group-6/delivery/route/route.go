@@ -19,6 +19,7 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db mongo.Database, gin *gi
 	NewAiRouter(env, timeout, db, publicRouter)
 
 	NewBlogRouter(db, gin, redisClient)
+	NewCommentRouter(env, db, gin)
 
 	protectedRouter := gin.Group("")
 	protectedRouter.Use(middleware.JwtAuthMiddleware(env.AccessTokenSecret))

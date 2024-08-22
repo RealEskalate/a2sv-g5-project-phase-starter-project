@@ -31,9 +31,10 @@ func NewRouter(db *mongo.Database) {
 		AppUsername: username,
 		AppHost:     host,
 	}
+	aiService := infrastructures.NewAIService(os.Getenv("GEMINI_API_KEY"))
 
 	blogRepo := repositories.NewBlogRepository(db, os.Getenv("BLOG_COLLECTION"))
-	blogUseCase := usecases.NewBlogUseCase(blogRepo, userRepo)
+	blogUseCase := usecases.NewBlogUseCase(blogRepo, userRepo, aiService)
 	blogController := controllers.NewBlogController(blogUseCase)
 
 	commentRepo := repositories.NewCommentRepository(db, os.Getenv("COMMENT_COLLECTION_NAME"))
@@ -59,6 +60,8 @@ func NewRouter(db *mongo.Database) {
 	router.DELETE("/blogs/:id", infrastructures.AuthMiddleware(&jwtService), blogController.DeleteBlog)
 	router.PATCH("/blogs/:id/view", infrastructures.AuthMiddleware(&jwtService), blogController.AddView)
 	router.GET("/blogs/search", infrastructures.AuthMiddleware(&jwtService), blogController.SearchBlogs)
+	router.POST("blogs/generate", infrastructures.AuthMiddleware(&jwtService), blogController.GenerateBlogContent)
+	router.POST("blogs/suggest", infrastructures.AuthMiddleware(&jwtService), blogController.SuggestImprovements)
 
 	router.PATCH("/users/promote", infrastructures.AuthMiddleware(&jwtService), infrastructures.AdminMiddleWare(), userController.PromoteUser)
 	router.PUT("/users/:id", infrastructures.AuthMiddleware(&jwtService), userController.UpdateProfile)

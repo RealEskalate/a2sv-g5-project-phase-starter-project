@@ -4,19 +4,26 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/generative-ai-go/genai"
 	"github.com/group13/blog/delivery/common"
 	basecontroller "github.com/group13/blog/delivery/controller/base"
+	gemini "github.com/group13/blog/usecase/ai_recommendation/command"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
-	gemini 	"github.com/group13/blog/usecase/ai_recommendation/command"
 )
 
 type Controller struct {
 	basecontroller.BaseHandler
-	recommendationHandler     icmd.IHandler[*gemini.RecommendationCommand, *string]
+	recommendationHandler     icmd.IHandler[*gemini.RecommendationCommand, *genai.GenerateContentResponse]
 }
 
+func NewAiController(recommendationHandler icmd.IHandler[*gemini.RecommendationCommand, *genai.GenerateContentResponse]) *Controller {
+	return &Controller{
+		recommendationHandler: recommendationHandler,
+	}
+}
 
 var _ common.IController = &Controller{}
+
 
 
 // RegisterPublic registers public routes.

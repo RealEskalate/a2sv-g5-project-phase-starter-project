@@ -179,3 +179,5 @@ func (uc *UserController) UpdateMyProfile(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{"message": "Profile updated successfully"})
 }
+
+

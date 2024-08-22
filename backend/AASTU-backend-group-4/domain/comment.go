@@ -19,7 +19,7 @@ type CommentRepository interface {
 	CreateComment(ctx context.Context, comment Comment) error
 	GetCommentByID(ctx context.Context, id primitive.ObjectID) (Comment, error)
 	GetCommentsByBlogID(ctx context.Context, blogID primitive.ObjectID) ([]Comment, error)
-	DeleteComment(ctx context.Context, commentID primitive.ObjectID) error
+	RemoveComment(ctx context.Context, commentID primitive.ObjectID) error
 }
 
 type CommentRequest struct {

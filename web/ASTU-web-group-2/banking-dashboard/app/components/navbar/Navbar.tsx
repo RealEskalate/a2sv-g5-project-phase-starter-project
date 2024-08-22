@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import Image from "next/image";
 import React, { useEffect, useState, useRef } from "react";
 import Sidebar from "../sidebar/Sidebar"; // Import Sidebar component
@@ -23,7 +23,10 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownOpen(false);
       }
     };
@@ -38,12 +41,12 @@ const Navbar = () => {
 
   // Toggle sidebar visibility
   const toggleSidebar = () => {
-    setIsSidebarOpen(prev => !prev);
+    setIsSidebarOpen((prev) => !prev);
   };
 
   // Toggle dropdown visibility
   const toggleDropdown = () => {
-    setIsDropdownOpen(prev => !prev);
+    setIsDropdownOpen((prev) => !prev);
   };
 
   // Get the current pathname from next/navigation
@@ -51,8 +54,8 @@ const Navbar = () => {
 
   // Function to capitalize the first letter of the page title
   const capitalizeFirstLetter = (text: string) => {
-    if (!text || text === "/") return 'Dashboard';
-    text = text.replace('-', ' ');
+    if (!text || text === "/") return "Dashboard";
+    text = text.replace("-", " ");
     return text.charAt(1).toUpperCase() + text.slice(2).toLowerCase();
   };
 
@@ -97,7 +100,7 @@ const Navbar = () => {
               <input
                 type="text"
                 placeholder="Search for something"
-                className="text-[15px] bg-[#F5F7FA] border border-transparent rounded-full px-4 py-2 w-full placeholder:text-[#B1B1B1] focus:outline-none focus:ring-0 focus:border-transparent"
+                className="text-[15px] bg-[#F5F7FA] border border-transparent rounded-full p-2 w-full placeholder:text-[#B1B1B1] focus:outline-none focus:ring-0 focus:border-transparent"
               />
             </div>
 
@@ -127,27 +130,28 @@ const Navbar = () => {
               />
             </Link>
 
-            <div 
-              className="relative" 
-              ref={dropdownRef}
-              
-              >
-              <Image
-                src={user.profilePicture==="default-profile.png"? "" : user.profilePicture}
-                width={50}
-                height={50}
-                alt="profile-picture"
-                className="object-fill rounded-full cursor-pointer"
-                onClick={toggleDropdown}
-              />  
+            <div className="relative" ref={dropdownRef}>
+              <div className="flex justify-center items-center w-12 h-12 rounded-full object-scale-down">
+                <Image
+                  src={
+                    user.profilePicture === "default-profile.png"
+                      ? ""
+                      : user.profilePicture
+                  }
+                  width={50}
+                  height={50}
+                  alt="profile-picture"
+                  className="block mx-auto h-12 rounded-full cursor-pointer"
+                  onClick={toggleDropdown}
+                />
+              </div>
 
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50 border-[1px] border-[#afafaf]">
-                
-                  <div 
-                    onClick={() =>signOut({callbackUrl:"/login"})}
-
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <div
+                    onClick={() => signOut({ callbackUrl: "/login" })}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
                     Logout
                   </div>
                 </div>

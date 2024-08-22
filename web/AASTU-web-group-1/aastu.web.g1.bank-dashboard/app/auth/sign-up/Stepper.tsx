@@ -13,11 +13,11 @@ const Stepper = ({ current }: { current: string }) => {
         const isActive = current === step.value;
         const isCompleted = index < steps.findIndex((s) => s.value === current);
         const circleClass = isActive
-          ? "bg-indigo-600 border-indigo-200 text-white"
+          ? "bg-[#343C6A] border-indigo-200 text-white"
           : isCompleted
           ? "bg-gray-100 border-gray-200 text-gray-600"
           : "bg-gray-100 border-gray-200 text-gray-600";
-        const textClass = isActive ? "text-indigo-600" : "text-gray-600";
+        const textClass = isActive ? "text-[#343C6A]" : "text-gray-600";
         const afterClass =
           index < steps.length - 1
             ? "after:content-['/'] sm:after:hidden after:mx-2"

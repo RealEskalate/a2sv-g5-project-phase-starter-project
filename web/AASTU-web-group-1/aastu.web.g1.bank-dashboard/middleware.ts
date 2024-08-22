@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (pathname.startsWith("/auth") || pathname.startsWith("/api")) {
+  if (pathname.startsWith("/auth") || pathname.startsWith("/api") || pathname.startsWith("/landing")) {
     return NextResponse.next();
   }
 

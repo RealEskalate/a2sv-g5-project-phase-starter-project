@@ -58,7 +58,7 @@ const Header = ({ title }: { title: string }) => {
 
   return (
     <div
-      className={`max-md:hidden ${
+      className={`max-md:hidden sticky top-0 z-50 ${
         isDarkMode ? "border-gray-700 bg-gray-800" : "bg-white"
       }`}
     >

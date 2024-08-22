@@ -33,13 +33,13 @@ func (uc *UserController) Register(c *gin.Context) {
 		c.JSON(400, gin.H{"message": "invalid json format"})
 		return
 	}
-	registeredUser, err := uc.user_usecase.SignUp(user)
+	_, err = uc.user_usecase.SignUp(user)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"user": registeredUser.ID.Hex()})
+	c.JSON(200, gin.H{"message":"verification email sent to your email"})
 }
 
 func (uc *UserController) Login(c *gin.Context) {

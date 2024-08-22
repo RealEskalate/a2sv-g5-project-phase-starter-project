@@ -1,8 +1,9 @@
 package controllers_test
 
 import (
+	controllers "blogs/Delivery/controllers"
 	domain "blogs/Domain"
-	controllers "blogs/delivery/controllers"
+
 	"blogs/mocks"
 	"bytes"
 	"encoding/json"
@@ -112,7 +113,6 @@ func (suite *SignupControllerTestSuite) TestSignup_InvalidRequest() {
 	suite.mockSignupUsecase.AssertCalled(suite.T(), "Create", mock.Anything, mock.AnythingOfType("domain.User"))
 }
 
-
 func (suite *SignupControllerTestSuite) TestVerifyOTP_Success() {
 	// Prepare a valid OTP token request
 	otpRequest := domain.OtpToken{
@@ -185,7 +185,6 @@ func (suite *SignupControllerTestSuite) TestVerifyOTP_Success() {
 	// Assert that the mock was called with the correct parameters
 	suite.mockSignupUsecase.AssertCalled(suite.T(), "VerifyOTP", mock.Anything, otpRequest)
 }
-
 
 func (suite *SignupControllerTestSuite) TestForgotPassword_Success() {
 	// Prepare a valid ForgotPasswordRequest
@@ -266,8 +265,6 @@ func (suite *SignupControllerTestSuite) TestResetPassword_Success() {
 	// Assert that the mock was called with the correct parameters
 	suite.mockSignupUsecase.AssertCalled(suite.T(), "ResetPassword", mock.Anything, resetPasswordRequest, token)
 }
-
-
 
 func TestSignupControllerTestSuite(t *testing.T) {
 	suite.Run(t, new(SignupControllerTestSuite))

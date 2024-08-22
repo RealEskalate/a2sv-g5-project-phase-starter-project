@@ -1,8 +1,8 @@
 package controllers_test
 
 import (
+	controllers "blogs/Delivery/controllers"
 	domain "blogs/Domain"
-	"blogs/delivery/controllers"
 	"blogs/mocks"
 	"bytes"
 	"encoding/json"
@@ -18,7 +18,7 @@ import (
 
 type UserControllerTestSuite struct {
 	suite.Suite
-	mockUserUsecase   *mocks.UserUseCase
+	mockUserUsecase *mocks.UserUseCase
 	userController  *controllers.NewUserController
 }
 
@@ -126,7 +126,6 @@ func (suite *UserControllerTestSuite) TestUpdateUser_Success() {
 	suite.mockUserUsecase.AssertCalled(suite.T(), "UpdateUser", mock.Anything, updateUserRequest)
 }
 
-
 func (suite *UserControllerTestSuite) TestUpdateUser_Unauthorized() {
 	// Prepare a valid user update request
 	updateUserRequest := domain.UserUpdateRequest{
@@ -168,7 +167,6 @@ func (suite *UserControllerTestSuite) TestUpdateUser_Unauthorized() {
 	// Assert that no update was attempted on the usecase
 	suite.mockUserUsecase.AssertNotCalled(suite.T(), "UpdateUser", mock.Anything, updateUserRequest)
 }
-
 
 func (suite *UserControllerTestSuite) TestPromoteUser_Success() {
 	// Mock request and context
@@ -251,9 +249,6 @@ func (suite *UserControllerTestSuite) TestPromoteUser_Unauthorized() {
 	// Assert that the mock was called with the correct parameters
 	suite.mockUserUsecase.AssertCalled(suite.T(), "PromoteandDemoteUser", mock.Anything, userID, promotionRequest, role)
 }
-
-
-
 
 func TestUserControllerTestSuite(t *testing.T) {
 	suite.Run(t, new(UserControllerTestSuite))

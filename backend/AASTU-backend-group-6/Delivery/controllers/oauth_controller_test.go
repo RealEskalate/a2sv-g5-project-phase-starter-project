@@ -2,7 +2,7 @@ package controllers_test
 
 import (
 	domain "blogs/Domain"
-	controllers "blogs/delivery/controllers"
+	controllers "blogs/Delivery/controllers"
 	"blogs/mocks"
 	"net/http"
 	"net/http/httptest"
@@ -28,7 +28,6 @@ func (suite *OauthControllerTestSuite) SetupTest() {
 		Config:       nil,
 	}
 }
-
 
 func (suite *OauthControllerTestSuite) TestGoogleAuth_Success() {
 	// Mock the OauthService to return a URL
@@ -57,7 +56,7 @@ func (suite *OauthControllerTestSuite) TestGoogleAuth_Success() {
 }
 
 // func (suite *OauthControllerTestSuite) TestGoogleCallback_Success() {
-// 	// Mocking the OauthUsecase and LoginService responses
+	// Mocking the OauthUsecase and LoginService responses
 // 	verifiedUser := domain.User{
 // 		Email:    "test@example.com",
 // 		Verified: true,
@@ -128,10 +127,6 @@ func (suite *OauthControllerTestSuite) TestGoogleAuth_Success() {
 // 	suite.mockLoginService.AssertCalled(suite.T(), "SaveAsActiveUser", mock.AnythingOfType("domain.ActiveUser"), "refreshToken", mock.Anything)
 // }
 
-
-
 func TestOauthControllerTestSuite(t *testing.T) {
 	suite.Run(t, new(OauthControllerTestSuite))
 }
-
-

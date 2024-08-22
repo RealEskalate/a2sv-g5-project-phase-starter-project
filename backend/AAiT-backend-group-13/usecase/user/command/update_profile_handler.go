@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/google/uuid"
 	er "github.com/group13/blog/domain/errors"
 	ihash "github.com/group13/blog/domain/i_hash"
 	"github.com/group13/blog/domain/models"
@@ -21,62 +22,55 @@ type UpdateProfileHandler struct {
 	emailService iemail.Service
 }
 
-
 var _ icmd.IHandler[*UpdateProfileCommand, *result.UpdateProfileResult] = &UpdateProfileHandler{}
 
 // NewUpdateProfileHandler creates a new UpdateProfileHandler instance.
 func NewUpdateProfileHandler(repo irepo.UserRepository, hashService ihash.Service, emailService iemail.Service) *UpdateProfileHandler {
 	return &UpdateProfileHandler{
-		repo: repo,
-		hashService: hashService,
+		repo:         repo,
+		hashService:  hashService,
 		emailService: emailService,
 	}
 }
 
-// Handle handles the UpdateProfileCommand and returns the result.
 func (h *UpdateProfileHandler) Handle(command *UpdateProfileCommand) (*result.UpdateProfileResult, error) {
-	user, err := h.repo.FindByUsername(command.Username)
+	log.Println("Handling UpdateProfileCommand")
+
+	// Parse the user ID from the command
+	userID, err := uuid.Parse(command.userid)
 	if err != nil {
+		log.Printf("Error parsing user ID: %v", err)
+		return &result.UpdateProfileResult{}, er.NewUnexpected("failed to parse user ID")
+	}
+
+	// Fetch the user by ID
+	user, err := h.repo.FindById(userID)
+	if err != nil {
+		log.Printf("Error finding user by ID: %v", err)
 		return &result.UpdateProfileResult{}, err
 	}
 
 	if user == nil {
+		log.Println("User not found by ID")
 		return &result.UpdateProfileResult{}, er.UserNotFound
 	}
 
-	if user.Email() != command.Email {
-		return &result.UpdateProfileResult{}, er.NewConflict("Another acc exists with this email Please use the other account")
-	}
+	// Check if the new email is available
+	if command.Email != "" {
+		otherUser, err := h.repo.FindByEmail(command.Email)
+		if err != nil && err != er.UserNotFound {
+			log.Printf("Error checking new email: %v", err)
+			return &result.UpdateProfileResult{}, err
+		} 
 
-	user, err = h.repo.FindByEmail(command.Email)
-	if err != nil {
-		return &result.UpdateProfileResult{}, err
-	}
-	
-	if user == nil {
-		return &result.UpdateProfileResult{}, er.UserNotFound
-	}
+		if otherUser != nil {
+			log.Println("Conflict: Another account exists with this email")
+			return &result.UpdateProfileResult{}, er.NewConflict("Another account exists with this email. Please use the other account")
+		}
 
-	if user.Username() != command.Username {
-		return &result.UpdateProfileResult{}, er.NewConflict("Username taken")
-	}
-	if command.FirstName != ""{
-		user.UpdateFirstName(command.FirstName)
-	}
-
-	if command.LastName != ""{
-		user.UpdateLastName(command.LastName)
-	}
-
-	if command.Password != ""{
-		user.UpdatePassword(command.Password, h.hashService)
-	}
-	if command.Username != ""{
-		user.UpdateUsername(command.Username)
-	}
-	if command.Email != ""{
-
+		log.Println("Updating email")
 		user.UpdateEmail(command.Email)
+
 		// Generate a validation link
 		validationLink, err := h.generateValidationLink(*user)
 		if err != nil {
@@ -93,19 +87,58 @@ func (h *UpdateProfileHandler) Handle(command *UpdateProfileCommand) (*result.Up
 			return &result.UpdateProfileResult{}, err
 		}
 		log.Println("Sign-up email sent")
+	} else {
+		user.UpdateEmail(command.Email)
 	}
-	user.MakeInactive()
-	
-	err  = h.repo.Save(user)
+
+	// Check if the new username is available
+	if command.Username != "" {
+		otherUser, err := h.repo.FindByUsername(command.Username)
+		if err != nil && err != er.UserNotFound {
+			log.Printf("Error finding user by username: %v", err)
+			return &result.UpdateProfileResult{}, err
+		}
+
+		if otherUser != nil {
+			log.Println("Conflict: Username taken")
+			return &result.UpdateProfileResult{}, er.NewConflict("Username taken")
+		}
+
+		log.Println("Updating username")
+		user.UpdateUsername(command.Username)
+	}
+
+	// Update other fields
+	if command.FirstName != "" {
+		log.Println("Updating first name")
+		user.UpdateFirstName(command.FirstName)
+	} 
 	
 
+	if command.LastName != "" {
+		log.Println("Updating last name")
+		user.UpdateLastName(command.LastName)
+	}
+
+	if command.Password != "" {
+		log.Println("Updating password")
+		user.UpdatePassword(command.Password, h.hashService)
+	}
+	user.MakeInactive()
+
+	// Save the updated user profile
+	err = h.repo.Save(user)
 	if err != nil {
+		log.Printf("Error saving user: %v", err)
 		return &result.UpdateProfileResult{}, err
 	}
+
+	log.Println("Profile updated successfully")
 	message := "Profile updated successfully"
 	res := result.NewUpdateProfileResult(message)
 	return &res, nil
 }
+
 
 
 func (h *UpdateProfileHandler) generateValidationLink(user models.User) (string, error) {
@@ -126,9 +159,3 @@ func (h *UpdateProfileHandler) generateValidationLink(user models.User) (string,
 	log.Printf("Validation link generated: %s", validationLink)
 	return validationLink, nil
 }
-
-
-
-
-
-

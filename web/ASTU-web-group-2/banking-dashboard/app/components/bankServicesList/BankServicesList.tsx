@@ -6,16 +6,12 @@ import BankServiceMobile, {
 } from "../bankService/BankServiceMobile";
 import { useGetBankServiceQuery } from "@/lib/service/BankService";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 const BankServicesList = () => {
-  const router = useRouter();
 
   const { data: session, status } = useSession();
 
   useEffect(() => {}, [session, status]);
-
-  if (!session?.user) router.push("/login");
 
   const accessToken = session?.user.accessToken!;
 

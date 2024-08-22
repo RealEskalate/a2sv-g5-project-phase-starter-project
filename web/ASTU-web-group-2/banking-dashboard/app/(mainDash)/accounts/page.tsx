@@ -69,12 +69,10 @@ const AccountsPage = () => {
   if (isLoadingAllCards || isLoadingCardInfo) {
     return (
       <div>
-        <div className="flex space-x-2 justify-center items-center bg-white h-screen">
-         </div>
+        <div className="flex space-x-2 justify-center items-center bg-white h-screen"></div>
       </div>
     );
   }
-
 
   if (isErrorAllCards || isErrorCardInfo) {
     return <div>Error loading data</div>;
@@ -116,27 +114,26 @@ const AccountsPage = () => {
               ))}
             </div>
           ) : (
-            <div>
-              <div className="flex space-x-2 justify-center items-center bg-white h-screen">
-                <span className="sr-only">Loading...</span>
-                <div className="h-8 w-8 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                <div className="h-8 w-8 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                <div className="h-8 w-8 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 rounded-full animate-bounce"></div>
+            <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-full bg-white animate-pulse rounded-[25px]">
+              <div className="flex flex-row gap-2">
+                <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+                <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
+                <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
               </div>
             </div>
           )}
         </CardForCreditCards>
       </div>
-      <div className="flex max-sm:flex-col justify-between">
+      <div className="grid lg:grid-cols-[3fr_2fr] max-md:grid-cols-1 gap-7 p-4 w-auto">
         <Card
           title="Debit & Credit Overview"
-          className="flex flex-col lg:w-[730px] w-[350px]"
+          className="w-full"
         >
           <DebitCreditOverviewChart />
         </Card>
         <Card
           title="Invoices Sent"
-          className="flex flex-col lg:w-[350px] lg:h-[300px] max-md:w-[350px]"
+          className="w-full"
         >
           <InvoicesSent />
         </Card>

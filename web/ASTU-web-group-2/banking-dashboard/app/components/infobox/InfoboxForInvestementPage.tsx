@@ -13,8 +13,6 @@ const InfoboxForInvestementPage = () => {
 
   useEffect(() => {}, [session, status]);
 
-  if (!session?.user) router.push("/login");
-
   const accessToken = session?.user.accessToken!;
 
   const { data: res, isLoading } = useGetInvestmentHistoryQuery(accessToken);

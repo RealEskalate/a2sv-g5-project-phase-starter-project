@@ -94,7 +94,7 @@ function DebitCreditOverviewChart() {
 
   return (
     <div className="text-gray-500 rounded-[22px] bg-white">
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between px-[5%]">
         <div className="flex flex-col mx-5 mt-5">
           <div className="text-black text-[9px] md:text-[12px] lg:text-[14px] font-light">
             $7,560 Debited & $5,420 Credited in this Week
@@ -109,8 +109,8 @@ function DebitCreditOverviewChart() {
           <div className="">Credit</div>
         </div>
       </div>
-      <div className="weekly-activity-chart h-[263px] w-full flex justify-center">
-        <canvas ref={chartRef} />
+      <div className="h-[263px] w-[100%] flex justify-center">
+        <canvas ref={chartRef} className="w-full h-full]"/>
       </div>
     </div>
   );

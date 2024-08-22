@@ -1,6 +1,7 @@
 import  { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { JWT } from "next-auth/jwt"; 
+
 const authOptions:AuthOptions = {
 	providers: [
 		CredentialsProvider({
@@ -11,7 +12,7 @@ const authOptions:AuthOptions = {
 			},
 			async authorize(credentials) {
 				const res = await fetch(
-					"https://bank-dashboard-1tst.onrender.com/auth/login",
+					"https://bank-dashboard-o9tl.onrender.com/auth/login",
 					{
 						method: "POST",
 						headers: {
@@ -47,7 +48,7 @@ const authOptions:AuthOptions = {
 				session.user.accessToken = token.accessToken;
 				session.user.refreshToken = token.refreshToken;
 			}
-			// console.log("sesssssssssss: ", session);
+			console.log("sesssssssssss: ", session);
 			return session;
 		},
 		async jwt({ token, user }: { token: JWT; user }) {

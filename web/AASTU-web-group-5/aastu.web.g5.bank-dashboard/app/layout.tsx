@@ -5,7 +5,7 @@ import { Inter } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { store, persistor } from "./redux/store";
+import { store  } from "./redux/store";
 import "./globals.css";
 import NavBar from "./components/common/navBar";
 import SideBar from "./components/common/sideBar";

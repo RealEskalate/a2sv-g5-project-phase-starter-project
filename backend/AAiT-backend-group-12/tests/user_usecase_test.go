@@ -4,10 +4,13 @@ import (
 	"blog_api/domain"
 	"blog_api/mocks"
 	"blog_api/usecase"
+	"context"
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -27,11 +30,11 @@ var TEST_USER = domain.User{
 type UserUsecaseTestSuite struct {
 	suite.Suite
 	Usecase             usecase.UserUsecase
-	mockUserRepository  domain.UserRepositoryInterface
-	mockCacheRepository domain.CacheRepositoryInterface
-	mockMailService     domain.MailServiceInterface
-	mockHashService     domain.HashingServiceInterface
-	mockJWTService      domain.JWTServiceInterface
+	mockUserRepository  *mocks.UserRepositoryInterface
+	mockCacheRepository *mocks.CacheRepositoryInterface
+	mockMailService     *mocks.MailServiceInterface
+	mockHashService     *mocks.HashingServiceInterface
+	mockJWTService      *mocks.JWTServiceInterface
 	GenerateToken       func(int) (string, error)
 	VerifyIdToken       func(string, string, string) error
 	DeleteFile          func(string) error
@@ -256,6 +259,96 @@ func (suite *UserUsecaseTestSuite) TestSanitizeAndValidateNewUser_Negative_Inval
 	suite.NotNil(err, "error should not be nil")
 	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
 	suite.Contains(err.Error(), "PhoneNumber")
+}
+
+func (suite *UserUsecaseTestSuite) TestGetVerificationData_Positive() {
+	verificationType := "verification_type"
+	expiresAt := time.Now().Round(0).Add(time.Hour)
+	tokenLength := 10
+
+	verificationData, err := suite.Usecase.GetVerificationData(context.Background(), verificationType, expiresAt, tokenLength)
+	suite.Nil(err)
+	suite.Equal(verificationData.Type, verificationType)
+	suite.Equal(verificationData.ExpiresAt, expiresAt)
+	suite.LessOrEqual(0, len(verificationData.Token))
+}
+
+func (suite *UserUsecaseTestSuite) TestSignup_Positive() {
+	user := TEST_USER
+
+	suite.Usecase.SanitizeAndValidateNewUser(&user)
+	mail := "mail_template"
+	hostUrl := "host_url"
+	suite.mockHashService.On("HashString", user.Password).Return("hashed_str", nil).Once()
+	suite.mockUserRepository.On("CreateUser", context.Background(), mock.AnythingOfType("*domain.User")).Return(nil).Once()
+	genToken, _ := suite.GenerateToken(32)
+	suite.mockMailService.On("EmailVerificationTemplate", mock.AnythingOfType("string"), user.Username, genToken).Return(mail).Once()
+	suite.mockMailService.On("SendMail", mock.AnythingOfType("string"), user.Email, mail).Return(nil).Once()
+
+	err := suite.Usecase.Signup(context.Background(), &user, hostUrl)
+	suite.Nil(err)
+
+	// check the updated values
+	suite.False(user.IsVerified)
+	suite.NotEqual("", user.VerificationData.Token)
+	suite.GreaterOrEqual(user.CreatedAt, time.Now().Add(-1*time.Minute))
+	suite.GreaterOrEqual(user.VerificationData.ExpiresAt, time.Now())
+	suite.NotEqual(user.Password, TEST_USER.Password)
+	suite.Equal(user.Role, domain.RoleUser)
+
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestSignup_Negative_HashError() {
+	user := TEST_USER
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	hostUrl := "host_url"
+	suite.mockHashService.On("HashString", user.Password).Return("hashed_str", sampleErr).Once()
+
+	uErr := suite.Usecase.Signup(context.Background(), &user, hostUrl)
+
+	suite.NotNil(uErr, "error during hash")
+	suite.Equal(uErr.GetCode(), domain.ERR_INTERNAL_SERVER)
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestSignup_Negative_RepositoryErr() {
+	user := TEST_USER
+
+	hostUrl := "host_url"
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockHashService.On("HashString", user.Password).Return("hashed_str", nil).Once()
+	suite.mockUserRepository.On("CreateUser", context.Background(), mock.AnythingOfType("*domain.User")).Return(sampleErr).Once()
+
+	err := suite.Usecase.Signup(context.Background(), &user, hostUrl)
+	suite.NotNil(err, "error during repository call")
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestSignup_Negative_MailError() {
+	user := TEST_USER
+
+	suite.Usecase.SanitizeAndValidateNewUser(&user)
+	mail := "mail_template"
+	hostUrl := "host_url"
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockHashService.On("HashString", user.Password).Return("hashed_str", nil).Once()
+	suite.mockUserRepository.On("CreateUser", context.Background(), mock.AnythingOfType("*domain.User")).Return(nil).Once()
+	suite.mockUserRepository.On("DeleteUser", context.Background(), user.Username).Return(nil).Once()
+
+	genToken, _ := suite.GenerateToken(32)
+	suite.mockMailService.On("EmailVerificationTemplate", mock.AnythingOfType("string"), user.Username, genToken).Return(mail).Once()
+	suite.mockMailService.On("SendMail", mock.AnythingOfType("string"), user.Email, mail).Return(sampleErr).Once()
+
+	err := suite.Usecase.Signup(context.Background(), &user, hostUrl)
+	suite.NotNil(err, "error during mail send")
+	suite.Equal(err.GetCode(), domain.ERR_INTERNAL_SERVER)
+
+	suite.mockUserRepository.AssertExpectations(suite.T())
 }
 
 func TestUserUsecase(t *testing.T) {

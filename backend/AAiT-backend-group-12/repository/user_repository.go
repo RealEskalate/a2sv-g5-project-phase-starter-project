@@ -128,7 +128,7 @@ func (r *UserRepository) UpdateUser(c context.Context, username string, user *dt
 	}
 
 	// return the name of the file if the profile picture is local
-	if user.ProfilePicture.IsLocal {
+	if foundUser.ProfilePicture.IsLocal {
 		return updatedData, foundUser.ProfilePicture.FileName, nil
 	}
 

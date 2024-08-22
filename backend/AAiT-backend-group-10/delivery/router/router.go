@@ -14,13 +14,23 @@ import (
 func NewRouter(db *mongo.Database) {
 	router := gin.Default()
 
+	//load email configuration from .env
+	email := os.Getenv("EMAIL")
+	password := os.Getenv("EMAIL_PASSWORD")
+	username := os.Getenv("EMAIL_USERNAME")
+	host := os.Getenv("EMAIL_HOST")
+
 	jwtService := infrastructures.JwtService{JwtSecret: os.Getenv("JWT_SECRET")}
 
 	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
 
-	jwt := infrastructures.Jwt{JwtSecret: os.Getenv("JWT_SECRET")}
 	pwdService := infrastructures.PwdService{}
-	emailService := infrastructures.EmailService{}
+	emailService := infrastructures.EmailService{
+		AppEmail:    email,
+		AppPass: 	 password,
+		AppUsername: username,
+		AppHost:     host,
+	}
 
 	blogRepo := repositories.NewBlogRepository(db, os.Getenv("BLOG_COLLECTION"))
 	blogUseCase := usecases.NewBlogUseCase(blogRepo, userRepo)
@@ -28,7 +38,7 @@ func NewRouter(db *mongo.Database) {
 
 	commentRepo := repositories.NewCommentRepository(db, os.Getenv("COMMENT_COLLECTION_NAME"))
 	commentController := controllers.CommentController{
-		CommentUsecase: usecases.NewCommentUsecase(commentRepo),
+		CommentUsecase: usecases.NewCommentUsecase(commentRepo, userRepo),
 	}
 
 	likeRepo := repositories.NewLikeRepository(db, os.Getenv("LIKE_COLLECTION_NAME"))
@@ -36,7 +46,7 @@ func NewRouter(db *mongo.Database) {
 		LikeUseCase: usecases.NewLikeUseCase(likeRepo),
 	}
 
-	authUsecases := usecases.NewAuthUsecase(userRepo, jwt, pwdService, emailService)
+	authUsecases := usecases.NewAuthUsecase(userRepo, jwtService, pwdService, emailService)
 	authController := controllers.NewAuthController(authUsecases, controllers.GoogleOAuthConfig)
 
 	userUseCase := usecases.NewUserUseCase(userRepo)
@@ -51,20 +61,18 @@ func NewRouter(db *mongo.Database) {
 	router.GET("/blogs/search", infrastructures.AuthMiddleware(&jwtService), blogController.SearchBlogs)
 
 	router.PATCH("/users/promote", infrastructures.AuthMiddleware(&jwtService), infrastructures.AdminMiddleWare(), userController.PromoteUser)
+	router.PUT("/users/:id", infrastructures.AuthMiddleware(&jwtService), userController.UpdateProfile)
 
 	router.GET("/comment/:blog_id", infrastructures.AuthMiddleware(&jwtService), commentController.GetComments)
-	router.GET("/comment_count/:blog_id", infrastructures.AuthMiddleware(&jwtService), commentController.GetCommentsCount)
 	router.POST("/comment", infrastructures.AuthMiddleware(&jwtService), commentController.AddComment)
 	router.PUT("/comment/:id", infrastructures.AuthMiddleware(&jwtService), commentController.UpdateComment)
-	router.DELETE("/comment/:id", infrastructures.AuthMiddleware(&jwtService), commentController.DelelteComment)
+	router.DELETE("/comment/:id", infrastructures.AuthMiddleware(&jwtService), commentController.DeleteComment)
 
 	router.PUT("/like", infrastructures.AuthMiddleware(&jwtService), likeController.LikeBlog)
 	router.DELETE("/like", infrastructures.AuthMiddleware(&jwtService), likeController.DeleteLike)
-	router.GET("/like/:blog_id", infrastructures.AuthMiddleware(&jwtService), likeController.BlogLikeCount)
 
 	router.POST("/register", authController.Register)
 	router.POST("/login", authController.Login)
-	router.POST("/refresh", authController.RefreshToken)
 	router.POST("/refresh-token", authController.RefreshToken)
 	router.POST("/forgot-password", authController.ForgotPassword)
 	router.POST("/reset-password", authController.ResetPassword)

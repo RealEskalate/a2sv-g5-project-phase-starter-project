@@ -28,7 +28,7 @@ import (
 	blogcmd "github.com/group13/blog/usecase/blog/command"
 	blogqry "github.com/group13/blog/usecase/blog/query"
 	passwordreset "github.com/group13/blog/usecase/password_reset"
-	geminiService "github.com/group13/blog/usecase/ai_recommendation/command"
+	geminiService "github.com/group13/blog/usecase/ai_recommendation/query"
 	usercmd "github.com/group13/blog/usecase/user/command"
 	userqry "github.com/group13/blog/usecase/user/query"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -45,7 +45,6 @@ func main() {
 	cacheClient := initCache(cfg)
 	geminiModel := initGeminiClient(cfg)
 
-	recommendationHandler := geminiService.NewReccomendationHandler(geminiModel)
 	// Initialize services
 	userRepo, blogRepo, _, _ := initRepos(cfg, mongoClient)
 	jwtService := jwt.New(
@@ -60,7 +59,8 @@ func main() {
 	// init controllers
 	userController := initUserController(userRepo, hashService, jwtService, emailService)
 	blogController := initBlogController(blogRepo, cacheClient)
-	geminiController := initGeminiController(recommendationHandler)
+	geminiController := initGeminiController(geminiService.NewReccomendationHandler(geminiModel))
+	
 	// Router configuration
 	routerConfig := router.Config{
 		Addr:        fmt.Sprintf(":%s", cfg.ServerPort),
@@ -134,7 +134,7 @@ func initGeminiClient(cfg config.Config) *genai.GenerativeModel{
 	model.SetTemperature(0.9)
 	model.SetTopP(0.5)
 	model.SetTopK(20)
-	model.SetMaxOutputTokens(30)
+	model.SetMaxOutputTokens(100)
 	return model
 
 

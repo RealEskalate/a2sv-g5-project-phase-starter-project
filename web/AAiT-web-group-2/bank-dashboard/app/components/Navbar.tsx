@@ -2,7 +2,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { FiMenu } from "react-icons/fi";
+// import { FiMenu } from "react-icons/fi";
 
 
 
@@ -14,7 +14,7 @@ const Navbar = ({onMenuClick}: {onMenuClick: () => void}) => {
   return (
     <div className="flex justify-between items-center  h-24 px-3 ">
       <div className='text-2xl sm:hidden '>
-        <FiMenu onClick={onMenuClick} />
+        {/* <FiMenu onClick={onMenuClick} /> */}
 
       </div>
 

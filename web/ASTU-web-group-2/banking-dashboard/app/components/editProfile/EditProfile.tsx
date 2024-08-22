@@ -66,9 +66,8 @@ const EditProfile = () => {
         <div className="mb-6 relative flex justify-start gap-4">
           <ul className="flex justify-around list-none p-0">
             {tabs.map((tab, index) => (
-              <div className="flex flex-col">
+              <div key={index} className="flex flex-col">
                 <li
-                  key={index}
                   className={`cursor-pointer p-2 font-[500] text-[16px] ${
                     activeTab === index
                       ? "text-blue-700 font-bold"

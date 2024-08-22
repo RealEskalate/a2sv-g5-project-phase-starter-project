@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Navbar from "./Navbar";
-import Sidebar from "./Sidebar";
+import Navbar, { NavBarLoading } from "./Navbar";
+import Sidebar, { SidebarLoading } from "./Sidebar";
 import { getSession } from "next-auth/react";
-import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
+import Loading from "../accounts/components/Loading";
 
 interface Props {
   children: React.ReactNode;
@@ -12,46 +12,44 @@ interface Props {
 const Navigation: React.FC<Props> = ({ children }) => {
   const [toggle, setToggle] = useState(false);
   const [session, setSession] = useState(false);
-  // const [access_token, setAccess_token] = useState("");
-  
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchSession = async () => {
       const sessionData = await getSession();
       if (sessionData?.user) {
-        console.log("Session Available");
         setSession(true);
       }
+      setLoading(false);
     };
 
     fetchSession();
   }, []);
 
   return (
-    <div className="flex w-full overflow-x-hidden overflow-y-hidden">
-      {session ? (
-        <div className="z-50 bg-white">
-          <Sidebar
-            toggle={toggle}
-            handleClose={() => {
-              setToggle(!toggle);
-            }}
-          />
+    <>
+      {loading ? (
+        <div className="flex w-full">
+          <SidebarLoading />
+          <div className="flex flex-col w-full">
+            <div className="flex w-full">
+              <NavBarLoading />
+            </div>
+            <Loading />
+          </div>
         </div>
       ) : (
-        <>
-          <div className="hidden md:flex md:flex-col md:gap-5 py-7 border-r h-svh sticky top-0 animate-pulse">
-            <div className="px-5 py-2">
-              <div className="bg-gray-300 w-44 h-9 rounded"></div>
+        <div className="flex w-full">
+          {session && (
+            <div className="z-50 bg-white">
+              <Sidebar
+                toggle={toggle}
+                handleClose={() => {
+                  setToggle(!toggle);
+                }}
+              />
             </div>
-            <div className="flex flex-col gap-4 px-5">
-              <div className="bg-gray-300 w-40 h-20 rounded"></div>
-              <div className="bg-gray-300 w-40 h-20 rounded"></div>
-              <div className="bg-gray-300 w-40 h-20 rounded"></div>
-              <div className="bg-gray-300 w-40 h-20 rounded"></div>
-              <div className="bg-gray-300 w-40 h-20 rounded"></div>
-            </div>
-          </div>
-
+          )}
           {toggle && (
             <div className="md:hidden flex animate-pulse">
               <div
@@ -76,57 +74,22 @@ const Navigation: React.FC<Props> = ({ children }) => {
               </div>
             </div>
           )}
-        </>
+
+          <div className="flex flex-col w-full">
+            {session && (
+              <div className="w-full bg-white md:sticky md:top-0 md:z-20">
+                <Navbar
+                  handleClick={() => {
+                    setToggle(!toggle);
+                  }}
+                />
+              </div>
+            )}
+            {children}
+          </div>
+        </div>
       )}
-
-      <div className="flex flex-col w-full">
-        {session ? (
-          <div className="w-full bg-white md:sticky md:top-0 md:z-20">
-            <Navbar
-              handleClick={() => {
-                setToggle(!toggle);
-              }}
-            />
-          </div>
-        ):(
-          <div className="flex flex-col gap-5 py-5 border-b px-10 animate-pulse">
-            <div className="flex gap-5 justify-between items-center">
-              <div className="text-2xl md:hidden">
-                <button>
-                  <div className="bg-gray-300 w-8 h-8 rounded-full"></div>
-                </button>
-              </div>
-              <div className="font-bold text-2xl bg-gray-300 rounded w-32 h-8"></div>
-
-              <div className="flex gap-20">
-                <div className="w-72 rounded-full hidden md:flex md:gap-2 bg-[#F5F7FA] text-sm font-normal py-3 px-8 ml-2 items-center">
-                  <div className="bg-gray-300 w-5 h-5 rounded-full"></div>
-                  <div className="bg-gray-300 h-6 w-full rounded-lg"></div>
-                </div>
-
-                <div className="hidden md:flex gap-5 text-xl md:items-center">
-                  <div className="cursor-pointer text-xl rounded-full px-2 py-2">
-                    <div className="bg-gray-200 w-5 h-5 rounded-full"></div>
-                  </div>
-                  <div className="cursor-pointer text-xl rounded-full px-2 py-2">
-                    <div className="w-5 h-5 rounded-full bg-gray-200"></div>
-                  </div>
-                </div>
-                <div className="items-center">
-                  <div className="bg-gray-300 w-9 h-9 rounded-full"></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex md:hidden rounded-full bg-[#F5F7FA] text-[#8BA3CB] text-sm font-normal gap-2 items-center py-3 px-4 ml-2">
-              <div className="bg-gray-300 w-5 h-5 rounded-lg"></div>
-              <div className="bg-gray-300 h-6 w-full rounded"></div>
-            </div>
-          </div>
-        )}
-        {children}
-      </div>
-    </div>
+    </>
   );
 };
 

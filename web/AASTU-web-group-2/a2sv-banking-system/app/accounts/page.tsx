@@ -53,9 +53,9 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [getCard, setGetCards] = useState<CardType[]>();
   const [currentUser, setCurrentUser] = useState<UserInfo>();
-  const [balance, setBalance] = useState(0)
-  const [income, setIncome] = useState(0);
-  const [expense, setExpense] = useState(0);
+  const [balance, setBalance] = useState("Loading...")
+  const [income, setIncome] = useState("Loading...");
+  const [expense, setExpense] = useState("Loading...");
 
   // Getting the session from the server and Access Token From Refresh
   useEffect(() => {
@@ -101,7 +101,7 @@ const Page = () => {
           (sum: number, item: any) => sum + item.amount,
           0
         );
-        setIncome(totalIncome);
+        setIncome(String(totalIncome));
 
         // Fetch Expense
         const expenseData = await getTransactionsExpenses(0, 1, access_token);
@@ -109,7 +109,7 @@ const Page = () => {
           (sum: number, item: any) => sum + item.amount,
           0
         );
-        setExpense(totalExpense);
+        setExpense(String(totalExpense));
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -223,22 +223,22 @@ const Page = () => {
       <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5">
         <div>
           <div className="flex flex-wrap gap-2">
-            {balance || balance == 0 ? (
+            {(balance || income == "Loading")? (
               <ListCard column={ReusableCard} width={"w-[48%] md:w-[23%]"} />
             ) : (
               <ListCardLoading></ListCardLoading>
             )}
-            {(income || income == 0 )? (
+            {(income || income == "Loading" )? (
               <ListCard column={card1} width={"w-[48%] md:w-[23%]"} />
             ) : (
               <ListCardLoading></ListCardLoading>
             )}
-            {(expense || expense == 0) ? (
+            {(expense || expense == "Loading") ? (
               <ListCard column={card2} width={"w-[48%] md:w-[23%]"} />
             ) : (
               <ListCardLoading></ListCardLoading>
             )}
-            {(balance || balance == 0) ? (
+            {(balance || balance == "Loading") ? (
               <ListCard column={card3} width={"w-[48%] md:w-[23%]"} />
             ) : (
               <ListCardLoading></ListCardLoading>

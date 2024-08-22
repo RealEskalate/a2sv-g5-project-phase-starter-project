@@ -32,11 +32,7 @@ func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 		}
 
 		iuser, _ := c.Get("user")
-
-		user := domain.User{}
-		if iuser != nil {
-			user = iuser.(domain.User)
-		}
+		user := iuser.(domain.User)
 		blg.ID = primitive.NewObjectID()
 		blog.Owner = user
 		createdBlog, err := bc.BlogUsecase.CreateBlog(blog)

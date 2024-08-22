@@ -1,4 +1,4 @@
-package domain
+ackage domain
 
 import (
 	"mime/multipart"
@@ -13,17 +13,10 @@ type UserUseCase interface {
 	Login(context *gin.Context, username, password string) (map[string]string, Error)
 	ForgotPassword(context *gin.Context, email string) Error
 	ResetPassword(cxt *gin.Context, newPassword, confirmPassword, token string) Error
-<<<<<<< HEAD
-	Logout(context context.Context, token map[string]string) Error
-	PromoteUser(context context.Context, userID string) Error
-	DemoteUser(cxt context.Context, userID string) Error
-	UpdateProfile(context context.Context, userID string, user *User) Error
-=======
 	Logout(cxt *gin.Context, token map[string]string) Error
 	PromoteUser(cxt *gin.Context, userID string) Error
 	DemoteUser(cxt *gin.Context, userID string) Error
 	UpdateProfile(cxt *gin.Context, userID string, user *User) Error
->>>>>>> e598bdcf (modified the user usecase to use a interface)
 	ImageUpload(cxt *gin.Context, file *multipart.File, header *multipart.FileHeader) Error
 }
 

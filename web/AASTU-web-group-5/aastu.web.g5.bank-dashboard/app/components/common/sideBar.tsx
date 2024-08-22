@@ -5,11 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { FaTimes } from "react-icons/fa";
 
-<<<<<<< HEAD
-import creditCard from "/public/assets/icons/credit-card 1.svg";	
-=======
 import creditCard from "/public/assets/icons/credit-card 1.svg";
->>>>>>> 47c7c1b40fcde3badf0bed7dd0af91ca77264d44
 import econometrics from "/public/assets/icons/econometrics 1.svg";
 import economicInvestment from "/public/assets/icons/economic-investment 1.svg";
 import enabledHome from "/public/assets/icons/home 2.svg";
@@ -20,10 +16,6 @@ import settingsSolid from "/public/assets/icons/settings solid 1.svg";
 import transfer from "/public/assets/icons/transfer 1.svg";
 import user from "/public/assets/icons/user 3 1.svg";
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 47c7c1b40fcde3badf0bed7dd0af91ca77264d44
 import enabledCreditCard from "/public/assets/icons/enabled/credit-card 1.svg";
 import enabledEconometrics from "/public/assets/icons/enabled/econometrics 1.svg";
 import enabledEconomicInvestment from "/public/assets/icons/enabled/economic-investment 1.svg";
@@ -58,6 +50,7 @@ const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolea
                     <FaTimes size={24} />
                 </button>
             </div>
+
 
             <div className="flex flex-col gap-[42px]">
                 <SidebarItem

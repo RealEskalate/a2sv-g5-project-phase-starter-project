@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type TagUsecaseSuite struct {
@@ -43,9 +42,9 @@ func (suite *TagUsecaseSuite) TestCreateTag() {
 
 func (suite *TagUsecaseSuite) TestDeleteTag() {
 	c, _ := gin.CreateTestContext(nil)
-	id := primitive.NewObjectID()
+	slug := "fasdf"
 	suite.repo.On("DeleteTag", mock.Anything, mock.Anything).Return(nil, 200)
-	err, status := suite.tagUsecase.DeleteTag(c, id)
+	err, status := suite.tagUsecase.DeleteTag(c, slug)
 	suite.Nil(err)
 	suite.Equal(200, status)
 }

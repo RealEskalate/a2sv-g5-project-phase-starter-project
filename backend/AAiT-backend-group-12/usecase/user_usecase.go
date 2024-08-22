@@ -152,7 +152,7 @@ func (u *UserUsecase) SanitizeAndValidateNewUser(user *domain.User) domain.Coded
 }
 
 /* Generates a verification struct with the provided fields */
-func (u *UserUsecase) GetVerificationData(c context.Context, username string, verificationType string, expiresAt time.Time, tokenLength int) (domain.VerificationData, domain.CodedError) {
+func (u *UserUsecase) GetVerificationData(c context.Context, verificationType string, expiresAt time.Time, tokenLength int) (domain.VerificationData, domain.CodedError) {
 	var verificationData domain.VerificationData
 	generatedToken, gErr := u.GenerateToken(tokenLength)
 	if gErr != nil {
@@ -183,7 +183,7 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 		return domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
-	verificationData, err := u.GetVerificationData(c, user.Username, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2), 32)
+	verificationData, err := u.GetVerificationData(c, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2), 32)
 	if err != nil {
 		return err
 	}
@@ -502,7 +502,7 @@ func (u *UserUsecase) VerifyEmail(c context.Context, username string, token stri
 	}
 
 	if user.VerificationData.ExpiresAt.Before(time.Now().Round(0)) {
-		verificationData, err := u.GetVerificationData(c, username, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2), 32)
+		verificationData, err := u.GetVerificationData(c, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2), 32)
 		if err != nil {
 			return err
 		}
@@ -539,7 +539,7 @@ func (u *UserUsecase) InitResetPassword(c context.Context, username string, emai
 		return domain.NewError("User email not verified", domain.ERR_UNAUTHORIZED)
 	}
 
-	verificationData, err := u.GetVerificationData(c, username, domain.ResetPasswordType, time.Now().Round(0).Add(time.Minute*10), 12)
+	verificationData, err := u.GetVerificationData(c, domain.ResetPasswordType, time.Now().Round(0).Add(time.Minute*10), 12)
 	if err != nil {
 		return err
 	}

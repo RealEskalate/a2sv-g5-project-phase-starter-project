@@ -13,6 +13,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+var MockUserData = []domain.User{
+	{Username: "testuser1", Email: "testuser1@gmail.com", Password: "password"},
+	{Username: "testuser2", Email: "testuser2@gmail.com", Password: "password"},
+	{Username: "testuser3", Email: "testuser3@gmail.com", Password: "password"},
+	{Username: "testuser4", Email: "testuser4@gmail.com", Password: "password"},
+	{Username: "testuser5", Email: "testuser5@gmail.com", Password: "password"},
+	{Username: "testuser6", Email: "testuser6@gmail.com", Password: "password"},
+}
+
 type UserRepositoryTestSuite struct {
 	suite.Suite
 	client         *mongo.Client
@@ -79,6 +88,60 @@ func (suite *UserRepositoryTestSuite) TestCreateUser_Negative_DuplicateEmail() {
 
 	suite.NotNil(err, "error when creating user with duplicate email")
 	suite.Equal(err.GetCode(), domain.ERR_CONFLICT, "error code is conflict")
+}
+
+func (suite *UserRepositoryTestSuite) TestCreateUser_Negative_DuplicateUsername() {
+	user := domain.User{
+		Username: "testuser",
+		Email:    "user@gmail.com",
+		Password: "password",
+	}
+
+	err := suite.UserRepository.CreateUser(context.Background(), &user)
+	suite.Nil(err, "no error when creating user")
+
+	newUser := domain.User{
+		Username: user.Username,
+		Email:    "newemail@gmail.com",
+		Password: "password",
+	}
+	err = suite.UserRepository.CreateUser(context.Background(), &newUser)
+
+	suite.NotNil(err, "error when creating user with duplicate username")
+	suite.Equal(err.GetCode(), domain.ERR_CONFLICT, "error code is conflict")
+}
+
+func (suite *UserRepositoryTestSuite) TestFindUser_Positive() {
+	for _, user := range MockUserData {
+		suite.UserRepository.CreateUser(context.Background(), &user)
+	}
+
+	// find by both email and username
+	for _, user := range MockUserData {
+		foundUser, err := suite.UserRepository.FindUser(context.Background(), &user)
+		suite.Nil(err, "no error when finding user")
+		suite.Equal(user.Username, foundUser.Username, "username matches")
+		suite.Equal(user.Email, foundUser.Email, "email matches")
+		suite.Equal(user.Password, foundUser.Password, "password matches")
+	}
+
+	// find by username
+	for _, user := range MockUserData {
+		foundUser, err := suite.UserRepository.FindUser(context.Background(), &domain.User{Username: user.Username})
+		suite.Nil(err, "no error when finding user")
+		suite.Equal(user.Username, foundUser.Username, "username matches")
+		suite.Equal(user.Email, foundUser.Email, "email matches")
+		suite.Equal(user.Password, foundUser.Password, "password matches")
+	}
+
+	// find by email
+	for _, user := range MockUserData {
+		foundUser, err := suite.UserRepository.FindUser(context.Background(), &domain.User{Email: user.Email})
+		suite.Nil(err, "no error when finding user")
+		suite.Equal(user.Username, foundUser.Username, "username matches")
+		suite.Equal(user.Email, foundUser.Email, "email matches")
+		suite.Equal(user.Password, foundUser.Password, "password matches")
+	}
 }
 
 func (suite *UserRepositoryTestSuite) TeardownSuite() {

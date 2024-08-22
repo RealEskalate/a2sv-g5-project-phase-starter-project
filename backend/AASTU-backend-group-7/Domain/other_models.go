@@ -11,8 +11,8 @@ type BlogCollections struct {
 	Tags          Collection
 }
 
-
 type Filter struct {
+	Title      string
 	Slug       string
 	AuthorName string
 	Page       int

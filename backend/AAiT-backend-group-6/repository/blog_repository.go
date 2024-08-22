@@ -5,6 +5,8 @@ import (
 	"AAiT-backend-group-6/mongo"
 	"context"
 
+	// "context"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -22,10 +24,10 @@ func NewBlogRepository(db mongo.Database, collection string) *blogRepository {
 	}
 }
 
-func (r *blogRepository) CreateBlog(c context.Context, blog *domain.Blog) error {
+func (r *blogRepository) CreateBlog(c context.Context, blog *domain.Blog) (domain.Blog, error) {
 	collection := r.database.Collection(r.collection)
 	_, err := collection.InsertOne(c, blog)
-	return err
+	return *blog, err
 }
 
 func (r *blogRepository) GetBlog(c context.Context, id string) (*domain.Blog, error) {
@@ -84,7 +86,7 @@ func (r *blogRepository) UpdateBlog(c context.Context, blog *domain.Blog) error 
 	collection := r.database.Collection(r.collection)
 
 	_, err := collection.UpdateOne(
-		context.Background(),
+		c,
 		bson.M{"_id": blog.ID},
 		bson.M{"$set": blog},
 	)

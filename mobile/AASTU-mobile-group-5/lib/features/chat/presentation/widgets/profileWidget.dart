@@ -6,8 +6,7 @@ class ProfileWidget extends StatelessWidget {
     return Container(
       child: Container(
         alignment: Alignment.center,
-        // width: 200,
-        // height: 200,
+        
         
         decoration:BoxDecoration(
           color: Colors.blue.shade300,
@@ -22,10 +21,10 @@ class ProfileWidget extends StatelessWidget {
                 width: 100,
                 height: 100,
                  child: Container(
-                  width: 50,
-                  height: 50,
+                  width: 600,
+                  height: 600,
                   child: Image.asset('assets/images/Alex.png',
-                  fit: BoxFit.cover, 
+                  fit: BoxFit.fill, 
                       width: double.infinity, 
                       height: double.infinity,
                   ),

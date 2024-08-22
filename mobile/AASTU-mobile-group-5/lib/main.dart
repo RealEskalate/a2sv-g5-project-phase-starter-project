@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'features/chat/presentation/widgets/profileWidget.dart';
 import 'features/product/domain/entities/product.dart';
 import 'features/product/domain/use_case/add_product.dart';
 import 'features/product/domain/use_case/delete_product.dart';
@@ -28,7 +29,7 @@ import 'service_locator.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setupLocator();
-  runApp(const MyApp());
+  runApp(ProfileWidget());
 }
 
 class MyApp extends StatelessWidget {

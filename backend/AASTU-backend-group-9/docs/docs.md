@@ -145,3 +145,4 @@ The Blog Starter Project is a backend API designed to power a blog platform. Thi
 
 This API documentation provides a detailed guide on how to interact with the Blog Starter Project API. All endpoints are documented with example requests and responses, error codes, and descriptions.
 
+https://documenter.getpostman.com/view/36737395/2sAXjDevNy

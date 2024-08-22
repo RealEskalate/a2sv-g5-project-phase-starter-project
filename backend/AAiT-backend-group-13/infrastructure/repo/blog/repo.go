@@ -3,8 +3,10 @@ package blogrepo
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/google/uuid"
+	er "github.com/group13/blog/domain/errors"
 	"github.com/group13/blog/domain/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -43,9 +45,16 @@ func (r *Repo) Save(blog *models.Blog) error {
 // Delete removes a blog by ID.
 func (r *Repo) Delete(id uuid.UUID) error {
 	filter := bson.M{"_id": id}
-	_, err := r.collection.DeleteOne(context.Background(), filter)
+	deleteResult, err := r.collection.DeleteOne(context.Background(), filter)
 	if err != nil {
-		return fmt.Errorf("error deleting blog: %w", err)
+		log.Println("Error deleting document:", err)
+		return err 
+	} else if deleteResult.DeletedCount == 0 {
+		log.Println("No documents were deleted. It might not exist.")
+		return er.BlogNotFound
+	} else {
+		log.Println("Document deleted successfully.")
+
 	}
 	return nil
 }

@@ -6,7 +6,6 @@ import (
 	"log"
 	
 	"strconv"
-	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/generative-ai-go/genai"

@@ -15,6 +15,9 @@ const config: Config = {
         "primary-color-500": "#2D60FF",
         "primary-color-800": "#343C6A",
       },
+      fontFamily: {
+        inter: ['Inter', 'sans-serif'],
+      },
     },
   },
   plugins: [],

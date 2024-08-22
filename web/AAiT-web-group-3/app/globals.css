@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* imports inter font from google fonts */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+
+
+.service_list_title{
+    @apply font-inter font-medium text-[#232323] text-[16px] leading-[19.36px]
+}
+.service_list_subtitle{
+    @apply font-inter text-[#718EBF] font-normal text-[15px] leading-[18.15px]
+}

@@ -19,6 +19,10 @@ type Config struct {
 	DBConnectionString     string        // Connection string for the database.
 	JWTSecret              string        // Secret key for JWT signing.
 	JWTExpirationInSeconds time.Duration // JWT expiration time.
+	Blog_cache_db          string
+	Blog_cache_expiry      time.Duration
+	Cache_host             string 
+	Cache_port             string
 }
 
 // Envs holds the loaded configuration values.
@@ -38,6 +42,10 @@ func initConfig() Config {
 		DBName:                 getEnv("DB_NAME", "taskdb"),
 		JWTSecret:              getEnv("JWT_SECRET", "not-so-secret-now-is-it?"),
 		JWTExpirationInSeconds: time.Duration(getTimeEnv("JWT_EXPIRATION_IN_SECONDS", 60*24)) * time.Second,
+		Blog_cache_db : 		getEnv("BLOG_CACHE_DB", "0"),
+		Blog_cache_expiry: 		time.Duration(getTimeEnv("BLOG_CACHE_EXPIRY", 60*60)) * time.Second,
+		Cache_host:				getEnv("CACHE_HOST", "localhost"),
+		Cache_port: 			getEnv("CACHE_PORT", "6379"),
 	}
 }
 

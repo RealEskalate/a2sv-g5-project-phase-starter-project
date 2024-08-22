@@ -6,14 +6,13 @@ import (
 	"strconv"
 	"time"
 
-	
-
 	"github.com/go-redis/redis/v8"
 	"github.com/group13/blog/config"
 	"github.com/group13/blog/delivery/common"
 	blogcontroller "github.com/group13/blog/delivery/controller/blog"
 	usercontroller "github.com/group13/blog/delivery/controller/user"
 	"github.com/group13/blog/delivery/router"
+	cache "github.com/group13/blog/infrastructure/cache"
 	db "github.com/group13/blog/infrastructure/database"
 	"github.com/group13/blog/infrastructure/email"
 	"github.com/group13/blog/infrastructure/hash"
@@ -24,11 +23,9 @@ import (
 	userrepo "github.com/group13/blog/infrastructure/repo/user"
 	blogcmd "github.com/group13/blog/usecase/blog/command"
 	blogqry "github.com/group13/blog/usecase/blog/query"
-	cache "github.com/group13/blog/infrastructure/cache"
 	passwordreset "github.com/group13/blog/usecase/password_reset"
 	usercmd "github.com/group13/blog/usecase/user/command"
 	userqry "github.com/group13/blog/usecase/user/query"
-	cache "github.com/group13/blog/usecase/common/i_cache"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -94,7 +91,7 @@ func initRepos(cfg config.Config, mongoClient *mongo.Client) (*userrepo.Repo, *b
 	return userRepo, blogRepo, commentRepo, reactionRepo
 }
 
-func initCache(cfg config.Config) *cache.RedisCache  {
+func initCache(cfg config.Config) *cache.RedisCache {
 	host, err := strconv.ParseInt(cfg.Cache_port, 10, 32)
 	if err != nil {
 		log.Fatalf("Error parsing cache db: %v", err)

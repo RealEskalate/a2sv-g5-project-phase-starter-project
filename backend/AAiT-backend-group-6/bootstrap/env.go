@@ -10,6 +10,8 @@ import (
 )
 
 type Env struct {
+	GEMINIAPIKEY		   string `mapstructure:"GEMINIAPIKEY"`
+	REDISADDR              string `mapstructure:"REDISADDR"`
 	AppEnv                 string `mapstructure:"APP_ENV"`
 	ServerAddress          string `mapstructure:"SERVER_ADDRESS"`
 	ContextTimeout         int    `mapstructure:"CONTEXT_TIMEOUT"`
@@ -50,7 +52,7 @@ func NewEnv() *Env {
 func setEnv(envStruct *Env) error{
 	val := reflect.ValueOf(envStruct).Elem()
 	typ := val.Type()
-	for i := range typ.NumField() {
+	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
 		envKey := field.Tag.Get("mapstructure")
 

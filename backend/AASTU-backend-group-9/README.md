@@ -1,15 +1,57 @@
-# Blog Project
-
-Welcome to the BLog API Project! This repository contains the backend Api for Blog project, developed by multiple groups. The project aims to provide a comprehensive solution for managing blogs and user interactions.
-
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [Getting Started](#getting-started)
+# Blog Starter Project
 
 ## Introduction
 
-The Blog Starter Project is designed to develop a backend API for a blog platform. This platform allows users to create, read, update, and delete blog posts, manage profiles, perform advanced searches, and leverage AI for content suggestions. The API also integrates user authentication, authorization, and role management, ensuring secure and efficient operations.
+The **Blog Starter Project** is a backend API designed to power a comprehensive blog platform. This project provides a foundation for creating, managing, and interacting with blog content. It includes features like user authentication, blog management, advanced search and filtering, and AI-driven content suggestions.
+
+## Features
+
+- **User Authentication & Authorization:**
+  - User registration, login, and profile management.
+  - Role-based access control (admin/user).
+  - Secure JWT-based token management with access and refresh tokens.
+
+- **Blog Management:**
+  - CRUD operations for blog posts.
+  - Tagging, filtering, and search functionality.
+  - Blog popularity tracking with view counts, likes, dislikes, and comments.
+
+- **AI Integration:**
+  - AI-powered content suggestions based on user input.
+
+- **Advanced Features:**
+  - Pagination for efficient data retrieval.
+  - Profile management for users.
+  - Robust error handling and validation.
+
+## Tech Stack
+
+- **Programming Language:** Go
+- **Framework:** Gin
+- **Database:** MongoDB
+- **Authentication:** JWT (JSON Web Tokens)
+- **Documentation:** Postman
+
+### Key Components:
+
+- **Delivery:** Contains the controllers and routers, handling HTTP requests and responses.
+- **Domain:** Contains the core business logic and domain models.
+- **Infrastructure:** Handles external services and infrastructure-related code such as authentication and database connections.
+- **Repositories:** Implements the data access layer, interacting with the MongoDB database.
+- **Usecases:** Contains the application-specific business logic.
+
+## Getting Started
+
+### Prerequisites
+
+- Go 1.19 or higher
+- MongoDB
+- Postman (for API testing)
+
+API Documentation
+The API is documented using Postman. You can import the Postman collection to explore the endpoints.
+
+https://documenter.getpostman.com/view/36737395/2sAXjDevNy
 
 ## Getting Started
 
@@ -17,7 +59,7 @@ The Blog Starter Project is designed to develop a backend API for a blog platfor
 
 Before you begin, ensure you have the following installed on your machine:
 
-- [Go](https://golang.org/doc/install) (version 1.16 or higher)
+- [Go](https://golang.org/doc/install) (version 1.19 or higher)
 - [MongoDB](https://www.mongodb.com/)
 
 ### Setup

@@ -1,25 +1,24 @@
 package route
 
 import (
-	delivery "AAiT-backend-group-6/delivery/controller"
+	"AAiT-backend-group-6/delivery/controller"
 	"AAiT-backend-group-6/domain"
 	"AAiT-backend-group-6/mongo"
+	"AAiT-backend-group-6/redis"
 	"AAiT-backend-group-6/repository"
 	"AAiT-backend-group-6/usecase"
 
 	"github.com/gin-gonic/gin"
 )
 
-func NewBlogRouter(db mongo.Database, gin *gin.Engine) {
+func NewBlogRouter(db mongo.Database, gin *gin.Engine, redisClient redis.Client) {
 	tr := repository.NewBlogRepository(db, domain.CollectionBlogs)
-	tc := &delivery.BlogController{
-		BlogUsecase: usecase.NewBlogUseCase(
-			tr,
-		),
-	}
+	tu := usecase.NewBlogUseCase(tr)
+	tc := controller.NewBlogController(tu, redisClient)
+	
 	// protectedRoute := gin.Group("")
 	publicRoute := gin.Group("")
-	// protectedRoute.Use(infrastructure.AdminOnlyMiddleware(), infrastructure.JWTAuthMiddleware())
+	// protectedRoute.Use(infrastructure.AdminOnlMiddleware(), infrastructure.JWTAuthMiddleware())
 	publicRoute.GET("/blogs", tc.GetBlogs)
 	publicRoute.GET("/blogs/:id", tc.GetBlog)
 	publicRoute.POST("/blogs", tc.CreateBlog)

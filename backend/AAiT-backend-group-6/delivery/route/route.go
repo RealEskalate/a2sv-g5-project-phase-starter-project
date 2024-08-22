@@ -6,7 +6,6 @@ import (
 	"AAiT-backend-group-6/mongo"
 	"AAiT-backend-group-6/redis"
 	"time"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,7 +16,7 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db mongo.Database, gin *gi
 	NewLoginRouter(env, timeout, db, publicRouter)
 	NewAiRouter(env,timeout,db,publicRouter)
 
-	NewBlogRouter(db, gin)
+	NewBlogRouter(db, gin,redisClient)
 
 	protectedRouter := gin.Group("")
 	// Middleware to verify AccessToken

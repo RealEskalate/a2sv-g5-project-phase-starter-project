@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
-const API_BASE_URL = "https://bank-dashboard-6acc.onrender.com";
+
+const API_BASE_URL = "https://bank-dashboard-1tst.onrender.com";
 const token = Cookies.get('accessToken')
 // GET /bank-services/{id}
 export const getBankServiceById = async (id: any) => {
@@ -43,7 +44,6 @@ export const getAllBankServices = async () => {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
-     
     },
 
   });

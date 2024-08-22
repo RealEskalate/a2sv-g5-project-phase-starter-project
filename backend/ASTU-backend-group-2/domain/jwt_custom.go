@@ -5,8 +5,10 @@ import (
 )
 
 type JwtCustomClaims struct {
-	Name string `json:"name"`
-	ID   string `json:"id"`
+	Name    string `json:"name"`
+	Role    string `json:"role"`
+	IsOwner bool   `json:"is_owner"`
+	ID      string `json:"id"`
 	jwt.RegisteredClaims
 }
 

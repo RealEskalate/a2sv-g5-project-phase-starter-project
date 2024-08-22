@@ -1,10 +1,9 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageCaptureWidget extends StatefulWidget {
-  const ImageCaptureWidget({Key? key}) : super(key: key);
+  const ImageCaptureWidget({super.key});
 
   @override
   _ImageCaptureWidgetState createState() => _ImageCaptureWidgetState();

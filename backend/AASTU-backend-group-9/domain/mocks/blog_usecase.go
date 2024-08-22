@@ -16,13 +16,13 @@ type BlogUsecase struct {
 	mock.Mock
 }
 
-// AddComment provides a mock function with given fields: ctx, id, comment
-func (_m *BlogUsecase) AddComment(ctx context.Context, id primitive.ObjectID, comment *domain.Comment) error {
-	ret := _m.Called(ctx, id, comment)
+// AddComment provides a mock function with given fields: ctx, id, userID, comment
+func (_m *BlogUsecase) AddComment(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID, comment *domain.Comment) error {
+	ret := _m.Called(ctx, id, userID, comment)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, *domain.Comment) error); ok {
-		r0 = rf(ctx, id, comment)
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, primitive.ObjectID, *domain.Comment) error); ok {
+		r0 = rf(ctx, id, userID, comment)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -60,6 +60,20 @@ func (_m *BlogUsecase) DeleteBlog(ctx context.Context, id primitive.ObjectID) er
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) error); ok {
 		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// DeleteComment provides a mock function with given fields: ctx, post_id, comment_id, userID
+func (_m *BlogUsecase) DeleteComment(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID) error {
+	ret := _m.Called(ctx, post_id, comment_id, userID)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, primitive.ObjectID, primitive.ObjectID) error); ok {
+		r0 = rf(ctx, post_id, comment_id, userID)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -182,22 +196,45 @@ func (_m *BlogUsecase) GetBlogByID(ctx context.Context, id primitive.ObjectID) (
 	return r0, r1
 }
 
-// SearchBlogs provides a mock function with given fields: ctx, query, filters
-func (_m *BlogUsecase) SearchBlogs(ctx context.Context, query string, filters *domain.BlogFilters) ([]*domain.BlogResponse, error) {
-	ret := _m.Called(ctx, query, filters)
+// GetComments provides a mock function with given fields: ctx, post_id
+func (_m *BlogUsecase) GetComments(ctx context.Context, post_id primitive.ObjectID) (*domain.Comment, error) {
+	ret := _m.Called(ctx, post_id)
 
-	var r0 []*domain.BlogResponse
-	if rf, ok := ret.Get(0).(func(context.Context, string, *domain.BlogFilters) []*domain.BlogResponse); ok {
-		r0 = rf(ctx, query, filters)
+	var r0 *domain.Comment
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) *domain.Comment); ok {
+		r0 = rf(ctx, post_id)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.BlogResponse)
+			r0 = ret.Get(0).(*domain.Comment)
 		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, string, *domain.BlogFilters) error); ok {
-		r1 = rf(ctx, query, filters)
+	if rf, ok := ret.Get(1).(func(context.Context, primitive.ObjectID) error); ok {
+		r1 = rf(ctx, post_id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// SearchBlogs provides a mock function with given fields: ctx, title, author
+func (_m *BlogUsecase) SearchBlogs(ctx context.Context, title string, author string) (*[]domain.Blog, error) {
+	ret := _m.Called(ctx, title, author)
+
+	var r0 *[]domain.Blog
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *[]domain.Blog); ok {
+		r0 = rf(ctx, title, author)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*[]domain.Blog)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, title, author)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -206,11 +243,11 @@ func (_m *BlogUsecase) SearchBlogs(ctx context.Context, query string, filters *d
 }
 
 // TrackDislike provides a mock function with given fields: ctx, id, userID
-func (_m *BlogUsecase) TrackDislike(ctx context.Context, id primitive.ObjectID, userID string) error {
+func (_m *BlogUsecase) TrackDislike(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) error {
 	ret := _m.Called(ctx, id, userID)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, string) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, primitive.ObjectID) error); ok {
 		r0 = rf(ctx, id, userID)
 	} else {
 		r0 = ret.Error(0)
@@ -220,11 +257,11 @@ func (_m *BlogUsecase) TrackDislike(ctx context.Context, id primitive.ObjectID, 
 }
 
 // TrackLike provides a mock function with given fields: ctx, id, userID
-func (_m *BlogUsecase) TrackLike(ctx context.Context, id primitive.ObjectID, userID string) error {
+func (_m *BlogUsecase) TrackLike(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) error {
 	ret := _m.Called(ctx, id, userID)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, string) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, primitive.ObjectID) error); ok {
 		r0 = rf(ctx, id, userID)
 	} else {
 		r0 = ret.Error(0)
@@ -268,6 +305,20 @@ func (_m *BlogUsecase) UpdateBlog(ctx context.Context, id primitive.ObjectID, bl
 	}
 
 	return r0, r1
+}
+
+// UpdateComment provides a mock function with given fields: ctx, post_id, comment_id, userID, comment
+func (_m *BlogUsecase) UpdateComment(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID, comment *domain.Comment) error {
+	ret := _m.Called(ctx, post_id, comment_id, userID, comment)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, primitive.ObjectID, primitive.ObjectID, *domain.Comment) error); ok {
+		r0 = rf(ctx, post_id, comment_id, userID, comment)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 type mockConstructorTestingTNewBlogUsecase interface {

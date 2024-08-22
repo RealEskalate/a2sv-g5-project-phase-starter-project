@@ -5,6 +5,8 @@ package mocks
 import (
 	context "context"
 
+	genai "github.com/google/generative-ai-go/genai"
+
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -14,14 +16,16 @@ type AIUsecase struct {
 }
 
 // GenerateBlogContent provides a mock function with given fields: ctx, keywords
-func (_m *AIUsecase) GenerateBlogContent(ctx context.Context, keywords string) (string, error) {
+func (_m *AIUsecase) GenerateBlogContent(ctx context.Context, keywords string) (*genai.GenerateContentResponse, error) {
 	ret := _m.Called(ctx, keywords)
 
-	var r0 string
-	if rf, ok := ret.Get(0).(func(context.Context, string) string); ok {
+	var r0 *genai.GenerateContentResponse
+	if rf, ok := ret.Get(0).(func(context.Context, string) *genai.GenerateContentResponse); ok {
 		r0 = rf(ctx, keywords)
 	} else {
-		r0 = ret.Get(0).(string)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*genai.GenerateContentResponse)
+		}
 	}
 
 	var r1 error

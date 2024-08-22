@@ -51,7 +51,7 @@ func (ac *AuthController) LogIn() gin.HandlerFunc {
         }
 
         if!user.IsVerified{
-            c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message":"you need to be verified"})
+            c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message":"you need to be verified", "user": domain.CreateResponseUser(user)})
             return
         }
 

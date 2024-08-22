@@ -1,0 +1,20 @@
+{
+  "statusCode": 200,
+  "message": "",
+  "data": [
+    {
+      "id": "6672752cbd218790438efdb0",
+      "name": "Anime website",
+      "description": "Explore anime characters.",
+      "price": 123,
+      "imageUrl": "https://res.cloudinary.com/g5-mobile-track/image/upload/v1718777132/images/zxjhzrflkvsjutgbmr0f.jpg"
+    },
+    {
+      "id": "66728788b116d7a8d476558c",
+      "name": "Better name",
+      "description": "Even better description. The best description ever.",
+      "price": 112,
+      "imageUrl": "https://res.cloudinary.com/g5-mobile-track/image/upload/v1718781833/images/jxt6xd4ivavvuodt9gkx.jpg"
+    }
+  ]
+}

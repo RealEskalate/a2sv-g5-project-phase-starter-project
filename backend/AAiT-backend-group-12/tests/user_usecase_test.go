@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 )
@@ -693,6 +694,237 @@ func (suite *UserUsecaseTestSuite) TestOAuthLogin_Negative_RepositoryError_SetRe
 	suite.NotNil(err, "error should not be nil")
 	suite.Equal(ack, "")
 	suite.Equal(rfk, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Positive() {
+	refreshToken := "refr.esht.oken"
+	user := TEST_USER
+	user.IsVerified = true
+	user.RefreshToken = "hashed_str"
+	tk := &jwt.Token{}
+
+	suite.mockJWTService.On("ValidateAndParseToken", refreshToken).Return(tk, nil).Once()
+	suite.mockJWTService.On("GetTokenType", tk).Return("refreshToken", nil).Once()
+	suite.mockJWTService.On("GetUsername", tk).Return(user.Username, nil).Once()
+	suite.mockJWTService.On("GetExpiryDate", tk).Return(time.Now().Round(0).Add(time.Minute), nil).Once()
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: user.Username}).Return(user, nil).Once()
+	suite.mockHashService.On("ValidateHashedString", "hashed_str", "oken").Return(nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "accessToken", time.Minute*time.Duration(suite.ENV.ACCESS_TOKEN_LIFESPAN)).Return("acc.ess.Token", nil).Once()
+
+	ack, err := suite.Usecase.RenewAccessToken(context.Background(), refreshToken)
+	suite.Nil(err, "error should be nil")
+	suite.Equal(ack, "acc.ess.Token")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_JWTError() {
+	refreshToken := "refr.esht.oken"
+	tk := &jwt.Token{}
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockJWTService.On("ValidateAndParseToken", refreshToken).Return(tk, sampleErr).Once()
+
+	ack, err := suite.Usecase.RenewAccessToken(context.Background(), refreshToken)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_UNAUTHORIZED)
+	suite.Equal(ack, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_GetTokenTypeError() {
+	refreshToken := "refr.esht.oken"
+	tk := &jwt.Token{}
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockJWTService.On("ValidateAndParseToken", refreshToken).Return(tk, nil).Once()
+	suite.mockJWTService.On("GetTokenType", tk).Return("refreshToken", sampleErr).Once()
+
+	ack, err := suite.Usecase.RenewAccessToken(context.Background(), refreshToken)
+	suite.Equal(err.GetCode(), domain.ERR_UNAUTHORIZED)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_GetUsernameError() {
+	refreshToken := "refr.esht.oken"
+	user := TEST_USER
+	tk := &jwt.Token{}
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockJWTService.On("ValidateAndParseToken", refreshToken).Return(tk, nil).Once()
+	suite.mockJWTService.On("GetTokenType", tk).Return("refreshToken", nil).Once()
+	suite.mockJWTService.On("GetUsername", tk).Return(user.Username, sampleErr).Once()
+
+	ack, err := suite.Usecase.RenewAccessToken(context.Background(), refreshToken)
+	suite.Equal(err.GetCode(), domain.ERR_UNAUTHORIZED)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_GetExpiryDateError() {
+	refreshToken := "refr.esht.oken"
+	user := TEST_USER
+	tk := &jwt.Token{}
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockJWTService.On("ValidateAndParseToken", refreshToken).Return(tk, nil).Once()
+	suite.mockJWTService.On("GetTokenType", tk).Return("refreshToken", nil).Once()
+	suite.mockJWTService.On("GetUsername", tk).Return(user.Username, nil).Once()
+	suite.mockJWTService.On("GetExpiryDate", tk).Return(time.Now().Round(0).Add(time.Minute), sampleErr).Once()
+
+	ack, err := suite.Usecase.RenewAccessToken(context.Background(), refreshToken)
+	suite.Equal(err.GetCode(), domain.ERR_UNAUTHORIZED)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_ExpiredToken() {
+	refreshToken := "refr.esht.oken"
+	user := TEST_USER
+	tk := &jwt.Token{}
+
+	suite.mockJWTService.On("ValidateAndParseToken", refreshToken).Return(tk, nil).Once()
+	suite.mockJWTService.On("GetTokenType", tk).Return("refreshToken", nil).Once()
+	suite.mockJWTService.On("GetUsername", tk).Return(user.Username, nil).Once()
+	suite.mockJWTService.On("GetExpiryDate", tk).Return(time.Now().Round(0).Add(time.Minute*-2), nil).Once()
+	suite.mockUserRepository.On("SetRefreshToken", context.Background(), &domain.User{Username: user.Username}, "").Return(nil).Once()
+
+	ack, err := suite.Usecase.RenewAccessToken(context.Background(), refreshToken)
+	suite.Equal(err.GetCode(), domain.ERR_UNAUTHORIZED)
+	suite.Contains(err.Error(), "expired")
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_RepositoryError_FindUser() {
+	refreshToken := "refr.esht.oken"
+	user := TEST_USER
+	tk := &jwt.Token{}
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockJWTService.On("ValidateAndParseToken", refreshToken).Return(tk, nil).Once()
+	suite.mockJWTService.On("GetTokenType", tk).Return("refreshToken", nil).Once()
+	suite.mockJWTService.On("GetUsername", tk).Return(user.Username, nil).Once()
+	suite.mockJWTService.On("GetExpiryDate", tk).Return(time.Now().Round(0).Add(time.Minute), nil).Once()
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: user.Username}).Return(user, sampleErr).Once()
+
+	ack, err := suite.Usecase.RenewAccessToken(context.Background(), refreshToken)
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_NotVerified() {
+	refreshToken := "refr.esht.oken"
+	user := TEST_USER
+	// user.IsVerified = true
+	user.RefreshToken = "hashed_str"
+	tk := &jwt.Token{}
+
+	suite.mockJWTService.On("ValidateAndParseToken", refreshToken).Return(tk, nil).Once()
+	suite.mockJWTService.On("GetTokenType", tk).Return("refreshToken", nil).Once()
+	suite.mockJWTService.On("GetUsername", tk).Return(user.Username, nil).Once()
+	suite.mockJWTService.On("GetExpiryDate", tk).Return(time.Now().Round(0).Add(time.Minute), nil).Once()
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: user.Username}).Return(user, nil).Once()
+
+	ack, err := suite.Usecase.RenewAccessToken(context.Background(), refreshToken)
+	suite.Equal(err.GetCode(), domain.ERR_UNAUTHORIZED)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_NoRefreshToken() {
+	refreshToken := "refr.esht.oken"
+	user := TEST_USER
+	user.IsVerified = true
+	// user.RefreshToken = "hashed_str"
+	tk := &jwt.Token{}
+
+	suite.mockJWTService.On("ValidateAndParseToken", refreshToken).Return(tk, nil).Once()
+	suite.mockJWTService.On("GetTokenType", tk).Return("refreshToken", nil).Once()
+	suite.mockJWTService.On("GetUsername", tk).Return(user.Username, nil).Once()
+	suite.mockJWTService.On("GetExpiryDate", tk).Return(time.Now().Round(0).Add(time.Minute), nil).Once()
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: user.Username}).Return(user, nil).Once()
+
+	ack, err := suite.Usecase.RenewAccessToken(context.Background(), refreshToken)
+	suite.Equal(err.GetCode(), domain.ERR_NOT_FOUND)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_HashError() {
+	refreshToken := "refr.esht.oken"
+	user := TEST_USER
+	user.IsVerified = true
+	user.RefreshToken = "hashed_str"
+	tk := &jwt.Token{}
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockJWTService.On("ValidateAndParseToken", refreshToken).Return(tk, nil).Once()
+	suite.mockJWTService.On("GetTokenType", tk).Return("refreshToken", nil).Once()
+	suite.mockJWTService.On("GetUsername", tk).Return(user.Username, nil).Once()
+	suite.mockJWTService.On("GetExpiryDate", tk).Return(time.Now().Round(0).Add(time.Minute), nil).Once()
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: user.Username}).Return(user, nil).Once()
+	suite.mockHashService.On("ValidateHashedString", "hashed_str", "oken").Return(sampleErr).Once()
+
+	ack, err := suite.Usecase.RenewAccessToken(context.Background(), refreshToken)
+	suite.Equal(err.GetCode(), domain.ERR_UNAUTHORIZED)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_() {
+	refreshToken := "refr.esht.oken"
+	user := TEST_USER
+	user.IsVerified = true
+	user.RefreshToken = "hashed_str"
+	tk := &jwt.Token{}
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockJWTService.On("ValidateAndParseToken", refreshToken).Return(tk, nil).Once()
+	suite.mockJWTService.On("GetTokenType", tk).Return("refreshToken", nil).Once()
+	suite.mockJWTService.On("GetUsername", tk).Return(user.Username, nil).Once()
+	suite.mockJWTService.On("GetExpiryDate", tk).Return(time.Now().Round(0).Add(time.Minute), nil).Once()
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: user.Username}).Return(user, nil).Once()
+	suite.mockHashService.On("ValidateHashedString", "hashed_str", "oken").Return(nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "accessToken", time.Minute*time.Duration(suite.ENV.ACCESS_TOKEN_LIFESPAN)).Return("acc.ess.Token", sampleErr).Once()
+
+	ack, err := suite.Usecase.RenewAccessToken(context.Background(), refreshToken)
+	suite.Equal(err.GetCode(), domain.ERR_INTERNAL_SERVER)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
 	suite.mockUserRepository.AssertExpectations(suite.T())
 	suite.mockHashService.AssertExpectations(suite.T())
 	suite.mockJWTService.AssertExpectations(suite.T())

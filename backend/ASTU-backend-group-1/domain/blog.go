@@ -28,10 +28,10 @@ type Comment struct {
 
 type Blog struct {
 	Id       string    `json:"id,omitempty" bson:"_id,omitempty"`
-	AuthorId string    `json:"author_id,omitempty" bson:"author_id,omitempty" binding:"required"`
+	AuthorId string    `json:"author_id,omitempty" bson:"author_id,omitempty" `
 	Title    string    `json:"title,omitempty" bson:"title,omitempty" binding:"required"`
 	Content  string    `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
-	Date     time.Time `json:"date,omitempty" bson:"date,omitempty" binding:"required"`
+	Date     time.Time `json:"date,omitempty" bson:"date,omitempty" `
 	Tags     []string  `json:"tags,omitempty" bson:"tags,omitempty" binding:"required"`
 
 	Likes    []string  `json:"likes,omitempty" bson:"likes,omitempty"  `
@@ -57,7 +57,7 @@ type BlogRepository interface {
 	CreateBlog(b Blog) (Blog, error)
 	GetBlog(opts BlogFilterOption) ([]Blog, error)
 	UpdateBlog(blogId string, updateData Blog) (Blog, error)
-	DeleteBlog(blogId string) error
+	DeleteBlog(blogId,authorId string) error
 	FindPopularBlog() ([]Blog, error)
 	GetBlogById(blogid string) (Blog, error)
 	LikeOrDislikeBlog(blogId, userId string, like int) error

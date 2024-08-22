@@ -57,5 +57,6 @@ type Claims struct {
 	Email    string `json:"email"`
 	IsAdmin  bool   `json:"is_admin"`
 	Username string `json:"username"`
+	IsActive bool   `json:"is_active"`
 	jwt.StandardClaims
 }

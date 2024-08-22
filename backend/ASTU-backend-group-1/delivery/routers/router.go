@@ -22,6 +22,10 @@ func NewMainRouter(uc controllers.UserController, bc controllers.BlogController,
 }
 func (gr *MainRouter) GinBlogRouter() {
 	router := gin.Default()
+	router.GET("blogs/", gr.blogController.HandleGetAllBlogs)
+	router.GET("blogs/popular", gr.blogController.HandleGetPopularBlog)
+	router.GET("blogs/filter", gr.blogController.HandleFilterBlogs)
+	router.GET("blogs/:blogId", gr.blogController.HandleGetBlogById)
 	userrouter := router.Group("/users")
 	{
 
@@ -31,33 +35,33 @@ func (gr *MainRouter) GinBlogRouter() {
 		userrouter.GET("/forgetPassword", gr.handler.ForgetPassword)
 		userrouter.POST("/resetPassword", gr.handler.ResetPassword)
 		userrouter.GET("/logout", gr.handler.LogoutUser)
+		userrouter.POST("/:uid/refresh", gr.handler.RefreshAccessToken)
 	}
 	blogRouter := router.Group("/blogs")
+	blogRouter.Use(gr.authController.AuthenticationMiddleware())
 	{
-		blogRouter.POST("/", gr.authController.UserMiddlewareGin(), gr.blogController.HandleCreateBlog)
-		blogRouter.GET("/", gr.authController.UserMiddlewareGin(), gr.blogController.HandleGetAllBlogs)
-		blogRouter.GET("/popular", gr.authController.UserMiddlewareGin(), gr.blogController.HandleGetPopularBlog)
-		blogRouter.GET("/filter", gr.authController.UserMiddlewareGin(), gr.blogController.HandleFilterBlogs)
-		blogRouter.GET("/:blogId", gr.authController.UserMiddlewareGin(), gr.blogController.HandleGetBlogById)
-		blogRouter.PATCH("/:blogId", gr.authController.AuthorMiddlewareGin(), gr.blogController.HandleBlogUpdate)
-		blogRouter.DELETE("/:blogId", gr.authController.AuthorMiddlewareGin(), gr.authController.AdminMiddlewareGin(), gr.blogController.HandleBlogDelete)
-		blogRouter.POST("/:blogId/interact/:type", gr.authController.UserMiddlewareGin(), gr.blogController.HandleBlogLikeOrDislike)
+		blogRouter.POST("/", gr.authController.USERMiddleware(), gr.blogController.HandleCreateBlog)
+		blogRouter.PATCH("/:blogId", gr.authController.ADMINMiddleware(), gr.blogController.HandleBlogUpdate)
+		blogRouter.DELETE("/:blogId", gr.authController.ADMINMiddleware(), gr.blogController.HandleBlogDelete)
+		blogRouter.POST("/:blogId/interact/:type", gr.authController.USERMiddleware(), gr.blogController.HandleBlogLikeOrDislike)
 
 		// TODO: check if there is a blog with such id
 		commentRouter := blogRouter.Group("/:blogId/comments")
+		commentRouter.Use(gr.authController.USERMiddleware())
 		{
-			commentRouter.GET("/", gr.authController.UserMiddlewareGin(), gr.blogController.HandleGetAllComments)
-			commentRouter.POST("/", gr.authController.UserMiddlewareGin(), gr.blogController.HandleCommentOnBlog)
-			commentRouter.GET("/:commentId", gr.authController.UserMiddlewareGin(), gr.blogController.HandleGetCommentById)
-			commentRouter.POST("/:commentId/interact/:type", gr.authController.UserMiddlewareGin(), gr.blogController.HandleCommentLikeOrDislike)
+			commentRouter.GET("/", gr.blogController.HandleGetAllComments)
+			commentRouter.POST("/", gr.blogController.HandleCommentOnBlog)
+			commentRouter.GET("/:commentId", gr.blogController.HandleGetCommentById)
+			commentRouter.POST("/:commentId/interact/:type", gr.blogController.HandleCommentLikeOrDislike)
 
 			repliesRouter := commentRouter.Group("/:commentId/replies")
+			repliesRouter.Use(gr.authController.USERMiddleware())
 			{
-				repliesRouter.GET("/", gr.authController.UserMiddlewareGin(), gr.blogController.HandleGetAllRepliesForComment)
-				repliesRouter.POST("/", gr.authController.UserMiddlewareGin(), gr.blogController.HandleReplyOnComment)
-				repliesRouter.GET("/:replyId", gr.authController.UserMiddlewareGin(), gr.blogController.HandleGetReplyById)
+				repliesRouter.GET("/", gr.blogController.HandleGetAllRepliesForComment)
+				repliesRouter.POST("/", gr.blogController.HandleReplyOnComment)
+				repliesRouter.GET("/:replyId", gr.blogController.HandleGetReplyById)
 				// todo: test the below functions
-				repliesRouter.POST("/:replyId/interact/:type", gr.authController.UserMiddlewareGin(), gr.blogController.HandleReplyLikeOrDislike)
+				repliesRouter.POST("/:replyId/interact/:type", gr.blogController.HandleReplyLikeOrDislike)
 			}
 		}
 
@@ -89,4 +93,3 @@ func (gr *MainRouter) GinBlogRouter() {
 	})
 	router.Run(":8000")
 }
-

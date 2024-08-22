@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	infrastructure "astu-backend-g1/Infrastructure"
 	"astu-backend-g1/domain"
 	usecase "astu-backend-g1/usecases"
 	"net/http"
@@ -23,6 +24,12 @@ func (cont *BlogController) HandleCreateBlog(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, err)
 		return
 	}
+	claims, err := infrastructure.GetClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "could not get the claims"})
+		return
+	}
+	blog.AuthorId = claims.ID
 	blog, err = cont.usecase.CreateBLog(blog)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
@@ -94,7 +101,12 @@ func (cont *BlogController) HandleBlogUpdate(ctx *gin.Context) {
 
 }
 func (cont *BlogController) HandleBlogDelete(ctx *gin.Context) {
-	err := cont.usecase.DeleteBLog(ctx.Param("blogId"))
+	claims, err := infrastructure.GetClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "could not get the claims"})
+		return
+	}
+	err = cont.usecase.DeleteBLog(ctx.Param("blogId"),claims.ID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -138,9 +150,6 @@ func (cont *BlogController) HandleBlogLikeOrDislike(ctx *gin.Context) {
 		}
 	}
 }
-
-
-
 
 func (cont *BlogController) HandleCommentOnBlog(ctx *gin.Context) {
 	var newComment domain.Comment
@@ -215,39 +224,37 @@ func (cont *BlogController) HandleCommentLikeOrDislike(ctx *gin.Context) {
 	}
 }
 
-
-
 func (cont *BlogController) HandleReplyOnComment(ctx *gin.Context) {
 	var newReply domain.Reply
-    err := ctx.ShouldBindJSON(&newReply)
-    if err != nil {
-        ctx.IndentedJSON(http.StatusBadRequest, err)
-        return
-    }
-    err = cont.usecase.ReplyToComment(ctx.Param("blogId"), ctx.Param("commentId"), newReply)
-    if err != nil {
-        ctx.IndentedJSON(http.StatusNotFound, err)
-    } else {
-        ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply added successfully"})
-    }
+	err := ctx.ShouldBindJSON(&newReply)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, err)
+		return
+	}
+	err = cont.usecase.ReplyToComment(ctx.Param("blogId"), ctx.Param("commentId"), newReply)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusNotFound, err)
+	} else {
+		ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply added successfully"})
+	}
 }
 
 func (cont *BlogController) HandleGetAllRepliesForComment(ctx *gin.Context) {
 	replies, err := cont.usecase.GetAllRepliesForComment(ctx.Param("blogId"), ctx.Param("commentId"))
-    if err!= nil {
-        ctx.IndentedJSON(http.StatusNotFound, err)
-    } else {
-        ctx.IndentedJSON(http.StatusOK, replies)
-    }
+	if err != nil {
+		ctx.IndentedJSON(http.StatusNotFound, err)
+	} else {
+		ctx.IndentedJSON(http.StatusOK, replies)
+	}
 }
 
 func (cont *BlogController) HandleGetReplyById(ctx *gin.Context) {
 	replies, err := cont.usecase.GetReplyById(ctx.Param("blogId"), ctx.Param("commentId"), ctx.Param("replyId"))
-    if err!= nil {
-        ctx.IndentedJSON(http.StatusNotFound, err)
-    } else {
-        ctx.IndentedJSON(http.StatusOK, replies)
-    }
+	if err != nil {
+		ctx.IndentedJSON(http.StatusNotFound, err)
+	} else {
+		ctx.IndentedJSON(http.StatusOK, replies)
+	}
 }
 
 func (cont *BlogController) HandleReplyLikeOrDislike(ctx *gin.Context) {

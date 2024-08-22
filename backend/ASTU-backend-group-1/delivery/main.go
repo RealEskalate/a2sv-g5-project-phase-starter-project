@@ -20,9 +20,9 @@ func main() {
 	}
 	blogCollections := client.Database("BlogAPI").Collection("Blogs")
 	userCollections := client.Database("BlogAPI").Collection("Users")
-	auth := infrastructure.NewAuthMiddleware(userCollections)
-	auther := infrastructure.GeneralAuthorizer(auth)
-	authController := infrastructure.NewAuthController(auther)
+	// auth := infrastructure.NewAuthMiddleware(userCollections)
+	// auther := infrastructure.GeneralAuthorizer(auth)
+	authController := infrastructure.NewAuthController()
 	_ = client.Database("BlogAPI").Collection("Tokens")
 	blogRepo := repository.NewBlogRepository(blogCollections)
 	blogUsecase := usecase.NewBlogUsecase(blogRepo)
@@ -32,7 +32,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	UserController := controllers.NewUserController(userUsecase)
+	UserController := controllers.NewUserController(userUsecase, userCollections)
 	Router := router.NewMainRouter(*UserController, *blogController, authController)
 	Router.GinBlogRouter()
 

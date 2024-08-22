@@ -39,7 +39,7 @@ func (urlRepo *URL_Repo) GetURL(short_url_code string, ctx context.Context) (*mo
 		if err == mongo.ErrNoDocuments {
 			return nil, models.NotFound(err.Error())
 		}
-		return nil, models.NotFound(err.Error())
+		return nil, models.InternalServerError(err.Error())
 	}
 
 	return &result, nil

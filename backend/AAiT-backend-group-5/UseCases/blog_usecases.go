@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"log"
 	"strconv"
 
 	config "github.com/aait.backend.g5.main/backend/Config"
@@ -186,9 +185,11 @@ func (b *blogUsecase) DeleteBlog(ctx context.Context, deleteBlogReq dtos.DeleteB
 
 func (b *blogUsecase) TrackPopularity(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse {
 
-	existingAction, _ := b.popularity.GetBlogPopularityAction(ctx, popularity.BlogID, popularity.UserID)
+	existingAction, err := b.popularity.GetBlogPopularityAction(ctx, popularity.BlogID, popularity.UserID)
 
-	log.Println(existingAction, "existingAction")
+	if err != nil && err.Code != 404 {
+		return err
+	}
 
 	if existingAction != nil {
 		if existingAction.Action == popularity.Action {

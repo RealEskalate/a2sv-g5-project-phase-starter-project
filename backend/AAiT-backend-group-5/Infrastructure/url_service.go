@@ -54,7 +54,7 @@ func (uc *urlService) GetURL(short_url_code string) (*models.URL, *models.ErrorR
 	url, err := uc.repo.GetURL(short_url_code, uc.ctx)
 
 	if err != nil {
-		return nil, models.InternalServerError("Error while getting the URL")
+		return nil, err
 	}
 
 	return url, nil

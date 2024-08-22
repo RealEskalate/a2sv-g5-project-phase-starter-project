@@ -22,13 +22,11 @@ func NewAuthenticationRouter(env *config.Env, database mongo.Database, group *gi
 	email_service := infrastructure.NewEmailService(emailConfig, *env)
 	url_service := infrastructure.NewURLService(env, url_repository)
 
-	// instantiate login controller
 	LoginController := &controllers.LoginController{
 		LoginUsecase: usecases.NewLoginUsecase(jwt_service, password_service, user_repository, session_repository, *env),
 		Env:          env,
 	}
 
-	// instantiate signup controller
 	SignupController := &controllers.SignupController{
 		SignupUsecase:   usecases.NewSignupUsecase(user_repository, email_service, jwt_service, url_service),
 		PasswordUsecase: usecases.NewSetupPassword(url_service, jwt_service, user_repository, email_service, password_service),

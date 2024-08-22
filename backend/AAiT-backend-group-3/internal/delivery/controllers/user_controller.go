@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 type UserController struct {
 	user_usecase usecases.UserUsecaseInterface
 }
@@ -17,7 +16,7 @@ type UserControllerInterface interface {
 	Login(c *gin.Context)
 	RefreshToken(c *gin.Context)
 	VerifyEmail(c *gin.Context)
-	Logout(c *gin.Context)	
+	Logout(c *gin.Context)
 }
 
 func NewUserController(u usecases.UserUsecaseInterface) UserControllerInterface {
@@ -39,7 +38,7 @@ func (uc *UserController) Register(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"message":"verification email sent to your email"})
+	c.JSON(200, gin.H{"message": "verification email sent to your email"})
 }
 
 func (uc *UserController) Login(c *gin.Context) {
@@ -50,7 +49,7 @@ func (uc *UserController) Login(c *gin.Context) {
 	}
 	accessTkn, refreshTkn, err := uc.user_usecase.Login(user)
 	if err != nil {
-		c.JSON(500, gin.H{"error":err.Error()})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{"accessToken": accessTkn, "refreshToken": refreshTkn})
@@ -85,10 +84,10 @@ func (uc *UserController) VerifyEmail(c *gin.Context) {
 		c.JSON(401, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"message": "Email successfully verified", "access_token": accTkn, "refresh_token":refTkn})
+	c.JSON(200, gin.H{"message": "Email successfully verified", "access_token": accTkn, "refresh_token": refTkn})
 }
 
-func (uc *UserController) Logout(c *gin.Context){
+func (uc *UserController) Logout(c *gin.Context) {
 	token, ok := c.Get("token")
 	if !ok {
 		c.JSON(400, gin.H{"error": "Missing token"})
@@ -96,7 +95,7 @@ func (uc *UserController) Logout(c *gin.Context){
 	}
 	tokenStr, ok := token.(string)
 	fmt.Println(tokenStr)
-	
+
 	if !ok {
 		c.JSON(500, gin.H{"error": "Invalid token format"})
 		return

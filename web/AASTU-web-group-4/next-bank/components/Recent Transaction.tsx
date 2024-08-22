@@ -7,6 +7,10 @@ import LifeInsuranceIcon from '@/public/icons/LifeInsuranceIcon';
 import ShoppingIcon from '@/public/icons/ShoppingIcon';
 import SavingAccountsIcon from '@/public/icons/SavingAccountsIcon';
 import BusinessLoans from '@/public/icons/BusinessLoans';
+import Cookies from "js-cookie";
+
+const token = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJxd2VyIiwiaWF0IjoxNzI0MzE0NzM5LCJleHAiOjE3MjQ0MDExMzl9.B5Avsv1ZUX-DSf7PGwwIRNyAlKk_UAPsy2B9C-geCLtYSOMPOjDYeu9nRkHjT3z7";
+
 
 const RecentTransaction = () => {
   const [recentTransaction, setRecentTransaction] = useState<any[]>([]);
@@ -14,7 +18,7 @@ const RecentTransaction = () => {
   useEffect(() => {
     const fetchRecentTransaction = async () => {
       try {
-        const response = await getAllTransactionsss();
+        const response = await getAllTransactionsss(token);
         setRecentTransaction(response.data.content);
       } catch (error) {
         console.error("Error fetching the recent transactions: ", error);

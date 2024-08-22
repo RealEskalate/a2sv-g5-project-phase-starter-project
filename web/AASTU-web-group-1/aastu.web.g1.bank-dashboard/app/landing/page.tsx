@@ -2,6 +2,11 @@ import { useUser } from "@/contexts/UserContext";
 import React from "react";
 import Header from "./_components/Header";
 import Hero from "./_components/Hero";
+import Desc from "./_components/Desc";
+import Team from "./_components/Team";
+import CTA from "./_components/CTA";
+import About from "./_components/About";
+import Footer from "./_components/Footer";
 
 const Landing = () => {
   return (
@@ -11,6 +16,11 @@ const Landing = () => {
     >
       <Header />
       <Hero />
+      {/* <About /> */}
+      {/* <Desc /> */}
+      <Team />
+      <CTA />
+      <Footer />
     </div>
   );
 };

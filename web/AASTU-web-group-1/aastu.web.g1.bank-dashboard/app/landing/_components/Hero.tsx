@@ -6,7 +6,7 @@ import React from "react";
 
 const Hero = () => {
   return (
-    <div className="flex flex-col justify-center items-center text-center pt-20">
+    <div className="flex flex-col justify-center items-center text-center pt-20 bg-gray-50">
       <div className="w-[60%]">
         <h1 className="text-5xl pb-4">
           Banking Solutions Tailored for growing companies
@@ -20,9 +20,9 @@ const Hero = () => {
         </Button>
       </div>
       <img
-        src="/icons/landing.png"
+        src="/icons/dashImage.png"
         alt="logo"
-        className="w-[80%] rounded-3xl"
+        className="w-[80%] rounded-3xl border-gray-300 p-2 border-b-0 -mb-5 border-t-0"
       />
     </div>
   );

@@ -23,5 +23,4 @@ func RegisterAdminUserRoutes(userCollection *mongo.Collection, router *gin.Engin
 		adminRoute.GET("/user/:id", userHandler.GetUser)
 		adminRoute.GET("/users/filtered", userHandler.FilterUsers)
 	}
-
 }

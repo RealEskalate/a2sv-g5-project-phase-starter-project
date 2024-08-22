@@ -18,7 +18,7 @@ func main() {
 	mongo.InitializeCollections()
 
 	userCollection := mongo.UserCollection
-	blogCollection := mongo.BlogsCollection
+	blogCollection := mongo.BlogsCollectionh
 	commentCollection := mongo.CommentsCollection
 	likeCollection := mongo.LikesCollection
 	viewCollection := mongo.ViewsCollection

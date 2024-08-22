@@ -1,6 +1,7 @@
 package blog
 
 import (
+	//"blogApp/internal/ai"
 	"blogApp/internal/domain"
 	"blogApp/internal/repository"
 	"context"
@@ -37,7 +38,7 @@ func (u *blogUseCase) CreateBlog(ctx context.Context, blog *domain.Blog, authorI
 	blog.Author = Author
 	blog.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
 
-	// is_valid, message, err := ai.ModerateBlog(blog.Content, blog.Title)
+	//is_valid, message, err := ai.ModerateBlog(blog.Content, blog.Title)
 	// if err != nil {
 	// 	log.Printf("Error moderating blog: %v", err)
 	// 	return fmt.Errorf("failed to moderate blog: %w", err)

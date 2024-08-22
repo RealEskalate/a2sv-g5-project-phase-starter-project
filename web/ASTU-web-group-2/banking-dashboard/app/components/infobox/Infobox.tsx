@@ -14,8 +14,6 @@ const Infobox = () => {
 
   useEffect(() => {}, [session, status]);
 
-  if (!session?.user) router.push("/login");
-
   const accessToken = session?.user.accessToken!;
 
   const { data: res, isLoading } = useGetAllTransactionQuery(accessToken);

@@ -127,7 +127,7 @@ func (ChatHandler *ChatHandler) GetChatsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, retrievedChats)
 }
 
-func (ChatHandler *ChatHandler) SendMessage(c *gin.Context) {
+func (ChatHandler *ChatHandler) SendMessageHandler(c *gin.Context) {
 	var textForm chat.TextForm
 	if err := c.ShouldBindJSON(&textForm); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -158,4 +158,28 @@ func (ChatHandler *ChatHandler) SendMessage(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response)
+}
+
+func (chatHandler *ChatHandler) GenerateChatTitleHandler(c *gin.Context) {
+	var form chat.TextForm
+	if err := c.ShouldBindJSON(&form); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	title, err := chatHandler.chatUsecase.GenerateChatTitle(c.Request.Context(), form)
+
+	var validationError validator.ValidationErrors
+	if errors.As(err, &validationError) {
+		errs := infrastructure.ReturnErrorResponse(err)
+		c.JSON(http.StatusBadRequest, errs)
+		return
+	}
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, title)
 }

@@ -1,6 +1,6 @@
 # e_commerce_app
 
-A new Flutter project.
+AASTU G2
 
 ## Getting Started
 

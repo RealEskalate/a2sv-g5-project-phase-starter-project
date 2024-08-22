@@ -63,6 +63,7 @@ const CreditCardComponent: React.FC = () => {
 		if (accessToken) {
 			fetchCardData(currentPage);
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [accessToken, currentPage]);
 
 	const handleCardAdded = () => {

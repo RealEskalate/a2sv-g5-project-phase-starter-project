@@ -7,7 +7,7 @@ import (
 	// "AAiT-backend-group-2/Infrastructure/services"
 	repositories "AAiT-backend-group-2/Repositories"
 	usecases "AAiT-backend-group-2/Usecases"
-
+	"AAiT-backend-group-2/Infrastructure/cache"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -15,18 +15,19 @@ import (
 
 
 func NewBlogRouter(db *mongo.Database, group *gin.RouterGroup,configs *domain.Config) {
-	
-	blogRepo := repositories.NewBlogRepository(db)
+	redisCache := cache.NewRedisCache(configs.RedisAdr,configs.RedisPass,0)
+	blogRepo := repositories.NewBlogRepository(db,redisCache)
 	blogUsecase := usecases.NewBlogUsecase(blogRepo)
 	blogController := controllers.NewBlogController(blogUsecase)
 	
 	blogRoutes := group.Group("/blogs")
 	blogRoutes.GET("", blogController.GetAllBlogs)
+	blogRoutes.GET("/:id", blogController.GetBlogByID)
 	blogRoutes.GET("/blogFilter", blogController.FilterBlogs)
 	blogRoutes.Use(infrastructure.AuthMiddleWare(configs.SecretKey))
 	{
 		blogRoutes.POST("", blogController.CreateBlog)
-		blogRoutes.GET("/:id", blogController.GetBlogByID)
+		// blogRoutes.GET("/:id", blogController.GetBlogByID)
 		blogRoutes.PUT("/:id", blogController.UpdateBlog)
 	}
 	blogRoutes.Use(infrastructure.AuthMiddleWare(configs.SecretKey), infrastructure.RoleMiddleware())

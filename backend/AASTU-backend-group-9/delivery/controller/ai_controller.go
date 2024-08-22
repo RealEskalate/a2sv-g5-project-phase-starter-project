@@ -12,13 +12,15 @@ type AIController struct {
 }
 
 func (ctrl *AIController) GenerateContent(c *gin.Context) {
-    keywords := c.Query("keywords")
-    if keywords == "" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Keywords are required"})
-        return
+    var request struct {
+        Keywords string `json:"keywords" binding:"required"`
     }
+    if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-    content, err := ctrl.AIUsecase.GenerateBlogContent(c.Request.Context(), keywords)
+    content, err := ctrl.AIUsecase.GenerateBlogContent(c.Request.Context(), request.Keywords)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return

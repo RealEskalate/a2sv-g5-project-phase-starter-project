@@ -164,13 +164,13 @@ func (_m *UserUsecase) PromoteUser(c context.Context, id primitive.ObjectID, cla
 	return r0
 }
 
-// UpdateUser provides a mock function with given fields: c, user, claims, id
-func (_m *UserUsecase) UpdateUser(c context.Context, user *domain.User, claims *domain.JwtCustomClaims, id primitive.ObjectID) (*domain.User, error) {
-	ret := _m.Called(c, user, claims, id)
+// UpdateUser provides a mock function with given fields: c, user, claims, existinguser
+func (_m *UserUsecase) UpdateUser(c context.Context, user *domain.User, claims *domain.JwtCustomClaims, existinguser *domain.User) (*domain.User, error) {
+	ret := _m.Called(c, user, claims, existinguser)
 
 	var r0 *domain.User
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.User, *domain.JwtCustomClaims, primitive.ObjectID) *domain.User); ok {
-		r0 = rf(c, user, claims, id)
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.User, *domain.JwtCustomClaims, *domain.User) *domain.User); ok {
+		r0 = rf(c, user, claims, existinguser)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*domain.User)
@@ -178,8 +178,8 @@ func (_m *UserUsecase) UpdateUser(c context.Context, user *domain.User, claims *
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, *domain.User, *domain.JwtCustomClaims, primitive.ObjectID) error); ok {
-		r1 = rf(c, user, claims, id)
+	if rf, ok := ret.Get(1).(func(context.Context, *domain.User, *domain.JwtCustomClaims, *domain.User) error); ok {
+		r1 = rf(c, user, claims, existinguser)
 	} else {
 		r1 = ret.Error(1)
 	}

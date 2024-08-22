@@ -1,11 +1,14 @@
 import Topleft from "./Topleft";
 import Topright from "./Topright";
 
-export default function Top() {
+export default function Top({ topicName }: { topicName: string }) {
   return (
-    <div className="flex justify-between w-full mb-5">
-      <Topright topic="OverView" />
-      <Topleft />
+    <>
+    
+    <div className="flex flex-row justify-between w-full pb-7 mb-5 ">
+      <Topleft topic={topicName} />
+      <Topright />
     </div>
+    </>
   );
 }

@@ -1,11 +1,9 @@
-import Search from "./Search";
-import Seting from "./Seting";
 
-export default function Topleft() {
+export default function Topleft({ topic }: { topic: string }) {
   return (
-    <div className="flex gap-3 mr-5 mt-3 w-1/3">
-      <Search />
-      <Seting />
+    
+    <div className="flex gap-20 w-1/4 text-black mt-3 ml-5 items-center">
+      <p className="font-normal text-3xl ">{topic}</p>
     </div>
   );
 }

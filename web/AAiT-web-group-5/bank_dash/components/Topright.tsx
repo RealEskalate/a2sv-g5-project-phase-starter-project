@@ -1,9 +1,11 @@
-import { IoMdCard } from "react-icons/io";
+import Search from "./Search";
+import Setting from "./Setting";
 
-export default function Topright({ topic }: { topic: string }) {
+export default function Topright() {
   return (
-    <div className="flex gap-20 w-1/4 text-black mt-3 ml-5 items-center">
-      <p className="font-normal text-3xl ">{topic}</p>
+    <div className="flex gap-3 mr-5 mt-3 w-1/3">
+      <Search />
+      <Setting />
     </div>
   );
 }

@@ -74,11 +74,11 @@ export function TableDemo() {
             <TableCell>{invoice.Type}</TableCell>
             <TableCell>{invoice.card}</TableCell>
             <TableCell>{invoice.Date}</TableCell>
-            <TableCell className="text-right text-red-600">
+            <TableCell className="text-red-600 items-center">
               {invoice.Amount}
             </TableCell>
-            <TableCell>
-              <button className="rounded-3xl border-blue-600 p-2 text-blue-600 border-2 flex items-center justify-center">
+            <TableCell >
+              <button className="rounded-xl border-blue-600 p-2 text-blue-600 border flex items-center justify-center transition ease-in hover:bg-blue-600 hover:text-white">
                 Download
               </button>
             </TableCell>
@@ -88,7 +88,8 @@ export function TableDemo() {
       <TableFooter>
         <TableRow>
           <TableCell colSpan={5}>Total</TableCell>
-          <TableCell className="text-right">$2,500.00</TableCell>
+          <TableCell className="text-left text-red-500 font-semibold">$2,500.00</TableCell>
+          <TableCell className="text-center"></TableCell>
         </TableRow>
       </TableFooter>
     </Table>

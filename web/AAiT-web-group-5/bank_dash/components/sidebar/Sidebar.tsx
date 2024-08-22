@@ -70,7 +70,7 @@ const SideBar = () => {
             <MenuIcons.Logo />
         </Toolbar>
 
-        <Box component="nav" className='border-r min-h-screen w-64' sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Box component="nav" className='border-r min-h-screen w-64 flex flex-col' >
         {menuItems.map((item) => (
             <SideList key={item.id} sideitem={item} />
         ))}

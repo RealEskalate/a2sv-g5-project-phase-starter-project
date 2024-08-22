@@ -5,6 +5,7 @@ import (
 	"blog_project/infrastructure"
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"sync/atomic"
@@ -12,12 +13,14 @@ import (
 )
 
 type UserUsecase struct {
-	UserRepo domain.IUserRepository
+	UserRepo  domain.IUserRepository
+	TokenRepo domain.ITokenRepository
 }
 
-func NewUserUsecase(userRepo domain.IUserRepository) domain.IUserUsecase {
+func NewUserUsecase(userRepo domain.IUserRepository, tokenRepo domain.ITokenRepository) domain.IUserUsecase {
 	return &UserUsecase{
-		UserRepo: userRepo,
+		UserRepo:  userRepo,
+		TokenRepo: tokenRepo,
 	}
 }
 
@@ -208,6 +211,33 @@ func (u *UserUsecase) DemoteUser(ctx context.Context, userID int) (domain.User, 
 	u.UpdateUser(ctx, user.ID, user)
 
 	return user, nil
+}
+
+func (u *UserUsecase) Logout(ctx context.Context, token string) error {
+	decodedToken, err := infrastructure.IsAuthorized(token, os.Getenv("jwt_secret"))
+	if err != nil {
+		return fmt.Errorf("invalid token: %v", err)
+	}
+
+	err = u.TokenRepo.BlacklistToken(ctx, token)
+	if err != nil {
+		return err
+	}
+
+	userID := int(decodedToken["id"].(float64))
+
+	refreshToken, err := u.UserRepo.GetRefreshToken(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	err = u.TokenRepo.BlacklistToken(ctx, refreshToken)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
 // Email validation function

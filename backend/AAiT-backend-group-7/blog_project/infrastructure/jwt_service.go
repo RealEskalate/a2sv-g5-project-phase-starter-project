@@ -1,13 +1,31 @@
 package infrastructure
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"blog_project/domain"
+	"blog_project/repositories"
 )
+
+var tokenRepo domain.ITokenRepository
+
+func init() {
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db := client.Database("blog_project")
+	tokenCollection := db.Collection("tokens")
+	tokenRepo = repositories.NewTokenRepository(tokenCollection)
+}
 
 func GenerateJWTAccessToken(user *domain.User, accessTokenSecret string, accessTokenExpiryHour int) (string, error) {
 	// Set token expiry time
@@ -57,6 +75,15 @@ func GenerateJWTRefreshToken(user *domain.User, refreshTokenSecret string, refre
 	return refreshToken, nil
 }
 func IsAuthorized(requestToken string, secret string) (jwt.MapClaims, error) {
+	blacklisted, err := tokenRepo.IsBlacklisted(requestToken)
+	if err != nil {
+		return nil, err
+	}
+
+	if blacklisted {
+		return nil, fmt.Errorf("token is blacklisted")
+	}
+
 	token, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

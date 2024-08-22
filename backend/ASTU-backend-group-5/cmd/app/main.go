@@ -18,14 +18,15 @@ func main() {
 	mongo.InitializeCollections()
 
 	userCollection := mongo.UserCollection
-	blogCollection := mongo.BlogsCollection
+	blogCollection := mongo.BlogsCollectionh
 	commentCollection := mongo.CommentsCollection
 	likeCollection := mongo.LikesCollection
 	viewCollection := mongo.ViewsCollection
 	tagCollection := mongo.TagsCollection
 
 	router := gin.Default()
-
+	// Serve static files from the "upload" directory
+	router.Static("/uploads", "./uploads")
 	routes.SetUpRoute(router, blogCollection, commentCollection, likeCollection, viewCollection, tagCollection, userCollection)
 	router.Run(":" + confs.GO_PORT)
 }

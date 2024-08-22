@@ -142,14 +142,14 @@ func (userController *userController) Logout(cxt *gin.Context) {
 }
 
 func (userController *userController) PromoteUser(cxt *gin.Context) {
-	var updateID string
+	var updateID map[string]string
 	errUnmarshal := cxt.ShouldBind(&updateID)
 	if errUnmarshal != nil {
 		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errUnmarshal.Error()})
 		return
 	}
 
-	errPromote := userController.UserUseCase.PromoteUser(cxt, updateID)
+	errPromote := userController.UserUseCase.PromoteUser(cxt, updateID["id"])
 	if errPromote != nil {
 		cxt.JSON(errPromote.StatusCode(), gin.H{"Error": errPromote.Error()})
 		return
@@ -159,14 +159,14 @@ func (userController *userController) PromoteUser(cxt *gin.Context) {
 }
 
 func (userController *userController) DemoteUser(cxt *gin.Context) {
-	var updateID string
+	var updateID map[string]string
 	errUnmarshal := cxt.ShouldBind(&updateID)
 	if errUnmarshal != nil {
 		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errUnmarshal.Error()})
 		return
 	}
 
-	errDemote := userController.UserUseCase.DemoteUser(cxt, updateID)
+	errDemote := userController.UserUseCase.DemoteUser(cxt, updateID["id"])
 	if errDemote != nil {
 		cxt.JSON(errDemote.StatusCode(), gin.H{"Error": errDemote.Error()})
 		return

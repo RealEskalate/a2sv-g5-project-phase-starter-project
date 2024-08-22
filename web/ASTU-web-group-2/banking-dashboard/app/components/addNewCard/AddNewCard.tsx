@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +9,7 @@ import notify from "@/utils/notify";
 // Define the Zod schema for form validation
 const addCardSchema = z.object({
   cardHolder: z.string().min(1, "Card Holder is required"),
-  balance: z.number().min(0, "Balance must be greater than or equal to 0"),
+  balance: z.coerce.number().min(0, "Balance must be greater than or equal to 0"),
   expiryDate: z.string().min(1, "Expiration Date is required"),
   cardType: z.string().min(1, "Card Type is required"),
 });
@@ -26,10 +26,12 @@ const AddNewCard = () => {
   });
   const [addNewCard] = useAddCreditCardMutation();
   const session = useSession();
+  const [loading, setLoading] = useState(false)
 
   const onSubmit = async (data: AddCardFormValues) => {
+    setLoading(true)
     const formattedData = {
-      balance: data.balance,
+      balance: Number(data.balance),
       cardHolder: data.cardHolder,
       expiryDate: new Date(data.expiryDate).toISOString(),
       cardType: data.cardType,
@@ -48,6 +50,7 @@ const AddNewCard = () => {
       // Handle failure case
       notify.error("Failed to add card.");
     }
+    setLoading(false)
   };
 
   return (
@@ -58,7 +61,7 @@ const AddNewCard = () => {
         be used to purchase goods and services on credit or obtain cash
         advances.
       </p>
-      <form className="grid gap-6">
+      <form className="grid gap-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">
             <label className="text-base font-normal text-[#232323]">
@@ -68,7 +71,11 @@ const AddNewCard = () => {
               type="text"
               className="w-full h-12 rounded-lg border border-[#E2E8F0] text-[#718EBF] pl-4"
               placeholder="Classic"
+              {...register("cardType")}
             />
+            {errors.cardType && (
+              <span className="text-red-500">{errors.cardType.message}</span>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -79,7 +86,11 @@ const AddNewCard = () => {
               type="text"
               className="w-full h-12 rounded-lg border border-[#E2E8F0] pl-4"
               placeholder="My Cards"
+              {...register("cardHolder")}
             />
+            {errors.cardHolder && (
+              <span className="text-red-500">{errors.cardHolder.message}</span>
+            )}
           </div>
         </div>
 
@@ -92,7 +103,11 @@ const AddNewCard = () => {
               type="number"
               className="w-full h-12 rounded-lg border border-[#E2E8F0] pl-4"
               placeholder="27,000$"
+              {...register("balance")}
             />
+            {errors.balance && (
+              <span className="text-red-500">{errors.balance.message}</span>
+            )}
           </div>
           <div className="flex flex-col gap-2">
             <label className="text-base font-normal text-[#232323]">
@@ -101,15 +116,29 @@ const AddNewCard = () => {
             <input
               type="date"
               className="w-full h-12 rounded-lg border border-[#E2E8F0] text-[#718EBF] pl-4"
+              {...register("expiryDate")}
             />
+            {errors.expiryDate && (
+              <span className="text-red-500">{errors.expiryDate.message}</span>
+            )}
           </div>
         </div>
         <div className="flex justify-start">
-          <button
+          {/* <button
             type="submit"
-            className="w-auto h-12 rounded-lg bg-[#1814F3] text-white px-6 py-2"
+            className="w-auto h-12 rounded-lg bg-[#1814F3] text-white px-6 py-2 " disabled={loading}
           >
             Add Card
+          </button> */}
+          <button
+            type="submit"
+            className={`w-auto h-12 rounded-lg bg-[#1814F3] text-white px-6 py-2 `}
+          >
+            {loading ? (
+              <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin [animation-duration:3s]  border-white mx-auto"></div>
+            ) : (
+              "Add Card"
+            )}
           </button>
         </div>
       </form>
@@ -118,4 +147,3 @@ const AddNewCard = () => {
 };
 
 export default AddNewCard;
-

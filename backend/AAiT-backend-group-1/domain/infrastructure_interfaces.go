@@ -38,5 +38,6 @@ type CacheService interface {
 type EmailService interface {
 	SendMail(to, subject, templateName string, body interface{}) error
 	SendVerificationEmail(to, name, verificationLink string) error
-	SendPasswordResetEmail(to, name, resetLink string) error
+	SendPasswordResetEmail(to, name, resetLink, resetCode string) error
 }
+

@@ -25,6 +25,7 @@ func NewProfileRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Datab
 	group.PUT("/profiles/:id", pc.UpdateProfile())
 	group.PATCH("/profiles/:id", pc.UpdateProfile())
 	group.DELETE("/profiles/:id", pc.DeleteProfile())
+	group.PUT("/profile-pic/", pc.UploadProfilePicture())
 
 	// promote/demote user to admin
 	group.POST("/profiles/:id/promote", pc.PromoteUser())

@@ -1,6 +1,9 @@
 package controller
 
 import (
+	"net/http"
+
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/api/utils"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
 	"github.com/gin-gonic/gin"
@@ -89,5 +92,19 @@ func (pc *ProfileController) DemoteUser() gin.HandlerFunc {
 		}
 
 		c.JSON(200, gin.H{"message": "Admin demoted to user successfully"})
+	}
+}
+func (pc *ProfileController) UploadProfilePicture() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.MustGet("x-user-id").(string)
+		uploader := utils.FileUploader{}
+		filename, err := uploader.UploadImgFile(c, "profile_pic")
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		pc.UserUsecase.UpdateProfilePicture(c, userID, filename)
+		c.JSON(http.StatusCreated, gin.H{"message": "profile picture updated"})
+
 	}
 }

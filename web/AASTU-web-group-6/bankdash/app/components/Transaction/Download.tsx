@@ -5,20 +5,22 @@ import { TransactionType } from "@/types/TransactionValue";
 const Download = ({
   transactionId,
   transaction,
+  accessToken,
 }: {
   transactionId: string;
   transaction: TransactionType;
+  accessToken: string;
 }) => {
   const handleDownload = async () => {
     try {
       const headers = {
-        Authorization: `Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0bmFob20iLCJpYXQiOjE3MjQxNDYwNjgsImV4cCI6MTcyNDIzMjQ2OH0.Y00dc0ACMvkHK5ZYWVsBxK5lk2l5VB_6xnnFAMXrkMjRjl2jxEZHglllGcw_S61p`,
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       };
 
       // Fetch the transaction data using Axios with headers
       const response = await axios.get(
-        `https://bank-dashboard-1tst.onrender.com/transactions/${transactionId}`,
+        `https://bank-dashboard-o9tl.onrender.com/transactions/${transactionId}`,
         {
           headers,
         }

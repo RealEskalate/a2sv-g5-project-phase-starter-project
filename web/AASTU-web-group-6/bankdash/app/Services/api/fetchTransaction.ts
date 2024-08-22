@@ -1,12 +1,12 @@
 import axios from "axios";
 
-const getTransaction = async (page: number) => {
+const getTransaction = async (page: number, accessToken: string) => {
     try {
         const response = await axios({
             method: "GET",
-            url: `https://bank-dashboard-1tst.onrender.com/transactions?page=${page}&size=2`,
+            url: `https://bank-dashboard-o9tl.onrender.com/transactions?page=${page}&size=5`,
             headers: {
-                Authorization: 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0bmFob20iLCJpYXQiOjE3MjQyMjc5MDIsImV4cCI6MTcyNDMxNDMwMn0.DydxCzT8qS-LiHc38KHirs0rZDUIuStwQEJANdRe2ceWPefpAil3wYWnfSdod3uG',
+                Authorization: `Bearer ${accessToken}`,
                 "Content-Type": "application/json",
             },
         });
@@ -21,13 +21,13 @@ const getTransaction = async (page: number) => {
     }
 };
 
-const getExpense = async (page: number, size: number = 5) => {
+const getExpense = async (page: number, accessToken: string) => {
     try {
         const response = await axios({
             method: "GET",
-            url: `https://bank-dashboard-1tst.onrender.com/transactions/expenses?page=${page}&size=${size}`,
+            url: `https://bank-dashboard-o9tl.onrender.com/transactions/expenses?page=${page}&size=5`,
             headers: {
-                Authorization: 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0bmFob20iLCJpYXQiOjE3MjQyMjc5MDIsImV4cCI6MTcyNDMxNDMwMn0.DydxCzT8qS-LiHc38KHirs0rZDUIuStwQEJANdRe2ceWPefpAil3wYWnfSdod3uG',
+                Authorization: `Bearer ${accessToken}`,
                 "Content-Type": "application/json",
             },
         });
@@ -42,13 +42,13 @@ const getExpense = async (page: number, size: number = 5) => {
     }
 };
 
-const getIncome = async (page: number) => {
+const getIncome = async (page: number, accessToken: string) => {
     try {
         const response = await axios({
             method: "GET",
-            url: `https://bank-dashboard-1tst.onrender.com/transactions/incomes?page=${page}&size=1`,
+            url: `https://bank-dashboard-o9tl.onrender.com/transactions/incomes?page=${page}&size=5`,
             headers: {
-                Authorization: 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0bmFob20iLCJpYXQiOjE3MjQyMjc5MDIsImV4cCI6MTcyNDMxNDMwMn0.DydxCzT8qS-LiHc38KHirs0rZDUIuStwQEJANdRe2ceWPefpAil3wYWnfSdod3uG',
+                Authorization: `Bearer ${accessToken}`,
                 "Content-Type": "application/json",
             },
         });

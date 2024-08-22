@@ -14,16 +14,16 @@ package repository
 // )
 
 // var mockBlogs = []domain.Blog{
-// 	{Id: "1", Title: "title 1", Content: "content 1", AuthorID: "author 1", Date: time.Now(), Tags: []string{"tag1"}},
-// 	{Id: "2", Title: "title 2", Content: "content 2", AuthorID: "author 2", Date: time.Now(), Tags: []string{"tag2"}},
-// 	{Id: "3", Title: "title 3", Content: "content 3", AuthorID: "author 3", Date: time.Now(), Tags: []string{"tag3"}},
-// 	{Id: "4", Title: "title 4", Content: "content 4", AuthorID: "author 4", Date: time.Now(), Tags: []string{"tag4"}},
-// 	{Id: "5", Title: "title 5", Content: "content 5", AuthorID: "author 5", Date: time.Now(), Tags: []string{"tag5"}},
-// 	{Id: "6", Title: "title 6", Content: "content 6", AuthorID: "author 6", Date: time.Now(), Tags: []string{"tag6"}},
-// 	{Id: "7", Title: "title 7", Content: "content 7", AuthorID: "author 7", Date: time.Now(), Tags: []string{"tag7"}},
-// 	{Id: "8", Title: "title 8", Content: "content 8", AuthorID: "author 8", Date: time.Now(), Tags: []string{"tag8"}},
-// 	{Id: "9", Title: "title 9", Content: "content 9", AuthorID: "author 9", Date: time.Now(), Tags: []string{"tag9"}},
-// 	{Id: "10", Title: "title 10", Content: "content 10", AuthorID: "author 10", Date: time.Now(), Tags: []string{"tag10"}},
+// 	{Id: "1", Title: "title 1", Content: "content 1", AuthorId: "author 1", Date: time.Now(), Tags: []string{"tag1"}},
+// 	{Id: "2", Title: "title 2", Content: "content 2", AuthorId: "author 2", Date: time.Now(), Tags: []string{"tag2"}},
+// 	{Id: "3", Title: "title 3", Content: "content 3", AuthorId: "author 3", Date: time.Now(), Tags: []string{"tag3"}},
+// 	{Id: "4", Title: "title 4", Content: "content 4", AuthorId: "author 4", Date: time.Now(), Tags: []string{"tag4"}},
+// 	{Id: "5", Title: "title 5", Content: "content 5", AuthorId: "author 5", Date: time.Now(), Tags: []string{"tag5"}},
+// 	{Id: "6", Title: "title 6", Content: "content 6", AuthorId: "author 6", Date: time.Now(), Tags: []string{"tag6"}},
+// 	{Id: "7", Title: "title 7", Content: "content 7", AuthorId: "author 7", Date: time.Now(), Tags: []string{"tag7"}},
+// 	{Id: "8", Title: "title 8", Content: "content 8", AuthorId: "author 8", Date: time.Now(), Tags: []string{"tag8"}},
+// 	{Id: "9", Title: "title 9", Content: "content 9", AuthorId: "author 9", Date: time.Now(), Tags: []string{"tag9"}},
+// 	{Id: "10", Title: "title 10", Content: "content 10", AuthorId: "author 10", Date: time.Now(), Tags: []string{"tag10"}},
 // }
 
 // type BlogRespositoryTestSuite struct {
@@ -46,7 +46,7 @@ package repository
 // 	suite.coll.On("InsertOne", mock.Anything, mock.Anything, mock.Anything).Return(&mongo.InsertOneResult{
 // 		InsertedID: primitive.NewObjectID(),
 // 	}, nil)
-// 	result, err := suite.BlogRepository.Create(mockBlogs[0])
+// 	result, err := suite.BlogRepository.CreateBlog(mockBlogs[0])
 // 	assert.NoError(err)
 // 	assert.Equal(result, mockBlogs[0])
 // }
@@ -71,57 +71,57 @@ package repository
 // 		assert.Equal(mockBlogs, result)
 // 	})
 // 	// todo this is for a single result
-// 	// suite.T().Run("Getting by Blogname", func(t *testing.T) {
-// 	// 	cur := &mongomocks.Cursor{}
-// 	// 	singleResult := &mongomocks.SingleResult{}
-// 	// 	singleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
-// 	// 		arg := args.Get(0).(*domain.Blog)
-// 	// 		*arg = mockBlogs[0]
-// 	// 	}).Return(nil)
-// 	// 	suite.coll.On("FindOne", mock.Anything, mock.Anything, mock.Anything).Return(singleResult)
-// 	// 	defer cur.AssertExpectations(suite.T())
-// 	// 	result, err := suite.BlogRepository.Get(domain.BlogFilterOption{
-// 	// 		Filter: domain.BlogFilters{
-// 	// 			Title: mockBlogs[0].Title,
-// 	// 		},
-// 	// 	})
-// 	// 	assert.NoError(err)
-// 	// 	assert.Equal(mockBlogs, result[0])
-// 	// })
-// 	// suite.T().Run("Getting by Email", func(t *testing.T) {
-// 	// 	cur := &mongomocks.Cursor{}
-// 	// 	singleResult := &mongomocks.SingleResult{}
-// 	// 	singleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
-// 	// 		arg := args.Get(0).(*domain.Blog)
-// 	// 		*arg = mockBlogs[0]
-// 	// 	}).Return(nil)
-// 	// 	suite.coll.On("Find", mock.Anything, mock.Anything, mock.Anything).Return(singleResult)
-// 	// 	defer cur.AssertExpectations(suite.T())
-// 	// 	result, err := suite.BlogRepository.Get(domain.BlogFilterOption{
-// 	// 		Filter: domain.BlogFilters{
-//     //             Tags: mockBlogs[0].Tags,
-//     //         },
-// 	// 	})
-// 	// 	assert.NoError(err)
-// 	// 	assert.Equal(mockBlogs, result[0])
-// 	// })
-// 	// suite.T().Run("Getting by Id", func(t *testing.T) {
-// 	// 	cur := &mongomocks.Cursor{}
-// 	// 	singleResult := &mongomocks.SingleResult{}
-// 	// 	singleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
-// 	// 		arg := args.Get(0).(*domain.Blog)
-// 	// 		*arg = mockBlogs[0]
-// 	// 	}).Return(nil)
-// 	// 	suite.coll.On("FindOne", mock.Anything, mock.Anything, mock.Anything).Return(singleResult)
-// 	// 	defer cur.AssertExpectations(suite.T())
-// 	// 	result, err := suite.BlogRepository.Get(domain.BlogFilterOption{
-// 	// 		Filter: domain.BlogFilters{
-//     //             AuthorId: mockBlogs[0].AuthorID,
-//     //         },
-// 	// 	})
-// 	// 	assert.NoError(err)
-// 	// 	assert.Equal(mockBlogs, result[0])
-// 	// })
+// 	suite.T().Run("Getting by Blogname", func(t *testing.T) {
+// 		cur := &mongomocks.Cursor{}
+// 		singleResult := &mongomocks.SingleResult{}
+// 		singleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
+// 			arg := args.Get(0).(*domain.Blog)
+// 			*arg = mockBlogs[0]
+// 		}).Return(nil)
+// 		suite.coll.On("FindOne", mock.Anything, mock.Anything, mock.Anything).Return(singleResult)
+// 		defer cur.AssertExpectations(suite.T())
+// 		result, err := suite.BlogRepository.Get(domain.BlogFilterOption{
+// 			Filter: domain.BlogFilters{
+// 				Title: mockBlogs[0].Title,
+// 			},
+// 		})
+// 		assert.NoError(err)
+// 		assert.Equal(mockBlogs, result[0])
+// 	})
+// 	suite.T().Run("Getting by Email", func(t *testing.T) {
+// 		cur := &mongomocks.Cursor{}
+// 		singleResult := &mongomocks.SingleResult{}
+// 		singleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
+// 			arg := args.Get(0).(*domain.Blog)
+// 			*arg = mockBlogs[0]
+// 		}).Return(nil)
+// 		suite.coll.On("Find", mock.Anything, mock.Anything, mock.Anything).Return(singleResult)
+// 		defer cur.AssertExpectations(suite.T())
+// 		result, err := suite.BlogRepository.Get(domain.BlogFilterOption{
+// 			Filter: domain.BlogFilters{
+//                 Tags: mockBlogs[0].Tags,
+//             },
+// 		})
+// 		assert.NoError(err)
+// 		assert.Equal(mockBlogs, result[0])
+// 	})
+// 	suite.T().Run("Getting by Id", func(t *testing.T) {
+// 		cur := &mongomocks.Cursor{}
+// 		singleResult := &mongomocks.SingleResult{}
+// 		singleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
+// 			arg := args.Get(0).(*domain.Blog)
+// 			*arg = mockBlogs[0]
+// 		}).Return(nil)
+// 		suite.coll.On("FindOne", mock.Anything, mock.Anything, mock.Anything).Return(singleResult)
+// 		defer cur.AssertExpectations(suite.T())
+// 		result, err := suite.BlogRepository.Get(domain.BlogFilterOption{
+// 			Filter: domain.BlogFilters{
+//                 AuthorId: mockBlogs[0].AuthorID,
+//             },
+// 		})
+// 		assert.NoError(err)
+// 		assert.Equal(mockBlogs, result[0])
+// 	})
 // }
 
 // func TestBlogRepository(t *testing.T) {

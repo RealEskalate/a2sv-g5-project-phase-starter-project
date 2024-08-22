@@ -161,6 +161,20 @@ func (suite *UserUsecaseTestSuite) TestValidateUsername_Negative_NoSpecialCharac
 	suite.Contains(err.Error(), "must contain only")
 }
 
+func (suite *UserUsecaseTestSuite) TestValidateEmail_Positive() {
+	testEmail := "timid_@gmail.com"
+	err := suite.Usecase.ValidateEmail(testEmail)
+	suite.Nil(err)
+}
+
+func (suite *UserUsecaseTestSuite) TestValidateEmail_Negative_InvalidEmail() {
+	testEmail := "timid_gmail.com"
+	err := suite.Usecase.ValidateEmail(testEmail)
+	suite.NotNil(err)
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.Contains(err.Error(), "email")
+}
+
 func TestUserUsecase(t *testing.T) {
 	suite.Run(t, new(UserUsecaseTestSuite))
 }

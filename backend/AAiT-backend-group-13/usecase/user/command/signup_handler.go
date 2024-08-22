@@ -19,7 +19,6 @@ import (
 	irepo "github.com/group13/blog/usecase/common/i_repo"
 	icache "github.com/group13/blog/usecase/common/i_cache"
 	result "github.com/group13/blog/usecase/user/result"
-	
 )
 
 // SignUpHandler handles user sign-up logic.
@@ -58,9 +57,9 @@ func NewSignUpHandler(config SignUpConfig) *SignUpHandler {
 // It creates a new user, checks for conflicts in username and email,
 // generates a validation link, and sends a sign-up email.
 func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, error) {
-	log.Println("Starting sign-up process")
+	log.Printf("Starting sign-up process for user %s -- SignUpHandler", command.username)
 
-	cfg := models.UserConfig{
+	user, err := models.NewUser(models.UserConfig{
 		Username:       command.username,
 		Email:          command.email,
 		PlainPassword:  command.password,
@@ -68,9 +67,7 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 		LastName:       command.lastName,
 		IsAdmin:        false,
 		PasswordHasher: h.hashService,
-	}
-
-	user, err := models.NewUser(cfg)
+	})
 	if err != nil {
 		log.Printf("Error creating new user: %v", err)
 		return nil, err
@@ -81,11 +78,11 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 	res, err := h.repo.FindByUsername(user.Username())
 	if err != nil {
 		if err != er.UserNotFound {
-			log.Printf("Error finding user by username: %v", err.Error())
+			log.Printf("Error finding user by username: %v -- SignUpHandler", err.Error())
 			return nil, err
 		}
 	} else if res != nil {
-		log.Printf("Username %s is already taken", user.Username())
+		log.Printf("Username %s is already taken -- SignUpHandler", user.Username())
 		return nil, er.NewConflict("username taken")
 	}
 
@@ -95,18 +92,18 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 	res, err = h.repo.FindByEmail(user.Email())
 	if err != nil {
 		if err != er.UserNotFound {
-			log.Printf("Error finding user by email: %v", err)
+			log.Printf("Error finding user by email: %v -- SignUpHandler", err)
 			return nil, err
 		}
 	} else if res != nil {
-		log.Printf("Email %s is already registered", user.Email())
+		log.Printf("Email %s is already registered -- SignUpHandler", user.Email())
 		return nil, er.NewConflict("email already exists")
 	}
 
 	log.Printf("Email %s is available", user.Email())
 
 	// Generate a validation link
-	validationLink, err := h.GenerateValidationLink(*user)
+	validationLink, err := h.generateValidationLink(*user)
 	if err != nil {
 		log.Printf("Error generating validation link: %v", err)
 		return nil, err
@@ -127,7 +124,7 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 		log.Printf("Error saving new user: %v", err)
 		return nil, err
 	}
-	log.Printf("New user %s saved successfully", user.Username())
+	log.Printf("New user %s saved successfully -- SignUpHandler", user.Username())
 
 	return &result.SignUpResult{
 		ID:        user.ID(),
@@ -138,8 +135,8 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 	}, nil
 }
 
-// GenerateValidationLink creates a validation link for the user with encryption.
-func (h *SignUpHandler) GenerateValidationLink(user models.User) (string, error) {
+// generateValidationLink creates a validation link for the user with encryption.
+func (h *SignUpHandler) generateValidationLink(user models.User) (string, error) {
 	log.Printf("Generating validation link for user %s", user.Username())
 
 	userID := user.ID().String()
@@ -153,7 +150,7 @@ func (h *SignUpHandler) GenerateValidationLink(user models.User) (string, error)
 		return "", er.NewUnexpected("failed to encrypt value")
 	}
 
-	validationLink := fmt.Sprintf("https://localhost:8080/validate?=%s", encryptedValue)
+	validationLink := fmt.Sprintf("http://localhost:8080/api/v1/auth/validateEmail?secret?=%s", encryptedValue)
 	log.Printf("Validation link generated: %s", validationLink)
 	return validationLink, nil
 }

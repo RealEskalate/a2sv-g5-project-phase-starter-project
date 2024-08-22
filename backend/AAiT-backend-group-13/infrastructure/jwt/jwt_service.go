@@ -46,14 +46,14 @@ func New(config Config) *Service {
 func (s *Service) Generate(user *models.User, tokenType string) (string, error) {
 	email := user.Email()
 	name := user.Username()
-	role := user.IsAdmin()
+	isAdmin := user.IsAdmin()
 
 	var expTime time.Duration
 
 	switch tokenType {
-	case "access":
+	case ijwt.Access:
 		expTime = s.expTime
-	case "refresh":
+	case ijwt.Refresh:
 		expTime = s.refreshExpTime
 	default:
 		expTime = time.Minute * 15
@@ -65,11 +65,14 @@ func (s *Service) Generate(user *models.User, tokenType string) (string, error) 
 	}
 
 	tokenClaims := jwt.MapClaims{
-		"email":  email,
-		"name":   name,
-		"role":   role,
-		"exp":    claims.ExpiresAt,
-		"issuer": claims.Issuer,
+		"email":    email,
+		"name":     name,
+		"is_admin": isAdmin,
+		"exp":      claims.ExpiresAt,
+		"issuer":   claims.Issuer,
+	}
+	if tokenType == ijwt.Reset {
+		tokenClaims["is_for_reset"] = true
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenClaims)

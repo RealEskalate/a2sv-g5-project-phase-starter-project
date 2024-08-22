@@ -35,7 +35,7 @@ func NewValidateEmailHandler(repo irepository.UserRepository, hashService ihash.
 // Handle processes the email validation using the provided encrypted value.
 // It decodes the value, verifies the user, checks expiry, and generates JWT tokens.
 func (h *ValidateEmailHandler) Handle(encryptedValue string) (*result.ValidateEmailResult, error) {
-	decodedUsername, decodedExpiry, decodedUserId := h.decodesecret(encryptedValue)
+	decodedUserId, decodedExpiry, decodedUsername := h.decodesecret(encryptedValue)
 	userID, err := uuid.Parse(decodedUserId)
 	if err != nil {
 		return nil, er.NewBadRequest("invalid user ID")
@@ -57,7 +57,6 @@ func (h *ValidateEmailHandler) Handle(encryptedValue string) (*result.ValidateEm
 		return nil, er.NewBadRequest("invalid secret")
 	}
 
-	// Activate the user account and save changes
 	user.MakeActive()
 	if err := h.repo.Save(user); err != nil {
 		return nil, err

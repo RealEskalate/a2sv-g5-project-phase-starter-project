@@ -18,11 +18,10 @@ var _ icache.ICache = &RedisCache{}
 
 func NewRedisCache(client *redis.Client, expiryDay time.Duration) *RedisCache {
 	return &RedisCache{
-		client: client,
+		client:    client,
 		expiryDay: time.Second * expiryDay,
 	}
 }
-
 
 func (r *RedisCache) Get(key string) (interface{}, error) {
 	val, err := r.client.Get(context.Background(), key).Result()
@@ -41,7 +40,6 @@ func (r *RedisCache) Get(key string) (interface{}, error) {
 
 	return result, nil
 }
-
 
 func (r *RedisCache) Set(key string, value interface{}) error {
 	jsonData, err := json.Marshal(value)

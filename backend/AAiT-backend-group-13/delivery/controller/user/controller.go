@@ -9,9 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	basecontroller "github.com/group13/blog/delivery/controller/base"
+	errapi "github.com/group13/blog/delivery/errors"
+	er "github.com/group13/blog/domain/errors"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
 	passwordreset "github.com/group13/blog/usecase/password_reset"
 	usercmd "github.com/group13/blog/usecase/user/command"
+	userqry "github.com/group13/blog/usecase/user/query"
 	"github.com/group13/blog/usecase/user/result"
 )
 
@@ -19,7 +22,7 @@ import (
 type UserController struct {
 	basecontroller.BaseHandler
 	promoteHandler       icmd.IHandler[*usercmd.PromoteCommand, bool]
-	loginHandler         icmd.IHandler[*usercmd.LoginCommand, *result.LoginInResult]
+	loginHandler         icmd.IHandler[*userqry.LoginQuery, *result.LoginInResult]
 	signupHandler        icmd.IHandler[*usercmd.SignUpCommand, *result.SignUpResult]
 	resetPasswordHandler icmd.IHandler[*passwordreset.ResetCommand, bool]
 	resetCodeSendHandler icmd.IHandler[string, time.Time]
@@ -30,7 +33,7 @@ type UserController struct {
 // Config holds the configuration for creating a new UserController.
 type Config struct {
 	PromoteHandler       icmd.IHandler[*usercmd.PromoteCommand, bool]
-	LoginHandler         icmd.IHandler[*usercmd.LoginCommand, *result.LoginInResult]
+	LoginHandler         icmd.IHandler[*userqry.LoginQuery, *result.LoginInResult]
 	SignupHandler        icmd.IHandler[*usercmd.SignUpCommand, *result.SignUpResult]
 	ResetPasswordHandler icmd.IHandler[*passwordreset.ResetCommand, bool]
 	ResetCodeSendHandler icmd.IHandler[string, time.Time]
@@ -59,9 +62,8 @@ func (u UserController) RegisterPrivileged(router *gin.RouterGroup) {
 
 func (u UserController) RegisterProtected(router *gin.RouterGroup) {
 	router = router.Group("/auth")
-	router.GET("/:username/logout", u.logout)
+	router.POST("/:username/logout", u.logout)
 }
-
 func (u UserController) RegisterPublic(router *gin.RouterGroup) {
 	router = router.Group("/auth")
 	router.POST("/signup", u.signUp)
@@ -73,43 +75,43 @@ func (u UserController) RegisterPublic(router *gin.RouterGroup) {
 }
 
 func (u *UserController) signUp(ctx *gin.Context) {
-	var user SignUpDto
-	if err := ctx.BindJSON(&user); err != nil {
+	var request SignUpDto
+	if err := ctx.BindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, "Invalid Input")
-		log.Println("User input could not be bound -- UserController")
 		return
 	}
 
-	command := usercmd.NewSignUpCommand(user.Username, user.FirstName, user.LastName, user.Email, user.Password)
+	log.Printf("Started creating new account for user with username %s -- UserController", request.Username)
+	command := usercmd.NewSignUpCommand(request.Username, request.FirstName, request.LastName, request.Email, request.Password)
 	_, err := u.signupHandler.Handle(command)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err.Error())
-		log.Println("User use case invalidated data -- UserController")
+		log.Println("User signed up failed -- UserController")
+		u.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
 		return
 	}
 
 	log.Println("User signed up successfully -- UserController")
-	ctx.JSON(http.StatusCreated, "Signed Up successfully")
+	u.Respond(ctx, http.StatusCreated, "Signed Up successfully")
 }
 
 func (u *UserController) login(ctx *gin.Context) {
-	var user LoginDto
-	if err := ctx.BindJSON(&user); err != nil {
+	var request LoginDto
+	if err := ctx.BindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, "Invalid Input")
 		log.Println("User input could not be bound -- UserController")
 		return
 	}
-	log.Printf("User: %v", user)
+	log.Printf("login in user %s -- UserController", request.Username)
 
-	command := usercmd.NewLoginCommand(user.Username, user.Password)
+	command := userqry.NewLoginQuery(request.Username, request.Password)
 	res, err := u.loginHandler.Handle(command)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err.Error())
+		u.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
 		log.Println("User use case invalidated data -- UserController")
 		return
 	}
 
-	u.RespondWithCookies(ctx, http.StatusOK, res, []*http.Cookie{
+	u.RespondWithCookies(ctx, http.StatusOK, nil, []*http.Cookie{
 		{
 			Name:     "accessToken",
 			Value:    res.Token,
@@ -122,7 +124,7 @@ func (u *UserController) login(ctx *gin.Context) {
 		{
 			Name:     "refreshToken",
 			Value:    res.RefreshToken,
-			Path:     "/",
+			Path:     "/refreshToken",
 			Domain:   ctx.Request.Host,
 			MaxAge:   48 * 60 * 60,
 			HttpOnly: true,
@@ -142,7 +144,7 @@ func (u *UserController) resetPassword(ctx *gin.Context) {
 	command := passwordreset.NewResetCommand(request.Token, request.NewPassword)
 	_, err := u.resetPasswordHandler.Handle(command)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err.Error())
+		u.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
 		log.Println("Password reset use case failed -- UserController")
 		return
 	}
@@ -160,21 +162,21 @@ func (u *UserController) validateCode(ctx *gin.Context) {
 	}
 
 	command := passwordreset.NewValidateCodeCommand(request.Code, request.Email)
-	_, err := u.validateCodeHandler.Handle(command)
+	token, err := u.validateCodeHandler.Handle(command)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err.Error())
+		u.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
 		log.Println("Code validation use case failed -- UserController")
 		return
 	}
 
 	log.Println("Code validated successfully -- UserController")
-	ctx.JSON(http.StatusOK, "Code validated successfully")
+	u.Respond(ctx, http.StatusOK, gin.H{"resetToken": token})
 }
 
 func (u *UserController) forgotPassword(ctx *gin.Context) {
 	var request ForgotPasswordDto
 	if err := ctx.BindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, "Invalid Input")
+		ctx.JSON(http.StatusBadRequest, err.Error())
 		log.Println("User input could not be bound -- UserController")
 		return
 	}
@@ -225,36 +227,33 @@ func (u UserController) changeStatus(toAdmin bool, ctx *gin.Context) {
 	username := ctx.Param("id")
 	claims, exists := ctx.Get("userClaims")
 	if !exists {
-		u.BaseHandler.Respond(ctx, http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-
+		u.Problem(ctx, errapi.NewAuthentication("authentication required"))
 		return
 	}
 
 	// Type assertion to jwt.MapClaims
 	jwtClaims, ok := claims.(jwt.MapClaims)
 	if !ok {
-		u.BaseHandler.Respond(ctx, http.StatusBadRequest, gin.H{"message": "Invalid Input"})
+		u.Problem(ctx, errapi.NewAuthentication("authentication required"))
 		return
 	}
 
 	// Extract and parse the user_id claim as a UUID
 	userIDStr, ok := jwtClaims["user_id"].(string)
 	if !ok {
-		u.BaseHandler.Respond(ctx, http.StatusBadRequest, gin.H{"message": "Invalid Input"})
+		u.Problem(ctx, errapi.NewAuthentication("authentication required"))
 		return
 	}
 
 	promoterId, err := uuid.Parse(userIDStr)
-
 	if err != nil {
-		u.BaseHandler.Respond(ctx, http.StatusBadRequest, gin.H{"message": "Invalid Input"})
+		u.Problem(ctx, errapi.NewAuthentication("authentication required"))
 		return
 	}
 
 	_, err = u.promoteHandler.Handle(usercmd.NewPromoteCommand(username, toAdmin, promoterId))
-
 	if err != nil {
-		u.BaseHandler.Respond(ctx, http.StatusInternalServerError, gin.H{"message": err.Error()})
+		u.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
 		return
 	}
 
@@ -269,9 +268,8 @@ func (u UserController) validateEmail(ctx *gin.Context) {
 
 	// Pass the secret to the use case
 	_, err := u.validateEmailHandler.Handle(encryptedValue)
-
 	if err != nil {
-		u.BaseHandler.Respond(ctx, http.StatusInternalServerError, gin.H{"message": err.Error()})
+		u.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
 		log.Println("User use case invalidated it -- user controller")
 		return
 	}

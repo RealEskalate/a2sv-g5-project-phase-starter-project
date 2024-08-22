@@ -5,6 +5,9 @@ const token =
 export const getBankServiceById = async (id: any) => {
   const response = await fetch(`${API_BASE_URL}/bank-services/${id}`, {
     method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
   return response.json();
 };
@@ -70,4 +73,3 @@ export const searchBankServices = async (queryParams: any) => {
   );
   return response.json();
 };
-

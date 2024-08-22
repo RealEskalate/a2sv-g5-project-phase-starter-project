@@ -71,6 +71,11 @@ func (u *UserUsecase) GoogleCallback(code string) (*domain.User, *domain.Token, 
 	// Create a new user if not found
 	if dbUser == nil {
 		user.ID = primitive.NewObjectID()
+		randomPassword, err := generateRandomPassword(30)
+		if err != nil {
+			return nil, nil, err
+		}
+		user.Password = randomPassword
 		err = u.repo.CreateUser(context.TODO(), user)
 		if err != nil {
 			return nil, nil, err

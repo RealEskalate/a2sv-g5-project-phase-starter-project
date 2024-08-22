@@ -15,6 +15,8 @@ type Blog struct {
 	CreatedAt primitive.DateTime `json:"created_at" bson:"created_at"` // Timestamp for when the blog was created
 	UpdatedAt primitive.DateTime `json:"updated_at" bson:"updated_at"` // Timestamp for when the blog was last updated
 	Tags      []BlogTag          `json:"tags" bson:"tags"`             // Tags for categorizing the blog
+	Views     int64              `json:"views" bson:"views"`           // Count of views
+	Likes     int64              `json:"likes" bson:"likes"`           // Count of likes
 }
 
 type BlogTag struct {

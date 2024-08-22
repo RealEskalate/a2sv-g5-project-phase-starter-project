@@ -10,7 +10,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 import os
-from load_env import load_dotenv
+from dotenv import load_dotenv
 load_dotenv()
 # from langchain.agents import AgentExecutor
 

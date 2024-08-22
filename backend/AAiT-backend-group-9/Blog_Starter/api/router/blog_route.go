@@ -6,7 +6,9 @@ import (
 	"Blog_Starter/domain"
 	"Blog_Starter/repository"
 	"Blog_Starter/usecase"
+	"Blog_Starter/utils/infrastructure"
 	"time"
+
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -14,9 +16,10 @@ import (
 func NewBlogRouter(env *config.Env, timeout time.Duration, db *mongo.Client, group *gin.RouterGroup) {
 
 	database := db.Database(env.DBName) // Replace with your actual database name
+	cacheServic := infrastructure.NewcacheServic(env.CacheAddr, "", 0)
 	br := repository.NewBlogRepository(database, domain.CollectionBlog)
 	ur := repository.NewUserRepository(database, domain.CollectionUser)
-	bu := usecase.NewBlogUseCase(br, ur, timeout)
+	bu := usecase.NewBlogUseCase(br, ur, timeout, cacheServic)
 	bc := controller.NewBlogController(bu)
 
 	group.POST("/create", bc.CreateBlog)

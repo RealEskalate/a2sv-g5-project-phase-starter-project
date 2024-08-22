@@ -69,7 +69,7 @@ const recentlistitems = [
 
 const CardList = () => {
   return (
-    <div className=" sm:w-[475px] md:w-[730px]  ">
+    <div className="">
       {recentlistitems.map((item, index) => (
         <div key={index} className="grid grid-flow-col h-[69px] lg:h-[90px] justify-between mb-[10px] sm:mb-[15px] items-center pl-[20px] bg-white rounded-3xl grid-col-12">
           

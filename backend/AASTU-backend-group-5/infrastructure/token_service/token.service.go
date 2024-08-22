@@ -24,6 +24,7 @@ func (t *TokenService_imp) GenerateAccessToken(user domain.User) (string, error)
 	claims := domain.UserClaims{
         ID:      user.ID,
         Name:    user.UserName,
+		Avatar: user.ProfilePicture,
         Email:   user.Email,
         IsAdmin: user.Is_Admin,
         StandardClaims: jwt.StandardClaims{
@@ -38,6 +39,7 @@ func (t *TokenService_imp) GenerateRefreshToken(user domain.User) (string, error
 	claims := domain.UserClaims{
         ID:      user.ID,
         Name:    user.UserName,
+		Avatar: user.ProfilePicture,
         Email:   user.Email,
         IsAdmin: user.Is_Admin,
         StandardClaims: jwt.StandardClaims{
@@ -65,6 +67,7 @@ func (t *TokenService_imp) ValidateAccessToken(tokenStr string) (*domain.User, e
 	return &domain.User{
         ID:      claims.ID,
         UserName:    claims.Name,
+		ProfilePicture: claims.Avatar,
         Email:   claims.Email,
         Is_Admin: claims.IsAdmin,
     }, nil
@@ -88,6 +91,7 @@ func (t *TokenService_imp) ValidateRefreshToken(tokenStr string) (*domain.User, 
 	return &domain.User{
         ID:      claims.ID,
         UserName:    claims.Name,
+		ProfilePicture: claims.Avatar,
         Email:   claims.Email,
         Is_Admin: claims.IsAdmin,
     }, nil

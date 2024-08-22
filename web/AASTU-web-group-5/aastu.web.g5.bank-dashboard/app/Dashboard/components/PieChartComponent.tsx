@@ -13,12 +13,17 @@ const PieChartComponent: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions/expenses?page=0&size=10', {
+        const response = await axios.get('https://bank-dashboard-o9tl.onrender.com/transactions/expenses?page=0&size=10', {
           headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`,
+            Authorization: `Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZHVnbmEiLCJpYXQiOjE3MjQzMzMyNDcsImV4cCI6MTcyNDQxOTY0N30.5lTJSlmznH3Dzg8BmHuyMSvET55kVMqHhENd76U0q3mX1LZtP7W8HTXy4mb2pV0s`,
           },
         });
-        setData(response.data.data);
+
+        // Extract the content array from the response
+        const fetchedData = response.data.data.content;
+
+        // Set the content array as the data
+        setData(fetchedData);
       } catch (error) {
         console.error("Failed to fetch data:", error);
         setError("Failed to fetch data. Please check the console for more details.");
@@ -55,7 +60,7 @@ const PieChartComponent: React.FC = () => {
     }
 
     return acc;
-  }, [] as any[]);
+  }, []);
 
   // Handle "Other" category directly within the processed data
   const totalValue = processedData.reduce((sum, entry) => sum + entry.value, 0);

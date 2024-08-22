@@ -3,7 +3,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'https://bank-dashboard-6acc.onrender.com/api', // Base URL for the API
+  baseURL: 'https://bank-dashboard-o9tl.onrender.com/api', // Base URL for the API
   headers: {
     'Content-Type': 'application/json',
   },

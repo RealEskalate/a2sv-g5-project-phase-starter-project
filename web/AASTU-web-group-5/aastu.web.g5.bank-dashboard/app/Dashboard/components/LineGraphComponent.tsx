@@ -26,9 +26,9 @@ export function LineGraphComponent() {
   useEffect(() => {
     const fetchChartData = async () => {
       try {
-        const response = await axios.get('https://bank-dashboard-6acc.onrender.com/transactions/balance-history', {
+        const response = await axios.get('https://bank-dashboard-o9tl.onrender.com/transactions/balance-history', {
           headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`,
+            Authorization: `Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZHVnbmEiLCJpYXQiOjE3MjQzMzMyNDcsImV4cCI6MTcyNDQxOTY0N30.5lTJSlmznH3Dzg8BmHuyMSvET55kVMqHhENd76U0q3mX1LZtP7W8HTXy4mb2pV0s`,
           },
         });
         if (response.data.success) {

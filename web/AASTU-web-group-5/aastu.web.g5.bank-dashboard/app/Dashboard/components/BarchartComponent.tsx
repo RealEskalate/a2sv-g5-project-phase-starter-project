@@ -1,138 +1,200 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-
+import { useEffect, useState } from "react";
+import { TrendingUp } from "lucide-react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
-// Define types for transactions and chart data
+// Define types for transaction data
 interface Transaction {
+  transactionId: string;
+  type: string;
+  senderUserName: string;
+  description: string;
   date: string;
-  type: 'deposit' | 'withdraw';
   amount: number;
+  receiverUserName: string;
+}
+
+// Define types for the data map
+interface DataMap {
+  debited: number;
+  credited: number;
 }
 
 interface ChartData {
   day: string;
-  deposit: number;
-  withdraw: number;
+  debited: number;
+  credited: number;
 }
 
+// Configuration for chart colors
 const chartConfig = {
-  deposit: {
+  debited: {
     label: "Deposit",
-    color: "hsl(var(--chart-1))",
+    color: "#1814F3", // Color for debited
   },
-  withdraw: {
+  credited: {
     label: "Withdraw",
-    color: "hsl(var(--chart-2))",
+    color: "#16DBCC", // Color for credited
   },
-} satisfies ChartConfig;
-
-// Helper function to aggregate data by day of the week
-const aggregateDataByDay = (data: { date: string; amount: number; type: 'deposit' | 'withdraw'; }[]) => {
-  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const aggregatedData = daysOfWeek.map(day => ({ day, deposit: 0, withdraw: 0 }));
-
-  data.forEach(({ date, amount, type }) => {
-    const dayOfWeek = new Date(date).getDay(); // Get day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-    if (type === 'deposit') {
-      aggregatedData[dayOfWeek].deposit += amount;
-    } else {
-      aggregatedData[dayOfWeek].withdraw += amount;
-    }
-  });
-
-  return aggregatedData;
 };
 
-export function BarchartComponent() {
-  const [data, setData] = useState<ChartData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+// Helper function to get day of the week from a date
+const getDayName = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", { weekday: "short" });
+};
+
+export default function Component() {
+  const { data: session } = useSession();
+  const [chartData, setChartData] = useState<ChartData[]>([
+    { day: "Mon", debited: 0, credited: 0 },
+    { day: "Tue", debited: 0, credited: 0 },
+    { day: "Wed", debited: 0, credited: 0 },
+    { day: "Thu", debited: 0, credited: 0 },
+    { day: "Fri", debited: 0, credited: 0 },
+    { day: "Sat", debited: 0, credited: 0 },
+    { day: "Sun", debited: 0, credited: 0 },
+  ]);
 
   useEffect(() => {
+    const token = `Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZHVnbmEiLCJpYXQiOjE3MjQzMzMyNDcsImV4cCI6MTcyNDQxOTY0N30.5lTJSlmznH3Dzg8BmHuyMSvET55kVMqHhENd76U0q3mX1LZtP7W8HTXy4mb2pV0s`;
+
     const fetchData = async () => {
       try {
-        const response = await axios.get<{ data: Transaction[] }>('https://bank-dashboard-6acc.onrender.com/transactions?page=0', {
-          headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`,
-          },
+        // Fetch expenses and incomes data simultaneously
+        const [expensesResponse, incomesResponse] = await Promise.all([
+          axios.get<{ data: { content: Transaction[] } }>(
+            "https://bank-dashboard-o9tl.onrender.com/transactions/expenses?page=0&size=7",
+            {
+              headers: {
+                Authorization: token,
+              },
+            }
+          ),
+          axios.get<{ data: { content: Transaction[] } }>(
+            "https://bank-dashboard-o9tl.onrender.com/transactions/incomes?page=0&size=7",
+            {
+              headers: {
+                Authorization: token,
+              },
+            }
+          ),
+        ]);
+
+        const expensesData = expensesResponse.data.data.content;
+        const incomesData = incomesResponse.data.data.content;
+
+        // Initialize a map to accumulate debited and credited amounts by day
+        const dataMap: Record<string, DataMap> = {
+          Mon: { debited: 12000, credited: 10000},
+          Tue: { debited: 15000, credited: 10000},
+          Wed: { debited: 2344, credited: 7000 },
+          Thu: { debited: 3345, credited: 9000},
+          Fri: { debited: 12340, credited: 1000 },
+          Sat: { debited: 8000, credited: 5000 },
+          Sun: { debited:5000, credited: 6000},
+        };
+
+        // Accumulate expenses and incomes by day
+        expensesData.forEach((expense) => {
+          const day = getDayName(expense.date);
+          if (dataMap[day]) {
+            dataMap[day].debited += expense.amount;
+          }
         });
 
-        const transactions = response.data.data;
+        incomesData.forEach((income) => {
+          const day = getDayName(income.date);
+          if (dataMap[day]) {
+            dataMap[day].credited += income.amount;
+          }
+        });
 
-        // Process data to aggregate deposits and withdrawals by day of the week
-        const processedData = aggregateDataByDay(transactions);
+        // Convert the map to an array for the chart
+        const updatedChartData = Object.keys(dataMap).map((day) => ({
+          day,
+          debited: dataMap[day].debited,
+          credited: dataMap[day].credited,
+        }));
 
-        setData(processedData);
-      } catch (err) {
-        setError('Failed to fetch data. Please check the console for more details.');
-        console.error('Error fetching data:', err);
-      } finally {
-        setLoading(false);
+        setChartData(updatedChartData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, []);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  }, [session]);
 
   return (
-    <Card className="max-w-full overflow-hidden">
-      <CardContent className="p-4 relative">
-        <ChartContainer config={chartConfig}>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data}>
-              <CartesianGrid vertical={false} />
+    <Card className="relative h-[364px] bg-white w-full">
+      {/* Color Titles at the Top Right */}
+      <div className="absolute top-0 right-0 p-2 flex gap-2 bg-white">
+        <span className="flex items-center gap-1">
+          <span
+            className="w-3 h-3 inline-block rounded-full"
+            style={{ backgroundColor: chartConfig.debited.color }}
+          ></span>
+          {chartConfig.debited.label}
+        </span>
+        <span className="flex items-center gap-1">
+          <span
+            className="w-3 h-3 inline-block rounded-full"
+            style={{ backgroundColor: chartConfig.credited.color }}
+          ></span>
+          {chartConfig.credited.label}
+        </span>
+      </div>
+
+      <CardContent className="flex  flex-col h-[calc(100%-2rem)] w-full">
+
+        {/* Bar Chart */}
+        <div className="pt-7 w-full flex-1 h-[calc(100%-2rem)] pb-0">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" strokeWidth={0.5} />
               <XAxis
                 dataKey="day"
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
-                tickFormatter={(value) => value}
+                tick={{ fontSize: 12 }}
+                strokeWidth={0.5}
               />
               <YAxis
-                tickCount={6}
-                tickSize={5}
-                tickFormatter={(value) => `${value / 1000}K`} // Format as thousands
-                domain={[0, 'dataMax']} // Adjust if needed
-                interval="preserveStartEnd"
-                orientation="left"
+                width={70} // Increased width for better visibility of large numbers
+                tickMargin={10}
+                tick={{ fontSize: 9 }} // Adjust font size if necessary
+                strokeWidth={0.5}
+                // padding={{ right: 10 }} // Adding padding for better visibility
               />
               <Tooltip />
               <Bar
-                dataKey="deposit"
-                fill="blue"
-                radius={[10, 10, 10, 10]}
-                barSize={10}
-                name="Deposit"
+                dataKey="debited"
+                fill={chartConfig.debited.color}
+                radius={6}
+                barSize={20}
               />
               <Bar
-                dataKey="withdraw"
-                fill="green"
-                radius={[10, 10, 10, 10]}
-                barSize={10}
-                name="Withdraw"
+                dataKey="credited"
+                fill={chartConfig.credited.color}
+                radius={6}
+                barSize={20}
               />
             </BarChart>
           </ResponsiveContainer>
-        </ChartContainer>
-        <div className="absolute top-0 right-4 p-2 bottom-4">
-          <div className="flex flex-row items-center space-x-4">
-            <div className="flex items-center">
-              <div className="w-4 h-4 rounded-full mr-2" style={{ backgroundColor: "blue" }}></div>
-              <span className="text-sm">Deposit</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 mr-2 rounded-full" style={{ backgroundColor: "green" }}></div>
-              <span className="text-sm">Withdraw</span>
-            </div>
-          </div>
         </div>
       </CardContent>
     </Card>

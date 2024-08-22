@@ -1,15 +1,17 @@
 package Domain
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type User struct {
 	Id                 primitive.ObjectID `bson:"_id,omitempty"`
-	Name               string             `bson:"name"`
-	Email              string             `bson:"email"`
-	Password           string             `bson:"password"`
+	Name               string             `bson:"name" validate:"required,min=2,max=50"`
+	LastName           string             `bson:"last_name" validate:"reqiured,min=2,max=50"`
+	Email              string             `bson:"email" validate:"required,email"`
+	Password           string             `bson:"password" validate:"required"`
 	Role               string             `bson:"role"`
 	ImageUrl           string             `bson:"image_url"`
 	CreatedAt          time.Time          `bson:"created_at"`
@@ -22,3 +24,4 @@ type Credential struct {
 	Email     string `json:"email" bson:"email"`
 	Refresher string `json:"refresher" bson:"refresher"`
 }
+

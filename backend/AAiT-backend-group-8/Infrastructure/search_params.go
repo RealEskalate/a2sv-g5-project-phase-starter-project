@@ -1,10 +1,11 @@
-package infrastructure
+package Infrastructure
 
 import (
 	"AAiT-backend-group-8/Domain"
-	"github.com/gin-gonic/gin"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 const dateLayout = "2006-01-02" // example layout, adjust as needed

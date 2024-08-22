@@ -3,23 +3,23 @@ package controller
 import (
 	"net/http"
 
-	"github.com/RealEskalate/blogpost/usecase"
+	"github.com/RealEskalate/blogpost/domain"
 	"github.com/gin-gonic/gin"
 )
 
 type DislikeController struct {
-	DislikeUseCase *usecase.DislikeUseCase
+	DislikeUseCase domain.DisLike_Usecase_interface
 }
 
-func NewDislikeController(dislikeUseCase *usecase.DislikeUseCase) *DislikeController {
+func NewDislikeController(dislikeUseCase domain.DisLike_Usecase_interface) *DislikeController {
 	return &DislikeController{
 		DislikeUseCase: dislikeUseCase,
 	}
 }
 
 func (BC *DislikeController) GetDislikes(ctx *gin.Context) {
-	post_id := ctx.Param("post_id")
-	dislikes, err := BC.DislikeUseCase.GetDislikes(post_id)
+	postID := ctx.Param("post_id")
+	dislikes, err := BC.DislikeUseCase.GetDislikes(postID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -28,10 +28,10 @@ func (BC *DislikeController) GetDislikes(ctx *gin.Context) {
 }
 
 func (BC *DislikeController) CreateDislike(ctx *gin.Context) {
-	user_id := ctx.Param("user_id")
-	post_id := ctx.Param("post_id")
+	userID := ctx.Param("user_id")
+	postID := ctx.Param("post_id")
 
-	err := BC.DislikeUseCase.CreateDislike(user_id, post_id)
+	err := BC.DislikeUseCase.CreateDislike(userID, postID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -40,10 +40,10 @@ func (BC *DislikeController) CreateDislike(ctx *gin.Context) {
 }
 
 func (BC *DislikeController) ToggleDislike(ctx *gin.Context) {
-	user_id := ctx.Param("user_id")
-	post_id := ctx.Param("post_id")
+	userID := ctx.Param("user_id")
+	postID := ctx.Param("post_id")
 
-	err := BC.DislikeUseCase.ToggleDislike(user_id, post_id)
+	err := BC.DislikeUseCase.ToggleDislike(userID, postID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -52,10 +52,10 @@ func (BC *DislikeController) ToggleDislike(ctx *gin.Context) {
 }
 
 func (BC *DislikeController) RemoveDislike(ctx *gin.Context) {
-	user_id := ctx.Param("user_id")
-	post_id := ctx.Param("post_id")
+	userID := ctx.Param("user_id")
+	postID := ctx.Param("post_id")
 
-	err := BC.DislikeUseCase.RemoveDislike(user_id, post_id)
+	err := BC.DislikeUseCase.RemoveDislike(userID, postID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

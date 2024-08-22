@@ -6,6 +6,7 @@ import (
 
 	"github.com/RealEskalate/blogpost/domain"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -24,6 +25,7 @@ func NewBlogController(blogUsecase domain.Blog_Usecase_interface, userUsecase do
 func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var blog domain.PostBlog
+		var blg domain.Blog
 		if err := c.BindJSON(&blog); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse request. Ensure the blog data is correct: " + err.Error()})
 			return
@@ -117,7 +119,6 @@ func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"message": "Blog post updated successfully!", "blog": updatedBlog})
 	}
 }
-
 func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		idStr := c.Param("id")
@@ -128,7 +129,8 @@ func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 			return
 		}
 
-		if err := bc.BlogUsecase.DeleteBlog(id.Hex(), ""); err != nil {
+		err = bc.BlogUsecase.DeleteBlog(id.Hex())
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to delete blog post: " + err.Error()})
 			return
 		}
@@ -139,11 +141,41 @@ func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 
 func (bc *BlogController) FilterBlogs() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		filters := make(map[string]string)
-		for key, values := range c.Request.URL.Query() {
-			if len(values) > 0 {
-				filters[key] = values[0]
+
+		title := c.Query("title")
+		author := c.Query("author")
+
+		tags := c.QueryArray("tags")
+		startDate := c.Query("start_date")
+		endDate := c.Query("end_date")
+		popularity := c.Query("popularity")
+
+		filters := make(map[string]interface{})
+
+		if title != "" {
+			filters["title"] = title
+		}
+		if author != "" {
+			filters["owner.username"] = author
+		}
+
+		if len(tags) > 0 {
+			filters["tag"] = tags
+		}
+		if startDate != "" {
+			filters["created_at"] = bson.M{"$gte": startDate}
+		}
+		if endDate != "" {
+			filters["created_at"] = bson.M{"$lte": endDate}
+		}
+
+		if popularity != "" {
+			popularityValue, err := strconv.Atoi(popularity)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid popularity value."})
+				return
 			}
+			filters["like_count"] = bson.M{"$gte": popularityValue}
 		}
 
 		blogs, err := bc.BlogUsecase.FilterBlog(filters)

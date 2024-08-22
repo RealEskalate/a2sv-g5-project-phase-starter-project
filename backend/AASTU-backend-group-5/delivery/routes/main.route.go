@@ -19,17 +19,17 @@ func SetUp(router *gin.Engine) {
 	}
 
   
-	stateCollection := &database.MongoCollection{
+ 	stateCollection := &database.MongoCollection{
 		Collection: clinect.Client.Database("BlogPost").Collection("States"),
 	}
 	userrepo := repository.NewUserRepository(userCollection)
-
+  
 	aiRoute := router.Group("")
 	userRoute := router.Group("")
 	verifiRoute := router.Group("")
 	uplaodRoute := router.Group("")
 	authRoute := router.Group("")
-  	blogRot := router.Group("")
+  blogRot := router.Group("")
   popularityRoute := router.Group("")
 	likeRoute := router.Group("")
 	dislikeRoute := router.Group("")
@@ -40,9 +40,10 @@ func SetUp(router *gin.Engine) {
 	NewBlogRoutes(blogRot, blogCollection, userCollection)
 	NewAiRequestRoute(aiRoute)
 	NewUserRoute(userRoute, userCollection)
-  	NewAuthRoute(authRoute, userCollection, stateCollection)
-  	NewPopularityRoutes(popularityRoute, blogCollection)
-	NewLikeRoutes(likeRoute, blogCollection)``
+  NewAuthRoute(authRoute, userCollection, stateCollection)
+  NewPopularityRoutes(popularityRoute, blogCollection)
+	NewLikeRoutes(likeRoute, blogCollection)
 	NewDislikeRoutes(dislikeRoute, blogCollection)
 	NewCommentRoutes(commentRoute, blogCollection)
+
 }

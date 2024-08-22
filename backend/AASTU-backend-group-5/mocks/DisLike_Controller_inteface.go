@@ -12,66 +12,28 @@ type DisLike_Controller_inteface struct {
 	mock.Mock
 }
 
-// CreateDisLike provides a mock function with given fields:
-func (_m *DisLike_Controller_inteface) CreateDisLike() gin.HandlerFunc {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for CreateDisLike")
-	}
-
-	var r0 gin.HandlerFunc
-	if rf, ok := ret.Get(0).(func() gin.HandlerFunc); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(gin.HandlerFunc)
-		}
-	}
-
-	return r0
+// CreateDislike provides a mock function with given fields: ctx
+func (_m *DisLike_Controller_inteface) CreateDislike(ctx *gin.Context) {
+	_m.Called(ctx)
 }
 
-// DeleteDisLike provides a mock function with given fields:
-func (_m *DisLike_Controller_inteface) DeleteDisLike() gin.HandlerFunc {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for DeleteDisLike")
-	}
-
-	var r0 gin.HandlerFunc
-	if rf, ok := ret.Get(0).(func() gin.HandlerFunc); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(gin.HandlerFunc)
-		}
-	}
-
-	return r0
+// GetDislikes provides a mock function with given fields: ctx
+func (_m *DisLike_Controller_inteface) GetDislikes(ctx *gin.Context) {
+	_m.Called(ctx)
 }
 
-// GetDisLikes provides a mock function with given fields:
-func (_m *DisLike_Controller_inteface) GetDisLikes() gin.HandlerFunc {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetDisLikes")
-	}
-
-	var r0 gin.HandlerFunc
-	if rf, ok := ret.Get(0).(func() gin.HandlerFunc); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(gin.HandlerFunc)
-		}
-	}
-
-	return r0
+// RemoveDislike provides a mock function with given fields: ctx
+func (_m *DisLike_Controller_inteface) RemoveDislike(ctx *gin.Context) {
+	_m.Called(ctx)
 }
 
+// ToggleDislike provides a mock function with given fields: ctx
+func (_m *DisLike_Controller_inteface) ToggleDislike(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
+// NewDisLike_Controller_inteface creates a new instance of DisLike_Controller_inteface. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
+// The first argument is typically a *testing.T value.
 func NewDisLike_Controller_inteface(t interface {
 	mock.TestingT
 	Cleanup(func())

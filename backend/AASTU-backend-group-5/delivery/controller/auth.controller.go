@@ -50,6 +50,11 @@ func (ac *AuthController) LogIn() gin.HandlerFunc {
             return
         }
 
+        if!user.IsVerified{
+            c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message":"you need to be verified", "user": domain.CreateResponseUser(user)})
+            return
+        }
+
         http.SetCookie(c.Writer, &http.Cookie{
             Name:     "refresh_token",
             Value:    refreshToken,

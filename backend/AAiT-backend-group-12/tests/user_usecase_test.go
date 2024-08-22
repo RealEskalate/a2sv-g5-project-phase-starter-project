@@ -930,6 +930,104 @@ func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_() {
 	suite.mockJWTService.AssertExpectations(suite.T())
 }
 
+func (suite *UserUsecaseTestSuite) TestUpdateUser_Positive() {
+	user := TEST_USER
+	updates := dtos.UpdateUser{
+		PhoneNumber: "+2347030000000",
+		Bio:         "I",
+		ProfilePicture: dtos.ProfilePicture{
+			FileName: "profile_picture",
+		},
+	}
+
+	resUpdated := map[string]string{
+		"PhoneNumber":    updates.PhoneNumber,
+		"Bio":            updates.Bio,
+		"ProfilePicture": updates.ProfilePicture.FileName,
+	}
+
+	suite.mockUserRepository.On("UpdateUser", context.Background(), user.Username, &updates).Return(resUpdated, "", nil).Once()
+
+	updatedData, err := suite.Usecase.UpdateUser(context.Background(), user.Username, user.Username, &updates)
+	suite.Nil(err, "error should be nil")
+	suite.Equal(updatedData["PhoneNumber"], updates.PhoneNumber)
+	suite.Equal(updatedData["Bio"], updates.Bio)
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestUpdateUser_Positive_WithOldPFP() {
+	user := TEST_USER
+	updates := dtos.UpdateUser{
+		PhoneNumber: "+2347030000000",
+		Bio:         "I",
+		ProfilePicture: dtos.ProfilePicture{
+			FileName: "profile_picture",
+		},
+	}
+
+	resUpdated := map[string]string{
+		"PhoneNumber":    updates.PhoneNumber,
+		"Bio":            updates.Bio,
+		"ProfilePicture": updates.ProfilePicture.FileName,
+	}
+
+	suite.mockUserRepository.On("UpdateUser", context.Background(), user.Username, &updates).Return(resUpdated, "oldpfp", nil).Once()
+
+	updatedData, err := suite.Usecase.UpdateUser(context.Background(), user.Username, user.Username, &updates)
+	suite.Nil(err, "error should be nil")
+	suite.Equal(updatedData["PhoneNumber"], updates.PhoneNumber)
+	suite.Equal(updatedData["Bio"], updates.Bio)
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestUpdateUser_Negative_NotTheOwner() {
+	user := TEST_USER
+	updates := dtos.UpdateUser{
+		PhoneNumber: "+2347030000000",
+		Bio:         "I",
+		ProfilePicture: dtos.ProfilePicture{
+			FileName: "profile_picture",
+		},
+	}
+
+	updatedData, err := suite.Usecase.UpdateUser(context.Background(), user.Username, user.Username+"random", &updates)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_FORBIDDEN)
+	suite.Equal(updatedData["PhoneNumber"], "")
+	suite.Equal(updatedData["Bio"], "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestUpdateUser_Negative_InvalidPhoneNumber() {
+	user := TEST_USER
+	updates := dtos.UpdateUser{
+		PhoneNumber: "+2dasfasdf0",
+		Bio:         "I",
+		ProfilePicture: dtos.ProfilePicture{
+			FileName: "profile_picture",
+		},
+	}
+
+	updatedData, err := suite.Usecase.UpdateUser(context.Background(), user.Username, user.Username, &updates)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.Equal(updatedData["PhoneNumber"], "")
+	suite.Equal(updatedData["Bio"], "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestUpdateUser_Negative_EmptyUpdate() {
+	user := TEST_USER
+	updates := dtos.UpdateUser{}
+
+	updatedData, err := suite.Usecase.UpdateUser(context.Background(), user.Username, user.Username, &updates)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.Equal(updatedData["PhoneNumber"], "")
+	suite.Equal(updatedData["Bio"], "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
 func TestUserUsecase(t *testing.T) {
 	suite.Run(t, new(UserUsecaseTestSuite))
 }

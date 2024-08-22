@@ -86,6 +86,7 @@ func (s *AIService) ReviewContent(blogContent string) (string, error) {
 	return suggestions, nil
 }
 
+// CleanText removes unwanted characters and formatting from the provided text.
 func (s *AIService) CleanText(value interface{}) string {
 	text := s.ExtractText(value)
 

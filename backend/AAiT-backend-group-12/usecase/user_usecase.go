@@ -15,10 +15,10 @@ import (
 type UserUsecase struct {
 	userRepository  domain.UserRepositoryInterface
 	cacheRepository domain.CacheRepositoryInterface
-	GenerateToken   func(int) (string, error)
 	MailService     domain.MailServiceInterface
 	JWTService      domain.JWTServiceInterface
 	HashingService  domain.HashingServiceInterface
+	GenerateToken   func(int) (string, error)
 	VerifyIdToken   func(string, string, string) error
 	DeleteFile      func(string) error
 	ENV             domain.EnvironmentVariables
@@ -53,12 +53,33 @@ func NewUserUsecase(
 
 /* Validates password length constraints*/
 func (u *UserUsecase) ValidatePassword(password string) domain.CodedError {
+	// validate length
 	if len(password) < 8 {
 		return domain.NewError("Password too short", domain.ERR_BAD_REQUEST)
 	}
 
 	if len(password) > 71 {
 		return domain.NewError("Password too long", domain.ERR_BAD_REQUEST)
+	}
+
+	// validate lower case letter
+	if !strings.ContainsAny(password, "abcdefghijklmnopqrstuvwxyz") {
+		return domain.NewError("Password must contain a lower case letter", domain.ERR_BAD_REQUEST)
+	}
+
+	// validate upper case letter
+	if !strings.ContainsAny(password, "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
+		return domain.NewError("Password must contain an upper case letter", domain.ERR_BAD_REQUEST)
+	}
+
+	// validate number
+	if !strings.ContainsAny(password, "0123456789") {
+		return domain.NewError("Password must contain a number", domain.ERR_BAD_REQUEST)
+	}
+
+	// validate special character
+	if !strings.ContainsAny(password, "!@#$%^&*()_+-=[]{}|;:,.<>?/\\") {
+		return domain.NewError("Password must contain a special character", domain.ERR_BAD_REQUEST)
 	}
 
 	return nil

@@ -53,6 +53,41 @@ func (blogRepo *blogRepository) GetAllBlogs(ctx context.Context) ([]domain.Blog,
 	return blogs, nil
 }
 
+func (blogRepo *blogRepository) GetBlogsByPage(ctx context.Context, offset, limit int) ([]domain.Blog, error) {
+	findOptions := options.Find()
+	findOptions.SetSkip(int64(offset))
+	findOptions.SetLimit(int64(limit))
+
+	cursor, err := blogRepo.collection.Find(ctx, bson.M{}, findOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(ctx)
+
+	var blogs []domain.Blog
+
+	for cursor.Next(ctx) {
+		var blog domain.Blog
+
+		if err := cursor.Decode(&blog); err != nil {
+			return nil, err
+		}
+
+		blogs = append(blogs, blog)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	if len(blogs) == 0 {
+		return []domain.Blog{}, nil
+	}
+
+	return blogs, nil
+}
+
 func (blogRepo *blogRepository) GetBlogByID(ctx context.Context, id int) (domain.Blog, error) {
 	var blog domain.Blog
 

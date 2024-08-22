@@ -17,10 +17,10 @@ import (
 
 func main() {
 
-	err := godotenv.Load()
-    if err != nil {
-        log.Fatal("Error loading .env file")
-    }
+	err := godotenv.Load("../.env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
@@ -34,10 +34,12 @@ func main() {
 	blogRepo := repositories.NewBlogRepository(blogCollection)
 	userRepo := repositories.NewUserRepository(userCollection)
 	userUsecase := usecases.NewUserUsecase(userRepo)
-	blogUsecase := usecases.NewBlogUsecase(aiService ,blogRepo, userUsecase)
+	blogUsecase := usecases.NewBlogUsecase(aiService, blogRepo, userUsecase)
 	blogController := controllers.NewBlogController(blogUsecase)
 	userController := controllers.NewUserController(userUsecase)
 
 	r := routers.SetupRouter(blogController, userController)
+	r.Static("/uploads", "./uploads")
+
 	r.Run("localhost:8080")
 }

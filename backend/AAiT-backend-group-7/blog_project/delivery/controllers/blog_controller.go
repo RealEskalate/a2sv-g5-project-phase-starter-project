@@ -17,8 +17,23 @@ func NewBlogController(blogUsecase domain.IBlogUsecase) domain.IBlogController {
 
 func (bc *blogController) GetAllBlogs(c *gin.Context) {
 	sortOrder := c.DefaultQuery("sort", "DESC") // Default to "DESC" if not specified
+	page := c.DefaultQuery("page", "1")
+	limit := c.DefaultQuery("limit", "10")
 
-	blogs, err := bc.BlogUsecase.GetAllBlogs(c, sortOrder)
+	// Convert page and limit to integers
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid page number"})
+		return
+	}
+
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid limit number"})
+		return
+	}
+
+	blogs, err := bc.BlogUsecase.GetAllBlogs(c, sortOrder, pageInt, limitInt)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -203,18 +218,22 @@ func (bc *blogController) Search(c *gin.Context) {
 
 }
 
+type BlogContent struct {
+	Content string `json:"content"`
+}
 
 func (bc *blogController) AiRecommendation(c *gin.Context) {
-	var content string
+	var content BlogContent
 
-	err := c.BindJSON(&content)
-
-	if 	err != nil {
+	err := c.ShouldBindJSON(&content)
+	// print("content is", content)
+	if err != nil {
+		print("error is here")
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	recommendation, err := bc.BlogUsecase.AiRecommendation(c, content)
+	recommendation, err := bc.BlogUsecase.AiRecommendation(c, content.Content)
 
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})

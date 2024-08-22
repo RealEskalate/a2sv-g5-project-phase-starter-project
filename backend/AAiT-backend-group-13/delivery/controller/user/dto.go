@@ -1,8 +1,32 @@
 package usercontroller
 
+import (
+	"github.com/google/uuid"
+	"github.com/group13/blog/usecase/user/result"
+)
+
 type LoginDto struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
+}
+
+type LoginResponse struct {
+	ID        uuid.UUID
+	Username  string
+	FirstName string
+	LastName  string
+	IsAdmin   bool
+}
+
+func NewLoginResponse(r *result.LoginInResult) *LoginResponse {
+	return &LoginResponse{
+		ID:        r.User.ID(),
+		Username:  r.User.Username(),
+		FirstName: r.User.FirstName(),
+		LastName:  r.User.LastName(),
+		IsAdmin:   r.User.IsAdmin(),
+	}
+
 }
 
 type SignUpDto struct {

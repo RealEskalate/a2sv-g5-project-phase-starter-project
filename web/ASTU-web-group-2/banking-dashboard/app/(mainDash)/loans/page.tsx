@@ -5,9 +5,9 @@ import Card from '../../components/card/Card'
 
 const LoansPage = () => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="grid grid-cols-1 gap-2 pb-5">
       <InfoboxForLoans />
-      <Card title="Active Loans Overview" className="flex flex-col max-sm:w-fit">
+      <Card title="Active Loans Overview" className="">
         <ActiveLoansOverview />
       </Card>
     </div>

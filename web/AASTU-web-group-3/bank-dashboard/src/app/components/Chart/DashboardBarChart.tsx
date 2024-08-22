@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/chart";
 
 import { useGetExpenseTransactionsQuery } from "@/lib/redux/api/transactionsApi";
+import Loading from "@/app/loading";
 
 export default function DashboardBarChart() {
   const { data, isLoading, isError } = useGetExpenseTransactionsQuery({
@@ -75,7 +76,7 @@ export default function DashboardBarChart() {
       <Card className="w-full xl:w-[90%]">
         <CardContent>
           {isLoading ? (
-            <p>Loading...</p>
+            <Loading />
           ) : isError ? (
             <p>Error loading data</p>
           ) : (

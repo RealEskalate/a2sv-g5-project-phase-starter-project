@@ -1,19 +1,18 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Image from "next/image";
-import { getSession, signOut } from "next-auth/react";
-import { CiLight } from "react-icons/ci";
-import { CiDark } from "react-icons/ci";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import Link from "next/link";
-import { Separator } from "@radix-ui/react-select";
 import { useUser } from "@/contexts/UserContext";
+import { Separator } from "@radix-ui/react-select";
 import ky from "ky";
+import { getSession, signOut } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { CiDark, CiLight } from "react-icons/ci";
 
 const Header = ({ title }: { title: string }) => {
   const { isDarkMode, setIsDarkMode } = useUser();
@@ -34,7 +33,7 @@ const Header = ({ title }: { title: string }) => {
 
       try {
         const res: any = await ky(
-          "https://bank-dashboard-1tst.onrender.com/user/current",
+          "https://bank-dashboard-o9tl.onrender.com/user/current",
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

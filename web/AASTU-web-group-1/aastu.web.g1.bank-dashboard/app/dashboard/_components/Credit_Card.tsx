@@ -41,11 +41,11 @@ const CreditCard: React.FC<CardDetails> = ({
 
   return (
     <div
-      className={`min-w-[300px] h-56  md:w-[350px] md:h-[220px] ${bgColor} rounded-3xl pt-3 sm:space-y-8 md:space-y-6 ${
+      className={`min-w-[300px] h-55  md:w-[350px] ${bgColor} rounded-2xl space-y-6 ${
         !isDarkMode ? "border border-gray-300" : ""
       }`}
     >
-      <div className="flex justify-between px-5">
+      <div className="flex justify-between px-5 pt-3">
         <div className={`block ${textColor} space-y-1`}>
           <p className="text-[11px] md:text-[12px] font-lato font-normal">
             Balance
@@ -80,27 +80,25 @@ const CreditCard: React.FC<CardDetails> = ({
         </div>
       </div>
 
-     
-        <div
-          className={`flex justify-between px-5 items-center md:space-y-1  py-5 backdrop-blur-[3px] bg-gradient-to-r from-white/30 to-white/5 rounded-b-3xl`}
+      <div
+        className={`flex justify-between px-5 items-center py-6 bg-gradient-to-r from-white/30 to-white/5 rounded-b-2xl backdrop-blur-[3px]`}
+      >
+        <p
+          className={`text-[15px] md:text-[16px] ${textColor} font-lato font-semibold w-[80%]`}
         >
-          <p
-            className={`text-[15px] md:text-[16px] ${textColor} font-lato font-semibold w-[80%]`}
-          >
-            {maskCardNumber(semiCardNumber)}
-          </p>
-          <Image
-            src={`${
-              bgColor !== "bg-white"
-                ? "/icons/cardwhite.svg"
-                : "/icons/cardgray.svg"
-            }`}
-            alt={"transaction"}
-            width={30}
-            height={20}
-          />
-        </div>
-    
+          {maskCardNumber(semiCardNumber)}
+        </p>
+        <Image
+          src={`${
+            bgColor !== "bg-white"
+              ? "/icons/cardwhite.svg"
+              : "/icons/cardgray.svg"
+          }`}
+          alt={"transaction"}
+          width={30}
+          height={20}
+        />
+      </div>
     </div>
   );
 };

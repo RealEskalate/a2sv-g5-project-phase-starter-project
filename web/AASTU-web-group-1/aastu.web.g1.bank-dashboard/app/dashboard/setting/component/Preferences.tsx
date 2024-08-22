@@ -1,8 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,11 +11,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { zodResolver } from "@hookform/resolvers/zod";
 import ky, { HTTPError } from "ky";
-import { useState } from "react";
-import { toast } from "sonner";
 import { getSession } from "next-auth/react";
-import { Currency } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const Preferences = () => {
   const [loading, setLoading] = useState(false);
@@ -48,7 +47,7 @@ const Preferences = () => {
       const session = await getSession();
       const accessToken = session?.user.accessToken;
       const res = await ky.put(
-        "https://bank-dashboard-1tst.onrender.com/user/update-preference",
+        "https://bank-dashboard-o9tl.onrender.com/user/update-preference",
         {
           json: { ...values, twoFactorAuthentication: false },
           headers: {

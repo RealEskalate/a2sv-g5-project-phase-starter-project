@@ -1,9 +1,9 @@
 "use client";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { ProfileForm } from "./Form";
-import { getSession } from "next-auth/react";
 import ky from "ky";
+import { getSession } from "next-auth/react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { ProfileForm } from "./Form";
 
 interface FormData {
   name: string;
@@ -45,7 +45,7 @@ const EditProfile = () => {
 
       try {
         const res: any = await ky(
-          "https://bank-dashboard-1tst.onrender.com/user/current",
+          "https://bank-dashboard-o9tl.onrender.com/user/current",
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

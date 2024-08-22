@@ -20,7 +20,7 @@ func main() {
 
 	gin := gin.Default()
 
-	routes.Setup(env, timeout, *db, gin)
+	routes.Setup(env, timeout, *db, gin, *app.Redis)
 
 	gin.Run(env.ServerAddress)
 

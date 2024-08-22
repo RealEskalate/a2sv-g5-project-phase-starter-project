@@ -171,3 +171,7 @@ func (ou *otpUsecase) ResendOTP(c context.Context, email string) (resp domain.OT
 
 	return response, nil
 }
+
+func (ou *otpUsecase) SendPasswordResetEmail(c context.Context, email string) (otp string, err error) {
+	return "", nil
+}

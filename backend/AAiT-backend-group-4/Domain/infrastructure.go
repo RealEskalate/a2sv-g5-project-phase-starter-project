@@ -9,6 +9,7 @@ type TokenInfrastructure interface {
 	CheckTokenExpiry(tokenString string, secret string) (bool, error)
 	UpdateTokens(id string) (accessToken string, refreshToken string, err error)
 	RemoveTokens(id string) error
+	ExtractUserIDFromToken(tokenString string) (string, error)
 }
 
 type PasswordInfrastructure interface {
@@ -19,4 +20,9 @@ type PasswordInfrastructure interface {
 type OtpInfrastructure interface {
 	CreateOTP(otp *UserOTPRequest) (otpcode string, err error)
 	SendEmail(email string, subject string, key string, otp string) error
+	SendPasswordResetEmail(email string, subject string, key string) error
+}
+
+type PopularityService interface{
+	CalculatePopularity(fb Feedback) float64
 }

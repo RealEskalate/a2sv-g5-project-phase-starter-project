@@ -5,10 +5,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Setup(env *bootstrap.Env, timeout time.Duration, db mongo.Database, gin *gin.Engine) {
+func Setup(env *bootstrap.Env, timeout time.Duration, db mongo.Database, gin *gin.Engine, rc redis.Client) {
 	gin.LoadHTMLGlob("templates/*")
 
 	publicRouter := gin.Group("")
@@ -18,5 +19,6 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db mongo.Database, gin *gi
 	NewLoginRoute(env, timeout, db, publicRouter)
 	NewPromoteRoute(env, timeout, db, publicRouter)
 	NewOtpRoute(env, timeout, db, publicRouter)
-	NewBlogRoute(env, timeout, db, publicRouter)
+	NewBlogRoute(env, timeout, db, publicRouter, rc)
+	NewForgotPasswordRoute(env, timeout, db, publicRouter)
 }

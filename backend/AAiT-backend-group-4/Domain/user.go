@@ -23,6 +23,8 @@ type User struct {
 	Verified      bool               `json:"verified" bson:"verified"`
 	Created_At    time.Time          `json:"created_at" bson:"created_at"`
 	Updated_At    time.Time          `json:"updated_at" bson:"updated_at"`
+	PasswordResetToken string   	 `json:"password_reset_token"`
+	TokenExpiry       time.Time 	 `json:"token_expiry"`
 }
 
 type UserUpdate struct {
@@ -36,6 +38,8 @@ type UserUpdate struct {
 	Verified      *bool   `json:"verified" bson:"verified"`
 	Access_Token  *string `json:"access_token" bson:"access_token"`
 	Refresh_Token *string `json:"refresh_token" bson:"refresh_token"`
+	PasswordResetToken string   `json:"password_reset_token"`
+	TokenExpiry       time.Time `json:"token_expiry"`
 }
 
 type UserRepository interface {
@@ -51,6 +55,8 @@ type UserRepository interface {
 	VerifyUser(c context.Context, id string) (User, error)
 	UpdateTokens(c context.Context, id string, accessToken string, refreshToken string) (User, error)
 	IsAdmin(c context.Context, id string)bool
+	GetByPasswordResetToken(ctx context.Context, token string) (User, error)
+	UpdatePasswordTokens(ctx context.Context, userID string, updatedFields map[string]interface{}) error
 }
 
 type UserUsecase interface {

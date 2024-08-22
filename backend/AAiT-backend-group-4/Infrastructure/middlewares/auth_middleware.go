@@ -2,13 +2,14 @@ package infrastructure
 
 import (
 	bootstrap "aait-backend-group4/Bootstrap"
+	domain "aait-backend-group4/Domain"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-func AuthMiddleware(env *bootstrap.Env, tokenService *tokenService) gin.HandlerFunc {
+func AuthMiddleware(env *bootstrap.Env, tokenService domain.TokenInfrastructure) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 
@@ -37,4 +38,5 @@ func AuthMiddleware(env *bootstrap.Env, tokenService *tokenService) gin.HandlerF
 		c.Set("claims", claims)
 		c.Next()
 	}
+
 }

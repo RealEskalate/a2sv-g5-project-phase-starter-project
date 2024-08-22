@@ -12,7 +12,7 @@ const PageNumbers = ({ totalPages, currentPage, setCurrentPage }:paginationProps
     const startPage = Math.min(currentPage, totalPages - maxVisiblePages + 1);
     const endPage = Math.min(startPage + maxVisiblePages - 1, totalPages);
 
-    for (let i = startPage; i <= endPage; i++) {
+    for (let i = startPage; i < endPage; i++) {
       pages.push(
         <li key={i}>
           <button
@@ -21,7 +21,7 @@ const PageNumbers = ({ totalPages, currentPage, setCurrentPage }:paginationProps
               currentPage === i && 'bg-blue-bright text-white rounded-xl'
             }`}
           >
-            {i}
+            {i+1}
           </button>
         </li>
       );

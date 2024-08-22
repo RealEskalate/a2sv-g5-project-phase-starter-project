@@ -88,14 +88,14 @@ const Navbar = () => {
             </p>
           </div>
 
-          <div className="hidden sm:flex gap-5 items-center relative">
-            <div className="search-div bg-[#F5F7FA] flex items-center rounded-full h-[50px] px-4 py-2 w-full max-w-[400px] mx-auto">
+          <div className=" sm:flex gap-5 items-center relative">
+            <div className="hidden sm:flex search-div bg-[#F5F7FA]  items-center rounded-full h-[50px] px-4 py-2 w-full max-w-[400px] mx-auto">
               <Image
                 src="/assets/navbar/magnifying-glass.svg"
                 width={20}
                 height={20}
                 alt="magnifying-glass"
-                className="mr-3"
+                className="mr-3 "
               />
               <input
                 type="text"
@@ -106,7 +106,7 @@ const Navbar = () => {
 
             <Link
               href="/settings"
-              className="bg-[#F5F7FA] rounded-full flex justify-center items-center"
+              className="sm:flex hidden bg-[#F5F7FA] rounded-full justify-center items-center"
             >
               <Image
                 src="/assets/navbar/settings.svg"
@@ -119,7 +119,7 @@ const Navbar = () => {
 
             <Link
               href="/"
-              className="bg-[#F5F7FA] rounded-full flex justify-center items-center"
+              className="sm:flex hidden bg-[#F5F7FA] rounded-full  justify-center items-center"
             >
               <Image
                 src="/assets/navbar/notification.svg"
@@ -134,7 +134,7 @@ const Navbar = () => {
               <div className="flex justify-center items-center w-12 h-12 rounded-full object-scale-down">
                 <Image
                   src={
-                    user.profilePicture === "default-profile.png"
+                    user.profilePicture === "assets/navbar/default-image.svg"
                       ? ""
                       : user.profilePicture
                   }

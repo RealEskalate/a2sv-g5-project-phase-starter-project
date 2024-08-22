@@ -25,16 +25,16 @@ func NewBlogController(blogUsecase domain.Blog_Usecase_interface, userUsecase do
 func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var blog domain.PostBlog
-		var blg domain.Blog
+		// var blg domain.Blog
 		if err := c.BindJSON(&blog); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse request. Ensure the blog data is correct: " + err.Error()})
 			return
 		}
 
 		iuser, _ := c.Get("user")
-		user := iuser.(domain.User)
-		blg.ID = primitive.NewObjectID()
-		blog.Owner = user
+		user := iuser.(*domain.User)
+		// blg.ID = primitive.NewObjectID()
+		blog.Owner = *user
 		createdBlog, err := bc.BlogUsecase.CreateBlog(blog)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to add blog post: " + err.Error()})

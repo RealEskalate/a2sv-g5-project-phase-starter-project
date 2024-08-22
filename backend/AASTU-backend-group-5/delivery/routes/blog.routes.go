@@ -41,6 +41,7 @@ func NewBlogRoutes(group *gin.RouterGroup, blog_collection database.CollectionIn
 	LoggedInmiddleWare := middleware.LoggedIn(TokenSvc)
 	mustOwn := middleware.RoleBasedAuth(false)
 
+
 	group.GET("api/blog" , ctrl.GetAllBlogs())
 	group.GET("api/search-blog/" , ctrl.FilterBlogs())
 
@@ -48,7 +49,7 @@ func NewBlogRoutes(group *gin.RouterGroup, blog_collection database.CollectionIn
 	group.POST("api/blog/",LoggedInmiddleWare, ctrl.CreateBlog())
 
 	group.GET("api/my-blog",LoggedInmiddleWare , mustOwn , ctrl.GetMyBlogs())
-	group.PUT("api/blog/",LoggedInmiddleWare , mustOwn ,ctrl.UpdateBlog())
-	group.DELETE("api/blog/",LoggedInmiddleWare, mustOwn ,ctrl.DeleteBlog())
+	group.PUT("api/blog/:id",LoggedInmiddleWare , mustOwn ,ctrl.UpdateBlog())
+	group.DELETE("api/blog/:id",LoggedInmiddleWare, mustOwn ,ctrl.DeleteBlog())
 
 }

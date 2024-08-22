@@ -26,11 +26,11 @@ const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('Preferences');
   const [user, setUser] = useState<User | null>(null);
   const [notifications, setNotifications] = useState<Preference>({
-    currency: "Enter your currency",
+    currency: "",
     sentOrReceiveDigitalCurrency: true,
     receiveMerchantOrder: false,
     accountRecommendations: true,
-    timeZone: "Enter your time zone",
+    timeZone: "",
     twoFactorAuthentication: false,
   });
 
@@ -174,7 +174,7 @@ const SettingsPage: React.FC = () => {
               </form>
             )}
 
-            {activeTab === 'Edit Profile' && user && <EditProfile/>}
+            {activeTab === 'Edit Profile' && <EditProfile/>}
             {activeTab === 'Security' && <SecuritySetting />}
           </div>
         </div>

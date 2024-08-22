@@ -20,6 +20,9 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, gin *g
 	NewVerificationRouter(env, timeout, db, publicRouter)
 	NewPublicBlogsRouter(env, timeout, db, publicRouter)
 
+	// Static files
+	NewPublicFileRouter(env, publicRouter)
+
 	protectedRouter := gin.Group("")
 	protectedRouter.Use(middleware.JwtAuthMiddleware(env.AccessTokenSecret))
 

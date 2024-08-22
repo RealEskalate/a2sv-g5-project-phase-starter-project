@@ -6,8 +6,8 @@ export const activeLoanApi = createApi({
   reducerPath: "activeLoanApi",
   baseQuery: baseQuery(),
   endpoints: (builder) => ({
-    getAllActiveLoans: builder.query<ActiveLoanResponseType, void>({
-      query: () => `/active-loans/all`,
+      getAllActiveLoans: builder.query<ActiveLoanResponseType, void>({
+        query: () => `/active-loans/all`,
     }),
     getActiveLoanById: builder.query<void, string>({
       query: (id) => `/active-loans/${id}`,

@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import Messi from "@/app/assets/Header/MESSI.jpg";
+import Messi from "@/assets/Header/MESSI.jpg";
 
 const Header = () => {
   return (

@@ -56,7 +56,7 @@ export const refreshToken = async (tokenData: any) => {
 export const loginUser = async (loginData: any) => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-1tst.onrender.com/auth/login",
+      "https://bank-dashboard-o9tl.onrender.com/auth/login",
       {
         method: "POST",
         headers: {

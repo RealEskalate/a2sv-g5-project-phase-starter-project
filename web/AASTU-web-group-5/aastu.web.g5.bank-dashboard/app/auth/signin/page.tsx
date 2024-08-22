@@ -19,7 +19,7 @@ const Login = () => {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 	const onSubmit = async (data: LoginFormData) => {
-		setErrorMessage(null); // Reset error message
+		setErrorMessage(null);
 
 		try {
 			const result = await signIn("credentials", {
@@ -28,11 +28,13 @@ const Login = () => {
 				password: data.password,
 			});
 
+			console.log(result, "result");
 			if (result?.error) {
-				setErrorMessage(result.error);
+				setErrorMessage("");
 			} else if (result?.ok) {
-				router.push("/");
+				router.push("/Services");
 			} else {
+				// Handle unexpected cases
 				setErrorMessage("Unexpected response from server.");
 			}
 		} catch (error: any) {
@@ -42,8 +44,8 @@ const Login = () => {
 	};
 
 	return (
-		<div className="flex flex-col items-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
-			<div className="w-full sm:max-w-lg md:max-w-[70%] lg:max-w-[60%] bg-white dark:bg-gray-700 p-8 sm:p-12 md:p-16 lg:p-20 rounded-lg shadow-md mt-4">
+		<div className="flex flex-col items-center min-h-screen bg-gray-100 p-4">
+			<div className="w-full sm:max-w-lg md:max-w-[70%] lg:max-w-[60%] bg-white p-8 sm:p-12 md:p-16 lg:p-20 rounded-lg shadow-md mt-4">
 				<h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-10 md:mb-12 text-purple-700 text-center">
 					Login to Your Account
 				</h1>
@@ -90,7 +92,7 @@ const Login = () => {
 				</form>
 
 				<p className="mt-8 text-center">
-					Don't have an account?{" "}
+					Don&apos; t have an account?{" "}
 					<a href="/auth/signup" className="text-blue-500">
 						Sign up
 					</a>

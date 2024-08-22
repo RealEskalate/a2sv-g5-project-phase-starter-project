@@ -10,18 +10,27 @@ import MonthlyRevenueChart from "./MonthlyRevenueChart";
 import { tradingStockData, investmentsData } from "./mockData";
 import { useSession } from "next-auth/react";
 
+interface ExtendedUser {
+	name?: string;
+	email?: string;
+	image?: string;
+	accessToken?: string;
+}
+
 const Investments = () => {
+	const { data: session, status } = useSession();
 	const [investmentOverview, setInvestmentOverview] = useState({
 		totalAmount: 0,
 		numberOfInvestments: 0,
 		rateOfReturn: 0,
 	});
+	const user = session.user as ExtendedUser;
+	const accessToken = user.accessToken;
 
 	const [yearlyTotalInvestment, setYearlyTotalInvestment] = useState([]);
 	const [monthlyRevenue, setMonthlyRevenue] = useState([]);
-	const { data: session } = useSession();
 
-	const token: string = ` Bearer ${session?.user?.accessToken} `;
+	const token: string = ` Bearer ${accessToken} `;
 	useEffect(() => {
 		const fetchInvestmentData = async () => {
 			try {
@@ -29,7 +38,7 @@ const Investments = () => {
 					"https://bank-dashboard-1tst.onrender.com/user/random-investment-data?years=3&months=5",
 					{
 						headers: {
-							Authorization: token, // Make sure to add your token here
+							Authorization: token,
 						},
 					}
 				);
@@ -56,7 +65,7 @@ const Investments = () => {
 		};
 
 		fetchInvestmentData();
-	}, []);
+	}, [token]);
 
 	return (
 		<div className="bg-[#F5F7FA] space-y-8 pt-3    w-full overflow-hidden dark:bg-gray-800 ">

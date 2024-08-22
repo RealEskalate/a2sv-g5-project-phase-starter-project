@@ -51,7 +51,6 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 		setIsSidebarVisible(!isSidebarVisible);
 	};
 
-
 	const darkClass = darkmode ? "dark" : "";
 	return (
 		<div className={`min-h-screen flex ${darkClass}`}>

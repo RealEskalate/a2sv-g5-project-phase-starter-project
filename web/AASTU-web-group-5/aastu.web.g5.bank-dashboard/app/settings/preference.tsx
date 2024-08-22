@@ -3,37 +3,61 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useForm } from 'react-hook-form';
-import Toggle from './toogle';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import   Toggle  from './toogle'
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from '../redux/slice/userSlice';
+import { RootState } from '../redux/store';
+import User from '../../type/user'
+interface ExtendedUser {
+  name?: string;
+  email?: string;
+  image?: string;
+  accessToken?: string;
+}
+
+interface FormData {
+  currency: string;
+  timeZone: string;
+  sentOrReceiveDigitalCurrency: boolean;
+  receiveMerchantOrder: boolean;
+  accountRecommendations: boolean;
+  twoFactorAuthentication: boolean;
+}
 
 function Preference() {
-
-
-  const x = useSelector((state) => state.user);
-  console.log(x, 'x');
-  const [successMessage, setSuccessMessage] = useState('');
-
-
-
   const { data: session } = useSession();
-  const key: string = session?.user?.accessToken || '';
+  const [successMessage, setSuccessMessage] = useState('');
+  const [apiError, setApiError] = useState('');
 
-  const user = useSelector((state) => state.user);
-  console.log(user,'user')
+  const user = useSelector((state: RootState) => state.user as User);
   const dispatch = useDispatch();
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
-
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
+  
   const [digitalCurrency, setDigitalCurrency] = useState(false);
   const [merchantOrder, setMerchantOrder] = useState(false);
   const [accountRecommendations, setAccountRecommendations] = useState(false);
-  const [apiError, setApiError] = useState(''); // State for API errors
 
-  const onSubmit = async (data: any) => {
-    setApiError(''); // Clear any previous API error
-    console.log(data,'data')
+  const users = session?.user as ExtendedUser;
+  const key = users?.accessToken || '';
+
+  useEffect(() => {
+    if (user) {
+      setValue('currency', user.preference.currency || '');
+      setValue('timeZone', user.preference.timeZone || '');
+      setDigitalCurrency(user.preference.sentOrReceiveDigitalCurrency || false);
+      setMerchantOrder(user.preference.receiveMerchantOrder || false);
+      setAccountRecommendations(user.preference.accountRecommendations || false);
+    }
+  }, [user, setValue]);
+
+  const handleDigitalCurrencyChange = () => setDigitalCurrency(!digitalCurrency);
+  const handleMerchantOrderChange = () => setMerchantOrder(!merchantOrder);
+  const handleAccountRecommendationsChange = () => setAccountRecommendations(!accountRecommendations);
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    setApiError('');
     const updatedData = {
       ...data,
       sentOrReceiveDigitalCurrency: digitalCurrency,
@@ -41,7 +65,7 @@ function Preference() {
       accountRecommendations: accountRecommendations,
       twoFactorAuthentication: true,
     };
-console.log(updatedData,'updateduser')
+
     try {
       const response = await axios.put('https://bank-dashboard-1tst.onrender.com/user/update-preference', updatedData, {
         headers: {
@@ -51,31 +75,15 @@ console.log(updatedData,'updateduser')
       });
 
       if (response.status === 200) {
-        setSuccessMessage('Preferences updated successfully:!');
-        console.log('Preferences updated successfully:', response.data);
+        setSuccessMessage('Preferences updated successfully!');
         dispatch(setUser(updatedData));
       } else {
         throw new Error(`Failed to update preferences: ${response.statusText}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       setApiError(error.response?.data?.message || 'Failed to update preferences.');
-      console.error('Error updating preferences:', error);
     }
   };
-
-  useEffect(() => {
-    if (user) {
-      setValue('currency', user.currency || '');
-      setValue('timeZone', user.timeZone || '');
-      setDigitalCurrency(user.sentOrReceiveDigitalCurrency || false);
-      setMerchantOrder(user.receiveMerchantOrder || false);
-      setAccountRecommendations(user.accountRecommendations || false);
-    }
-  }, [user, setValue]);
-
-  const handleDigitalCurrencyChange = () => setDigitalCurrency(!digitalCurrency);
-  const handleMerchantOrderChange = () => setMerchantOrder(!merchantOrder);
-  const handleAccountRecommendationsChange = () => setAccountRecommendations(!accountRecommendations);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -107,15 +115,15 @@ console.log(updatedData,'updateduser')
         Notification
         <div className="flex flex-col gap-4 mt-5 md:mt-6">
           <div className="flex gap-5 md:gap-6">
-            <Toggle checked={digitalCurrency} onChange={handleDigitalCurrencyChange} />
+            <Toggle/>
             <div>I send or receive digital currency</div>
           </div>
           <div className="flex gap-5 md:gap-6">
-            <Toggle checked={merchantOrder} onChange={handleMerchantOrderChange} />
+            <Toggle />
             <div>I receive merchant order</div>
           </div>
           <div className="flex gap-5 md:gap-6">
-            <Toggle checked={accountRecommendations} onChange={handleAccountRecommendationsChange} />
+            <Toggle  />
             <div>There are recommendations for my account</div>
           </div>
         </div>

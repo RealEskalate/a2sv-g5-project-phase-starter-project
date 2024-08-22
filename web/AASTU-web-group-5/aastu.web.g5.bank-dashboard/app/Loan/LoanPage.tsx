@@ -16,14 +16,21 @@ interface LoanResponse {
 		totalPages: number;
 	};
 }
-
+interface ExtendedUser {
+	name?: string;
+	email?: string;
+	image?: string;
+	accessToken?: string;
+}
 const LoanPage = () => {
 	const [loanData, setLoanData] = useState<LoanResponse | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [currentPage, setCurrentPage] = useState(0);
 
-	const { data: session } = useSession();
-	const accessToken = session?.user?.accessToken;
+	const { data: session, status } = useSession();
+	const user = session?.user as ExtendedUser;
+
+	const accessToken = user.accessToken;
 
 	useEffect(() => {
 		const fetchLoanData = async () => {

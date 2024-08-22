@@ -70,6 +70,7 @@ const CardList = ({ cardId }: CardListProps) => {
 
 	useEffect(() => {
 		fetchCardListData();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [cardId]);
 
 	if (loading) {

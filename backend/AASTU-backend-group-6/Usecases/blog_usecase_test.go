@@ -189,3 +189,4 @@ func (suite *BlogUsecaseSuite) TestUpdateBlogByID() {
 func TestBloBlogUsecaseSuite(t *testing.T) {
 	suite.Run(t, new(BlogUsecaseSuite))
 }
+

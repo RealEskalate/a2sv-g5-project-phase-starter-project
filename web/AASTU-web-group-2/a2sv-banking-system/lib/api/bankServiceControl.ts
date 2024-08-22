@@ -1,5 +1,5 @@
 import axios from 'axios';
-const BASE_URL = 'https://bank-dashboard-6acc.onrender.com';
+const BASE_URL = 'https://bank-dashboard-1tst.onrender.com';
 interface BankServiceData {
   id: string;
   name: string;

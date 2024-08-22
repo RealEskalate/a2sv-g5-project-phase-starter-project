@@ -1,3 +1,5 @@
+"use client"
+import { useRouter } from "next/navigation";
 import React from "react";
 
 const services = [
@@ -22,6 +24,7 @@ const services = [
 ];
 
 const Services = () => {
+  const router = useRouter()
   return (
     <section id="services" className="w-full  py-10 mt-20">
       <div className="text-center mb-10">
@@ -33,14 +36,16 @@ const Services = () => {
         {services.map((item, index) => (
           <div
             key={index}
-            className="flex flex-col items-center p-6 rounded-3xl border border-dashed border-gray-400 shadow-lg"
+            className="flex flex-col items-center p-6 rounded-3xl border border-dashed border-gray-400 hover:shadow-lg"
           >
             <img src={item.icon} alt={item.title} className="w-24 h-24 mb-4" />
             <h2 className="text-2xl text-[#0b1739] mb-2">{item.title}</h2>
             <p className="text-md text-[#6F6969] mb-4 text-center">
               {item.description}
             </p>
-            <button className="rounded-full px-4 py-2 border-[1px] border-dashed  border-gray-400  hover:bg-[#083E9E]">
+            <button 
+            onClick={()=>router.push('/login')}
+            className="rounded-full px-4 py-2 border-[1px] border-dashed  border-gray-400  hover:bg-[#083E9E] hover:text-white">
               Apply now
             </button>
           </div>

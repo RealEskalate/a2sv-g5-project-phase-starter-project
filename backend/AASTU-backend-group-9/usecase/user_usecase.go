@@ -124,20 +124,26 @@ func (uc *UserUsecase) PromoteUser(c context.Context, id primitive.ObjectID, cla
 }
 
 func (uc *UserUsecase) DemoteUser(c context.Context, id primitive.ObjectID, claims *domain.JwtCustomClaims) error {
-	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
-	defer cancel()
-	user, err := uc.userRepository.GetUserByID(ctx, id)
-	if err != nil {
-		return err
-	}
-	if user.Role == "root" {
-		return errors.New("cannot demote root user")
-	}
-	if user.Role == "user" {
-		return errors.New("user is already a user")
-	}
-	if claims.Role != "admin" && claims.Role != "root" {
-		return errors.New("a user must be an admin or root to demote another user")
-	}
-	return uc.userRepository.DemoteUser(ctx, id)
+    ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+    defer cancel()
+
+    user, err := uc.userRepository.GetUserByID(ctx, id)
+    if err != nil {
+        return err
+    }
+
+    if user.Role == "root" {
+        return errors.New("cannot demote root user")
+    }
+
+    if user.Role == "user" {
+        return errors.New("user is already a user")
+    }
+
+    if claims.Role != "admin" && claims.Role != "root" {
+        return errors.New("a user must be an admin or root to demote another user")
+    }
+
+    user.Role = "user"
+    return uc.userRepository.UpdateUser(ctx, user)
 }

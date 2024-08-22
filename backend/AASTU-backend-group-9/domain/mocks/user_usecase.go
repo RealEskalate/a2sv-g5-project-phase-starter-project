@@ -187,6 +187,8 @@ func (_m *UserUsecase) UpdateUser(c context.Context, user *domain.User, claims *
 	return r0, r1
 }
 
+
+
 type mockConstructorTestingTNewUserUsecase interface {
 	mock.TestingT
 	Cleanup(func())

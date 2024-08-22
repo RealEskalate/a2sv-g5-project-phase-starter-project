@@ -1,6 +1,4 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { session } from '@/session';
-import { get } from 'http';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from '../api/baseQuery';
 import { TransactionResponseType } from '@/types/transaction.types';
 

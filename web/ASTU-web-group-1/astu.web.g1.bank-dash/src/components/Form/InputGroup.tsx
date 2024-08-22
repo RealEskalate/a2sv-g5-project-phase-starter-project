@@ -17,7 +17,7 @@ const InputGroup = ({
         type={inputType}
         id={id}
         placeholder={placeholder}
-        // {...register(registerName)}
+        {...register(registerName)}
         className='w-full border-2 border-[#DFEAF2] p-5 py-3 rounded-xl placeholder:text-blue-steel focus:border-blue-steel outline-none'
       />
       {errorMessage && <p className='text-red-400'> {errorMessage} </p>}

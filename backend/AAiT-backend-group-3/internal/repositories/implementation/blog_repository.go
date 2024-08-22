@@ -118,6 +118,7 @@ func (r *MongoBlogRepository) GetBlogs(filter map[string]interface{}, search str
 
 func (r *MongoBlogRepository) UpdateBlog(blogId string, newBlog *models.Blog) error {
 	blogID, _ := primitive.ObjectIDFromHex(blogId)
+	newBlog.UpdatedAt = time.Now()
 
 	_, err := r.collection.UpdateOne(
 		ctx,
@@ -126,6 +127,7 @@ func (r *MongoBlogRepository) UpdateBlog(blogId string, newBlog *models.Blog) er
 	)
 	return err
 }
+
 
 func (r *MongoBlogRepository) DeleteBlog(blogId string) error {
 	blogID, _ := primitive.ObjectIDFromHex(blogId)

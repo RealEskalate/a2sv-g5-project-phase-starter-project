@@ -47,7 +47,6 @@ func (u *commentUsecase) DeleteComment(commentID, role_, UserID string) (*domain
 		return nil, errors.New("unauthorized")
 	}
 
-
 	objID, err := primitive.ObjectIDFromHex(commentID)
 	if err != nil {
 		return nil, errors.New("invalid comment ID")
@@ -115,7 +114,7 @@ func (u *commentUsecase) DeleteReply(replyID, role_, UserID string) (*domain.Rep
 	if existingReply.UserID != UserID || role_ != "admin" {
 		return nil, errors.New("unauthorized")
 	}
-	
+
 	return u.commentRepo.DeleteReply(objID)
 }
 

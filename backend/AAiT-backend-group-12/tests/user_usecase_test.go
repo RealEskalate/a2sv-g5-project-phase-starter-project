@@ -1028,6 +1028,50 @@ func (suite *UserUsecaseTestSuite) TestUpdateUser_Negative_EmptyUpdate() {
 	suite.mockUserRepository.AssertExpectations(suite.T())
 }
 
+func (suite *UserUsecaseTestSuite) TestPromoteUser_Positive() {
+	user := TEST_USER
+
+	suite.mockUserRepository.On("ChangeRole", context.Background(), user.Username, domain.RoleAdmin).Return(nil).Once()
+
+	err := suite.Usecase.PromoteUser(context.Background(), user.Username)
+	suite.Nil(err, "error should be nil")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestPromoteUser_Negative() {
+	user := TEST_USER
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("ChangeRole", context.Background(), user.Username, domain.RoleAdmin).Return(sampleErr).Once()
+
+	err := suite.Usecase.PromoteUser(context.Background(), user.Username)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestDemoteUser_Positive() {
+	user := TEST_USER
+
+	suite.mockUserRepository.On("ChangeRole", context.Background(), user.Username, domain.RoleUser).Return(nil).Once()
+
+	err := suite.Usecase.DemoteUser(context.Background(), user.Username)
+	suite.Nil(err, "error should be nil")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestDemoteUser_Negative() {
+	user := TEST_USER
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("ChangeRole", context.Background(), user.Username, domain.RoleUser).Return(sampleErr).Once()
+
+	err := suite.Usecase.DemoteUser(context.Background(), user.Username)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
 func TestUserUsecase(t *testing.T) {
 	suite.Run(t, new(UserUsecaseTestSuite))
 }

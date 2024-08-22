@@ -6,6 +6,7 @@ import (
 )
 
 type LikeUseCase struct {
+	BlogRepo 	domain.Blog_Repository_interface
 	LikeRepo    domain.Like_Repositroy_interface
 	DislikeRepo *repository.DislikeRepository
 }
@@ -22,7 +23,11 @@ func (BC *LikeUseCase) GetLikes(post_id string) ([]domain.Like, error) {
 }
 
 func (BC *LikeUseCase) CreateLike(user_id string, post_id string) error {
-	return BC.LikeRepo.CreateLike(user_id, post_id)
+	err := BC.LikeRepo.CreateLike(user_id, post_id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (BC *LikeUseCase) ToggleLike(user_id string, post_id string) error {

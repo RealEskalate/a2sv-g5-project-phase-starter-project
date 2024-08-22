@@ -3,13 +3,13 @@ package config
 import "fmt"
 
 func ConfigFogetBody(token string, id string) (string, string) {
-	subject := "Email Verification"
+	subject := "Reset Password"
 	body := fmt.Sprintf(
 	`
-	<h2>Verify Your Email</h2>
+	<h1>Reset password</h1>
 	<hr>
 	<p>Click the link below to reset password:</p>
-	<a href="http://localhost:8080/api/forget-password/?id=%s&token=%s">Forget-Password</a>
+	<a href="http://localhost:8080/api/forget-password/?id=%s&token=%s">Reset-Password</a>
 	`,id,token)
 
 	return subject,body

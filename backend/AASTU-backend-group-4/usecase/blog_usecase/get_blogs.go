@@ -6,14 +6,17 @@ import (
 )
 
 func (bu *BlogUsecase) GetBlogs(ctx context.Context, page, limit int, sortBy string) ([]domain.Blog, int, error) {
+	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
+	defer cancel()
+
 	// Get blog posts from the repository
-	blogs, err := bu.blogRepo.GetPaginatedBlogs(context.Background(), page, limit, sortBy)
+	blogs, err := bu.blogRepo.GetPaginatedBlogs(ctx, page, limit, sortBy)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	// Get total number of posts for pagination metadata
-	totalPosts, err := bu.blogRepo.GetTotalBlogs(context.Background())
+	totalPosts, err := bu.blogRepo.GetTotalBlogs(ctx)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -21,11 +24,11 @@ func (bu *BlogUsecase) GetBlogs(ctx context.Context, page, limit int, sortBy str
 	// Fetch additional popularity metrics
 	for i := range blogs {
 		blogID := blogs[i].ID
-		blogs[i].Likes, err = bu.likeRepo.GetLikesCount(context.TODO(), blogID)
+		blogs[i].Likes, err = bu.likeRepo.GetLikesCount(ctx, blogID)
 		if err != nil {
 			return nil, 0, err
 		}
-		blogs[i].Comments, err = bu.commentRepo.GetCommentsCount(context.TODO(), blogID)
+		blogs[i].Comments, err = bu.commentRepo.GetCommentsCount(ctx, blogID)
 		if err != nil {
 			return nil, 0, err
 		}

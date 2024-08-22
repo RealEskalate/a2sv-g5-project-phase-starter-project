@@ -49,7 +49,7 @@ type UpdateRequest struct {
 type UserUsecase interface {
 	// SignupUsecase(ctx context.Context, user *User) error
 	// UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *User) error
-	// GetByEmail(ctx context.Context, email string) (User, error)
+	
 	// GetByUsername(ctx context.Context, username string) (User, error)
 	// DeleteRefreshTokenByUserID(ctx context.Context, userID string) error
 	// GeneratePasswordResetToken(ctx context.Context, email, resetTokenSecret string, expiryHour int) error
@@ -63,6 +63,9 @@ type UserUsecase interface {
 	Logout(ctx context.Context, userID string) error
 	RequestPasswordReset(ctx context.Context, email, frontendBaseURL string) error
 	ResetPassword(ctx context.Context, req ResetPasswordRequest) error
+	PromoteDemote(ctx context.Context, userID primitive.ObjectID, action string) error
+	GetByEmail(ctx context.Context, email string) (User, error)
+	GetByUsername(ctx context.Context, username string) (User, error)
 }
 
 type UserRepository interface {
@@ -82,4 +85,6 @@ type UserRepository interface {
 	GetByEmail(ctx context.Context, email string) (*User, error)
 	GetByID(ctx context.Context, id string) (*User, error)
 	UpdatePasswordByEmail(ctx context.Context, email, newPassword string) error
+	PromoteDemote(ctx context.Context, userID primitive.ObjectID, action string) error
+	
 }

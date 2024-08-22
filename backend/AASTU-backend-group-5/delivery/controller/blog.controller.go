@@ -123,10 +123,8 @@ func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"message": "Blog post updated successfully!", "blog": updatedBlog})
 	}
 }
-
 func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
 		idStr := c.Param("id")
 
 		id, err := primitive.ObjectIDFromHex(idStr)
@@ -135,13 +133,7 @@ func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 			return
 		}
 
-		iuser, _ := c.Get("user")
-
-		user := domain.User{}
-		if iuser != nil {
-			user = iuser.(domain.User)
-		}
-		err = bc.BlogUsecase.DeleteBlog(id.Hex(), user.ID.Hex())
+		err = bc.BlogUsecase.DeleteBlog(id.Hex())
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to delete blog post: " + err.Error()})
 			return

@@ -40,17 +40,17 @@ func (_m *Blog_Repository_interface) CreateBlogDocument(blog domain.Blog) (domai
 	return r0, r1
 }
 
-// DeleteBlogDocument provides a mock function with given fields: id, userID
-func (_m *Blog_Repository_interface) DeleteBlogDocument(id string, userID string) error {
-	ret := _m.Called(id, userID)
+// DeleteBlogDocument provides a mock function with given fields: id
+func (_m *Blog_Repository_interface) DeleteBlogDocument(id string) error {
+	ret := _m.Called(id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteBlogDocument")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string) error); ok {
-		r0 = rf(id, userID)
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(id)
 	} else {
 		r0 = ret.Error(0)
 	}

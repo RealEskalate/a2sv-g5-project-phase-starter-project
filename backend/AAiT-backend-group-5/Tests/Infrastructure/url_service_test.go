@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aait.backend.g5.main/backend/Config"
-	"github.com/aait.backend.g5.main/backend/Domain/Interfaces"
-	"github.com/aait.backend.g5.main/backend/Domain/Models"
-	"github.com/aait.backend.g5.main/backend/Infrastructure"
-	"github.com/aait.backend.g5.main/backend/Mocks"
+	config "github.com/aait.backend.g5.main/backend/Config"
+	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
+	models "github.com/aait.backend.g5.main/backend/Domain/Models"
+	infrastructure "github.com/aait.backend.g5.main/backend/Infrastructure"
+	mocks "github.com/aait.backend.g5.main/backend/Mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 )
@@ -21,7 +21,7 @@ type URLServiceTestSuite struct {
 	ctr        *gomock.Controller
 }
 
-func (suite *URLServiceTestSuite) SetupTest() {
+func (suite *URLServiceTestSuite) SetupSuite() {
 	suite.ctr = gomock.NewController(suite.T())
 	suite.repoMock = mocks.NewMockURLServiceRepository(suite.ctr)
 	suite.env = &config.Env{
@@ -31,7 +31,7 @@ func (suite *URLServiceTestSuite) SetupTest() {
 	suite.urlService = infrastructure.NewURLService(suite.env, suite.repoMock)
 }
 
-func (suite *URLServiceTestSuite) TearDownTest() {
+func (suite *URLServiceTestSuite) TearDownSuite() {
 	suite.ctr.Finish()
 }
 
@@ -42,7 +42,7 @@ func (suite *URLServiceTestSuite) TestGenerateURL_Success() {
 
 	suite.repoMock.
 		EXPECT().
-		SaveURL(gomock.Any(), gomock.Any()). 
+		SaveURL(gomock.Any(), gomock.Any()).
 		Return(nil)
 
 	url, err := suite.urlService.GenerateURL(token, purpose)
@@ -57,7 +57,7 @@ func (suite *URLServiceTestSuite) TestGenerateURL_SaveURLError() {
 
 	suite.repoMock.
 		EXPECT().
-		SaveURL(gomock.Any(), gomock.Any()). 
+		SaveURL(gomock.Any(), gomock.Any()).
 		Return(expectedError)
 
 	url, err := suite.urlService.GenerateURL(token, purpose)

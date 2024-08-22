@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	config "github.com/aait.backend.g5.main/backend/Config"
-	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
+	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	mocks "github.com/aait.backend.g5.main/backend/Mocks"
 	usecases "github.com/aait.backend.g5.main/backend/UseCases"
 	"github.com/golang/mock/gomock"
@@ -22,7 +22,7 @@ type LogoutUsecaseTestSuite struct {
 	ctr            *gomock.Controller
 }
 
-func (suite *LogoutUsecaseTestSuite) SetupTest() {
+func (suite *LogoutUsecaseTestSuite) SetupSuite() {
 	suite.ctr = gomock.NewController(suite.T())
 	suite.jwtServiceMock = mocks.NewMockJwtService(suite.ctr)
 	suite.repositoryMock = mocks.NewMockSessionRepository(suite.ctr)
@@ -35,7 +35,7 @@ func (suite *LogoutUsecaseTestSuite) SetupTest() {
 	)
 }
 
-func (suite *LogoutUsecaseTestSuite) TearDownTest() {
+func (suite *LogoutUsecaseTestSuite) TearDownSuite() {
 	suite.ctr.Finish()
 }
 

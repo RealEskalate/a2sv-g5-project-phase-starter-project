@@ -21,17 +21,17 @@ import (
 
 type BlogUsecaseTestSuite struct {
 	suite.Suite
-	repositoryMock       *mocks.MockBlogRepository
-	userRepoMock         *mocks.MockUserRepository
-	popularityMock       *mocks.MockBlogPopularityActionRepository
-	commentMock          *mocks.MockBlogCommentRepository
-	cacheServiceMock     *mocks.MockRedisCache
-	blogHelperMock       *mocks.MockBlogHelper
-	blogUsecase          interfaces.BlogUsecase
-	ctrl                 *gomock.Controller
+	repositoryMock   *mocks.MockBlogRepository
+	userRepoMock     *mocks.MockUserRepository
+	popularityMock   *mocks.MockBlogPopularityActionRepository
+	commentMock      *mocks.MockBlogCommentRepository
+	cacheServiceMock *mocks.MockRedisCache
+	blogHelperMock   *mocks.MockBlogHelper
+	blogUsecase      interfaces.BlogUsecase
+	ctrl             *gomock.Controller
 }
 
-func (suite *BlogUsecaseTestSuite) SetupTest() {
+func (suite *BlogUsecaseTestSuite) SetupSuite() {
 	suite.ctrl = gomock.NewController(suite.T())
 	suite.repositoryMock = mocks.NewMockBlogRepository(suite.ctrl)
 	suite.userRepoMock = mocks.NewMockUserRepository(suite.ctrl)
@@ -43,7 +43,7 @@ func (suite *BlogUsecaseTestSuite) SetupTest() {
 	suite.blogUsecase = usecases.NewblogUsecase(
 		suite.repositoryMock,
 		suite.cacheServiceMock,
-		config.Env{}, 
+		config.Env{},
 		time.Minute,
 		suite.blogHelperMock,
 		suite.userRepoMock,
@@ -52,13 +52,13 @@ func (suite *BlogUsecaseTestSuite) SetupTest() {
 	)
 }
 
-func (suite *BlogUsecaseTestSuite) TearDownTest() {
+func (suite *BlogUsecaseTestSuite) TearDownSuite() {
 	suite.ctrl.Finish()
 }
 
 func (suite *BlogUsecaseTestSuite) TestCreateBlog_Success() {
 	ctx := context.Background()
-	blog := &models.Blog{Title: "New Blog",Slug: "new-blog"}
+	blog := &models.Blog{Title: "New Blog", Slug: "new-blog"}
 	slug := "new-blog"
 	blogResponse := &dtos.BlogResponse{
 		Blog:       *blog,
@@ -167,8 +167,8 @@ func (suite *BlogUsecaseTestSuite) TestSearchBlogs_Success() {
 
 	suite.blogHelperMock.
 		EXPECT().
-			Marshal(gomock.Any()).
-			Return("mocked_json", nil)
+		Marshal(gomock.Any()).
+		Return("mocked_json", nil)
 
 	suite.cacheServiceMock.
 		EXPECT().
@@ -179,7 +179,6 @@ func (suite *BlogUsecaseTestSuite) TestSearchBlogs_Success() {
 	suite.Nil(err)
 	suite.Equal(blogResponse, result)
 }
-
 
 func (suite *BlogUsecaseTestSuite) TestUpdateBlog_Success() {
 	ctx := context.Background()
@@ -203,7 +202,7 @@ func (suite *BlogUsecaseTestSuite) TestUpdateBlog_Success() {
 func (suite *BlogUsecaseTestSuite) TestDeleteBlog_Success() {
 	ctx := context.Background()
 	deleteBlogReq := dtos.DeleteBlogRequest{
-		BlogID:  "1",
+		BlogID:   "1",
 		AuthorID: "author1",
 	}
 	blog := &models.Blog{ID: deleteBlogReq.BlogID, AuthorID: deleteBlogReq.AuthorID}

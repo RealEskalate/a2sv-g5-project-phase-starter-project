@@ -23,7 +23,7 @@ package tests
 // 	Repo       *repository.SessionRepo
 // }
 
-// func (suite *SessionRepoTestSuite) SetupTest() {
+// func (suite *SessionRepoTestSuite) SetupSuite() {
 // 	// Connect to the test MongoDB instance
 // 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 // 	client, err := mongo.Connect(context.TODO(), clientOptions)
@@ -47,7 +47,6 @@ package tests
 // 		log.Fatal(err)
 // 	}
 // }
-
 
 // func (suite *SessionRepoTestSuite) TestSaveToken() {
 // 	session := &models.Session{
@@ -119,7 +118,6 @@ package tests
 // 	_, err := suite.Collection.InsertOne(context.TODO(), session)
 // 	suite.Empty(err)
 
-	
 // 	// Retrieve the session
 // 	foundSession, errResp := suite.Repo.GetToken(context.TODO(), session.UserID)
 // 	suite.Empty(errResp)

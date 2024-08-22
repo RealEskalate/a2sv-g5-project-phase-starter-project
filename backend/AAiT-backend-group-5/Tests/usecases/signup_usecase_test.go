@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aait.backend.g5.main/backend/Domain/Interfaces"
-	"github.com/aait.backend.g5.main/backend/Domain/Models"
-	"github.com/aait.backend.g5.main/backend/Mocks"
+	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
+	models "github.com/aait.backend.g5.main/backend/Domain/Models"
+	mocks "github.com/aait.backend.g5.main/backend/Mocks"
 	usecases "github.com/aait.backend.g5.main/backend/UseCases"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
@@ -22,7 +22,7 @@ type SignupUsecaseTestSuite struct {
 	ctrl             *gomock.Controller
 }
 
-func (suite *SignupUsecaseTestSuite) SetupTest() {
+func (suite *SignupUsecaseTestSuite) SetupSuite() {
 	suite.ctrl = gomock.NewController(suite.T())
 	suite.repositoryMock = mocks.NewMockUserRepository(suite.ctrl)
 	suite.emailServiceMock = mocks.NewMockEmailService(suite.ctrl)
@@ -37,7 +37,7 @@ func (suite *SignupUsecaseTestSuite) SetupTest() {
 	)
 }
 
-func (suite *SignupUsecaseTestSuite) TearDownTest() {
+func (suite *SignupUsecaseTestSuite) TearDownSuite() {
 	suite.ctrl.Finish()
 }
 

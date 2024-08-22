@@ -80,7 +80,7 @@ const Center = () => {
             <div className="indiColor w-full flex gap-4 justify-end">
               <div className="flex gap-2 p-4 items-center dark:text-gray-200">
                 <div className="circle w-4 h-4 bg-[#1814F3]  rounded-full"></div>
-                Diposit
+                Deposit
               </div>
               <div className="flex gap-2 p-4 items-center dark:text-gray-200">
                 <div className="circle w-4 h-4 bg-[#16DBCC] rounded-full"></div>

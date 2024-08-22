@@ -8,14 +8,6 @@ import (
 )
 
 func (uc *userController) Logout(c *gin.Context) {
-	var request domain.LogoutRequest
-
-	// Bind the JSON request body to the request struct
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
 	// Get the user ID from the context (set by the middleware)
 	userID, exists := c.Get("userID")
 	if !exists {

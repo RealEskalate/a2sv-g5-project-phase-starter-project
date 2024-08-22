@@ -14,7 +14,7 @@ func (uc *userController) RefreshTokens(c *gin.Context) {
 		return
 	}
 
-	resp, err := uc.authService.RefreshTokens(c, req.RefreshToken)
+	resp, err := uc.authService.RefreshTokens(c, req.AccessToken)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return

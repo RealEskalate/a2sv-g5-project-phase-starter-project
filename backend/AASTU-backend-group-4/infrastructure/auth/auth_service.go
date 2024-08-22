@@ -47,10 +47,14 @@ func (a *authService) GenerateAccessToken(ctx context.Context, user domain.User)
 	return token.SignedString([]byte(a.accessSecret))
 }
 
-func (a *authService) GenerateAndStoreRefreshToken(ctx context.Context, userID string) (string, error) {
+func (a *authService) GenerateAndStoreRefreshToken(ctx context.Context, user domain.User) (string, error) {
+	userID := user.ID.Hex()
 	claims := jwt.MapClaims{
-		"user_id": userID,
-		"exp":     time.Now().Add(a.refreshExpiry).Unix(),
+		"user_id":  userID,
+		"email":    user.Email,
+		"username": user.Username,
+		"isAdmin":  user.IsAdmin,
+		"exp":      time.Now().Add(a.refreshExpiry).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -70,9 +74,15 @@ func (a *authService) ValidateToken(tokenString string) (*jwt.Token, error) {
 		return []byte(a.refreshSecret), nil
 	})
 }
+func (a *authService) ValidateAccessToken(tokenString string) (*jwt.Token, error) {
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(a.accessSecret), nil
+	})
+}
 
-func (a *authService) RefreshTokens(ctx context.Context, refreshToken string) (*domain.RefreshResponse, error) {
-	token, err := a.ValidateToken(refreshToken)
+func (a *authService) RefreshTokens(ctx context.Context, accessToken string) (*domain.RefreshResponse, error) {
+
+	token, err := a.ValidateAccessToken(accessToken)
 	if err != nil {
 		return nil, err
 	}
@@ -86,33 +96,53 @@ func (a *authService) RefreshTokens(ctx context.Context, refreshToken string) (*
 	if !ok {
 		return nil, errors.New("invalid refresh token claims")
 	}
+	email, ok := claims["email"].(string)
+	if !ok {
+		return nil, errors.New("invalid refresh token claims")
+	}
+	username, ok := claims["username"].(string)
+	if !ok {
+		return nil, errors.New("invalid refresh token claims")
+	}
+	isAdmin, ok := claims["isAdmin"].(bool)
+	if !ok {
+		return nil, errors.New("invalid refresh token claims")
+	}
+
+	objectID, err := primitive.ObjectIDFromHex(userID)
 
 	// Convert userID to primitive.ObjectID
-	objectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return nil, errors.New("invalid user ID format")
 	}
+	// time.Now().Add(a.accessExpiry).Unix()
+	user := &domain.User{
+		ID:       objectID,
+		Username: username,
+		Email:    email,
+		IsAdmin:  isAdmin,
+	}
 
 	// Check if refresh token is in the database
-	storedToken, err := a.refreshTokenRepo.GetRefreshToken(ctx, userID)
-	if err != nil || storedToken != refreshToken {
+	refreshToken, err := a.refreshTokenRepo.GetRefreshToken(ctx, userID)
+	if err != nil {
 		return nil, errors.New("refresh token not found or invalid")
 	}
 
-	// Generate new tokens
-	accessToken, err := a.GenerateAccessToken(ctx, domain.User{ID: objectID})
+	_, err = VerifyToken(refreshToken, a.refreshSecret)
 	if err != nil {
-		return nil, err
+		a.DeleteRefreshToken(ctx, userID)
+		return nil, errors.New("session expired, please login again")
 	}
 
-	newRefreshToken, err := a.GenerateAndStoreRefreshToken(ctx, userID)
+	// Generate new tokens
+	newAccessToken, err := a.GenerateAccessToken(ctx, *user)
 	if err != nil {
 		return nil, err
 	}
 
 	return &domain.RefreshResponse{
-		AccessToken:  accessToken,
-		RefreshToken: newRefreshToken,
+		AccessToken: newAccessToken,
 	}, nil
 }
 

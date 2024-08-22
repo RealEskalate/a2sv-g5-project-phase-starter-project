@@ -25,16 +25,5 @@ func (uc *userController) Login(c *gin.Context) {
 		return
 	}
 
-	// Set the refresh token in a secure cookie
-	c.SetCookie(
-		"refresh_token",
-		resp.RefreshToken,
-		uc.Env.RefreshTokenExpiryHour,
-		"/",
-		"localhost",
-		false,
-		true,
-	)
-
 	c.JSON(http.StatusOK, resp)
 }

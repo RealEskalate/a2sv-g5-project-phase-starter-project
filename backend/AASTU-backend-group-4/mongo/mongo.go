@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
 	"time"
 
@@ -151,6 +152,9 @@ func (mc *mongoCollection) UpdateOne(ctx context.Context, filter interface{}, up
 
 func (mc *mongoCollection) InsertOne(ctx context.Context, document interface{}) (interface{}, error) {
 	id, err := mc.coll.InsertOne(ctx, document)
+	if err != nil {
+		return nil, fmt.Errorf("error inserting document: %w", err)
+	}
 	return id.InsertedID, err
 }
 

@@ -12,17 +12,17 @@ type Comment_Usecase_interface struct {
 	mock.Mock
 }
 
-// CreateComment provides a mock function with given fields: post_id, user_id
-func (_m *Comment_Usecase_interface) CreateComment(post_id string, user_id string) error {
-	ret := _m.Called(post_id, user_id)
+// CreateComment provides a mock function with given fields: post_id, user_id, content
+func (_m *Comment_Usecase_interface) CreateComment(post_id string, user_id string, content string) error {
+	ret := _m.Called(post_id, user_id, content)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateComment")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string) error); ok {
-		r0 = rf(post_id, user_id)
+	if rf, ok := ret.Get(0).(func(string, string, string) error); ok {
+		r0 = rf(post_id, user_id, content)
 	} else {
 		r0 = ret.Error(0)
 	}

@@ -12,11 +12,13 @@ import (
 
 type CommentRepository struct {
 	collection database.CollectionInterface
+	Blog database.CollectionInterface
 }
 
-func NewCommentRepository(collection database.CollectionInterface) *CommentRepository {
+func NewCommentRepository(collection database.CollectionInterface, blog database.CollectionInterface) *CommentRepository {
 	return &CommentRepository{
 		collection: collection,
+		Blog: blog,
 	}
 }
 
@@ -41,7 +43,7 @@ func (CR *CommentRepository) GetComments(post_id string) ([]domain.Comment, erro
 	return comments, nil
 }
 
-func (CR *CommentRepository) CreateComment(post_id string, user_id string) error {
+func (CR *CommentRepository) CreateComment(post_id string, user_id string , content string) error {
 	userObjectID, err := primitive.ObjectIDFromHex(user_id)
 	if err != nil {
 		return err // Return an error if the conversion fails
@@ -55,8 +57,15 @@ func (CR *CommentRepository) CreateComment(post_id string, user_id string) error
 		ID:     primitive.NewObjectID(),
 		UserID: userObjectID,
 		PostID: postObjectID,
+		Content: content,
 	}
 
+	filter := bson.D{{Key: "_id", Value: postObjectID}}
+	setter := bson.D{{Key: "$inc", Value: bson.D{{Key: "comment_count", Value: 1}}}}
+	_, err = CR.Blog.UpdateOne(context.TODO() , filter , setter)
+	if err != nil{
+		return err
+	}
 	_, err = CR.collection.InsertOne(context.TODO(), comment)
 	return err
 }
@@ -64,6 +73,9 @@ func (CR *CommentRepository) CreateComment(post_id string, user_id string) error
 func (CR *CommentRepository) DeleteComment(comment_id string) error {
 	obID, _ := primitive.ObjectIDFromHex(comment_id)
 	query := bson.M{"_id": obID}
+
+	var comment domain.Comment
+	CR.collection.FindOne(context.TODO(), query).Decode(&comment)
 
 	res, err := CR.collection.DeleteOne(context.TODO(), query)
 	if err != nil {
@@ -74,7 +86,14 @@ func (CR *CommentRepository) DeleteComment(comment_id string) error {
 		return errors.New("no comment with this ID found")
 	}
 
-	return nil
+	postObjectID := comment.PostID
+	_, err = CR.Blog.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": postObjectID},
+		bson.M{"$inc": bson.M{"comment_count": -1}},
+	)
+
+	return err
 }
 
 func (CR *CommentRepository) UpdateComment(comment_id string) error {

@@ -54,14 +54,14 @@ type Comment_Controller_inteface interface {
 
 type Comment_Usecase_interface interface {
 	GetComments(post_id string) ([]Comment, error)
-	CreateComment(post_id string, user_id string) error
+	CreateComment(post_id string, user_id string , content string) error
 	DeleteComment(comment_id string) error
 	UpdateComment(comment_id string) error
 }
 
 type Comment_Repository_interface interface {
 	GetComments(post_id string) ([]Comment, error)
-	CreateComment(post_id string, user_id string) error
+	CreateComment(post_id string, user_id string , content string) error
 	DeleteComment(comment_id string) error
 	UpdateComment(comment_id string) error
 }

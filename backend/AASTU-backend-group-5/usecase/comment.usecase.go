@@ -18,8 +18,8 @@ func (c *CommentUseCase) GetComments(post_id string) ([]domain.Comment, error) {
 	return c.CommentRepo.GetComments(post_id)
 }
 
-func (c *CommentUseCase) CreateComment(post_id string, user_id string) error {
-	return c.CommentRepo.CreateComment(post_id, user_id)
+func (c *CommentUseCase) CreateComment(post_id string, user_id string , content string) error {
+	return c.CommentRepo.CreateComment(post_id, user_id , content)
 }
 
 func (c *CommentUseCase) DeleteComment(comment_id string) error {

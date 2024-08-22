@@ -28,7 +28,9 @@ func (BC *DislikeController) GetDislikes(ctx *gin.Context) {
 }
 
 func (BC *DislikeController) CreateDislike(ctx *gin.Context) {
-	userID := ctx.Param("user_id")
+	isuer,_ := ctx.Get("user")
+	user := isuer.(domain.ResponseUser)
+	userID := user.ID
 	postID := ctx.Param("post_id")
 
 	err := BC.DislikeUseCase.CreateDislike(userID, postID)
@@ -40,7 +42,9 @@ func (BC *DislikeController) CreateDislike(ctx *gin.Context) {
 }
 
 func (BC *DislikeController) ToggleDislike(ctx *gin.Context) {
-	userID := ctx.Param("user_id")
+	isuer,_ := ctx.Get("user")
+	user := isuer.(domain.ResponseUser)
+	userID := user.ID
 	postID := ctx.Param("post_id")
 
 	err := BC.DislikeUseCase.ToggleDislike(userID, postID)
@@ -52,7 +56,9 @@ func (BC *DislikeController) ToggleDislike(ctx *gin.Context) {
 }
 
 func (BC *DislikeController) RemoveDislike(ctx *gin.Context) {
-	userID := ctx.Param("user_id")
+	isuer,_ := ctx.Get("user")
+	user := isuer.(domain.ResponseUser)
+	userID := user.ID
 	postID := ctx.Param("post_id")
 
 	err := BC.DislikeUseCase.RemoveDislike(userID, postID)

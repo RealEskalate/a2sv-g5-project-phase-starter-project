@@ -13,7 +13,8 @@ type Like struct {
 	Status *bool              `bson:"status" json:"status"`
 }
 
-type LikeReposiotory interface {
+
+type LikeRepository interface {
 	Create(c context.Context, userID string, blogID string, status bool) error
 	Like(c context.Context, userID string, blogID string) error
 	Dislike(c context.Context, userId string, blogID string) error
@@ -21,12 +22,17 @@ type LikeReposiotory interface {
 	RemoveDislike(c context.Context, id string) error
 	GetLikesByUser(ctx context.Context, userID string, limit, offset int) ([]Like, error)
 	GetLikesByBlog(ctx context.Context, blogID string, limit, offset int) ([]Like, error)
-	GetLikeByID(c context.Context, likeID string) (Like, error)
+	GetStatus(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID)(bool, string , error)
+	
 }
 
 type LikeUsecase interface {
 	Like(c context.Context, userID string, blogID string) error
 	Dislike(c context.Context, userID string, blogID string) error
+	RemoveLike(ctx context.Context, likeID, blogID string) error 
+	RemoveDislike(ctx context.Context, dislikeID, blogID string) error 
 	GetLikesByUser(ctx context.Context, userID string, limit, page int) ([]Like, error)
 	GetLikesByBlog(ctx context.Context, blogID string, limit, page int) ([]Like, error)
+	GetStatus(ctx context.Context, userID string, blogID string) (bool, string, error)
+	
 }

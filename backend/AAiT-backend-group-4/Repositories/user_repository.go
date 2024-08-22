@@ -253,3 +253,29 @@ func (ur *userRepository) IsAdmin(c context.Context, userID string) bool {
 
 	return user.User_Role == "ADMIN"
 }
+
+func (ur *userRepository) GetByPasswordResetToken(ctx context.Context, token string) (domain.User, error) {
+
+	collection := ur.database.Collection(ur.collection)
+
+    var user domain.User
+    filter := bson.M{"password_reset_token": token}
+    err := collection.FindOne(ctx, filter).Decode(&user)
+    if err != nil {
+        return domain.User{}, err
+    }
+    return user, nil
+}
+
+func (ur *userRepository) UpdatePasswordTokens(ctx context.Context, userID string, updatedFields map[string]interface{}) error {
+
+	collection := ur.database.Collection(ur.collection)
+    filter := bson.M{"_id": userID}        // Filter to find the user by ID
+    update := bson.M{"$set": updatedFields} // Set the fields to update
+    
+    _, err := collection.UpdateOne(ctx, filter, update)
+    if err != nil {
+        return err
+    }
+    return nil
+}

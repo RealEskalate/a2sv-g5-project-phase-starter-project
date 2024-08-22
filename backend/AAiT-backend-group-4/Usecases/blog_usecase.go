@@ -74,7 +74,8 @@ func (blogU *blogUsecase) SearchBlogs(c context.Context, filter domain.Filter, l
 	}, nil
 }
 
-// Create calls Create method in a blog repository to create a blog
+// CreateBlog adds a new blog to the repository
+// It takes a blog object and calls the CreateBlog method in the blog repository to store it.
 func (blogU *blogUsecase) CreateBlog(c context.Context, blog *domain.Blog) error {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
@@ -120,7 +121,6 @@ func (blogU *blogUsecase) FetchByBlogID(c context.Context, blogID string) (domai
 }
 
 // FetchAll calls FetchAll in repository to fetch all blogs in the database
-
 // FetchByBlogAuthor calls FetchByBlogAuthor method in blog repository to retrive a blog writtern by the author using authuthor and pagination metadata
 func (blogU *blogUsecase) FetchByBlogAuthor(c context.Context, authorID string, limit, page int) (domain.PaginatedBlogs, error) {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
@@ -163,43 +163,16 @@ func (blogU *blogUsecase) FetchByBlogAuthor(c context.Context, authorID string, 
 
 // FetchByBlogTitle calls FetchByBlogTitle method in blog repository to retrive a blog by it's title
 // FetchByBlogTitle fetches blogs by their title and handles pagination
-func (blogU *blogUsecase) FetchByBlogTitle(c context.Context, title string, limit, page int) (domain.PaginatedBlogs, error) {
+func (blogU *blogUsecase) FetchByBlogTitle(c context.Context, title string) (domain.Blog, error) {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
 
-	if limit <= 0 || page <= 0 {
-		return domain.PaginatedBlogs{}, fmt.Errorf("invalid limit or page number")
-	}
-
-	offset := (page - 1) * limit
-
-	blogs, totalCount, err := blogU.blogRepository.FetchByBlogTitle(ctx, title, limit, offset)
+	blog, err := blogU.blogRepository.FetchByBlogTitle(ctx, title)
 	if err != nil {
-		return domain.PaginatedBlogs{}, err
+		return domain.Blog{}, err
 	}
 
-	totalPages := (totalCount + limit - 1) / limit
-	currentPage := page
-	nextPage := currentPage + 1
-	previousPage := currentPage - 1
-
-	if previousPage < 1 {
-		previousPage = 0
-	}
-
-	if nextPage > totalPages {
-		nextPage = 0
-	}
-
-	return domain.PaginatedBlogs{
-		Blogs: blogs,
-		Pagination: domain.PaginationData{
-			NextPage:     nextPage,
-			PreviousPage: previousPage,
-			CurrentPage:  currentPage,
-			TotalPages:   totalPages,
-			TotalItems:   totalCount,
-		}}, nil
+	return blog, nil
 }
 
 // FetchAll retrieves all blogs with pagination and metadata
@@ -272,6 +245,9 @@ func (blogU *blogUsecase) FetchAll(c context.Context, limit, page int) (domain.P
 	return returnedValue, nil
 }
 
+// FetchByPageAndPopularity retrieves blogs sorted by popularity, with pagination
+// It calculates the offset based on pagination parameters and fetches blogs and total count
+// It then calculates pagination metadata and returns a paginated result.
 func (blogU *blogUsecase) FetchByPageAndPopularity(ctx context.Context, limit, page int) (domain.PaginatedBlogs, error) {
 	ctx, cancel := context.WithTimeout(ctx, blogU.contextTimeouts)
 	defer cancel()
@@ -304,7 +280,6 @@ func (blogU *blogUsecase) FetchByPageAndPopularity(ctx context.Context, limit, p
 		return domain.PaginatedBlogs{}, err
 	}
 
-	// Calculate pagination metadata
 	totalPages := (totalCount + limit - 1) / limit
 	currentPage := page
 	nextPage := currentPage + 1
@@ -380,17 +355,16 @@ func (blogU *blogUsecase) FetchByTags(ctx context.Context, tags []domain.Tag, li
 		return domain.PaginatedBlogs{}, err
 	}
 
-	// Calculate pagination metadata
 	totalPages := (totalCount + limit - 1) / limit
 	currentPage := page
 	nextPage := currentPage + 1
 	previousPage := currentPage - 1
 
 	if nextPage > totalPages {
-		nextPage = 0 // No next page
+		nextPage = 0
 	}
 	if previousPage < 1 {
-		previousPage = 0 // No previous page
+		previousPage = 0
 	}
 
 	returnedValue := domain.PaginatedBlogs{
@@ -473,14 +447,15 @@ func (blogU *blogUsecase) DeleteBlog(c context.Context, id primitive.ObjectID, d
 
 // AddComment function calls the AddComment function in blog repository using user Id
 // Then adds it to the feedback filed of the blog using updateFeedback method
-func (blogU *blogUsecase) AddComment(c context.Context, userID string, comment domain.Comment) error {
+func (blogU *blogUsecase) AddComment(c context.Context, blogID string, comment domain.Comment) error {
 
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
+
 	addCommentFunc := func(feedback *domain.Feedback) error {
 		return blogU.blogRepository.AddComment(feedback, comment)
 	}
-	return blogU.blogRepository.UpdateFeedback(ctx, userID, addCommentFunc)
+	return blogU.blogRepository.UpdateFeedback(ctx, blogID, addCommentFunc)
 }
 
 // UpdateComment function calls the UpdateComment function in blog repository using user Id

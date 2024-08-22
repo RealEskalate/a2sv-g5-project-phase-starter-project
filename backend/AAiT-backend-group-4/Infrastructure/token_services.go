@@ -102,6 +102,29 @@ func (s *tokenService) ExtractRoleFromToken(tokenString string, secret string) (
 	return claims["Role"].(string), nil
 }
 
+func (s *tokenService)ExtractUserIDFromToken(tokenString string) (string, error){
+
+	type JwtCustomClaims struct {
+		UserID string `json:"user_id"`
+		jwt.StandardClaims
+	}
+
+	token, err := jwt.ParseWithClaims(tokenString, &JwtCustomClaims{}, func(t *jwt.Token) (interface{}, error) {
+
+		return []byte("your-secret-key"), nil
+	})
+	if err != nil {
+		return "", err
+	}
+
+	if claims, ok := token.Claims.(*JwtCustomClaims); ok && token.Valid {
+		return claims.UserID, nil
+	}
+
+	return "", fmt.Errorf("invalid token")
+}
+
+
 // CheckTokenExpiry checks the expiry of a given token.
 // It takes a token string and a secret as input parameters.
 // It returns a boolean value indicating whether the token has expired or not, and an error if any.

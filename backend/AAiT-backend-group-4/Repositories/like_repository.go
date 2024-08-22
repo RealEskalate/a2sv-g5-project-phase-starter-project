@@ -3,6 +3,7 @@ package repositories
 import (
 	domain "aait-backend-group4/Domain"
 	"context"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -10,8 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type likeReposiotory struct {
-	databse    mongo.Database
+type likeRepository struct {
+	database    mongo.Database
 	collection string
 }
 
@@ -34,9 +35,9 @@ func changeIdsToPrimitive(userID string, blogID string) (primitive.ObjectID, pri
 // NewLikeRepository creates a new instance of the LikeRepository.
 // It takes a mongo.Database and a collection name as parameters.
 // Returns a domain.LikeRepository interface.
-func NewLikeRepository(database mongo.Database, collection string) domain.LikeReposiotory {
-	return &likeReposiotory{
-		databse:    database,
+func NewLikeRepository(database mongo.Database, collection string) domain.LikeRepository {
+	return &likeRepository{
+		database:    database,
 		collection: collection,
 	}
 }
@@ -44,8 +45,8 @@ func NewLikeRepository(database mongo.Database, collection string) domain.LikeRe
 // Create creates a new like record in the database.
 // It takes a context.Context, userID string, blogID string, and status bool as parameters.
 // The function returns an error if any error occurs during the creation process.
-func (lr *likeReposiotory) Create(c context.Context, userID string, blogID string, status bool) error {
-	collection := lr.databse.Collection(lr.collection)
+func (lr *likeRepository) Create(c context.Context, userID string, blogID string, status bool) error {
+	collection := lr.database.Collection(lr.collection)
 	userPrimitiveID, blogPrimitiveID, err := changeIdsToPrimitive(userID, blogID)
 	if err != nil {
 		return err
@@ -66,8 +67,8 @@ func (lr *likeReposiotory) Create(c context.Context, userID string, blogID strin
 // It takes the user ID and blog ID as parameters and returns an error if any.
 // If the like document already exists, it updates the status to true.
 // If the like document does not exist, it creates a new like document with the status set to true.
-func (lr *likeReposiotory) Like(c context.Context, userID string, blogID string) error {
-	collection := lr.databse.Collection(lr.collection)
+func (lr *likeRepository) Like(c context.Context, userID string, blogID string) error {
+	collection := lr.database.Collection(lr.collection)
 	userPrimitiveID, blogPrimitiveID, err := changeIdsToPrimitive(userID, blogID)
 	if err != nil {
 		return err
@@ -92,8 +93,8 @@ func (lr *likeReposiotory) Like(c context.Context, userID string, blogID string)
 
 // Dislike updates the status of a like document to false, indicating that the user dislikes the blog.
 // It takes the user ID and blog ID as parameters and returns an error if any occurred during the update process.
-func (lr *likeReposiotory) Dislike(c context.Context, userId string, blogID string) error {
-	collection := lr.databse.Collection(lr.collection)
+func (lr *likeRepository) Dislike(c context.Context, userId string, blogID string) error {
+	collection := lr.database.Collection(lr.collection)
 	userPrimitiveID, blogPrimitiveID, err := changeIdsToPrimitive(userId, blogID)
 	if err != nil {
 		return err
@@ -102,14 +103,13 @@ func (lr *likeReposiotory) Dislike(c context.Context, userId string, blogID stri
 	filter := bson.M{"user_id": userPrimitiveID, "blog_id": blogPrimitiveID}
 	update := bson.M{"$set": bson.M{"status": false}}
 
-	// Try to update the existing like document
 	result, err := collection.UpdateOne(c, filter, update)
 	if err != nil {
 		return err
 	}
 
 	if result.MatchedCount == 0 {
-		err = lr.Create(c, userId, blogID, true)
+		err = lr.Create(c, userId, blogID, false)
 		return err
 	}
 
@@ -122,19 +122,17 @@ func (lr *likeReposiotory) Dislike(c context.Context, userId string, blogID stri
 // If the id is not a valid ObjectID, an error is returned.
 // If the document is found, it is removed from the collection.
 // Returns an error if there was an issue with the conversion, deletion, or if the document was not found.
-func (lr *likeReposiotory) RemoveLike(c context.Context, id string) error {
-	collection := lr.databse.Collection(lr.collection)
+func (lr *likeRepository) RemoveLike(c context.Context, id string) error {
+	collection := lr.database.Collection(lr.collection)
 
-	// Convert id to primitive.ObjectID
+
 	likeID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
 	}
 
-	// Define filter to find the document with the specified id
 	filter := bson.M{"_id": likeID}
 
-	// Remove the document from the collection
 	_, err = collection.DeleteOne(c, filter)
 	if err != nil {
 		return err
@@ -146,19 +144,17 @@ func (lr *likeReposiotory) RemoveLike(c context.Context, id string) error {
 // RemoveDislike removes a dislike from the collection based on the provided ID.
 // It takes a context.Context and an ID string as parameters.
 // The function returns an error if there was a problem removing the dislike.
-func (lr *likeReposiotory) RemoveDislike(c context.Context, id string) error {
-	collection := lr.databse.Collection(lr.collection)
+func (lr *likeRepository) RemoveDislike(c context.Context, id string) error {
+	collection := lr.database.Collection(lr.collection)
 
-	// Convert id to primitive.ObjectID
+
 	likeID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
 	}
 
-	// Define filter to find the document with the specified id
 	filter := bson.M{"_id": likeID}
 
-	// Remove the document from the collection
 	_, err = collection.DeleteOne(c, filter)
 	if err != nil {
 		return err
@@ -167,8 +163,8 @@ func (lr *likeReposiotory) RemoveDislike(c context.Context, id string) error {
 	return nil
 }
 
-func (lr *likeReposiotory) GetLikesByUser(c context.Context, userID string, limit, offset int) (likes []domain.Like, err error) {
-	collection := lr.databse.Collection(lr.collection)
+func (lr *likeRepository) GetLikesByUser(c context.Context, userID string, limit, offset int) (likes []domain.Like, err error) {
+	collection := lr.database.Collection(lr.collection)
 	userPrimitiveID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return []domain.Like{}, err
@@ -195,9 +191,9 @@ func (lr *likeReposiotory) GetLikesByUser(c context.Context, userID string, limi
 
 }
 
-func (lr *likeReposiotory) GetLikesByBlog(c context.Context, blogID string, limit, offset int) (likes []domain.Like, err error) {
+func (lr *likeRepository) GetLikesByBlog(c context.Context, blogID string, limit, offset int) (likes []domain.Like, err error) {
 
-	collection := lr.databse.Collection(lr.collection)
+	collection := lr.database.Collection(lr.collection)
 	userPrimitiveID, err := primitive.ObjectIDFromHex(blogID)
 
 	if err != nil {
@@ -224,8 +220,8 @@ func (lr *likeReposiotory) GetLikesByBlog(c context.Context, blogID string, limi
 	return likeResults, nil
 }
 
-func (lr *likeReposiotory) GetLikeByID(c context.Context, likeID string) (domain.Like, error) {
-	collection := lr.databse.Collection(lr.collection)
+func (lr *likeRepository) GetLikeByID(c context.Context, likeID string) (domain.Like, error) {
+	collection := lr.database.Collection(lr.collection)
 
 	likeObjectID, err := primitive.ObjectIDFromHex(likeID)
 	if err != nil {
@@ -245,4 +241,30 @@ func (lr *likeReposiotory) GetLikeByID(c context.Context, likeID string) (domain
 	}
 
 	return like, nil
+}
+func (lr *likeRepository) GetStatus(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID) (bool,string, error) {
+    collection := lr.database.Collection(lr.collection)
+
+    filter := bson.M{
+        "user_id": userID,
+        "blog_id": blogID,
+    }
+
+    var like domain.Like
+    err := collection.FindOne(ctx, filter).Decode(&like)
+
+    if err != nil {
+        if err == mongo.ErrNoDocuments {
+            // No like or dislike found for the user and blog
+            return false,"", errors.New("status not found")
+        }
+        // For other errors, return a general internal server error
+        return false,"", errors.New("internal server error")
+    }
+
+    // Return the status of the like or dislike
+    if like.Status != nil && *like.Status {
+        return true,like.ID.Hex(), nil
+    }
+    return false,like.ID.Hex(), nil
 }

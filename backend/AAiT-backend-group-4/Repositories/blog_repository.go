@@ -11,6 +11,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func CalculatePopularity(fb *domain.Feedback) float64 {
+	val := (float64(fb.Likes) * 2) + (float64(fb.View_count) * 1.2) +
+		(float64(len(fb.Comments)) * 1.5) - float64(fb.Dislikes)
+	return val
+}
+
 // blogRepository implements the domain.BlogRepository interface
 type blogRepository struct {
 	database   mongo.Database
@@ -18,6 +24,7 @@ type blogRepository struct {
 }
 
 // NewBlogRepository creates a new instance of blogRepository
+// It initializes the blogRepository with a database, collection name, and a popularity service.
 func NewBlogRepository(db mongo.Database, collection string) domain.BlogRepository {
 	return &blogRepository{
 		database:   db,
@@ -25,13 +32,13 @@ func NewBlogRepository(db mongo.Database, collection string) domain.BlogReposito
 	}
 }
 
-// Creates MongoDB filter
-// Creates find options with sorting and pagination
-// Gets the total count of documents matching the filter
-// Return the the filterd blogs and count
+// SearchBlogs retrieves blogs from the collection based on the provided filter, limit, and offset.
+// It creates a MongoDB filter based on the provided filter parameters and constructs find options with sorting and pagination.
+// It returns the filtered blogs and the total count of documents matching the filter.
 func (br *blogRepository) SearchBlogs(c context.Context, filter domain.Filter, limit, offset int) ([]domain.Blog, int, error) {
 	var blogs []domain.Blog
 
+	// Create MongoDB filter
 	mongoFilter := bson.M{}
 	if filter.AuthorName != nil {
 		mongoFilter["author_info.name"] = *filter.AuthorName
@@ -46,6 +53,7 @@ func (br *blogRepository) SearchBlogs(c context.Context, filter domain.Filter, l
 		mongoFilter["popularity"] = *filter.Popularity
 	}
 
+	// Create find options with sorting and pagination
 	findOptions := options.Find()
 	if filter.Sort_By != nil {
 		switch *filter.Sort_By {
@@ -76,7 +84,8 @@ func (br *blogRepository) SearchBlogs(c context.Context, filter domain.Filter, l
 	return blogs, int(count), nil
 }
 
-// CreateBlog inserts a new blog into the collection
+// CreateBlog inserts a new blog into the collection.
+// It takes a domain.Blog object and inserts it into the MongoDB collection.
 func (br *blogRepository) CreateBlog(c context.Context, blog *domain.Blog) error {
 	collection := br.database.Collection(br.collection)
 
@@ -85,7 +94,9 @@ func (br *blogRepository) CreateBlog(c context.Context, blog *domain.Blog) error
 	return err
 }
 
-// FetchByBlogID retrieves a blog by its ID
+// FetchByBlogID retrieves a blog by its ID.
+// It takes a blogID as a string, converts it to ObjectID, and queries the MongoDB collection to find the blog.
+// It also increments the view count of the blog and updates its popularity.
 func (br *blogRepository) FetchByBlogID(c context.Context, blogID string) (domain.Blog, error) {
 	collection := br.database.Collection(br.collection)
 
@@ -95,15 +106,21 @@ func (br *blogRepository) FetchByBlogID(c context.Context, blogID string) (domai
 	if err != nil {
 		return blog, err
 	}
+	blog.Feedbacks.View_count++
+	newPopularity := CalculatePopularity(&blog.Feedbacks)
+
+	err = br.UpdatePopularity(c, blog.ID, newPopularity)
+	if err != nil {
+		return domain.Blog{}, err
+	}
 
 	err = collection.FindOne(c, bson.M{"_id": idHex}).Decode(&blog)
 	return blog, err
 }
 
-// FetchByBlogAuthor retrieves blogs by the author's ID and the number of blogs by the Author and
-
+// FetchByBlogAuthor retrieves blogs written by a specific author, with pagination.
+// It takes an authorID, limit, and offset to return a paginated list of blogs written by the specified author.
 func (br *blogRepository) FetchByBlogAuthor(c context.Context, authorID string, limit, offset int) ([]domain.Blog, int, error) {
-
 	collection := br.database.Collection(br.collection)
 	filter := bson.M{"author_info.author_id": authorID}
 
@@ -130,38 +147,35 @@ func (br *blogRepository) FetchByBlogAuthor(c context.Context, authorID string, 
 	return blogs, int(count), nil
 }
 
-// FetchByBlogTitle retrieves blogs by their title with optional pagination
-// MongoDB filter for title search with case-insensitive regex
-// Count total number of documents matching the filter
-func (br *blogRepository) FetchByBlogTitle(c context.Context, title string, limit, offset int) ([]domain.Blog, int, error) {
-
+// FetchByBlogTitle retrieves a blog by its title using a case-insensitive regex search.
+// It takes a title string and returns the blog matching the title.
+func (br *blogRepository) FetchByBlogTitle(c context.Context, title string) (domain.Blog, error) {
 	collection := br.database.Collection(br.collection)
 	filter := bson.M{"title": bson.M{"$regex": title, "$options": "i"}}
 
-	findOptions := options.Find()
-	findOptions.SetLimit(int64(limit))
-	findOptions.SetSkip(int64(offset))
-
-	cursor, err := collection.Find(c, filter, findOptions)
+	cursor, err := collection.Find(c, filter)
 	if err != nil {
-		return []domain.Blog{}, 0, err
+		return domain.Blog{}, err
 	}
 
-	var blogs []domain.Blog
-	err = cursor.All(c, &blogs)
+	var blog domain.Blog
+	err = cursor.All(c, &blog)
 	if err != nil {
-		return []domain.Blog{}, 0, err
+		return domain.Blog{}, err
+	}
+	blog.Feedbacks.View_count++
+	newPopularity := CalculatePopularity(&blog.Feedbacks)
+
+	err = br.UpdatePopularity(c, blog.ID, newPopularity)
+	if err != nil {
+		return domain.Blog{}, err
 	}
 
-	count, err := collection.CountDocuments(c, filter)
-	if err != nil {
-		return []domain.Blog{}, 0, err
-	}
-
-	return blogs, int(count), nil
+	return blog, nil
 }
 
-// FetchAll retrieves all blogs from the collection with optional pagination
+// FetchAll retrieves all blogs from the collection with optional pagination.
+// It returns a paginated list of all blogs and the total count of blogs in the collection.
 func (br *blogRepository) FetchAll(c context.Context, limit, offset int) ([]domain.Blog, int, error) {
 	collection := br.database.Collection(br.collection)
 
@@ -188,7 +202,8 @@ func (br *blogRepository) FetchAll(c context.Context, limit, offset int) ([]doma
 	return blogs, int(count), nil
 }
 
-// FetchByPageAndPopularity retrieves blogs from the collection based on page number and sorts them by popularity
+// FetchByPageAndPopularity retrieves blogs sorted by popularity, with pagination.
+// It returns a paginated list of blogs sorted by their popularity in descending order.
 func (br *blogRepository) FetchByPageAndPopularity(ctx context.Context, limit, offset int) ([]domain.Blog, int, error) {
 	collection := br.database.Collection(br.collection)
 
@@ -219,7 +234,8 @@ func (br *blogRepository) FetchByPageAndPopularity(ctx context.Context, limit, o
 	return blogs, int(totalCount), nil
 }
 
-// FetchByTags retrieves blogs that have the specified tags with pagination
+// FetchByTags retrieves blogs that have the specified tags with pagination.
+// It takes a list of tags, limit, and offset to return a paginated list of blogs matching the tags.
 func (br *blogRepository) FetchByTags(ctx context.Context, tags []domain.Tag, limit, offset int) ([]domain.Blog, int, error) {
 	collection := br.database.Collection(br.collection)
 
@@ -250,7 +266,8 @@ func (br *blogRepository) FetchByTags(ctx context.Context, tags []domain.Tag, li
 	return blogs, int(totalCount), nil
 }
 
-// UpdateBlog updates a blog in the collection by its ID
+// UpdateBlog updates a blog's details in the collection by its ID.
+// It takes a blog ID and a domain.BlogUpdate object containing the updated blog details.
 func (br *blogRepository) UpdateBlog(ctx context.Context, id primitive.ObjectID, blog domain.BlogUpdate) error {
 	collection := br.database.Collection(br.collection)
 
@@ -282,16 +299,17 @@ func (br *blogRepository) UpdateBlog(ctx context.Context, id primitive.ObjectID,
 	return err
 }
 
-// DeleteBlog deletes a blog from the collection by its ID
+// DeleteBlog removes a blog from the collection by its ID.
+// It takes a blog ID and deletes the corresponding blog document from MongoDB.
 func (br *blogRepository) DeleteBlog(ctx context.Context, id primitive.ObjectID) error {
-
 	collection := br.database.Collection(br.collection)
 
-	_, errs := collection.DeleteOne(ctx, bson.M{"_id": id})
-	return errs
+	_, err := collection.DeleteOne(ctx, bson.M{"_id": id})
+	return err
 }
 
-// BlogExists checks if a blog exists by its ID
+// BlogExists checks if a blog exists in the collection by its ID.
+// It returns true if a blog with the given ID exists, false otherwise.
 func (br *blogRepository) BlogExists(ctx context.Context, id primitive.ObjectID) (bool, error) {
 	collection := br.database.Collection(br.collection)
 
@@ -303,7 +321,8 @@ func (br *blogRepository) BlogExists(ctx context.Context, id primitive.ObjectID)
 	return count > 0, nil
 }
 
-// UserIsAuthor checks if a user is the author of a blog by their user ID and the blog ID
+// UserIsAuthor checks if a specific user is the author of a blog by the blog ID and user ID.
+// It returns true if the user is the author of the blog, false otherwise.
 func (br *blogRepository) UserIsAuthor(ctx context.Context, blogID primitive.ObjectID, userID string) (bool, error) {
 	collection := br.database.Collection(br.collection)
 
@@ -315,7 +334,8 @@ func (br *blogRepository) UserIsAuthor(ctx context.Context, blogID primitive.Obj
 	return count > 0, nil
 }
 
-// UpdatePopularity updates the popularity of a blog
+// UpdatePopularity updates the popularity score of a blog by its ID.
+// It takes a blog ID and the new popularity score to update the blog's popularity field.
 func (br *blogRepository) UpdatePopularity(ctx context.Context, id primitive.ObjectID, popularity float64) error {
 	collection := br.database.Collection(br.collection)
 
@@ -323,12 +343,15 @@ func (br *blogRepository) UpdatePopularity(ctx context.Context, id primitive.Obj
 	return err
 }
 
-func (br *blogRepository) UpdateFeedback(ctx context.Context, id string, updateFunc func(*domain.Feedback) error) error {
-	new_id, err := primitive.ObjectIDFromHex(id)
+// UpdateFeedback updates the feedback for a blog using a provided update function.
+// It retrieves the blog, applies the update function to its feedback, recalculates popularity, and updates the blog.
+func (br *blogRepository) UpdateFeedback(ctx context.Context, blogID string, updateFunc func(*domain.Feedback) error) error {
+	id, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return err
 	}
-	filter := bson.M{"_id": new_id}
+
+	filter := bson.M{"_id": id}
 	var blogPost domain.Blog
 
 	err = br.database.Collection(br.collection).FindOne(ctx, filter).Decode(&blogPost)
@@ -341,42 +364,56 @@ func (br *blogRepository) UpdateFeedback(ctx context.Context, id string, updateF
 		return err
 	}
 
+	newPopularity := CalculatePopularity(&blogPost.Feedbacks)
+
+	err = br.UpdatePopularity(ctx, blogPost.ID, newPopularity)
+	if err != nil {
+		return err
+	}
+
 	update := bson.M{"$set": bson.M{"feedbacks": blogPost.Feedbacks}}
 	_, err = br.database.Collection(br.collection).UpdateOne(ctx, filter, update)
 
 	return err
 }
 
-// Increments the number of likes in the blogs feedback
+// IncrementLikes increases the number of likes in the blog's feedback by 1.
+// It is used to increment the likes count of a blog's feedback.
 func (br *blogRepository) IncrementLikes(feedback *domain.Feedback) error {
 	feedback.Likes++
 	return nil
 }
 
-// Decrement the number of likes in the blogs feedback
+// DecrementLikes decreases the number of likes in the blog's feedback by 1.
+// It is used to decrement the likes count of a blog's feedback.
 func (br *blogRepository) DecrementLikes(feedback *domain.Feedback) error {
-	feedback.Dislikes--
+	feedback.Likes--
 	return nil
 }
 
-// Increments the number of dislikes in the blogs feedback
+// IncrementDislikes increases the number of dislikes in the blog's feedback by 1.
+// It is used to increment the dislikes count of a blog's feedback.
 func (br *blogRepository) IncrementDislike(feedback *domain.Feedback) error {
 	feedback.Dislikes++
 	return nil
 }
 
-// Decement the number of dislikes in the blogs feedback
+// DecrementDislikes decreases the number of dislikes in the blog's feedback by 1.
+// It is used to decrement the dislikes count of a blog's feedback.
 func (br *blogRepository) DecrementDislikes(feedback *domain.Feedback) error {
 	feedback.Dislikes--
 	return nil
 }
 
-// adds a comment in to the feedback list of the blog
+// AddComment adds a new comment to the feedback of a blog.
+// It appends the provided comment to the list of comments in the blog's feedback.
 func (br *blogRepository) AddComment(feedback *domain.Feedback, comment domain.Comment) error {
 	feedback.Comments = append(feedback.Comments, comment)
 	return nil
 }
 
+// UpdateComment updates an existing comment in the blog's feedback.
+// It replaces the comment made by the user with the updated comment if the user is authorized.
 func (br *blogRepository) UpdateComment(feedback *domain.Feedback, updatedComment domain.Comment, userID string) error {
 	commentIndex := -1
 	for i, comment := range feedback.Comments {
@@ -394,14 +431,14 @@ func (br *blogRepository) UpdateComment(feedback *domain.Feedback, updatedCommen
 	return nil
 }
 
+// RemoveComment removes a comment from the blog's feedback.
+// It deletes comments made by the requester or admin. It returns an error if no comments were removed.
 func (br *blogRepository) RemoveComment(feedback *domain.Feedback, requesterUserID string, isAdmin bool) error {
 	var newComments []domain.Comment
 	commentFound := false
 
 	for _, comment := range feedback.Comments {
-
 		if comment.User_ID == requesterUserID || isAdmin {
-
 			commentFound = true
 			continue
 		}

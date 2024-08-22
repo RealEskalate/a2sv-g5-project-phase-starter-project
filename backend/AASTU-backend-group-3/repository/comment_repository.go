@@ -167,11 +167,15 @@ func (r *CommentRepository) GetReplyByID(id primitive.ObjectID) (*domain.Reply, 
 }
 
 func (r *CommentRepository) GetRepliesByCommentID(commentID string, page, limit int64) ([]*domain.Reply, error) {
-	filter := bson.M{"_id": commentID}
+	commentIDObj, err := primitive.ObjectIDFromHex(commentID)
+	if err != nil {
+		return nil, err
+	}
+	filter := bson.M{"_id": commentIDObj}
 	opts := options.FindOne().SetProjection(bson.M{"replies": bson.M{"$slice": []int64{(page - 1) * limit, limit}}})
 
 	var comment domain.Comment
-	err := r.collection.FindOne(nil, filter, opts).Decode(&comment)
+	err = r.collection.FindOne(nil, filter, opts).Decode(&comment)
 	if err != nil {
 		return nil, err
 	}

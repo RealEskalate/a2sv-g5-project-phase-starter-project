@@ -16,16 +16,16 @@ const RecentTransactionTable = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [currentButton, setCurrentButton] = useState("all-transaction");
 
-  let queryResult;
-  if (currentButton === "all-transaction") {
-    queryResult = useGetAllTransactionsQuery({ page: currentPage, size: 5 });
-  } else if (currentButton === "income") {
-    queryResult = useGetTransactionIncomeQuery({ page: currentPage, size: 5 });
-  } else {
-    queryResult = useGetTransactionExpenseQuery({ page: currentPage, size: 5 });
-  }
+  // let queryResult;
+  // if (currentButton === "all-transaction") {
+  //   queryResult = useGetAllTransactionsQuery({ page: currentPage, size: 5 });
+  // } else if (currentButton === "income") {
+  //   queryResult = useGetTransactionIncomeQuery({ page: currentPage, size: 5 });
+  // } else {
+  //   queryResult = useGetTransactionExpenseQuery({ page: currentPage, size: 5 });
+  // }
 
-  const { data, error, isLoading } = queryResult;
+  const { data, error, isLoading } = useGetAllTransactionsQuery({ page: currentPage, size: 5 });
   console.log(data);
 
   if (isLoading) {

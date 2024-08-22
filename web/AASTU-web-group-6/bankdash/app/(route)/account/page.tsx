@@ -11,6 +11,7 @@ import { TransactionType } from "@/app/Redux/slices/TransactionSlice";
 import UserService from "@/app/Services/api/userService";
 import { useSession } from "next-auth/react";
 import { useEffect , useState } from "react";
+import { ShimmerVisaCard } from "@/app/components/Shimmer/ShimmerVisa";
 export default function Home() {
   const {data:session} = useSession();
   const accessToken = session?.accessToken as string;
@@ -90,15 +91,21 @@ export default function Home() {
             </p>
           </div>
           <>
-            {CardData?.slice(0, 1).map((item, index) => (
-              <VisaCard
-                key={index}
-                data={item}
-                isBlack={false}
-                isFade={false}
-                isSimGray={false}
-              />
-            ))}
+            {CardData.length > 0 ? (
+              CardData?.slice(0, 1).map((item, index) => (
+                <VisaCard
+                  key={index}
+                  data={item}
+                  isBlack={false}
+                  isFade={false}
+                  isSimGray={false}
+                />
+              ))
+            ) : (
+              <div className="w-full flex gap-6 ">
+                <ShimmerVisaCard />
+              </div>
+            )}
           </>
         </div>
       </div>

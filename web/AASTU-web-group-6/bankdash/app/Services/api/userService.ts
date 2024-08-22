@@ -5,14 +5,12 @@ import UserPreferenceValue from "@/types/UserPreferenceValue";
 const API_URL = "https://bank-dashboard-o9tl.onrender.com/user";
 
 interface UserResponseValue {
-
-  success: boolean,
-  message: string,
-  data: UserValue
+  success: boolean;
+  message: string;
+  data: UserValue;
 }
 
 interface UserUpdateValue {
-
   name: string;
   email: string;
   dateOfBirth: string;
@@ -24,15 +22,12 @@ interface UserUpdateValue {
   city: string;
   country: string;
   profilePicture: string;
-
 }
 
 interface UserPreferenceResponseValue {
-
-  success: boolean,
-  message: string,
-  data: UserPreferenceValue
-
+  success: boolean;
+  message: string;
+  data: UserPreferenceValue;
 }
 
 interface YearlyInvestmentValue {
@@ -57,7 +52,6 @@ interface InvestmentResponseValue {
   message: string;
   data: InvestmentDataValue;
 }
-
 
 const handleRequest = async (
   method: string,
@@ -87,7 +81,10 @@ const handleRequest = async (
 };
 
 class UserService {
-  public static update(formData: UserUpdateValue, accessToken: string): Promise<UserResponseValue> {
+  public static update(
+    formData: UserUpdateValue,
+    accessToken: string
+  ): Promise<UserResponseValue> {
     return handleRequest("PUT", `${API_URL}/update`, formData, accessToken);
   }
 
@@ -95,15 +92,29 @@ class UserService {
     formData: UserPreferenceValue,
     accessToken: string
   ): Promise<UserPreferenceResponseValue> {
-    return handleRequest("PUT", `${API_URL}/update-preference`, formData, accessToken);
+    return handleRequest(
+      "PUT",
+      `${API_URL}/update-preference`,
+      formData,
+      accessToken
+    );
   }
 
   public static searchUser(query: string, accessToken: string): Promise<any> {
     return handleRequest("GET", `${API_URL}/${query}`, undefined, accessToken);
   }
 
-  public static randomInvestmentData(years: number, months: number, accessToken: string): Promise<InvestmentResponseValue> {
-    return handleRequest("GET", `${API_URL}/random-investment-data?years=${years}&months=${months}`, undefined, accessToken);
+  public static randomInvestmentData(
+    years: number,
+    months: number,
+    accessToken: string
+  ): Promise<InvestmentResponseValue> {
+    return handleRequest(
+      "GET",
+      `${API_URL}/random-investment-data?years=${years}&months=${months}`,
+      undefined,
+      accessToken
+    );
   }
 
   public static current(accessToken: string): Promise<any> {

@@ -3,10 +3,10 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type LoginRequest struct {
@@ -18,6 +18,7 @@ type ResetPasswordRequest struct {
 	NewPasswor      string `json:"password"`
 	ConfirmPassword string `json:"confirm_password"`
 	Token           string
+	ResetToken      int `json:"reset_token"`
 }
 
 type LogoutRequest struct {
@@ -51,13 +52,7 @@ func (userController *userController) Register(cxt *gin.Context) {
 }
 
 func (userController *userController) VerifyEmail(cxt *gin.Context) {
-	var token string
-	errUnmarshal := cxt.ShouldBind(&token)
-	if errUnmarshal != nil {
-		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errUnmarshal.Error()})
-		return
-	}
-
+	token := cxt.Param("token")
 	errRegister := userController.UserUseCase.RegisterEnd(cxt, token)
 	if errRegister != nil {
 		cxt.JSON(errRegister.StatusCode(), gin.H{"Error": errRegister.Error()})
@@ -85,18 +80,21 @@ func (userController *userController) Login(cxt *gin.Context) {
 }
 
 func (userController *userController) ForgotPassword(cxt *gin.Context) {
-	var email string
+	var email struct {
+		Email string `json:"email"`
+	}
 	errUnmarshal := cxt.ShouldBind(&email)
 	if errUnmarshal != nil {
 		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errUnmarshal.Error()})
 		return
 	}
 
-	errForgot := userController.UserUseCase.ForgotPassword(cxt, email)
+	errForgot := userController.UserUseCase.ForgotPassword(cxt, email.Email)
 	if errForgot != nil {
 		cxt.JSON(errForgot.StatusCode(), gin.H{"Error": errForgot.Error()})
+		return
 	}
-	cxt.JSON(http.StatusOK, gin.H{"Message": fmt.Sprintf("Reset link have been sent to the email %v", email)})
+	cxt.JSON(http.StatusOK, gin.H{"Message": fmt.Sprintf("Reset link have been sent to the email %v", email.Email)})
 }
 
 func (userController *userController) ResetPassword(cxt *gin.Context) {
@@ -110,7 +108,7 @@ func (userController *userController) ResetPassword(cxt *gin.Context) {
 	resetToken := cxt.Param("token")
 	resetInfo.Token = resetToken
 
-	errReset := userController.UserUseCase.ResetPassword(cxt, resetInfo.NewPasswor, resetInfo.ConfirmPassword, resetInfo.Token)
+	errReset := userController.UserUseCase.ResetPassword(cxt, resetInfo.NewPasswor, resetInfo.ConfirmPassword, resetInfo.Token, resetInfo.ResetToken)
 	if errReset != nil {
 		cxt.JSON(errReset.StatusCode(), gin.H{"Error": errReset.Error()})
 		return
@@ -128,8 +126,10 @@ func (userController *userController) Logout(cxt *gin.Context) {
 		return
 	}
 
+	accessToken := cxt.GetHeader("Authorization")
+
 	errLogout := userController.UserUseCase.Logout(cxt, map[string]string{
-		"access_token":  logoutInfo.AccessToken,
+		"access_token":  strings.TrimPrefix(accessToken, "Bearer "),
 		"refresh_token": logoutInfo.RefreshToken,
 	})
 
@@ -143,14 +143,14 @@ func (userController *userController) Logout(cxt *gin.Context) {
 }
 
 func (userController *userController) PromoteUser(cxt *gin.Context) {
-	var updateID string
+	var updateID map[string]string
 	errUnmarshal := cxt.ShouldBind(&updateID)
 	if errUnmarshal != nil {
 		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errUnmarshal.Error()})
 		return
 	}
 
-	errPromote := userController.UserUseCase.PromoteUser(cxt, updateID)
+	errPromote := userController.UserUseCase.PromoteUser(cxt, updateID["id"])
 	if errPromote != nil {
 		cxt.JSON(errPromote.StatusCode(), gin.H{"Error": errPromote.Error()})
 		return
@@ -160,14 +160,14 @@ func (userController *userController) PromoteUser(cxt *gin.Context) {
 }
 
 func (userController *userController) DemoteUser(cxt *gin.Context) {
-	var updateID string
+	var updateID map[string]string
 	errUnmarshal := cxt.ShouldBind(&updateID)
 	if errUnmarshal != nil {
 		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errUnmarshal.Error()})
 		return
 	}
 
-	errDemote := userController.UserUseCase.DemoteUser(cxt, updateID)
+	errDemote := userController.UserUseCase.DemoteUser(cxt, updateID["id"])
 	if errDemote != nil {
 		cxt.JSON(errDemote.StatusCode(), gin.H{"Error": errDemote.Error()})
 		return
@@ -177,7 +177,7 @@ func (userController *userController) DemoteUser(cxt *gin.Context) {
 }
 
 func (userController *userController) UpdateProfile(cxt *gin.Context) {
-	var updateInfo domain.User
+	var updateInfo map[string]interface{}
 	errUnmarshal := cxt.ShouldBind(&updateInfo)
 	if errUnmarshal != nil {
 		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errUnmarshal.Error()})
@@ -186,19 +186,16 @@ func (userController *userController) UpdateProfile(cxt *gin.Context) {
 
 	userID := cxt.Param("id")
 
-	updateInfo.ID = primitive.NewObjectID()
-
-	errUpdate := userController.UserUseCase.UpdateProfile(cxt, userID, &updateInfo)
+	errUpdate := userController.UserUseCase.UpdateProfile(cxt, userID, updateInfo)
 	if errUpdate != nil {
 		cxt.JSON(errUpdate.StatusCode(), gin.H{"Error": errUpdate.Error()})
 		return
 	}
 
 	cxt.JSON(http.StatusOK, gin.H{"Message": "User profile updated successfully"})
-
 }
 
-func (userController *UserController) ImageUpload(cxt *gin.Context) {
+func (userController *userController) ImageUpload(cxt *gin.Context) {
 	file, header, errFile := cxt.Request.FormFile("profile_picture")
 	if errFile != nil {
 		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errFile.Error()})

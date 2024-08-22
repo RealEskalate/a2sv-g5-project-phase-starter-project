@@ -2,7 +2,9 @@ package domain
 
 import (
 	"errors"
+	"net"
 	"regexp"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -21,11 +23,9 @@ type User struct {
 }
 
 type Photo struct {
-	ID         primitive.ObjectID `bson:"_id,omitempty"`
-	UserID     primitive.ObjectID `bson:"user_id"`
-	Filename   string             `bson:"filename"`
-	FilePath   string             `bson:"file_path"`
-	UploadedAt time.Time          `bson:"uploaded_at"`
+	Filename   string    `bson:"filename"`
+	FilePath   string    `bson:"file_path"`
+	UploadedAt time.Time `bson:"uploaded_at"`
 }
 
 func NewUser(username, email, password, bio string, profilePictureUrl Photo) *User {
@@ -43,11 +43,27 @@ func NewUser(username, email, password, bio string, profilePictureUrl Photo) *Us
 
 func (u *User) Validate() error {
 	if !regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`).MatchString(u.Email) {
-		return errors.New("Invalid email")
+		return errors.New("invalid email")
 	}
 
+	if IsValidDomain(u.Email) {
+		return errors.New("invalid email")
+	}
+
+	if HasMXRecord(u.Email) {
+		return errors.New("inactive email")
+	}
+
+	// if IsValidDomain(u.Email) {
+	// 	return errors.New("invalid email domain")
+	// }
+	//
+	// if HasMXRecord(u.Email) {
+	// 	return errors.New("inactive email")
+	// }
+	//
 	if !IsStrongPassword(u.Password) {
-		return errors.New("Password is not strong enough")
+		return errors.New("password is not strong enough")
 	}
 
 	return nil
@@ -77,4 +93,22 @@ func IsStrongPassword(password string) bool {
 	}
 
 	return hasUpper && hasLower && hasNumber && hasSpecial
+}
+
+func IsValidDomain(email string) bool {
+	splitedEmail := strings.Split(email, "@")
+	if len(splitedEmail) != 2 {
+		return false
+	}
+	_, err := net.LookupIP(splitedEmail[1])
+	return err == nil
+}
+
+func HasMXRecord(email string) bool {
+	splitedEmail := strings.Split(email, "@")
+	if len(splitedEmail) != 2 {
+		return false
+	}
+	mxRecord, err := net.LookupMX(splitedEmail[1])
+	return err == nil && len(mxRecord) > 0
 }

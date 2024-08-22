@@ -59,4 +59,3 @@ go.sum
 makefile
 tmp/
 .air.toml
-k8s/

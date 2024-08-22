@@ -29,6 +29,8 @@ type Env struct {
 	GoogleClientSecret         string `mapstructure:"GOOGLE_CLIENT_SECRET"`
 	GoogleUrlCallback          string `mapstructure:"GOOGLE_URL_CALLBACK"`
 	SessionSecret              string `mapstructure:"SESSION_SECRET"`
+	GeminiAPIKey               string `mapstructure:"GEMINI_API_KEY"`
+	GeminiWordCount            string `mapstructure:"GEMINI_WORD_COUNT"`
 }
 
 func NewEnv() *Env {

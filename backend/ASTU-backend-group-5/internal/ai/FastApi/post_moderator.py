@@ -8,11 +8,11 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from tools import set_decision
 
 import os
-from load_env import load_dotenv
+from dotenv import load_dotenv
 load_dotenv()
 
 llm = ChatOpenAI(temperature=0, model="gpt-4-turbo", verbose=True, api_key=os.getenv("OPENAI_API_KEY"))
-
+print(os.getenv("OPENAI_API_KEY"))
 class DecisionState:
     def __init__(self):
         self.valid = None

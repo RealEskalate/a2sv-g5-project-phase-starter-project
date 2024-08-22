@@ -9,12 +9,12 @@ import (
 
 func RegisterUserRoutes(collection *mongo.Collection, router *gin.Engine) {
 	userHandler := InstantaiteUserHandler(collection)
-	adminRoute := router.Group("/api/v1/accounts", middleware.AuthMiddleware())
+	userRoute := router.Group("/api/v1/accounts", middleware.AuthMiddleware())
 	{
-		adminRoute.GET("/me", userHandler.GetUser)
-		adminRoute.DELETE("/me", userHandler.DeleteUser)
-		adminRoute.PUT("/me", userHandler.UpdateUser)
-
+		userRoute.GET("/me", userHandler.GetUser)
+		userRoute.DELETE("/me", userHandler.DeleteUser)
+		userRoute.PUT("/me", userHandler.UpdateUser)
+		userRoute.GET("/any/:id", userHandler.GetAnyUser)
 	}
 
 }

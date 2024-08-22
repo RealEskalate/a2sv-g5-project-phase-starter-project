@@ -23,11 +23,9 @@ type User struct {
 }
 
 type Photo struct {
-	ID         primitive.ObjectID `bson:"_id,omitempty"`
-	UserID     primitive.ObjectID `bson:"user_id"`
-	Filename   string             `bson:"filename"`
-	FilePath   string             `bson:"file_path"`
-	UploadedAt time.Time          `bson:"uploaded_at"`
+	Filename   string    `bson:"filename"`
+	FilePath   string    `bson:"file_path"`
+	UploadedAt time.Time `bson:"uploaded_at"`
 }
 
 func NewUser(username, email, password, bio string, profilePictureUrl Photo) *User {
@@ -48,14 +46,14 @@ func (u *User) Validate() error {
 		return errors.New("invalid email")
 	}
 
-	if IsValidDomain(u.Email) {
-		return errors.New("invalid email")
-	}
-
-	if HasMXRecord(u.Email) {
-		return errors.New("inactive email")
-	}
-
+	// if IsValidDomain(u.Email) {
+	// 	return errors.New("invalid email domain")
+	// }
+	//
+	// if HasMXRecord(u.Email) {
+	// 	return errors.New("inactive email")
+	// }
+	//
 	if !IsStrongPassword(u.Password) {
 		return errors.New("password is not strong enough")
 	}

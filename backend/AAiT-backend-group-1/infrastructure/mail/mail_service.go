@@ -26,7 +26,11 @@ func NewEmailService() domain.EmailService {
 
 func (service *emailService) SendMail(to, subject, templateName string, body interface{}) error {
 	from := os.Getenv("SMTP_EMAIL")
-	tmplt, errLoadingTmplt := template.ParseFiles("templates/" + templateName)
+	currdir, errdir := os.Getwd()
+	if errdir != nil {
+		return errdir
+	}
+	tmplt, errLoadingTmplt := template.ParseFiles(currdir + "/infrastructure/mail/templates/" + templateName)
 	if errLoadingTmplt != nil {
 		return fmt.Errorf("error loading the template: %v", errLoadingTmplt)
 	}

@@ -1,4 +1,4 @@
-ackage domain
+package domain
 
 import (
 	"mime/multipart"
@@ -16,7 +16,7 @@ type UserUseCase interface {
 	Logout(cxt *gin.Context, token map[string]string) Error
 	PromoteUser(cxt *gin.Context, userID string) Error
 	DemoteUser(cxt *gin.Context, userID string) Error
-	UpdateProfile(cxt *gin.Context, userID string, user *User) Error
+	UpdateProfile(cxt *gin.Context, userID string, user map[string]interface{}) Error
 	ImageUpload(cxt *gin.Context, file *multipart.File, header *multipart.FileHeader) Error
 }
 

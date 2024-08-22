@@ -1,6 +1,8 @@
 import React from "react";
 import axios from "axios";
 import { TransactionType } from "@/types/TransactionValue";
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/options";
 
 const Download = ({
   transactionId,
@@ -10,9 +12,11 @@ const Download = ({
   transaction: TransactionType;
 }) => {
   const handleDownload = async () => {
+    const session = await getServerSession(options);
+    const accessToken = session?.accessToken as string;
     try {
       const headers = {
-        Authorization: `Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0bmFob20iLCJpYXQiOjE3MjQxNDYwNjgsImV4cCI6MTcyNDIzMjQ2OH0.Y00dc0ACMvkHK5ZYWVsBxK5lk2l5VB_6xnnFAMXrkMjRjl2jxEZHglllGcw_S61p`,
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       };
 

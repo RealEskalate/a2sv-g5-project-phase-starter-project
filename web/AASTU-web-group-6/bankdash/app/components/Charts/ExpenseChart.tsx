@@ -54,7 +54,7 @@ export default function Component() {
         {" "}
         <ChartContainer
           config={chartConfig}
-          className="we mx-auto aspect-square max-h-[250px] h-44"
+          className="we mx-auto aspect-square max-h-[250px] lg:h-64"
         >
           <PieChart>
             <ChartTooltip

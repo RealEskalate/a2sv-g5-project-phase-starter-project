@@ -103,7 +103,7 @@ func (su *signupUsecase) VerifyOTP(c context.Context, otp *domain.OTPRequest) (*
 	defer cancel()
 	storedOTP, err := su.GetOTPByEmail(ctx, otp.Email)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("OTP not found please signup again")
 	}
 	if storedOTP.Value != otp.Value {
 		return nil, errors.New("invalid OTP")

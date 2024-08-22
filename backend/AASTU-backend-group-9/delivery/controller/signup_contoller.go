@@ -37,7 +37,7 @@ func (sc *SignupController) Signup(c *gin.Context) {
 	}
 	err := sc.SignupUsecase.SendOTP(c, &user, sc.Env.SMTPUsername, sc.Env.SMTPPassword)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "OTP sending failed"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "OTP sent"})

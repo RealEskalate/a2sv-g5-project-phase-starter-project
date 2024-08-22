@@ -14,7 +14,7 @@ func (h *BlogHandler) DeleteBlogHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	if err := h.UseCase.DeleteBlog(context.Background(), id, userClaims.UserID); err != nil {
+	if err := h.UseCase.DeleteBlog(context.Background(), id, userClaims.UserID, userClaims.Role); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -31,7 +31,7 @@ func (h *BlogHandler) DeleteCommentHandler(c *gin.Context) {
 	}
 
 	commentId := c.Param("id")
-	if err := h.UseCase.DeleteComment(context.Background(), commentId, userClaims.UserID); err != nil {
+	if err := h.UseCase.DeleteComment(context.Background(), commentId, userClaims.UserID, userClaims.Role); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -48,7 +48,7 @@ func (h *BlogHandler) DeleteLikeHandler(c *gin.Context) {
 
 	likeId := c.Param("id")
 
-	if err := h.UseCase.RemoveLike(context.Background(), likeId, userClaims.UserID); err != nil {
+	if err := h.UseCase.RemoveLike(context.Background(), likeId, userClaims.UserID, userClaims.Role); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

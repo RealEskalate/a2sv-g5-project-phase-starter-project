@@ -11,7 +11,7 @@ type BlogUseCase interface {
 	CreateBlog(ctx context.Context, blog *domain.Blog, authorId string) error
 	GetBlogByID(ctx context.Context, id string) (*domain.Blog, error)
 	UpdateBlog(ctx context.Context, id string, blog *domain.Blog, authorId string) error
-	DeleteBlog(ctx context.Context, id, userId string) error
+	DeleteBlog(ctx context.Context, id, userId string, userRole string) error
 	GetAllBlogs(ctx context.Context) ([]*domain.Blog, error)
 	FilterBlogs(ctx context.Context, filter domain.BlogFilter) ([]*domain.Blog, error)
 	PaginateBlogs(ctx context.Context, filter domain.BlogFilter, page, pageSize int) ([]*domain.Blog, error)
@@ -39,7 +39,7 @@ type BlogUseCase interface {
 	DeleteTag(ctx context.Context, id string) error
 	GetTagByID(ctx context.Context, id string) (*domain.BlogTag, error)
 
-	DeleteComment(ctx context.Context, comment, userId string) error
-	RemoveLike(ctx context.Context, likeId, userId string) error
+	DeleteComment(ctx context.Context, comment, userId string, userRole string) error
+	RemoveLike(ctx context.Context, likeId, userId string, userRole string) error
 	SearchBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int) ([]*domain.Blog, int, error)
 }

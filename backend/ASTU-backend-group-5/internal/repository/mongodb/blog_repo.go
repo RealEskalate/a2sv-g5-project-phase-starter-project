@@ -102,11 +102,36 @@ func (r *MongoBlogRepository) GetAllBlogs(ctx context.Context) ([]*domain.Blog, 
 // FilterBlogs filters blogs based on the provided criteria
 func (r *MongoBlogRepository) FilterBlogs(ctx context.Context, filter domain.BlogFilter) ([]*domain.Blog, error) {
 	query := bson.M{}
+
+	// Apply filters based on the provided filter object
 	if filter.Title != nil && *filter.Title != "" {
 		query["title"] = *filter.Title
 	}
-	// Add other filters as needed...
+	if filter.AuthorID != nil {
+		query["ownerID"] = *filter.AuthorID
+	}
+	if len(filter.Tags) > 0 {
+		query["tags.name"] = bson.M{"$in": filter.Tags}
+	}
+	if filter.DateRange != nil {
+		query["created_at"] = bson.M{
+			"$gte": filter.DateRange.From,
+			"$lte": filter.DateRange.To,
+		}
+	}
+	if filter.Content != nil && *filter.Content != "" {
+		query["content"] = bson.M{"$regex": *filter.Content, "$options": "i"}
+	}
+	if filter.Keyword != nil && *filter.Keyword != "" {
+		keyword := *filter.Keyword
+		query["$or"] = []bson.M{
+			{"title": bson.M{"$regex": keyword, "$options": "i"}},
+			{"content": bson.M{"$regex": keyword, "$options": "i"}},
+			{"tags.name": bson.M{"$regex": keyword, "$options": "i"}},
+		}
+	}
 
+	// Retrieve blogs matching the filter
 	cursor, err := r.blogsCollection.Find(ctx, query)
 	if err != nil {
 		return nil, err
@@ -119,7 +144,28 @@ func (r *MongoBlogRepository) FilterBlogs(ctx context.Context, filter domain.Blo
 		if err := cursor.Decode(&blog); err != nil {
 			return nil, err
 		}
+
+		// Get view count for the blog
+		viewCount, err := r.viewsCollection.CountDocuments(ctx, bson.M{"blog_id": blog.ID})
+		if err != nil {
+			return nil, err
+		}
+
+		// Get like count for the blog
+		likeCount, err := r.likesCollection.CountDocuments(ctx, bson.M{"blog_id": blog.ID})
+		if err != nil {
+			return nil, err
+		}
+
+		// Add view and like counts to the blog structure
+		blog.Views = viewCount
+		blog.Likes = likeCount
+
 		blogs = append(blogs, &blog)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
 	}
 
 	return blogs, nil
@@ -450,6 +496,26 @@ func (r *MongoBlogRepository) FindBlogs(ctx context.Context, filter domain.BlogF
 		return nil, 0, err
 	}
 
+	// Fetch like and view counts for each blog
+	for _, blog := range blogs {
+		// Get view count for the blog
+		viewCount, err := r.viewsCollection.CountDocuments(ctx, bson.M{"blog_id": blog.ID})
+		if err != nil {
+			return nil, 0, err
+		}
+
+		// Get like count for the blog
+		likeCount, err := r.likesCollection.CountDocuments(ctx, bson.M{"blog_id": blog.ID})
+		if err != nil {
+			return nil, 0, err
+		}
+
+		// Add view and like counts to the blog structure
+		blog.Views = viewCount
+		blog.Likes = likeCount
+	}
+
+	// Get the total count of blogs matching the query
 	count, err := collection.CountDocuments(ctx, query)
 	if err != nil {
 		return nil, 0, err

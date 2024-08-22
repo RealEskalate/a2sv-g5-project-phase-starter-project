@@ -10,10 +10,10 @@ import (
 )
 
 type SessionRepo struct {
-	Collection *mongo.Collection
+	Collection interfaces.Collection
 }
 
-func NewSessionRepository(db *mongo.Database) interfaces.SessionRepository {
+func NewSessionRepository(db interfaces.Database) interfaces.SessionRepository {
 	return &SessionRepo{
 		Collection: db.Collection("session-collection"),
 	}

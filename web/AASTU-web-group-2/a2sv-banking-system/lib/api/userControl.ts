@@ -2,7 +2,7 @@ import axios from "axios";
 import User, { Preference } from "../../types/userInterface";
 
 // Extend the user type to include accessToken
-const baseUrl = "https://bank-dashboard-1tst.onrender.com";
+const baseUrl = "https://bank-dashboard-o9tl.onrender.com";
 
 export async function userUpdate(user: User, accessToken: string) {
   try {

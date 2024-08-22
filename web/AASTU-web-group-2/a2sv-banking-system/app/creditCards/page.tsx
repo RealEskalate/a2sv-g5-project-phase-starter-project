@@ -9,10 +9,13 @@ import Card from "../components/Page2/Card";
 import { Card as Card1 } from "../../types/cardController.Interface";
 import { getCards } from "@/lib/api/cardController";
 import { getSession } from "next-auth/react";
-import router from "next/navigation";
 import { useRouter } from "next/navigation";
 import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
-
+import {
+  ShimmerCreditCard,
+  ShimmerMainCreditCard,
+  ShimmerPieChartPage,
+} from "./Shimmer";
 const HeadingTitle = ({ title }: { title: string }) => {
   return (
     <h1 className="text-[#343C6A] font-semibold lg:text-xl md:text-lg">
@@ -26,6 +29,13 @@ const CreditCards = () => {
   const [cards, setCards] = useState<Card1[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredCards = cards.filter(
+    (card) =>
+      card.cardType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      card.balance.toString().includes(searchTerm)
+  );
 
   const convertToDate = (date: string) => {
     const year = date.slice(2, 4);
@@ -40,7 +50,7 @@ const CreditCards = () => {
         setAccessToken(access_token);
       } else {
         router.push(
-          `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+          `./api/auth/signin?callbackUrl=${encodeURIComponent("/creditCards")}`
         );
       }
     };
@@ -75,59 +85,92 @@ const CreditCards = () => {
     const newCards = [card, ...cards];
     setCards(newCards);
   };
-  if (loading) return null;
 
+  if (accessToken == "" && loading == false) {
+    router.push(
+      `./api/auth/signin?callbackUrl=${encodeURIComponent("/creditCards")}`
+    );
+  }
   return (
     <div className="bg-[#f5f7fb] w-full p-5 gap-5 flex flex-col">
       <div className="flex-col gap-5">
         <HeadingTitle title="My Cards" />
 
         <div className="flex overflow-scroll justify-between [&::-webkit-scrollbar]:hidden">
-          {cards.map((card, index) => {
-            const [bgColor, textColor] = decideColor(index);
+          {loading ? (
+            <div className="flex gap-4">
+              {Array(3)
+                .fill(0)
+                .map((_, index) => (
+                  <ShimmerMainCreditCard key={index} />
+                ))}
+            </div>
+          ) : (
+            cards.map((card, index) => {
+              const [bgColor, textColor] = decideColor(index);
 
-            if (index <= 2) {
-              return (
-                <Card
-                  balance={card.balance.toString()}
-                  cardHolder={card.cardHolder}
-                  validThru={convertToDate(card.expiryDate)}
-                  cardNumber={card.id}
-                  filterClass=""
-                  bgColor={bgColor}
-                  textColor={textColor}
-                  iconBgColor="bg-opacity-10"
-                  showIcon={true}
-                  key={index}
-                />
-              );
-            }
-          })}
+              if (index <= 2) {
+                return (
+                  <Card
+                    balance={card.balance.toString()}
+                    cardHolder={card.cardHolder}
+                    validThru={convertToDate(card.expiryDate)}
+                    cardNumber={card.id}
+                    filterClass=""
+                    bgColor={bgColor}
+                    textColor={textColor}
+                    iconBgColor="bg-opacity-10"
+                    showIcon={true}
+                    key={index}
+                  />
+                );
+              }
+            })
+          )}
         </div>
       </div>
       <div className="flex flex-col gap-6 md:flex-row">
         <div className="flex flex-col gap-5 basis-5/12 ">
           <HeadingTitle title="Card Expense Statistics" />
-          <PieChart />
+          {loading ? <ShimmerPieChartPage /> : <PieChart />}
         </div>
         <div className="flex flex-col gap-3 md:justify-between w-full h-full">
-          <HeadingTitle title="Card List" />
+          <div className="flex justify-between">
+            <HeadingTitle title="Card List" />
+            <input
+              type="text"
+              placeholder="Search cards..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="p-2 border border-gray-300 rounded-lg basis-4/12"
+            />
+          </div>
           <div className="overflow-y-auto h-80 flex flex-col gap-4 [&::-webkit-scrollbar]:hidden">
-            {cards.map((card, index) => {
-              return (
+            {loading ? (
+              <div className="flex flex-col gap-4">
+                {Array(4)
+                  .fill(0)
+                  .map((_, index) => (
+                    <ShimmerCreditCard key={index} />
+                  ))}
+              </div>
+            ) : filteredCards.length == 0 ? (
+              <div>No Available Cards!</div>
+            ) : (
+              filteredCards.map((card, index) => (
                 <CreditCard
-                  icon={<img src="card1.svg" />}
+                  icon={<img src="card1.svg" alt="Card Icon" />}
                   linkUrl=""
                   data={[
                     ["Card Type", card.cardType],
                     ["Balance", card.balance.toString()],
-                    ["Card Number", card.cardType],
+                    ["Card Number", card.id],
                     ["Card Expiry", convertToDate(card.expiryDate)],
                   ]}
                   key={index}
                 />
-              );
-            })}
+              ))
+            )}
           </div>
         </div>
       </div>

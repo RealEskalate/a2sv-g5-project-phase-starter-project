@@ -6,11 +6,11 @@ import Investments from "./Investments/page";
 export default function Home() {
 	return (
 		<div>
-			<Link href="/auth/signup">
+			{/* <Link href="/auth/signup">
 				<button className="btn-primary bg-slate-600">Sign Up</button>
 			</Link>
 			<Investments />
-			<Accounts />
+			<Accounts /> */}
 		</div>
 	);
 	return (

@@ -9,6 +9,7 @@ import AddNewCard from "./AddNewCard";
 import CardSetting from "./CardSetting";
 import creditCardColor from "./cardMockData";
 import { useSession } from "next-auth/react";
+import Shimmer from "./Shimmer";
 interface ExtendedUser {
 	name?: string;
 	email?: string;
@@ -36,7 +37,7 @@ const CreditCardComponent: React.FC = () => {
 
 		try {
 			const response = await fetch(
-				`https://bank-dashboard-6acc.onrender.com/cards?page=${page}&size=3`,
+				`https://bank-dashboard-1tst.onrender.com/cards?page=${page}&size=3`,
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -81,7 +82,19 @@ const CreditCardComponent: React.FC = () => {
 	};
 
 	if (loading) {
-		return <p className="text-center py-5 text-blue-500">Loading...</p>;
+		return (
+			<div className="bg-[#F5F7FA] p-4 sm:px-8 sm:py-4">
+				<div className="font-semibold text-blue-900 p-2">My Cards</div>
+				<div className="overflow-x-auto">
+					<div className="flex flex-nowrap gap-6 w-[940px] sm:w-[1024px] md:w-full">
+						{Array.from({ length: 3 }).map((_, index) => (
+							<Shimmer key={index} />
+						))}
+					</div>
+				</div>
+				{/* Include additional shimmers for other sections if needed */}
+			</div>
+		);
 	}
 	if (error) {
 		return <p className="py-5">Error: {error}</p>;

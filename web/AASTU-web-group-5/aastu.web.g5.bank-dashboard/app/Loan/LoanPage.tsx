@@ -3,8 +3,11 @@
 import React, { useEffect, useState } from "react";
 import LoanCards from "./LoanCards";
 import LoanTable from "./LoanTable";
+import ShimmerLoanCards from "./ShimmerLoanCards";
+
 import { LoanDataProps } from "./loanTypes";
 import { useSession } from "next-auth/react";
+import ShimmerLoanTable from "./ShimmerLoanTable";
 
 interface LoanResponse {
 	success: boolean;
@@ -12,20 +15,12 @@ interface LoanResponse {
 	data: LoanDataProps[];
 }
 
-interface ExtendedUser {
-	name?: string;
-	email?: string;
-	image?: string;
-	accessToken?: string;
-}
-
 const LoanPage = () => {
 	const [loanData, setLoanData] = useState<LoanResponse | null>(null);
-	const { data: session } = useSession();
-	console.log(session, "session from loan");
+	const [loading, setLoading] = useState(true); // State for loading
 
-	const user = session?.user as ExtendedUser | undefined;
-	const accessToken = user?.accessToken;
+	const { data: session } = useSession();
+	const accessToken = session?.user?.accessToken;
 
 	useEffect(() => {
 		const fetchLoanData = async () => {
@@ -35,7 +30,7 @@ const LoanPage = () => {
 			}
 			try {
 				const response = await fetch(
-					"https://bank-dashboard-6acc.onrender.com/active-loans/all",
+					"https://bank-dashboard-1tst.onrender.com/active-loans/all",
 					{
 						headers: {
 							Authorization: `Bearer ${accessToken}`,
@@ -53,21 +48,29 @@ const LoanPage = () => {
 				setLoanData(data);
 			} catch (error) {
 				console.error("Error fetching loan data:", error);
+			} finally {
+				setLoading(false);
 			}
 		};
 
-		if (accessToken) {
-			fetchLoanData();
-		}
+		fetchLoanData();
 	}, [accessToken]);
 
 	return (
 		<div className="p-5 sm:px-10 sm:py-8">
-			{loanData && loanData.success && (
+			{loading ? (
 				<>
-					<LoanCards data={loanData.data} />
-					<LoanTable data={loanData.data} />
+					<ShimmerLoanCards />
+					<ShimmerLoanTable />
 				</>
+			) : (
+				loanData &&
+				loanData.success && (
+					<>
+						<LoanCards data={loanData.data} />
+						<LoanTable data={loanData.data} />
+					</>
+				)
 			)}
 		</div>
 	);

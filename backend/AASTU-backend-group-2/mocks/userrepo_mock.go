@@ -149,6 +149,24 @@ func (_m *UserRepository) UpdateUserDetails(user *domain.User) error {
 	return r0
 }
 
+// VerifyUserEmail provides a mock function with given fields: token
+func (_m *UserRepository) VerifyUserEmail(token string) error {
+	ret := _m.Called(token)
+
+	if len(ret) == 0 {
+		panic("no return value specified for VerifyUserEmail")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(token)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // NewUserRepository creates a new instance of UserRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewUserRepository(t interface {

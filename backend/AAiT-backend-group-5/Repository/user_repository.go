@@ -18,11 +18,11 @@ var ErrUserNotFound = errors.New("user not found")
 
 // mongodb implementation of UserRepository interface
 type UserMongoRepository struct {
-	Collection *mongo.Collection
+	Collection interfaces.Collection
 }
 
 // NewUserRepository creates a new UserMongoRepository
-func NewUserRepository(db *mongo.Database) interfaces.UserRepository {
+func NewUserRepository(db interfaces.Database) interfaces.UserRepository {
 	return &UserMongoRepository{
 		Collection: db.Collection("user-collection"),
 	}

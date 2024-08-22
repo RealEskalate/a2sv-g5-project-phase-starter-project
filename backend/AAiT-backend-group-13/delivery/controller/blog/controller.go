@@ -74,15 +74,14 @@ func (c *Controller) addBlog(ctx *gin.Context) {
 	var request BlogDto
 
 	if err := ctx.ShouldBindJSON(&request); err != nil {
-		c.respondWithError(ctx, http.StatusBadRequest, er.NewValidation(err.Error()))
+		c.Problem(ctx, errapi.NewBadRequest(err.Error()))
 		return
 	}
 
-	username := uuid.New()
-	cmd := blogcmd.NewAddCommand(request.Title, request.Content, request.Tags, username)
+	cmd := blogcmd.NewAddCommand(request.Title, request.Content, request.Tags, request.UserId)
 	blog, err := c.addHandler.Handle(cmd)
 	if err != nil {
-		c.respondWithError(ctx, http.StatusInternalServerError, err)
+		c.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
 		return
 	}
 
@@ -92,24 +91,20 @@ func (c *Controller) addBlog(ctx *gin.Context) {
 func (c *Controller) updateBlog(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
-		c.respondWithError(ctx, http.StatusBadRequest, er.NewValidation("Invalid Id Format"))
+		c.Problem(ctx, errapi.NewBadRequest(err.Error()))
 		return
 	}
 
 	var request BlogUpdateDto
 	if err := ctx.ShouldBindJSON(&request); err != nil {
-		c.respondWithError(ctx, http.StatusBadRequest, er.NewValidation("Invalid Request"))
+		c.Problem(ctx, errapi.NewBadRequest(err.Error()))
 		return
 	}
 
 	cmd := blogcmd.NewUpdateCommand(id, request.Title, request.Content, request.Tags)
 	_, err = c.updateHandler.Handle(cmd)
 	if err != nil {
-		if err == er.BlogNotFound {
-			c.respondWithError(ctx, http.StatusNotFound, err)
-		} else {
-			c.respondWithError(ctx, http.StatusInternalServerError, err)
-		}
+		c.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
 		return
 	}
 
@@ -119,17 +114,13 @@ func (c *Controller) updateBlog(ctx *gin.Context) {
 func (c *Controller) deleteBlog(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
-		c.respondWithError(ctx, http.StatusBadRequest, er.NewValidation("Invalid Id Format"))
+		c.Problem(ctx, errapi.NewBadRequest(err.Error()))
 		return
 	}
 
 	_, err = c.deleteHandler.Handle(id)
 	if err != nil {
-		if err == er.BlogNotFound {
-			c.respondWithError(ctx, http.StatusNotFound, err)
-		} else {
-			c.respondWithError(ctx, http.StatusInternalServerError, err)
-		}
+		c.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
 		return
 	}
 
@@ -139,8 +130,10 @@ func (c *Controller) deleteBlog(ctx *gin.Context) {
 func (c *Controller) getBlogs(ctx *gin.Context) {
 	cursor, limit, authorId := extractBlogQueryParams(ctx)
 
+	log.Printf("Fetching blogs for query cursor = %s, limit = %d, authorId = %v -- BlogController", cursor, limit, authorId)
 	lastSeenIdStr, err := decodeCursor(cursor)
 	if err != nil {
+		log.Printf("Error decoding cursor %v", err)
 		lastSeenIdStr = uuid.Nil.String()
 	}
 
@@ -155,13 +148,21 @@ func (c *Controller) getBlogs(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, blogs)
+	var nextCursor string
+	if len(blogs) > 0 {
+		nextCursor = buildCursor(blogs[len(blogs)-1])
+	}
+	response := []*BlogResponse{}
+	for _, blog := range blogs {
+		response = append(response, FromBlog(blog))
+	}
+	ctx.JSON(http.StatusOK, gin.H{"blogs": response, "cursor": nextCursor})
 }
 
 func (c *Controller) getBlogById(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
-		c.respondWithError(ctx, http.StatusBadRequest, er.NewValidation("Invalid Id Format"))
+		c.Problem(ctx, errapi.NewBadRequest(err.Error()))
 		return
 	}
 
@@ -180,7 +181,7 @@ func (c *Controller) getBlogById(ctx *gin.Context) {
 func extractBlogQueryParams(ctx *gin.Context) (string, int, uuid.UUID) {
 	cursor := ctx.Query("cursor")
 	limit := parseIntOrDefault(ctx.Query("limit"), 10)
-	authorId := parseUUIDOrNil(ctx.Query("authorId"))
+	authorId := parseUUID(ctx.Query("authorId"))
 
 	return cursor, limit, authorId
 }
@@ -193,16 +194,11 @@ func decodeCursor(cursor string) (string, error) {
 	return string(decodedBytes), nil
 }
 
-func (c *Controller) BuildCursor(lastBlog *models.Blog) string {
+func buildCursor(lastBlog *models.Blog) string {
 	if lastBlog == nil {
 		return ""
 	}
 	return base64.StdEncoding.EncodeToString([]byte(lastBlog.ID().String()))
-}
-
-// respondWithError sends an error response with the specified status code.
-func (c *Controller) respondWithError(ctx *gin.Context, code int, err error) {
-	ctx.IndentedJSON(code, gin.H{"error": err.Error()})
 }
 
 // parseIntOrDefault parses a string as an integer, returning a default value on failure.
@@ -214,8 +210,8 @@ func parseIntOrDefault(value string, defaultValue int) int {
 	return parsedValue
 }
 
-// parseUUIDOrNil parses a string as a UUID, returning uuid.Nil on failure.
-func parseUUIDOrNil(value string) uuid.UUID {
+// parseUUID parses a string as a UUID, returning uuid.Nil on failure.
+func parseUUID(value string) uuid.UUID {
 	parsedValue, err := uuid.Parse(value)
 	if err != nil {
 		return uuid.Nil

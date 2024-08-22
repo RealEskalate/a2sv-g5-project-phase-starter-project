@@ -158,8 +158,6 @@ func (su *signupUsecase) SendOTP(c context.Context, user *domain.AuthSignup,smtp
 
 }
 
-
-
 func (su *signupUsecase) SendEmail(email string, otpValue, smtpusername, smtppassword string) error {
 	// Implement your email sending logic here
 	from := smtpusername

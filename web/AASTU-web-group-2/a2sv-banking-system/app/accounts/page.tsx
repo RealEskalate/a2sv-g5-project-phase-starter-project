@@ -101,6 +101,7 @@ const Page = () => {
           (sum: number, item: any) => sum + item.amount,
           0
         );
+        setIncome(String("0"))
         setIncome(String(totalIncome));
 
         // Fetch Expense
@@ -109,6 +110,7 @@ const Page = () => {
           (sum: number, item: any) => sum + item.amount,
           0
         );
+        setExpense("0")
         setExpense(String(totalExpense));
       } catch (error) {
         console.error("Error fetching data:", error);

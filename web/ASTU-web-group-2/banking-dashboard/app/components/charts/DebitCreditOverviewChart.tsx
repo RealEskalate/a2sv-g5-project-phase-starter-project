@@ -93,7 +93,7 @@ function DebitCreditOverviewChart() {
   }, []);
 
   return (
-    <div className="text-gray-500 rounded-[22px] bg-white">
+    <div className="text-gray-500 rounded-[22px] bg-white md:max-h-none max-h-[230px] ">
       <div className="flex flex-row justify-between px-[5%]">
         <div className="flex flex-col mx-5 mt-5">
           <div className="text-black text-[9px] md:text-[12px] lg:text-[14px] font-light">

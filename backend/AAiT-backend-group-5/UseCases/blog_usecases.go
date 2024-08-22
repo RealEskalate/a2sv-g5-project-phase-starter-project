@@ -2,10 +2,8 @@ package usecases
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"log"
 	"strconv"
 
@@ -131,38 +129,10 @@ func (b *blogUsecase) SearchBlogs(ctx context.Context, filter dtos.FilterBlogReq
 
 	}
 
-	searchJson, err := json.Marshal(filter)
+	blogs, nErr := b.repository.SearchBlogs(ctx, filter)
 
-	if err != nil {
-		return nil, models.InternalServerError("Error while marshalling search filter")
-	}
-
-	cachedBlogs, sErr := b.cacheService.Get(ctx, string(searchJson))
-
-	if sErr == redis.Nil {
-		blogs, nErr := b.repository.SearchBlogs(ctx, filter)
-
-		resBlogs, rErr := b.helper.GetBlogs(ctx, blogs)
-
-		if nErr != nil {
-			return nil, nErr
-		}
-
-		if rErr != nil {
-			return nil, rErr
-		}
-
-		blogsJson, _ := b.helper.Marshal(resBlogs)
-		b.cacheService.Set(ctx, string(searchJson), string(blogsJson), b.cacheTTL)
-
-		return resBlogs, nil
-	} else if sErr != nil {
-		return nil, models.InternalServerError("Error while fetching search query from cache")
-	}
-
-	var blogs []*models.Blog
-	if err := b.helper.Unmarshal(cachedBlogs, &blogs); err != nil {
-		return nil, models.InternalServerError("Error while unmarshalling search query from cache")
+	if nErr != nil {
+		return nil, nErr
 	}
 
 	return b.helper.GetBlogs(ctx, blogs)

@@ -4,6 +4,7 @@ import TableButton from '../TableButton/TableButton';
 import RecentTransactionDescription from './RecentTransactionDescription';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useGetAllTransactionsQuery } from '@/lib/redux/slices/transactionSlice';
+import Pagination from './Pagination';
 
 const datax = [
   {
@@ -85,9 +86,10 @@ const RecentTransactionTable = () => {
   const rowsPerPage = 5;
 
   const { data, error, isLoading } = useGetAllTransactionsQuery(String(currentPage));
-  // console.log("data is",data,String(currentPage),data?.data.content.length);
+  console.log("data is",data,String(currentPage),data?.data.content.length);
 
-  // Calculate total pages
+  const totalPages = data?.data.totalPages;
+
   if (isLoading) {
     return <div>Loading...</div>; // Display loading state
   }
@@ -95,11 +97,7 @@ const RecentTransactionTable = () => {
   if (!data?.data?.content) {
     return <div>No transactions found.</div>; // Handle case when no data is returned
   }
-  const totalPages = Math.ceil(datax.length / rowsPerPage);
-
-  // Get current page datax
-  const currentDatax = datax.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-
+  
   const handelAllTransaction = () => {
     setCurrentButton('all-transaction');
   };
@@ -110,18 +108,6 @@ const RecentTransactionTable = () => {
 
   const handelExpense = () => {
     setCurrentButton('expense');
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
   };
 
   return (
@@ -181,19 +167,19 @@ const RecentTransactionTable = () => {
                 <th scope='col' className=' hidden md:table-cell pb-2'>
                   Transacton ID
                 </th>
-                <th scope='col' className='hidden md:table-cell pb-2'>
+                <th scope='col' className='hidden lg:table-cell pb-2'>
                   Type
                 </th>
-                <th scope='col' className='hidden md:table-cell pb-2'>
+                <th scope='col' className='hidden lg:table-cell pb-2'>
                   Card
                 </th>
-                <th scope='col' className='hidden md:table-cell pb-2'>
+                <th scope='col' className='hidden lg:table-cell pb-2'>
                   Date
                 </th>
                 <th scope='col' className='hidden md:table-cell pb-2'>
                   Amount
                 </th>
-                <th scope='col' className='hidden md:table-cell pb-2 w-fit'>
+                <th scope='col' className='hidden lg:table-cell pb-2 w-fit'>
                   Recipt
                 </th>
               </tr>
@@ -211,13 +197,13 @@ const RecentTransactionTable = () => {
                     />
                   </td>
                   <td className='hidden md:table-cell py-3'>{datax.transactionId}</td>
-                  <td className='hidden md:table-cell py-3'>{datax.type}</td>
-                  <td className='hidden md:table-cell py-3'>{'1234' + ' ****'}</td>
-                  <td className='hidden md:table-cell py-3'>{datax.date}</td>
+                  <td className='hidden lg:table-cell py-3'>{datax.type}</td>
+                  <td className='hidden lg:table-cell py-3'>{'1234' + ' ****'}</td>
+                  <td className='hidden lg:table-cell py-3'>{datax.date}</td>
                   <td className={`py-3 ${datax.amount < 0 ? 'text-candyPink' : 'text-mintGreen'}`}>
                     {datax.amount < 0 ? '-$' + datax.amount : '+$' + datax.amount}
                   </td>
-                  <td className='hidden md:table-cell py-3 w-24 md:w-32'>
+                  <td className='hidden lg:table-cell py-3 w-24 md:w-32'>
                     <TableButton text='Download' classname='px-6 text-[#123288] border-[#123288]' />
                   </td>
                 </tr>
@@ -226,42 +212,7 @@ const RecentTransactionTable = () => {
           </table>
         </div>
       </div>
-      <nav className='flex items-center justify-end pt-4 text-blue-bright'>
-        <ul className='inline-flex items-center -space-x-px text-sm h-8 gap-[10px]'>
-          <li className='flex flex-row flex-wrap gap-3 items-center'>
-            <ChevronLeft />
-            <button
-              onClick={handlePreviousPage}
-              disabled={currentPage === 1}
-              className='flex items-center justify-center px-3 h-8  '
-            >
-              Previous
-            </button>
-          </li>
-          {[...Array(totalPages)].map((_, index) => (
-            <li key={index}>
-              <button
-                onClick={() => setCurrentPage(index + 1)}
-                className={`flex items-center justify-center px-3 h-8 ${
-                  currentPage === index + 1 && 'bg-blue-bright text-white rounded-xl'
-                }`}
-              >
-                {index + 1}
-              </button>
-            </li>
-          ))}
-          <li className='flex flex-row flex-wrap gap-3 items-center'>
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-              className='flex items-center justify-center px-3 h-8'
-            >
-              Next
-            </button>
-            <ChevronRight />
-          </li>
-        </ul>
-      </nav>
+      <Pagination totalPages={2} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
     </div>
   );
 };

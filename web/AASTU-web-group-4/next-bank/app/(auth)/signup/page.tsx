@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { User } from "@/types/index";
-import { creditcardstyles, colors ,logo } from "../../../constants/index";
+import { creditcardstyles, colors, logo } from "../../../constants/index";
 import Image from "next/image";
 import Link from "next/link";
 import { registerUser } from '@/services/authentication';
@@ -10,28 +10,6 @@ import Cookie from "js-cookie";
 
 const SignupForm = () => {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<User>({
-    name: "",
-    email: "",
-    dateOfBirth: "",
-    permanentAddress: "",
-    postalCode: "",
-    username: "",
-    password: "",
-    presentAddress: "",
-    city: "",
-    country: "",
-    profilePicture: "",
-    preference: {
-      currency: "",
-      sentOrReceiveDigitalCurrency: false,
-      receiveMerchantOrder: false,
-      accountRecommendations: false,
-      timeZone: "",
-      twoFactorAuthentication: false,
-    },
-  });
-
   const {
     register,
     handleSubmit,

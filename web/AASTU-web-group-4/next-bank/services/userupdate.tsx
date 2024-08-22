@@ -3,6 +3,7 @@ import Cookie from "js-cookie"
 const API_BASE_URL = "https://bank-dashboard-o9tl.onrender.com";
 const token = Cookie.get("accessToken")
 // Update User Details - PUT Request
+const token = Cookies.get("accessToken");
 export const updateUserDetails = async (userData: any) => {
   try {
     const response = await fetch(
@@ -101,6 +102,7 @@ export const randominvestmentdata = async (userId: string) => {
   }
 };
 
+export const currentuser = async () => {
 export const currentuser = async () => {
   try {
     const response = await fetch(

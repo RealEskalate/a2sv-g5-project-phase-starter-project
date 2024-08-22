@@ -16,9 +16,7 @@ type BlogRepository interface {
 	UpdateBlog(ctx context.Context, blog *Blog) error
 	DeleteBlog(ctx context.Context, id primitive.ObjectID) error
 	SearchBlogs(ctx context.Context, title string, author string	) (*[]Blog, error)
-	// FilterBlogsByTags(ctx context.Context, tags []string) ([]*Blog, error)
-	// FilterBlogsByDate(ctx context.Context, date string) ([]*Blog, error)
-	FilterBlogs(ctx context.Context, popularity string,tags []string, date string) ([]*Blog, error)
+	FilterBlogs(ctx context.Context, popularity string,tags []string, startDate string,endDate string) ([]*Blog, error)
 	AddComment(ctx context.Context, id primitive.ObjectID, comment *Comment) error
 	HasUserDisliked(ctx context.Context, id primitive.ObjectID, userID string) (bool, error)
 	IncrementPopularity(ctx context.Context, id primitive.ObjectID, metric string) error
@@ -34,9 +32,7 @@ type BlogUsecase interface {
 	UpdateBlog(ctx context.Context, id primitive.ObjectID, blog *BlogUpdateRequest) (*BlogResponse, error)
 	DeleteBlog(ctx context.Context, id primitive.ObjectID) error
 	SearchBlogs(ctx context.Context, title string, author string) (*[]Blog, error)
-	// FilterBlogsByTags(ctx context.Context, tags []string) ([]*Blog, error)
-	// FilterBlogsByDate(ctx context.Context, date string) ([]*Blog, error)
-	FilterBlogs(ctx context.Context, popularity string,tags []string, date string) ([]*Blog, error)
+	FilterBlogs(ctx context.Context, popularity string,tags []string, startDate string,endDate string) ([]*Blog, error)
 	TrackView(ctx context.Context, id primitive.ObjectID) error
 	TrackLike(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) error
 	TrackDislike(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) error

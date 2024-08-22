@@ -206,9 +206,10 @@ func (bc *BlogController) SearchBlogs(c *gin.Context)  {
 
 func (bc *BlogController) FilterBlogs(c *gin.Context) {
 	tags := c.QueryArray("tags")
-    date := c.Query("date")
+	startDate := c.Query("startDate")
+	endDate := c.Query("endDate")
 	popularity := c.Query("popularity")
-	blogs, err := bc.BlogUsecase.FilterBlogs(c.Request.Context(), popularity,tags,date)
+	blogs, err := bc.BlogUsecase.FilterBlogs(c.Request.Context(), popularity, tags, startDate, endDate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

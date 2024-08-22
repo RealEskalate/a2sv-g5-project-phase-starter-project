@@ -14,6 +14,7 @@ import {
   BalanceType,
   TransactionType,
 } from "@/app/Redux/slices/TransactionSlice";
+import { ShimmerVisaCard } from "../Shimmer/ShimmerVisa";
 
 const Center = () => {
   const { data: session } = useSession();
@@ -48,15 +49,22 @@ const Center = () => {
 
           <div className="flex gap-6 py-2 grow scrollbar-hide xxs:justify-start xxs:overflow-x-auto sm:overflow-hidden sm:w-full sm:overflow-x-hidden">
             <>
-              {CardData?.slice(0, 2).map((item, index) => (
-                <VisaCard
-                  key={index}
-                  data={item}
-                  isBlack={cardColor[index] || false}
-                  isFade={false}
-                  isSimGray={false}
-                />
-              ))}
+              {CardData.length > 0 ? (
+                CardData?.slice(0, 2).map((item, index) => (
+                  <VisaCard
+                    key={index}
+                    data={item}
+                    isBlack={cardColor[index] || false}
+                    isFade={false}
+                    isSimGray={false}
+                  />
+                ))
+              ) : (
+                <div className="w-full flex gap-6 ">
+                  <ShimmerVisaCard />
+                  <ShimmerVisaCard />
+                </div>
+              )}
             </>
           </div>
         </div>

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import DescriptionCard from "./components/Shimmer/DescriptionCard";
+import DescriptionCard from "./components/Shimmer/SimmerCard";
 
 const NotFound = () => {
   const li = [1, 2, 3, 4];

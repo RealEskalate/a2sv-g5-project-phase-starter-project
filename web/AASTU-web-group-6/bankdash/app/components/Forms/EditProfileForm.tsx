@@ -73,7 +73,7 @@ const EditProfileForm = () => {
               type="text"
               id="name"
               {...register("name")}
-              className="p-3 border-2 border-gray-200 rounded-lg dark:bg-gray-700  dark:border-gray-600 placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
+              className="p-3 border-2 dark:bg-gray-200 dark:border-gray-300  border-gray-200 rounded-lg   placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
               placeholder="Charlene Reed"
             />
           </div>

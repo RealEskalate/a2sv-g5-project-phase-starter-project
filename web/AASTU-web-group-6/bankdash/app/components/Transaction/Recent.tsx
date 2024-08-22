@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import { TransactionType } from "@/types/TransactionValue";
@@ -8,8 +9,11 @@ import {
   getIncome,
   getTransaction,
 } from "@/app/Services/api/fetchTransaction";
+import { useSession } from "next-auth/react";
 
 const Recent = () => {
+  const { data: session } = useSession();
+  const accessToken = session?.accessToken as string;
   const [expenseData, setExpenseData] = useState<TransactionType[]>([]);
   const [incomeData, setIncomeData] = useState<TransactionType[]>([]);
   const [allData, setAllData] = useState<TransactionType[]>([]);
@@ -42,13 +46,13 @@ const Recent = () => {
   };
 
   const fetchIncome = async () => {
-    const res = await getIncome(currentPage);
+    const res = await getIncome(currentPage, accessToken);
     setIncomeData(res);
     setLoading(false);
   };
 
   const fetchAllTransactions = async () => {
-    const res = await getTransaction(currentPage);
+    const res = await getTransaction(currentPage, accessToken);
     setAllData(res);
     setLoading(false);
   };

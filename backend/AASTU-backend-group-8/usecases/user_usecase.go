@@ -58,6 +58,9 @@ func (u *UserUsecase) Login(authUser *domain.AuthUser) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
+	if user.IsOAuth {
+		return "", "", errors.New("invalid username or password")
+	}
 
 	fmt.Println("user: ", user)
 

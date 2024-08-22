@@ -15,6 +15,8 @@ import (
 )
 
 func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, refreshTokenUsecase *usecases.TokenUsecase, jwtService infrastructure.JWTService, likeUsecase *usecases.LikeUsecase, commentUsecase *usecases.CommentUsecase, tokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase) {
+	r.MaxMultipartMemory = 8 << 20 // 8 MB
+	r.Static("/public", "./uploads")
 
 	// Initialize controllers
 	signupController := controllers.NewSignupController(userUsecase, otpUsecase)
@@ -24,7 +26,7 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 	refreshTokenController := controllers.NewRefreshTokenController(userUsecase, refreshTokenUsecase, jwtService)
 	forgotPasswordController := controllers.NewForgotPasswordController(userUsecase, otpUsecase)
 	logoutController := controllers.NewLogoutController(refreshTokenUsecase)
-  
+
 	commentController := controllers.NewCommentController(commentUsecase)
 	likeController := controllers.NewLikeController(likeUsecase)
 
@@ -40,17 +42,18 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 	r.POST("/forgotpassword", forgotPasswordController.ForgotPassword)
 	r.POST("/verfiyforgotpassword", forgotPasswordController.VerifyForgotOTP)
 
+	// Blog routes
+	r.POST("/blogs", blogController.CreateBlogPost)
+	r.GET("/blogs", blogController.GetAllBlogPosts)
+	r.GET("/blogs/:id", blogController.GetBlogByID)
+	r.PUT("/blogs/:id", blogController.UpdateBlogPost)
+
 	// Authenticated routes
 	auth := r.Group("/api")
 	auth.Use(infrastructure.AuthMiddleware(jwtService))
 	{
 		auth.POST("/logout", logoutController.Logout)
 
-		// Blog routes
-		auth.POST("/blogs", blogController.CreateBlogPost)
-		auth.GET("/blogs", blogController.GetAllBlogPosts)
-		auth.GET("/blogs/:id", blogController.GetBlogByID)
-		auth.PUT("/blogs/:id", blogController.UpdateBlogPost)
 		// auth.POST("/blogsearch", blogController.SearchBlogPost)
 		auth.DELETE("/blogs/:id", blogController.DeleteBlogPost)
 
@@ -68,6 +71,7 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 	gothic.Store = sessions.NewCookieStore([]byte("secret"))
 	r.GET("/auth/:provider", oauthHandler.SignInWithProvider)
 	r.GET("/auth/:provider/callback", oauthHandler.CallbackHandler)
+
 	// Comment routes
 	auth.POST("/blogs/:id/comments", commentController.AddComment)
 	auth.GET("/blogs/:id/comments", commentController.GetCommentsByBlogID)

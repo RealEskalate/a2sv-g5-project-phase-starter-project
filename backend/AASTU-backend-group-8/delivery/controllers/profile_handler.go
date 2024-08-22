@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"meleket/domain"
 
 	"github.com/gin-gonic/gin"
@@ -18,8 +17,8 @@ func NewProfileHandler(p domain.ProfileUsecase) domain.ProfileHandler {
 }
 
 func (p *ProfileHandler) SaveProfile(c *gin.Context) {
-	var profile domain.Profile
-	if err := c.ShouldBindJSON(&profile); err != nil {
+	var profile domain.ProfileGet
+	if err := c.ShouldBind(&profile); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -37,7 +36,6 @@ func (p *ProfileHandler) SaveProfile(c *gin.Context) {
 
 func (p *ProfileHandler) FindProfile(c *gin.Context) {
 	userID := c.Param("user_id")
-	fmt.Println(userID)
 	profile, err := p.profileUsecase.FindProfile(userID)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -63,8 +61,8 @@ func (p *ProfileHandler) DeleteProfile(c *gin.Context) {
 }
 
 func (p *ProfileHandler) UpdateProfile(c *gin.Context) {
-	var profile domain.Profile
-	if err := c.ShouldBindJSON(&profile); err != nil {
+	var profile domain.ProfileGet
+	if err := c.ShouldBind(&profile); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}

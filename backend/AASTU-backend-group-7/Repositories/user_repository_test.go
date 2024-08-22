@@ -261,7 +261,7 @@ func (suite *UserRepositoryTestSuite) TestUpdateUser() {
 	})
 }
 func (suite *UserRepositoryTestSuite) TestDemoteUser() {
-	// A testcase for the successful update of a task.
+	// A testcase for the successful update of a user.
 	suite.Run("UpdateUserSuccess", func() {
 		ctx := context.Background()
 		id := primitive.NewObjectID()

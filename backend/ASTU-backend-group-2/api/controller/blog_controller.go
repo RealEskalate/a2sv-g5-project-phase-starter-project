@@ -58,7 +58,7 @@ func (bc *BlogController) GetBlogs() gin.HandlerFunc {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(200, gin.H{"blogs": blogs, "pageination": pagination})
+		c.JSON(200, gin.H{"blogs": blogs, "metadata": pagination})
 	}
 }
 

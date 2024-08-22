@@ -1,7 +1,7 @@
 // authenticationController.ts
 import { RegisterRequest, RegisterResponse, RefreshTokenResponse, LoginRequest, LoginResponse, ChangePasswordRequest, ChangePasswordResponse } from '@/types/authenticationController.interface';
 
-const BASE_URL = 'https://bank-dashboard-1tst.onrender.com'
+const BASE_URL = 'https://bank-dashboard-o9tl.onrender.com'
 
 
 const register = async (userDetails: RegisterRequest): Promise<RegisterResponse> => {

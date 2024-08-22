@@ -4,6 +4,7 @@ import Navbar, { NavBarLoading } from "./Navbar";
 import Sidebar, { SidebarLoading } from "./Sidebar";
 import { getSession } from "next-auth/react";
 import Loading from "../accounts/components/Loading";
+import { useDarkMode } from "./Context/DarkModeContext";
 
 interface Props {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ const Navigation: React.FC<Props> = ({ children }) => {
   const [toggle, setToggle] = useState(false);
   const [session, setSession] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { darkMode, toggleDarkMode } = useDarkMode(); // Use dark mode context
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -77,11 +79,12 @@ const Navigation: React.FC<Props> = ({ children }) => {
 
           <div className="flex flex-col w-full">
             {session && (
-              <div className="w-full bg-white md:sticky md:top-0 md:z-20">
+              <div className="w-full bg-white md:sticky md:top-0 md:z-20 dark:bg-[#020817]">
                 <Navbar
                   handleClick={() => {
                     setToggle(!toggle);
                   }}
+                  toggleDarkMode={toggleDarkMode}
                 />
               </div>
             )}

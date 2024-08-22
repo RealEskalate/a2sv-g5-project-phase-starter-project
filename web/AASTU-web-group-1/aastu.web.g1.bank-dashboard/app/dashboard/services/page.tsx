@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import ServiceList from "./serviceComponenet/ServiceList";
-import BenefitComp from "./serviceComponenet/BenefitComp";
 import { servicesList } from "@/constants/index";
-import { getSession } from "next-auth/react";
 import { useUser } from "@/contexts/UserContext";
+import { getSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import BenefitComp from "./serviceComponenet/BenefitComp";
+import ServiceList from "./serviceComponenet/ServiceList";
 
 // Type definition for a single bank service
 interface BankService {
@@ -36,7 +36,7 @@ const Services = () => {
       console.log(token);
       try {
         const response = await fetch(
-          "https://bank-dashboard-1tst.onrender.com/bank-services?page=0&size=10",
+          "https://bank-dashboard-o9tl.onrender.com/bank-services?page=0&size=10",
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -11,5 +11,10 @@ type Config struct {
 	SenderEmail 	string 			`mapstructure:"SENDER_EMAIL"`
 	SenderPassword	string			`mapstructure:"SENDER_PASSWORD"`
 	CloudinaryUrl 	string			`mapstructure:"CLOUDINARY_URL"`
+<<<<<<< Updated upstream
 	GeminiApiKey	string			`mapstructure:"GEMINI_API_kEY"`
+=======
+	RedisAdr 		string			`mapstructure:"REDIS_ADDR"`
+	RedisPass 		string			`mapstructure:"REDIS_PASS"`
+>>>>>>> Stashed changes
 }

@@ -34,22 +34,43 @@ func (r *BlogRepository) Save(blog *domain.BlogPost) (string, error) {
 	return res.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func (r *BlogRepository) GetAllBlog(pagination domain.Pagination, sortBy string, sortOrder int) ([]domain.BlogPost, error) {
+func (r *BlogRepository) GetAllBlog(pagination domain.Pagination, sortBy string, sortOrder int, filters domain.BlogFilter) ([]domain.BlogPost, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	// Create the filter based on the query parameters
+	filter := bson.M{}
+
+	if filters.Title != "" {
+		filter["title"] = bson.M{"$regex": filters.Title, "$options": "i"} // Case-insensitive match
+	}
+
+	if filters.AuthorID != "" {
+		objectID, err := primitive.ObjectIDFromHex(filters.AuthorID)
+		if err == nil {
+			filter["authorid"] = objectID
+		}
+	}
+
+	if len(filters.Tags) > 0 {
+		filter["tags"] = bson.M{"$in": filters.Tags}
+	}
+
+	if filters.Search != "" {
+		filter["content"] = bson.M{"$regex": filters.Search, "$options": "i"} // Text search in content
+	}
+
 	var blogs []domain.BlogPost
 	skip := (pagination.Page - 1) * pagination.Limit
-
-	// Define the sorting options based on the input
 	sortOptions := bson.D{{sortBy, sortOrder}}
 
 	findOptions := options.Find()
 	findOptions.SetLimit(int64(pagination.Limit))
 	findOptions.SetSkip(int64(skip))
-	findOptions.SetSort(sortOptions) // Use the dynamic sort option
+	findOptions.SetSort(bson.D{{"created_at", -1}}) // Example: Sort by created_at in descending order
+	findOptions.SetSort(sortOptions)                // Use the dynamic sort option
 
-	cursor, err := r.collection.Find(ctx, bson.M{}, findOptions)
+	cursor, err := r.collection.Find(ctx, filter, findOptions)
 	if err != nil {
 		return nil, err
 	}

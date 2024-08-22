@@ -55,15 +55,13 @@ const RecentTransaction = () => {
     return <div>Error fetching transactions</div>;
   }
 
-  // Ensure that data?.data is an array
+
   let fetcheddata: Props[] = Array.isArray(data?.data) ? data.data : recentlistitems;
 
-  // Limit data to the last 3 items
   if (fetcheddata.length > 3) {
     fetcheddata = fetcheddata.slice(-3);
   }
 
-  // Debugging: Check type and content of fetcheddata
   console.log('Fetched data:', fetcheddata);
   console.log('Is array:', Array.isArray(fetcheddata));
 

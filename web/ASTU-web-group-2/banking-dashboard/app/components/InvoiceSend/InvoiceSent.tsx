@@ -58,7 +58,7 @@ const InvoicesSent = () => {
   if (error) {
     return <div>Error fetching transactions</div>;
   }
-  let fetcheddata: Props[] = data?.data || recentlistitems;
+  let fetcheddata: Props[] = data?.data.content || recentlistitems;
   if (fetcheddata.length > 4){fetcheddata = fetcheddata.slice(0,4);}
   console.log(fetcheddata)
 

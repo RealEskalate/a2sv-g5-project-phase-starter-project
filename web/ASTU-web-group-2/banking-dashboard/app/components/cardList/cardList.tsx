@@ -21,6 +21,7 @@ interface FullCard extends Card {
   bank?: string; 
 }
 
+
 const CardList = () => {
   const { data: session } = useSession();
   const accessToken = session?.user?.accessToken || "";

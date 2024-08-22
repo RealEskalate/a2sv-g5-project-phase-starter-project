@@ -122,17 +122,17 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 }
 func (h *UserHandler) UpdateUser(c *gin.Context) {
-    var user domain.User
-    claims, exists := c.Get("claims")
-    if !exists {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-        return
-    }
-    userClaims, ok := claims.(*domain.Claims)
-    if !ok {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-        return
-    }
+	var user domain.User
+	claims, exists := c.Get("claims")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+		return
+	}
+	userClaims, ok := claims.(*domain.Claims)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+		return
+	}
 	// Handle the file upload separately
 	file, header, err := c.Request.FormFile("profile_pic")
 	if err == nil {
@@ -172,9 +172,6 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	}
 	user.UserName = c.PostForm("username")
 
-
-
-    
 	// fmt.Println(userClaims.UserID)
 	objectID, err := primitive.ObjectIDFromHex(userClaims.UserID)
 	if err != nil {
@@ -182,30 +179,12 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 	user.ID = objectID
-	
-  
 
-    err = h.UserUsecase.UpdateUser(&user)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-
-    c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
-}
-
-//  GoogleCallback is a handler that handles the google oauth callback
-func (h *UserHandler) GoogleCallback(c *gin.Context) {
-	code := c.Query("code")
-	user, token, err := h.UserUsecase.GoogleCallback(code)
+	err = h.UserUsecase.UpdateUser(&user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"id":    user.ID,
-		"email": user.Email,
-		"role":  user.Role,
-		"token": token,
-	})
+
+	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }

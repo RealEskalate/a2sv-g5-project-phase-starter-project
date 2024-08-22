@@ -7,11 +7,12 @@ import Expense from './Expense';
 const RecentTransactionTable = () => {
 
   return (
-    <div className='bg-white p-8 rounded-3xl'>
+      <div>
       
     <h1 className="text-16px md:text-18px xl:text-22px text-[#333B69] font-semibold">
       Recent Transaction
     </h1>
+    <div className='bg-white p-8 rounded-3xl'>
       
     <Tabs defaultValue='all_transaction' className='w-full'>
       <TabsList className='w-full mb-6 md:justify-start bg-white'>
@@ -46,6 +47,7 @@ const RecentTransactionTable = () => {
       </TabsContent>
     </Tabs>
   </div>
+        </div>
   );
 };
 

@@ -8,6 +8,7 @@ import EditProfile from '../components/EditProfile';
 import SecuritySetting from '../components/SecuritySetting';
 import { getCurrentUser, userUpdatePreference } from '../../lib/api/userControl';
 import User, { Preference } from '../../types/userInterface';
+import Refresh from '@/app/api/auth/[...nextauth]/token/RefreshToken'; 
 
 type Data = {
   access_token: string;
@@ -33,24 +34,35 @@ const SettingsPage: React.FC = () => {
     timeZone: "",
     twoFactorAuthentication: false,
   });
+  const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSessionAndUser = async () => {
       setLoading(true);
-      const sessionData = (await getSession()) as SessionDataType | null;
 
-      if (sessionData && sessionData.user) {
-        setSession(sessionData);
-        try {
-          const userData = await getCurrentUser(sessionData.user.access_token);
-          setUser(userData);
-          setNotifications(userData.preference); 
-        } catch (error) {
-          console.error("Error fetching user data:", error);
+      try {
+        const accessToken = await Refresh();
+        const sessionData = (await getSession()) as SessionDataType | null;
+
+        if (!sessionData?.user) {
+          router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
+          return;
         }
-      } else {
+
+        setSession(sessionData);
+
+        if (accessToken) {
+          const userData = await getCurrentUser(accessToken);
+          setUser(userData);
+          setNotifications(userData.preference);
+        } else {
+          router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
+        }
+      } catch (error) {
+        console.error("Error fetching session or user data:", error);
         router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
       }
+
       setLoading(false);
     };
 
@@ -69,14 +81,16 @@ const SettingsPage: React.FC = () => {
 
   const handlePreferencesUpdate = async (event: React.FormEvent) => {
     event.preventDefault();
+    setMessage(null); // Clear any previous messages
     try {
       if (session?.user?.access_token) {
-        await userUpdatePreference(notifications, session.user.access_token);
-        alert('Preferences updated successfully!');
+        const accessToken = await Refresh();
+        await userUpdatePreference(notifications, accessToken);
+        setMessage('Preferences updated successfully!');
       }
     } catch (error) {
       console.error('Error updating preferences:', error);
-      alert('Failed to update preferences.');
+      setMessage('Failed to update preferences. Please try again.');
     }
   };
 
@@ -85,12 +99,36 @@ const SettingsPage: React.FC = () => {
       <div className="flex min-h-screen bg-gray-50">
         <main className="flex-1 p-4 md:p-8">
           <div className="bg-white p-6 rounded-2xl shadow-md">
-            <div className="animate-pulse">
+            <div className="animate-pulse space-y-6">
+              
+              <div className="flex space-x-4">
+                <div className="h-10 w-32 bg-gray-200 rounded-lg"></div>
+                <div className="h-10 w-32 bg-gray-200 rounded-lg"></div>
+                <div className="h-10 w-32 bg-gray-200 rounded-lg"></div>
+              </div>
+
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                  <div className="h-10 bg-gray-200 rounded-lg"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                  <div className="h-10 bg-gray-200 rounded-lg"></div>
+                </div>
+              </div>
+
+         
               <div className="space-y-4">
-                <div className="h-12 bg-gray-200 rounded-lg"></div>
-                <div className="h-12 bg-gray-200 rounded-lg"></div>
-                <div className="h-12 bg-gray-200 rounded-lg"></div>
-                <div className="h-12 bg-gray-200 rounded-lg"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/6"></div>
+                <div className="h-10 bg-gray-200 rounded-lg w-1/3"></div>
+                <div className="h-10 bg-gray-200 rounded-lg w-1/3"></div>
+                <div className="h-10 bg-gray-200 rounded-lg w-1/3"></div>
+              </div>
+
+              <div className="flex justify-end">
+                <div className="h-12 w-32 bg-gray-200 rounded-lg"></div>
               </div>
             </div>
           </div>
@@ -120,8 +158,8 @@ const SettingsPage: React.FC = () => {
                       id="currency-input"
                       title="Currency"
                       className="mt-1 block w-full border border-[#DFEAF2] rounded-full shadow-sm px-4 py-2 text-[#718EBF]"
-                      value={notifications.currency || ""}  
                       placeholder="Enter your currency"
+                      value={notifications.currency || ""}  
                       onChange={(e) => handleTextInputChange('currency', e.target.value)}
                     />
                   </div>
@@ -132,8 +170,8 @@ const SettingsPage: React.FC = () => {
                       id="timezone-input"
                       title="Time Zone"
                       className="mt-1 block w-full border border-[#DFEAF2] rounded-full shadow-sm px-4 py-2 text-[#718EBF]"
-                      value={notifications.timeZone || ""}  
                       placeholder="Enter your time zone"
+                      value={notifications.timeZone || ""}  
                       onChange={(e) => handleTextInputChange('timeZone', e.target.value)}
                     />
                   </div>
@@ -163,18 +201,24 @@ const SettingsPage: React.FC = () => {
                   </div>
                 </div>
 
+                {message && (
+                  <div className="mt-6 text-center">
+                    <span className="text-sm text-green-600">{message}</span>
+                  </div>
+                )}
+
                 <div className="mt-6 flex justify-end">
-                  <button
-                    type="submit"
-                    className="bg-[#1814F3] border border-[#1814F3] rounded-xl text-white px-6 py-3 font-semibold text-xl md:w-1/4"
-                  >
-                    Save
-                  </button>
+                <button
+            type="submit"
+            className="bg-[#1814F3] hover:bg-[#423fef] text-white px-5 py-3 rounded-xl md:w-2/12 text-sm w-full self-end"
+          >
+            Save
+          </button>
                 </div>
               </form>
             )}
 
-            {activeTab === 'Edit Profile' && <EditProfile/>}
+            {activeTab === 'Edit Profile' && <EditProfile />}
             {activeTab === 'Security' && <SecuritySetting />}
           </div>
         </div>

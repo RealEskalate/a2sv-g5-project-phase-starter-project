@@ -207,6 +207,7 @@ func (u *User) UpdateUsername(username string) error {
 
 // MakeActive sets the User's status to active.
 func (u *User) MakeActive() { u.isActive = true }
+func (u *User) MakeInactive() { u.isActive = false }
 
 // UpdateFirstName updates the User's first name after validation.
 func (u *User) UpdateFirstName(firstName string) error {
@@ -220,6 +221,11 @@ func (u *User) UpdateFirstName(firstName string) error {
 // UpdateLastName updates the User's last name.
 func (u *User) UpdateLastName(lastName string) error {
 	u.lastName = lastName
+	return nil
+}
+
+func (u *User) UpdateEmail(email string) error {
+	u.email = email
 	return nil
 }
 

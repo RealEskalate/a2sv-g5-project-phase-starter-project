@@ -28,6 +28,7 @@ type UserController struct {
 	resetCodeSendHandler icmd.IHandler[string, time.Time]
 	validateCodeHandler  icmd.IHandler[*passwordreset.ValidateCodeCommand, string]
 	validateEmailHandler icmd.IHandler[string, *result.ValidateEmailResult]
+	updateProfileHandler 	  icmd.IHandler[*usercmd.UpdateProfileCommand, bool]
 }
 
 // Config holds the configuration for creating a new UserController.
@@ -39,6 +40,7 @@ type Config struct {
 	ResetCodeSendHandler icmd.IHandler[string, time.Time]
 	ValidateCodeHandler  icmd.IHandler[*passwordreset.ValidateCodeCommand, string]
 	ValidateEmailHandler icmd.IHandler[string, *result.ValidateEmailResult]
+	UpdateProfile 	  	 icmd.IHandler[*usercmd.UpdateProfileCommand, bool]
 }
 
 // New creates a new UserController with the given CQRS handlers.
@@ -51,6 +53,7 @@ func New(config Config) *UserController {
 		resetCodeSendHandler: config.ResetCodeSendHandler,
 		validateCodeHandler:  config.ValidateCodeHandler,
 		validateEmailHandler: config.ValidateEmailHandler,
+		updateProfileHandler: config.UpdateProfile,
 	}
 }
 
@@ -63,6 +66,7 @@ func (u UserController) RegisterPrivileged(router *gin.RouterGroup) {
 func (u UserController) RegisterProtected(router *gin.RouterGroup) {
 	router = router.Group("/auth")
 	router.POST("/:username/logout", u.logout)
+	router.PUT("/update", u.updateProfile)
 }
 func (u UserController) RegisterPublic(router *gin.RouterGroup) {
 	router = router.Group("/auth")
@@ -276,4 +280,37 @@ func (u UserController) validateEmail(ctx *gin.Context) {
 	}
 	log.Println("Email validated successfully -- controller")
 	u.BaseHandler.Respond(ctx, http.StatusOK, gin.H{"message": "Email validated successfully"})
+}
+
+
+func (u UserController) updateProfile(ctx *gin.Context) {
+	var request UpdateProfileDto
+	if err := ctx.BindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, "Invalid Input")
+		log.Println("User input could not be bound -- UserController")
+		return
+	}
+
+
+	if request.Username == "" {
+		u.Problem(ctx, errapi.NewBadRequest("username is required"))
+		return
+	}
+
+	if request.Email == "" {
+		u.Problem(ctx, errapi.NewBadRequest("email is required"))
+		return
+	}
+
+
+	command := usercmd.NewUpdateProfileCommand( request.Username, request.FirstName, request.LastName, request.Email, request.Password)
+	_, err := u.updateProfileHandler.Handle(command)
+	if err != nil {
+		u.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
+		log.Println("User use case invalidated data -- UserController")
+		return
+	}
+
+	log.Println("User profile updated successfully -- UserController")
+	u.Respond(ctx, http.StatusOK, "Profile updated successfully")
 }

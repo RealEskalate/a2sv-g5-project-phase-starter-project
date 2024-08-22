@@ -488,16 +488,26 @@ export const SignUpForm = () => {
           )}
           <div className="flex justify-between mt-4">
             {currentStep > 0 && (
-              <Button type="button" variant="outline" onClick={handleBack}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleBack}
+                className="bg-[#343C6A]"
+              >
                 Back
               </Button>
             )}
             {currentStep < steps.length - 1 ? (
-              <Button type="button" onClick={handleNext} disabled={loading}>
+              <Button
+                type="button"
+                onClick={handleNext}
+                disabled={loading}
+                className="bg-[#343C6A]"
+              >
                 Next
               </Button>
             ) : (
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" disabled={loading} className="bg-[#343C6A]">
                 Submit
               </Button>
             )}

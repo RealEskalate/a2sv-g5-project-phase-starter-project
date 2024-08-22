@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
+	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	mocks "github.com/aait.backend.g5.main/backend/Mocks"
 	usecases "github.com/aait.backend.g5.main/backend/UseCases"
 	"github.com/golang/mock/gomock"
@@ -19,13 +19,13 @@ type UserUsecaseTestSuite struct {
 	ctrl     *gomock.Controller
 }
 
-func (suite *UserUsecaseTestSuite) SetupTest() {
+func (suite *UserUsecaseTestSuite) SetupSuite() {
 	suite.ctrl = gomock.NewController(suite.T())
 	suite.repoMock = mocks.NewMockUserRepository(suite.ctrl)
 	suite.setup = usecases.NewUserUsecase(suite.repoMock)
 }
 
-func (suite *UserUsecaseTestSuite) TearDownTest() {
+func (suite *UserUsecaseTestSuite) TearDownSuite() {
 	suite.ctrl.Finish()
 }
 

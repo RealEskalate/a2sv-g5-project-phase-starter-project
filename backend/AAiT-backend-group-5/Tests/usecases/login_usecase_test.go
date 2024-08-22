@@ -25,7 +25,7 @@ type LoginUsecaseTestSuite struct {
 	ctr                 *gomock.Controller
 }
 
-func (suite *LoginUsecaseTestSuite) SetupTest() {
+func (suite *LoginUsecaseTestSuite) SetupSuite() {
 	suite.ctr = gomock.NewController(suite.T())
 	suite.jwtServiceMock = mocks.NewMockJwtService(suite.ctr)
 	suite.passwordServiceMock = mocks.NewMockPasswordService(suite.ctr)
@@ -47,7 +47,7 @@ func (suite *LoginUsecaseTestSuite) SetupTest() {
 	)
 }
 
-func (suite *LoginUsecaseTestSuite) TearDownTest() {
+func (suite *LoginUsecaseTestSuite) TearDownSuite() {
 	suite.ctr.Finish()
 }
 
@@ -90,7 +90,7 @@ func (suite *LoginUsecaseTestSuite) TestLoginUser_Success() {
 	suite.sessionMock.
 		EXPECT().
 		GetToken(ctx, user.ID).
-		Return(nil, nil) 
+		Return(nil, nil)
 	suite.sessionMock.
 		EXPECT().
 		SaveToken(ctx, &models.Session{

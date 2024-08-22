@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
+	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	mocks "github.com/aait.backend.g5.main/backend/Mocks"
 	usecases "github.com/aait.backend.g5.main/backend/UseCases"
 	"github.com/golang/mock/gomock"
@@ -21,7 +21,7 @@ type RefreshUsecaseTestSuite struct {
 	ctrl                  *gomock.Controller
 }
 
-func (suite *RefreshUsecaseTestSuite) SetupTest() {
+func (suite *RefreshUsecaseTestSuite) SetupSuite() {
 	suite.ctrl = gomock.NewController(suite.T())
 	suite.jwtServiceMock = mocks.NewMockJwtService(suite.ctrl)
 	suite.sessionRepositoryMock = mocks.NewMockSessionRepository(suite.ctrl)
@@ -33,7 +33,7 @@ func (suite *RefreshUsecaseTestSuite) SetupTest() {
 	)
 }
 
-func (suite *RefreshUsecaseTestSuite) TearDownTest() {
+func (suite *RefreshUsecaseTestSuite) TearDownSuite() {
 	suite.ctrl.Finish()
 }
 

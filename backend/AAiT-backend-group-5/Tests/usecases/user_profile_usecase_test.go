@@ -21,7 +21,7 @@ type UserProfileUpdateUsecaseTestSuite struct {
 	ctrl                     *gomock.Controller
 }
 
-func (suite *UserProfileUpdateUsecaseTestSuite) SetupTest() {
+func (suite *UserProfileUpdateUsecaseTestSuite) SetupSuite() {
 	suite.ctrl = gomock.NewController(suite.T())
 	suite.repositoryMock = mocks.NewMockUserRepository(suite.ctrl)
 	suite.passwordServiceMock = mocks.NewMockPasswordService(suite.ctrl)
@@ -31,7 +31,7 @@ func (suite *UserProfileUpdateUsecaseTestSuite) SetupTest() {
 	)
 }
 
-func (suite *UserProfileUpdateUsecaseTestSuite) TearDownTest() {
+func (suite *UserProfileUpdateUsecaseTestSuite) TearDownSuite() {
 	suite.ctrl.Finish()
 }
 

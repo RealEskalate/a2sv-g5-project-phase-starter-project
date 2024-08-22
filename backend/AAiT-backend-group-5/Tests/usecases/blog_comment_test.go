@@ -22,7 +22,7 @@ type CommentUsecaseTestSuite struct {
 	ctr              *gomock.Controller
 }
 
-func (suite *CommentUsecaseTestSuite) SetupTest() {
+func (suite *CommentUsecaseTestSuite) SetupSuite() {
 	suite.ctr = gomock.NewController(suite.T())
 	suite.commentRepoMock = mocks.NewMockBlogCommentRepository(suite.ctr)
 	suite.blogRepoMock = mocks.NewMockBlogRepository(suite.ctr)
@@ -34,7 +34,7 @@ func (suite *CommentUsecaseTestSuite) SetupTest() {
 	)
 }
 
-func (suite *CommentUsecaseTestSuite) TearDownTest() {
+func (suite *CommentUsecaseTestSuite) TearDownSuite() {
 	suite.ctr.Finish()
 }
 

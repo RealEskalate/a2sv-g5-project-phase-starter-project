@@ -18,7 +18,7 @@ type JwtServiceTestSuite struct {
 	ctr        *gomock.Controller
 }
 
-func (suite *JwtServiceTestSuite) SetupTest() {
+func (suite *JwtServiceTestSuite) SetupSuite() {
 	suite.ctr = gomock.NewController(suite.T())
 	suite.env = &config.Env{
 		JWT_SECRET: "mysecret",
@@ -26,7 +26,7 @@ func (suite *JwtServiceTestSuite) SetupTest() {
 	suite.jwtService = infrastructure.NewJwtService(suite.env)
 }
 
-func (suite *JwtServiceTestSuite) TearDownTest() {
+func (suite *JwtServiceTestSuite) TearDownSuite() {
 	suite.ctr.Finish()
 }
 

@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	config "github.com/aait.backend.g5.main/backend/Config"
-	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
+	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	mocks "github.com/aait.backend.g5.main/backend/Mocks"
 	usecases "github.com/aait.backend.g5.main/backend/UseCases"
 	"github.com/golang/mock/gomock"
@@ -25,7 +25,7 @@ type SetupPasswordTestSuite struct {
 	ctr                 *gomock.Controller
 }
 
-func (suite *SetupPasswordTestSuite) SetupTest() {
+func (suite *SetupPasswordTestSuite) SetupSuite() {
 	suite.ctr = gomock.NewController(suite.T())
 	suite.urlServiceMock = mocks.NewMockURLService(suite.ctr)
 	suite.jwtServiceMock = mocks.NewMockJwtService(suite.ctr)
@@ -44,7 +44,7 @@ func (suite *SetupPasswordTestSuite) SetupTest() {
 	)
 }
 
-func (suite *SetupPasswordTestSuite) TearDownTest() {
+func (suite *SetupPasswordTestSuite) TearDownSuite() {
 	suite.ctr.Finish()
 }
 
@@ -176,7 +176,7 @@ func (suite *SetupPasswordTestSuite) TestSetNewUserPassword_Success() {
 		Name:     "John Doe",
 		Username: "johndoe",
 		Email:    "user@example.com",
-		Role:    "user",
+		Role:     "user",
 	}
 
 	hashedPassword := "hashed_password"
@@ -237,7 +237,7 @@ func (suite *SetupPasswordTestSuite) TestSetNewUserPassword_UserAlreadyExists() 
 		Name:     "John Doe",
 		Username: "johndoe",
 		Email:    "user@example.com",
-		Role:    "user",
+		Role:     "user",
 	}
 
 	userT := &models.User{

@@ -13,7 +13,7 @@ type PasswordServiceTestSuite struct {
 	passwordService interfaces.PasswordService
 }
 
-func (suite *PasswordServiceTestSuite) SetupTest() {
+func (suite *PasswordServiceTestSuite) SetupSuite() {
 	suite.passwordService = infrastructure.NewPasswordService()
 }
 

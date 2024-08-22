@@ -76,3 +76,23 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 
 	c.JSON(http.StatusOK, updatedBlog)
 }
+
+func (bc *BlogController) DeleteBlog(c *gin.Context) {
+	blogID := c.Param("id")
+	userID := c.Value("userID").(string)
+
+	err := bc.blogUseCase.DeleteBlog(c.Request.Context(), userID, blogID)
+	if err != nil {
+		if errors.Is(err, auth.ErrNoUserWithId) {
+			c.AbortWithStatusJSON(http.StatusNotFound, err)
+		} else if errors.Is(err, blogDomain.ErrBlogNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, err)
+		} else {
+			log.Default().Println("Error trying to delete blog", err, "ID:", blogID)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		}
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}

@@ -29,7 +29,11 @@ func (uc *userProfileUpdateUsecase) UpdateUserProfile(ctx context.Context, userI
 	}
 
 	if user.Password != "" {
-		// Hash the password
+
+		if err := uc.passwordService.ValidatePasswordStrength(user.Password); err != nil {
+			return err
+		}
+
 		hashedPassword, err := uc.passwordService.EncryptPassword(user.Password)
 		if err != nil {
 			return models.InternalServerError("Something went wrong")

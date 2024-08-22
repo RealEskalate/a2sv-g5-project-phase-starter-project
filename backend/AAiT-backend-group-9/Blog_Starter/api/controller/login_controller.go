@@ -183,3 +183,21 @@ func (lc *LoginController) UpdatePassword(c *gin.Context) {
 
 
 
+
+func (lc *LoginController) LogOut(c *gin.Context) {
+	
+	user,err := utils.CheckUser(c)
+	if err!=nil{
+		c.JSON(http.StatusUnauthorized, gin.H{"error":err.Error()})
+		return
+	}
+	userID := user.UserID
+	err = lc.LoginUsecase.LogOut(c, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "logout success"})
+}
+
+

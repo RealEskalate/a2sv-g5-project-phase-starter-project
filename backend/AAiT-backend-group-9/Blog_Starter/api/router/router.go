@@ -13,4 +13,8 @@ func Setup(env *config.Env, timeout time.Duration, db *mongo.Client, gin *gin.En
     publicRouter := gin.Group("")
 
     NewSignupRouter(env, timeout, db, publicRouter)
+    NewLoginRouter(env, timeout, db, publicRouter)
+
+
+    //NewUserRouter(env, timeout, db, privateRouter)
 }

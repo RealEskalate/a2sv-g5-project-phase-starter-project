@@ -95,3 +95,15 @@ func (l *LoginUseCase) UpdatePassword(c context.Context, req domain.ChangePasswo
 
 
 
+// LogOut implements domain.LogoutUsecase.
+func (l *LoginUseCase) LogOut(c context.Context, userID string) error {
+	ctx,cancel := context.WithTimeout(c, l.ContextTimeout)
+	defer cancel()
+	_,err := l.UserRepository.UpdateToken(ctx, "", "" ,userID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+

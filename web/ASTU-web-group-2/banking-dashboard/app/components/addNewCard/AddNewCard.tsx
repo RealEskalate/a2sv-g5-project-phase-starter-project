@@ -51,96 +51,68 @@ const AddNewCard = () => {
   };
 
   return (
-    <div className="w-[730px] h-[440px] ml-290px mt-849px bg-white rounded-[25px]">
-      <p className="pl-[30px] pt-[27px] text-[#718EBF] font-normal text-[16px] leading-[26px]">
+    <div className="bg-white rounded-3xl grid grid-cols-1 gap-6 p-6">
+      <p className="text-[#718EBF] font-normal text-base leading-6">
         Credit Card generally means a plastic card issued by Scheduled
         Commercial Banks assigned to a Cardholder, with a credit limit, that can
         be used to purchase goods and services on credit or obtain cash
         advances.
       </p>
-      <div className="pl-[30px] pt-[29px]">
-        <form className="contact-form" onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex gap-[30px] pb-[22px]">
-            <div className="flex flex-col gap-[11px]">
-              <label className="text-[16px] leading-[19.26px] font-normal text-[#232323]">
-                Card Holder
-              </label>
-              <input
-                type="text"
-                className="w-[320px] h-[50px] rounded-[15px] border-[1px] pl-[20px]"
-                placeholder="John Doe"
-                {...register("cardHolder")}
-              />
-              {errors.cardHolder && (
-                <p className="text-red-500 text-sm">
-                  {errors.cardHolder.message}
-                </p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-[11px]">
-              <label className="text-[16px] leading-[19.26px] font-normal text-[#232323]">
-                Card Type
-              </label>
-              <input
-                type="text"
-                className="w-[320px] h-[50px] rounded-[15px] border-[1px] pl-[20px]"
-                placeholder="Classic"
-                {...register("cardType")}
-              />
-              {errors.cardType && (
-                <p className="text-red-500 text-sm">
-                  {errors.cardType.message}
-                </p>
-              )}
-            </div>
+      <form className="grid gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-2">
+            <label className="text-base font-normal text-[#232323]">
+              Card Type
+            </label>
+            <input
+              type="text"
+              className="w-full h-12 rounded-lg border border-[#E2E8F0] text-[#718EBF] pl-4"
+              placeholder="Classic"
+            />
           </div>
 
-
-          <div className="flex gap-[30px] pb-[30px]">
-            <div className="flex flex-col gap-[11px]">
-              <label className="text-[16px] leading-[19.26px] font-normal text-[#232323]">
-                Balance
-              </label>
-              <input
-                type="number"
-                className="w-[320px] h-[50px] rounded-[15px] border-[1px] pl-[20px]"
-                placeholder="27000"
-                {...register("balance", { valueAsNumber: true })}
-              />
-              {errors.balance && (
-                <p className="text-red-500 text-sm">{errors.balance.message}</p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-[11px]">
-              <label
-                className="text-[16px] leading-[19.26px] font-normal text-[#232323]"
-                htmlFor=""
-              >
-                Expiration Date
-              </label>
-              <input
-                type="date"
-                className="w-[320px] h-[50px] rounded-[15px] border-[1px] text-[#718EBF] pl-[20px]"
-                {...register("expiryDate")}
-              />
-              {errors.expiryDate && (
-                <p className="text-red-500 text-sm">
-                  {errors.expiryDate.message}
-                </p>
-              )}
-            </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-base font-normal text-[#232323]">
+              Name On Card
+            </label>
+            <input
+              type="text"
+              className="w-full h-12 rounded-lg border border-[#E2E8F0] pl-4"
+              placeholder="My Cards"
+            />
           </div>
+        </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-2">
+            <label className="text-base font-normal text-[#232323]">
+              Balance
+            </label>
+            <input
+              type="number"
+              className="w-full h-12 rounded-lg border border-[#E2E8F0] pl-4"
+              placeholder="27,000$"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-base font-normal text-[#232323]">
+              Expiration Date
+            </label>
+            <input
+              type="date"
+              className="w-full h-12 rounded-lg border border-[#E2E8F0] text-[#718EBF] pl-4"
+            />
+          </div>
+        </div>
+        <div className="flex justify-start">
           <button
             type="submit"
-            className="w-[160px] h-[50px] rounded-[9px] bg-[#1814F3] text-[#ffffff]"
+            className="w-auto h-12 rounded-lg bg-[#1814F3] text-white px-6 py-2"
           >
             Add Card
           </button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 };

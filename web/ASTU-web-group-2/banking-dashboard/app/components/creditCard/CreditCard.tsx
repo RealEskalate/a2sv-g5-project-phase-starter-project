@@ -77,13 +77,13 @@ const CreditCard = ({
         >
           <div>
             <p
-              className={`text-[12px] leading-[14.4px] font-normal max-sm:text-[11px] max-sm:leading-[13.2px]`}
+              className={`text-[12px] leading-[14.4px] font-normal max-sm:leading-[13.2px]`}
               style={{ color: labelColor }}
             >
               Balance
             </p>
             <p
-              className={`font-semibold text-[20px] leading-[24px] max-sm:text-[16px] max-sm:leading-[19.2px]`}
+              className={`font-semibold text-[20px] leading-[24px] max-sm:leading-[19.2px]`}
               style={{ color: textColor }}
             >
               ${balance}
@@ -96,13 +96,13 @@ const CreditCard = ({
         <div className="flex justify-between pt-[33px] pl-[24px] pr-[24px]">
           <div>
             <p
-              className={`font-normal leading-[14.4px] text-[12px] max-sm:text-[10px]   max-sm:leading-[12px]`}
+              className={`font-normal leading-[14.4px] text-[12px]   max-sm:leading-[12px]`}
               style={{ color: labelColor }}
             >
               CARD HOLDER
             </p>
             <p
-              className={`font-semibold text-[15px] max-sm:text-[13px] max-sm:leading-[15.6px]  leading-[18px]`}
+              className={`font-semibold text-[15px] max-sm:leading-[15.6px]  leading-[18px]`}
               style={{ color: textColor }}
             >
               {cardHolder}
@@ -110,13 +110,13 @@ const CreditCard = ({
           </div>
           <div>
             <p
-              className={`text-xs font-normal leading-[14.4px] max-sm:text-[10px]   max-sm:leading-[12px]`}
+              className={`text-xs font-normal leading-[14.4px]   max-sm:leading-[12px]`}
               style={{ color: labelColor }}
             >
               VALID THRU
             </p>
             <p
-              className={`font-semibold text-[15px] leading-[18px] max-sm:text-[13px] max-sm:leading-[15.6px]`}
+              className={`font-semibold text-[15px] leading-[18px] max-sm:leading-[15.6px]`}
               style={{ color: textColor }}
             >
               {expiryDate}
@@ -129,8 +129,8 @@ const CreditCard = ({
       >
         <p
           className={`font-semibold  ${
-            isHovered ? "text-[20px]" : "text-[20px]"
-          } max-sm:text-[10px] leading-[26.4px] `}
+            isHovered ? "text-[20px]" : "text-[22px]"
+          } leading-[26.4px] `}
           style={{ color: textColor }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}

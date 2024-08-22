@@ -1,5 +1,9 @@
-import React from 'react';
-import { IconType } from 'react-icons';
+import { useRouter } from "next/navigation";
+import React from "react";
+import { IconType } from "react-icons";
+import { IoMdNotificationsOutline } from "react-icons/io";
+import { IoMoonOutline, IoSettingsOutline } from "react-icons/io5";
+import { useDarkMode } from "./Context/DarkModeContext";
 
 type ElementType = {
   id: number;
@@ -10,26 +14,33 @@ type ElementType = {
 
 interface Props {
   handleNav: (s: string) => void;
-  handleActive: (s: string) => void
+  handleActive: (s: string) => void;
   elements: ElementType[];
   active: string;
 }
 
-const SidebarElements = ({handleActive, handleNav, elements, active }: Props) => {
+const SidebarElements = ({
+  handleActive,
+  handleNav,
+  elements,
+  active,
+}: Props) => {
+  const route = useRouter();
+  const { darkMode, toggleDarkMode } = useDarkMode(); // Use dark mode context
+
   return (
-    <div className="flex flex-col gap-5 mb-5">
+    <div className="flex flex-col gap-5 mb-5 ">
       {elements.map((el) => (
         <div
           key={el.id}
           className={`${
-            active === el.text
-              ? "text-[#2D60FF] border-l-2"
-              : "text-[#B1B1B1]"
+            active === el.text ? "text-[#2D60FF] border-l-2" : "text-[#B1B1B1]"
           } flex gap-3 items-center font-semibold text-l`}
         >
           <button
-            onClick={() => {handleActive(el.text)
-              handleNav(el.destination)
+            onClick={() => {
+              handleActive(el.text);
+              handleNav(el.destination);
             }}
             className={`flex items-center w-full`}
           >
@@ -47,6 +58,23 @@ const SidebarElements = ({handleActive, handleNav, elements, active }: Props) =>
           </button>
         </div>
       ))}
+      <div className="flex gap-5 text-xl md:items-center px-10 py-10 md:hidden">
+        <div
+          className="cursor-pointer text-xl bg-[#F5F7FA] rounded-full px-2 py-2 dark:bg-[#050914] dark:border dark:border-[#333B69]"
+          onClick={() => route.push("./bankingSettings")}
+        >
+          <IoSettingsOutline />
+        </div>
+        {/* <div className="cursor-pointer text-xl bg-[#F5F7FA] rounded-full px-2 py-2 dark:bg-[#050914] dark:border dark:border-[#333B69]">
+              <IoMdNotificationsOutline />
+            </div> */}
+        <div
+          className="cursor-pointer text-xl bg-[#F5F7FA] rounded-full px-2 py-2 dark:bg-[#050914] dark:border dark:border-[#333B69]"
+          onClick={toggleDarkMode}
+        >
+          <IoMoonOutline />
+        </div>
+      </div>
     </div>
   );
 };

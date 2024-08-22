@@ -45,7 +45,7 @@ const YourFormComponent = () => {
      
     },
   });
-  const [updatePreference] = useUpdatePreferenceMutation() // Use the mutation hook
+  const [updatePreference,{isLoading}] = useUpdatePreferenceMutation() // Use the mutation hook
   const { data: session, status } = useSession();
 
   // Handle form submission
@@ -156,6 +156,7 @@ const YourFormComponent = () => {
         <button
           type='submit'
           className='w-full md:w-auto px-4 py-2 bg-[#1814F3] text-white rounded-lg'
+          disabled = {isLoading}
         >
           Save Changes
         </button>

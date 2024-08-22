@@ -6,7 +6,7 @@ const Navbar = () => {
   return (
     <>
       <div
-        className="flex w-full z-20 bg-slate-100 px-10 md:px-20 justify-between items-center fixed space-x-3 lg:px-14 border-b shadow-lg border-gray-100"
+        className="flex w-full z-20 bg-slate-50 px-10 md:px-20 justify-between items-center fixed space-x-3 lg:px-14 border-b shadow-lg border-gray-100"
         id="dashboard"
       >
         <div className="flex flex-col md:flex-row w-fit md:w-fit space-x-2 items-center py-2">

@@ -28,12 +28,11 @@ func (chatHandler *ChatHandler) CreateChatHandler(c *gin.Context) {
 		return
 	}
 
-	createChatForm := chat.CreateChatForm{
+	userIDForm := chat.UserIDForm{
 		UserID: c.Value("user_id").(string),
-		Title:  textForm.Text,
 	}
 
-	newChat, err := chatHandler.chatUsecase.CreateChat(c.Request.Context(), createChatForm)
+	newChat, err := chatHandler.chatUsecase.CreateChat(c.Request.Context(), userIDForm)
 	var validationError validator.ValidationErrors
 	if errors.As(err, &validationError) {
 		errs := infrastructure.ReturnErrorResponse(err)

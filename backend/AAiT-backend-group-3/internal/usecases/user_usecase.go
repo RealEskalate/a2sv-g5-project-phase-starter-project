@@ -43,6 +43,7 @@ func NewUserUsecase(userRepo repository_interface.UserRepositoryInterface, passw
 
 
 func (u *UserUsecase) SignUp(user *models.User) (*models.User, error) {
+	fmt.Println("User data received in the USECASE:", user)
 	users, err := u.userRepo.GetAllUsers()
 	if err != nil {
 		return nil, err

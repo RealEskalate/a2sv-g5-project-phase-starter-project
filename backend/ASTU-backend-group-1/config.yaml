@@ -1,7 +1,7 @@
 database:
   username: <your-database-username> 
   password: <your-database-password> 
-  uri: <your-database-uri>
+  uri: "mongodb+srv://Legend:AmIHDrlwCqmxgjy2@pycluster.ajv4lb8.mongodb.net/?retryWrites=true&w=majority&appName=pycluster"
 email:
   key: "nenbydebhwkqanpf"
 port: "http://localhost:9090/"

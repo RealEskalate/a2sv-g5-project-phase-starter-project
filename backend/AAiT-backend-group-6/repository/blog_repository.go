@@ -23,6 +23,7 @@ func NewBlogRepository(db mongo.Database, collection string) *blogRepository {
 }
 
 func (r *blogRepository) CreateBlog(c context.Context, blog *domain.Blog) error {
+	blog.ID = primitive.NewObjectID()
 	collection := r.database.Collection(r.collection)
 	_, err := collection.InsertOne(c, blog)
 	return err

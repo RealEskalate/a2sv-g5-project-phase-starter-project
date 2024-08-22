@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -32,11 +33,35 @@ type RedisClient struct {
 }
 
 func NewClient(addr string) Client {
-	return &RedisClient{
+    redisClient := RedisClient{
 		cl: redis.NewClient(&redis.Options{
 			Addr: addr,
 		}),
 	}
+
+	ctx := context.Background()
+	if _, err := redisClient.cl.Ping(ctx).Result(); err != nil {
+		panic("Unable to Connet to Redis")
+	}
+
+	err := redisClient.Set(ctx, "test", "Welcome to Golang with Redis and MongoDB", 
+	0)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	value, err := redisClient.Get(ctx, "test")
+
+	if err == redis.Nil {
+		fmt.Println("key: test does not exist")
+	} else if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("test", value)
+
+	return &redisClient
 }
 
 func (r *RedisClient) Connect(ctx context.Context) error {

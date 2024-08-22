@@ -67,6 +67,24 @@ func (_m *Cursor) Decode(_a0 interface{}) error {
 	return r0
 }
 
+// Err provides a mock function with given fields:
+func (_m *Cursor) Err() error {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Err")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func() error); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Next provides a mock function with given fields: _a0
 func (_m *Cursor) Next(_a0 context.Context) bool {
 	ret := _m.Called(_a0)

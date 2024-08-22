@@ -40,6 +40,7 @@ type Cursor interface {
 	Next(context.Context) bool
 	Decode(interface{}) error
 	All(context.Context, interface{}) error
+	Err() error
 }
 
 type Client interface {
@@ -199,4 +200,8 @@ func (mr *mongoCursor) Decode(v interface{}) error {
 
 func (mr *mongoCursor) All(ctx context.Context, result interface{}) error {
 	return mr.mc.All(ctx, result)
+}
+
+func (mr *mongoCursor) Err() error {
+	return mr.mc.Err()
 }

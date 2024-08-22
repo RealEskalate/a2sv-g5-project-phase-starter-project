@@ -21,7 +21,6 @@ func NewUserProfileUpdateUsecase(repository interfaces.UserRepository, passwordS
 }
 
 func (uc *userProfileUpdateUsecase) UpdateUserProfile(ctx context.Context, userID string, user *dtos.ProfileUpdateRequest) *models.ErrorResponse {
-	// Check if the user exists
 
 	existUser, err := uc.repository.GetUserByID(ctx, userID)
 	if err != nil {

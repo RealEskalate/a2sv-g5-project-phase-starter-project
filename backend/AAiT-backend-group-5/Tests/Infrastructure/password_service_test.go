@@ -1,4 +1,4 @@
-package infrastructure
+package infrastructure_test
 
 import (
 	"testing"

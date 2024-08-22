@@ -1,12 +1,12 @@
-package usecase
+package usecases_test
 
 import (
 	"context"
 	"testing"
 
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
-	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
+	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	mocks "github.com/aait.backend.g5.main/backend/Mocks"
 	usecases "github.com/aait.backend.g5.main/backend/UseCases"
 	"github.com/golang/mock/gomock"
@@ -15,10 +15,10 @@ import (
 
 type UserProfileUpdateUsecaseTestSuite struct {
 	suite.Suite
-	repositoryMock    *mocks.MockUserRepository
-	passwordServiceMock *mocks.MockPasswordService
+	repositoryMock           *mocks.MockUserRepository
+	passwordServiceMock      *mocks.MockPasswordService
 	userProfileUpdateUsecase interfaces.UserProfileUpdateUsecase
-	ctrl               *gomock.Controller
+	ctrl                     *gomock.Controller
 }
 
 func (suite *UserProfileUpdateUsecaseTestSuite) SetupTest() {
@@ -48,6 +48,10 @@ func (suite *UserProfileUpdateUsecaseTestSuite) TestUpdateUserProfile_Success() 
 	existingUser := &models.User{
 		ID: userID,
 	}
+	suite.passwordServiceMock.
+		EXPECT().
+		ValidatePasswordStrength(password).
+		Return(nil)
 
 	suite.repositoryMock.
 		EXPECT().
@@ -126,6 +130,11 @@ func (suite *UserProfileUpdateUsecaseTestSuite) TestUpdateUserProfile_EncryptPas
 		ID: userID,
 	}
 
+	suite.passwordServiceMock.
+		EXPECT().
+		ValidatePasswordStrength(password).
+		Return(nil)
+
 	suite.repositoryMock.
 		EXPECT().
 		GetUserByID(ctx, userID).
@@ -138,6 +147,34 @@ func (suite *UserProfileUpdateUsecaseTestSuite) TestUpdateUserProfile_EncryptPas
 
 	err := suite.userProfileUpdateUsecase.UpdateUserProfile(ctx, userID, updateRequest)
 	suite.Equal(models.InternalServerError("Something went wrong"), err)
+}
+
+func (suite *UserProfileUpdateUsecaseTestSuite) TestUpdateUserProfile_WeakPasswordError() {
+	ctx := context.Background()
+	userID := "user1"
+	password := "new_password"
+
+	updateRequest := &dtos.ProfileUpdateRequest{
+		Password: password,
+	}
+
+	existingUser := &models.User{
+		ID: userID,
+	}
+
+	suite.passwordServiceMock.
+		EXPECT().
+		ValidatePasswordStrength(password).
+		Return(models.BadRequest("Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character."))
+
+	suite.repositoryMock.
+		EXPECT().
+		GetUserByID(ctx, userID).
+		Return(existingUser, nil)
+
+	err := suite.userProfileUpdateUsecase.UpdateUserProfile(ctx, userID, updateRequest)
+	suite.Equal(models.BadRequest("Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character."), err)
+	suite.Error(err, "Expected error due to weak password")
 }
 
 func (suite *UserProfileUpdateUsecaseTestSuite) TestUpdateUserProfile_UpdateUserError() {
@@ -153,6 +190,11 @@ func (suite *UserProfileUpdateUsecaseTestSuite) TestUpdateUserProfile_UpdateUser
 	existingUser := &models.User{
 		ID: userID,
 	}
+
+	suite.passwordServiceMock.
+		EXPECT().
+		ValidatePasswordStrength(password).
+		Return(nil)
 
 	suite.repositoryMock.
 		EXPECT().

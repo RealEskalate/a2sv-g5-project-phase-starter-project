@@ -1,6 +1,14 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
 import Card1 from "./components/Card1";
 import Linechart from "./components/LineChart";
 import Monthly from "./components/Monthly";
+import { getServerSession } from "next-auth";
+import { options } from "../api/auth/[...nextauth]/options";
+import { getRandomInvestementData } from "./back/Invest";
 import {
   Table,
   TableBody,
@@ -44,15 +52,103 @@ const invoices = [
     return: "-12%",
   },
 ];
+interface arr {
+  time: string;
+  value: number;
+}
+const loanid = "66c3054e80b7cf4a6c2f7709";
+
+type ISODateString = string;
+
+interface DefaultSession {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    access_token?: string | any;
+  };
+  expires: ISODateString;
+}
+interface datatype {
+  totalInvestment: any;
+  rateOfReturn: any;
+  yearlyTotalInvestment: [{ time: string; value: number }];
+  monthlyRevenue: arr[];
+}
+
+type Data = {
+  access_token: string;
+  data: string;
+  refresh_token: string;
+};
+
+type SessionDataType = {
+  user: Data;
+};
 
 export default function Home() {
+  const [session, setSession] = useState<Data | null>(null);
+  const [access_token, setAccess_token] = useState("");
+  const router = useRouter();
+  const [loading, setloading] = useState(true);
+  const [Loading, setLoading] = useState(true);
+  const [data, setdata] = useState<datatype>();
+  
+  // Getting the session from the server and Access Token From Refresh
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const sessionData = (await getSession()) as SessionDataType | null;
+        setAccess_token(await Refresh());
+        if (sessionData && sessionData.user) {
+          setSession(sessionData.user);
+        } else {
+          router.push(
+            `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching session:", error);
+      } finally {
+        setloading(false);
+      }
+    };
+    
+    fetchSession();
+  }, [router]);
+  
+  // Combined fetching data to reduce multiple useEffect hooks
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!access_token) return;
+      
+      try {
+        // Fetch data
+        const d: datatype = await getRandomInvestementData(11,2021,access_token);
+        setdata(d);
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [access_token]);
+
+  if (loading || Loading) return <div>Loading...</div>;
+
   return (
-    // <main className="mt-16 ml-72">
     <div className="bg-gray-100 p-6">
       <div className="flex justify-between flex-wrap lg:flex-nowrap">
-        <Card1 text="Total Invested Amount" img="/total.png" num="$150,000" />
+        <Card1
+          text="Total Invested Amount"
+          img="/total.png"
+          num={data?.totalInvestment}
+        />
         <Card1 text="Number of Investments" img="/number.png" num="1,250" />
-        <Card1 text="Rate of Return" img="/rate.png" num="+5.80%" />
+        <Card1 text="Rate of Return" img="/rate.png" num={data?.rateOfReturn} />
       </div>
       <div className="grid grid-cols-2 gap-6">
         <div className="col-span-2 lg:col-span-1">
@@ -60,7 +156,6 @@ export default function Home() {
             Yearly Total Investment
           </div>
           <Linechart />
-          {/* <div className="rounded-lg p-1"></div> */}
         </div>
         <div className="col-span-2 lg:col-span-1">
           <div className="my-4 text-2xl font-bold col-span-1 text-[#333B69]">
@@ -261,6 +356,5 @@ export default function Home() {
         </div>
       </div>
     </div>
-    // </main>
   );
 }

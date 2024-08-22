@@ -19,4 +19,5 @@ type PasswordInfrastructure interface {
 type OtpInfrastructure interface {
 	CreateOTP(otp *UserOTPRequest) (otpcode string, err error)
 	SendEmail(email string, subject string, key string, otp string) error
+	SendPasswordResetEmail(email string, subject string, key string) error
 }

@@ -83,6 +83,7 @@ func (blogU *blogUsecase) CreateBlog(c context.Context, blog *domain.Blog) error
 }
 
 // FetchByBlogID calls FetchByBlogID in blog repository to fetch a blog the database using the blog Id.
+// Cached
 func (blogU *blogUsecase) FetchByBlogID(c context.Context, blogID string) (domain.Blog, error) {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
@@ -202,6 +203,7 @@ func (blogU *blogUsecase) FetchByBlogTitle(c context.Context, title string, limi
 }
 
 // FetchAll retrieves all blogs with pagination and metadata
+// Cached
 func (blogU *blogUsecase) FetchAll(c context.Context, limit, page int) (domain.PaginatedBlogs, error) {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
@@ -281,6 +283,21 @@ func (blogU *blogUsecase) FetchByPageAndPopularity(ctx context.Context, limit, p
 
 	offset := (page - 1) * limit
 
+	// Define cache key
+	cacheKey := fmt.Sprintf("blogs:popular:page:%d:limit:%d", page, limit)
+
+	// Check cache
+	cachedData, err := blogU.RedisClient.Get(ctx, cacheKey).Result()
+	if err == nil {
+		var paginatedBlogs domain.PaginatedBlogs
+		if err := json.Unmarshal([]byte(cachedData), &paginatedBlogs); err == nil {
+			log.Println("Cache hit")
+			return paginatedBlogs, nil
+		} else {
+			log.Printf("Error unmarshalling json: %v", err)
+		}
+	}
+
 	// Fetch blogs and total count
 	blogs, totalCount, err := blogU.blogRepository.FetchByPageAndPopularity(ctx, limit, offset)
 	if err != nil {
@@ -301,7 +318,7 @@ func (blogU *blogUsecase) FetchByPageAndPopularity(ctx context.Context, limit, p
 		nextPage = 0
 	}
 
-	return domain.PaginatedBlogs{
+	paginatedBlogs := domain.PaginatedBlogs{
 		Blogs: blogs,
 		Pagination: domain.PaginationData{
 			NextPage:     nextPage,
@@ -309,9 +326,19 @@ func (blogU *blogUsecase) FetchByPageAndPopularity(ctx context.Context, limit, p
 			CurrentPage:  currentPage,
 			TotalPages:   totalPages,
 			TotalItems:   totalCount,
-		}}, nil
+		}}
+
+	// Set cache
+	cacheData, err := json.Marshal(paginatedBlogs)
+	if err == nil {
+		expiration := 5 * time.Minute
+		blogU.RedisClient.Set(ctx, cacheKey, cacheData, expiration).Err()
+	}
+	log.Println("Cache Miss")
+	return paginatedBlogs, nil
 }
 
+// Cached
 func (blogU *blogUsecase) FetchByTags(ctx context.Context, tags []domain.Tag, limit, page int) (domain.PaginatedBlogs, error) {
 	ctx, cancel := context.WithTimeout(ctx, blogU.contextTimeouts)
 	defer cancel()

@@ -67,6 +67,38 @@ func (os *otpService) SendEmail(email string, subject string, key string, otp st
 	return nil
 }
 
+func (os *otpService) SendPasswordResetEmail(email string, subject string, key string) error {
+	resetLink := "http://localhost:4000/forgot-password"
+
+	var b bytes.Buffer
+	t, err := template.ParseFiles("templates/password_reset_link.html")
+	if err != nil {
+		return err
+	}
+	t.Execute(&b, struct {
+		Subject string
+		Otp     string
+		Link    string
+	}{
+		Subject: subject,
+		Link:    resetLink,
+	})
+
+	m := gomail.NewMessage()
+	m.SetHeader("From", "solomonjohna21@gmail.com")
+	m.SetHeader("To", email)
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/html", b.String())
+
+	d := gomail.NewDialer("smtp.gmail.com", 587, "solomonjohna21@gmail.com", key)
+
+	if err := d.DialAndSend(m); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // generateRandomOTP generates a random numeric OTP of the specified length
 func generateRandomOTP(length int) (string, error) {
 	otp := make([]byte, length)

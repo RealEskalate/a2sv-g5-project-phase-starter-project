@@ -137,26 +137,47 @@ func (u *UserRepository) UpdatePassword(c context.Context, password string, user
 // UpdateProfile implements domain.UserRepository.
 func (u *UserRepository) UpdateProfile(c context.Context, userUpdate *domain.UserUpdate, userID string) (*domain.User, error) {
 	collection := u.database.Collection(u.collection)
+
 	objID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return &domain.User{}, errors.New("invalid user ID format")
 	}
-	update := bson.M{
-		"$set": bson.M{
-			"username":     userUpdate.Username,
-			"name":         userUpdate.Name,
-			"bio":          userUpdate.Bio,
-			"contact_info": userUpdate.ContactInfo,
-			"updated_at":   primitive.NewDateTimeFromTime(time.Now()), // Update the timestamp
-		},
-	}
+
+	updateFields := bson.M{}
+
+    if userUpdate.Username != "" {
+        updateFields["username"] = userUpdate.Username
+    }
+    if userUpdate.Name != "" {
+        updateFields["name"] = userUpdate.Name
+    }
+    if userUpdate.Bio != "" {
+        updateFields["bio"] = userUpdate.Bio
+    }
+	if userUpdate.ContactInfo != (domain.ContactInfo{}) {
+        contactInfoFields := bson.M{}
+        if userUpdate.ContactInfo.Phone != "" {
+            contactInfoFields["phone"] = userUpdate.ContactInfo.Phone
+        }
+        if userUpdate.ContactInfo.Address != "" {
+            contactInfoFields["address"] = userUpdate.ContactInfo.Address
+        }
+        if len(contactInfoFields) > 0 {
+            updateFields["contact_info"] = contactInfoFields
+        }
+    }
+    // Always update the timestamp
+    updateFields["updated_at"] = primitive.NewDateTimeFromTime(time.Now())
+
+    update := bson.M{"$set": updateFields}
+
 
 	filter := bson.M{"_id": objID}
 	opts := options.Update().SetUpsert(false) // SetUpsert(false) means we don't want to create a new document if it doesn't exist
 
 	_, err = collection.UpdateOne(c, filter, update, opts)
 	if err != nil {
-		return &domain.User{}, err
+		return nil, err
 	}
 	// fetch the data after updating and return it insted of calling another repository interface try to keep the code DRY
 	return u.GetUserByID(c, userID)
@@ -168,8 +189,9 @@ func (u *UserRepository) UpdateProfilePicture(c context.Context, profilePicPath 
 	collection := u.database.Collection(u.collection)
 	objID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		return &domain.User{}, errors.New("invalid user ID format")
+		return nil, errors.New("invalid user ID format")
 	}
+
 	update := bson.M{
 		"$set": bson.M{
 			"profile_picture": profilePicPath,
@@ -181,7 +203,7 @@ func (u *UserRepository) UpdateProfilePicture(c context.Context, profilePicPath 
 
 	_, err = collection.UpdateOne(c, filter, update, opts)
 	if err != nil {
-		return &domain.User{}, err
+		return nil, err
 	}
 
 	return u.GetUserByID(c, userID)

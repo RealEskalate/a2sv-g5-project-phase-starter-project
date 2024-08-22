@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	CollectionLike = "Likes"
+	CollectionLike = "likes"
 )
 
 type Like struct {

@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"fmt"
 	"net/smtp"
 )
 
@@ -18,13 +19,28 @@ func NewEmailService(smtpServer string, email string, password string) *EmailSer
     }
 }
 
-func (e *EmailService) SendEmail(to, name, code string) error {
-	
+func (e *EmailService) EmailVerificationMsg(to, name, code string) string {
+    body := fmt.Sprintf("Dear %s,\n\nPlease use the following code to verify your email address:\n\n%s\n\nThank you.", name, code)
     msg := "From: " + e.email + "\n" +
         "To: " + to + "\n" +
-        "Subject: " + "Vefification Mail" + "\n\n" +
-        "Your verification code is" + "\n\n" +
-		code
+        "Subject: " + "Email Verification" + "\n\n" +
+        body
+
+	return msg
+}
+
+func (e *EmailService) PWRecoveryMsg(to, name, resetLink string) string {
+	body := fmt.Sprintf("Dear %s,\n\nWe received a request to reset your password. You can reset it by clicking the link below:\n\n%s\n\nIf you did not request a password reset, please ignore this email.", name, resetLink)
+
+    msg := "From: " + e.email + "\n" +
+        "To: " + to + "\n" +
+        "Subject: " + "Password Reset Request" + "\n\n" +
+        body
+        
+	return msg
+}
+
+func (e *EmailService) SendEmail(to, msg string) error {
 
     auth := smtp.PlainAuth(
         "",
@@ -39,7 +55,6 @@ func (e *EmailService) SendEmail(to, name, code string) error {
         e.email,
         []string{to},
         []byte(msg),
-
     )
 
     return err

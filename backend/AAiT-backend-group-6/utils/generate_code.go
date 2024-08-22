@@ -13,3 +13,4 @@ func GenerateRandomCode(length int) (string, error) {
     }
     return hex.EncodeToString(bytes)[:length], nil
 }
+

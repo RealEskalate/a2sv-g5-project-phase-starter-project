@@ -25,7 +25,7 @@ type SearchBlogPost struct {
 
 type BlogUsecaseInterface interface {
 	CreateBlogPost(blog *BlogPost) (string, error)
-	GetAllBlogPosts(Pagination, string, int) ([]BlogPost, error)
+	GetAllBlogPosts(Pagination, string, int, BlogFilter) ([]BlogPost, error)
 	GetBlogByID(id primitive.ObjectID) (*BlogPost, error)
 	UpdateBlogPost(id primitive.ObjectID, blog *BlogPost) (*BlogPost, error)
 	// SearchBlogPosts(query *SearchBlogPost) ([]BlogPost, error) // Add this method
@@ -36,7 +36,7 @@ type BlogUsecaseInterface interface {
 
 type BlogRepositoryInterface interface {
 	Save(blog *BlogPost) (string, error)
-	GetAllBlog(Pagination, string, int) ([]BlogPost, error)
+	GetAllBlog(pagination Pagination, sortBy string, sortOrder int, filter BlogFilter) ([]BlogPost, error)
 	GetBlogByID(id primitive.ObjectID) (*BlogPost, error)
 	Update(id primitive.ObjectID, blog *BlogPost) (*BlogPost, error)
 	// Search(title string) ([]BlogPost, error) // Add this method

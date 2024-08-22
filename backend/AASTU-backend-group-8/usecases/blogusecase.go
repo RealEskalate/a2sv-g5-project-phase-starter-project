@@ -25,8 +25,8 @@ func (u *BlogUsecase) CreateBlogPost(blog *domain.BlogPost) (string, error) {
 }
 
 // GetAllBlogPosts retrieves all blog posts
-func (u *BlogUsecase) GetAllBlogPosts(pagination domain.Pagination, sortBy string, sortOrder int) ([]domain.BlogPost, error) {
-	blogs, err := u.blogRepo.GetAllBlog(pagination, sortBy, sortOrder)
+func (u *BlogUsecase) GetAllBlogPosts(pagination domain.Pagination, sortBy string, sortOrder int, filter domain.BlogFilter) ([]domain.BlogPost, error) {
+	blogs, err := u.blogRepo.GetAllBlog(pagination, sortBy, sortOrder, filter)
 	if err != nil {
 		return nil, err
 	}

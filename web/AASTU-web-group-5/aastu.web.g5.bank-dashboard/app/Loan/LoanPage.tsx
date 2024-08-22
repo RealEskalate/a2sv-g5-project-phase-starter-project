@@ -27,7 +27,7 @@ const LoanPage = () => {
 			}
 			try {
 				const response = await fetch(
-					"https://bank-dashboard-6acc.onrender.com/active-loans/all",
+					"https://bank-dashboard-1tst.onrender.com/active-loans/all",
 					{
 						headers: {
 							Authorization: `Bearer ${accessToken}`,

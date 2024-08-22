@@ -65,7 +65,7 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 
 		try {
 			const response = await fetch(
-				"https://bank-dashboard-6acc.onrender.com/cards",
+				"https://bank-dashboard-1tst.onrender.com/cards",
 				{
 					method: "POST",
 					headers: {

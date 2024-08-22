@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewAuthRouter(env *bootstrap.Env,db *mongo.Database, group *gin.RouterGroup) {
+func NewAuthRouter(env *bootstrap.Env, db *mongo.Database, group *gin.RouterGroup) {
 	token_repo := repository.NewTokenRepository(db)
 	acc_tok_secret := env.AccessTokenSecret
 	ref_tok_secret := env.RefreshTokenSecret

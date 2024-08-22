@@ -5,55 +5,88 @@ import (
 	"backend-starter-project/domain/interfaces"
 	"context"
 	"errors"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type profileRepository struct {
-	db *mongo.Database
+	db         *mongo.Database
 	collection *mongo.Collection
-	context context.Context
+	context    context.Context
 }
 
-func NewProfileRepository(ctx context.Context, db *mongo.Database) interfaces.ProfileRepository{
-	return profileRepository{db: db, collection: db.Collection("profile"),context: ctx}
-} 
-func (repo profileRepository) GetUserProfile(user_id string) (*entities.Profile,error){
-	filter:=bson.D{{"userId",user_id}}
-	user:=repo.collection.FindOne(context.TODO(),filter)
-	if user.Err() ==nil{
-		return &entities.Profile{},errors.New("couldn't find the user")
+func NewProfileRepository(ctx context.Context, db *mongo.Database) interfaces.ProfileRepository {
+	return profileRepository{db: db, collection: db.Collection("profile"), context: ctx}
+}
+func (repo profileRepository) GetUserProfile(user_id string) (*entities.Profile, error) {
+	userID, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil {
+		return nil, err
 	}
+
+	filter := bson.D{{"userId", userID}}
+	fmt.Println("user id from profile repo", user_id,userID)
+	user := repo.collection.FindOne(context.TODO(), filter)
+	if user.Err() != nil {
+		return &entities.Profile{}, errors.New("couldn't find the profile")
+	}
+
 	var profile entities.Profile
-	user.Decode(&profile)
-	return &profile,nil
-
-}
-
-func (repo profileRepository) CreateUserProfile(profile *entities.Profile) (*entities.Profile, error){
-	_,err:=repo.collection.InsertOne(repo.context,profile) 
-	if err!=nil{
-		return nil,err
+	err = user.Decode(&profile)
+	if err != nil {
+		return nil, err
 	}
-	return profile,nil
+
+	return &profile, nil
+
 }
 
-func (repo profileRepository) UpdateUserProfile(profile *entities.Profile)(*entities.Profile,error){
-	user_id:=profile.UserID
-	filter:=bson.D{{"userId",user_id}}
-	_,err:=repo.collection.UpdateOne(context.TODO(),filter,profile)
-	if err!=nil{
-		return nil,err
+func (repo profileRepository) CreateUserProfile(profile *entities.Profile) (*entities.Profile, error) {
+	if profile.UserID == primitive.NilObjectID {
+		return nil, errors.New("user id is required")
 	}
-	
-	return profile,nil
+	if existed:=repo.collection.FindOne(repo.context, bson.D{{"userId", profile.UserID}});existed.Err()==nil{
+		return nil, errors.New("profile already exists")
+	}
+	response, err := repo.collection.InsertOne(repo.context, profile)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("profile service response", response)
+	return profile, nil
 }
 
-func (repo profileRepository) DeleteUserProfile(user_id string)error{
-	filter:=bson.D{{"userId",user_id}}
-	_,err:=repo.collection.DeleteOne(repo.context,filter)
-	if err!=nil{
+func (repo profileRepository) UpdateUserProfile(profile *entities.Profile) (*entities.Profile, error) {
+	user_id := profile.UserID
+	if user_id == primitive.NilObjectID {
+		return nil, errors.New("user id is required")
+	}
+	filter := bson.D{{"userId", user_id}}
+
+	data:=bson.D{
+		{"$set", bson.D{
+			{"bio", profile.Bio},
+			{"profilePicture", profile.ProfilePicture},
+			{"contactInfo", profile.ContactInfo},
+			{"updatedAt", profile.UpdatedAt},
+		}},
+	}
+	_, err := repo.collection.UpdateOne(context.TODO(), filter, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return profile, nil
+}
+
+func (repo profileRepository) DeleteUserProfile(user_id string) error {
+	userID, err := primitive.ObjectIDFromHex(user_id)
+	filter := bson.D{{"userId", userID}}
+	_, err = repo.collection.DeleteOne(repo.context, filter)
+	if err != nil {
 		return err
 	}
 

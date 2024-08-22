@@ -8,8 +8,8 @@ import (
 )
 
 type Blog struct {
-	ID           primitive.ObjectID `json:"_id,omitempty" bson:"id,omitempty"`
-	Title        string             `json:"title " bson:"title"`
+	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Title        string             `json:"title" bson:"title"`
 	Content      string             `json:"content" bson:"content"`
 	Tag          []string           `json:"tag" bson:"tag"`
 	UpdatedAt    time.Time          `json:"updated_at" bson:"updated_at"`
@@ -21,7 +21,7 @@ type Blog struct {
 }
 type PostBlog struct {
 	Owner   User     `json:"owner,omitempty" bson:"owner,omitempty"`
-	Title   string   `json:"title " bson:"title"`
+	Title   string   `json:"title" bson:"title"`
 	Content string   `json:"content" bson:"content"`
 	Tag     []string `json:"tag" bson:"tag"`
 }

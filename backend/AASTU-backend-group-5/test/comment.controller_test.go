@@ -27,6 +27,7 @@ func (suite *CommentControllerTestSuite) SetupTest() {
 	}
 }
 
+// Test case for successfully deleting a comment
 func (suite *CommentControllerTestSuite) TestDeleteComment_Success() {
 	commentID := primitive.NewObjectID().Hex()
 	suite.mockCommentUsecase.On("DeleteComment", commentID).Return(nil)
@@ -48,6 +49,7 @@ func (suite *CommentControllerTestSuite) TestDeleteComment_Success() {
 	suite.mockCommentUsecase.AssertExpectations(suite.T())
 }
 
+// Test case for invalid comment ID format
 func (suite *CommentControllerTestSuite) TestDeleteComment_InvalidID() {
 	invalidID := "invalid-id"
 
@@ -63,11 +65,12 @@ func (suite *CommentControllerTestSuite) TestDeleteComment_InvalidID() {
 	var response map[string]interface{}
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	suite.NoError(err)
-	suite.Contains(response["error"], "Invalid comment ID format")
+	suite.Contains(response["error"], "Invalid comment ID format. Please provide a valid comment ID.")
 
 	suite.mockCommentUsecase.AssertNotCalled(suite.T(), "DeleteComment")
 }
 
+// Test case for error from the use case during comment deletion
 func (suite *CommentControllerTestSuite) TestDeleteComment_UsecaseError() {
 	commentID := primitive.NewObjectID().Hex()
 	expectedError := errors.New("database error")
@@ -91,6 +94,7 @@ func (suite *CommentControllerTestSuite) TestDeleteComment_UsecaseError() {
 	suite.mockCommentUsecase.AssertExpectations(suite.T())
 }
 
+// Run the test suite
 func TestCommentControllerTestSuite(t *testing.T) {
 	suite.Run(t, new(CommentControllerTestSuite))
 }

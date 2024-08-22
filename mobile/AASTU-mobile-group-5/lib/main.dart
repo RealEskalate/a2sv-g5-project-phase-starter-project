@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'features/chat/presentation/pages/chat_display_people.dart';
+import 'features/chat/presentation/pages/chat_test_page.dart';
 import 'features/product/domain/entities/product.dart';
 import 'features/product/domain/use_case/add_product.dart';
 import 'features/product/domain/use_case/delete_product.dart';
@@ -80,6 +82,8 @@ class MyApp extends StatelessWidget {
               '/splash': (context) => const SplashScreen(),
               '/signin': (context) => const SignInPage(),
               '/signup': (context) => const SignUpPage(),
+              '/people': (context) => const PeoplePage(),
+              '/text': (context) => const TextPage(),
             },
             onGenerateRoute: (settings) {
               switch (settings.name) {

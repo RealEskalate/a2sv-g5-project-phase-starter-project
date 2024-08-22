@@ -107,7 +107,11 @@ class DetailsPage extends StatelessWidget {
                                             product.name,
                                             style: TextStyle(
                                               fontSize: 20,
-                                              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? Colors.white
+                                                  : Colors.black,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
@@ -117,7 +121,11 @@ class DetailsPage extends StatelessWidget {
                                             maxLines: 1,
                                             style: TextStyle(
                                               fontSize: 16,
-                                              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? Colors.white
+                                                  : Colors.black,
                                             ),
                                           ),
                                         ],
@@ -136,7 +144,11 @@ class DetailsPage extends StatelessWidget {
                                               '(4.0)',
                                               style: TextStyle(
                                                 fontSize: 13,
-                                                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
                                               ),
                                             ),
                                           ],
@@ -148,7 +160,11 @@ class DetailsPage extends StatelessWidget {
                                               'Price: ${product.price.toString()}',
                                               style: TextStyle(
                                                 fontSize: 16,
-                                                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
                                               ),
                                             ),
                                           ],
@@ -168,35 +184,66 @@ class DetailsPage extends StatelessWidget {
                       padding: const EdgeInsets.all(16.0),
                       child: Text('Size:',
                           style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                              fontSize: 18, fontWeight: FontWeight.w500)),
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500)),
                     ),
                     const SizeSelector(), // Replace with SizeSelector widget
                     const SizedBox(height: 16),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        product.description,
-                        style: TextStyle(
+                      child: Text(product.description,
+                          style: TextStyle(
                             fontSize: 14,
                             // color: Color.fromRGBO(102, 102, 102, 1)),
-                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,)
-                      ),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                          )),
                     ),
                     const SizedBox(height: 100),
-                     Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 30),
-                          DeleteButtonDetails(id: id), // Use DeleteButton widget
-                          const SizedBox(height: 30),
-                          const SizedBox(width: 50),
-                          UpdateButton(
-                            product: product,
-                          ), // Use UpdateButton widget
-                          const SizedBox(height: 30),
-                        ],
-                      
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 30),
+                            DeleteButtonDetails(
+                                id: id), // Use DeleteButton widget
+                            const SizedBox(height: 30),
+                            const SizedBox(width: 50),
+                            UpdateButton(
+                              product: product,
+                            ), // Use UpdateButton widget
+                            const SizedBox(height: 30),
+                          ],
+                        ),
+                        const SizedBox(height: 30),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 30),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/people');
+                              },
+                              child: const Text('People'),
+                            ),
+                            const SizedBox(width: 50,),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/text');
+                              },
+                              child: const Text('Text'),
+                            ),
+                            const SizedBox(height: 30),
+                          ],
+                        )
+                      ],
                     ),
                   ],
                 ),

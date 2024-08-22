@@ -11,7 +11,15 @@ export interface LoanType {
 }
 
 export interface ApiResponse {
-    success: boolean;
-    message: string;
-    data: LoanType[];
+    content: {
+        personalLoan: number,
+        businessLoan: number,
+        corporateLoan: number
+    }
+}
+
+export interface LoanDetail {
+    personalLoan: number,
+    businessLoan: number,
+    corporateLoan: number
 }

@@ -2,14 +2,18 @@ import React, { useState, useEffect } from "react";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import { TransactionType } from "@/types/TransactionValue";
 import Download from "./Download";
-import Pagination from "./Pagination";
+import Pagination from "../Pagination";
 import {
   getExpense,
   getIncome,
   getTransaction,
 } from "@/app/Services/api/fetchTransaction";
+import { useSession } from "next-auth/react";
 
 const Recent = () => {
+  const { data: session } = useSession();
+  const accessToken = session?.accessToken as string;
+
   const [expenseData, setExpenseData] = useState<TransactionType[]>([]);
   const [incomeData, setIncomeData] = useState<TransactionType[]>([]);
   const [allData, setAllData] = useState<TransactionType[]>([]);
@@ -24,31 +28,39 @@ const Recent = () => {
     setReset(!reset);
   }, [selectedTab]);
 
-  useEffect(() => {
+  const fetchData = async () => {
+    while (!accessToken) {
+      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay to wait for the token
+    }
+
     setLoading(true);
     if (selectedTab === "Expense") {
-      fetchExpense();
+      await fetchExpense();
     } else if (selectedTab === "Income") {
-      fetchIncome();
+      await fetchIncome();
     } else if (selectedTab === "All") {
-      fetchAllTransactions();
+      await fetchAllTransactions();
     }
-  }, [selectedTab, currentPage]);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [selectedTab, currentPage, accessToken]);
 
   const fetchExpense = async () => {
-    const res = await getExpense(currentPage);
+    const res = await getExpense(currentPage, accessToken);
     setExpenseData(res);
     setLoading(false);
   };
 
   const fetchIncome = async () => {
-    const res = await getIncome(currentPage);
+    const res = await getIncome(currentPage, accessToken);
     setIncomeData(res);
     setLoading(false);
   };
 
   const fetchAllTransactions = async () => {
-    const res = await getTransaction(currentPage);
+    const res = await getTransaction(currentPage, accessToken);
     setAllData(res);
     setLoading(false);
   };
@@ -63,7 +75,7 @@ const Recent = () => {
       : selectedTab === "Expense"
       ? expenseData
       : allData;
-
+  // console.log(dataToDisplay, "dis");
   return (
     <div className="space-y-7 my-6">
       <h3 className="font-semibold text-[22px] text-[#343C6A] dark:text-gray-300">
@@ -185,6 +197,7 @@ const Recent = () => {
                         <Download
                           transactionId={transaction.transactionId}
                           transaction={transaction}
+                          accessToken={accessToken}
                         />
                       </td>
                     </tr>

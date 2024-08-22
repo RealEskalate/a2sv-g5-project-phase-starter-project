@@ -2,7 +2,7 @@ import axios from "axios";
 import UserValue from "@/types/UserValue";
 import UserPreferenceValue from "@/types/UserPreferenceValue";
 
-const API_URL = "https://bank-dashboard-1tst.onrender.com/user";
+const API_URL = "https://bank-dashboard-o9tl.onrender.com/user";
 
 interface UserResponseValue {
 

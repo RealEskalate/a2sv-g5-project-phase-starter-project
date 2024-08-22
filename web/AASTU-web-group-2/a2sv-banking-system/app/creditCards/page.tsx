@@ -23,17 +23,9 @@ const HeadingTitle = ({ title }: { title: string }) => {
     </h1>
   );
 };
-type Data = {
-  access_token: string;
-  data: string;
-  refresh_token: string;
-};
 
-type SessionDataType = {
-  user: Data;
-};
 const CreditCards = () => {
-  const [session, setSession] = useState<Data | null>(null);
+  const [accessToken, setAccessToken] = useState<string>("");
   const [cards, setCards] = useState<Card1[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -53,9 +45,9 @@ const CreditCards = () => {
   };
   useEffect(() => {
     const fetchSession = async () => {
-      const sessionData = (await getSession()) as SessionDataType | null;
-      if (sessionData && sessionData.user) {
-        setSession(sessionData.user);
+      const access_token = await Refresh();
+      if (access_token) {
+        setAccessToken(access_token);
       } else {
         router.push(
           `./api/auth/signin?callbackUrl=${encodeURIComponent("/creditCards")}`
@@ -67,17 +59,17 @@ const CreditCards = () => {
   }, [router]);
 
   useEffect(() => {
-    if (session == null) {
+    if (accessToken == "") {
       return;
     }
     async function fetch() {
-      const data = await getCards(session?.access_token!, 0, 700);
+      const data = await getCards(accessToken, 0, 700);
       data.content.reverse();
       setCards(data.content);
       setLoading(false);
     }
     fetch();
-  }, [session]);
+  }, [accessToken]);
 
   const decideColor = (index: number) => {
     const remainder = index % 3;
@@ -187,7 +179,7 @@ const CreditCards = () => {
         <div className="flex flex-col gap-5">
           <HeadingTitle title="Add New Card" />
           <AddCardForm
-            access_token={session?.access_token!}
+            access_token={accessToken}
             handleAddition={handleAddition}
           />
         </div>

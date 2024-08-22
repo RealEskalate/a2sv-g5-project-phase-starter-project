@@ -56,11 +56,11 @@ func Envinit() {
 	if Mail_TRAP_API_KEY == "" {
 		log.Fatal("Mail_TRAP_API_KEY is not set")
 	}
-	Cloud_api_key= os.Getenv("Cloud_api_key")
+	Cloud_api_key = os.Getenv("Cloud_api_key")
 	if Mail_TRAP_API_KEY == "" {
 		log.Fatal("Cloud_api_key is not set")
 	}
-	Cloud_api_secret= os.Getenv("Cloud_api_secret")
+	Cloud_api_secret = os.Getenv("Cloud_api_secret")
 	if Mail_TRAP_API_KEY == "" {
 		log.Fatal("Cloud_api_secret is not set")
 	}

@@ -1,9 +1,10 @@
 package blog_repository
 
 import (
-	"context"
-
 	"AAiT-backend-group-2/Domain"
+	"context"
+	"encoding/json"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -13,18 +14,51 @@ type blogRepository struct {
 	blogCollection    *mongo.Collection
 	likeCollection    *mongo.Collection
 	commentCollection *mongo.Collection
+	cache             domain.Cache
 }
 
-func NewBlogRepository(db *mongo.Database) domain.BlogRepository {
+func NewBlogRepository(db *mongo.Database, cache domain.Cache) domain.BlogRepository {
 	return &blogRepository{
 		blogCollection:    db.Collection("blogs"),
 		likeCollection:    db.Collection("likes"),
 		commentCollection: db.Collection("comments"),
+		cache:             cache,
 	}
 }
 
 func (b *blogRepository) FindAll(ctx context.Context, page int, pageSize int, sortBy string, sortOrder string) ([]domain.Blog, int, error) {
 	skip := (page - 1) * pageSize
+
+	cachedKey := fmt.Sprintf("blogs:page=%d:pagesize=%d:sortby=%s:sortorder=%s", page, pageSize, sortBy, sortOrder)
+
+	cachedResult, err := b.cache.Get(cachedKey)
+	if err == nil && cachedResult != "" {
+		var cachedData map[string]interface{}
+		if err := json.Unmarshal([]byte(cachedResult.(string)), &cachedData); err != nil {
+			return nil, 0, err
+		}
+
+		var blogs []domain.Blog
+		if blogsData, ok := cachedData["blogs"].([]interface{}); ok {
+			blogsJSON, err := json.Marshal(blogsData)
+			if err != nil {
+				return nil, 0, err
+			}
+			if err := json.Unmarshal(blogsJSON, &blogs); err != nil {
+				return nil, 0, err
+			}
+		} else {
+			return nil, 0, fmt.Errorf("unexpected type for blogs in cache")
+		}
+
+		totalCount, ok := cachedData["totalCount"].(float64)
+		if !ok {
+			return nil, 0, fmt.Errorf("unexpected type for totalCount in cache")
+		}
+
+		fmt.Println("From Cache")
+		return blogs, int(totalCount), nil
+	}
 
 	findOptions := options.Find().SetSkip(int64(skip)).SetLimit(int64(pageSize))
 	sortOrderValue := 1
@@ -76,12 +110,54 @@ func (b *blogRepository) FindAll(ctx context.Context, page int, pageSize int, so
 		}
 		blogs[i].DislikeCount = int(dislikeCount)
 	}
+	cachedData := map[string]interface{}{
+		"blogs":      blogs,
+		"totalCount": totalCount,
+	}
+	cachedDataJSON, err := json.Marshal(cachedData)
+	if err != nil {
+		return nil, 0, err
+	}
+	if err := b.cache.Set(cachedKey, string(cachedDataJSON)); err != nil {
+		return nil, 0, err
+	}
 
 	return blogs, int(totalCount), nil
 
 }
 
 func (b *blogRepository) FindByID(ctx context.Context, id string) (*domain.Blog, error) {
+
+	// Trying to get the value from cache
+	cacheKey := "blog:" + id
+	cachedBlog, err := b.cache.Get(cacheKey)
+	if err == nil && cachedBlog != "" {
+		var blog domain.Blog
+		switch v := cachedBlog.(type) {
+		case string:
+			if err := json.Unmarshal([]byte(v), &blog); err != nil {
+				return nil, err
+			}
+			fmt.Println("From Cache")
+			return &blog, nil
+		case map[string]interface{}:
+			blogJSON, err := json.Marshal(v)
+			if err != nil {
+				return nil, err
+			}
+			err = json.Unmarshal(blogJSON, &blog)
+			if err != nil {
+				return nil, err
+			}
+			fmt.Println("From Cache")
+			return &blog, nil
+
+		default:
+			return nil, fmt.Errorf("unexpected type")
+		}
+	}
+
+	// Cache miss
 	var blog domain.Blog
 	if err := b.blogCollection.FindOne(ctx, bson.M{"_id": id}).Decode(&blog); err != nil {
 		return nil, err
@@ -109,6 +185,16 @@ func (b *blogRepository) FindByID(ctx context.Context, id string) (*domain.Blog,
 		return nil, err
 	}
 	blog.DislikeCount = int(dislikeCount)
+
+	blogJson, err := json.Marshal(blog)
+	if err != nil {
+		return nil, err
+	}
+	// Setting the value to cache
+	if err := b.cache.Set(cacheKey, string(blogJson)); err != nil {
+		return nil, err
+	}
+	fmt.Println("From DB")
 	return &blog, err
 }
 
@@ -135,7 +221,22 @@ func (b *blogRepository) Update(ctx context.Context, blog *domain.Blog) error {
 		},
 	}
 	_, err := b.blogCollection.UpdateOne(ctx, filter, update)
-	return err
+	if err != nil {
+		return err
+	}
+
+	cachedKeyPattern := "blogs:page=*:*:sortby=*:*"
+	keys, err := b.cache.Keys(cachedKeyPattern)
+	if err != nil {
+		return err
+	}
+	for _, key := range keys {
+		if err := b.cache.Delete(key); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (b *blogRepository) Delete(ctx context.Context, id string) error {
@@ -161,6 +262,17 @@ func (b *blogRepository) Delete(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
+	// Invalidate the cache
+	cachedKeyPattern := "blogs:page=*:*:sortby=*:*"
+	keys, err := b.cache.Keys(cachedKeyPattern)
+	if err != nil {
+		return err
+	}
+	for _, key := range keys {
+		if err := b.cache.Delete(key); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -181,6 +293,7 @@ func (b *blogRepository) Filter(ctx context.Context, tags []string, startDate, e
 
 	var sort bson.D
 	switch sortBy {
+
 	case "view_count":
 		sort = bson.D{{Key: "view_count", Value: -1}}
 	case "like_count":
@@ -227,7 +340,6 @@ func (b *blogRepository) Filter(ctx context.Context, tags []string, startDate, e
 			}
 			blogs[i].Comments = comments
 
-
 			likesCursor, err := b.likeCollection.Find(sessCtx, bson.M{"blog_id": blogs[i].ID})
 			if err != nil {
 				return nil, err
@@ -237,7 +349,7 @@ func (b *blogRepository) Filter(ctx context.Context, tags []string, startDate, e
 				return nil, err
 			}
 			blogs[i].LikeCount = len(likes)
-			
+
 		}
 
 		return nil, nil

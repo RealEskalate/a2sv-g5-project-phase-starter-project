@@ -3,7 +3,7 @@ package repository
 import (
 	"Blog_Starter/domain"
 	"context"
-
+	"time"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,7 +15,7 @@ type BlogCommentRepository struct {
 }
 
 
-func NewCommentRepository(dataBase *mongo.Database, commentCollection string, ctx *context.Context) domain.CommentRepository {
+func NewCommentRepository(dataBase *mongo.Database, commentCollection string) domain.CommentRepository {
 	return &BlogCommentRepository{
 		DataBase:          dataBase,
 		commentCollection: commentCollection,
@@ -69,6 +69,7 @@ func (bcr *BlogCommentRepository) Update(ctx context.Context, content string, co
 	update := bson.D{{
 		Key : "$set", Value : bson.D{
 			{Key : "content", Value : content},
+			{Key : "updatetimestamp", Value : time.Now()},
 		},
 	}}
 
@@ -76,7 +77,6 @@ func (bcr *BlogCommentRepository) Update(ctx context.Context, content string, co
 	if err != nil {
 		return nil, err
 	}
-
 	var foundComment domain.Comment
 	err = collection.FindOne(ctx, filter).Decode(&foundComment)
 	return &foundComment, err

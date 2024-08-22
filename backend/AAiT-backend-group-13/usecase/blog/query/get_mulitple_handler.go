@@ -3,6 +3,7 @@ package blogqry
 import (
 	"fmt"
 	"log"
+
 	"github.com/google/uuid"
 	"github.com/group13/blog/domain/models"
 	cache "github.com/group13/blog/usecase/common/i_cache"
@@ -17,15 +18,15 @@ const (
 
 // GetMultipleHandler handles queries for retrieving multiple blogs.
 type GetMultipleHandler struct {
-	blogRepo irepo.Blog
+	blogRepo  irepo.Blog
 	blogCache cache.ICache
 }
 
 // NewGetMultipleHandler creates a new instance of GetMultipleHandler with the provided blog repository.
-func NewGetMultipleHandler(blogRepo irepo.Blog, cacheService *cache.ICache) *GetMultipleHandler {
+func NewGetMultipleHandler(blogRepo irepo.Blog, cacheService cache.ICache) *GetMultipleHandler {
 	return &GetMultipleHandler{
-		blogRepo: blogRepo,
-		blogCache: *cacheService,
+		blogRepo:  blogRepo,
+		blogCache: cacheService,
 	}
 }
 
@@ -71,7 +72,6 @@ func (h *GetMultipleHandler) validateLimit(requestedLimit int) int {
 	}
 	return requestedLimit
 }
-
 
 func (h *GetMultipleHandler) generateCacheKey(query *GetMultipleQuery) string {
 	return fmt.Sprintf("blogs:user:%s:lastSeenID:%s:limit:%d", query.userID.String(), query.lastSeenID.String(), query.limit)

@@ -10,18 +10,27 @@ func SetUp(router *gin.Engine) {
 	var clinect config.ServerConnection
 	clinect.Connect_could()
 
+	// Initialize collections
 	userCollection := &database.MongoCollection{
 		Collection: clinect.Client.Database("BlogPost").Collection("Users"),
 	}
 	blogCollection := &database.MongoCollection{
 		Collection: clinect.Client.Database("BlogPost").Collection("Blogs"),
 	}
+
 	aiRoute := router.Group("")
 	userRoute := router.Group("")
-	blogRot := router.Group("")
+	blogRoute := router.Group("")
+	popularityRoute := router.Group("")
+	likeRoute := router.Group("")
+	dislikeRoute := router.Group("")
+	commentRoute := router.Group("")
 
-	NewBlogRoutes(blogRot, blogCollection, userCollection)
+	NewBlogRoutes(blogRoute, blogCollection, userCollection)
 	NewAiRequestRoute(aiRoute)
 	NewUserRoute(userRoute, userCollection)
-
+	NewPopularityRoutes(popularityRoute, blogCollection)
+	NewLikeRoutes(likeRoute, blogCollection)
+	NewDislikeRoutes(dislikeRoute, blogCollection)
+	NewCommentRoutes(commentRoute, blogCollection)
 }

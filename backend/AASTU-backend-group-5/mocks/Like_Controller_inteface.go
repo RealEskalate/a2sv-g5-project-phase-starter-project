@@ -12,64 +12,24 @@ type Like_Controller_inteface struct {
 	mock.Mock
 }
 
-// CreateLike provides a mock function with given fields:
-func (_m *Like_Controller_inteface) CreateLike() gin.HandlerFunc {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for CreateLike")
-	}
-
-	var r0 gin.HandlerFunc
-	if rf, ok := ret.Get(0).(func() gin.HandlerFunc); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(gin.HandlerFunc)
-		}
-	}
-
-	return r0
+// CreateLike provides a mock function with given fields: ctx
+func (_m *Like_Controller_inteface) CreateLike(ctx *gin.Context) {
+	_m.Called(ctx)
 }
 
-// DeleteLike provides a mock function with given fields:
-func (_m *Like_Controller_inteface) DeleteLike() gin.HandlerFunc {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for DeleteLike")
-	}
-
-	var r0 gin.HandlerFunc
-	if rf, ok := ret.Get(0).(func() gin.HandlerFunc); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(gin.HandlerFunc)
-		}
-	}
-
-	return r0
+// GetLikes provides a mock function with given fields: ctx
+func (_m *Like_Controller_inteface) GetLikes(ctx *gin.Context) {
+	_m.Called(ctx)
 }
 
-// GetLikes provides a mock function with given fields:
-func (_m *Like_Controller_inteface) GetLikes() gin.HandlerFunc {
-	ret := _m.Called()
+// RemoveLike provides a mock function with given fields: ctx
+func (_m *Like_Controller_inteface) RemoveLike(ctx *gin.Context) {
+	_m.Called(ctx)
+}
 
-	if len(ret) == 0 {
-		panic("no return value specified for GetLikes")
-	}
-
-	var r0 gin.HandlerFunc
-	if rf, ok := ret.Get(0).(func() gin.HandlerFunc); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(gin.HandlerFunc)
-		}
-	}
-
-	return r0
+// ToggleLike provides a mock function with given fields: ctx
+func (_m *Like_Controller_inteface) ToggleLike(ctx *gin.Context) {
+	_m.Called(ctx)
 }
 
 // NewLike_Controller_inteface creates a new instance of Like_Controller_inteface. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

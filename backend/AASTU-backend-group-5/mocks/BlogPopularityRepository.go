@@ -13,7 +13,7 @@ type BlogPopularityRepository struct {
 }
 
 // GetPopularBlogs provides a mock function with given fields: sortBy, sortOrder
-func (_m *BlogPopularityRepository) GetPopularBlogs(sortBy string, sortOrder int) ([]domain.Blog, error) {
+func (_m *BlogPopularityRepository) GetPopularBlogs(sortBy []domain.SortBy, sortOrder []domain.SortOrder) ([]domain.Blog, error) {
 	ret := _m.Called(sortBy, sortOrder)
 
 	if len(ret) == 0 {
@@ -22,10 +22,10 @@ func (_m *BlogPopularityRepository) GetPopularBlogs(sortBy string, sortOrder int
 
 	var r0 []domain.Blog
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string, int) ([]domain.Blog, error)); ok {
+	if rf, ok := ret.Get(0).(func([]domain.SortBy, []domain.SortOrder) ([]domain.Blog, error)); ok {
 		return rf(sortBy, sortOrder)
 	}
-	if rf, ok := ret.Get(0).(func(string, int) []domain.Blog); ok {
+	if rf, ok := ret.Get(0).(func([]domain.SortBy, []domain.SortOrder) []domain.Blog); ok {
 		r0 = rf(sortBy, sortOrder)
 	} else {
 		if ret.Get(0) != nil {
@@ -33,7 +33,7 @@ func (_m *BlogPopularityRepository) GetPopularBlogs(sortBy string, sortOrder int
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(string, int) error); ok {
+	if rf, ok := ret.Get(1).(func([]domain.SortBy, []domain.SortOrder) error); ok {
 		r1 = rf(sortBy, sortOrder)
 	} else {
 		r1 = ret.Error(1)

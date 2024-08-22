@@ -20,7 +20,7 @@ func AdminMiddleware(jwtService JWTService) gin.HandlerFunc {
 			return
 		}
 
-		if claims.Role != "admin" {
+		if claims.Role != "admin" && claims.Role != "root" {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}

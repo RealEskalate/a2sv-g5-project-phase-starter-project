@@ -43,6 +43,9 @@ type UserUsecaseInterface interface {
 	GetAllUsers() ([]*User, error)
 	UpdateUser(username, newPassword string) error
 	DeleteUser(objectID primitive.ObjectID) error
+
+	PromoteToAdmin(username string) error
+	DemoteToUser(username string) error
 }
 
 // RefreshToken(refreshToken *RefreshToken) (string, error)
@@ -56,4 +59,6 @@ type UserRepositoryInterface interface {
 	GetAllUsers() ([]*User, error)
 	UpdateUser(username string, user *User) error
 	DeleteUser(id primitive.ObjectID) error
+
+	UpdateRole(username string, role string) error
 }

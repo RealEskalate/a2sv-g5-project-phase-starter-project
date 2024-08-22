@@ -135,10 +135,21 @@ func (uc *UserUsecase) GetUserByUsername(c context.Context, username string) (*d
 func (uc *UserUsecase) PromoteUser(c context.Context, id primitive.ObjectID, claims *domain.JwtCustomClaims) error {
 	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
 	defer cancel()
-	user, err := uc.userRepository.GetUserByID(ctx, id)
-	if err != nil {
-		return err
-	}
+
+	userChan := make(chan *domain.User, 1)
+	errChan := make(chan error, 1)
+
+	go func() {
+		user, err := uc.userRepository.GetUserByID(ctx, id)
+		if err != nil {
+			errChan <- err
+			return
+		}
+		userChan <- user
+	}()
+
+	user := <-userChan
+
 	if user.Role == "root" {
 		return errors.New("cannot promote root user")
 	}
@@ -148,8 +159,14 @@ func (uc *UserUsecase) PromoteUser(c context.Context, id primitive.ObjectID, cla
 	if claims.Role != "admin" && claims.Role != "root" {
 		return errors.New("a user must be an admin or root to promote another user")
 	}
+
+	if err := <-errChan; err != nil {
+		return err
+	}
+
 	return uc.userRepository.PromoteUser(ctx, id)
 }
+
 
 func (uc *UserUsecase) DemoteUser(c context.Context, id primitive.ObjectID, claims *domain.JwtCustomClaims) error {
     ctx, cancel := context.WithTimeout(c, uc.contextTimeout)

@@ -29,14 +29,6 @@ type UserControllerTestSuite struct {
 	Role            string
 }
 
-var (
-	user_id = primitive.NewObjectID()
-)
-
-func mockExtractUser(c *gin.Context) (*Domain.AccessClaims, error) {
-	return &Domain.AccessClaims{ID: user_id, Role: "admin"}, nil
-}
-
 func (suite *UserControllerTestSuite) SetupTest() {
 	suite.mockUserUseCase = new(mocks.UserUseCases)
 	var err error
@@ -221,6 +213,73 @@ func (suite *UserControllerTestSuite) TestDeleteUser() {
 	// Assert
 	assert.Equal(suite.T(), http.StatusOK, w.Code)
 	// assert.Equal(suite.T(), "{\"message\":\"User deleted successfully\"}", w.Body.String())
+	suite.mockUserUseCase.AssertExpectations(suite.T())
+}
+
+func (suite *UserControllerTestSuite) TestPromoteUser() {
+	// Arrange
+	user := &Domain.AccessClaims{
+		ID:   suite.userID,
+		Role: suite.Role,
+	}
+	expected_User := Domain.OmitedUser{
+		ID:    suite.userID,
+		Email: "",
+	}
+	id := primitive.NewObjectID()
+	objectID := id.Hex()
+
+	// Mock the PromoteUser method
+	suite.mockUserUseCase.On("PromoteUser", mock.Anything, mock.Anything, mock.Anything).Return(expected_User, nil, http.StatusOK).Once()
+
+	req, _ := http.NewRequest(http.MethodPost, "/users/"+objectID+"/promote", nil)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Params = gin.Params{
+		{Key: "id", Value: objectID},
+	}
+	c.Set("claim", user)
+
+	// Act
+	suite.userController.PromoteUser(c)
+
+	// Assert
+	assert.Equal(suite.T(), http.StatusOK, w.Code)
+	suite.mockUserUseCase.AssertExpectations(suite.T())
+}
+
+func (suite *UserControllerTestSuite) TestDemoteUser() {
+	// Arrange
+	user := &Domain.AccessClaims{
+		ID:   suite.userID,
+		Role: suite.Role,
+	}
+
+	expected_User := Domain.OmitedUser{
+		ID:    suite.userID,
+		Email: "",
+	}
+	id := primitive.NewObjectID()
+	objectID := id.Hex()
+
+	suite.mockUserUseCase.On("DemoteUser", mock.Anything, mock.Anything, mock.Anything).Return(expected_User, nil, http.StatusOK).Once()
+
+	req, _ := http.NewRequest(http.MethodPost, "/users/"+objectID+"/demote", nil)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Params = gin.Params{
+		{Key: "id", Value: objectID},
+	}
+	c.Set("claim", user)
+
+	// Act
+	suite.userController.DemoteUser(c)
+
+	// Assert
+	assert.Equal(suite.T(), http.StatusOK, w.Code)
+	// assert.Equal(suite.T(), "{\"message\":\"User demoted successfully\", \"user\":null}", w.Body.String())
 	suite.mockUserUseCase.AssertExpectations(suite.T())
 }
 

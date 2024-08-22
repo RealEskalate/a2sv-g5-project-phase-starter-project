@@ -23,7 +23,6 @@ import (
 	userrepo "github.com/group13/blog/infrastructure/repo/user"
 	blogcmd "github.com/group13/blog/usecase/blog/command"
 	blogqry "github.com/group13/blog/usecase/blog/query"
-	cache "github.com/group13/blog/infrastructure/cache"
 	passwordreset "github.com/group13/blog/usecase/password_reset"
 	usercmd "github.com/group13/blog/usecase/user/command"
 	userqry "github.com/group13/blog/usecase/user/query"
@@ -92,7 +91,7 @@ func initRepos(cfg config.Config, mongoClient *mongo.Client) (*userrepo.Repo, *b
 	return userRepo, blogRepo, commentRepo, reactionRepo
 }
 
-func initCache(cfg config.Config) *cache.RedisCache  {
+func initCache(cfg config.Config) *cache.RedisCache {
 	host, err := strconv.ParseInt(cfg.Cache_port, 10, 32)
 	if err != nil {
 		log.Fatalf("Error parsing cache db: %v", err)

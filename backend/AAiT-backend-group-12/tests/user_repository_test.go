@@ -8,6 +8,7 @@ import (
 	"blog_api/repository"
 	"context"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/bson"
@@ -300,6 +301,42 @@ func (suite *UserRepositoryTestSuite) TestChangeRole_Negative_UserNotFound() {
 	newRole := "custom_rolies"
 	err := suite.UserRepository.ChangeRole(context.Background(), user.Username, newRole)
 	suite.NotNil(err, "error when changing role")
+	suite.Equal(err.GetCode(), domain.ERR_NOT_FOUND, "error code is not found")
+}
+
+func (suite *UserRepositoryTestSuite) TestUpdateVerificationDetails_Positive() {
+	user := MockUserData[0]
+	suite.UserRepository.CreateUser(context.Background(), &user)
+
+	verificationDetails := domain.VerificationData{
+		Token:     "pretend this is a very long random string",
+		ExpiresAt: time.Now().Round(time.Second),
+		Type:      domain.VerifyEmailType,
+	}
+	err := suite.UserRepository.UpdateVerificationDetails(context.Background(), user.Username, verificationDetails)
+	suite.Nil(err, "no error when updating verification details")
+
+	// check with the user in the DB
+	var updatedDataFromDB domain.User
+	suite.collection.FindOne(context.Background(), bson.M{"username": user.Username}).Decode(&updatedDataFromDB)
+	suite.Equal(verificationDetails.Token, updatedDataFromDB.VerificationData.Token, "token matches")
+	suite.Equal(verificationDetails.ExpiresAt, updatedDataFromDB.VerificationData.ExpiresAt.Local(), "expires at matches")
+	suite.Equal(verificationDetails.Type, updatedDataFromDB.VerificationData.Type, "type matches")
+	suite.Equal(user.Username, updatedDataFromDB.Username, "username matches")
+	suite.Equal(user.Email, updatedDataFromDB.Email, "email matches")
+	suite.Equal(user.Password, updatedDataFromDB.Password, "password matches")
+}
+
+func (suite *UserRepositoryTestSuite) TestUpdateVerificationDetails_Negative_UserNotFound() {
+	user := MockUserData[0]
+
+	verificationDetails := domain.VerificationData{
+		Token:     "pretend this is a very long random string",
+		ExpiresAt: time.Now().Round(time.Second),
+		Type:      domain.VerifyEmailType,
+	}
+	err := suite.UserRepository.UpdateVerificationDetails(context.Background(), user.Username, verificationDetails)
+	suite.NotNil(err, "no error when updating verification details")
 	suite.Equal(err.GetCode(), domain.ERR_NOT_FOUND, "error code is not found")
 }
 

@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-
 type UpdatedUser = {
   name: string;
   email: string;
@@ -14,18 +13,18 @@ type UpdatedUser = {
   profilePicture?: string | null;
 };
 type UpdatedPreference = {
-  currency: string,
-  sentOrReceiveDigitalCurrency: boolean,
-  receiveMerchantOrder: boolean,
-  accountRecommendations: boolean,
-  timeZone: string,
-  twoFactorAuthentication: boolean,
+  currency: string;
+  sentOrReceiveDigitalCurrency: boolean;
+  receiveMerchantOrder: boolean;
+  accountRecommendations: boolean;
+  timeZone: string;
+  twoFactorAuthentication: boolean;
 };
 
 export const userApi = createApi({
   reducerPath: "userDashboard",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-1tst.onrender.com",
+    baseUrl: "https://astu-bank-dashboard.onrender.com",
   }),
   endpoints: (builder) => ({
     getCurrentUser: builder.query({
@@ -38,7 +37,13 @@ export const userApi = createApi({
       }),
     }),
     updateUser: builder.mutation({
-      query: ({ accessToken, updatedUser }: { accessToken: string; updatedUser: UpdatedUser}) => ({
+      query: ({
+        accessToken,
+        updatedUser,
+      }: {
+        accessToken: string;
+        updatedUser: UpdatedUser;
+      }) => ({
         url: "/user/update",
         method: "PUT",
         body: updatedUser,
@@ -48,7 +53,13 @@ export const userApi = createApi({
       }),
     }),
     updatePreference: builder.mutation({
-      query: ({ accessToken, updatedPreference }: { accessToken: string; updatedPreference: UpdatedPreference }) => ({
+      query: ({
+        accessToken,
+        updatedPreference,
+      }: {
+        accessToken: string;
+        updatedPreference: UpdatedPreference;
+      }) => ({
         url: "/user/update-preference",
         method: "PUT",
         body: updatedPreference,
@@ -56,9 +67,12 @@ export const userApi = createApi({
           Authorization: `Bearer ${accessToken}`,
         },
       }),
-    })
-
+    }),
   }),
 });
 
-export const { useGetCurrentUserQuery, useUpdateUserMutation, useUpdatePreferenceMutation } = userApi;
+export const {
+  useGetCurrentUserQuery,
+  useUpdateUserMutation,
+  useUpdatePreferenceMutation,
+} = userApi;

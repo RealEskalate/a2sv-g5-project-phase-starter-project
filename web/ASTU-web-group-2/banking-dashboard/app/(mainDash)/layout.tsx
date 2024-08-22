@@ -1,73 +1,79 @@
-'use client';
-import React, { useEffect } from 'react';
-import Head from 'next/head';
-import Navbar from '../components/navbar/Navbar';
-import Sidebar from '../components/sidebar/Sidebar';
-import { Inter } from 'next/font/google';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation'; // Correct import
-import { useGetCurrentUserQuery } from '@/lib/service/UserService';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '@/lib/store';
-import { setUser } from '@/lib/features/userSlice/userSlice';
-import { isTokenExpired } from '@/utils/authUtils';
-import { useRefreshAccessTokenMutation } from '@/lib/service/authentication';
+"use client";
+import React, { useEffect } from "react";
+import Head from "next/head";
+import Navbar from "../components/navbar/Navbar";
+import Sidebar from "../components/sidebar/Sidebar";
+import { Inter } from "next/font/google";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation"; // Correct import
+import { useGetCurrentUserQuery } from "@/lib/service/UserService";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "@/lib/store";
+import { setUser } from "@/lib/features/userSlice/userSlice";
+import { isTokenExpired } from "@/utils/authUtils";
+import { useRefreshAccessTokenMutation } from "@/lib/service/authentication";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
-const Layout = ({ children, title = 'My Next.js App' }: { children: React.ReactNode; title?: string }) => {
+const Layout = ({
+  children,
+  title = "My Next.js App",
+}: {
+  children: React.ReactNode;
+  title?: string;
+}) => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.user.user);
 
-  const [refreshAccessToken, { isLoading: isRefreshing }] = useRefreshAccessTokenMutation();
+  const [refreshAccessToken, { isLoading: isRefreshing }] =
+    useRefreshAccessTokenMutation();
 
-  const { data: userData, isLoading } = useGetCurrentUserQuery(session?.user?.accessToken ?? '', {
-    skip: !session?.user?.accessToken,
-  });
+  const { data: userData, isLoading } = useGetCurrentUserQuery(
+    session?.user?.accessToken ?? "",
+    {
+      skip: !session?.user?.accessToken,
+    }
+  );
 
   useEffect(() => {
-    // console.log("step one")
+    // console.log("step one")'
+    console.log("session", session);
     const fetchUserData = async () => {
-    // console.log("step two")
+      // console.log("step two")
 
       try {
         const refreshToken = session?.user?.refreshToken;
         if (!refreshToken) {
-          throw new Error('No refresh token available');
+          throw new Error("No refresh token available");
         }
 
-        const refreshData = await refreshAccessToken(refreshToken); 
+        const refreshData = await refreshAccessToken(refreshToken);
         const newAccessToken = refreshData.data.data;
 
         if (newAccessToken) {
           session.user.accessToken = newAccessToken;
         } else {
-          throw new Error('Failed to refresh access token');
+          throw new Error("Failed to refresh access token");
         }
       } catch (error) {
-        console.error('Failed to refresh access token:', error);
-        router.push('/login');
+        console.error("Failed to refresh access token:", error);
+        router.push("/login");
       }
     };
-    if (session){
-
-      console.log(isTokenExpired(session.user.accessToken))
+    if (session) {
+      console.log(isTokenExpired(session.user.accessToken));
     }
-    if (session && isTokenExpired(session.user.accessToken)) {
-      fetchUserData();
-    }if (session?.user?.accessToken){
-
-      console.log("session",session,isTokenExpired(session.user.accessToken))
+    // if (session && isTokenExpired(session.user.accessToken)) {
+    //   // fetchUserData();
+    // }
+    if (session?.user?.accessToken) {
+      console.log("session", session, isTokenExpired(session.user.accessToken));
     }
-    if (status == "unauthenticated" && (!session)){
-
-      router.push('/login'); 
-
+    if (status == "unauthenticated" && !session) {
+      router.push("/login");
     }
-    
-   
   }, [session, router, refreshAccessToken]);
 
   useEffect(() => {
@@ -75,7 +81,6 @@ const Layout = ({ children, title = 'My Next.js App' }: { children: React.ReactN
       dispatch(setUser(userData.data));
     }
   }, [userData, dispatch]);
-
 
   return (
     <>

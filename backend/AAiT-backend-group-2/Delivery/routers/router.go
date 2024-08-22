@@ -17,4 +17,5 @@ func SetupRouter(db *mongo.Database, gin *gin.Engine, configs *domain.Config) {
 	NewUserRouter(db, publicRouter, configs)
 	NewAuthRouter(db, publicRouter, configs)
 	NewBlogRouter(db, publicRouter, configs)
+	NewAIRouter(db, publicRouter, configs)
 }

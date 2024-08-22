@@ -33,6 +33,12 @@ func (s *SignUpController) SignUp(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
+		
+	err := UserSignUp.Validate()
+	if err!=nil{
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	user, err := s.signUpUsecase.CreateUser(c, &UserSignUp)
 	if err != nil {
@@ -49,7 +55,7 @@ func (s *SignUpController) SignUp(c *gin.Context) {
 	otp := domain.Otp{
 		Email:      user.Email,
 		Otp:        code,
-		Expiration: time.Now().Add(3 * time.Minute),
+		Expiration: time.Now().Add(5 * time.Minute),
 	}
 
 	oldOtp, err := s.otpUsecase.GetOtpByEmail(c, UserSignUp.Email)
@@ -118,8 +124,12 @@ func (s *SignUpController) VerifyEmail(c *gin.Context) {
 	}
 
 	user, err := s.signUpUsecase.VerifyEmail(c, &VerifyEmailRequest)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err!=nil{
+		if err.Error() == "mongo: no documents in result"{
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
 		return
 	}
 
@@ -137,8 +147,12 @@ func (s *SignUpController) ResendOTP(c *gin.Context) {
 	ResendOTPRequest.Email = strings.ToLower(ResendOTPRequest.Email)
 
 	err := s.signUpUsecase.ResendOTP(c, &ResendOTPRequest)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err!=nil{
+		if err.Error() == "mongo: no documents in result"{
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
 		return
 	}
 
@@ -156,7 +170,7 @@ func (s *SignUpController) ResendOTP(c *gin.Context) {
 	code := fmt.Sprintf("%04d", randNumber)
 
 	otp.Otp = code
-	otp.Expiration = time.Now().Add(1 * time.Minute)
+	otp.Expiration = time.Now().Add(5 * time.Minute)
 
 
 	// Save OTP to database

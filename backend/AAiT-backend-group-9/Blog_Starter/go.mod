@@ -15,6 +15,8 @@ require (
 	google.golang.org/api v0.192.0
 )
 
+require github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+
 require (
 	github.com/go-redis/redis v6.15.9+incompatible // indirect
 	github.com/kr/text v0.2.0 // indirect

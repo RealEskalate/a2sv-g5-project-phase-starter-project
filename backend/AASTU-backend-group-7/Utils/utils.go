@@ -5,7 +5,7 @@ import (
 	"blogapp/Domain"
 	"context"
 	"encoding/json"
-	"log"
+	"fmt"
 	"mime/multipart"
 	"net/http"
 	"path/filepath"
@@ -74,7 +74,7 @@ func getCurrentTimeString() string {
 	return timeString
 }
 
-func SetProfilePicture(file *multipart.FileHeader) (string, error) {
+var SetProfilePicture = func (file *multipart.FileHeader) (string, error) {
 	// Supported file types
 	supportedTypes := map[string]bool{
 		".jpg":  true,
@@ -85,29 +85,37 @@ func SetProfilePicture(file *multipart.FileHeader) (string, error) {
 	}
 
 	ext := strings.ToLower(filepath.Ext(file.Filename))
+	fmt.Println(ext)
 	if !supportedTypes[ext] {
-		log.Println("Unsupported file type:", ext)
+		fmt.Println("Unsupported file type:", ext)
 		return "", http.ErrNotSupported
 	}
 
 	cld, err := cloudinary.NewFromURL("cloudinary://" + Config.Cloud_api_key + ":" + Config.Cloud_api_secret + "@dncnqaztp")
 	if err != nil {
-		log.Println("Cloudinary config error:", err)
+		fmt.Println("Cloudinary config error:", err)
 		return "", err
 	}
 
 	// Context with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
+	
+	
+	fileform, err := file.Open()
+	if err != nil {
+		fmt.Println("File open error:", err)
+		return "", err
+	}
+
 
 	// Upload parameters with dynamic public ID
 	uploadParams := uploader.UploadParams{
 		PublicID: "my_PP_" + file.Filename + getCurrentTimeString(),
 	}
-
-	resp, err := cld.Upload.Upload(ctx, file, uploadParams)
+	resp, err := cld.Upload.Upload(ctx, fileform, uploadParams)
 	if err != nil {
-		log.Println("Upload error:", err)
+		fmt.Println("Upload error:", err)
 		return "", err
 	}
 

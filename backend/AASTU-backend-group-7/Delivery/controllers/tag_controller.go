@@ -54,14 +54,10 @@ func (tagController *TagController) CreateTag(c *gin.Context) {
 
 // DeleteTag function
 func (tagController *TagController) DeleteTag(c *gin.Context) {
-	id, err := Utils.StringToObjectId(c.Param("id"))
+	slug := c.Param("slug")
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
 
-	err, statuscode := tagController.tagUseCase.DeleteTag(c, id)
+	err, statuscode := tagController.tagUseCase.DeleteTag(c, slug)
 	if err != nil {
 		c.JSON(statuscode, gin.H{"error": err.Error()})
 		return

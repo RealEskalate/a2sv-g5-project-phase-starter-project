@@ -63,13 +63,13 @@ func BlogRouter() {
 
 	tagRouter := Router.Group("/tags", auth_middleware.AuthMiddleware(), auth_middleware.IsAdminMiddleware())
 	{
-		tagRepo := Repositories.NewTagsRepository(BlogCollections)
+		tagRepo := Repositories.NewTagRepository(BlogCollections)
 		tagUsecase := usecases.NewTagsUseCase(tagRepo)
 		tagController := controllers.NewTagsController(tagUsecase)
 
 		tagRouter.POST("/create", tagController.CreateTag)
 		//delete tag
-		tagRouter.DELETE("/delete/:id", tagController.DeleteTag)
+		tagRouter.DELETE("/delete/:slug", tagController.DeleteTag)
 		//get all tags
 		tagRouter.GET("/all", tagController.GetAllTags)
 		// get tags by slug

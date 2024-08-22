@@ -91,5 +91,8 @@ func (u *OauthUseCase) OauthCallback(c context.Context, query string) interface{
 		return &domain.UserResponse{User: createdUser}
 
 	}
-	return &domain.UserResponse{User: existingUser}
+	if existingUser.GoogleID != "" {
+		return &domain.UserResponse{User: existingUser}
+	}
+	return &domain.ErrorResponse{Message: "User already exists", Status: 400}
 }

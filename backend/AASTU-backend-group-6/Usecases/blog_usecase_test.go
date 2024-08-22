@@ -1,8 +1,7 @@
-package test
+package usecases
 
 import (
 	domain "blogs/Domain"
-	usecases "blogs/Usecases"
 	"blogs/mocks"
 	"log"
 	"strings"
@@ -23,7 +22,7 @@ type BlogUsecaseSuite struct {
 func (suite *BlogUsecaseSuite) SetupTest() {
 	suite.repo = *new(mocks.BlogRepository)
 	suite.idConverter = *new(mocks.IDConverterInterface)
-	suite.blogUsecase = usecases.NewBlogUsecase(&suite.repo, &suite.idConverter)
+	suite.blogUsecase = NewBlogUsecase(&suite.repo, &suite.idConverter)
 }
 
 func (suite *BlogUsecaseSuite) TestReactOnBlog() {
@@ -190,3 +189,4 @@ func (suite *BlogUsecaseSuite) TestUpdateBlogByID() {
 func TestBloBlogUsecaseSuite(t *testing.T) {
 	suite.Run(t, new(BlogUsecaseSuite))
 }
+

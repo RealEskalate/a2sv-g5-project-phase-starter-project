@@ -52,6 +52,12 @@ func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog, role string) (
 		blog.CreatedAt = time.Now()
 		blog.UpdatedAt = time.Now()
 	}
+	if blog.CreatedAt.IsZero(){
+		blog.CreatedAt = time.Now()
+	}
+	if blog.UpdatedAt.IsZero(){
+		blog.UpdatedAt = time.Now()
+	}
 	if len(blog.Tags) == 0 {
 		blog.Tags = make([]string, 0)
 	}

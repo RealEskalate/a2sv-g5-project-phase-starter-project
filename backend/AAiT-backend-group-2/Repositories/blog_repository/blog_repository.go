@@ -1,4 +1,4 @@
-package repositories
+package blog_repository
 
 import (
 	"AAiT-backend-group-2/Domain"

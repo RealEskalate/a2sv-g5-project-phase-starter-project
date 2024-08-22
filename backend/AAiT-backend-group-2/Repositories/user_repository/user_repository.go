@@ -1,4 +1,4 @@
-package repositories
+package user_repository
 
 import (
 	domain "AAiT-backend-group-2/Domain"

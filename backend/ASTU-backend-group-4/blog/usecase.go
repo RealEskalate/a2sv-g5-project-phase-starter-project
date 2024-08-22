@@ -14,6 +14,16 @@ type BlogUseCaseImpl struct {
 	authRepository auth.AuthRepository
 }
 
+// UnDislikeBlog implements BlogUseCase.
+func (b *BlogUseCaseImpl) UnDislikeBlog(ctx context.Context, userID string, blogID string) error {
+	return b.blogRepository.UndislikeBlog(ctx, Dislike{UserID: userID, BlogID: blogID})
+}
+
+// UnLikeBlog implements BlogUseCase.
+func (b *BlogUseCaseImpl) UnLikeBlog(ctx context.Context, userID string, blogID string) error {
+	return b.blogRepository.UnlikeBlog(ctx, Like{UserID: userID, BlogID: blogID})
+}
+
 func NewBlogUseCaseImpl(blogRepository BlogRepository, authRepository auth.AuthRepository) BlogUseCase {
 	return &BlogUseCaseImpl{
 		blogRepository: blogRepository,

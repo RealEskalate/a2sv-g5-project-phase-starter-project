@@ -28,7 +28,8 @@ func (uc *UserController) Login(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 	}
-	ctx.JSON(http.StatusOK, gin.H{"access_token": accessToken, "refresh_token": refToken})
+	ctx.JSON(http.StatusOK, gin.H{"access token": accessToken})
+	ctx.JSON(http.StatusOK, gin.H{"refresh token": refToken})
 }
 
 func (uc *UserController) RegisterUser(ctx *gin.Context) {
@@ -46,35 +47,12 @@ func (uc *UserController) RegisterUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "successfully registered"})
 }
 
-func (uc *UserController) UpdateProfile(ctx *gin.Context) {
+func (uc *UserController) UpdateUser(ctx *gin.Context) {
 	var user auth.User
-	userid := ctx.Value("userID").(string)
 
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
 	}
-	user.ID = userid
-
-	err := uc.authuserusecase.UpdateProfile(ctx, user)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, err.Error())
-	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "updated"})
-}
 
-func (uc *UserController) ActivateUser(ctx *gin.Context) {
-	token := ctx.Param("token")
-	userID := ctx.Param("userID")
-
-	err := uc.authuserusecase.Activate(ctx, userID, token)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err.Error())
-	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "activated"})
-}
-
-func (uc *UserController) Logout(ctx *gin.Context) {
-	userid := ctx.Value("userID")
-	uc.authuserusecase.Logout(ctx, userid.(string))
-	ctx.JSON(http.StatusOK, gin.H{"message": "loged out successfully"})
 }

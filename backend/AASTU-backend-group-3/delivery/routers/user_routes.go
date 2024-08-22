@@ -38,6 +38,9 @@ func SetUpUser(router *gin.Engine) {
 		user.DELETE("/me", authController.DeleteMyAccount)
 
 
+		user.GET("/activate/me", authController.ActivateAccountMe)
+
+
 		// Logout routes
 		user.POST("/logout", authController.Logout)
 		user.GET("/logout-all", authController.LogoutAll)

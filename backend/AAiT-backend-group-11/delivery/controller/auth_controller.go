@@ -20,7 +20,7 @@ func NewAuthController(authService interfaces.AuthenticationService, passwordRes
 	return &AuthController{
 		authService: authService,
 		passwordResetService: passwordResetService}
-
+	}
 
 func (controller *AuthController) RegisterUser(c *gin.Context) {
 
@@ -138,3 +138,20 @@ func (controller *AuthController) ResetPassword(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Password reset successfully"})
 }
 
+func (controller *AuthController) ResendOtp(c *gin.Context) {
+    var request entities.ResendOTPRequest
+
+    err := c.ShouldBind(&request)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    err = controller.authService.ResendOtp(request)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "OTP sent successfully"})
+}

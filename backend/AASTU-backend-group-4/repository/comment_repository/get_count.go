@@ -8,7 +8,7 @@ import (
 )
 
 func (cr *CommentRepository) GetCommentsCount(ctx context.Context, blogID primitive.ObjectID) (int, error) {
-	count, err := cr.collection.CountDocuments(context.TODO(), bson.M{"blog_id": blogID})
+	count, err := cr.collection.CountDocuments(ctx, bson.M{"blog_id": blogID})
 	if err != nil {
 		return 0, err
 	}

@@ -2,6 +2,7 @@ package result
 
 import (
 	"github.com/google/uuid"
+	"github.com/group13/blog/domain/models"
 )
 
 type SignUpResult struct {
@@ -23,12 +24,14 @@ func NewSignUpResult(ID uuid.UUID, Username string, firstName string, lastName s
 }
 
 type LoginInResult struct {
+	User         *models.User
 	Token        string
 	RefreshToken string
 }
 
-func NewLoginInResult(token string, refreshToken string) LoginInResult {
-	return LoginInResult{
+func NewLoginInResult(user *models.User, token string, refreshToken string) *LoginInResult {
+	return &LoginInResult{
+		User:         user,
 		Token:        token,
 		RefreshToken: refreshToken,
 	}

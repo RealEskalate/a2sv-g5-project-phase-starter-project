@@ -69,10 +69,13 @@ func (BR *BlogRepository) UpdateBlogDocument(id string, blog domain.Blog) (domai
 	return blog, err
 }
 
-func (BR *BlogRepository) DeleteBlogDocument(id string, userID string) error {
-	obID, _ := primitive.ObjectIDFromHex(id)
-	userObId, _ := primitive.ObjectIDFromHex(userID)
-	query := bson.M{"_id": obID, "user._id": userObId}
+func (BR *BlogRepository) DeleteBlogDocument(id string) error {
+	obID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	query := bson.M{"_id": obID}
 
 	res, err := BR.collection.DeleteOne(context.TODO(), query)
 	if err != nil {

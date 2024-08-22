@@ -40,17 +40,17 @@ func (_m *Blog_Usecase_interface) CreateBlog(iblog domain.PostBlog) (domain.Blog
 	return r0, r1
 }
 
-// DeleteBlog provides a mock function with given fields: id, user_id
-func (_m *Blog_Usecase_interface) DeleteBlog(id string, user_id string) error {
-	ret := _m.Called(id, user_id)
+// DeleteBlog provides a mock function with given fields: id
+func (_m *Blog_Usecase_interface) DeleteBlog(id string) error {
+	ret := _m.Called(id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteBlog")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string) error); ok {
-		r0 = rf(id, user_id)
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(id)
 	} else {
 		r0 = ret.Error(0)
 	}

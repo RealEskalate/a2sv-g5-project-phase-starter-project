@@ -58,8 +58,8 @@ func (uc *BlogUseCase) UpdateBlog(id string, updatedBlog domain.Blog) (domain.Bl
 	return blog, nil
 }
 
-func (uc *BlogUseCase) DeleteBlog(id string, user_id string) error {
-	return uc.BlogRepo.DeleteBlogDocument(id, user_id)
+func (uc *BlogUseCase) DeleteBlog(id string) error {
+	return uc.BlogRepo.DeleteBlogDocument(id)
 }
 func (uc *BlogUseCase) FilterBlog(filters map[string]interface{}) ([]domain.Blog, error) {
 	blogs, err := uc.BlogRepo.FilterBlogDocument(filters)

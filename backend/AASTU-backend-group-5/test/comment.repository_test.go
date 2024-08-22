@@ -61,38 +61,72 @@ func (suite *CommentRepoTestSuite) TestGetComments() {
 }
 
 func (suite *CommentRepoTestSuite) TestCreateComment() {
-	suite.mockColl.On("InsertOne", context.TODO(), mock.Anything).Return(&mongo.InsertOneResult{}, nil)
+	postID := primitive.NewObjectID().Hex()
+	userID := primitive.NewObjectID().Hex()
 
-	err := suite.repo.CreateComment(primitive.NewObjectID().Hex(), primitive.NewObjectID().Hex())
+	suite.mockColl.On("InsertOne", context.TODO(), mock.MatchedBy(func(m interface{}) bool {
+		comment, ok := m.(domain.Comment)
+		return ok && comment.PostID.Hex() == postID && comment.UserID.Hex() == userID
+	})).Return(&mongo.InsertOneResult{}, nil)
+
+	err := suite.repo.CreateComment(postID, userID)
 	suite.NoError(err)
 
 	suite.mockColl.AssertExpectations(suite.T())
 }
 
 func (suite *CommentRepoTestSuite) TestDeleteComment() {
+	commentID := primitive.NewObjectID().Hex()
+
 	suite.mockColl.On("DeleteOne", context.TODO(), mock.MatchedBy(func(m interface{}) bool {
-		_, ok := m.(bson.M)
-		return ok
+		query, ok := m.(bson.M)
+		id, idExists := query["_id"]
+		return ok && idExists && id.(primitive.ObjectID).Hex() == commentID
 	})).Return(suite.mockDeleteResult, nil)
+
 	suite.mockDeleteResult.On("DeletedCount").Return(int64(1))
 
-	err := suite.repo.DeleteComment(primitive.NewObjectID().Hex())
+	err := suite.repo.DeleteComment(commentID)
 	suite.NoError(err)
 
 	suite.mockColl.AssertExpectations(suite.T())
 	suite.mockDeleteResult.AssertExpectations(suite.T())
 }
 
+func (suite *CommentRepoTestSuite) TestDeleteCommentNotFound() {
+	commentID := primitive.NewObjectID().Hex()
+
+	suite.mockColl.On("DeleteOne", context.TODO(), mock.MatchedBy(func(m interface{}) bool {
+		query, ok := m.(bson.M)
+		id, idExists := query["_id"]
+		return ok && idExists && id.(primitive.ObjectID).Hex() == commentID
+	})).Return(suite.mockDeleteResult, nil)
+
+	suite.mockDeleteResult.On("DeletedCount").Return(int64(0))
+
+	err := suite.repo.DeleteComment(commentID)
+	suite.Error(err)
+	suite.EqualError(err, "no comment with this ID found")
+
+	suite.mockColl.AssertExpectations(suite.T())
+	suite.mockDeleteResult.AssertExpectations(suite.T())
+}
+
 func (suite *CommentRepoTestSuite) TestUpdateComment() {
+	commentID := primitive.NewObjectID().Hex()
+
 	suite.mockColl.On("UpdateOne", context.TODO(), mock.MatchedBy(func(m interface{}) bool {
-		_, ok := m.(bson.M)
-		return ok
+		query, ok := m.(bson.M)
+		id, idExists := query["_id"]
+		return ok && idExists && id.(primitive.ObjectID).Hex() == commentID
 	}), mock.MatchedBy(func(m interface{}) bool {
-		_, ok := m.(bson.M)
-		return ok
+		update, ok := m.(bson.M)
+		set, setExists := update["$set"].(bson.M)
+		content, contentExists := set["content"]
+		return ok && setExists && contentExists && content == "Updated content"
 	})).Return(&mongo.UpdateResult{}, nil)
 
-	err := suite.repo.UpdateComment(primitive.NewObjectID().Hex())
+	err := suite.repo.UpdateComment(commentID)
 	suite.NoError(err)
 
 	suite.mockColl.AssertExpectations(suite.T())

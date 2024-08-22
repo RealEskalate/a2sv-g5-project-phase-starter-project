@@ -51,9 +51,7 @@ func (h *GetMultipleHandler) Handle(query *GetMultipleQuery) ([]*models.Blog, er
 		return nil, err
 	}
 
-	// Store the retrieved blogs in the cache
 	if err := h.blogCache.Set(cacheKey, blogs); err != nil {
-		// Log the caching error but don't fail the request
 		log.Println("Failed to cache blogs:", err)
 	}
 	return blogs, nil

@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} flex flex-row items-start justify-between` }>
-        <Sidebar />
+      <Sidebar />
         <main className="w-full h-full">
           {children}
         </main>

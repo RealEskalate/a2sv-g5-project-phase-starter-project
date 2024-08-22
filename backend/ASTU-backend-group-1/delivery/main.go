@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	clientOptions := options.Client().ApplyURI("mongodb+srv://Legend:AmIHDrlwCqmxgjy2@pycluster.ajv4lb8.mongodb.net/?retryWrites=true&w=majority&appName=pycluster")
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017/")
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		panic(err)
@@ -26,7 +26,7 @@ func main() {
 	blogUsecase := usecase.NewBlogUsecase(blogRepo)
 	blogController := controllers.NewBlogController(*blogUsecase)
 	authController := infrastructure.NewAuthController(blogRepo)
-	userRepo := repository.NewUserRepository(mongoifc.WrapCollection	(userCollections))
+	userRepo := repository.NewUserRepository(mongoifc.WrapCollection(userCollections))
 	userUsecase, err := usecase.NewUserUsecase(userRepo)
 	if err != nil {
 		panic(err)
@@ -34,5 +34,4 @@ func main() {
 	UserController := controllers.NewUserController(userUsecase)
 	Router := router.NewMainRouter(*UserController, *blogController, authController)
 	Router.GinBlogRouter()
-
 }

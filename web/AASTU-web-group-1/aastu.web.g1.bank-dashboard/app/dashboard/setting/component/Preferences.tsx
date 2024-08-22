@@ -49,7 +49,7 @@ const Preferences = () => {
       const session = await getSession();
       const accessToken = session?.user.accessToken;
       const res = await ky.put(
-        "https://bank-dashboard-1tst.onrender.com/user/update-preference",
+        "https://bank-dashboard-o9tl.onrender.com/user/update-preference",
         {
           json: { ...values, twoFactorAuthentication: false },
           headers: {

@@ -19,6 +19,6 @@ func RegisterAIRoutes(env *config.Env, timeout time.Duration, router *gin.Router
 	aiRoutes := router.Group("")
 	aiRoutes.Use(middleware.AuthMidd)
 	{
-		aiRoutes.GET("/generate-content", aiController.GenerateContent)
+		aiRoutes.POST("/generate-content", aiController.GenerateContent)
 	}
 }

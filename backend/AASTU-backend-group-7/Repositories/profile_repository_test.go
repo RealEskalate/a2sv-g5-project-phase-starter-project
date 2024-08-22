@@ -5,6 +5,7 @@ import (
 	"blogapp/mocks"
 	"context"
 	"errors"
+	"log"
 	"net/http"
 	"testing"
 
@@ -35,43 +36,40 @@ func (suite *ProfileRepositoryTestSuite) TearDownTest() {
 	// Cleanup resources if needed
 }
 
-// func (suite *ProfileRepositoryTestSuite) TestDeleteProfile() {
-// 	// A testcase for the successful deletion of a user.
-// 	suite.Run("DeleteUserSuccess", func() {
-// 		ctx := context.Background()
-// 		id := primitive.NewObjectID()
-// 		user := Domain.AccessClaims{ID: id, Role: "admin"}
-// 		count := int64(1)
-// 		// suite.usercollection.On("DeleteOne", mock.Anything, mock.Anything).Return(&mongo.DeleteResult{DeletedCount: count}, nil).Once()
-// 		// Mock the DeleteOne method
-// 		delResult := &mongo.DeleteResult{DeletedCount: count}
-// 		suite.usercollection.On("DeleteOne", mock.Anything, mock.Anything).Return(delResult, nil).Once()
-// 		// suite.refreshcollection.On("DeleteOne", mock.Anything, mock.Anything).Return(delResult, nil).Once()
+func (suite *ProfileRepositoryTestSuite) TestDeleteProfile() {
+	suite.Run("DeleteUserSuccess", func() {
+		ctx := context.Background()
+		id := primitive.NewObjectID()
+		user := Domain.AccessClaims{ID: id, Role: "admin"}
+		count := int64(1)
 
-// 		err, status := suite.repo.DeleteProfile(ctx, id, user)
-// 		log.Println(err)
-// 		suite.NoError(err)
-// 		suite.Equal(http.StatusOK, status)
-// 	})
+		// Mock the DeleteOne method
+		delResult := &mongo.DeleteResult{DeletedCount: count}
+		suite.usercollection.On("DeleteOne", mock.Anything, mock.Anything).Return(delResult, nil).Once()
+		suite.tokencollection.On("DeleteOne", mock.Anything, mock.Anything).Return(delResult, nil).Once()
+		err, status := suite.repo.DeleteProfile(ctx, id, user)
+		log.Println(err)
+		suite.NoError(err)
+		suite.Equal(http.StatusOK, status)
+	})
 
-// 	// A testcase for the failure of deleting a user.
-// 	suite.Run("DeleteUserFailure", func() {
-// 		ctx := context.Background()
-// 		id := primitive.NewObjectID()
-// 		user := Domain.AccessClaims{ID: id, Role: "admin"}
-// 		count := int64(0)
-// 		// suite.usercollection.On("DeleteOne", mock.Anything, mock.Anything).Return(&mongo.DeleteResult{DeletedCount: count}, nil).Once()
-// 		// Mock the DeleteOne method
-// 		delResult := &mongo.DeleteResult{DeletedCount: count}
-// 		suite.usercollection.On("DeleteOne", mock.Anything, mock.Anything).Return(delResult, nil).Once()
-// 		// suite.refreshcollection.On("DeleteOne", mock.Anything, mock.Anything).Return(delResult, nil).Once()
+	suite.Run("DeleteUserFailure", func() {
+		ctx := context.Background()
+		id := primitive.NewObjectID()
+		user := Domain.AccessClaims{ID: id, Role: "admin"}
+		count := int64(0)
 
-// 		err, status := suite.repo.DeleteProfile(ctx, id, user)
-// 		log.Println(err)
-// 		suite.Error(err)
-// 		suite.Equal(404, status)
-// 	})
-// }
+		// Mock the DeleteOne method
+		delResult := &mongo.DeleteResult{DeletedCount: count}
+		suite.usercollection.On("DeleteOne", mock.Anything, mock.Anything).Return(delResult, nil).Once()
+		suite.tokencollection.On("DeleteOne", mock.Anything, mock.Anything).Return(delResult, nil).Once()
+
+		err, status := suite.repo.DeleteProfile(ctx, id, user)
+		log.Println(err)
+		suite.Error(err)
+		suite.Equal(404, status)
+	})
+}
 
 func (suite *ProfileRepositoryTestSuite) TestGetProfile() {
 
@@ -95,28 +93,28 @@ func (suite *ProfileRepositoryTestSuite) TestGetProfile() {
 		suite.Equal(expectedUser, result)
 	})
 
-	// suite.Run("TestGetUserSuccess", func() {
-	// 	ctx := context.Background()
-	// 	expectedUser := Domain.OmitedUser{} // Populate with expected values as needed
-	// 	id := primitive.ObjectID{}
-	// 	mockSingleResult := new(mocks.SingleResult)
+	suite.Run("TestGetUserSuccess", func() {
+		ctx := context.Background()
+		expectedUser := Domain.OmitedUser{} // Populate with expected values as needed
+		id := primitive.ObjectID{}
+		mockSingleResult := new(mocks.SingleResult)
 
-	// 	// Simulate successful decoding
-	// 	mockSingleResult.On("Decode", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
-	// 		userPtr := args.Get(0).(*Domain.OmitedUser)
-	// 		*userPtr = expectedUser
-	// 	})
+		// Simulate successful decoding
+		mockSingleResult.On("Decode", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+			userPtr := args.Get(0).(*Domain.OmitedUser)
+			*userPtr = expectedUser
+		})
 
-	// 	suite.usercollection.On("FindOne", ctx, mock.Anything).Return(mockSingleResult)
+		suite.usercollection.On("FindOne", ctx, mock.Anything).Return(mockSingleResult)
 
-	// 	// Call the method under test
-	// 	result, err, status := suite.repo.GetProfile(ctx, id, Domain.AccessClaims{ID: id})
+		// Call the method under test
+		result, err, status := suite.repo.GetProfile(ctx, id, Domain.AccessClaims{ID: id})
 
-	// 	// Assertions
-	// 	suite.Error(err)
-	// 	suite.NotEqual(http.StatusOK, status)
-	// 	suite.Equal(expectedUser, result) // Compare to expected user
-	// })
+		// Assertions
+		suite.Error(err)
+		suite.NotEqual(http.StatusOK, status)
+		suite.Equal(expectedUser, result) // Compare to expected user
+	})
 }
 func (suite *ProfileRepositoryTestSuite) TestUpdateProfile() {
 

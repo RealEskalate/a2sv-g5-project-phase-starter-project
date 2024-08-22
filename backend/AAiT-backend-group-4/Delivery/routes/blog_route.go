@@ -27,16 +27,16 @@ func NewBlogRoute(env *bootstrap.Env, timeout time.Duration, db mongo.Database, 
 	// Define the blog routes with pagination considerations
 	blogRoutes := group.Group("/blogs")
 	{
-		blogRoutes.POST("", bc.CreateBlog)
-		blogRoutes.PUT("/:id", bc.UpdateBlog)
-		blogRoutes.DELETE("/:id", bc.DeleteBlog)
-		blogRoutes.GET("/", bc.FetchAll)
-		blogRoutes.GET("/popular", bc.FetchByPageAndPopularity)
-		blogRoutes.GET("/author/:author_id", bc.FetchByBlogAuthor)
-		blogRoutes.POST("/tags", bc.FetchByTags)
-		blogRoutes.GET("/search", bc.SearchBlogs)
-		blogRoutes.GET("/title", bc.FetchByBlogTitle)
-		blogRoutes.POST("/comments/:id", bc.AddComment)
+		blogRoutes.POST("", bc.CreateBlog)                         // works
+		blogRoutes.PUT("/:id", bc.UpdateBlog)                      // works
+		blogRoutes.DELETE("/:id", bc.DeleteBlog)                   // works
+		blogRoutes.GET("/", bc.FetchAll)                           // works
+		blogRoutes.GET("/popular", bc.FetchByPageAndPopularity)    // works
+		blogRoutes.GET("/author/:author_id", bc.FetchByBlogAuthor) // works
+		blogRoutes.POST("/tags", bc.FetchByTags)                   // works
+		blogRoutes.GET("/search", bc.SearchBlogs)                  // works
+		blogRoutes.GET("/title", bc.FetchByBlogTitle)              // works
+		blogRoutes.POST("/comments/:id", bc.AddComment)            // works
 		blogRoutes.PUT("/comments/:id", bc.UpdateComment)
 		blogRoutes.DELETE("/comments/:id", bc.RemoveComment)
 	}

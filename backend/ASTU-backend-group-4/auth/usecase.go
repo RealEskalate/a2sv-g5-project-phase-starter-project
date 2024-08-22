@@ -26,6 +26,9 @@ func NewAuthUserUsecase(repository AuthRepository, emailService infrastructure.E
 }
 
 func (au *AuthUserUsecase) Login(ctx context.Context, info LoginForm) (string, string, error) {
+	// panic("not implemented") // TODO: Implement
+	// var userInfo LoginForm
+	// find the user name and match the hashed password with ith info.password
 	user, err := au.repository.GetUserByUsername(ctx, info.Username)
 	if err != nil {
 		return "", "", ErrNoUserWithUsername

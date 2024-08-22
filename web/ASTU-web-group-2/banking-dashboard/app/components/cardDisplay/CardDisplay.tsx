@@ -78,7 +78,15 @@ const CardDisplay = ({ numofcard }: { numofcard: number }) => {
 
   if (isLoadingAllCards || isLoadingCardInfo) {
     // if (true) {
-    return <CardSkeleton />;
+    return (
+      <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-full bg-white animate-pulse rounded-[25px]">
+            <div className="flex flex-row gap-2">
+              <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+              <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
+              <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+            </div>
+          </div>
+    );
   }
 
   if (isErrorAllCards || isErrorCardInfo) {
@@ -86,8 +94,8 @@ const CardDisplay = ({ numofcard }: { numofcard: number }) => {
   }
 
   const allCardsData = allCardsDataWithContent.content!;
-  console.log("The data we want to see: ", allCardsDataWithContent);
-  console.log("The data we don't want to see: ", cardInfoData);
+  
+  const color: ("primary" | "secondary" | "tertiary")[] = ["primary", "tertiary", "secondary"];
 
   return (
     <div className="flex flex-col gap-2 pb-5">
@@ -105,7 +113,7 @@ const CardDisplay = ({ numofcard }: { numofcard: number }) => {
                     cardNumber={formatCardNumber(
                       cardInfoData?.cardNumber || card.semiCardNumber
                     )}
-                    cardType={index === 0 ? "primary" : "tertiary"}
+                    cardType={color[index % color.length]}
                   />
                 </div>
               ))}

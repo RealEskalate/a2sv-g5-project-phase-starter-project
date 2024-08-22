@@ -71,7 +71,7 @@ func (sc *SignupController) VerifyOTP(c *gin.Context) {
 		Name:     existingOtp.Username,
 		Email:    existingOtp.Email,
 		Password: existingOtp.Password,
-		Role:     existingOtp.Role,
+		Role:     "user",
 	}
 	err = sc.userUsecase.Register(&user)
 	if err != nil {

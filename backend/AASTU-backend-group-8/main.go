@@ -64,11 +64,13 @@ func main() {
 	//controllers
 	aiHandler := controllers.NewAIHandler(aiUsecase)
 	profileHandler := controllers.NewProfileHandler(profileUsecase)
+	promoteDemoteHandler := controllers.NewPromoteDemoteController(userUsecase)
 
 
 	r := gin.Default()
 
 	routers.AIRouter(r, aiHandler,jwtService)
+	routers.PromoteDemoteRouter(r, promoteDemoteHandler, jwtService)
 
 	profileRouter := routers.NewProfileRouter(profileHandler, r)
 	profileRouter.InitProfileRoutes(r.Group("/api/v1"))

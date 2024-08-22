@@ -145,3 +145,34 @@ func (u *UserUsecase) GetAllUsers() ([]*domain.User, error) {
 func (u *UserUsecase) DeleteUser(objectID primitive.ObjectID) error {
 	return u.userRepo.DeleteUser(objectID)
 }
+
+
+func (u *UserUsecase) PromoteToAdmin(username string) error {
+	user, err := u.userRepo.GetUserByUsername(username)
+	if err != nil {
+		return err
+	}
+
+	if user.Role == "admin" || user.Role == "root" {
+		return errors.New("user is already an admin")
+	}
+
+	return u.userRepo.UpdateRole(username, "admin")
+}
+
+func (u *UserUsecase) DemoteToUser( username string) error {
+	user, err := u.userRepo.GetUserByUsername(username)
+	if err != nil {
+		return err
+	}
+
+	if user.Role == "user" {
+		return errors.New("user is already a user")
+	}
+
+	if user.Role == "root" {
+		return errors.New("cannot demote a root user")
+	}
+
+	return u.userRepo.UpdateRole(username, "user")
+}

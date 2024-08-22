@@ -14,6 +14,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
+var ErrNoDocuments = errors.New("mongo: no documents in result")
+
 type Database interface {
 	Collection(string) Collection
 	Client() Client
@@ -181,7 +183,14 @@ func (mc *mongoCollection) CountDocuments(ctx context.Context, filter interface{
 }
 
 func (sr *mongoSingleResult) Decode(v interface{}) error {
-	return sr.sr.Decode(v)
+	err := sr.sr.Decode(v)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return ErrNoDocuments
+		}
+		return err
+	}
+	return nil
 }
 
 func (mr *mongoCursor) Close(ctx context.Context) error {

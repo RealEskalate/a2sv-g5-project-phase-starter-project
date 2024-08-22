@@ -63,7 +63,6 @@ func (AI)GenerateContentFromGemini(title string, description string) (string, er
         return "", fmt.Errorf("error unmarshaling response: %v", err)
     }
 
-    // Extract and combine the generated blog content
     var blogContent string
     for _, cad := range *generateResponse.Candidates {
         if cad.Content != nil {

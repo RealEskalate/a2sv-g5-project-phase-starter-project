@@ -6,6 +6,7 @@ import (
 
 	"github.com/RealEskalate/blogpost/domain"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -23,31 +24,24 @@ func NewBlogController(blogUsecase domain.Blog_Usecase_interface, userUsecase do
 
 func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var blog domain.Blog
+		var blog domain.PostBlog
+		var blg domain.Blog
 		if err := c.BindJSON(&blog); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse request. Ensure the blog data is correct: " + err.Error()})
 			return
 		}
 
-		blog.ID = primitive.NewObjectID()
+		iuser, _ := c.Get("user")
 
-		claims, exists := c.Get("user")
-		if !exists {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized. Please log in to add a blog post."})
-			return
+		user := domain.User{}
+		if iuser != nil {
+			user = iuser.(domain.User)
 		}
-
-		userClaims := claims.(*domain.Claims)
-		createdByID, err := primitive.ObjectIDFromHex(userClaims.UserID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID. Please try again."})
-			return
-		}
-		blog.ID = createdByID
-
+		blg.ID = primitive.NewObjectID()
+		blog.Owner = user
 		createdBlog, err := bc.BlogUsecase.CreateBlog(blog)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to add blog post. Please ensure all required fields are filled: " + err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to add blog post: " + err.Error()})
 			return
 		}
 
@@ -57,34 +51,13 @@ func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 
 func (bc *BlogController) GetMyBlogs() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		claims, exists := c.Get("user")
-		if !exists {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized. Please log in to view your blog posts."})
-			return
-		}
-
-		userClaims, ok := claims.(*domain.Claims)
-		if !ok {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user claims. Please try again."})
-			return
-		}
-
-		userId, _ := primitive.ObjectIDFromHex(userClaims.UserID)
-
-		blogs, err := bc.BlogUsecase.GetBlogs(0, 0) // Assuming limit and page_number are 0 for the current user
+		blogs, err := bc.BlogUsecase.GetBlogs(0, 0)
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Failed to retrieve your blog posts. Please try again later: " + err.Error()})
 			return
 		}
 
-		var userBlogs []domain.Blog
-		for _, blog := range blogs {
-			if blog.ID == userId {
-				userBlogs = append(userBlogs, blog)
-			}
-		}
-
-		c.JSON(http.StatusOK, gin.H{"message": "Your blog posts retrieved successfully!", "blogs": userBlogs})
+		c.JSON(http.StatusOK, gin.H{"message": "Your blog posts retrieved successfully!", "blogs": blogs})
 	}
 }
 
@@ -107,24 +80,19 @@ func (bc *BlogController) GetOneBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		idStr := c.Param("id")
 
-		_, err := primitive.ObjectIDFromHex(idStr)
+		id, err := primitive.ObjectIDFromHex(idStr)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format. Please provide a valid blog ID."})
 			return
 		}
 
-		blogs, err := bc.BlogUsecase.GetOneBlog(idStr)
+		blog, err := bc.BlogUsecase.GetOneBlog(id.Hex())
 		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Blog post not found. Please ensure the blog ID is correct: " + err.Error()})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Blog post not found: " + err.Error()})
 			return
 		}
 
-		if len(blogs) == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Blog post not found."})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"message": "Blog post retrieved successfully!", "blog": blogs[0]})
+		c.JSON(http.StatusOK, gin.H{"message": "Blog post retrieved successfully!", "blog": blog})
 	}
 }
 
@@ -139,28 +107,35 @@ func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 		}
 
 		var blog domain.Blog
-		blog.ID = id
 		if err := c.BindJSON(&blog); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse request. Ensure the blog data is correct: " + err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse request: " + err.Error()})
 			return
 		}
 
-		updatedBlog, err := bc.BlogUsecase.UpdateBlog(idStr, blog)
+		blog.ID = id
+
+		updatedBlog, err := bc.BlogUsecase.UpdateBlog(id.Hex(), blog)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to update blog post. Please ensure all required fields are filled: " + err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to update blog post: " + err.Error()})
 			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{"message": "Blog post updated successfully!", "blog": updatedBlog})
 	}
 }
-
 func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		idStr := c.Param("id")
 
-		if err := bc.BlogUsecase.DeleteBlog(idStr); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to delete blog post. Please try again: " + err.Error()})
+		id, err := primitive.ObjectIDFromHex(idStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format. Please provide a valid blog ID."})
+			return
+		}
+
+		err = bc.BlogUsecase.DeleteBlog(id.Hex())
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to delete blog post: " + err.Error()})
 			return
 		}
 
@@ -170,11 +145,41 @@ func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 
 func (bc *BlogController) FilterBlogs() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		filters := make(map[string]string)
-		for key, values := range c.Request.URL.Query() {
-			if len(values) > 0 {
-				filters[key] = values[0]
+
+		title := c.Query("title")
+		author := c.Query("author")
+
+		tags := c.QueryArray("tags")
+		startDate := c.Query("start_date")
+		endDate := c.Query("end_date")
+		popularity := c.Query("popularity")
+
+		filters := make(map[string]interface{})
+
+		if title != "" {
+			filters["title"] = title
+		}
+		if author != "" {
+			filters["owner.username"] = author
+		}
+
+		if len(tags) > 0 {
+			filters["tag"] = tags
+		}
+		if startDate != "" {
+			filters["created_at"] = bson.M{"$gte": startDate}
+		}
+		if endDate != "" {
+			filters["created_at"] = bson.M{"$lte": endDate}
+		}
+
+		if popularity != "" {
+			popularityValue, err := strconv.Atoi(popularity)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid popularity value."})
+				return
 			}
+			filters["like_count"] = bson.M{"$gte": popularityValue}
 		}
 
 		blogs, err := bc.BlogUsecase.FilterBlog(filters)

@@ -61,18 +61,60 @@ func (LR *LikeRepository) CreateLike(user_id string, post_id string) error {
 	return err
 }
 
-func (LR *LikeRepository) DeleteLike(like_id string) error {
-	obID, _ := primitive.ObjectIDFromHex(like_id)
-	query := bson.M{"_id": obID}
+func (LR *LikeRepository) RemoveLike(user_id string, post_id string) error {
+	userObjectID, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil {
+		return err
+	}
 
+	postObjectID, err := primitive.ObjectIDFromHex(post_id)
+	if err != nil {
+		return err
+	}
+
+	query := bson.M{"user_id": userObjectID, "post_id": postObjectID}
 	res, err := LR.collection.DeleteOne(context.TODO(), query)
 	if err != nil {
 		return err
 	}
 
 	if res.DeletedCount() == 0 {
-		return errors.New("no like with this ID found")
+		return errors.New("like not found")
 	}
 
-	return nil
+	_, err = LR.collection.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": postObjectID},
+		bson.M{"$inc": bson.M{"like_count": -1}},
+	)
+
+	return err
+}
+
+func (LR *LikeRepository) ToggleLike(user_id string, post_id string) error {
+	userObjectID, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil {
+		return err
+	}
+
+	postObjectID, err := primitive.ObjectIDFromHex(post_id)
+	if err != nil {
+		return err
+	}
+
+	dislikeRepo := NewDislikeRepository(LR.collection)
+
+	count, err := LR.collection.CountDocuments(context.TODO(), bson.M{"user_id": userObjectID, "post_id": postObjectID})
+	if err != nil {
+		return err
+	}
+
+	if count > 0 {
+		return LR.RemoveLike(user_id, post_id)
+	} else {
+		if err := dislikeRepo.RemoveDislike(user_id, post_id); err != nil && err.Error() != "dislike not found" {
+			return err
+		}
+		return LR.CreateLike(user_id, post_id)
+	}
 }

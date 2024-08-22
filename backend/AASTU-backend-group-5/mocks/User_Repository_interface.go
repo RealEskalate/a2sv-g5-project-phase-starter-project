@@ -30,9 +30,37 @@ func (_m *User_Repository_interface) DeleteUserDocument(id string) error {
 	return r0
 }
 
-// FilterUserDocument provides a mock function with given fields: _a0
-func (_m *User_Repository_interface) FilterUserDocument(_a0 map[string]string) ([]domain.User, error) {
-	ret := _m.Called(_a0)
+// DemoteUser provides a mock function with given fields: id
+func (_m *User_Repository_interface) DemoteUser(id string) (domain.User, error) {
+	ret := _m.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DemoteUser")
+	}
+
+	var r0 domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (domain.User, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(string) domain.User); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(domain.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// FilterUserDocument provides a mock function with given fields: filter
+func (_m *User_Repository_interface) FilterUserDocument(filter map[string]string) ([]domain.User, error) {
+	ret := _m.Called(filter)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FilterUserDocument")
@@ -41,10 +69,10 @@ func (_m *User_Repository_interface) FilterUserDocument(_a0 map[string]string) (
 	var r0 []domain.User
 	var r1 error
 	if rf, ok := ret.Get(0).(func(map[string]string) ([]domain.User, error)); ok {
-		return rf(_a0)
+		return rf(filter)
 	}
 	if rf, ok := ret.Get(0).(func(map[string]string) []domain.User); ok {
-		r0 = rf(_a0)
+		r0 = rf(filter)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.User)
@@ -52,7 +80,7 @@ func (_m *User_Repository_interface) FilterUserDocument(_a0 map[string]string) (
 	}
 
 	if rf, ok := ret.Get(1).(func(map[string]string) error); ok {
-		r1 = rf(_a0)
+		r1 = rf(filter)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -118,55 +146,27 @@ func (_m *User_Repository_interface) GetUserDocuments() ([]domain.User, error) {
 	return r0, r1
 }
 
-// LogIn provides a mock function with given fields: user
-func (_m *User_Repository_interface) LogIn(user domain.LogINUser) (domain.User, error) {
-	ret := _m.Called(user)
+// PromoteUser provides a mock function with given fields: id
+func (_m *User_Repository_interface) PromoteUser(id string) (domain.User, error) {
+	ret := _m.Called(id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for LogIn")
+		panic("no return value specified for PromoteUser")
 	}
 
 	var r0 domain.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(domain.LogINUser) (domain.User, error)); ok {
-		return rf(user)
+	if rf, ok := ret.Get(0).(func(string) (domain.User, error)); ok {
+		return rf(id)
 	}
-	if rf, ok := ret.Get(0).(func(domain.LogINUser) domain.User); ok {
-		r0 = rf(user)
+	if rf, ok := ret.Get(0).(func(string) domain.User); ok {
+		r0 = rf(id)
 	} else {
 		r0 = ret.Get(0).(domain.User)
 	}
 
-	if rf, ok := ret.Get(1).(func(domain.LogINUser) error); ok {
-		r1 = rf(user)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// Register provides a mock function with given fields: user
-func (_m *User_Repository_interface) Register(user domain.RegisterUser) (domain.User, error) {
-	ret := _m.Called(user)
-
-	if len(ret) == 0 {
-		panic("no return value specified for Register")
-	}
-
-	var r0 domain.User
-	var r1 error
-	if rf, ok := ret.Get(0).(func(domain.RegisterUser) (domain.User, error)); ok {
-		return rf(user)
-	}
-	if rf, ok := ret.Get(0).(func(domain.RegisterUser) domain.User); ok {
-		r0 = rf(user)
-	} else {
-		r0 = ret.Get(0).(domain.User)
-	}
-
-	if rf, ok := ret.Get(1).(func(domain.RegisterUser) error); ok {
-		r1 = rf(user)
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -195,6 +195,34 @@ func (_m *User_Repository_interface) UpdateUserDocument(id string, user domain.U
 
 	if rf, ok := ret.Get(1).(func(string, domain.UpdateUser) error); ok {
 		r1 = rf(id, user)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateUserPassword provides a mock function with given fields: id, new_hashed_password
+func (_m *User_Repository_interface) UpdateUserPassword(id string, new_hashed_password string) (domain.User, error) {
+	ret := _m.Called(id, new_hashed_password)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateUserPassword")
+	}
+
+	var r0 domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string) (domain.User, error)); ok {
+		return rf(id, new_hashed_password)
+	}
+	if rf, ok := ret.Get(0).(func(string, string) domain.User); ok {
+		r0 = rf(id, new_hashed_password)
+	} else {
+		r0 = ret.Get(0).(domain.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(id, new_hashed_password)
 	} else {
 		r1 = ret.Error(1)
 	}

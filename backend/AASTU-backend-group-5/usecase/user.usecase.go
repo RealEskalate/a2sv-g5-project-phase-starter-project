@@ -1,6 +1,9 @@
 package usecase
 
-import "github.com/RealEskalate/blogpost/domain"
+import (
+	"github.com/RealEskalate/blogpost/domain"
+	passwordservice "github.com/RealEskalate/blogpost/infrastructure/password_service"
+)
 
 type UserUseCase struct {
 	UserRepo domain.User_Repository_interface
@@ -41,6 +44,22 @@ func (usecase *UserUseCase) UpdateUser(id string, user domain.UpdateUser) (domai
 	return domain.CreateResponseUser(new_user),nil
 }
 
+func (usecase *UserUseCase) UpdatePassword(id string , updated_user domain.UpdatePassword)(domain.ResponseUser , error) {
+	var password_hasher passwordservice.PasswordS
+	if updated_user.ConfirmPassword != updated_user.Password {
+		return domain.ResponseUser{} , nil
+	}
+	hashed_password,err := password_hasher.HashPassword(updated_user.Password)
+	if err != nil {
+		return domain.ResponseUser{}, err
+	}
+	user,err := usecase.UserRepo.UpdateUserPassword(id , hashed_password)
+	if err != nil {
+		return domain.ResponseUser{}, err
+	}
+	return domain.CreateResponseUser(user) , nil
+}
+
 
 func (usecase *UserUseCase) DeleteUser(id string) error {
 	return usecase.UserRepo.DeleteUserDocument(id)
@@ -75,4 +94,20 @@ func (usecase *UserUseCase) FilterUser(filter map[string]string) ([]domain.Respo
 	}
 
 	return response_users,nil
+}
+
+func (usecase *UserUseCase) PromoteUser(id string) (domain.ResponseUser, error) {
+	new_user,err := usecase.UserRepo.PromoteUser(id)
+	if err != nil {
+		return domain.ResponseUser{},err
+	}
+	return domain.CreateResponseUser(new_user),nil
+}
+
+func (usecase *UserUseCase) DemoteUser(id string) (domain.ResponseUser, error) {
+	new_user,err := usecase.UserRepo.DemoteUser(id)
+	if err != nil {
+		return domain.ResponseUser{},err
+	}
+	return domain.CreateResponseUser(new_user),nil
 }

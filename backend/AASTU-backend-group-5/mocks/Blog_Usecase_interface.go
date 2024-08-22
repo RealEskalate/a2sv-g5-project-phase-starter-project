@@ -12,9 +12,9 @@ type Blog_Usecase_interface struct {
 	mock.Mock
 }
 
-// CreateBlog provides a mock function with given fields: blog
-func (_m *Blog_Usecase_interface) CreateBlog(blog domain.Blog) (domain.Blog, error) {
-	ret := _m.Called(blog)
+// CreateBlog provides a mock function with given fields: iblog
+func (_m *Blog_Usecase_interface) CreateBlog(iblog domain.PostBlog) (domain.Blog, error) {
+	ret := _m.Called(iblog)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateBlog")
@@ -22,17 +22,17 @@ func (_m *Blog_Usecase_interface) CreateBlog(blog domain.Blog) (domain.Blog, err
 
 	var r0 domain.Blog
 	var r1 error
-	if rf, ok := ret.Get(0).(func(domain.Blog) (domain.Blog, error)); ok {
-		return rf(blog)
+	if rf, ok := ret.Get(0).(func(domain.PostBlog) (domain.Blog, error)); ok {
+		return rf(iblog)
 	}
-	if rf, ok := ret.Get(0).(func(domain.Blog) domain.Blog); ok {
-		r0 = rf(blog)
+	if rf, ok := ret.Get(0).(func(domain.PostBlog) domain.Blog); ok {
+		r0 = rf(iblog)
 	} else {
 		r0 = ret.Get(0).(domain.Blog)
 	}
 
-	if rf, ok := ret.Get(1).(func(domain.Blog) error); ok {
-		r1 = rf(blog)
+	if rf, ok := ret.Get(1).(func(domain.PostBlog) error); ok {
+		r1 = rf(iblog)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -58,9 +58,9 @@ func (_m *Blog_Usecase_interface) DeleteBlog(id string) error {
 	return r0
 }
 
-// FilterBlog provides a mock function with given fields: _a0
-func (_m *Blog_Usecase_interface) FilterBlog(_a0 map[string]string) ([]domain.Blog, error) {
-	ret := _m.Called(_a0)
+// FilterBlog provides a mock function with given fields: filters
+func (_m *Blog_Usecase_interface) FilterBlog(filters map[string]interface{}) ([]domain.Blog, error) {
+	ret := _m.Called(filters)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FilterBlog")
@@ -68,19 +68,19 @@ func (_m *Blog_Usecase_interface) FilterBlog(_a0 map[string]string) ([]domain.Bl
 
 	var r0 []domain.Blog
 	var r1 error
-	if rf, ok := ret.Get(0).(func(map[string]string) ([]domain.Blog, error)); ok {
-		return rf(_a0)
+	if rf, ok := ret.Get(0).(func(map[string]interface{}) ([]domain.Blog, error)); ok {
+		return rf(filters)
 	}
-	if rf, ok := ret.Get(0).(func(map[string]string) []domain.Blog); ok {
-		r0 = rf(_a0)
+	if rf, ok := ret.Get(0).(func(map[string]interface{}) []domain.Blog); ok {
+		r0 = rf(filters)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.Blog)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(map[string]string) error); ok {
-		r1 = rf(_a0)
+	if rf, ok := ret.Get(1).(func(map[string]interface{}) error); ok {
+		r1 = rf(filters)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -119,24 +119,22 @@ func (_m *Blog_Usecase_interface) GetBlogs(limit int, page_number int) ([]domain
 }
 
 // GetOneBlog provides a mock function with given fields: id
-func (_m *Blog_Usecase_interface) GetOneBlog(id string) ([]domain.Blog, error) {
+func (_m *Blog_Usecase_interface) GetOneBlog(id string) (domain.Blog, error) {
 	ret := _m.Called(id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetOneBlog")
 	}
 
-	var r0 []domain.Blog
+	var r0 domain.Blog
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string) ([]domain.Blog, error)); ok {
+	if rf, ok := ret.Get(0).(func(string) (domain.Blog, error)); ok {
 		return rf(id)
 	}
-	if rf, ok := ret.Get(0).(func(string) []domain.Blog); ok {
+	if rf, ok := ret.Get(0).(func(string) domain.Blog); ok {
 		r0 = rf(id)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.Blog)
-		}
+		r0 = ret.Get(0).(domain.Blog)
 	}
 
 	if rf, ok := ret.Get(1).(func(string) error); ok {

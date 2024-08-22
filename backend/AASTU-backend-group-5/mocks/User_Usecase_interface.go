@@ -30,6 +30,34 @@ func (_m *User_Usecase_interface) DeleteUser(id string) error {
 	return r0
 }
 
+// DemoteUser provides a mock function with given fields: id
+func (_m *User_Usecase_interface) DemoteUser(id string) (domain.ResponseUser, error) {
+	ret := _m.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DemoteUser")
+	}
+
+	var r0 domain.ResponseUser
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (domain.ResponseUser, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(string) domain.ResponseUser); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(domain.ResponseUser)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // FilterUser provides a mock function with given fields: _a0
 func (_m *User_Usecase_interface) FilterUser(_a0 map[string]string) ([]domain.ResponseUser, error) {
 	ret := _m.Called(_a0)
@@ -118,27 +146,27 @@ func (_m *User_Usecase_interface) GetUsers() ([]domain.ResponseUser, error) {
 	return r0, r1
 }
 
-// LogIn provides a mock function with given fields: user
-func (_m *User_Usecase_interface) LogIn(user domain.LogINUser) (domain.ResponseUser, error) {
-	ret := _m.Called(user)
+// PromoteUser provides a mock function with given fields: id
+func (_m *User_Usecase_interface) PromoteUser(id string) (domain.ResponseUser, error) {
+	ret := _m.Called(id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for LogIn")
+		panic("no return value specified for PromoteUser")
 	}
 
 	var r0 domain.ResponseUser
 	var r1 error
-	if rf, ok := ret.Get(0).(func(domain.LogINUser) (domain.ResponseUser, error)); ok {
-		return rf(user)
+	if rf, ok := ret.Get(0).(func(string) (domain.ResponseUser, error)); ok {
+		return rf(id)
 	}
-	if rf, ok := ret.Get(0).(func(domain.LogINUser) domain.ResponseUser); ok {
-		r0 = rf(user)
+	if rf, ok := ret.Get(0).(func(string) domain.ResponseUser); ok {
+		r0 = rf(id)
 	} else {
 		r0 = ret.Get(0).(domain.ResponseUser)
 	}
 
-	if rf, ok := ret.Get(1).(func(domain.LogINUser) error); ok {
-		r1 = rf(user)
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -146,27 +174,27 @@ func (_m *User_Usecase_interface) LogIn(user domain.LogINUser) (domain.ResponseU
 	return r0, r1
 }
 
-// Register provides a mock function with given fields: user
-func (_m *User_Usecase_interface) Register(user domain.RegisterUser) (domain.ResponseUser, error) {
-	ret := _m.Called(user)
+// UpdatePassword provides a mock function with given fields: id, updated_user
+func (_m *User_Usecase_interface) UpdatePassword(id string, updated_user domain.UpdatePassword) (domain.ResponseUser, error) {
+	ret := _m.Called(id, updated_user)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Register")
+		panic("no return value specified for UpdatePassword")
 	}
 
 	var r0 domain.ResponseUser
 	var r1 error
-	if rf, ok := ret.Get(0).(func(domain.RegisterUser) (domain.ResponseUser, error)); ok {
-		return rf(user)
+	if rf, ok := ret.Get(0).(func(string, domain.UpdatePassword) (domain.ResponseUser, error)); ok {
+		return rf(id, updated_user)
 	}
-	if rf, ok := ret.Get(0).(func(domain.RegisterUser) domain.ResponseUser); ok {
-		r0 = rf(user)
+	if rf, ok := ret.Get(0).(func(string, domain.UpdatePassword) domain.ResponseUser); ok {
+		r0 = rf(id, updated_user)
 	} else {
 		r0 = ret.Get(0).(domain.ResponseUser)
 	}
 
-	if rf, ok := ret.Get(1).(func(domain.RegisterUser) error); ok {
-		r1 = rf(user)
+	if rf, ok := ret.Get(1).(func(string, domain.UpdatePassword) error); ok {
+		r1 = rf(id, updated_user)
 	} else {
 		r1 = ret.Error(1)
 	}

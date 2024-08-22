@@ -62,6 +62,25 @@ func (controller *UserController) UpdateUser() gin.HandlerFunc {
 	}
 }
 
+func (controller *UserController)UpdatePassword() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var update_password domain.UpdatePassword
+		id := ctx.Param("id")
+		if err := ctx.BindJSON(&update_password); err != nil {
+			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : err.Error()})
+			return
+		}
+
+		response_user,err := controller.UserUsecase.UpdatePassword(id ,update_password)
+		if err != nil {
+			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : err.Error()})
+			return
+		}
+
+		ctx.IndentedJSON(http.StatusAccepted , gin.H{"data" : response_user})
+	}
+}
+
 func (controller *UserController) DeleteUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -126,5 +145,33 @@ func (controller *UserController) FilterUser() gin.HandlerFunc {
 			return
 		}
 		ctx.IndentedJSON(http.StatusOK , gin.H{"data" : users})
+	}
+}
+
+func (controller *UserController) PromoteUser() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		user,err := controller.UserUsecase.PromoteUser(id)
+		if err != nil {
+			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : "error updating user"})
+			return
+		}
+
+		ctx.IndentedJSON(http.StatusOK , gin.H{"data" : user})
+	}
+}
+
+func (controller *UserController) DemoteUser() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		user,err := controller.UserUsecase.DemoteUser(id)
+		if err != nil {
+			ctx.IndentedJSON(http.StatusBadRequest , gin.H{"error" : "error updating user"})
+			return
+		}
+
+		ctx.IndentedJSON(http.StatusOK , gin.H{"data" : user})
 	}
 }

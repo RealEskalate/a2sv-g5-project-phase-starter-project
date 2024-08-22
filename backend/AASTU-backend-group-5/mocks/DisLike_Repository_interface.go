@@ -30,24 +30,6 @@ func (_m *DisLike_Repository_interface) CreateDisLike(user_id string, post_id st
 	return r0
 }
 
-// DeleteDisLike provides a mock function with given fields: like_id
-func (_m *DisLike_Repository_interface) DeleteDisLike(like_id string) error {
-	ret := _m.Called(like_id)
-
-	if len(ret) == 0 {
-		panic("no return value specified for DeleteDisLike")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(like_id)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // GetDisLikes provides a mock function with given fields: post_id
 func (_m *DisLike_Repository_interface) GetDisLikes(post_id string) ([]domain.DisLike, error) {
 	ret := _m.Called(post_id)
@@ -76,6 +58,42 @@ func (_m *DisLike_Repository_interface) GetDisLikes(post_id string) ([]domain.Di
 	}
 
 	return r0, r1
+}
+
+// RemoveDislike provides a mock function with given fields: user_id, post_id
+func (_m *DisLike_Repository_interface) RemoveDislike(user_id string, post_id string) error {
+	ret := _m.Called(user_id, post_id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for RemoveDislike")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(user_id, post_id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// ToggleDislike provides a mock function with given fields: user_id, post_id
+func (_m *DisLike_Repository_interface) ToggleDislike(user_id string, post_id string) error {
+	ret := _m.Called(user_id, post_id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ToggleDislike")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(user_id, post_id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // NewDisLike_Repository_interface creates a new instance of DisLike_Repository_interface. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

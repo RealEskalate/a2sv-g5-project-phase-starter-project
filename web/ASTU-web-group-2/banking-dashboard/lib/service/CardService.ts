@@ -3,7 +3,11 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const CreditCardInfoApi = createApi({
   reducerPath: "creditCard",
   baseQuery: fetchBaseQuery({
+<<<<<<< HEAD:web/ASTU-web-group-2/banking-dashboard/lib/service/CardService.tsx
    baseUrl: "https://astu-bank-dashboard.onrender.com",
+=======
+    baseUrl: "https://astu-bank-dashboard.onrender.com",
+>>>>>>> df7412d5a7cf02a4ba73c728ff86bcb98555c1ab:web/ASTU-web-group-2/banking-dashboard/lib/service/CardService.ts
   }),
   endpoints: (builder) => ({
     getAllCardInfo: builder.query({

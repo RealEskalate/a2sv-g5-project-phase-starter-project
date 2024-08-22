@@ -9,6 +9,7 @@ import {
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import CardSkeleton from "../skeleton/CardSkeleton";
 
 export interface card {
   card: string;
@@ -76,19 +77,12 @@ const CardDisplay = ({ numofcard }: { numofcard: number }) => {
   );
 
   if (isLoadingAllCards || isLoadingCardInfo) {
-    return (
-      <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-full bg-white animate-pulse rounded-[25px]">
-        <div className="flex flex-row gap-2">
-          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
-          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-        </div>
-      </div>
-    );
+    // if (true) {
+    return <CardSkeleton />;
   }
 
   if (isErrorAllCards || isErrorCardInfo) {
-    return <div>Error loading data</div>; 
+    return <div>Error loading data</div>;
   }
 
   const allCardsData = allCardsDataWithContent.content!;

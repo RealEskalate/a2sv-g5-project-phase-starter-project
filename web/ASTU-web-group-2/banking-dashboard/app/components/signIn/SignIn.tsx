@@ -35,7 +35,7 @@ const SignIn = () => {
       redirect: false,
     });
     if (!res?.ok) {
-      alert("Invalid Credentials");
+      notify.error("Invalid Credentials");
       router.push("/login");
     } else {
       console.log("response: ", res);

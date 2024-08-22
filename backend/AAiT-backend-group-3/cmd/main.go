@@ -13,10 +13,13 @@ import (
 	"os"
 	"strconv"
 
-	"AAIT-backend-group-3/internal/repositories/implementation"
+	repositories "AAIT-backend-group-3/internal/repositories/implementation"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+
+	"github.com/google/generative-ai-go/genai"
+	"google.golang.org/api/option"
 )
 
 func main() {
@@ -31,6 +34,7 @@ func main() {
 	userName := os.Getenv("USERNAME")
 	smtpHost := os.Getenv("SMTP_HOST")
 	passWord := os.Getenv("PASSWORD")
+	geminiApiKey := os.Getenv("GEMINI_API_KEY")
 	
 	smtpPort, err := strconv.Atoi(smtpPortStr)
 	if err != nil {
@@ -42,6 +46,12 @@ func main() {
 		log.Fatalf("Error connecting to MongoDB: %v", err)
 	}
 	fmt.Println("Connected to MongoDB!", dbClient.Database.Name())
+
+	// create a new gemini client
+	gemini_client, err := genai.NewClient(context.Background(), option.WithAPIKey(geminiApiKey))
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	//services
 	emailSvc := services.NewEmailService(smtpHost, smtpPort, userName, passWord)
@@ -57,6 +67,7 @@ func main() {
 	blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs", cacheSvc)
 	commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
 
+	aiService := services.NewAiService(gemini_client)
 
 	//middlewares
 	authMiddleware := middlewares.NewAuthMiddleware(jwtSvc, cacheSvc)
@@ -67,6 +78,7 @@ func main() {
 	otpUsecase := usecases.NewOtpUseCase(otpRepo, userRepo, emailSvc, passSvc, "http://localhost:8080", validationSvc)
 	blogService := usecases.NewBlogUsecase(blogRepo)
 	commentService := usecases.NewCommentUsecase(commentRepo)
+	aiHelperUsecase := usecases.NewAiHelperUsecase(aiService)
 
 
 	// controllers
@@ -74,6 +86,7 @@ func main() {
 	otpController := controllers.NewOTPController(otpUsecase)
 	blogController := controllers.NewBlogController(blogService)
 	commentController := controllers.NewCommentController(commentService)
+	aiHelperController := controllers.NewAiHelperController(aiHelperUsecase)
 
 
 	router := gin.New()
@@ -84,6 +97,7 @@ func main() {
 	routers.CreateUserRouter(router, userController, otpController, authMiddleware)
 	routers.CreateBlogRouter(router, blogController, authMiddleware)
 	routers.CreateCommentRouter(router, commentController, authMiddleware)
+	routers.CreateAiHelperRouter(router, aiHelperController)
 	if err := router.Run(":" + os.Getenv("PORT")); err!= nil{
 		log.Fatal(err)
 	}

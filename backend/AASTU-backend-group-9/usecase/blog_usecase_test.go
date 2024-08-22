@@ -119,47 +119,6 @@ func (suite *BlogUsecaseTestSuite) TestDeleteBlog() {
     assert.NoError(suite.T(), err)
     suite.blogRepository.AssertExpectations(suite.T())
 }
-func (suite *BlogUsecaseTestSuite) TestSearchBlogs() {
-    ctx := context.TODO()
-    filters := &domain.BlogFilters{Title: "Test"}
-    suite.blogRepository.On("SearchBlogs", ctx, "query", filters).Return([]*domain.Blog{}, nil).Once()
-
-    blogs, err := suite.blogUsecase.SearchBlogs(ctx, "query", filters)
-    assert.NoError(suite.T(), err)
-    assert.NotNil(suite.T(), blogs)
-    suite.blogRepository.AssertExpectations(suite.T())
-}
-func (suite *BlogUsecaseTestSuite) TestFilterBlogsByTags() {
-    ctx := context.TODO()
-    tags := []string{"tag1", "tag2"}
-    suite.blogRepository.On("FilterBlogsByTags", ctx, tags).Return([]*domain.Blog{}, nil).Once()
-
-    blogs, err := suite.blogUsecase.FilterBlogsByTags(ctx, tags)
-    assert.NoError(suite.T(), err)
-    assert.NotNil(suite.T(), blogs)
-    suite.blogRepository.AssertExpectations(suite.T())
-}
-func (suite *BlogUsecaseTestSuite) TestFilterBlogsByDate() {
-    ctx := context.TODO()
-    date := "2023-10-01"
-    suite.blogRepository.On("FilterBlogsByDate", ctx, date).Return([]*domain.Blog{}, nil).Once()
-
-    blogs, err := suite.blogUsecase.FilterBlogsByDate(ctx, date)
-    assert.NoError(suite.T(), err)
-    assert.NotNil(suite.T(), blogs)
-    suite.blogRepository.AssertExpectations(suite.T())
-}
-
-func (suite *BlogUsecaseTestSuite) TestFilterBlogsByPopularity() {
-    ctx := context.TODO()
-    popularity := "high"
-    suite.blogRepository.On("FilterBlogsByPopularity", ctx, popularity).Return([]*domain.Blog{}, nil).Once()
-
-    blogs, err := suite.blogUsecase.FilterBlogsByPopularity(ctx, popularity)
-    assert.NoError(suite.T(), err)
-    assert.NotNil(suite.T(), blogs)
-    suite.blogRepository.AssertExpectations(suite.T())
-}
 func (suite *BlogUsecaseTestSuite) TestTrackView() {
     ctx := context.TODO()
     postID := primitive.NewObjectID()

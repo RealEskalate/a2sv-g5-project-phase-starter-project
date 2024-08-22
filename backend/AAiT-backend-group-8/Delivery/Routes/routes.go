@@ -29,7 +29,7 @@ func InitRouter(controller *controller.Controller) *gin.Engine {
 
 	router.POST("/forgot-password", controller.ForgotPassword)
 	router.GET("/store-token", controller.StoreToken)
-	router.POST("/reset-password",controller.ResetPassword)
+	router.POST("/reset-password", controller.ResetPassword)
 
 	router.POST("/like/:blogID", infrastructure.UserMiddleware(SECRET_KEY), controller.LikeBlog)
 	router.GET("/like/:blogID", infrastructure.UserMiddleware(SECRET_KEY), controller.GetLikes)

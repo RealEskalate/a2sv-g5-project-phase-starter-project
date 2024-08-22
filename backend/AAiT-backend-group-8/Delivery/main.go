@@ -13,13 +13,14 @@ import (
 var SecretKey = "123456abcd"
 
 func main() {
-	mongoClient := mongodb.InitMongoDB("mongodb://localhost:27017")
+	mongoClient := mongodb.InitMongoDB()
 
-	userCollection := mongoClient.Database("starter-project").Collection("users")
-	tokenCollection := mongoClient.Database("starter-project").Collection("token")
-	blogCollection := mongoClient.Database("starter-project").Collection("blogs")
-	commentCollection := mongoClient.Database("starter-project").Collection("comments")
-	likeCollection := mongoClient.Database("starter-project").Collection("likes")
+	dbName := "started-project"
+	userCollection := mongodb.CreateCollection(mongoClient, dbName, "users")
+	tokenCollection := mongodb.CreateCollection(mongoClient, dbName, "token")
+	blogCollection := mongodb.CreateCollection(mongoClient, dbName, "blogs")
+	commentCollection := mongodb.CreateCollection(mongoClient, dbName, "comments")
+	likeCollection := mongodb.CreateCollection(mongoClient, dbName, "likes")
 
 	userRepo := mongodb.NewUserRepository(userCollection, context.TODO())
 	ts := infrastructure.NewTokenService(SecretKey)

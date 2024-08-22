@@ -1072,6 +1072,87 @@ func (suite *UserUsecaseTestSuite) TestDemoteUser_Negative() {
 	suite.mockUserRepository.AssertExpectations(suite.T())
 }
 
+func (suite *UserUsecaseTestSuite) TestVerifyEmail_Positive() {
+	user := TEST_USER
+	user.VerificationData.Token = "token1"
+	user.VerificationData.ExpiresAt = time.Now().Add(time.Minute)
+	token := "token1"
+	hostUrl := "http://localhost:8080"
+
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: strings.TrimSpace(user.Username)}).Return(user, nil).Once()
+	suite.mockUserRepository.On("VerifyUser", context.Background(), strings.TrimSpace(user.Username)).Return(nil).Once()
+
+	err := suite.Usecase.VerifyEmail(context.Background(), user.Username, token, hostUrl)
+	suite.Nil(err, "error should be nil")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestVerifyEmail_Negative_RespositoryError_FindUser() {
+	user := TEST_USER
+	user.VerificationData.Token = "token1"
+	user.VerificationData.ExpiresAt = time.Now().Add(time.Minute)
+	token := "token1"
+	hostUrl := "http://localhost:8080"
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: strings.TrimSpace(user.Username)}).Return(user, sampleErr).Once()
+
+	err := suite.Usecase.VerifyEmail(context.Background(), user.Username, token, hostUrl)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestVerifyEmail_Negative_RespositoryError_InvalidToken() {
+	user := TEST_USER
+	user.VerificationData.Token = "token1"
+	user.VerificationData.ExpiresAt = time.Now().Add(time.Minute)
+	token := "token2"
+	hostUrl := "http://localhost:8080"
+
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: strings.TrimSpace(user.Username)}).Return(user, nil).Once()
+
+	err := suite.Usecase.VerifyEmail(context.Background(), user.Username, token, hostUrl)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestVerifyEmail_Negative_RespositoryError_AlreadyVerified() {
+	user := TEST_USER
+	user.IsVerified = true
+	user.VerificationData.Token = "token1"
+	user.VerificationData.ExpiresAt = time.Now().Add(time.Minute)
+	token := "token1"
+	hostUrl := "http://localhost:8080"
+
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: strings.TrimSpace(user.Username)}).Return(user, nil).Once()
+
+	err := suite.Usecase.VerifyEmail(context.Background(), user.Username, token, hostUrl)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestVerifyEmail_Negative_RespositoryError_VerifyUser() {
+	user := TEST_USER
+	user.VerificationData.Token = "token1"
+	user.VerificationData.ExpiresAt = time.Now().Add(time.Minute)
+	token := "token1"
+	hostUrl := "http://localhost:8080"
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: strings.TrimSpace(user.Username)}).Return(user, nil).Once()
+	suite.mockUserRepository.On("VerifyUser", context.Background(), strings.TrimSpace(user.Username)).Return(sampleErr).Once()
+
+	err := suite.Usecase.VerifyEmail(context.Background(), user.Username, token, hostUrl)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
 func TestUserUsecase(t *testing.T) {
 	suite.Run(t, new(UserUsecaseTestSuite))
 }

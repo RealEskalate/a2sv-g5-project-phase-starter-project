@@ -19,7 +19,11 @@ func (controller *Controller) LikeBlog(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
+	_, err = controller.blogUseCase.GetBlogByID(blogID)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	likes, err := controller.LikeUseCase.LikeComment(userID, blogID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

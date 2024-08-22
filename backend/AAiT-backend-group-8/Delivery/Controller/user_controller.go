@@ -21,8 +21,8 @@ func (controller *Controller) RegisterUser(c *gin.Context) {
 	struct_validator.RegisterValidation("password", passwordValidation)
 	struct_err := struct_validator.Struct(user)
 
-	if struct_err != nil{
-		c.JSON(400, gin.H{"error" : struct_err.Error()})
+	if struct_err != nil {
+		c.JSON(400, gin.H{"error": struct_err.Error()})
 		return
 	}
 
@@ -45,7 +45,6 @@ func (controller *Controller) VerifyEmail(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "Invalid token"})
 		return
 	}
-
 	err := controller.UserUseCase.VerifyEmail(token)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -89,7 +88,8 @@ func (controller *Controller) RefreshToken(c *gin.Context) {
 
 	token, err := controller.UserUseCase.RefreshToken(cred.Email, cred.Refresher)
 	if err != nil {
-		c.IndentedJSON(400, gin.H{"message": "invalid refresh token "})
+		c.IndentedJSON(400, gin.H{"message": err.Error()})
+		return
 	}
 	c.IndentedJSON(http.StatusOK, gin.H{"token": token})
 
@@ -199,8 +199,8 @@ func (controller *Controller) Logout(c *gin.Context) {
 
 	err := c.ShouldBindJSON(cred)
 
-	if err != nil{
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error" : "invalid request payload"})
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid request payload"})
 		return
 	}
 

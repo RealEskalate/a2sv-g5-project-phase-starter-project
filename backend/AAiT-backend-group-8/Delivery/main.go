@@ -10,7 +10,7 @@ import (
 	"context"
 )
 
-var SecretKey = "123456abed"
+var SecretKey = "123456abcd"
 
 func main() {
 	mongoClient := mongodb.InitMongoDB("mongodb://localhost:27017")

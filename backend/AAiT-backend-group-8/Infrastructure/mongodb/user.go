@@ -93,9 +93,7 @@ func (r *UserRepositoryImpl) UpdatePasswordByEmail(email string, newPassword str
 func (r *UserRepositoryImpl) PromoteUser(email string) error {
 	filter := bson.M{"email": email}
 	update := bson.M{"$set": bson.M{"role": "admin"}}
-
 	_, err := r.db.UpdateOne(r.ctx, filter, update)
-
 	return err
 }
 

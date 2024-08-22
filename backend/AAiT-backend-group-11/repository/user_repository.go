@@ -61,18 +61,18 @@ func (repo *userRepository) DeleteUser(userId string) error{
 }
 
 
-
-
 func (repo *userRepository) FindUserById(userId string) (*entities.User, error){
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	userObjectID, err := primitive.ObjectIDFromHex(userId)
-	if err != nil {
-		return nil, err
-	}
+	
+	objectId, err := primitive.ObjectIDFromHex(userId)
+    if err != nil {
+        return nil, err
+    }
 
 	var user entities.User
-	err = repo.collection.FindOne(ctx, bson.M{"_id": userObjectID}).Decode(&user)
+	err = repo.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&user)
+
 	if err != nil {
 		return nil, err
 	}

@@ -1,10 +1,14 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import PieChart from "./PieChart";
 import CreditCard from "./CreditCard";
 import CardSettingList from "./CardSettingList";
 import AddCardForm from "./AddCardForm";
 import MainCreditCard from "./MainCreditCard";
 import Card from "../components/Page2/Card";
+import { Card as Card1 } from "../../types/cardController.Interface";
+import { getCards } from "@/lib/api/cardController";
+import { useSession } from "next-auth/react";
 
 const HeadingTitle = ({ title }: { title: string }) => {
   return (
@@ -15,6 +19,17 @@ const HeadingTitle = ({ title }: { title: string }) => {
 };
 
 const CreditCards = () => {
+  const [cards, setCards] = useState<Card1[]>([]);
+  // const { data: session } = useSession();
+
+  // useEffect(() => {
+  //   async function fetch() {
+  //     const data = await getCards(session?.user?.access_token);
+  //     console.log(data);
+  //     setCards(data.content);
+  //   }
+  // }, []);
+
   return (
     <div className="bg-[#f5f7fb] w-full p-5 gap-5 flex flex-col">
       <div className="flex-col gap-5">

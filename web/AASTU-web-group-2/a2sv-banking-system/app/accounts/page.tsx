@@ -12,9 +12,16 @@ import BarChartForAccounts from "./components/BarChartForAccounts";
 import Card from "../components/Page2/Card";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { getCurrentUser } from "@/lib/api/userControl";
 import { getCards } from "@/lib/api/cardController";
-import { GetCardsResponse, Card as CardType } from "@/types/cardController.Interface";
+import { Card as CardType } from "@/types/cardController.Interface";
+import { getCurrentUser } from "@/lib/api/userControl";
+import { UserInfo } from "@/types/userInterface";
+import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
+import {
+  getTransactionIncomes,
+  getTransactionsExpenses,
+} from "@/lib/api/transactionController";
+import Loading from "./components/Loading";
 type DataItem = {
   heading: string;
   text: string;
@@ -40,38 +47,73 @@ type SessionDataType = {
 
 const Page = () => {
   const [session, setSession] = useState<Data | null>(null);
+  const [access_token, setAccess_token] = useState("");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [getCard, setGetCards] = useState<CardType[]>();
+  const [currentUser, setCurrentUser] = useState<UserInfo>();
+  const [income, setIncome] = useState(0);
+  const [expense, setExpense] = useState(0);
 
-  // Getting the session from the server
+  // Getting the session from the server and Access Token From Refresh
   useEffect(() => {
     const fetchSession = async () => {
-      const sessionData = (await getSession()) as SessionDataType | null;
-      if (sessionData && sessionData.user) {
-        setSession(sessionData.user);
-      } else {
-        router.push(
-          `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
-        );
+      try {
+        const sessionData = (await getSession()) as SessionDataType | null;
+        setAccess_token(await Refresh());
+        if (sessionData && sessionData.user) {
+          setSession(sessionData.user);
+        } else {
+          router.push(
+            `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching session:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchSession();
   }, [router]);
 
-  // Fetching cards
+  // Combined fetching data to reduce multiple useEffect hooks
   useEffect(() => {
-    const addingData = async () => {
-      if (session?.access_token) {
-        const cardData = await getCards(session?.access_token);
-        console.log("Fetching Complete", cardData.content)
+    const fetchData = async () => {
+      if (!access_token) return;
+
+      try {
+        // Fetch Cards
+        const cardData = await getCards(access_token);
         setGetCards(cardData.content);
+
+        // Fetch Balance
+        const currentUser = await getCurrentUser(access_token);
+        setCurrentUser(currentUser);
+
+        // Fetch Income
+        const incomeData = await getTransactionIncomes(0, 1, access_token);
+        const totalIncome = incomeData.data.content.reduce(
+          (sum: number, item: any) => sum + item.amount,
+          0
+        );
+        setIncome(totalIncome);
+
+        // Fetch Expense
+        const expenseData = await getTransactionsExpenses(0, 1, access_token);
+        const totalExpense = expenseData.data.content.reduce(
+          (sum: number, item: any) => sum + item.amount,
+          0
+        );
+        setExpense(totalExpense);
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
     };
-    addingData();
-  });
+
+    fetchData();
+  }, [access_token]);
 
   // Example data for the first ListCard
   const ReusableCard: Column = {
@@ -80,7 +122,7 @@ const Page = () => {
     data: [
       {
         heading: "My Balance",
-        text: "$12,750",
+        text: String(currentUser?.accountBalance) ?? "",
         headingStyle: "text-sm font-bold text-nowrap text-[#718EBF]",
         dataStyle: "text-xs text-nowrap",
       },
@@ -93,6 +135,7 @@ const Page = () => {
     iconStyle: "text-[#396AFF] bg-[#E7EDFF]", // Updating the iconStyle
     data: ReusableCard.data.map((item) => ({
       ...item,
+      text: String(income),
       heading: "Income", // Updating the heading
     })),
   };
@@ -103,6 +146,7 @@ const Page = () => {
     iconStyle: "text-[#FF82AC] bg-[#FFE0EB]", // Updating the iconStyle
     data: ReusableCard.data.map((item) => ({
       ...item,
+      text: String(expense),
       heading: "Expense", // Updating the heading
     })),
   };
@@ -158,7 +202,11 @@ const Page = () => {
     })),
   };
 
-  if (loading) return null; // Don't render anything while loading
+  if (loading) {
+    return <Loading></Loading>;
+  }
+
+  // Don't render anything while loading
 
   if (!session) {
     router.push(
@@ -167,7 +215,6 @@ const Page = () => {
     return null;
   }
 
-  console.log("get Card", getCard);
   return (
     <>
       <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5">
@@ -191,6 +238,7 @@ const Page = () => {
               <ListCard column={transaction2} width={"w-full"} />
             </div>
           </div>
+
           <div className="md:w-1/2 gap-1 flex flex-col">
             <div className="flex justify-between mr-2">
               <span className="text-xl text-[#333B69] font-semibold">
@@ -200,20 +248,53 @@ const Page = () => {
                 See All
               </span>
             </div>
-            {getCard && getCard.map((items) => (
-              <Card
-                key={items.id}
-                balance={String(items.balance)}
-                cardHolder={items.cardHolder}
-                validThru={formatDate(items.expiryDate)}
-                cardNumber="3778 **** **** 1234"
-                filterClass=""
-                bgColor="from-[#4C49ED] to-[#0A06F4]"
-                textColor="text-white"
-                iconBgColor="bg-opacity-10"
-                showIcon={true}
-              ></Card>
-            ))}
+            {getCard ? (
+              getCard.map((items) => (
+                <Card
+                  key={items.id}
+                  balance={String(items.balance)}
+                  cardHolder={items.cardHolder}
+                  validThru={formatDate(items.expiryDate)}
+                  cardNumber="3778 **** **** 1234"
+                  filterClass=""
+                  bgColor="from-[#4C49ED] to-[#0A06F4]"
+                  textColor="text-white"
+                  iconBgColor="bg-opacity-10"
+                  showIcon={true}
+                ></Card>
+              ))
+            ) : (
+              <div className="border rounded-3xl my-4 mx-2 animate-pulse">
+                <div className="relative w-full bg-gradient-to-b from-gray-300 to-gray-500 text-transparent rounded-3xl shadow-md h-[230px] min-w-[350px]">
+                  <div className="flex justify-between items-start px-6 pt-6">
+                    <div>
+                      <p className="text-xs font-semibold bg-gray-400 rounded w-16 h-4 mb-2"></p>
+                      <p className="text-xl font-medium bg-gray-400 rounded w-24 h-6"></p>
+                    </div>
+                    <div className="w-8 h-8 bg-gray-400 rounded-full"></div>
+                  </div>
+
+                  <div className="flex justify-between gap-12 mt-4 px-6">
+                    <div>
+                      <p className="text-xs font-medium bg-gray-400 rounded w-16 h-4 mb-2"></p>
+                      <p className="font-medium text-base bg-gray-400 rounded w-24 h-6"></p>
+                    </div>
+                    <div className="pr-8">
+                      <p className="text-xs font-medium bg-gray-400 rounded w-16 h-4 mb-2"></p>
+                      <p className="font-medium text-base md:text-lg bg-gray-400 rounded w-24 h-6"></p>
+                    </div>
+                  </div>
+
+                  <div className="relative mt-8 flex justify-between py-4 items-center">
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-white/30 to-transparent z-0"></div>
+                    <div className="relative z-10 text-base font-medium px-6 bg-gray-400 rounded w-40 h-6"></div>
+                    <div className="flex justify-end relative z-10 px-6">
+                      <div className="w-12 h-12 bg-gray-400 rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

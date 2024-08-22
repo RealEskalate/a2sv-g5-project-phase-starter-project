@@ -38,7 +38,8 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 		} else if errors.Is(err, auth.ErrNoUserWithId) {
 			c.AbortWithStatusJSON(http.StatusNotFound, err)
 		} else {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, err)
+			log.Default().Println("Error trying to create blog", err, "blog", blog)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		}
 		return
 	}

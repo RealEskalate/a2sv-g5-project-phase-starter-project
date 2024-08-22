@@ -13,6 +13,9 @@ type BlogControllerInterface interface {
 	CreateBlog(c *gin.Context)
 	GetBlogByID(c *gin.Context)
 	GetBlogs(c *gin.Context)
+	GetBlogsByAuthorID(c *gin.Context)
+	GetBlogsByPopularity(c *gin.Context)
+	GetBlogsByTags(c *gin.Context)
 	UpdateBlog(c *gin.Context)
 	DeleteBlog(c *gin.Context)
 	LikeBlog(c *gin.Context)
@@ -105,7 +108,6 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
         return
     }
 
-
     err = bc.blog_usecase.UpdateBlog(blogID, &req)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to edit blog"})
@@ -114,7 +116,6 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 
     c.JSON(http.StatusOK, gin.H{"message": "Blog updated successfully"})
 }
-
 
 func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	blogID := c.Param("id")
@@ -154,4 +155,46 @@ func (bc *BlogController) ViewBlog(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "Blog view recorded successfully"})
+}
+
+func (bc *BlogController) GetBlogsByAuthorID(c *gin.Context) {
+	authorID := c.Param("author_id")
+
+	blogs, err := bc.blog_usecase.GetBlogsByAuthorID(authorID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get blogs by author"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"blogs": blogs})
+}
+
+func (bc *BlogController) GetBlogsByPopularity(c *gin.Context) {
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+
+	blogs, err := bc.blog_usecase.GetBlogsByPopularity(limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get popular blogs"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"blogs": blogs})
+}
+
+func (bc *BlogController) GetBlogsByTags(c *gin.Context) {
+	tags := c.QueryArray("tags")
+	if len(tags) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Tags parameter is required"})
+		return
+	}
+	blogs, err := bc.blog_usecase.GetBlogsByTags(tags)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get blogs by tags"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"blogs": blogs})
 }

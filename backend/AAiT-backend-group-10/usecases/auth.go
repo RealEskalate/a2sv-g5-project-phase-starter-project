@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"aait.backend.g10/domain"
-	"aait.backend.g10/infrastructures"
 	"aait.backend.g10/usecases/dto"
 	"aait.backend.g10/usecases/interfaces"
 	"github.com/golang-jwt/jwt/v4"
@@ -24,12 +23,12 @@ type IAuthUsecase interface {
 
 type AuthUsecase struct {
 	userRepository interfaces.IUserRepository
-	jwtService     infrastructures.JwtService
-	pwdService     infrastructures.PwdService
-	emailService   infrastructures.EmailService
+	jwtService     interfaces.IJwtService
+	pwdService     interfaces.IHashingService
+	emailService   interfaces.IEmailService
 }
 
-func NewAuthUsecase(ur interfaces.IUserRepository, jwt infrastructures.JwtService, pwdService infrastructures.PwdService, emailService infrastructures.EmailService) IAuthUsecase {
+func NewAuthUsecase(ur interfaces.IUserRepository, jwt interfaces.IJwtService, pwdService interfaces.IHashingService, emailService interfaces.IEmailService) IAuthUsecase {
 	return &AuthUsecase{
 		userRepository: ur,
 		jwtService:     jwt,

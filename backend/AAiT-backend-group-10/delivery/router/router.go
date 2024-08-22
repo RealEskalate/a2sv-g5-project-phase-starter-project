@@ -27,7 +27,7 @@ func NewRouter(db *mongo.Database, redisClient *redis.Client) {
 	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
 	cacheRepo := infrastructures.NewCacheRepo(redisClient, context.Background())
 
-	pwdService := infrastructures.PwdService{}
+	pwdService := infrastructures.HashingService{}
 	emailService := infrastructures.EmailService{
 		AppEmail:    email,
 		AppPass:     password,
@@ -46,7 +46,7 @@ func NewRouter(db *mongo.Database, redisClient *redis.Client) {
 		LikeUseCase: usecases.NewLikeUseCase(likeRepo, cacheRepo),
 	}
 
-	authUsecases := usecases.NewAuthUsecase(userRepo, jwtService, pwdService, emailService)
+	authUsecases := usecases.NewAuthUsecase(userRepo, &jwtService, &pwdService, &emailService)
 	authController := controllers.NewAuthController(authUsecases, controllers.GoogleOAuthConfig)
 
 	userUseCase := usecases.NewUserUseCase(userRepo)

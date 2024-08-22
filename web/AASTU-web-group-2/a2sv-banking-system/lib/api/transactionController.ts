@@ -243,54 +243,41 @@ const getTransactionsExpenses = async (
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+      });
+  
+      if (response.status === 200) {
+        const data: PaginatedTransactionsResponse = await response.json();
+        return data;
+      } else {
+        throw new Error(`Request failed with status code: ${response.status}`);
       }
-    );
-
-    if (response.status === 200) {
-      const data: PaginatedTransactionsResponse = await response.json();
-      return data;
-    } else {
-      throw new Error(`Request failed with status code: ${response.status}`);
+    } catch (error) {
+      console.error('Error fetching paginated transactions:', error);
+      throw error;
     }
-  } catch (error) {
-    console.error("Error fetching paginated transactions:", error);
-    throw error;
-  }
-};
-const getBalanceHistory = async (
-  monthsBeforeFirstTransaction: number,
-  token: string
-): Promise<BalanceHistoryResponse> => {
-  try {
-    // const token = await getAccessToken();
-    const response = await fetch(`${BASE_URL}/transactions/balance-history`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.status === 200) {
-      const data: BalanceHistoryResponse = await response.json();
-      return data;
-    } else {
-      throw new Error(`Request failed with status code: ${response.status}`);
+  };
+  const getBalanceHistory = async (monthsBeforeFirstTransaction: number, token:string): Promise<BalanceHistoryResponse> => {
+    try {
+      // const token = await getAccessToken();
+      const response = await fetch(`${BASE_URL}/transactions/balance-history`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.status === 200) {
+        const data: BalanceHistoryResponse = await response.json();
+        return data;
+      } else {
+        throw new Error(`Request failed with status code: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error fetching balance history:', error);
+      throw error;
     }
-  } catch (error) {
-    console.error("Error fetching balance history:", error);
-    throw error;
-  }
-};
+  };
 
-export {
-  getBalanceHistory,
-  getRandomBalanceHistory,
-  getQuickTransfers,
-  getTransactionById,
-  getTransactionIncomes,
-  getTransactions,
-  getTransactionsExpenses,
-  postTransactionsDeposit,
-  postTransaction,
-};
+
+  export {getBalanceHistory, getRandomBalanceHistory, getQuickTransfers, getTransactionById, getTransactionIncomes, getTransactions, getTransactionsExpenses, postTransactionsDeposit, postTransaction}

@@ -7,6 +7,15 @@ import {
 } from "../../lib/api/userControl";
 import { getSession } from "next-auth/react";
 import { changePassword } from "../../lib/api/authenticationController";
+type Data = {
+  access_token: string;
+  data: string;
+  refresh_token: string;
+};
+
+type SessionDataType = {
+  user: Data;
+};
 
 const HeadingLabel = ({ label }: { label: string }) => {
   return (
@@ -24,7 +33,6 @@ const InputLabel = ({ label, htmlFor }: { label: string; htmlFor: string }) => {
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
 
 const ToggleSwitch = ({
   handleToogle,
@@ -73,7 +81,7 @@ interface SecurityFormInputs {
 }
 
 const SecuritySetting = () => {
-  const [accessToken, setAccessToken] = useState<string>("");
+  const [session, setSession] = useState<Data | null>(null);
   const [loading, setLoading] = useState(true);
 
   const {
@@ -88,9 +96,9 @@ const SecuritySetting = () => {
 
   useEffect(() => {
     const fetchSession = async () => {
-      const access_token = await Refresh();
-      if (access_token != "") {
-        setAccessToken(access_token);
+      const sessionData = (await getSession()) as SessionDataType | null;
+      if (sessionData && sessionData.user) {
+        setSession(sessionData.user);
         setLoading(false);
       } else {
         router.push(
@@ -107,12 +115,12 @@ const SecuritySetting = () => {
   };
 
   const onSubmit = async (data: SecurityFormInputs) => {
-    const user = await getCurrentUser(accessToken);
+    const user = await getCurrentUser(session?.access_token!);
     user.preference.twoFactorAuthentication = enabled;
-    await userUpdatePreference(user.preference, accessToken);
+    await userUpdatePreference(user.preference, session?.access_token!);
     await changePassword(
       { password: data.old_password, newPassword: data.new_password },
-      accessToken
+      session?.access_token!
     );
     reset();
   };

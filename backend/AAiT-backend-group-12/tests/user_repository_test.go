@@ -144,6 +144,39 @@ func (suite *UserRepositoryTestSuite) TestFindUser_Positive() {
 	}
 }
 
+func (suite *UserRepositoryTestSuite) TestFindUser_Negative_UserNotFound() {
+	for _, user := range MockUserData {
+		suite.UserRepository.CreateUser(context.Background(), &user)
+	}
+
+	_, err := suite.UserRepository.FindUser(context.Background(), &domain.User{Username: "testuser99"})
+	suite.NotNil(err, "error when user not found")
+	suite.Equal(err.GetCode(), domain.ERR_NOT_FOUND, "error code is not found")
+
+	_, err = suite.UserRepository.FindUser(context.Background(), &domain.User{Email: "testuser99@gmail.com"})
+	suite.NotNil(err, "error when user not found")
+	suite.Equal(err.GetCode(), domain.ERR_NOT_FOUND, "error code is not found")
+}
+
+func (suite *UserRepositoryTestSuite) TestSetRefreshToken_Positive() {
+	user := MockUserData[0]
+	suite.UserRepository.CreateUser(context.Background(), &user)
+
+	newRefreshToken := "this is a. kinda valid refresh token. it has the two dots"
+	err := suite.UserRepository.SetRefreshToken(context.Background(), &user, newRefreshToken)
+	suite.Nil(err, "no error when setting refresh token")
+}
+
+func (suite *UserRepositoryTestSuite) TestSetRefreshToken_Negative() {
+	user := MockUserData[0]
+	// user not created
+
+	newRefreshToken := "this is a. kinda valid refresh token. it has the two dots"
+	err := suite.UserRepository.SetRefreshToken(context.Background(), &user, newRefreshToken)
+	suite.NotNil(err, "no error when setting refresh token")
+	suite.Equal(err.GetCode(), domain.ERR_NOT_FOUND, "error code is not found")
+}
+
 func (suite *UserRepositoryTestSuite) TeardownSuite() {
 	initdb.DisconnectDB(suite.client)
 }

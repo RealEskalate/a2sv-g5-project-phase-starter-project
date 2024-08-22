@@ -15,8 +15,8 @@ const App: React.FC = () => {
         const current = await currentuser();
         setCurrentUser(current.data.name)
 
-        console.log("on the card user:" , currentUser); // Correct this
-
+        console.log("on the card user:" , currentUser); 
+        
         if (Array.isArray(transactionData.data.content)) {
           setTransactions(transactionData.data.content);
         } else {

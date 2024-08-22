@@ -51,13 +51,13 @@ const Accounts = () => {
             <h2 className="text-lg font-semibold mb-4">
               Debit & Credit Overview
             </h2>
-            <div className="flex-1 flex items-stretch">
+            <div>
               <AccountBarChart />
             </div>
           </div>
           <div className="lg:col-span-3 flex flex-col">
             <h2 className="text-lg font-semibold mb-4">Invoices Sent</h2>
-            <div className="flex-1 flex items-stretch">
+            <div>
               <InvoicesCard />
             </div>
           </div>

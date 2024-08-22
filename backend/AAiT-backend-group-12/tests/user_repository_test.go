@@ -340,6 +340,33 @@ func (suite *UserRepositoryTestSuite) TestUpdateVerificationDetails_Negative_Use
 	suite.Equal(err.GetCode(), domain.ERR_NOT_FOUND, "error code is not found")
 }
 
+func (suite *UserRepositoryTestSuite) TestVerifyUser_Positive() {
+	user := MockUserData[0]
+	suite.UserRepository.CreateUser(context.Background(), &user)
+
+	// check before verification
+	var userBefore domain.User
+	suite.collection.FindOne(context.Background(), bson.M{"username": user.Username}).Decode(&userBefore)
+	suite.False(userBefore.IsVerified, "user is not verified")
+
+	err := suite.UserRepository.VerifyUser(context.Background(), user.Username)
+	suite.Nil(err, "no error when verifying user")
+
+	// check after verification
+	var userAfter domain.User
+	suite.collection.FindOne(context.Background(), bson.M{"username": user.Username}).Decode(&userAfter)
+	suite.True(userAfter.IsVerified, "user is verified")
+}
+
+func (suite *UserRepositoryTestSuite) TestVerifyUser_Negative_UserNotFound() {
+	user := MockUserData[0]
+	// suite.UserRepository.CreateUser(context.Background(), &user)
+
+	err := suite.UserRepository.VerifyUser(context.Background(), user.Username)
+	suite.NotNil(err, "error when verifying user")
+	suite.Equal(err.GetCode(), domain.ERR_NOT_FOUND, "error code is not found")
+}
+
 func (suite *UserRepositoryTestSuite) TeardownSuite() {
 	initdb.DisconnectDB(suite.client)
 }

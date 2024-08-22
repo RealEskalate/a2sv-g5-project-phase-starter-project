@@ -42,16 +42,17 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 	r.POST("/forgotpassword", forgotPasswordController.ForgotPassword)
 	r.POST("/verfiyforgotpassword", forgotPasswordController.VerifyForgotOTP)
 
-	// Blog routes
-	r.POST("/blogs", blogController.CreateBlogPost)
-	r.GET("/blogs", blogController.GetAllBlogPosts)
 	r.GET("/blogs/:id", blogController.GetBlogByID)
-	r.PUT("/blogs/:id", blogController.UpdateBlogPost)
+	r.GET("/blogs", blogController.GetAllBlogPosts)
 
 	// Authenticated routes
 	auth := r.Group("/api")
 	auth.Use(infrastructure.AuthMiddleware(jwtService))
 	{
+		// Blog routes
+		auth.POST("/blogs", blogController.CreateBlogPost)
+		auth.PUT("/blogs/:id", blogController.UpdateBlogPost)
+
 		auth.POST("/logout", logoutController.Logout)
 
 		// auth.POST("/blogsearch", blogController.SearchBlogPost)

@@ -19,6 +19,9 @@ type Pagination struct {
 
 type BlogFilter struct {
 	Tags      []string `json:"tags"`
+	AuthorID  string   `json:"author_id"`
+	Search    string   `json:"search"`
+	Title     string   `json:"title"`
 	DateRange struct {
 		From time.Time `json:"from"`
 		To   time.Time `json:"to"`

@@ -4,9 +4,12 @@ import (
 	"AAiT-backend-group-2/Delivery/controllers"
 	domain "AAiT-backend-group-2/Domain"
 	infrastructure "AAiT-backend-group-2/Infrastructure"
+	"AAiT-backend-group-2/Repositories/blog_repository"
+	"AAiT-backend-group-2/Usecases/blog_usecase"
+
 	// "AAiT-backend-group-2/Infrastructure/services"
-	repositories "AAiT-backend-group-2/Repositories"
-	usecases "AAiT-backend-group-2/Usecases"
+	// repositories "AAiT-backend-group-2/Repositories"
+	// usecases "AAiT-backend-group-2/Usecases"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -16,8 +19,8 @@ import (
 
 func NewBlogRouter(db *mongo.Database, group *gin.RouterGroup,configs *domain.Config) {
 	
-	blogRepo := repositories.NewBlogRepository(db)
-	blogUsecase := usecases.NewBlogUsecase(blogRepo)
+	blogRepo := blog_repository.NewBlogRepository(db)
+	blogUsecase := blog_usecase.NewBlogUsecase(blogRepo)
 	blogController := controllers.NewBlogController(blogUsecase)
 	
 	blogRoutes := group.Group("/blogs")

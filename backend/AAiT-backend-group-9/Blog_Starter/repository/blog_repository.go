@@ -3,8 +3,9 @@ package repository
 import (
 	"Blog_Starter/domain"
 	"context"
+	"fmt"
 	"math"
-
+	"time"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -20,7 +21,7 @@ type BlogRepository struct {
 // DeleteRating implements domain.BlogRepository.
 // InsertRating implements domain.BlogRepository
 
-func NewBlogRepository(db *mongo.Database, blogCollection string, c *context.Context) domain.BlogRepository {
+func NewBlogRepository(db *mongo.Database, blogCollection string) domain.BlogRepository {
 	return &BlogRepository{
 		db:             db,
 		blogCollection: blogCollection,
@@ -59,6 +60,7 @@ func (r *BlogRepository) GetBlogByID(ctx context.Context, blogID string) (*domai
 	filter := bson.M{"_id": blogObjectID}
 	var blog domain.Blog
 	err = collection.FindOne(ctx, filter).Decode(&blog)
+	fmt.Println(err)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.New("blog not found")
@@ -113,6 +115,7 @@ func (r *BlogRepository) UpdateBlog(c context.Context, blog *domain.BlogUpdate, 
 	// implementation
 	collection := r.db.Collection(r.blogCollection)
 	blogObjectID, err := primitive.ObjectIDFromHex(blogID)
+	blog.UpdatedAt = time.Now()
 	if err != nil {
 		return nil, errors.New("invalid blog id")
 	}
@@ -122,7 +125,13 @@ func (r *BlogRepository) UpdateBlog(c context.Context, blog *domain.BlogUpdate, 
 	if err != nil {
 		return nil, err
 	}
-	return &domain.Blog{}, nil
+
+	var updatedBlog domain.Blog
+	err = collection.FindOne(c, filter).Decode(&updatedBlog)
+	if err != nil {
+		return nil, err
+	}
+	return &updatedBlog, nil
 }
 
 func (r *BlogRepository) DeleteBlog(c context.Context, blogID string) error {
@@ -166,14 +175,14 @@ func (bf *BlogRepository) FilterBlogs(ctx context.Context, blogRequest *domain.B
 		}
 	}
 
-	cur, err := collection.Find(context.TODO(), filter)
+	cur, err := collection.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
-	defer cur.Close(context.TODO())
+	defer cur.Close(ctx)
 
 	var blogResponse []*domain.Blog
-	for cur.Next(context.TODO()) {
+	for cur.Next(ctx) {
 		var singleResponse domain.Blog
 		err := cur.Decode(&singleResponse)
 		if err != nil {
@@ -186,6 +195,10 @@ func (bf *BlogRepository) FilterBlogs(ctx context.Context, blogRequest *domain.B
 	if err := cur.Err(); err != nil {
 		return nil, err
 	}
+	if blogResponse == nil {
+		return nil, mongo.ErrNoDocuments
+	}
+	fmt.Println(blogResponse)
 	return blogResponse, nil
 }
 
@@ -211,42 +224,43 @@ func (r *BlogRepository) IncrementViewCount(ctx context.Context, blogID string) 
 
 // SearchBlogs implements domain.BlogRepository.
 func (sr *BlogRepository) SearchBlogs(ctx context.Context, searchRequest *domain.BlogSearchRequest) ([]*domain.Blog, error) {
-	collection := sr.db.Collection(sr.blogCollection)
-	filter := bson.M{}
-	if searchRequest.Title != "" && searchRequest.Author != "" {
-		filter = bson.M{"author": searchRequest.Author, "title": searchRequest.Title}
-	}
-	if searchRequest.Title == "" && searchRequest.Author != "" {
-		filter = bson.M{"author": searchRequest.Author}
-	}
-	if searchRequest.Title != "" && searchRequest.Author == "" {
-		filter = bson.M{"title": searchRequest.Title}
-	}
+    collection := sr.db.Collection(sr.blogCollection)
+    filter := bson.M{}
 
-	cur, err := collection.Find(ctx, filter)
-	if err != nil {
-		return nil, err
-	}
-	defer cur.Close(ctx)
-	var searchedBlogs []*domain.Blog
-	for cur.Next(context.TODO()) {
-		var singleBlog domain.Blog
-		err := cur.Decode(&singleBlog)
-		if err != nil {
-			return nil, err
-		}
+    if searchRequest.Title != "" && searchRequest.Author != "" {
+        filter = bson.M{
+            "author": bson.M{"$regex": searchRequest.Author, "$options": "i"},
+            "title":  bson.M{"$regex": searchRequest.Title, "$options": "i"},
+        }
+    } else if searchRequest.Title == "" && searchRequest.Author != "" {
+        filter = bson.M{"author": bson.M{"$regex": searchRequest.Author, "$options": "i"}}
+    } else if searchRequest.Title != "" && searchRequest.Author == "" {
+        filter = bson.M{"title": bson.M{"$regex": searchRequest.Title, "$options": "i"}}
+    }
 
-		searchedBlogs = append(searchedBlogs, &singleBlog)
-	}
+    cur, err := collection.Find(ctx, filter)
+    if err != nil {
+        return nil, err
+    }
+    defer cur.Close(ctx)
 
-	if err := cur.Err(); err != nil {
-		return nil, err
-	}
+    var searchedBlogs []*domain.Blog
+    for cur.Next(ctx) {
+        var singleBlog domain.Blog
+        err := cur.Decode(&singleBlog)
+        if err != nil {
+            return nil, err
+        }
 
-	return searchedBlogs, nil
+        searchedBlogs = append(searchedBlogs, &singleBlog)
+    }
+
+    if err := cur.Err(); err != nil {
+        return nil, err
+    }
+
+    return searchedBlogs, nil
 }
-
-
 
 func (sr *BlogRepository) InsertRating(ctx context.Context, insertedRating *domain.BlogRating) error {
 	objectID, err := primitive.ObjectIDFromHex(insertedRating.BlogID)
@@ -411,13 +425,18 @@ func (sr *BlogRepository) UpdateCommentCount(ctx context.Context, blogID string,
 
 func(b *BlogRepository) UpdateLikeCount(c context.Context, blogID string, isIncrement bool) error {
 	collection:= b.db.Collection(b.blogCollection)
+	objectID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return err
+	}
+	
 	var update int
 	if isIncrement {
 		update = 1
 	} else {
 		update = -1
 	}
-	_, err := collection.UpdateOne(c, bson.M{"_id": blogID}, bson.M{"$inc": bson.M{"like_count": update}})
+	_, err = collection.UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$inc": bson.M{"like_count": update}})
 	if err != nil {
 		return err
 	}

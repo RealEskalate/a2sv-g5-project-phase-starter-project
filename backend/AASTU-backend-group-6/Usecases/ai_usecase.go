@@ -34,8 +34,8 @@ func (u *AIUsecase) AskAI(c context.Context , request domain.AiRequest) interfac
 	}
 
 	if len(result.Candidates) > 0 && len(result.Candidates[0].Content.Parts) > 0 {
-		response := result.Candidates[0].Content.Parts[0] // Convert the Part to a string
-		
+		response := result.Candidates[0].Content.Parts[0]
+
 		return &domain.AiResponse{Response: response}
 	}
 

@@ -57,6 +57,7 @@ type SignupUseCase interface {
 	ForgotPassword(c context.Context , email ForgotPasswordRequest) interface{}
 	ResetPassword(c context.Context , password ResetPasswordRequest , token string) interface{}
 	HandleUnverifiedUser(c context.Context, user User) interface{}
+	// ResendToken(c context.Context , email User) interface{}
 }
 
 type UserUseCase interface {
@@ -96,4 +97,8 @@ type UserPromotionRequest struct {
 
 type UserPromotionResponse struct {
 	Message string `json:"message"`
+}
+
+type Email struct {
+	Email string `json:"email"`
 }

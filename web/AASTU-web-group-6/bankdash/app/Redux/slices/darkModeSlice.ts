@@ -6,7 +6,8 @@ interface DarkModeState {
 }
 
 const initialState: DarkModeState = {
-  darkMode: false,
+  //initially based on browser preference
+  darkMode: window.matchMedia("(prefers-color-scheme: dark)").matches,
 };
 
 const darkModeSlice = createSlice({

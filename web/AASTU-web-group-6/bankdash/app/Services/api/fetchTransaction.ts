@@ -63,5 +63,4 @@ const getIncome = async (page: number, accessToken: string) => {
     }
 };
 
-
-export { getExpense, getTransaction, getIncome }
+export { getExpense, getTransaction, getIncome };

@@ -4,7 +4,6 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 
-
 interface FormValues {
   receiverUserName: string;
   amount: number;
@@ -13,10 +12,10 @@ interface FormValues {
 interface props {
   isOpen: boolean;
   onClose: () => void;
-  userName : string
-  amount :number
+  userName: string;
+  amount: number;
 }
-const ModalTrans = async ({ isOpen, onClose , userName ,amount }: props) => {
+const ModalTrans = async ({ isOpen, onClose, userName, amount }: props) => {
   const {
     register,
     handleSubmit,
@@ -30,7 +29,7 @@ const ModalTrans = async ({ isOpen, onClose , userName ,amount }: props) => {
     // change to tranService
     try {
       const response = await axios.post(
-        "https://bank-dashboard-6acc.onrender.com/transactions",
+        "https://bank-dashboard-1tst.onrender.com/transactions",
         formData,
         {
           headers: {

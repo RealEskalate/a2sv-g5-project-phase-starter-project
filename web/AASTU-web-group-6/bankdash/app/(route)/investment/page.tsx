@@ -22,9 +22,7 @@ const InvestmentPage = () => {
   const [data, setData] = useState<InvestmentData>();
   const [error, setError] = useState<string>("");
 
-  const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtaWhyZXQiLCJpYXQiOjE3MjQxNTMwNTAsImV4cCI6MTcyNDIzOTQ1MH0.32mp3s5k_Zq1D0AhIFKV29TbFakB3YR4Uq6UswODYvLENyN8pC5yZQf7yvHiKvuo";
-
+  const accessToken = session?.accessToken as string;
   useUserDispatch(accessToken);
   const investmentData: InvestmentData = useAppSelector(
     (state) => state.user.investment

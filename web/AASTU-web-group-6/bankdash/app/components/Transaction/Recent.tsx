@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import { TransactionType } from "@/types/TransactionValue";

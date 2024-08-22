@@ -67,6 +67,7 @@ func LoggedIn(TS tokenservice.TokenService_imp) gin.HandlerFunc {
 		}
 
 		// Token is valid, store the user in the context
+
 		usr := domain.CreateResponseUser(*user)
 		c.Set("user", usr)
 

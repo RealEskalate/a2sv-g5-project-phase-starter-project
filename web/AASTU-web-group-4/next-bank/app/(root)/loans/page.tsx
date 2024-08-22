@@ -102,9 +102,9 @@ useEffect(() => {
 
         {/* Active Loans Overview - Mobile View */}
         <div className="w-[100%] flex flex-col items-center mt-8 text-sm">
-          <h2 className="text-lg font-bold mb-4 ml-5">Active Loans Overview</h2>
+          <h2 className="text-lg font-bold mb-4 ml-5 dark:text-blue-500">Active Loans Overview</h2>
           <div className="w-[100%] flex justify-center ">
-            <table className=" w-[70%] md:w-[60%]  h-[85px] bg-white rounded-lg shadow-md text-[12px]">
+            <table className=" w-[70%] md:w-[60%]  h-[85px] bg-white rounded-lg shadow-md text-[12px]  dark:bg-dark text-gray-900 dark:text-white">
               <thead>
                 <tr>
                   <th className="px-4 py-2 text-left font-semibold text-gray-400">Loan Money</th>
@@ -149,9 +149,9 @@ useEffect(() => {
 
         {/* Active Loans Overview - Desktop/Table View */}
         <div className="mt-8">
-          <h2 className="text-lg font-bold mb-4">Active Loans Overview</h2>
+          <h2 className="text-lg font-bold mb-4 dark:text-blue-500">Active Loans Overview</h2>
           <div className="overflow-x-auto">
-            <table className="w-[100%] bg-white rounded-2xl shadow-md table-fixed">
+            <table className="w-[100%] bg-white rounded-2xl shadow-md table-fixed dark:bg-dark text-gray-900 dark:text-white">
               <thead>
                 <tr>
                   <th className="px-4 py-2 text-left font-semibold text-gray-400">SL No</th>
@@ -173,7 +173,7 @@ useEffect(() => {
                     <td className="border-t px-4 py-2">{loan.interestRate}</td>
                     <td className="border-t px-4 py-2">{ `${Number(loan.installment ?? '0').toFixed(2)?.toLocaleString() || 0} $`   }</td>
                     <td className="border-t px-4 py-2">
-                      <Link href="#" className="text-purple-900 border border-purple-900 rounded-full px-4 py-1">
+                      <Link href="#" className="text-purple-900 border border-purple-900 rounded-full px-4 py-1 dark:text-blue-500 dark:border-blue-500">
                         Repay
                       </Link>
                     </td>

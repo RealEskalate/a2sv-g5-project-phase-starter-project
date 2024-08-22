@@ -49,7 +49,7 @@ export interface QuickTransferData {
 }
 
 export interface PostTransactionRequest {
-  type: string; 
+  type: string; // e.g., "shopping", "bill", etc.
   description: string;
   amount: number;
   receiverUserName: string;

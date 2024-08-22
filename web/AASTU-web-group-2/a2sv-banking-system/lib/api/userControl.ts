@@ -11,7 +11,7 @@ export async function userUpdate(user: User, accessToken: string) {
         "Content-Type": "application/json",
       },
     });
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error updating user:", error);
     throw error;
@@ -33,7 +33,7 @@ export async function userUpdatePreference(
         },
       }
     );
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error updating user preference:", error);
     throw error;
@@ -48,7 +48,7 @@ export async function getUserByUsername(username: string, accessToken: string) {
         "Content-Type": "application/json",
       },
     });
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching user by username:", error);
     throw error;
@@ -70,7 +70,7 @@ export async function getRandomInvestementData(
         },
       }
     );
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching random investment data:", error);
     throw error;

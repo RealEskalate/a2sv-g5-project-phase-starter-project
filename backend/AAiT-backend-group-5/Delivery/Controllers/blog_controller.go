@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -12,21 +12,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type blogController struct {
+type BlogController struct {
 	usecase interfaces.BlogUsecase
 }
 
-func NewBlogController(usecase interfaces.BlogUsecase) interfaces.BlogController {
-	return &blogController{
+func NewBlogController(usecase interfaces.BlogUsecase) *BlogController {
+	return &BlogController{
 		usecase: usecase,
 	}
 }
 
-func (c *blogController) getAuthorID(ctx *gin.Context) string {
-	return ctx.GetString("id")
-}
-
-func (c *blogController) CreateBlogController(ctx *gin.Context) {
+func (c *BlogController) CreateBlogController(ctx *gin.Context) {
 	var newBlog dtos.CreateBlogRequest
 
 	if err := ctx.ShouldBind(&newBlog); err != nil {
@@ -34,7 +30,7 @@ func (c *blogController) CreateBlogController(ctx *gin.Context) {
 		return
 	}
 
-	authorID := c.getAuthorID(ctx)
+	authorID := ctx.GetString("id")
 
 	blog := models.Blog{
 		Title:    newBlog.Title,
@@ -53,7 +49,7 @@ func (c *blogController) CreateBlogController(ctx *gin.Context) {
 
 }
 
-func (c *blogController) GetBlogController(ctx *gin.Context) {
+func (c *BlogController) GetBlogController(ctx *gin.Context) {
 	blogId := ctx.Param("id")
 
 	blog, err := c.usecase.GetBlog(ctx, blogId)
@@ -66,7 +62,7 @@ func (c *blogController) GetBlogController(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, gin.H{"data": blog})
 }
 
-func (c *blogController) GetBlogsController(ctx *gin.Context) {
+func (c *BlogController) GetBlogsController(ctx *gin.Context) {
 	page := ctx.DefaultQuery("page", "1")
 
 	pageInt, ok := strconv.Atoi(page)
@@ -86,7 +82,7 @@ func (c *blogController) GetBlogsController(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, gin.H{"data": blogs})
 }
 
-func (c *blogController) SearchBlogsController(ctx *gin.Context) {
+func (c *BlogController) SearchBlogsController(ctx *gin.Context) {
 
 	title := ctx.DefaultQuery("title", "")
 	authorName := ctx.DefaultQuery("author_name", "")
@@ -115,9 +111,6 @@ func (c *blogController) SearchBlogsController(ctx *gin.Context) {
 		Tags:         tagsSlice,
 	}
 
-	log.Println(title, "filter")
-	log.Println(tags, "filter")
-
 	blogs, err := c.usecase.SearchBlogs(ctx, filter)
 
 	if err != nil {
@@ -128,7 +121,7 @@ func (c *blogController) SearchBlogsController(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, gin.H{"data": blogs})
 }
 
-func (c *blogController) UpdateBlogController(ctx *gin.Context) {
+func (c *BlogController) UpdateBlogController(ctx *gin.Context) {
 	var updateBlog dtos.UpdateBlogRequest
 	blogID := ctx.Param("id")
 
@@ -137,9 +130,7 @@ func (c *blogController) UpdateBlogController(ctx *gin.Context) {
 		return
 	}
 
-	log.Println(updateBlog, "updateBlog")
-
-	authorID := c.getAuthorID(ctx)
+	authorID := ctx.GetString("id")
 
 	blog := models.Blog{
 		ID:       blogID,
@@ -159,11 +150,14 @@ func (c *blogController) UpdateBlogController(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Blog updated successfully"})
 }
 
-func (c *blogController) DeleteBlogController(ctx *gin.Context) {
+func (c *BlogController) DeleteBlogController(ctx *gin.Context) {
 	blogID := ctx.Param("id")
-	authorID := c.getAuthorID(ctx)
+	authorID := ctx.GetString("id")
 
 	if authorID == "" {
+		fmt.Println("author id", authorID)
+		fmt.Println("blog id", blogID)
+
 		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
@@ -181,7 +175,7 @@ func (c *blogController) DeleteBlogController(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Blog deleted successfully"})
 }
 
-func (c *blogController) TrackPopularityController(ctx *gin.Context) {
+func (c *BlogController) TrackPopularityController(ctx *gin.Context) {
 	var blogPopularity dtos.TrackPopularityRequest
 
 	if err := ctx.ShouldBind(&blogPopularity); err != nil {
@@ -189,7 +183,7 @@ func (c *blogController) TrackPopularityController(ctx *gin.Context) {
 		return
 	}
 
-	userID := c.getAuthorID(ctx)
+	userID := ctx.GetString("id")
 	blogID := ctx.Param("id")
 
 	blogPopularity.UserID = userID

@@ -20,7 +20,7 @@ const TrendingStock = ({items}:props) => {
    
 
     return (
-        <div className="w-[100%] p-4 h-[343px] rounded-3xl bg-white overflow-y-auto ">
+        <div className="w-[100%] p-4 h-[343px] rounded-3xl bg-white overflow-y-auto  dark:bg-dark text-gray-900 dark:text-white">
             <table className="w-full border-collapse">
                 <thead >
                     <tr>
@@ -33,9 +33,9 @@ const TrendingStock = ({items}:props) => {
                 <tbody>
                     {items.map((item, index) =>
                         <tr key={item.slNo}>
-                            <td className="py-2 px-3  text-gray-800">{item.slNo}</td>
-                            <td className="py-2 px-3  text-gray-800">{item.name}</td>
-                            <td className="py-2 px-3  text-gray-800">{item.price}</td>
+                            <td className="py-2 px-3  text-gray-800 dark:text-white">{item.slNo}</td>
+                            <td className="py-2 px-3  text-gray-800 dark:text-white">{item.name}</td>
+                            <td className="py-2 px-3  text-gray-800 dark:text-white">{item.price}</td>
                             {
                                 item.return.includes('+') ? <td className={`py-2 px-3 text-green-500`}>{item.return}</td> :
                                     <td className={`py-2 px-3 text-red-500`}>{item.return}</td>

@@ -109,19 +109,16 @@ export const currentuser = async () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization:`Bearer ${token}`
         },
       }
     );
 
     if (!response.ok) {
-      console.log("current user fetch :", response)
       throw new Error("Failed to fetch user details");
     }
 
     const data = await response.json();
-    console.log("succesful current user response:", data)
-
     return data;
   } catch (error) {
     console.error("Error:", error);

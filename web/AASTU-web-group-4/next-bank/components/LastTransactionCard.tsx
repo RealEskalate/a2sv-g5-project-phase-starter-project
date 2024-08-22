@@ -31,9 +31,9 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="p-3 gap-4 flex-1 h-auto bg-gray-50">
+    <div className="p-3 gap-4 flex-1 h-auto bg-gray-50 dark:bg-dark text-gray-900 dark:text-white">
       {transactions.map((transaction, index) => (
-        <TransactionCard key={index} transaction={transaction}  currentname = {currentUser} />
+        <TransactionCard key={index} transaction={transaction} currentname={currentUser} />
       ))}
     </div>
   );

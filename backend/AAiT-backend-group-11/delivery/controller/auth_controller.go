@@ -14,12 +14,13 @@ import (
 type AuthController struct {
 	authService interfaces.AuthenticationService
 }
-func NewAuthController(authService interfaces.AuthenticationService) *AuthController{
+
+func NewAuthController(authService interfaces.AuthenticationService) *AuthController {
 	return &AuthController{authService: authService}
 }
 
-func (controller *AuthController) RegisterUser(c *gin.Context){
-	
+func (controller *AuthController) RegisterUser(c *gin.Context) {
+
 	var userRequest entities.User
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -27,15 +28,15 @@ func (controller *AuthController) RegisterUser(c *gin.Context){
 	}
 
 	user := entities.User{
-		ID: primitive.NewObjectID(),
-		Username: userRequest.Username,
-		Email: userRequest.Email,
-		Password: userRequest.Password,
+		ID:         primitive.NewObjectID(),
+		Username:   userRequest.Username,
+		Email:      userRequest.Email,
+		Password:   userRequest.Password,
 		IsVerified: false,
-		Role: "user",
-		Profile: entities.Profile{},
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Role:       "user",
+		Profile:    entities.Profile{},
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
 	}
 
 	createdUser, err := controller.authService.RegisterUser(&user)
@@ -59,19 +60,21 @@ func (controller *AuthController) Login(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"access_token": accessToken})
+	c.Header("Authorization", "Bearer "+accessToken)
+	c.JSON(200, gin.H{"refresh_token": refreshToken.Token})
+	c.JSON(200, gin.H{"message": "login successful"})
+	c.Set("userId", refreshToken.UserID)
 	c.SetCookie("refresh_token", refreshToken.Token, int(refreshToken.ExpiresAt.Unix()), "/", "localhost", false, true)
 }
 
+func (controller *AuthController) Logout(c *gin.Context) {
+	userId := c.GetString("userId")
 
-func (controller *AuthController) Logout(c *gin.Context){
-	userId:=c.GetString("userId")
-	
 	controller.authService.Logout(userId)
-	c.JSON(200,gin.H{"message":"succesfully logged out"})
+	c.JSON(200, gin.H{"message": "succesfully logged out"})
 }
 
-func (controller *AuthController) RefreshAccessToken(c *gin.Context){
+func (controller *AuthController) RefreshAccessToken(c *gin.Context) {
 	var token entities.RefreshToken
 	err := c.ShouldBindJSON(&token)
 	if err != nil {
@@ -81,7 +84,7 @@ func (controller *AuthController) RefreshAccessToken(c *gin.Context){
 	controller.authService.RefreshAccessToken(&token)
 }
 
-func (controller *AuthController) VerifyEmail(c *gin.Context)  {
+func (controller *AuthController) VerifyEmail(c *gin.Context) {
 
 	var emailVerification entities.EmailVerificationRequest
 

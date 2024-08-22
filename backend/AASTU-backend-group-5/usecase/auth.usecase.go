@@ -124,6 +124,7 @@ func (u *AuthUsecase) GoogleCallBack(stateID, code string) (*domain.User, string
 	if err != nil {
 		return nil, "", "", err
 	}
+    defer u.StateRepo.DeleteState(stateID)
 
 	if time.Now().After(state.ExpiresAT) {
 		return nil, "", "", errors.New("state expired")

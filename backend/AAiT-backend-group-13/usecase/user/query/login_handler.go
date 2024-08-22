@@ -72,8 +72,5 @@ func (h *LoginHandler) Handle(command *LoginQuery) (*result.LoginInResult, error
 		return nil, err
 	}
 
-	return &result.LoginInResult{
-		Token:        token,
-		RefreshToken: refreshToken,
-	}, nil
+	return result.NewLoginInResult(user, token, refreshToken), nil
 }

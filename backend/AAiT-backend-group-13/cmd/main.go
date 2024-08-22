@@ -177,12 +177,14 @@ func initBlogController(blogRepo *blogrepo.Repo, cacheService *cache.RedisCache)
 	updateHandler := blogcmd.NewUpdateHandler(blogRepo)
 	deleteHandler := blogcmd.NewDeleteHandler(blogRepo)
 	getMultipleHandler := blogqry.NewGetMultipleHandler(blogRepo, cacheService)
+	getHandler := blogqry.NewGetHandler(blogRepo)
 
 	return blogcontroller.New(blogcontroller.Config{
 		AddHandler:         addHandler,
 		UpdateHandler:      updateHandler,
 		DeleteHandler:      deleteHandler,
 		GetMultipleHandler: getMultipleHandler,
+		GetHandler:         getHandler,
 	})
 }
 

@@ -14,8 +14,7 @@ type Like struct {
 
 type LikeRepository interface {
 	GetLikesCount(ctx context.Context, blogID primitive.ObjectID) (int, error)
-
-	// CreateLike(ctx context.Context, like Like) error
-	// DeleteLike(ctx context.Context, likeID string) error
-	// IsLikedByUser(ctx context.Context, blogID, userID string) (bool, error)
+	GetLikes(ctx context.Context, blogID primitive.ObjectID) ([]Like, error)
+	CreateLike(ctx context.Context, like Like) error
+	DeleteLike(ctx context.Context, likeID string) error
 }

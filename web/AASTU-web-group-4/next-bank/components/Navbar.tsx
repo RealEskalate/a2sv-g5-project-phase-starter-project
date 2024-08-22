@@ -1,7 +1,9 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import Image from 'next/image';
 import { FaSearch, FaCog, FaBell } from 'react-icons/fa';
 import ThemeSwitch from './ThemeSwitch';
+
+import Link from 'next/link';
 
 type NavbarProps = {
   pageTitle: string;
@@ -9,6 +11,21 @@ type NavbarProps = {
 };
 
 export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+
+  const toggleDropdown = () => {
+    setIsOpen((prev:any) => !prev);
+  };
+
+  const handleSignOut = () => {
+    // Sign-out logic here
+  };
+
+  const handleSettings = () => {
+    // Navigate to settings page or open settings modal
+
+  };
   return (
     <nav className="flex flex-col p-4 bg-white shadow-md lg:pl-64  dark:bg-dark text-gray-900 dark:text-white">
       {/* Mobile View: Hamburger Menu */}
@@ -19,7 +36,8 @@ export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
           </svg>
         </button>
         <div className="text-xl font-bold flex-1 text-center dark:text-blue-500">{pageTitle}</div>
-        <Image src="/Images/profilepic.jpeg" alt="User Profile" width={32} height={32} className="rounded-full aspect-square object-cover" />
+        <Image src="/Images/profilepic.jpeg" alt="User Profile" width={40} height={40} className="rounded-full aspect-square object-cover" />
+        
       </div>
 
       {/* Mobile Search Bar */}
@@ -53,8 +71,42 @@ export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
           <div className="flex items-center rounded-full bg-gray-100 p-2">
             <FaBell className="text-red-600" size={20} />
           </div>
-          <Image src="/Images/profilepic.jpeg" alt="User Profile" width={40} height={40} className="rounded-full aspect-square object-cover" />
-          <div></div>
+          <div className="relative inline-block">
+
+      <div onClick={toggleDropdown}>
+        <Image
+          src="/Images/profilepic.jpeg"
+          alt="User Profile"
+          width={40}
+          height={40}
+          className="rounded-full aspect-square object-cover cursor-pointer"
+        />
+      </div>
+
+      {isOpen && (
+        <div className="absolute left-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+          <Link href={'../setting'} passHref>
+          <button
+            onClick={handleSettings}
+            className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100"
+          >
+          <div className="flex items-center rounded-full bg-gray-100 p-2">
+            <FaCog className="text-blue-800" size={20} />
+          </div>                        
+            Settings
+          </button>
+          </Link>
+          
+          <button
+            
+            className="flex items-center w-full px-12 py-2 hover:bg-gray-100 text-red-600"
+          >
+            
+            Sign Out
+          </button>
+        </div>
+      )}
+    </div>
         </div>
       </div>
     </nav>

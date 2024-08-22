@@ -28,6 +28,7 @@ const LoginForm: React.FC = () => {
 
   const onSubmit = async (data: any) => {
     setIsLoading(true);
+    setErrorMessage("");
       try {
         const loggedInUser = await loginUser(data);
         
@@ -41,6 +42,15 @@ const LoginForm: React.FC = () => {
       } catch (error) {
         console.error('Error here:', error);
         setIsLoading(false);
+        if (error instanceof Error) {
+          setErrorMessage(error.message || "Login failed. Please try again.");
+        } else if (typeof error === 'object' && error !== null && 'response' in error) {
+          const axiosError = error as any; // Type assertion
+          setErrorMessage(axiosError.response?.data?.message || "Login failed. Please try again.");
+        } else {
+          setErrorMessage("An unexpected error occurred.");
+        }
+
       }
     };
 
@@ -103,7 +113,7 @@ const LoginForm: React.FC = () => {
 
         {errorMessage && (
         <div className="text-red-500 text-center mb-4">
-          {errorMessage}
+          {errorMessage} Enter valid credentials
         </div>
         )}
 
@@ -114,12 +124,15 @@ const LoginForm: React.FC = () => {
         >
         {isLoading ? (
 
-          <ArrowPathIcon className="h-5 w-5 animate-spin  text-white " />
+          <div className="flex justify-center items-center ">
+            <ArrowPathIcon className="h-5 w-5 animate-spin  text-white  " />
+          </div>
         ) : (
           
           "Login"
         )}
         </button>
+        
         </div>
 
         <div className="my-14 flex flex-col items-center text-l ">

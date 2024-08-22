@@ -21,7 +21,6 @@ func (useCase *userUsecase) Get() ([]domain.User, error) {
 	return useCase.userRepository.Get(domain.UserFilterOption{})
 }
 
-
 func (useCase *userUsecase) LoginUser(uname string, password string) (string, error) {
 	user, err := useCase.GetByUsername(uname)
 	if err != nil {
@@ -40,7 +39,6 @@ func (useCase *userUsecase) LoginUser(uname string, password string) (string, er
 	return accesstoken, nil
 }
 
-
 func (useCase *userUsecase) Logout(email string) error {
 	user, err := useCase.GetByEmail(email)
 	if err != nil {
@@ -50,7 +48,6 @@ func (useCase *userUsecase) Logout(email string) error {
 	useCase.userRepository.Update(user.ID, user)
 	return nil
 }
-
 
 func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 	user, err := useCase.GetByEmail(email)
@@ -81,7 +78,6 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 
 	return "Password reset token sent to your email", nil
 }
-
 
 func (useCase *userUsecase) ResetPassword(email string, token string, password string) (string, error) {
 	user, err := useCase.GetByEmail(email)
@@ -123,7 +119,7 @@ func (useCase *userUsecase) GetByUsername(username string) (domain.User, error) 
 
 func (useCase *userUsecase) AccountVerification(uemail string, confirmationToken string) error {
 	user, err := useCase.GetByEmail(uemail)
-	if err!= nil{
+	if err != nil {
 		return err
 	}
 	if user.VerifyToken == confirmationToken {
@@ -156,10 +152,10 @@ func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	nUser, err := useCase.userRepository.Create(u)
 	if !nUser.IsAdmin {
 		link := "`http://localhost:8000/`users/accountVerification/?email=" + u.Email + "&token=" + string(confirmationToken)
-		err = infrastructure.SendEmail(u.Email, "Registration Confirmation", "This sign up Confirmation email to verify: ", link)
-	}
-	if err != nil {
-		return nUser, err
+		err := infrastructure.SendEmail(u.Email, "Registration Confirmation", "This sign up Confirmation email to verify: ", link)
+		if err != nil {
+			return nUser, err
+		}
 	}
 	return nUser, err
 }

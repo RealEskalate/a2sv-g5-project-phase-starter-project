@@ -62,7 +62,7 @@ const Navbar = ({ handleClick, toggleDarkMode }: Props) => {
         </div>
       </div>
 
-      <div className="rounded-full flex md:gap-2 bg-[#F5F7FA] text-[#8BA3CB] text-sm font-normal py-3 px-8 ml-2 items-center dark:bg-[#050914] dark:border dark:border-[#333B69]">
+      <div className="md:hidden rounded-full flex md:gap-2 bg-[#F5F7FA] text-[#8BA3CB] text-sm font-normal py-3 px-8 ml-2 items-center dark:bg-[#050914] dark:border dark:border-[#333B69]">
         <MdOutlineSearch className="text-xl" />
         <input
           type="text"

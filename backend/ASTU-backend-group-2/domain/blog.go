@@ -5,6 +5,7 @@ import (
 	"time"
 
 	mongopagination "github.com/gobeam/mongo-go-pagination"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -80,11 +81,21 @@ type Reaction struct {
 	Disliked bool               `json:"disliked" bson:"disliked"`
 	Date     time.Time          `json:"date" bson:"date"`
 }
+type BlogFilter struct {
+	Title          string
+	Tags           []string
+	DateFrom       time.Time
+	DateTo         time.Time
+	Limit          int64
+	Pages          int64
+	PopularityFrom int
+	PopularityTo   int
+}
 
 // BlogRepository defines the methods required for data access related to blogs and comments.
 type BlogRepository interface {
 	GetByTags(c context.Context, tags []string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
-	GetAllBlogs(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
+	GetAllBlogs(c context.Context, filter bson.M, blogFilter BlogFilter) ([]Blog, mongopagination.PaginationData, error)
 	GetBlogByID(c context.Context, blogID string) (Blog, error)
 	GetByPopularity(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	Search(c context.Context, searchTerm string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
@@ -112,7 +123,7 @@ type ReactionRepository interface {
 
 type BlogUsecase interface {
 	GetByTags(c context.Context, tags []string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
-	GetAllBlogs(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
+	GetAllBlogs(c context.Context, filter BlogFilter) ([]Blog, mongopagination.PaginationData, error)
 	GetBlogByID(c context.Context, blogID string) (Blog, error)
 	GetByPopularity(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	Search(c context.Context, searchTerm string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)

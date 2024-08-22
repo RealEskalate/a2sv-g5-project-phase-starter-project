@@ -16,6 +16,14 @@ const (
 	VALID_DELETED_FILE = "valid_deleted_file.png"
 )
 
+var TEST_USER = domain.User{
+	Username:    "  timid_  ",
+	Email:       " timid_  @  gmail.com         ",
+	Bio:         "   cartifan20 ",
+	Password:    "  cR@zyP@ssw0rd  ",
+	PhoneNumber: " +256 6 45 2 10  21         ",
+}
+
 type UserUsecaseTestSuite struct {
 	suite.Suite
 	Usecase             usecase.UserUsecase
@@ -172,7 +180,82 @@ func (suite *UserUsecaseTestSuite) TestValidateEmail_Negative_InvalidEmail() {
 	err := suite.Usecase.ValidateEmail(testEmail)
 	suite.NotNil(err)
 	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
-	suite.Contains(err.Error(), "email")
+	suite.Contains(err.Error(), "Email")
+}
+
+func (suite *UserUsecaseTestSuite) TestSanitizeUserFields() {
+	user := TEST_USER
+	oldPwd := user.Password
+
+	suite.Usecase.SantizeUserFields(&user)
+	suite.Equal(user.Username, "timid_")
+	suite.Equal(user.Email, "timid_@gmail.com")
+	suite.Equal(user.Bio, "cartifan20")
+	suite.Equal(user.PhoneNumber, "+25664521021")
+	suite.Equal(oldPwd, user.Password)
+}
+
+func (suite *UserUsecaseTestSuite) TestSanitizeAndValidateNewUser_Positive() {
+	user := TEST_USER
+	oldPwd := TEST_USER.Password
+
+	err := suite.Usecase.SanitizeAndValidateNewUser(&user)
+	suite.Nil(err, "error should be nil")
+	suite.Equal(user.Username, "timid_")
+	suite.Equal(user.Email, "timid_@gmail.com")
+	suite.Equal(user.Bio, "cartifan20")
+	suite.Equal(user.PhoneNumber, "+25664521021")
+	suite.Equal(oldPwd, user.Password)
+}
+
+func (suite *UserUsecaseTestSuite) TestSanitizeAndValidateNewUser_Negative_InvalidUsername() {
+	user := TEST_USER
+	user.Username = "ti"
+
+	err := suite.Usecase.SanitizeAndValidateNewUser(&user)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.Contains(err.Error(), "Username")
+}
+
+func (suite *UserUsecaseTestSuite) TestSanitizeAndValidateNewUser_Negative_InvalidEmail() {
+	user := TEST_USER
+	user.Email = "ti"
+
+	err := suite.Usecase.SanitizeAndValidateNewUser(&user)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.Contains(err.Error(), "Email")
+}
+
+func (suite *UserUsecaseTestSuite) TestSanitizeAndValidateNewUser_Negative_InvalidPassword() {
+	user := TEST_USER
+	user.Password = "ti"
+
+	err := suite.Usecase.SanitizeAndValidateNewUser(&user)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.Contains(err.Error(), "Password")
+}
+
+func (suite *UserUsecaseTestSuite) TestSanitizeAndValidateNewUser_Negative_InvalidBio() {
+	user := TEST_USER
+	user.Bio = ""
+
+	err := suite.Usecase.SanitizeAndValidateNewUser(&user)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.Contains(err.Error(), "Bio")
+}
+
+func (suite *UserUsecaseTestSuite) TestSanitizeAndValidateNewUser_Negative_InvalidPhoneNumber() {
+	user := TEST_USER
+	user.PhoneNumber = ""
+
+	err := suite.Usecase.SanitizeAndValidateNewUser(&user)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.Contains(err.Error(), "PhoneNumber")
 }
 
 func TestUserUsecase(t *testing.T) {

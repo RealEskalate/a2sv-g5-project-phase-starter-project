@@ -1,11 +1,12 @@
 import axios from "axios";
 
-const API_URL = "https://bank-dashboard-1tst.onrender.com/transactions"; // Adjust this to match your actual API base URL
+const API_URL = "https://bank-dashboard-o9tl.onrender.com/transactions"; // Adjust this to match your actual API base URL
 const extension = "/balance-history";
 const API_URL_expense =
-  "https://bank-dashboard-1tst.onrender.com/transactions/expenses";
+  "https://bank-dashboard-o9tl.onrender.com/transactions/expenses";
 const API_URL_income =
-  "https://bank-dashboard-1tst.onrender.com/transactions/incomes";
+  "https://bank-dashboard-o9tl.onrender.com/transactions/incomes";
+const API_URL_quick = "https://bank-dashboard-o9tl.onrender.com/transactions/quick-transfers"
 interface TransactionType {
   transactionId: string;
   type: string;
@@ -95,7 +96,7 @@ class TransactionService {
   ): Promise<quickType[]> {
     return handleRequest(
       "GET",
-      `${API_URL_quick}?number=6`,
+      `${API_URL_quick}?number=4`,
       undefined,
       accessToken
     );

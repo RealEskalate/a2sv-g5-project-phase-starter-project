@@ -89,3 +89,29 @@ func (r *UserRepositoryImpl) UpdatePasswordByEmail(email string, newPassword str
 	_, err := r.db.UpdateOne(r.ctx, filter, update)
 	return err
 }
+
+func (r *UserRepositoryImpl) PromoteUser(email string) error {
+	filter := bson.M{"email": email}
+	update := bson.M{"$set": bson.M{"role": "admin"}}
+
+	_, err := r.db.UpdateOne(r.ctx, filter, update)
+
+	return err
+}
+
+func (r *UserRepositoryImpl) DemoteUser(email string) error {
+	filter := bson.M{"email": email}
+	update := bson.M{"$set": bson.M{"role": "user"}}
+
+	_, err := r.db.UpdateOne(r.ctx, filter, update)
+
+	return err
+}
+
+func (r *UserRepositoryImpl) DeleteUser(email string) error {
+	filter := bson.M{"email": email}
+
+	_, err := r.db.DeleteOne(r.ctx, filter)
+
+	return err
+}

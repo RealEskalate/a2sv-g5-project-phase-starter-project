@@ -15,8 +15,9 @@ func (s *NewUserController) UpdateUser(c *gin.Context) {
 	var user domain.UserUpdateRequest
 	userid := c.Param("id")
 	authenticatedUserID := c.GetString("user_id")
+	role := c.GetString("role")
 
-	if userid != authenticatedUserID {
+	if userid != authenticatedUserID && role != "admin" {
 		c.JSON(401, gin.H{"error": "Unauthorized to update user Information"})
 		return
 	}

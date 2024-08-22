@@ -1,8 +1,8 @@
 package controllers_test
 
 import (
-	domain "blogs/Domain"
 	controllers "blogs/Delivery/controllers"
+	domain "blogs/Domain"
 	"blogs/mocks"
 	"net/http"
 	"net/http/httptest"
@@ -56,7 +56,7 @@ func (suite *OauthControllerTestSuite) TestGoogleAuth_Success() {
 }
 
 // func (suite *OauthControllerTestSuite) TestGoogleCallback_Success() {
-	// Mocking the OauthUsecase and LoginService responses
+// Mocking the OauthUsecase and LoginService responses
 // 	verifiedUser := domain.User{
 // 		Email:    "test@example.com",
 // 		Verified: true,

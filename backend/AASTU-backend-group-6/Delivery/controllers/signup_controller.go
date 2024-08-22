@@ -73,3 +73,30 @@ func (s *SignupController) ForgotPassword(c *gin.Context) {
 		HandleResponse(c, response)
 	}
 }
+
+
+func (s *SignupController) ResendOTP(c *gin.Context) {
+	var email domain.User
+	err := c.ShouldBindJSON(&email)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	response := s.SignupUsecase.HandleUnverifiedUser(c, email)
+	HandleResponse(c, response)
+
+}
+
+
+// func (s *SignupController) ResendToken(c *gin.Context) {
+// 	var email domain.User
+// 	err := c.ShouldBindJSON(&email)
+// 	if err != nil {
+// 		c.JSON(400, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	response := s.SignupUsecase.ResendToken(c, email)
+// 	HandleResponse(c, response)
+// }

@@ -16,6 +16,7 @@ type blogUsecase struct {
 }
 
 // NewBlogUsecase creates a new instance of blogUsecase and returns it
+// It requires a blog repository, user repository, and a timeout duration for context management.
 func NewBlogUsecase(blogRepository domain.BlogRepository, userRepository domain.UserRepository, timeout time.Duration) domain.BlogUsecase {
 	return &blogUsecase{
 		blogRepository:  blogRepository,
@@ -68,7 +69,8 @@ func (blogU *blogUsecase) SearchBlogs(c context.Context, filter domain.Filter, l
 	}, nil
 }
 
-// Create calls Create method in a blog repository to create a blog
+// CreateBlog adds a new blog to the repository
+// It takes a blog object and calls the CreateBlog method in the blog repository to store it.
 func (blogU *blogUsecase) CreateBlog(c context.Context, blog *domain.Blog) error {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
@@ -76,7 +78,8 @@ func (blogU *blogUsecase) CreateBlog(c context.Context, blog *domain.Blog) error
 	return blogU.blogRepository.CreateBlog(ctx, blog)
 }
 
-// FetchByBlogID calls FetchByBlogID in blog repository to fetch a blog the database using the blog Id.
+// FetchByBlogID retrieves a single blog by its ID
+// It calls the FetchByBlogID method in the blog repository to get the blog details.
 func (blogU *blogUsecase) FetchByBlogID(c context.Context, blogID string) (domain.Blog, error) {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
@@ -85,7 +88,6 @@ func (blogU *blogUsecase) FetchByBlogID(c context.Context, blogID string) (domai
 }
 
 // FetchAll calls FetchAll in repository to fetch all blogs in the database
-
 // FetchByBlogAuthor calls FetchByBlogAuthor method in blog repository to retrive a blog writtern by the author using authuthor and pagination metadata
 func (blogU *blogUsecase) FetchByBlogAuthor(c context.Context, authorID string, limit, page int) (domain.PaginatedBlogs, error) {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
@@ -140,7 +142,9 @@ func (blogU *blogUsecase) FetchByBlogTitle(c context.Context, title string) (dom
 	return blog, nil
 }
 
-// FetchAll retrieves all blogs with pagination and metadata
+// FetchAll retrieves all blogs with pagination
+// It validates the pagination parameters, calculates the offset, and fetches the blogs and total count
+// Then it computes pagination metadata and returns a paginated result.
 func (blogU *blogUsecase) FetchAll(c context.Context, limit, page int) (domain.PaginatedBlogs, error) {
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
@@ -180,6 +184,9 @@ func (blogU *blogUsecase) FetchAll(c context.Context, limit, page int) (domain.P
 		}}, nil
 }
 
+// FetchByPageAndPopularity retrieves blogs sorted by popularity, with pagination
+// It calculates the offset based on pagination parameters and fetches blogs and total count
+// It then calculates pagination metadata and returns a paginated result.
 func (blogU *blogUsecase) FetchByPageAndPopularity(ctx context.Context, limit, page int) (domain.PaginatedBlogs, error) {
 	ctx, cancel := context.WithTimeout(ctx, blogU.contextTimeouts)
 	defer cancel()
@@ -191,13 +198,11 @@ func (blogU *blogUsecase) FetchByPageAndPopularity(ctx context.Context, limit, p
 
 	offset := (page - 1) * limit
 
-	// Fetch blogs and total count
 	blogs, totalCount, err := blogU.blogRepository.FetchByPageAndPopularity(ctx, limit, offset)
 	if err != nil {
 		return domain.PaginatedBlogs{}, err
 	}
 
-	// Calculate pagination metadata
 	totalPages := (totalCount + limit - 1) / limit
 	currentPage := page
 	nextPage := currentPage + 1
@@ -222,6 +227,9 @@ func (blogU *blogUsecase) FetchByPageAndPopularity(ctx context.Context, limit, p
 		}}, nil
 }
 
+// FetchByTags retrieves blogs associated with specific tags, with pagination
+// It validates the pagination parameters, calculates the offset, and fetches blogs and total count
+// It then calculates pagination metadata and returns a paginated result.
 func (blogU *blogUsecase) FetchByTags(ctx context.Context, tags []domain.Tag, limit, page int) (domain.PaginatedBlogs, error) {
 	ctx, cancel := context.WithTimeout(ctx, blogU.contextTimeouts)
 	defer cancel()
@@ -239,17 +247,16 @@ func (blogU *blogUsecase) FetchByTags(ctx context.Context, tags []domain.Tag, li
 		return domain.PaginatedBlogs{}, err
 	}
 
-	// Calculate pagination metadata
 	totalPages := (totalCount + limit - 1) / limit
 	currentPage := page
 	nextPage := currentPage + 1
 	previousPage := currentPage - 1
 
 	if nextPage > totalPages {
-		nextPage = 0 // No next page
+		nextPage = 0 
 	}
 	if previousPage < 1 {
-		previousPage = 0 // No previous page
+		previousPage = 0 
 	}
 
 	return domain.PaginatedBlogs{

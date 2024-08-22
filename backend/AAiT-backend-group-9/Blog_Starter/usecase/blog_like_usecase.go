@@ -22,22 +22,23 @@ func NewLikeUseCase(likeRepository domain.LikeRepository, blogRepository domain.
 
 
 // GetByID implements domain.LikeUseCase.
-func (l *LikeUseCase) GetByID(c context.Context, userID string, blogID string) (*domain.Like, error) {
-	ctx, cancel := context.WithTimeout(c, l.ContextTimeout)
+func (lu *LikeUseCase) GetByID(c context.Context, userID string, blogID string) (*domain.Like, error) {
+	ctx, cancel := context.WithTimeout(c, lu.ContextTimeout)
 	defer cancel()
-	return l.LikeRepository.GetByID(ctx,userID,blogID)
+	
+	return lu.LikeRepository.GetByID(ctx,userID,blogID)
 }
 
 // LikeBlog implements domain.LikeUseCase.
-func (l *LikeUseCase) LikeBlog(c context.Context, like *domain.Like) (*domain.Like, error) {
-	ctx,cancel := context.WithTimeout(c, l.ContextTimeout)
+func (lu *LikeUseCase) LikeBlog(c context.Context, like *domain.Like) (*domain.Like, error) {
+	ctx,cancel := context.WithTimeout(c, lu.ContextTimeout)
 	defer cancel()
 
-	 _ ,err := l.LikeRepository.LikeBlog(ctx, like)
+	 _ ,err := lu.LikeRepository.LikeBlog(ctx, like)
 	 if err != nil {
 	 	return nil,err
 	 }
-	 err= l.BlogRepository.UpdateLikeCount(ctx, like.BlogID, true)
+	 err= lu.BlogRepository.UpdateLikeCount(ctx, like.BlogID, true)
 	 if err != nil {
 	 	return nil,err
 	 }
@@ -45,14 +46,15 @@ func (l *LikeUseCase) LikeBlog(c context.Context, like *domain.Like) (*domain.Li
 }
 
 // UnlikeBlog implements domain.LikeUseCase.
-func (l *LikeUseCase) UnlikeBlog(c context.Context, likeID string) (*domain.Like, error) {
-	ctx,canel := context.WithTimeout(c, l.ContextTimeout)
-	defer canel()
-	like ,err := l.LikeRepository.UnlikeBlog(ctx, likeID)
+func (lu *LikeUseCase) UnlikeBlog(c context.Context, likeID string) (*domain.Like, error) {
+	ctx,cancel := context.WithTimeout(c, lu.ContextTimeout)
+	defer cancel()
+
+	like ,err := lu.LikeRepository.UnlikeBlog(ctx, likeID)
 	 if err != nil {
 	 	return nil,err
 	 }
-	 err= l.BlogRepository.UpdateLikeCount(ctx, like.BlogID, false)
+	 err= lu.BlogRepository.UpdateLikeCount(ctx, like.BlogID, false)
 	 if err != nil {
 	 	return nil,err
 	 }

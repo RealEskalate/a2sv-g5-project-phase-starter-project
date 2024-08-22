@@ -8,10 +8,20 @@ require (
 	github.com/google/generative-ai-go v0.17.0
 	github.com/joho/godotenv v1.5.1
 	github.com/pkg/errors v0.9.1
+	github.com/redis/go-redis v6.15.9+incompatible
 	go.mongodb.org/mongo-driver v1.16.1
 	golang.org/x/crypto v0.26.0
 	golang.org/x/oauth2 v0.22.0
 	google.golang.org/api v0.192.0
+)
+
+require github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+
+require (
+	github.com/go-redis/redis v6.15.9+incompatible // indirect
+	github.com/kr/text v0.2.0 // indirect
+	github.com/onsi/ginkgo v1.16.5 // indirect
+	github.com/onsi/gomega v1.34.1 // indirect
 )
 
 require (
@@ -67,7 +77,7 @@ require (
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.23.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
-	golang.org/x/time v0.6.0 // indirect
+	golang.org/x/time v0.6.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240711142825-46eb208f015d // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240730163845-b1a4ccb954bf // indirect
 	google.golang.org/grpc v1.64.1 // indirect

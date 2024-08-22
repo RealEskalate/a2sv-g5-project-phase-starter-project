@@ -53,7 +53,13 @@ func (uc *UserController) PromoteUser(c *gin.Context) {
 		return
 	}
 
-	userID := c.Param("id")
+	var userID string
+	if err = c.BindJSON(&userID);err!=nil{
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+
+	}
+
 
 	err = uc.userUsecase.PromoteUser(c, userID)
 	if err != nil {
@@ -81,7 +87,12 @@ func (uc *UserController) DemoteUser(c *gin.Context) {
 		return
 	}
 
-	userID := c.Param("id")
+	var userID string
+	if err = c.BindJSON(&userID);err!=nil{
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+
+	}
 
 	err = uc.userUsecase.DemoteUser(c, userID)
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/RealEskalate/blogpost/domain"
 	tokenservice "github.com/RealEskalate/blogpost/infrastructure/token_service"
 	"github.com/gin-gonic/gin"
 )
@@ -66,7 +67,10 @@ func LoggedIn(TS tokenservice.TokenService_imp) gin.HandlerFunc {
 		}
 
 		// Token is valid, store the user in the context
-		c.Set("user", user)
+
+		usr := domain.CreateResponseUser(*user)
+		c.Set("user", usr)
+
 		// Proceed to the next handler
 		c.Next()
 	}

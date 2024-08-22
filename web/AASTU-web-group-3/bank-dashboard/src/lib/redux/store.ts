@@ -5,12 +5,13 @@ import { transactionsApi } from "./api/transactionsApi";
 import { serviceApi } from "./api/serviceApi";
 import { settingApi } from "./api/settingApi";
 import { loansApi } from "./api/loansApi";
-import { cardsApi } from "./api/cardsApi";
+import { cardsApi } from './api/cardsApi';
 import transactionsReducer from "./slices/transactionsSlice";
 import loansReducer from "./slices/loansSlice";
 import settingReducer from "./slices/settingSlice";
 import serviceReducer from "./slices/serviceSlice";
-import cardsReducer from './slices/cardsSlice'
+import cardsReducer from './slices/cardsSlice';
+import layoutReducer from './slices/layoutSlice'; // Import the layout reducer
 
 export const store = configureStore({
   reducer: {
@@ -19,12 +20,13 @@ export const store = configureStore({
     [serviceApi.reducerPath]: serviceApi.reducer,
     [settingApi.reducerPath]: settingApi.reducer,
     [loansApi.reducerPath]: loansApi.reducer,
-    [cardsApi.reducerPath]:cardsApi.reducer,
-    transactions: transactionsReducer, 
-    service: serviceReducer, 
-    setting: settingReducer, 
+    [cardsApi.reducerPath]: cardsApi.reducer,
+    transactions: transactionsReducer,
+    service: serviceReducer,
+    setting: settingReducer,
     loans: loansReducer,
-    cards:cardsReducer
+    cards: cardsReducer,
+    layout: layoutReducer, // Add the layout reducer to the store
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(

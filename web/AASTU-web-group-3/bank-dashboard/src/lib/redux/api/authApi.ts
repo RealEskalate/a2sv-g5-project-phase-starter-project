@@ -17,7 +17,7 @@ interface AuthResponse {
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-1tst.onrender.com",
+    baseUrl: 'https://bank-dashboard-1tst.onrender.com',
   }),
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, Credentials>({

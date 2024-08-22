@@ -77,8 +77,12 @@ export const transactionsApi = createApi({
         `/transactions/latest-transfers${num}`,
     }),
     getBalanceHistory:builder.query<BalanceHistoryResponse, {}>({
-      query:()=> 'transactions/balance-history'
-    })
+      query:()=> '/transactions/balance-history'
+    }),
+    getQuickTransfers:builder.query<BalanceHistoryResponse, {num:number}>({
+      query:({num})=> `/transactions/quick-transfers/${num}`
+    }),
+    
   }),
 });
 

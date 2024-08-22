@@ -10,19 +10,21 @@ import (
 // A dto for blog where it gives the blog details and the author details
 
 type BlogDto struct {
-	ID         uuid.UUID   `json:"id"`
-	Title      string      `json:"title"`
-	Content    string      `json:"content"`
-	Author     uuid.UUID   `json:"author"`
-	Tags       []string    `json:"tags"`
-	CreatedAt  time.Time   `json:"createdAt"`		
-	UpdatedAt  time.Time   `json:"updatedAt"`
-	ViewCount  int         `json:"viewCount"`
-	AuthorName string      `json:"authorName"`
+	ID         		uuid.UUID   `json:"id"`
+	Title      		string      `json:"title"`
+	Content    		string      `json:"content"`
+	Author     		uuid.UUID   `json:"author"`
+	Tags       		[]string    `json:"tags"`
+	CreatedAt  		time.Time   `json:"createdAt"`		
+	UpdatedAt  		time.Time   `json:"updatedAt"`
+	ViewCount  		int         `json:"viewCount"`
+	LikeCount  		int		    `json:"likeCount"`
+	CommentCount	int	   		`json:"commentCount"`
+	AuthorName 		string      `json:"authorName"`
 }
 
 
-func NewBlogDto(blog domain.Blog, author domain.User) *BlogDto {
+func NewBlogDto(blog domain.Blog, author domain.User, likeCount int, commentCount int) *BlogDto {
 	return &BlogDto{
 		ID:         blog.ID,
 		Title:      blog.Title,
@@ -32,6 +34,8 @@ func NewBlogDto(blog domain.Blog, author domain.User) *BlogDto {
 		CreatedAt:  blog.CreatedAt,
 		UpdatedAt:  blog.UpdatedAt,
 		ViewCount:  blog.ViewCount,
+		LikeCount:  likeCount,
+		CommentCount: commentCount,
 		AuthorName: author.FullName,
 	}
 }

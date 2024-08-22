@@ -27,18 +27,11 @@ import {UserCircleIcon , PencilSquareIcon , Cog6ToothIcon , QuestionMarkCircleIc
 const modalStyle = {
   animation: 'fadeIn 0.5s ease-in-out',
 };
-const Modal: FC<{ message: string }> = ({ message }) => (
-  <div style={modalStyle} className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg">
-      <h2 className="text-lg font-semibold">{message}</h2>
-    </div>
-  </div>
-);
+
 
 
 export function DropdownMenuDemo() {
-  const [showModal, setShowModal] = useState(false);
-
+ 
   const router = useRouter();
   const handleSignOut = async () => {
     Cookies.remove('accessToken');
@@ -102,12 +95,7 @@ const fetch = async () => {
           </div>
           {/* <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut> */}
         </DropdownMenuItem>
-        {showModal && (
-        <Modal
-          message="We're sad to see you go! Come back again!"
-          onClose={() => setShowModal(false)} // Optional close function
-        />
-      )}
+        
       </DropdownMenuContent>
     </DropdownMenu>
   )

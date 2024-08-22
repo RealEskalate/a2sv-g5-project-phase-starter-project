@@ -1,7 +1,6 @@
 package gin
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"strconv"
@@ -66,7 +65,7 @@ func (chatHandler *ChatHandler) GetChatHandler(c *gin.Context) {
 	}
 
 	if err == chat.ErrChatNotFound {
-		c.JSON(http.StatusNotFound, err.Error)
+		c.JSON(http.StatusNotFound, err.Error())
 		return
 	}
 
@@ -126,4 +125,37 @@ func (ChatHandler *ChatHandler) GetChatsHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, retrievedChats)
+}
+
+func (ChatHandler *ChatHandler) SendMessage(c *gin.Context) {
+	var textForm chat.TextForm
+	if err := c.ShouldBindJSON(&textForm); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	chatForm := chat.DefaultChatForm{
+		ChatID: c.Param("id"),
+		UserID: c.Value("user_id").(string),
+	}
+
+	response, err := ChatHandler.chatUsecase.SendMessage(c.Request.Context(), chatForm, textForm)
+
+	var validationError validator.ValidationErrors
+	if errors.As(err, &validationError) {
+		errs := infrastructure.ReturnErrorResponse(err)
+		c.JSON(http.StatusBadRequest, errs)
+		return
+	}
+
+	if err == chat.ErrChatNotFound {
+		c.JSON(http.StatusNotFound, err.Error())
+		return
+	}
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }

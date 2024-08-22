@@ -63,7 +63,7 @@ const chartConfig = {
 
 const MyExpense = () => {
   return (
-    <div className="px-2 mx-auto w-fit rounded-my-card-radius drop-shadow-lg shadow-md overflow-hidden">
+    <div className="px-2 h-[225px]  mx-auto w-[350px] max-md:w-[231px] max-md:h-[170px] rounded-my-card-radius drop-shadow-lg shadow-md overflow-hidden">
       <Chart options={chartConfig.options} series={chartConfig.series} type="bar" />
     </div>
   );

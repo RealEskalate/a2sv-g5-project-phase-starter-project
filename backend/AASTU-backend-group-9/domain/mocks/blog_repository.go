@@ -57,7 +57,33 @@ func (_m *BlogRepository) DeleteBlog(ctx context.Context, id primitive.ObjectID)
 
 	return r0
 }
+// DecrementPopularity provides a mock function with given fields: ctx, id
+// DecrementPopularity provides a mock function with given fields: ctx, id, metric
+func (_m *BlogRepository) DecrementPopularity(ctx context.Context, id primitive.ObjectID, metric string) error {
+    ret := _m.Called(ctx, id, metric)
 
+    var r0 error
+    if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, string) error); ok {
+        r0 = rf(ctx, id, metric)
+    } else {
+        r0 = ret.Error(0)
+    }
+
+    return r0
+}
+// IncrementPopularity provides a mock function with given fields: ctx, id, metric
+func (_m *BlogRepository) IncrementPopularity(ctx context.Context, id primitive.ObjectID, metric string) error {
+    ret := _m.Called(ctx, id, metric)
+
+    var r0 error
+    if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, string) error); ok {
+        r0 = rf(ctx, id, metric)
+    } else {
+        r0 = ret.Error(0)
+    }
+
+    return r0
+}
 // FilterBlogsByDate provides a mock function with given fields: ctx, date
 func (_m *BlogRepository) FilterBlogsByDate(ctx context.Context, date string) ([]*domain.Blog, error) {
 	ret := _m.Called(ctx, date)

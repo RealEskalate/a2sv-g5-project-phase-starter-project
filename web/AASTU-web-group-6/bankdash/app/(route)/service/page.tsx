@@ -34,13 +34,11 @@ const Services = () => {
     setIsModalOpen(!isModalOpen);
   };
 
-  const accessToken =
-    "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiZXRzZWxvdCIsImlhdCI6MTcyNDIwNzUzMCwiZXhwIjoxNzI0MjkzOTMwfQ.3BqG6j5y2ts1WXajtWBI7C2eEx3UNFV-fPjMokVJ-cN-z48sy40yhMBuvZOoJblr";
-
+  const accessToken = session?.accessToken;
   async function fetchData(accessToken: string) {
     try {
       const response = await axios.get(
-        `https://bank-dashboard-6acc.onrender.com/bank-services?page=0&size=50`,
+        `https://bank-dashboard-1tst.onrender.com/bank-services?page=0&size=50`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

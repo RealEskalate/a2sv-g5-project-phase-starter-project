@@ -226,7 +226,11 @@ func (r *UserRepository) UpdatePassword(c context.Context, username string, newP
 
 // DeleteUser deletes the user with the provided username
 func (r *UserRepository) DeleteUser(c context.Context, username string) domain.CodedError {
-	_, err := r.collection.DeleteOne(c, bson.D{{Key: "username", Value: username}})
+	res, err := r.collection.DeleteOne(c, bson.D{{Key: "username", Value: username}})
+	if res.DeletedCount == 0 {
+		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
 	if err != nil {
 		return domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
 	}

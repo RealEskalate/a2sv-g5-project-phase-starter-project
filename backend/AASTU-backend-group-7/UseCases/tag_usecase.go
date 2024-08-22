@@ -26,7 +26,7 @@ func (usecase *TagsUseCase) CreateTag(c *gin.Context, tag *Domain.Tag) (error, i
 	return usecase.tagRepository.CreateTag(ctx, tag)
 }
 
-func (usecase *tagsUseCase) DeleteTag(c *gin.Context, slug string) (error, int) {
+func (usecase *TagsUseCase) DeleteTag(c *gin.Context, slug string) (error, int) {
 	ctx, cancel := context.WithTimeout(c, usecase.contextTimeout)
 	defer cancel()
 	return usecase.tagRepository.DeleteTag(ctx, slug)

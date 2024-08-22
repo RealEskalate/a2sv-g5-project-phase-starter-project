@@ -26,6 +26,7 @@ var TEST_USER = domain.User{
 	Bio:         "   cartifan20 ",
 	Password:    "  cR@zyP@ssw0rd  ",
 	PhoneNumber: " +256 6 45 2 10  21         ",
+	Role:        domain.RoleUser,
 }
 
 var TEST_GOOGLE_RES = dtos.GoogleResponse{
@@ -60,7 +61,7 @@ type UserUsecaseTestSuite struct {
 	GenerateToken       func(int) (string, error)
 	VerifyIdToken       func(string, string, string) error
 	DeleteFile          func(string) error
-	ENV                 domain.EnvironmentVariables
+	ENV                 *domain.EnvironmentVariables
 }
 
 func (suite *UserUsecaseTestSuite) SetupSuite() {
@@ -90,6 +91,11 @@ func (suite *UserUsecaseTestSuite) SetupSuite() {
 		return fmt.Errorf("file not found")
 	}
 
+	suite.ENV = &domain.EnvironmentVariables{
+		ACCESS_TOKEN_LIFESPAN:  12,
+		REFRESH_TOKEN_LIFESPAN: 13,
+	}
+
 	suite.Usecase = *usecase.NewUserUsecase(
 		suite.mockUserRepository,
 		suite.mockCacheRepository,
@@ -99,7 +105,7 @@ func (suite *UserUsecaseTestSuite) SetupSuite() {
 		suite.mockHashService,
 		suite.VerifyIdToken,
 		suite.DeleteFile,
-		suite.ENV,
+		*suite.ENV,
 	)
 }
 
@@ -110,7 +116,6 @@ func (suite *UserUsecaseTestSuite) SetupTest() {
 	suite.mockMailService.ExpectedCalls = []*mock.Call{}
 	suite.mockUserRepository.ExpectedCalls = []*mock.Call{}
 	suite.mockJWTService.ExpectedCalls = []*mock.Call{}
-	suite.ENV = domain.EnvironmentVariables{}
 }
 
 func (suite *UserUsecaseTestSuite) TestValidatePassword_Positive() {
@@ -458,18 +463,240 @@ func (suite *UserUsecaseTestSuite) TestOAuthSignup_RepositoryError() {
 	suite.mockHashService.AssertExpectations(suite.T())
 }
 
-// func (suite *UserUsecaseTestSuite) TestLogin_Positive() {
-// 	user := TEST_USER
-// 	user.IsVerified = true
-// 	suite.Usecase.SantizeUserFields(&user)
+func (suite *UserUsecaseTestSuite) TestLogin_Positive() {
+	user := TEST_USER
+	user.IsVerified = true
+	suite.Usecase.SantizeUserFields(&user)
 
-// 	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{
-// 		Username: user.Username,
-// 		Email:    user.Email,
-// 	}).Return(&user, nil).Once()
+	suite.mockUserRepository.On("FindUser", context.Background(), &user).Return(user, nil).Once()
+	suite.mockHashService.On("ValidateHashedString", user.Password, user.Password).Return(nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "accessToken", time.Minute*time.Duration(suite.ENV.ACCESS_TOKEN_LIFESPAN)).Return("acc.ess.Token", nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "refreshToken", time.Hour*time.Duration(suite.ENV.REFRESH_TOKEN_LIFESPAN)).Return("ref.reshT.oken", nil).Once()
+	suite.mockHashService.On("HashString", "oken").Return("hashed_str", nil).Once()
+	suite.mockUserRepository.On("SetRefreshToken", context.Background(), &user, "hashed_str").Return(nil).Once()
 
-// 	suite.mockUserRepository.AssertExpectations(suite.T())
-// }
+	ack, rfk, err := suite.Usecase.Login(context.Background(), &user)
+	suite.Nil(err, "error should be nil")
+	suite.Equal(ack, "acc.ess.Token")
+	suite.Equal(rfk, "ref.reshT.oken")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestLogin_Negative_RepositoryError_Find() {
+	user := TEST_USER
+	user.IsVerified = true
+	suite.Usecase.SantizeUserFields(&user)
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("FindUser", context.Background(), &user).Return(user, sampleErr).Once()
+
+	ack, rfk, err := suite.Usecase.Login(context.Background(), &user)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.Equal(ack, "")
+	suite.Equal(rfk, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestLogin_Negative_HashError() {
+	user := TEST_USER
+	user.IsVerified = true
+	suite.Usecase.SantizeUserFields(&user)
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("FindUser", context.Background(), &user).Return(user, nil).Once()
+	suite.mockHashService.On("ValidateHashedString", user.Password, user.Password).Return(sampleErr).Once()
+
+	ack, rfk, err := suite.Usecase.Login(context.Background(), &user)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_UNAUTHORIZED)
+	suite.Equal(ack, "")
+	suite.Equal(rfk, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestLogin_Negative_JWTError() {
+	user := TEST_USER
+	user.IsVerified = true
+	suite.Usecase.SantizeUserFields(&user)
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("FindUser", context.Background(), &user).Return(user, nil).Once()
+	suite.mockHashService.On("ValidateHashedString", user.Password, user.Password).Return(nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "accessToken", time.Minute*time.Duration(suite.ENV.ACCESS_TOKEN_LIFESPAN)).Return("acc.ess.Token", sampleErr).Once()
+
+	ack, rfk, err := suite.Usecase.Login(context.Background(), &user)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.Equal(ack, "")
+	suite.Equal(rfk, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestLogin_Negative_RepositoryError_SetRefreshToken() {
+	user := TEST_USER
+	user.IsVerified = true
+	suite.Usecase.SantizeUserFields(&user)
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("FindUser", context.Background(), &user).Return(user, nil).Once()
+	suite.mockHashService.On("ValidateHashedString", user.Password, user.Password).Return(nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "accessToken", time.Minute*time.Duration(suite.ENV.ACCESS_TOKEN_LIFESPAN)).Return("acc.ess.Token", nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "refreshToken", time.Hour*time.Duration(suite.ENV.REFRESH_TOKEN_LIFESPAN)).Return("ref.reshT.oken", nil).Once()
+	suite.mockHashService.On("HashString", "oken").Return("hashed_str", nil).Once()
+	suite.mockUserRepository.On("SetRefreshToken", context.Background(), &user, "hashed_str").Return(sampleErr).Once()
+
+	ack, rfk, err := suite.Usecase.Login(context.Background(), &user)
+	suite.NotNil(err, "error should be not nil")
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.Equal(ack, "")
+	suite.Equal(rfk, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestLogin_Negative_NoEmailAndUsername() {
+	ack, rfk, err := suite.Usecase.Login(context.Background(), &domain.User{})
+
+	suite.NotNil(err, "error should be not nil")
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.Equal(ack, "")
+	suite.Equal(rfk, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestOAuthLogin_Positive() {
+	google_data := TEST_GOOGLE_RES
+	user := TEST_USER
+	user.IsVerified = true
+
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Email: google_data.Email}).Return(user, nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "accessToken", time.Minute*time.Duration(suite.ENV.ACCESS_TOKEN_LIFESPAN)).Return("acc.ess.Token", nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "refreshToken", time.Hour*time.Duration(suite.ENV.REFRESH_TOKEN_LIFESPAN)).Return("ref.reshT.oken", nil).Once()
+	suite.mockHashService.On("HashString", "oken").Return("hashed_str", nil).Once()
+	suite.mockUserRepository.On("SetRefreshToken", context.Background(), &user, "hashed_str").Return(nil).Once()
+
+	ack, rfk, err := suite.Usecase.OAuthLogin(context.Background(), &google_data)
+	suite.Nil(err, "error should be nil")
+	suite.Equal(ack, "acc.ess.Token")
+	suite.Equal(rfk, "ref.reshT.oken")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestOAuthLogin_Negative_RepositoryError_Find() {
+	google_data := TEST_GOOGLE_RES
+	user := TEST_USER
+	user.IsVerified = true
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Email: google_data.Email}).Return(user, sampleErr).Once()
+
+	ack, rfk, err := suite.Usecase.OAuthLogin(context.Background(), &google_data)
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.Equal(rfk, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestOAuthLogin_Negative_VerificationError() {
+	google_data := TEST_GOOGLE_RES
+	google_data.IDToken = "random"
+	user := TEST_USER
+	// user.IsVerified = true
+
+	// sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Email: google_data.Email}).Return(user, nil).Once()
+
+	ack, rfk, err := suite.Usecase.OAuthLogin(context.Background(), &google_data)
+	suite.Equal(err.GetCode(), domain.ERR_UNAUTHORIZED)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.Equal(rfk, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestOAuthLogin_Negative_JWTError() {
+	google_data := TEST_GOOGLE_RES
+	user := TEST_USER
+	user.IsVerified = true
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Email: google_data.Email}).Return(user, nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "accessToken", time.Minute*time.Duration(suite.ENV.ACCESS_TOKEN_LIFESPAN)).Return("acc.ess.Token", sampleErr).Once()
+
+	ack, rfk, err := suite.Usecase.OAuthLogin(context.Background(), &google_data)
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.Equal(rfk, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestOAuthLogin_Negative_HashError() {
+	google_data := TEST_GOOGLE_RES
+	user := TEST_USER
+	user.IsVerified = true
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Email: google_data.Email}).Return(user, nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "accessToken", time.Minute*time.Duration(suite.ENV.ACCESS_TOKEN_LIFESPAN)).Return("acc.ess.Token", nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "refreshToken", time.Hour*time.Duration(suite.ENV.REFRESH_TOKEN_LIFESPAN)).Return("ref.reshT.oken", nil).Once()
+	suite.mockHashService.On("HashString", "oken").Return("hashed_str", sampleErr).Once()
+
+	ack, rfk, err := suite.Usecase.OAuthLogin(context.Background(), &google_data)
+	suite.Equal(err.GetCode(), domain.ERR_INTERNAL_SERVER)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.Equal(rfk, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestOAuthLogin_Negative_RepositoryError_SetRefreshToken() {
+	google_data := TEST_GOOGLE_RES
+	user := TEST_USER
+	user.IsVerified = true
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Email: google_data.Email}).Return(user, nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "accessToken", time.Minute*time.Duration(suite.ENV.ACCESS_TOKEN_LIFESPAN)).Return("acc.ess.Token", nil).Once()
+	suite.mockJWTService.On("SignJWTWithPayload", user.Username, user.Role, "refreshToken", time.Hour*time.Duration(suite.ENV.REFRESH_TOKEN_LIFESPAN)).Return("ref.reshT.oken", nil).Once()
+	suite.mockHashService.On("HashString", "oken").Return("hashed_str", nil).Once()
+	suite.mockUserRepository.On("SetRefreshToken", context.Background(), &user, "hashed_str").Return(sampleErr).Once()
+
+	ack, rfk, err := suite.Usecase.OAuthLogin(context.Background(), &google_data)
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.Equal(rfk, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
 
 func TestUserUsecase(t *testing.T) {
 	suite.Run(t, new(UserUsecaseTestSuite))

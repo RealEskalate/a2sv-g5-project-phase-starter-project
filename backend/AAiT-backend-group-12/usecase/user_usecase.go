@@ -306,12 +306,12 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 	}
 
 	// sign the new access and refresh tokens
-	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN))
+	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(u.ENV.ACCESS_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", "", err
 	}
 
-	refreshToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(env.ENV.REFRESH_TOKEN_LIFESPAN))
+	refreshToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(u.ENV.REFRESH_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", "", err
 	}
@@ -356,12 +356,12 @@ func (u *UserUsecase) OAuthLogin(c context.Context, data *dtos.GoogleResponse) (
 	}
 
 	// signs the new access and refresh tokens
-	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN))
+	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(u.ENV.ACCESS_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", "", err
 	}
 
-	refreshToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(env.ENV.REFRESH_TOKEN_LIFESPAN))
+	refreshToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(u.ENV.REFRESH_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", "", err
 	}
@@ -437,7 +437,7 @@ func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (
 		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
 	}
 
-	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN))
+	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(u.ENV.ACCESS_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
 	}

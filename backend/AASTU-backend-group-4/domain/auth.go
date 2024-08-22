@@ -8,7 +8,7 @@ import (
 
 type AuthService interface {
 	GenerateAccessToken(ctx context.Context, user User) (string, error)
-	GenerateAndStoreRefreshToken(ctx context.Context, userID string) (string, error)
+	GenerateAndStoreRefreshToken(ctx context.Context, user User) (string, error)
 	ValidateToken(tokenString string) (*jwt.Token, error)
 	RefreshTokens(ctx context.Context, refreshToken string) (*RefreshResponse, error)
 	DeleteRefreshToken(ctx context.Context, userID string) error
@@ -18,10 +18,9 @@ type AuthService interface {
 }
 
 type RefreshRequest struct {
-	RefreshToken string `json:"refreshToken"`
+	AccessToken string `json:"accessToken"`
 }
 
 type RefreshResponse struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
+	AccessToken string `json:"accessToken"`
 }

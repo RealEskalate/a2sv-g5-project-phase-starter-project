@@ -21,15 +21,6 @@ func (uc *userController) SignUp(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie(
-		"refresh_token",        // Cookie name
-		resp.RefreshToken,      // Cookie value (refresh token)
-		uc.Env.RefreshTokenExpiryHour,            // Cookie max age (7 days)
-		"/",                    // Cookie path (available across entire site)
-		"localhost",            // Domain for cookie (use "localhost" for local development)
-		false,                  // Secure flag (false for HTTP, true for HTTPS)
-		true,                    // HttpOnly flag (true to prevent JavaScript access)
-	)
 
 	c.JSON(http.StatusCreated, resp)
 }

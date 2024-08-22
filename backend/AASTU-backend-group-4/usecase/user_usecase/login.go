@@ -30,13 +30,12 @@ func (u *userUsecase) Login(ctx context.Context, req domain.LoginRequest) (*doma
 	}
 
 	// Generate and store the refresh token
-	refreshToken, err := u.authService.GenerateAndStoreRefreshToken(ctx, user.ID.Hex())
+	_, err = u.authService.GenerateAndStoreRefreshToken(ctx, *user)
 	if err != nil {
 		return nil, err
 	}
 
 	return &domain.LoginResponse{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
+		AccessToken: accessToken,
 	}, nil
 }

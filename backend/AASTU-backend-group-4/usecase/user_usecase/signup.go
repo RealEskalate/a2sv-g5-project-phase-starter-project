@@ -6,6 +6,7 @@ import (
 	"errors"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -24,6 +25,7 @@ func (u *userUsecase) SignUp(ctx context.Context, req domain.SignupRequest) (dom
 	}
 
 	user := &domain.User{
+		ID:                 primitive.NewObjectID(),
 		Firstname:          req.Firstname,
 		Lastname:           req.Lastname,
 		Username:           req.Username,
@@ -45,13 +47,12 @@ func (u *userUsecase) SignUp(ctx context.Context, req domain.SignupRequest) (dom
 		return domain.SignupResponse{}, err
 	}
 
-	refreshToken, err := u.authService.GenerateAndStoreRefreshToken(ctx, user.ID.Hex())
+	_, err = u.authService.GenerateAndStoreRefreshToken(ctx, *user)
 	if err != nil {
 		return domain.SignupResponse{}, err
 	}
 
 	return domain.SignupResponse{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
+		AccessToken: accessToken,
 	}, nil
 }

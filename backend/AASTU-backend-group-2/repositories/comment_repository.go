@@ -11,16 +11,18 @@ import (
 )
 
 type CommentRepositoryImpl struct {
-	client     *mongo.Client
-	database   *mongo.Database
-	collection *mongo.Collection
+	client         *mongo.Client
+	database       *mongo.Database
+	collection     *mongo.Collection
+	blogcollection *mongo.Collection
 }
 
 func NewCommentRepository(mongoClient *mongo.Client) domain.CommentRepository {
 	return &CommentRepositoryImpl{
-		client:     mongoClient,
-		database:   mongoClient.Database("Blog-manager"),
-		collection: mongoClient.Database("Blog-manager").Collection("Comments"),
+		client:         mongoClient,
+		database:       mongoClient.Database("Blog-manager"),
+		collection:     mongoClient.Database("Blog-manager").Collection("Comments"),
+		blogcollection: mongoClient.Database("Blog-manager").Collection("Blogs"),
 	}
 
 }
@@ -40,7 +42,29 @@ func (cr *CommentRepositoryImpl) CreateComment(blogID, userID string, comment do
 	comment.Date = time.Now()
 
 	_, err = cr.collection.InsertOne(context.TODO(), comment)
-	return err
+	if err != nil {
+		return err
+	}
+
+	var blog domain.Blog
+
+	erro := cr.blogcollection.FindOne(context.TODO(), bson.D{}).Decode(&blog)
+
+	if erro != nil {
+		return erro
+	}
+
+	if blog.Comments == 0 {
+		_, err = cr.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": comment.BlogID}, bson.M{"$set": bson.M{"comment": 1}})
+	} else {
+		_, err = cr.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": comment.BlogID}, bson.M{"$inc": bson.M{"comment": 1}})
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (cr *CommentRepositoryImpl) GetComments(blogID string) ([]domain.Comment, error) {

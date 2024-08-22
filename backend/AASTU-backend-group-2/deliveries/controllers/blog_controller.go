@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogController struct {
@@ -33,17 +34,7 @@ func NewBlogController(Blogmgr domain.BlogUsecase, likemgr domain.LikeUsecase, c
 }
 
 func (controller *BlogController) CreateBlog(c *gin.Context) {
-	// role, exists := c.Get("role")
-	// if !exists || (role != "user" && role != "admin") {
-	// 	c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-	// 	return
-	// }
-
-	// userid, exists := c.Get("userid")
-	// if !exists {
-	// 	c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-	// 	return
-	// }
+	userid := c.GetString("userid")
 
 	var blog domain.Blog
 	if err := c.ShouldBindJSON(&blog); err != nil {
@@ -55,9 +46,13 @@ func (controller *BlogController) CreateBlog(c *gin.Context) {
 		c.JSON(http.StatusBadGateway, gin.H{"message": "Please fill in all fields"})
 		return
 	}
-	// blog.UserID = userid
 
+	blog.UserID, _ = primitive.ObjectIDFromHex(userid)
 	blog.Date = time.Now()
+	blog.Likes = 0
+	blog.DisLikes = 0
+	blog.Comments = 0
+
 	err := controller.Blogusecase.CreateBlog(c, &blog)
 	if err != nil {
 		c.JSON(400, gin.H{
@@ -68,14 +63,13 @@ func (controller *BlogController) CreateBlog(c *gin.Context) {
 	c.JSON(200, blog)
 
 }
+
 func (controller *BlogController) RetrieveBlog(c *gin.Context) {
-	// role, exists := c.Get("role")
-	// if !exists || (role != "user" && role != "admin") {
-	// 	c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-	// 	return
-	// }
+
 	pages, _ := strconv.Atoi(c.Query("page"))
-	blogs, err := controller.Blogusecase.RetrieveBlog(c, pages)
+	sortby := c.DefaultQuery("sortby", "")
+	sortdire := c.DefaultQuery("sortdir", "")
+	blogs, err := controller.Blogusecase.RetrieveBlog(c, pages, sortby, sortdire)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"error": err.Error(),
@@ -85,8 +79,12 @@ func (controller *BlogController) RetrieveBlog(c *gin.Context) {
 
 	c.JSON(200, blogs)
 }
+
 func (controller *BlogController) UpdateBlog(c *gin.Context) {
 	getID := c.Param("id")
+	admin := c.GetBool("isadmin")
+	userid := c.GetString("userid")
+
 	if getID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "id can not be empty"})
 		return
@@ -98,7 +96,7 @@ func (controller *BlogController) UpdateBlog(c *gin.Context) {
 		return
 	}
 
-	err := controller.Blogusecase.UpdateBlog(c, blog, getID)
+	err := controller.Blogusecase.UpdateBlog(c, blog, getID, admin, userid)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -106,14 +104,18 @@ func (controller *BlogController) UpdateBlog(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusAccepted, gin.H{"message": "blog succesfully updated"})
 }
+
 func (controller *BlogController) DeleteBlog(c *gin.Context) {
 	getID := c.Param("id")
+	admin := c.GetBool("isadmin")
+	userid := c.GetString("userid")
+
 	if getID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "id can not be empty"})
 		return
 	}
 
-	err := controller.Blogusecase.DeleteBlog(c, getID)
+	err := controller.Blogusecase.DeleteBlog(c, getID, admin, userid)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

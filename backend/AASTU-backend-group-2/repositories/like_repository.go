@@ -65,6 +65,7 @@ func (lrep *LikeRepository) DeleteLike(like_id string) error {
 		return err
 	}
 	_, err = lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": like.BlogID}, bson.M{"$inc": bson.M{"likes": -1}})
+
 	if err != nil {
 		return err
 	}

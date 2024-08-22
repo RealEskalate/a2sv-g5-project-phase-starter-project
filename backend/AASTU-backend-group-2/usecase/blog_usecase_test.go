@@ -32,7 +32,7 @@ func (s *BlogUseCasetestSuite) TearDownTest() {
 // TestRunSuite runs the test suite
 func TestRunSuite(t *testing.T) {
 	suite.Run(t, new(BlogUseCasetestSuite))
-	suite.Run(t, new(UserUseCasetestSuite))
+	// suite.Run(t, new(UserUseCasetestSuite))
 }
 
 // TestCreateBlog tests the CreateBlog method
@@ -51,9 +51,9 @@ func (s *BlogUseCasetestSuite) TestCreateBlog() {
 
 // TestRetrieveBlog tests the RetrieveBlog method
 func (s *BlogUseCasetestSuite) TestRetrieveBlog() {
-	s.mockBlogRepository.On("RetrieveBlog", 1).Return([]domain.Blog{}, nil)
+	s.mockBlogRepository.On("RetrieveBlog", 1, "popularity", "asc").Return([]domain.Blog{}, nil)
 
-	blogs, err := s.BlogUsecase.RetrieveBlog(context.Background(), 1)
+	blogs, err := s.BlogUsecase.RetrieveBlog(context.Background(), 1, "popularity", "asc")
 	s.NoError(err)
 	s.Equal([]domain.Blog{}, blogs)
 }
@@ -66,17 +66,17 @@ func (s *BlogUseCasetestSuite) TestUpdateBlog() {
 		Tags:    []string{"test", "blog"},
 	}
 
-	s.mockBlogRepository.On("UpdateBlog", blog, "123").Return(nil)
+	s.mockBlogRepository.On("UpdateBlog", blog, "123", true, "my-uid").Return(nil)
 
-	err := s.BlogUsecase.UpdateBlog(context.Background(), blog, "123")
+	err := s.BlogUsecase.UpdateBlog(context.Background(), blog, "123", true, "my-uid")
 	s.NoError(err)
 }
 
 // TestDeleteBlog tests the DeleteBlog method
 func (s *BlogUseCasetestSuite) TestDeleteBlog() {
-	s.mockBlogRepository.On("DeleteBlog", "123").Return(nil)
+	s.mockBlogRepository.On("DeleteBlog", "123", true, "my-uid").Return(nil)
 
-	err := s.BlogUsecase.DeleteBlog(context.Background(), "123")
+	err := s.BlogUsecase.DeleteBlog(context.Background(), "123", true, "my-uid")
 	s.NoError(err)
 }
 

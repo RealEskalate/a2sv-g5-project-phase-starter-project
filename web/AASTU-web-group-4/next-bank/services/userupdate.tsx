@@ -1,12 +1,12 @@
 import Cookie from "js-cookie"
 
-const API_BASE_URL = "https://bank-dashboard-1tst.onrender.com";
+const API_BASE_URL = "https://bank-dashboard-o9tl.onrender.com";
 const token = Cookie.get("accessToken")
 // Update User Details - PUT Request
 export const updateUserDetails = async (userData: any) => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-1tst.onrender.com/user/update",
+      "https://bank-dashboard-o9tl.onrender.com/user/update",
       {
         method: "PUT",
         headers: {
@@ -31,7 +31,7 @@ export const updateUserDetails = async (userData: any) => {
 export const updatePreference = async (userData: any) => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-1tst.onrender.com/user/update-preference",
+      "https://bank-dashboard-o9tl.onrender.com/user/update-preference",
       {
         method: "PUT",
         headers: {
@@ -56,7 +56,7 @@ export const updatePreference = async (userData: any) => {
 export const fetchUserDetails = async (userId: string) => {
   try {
     const response = await fetch(
-      `https://bank-dashboard-1tst.onrender.com/user/{username}`,
+      `https://bank-dashboard-o9tl.onrender.com/user/{username}`,
       {
         method: "GET",
         headers: {
@@ -80,7 +80,7 @@ export const fetchUserDetails = async (userId: string) => {
 export const randominvestmentdata = async (userId: string) => {
   try {
     const response = await fetch(
-      `https://bank-dashboard-1tst.onrender.com/user/random-investment-data`,
+      `https://bank-dashboard-o9tl.onrender.com/user/random-investment-data`,
       {
         method: "GET",
         headers: {
@@ -104,7 +104,7 @@ export const randominvestmentdata = async (userId: string) => {
 export const currentuser = async () => {
   try {
     const response = await fetch(
-      `https://bank-dashboard-1tst.onrender.com/user/current`,
+      `https://bank-dashboard-o9tl.onrender.com/user/current`,
       {
         method: "GET",
         headers: {

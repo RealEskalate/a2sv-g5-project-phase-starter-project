@@ -2,7 +2,7 @@ import Cookies from "js-cookie";
 
 
 const API_BASE_URL = 'https://bank-dashboard-o9tl.onrender.com';
-const API_BASE_URL = 'https://bank-dashboard-1tst.onrender.com';
+
 const token = Cookies.get('accessToken')
 
 // GET /transactionshttps://bank-dashboard-1tst.onrender.com
@@ -129,15 +129,7 @@ export const getLatestTransfers = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    const response = await fetch(
-      `${API_BASE_URL}/transactions/quick-transfers?number=${number}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+    
     return response.json();
   } catch (error) {
     console.error("Error fetching latest transfers:", error);

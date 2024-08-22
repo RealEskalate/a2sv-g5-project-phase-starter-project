@@ -72,6 +72,7 @@ func (repo *userRepository) FindUserById(userId string) (*entities.User, error){
 
 	var user entities.User
 	err = repo.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&user)
+
 	if err != nil {
 		return nil, err
 	}

@@ -16,7 +16,7 @@ func NewBlogService(blogRepository interfaces.BlogRepository) interfaces.BlogSer
 }
 
 func (bs *blogService) CreateBlogPost(blogPost *entities.BlogPost, userId string) (*entities.BlogPost, error) {
-
+	
 	if blogPost.Title == "" || blogPost.Content == "" || len(blogPost.Tags) == 0 {
 		return nil, errors.New("missing required fields")
 	}
@@ -47,6 +47,7 @@ func (bs *blogService) GetBlogPostById(blogPostId string, userId string) (*entit
 }
 
 func (bs *blogService) UpdateBlogPost(blogPost *entities.BlogPost, userId string) (*entities.BlogPost, error) {
+	
 	
 	// Fetch the existing blog post to verify the author
 	existingBlogPost, err := bs.blogRepository.GetBlogPostById(blogPost.ID.Hex())

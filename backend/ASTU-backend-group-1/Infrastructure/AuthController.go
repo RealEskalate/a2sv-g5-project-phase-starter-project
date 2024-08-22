@@ -92,7 +92,7 @@ func (ac *AuthController) AuthorMiddlewareGin() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		if !ac.auth.OwnerAuth(claims,c.Param("_id")) {
+		if !ac.auth.OwnerAuth(claims, c.Param("_id")) {
 
 		}
 		c.Next()

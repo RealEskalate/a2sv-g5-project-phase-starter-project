@@ -232,18 +232,26 @@ func (r *MongoBlogRepository) UpdateBlog(strBlogId string, updateData domain.Blo
 	return updateData, nil
 }
 
-func (r *MongoBlogRepository) DeleteBlog(blogId string) error {
+func (r *MongoBlogRepository) DeleteBlog(blogId, authorId string) error {
 	id, err := IsValidObjectID(blogId)
 	if err != nil {
 		return err
 	}
 
 	filter := bson.M{"_id": id}
+	var blog domain.Blog
+	err = r.collection.FindOne(context.Background(), filter).Decode(&blog)
+	if err != nil {
+		log.Printf("Failed to find blog with ID %s: %v", blogId, err)
+		return err
+	}
+	if blog.AuthorId != authorId {
+		return errors.New("unauthorized to delete this blog")
+	}
 	result, err := r.collection.DeleteOne(context.Background(), filter)
 	if err != nil || result.DeletedCount == 0 {
 		log.Printf("Failed to delete blog with ID %s: %v", blogId, err)
 	}
-
 	return nil
 }
 
@@ -575,7 +583,7 @@ func (r *MongoBlogRepository) GetReplyById(blogId, commentId, replyId string) (d
 	}
 
 	projection := bson.M{
-		"comments.$": 1, 
+		"comments.$": 1,
 	}
 
 	var result struct {
@@ -592,7 +600,7 @@ func (r *MongoBlogRepository) GetReplyById(blogId, commentId, replyId string) (d
 
 	if len(result.Comments) > 0 {
 		for _, reply := range result.Comments[0].Replies {
-			if reply.ReplyId == replyId{
+			if reply.ReplyId == replyId {
 				return reply, nil
 			}
 		}

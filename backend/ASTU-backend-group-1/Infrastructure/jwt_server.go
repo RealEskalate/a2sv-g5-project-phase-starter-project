@@ -25,11 +25,12 @@ func GenerateToken(user *domain.User, pwd string) (string, string, error) {
 	}
 
 	// Access token
-	expirationTime := time.Now().Add(1 * time.Minute)
+	expirationTime := time.Now().Add(2 * time.Minute)
 	claims := &domain.Claims{
-		ID:      user.ID,
-		Email:   user.Email,
-		IsAdmin: user.IsAdmin,
+		ID:       user.ID,
+		Email:    user.Email,
+		IsAdmin:  user.IsAdmin,
+		IsActive: user.IsActive,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 			IssuedAt:  time.Now().Unix(),

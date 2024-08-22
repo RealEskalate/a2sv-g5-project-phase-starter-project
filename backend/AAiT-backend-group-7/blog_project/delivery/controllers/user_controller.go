@@ -192,6 +192,21 @@ func (uc *userController) Login(c *gin.Context) {
 }
 
 func (uc *userController) Logout(c *gin.Context) {
+	var token struct {
+		Token string `json:"token"`
+	}
+	err := c.ShouldBindJSON(&token)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = uc.UserUsecase.Logout(c, token.Token)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Logged out successfully"})
 
 }
 

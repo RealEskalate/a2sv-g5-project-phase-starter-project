@@ -35,6 +35,7 @@ func SetupRouter(blogController domain.IBlogController, userController domain.IU
 	users.POST("/login", userController.Login)
 	users.POST("/forget-password/:email", userController.ForgetPassword)
 	users.POST("/reset-password/:username/:password", userController.ResetPassword)
+	users.POST("/logout", userController.Logout)
 
 	users.Use(infrastructure.JwtAuthMiddleware(os.Getenv("jwt_secret")))
 	{

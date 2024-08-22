@@ -29,6 +29,7 @@ type IUserRepository interface {
 	AddBlog(ctx context.Context, userID int, blog Blog) (User, error)
 	StoreRefreshToken(ctx context.Context, userID int, refreshToken string) error
 	ValidateRefreshToken(ctx context.Context, userID int, refreshToken string) (bool, error)
+	GetRefreshToken(ctx context.Context, userID int) (string, error)
 }
 
 type IUserUsecase interface {
@@ -40,6 +41,7 @@ type IUserUsecase interface {
 	AddBlog(ctx context.Context, userID int, blog Blog) (User, error)
 	DeleteBlog(ctx context.Context, userID int, blogID int) (User, error)
 	Login(ctx context.Context, username, password string) (string, string, error)
+	Logout(ctx context.Context, token string) error
 	ForgetPassword(ctx context.Context, email string) error
 	ResetPassword(ctx context.Context, username, password string) error
 	PromoteUser(ctx context.Context, userID int) (User, error)
@@ -61,4 +63,9 @@ type IUserController interface {
 	PromoteUser(c *gin.Context)
 	DemoteUser(c *gin.Context)
 	RefreshToken(c *gin.Context)
+}
+
+type ITokenRepository interface {
+	BlacklistToken(ctx context.Context, token string) error
+	IsBlacklisted(token string) (bool, error)
 }

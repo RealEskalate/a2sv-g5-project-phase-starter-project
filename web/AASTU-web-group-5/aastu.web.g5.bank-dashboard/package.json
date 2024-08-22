@@ -9,7 +9,6 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
-		"@next/swc-win32-x64-msvc": "^14.2.5",
 		"@reduxjs/toolkit": "^2.2.7",
 		"@shadcn/ui": "^0.0.4",
 		"@tanstack/react-table": "^8.20.1",

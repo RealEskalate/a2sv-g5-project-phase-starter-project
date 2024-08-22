@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, applyMiddleware } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // or 'redux-persist/lib/storage/session' for session storage
 import { Persistor } from "redux-persist/es/types";
@@ -11,6 +11,7 @@ const persistConfig = {
 	key: "root",
 	storage,
 };
+
 const sagaMiddleware = createSagaMiddleware();
 const persistedReducer = persistReducer(persistConfig, themeReducer);
 
@@ -19,6 +20,10 @@ export const store = configureStore({
 		user: userReducer,
 		theme: persistedReducer,
 	},
+	middleware: (getDefaultMiddleware) =>
+		getDefaultMiddleware({
+			serializableCheck: false,
+		}).concat(sagaMiddleware),
 	// other store configurations if needed
 });
 

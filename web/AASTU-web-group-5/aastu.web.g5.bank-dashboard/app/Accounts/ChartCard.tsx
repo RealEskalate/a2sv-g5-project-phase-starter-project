@@ -39,16 +39,6 @@ const getDayName = (dateString) => {
 };
 
 export default function Component() {
-	const { data: session } = useSession();
-	const [chartData, setChartData] = useState([
-		{ day: "Mon", debited: 0, credited: 0 },
-		{ day: "Tue", debited: 0, credited: 0 },
-		{ day: "Wed", debited: 0, credited: 0 },
-		{ day: "Thu", debited: 0, credited: 0 },
-		{ day: "Fri", debited: 0, credited: 0 },
-		{ day: "Sat", debited: 0, credited: 0 },
-		{ day: "Sun", debited: 0, credited: 0 },
-	]);
 	const [chartData, setChartData] = useState([
 		{ day: "Mon", debited: 0, credited: 0 },
 		{ day: "Tue", debited: 0, credited: 0 },
@@ -63,85 +53,71 @@ export default function Component() {
 	const accessToken = user.accessToken;
 
 	useEffect(() => {
-		const token = `Bearer ${session?.user?.accessToken}`;
-		useEffect(() => {
-			const token = `Bearer ${accessToken}`;
+		const token = `Bearer ${accessToken}`;
 
-			const fetchData = async () => {
-				try {
-					// Fetch expenses and incomes data simultaneously
-					const [expensesResponse, incomesResponse] = await Promise.all([
-						axios.get(
-							"https://bank-dashboard-1tst.onrender.com/transactions/expenses?page=0&size=7",
-							{
-								headers: {
-									Authorization: token,
-								},
-							}
-						),
-						axios.get(
-							"https://bank-dashboard-1tst.onrender.com/transactions/incomes?page=0&size=7",
-							{
-								headers: {
-									Authorization: token,
-								},
-							}
-						),
-					]);
-
-					const expensesData = expensesResponse.data.data.content;
-					const incomesData = incomesResponse.data.data.content;
-
-					// Initialize a map to accumulate debited and credited amounts by day
-					const dataMap = {
-						Mon: { debited: 12000, credited: 10000 },
-						Tue: { debited: 15000, credited: 10000 },
-						Wed: { debited: 2344, credited: 7000 },
-						Thu: { debited: 3345, credited: 9000 },
-						Fri: { debited: 12340, credited: 1000 },
-						Sat: { debited: 8000, credited: 5000 },
-						Sun: { debited: 5000, credited: 6000 },
-					};
-					const dataMap = {
-						Mon: { debited: 12000, credited: 10000 },
-						Tue: { debited: 15000, credited: 10000 },
-						Wed: { debited: 2344, credited: 7000 },
-						Thu: { debited: 3345, credited: 9000 },
-						Fri: { debited: 12340, credited: 1000 },
-						Sat: { debited: 8000, credited: 5000 },
-						Sun: { debited: 5000, credited: 6000 },
-					};
-
-					// Accumulate expenses and incomes by day
-					expensesData.forEach((expense) => {
-						const day = getDayName(expense.date);
-						if (dataMap[day]) {
-							dataMap[day].debited += expense.amount;
+		const fetchData = async () => {
+			try {
+				// Fetch expenses and incomes data simultaneously
+				const [expensesResponse, incomesResponse] = await Promise.all([
+					axios.get(
+						"https://bank-dashboard-1tst.onrender.com/transactions/expenses?page=0&size=7",
+						{
+							headers: {
+								Authorization: token,
+							},
 						}
-					});
-
-					incomesData.forEach((income) => {
-						const day = getDayName(income.date);
-						if (dataMap[day]) {
-							dataMap[day].credited += income.amount;
+					),
+					axios.get(
+						"https://bank-dashboard-1tst.onrender.com/transactions/incomes?page=0&size=7",
+						{
+							headers: {
+								Authorization: token,
+							},
 						}
-					});
+					),
+				]);
 
-					// Convert the map to an array for the chart
-					const updatedChartData = Object.keys(dataMap).map((day) => ({
-						day,
-						debited: dataMap[day].debited,
-						credited: dataMap[day].credited,
-					}));
+				const expensesData = expensesResponse.data.data.content;
+				const incomesData = incomesResponse.data.data.content;
 
-					setChartData(updatedChartData);
-				} catch (error) {
-					console.error("Error fetching data:", error);
-				}
-			};
+				const dataMap = {
+					Mon: { debited: 12000, credited: 10000 },
+					Tue: { debited: 15000, credited: 10000 },
+					Wed: { debited: 2344, credited: 7000 },
+					Thu: { debited: 3345, credited: 9000 },
+					Fri: { debited: 12340, credited: 1000 },
+					Sat: { debited: 8000, credited: 5000 },
+					Sun: { debited: 5000, credited: 6000 },
+				};
 
-			fetchData();
-		}, [session]);
+				// Accumulate expenses and incomes by day
+				expensesData.forEach((expense) => {
+					const day = getDayName(expense.date);
+					if (dataMap[day]) {
+						dataMap[day].debited += expense.amount;
+					}
+				});
+
+				incomesData.forEach((income) => {
+					const day = getDayName(income.date);
+					if (dataMap[day]) {
+						dataMap[day].credited += income.amount;
+					}
+				});
+
+				// Convert the map to an array for the chart
+				const updatedChartData = Object.keys(dataMap).map((day) => ({
+					day,
+					debited: dataMap[day].debited,
+					credited: dataMap[day].credited,
+				}));
+
+				setChartData(updatedChartData);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
+
 		fetchData();
 	}, [accessToken, session]);
 

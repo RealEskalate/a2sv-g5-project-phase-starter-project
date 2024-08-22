@@ -85,7 +85,7 @@ const BalanceCard: React.FC<{ accountData: BalanceCardProps }> = ({ accountData 
   const { iconSrc, altText, title, balance } = accountData;
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-3 flex items-center space-x-3 w-full">
+    <div className="bg-white rounded-lg shadow-md p-3 flex items-center space-x-3 w-full dark:bg-dark text-gray-900 dark:text-white">
       {/* Icon */}
       <div className="rounded-full p-2">
         <Image 
@@ -99,7 +99,7 @@ const BalanceCard: React.FC<{ accountData: BalanceCardProps }> = ({ accountData 
 
       {/* Balance Details */}
       <div>
-        <p className="text-blue-500 text-xs">{title}</p>
+        <p className="text-white text-xs">{title}</p>
         <p className="text-black text-lg font-bold">{balance}</p>
       </div>
     </div>
@@ -139,7 +139,7 @@ const accountDatas: BalanceCardProps[] = [
 
 const App: React.FC = () => {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full  dark:bg-dark text-gray-900 dark:text-white">
       {accountDatas.map((accountData, index) => (
         <BalanceCard key={index} accountData={accountData} />
       ))}

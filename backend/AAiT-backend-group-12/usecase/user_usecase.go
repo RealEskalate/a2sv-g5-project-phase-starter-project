@@ -97,7 +97,7 @@ func (u *UserUsecase) ValidateUsername(username string) domain.CodedError {
 
 	re := regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 	if !re.MatchString(username) {
-		return domain.NewError("Invalid username: must contain only letters, numbers and underscores", domain.ERR_BAD_REQUEST)
+		return domain.NewError("Invalid Username: must contain only letters, numbers and underscores", domain.ERR_BAD_REQUEST)
 	}
 
 	return nil
@@ -106,7 +106,7 @@ func (u *UserUsecase) ValidateUsername(username string) domain.CodedError {
 /* Validates email format */
 func (u *UserUsecase) ValidateEmail(email string) domain.CodedError {
 	if _, err := mail.ParseAddress(email); err != nil {
-		return domain.NewError("Invalid email", domain.ERR_BAD_REQUEST)
+		return domain.NewError("Invalid Email", domain.ERR_BAD_REQUEST)
 	}
 
 	return nil
@@ -114,10 +114,10 @@ func (u *UserUsecase) ValidateEmail(email string) domain.CodedError {
 
 /* Sanitizes user email, username, bio and phonenumber fields */
 func (u *UserUsecase) SantizeUserFields(user *domain.User) {
-	user.Email = strings.TrimSpace(strings.ToLower(user.Email))
-	user.Username = strings.TrimSpace(strings.ToLower(user.Username))
+	user.Email = strings.ReplaceAll(strings.TrimSpace(strings.ToLower(user.Email)), " ", "")
+	user.Username = strings.ReplaceAll(strings.TrimSpace(strings.ToLower(user.Username)), " ", "")
 	user.Bio = strings.TrimSpace(user.Bio)
-	user.PhoneNumber = strings.TrimSpace(user.PhoneNumber)
+	user.PhoneNumber = strings.ReplaceAll(strings.TrimSpace(user.PhoneNumber), " ", "")
 }
 
 /* Calls sanitization and validation functions and validates bio and phonenumber format */
@@ -145,7 +145,7 @@ func (u *UserUsecase) SanitizeAndValidateNewUser(user *domain.User) domain.Coded
 	}
 
 	if !PhoneRegex.MatchString(user.PhoneNumber) {
-		return domain.NewError("Invalid phone number: must be informat +XXXXXXXXXX", domain.ERR_BAD_REQUEST)
+		return domain.NewError("Invalid PhoneNumber: must be informat +XXXXXXXXXX", domain.ERR_BAD_REQUEST)
 	}
 
 	return nil

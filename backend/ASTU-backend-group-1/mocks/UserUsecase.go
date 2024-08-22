@@ -14,31 +14,21 @@ type UserUsecase struct {
 }
 
 // AccountVerification provides a mock function with given fields: uemail, confirmationToken
-func (_m *UserUsecase) AccountVerification(uemail string, confirmationToken string) (string, error) {
+func (_m *UserUsecase) AccountVerification(uemail string, confirmationToken string) error {
 	ret := _m.Called(uemail, confirmationToken)
 
 	if len(ret) == 0 {
 		panic("no return value specified for AccountVerification")
 	}
 
-	var r0 string
-	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string) (string, error)); ok {
-		return rf(uemail, confirmationToken)
-	}
-	if rf, ok := ret.Get(0).(func(string, string) string); ok {
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
 		r0 = rf(uemail, confirmationToken)
 	} else {
-		r0 = ret.Get(0).(string)
+		r0 = ret.Error(0)
 	}
 
-	if rf, ok := ret.Get(1).(func(string, string) error); ok {
-		r1 = rf(uemail, confirmationToken)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // Create provides a mock function with given fields: u
@@ -257,6 +247,24 @@ func (_m *UserUsecase) LoginUser(uname string, password string) (string, error) 
 	return r0, r1
 }
 
+// Logout provides a mock function with given fields: email
+func (_m *UserUsecase) Logout(email string) error {
+	ret := _m.Called(email)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Logout")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(email)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // ResetPassword provides a mock function with given fields: email, token, password
 func (_m *UserUsecase) ResetPassword(email string, token string, password string) (string, error) {
 	ret := _m.Called(email, token, password)
@@ -318,8 +326,7 @@ func (_m *UserUsecase) Update(userId string, updateData domain.User) (domain.Use
 func NewUserUsecase(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *UserUsecase {
+}) *UserUsecase {
 	mock := &UserUsecase{}
 	mock.Mock.Test(t)
 

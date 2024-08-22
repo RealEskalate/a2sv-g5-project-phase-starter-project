@@ -56,7 +56,7 @@ ACCESS_TOKEN_SECRET=<your-access-token-secret>
 REFRESH_TOKEN_SECRET=<your-refresh-token-secret>
 CLIENT_ID=<your-client-id>
 CLIENT_SECRET=<your-client-secret>
-REDIRECT_URI=http://localhost:8080/auth/callback
+REDIRECT_URI=<your-callback-url>
 OAUTH_STATE_STRING=oauthStateString
 ACTIVE_USER_COLLECTION=active_user
 GEMINI_API_KEY=<your-api-key>
@@ -77,6 +77,20 @@ GEMINI_API_KEY=<your-api-key>
 - `DELETE /blogs/delete/:id` - Delete a blog by ID (Protected)
 - `POST /blogs/comment/create` - Comment on a blog (Protected)
 - `POST /blogs/react/:id` - React to a blog (Protected)
+
+### User Registration Endpoints 👤
+
+- `POST /auth/signup` - Register a new user
+- `POST /auth/verify` - Verify a user's email address using OTP
+- `POST /auth/resend` - Resend a verification email
+- `POST /auth/reset` - Send a password reset email
+- `POST /auth/reset/token` - Reset a user's password
+- `POST /auth/login` - Login a user
+- `POST /auth/logout` - Logout a user (Protected)
+- `Post /auth/google` - Login with Google
+- `GET /auth/callback` - Google OAuth callback
+- `POST /auth/refresh` - Refresh access token (Protected)
+-
 
 ### User Endpoints 👤
 

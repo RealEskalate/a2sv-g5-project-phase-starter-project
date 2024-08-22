@@ -249,7 +249,7 @@ func (userUC *userUseCase) ForgotPassword(cxt *gin.Context, email string) domain
 	return nil
 }
 
-func (userUC *userUseCase) ResetPassword(cxt *gin.Context, newPassword, confirmPassword, token string) domain.Error {
+func (userUC *userUseCase) ResetPassword(cxt *gin.Context, newPassword, confirmPassword, token string, code int) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}

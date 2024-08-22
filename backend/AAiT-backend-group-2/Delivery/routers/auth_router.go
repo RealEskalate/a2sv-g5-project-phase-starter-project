@@ -24,10 +24,10 @@ func NewAuthRouter(db *mongo.Database, group *gin.RouterGroup, configs *domain.C
 
 	authController := controllers.NewAuthController(userUsecase)
 
-	group.POST("/users/register", authController.CreateUser)
-	group.POST("/users/login", authController.Login)
+	group.POST("/register", authController.CreateUser)
+	group.POST("/login", authController.Login)
 
 	userRoutes := group.Group("")
 	userRoutes.Use(infrastructure.AuthMiddleWare(configs.SecretKey))
-	userRoutes.POST("/users/refresh-token", authController.RefreshToken)
+	userRoutes.POST("/refresh-token", authController.RefreshToken)
 }

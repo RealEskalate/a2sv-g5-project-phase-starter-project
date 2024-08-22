@@ -85,6 +85,7 @@ const CreditCardsPage = () => {
   console.log("the data we don't want to see: ", cardInfoData);
   const allCardsData = allCardsDataWithContent.content!;
   const leng = allCardsData.length;
+  
   return (
     <div className="grid grid-cols-1 gap-2 pb-5">
       <div className="grid lg:grid-cols-1 p-4">

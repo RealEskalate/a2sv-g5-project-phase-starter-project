@@ -12,38 +12,56 @@ function WeeklyActivityChart() {
   const chartRef = useRef<ChartRef>(null);
   const { data: session, status } = useSession();
   const accessToken = session?.user.accessToken!;
-  const { data, isError, isLoading } = useGetAllTransactionQuery(accessToken);
+  const { data: res, isError, isLoading } = useGetAllTransactionQuery(accessToken);
 
   const processDataForChart = (transactions: any[]) => {
-    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const deposits = new Array(7).fill(1); // Initialize with 0
-    const withdrawals = new Array(7).fill(1); // Initialize with 0
+    const daysOfWeek = [];
+    let deposits = new Array(7).fill(0);
+    let withdrawals = new Array(7).fill(0);
 
-    if (Array.isArray(transactions)) {
-      transactions.forEach((transaction) => {
-        const date = new Date(transaction.date);
-        const dayIndex = date.getDay(); // Sunday is 0, Saturday is 6
+    const today = new Date();
+    const todayIndex = today.getDay();
+    
+    // Get the date 7 days ago
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(today.getDate() - 7);
 
-        if (transaction.type === "deposit") {
-          deposits[dayIndex] += transaction.amount;
-        } else if (transaction.type === "shopping") {
-          withdrawals[dayIndex] += transaction.amount;
-        }
-      });
-    } else {
-      console.error(
-        "Expected an array of transactions, but got:",
-        transactions
-      );
+    for (let i = 0; i < 7; i++) {
+        const dayIndex = (todayIndex - i + 7) % 7;
+        const day = new Date(today);
+        day.setDate(today.getDate() - i);
+        const dayLabel = day.toLocaleString('en-US', { weekday: 'short' });
+        daysOfWeek.unshift(dayLabel);
     }
 
+    transactions.forEach((transaction) => {
+        const date = new Date(transaction.date);
+        
+        // Only include transactions from the last 7 days
+        if (date >= sevenDaysAgo && date <= today) {
+            const dayIndex = (todayIndex - date.getDay() + 7) % 7;
+
+            if (transaction.type.toLowerCase() === "deposit") {
+                deposits[dayIndex] += transaction.amount;
+            } else {
+                withdrawals[dayIndex] += transaction.amount;
+            }
+        }
+    });
+    deposits = deposits.filter(deposit => deposit <= 1000)
+    withdrawals = withdrawals.filter(withdrawal => withdrawal <= 1000)
+    
+
     return { deposits, withdrawals, daysOfWeek };
-  };
+};
+
+
+
 
   useEffect(() => {
     const currentChartRef = chartRef.current;
 
-    if (currentChartRef && data?.success) {
+    if (currentChartRef && res?.success) {
       if (currentChartRef.chart) {
         currentChartRef.chart.destroy();
       }
@@ -51,9 +69,8 @@ function WeeklyActivityChart() {
       const context = currentChartRef.getContext("2d");
 
       if (context) {
-        // Access transactions array within `data.data.content`
         const { deposits, withdrawals, daysOfWeek } = processDataForChart(
-          data.data.content
+          res.data.content
         );
 
         const newChart = new Chart(context, {
@@ -69,7 +86,7 @@ function WeeklyActivityChart() {
                 borderWidth: 0,
                 borderRadius: 50,
                 barThickness: 10,
-                maxBarThickness: 20,
+                maxBarThickness: 10,
                 categoryPercentage: 0.6,
                 barPercentage: 0.7,
               },
@@ -91,7 +108,7 @@ function WeeklyActivityChart() {
                 borderWidth: 0,
                 borderRadius: 50,
                 barThickness: 10,
-                maxBarThickness: 20,
+                maxBarThickness: 10,
                 categoryPercentage: 0.6,
                 barPercentage: 0.7,
               },
@@ -99,7 +116,7 @@ function WeeklyActivityChart() {
           },
           options: {
             responsive: true,
-            maintainAspectRatio: false, // Allow the chart to resize based on its container
+            maintainAspectRatio: false,
             plugins: {
               legend: {
                 display: false,
@@ -126,17 +143,18 @@ function WeeklyActivityChart() {
         currentChartRef.chart = newChart;
       }
     }
-  }, [data]);
+  }, [res]);
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center flex-col flex-initial flex-wrap bg-white  px-5 lg:h-[322px] h-[261px] w-full rounded-[22px]">
-        <div className="flex flex-row gap-2">
-          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
-          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-        </div>
+      <div className="flex flex-row gap-2">
+        <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+        <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
+        <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
       </div>
+    </div>
+
     );
   }
 
@@ -149,7 +167,7 @@ function WeeklyActivityChart() {
   }
 
   return (
-    <div className=" bg-white rounded-[22px]  lg:h-[322px] h-[261px] ">
+    <div className="bg-white rounded-[22px] lg:h-[322px] h-[261px] ">
       <div className="flex flex-row justify-end gap-2">
         <div className="flex flex-row mx-5 mt-5 gap-1">
           <div className="w-[12px] h-[12px] mt-[6px] border rounded-full bg-[#16DBCC]"></div>

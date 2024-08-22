@@ -26,7 +26,11 @@ func NewEmailService() domain.EmailService {
 
 func (service *emailService) SendMail(to, subject, templateName string, body interface{}) error {
 	from := os.Getenv("SMTP_EMAIL")
-	tmplt, errLoadingTmplt := template.ParseFiles("templates/" + templateName)
+	currdir, errdir := os.Getwd()
+	if errdir != nil {
+		return errdir
+	}
+	tmplt, errLoadingTmplt := template.ParseFiles(currdir + "/infrastructure/mail/templates/" + templateName)
 	if errLoadingTmplt != nil {
 		return fmt.Errorf("error loading the template: %v", errLoadingTmplt)
 	}
@@ -52,10 +56,11 @@ func (service *emailService) SendVerificationEmail(to, name, verificationLink st
 	return service.SendMail(to, "Email Verification", "verification.html", data)
 }
 
-func (service *emailService) SendPasswordResetEmail(to, name, resetLink string) error {
+func (service *EmailService) SendPasswordResetEmail(to, name, resetLink, resetCode string) error {
 	data := map[string]string{
 		"Name":      name,
 		"ResetLink": resetLink,
+		"ResetCode": resetCode,
 	}
 
 	return service.SendMail(to, "Password Reset", "password_reset.html", data)

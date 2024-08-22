@@ -39,12 +39,8 @@ func (sessionRepo sessionRepository) FindTokenById(cxt context.Context, id strin
 	return &fetchedSession, nil
 }
 
-func (sessionRepo sessionRepository) FindTokenByUserUsername(cxt context.Context, userID string) (*domain.Session, bool, domain.Error) {
-	user_id, errIDParse := primitive.ObjectIDFromHex(userID)
-	if errIDParse != nil {
-		return &domain.Session{}, false, &domain.CustomError{Message: fmt.Sprintf("error parsing the user id. %v \n", errIDParse.Error()), Code: http.StatusInternalServerError}
-	}
-	filter := bson.D{{"user_id", user_id}}
+func (sessionRepo sessionRepository) FindTokenByUserUsername(cxt context.Context, username string) (*domain.Session, bool, domain.Error) {
+	filter := bson.D{{Key: "username", Value: username}}
 	var fetchedSession domain.Session
 	errFetchSession := sessionRepo.collection.FindOne(cxt, filter).Decode(&fetchedSession)
 	if errFetchSession != nil {
@@ -66,7 +62,7 @@ func (sessionRepo sessionRepository) CreateToken(cxt context.Context, session *d
 	}
 	returnedID, ok := insertResult.InsertedID.(primitive.ObjectID)
 	if !ok {
-		return &domain.Session{}, &domain.CustomError{Message: fmt.Sprintf("error getting the user id. %v \n", errInsert.Error()), Code: http.StatusInternalServerError}
+		return &domain.Session{}, &domain.CustomError{Message: fmt.Sprintln("error getting the user id."), Code: http.StatusInternalServerError}
 	}
 	session.ID = returnedID
 	return session, nil

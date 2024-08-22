@@ -15,12 +15,12 @@ import (
 )
 
 func main() {
-	
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	
+
 	geminiApiKey := os.Getenv("GEMINI_API_KEY")
 
 	databaseUri := os.Getenv("DATABASE_URI")
@@ -29,7 +29,9 @@ func main() {
 
 	accessSecret := os.Getenv("ACCESS_SECRET")
 	refreshSecret := os.Getenv("REFRESH_SECRET")
-	jwtService := infrastructure.NewJWTTokenService(accessSecret, refreshSecret, databaseService.GetCollection("tokens"))
+	verifySecret := os.Getenv("VERIFY_SECRET")
+	resetSecret := os.Getenv("RESET_SECRET")
+	jwtService := infrastructure.NewJWTTokenService(accessSecret, refreshSecret, verifySecret, resetSecret, databaseService.GetCollection("tokens"))
 
 	cacheDbUri := os.Getenv("CACHE_DB_URI")
 	cacheDbPassword := os.Getenv("CACHE_DB_PASSWORD")
@@ -38,15 +40,15 @@ func main() {
 	passwordService := infrastructure.NewPasswordService()
 
 	emailService := mail.NewEmailService()
-	
+
 	sessionRepo := repository.NewSessionRespository(databaseService.GetCollection("sessions"))
 
 	userRepo := repository.NewUserRespository(databaseService.GetCollection("users"))
 	userUC := usecases.NewUserUseCase(userRepo, sessionRepo, passwordService, jwtService, emailService, cacheService)
 	userController := controllers.NewUserController(userUC)
-	
+
 	blogRepo := repository.NewBlogRepository(databaseService.GetCollection("blogs"), context.TODO())
-	blogUC := usecases.NewBlogUseCase(blogRepo)
+	blogUC := usecases.NewBlogUseCase(blogRepo, cacheService)
 	blogController := controllers.NewBlogController(blogUC)
 
 	blogAssistantUC := usecases.NewBlogAssistantUsecase(geminiApiKey)

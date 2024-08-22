@@ -25,14 +25,6 @@ func NewMiddlewareService(jwtService domain.JwtService, cacheService domain.Cach
 
 func (m *middlewareService) Authenticate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var body LogoutRequest
-		errUnmarshall := ctx.ShouldBind(&body)
-		if errUnmarshall != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": errUnmarshall.Error()})
-			ctx.Abort()
-			return
-		}
-
 		authHeader := ctx.GetHeader("Authorization")
 		if authHeader == "" {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "authorization header is required"})
@@ -47,13 +39,7 @@ func (m *middlewareService) Authenticate() gin.HandlerFunc {
 			return
 		}
 
-		if body.AccessToken != authParts[1] {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid access token"})
-			ctx.Abort()
-			return
-		}
-
-		blacklisted, errRedis := m.redisService.Get(body.AccessToken) // check if token is blacklisted
+		blacklisted, errRedis := m.redisService.Get(authParts[1]) // check if token is blacklisted
 		if errRedis != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": errRedis.Error()})
 			ctx.Abort()

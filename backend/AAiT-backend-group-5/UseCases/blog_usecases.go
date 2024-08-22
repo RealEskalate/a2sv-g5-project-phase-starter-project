@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"log"
 	"strconv"
+
+	"github.com/go-redis/redis/v8"
 
 	config "github.com/aait.backend.g5.main/backend/Config"
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"

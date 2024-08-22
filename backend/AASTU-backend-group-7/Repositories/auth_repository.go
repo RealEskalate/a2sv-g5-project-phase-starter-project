@@ -74,14 +74,14 @@ func (ar *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.
 		return Domain.Tokens{}, errors.New("Invalid credentials"), http.StatusBadRequest
 	}
 	fmt.Println("emailverified :", existingUser.EmailVerified, "email", existingUser.Email)
-	// if existingUser.EmailVerified == false {
-	// 	err, statusCode := ar.SendActivationEmail(user.Email)
-	// 	if err != nil {
-	// 		fmt.Println("error at sending email", err)
-	// 		return Domain.Tokens{}, err, statusCode
-	// 	}
-	// 	return Domain.Tokens{}, errors.New("email is not activated , an activation email has been sent"), http.StatusUnauthorized
-	// }
+	if existingUser.EmailVerified == false {
+		err, statusCode := ar.SendActivationEmail(user.Email)
+		if err != nil {
+			fmt.Println("error at sending email", err)
+			return Domain.Tokens{}, err, statusCode
+		}
+		return Domain.Tokens{}, errors.New("email is not activated , an activation email has been sent"), http.StatusUnauthorized
+	}
 	return ar.GenerateTokenFromUser(ctx, existingUser)
 
 }
@@ -156,10 +156,10 @@ func (ar *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 		return &Domain.OmitedUser{}, errors.New("User Not Created"), 500
 	}
 	fetched.Password = ""
-	// err, statusCode := ar.SendActivationEmail(fetched.Email)
-	// if err != nil {
-	// 	return &fetched, err, statusCode
-	// }
+	err, statusCode := ar.SendActivationEmail(fetched.Email)
+	if err != nil {
+		return &fetched, err, statusCode
+	}
 	return &fetched, err, 200
 }
 
@@ -268,7 +268,7 @@ func (ar *authRepository) CallbackHandler(ctx context.Context, code string) (Dom
 			UserName:       userInfo["name"].(string),
 			ProfilePicture: userInfo["picture"].(string),
 			EmailVerified:  userInfo["email_verified"].(bool),
-			Password:       "Test2" + userInfo["sub"].(string),
+			Password:       "Test!2" + userInfo["sub"].(string),
 		}
 		_, err, _ := ar.Register(ctx, &user)
 		if err != nil {
@@ -300,7 +300,7 @@ func (ar *authRepository) GenerateTokenFromUser(ctx context.Context, existingUse
 	}
 
 	// filter := primitive.D{{"_id", existingUser.ID}}
-	existingToken, err, statusCode:= ar.TokenRepository.FindToken(ctx, existingUser.ID)
+	existingToken, err, statusCode := ar.TokenRepository.FindToken(ctx, existingUser.ID)
 	if err != nil && err.Error() != "mongo: no documents in result" {
 		fmt.Println("error at count", err)
 		return Domain.Tokens{}, err, statusCode

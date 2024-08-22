@@ -15,7 +15,7 @@ const CardForCreditCards = ({
   className?: string;
 }) => {
   return (
-    <div className={`${className} `}>
+    <div className={`${className} mt-3 `}>
       <div className="flex justify-between items-center mb-4">
         <p className="font-semibold text-lg md:text-xl lg:text-2xl text-[#343C6A]">
           {title}

@@ -1,15 +1,16 @@
+"use client"
 import React from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
-interface props{
-  title:string
-}
 
-const Navbar = (props:props) => {
+
+const Navbar = () => {
+  const path = usePathname()
   return (
-    <div className="flex justify-between items-center h-24 px-3 ">
+    <div className="flex justify-between items-center  h-24 px-3 ">
       <div className='flex gap-[50px] items-center'>
-        <p className='font-[600] text-[28px] text-[#343C6A]'>{props.title}</p>
+        <p className='font-[600] text-[28px] text-[#343C6A]'>{path}</p>
       </div>
       <div className='flex gap-5 items-center'>
         <div className='flex hidden  sm:flex md:gap-1 lg:gap-5'>

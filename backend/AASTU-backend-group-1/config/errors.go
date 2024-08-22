@@ -37,6 +37,7 @@ var (
 	ErrBlogOrLikeNotFound    = errors.New("blog or like not found")
 	ErrOnlyAuthorOrAdminDel  = errors.New("only author or admin can delete the blog")
 	ErrOnlyAuthorUpdates     = errors.New("only author can update the blog")
+	ErrUserCantBePromoted    = errors.New("user cannot be promoted")
 )
 
 func GetStatusCode(err error) int {
@@ -53,6 +54,8 @@ func GetStatusCode(err error) int {
 		return http.StatusConflict
 	case ErrUserNotFound, ErrTokenNotFound, ErrBlogNotFound, ErrLikeNotFound, ErrCommentNotFound, ErrBlogOrLikeNotFound:
 		return http.StatusNotFound
+	case ErrUserCantBePromoted:
+		return http.StatusUnprocessableEntity
 	default:
 		return http.StatusInternalServerError
 	}

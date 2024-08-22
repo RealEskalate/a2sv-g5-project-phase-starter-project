@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (b *BlogController) DeleteLogByID(ctx *gin.Context) {
+func (b *BlogController) DeleteBlogByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	claims, ok := ctx.MustGet("claims").(*domain.LoginClaims)

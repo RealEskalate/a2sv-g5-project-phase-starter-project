@@ -13,7 +13,6 @@ import (
 )
 
 func main() {
-	config.GenerateAIContent("Hello, how are you?")
 	log.Println("Starting server...")
 
 	// Initialize environment variables

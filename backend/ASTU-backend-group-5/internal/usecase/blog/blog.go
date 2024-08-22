@@ -9,11 +9,11 @@ import (
 type BlogUseCase interface {
 	// Blog operations
 	CreateBlog(ctx context.Context, blog *domain.Blog, authorId string) error
-	GetBlogByID(ctx context.Context, id string) (*domain.Blog, error)
+	GetBlogByID(ctx context.Context, blogId, userId string) (*domain.GetSingleBlogDTO, error)
 	UpdateBlog(ctx context.Context, id string, blog *domain.Blog, authorId string) error
 	DeleteBlog(ctx context.Context, id, userId string, userRole string) error
 	GetAllBlogs(ctx context.Context) ([]*domain.Blog, error)
-	FilterBlogs(ctx context.Context, filter domain.BlogFilter) ([]*domain.Blog, error)
+	// FilterBlogs(ctx context.Context, filter domain.BlogFilter) ([]*domain.Blog, error)
 	PaginateBlogs(ctx context.Context, filter domain.BlogFilter, page, pageSize int) ([]*domain.Blog, error)
 
 	// Tag operations
@@ -41,5 +41,5 @@ type BlogUseCase interface {
 
 	DeleteComment(ctx context.Context, comment, userId string, userRole string) error
 	RemoveLike(ctx context.Context, likeId, userId string, userRole string) error
-	SearchBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int) ([]*domain.Blog, int, error)
+	SearchBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int, orderBy []string) ([]*domain.GetBlogDTO, int, error)
 }

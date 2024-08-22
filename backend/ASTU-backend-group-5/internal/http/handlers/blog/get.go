@@ -11,8 +11,14 @@ import (
 )
 
 func (h *BlogHandler) GetBlogByIDHandler(c *gin.Context) {
-	id := c.Param("id")
-	blog, err := h.UseCase.GetBlogByID(context.Background(), id)
+	claims, _ := GetClaims(c)
+	userId := ""
+	if claims != nil {
+		userId = claims.UserID
+	}
+
+	blogId := c.Param("id")
+	blog, err := h.UseCase.GetBlogByID(context.Background(), blogId, userId)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -31,21 +37,21 @@ func (h *BlogHandler) GetAllBlogsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, blogs)
 }
 
-func (h *BlogHandler) FilterBlogsHandler(c *gin.Context) {
-	var filter domain.BlogFilter
-	if err := c.ShouldBindQuery(&filter); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+// func (h *BlogHandler) FilterBlogsHandler(c *gin.Context) {
+// 	var filter domain.BlogFilter
+// 	if err := c.ShouldBindQuery(&filter); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	blogs, err := h.UseCase.FilterBlogs(context.Background(), filter)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+// 	blogs, err := h.UseCase.FilterBlogs(context.Background(), filter)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	c.JSON(http.StatusOK, blogs)
-}
+// 	c.JSON(http.StatusOK, blogs)
+// }
 
 func (h *BlogHandler) PaginateBlogsHandler(c *gin.Context) {
 	var filter domain.BlogFilter

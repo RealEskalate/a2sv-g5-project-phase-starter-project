@@ -2,6 +2,7 @@ package tests
 
 import (
 	"blog_api/domain"
+	"blog_api/domain/dtos"
 	"blog_api/mocks"
 	"blog_api/usecase"
 	"context"
@@ -25,6 +26,27 @@ var TEST_USER = domain.User{
 	Bio:         "   cartifan20 ",
 	Password:    "  cR@zyP@ssw0rd  ",
 	PhoneNumber: " +256 6 45 2 10  21         ",
+}
+
+var TEST_GOOGLE_RES = dtos.GoogleResponse{
+	RawData: struct {
+		Email         string `json:"email" binding:"required"`
+		ID            string `json:"id" binding:"required"`
+		Picture       string `json:"picture"`
+		VerifiedEmail bool   `json:"verified_email" binding:"required"`
+	}{
+		Email:         TEST_USER.Email,
+		ID:            "google_id",
+		Picture:       "google_picture",
+		VerifiedEmail: true,
+	},
+	Provider:     "google",
+	Email:        TEST_USER.Email,
+	UserID:       "google_id",
+	AccessToken:  "google_access_token",
+	RefreshToken: "google_refresh_token",
+	ExpiresAt:    "google_expires_at",
+	IDToken:      VALID_GOOGLE_TOKEN,
 }
 
 type UserUsecaseTestSuite struct {
@@ -83,6 +105,11 @@ func (suite *UserUsecaseTestSuite) SetupSuite() {
 
 // Reset the environment variables before each test
 func (suite *UserUsecaseTestSuite) SetupTest() {
+	suite.mockCacheRepository.ExpectedCalls = []*mock.Call{}
+	suite.mockHashService.ExpectedCalls = []*mock.Call{}
+	suite.mockMailService.ExpectedCalls = []*mock.Call{}
+	suite.mockUserRepository.ExpectedCalls = []*mock.Call{}
+	suite.mockJWTService.ExpectedCalls = []*mock.Call{}
 	suite.ENV = domain.EnvironmentVariables{}
 }
 
@@ -348,6 +375,77 @@ func (suite *UserUsecaseTestSuite) TestSignup_Negative_MailError() {
 	suite.NotNil(err, "error during mail send")
 	suite.Equal(err.GetCode(), domain.ERR_INTERNAL_SERVER)
 
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestOAuthSignup_Positive() {
+	user := TEST_USER
+	google_res := TEST_GOOGLE_RES
+	suite.Usecase.SantizeUserFields(&user)
+	oauthDto := dtos.OAuthSignup{
+		Username: user.Username,
+		Password: user.Password,
+	}
+
+	suite.mockHashService.On("HashString", user.Password).Return("hashed_str", nil).Once()
+	suite.mockUserRepository.On("CreateUser", context.Background(), mock.AnythingOfType("*domain.User")).Return(nil).Once()
+	suite.mockUserRepository.On("VerifyUser", context.Background(), user.Username).Return(nil).Once()
+
+	err := suite.Usecase.OAuthSignup(context.Background(), &google_res, &oauthDto)
+	suite.Nil(err, "error should be nil")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestOAuthSignup_Negative_VerificationError() {
+	user := TEST_USER
+	google_res := TEST_GOOGLE_RES
+	suite.Usecase.SantizeUserFields(&user)
+	oauthDto := dtos.OAuthSignup{
+		Username: user.Username,
+		Password: user.Password,
+	}
+
+	google_res.IDToken = "random"
+
+	err := suite.Usecase.OAuthSignup(context.Background(), &google_res, &oauthDto)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_UNAUTHORIZED)
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestOAuthSignup_Negative_HashError() {
+	user := TEST_USER
+	google_res := TEST_GOOGLE_RES
+	suite.Usecase.SantizeUserFields(&user)
+	oauthDto := dtos.OAuthSignup{
+		Username: user.Username,
+		Password: user.Password,
+	}
+
+	suite.mockHashService.On("HashString", user.Password).Return("hashed_str", domain.NewError("", domain.ERR_INTERNAL_SERVER)).Once()
+
+	err := suite.Usecase.OAuthSignup(context.Background(), &google_res, &oauthDto)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_INTERNAL_SERVER)
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+func (suite *UserUsecaseTestSuite) TestOAuthSignup_RepositoryError() {
+	user := TEST_USER
+	google_res := TEST_GOOGLE_RES
+	suite.Usecase.SantizeUserFields(&user)
+	oauthDto := dtos.OAuthSignup{
+		Username: user.Username,
+		Password: user.Password,
+	}
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockHashService.On("HashString", user.Password).Return("hashed_str", nil).Once()
+	suite.mockUserRepository.On("CreateUser", context.Background(), mock.AnythingOfType("*domain.User")).Return(sampleErr).Once()
+
+	err := suite.Usecase.OAuthSignup(context.Background(), &google_res, &oauthDto)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
 	suite.mockUserRepository.AssertExpectations(suite.T())
 }
 

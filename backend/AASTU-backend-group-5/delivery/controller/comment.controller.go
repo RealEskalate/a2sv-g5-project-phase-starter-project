@@ -41,23 +41,22 @@ func (cc *CommentController) GetComments() gin.HandlerFunc {
 func (cc *CommentController) CreateComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		postID := c.Param("post_id")
-
+		iuser,_ := c.Get("user")
+		user := iuser.(domain.ResponseUser)
 		_, err := primitive.ObjectIDFromHex(postID)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID format. Please provide a valid post ID."})
 			return
 		}
 
-		var requestBody struct {
-			UserID string `json:"user_id"`
-		}
+		requestBody := domain.Comment{}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body."})
 			return
 		}
 
-		if err := cc.CommentUsecase.CreateComment(postID, requestBody.UserID); err != nil {
+		if err := cc.CommentUsecase.CreateComment(postID, user.ID , requestBody.Content); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add comment. Please try again: " + err.Error()})
 			return
 		}

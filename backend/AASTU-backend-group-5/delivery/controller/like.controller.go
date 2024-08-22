@@ -28,7 +28,9 @@ func (LC *LikeController) GetLikes(ctx *gin.Context) {
 }
 
 func (LC *LikeController) CreateLike(ctx *gin.Context) {
-	userID := ctx.Param("user_id")
+	isuer,_ := ctx.Get("user")
+	user := isuer.(domain.ResponseUser)
+	userID := user.ID
 	postID := ctx.Param("post_id")
 
 	err := LC.LikeUseCase.CreateLike(userID, postID)
@@ -40,7 +42,9 @@ func (LC *LikeController) CreateLike(ctx *gin.Context) {
 }
 
 func (LC *LikeController) ToggleLike(ctx *gin.Context) {
-	userID := ctx.Param("user_id")
+	isuer,_ := ctx.Get("user")
+	user := isuer.(domain.ResponseUser)
+	userID := user.ID
 	postID := ctx.Param("post_id")
 
 	err := LC.LikeUseCase.ToggleLike(userID, postID)
@@ -52,7 +56,9 @@ func (LC *LikeController) ToggleLike(ctx *gin.Context) {
 }
 
 func (LC *LikeController) RemoveLike(ctx *gin.Context) {
-	userID := ctx.Param("user_id")
+	isuer,_ := ctx.Get("user")
+	user := isuer.(domain.ResponseUser)
+	userID := user.ID
 	postID := ctx.Param("post_id")
 
 	err := LC.LikeUseCase.RemoveLike(userID, postID)

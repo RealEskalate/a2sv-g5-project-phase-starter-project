@@ -12,11 +12,14 @@ import (
 
 type LikeRepository struct {
 	collection database.CollectionInterface
+	Blog database.CollectionInterface
+	
 }
 
-func NewLikeRepository(collection database.CollectionInterface) *LikeRepository {
+func NewLikeRepository(collection database.CollectionInterface, blog database.CollectionInterface) *LikeRepository {
 	return &LikeRepository{
 		collection: collection,
+		Blog: blog,
 	}
 }
 
@@ -57,6 +60,13 @@ func (LR *LikeRepository) CreateLike(user_id string, post_id string) error {
 		PostID: postObjectID,
 	}
 
+	filter := bson.D{{Key: "_id", Value: postObjectID}}
+	setter := bson.D{{Key: "$inc", Value: bson.D{{Key: "like_count", Value: 1}}}}
+	_, err = LR.Blog.UpdateOne(context.TODO() , filter , setter)
+	if err != nil {
+		return err
+	}
+
 	_, err = LR.collection.InsertOne(context.TODO(), like)
 	return err
 }
@@ -82,12 +92,12 @@ func (LR *LikeRepository) RemoveLike(user_id string, post_id string) error {
 		return errors.New("like not found")
 	}
 
-	_, err = LR.collection.UpdateOne(
+	_, err = LR.Blog.UpdateOne(
 		context.TODO(),
 		bson.M{"_id": postObjectID},
 		bson.M{"$inc": bson.M{"like_count": -1}},
 	)
-
+	
 	return err
 }
 
@@ -102,7 +112,7 @@ func (LR *LikeRepository) ToggleLike(user_id string, post_id string) error {
 		return err
 	}
 
-	dislikeRepo := NewDislikeRepository(LR.collection)
+	dislikeRepo := NewDislikeRepository(LR.collection, LR.Blog)
 
 	count, err := LR.collection.CountDocuments(context.TODO(), bson.M{"user_id": userObjectID, "post_id": postObjectID})
 	if err != nil {
@@ -118,3 +128,4 @@ func (LR *LikeRepository) ToggleLike(user_id string, post_id string) error {
 		return LR.CreateLike(user_id, post_id)
 	}
 }
+ 

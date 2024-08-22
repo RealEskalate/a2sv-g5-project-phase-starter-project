@@ -12,11 +12,13 @@ import (
 
 type DislikeRepository struct {
 	collection database.CollectionInterface
+	Blog database.CollectionInterface
 }
 
-func NewDislikeRepository(collection database.CollectionInterface) *DislikeRepository {
+func NewDislikeRepository(collection database.CollectionInterface, blog database.CollectionInterface) *DislikeRepository {
 	return &DislikeRepository{
 		collection: collection,
+		Blog: blog,
 	}
 }
 
@@ -57,6 +59,12 @@ func (DR *DislikeRepository) CreateDisLike(user_id string, post_id string) error
 		UserID: userObjectID,
 		PostID: postObjectID,
 	}
+	filter := bson.D{{Key: "_id", Value: postObjectID}}
+	setter := bson.D{{Key: "$inc", Value: bson.D{{Key: "dislike_count", Value: 1}}}}
+	_, err = DR.Blog.UpdateOne(context.TODO() , filter , setter)
+	if err != nil {
+		return err
+	}
 
 	_, err = DR.collection.InsertOne(context.TODO(), dislike)
 	return err
@@ -83,7 +91,7 @@ func (DR *DislikeRepository) RemoveDislike(user_id string, post_id string) error
 		return errors.New("dislike not found")
 	}
 
-	_, err = DR.collection.UpdateOne(
+	_, err = DR.Blog.UpdateOne(
 		context.TODO(),
 		bson.M{"_id": postObjectID},
 		bson.M{"$inc": bson.M{"dislike_count": -1}},
@@ -103,7 +111,7 @@ func (DR *DislikeRepository) ToggleDislike(user_id string, post_id string) error
 		return err
 	}
 
-	likeRepo := NewLikeRepository(DR.collection)
+	likeRepo := NewLikeRepository(DR.collection, DR.Blog)
 
 	count, err := DR.collection.CountDocuments(context.TODO(), bson.M{"user_id": userObjectID, "post_id": postObjectID})
 	if err != nil {

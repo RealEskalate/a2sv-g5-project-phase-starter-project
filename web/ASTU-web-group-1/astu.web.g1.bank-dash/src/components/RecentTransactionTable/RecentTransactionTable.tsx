@@ -84,7 +84,10 @@ const RecentTransactionTable = () => {
   const [pageData, setPageData] = useState([]);
   const rowsPerPage = 5;
 
-  const { data, error, isLoading } = useGetAllTransactionsQuery(String(currentPage));
+  const { data, error, isLoading } = useGetAllTransactionsQuery({
+    page: currentPage,
+    size: rowsPerPage,
+  });
   // console.log("data is",data,String(currentPage),data?.data.content.length);
 
   // Calculate total pages

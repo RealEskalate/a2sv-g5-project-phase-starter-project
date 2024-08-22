@@ -2,7 +2,7 @@ export const sidebarListItems = [
 
     {
         name: "Dashboard",
-        path: "/",
+        path: "/dashboard",
         icon: "/assets/sidebar/dashboard.svg",
         activeIcon: "/assets/sidebar/dashboard-active.svg",
     },  

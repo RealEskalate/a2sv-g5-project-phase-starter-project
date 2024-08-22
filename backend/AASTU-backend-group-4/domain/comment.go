@@ -16,7 +16,7 @@ type Comment struct {
 }
 type CommentRepository interface {
 	GetCommentsCount(ctx context.Context, blogID primitive.ObjectID) (int, error)
-	// CreateComment(ctx context.Context, comment Comment) error
-	// GetCommentsByBlogID(ctx context.Context, blogID string, page, limit int) ([]Comment, error)
-	// DeleteComment(ctx context.Context, commentID string) error
+	CreateComment(ctx context.Context, comment Comment) error
+	GetCommentsByBlogID(ctx context.Context, blogID primitive.ObjectID) ([]Comment, error)
+	DeleteComment(ctx context.Context, commentID primitive.ObjectID) error
 }

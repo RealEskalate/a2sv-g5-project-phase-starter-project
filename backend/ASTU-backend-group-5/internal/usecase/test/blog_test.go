@@ -151,6 +151,48 @@ func (suite *BlogUseCaseTestSuite) TestDeleteBlog_Failure_DeleteBlog() {
 	suite.repoMock.AssertCalled(suite.T(), "DeleteBlog", mock.Anything, blogID)
 }
 
+func (suite *BlogUseCaseTestSuite) TestFilterBlogs_Success() {
+	filter := domain.BlogFilter{
+		Title: ptrToString("Test Blog"),
+	}
+	expectedBlogs := []*domain.Blog{
+		{
+			ID:    primitive.NewObjectID(),
+			Title: "Test Blog",
+		},
+	}
+
+	suite.repoMock.On("FilterBlogs", suite.ctx, filter).Return(expectedBlogs, nil)
+
+	blogs, err := suite.useCase.FilterBlogs(suite.ctx, filter)
+
+	suite.NoError(err)
+	suite.Equal(expectedBlogs, blogs)
+	suite.repoMock.AssertExpectations(suite.T())
+}
+
+
+func (suite *BlogUseCaseTestSuite) TestFilterBlogs_Error() {
+	filter := domain.BlogFilter{
+		Title: ptrToString("Nonexistent Blog"),
+	}
+	expectedError := fmt.Errorf("some repository error")
+
+	suite.repoMock.On("FilterBlogs", suite.ctx, filter).Return(nil, expectedError)
+
+	blogs, err := suite.useCase.FilterBlogs(suite.ctx, filter)
+
+	suite.Error(err)
+	suite.Nil(blogs)
+	suite.EqualError(err, "failed to filter blogs: some repository error")
+	suite.repoMock.AssertExpectations(suite.T())
+}
+
+
+func ptrToString(s string) *string {
+	return &s
+}
+
 func TestBlogUseCaseTestSuite(t *testing.T) {
 	suite.Run(t, new(BlogUseCaseTestSuite))
 }

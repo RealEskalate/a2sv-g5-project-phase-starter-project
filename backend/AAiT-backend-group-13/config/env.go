@@ -23,6 +23,7 @@ type Config struct {
 	Blog_cache_expiry      time.Duration
 	Cache_host             string 
 	Cache_port             string
+	Google_Api_Key         string
 }
 
 // Envs holds the loaded configuration values.
@@ -46,6 +47,7 @@ func initConfig() Config {
 		Blog_cache_expiry: 		time.Duration(getTimeEnv("BLOG_CACHE_EXPIRY", 60*60)) * time.Second,
 		Cache_host:				getEnv("CACHE_HOST", "localhost"),
 		Cache_port: 			getEnv("CACHE_PORT", "6379"),
+		Google_Api_Key:			getEnv("GOOGLE_API_KEY", ""),
 	}
 }
 

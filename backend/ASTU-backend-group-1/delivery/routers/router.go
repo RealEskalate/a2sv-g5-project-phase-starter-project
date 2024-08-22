@@ -4,7 +4,11 @@ import (
 	infrastructure "astu-backend-g1/Infrastructure"
 	"astu-backend-g1/delivery/controllers"
 
+	_ "astu-backend-g1/delivery/docs"
+
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type MainRouter struct {
@@ -20,8 +24,11 @@ func NewMainRouter(uc controllers.UserController, bc controllers.BlogController,
 		handler:        uc,
 	}
 }
+
+// @title Blog API in Golang
 func (gr *MainRouter) GinBlogRouter() {
 	router := gin.Default()
+	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.GET("blogs/", gr.blogController.HandleGetAllBlogs)
 	router.GET("blogs/popular", gr.blogController.HandleGetPopularBlog)
 	router.GET("blogs/filter", gr.blogController.HandleFilterBlogs)

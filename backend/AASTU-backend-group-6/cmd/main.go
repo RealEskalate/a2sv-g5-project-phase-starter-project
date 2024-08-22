@@ -1,8 +1,8 @@
 package main
 
 import (
-	"blogs/Delivery/routers"
 	infrastructure "blogs/Infrastructure"
+	"blogs/delivery/routers"
 	"fmt"
 
 	"github.com/gin-gonic/gin"

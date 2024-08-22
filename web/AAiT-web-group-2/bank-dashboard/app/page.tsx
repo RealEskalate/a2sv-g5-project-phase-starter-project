@@ -2,8 +2,8 @@
 
 export default function Home() {
   return (
-    <main className=" ">
+    <div className="min-h-screen items-center bg-background ">
       <h1>Bank dashboard</h1>
-    </main>
+    </div>
   );
 }

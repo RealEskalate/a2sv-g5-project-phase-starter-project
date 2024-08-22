@@ -39,13 +39,13 @@ const LoginForm: React.FC = () => {
         window.location.href = '/'
         // console.log("Success")
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error here:', error);
         setIsLoading(false);
       }
     };
 
   return (
-    <div className="flex items-center justify-center max-h-screen py-6 overflow-hidden ">
+    <div className="flex items-center justify-center max-h-screen py-6 overflow-hidden">
       <div className="flex-col items-center justify-center w-[50vh]">
       <form onSubmit={handleSubmit(onSubmit)} className="p-4 rounded-2xl">
         <div className="flex flex-col justify-center items-center">
@@ -56,12 +56,12 @@ const LoginForm: React.FC = () => {
           height={50}
           className="h-30 w-40 m-auto pt-4"
         />
-        <h1 className="font-bold text-3xl text-gray-700 font-serif p-2"> <p className=" text-gray-600">NEXT BANK</p></h1>
+        <h1 className="font-bold text-3xl text-gray-700 font-serif p-2"> <p className=" text-gray-600 dark:text-white">NEXT BANK</p></h1>
         </div>
 
         <div className="py-6">
         <div>
-          <label htmlFor="userName" className="block font-bold mb-2 text-gray-700">
+          <label htmlFor="userName" className="block font-bold mb-2 text-gray-700 dark:text-white">
           UserName
           </label>
           <input
@@ -82,7 +82,7 @@ const LoginForm: React.FC = () => {
 
         <div className="py-6">
         <div>
-          <label htmlFor="password" className="block font-bold mb-2 text-gray-700">
+          <label htmlFor="password" className="block font-bold mb-2 text-gray-700 dark:text-white">
           Password
           </label>
           <input

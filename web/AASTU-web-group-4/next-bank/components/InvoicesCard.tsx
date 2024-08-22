@@ -46,7 +46,7 @@ const transactions: Transaction[] = [
 
 const TransactionList: React.FC = () => {
   return (
-    <div className="flex-1 flex flex-col justify-between bg-white rounded-lg shadow-md p-4 space-y-4">
+    <div className="flex-1 flex flex-col justify-between bg-white rounded-lg shadow-md p-4 space-y-4  dark:bg-dark text-gray-900 dark:text-white">
       {transactions.map(transaction => (
         <div key={transaction.id} className="flex items-center justify-between">
         <div className={`w-10 h-10 flex items-center justify-center rounded-full ${transaction.iconBgColor}`}>
@@ -59,10 +59,10 @@ const TransactionList: React.FC = () => {
           />
         </div>
         <div className="flex-1 px-4">
-          <div className="text-gray-800 font-medium">{transaction.name}</div>
-          <div className="text-gray-400 text-sm">{transaction.time}</div>
+          <div className="text-gray-800 font-medium dark:text-white">{transaction.name}</div>
+          <div className="text-gray-400 text-sm dark:text-white">{transaction.time}</div>
         </div>
-        <div className="text-gray-800 font-semibold">{transaction.amount}</div>
+        <div className="text-gray-800 font-semibold dark:text-white">{transaction.amount}</div>
       </div>
       ))}
     </div>

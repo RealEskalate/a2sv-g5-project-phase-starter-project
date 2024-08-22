@@ -27,10 +27,10 @@ const BankservicesList: React.FC = () => {
       try {
         const response= await getAllBankServices();
         console.log("response:" , response)
-        setservices(response.data.content || [])
+        setservices(response.data.content)
         
       } catch (error) {
-        console.error(' Error feetching bank services:', error);
+        console.error(' Error fetching bank services:', error);
       }
     };
     fetch();
@@ -39,7 +39,7 @@ const BankservicesList: React.FC = () => {
 
   return (
     <div className="max-w-[1110px] mx-auto">
-      <h2 className="text-xl font-bold mb-4">Bank Services List</h2>
+      <h2 className="text-xl font-bold mb-4 dark:text-blue-500">Bank Services List</h2>
       {services.map((service: any, index: any) => (
         <div key={index} className="mb-4">
           {/* Mobile View */}

@@ -35,7 +35,7 @@ const TransferPage: React.FC = () => {
   }
   
   return (
-    <div className=" container  flex flex-col items-center max-h-screen h-screen  md:flex-row  md:h-full bg-gray-100 p-0  md:ml-45 md:p-8 md:max-h-full md:gap-10 md:mb-24 ">
+    <div className=" container  flex flex-col items-center max-h-screen h-screen  md:flex-row  md:h-full bg-gray-100 p-0  md:ml-45 md:p-8 md:max-h-full md:gap-10 md:mb-24  dark:bg-dark text-gray-900 dark:text-white">
       
         <Image
         src={logo.transfer}

@@ -68,7 +68,7 @@ export const getAllCards = async () => {
   // Delete Card by ID - DELETE Request
   export const deleteCardById = async (id: string) => {
     try {
-      const response = await fetch(`https://bank-dashboard-6acc.onrender.com/cards/${id}`, {
+      const response = await fetch(`https://bank-dashboard-1tst.onrender.com/cards/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

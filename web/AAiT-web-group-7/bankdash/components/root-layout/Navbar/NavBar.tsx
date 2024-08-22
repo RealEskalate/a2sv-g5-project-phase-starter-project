@@ -89,7 +89,7 @@ const NavBar: React.FC<Props> = ({ openSidebar }) => {
         />
         <IoPersonCircleSharp
           className="cursor-pointer"
-          onClick={() => router.push("/")}
+          onClick={() => router.push("/settings")}
           aria-label="Profile-Avatar-Button"
           size={40}
         />

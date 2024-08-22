@@ -110,12 +110,12 @@ const Sidebar: React.FC<Props> = ({ open, onClose, collapse, onCollapse }) => {
 
   return (
     <div
-      className={`fixed top-0 border-r-2 left-0 z-50 flex min-h-full flex-col bg-surfContainer pb-10 shadow-white/5 transition-all duration-175 ${
+      className={`fixed top-0 left-0 z-50 flex min-h-full flex-col bg-surfContainer pb-10 shadow-white/5 transition-all duration-175 ${
         open ? "translate-x-0" : "-translate-x-full"
       } ${collapse ? "w-[90px]" : "w-[260px]"} ${
         open ? "bg-opacity-100 backdrop-blur-md" : "bg-opacity-0"
       }`}
-      style={{ zIndex: 9999 }}  // Ensures it stays on top
+      style={{ zIndex: 9999 }} 
     >
       <span
         className="absolute top-5 right-5 block cursor-pointer md:hidden"

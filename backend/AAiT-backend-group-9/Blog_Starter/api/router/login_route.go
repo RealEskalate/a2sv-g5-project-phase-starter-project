@@ -24,15 +24,15 @@ func NewLoginRouter(env *config.Env, timeout time.Duration, db *mongo.Client, gr
     ur := repository.NewUserRepository(database, domain.CollectionUser)
     tm := &infrastructure.NewTokenManager{} // Assuming NewTokenManager returns an implementation of TokenManager
     // Initialize use cases
-    signUpUsecase := usecase.NewUserUsecase(ur, timeout)
-    loginUsecase := usecase.NewLoginUseCase(ur,tm,timeout)
+    UserUsecase := usecase.NewUserUsecase(ur, timeout)
+    loginUsecase := usecase.NewLoginUseCase(ur,tm,timeout,env)
     otpUsecase := usecase.NewOtpUsecase(or, timeout)
     
     // Initialize controller
-    loginController := controller.NewLoginController(loginUsecase,otpUsecase,signUpUsecase)
+    loginController := controller.NewLoginController(loginUsecase,otpUsecase,UserUsecase)
     
     // Set up routes
     group.POST("/login", loginController.Login)
-    group.POST("/forgetpassword", loginController.ForgotPassword)
+    group.POST("/forgotpassword", loginController.ForgotPassword)
     group.POST("/updatepassword", loginController.UpdatePassword)
 }

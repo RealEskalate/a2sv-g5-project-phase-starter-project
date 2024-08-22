@@ -29,6 +29,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setupLocator();
   runApp(const MyApp());
+  // runApp(CustomBottomNavigationBar());
 }
 
 class MyApp extends StatelessWidget {

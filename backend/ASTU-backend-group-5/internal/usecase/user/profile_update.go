@@ -18,6 +18,14 @@ func (u *UserUsecase) UpdateUser(user *domain.User) error {
 	if dbUser == nil {
 		return errors.New("invalid user")
 	}
+	exists, err := u.repo.FindUserByUserName(context.Background(), user.UserName)
+	if err != nil {
+		return err
+	}
+
+	if exists != nil && exists.ID != userID {
+		return errors.New("user with this username already exists")
+	}
 	dbUser.Profile = user.Profile
 	dbUser.UserName = user.UserName
 

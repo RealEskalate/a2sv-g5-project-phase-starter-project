@@ -1,6 +1,7 @@
 package account
 
 import (
+	"blogApp/internal/domain"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,8 +15,14 @@ func (h *UserHandler) GoogleCallback(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	getUSer := &domain.GetUserDTO{
+		Email:    user.Email,
+		UserName: user.UserName,
+		Role:     user.Role,
+		Profile:  user.Profile,
+	}
 	c.JSON(http.StatusOK, gin.H{
-		"user":  user,
+		"user":  getUSer,
 		"token": token,
 	})
 }

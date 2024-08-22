@@ -35,6 +35,12 @@ func (controller *Controller) CreateComment(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	_, err = controller.blogUseCase.GetBlogByID(blogID)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	var comment domain.Comment
 	if err := ctx.BindJSON(&comment); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -43,7 +49,7 @@ func (controller *Controller) CreateComment(ctx *gin.Context) {
 
 	struct_err := struct_validator.Struct(comment)
 
-	if struct_err != nil{
+	if struct_err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": struct_err.Error()})
 		return
 	}

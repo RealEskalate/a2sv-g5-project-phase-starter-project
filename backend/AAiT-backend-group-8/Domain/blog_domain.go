@@ -9,7 +9,7 @@ import (
 type Blog struct {
 	Id           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	Title        string             `bson:"title" json:"title" validate:"required,min=3,max=100"`
-	Body         string             `bson:"body" json:"body" validate:"required,min=10"`
+	Body         string             `bson:"body" json:"body" validate:"required"`
 	Tags         []string           `bson:"tags" json:"tags"`
 	CreatedAt    time.Time          `bson:"created_at" json:"created_at"`
 	LastUpdated  time.Time          `bson:"last_updated" json:"last_updated"`

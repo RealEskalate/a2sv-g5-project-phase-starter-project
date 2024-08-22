@@ -153,6 +153,7 @@ func (userUseCase *UserUseCaseImpl) Login(email string, password string) (string
 	}
 
 	if !user.Verified {
+		_ = userUseCase.MailService.SendVerificationEmail(user.Email, user.VerificationToken)
 		return "", "", errors.New("not a verified user")
 	}
 
@@ -179,7 +180,6 @@ func (userUseCase *UserUseCaseImpl) Login(email string, password string) (string
 		return "", "", err
 	}
 
-
 	//Store the refresher token in the database
 	credentials := domain.Credential{Email: email, Refresher: refresher}
 	err = userUseCase.TokenRepo.InsertRefresher(credentials)
@@ -197,7 +197,6 @@ func (userUseCase *UserUseCaseImpl) GenerateResetPasswordToken(email string) err
 	if err != nil {
 		return errors.New("user not found")
 	}
-
 	resetToken, err := userUseCase.TokenService.GenerateToken(user.Email, user.Id, "reset_password", "", time.Now().Add(1*time.Hour).Unix())
 	if err != nil {
 		return err
@@ -296,6 +295,6 @@ func (uuc *UserUseCaseImpl) DeleteUser(email string) error {
 // 	return uuc.TokenRepo.DeleteRefresher(email, refresher)
 // }
 
-func (uuc *UserUseCaseImpl) Logout(email, refresher string) error{
+func (uuc *UserUseCaseImpl) Logout(email, refresher string) error {
 	return uuc.TokenRepo.DeleteRefresher(email, refresher)
 }

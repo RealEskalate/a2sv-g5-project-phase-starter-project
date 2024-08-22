@@ -19,12 +19,13 @@ func (controller *Controller) CreateBlog(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	// fmt.Println(blog)
 
 	struct_err := struct_validator.Struct(blog)
 
 	if struct_err != nil{
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": struct_err.Error()})
-		return
+	ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": struct_err.Error()})
+	return
 	}
 
 	claims, err := infrastructure.Parse(ctx)

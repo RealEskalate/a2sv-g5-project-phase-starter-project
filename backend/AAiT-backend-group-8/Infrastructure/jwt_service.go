@@ -34,16 +34,13 @@ func (ts *TokenService) ValidateToken(tokenString string) (map[string]interface{
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(ts.SecretKey), nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
-
 	claims, ok := token.Claims.(*jwt.MapClaims)
 	if ok && token.Valid {
 		return *claims, nil
 	}
-
 	return nil, errors.New("invalid token")
 }
 
@@ -51,11 +48,9 @@ func (ts *TokenService) GetClaimsOfToken(tokenString string) (map[string]interfa
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(ts.SecretKey), nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
-
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
 		return claims, nil

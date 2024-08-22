@@ -9,7 +9,7 @@ import (
 type User struct {
 	Id                 primitive.ObjectID `bson:"_id,omitempty"`
 	Name               string             `bson:"name" validate:"required,min=2,max=50"`
-	LastName           string             `bson:"last_name" validate:"reqiured,min=2,max=50"`
+	LastName           string             `bson:"lastname"`
 	Email              string             `bson:"email" validate:"required,email"`
 	Password           string             `bson:"password" validate:"required"`
 	Role               string             `bson:"role"`
@@ -24,4 +24,3 @@ type Credential struct {
 	Email     string `json:"email" bson:"email"`
 	Refresher string `json:"refresher" bson:"refresher"`
 }
-

@@ -1,5 +1,4 @@
 "use client";
-// import { useState, useEffect } from "react";
 import BalanceCard from "@/components/AccountSmallCard";
 import LastTransactionCard from "@/components/LastTransactionCard";
 import DesktopCreditCard from "@/components/DesktopCreditCard";
@@ -7,7 +6,6 @@ import InvoicesCard from "@/components/InvoicesCard";
 import AccountBarChart from "@/components/AccountBarChart";
 
 const Accounts = () => {
-
   return (
     <div className="flex">
       {/* Sidebar */}

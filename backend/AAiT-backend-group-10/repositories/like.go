@@ -41,7 +41,17 @@ func (l *LikeRepository) GetLike(blogID uuid.UUID, reacterID uuid.UUID) (domain.
 }
 
 // LikeBlog implements usecases.LikeUsecaseInterface.
-func (l *LikeRepository) LikeBlog(like domain.Like) *domain.CustomError {
+func (l *LikeRepository) AddLike(like domain.Like) *domain.CustomError {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	_, err := l.Collection.InsertOne(ctx, like)
+	if err != nil {
+		return domain.ErrLikeCreationFailed
+	}
+	return nil
+}
+
+func (l *LikeRepository) UpdateLike(like domain.Like) *domain.CustomError {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -49,23 +59,10 @@ func (l *LikeRepository) LikeBlog(like domain.Like) *domain.CustomError {
 		{Key: "blog_id", Value: like.BlogID},
 		{Key: "reacter_id", Value: like.ReacterID},
 	}
-
-	var existingLike domain.Like
-	err := l.Collection.FindOne(ctx, filter).Decode(&existingLike)
-	if err == mongo.ErrNoDocuments {
-		_, err = l.Collection.InsertOne(ctx, like)
-		if err != nil {
-			return domain.ErrLikeCreationFailed
-		}
-	} else if err == nil {
-		// Update the existing document
-		update := bson.D{{Key: "$set", Value: bson.D{{Key: "is_like", Value: like.IsLike}}}}
-		_, err = l.Collection.UpdateOne(ctx, filter, update)
-		if err != nil {
-			return domain.ErrLikeUpdateFailed
-		}
-	} else {
-		return domain.ErrLikeCreationFailed
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "is_like", Value: like.IsLike}}}}
+	_, err := l.Collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return domain.ErrLikeUpdateFailed
 	}
 	return nil
 }

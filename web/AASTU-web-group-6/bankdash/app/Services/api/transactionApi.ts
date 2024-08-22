@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const API_URL = "https://bank-dashboard-6acc.onrender.com/transactions"; // Adjust this to match your actual API base URL
+const API_URL = "https://bank-dashboard-1tst.onrender.com/transactions"; // Adjust this to match your actual API base URL
 const extension = "/balance-history";
 const API_URL_expense =
-  "https://bank-dashboard-6acc.onrender.com/transactions/expenses";
+  "https://bank-dashboard-1tst.onrender.com/transactions/expenses";
 const API_URL_income =
-  "https://bank-dashboard-6acc.onrender.com/transactions/incomes";
+  "https://bank-dashboard-1tst.onrender.com/transactions/incomes";
 interface TransactionType {
   transactionId: string;
   type: string;
@@ -14,6 +14,15 @@ interface TransactionType {
   date: string;
   amount: number;
   receiverUserName: string | null;
+}
+
+interface quickType {
+  id: string,
+  name: string,
+  username: string,
+  city: string,
+  country: string,
+  profilePicture: string
 }
 
 const handleRequest = async (
@@ -32,7 +41,7 @@ const handleRequest = async (
         "Content-Type": "application/json",
       },
     });
-    return response.data.data;
+    return response.data.data
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error("Axios error:", error.message);
@@ -76,7 +85,17 @@ class TransactionService {
   ): Promise<TransactionType[]> {
     return handleRequest(
       "GET",
-      `${API_URL_income}?page=0&size=10`,
+      `${API_URL_income}?page=0&size=1000`,
+      undefined,
+      accessToken
+    );
+  }
+  public static getQuickTransfer(
+    accessToken?: string
+  ): Promise<quickType[]> {
+    return handleRequest(
+      "GET",
+      `${API_URL_quick}?number=6`,
       undefined,
       accessToken
     );

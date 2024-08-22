@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+"use client"
+import { Provider } from "react-redux";
+import store from "./store";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Header from "./components/Header/Header";
 import "./globals.css";
@@ -11,13 +12,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex h-screen w-screen">
-        <Sidebar />
-        <div className="w-full flex flex-col h-full">
-          <Header />
-          {children}
-        </div>
-      </body>
+      <Provider store={store}>
+        <body className="flex h-screen w-screen">
+          <Sidebar />
+          <div className="w-full flex flex-col h-full">
+            <Header />
+            {children}
+          </div>
+        </body>
+      </Provider>
     </html>
   );
 }

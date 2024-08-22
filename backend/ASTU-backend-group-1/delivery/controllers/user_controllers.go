@@ -1,18 +1,32 @@
 package controllers
 
 import (
+	infrastructure "astu-backend-g1/Infrastructure"
+	"astu-backend-g1/config"
 	"astu-backend-g1/domain"
+	"context"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserController struct {
-	userUsecase domain.UserUsecase
+	userUsecase    domain.UserUsecase
+	userCollection *mongo.Collection
 }
 
-func NewUserController(userUsecase domain.UserUsecase) *UserController {
-	return &UserController{userUsecase: userUsecase}
+func NewUserController(userUsecase domain.UserUsecase, userCollection *mongo.Collection) *UserController {
+	return &UserController{
+		userUsecase:    userUsecase,
+		userCollection: userCollection,
+	}
+
 }
 
 func (c *UserController) Register(ctx *gin.Context) {
@@ -165,4 +179,61 @@ func (c *UserController) UpdateUser(ctx *gin.Context) {
 		return
 	}
 	ctx.IndentedJSON(http.StatusOK, updatedUser)
+}
+func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
+	configJwt, err := config.LoadConfig()
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
+	}
+
+	var jwtSecret = []byte(configJwt.Jwt.JwtKey)
+	type Pass struct {
+		pwd string `json:"pwd"`
+	}
+	var NUID Pass
+	err = ctx.ShouldBindJSON(&NUID)
+	TheUser, err := c.userUsecase.GetByID(ctx.Param("uid"))
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+	fmt.Println("this is the user:", TheUser)
+	refreshToken, err := jwt.ParseWithClaims(TheUser.RefreshToken, &domain.Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return jwtSecret, nil
+	})
+	fmt.Println("this is the refresh token", refreshToken)
+	if err == nil {
+		refreshClaims, ok := refreshToken.Claims.(*domain.Claims)
+		fmt.Println("this is the refresh claims", refreshClaims)
+
+		if refreshClaims.ExpiresAt < time.Now().Unix() {
+			c.userCollection.UpdateOne(context.TODO(), bson.M{"_id": TheUser.ID}, domain.User{RefreshToken: ""})
+			ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "refresh token is expired"})
+			return
+		}
+		if ok && refreshToken.Valid {
+			if err != nil {
+				ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": err})
+				return
+			}
+			// User login logic
+			if bcrypt.CompareHashAndPassword([]byte(TheUser.Password), []byte(NUID.pwd)) != nil {
+				ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": err})
+				return
+			}
+
+			newToken, refresh, err := infrastructure.GenerateToken(&TheUser, NUID.pwd)
+			if err != nil {
+				ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err})
+				return
+			}
+			ctx.IndentedJSON(200, gin.H{"refreshed access token": newToken})
+			TheUser.RefreshToken = refresh
+			c.userCollection.UpdateOne(context.TODO(), bson.M{"_id": TheUser.ID}, domain.User{RefreshToken: refresh})
+			return
+		} else {
+			ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Token is expired"})
+		}
+	}
+	ctx.IndentedJSON(http.StatusForbidden, gin.H{"error": "couldn't refrsh the token"})
 }

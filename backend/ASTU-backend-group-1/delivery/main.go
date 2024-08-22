@@ -1,12 +1,12 @@
 package main
 
 import (
-	"context"
 	infrastructure "astu-backend-g1/Infrastructure"
 	"astu-backend-g1/delivery/controllers"
-	"astu-backend-g1/delivery/routers"
+	router "astu-backend-g1/delivery/routers"
 	"astu-backend-g1/repository"
-	"astu-backend-g1/usecases"
+	usecase "astu-backend-g1/usecases"
+	"context"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -22,7 +22,7 @@ func main() {
 	userCollections := client.Database("BlogAPI").Collection("Users")
 	// auth := infrastructure.NewAuthMiddleware(userCollections)
 	// auther := infrastructure.GeneralAuthorizer(auth)
-	authController := infrastructure.NewAuthController(userCollections)
+	authController := infrastructure.NewAuthController()
 	_ = client.Database("BlogAPI").Collection("Tokens")
 	blogRepo := repository.NewBlogRepository(blogCollections)
 	blogUsecase := usecase.NewBlogUsecase(blogRepo)
@@ -32,7 +32,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	UserController := controllers.NewUserController(userUsecase)
+	UserController := controllers.NewUserController(userUsecase, userCollections)
 	Router := router.NewMainRouter(*UserController, *blogController, authController)
 	Router.GinBlogRouter()
 

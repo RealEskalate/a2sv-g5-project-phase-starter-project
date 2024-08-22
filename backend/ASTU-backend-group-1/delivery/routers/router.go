@@ -34,6 +34,7 @@ func (gr *MainRouter) GinBlogRouter() {
 		userrouter.POST("/login", gr.handler.LoginUser)
 		userrouter.GET("/forgetPassword", gr.handler.ForgetPassword)
 		userrouter.POST("/resetPassword", gr.handler.ResetPassword)
+		userrouter.POST("/:uid/refresh", gr.handler.RefreshAccessToken)
 	}
 	blogRouter := router.Group("/blogs")
 	blogRouter.Use(gr.authController.AuthenticationMiddleware())

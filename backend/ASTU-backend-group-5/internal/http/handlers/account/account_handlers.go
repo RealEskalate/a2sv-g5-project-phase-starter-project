@@ -188,3 +188,13 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
+
+func (h *UserHandler) GetAnyUser(c *gin.Context) {
+	userId := c.Param("userId")
+	user, err := h.UserUsecase.FindUserById(userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}

@@ -14,7 +14,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 
 import os
-from load_env import load_dotenv
+from dotenv import load_dotenv
 load_dotenv()
 
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")

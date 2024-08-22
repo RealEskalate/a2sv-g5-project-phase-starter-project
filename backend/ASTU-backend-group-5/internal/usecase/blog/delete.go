@@ -7,7 +7,7 @@ import (
 )
 
 // DeleteBlog deletes a blog by its ID
-func (u *blogUseCase) DeleteBlog(ctx context.Context, id string, userId string) error {
+func (u *blogUseCase) DeleteBlog(ctx context.Context, id string, userId string, userRole string) error {
 	blog, err := u.repo.GetBlogByID(ctx, id)
 	if err != nil {
 		log.Printf("Error retrieving blog with ID %s: %v", id, err)
@@ -17,7 +17,7 @@ func (u *blogUseCase) DeleteBlog(ctx context.Context, id string, userId string) 
 		log.Printf("Blog with ID %s not found", id)
 		return fmt.Errorf("blog not found")
 	}
-	if blog.Author.Hex() != userId {
+	if blog.Author.Hex() != userId && userRole != "admin" && userRole != "owner" {
 		return fmt.Errorf("you are not authorized to delete this blog")
 	}
 
@@ -29,14 +29,14 @@ func (u *blogUseCase) DeleteBlog(ctx context.Context, id string, userId string) 
 	return nil
 }
 
-func (u *blogUseCase) DeleteComment(ctx context.Context, commentId, userId string) error {
+func (u *blogUseCase) DeleteComment(ctx context.Context, commentId, userId string, userRole string) error {
 	comment, err := u.repo.GetCommentById(ctx, commentId)
 	if err != nil {
 		log.Printf("Error retrieving comment with ID %s: %v", commentId, err)
 		return fmt.Errorf("failed to retrieve comment: %w", err)
 	}
 
-	if comment.UserID.Hex() != userId {
+	if comment.UserID.Hex() != userId && userRole != "admin" && userRole != "owner" {
 		return fmt.Errorf("you are not authorized to delete this comment")
 	}
 	err = u.repo.DeleteComment(ctx, comment.ID)
@@ -48,7 +48,7 @@ func (u *blogUseCase) DeleteComment(ctx context.Context, commentId, userId strin
 
 }
 
-func (u *blogUseCase) RemoveLike(ctx context.Context, likeId, userId string) error {
+func (u *blogUseCase) RemoveLike(ctx context.Context, likeId, userId string, userRole string) error {
 	like, err := u.repo.GetLikeById(ctx, likeId)
 	if err != nil {
 		log.Printf("Error retrieving like with ID %s: %v", likeId, err)
@@ -59,7 +59,7 @@ func (u *blogUseCase) RemoveLike(ctx context.Context, likeId, userId string) err
 		return fmt.Errorf("like not found")
 	}
 
-	if like.UserID.Hex() != userId {
+	if like.UserID.Hex() != userId && userRole != "admin" && userRole != "owner" {
 		return fmt.Errorf("you are not authorized to delete this like")
 	}
 	err = u.repo.RemoveLike(ctx, like.ID)

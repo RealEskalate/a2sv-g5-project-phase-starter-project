@@ -15,7 +15,7 @@ func NewBlogRouter(db mongo.Database, gin *gin.Engine, redisClient redis.Client)
 	tr := repository.NewBlogRepository(db, domain.CollectionBlogs)
 	tu := usecase.NewBlogUseCase(tr)
 	tc := controller.NewBlogController(tu, redisClient)
-	
+
 	// protectedRoute := gin.Group("")
 	publicRoute := gin.Group("")
 	// protectedRoute.Use(infrastructure.AdminOnlMiddleware(), infrastructure.JWTAuthMiddleware())

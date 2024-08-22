@@ -5,8 +5,8 @@ import (
 	"AAiT-backend-group-6/delivery/middleware"
 	"AAiT-backend-group-6/mongo"
 	"AAiT-backend-group-6/redis"
-	"time"
 	"github.com/gin-gonic/gin"
+	"time"
 )
 
 func Setup(env *bootstrap.Env, timeout time.Duration, db mongo.Database, gin *gin.Engine, redisClient redis.Client) {
@@ -15,10 +15,10 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db mongo.Database, gin *gi
 	NewSignupRouter(env, timeout, db, publicRouter)
 	NewLoginRouter(env, timeout, db, publicRouter)
 	NewFogetPWRouter(env, timeout, db, publicRouter)
-	
-	NewAiRouter(env,timeout,db,publicRouter)
 
-	NewBlogRouter(db, gin,redisClient)
+	NewAiRouter(env, timeout, db, publicRouter)
+
+	NewBlogRouter(db, gin, redisClient)
 
 	protectedRouter := gin.Group("")
 	protectedRouter.Use(middleware.JwtAuthMiddleware(env.AccessTokenSecret))

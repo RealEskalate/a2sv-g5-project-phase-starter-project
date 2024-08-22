@@ -22,7 +22,6 @@ func NewUserProfileController(userProfileUC interfaces.UserProfileUpdateUsecase)
 func (userProfileController *UserProfileController) ProfileUpdate(ctx *gin.Context) {
 	var updatedUser *dtos.ProfileUpdateRequest
 	userID := ctx.GetString("id")
-	fmt.Println(userID)
 
 	err := ctx.ShouldBind(&updatedUser)
 	if err != nil {

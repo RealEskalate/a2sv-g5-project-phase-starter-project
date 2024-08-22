@@ -79,5 +79,5 @@ func (bc *BlogController) HandleDeleteComment(c *gin.Context) {
 		c.JSON(GetHTTPErrorCode(err), domain.Response{"error": err.Error()})
 	}
 
-	c.JSON(http.StatusNoContent, gin.H{"message": "updated successfully"})
+	c.JSON(http.StatusNoContent, gin.H{"message": "Deleted successfully"})
 }

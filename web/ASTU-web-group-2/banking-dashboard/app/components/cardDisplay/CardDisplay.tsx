@@ -28,7 +28,7 @@ export const formatCardNumber = (number: string): string => {
   return number.replace(/(\d{4})(?=\d)/g, "$1 ");
 };
 
-const CardDisplay = ({numofcard} :{numofcard : number} ) => {
+const CardDisplay = ({ numofcard }: { numofcard: number }) => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -77,49 +77,52 @@ const CardDisplay = ({numofcard} :{numofcard : number} ) => {
 
   if (isLoadingAllCards || isLoadingCardInfo) {
     return (
-      <div className="flex space-x-2 justify-center items-center bg-white h-screen">
-        <span className="sr-only">Loading...</span>
-        <div className="h-8 w-8 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-        <div className="h-8 w-8 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-        <div className="h-8 w-8 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 rounded-full animate-bounce"></div>
+      <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-full bg-white animate-pulse rounded-[25px]">
+        <div className="flex flex-row gap-2">
+          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
+          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+        </div>
       </div>
     );
   }
 
   if (isErrorAllCards || isErrorCardInfo) {
-    return <div>Error loading data</div>;
+    return <div>Error loading data</div>; 
   }
 
   const allCardsData = allCardsDataWithContent.content!;
   console.log("The data we want to see: ", allCardsDataWithContent);
   console.log("The data we don't want to see: ", cardInfoData);
-  
 
   return (
     <div className="flex flex-col gap-2 pb-5">
       <div className="flex max-sm:flex-col justify-between">
         {allCardsData ? (
           <div className="flex gap-[30px]">
-            {allCardsData.slice(0, numofcard).map((card: CardData, index: number) => (
-              <div key={index}>
-                <CreditCard
-                  balance={card.balance}
-                  cardHolder={card.cardHolder}
-                  expiryDate={new Date(card.expiryDate).toLocaleDateString()}
-                  cardNumber={formatCardNumber(
-                    cardInfoData?.cardNumber || card.semiCardNumber
-                  )}
-                  cardType={index === 0 ? "primary" : "tertiary"}
-                />
-              </div>
-            ))}
+            {allCardsData
+              .slice(0, numofcard)
+              .map((card: CardData, index: number) => (
+                <div key={index}>
+                  <CreditCard
+                    balance={card.balance}
+                    cardHolder={card.cardHolder}
+                    expiryDate={new Date(card.expiryDate).toLocaleDateString()}
+                    cardNumber={formatCardNumber(
+                      cardInfoData?.cardNumber || card.semiCardNumber
+                    )}
+                    cardType={index === 0 ? "primary" : "tertiary"}
+                  />
+                </div>
+              ))}
           </div>
         ) : (
-          <div className="flex space-x-2 justify-center items-center bg-white h-screen">
-            <span className="sr-only">Loading...</span>
-            <div className="h-8 w-8 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-            <div className="h-8 w-8 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-            <div className="h-8 w-8 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 rounded-full animate-bounce"></div>
+          <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-full bg-white animate-pulse rounded-[25px]">
+            <div className="flex flex-row gap-2">
+              <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+              <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
+              <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+            </div>
           </div>
         )}
       </div>

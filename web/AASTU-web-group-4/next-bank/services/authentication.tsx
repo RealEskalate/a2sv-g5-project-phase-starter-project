@@ -1,4 +1,3 @@
-
 // Register User - POST Request
 export const registerUser = async (userData: any) => {
     try {
@@ -10,7 +9,6 @@ export const registerUser = async (userData: any) => {
         body: JSON.stringify(userData),
       });
   
-      console.log("response:",response)
       if (!response.ok) {
         throw new Error('Failed to register user');
       }

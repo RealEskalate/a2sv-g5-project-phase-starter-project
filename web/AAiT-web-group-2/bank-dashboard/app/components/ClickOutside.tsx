@@ -42,7 +42,7 @@ const ClickOutside: React.FC<Props> = ({
   }, [exceptionRef, onClick]);
 
   return (
-    <div ref={wrapperRef} className={`${className || ""}`}>
+    <div ref={wrapperRef} className={` ${className || ""}`}>
       {children}
     </div>
   );

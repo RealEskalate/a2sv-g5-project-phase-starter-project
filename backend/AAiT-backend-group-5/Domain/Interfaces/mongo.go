@@ -1,4 +1,4 @@
-package mongo
+package interfaces
 
 import (
 	"context"

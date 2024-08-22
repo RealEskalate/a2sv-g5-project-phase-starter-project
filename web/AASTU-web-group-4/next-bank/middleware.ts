@@ -23,14 +23,6 @@ export async function middleware(request: NextRequest) {
 // Define the paths where this middleware should be applied
 export const config = {
   matcher: [
-    '/', 
-    '/transaction', 
-    '/accounts', 
-    '/credit-card', 
-    '/transfer', 
-    '/investments', 
-    '/loans', 
-    '/services', 
-    '/setting'
+    
   ],
 };

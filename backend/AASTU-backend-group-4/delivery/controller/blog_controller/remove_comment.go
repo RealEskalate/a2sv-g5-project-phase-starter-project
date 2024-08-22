@@ -9,16 +9,21 @@ import (
 
 func (bc *BlogController) DeleteComment(c *gin.Context) {
 	commentIDParam := c.Param("id")
-	userID := c.MustGet("user_id").(primitive.ObjectID)
-	isAdmin := c.MustGet("is_admin").(bool)
+	userID := c.GetString("user_id")
+	isAdmin := c.GetBool("is_admin")
 
 	commentID, err := primitive.ObjectIDFromHex(commentIDParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
 		return
 	}
+	userId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
 
-	err = bc.usecase.DeleteComment(c, userID, commentID, isAdmin)
+	err = bc.usecase.RemoveComment(c, userId, commentID, isAdmin)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

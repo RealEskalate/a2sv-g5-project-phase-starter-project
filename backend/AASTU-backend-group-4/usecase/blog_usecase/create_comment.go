@@ -8,17 +8,22 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (bu *BlogUsecase) CreateComment(ctx context.Context, comment *domain.Comment) (*domain.Comment, error) {
+func (bu *BlogUsecase) CreateComment(ctx context.Context, comment *domain.CommentRequest) (*domain.Comment, error) {
 	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
 	defer cancel()
 
-	comment.ID = primitive.NewObjectID()
-	comment.CreatedAt = time.Now()
+	var newComment domain.Comment
 
-	err := bu.commentRepo.CreateComment(ctx, *comment)
+	newComment.ID = primitive.NewObjectID()
+	newComment.BlogID = comment.BlogID
+	newComment.UserID = comment.UserID
+	newComment.Content = comment.Content
+	newComment.CreatedAt = time.Now()
+
+	err := bu.commentRepo.CreateComment(ctx, newComment)
 	if err != nil {
 		return nil, err
 	}
 
-	return comment, nil
+	return &newComment, nil
 }

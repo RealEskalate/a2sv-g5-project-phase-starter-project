@@ -4,13 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-const LandingNav = () => {
+const LandingNav = ({bgWhite}:{bgWhite:boolean}) => {
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
   const { data: session, status } = useSession();
 
   const toggle = () => {
     setIsMenuVisible(!isMenuVisible);
-    console.log("toggled");
   };
 
   useEffect(() => {
@@ -18,7 +17,7 @@ const LandingNav = () => {
   }, [isMenuVisible]);
 
   return (
-    <header className="bg-[#083E9E] text-white flex justify-center items-center sm:justify-between p-2 sm:p-4  relative">
+    <header className={`bg-[#083E9E] text-white flex justify-center items-center sm:justify-between p-2 sm:p-4  relative `}>
       <div className="font-extrabold text-[25px]">BankDash</div>
 
       <div className="flex items-center">
@@ -49,7 +48,7 @@ const LandingNav = () => {
             <div className="mb-2 sm:mb-0">About Us</div>
           </Link>
           {status === "authenticated" ? (
-            <Link href={"/"}>
+            <Link href={"/dashboard"}>
               <div className="mb-2 sm:mb-0">DashBoard</div>
             </Link>
           ) : (

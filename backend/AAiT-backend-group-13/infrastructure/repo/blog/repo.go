@@ -177,9 +177,9 @@ func (r *Repo) GetSingle(id uuid.UUID) (*models.Blog, error) {
 	err := r.collection.FindOne(context.Background(), filter).Decode(&blogDTO)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, nil // Blog not found
+			return nil, er.BlogNotFound
 		}
-		return nil, fmt.Errorf("error retrieving blog: %w", err)
+		return nil, er.NewUnexpected("error retrieving blog")
 	}
 
 	// Convert BlogDTO to blogmodel.Blog

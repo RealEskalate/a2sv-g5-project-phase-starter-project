@@ -6,6 +6,9 @@
   background: red;
   color: red;
 }
+html {
+  @apply scroll-smooth;
+}
 
 @layer base {
   :root {

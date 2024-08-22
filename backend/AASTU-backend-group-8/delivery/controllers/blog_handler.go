@@ -43,6 +43,12 @@ func (bc *BlogController) CreateBlogPost(c *gin.Context) {
 }
 
 func (bc *BlogController) GetAllBlogPosts(c *gin.Context) {
+	var filter domain.BlogFilter
+	filter.Title = c.Query("title")
+	filter.AuthorID = c.Query("author_id")
+	filter.Tags = c.QueryArray("tags")
+	filter.Search = c.Query("search")
+
 	var paginationInfo domain.Pagination
 	pageStr := c.DefaultQuery("page", "1")
 	pageSizeStr := c.DefaultQuery("pageSize", "10")
@@ -67,7 +73,8 @@ func (bc *BlogController) GetAllBlogPosts(c *gin.Context) {
 	if err != nil || (sortOrder != 1 && sortOrder != -1) {
 		sortOrder = -1 // Default to descending order
 	}
-	blogs, err := bc.blogUsecase.GetAllBlogPosts(paginationInfo, sortBy, sortOrder)
+
+	blogs, err := bc.blogUsecase.GetAllBlogPosts(paginationInfo, sortBy, sortOrder, filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

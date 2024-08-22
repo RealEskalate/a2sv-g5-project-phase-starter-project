@@ -47,8 +47,6 @@ export default function RootLayout({
                   <NavBar
                     toggleSidebar={toggleSidebar}
                     isSidebarVisible={isSidebarVisible}
-                    toggleDarkMode={toggleDarkMode}
-                    darkmode={darkmode}
                   />
                   <main >
                     {children}

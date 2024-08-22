@@ -11,13 +11,19 @@ interface LoanResponse {
 	message: string;
 	data: LoanDataProps[];
 }
-
+interface ExtendedUser {
+	name?: string;
+	email?: string;
+	image?: string;
+	accessToken?: string;
+  }
 const LoanPage = () => {
 	const [loanData, setLoanData] = useState<LoanResponse | null>(null);
 
 	const { data: session, status } = useSession();
+	const user = session?.user as ExtendedUser;
 
-	const accessToken = session.user?.accessToken;
+	const accessToken = user.accessToken;
 
 	useEffect(() => {
 		const fetchLoanData = async () => {

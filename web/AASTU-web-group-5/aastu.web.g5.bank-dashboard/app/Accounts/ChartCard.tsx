@@ -15,7 +15,12 @@ import { Card, CardContent } from "../../@/components/ui/card";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
-// Configuration for chart colors
+interface ExtendedUser {
+  name?: string;
+  email?: string;
+  image?: string;
+  accessToken?: string;
+}
 const chartConfig = {
   debited: {
     label: "Debited",
@@ -34,7 +39,6 @@ const getDayName = (dateString) => {
 };
 
 export default function Component() {
-  const { data: session } = useSession();
   const [chartData, setChartData] = useState([
     { day: "Mon", debited: 0, credited: 0 },
     { day: "Tue", debited: 0, credited: 0 },
@@ -44,9 +48,13 @@ export default function Component() {
     { day: "Sat", debited: 0, credited: 0 },
     { day: "Sun", debited: 0, credited: 0 },
   ]);
+  const { data: session, status } = useSession();
+  const user = session?.user as ExtendedUser;
+  const accessToken = user.accessToken
+
 
   useEffect(() => {
-    const token = `Bearer ${session?.user?.accessToken}`;
+    const token = `Bearer ${accessToken}`;
 
     const fetchData = async () => {
       try {
@@ -73,7 +81,6 @@ export default function Component() {
         const expensesData = expensesResponse.data.data.content;
         const incomesData = incomesResponse.data.data.content;
 
-        // Initialize a map to accumulate debited and credited amounts by day
         const dataMap = {
           Mon: { debited: 12000, credited: 10000},
           Tue: { debited: 15000, credited: 10000},
@@ -113,7 +120,7 @@ export default function Component() {
     };
 
     fetchData();
-  }, [session]);
+  }, [accessToken, session]);
 
   return (
     <Card className="relative h-[364px] bg-white w-full">

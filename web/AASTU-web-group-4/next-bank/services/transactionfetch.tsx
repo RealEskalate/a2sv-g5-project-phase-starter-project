@@ -141,6 +141,7 @@ export const getIncomes = async ( page:any , size:any) => {
     throw error;
   }
 };
+
 // GET /transactions/expenses
 export const getExpenses = async ( page:any , size:any) => {
   try {

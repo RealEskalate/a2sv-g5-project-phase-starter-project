@@ -67,7 +67,6 @@ func LoggedIn(TS tokenservice.TokenService_imp) gin.HandlerFunc {
 
 		// Token is valid, store the user in the context
 		c.Set("user", user)
-
 		// Proceed to the next handler
 		c.Next()
 	}

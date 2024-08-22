@@ -29,7 +29,7 @@ export default function RootLayout({
             setCollapse(!collapse);
           }}
         />
-        <div className={`w-full h-full ${collapse ? "md:ml-[110px]" : "md:ml-72"}`}>
+        <div className={`w-full h-full border ${collapse ? "md:ml-[110px]" : "md:ml-[260px]"}`}>
           <NavBar
             openSidebar={() => {
               setOpen(true);

@@ -18,7 +18,7 @@ const Download = ({
 
       // Fetch the transaction data using Axios with headers
       const response = await axios.get(
-        `https://bank-dashboard-1tst.onrender.com/transactions/${transactionId}`,
+        `https://bank-dashboard-o9tl.onrender.com/transactions/${transactionId}`,
         {
           headers,
         }

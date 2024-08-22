@@ -80,7 +80,7 @@ export function MonthlyRev({ data }: YearlyInvestProps) {
             accessibilityLayer
             data={chartData}
             margin={{
-             
+              left : 6,
               right: 12,
             }}
           >
@@ -98,7 +98,7 @@ export function MonthlyRev({ data }: YearlyInvestProps) {
               axisLine={false}
               tickMargin={8}
               ticks={[0, 2000, 4000, 6000, 8000]}
-              tickFormatter={(value) => value.toLocaleString()}
+              tickFormatter={(value) => `$${value.toLocaleString()}`}
             />
             <ChartTooltip
               cursor={false}

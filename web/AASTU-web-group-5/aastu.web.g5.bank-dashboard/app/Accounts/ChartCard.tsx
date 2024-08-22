@@ -53,7 +53,7 @@ export default function Component() {
         // Fetch expenses and incomes data simultaneously
         const [expensesResponse, incomesResponse] = await Promise.all([
           axios.get(
-            "https://bank-dashboard-6acc.onrender.com/transactions/expenses?page=0&size=7",
+            "https://bank-dashboard-1tst.onrender.com/transactions/expenses?page=0&size=7",
             {
               headers: {
                 Authorization: token,
@@ -61,7 +61,7 @@ export default function Component() {
             }
           ),
           axios.get(
-            "https://bank-dashboard-6acc.onrender.com/transactions/incomes?page=0&size=7",
+            "https://bank-dashboard-1tst.onrender.com/transactions/incomes?page=0&size=7",
             {
               headers: {
                 Authorization: token,
@@ -75,7 +75,7 @@ export default function Component() {
 
         // Initialize a map to accumulate debited and credited amounts by day
         const dataMap = {
-          Mon: { debited: 12000, credited: 0 },
+          Mon: { debited: 12000, credited: 10000},
           Tue: { debited: 15000, credited: 10000},
           Wed: { debited: 2344, credited: 7000 },
           Thu: { debited: 3345, credited: 9000},
@@ -160,13 +160,13 @@ export default function Component() {
                 tick={{ fontSize: 12 }}
                 strokeWidth={0.5}
               />
-              <YAxis
+              {/* <YAxis
                 width={70} // Increased width for better visibility of large numbers
                 tickMargin={10}
                 tick={{ fontSize: 9 }} // Adjust font size if necessary
                 strokeWidth={0.5}
                 // padding={{ right: 10 }} // Adding padding for better visibility
-              />
+              /> */}
               <Tooltip />
               <Bar
                 dataKey="debited"

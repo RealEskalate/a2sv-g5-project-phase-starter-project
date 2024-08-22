@@ -58,7 +58,7 @@ func main() {
 	emailService := &email.MailTrapService{}
 
 	// init controllers
-	userController := initUserController(userRepo, hashService, jwtService, emailService, recommendationHandler)
+	userController := initUserController(userRepo, hashService, jwtService, emailService)
 	blogController := initBlogController(blogRepo, cacheClient)
 	geminiController := initGeminiController(recommendationHandler)
 	// Router configuration
@@ -139,7 +139,7 @@ func initGeminiClient(cfg config.Config) *genai.GenerativeModel{
 
 
 }
-func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtService *jwt.Service, mailService *email.MailTrapService, geminiHandler *geminiService.RecomendationHandler) *usercontroller.UserController {
+func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtService *jwt.Service, mailService *email.MailTrapService,) *usercontroller.UserController {
 	promoteHandler := usercmd.NewPromoteHandler(userRepo)
 	loginHandler := userqry.NewLoginHandler(userqry.LoginConfig{
 		UserRepo:     userRepo,

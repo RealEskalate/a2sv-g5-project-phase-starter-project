@@ -24,6 +24,7 @@ func (uc *BlogUseCase) CreateBlog(iblog domain.PostBlog) (domain.Blog, error) {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		Tag:       iblog.Tag,
+		Owner: iblog.Owner,
 	}
 	if blog.ID.IsZero() {
 		blog.ID = primitive.NewObjectID()

@@ -26,8 +26,6 @@ func (suite *LoginUsecaseTestSuite) SetupTest() {
 	suite.contextTimeout = time.Second * 5
 	suite.LoginUsecaseTestSuite = NewLoginUsecase(suite.mockUserRepo, suite.mockActiveUserRepo, suite.contextTimeout)
 }
-
-
 func (suite *LoginUsecaseTestSuite) TestGetUserByEmail() {
 	suite.Run("TestSuccess", func() {
 		suite.mockUserRepo.On("FindUserByEmail", mock.Anything, mock.Anything).Return(domain.User{}, nil).Once()

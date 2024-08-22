@@ -146,6 +146,9 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
 
 func (service *authService) Login(emailOrUsername, password string) (*entities.RefreshToken, string, error) {
 	user, _ := service.userService.FindUserByEmail(emailOrUsername)
+	if user == nil {
+		return nil, "", errors.New("User not found")
+	}
 	err := service.passwordService.ComparePassword(user.Password, password)
 	if err != nil {
 		return nil, "", errors.New("Invalid password")

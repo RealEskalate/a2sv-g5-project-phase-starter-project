@@ -169,6 +169,7 @@ func (service *tokenService) GetClaimsFromToken(token string) map[string]string 
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(service.accessTokenSecret), nil
+		return []byte(service.accessTokenSecret), nil
 	})
 
 	if err != nil {

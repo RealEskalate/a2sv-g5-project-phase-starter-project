@@ -51,7 +51,7 @@ const SideBar = ({
 		<div
 			className={`pl-[38px]   ${
 				isSidebarVisible ? "block" : "hidden"
-			} sm:block flex items-center flex-col min-w-full sm:w-auto`}
+			} sm:block flex items-center flex-col min-w-full sm:w-auto  `}
 		>
 			<div
 				className="flex gap-[9px] items-center relative"

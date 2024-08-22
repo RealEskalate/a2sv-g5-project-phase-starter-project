@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { LoanDataProps } from "./loanTypes"; // Import the shared type
 
 interface LoanTableProps {
@@ -14,18 +14,6 @@ const formatNumber = (num: number) => {
 };
 
 const LoanTable: React.FC<LoanTableProps> = ({ data }) => {
-	// State for pagination
-	const [currentPage, setCurrentPage] = useState(1);
-	const itemsPerPage = 5; // Number of items per page
-
-	// Calculate total pages
-	const totalPages = Math.ceil(data.length / itemsPerPage);
-
-	// Calculate the current page's data
-	const startIndex = (currentPage - 1) * itemsPerPage;
-	const paginatedData = data.slice(startIndex, startIndex + itemsPerPage);
-
-	// Calculate totals
 	const totalLoanMoney = data.reduce(
 		(acc, loan) => acc + (loan.loanAmount || 0),
 		0
@@ -39,15 +27,8 @@ const LoanTable: React.FC<LoanTableProps> = ({ data }) => {
 		0
 	);
 
-	// Function to handle page change
-	const handlePageChange = (page: number) => {
-		if (page >= 1 && page <= totalPages) {
-			setCurrentPage(page);
-		}
-	};
-
 	return (
-		<div className="py-5">
+		<div className="py-2">
 			<div className="p-3 text-[#333B69] text-xl font-semibold">
 				<p>Active Loans Overview</p>
 			</div>
@@ -72,14 +53,12 @@ const LoanTable: React.FC<LoanTableProps> = ({ data }) => {
 							</tr>
 						</thead>
 						<tbody>
-							{paginatedData.map((loan, index) => (
+							{data.map((loan, index) => (
 								<tr
 									key={loan.id}
 									className="border-b-2 border-solid border-gray-100 text-[#232323] text-center"
 								>
-									<td className="p-3 hidden sm:table-cell">
-										{startIndex + index + 1}.
-									</td>
+									<td className="p-3 hidden sm:table-cell">{index + 1}.</td>
 									<td className="p-3">${formatNumber(loan.loanAmount ?? 0)}</td>
 									<td className="p-3">
 										${formatNumber(loan.leftToRepay ?? 0)}
@@ -113,44 +92,6 @@ const LoanTable: React.FC<LoanTableProps> = ({ data }) => {
 							</tr>
 						</tbody>
 					</table>
-					{/* Pagination Controls */}
-					<div className="flex justify-center mt-4">
-						<button
-							className={`px-3 py-1 mx-1 border rounded-md ${
-								currentPage === 1
-									? "bg-gray-200 cursor-not-allowed"
-									: "bg-white"
-							}`}
-							onClick={() => handlePageChange(currentPage - 1)}
-							disabled={currentPage === 1}
-						>
-							Previous
-						</button>
-						{Array.from({ length: totalPages }, (_, index) => (
-							<button
-								key={index + 1}
-								className={`px-3 py-1 mx-1 border rounded-md ${
-									currentPage === index + 1
-										? "bg-blue-500 text-white"
-										: "bg-white"
-								}`}
-								onClick={() => handlePageChange(index + 1)}
-							>
-								{index + 1}
-							</button>
-						))}
-						<button
-							className={`px-3 py-1 mx-1 border rounded-md ${
-								currentPage === totalPages
-									? "bg-gray-200 cursor-not-allowed"
-									: "bg-white"
-							}`}
-							onClick={() => handlePageChange(currentPage + 1)}
-							disabled={currentPage === totalPages}
-						>
-							Next
-						</button>
-					</div>
 				</div>
 			</div>
 		</div>

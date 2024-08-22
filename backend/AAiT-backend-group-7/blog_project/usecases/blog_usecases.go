@@ -1,10 +1,10 @@
 package usecases
 
 import (
+	"blog_project/domain"
 	"context"
 	"errors"
 	"sort"
-	"blog_project/domain"
 )
 
 type BlogUsecases struct {
@@ -13,21 +13,22 @@ type BlogUsecases struct {
 	UserUsecase domain.IUserUsecase
 }
 
-func NewBlogUsecase(aiService domain.AiService , blogrepo domain.IBlogRepository, userusecase domain.IUserUsecase) domain.IBlogUsecase {
+func NewBlogUsecase(aiService domain.AiService, blogrepo domain.IBlogRepository, userusecase domain.IUserUsecase) domain.IBlogUsecase {
 	return &BlogUsecases{
-		AiService:  aiService,
+		AiService:   aiService,
 		BlogRepo:    blogrepo,
 		UserUsecase: userusecase,
 	}
 }
 
-func (u *BlogUsecases) GetAllBlogs(ctx context.Context, sortOrder string) ([]domain.Blog, error) {
-	blogs, err := u.BlogRepo.GetAllBlogs(ctx)
+func (u *BlogUsecases) GetAllBlogs(ctx context.Context, sortOrder string, page, limit int) ([]domain.Blog, error) {
+	offset := (page - 1) * limit
+
+	blogs, err := u.BlogRepo.GetBlogsByPage(ctx, offset, limit)
 	if err != nil {
 		return nil, err
 	}
 
-	// create a slice to hold blogs with their popularity
 	type blogWithPopularity struct {
 		Blog       domain.Blog
 		Popularity int
@@ -35,13 +36,11 @@ func (u *BlogUsecases) GetAllBlogs(ctx context.Context, sortOrder string) ([]dom
 
 	blogWithPopularityList := make([]blogWithPopularity, len(blogs))
 
-	// calculate popularity for each blog and store it along with the blog
 	for i, blog := range blogs {
 		popularity := len(blog.Likes) - len(blog.Dislikes) + 2*len(blog.Comments)
 		blogWithPopularityList[i] = blogWithPopularity{Blog: blog, Popularity: popularity}
 	}
 
-	// sort blogs by popularity
 	if sortOrder == "ASC" {
 		sort.Slice(blogWithPopularityList, func(i, j int) bool {
 			return blogWithPopularityList[i].Popularity < blogWithPopularityList[j].Popularity
@@ -52,7 +51,6 @@ func (u *BlogUsecases) GetAllBlogs(ctx context.Context, sortOrder string) ([]dom
 		})
 	}
 
-	// extract sorted blogs from the blogWithPopularity slice
 	sortedBlogs := make([]domain.Blog, len(blogs))
 	for i, bw := range blogWithPopularityList {
 		sortedBlogs[i] = bw.Blog
@@ -276,7 +274,6 @@ func (u *BlogUsecases) AddComent(ctx context.Context, blogID int, authorID int, 
 
 	return blog, nil
 }
-
 
 func (u *BlogUsecases) AiRecommendation(ctx context.Context, content string) (string, error) {
 	return u.AiService.GenerateContent(ctx, content)

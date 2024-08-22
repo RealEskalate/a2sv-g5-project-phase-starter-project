@@ -47,10 +47,11 @@ type IBlogRepository interface {
 	SearchByTitle(ctx context.Context, title string) ([]Blog, error)
 	SearchByTags(ctx context.Context, tags []string) ([]Blog, error)
 	SearchByAuthor(ctx context.Context, author string) ([]Blog, error)
+	GetBlogsByPage(ctx context.Context, offset, limit int) ([]Blog, error)
 }
 
 type IBlogUsecase interface {
-	GetAllBlogs(ctx context.Context, sortOrder string) ([]Blog, error)
+	GetAllBlogs(ctx context.Context, sortOrder string, page, limit int) ([]Blog, error)
 	GetBlogByID(ctx context.Context, id int) (Blog, error)
 	CreateBlog(ctx context.Context, blog Blog) (Blog, error)
 	UpdateBlog(ctx context.Context, id int, blog Blog) (Blog, error)

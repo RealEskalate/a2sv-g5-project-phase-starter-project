@@ -2,6 +2,9 @@ package controllers
 
 import (
 	"blog_project/domain"
+	"fmt"
+	"io"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -21,6 +24,14 @@ func (uc *userController) GetAllUsers(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
+	// Prepend the URL to the ProfilePic path
+	for i := range users {
+		if users[i].ProfilePic != "" {
+			users[i].ProfilePic = fmt.Sprintf("http://localhost:8080/%s", users[i].ProfilePic)
+		}
+	}
+
 	c.JSON(200, users)
 }
 
@@ -37,16 +48,57 @@ func (uc *userController) GetUserByID(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
+	// Prepend the URL to the ProfilePic path
+	if user.ProfilePic != "" {
+		user.ProfilePic = fmt.Sprintf("http://localhost:8080/%s", user.ProfilePic)
+	}
+
 	c.JSON(200, user)
 }
 
 func (uc *userController) CreateUser(c *gin.Context) {
 	var user domain.User
-	err := c.BindJSON(&user)
 
+	// Parse form data
+	err := c.Request.ParseMultipartForm(10 << 20) // Limit upload size to 10MB
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(400, gin.H{"error": "Could not parse form data"})
 		return
+	}
+
+	// Retrieve JSON fields
+	user.Username = c.PostForm("username")
+	user.Password = c.PostForm("password")
+	user.Email = c.PostForm("email")
+	user.Role = c.PostForm("role")
+	user.Bio = c.PostForm("bio")
+	user.Phone = c.PostForm("phone")
+
+	// Handle profile picture upload (optional)
+	file, handler, err := c.Request.FormFile("profile_pic")
+	if err == nil { // Only proceed if the file was uploaded
+		defer file.Close()
+
+		// Define the path where the file will be stored
+		filePath := fmt.Sprintf("uploads/%s", handler.Filename)
+
+		// Save the file to disk
+		out, err := os.Create(filePath)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Unable to create the file for writing: " + err.Error()})
+			return
+		}
+		defer out.Close()
+
+		_, err = io.Copy(out, file)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Unable to save the file"})
+			return
+		}
+
+		// Set the profile picture path
+		user.ProfilePic = filePath
 	}
 
 	newUser, err := uc.UserUsecase.CreateUser(c, user)
@@ -200,12 +252,19 @@ func (uc *userController) DemoteUser(c *gin.Context) {
 }
 
 func (uc *userController) RefreshToken(c *gin.Context) {
-	refreshToken := c.Param("refresh_token")
-	newtoken, err := uc.UserUsecase.RefreshToken(c, refreshToken)
+	var refreshToken struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+	err := c.ShouldBindJSON(&refreshToken)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"message": "Token refreshed successfully", "new token": newtoken})
-
+	newToken, err := uc.UserUsecase.RefreshToken(c, refreshToken.RefreshToken)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Token refreshed successfully", "new_access_token": newToken})
 }

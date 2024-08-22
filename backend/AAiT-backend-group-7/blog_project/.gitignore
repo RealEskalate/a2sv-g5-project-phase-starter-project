@@ -27,3 +27,6 @@ bin/
 
 # Dependencies
 vendor/
+
+# Ignore all files in the uploads directory
+/delivery/uploads/

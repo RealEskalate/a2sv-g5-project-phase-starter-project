@@ -9,8 +9,6 @@ import (
 	"regexp"
 	"sync/atomic"
 	"time"
-
-	"github.com/golang-jwt/jwt"
 )
 
 type UserUsecase struct {
@@ -109,7 +107,7 @@ func (u *UserUsecase) Login(ctx context.Context, username, password string) (str
 		return "", "", errors.New("invalid credentials")
 	}
 
-	err = infrastructure.ComparePasswords(user.Password, password)
+	err = infrastructure.ComparePassword(user.Password, password)
 	if err != nil {
 		return "", "", errors.New("invalid credentials")
 	}
@@ -134,19 +132,24 @@ func (u *UserUsecase) Login(ctx context.Context, username, password string) (str
 }
 
 func (u *UserUsecase) RefreshToken(ctx context.Context, refreshToken string) (string, error) {
-	validatedToken, err := infrastructure.ValidateToken(refreshToken, os.Getenv("jwt_secret"))
+	validatedToken, err := infrastructure.IsAuthorized(refreshToken, os.Getenv("jwt_secret"))
 	if err != nil {
 		return "", errors.New("invalid token")
 	}
 
-	userID := validatedToken.Claims.(jwt.MapClaims)["id"].(int)
+	// Convert the id from float64 to int
+	userID, ok := validatedToken["id"].(float64)
+	if !ok {
+		return "", errors.New("invalid token ID type")
+	}
 
-	user, err := u.UserRepo.GetUserByID(ctx, userID)
+	// Convert float64 to int
+	user, err := u.UserRepo.GetUserByID(ctx, int(userID))
 	if err != nil {
 		return "", errors.New("user not found")
 	}
 
-	newToken, err := infrastructure.GenerateJWTAccessToken(&user, os.Getenv("jwt_secret"), 1)
+	newToken, _ := infrastructure.GenerateJWTAccessToken(&user, os.Getenv("jwt_secret"), 1)
 
 	return newToken, nil
 }

@@ -2,10 +2,87 @@
 import Image from "next/image";
 import DoughnutChart from "../components/Chart/Doughnut";
 import React from "react";
+import { useState } from "react";
 import CardListPage from "../components/cardList/CardList";
 import CreditCard from "../components/CreditCard";
+import {
+  useGetCardsQuery,
+  useCreateCardMutation,
+} from "../../lib/redux/api/cardsApi";
+import { Card } from "../../lib/redux/types/cards";
 
-const creditCardPage = () => {
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Add 1 because months are zero-indexed
+  const year = date.getFullYear().toString().slice(-2); // Get the last two digits of the year
+  return `${month}/${year}`;
+}
+
+function formatCardNumber(cardNumber: string): string {
+  const start = cardNumber.slice(0, 4);
+  const end = cardNumber.slice(-4);
+  return `${start} **** **** ${end}`;
+}
+
+function formatBalance(balance: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(balance);
+}
+
+const cardStyles = [
+  {
+    backgroundImg:
+      "bg-[linear-gradient(107.38deg,#2D60FF_2.61%,#539BFF_101.2%)]",
+    textColor: "text-white",
+  },
+  {
+    backgroundImg:
+      "bg-[linear-gradient(107.38deg,#4C49ED_2.61%,#0A06F4_101.2%)]",
+    textColor: "text-white",
+  },
+  {
+    backgroundImg: "bg-white",
+    textColor: "text-black",
+  },
+];
+
+const CreditCardPage = () => {
+  const { data, error, isLoading } = useGetCardsQuery({ page: 0, size: 10 });
+  const [createCard, { isLoading: isCreating }] = useCreateCardMutation();
+
+  const [cardType, setCardType] = useState("");
+  const [nameOnCard, setNameOnCard] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [expirationDate, setExpirationDate] = useState("");
+
+  const handleAddCard = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      console.log("Creating card...");
+      await createCard({
+        cardType: cardType,
+        cardHolder: nameOnCard,
+        expiryDate: expirationDate,
+        balance: 1000,
+        passcode: password,
+      }).unwrap();
+
+      // Reset form fields
+      setCardType("");
+      setPassword("");
+      setNameOnCard("");
+      setExpirationDate("");
+    } catch (error) {
+      console.error("Failed to add new card", error);
+    }
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error fetching cards</div>;
   return (
     <div className="body bg-[#F5F7FA] w-full h-full overflow-y-auto pb-5 m-0">
       <div className="cards m-2 bg-[#F5F7FA]  p-1">
@@ -15,41 +92,26 @@ const creditCardPage = () => {
           </h1>
         </div>
 
-        <div className="creditcards  flex justify-between gap-5 lg:flex-row overflow-x-auto overflow-y-hidden no-scrollbar  h-56  lg:justify-between lg:px-4 ">
-          <div className="credit-card min-w-72 max-w-88 flex-shrink-0 ">
-            <CreditCard
-              name="Abenezer M"
-              balance="$5,756"
-              cardNumber="3778 **** **** 1234"
-              validDate="11/15"
-              backgroundImg="bg-[linear-gradient(107.38deg,#2D60FF_2.61%,#539BFF_101.2%)]"
-              textColor="text-white"
-            />
-          </div>
+        <div className="creditcards  flex justify-evenly gap-5 lg:flex-row overflow-x-auto overflow-y-hidden no-scrollbar  h-56  lg:justify-between lg:px-4 ">
+          {data?.content.map((card: Card, index: number) => {
+            const style = cardStyles[index % cardStyles.length];
+            return (
+              <div
+                key={index}
+                className="credit-card min-w-72 max-w-88 flex-shrink-0"
+              >
+                <CreditCard
+                  name={card.cardHolder}
+                  balance={formatBalance(card.balance)}
+                  cardNumber={formatCardNumber(card.semiCardNumber)}
+                  validDate={formatDate(card.expiryDate)}
+                  backgroundImg={style.backgroundImg}
+                  textColor={style.textColor}
+                />
+              </div>
+            );
+          })}
 
-          <div className="credit-card min-w-72 max-w-96 flex-shrink-0 ">
-            <CreditCard
-              name="Abeni W"
-              balance="$5,756"
-              cardNumber="3778 **** **** 1234"
-              validDate="11/15"
-              backgroundImg="bg-[linear-gradient(107.38deg,#4C49ED_2.61%,#0A06F4_101.2%)]"
-              textColor="text-white"
-            />
-          </div>
-
-          <div className="credit-card min-w-72 max-w-88 flex-shrink-0">
-            <CreditCard
-              name="Abeni M"
-              balance="$5,756"
-              cardNumber="3778 **** **** 1234"
-              validDate="11/15"
-              backgroundImg="bg-white"
-              textColor="text-black"
-            />
-          </div>
-
-          {/* Add more cards here if needed */}
         </div>
       </div>
 
@@ -94,6 +156,8 @@ const creditCardPage = () => {
                 name="CardType"
                 id="CardType"
                 placeholder="Classic"
+                value={cardType}
+                onChange={(e) => setCardType(e.target.value)}
                 className="border-[1px] md:w-[90%] w-auto  h-[40px] rounded-[10px] p-3 md:text-xs"
               />
             </div>
@@ -106,6 +170,8 @@ const creditCardPage = () => {
                 name="nameoncard"
                 id="nameoncard"
                 placeholder="My Cards"
+                value={nameOnCard}
+                onChange={(e) => setNameOnCard(e.target.value)}
                 className="border-[1px] md:w-[90%] w-auto h-[40px] rounded-[10px] p-3 md:text-xs"
               />
             </div>
@@ -118,6 +184,8 @@ const creditCardPage = () => {
                 name="cardnumber"
                 id="cardnumber"
                 placeholder="**** **** **** ****"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="border-[1px] md:w-[90%] w-auto h-[40px] rounded-[10px] p-3 md:text-xs"
               />
             </div>
@@ -129,19 +197,22 @@ const creditCardPage = () => {
                 Expiration Date
               </label>
               <input
-                type=" date"
+                type="date"
                 name="expirationdate"
                 id="expirationdate"
-                placeholder="25 January 2025"
+                value={expirationDate}
+                onChange={(e) => setExpirationDate(e.target.value)}
                 className="border-[1px] md:w-[90%] w-auto h-[40px] rounded-[10px] p-3 md:text-xs"
               />
             </div>
 
             <button
               type="submit"
+              onClick={handleAddCard}
+              disabled={isCreating}
               className="border-2 md:w-[30%] bg-[#1814F3] text-white w-auto  h-[40px] rounded-[9px]"
             >
-              Add To Cart
+              {isCreating ? "Adding..." : "Add Card"}
             </button>
           </form>
         </div>
@@ -290,4 +361,4 @@ const creditCardPage = () => {
   );
 };
 
-export default creditCardPage;
+export default CreditCardPage;

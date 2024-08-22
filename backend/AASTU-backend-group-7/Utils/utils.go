@@ -74,7 +74,7 @@ func getCurrentTimeString() string {
 	return timeString
 }
 
-func SetProfilePicture(file *multipart.FileHeader) (string, error) {
+var SetProfilePicture = func (file *multipart.FileHeader) (string, error) {
 	// Supported file types
 	supportedTypes := map[string]bool{
 		".jpg":  true,

@@ -111,7 +111,7 @@ func (ChatHandler *ChatHandler) GetChatsHandler(c *gin.Context) {
 		Page:  page,
 	}
 
-	retrievedChats, err := ChatHandler.chatUsecase.GetChats(context.TODO(), form, pagination)
+	retrievedChats, err := ChatHandler.chatUsecase.GetChats(c.Request.Context(), form, pagination)
 
 	var validationError validator.ValidationErrors
 	if errors.As(err, &validationError) {

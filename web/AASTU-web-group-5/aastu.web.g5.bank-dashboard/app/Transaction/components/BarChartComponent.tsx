@@ -1,12 +1,9 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Bar, BarChart, CartesianGrid, XAxis, Cell, LabelList } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, LabelList } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-import { useSession } from "next-auth/react";
 
+// Define chart configuration for the BarChart
 const chartConfig = {
   desktop: {
     label: "Expenses",
@@ -14,81 +11,49 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const getAllMonths = () => {
-  const months = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  ];
-  return months;
-};
+interface TransactionData {
+  transactionId: string;
+  type: string;
+  senderUserName: string;
+  description: string;
+  date: string;
+  amount: number;
+  receiverUserName: string | null;
+}
 
-export function BarChartComponent() {
-  const [chartData, setChartData] = useState<{ month: string, desktop: number }[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  interface ExtendedUser {
-    name?: string;
-    email?: string;
-    image?: string;
-    accessToken?: string;
-    }
-    const { data: session, status } = useSession();
-    const user = session?.user as ExtendedUser;
-    const accessToken = user?.accessToken;
+interface BarChartComponentProps {
+  data: TransactionData[];
+}
+
+// Define all months of the year
+const monthsOfYear = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+export function BarChartComponent({ data }: BarChartComponentProps) {
+  const [hovering, setHovering] = useState<number | null>(null);
+  const [aggregatedData, setAggregatedData] = useState<{ month: string; amount: number }[]>([]);
+
   useEffect(() => {
-    const fetchChartData = async () => {
-      try {
-        const response = await axios.get('https://bank-dashboard-1tst.onrender.com/transactions/expenses?page=0&size=10', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        if (response.data.success) {
-          // Initialize data with zeros for each month
-          const months = getAllMonths();
-          const initialData = months.map(month => ({ month, desktop: 0 }));
-
-          // Map API response to chart format
-          response.data.data.forEach((item: { date: string, amount: number }) => {
-            const month = new Date(item.date).toLocaleString('default', { month: 'short' });
-            const index = months.indexOf(month);
-            if (index !== -1) {
-              initialData[index].desktop += item.amount;
-            }
-          });
-
-          setChartData(initialData);
-        } else {
-          setError('Failed to fetch data');
-        }
-      } catch (err) {
-        console.error('Error fetching chart data:', err);
-        setError('Failed to fetch data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchChartData();
-  }, []);
-
-  const handleMouseEnter = (index: number) => {
-    setActiveIndex(index);
-  };
-
-  const handleMouseLeave = () => {
-    setActiveIndex(null);
-  };
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+    const aggregated = monthsOfYear.map((month, index) => {
+      const monthData = data.filter(item => {
+        const itemMonth = new Date(item.date).getMonth(); // Extract month from date
+        return itemMonth === index;
+      });
+      const totalAmount = monthData.reduce((sum, item) => sum + item.amount, 0);
+      return { month, amount: totalAmount+11111111 };
+    });
+    setAggregatedData(aggregated);
+  }, [data]);
 
   return (
     <Card>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart data={chartData} onMouseLeave={handleMouseLeave}>
+          <BarChart
+            data={aggregatedData}
+            width={500}
+            height={300}
+            onMouseLeave={() => setHovering(null)}
+          >
             <CartesianGrid vertical={false} horizontal={false} />
             <XAxis
               dataKey="month"
@@ -96,26 +61,53 @@ export function BarChartComponent() {
               tickMargin={10}
               axisLine={false}
             />
-            <Bar dataKey="desktop" radius={10}>
-              {chartData.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={activeIndex === index ? "#12887E33" : "#EDF0F7"}
-                  onMouseEnter={() => handleMouseEnter(index)}
-                />
-              ))}
+            <Bar
+  dataKey="amount"
+  radius={10}
+  fill="green" // initial fill color
+  onMouseEnter={(data, index) => setHovering(index)}
+  onMouseLeave={() => setHovering(null)}
+>
+  {aggregatedData.map((entry, index) => (
+    <rect
+      key={`rect-${index}`}
+      x={index * 30}
+      y={200 - entry.amount}
+      width={20}
+      height={entry.amount}
+      fill={hovering === index ? "#d0e9f4" : "green"} // change fill color on hover
+    />
+  ))}
+  <LabelList
+    dataKey="amount"
+    position="top"
+    content={({ x, y, value, index }) =>
+      hovering === index ? (
+        <text
+          x={x}
+          y={y}
+          dy={-10}
+          fill="black"
+          fontSize={12}
+          textAnchor="middle"
+        >
+          {value}
+        </text>
+      ) : null
+    }
+  />
               <LabelList
-                dataKey="desktop"
+                dataKey="amount"
                 position="top"
                 content={({ x, y, value, index }) =>
-                  activeIndex === index ? (
+                  hovering === index ? (
                     <text
                       x={x}
                       y={y}
                       dy={-10}
                       fill="black"
                       fontSize={12}
-                      textAnchor="top"
+                      textAnchor="middle"
                     >
                       {value}
                     </text>

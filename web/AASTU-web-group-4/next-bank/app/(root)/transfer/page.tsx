@@ -24,7 +24,7 @@ const TransferPage: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center bg-gray-100 p-4">
+    <div className="flex justify-center items-center bg-gray-100 p-14">
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-lg h-full sm:h-auto flex flex-col justify-center lg:ml-72">
         <div className="text-center text-2xl font-bold mb-4 p-3 flex justify-center gap-3">
           <p>

@@ -5,9 +5,7 @@ interface BalanceCardProps {
     altText: string;
     title: string;
     amount: string;
-    index: number;
-  }
-  
+  } 
 
 export const BalanceCard: React.FC<{ balance: BalanceCardProps }> = ({ balance }) => {
     const { iconSrc, altText, title, amount } = balance;
@@ -33,36 +31,3 @@ export const BalanceCard: React.FC<{ balance: BalanceCardProps }> = ({ balance }
       </div>
     );
   };
-  
-
-  const balances: BalanceCardProps[] = [
-  {
-    iconSrc: '/Images/1.png',
-    index: 1,
-    altText: "Money Bag Icon",
-    title: "My Balance",
-    amount: balance.accountBalance,
-  },
-  {
-    iconSrc: '/Images/2.png',
-    index: 2,
-    altText: "Income Icon",
-    title: "Income",
-    amount: "$5,600",
-  },
-  {
-    iconSrc: '/Images/3.png',
-    index: 3,
-    altText: "Expense Icon",
-    title: "Expense",
-    amount: "$3,460",
-  },
-  {
-    iconSrc: '/Images/4.png',
-    index: 4,
-    altText: "Savings Icon",
-    title: "Total Saving",
-    amount: "$7,920",
-  },
-];
-

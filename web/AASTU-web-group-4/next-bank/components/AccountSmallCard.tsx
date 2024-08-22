@@ -1,3 +1,78 @@
+import { useState, useEffect } from "react";
+import { currentuser } from "@/services/userupdate";
+import { BalanceCard } from './smallCard';
+
+interface BalanceCardProps {
+  iconSrc: string;
+  altText: string;
+  title: string;
+  amount: string;
+  index: number;
+}
+
+const App: React.FC = () => {
+  const [balances, setBalances] = useState<BalanceCardProps[]>([]);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const balanceInfo = await currentuser();
+        const fetchedBalance = `$${balanceInfo.data.accountBalance}`;
+
+        const updatedBalances: BalanceCardProps[] = [
+          {
+            iconSrc: '/Images/1.png',
+            index: 1,
+            altText: "Money Bag Icon",
+            title: "My Balance",
+            amount: fetchedBalance, // Using fetched balance
+          },
+          {
+            iconSrc: '/Images/2.png',
+            index: 2,
+            altText: "Income Icon",
+            title: "Income",
+            amount: "$5,600",
+          },
+          {
+            iconSrc: '/Images/3.png',
+            index: 3,
+            altText: "Expense Icon",
+            title: "Expense",
+            amount: "$3,460",
+          },
+          {
+            iconSrc: '/Images/4.png',
+            index: 4,
+            altText: "Savings Icon",
+            title: "Total Saving",
+            amount: "$7,920",
+          },
+        ];
+
+        setBalances(updatedBalances);
+      } catch (error) {
+        console.error("Failed to fetch balance", error);
+      }
+    };
+
+    fetchBalance();
+  }, []);
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+      {balances.map((balance) => (
+        <BalanceCard key={balance.index} balance={balance} />
+      ))}
+    </div>
+  );
+};
+
+export default App;
+
+
+
+
 // import Image from 'next/image';  
 // import { useState, useEffect } from "react";
 // import { getAllBankServices, getBankServiceById } from "@/services/bankseervice";
@@ -81,41 +156,4 @@
 //   },
 // ];
 
-
-import { useState, useEffect } from "react";
-import { currentuser } from "@/services/userupdate";
-import { BalanceCard } from './smallCard';
-
-const App: React.FC = () => {
-  const [balances, setBalances] = useState("");
-
-  useEffect(() => {
-    const fetchBalance = async () => {
-      try {
-        const balanceInfo = await currentuser();
-        console.log(balanceInfo)
-
-        if (Array.isArray(balanceInfo.data.accountBlance)) {
-          setBalances(balanceInfo.data.accountBlance);
-        } else {
-          console.error("Transaction data is not an array");
-        }
-      } catch (error) {
-        console.error("Failed to fetch transactions", error);
-      }
-    };
-
-    fetchBalance();
-  }, []);
-
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-      {balances.map((balance, index) => (
-        <BalanceCard key={index} balance={balance} />
-      ))}
-    </div>
-  );
-};
-
-export default App;
 

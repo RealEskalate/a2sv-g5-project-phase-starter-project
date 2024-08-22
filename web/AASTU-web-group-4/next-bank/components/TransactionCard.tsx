@@ -24,7 +24,7 @@ const TransactionCard: React.FC<{ transaction: Transaction,currentname:string }>
   const formattedAmount = `${sign}${'$'}${Math.abs(Number(transaction.amount)).toLocaleString()}`;
 
   return (
-    <div className="flex flex-col pt-4 md:flex-row gap-4 gap-y-6 w-auto rounded-2xl shadow-none border-none">
+    <div className="flex flex-col pt-4 md:flex-row md:justify-evenly gap-4 gap-y-6 w-auto rounded-2xl shadow-none border-none">
       {/* Desktop View */}
       <div className="hidden md:flex items-center">
         <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-4">

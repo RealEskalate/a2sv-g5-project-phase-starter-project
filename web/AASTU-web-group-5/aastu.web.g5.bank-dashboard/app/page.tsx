@@ -8,7 +8,6 @@ export default function Home() {
 
   return (
     <div className="p-4">
-      {/* Render Investments if authenticated, otherwise render Signin */}
       {status === "authenticated" ? <Investments /> : <Signin />}
     </div>
   );

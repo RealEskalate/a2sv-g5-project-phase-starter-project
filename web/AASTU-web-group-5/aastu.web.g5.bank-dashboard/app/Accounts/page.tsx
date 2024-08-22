@@ -150,6 +150,7 @@ const Accounts = () => {
     fetchIncomes();
     fetchExpenses();
     fetchCardData(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, income, expense]);
 
   if (loading) {

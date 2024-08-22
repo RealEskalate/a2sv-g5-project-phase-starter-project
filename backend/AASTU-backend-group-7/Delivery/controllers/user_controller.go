@@ -10,17 +10,17 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type userController struct {
+type UserController struct {
 	userUseCase Domain.UserUseCases
 }
 
-func NewUserController(service_reference Domain.UserUseCases) *userController {
-	return &userController{
+func NewUserController(service_reference Domain.UserUseCases) *UserController {
+	return &UserController{
 		userUseCase: service_reference,
 	}
 }
 
-func (uc *userController) GetUsers(c *gin.Context) {
+func (uc *UserController) GetUsers(c *gin.Context) {
 
 	users, err, statusCode := uc.userUseCase.GetUsers(c)
 	if err != nil {
@@ -30,7 +30,7 @@ func (uc *userController) GetUsers(c *gin.Context) {
 	}
 }
 
-func (uc *userController) GetUser(c *gin.Context) {
+func (uc *UserController) GetUser(c *gin.Context) {
 	cur_user, err := Getclaim(c)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid token"})
@@ -51,7 +51,7 @@ func (uc *userController) GetUser(c *gin.Context) {
 	}
 }
 
-func (uc *userController) CreateUser(c *gin.Context) {
+func (uc *UserController) CreateUser(c *gin.Context) {
 	var user Domain.User
 	if err := c.BindJSON(&user); err != nil {
 		c.IndentedJSON(400, gin.H{"error": err.Error()})
@@ -72,7 +72,7 @@ func (uc *userController) CreateUser(c *gin.Context) {
 	}
 }
 
-func (uc *userController) UpdateUser(c *gin.Context) {
+func (uc *UserController) UpdateUser(c *gin.Context) {
 	logeduser, err := Getclaim(c)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid token"})
@@ -97,7 +97,7 @@ func (uc *userController) UpdateUser(c *gin.Context) {
 	}
 }
 
-func (uc *userController) DeleteUser(c *gin.Context) {
+func (uc *UserController) DeleteUser(c *gin.Context) {
 	user, err := Getclaim(c)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid token"})
@@ -118,7 +118,7 @@ func (uc *userController) DeleteUser(c *gin.Context) {
 	}
 }
 
-func (uc *userController) PromoteUser(c *gin.Context) {
+func (uc *UserController) PromoteUser(c *gin.Context) {
 	user, err := Getclaim(c)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid token"})
@@ -138,7 +138,7 @@ func (uc *userController) PromoteUser(c *gin.Context) {
 	}
 }
 
-func (uc *userController) DemoteUser(c *gin.Context) {
+func (uc *UserController) DemoteUser(c *gin.Context) {
 	user, err := Getclaim(c)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid token"})

@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 import { getAllTransactions } from "@/services/transactionfetch";
-import { currentuser } from "@/services/userupdate";
+import { currentUser } from "@/services/userupdate";
 import TransactionCard from "./TransactionCard";
 
 // App Component
 const App: React.FC = () => {
   const [transactions, setTransactions] = useState<[]>([]);
-  const [currentUser,setCurrentUser] = useState("")
+  const [currentuser,setCurrentuser] = useState("")
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
         const transactionData = await getAllTransactions(0, 5); 
-        const current = await currentuser();
-        setCurrentUser(current.data.name)
+        const current = await currentUser();
+        setCurrentuser(current.data.name)
 
         console.log("on the card user:" , currentUser); 
         
@@ -33,7 +33,7 @@ const App: React.FC = () => {
   return (
     <div className="p-3 gap-4 flex-1 h-auto bg-gray-50 dark:bg-dark text-gray-900 dark:text-white">
       {transactions.map((transaction, index) => (
-        <TransactionCard key={index} transaction={transaction} currentname={currentUser} />
+        <TransactionCard key={index} transaction={transaction} currentname={currentuser} />
       ))}
     </div>
   );

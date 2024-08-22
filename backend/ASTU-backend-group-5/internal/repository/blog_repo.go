@@ -10,11 +10,11 @@ import (
 type BlogRepository interface {
 	// Blog operations
 	CreateBlog(ctx context.Context, blog *domain.Blog) error
-	GetBlogByID(ctx context.Context, id string) (*domain.Blog, error)
+	GetBlogByID(ctx context.Context, id string) (*domain.GetSingleBlogDTO, error)
 	UpdateBlog(ctx context.Context, id string, blog *domain.Blog) error
 	DeleteBlog(ctx context.Context, id string) error
 	GetAllBlogs(ctx context.Context) ([]*domain.Blog, error)
-	FilterBlogs(ctx context.Context, filter domain.BlogFilter) ([]*domain.Blog, error)
+	// FilterBlogs(ctx context.Context, filter domain.BlogFilter) ([]*domain.Blog, error)
 	PaginateBlogs(ctx context.Context, filter domain.BlogFilter, page, pageSize int) ([]*domain.Blog, error)
 
 	// Tag operations
@@ -49,5 +49,5 @@ type BlogRepository interface {
 	GetLikeById(ctx context.Context, likeId string) (*domain.Like, error)
 	GetCommentById(ctx context.Context, commentId string) (*domain.Comment, error)
 
-	FindBlogs(ctx context.Context, filter domain.BlogFilter, page, pageSize int) ([]*domain.Blog, int, error)
+	FindBlogs(ctx context.Context, filter domain.BlogFilter, page, pageSize int, orderBy []string) ([]*domain.GetBlogDTO, int, error)
 }

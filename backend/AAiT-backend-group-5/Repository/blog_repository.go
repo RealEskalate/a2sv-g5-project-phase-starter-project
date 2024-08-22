@@ -58,7 +58,6 @@ func (br *BlogMongoRepository) GetBlogs(ctx context.Context, page int) ([]*model
 	pageSize := 10
 	skip := (page - 1) * pageSize
 
-	// Define find options with limit and skip for pagination
 	findOptions := options.Find()
 	findOptions.SetLimit(int64(pageSize))
 	findOptions.SetSkip(int64(skip))

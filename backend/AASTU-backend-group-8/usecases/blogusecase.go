@@ -16,17 +16,17 @@ func NewBlogUsecase(br domain.BlogRepositoryInterface) *BlogUsecase {
 }
 
 // CreateBlogPost creates a new blog post
-func (u *BlogUsecase) CreateBlogPost(blog *domain.BlogPost) (interface{}, error) {
-	id,err := u.blogRepo.Save(blog)
+func (u *BlogUsecase) CreateBlogPost(blog *domain.BlogPost) (string, error) {
+	id, err := u.blogRepo.Save(blog)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	return id, nil
 }
 
 // GetAllBlogPosts retrieves all blog posts
-func (u *BlogUsecase) GetAllBlogPosts() ([]domain.BlogPost, error) {
-	blogs, err := u.blogRepo.GetAllBlog()
+func (u *BlogUsecase) GetAllBlogPosts(pagination domain.Pagination, sortBy string, sortOrder int) ([]domain.BlogPost, error) {
+	blogs, err := u.blogRepo.GetAllBlog(pagination, sortBy, sortOrder)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (u *BlogUsecase) GetBlogByID(id primitive.ObjectID) (*domain.BlogPost, erro
 
 // UpdateBlogPost updates an existing blog post
 func (u *BlogUsecase) UpdateBlogPost(id primitive.ObjectID, blog *domain.BlogPost) (*domain.BlogPost, error) {
-	updatedBlog, err := u.blogRepo.Update(blog)
+	updatedBlog, err := u.blogRepo.Update(id, blog)
 	if err != nil {
 		return nil, err
 	}

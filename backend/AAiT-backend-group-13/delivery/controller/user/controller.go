@@ -28,7 +28,7 @@ type UserController struct {
 	resetCodeSendHandler icmd.IHandler[string, time.Time]
 	validateCodeHandler  icmd.IHandler[*passwordreset.ValidateCodeCommand, string]
 	validateEmailHandler icmd.IHandler[string, *result.ValidateEmailResult]
-	updateProfileHandler 	  icmd.IHandler[*usercmd.UpdateProfileCommand, bool]
+	updateProfileHandler 	  icmd.IHandler[*usercmd.UpdateProfileCommand, *result.UpdateProfileResult]
 }
 
 // Config holds the configuration for creating a new UserController.
@@ -40,7 +40,7 @@ type Config struct {
 	ResetCodeSendHandler icmd.IHandler[string, time.Time]
 	ValidateCodeHandler  icmd.IHandler[*passwordreset.ValidateCodeCommand, string]
 	ValidateEmailHandler icmd.IHandler[string, *result.ValidateEmailResult]
-	UpdateProfile 	  	 icmd.IHandler[*usercmd.UpdateProfileCommand, bool]
+	UpdateProfileHandler 	  	 icmd.IHandler[*usercmd.UpdateProfileCommand, *result.UpdateProfileResult]
 }
 
 // New creates a new UserController with the given CQRS handlers.
@@ -53,7 +53,7 @@ func New(config Config) *UserController {
 		resetCodeSendHandler: config.ResetCodeSendHandler,
 		validateCodeHandler:  config.ValidateCodeHandler,
 		validateEmailHandler: config.ValidateEmailHandler,
-		updateProfileHandler: config.UpdateProfile,
+		updateProfileHandler: config.UpdateProfileHandler,
 	}
 }
 

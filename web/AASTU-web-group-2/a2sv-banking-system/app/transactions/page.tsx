@@ -27,12 +27,12 @@ type SessionDataType = {
   user: Data;
 };
 
-// Type Guard to check if the response is PaginatedTransactionsResponse
+
 const isPaginatedTransactionsResponse = (response: GetTransactionsResponse | PaginatedTransactionsResponse): response is PaginatedTransactionsResponse => {
   return (response as PaginatedTransactionsResponse).data !== undefined;
 };
 
-// Type Guard to check if the response is GetTransactionsResponse
+
 const isGetTransactionsResponse = (response: GetTransactionsResponse | PaginatedTransactionsResponse): response is GetTransactionsResponse => {
   return (response as GetTransactionsResponse).transactions !== undefined;
 };
@@ -121,7 +121,7 @@ const Page = () => {
             const allTransactions = response.transactions.flatMap(transactionResponse => transactionResponse.data.content);
             setTransactions(allTransactions);
           } else {
-            // Handle unknown response type or error
+            
             console.error('Unknown response type:', response);
           }
         } catch (error) {

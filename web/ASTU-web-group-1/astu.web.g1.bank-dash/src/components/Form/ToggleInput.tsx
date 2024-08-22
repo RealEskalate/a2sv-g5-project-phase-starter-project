@@ -17,7 +17,7 @@ const ToggleInput = ({
           type={inputType}
           id={id}
           placeholder={placeholder}
-          // {...register(registerName)}
+          {...register(registerName)}
           className="sr-only peer"
         />
         <div className={`${currentState ? 'bg-[#16dbcc]' : 'bg-gray-200'} relative w-11 h-6 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#16dbcc] rounded-full peer 

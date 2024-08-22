@@ -67,5 +67,5 @@ func (signupController *SignupController) ConfirmRegistration(ctx *gin.Context) 
 		return
 	}
 
-	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "registeration successful, proceed to login"})
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "registration successful, proceed to login"})
 }

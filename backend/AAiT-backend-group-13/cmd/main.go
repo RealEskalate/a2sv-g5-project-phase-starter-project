@@ -152,6 +152,7 @@ func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtS
 		JwtService:   jwtService,
 		EmailService: mailService,
 	})
+	updateProfileHandler := usercmd.NewUpdateProfileHandler(userRepo, hashService, mailService)
 	// aiController := gemini.NewAiController(geminiHandler)
 	
 	resetPasswordHandler := passwordreset.NewResetHandler(userRepo, hashService, jwtService)
@@ -167,6 +168,7 @@ func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtS
 		ResetCodeSendHandler: resetCodeSendHandler,
 		ValidateCodeHandler:  validateCodeHandler,
 		ValidateEmailHandler: validateEmailHandler,
+		UpdateProfileHandler: updateProfileHandler,
 	})
 
 }

@@ -208,6 +208,43 @@ func (_m *BlogRepository) FilterBlogs(ctx context.Context, filter domain.BlogFil
 	return r0, r1
 }
 
+// FindBlogs provides a mock function with given fields: ctx, filter, page, pageSize
+func (_m *BlogRepository) FindBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int) ([]*domain.Blog, int, error) {
+	ret := _m.Called(ctx, filter, page, pageSize)
+
+	if len(ret) == 0 {
+		panic("no return value specified for FindBlogs")
+	}
+
+	var r0 []*domain.Blog
+	var r1 int
+	var r2 error
+	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter, int, int) ([]*domain.Blog, int, error)); ok {
+		return rf(ctx, filter, page, pageSize)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter, int, int) []*domain.Blog); ok {
+		r0 = rf(ctx, filter, page, pageSize)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.Blog)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, domain.BlogFilter, int, int) int); ok {
+		r1 = rf(ctx, filter, page, pageSize)
+	} else {
+		r1 = ret.Get(1).(int)
+	}
+
+	if rf, ok := ret.Get(2).(func(context.Context, domain.BlogFilter, int, int) error); ok {
+		r2 = rf(ctx, filter, page, pageSize)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // GetAllBlogs provides a mock function with given fields: ctx
 func (_m *BlogRepository) GetAllBlogs(ctx context.Context) ([]*domain.Blog, error) {
 	ret := _m.Called(ctx)

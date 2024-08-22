@@ -482,6 +482,43 @@ func (_m *BlogUseCase) RemoveTagFromBlog(ctx context.Context, blogID string, tag
 	return r0
 }
 
+// SearchBlogs provides a mock function with given fields: ctx, filter, page, pageSize
+func (_m *BlogUseCase) SearchBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int) ([]*domain.Blog, int, error) {
+	ret := _m.Called(ctx, filter, page, pageSize)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SearchBlogs")
+	}
+
+	var r0 []*domain.Blog
+	var r1 int
+	var r2 error
+	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter, int, int) ([]*domain.Blog, int, error)); ok {
+		return rf(ctx, filter, page, pageSize)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter, int, int) []*domain.Blog); ok {
+		r0 = rf(ctx, filter, page, pageSize)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.Blog)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, domain.BlogFilter, int, int) int); ok {
+		r1 = rf(ctx, filter, page, pageSize)
+	} else {
+		r1 = ret.Get(1).(int)
+	}
+
+	if rf, ok := ret.Get(2).(func(context.Context, domain.BlogFilter, int, int) error); ok {
+		r2 = rf(ctx, filter, page, pageSize)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // UpdateBlog provides a mock function with given fields: ctx, id, _a2, authorId
 func (_m *BlogUseCase) UpdateBlog(ctx context.Context, id string, _a2 *domain.Blog, authorId string) error {
 	ret := _m.Called(ctx, id, _a2, authorId)

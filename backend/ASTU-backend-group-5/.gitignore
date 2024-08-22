@@ -4,4 +4,8 @@ tmp
 venv
 venv/
 .venv
+<<<<<<< HEAD
 mokery.yml
+=======
+uploads
+>>>>>>> ff353a95068e678ce0e83867a33ea9d25fd10dcf

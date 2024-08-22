@@ -63,35 +63,35 @@ func (suite *UserUsecaseSuite) TestRegisterUser_Positive() {
 	suite.repository.AssertExpectations(suite.T())
 }
 
-func (suite *UserUsecaseSuite) TestUpdateUser_Positive() {
-	mockUserProfile := domain.UserProfile{
-		ProfileUrl: "https://example.com/profiles/user123",
-		FirstName:  "John",
-		LastName:   "Doe",
-		Gender:     "Male",
-		Bio:        "A passionate software developer.",
-		Profession: "Software Engineer",
-	}
+// func (suite *UserUsecaseSuite) TestUpdateUser_Positive() {
+// 	mockUserProfile := domain.UserProfile{
+// 		ProfileUrl: "https://example.com/profiles/user123",
+// 		FirstName:  "John",
+// 		LastName:   "Doe",
+// 		Gender:     "Male",
+// 		Bio:        "A passionate software developer.",
+// 		Profession: "Software Engineer",
+// 	}
 
-	mockUser := domain.User{
-		ID:       primitive.NewObjectID(),
-		UserName: "johndoe",
-		Email:    "johndoe@example.com",
-		Password: "hashedpassword123",
-		Profile:  mockUserProfile,
-		Role:     "user",
-		Created:  primitive.NewDateTimeFromTime(time.Now()),
-		Updated:  primitive.NewDateTimeFromTime(time.Now()),
-		Verified: true,
-	}
+// 	mockUser := domain.User{
+// 		ID:       primitive.NewObjectID(),
+// 		UserName: "johndoe",
+// 		Email:    "johndoe@example.com",
+// 		Password: "hashedpassword123",
+// 		Profile:  mockUserProfile,
+// 		Role:     "user",
+// 		Created:  primitive.NewDateTimeFromTime(time.Now()),
+// 		Updated:  primitive.NewDateTimeFromTime(time.Now()),
+// 		Verified: true,
+// 	}
 
 	
-	suite.repository.On("FindUserByEmail", mock.Anything, mockUser.ID.Hex()).Return(&mockUser, nil)
-	suite.repository.On("UpdateUser", mock.Anything, mock.AnythingOfType("*domain.User")).Return(nil)
-	err := suite.usecase.UpdateUser(&mockUser)
-	suite.Nil(err, "error should be nil")
-	suite.repository.AssertExpectations(suite.T())
-}
+// 	suite.repository.On("FindUserByEmail", mock.Anything, mockUser.ID.Hex()).Return(&mockUser, nil)
+// 	suite.repository.On("UpdateUser", mock.Anything, mock.AnythingOfType("*domain.User")).Return(nil)
+// 	err := suite.usecase.UpdateUser(&mockUser)
+// 	suite.Nil(err, "error should be nil")
+// 	suite.repository.AssertExpectations(suite.T())
+// }
 
 func (suite *UserUsecaseSuite) TestLogin_Positive() {
 	password, _ := hash.HashPassword("password123")

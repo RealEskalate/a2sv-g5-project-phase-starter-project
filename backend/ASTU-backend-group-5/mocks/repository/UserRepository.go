@@ -14,16 +14,6 @@ type UserRepository struct {
 	mock.Mock
 }
 
-// GoogleCallback implements repository.UserRepository.
-func (_m *UserRepository) GoogleCallback(ctx context.Context, code string) (*domain.User, error) {
-	panic("unimplemented")
-}
-
-// RegisterUser implements repository.UserRepository.
-func (_m *UserRepository) RegisterUser(ctx context.Context, user *domain.User) (*domain.User, error) {
-	panic("unimplemented")
-}
-
 // CreateUser provides a mock function with given fields: ctx, user
 func (_m *UserRepository) CreateUser(ctx context.Context, user *domain.User) error {
 	ret := _m.Called(ctx, user)
@@ -210,6 +200,36 @@ func (_m *UserRepository) GetAllUsers(ctx context.Context) ([]*domain.User, erro
 	return r0, r1
 }
 
+// GoogleCallback provides a mock function with given fields: ctx, code
+func (_m *UserRepository) GoogleCallback(ctx context.Context, code string) (*domain.User, error) {
+	ret := _m.Called(ctx, code)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GoogleCallback")
+	}
+
+	var r0 *domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*domain.User, error)); ok {
+		return rf(ctx, code)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.User); ok {
+		r0 = rf(ctx, code)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, code)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // IsEmptyCollection provides a mock function with given fields: ctx
 func (_m *UserRepository) IsEmptyCollection(ctx context.Context) (bool, error) {
 	ret := _m.Called(ctx)
@@ -231,6 +251,36 @@ func (_m *UserRepository) IsEmptyCollection(ctx context.Context) (bool, error) {
 
 	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
 		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// RegisterUser provides a mock function with given fields: ctx, user
+func (_m *UserRepository) RegisterUser(ctx context.Context, user *domain.User) (*domain.User, error) {
+	ret := _m.Called(ctx, user)
+
+	if len(ret) == 0 {
+		panic("no return value specified for RegisterUser")
+	}
+
+	var r0 *domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) (*domain.User, error)); ok {
+		return rf(ctx, user)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) *domain.User); ok {
+		r0 = rf(ctx, user)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *domain.User) error); ok {
+		r1 = rf(ctx, user)
 	} else {
 		r1 = ret.Error(1)
 	}

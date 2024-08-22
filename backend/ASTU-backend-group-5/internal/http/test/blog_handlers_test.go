@@ -78,7 +78,7 @@ func (suite *BlogHandlerTestSuite) TestCreateBlogHandler_Failure_BindingError() 
 	suite.router.ServeHTTP(w, req)
 
 	// Assertions
-	suite.Equal(http.StatusBadRequest, w.Code)
+	suite.Equal(400, w.Code)
 }
 
 func (suite *BlogHandlerTestSuite) TestCreateBlogHandler_Failure_UseCaseError() {

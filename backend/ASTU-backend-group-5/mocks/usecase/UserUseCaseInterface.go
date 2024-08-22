@@ -47,7 +47,7 @@ func (_m *UserUseCaseInterface) DeleteUser(id string) error {
 	}
 
 	return r0
-} 
+}
 
 // DemoteFromAdmin provides a mock function with given fields: UserId
 func (_m *UserUseCaseInterface) DemoteFromAdmin(UserId string) error {
@@ -217,6 +217,45 @@ func (_m *UserUseCaseInterface) GetAllUsers() ([]*domain.User, error) {
 	return r0, r1
 }
 
+// GoogleCallback provides a mock function with given fields: code
+func (_m *UserUseCaseInterface) GoogleCallback(code string) (*domain.User, *domain.Token, error) {
+	ret := _m.Called(code)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GoogleCallback")
+	}
+
+	var r0 *domain.User
+	var r1 *domain.Token
+	var r2 error
+	if rf, ok := ret.Get(0).(func(string) (*domain.User, *domain.Token, error)); ok {
+		return rf(code)
+	}
+	if rf, ok := ret.Get(0).(func(string) *domain.User); ok {
+		r0 = rf(code)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string) *domain.Token); ok {
+		r1 = rf(code)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*domain.Token)
+		}
+	}
+
+	if rf, ok := ret.Get(2).(func(string) error); ok {
+		r2 = rf(code)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // Login provides a mock function with given fields: email, password
 func (_m *UserUseCaseInterface) Login(email string, password string) (*domain.User, *domain.Token, error) {
 	ret := _m.Called(email, password)
@@ -254,17 +293,6 @@ func (_m *UserUseCaseInterface) Login(email string, password string) (*domain.Us
 	}
 
 	return r0, r1, r2
-}
-
-
-// GoogleCallback provides a mock function with given fields: code
-func (_m *UserUseCaseInterface) GoogleCallback(code string) (*domain.User, *domain.Token, error) {
-	ret := _m.Called(code)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GoogleCallback")
-	}
-	return nil, nil, nil
 }
 
 // PromoteToAdmin provides a mock function with given fields: UserId
@@ -418,4 +446,3 @@ func NewUserUseCaseInterface(t interface {
 
 	return mock
 }
-

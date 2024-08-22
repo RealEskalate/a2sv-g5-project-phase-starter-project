@@ -1,184 +1,121 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react"; // Import React and useState
 import { Pie, PieChart, Tooltip, Cell, Sector } from "recharts";
-import { useSession } from "next-auth/react";
 
-const PieChartComponent: React.FC = () => {
-	const [data, setData] = useState<any[]>([]);
-	const [error, setError] = useState<string | null>(null);
-	const [loading, setLoading] = useState(false);
-	const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
-	interface ExtendedUser {
-		name?: string;
-		email?: string;
-		image?: string;
-		accessToken?: string;
-	}
-	const { data: session, status } = useSession();
-	const user = session?.user as ExtendedUser;
-	const accessToken = user?.accessToken;
+// Dummy data for the pie chart
+const dummyChartData = [
+	{ browser: "Others", Expenses: 350, fill: "#FF6384" },
+	{ browser: "Transfer", Expenses: 300, fill: "#36A2EB" },
+	{ browser: "Shopping", Expenses: 200, fill: "#FFCE56" },
+	{ browser: "Services", Expenses: 150, fill: "#4BC0C0" },
+];
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const response = await axios.get(
-					"https://bank-dashboard-1tst.onrender.com/transactions/expenses?page=0&size=10",
-					{
-						headers: {
-							Authorization: `Bearer ${accessToken}`,
-						},
-					}
-				);
-				setData(response.data.data);
-			} catch (error) {
-				console.error("Failed to fetch data:", error);
-				setError(
-					"Failed to fetch data. Please check the console for more details."
-				);
-			}
-		};
+// Calculate the total sum of expenses
+const totalExpenses = dummyChartData.reduce(
+	(sum, entry) => sum + entry.Expenses,
+	0
+);
 
-		fetchData();
-	}, []);
+// Define a custom label component
+const CustomLabel = (props: any) => {
+	const { cx, cy, midAngle, outerRadius, value, name } = props;
+	const RADIAN = Math.PI / 180;
+	const radius = outerRadius / 2; // Position inside the sector
 
-	// Map transaction types to colors
-	const typeColors: Record<string, string> = {
-		service: "#FC7900",
-		transfer: "#343C6A",
-		shopping: "#FA00FF",
-		other: "#1814F3", // Default color for "other"
-	};
+	// Calculate the position of the label
+	const x = cx + radius * Math.cos(-RADIAN * midAngle);
+	const y = cy + radius * Math.sin(-RADIAN * midAngle);
 
-	// Process data
-	const processedData = data.reduce((acc: any[], item: any) => {
-		const type = ["service", "transfer", "shopping"].includes(
-			item.type?.toLowerCase()
-		)
-			? item.type.toLowerCase()
-			: "other";
+	// Calculate the percentage
+	const percentage = (value / totalExpenses) * 100;
 
-		const existing = acc.find((entry) => entry.name === type);
-
-		if (existing) {
-			existing.value += item.amount;
-		} else {
-			acc.push({
-				name: type,
-				value: item.amount,
-				fill: typeColors[type],
-			});
-		}
-
-		return acc;
-	}, [] as any[]);
-
-	// Handle "Other" category directly within the processed data
-	const totalValue = processedData.reduce((sum, entry) => sum + entry.value, 0);
-	const threshold = 100; // Example threshold for "Other"
-	const filteredData = processedData.filter(
-		(entry) => entry.value >= threshold
+	return (
+		<text
+			x={x}
+			y={y}
+			fill="#fff"
+			textAnchor="middle"
+			className="text-xs font-semibold"
+			dominantBaseline="central"
+		>
+			<tspan x={x} dy="-1.2em">
+				{name}
+			</tspan>
+			<tspan x={x} dy="1.2em">
+				{percentage.toFixed(1)}%
+			</tspan>
+		</text>
 	);
+};
 
-	const othersValue =
-		totalValue - filteredData.reduce((sum, entry) => sum + entry.value, 0);
+// Define a custom shape for the hover effect
+const renderActiveShape = (props: any) => {
+	const { cx, cy, midAngle, outerRadius, startAngle, endAngle, fill } = props;
+	const RADIAN = Math.PI / 180;
 
-	if (othersValue > 0) {
-		filteredData.push({
-			name: "other",
-			value: othersValue,
-			fill: typeColors["other"],
-		});
-	}
+	// Increase outer radius for the hover effect
+	const hoverRadius = outerRadius + 15; // Adjust the value as needed
 
-	const CustomLabel = (props: any) => {
-		const { cx, cy, midAngle, outerRadius, value, name } = props;
-		const RADIAN = Math.PI / 180;
-		const radius = outerRadius / 2;
+	return (
+		<g>
+			<Sector
+				cx={cx}
+				cy={cy}
+				startAngle={startAngle}
+				endAngle={endAngle}
+				outerRadius={hoverRadius}
+				fill={fill}
+			/>
+			<Sector
+				cx={cx}
+				cy={cy}
+				startAngle={startAngle}
+				endAngle={endAngle}
+				outerRadius={outerRadius}
+				fill={fill}
+				stroke="none"
+			/>
+		</g>
+	);
+};
 
-		const x = cx + radius * Math.cos(-RADIAN * midAngle);
-		const y = cy + radius * Math.sin(-RADIAN * midAngle);
+// PieChart component
+export function PieChartComponent() {
+	const [activeIndex, setActiveIndex] = useState<number | 0>(0);
 
-		const percentage = ((value / totalValue) * 100).toFixed(1);
-
-		return (
-			<text
-				x={x}
-				y={y}
-				fill="#fff"
-				textAnchor="middle"
-				className="text-xs font-semibold"
-				dominantBaseline="central"
-			>
-				<tspan x={x} dy="-1.2em">
-					{name}
-				</tspan>
-				<tspan x={x} dy="1.2em">
-					{percentage}%
-				</tspan>
-			</text>
-		);
+	const onPieEnter = (data: any, index: number) => {
+		setActiveIndex(index);
 	};
 
-	const renderActiveShape = (props: any) => {
-		const { cx, cy, midAngle, outerRadius, startAngle, endAngle, fill } = props;
-		const hoverRadius = outerRadius + 15;
-
-		return (
-			<g>
-				<Sector
-					cx={cx}
-					cy={cy}
-					startAngle={startAngle}
-					endAngle={endAngle}
-					outerRadius={hoverRadius}
-					fill={fill}
-				/>
-				<Sector
-					cx={cx}
-					cy={cy}
-					startAngle={startAngle}
-					endAngle={endAngle}
-					outerRadius={outerRadius}
-					fill={fill}
-					stroke="none"
-				/>
-			</g>
-		);
+	const onPieLeave = () => {
+		setActiveIndex(0);
 	};
-
-	if (error) {
-		return <div>{error}</div>;
-	}
 
 	return (
 		<div className="flex justify-center items-center h-screen">
 			<PieChart width={300} height={300}>
 				<Pie
-					data={filteredData}
-					dataKey="value"
-					nameKey="name"
+					data={dummyChartData}
+					dataKey="Expenses"
+					nameKey="browser"
 					cx="50%"
 					cy="50%"
 					outerRadius={100}
 					fill="#8884d8"
-					activeShape={renderActiveShape}
-					label={CustomLabel}
-					stroke="#fff"
-					strokeWidth={3}
-					onMouseEnter={(_, index) => setActiveIndex(index)}
-					onMouseLeave={() => setActiveIndex(undefined)}
-					activeIndex={activeIndex}
+					activeShape={renderActiveShape} // Apply the hover effect
+					label={CustomLabel} // Use the custom label component
+					stroke="#fff" // Set the stroke color to white
+					strokeWidth={3} // Set the stroke width for the border
+					onMouseEnter={onPieEnter} // Handle mouse enter
+					onMouseLeave={onPieLeave} // Handle mouse leave
+					activeIndex={activeIndex} // Apply hover effect based on activeIndex
 				>
-					{filteredData.map((entry, index) => (
+					{dummyChartData.map((entry, index) => (
 						<Cell key={`cell-${index}`} fill={entry.fill} />
 					))}
 				</Pie>
-				<Tooltip />
 			</PieChart>
 		</div>
 	);
-};
-
-export default PieChartComponent;
+}

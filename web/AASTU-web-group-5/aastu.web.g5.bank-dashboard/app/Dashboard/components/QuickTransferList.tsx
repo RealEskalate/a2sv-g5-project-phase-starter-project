@@ -1,75 +1,14 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
 import { QuickTransferCard } from "./QuickTransferCard";
-import { useSession } from "next-auth/react";
-
-interface Transfer {
-	id: string;
-	name: string;
-	username: string;
-	city: string;
-	country: string;
-	profilePicture: string;
-}
 
 export const QuickTransferList = () => {
-	const [transfers, setTransfers] = useState<Transfer[]>([]);
-	const [loading, setLoading] = useState<boolean>(true);
-	const [error, setError] = useState<string | null>(null);
-
-	interface ExtendedUser {
-		name?: string;
-		email?: string;
-		image?: string;
-		accessToken?: string;
-	}
-	const { data: session, status } = useSession();
-	const user = session?.user as ExtendedUser;
-
-	const accessToken = user?.accessToken;
-	useEffect(() => {
-		const fetchTransfers = async () => {
-			try {
-				const response = await axios.get<{ data: Transfer[] }>(
-					"https://bank-dashboard-1tst.onrender.com/transactions/latest-transfers?number=3",
-					{
-						headers: {
-							Authorization: `Bearer ${accessToken}`,
-						},
-					}
-				);
-
-				setTransfers(response.data.data);
-			} catch (err) {
-				setError(
-					"Failed to fetch data. Please check the console for more details."
-				);
-				console.error("Error fetching data:", err);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchTransfers();
-	}, []);
-
-	if (loading) return <p>Loading...</p>;
-	if (error) return <p>Error: {error}</p>;
-
 	return (
 		<div className="container rounded-[20px] flex flex-col gap-4 p-4">
 			<div className="flex flex-col md:flex-row justify-between items-center">
 				<div className="flex flex-row gap-4 overflow-x-auto">
-					{/* Render QuickTransferCard for each transfer */}
-					{transfers.map((transfer) => (
-						<QuickTransferCard
-							key={transfer.id}
-							username={transfer.username}
-							profilePicture={transfer.profilePicture}
-						/>
-					))}
+					<QuickTransferCard />
+					<QuickTransferCard />
+					<QuickTransferCard />
 				</div>
 				<svg
 					className="w-6 h-6 shadow-md mt-2 md:mt-0"

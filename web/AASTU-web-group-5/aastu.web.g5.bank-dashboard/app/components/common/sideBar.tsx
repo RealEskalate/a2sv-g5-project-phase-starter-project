@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react"; // Ensure useState is imported
+import React, { useState } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { FaTimes } from "react-icons/fa";
@@ -49,7 +49,7 @@ const SideBar = ({
 
 	return (
 		<div
-			className={`pl-[38px] ${
+			className={`pl-[38px]   ${
 				isSidebarVisible ? "block" : "hidden"
 			} sm:block flex items-center flex-col min-w-full sm:w-auto`}
 		>
@@ -65,7 +65,6 @@ const SideBar = ({
 				<div className="font-bold" style={{ color: primary_2 }}>
 					BankDash.
 				</div>
-				<div></div>
 				<button
 					className="sm:hidden ml-auto absolute -right-8"
 					onClick={toggleSidebar}
@@ -75,114 +74,95 @@ const SideBar = ({
 			</div>
 
 			<div className="flex flex-col gap-[42px]">
-				<div
-					className="flex gap-[23px]"
+				<SidebarItem
+					isEnabled={enabled === "home"}
 					onClick={() => handleIconClick("home", "/Dashboard")}
-				>
-					<Image
-						src={enabled === "home" ? enabledHome : home}
-						alt="Home Icon"
-						className="h-[25px] w-[25px]"
-					/>
-					<div> Dashboard</div>
-				</div>
-				<div
-					className="flex gap-[23px]"
+					icon={home}
+					enabledIcon={enabledHome}
+					label="Dashboard"
+				/>
+				<SidebarItem
+					isEnabled={enabled === "transfer"}
 					onClick={() => handleIconClick("transfer", "/Transaction")}
-				>
-					<Image
-						src={enabled === "transfer" ? enabledTransfer : transfer}
-						alt="Transfer Icon"
-						className="h-[25px] w-[25px]"
-					/>
-					<div> Transactions</div>
-				</div>
-				<div
-					className="flex gap-[23px]"
+					icon={transfer}
+					enabledIcon={enabledTransfer}
+					label="Transactions"
+				/>
+				<SidebarItem
+					isEnabled={enabled === "user"}
 					onClick={() => handleIconClick("user", "/Accounts")}
-				>
-					<Image
-						src={enabled === "user" ? enabledUser : user}
-						alt="User Icon"
-						className="h-[25px] w-[25px]"
-					/>
-					<div> Accounts</div>
-				</div>
-				<div
-					className="flex gap-[23px]"
+					icon={user}
+					enabledIcon={enabledUser}
+					label="Accounts"
+				/>
+				<SidebarItem
+					isEnabled={enabled === "economicInvestment"}
 					onClick={() => handleIconClick("economicInvestment", "/Investments")}
-				>
-					<Image
-						src={
-							enabled === "economicInvestment"
-								? enabledEconomicInvestment
-								: economicInvestment
-						}
-						alt="Investments Icon"
-						className="h-[25px] w-[25px]"
-					/>
-					<div> Investments</div>
-				</div>
-				<div
-					className="flex gap-[23px]"
+					icon={economicInvestment}
+					enabledIcon={enabledEconomicInvestment}
+					label="Investments"
+				/>
+				<SidebarItem
+					isEnabled={enabled === "creditCard"}
 					onClick={() => handleIconClick("creditCard", "/CreditCards")}
-				>
-					<Image
-						src={enabled === "creditCard" ? enabledCreditCard : creditCard}
-						alt="Credit Card Icon"
-						className="h-[25px] w-[25px]"
-					/>
-					<div> Credit Cards</div>
-				</div>
-				<div
-					className="flex gap-[23px]"
+					icon={creditCard}
+					enabledIcon={enabledCreditCard}
+					label="Credit Cards"
+				/>
+				<SidebarItem
+					isEnabled={enabled === "loan"}
 					onClick={() => handleIconClick("loan", "/Loan")}
-				>
-					<Image
-						src={enabled === "loan" ? enabledLoan : loan}
-						alt="Loan Icon"
-						className="h-[25px] w-[25px]"
-					/>
-					<div> Loans</div>
-				</div>
-				<div
-					className="flex gap-[23px]"
-					onClick={() => handleIconClick("service", "/services")}
-				>
-					<Image
-						src={enabled === "service" ? enabledService : service}
-						alt="Services Icon"
-						className="h-[25px] w-[25px]"
-					/>
-					<div> Services</div>
-				</div>
-				<div
-					className="flex gap-[23px]"
+					icon={loan}
+					enabledIcon={enabledLoan}
+					label="Loans"
+				/>
+				<SidebarItem
+					isEnabled={enabled === "service"}
+					onClick={() => handleIconClick("service", "/Services")}
+					icon={service}
+					enabledIcon={enabledService}
+					label="Services"
+				/>
+				<SidebarItem
+					isEnabled={enabled === "econometrics"}
 					onClick={() => handleIconClick("econometrics", "/privileges")}
-				>
-					<Image
-						src={
-							enabled === "econometrics" ? enabledEconometrics : econometrics
-						}
-						alt="Privileges Icon"
-						className="h-[25px] w-[25px]"
-					/>
-					<div> My Privileges</div>
-				</div>
-				<div
-					className="flex gap-[23px]"
+					icon={econometrics}
+					enabledIcon={enabledEconometrics}
+					label="My Privileges"
+				/>
+				<SidebarItem
+					isEnabled={enabled === "settings"}
 					onClick={() => handleIconClick("settings", "/settings")}
-				>
-					<Image
-						src={enabled === "settings" ? enabledSettingsSolid : settingsSolid}
-						alt="Settings Icon"
-						className="h-[25px] w-[25px]"
-					/>
-					<div> Settings</div>
-				</div>
+					icon={settingsSolid}
+					enabledIcon={enabledSettingsSolid}
+					label="Settings"
+				/>
 			</div>
 		</div>
 	);
 };
+
+const SidebarItem = ({
+	isEnabled,
+	onClick,
+	icon,
+	enabledIcon,
+	label,
+}: {
+	isEnabled: boolean;
+	onClick: () => void;
+	icon: string;
+	enabledIcon: string;
+	label: string;
+}) => (
+	<div className="flex gap-[23px]" onClick={onClick}>
+		<Image
+			src={isEnabled ? enabledIcon : icon}
+			alt={`${label} Icon`}
+			className="h-[25px] w-[25px]"
+		/>
+		<div>{label}</div>
+	</div>
+);
 
 export default SideBar;

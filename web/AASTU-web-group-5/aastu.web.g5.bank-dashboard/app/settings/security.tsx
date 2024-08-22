@@ -26,45 +26,37 @@ export default function Security() {
     e.preventDefault();
     setSuccessMessage('');
     setApiError('');
-
-
+  
+    const data = { password: currentPassword, newPassword: newPassword };
     
-    console.log(currentPassword,newPassword,1)
-    const data = {password:currentPassword,newPassword:newPassword}
-    console.log(JSON.stringify(data))
-
     try {
       const response = await axios.post(
-        `https://bank-dashboard-6acc.onrender.com/auth/change_password`,
+        `https://bank-dashboard-1tst.onrender.com/auth/change_password`,
         data,
         {    
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${key}`
-        },
-      });
-
-      console.log(response)
-      if (response.status==200) {
-        const errorText = await response.data;
-        throw new Error(`Failed to change password: ${errorText}`);
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${key}`,
+          },
+        }
+      );
+  
+      if (response.status === 200) {
+        const result = response.data;
+        if (result.success) {
+          setSuccessMessage('Password changed successfully!');
+        } else {
+          setApiError(result.message || 'Failed to change password.');
+        }
+      } else {
+        setApiError(`Failed to change password: ${response.statusText}`);
       }
-
-      const result = await response.data();
-      if (result.success){
-        console.log(result  )
-        setSuccessMessage('Password changed successfully!');
-      }
-      else{
-        setApiError(result.message);
-        return 
-      }
-      console.log('Password changed successfully:', result.success);
     } catch (error) {
+      setApiError(error.response?.data?.message || 'Failed to change password.');
       console.error('Error changing password:', error);
     }
   };
-
+  
   return (
     <div className='text-[16px]'>
       <div className="text-slate-700 text-sm md:text-base lg:text-[17px]">Two-factor Authentication</div>

@@ -85,7 +85,7 @@ const Accounts = () => {
 		const fetchTransactions = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-6acc.onrender.com/transactions?page=0&size=10",
+					"https://bank-dashboard-1tst.onrender.com/transactions?page=0&size=10",
 					{
 						headers: {
 							Authorization: token,
@@ -104,7 +104,7 @@ const Accounts = () => {
 		const fetchBalanceData = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-6acc.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=2",
+					"https://bank-dashboard-1tst.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=2",
 					{
 						headers: {
 							Authorization: token,
@@ -126,7 +126,7 @@ const Accounts = () => {
 		const fetchIncomes = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-6acc.onrender.com/transactions/incomes?page=0&size=7",
+					"https://bank-dashboard-1tst.onrender.com/transactions/incomes?page=0&size=7",
 					{
 						headers: {
 							Authorization: token,
@@ -150,7 +150,7 @@ const Accounts = () => {
 		const fetchExpenses = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-6acc.onrender.com/transactions/expenses?page=0&size=3",
+					"https://bank-dashboard-1tst.onrender.com/transactions/expenses?page=0&size=3",
 					{
 						headers: {
 							Authorization: token,
@@ -186,7 +186,7 @@ const Accounts = () => {
 	}
 
 	return (
-		<div className="bg-[#F5F7FA] space-y-8  pt-3 px-4 lg:px-16 w-full overflow-hidden">
+		<div className="bg-[#F5F7FA] w-[90%] space-y-8 ">
 			{/* Balance and Overview */}
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				<div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
@@ -292,7 +292,7 @@ const Accounts = () => {
 				</div>
 
 				{/* Hidden on small screens */}
-				<div className=" bg-white rounded-lg">
+				<div className="bg-white rounded-lg">
 					<div className="flex justify-between p-2">
 						<p className="text-lg font-semibold">My card</p>
 						<button
@@ -316,17 +316,17 @@ const Accounts = () => {
 
 			{/* Debit and Credit Overview */}
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-				<div className="p-4 bg-gray-100 rounded-lg lg:col-span-2">
+				<div className="bg-gray-100 rounded-lg lg:col-span-2">
 					<p className="text-lg font-semibold">Debit and credit overview</p>
-					<div className="p-1 bg-white rounded-lg shadow">
+					<div className="p-1 mt-3 bg-white rounded-lg shadow">
 						<ChartCard />
 					</div>
 				</div>
 
 				{/* Invoices Sent */}
-				<div className=" w-full bg-gray-100 rounded-lg">
+				<div className="w-full bg-gray-100 rounded-lg">
 					<p className="text-lg font-semibold">Invoices sent</p>
-					<div className="p-4 rounded-lg shadow h-[364px] bg-white">
+					<div className="p-4 mt-4 rounded-lg shadow h-[364px] bg-white">
 						{invoicesData.slice(0, 4).map((data, index) => (
 							<div
 								key={index}

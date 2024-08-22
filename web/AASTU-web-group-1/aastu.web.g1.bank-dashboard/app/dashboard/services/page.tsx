@@ -6,6 +6,7 @@ import BenefitComp from "./serviceComponenet/BenefitComp";
 import { servicesList } from "@/constants/index";
 import { getSession } from "next-auth/react";
 import { useUser } from "@/contexts/UserContext";
+import { Loading } from "../_components/Loading";
 
 // Type definition for a single bank service
 interface BankService {
@@ -60,7 +61,9 @@ const Services = () => {
 
   const { isDarkMode } = useUser();
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <div
       className={`p-4 flex flex-col w-full gap-5 lg:p-8 ${
         isDarkMode ? "bg-gray-800 text-gray-300" : "text-gray-900"
@@ -80,18 +83,14 @@ const Services = () => {
         >
           Bank Services List
         </h1>
-        {loading ? (
-          <div>Loading...</div>
-        ) : (
-          bankServices.map((items, index) => (
-            <ServiceList
-              icon={items.icon}
-              name={items.name}
-              details={items.details}
-              key={index}
-            />
-          ))
-        )}
+        {bankServices.map((items, index) => (
+          <ServiceList
+            icon={items.icon}
+            name={items.name}
+            detail={items.details}
+            key={index}
+          />
+        ))}
       </div>
     </div>
   );

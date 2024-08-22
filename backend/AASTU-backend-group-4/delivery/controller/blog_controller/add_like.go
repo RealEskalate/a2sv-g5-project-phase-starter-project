@@ -8,10 +8,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (bc *BlogController) CreateComment(c *gin.Context) {
-	var comment domain.CommentRequest
+func (bc *BlogController) AddLike(c *gin.Context) {
+	var like domain.LikeRequest
 
-	if err := c.ShouldBindJSON(&comment); err != nil {
+	if err := c.ShouldBindJSON(&like); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -23,13 +23,15 @@ func (bc *BlogController) CreateComment(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
-	comment.UserID = ID
+	like.UserID = ID
 
-	createdComment, err := bc.usecase.CreateComment(c, &comment)
+	// Create the blog post using the usecase
+	err = bc.usecase.AddLike(c, &like)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"comment": createdComment})
+	// Return the created blog post with StatusCreated
+	c.JSON(http.StatusCreated, gin.H{"message": "liked successfuly"})
 }

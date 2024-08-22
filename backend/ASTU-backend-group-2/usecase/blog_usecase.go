@@ -6,6 +6,8 @@ import (
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
 	mongopagination "github.com/gobeam/mongo-go-pagination"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type blogUsecase struct {
@@ -31,12 +33,61 @@ func (b *blogUsecase) GetByTags(c context.Context, tags []string, limit int64, p
 
 	return blogs, meta, nil
 }
+func BlogFilterOption(filter domain.BlogFilter) (bson.M, *options.FindOptions) {
+	query := bson.M{}
 
-func (b *blogUsecase) GetAllBlogs(c context.Context, limit int64, page int64) ([]domain.Blog, mongopagination.PaginationData, error) {
+	// Title filter
+	if filter.Title != "" {
+		query["title"] = bson.M{"$regex": filter.Title, "$options": "i"} // case-insensitive search
+	}
+
+	// Tags filter
+	if len(filter.Tags) > 0 {
+		query["tags"] = bson.M{"$in": filter.Tags}
+	}
+
+	// Date range filter
+	if !filter.DateFrom.IsZero() && !filter.DateTo.IsZero() {
+		query["created_at"] = bson.M{
+			"$gte": filter.DateFrom,
+			"$lte": filter.DateTo,
+		}
+	} else if !filter.DateFrom.IsZero() {
+		query["created_at"] = bson.M{"$gte": filter.DateFrom}
+	} else if !filter.DateTo.IsZero() {
+		query["created_at"] = bson.M{"$lte": filter.DateTo}
+	}
+
+	// Popularity filter
+	if filter.PopularityFrom > 0 && filter.PopularityTo > 0 {
+		query["popularity"] = bson.M{
+			"$gte": filter.PopularityFrom,
+			"$lte": filter.PopularityTo,
+		}
+	} else if filter.PopularityFrom > 0 {
+		query["popularity"] = bson.M{"$gte": filter.PopularityFrom}
+	} else if filter.PopularityTo > 0 {
+		query["popularity"] = bson.M{"$lte": filter.PopularityTo}
+	}
+
+	// Pagination
+	findOptions := options.Find()
+	if filter.Limit > 0 {
+		findOptions.SetLimit(filter.Limit)
+	}
+	if filter.Pages > 0 {
+		skip := (filter.Pages - 1) * filter.Limit
+		findOptions.SetSkip(skip)
+	}
+	return query, findOptions
+
+}
+
+func (b *blogUsecase) GetAllBlogs(c context.Context, blogFilter domain.BlogFilter) ([]domain.Blog, mongopagination.PaginationData, error) {
 	ctx, cancel := context.WithTimeout(c, b.contextTimeout)
 	defer cancel()
-
-	blogs, meta, err := b.blogRepository.GetAllBlogs(ctx, limit, page)
+	filter, _ := BlogFilterOption(blogFilter)
+	blogs, meta, err := b.blogRepository.GetAllBlogs(ctx, filter, blogFilter)
 
 	if err != nil {
 		return nil, mongopagination.PaginationData{}, err

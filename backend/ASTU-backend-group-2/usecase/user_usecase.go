@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
@@ -70,5 +71,12 @@ func (uu *userUsecase) PromoteUserToAdmin(c context.Context, userID string) erro
 }
 
 func (uu *userUsecase) DemoteAdminToUser(c context.Context, userID string) error {
+	user, err := uu.GetUserById(c, userID)
+	if err != nil {
+		return err
+	}
+	if user.IsOwner {
+		return errors.New("cannot demote owner")
+	}
 	return uu.userRepository.DemoteAdminToUser(c, userID)
 }

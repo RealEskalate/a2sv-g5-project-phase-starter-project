@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/RealEskalate/blogpost/domain"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogUseCase struct {
@@ -24,7 +25,10 @@ func (uc *BlogUseCase) CreateBlog(iblog domain.PostBlog) (domain.Blog, error) {
 		UpdatedAt: time.Now(),
 		Tag:       iblog.Tag,
 	}
-	createdBlog, err := uc.BlogRepo.CreateBlogDocunent(blog)
+	if blog.ID.IsZero() {
+		blog.ID = primitive.NewObjectID()
+	}
+	createdBlog, err := uc.BlogRepo.CreateBlogDocument(blog)
 	if err != nil {
 		return domain.Blog{}, err
 	}
@@ -32,21 +36,21 @@ func (uc *BlogUseCase) CreateBlog(iblog domain.PostBlog) (domain.Blog, error) {
 }
 
 func (uc *BlogUseCase) GetBlogs(limit int, page_number int) ([]domain.Blog, error) {
-	blogs, err := uc.BlogRepo.GetBlogDocunents(page_number, limit)
+	blogs, err := uc.BlogRepo.GetBlogDocuments(page_number, limit)
 	if err != nil {
 		return []domain.Blog{}, err
 	}
 	return blogs, nil
 }
 func (uc *BlogUseCase) GetOneBlog(id string) (domain.Blog, error) {
-	blogs, err := uc.BlogRepo.GetOneBlogDocunent(id)
+	blogs, err := uc.BlogRepo.GetOneBlogDocument(id)
 	if err != nil {
 		return domain.Blog{}, err
 	}
 	return blogs, nil
 }
 func (uc *BlogUseCase) UpdateBlog(id string, updatedBlog domain.Blog) (domain.Blog, error) {
-	blog, err := uc.BlogRepo.UpdateBlogDocunent(id, updatedBlog)
+	blog, err := uc.BlogRepo.UpdateBlogDocument(id, updatedBlog)
 	if err != nil {
 		return domain.Blog{}, err
 	}
@@ -57,8 +61,8 @@ func (uc *BlogUseCase) UpdateBlog(id string, updatedBlog domain.Blog) (domain.Bl
 func (uc *BlogUseCase) DeleteBlog(id string, user_id string) error {
 	return uc.BlogRepo.DeleteBlogDocument(id, user_id)
 }
-func (uc *BlogUseCase) FilterBlog(ans map[string]string) ([]domain.Blog, error) {
-	blogs, err := uc.BlogRepo.FilterBlogDocunent(ans)
+func (uc *BlogUseCase) FilterBlog(filters map[string]interface{}) ([]domain.Blog, error) {
+	blogs, err := uc.BlogRepo.FilterBlogDocument(filters)
 	if err != nil {
 		return []domain.Blog{}, err
 	}

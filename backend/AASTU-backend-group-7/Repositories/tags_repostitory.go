@@ -5,7 +5,6 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type TagRepository struct {
@@ -29,13 +28,16 @@ func (repo *TagRepository) CreateTag(ctx context.Context, tag *Domain.Tag) (erro
 	return nil, 201
 }
 
-func (repo *TagRepository) DeleteTag(ctx context.Context, id primitive.ObjectID) (error, int) {
-	_, err := repo.tagCollection.DeleteOne(ctx, id)
+func (repo *TagRepository) DeleteTag(ctx context.Context, slug string) (error, int) {
+
+	// delete tag by slug
+	_, err := repo.tagCollection.DeleteOne(ctx, bson.M{"slug": slug})
 	if err != nil {
 		return err, 500
 	}
+
 	// delete tag from all posts
-	_, err = repo.postCollection.UpdateMany(ctx, bson.M{"tags": id}, bson.M{"$pull": bson.M{"tags": id}})
+	_, err = repo.postCollection.UpdateMany(ctx, bson.M{}, bson.M{"$pull": bson.M{"tags": slug}})
 	if err != nil {
 		return err, 500
 	}

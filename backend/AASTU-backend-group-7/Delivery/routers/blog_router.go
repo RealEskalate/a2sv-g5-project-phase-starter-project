@@ -69,7 +69,7 @@ func BlogRouter() {
 
 		tagRouter.POST("/create", tagController.CreateTag)
 		//delete tag
-		tagRouter.DELETE("/delete/:id", tagController.DeleteTag)
+		tagRouter.DELETE("/delete/:slug", tagController.DeleteTag)
 		//get all tags
 		tagRouter.GET("/all", tagController.GetAllTags)
 		// get tags by slug

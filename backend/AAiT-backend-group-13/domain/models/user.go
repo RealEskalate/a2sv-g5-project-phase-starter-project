@@ -29,8 +29,8 @@ var (
 
 // ResetCode represents a code used for password resets.
 type ResetCode struct {
-	Code int64     // The reset code
-	Expr time.Time // Expiration time of the reset code
+	CodeHash string    // The reset code
+	Expr     time.Time // Expiration time of the reset code
 }
 
 // User represents a system user with private fields.
@@ -68,6 +68,7 @@ type MapUserConfig struct {
 	Email          string
 	HashedPassword string
 	IsAdmin        bool
+	IsActive       bool
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	ResetCode      *ResetCode
@@ -116,6 +117,7 @@ func MapUser(config MapUserConfig) *User {
 		email:        config.Email,
 		passwordHash: config.HashedPassword,
 		isAdmin:      config.IsAdmin,
+		isActive:     config.IsActive,
 		createdAt:    config.CreatedAt,
 		updatedAt:    config.UpdatedAt,
 		resetCode:    config.ResetCode,
@@ -222,9 +224,20 @@ func (u *User) UpdateLastName(lastName string) error {
 }
 
 // UpdateResetCode sets a new password reset code for the User.
-func (u *User) UpdateResetCode(code *ResetCode) error {
-	u.resetCode = code
+func (u *User) UpdateResetCode(code string, expr time.Time, hashService ihash.Service) error {
+	hashedCode, err := hashService.Hash(code)
+	if err != nil {
+		return err
+	}
+	u.resetCode = &ResetCode{
+		CodeHash: hashedCode,
+		Expr:     expr,
+	}
 	return nil
+}
+
+func (u *User) RemoveResetCode() {
+	u.resetCode = nil
 }
 
 // UpdatePassword updates the User's password after validation.

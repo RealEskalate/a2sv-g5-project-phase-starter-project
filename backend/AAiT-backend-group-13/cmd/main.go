@@ -6,14 +6,13 @@ import (
 	"strconv"
 	"time"
 
-	
-
 	"github.com/go-redis/redis/v8"
 	"github.com/group13/blog/config"
 	"github.com/group13/blog/delivery/common"
 	blogcontroller "github.com/group13/blog/delivery/controller/blog"
 	usercontroller "github.com/group13/blog/delivery/controller/user"
 	"github.com/group13/blog/delivery/router"
+	cache "github.com/group13/blog/infrastructure/cache"
 	db "github.com/group13/blog/infrastructure/database"
 	"github.com/group13/blog/infrastructure/email"
 	"github.com/group13/blog/infrastructure/hash"
@@ -27,6 +26,7 @@ import (
 	cache "github.com/group13/blog/infrastructure/cache"
 	passwordreset "github.com/group13/blog/usecase/password_reset"
 	usercmd "github.com/group13/blog/usecase/user/command"
+	userqry "github.com/group13/blog/usecase/user/query"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -111,7 +111,7 @@ func initCache(cfg config.Config) *cache.RedisCache  {
 
 func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtService *jwt.Service, mailService *email.MailTrapService) *usercontroller.UserController {
 	promoteHandler := usercmd.NewPromoteHandler(userRepo)
-	loginHandler := usercmd.NewLoginHandler(usercmd.LoginConfig{
+	loginHandler := userqry.NewLoginHandler(userqry.LoginConfig{
 		UserRepo:     userRepo,
 		HashService:  hashService,
 		JwtService:   jwtService,
@@ -124,8 +124,8 @@ func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtS
 		EmailService: mailService,
 	})
 	resetPasswordHandler := passwordreset.NewResetHandler(userRepo, hashService, jwtService)
-	resetCodeSendHandler := passwordreset.NewSendcodeHandler(userRepo)
-	validateCodeHandler := passwordreset.NewValidateCodeHandler(userRepo, jwtService)
+	resetCodeSendHandler := passwordreset.NewSendcodeHandler(userRepo, mailService, hashService)
+	validateCodeHandler := passwordreset.NewValidateCodeHandler(userRepo, jwtService, hashService)
 	validateEmailHandler := usercmd.NewValidateEmailHandler(userRepo, hashService, jwtService)
 
 	return usercontroller.New(usercontroller.Config{

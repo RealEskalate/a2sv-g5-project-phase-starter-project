@@ -1,4 +1,4 @@
-package usercmd
+package userqry
 
 import (
 	"log"
@@ -39,31 +39,29 @@ func NewLoginHandler(config LoginConfig) *LoginHandler {
 }
 
 // Ensure LoginHandler implements icmd.IHandler
-var _ icmd.IHandler[*LoginCommand, *result.LoginInResult] = &LoginHandler{}
+var _ icmd.IHandler[*LoginQuery, *result.LoginInResult] = &LoginHandler{}
 
 // Handle processes the login command and returns the login result with tokens.
-func (h *LoginHandler) Handle(command *LoginCommand) (*result.LoginInResult, error) {
-	// Find user by username
-	log.Printf("Finding user by username: %s", command)
+func (h *LoginHandler) Handle(command *LoginQuery) (*result.LoginInResult, error) {
+	log.Printf("Finding user by username: %s -- LoginHandler", command)
 	user, err := h.repo.FindByUsername(command.username)
 	if user.Username() == "" || err != nil {
-		return nil, er.NewNotFound("user not found")
+		return nil, er.NewUnauthorized("user not found")
+	} else if !user.IsActive() {
+		return nil, er.NewUnauthorized("user is not activated")
 	}
 
-	// Verify password
 	log.Println(user, "found this user", user.PasswordHash(), "now checking password")
-	ok, err := h.hashService.Match(user.PasswordHash(), command.password )
+	ok, err := h.hashService.Match(user.PasswordHash(), command.password)
 	if err != nil {
+		log.Printf("Error matching password %v", err)
 		return nil, err
 	}
 	if !ok {
-		return nil, er.NewValidation("password is incorrect")
+		log.Println("password didnot match")
+		return nil, er.NewUnauthorized("password is incorrect")
 	}
 
-	// Mark user as active
-	user.MakeActive()
-
-	// Generate tokens
 	token, err := h.jwtService.Generate(user, ijwt.Access)
 	if err != nil {
 		return nil, err
@@ -74,7 +72,6 @@ func (h *LoginHandler) Handle(command *LoginCommand) (*result.LoginInResult, err
 		return nil, err
 	}
 
-	// Return login result
 	return &result.LoginInResult{
 		Token:        token,
 		RefreshToken: refreshToken,

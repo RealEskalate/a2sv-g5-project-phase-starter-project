@@ -1,13 +1,14 @@
 package config
 
 import (
-    "context"
-    "log"
-    "time"
+	"context"
+	"fmt"
+	"log"
+	"time"
 
-    "go.mongodb.org/mongo-driver/mongo"
-    "go.mongodb.org/mongo-driver/mongo/options"
-    "go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 func NewMongoDatabase(env *Env) *mongo.Client {
@@ -26,6 +27,7 @@ func NewMongoDatabase(env *Env) *mongo.Client {
     if err != nil {
         log.Fatal(err)
     }
+    fmt.Println("connected to database")
 
     return client
 }

@@ -57,7 +57,7 @@ const CreditCards = () => {
   return (
     <div
       className={`p-3 ${
-        isDarkMode ? "bg-gray-700 text-gray-200" : "bg-white text-black"
+        isDarkMode ? "bg-gray-700 text-gray-200" : " text-black"
       }`}
     >
       <div className="p-3">
@@ -66,7 +66,7 @@ const CreditCards = () => {
         >
           My Cards
         </h1>
-        <div className="flex flex-row max-y-[200px] overflow-y-auto gap-6 sm:max-x-[500px] md:max-x-[600px]">
+        <div className="flex flex-row max-y-[200px] overflow-y-auto gap-6 sm:max-x-[500px] md:max-x-[600px] ">
           {creditCards.map((card) => (
             <CreditCard
               key={card.id}
@@ -92,7 +92,7 @@ const CreditCards = () => {
             </h1>
             <div
               style={{ borderRadius: "5px", overflow: "hidden" }}
-              className="rounded-full"
+              className="rounded-full bg-white"
             >
               <Donut />
             </div>

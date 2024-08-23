@@ -64,7 +64,7 @@ const Accounts = () => {
         }`}
       >
         <div
-          className={`p-4 rounded-3xl ${
+          className={`py-5  rounded-3xl ${
             isDarkMode ? "bg-gray-800" : "bg-white"
           } shadow-md`}
         >
@@ -76,7 +76,7 @@ const Accounts = () => {
           />
         </div>
         <div
-          className={`p-4 rounded-3xl ${
+          className={` py-5 rounded-3xl ${
             isDarkMode ? "bg-gray-800" : "bg-white"
           } shadow-md`}
         >
@@ -85,10 +85,11 @@ const Accounts = () => {
             amount={5600}
             image="/icons/handmoney.svg"
             color={isDarkMode ? "bg-blue-300" : "bg-blue-500"}
+            
           />
         </div>
         <div
-          className={`p-4 rounded-3xl ${
+          className={`py-5 rounded-3xl ${
             isDarkMode ? "bg-gray-800" : "bg-white"
           } shadow-md`}
         >
@@ -100,7 +101,7 @@ const Accounts = () => {
           />
         </div>
         <div
-          className={`p-4 rounded-3xl ${
+          className={`py-5 rounded-3xl ${
             isDarkMode ? "bg-gray-800" : "bg-white"
           } shadow-md`}
         >
@@ -194,10 +195,10 @@ const Accounts = () => {
           <div>
             <h1 className="text-xl mb-4">Invoices Sent</h1>
             <div
-              className={`rounded-xl  ${
+              className={`rounded-xl mb- ${
                 isDarkMode ? "bg-gray-800" : "bg-white"
               }`}
-            >
+            ><div>
               <Invoices
                 image="/icons/eaten.svg"
                 title="Apple Store"
@@ -205,6 +206,8 @@ const Accounts = () => {
                 expense={450}
                 color={isDarkMode ? "bg-green-300" : "bg-green-500"}
               />
+            </div>
+            <div>
               <Invoices
                 image="/icons/useryello.svg"
                 title="Michael"
@@ -212,6 +215,8 @@ const Accounts = () => {
                 expense={450}
                 color={isDarkMode ? "bg-yellow-300" : "bg-yellow-500"}
               />
+            </div>
+            <div>
               <Invoices
                 image="/icons/playstation.svg"
                 title="Apple Store"
@@ -219,6 +224,9 @@ const Accounts = () => {
                 expense={1085}
                 color={isDarkMode ? "bg-blue-300" : "bg-blue-500"}
               />
+            </div>
+            <div>
+
               <Invoices
                 image="/icons/user.svg"
                 title="William"
@@ -226,6 +234,7 @@ const Accounts = () => {
                 expense={90}
                 color={isDarkMode ? "bg-pink-300" : "bg-pink-500"}
               />
+            </div>
             </div>
           </div>
         </div>

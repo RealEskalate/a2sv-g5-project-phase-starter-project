@@ -19,21 +19,21 @@ import {
 } from "@/components/ui/chart"
 import { useUser } from "@/contexts/UserContext"
 const chartData = [
-  { days: "Sunday", desktop: 186, mobile: 80 },
-  { days: "Monday", desktop: 305, mobile: 200 },
-  { days: "Tuesday", desktop: 237, mobile: 120 },
-  { days: "Wednesday", desktop: 73, mobile: 190 },
-  { days: "Thursday", desktop: 209, mobile: 130 },
-  { days: "Friday", desktop: 214, mobile: 140 },
-  { days: "Saturday", desktop: 214, mobile: 140 },
+  { days: "Sunday", debit: 186, credit: 80 },
+  { days: "Monday", debit: 305, credit: 200 },
+  { days: "Tuesday", debit: 237, credit: 120 },
+  { days: "Wednesday", debit: 73, credit: 190 },
+  { days: "Thursday", debit: 209, credit: 130 },
+  { days: "Friday", debit: 214, credit: 140 },
+  { days: "Saturday", debit: 214, credit: 140 },
 ]
 
 const chartConfig = {
-  desktop: {
+  debit: {
     label: "Debit",
     color: "#1A16F3",
   },
-  mobile: {
+  credit: {
     label: "Credit",
     color: "#FCAA0B",
   },
@@ -72,8 +72,8 @@ export function ChartWeekly() {
               cursor={false}
               content={<ChartTooltipContent indicator="dashed" />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-            <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
+            <Bar dataKey="debit" fill="#1A16F3" radius={4} />
+            <Bar dataKey="credit" fill="#FCAA0B" radius={4} />
           </BarChart>
         </ChartContainer>
       </CardContent>

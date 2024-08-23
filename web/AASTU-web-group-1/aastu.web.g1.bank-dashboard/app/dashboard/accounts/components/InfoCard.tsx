@@ -25,7 +25,7 @@ const InfoCard = ({ image, color, title, amount }: Prop) => {
   return (
     <div className={`flex p-4 rounded-lg ${containerClass}`}>
       <div
-        className={`flex items-center justify-center ${colorClass} font-semibold py-2 px-3 rounded-lg text-sm w-[45px] h-[45px]`}
+        className={`flex items-center justify-center ${colorClass} font-semibold gap-2  rounded-lg text-sm w-[45px] h-[45px]  `}
       >
         <Image src={image} alt={title} width={20} height={20} />
       </div>

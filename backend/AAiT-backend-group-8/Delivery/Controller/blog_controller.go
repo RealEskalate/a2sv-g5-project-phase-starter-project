@@ -2,12 +2,10 @@ package controller
 
 import (
 	"AAiT-backend-group-8/Domain"
-	infrastructure "AAiT-backend-group-8/Infrastructure"
-
+	infrastructure "AAiT-backend-group-8/Infrastructure"	
 	"log"
 	"net/http"
 	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

@@ -42,6 +42,7 @@ func (h *BlogHandler) SearchBlogsHandler(c *gin.Context) {
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
 
 	// Call the use case to search for blogs
+	fmt.Println("filter", filter, "page", page, "pageSize", pageSize, "orderBy", sortBy)
 	blogs, totalBlogs, err := h.UseCase.SearchBlogs(context.Background(), filter, page, pageSize, sortBy)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

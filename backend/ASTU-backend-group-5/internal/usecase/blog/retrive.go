@@ -37,6 +37,13 @@ func (u *blogUseCase) GetBlogByID(ctx context.Context, blogId, userId string) (*
 				return nil, fmt.Errorf("failed to create view: %w", err)
 			}
 		}
+		liked, err := u.repo.HasUserLikedBlog(ctx, userId, blogId)
+
+		if err != nil {
+			log.Printf("Error checking if user has liked blog with ID %s: %v", blogId, err)
+			return nil, fmt.Errorf("failed to check if user has liked blog: %w", err)
+		}
+		blog.Liked = liked
 	}
 	return blog, nil
 }

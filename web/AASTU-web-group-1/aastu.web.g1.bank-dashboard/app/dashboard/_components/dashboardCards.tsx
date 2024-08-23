@@ -20,11 +20,12 @@ export const Cards = ({onLoadingComplete}: {onLoadingComplete: any}) => {
   useEffect(() => {
     const fetchData = async () => {
       try{
-
         const res = await getCreditCards(0, 2);
         setCreditCards(res?.content || []);
-      }finally{setLoading(false);
-      onLoadingComplete(false);}
+           onLoadingComplete(false);
+           setLoading(false);
+      }finally{
+   }
       
     };
     fetchData();

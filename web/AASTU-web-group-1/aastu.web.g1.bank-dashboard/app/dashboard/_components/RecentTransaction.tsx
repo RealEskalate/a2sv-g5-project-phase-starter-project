@@ -30,17 +30,16 @@ export const RecentTransaction = ({onLoadingComplete}:{onLoadingComplete:any}) =
       try {
         const recent = await getallTransactions(0, 3);
         setRecentTransactions(recent?.content || []);
-      
+         onLoadingComplete(false);
+           setLoading(false);
       } finally {
-        onLoadingComplete(false);
-        setLoading(false);
       }
     };
     fetchData();
   }, [onLoadingComplete]);
 
   return (
-    <div className="space-y-5 md:space-y-5 w-full md:w-1/3">
+    <div className=" md:space-y-5 w-full md:w-1/3">
       <div className="font-inter text-[16px] font-semibold">
         <h4>Recent Transactions</h4>
       </div>

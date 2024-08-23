@@ -59,7 +59,7 @@ const CreditCard: React.FC<CardDetails> = ({
 
       <div className="flex px-5">
         <div className="w-[60%] block space-y-1">
-          <p className="text-[10px] md:text-[11px] text-gray-400 font-lato font-normal">
+          <p className="text-[10px] md:text-[11px] text-white text-opacity-50 font-lato font-normal">
             CARD HOLDER
           </p>
           <p
@@ -69,7 +69,7 @@ const CreditCard: React.FC<CardDetails> = ({
           </p>
         </div>
         <div className="block space-y-1">
-          <p className="text-[10px] md:text-[11px] text-gray-400 font-lato font-normal">
+          <p className="text-[10px] md:text-[11px] text-white text-opacity-50 font-lato font-normal">
             Exp. Date
           </p>
           <p

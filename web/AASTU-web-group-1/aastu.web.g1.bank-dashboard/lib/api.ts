@@ -7,7 +7,6 @@ export  async function getCreditCards(page: number, size: number) {
     try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
-    console.log(accessToken);
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/cards?page=${page}&size=${size}`, {
       method: "GET",
       headers: {
@@ -19,7 +18,6 @@ export  async function getCreditCards(page: number, size: number) {
       throw new Error("failed to get data");
     }
     const cards: CreditCardProps = await res.json();
-    console.log(cards)
     return cards;
   } catch (error) {
     console.error("An error occurred on card:", error);
@@ -64,9 +62,9 @@ export async function addTransactions({
   receiverUserName,
 }: Props) {
   try {
-    console.log(process.env.NEXT_PUBLIC_BASE_URL)
     const session = await getSession();
     const accessToken = session?.user.accessToken;
+    console.log("add transaction",accessToken);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/transactions`,
       {
@@ -114,7 +112,6 @@ export async function getCurrentUser() {
     const currentUser: UserResponse = await res.json();
     return currentUser.data;
   } catch (error) {
-    console.log(error);
     console.log("An error occurred:", error);
   }
 }
@@ -148,7 +145,7 @@ export async function getIncomes(page: number, size: number) {
   try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
-
+    console.log("get income",accessToken);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/transactions/incomes?page=${page}&size=${size}`,
       {
@@ -174,6 +171,7 @@ export default async function getRandomBalance() {
   try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
+    console.log("random balance",accessToken);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/transactions/random-balance-history?monthsBeforeFirstTransaction=7`,
       {
@@ -198,6 +196,7 @@ export async function getallTransactions(page: number, size: number) {
   try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
+    console.log("get all transactions",accessToken);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/transactions?page=${page}&size=${size}`,
       {

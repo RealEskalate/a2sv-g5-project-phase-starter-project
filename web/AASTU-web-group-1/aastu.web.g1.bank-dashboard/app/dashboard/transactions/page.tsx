@@ -20,25 +20,21 @@ const Transactions = () => {
   }, [transactionCardsLoaded, transactionTableLoaded]);
 
   return (
-    <>
+    <div
+      className={`space-y-5 ${dataFetched?"p-10":""} ${
+        isDarkMode ? "bg-gray-700 text-gray-200" : "bg-[#F5F7FA] text-gray-900"
+      }`}
+    >
       {!dataFetched && <Loading />}
-      <div
-        className={`space-y-5 p-5 ${
-          isDarkMode
-            ? "bg-gray-700 text-gray-200"
-            : "bg-[#F5F7FA] text-gray-900"
-        }`}
-      >
-        {/* First row */}
-        <TransactionCards
-          onLoadingComplete={() => setTransactionCardsLoaded(true)}
-        />
-        {/* Second row */}
-        <TransactionTable
-          onLoadingComplete={() => setTransactionTableLoaded(true)}
-        />
-      </div>
-    </>
+      {/* First row */}
+      <TransactionCards
+        onLoadingComplete={() => setTransactionCardsLoaded(true)}
+      />
+      {/* Second row */}
+      <TransactionTable
+        onLoadingComplete={() => setTransactionTableLoaded(true)}
+      />
+    </div>
   );
 };
 

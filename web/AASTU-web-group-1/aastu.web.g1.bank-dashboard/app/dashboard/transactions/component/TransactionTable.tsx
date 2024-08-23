@@ -43,11 +43,12 @@ export const TransactionTable = ({
         }
         setTransactions(data?.content || []);
         setTotalPages(data?.totalPages || 7);
+        setLoading(false);
+        onLoadingComplete(false);
       } catch (error) {
         console.error("Error fetching transactions:", error);
       } finally {
-        setLoading(false);
-        onLoadingComplete(false);
+       
       }
     };
     fetchData();
@@ -150,22 +151,23 @@ export const TransactionTable = ({
         )}
       </div>
       <div className="flex justify-end items-center space-x-2">
-        <button
-          onClick={handlePreviousPage}
-          className={`flex rounded-xl ${
-            currentPage === 1 ? "text-gray-400" : "text-blue-600"
-          } ${isDarkMode ? "bg-gray-800" : "bg-white"}`}
-          disabled={currentPage === 1}
-        >
-          <GrFormPrevious size={30} />
-          <p
-            className={`m-2 ${
-              currentPage === 1 ? "text-gray-400" : "text-blue-600"
-            } ${isDarkMode ? "text-gray-300" : "text-gray-900"}`}
-          >
-            Previous
-          </p>
-        </button>
+       <button
+  onClick={handlePreviousPage}
+  className={`flex items-center justify-center rounded-xl ${
+    currentPage === 1 ? "text-gray-400" : "text-blue-600"
+  } ${isDarkMode ? "bg-gray-800" : "bg-white"}`}
+  disabled={currentPage === 1}
+>
+  <GrFormPrevious size={30} />
+  <p
+    className={`ml-2 ${
+      currentPage === 1 ? "text-gray-400" : "text-blue-600"
+    } ${isDarkMode ? "text-gray-300" : "text-gray-900"}`}
+  >
+    Previous
+  </p>
+</button>
+
 
         {renderPageButtons()}
 

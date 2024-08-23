@@ -20,11 +20,11 @@ export const ExpenseStatistics = ({
     const fetchData = async () => {
       try {
         const statistics = await getallTransactions(0, 100);
-        console.log(statistics);
         setTransactions(statistics?.content || []);
+         onLoadingComplete(false);
+         setLoading(false);
       } finally {
-        onLoadingComplete(false);
-        setLoading(false);
+        
       }
     };
     fetchData();

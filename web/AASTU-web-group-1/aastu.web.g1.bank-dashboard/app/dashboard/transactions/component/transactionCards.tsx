@@ -33,11 +33,12 @@ export const TransactionCards = ({
         ]);
         setCreditCards(cards?.content || []);
         setExpenses(initialExpenses?.content || []);
+        setLoading(false);
+        onLoadingComplete(false);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
-        setLoading(false);
-        onLoadingComplete(false);
+        
       }
     };
     fetchData();
@@ -78,7 +79,7 @@ export const TransactionCards = ({
           }hadow-lg`}
         >
           {loading ? (
-            <div className="p-5">
+            <div className="p-2">
               <Shimmer />
             </div>
           ) : (

@@ -20,9 +20,10 @@ export const BalanceHistory = ({ onLoadingComplete }: { onLoadingComplete: any }
       try {
         const BalanceHistory = await getRandomBalance();
         setBalanceHistory(BalanceHistory || []);
+         onLoadingComplete(false);
+           setLoading(false);
       } finally {
-        onLoadingComplete(false);
-        setLoading(false);
+      
       }
     };
     fetchData();

@@ -33,9 +33,11 @@ export const QuickTransfer = ({ onLoadingComplete }: { onLoadingComplete: any })
       try {
         const accounts = await getQuickTransfer(10);
         setQuickTransfer(accounts || []);
+          onLoadingComplete(false);
+           setLoading(false);
       } finally {
-        setLoading(false);
-        onLoadingComplete(false)
+       
+      
       }
     };
     fetchData();

@@ -61,7 +61,7 @@ const MainDashboard = () => {
 
   return (
     <div
-      className={`relative ${dataFetched ? "p-10" : ""} space-y-5 ${
+      className={` ${dataFetched ? "p-10 space-y-5 " : ""}${
         isDarkMode ? "bg-gray-700 text-white" : "bg-[#F5F7FA] text-black"
       }`}
     >

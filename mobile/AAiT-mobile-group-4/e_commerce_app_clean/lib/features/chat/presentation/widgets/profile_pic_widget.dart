@@ -7,7 +7,7 @@ class ProfilePicWidget extends StatelessWidget {
 
   final double radius;
 
-  const ProfilePicWidget({super.key, this.imagePath = 'assets/profile_pic.png',  required this.bgColor,required this.radius});
+  const ProfilePicWidget({super.key, this.imagePath = 'assets/story_3.png',  required this.bgColor,required this.radius});
 
   @override
   Widget build(BuildContext context) {

@@ -15,6 +15,7 @@ import service from "../../../public/images/service.svg";
 import serviceBlue from "../../../public/images/service-blue.svg";
 import setting from "../../../public/images/setting.svg";
 import settingBlue from "../../../public/images/setting-blue.svg";
+import logo from "../../../public/images/Logo.svg";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -24,8 +25,11 @@ interface Props {
 
 const Sidebar = ({ selected }: Props) => {
   return (
-    <div className="w-1/6 bg-white left-0 h-full pt-1 hidden md:block bg-fixed ">
-      <ul className="flex mt-7 justify-center space-y-7 flex-col">
+    <div className="w-1/6 bg-white absolute left-0 top-0 h-full pt-1 hidden md:block bg-fixed ">
+      <ul className="flex mt-5 justify-center space-y-7 flex-col">
+          <div className="w-2/3 ml-10 md:block hidden">
+            <Image src={logo} className="ml-1" alt="LOGO" />
+          </div>
 
           <li
             className={

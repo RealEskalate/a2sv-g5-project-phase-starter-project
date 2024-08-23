@@ -45,7 +45,7 @@ type Cursor interface {
 }
 
 type Client interface {
-	Database(string) Database
+	Database(name string, opts ...*options.DatabaseOptions) Database
 	Connect(context.Context) error
 	Disconnect(context.Context) error
 	StartSession() (mongo.Session, error)
@@ -109,7 +109,7 @@ func (mc *mongoClient) Ping(ctx context.Context) error {
 	return mc.cl.Ping(ctx, readpref.Primary())
 }
 
-func (mc *mongoClient) Database(dbName string) Database {
+func (mc *mongoClient) Database(dbName string, opts ...*options.DatabaseOptions) Database {
 	db := mc.cl.Database(dbName)
 	return &mongoDatabase{db: db}
 }

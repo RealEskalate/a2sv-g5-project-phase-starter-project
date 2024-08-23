@@ -8,12 +8,12 @@ import (
 
 type OTP struct {
 	ID         primitive.ObjectID `bson:"_id,omitempty"`
-	Email      string             `bson:"email"`
-	Code       string             `bson:"code"`
+	Email      string             `bson:"email, required, email"`
+	Code       string             `bson:"code, min=5"`
 	Expiration time.Time          `bson:"expiration"`
 	IsValid    bool     		  `bson:"is_valid"`
 }
 
 type ResendOTPRequest struct {
-	Email string `json:"email"`
+	Email string `json:"email required email"`
 }

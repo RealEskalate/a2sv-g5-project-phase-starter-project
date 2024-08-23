@@ -4,8 +4,10 @@ import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
 	"context"
+
 	"errors"
 	"sync"
+
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -27,6 +29,7 @@ func NewBlogRepository(collection *mongo.Collection, ctx context.Context) interf
 }
 
 func (br *blogRepository) CreateBlogPost(blogPost *entities.BlogPost, userId string) (*entities.BlogPost, error) {
+
 	userObjectId, err := primitive.ObjectIDFromHex(userId)
 
 	if err != nil {

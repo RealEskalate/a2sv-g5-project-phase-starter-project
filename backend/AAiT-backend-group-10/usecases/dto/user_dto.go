@@ -26,3 +26,12 @@ type CreatedResponseDto struct {
 	Bio      string 	`json:"bio"`
 	ImageUrl string 	`json:"image_url"`
 }
+
+type GetUserResponseDto struct {
+	ID       uuid.UUID  `json:"id"`
+	FullName string 	`json:"full_name"`
+	Email    string 	`json:"email"`
+	Bio      string 	`json:"bio"`
+	ImageUrl string 	`json:"image_url"`
+	IsAdmin  bool 	`json:"is_admin"`
+}

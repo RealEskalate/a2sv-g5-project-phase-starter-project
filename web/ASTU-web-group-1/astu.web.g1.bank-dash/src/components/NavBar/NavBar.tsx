@@ -7,6 +7,7 @@ import Avatar from '../Avatar/Avatar';
 import { usePathname } from 'next/navigation';
 import { useAppDispatch } from '@/hooks/hoooks';
 import { toggleHamburgerMenu } from '@/lib/redux/slices/uiSlice';
+import Link from 'next/link';
 
 export default function NavBar() {
   const path: { [key: string]: string } = {
@@ -18,7 +19,6 @@ export default function NavBar() {
     '/bank-dash/loans': 'Loans',
     '/bank-dash/services': 'Services',
     '/bank-dash/settings': 'Settings',
-
   };
   const pathname = usePathname();
   console.log(pathname);
@@ -48,7 +48,9 @@ export default function NavBar() {
           />
         </div>
         <div className=' hidden md:flex w-11 h-11 bg-slate-100 rounded-full justify-center items-center text-blue-steel'>
-          <Settings className='w-6 h-6' />
+          <Link href='/bank-dash/settings'>
+            <Settings className='w-6 h-6' />
+          </Link>
         </div>
         <div className='hidden md:flex w-11 h-11 bg-slate-100 rounded-full justify-center items-center text-red-400'>
           <Notification className='w-6 h-6' />

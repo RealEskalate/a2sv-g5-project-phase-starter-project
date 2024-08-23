@@ -61,7 +61,7 @@ class Main extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         // initial for splash page
-        initialRoute: '/splashScreen',
+        initialRoute: '/splash',
 
         onGenerateRoute: (settings) {
           if (settings.name == '/detail') {

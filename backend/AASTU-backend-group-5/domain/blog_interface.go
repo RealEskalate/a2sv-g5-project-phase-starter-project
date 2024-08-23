@@ -20,12 +20,13 @@ type Blog_Usecase_interface interface {
 	UpdateBlog(id string, blog Blog) (Blog, error)
 	DeleteBlog(id string) error
 	FilterBlog(filters map[string]interface{}) ([]Blog, error)
+	GetUniqueBlog(filter map[string]interface{}, posts *[]Blog) error
 }
 
 type Blog_Repository_interface interface {
 	CreateBlogDocument(blog Blog) (Blog, error)
 	GetOneBlogDocument(id string) (Blog, error)
-	GetBlogDocuments(offset int, limit int) ([]Blog, error)
+	GetBlogDocuments(page int, limit int) ([]Blog, error)
 	UpdateBlogDocument(id string, blog Blog) (Blog, error)
 	DeleteBlogDocument(id string) error
 	FilterBlogDocument(filters map[string]interface{}) ([]Blog, error)

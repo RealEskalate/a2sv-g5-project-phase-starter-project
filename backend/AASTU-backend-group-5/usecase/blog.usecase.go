@@ -77,3 +77,14 @@ func (uc *BlogUseCase) FilterBlog(filters map[string]interface{}) ([]domain.Blog
 	}
 	return blogs, nil
 }
+func (uc *BlogUseCase) GetUniqueBlog(filter map[string]interface{}, posts *[]*domain.Blog) error {
+	pst, err := uc.BlogRepo.FilterBlogDocument(filter)
+	if err != nil {
+		return err
+	}
+	posts = &pst
+	return nil
+}
+func (uc *BlogUseCase) SearchBlogs(filters map[string]interface{}) ([]domain.Blog, error) {
+	return uc.BlogRepo.FilterBlogDocument(filters)
+}

@@ -5,7 +5,7 @@ type ForgetPasswordRequest struct {
 }
 
 type PasswordReset struct {
-	Email    string `json:"email"`
-	NewPassword string `json:"password" binding:"required"`
+	Email    string `json:"email binding:"required,email"`
+	NewPassword string `json:"password" binding:"required,min=6"`
 	Token    string `json:"token" binding:"required"`
 }

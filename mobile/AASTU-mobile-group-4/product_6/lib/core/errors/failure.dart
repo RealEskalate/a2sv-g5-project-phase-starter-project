@@ -23,3 +23,9 @@ class DatabaseFailure extends Failure {
 class CacheException extends Failure {
   const CacheException(super.message);
 }
+class AuthenticationFailure extends Failure {
+  const AuthenticationFailure(super.message);
+}
+class NetworkFailure extends Failure {
+  const NetworkFailure(super.message);
+}

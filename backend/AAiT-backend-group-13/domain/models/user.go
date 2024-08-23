@@ -226,6 +226,7 @@ func (u *User) UpdateLastName(lastName string) error {
 
 func (u *User) UpdateEmail(email string) error {
 	u.email = email
+	u.MakeInactive()
 	return nil
 }
 

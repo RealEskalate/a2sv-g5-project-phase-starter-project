@@ -51,23 +51,12 @@ func (h *UpdateProfileHandler) Handle(command *UpdateProfileCommand) (*result.Up
 	}
 
 	if user == nil {
-		log.Println("User not found by ID")
+		log.Println("User not found")
 		return &result.UpdateProfileResult{}, er.UserNotFound
 	}
 
 	// Check if the new email is available
 	if command.Email != "" {
-		otherUser, err := h.repo.FindByEmail(command.Email)
-		if err != nil && err != er.UserNotFound {
-			log.Printf("Error checking new email: %v", err)
-			return &result.UpdateProfileResult{}, err
-		} 
-
-		if otherUser != nil {
-			log.Println("Conflict: Another account exists with this email")
-			return &result.UpdateProfileResult{}, er.NewConflict("Another account exists with this email. Please use the other account")
-		}
-
 		log.Println("Updating email")
 		user.UpdateEmail(command.Email)
 
@@ -87,23 +76,10 @@ func (h *UpdateProfileHandler) Handle(command *UpdateProfileCommand) (*result.Up
 			return &result.UpdateProfileResult{}, err
 		}
 		log.Println("Sign-up email sent")
-	} else {
-		user.UpdateEmail(command.Email)
-	}
+	} 
 
 	// Check if the new username is available
 	if command.Username != "" {
-		otherUser, err := h.repo.FindByUsername(command.Username)
-		if err != nil && err != er.UserNotFound {
-			log.Printf("Error finding user by username: %v", err)
-			return &result.UpdateProfileResult{}, err
-		}
-
-		if otherUser != nil {
-			log.Println("Conflict: Username taken")
-			return &result.UpdateProfileResult{}, er.NewConflict("Username taken")
-		}
-
 		log.Println("Updating username")
 		user.UpdateUsername(command.Username)
 	}
@@ -124,7 +100,6 @@ func (h *UpdateProfileHandler) Handle(command *UpdateProfileCommand) (*result.Up
 		log.Println("Updating password")
 		user.UpdatePassword(command.Password, h.hashService)
 	}
-	user.MakeInactive()
 
 	// Save the updated user profile
 	err = h.repo.Save(user)

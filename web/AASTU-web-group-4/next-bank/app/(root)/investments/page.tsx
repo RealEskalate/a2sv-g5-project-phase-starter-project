@@ -67,36 +67,36 @@ const Investments = async () => {
    const  Trendingcomp = fetch()
 
   return (
-    <div className={` ${colors.graybg}   flex  flex-col  lg:gap-5 lg:ml-64 lg:pr-6 xl:pr-10 `}>
+    <div className={` ${colors.graybg}   flex  flex-col  lg:gap-5 lg:ml-64 lg:pr-6 xl:pr-10  dark:bg-dark text-gray-900 dark:text-white`}>
 
-      <div className='flex flex-col items-center px-6 pt-10 gap-4 lg:flex-row ' >
-        <div className='flex gap-3 w-[80%] bg-white justify-center items-center py-3  rounded-xl'>
+      <div className='flex flex-col items-center px-6 pt-10 gap-4 lg:flex-row dark:bg-dark text-gray-900 dark:text-white'>
+        <div className='flex gap-3 w-[80%] bg-white justify-center items-center py-3  rounded-xl  dark:bg-dark text-gray-900 dark:text-white'>
           <div className='bg-cyan-100 w-[50px] h-[50px] flex items-center justify-center rounded-full  '>
             <FaSackDollar className='text-cyan-500 h-[25px] w-[20px] '/>
           </div>
           <div>
-            <p className={`${colors.textgray} font-normal text-[12px]`}>Total Invested Amount</p>
-            <p className={`${colors.textblack} font-semibold text-[16px] `}>$10000</p>
+            <p className={`${colors.textgray} font-normal text-[12px] dark:text-white`}>Total Invested Amount</p>
+            <p className={`${colors.textblack} font-semibold text-[16px] dark:text-white`}>$10000</p>
           </div>
         </div>
 
-        <div className='flex gap-3 w-[80%] bg-white justify-center items-center py-3  rounded-xl'>
+        <div className='flex gap-3 w-[80%] bg-white justify-center items-center py-3 rounded-xl  dark:bg-dark text-gray-900 dark:text-white'>
           <div className='bg-pink-100 w-[50px] h-[50px] flex items-center justify-center rounded-full  '>
             <GiTakeMyMoney className='text-pink-500 h-[25px] w-[20px] '/>
           </div>
           <div>
-            <p className={`${colors.textgray} font-normal text-[12px]  `}>Number of Investments</p>
-            <p className={`${colors.textblack} font-semibold text-[16px] `}>1809</p>
+            <p className={`${colors.textgray} font-normal text-[12px] dark:text-white`}>Number of Investments</p>
+            <p className={`${colors.textblack} font-semibold text-[16px] dark:text-white`}>1809</p>
           </div>
         </div>
 
-        <div className='flex gap-3 w-[80%] bg-white justify-center items-center py-3  rounded-xl'>
+        <div className='flex gap-3 w-[80%] bg-white justify-center items-center py-3 rounded-xl dark:bg-dark text-gray-900 dark:text-white'>
           <div className='bg-indigo-100 w-[50px] h-[50px] flex items-center justify-center rounded-full  '>
             <AiOutlineRetweet className='text-indigo-500 h-[25px] w-[20px] '/>
           </div>
           <div>
-            <p className={`${colors.textgray} font-normal text-[12px] w-[132px] `}>Rate of Return</p>
-            <p className={`${colors.textblack} font-semibold text-[16px] `}>+5.8%</p>
+            <p className={`${colors.textgray} font-normal text-[12px] w-[132px] dark:text-white`}>Rate of Return</p>
+            <p className={`${colors.textblack} font-semibold text-[16px] dark:text-white`}>+5.8%</p>
           </div>
         </div>
 
@@ -104,18 +104,18 @@ const Investments = async () => {
 
       <div className='  flex flex-col py-5 px-6 gap-14 lg:grid lg:grid-cols-2 lg:gap-6  '>
         <div className='flex flex-col gap-3 lg:gap-4 xl:gap-5 '>
-          <h2 className={`font-semibold text-[22px] ${colors.navbartext} `}>Yearly Total Investments</h2>
+          <h2 className={`font-semibold text-[22px] ${colors.navbartext} dark:text-blue-500`}>Yearly Total Investments</h2>
           <LineChartStright/>
         </div>
         <div className='flex  flex-col gap-3 lg:gap-4 xl:gap-5 '>
-          <h2  className={`font-semibold text-[22px] ${colors.navbartext} `} >Monthly Revenue</h2>
+          <h2  className={`font-semibold text-[22px] ${colors.navbartext} dark:text-blue-500`} >Monthly Revenue</h2>
           <LineChartNoBg/>
         </div>
       </div>
 
       <div className='flex flex-col lg:grid lg:grid-cols-5 '>
         <div className='px-6  lg:col-span-3 flex flex-col gap-5'>
-          <h2 className={`font-semibold text-[22px] ${colors.navbartext} `} >My Investment</h2>
+          <h2 className={`font-semibold text-[22px] ${colors.navbartext} dark:text-blue-500`} >My Investment</h2>
           {
             data.map((item,index)=>(
               <MyInvestment key={index} icon={item.icon} color={item.color} colortext={item.colortext} category={item.category} categorycolor={item.categorycolor} name={item.name} amount={item.amount} percentage={item.percentage}/>
@@ -125,7 +125,7 @@ const Investments = async () => {
         <div className='lg:col-span-2' >
 
        <div className='p-6 lg:p-0'>
-       <h2 className="text-lg font-semibold text-gray-800 mb-3">Trending Stock</h2>
+       <h2 className="text-lg font-semibold text-gray-800 mb-3 dark:text-blue-500">Trending Stock</h2>
 
          <TrendingStock items = {trendingdata}/>
        </div>

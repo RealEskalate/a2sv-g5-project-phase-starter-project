@@ -82,7 +82,7 @@ const CreditCard = () => {
 
       <div className="flex flex-col md:flex-row gap-16">
         <div className="doughnutChart lg:w-[360px] md:w-[231] w-[325px] my-6">
-          <h1 className="text-[19px] mb-6 font-bold text-[#333B69]">
+          <h1 className="text-[19px] mb-6 font-bold text-[#333B69] dark:text-blue-500">
             Card Expense Statistics
           </h1>
           <Component />
@@ -121,7 +121,7 @@ const CreditCard = () => {
         </div>
 
         <div>
-          <h1 className="text-[19px] mb-3 font-bold text-[#333B69]">Card Setting</h1>
+          <h1 className="text-[19px] mb-3 font-bold text-[#333B69] dark:text-blue-500">Card Setting</h1>
           <CardSetting />
         </div>
       </div>

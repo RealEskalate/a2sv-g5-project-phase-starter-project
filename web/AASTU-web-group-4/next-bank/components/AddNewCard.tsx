@@ -113,7 +113,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 dark:bg-dark text-gray-900 dark:text-white"
         >
           <div>
             <label htmlFor="cardTypeId" className="text-[16px] block pb-2">
@@ -225,7 +225,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
           <div className="md:mt-4 md:ml-36 lg:ml-56">
             <button
               type="submit"
-              className="rounded-xl text-[16px] px-7 text-center bg-[#1814F3] text-white w-[95%] md:w-[auto] mt-4 p-2"
+              className="rounded-xl text-[16px] px-7 text-center bg-[#1814F3] dark:bg-blue-700 text-white w-[95%] md:w-[auto] mt-4 p-2"
             >
               Add Card
             </button>

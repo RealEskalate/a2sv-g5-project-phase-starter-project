@@ -1,8 +1,7 @@
-"use client"
-
-import * as React from "react"
-import { Label, Pie, PieChart, Sector } from "recharts"
-import { PieSectorDataItem } from "recharts/types/polar/Pie"
+'use client'
+import * as React from "react";
+import { Label, Legend, Pie, PieChart, Sector } from "recharts";
+import { PieSectorDataItem } from "recharts/types/polar/Pie";
 
 import {
   Card,
@@ -10,21 +9,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartStyle,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/chart";
 
 const desktopData = [
   { month: "january", desktop: 186, fill: "#FF6384" },  // Red
@@ -32,7 +24,7 @@ const desktopData = [
   { month: "march", desktop: 237, fill: "#FFCE56" },    // Yellow
   { month: "april", desktop: 173, fill: "#4BC0C0" },    // Teal
   { month: "may", desktop: 209, fill: "#9966FF" },      // Purple
-]
+];
 
 const chartConfig = {
   visitors: {
@@ -64,17 +56,11 @@ const chartConfig = {
     label: "May",
     color: "#9966FF",  // Purple
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export default function Component() {
-  const id = "pie-interactive"
-  const [activeMonth, setActiveMonth] = React.useState(desktopData[0].month)
-
-  const activeIndex = React.useMemo(
-    () => desktopData.findIndex((item) => item.month === activeMonth),
-    [activeMonth]
-  )
-  const months = React.useMemo(() => desktopData.map((item) => item.month), [])
+  const id = "pie-interactive";
+  const [activeIndex, setActiveIndex] = React.useState(0);
 
   return (
     <Card data-chart={id} className="flex flex-col rounded-3xl">
@@ -137,6 +123,7 @@ export default function Component() {
               innerRadius={60}
               strokeWidth={5}
               activeIndex={activeIndex}
+              onMouseEnter={(_, index) => setActiveIndex(index)}
               activeShape={({
                 outerRadius = 0,
                 ...props
@@ -164,26 +151,31 @@ export default function Component() {
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
+                          className="dark:text-white fill-foreground text-3xl font-bold"
                         >
                           {desktopData[activeIndex].desktop.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
+                          className="dark:text-white fill-muted-foreground"
                         >
                           expense
                         </tspan>
                       </text>
-                    )
+                    );
                   }
                 }}
               />
             </Pie>
+            <Legend
+              layout="horizontal"
+              verticalAlign="bottom"
+              align="center"
+            />
           </PieChart>
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
   const refreshToken = request.cookies.get('refreshToken');
 
   // Log the cookies for debugging purposes
-  console.log('Request Cookies:', { accessToken, refreshToken });
+  // console.log('Request Cookies:', { accessToken, refreshToken });
 
   // Check if the access token exists
   if (!accessToken) {

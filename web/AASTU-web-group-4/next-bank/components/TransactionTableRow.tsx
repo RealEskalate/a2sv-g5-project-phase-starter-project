@@ -12,7 +12,7 @@ const TransactionTableRow: React.FC<TransactionTableRowProps> = ({ transaction }
   const { description, id, type, category, card, date, amount } = transaction;
 
   return (
-    <tr className="border-b">
+    <tr className="border-b ">
       <td className="px-4 py-2 flex items-center">
         {type === 'income' ? (
           <FaArrowUp className="text-green-500 mr-2" />

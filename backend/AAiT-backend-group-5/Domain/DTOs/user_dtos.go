@@ -7,7 +7,6 @@ type CreateAccountRequest struct {
 	Username string `json:"username" validate:"required,min=3,max=30"`
 	Name     string `json:"name" validate:"required"`
 	Email    string `json:"email" validate:"required,email"`
-	// Password string `json:"password" validate:"required,min=6"`
 }
 
 // CreateAccountResponse represents the response after creating a new user account
@@ -56,4 +55,11 @@ type ProfileUpdateRequest struct {
 	Username string `json:"username"`
 	Name     string `json:"name"`
 	Password string `bson:"password" json:"password"`
+}
+
+type OAuthRequest struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	Name         string `json:"name" validate:"required"`
+	Email        string `json:"email" validate:"required,email"`
 }

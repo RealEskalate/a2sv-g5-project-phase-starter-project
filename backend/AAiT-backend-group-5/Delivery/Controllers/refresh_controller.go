@@ -12,7 +12,11 @@ type RefreshController struct {
 	JwtService     interfaces.JwtService
 }
 
-func NewRefreshController(refreshUsecase interfaces.RefreshUsecase, jwtService interfaces.JwtService) *RefreshController {
+func NewRefreshController(
+	refreshUsecase interfaces.RefreshUsecase,
+	jwtService interfaces.JwtService,
+	oauthService interfaces.OAuthService,
+) *RefreshController {
 	return &RefreshController{
 		RefreshUsecase: refreshUsecase,
 		JwtService:     jwtService,
@@ -20,7 +24,6 @@ func NewRefreshController(refreshUsecase interfaces.RefreshUsecase, jwtService i
 }
 
 func (refreshController *RefreshController) Refresh(ctx *gin.Context) {
-	// get the userId from the context
 	userId := ctx.GetString("id")
 
 	authHeader := ctx.GetHeader("Authorization")

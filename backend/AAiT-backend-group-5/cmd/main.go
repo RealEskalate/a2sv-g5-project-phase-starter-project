@@ -14,7 +14,7 @@ func main() {
 	gin := gin.Default()
 
 	routers.Setup(env, *db, gin)
-	// gin.Run()
-	gin.Run("0.0.0.0:8081")
+	gin.Run(env.SERVER_ADDRESS)
+	// gin.Run("0.0.0.0:8081")
 
 }

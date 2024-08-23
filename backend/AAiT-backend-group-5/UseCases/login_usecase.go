@@ -35,6 +35,10 @@ func (uc *loginUsecase) LoginUser(ctx context.Context, userReqest dtos.LoginRequ
 		return nil, err
 	}
 
+	if user.Password == "" {
+		return nil, models.BadRequest("It looks like you have not set your password yet, sign in with google")
+	}
+
 	// validate password
 	if validPassword := uc.passwordService.ValidatePassword(userReqest.Password, user.Password); !validPassword {
 		return nil, models.Unauthorized("Invalid creaditional")
@@ -51,7 +55,7 @@ func (uc *loginUsecase) LoginUser(ctx context.Context, userReqest dtos.LoginRequ
 	session := models.Session{
 		UserID:       user.ID,
 		RefreshToken: refresheToken,
-		AccessToken: accessToken,
+		AccessToken:  accessToken,
 	}
 
 	userToken, _ := uc.session.GetToken(ctx, user.ID)

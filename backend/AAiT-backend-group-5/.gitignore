@@ -40,7 +40,9 @@ test.go
 node_modules/
 
 # Environment variables
-.env
+*.env
+*.local
+*.docker
 
 # Dependency directories (remove the leading slash if you want to ignore files in all directories)
 vendor/

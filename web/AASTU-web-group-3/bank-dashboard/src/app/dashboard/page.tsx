@@ -26,7 +26,7 @@ const HomePage: React.FC = () => {
       case "deposit":
         return `+$${transaction.amount}`;
       default:
-        return `$${transaction.amount}`; // Default case if type is unrecognized
+        return `$${transaction.amount}`; 
     }
   };
 
@@ -115,7 +115,19 @@ const HomePage: React.FC = () => {
       <div className="mt-5 lg:flex lg:space-x-8">
         <div className="lg:w-1/2 lg:bg-white lg:p-5 lg:rounded-lg lg:border lg:shadow-md">
           <h3 className="text-lg font-semibold">Quick Transfer</h3>
-          {/* Quick Transfer Section */}
+          <div className="mt-5 lg:mt-8">
+            <h3 className="text-lg font-semibold">Write Amount</h3>
+            <div className="relative flex items-center mt-3">
+              <input
+                type="text"
+                placeholder="525.20"
+                className="w-full p-3 pr-20 h-12 bg-white rounded-3xl border border-gray-300"
+              />
+              <button className="absolute top-0 right-0 h-full w-1/2 px-3 bg-[#1814F3] text-white rounded-3xl">
+                Send
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="mt-5 lg:mt-0 lg:w-1/2 lg:bg-white lg:p-5 lg:rounded-lg lg:border lg:shadow-md">

@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../store';
 import { getSession } from 'next-auth/react';
+import { Loan } from '../types/loans';
 
 interface LoanRequest {
   loanAmount: number;
@@ -8,6 +9,7 @@ interface LoanRequest {
   interestRate: number;
   type: string;
 }
+
 
 export interface LoanResponse {
   success: boolean;
@@ -44,7 +46,7 @@ interface LoanDetailDataResponse {
 export const loansApi = createApi({
   reducerPath: 'loansApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://bank-dashboard-1tst.onrender.com',
+    baseUrl: 'https://bank-dashboard-o9tl.onrender.com',
     prepareHeaders: async (headers, { getState }) => {
       const session = await getSession()
       const token = session?.accessToken
@@ -77,8 +79,8 @@ export const loansApi = createApi({
     getLoanById: builder.query<LoanResponse, string>({
       query: (id) => `/active-loans/${id}`,
     }),
-    getMyLoans: builder.query<LoansResponse, void>({
-      query: () => '/active-loans/my-loans',
+    getMyLoans: builder.query<Loan, {page:number, size:number}>({
+      query: ({ page, size }) => `/active-loans/my-loans?page=${page}&size=${size}`,
     }),
     getLoanDetailData: builder.query<LoanDetailDataResponse, void>({
       query: () => '/active-loans/detail-data',

@@ -10,7 +10,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Provider>
-        <html lang="en">
+        <html lang="en" data-theme="light">
           <body className="flex h-screen overflow-hidden">
             <ClientLayout>
               {children}

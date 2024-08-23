@@ -1,13 +1,10 @@
 package gin
 
 import (
-	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/auth"
-	blogDomain "github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/blog"
-	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/chat"
 	"github.com/gin-gonic/gin"
 )
 
-func SetUpRouter(r *gin.Engine, blogController *BlogController, blogUseCase *blogDomain.BlogUseCase, chatHandler *ChatHandler, chatUsecase *chat.ChatUsecase, userController *UserController, authUsecase *auth.AuthServices) {
+func SetUpRouter(r *gin.Engine, blogController *BlogController, chatHandler *ChatHandler, userController *UserController) {
 	SetUpBlogRouter(r, blogController)
 	SetUpChatRouter(r, chatHandler)
 	SetUpAuthRouter(r, userController)

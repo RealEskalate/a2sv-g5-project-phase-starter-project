@@ -197,7 +197,7 @@ func getSortedBlog(c context.Context, collection *mongo.Collection, limit int64,
 
 	var blogs []domain.Blog
 
-	paginatedData, err := mongopagination.New(collection).Context(c).Limit(limit).Page(page).Select(projection).Sort(sortField, -1).Decode(&blogs).Find()
+	paginatedData, err := mongopagination.New(collection).Context(c).Limit(limit).Page(page).Filter(bson.M{}).Select(projection).Sort(sortField, -1).Decode(&blogs).Find()
 
 	if err != nil {
 		return []domain.Blog{}, mongopagination.PaginationData{}, err

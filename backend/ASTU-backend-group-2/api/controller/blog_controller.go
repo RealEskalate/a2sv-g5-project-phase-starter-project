@@ -2,7 +2,10 @@ package controller
 
 import (
 	"context"
+	"log"
+	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
@@ -17,37 +20,44 @@ type blogController interface {
 	CreateBlog() gin.HandlerFunc
 	UpdateBlog() gin.HandlerFunc
 	DeleteBlog() gin.HandlerFunc
-	// GetComments() gin.HandlerFunc
-	// CreateComment() gin.HandlerFunc
-	// GetComment() gin.HandlerFunc
-	// UpdateComment() gin.HandlerFunc
-	// DeleteComment() gin.HandlerFunc
-	// CreateLike() gin.HandlerFunc
+
+	GetComments() gin.HandlerFunc
+	CreateComment() gin.HandlerFunc
+	GetComment() gin.HandlerFunc
+	UpdateComment() gin.HandlerFunc
+	DeleteComment() gin.HandlerFunc
+	CreateLike() gin.HandlerFunc
 }
 
 type BlogController struct {
-	BlogUsecase domain.BlogUsecase
-	Env         *bootstrap.Env
+	BlogUsecase    domain.BlogUsecase
+	CommentUsecase domain.CommentUsecase
+	Env            *bootstrap.Env
 }
 
 func (bc *BlogController) GetBlogs() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		page, _ := strconv.ParseInt(c.Query("page"), 10, 64)
+		limit, _ := strconv.ParseInt(c.Query("limit"), 10, 64)
 		dateFrom, _ := time.Parse(time.RFC3339, c.Query("date_from"))
 		dateTo, _ := time.Parse(time.RFC3339, c.Query("date_to"))
-		tags, _ := c.GetQueryArray("tags")
+		tags := strings.Split(c.Query("tags"), ",")
 		popularityFrom, _ := strconv.Atoi(c.Query("popularity_from"))
 		popularityTo, _ := strconv.Atoi(c.Query("popularity_to"))
-
+		//in go when u split an empty string
+		//Because the returned array is not empty. First element of it is an empty string ""
+		if len(tags) == 1 && tags[0] == "" {
+			tags = []string{}
+		}
 		var blogFilter domain.BlogFilter
-
+		log.Printf("%#v\n", tags)
 		blogFilter = domain.BlogFilter{
 			Title:          c.Query("title"),
 			Tags:           tags,
 			DateFrom:       dateFrom,
 			DateTo:         dateTo,
-			Limit:          10, // 10 pages perfilter
+			Limit:          limit, //  pages perfilter
 			Pages:          page,
 			PopularityFrom: popularityFrom,
 			PopularityTo:   popularityTo,
@@ -120,11 +130,11 @@ func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 }
 func (bc *BlogController) GetByTags() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tags := c.Query("tags")
+		tags, _ := c.GetQueryArray("tags")
 		limit, _ := strconv.ParseInt(c.Query("limit"), 10, 64)
 		page, _ := strconv.ParseInt(c.Query("page"), 10, 64)
 
-		blogs, pagination, err := bc.BlogUsecase.GetByTags(context.TODO(), []string{tags}, limit, page)
+		blogs, pagination, err := bc.BlogUsecase.GetByTags(context.TODO(), tags, limit, page)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
@@ -169,5 +179,86 @@ func (bc *BlogController) SortByDate() gin.HandlerFunc {
 			return
 		}
 		c.JSON(200, gin.H{"blogs": blogs, "pageination": pagination})
+	}
+}
+func (bc *BlogController) GetComments() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		blogID := c.Param("id")
+		limit, _ := strconv.ParseInt(c.Query("limit"), 10, 64)
+		page, _ := strconv.ParseInt(c.Query("page"), 10, 64)
+
+		comments, pageination, err := bc.CommentUsecase.GetComments(c, blogID, limit, page)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		log.Println("[ctrl] blog id", blogID)
+
+		c.JSON(http.StatusOK, gin.H{"comments": comments, "metadata": pageination})
+	}
+}
+func (bc *BlogController) CreateComment() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.MustGet("x-user-id").(string)
+		blogID := c.Param("id")
+		var commentIn domain.CommentIn
+
+		if err := c.BindJSON(&commentIn); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		log.Println("comment input:", bc.CommentUsecase)
+		comment, err := bc.CommentUsecase.CreateComment(c, userID, blogID, &commentIn)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusCreated, gin.H{"comment": comment})
+
+	}
+}
+func (bc *BlogController) GetComment() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		commentID := c.Param("comment_id")
+
+		comment, err := bc.CommentUsecase.GetComment(c, commentID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"comment": comment})
+	}
+}
+func (bc *BlogController) UpdateComment() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		commentID := c.Param("comment_id")
+
+		var commentUpd domain.CommentUpdate
+
+		if err := c.BindJSON(&commentUpd); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		comment, err := bc.CommentUsecase.UpdateComment(c.Request.Context(), commentID, &commentUpd)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"comment": comment})
+	}
+}
+
+func (bc *BlogController) DeleteComment() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		commentID := c.Param("comment_id")
+
+		err := bc.CommentUsecase.DeleteComment(c, commentID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusNoContent, gin.H{})
 	}
 }

@@ -47,7 +47,7 @@ func BlogFilterOption(filter domain.BlogFilter) (bson.M, *options.FindOptions) {
 
 	// Tags filter
 	if len(filter.Tags) > 0 {
-		semiquery["tags"] = bson.M{"$in": filter.Tags}
+		semiquery["tags"] = bson.M{"$all": filter.Tags}
 	}
 
 	// Date range filter

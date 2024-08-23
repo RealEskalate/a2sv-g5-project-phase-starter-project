@@ -44,13 +44,13 @@ const Transactions = () => {
         </div>
       </div>
 
-      <h5 className="text-[22px] font-semibold text-[#343C6A]">
+      <h5 className="text-xl font-semibold text-[#343C6A]">
         Recent Transactions
       </h5>
-      <div className="flex gap-20">
+      <div className="flex gap-10 ">
         <div className="flex flex-col gap-1 justify-center">
           <div
-            className={`w-[123px] h-[19px] text-[16px] font-medium text-center ${
+            className={`text-md text-center cursor-pointer ${
               selected === "All Transactions"
                 ? "text-[#1814F3]"
                 : "text-[#718EBF]"
@@ -65,7 +65,7 @@ const Transactions = () => {
         </div>
         <div className="flex flex-col gap-1 justify-center">
           <div
-            className={`w-[123px] h-[19px] text-[16px] font-medium text-center ${
+            className={`text-md text-center cursor-pointer ${
               selected === "Incomes" ? "text-[#1814F3]" : "text-[#718EBF]"
             }`}
             onClick={() => handleClick("Incomes")}
@@ -78,7 +78,7 @@ const Transactions = () => {
         </div>
         <div className="flex flex-col gap-1 justify-center">
           <div
-            className={`w-[123px] h-[19px] text-[16px] font-medium text-center ${
+            className={`text-md text-center cursor-pointer ${
               selected === "Expenses" ? "text-[#1814F3]" : "text-[#718EBF]"
             }`}
             onClick={() => handleClick("Expenses")}
@@ -113,9 +113,9 @@ const Transactions = () => {
             {Array(4)
               .fill(null)
               .map((_, index) => (
-                <tr key={index} className="h-[35px]">
+                <tr key={index} className="text-sm">
                   <td>
-                    <div className="flex gap-1 items-center">
+                    <div className="flex items-center">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"

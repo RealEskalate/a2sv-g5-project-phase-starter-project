@@ -6,6 +6,7 @@ import 'features/authentication/presentation/pages/cover_page.dart';
 import 'features/authentication/presentation/pages/sign_in_page.dart';
 import 'features/authentication/presentation/pages/sign_up_page.dart';
 import 'features/chat/presentation/pages/chat_page.dart';
+import 'features/chat/presentation/pages/message_detail.dart';
 import 'features/product/domain/entities/product_entity.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
 import 'features/product/presentation/pages/details_page.dart';
@@ -44,14 +45,11 @@ void main() async {
           else
           if(settings.name == '/sign_in_page'){
             return createRoute(SignInPage());
-          }
-          else if(settings.name == '/sign_up_page'){
+          } else if(settings.name == '/sign_up_page'){
             return createRoute(const SignUpPage());
-          }
-          else if(settings.name == '/cover_page'){
+          } else if(settings.name == '/cover_page'){
             return createRoute(const CoverPage());
-          }
-          else if (settings.name == '/home_page') {
+          } else if (settings.name == '/home_page') {
             return createRoute(const Home());
           } else if (settings.name == '/product_add_page') {
             return createRoute(const AddProudctPage());
@@ -61,6 +59,8 @@ void main() async {
             return createRoute(DetailsPage(selectedProduct: settings.arguments as ProductEntity));
           } else if (settings.name == '/update_page') {
             return createRoute(UpdatePage(selectedProduct: settings.arguments as ProductEntity));
+          } else if (settings.name == '/message') {
+            return createRoute(const MessageDetail());
           }
           return null;
         },

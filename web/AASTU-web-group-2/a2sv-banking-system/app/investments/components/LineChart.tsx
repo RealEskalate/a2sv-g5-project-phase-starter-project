@@ -39,7 +39,6 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-
 type Data = {
   access_token: string;
   data: string;
@@ -49,7 +48,6 @@ type Data = {
 type SessionDataType = {
   user: Data;
 };
-
 
 export default function Linechart() {
   const [session, setSession] = useState<Data | null>(null);
@@ -106,7 +104,15 @@ export default function Linechart() {
     fetchData();
   }, [access_token]);
 
-  if (loading || Loading) return <div>Loading...</div>;
+  if (loading || Loading)
+    return (
+      <div className="bg-white rounded-3xl border-none p-8 animate-shimmer">
+        <div className="h-6 w-full bg-gray-300 rounded-md mb-4"></div>
+        <div className="h-4 w-3/4 bg-gray-300 rounded-md mb-4"></div>
+        <div className="h-4 w-1/2 bg-gray-300 rounded-md mb-4"></div>
+        <div className="h-4 w-2/3 bg-gray-300 rounded-md"></div>
+      </div>
+    );
   const { yearlyTotalInvestment } = data;
   return (
     <Card className="bg-white rounded-3xl border-none ">

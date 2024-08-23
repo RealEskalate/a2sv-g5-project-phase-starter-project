@@ -1,8 +1,8 @@
 import axios from "axios";
-
-const activeloansall = async (token: string) => {
+const baseUrl = "https://a2svwallet.onrender.com";
+const activeloansall = async (token: string, size: number, page: number) => {
   const response = await axios.get(
-    "https://bank-dashboard-1tst.onrender.com/active-loans/all",
+    baseUrl + `/active-loans/all?page=${page}&size=${size}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -14,47 +14,38 @@ const activeloansall = async (token: string) => {
 };
 
 const activeloansdetaildata = async (token: string) => {
-  const response = await axios.get(
-    "https://bank-dashboard-1tst.onrender.com/active-loans/detail-data",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const response = await axios.get(baseUrl + "/active-loans/detail-data", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
   return response.data.data;
 };
 
 const activeloansmyloans = async (token: string) => {
-  const response = await axios.get(
-    "https://bank-dashboard-1tst.onrender.com/active-loans/my-loans",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const response = await axios.get(baseUrl + "/active-loans/my-loans", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
   return response.data.data;
 };
 
-const activeloansid = async (loanid:string,token: string) => {
-  const response = await axios.get(
-    `https://bank-dashboard-1tst.onrender.com/active-loans/${loanid}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
+const activeloansid = async (loanid: string, token: string) => {
+  const response = await axios.get(baseUrl + `/active-loans/${loanid}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
   return response.data.data;
 };
 
-const activeloansidapprove = async (loanid:string,token: string) => {
+const activeloansidapprove = async (loanid: string, token: string) => {
   const respons7 = await axios.post(
-    `https://bank-dashboard-1tst.onrender.com/active-loans/${loanid}/approve`,
+    baseUrl + `/active-loans/${loanid}/approve`,
     {},
     {
       headers: {
@@ -65,9 +56,9 @@ const activeloansidapprove = async (loanid:string,token: string) => {
   );
 };
 
-const activeloansidreject = async (loanid:string,token: string) => {
+const activeloansidreject = async (loanid: string, token: string) => {
   const response = await axios.post(
-    `https://bank-dashboard-1tst.onrender.com/active-loans/${loanid}/reject`,
+    baseUrl + `/active-loans/${loanid}/reject`,
     {},
     {
       headers: {
@@ -78,16 +69,16 @@ const activeloansidreject = async (loanid:string,token: string) => {
   return response.data;
 };
 
-interface activeloanbody  {
+interface activeloanbody {
   loanAmount: number;
   duration: number;
   interestRate: number;
   type: string;
 }
 
-const activeloans = async ( token: string) => {
+const activeloans = async (token: string) => {
   const response = await axios.post(
-    "https://bank-dashboard-1tst.onrender.com/active-loans",
+    baseUrl + "/active-loans",
     JSON.stringify({
       loanAmount: 1,
       duration: 1,

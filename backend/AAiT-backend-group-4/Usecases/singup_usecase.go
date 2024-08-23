@@ -77,6 +77,7 @@ func (su *singupUsecase) Signup(c context.Context, user *domain.SignupRequest) (
 		Username:      user.User_Name,
 		Email:         user.Email,
 		Password:      hashedPassword,
+		ProfileImage:  &user.Image_Path,
 		User_Role:     "USER",
 		Access_Token:  "",
 		Refresh_Token: "",

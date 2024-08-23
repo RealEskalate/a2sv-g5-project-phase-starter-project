@@ -24,7 +24,8 @@ func NewSignupRoute(env *bootstrap.Env, timeout time.Duration, db mongo.Database
 	// otp usecase
 	ou := usecases.NewOtpUsecase(or, timeout, os, ps, *env, ur)
 	// token Service
-	ts := infrastructure.NewTokenService()
+	userRepository := repositories.NewUserRepository(db, env.UserCollection)
+	ts := infrastructure.NewTokenService(userRepository, env)
 
 	// signup controller
 	sc := controllers.SignupController{

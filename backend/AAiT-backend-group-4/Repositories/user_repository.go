@@ -4,6 +4,7 @@ import (
 	domain "aait-backend-group4/Domain"
 	"context"
 	"fmt"
+	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -128,10 +129,14 @@ func (ur *userRepository) GetByUsername(c context.Context, userName string) (dom
 func (ur *userRepository) GetByEmail(c context.Context, email string) (domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 	var user domain.User
+
 	err := collection.FindOne(c, bson.D{{Key: "email", Value: email}}).Decode(&user)
 	if err != nil {
+		// Log the error if the user is not found or any other error occurs
+		log.Printf("Error finding user with email %s: %v", email, err)
 		return domain.User{}, err
 	}
+
 	return user, nil
 }
 
@@ -166,11 +171,25 @@ func (ur *userRepository) UpdateUser(c context.Context, id string, user domain.U
 		updateFields["profile_image"] = *user.ProfileImage
 	}
 
+	if user.Verified != nil {
+		updateFields["verified"] = *user.Verified
+	}
+
+	if user.Access_Token != nil {
+		updateFields["access_token"] = *user.Access_Token
+	}
+
+	if user.Refresh_Token != nil {
+		updateFields["refresh_token"] = *user.Refresh_Token
+	}
+
 	var updatedUser domain.User
 	idHex, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return updatedUser, fmt.Errorf("invalid user ID format")
 	}
+
+	log.Printf("Updating user with ID: %s", id)
 
 	update := bson.D{{Key: "$set", Value: updateFields}}
 	result, err := collection.UpdateOne(
@@ -184,7 +203,7 @@ func (ur *userRepository) UpdateUser(c context.Context, id string, user domain.U
 	}
 
 	if result.ModifiedCount == 0 {
-		return updatedUser, fmt.Errorf("user not found or no changes made")
+		return updatedUser, fmt.Errorf("user not found no modified count")
 	}
 
 	err = collection.FindOne(c, bson.D{{Key: "_id", Value: idHex}}).Decode(&updatedUser)
@@ -294,8 +313,8 @@ func (ur *userRepository) GetByPasswordResetToken(ctx context.Context, token str
 // Returns an error if the update operation fails.
 func (ur *userRepository) UpdatePasswordTokens(ctx context.Context, userID string, updatedFields map[string]interface{}) error {
 	collection := ur.database.Collection(ur.collection)
-	filter := bson.M{"_id": userID}
-	update := bson.M{"$set": updatedFields}
+	filter := bson.M{"_id": userID}         // Filter to find the user by ID
+	update := bson.M{"$set": updatedFields} // Set the fields to update
 
 	_, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {

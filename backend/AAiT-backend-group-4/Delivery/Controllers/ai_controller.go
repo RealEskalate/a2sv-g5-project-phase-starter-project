@@ -13,6 +13,13 @@ type AIController struct {
 	Env       *bootstrap.Env
 }
 
+// GenerateTextWithTags generates text based on the provided tags.
+// It takes a gin.Context object and a slice of domain.Tag as input.
+// The function binds the JSON request to the 'request' variable.
+// If there is an error in binding the JSON, it returns a JSON response with the error message.
+// Otherwise, it calls the AiUsecase.GenerateTextWithTags method passing the context and the request.
+// If there is an error in generating the text, it returns a JSON response with the error message.
+// Finally, it constructs a JSON response with the generated text and returns it.
 func (ac *AIController) GenerateTextWithTags(c *gin.Context) {
 	var request []domain.Tag
 
@@ -36,6 +43,10 @@ func (ac *AIController) GenerateTextWithTags(c *gin.Context) {
 	c.JSON(http.StatusOK, msg)
 }
 
+// GenerateTextWithPrompt generates text based on the given prompt.
+// It takes a JSON object containing a prompt as input and returns the generated text as a response.
+// If there is an error in binding the JSON object or generating the text, it returns an error message.
+// The generated text is returned in the "result" field of the JSON response.
 func (ac *AIController) GenerateTextWithPrompt(c *gin.Context) {
 	var prompt map[string]string
 
@@ -59,6 +70,9 @@ func (ac *AIController) GenerateTextWithPrompt(c *gin.Context) {
 
 }
 
+// GenerateSuggestions generates suggestions based on the provided text content.
+// It takes a gin.Context object and a map[string]string containing the text content as input.
+// It returns the generated suggestions as a string and an error, if any.
 func (ac *AIController) GenerateSuggestions(c *gin.Context) {
 	var textContent map[string]string
 

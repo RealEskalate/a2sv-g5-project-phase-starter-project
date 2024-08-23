@@ -67,6 +67,12 @@ func (os *otpService) SendEmail(email string, subject string, key string, otp st
 	return nil
 }
 
+// SendPasswordResetEmail sends a password reset email to the specified email address.
+// It takes the email address, subject, and key as parameters.
+// The email contains a password reset link that redirects to the reset password page.
+// The link is generated based on the provided resetLink URL.
+// The email is sent using the SMTP server configured with the provided key.
+// Returns an error if there was a problem sending the email.
 func (os *otpService) SendPasswordResetEmail(email string, subject string, key string) error {
 	resetLink := "http://localhost:4000/forgot-password"
 

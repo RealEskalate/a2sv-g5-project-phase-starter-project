@@ -89,33 +89,7 @@ func (blogU *blogUsecase) FetchByBlogID(c context.Context, blogID string) (domai
 	ctx, cancel := context.WithTimeout(c, blogU.contextTimeouts)
 	defer cancel()
 
-	// Generate cache key
-	cacheKey := fmt.Sprintf("blog:%s", blogID)
-	// Check cache
-	val, err := blogU.RedisClient.Get(ctx, cacheKey).Result()
-	if err == nil {
-		var cachedBlog domain.Blog
-		if err := json.Unmarshal([]byte(val), &cachedBlog); err == nil {
-			log.Println("Cache hit")
-			return cachedBlog, nil
-		} else {
-			log.Printf("Error unmarshalling json: %v", err)
-		}
-	} else {
-		log.Printf("Error getting value from Redis: %v", err)
-	}
 	returnedValue, err := blogU.blogRepository.FetchByBlogID(ctx, blogID)
-	if err == nil {
-		log.Println("Cache miss")
-		// Update cache
-		blogsJson, err := json.Marshal(returnedValue)
-		if err == nil {
-			expiration := 5 * time.Minute
-			if err := blogU.RedisClient.Set(ctx, cacheKey, blogsJson, expiration).Err(); err != nil {
-				log.Printf("Failed to update cache: %v", err)
-			}
-		}
-	}
 
 	return returnedValue, err
 }
@@ -169,7 +143,7 @@ func (blogU *blogUsecase) FetchByBlogTitle(c context.Context, title string) (dom
 
 	blog, err := blogU.blogRepository.FetchByBlogTitle(ctx, title)
 	if err != nil {
-		return domain.Blog{}, err
+		return domain.Blog{}, fmt.Errorf("couldn't fetch blog by title")
 	}
 
 	return blog, nil

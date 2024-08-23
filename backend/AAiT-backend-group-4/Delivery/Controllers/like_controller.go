@@ -86,7 +86,7 @@ func (lctrl *LikeController) Dislike(c *gin.Context) {
 		return
 	}
 
-	if dislikeStatus {
+	if !dislikeStatus {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Already disliked"})
 		return
 	}

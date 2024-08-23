@@ -21,7 +21,7 @@ type Env struct {
 	LikeCollection          string `mapstructure:"LIKE_COLLECTION"`
 	EmailApiKey             string `mapstructure:"EMAIL_API_KEY"`
 	GeminiApiKey            string `mapstructure:"GEMINI_API_KEY"`
-	AccessTokenExpiryMinute int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
+	AccessTokenExpiryMinute int    `mapstructure:"ACCESS_TOKEN_EXPIRY_MINUTE"`
 	AccessTokenSecret       string `mapstructure:"ACCESS_TOKEN"`
 	RefreshTokenSecret      string `mapstructure:"REFRESH_TOKEN"`
 	RefreshTokenExpiryHour  int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`

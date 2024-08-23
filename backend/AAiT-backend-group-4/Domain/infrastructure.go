@@ -3,7 +3,7 @@ package domain
 type TokenInfrastructure interface {
 	CreateAllTokens(user *User, accessSecret string, refreshSecret string,
 		accessExpiry int, refreshExpiry int) (accessToken string, refreshToken string, err error)
-	ValidateToken(tokenString string, secret string) (claims *JwtCustomClaims, err error)
+	ValidateToken(tokenString string, secret string) (bool, error)
 	ExtractClaims(tokenString string, secret string) (map[string]interface{}, error)
 	ExtractRoleFromToken(tokenString string, secret string) (string, error)
 	CheckTokenExpiry(tokenString string, secret string) (bool, error)
@@ -23,6 +23,6 @@ type OtpInfrastructure interface {
 	SendPasswordResetEmail(email string, subject string, key string) error
 }
 
-type PopularityService interface{
+type PopularityService interface {
 	CalculatePopularity(fb Feedback) float64
 }

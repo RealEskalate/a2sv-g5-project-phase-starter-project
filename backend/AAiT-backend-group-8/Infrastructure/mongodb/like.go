@@ -84,3 +84,12 @@ func (repo *LikeRepository) DeleteByBLogID(blogID primitive.ObjectID) error {
 	}
 	return nil
 }
+
+func (repo *LikeRepository) DropDataBase() error {
+	filter := bson.M{}
+	_, err := repo.collection.DeleteMany(repo.ctx, filter)
+	if err != nil {
+		return nil
+	}
+	return nil
+}

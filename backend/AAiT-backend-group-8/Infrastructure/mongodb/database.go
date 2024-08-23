@@ -2,13 +2,15 @@ package mongodb
 
 import (
 	"context"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func InitMongoDB(uri string) *mongo.Client {
+func InitMongoDB() *mongo.Client {
+	uri := "mongodb://localhost:27017"
 	ctx := context.TODO()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
@@ -24,4 +26,9 @@ func InitMongoDB(uri string) *mongo.Client {
 	}
 
 	return client
+}
+
+func CreateCollection(client *mongo.Client, databaseName, clientName string) *mongo.Collection {
+	myCollection := client.Database(databaseName).Collection(clientName)
+	return myCollection
 }

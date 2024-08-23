@@ -1,12 +1,13 @@
-package infrastructure
+package Infrastructure
 
 import (
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
 	"log"
 	"strings"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 )
 
 func Parse(ctx *gin.Context) (*jwt.MapClaims, error) {

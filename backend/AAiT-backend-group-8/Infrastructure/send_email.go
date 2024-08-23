@@ -1,4 +1,4 @@
-package infrastructure
+package Infrastructure
 
 import (
 	interfaces "AAiT-backend-group-8/Interfaces"

@@ -1,18 +1,19 @@
 package Domain
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Blog struct {
-	Id           primitive.ObjectID `bson:"_id, omitempty" json:"id"`
-	Title        string             `bson:"title" json:"title"`
-	Body         string             `bson:"body" json:"body"`
+	Id           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Title        string             `bson:"title" json:"title" validate:"required,min=3,max=100"`
+	Body         string             `bson:"body" json:"body" validate:"required"`
 	Tags         []string           `bson:"tags" json:"tags"`
 	CreatedAt    time.Time          `bson:"created_at" json:"created_at"`
 	LastUpdated  time.Time          `bson:"last_updated" json:"last_updated"`
-	AuthorName   string             `bson:"author_name" json:"author_name"`
+	AuthorName   string             `bson:"author_name" json:"author_name" validate:"max=100"`
 	AuthorID     primitive.ObjectID `bson:"author_id" json:"author_id"`
 	ViewCount    int                `bson:"view_count" json:"view_count"`
 	LikeCount    int                `bson:"like_count" json:"like_count"`

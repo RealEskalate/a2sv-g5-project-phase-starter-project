@@ -20,17 +20,35 @@ func NewUserProfileController(userProfileUC interfaces.UserProfileUpdateUsecase)
 }
 
 func (userProfileController *UserProfileController) ProfileUpdate(ctx *gin.Context) {
-	var updatedUser *dtos.ProfileUpdateRequest
+	var updatedUser dtos.ProfileUpdateRequest
+
+	// get userID from the context
 	userID := ctx.GetString("id")
 
-	err := ctx.ShouldBind(&updatedUser)
+	// get the file from the form field
+	file, err := ctx.FormFile("profileImage")
 	if err != nil {
-		fmt.Println(updatedUser)
-		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "invalid request"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid file"})
 		return
 	}
+	fmt.Println("111111111111111")
+	fmt.Println(updatedUser)
 
-	e := userProfileController.UserProfileUC.UpdateUserProfile(ctx, userID, updatedUser)
+	// err = ctx.ShouldBind(&updatedUser)
+	// if err != nil {
+	// 	ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "invalid request"})
+	// 	return
+	// }
+
+	updatedUser.Username = ctx.PostForm("user_name")
+	updatedUser.Name = ctx.PostForm("name")
+	updatedUser.PhoneNumber = ctx.PostForm("phone_number")
+	updatedUser.Password = ctx.PostForm("password")
+	updatedUser.Bio = ctx.PostForm("bio")
+
+	fmt.Println("22222222222222222")
+
+	e := userProfileController.UserProfileUC.UpdateUserProfile(ctx, userID, &updatedUser, file)
 	if e != nil {
 		ctx.IndentedJSON(e.Code, gin.H{"error": e.Error()})
 		return

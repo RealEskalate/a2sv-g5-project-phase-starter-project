@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"context"
+	"mime/multipart"
 
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
@@ -16,7 +17,6 @@ type UserRepository interface {
 	DeleteUser(ctx context.Context, userID string) *models.ErrorResponse
 	PromoteUser(ctx context.Context, userID string) *models.ErrorResponse
 	DemoteUser(ctx context.Context, userID string) *models.ErrorResponse
-
 }
 
 type PromoteDemoteUserUsecase interface {
@@ -25,5 +25,5 @@ type PromoteDemoteUserUsecase interface {
 }
 
 type UserProfileUpdateUsecase interface {
-	UpdateUserProfile(ctx context.Context, userID string, user *dtos.ProfileUpdateRequest) *models.ErrorResponse
+	UpdateUserProfile(ctx context.Context, userID string, user *dtos.ProfileUpdateRequest, file *multipart.FileHeader) *models.ErrorResponse
 }

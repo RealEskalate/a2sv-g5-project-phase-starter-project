@@ -28,13 +28,11 @@ func (pu *profileUsecase) UploadImageToCloudinary(userId string, file *multipart
 	}
 	defer src.Close()
 
-	// Upload the image to Cloudinary
 	uploadResult, err := pu.cloudinary.Upload.Upload(context.TODO(), src, uploader.UploadParams{})
 	if err != nil {
 		return "", err
 	}
 
-	// Store the image key (e.g., public_id) in MongoDB
 	if err := pu.profileRepo.SaveProfileImageKey(userId, uploadResult.PublicID); err != nil {
 		return "", err
 	}

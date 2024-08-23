@@ -21,21 +21,23 @@ func NewForgotPasswordController(PasswordUsecase interfaces.PasswordUsecase) *Fo
 func (forgotPasswordController *ForgotPasswordController) ForgotPasswordRequest(ctx *gin.Context) {
 	var request dtos.PasswordResetRequest
 
-	// attempt to bind IndentedJSON payload
 	err := ctx.ShouldBind(&request)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
 		return
 	}
 
-	// generate URL to be sent via email
+	if err := request.Validate(); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "one or more fields are missing"})
+		return
+	}
+
 	resetURL, e := forgotPasswordController.PasswordUsecase.GenerateResetURL(ctx, request.Email)
 	if e != nil {
 		ctx.IndentedJSON(e.Code, e.Error())
 		return
 	}
 
-	// send confirmation email
 	e = forgotPasswordController.PasswordUsecase.SendResetEmail(ctx, request.Email, resetURL)
 	if e != nil {
 		ctx.IndentedJSON(e.Code, e.Error())
@@ -48,14 +50,17 @@ func (forgotPasswordController *ForgotPasswordController) ForgotPasswordRequest(
 func (forgotPasswordController *ForgotPasswordController) SetNewPassword(ctx *gin.Context) {
 	var setUpPasswordRequest dtos.SetUpPasswordRequest
 
-	// attempt to bind the payload carrying the new password
 	err := ctx.ShouldBind(&setUpPasswordRequest)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
 
-	// get short code from the URL
+	if err := setUpPasswordRequest.Validate(); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "one or more fields are missing"})
+		return
+	}
+
 	shortURLCode := ctx.Param("id")
 
 	e := forgotPasswordController.PasswordUsecase.SetUpdateUserPassword(ctx, shortURLCode, setUpPasswordRequest.Password)

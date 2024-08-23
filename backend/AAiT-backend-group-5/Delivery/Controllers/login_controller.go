@@ -30,6 +30,11 @@ func (loginController *LoginController) Login(ctx *gin.Context) {
 		return
 	}
 
+	if err := loginRequest.Validate(); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
+		return
+	}
+
 	loginResponse, e := loginController.LoginUsecase.LoginUser(ctx, loginRequest)
 	if e != nil {
 		ctx.IndentedJSON(e.Code, gin.H{"error": e.Message})

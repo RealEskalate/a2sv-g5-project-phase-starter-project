@@ -4,10 +4,10 @@ import '../../../../core/errors/failure.dart';
 import '../entity/chat_entity.dart';
 import '../repository/chat_repository.dart';
 
-class GetAllChats {
+class GetAllChatsUsecase {
   final ChatRepository repository;
 
-  GetAllChats(this.repository);
+  GetAllChatsUsecase(this.repository);
 
 Future<Either<Failure, List<ChatEntity>>> getAllChats()
 async {

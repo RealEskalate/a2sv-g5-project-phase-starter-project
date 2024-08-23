@@ -8,13 +8,16 @@ class ProductEntity_local extends Equatable {
   final String description;
   final num price;
   final String imagePath;
+  final String sellerId;
   const ProductEntity_local(
       {
       required this.id,
       required this.name,
       required this.description,
       required this.price,
-      required this.imagePath});
+      required this.imagePath,
+      required this.sellerId 
+      });
 
   @override
   List<Object?> get props => [id,name, description, price,imagePath];

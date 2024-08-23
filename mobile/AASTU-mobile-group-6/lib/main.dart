@@ -68,8 +68,15 @@ class Main extends StatelessWidget {
             final item = settings.arguments as ProductModel;
             return MaterialPageRoute(
               builder: (context) {
-                return BlocProvider(
-                  create: (context) => sl.get<DetailBloc>(),
+                return MultiBlocProvider(
+                  providers: [
+                    BlocProvider(
+                      create: (context) => sl.get<DetailBloc>(),
+                    ),
+                    BlocProvider(
+                      create: (context) =>
+                          sl.get<GetUserBloc>()..add(GetUserInfoEvent())),
+                  ],
                   child: DetailsPage(item: item),
                 );
               },
@@ -115,9 +122,10 @@ class Main extends StatelessWidget {
                 child: AddUpdate(),
               ),
           '/search': (context) => BlocProvider(
-      create: (context) => sl.get<SearchBloc>()..add(LoadAllProductEvent()),
-      child: searchPage(),
-    ),
+                create: (context) =>
+                    sl.get<SearchBloc>()..add(LoadAllProductEvent()),
+                child: searchPage(),
+              ),
 
           '/splash': (context) => SplashScreen(),
 

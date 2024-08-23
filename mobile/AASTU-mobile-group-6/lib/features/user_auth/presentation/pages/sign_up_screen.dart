@@ -330,6 +330,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           onPressed: () {
                             var user = UserModel(
+                                id: '',
                                 name: name_input.text,
                                 email: email_input.text,
                                 password: password_input.text);

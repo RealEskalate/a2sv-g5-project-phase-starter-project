@@ -13,12 +13,14 @@ import (
 )
 
 type UserUsecase struct {
+	emailService *infrastructure.EmailService
 	UserRepo  domain.IUserRepository
 	TokenRepo domain.ITokenRepository
 }
 
-func NewUserUsecase(userRepo domain.IUserRepository, tokenRepo domain.ITokenRepository) domain.IUserUsecase {
+func NewUserUsecase(userRepo domain.IUserRepository, emailService *infrastructure.EmailService, tokenRepo domain.ITokenRepository) domain.IUserUsecase {
 	return &UserUsecase{
+		emailService: emailService,
 		UserRepo:  userRepo,
 		TokenRepo: tokenRepo,
 	}
@@ -157,33 +159,60 @@ func (u *UserUsecase) RefreshToken(ctx context.Context, refreshToken string) (st
 	return newToken, nil
 }
 
-func (u *UserUsecase) ForgetPassword(ctx context.Context, email string) error {
-	user, err := u.UserRepo.SearchByEmail(ctx, email)
-	if err != nil || user.ID == 0 {
+// RequestPasswordReset handles the logic for initiating a password reset
+func (u *UserUsecase) ForgetPassword(ctx context.Context , email string) error {
+	user, err := u.UserRepo.SearchByEmail(ctx , email)
+	if err != nil {
 		return errors.New("user not found")
 	}
 
-	// Assume infrastructure is implemented to send password reset emails
-	// return infrastructure.SendResetLink(user.Email)
+	resetToken  , err:=  infrastructure.GenerateJWTRefreshToken(&user, os.Getenv("jwt_secret"),1)
+
+	if err != nil {
+		return err
+	}
+
+	if err := u.emailService.SendPasswordResetEmail(email, resetToken); err != nil {
+		return errors.New("failed to send password reset email")
+	}
+
 	return nil
 }
 
-func (u *UserUsecase) ResetPassword(ctx context.Context, username, password string) error {
-	user, err := u.UserRepo.SearchByUsername(ctx, username)
-	if err != nil || user.ID == 0 {
+// ResetPassword handles the logic for resetting the password
+func (u *UserUsecase) ResetPassword(ctx context.Context ,token, newPassword string) error {
+	 claims , err := infrastructure.IsAuthorized(token, os.Getenv("jwt_secret"))
+
+	if err != nil {
+		return errors.New("invalid token")
+	}
+
+	userID, ok := claims["id"].(float64)
+	if !ok {
+		return errors.New("invalid token ID type")
+	}
+
+	user, err := u.UserRepo.GetUserByID(ctx, int(userID))
+	if err != nil {
 		return errors.New("user not found")
 	}
 
-	// Assume infrastructure is implemented to hash passwords
-	// hashedPassword, err := infrastructure.HashPassword(password)
-	// if err != nil {
-	// 	return err
-	// }
+	hashedPassword, err := infrastructure.HashPassword(newPassword)
+	if err != nil {
+		return errors.New("failed to hash password")
+	}
 
-	// user.Password = hashedPassword
-	_, err = u.UserRepo.UpdateUser(ctx, user.ID, user)
-	return err
+	user.Password = hashedPassword
+
+
+	if _ , err := u.UserRepo.UpdateUser(ctx ,user.ID , user); err != nil {
+		return errors.New("failed to update password")
+	}
+
+	return nil
 }
+
+
 
 func (u *UserUsecase) PromoteUser(ctx context.Context, userID int) (domain.User, error) {
 	user, err := u.UserRepo.GetUserByID(ctx, userID)

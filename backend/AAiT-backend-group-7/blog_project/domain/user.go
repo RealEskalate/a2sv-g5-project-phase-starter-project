@@ -69,3 +69,4 @@ type ITokenRepository interface {
 	BlacklistToken(ctx context.Context, token string) error
 	IsBlacklisted(token string) (bool, error)
 }
+

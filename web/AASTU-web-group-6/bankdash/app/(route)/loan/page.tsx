@@ -2,16 +2,15 @@ import LoanTable from "@/app/components/Loan/LoanTable";
 import React from "react";
 import { LoanType } from "@/types/LoanValue";
 import Card from "../../components/Accounts/account";
-// import loanApi from "@/app/Services/api/loanApi";
+import loanApi from "@/app/Services/api/loanApi";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 
 const Loan = async () => {
   const session = await getServerSession(options);
   const accessToken = session?.accessToken as string;
-  // console.log(accessToken, "Server Token");
-  // const loanData = await loanApi.getLoan(accessToken);
-  const loanData = [];
+  console.log(accessToken, "Server Token");
+  const loanData = await loanApi.getLoan(accessToken);
   return (
     <div className="px-5 space-y-4 mt-4 w-full h-screen">
       <div className="flex flex-col xxs:overflow-x-auto md:overflow-hidden lg:flex-row gap-6 xl:gap-7">

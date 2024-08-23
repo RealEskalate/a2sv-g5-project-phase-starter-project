@@ -1,9 +1,10 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import AuthService from "@/app/Services/api/authService";
+import LoginValue from "@/types/LoginValue";
 
-// Define or import your User and Token types
-interface User {
+// Define or import your UserValue and Token types
+interface UserValue {
   refreshToken: string;
   accessToken: string;
 }
@@ -18,6 +19,8 @@ interface Session {
   refreshToken?: string;
 }
 
+
+
 export const options: NextAuthOptions = {
   session: {
     strategy: "jwt",
@@ -30,22 +33,23 @@ export const options: NextAuthOptions = {
     CredentialsProvider({
       type: "credentials",
       credentials: {},
-      async authorize(credentials) {
+      async authorize(credentials): Promise<any> {
         if (!credentials) {
           return null;
         }
-
-        const response = await AuthService.login(credentials);
+        const data =  credentials as LoginValue;
+        const response = await AuthService.login(data);
         if (response.success) {
           const data: any = response.data;
-          console.log("Response",data)
+          // console.log("Response",data)
 
-          const userData: User = {
+          const userData: UserValue = {
             refreshToken: data.refresh_token,
             accessToken: data.access_token,
           };
+          // console.log("UserValue AUTH",userData)
 
-          return userData;
+          return userData as UserValue;
         } else {
           return null;
         }
@@ -56,7 +60,7 @@ export const options: NextAuthOptions = {
     async jwt({ token, user }) {
       console.log("USER",user)
       if (user) {
-        // Cast user to the User type
+        // Cast user to the UserValue type
         token.accessToken = user.accessToken as string;
         token.refreshToken = user.refreshToken as string;
       }

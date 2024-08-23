@@ -7,6 +7,7 @@ import InvestmentService from "@/app/Services/api/investmentApi";
 
 const useUserDispatch = (accessToken: string) => {
   const dispatch = useAppDispatch();
+  
 
   useEffect(() => {
     const fetchInitialCards = async () => {

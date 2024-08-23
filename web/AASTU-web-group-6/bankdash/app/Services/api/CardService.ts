@@ -1,7 +1,8 @@
 // src/services/cardService.ts
 import axios from "axios";
+import { checkAndRefreshToken } from "./hooks/useRefresh";
 
-const API_URL = "https://bank-dashboard-1tst.onrender.com/cards"; // Adjust this to match your actual API base URL
+const API_URL = "https://bank-dashboard-rsf1.onrender.com/cards"; // Adjust this to match your actual API base URL
 
 interface Card {
   id?: string;
@@ -12,6 +13,10 @@ interface Card {
   cardType?: string;
   cardNumber?: string;
   userId?: string;
+}
+
+interface DecodedToken {
+  exp: number; 
 }
 
 const handleRequest = async (
@@ -30,10 +35,11 @@ const handleRequest = async (
         "Content-Type": "application/json",
       },
     });
-    // console.log(response.data, "all data");
+    console.log("Response Status",response.status);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
+      if (error.response.status === 401)
       console.error("Axios error:", error.message);
     } else {
       console.error("Unexpected error:", error);
@@ -42,30 +48,47 @@ const handleRequest = async (
   }
 };
 
+
 class CardService {
-  public static getAllCards(accessToken?: string): Promise<Card[]> {
+
+  private static async ensureAccessToken(accessToken?: string): Promise<string> {
+    console.log('checking')
+    const decodedToken = jwtDecode<DecodedToken>(accessToken);
+    console.log("DECODED TOKEN",decodedToken)
+    if (accessToken) {
+      return accessToken;
+    }
+    return await checkAndRefreshToken() as string;
+  }
+
+  public static async getAllCards(accessToken?: string): Promise<Card[]> {
+    const token = await this.ensureAccessToken(accessToken);
     return handleRequest(
       "GET",
       `${API_URL}?page=1&size=3`,
       undefined,
-      accessToken
+      token
     );
   }
 
-  public static addCard(card: Card, accessToken: string): Promise<Card> {
-    return handleRequest("POST", API_URL, card, accessToken);
+  public static async addCard(card: Card, accessToken?: string): Promise<Card> {
+    const token = await this.ensureAccessToken(accessToken);
+    return handleRequest("POST", API_URL, card, token);
   }
 
-  public static getCardById(id: string, accessToken?: string): Promise<Card> {
-    return handleRequest("GET", `${API_URL}/${id}`, undefined, accessToken);
+  public static async getCardById(id: string, accessToken?: string): Promise<Card> {
+    const token = await this.ensureAccessToken(accessToken);
+    return handleRequest("GET", `${API_URL}/${id}`, undefined, token);
   }
 
-  public static deleteCardById(
-    id: string,
-    accessToken?: string
-  ): Promise<void> {
-    return handleRequest("DELETE", `${API_URL}/${id}`, undefined, accessToken);
+  public static async deleteCardById(id: string, accessToken?: string): Promise<void> {
+    const token = await this.ensureAccessToken(accessToken);
+    return handleRequest("DELETE", `${API_URL}/${id}`, undefined, token);
   }
 }
 
 export default CardService;
+function jwtDecode<T>(accessToken: string | undefined) {
+  throw new Error("Function not implemented.");
+}
+

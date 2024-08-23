@@ -7,6 +7,7 @@ import NavBar from "../components/Layout/NavBar";
 import { useAppSelector } from "../Redux/store/store";
 
 const LayoutProvider = ({ children }: { children: ReactNode }) => {
+  
   const pathname = usePathname();
 
   const noLayoutPaths = ["/login", "/signup"];

@@ -2,16 +2,17 @@ package controller
 
 import (
 	"AAiT-backend-group-8/Domain"
-	"AAiT-backend-group-8/Infrastructure"
+	infrastructure "AAiT-backend-group-8/Infrastructure"
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (controller *Controller) CreateBlog(ctx *gin.Context) {
@@ -19,6 +20,14 @@ func (controller *Controller) CreateBlog(ctx *gin.Context) {
 
 	if err := ctx.ShouldBind(&blog); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	// fmt.Println(blog)
+
+	struct_err := struct_validator.Struct(blog)
+
+	if struct_err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": struct_err.Error()})
 		return
 	}
 

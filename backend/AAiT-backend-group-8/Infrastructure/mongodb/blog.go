@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"AAiT-backend-group-8/Domain"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -35,6 +36,15 @@ func (repo *BlogRepository) Create(blog *Domain.Blog) error {
 	return nil
 }
 
+func (repo *BlogRepository) DropDB() error {
+	filter := bson.D{{}}
+	_, err := repo.blogs.DeleteMany(context.TODO(), filter)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
 func (repo *BlogRepository) FindAll(page int, pageSize int, sortBy string) ([]Domain.Blog, error) {
 	findOptions := options.Find()
 	findOptions.SetSkip(int64((page - 1) * pageSize))

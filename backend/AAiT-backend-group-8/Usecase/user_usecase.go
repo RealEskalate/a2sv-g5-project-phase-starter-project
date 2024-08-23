@@ -3,6 +3,7 @@ package usecase
 import (
 	domain "AAiT-backend-group-8/Domain"
 	interfaces "AAiT-backend-group-8/Interfaces"
+
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
@@ -116,15 +117,11 @@ func (userUseCase *UserUseCaseImpl) RefreshToken(email, refresher string) (strin
 	_, err := userUseCase.TokenService.ValidateToken(refresher)
 
 	if err != nil {
-		return "", err
+		return "", errors.New("invalid refresh token")
 	}
-	existingRefresher, err := userUseCase.TokenRepo.GetRefresher(email)
+	err = userUseCase.TokenRepo.CheckRefresher(email, refresher)
 
 	if err != nil {
-		return "", err
-	}
-
-	if existingRefresher != refresher {
 		return "", errors.New("invalid refresher token")
 	}
 
@@ -155,6 +152,7 @@ func (userUseCase *UserUseCaseImpl) Login(email string, password string) (string
 	}
 
 	if !user.Verified {
+		_ = userUseCase.MailService.SendVerificationEmail(user.Email, user.VerificationToken)
 		return "", "", errors.New("not a verified user")
 	}
 
@@ -173,12 +171,15 @@ func (userUseCase *UserUseCaseImpl) Login(email string, password string) (string
 		return "", "", err
 	}
 
+	//Define and Generate a refresher token for the user
 	refresherExp := time.Now().Add(time.Hour * 24 * 30).Unix()
 	refresher, err := userUseCase.TokenService.GenerateToken(user.Email, user.Id, user.Role, user.Name, refresherExp)
 
 	if err != nil {
 		return "", "", err
 	}
+
+	//Store the refresher token in the database
 	credentials := domain.Credential{Email: email, Refresher: refresher}
 	err = userUseCase.TokenRepo.InsertRefresher(credentials)
 
@@ -186,6 +187,7 @@ func (userUseCase *UserUseCaseImpl) Login(email string, password string) (string
 		return "", "", err
 	}
 
+	//return the token and the refresher token
 	return token, refresher, nil
 }
 
@@ -194,7 +196,6 @@ func (userUseCase *UserUseCaseImpl) GenerateResetPasswordToken(email string) err
 	if err != nil {
 		return errors.New("user not found")
 	}
-
 	resetToken, err := userUseCase.TokenService.GenerateToken(user.Email, user.Id, "reset_password", "", time.Now().Add(1*time.Hour).Unix())
 	if err != nil {
 		return err
@@ -263,4 +264,36 @@ func (userUseCase *UserUseCaseImpl) ResetPassword(token string, newPassword stri
 	}
 
 	return nil
+}
+
+func (uuc *UserUseCaseImpl) PromoteUser(email string) error {
+	return uuc.userRepository.PromoteUser(email)
+}
+
+func (uuc *UserUseCaseImpl) DemoteUser(email string) error {
+	return uuc.userRepository.DemoteUser(email)
+}
+
+func (uuc *UserUseCaseImpl) DeleteUser(email string) error {
+	//Delete the user
+	user_err := uuc.userRepository.DeleteUser(email)
+	if user_err != nil {
+		return errors.New("user not found")
+	}
+
+	//Delete the refresher associated with the user
+	refresher_err := uuc.TokenRepo.DeleteAllRefreshers(email)
+	if refresher_err != nil {
+		return errors.New("refresher not found")
+	}
+
+	return nil
+}
+
+// func (uuc *UserUseCaseImpl) DeleteRefresher(email, refresher string) error {
+// 	return uuc.TokenRepo.DeleteRefresher(email, refresher)
+// }
+
+func (uuc *UserUseCaseImpl) Logout(email, refresher string) error {
+	return uuc.TokenRepo.DeleteRefresher(email, refresher)
 }

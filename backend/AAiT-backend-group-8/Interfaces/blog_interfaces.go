@@ -1,4 +1,4 @@
-package interfaces
+package Interfaces
 
 import domain "AAiT-backend-group-8/Domain"
 

@@ -170,7 +170,7 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
                       </Link>
                     </div>
                     <button
-                      onClick={() => signOut({ callbackUrl: "/login" })}
+                      onClick={() => signOut({ callbackUrl: "/" })}
                       className="flex justify-center items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       Logout

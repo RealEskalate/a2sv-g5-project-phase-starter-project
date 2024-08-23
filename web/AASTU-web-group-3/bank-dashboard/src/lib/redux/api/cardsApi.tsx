@@ -11,7 +11,7 @@ import {
 export const cardsApi = createApi({
   reducerPath: "cardsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-o9tl.onrender.com",
+    baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
     prepareHeaders: async (headers) => {
       const session = await getSession();
       const token = session?.accessToken;

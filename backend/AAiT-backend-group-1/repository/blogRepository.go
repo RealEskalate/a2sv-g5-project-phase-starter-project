@@ -387,18 +387,43 @@ func (r *blogRepository) EditComment(blogID, commentID string, updatedComment *d
 }
 
 
-func (r *blogRepository) Like(id string , userID string) domain.Error {
-	// Implement the Like method here
-	primID , err := primitive.ObjectIDFromHex(id)
+func (r *blogRepository) Like(id string, userID string) domain.Error {
+	primID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return &domain.CustomError{Code: 400, Message: "Invalid ID"}
 	}
+
+	// Aggregation pipeline
 	filter := bson.M{"_id": primID}
 	update := bson.M{
-		"$addToSet": bson.M{
-			"likes": userID,
+		"$set": bson.M{
+			"likes": bson.M{
+				"$cond": bson.M{
+					"if": bson.M{
+						"$in": bson.A{userID, "$likes"},
+					},
+					"then": bson.M{
+						"$filter": bson.M{
+							"input": "$likes",
+							"as":    "like",
+							"cond":  bson.M{"$ne": bson.A{"$$like", userID}},
+						},
+					},
+					"else": bson.M{
+						"$concatArrays": bson.A{"$likes", bson.A{userID}},
+					},
+				},
+			},
+			"dislikes": bson.M{
+				"$filter": bson.M{
+					"input": "$dislikes",
+					"as":    "dislike",
+					"cond":  bson.M{"$ne": bson.A{"$$dislike", userID}},
+				},
+			},
 		},
 	}
+
 	_, err = r.collection.UpdateOne(r.ctx, filter, update)
 	if err != nil {
 		return &domain.CustomError{Code: 500, Message: "Internal Server Error"}
@@ -406,18 +431,45 @@ func (r *blogRepository) Like(id string , userID string) domain.Error {
 	return nil
 }
 
-func (r *blogRepository) DisLike(id string , userID string) domain.Error {
-	// Implement the DisLike method here
-	primID , err := primitive.ObjectIDFromHex(id)
+
+func (r *blogRepository) DisLike(id string, userID string) domain.Error {
+	primID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return &domain.CustomError{Code: 400, Message: "Invalid ID"}
 	}
+
+	// Aggregation pipeline
 	filter := bson.M{"_id": primID}
 	update := bson.M{
-		"$addToSet": bson.M{
-			"dislikes": userID,
+		"$set": bson.M{
+			"dislikes": bson.M{
+				"$cond": bson.M{
+					"if": bson.M{
+						"$in": bson.A{userID, "$dislikes"},
+					},
+					"then": bson.M{
+						"$filter": bson.M{
+							"input": "$dislikes",
+							"as":    "dislike",
+							"cond":  bson.M{"$ne": bson.A{"$$dislike", userID}},
+						},
+					},
+					"else": bson.M{
+						"$concatArrays": bson.A{"$dislikes", bson.A{userID}},
+					},
+				},
+			},
+			// Also remove the userID from likes if present
+			"likes": bson.M{
+				"$filter": bson.M{
+					"input": "$likes",
+					"as":    "like",
+					"cond":  bson.M{"$ne": bson.A{"$$like", userID}},
+				},
+			},
 		},
 	}
+
 	_, err = r.collection.UpdateOne(r.ctx, filter, update)
 	if err != nil {
 		return &domain.CustomError{Code: 500, Message: "Internal Server Error"}

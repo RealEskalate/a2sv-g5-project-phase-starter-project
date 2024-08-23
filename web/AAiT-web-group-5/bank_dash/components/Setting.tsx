@@ -18,12 +18,7 @@ export default function Setting() {
       >
         <IoMdNotificationsOutline className="text-xl text-red-400" />
       </button>
-      <button
-        type="button"
-        className="rounded-full   p-1 w-10 h-10   bg-slate-200 flex justify-center items-center"
-      >
-        <p className="text-black">P</p>
-      </button>
+      
     </div>
   );
 }

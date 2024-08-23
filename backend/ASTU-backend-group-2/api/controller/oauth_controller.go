@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
@@ -23,10 +24,17 @@ type OAuthController struct {
 
 func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// provider := c.Param("provider")
+		// c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), "provider", provider))
+
 		provider := c.Param("provider")
-		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), "provider", provider))
+		q := c.Request.URL.Query()
+		q.Add("provider", provider)
+		c.Request.URL.RawQuery = q.Encode()
 
 		user, err := gothic.CompleteUserAuth(c.Writer, c.Request)
+
+		fmt.Println(user)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

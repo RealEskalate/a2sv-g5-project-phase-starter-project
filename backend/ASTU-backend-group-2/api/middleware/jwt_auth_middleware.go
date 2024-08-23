@@ -17,12 +17,14 @@ func JwtAuthMiddleware(secret string) gin.HandlerFunc {
 			authToken := t[1]
 			authorized, err := tokenutil.IsAuthorized(authToken, secret)
 			if authorized {
-				userID, err := tokenutil.ExtractIDFromToken(authToken, secret)
+				claims, err := tokenutil.ExtractUserClaimsFromToken(authToken, secret)
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusUnauthorized, domain.ErrorResponse{Message: err.Error()})
 					return
 				}
-				c.Set("x-user-id", userID)
+				c.Set("x-user-id", claims["id"])
+				c.Set("x-user-role", claims["role"])
+				c.Set("x-user-owner", claims["is_owner"])
 				c.Next()
 				return
 			}

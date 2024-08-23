@@ -158,12 +158,13 @@ func (pc *ProfileController) DeleteProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.Param("id")
 		err := pc.UserUsecase.DeleteUser(c, userID)
+
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "Profile deleted successfully"})
+		c.JSON(http.StatusNoContent, nil)
 	}
 }
 
@@ -214,7 +215,7 @@ func (pc *ProfileController) UploadProfilePicture(cloudinary *cloudinary.Cloudin
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-
+		pc.UserUsecase.UpdateProfilePicture(c, userID, imageUrl)
 		c.JSON(200, gin.H{"message": "Admin demoted to user successfully"})
 	}
 }

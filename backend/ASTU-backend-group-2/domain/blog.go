@@ -35,9 +35,10 @@ func (blog *Blog) UpdatePopularity() {
 
 // defines the structure for the blogs that will be  received from the request when creating and updating
 type BlogIn struct {
-	Title   string   `json:"title" bson:"title" binding:"required"`
-	Tags    []string `json:"tags" bson:"tags"`
-	Content string   `json:"content" bson:"content" binding:"required"`
+	ID      primitive.ObjectID `json:"id" bson:"_id"`
+	Title   string             `json:"title" bson:"title" binding:"required"`
+	Tags    []string           `json:"tags" bson:"tags"`
+	Content string             `json:"content" bson:"content" binding:"required"`
 }
 
 type BlogUpdate struct {

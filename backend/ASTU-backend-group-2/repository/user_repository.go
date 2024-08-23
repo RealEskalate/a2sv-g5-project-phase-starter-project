@@ -158,7 +158,7 @@ func (ur *userRepository) ActivateUser(c context.Context, userID string) (*domai
 		return nil, errors.New("object id invalid")
 	}
 	filter := bson.M{"_id": id}
-	update := bson.M{"$set": bson.M{"active": true}}
+	update := bson.M{"$set": bson.M{"is_active": true}}
 
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 
@@ -179,8 +179,17 @@ func (ur *userRepository) DeleteUser(c context.Context, userID string) error {
 		return errors.New("object id invalid")
 	}
 	filter := bson.M{"_id": id}
-	_, err = collection.DeleteOne(c, filter)
-	return err
+	res, err := collection.DeleteOne(c, filter)
+
+	if err != nil {
+		return err
+	}
+
+	if res.DeletedCount == 0 {
+		return mongo.ErrNoDocuments
+	}
+
+	return nil
 }
 func (ur *userRepository) IsUserActive(c context.Context, userID string) (bool, error) {
 	collection := ur.database.Collection(ur.collection)

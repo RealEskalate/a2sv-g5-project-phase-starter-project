@@ -19,7 +19,7 @@ func NewSignupRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Databa
 		Env:           env,
 	}
 	group.POST("/signup", sc.Signup)
-	group.POST("/verify-email/:Verificationtoken", sc.VerifyEmail)
+	group.GET("/verify-email/:token", sc.VerifyEmail)
 }
 
 func NewLoginRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -19,30 +20,38 @@ type SignupController struct {
 	SignupUsecase domain.SignupUsecase
 	Env           *bootstrap.Env
 }
-func (sc *SignupController)VerifyEmail(c *gin.Context){
-	Verificationtoken:=c.Param("Verificationtoken")
-	decodedToken, _ :=b64.URLEncoding.DecodeString(Verificationtoken)
-	if valid,err:=tokenutil.IsAuthorized(string(decodedToken),sc.Env.VerificationTokenSecret);!valid || err!=nil{
+
+func (sc *SignupController) VerifyEmail(c *gin.Context) {
+	Verificationtoken := c.Param("token")
+	decodedToken, _ := b64.URLEncoding.DecodeString(Verificationtoken)
+
+	valid, err := tokenutil.IsAuthorized(string(decodedToken), sc.Env.VerificationTokenSecret)
+
+	fmt.Println(string(decodedToken))
+
+	if !valid || err != nil {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Invalid token"})
-		return 
+		return
 	}
 
-	userID,err:=tokenutil.ExtractIDFromToken(string(decodedToken),sc.Env.VerificationTokenSecret)
-	if err!=nil{
+	claims, err := tokenutil.ExtractUserClaimsFromToken(string(decodedToken), sc.Env.VerificationTokenSecret)
+	userID := claims["id"].(string)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
-	vuser,err:=sc.SignupUsecase.GetUserById(context.TODO(),userID)
-	if err!=nil{
+	user, err := sc.SignupUsecase.GetUserById(context.TODO(), userID)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
-	if vuser.VerToken!=string(decodedToken){
-		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Invalid token"})
+	if user.Active {
+		c.JSON(http.StatusConflict, domain.ErrorResponse{Message: "User already activated"})
 		return
 	}
-	err=sc.SignupUsecase.ActivateUser(context.TODO(),userID)
-	if err!=nil{
+
+	err = sc.SignupUsecase.ActivateUser(context.TODO(), userID)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
@@ -75,16 +84,16 @@ func (sc *SignupController) Signup(c *gin.Context) {
 
 	request.Password = string(encryptedPassword)
 
-	IsOwner,err:=sc.SignupUsecase.IsOwner(c)
-	if err!=nil{
+	IsOwner, err := sc.SignupUsecase.IsOwner(c)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
-	var role string 
-	if IsOwner{
-		role="admin"
-	}else{
-		role="user"
+	var role string
+	if IsOwner {
+		role = "admin"
+	} else {
+		role = "user"
 	}
 
 	user := domain.User{
@@ -95,25 +104,11 @@ func (sc *SignupController) Signup(c *gin.Context) {
 		Password:  request.Password,
 		Active:    false,
 		Bio:       request.Bio,
-		ProfileImg: request.ProfileImg,
+		// ProfileImg: request.ProfileImg,
 		IsOwner:   IsOwner,
 		Role:      role,
 		CreatedAt: primitive.NewDateTimeFromTime(time.Now()),
 		UpdatedAt: primitive.NewDateTimeFromTime(time.Now()),
-	}
-
-	
-
-	accessToken, err := sc.SignupUsecase.CreateAccessToken(&user, sc.Env.AccessTokenSecret, sc.Env.AccessTokenExpiryHour)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	refreshToken, err := sc.SignupUsecase.CreateRefreshToken(&user, sc.Env.RefreshTokenSecret, sc.Env.RefreshTokenExpiryHour)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
-		return
 	}
 
 	VerificationToken, err := sc.SignupUsecase.CreateVerificationToken(&user, sc.Env.VerificationTokenSecret, sc.Env.VerificationTokenExpiryMin)
@@ -122,7 +117,6 @@ func (sc *SignupController) Signup(c *gin.Context) {
 		return
 	}
 	user.VerToken = VerificationToken
-	user.Tokens = append(user.Tokens, refreshToken)
 
 	_, err = sc.SignupUsecase.Create(c, &user)
 
@@ -132,16 +126,12 @@ func (sc *SignupController) Signup(c *gin.Context) {
 	}
 
 	//send email
-	encodedToken:=b64.URLEncoding.EncodeToString([]byte(VerificationToken))
-	err=sc.SignupUsecase.SendVerificationEmail(user.Email,encodedToken,sc.Env)
-	if err!=nil{
+	encodedToken := b64.URLEncoding.EncodeToString([]byte(VerificationToken))
+	err = sc.SignupUsecase.SendVerificationEmail(user.Email, encodedToken, sc.Env)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 	}
 
-	signupResponse := domain.SignupResponse{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-	}
+	c.JSON(http.StatusCreated, gin.H{"message": "email sent successfully, please verify your email"})
 
-	c.JSON(http.StatusOK, signupResponse)
 }

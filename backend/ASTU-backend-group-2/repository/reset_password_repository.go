@@ -11,19 +11,21 @@ import (
 )
 
 type resetPasswordRepository struct {
-	database   mongo.Database
-	collection string
+	database        mongo.Database
+	usersCollection string
+	resetCollection string
 }
 
-func NewResetPasswordRepository(db mongo.Database, collection string) domain.ResetPasswordRepository {
+func NewResetPasswordRepository(db mongo.Database, userCollection string, resetCollection string) domain.ResetPasswordRepository {
 	return &resetPasswordRepository{
-		database:   db,
-		collection: collection,
+		database:        db,
+		usersCollection: userCollection,
+		resetCollection: resetCollection,
 	}
 }
 
 func (rp *resetPasswordRepository) GetUserByEmail(c context.Context, email string) (*domain.User, error) {
-	collection := rp.database.Collection(rp.collection)
+	collection := rp.database.Collection(rp.usersCollection)
 	var user domain.User
 	err := collection.FindOne(c, bson.M{"email": email}).Decode(&user)
 	if err != nil {
@@ -31,9 +33,9 @@ func (rp *resetPasswordRepository) GetUserByEmail(c context.Context, email strin
 	}
 	return &user, err
 }
-func (rp *resetPasswordRepository) ResetPassword(c context.Context, userID string ,resetPassword *domain.ResetPasswordRequest) error {
+func (rp *resetPasswordRepository) ResetPassword(c context.Context, userID string, resetPassword *domain.ResetPasswordRequest) error {
 
-	collection := rp.database.Collection(rp.collection)
+	collection := rp.database.Collection(rp.usersCollection)
 	ObjID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return errors.New("object id invalid")
@@ -47,18 +49,18 @@ func (rp *resetPasswordRepository) ResetPassword(c context.Context, userID strin
 	}
 	return nil
 }
- 
+
 func (rp *resetPasswordRepository) SaveOtp(c context.Context, otp *domain.OtpSave) error {
-		collection := rp.database.Collection(rp.collection)
-	
-		_, err := collection.InsertOne(c, otp)
-		return err
+	collection := rp.database.Collection(rp.resetCollection)
+
+	_, err := collection.InsertOne(c, otp)
+	return err
 }
 
 func (rp *resetPasswordRepository) GetOTPByEmail(c context.Context, email string) (*domain.OtpSave, error) {
 
-	collection := rp.database.Collection(rp.collection)
-	var otp domain.OtpSave	
+	collection := rp.database.Collection(rp.resetCollection)
+	var otp domain.OtpSave
 
 	err := collection.FindOne(c, bson.M{"email": email}).Decode(&otp)
 
@@ -67,9 +69,8 @@ func (rp *resetPasswordRepository) GetOTPByEmail(c context.Context, email string
 
 func (rp *resetPasswordRepository) DeleteOtp(c context.Context, email string) error {
 
-	collection := rp.database.Collection(rp.collection)
+	collection := rp.database.Collection(rp.resetCollection)
 
 	_, err := collection.DeleteOne(c, bson.M{"email": email})
 	return err
 }
-

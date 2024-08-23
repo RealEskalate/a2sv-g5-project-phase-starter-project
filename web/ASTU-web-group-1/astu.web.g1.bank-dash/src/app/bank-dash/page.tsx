@@ -8,6 +8,7 @@ import RecentTransaction from '@/components/RecentTransaction/RecentTransaction'
 import { Plus } from 'lucide-react';
 import StoreProvider from '@/providers/StoreProvider';
 import TestNaol from '@/components/TestNaol';
+import MyCardLists from '@/components/MyCard/MyCardLists';
 
 export default function Home() {
   return (
@@ -21,8 +22,9 @@ export default function Home() {
             </div>
             <div className='flex  overflow-x-auto space-x-2'>
               <StoreProvider>
-                <MyCard />
-                <MyCard />
+                <MyCardLists />
+                {/* <MyCard />
+                <MyCard /> */}
               </StoreProvider>
               <div className='w-[295px] h-[175px] bg-gray-200 rounded-3xl justify-center items-center flex flex-shrink-0'>
                 <Plus size={32} />

@@ -89,7 +89,7 @@ const Layout = ({
       <div className={`${inter.className} flex flex-col min-h-screen`}>
         <div className="flex flex-1">
           <LayoutForTest/>
-          <main className="max-md:pt-[100px] flex-1 p-4 mt-[60px] lg:ml-[240px] sm:ml-[240px] ml-0 bg-[#F5F7FA]">
+          <main className="max-md:pt-[100px] flex-1 p-4 mt-[60px] lg:ml-[240px] md:ml-[240px] ml-0 bg-[#F5F7FA]">
             {children}
           </main>
         </div>

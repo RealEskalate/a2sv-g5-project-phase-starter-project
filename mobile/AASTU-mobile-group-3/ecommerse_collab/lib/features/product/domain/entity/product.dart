@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../authentication/domain/entity/user.dart';
 import '../../data/models/product_model.dart';
 
 class Product extends Equatable {
@@ -10,6 +11,7 @@ class Product extends Equatable {
     required this.description,
     required this.image,
     required this.price,
+    required this.seller,
   });
 
   final String id;
@@ -18,22 +20,14 @@ class Product extends Equatable {
   final String description;
   final String image;
   final int price;
+  final User seller;
 
-  // Map<String, dynamic> toJson() {
-  //   return {
-  //     'id': id,
-  //     'name': name,
-  //     'category': category,
-  //     'description': description,
-  //     'price': price,
-  //     'image': image
-  //   };
-  // }
+
 
   @override
-  List<Object?> get props => [id, name, category, description, image, price];
+  List<Object?> get props => [id, name, category, description, image, price, seller];
 
-  ProductModel toModel() => ProductModel(id: id, name: name, description: description, image: image, price: price);
+  ProductModel toModel() => ProductModel(id: id, name: name, description: description, image: image, price: price, seller: seller.toModel());
 
       
 }

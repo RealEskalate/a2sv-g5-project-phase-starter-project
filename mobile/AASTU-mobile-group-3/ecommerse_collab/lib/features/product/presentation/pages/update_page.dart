@@ -182,7 +182,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                                 category: category,
                                 price: int.parse(price.text),
                                 description: description.text,
-                                image: widget.product.image,
+                                image: widget.product.image,seller: widget.product.seller
                               );
                             return DetailPage(product: product);
                           }));
@@ -196,6 +196,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                                 price: int.parse(price.text),
                                 description: description.text,
                                 image: widget.product.image,
+                                seller: widget.product.seller
                               );
                             return DetailPage(product: product);
                           }));

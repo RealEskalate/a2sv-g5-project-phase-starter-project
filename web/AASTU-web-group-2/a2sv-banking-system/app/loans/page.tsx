@@ -94,7 +94,7 @@ export default function Home() {
       try {
         // Fetch f
         const data1 = await activeloansall(access_token, 10, page);
-        console.log(data1);
+        // console.log(data1);
         setf(data1.content);
         settotal(data1.totalPages);
 

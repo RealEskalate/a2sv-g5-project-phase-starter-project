@@ -19,7 +19,7 @@ func NewBlogLikeRouter(env *config.Env , timeout time.Duration, db *mongo.Client
 	lu := usecase.NewLikeUseCase(lr, br, timeout)
 	lc := controller.NewLikeController(lu, timeout)
 
-	group.POST("/like/:id", lc.LikeBlog)
-	group.DELETE("/unlike/:id", lc.UnlikeBlog)
-	group.GET("like", lc.GetByID)
+	group.POST("/like", lc.LikeBlog)
+	group.DELETE("/like/:id", lc.UnlikeBlog)
+	group.GET("/like/:id", lc.GetByID)
 }

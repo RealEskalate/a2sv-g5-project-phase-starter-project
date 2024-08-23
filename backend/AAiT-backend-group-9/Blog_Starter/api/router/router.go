@@ -20,13 +20,19 @@ func Setup(env *config.Env, timeout time.Duration, db *mongo.Client, gin *gin.En
 
 	privateRouterBlog := gin.Group("/api/blog")
 	privateRouterBlog.Use(middleware.AuthMiddleWare(env.AccessTokenSecret))
-	
 	NewBlogRouter(env, timeout, db, privateRouterBlog)
-	NewBlogRatingRouter(env, timeout, db, privateRouterBlog)
-	NewBlogCommentRouter(env, timeout, db, privateRouterBlog)
-	NewBlogLikeRouter(env, timeout, db, privateRouterBlog)
+
+	popularityRouter := gin.Group("/api/blog/:blog_id")
+	privateRouterBlog.Use(middleware.AuthMiddleWare(env.AccessTokenSecret))
+	NewBlogRatingRouter(env, timeout, db, popularityRouter)
+	NewBlogCommentRouter(env, timeout, db, popularityRouter)
+	NewBlogLikeRouter(env, timeout, db, popularityRouter)
 
 	privateRouterUser := gin.Group("/api/user")
 	privateRouterUser.Use(middleware.AuthMiddleWare(env.AccessTokenSecret))
 	NewUserRouter(env, timeout, db, privateRouterUser)
+
+	privateRouterRefreshToken := gin.Group("/api")
+	privateRouterRefreshToken.Use(middleware.RefreshMiddleware(env.RefreshTokenSecret))
+	NewRefreshTokenRouter(env, timeout, db, privateRouterRefreshToken)
 }

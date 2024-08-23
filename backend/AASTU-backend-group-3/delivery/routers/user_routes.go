@@ -27,8 +27,8 @@ func SetUpUser(router *gin.Engine) {
 	// Set up user routes
 	user := router.Group("/user")
 	user.Use(infrastracture.AuthMiddleware()) 
-
 	user.POST("/refresh-token", authController.RefreshToken)
+
 
 	// Protected routes
 	{
@@ -36,6 +36,9 @@ func SetUpUser(router *gin.Engine) {
 		user.PUT("/update", authController.UpdateMyProfile)
 		user.POST("/upload-image", authController.UploadImage)
 		user.DELETE("/me", authController.DeleteMyAccount)
+
+
+		user.GET("/activate/me", authController.ActivateAccountMe)
 
 
 		// Logout routes

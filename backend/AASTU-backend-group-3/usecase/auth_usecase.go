@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"errors"
+	"fmt"
 	"group3-blogApi/domain"
 	"group3-blogApi/infrastracture"
 	"time"
@@ -300,3 +301,33 @@ func (u *UserUsecase) ResetPassword(token, newPassword string) error {
 }
 
 
+
+func (u *UserUsecase) ActivateAccountMe(userID string) error {
+
+	user, err := u.UserRepo.GetUserByID(userID)
+	fmt.Println(userID, "userID 899999999999999999999999999999999999************")
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	token, err := infrastracture.GenerateActivationToken()
+	if err != nil {
+		return errors.New("could not generate activation token")
+	}
+
+	user.ActivationToken = token
+	user.TokenCreatedAt = time.Now()
+
+	err = u.UserRepo.UpdateUser(&user)
+	if err != nil {
+		return errors.New("failed to save activation token")
+	}
+
+	err = infrastracture.SendActivationEmail(user.Email, token)
+	if err != nil {
+		return err
+	}
+
+	return nil
+	
+}

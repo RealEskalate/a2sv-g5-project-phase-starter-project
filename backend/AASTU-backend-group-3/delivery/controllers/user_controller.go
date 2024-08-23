@@ -61,7 +61,7 @@ func (uc *UserController) Logout(c *gin.Context) {
 
 // TODO: get userID from context rather than query
 func (uc *UserController) LogoutAll(c *gin.Context) {
-	userID := c.Query("userID")
+	userID := c.GetString("user_id")
 	err := uc.UserUsecase.LogoutAllDevices(userID)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -73,7 +73,7 @@ func (uc *UserController) LogoutAll(c *gin.Context) {
 
 // TODO: get userID from context rather than query
 func (uc *UserController) LogoutDevice(c *gin.Context) {
-	userID := c.Query("userID")
+	userID := c.GetString("user_id")
 	deviceID := c.Query("deviceID")
 	err := uc.UserUsecase.LogoutDevice(userID, deviceID)
 	if err != nil {
@@ -86,7 +86,7 @@ func (uc *UserController) LogoutDevice(c *gin.Context) {
 
 // TODO: get userID from context rather than query
 func (uc *UserController) GetDevices(c *gin.Context) {
-	userID := c.Query("userID")
+	userID := c.GetString("user_id")
 	devices, err := uc.UserUsecase.GetDevices(userID)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -131,6 +131,18 @@ func (uc *UserController) Register(c *gin.Context) {
 
 	c.JSON(200, gin.H{"message": "Your Account created successfully please check your email to activate your account"})
 
+}
+
+func (uc* UserController) ActivateAccountMe(c *gin.Context) {
+	userID := c.GetString("user_id")
+
+	err := uc.UserUsecase.ActivateAccountMe(userID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Check your email."})
 }
 
 

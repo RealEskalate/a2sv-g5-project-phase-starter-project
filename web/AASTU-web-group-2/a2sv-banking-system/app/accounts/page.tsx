@@ -213,7 +213,7 @@ const Page = () => {
       <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5 dark:bg-[#020817]">
         <div>
           <div className="flex flex-wrap gap-2">
-            {balance || income == "Loading" ? (
+            {balance || income == "0" ? (
               <ListCard
                 column={ReusableCard}
                 width={"w-[48%] md:w-[23%]"}
@@ -223,7 +223,7 @@ const Page = () => {
               <ListCardLoading></ListCardLoading>
             )}
 
-            {income || income == "Loading" ? (
+            {income || income == "0" ? (
               <ListCard
                 column={card1}
                 width={"w-[48%] md:w-[23%]"}
@@ -232,7 +232,7 @@ const Page = () => {
             ) : (
               <ListCardLoading></ListCardLoading>
             )}
-            {expense || expense == "Loading" ? (
+            {expense || expense == "0" ? (
               <ListCard
                 column={card2}
                 width={"w-[48%] md:w-[23%]"}
@@ -241,7 +241,7 @@ const Page = () => {
             ) : (
               <ListCardLoading></ListCardLoading>
             )}
-            {balance || balance == "Loading" ? (
+            {balance || balance == "0" ? (
               <ListCard
                 column={card3}
                 width={"w-[48%] md:w-[23%]"}

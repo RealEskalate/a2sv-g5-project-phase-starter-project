@@ -54,6 +54,10 @@ dependencies:
   google_fonts: ^6.2.1
   image_picker: ^1.1.2
   internet_connection_checker: ^2.0.0
+  flutter_sound: ^9.11.3
+  permission_handler: ^11.3.1
+  chat_bubbles: ^1.6.0
+  bubble: ^1.2.1
 
 dev_dependencies:
   flutter_test:

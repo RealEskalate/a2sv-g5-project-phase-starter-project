@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { cardListMockData } from "./cardListMockData";
-// import creditCardColor from "./cardMockData";
-
+import Shimmer from "./Shimmer";
 interface CardListData {
 	id: string;
 	balance: number;
@@ -19,12 +18,12 @@ interface CardListProps {
 	cardId: string[];
 }
 
-  interface ExtendedUser {
+interface ExtendedUser {
 	name?: string;
 	email?: string;
 	image?: string;
 	accessToken?: string;
-  }
+}
 
 const CardList = ({ cardId }: CardListProps) => {
 	const { data: session, status } = useSession();
@@ -71,10 +70,21 @@ const CardList = ({ cardId }: CardListProps) => {
 
 	useEffect(() => {
 		fetchCardListData();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [cardId]);
 
 	if (loading) {
-		return <p className="text-center py-5 text-blue-500 ">Loading...</p>;
+		if (loading) {
+			return (
+				<>
+					{Array.from({ length: 3 }).map((_, index) => (
+						<div key={index} className="list pb-2 p-1">
+							<Shimmer />
+						</div>
+					))}
+				</>
+			);
+		}
 	}
 	if (error) {
 		return <p className="py-5">Error: {error}</p>;

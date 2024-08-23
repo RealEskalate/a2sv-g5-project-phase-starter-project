@@ -1,20 +1,29 @@
-"use client"
+'use client';
 
-import React from 'react';
-import Image from 'next/image'; // Assuming you're using Next.js
-import { RecentTransaction } from './mockData'; // Adjust the path as needed
-import { Slice } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import axios from 'axios';
 
-<<<<<<< HEAD
+interface Transaction {
+  id: string;
+  name: string;
+  type: string;
+  date: string;
+  amount: string;
+}
+
 const RecentTransactionCard = () => {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Replace this with the actual way you retrieve the access token
+  const accessToken = 'YOUR_ACCESS_TOKEN_HERE';
 
   useEffect(() => {
     const fetchRecentTransactions = async () => {
       try {
-        const response = await axios.get(
+        const response = await axios.get<{ data: { content: Transaction[] } }>(
           'https://bank-dashboard-o9tl.onrender.com/transactions?page=0&size=3',
           {
             headers: {
@@ -23,7 +32,7 @@ const RecentTransactionCard = () => {
           }
         );
         setData(response.data.data.content); // Adjusted to match your response format
-      } catch (err: any) {
+      } catch (err) {
         setError('Failed to fetch data. Please check the console for more details.');
         console.error('Error fetching data:', err);
       } finally {
@@ -32,12 +41,10 @@ const RecentTransactionCard = () => {
     };
 
     fetchRecentTransactions();
-  }, []);
+  }, [accessToken]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
-
-  const transactions = data.slice(0, 3); // Ensure we're getting the first 3 transactions
 
   // Helper function to get icon path based on transaction type
   const getIconPath = (type: string) => {
@@ -55,47 +62,31 @@ const RecentTransactionCard = () => {
 
   return (
     <div>
-      <p className='text-[#343C6A]'>Recent Transactions</p>
+      <p className='text-[#343C6A] text-lg font-semibold mb-4'>Recent Transactions</p>
       <div className='bg-white rounded-[25px] p-7'>
-        {transactions.map((transaction, index) => (
-          <div>
-          <div key={index} className="flex items-center justify-between space-x-8 mb-4 ">
+        {data.slice(0, 3).map((transaction) => (
+          <div key={transaction.id} className="flex items-center justify-between space-x-8 mb-4">
             <div className="flex items-center space-x-4">
               <Image
                 height={44}
                 width={44}
                 src={getIconPath(transaction.type)} // Icon based on transaction type
                 alt={transaction.type}
-                className="object-cover"
+                className="object-cover rounded-full"
               />
-=======
-export const RecentTransactionCard = () => {
-  const slicedTransactions = RecentTransaction.slice(0, 3);
-
-  return (
-    <div>
-      <p>Recent Transactions</p>
-      <div>
-        {slicedTransactions.map((transaction, index) => (
-          <div key={index} className="flex items-center justify-between space-x-8 mb-4">
-            <div className="flex items-center justify-between space-x-8 mb-4">
-              <Image height={44} width={44} src={transaction.image} alt="invoice" className="rounded-full object-cover" />
->>>>>>> aastu.web.g5.yetnayet.transactions
               <div>
                 <p className="font-semibold text-sm md:text-base">{transaction.name}</p>
                 <p className="text-xs md:text-sm text-gray-500">{transaction.date}</p>
               </div>
             </div>
-            {transaction.amount[0]=="+" ? 
-            <p className="font-semibold text-green-600 text-sm md:text-base">{transaction.amount}</p>
-            : <p className="font-semibold text-red-700 text-sm md:text-base">{transaction.amount}</p> }
-          </div>
+            <p className={`font-semibold text-sm md:text-base ${transaction.amount[0] === '+' ? 'text-green-600' : 'text-red-700'}`}>
+              {transaction.amount}
+            </p>
           </div>
         ))}
       </div>
     </div>
   );
 };
-
 
 export default RecentTransactionCard;

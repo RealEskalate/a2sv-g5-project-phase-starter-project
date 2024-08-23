@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, TooltipProps } from "recharts";
 import { Card, CardContent } from "../../@/components/ui/card";
 
 interface YearlyInvestmentData {

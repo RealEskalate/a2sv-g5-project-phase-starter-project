@@ -1,24 +1,35 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { QuickTransferCard } from './QuickTransferCard';
 
+interface Transfer {
+  id: string;
+  name: string;
+  username: string;
+  profilePicture: string;
+}
+
 export const QuickTransferList = () => {
-<<<<<<< HEAD
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Replace this with the actual way you retrieve the access token, e.g., from context or props
+  const accessToken = 'YOUR_ACCESS_TOKEN_HERE';
 
   useEffect(() => {
     const fetchTransfers = async () => {
       try {
         const response = await axios.get<{ data: Transfer[] }>(
-          'https://astu-bank-dashboard.onrender.com/transactions/quick-transfers?number=3', 
+          'https://astu-bank-dashboard.onrender.com/transactions/quick-transfers?number=3',
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           }
         );
-
         setTransfers(response.data.data);
       } catch (err) {
         setError('Failed to fetch data. Please check the console for more details.');
@@ -29,20 +40,21 @@ export const QuickTransferList = () => {
     };
 
     fetchTransfers();
-  }, []);
+  }, [accessToken]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
-=======
->>>>>>> aastu.web.g5.yetnayet.transactions
   return (
     <div className='container rounded-[20px] flex flex-col gap-4 p-4'>
       <div className='flex flex-col md:flex-row justify-between items-center'>
         <div className='flex flex-row gap-4 overflow-x-auto'>
-          <QuickTransferCard />
-          <QuickTransferCard />
-          <QuickTransferCard />
+          {transfers.map((transfer) => (
+            <QuickTransferCard
+              key={transfer.id}
+              userId={transfer.id} // Pass userId to QuickTransferCard
+            />
+          ))}
         </div>
         <svg className='w-6 h-6 shadow-md mt-2 md:mt-0' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <g fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
@@ -69,10 +81,6 @@ export const QuickTransferList = () => {
       </div>
     </div>
   );
-<<<<<<< HEAD
 };
 
 export default QuickTransferList;
-=======
-}
->>>>>>> aastu.web.g5.yetnayet.transactions

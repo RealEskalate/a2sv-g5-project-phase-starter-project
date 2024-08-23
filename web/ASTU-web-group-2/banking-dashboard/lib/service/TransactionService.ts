@@ -29,10 +29,10 @@ export const transactionApi = createApi({
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-        params:{
-          "page":1,
-          "size" : 7
-        }
+        params: {
+          page: 1,
+          size: 7,
+        },
       }),
     }),
     getBalanceHistory: builder.query({
@@ -41,7 +41,7 @@ export const transactionApi = createApi({
         method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
-        },    
+        },
       }),
     }),
     getInvestmentHistory: builder.query({
@@ -51,13 +51,19 @@ export const transactionApi = createApi({
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-        params:{
-          "years":10,
-          "months" : 0
-        } 
+        params: {
+          years: 10,
+          months: 0,
+        },
       }),
     }),
   }),
 });
 
-export const { useGetAllTransactionQuery, useSignUpMutation, useGetExpensesQuery, useGetBalanceHistoryQuery, useGetInvestmentHistoryQuery } = transactionApi;
+export const {
+  useGetAllTransactionQuery,
+  useSignUpMutation,
+  useGetExpensesQuery,
+  useGetBalanceHistoryQuery,
+  useGetInvestmentHistoryQuery,
+} = transactionApi;

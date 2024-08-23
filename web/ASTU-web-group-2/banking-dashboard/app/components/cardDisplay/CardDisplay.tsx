@@ -6,7 +6,6 @@ import {
   useGetAllCardInfoQuery,
   useRetiriveCardInfoQuery,
 } from "@/lib/service/CardService";
-
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import CardSkeleton from "../skeleton/CardSkeleton";
@@ -77,15 +76,14 @@ const CardDisplay = ({ numofcard }: { numofcard: number }) => {
   );
 
   if (isLoadingAllCards || isLoadingCardInfo) {
-    // if (true) {
     return (
       <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-full bg-white animate-pulse rounded-[25px]">
-            <div className="flex flex-row gap-2">
-              <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-              <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
-              <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-            </div>
-          </div>
+        <div className="flex flex-row gap-2">
+          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
+          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
+        </div>
+      </div>
     );
   }
 
@@ -94,13 +92,16 @@ const CardDisplay = ({ numofcard }: { numofcard: number }) => {
   }
 
   const allCardsData = allCardsDataWithContent.content!;
-  
-  const color: ("primary" | "secondary" | "tertiary")[] = ["primary", "tertiary", "secondary"];
+  const color: ("primary" | "secondary" | "tertiary")[] = [
+    "primary",
+    "tertiary",
+    "secondary",
+  ];
 
   return (
     <div className="flex flex-col gap-2 pb-5">
       <div className="flex max-sm:flex-col justify-between">
-        {allCardsData ? (
+        {allCardsData.length > 0 ? (
           <div className="flex gap-[30px]">
             {allCardsData
               .slice(0, numofcard)
@@ -119,12 +120,13 @@ const CardDisplay = ({ numofcard }: { numofcard: number }) => {
               ))}
           </div>
         ) : (
-          <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-full bg-white animate-pulse rounded-[25px]">
-            <div className="flex flex-row gap-2">
-              <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-              <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
-              <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-            </div>
+          <div className="flex max-sm:flex-col justify-center w-[730px]">
+            {/* Placeholder image or message when no cards are available */}
+            <img
+              src="/assets/bankService/empty-image.png"
+              alt="No cards available"
+              className="w-fit h-fit "
+            />
           </div>
         )}
       </div>

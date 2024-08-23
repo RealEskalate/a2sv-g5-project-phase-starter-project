@@ -8,7 +8,7 @@ const Settings = () => {
   return (
     <>
       <div className='bg-white p-8 rounded-3xl'>
-        <Tabs defaultValue='account' className='w-full'>
+        <Tabs defaultValue='edit_profile' className='w-full'>
           <TabsList className='w-full mb-6 md:justify-start bg-white'>
             <TabsTrigger
               value='edit_profile'

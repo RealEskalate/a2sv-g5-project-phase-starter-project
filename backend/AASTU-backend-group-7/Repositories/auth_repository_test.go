@@ -61,7 +61,7 @@ func (suite *AuthRepositoryTestSuite) TestLogin() {
 
 		suite.usercollection.On("FindOne", mock.Anything, mock.Anything).Return(mockSingleResult)
 
-		user := &Domain.User{
+		user := &Dtos.LoginUserDto{
 			Email:    "test@example.com",
 			Password: "password123",
 		}
@@ -98,7 +98,7 @@ func (suite *AuthRepositoryTestSuite) TestLogin() {
 		}
 
 		// Call the method under test
-		tokens, err, status := suite.repo.Login(ctx, &Domain.User{
+		tokens, err, status := suite.repo.Login(ctx, &Dtos.LoginUserDto{
 			Email:    "test@example.com",
 			Password: "password123",
 		})

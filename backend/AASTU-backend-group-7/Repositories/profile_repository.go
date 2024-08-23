@@ -102,7 +102,7 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 	update := bson.D{
 		{"$set", bson.D{
 			{"email", NewUser.Email},
-			{"userName", NewUser.UserName},
+			{"username", NewUser.UserName},
 			{"name", NewUser.Name},
 			{"role", NewUser.Role},
 			{"profile_picture", NewUser.ProfilePicture},

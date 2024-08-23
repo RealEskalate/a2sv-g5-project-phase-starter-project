@@ -9,12 +9,12 @@ import (
 
 func UserRouter() {
 	userRouter := Router.Group("/users")
+	user_repo := Repositories.NewUserRepository(BlogCollections.Users, BlogCollections.RefreshTokens)
 	userRouter.Use(auth_middleware.AuthMiddleware())
-	userRouter.Use(auth_middleware.IsAdminMiddleware())
+	userRouter.Use(auth_middleware.IsAdminMiddleware(user_repo))
 	{
 
 		// generate new auth repo
-		user_repo := Repositories.NewUserRepository(BlogCollections.Users, BlogCollections.RefreshTokens)
 
 		user_usecase := usecases.NewUserUseCase(user_repo)
 		user_controller := controllers.NewUserController(user_usecase)

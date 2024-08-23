@@ -1,7 +1,10 @@
 package Dtos
 
 import (
+	"reflect"
 	"time"
+
+	"github.com/go-playground/validator"
 )
 
 type RegisterUserDto struct {
@@ -19,5 +22,21 @@ type RegisterUserDto struct {
 
 type LoginUserDto struct {
 	Email    string `json:"email" validate:"required,email"`
+	UserName string `json:"username",omitempty`
 	Password string `json:"password" validate:"required"`
+}
+
+func CustomValidator(fl validator.FieldLevel) bool {
+	// Get the struct field value
+	v := fl.Field()
+
+	// Check if both Email and UserName are not empty
+	switch v.Type().Kind() {
+	case reflect.Struct:
+		email := v.FieldByName("Email").String()
+		username := v.FieldByName("UserName").String()
+		return email != "" || username != ""
+	default:
+		return false
+	}
 }

@@ -23,7 +23,7 @@ func NewAuthUseCase(repo Domain.AuthRepository) *AuthUseCase {
 }
 
 // login
-func (a *AuthUseCase) Login(c *gin.Context, user *Domain.User) (Domain.Tokens, error, int) {
+func (a *AuthUseCase) Login(c *gin.Context, user *Dtos.LoginUserDto) (Domain.Tokens, error, int) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 

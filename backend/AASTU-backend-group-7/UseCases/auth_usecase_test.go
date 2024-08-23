@@ -29,8 +29,8 @@ func (suite *AuthUsecaseSuite) SetupTest() {
 
 func (suite *AuthUsecaseSuite) TestLogin() {
 	c, _ := gin.CreateTestContext(nil)
-	user := Domain.User{
-		Email:    "",
+	user := Dtos.LoginUserDto{
+		Email:    "asdfs@gmail.com",
 		Password: "password",
 	}
 	suite.repo.On("Login", mock.Anything, mock.Anything).Return(Domain.Tokens{}, nil, 200)

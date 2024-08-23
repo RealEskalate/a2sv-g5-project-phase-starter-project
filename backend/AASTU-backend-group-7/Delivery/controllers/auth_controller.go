@@ -26,17 +26,22 @@ func NewAuthController(usecase Domain.AuthUseCase) *AuthController {
 
 // login
 func (ac *AuthController) Login(c *gin.Context) {
-	var newUser Domain.User
+	var newUser Dtos.LoginUserDto
 	v := validator.New()
 	if err := c.ShouldBindJSON(&newUser); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid data", "error": err.Error()})
 		return
 	}
 	if err := v.Struct(newUser); err != nil {
-		fmt.Println(err.Error())
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid or missing data", "error": err.Error()})
-		return
+		if newUser.Email == "" && newUser.UserName == "" {
+			c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid or missing data", "error": "email or username is required"})
+			return
+		}
+		// fmt.Println(err.Error())
+		// c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid or missing data", "error": err.Error()})
+		// return
 	}
+	fmt.Println(newUser)
 	token, err, statusCode := ac.AuthUseCase.Login(c, &newUser)
 	if err != nil {
 		c.IndentedJSON(statusCode, gin.H{"error": err.Error()})

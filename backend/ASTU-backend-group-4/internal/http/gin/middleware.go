@@ -55,20 +55,6 @@ func AdminMidleware() gin.HandlerFunc {
 	}
 }
 
-func SupperMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		role, role_exist := c.Get("is_supper")
-		roleParsed := role.(bool)
-
-		if !role_exist || !roleParsed {
-			c.JSON(http.StatusUnauthorized, gin.H{"message": "unautorized access"})
-			c.Abort()
-			return
-		}
-		c.Next()
-	}
-}
-
 func validateSigningMethod(token *jwt.Token) (interface{}, error) {
 	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

@@ -94,4 +94,8 @@ function SidebarWrapper({
 			</div>
 		)
 	);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 35c81b63cbc3b1fcc7be64580061b14b86c50267

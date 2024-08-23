@@ -13,10 +13,8 @@ export default function Login() {
 
   const { data: session, status } = useSession();
   const user = useSelector((state: { user: User }) => state.user);
-  // console.log(session,'session')
   const users = session?.user as ExtendedUser;
 
-  // console.log(users.accessToken,'accessToken');
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -30,7 +28,7 @@ export default function Login() {
         },
       });
     }
-  }, [status, session, dispatch]);
+  }, [status, session, dispatch, users.accessToken]);
 
   if (status === "loading") {
     return <div>Loading...</div>;

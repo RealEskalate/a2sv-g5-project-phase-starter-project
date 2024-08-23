@@ -1,9 +1,7 @@
-import NextAuth, { User as NextAuthUser } from "next-auth";
+import  { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { JWT } from "next-auth/jwt"; // Import the JWT type
-import creditCardColor from "@/app/CreditCards/cardMockData";
-console.log('authOptions')
-export const authOptions = {
+import { JWT } from "next-auth/jwt"; 
+const authOptions:AuthOptions = {
 	providers: [
 		CredentialsProvider({
 			name: "Credentials",
@@ -12,7 +10,6 @@ export const authOptions = {
 				password: { label: "Password", type: "password" },
 			},
 			async authorize(credentials) {
-				console.log(creditCardColor,'credentails')
 				const res = await fetch(
 					"https://bank-dashboard-1tst.onrender.com/auth/login",
 					{
@@ -50,7 +47,7 @@ export const authOptions = {
 				session.user.accessToken = token.accessToken;
 				session.user.refreshToken = token.refreshToken;
 			}
-			console.log("sesssssssssss: ", session);
+			// console.log("sesssssssssss: ", session);
 			return session;
 		},
 		async jwt({ token, user }: { token: JWT; user }) {
@@ -63,3 +60,5 @@ export const authOptions = {
 		},
 	},
 };
+
+export{ authOptions};

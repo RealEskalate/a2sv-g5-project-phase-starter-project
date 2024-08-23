@@ -4,6 +4,8 @@ import RecentTransactionTable from "@/components/RecentTransactionTable/RecentTr
 import { Plus } from "lucide-react";
 import MyExpence from "@/components/Charts/MyExpence";
 import StoreProvider from "@/providers/StoreProvider";
+import MyCardLists from "@/components/MyCard/MyCardLists";
+
 interface idParamsType {
   params: {
     transactionId: string;
@@ -22,8 +24,7 @@ export default function page({ params }: idParamsType) {
               </div>
               <div className="flex  overflow-x-auto space-x-2">
                 <StoreProvider>
-                  <MyCard />
-                  <MyCard />
+                  <MyCardLists />
                 </StoreProvider>
                 <div className="w-[295px] h-[175px] bg-gray-200 rounded-3xl justify-center items-center flex flex-shrink-0">
                   <Plus size={32} />

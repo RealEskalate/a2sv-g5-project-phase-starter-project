@@ -26,7 +26,10 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "svgr.d.ts"
-, "src/components/MyCard/MyCard.test.ts", "jest.config.js"  ],
+    "svgr.d.ts",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "jest.setup.ts"
+  ],
   "exclude": ["node_modules"]
 }

@@ -56,37 +56,39 @@ class _SignInState extends State<SignIn> {
       builder: (context, state) {
         return Scaffold(
           backgroundColor: Colors.white,
-          body: Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Logo(width: 144, height: 50, fontSize: 48),
-                const BigTitle(text: "Sign into your account"),
-                SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      CustomTextField(
-                          name: "Email",
-                          controller: emailController,
-                          hintText: "ex: jon.smith@email.com"),
-                      CustomTextField(
-                          name: "Password",
-                          controller: passwordController,
-                          hintText: "********"),
-                      CustomButton(
-                        name: 'SIGN IN',
-                        controllers: [emailController, passwordController],
-                        login: true,
-                      ),
-                      const SizedBox(height: 40),
-                      const LinkedText(
-                          description: "Don’t have an account?",
-                          linkedText: " SIGN UP",
-                          navigateTo: SignUp()),
-                    ],
+          body: SingleChildScrollView(
+            child: Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Logo(width: 144, height: 50, fontSize: 48),
+                  const BigTitle(text: "Sign into your account"),
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        CustomTextField(
+                            name: "Email",
+                            controller: emailController,
+                            hintText: "ex: jon.smith@email.com"),
+                        CustomTextField(
+                            name: "Password",
+                            controller: passwordController,
+                            hintText: "********"),
+                        CustomButton(
+                          name: 'SIGN IN',
+                          controllers: [emailController, passwordController],
+                          login: true,
+                        ),
+                        const SizedBox(height: 40),
+                        const LinkedText(
+                            description: "Don’t have an account?",
+                            linkedText: " SIGN UP",
+                            navigateTo: SignUp()),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

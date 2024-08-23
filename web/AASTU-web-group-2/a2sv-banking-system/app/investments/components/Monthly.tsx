@@ -55,7 +55,6 @@ type SessionDataType = {
   user: Data;
 };
 
-
 export default function Monthly() {
   const [session, setSession] = useState<Data | null>(null);
   const [access_token, setAccess_token] = useState("");
@@ -63,11 +62,11 @@ export default function Monthly() {
   const [loading, setloading] = useState(true);
   const [Loading, setLoading] = useState(true);
   const [data, setdata] = useState<info>({
-  totalInvestment: 1,
-  rateOfReturn: 1,
-  yearlyTotalInvestment: [],
-  monthlyRevenue: []
-});
+    totalInvestment: 1,
+    rateOfReturn: 1,
+    yearlyTotalInvestment: [],
+    monthlyRevenue: [],
+  });
 
   // Getting the session from the server and Access Token From Refresh
   useEffect(() => {
@@ -111,7 +110,15 @@ export default function Monthly() {
     fetchData();
   }, [access_token]);
 
-  if (loading || Loading) return <div>Loading...</div>;
+  if (loading || Loading)
+    return (
+      <div className="bg-white rounded-3xl border-none p-8 animate-shimmer">
+        <div className="h-6 w-full bg-gray-300 rounded-md mb-4"></div>
+        <div className="h-4 w-3/4 bg-gray-300 rounded-md mb-4"></div>
+        <div className="h-4 w-1/2 bg-gray-300 rounded-md mb-4"></div>
+        <div className="h-4 w-2/3 bg-gray-300 rounded-md"></div>
+      </div>
+    );
   // console.log(data);
   const { monthlyRevenue } = data;
   return (

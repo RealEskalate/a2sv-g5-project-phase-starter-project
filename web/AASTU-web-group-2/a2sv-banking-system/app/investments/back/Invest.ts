@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "https://bank-dashboard-1tst.onrender.com";
+const baseUrl = "https://a2svwallet.onrender.com";
 export async function getRandomInvestementData(
   months: number,
   years: number,

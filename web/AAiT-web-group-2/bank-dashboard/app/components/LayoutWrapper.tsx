@@ -17,14 +17,13 @@ const LayoutWrapper = ({children}: {children: React.ReactNode}) => {
       </div>
 
 
-      <div className="flex-grow-1  bg-white flex flex-col w-full h-screen  md:flex-grow-1   ">
+      <div className="flex-grow-1  bg-white flex flex-col w-full h-screen  md:flex-grow-1 overflow-hidden  ">
         <div>
           <Navbar onMenuClick={handleSidebar} />
         </div>
 
-        <div className="bg-background w-full flex-grow overflow-y-auto">
+        <div className="bg-background p-4 w-full flex-grow overflow-y-auto">
           {children}
-
         </div>
 
       </div>

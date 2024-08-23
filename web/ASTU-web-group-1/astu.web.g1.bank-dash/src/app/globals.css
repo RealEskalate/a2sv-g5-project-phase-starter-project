@@ -76,6 +76,18 @@ input[type='number']::-webkit-outer-spin-button {
   margin: 0;
 }
 
+/* Hide scrollbar for Webkit browsers */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+
 @layer base {
   * {
     @apply border-border;

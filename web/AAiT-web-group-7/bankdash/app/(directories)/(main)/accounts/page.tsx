@@ -17,7 +17,6 @@ import playstation from '@/public/accountsimage/playstation.svg';
 import LastTransactionsComp from '@/components/accounts/lastTransactions';
 import AccountsBarChartComponent from '@/components/accounts/AccountsBarChart';
 import Invoice from '@/components/accounts/invoices';
-import { appendFile } from 'fs';
 
 const page = () => {
   const Cards = [

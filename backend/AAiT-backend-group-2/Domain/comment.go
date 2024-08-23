@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type Comment struct {
 	ID        string    `bson:"_id" json:"id"`
@@ -11,19 +14,19 @@ type Comment struct {
 }
 
 type CommentRepository interface {
-	FindAll() ([]Comment, error)
-	FindByID(id string) (*Comment, error)
-	FindByBlogID(blogID string) ([]Comment, error)
-	Save(comment *Comment) error
-	Update(comment *Comment) error
-	Delete(id string) error
+	FindAll(ctx context.Context) ([]Comment, error)
+	FindByID(ctx context.Context, id string) (*Comment, error)
+	FindByBlogID(ctx context.Context, blogID string) ([]Comment, error)
+	Save(ctx context.Context, comment *Comment) error
+	Update(ctx context.Context, comment *Comment) error
+	Delete(ctx context.Context, id string) error
 }
 
 type CommentUsecase interface {
-	GetAllComments() ([]Comment, error)
-	GetCommentByID(id string) (*Comment, error)
-	GetCommentsByBlogID(blogID string) ([]Comment, error)
-	CreateComment(comment *Comment) error
-	UpdateComment(comment *Comment) error
-	DeleteComment(id string) error
+	GetAllComments(ctx context.Context) ([]Comment, error)
+	GetCommentByID(ctx context.Context, id string) (*Comment, error)
+	GetCommentsByBlogID(ctx context.Context, blogID string) ([]Comment, error)
+	CreateComment(ctx context.Context, comment *Comment) error
+	UpdateComment(ctx context.Context, comment *Comment) error
+	DeleteComment(ctx context.Context, id string) error
 }

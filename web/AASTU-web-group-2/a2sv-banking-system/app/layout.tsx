@@ -3,6 +3,7 @@ import { Inter, Lato } from "next/font/google";
 import "./globals.css";
 import Navigation from "./components/Navigation";
 import { DarkModeProvider } from "./components/Context/DarkModeContext";
+import ProgressBar from "./components/loadingprovider/ProgressBar";
 const inter = Inter({ subsets: ["latin"] });
 const lato = Lato({
   subsets: ["latin"],
@@ -22,9 +23,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} ${lato.className} flex w-full`}>
-        <DarkModeProvider>
-          <Navigation>{children}</Navigation>
-        </DarkModeProvider>
+        <ProgressBar>
+          <DarkModeProvider>
+            <Navigation>{children}</Navigation>
+          </DarkModeProvider>
+        </ProgressBar>
       </body>
     </html>
   );

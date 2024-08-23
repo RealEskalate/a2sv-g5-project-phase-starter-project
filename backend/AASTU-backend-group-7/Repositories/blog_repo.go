@@ -471,6 +471,21 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 	// Initialize the filter for MongoDB query
 	pipeline := []bson.M{}
 
+	// Add lookup for comments and calculate comment count
+	pipeline = append(pipeline, bson.M{
+		"$lookup": bson.M{
+			"from":         "comments",
+			"localField":   "_id",
+			"foreignField": "postid", // Ensure this matches your Comment struct
+			"as":           "comments",
+		},
+	})
+	pipeline = append(pipeline, bson.M{
+		"$addFields": bson.M{
+			"commentcount": bson.M{"$size": "$comments"},
+		},
+	})
+
 	// Build the match stage for filtering
 	matchStage := bson.M{}
 	countfilter := bson.M{}
@@ -480,7 +495,6 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 	if filter.Page > 1 {
 		page = filter.Page
 	}
-
 	limit := 20
 	if filter.Limit > 0 {
 		limit = filter.Limit
@@ -491,25 +505,24 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 		matchStage["slug"] = filter.Slug
 		countfilter["slug"] = filter.Slug
 	}
-
 	if filter.AuthorName != "" {
 		matchStage["authorname"] = filter.AuthorName
-		countfilter["authorName"] = filter.AuthorName
+		countfilter["authorname"] = filter.AuthorName
+	}
+	fmt.Println(len(filter.Tags))
+	if len(filter.Tags) > 0 {
+		matchStage["tags"] = bson.M{"$in": filter.Tags}
+		countfilter["tags"] = bson.M{"$in": filter.Tags}
 	}
 
-	if len(filter.Tags) > 1 {
-		matchStage["tags"] = bson.M{"$all": filter.Tags} // Filter documents that contain all the specified tags
-		countfilter["tags"] = bson.M{"$all": filter.Tags}
-	}
-
-	// count the number of documents that match the filter criteria
+	// Count the number of documents that match the filter criteria
 	count, err := br.postCollection.CountDocuments(ctx, countfilter)
 
 	if len(matchStage) > 0 {
 		pipeline = append(pipeline, bson.M{"$match": matchStage})
 	}
 
-	// Default sort by publishedAt in descending order
+	// Default sort by updatedat in descending order
 	orderBy := -1
 	if filter.OrderBy == 1 {
 		orderBy = 1
@@ -518,21 +531,20 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 	sort := bson.M{sortBy: orderBy}
 	if filter.SortBy != "" {
 		sortBy = filter.SortBy
-
 		if sortBy == "popularity" {
 			pipeline = append(pipeline, bson.M{
 				"$addFields": bson.M{
 					"popularity": bson.M{
 						"$add": []interface{}{
-							bson.M{"$multiply": []interface{}{"$views", 1}},         // Weight for views
-							bson.M{"$multiply": []interface{}{"$likecount", 2}},     // Weight for likes
-							bson.M{"$multiply": []interface{}{"$dislikecount", -1}}, // Weight for dislikes
+							bson.M{"$multiply": []interface{}{"$views", 1}},
+							bson.M{"$multiply": []interface{}{"$likecount", 2}},
+							bson.M{"$multiply": []interface{}{"$dislikecount", -1}},
+							bson.M{"$multiply": []interface{}{"$commentcount", 3}}, // Adjust the weight for comments as needed
 						},
 					},
 				},
 			})
-
-			pipeline = append(pipeline, bson.M{"$sort": bson.M{"popularity": -1}})
+			pipeline = append(pipeline, bson.M{"$sort": bson.M{"popularity": orderBy}})
 		} else {
 			pipeline = append(pipeline, bson.M{"$sort": bson.M{sortBy: orderBy}})
 		}
@@ -561,6 +573,8 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 	}
 	return posts, nil, 200, paginationMetaData
 }
+
+
 
 // delete post by id
 func (br *blogrepository) DeletePost(ctx context.Context, id primitive.ObjectID) (error, int) {

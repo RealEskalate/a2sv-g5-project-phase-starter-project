@@ -14,9 +14,9 @@ type Post struct {
 	PublishedAt  time.Time          `json:"published_at"`
 	UpdatedAt    time.Time          `json:"updated_at"`
 	IsPublished  bool               `json:"is_published"`
-	Views        uint               `json:"views"`
-	LikeCount    uint               `json:"like_count"`
-	DislikeCount uint               `json:"dislike_count"`
+	Views        uint               `json:"views" bson:"views"`
+	LikeCount    uint               `json:"like_count" bson:"likecount"`
+	DislikeCount uint               `json:"dislike_count" bson:"dislikecount"`
 	Popularity   uint               `json:"popularity"`
 	AuthorID     primitive.ObjectID `json:"author_id"`
 	AuthorName   string             `json:"author_name"`

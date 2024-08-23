@@ -248,9 +248,11 @@ func (controller *blogController) GetAllPosts(c *gin.Context) {
 
 	if tags, ok := queryparams["tags"]; ok && len(tags) > 0 {
 		filter.Tags = strings.Split(tags[0], ",") // Splitting by comma to get slice of tags
-	}
-	// fmt.Println(filter.Tags)
+		// fmt.Println(filter.Tags)
 
+	}
+
+	fmt.Println(filter)
 	posts, err, statusCode, paginationMetaData := controller.BlogUseCase.GetAllPosts(c, filter)
 	if err != nil {
 		c.JSON(statusCode, gin.H{"error": err.Error()})

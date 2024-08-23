@@ -6,3 +6,4 @@ venv/
 .venv
 mokery.yml
 .envf
+env.yaml

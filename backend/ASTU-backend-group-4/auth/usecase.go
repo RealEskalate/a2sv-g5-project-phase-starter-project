@@ -3,8 +3,10 @@ package auth
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/pkg/infrastructure"
@@ -22,7 +24,6 @@ func NewAuthUserUsecase(repository AuthRepository, emailService infrastructure.E
 		repository:   repository,
 		emailService: emailService,
 	}
-
 }
 
 func (au *AuthUserUsecase) Login(ctx context.Context, info LoginForm) (string, string, error) {
@@ -71,10 +72,20 @@ func (au *AuthUserUsecase) RegisterUser(ctx context.Context, user User) error {
 	}
 	user.Password = string(hashedpasswors)
 	user.IsActive = false
+	user.Email = strings.ToLower(user.Email)
 	// user.IsAdmin = false	activationLink := fmt.Sprintf("http://localhost/activate/%s/%s", user.ID, tokenString)
 
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
+	// if the user is first user is make it admin and super admin
+	count, err := au.repository.GetCollectionCount(ctx)
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		user.IsAdmin = true
+		user.IsSupper = true
+	}
 	_, err = au.repository.CreateUser(ctx, user)
 	if err != nil {
 		return ErrCantCreateUser
@@ -99,7 +110,6 @@ func (au *AuthUserUsecase) UpdateProfile(ctx context.Context, user User) error {
 }
 
 func (au *AuthUserUsecase) Activate(ctx context.Context, userID string, token string) error {
-	// refreshToekn, err := au.repository.GetRefreshToken(ctx, token)
 	user, err := au.repository.GetUserByID(ctx, userID)
 	if err != nil {
 		return err
@@ -163,4 +173,41 @@ func (au *AuthUserUsecase) GenerateToken(user User, tokenType string) (string, e
 	}
 	return tokenString, nil
 
+}
+
+func (au *AuthUserUsecase) PromoteUser(ctx context.Context, userID string) error {
+	user, err := au.repository.GetUserByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	if !user.IsAdmin {
+		user.IsAdmin = true
+	} else {
+		return errors.New("the user was an admin")
+	}
+	_, err = au.repository.UpdateUser(ctx, user)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (au *AuthUserUsecase) DemoteUser(ctx context.Context, userID string) error {
+	user, err := au.repository.GetUserByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	if !user.IsSupper {
+		user.IsAdmin = false
+	} else {
+		return errors.New("you don't have the previlage to delete this super admin ")
+	}
+	_, err = au.repository.UpdateUser(ctx, user)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }

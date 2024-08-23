@@ -13,6 +13,7 @@ type User struct {
 	Password  string    `json:"password"`
 	IsActive  bool      `json:"isactive"`
 	IsAdmin   bool      `json:"isadmin"`
+	IsSupper  bool      `json:"issuper"`
 	CreatedAt time.Time `json:"createdat"`
 	UpdatedAt time.Time `json:"updatedat"`
 }
@@ -39,6 +40,7 @@ type AuthRepository interface {
 	RegisterRefreshToken(ctx context.Context, userId string, token string) error
 	GetRefreshToken(ctx context.Context, token string) (string, error)
 	DeleteRefreshToken(ctx context.Context, token string) error
+	GetCollectionCount(ctx context.Context) (int64, error)
 }
 
 type AuthServices interface {
@@ -49,4 +51,6 @@ type AuthServices interface {
 	Logout(ctx context.Context, userID string)
 	GenerateToken(user User, tokentype string) (string, error)
 	GenerateActivateToken(hashedpassword string, updatedat time.Time) (string, error)
+	PromoteUser(ctx context.Context, userID string) error
+	DemoteUser(ctx context.Context, userID string) error
 }

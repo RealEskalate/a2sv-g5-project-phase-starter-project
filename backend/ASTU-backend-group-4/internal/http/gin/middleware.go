@@ -32,8 +32,9 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		c.Set("userID", tokenClaim["id"])
-		c.Set("isAdmin", tokenClaim["isadmin"])
+		c.Set("user_id", tokenClaim["id"])
+		c.Set("is_admin", tokenClaim["isadmin"])
+		c.Set("is_supper", tokenClaim["issupper"])
 
 		c.Next()
 	}
@@ -42,7 +43,7 @@ func AuthMiddleware() gin.HandlerFunc {
 func AdminMidleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// uses_name, user_exist := c.Get("userame")
-		role, role_exist := c.Get("isAdmin")
+		role, role_exist := c.Get("is_admin")
 		roleParsed := role.(bool)
 
 		if !role_exist || !roleParsed {

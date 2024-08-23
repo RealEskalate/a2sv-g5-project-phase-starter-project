@@ -2,7 +2,9 @@
 import { useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 const LayoutWrapper = ({children}: {children: React.ReactNode}) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true)
@@ -11,9 +13,24 @@ const LayoutWrapper = ({children}: {children: React.ReactNode}) => {
 
     }
     const path = usePathname()
+    const session = useSession()
+    const router = useRouter()
 
     if(path.includes("auth")){
       return <div className="h-screen overflow-y-auto">{children}</div>
+    }
+
+    if(session.status === "unauthenticated"){
+      router.push('/')
+      return (
+        <div>
+          
+          <Navbar onMenuClick={handleSidebar} />
+          
+          
+           {children}
+        </div>
+      )
     }
 
   return (

@@ -35,6 +35,9 @@ func (r *MongoBlogRepository) CreateBlog(blog *models.Blog, authorId string) (st
 	}
 	blog.AuthorID = authorObjectID
 	blog.ID = primitive.NewObjectID()
+	blog.Views = 0
+	blog.PopularityScore = 0
+	blog.Likes = nil
 	_, err = r.collection.InsertOne(ctx, blog)
 	if err != nil {
 		return "", err
@@ -81,7 +84,7 @@ func (r *MongoBlogRepository) GetBlogs(filter map[string]interface{}, search str
 
 	filterBson := bson.M{}
 	if search != "" {
-		filterBson["$text"] = bson.M{"$search": search}
+		filterBson["$title"] = bson.M{"$search": search}
 	}
 	for key, value := range filter {
 		filterBson[key] = value
@@ -119,7 +122,7 @@ func (r *MongoBlogRepository) GetBlogs(filter map[string]interface{}, search str
 func (r *MongoBlogRepository) UpdateBlog(blogId string, newBlog *models.Blog) error {
 	blogID, _ := primitive.ObjectIDFromHex(blogId)
 	newBlog.UpdatedAt = time.Now()
-
+	newBlog.ID =blogID
 	_, err := r.collection.UpdateOne(
 		ctx,
 		bson.M{"_id": blogID},

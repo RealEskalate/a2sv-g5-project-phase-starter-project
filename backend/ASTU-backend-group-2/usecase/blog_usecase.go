@@ -35,7 +35,6 @@ func (b *blogUsecase) GetByTags(c context.Context, tags []string, limit int64, p
 	return blogs, meta, nil
 }
 func BlogFilterOption(filter domain.BlogFilter) (bson.M, *options.FindOptions) {
-
 	query := bson.M{
 		"$match": bson.M{},
 	}
@@ -48,7 +47,7 @@ func BlogFilterOption(filter domain.BlogFilter) (bson.M, *options.FindOptions) {
 
 	// Tags filter
 	if len(filter.Tags) > 0 {
-		semiquery["tags"] = bson.M{"$in": filter.Tags}
+		semiquery["tags"] = bson.M{"$all": filter.Tags}
 	}
 
 	// Date range filter
@@ -66,7 +65,6 @@ func BlogFilterOption(filter domain.BlogFilter) (bson.M, *options.FindOptions) {
 	// Popularity filter
 	if filter.PopularityFrom > 0 && filter.PopularityTo > 0 {
 		semiquery["popularity"] = bson.M{
-
 			"$gte": filter.PopularityFrom,
 			"$lte": filter.PopularityTo,
 		}

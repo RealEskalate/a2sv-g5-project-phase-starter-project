@@ -37,7 +37,7 @@ const Transactions: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://bank-dashboard-1tst.onrender.com/transactions/expenses?page=0&size=7`,
+        `https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=0&size=7`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -74,7 +74,7 @@ const Transactions: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://bank-dashboard-1tst.onrender.com/cards?page=${page}&size=3`,
+        `https://bank-dashboard-rsf1.onrender.com/cards?page=${page}&size=3`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -98,7 +98,7 @@ const Transactions: React.FC = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `https://bank-dashboard-1tst.onrender.com/transactions?page=${0}&size${5}`,
+        `https://bank-dashboard-rsf1.onrender.com/transactions?page=${0}&size${5}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

@@ -40,7 +40,7 @@ function Dashboard() {
 
     try {
       const response = await fetch(
-        `https://bank-dashboard-1tst.onrender.com/cards?page=${page}&size=3`,
+        `https://bank-dashboard-rsf1.onrender.com/cards?page=${page}&size=3`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

@@ -11,7 +11,7 @@ const authOptions:AuthOptions = {
 			},
 			async authorize(credentials) {
 				const res = await fetch(
-					"https://bank-dashboard-1tst.onrender.com/auth/login",
+					"https://bank-dashboard-rsf1.onrender.com/auth/login",
 					{
 						method: "POST",
 						headers: {

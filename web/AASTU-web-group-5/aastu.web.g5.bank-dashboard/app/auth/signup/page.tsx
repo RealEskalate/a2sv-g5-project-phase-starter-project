@@ -36,7 +36,7 @@ const Register = () => {
 
   const onSubmit = async (data: RegistrationFormData) => {
     try {
-      const response = await axios.post('https://bank-dashboard-1tst.onrender.com/auth/register', data);
+      const response = await axios.post('https://bank-dashboard-rsf1.onrender.com/auth/register', data);
       console.log(response.data); // Handle response data if needed
       router.push('/auth/signin'); // Redirect to login page after successful registration
     } catch (error: any) {

@@ -1,7 +1,7 @@
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { JWT } from "next-auth/jwt";
-
+console.log(process.env.NEXTAUTH_SECRET,'enviroment')
 async function refreshAccessToken(token: JWT) {
 	console.log('authOptions',token)
 
@@ -13,9 +13,10 @@ async function refreshAccessToken(token: JWT) {
         Authorization: `Bearer ${token.refreshToken}`,
       },
     });
+	console.log(res,'11111111111111111111')
 
     const refreshedTokens = await res.json(); 
-console.log(refreshedTokens,'refreshedTokens')
+	console.log(refreshedTokens,'refreshedTokens')
     if (!res.ok) {
       throw refreshedTokens;
     } 
@@ -23,8 +24,7 @@ console.log(refreshedTokens,'refreshedTokens')
 
     return {
       ...token,
-      accessToken: refreshedTokens.data.access_token,
-      refreshToken: refreshedTokens.data.refresh_token,
+      accessToken: refreshedTokens.data,
       accessTokenExpires: Date.now() + 10* 60 * 1000, 
     };
   } catch (error) {
@@ -85,11 +85,13 @@ const authOptions: AuthOptions = {
           username: user.username,
         };
       }
+	  console.log((Date.now() - (token.accessTokenExpires as number))/600,'time111')
+
       if (Date.now() < (token.accessTokenExpires as number)) {
         return token;
       }
 
-
+	  console.log((Date.now() - (token.accessTokenExpires as number))/600,'timeleft')
       return refreshAccessToken(token);
     },
     async session({ session, token }: { session: any; token: JWT }) {

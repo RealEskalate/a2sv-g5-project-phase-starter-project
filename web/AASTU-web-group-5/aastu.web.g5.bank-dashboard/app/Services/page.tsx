@@ -57,8 +57,8 @@ const Page = () => {
   return (
     <div className="bg-gray-100">
       {/* Life Insurance Section */}
-      <div className="w-full flex items-center bg-gray-100 p-6 gap-6 pr-10 pl-10">
-        <div className="mr-5 lg:mr-0 flex gap-4 overflow-x-auto lg:overflow-x-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:pl-10 lg:pt-10 w-full">
+      <div className="w-full bg-gray-100 flex-grow flex items-center justify-center mx-auto">
+      <div className="w-full lg:mr-7 flex gap-4 overflow-x-auto lg:overflow-x-visible lg:pl-10 lg:pt-10 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <div className="bg-white h-[90px] rounded-xl flex-grow flex justify-center items-center gap-4">
             <div className="flex items-center justify-center bg-blue-100 rounded-full w-14 h-14">
               <Image

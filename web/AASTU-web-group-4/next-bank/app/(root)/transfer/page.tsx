@@ -8,6 +8,7 @@ import { createTransaction } from '@/services/transactionfetch';
 import Cookies from 'js-cookie';
 import { message } from 'antd';
 import { currentuser } from '@/services/userupdate';
+import {UserData} from '@/types/index'
 
 const TransferPage: React.FC = () => {
   const [visible, setVisible] = useState(false);
@@ -15,7 +16,7 @@ const TransferPage: React.FC = () => {
   const [status, setStatus] = useState<'success' | 'error' | null>(null);
   const { register, reset, handleSubmit, formState: { errors } } = useForm();
   // let account = 5000;
-  const [info, setinfo] = useState([])
+  const [info, setinfo] = useState<UserData>()
 
 
   useEffect(() => {
@@ -84,7 +85,7 @@ const TransferPage: React.FC = () => {
         <div className="bg-white p-4 sm:p-6 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-lg h-full sm:h-auto flex flex-col justify-center lg:ml-72">
           <div className="text-center text-2xl font-bold mb-4 p-3 flex justify-center gap-3">
             <p>
-              {visible ? `$${info.accountBalance}` : '$****'}
+              {visible ? `$${info?.accountBalance}` : '$****'}
             </p>
             <button onClick={handleVisibility}>
               {visible ? <FaEyeSlash className="text-green-200 hover:text-green-500 text-2xl" /> : <FaEye className="text-green-400 hover:text-green-700 text-3xl" />}

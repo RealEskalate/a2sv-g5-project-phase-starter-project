@@ -2,29 +2,14 @@ package infrastructure
 
 import (
 	"fmt"
-	"time"
 
 	domain "blogs/Domain"
 
 	jwt "github.com/golang-jwt/jwt/v4"
 )
 
-func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
-	exp := time.Now().Add(time.Hour * time.Duration(expiry))
+func CreateToken(claims jwt.Claims, secret string) (string, error) {
 
-	// Create claims
-	var role string
-	if user.Role == "" {
-		role = "user"
-	}
-	claims := &domain.JwtCustomClaims{
-		UserName: user.Username,
-		ID:       user.ID.Hex(),
-		Role:     role,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(exp), // Convert expiration time to *jwt.NumericDate
-		},
-	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	t, err := token.SignedString([]byte(secret))
 	if err != nil {
@@ -33,21 +18,21 @@ func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToke
 	return t, err
 }
 
-func CreateRefreshToken(user *domain.User, secret string, expiry int) (refreshToken string, err error) {
-	exp := time.Now().Add(time.Hour * time.Duration(expiry))
-	claimsRefresh := &domain.JwtCustomRefreshClaims{
-		ID: user.ID.Hex(),
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(exp), // Convert expiration time to *jwt.NumericDate
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claimsRefresh)
-	rt, err := token.SignedString([]byte(secret))
-	if err != nil {
-		return "", err
-	}
-	return rt, err
-}
+// func CreateRefreshToken(user *domain.User, secret string, expiry int) (refreshToken string, err error) {
+// 	exp := time.Now().Add(time.Hour * time.Duration(expiry))
+// 	claimsRefresh := &domain.JwtCustomRefreshClaims{
+// 		ID: user.ID.Hex(),
+// 		RegisteredClaims: jwt.RegisteredClaims{
+// 			ExpiresAt: jwt.NewNumericDate(exp), // Convert expiration time to *jwt.NumericDate
+// 		},
+// 	}
+// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claimsRefresh)
+// 	rt, err := token.SignedString([]byte(secret))
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	return rt, err
+// }
 
 func IsAuthorized(requestToken string, secret string) (bool, error) {
 	_, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
@@ -100,8 +85,6 @@ func ExtractFromToken(requestToken string, secret string) (domain.JwtCustomClaim
 		return domain.JwtCustomClaims{}, fmt.Errorf("invalid token")
 	}
 	return domain.JwtCustomClaims{
-		UserName: claims["user_name"].(string),
-		ID:       claims["id"].(string),
-		Role:     claims["role"].(string),
+		ID: claims["id"].(string),
 	}, nil
 }

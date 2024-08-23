@@ -9,6 +9,10 @@ import (
 type AiRequest struct {
 	Message string `json:"message"`
 }
+type BlogPost struct {
+	Title       string `json:"Title"`
+	Description string `json:"Description"`
+}
 
 type AiResponse struct {
 	Response genai.Part `json:"response"`

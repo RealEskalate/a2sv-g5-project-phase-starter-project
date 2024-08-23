@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 // import { CardData } from "@/types/cardData";
 import { Card } from "@/lib/redux/types/cards";
 import CardBox from "@/app/components/cardBox";
@@ -21,62 +22,67 @@ const colorOptions = [
 ];
 
 const CardListPage = () => {
-  const { data, error, isLoading } = useGetCardsQuery({ page: 0, size: 10 });
+  const [page, setPage] = useState(0);
+  const { data, error, isLoading } = useGetCardsQuery({ page, size: 3 });
 
-  if (isLoading) return <Loading/>;
+  const totalPages = data?.totalPages || 1;
+
+  const handlePreviousPage = () => {
+    if (page > 0) {
+      setPage(page - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (page < totalPages - 1) {
+      setPage(page + 1);
+    }
+  };
+
+  if (isLoading) return <Loading />;
   if (error) return <div>Error fetching cards</div>;
 
-  // const cardData: CardData[] = [
-  //   {
-  //     cardType: "Secondary",
-  //     bank: "DBL Bank",
-  //     detailsLink: "/creditcardpage/abc",
-  //     svgColor: "#396AFF",
-  //     svgBgColor: "#E7EDFF",
-  //     cardNumber: "**** **** **** 1234",
-  //     NamainCard: "William",
-  //   },
-  //   {
-  //     cardType: "Secondary",
-  //     bank: "BRC Bank",
-  //     detailsLink: "/creditcardpage/abc",
-  //     svgColor: "#FF82AC",
-  //     svgBgColor: "#FFE0EB",
-  //     cardNumber: "**** **** **** 1234",
-  //     NamainCard: "Michael",
-  //   },
-  //   {
-  //     cardType: "Secondary",
-  //     bank: "ABM Bank",
-  //     detailsLink: "/creditcardpage/xyz",
-  //     svgColor: "#FFD700",
-  //     svgBgColor: "#FFF5D9",
-  //     cardNumber: "**** **** **** 1234",
-  //     NamainCard: "Edward",
-  //   },
-  // ];
-
   return (
-    // const colorOption = colorOptions[index % colorOptions.length];
-    <div className="card-list-container  ">
-      {data?.content.map((card: Card, index: number) => {
-        const colorOption = colorOptions[index % colorOptions.length]; // Cycle through color options
+    <div className="card-list-container flex flex-col justify-between h-full">
+      <div className="card-list flex-grow">
+        {data?.content.map((card: Card, index: number) => {
+          const colorOption = colorOptions[index % colorOptions.length]; // Cycle through color options
 
-        return (
-          <CardBox
-            key={index}
-            cardType={card.cardType}
-            bank="CBE Bank"
-            detailsLink="/creditcardpage/xyz"
-            svgColor={colorOption.svgColor}
-            svgBgColor={colorOption.svgBgColor}
-            cardNumber={formatCardNumber(card.semiCardNumber)}
-            NamainCard={card.cardHolder}
-          />
-        );
-      })}
+          return (
+            <CardBox
+              key={index}
+              cardType={card.cardType}
+              bank="CBE Bank"
+              detailsLink="/creditcardpage/xyz"
+              svgColor={colorOption.svgColor}
+              svgBgColor={colorOption.svgBgColor}
+              cardNumber={formatCardNumber(card.semiCardNumber)}
+              NamainCard={card.cardHolder}
+            />
+          );
+        })}
+      </div>
+
+      {/* <div className="pagination-controls flex justify-center items-center mt-4">
+        <button
+          onClick={handlePreviousPage}
+          disabled={page === 0}
+          className="btn"
+        >
+          Previous
+        </button>
+        <span className="mx-2">
+          Page {page + 1} of {totalPages}
+        </span>
+        <button
+          onClick={handleNextPage}
+          disabled={page >= totalPages - 1}
+          className="btn"
+        >
+          Next
+        </button>
+      </div> */}
     </div>
   );
 };
-
 export default CardListPage;

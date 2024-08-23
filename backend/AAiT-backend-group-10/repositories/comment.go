@@ -105,3 +105,16 @@ func (cr *CommentRepository) UpdateComment(updatedComment domain.Comment) *domai
 	}
 	return nil
 }
+
+func (cr *CommentRepository) DeleteCommentsByBlog(blogID uuid.UUID) *domain.CustomError {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	filter := bson.D{
+		{Key: "blog_id", Value: blogID},
+	}
+	_, err := cr.Collection.DeleteMany(ctx, filter)
+	if err != nil {
+		return domain.ErrCommentDeletionFailed
+	}
+	return nil
+}

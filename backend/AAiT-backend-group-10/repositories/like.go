@@ -98,3 +98,17 @@ func (l *LikeRepository) BlogLikeCount(blog_id uuid.UUID) (int, *domain.CustomEr
 	}
 	return int(count), nil
 }
+
+func (l *LikeRepository) DeleteLikesByBlog(blogID uuid.UUID) *domain.CustomError {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	filter := bson.D{
+		{Key: "blog_id", Value: blogID},
+	}
+	_, err := l.Collection.DeleteMany(ctx, filter)
+	if err != nil {
+		return domain.ErrLikeDeletionFailed
+	} 
+	return nil
+}

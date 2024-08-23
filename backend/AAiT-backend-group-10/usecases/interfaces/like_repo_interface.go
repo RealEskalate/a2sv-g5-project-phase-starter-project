@@ -12,4 +12,5 @@ type LikeRepositoryInterface interface {
 	UpdateLike(like domain.Like) *domain.CustomError
 	DeleteLike(like dto.UnlikeDto) *domain.CustomError
 	BlogLikeCount(blogID uuid.UUID) (int, *domain.CustomError)
+	DeleteLikesByBlog(blogID uuid.UUID) *domain.CustomError
 }

@@ -173,6 +173,16 @@ func (b *BlogUseCase) DeleteBlog(id uuid.UUID, requester_id uuid.UUID, is_admin 
 		return domain.ErrUnAuthorized
 	}
 
+	commentErr := b.commentRepo.DeleteCommentsByBlog(id)
+	if commentErr != nil {
+		return commentErr
+	}
+
+	likeErr := b.likeRepo.DeleteLikesByBlog(id)
+	if likeErr != nil {
+		return likeErr
+	}
+
 	_ = b.cacheRepo.Delete("blogs:all")
 	_ = b.cacheRepo.Delete("blog:" + id.String())
 

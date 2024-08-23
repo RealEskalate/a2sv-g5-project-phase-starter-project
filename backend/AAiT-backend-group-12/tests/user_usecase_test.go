@@ -755,6 +755,22 @@ func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_GetTokenTypeErr
 	suite.mockJWTService.AssertExpectations(suite.T())
 }
 
+func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_InvalidTokenType() {
+	refreshToken := "refr.esht.oken"
+	tk := &jwt.Token{}
+
+	suite.mockJWTService.On("ValidateAndParseToken", refreshToken).Return(tk, nil).Once()
+	suite.mockJWTService.On("GetTokenType", tk).Return("INVALID", nil).Once()
+
+	ack, err := suite.Usecase.RenewAccessToken(context.Background(), refreshToken)
+	suite.Equal(err.GetCode(), domain.ERR_FORBIDDEN)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(ack, "")
+	suite.mockUserRepository.AssertExpectations(suite.T())
+	suite.mockHashService.AssertExpectations(suite.T())
+	suite.mockJWTService.AssertExpectations(suite.T())
+}
+
 func (suite *UserUsecaseTestSuite) TestRenewAccessToken_Negative_GetUsernameError() {
 	refreshToken := "refr.esht.oken"
 	user := TEST_USER
@@ -1128,6 +1144,63 @@ func (suite *UserUsecaseTestSuite) TestVerifyEmail_Negative_RespositoryError_Alr
 	hostUrl := "http://localhost:8080"
 
 	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: strings.TrimSpace(user.Username)}).Return(user, nil).Once()
+
+	err := suite.Usecase.VerifyEmail(context.Background(), user.Username, token, hostUrl)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestVerifyEmail_Negative_ExpiredMailError() {
+	user := TEST_USER
+	user.VerificationData.Token = "token1"
+	user.VerificationData.ExpiresAt = time.Now().Add(time.Minute * -1)
+	mail := "mail"
+	token := "token1"
+	hostUrl := "http://localhost:8080"
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: strings.TrimSpace(user.Username)}).Return(user, nil).Once()
+	suite.mockUserRepository.On("UpdateVerificationDetails", context.Background(), strings.TrimSpace(user.Username), mock.AnythingOfType("domain.VerificationData")).Return(nil).Once()
+	suite.mockMailService.On("EmailVerificationTemplate", hostUrl, strings.TrimSpace(user.Username), mock.AnythingOfType("string")).Return(mail).Once()
+	suite.mockMailService.On("SendMail", mock.AnythingOfType("string"), user.Email, mail).Return(sampleErr).Once()
+
+	err := suite.Usecase.VerifyEmail(context.Background(), user.Username, token, hostUrl)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), domain.ERR_INTERNAL_SERVER)
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestVerifyEmail_Negative_RepositoryError_UpdateVerification() {
+	user := TEST_USER
+	user.VerificationData.Token = "token1"
+	user.VerificationData.ExpiresAt = time.Now().Add(time.Minute * -1)
+	token := "token1"
+	hostUrl := "http://localhost:8080"
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: strings.TrimSpace(user.Username)}).Return(user, nil).Once()
+	suite.mockUserRepository.On("UpdateVerificationDetails", context.Background(), strings.TrimSpace(user.Username), mock.AnythingOfType("domain.VerificationData")).Return(sampleErr).Once()
+
+	err := suite.Usecase.VerifyEmail(context.Background(), user.Username, token, hostUrl)
+	suite.NotNil(err, "error should not be nil")
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.mockUserRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestVerifyEmail_Negative_VerificationDataExpired() {
+	user := TEST_USER
+	user.VerificationData.Token = "token1"
+	user.VerificationData.ExpiresAt = time.Now().Add(time.Minute * -1)
+	mail := "mail"
+	token := "token1"
+	hostUrl := "http://localhost:8080"
+
+	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: strings.TrimSpace(user.Username)}).Return(user, nil).Once()
+	suite.mockUserRepository.On("UpdateVerificationDetails", context.Background(), strings.TrimSpace(user.Username), mock.AnythingOfType("domain.VerificationData")).Return(nil).Once()
+	suite.mockMailService.On("EmailVerificationTemplate", hostUrl, strings.TrimSpace(user.Username), mock.AnythingOfType("string")).Return(mail).Once()
+	suite.mockMailService.On("SendMail", mock.AnythingOfType("string"), user.Email, mail).Return(nil).Once()
 
 	err := suite.Usecase.VerifyEmail(context.Background(), user.Username, token, hostUrl)
 	suite.NotNil(err, "error should not be nil")

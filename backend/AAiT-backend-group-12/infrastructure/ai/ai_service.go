@@ -34,6 +34,38 @@ func NewAIService(apiKey string) *AIService {
 	}
 }
 
+// CleanText removes unwanted characters and formatting from the provided text.
+func (s *AIService) CleanText(value interface{}) string {
+	text := s.ExtractText(value)
+
+	cleanedText := strings.ReplaceAll(strings.ReplaceAll(text, "**", ""), "*", "")
+	cleanedText = strings.ReplaceAll(cleanedText, "\n\n", "\n")
+
+	return cleanedText
+}
+
+// extractText extracts the 'Text' field from a struct or returns the string value directly.
+func (s *AIService) ExtractText(value interface{}) string {
+	v := reflect.ValueOf(value)
+
+	switch v.Kind() {
+	case reflect.Struct:
+		field := v.FieldByName("Text")
+		if !field.IsValid() {
+			log.Printf("Field 'Text' not found in struct of type %T", value)
+			return ""
+		}
+		return field.String()
+
+	case reflect.String:
+		return v.String()
+
+	default:
+		log.Printf("Unsupported type %T for field extraction", value)
+		return ""
+	}
+}
+
 // GenerateContent generates content based on topics provided.
 func (s *AIService) GenerateContent(topics []string) (string, error) {
 	prompt := "Generate a blog post about " + strings.Join(topics, ", ") + ". " +
@@ -86,38 +118,6 @@ func (s *AIService) ReviewContent(blogContent string) (string, error) {
 	}
 
 	return suggestions, nil
-}
-
-// CleanText removes unwanted characters and formatting from the provided text.
-func (s *AIService) CleanText(value interface{}) string {
-	text := s.ExtractText(value)
-
-	cleanedText := strings.ReplaceAll(strings.ReplaceAll(text, "**", ""), "*", "")
-	cleanedText = strings.ReplaceAll(cleanedText, "\n\n", "\n")
-
-	return cleanedText
-}
-
-// extractText extracts the 'Text' field from a struct or returns the string value directly.
-func (s *AIService) ExtractText(value interface{}) string {
-	v := reflect.ValueOf(value)
-
-	switch v.Kind() {
-	case reflect.Struct:
-		field := v.FieldByName("Text")
-		if !field.IsValid() {
-			log.Printf("Field 'Text' not found in struct of type %T", value)
-			return ""
-		}
-		return field.String()
-
-	case reflect.String:
-		return v.String()
-
-	default:
-		log.Printf("Unsupported type %T for field extraction", value)
-		return ""
-	}
 }
 
 // GenerateTrendingTopics generates a list of trending blog topics based on the provided keywords.

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'profileWidget.dart';
+import 'profile_widget.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
@@ -15,7 +15,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: CircleAvatar(
           radius: 30.0, 
           backgroundColor: Colors.grey[300], 
-          child: const ProfileWidget(),
+          child: ProfileWidget(iconUrl: 'assets/images/Alex.png',isOnline: true,),
         ),
       ),
       title: Column(

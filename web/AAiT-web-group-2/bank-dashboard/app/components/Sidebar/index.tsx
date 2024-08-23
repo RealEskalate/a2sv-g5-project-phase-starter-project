@@ -1,11 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import SidebarItem from "./SidebarItem";
-import useLocalStorage from "@/src/hooks/UseLocalStorage";
 import Home from "../../../public/iconI.png";
 import Transaction from "../../../public/iconII.png";
 import User from "../../../public/iconIII.png";
@@ -40,7 +39,8 @@ const menuGroups = [
 
 const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const pathname = usePathname();
-  const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
+  // const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
+  const [pageName, setPageName] = useState("dashboard")
 
   return (
       <aside

@@ -11,12 +11,10 @@ class ProfilePicWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: CircleAvatar(
+    return CircleAvatar(
         radius: radius,
         backgroundColor: bgColor,
         backgroundImage: AssetImage(imagePath),
-      ),
-    );
+      );
   }
 }

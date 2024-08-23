@@ -2,6 +2,7 @@
 import { useState } from "react";
 import InputMoney from "../inputMoney/InputMoney";
 import PersonCard from "../personCard/PersonCard";
+import CardGridSkeleton from "./CardGridSkeleton";
 
 const SendMoney = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -51,6 +52,11 @@ const SendMoney = () => {
   const handleCardClick = (index: number) => {
     setSelectedIndex(index);
   };
+  // if (true) {
+  //   return (
+  //     <CardGridSkeleton />
+  //   )
+  // }
 
   return (
     <div className="gap-4 rounded-3xl bg-white px-5 pt-7 pb-9 h-[300px] w-full grid grid-rows-[3fr-1fr]">

@@ -47,5 +47,6 @@ func NewUserRoute(group *gin.RouterGroup  , user_collection database.CollectionI
 	group.PUT("api/user/:id", LoggedInmiddleWare , mustOwn , ctrl.UpdateUser())
 	group.DELETE("api/user/:id",LoggedInmiddleWare ,mustOwn, ctrl.DeleteUser())
 
+	group.PUT("api/demote/:id" , LoggedInmiddleWare , mustBeAdmin , ctrl.DemoteUser())
 	group.PUT("api/promote/:id" , LoggedInmiddleWare , mustBeAdmin , ctrl.PromoteUser())
 }

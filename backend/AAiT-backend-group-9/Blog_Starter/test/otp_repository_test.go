@@ -14,6 +14,60 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+/*
+func NewOtpRepository(db *mongo.Database, collection string) domain.OtpRepository {
+	return &otpRepository{
+		database:   db,
+		collection: collection,
+	}
+}
+
+func (or *otpRepository) SaveOtp(c context.Context, otp *domain.Otp) error {
+	collection := or.database.Collection(or.collection)
+
+	// Define an update operation
+	update := bson.M{
+		"$set": otp,
+	}
+
+	// Define options for the update operation (e.g., to perform an upsert)
+	options := options.Update().SetUpsert(true)
+	_, err := collection.UpdateOne(c, bson.M{"_id": otp.ID}, update, options)
+
+	return err
+}
+
+func (or *otpRepository) InvalidateOtp(c context.Context, otp *domain.Otp) error {
+	collection := or.database.Collection(or.collection)
+
+	// Define an update operation
+	update := bson.M{}
+
+	// Define options for the update operation (e.g., to perform an upsert)
+	options := options.Update().SetUpsert(false)
+
+	// Perform the update operation
+	_, err := collection.UpdateOne(c, bson.M{"_id": otp.ID}, update, options)
+
+	return err
+}
+
+func (or *otpRepository) GetOtpByEmail(c context.Context, email string) (domain.Otp, error) {
+	collection := or.database.Collection(or.collection)
+	var otp domain.Otp
+	err := collection.FindOne(c, bson.M{"email": email}).Decode(&otp)
+	return otp, err
+}
+
+func (or *otpRepository) GetByID(c context.Context, id string) (domain.Otp, error) {
+	collection := or.database.Collection(or.collection)
+	var otp domain.Otp
+	err := collection.FindOne(c, bson.M{"_id": id}).Decode(&otp)
+	return otp, err
+}
+
+*/
+
 type OtpRepositorySuit struct {
 	suite.Suite
 	// the funcionalities we need to test
@@ -82,4 +136,36 @@ func (suite *OtpRepositorySuit) TestSaveOtp() {
 	suite.Nil(err)
 	suite.Equal(otp.Otp, otp2.Otp)
 
+}
+
+func (suite *OtpRepositorySuit) TestGetByID() {
+	otp := domain.Otp{
+		ID:    primitive.NewObjectID(),
+		Email: "eyob@gmail.com",
+		Otp:   "1234",
+	}
+
+	err := suite.repository.SaveOtp(context.Background(), &otp)
+	suite.Nil(err)
+
+	otp2, err := suite.repository.GetByID(context.Background(), otp.ID.Hex())
+
+	suite.Nil(err)
+	suite.Equal(otp.Otp, otp2.Otp)
+}
+
+func (suite *OtpRepositorySuit) TestGetOtpByEmail() {
+	otp := domain.Otp{
+		ID:    primitive.NewObjectID(),
+		Email: "eyob@gmail.com",
+		Otp:   "1234",
+	}
+
+	err := suite.repository.SaveOtp(context.Background(), &otp)
+	suite.Nil(err)
+
+	otp2, err := suite.repository.GetOtpByEmail(context.Background(), otp.Email)
+
+	suite.Nil(err)
+	suite.Equal(otp.Otp, otp2.Otp)
 }

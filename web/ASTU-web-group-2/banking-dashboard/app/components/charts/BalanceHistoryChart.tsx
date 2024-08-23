@@ -3,6 +3,8 @@ import { useGetBalanceHistoryQuery } from "@/lib/service/TransactionService";
 import { useRef, useEffect } from "react";
 import { Chart, ChartData, ChartOptions } from "chart.js/auto";
 import { useSession } from "next-auth/react";
+import BarChartSkeleton from "./BarChartSkeleton";
+import ErrorImage from "../Error/ErrorImage";
 
 const generateMonths = () => {
   const months = [];
@@ -61,7 +63,7 @@ function BalanceHistoryChart() {
 
   useEffect(() => {
     if (chartRef.current && data?.success) {
-      // Destroy the chart instance if it already exists
+   
       if (chartRef.current.chart) {
         chartRef.current.chart.destroy();
       }
@@ -150,21 +152,30 @@ function BalanceHistoryChart() {
 
   if (isLoading) {
     return (
-      <div className="rounded-3xl flex justify-center items-center flex-col flex-initial flex-wrap  bg-white p-5 h-[300px] animate-pulse">
-          <div className="flex flex-row gap-2">
-            <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-            <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
-            <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-          </div>
-      </div>
+      <div className="w-full h-auto bg-gray-300 rounded-lg flex items-center justify-center animate-pulse">
+     
+      <svg width="100%" height="100%" viewBox="0 0 200 100">
+        <polyline
+          fill="none"
+          stroke="#aaaaaa"
+          strokeWidth="2"
+          points="10,80 40,60 70,65 100,45 130,50 160,30 190,40"
+        />
+        <circle cx="10" cy="80" r="3" fill="#aaaaaa" />
+        <circle cx="40" cy="60" r="3" fill="#aaaaaa" />
+        <circle cx="70" cy="65" r="3" fill="#aaaaaa" />
+        <circle cx="100" cy="45" r="3" fill="#aaaaaa" />
+        <circle cx="130" cy="50" r="3" fill="#aaaaaa" />
+        <circle cx="160" cy="30" r="3" fill="#aaaaaa" />
+        <circle cx="190" cy="40" r="3" fill="#aaaaaa" />
+      </svg>
+    </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="balance-history-chart text-[#718EBF] rounded-3xl bg-white  w-full h-[300px] pt-5">
-        Ooops! Error loading balance history.
-      </div>
+      <ErrorImage />
     );
   }
 

@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import PieChartSkeleton from './PieChartSkeleton';
 
 Chart.register(ArcElement, Tooltip, Legend);
 
@@ -10,7 +11,7 @@ const data = {
   labels: ['Category A', 'Category B', 'Category C', 'Category D'],
   datasets: [
     {
-      data: [30, 15, 35, 20],
+      data: [25, 25, 25, 25],
       backgroundColor: ['#343C6A', '#FC7900', '#1814F3', '#FA00FF'],
       borderWidth: 5,
       hoverBorderWidth: 2,
@@ -86,6 +87,12 @@ ${label}`;
       }
     }
   }, []);
+
+  // if (true) {
+  //   return (
+  //     <PieChartSkeleton />
+  //   )
+  // }
 
   return (
     <div className='bg-white  rounded-3xl lg:h-[322px] h-[261px] flex justify-center items-center'>

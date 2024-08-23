@@ -14,7 +14,7 @@ const InfoboxForLoans = () => {
 
   const accessToken = session?.user.accessToken!;
 
-  const { data: res, isLoading } = useGetMyLoansDetailQuery(accessToken);
+  const { data: res, isLoading, isError } = useGetMyLoansDetailQuery(accessToken);
 
   if (isLoading) {
     return (
@@ -26,6 +26,9 @@ const InfoboxForLoans = () => {
 
       </div>
     );
+  }
+  if (isError) {
+    return <div>Error fetching data!</div>;
   }
 
   const data = res.data!;

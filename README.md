@@ -48,7 +48,6 @@ To get started with the Group Name Web Project, follow these steps:
 
 ## Git Guidelines
 
-
 Refer to [Git Guidelines](docs/git.md)
 
 Thank you for being a part of the A2SV journey. Together, we can make a positive impact on society through technology and innovation.

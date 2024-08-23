@@ -15,7 +15,7 @@ import (
 
 func Router(server *gin.RouterGroup, config *infrastructure.Config, DB mongo.Database) {
 
-	blog_repo := repositories.NewBlogRepository(DB.Collection(config.BlogCollection), DB.Collection(config.UserCollection), *config)
+	blog_repo := repositories.NewBlogRepository(DB.Collection(config.BlogCollection), DB.Collection(config.UserCollection), DB.Collection(config.CommentCollection), *config)
 	validator := domain.NewValidator()
 	idConverter := domain.NewIdConverter()
 	blog_usecase := usecases.NewBlogUsecase(blog_repo, idConverter)

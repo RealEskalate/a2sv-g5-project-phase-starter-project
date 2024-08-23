@@ -14,6 +14,8 @@ func SetRouter(router *gin.Engine, com *controllers.CommentController, c *contro
 	router.POST("/user/verify-email", cu.VerifyEmail)
 	router.POST("/user/login", cu.LoginUser)
 	router.GET("/logout", middleware.AuthMiddleware(client), cu.LogoutUser)
+	router.PUT("/user/update", middleware.AuthMiddleware(client), cu.UpdateUserDetails)
+	router.PUT("/admin/promote", middleware.AuthMiddleware(client), middleware.AdminMiddleware, cu.PromoteDemoteUser)
 
 	router.POST("/forget-password", cu.ForgotPassword)
 	router.POST("/reset-password", cu.ResetPassword)

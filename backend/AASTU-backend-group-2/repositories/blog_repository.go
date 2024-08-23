@@ -4,6 +4,7 @@ import (
 	"blog_g2/domain"
 	"context"
 	"errors"
+	"log"
 
 	"time"
 
@@ -31,7 +32,9 @@ func NewBlogRepository(mongoClient *mongo.Client) domain.BlogRepository {
 const perpage = 10
 
 func (br *BlogRepository) CreateBlog(blog *domain.Blog) error {
-	result, err := br.collection.InsertOne(context.TODO(), blog)
+	log.Println(blog)
+	blog.ID = primitive.NewObjectID()
+	result, err := br.collection.InsertOne(context.TODO(), blog, options.InsertOne())
 	if err != nil {
 		return err
 	}
@@ -39,19 +42,25 @@ func (br *BlogRepository) CreateBlog(blog *domain.Blog) error {
 	return nil
 }
 
-func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) ([]domain.Blog, error) {
+func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) ([]domain.Blog, int, error) {
 	if pgnum == 0 {
 		pgnum = 1
 	}
 	sorto := -1
 	skip := perpage * (pgnum - 1)
 
+	count, err := br.collection.CountDocuments(context.TODO(), bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Total documents: %d\n", count)
+
 	if direct == "" {
 		direct = "desc"
 	}
 
 	if direct != "asc" && direct != "desc" {
-		return nil, errors.New("invalid direct parameter")
+		return nil, 0, errors.New("invalid direct parameter")
 	}
 
 	if direct == "asc" {
@@ -63,7 +72,7 @@ func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) 
 	}
 
 	if sortby != "date" && sortby != "popularity" {
-		return nil, errors.New("invalid sortby parameter")
+		return nil, 0, errors.New("invalid sortby parameter")
 	}
 
 	if sortby == "popularity" {
@@ -75,7 +84,7 @@ func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) 
 						{Key: "$add", Value: bson.A{
 							bson.D{{Key: "$multiply", Value: bson.A{"$likes", 1}}},
 							bson.D{{Key: "$multiply", Value: bson.A{"$dislikes", 1}}},
-							bson.D{{Key: "$multiply", Value: bson.A{"$comment", 2}}},
+							bson.D{{Key: "$multiply", Value: bson.A{"$comments", 2}}},
 						}},
 					}},
 				}},
@@ -96,16 +105,16 @@ func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) 
 
 		cursor, err := br.collection.Aggregate(context.Background(), pipeline)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
 		var blogs []domain.Blog
 
 		if err = cursor.All(context.Background(), &blogs); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
-		return blogs, nil
+		return blogs, int(count), nil
 
 	} else if sortby == "date" {
 		findoptions := options.Find()
@@ -115,17 +124,17 @@ func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) 
 
 		cursor, err := br.collection.Find(context.Background(), bson.D{}, findoptions)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
 		var blogs []domain.Blog
 		if err = cursor.All(context.Background(), &blogs); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
-		return blogs, nil
+		return blogs, int(count), nil
 	}
 
-	return nil, errors.New("no blogs found")
+	return nil, 0, errors.New("no blogs found")
 
 }
 

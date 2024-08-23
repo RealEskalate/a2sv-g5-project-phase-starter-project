@@ -17,13 +17,8 @@ func NewDisLikeController(dislikeusecase domain.DisLikeUsecase) *DisLikeControll
 }
 
 func (dc DisLikeController) CreateDisLike(c *gin.Context) {
-	role, exists := c.Get("role")
-	if !exists || (role != "user" && role != "admin") {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-		return
-	}
 	postID := c.Param("postID")
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("userid")
 	userIDString, ok := userID.(string)
 	if !ok || !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "user not found"})
@@ -44,12 +39,7 @@ func (dc DisLikeController) CreateDisLike(c *gin.Context) {
 
 func (dc DisLikeController) DeleteDisLike(c *gin.Context) {
 
-	role, exists := c.Get("role")
-	if !exists || (role != "user" && role != "admin") {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-		return
-	}
-	dislikeid, exists := c.Get("userID")
+	dislikeid, exists := c.Get("userid")
 	dislikeidstr, ok := dislikeid.(string)
 	if !ok || !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "like not found"})
@@ -68,12 +58,6 @@ func (dc DisLikeController) DeleteDisLike(c *gin.Context) {
 }
 
 func (dc DisLikeController) GetDisLikes(c *gin.Context) {
-
-	role, exists := c.Get("role")
-	if !exists || (role != "user" && role != "admin") {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-		return
-	}
 	postID := c.Param("postID")
 	dislikes, err := dc.dislikeusecase.GetDisLikes(context.TODO(), postID)
 	if err != nil {

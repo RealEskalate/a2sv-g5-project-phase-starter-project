@@ -2,6 +2,8 @@ package usecases
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"time"
 
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
@@ -22,12 +24,39 @@ func NewBlogUseCase(br domain.BlogRepository, cache infrastructure.CacheService)
 }
 
 func (bu *blogUseCase) CreateBlog(blog *domain.Blog, authorID string) domain.Error {
-	blog.AuthorID, _ = primitive.ObjectIDFromHex(authorID)
-	_, err := bu.blogRepository.Create(blog)
+	// Convert authorID to ObjectID
+	authorObjectID, err := primitive.ObjectIDFromHex(authorID)
 	if err != nil {
-		return err
+		return &domain.CustomError{Code: 400, Message: "Invalid Author ID"}
 	}
-	bu.redis.Delete("all_blogs") 
+	blog.AuthorID = authorObjectID
+
+	// Initialize blog fields
+	blog.Likes = []string{}
+	blog.Dislikes = []string{}
+	blog.Comments = []domain.Comment{}
+	blog.CreatedAt = time.Now()
+	blog.UpdatedAt = time.Now()
+	blog.ViewCount = 0
+	if blog.Tags == nil {
+		blog.Tags = []string{}
+	}
+
+	// Create the blog in the repository
+	_, err = bu.blogRepository.Create(blog)
+	if err != nil {
+		return domain.CustomError{
+			Code:    500,
+			Message: "Failed to create blog",
+		}
+	}
+
+	// Delete the cached list of all blogs in Redis
+	if err := bu.redis.Delete("all_blogs"); err != nil {
+		// Log the error if needed but don't return it to avoid disrupting the flow
+		log.Printf("Failed to delete Redis key 'all_blogs': %v", err)
+	}
+
 	return nil
 }
 
@@ -72,35 +101,51 @@ func (bu *blogUseCase) GetBlogs(page_number string) ([]domain.Blog, domain.Error
 }
 
 func (bu *blogUseCase) UpdateBlog(blogID string, blog *domain.Blog, userID string) domain.Error {
-	_, err := bu.blogRepository.Update(blogID, blog)
+
+	prevBlog, err := bu.blogRepository.FindById(blogID)
 	if err != nil {
 		return err
 	}
-	bu.redis.Delete(blogID) 
-	bu.redis.Delete("all_blogs") 
-	return nil
-}
-
-func (bu *blogUseCase) DeleteBlog(blogID string) domain.Error {
-	err := bu.blogRepository.Delete(blogID)
+	if prevBlog.AuthorID.Hex() != userID {
+		fmt.Println(blog.AuthorID.Hex(), "userID", userID)
+		return domain.CustomError{Code: 403, Message: "You are not authorized to update this blog"}
+	}
+	_, err = bu.blogRepository.Update(blogID, blog)
 	if err != nil {
 		return err
 	}
-	bu.redis.Delete(blogID) 
-	bu.redis.Delete("all_blogs") 
+	bu.redis.Delete(blogID)
+	bu.redis.Delete("all_blogs")
 	return nil
 }
 
-func (bu *blogUseCase) SearchBlogsByTitle(title string , page_number string) ([]domain.Blog, domain.Error) {
-	blogs, err := bu.blogRepository.SearchByTitle(title , page_number)
+func (bu *blogUseCase) DeleteBlog(blogID string, userID string) domain.Error {
+	blog, err := bu.blogRepository.FindById(blogID)
+	if err != nil {
+		return err
+	}
+	if blog.AuthorID.Hex() != userID {
+		return domain.CustomError{Code: 403, Message: "You are not authorized to delete this blog"}
+	}
+	err = bu.blogRepository.Delete(blogID)
+	if err != nil {
+		return err
+	}
+	bu.redis.Delete(blogID)
+	bu.redis.Delete("all_blogs")
+	return nil
+}
+
+func (bu *blogUseCase) SearchBlogsByTitle(title string, page_number string) ([]domain.Blog, domain.Error) {
+	blogs, err := bu.blogRepository.SearchByTitle(title, page_number)
 	if err != nil {
 		return nil, err
 	}
 	return blogs, nil
 }
 
-func (bu *blogUseCase) SearchBlogsByAuthor(author string ,page_number string) ([]domain.Blog, domain.Error) {
-	blogs, err := bu.blogRepository.SearchByAuthor(author , page_number)
+func (bu *blogUseCase) SearchBlogsByAuthor(author string, page_number string) ([]domain.Blog, domain.Error) {
+	blogs, err := bu.blogRepository.SearchByAuthor(author, page_number)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +173,7 @@ func (bu *blogUseCase) LikeBlog(userID, blogID string) domain.Error {
 	likeCountKey := "blog:like_count:" + blogID
 	bu.redis.Increment(likeCountKey)
 
-	bu.redis.Delete(blogID) // Invalidate cache for the liked blog
+	bu.redis.Delete(blogID)
 	return nil
 }
 
@@ -149,7 +194,6 @@ func (bu *blogUseCase) AddComment(blogID string, comment *domain.Comment) domain
 	bu.redis.Delete(blogID)
 	return nil
 }
-
 func (bu *blogUseCase) DeleteComment(blogID, commentID string) domain.Error {
 	err := bu.blogRepository.DeleteComment(blogID, commentID)
 	if err != nil {
@@ -173,6 +217,6 @@ func (bu *blogUseCase) Like(blogID, userID string) domain.Error {
 	if err != nil {
 		return err
 	}
-	bu.redis.Delete(blogID) 
+	bu.redis.Delete(blogID)
 	return nil
 }

@@ -25,7 +25,7 @@ type BlogUseCase interface {
 	GetBlog(blogID string, userID string) (*Blog, Error)
 	GetBlogs(page_number string) ([]Blog, Error)
 	UpdateBlog(blogID string, blog *Blog, userId string) Error
-	DeleteBlog(blogID string) Error
+	DeleteBlog(blogID string , currUserId string) Error
 	SearchBlogsByTitle(title string, page_number string) ([]Blog, Error)
 	SearchBlogsByAuthor(author string, page_number string) ([]Blog, Error)
 	FilterBlogs(tags []string, dateAfter time.Time, popular bool) ([]Blog, Error)

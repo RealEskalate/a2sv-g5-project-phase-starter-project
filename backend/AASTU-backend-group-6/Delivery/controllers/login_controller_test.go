@@ -52,7 +52,6 @@ func (suite *LoginControllerTestSuite) TestLogin_Success() {
 		ID:       primitive.NewObjectID(),
 		Email:    "test@example.com",
 		Password: string(hash),
-		Verified: true,
 	}
 	accessToken := "access_token"
 	refreshToken := "refresh_token"
@@ -158,7 +157,7 @@ func (suite *LoginControllerTestSuite) TestLogin_InvalidCredentials() {
 		ID:       primitive.NewObjectID(),
 		Email:    "test@example.com",
 		Password: "$2a$10$XV8WY4vZQ9L0X1tZ6Z1K7e8X6Z1K7e8X6Z1K7e8X6Z1K7e8X6Z1K7e",
-		Verified: true,
+		
 	}
 
 	suite.loginUsecase.On("GetUserByEmail", mock.Anything, request.Email).Return(user, nil)
@@ -196,7 +195,7 @@ func (suite *LoginControllerTestSuite) TestLogin_UserNotVerified() {
 		ID:       primitive.NewObjectID(),
 		Email:    "test@example.com",
 		Password: string(hash),
-		Verified: false,
+		
 	}
 
 	suite.loginUsecase.On("GetUserByEmail", mock.Anything, request.Email).Return(user, nil)

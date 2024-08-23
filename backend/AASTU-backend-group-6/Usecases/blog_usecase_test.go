@@ -44,7 +44,7 @@ func (suite *BlogUsecaseSuite) TestCommentOnBlog() {
 	suite.repo.On("CommentOnBlog", "1", "name", comment).Return(nil)
 	suite.idConverter.On("ToObjectID", "1").Return(newID)
 
-	err := suite.blogUsecase.CommentOnBlog("1", "name", comment)
+	err := suite.blogUsecase.CommentOnBlog("user_id", comment)
 
 	suite.IsTypef(err, nil, "should be similar in Type")
 	suite.Equal(err, nil, "should be equal")
@@ -61,14 +61,14 @@ func (suite *BlogUsecaseSuite) TestCreateBlog() {
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 		Tags:       make([]string, 1),
-		Comments:   make([]domain.Comment, 1),
-		Creater_id: id,
+		Commenters_ID:   make([]primitive.ObjectID, 1),
+		Creator_id: id,
 		Blog_image: "https://media.istockphoto.com/id/922745190/photo/blogging-blog-concepts-ideas-with-worktable.jpg?s=2048x2048&w=is&k=20&c=QNKuhWRD7f0P5hybe28_AHo_Wh6W93McWY157Vmmh4Q=",
 	}
 
 	suite.repo.On("CreateBlog", "1", blog, "user").Return(blog, nil)
 
-	newBlog, err := suite.blogUsecase.CreateBlog("1", blog, "user")
+	newBlog, err := suite.blogUsecase.CreateBlog("1", blog)
 	suite.Assert().IsType(newBlog, domain.Blog{}, "must be of the same type")
 	suite.Nil(err, "should no be nil")
 	suite.repo.AssertExpectations(suite.T())
@@ -82,16 +82,16 @@ func (suite *BlogUsecaseSuite) TestDeleteBlogByID() {
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 		Tags:       make([]string, 1),
-		Comments:   make([]domain.Comment, 1),
-		Creater_id: id,
+		Commenters_ID:   make([]primitive.ObjectID, 1),
+		Creator_id: id,
 		Blog_image: "https://media.istockphoto.com/id/922745190/photo/blogging-blog-concepts-ideas-with-worktable.jpg?s=2048x2048&w=is&k=20&c=QNKuhWRD7f0P5hybe28_AHo_Wh6W93McWY157Vmmh4Q=",
 	}
 
 	suite.repo.On("GetBlogByID", "1", true).Return(blog, nil)
-	suite.idConverter.On("ToString", blog.Creater_id).Return("1")
+	suite.idConverter.On("ToString", blog.Creator_id).Return("1")
 	suite.repo.On("DeleteBlogByID", "1", "1").Return(domain.ErrorResponse{})
 
-	errResponse := suite.blogUsecase.DeleteBlogByID("1", "1", "user")
+	errResponse := suite.blogUsecase.DeleteBlogByID("1", "user")
 	suite.IsType(errResponse, domain.ErrorResponse{}, "should of the same type")
 	suite.repo.AssertExpectations(suite.T())
 }
@@ -141,10 +141,10 @@ func (suite *BlogUsecaseSuite) TestGetBlogs() {
 func (suite *BlogUsecaseSuite) TestGetMyBlogByID() {
 	id, _ := primitive.ObjectIDFromHex("66c59fa762c7e4ec02998609")
 	blog := domain.Blog{
-		Creater_id: id,
+		Creator_id: id,
 	}
 	suite.repo.On("GetMyBlogByID", "66c59fa762c7e4ec02998609", "1").Return(blog, nil)
-	blog, err := suite.blogUsecase.GetMyBlogByID(blog.Creater_id.Hex(), "1", "user")
+	blog, err := suite.blogUsecase.GetMyBlogByID(blog.Creator_id.Hex(),  "user")
 	suite.IsType(blog, domain.Blog{}, "should be equal")
 	suite.Nil(err, "should be nil")
 	suite.repo.AssertExpectations(suite.T())
@@ -174,11 +174,11 @@ func (suite *BlogUsecaseSuite) TestSearchBlogByTitleAndAuthor() {
 func (suite *BlogUsecaseSuite) TestUpdateBlogByID() {
 	id, _ := primitive.ObjectIDFromHex("66c59fa762c7e4ec02998609")
 	blog := domain.Blog{
-		Creater_id: id,
+		Creator_id: id,
 	}
 	suite.repo.On("UpdateBlogByID", "66c59fa762c7e4ec02998609", "1", blog).Return(blog, nil)
 	suite.repo.On("GetBlogByID", "1", true).Return(blog, nil)
-	blog, err := suite.blogUsecase.UpdateBlogByID("66c59fa762c7e4ec02998609", "1", blog, "user")
+	blog, err := suite.blogUsecase.UpdateBlogByID("66c59fa762c7e4ec02998609", "1", blog)
 
 	suite.IsType(blog, domain.Blog{}, "should be equal")
 	suite.Nil(err, "should be nil")

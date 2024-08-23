@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import   Toggle  from './toogle'
 import { useSelector, useDispatch } from 'react-redux';
@@ -31,6 +31,7 @@ function Preference() {
   const [apiError, setApiError] = useState('');
 
   const user = useSelector((state: RootState) => state.user as User);
+  console.log(user,'11111111111111')
   const dispatch = useDispatch();
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
@@ -40,7 +41,7 @@ function Preference() {
   const [accountRecommendations, setAccountRecommendations] = useState(false);
 
   const users = session?.user as ExtendedUser;
-  const key = users?.accessToken || '';
+  console.log(users,'users')
 
   useEffect(() => {
     if (user) {
@@ -50,14 +51,16 @@ function Preference() {
       setMerchantOrder(user.preference.receiveMerchantOrder || false);
       setAccountRecommendations(user.preference.accountRecommendations || false);
     }
-  }, [user, setValue]);
-
+  }, [users, setValue,user]);
+if(!users){return <></>}
   const handleDigitalCurrencyChange = () => setDigitalCurrency(!digitalCurrency);
   const handleMerchantOrderChange = () => setMerchantOrder(!merchantOrder);
   const handleAccountRecommendationsChange = () => setAccountRecommendations(!accountRecommendations);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
+    setSuccessMessage('');
     setApiError('');
+    console.log(users.accessToken,'access token ')
     const updatedData = {
       ...data,
       sentOrReceiveDigitalCurrency: digitalCurrency,
@@ -65,22 +68,27 @@ function Preference() {
       accountRecommendations: accountRecommendations,
       twoFactorAuthentication: true,
     };
-
+console.log(updatedData,'upadted data ')
     try {
       const response = await axios.put('https://bank-dashboard-rsf1.onrender.com/user/update-preference', updatedData, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${key}`,
+          'Authorization': `Bearer ${users.accessToken}`,
         },
       });
 
+      console.log(response.status,111111)
       if (response.status === 200) {
         setSuccessMessage('Preferences updated successfully!');
         dispatch(setUser(updatedData));
-      } else {
+      }else if (response.status==401) {
+        signOut()
+      }
+      else {
         throw new Error(`Failed to update preferences: ${response.statusText}`);
       }
     } catch (error: any) {
+      if(error.response.status==401){signOut()}
       setApiError(error.response?.data?.message || 'Failed to update preferences.');
     }
   };
@@ -114,16 +122,16 @@ function Preference() {
       <div className="mt-6 md:mt-8 text-slate-700 text-sm md:text-base lg:text-[17px]">
         Notification
         <div className="flex flex-col gap-4 mt-5 md:mt-6">
-          <div className="flex gap-5 md:gap-6">
+          <div className="flex gap-5 md:gap-6"  onClick={handleDigitalCurrencyChange}>
             <Toggle/>
             <div>I send or receive digital currency</div>
           </div>
-          <div className="flex gap-5 md:gap-6">
+          <div className="flex gap-5 md:gap-6"   onClick={handleMerchantOrderChange}>
             <Toggle />
             <div>I receive merchant order</div>
           </div>
-          <div className="flex gap-5 md:gap-6">
-            <Toggle  />
+          <div className="flex gap-5 md:gap-6" onClick={handleAccountRecommendationsChange}>
+        <Toggle  />
             <div>There are recommendations for my account</div>
           </div>
         </div>

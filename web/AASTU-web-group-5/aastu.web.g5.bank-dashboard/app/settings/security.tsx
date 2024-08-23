@@ -1,15 +1,18 @@
 'use client';
 import React, { useState } from 'react';
 import Toggle from './toogle';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import  Error  from '../error';
 interface ExtendedUser {
   name?: string;
   email?: string;
   image?: string;
   accessToken?: string;
   }
+ 
+  
 
 export default function Security() {
   const { register, formState: { errors } } = useForm();
@@ -26,7 +29,7 @@ export default function Security() {
     e.preventDefault();
     setSuccessMessage('');
     setApiError('');
-  
+    
     const data = { password: currentPassword, newPassword: newPassword };
     
     try {
@@ -45,6 +48,7 @@ export default function Security() {
         const result = response.data;
         if (result.success) {
           setSuccessMessage('Password changed successfully!');
+          // signOut()
         } else {
           setApiError(result.message || 'Failed to change password.');
         }
@@ -59,10 +63,12 @@ export default function Security() {
   
   return (
     <div className='text-[16px]'>
+      <Error  session = {session}/>
+
       <div className="text-slate-700 text-sm md:text-base lg:text-[17px]">Two-factor Authentication</div>
       <div className="flex gap-5 md:gap-6 mt-4">
         <Toggle />
-        <div className="text-slate-700 text-sm md:text-base lg:text-[17px]">
+        <div className="text-slate-700 text-sm md:text-base lg:text-[17px]"> 
           Enable or disable two-factor authentication
         </div>
       </div>

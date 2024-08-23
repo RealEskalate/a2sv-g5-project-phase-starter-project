@@ -19,9 +19,8 @@ type BlogCommentRepositorySuite struct {
 	suite.Suite
 
 	blogCommentCollection *mocks.Collection
-	repository  *repository.BlogCommentRepository
+	repository            *repository.BlogCommentRepository
 }
-
 
 func (suite *BlogCommentRepositorySuite) SetupTest() {
 	suite.blogCommentCollection = &mocks.Collection{}
@@ -57,32 +56,30 @@ func (suite *BlogCommentRepositorySuite) TestAddComment_Failure() {
 	suite.blogCommentCollection.AssertExpectations(suite.T())
 }
 
-
 func (suite *BlogCommentRepositorySuite) TestGetComments_Success() {
-    cursor := &mocks.Cursor{}
-    comments := []models.Comment{
-        {ID: "1", Content: "First Comment"},
-        {ID: "2", Content: "Second Comment"},
-    }
+	cursor := &mocks.Cursor{}
+	comments := []models.Comment{
+		{ID: "1", Content: "First Comment"},
+		{ID: "2", Content: "Second Comment"},
+	}
 
-    suite.blogCommentCollection.On("Find", mock.Anything, map[string]string{"blog_id": "123"}).Return(cursor, nil)
-    // Mock the behavior of cursor.All to populate the passed slice pointer
-    cursor.On("All", mock.Anything, mock.Anything).Run(func(args mock.Arguments) {
-        // Extract the pointer to the slice and set it with the test comments
-        arg := args.Get(1).(*[]models.Comment)
-        *arg = comments
-    }).Return(nil)
-    cursor.On("Close", mock.Anything).Return(nil)
+	suite.blogCommentCollection.On("Find", mock.Anything, map[string]string{"blog_id": "123"}).Return(cursor, nil)
+	// Mock the behavior of cursor.All to populate the passed slice pointer
+	cursor.On("All", mock.Anything, mock.Anything).Run(func(args mock.Arguments) {
+		// Extract the pointer to the slice and set it with the test comments
+		arg := args.Get(1).(*[]models.Comment)
+		*arg = comments
+	}).Return(nil)
+	cursor.On("Close", mock.Anything).Return(nil)
 
-    result, err := suite.repository.GetComments(context.Background(), "123")
+	result, err := suite.repository.GetComments(context.Background(), "123")
 
-    suite.Nil(err)
-    suite.NotNil(result)
-    suite.Equal(len(comments), len(result))
-    suite.blogCommentCollection.AssertExpectations(suite.T())
-    cursor.AssertExpectations(suite.T())
+	suite.Nil(err)
+	suite.NotNil(result)
+	suite.Equal(len(comments), len(result))
+	suite.blogCommentCollection.AssertExpectations(suite.T())
+	cursor.AssertExpectations(suite.T())
 }
-
 
 func (suite *BlogCommentRepositorySuite) TestGetComments_Failure() {
 	suite.blogCommentCollection.On("Find", mock.Anything, map[string]string{"blog_id": "123"}).Return(nil, errors.New("Find error"))
@@ -128,7 +125,6 @@ func (suite *BlogCommentRepositorySuite) TestUpdateComment_Failure() {
 	suite.blogCommentCollection.AssertExpectations(suite.T())
 }
 
-
 func (suite *BlogCommentRepositorySuite) TestDeleteComment_Success() {
 	filter := bson.M{"_id": "123"}
 
@@ -151,7 +147,6 @@ func (suite *BlogCommentRepositorySuite) TestDeleteComment_Failure() {
 	suite.Equal("Failed to delete comment", err.Message)
 	suite.blogCommentCollection.AssertExpectations(suite.T())
 }
-
 
 func (suite *BlogCommentRepositorySuite) TestGetComment_Success() {
 	comment := models.Comment{ID: "123", Content: "Test Comment"}
@@ -178,7 +173,6 @@ func (suite *BlogCommentRepositorySuite) TestGetComment_Success() {
 	singleResult.AssertExpectations(suite.T())
 }
 
-
 func (suite *BlogCommentRepositorySuite) TestGetComment_Failure() {
 	// Mock the SingleResult
 	singleResult := &mocks.SingleResult{}
@@ -198,8 +192,6 @@ func (suite *BlogCommentRepositorySuite) TestGetComment_Failure() {
 	suite.blogCommentCollection.AssertExpectations(suite.T())
 	singleResult.AssertExpectations(suite.T())
 }
-
-
 
 func (suite *BlogCommentRepositorySuite) TestDeleteComments_Success() {
 	filter := bson.M{"blog_id": "123"}
@@ -223,7 +215,6 @@ func (suite *BlogCommentRepositorySuite) TestDeleteComments_Failure() {
 	suite.Equal("Failed to delete comments", err.Message)
 	suite.blogCommentCollection.AssertExpectations(suite.T())
 }
-
 
 func TestBlogCommentRepositorySuite(t *testing.T) {
 	suite.Run(t, new(BlogCommentRepositorySuite))

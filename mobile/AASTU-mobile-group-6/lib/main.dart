@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/add/add_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/detail_bloc.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_bloc.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/update/bloc/update_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/HomeChat.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_bloc.dart';
@@ -113,7 +115,9 @@ class Main extends StatelessWidget {
                 child: AddUpdate(),
               ),
           '/search': (context) => BlocProvider(
-              create: (context) => sl.get<HomeBloc>()..add(GetProductsEvent())),
+      create: (context) => sl.get<SearchBloc>()..add(LoadAllProductEvent()),
+      child: searchPage(),
+    ),
 
           '/splash': (context) => SplashScreen(),
 

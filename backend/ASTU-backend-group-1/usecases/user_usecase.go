@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	infrastructure "astu-backend-g1/Infrastructure"
 	"astu-backend-g1/domain"
+	"astu-backend-g1/infrastructure"
 	"crypto/rand"
 	"errors"
 	"math/big"
@@ -20,7 +20,6 @@ func NewUserUsecase(u domain.UserRepository) (domain.UserUsecase, error) {
 func (useCase *userUsecase) Get() ([]domain.User, error) {
 	return useCase.userRepository.Get(domain.UserFilterOption{})
 }
-
 
 func (useCase *userUsecase) LoginUser(uname string, password string) (string, error) {
 	user, err := useCase.GetByUsername(uname)
@@ -40,7 +39,6 @@ func (useCase *userUsecase) LoginUser(uname string, password string) (string, er
 	return accesstoken, nil
 }
 
-
 func (useCase *userUsecase) Logout(email string) error {
 	user, err := useCase.GetByEmail(email)
 	if err != nil {
@@ -50,7 +48,6 @@ func (useCase *userUsecase) Logout(email string) error {
 	useCase.userRepository.Update(user.ID, user)
 	return nil
 }
-
 
 func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 	user, err := useCase.GetByEmail(email)
@@ -81,7 +78,6 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 
 	return "Password reset token sent to your email", nil
 }
-
 
 func (useCase *userUsecase) ResetPassword(email string, token string, password string) (string, error) {
 	user, err := useCase.GetByEmail(email)
@@ -123,7 +119,7 @@ func (useCase *userUsecase) GetByUsername(username string) (domain.User, error) 
 
 func (useCase *userUsecase) AccountVerification(uemail string, confirmationToken string) error {
 	user, err := useCase.GetByEmail(uemail)
-	if err!= nil{
+	if err != nil {
 		return err
 	}
 	if user.VerifyToken == confirmationToken {

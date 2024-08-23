@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
@@ -13,6 +14,8 @@ import 'features/authentication/presentation/bloc/blocs.dart';
 // import 'features/authentication/presentation/pages/onboarding.dart';
 import 'features/authentication/presentation/pages/onboarding.dart';
 import 'features/chat/presentation/pages/chat_list.dart';
+import 'features/chat/presentation/pages/chat_page.dart';
+import 'features/chat/presentation/widgets/chat.dart';
 import 'features/chat/presentation/widgets/chat_card.dart';
 import 'features/chat/presentation/widgets/user_avater.dart';
 import 'features/product/presentation/bloc/blocs.dart';
@@ -39,7 +42,16 @@ class MyApp extends StatelessWidget {
       ],
       child:  MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: Onboarding()   
+        home: 
+        Scaffold(
+          body: const Column(children: [
+              // Text( "Chat List"),
+              // Chat(message: "sdfghjklhsdfghjfghjfghjhdfghjksdfghjdfghjklghjhksdfghjklhsdfghjfghjfghjhdfghjksdfghjdfghjklghjhksdfghjklhsdfghjfghjfghjhdfghjksdfghjdfghjklghjhksdfghjklhsdfghjfghjfghjhdfghjksdfghjdfghjklghjhksdfghjklhsdfghjfghjfghjhdfghjksdfghjdfghjklghjhksdfghjklhsdfghjfghjfghjhdfghjksdfghjdfghjklghjhk"),
+              // SizedBox(height: 10),
+              // Chat(message: "dfghjksdfghjdfghjklghjhk"),
+            ],),
+          
+        )  
       ),
     );
   }

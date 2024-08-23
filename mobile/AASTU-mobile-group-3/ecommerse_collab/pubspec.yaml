@@ -46,6 +46,9 @@ dependencies:
   uuid: ^3.0.6
   cupertino_icons: ^1.0.6
   internet_connection_checker: ^1.0.0+1
+  flutter_sound: ^9.2.13
+  path_provider: ^2.0.11
+  permission_handler: ^10.2.0 
 
 dev_dependencies:
   flutter_test:

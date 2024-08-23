@@ -38,6 +38,12 @@ func (r *blogRepository) Save(blog *Domain.Blog) (*Domain.Blog, error) {
 		// Handle the case where the ObjectID is not set
 		blog.Id = primitive.NewObjectID().Hex()
 	}
+
+	// Initialize comments if nil
+	if blog.Comments == nil {
+		blog.Comments = []Domain.Comment{}
+	}
+
 	_, err := r.collection.InsertOne(context.TODO(), blog)
 	if err != nil {
 		return nil, err
@@ -195,26 +201,6 @@ func (r *blogRepository) ToggleDislike(blogID, username string) error {
 	return err
 }
 
-func (r *userRepository) ExpireToken(token string) error {
-	// Define the filter to find the token
-	filter := bson.M{"access_token": token}
-
-	// Define the update to set the ExpiresAt field to the current time
-	update := bson.M{
-		"$set": bson.M{
-			"expires_at": time.Now().Unix(), // Assuming ExpiresAt is stored as a Unix timestamp
-		},
-	}
-
-	// Perform the update operation
-	_, err := r.tokenCollection.UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (r *blogRepository) FilterBlogs(tags []string, startDate, endDate time.Time, sortBy string) ([]Domain.Blog, error) {
 	filter := bson.M{}
 
@@ -224,21 +210,21 @@ func (r *blogRepository) FilterBlogs(tags []string, startDate, endDate time.Time
 	}
 
 	// Filter by date range
-	if !startDate.IsZero() && !endDate.IsZero() {
-		filter["created_at"] = bson.M{
-			"$gte": startDate,
-			"$lte": endDate,
+	if !startDate.IsZero() || !endDate.IsZero() {
+		dateFilter := bson.M{}
+		if !startDate.IsZero() {
+			dateFilter["$gte"] = startDate
 		}
-	} else if !startDate.IsZero() {
-		filter["created_at"] = bson.M{"$gte": startDate}
-	} else if !endDate.IsZero() {
-		filter["created_at"] = bson.M{"$lte": endDate}
+		if !endDate.IsZero() {
+			dateFilter["$lte"] = endDate
+		}
+		filter["created_at"] = dateFilter
 	}
 
 	// Create a find options struct to handle sorting
 	findOptions := options.Find()
 
-	// Sort by popularity (e.g., view count)
+	// Sort by specified criteria
 	switch sortBy {
 	case "popularity":
 		findOptions.SetSort(bson.D{{Key: "view_count", Value: -1}})
@@ -263,6 +249,10 @@ func (r *blogRepository) FilterBlogs(tags []string, startDate, endDate time.Time
 			return nil, err
 		}
 		blogs = append(blogs, blog)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
 	}
 
 	return blogs, nil

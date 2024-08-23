@@ -4,8 +4,11 @@ import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"ASTU-backend-group-3/Blog_manager/Repository"
 	"ASTU-backend-group-3/Blog_manager/infrastructure"
+	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"regexp"
 	"strings"
 
@@ -25,6 +28,7 @@ type UserUsecase interface {
 	UpdatePassword(username string, newPassword string) error
 	PromoteTOAdmin(username string) error
 	Verify(token string) error
+	OAuthLogin(c *gin.Context, code string) (*Domain.User, string, error)
 }
 
 type userUsecase struct {
@@ -360,4 +364,114 @@ func validatePasswordStrength(password string) error {
 	}
 
 	return nil
+}
+
+func (u *userUsecase) OAuthLogin(c *gin.Context, code string) (*Domain.User, string, error) {
+	// Exchange the authorization code for an access token
+	token, err := infrastructure.OAuthConfig.Exchange(context.Background(), code)
+	if err != nil {
+		return nil, "", errors.New("failed to exchange token: " + err.Error())
+	}
+
+	// Retrieve user info using the access token
+	client := infrastructure.OAuthConfig.Client(context.Background(), token)
+	userInfo, err := fetchUserInfo(client)
+	if err != nil {
+		return nil, "", errors.New("failed to fetch user info")
+	}
+
+	// Prepare the RegisterInput from the OAuth user info
+	registerInput := Domain.RegisterInput{
+		Name:           userInfo["name"].(string),
+		Username:       strings.Split(userInfo["email"].(string), "@")[0],
+		Email:          userInfo["email"].(string),
+		ProfilePicture: userInfo["picture"].(string),
+		IsOauth:        true,
+	}
+
+	// Check if the user already exists by email
+	existingUser, _ := u.userRepo.FindByEmail(registerInput.Email)
+	if existingUser != nil {
+
+		accessToken, err := infrastructure.GenerateJWT(existingUser.Username, existingUser.Role)
+		if err != nil {
+			return nil, "", err
+		}
+
+		refreshToken, err := infrastructure.GenerateRefreshToken(existingUser.Username)
+		if err != nil {
+			return nil, "", err
+		}
+
+		c.SetCookie("refresh_token", refreshToken, 3600, "/", "", false, true)
+
+		err = u.userRepo.InsertToken(existingUser.Username, accessToken, refreshToken)
+
+		if err != nil {
+			return nil, "", err
+		}
+		// If the user already exists, generate a token for the existing user
+		tokenString, err := infrastructure.GenerateJWT(existingUser.Username, existingUser.Role)
+		if err != nil {
+			return nil, "", err
+		}
+		return existingUser, tokenString, nil
+	}
+
+	// If the user does not exist, register a new user
+	newUser := &Domain.User{
+		Id:             primitive.NewObjectID(),
+		Name:           registerInput.Name,
+		Username:       registerInput.Username,
+		Email:          registerInput.Email,
+		ProfilePicture: registerInput.ProfilePicture,
+		IsOauth:        registerInput.IsOauth,
+		IsActive:       true,
+	}
+
+	err = u.userRepo.Save(newUser)
+	if err != nil {
+		return nil, "", err
+	}
+
+	// Generate a token for the new user
+	accessToken, err := infrastructure.GenerateJWT(newUser.Username, newUser.Role)
+	if err != nil {
+		return nil, "", err
+	}
+
+	refreshToken, err := infrastructure.GenerateRefreshToken(newUser.Username)
+	if err != nil {
+		return nil, "", err
+	}
+
+	c.SetCookie("refresh_token", refreshToken, 3600, "/", "", false, true)
+
+	err = u.userRepo.InsertToken(newUser.Username, accessToken, refreshToken)
+
+	if err != nil {
+		return nil, "", err
+	}
+	// If the user already exists, generate a token for the existing user
+	tokenString, err := infrastructure.GenerateJWT(newUser.Username, newUser.Role)
+	if err != nil {
+		return nil, "", err
+	}
+	return newUser, tokenString, nil
+}
+
+// fetchUserInfo retrieves the user's information from the OAuth provider
+func fetchUserInfo(client *http.Client) (map[string]interface{}, error) {
+	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var userInfo map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
+		return nil, err
+	}
+
+	return userInfo, nil
 }

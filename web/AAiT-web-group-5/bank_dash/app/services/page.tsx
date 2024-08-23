@@ -31,6 +31,7 @@ const Services = () => {
           </h1>
           <div className="flex flex-col gap-4">
             <Service image="/loan.svg" title="Business loans" />
+
             <Service image="/Group.svg" title="Checking accounts" />
             <Service image="/Group1.svg" title="Saving accounts" />
             <Service image="/user.svg" title="Debit and credit cards" />

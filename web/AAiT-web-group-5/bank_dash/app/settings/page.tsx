@@ -175,6 +175,7 @@ export default function Setting() {
                   />
                 </div>
               </div>
+
               <button
                 type="submit"
                 className="bg-blue-800 py-3 px-16 rounded-lg text-white"

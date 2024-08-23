@@ -19,13 +19,18 @@ type SessionDataType = {
 
 const HeadingLabel = ({ label }: { label: string }) => {
   return (
-    <h1 className="text-sm font-medium lg:text-lg text-[#333B69]">{label}</h1>
+    <h1 className="text-sm font-medium lg:text-lg text-[#333B69] dark:text-[#9faaeb]">
+      {label}
+    </h1>
   );
 };
 
 const InputLabel = ({ label, htmlFor }: { label: string; htmlFor: string }) => {
   return (
-    <label htmlFor={htmlFor} className="text-xs text-[#232323] lg:text-base">
+    <label
+      htmlFor={htmlFor}
+      className="text-xs text-[#232323] lg:text-base dark:text-[#feffffc7]"
+    >
       {label}
     </label>
   );
@@ -133,7 +138,7 @@ const SecuritySetting = () => {
     <div className="">
       <form
         action=""
-        className="flex flex-col gap-3"
+        className="flex flex-col gap-4"
         onSubmit={handleSubmit(onSubmit)}
       >
         <HeadingLabel label="Two-factor Authentication" />
@@ -148,7 +153,7 @@ const SecuritySetting = () => {
             type="password"
             id="old_password"
             placeholder="**********"
-            className="border rounded-lg px-3 py-2 text-xs flex items-end w-full md:w-64"
+            className="border rounded-xl px-3 py-2 text-lg flex items-center w-full md:w-64 dark:bg-[#050914] dark:border-[#333B69] "
             {...register("old_password", {
               required: "Current Password is required",
               minLength: {
@@ -169,7 +174,7 @@ const SecuritySetting = () => {
             type="password"
             id="new_password"
             placeholder="**********"
-            className="border rounded-lg px-3 py-2 text-xs flex items-end w-full md:w-64"
+            className="border rounded-xl px-3 py-2 text-lg flex items-center w-full md:w-64 dark:bg-[#050914] dark:border-[#333B69] "
             {...register("new_password", {
               required: "New Password is required",
               minLength: {

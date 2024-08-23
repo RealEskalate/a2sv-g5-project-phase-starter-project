@@ -13,7 +13,9 @@ const CardSetting = ({ icon, data }: Props) => {
         {data.map((data, index) => {
           return (
             <div className={`${index > 0 && "hidden"} lg:block`} key={index}>
-              <p className="text-[#232323] font-medium text-sm">{data[0]}</p>
+              <p className="text-[#232323] font-medium text-sm lg:text-base dark:text-[#d2d6ef]">
+                {data[0]}
+              </p>
               <p className="text-[#8297c0] text-xs">{data[1]}</p>
             </div>
           );

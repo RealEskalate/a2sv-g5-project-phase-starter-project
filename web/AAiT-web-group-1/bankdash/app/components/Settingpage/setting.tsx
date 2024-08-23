@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import img from '../../../public/images/image.png';
 import icon from '../../../public/images/icon.svg';
-import { dummyUserProfile } from '../../../public/duumydata';
+import { dummyUserProfile } from './duumydata';
 
 const UserProfile = () => {
   const router = useRouter();

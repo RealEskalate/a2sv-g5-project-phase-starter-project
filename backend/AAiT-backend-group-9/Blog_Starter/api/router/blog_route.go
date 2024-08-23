@@ -26,9 +26,9 @@ func NewBlogRouter(env *config.Env, timeout time.Duration, db *mongo.Client, gro
 
 	group.POST("/", bc.CreateBlog)
 	group.GET("/", bc.GetAllBlog)
-	group.GET("/:id", bc.GetBlogByID)
-	group.PATCH("/:id", bc.UpdateBlog)
-	group.DELETE("/:id", bc.DeleteBlog)
+	group.GET("/:blog_id", bc.GetBlogByID)
+	group.PATCH("/:blog_id", bc.UpdateBlog)
+	group.DELETE("/:blog_id", bc.DeleteBlog)
 	group.GET("/search", bc.SearchBlog)
 	group.GET("/filter", bc.FilterBlog)
 }

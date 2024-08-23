@@ -5,6 +5,8 @@ import (
 	"astu-backend-g1/infrastructure"
 	"crypto/rand"
 	"errors"
+	"fmt"
+	"log"
 	"math/big"
 	"time"
 )
@@ -35,11 +37,12 @@ func (useCase *userUsecase) LoginUser(uname string, password string,email string
 		return "", err
 	}
 	user.RefreshToken = refreshToken
-	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken})
+	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken,IsAdmin: user.IsAdmin})
 
 	return accesstoken, nil
 } else if email != "" {
 	user, err := useCase.GetByEmail(email)
+	
 	if err != nil {
 		return "", err
 	}
@@ -50,8 +53,9 @@ func (useCase *userUsecase) LoginUser(uname string, password string,email string
 	if err != nil {
 		return "", err
 	}
+	log.Println(user)
 	user.RefreshToken = refreshToken
-	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken})
+	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken,IsAdmin:user.IsAdmin})
 
 	return accesstoken, nil
 }else{
@@ -65,7 +69,7 @@ func (useCase *userUsecase) Logout(email string) error {
 		return err
 	}
 	user.RefreshToken = ""
-	useCase.userRepository.Update(user.ID, user)
+	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: "",IsAdmin:user.IsAdmin})
 	return nil
 }
 
@@ -89,7 +93,7 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 	user.VerifyToken = string(confirmationToken)
 
 	expirationTime := time.Now().Add(2 * time.Hour)
-	useCase.userRepository.Update(user.ID, domain.User{VerifyToken: string(confirmationToken), ExpirationDate: expirationTime})
+	useCase.userRepository.Update(user.ID, domain.User{VerifyToken: string(confirmationToken), ExpirationDate: expirationTime,IsAdmin: user.IsAdmin})
 	link := "http://localhost:8000/users/resetPassword/?email=" + user.Email + "&token=" + string(confirmationToken)
 	err = infrastructure.SendEmail(user.Email, "Password Reset", "This is the password reset link: ", link)
 	if err != nil {
@@ -112,7 +116,7 @@ func (useCase *userUsecase) ResetPassword(email string, token string, password s
 			return "Token has expired", errors.New("Token expired")
 		}
 		user.Password, _ = infrastructure.PasswordHasher(password)
-		_, err := useCase.userRepository.Update(user.ID, domain.User{Password: user.Password})
+		_, err := useCase.userRepository.Update(user.ID, domain.User{Password: user.Password,IsAdmin: user.IsAdmin})
 		if err != nil {
 			return "password has not been updated", err
 		}
@@ -124,7 +128,7 @@ func (useCase *userUsecase) ResetPassword(email string, token string, password s
 func (useCase *userUsecase) GetByID(userID string) (domain.User, error) {
 	filter := domain.UserFilter{UserId: userID}
 	opts := domain.UserFilterOption{Filter: filter}
-	users, err := useCase.userRepository.Get(opts)
+	users, err := useCase.userRepository.Get(opts)	
 	return users[0], err
 }
 
@@ -143,7 +147,7 @@ func (useCase *userUsecase) AccountVerification(uemail string, confirmationToken
 		return err
 	}
 	if user.VerifyToken == confirmationToken {
-		_, err := useCase.userRepository.Update(user.ID, domain.User{IsActive: true})
+		_, err := useCase.userRepository.Update(user.ID, domain.User{IsActive: true,IsAdmin: user.IsAdmin})
 		return err
 	} else {
 		return errors.New("invalid token")
@@ -186,4 +190,60 @@ func (useCase *userUsecase) Update(userId string, updateData domain.User) (domai
 
 func (useCase *userUsecase) Delete(userId string) error {
 	return useCase.userRepository.Delete(userId)
+}
+func (useCase *userUsecase) PromteUser(username string) (domain.User, error) {
+	user, err := useCase.GetByUsername(username)
+	if user.IsAdmin {
+		return user,fmt.Errorf("user is already an admin")
+	}
+	if err != nil {
+		return user,fmt.Errorf("user not found")
+	}
+	user,err= useCase.userRepository.Update(user.ID, domain.User{IsAdmin: true})
+	if err !=nil{ 
+	return user,fmt.Errorf("user not found")
+	}
+	return user,err
+}
+func (useCase *userUsecase) DemoteUser(username string) (domain.User, error) {
+	user, err := useCase.GetByUsername(username)
+	if !user.IsAdmin {
+		return user,errors.New("user is not an admin")
+	}
+	if err != nil {
+		return user,fmt.Errorf("user not found")
+	}
+	user,err= useCase.userRepository.Update(user.ID, domain.User{IsAdmin: false})
+	if err !=nil{
+		return user,fmt.Errorf("user not found")
+	}
+	return user,err
+}
+func (useCase *userUsecase) PromteUserByEmail(email string) (domain.User, error) {
+	user, err := useCase.GetByEmail(email)
+	if user.IsAdmin {
+		return user,fmt.Errorf("user is already an admin")
+	}
+	if err != nil {
+		return user,fmt.Errorf("user not found")
+	}
+	user,err= useCase.userRepository.Update(user.ID, domain.User{IsAdmin: true})
+	if err !=nil{ 
+	return user,fmt.Errorf("user not found")
+	}
+	return user,err
+}
+func (useCase *userUsecase) DemoteUserByEmail(email string) (domain.User, error) {
+	user, err := useCase.GetByEmail(email)
+	if !user.IsAdmin {
+		return user,errors.New("user is not an admin")
+	}
+	if err != nil {
+		return user,fmt.Errorf("user not found")
+	}
+	user,err= useCase.userRepository.Update(user.ID, domain.User{IsAdmin: false})
+	if err !=nil{
+		return user,fmt.Errorf("user not found")
+	}
+	return user,err
 }

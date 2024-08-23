@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -14,13 +15,13 @@ import (
 
 type blogRepository struct {
 	collection *mongo.Collection
-	ctx 	  context.Context
+	ctx        context.Context
 }
 
-func NewBlogRepository(collection *mongo.Collection , ctx context.Context) domain.BlogRepository {
+func NewBlogRepository(collection *mongo.Collection, ctx context.Context) domain.BlogRepository {
 	return &blogRepository{
 		collection: collection,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 func (r *blogRepository) Create(blog *domain.Blog) (*domain.Blog, domain.Error) {
@@ -33,7 +34,6 @@ func (r *blogRepository) Create(blog *domain.Blog) (*domain.Blog, domain.Error) 
 	}
 	return blog, nil
 }
-
 
 func (r *blogRepository) FindById(id string) (*domain.Blog, domain.Error) {
 	primID, err := primitive.ObjectIDFromHex(id)
@@ -94,53 +94,51 @@ func (r *blogRepository) FindAll(page_number string) ([]domain.Blog, domain.Erro
 	return blogs, nil
 }
 
-
 func (r *blogRepository) Update(blogID string, blog *domain.Blog) (*domain.Blog, domain.Error) {
-    // Convert the string ID to a primitive.ObjectID
-    primID, err := primitive.ObjectIDFromHex(blogID)
-    if err != nil {
-        return nil, &domain.CustomError{Code: 400, Message: "Invalid ID"}
-    }
+	// Convert the string ID to a primitive.ObjectID
+	primID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return nil, &domain.CustomError{Code: 400, Message: "Invalid ID"}
+	}
 
-    // Prepare the update document
-    update := bson.M{
-        "$set": bson.M{
-            "updatedAt": time.Now(),
-        },
-    }
+	// Prepare the update document
+	update := bson.M{
+		"$set": bson.M{
+			"updatedAt": time.Now(),
+		},
+	}
 
-    // Conditionally add fields to the update document
-    if blog.Title != "" {
-        update["$set"].(bson.M)["title"] = blog.Title
-    }
+	// Conditionally add fields to the update document
+	if blog.Title != "" {
+		update["$set"].(bson.M)["title"] = blog.Title
+	}
 
-    if blog.Content != "" {
-        update["$set"].(bson.M)["content"] = blog.Content
-    }
+	if blog.Content != "" {
+		update["$set"].(bson.M)["content"] = blog.Content
+	}
 
-    if len(blog.Tags) > 0 {
-        update["$set"].(bson.M)["tags"] = blog.Tags
-    }
+	if len(blog.Tags) > 0 {
+		update["$set"].(bson.M)["tags"] = blog.Tags
+	}
 
-    // Define the filter for the document to update
-    filter := bson.M{"_id": primID}
+	// Define the filter for the document to update
+	filter := bson.M{"_id": primID}
 
-    // Perform the update operation
-    _, err = r.collection.UpdateOne(r.ctx, filter, update)
-    if err != nil {
-        return nil, &domain.CustomError{Code: 500, Message: "Internal Server Error"}
-    }
+	// Perform the update operation
+	_, err = r.collection.UpdateOne(r.ctx, filter, update)
+	if err != nil {
+		return nil, &domain.CustomError{Code: 500, Message: "Internal Server Error"}
+	}
 
-    // Optionally, retrieve the updated document
-    var updatedBlog domain.Blog
-    err = r.collection.FindOne(r.ctx, filter).Decode(&updatedBlog)
-    if err != nil {
-        return nil, &domain.CustomError{Code: 500, Message: "Error retrieving updated blog"}
-    }
+	// Optionally, retrieve the updated document
+	var updatedBlog domain.Blog
+	err = r.collection.FindOne(r.ctx, filter).Decode(&updatedBlog)
+	if err != nil {
+		return nil, &domain.CustomError{Code: 500, Message: "Error retrieving updated blog"}
+	}
 
-    return &updatedBlog, nil
+	return &updatedBlog, nil
 }
-
 
 func (r *blogRepository) Delete(id string) domain.Error {
 	primID, err := primitive.ObjectIDFromHex(id)
@@ -245,18 +243,18 @@ func (r *blogRepository) SearchByAuthor(author string, page_number string) ([]do
 	return blogs, nil
 }
 func (r *blogRepository) Filter(filters map[string]interface{}) ([]domain.Blog, domain.Error) {
-    // Initialize the MongoDB filter
-    mongoFilter := bson.M{}
+	// Initialize the MongoDB filter
+	mongoFilter := bson.M{}
 
-    // Add time filter if it exists
-    if timeValue, ok := filters["time"].(time.Time); ok {
-        mongoFilter["created_at"] = bson.M{"$gte": timeValue}
-    }
+	// Add time filter if it exists
+	if timeValue, ok := filters["time"].(time.Time); ok {
+		mongoFilter["created_at"] = bson.M{"$gte": timeValue}
+	}
 
-    // Add tags filter if it exists
-    if tags, ok := filters["tags"].([]string); ok && len(tags) > 0 && tags[0] != " " {
-        mongoFilter["tags"] = bson.M{"$in": tags}
-    }
+	// Add tags filter if it exists
+	if tags, ok := filters["tags"].([]string); ok && len(tags) > 0 && tags[0] != " " {
+		mongoFilter["tags"] = bson.M{"$in": tags}
+	}
 
 	if popular, ok := filters["popular"].(bool); ok && popular {
 		mongoFilter["$or"] = []bson.M{
@@ -264,164 +262,151 @@ func (r *blogRepository) Filter(filters map[string]interface{}) ([]domain.Blog, 
 		}
 	}
 
-    // Query the database
-    cursor, err := r.collection.Find(r.ctx, mongoFilter)
-    if err != nil {
-        return nil, &domain.CustomError{Code: 500, Message: "Internal Server Error"}
-    }
-    defer cursor.Close(r.ctx)
+	// Query the database
+	cursor, err := r.collection.Find(r.ctx, mongoFilter)
+	if err != nil {
+		return nil, &domain.CustomError{Code: 500, Message: "Internal Server Error"}
+	}
+	defer cursor.Close(r.ctx)
 
-    var blogs []domain.Blog
-    for cursor.Next(r.ctx) {
-        var blog domain.Blog
-        if err := cursor.Decode(&blog); err != nil {
-            return nil, &domain.CustomError{Code: 500, Message: "Error decoding blog"}
-        }
-        blogs = append(blogs, blog)
-    }
+	var blogs []domain.Blog
+	for cursor.Next(r.ctx) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return nil, &domain.CustomError{Code: 500, Message: "Error decoding blog"}
+		}
+		blogs = append(blogs, blog)
+	}
 
-    if err := cursor.Err(); err != nil {
-        return nil, &domain.CustomError{Code: 500, Message: "Cursor error"}
-    }
+	if err := cursor.Err(); err != nil {
+		return nil, &domain.CustomError{Code: 500, Message: "Cursor error"}
+	}
 
-    return blogs, nil
+	return blogs, nil
 }
-
 
 func (r *blogRepository) AddComment(blogID string, comment *domain.Comment) domain.Error {
-    // Convert the blogID to a primitive.ObjectID
-    primID, err := primitive.ObjectIDFromHex(blogID)
-    if err != nil {
-        return &domain.CustomError{Code: 400, Message: "Invalid blog ID"}
-    }
+	// Convert the blogID to a primitive.ObjectID
+	primID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return &domain.CustomError{Code: 400, Message: "Invalid blog ID"}
+	}
 
-    // Set the comment ID and CreatedAt fields
-    comment.ID = primitive.NewObjectID()
-    comment.CreatedAt = time.Now()
+	// Set the comment ID and CreatedAt fields
+	comment.ID = primitive.NewObjectID()
+	comment.CreatedAt = time.Now()
 
-    // Prepare the update operation to push the new comment to the Comments array
-    update := bson.M{
-        "$push": bson.M{"comments": comment},
-        "$set":  bson.M{"updated_at": time.Now()},
-    }
+	// Prepare the update operation to push the new comment to the Comments array
+	update := bson.M{
+		"$push": bson.M{"comments": comment},
+		"$set":  bson.M{"updated_at": time.Now()},
+	}
 
-    // Define the filter for the blog to update
-    filter := bson.M{"_id": primID}
+	// Define the filter for the blog to update
+	filter := bson.M{"_id": primID}
 
-    // Execute the update operation
-    _, err = r.collection.UpdateOne(r.ctx, filter, update)
-    if err != nil {
-        return &domain.CustomError{Code: 500, Message: "Internal Server Error"}
-    }
+	// Execute the update operation
+	_, err = r.collection.UpdateOne(r.ctx, filter, update)
+	if err != nil {
+		return &domain.CustomError{Code: 500, Message: "Internal Server Error"}
+	}
 
-    return nil
+	return nil
 }
-
 
 func (r *blogRepository) DeleteComment(blogID, commentID string) domain.Error {
-    // Convert the blogID to a primitive.ObjectID
-    primBlogID, err := primitive.ObjectIDFromHex(blogID)
-    if err != nil {
-        return &domain.CustomError{Code: 400, Message: "Invalid blog ID"}
-    }
+	// Convert the blogID to a primitive.ObjectID
+	primBlogID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return &domain.CustomError{Code: 400, Message: "Invalid blog ID"}
+	}
 
-    // Convert the commentID to a primitive.ObjectID
-    primCommentID, err := primitive.ObjectIDFromHex(commentID)
-    if err != nil {
-        return &domain.CustomError{Code: 400, Message: "Invalid comment ID"}
-    }
+	// Convert the commentID to a primitive.ObjectID
+	primCommentID, err := primitive.ObjectIDFromHex(commentID)
+	if err != nil {
+		return &domain.CustomError{Code: 400, Message: "Invalid comment ID"}
+	}
 
-    // Prepare the update operation to pull the comment from the Comments array
-    update := bson.M{
-        "$pull": bson.M{"comments": bson.M{"_id": primCommentID}},
-        "$set":  bson.M{"updated_at": time.Now()},
-    }
+	// Prepare the update operation to pull the comment from the Comments array
+	update := bson.M{
+		"$pull": bson.M{"comments": bson.M{"_id": primCommentID}},
+		"$set":  bson.M{"updated_at": time.Now()},
+	}
 
-    // Define the filter for the blog to update
-    filter := bson.M{"_id": primBlogID}
+	// Define the filter for the blog to update
+	filter := bson.M{"_id": primBlogID}
 
-    // Execute the update operation
-    _, err = r.collection.UpdateOne(r.ctx, filter, update)
-    if err != nil {
-        return &domain.CustomError{Code: 500, Message: "Internal Server Error"}
-    }
+	// Execute the update operation
+	_, err = r.collection.UpdateOne(r.ctx, filter, update)
+	if err != nil {
+		return &domain.CustomError{Code: 500, Message: "Internal Server Error"}
+	}
 
-    return nil
+	return nil
 }
-
 
 func (r *blogRepository) EditComment(blogID, commentID string, updatedComment *domain.Comment) domain.Error {
-    // Convert the blogID to a primitive.ObjectID
-    primBlogID, err := primitive.ObjectIDFromHex(blogID)
-    if err != nil {
-        return &domain.CustomError{Code: 400, Message: "Invalid blog ID"}
-    }
+	// Convert the blogID to a primitive.ObjectID
+	primBlogID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return &domain.CustomError{Code: 400, Message: "Invalid blog ID"}
+	}
 
-    // Convert the commentID to a primitive.ObjectID
-    primCommentID, err := primitive.ObjectIDFromHex(commentID)
-    if err != nil {
-        return &domain.CustomError{Code: 400, Message: "Invalid comment ID"}
-    }
+	// Convert the commentID to a primitive.ObjectID
+	primCommentID, err := primitive.ObjectIDFromHex(commentID)
+	if err != nil {
+		return &domain.CustomError{Code: 400, Message: "Invalid comment ID"}
+	}
 
-    // Prepare the filter to find the blog and the specific comment to update
-    filter := bson.M{
-        "_id":            primBlogID,
-        "comments._id":   primCommentID,
-    }
+	// Prepare the filter to find the blog and the specific comment to update
+	filter := bson.M{
+		"_id":          primBlogID,
+		"comments._id": primCommentID,
+	}
 
-    // Prepare the update operation to modify the specific comment's fields
-    update := bson.M{
-        "$set": bson.M{
-            "comments.$.content":   updatedComment.Content,
-            "comments.$.updated_at": time.Now(), // Assuming you have an updated_at field in the comment
-        },
-    }
+	// Prepare the update operation to modify the specific comment's fields
+	update := bson.M{
+		"$set": bson.M{
+			"comments.$.content":    updatedComment.Content,
+			"comments.$.updated_at": time.Now(), // Assuming you have an updated_at field in the comment
+		},
+	}
 
-    // Execute the update operation
-    _, err = r.collection.UpdateOne(r.ctx, filter, update)
-    if err != nil {
-        return &domain.CustomError{Code: 500, Message: "Internal Server Error"}
-    }
+	// Execute the update operation
+	_, err = r.collection.UpdateOne(r.ctx, filter, update)
+	if err != nil {
+		return &domain.CustomError{Code: 500, Message: "Internal Server Error"}
+	}
 
-    return nil
+	return nil
 }
 
-
 func (r *blogRepository) Like(id string, userID string) domain.Error {
+	// Implement the Like method here
 	primID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return &domain.CustomError{Code: 400, Message: "Invalid ID"}
 	}
-
-	// Aggregation pipeline
 	filter := bson.M{"_id": primID}
-	update := bson.M{
-		"$set": bson.M{
-			"likes": bson.M{
-				"$cond": bson.M{
-					"if": bson.M{
-						"$in": bson.A{userID, "$likes"},
-					},
-					"then": bson.M{
-						"$filter": bson.M{
-							"input": "$likes",
-							"as":    "like",
-							"cond":  bson.M{"$ne": bson.A{"$$like", userID}},
-						},
-					},
-					"else": bson.M{
-						"$concatArrays": bson.A{"$likes", bson.A{userID}},
-					},
-				},
-			},
-			"dislikes": bson.M{
-				"$filter": bson.M{
-					"input": "$dislikes",
-					"as":    "dislike",
-					"cond":  bson.M{"$ne": bson.A{"$$dislike", userID}},
-				},
-			},
-		},
+
+		check := r.collection.FindOne(r.ctx, bson.M{
+			"_id":   primID,
+			"likes": userID,
+		})
+
+	var update bson.M
+	if check.Err() == nil {
+		// If userID is already in likes, remove it
+		fmt.Println("User already liked the blog")
+		update = bson.M{
+			"$pull": bson.M{"likes": userID},
+		}
+	} else {
+		// If userID is not in likes, add it
+		update = bson.M{
+			"$addToSet": bson.M{"likes": userID},
+			"$pull": bson.M{"dislikes": userID}, 
+		}
 	}
 
 	_, err = r.collection.UpdateOne(r.ctx, filter, update)
@@ -431,43 +416,34 @@ func (r *blogRepository) Like(id string, userID string) domain.Error {
 	return nil
 }
 
-
 func (r *blogRepository) DisLike(id string, userID string) domain.Error {
+	// Implement the Like method here
 	primID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return &domain.CustomError{Code: 400, Message: "Invalid ID"}
 	}
-
-	// Aggregation pipeline
 	filter := bson.M{"_id": primID}
-	update := bson.M{
-		"$set": bson.M{
-			"dislikes": bson.M{
-				"$cond": bson.M{
-					"if": bson.M{
-						"$in": bson.A{userID, "$dislikes"},
-					},
-					"then": bson.M{
-						"$filter": bson.M{
-							"input": "$dislikes",
-							"as":    "dislike",
-							"cond":  bson.M{"$ne": bson.A{"$$dislike", userID}},
-						},
-					},
-					"else": bson.M{
-						"$concatArrays": bson.A{"$dislikes", bson.A{userID}},
-					},
-				},
-			},
-			// Also remove the userID from likes if present
-			"likes": bson.M{
-				"$filter": bson.M{
-					"input": "$likes",
-					"as":    "like",
-					"cond":  bson.M{"$ne": bson.A{"$$like", userID}},
-				},
-			},
-		},
+
+		check := r.collection.FindOne(r.ctx, bson.M{
+			"_id":   primID,
+			"dislikes": userID,
+		})
+
+	var update bson.M
+
+	if check.Err() == nil {
+		// If userID is already in likes, remove it
+		fmt.Println("User already disliked the blog")
+		update = bson.M{
+			"$pull": bson.M{"dislikes": userID},
+		
+		}
+	} else {
+		// If userID is not in likes, add it
+		update = bson.M{
+			"$addToSet": bson.M{"dislikes": userID},
+			"$pull": bson.M{"likes": userID}, 
+		}
 	}
 
 	_, err = r.collection.UpdateOne(r.ctx, filter, update)

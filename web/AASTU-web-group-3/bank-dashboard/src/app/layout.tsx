@@ -4,17 +4,15 @@ import Provider from "@/lib/redux/Provider";
 import Sidebar from "./components/SideBar"; // Update path as needed
 import Navbar from "./components/NavBar"; // Update path as needed
 
-import ClientLayout from '../lib/ClientLayout';
+import ClientLayout from "../lib/ClientLayout";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Provider>
-        <html lang="en">
+        <html lang="en" data-theme="light">
           <body className="flex h-screen overflow-hidden">
-            <ClientLayout>
-              {children}
-            </ClientLayout>
+            <ClientLayout>{children}</ClientLayout>
             {/* <Sidebar />
             <div className="flex flex-col flex-grow h-full overflow-hidden md:w-4/5 lg:w-4/5">
               <Navbar />

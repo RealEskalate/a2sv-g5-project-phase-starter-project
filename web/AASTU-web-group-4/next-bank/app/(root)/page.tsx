@@ -18,7 +18,7 @@ import { getAllCards } from "@/services/cardfetch";
 import Image from "next/image";
 import MyCardsLoad from "@/components/loadingComponents/MyCardsLoad";
 
-const page = () => {
+const Page = () => {
   const [cards, setCards] = useState<any[]>([]);
   const [token, setToken] = useState<any>(null); // Initialize with null to indicate it's being fetched
   const [error, setError] = useState<string | null>(null);
@@ -163,4 +163,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

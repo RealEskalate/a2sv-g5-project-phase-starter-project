@@ -30,7 +30,7 @@ const SlidingCards: React.FC = () => {
       </div>
 
       {/* Mobile View - Carousel */}
-      <div className="lg:hidden pt-8 w-full max-w-[390px] h-[235px] mx-auto relative">
+      <div className="lg:hidden pt-8 w-full max-w-[390px] pl-5 h-[235px]  relative">
         <Carousel className=''>
           <CarouselContent>
             {cards.map((card) => (

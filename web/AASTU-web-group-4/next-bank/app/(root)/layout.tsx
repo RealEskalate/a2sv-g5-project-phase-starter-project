@@ -4,6 +4,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { Navbar } from '@/components/Navbar';
 import { usePathname } from 'next/navigation';
 import { sidebarLinks } from '@/constants';
+import {  message } from 'antd';
 
 const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -17,8 +18,11 @@ const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
     document.body.style.overflow = isSidebarOpen ? 'hidden' : 'auto';
   }, [isSidebarOpen]);
+  const [messageApi, contextHolder] = message.useMessage();
 
   return (
+    <>
+    {contextHolder}
     <div className="flex overflow-x-hidden">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div className={`flex-1 flex flex-col transition-transform duration-300 ${isSidebarOpen ? 'ml-0' : 'ml-0'} overflow-x-hidden`}>
@@ -26,6 +30,7 @@ const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
         <main className="flex-grow">{children}</main>
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,16 +1,23 @@
-'use client';
+"use client";
 import React from "react";
-import Example from '../components/barchart';
+import {BarChartComponent} from "../components/Chart/Barchart";
 import CreditCard from "../components/CreditCard";
 import Image from "next/image";
-import {spotify,user,mobileService,returnValue,nameinvestment,totalinvestment, apple} from '@/../../public/Icons'
-
+import {
+  spotify,
+  user,
+  mobileService,
+  returnValue,
+  nameinvestment,
+  totalinvestment,
+  apple,
+} from "@/../../public/Icons";
 
 interface CardProps {
   title: string;
   salary: number;
   index: number;
-  icon:string
+  icon: string;
 }
 
 interface Transaction {
@@ -21,20 +28,47 @@ interface Transaction {
   status: string;
   value: number;
   date: string;
-  icon:string;
+  icon: string;
 }
 
 const dataCorner: CardProps[] = [
-  { icon:nameinvestment, title: "My Balance", salary: 12000, index: 1 },
-  {icon:spotify, title: "Income", salary: 5600, index: 2 },
-  { icon:totalinvestment, title: "Expense", salary: 3460, index: 3 },
-  { icon:returnValue, title: "Total Saving", salary: 7920, index: 4 },
+  { icon: nameinvestment, title: "My Balance", salary: 12000, index: 1 },
+  { icon: spotify, title: "Income", salary: 5600, index: 2 },
+  { icon: totalinvestment, title: "Expense", salary: 3460, index: 3 },
+  { icon: returnValue, title: "Total Saving", salary: 7920, index: 4 },
 ];
 
 const transactions: Transaction[] = [
-  {icon:spotify, index: 5, title: "Spotify Subscription", jobtitle: "Shopping", creditcard: "1234****", status: "Pending", value: 150, date: "25 Jan 2021" },
-  { icon:mobileService,index: 6, title: "Mobile Service", jobtitle: "Service", creditcard: "1234****", status: "Pending", value: 1200, date: "15 Feb 2021" },
-  {icon:user, index: 7, title: "Grocery Shopping", jobtitle: "Supermarket", creditcard: "1234****", status: "Completed", value: 350, date: "10 Mar 2021" },
+  {
+    icon: spotify,
+    index: 5,
+    title: "Spotify Subscription",
+    jobtitle: "Shopping",
+    creditcard: "1234****",
+    status: "Pending",
+    value: 150,
+    date: "25 Jan 2021",
+  },
+  {
+    icon: mobileService,
+    index: 6,
+    title: "Mobile Service",
+    jobtitle: "Service",
+    creditcard: "1234****",
+    status: "Pending",
+    value: 1200,
+    date: "15 Feb 2021",
+  },
+  {
+    icon: user,
+    index: 7,
+    title: "Grocery Shopping",
+    jobtitle: "Supermarket",
+    creditcard: "1234****",
+    status: "Completed",
+    value: 350,
+    date: "10 Mar 2021",
+  },
 ];
 
 const Page: React.FC = () => {
@@ -42,12 +76,23 @@ const Page: React.FC = () => {
     <div className="max-w-screen max-h-screen mx-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-10 lg:py-8">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         {dataCorner.map((card) => (
-          <div key={card.index} className="flex justify-center items-center h-[85px] rounded-2xl shadow-xl bg-white p-4">
+          <div
+            key={card.index}
+            className="flex justify-center items-center h-[85px] rounded-2xl shadow-xl bg-white p-4"
+          >
             <div className="flex items-center">
-              <Image width={28} height={28} className=" text-gray-500 mr-4" src={card.icon} alt="Image Icon" />
+              <Image
+                width={28}
+                height={28}
+                className=" text-gray-500 mr-4"
+                src={card.icon}
+                alt="Image Icon"
+              />
               <div>
                 <h3 className="text-gray-500 text-sm">{card.title}</h3>
-                <p className="text-black text-2xl font-bold">${card.salary.toLocaleString()}</p>
+                <p className="text-black text-2xl font-bold">
+                  ${card.salary.toLocaleString()}
+                </p>
               </div>
             </div>
           </div>
@@ -62,22 +107,51 @@ const Page: React.FC = () => {
         <div className="rounded-3xl bg-white shadow-xl p- w-full lg:col-span-2">
           <div className="flex flex-col space gap-y-2">
             {transactions.map((transaction) => (
-              <div key={transaction.index} className="flex items-center p-4 bg-white rounded-lg shadow-sm">
+              <div
+                key={transaction.index}
+                className="flex items-center p-4 bg-white rounded-lg shadow-sm"
+              >
                 <div className="p-3 rounded-full">
-                  <Image width={20} height={20} src={transaction.icon} alt={`${transaction.status} Icon`} className="w-12 h-12" />
+                  <Image
+                    width={20}
+                    height={20}
+                    src={transaction.icon}
+                    alt={`${transaction.status} Icon`}
+                    className="w-12 h-12"
+                  />
                 </div>
                 <div className="flex-grow flex flex-col ml-4">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-gray-800 font-medium">{transaction.title}</p>
+                    <p className="text-gray-800 font-medium">
+                      {transaction.title}
+                    </p>
                   </div>
                   <div className="flex items-center justify-between overflow-hidden">
-                    <p className="text-gray-400 text-xs w-1/2 text-left">{transaction.date}</p>
-                    <p className="text-gray-400 w-1/4 hidden sm:block">{transaction.jobtitle}</p>
-                    <p className="text-gray-400 w-1/4 text-center hidden sm:block">{transaction.creditcard}</p>
-                    <p className={` style={{ color: '#718EBF' }} hidden sm:block font-medium w-1/4 text-right ${transaction.status  ? "style={{ color: '#718EBF' }}" : "text-green-500"}`}>
+                    <p className="text-gray-400 text-xs w-1/2 text-left">
+                      {transaction.date}
+                    </p>
+                    <p className="text-gray-400 w-1/4 hidden sm:block">
+                      {transaction.jobtitle}
+                    </p>
+                    <p className="text-gray-400 w-1/4 text-center hidden sm:block">
+                      {transaction.creditcard}
+                    </p>
+                    <p
+                      className={` style={{ color: '#718EBF' }} hidden sm:block font-medium w-1/4 text-right ${
+                        transaction.status
+                          ? "style={{ color: '#718EBF' }}"
+                          : "text-green-500"
+                      }`}
+                    >
                       {transaction.status}
                     </p>
-                    <p className={`text-400 font-medium w-1/4 text-right ${transaction.value < 0 ? "text-red-500" : "text-green-500"}`}>
+                    <p
+                      className={`text-400 font-medium w-1/4 text-right ${
+                        transaction.value < 0
+                          ? "text-red-500"
+                          : "text-green-500"
+                      }`}
+                    >
                       ${Math.abs(transaction.value).toLocaleString()}
                     </p>
                   </div>
@@ -88,15 +162,14 @@ const Page: React.FC = () => {
         </div>
 
         <div className="w-full h-56 md:h-[90%] rounded-3xl overflow-hidden col-span-1">
-        <CreditCard
-                name="Karthik P"
-                balance="$5,756"
-                cardNumber="3778 **** **** 1234"
-                validDate="11/15"
-                backgroundImg="bg-blue-600"
-                textColor ="text-white"
-            />
-
+          <CreditCard
+            name="Karthik P"
+            balance="$5,756"
+            cardNumber="3778 **** **** 1234"
+            validDate="11/15"
+            backgroundImg="bg-blue-600"
+            textColor="text-white"
+          />
         </div>
       </div>
 
@@ -109,7 +182,7 @@ const Page: React.FC = () => {
           <span className="text-left font-inter text-sm font-normal leading-4 px-6 py-2">
             $7,560 Debited & $5,420 Credited in this Week
           </span>
-          <Example />
+          <BarChartComponent />
         </div>
 
         <div className="rounded-3xl bg-white shadow-md p-6">
@@ -120,10 +193,17 @@ const Page: React.FC = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <div className="bg-[#DCFAF8] w-12 h-12 rounded-2xl flex items-center justify-center">
-                  <Image width={20} height={20} src={apple} alt="Deposit Icon" />
+                  <Image
+                    width={20}
+                    height={20}
+                    src={apple}
+                    alt="Deposit Icon"
+                  />
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-sm font-light text-gray-400">Apple Store</p>
+                  <p className="text-sm font-light text-gray-400">
+                    Apple Store
+                  </p>
                   <small className="text-xs text-blue-500">5h ago</small>
                 </div>
               </div>
@@ -134,7 +214,13 @@ const Page: React.FC = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <div className="bg-[#FFF5D9] w-12 h-12 rounded-2xl flex items-center justify-center">
-                  <Image width={20} height={20} src={spotify} alt="Spotify" className="w-6 h-6 object-contain" />
+                  <Image
+                    width={20}
+                    height={20}
+                    src={spotify}
+                    alt="Spotify"
+                    className="w-6 h-6 object-contain"
+                  />
                 </div>
                 <div className="flex flex-col">
                   <p className="text-sm font-light text-gray-400">Michael</p>
@@ -148,10 +234,18 @@ const Page: React.FC = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <div className="bg-[#E7EDFF] w-12 h-12 rounded-2xl flex items-center justify-center">
-                  <Image width={20} height={20} src={spotify} alt="Playstation" className="w-6 h-6 object-contain" />
+                  <Image
+                    width={20}
+                    height={20}
+                    src={spotify}
+                    alt="Playstation"
+                    className="w-6 h-6 object-contain"
+                  />
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-sm font-light text-gray-400">Playstation</p>
+                  <p className="text-sm font-light text-gray-400">
+                    Playstation
+                  </p>
                   <small className="text-xs text-blue-500">5 days ago</small>
                 </div>
               </div>
@@ -162,7 +256,13 @@ const Page: React.FC = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <div className="bg-[#FFE0EB] w-12 h-12 rounded-2xl flex items-center justify-center">
-                  <Image width={20} height={20} src={spotify} alt="William" className="w-6 h-6 object-contain" />
+                  <Image
+                    width={20}
+                    height={20}
+                    src={spotify}
+                    alt="William"
+                    className="w-6 h-6 object-contain"
+                  />
                 </div>
                 <div className="flex flex-col">
                   <p className="text-sm font-light text-gray-400">William</p>

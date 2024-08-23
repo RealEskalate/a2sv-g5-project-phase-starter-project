@@ -85,6 +85,36 @@ func (_m *UserUsecase) Logout(tokenString string) error {
 	return r0
 }
 
+// OAuthLogin provides a mock function with given fields: c, code
+func (_m *UserUsecase) OAuthLogin(c *gin.Context, code string) (*Domain.User, string, error) {
+	ret := _m.Called(c, code)
+
+	var r0 *Domain.User
+	if rf, ok := ret.Get(0).(func(*gin.Context, string) *Domain.User); ok {
+		r0 = rf(c, code)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*Domain.User)
+		}
+	}
+
+	var r1 string
+	if rf, ok := ret.Get(1).(func(*gin.Context, string) string); ok {
+		r1 = rf(c, code)
+	} else {
+		r1 = ret.Get(1).(string)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*gin.Context, string) error); ok {
+		r2 = rf(c, code)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // PromoteTOAdmin provides a mock function with given fields: username
 func (_m *UserUsecase) PromoteTOAdmin(username string) error {
 	ret := _m.Called(username)

@@ -47,6 +47,7 @@ const SideBar = () => {
       title: 'Services',
       link: '/services',
       icon: <MenuIcons.Serviceicon />,
+      available: true
     },
     {
       id: 'loan',

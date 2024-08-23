@@ -70,7 +70,7 @@ export default function DashboardBarChart() {
 
   return (
     <div className="flex flex-col  lg:w-1/3 justify-center lg:justify-start">
-      <h1 className="font-semibold text-[#343C6A] h-20 flex items-center mx-2">
+      <h1 className="font-semibold text-[#343C6A] h-16 flex items-center mx-2">
         My Expense
       </h1>
       <Card className="w-full xl:w-[90%]">

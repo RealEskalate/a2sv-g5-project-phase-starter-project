@@ -159,7 +159,7 @@ const EditProfile = () => {
               {field.label}
             </label>
             <input
-              className="w-full p-3 md:p-2 text-[#718EBF] border-2 text-sm border-[#DFEAF2] rounded-lg focus:outline-none"
+              className="w-full p-3 md:p-2 text-[#718EBF] border-2 text-sm border-[#DFEAF2] rounded-lg focus:outline-none bg-white"
               type={field.type}
               id={field.id}
               placeholder={field.placeholder}

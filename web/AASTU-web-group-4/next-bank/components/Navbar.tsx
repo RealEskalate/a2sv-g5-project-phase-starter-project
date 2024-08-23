@@ -8,6 +8,8 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { DropdownMenuDemo } from './dropdown';
 import ThemeSwitch from './ThemeSwitch';
+import { IoMdNotificationsOutline } from "react-icons/io";
+import NotificationBell from './NotificationBell';
 
 
 type NavbarProps = {
@@ -55,6 +57,7 @@ export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
       {/* Larger Screens: Full Navbar */}
       <div className="hidden lg:flex items-center justify-around w-full">
         <div className="text-2xl font-extrabold">{pageTitle}</div>
+        <div className="flex items-center gap-4">
         <div className="relative w-64">
           <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
           <input
@@ -63,17 +66,16 @@ export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
             className="w-full px-10 py-2 text-left bg-gray-100 border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-        <div className="flex items-center gap-4">
-          <ThemeSwitch/>
-          <div className="flex items-center rounded-full bg-gray-100 p-2">
-            <FaBell className="text-red-600" size={20} />
+          <div>
+            <ThemeSwitch/>
+          </div>
+          <div>
+            <NotificationBell />
           </div>
           <div className="relative inline-block">
             <div >
                 <DropdownMenuDemo />
             </div>
-
-            
           </div>
         </div>
       </div>

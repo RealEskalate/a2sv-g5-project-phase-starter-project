@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 
-const API_BASE_URL = 'https://bank-dashboard-o9tl.onrender.com';
-const token = Cookies.get('accessToken')
+const API_BASE_URL = "https://web-team-g4.onrender.com";
+const token = Cookies.get("accessToken");
 
 // POST /active-loans
 export const createActiveLoan = async (loanData: any) => {

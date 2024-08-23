@@ -55,8 +55,8 @@ const fetch = async () => {
         <Image
                 src="/Images/profilepic.jpeg"
                 alt="User Profile"
-                width={30}
-                height={30}
+                width={40}
+                height={40}
                 className="rounded-full aspect-square object-cover cursor-pointer"
               />
       </DropdownMenuTrigger>

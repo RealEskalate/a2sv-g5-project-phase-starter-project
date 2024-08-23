@@ -19,12 +19,13 @@ type BlogDto struct {
 	UpdatedAt  		time.Time   `json:"updatedAt"`
 	ViewCount  		int         `json:"viewCount"`
 	LikeCount  		int		    `json:"likeCount"`
+	DislikeCount	int		    `json:"dislikeCount"`
 	CommentCount	int	   		`json:"commentCount"`
 	AuthorName 		string      `json:"authorName"`
 }
 
 
-func NewBlogDto(blog domain.Blog, author domain.User, likeCount int, commentCount int) *BlogDto {
+func NewBlogDto(blog domain.Blog, author domain.User, likeCount int, disLikeCount int, commentCount int) *BlogDto {
 	return &BlogDto{
 		ID:         blog.ID,
 		Title:      blog.Title,
@@ -35,6 +36,7 @@ func NewBlogDto(blog domain.Blog, author domain.User, likeCount int, commentCoun
 		UpdatedAt:  blog.UpdatedAt,
 		ViewCount:  blog.ViewCount,
 		LikeCount:  likeCount,
+		DislikeCount: disLikeCount,
 		CommentCount: commentCount,
 		AuthorName: author.FullName,
 	}

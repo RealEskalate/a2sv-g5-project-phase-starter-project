@@ -85,12 +85,13 @@ func (l *LikeRepository) DeleteLike(like dto.UnlikeDto) *domain.CustomError {
 	return nil
 }
 
-func (l *LikeRepository) BlogLikeCount(blog_id uuid.UUID) (int, *domain.CustomError) {
+func (l *LikeRepository) BlogLikeCount(blog_id uuid.UUID, isLike bool) (int, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	filter := bson.D{
 		{Key: "blog_id", Value: blog_id},
+		{Key: "is_like", Value: isLike},
 	}
 	count, err := l.Collection.CountDocuments(ctx, filter)
 	if err != nil {

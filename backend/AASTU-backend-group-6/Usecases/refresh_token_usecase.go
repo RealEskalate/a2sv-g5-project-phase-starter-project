@@ -5,6 +5,8 @@ import (
 	infrastructure "blogs/Infrastructure"
 	"context"
 	"time"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type refreshTokenUsecase struct {
@@ -38,13 +40,31 @@ func (r *refreshTokenUsecase) CheckActiveUser(c context.Context, id string, user
 }
 
 // checkActiveUser implements domain.RefreshTokenUsecase.
-func (r *refreshTokenUsecase) CreateAccessToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
-	return infrastructure.CreateAccessToken(user, secret, expiry)
+func (r *refreshTokenUsecase) CreateAccessToken(user *domain.User, secret string, expiry int) (string, error) {
+	exp := time.Now().Add(time.Hour * time.Duration(expiry))
+
+	// Create claims
+	claims := &domain.JwtCustomClaims{
+		ID: user.ID.Hex(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(exp), // Convert expiration time to *jwt.NumericDate
+		},
+	}
+	return infrastructure.CreateToken(claims, secret)
 }
 
 // CreateRefreshToken implements domain.RefreshTokenUsecase.
-func (r *refreshTokenUsecase) CreateRefreshToken(user *domain.User, secret string, expiry int) (refreshToken string, err error) {
-	return infrastructure.CreateRefreshToken(user, secret, expiry)
+func (r *refreshTokenUsecase) CreateRefreshToken(user *domain.User, secret string, expiry int) (string, error) {
+	exp := time.Now().Add(time.Hour * time.Duration(expiry))
+
+	// Create claims
+	claims := &domain.JwtCustomClaims{
+		ID: user.ID.Hex(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(exp), // Convert expiration time to *jwt.NumericDate
+		},
+	}
+	return infrastructure.CreateToken(claims, secret)
 }
 
 // ExtractIDFromToken implements domain.RefreshTokenUsecase.

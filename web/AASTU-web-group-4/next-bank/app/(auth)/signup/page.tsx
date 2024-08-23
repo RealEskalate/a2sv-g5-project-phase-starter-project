@@ -47,8 +47,8 @@ const SignupForm = () => {
   const handlePreviousStep = () => setStep(step - 1);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-3xl mx-auto p-3 bg-white shadow-md rounded-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-dark">
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-3xl mx-auto p-3 bg-white dark:bg-gray-900 shadow-md rounded-lg">
         <div className="flex justify-center items-center m-2">
           <Image src={logo.icon} alt="Logo" height={60} width={60} />
           <h1 className="font-bold text-3xl text-gray-700 font-serif p-2">
@@ -68,7 +68,7 @@ const SignupForm = () => {
                 id="name"
                 placeholder="ex: John"
                 {...register("name", { required: "Name is required" })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border border-gray-300 dark:text-black dark:bg-white rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.name && <p className="text-red-500 mt-1">{errors.name.message}</p>}
             </div>
@@ -86,7 +86,7 @@ const SignupForm = () => {
                     message: "Invalid email format",
                   },
                 })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.email && <p className="text-red-500 mt-1">{errors.email.message}</p>}
             </div>
@@ -97,7 +97,7 @@ const SignupForm = () => {
                 type="date"
                 id="dateOfBirth"
                 {...register("dateOfBirth", { required: "Date of Birth is required" })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.dateOfBirth && <p className="text-red-500 mt-1">{errors.dateOfBirth.message}</p>}
             </div>
@@ -108,81 +108,69 @@ const SignupForm = () => {
                 type="text"
                 id="username"
                 placeholder="ex: Star"
-                {...register("username", { 
-                  required: "Username is required",  
-                  // minLength: {
-                  //   value: 4,
-                  //   message: "Username must be at least 4 characters",
-                  // },
-                  // maxLength: {
-                  //   value: 12,
-                  //   message: "Username must not exceed 12 characters",
-                  // }
-                })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                {...register("username", { required: "Username is required" })}
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.username && <p className="text-red-500 mt-1">{errors.username.message}</p>}
             </div>
 
-  
+            <div>
+              <label htmlFor="password" className="block font-medium text-gray-700">Password</label>
+              <input
+                type="password"
+                id="password"
+                placeholder="ex: password"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters",
+                  },
+                })}
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+              />
+              {errors.password && <p className="text-red-500 mt-1">{errors.password.message}</p>}
+            </div>
 
-  <div>
-            <label htmlFor="password" className="block font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              id="password"
-              placeholder="ex: password"
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters",
-                },
-              })}
-              className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
-            />
-            {errors.password && <p className="text-red-500 mt-1">{errors.password.message}</p>}
-          </div>
+            <div className="md:row-span-2">
+              <label htmlFor="permanentAddress" className="block font-medium text-gray-700">Permanent Address</label>
+              <textarea
+                id="permanentAddress"
+                placeholder="ex: A.A"
+                {...register("permanentAddress", { required: "Permanent Address is required" })}
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+              />
+              {errors.permanentAddress && <p className="text-red-500 mt-1">{errors.permanentAddress.message}</p>}
+            </div>
 
-          <div className="md:row-span-2">
-            <label htmlFor="permanentAddress" className="block font-medium text-gray-700">Permanent Address</label>
-            <textarea
-              id="permanentAddress"
-              placeholder="ex: A.A"
-              {...register("permanentAddress", { required: "Permanent Address is required" })}
-              className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
-            />
-            {errors.permanentAddress && <p className="text-red-500 mt-1">{errors.permanentAddress.message}</p>}
+            <div>
+              <label htmlFor="postalCode" className="block font-medium text-gray-700">Postal Code</label>
+              <input
+                type="text"
+                id="postalCode"
+                placeholder="ex: 1000"
+                {...register("postalCode", { required: "Postal Code is required" })}
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+              />
+              {errors.postalCode && <p className="text-red-500 mt-1">{errors.postalCode.message}</p>}
+            </div>
           </div>
+        )}
 
-          <div>
-            <label htmlFor="postalCode" className="block font-medium text-gray-700">Postal Code</label>
-            <input
-              type="text"
-              id="postalCode"
-              placeholder="ex: 1000"
-              {...register("postalCode", { required: "Postal Code is required" })}
-              className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
-            />
-            {errors.postalCode && <p className="text-red-500 mt-1">{errors.postalCode.message}</p>}
-          </div>
-        </div>
-      )}
-
-      {step === 2 && (
-        <div className="grid gap-6 sm:grid-cols-1 mb-6 md:py-14 md:grid-cols-2">
-          {/* Step 2 Fields */}
-          <div>
-            <label htmlFor="presentAddress" className="block font-medium text-gray-700">Present Address</label>
-            <input
-              type="text"
-              id="presentAddress"
-              placeholder="ex: Bola"
-              {...register("presentAddress", { required: "Present Address is required" })}
-              className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
-            />
-            {errors.presentAddress && <p className="text-red-500 mt-1">{errors.presentAddress.message}</p>}
-          </div>
+        {step === 2 && (
+          <div className="grid gap-6 sm:grid-cols-1 mb-6 md:py-14 md:grid-cols-2">
+            {/* Step 2 Fields */}
+            <div>
+              <label htmlFor="presentAddress" className="block font-medium text-gray-700">Present Address</label>
+              <input
+                type="text"
+                id="presentAddress"
+                placeholder="ex: Bola"
+                {...register("presentAddress", { required: "Present Address is required" })}
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+              />
+              {errors.presentAddress && <p className="text-red-500 mt-1">{errors.presentAddress.message}</p>}
+            </div>
 
           <div>
             <label htmlFor="city" className="block font-medium text-gray-700">City</label>
@@ -195,6 +183,17 @@ const SignupForm = () => {
             />
             {errors.city && <p className="text-red-500 mt-1">{errors.city.message}</p>}
           </div>
+            <div>
+              <label htmlFor="city" className="block font-medium text-gray-700">City</label>
+              <input
+                type="text"
+                id="city"
+                placeholder="ex: A.A"
+                {...register("city", { required: "City is required" })}
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+              />
+              {errors.city && <p className="text-red-500 mt-1">{errors.city.message}</p>}
+            </div>
 
           <div>
             <label htmlFor="country" className="block font-medium text-gray-700">Country</label>
@@ -208,6 +207,17 @@ const SignupForm = () => {
             {errors.country && <p className="text-red-500 mt-1">{errors.country.message}</p>}
           </div>
 
+            <div>
+              <label htmlFor="country" className="block font-medium text-gray-700">Country</label>
+              <input
+                type="text"
+                id="country"
+                placeholder="ex: Ethiopia"
+                {...register("country", { required: "Country is required" })}
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+              />
+              {errors.country && <p className="text-red-500 mt-1">{errors.country.message}</p>}
+            </div>
 
           <div>
             <label htmlFor="profilePicture" className="block font-medium text-gray-700">Profile Picture</label>
@@ -219,26 +229,36 @@ const SignupForm = () => {
             />
             {errors.profilePicture && <p className="text-red-500 mt-1">{errors.profilePicture.message}</p>}
           </div>
+            <div>
+              <label htmlFor="profilePicture" className="block font-medium text-gray-700">Profile Picture</label>
+              <input
+                type="file"
+                id="profilePicture"
+                {...register("profilePicture")}
+                className="p-2 dark:text-black dark:bg-white w-full border border-gray-300 rounded-lg mt-1 focus:outline-none focus:border-blue-500"
+              />
+              {errors.profilePicture && <p className="text-red-500 mt-1">{errors.profilePicture.message}</p>}
+            </div>
 
-          <div>
-            <label htmlFor="currency" className="block font-medium text-gray-700">Preferred Currency</label>
-            <select
-              id="currency"
-              {...register("currency", { required: "Preferred Currency is required" })}
-              className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
-            >
-              <option value="">Select Currency</option>
-              <option value="USD">USD</option>
-              <option value="ETB">ETB</option>
-              <option value="EUR">EUR</option>
-              <option value="GBP">GBP</option>
-              <option value="JPY">JPY</option>
-              <option value="CAD">CAD</option>
-            </select>
-            {errors.currency && <p className="text-red-500 mt-1">{errors.currency.message}</p>}
+            <div>
+              <label htmlFor="currency" className="block font-medium text-gray-700">Preferred Currency</label>
+              <select
+                id="currency"
+                {...register("currency", { required: "Preferred Currency is required" })}
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+              >
+                <option value="">Select Currency</option>
+                <option value="USD">USD</option>
+                <option value="ETB">ETB</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="JPY">JPY</option>
+                <option value="CAD">CAD</option>
+              </select>
+              {errors.currency && <p className="text-red-500 mt-1">{errors.currency.message}</p>}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       <div className="flex justify-between mt-8">
         {step > 1 && (

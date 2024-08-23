@@ -40,6 +40,21 @@ export const loanCardMapping = [
 ];
 
 
+// export const mockUser = {
+//   id: "123456",
+//   name: "John Doe",
+//   email: "john.doe@example.com",
+//   profilePicture: "/path/to/profile-picture.jpg",
+// };
+
+
+export const mockNotifications = [
+  { id: "1", message: "Your payment was successful", isRead: false },
+  { id: "2", message: "New login from an unrecognized device", isRead: false },
+  { id: "3", message: "Your account settings have been updated", isRead: true },
+];
+
+
 
 
 // src/constants/index.ts

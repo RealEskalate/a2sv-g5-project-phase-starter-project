@@ -3,14 +3,32 @@ package gemini_ai
 import (
 	"context"
 	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/chat"
 	"github.com/google/generative-ai-go/genai"
+	"google.golang.org/api/option"
 )
 
 type AIService struct {
 	model *genai.GenerativeModel
+}
+
+func NewModel() *genai.GenerativeModel {
+	ctx := context.Background()
+
+	// Access your API key as an environment variable
+	client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("GENAI_API_KEY")))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	model := client.GenerativeModel("gemini-pro")
+
+	return model
 }
 
 func NewAIService(model *genai.GenerativeModel) *AIService {

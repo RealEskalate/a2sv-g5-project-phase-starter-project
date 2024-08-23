@@ -8,17 +8,39 @@ import { Card as CardType } from "@/app/Redux/slices/cardSlice";
 import { useAppSelector } from "@/app/Redux/store/store";
 import LastTrans from "@/app/components/Accounts/Last_trans";
 import { TransactionType } from "@/app/Redux/slices/TransactionSlice";
+import UserService from "@/app/Services/api/userService";
+import { useSession } from "next-auth/react";
+import { useEffect , useState } from "react";
 import { ShimmerVisaCard } from "@/app/components/Shimmer/ShimmerVisa";
 export default function Home() {
+  const {data:session} = useSession();
+  const accessToken = session?.accessToken as string;
   const CardData: CardType[] = useAppSelector((state) => state.cards.cards);
+  const [totalBalance , setTotalBalance] = useState<number>(0);
+  const formattedAmount = `$${totalBalance.toLocaleString()}`;
+  useEffect(() => {
+    
+    const fetchData = async () => {
+      try {
+        const data = await UserService.current(accessToken)
+        setTotalBalance(data.data.accountBalance)
+        console.log(data.data.accountBalance, "current balance");
+      } catch (error) {
+        console.log("error" , error)
+        console.error("Error fetching current  data:", error);
+      }
+    };
 
+    fetchData();
+  }, [accessToken]);
   return (
-    <div className="w-[96%] flex flex-col grow gap-6 p-5 lg:p-8 pt-6">
-      <div className="flex flex-col lg:flex-row gap-6 xl:gap-7 pt-16 sm:pt-0">
-        <div className="flex lg:w-[45%] gap-4 xl:gap-7">
+    <div className="w-[96%] flex flex-col grow gap-6 p-5 lg:p-8 pt-11 md:pt-6 ">
+      <div className="flex flex-col lg:flex-row gap-6 xl:gap-7 pt-0">
+        <div className="flex w-full gap-4 xl:gap-7 flex-col md:flex-row">
+          <div className="flex gap-7 w-full">
           <Card
             title="My Balance"
-            amount="$12,750"
+            amount= { formattedAmount}
             color="#FFF5D9"
             icon="/assets/money-tag 1.svg"
             width="w-full"
@@ -30,6 +52,8 @@ export default function Home() {
             icon="/assets/expense.svg"
             width="w-full"
           />
+          </div>
+          <div className="flex gap-7 w-full">
           <Card
             title="Expense"
             amount="$3,460"
@@ -44,6 +68,7 @@ export default function Home() {
             icon="/assets/saving.svg"
             width="w-full"
           />
+          </div>
         </div>
       </div>
 

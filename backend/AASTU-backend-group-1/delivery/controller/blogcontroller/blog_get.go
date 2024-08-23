@@ -2,6 +2,7 @@ package blogcontroller
 
 import (
 	"blogs/config"
+	"blogs/domain"
 	"fmt"
 	"log"
 	"net/http"
@@ -17,25 +18,41 @@ func (b *BlogController) GetBlogs(ctx *gin.Context) {
 	reverse := ctx.Query("reverse")
 
 	if pageString == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "page is required"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "page is required",
+		})
 		return
 	}
 
 	var page, size int
 	_, err := fmt.Sscanf(pageString, "%d", &page)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "page must be a number"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "page must be a number",
+		})
 		return
 	}
 
 	if sizeString == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "size is required"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "size is required",
+		})
 		return
 	}
 
 	_, err = fmt.Sscanf(sizeString, "%d", &size)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "size must be a number"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "size must be a number",
+		})
 		return
 	}
 
@@ -47,22 +64,26 @@ func (b *BlogController) GetBlogs(ctx *gin.Context) {
 		reverse = "false"
 	}
 
-	blogs, err := b.BlogUsecase.GetBlogs(sortBy, page, size, reverse == "true")
+	blogs, total, err := b.BlogUsecase.GetBlogs(sortBy, page, size, reverse == "true")
 	if err != nil {
 		code := config.GetStatusCode(err)
+		log.Println(err)
 
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Cannot get blogs",
+			Error:   err.Error(),
+		})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"count": len(blogs),
-		"data":  blogs,
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Success",
+		Data: gin.H{
+			"blogs":       blogs,
+			"total_pages": total,
+		},
 	})
 }
 
@@ -70,23 +91,30 @@ func (b *BlogController) GetBlogByID(ctx *gin.Context) {
 	idHex := ctx.Param("id")
 	id, err := primitive.ObjectIDFromHex(idHex)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "invalid id",
+		})
 		return
 	}
 
 	blog, err := b.BlogUsecase.GetBlogByID(id.Hex())
 	if err != nil {
 		code := config.GetStatusCode(err)
+		log.Println(err)
 
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Cannot get blog",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, blog)
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Success",
+		Data:    blog,
+	})
 }

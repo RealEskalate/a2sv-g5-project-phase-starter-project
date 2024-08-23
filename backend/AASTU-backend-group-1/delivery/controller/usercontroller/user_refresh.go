@@ -13,25 +13,28 @@ func (u *UserController) RefreshToken(ctx *gin.Context) {
 	claims, ok := ctx.MustGet("claims").(*domain.LoginClaims)
 	if !ok {
 		log.Println("Error getting claims")
-		ctx.JSON(http.StatusInternalServerError, "Internal server error")
+		ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Internal server error",
+			Error:   "cannot get claims",
+		})
 		return
 	}
 
 	accessToken, err := u.UserUsecase.RefreshToken(claims)
 	if err != nil {
 		code := config.GetStatusCode(err)
-
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(code, gin.H{"error": "Internal server error"})
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Failed to refresh token",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"access_token": accessToken,
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Successfully refresh token",
+		Data:    accessToken,
 	})
 }

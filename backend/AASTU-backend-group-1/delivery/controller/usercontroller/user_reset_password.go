@@ -2,7 +2,7 @@ package usercontroller
 
 import (
 	"blogs/config"
-	"log"
+	"blogs/domain"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,8 +11,10 @@ import (
 func (u *UserController) ResetPassword(ctx *gin.Context) {
 	tokenString := ctx.Query("token")
 	if tokenString == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Token is required",
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "Token is required",
 		})
 		return
 	}
@@ -20,18 +22,16 @@ func (u *UserController) ResetPassword(ctx *gin.Context) {
 	err := u.UserUsecase.ResetPassword(tokenString)
 	if err != nil {
 		code := config.GetStatusCode(err)
-
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(code, gin.H{"error": "Internal server error"})
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Failed to reset password",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(200, gin.H{
-		"message": "Password reset successfully",
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Successfully reset password",
 	})
 }

@@ -1,35 +1,45 @@
 package blogcontroller
 
 import (
-	"errors"
+	"blogs/config"
+	"blogs/domain"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func (b *BlogController) SearchBlog(ctx *gin.Context) {
+	title := ctx.Query("title")
+	author := ctx.Query("author")
+	tags := ctx.QueryArray("tags")
 
-	var search struct {
-		Title  string   `json:"title"`
-		Author string   `json:"author"`
-		Tags   []string `json:"tags"`
-	}
-	   search.Title = ctx.Query("title")
-	   search.Author = ctx.Query("author")
-	   search.Tags = ctx.QueryArray("tags")
-
-
-	if search.Title == "" || search.Author == "" || len(search.Tags) == 0 {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": errors.New("title, author and tags are required")})
+	if title == "" && author == "" && len(tags) == 0 {
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "at least one of title, author, or tags is required",
+		})
 		return
 	}
 
-	blogs, err := b.BlogUsecase.SearchBlog(search.Title, search.Author, search.Tags)
+	if len(tags) == 0 {
+		tags = []string{}
+	}
+
+	blogs, err := b.BlogUsecase.SearchBlog(title, author, tags)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		code := config.GetStatusCode(err)
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Cannot search blog",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, blogs)
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Success",
+		Data:    blogs,
+	})
 }
-

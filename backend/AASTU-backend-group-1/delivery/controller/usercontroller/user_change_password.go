@@ -3,21 +3,29 @@ package usercontroller
 import (
 	"blogs/config"
 	"blogs/domain"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func (u *UserController) ForgotPassword(ctx *gin.Context) {
-	var input struct {
-		Email       string `json:"email"`
+func (u *UserController) ChangePassword(ctx *gin.Context) {
+	claims, ok := ctx.MustGet("claims").(*domain.LoginClaims)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Internal server error",
+			Error:   "cannot get claims",
+		})
+		return
+	}
+
+	var Request struct {
+		OldPassword string `json:"old_password"`
 		NewPassword string `json:"new_password"`
 	}
 
-	err := ctx.ShouldBindJSON(&input)
+	err := ctx.ShouldBind(&Request)
 	if err != nil {
-		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
 			Status:  http.StatusBadRequest,
 			Message: "Invalid request",
@@ -26,15 +34,15 @@ func (u *UserController) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 
-	if input.Email == "" {
+	if Request.OldPassword == "" {
 		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
 			Status:  http.StatusBadRequest,
-			Message: "Email is required",
+			Message: "Old password is required",
 		})
 		return
 	}
 
-	if input.NewPassword == "" {
+	if Request.NewPassword == "" {
 		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
 			Status:  http.StatusBadRequest,
 			Message: "New password is required",
@@ -42,23 +50,13 @@ func (u *UserController) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 
-	err = u.UserUsecase.ForgotPassword(input.Email, input.NewPassword)
+	err = u.UserUsecase.ChangePassword(claims.Username, Request.OldPassword, Request.NewPassword)
 	if err != nil {
 		code := config.GetStatusCode(err)
 
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(code, domain.APIResponse{
-				Status:  code,
-				Message: "Internal server error",
-				Error:   "Failed to send password reset token",
-			})
-			return
-		}
-
 		ctx.JSON(code, domain.APIResponse{
 			Status:  code,
-			Message: "Failed to send password reset token",
+			Message: "Failed to change password",
 			Error:   err.Error(),
 		})
 		return
@@ -66,6 +64,6 @@ func (u *UserController) ForgotPassword(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, domain.APIResponse{
 		Status:  http.StatusOK,
-		Message: "Password reset token sent",
+		Message: "Password changed successfully",
 	})
 }

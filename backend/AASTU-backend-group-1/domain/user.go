@@ -54,6 +54,8 @@ type UserUsecase interface {
 	GoogleLogin() (string, error)
 	GoogleCallback(state, code string) (string, string, error)
 	DeleteUser(username string) error
+	ChangePassword(usernameoremail, oldPassword, newPassword string) error
+	GetUserByUsername(username string) (*User, error)
 }
 
 type OAuthStateRepository interface {

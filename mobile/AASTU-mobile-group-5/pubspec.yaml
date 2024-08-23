@@ -58,6 +58,7 @@ dependencies:
   file_picker: ^8.1.2
   record: ^5.1.2
   camera:
+  web_socket_channel: ^2.4.0
 
 
 

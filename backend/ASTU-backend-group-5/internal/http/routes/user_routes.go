@@ -15,6 +15,7 @@ func RegisterUserRoutes(collection *mongo.Collection, router *gin.Engine) {
 		userRoute.DELETE("/me", userHandler.DeleteUser)
 		userRoute.PUT("/me", userHandler.UpdateUser)
 		userRoute.GET("/any/:id", userHandler.GetAnyUser)
+		userRoute.POST("upload", userHandler.UploadProfilePic)
 	}
 
 }

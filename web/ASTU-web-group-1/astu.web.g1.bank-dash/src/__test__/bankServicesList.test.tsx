@@ -21,36 +21,6 @@ describe("BankServicesList Component", () => {
     mockedUseGetBankServiceQuery.mockReset();
   });
 
-  // it("should display loading state initially", () => {
-  //   mockedUseGetBankServiceQuery.mockImplementation(
-  //     () =>
-  //       ({
-  //         data: null,
-  //         error: null,
-  //         isLoading: true,
-  //       } as any)
-  //   ); // Use `as any` to bypass type errors
-
-  //   render(<BankServicesList />);
-  //   expect(screen.getByText("Bank Services List")).toBeInTheDocument();
-  //   // Adjust based on your actual loading indicator
-  //   expect(screen.getByText(/loading/i)).toBeInTheDocument();
-  // });
-
-  // it("should display error message when there is an error", async () => {
-  //   mockedUseGetBankServiceQuery.mockImplementation(
-  //     () =>
-  //       ({
-  //         data: null,
-  //         error: "An error occurred",
-  //         isLoading: false,
-  //       } as any)
-  //   );
-
-  //   render(<BankServicesList />);
-  //   expect(await screen.findByText("An error occurred")).toBeInTheDocument();
-  // });
-
   it("should display data correctly when fetch is successful", async () => {
     const mockData = {
       data: {
@@ -79,3 +49,33 @@ describe("BankServicesList Component", () => {
     expect(screen.getByText("Details about Service 1")).toBeInTheDocument();
   });
 });
+
+// it("should display loading state initially", () => {
+//   mockedUseGetBankServiceQuery.mockImplementation(
+//     () =>
+//       ({
+//         data: null,
+//         error: null,
+//         isLoading: true,
+//       } as any)
+//   ); // Use `as any` to bypass type errors
+
+//   render(<BankServicesList />);
+//   expect(screen.getByText("Bank Services List")).toBeInTheDocument();
+//   // Adjust based on your actual loading indicator
+//   expect(screen.getByText(/loading/i)).toBeInTheDocument();
+// });
+
+// it("should display error message when there is an error", async () => {
+//   mockedUseGetBankServiceQuery.mockImplementation(
+//     () =>
+//       ({
+//         data: null,
+//         error: "An error occurred",
+//         isLoading: false,
+//       } as any)
+//   );
+
+//   render(<BankServicesList />);
+//   expect(await screen.findByText("An error occurred")).toBeInTheDocument();
+// });

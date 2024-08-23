@@ -93,7 +93,7 @@ export default function Home() {
   const [loading, setloading] = useState(true);
   const [Loading, setLoading] = useState(true);
   const [data, setdata] = useState<datatype>();
-  
+
   // Getting the session from the server and Access Token From Refresh
   useEffect(() => {
     const fetchSession = async () => {
@@ -113,20 +113,23 @@ export default function Home() {
         setloading(false);
       }
     };
-    
+
     fetchSession();
   }, [router]);
-  
+
   // Combined fetching data to reduce multiple useEffect hooks
   useEffect(() => {
     const fetchData = async () => {
       if (!access_token) return;
-      
+
       try {
         // Fetch data
-        const d: datatype = await getRandomInvestementData(11,2021,access_token);
+        const d: datatype = await getRandomInvestementData(
+          11,
+          2021,
+          access_token
+        );
         setdata(d);
-
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -137,7 +140,38 @@ export default function Home() {
     fetchData();
   }, [access_token]);
 
-  if (loading || Loading) return <div>Loading...</div>;
+  if (loading || Loading)
+    return (
+      <div className="bg-gray-100 p-6 animate-pulse">
+        <div className="flex justify-between flex-wrap lg:flex-nowrap gap-4">
+          <div className="bg-gray-300 rounded-lg w-1/3 h-20"></div>
+          <div className="bg-gray-300 rounded-lg w-1/3 h-20"></div>
+          <div className="bg-gray-300 rounded-lg w-1/3 h-20"></div>
+        </div>
+        <div className="grid grid-cols-2 gap-6">
+          <div className="col-span-2 lg:col-span-1">
+            <div className="my-4 bg-gray-300 rounded-lg h-8 w-1/2"></div>
+            <div className="bg-gray-300 rounded-lg h-40"></div>
+          </div>
+          <div className="col-span-2 lg:col-span-1">
+            <div className="my-4 bg-gray-300 rounded-lg h-8 w-1/2"></div>
+            <div className="bg-gray-300 rounded-lg h-40"></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-8">
+          <div className="col-span-12 lg:col-span-7">
+            <div className="my-4 bg-gray-300 rounded-lg h-8 w-1/2"></div>
+            <div className="bg-gray-300 rounded-lg h-24 my-3"></div>
+            <div className="bg-gray-300 rounded-lg h-24 my-3"></div>
+            <div className="bg-gray-300 rounded-lg h-24 my-3"></div>
+          </div>
+          <div className="col-span-12 lg:col-span-5">
+            <div className="my-4 bg-gray-300 rounded-lg h-8 w-1/2"></div>
+            <div className="bg-gray-300 rounded-lg h-72"></div>
+          </div>
+        </div>
+      </div>
+    );
 
   return (
     <div className="bg-gray-100 p-6">

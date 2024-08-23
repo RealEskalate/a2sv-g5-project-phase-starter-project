@@ -47,28 +47,32 @@ func (b BlogUsecase) CommentOnBlog(user_id string, comment domain.Comment) error
 }
 
 // CreateBlog implements domain.BlogRepository.
-func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
+func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog, creator_id string) (domain.Blog, error) {
 	if blog.CreatedAt.IsZero() && blog.UpdatedAt.IsZero() {
 		blog.CreatedAt = time.Now()
 		blog.UpdatedAt = time.Now()
 	}
-	if blog.CreatedAt.IsZero(){
+	if blog.CreatedAt.IsZero() {
 		blog.CreatedAt = time.Now()
 	}
-	if blog.UpdatedAt.IsZero(){
+	if blog.UpdatedAt.IsZero() {
 		blog.UpdatedAt = time.Now()
 	}
 	if len(blog.Tags) == 0 {
 		blog.Tags = make([]string, 0)
 	}
-	
-	blog.Commenters_ID = utils.MakePrimitiveList(0)
+
 	if blog.Blog_image == "" {
 		blog.Blog_image = "https://media.istockphoto.com/id/922745190/photo/blogging-blog-concepts-ideas-with-worktable.jpg?s=2048x2048&w=is&k=20&c=QNKuhWRD7f0P5hybe28_AHo_Wh6W93McWY157Vmmh4Q="
 	}
+
 	blog.ViewCount = 0
 	blog.Popularity = 0
-	newBlog, err := b.blogRepository.CreateBlog(user_id, blog)
+	blog.LikeCount = 0
+	blog.DisLikeCount = 0
+	blog.Commenters_ID = utils.MakePrimitiveList(0)
+
+	newBlog, err := b.blogRepository.CreateBlog(user_id, blog, creator_id)
 	if err != nil {
 		return domain.Blog{}, err
 	}
@@ -90,7 +94,8 @@ func (b BlogUsecase) DeleteBlogByID(user_id string, blog_id string) domain.Error
 		return domain.ErrorResponse{
 			Message: "internal server error",
 			Status:  500,
-	}}
+		}
+	}
 
 	if strings.ToLower(role) != "admin" && user_id != b.idConverter.ToString(blog.Creator_id) {
 		return domain.ErrorResponse{
@@ -241,7 +246,7 @@ func (b BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, pag
 func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.Blog) (domain.Blog, error) {
 	var updated_blog domain.Blog
 	var err error
-	role , err := b.blogRepository.GetUserRoleByID(user_id)
+	role, err := b.blogRepository.GetUserRoleByID(user_id)
 	if err != nil {
 		return domain.Blog{}, err
 	}

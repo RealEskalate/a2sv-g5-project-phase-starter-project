@@ -10,7 +10,7 @@ export default function ClientLayout({
 }) {
   const pathname = usePathname();
 
-  const showSidebarAndNavbar = pathname !== "/auth/signin";
+  const showSidebarAndNavbar = pathname !== "/auth/signin" && pathname !== "/auth/signup";
   return (
     <>
       {showSidebarAndNavbar && <Sidebar />}

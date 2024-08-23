@@ -7,17 +7,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ProfileController struct {
-	profileUsecase interfaces.ProfileUpdateUsecase
+type ProfileUpdateController struct {
+	ProfileUsecase interfaces.ProfileUpdateUsecase
 }
 
-func NewProfileController(pu interfaces.ProfileUpdateUsecase) *ProfileController {
-	return &ProfileController{
-		profileUsecase: pu,
+func NewProfileController(pu interfaces.ProfileUpdateUsecase) *ProfileUpdateController {
+	return &ProfileUpdateController{
+		ProfileUsecase: pu,
 	}
 }
 
-func (pc *ProfileController) UploadProfileImage(c *gin.Context) {
+func (pc *ProfileUpdateController) UploadProfileImage(c *gin.Context) {
 	file, err := c.FormFile("profileImage")
 	userId := c.GetString("id")
 
@@ -26,7 +26,7 @@ func (pc *ProfileController) UploadProfileImage(c *gin.Context) {
 		return
 	}
 
-	imageKey, err := pc.profileUsecase.UploadImageToCloudinary(userId, file)
+	imageKey, err := pc.ProfileUsecase.UploadImageToCloudinary(userId, file)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload image"})
 		return

@@ -53,7 +53,9 @@ type Response struct {
 
 // ProfileUpdateRequest represents the payload for updating a user's profile
 type ProfileUpdateRequest struct {
-	Username string `json:"username"`
-	Name     string `json:"name"`
-	Password string `bson:"password" json:"password"`
+	Username    string `json:"username"`
+	Name        string `json:"name"`
+	PhoneNumber string `json:"phone_number"`
+	Bio         string `json:"bio"`
+	Password    string `bson:"password" json:"password"`
 }

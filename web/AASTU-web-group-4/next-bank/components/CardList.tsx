@@ -2,6 +2,7 @@ import React from "react";
 import { colors, sidebarLinks } from "../constants/index";
 import { CgCreditCard } from "react-icons/cg";
 import { cardType } from "@/types";
+import Image from "next/image";
 
 interface Props {
   card_list: cardType[];
@@ -10,7 +11,8 @@ interface Props {
 const CardList: React.FC<Props> = ({ card_list }) => {
   return (
     <div className="max-h-[400px] lg:w-[730px] md:w-[487px] w-[325] overflow-y-scroll pr-6 py-4 scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-blue-400">
-      {card_list.map((card: any, index: number) => (
+      {Array.isArray(card_list) && card_list.length > 0 ? (
+        card_list.map((card: any, index: number) => (
         <div
           key={index}
           className="flex flex-row justify-between w-full bg-white p-4 mb-4 rounded-lg shadow-md "
@@ -56,7 +58,20 @@ const CardList: React.FC<Props> = ({ card_list }) => {
             View Details
           </a>
         </div>
-      ))}
+      ))) : (
+        <div className=" pr-6 py-32 bg-white w-full flex flex-col justify-center align-middle rounded-xl scrollbar-none">
+          <Image
+                src="/icons/null.png"
+                width={80}
+                height={80}
+                alt="null"
+                className="mx-auto pb-2 block"
+              />
+          <span className="mx-auto my-auto md:text-xl text-sm text-[#993d4b] font-bold">
+            There is no cards for now!
+            </span>
+        </div>
+      )}
     </div>
   );
 };

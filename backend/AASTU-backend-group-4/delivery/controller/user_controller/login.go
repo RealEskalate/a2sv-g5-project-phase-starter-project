@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (uc *userController) Login(c *gin.Context) {
+func (uc *UserController) Login(c *gin.Context) {
 	var req domain.LoginRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {

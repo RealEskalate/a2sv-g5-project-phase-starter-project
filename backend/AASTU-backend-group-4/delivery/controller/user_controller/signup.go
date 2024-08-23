@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (uc *userController) SignUp(c *gin.Context) {
+func (uc *UserController) SignUp(c *gin.Context) {
 	var req domain.SignupRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -20,7 +20,6 @@ func (uc *userController) SignUp(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 
 	c.JSON(http.StatusCreated, resp)
 }

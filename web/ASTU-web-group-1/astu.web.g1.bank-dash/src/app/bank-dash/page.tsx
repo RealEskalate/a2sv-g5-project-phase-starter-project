@@ -9,6 +9,7 @@ import { Plus } from 'lucide-react';
 import StoreProvider from '@/providers/StoreProvider';
 import TestNaol from '@/components/TestNaol';
 import MyCardLists from '@/components/MyCard/MyCardLists';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -17,17 +18,19 @@ export default function Home() {
         <div className='lg:w-2/3 md:pr-3 xl:pr-5 flex-shrink'>
           <div className='w-full'>
             <div className='flex justify-between'>
-              <p className='text-[#333B69] pb-3 font-semibold'>My Card</p>
-              <p className='text-[#333B69] pb-3 font-semibold'>See All</p>
+              <p className='text-[#333B69] pb-3 font-semibold'>My Cards</p>
+              <p className='text-[#333B69] pb-3 font-semibold'>
+                <Link href='bank-dash/credit-card'>See All</Link>{' '}
+              </p>
             </div>
-            <div className='flex  overflow-x-auto space-x-2'>
+            <div className='flex  overflow-x-auto space-x-3'>
               <StoreProvider>
                 <MyCardLists />
-                {/* <MyCard />
-                <MyCard /> */}
               </StoreProvider>
               <div className='w-[295px] h-[175px] bg-gray-200 rounded-3xl justify-center items-center flex flex-shrink-0'>
-                <Plus size={32} />
+                <Link href='/bank-dash/credit-card'>
+                  <Plus size={32} />
+                </Link>
               </div>
             </div>
           </div>

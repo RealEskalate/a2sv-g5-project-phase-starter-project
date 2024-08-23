@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {FaGreaterThan,FaLessThan} from 'react-icons/fa'
+import { FaGreaterThan, FaLessThan } from "react-icons/fa";
 import Card from "../components/common/card";
 import CardList from "./CardList";
 import CardStatistics from "./CardStatistics";
@@ -9,12 +9,13 @@ import AddNewCard from "./AddNewCard";
 import CardSetting from "./CardSetting";
 import creditCardColor from "./cardMockData";
 import { useSession } from "next-auth/react";
+import Shimmer from "./Shimmer";
 interface ExtendedUser {
-    name?: string;
-    email?: string;
-    image?: string;
-    accessToken?: string;
-    }
+	name?: string;
+	email?: string;
+	image?: string;
+	accessToken?: string;
+}
 const CreditCardComponent: React.FC = () => {
 	const [cardData, setCardData] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -22,8 +23,9 @@ const CreditCardComponent: React.FC = () => {
 	const [currentPage, setCurrentPage] = useState(0);
 	const [totalPages, setTotalPages] = useState(0);
 	const { data: session, status } = useSession();
+
 	const user = session?.user as ExtendedUser;
-  
+
 	const accessToken = user.accessToken;
 
 	const fetchCardData = async (page: number) => {
@@ -61,6 +63,7 @@ const CreditCardComponent: React.FC = () => {
 		if (accessToken) {
 			fetchCardData(currentPage);
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [accessToken, currentPage]);
 
 	const handleCardAdded = () => {
@@ -80,7 +83,19 @@ const CreditCardComponent: React.FC = () => {
 	};
 
 	if (loading) {
-		return <p className="text-center py-5 text-blue-500">Loading...</p>;
+		return (
+			<div className="bg-[#F5F7FA] p-4 sm:px-8 sm:py-4">
+				<div className="font-semibold text-blue-900 p-2">My Cards</div>
+				<div className="overflow-x-auto">
+					<div className="flex flex-nowrap gap-6 w-[940px] sm:w-[1024px] md:w-full">
+						{Array.from({ length: 3 }).map((_, index) => (
+							<Shimmer key={index} />
+						))}
+					</div>
+				</div>
+				{/* Include additional shimmers for other sections if needed */}
+			</div>
+		);
 	}
 	if (error) {
 		return <p className="py-5">Error: {error}</p>;

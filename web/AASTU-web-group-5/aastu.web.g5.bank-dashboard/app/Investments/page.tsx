@@ -10,7 +10,12 @@ import MonthlyRevenueChart from './MonthlyRevenueChart'
 import { tradingStockData, investmentsData } from "./mockData";
 import { useSession } from "next-auth/react";
 import Shimmer1 from "../Accounts/shimmer";
-
+interface ExtendedUser {
+	name?: string;
+	email?: string;
+	image?: string;
+	accessToken?: string;
+}
 const Investments = () => {
   const [loading, setLoading] = useState(true);
   const [investmentOverview, setInvestmentOverview] = useState({
@@ -22,8 +27,9 @@ const Investments = () => {
   const [yearlyTotalInvestment, setYearlyTotalInvestment] = useState([]);
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
   const { data: session } = useSession();
+  const user = session?.user as ExtendedUser;
 
-  const token: string = `Bearer ${session?.user?.accessToken}`;
+  const token: string = `Bearer ${user.accessToken}`;
   useEffect(() => {
     const fetchInvestmentData = async () => {
       setLoading(true); // Set loading to true before fetching data
@@ -130,42 +136,41 @@ const Investments = () => {
         {/* Investments Section */}
         <div className="md:w-[58%] p-4 bg-gray-100 rounded-lg min-h-[345px]">
           <p className="text-lg font-semibold">My Investments</p>
-          {loading ? <Shimmer1/>:
-             (
-              <div className="space-y-4 mt-4">
-               {investmentsData.slice(0, 3).map((investment) => (
-                <div
-                  key={investment.id}
-                  className="flex items-center space-x-4 p-2 bg-white rounded-lg shadow"
-                >
-                  <Image
-                    src={investment.image}
-                    alt={investment.name}
-                    width={44}
-                    height={44}
-                    className="rounded-full object-cover"
-                  />
-                  <div className="flex-1">
-                    <p className="font-semibold">{investment.name}</p>
-                    <p className="text-gray-500">{investment.service}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold">{investment.value}</p>
-                    <p className="text-xs text-gray-500">Investment value</p>
-                  </div>
-                  <div>
-                    <div>
-                      {investment.return < 0 ? (
-                        <p className="text-red-500">{investment.return}%</p>
-                      ) : (
-                        <p className="text-green-500">{investment.return}%</p>
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-500">Return</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          {loading ? <Shimmer1/>:(
+                        <div className="space-y-4 mt-4">
+                        {investmentsData.slice(0, 3).map((investment) => (
+                          <div
+                            key={investment.id}
+                            className="flex items-center space-x-4 p-2 bg-white rounded-lg shadow"
+                          >
+                            <Image
+                              src={investment.image}
+                              alt={investment.name}
+                              width={44}
+                              height={44}
+                              className="rounded-full object-cover"
+                            />
+                            <div className="flex-1">
+                              <p className="font-semibold">{investment.name}</p>
+                              <p className="text-gray-500">{investment.service}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold">{investment.value}</p>
+                              <p className="text-xs text-gray-500">Investment value</p>
+                            </div>
+                            <div>
+                              <div>
+                                {investment.return < 0 ? (
+                                  <p className="text-red-500">{investment.return}%</p>
+                                ) : (
+                                  <p className="text-green-500">{investment.return}%</p>
+                                )}
+                              </div>
+                              <p className="text-xs text-gray-500">Return</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
           )}
 
         </div>

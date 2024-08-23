@@ -4,10 +4,18 @@ import Image from 'next/image';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 
+interface ExtendedUser {
+  name?: string;
+  email?: string;
+  image?: string;
+  accessToken?: string;
+}
 const Page = () => {
   const [services, setServices] = useState([]);
   const { data: session } = useSession();
-  const token: string = `Bearer ${session?.user?.accessToken}`;
+  const user = session?.user as ExtendedUser;
+  const  accessToken = user.accessToken;
+  const token: string = `Bearer ${accessToken}`;
 
   useEffect(() => {
     const fetchServices = async () => {

@@ -28,7 +28,7 @@ const LoanTable: React.FC<LoanTableProps> = ({ data }) => {
 	);
 
 	return (
-		<div className="py-5">
+		<div className="py-2">
 			<div className="p-3 text-[#333B69] text-xl font-semibold">
 				<p>Active Loans Overview</p>
 			</div>

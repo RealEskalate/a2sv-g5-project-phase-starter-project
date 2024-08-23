@@ -10,13 +10,11 @@ interface ExtendedUser {
 	accessToken?: string;
   }
 export default function Login() {
-
+ 
   const { data: session, status } = useSession();
   const user = useSelector((state: { user: User }) => state.user);
-  // console.log(session,'session')
   const users = session?.user as ExtendedUser;
 
-  // console.log(users.accessToken,'accessToken');
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -25,23 +23,17 @@ export default function Login() {
       dispatch({
         type: "USER_FETCH_REQUESTED",
         payload: {
-          userName: session.user.name,
-          accessToken: users.accessToken,
+          username: session.user.name,
+          token: users.accessToken,
         },
       });
     }
-  }, [status, session, dispatch]);
+  }, [status, session, dispatch, users]);
+  useEffect(() => {
+    console.log('Updated user state:', user); // Log the updated user state
+  }, [user]);
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-
-  if (status === "unauthenticated") {
-    return <div>Please log in</div>;
-  }
-
-  console.log('user', user);
-  return <div> 
-</div>
-
+  // return <div> 
+// </div>
+return (<></>)
 }

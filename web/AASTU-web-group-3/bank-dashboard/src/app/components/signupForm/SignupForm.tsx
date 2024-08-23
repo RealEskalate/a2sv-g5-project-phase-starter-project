@@ -4,27 +4,28 @@ import { useForm, FormProvider } from 'react-hook-form';
 import Step1 from './Step1';
 import Step2 from './Step2';
 import Step3 from './Step3';
+import { useSignUpMutation } from '@/lib/redux/api/authApi';
 
 type FormData = {
-  name: string;
-  email: string;
-  dateOfBirth: string;
-  permanentAddress: string;
-  postalCode: string;
-  presentAddress: string;
-  city: string;
-  country: string;
-  profilePicture: FileList|null;
-  username: string;
-  password: string;
-  preference: {
-    currency: string;
-    sentOrReceiveDigitalCurrency: boolean;
-    receiveMerchantOrder: boolean;
-    accountRecommendations: boolean;
-    timeZone: string;
-    twoFactorAuthentication: boolean;
-  };
+    name: string;
+    email: string;
+    dateOfBirth: string;
+    permanentAddress: string;
+    postalCode: string;
+    presentAddress: string;
+    city: string;
+    country: string;
+    profilePicture: string;
+    username: string;
+    password: string;
+    preference: {
+      currency: string;
+      sentOrReceiveDigitalCurrency: boolean;
+      receiveMerchantOrder: boolean;
+      accountRecommendations: boolean;
+      timeZone:string;
+      twoFactorAuthentication: boolean;
+    };
 };
 
 const SignUpForm: React.FC = () => {
@@ -38,7 +39,7 @@ const SignUpForm: React.FC = () => {
       presentAddress: '',
       city: '',
       country: '',
-      profilePicture: null,
+      profilePicture:"/",
       username: '',
       password: '',
       preference: {
@@ -46,16 +47,26 @@ const SignUpForm: React.FC = () => {
         sentOrReceiveDigitalCurrency: false,
         receiveMerchantOrder: false,
         accountRecommendations: false,
-        timeZone: '',
+        timeZone: 'GMT + 3',
         twoFactorAuthentication: false,
       },
     },
   });
 
+  
   const [step, setStep] = useState(1);
-
-  const onSubmit = (data: FormData) => {
+  const [putSignUp ] = useSignUpMutation()
+  
+  const onSubmit = async (data: FormData) => {
     console.log(data);
+    try {
+      await putSignUp(data ).unwrap();
+      window.location.reload()
+
+    } catch (err) {
+      console.error(err);
+    }
+
   };
 
   const nextStep = () => {

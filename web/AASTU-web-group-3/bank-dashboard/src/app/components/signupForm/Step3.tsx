@@ -7,7 +7,7 @@ interface StepProps {
 }
 
 const Step3: React.FC<StepProps> = ({ step }) => {
-  const { register, formState: { errors }, watch } = useFormContext();
+  const { register, formState: { errors, isSubmitted }, watch } = useFormContext();
 
   const isDigitalCurrencyEnabled = watch('preference.sentOrReceiveDigitalCurrency');
   const isMerchantOrderEnabled = watch('preference.receiveMerchantOrder');
@@ -26,7 +26,7 @@ const Step3: React.FC<StepProps> = ({ step }) => {
           {...register('username', { required: 'Username is required' })}
           className="mt-1 p-2 block w-full border rounded-md"
         />
-        {errors.username && <p className="text-red-500 text-sm mt-1">{String(errors.username.message)}</p>}
+        {isSubmitted && errors.username && <p className="text-red-500 text-sm mt-1">{String(errors.username.message)}</p>}
       </div>
       <div>
         <label className="block text-sm font-medium">Password</label>
@@ -35,7 +35,7 @@ const Step3: React.FC<StepProps> = ({ step }) => {
           {...register('password', { required: 'Password is required' })}
           className="mt-1 p-2 block w-full border rounded-md"
         />
-        {errors.password && <p className="text-red-500 text-sm mt-1">{String(errors.password.message)}</p>}
+        {isSubmitted && errors.password && <p className="text-red-500 text-sm mt-1">{String(errors.password.message)}</p>}
       </div>
       <div>
         <label className="block text-sm font-medium">Currency</label>
@@ -48,8 +48,26 @@ const Step3: React.FC<StepProps> = ({ step }) => {
           <option value="ETB">Ethiopian Birr (ETB)</option>
           <option value="GBP">British Pound (GBP)</option>
         </select>
-        {(errors.preference as any).currency && <p className="text-red-500 text-sm mt-1">{String((errors.preference as any).currency?.message)}</p>}
+        {isSubmitted && (errors.preference as any)?.currency && <p className="text-red-500 text-sm mt-1">{String((errors.preference as any)?.currency.message)}</p>}
       </div>
+      <div>
+  <label className="block text-sm font-medium">Time Zone</label>
+  <select
+    {...register('preference.timeZone', { required: 'Time Zone is required' })}
+    className="mt-1 p-2 block w-full border rounded-md"
+  >
+    <option value="UTC">Coordinated Universal Time (UTC)</option>
+    <option value="GMT">Greenwich Mean Time (GMT)</option>
+    <option value="EAT">East Africa Time (EAT)</option>
+    <option value="EST">Eastern Standard Time (EST)</option>
+  </select>
+  {isSubmitted && (errors.preference as any)?.timeZone && (
+    <p className="text-red-500 text-sm mt-1">
+      {String((errors.preference as any)?.timeZone.message)}
+    </p>
+  )}
+</div>
+
       <div className="flex items-center justify-between">
         <label className="block text-sm font-medium">Send or Receive Digital Currency</label>
         <label className="relative inline-flex items-center cursor-pointer">
@@ -81,7 +99,8 @@ const Step3: React.FC<StepProps> = ({ step }) => {
         <label className="relative inline-flex items-center cursor-pointer">
           <input 
             type="checkbox" 
-            {...register('preference.accountRecommendations')} 
+            {...register('preference.accountRecommendations')}
+
             className="sr-only peer" 
           />
           <div className={`${switchBaseClasses} ${isAccountRecommendationsEnabled ? 'bg-green-500' : 'bg-gray-300'}`}>

@@ -40,7 +40,7 @@ const EditProfile = ({ userData }: EditProfileProps ) => {
   }, [userData]);
 
 
-  const { register, handleSubmit, setValue } = useForm<FormInput>({
+  const { register, handleSubmit, setValue,formState } = useForm<FormInput>({
     defaultValues: {
       name: currentUser?.data.name || "",
       email:currentUser?.data.email || "",
@@ -55,6 +55,8 @@ const EditProfile = ({ userData }: EditProfileProps ) => {
     },
   });
 
+
+  const {isSubmitSuccessful,isSubmitting} = formState
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state: RootState) => state.setting);
 
@@ -64,9 +66,9 @@ const EditProfile = ({ userData }: EditProfileProps ) => {
 
   const onSubmit = async (data: FormInput) => {
     try {
-  
-      
       await putSetting(data ).unwrap();
+      window.location.reload()
+
     } catch (err) {
       console.error(err);
     }
@@ -101,7 +103,9 @@ const EditProfile = ({ userData }: EditProfileProps ) => {
         'state_changed',
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`Upload is ${progress}% done`);
+          if(progress == 100){
+            alert(`Upload is ${progress}% done`);
+          }
         },
         (error) => {
           console.error("Error during upload:", error);
@@ -185,8 +189,8 @@ const EditProfile = ({ userData }: EditProfileProps ) => {
           <button
             className="w-full md:w-1/5 bg-[#1814F3] text-white font-semibold py-2 px-4 rounded-lg focus:outline-none"
             type="submit"
-          >
-            Save
+          >{
+            !isSubmitting ? "Save":"saving ... " }
           </button>
         </div>
       </form>

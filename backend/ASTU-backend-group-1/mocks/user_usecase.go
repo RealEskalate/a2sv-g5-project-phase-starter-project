@@ -219,9 +219,9 @@ func (_m *UserUsecase) GetByUsername(username string) (domain.User, error) {
 	return r0, r1
 }
 
-// LoginUser provides a mock function with given fields: uname, password
-func (_m *UserUsecase) LoginUser(uname string, password string) (string, error) {
-	ret := _m.Called(uname, password)
+// LoginUser provides a mock function with given fields: uname, password, email
+func (_m *UserUsecase) LoginUser(uname string, password string, email string) (string, error) {
+	ret := _m.Called(uname, password, email)
 
 	if len(ret) == 0 {
 		panic("no return value specified for LoginUser")
@@ -229,17 +229,17 @@ func (_m *UserUsecase) LoginUser(uname string, password string) (string, error) 
 
 	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string) (string, error)); ok {
-		return rf(uname, password)
+	if rf, ok := ret.Get(0).(func(string, string, string) (string, error)); ok {
+		return rf(uname, password, email)
 	}
-	if rf, ok := ret.Get(0).(func(string, string) string); ok {
-		r0 = rf(uname, password)
+	if rf, ok := ret.Get(0).(func(string, string, string) string); ok {
+		r0 = rf(uname, password, email)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
-	if rf, ok := ret.Get(1).(func(string, string) error); ok {
-		r1 = rf(uname, password)
+	if rf, ok := ret.Get(1).(func(string, string, string) error); ok {
+		r1 = rf(uname, password, email)
 	} else {
 		r1 = ret.Error(1)
 	}

@@ -21,7 +21,8 @@ func (useCase *userUsecase) Get() ([]domain.User, error) {
 	return useCase.userRepository.Get(domain.UserFilterOption{})
 }
 
-func (useCase *userUsecase) LoginUser(uname string, password string) (string, error) {
+func (useCase *userUsecase) LoginUser(uname string, password string,email string) (string, error) {
+	if uname != "" {
 	user, err := useCase.GetByUsername(uname)
 	if err != nil {
 		return "", err
@@ -37,6 +38,25 @@ func (useCase *userUsecase) LoginUser(uname string, password string) (string, er
 	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken})
 
 	return accesstoken, nil
+} else if email != "" {
+	user, err := useCase.GetByEmail(email)
+	if err != nil {
+		return "", err
+	}
+	if user.IsActive == false {
+		return "", errors.New("Account not activated")
+	}
+	accesstoken, refreshToken, err := infrastructure.GenerateToken(&user, password)
+	if err != nil {
+		return "", err
+	}
+	user.RefreshToken = refreshToken
+	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken})
+
+	return accesstoken, nil
+}else{
+	return "", errors.New("Invalid login credentials")
+}
 }
 
 func (useCase *userUsecase) Logout(email string) error {

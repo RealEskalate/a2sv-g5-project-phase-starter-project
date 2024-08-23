@@ -33,6 +33,7 @@ func RegisterBlogRoutes(blogsCollection, commentsCollection, likesCollection, vi
 		blogRoutes.GET("/:id/views", blogHandler.GetViewsByBlogIDHandler)
 		blogRoutes.DELETE("/comments/:id", blogHandler.DeleteCommentHandler)
 		blogRoutes.DELETE("/likes/:id", blogHandler.DeleteLikeHandler)
+		blogRoutes.POST("/uploads", blogHandler.UploadBlogPhotos)
 		// blogRoutes.GET("")
 
 	}

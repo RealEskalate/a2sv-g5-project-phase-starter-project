@@ -1,32 +1,33 @@
 package controllers
 
 import (
+	"net/http"
+
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
-type blogCommentController struct {
+type BlogCommentController struct {
 	usecase interfaces.BlogCommentUsecase
 }
 
 func NewBlogCommentController(usecase interfaces.BlogCommentUsecase) interfaces.BlogCommentController {
-	return &blogCommentController{
+	return &BlogCommentController{
 		usecase: usecase,
 	}
 }
 
-func (c *blogCommentController) getUserID(ctx *gin.Context) string {
+func (c *BlogCommentController) getUserID(ctx *gin.Context) string {
 	return ctx.GetString("id")
 }
 
-func (c *blogCommentController) getBlogID(ctx *gin.Context) string {
+func (c *BlogCommentController) getBlogID(ctx *gin.Context) string {
 	return ctx.Param("blogID")
 }
 
-func (bcc *blogCommentController) AddCommentController(ctx *gin.Context) {
+func (bcc *BlogCommentController) AddCommentController(ctx *gin.Context) {
 	blogID := bcc.getBlogID(ctx)
 	userID := bcc.getUserID(ctx)
 
@@ -52,7 +53,7 @@ func (bcc *blogCommentController) AddCommentController(ctx *gin.Context) {
 
 }
 
-func (bcc *blogCommentController) GetCommentsController(ctx *gin.Context) {
+func (bcc *BlogCommentController) GetCommentsController(ctx *gin.Context) {
 	blogID := bcc.getBlogID(ctx)
 
 	comments, err := bcc.usecase.GetComments(ctx, blogID)
@@ -64,7 +65,7 @@ func (bcc *blogCommentController) GetCommentsController(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"comments": comments})
 }
 
-func (bcc *blogCommentController) GetCommentController(ctx *gin.Context) {
+func (bcc *BlogCommentController) GetCommentController(ctx *gin.Context) {
 	commentID := ctx.Param("commentID")
 
 	comment, err := bcc.usecase.GetComment(ctx, commentID)
@@ -76,7 +77,7 @@ func (bcc *blogCommentController) GetCommentController(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"comment": comment})
 }
 
-func (bcc *blogCommentController) UpdateCommentController(ctx *gin.Context) {
+func (bcc *BlogCommentController) UpdateCommentController(ctx *gin.Context) {
 	commentID := ctx.Param("commentID")
 	userID := bcc.getUserID(ctx)
 
@@ -96,7 +97,7 @@ func (bcc *blogCommentController) UpdateCommentController(ctx *gin.Context) {
 
 }
 
-func (bcc *blogCommentController) DeleteCommentController(ctx *gin.Context) {
+func (bcc *BlogCommentController) DeleteCommentController(ctx *gin.Context) {
 	// Implement the logic to delete a comment
 	commentID := ctx.Param("commentID")
 	userID := bcc.getUserID(ctx)

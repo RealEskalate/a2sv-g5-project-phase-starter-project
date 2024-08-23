@@ -39,7 +39,7 @@ type Env struct {
 }
 
 func NewEnv() *Env {
-	projectRoot := "/home/dawit/projects/current/as2v/a2sv-g5-project-phase-starter-project/backend/AAiT-backend-group-5"
+	projectRoot := "/home/mercury/Desktop/a2sv_starter_project/a2sv-g5-project-phase-starter-project/backend/AAiT-backend-group-5"
 
 	viper.SetConfigFile(filepath.Join(projectRoot, ".env"))
 	viper.AutomaticEnv()

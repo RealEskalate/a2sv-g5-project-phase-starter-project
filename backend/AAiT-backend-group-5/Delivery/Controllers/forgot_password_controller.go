@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"net/http"
 
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
@@ -47,12 +46,12 @@ func (forgotPasswordController *ForgotPasswordController) ForgotPasswordRequest(
 }
 
 func (forgotPasswordController *ForgotPasswordController) SetNewPassword(ctx *gin.Context) {
-	var setUpPasswordRequest *dtos.SetUpPasswordRequest
+	var setUpPasswordRequest dtos.SetUpPasswordRequest
 
 	// attempt to bind the payload carrying the new password
 	err := ctx.ShouldBind(&setUpPasswordRequest)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, errors.New("invalid request"))
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
 

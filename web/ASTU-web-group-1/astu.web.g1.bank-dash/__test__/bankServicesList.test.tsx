@@ -1,10 +1,10 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom"; // Import Jest DOM matchers
-import BankServicesList from "../components/BankServicesList/BankServicesList";
 import { useGetBankServiceQuery } from "@/lib/redux/slices/bankService";
+import BankServicesList from "@/components/BankServicesList/BankServicesList";
 
 // Mock the hook
-jest.mock("../lib/redux/slices/bankService", () => ({
+jest.mock("../src/lib/redux/slices/bankService", () => ({
   useGetBankServiceQuery: jest.fn(),
 }));
 
@@ -14,10 +14,12 @@ type MockedUseGetBankServiceQuery = jest.MockedFunction<
 >;
 
 describe("BankServicesList Component", () => {
+  // Access the mocked hook
   const mockedUseGetBankServiceQuery =
     useGetBankServiceQuery as MockedUseGetBankServiceQuery;
 
   beforeEach(() => {
+    // Reset mocks before each test
     mockedUseGetBankServiceQuery.mockReset();
   });
 
@@ -48,34 +50,34 @@ describe("BankServicesList Component", () => {
     expect(await screen.findByText("Service 1")).toBeInTheDocument();
     expect(screen.getByText("Details about Service 1")).toBeInTheDocument();
   });
+
+  it("should display loading state initially", () => {
+    mockedUseGetBankServiceQuery.mockImplementation(
+      () =>
+        ({
+          data: null,
+          error: null,
+          isLoading: true,
+        } as any)
+    );
+
+    render(<BankServicesList />);
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    // Adjust based on your actual loading indicator
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+  });
+
+  it("should display error message when there is an error", async () => {
+    mockedUseGetBankServiceQuery.mockImplementation(
+      () =>
+        ({
+          data: null,
+          error: "An error occurred",
+          isLoading: false,
+        } as any)
+    );
+
+    render(<BankServicesList />);
+    expect(await screen.findByText("An error occurred")).toBeInTheDocument();
+  });
 });
-
-// it("should display loading state initially", () => {
-//   mockedUseGetBankServiceQuery.mockImplementation(
-//     () =>
-//       ({
-//         data: null,
-//         error: null,
-//         isLoading: true,
-//       } as any)
-//   ); // Use `as any` to bypass type errors
-
-//   render(<BankServicesList />);
-//   expect(screen.getByText("Bank Services List")).toBeInTheDocument();
-//   // Adjust based on your actual loading indicator
-//   expect(screen.getByText(/loading/i)).toBeInTheDocument();
-// });
-
-// it("should display error message when there is an error", async () => {
-//   mockedUseGetBankServiceQuery.mockImplementation(
-//     () =>
-//       ({
-//         data: null,
-//         error: "An error occurred",
-//         isLoading: false,
-//       } as any)
-//   );
-
-//   render(<BankServicesList />);
-//   expect(await screen.findByText("An error occurred")).toBeInTheDocument();
-// });

@@ -12,6 +12,9 @@ func ChatRouter() {
 		chatController := controllers.NewChatController()
 
 		chatRouter.POST("", chatController.GetChatCompletion)
+		chatRouter.POST("/tags", chatController.GetChatCompletionByTags)
+		chatRouter.POST("/enhance", chatController.GetChatCompletionEnhancements)
+		chatRouter.POST("/generate", chatController.HandleGeneratePostRequest)
 
 	}
 }

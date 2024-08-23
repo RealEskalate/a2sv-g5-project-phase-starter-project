@@ -4,6 +4,7 @@ import (
 	"blogapp/Domain"
 	"blogapp/Utils"
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -213,7 +214,7 @@ func (br *blogrepository) AddTagToPost(ctx context.Context, id primitive.ObjectI
 	var tag *Domain.Tag
 	err := br.tagCollection.FindOne(ctx, filter).Decode(&tag)
 	if err != nil {
-		return err, 500
+		return errors.New("tag don't exist"), 500
 	}
 	// update post with tag
 	update := bson.D{{"$push", bson.D{{"tags", tag.Slug}}}}
@@ -508,6 +509,10 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 	if filter.AuthorName != "" {
 		matchStage["authorname"] = filter.AuthorName
 		countfilter["authorname"] = filter.AuthorName
+
+	if filter.Title != "" {
+		matchStage["title"] = primitive.Regex{Pattern: filter.Title, Options: "i"}
+		countfilter["title"] = primitive.Regex{Pattern: filter.Title, Options: "i"}
 	}
 	fmt.Println(len(filter.Tags))
 	if len(filter.Tags) > 0 {

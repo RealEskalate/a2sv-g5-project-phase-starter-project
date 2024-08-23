@@ -39,7 +39,7 @@ export function BarChartComponent() {
   useEffect(() => {
     const fetchChartData = async () => {
       try {
-        const response = await axios.get('https://bank-dashboard-1tst.onrender.com/transactions/expenses?page=0&size=10', {
+        const response = await axios.get('https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=0&size=10', {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },

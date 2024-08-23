@@ -16,11 +16,12 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import ky, { HTTPError } from "ky";
 import { useState } from "react";
-import { toast } from "sonner";
+import { useToast } from "@/components/ui/use-toast";
 import { getSession } from "next-auth/react";
 import { Currency } from "lucide-react";
 
 const Preferences = () => {
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const formSchema = z.object({
     sentOrReceiveDigitalCurrency: z.boolean().default(true).optional(),
@@ -48,7 +49,7 @@ const Preferences = () => {
       const session = await getSession();
       const accessToken = session?.user.accessToken;
       const res = await ky.put(
-        "https://bank-dashboard-o9tl.onrender.com/user/update-preference",
+        `${process.env.BASE_URL}/user/update-preference`,
         {
           json: { ...values, twoFactorAuthentication: false },
           headers: {
@@ -58,14 +59,22 @@ const Preferences = () => {
       );
       const data = await res.json();
       console.log("Response", data);
-      toast("Update Successful");
+      toast({
+        title: "Success",
+        description: "Preferences updated successfully",
+        variant: "success",
+      });
     } catch (err) {
       if (err instanceof HTTPError && err.response) {
         const errorResponse = await err.response.json();
         console.error("Error Response", errorResponse);
+        toast({
+          title: "Error",
+          description: "There was a problem with your request",
+          variant: "destructive",
+        });
       }
       console.error("Console Error", err);
-      toast("Update Unsuccessful");
     } finally {
       setLoading(false);
     }

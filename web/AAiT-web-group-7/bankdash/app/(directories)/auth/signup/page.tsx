@@ -74,7 +74,6 @@ const Signup = () => {
             </p>
           </div>
 
-          {/* Additional Fields from the Schema */}
           <div className="w-[350px] h-[60px] flex flex-col gap-2">
             <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
               Date of Birth

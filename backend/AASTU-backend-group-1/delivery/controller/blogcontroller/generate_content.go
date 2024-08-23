@@ -1,7 +1,7 @@
 package blogcontroller
 
 import (
-	"log"
+	"blogs/domain"
 	"net/http"
 	"strings"
 
@@ -15,13 +15,20 @@ func (l *BlogController) GenerateContent(ctx *gin.Context) {
 	}
 
 	if err := ctx.ShouldBindJSON(&prompts); err != nil {
-		log.Println(err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	if prompts.Title == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "title is required"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "title is required",
+		})
 		return
 	}
 
@@ -29,9 +36,17 @@ func (l *BlogController) GenerateContent(ctx *gin.Context) {
 	result, err := l.BlogUsecase.GenerateAiContent(content)
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Internal server error",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"content": result})
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Success",
+		Data:    result,
+	})
 }

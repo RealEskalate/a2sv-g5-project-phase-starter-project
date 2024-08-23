@@ -5,14 +5,18 @@ import (
 	"blogs/domain"
 	"log"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
 func (u *UserController) UpdateProfile(ctx *gin.Context) {
 	claims, ok := ctx.MustGet("claims").(*domain.LoginClaims)
 	if !ok {
-		log.Println("Error getting claims")
-		ctx.JSON(http.StatusInternalServerError, "Internal server error")
+		ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Internal server error",
+			Error:   "cannot get claims",
+		})
 		return
 	}
 
@@ -23,8 +27,11 @@ func (u *UserController) UpdateProfile(ctx *gin.Context) {
 	file, err := ctx.FormFile("avatar")
 	if err != nil && err != http.ErrMissingFile {
 		// Handle the error only if it's not because the file is missing
-		log.Println("Error retrieving file:", err)
-		ctx.JSON(http.StatusBadRequest, "Error uploading file")
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -33,7 +40,11 @@ func (u *UserController) UpdateProfile(ctx *gin.Context) {
 		avatarPath, err = config.UploadToCloudinary(file)
 		if err != nil {
 			log.Println("Error uploading file to Cloudinary:", err)
-			ctx.JSON(http.StatusInternalServerError, "Internal server error")
+			ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+				Status:  http.StatusInternalServerError,
+				Message: "Error uploading file to Cloudinary",
+				Error:   err.Error(),
+			})
 			return
 		}
 		log.Println("Avatar successfully uploaded to Cloudinary:", avatarPath)
@@ -52,7 +63,11 @@ func (u *UserController) UpdateProfile(ctx *gin.Context) {
 
 	err = ctx.ShouldBind(&userData)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -76,18 +91,16 @@ func (u *UserController) UpdateProfile(ctx *gin.Context) {
 	err = u.UserUsecase.UpdateProfile(user, claims)
 	if err != nil {
 		code := config.GetStatusCode(err)
-
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(code, gin.H{"error": "Internal server error"})
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Failed to update user profile",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "User profile updated successfully",
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "User profile updated successfully",
 	})
 }

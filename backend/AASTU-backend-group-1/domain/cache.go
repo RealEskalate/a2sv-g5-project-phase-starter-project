@@ -1,6 +1,5 @@
 package domain
 
-
 // CacheRepository is an interface for cache repository
 
 type Cache interface {

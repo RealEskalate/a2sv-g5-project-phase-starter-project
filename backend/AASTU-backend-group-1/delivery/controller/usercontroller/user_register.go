@@ -19,8 +19,11 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 	file, err := ctx.FormFile("avatar")
 	if err != nil && err != http.ErrMissingFile {
 		// Handle the error only if it's not because the file is missing
-		log.Println("Error retrieving file:", err)
-		ctx.JSON(http.StatusBadRequest, "Error uploading file")
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Error retrieving file",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -29,7 +32,11 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 		avatarPath, err = config.UploadToCloudinary(file)
 		if err != nil {
 			log.Println("Error uploading file to Cloudinary:", err)
-			ctx.JSON(http.StatusInternalServerError, "Internal server error")
+			ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+				Status:  http.StatusInternalServerError,
+				Message: "Error uploading file to Cloudinary",
+				Error:   err.Error(),
+			})
 			return
 		}
 		log.Println("Avatar successfully uploaded to Cloudinary:", avatarPath)
@@ -43,30 +50,46 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 		Password  string `form:"password"`
 		Email     string `form:"email"`
 		Address   string `form:"address"`
-		Avatar	string `form:"avatar"`
+		Avatar    string `form:"avatar"`
 	}
 
 	err = ctx.ShouldBind(&userData)
 	if err != nil {
 		log.Print(err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	log.Println("User data:", userData)
 
 	if userData.Username == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "username is required"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "username is required",
+		})
 		return
 	}
 
 	if userData.Email == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "email is required"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "email is required",
+		})
 		return
 	}
 
 	if userData.Password == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "password is required"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "password is required",
+		})
 		return
 	}
 
@@ -92,18 +115,16 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 	err = u.UserUsecase.RegisterUser(user)
 	if err != nil {
 		code := config.GetStatusCode(err)
-
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(code, gin.H{"error": "Internal server error"})
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Failed to register user",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "verification email has been sent successfully",
+	ctx.JSON(http.StatusCreated, domain.APIResponse{
+		Status:  http.StatusCreated,
+		Message: "User registered successfully",
 	})
 }

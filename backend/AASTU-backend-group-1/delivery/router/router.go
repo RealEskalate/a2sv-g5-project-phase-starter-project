@@ -15,14 +15,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func getBlogController(database *mongo.Database,cache domain.Cache) *blogcontroller.BlogController {
-	blogRepository := repository.NewBlogRepository(database,cache)
+func getBlogController(database *mongo.Database, cache domain.Cache) *blogcontroller.BlogController {
+	blogRepository := repository.NewBlogRepository(database, cache)
 	blogUsecase := blogusecase.NewBlogUsecase(blogRepository)
 	blogController := blogcontroller.NewBlogController(blogUsecase)
 	return blogController
 }
 
-func getUserController(database *mongo.Database,cache domain.Cache) *usercontroller.UserController {
+func getUserController(database *mongo.Database, cache domain.Cache) *usercontroller.UserController {
 	userRepository := repository.NewUserRepository(database, cache)
 	authRepository := repository.NewOAuthRepository(database)
 	userUsecase := userusecase.NewUserUsecase(userRepository, authRepository)
@@ -57,10 +57,11 @@ func protectedRouter(router *gin.Engine, userController *usercontroller.UserCont
 }
 
 func privateUserRouter(router *gin.RouterGroup, userController *usercontroller.UserController) {
+	router.GET("/users/:username", userController.GetUserByUsername)
 	router.PATCH("/users", userController.UpdateProfile)
 	router.PATCH("/users/promote", userController.PromoteUser)
 	router.POST("/users/logout", userController.LogoutUser)
-
+	router.PATCH("/users/change-password", userController.ChangePassword)
 }
 
 func privateBlogRouter(router *gin.RouterGroup, blogController *blogcontroller.BlogController) {
@@ -68,7 +69,7 @@ func privateBlogRouter(router *gin.RouterGroup, blogController *blogcontroller.B
 	router.GET("/blogs", blogController.GetBlogs)
 	router.GET("/blogs/:id", blogController.GetBlogByID)
 	router.PUT("/blogs/:id", blogController.UpdateBlogByID)
-	router.DELETE("/blogs/:id", blogController.DeleteLogByID)
+	router.DELETE("/blogs/:id", blogController.DeleteBlogByID)
 
 	router.POST("/blogs/:id/comments", blogController.AddComment)
 	router.GET("/blogs/:id/comments", blogController.GetBlogComments)
@@ -80,7 +81,7 @@ func privateBlogRouter(router *gin.RouterGroup, blogController *blogcontroller.B
 	router.POST("/blogs/views", blogController.AddView)
 
 	router.GET("/blogs/search", blogController.SearchBlog)
-	router.GET("/blogs/tags", blogController.FilterBlog)
+	router.GET("/blogs/filter", blogController.FilterBlog)
 
 	router.POST("/blogs/generate", blogController.GenerateContent)
 }
@@ -92,8 +93,8 @@ func SetupRouter(mongoClient *mongo.Client) *gin.Engine {
 	router.Use(cors.Default())
 
 	database := mongoClient.Database("blog")
-	blogController := getBlogController(database,cache)
-	userController := getUserController(database,cache)
+	blogController := getBlogController(database, cache)
+	userController := getUserController(database, cache)
 
 	publicRouter(router, userController)
 	protectedRouter(router, userController)

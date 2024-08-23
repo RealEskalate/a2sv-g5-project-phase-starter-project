@@ -17,7 +17,11 @@ func (b *BlogController) AddView(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&blogs); err != nil {
 		log.Println(err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -25,7 +29,11 @@ func (b *BlogController) AddView(ctx *gin.Context) {
 	for _, idHex := range blogs.IDs {
 		id, err := primitive.ObjectIDFromHex(idHex)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id: " + idHex})
+			ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+				Status:  http.StatusBadRequest,
+				Message: "Invalid request",
+				Error:   "invalid id",
+			})
 			return
 		}
 		objectIDs = append(objectIDs, id)
@@ -34,23 +42,27 @@ func (b *BlogController) AddView(ctx *gin.Context) {
 	claim, ok := ctx.MustGet("claims").(*domain.LoginClaims)
 	if !ok {
 		log.Println("failed to get claims")
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Internal server error",
+			Error:   "cannot get claims",
+		})
 		return
 	}
 
 	err := b.BlogUsecase.AddView(objectIDs, *claim)
 	if err != nil {
 		code := config.GetStatusCode(err)
-
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(http.StatusInternalServerError, "internal server error")
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Failed to add views",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "views have been added"})
+	ctx.JSON(http.StatusCreated, domain.APIResponse{
+		Status:  http.StatusCreated,
+		Message: "Views added",
+	})
 }

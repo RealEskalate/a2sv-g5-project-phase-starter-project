@@ -58,6 +58,7 @@ type BlogRepository interface {
 	IncrmentBlogComments(blogID string) error
 	DecrementBlogLikes(blogID string) error
 	RemoveLike(blogID string, author string) error
+	GetTotalBlogs() (int, error)
 }
 
 type BlogUsecase interface {
@@ -70,7 +71,7 @@ type BlogUsecase interface {
 	AddView(view []primitive.ObjectID, claim LoginClaims) error
 	AddLike(like *Like) error
 	AddComment(comment *Comment) error
-	GetBlogs(sortBy string, page, limit int, reverse bool) ([]*Blog, error)
+	GetBlogs(sortBy string, page, limit int, reverse bool) ([]*Blog, int, error)
 	GetBlogComments(blogID string) ([]*Comment, error)
 	GetBlogLikes(blogID string) ([]*Like, error)
 	RemoveLike(id string, claim *LoginClaims) error

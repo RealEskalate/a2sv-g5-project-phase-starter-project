@@ -2,6 +2,7 @@ package usercontroller
 
 import (
 	"blogs/config"
+	"blogs/domain"
 	"log"
 	"net/http"
 
@@ -10,17 +11,16 @@ import (
 
 func (u *UserController) GoogleLogin(ctx *gin.Context) {
 	url, err := u.UserUsecase.GoogleLogin()
-
 	if err != nil {
 		log.Println(err)
-
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal server error",
+		ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Internal server error",
+			Error:   "Failed to get google login url",
 		})
 		return
 	}
 
-	log.Println(url)
 	ctx.Redirect(http.StatusTemporaryRedirect, url)
 }
 
@@ -29,15 +29,19 @@ func (u *UserController) GoogleCallback(ctx *gin.Context) {
 	code := ctx.Query("code")
 
 	if state == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "State is required",
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "State is required",
 		})
 		return
 	}
 
 	if code == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Code is required",
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "Code is required",
 		})
 		return
 	}
@@ -46,23 +50,20 @@ func (u *UserController) GoogleCallback(ctx *gin.Context) {
 
 	if err != nil {
 		statusCode := config.GetStatusCode(err)
-
-		if statusCode == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(statusCode, gin.H{
-				"error": "Internal server error",
-			})
-			return
-		}
-
-		ctx.JSON(statusCode, gin.H{
-			"error": err.Error(),
+		ctx.JSON(statusCode, domain.APIResponse{
+			Status:  statusCode,
+			Message: "Failed to login with google",
+			Error:   err.Error(),
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Successfully login with google",
+		Data: gin.H{
+			"access_token":  accessToken,
+			"refresh_token": refreshToken,
+		},
 	})
 }

@@ -2,7 +2,7 @@ package usercontroller
 
 import (
 	"blogs/config"
-	"log"
+	"blogs/domain"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,26 +13,35 @@ func (u *UserController) LoginUser(ctx *gin.Context) {
 		Email    string `json:"email"`
 		Username string `json:"username"`
 		Password string `json:"password"`
-	}	
-
-
+	}
 
 	err := ctx.ShouldBindJSON(&userData)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	if userData.Email == "" && userData.Username == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "email or username is required"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "email or username is required",
+		})
 		return
 	}
 
 	if userData.Password == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "password is required"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "password is required",
+		})
 		return
 	}
-
 
 	var accessToken, refreshToken string
 	if userData.Email != "" {
@@ -43,20 +52,20 @@ func (u *UserController) LoginUser(ctx *gin.Context) {
 
 	if err != nil {
 		code := config.GetStatusCode(err)
-
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(code, gin.H{"error": "Internal server error"})
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Failed to login",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message":       "Login successfull",
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Success",
+		Data: gin.H{
+			"access_token":  accessToken,
+			"refresh_token": refreshToken,
+		},
 	})
 }

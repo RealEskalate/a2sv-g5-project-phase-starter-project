@@ -1,28 +1,23 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { session } from "@/session";
+import { baseQuery } from "../api/baseQuery";
+import { ActiveLoanResponseType, ActiveLoansDetailResponseType } from "@/types/active-loan.types";
 
 export const activeLoanApi = createApi({
   reducerPath: "activeLoanApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-6acc.onrender.com",
-    prepareHeaders: (headers) => {
-      headers.set("Authorization", `Bearer ${session}`);
-      return headers;
-    },
-  }),
+  baseQuery: baseQuery(),
   endpoints: (builder) => ({
-    getAllActiveLoans: builder.query<void, string>({
-      query: () => `/active-loans/all`,
+      getAllActiveLoans: builder.query<ActiveLoanResponseType, void>({
+        query: () => `/active-loans/all`,
     }),
     getActiveLoanById: builder.query<void, string>({
       query: (id) => `/active-loans/${id}`,
     }),
 
-    getMyActiveLoans: builder.query<void, string>({
+    getMyActiveLoans: builder.query<void, void>({
       query: () => `/active-loans/my-loans`,
     }),
 
-    getDetailActiveLoans: builder.query<void, string>({
+    getDetailActiveLoans: builder.query<ActiveLoansDetailResponseType, void>({
       query: () => `/active-loans/detail-data`,
     }),
 

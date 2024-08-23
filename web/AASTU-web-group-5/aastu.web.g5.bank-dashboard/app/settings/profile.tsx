@@ -34,6 +34,7 @@ const EditProfile = () => {
   const dispatch = useDispatch();
   const { data: session, status } = useSession();
   const user = session?.user as ExtendedUser;
+  console.log(session,'session')
   console.log(user,'this is user ')
   useEffect(() => {
     console.log(profilePicture,1111)
@@ -54,8 +55,8 @@ const EditProfile = () => {
     setProfilePicture(reduxUser?.profilePicture || '/images/christina.png');
     console.log('Profile picture updated:', reduxUser?.profilePicture);
 }, [reduxUser?.profilePicture]);
-
-  if (!user?.name || !user?.accessToken) {
+console.log(user?.accessToken,'user.accessToken')
+  if (!user?.accessToken) {
     return <div>Loading...</div>; 
   }
 

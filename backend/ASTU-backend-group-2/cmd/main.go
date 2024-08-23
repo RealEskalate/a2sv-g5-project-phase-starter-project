@@ -40,7 +40,7 @@ func main() {
 	gin := gin.Default()
 
 	// Setup the routes
-	route.Setup(env, timeout, db, gin)
+	route.Setup(env, timeout, db, gin, app.Cloudinary)
 
 	// Run the server
 	gin.Run(env.ServerAddress)

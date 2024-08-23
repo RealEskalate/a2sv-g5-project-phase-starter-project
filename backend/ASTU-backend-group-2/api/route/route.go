@@ -5,11 +5,12 @@ import (
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/api/middleware"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
+	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Setup(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, gin *gin.Engine) {
+func Setup(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, gin *gin.Engine, cloudinary *cloudinary.Cloudinary) {
 	publicRouter := gin.Group("")
 
 	// All Public APIs
@@ -28,5 +29,5 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, gin *g
 
 	// All Private APIs
 	NewPrivateBlogsRouter(env, timeout, db, protectedRouter)
-	NewProfileRouter(env, timeout, db, protectedRouter)
+	NewProfileRouter(env, timeout, db, protectedRouter, cloudinary)
 }

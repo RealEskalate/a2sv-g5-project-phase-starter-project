@@ -1,31 +1,87 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import RecentTransactions from "@/components/RecentTransaction";
 import ExpensesChart from "@/components/ExpensesCart";
 import SlidingCards from "@/components/SlidingCards"; // Import the sliding cards component
-import CreditCard from "@/components/CreditCard";
+import Cookies from "js-cookie";
+import { getAllCards } from "@/services/cardfetch";
+import Image from "next/image";
+import MyCardsLoad from "@/components/loadingComponents/MyCardsLoad";
+import ResponsiveCreditCard from "@/components/CreditCard";
+import { colors } from "@/constants";
 
 const Transaction: React.FC = () => {
+  const [cards, setCards] = useState<any[]>([]);
+  const [token, setToken] = useState<any>(null); // Initialize with null to indicate it's being fetched
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true); // Add a loading state
+
+  useEffect(() => {
+    const fetchCards = async () => {
+      try {
+        const storedToken = Cookies.get("accessToken");
+        setToken(storedToken);
+
+        if (!storedToken) {
+          setLoading(false); // Stop loading if no token is found
+          throw new Error("Token not found. Please log in again.");
+        }
+
+        const data = await getAllCards(storedToken);
+        setCards(data.slice(0, 2));
+        console.log(data);
+        setError(null);
+      } catch (err) {
+        setError("Failed to fetch cards data!");
+      } finally {
+        setLoading(false); // Stop loading once the fetch is done
+      }
+    };
+
+    fetchCards();
+  }, []);
   return (
     <div className=" w-[100%]">
-      {/* Large Screens Layout */}
       <div className=" hidden lg:grid lg:grid-cols-2 lg:gap-5 lg:space-x-8 lg:pb-8 lg:ml-72">
         {/* Cards Section */}
         <div className="flex flex-col">
           <h1 className="text-2xl font-bold mb-4 dark:text-blue-500">
             My Cards
           </h1>
-          <div className=" w-[100%] overflow-x-auto flex space-x-4">
-            <div className="flex-1">
-              {/* Card 1 Content */}
-
-              <CreditCard backgroundColor="bg-blue-700" />
-            </div>
-            <div className="flex-1">
-              {/* Card 2 Content */}
-              <CreditCard backgroundColor="bg-purple-700" />
-            </div>
+          <div className=" w-[100%] overflow-x-auto flex space-x-4 scrollbar-thin scrollbar-track-[#F5F7FA] dark:scrollbar-track-dark scrollbar-thumb-[#92a7c5] scrollbar-thumb-rounded-full">
+          {loading ? (
+                <MyCardsLoad count={2}/>
+              ) : Array.isArray(cards) && cards.length > 0 ? (
+                cards.map((card: any, index: number) => (
+                  <div key={index} className="p-1 flex gap-1">
+                    <ResponsiveCreditCard
+                      backgroundColor={
+                        index % 2 === 0 ? colors.blue : colors.white
+                      }
+                      balance={card.balance}
+                      cardHolder={card.cardHolder}
+                      expiryDate={card.expiryDate.slice(0, 10)}
+                      cardNumber={card.semiCardNumber}
+                    />
+                  </div>
+                ))
+              ) : token ? (
+                <div className="w-screen bg-white py-16 rounded-xl flex flex-col justify-center dark:bg-dark dark:border-[1px] dark:border-gray-700">
+                  <Image
+                    src="/icons/null.png"
+                    width={80}
+                    height={80}
+                    alt="null"
+                    className="mx-auto pb-2 block"
+                  />
+                  <span className="mx-auto my-auto md:text-xl text-sm text-[#993d4b] font-bold mb-5">
+                    {error ? error : "There are no cards for now!"}
+                  </span>
+                </div>
+              ) : (
+                <MyCardsLoad count={2} />
+              )}
           </div>
         </div>
 

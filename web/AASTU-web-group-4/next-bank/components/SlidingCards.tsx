@@ -20,14 +20,14 @@ const SlidingCards: React.FC = () => {
   return (
     <div>
       {/* Desktop and Tablet View */}
-      <div className="hidden lg:flex lg:justify-center lg:space-x-8 w-full max-w-[750px] ">
+      {/* <div className="hidden lg:flex lg:justify-center lg:space-x-8 w-full max-w-[750px] ">
         {cards.slice(0, 2).map((card) => (
-          <CreditCard
-            key={card.id}
-            backgroundColor={card.bgColor}
-          />
+          // <CreditCard
+          //   key={card.id}
+          //   backgroundColor={card.bgColor}
+          // />
         ))}
-      </div>
+      </div> */}
 
       {/* Mobile View - Carousel */}
       <div className="lg:hidden pt-8 w-full max-w-[390px] pl-5 h-[235px]  relative">

@@ -63,17 +63,15 @@ func (uc *UserController) HandleGoogleCallback(c *gin.Context) {
 	var googleUser domain.OAuthUserInfo
 	json.Unmarshal(data, &googleUser)
 
-	
 	googleUser.Provider = domain.Google
 
 	ipAddress := c.ClientIP()
 	userAgent := c.Request.UserAgent()
 	deviceFingerprint := infrastracture.GenerateDeviceFingerprint(ipAddress, userAgent)
 
-	loginResponse, err := uc.UserUsecase.OAuthLogin(googleUser, deviceFingerprint)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
+	loginResponse, uerr := uc.UserUsecase.OAuthLogin(googleUser, deviceFingerprint)
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 	}
 
 	c.JSON(http.StatusOK, gin.H{"tokens": loginResponse})

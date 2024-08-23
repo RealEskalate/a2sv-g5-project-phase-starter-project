@@ -11,6 +11,6 @@ type ContentSuggestion struct {
 
 
 type AIUsecase interface {
-	ContentSuggestions(ctx context.Context, userID string) ([]ContentSuggestion, error)
-	ContentEnhancements(ctx context.Context, content string) (string, error)
+	ContentSuggestions(ctx context.Context, userID string) ([]ContentSuggestion, *CustomError)
+	ContentEnhancements(ctx context.Context, content string) (string, *CustomError)
 }

@@ -10,7 +10,7 @@ func (uc *UserController) GetMyProfile(c *gin.Context) {
 	userID := c.GetString("user_id")
 	user, err := uc.UserUsecase.GetMyProfile(userID)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	c.JSON(200, gin.H{"message": "Welcome to your profile", "user": user})
@@ -26,7 +26,7 @@ func(uc* UserController) GetUsers(c *gin.Context){
 
 	users, err := uc.UserUsecase.GetUsers()
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	c.JSON(200, gin.H{"users": users})
@@ -38,7 +38,7 @@ func(uc* UserController) GetUser(c *gin.Context){
 	userID := c.Param("id")
 	user, err := uc.UserUsecase.GetMyProfile(userID)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "User not found"})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
@@ -59,7 +59,7 @@ func(uc* UserController) DeleteUser(c *gin.Context){
 	userID := c.Param("id")
 	user, err := uc.UserUsecase.GetMyProfile(userID)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "User not found"})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
@@ -72,7 +72,7 @@ func(uc* UserController) DeleteUser(c *gin.Context){
 	
 	deletedUser, err := uc.UserUsecase.DeleteUser(userID)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	c.JSON(200, gin.H{"message": "User deleted successfully", "user": deletedUser})
@@ -99,7 +99,7 @@ func(uc* UserController) UpdateUserRole(c *gin.Context){
 
 	updatedUser, err := uc.UserUsecase.UpdateUserRole(userID, role.Role)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	updatedUser.Role = role.Role
@@ -112,7 +112,7 @@ func(uc* UserController) DeleteMyAccount(c *gin.Context){
 
 	user, err := uc.UserUsecase.GetMyProfile(userID)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "User not found"})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 

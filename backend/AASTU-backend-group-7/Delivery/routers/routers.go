@@ -27,6 +27,7 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	// Initialize the custonm user collections
 	customUserCol := custommongo.NewMongoCollection(usercol)
 	indexModels := []mongo.IndexModel{
+		// if you uncommnet this email can't match username
 		{
 			Keys:    bson.D{{Key: "email", Value: 1}}, // index in ascending order
 			Options: options.Index().SetUnique(true),  // make index unique
@@ -36,6 +37,7 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 			Options: options.Index().SetUnique(true),
 		},
 	}
+
 	_, err := customUserCol.CreateIndexes(context.Background(), indexModels)
 	if err != nil {
 		panic(err)

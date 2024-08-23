@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -97,27 +98,27 @@ func (ar *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 		return &Domain.OmitedUser{}, err, http.StatusBadRequest
 	}
 	// Check if the email is already taken
-	existingUserFilter := bson.D{}
-	if user.UserName != "" {
-		existingUserFilter = bson.D{
-			{"$or", bson.A{
-				bson.D{{Key: "email", Value: user.Email}},
-				bson.D{{Key: "username", Value: user.UserName}},
-			}},
-		}
-	} else {
-		existingUserFilter = bson.D{
-			{Key: "email", Value: user.Email},
-		}
-	}
-	existingUserCount, err := ar.UserCollection.CountDocuments(ctx, existingUserFilter)
-	if err != nil {
-		fmt.Println("error at count", err)
-		return &Domain.OmitedUser{}, err, 500
-	}
-	if existingUserCount > 0 {
-		return &Domain.OmitedUser{}, errors.New("Email is already taken"), http.StatusBadRequest
-	}
+	// existingUserFilter := bson.D{}
+	// if user.UserName != "" {
+	// 	existingUserFilter = bson.D{
+	// 		{"$or", bson.A{
+	// 			bson.D{{Key: "email", Value: user.Email}},
+	// 			bson.D{{Key: "username", Value: user.UserName}},
+	// 		}},
+	// 	}
+	// } else {
+	// 	existingUserFilter = bson.D{
+	// 		{Key: "email", Value: user.Email},
+	// 	}
+	// }
+	// existingUserCount, err := ar.UserCollection.CountDocuments(ctx, existingUserFilter)
+	// if err != nil {
+	// 	fmt.Println("error at count", err)
+	// 	return &Domain.OmitedUser{}, err, 500
+	// }
+	// if existingUserCount > 0 {
+	// 	return &Domain.OmitedUser{}, errors.New("Email or UserName is already taken"), http.StatusBadRequest
+	// }
 	// check if password is following the rules
 	err = password_services.CheckPasswordStrength(user.Password)
 	if err != nil {
@@ -132,7 +133,7 @@ func (ar *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 	user.EmailVerified = false
 	user.Password = string(hashedPassword)
 	if user.UserName == "" {
-		user.UserName = user.Email
+		user.UserName = user.Email + "_user"
 	}
 	user.Role = "user"
 	user.CreatedAt = time.Now()
@@ -140,7 +141,10 @@ func (ar *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 
 	InsertedID, err := ar.UserCollection.InsertOne(ctx, user)
 	if err != nil {
-		fmt.Println("error at insert", err)
+		if strings.Contains(err.Error(), "E11000 duplicate key error") {
+			fmt.Println("error at insert", err)
+			return &Domain.OmitedUser{}, errors.New("Email Already Taken"), 400
+		}
 		return &Domain.OmitedUser{}, err, 500
 	}
 
@@ -268,7 +272,7 @@ func (ar *authRepository) CallbackHandler(ctx context.Context, code string) (Dom
 		user := Dtos.RegisterUserDto{
 			Name:           userInfo["name"].(string),
 			Email:          userInfo["email"].(string),
-			UserName:       userInfo["email"].(string),
+			UserName:       userInfo["email"].(string) + "_user",
 			ProfilePicture: userInfo["picture"].(string),
 			EmailVerified:  userInfo["email_verified"].(bool),
 			Password:       "Test!2" + userInfo["sub"].(string),

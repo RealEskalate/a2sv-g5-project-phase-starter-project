@@ -38,6 +38,7 @@ type IUserUsecase interface {
 	CreateUser(ctx context.Context, user User) (User, error)
 	UpdateUser(ctx context.Context, id int, user User) (User, error)
 	DeleteUser(ctx context.Context, id int) error
+	GetUserByUsername(ctx context.Context, username string) (User, error)
 	AddBlog(ctx context.Context, userID int, blog Blog) (User, error)
 	DeleteBlog(ctx context.Context, userID int, blogID int) (User, error)
 	Login(ctx context.Context, username, password string) (string, string, error)
@@ -69,4 +70,3 @@ type ITokenRepository interface {
 	BlacklistToken(ctx context.Context, token string) error
 	IsBlacklisted(token string) (bool, error)
 }
-

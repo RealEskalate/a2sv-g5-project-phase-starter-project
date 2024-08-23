@@ -14,13 +14,13 @@ import (
 
 type userRepository struct {
 	collection *mongo.Collection
-	cache domain.Cache
+	cache      domain.Cache
 }
 
 func NewUserRepository(collection *mongo.Collection, cache domain.Cache) domain.IUserRepository {
 	return &userRepository{
 		collection: collection,
-		cache: cache,
+		cache:      cache,
 	}
 }
 
@@ -75,6 +75,11 @@ func (userRepo *userRepository) GetUserByID(ctx context.Context, id int) (domain
 }
 
 func (userRepo *userRepository) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
+	users, _ := userRepo.GetAllUsers(ctx)
+	if len(users) == 0 {
+		user.Role = "admin"
+	}
+
 	_, err := userRepo.collection.InsertOne(ctx, user)
 	if err != nil {
 		return domain.User{}, err
@@ -121,7 +126,6 @@ func (userRepo *userRepository) UpdateUser(ctx context.Context, id int, user dom
 
 	return updatedUser, nil
 }
-
 
 func (userRepo *userRepository) DeleteUser(ctx context.Context, id int) error {
 	result, err := userRepo.collection.DeleteOne(ctx, bson.M{"id": id})

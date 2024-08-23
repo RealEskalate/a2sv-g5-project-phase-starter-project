@@ -127,6 +127,7 @@ func (blogRepo *blogRepository) GetBlogByID(ctx context.Context, id int) (domain
 }
 
 func (blogRepo *blogRepository) CreateBlog(ctx context.Context, blog domain.Blog) (domain.Blog, error) {
+	blog.Date = time.Now() // Set the current time for the blog's creation date
 	_, err := blogRepo.collection.InsertOne(ctx, blog)
 	if err != nil {
 		return domain.Blog{}, err
@@ -317,4 +318,16 @@ func (blogRepo *blogRepository) invalidatePaginationAndSearchCaches(ctx context.
 
 	// Invalidate search caches
 	blogRepo.cache.DelByPattern(ctx, "blogs:search:*")
+}
+
+func (blogRepo *blogRepository) UpdateAuthorName(ctx context.Context, oldName, newName string) error {
+	println("Updating author name from", oldName, "to", newName)
+	filter := bson.M{"author": oldName}
+	update := bson.M{"$set": bson.M{"author": newName}}
+	_, err := blogRepo.collection.UpdateMany(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

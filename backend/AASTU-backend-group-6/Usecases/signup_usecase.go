@@ -63,7 +63,7 @@ func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} 
 	user.Password = hashedPassword
 
 	// 15 minute for expiration 
-	user.ExpiresAt = time.Now().Add(time.Minute  * 5)
+	user.ExpiresAt = time.Now().Add(time.Minute  * 2)
 
 	// send OTP
 	otp, err := infrastructure.GenerateOTP()
@@ -117,6 +117,7 @@ func (u *SignupUseCase) VerifyOTP(c context.Context, otp domain.OtpToken) interf
 	// update user
 	user.Verified = true
 	user.OTP = ""
+	user.Role = "user"
 
 	verifiedUser, err := u.SignupRepository.VerifyUser(ctx, user)
 
@@ -124,6 +125,7 @@ func (u *SignupUseCase) VerifyOTP(c context.Context, otp domain.OtpToken) interf
 		return &domain.ErrorResponse{Message: "Error verifying user", Status: 500}
 	}
 
+	verifiedUser.Password = ""
 	return &domain.SuccessResponse{Message: "Account verified successfully", Data: verifiedUser, Status: 200}
 
 }
@@ -137,6 +139,10 @@ func (u *SignupUseCase) ForgotPassword(c context.Context, email domain.ForgotPas
 	existing , err := u.SignupRepository.FindUserByEmail(ctx, email.Email)
 	if err != nil {
 		return &domain.ErrorResponse{Message: "User not found", Status: 404}
+	}
+
+	if existing.GoogleID != "" {
+		return &domain.ErrorResponse{Message: "User is registered with Google", Status: 400}
 	}
 
 	// generate token
@@ -157,7 +163,7 @@ func (u *SignupUseCase) ForgotPassword(c context.Context, email domain.ForgotPas
 	// save token to db
 	// expiration time 15 minutes
 
-	expiration := time.Now().Add(time.Minute * 20)
+	expiration := time.Now().Add(time.Minute * 3)
 
 	_, err = u.SignupRepository.SetResetToken(ctx, email, token, expiration)
 

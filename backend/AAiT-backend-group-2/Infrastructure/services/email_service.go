@@ -11,8 +11,13 @@ import (
 	"time"
 )
 
+type EmailService interface {
+	SendEmail(receiver, subject, templateName string, model interface{}) error
+	GeneratePasswordResetTemplate(email, userName, token string) (domain.PasswordResetModel, error)
+}
 
-type EmailService struct {
+
+type emailService struct {
 	Host       string
 	Port       string
 	SenderEmail    string
@@ -21,8 +26,8 @@ type EmailService struct {
 	TemplateDir   string
 }
 
-func NewEmailService(emailHost string, emailPort string, senderEmail string, senderPassword string) *EmailService {
-	return &EmailService{
+func NewEmailService(emailHost string, emailPort string, senderEmail string, senderPassword string) EmailService {
+	return &emailService{
 		Host:		   emailHost,
 		Port:		   emailPort,
 		SenderEmail:   senderEmail,
@@ -32,7 +37,7 @@ func NewEmailService(emailHost string, emailPort string, senderEmail string, sen
 	}
 }
 
-func (service *EmailService) SendEmail(receiver, subject, templateName string, model interface{}) error {
+func (service *emailService) SendEmail(receiver, subject, templateName string, model interface{}) error {
 	templ, err := template.ParseFiles(filepath.Join(service.TemplateDir, templateName))
 
 	if err != nil {
@@ -64,7 +69,7 @@ func (service *EmailService) SendEmail(receiver, subject, templateName string, m
 	return nil
 }
 
-func (service *EmailService) GeneratePasswordResetTemplate(email, userName, token string) (domain.PasswordResetModel, error) {
+func (service *emailService) GeneratePasswordResetTemplate(email, userName, token string) (domain.PasswordResetModel, error) {
 	resetLink := service.FrontendHost + "auth/reset-password?email=" + url.QueryEscape(email) + "&token=" + url.QueryEscape(token)
 	resetModel := domain.PasswordResetModel{
 		UserName:  userName,

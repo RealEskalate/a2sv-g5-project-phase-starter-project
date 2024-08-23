@@ -14,15 +14,20 @@ import (
 	"github.com/google/uuid"
 )
 
-type ImageService struct {
+type ImageService interface {
+	UploadImage(c context.Context, file *multipart.FileHeader) (string, error)
+	SaveProfileImage(dto *dtos.UpdateProfileDto) (string, error)
+}
+
+type imageService struct {
 	cloudinaryUrl string
 }
 
-func NewImageService(cloudinaryUrl string) *ImageService {
-	return &ImageService{cloudinaryUrl: cloudinaryUrl}
+func NewImageService(cloudinaryUrl string) *imageService {
+	return &imageService{cloudinaryUrl: cloudinaryUrl}
 }
 
-func (service *ImageService) UploadImage(c context.Context, file *multipart.FileHeader) (string, error) { 
+func (service *imageService) UploadImage(c context.Context, file *multipart.FileHeader) (string, error) { 
 	defer func() {
 		os.Remove("assets/uploads/" + file.Filename)
 	} ()
@@ -46,7 +51,7 @@ func (service *ImageService) UploadImage(c context.Context, file *multipart.File
 	return resp.SecureURL, nil
 }
 
-func (service *ImageService) SaveProfileImage(dto *dtos.UpdateProfileDto) (string, error) {
+func (service *imageService) SaveProfileImage(dto *dtos.UpdateProfileDto) (string, error) {
 	if dto.Avatar == nil {
 		return "", fmt.Errorf("no image file provided")
 	}

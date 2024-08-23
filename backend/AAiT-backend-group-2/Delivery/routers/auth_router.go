@@ -15,12 +15,11 @@ import (
 
 func NewAuthRouter(db *mongo.Database, group *gin.RouterGroup, configs *domain.Config) {
 	jwtService := services.NewJWTService([]byte(configs.SecretKey))
-	validatorService := services.NewValidatorService()
 	userRepo := user_repository.NewUserRepository(db)
 	emailService := services.NewEmailService(configs.EmailHost, configs.EmailPort, configs.SenderEmail, configs.SenderPassword)
 	imageService := services.NewImageService(configs.CloudinaryUrl)
 
-	userUsecase := user_usecase.NewUserUsecase(userRepo, jwtService, emailService, imageService, 10*time.Second, validatorService)
+	userUsecase := user_usecase.NewUserUsecase(userRepo, jwtService, emailService, imageService, 10*time.Second)
 
 	authController := controllers.NewAuthController(userUsecase)
 

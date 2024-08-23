@@ -43,10 +43,9 @@ export const getAllBankServices = async () => {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
-     
-    },
-
-  });
+      },
+    }
+  );
   return response.json();
 };
 

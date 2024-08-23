@@ -35,7 +35,7 @@ const EditProfile = () => {
 
     try {
       const response = await axios.put(
-        'https://bank-dashboard-1tst.onrender.com/user/update',
+        'https://bank-dashboard-rsf1.onrender.com/user/update',
         {
           name,
           email,

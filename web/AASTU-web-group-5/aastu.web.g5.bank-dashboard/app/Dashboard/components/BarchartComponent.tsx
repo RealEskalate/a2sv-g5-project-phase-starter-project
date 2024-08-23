@@ -21,7 +21,7 @@ const BarChartComponent = () => {
   useEffect(() => {
     if (user?.accessToken) {
       axios
-        .get('https://bank-dashboard-1tst.onrender.com/transactions?page=0', {
+        .get('https://bank-dashboard-rsf1.onrender.com/transactions?page=0', {
           headers: {
             'Authorization': `Bearer ${user.accessToken}`,
           },

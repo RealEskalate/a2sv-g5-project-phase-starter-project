@@ -18,7 +18,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ id, label, checked, onChang
         onChange={() => onChange(!checked)}
       />
       <div
-        className={`relative max-md:w-11 max-md:h-6 w-[56px] h-[30.71px] rounded-full transition-colors duration-200 ease-in-out ${
+        className={`relative max-md:min-w-11 max-md:h-6 w-11 h-[30.71px] rounded-full transition-colors duration-200 ease-in-out ${
           checked ? 'bg-[#16DBCC]' : 'bg-gray-200'
         }`}
       >

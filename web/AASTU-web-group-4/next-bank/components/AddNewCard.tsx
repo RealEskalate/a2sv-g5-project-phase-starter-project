@@ -102,8 +102,8 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
   }
 
   return (
-    <div className={`mr-4 ${Loading ? "opacity-50 pointer-events-none" : ""}`}>
-      <div className="bg-white lg:w-[800px] w-[330px] md:w-[630px] sm:h-[720px] md:h-[450px] p-7 border-[1px] rounded-xl">
+    <div className={`mr-4 ${Loading ? "animate-pulse opacity-50 pointer-events-none" : ""}`}>
+      <div className="bg-white lg:w-[800px] w-[330px] md:w-[630px] sm:h-[720px] md:h-[470px] p-7 border-[1px] rounded-xl">
         <p className="text-[17px] text-[#718EBF]">
           Credit Card generally means a plastic card issued by Scheduled
           Commercial Banks assigned to a Cardholder, with a credit limit, that

@@ -34,7 +34,7 @@ const Sidebar = () => {
 
       try {
         const res: any = await ky(
-          "https://bank-dashboard-o9tl.onrender.com/user/current",
+          `${process.env.NEXT_PUBLIC_BASE_URL}/user/current`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

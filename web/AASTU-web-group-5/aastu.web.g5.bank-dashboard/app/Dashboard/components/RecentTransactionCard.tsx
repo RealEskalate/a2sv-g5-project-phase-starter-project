@@ -1,9 +1,11 @@
-"use client";
+"use client"
 
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import axios from 'axios';
+import React from 'react';
+import Image from 'next/image'; // Assuming you're using Next.js
+import { RecentTransaction } from './mockData'; // Adjust the path as needed
+import { Slice } from 'lucide-react';
 
+<<<<<<< HEAD
 const RecentTransactionCard = () => {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -16,7 +18,7 @@ const RecentTransactionCard = () => {
           'https://bank-dashboard-o9tl.onrender.com/transactions?page=0&size=3',
           {
             headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZHVnbmEiLCJpYXQiOjE3MjQzMzMyNDcsImV4cCI6MTcyNDQxOTY0N30.5lTJSlmznH3Dzg8BmHuyMSvET55kVMqHhENd76U0q3mX1LZtP7W8HTXy4mb2pV0s`,
+              Authorization: `Bearer ${accessToken}`,
             },
           }
         );
@@ -66,14 +68,27 @@ const RecentTransactionCard = () => {
                 alt={transaction.type}
                 className="object-cover"
               />
+=======
+export const RecentTransactionCard = () => {
+  const slicedTransactions = RecentTransaction.slice(0, 3);
+
+  return (
+    <div>
+      <p>Recent Transactions</p>
+      <div>
+        {slicedTransactions.map((transaction, index) => (
+          <div key={index} className="flex items-center justify-between space-x-8 mb-4">
+            <div className="flex items-center justify-between space-x-8 mb-4">
+              <Image height={44} width={44} src={transaction.image} alt="invoice" className="rounded-full object-cover" />
+>>>>>>> aastu.web.g5.yetnayet.transactions
               <div>
-                <p className="font-semibold text-sm md:text-base">{transaction.description}</p>
-                <p className="text-xs md:text-sm text-gray-500">{new Date(transaction.date).toLocaleDateString()}</p>
+                <p className="font-semibold text-sm md:text-base">{transaction.name}</p>
+                <p className="text-xs md:text-sm text-gray-500">{transaction.date}</p>
               </div>
             </div>
-            <p className={`font-semibold text-sm md:text-base ${transaction.amount >= 0 ? 'text-green-600' : 'text-red-700'}`}>
-              {transaction.amount >= 0 ? `+$${transaction.amount}` : `-$${Math.abs(transaction.amount)}`}
-            </p>
+            {transaction.amount[0]=="+" ? 
+            <p className="font-semibold text-green-600 text-sm md:text-base">{transaction.amount}</p>
+            : <p className="font-semibold text-red-700 text-sm md:text-base">{transaction.amount}</p> }
           </div>
           </div>
         ))}
@@ -81,5 +96,6 @@ const RecentTransactionCard = () => {
     </div>
   );
 };
+
 
 export default RecentTransactionCard;

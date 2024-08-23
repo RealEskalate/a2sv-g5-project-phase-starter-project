@@ -21,6 +21,7 @@ function Preference() {
   const key: string = session?.user?.accessToken || '';
 
   const user = useSelector((state) => state.user);
+  console.log(user,'user')
   const dispatch = useDispatch();
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm();
@@ -32,7 +33,7 @@ function Preference() {
 
   const onSubmit = async (data: any) => {
     setApiError(''); // Clear any previous API error
-
+    console.log(data,'data')
     const updatedData = {
       ...data,
       sentOrReceiveDigitalCurrency: digitalCurrency,
@@ -40,9 +41,9 @@ function Preference() {
       accountRecommendations: accountRecommendations,
       twoFactorAuthentication: true,
     };
-
+console.log(updatedData,'updateduser')
     try {
-      const response = await axios.put('https://bank-dashboard-6acc.onrender.com/user/update-preference', updatedData, {
+      const response = await axios.put('https://bank-dashboard-1tst.onrender.com/user/update-preference', updatedData, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${key}`,

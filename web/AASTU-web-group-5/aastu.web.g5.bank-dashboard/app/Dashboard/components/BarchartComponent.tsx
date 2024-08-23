@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useEffect, useState } from "react";
 import { TrendingUp } from "lucide-react";
@@ -69,7 +69,7 @@ export default function Component() {
   ]);
 
   useEffect(() => {
-    const token = `Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZHVnbmEiLCJpYXQiOjE3MjQzMzMyNDcsImV4cCI6MTcyNDQxOTY0N30.5lTJSlmznH3Dzg8BmHuyMSvET55kVMqHhENd76U0q3mX1LZtP7W8HTXy4mb2pV0s`;
+    const token = `Bearer ${accessToken}`;
 
     const fetchData = async () => {
       try {
@@ -198,5 +198,5 @@ export default function Component() {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

@@ -56,7 +56,7 @@ func (m *MockBlogUseCase) UpdateBlog(blogID string, blog *domain.Blog, userID st
 	return nil
 }
 
-func (m *MockBlogUseCase) DeleteBlog(blogID string) domain.Error {
+func (m *MockBlogUseCase) DeleteBlog(blogID string , userID string) domain.Error {
 	args := m.Called(blogID)
 	if err, ok := args.Get(0).(domain.Error); ok {
 		return err

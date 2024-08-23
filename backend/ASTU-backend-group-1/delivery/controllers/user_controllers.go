@@ -368,6 +368,16 @@ func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
 	}
 	ctx.IndentedJSON(http.StatusForbidden, gin.H{"error": "couldn't refrsh the token"})
 }
+
+// Promote godoc
+// @Summary      Promote user
+// @Description  Promotes a user to admin by username
+// @Tags         users
+// @Produce      json
+// @Param        username path string true "Username"
+// @Success      200 {object} map[string]string "message"
+// @Failure      406 {object} map[string]string "error"
+// @Router       /users/promote/{username} [post]
 func (c *UserController) Promote(ctx *gin.Context) {
 	username := ctx.Param("username")
 	_, err := c.userUsecase.PromteUser(username)
@@ -378,6 +388,16 @@ func (c *UserController) Promote(ctx *gin.Context) {
 	}
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "User promoted to admin"})
 }
+
+// Demote godoc
+// @Summary      Demote user
+// @Description  Demotes a user to regular user by username
+// @Tags         users
+// @Produce      json
+// @Param        username path string true "Username"
+// @Success      200 {object} map[string]string "message"
+// @Failure      406 {object} map[string]string "error"
+// @Router       /users/demote/{username} [post]
 func (c *UserController) Demote(ctx *gin.Context) {
 	username := ctx.Param("username")
 	_, err := c.userUsecase.DemoteUser(username)
@@ -387,6 +407,16 @@ func (c *UserController) Demote(ctx *gin.Context) {
 	}
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "User demoted to user"})
 }
+
+// PromoteByEmail godoc
+// @Summary      Promote user by email
+// @Description  Promotes a user to admin by email
+// @Tags         users
+// @Produce      json
+// @Param        email path string true "Email"
+// @Success      200 {object} map[string]string "message"
+// @Failure      406 {object} map[string]string "error"
+// @Router       /users/promoteByEmail/{email} [post]
 func (c *UserController) PromoteByEmail(ctx *gin.Context) {
 	email := ctx.Param("email")
 	_, err := c.userUsecase.PromteUserByEmail(email)
@@ -397,6 +427,16 @@ func (c *UserController) PromoteByEmail(ctx *gin.Context) {
 	}
 	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "User promoted to admin"})
 }
+
+// DemoteByEmail godoc
+// @Summary      Demote user by email
+// @Description  Demotes a user to regular user by email
+// @Tags         users
+// @Produce      json
+// @Param        email path string true "Email"
+// @Success      200 {object} map[string]string "message"
+// @Failure      406 {object} map[string]string "error"
+// @Router       /users/demoteByEmail/{email} [post]
 func (c *UserController) DemoteByEmail(ctx *gin.Context) {
 	email := ctx.Param("email")
 	_, err := c.userUsecase.DemoteUserByEmail(email)

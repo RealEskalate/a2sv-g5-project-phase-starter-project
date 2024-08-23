@@ -14,13 +14,15 @@ import (
 
 // blogUseCase implements the BlogUseCase interface
 type blogUseCase struct {
-	repo repository.BlogRepository
+	repo     repository.BlogRepository
+	userRepo repository.UserRepository
 }
 
 // NewBlogUseCase creates a new instance of BlogUseCase
-func NewBlogUseCase(repo repository.BlogRepository) BlogUseCase {
+func NewBlogUseCase(repo repository.BlogRepository, userRepo repository.UserRepository) BlogUseCase {
 	return &blogUseCase{
-		repo: repo,
+		repo:     repo,
+		userRepo: userRepo,
 	}
 }
 
@@ -29,6 +31,16 @@ func (u *blogUseCase) CreateBlog(ctx context.Context, blog *domain.Blog, authorI
 	if blog == nil {
 		return errors.New("blog cannot be nil")
 	}
+	// authorUser, err := u.repo(ctx, authorId)
+	creator, err := u.userRepo.FindUserById(ctx, authorId)
+	if err != nil {
+		log.Printf("Error creating blog: %v", err)
+		return fmt.Errorf("failed to create blog: %w", err)
+	}
+	if creator == nil {
+		return errors.New("user not found")
+	}
+
 	Author, err := primitive.ObjectIDFromHex(authorId)
 	if err != nil {
 		log.Printf("Error creating blog: %v", err)
@@ -36,6 +48,7 @@ func (u *blogUseCase) CreateBlog(ctx context.Context, blog *domain.Blog, authorI
 	}
 	blog.Author = Author
 	blog.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
+	blog.AuthorName = creator.Profile.FirstName + " " + creator.Profile.LastName
 
 	//is_valid, message, err := ai.ModerateBlog(blog.Content, blog.Title)
 	// if err != nil {
@@ -68,10 +81,14 @@ func (u *blogUseCase) AddComment(ctx context.Context, comment *domain.Comment, u
 	comment.BlogID = blogObjectID
 
 	err = u.repo.AddComment(ctx, comment)
-
 	if err != nil {
 		log.Printf("Error adding comment to blog with ID %s: %v", comment.BlogID.Hex(), err)
 		return fmt.Errorf("failed to add comment: %w", err)
+	}
+
+	err = u.repo.IncrementBlogCommentCount(ctx, comment.BlogID.Hex())
+	if err != nil {
+		log.Printf("Error incrementing comment count for blog with ID %s: %v", comment.BlogID.Hex(), err)
 	}
 	return nil
 }
@@ -83,6 +100,7 @@ func (u *blogUseCase) AddLike(ctx context.Context, like *domain.Like, userId str
 	}
 	alreadyLiked, _ := u.repo.HasUserLikedBlog(ctx, userId, like.BlogID.Hex())
 	if alreadyLiked {
+		u.RemoveLike(ctx, like.BlogID.Hex(), userId, "user")
 		return nil
 	}
 	like.UserID, _ = primitive.ObjectIDFromHex(userId)
@@ -90,6 +108,10 @@ func (u *blogUseCase) AddLike(ctx context.Context, like *domain.Like, userId str
 	if err != nil {
 		log.Printf("Error adding like to blog with ID %s: %v", like.BlogID.Hex(), err)
 		return fmt.Errorf("failed to add like: %w", err)
+	}
+	err = u.repo.IncrementBlogLikeCount(ctx, like.BlogID.Hex())
+	if err != nil {
+		log.Printf("Error incrementing like count for blog with ID %s: %v", like.BlogID.Hex(), err)
 	}
 	return nil
 }
@@ -108,6 +130,10 @@ func (u *blogUseCase) AddView(ctx context.Context, view *domain.View, userId str
 	if err != nil {
 		log.Printf("Error adding view to blog with ID %s: %v", view.BlogID.Hex(), err)
 		return fmt.Errorf("failed to add view: %w", err)
+	}
+	err = u.repo.IncrementBlogViewCount(ctx, view.BlogID.Hex())
+	if err != nil {
+		log.Printf("Error incrementing view count for blog with ID %s: %v", view.BlogID.Hex(), err)
 	}
 	return nil
 }

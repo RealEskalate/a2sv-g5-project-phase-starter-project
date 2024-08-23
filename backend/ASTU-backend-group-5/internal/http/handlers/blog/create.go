@@ -18,7 +18,7 @@ func NewBlogHandler(useCase blog.BlogUseCase) *BlogHandler {
 }
 
 func (h *BlogHandler) CreateBlogHandler(c *gin.Context) {
-	var blog domain.Blog
+	var blog domain.CreateBlogDTO
 	claims, err := GetClaims(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -29,7 +29,13 @@ func (h *BlogHandler) CreateBlogHandler(c *gin.Context) {
 		return
 	}
 	// blog.Author = claims.UserID
-	if err := h.UseCase.CreateBlog(context.Background(), &blog, claims.UserID); err != nil {
+	dbBlog := domain.Blog{
+		Title:   blog.Title,
+		Content: blog.Content,
+		Tags:    blog.Tags,
+	}
+
+	if err := h.UseCase.CreateBlog(context.Background(), &dbBlog, claims.UserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

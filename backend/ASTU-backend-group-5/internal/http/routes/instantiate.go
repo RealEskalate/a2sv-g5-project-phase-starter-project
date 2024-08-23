@@ -8,25 +8,37 @@ import (
 	"blogApp/internal/usecase/blog"
 	"blogApp/internal/usecase/user"
 
-	"go.mongodb.org/mongo-driver/mongo"
+	localMongo "blogApp/pkg/mongo"
 )
 
-func InstantaiteUserHandler(collection *mongo.Collection) *account.UserHandler {
-	userRepo := &mongodb.UserRepositoryMongo{Collection: collection}
+func InstantaiteUserHandler() *account.UserHandler {
+	usersCollection := localMongo.UserCollection
+	userRepo := &mongodb.UserRepositoryMongo{Collection: usersCollection}
 	userUsecase := user.NewUserUsecase(userRepo)
 	userHandler := account.NewUserHandler(userUsecase)
 	return userHandler
 }
 
-func InstantaiteTokenUsecase(collection *mongo.Collection) *usecase.TokenUsecase {
-	tokenRepo := mongodb.NewMongoTokenRepository(collection)
+func InstantaiteTokenUsecase() *usecase.TokenUsecase {
+	tokensCollection := localMongo.TokenCollection
+	tokenRepo := mongodb.NewMongoTokenRepository(tokensCollection)
 	tokenUsecase := usecase.NewTokenUsecase(tokenRepo)
 	return tokenUsecase
 }
 
-func InstantaiteBlogHandler(blogsCollection, commentsCollection, likesCollection, viewsCollection, tagsCollection *mongo.Collection) *BlogHandler.BlogHandler {
+func InstantaiteBlogHandler() *BlogHandler.BlogHandler {
+	blogsCollection := localMongo.BlogsCollection
+	commentsCollection := localMongo.CommentsCollection
+	likesCollection := localMongo.LikesCollection
+	viewsCollection := localMongo.ViewsCollection
+	tagsCollection := localMongo.TagsCollection
+
 	blogRepo := mongodb.NewMongoBlogRepository(blogsCollection, commentsCollection, likesCollection, viewsCollection, tagsCollection)
-	blogUsecase := blog.NewBlogUseCase(blogRepo)
+
+	userCollection := localMongo.UserCollection
+	userRepo := mongodb.NewUserRepositoryMongo(userCollection)
+
+	blogUsecase := blog.NewBlogUseCase(blogRepo, userRepo)
 	blogHandler := BlogHandler.NewBlogHandler(blogUsecase)
 	return blogHandler
 }

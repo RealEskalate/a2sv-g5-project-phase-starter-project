@@ -192,3 +192,54 @@ func (bc *BlogController) FilterBlogs() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"message": "Filtered blog posts retrieved successfully!", "blogs": blogs})
 	}
 }
+func (bc *BlogController) GetUniqueBlog() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        // Retrieve cookie values
+        title, err := c.Cookie("title")
+        if err != nil && err != http.ErrNoCookie {
+            c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to retrieve title cookie"})
+            return
+        }
+
+        author, err := c.Cookie("author")
+        if err != nil && err != http.ErrNoCookie {
+            c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to retrieve author cookie"})
+            return
+        }
+
+        tagsCookie, err := c.Cookie("tags")
+        if err != nil && err != http.ErrNoCookie {
+            c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to retrieve tags cookie"})
+            return
+        }
+
+        var tags []string
+        if tagsCookie != "" {
+            if err := json.Unmarshal([]byte(tagsCookie), &tags); err != nil {
+                c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to parse tags from cookie"})
+                return
+            }
+        }
+
+        // Prepare filters based on cookies
+        filters := make(map[string]interface{})
+        if title != "" {
+            filters["title"] = title
+        }
+        if author != "" {
+            filters["owner.username"] = author
+        }
+        if len(tags) > 0 {
+            filters["tag"] = tags
+        }
+
+        // Retrieve unique blog posts
+        var posts []*domain.Blog
+        if err := bc.BlogUsecase.GetUniqueBlog(filters, &posts); err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to retrieve unique posts"})
+            return
+        }
+
+        c.JSON(http.StatusOK, posts)
+    }
+}

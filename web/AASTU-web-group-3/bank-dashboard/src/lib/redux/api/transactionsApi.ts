@@ -7,13 +7,14 @@ import {
   TransactionDepositRequest, 
   LatestTransferResponse,
   BalanceHistoryResponse, 
-  MyExpenseResponse
+  MyExpenseResponse, 
+  IncomeResponse
 } from "../types/transactions";
 
 export const transactionsApi = createApi({
   reducerPath: "transactionsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-6acc.onrender.com",
+    baseUrl: "https://bank-dashboard-1tst.onrender.com",
     prepareHeaders: async (headers) => {
       const session = await getSession();
       const token = session?.accessToken;
@@ -27,7 +28,7 @@ export const transactionsApi = createApi({
   }),
   endpoints: (builder) => ({
     getAllTransactions: builder.query<MyExpenseResponse,{ size: number; page: number }>({
-      query: ({ size, page }) => `/transactions?size=${size}&page=${page}`,
+      query: ({ size, page }) => `/transactions?page=${page}&size=${size}`,
     }),
 
     getTransactionById: builder.query<TransactionResponse, string>({
@@ -40,9 +41,9 @@ export const transactionsApi = createApi({
     }),
 
 
-    getIncomeTransactions: builder.query<TransactionsResponse, { size: number; page: number }>({
+    getIncomeTransactions: builder.query<IncomeResponse, { size: number; page: number }>({
       query: ({ size, page }) =>
-        `/transactions/income?size=${size}&page=${page}`,
+        `/transactions/incomes?page=${page}&size=${size}`,
     }),
 
     getExpenseTransactions: builder.query<MyExpenseResponse, { size: number; page: number }>({
@@ -76,8 +77,12 @@ export const transactionsApi = createApi({
         `/transactions/latest-transfers${num}`,
     }),
     getBalanceHistory:builder.query<BalanceHistoryResponse, {}>({
-      query:()=> 'transactions/balance-history'
-    })
+      query:()=> '/transactions/balance-history'
+    }),
+    getQuickTransfers:builder.query<BalanceHistoryResponse, {num:number}>({
+      query:({num})=> `/transactions/quick-transfers/${num}`
+    }),
+    
   }),
 });
 

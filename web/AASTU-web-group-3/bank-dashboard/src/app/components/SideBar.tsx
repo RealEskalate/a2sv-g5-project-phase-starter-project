@@ -1,0 +1,79 @@
+"use client";
+import Image from "next/image";
+import Link from "next/link";
+import {useEffect} from 'react'
+import { usePathname } from "next/navigation";
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/lib/redux/store'; // Update the path if necessary
+import { toggleSidebar, setActiveItem } from '@/lib/redux/slices/layoutSlice'; // Update the path if necessary
+import { menuItems, logo } from "@/../../public/Icons";
+
+
+const Sidebar = () => {
+  const dispatch = useDispatch();
+  const pathname = usePathname
+  const { ishidden, activeItem } = useSelector((state: RootState) => state.layout);
+  const currentPath = pathname()
+  useEffect(()=>{
+    const activeMenuItem = menuItems.find((item) => currentPath.startsWith(item.href));
+    if(activeMenuItem){
+      dispatch(setActiveItem(activeMenuItem!.title))
+    } else if (!activeMenuItem && currentPath === "/") {
+      dispatch(setActiveItem('Dashboard'))
+    }
+
+  }, [currentPath, dispatch])
+
+
+  return (
+    <aside
+      className={`fixed top-0 left-0 z-40 min-w-48 w-64 h-full bg-white shadow-md transition-transform transform ${
+        ishidden ? "translate-x-0" : "-translate-x-full"
+      } md:translate-x-0 md:relative md:w-[30%] lg:w-[20%] md:flex md:flex-col md:gap-6 md:py-1 md:border md:border-[#E6EFF5]`}
+    >
+      <div className="ml-5 mt-3 flex items-center gap-8">
+        <div className="flex justify-between items-center">
+          <Image src={logo} alt="Logo" width={36} height={36} />
+          <div className="text-[#343C6A] pl-2 md:text-xl md:pl-1 lg:pl-2 lg:text-2xl text-base xl:text-4xl md:text-[21px] font-[800] font-mont">
+            BankDash.
+          </div>
+        </div>
+        <div
+          onClick={() => dispatch(toggleSidebar())}
+          className="md:hidden rounded-full text-end py-3 px-4 text-blue-600 font-bold bg-[#F5F7FA]"
+        >
+          X
+        </div>
+      </div>
+      <ul className="flex flex-col">
+        {menuItems.map((item) => (
+          <Link href={item.href} key={item.title}>
+            <li
+              onClick={() => dispatch(setActiveItem(item.title))}
+              className={`flex gap-3 items-center px-8 py-3 text-md md:text-lg ${
+                activeItem === item.title
+                  ? "border-l-4 border-l-[#2D60FF] text-[#2D60FF] font-bold"
+                  : "text-[#B1B1B1]"
+              }`}
+            >
+              <Image
+                src={item.icon}
+                alt={item.title}
+                width={24}
+                height={24}
+                className={`w-6 h-6 ${
+                  activeItem === item.title
+                    ? "filter-active"
+                    : "filter-inactive"
+                }`}
+              />
+              <div>{item.title}</div>
+            </li>
+          </Link>
+        ))}
+      </ul>
+    </aside>
+  );
+};
+
+export default Sidebar;

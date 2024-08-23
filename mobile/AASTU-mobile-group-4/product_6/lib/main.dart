@@ -8,5 +8,4 @@ void main() async {
   await setupLocator();
   runApp(EcommerceApp());
   
-  
 }

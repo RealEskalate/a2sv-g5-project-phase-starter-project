@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"astu-backend-g1/config"
 	"astu-backend-g1/domain"
 	"astu-backend-g1/infrastructure"
 	"crypto/rand"
@@ -94,7 +95,11 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 
 	expirationTime := time.Now().Add(2 * time.Hour)
 	useCase.userRepository.Update(user.ID, domain.User{VerifyToken: string(confirmationToken), ExpirationDate: expirationTime,IsAdmin: user.IsAdmin})
-	link := "http://localhost:8000/users/resetPassword/?email=" + user.Email + "&token=" + string(confirmationToken)
+	config_domain,err:= config.LoadConfig()
+	if err != nil {
+		return "", err
+	}
+	link :=config_domain.Domain + "/users/resetPassword/?email=" + user.Email + "&token=" + string(confirmationToken)
 	err = infrastructure.SendEmail(user.Email, "Password Reset", "This is the password reset link: ", link)
 	if err != nil {
 		return "", err
@@ -175,7 +180,11 @@ func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	u.VerifyToken = string(confirmationToken)
 	nUser, err := useCase.userRepository.Create(u)
 	if !nUser.IsAdmin {
-		link := "`http://localhost:8000/`users/accountVerification/?email=" + u.Email + "&token=" + string(confirmationToken)
+		config_domain,err:=config.LoadConfig()
+		if err != nil {
+			return nUser, err
+		}
+		link := config_domain.Domain + "/users/accountVerification/?email=" + u.Email + "&token=" + string(confirmationToken)
 		err = infrastructure.SendEmail(u.Email, "Registration Confirmation", "This sign up Confirmation email to verify: ", link)
 	}
 	if err != nil {

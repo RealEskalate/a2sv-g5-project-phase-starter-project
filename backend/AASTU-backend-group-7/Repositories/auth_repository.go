@@ -131,6 +131,9 @@ func (ar *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 	}
 	user.EmailVerified = false
 	user.Password = string(hashedPassword)
+	if user.UserName == "" {
+		user.UserName = user.Email
+	}
 	user.Role = "user"
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
@@ -265,7 +268,7 @@ func (ar *authRepository) CallbackHandler(ctx context.Context, code string) (Dom
 		user := Dtos.RegisterUserDto{
 			Name:           userInfo["name"].(string),
 			Email:          userInfo["email"].(string),
-			UserName:       userInfo["name"].(string),
+			UserName:       userInfo["email"].(string),
 			ProfilePicture: userInfo["picture"].(string),
 			EmailVerified:  userInfo["email_verified"].(bool),
 			Password:       "Test!2" + userInfo["sub"].(string),

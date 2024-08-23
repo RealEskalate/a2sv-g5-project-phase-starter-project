@@ -23,22 +23,46 @@ import '../../../../core/usecases/usecases.dart';
 import '../../domain/usecases/get_all_usecase.dart';
 
 
+// home_bloc.dart
 
-
-
-class HomeBloc extends Bloc<HomeEvent, HomeState>  {
-  final client = http.Client;
+class HomeBloc extends Bloc<HomeEvent, HomeState> {
+  final client = http.Client();
   final localData = SharedPreferences.getInstance();
-  GetAllUsecase getAllProductsUseCase;
-  GetDetailUseCase getDetailUsecase;
+  final GetAllUsecase getAllProductsUseCase;
+  final GetDetailUseCase getDetailUsecase;
 
-  HomeBloc(this.getAllProductsUseCase,this.getDetailUsecase) : super(HomeLoading()) {
-    on<GetProductsEvent>((event, emit) async{
-      emit(HomeLoading());  
-      var products = await getAllProductsUseCase(NoParams());
-      products.fold((l) => emit(HomeFailure(l.message)), (r) => emit(HomeLoaded(r)));
+  // To store all products and filter them for search
+  List<ProductModel> _allProducts = [];
 
+  HomeBloc(this.getAllProductsUseCase, this.getDetailUsecase) : super(HomeLoading()) {
+    on<GetProductsEvent>((event, emit) async {
+      emit(HomeLoading());
+
+      var result = await getAllProductsUseCase(NoParams());
+      result.fold(
+        (failure) => emit(HomeFailure(failure.message)),
+        (products) {
+          _allProducts = products; // Cache the full product list
+          emit(HomeLoaded(products));
+        },
+      );
     });
-    
+
+    on<SearchProductsEvent>((event, emit) async {
+      emit(HomeLoading());
+
+      if (event.searchTerm.isEmpty) {
+        // If search term is empty, show all products
+        emit(HomeLoaded(_allProducts));
+      } else {
+        // Filter products by name based on the search term
+        List<ProductModel> filteredProducts = _allProducts.where((product) {
+          return product.name.toLowerCase().contains(event.searchTerm.toLowerCase());
+        }).toList();
+
+        emit(HomeLoaded(filteredProducts));
+      }
+    });
   }
 }
+

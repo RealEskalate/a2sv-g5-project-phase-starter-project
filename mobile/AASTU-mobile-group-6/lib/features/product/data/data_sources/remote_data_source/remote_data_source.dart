@@ -53,7 +53,7 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   }
   @override
   Future<UserModel> getUserInfo()async {
-    var url = 'https://g5-flutter-learning-path-be.onrender.com/api/v2/users/me';
+    var url = 'https://g5-flutter-learning-path-be.onrender.com/api/v3/users/me';
     var temp = await SharedPreferences.getInstance();
     var temp2 = temp.getString('access_token');
     var head = {
@@ -77,7 +77,7 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
 
   @override
   Future<List<ProductModel>> getProducts() async {
-    var url = 'https://g5-flutter-learning-path-be.onrender.com/api/v2/products';
+    var url = 'https://g5-flutter-learning-path-be.onrender.com/api/v3/products';
     var temp = await SharedPreferences.getInstance();
     var temp2 = temp.getString('access_token');
 
@@ -98,7 +98,7 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
 
   @override
   Future<String> addProduct(ProductEntity product) async {
-    var url = 'https://g5-flutter-learning-path-be.onrender.com/api/v2/products';
+    var url = 'https://g5-flutter-learning-path-be.onrender.com/api/v3/products';
     var temp = await SharedPreferences.getInstance();
     var temp2 = temp.getString('access_token').toString();
     
@@ -152,7 +152,7 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
 
   @override
   Future<String> updateProduct(ProductModel product) async {
-    var url = 'https://g5-flutter-learning-path-be.onrender.com/api/v2/products/';
+    var url = 'https://g5-flutter-learning-path-be.onrender.com/api/v3/products/';
     var temp1 = await SharedPreferences.getInstance();
     var temp2 = temp1.getString('access_token');
     

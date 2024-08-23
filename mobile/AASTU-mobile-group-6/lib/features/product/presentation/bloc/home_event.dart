@@ -10,4 +10,11 @@ class GetProductsEvent extends HomeEvent {
   List<Object> get props => [];
 }
 
+class SearchProductsEvent extends HomeEvent {
+  final String searchTerm;
 
+  SearchProductsEvent(this.searchTerm);
+
+  @override
+  List<Object> get props => [searchTerm];
+}

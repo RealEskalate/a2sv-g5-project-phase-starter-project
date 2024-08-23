@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/add/add_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/detail_bloc.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_bloc.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/update/bloc/update_bloc.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/HomeChat.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/login/bloc/sign_in_bloc.dart';
@@ -53,13 +56,12 @@ class Main extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return BlocProvider(
       create: (context) => sl.get<HomeBloc>()..add(GetProductsEvent()),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         // initial for splash page
-        initialRoute: '/splash',
+        initialRoute: '/splashScreen',
 
         onGenerateRoute: (settings) {
           if (settings.name == '/detail') {
@@ -88,12 +90,16 @@ class Main extends StatelessWidget {
         },
         routes: {
           '/home': (context) => MultiBlocProvider(
-            providers: [
-        BlocProvider(create: (context)=> sl.get<HomeBloc>()..add(GetProductsEvent())),
-        BlocProvider(create: (context)=>sl.get<GetUserBloc>()..add(GetUserInfoEvent()))
-            ],
-            child: HomePage(),
-          ),
+                providers: [
+                  BlocProvider(
+                      create: (context) =>
+                          sl.get<HomeBloc>()..add(GetProductsEvent())),
+                  BlocProvider(
+                      create: (context) =>
+                          sl.get<GetUserBloc>()..add(GetUserInfoEvent()))
+                ],
+                child: HomePage(),
+              ),
           '/login': (context) => BlocProvider(
                 create: (context) => sl.get<LoginBloc>(),
                 child: LoginScreen(),
@@ -102,16 +108,21 @@ class Main extends StatelessWidget {
                 create: (context) => sl.get<SignUpBloc>(),
                 child: SignUpScreen(),
               ),
-            '/logout': (context)=> LogoutScreen(),
+          '/logout': (context) => LogoutScreen(),
 
           '/add': (context) => BlocProvider(
                 create: (context) => sl.get<addBloc>(),
                 child: AddUpdate(),
               ),
           '/search': (context) => BlocProvider(
-              create: (context) => sl.get<HomeBloc>()..add(GetProductsEvent())),
+      create: (context) => sl.get<SearchBloc>()..add(LoadAllProductEvent()),
+      child: searchPage(),
+    ),
 
           '/splash': (context) => SplashScreen(),
+
+          '/HomeChat': (context) => Chat(),
+
           // '/detail': (context) => DetailsPage(),
         },
       ),

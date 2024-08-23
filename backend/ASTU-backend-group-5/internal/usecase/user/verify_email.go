@@ -7,6 +7,7 @@ import (
 	"blogApp/pkg/jwt"
 	"context"
 	"errors"
+	"fmt"
 	"log"
 )
 
@@ -28,6 +29,7 @@ func (u *UserUsecase) RequestEmailVerification(user domain.User) error {
 	}
 	emailProvider := Config.EMAIL_PROVIDER
 
+	fmt.Println("Port: ", Config.SMTP_PORT)
 	switch emailProvider {
 	case "simple":
 		emailSender = email.NewSimpleEmailSender(

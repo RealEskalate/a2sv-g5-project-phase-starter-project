@@ -2,6 +2,7 @@ package usecases
 
 import (
 	domain "blogs/Domain"
+	utils "blogs/Utils"
 	"errors"
 	"strconv"
 	"strings"
@@ -36,10 +37,9 @@ func (b BlogUsecase) ReactOnBlog(user_id string, reactionType string, blog_id st
 }
 
 // CommentOnBlog implements domain.BlogRepository.
-func (b BlogUsecase) CommentOnBlog(user_id string, user_name string, comment domain.Comment) error {
+func (b BlogUsecase) CommentOnBlog(user_id string, comment domain.Comment) error {
 	comment.Commentor_ID = b.idConverter.ToObjectID(user_id)
-	comment.Commentor_username = user_name
-	err := b.blogRepository.CommentOnBlog(user_id, user_name, comment)
+	err := b.blogRepository.CommentOnBlog(user_id, comment)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (b BlogUsecase) CommentOnBlog(user_id string, user_name string, comment dom
 }
 
 // CreateBlog implements domain.BlogRepository.
-func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog, role string) (domain.Blog, error) {
+func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
 	if blog.CreatedAt.IsZero() && blog.UpdatedAt.IsZero() {
 		blog.CreatedAt = time.Now()
 		blog.UpdatedAt = time.Now()
@@ -61,15 +61,14 @@ func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog, role string) (
 	if len(blog.Tags) == 0 {
 		blog.Tags = make([]string, 0)
 	}
-	if len(blog.Comments) == 0 {
-		blog.Comments = make([]domain.Comment, 0)
-	}
+	
+	blog.Commenters_ID = utils.MakePrimitiveList(0)
 	if blog.Blog_image == "" {
 		blog.Blog_image = "https://media.istockphoto.com/id/922745190/photo/blogging-blog-concepts-ideas-with-worktable.jpg?s=2048x2048&w=is&k=20&c=QNKuhWRD7f0P5hybe28_AHo_Wh6W93McWY157Vmmh4Q="
 	}
 	blog.ViewCount = 0
 	blog.Popularity = 0
-	newBlog, err := b.blogRepository.CreateBlog(user_id, blog, role)
+	newBlog, err := b.blogRepository.CreateBlog(user_id, blog)
 	if err != nil {
 		return domain.Blog{}, err
 	}
@@ -77,7 +76,7 @@ func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog, role string) (
 }
 
 // DeleteBlogByID implements domain.BlogRepository.
-func (b BlogUsecase) DeleteBlogByID(user_id string, blog_id string, role string) domain.ErrorResponse {
+func (b BlogUsecase) DeleteBlogByID(user_id string, blog_id string) domain.ErrorResponse {
 	var errResponse domain.ErrorResponse
 	blog, err := b.blogRepository.GetBlogByID(blog_id, true)
 	if err != nil {
@@ -86,14 +85,21 @@ func (b BlogUsecase) DeleteBlogByID(user_id string, blog_id string, role string)
 			Status:  500,
 		}
 	}
-	if strings.ToLower(role) != "admin" && user_id != b.idConverter.ToString(blog.Creater_id) {
+	role, err := b.blogRepository.GetUserRoleByID(user_id)
+	if err != nil {
+		return domain.ErrorResponse{
+			Message: "internal server error",
+			Status:  500,
+	}}
+
+	if strings.ToLower(role) != "admin" && user_id != b.idConverter.ToString(blog.Creator_id) {
 		return domain.ErrorResponse{
 			Message: "permission denied",
 			Status:  403,
 		}
 	}
 	if strings.ToLower(role) == "admin" {
-		errResponse = b.blogRepository.DeleteBlogByID(b.idConverter.ToString(blog.Creater_id), blog_id)
+		errResponse = b.blogRepository.DeleteBlogByID(b.idConverter.ToString(blog.Creator_id), blog_id)
 	} else {
 		errResponse = b.blogRepository.DeleteBlogByID(user_id, blog_id)
 	}
@@ -159,15 +165,19 @@ func (b BlogUsecase) GetBlogs(pageNo string, pageSize string, popularity string)
 }
 
 // GetMyBlogByID implements domain.BlogRepository.
-func (b BlogUsecase) GetMyBlogByID(user_id string, blog_id string, role string) (domain.Blog, error) {
+func (b BlogUsecase) GetMyBlogByID(user_id string, blog_id string) (domain.Blog, error) {
 	myBlog, err := b.blogRepository.GetMyBlogByID(user_id, blog_id)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+	role, err := b.blogRepository.GetUserRoleByID(user_id)
 	if err != nil {
 		return domain.Blog{}, err
 	}
 	if strings.ToLower(role) == "admin" {
 		return myBlog, err
 	} else {
-		if user_id == myBlog.Creater_id.Hex() {
+		if user_id == myBlog.Creator_id.Hex() {
 			return myBlog, nil
 		} else {
 			return domain.Blog{}, errors.New("unauthorized access")
@@ -228,10 +238,13 @@ func (b BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, pag
 }
 
 // UpdateBlogByID implements domain.BlogRepository.
-func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.Blog, role string) (domain.Blog, error) {
+func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.Blog) (domain.Blog, error) {
 	var updated_blog domain.Blog
 	var err error
-
+	role , err := b.blogRepository.GetUserRoleByID(user_id)
+	if err != nil {
+		return domain.Blog{}, err
+	}
 	if strings.ToLower(role) == "admin" {
 		updated_blog, err = b.blogRepository.UpdateBlogByID(user_id, blog_id, blog)
 	} else {
@@ -239,7 +252,7 @@ func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.
 		if err != nil {
 			return domain.Blog{}, err
 		} else {
-			if existing_blog.Creater_id.Hex() == user_id {
+			if existing_blog.Creator_id.Hex() == user_id {
 				updated_blog, err = b.blogRepository.UpdateBlogByID(user_id, blog_id, blog)
 			} else {
 				return domain.Blog{}, errors.New("unauthorized access")

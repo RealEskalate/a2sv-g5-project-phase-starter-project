@@ -39,10 +39,10 @@
 Cypress.Commands.add("login", () => {
   cy.visit("/login");
 
-  cy.get('input[name="userName"]').type("testjr");
-  cy.get('input[name="password"]').type("testjrtestjr");
+  cy.get('input[name="userName"]').type("kala33");
+  cy.get('input[name="password"]').type("12345678");
 
   cy.get('button[type="submit"]').click();
-
+  cy.wait(5000);
   cy.url().should("not.include", "/login");
 });

@@ -220,7 +220,7 @@ func (userUC *userUseCase) RefreshToken(cxt *gin.Context, refreshToken string) (
 
 	token, errToken := userUC.jwtService.ValidateRefreshToken(refreshToken)
 	if errToken != nil {
-		return map[string]string{}, domain.CustomError{Message: errToken.Error(), Code: http.StatusInternalServerError}
+		return map[string]string{}, domain.CustomError{Message: errToken.Error(), Code: errToken.StatusCode()}
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)

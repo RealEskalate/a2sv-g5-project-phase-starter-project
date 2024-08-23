@@ -16,8 +16,8 @@ type likeRepository struct {
 	collection string
 }
 
-// changeIdsToPrimitive converts the given user ID and blog ID from string format to primitive.ObjectID format.
-// It returns the converted userPrimitiveID and blogPrimitiveID, along with any error encountered during the conversion.
+// changeIdsToPrimitive converts the provided user ID and blog ID from string format to primitive.ObjectID format.
+// It returns the converted userPrimitiveID and blogPrimitiveID, and any error encountered during conversion.
 func changeIdsToPrimitive(userID string, blogID string) (primitive.ObjectID, primitive.ObjectID, error) {
 	userPrimitiveID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -32,9 +32,8 @@ func changeIdsToPrimitive(userID string, blogID string) (primitive.ObjectID, pri
 	return userPrimitiveID, blogPrimitiveID, nil
 }
 
-// NewLikeRepository creates a new instance of the LikeRepository.
-// It takes a mongo.Database and a collection name as parameters.
-// Returns a domain.LikeRepository interface.
+// NewLikeRepository creates and initializes a new instance of likeRepository.
+// It takes a mongo.Database and a collection name as parameters and returns a domain.LikeRepository interface.
 func NewLikeRepository(database mongo.Database, collection string) domain.LikeRepository {
 	return &likeRepository{
 		database:    database,
@@ -42,9 +41,9 @@ func NewLikeRepository(database mongo.Database, collection string) domain.LikeRe
 	}
 }
 
-// Create creates a new like record in the database.
+// Create inserts a new like record into the database.
 // It takes a context.Context, userID string, blogID string, and status bool as parameters.
-// The function returns an error if any error occurs during the creation process.
+// Returns an error if the insert operation fails.
 func (lr *likeRepository) Create(c context.Context, userID string, blogID string, status bool) error {
 	collection := lr.database.Collection(lr.collection)
 	userPrimitiveID, blogPrimitiveID, err := changeIdsToPrimitive(userID, blogID)
@@ -63,10 +62,9 @@ func (lr *likeRepository) Create(c context.Context, userID string, blogID string
 	return err
 }
 
-// Like updates the status of a like document in the database.
-// It takes the user ID and blog ID as parameters and returns an error if any.
-// If the like document already exists, it updates the status to true.
-// If the like document does not exist, it creates a new like document with the status set to true.
+// Like updates or creates a like document for a blog post.
+// It sets the status to true. If a like document already exists, it updates the status.
+// If no document is found, it creates a new one with the status set to true.
 func (lr *likeRepository) Like(c context.Context, userID string, blogID string) error {
 	collection := lr.database.Collection(lr.collection)
 	userPrimitiveID, blogPrimitiveID, err := changeIdsToPrimitive(userID, blogID)
@@ -91,8 +89,9 @@ func (lr *likeRepository) Like(c context.Context, userID string, blogID string) 
 	return nil
 }
 
-// Dislike updates the status of a like document to false, indicating that the user dislikes the blog.
-// It takes the user ID and blog ID as parameters and returns an error if any occurred during the update process.
+// Dislike updates or creates a like document to indicate a dislike.
+// It sets the status to false. If a like document already exists, it updates the status.
+// If no document is found, it creates a new one with the status set to false.
 func (lr *likeRepository) Dislike(c context.Context, userId string, blogID string) error {
 	collection := lr.database.Collection(lr.collection)
 	userPrimitiveID, blogPrimitiveID, err := changeIdsToPrimitive(userId, blogID)
@@ -116,16 +115,13 @@ func (lr *likeRepository) Dislike(c context.Context, userId string, blogID strin
 	return nil
 }
 
-// RemoveLike removes a like document from the collection based on the provided id.
-// It takes a context.Context and a string id as parameters.
-// The id is converted to a primitive.ObjectID and used to define the filter to find the document.
-// If the id is not a valid ObjectID, an error is returned.
-// If the document is found, it is removed from the collection.
-// Returns an error if there was an issue with the conversion, deletion, or if the document was not found.
+// RemoveLike deletes a like document from the collection based on the provided ID.
+// It takes a context.Context and a string ID as parameters.
+// Converts the ID to a primitive.ObjectID and uses it to find and delete the document.
+// Returns an error if there is an issue with the conversion or deletion.
 func (lr *likeRepository) RemoveLike(c context.Context, id string) error {
 	collection := lr.database.Collection(lr.collection)
 
-
 	likeID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
@@ -141,13 +137,13 @@ func (lr *likeRepository) RemoveLike(c context.Context, id string) error {
 	return nil
 }
 
-// RemoveDislike removes a dislike from the collection based on the provided ID.
-// It takes a context.Context and an ID string as parameters.
-// The function returns an error if there was a problem removing the dislike.
+// RemoveDislike deletes a dislike document from the collection based on the provided ID.
+// It takes a context.Context and a string ID as parameters.
+// Converts the ID to a primitive.ObjectID and uses it to find and delete the document.
+// Returns an error if there is an issue with the conversion or deletion.
 func (lr *likeRepository) RemoveDislike(c context.Context, id string) error {
 	collection := lr.database.Collection(lr.collection)
 
-
 	likeID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
@@ -163,6 +159,9 @@ func (lr *likeRepository) RemoveDislike(c context.Context, id string) error {
 	return nil
 }
 
+// GetLikesByUser retrieves a list of likes associated with a specific user.
+// It takes a context.Context, userID string, limit, and offset as parameters.
+// Returns a slice of likes and any error encountered.
 func (lr *likeRepository) GetLikesByUser(c context.Context, userID string, limit, offset int) (likes []domain.Like, err error) {
 	collection := lr.database.Collection(lr.collection)
 	userPrimitiveID, err := primitive.ObjectIDFromHex(userID)
@@ -175,27 +174,25 @@ func (lr *likeRepository) GetLikesByUser(c context.Context, userID string, limit
 	options.SetSkip(int64(offset))
 
 	cursor, err := collection.Find(c, bson.M{"user_id": userPrimitiveID}, options)
-
 	if err != nil {
 		return []domain.Like{}, err
 	}
 
 	var likeResults []domain.Like
 	err = cursor.All(c, &likeResults)
-
 	if err != nil {
 		return []domain.Like{}, err
 	}
 
 	return likeResults, nil
-
 }
 
+// GetLikesByBlog retrieves a list of likes associated with a specific blog post.
+// It takes a context.Context, blogID string, limit, and offset as parameters.
+// Returns a slice of likes and any error encountered.
 func (lr *likeRepository) GetLikesByBlog(c context.Context, blogID string, limit, offset int) (likes []domain.Like, err error) {
-
 	collection := lr.database.Collection(lr.collection)
-	userPrimitiveID, err := primitive.ObjectIDFromHex(blogID)
-
+	blogPrimitiveID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return []domain.Like{}, err
 	}
@@ -204,15 +201,13 @@ func (lr *likeRepository) GetLikesByBlog(c context.Context, blogID string, limit
 	options.SetLimit(int64(limit))
 	options.SetSkip(int64(offset))
 
-	cursor, err := collection.Find(c, bson.M{"blog_id": userPrimitiveID}, options)
-
+	cursor, err := collection.Find(c, bson.M{"blog_id": blogPrimitiveID}, options)
 	if err != nil {
 		return []domain.Like{}, err
 	}
 
 	var likeResults []domain.Like
 	err = cursor.All(c, &likeResults)
-
 	if err != nil {
 		return []domain.Like{}, err
 	}
@@ -220,6 +215,10 @@ func (lr *likeRepository) GetLikesByBlog(c context.Context, blogID string, limit
 	return likeResults, nil
 }
 
+// GetLikeByID retrieves a like document from the collection using its unique ID.
+// It takes a context.Context and a string ID as parameters.
+// Converts the ID to a primitive.ObjectID and queries the collection to find the document.
+// Returns the like document and any error encountered.
 func (lr *likeRepository) GetLikeByID(c context.Context, likeID string) (domain.Like, error) {
 	collection := lr.database.Collection(lr.collection)
 
@@ -231,7 +230,6 @@ func (lr *likeRepository) GetLikeByID(c context.Context, likeID string) (domain.
 	filter := bson.M{"_id": likeObjectID}
 
 	var like domain.Like
-
 	err = collection.FindOne(c, filter).Decode(&like)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -242,7 +240,11 @@ func (lr *likeRepository) GetLikeByID(c context.Context, likeID string) (domain.
 
 	return like, nil
 }
-func (lr *likeRepository) GetStatus(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID) (bool,string, error) {
+
+// GetStatus retrieves the like or dislike status for a specific user and blog.
+// It takes a context.Context, userID primitive.ObjectID, and blogID primitive.ObjectID as parameters.
+// Returns the status of the like (true for like, false for dislike), the like ID, and any error encountered.
+func (lr *likeRepository) GetStatus(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID) (bool, string, error) {
     collection := lr.database.Collection(lr.collection)
 
     filter := bson.M{
@@ -256,15 +258,15 @@ func (lr *likeRepository) GetStatus(ctx context.Context, userID primitive.Object
     if err != nil {
         if err == mongo.ErrNoDocuments {
             // No like or dislike found for the user and blog
-            return false,"", errors.New("status not found")
+            return false, "", errors.New("status not found")
         }
         // For other errors, return a general internal server error
-        return false,"", errors.New("internal server error")
+        return false, "", errors.New("internal server error")
     }
 
     // Return the status of the like or dislike
     if like.Status != nil && *like.Status {
-        return true,like.ID.Hex(), nil
+        return true, like.ID.Hex(), nil
     }
-    return false,like.ID.Hex(), nil
+    return false, like.ID.Hex(), nil
 }

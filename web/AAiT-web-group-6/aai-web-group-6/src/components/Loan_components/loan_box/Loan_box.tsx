@@ -1,5 +1,5 @@
 import React from 'react'
-import items from '../../../constants/loan_constants/loan_box_items'
+import items from '@/constants/loan_constants/loan_box_items'
 
 const Loan_box = () => {
   return (

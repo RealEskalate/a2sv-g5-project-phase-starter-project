@@ -4,16 +4,16 @@ import ResponseValue from "@/types/ResponseValue";
 import SignupResponseValue from "@/types/SignupResponseValue";
 
 const SignupService = async (formData: UserValue): Promise<ResponseValue> => {
-    try {
-        const response = await axios.post<SignupResponseValue>(
-            "https://bank-dashboard-rsf1.onrender.com/auth/register",
-            formData,
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        );
+  try {
+    const response = await axios.post<SignupResponseValue>(
+      "https://bank-dashboard-rsf1.onrender.com/auth/register",
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (response.status === 200) {
       return { success: true, data: response.data };

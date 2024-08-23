@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/profileWidget.dart';
+
 class PeoplePage extends StatelessWidget {
   const PeoplePage({super.key});
 
@@ -16,6 +18,7 @@ class PeoplePage extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                ProfileWidget(),
                 Text('Sabila Sayma', style: TextStyle(fontSize: 18)),
                 Text('8 members, 5 online', style: TextStyle(fontSize: 12)),
               ],

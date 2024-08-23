@@ -22,15 +22,17 @@ func NewBlogRouter(db *mongo.Database, group *gin.RouterGroup, model *genai.Gene
 	
 
 	aic := controller.NewAIContentController(ais)
-	ac := controller.NewBlogController(bs)
+	bc := controller.NewBlogController(bs)
 	ptc := controller.NewPopularityTrackingController(pts)
 
 
-	group.POST("", ac.CreateBlogPost)
-	group.GET("", ac.GetBlogPosts)
-	group.GET(":id", ac.GetBlogPost)
-	group.PUT(":id", ac.UpdateBlogPost)
-	group.DELETE(":id", ac.DeleteBlogPost)
+	group.POST("", bc.CreateBlogPost)
+	group.GET("", bc.GetBlogPosts)
+	group.GET(":id", bc.GetBlogPost)
+	group.PUT(":id", bc.UpdateBlogPost)
+	group.DELETE(":id", bc.DeleteBlogPost)
+	group.POST("search", bc.SearchBlogPosts)
+	group.POST("filter", bc.FilterBlogPosts)
 
 	group.POST("generate", aic.GenerateContentSuggestions)
 	group.POST("enhance/:id", aic.SuggestContentImprovements)

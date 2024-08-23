@@ -1,15 +1,12 @@
 package controller
 
 import (
-	"backend-starter-project/domain/entities"
+	"backend-starter-project/domain/dto"
 	"backend-starter-project/domain/interfaces"
 	"errors"
 	"net/http"
 	"strconv"
-	"time"
-
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogController struct {
@@ -24,32 +21,58 @@ func NewBlogController(blogService interfaces.BlogService) *BlogController {
 
 func (bc *BlogController) CreateBlogPost(c *gin.Context) {
     
-	var blogPost entities.BlogPost
+	var blogPost dto.AddBlogRequest
+	var response dto.Response
 	
 	userId, ok := c.Get("userId")
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+		response.Error = "User not found"
+		response.Success = false
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	userIdStr, ok := userId.(string)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while finding user"})
-		return
-	}
+	userIdStr := userId.(string)
+
     if err := c.ShouldBindJSON(&blogPost); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		response.Error = "Invalid request payload"
+		response.Success = false
+        c.JSON(http.StatusBadRequest, response)
         return
     }
-
+	blogPost.Username = c.GetString("username")
     createdBlogPost, err := bc.blogService.CreateBlogPost(&blogPost, userIdStr)
     if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.Error = "Error while creating user"
+		response.Success = false
+        c.JSON(http.StatusInternalServerError, response)
         return
     }
 
-    c.JSON(http.StatusOK, gin.H{"message": "Blog post created successfully", "blogPost": createdBlogPost})
+	response.Success = true
+	response.Message = "Blog post created successfully"
+	response.Data = gin.H{"blogPost": createdBlogPost}
+    c.JSON(http.StatusOK,response)
 }
 
+func (bc *BlogController) GetBlogPost(c *gin.Context) {
+	blogPostId := c.Param("id")
+	userId := c.GetString("userId")
+
+	var response dto.Response
+
+	blogPost, err := bc.blogService.GetBlogPostById(blogPostId, userId)
+	if err != nil {
+		response.Success = false
+		response.Error = "Error getting blog post"
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	response.Success = true
+	response.Data = blogPost
+
+	c.JSON(http.StatusOK, response)
+}
 
 func (bc *BlogController) GetBlogPosts(c *gin.Context) {
     // Parse query parameters for pagination
@@ -57,21 +80,28 @@ func (bc *BlogController) GetBlogPosts(c *gin.Context) {
     pageSizeStr := c.DefaultQuery("pageSize", "20")
     sortBy := c.DefaultQuery("sortBy", "createdAt")
 
+	var response dto.Response
     page, err := strconv.Atoi(pageStr)
     if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		response.Error = "Invalid page number"
+		response.Success = false
+        c.JSON(http.StatusBadRequest, response)
         return
     }
 
     pageSize, err := strconv.Atoi(pageSizeStr)
     if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+		response.Error =  "Invalid page size"
+		response.Success = false
+        c.JSON(http.StatusBadRequest, response)
         return
     }
 
     blogPosts, totalPosts, err := bc.blogService.GetBlogPosts(page, pageSize, sortBy)
     if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		 response.Error = "Error while getting blog posts"
+		 response.Success = false
+        c.JSON(http.StatusInternalServerError, response)
         return
     }
 
@@ -79,126 +109,144 @@ func (bc *BlogController) GetBlogPosts(c *gin.Context) {
     totalPages := (totalPosts + pageSize - 1) / pageSize
 
     // Return the response with blog posts and pagination metadata
-    c.JSON(http.StatusOK, gin.H{
-        "blogPosts": blogPosts,
-        "pagination": gin.H{
-            "currentPage": page,
-            "pageSize":    pageSize,
-            "totalPages":  totalPages,
-            "totalPosts":  totalPosts,
-        },
-    })
+	pagination := dto.Pagination{
+		CurrentPage: page,
+		PageSize: pageSize,
+		TotalPages: totalPages,
+		TotalPosts: totalPosts,
+	}
+	blogPosts.Pagination = pagination
+
+	response.Data  = blogPosts
+	
+    c.JSON(http.StatusOK, response)
 }
 
 func (bc *BlogController) UpdateBlogPost(c *gin.Context) {
-	// Parse the blog post ID from the URL
 	blogPostId := c.Param("id")
 	userId,ok := c.Get("userId")
+	var response  dto.Response
+
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+		response.Success = false
+		response.Error = "User not found"
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	objID, err := primitive.ObjectIDFromHex(blogPostId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog post ID"})
-		return
-	}
+	
 
-	// Bind the incoming JSON to the blogPost entity
-	var blogPost entities.BlogPost
+	var blogPost dto.UpdateBlogRequest
 	if err := c.ShouldBindJSON(&blogPost); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		response.Success = false
+		response.Error =  "Invalid input data"
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-	// Set the ID to the object ID from the URL
-	blogPost.ID = objID
+	blogPost.ID = blogPostId
 
-	// Update the blog post
 	updatedBlogPost, err := bc.blogService.UpdateBlogPost(&blogPost,userId.(string))
 	if err != nil {
 		if errors.Is(err, errors.New("unauthorized: only the author can update this post")) {
-			c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to update this blog post"})
+			response.Success = false
+			response.Error = "You are not authorized to update this blog post"
+			c.JSON(http.StatusForbidden, response)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.Success = false
+		response.Error = err.Error()
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	// Return the updated blog post as confirmation
-	c.JSON(http.StatusOK, gin.H{"message": "Blog post updated successfully", "blogPost": updatedBlogPost})
+	response.Success = true
+	response.Message = "Blog post updated successfully"
+	response.Data = gin.H{
+		"updated post": updatedBlogPost,
+	}
+	c.JSON(http.StatusOK, response)
 }
 
 
 
 func (bc *BlogController) DeleteBlogPost(c *gin.Context) {
-	// Parse the blog post ID from the URL
 	blogPostId := c.Param("id")
 	userId:= c.GetString("userId")
 	role := c.GetString("role")	
 
-	// Delete the blog post
+	var response dto.Response
 	err := bc.blogService.DeleteBlogPost(blogPostId, userId,role)
 	if err != nil {
+		response.Success = false
 		if errors.Is(err, errors.New("unauthorized: only the author or an admin can delete this post")) {
-			c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to delete this blog post"})
+			response.Error = "You are not authorized to delete this blog post"
+			c.JSON(http.StatusForbidden, response)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.Error = "Error deleting the blog post"
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	// Return a success message
-	c.JSON(http.StatusOK, gin.H{"message": "Blog post deleted successfully"})
+	response.Success = true
+	response.Message = "Blog post deleted successfully"
+	c.JSON(http.StatusOK, response)
+
 }
 
 
 func (bc *BlogController) SearchBlogPosts(c *gin.Context) {
-	criteria := c.Query("criteria")
-	tags := c.QueryArray("tags")
+	var search dto.SearchBlogPostRequest
+	var response dto.Response
 
-	startDateStr := c.Query("startDate")
-	endDateStr := c.Query("endDate")
-
-	var startDate, endDate time.Time
-	var err error
-
-	if startDateStr != "" {
-		startDate, err = time.Parse(time.RFC3339, startDateStr)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid start date format"})
-			return
-		}
-	}
-
-	if endDateStr != "" {
-		endDate, err = time.Parse(time.RFC3339, endDateStr)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid end date format"})
-			return
-		}
-	}
-
-	blogPosts, err := bc.blogService.SearchBlogPosts(criteria, tags, startDate, endDate)
+	err := c.ShouldBindJSON(&search)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.Success = false
+		response.Error = "Invalid search text"
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}	
+
+	blogPosts, err := bc.blogService.SearchBlogPosts(search.SearchText)
+	if err != nil {
+		response.Success = false
+		response.Error = "Error while searching blog posts"
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, blogPosts)
+	//TODO: add pagination for search results
+
+	response.Success = true
+	response.Data = blogPosts
+
+	c.JSON(http.StatusOK, response)
 }
 
-func (bc *BlogController) GetBlogPost(c *gin.Context) {
-	blogPostId := c.Param("id")
-	userId := c.GetString("userId")
-
-
-	blogPost, err := bc.blogService.GetBlogPostById(blogPostId, userId)
+func (bc *BlogController) FilterBlogPosts(c *gin.Context){
+	
+	var filterReq dto.FilterBlogPostsRequest
+	var response dto.Response
+	err := c.ShouldBindJSON(&filterReq)
+	if err != nil{
+		response.Success = false
+		response.Error = "Invalid request payload"
+		c.JSON(http.StatusBadRequest, response)
+	}
+	
+	blogPosts, err := bc.blogService.FilterBlogPosts(filterReq)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.Success = false
+		response.Error = "Error filtering blog posts"
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, blogPost)
+	//TODO: add pagination for filter results
+	response.Success = true
+	response.Data = blogPosts
+
+	c.JSON(http.StatusOK, response)
 }
+

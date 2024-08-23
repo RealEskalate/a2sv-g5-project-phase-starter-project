@@ -3,6 +3,7 @@ package controllers
 import (
 	domain "AAiT-backend-group-2/Domain"
 	"AAiT-backend-group-2/Infrastructure/dtos"
+	"AAiT-backend-group-2/Infrastructure/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +24,7 @@ func (ctr *UserController) GetAllUsers(c *gin.Context) {
 	users, err := ctr.UserUsecase.GetAllUsers(c)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{
+		c.IndentedJSON(utils.GetHttpErrorCodes(err), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -38,8 +39,8 @@ func (ctr *UserController) GetUserByID(c *gin.Context) {
 	user, err := ctr.UserUsecase.GetUserByID(c, id)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{
-			"error": "User Not Found!",
+		c.IndentedJSON(utils.GetHttpErrorCodes(err), gin.H{
+			"error": err.Error(),
 		})
 		return
 	}
@@ -62,7 +63,7 @@ func (ctr *UserController) UpdateUser(c *gin.Context) {
 	err := ctr.UserUsecase.UpdateUser(c, id, &user)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{
+		c.IndentedJSON(utils.GetHttpErrorCodes(err), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -77,7 +78,7 @@ func (ctr *UserController) DeleteUser(c *gin.Context) {
 	err := ctr.UserUsecase.DeleteUser(c, id)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{
+		c.IndentedJSON(utils.GetHttpErrorCodes(err), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -94,7 +95,7 @@ func (ctr *UserController) PromoteUser(c *gin.Context) {
 
 	err := ctr.UserUsecase.PromoteUser(c, id)
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "User not found!"})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -106,15 +107,11 @@ func (ctr *UserController) DemoteAdmin(c *gin.Context) {
 
 	err := ctr.UserUsecase.DemoteAdmin(c, id)
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "User not found!"})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "User demoted successfully!"})
-}
-
-func (ctr *UserController) ProtectedPoint(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "you got the protected route"})
 }
 
 func (ctr *UserController) Logout(c *gin.Context) {
@@ -122,7 +119,7 @@ func (ctr *UserController) Logout(c *gin.Context) {
 
 	err := ctr.UserUsecase.Logout(c, id)
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "User not found!"})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 

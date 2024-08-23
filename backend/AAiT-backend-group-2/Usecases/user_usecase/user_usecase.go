@@ -4,8 +4,7 @@ import (
 	domain "AAiT-backend-group-2/Domain"
 	"AAiT-backend-group-2/Infrastructure/dtos"
 	"AAiT-backend-group-2/Infrastructure/services"
-	"errors"
-	"fmt"
+	"AAiT-backend-group-2/Infrastructure/utils"
 	"time"
 
 	"golang.org/x/net/context"
@@ -15,55 +14,54 @@ import (
 type userUsecase struct {
 	userRepository domain.UserRepository
 	jwtService services.JWTService
-	emailService *services.EmailService
-	imageService *services.ImageService
+	emailService services.EmailService
+	imageService services.ImageService
 	contextTimeout time.Duration
-	validator *services.ValidatorService
 }
 
-func NewUserUsecase(userRepository domain.UserRepository, jwtService services.JWTService, emailService *services.EmailService, imageService *services.ImageService, timeout time.Duration, validator *services.ValidatorService) domain.UserUsecase {
+func NewUserUsecase(userRepository domain.UserRepository, jwtService services.JWTService, emailService services.EmailService, imageService services.ImageService, timeout time.Duration) domain.UserUsecase {
 	return &userUsecase{
 		userRepository: userRepository,
 		jwtService: jwtService,
 		emailService: emailService,
 		imageService: imageService,
 		contextTimeout: timeout,
-		validator: validator,
 	}
 }
 
-func (uu *userUsecase) GetAllUsers(c context.Context,) ([]domain.User, error) {
+func (uu *userUsecase) GetAllUsers(c context.Context,) ([]domain.User, domain.CodedError) {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
 	return uu.userRepository.FindAll(ctx)
 }
 
-func (uu *userUsecase) GetUserByID(c context.Context, id string) (*domain.User, error) {
+func (uu *userUsecase) GetUserByID(c context.Context, id string) (*domain.User, domain.CodedError) {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
 	return uu.userRepository.FindByID(ctx, id)
 }
 
-func (uu *userUsecase) CreateUser(c context.Context, user domain.User) error {
-	if err := services.ValidateStruct(uu.validator, user); err != nil {
-		return fmt.Errorf("validation error: %v", err.Error())
-	}
-
+func (uu *userUsecase) CreateUser(c context.Context, user domain.User) domain.CodedError {
 	_, err := uu.userRepository.FindByEmailOrUsername(c, user.Email)
 	if err == nil {
-		return errors.New("email already exists")
+		return domain.NewError("email already exists", domain.ERR_CONFLICT)
 	}
 
 	_, err = uu.userRepository.FindByEmailOrUsername(c, user.Username)
 	if err == nil {
-		return errors.New("username already exists")
+		return domain.NewError("username already exists", domain.ERR_CONFLICT)
 	}
 
-	hashedPassword, err := services.GeneratePasswordHash(user.Password)
+	err = utils.ValidateUser(user)
 	if err != nil {
-		return errors.New("internal server error: failed to hash password")
+		return err
+	}
+
+	hashedPassword, passwordErr := services.GeneratePasswordHash(user.Password)
+	if passwordErr != nil {
+		return domain.NewError("internal server error: failed to hash password", domain.ERR_INTERNAL_SERVER)
 	}
 
 	user.Password = hashedPassword
@@ -74,7 +72,7 @@ func (uu *userUsecase) CreateUser(c context.Context, user domain.User) error {
 	count, err := uu.userRepository.CountDocuments(ctx)
 
 	if err != nil {
-		return errors.New("internal server error: failed to count users")
+		return domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
 	if count == 0 {
@@ -89,9 +87,14 @@ func (uu *userUsecase) CreateUser(c context.Context, user domain.User) error {
 	return uu.userRepository.Save(ctx, user)
 }
 
-func (uu *userUsecase) UpdateUser(c context.Context, id string, user *domain.User) error {
+func (uu *userUsecase) UpdateUser(c context.Context, id string, user *domain.User) domain.CodedError {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
+
+	err := utils.ValidateUsername(user.Username)
+	if err != nil {
+		return err
+	}
 
 	updateData := map[string]interface{}{
 		"username": user.Username,
@@ -102,70 +105,70 @@ func (uu *userUsecase) UpdateUser(c context.Context, id string, user *domain.Use
 	return uu.userRepository.Update(ctx, id, updateData)
 }
 
-func (uu *userUsecase) DeleteUser(c context.Context, id string) error {
+func (uu *userUsecase) DeleteUser(c context.Context, id string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
 	return uu.userRepository.Delete(ctx, id)
 }
 
-func (uu *userUsecase) Login(c context.Context, loginDto *dtos.LoginDTO) (map[string]string, error) {
+func (uu *userUsecase) Login(c context.Context, loginDto *dtos.LoginDTO) (map[string]string, domain.CodedError) {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
 	user, err := uu.userRepository.FindByEmailOrUsername(ctx, loginDto.EmailOrUserName)
 
 	if err != nil || user == nil {
-		return nil, errors.New("invalid email or password")
+		return nil, domain.NewError("invalid email or password", domain.ERR_INVALID_CREDENTIALS)
 	}
 
 	if !services.ComparePasswordHash(loginDto.Password, user.Password) {
-		return nil, errors.New("invalid email or password")
+		return nil, domain.NewError("invalid email or password", domain.ERR_INVALID_CREDENTIALS)
 	}
 
-	tokens, err := uu.jwtService.GenerateToken(user.ID.Hex(), user.Email, user.Role, 15*time.Minute, 24*time.Hour)
-	if err != nil {
-		return nil, errors.New("internal server error: failed to generate token")
+	tokens, tokenErr := uu.jwtService.GenerateToken(user.ID.Hex(), user.Email, user.Role, 15*time.Minute, 24*time.Hour)
+	if tokenErr != nil {
+		return nil, domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
 	updateFields := map[string]interface{}{
 		"refresh_token": tokens["refresh_token"],
 	}
 	if err := uu.userRepository.Update(ctx, user.ID.Hex(), updateFields); err != nil {
-		return nil, errors.New("internal server error")
+		return nil, domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
 	return tokens, nil
 }
 
-func (uu *userUsecase) RefreshToken(c context.Context, refreshToken string) (string, error) {
+func (uu *userUsecase) RefreshToken(c context.Context, refreshToken string) (string, domain.CodedError) {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
 	claims, err := uu.jwtService.ValidateToken(refreshToken, "refresh_token")
 	if err != nil {
-		return "", err
+		return "", domain.NewError("invalid token", domain.ERR_INVALID_CREDENTIALS)
 	}
 
 	user, err := uu.userRepository.FindByID(ctx, claims["userID"])
 	if err != nil {
-		return "", errors.New("internal server error: user not found")
+		return "", domain.NewError("user not found", domain.ERR_NOT_FOUND)
 	}
 
 	if user.RefreshToken != refreshToken {
-		return "", errors.New("invalid token")
+		return "", domain.NewError("invalid token", domain.ERR_INVALID_CREDENTIALS)
 	}
 
 	newAcessToken, err := uu.jwtService.RenewToken(claims)
 
 	if err != nil {
-		return "", errors.New("internal server error: failed to renew token")
+		return "", domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
 	return newAcessToken, nil
 }
 
-func (uu *userUsecase) PromoteUser(c context.Context, id string) error {
+func (uu *userUsecase) PromoteUser(c context.Context, id string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
@@ -176,7 +179,7 @@ func (uu *userUsecase) PromoteUser(c context.Context, id string) error {
 	return uu.userRepository.PromoteUser(ctx, id, updateData)
 }
 
-func (uu *userUsecase) DemoteAdmin(c context.Context, id string) error {
+func (uu *userUsecase) DemoteAdmin(c context.Context, id string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
@@ -187,7 +190,7 @@ func (uu *userUsecase) DemoteAdmin(c context.Context, id string) error {
 	return uu.userRepository.DemoteAdmin(ctx, id, updateData)
 }
 
-func (uu *userUsecase) Logout(c context.Context, id string) error {
+func (uu *userUsecase) Logout(c context.Context, id string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
@@ -199,66 +202,62 @@ func (uu *userUsecase) Logout(c context.Context, id string) error {
 }
 
 
-func (uu *userUsecase) ForgotPassword(c context.Context, userId, email string) error {
+func (uu *userUsecase) ForgotPassword(c context.Context, userId, email string) domain.CodedError {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
 	user, err := uu.userRepository.FindByEmailOrUsername(c, email)
 	if err != nil {
-		return errors.New("internal server error: user not found")
+		return domain.NewError("user not found", domain.ERR_NOT_FOUND)
 	}
 
 	if user != nil && user.ID.Hex() != userId {
-		return errors.New("unatuhorized")
+		return domain.NewError("unatuhorized", domain.ERR_UNAUTHORIZED)
 	}
 
-	token, err := services.GenerateSecureToken(32)
+	token, tokenErr := services.GenerateSecureToken(32)
 	hashedToken := services.HashToken(token)
-	if err != nil {
-		return errors.New("internal server error: failed to generate token")
+	if tokenErr != nil {
+		return domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
 	_, err = uu.userRepository.ForgotPassword(ctx, user.Email, hashedToken)
 
 	if err != nil {
-		return errors.New("internal server error")
+		return domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
-	resetModel, err := uu.emailService.GeneratePasswordResetTemplate(email, user.Username, token)
-	if err != nil {
-		return errors.New("unable to reset password")
+	resetModel, emailErr := uu.emailService.GeneratePasswordResetTemplate(email, user.Username, token)
+	if emailErr != nil {
+		return domain.NewError("internal server error: unable to send reset email", domain.ERR_INTERNAL_SERVER)
 	}
 
 	if err := uu.emailService.SendEmail(email, "Password Reset", "reset_email.html", resetModel); err != nil {
-		return err
+		return domain.NewError("internal server error: unable to send reset email", domain.ERR_INTERNAL_SERVER)
 	}
 
 	return nil
 }
 
-func (uu *userUsecase) ResetPassword(c context.Context,  userId string, passwordResetDto *dtos.PasswordResetDto) error {
+func (uu *userUsecase) ResetPassword(c context.Context,  userId string, passwordResetDto *dtos.PasswordResetDto) domain.CodedError {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
 	if passwordResetDto.Password != passwordResetDto.ConfirmPassword {
-		return errors.New("passwords do not match")
+		return domain.NewError("password don't match", domain.ERR_BAD_REQUEST)
 	}
 
 	user, err := uu.userRepository.FindByEmailOrUsername(ctx, passwordResetDto.Email)
 	if err != nil {
-		return errors.New("internal server error: user not found")
+		return domain.NewError("user not found", domain.ERR_NOT_FOUND)
 	}
 
 	if user == nil {
-		return errors.New("user not found")
+		return domain.NewError("user not found", domain.ERR_NOT_FOUND)
 	}
 
 	if user.ID.Hex() != userId {
-		return errors.New("unatuhorized")
-	}
-
-	if err := services.ValidateStruct(uu.validator, passwordResetDto); err != nil {
-		return fmt.Errorf("validation error: %v", err.Error())
+		return domain.NewError("unatuhorized", domain.ERR_UNAUTHORIZED)
 	}
 
 	hashedToken := services.HashToken(passwordResetDto.Token)
@@ -267,9 +266,9 @@ func (uu *userUsecase) ResetPassword(c context.Context,  userId string, password
 		return err
 	}
 
-	hashedPassword, err := services.GeneratePasswordHash(passwordResetDto.Password)
-	if err != nil {
-		return errors.New("internal server error: failed to hash password")
+	hashedPassword, passwordErr := services.GeneratePasswordHash(passwordResetDto.Password)
+	if passwordErr != nil {
+		return domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
 	updateData := map[string]interface{}{
@@ -277,41 +276,41 @@ func (uu *userUsecase) ResetPassword(c context.Context,  userId string, password
 	}
 
 	if err := uu.userRepository.Update(ctx, user.ID.Hex(), updateData); err != nil {
-		return errors.New("internal server error")
+		return domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
 	if err := uu.userRepository.InvalidateResetToken(c, user.ID.Hex()); err != nil {
-		return errors.New("internal server error")
+		return domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
 	return nil
 }
 
-func (uu *userUsecase) ChangePassword(c context.Context, userId string, changePasswordDto *dtos.ChangePasswordDto) error {
+func (uu *userUsecase) ChangePassword(c context.Context, userId string, changePasswordDto *dtos.ChangePasswordDto) domain.CodedError {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
 
 	if changePasswordDto.NewPassword != changePasswordDto.ConfirmPassword {
-		return errors.New("password don't match")
+		return domain.NewError("password don't match", domain.ERR_BAD_REQUEST)
 	}
 
 	user, err := uu.userRepository.FindByID(c, userId)
 	if err != nil || user == nil {
-		return errors.New("user not found")
+		return domain.NewError("user not found", domain.ERR_NOT_FOUND)
 	}
 
 	if user.ID.Hex() != userId {
-		return errors.New("unatuhorized")
+		return domain.NewError("unatuhorized", domain.ERR_UNAUTHORIZED)
 	}
 
-	hashedPassword, err := services.GeneratePasswordHash(changePasswordDto.NewPassword)
-	if err != nil {
-		return errors.New("internal server error")
+	hashedPassword, passwordErr := services.GeneratePasswordHash(changePasswordDto.NewPassword)
+	if passwordErr != nil {
+		return domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
 	if user.Password == hashedPassword {
-		return errors.New("new password can't be old password")
+		return domain.NewError("password is the same as the current password", domain.ERR_BAD_REQUEST)
 	}
 
 	updateData := map[string]interface{}{
@@ -319,33 +318,29 @@ func (uu *userUsecase) ChangePassword(c context.Context, userId string, changePa
 	}
 
 	if err := uu.userRepository.Update(ctx, user.ID.Hex(), updateData); err != nil {
-		return errors.New("internal server error")
+		return domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
 	return nil
 }
 
 
-func (uu *userUsecase) UpdateProfile(c context.Context, userId string, updateProfileDto *dtos.UpdateProfileDto) error {
+func (uu *userUsecase) UpdateProfile(c context.Context, userId string, updateProfileDto *dtos.UpdateProfileDto) domain.CodedError {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
-	if err := services.ValidateStruct(uu.validator, updateProfileDto); err != nil {
-		return fmt.Errorf("validation error: %v", err.Error())
-	}
-
 	existingUser, err := uu.userRepository.FindByEmailOrUsername(c, updateProfileDto.UserProfile.Username)
 	if err == nil && existingUser != nil && existingUser.ID.Hex() != userId {
-		return errors.New("username already exists")
+		return domain.NewError("username already exists", domain.ERR_CONFLICT)
 	}
 
 	user, err := uu.userRepository.FindByID(c, userId)
 	if err != nil || user == nil {
-		return errors.New("user not found")
+		return domain.NewError("user not found", domain.ERR_NOT_FOUND)
 	}
 
 	if user.ID.Hex() != userId {
-		return errors.New("unatuhorized")
+		return domain.NewError("unatuhorized", domain.ERR_UNAUTHORIZED)
 	}
 
 	var imageUrl string
@@ -353,13 +348,13 @@ func (uu *userUsecase) UpdateProfile(c context.Context, userId string, updatePro
 	if updateProfileDto.Avatar != nil {
 		_, err := uu.imageService.SaveProfileImage(updateProfileDto)
 		if err != nil {
-			return errors.New("internal server error")
+			return domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 		}
 
 		url, err := uu.imageService.UploadImage(c, updateProfileDto.Avatar)
 		imageUrl = url
 		if err != nil {
-			return errors.New("internal server error")
+			return domain.NewError("internal server error", domain.ERR_INTERNAL_SERVER)
 		}
 	}
 

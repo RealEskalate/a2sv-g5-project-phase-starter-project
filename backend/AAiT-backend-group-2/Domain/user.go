@@ -30,33 +30,33 @@ type UserProfile struct {
 type UpdateData map[string]interface{}
 
 type UserUsecase interface {
-	GetAllUsers(c context.Context) ([]User, error)
-	GetUserByID(c context.Context, id string) (*User, error)
-	CreateUser(c context.Context, user User) error
-	UpdateUser(c context.Context, id string, user *User) error
-	DeleteUser(c context.Context, id string) error
-	Login(c context.Context, loginDto *dtos.LoginDTO) (map[string]string, error)
-	PromoteUser(c context.Context, id string) error
-	DemoteAdmin(c context.Context, id string) error
-	RefreshToken(c context.Context, token string) (string, error)
-	Logout(c context.Context, id string) error
-	ForgotPassword(c context.Context, userId, email string) error
-	ResetPassword(c context.Context, userId string, passwordResetDto *dtos.PasswordResetDto) error
-	ChangePassword(c context.Context, userId string, changePasswordDto *dtos.ChangePasswordDto) error
-	UpdateProfile(c context.Context, userId string, updateProfileDto *dtos.UpdateProfileDto) error
+	GetAllUsers(c context.Context) ([]User, CodedError)
+	GetUserByID(c context.Context, id string) (*User, CodedError)
+	CreateUser(c context.Context, user User) CodedError
+	UpdateUser(c context.Context, id string, user *User) CodedError
+	DeleteUser(c context.Context, id string) CodedError
+	Login(c context.Context, loginDto *dtos.LoginDTO) (map[string]string, CodedError)
+	PromoteUser(c context.Context, id string) CodedError
+	DemoteAdmin(c context.Context, id string) CodedError
+	RefreshToken(c context.Context, token string) (string, CodedError)
+	Logout(c context.Context, id string) CodedError
+	ForgotPassword(c context.Context, userId, email string) CodedError
+	ResetPassword(c context.Context, userId string, passwordResetDto *dtos.PasswordResetDto) CodedError
+	ChangePassword(c context.Context, userId string, changePasswordDto *dtos.ChangePasswordDto) CodedError
+	UpdateProfile(c context.Context, userId string, updateProfileDto *dtos.UpdateProfileDto) CodedError
 }
 
 type UserRepository interface {
-	FindAll(c context.Context) ([]User, error)
-	FindByID(c context.Context, id string) (*User, error)
-	FindByEmailOrUsername(c context.Context, emailOrUsername string) (*User, error)
-	CountDocuments(c context.Context) (int64, error)
-	Save(c context.Context, user User) error
-	Update(c context.Context, id string, updateData UpdateData) error
-	Delete(c context.Context, id string) error
-	PromoteUser(c context.Context, id string, updateData UpdateData) error
-	DemoteAdmin(c context.Context, id string, updateData UpdateData) error
-	ForgotPassword(c context.Context, email ,token string) (string, error)
-	ValidateResetToken(c context.Context, userID, token string) error
-	InvalidateResetToken(c context.Context, userID string) error
+	FindAll(c context.Context) ([]User, CodedError)
+	FindByID(c context.Context, id string) (*User, CodedError)
+	FindByEmailOrUsername(c context.Context, emailOrUsername string) (*User, CodedError)
+	CountDocuments(c context.Context) (int64, CodedError)
+	Save(c context.Context, user User) CodedError
+	Update(c context.Context, id string, updateData UpdateData) CodedError
+	Delete(c context.Context, id string) CodedError
+	PromoteUser(c context.Context, id string, updateData UpdateData) CodedError
+	DemoteAdmin(c context.Context, id string, updateData UpdateData) CodedError
+	ForgotPassword(c context.Context, email ,token string) (string, CodedError)
+	ValidateResetToken(c context.Context, userID, token string) CodedError
+	InvalidateResetToken(c context.Context, userID string) CodedError
 }

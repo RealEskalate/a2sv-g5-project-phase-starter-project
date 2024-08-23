@@ -28,7 +28,7 @@ const LandingHome = () => {
           transition={{ duration: 0.75, ease: "easeOut", delay: 0.4 }}
           className="font-thin md:font:normal text-[5px] md:text-[15px]"
         >
-          Join millions of agents saving funds for people who do not have access
+
           to their bank details and earn returns.
         </m.span>
       </m.div>

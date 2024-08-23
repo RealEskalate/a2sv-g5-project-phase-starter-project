@@ -12,6 +12,7 @@ import { RootState, AppDispatch } from "@/lib/store";
 import { setUser } from "@/lib/features/userSlice/userSlice";
 import { isTokenExpired } from "@/utils/authUtils";
 import { useRefreshAccessTokenMutation } from "@/lib/service/authentication";
+import LayoutForTest from "../components/layout/LayoutForTest";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -89,9 +90,8 @@ const Layout = ({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <div className={`${inter.className} flex flex-col min-h-screen`}>
-        <Navbar />
         <div className="flex flex-1">
-          <Sidebar />
+          <LayoutForTest/>
           <main className="max-md:pt-[100px] flex-1 p-4 mt-[60px] lg:ml-[240px] sm:ml-[240px] ml-0 bg-[#F5F7FA]">
             {children}
           </main>

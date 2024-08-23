@@ -174,9 +174,9 @@ const Navbar = () => {
             className="text-md bg-[#F5F7FA] w-full"
           />
         </div>
-      </header>
+      </header> 
 
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+   {/* <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} /> */}
     </>
   );
 };

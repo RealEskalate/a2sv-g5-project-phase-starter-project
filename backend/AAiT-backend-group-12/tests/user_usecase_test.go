@@ -1389,6 +1389,48 @@ func (suite *UserUsecaseTestSuite) TestResetPassword_Negative_RepositoryError_Up
 	suite.mockHashService.AssertExpectations(suite.T())
 }
 
+func (suite *UserUsecaseTestSuite) TestLogout_Positive() {
+	user := TEST_USER
+	accessToken := "acc.esst.oken"
+
+	suite.mockCacheRepository.On("CacheData", accessToken, "", time.Minute*time.Duration(suite.ENV.ACCESS_TOKEN_LIFESPAN)).Return(nil).Once()
+	suite.mockUserRepository.On("SetRefreshToken", context.Background(), &domain.User{Username: user.Username}, "").Return(nil).Once()
+
+	err := suite.Usecase.Logout(context.Background(), user.Username, accessToken)
+	suite.Nil(err, "err should be nil")
+	suite.mockCacheRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestLogout_Negative_CacheError() {
+	user := TEST_USER
+	accessToken := "acc.esst.oken"
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockCacheRepository.On("CacheData", accessToken, "", time.Minute*time.Duration(suite.ENV.ACCESS_TOKEN_LIFESPAN)).Return(sampleErr).Once()
+
+	err := suite.Usecase.Logout(context.Background(), user.Username, accessToken)
+	suite.NotNil(err, "err should not be nil")
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.mockCacheRepository.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestLogout_Negative_ReposioryError_SetRefreshToken() {
+	user := TEST_USER
+	accessToken := "acc.esst.oken"
+
+	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
+	suite.mockCacheRepository.On("CacheData", accessToken, "", time.Minute*time.Duration(suite.ENV.ACCESS_TOKEN_LIFESPAN)).Return(nil).Once()
+	suite.mockUserRepository.On("SetRefreshToken", context.Background(), &domain.User{Username: user.Username}, "").Return(sampleErr).Once()
+
+	err := suite.Usecase.Logout(context.Background(), user.Username, accessToken)
+	suite.Equal(err.GetCode(), sampleErr.GetCode())
+	suite.Equal(err.Error(), sampleErr.Error())
+	suite.NotNil(err, "err should not be nil")
+
+	suite.mockCacheRepository.AssertExpectations(suite.T())
+}
+
 func TestUserUsecase(t *testing.T) {
 	suite.Run(t, new(UserUsecaseTestSuite))
 }

@@ -5,37 +5,42 @@ import (
 )
 
 func SetUpRouter(r *gin.Engine, blogController *BlogController, chatHandler *ChatHandler, userController *UserController) {
-	SetUpBlogRouter(r, blogController)
-	SetUpChatRouter(r, chatHandler)
-	SetUpAuthRouter(r, userController)
+	v1 := r.Group("/v1")
+	blogsV1 := v1.Group("/blogs")
+	chatV1 := v1.Group("/chats")
+	authV1 := v1.Group("/auth")
+	SetUpBlogRouter(blogsV1, blogController)
+	SetUpChatRouter(chatV1, chatHandler)
+	SetUpAuthRouter(authV1, userController)
 }
 
-func SetUpChatRouter(r *gin.Engine, chatHandler *ChatHandler) {
+func SetUpChatRouter(r *gin.RouterGroup, chatHandler *ChatHandler) {
 	r.GET("/", AuthMiddleware(), chatHandler.GetChatsHandler)
 	r.POST("/", AuthMiddleware(), chatHandler.CreateChatHandler)
-	r.POST("/", AuthMiddleware(), chatHandler.GenerateChatTitleHandler)
 	r.GET("/:id", AuthMiddleware(), chatHandler.GetChatHandler)
 	r.DELETE("/:id", AuthMiddleware(), chatHandler.DeleteChatHandler)
 	r.POST("/:id/send-message", AuthMiddleware(), chatHandler.SendMessageHandler)
 }
 
-func SetUpBlogRouter(r *gin.Engine, blogController *BlogController) {
-	r.POST("/", AuthMiddleware(), blogController.CreateBlog)
-	r.GET("/", AuthMiddleware(), blogController.GetBlogs)
-	r.GET("/:id", AuthMiddleware(), blogController.GetBlogByID)
-	r.PUT("/:id", AuthMiddleware(), blogController.UpdateBlog)
-	r.DELETE("/:id", AuthMiddleware(), blogController.DeleteBlog)
-	r.GET("/search", AuthMiddleware(), blogController.SearchBlogs)
-	r.GET("/:id/comments", AuthMiddleware(), blogController.GetCommentsByBlogID)
-	r.POST("/:id/comments", AuthMiddleware(), blogController.CreateComment)
-	r.DELETE("/:id/comments/:comment_id", AuthMiddleware(), blogController.DeleteComment)
-	r.POST("/:id/likes", AuthMiddleware(), blogController.LikeBlog)
-	r.POST("/:id/dislikes", AuthMiddleware(), blogController.DislikeBlog)
-	r.DELETE("/:id/likes", AuthMiddleware(), blogController.UnLikeBlog)
-	r.DELETE("/:id/dislike", AuthMiddleware(), blogController.UnDislikeBlog)
+func SetUpBlogRouter(r *gin.RouterGroup, blogController *BlogController) {
+	r.Use(AuthMiddleware())
+
+	r.POST("/", blogController.CreateBlog)
+	r.GET("/", blogController.GetBlogs)
+	r.GET("/:id", blogController.GetBlogByID)
+	r.PUT("/:id", blogController.UpdateBlog)
+	r.DELETE("/:id", blogController.DeleteBlog)
+	r.GET("/search", blogController.SearchBlogs)
+	r.GET("/:id/comments", blogController.GetCommentsByBlogID)
+	r.POST("/:id/comments", blogController.CreateComment)
+	r.DELETE("/:id/comments/:comment_id", blogController.DeleteComment)
+	r.POST("/:id/likes", blogController.LikeBlog)
+	r.POST("/:id/dislikes", blogController.DislikeBlog)
+	r.DELETE("/:id/likes", blogController.UnLikeBlog)
+	r.DELETE("/:id/dislike", blogController.UnDislikeBlog)
 }
 
-func SetUpAuthRouter(r *gin.Engine, userController *UserController) {
+func SetUpAuthRouter(r *gin.RouterGroup, userController *UserController) {
 	r.POST("/login", userController.Login)
 	r.POST("/register", userController.RegisterUser)
 	r.PUT("/profile", AuthMiddleware(), userController.UpdateProfile)

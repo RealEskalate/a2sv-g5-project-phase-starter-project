@@ -32,6 +32,10 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
     }
   }
 
+  void unfocusTextFields() {
+    FocusScope.of(context).unfocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,26 +64,29 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
-              child: ListView.separated(
-                controller: _scrollController,
-                itemBuilder: (BuildContext context, int index) {
-                  return mock_chat_data[index];
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return const SizedBox(height: 20);
-                },
-                itemCount: mock_chat_data.length,
+      body: GestureDetector(
+        onTap: unfocusTextFields,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 20, 20, 40),
+                child: ListView.separated(
+                  controller: _scrollController,
+                  itemBuilder: (BuildContext context, int index) {
+                    return mock_chat_data[index];
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return const SizedBox(height: 20);
+                  },
+                  itemCount: mock_chat_data.length,
+                ),
               ),
             ),
-          ),
-          _buildInputBar(),
-        ],
+            _buildInputBar(),
+          ],
+        ),
       ),
     );
   }

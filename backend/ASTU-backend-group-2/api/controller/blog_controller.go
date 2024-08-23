@@ -11,6 +11,7 @@ import (
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // interface for blog controllers
@@ -108,13 +109,26 @@ func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 
 func (bc *BlogController) BatchCreateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		userID := c.MustGet("x-user-id").(string)
+		id, err := primitive.ObjectIDFromHex(userID)
+
+		if err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+
 		var newBlogs []domain.BlogIn
+
 		if err := c.ShouldBindJSON(&newBlogs); err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
 
-		err := bc.BlogUsecase.BatchCreateBlog(context.Background(), &newBlogs)
+		for _, blog := range newBlogs {
+			blog.ID = id
+		}
+
+		err = bc.BlogUsecase.BatchCreateBlog(context.Background(), &newBlogs)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return

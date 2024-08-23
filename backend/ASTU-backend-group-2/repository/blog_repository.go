@@ -53,13 +53,30 @@ func (br *blogRepository) GetAllBlogs(c context.Context, filter bson.M, blogFilt
 }
 
 // utility filteration function that used to filter the blogs based on the user query
-func getFiltered(c context.Context, coll *mongo.Collection, filter bson.M, blogFilter domain.BlogFilter) ([]domain.Blog, mongopagination.PaginationData, error) {
-	var blogs []domain.Blog
 
-	paginatedData, err := mongopagination.New(coll).Context(c).Limit(10).Page(blogFilter.Pages).Decode(&blogs).Aggregate(filter)
+func getFiltered(c context.Context, collection *mongo.Collection, filter bson.M, blogFilter domain.BlogFilter) ([]domain.Blog, mongopagination.PaginationData, error) {
+	blogs := make([]domain.Blog, 0)
 
-	if err != nil {
-		return []domain.Blog{}, mongopagination.PaginationData{}, err
+	paginated := mongopagination.New(collection).Context(c).Limit(10).Page(blogFilter.Pages)
+
+	// Aggregate()
+
+	var paginatedData *mongopagination.PaginatedData
+	var err error
+	if filter != nil {
+		paginatedData, err = paginated.Aggregate(filter)
+		// paginatedData, err = paginated.Aggregate(bson.M{"$match": bson.M{"title": "ale", "$in": bson.M{"tag": []string{}}}})
+		if err != nil {
+			log.Println("[REPO] error in GET  Filter", err.Error())
+			return []domain.Blog{}, mongopagination.PaginationData{}, err
+		}
+		for _, raw := range paginatedData.Data {
+			var blog domain.Blog
+			if marshallErr := bson.Unmarshal(raw, &blog); marshallErr == nil {
+				blogs = append(blogs, blog)
+			}
+
+		}
 	}
 
 	return blogs, paginatedData.Pagination, nil
@@ -159,10 +176,14 @@ func (br *blogRepository) DeleteBlog(c context.Context, blogID string) error {
 		return err
 	}
 
-	_, err = collection.DeleteOne(c, bson.M{"_id": ID})
+	res, err := collection.DeleteOne(c, bson.M{"_id": ID})
 
 	if err != nil {
 		return err
+	}
+
+	if res.DeletedCount == 0 {
+		return mongo.ErrNoDocuments
 	}
 
 	return nil

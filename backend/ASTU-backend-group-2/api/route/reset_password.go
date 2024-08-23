@@ -13,10 +13,10 @@ import (
 )
 
 func NewPublicResetPasswordRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
-	ur := repository.NewResetPasswordRepository(*db, domain.CollectionUser)
+	ur := repository.NewResetPasswordRepository(*db, domain.CollectionUser, domain.CollectionResetPassword)
 	sc := controller.ResetPasswordController{
 		ResetPasswordUsecase: usecase.NewResetPasswordUsecase(ur, timeout),
-		Env:           env,
+		Env:                  env,
 	}
 	group.POST("/forgot-password", sc.ForgotPassword)
 	group.POST("/reset-password", sc.ResetPassword)

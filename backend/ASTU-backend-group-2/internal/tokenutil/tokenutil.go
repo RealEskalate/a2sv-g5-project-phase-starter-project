@@ -11,7 +11,6 @@ import (
 func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry))
 	claims := &domain.JwtCustomClaims{
-
 		Role:    user.Role,
 		IsOwner: user.IsOwner,
 		ID:      user.ID.Hex(),
@@ -30,8 +29,7 @@ func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToke
 func CreateVerificationToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry))
 	claims := &domain.JwtCustomClaims{
-		Name: user.FirstName + " " + user.LastName,
-		ID:   user.ID.Hex(),
+		ID: user.ID.Hex(),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(exp),
 		},
@@ -70,23 +68,23 @@ func IsAuthorized(requestToken string, secret string) (bool, error) {
 		return false, err
 	}
 
-	if claims, ok := token.Claims.(jwt.Claims); ok && token.Valid {
-		if registeredClaims, ok := claims.(*jwt.RegisteredClaims); ok {
-			if registeredClaims.ExpiresAt != nil {
-				expirationTime := registeredClaims.ExpiresAt.Time
-				if time.Now().After(expirationTime) {
-					return false, fmt.Errorf("token has expired")
-				}
-				return true, nil
-			}
-			return false, fmt.Errorf("expiry claim not present in token")
-		}
-		return false, fmt.Errorf("invalid token claims")
+	claims, ok := token.Claims.(jwt.MapClaims)
+	fmt.Println(claims)
+
+	if !ok && !token.Valid {
+		return false, fmt.Errorf("Invalid Token")
 	}
-	return false, fmt.Errorf("invalid token")
+
+	expirationTime := time.Unix(int64(claims["exp"].(float64)), 0)
+
+	if time.Now().After(expirationTime) {
+		return false, fmt.Errorf("token has expired")
+	}
+	return true, nil
+
 }
 
-func ExtractIDFromToken(requestToken string, secret string) (string, error) {
+func ExtractUserClaimsFromToken(requestToken string, secret string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -95,14 +93,14 @@ func ExtractIDFromToken(requestToken string, secret string) (string, error) {
 	})
 
 	if err != nil {
-		return "", err
+		return jwt.MapClaims{}, err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if !ok && !token.Valid {
-		return "", fmt.Errorf("Invalid Token")
+		return jwt.MapClaims{}, fmt.Errorf("Invalid Token")
 	}
 
-	return claims["id"].(string), nil
+	return claims, nil
 }

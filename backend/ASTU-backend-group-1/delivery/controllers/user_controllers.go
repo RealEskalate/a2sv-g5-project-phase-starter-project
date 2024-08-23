@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	infrastructure "astu-backend-g1/Infrastructure"
 	"astu-backend-g1/config"
 	"astu-backend-g1/domain"
+	"astu-backend-g1/infrastructure"
 	"fmt"
 	"net/http"
 	"time"
@@ -275,7 +275,7 @@ func (c *UserController) DeleteUser(ctx *gin.Context) {
 func (c *UserController) UpdateUser(ctx *gin.Context) {
 	userId := ctx.Param("id")
 	updateData := domain.User{}
-	if err := ctx.ShouldBind(updateData); err != nil {
+	if err := ctx.ShouldBind(&updateData); err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}

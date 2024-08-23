@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -11,7 +11,7 @@ import {
   CategoryScale,
 } from 'chart.js';
 
-// Register necessary Chart.js components
+
 ChartJS.register(
   LineElement,
   PointElement,
@@ -22,22 +22,38 @@ ChartJS.register(
   Legend
 );
 
-const LineGraphWithDots = () => {
-  // Dummy data for the graph
+interface yearlyTotal{
+  TotInvestment:[{
+    time:string
+    value:number
+  }]
+}
+
+const LineGraphWithDots = ({TotInvestment}:yearlyTotal) => {
+  const [graphData, setGraphData] = useState([
+    { time: '2022', value: 6752.516076053059 },
+    { time: '2023', value: 7874.519878321524 },
+    { time: '2024', value: 15860.839475392751 },
+  ])
+
+  useEffect(()=>{
+    setGraphData(TotInvestment)
+  },[TotInvestment])
+
   const data = {
-    labels: ['2016', '2017', '2018', '2019', '2020', '2021'],
+    labels: graphData.map(item => item.time).reverse(), 
     datasets: [
       {
-        label: 'Dummy Data',
-        data: [0, 40000, 20000, 30000, 10000, 50000], // Dummy dataset values
-        borderColor: '#EDA10D', // Line color
-        backgroundColor: 'transparent', // Ensure the line background is transparent
+        label: 'Total Investment',
+        data: graphData.map(item => item.value).reverse(),
+        borderColor: '#EDA10D',
+        backgroundColor: 'transparent',
         borderWidth: 4,
-        pointRadius: 6, // Dots size
-        pointStyle: 'circle', // Circle dot shape
-        pointBackgroundColor: '#fff', // Hollow middle (white to blend with chart background)
-        pointBorderColor: '#EDA10D', // Dot border color
-        pointBorderWidth: 4, // Bold dot border
+        pointRadius: 6,
+        pointStyle: 'circle',
+        pointBackgroundColor: '#fff',
+        pointBorderColor: '#EDA10D',
+        pointBorderWidth: 4,
       },
     ],
   };

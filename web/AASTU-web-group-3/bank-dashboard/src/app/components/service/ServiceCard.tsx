@@ -52,9 +52,9 @@ export default function ServiceCard() {
             <Image width={18} height={18} src={card.icon} alt="aastu" />
           </div>
           <div className="right w-full flex justify-between items-center p-2">
-            <div className="md:w-1/4">
+            <div className="md:w-1/4 flex-shrink-0">
               <div className="font-normal ">{card.name}</div>
-              <div className="font-normal text-xs text-[#718EBF]">
+              <div className="font-normal h-5 flex-grow max-w-xs truncate text-xs text-[#718EBF]">
                 {card.details}
               </div>
             </div>

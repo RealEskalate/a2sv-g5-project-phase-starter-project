@@ -2,6 +2,7 @@
 
 
 
+import '../../../user/data/models/user_model.dart';
 import '../../domain/entities/chat_entity.dart';
 
 class ChatModel extends ChatEntity{
@@ -20,8 +21,8 @@ class ChatModel extends ChatEntity{
   Map<String,dynamic>toJson(){
     return{
       '_id': chat_id,
-      'user1': seller_one,
-      'user2': seller_two,
+      'user1': (seller_one as UserModel).toJson(),
+      'user2': (seller_two as UserModel).toJson(),
     };
   }
 

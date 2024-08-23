@@ -17,10 +17,10 @@ import (
 
 type ControllerTestSuite struct {
 	suite.Suite
-	mockBlogUseCase 	*mocks.BlogUsecase
-	mockValidator 	  	*mocks.ValidateInterface
-	router          	*gin.Engine
-	controller 			*BlogController
+	mockBlogUseCase *mocks.BlogUsecase
+	mockValidator   *mocks.ValidateInterface
+	router          *gin.Engine
+	controller      *BlogController
 }
 
 func MockAuthMiddleware(role string, userID string, user_name string) gin.HandlerFunc {
@@ -42,18 +42,18 @@ func (suite *ControllerTestSuite) SetupTest() {
 func (suite *ControllerTestSuite) TestGetBlogsHandler_Success() {
 	mockBlogs := []domain.Blog{
 		{
-			ID: primitive.NewObjectID(),
-			Title: "Blog 1",
-			Author: "The author",
+			ID:      primitive.NewObjectID(),
+			Title:   "Blog 1",
+			Author:  "The author",
 			Content: "This is a blog",
-			Tags: []string{"tag1", "tag2"},
+			Tags:    []string{"tag1", "tag2"},
 		},
 		{
-			ID: primitive.NewObjectID(),
-			Title: "Blog 1",
-			Author: "The author",
+			ID:      primitive.NewObjectID(),
+			Title:   "Blog 1",
+			Author:  "The author",
 			Content: "This is a blog",
-			Tags: []string{"tag1", "tag2"},
+			Tags:    []string{"tag1", "tag2"},
 		},
 	}
 	pagination := domain.Pagination{
@@ -62,10 +62,10 @@ func (suite *ControllerTestSuite) TestGetBlogsHandler_Success() {
 		TotalPages:  2,
 		TotatRecord: 2,
 	}
-	
+
 	suite.router.GET("/blogs", suite.controller.GetBlogs)
 
-	suite.mockBlogUseCase.On("GetBlogs", "0", "0", "").Return(mockBlogs,pagination, nil)
+	suite.mockBlogUseCase.On("GetBlogs", "0", "0", "").Return(mockBlogs, pagination, nil)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/blogs", nil)
@@ -80,11 +80,11 @@ func (suite *ControllerTestSuite) TestGetBlogsHandler_Success() {
 func (suite *ControllerTestSuite) TestGetBlogByIdHandler_Success() {
 	blog_id := primitive.NewObjectID()
 	mockBlog := domain.Blog{
-		ID: blog_id,
-		Title: "Blog 1",
-		Author: "The author",
+		ID:      blog_id,
+		Title:   "Blog 1",
+		Author:  "The author",
 		Content: "This is a blog",
-		Tags: []string{"tag1", "tag2"},
+		Tags:    []string{"tag1", "tag2"},
 	}
 	suite.mockBlogUseCase.On("GetBlogByID", mockBlog.ID.Hex(), false).Return(mockBlog, nil)
 	suite.router.GET("/blogs/:id", suite.controller.GetBlogByID)
@@ -104,7 +104,7 @@ func (suite *ControllerTestSuite) TestReactOnBlogHandler_Success() {
 	suite.mockBlogUseCase.On("ReactOnBlog", user_id, "true", blog_id).Return(domain.ErrorResponse{})
 	suite.router.POST("/blogs/react/:id", MockAuthMiddleware("user", user_id, "user123"), suite.controller.ReactOnBlog)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/blogs/react/"+ blog_id + "?isLiked=true" ,nil)
+	req, _ := http.NewRequest("POST", "/blogs/react/"+blog_id+"?isLiked=true", nil)
 	suite.router.ServeHTTP(w, req)
 
 	suite.Equal(http.StatusOK, w.Code)
@@ -133,29 +133,28 @@ func (suite *ControllerTestSuite) TestCommentOnBlogHandler_Success() {
 	suite.mockBlogUseCase.AssertExpectations(suite.T())
 }
 
-
 func (suite *ControllerTestSuite) TestCreateBlogHandler_Success() {
 	blog_id := primitive.NewObjectID()
 	created_at := time.Now()
 	updated_at := time.Now()
 	mockBlog := domain.Blog{
-		ID: blog_id,
-		Title: "Blog 1",
-		Author: "The author",
+		ID:      blog_id,
+		Title:   "Blog 1",
+		Author:  "The author",
 		Content: "This is a blog",
-		Tags: []string{"tag1", "tag2"},
+		Tags:    []string{"tag1", "tag2"},
 	}
 	newBlog := domain.Blog{
-		ID: blog_id,
-		Title: "Blog 1",
-		Author: "The author",
-		Content: "This is a blog",
-		Tags: []string{},
-		CreatedAt: created_at,
-		UpdatedAt: updated_at,
-		Comments: []domain.Comment{},
-		ViewCount: 0,
-		Popularity: 0,
+		ID:            blog_id,
+		Title:         "Blog 1",
+		Author:        "The author",
+		Content:       "This is a blog",
+		Tags:          []string{},
+		CreatedAt:     created_at,
+		UpdatedAt:     updated_at,
+		Commenters_ID: []primitive.ObjectID{},
+		ViewCount:     0,
+		Popularity:    0,
 	}
 	user_id := primitive.NewObjectID().Hex()
 	suite.mockBlogUseCase.On("CreateBlog", user_id, mockBlog, "user").Return(newBlog, nil)
@@ -174,13 +173,12 @@ func (suite *ControllerTestSuite) TestCreateBlogHandler_Success() {
 	suite.mockBlogUseCase.AssertExpectations(suite.T())
 }
 
-
 func (suite *ControllerTestSuite) TestDeleteHandler_Success() {
 	user_id := primitive.NewObjectID().Hex()
 	blog_id := primitive.NewObjectID().Hex()
 	suite.mockBlogUseCase.On("DeleteBlogByID", user_id, blog_id, "user").Return(domain.ErrorResponse{})
 	suite.router.DELETE("/blogs/delete:id", MockAuthMiddleware("user", user_id, "user123"), suite.controller.DeleteBlogByID)
-	req, _ := http.NewRequest("DELETE", "/blogs/delete" + blog_id, nil)
+	req, _ := http.NewRequest("DELETE", "/blogs/delete"+blog_id, nil)
 
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, req)
@@ -189,18 +187,17 @@ func (suite *ControllerTestSuite) TestDeleteHandler_Success() {
 	suite.mockBlogUseCase.AssertExpectations(suite.T())
 }
 
-
 func (suite *ControllerTestSuite) TestGetMyBlogByIdHandler_Success() {
 	blog_id := primitive.NewObjectID()
 	user_id := primitive.NewObjectID().Hex()
 	mockBlog := domain.Blog{
-		ID: blog_id,
-		Title: "Blog 1",
-		Author: "The author",
+		ID:      blog_id,
+		Title:   "Blog 1",
+		Author:  "The author",
 		Content: "This is a blog",
-		Tags: []string{"tag1", "tag2"},
+		Tags:    []string{"tag1", "tag2"},
 	}
-	suite.mockBlogUseCase.On("GetMyBlogByID",user_id, blog_id.Hex(), "user" ).Return(mockBlog, nil)
+	suite.mockBlogUseCase.On("GetMyBlogByID", user_id, blog_id.Hex(), "user").Return(mockBlog, nil)
 	suite.router.GET("/blogs/my/:id", MockAuthMiddleware("user", user_id, "user123"), suite.controller.GetMyBlogByID)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/blogs/my/"+blog_id.Hex(), nil)
@@ -216,18 +213,18 @@ func (suite *ControllerTestSuite) TestGetMyBlogsHandler_Success() {
 	user_id := primitive.NewObjectID()
 	mockBlogs := []domain.Blog{
 		{
-			ID: primitive.NewObjectID(),
-			Title: "Blog 1",
-			Author: "The author",
+			ID:      primitive.NewObjectID(),
+			Title:   "Blog 1",
+			Author:  "The author",
 			Content: "This is a blog",
-			Tags: []string{"tag1", "tag2"},
+			Tags:    []string{"tag1", "tag2"},
 		},
 		{
-			ID: primitive.NewObjectID(),
-			Title: "Blog 1",
-			Author: "The author",
+			ID:      primitive.NewObjectID(),
+			Title:   "Blog 1",
+			Author:  "The author",
 			Content: "This is a blog",
-			Tags: []string{"tag1", "tag2"},
+			Tags:    []string{"tag1", "tag2"},
 		},
 	}
 	pagination := domain.Pagination{
@@ -236,10 +233,10 @@ func (suite *ControllerTestSuite) TestGetMyBlogsHandler_Success() {
 		TotalPages:  2,
 		TotatRecord: 2,
 	}
-	
+
 	suite.router.GET("/blogs/my", MockAuthMiddleware("user", user_id.Hex(), "user123"), suite.controller.GetMyBlogs)
 
-	suite.mockBlogUseCase.On("GetMyBlogs", user_id.Hex(), "0", "0", "").Return(mockBlogs,pagination, nil)
+	suite.mockBlogUseCase.On("GetMyBlogs", user_id.Hex(), "0", "0", "").Return(mockBlogs, pagination, nil)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/blogs/my", nil)
@@ -251,21 +248,20 @@ func (suite *ControllerTestSuite) TestGetMyBlogsHandler_Success() {
 	suite.mockBlogUseCase.AssertExpectations(suite.T())
 }
 
-
 func (suite *ControllerTestSuite) TestUpdateTaskHandler_UserSuccess() {
 	blog_id := primitive.NewObjectID()
 	user_id := primitive.NewObjectID()
 	mockBlog := domain.Blog{
-		ID: blog_id,
-		Title: "Blog 1",
-		Author: "The author",
+		ID:      blog_id,
+		Title:   "Blog 1",
+		Author:  "The author",
 		Content: "This is a blog",
-		Tags: []string{"tag1", "tag2"},
+		Tags:    []string{"tag1", "tag2"},
 	}
 
 	suite.router.PUT("/update/:id", MockAuthMiddleware("user", user_id.Hex(), "user123"), suite.controller.UpdateBlogByID)
 	suite.mockBlogUseCase.On("UpdateBlogByID", user_id.Hex(), blog_id.Hex(), mockBlog, "user").Return(mockBlog, nil)
-	
+
 	body, _ := json.Marshal(mockBlog)
 	req, _ := http.NewRequest("PUT", "/update/"+blog_id.Hex(), bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
@@ -277,22 +273,22 @@ func (suite *ControllerTestSuite) TestUpdateTaskHandler_UserSuccess() {
 	suite.Contains(w.Body.String(), "Blog 1")
 	suite.mockBlogUseCase.AssertExpectations(suite.T())
 }
-	
+
 func (suite *ControllerTestSuite) TestSearchBlogByTitleAndAuthorHandler_Success() {
 	mockBlogs := []domain.Blog{
 		{
-			ID: primitive.NewObjectID(),
-			Title: "Blog 1",
-			Author: "The author",
+			ID:      primitive.NewObjectID(),
+			Title:   "Blog 1",
+			Author:  "The author",
 			Content: "This is a blog",
-			Tags: []string{"tag1", "tag2"},
+			Tags:    []string{"tag1", "tag2"},
 		},
 		{
-			ID: primitive.NewObjectID(),
-			Title: "Blog 1",
-			Author: "The author",
+			ID:      primitive.NewObjectID(),
+			Title:   "Blog 1",
+			Author:  "The author",
 			Content: "This is a blog",
-			Tags: []string{"tag1", "tag2"},
+			Tags:    []string{"tag1", "tag2"},
 		},
 	}
 	pagination := domain.Pagination{
@@ -301,10 +297,10 @@ func (suite *ControllerTestSuite) TestSearchBlogByTitleAndAuthorHandler_Success(
 		TotalPages:  2,
 		TotatRecord: 2,
 	}
-	
+
 	suite.router.GET("/search", suite.controller.SearchBlogByTitleAndAuthor)
 
-	suite.mockBlogUseCase.On("SearchBlogByTitleAndAuthor", "xx", "xx", "", "", "").Return(mockBlogs,pagination, domain.ErrorResponse{})
+	suite.mockBlogUseCase.On("SearchBlogByTitleAndAuthor", "xx", "xx", "", "", "").Return(mockBlogs, pagination, domain.ErrorResponse{})
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/search?title=xx&author=xx", nil)

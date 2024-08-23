@@ -4,6 +4,7 @@ import (
 	domain "blogs/Domain"
 	"blogs/mongo"
 	"context"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -40,4 +41,27 @@ func (u *unverifiedUserRepo) StoreUnverifiedUser(ctx context.Context, uv domain.
 	collection := u.database.Collection(u.collection)
 	_, err := collection.InsertOne(ctx, uv)
 	return err
+}
+
+//paste in repo
+
+func (s *unverifiedUserRepo) UpdateOTP(ctx context.Context, email string, otp string, expiry time.Time) (domain.UnverifiedUserResponse, error) {
+	collection := s.database.Collection(s.collection)
+	var unverifiedUser domain.UnverifiedUserResponse
+
+	// Filter to find the user by email
+	filter := bson.M{"email": email}
+
+	// Update to set the reset_token
+	update := bson.M{"$set": bson.M{"otp": otp, "expiresat": expiry}}
+
+	// Execute the update
+	_, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return unverifiedUser, err
+	}
+
+	// Return the updated user
+	return unverifiedUser, nil
+
 }

@@ -9,8 +9,10 @@ import ChartCard_Invest from "./ChartCard_Invest";
 import MonthlyRevenueChart from './MonthlyRevenueChart'
 import { tradingStockData, investmentsData } from "./mockData";
 import { useSession } from "next-auth/react";
+import Shimmer1 from "../Accounts/shimmer";
 
 const Investments = () => {
+  const [loading, setLoading] = useState(true);
   const [investmentOverview, setInvestmentOverview] = useState({
     totalAmount: 0,
     numberOfInvestments: 0,
@@ -21,13 +23,13 @@ const Investments = () => {
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
   const { data: session } = useSession();
 
-  const token: string =  ` Bearer ${session?.user?.accessToken} `;
+  const token: string = `Bearer ${session?.user?.accessToken}`;
   useEffect(() => {
-    
     const fetchInvestmentData = async () => {
+      setLoading(true); // Set loading to true before fetching data
       try {
         const response = await axios.get(
-          "https://bank-dashboard-1tst.onrender.com/user/random-investment-data?years=3&months=5",
+          "https://bank-dashboard-rsf1.onrender.com/user/random-investment-data?years=3&months=5",
           {
             headers: {
               Authorization: token, // Make sure to add your token here
@@ -37,18 +39,22 @@ const Investments = () => {
 
         const { totalInvestment, rateOfReturn, yearlyTotalInvestment, monthlyRevenue } =
           response.data.data;
-          console.log(response.data.data, "responce.data.data");
 
         setInvestmentOverview({
           totalAmount: totalInvestment,
           numberOfInvestments: yearlyTotalInvestment.length,
           rateOfReturn: rateOfReturn,
         });
-
+        if (!session || !session.user) {
+          setLoading(false);
+          return;
+        }
         setYearlyTotalInvestment(yearlyTotalInvestment);
         setMonthlyRevenue(monthlyRevenue);
       } catch (error) {
         console.error("Error fetching investment data:", error);
+      } finally {
+        setLoading(false); // Set loading to false after fetching data
       }
     };
 
@@ -56,29 +62,45 @@ const Investments = () => {
   }, []);
 
   return (
-    <div className="bg-[#F5F7FA] space-y-8 ml-[30px] pt-3    w-full overflow-hidden">
+    <div className="bg-[#F5F7FA] space-y-8 w-[95%] pt-3 overflow-hidden mx-auto">
       {/* Row 1: Investment Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+         
         <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
-          <Image height={44} width={44} src={TotalAmmount_img} alt="balance" />
-          <div>
-            <p>Total Invested Amount</p>
-            <p className="text-xl font-semibold">${investmentOverview.totalAmount.toFixed(2)}</p>
-          </div>
+           {loading ? <Shimmer1 />:(
+            <>
+              <Image height={44} width={44} src={TotalAmmount_img} alt="balance" />
+              <div>
+                <p>Total Invested Amount</p>
+                <p className="text-xl font-semibold">${investmentOverview.totalAmount.toFixed(2)}</p>
+              </div>
+            </>
+            )}
+        </div>
+
+        <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
+          {loading ? <Shimmer1 />:(
+            <>
+              <Image height={44} width={44} src={Number_img} alt="balance" />
+              <div>
+                <p>Number of Investments</p>
+                <p className="text-xl font-semibold">{investmentOverview.numberOfInvestments.toFixed(2)}</p>
+              </div>
+            </>
+          )}
+          
         </div>
         <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
-          <Image height={44} width={44} src={Number_img} alt="balance" />
-          <div>
-            <p>Number of Investments</p>
-            <p className="text-xl font-semibold">{investmentOverview.numberOfInvestments.toFixed(2)}</p>
-          </div>
-        </div>
-        <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
-          <Image height={44} width={44} src={Rate_img} alt="balance" />
-          <div>
-            <p>Rate of Return</p>
-            <p className="text-xl font-semibold">{investmentOverview.rateOfReturn.toFixed(2)}%</p>
-          </div>
+          {loading ? <Shimmer1/>:(
+            <>
+              <Image height={44} width={44} src={Rate_img} alt="balance" />
+              <div>
+                <p>Rate of Return</p>
+                <p className="text-xl font-semibold">{investmentOverview.rateOfReturn.toFixed(2)}%</p>
+              </div>
+            </>
+          )}
+          
         </div>
       </div>
 
@@ -87,7 +109,12 @@ const Investments = () => {
         <div className="p-4 bg-gray-100 rounded-lg">
           <p>Yearly Total Investment</p>
           <div className="h-36 bg-white rounded mt-4" style={{ width: "100%", height: 329 }}>
-            <ChartCard_Invest data={yearlyTotalInvestment} />
+            {loading ? <Shimmer1/>:(
+              <>
+                  <ChartCard_Invest data={yearlyTotalInvestment} />
+              </>
+            )}
+           
           </div>
         </div>
         <div className="p-4 bg-gray-100 rounded-lg">
@@ -103,40 +130,44 @@ const Investments = () => {
         {/* Investments Section */}
         <div className="md:w-[58%] p-4 bg-gray-100 rounded-lg min-h-[345px]">
           <p className="text-lg font-semibold">My Investments</p>
-          <div className="space-y-4 mt-4">
-            {investmentsData.slice(0, 3).map((investment) => (
-              <div
-                key={investment.id}
-                className="flex items-center space-x-4 p-2 bg-white rounded-lg shadow"
-              >
-                <Image
-                  src={investment.image}
-                  alt={investment.name}
-                  width={44}
-                  height={44}
-                  className="rounded-full object-cover"
-                />
-                <div className="flex-1">
-                  <p className="font-semibold">{investment.name}</p>
-                  <p className="text-gray-500">{investment.service}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">{investment.value}</p>
-                  <p className="text-xs text-gray-500">Investment value</p>
-                </div>
-                <div>
-                  <div>
-                    {investment.return < 0 ? (
-                      <p className="text-red-500">{investment.return}%</p>
-                    ) : (
-                      <p className="text-green-500">{investment.return}%</p>
-                    )}
+          {loading ? <Shimmer1/>:
+             (
+              <div className="space-y-4 mt-4">
+               {investmentsData.slice(0, 3).map((investment) => (
+                <div
+                  key={investment.id}
+                  className="flex items-center space-x-4 p-2 bg-white rounded-lg shadow"
+                >
+                  <Image
+                    src={investment.image}
+                    alt={investment.name}
+                    width={44}
+                    height={44}
+                    className="rounded-full object-cover"
+                  />
+                  <div className="flex-1">
+                    <p className="font-semibold">{investment.name}</p>
+                    <p className="text-gray-500">{investment.service}</p>
                   </div>
-                  <p className="text-xs text-gray-500">Return</p>
+                  <div>
+                    <p className="text-sm font-semibold">{investment.value}</p>
+                    <p className="text-xs text-gray-500">Investment value</p>
+                  </div>
+                  <div>
+                    <div>
+                      {investment.return < 0 ? (
+                        <p className="text-red-500">{investment.return}%</p>
+                      ) : (
+                        <p className="text-green-500">{investment.return}%</p>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500">Return</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+
         </div>
 
         {/* Trading Stock Section */}

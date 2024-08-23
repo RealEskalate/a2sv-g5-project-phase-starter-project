@@ -33,14 +33,14 @@ const sidecolor = "#B1B1B1";
 const SideBar = ({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolean, toggleSidebar: () => void }) => {
     const pathname = usePathname() || 'Dashboard';
     const [enabled, setEnabled] = useState<string>(pathname);
-    
+    const [activePage, setActivePage] = useState('Overview')
     const router = useRouter();
 
     const handleIconClick = (option: string, path: string) => {
         setEnabled(option);
         router.push(path);
     };
-
+    
     return (
         <div className={`pl-[38px]   ${isSidebarVisible ? 'block' : 'hidden'} sm:block flex items-center flex-col min-w-full sm:w-auto`}>
             <div className="flex gap-[9px] items-center relative" style={{ height: "101px" }}>

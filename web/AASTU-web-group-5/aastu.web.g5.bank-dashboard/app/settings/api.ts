@@ -8,7 +8,7 @@
     };
 
     try {
-      const response = await axios.put('https://bank-dashboard-1tst.onrender.com/user/update-preference', updatedData, {
+      const response = await axios.put('https://bank-dashboard-rsf1.onrender.com/user/update-preference', updatedData, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${key}`,

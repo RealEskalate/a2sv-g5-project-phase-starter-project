@@ -11,7 +11,7 @@ import (
 )
 
 type LikeUsecase struct {
-	LikeRepo    interfaces.LikeRepositoryInterface
+	LikeRepo  interfaces.LikeRepositoryInterface
 	CacheRepo interfaces.CacheRepoInterface
 }
 
@@ -23,7 +23,7 @@ type LikeUsecaseInterface interface {
 
 func NewLikeUseCase(likeRepo interfaces.LikeRepositoryInterface, cacheRepo interfaces.CacheRepoInterface) *LikeUsecase {
 	return &LikeUsecase{
-		LikeRepo:    likeRepo,
+		LikeRepo:  likeRepo,
 		CacheRepo: cacheRepo,
 	}
 }
@@ -33,8 +33,9 @@ func (l *LikeUsecase) GetLike(blogID uuid.UUID, reacterID uuid.UUID) (domain.Lik
 
 // LikeBlog implements LikeUsecaseInterface.
 func (l *LikeUsecase) LikeBlog(like domain.Like) *domain.CustomError {
-	like, err := l.LikeRepo.GetLike(like.BlogID, like.ReacterID)
+	prevLike, err := l.LikeRepo.GetLike(like.BlogID, like.ReacterID)
 	if err == domain.ErrLikeNotFound {
+		like.ID = uuid.New()
 		l.LikeRepo.AddLike(like)
 		var cachedCountKey string
 		if *like.IsLike {
@@ -43,7 +44,7 @@ func (l *LikeUsecase) LikeBlog(like domain.Like) *domain.CustomError {
 			cachedCountKey = fmt.Sprintf("DisLikesCount:%s", like.BlogID)
 		}
 		count, err := l.CacheRepo.Get(cachedCountKey)
-	    if err == nil{
+		if err == nil {
 			count, _ := strconv.Atoi(count)
 			count++
 			err = l.CacheRepo.Set(cachedCountKey, strconv.Itoa(count), 0)
@@ -55,36 +56,34 @@ func (l *LikeUsecase) LikeBlog(like domain.Like) *domain.CustomError {
 	} else if err != nil {
 		return err
 	} else { // if the like already exists
+		if *like.IsLike == *prevLike.IsLike {
+			return nil
+		}
+		err = l.LikeRepo.UpdateLike(like)
+		if err != nil {
+			return err
+		}
+
 		likeCachedCount, err1 := l.CacheRepo.Get(fmt.Sprintf("LikeCount:%s", like.BlogID))
 		DisLikeCachedCount, err2 := l.CacheRepo.Get(fmt.Sprintf("DisLikesCount:%s", like.BlogID))
 		if err1 == domain.ErrCacheNotFound || err2 == domain.ErrCacheNotFound {
 			return nil
 		}
-		prevLike, err := l.GetLike(like.BlogID, like.ReacterID)
-		if err == nil {
-			if *like.IsLike == *prevLike.IsLike {
-				return nil
-			}
-			err = l.LikeRepo.UpdateLike(like)
-			if err != nil {
-				return err
-			}
 
-			if *prevLike.IsLike && !*like.IsLike {
-				likeCachedCount, _ := strconv.Atoi(likeCachedCount)
-				likeCachedCount--
-				_ = l.CacheRepo.Set(fmt.Sprintf("LikeCount:%s", like.BlogID), strconv.Itoa(likeCachedCount), 0)
-				DisLikeCachedCount, _ := strconv.Atoi(DisLikeCachedCount)
-				DisLikeCachedCount++
-				_ = l.CacheRepo.Set(fmt.Sprintf("DisLikesCount:%s", like.BlogID), strconv.Itoa(DisLikeCachedCount), 0)
-			} else if !*prevLike.IsLike && *like.IsLike {
-				likeCachedCount, _ := strconv.Atoi(likeCachedCount)
-				likeCachedCount++
-				_ = l.CacheRepo.Set(fmt.Sprintf("LikeCount:%s", like.BlogID), strconv.Itoa(likeCachedCount), 0)
-				DisLikeCachedCount, _ := strconv.Atoi(DisLikeCachedCount)
-				DisLikeCachedCount--
-				_ = l.CacheRepo.Set(fmt.Sprintf("DisLikesCount:%s", like.BlogID), strconv.Itoa(DisLikeCachedCount), 0)
-			}
+		if *prevLike.IsLike && !*like.IsLike {
+			likeCachedCount, _ := strconv.Atoi(likeCachedCount)
+			likeCachedCount--
+			_ = l.CacheRepo.Set(fmt.Sprintf("LikeCount:%s", like.BlogID), strconv.Itoa(likeCachedCount), 0)
+			DisLikeCachedCount, _ := strconv.Atoi(DisLikeCachedCount)
+			DisLikeCachedCount++
+			_ = l.CacheRepo.Set(fmt.Sprintf("DisLikesCount:%s", like.BlogID), strconv.Itoa(DisLikeCachedCount), 0)
+		} else if !*prevLike.IsLike && *like.IsLike {
+			likeCachedCount, _ := strconv.Atoi(likeCachedCount)
+			likeCachedCount++
+			_ = l.CacheRepo.Set(fmt.Sprintf("LikeCount:%s", like.BlogID), strconv.Itoa(likeCachedCount), 0)
+			DisLikeCachedCount, _ := strconv.Atoi(DisLikeCachedCount)
+			DisLikeCachedCount--
+			_ = l.CacheRepo.Set(fmt.Sprintf("DisLikesCount:%s", like.BlogID), strconv.Itoa(DisLikeCachedCount), 0)
 		}
 	}
 	return nil
@@ -94,4 +93,3 @@ func (l *LikeUsecase) LikeBlog(like domain.Like) *domain.CustomError {
 func (l *LikeUsecase) DeleteLike(like dto.UnlikeDto) *domain.CustomError {
 	return l.LikeRepo.DeleteLike(like)
 }
-

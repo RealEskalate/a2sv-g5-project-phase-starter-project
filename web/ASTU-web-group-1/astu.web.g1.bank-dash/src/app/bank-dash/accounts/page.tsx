@@ -11,6 +11,7 @@ import React from 'react';
 import { authOptions } from '../../api/auth/[...nextauth]/options';
 import { ApiProvider } from '@reduxjs/toolkit/query/react';
 import StoreProvider from '@/providers/StoreProvider';
+import SingleCard from './SingleCard';
 
 export default async function page() {
   // const session = await getServerSession(authOptions);
@@ -27,7 +28,8 @@ export default async function page() {
           </div>
           <div>
             <StoreProvider>
-              <MyCard />
+              <SingleCard />
+              {/* <MyCard /> */}
             </StoreProvider>
           </div>
         </div>

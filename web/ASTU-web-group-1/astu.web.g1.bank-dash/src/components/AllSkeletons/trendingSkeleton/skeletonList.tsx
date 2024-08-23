@@ -1,7 +1,8 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
-import Trendingcard from "./trendingcard";
+import SkeletonCard from "./skeletonCard";
 
-const TrendingList = () => {
+const SkeletonList = () => {
   const data = [
     { name: "Product A", price: "$25.00", pers: "+5%", color: true },
     { name: "Product B", price: "$45.00", pers: "+10%", color: true },
@@ -16,9 +17,7 @@ const TrendingList = () => {
   ];
   return (
     <div className="w-full md:w-2/5 px-2">
-      <h1 className="py-2 mb-4 w-fit  font-Inter font-[600] text-xl text-deepNavy">
-        Trending Stock
-      </h1>
+      <Skeleton className="mt-2 mb-4 w-52 h-5 bg-slate-200" />
       <div
         className="overflow-x-auto bg-white md:px-4 max-h-[241px] min[890px]:max-h-[290px] lg:max-h-[243px] rounded-2xl md:rounded-2xl"
         style={{
@@ -30,31 +29,23 @@ const TrendingList = () => {
           <thead className="sticky top-0 bg-white z-10">
             <tr>
               <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
-                <span className=" md:hidden lg:inline">SL</span>
-                No
+                <Skeleton className="h-4 w-10" />
               </th>
               <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
-                Name
+                <Skeleton className="h-4 w-10" />
               </th>
               <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
-                Price
+                <Skeleton className="h-4 w-10" />
               </th>
               <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
-                Return
+                <Skeleton className="h-4 w-10" />
               </th>
             </tr>
           </thead>
           <tbody className="w-full">
             {data.map((datas, index) => (
               <>
-                <Trendingcard
-                  key={index}
-                  No={`${index + 1}`}
-                  Name={datas.name}
-                  price={datas.price}
-                  Return={datas.pers}
-                  Color={datas.color}
-                />
+                <SkeletonCard />
               </>
             ))}
           </tbody>
@@ -64,4 +55,4 @@ const TrendingList = () => {
   );
 };
 
-export default TrendingList;
+export default SkeletonList;

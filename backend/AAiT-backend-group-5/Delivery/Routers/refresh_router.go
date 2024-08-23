@@ -7,12 +7,13 @@ import (
 	repository "github.com/aait.backend.g5.main/backend/Repository"
 	usecases "github.com/aait.backend.g5.main/backend/UseCases"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
+	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
+	
 )
 
-func NewRefreshRouter(env *config.Env, database mongo.Database, group *gin.RouterGroup) {
-	session_repo := repository.NewSessionRepository(&database)
-	user_repo := repository.NewUserRepository(&database)
+func NewRefreshRouter(env *config.Env, database interfaces.Database, group *gin.RouterGroup) {
+	session_repo := repository.NewSessionRepository(database)
+	user_repo := repository.NewUserRepository(database)
 
 	jwt_service := infrastructure.NewJwtService(env)
 

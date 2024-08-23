@@ -3,9 +3,8 @@ package repositories
 import (
 	"AAIT-backend-group-3/internal/domain/models"
 	"AAIT-backend-group-3/internal/infrastructures/services"
-	"AAIT-backend-group-3/internal/repositories/interfaces"
+	repository_interface "AAIT-backend-group-3/internal/repositories/interfaces"
 	"errors"
-	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,13 +13,13 @@ import (
 )
 
 type MongoUserRepository struct {
-	collection *mongo.Collection
+	collection  *mongo.Collection
 	redisClient services.ICacheService
 }
 
 func NewMongoUserRepository(db *mongo.Database, collectionName string, redisClient services.ICacheService) repository_interface.UserRepositoryInterface {
 	return &MongoUserRepository{
-		collection: db.Collection(collectionName),
+		collection:  db.Collection(collectionName),
 		redisClient: redisClient,
 	}
 }
@@ -58,18 +57,18 @@ func (r *MongoUserRepository) GetUserByID(id string) (*models.User, error) {
 }
 
 func (repo *MongoUserRepository) GetAllUsers() ([]*models.User, error) {
-    var users []*models.User
-    cursor, err := repo.collection.Find(ctx, bson.M{})
-    if err != nil {
-        return nil, err
-    }
-    defer cursor.Close(ctx) 
+	var users []*models.User
+	cursor, err := repo.collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
 
-    err = cursor.All(ctx, &users)
-    if err != nil {
-        return nil, err
-    }
-    return users, nil
+	err = cursor.All(ctx, &users)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 
 func (r *MongoUserRepository) GetUserByEmail(email string) (*models.User, error) {
@@ -90,12 +89,11 @@ func (r *MongoUserRepository) DeleteUser(id string) error {
 	return err
 }
 
-func (r *MongoUserRepository) UpdateProfile(id string, user *models.User) error {
+func (r *MongoUserRepository) UpdateUser(id string, user *models.User) error {
 	user_id, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return errors.New(err.Error())
 	}
-	fmt.Println("refToken", user.RefToken)
 	_, err = r.collection.UpdateOne(ctx, bson.M{"_id": user_id}, bson.M{"$set": user})
 	return err
 }
@@ -125,4 +123,16 @@ func (r *MongoUserRepository) UpdatePassword(userID string, hashedPassword strin
 	}
 	_, err = r.collection.UpdateOne(ctx, bson.M{"_id": objID}, bson.M{"$set": bson.M{"password": hashedPassword}})
 	return err
+}
+
+
+func (r *MongoUserRepository) UpdateUserProfile(userID string, updateData *models.User) error {
+	user_id, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
+    filter := bson.M{"_id": user_id}
+    update := bson.M{"$set": updateData,}
+    _, err = r.collection.UpdateOne(ctx, filter, update)
+    return err
 }

@@ -3,12 +3,11 @@ package usecases
 import (
 	"AAIT-backend-group-3/internal/domain/models"
 	"AAIT-backend-group-3/internal/infrastructures/services"
-	"AAIT-backend-group-3/internal/repositories/interfaces"
+	repository_interface "AAIT-backend-group-3/internal/repositories/interfaces"
 	"context"
 	"errors"
 	"fmt"
 	"time"
-
 )
 
 type IOtpUsecase interface {
@@ -18,21 +17,21 @@ type IOtpUsecase interface {
 }
 
 type OtpUsecase struct {
-	otpRepo  repository_interface.IOtpRepository
-	userRepo repository_interface.UserRepositoryInterface
-	emailSvc services.IEmailService
-	passSvc services.IHashService
-	redirectURL  string 
+	otpRepo       repository_interface.IOtpRepository
+	userRepo      repository_interface.UserRepositoryInterface
+	emailSvc      services.IEmailService
+	passSvc       services.IHashService
+	redirectURL   string
 	validationSvc services.IValidationService
 }
 
-func NewOtpUseCase(otpRepo repository_interface.IOtpRepository,userRepo repository_interface.UserRepositoryInterface,emailSvc services.IEmailService,passSvc services.IHashService,redirectURL string, validationSvc services.IValidationService) IOtpUsecase {
+func NewOtpUseCase(otpRepo repository_interface.IOtpRepository, userRepo repository_interface.UserRepositoryInterface, emailSvc services.IEmailService, passSvc services.IHashService, redirectURL string, validationSvc services.IValidationService) IOtpUsecase {
 	return &OtpUsecase{
-		otpRepo:  otpRepo,
-		userRepo: userRepo,
-		emailSvc: emailSvc,
-		redirectURL:  redirectURL,
-		passSvc: passSvc,
+		otpRepo:       otpRepo,
+		userRepo:      userRepo,
+		emailSvc:      emailSvc,
+		redirectURL:   redirectURL,
+		passSvc:       passSvc,
 		validationSvc: validationSvc,
 	}
 }
@@ -49,8 +48,8 @@ func (u *OtpUsecase) GenerateAndSendOtp(ctx context.Context, email string) error
 
 	otpEntry.ExpiresAt = expiresAt
 	otpEntry.UserID = user.ID.Hex()
-	otpEntry.OTP = otp;
-	
+	otpEntry.OTP = otp
+
 	err = u.otpRepo.SaveOtp(ctx, otpEntry)
 	if err != nil {
 		return err
@@ -89,15 +88,15 @@ func (u *OtpUsecase) ResetPassword(ctx context.Context, userID string, newPasswo
 	if err != nil {
 		return err
 	}
-	
+
 	var newUser *models.User
 	newUser, err = u.userRepo.GetUserByID(userID)
 	if err != nil {
 		return errors.New("user not found")
 	}
-	
+
 	newUser.Password = hashedPassword
-	err = u.userRepo.UpdateProfile(userID, newUser)
+	err = u.userRepo.UpdateUser(userID, newUser)
 	if err != nil {
 		return err
 	}

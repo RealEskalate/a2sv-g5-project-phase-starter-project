@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'features/auth/presentation/login.dart';
 import 'features/auth/presentation/register.dart';
 import 'features/auth/presentation/splash.dart';
+import 'features/chat_feature/chat/domain/usecase/initialize_chat.dart';
 import 'features/chat_feature/chat/presentation/pages/direct_messages.dart';
 import 'features/product/data/data_sources/local_data_source.dart';
 import 'features/product/data/model/product_model.dart';
@@ -14,6 +15,7 @@ import 'features/product/domain/usecases/getallproduct.dart';
 import 'features/product/presentation/bloc/getallproductbloc/bloc/product_bloc.dart';
 import 'features/product/presentation/pages/homepage.dart';
 import 'service_locator.dart';
+import 'temp_dart.dart';
 
 // void main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +38,7 @@ class Sample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: UiChatHistory(),
+      home: TempDart(initializeChat:getIt<InitializeChat>() ,),
     );
   }
 }

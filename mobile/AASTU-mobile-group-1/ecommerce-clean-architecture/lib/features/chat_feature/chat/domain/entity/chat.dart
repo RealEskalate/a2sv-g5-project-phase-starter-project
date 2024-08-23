@@ -1,9 +1,11 @@
 import 'package:ecommerce/features/auth/data/model/user_model.dart';
 
+import '../../../../auth/domain/entities/user.dart';
+
 class ChatEntity{
  final String chatId;
-  final UserModel user1;
-  final UserModel user2;
+  final UserEntity user1;
+  final UserEntity user2;
   const ChatEntity({
     required this.chatId,
     required this.user1,

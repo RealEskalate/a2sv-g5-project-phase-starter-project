@@ -1,14 +1,20 @@
+import 'package:ecommerce/features/auth/data/data_sources/remote_data_source.dart';
+
 import '../../../../../core/error/failure.dart';
 import '../../domain/entity/message.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../domain/repository/chat_repository.dart';
+import '../data_source/remote_abstract.dart';
+import '../model/chat_model.dart';
 
-class ChatRepositoryImp extends ChatRepository{
+class ChatRepositoryImp extends ChatRepository {
+  RemoteAbstract remoteAbstract;
+  ChatRepositoryImp({required this.remoteAbstract});
   @override
-  Future<Either<Failure, String>> chatRoom(String receiverId) {
-    // TODO: implement chatRoom
-    throw UnimplementedError();
+  Future<Either<Failure, String>> chatRoom(String receiverId) async{
+    var token =await getToken();
+    return remoteAbstract.chatRoom(token!,receiverId);
   }
 
   @override
@@ -26,6 +32,13 @@ class ChatRepositoryImp extends ChatRepository{
   @override
   Future<Either<Failure, void>> sendMessage(Message message) {
     // TODO: implement sendMessage
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<Either<Failure, List<ChatModel>>> getChatHistory() {
+    // get token form local storage and call get chat history from remote
+    // TODO: implement getChatHistory
     throw UnimplementedError();
   }
 }

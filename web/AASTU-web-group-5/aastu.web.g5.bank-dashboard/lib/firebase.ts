@@ -18,7 +18,6 @@ const app = initializeApp(firebaseConfig);
 // Initialize Analytics conditionally
 let analytics: Analytics | null = null;
 if (typeof window !== "undefined") {
-  // We are in the browser environment
   isSupported().then((supported) => {
     if (supported) {
       analytics = getAnalytics(app);

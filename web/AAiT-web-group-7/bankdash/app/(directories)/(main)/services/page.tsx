@@ -1,5 +1,8 @@
-<<<<<<< HEAD
+import Image from "next/image";
 import React from "react";
+import keyimg from '@/public/pubimg/key.svg'
+import bagimg from '@/public/pubimg/bag.svg';
+import shieldimg from '@/public/pubimg/shield.svg'
 
 const ServicePage = () => {
   return (
@@ -8,7 +11,7 @@ const ServicePage = () => {
         <div className="w-[350px] h-[120px] rounded-3xl flex justify-center items-center bg-white">
           <div className="flex flex-row w-[246px] h-[70px]  justify-between items-center ">
             <div className=" rounded-full flex justify-center w-[70px] h-[70px] p-5 bg-[#E7EDFF]">
-              <img src="pubimg/key.svg" />
+              <Image src={keyimg} alt="keyimage" />
             </div>
             <div className=" flex flex-col w-[154px] h-[51px] gap-1">
               <div className="font-[intel] text-[#232323] font-bold">
@@ -23,7 +26,7 @@ const ServicePage = () => {
         <div className="w-[350px] h-[120px]  rounded-3xl flex justify-center items-center bg-white">
           <div className="flex flex-row w-[246px] h-[70px]  justify-between items-center ">
             <div className=" rounded-full flex justify-center w-[70px] h-[70px] p-5 bg-[#FFF5D9]">
-              <img src="pubimg/bag.svg" />
+              <Image src={bagimg} alt="bagimage"/>
             </div>
             <div className=" flex flex-col w-[154px] h-[51px] gap-1">
               <div className="font-[intel] text-[#232323] font-bold">
@@ -38,7 +41,7 @@ const ServicePage = () => {
         <div className="w-[350px] h-[120px]  rounded-3xl flex justify-center items-center bg-white">
           <div className="flex flex-row w-[246px] h-[70px]  justify-between items-center ">
             <div className=" rounded-full flex justify-center w-[70px] h-[70px] p-5 bg-[#DCFAF8]">
-              <img src="pubimg/shield.svg" />
+              <Image src={shieldimg} alt="shieldimg"/>
             </div>
             <div className=" flex flex-col w-[154px] h-[51px] gap-1">
               <div className="font-[intel] text-[#232323] font-bold">
@@ -234,16 +237,3 @@ const ServicePage = () => {
 };
 
 export default ServicePage;
-=======
-import React from 'react'
-
-const page = () => {
-  return (
-    <div>
-      services page
-    </div>
-  )
-}
-
-export default page
->>>>>>> 5815d9f08456f911c3bf41a77fb243b5ec94f705

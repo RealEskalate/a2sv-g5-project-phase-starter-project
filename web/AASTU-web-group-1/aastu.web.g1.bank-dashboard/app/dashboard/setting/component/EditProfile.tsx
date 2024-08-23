@@ -45,7 +45,7 @@ const EditProfile = () => {
 
       try {
         const res: any = await ky(
-          "https://bank-dashboard-6acc.onrender.com/user/current",
+          `${process.env.NEXT_PUBLIC_BASE_URL}/user/current`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

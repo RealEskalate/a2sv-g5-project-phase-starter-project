@@ -10,7 +10,7 @@ const Transaction: React.FC = () => {
   return (
     <div className=" w-[100%]">
       {/* Large Screens Layout */}
-      <div className=" hidden lg:grid lg:grid-cols-2 lg:gap-5 lg:space-x-8 lg:pb-8 lg:ml-72">
+      <div className=" hidden lg:grid lg:grid-cols-2 lg:gap-5 lg:space-x-8 lg:pb-8 lg:ml-72 lg:pt-16">
         {/* Cards Section */}
         <div className="flex flex-col">
           <h1 className="text-2xl font-bold mb-4 dark:text-blue-500">
@@ -40,7 +40,7 @@ const Transaction: React.FC = () => {
       </div>
 
       {/* Mobile Layout */}
-      <div className="lg:hidden mb-8">
+      <div className="lg:hidden pt-10">
         <h1 className="text-2xl font-bold mb-4 dark:text-blue-500">My Cards</h1>
         <div className="mb-8">
           <SlidingCards />

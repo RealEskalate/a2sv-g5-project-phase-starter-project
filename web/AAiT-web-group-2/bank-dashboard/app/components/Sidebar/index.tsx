@@ -44,7 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
   return (
       <aside
-        className={`pt-6 border-r-2 border-[#E6EFF5] left-0 min-w-52 md:w-64 sm:top-0 z-9999 flex h-screen flex-col overflow-y-hidden bg-white duration-300 ease-linear  sm:translate-x-0 ${
+        className={`pt-6 border-r-2 border-[#E6EFF5]  left-0 min-w-52 md:w-64 sm:top-0 z-9999 flex h-full flex-col overflow-y-hidden bg-white duration-300 ease-linear  sm:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

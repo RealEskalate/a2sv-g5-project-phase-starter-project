@@ -18,7 +18,7 @@ class avatar_with_name extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const ProfileWidget(iconUrl: 'images/leather_shoe_1.png',),
+          const ProfileWidget(isOnline:true, iconUrl: 'images/leather_shoe_1.png',),
           Text(
             name,
             style: const TextStyle(

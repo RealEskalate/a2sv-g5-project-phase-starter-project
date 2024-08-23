@@ -31,10 +31,11 @@ func (refreshController *RefreshController) Refresh(ctx *gin.Context) {
 
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, err.Error())
+		return
 	}
 
 	refresh_token := authParts[1]
-	accessToken, e := refreshController.RefreshUsecase.RefreshToken(ctx, userId, refresh_token)
+	accessToken, e := refreshController.RefreshUsecase.RefreshToken(ctx.Request.Context(), userId, refresh_token)
 	if e != nil {
 		ctx.IndentedJSON(e.Code, gin.H{"error": e.Message})
 		return

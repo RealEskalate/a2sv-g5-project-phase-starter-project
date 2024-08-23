@@ -57,7 +57,7 @@ func (j *AuthMiddleware) JWTAuthMiddelware() gin.HandlerFunc {
 		session, nErr := j.repo.GetToken(c, authorizedToken.ID)
 
 		if nErr != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorizedddd"})
 			c.Abort()
 			return
 		}

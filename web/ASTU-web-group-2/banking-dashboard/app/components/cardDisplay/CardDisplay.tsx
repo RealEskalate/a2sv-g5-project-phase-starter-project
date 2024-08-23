@@ -120,12 +120,12 @@ const CardDisplay = ({ numofcard }: { numofcard: number }) => {
               ))}
           </div>
         ) : (
-          <div className="flex max-sm:flex-col justify-center w-[730px]">
+          <div className="flex max-sm:flex-col justify-center w-[500px]">
             {/* Placeholder image or message when no cards are available */}
             <img
               src="/assets/bankService/empty-image.png"
               alt="No cards available"
-              className="w-fit h-fit "
+              className="w-[300px] h-fit "
             />
           </div>
         )}

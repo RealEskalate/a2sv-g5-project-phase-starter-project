@@ -19,7 +19,7 @@ class UserModel extends User {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'],
+      id: json['_id'],
       email: json['email'],
       username: json['name'],
       password: json['password'] ?? '',
@@ -31,9 +31,10 @@ class UserModel extends User {
       'id': id,
       'email': email,
       'username': username,
-      'password': password,
+      'password': password ,
     };
   }
+
 
   User toEntity() => User(id: id, username: username, password: password, email: email);
 }

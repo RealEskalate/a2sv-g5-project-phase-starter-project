@@ -41,12 +41,12 @@ func (m *MockBlogAssistantUsecase) EnhanceBlog(content, command string) (map[str
 	return r0, r1
 }
 
-func (m *MockBlogAssistantUsecase) SuggestBlog(industry string) (map[string]interface{}, domain.Error) {
+func (m *MockBlogAssistantUsecase) SuggestBlog(industry string) ([]map[string]interface{}, domain.Error) {
 	ret := m.Called(industry)
 
-	var r0 map[string]interface{}
+	var r0 []map[string]interface{}
 	if ret.Get(0) != nil {
-		r0 = ret.Get(0).(map[string]interface{})
+		r0 = ret.Get(0).([]map[string]interface{})
 	}
 
 	var r1 domain.Error

@@ -34,8 +34,8 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
         'Content-Type': 'application/json',
          };
     
-    final response = await client.get(Uri.parse(Urls.baseUrl, ), headers: headers);
-    
+    final response = await client.get(Uri.parse(Urls.baseUrl), headers: headers);
+    print("from remote data source ${response.body}");
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body) as Map<String, dynamic>;
       

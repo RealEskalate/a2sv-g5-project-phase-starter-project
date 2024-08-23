@@ -160,6 +160,7 @@ class _HomePageState extends State<HomePage> {
         }
       },
       builder: (context, state) {
+        context.read<ProductBloc>().add(GetAllProductEvent());
         return Scaffold(
           body: Container(
             padding: const EdgeInsets.all(10),
@@ -168,10 +169,8 @@ class _HomePageState extends State<HomePage> {
               children: [
                 header(),
                 bigTitle("Available Products", Icons.search),
-                BlocProvider(
-                  create: (context) =>
-                      context.read<ProductBloc>()..add(GetAllProductEvent()),
-                  child: Expanded(
+                
+          Expanded(
                     child: RefreshIndicator(
                       onRefresh: () => widget._refreshProducts(context),
                       child: BlocBuilder<ProductBloc, ProductState>(
@@ -200,7 +199,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                ),
+                
               ],
             ),
           ),

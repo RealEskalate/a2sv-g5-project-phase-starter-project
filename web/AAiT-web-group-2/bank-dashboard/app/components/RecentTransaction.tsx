@@ -7,7 +7,7 @@ import JemiWilson from "../../public/JemiWilson";
 
 const RecentTransaction = () => {
   return (
-    <div className="flex flex-col justify-start py-5 w-[350px] h-[235px] min-w-[231px] min-h-[170px] max-w-[350px] max-h-[235px] bg-white rounded-my-card-radius drop-shadow-sm shadow-md">
+    <div className="flex flex-col justify-start py-5 w-[350px] h-[235px] min-w-[231px] min-h-[170px] max-w-[338px] max-h-[235px] bg-white rounded-my-card-radius drop-shadow-sm shadow-md">
       <div className="flex justify-start items-center">
         <div className="flex justify-center items-center bg-custom-light-orange mx-6 w-[60px] h-[60px] min-w-[50px] min-h-[50px] max-w-[60px] max-h-[60px] rounded-full">
           <DepositeFromCard />

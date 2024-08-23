@@ -10,12 +10,12 @@ import ErrorImage from "../Error/ErrorImage";
 
 const ActiveLoansOverview = () => {
   const { data: session } = useSession();
-  const accessToken = session?.user.accessToken;
+  const accessToken = session?.user.accessToken!;
   useEffect(()=>{
     console.log("data",session)
   },[session])
   const { data, isLoading, isError, isSuccess } = useGetMyLoanServiceQuery(
-    accessToken || ""
+    accessToken
   );
   let loans: loan[] = [];
 

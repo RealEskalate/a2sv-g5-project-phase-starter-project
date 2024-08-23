@@ -28,7 +28,7 @@ const CardList = () => {
   const { data: session, status } = useSession();
   const accessToken = session?.user.accessToken!;
   
-  const { data: cardsData, isLoading, error } = useGetAllCardInfoQuery(accessToken);
+  const { data: cardsData, isLoading, error } = useGetAllCardInfoQuery({token : accessToken,size : 5});
   const [cardDetails, setCardDetails] = useState<FullCard[]>([]);
   const [retrieveCardInfo, { data: cardDetailsData, error: retrieveCardInfoError }] = useLazyRetiriveCardInfoQuery();
 

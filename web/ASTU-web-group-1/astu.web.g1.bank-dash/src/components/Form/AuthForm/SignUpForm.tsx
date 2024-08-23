@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
+import { FormType } from '@/types/register-formType';
 
 const stepOneSchema = z
   .object({
@@ -100,7 +101,7 @@ const SignUpForm = () => {
 
       console.log('Returned and combined values', finalData);
 
-      const res = await fetch('https://astu-bank-dashboard.onrender.com', {
+      const res = await fetch('https://astu-bank-dashboard.onrender.com/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,6 +116,7 @@ const SignUpForm = () => {
         router.push('/api/auth/signin');
       }
       if (!res.ok) {
+        alert('Failed to create user');
         console.log('Failed to create user');
       }
       // })

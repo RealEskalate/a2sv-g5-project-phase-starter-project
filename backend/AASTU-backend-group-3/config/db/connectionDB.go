@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -39,4 +40,19 @@ func ConnectDB(connectionString string) {
     LikeCollection = client.Database("Starter_blog").Collection("likes")
     CommentCollection = client.Database("Starter_blog").Collection("comments")
 
+}
+
+func CreateTextIndex(collection *mongo.Collection) {
+    indexModel := mongo.IndexModel{
+        Keys: bson.D{
+            {Key: "tags", Value: "text"},
+            {Key: "autorname", Value: "text"},
+        },
+        Options: options.Index().SetDefaultLanguage("english"),
+    }
+
+    _, err := collection.Indexes().CreateOne(context.Background(), indexModel)
+    if err != nil {
+        log.Fatal(err)
+    }
 }

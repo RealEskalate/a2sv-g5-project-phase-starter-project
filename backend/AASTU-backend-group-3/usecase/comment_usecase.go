@@ -19,6 +19,7 @@ func NewCommentUsecase(commentRepo domain.CommentRepository) domain.CommentUseca
 func (u *commentUsecase) CreateComment(comment *domain.Comment) (*domain.Comment, *domain.CustomError) {
 	if comment.PostID.IsZero() || comment.UserID.IsZero() || comment.Content == "" {
 		return nil, domain.ErrMissingRequiredFields
+
 	}
 	createdComment, err := u.commentRepo.CreateComment(comment)
 	if err != nil {

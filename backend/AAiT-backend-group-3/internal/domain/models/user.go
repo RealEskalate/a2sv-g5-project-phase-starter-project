@@ -16,6 +16,5 @@ type User struct {
     UpdatedAt               time.Time          `bson:"updated_at" json:"updated_at"`
     IsVerified              bool               `bson:"is_verified" json:"is_verified"`
     VerificationToken       string             `bson:"verification_token" json:"-"`
-    TokenExp                time.Time          `bson:"token_exp" json:"-"`
     RefToken                string             `bson:"ref_token" json:"-"`
 }

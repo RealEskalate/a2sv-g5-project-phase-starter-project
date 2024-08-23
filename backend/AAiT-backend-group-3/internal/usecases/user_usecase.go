@@ -46,7 +46,6 @@ func NewUserUsecase(userRepo repository_interface.UserRepositoryInterface, passw
 
 
 func (u *UserUsecase) SignUp(user *models.User) (*models.User, error) {
-	fmt.Println("User data received in the USECASE:", user)
 	users, err := u.userRepo.GetAllUsers()
 	if err != nil {
 		return nil, err
@@ -88,7 +87,7 @@ func (u *UserUsecase) SignUp(user *models.User) (*models.User, error) {
 	verificationLink := fmt.Sprintf("http://localhost:8080/auth/verify-email?token=%s", verificationToken)
 
 	user.VerificationToken = verificationToken
-	user.TokenExp = time.Now().Add(24 * time.Hour)
+
 
 	u.userRepo.UpdateProfile(regUser.ID.Hex(), user)
 
@@ -190,17 +189,11 @@ func (u *UserUsecase) VerifyEmailToken(token string) (string, string, error) {
 	if err != nil {
 		return "", "", errors.New("invalid or expired token")
 	}
-
-	if time.Now().After(user.TokenExp) {
-		return "", "", errors.New("token expired")
-	}
-
 	accessToken, _ := u.jwtSevices.GenerateAccessToken(user.ID.Hex(), user.Role)
 	refershToken, _ := u.jwtSevices.GenerateRefreshToken(user.ID.Hex(), user.Role)
 
 	user.IsVerified = true
 	user.VerificationToken = "" 
-	user.TokenExp = time.Time{}
 	user.RefToken = refershToken
 
 	err = u.userRepo.UpdateProfile(user.ID.Hex(), user)

@@ -14,7 +14,6 @@ import (
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/utils"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type userUseCase struct {
@@ -208,6 +207,51 @@ func (userUC *userUseCase) Login(cxt *gin.Context, username, password string) (m
 		return map[string]string{}, domain.CustomError{Message: errUpdate.Error(), Code: http.StatusInternalServerError}
 	}
 	return map[string]string{"access_token": accessToken, "refresh_token": refreshToken}, nil
+}
+
+func (userUC *userUseCase) RefreshToken(cxt *gin.Context, refreshToken string) (map[string]string, domain.Error) {
+	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
+	if errTimeout != nil {
+		return map[string]string{}, &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
+	}
+
+	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
+	defer cancel()
+
+	token, errToken := userUC.jwtService.ValidateRefreshToken(refreshToken)
+	if errToken != nil {
+		return map[string]string{}, domain.CustomError{Message: errToken.Error(), Code: errToken.StatusCode()}
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return map[string]string{}, domain.CustomError{Message: "error parsing claims", Code: http.StatusInternalServerError}
+	}
+
+	existingUser, err := userUC.userRepo.FindById(context, claims["user_id"].(string))
+	if err != nil {
+		return map[string]string{}, domain.CustomError{Message: err.Error(), Code: err.StatusCode()}
+	}
+
+	existingSession, existenceCheck, err := userUC.sessionRepo.FindTokenByUserUsername(context, existingUser.Username)
+	if err != nil {
+		return map[string]string{}, domain.CustomError{Message: "error while retriving existingSession", Code: http.StatusInternalServerError}
+	}
+
+	if !existenceCheck {
+		return map[string]string{}, domain.CustomError{Message: "session not found", Code: http.StatusNotFound}
+	}
+
+	if existingSession.RefreshToken != refreshToken || existingSession.Username != existingUser.Username {
+		return map[string]string{}, domain.CustomError{Message: "invalid token", Code: http.StatusUnauthorized}
+	}
+
+	newAccessToken, errAccess := userUC.jwtService.GenerateAccessTokenWithPayload(*existingUser)
+	if errAccess != nil {
+		return map[string]string{}, domain.CustomError{Message: errAccess.Error(), Code: http.StatusInternalServerError}
+	}
+
+	return map[string]string{"refresh_token": newAccessToken}, nil
 }
 
 func (userUC *userUseCase) ForgotPassword(cxt *gin.Context, email string) domain.Error {
@@ -442,7 +486,7 @@ func (userUC *userUseCase) UpdateProfile(cxt *gin.Context, userID string, user m
 	return userUC.userRepo.UpdateProfile(context, userID, user)
 }
 
-func (userUC *userUseCase) ImageUpload(cxt *gin.Context, file *multipart.File, header *multipart.FileHeader) domain.Error {
+func (userUC *userUseCase) ImageUpload(cxt *gin.Context, file *multipart.File, header *multipart.FileHeader, id string) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
 		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
@@ -453,24 +497,34 @@ func (userUC *userUseCase) ImageUpload(cxt *gin.Context, file *multipart.File, h
 	if valid := utils.IsValidFileFormat(header, "image/png", "image/jpeg"); !valid {
 		cxt.JSON(http.StatusBadRequest, gin.H{"Error": "Invalid file format"})
 	}
-	filename := fmt.Sprintf("%s%s", uuid.New().String(), header.Filename)
 
-	delivery_url, errSave := utils.SaveImage(*file, filename, context)
+	existingUser, err := userUC.userRepo.FindById(context, id)
+	if err != nil {
+		return &domain.CustomError{Message: err.Error(), Code: http.StatusInternalServerError}
+	}
+
+	if existingUser.ProfilePictureUrl.FilePath != "" {
+		errDelete := utils.DeleteImage(existingUser.ProfilePictureUrl.Public_id, context)
+		if errDelete != nil {
+			return &domain.CustomError{Message: errDelete.Error(), Code: http.StatusInternalServerError}
+		}
+	}
+
+	upload_reslt, errSave := utils.SaveImage(*file, header.Filename, context)
 	if errSave != nil {
 		return &domain.CustomError{Message: errSave.Error(), Code: http.StatusInternalServerError}
 	}
 
-	userID, _ := cxt.Get("user_id")
 	photo := domain.Photo{
-		Filename:   filename,
-		FilePath:   delivery_url,
+		Filename:   header.Filename,
+		FilePath:   upload_reslt.SecureURL,
+		Public_id:  upload_reslt.PublicID,
 		UploadedAt: time.Now(),
 	}
 
-	user, errUser := userUC.userRepo.FindById(context, userID.(string))
-	if errUser != nil {
-		return &domain.CustomError{Message: errUser.Error(), Code: http.StatusInternalServerError}
+	errUpdate := userUC.userRepo.UploadProfilePicture(context, photo, id)
+	if errUpdate != nil {
+		return &domain.CustomError{Message: errUpdate.Error(), Code: http.StatusInternalServerError}
 	}
-	user.ProfilePictureUrl = photo
 	return nil
 }

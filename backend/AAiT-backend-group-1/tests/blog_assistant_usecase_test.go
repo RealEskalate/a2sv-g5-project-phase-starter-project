@@ -46,7 +46,7 @@ func (suite *BlogAssistantUseCaseTestSuite) TestEnhanceBlog() {
 	assert.NotNil(suite.T(), blog)
 }
 
-func (suite *BlogAssistantUseCaseTestSuite) TestSuggestBlog(){
+func (suite *BlogAssistantUseCaseTestSuite) TestSuggestBlog() {
 	industry := "AI"
 	blog, err := suite.usecase.SuggestBlog(industry)
 	assert.Nil(suite.T(), err)
@@ -56,3 +56,4 @@ func (suite *BlogAssistantUseCaseTestSuite) TestSuggestBlog(){
 func TestBlogAssistantUseCaseTestSuite(t *testing.T) {
 	suite.Run(t, new(BlogAssistantUseCaseTestSuite))
 }
+

@@ -11,13 +11,14 @@ type UserUseCase interface {
 	RegisterStart(cxt *gin.Context, user *User) Error
 	RegisterEnd(cxt *gin.Context, token string) Error
 	Login(context *gin.Context, username, password string) (map[string]string, Error)
+	RefreshToken(cxt *gin.Context, refreshToken string) (map[string]string, Error)
 	ForgotPassword(context *gin.Context, email string) Error
 	ResetPassword(cxt *gin.Context, newPassword, confirmPassword, token string, resetCode int) Error
 	Logout(cxt *gin.Context, token map[string]string) Error
 	PromoteUser(cxt *gin.Context, userID string) Error
 	DemoteUser(cxt *gin.Context, userID string) Error
 	UpdateProfile(cxt *gin.Context, userID string, user map[string]interface{}) Error
-	ImageUpload(cxt *gin.Context, file *multipart.File, header *multipart.FileHeader) Error
+	ImageUpload(cxt *gin.Context, file *multipart.File, header *multipart.FileHeader, id string) Error
 }
 
 type BlogUseCase interface {

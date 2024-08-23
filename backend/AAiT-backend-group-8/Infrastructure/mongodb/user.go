@@ -38,6 +38,7 @@ func (r *UserRepositoryImpl) GetUserByVerificationToken(token string) (*Domain.U
 	}
 	return &user, nil
 }
+
 func (r *UserRepositoryImpl) VerifyUser(user *Domain.User) error {
 	filter := bson.M{"_id": user.Id}
 	update := bson.M{"$set": bson.M{
@@ -112,4 +113,13 @@ func (r *UserRepositoryImpl) DeleteUser(email string) error {
 	_, err := r.db.DeleteOne(r.ctx, filter)
 
 	return err
+}
+
+func (r *UserRepositoryImpl) DropDataBase() error {
+	filter := bson.M{}
+	_, err := r.db.DeleteMany(r.ctx, filter)
+	if err != nil {
+		return err
+	}
+	return nil
 }

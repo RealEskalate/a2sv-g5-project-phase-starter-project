@@ -103,3 +103,13 @@ func (repo *CommentRepository) GetCommentByID(commentID primitive.ObjectID) (*do
 
 	return &comment, nil
 }
+
+func (repo *CommentRepository) DropDataBase() error {
+	filter := bson.M{}
+	_, err := repo.collection.DeleteMany(repo.ctx, filter)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}

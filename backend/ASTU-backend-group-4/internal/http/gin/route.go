@@ -7,7 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetUpChatRouter(r *gin.Engine, chatHandler *ChatHandler, chatUsecase *chat.ChatUsecase) {
+func SetUpRouter(r *gin.Engine, blogController *BlogController, blogUseCase *blogDomain.BlogUseCase, chatHandler *ChatHandler, chatUsecase *chat.ChatUsecase, userController *UserController, authUsecase *auth.AuthServices) {
+	SetUpBlogRouter(r, blogController)
+	SetUpChatRouter(r, chatHandler)
+	SetUpAuthRouter(r, userController)
+}
+
+func SetUpChatRouter(r *gin.Engine, chatHandler *ChatHandler) {
 	r.GET("/", AuthMiddleware(), chatHandler.GetChatsHandler)
 	r.POST("/", AuthMiddleware(), chatHandler.CreateChatHandler)
 	r.POST("/", AuthMiddleware(), chatHandler.GenerateChatTitleHandler)
@@ -16,7 +22,7 @@ func SetUpChatRouter(r *gin.Engine, chatHandler *ChatHandler, chatUsecase *chat.
 	r.POST("/:id/send-message", AuthMiddleware(), chatHandler.SendMessageHandler)
 }
 
-func SetUpBlogRouter(r *gin.Engine, blogController *BlogController, blogUseCase *blogDomain.BlogUseCase) {
+func SetUpBlogRouter(r *gin.Engine, blogController *BlogController) {
 	r.POST("/", AuthMiddleware(), blogController.CreateBlog)
 	r.GET("/", AuthMiddleware(), blogController.GetBlogs)
 	r.GET("/:id", AuthMiddleware(), blogController.GetBlogByID)
@@ -32,7 +38,7 @@ func SetUpBlogRouter(r *gin.Engine, blogController *BlogController, blogUseCase 
 	r.DELETE("/:id/dislike", AuthMiddleware(), blogController.UnDislikeBlog)
 }
 
-func SetUpAuthRouter(r *gin.Engine, userController *UserController, authUsecase *auth.AuthServices) {
+func SetUpAuthRouter(r *gin.Engine, userController *UserController) {
 	r.POST("/login", userController.Login)
 	r.POST("/register", userController.RegisterUser)
 	r.PUT("/profile", AuthMiddleware(), userController.UpdateProfile)

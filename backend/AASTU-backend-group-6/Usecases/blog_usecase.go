@@ -257,14 +257,13 @@ func (b BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.
 		if err != nil {
 			return domain.Blog{}, err
 		} else {
-			if existing_blog.Creator_id.Hex() == user_id {
+			if b.idConverter.ToString(existing_blog.Creator_id) == user_id {
 				updated_blog, err = b.blogRepository.UpdateBlogByID(user_id, blog_id, blog)
 			} else {
 				return domain.Blog{}, errors.New("unauthorized access")
 			}
 		}
 	}
-
 	if err != nil {
 		return domain.Blog{}, err
 	} else {

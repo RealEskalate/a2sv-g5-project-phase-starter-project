@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import Profile from "./profile";
 import Preference from "./preference";
 import Security from "./security";
-import { useSession } from "next-auth/react";
 import { useSelector } from "react-redux";
 import User from "../../type/user";
 const activeColor = "text-blue-700";

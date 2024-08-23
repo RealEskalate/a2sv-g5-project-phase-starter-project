@@ -1,8 +1,32 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import '../widgets/message_contaner.dart';
 
-class MessageDetail extends StatelessWidget {
+class MessageDetail extends StatefulWidget {
   const MessageDetail({super.key});
+
+  @override
+  State<MessageDetail> createState() => _MessageDetailState();
+}
+
+class _MessageDetailState extends State<MessageDetail> {
+  bool isLoading = true;
+  late Directory appDirectory;
+  String? path;
+
+  // @override
+  // void initState() {
+  //   _getDir();
+  //   super.initState();
+  // }
+
+  // void _getDir() async {
+  //   appDirectory = await getApplicationDocumentsDirectory();
+  //   path = '${appDirectory.path}/recording.m4a';
+  //   isLoading = false;
+  //   setState(() {});
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +42,10 @@ class MessageDetail extends StatelessWidget {
             itemCount: 20,
             itemBuilder: (context, index) {
               return withTime(
+                appDirectory: appDirectory,
                 text: 'Have a great working week!!', 
                 isCurrentUser: index % 2 != 0 ? true : false, 
-                type: index % 3 != 0 ?'image': 'audio',
+                type: 'text',
                 image: 'https://images.unsplash.com/photo-1557863618-9643198cb07b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Njd8fFRveW90YSUyMFY4JTIwcGF0cm9sfGVufDB8fDB8fHww',
                 time: '09:25 AM',
               );

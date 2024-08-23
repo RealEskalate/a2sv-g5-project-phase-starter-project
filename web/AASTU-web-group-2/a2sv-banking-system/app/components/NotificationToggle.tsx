@@ -29,7 +29,7 @@ const NotificationToggle: React.FC<NotificationToggleProps> = ({ id, label, chec
       <label
         htmlFor={id}
         className={`cursor-pointer rounded-full w-14 h-7 flex items-center relative transition-colors duration-300 ${
-          enabled ? "bg-[#1814f3] dark:bg-[#1814f3" : "bg-gray-200 dark:bg-gray-600"
+          enabled ? "bg-[#16dbcc] dark:bg-[#1814f3]" : "bg-gray-200 dark:bg-gray-600"
         }`}
       >
         <span

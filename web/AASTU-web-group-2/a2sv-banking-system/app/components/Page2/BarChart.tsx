@@ -34,7 +34,7 @@ const BarChart: React.FC<{ token: string }> = ({ token }) => {
       try {
         const response = await getBalanceHistory(6, token); // Fetching data for the last 6 months
         const data = response.data;
-
+          console.log(data)
         // Sort the data by time to match with labels
         const sortedData = data
           .sort((a: BalanceHistoryData, b: BalanceHistoryData) => new Date(a.time).getMonth() - new Date(b.time).getMonth())
@@ -43,6 +43,7 @@ const BarChart: React.FC<{ token: string }> = ({ token }) => {
         setChartData(sortedData.length > 0 ? sortedData : [0, 0, 0, 0, 0, 0]);
       } catch (error) {
         console.error('Error fetching balance history:', error);
+        console.log(error)
       } finally {
         setLoading(false);
       }

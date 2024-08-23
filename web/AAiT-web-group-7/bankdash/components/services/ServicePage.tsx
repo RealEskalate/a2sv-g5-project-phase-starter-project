@@ -16,7 +16,7 @@ const ServicePage = () => {
           imageSrc="pubimg/bag.svg"
           title="Shopping"
           decription="Buy. Think. Grow."
-          bgColor="#FFE0EB"
+          bgColor="#FFF5D9"
         />
         <ServiceCard
           imageSrc="pubimg/shield.svg"

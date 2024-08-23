@@ -14,16 +14,36 @@ const LoanPage = () => {
   return (
     <div className="w-fill h-fill flex flex-col gap-[26px] p-10">
       <div className="w-fill h-fill flex flex-row gap-[26px] ">
-        <LoanCard imageSrc="pubimg/user.svg" title="Personal Loans" amount="$100,000" bgColor = "#E7EDFF" />
-        <LoanCard imageSrc="pubimg/briefcase.svg" title="Corporate Loans" amount="$100,000"  bgColor="#FFF5D9"/>
-        <LoanCard imageSrc="pubimg/Group.svg" title="Business Loans" amount="$500,000" bgColor="#FFE0EB" />
-        <LoanCard imageSrc="pubimg/support.svg" title="Custom Loans" amount="Choose Money" bgColor="#DCFAF8" />
+        <LoanCard
+          imageSrc="pubimg/user.svg"
+          title="Personal Loans"
+          amount="$100,000"
+          bgColor="#E7EDFF"
+        />
+        <LoanCard
+          imageSrc="pubimg/briefcase.svg"
+          title="Corporate Loans"
+          amount="$100,000"
+          bgColor="#FFF5D9"
+        />
+        <LoanCard
+          imageSrc="pubimg/Group.svg"
+          title="Business Loans"
+          amount="$500,000"
+          bgColor="#FFE0EB"
+        />
+        <LoanCard
+          imageSrc="pubimg/support.svg"
+          title="Custom Loans"
+          amount="Choose Money"
+          bgColor="#DCFAF8"
+        />
       </div>
       <div className="text-[#333B69] w-fit font-bold">
         Active Loans Overview
       </div>
       <div className="bg-white px-[20px] py-[10px] w-[1110px] border rounded-3xl">
-        <Table >
+        <Table>
           {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
           <TableHeader>
             <TableRow>
@@ -149,7 +169,6 @@ const LoanPage = () => {
               <TableCell></TableCell>
               <TableCell></TableCell>
               <TableCell>$50,000 / month</TableCell>
-              
             </TableRow>
           </TableBody>
         </Table>

@@ -71,7 +71,7 @@ func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog, creator_id str
 	blog.LikeCount = 0
 	blog.DisLikeCount = 0
 	blog.Commenters_ID = utils.MakePrimitiveList(0)
-
+	blog.Deleted = false
 	newBlog, err := b.blogRepository.CreateBlog(user_id, blog, creator_id)
 	if err != nil {
 		return domain.Blog{}, err

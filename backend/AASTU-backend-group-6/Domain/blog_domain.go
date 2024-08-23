@@ -31,6 +31,8 @@ type Comment struct {
 	Commentor_ID       primitive.ObjectID `bson:"commentor_id"`
 	Commentor_username string             `bson:"commentor_username"`
 	Content            string             `bson:"content" validate:"required,min=1,max=255"`
+	Deleted            bool               `bson:"deleted"`
+	DeletedAt          time.Time          `bson:"deletedAt"`
 }
 
 type BlogUsecase interface {

@@ -96,7 +96,6 @@ func (ur *UserMongoRepository) GetUserByID(ctx context.Context, id string) (*mod
 	}
 
 	user.ID = objID.Hex()
-
 	return &user, nil
 }
 
@@ -130,7 +129,6 @@ func (ur *UserMongoRepository) UpdateUser(ctx context.Context, user *models.User
 	if user.PhoneNumber != "" {
 		update["phone_number"] = user.PhoneNumber
 	}
-	
 
 	if len(update) == 0 {
 		return models.Nil()

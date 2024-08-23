@@ -33,7 +33,7 @@ class _ChatterCardState extends State<ChatterCard> {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Colors.white, width: 1),
+            side: const BorderSide(color: Colors.white, width: 1),
           ),
           child: Padding(
             padding:
@@ -76,17 +76,20 @@ class _ChatterCardState extends State<ChatterCard> {
         Text(
           widget.name,
           style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+						fontFamily: 'General Sans Variable',
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+						color: Color(0xFF000E08),
           ),
           overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 4),
         Text(
           widget.lastMessage,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey.shade600,
+          style: const TextStyle(
+						fontFamily: 'General Sans Variable',
+            fontSize: 12,
+            color: Color(0xFF797C7B),
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -101,9 +104,10 @@ class _ChatterCardState extends State<ChatterCard> {
       children: [
         Text(
           widget.time,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
-            color: Colors.grey.shade500,
+						fontFamily: 'General Sans Variable',
+            color: Color(0xFF797C7B),
           ),
         ),
         const SizedBox(height: 8),
@@ -111,13 +115,13 @@ class _ChatterCardState extends State<ChatterCard> {
           Container(
             padding: const EdgeInsets.all(6),
             decoration: const BoxDecoration(
-              color: Colors.blue,
+              color: Color(0xFF3F51F3),
               shape: BoxShape.circle,
             ),
             child: Text(
               '${widget.unreadCount}',
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: 11,
                 color: Colors.white,
               ),
             ),

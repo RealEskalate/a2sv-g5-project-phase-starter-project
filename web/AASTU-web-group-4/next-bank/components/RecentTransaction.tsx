@@ -94,8 +94,9 @@ const RecentTransactions = () => {
           className="p-4   text-red-700 flex flex-col gap-4 h-200px justify-center items-center rounded relative"
           role="alert"
         >
-          <TbFileSad className={`${colors.textblue} dark:text-white w-[400px] h-[70px]`} />
-
+          <TbFileSad
+          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+        />
           <div>
             <span className="block sm:inline text-[18px]">
               {" "}

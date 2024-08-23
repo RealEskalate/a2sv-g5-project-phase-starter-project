@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import { getRandomBalanceHistory } from "@/services/transactionfetch";
 import { TbFileSad } from "react-icons/tb";
-import {colors} from '@/constants/index'
+import { colors } from "@/constants/index";
 
 // Mapping of numeric month values to month names
 const monthNames = [
@@ -87,7 +87,7 @@ export default function LineChart() {
     return (
       <div className="flex flex-col items-center justify-center h-full text-red-500">
         <TbFileSad
-          className={`${colors.textblue} dark:text-white w-[400px] h-[70px]`}
+          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
         />
 
         <div>Error fetching the balance history</div>

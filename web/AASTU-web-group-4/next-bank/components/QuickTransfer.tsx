@@ -132,7 +132,9 @@ const QuickTransfer: React.FC = () => {
   if (status === 'error') {
     return (
       <div className="flex flex-col items-center justify-center h-full text-red-500">
-        <TbFileSad className={`${colors.textblue} dark:text-white w-[400px] h-[70px]`} />
+        <TbFileSad
+          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+        />
         <div>Error fetching the users</div>
       </div>
     );

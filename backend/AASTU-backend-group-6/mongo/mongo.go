@@ -72,7 +72,6 @@ type mongoCursor struct {
 type mongoSession struct {
 	mongo.Session
 }
-
 type nullawareDecoder struct {
 	defDecoder bsoncodec.ValueDecoder
 	zeroValue  reflect.Value
@@ -109,8 +108,8 @@ func (mc *mongoClient) Ping(ctx context.Context) error {
 func (mc *mongoClient) Database(dbName string) Database {
 	db := mc.cl.Database(dbName)
 	return &mongoDatabase{db: db}
-}
 
+}
 func (mc *mongoClient) UseSession(ctx context.Context, fn func(mongo.SessionContext) error) error {
 	return mc.cl.UseSession(ctx, fn)
 }

@@ -3,8 +3,8 @@ module github.com/aait.backend.g5.main/backend
 go 1.22.5
 
 require (
-	github.com/amitshekhariitbhu/go-backend-clean-architecture v0.0.0-20240711053131-ec6f4c1609b6
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
+	github.com/cloudinary/cloudinary-go/v2 v2.9.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang/mock v1.6.0
@@ -15,7 +15,6 @@ require (
 )
 
 require (
-	github.com/cloudinary/cloudinary-go/v2 v2.9.0 // indirect
 	github.com/creasty/defaults v1.7.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/gorilla/schema v1.4.1 // indirect

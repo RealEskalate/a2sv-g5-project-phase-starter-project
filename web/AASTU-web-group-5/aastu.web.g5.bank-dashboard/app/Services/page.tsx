@@ -21,7 +21,7 @@ const Page = () => {
     const fetchServices = async () => {
       try {
         const response = await axios.get(
-          "https://bank-dashboard-o9tl.onrender.com/bank-services?page=0&size=7",
+          "https://bank-dashboard-rsf1.onrender.com/bank-services?page=0&size=7",
           {
             headers: {
               Authorization: token,

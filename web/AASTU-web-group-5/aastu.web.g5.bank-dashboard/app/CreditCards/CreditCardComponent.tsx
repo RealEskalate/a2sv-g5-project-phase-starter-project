@@ -37,7 +37,7 @@ const CreditCardComponent: React.FC = () => {
 
 		try {
 			const response = await fetch(
-				`https://bank-dashboard-o9tl.onrender.com/cards?page=${page}&size=3`,
+				`https://bank-dashboard-rsf1.onrender.com/cards?page=${page}&size=3`,
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,

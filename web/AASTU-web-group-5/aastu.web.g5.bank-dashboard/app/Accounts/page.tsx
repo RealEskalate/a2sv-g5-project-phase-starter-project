@@ -51,7 +51,7 @@ const Accounts = () => {
 
 		try {
 			const response = await fetch(
-				`https://bank-dashboard-o9tl.onrender.com/cards?page=${page}&size=3`,
+				`https://bank-dashboard-rsf1.onrender.com/cards?page=${page}&size=3`,
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -85,7 +85,7 @@ const Accounts = () => {
 		const fetchTransactions = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-o9tl.onrender.com/transactions?page=0&size=10",
+					"https://bank-dashboard-rsf1.onrender.com/transactions?page=0&size=10",
 					{
 						headers: {
 							Authorization: token,
@@ -104,7 +104,7 @@ const Accounts = () => {
 		const fetchBalanceData = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-o9tl.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=2",
+					"https://bank-dashboard-rsf1.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=2",
 					{
 						headers: {
 							Authorization: token,
@@ -126,7 +126,7 @@ const Accounts = () => {
 		const fetchIncomes = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-o9tl.onrender.com/transactions/incomes?page=0&size=7",
+					"https://bank-dashboard-rsf1.onrender.com/transactions/incomes?page=0&size=7",
 					{
 						headers: {
 							Authorization: token,
@@ -150,7 +150,7 @@ const Accounts = () => {
 		const fetchExpenses = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-o9tl.onrender.com/transactions/expenses?page=0&size=3",
+					"https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=0&size=3",
 					{
 						headers: {
 							Authorization: token,

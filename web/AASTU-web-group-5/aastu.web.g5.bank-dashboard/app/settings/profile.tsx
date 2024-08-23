@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import axios from 'axios';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { app } from  '../../lib/firebase' ; // Import the initialized Firebase app
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
 interface ExtendedUser {
   name?: string;
@@ -15,9 +17,6 @@ interface ExtendedUser {
 }
 
 const EditProfile = () => {
-  const { data: session } = useSession();
-  const user = session?.user as ExtendedUser;
-
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
@@ -27,10 +26,39 @@ const EditProfile = () => {
   const [presentAddress, setPresentAddress] = useState('');
   const [city, setCity] = useState('');
   const [country, setCountry] = useState('');
-  const [profilePicture, setProfilePicture] = useState(user?.image || '/images/christina.png');
+  const reduxUser = useSelector((state: RootState) => state.user);
+  const [profilePicture, setProfilePicture] = useState(reduxUser?.profilePicture || '/images/christina.png');
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+  const dispatch = useDispatch();
+  const { data: session, status } = useSession();
+  const user = session?.user as ExtendedUser;
+  console.log(user,'this is user ')
+  useEffect(() => {
+    console.log(profilePicture,1111)
+    if (status === "authenticated" && user?.accessToken && !reduxUser?.name) {
+      console.log('Dispatching USER_FETCH_REQUESTED');
+      dispatch({
+        type: "USER_FETCH_REQUESTED",
+        payload: {
+          username: user?.name || '',
+          token: user.accessToken,
+        },
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, dispatch,session,user]);
+
+  useEffect(() => {
+    setProfilePicture(reduxUser?.profilePicture || '/images/christina.png');
+    console.log('Profile picture updated:', reduxUser?.profilePicture);
+}, [reduxUser?.profilePicture]);
+
+  if (!user?.name || !user?.accessToken) {
+    return <div>Loading...</div>; 
+  }
+
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -41,12 +69,11 @@ const EditProfile = () => {
     const storageRef = ref(storage, `profilePictures/${user?.email}/${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
-    setUploading(true);
+    setUploading(true);   
 
     uploadTask.on(
       'state_changed',
       (snapshot) => {
-        // Optional: monitor upload progress here
       },
       (error) => {
         console.error('Upload failed:', error);
@@ -74,9 +101,10 @@ const data = { name,
   profilePicture,
   city,
   country,}
+  console.log(data,'savechanges1111',user.accessToken)
     try {
       const response = await axios.put(
-        'https://bank-dashboard-o9tl.onrender.com/user/update',
+        'https://bank-dashboard-rsf1.onrender.com/user/update',
          data,
         
         {
@@ -90,6 +118,7 @@ const data = { name,
       if (response.status === 200) {
         setMessage('Profile updated successfully!');
         setIsSuccess(true);
+        signOut()
       } else {
         const errorData = response.data;
         setMessage(`Error: ${errorData.message}`);

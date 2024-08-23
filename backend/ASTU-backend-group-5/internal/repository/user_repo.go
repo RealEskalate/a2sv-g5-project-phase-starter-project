@@ -23,7 +23,7 @@ type UserRepository interface {
 	FilterUsers(ctx context.Context, filter map[string]interface{}) ([]*domain.User, error)
 
 	IsEmptyCollection(ctx context.Context) (bool, error)
-	
+
 	RegisterUser(ctx context.Context, user *domain.User) (*domain.User, error)
 
 	GoogleCallback(ctx context.Context, code string) (*domain.User, error)

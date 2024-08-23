@@ -98,8 +98,13 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	c.JSON(http.StatusOK, dbUser)
+	Me := domain.GetUserDTO{
+		ID:      dbUser.ID,
+		Email:   dbUser.Email,
+		Role:    dbUser.Role,
+		Profile: dbUser.Profile,
+	}
+	c.JSON(http.StatusOK, Me)
 }
 
 func (h *UserHandler) DeleteUser(c *gin.Context) {
@@ -122,7 +127,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 }
 func (h *UserHandler) UpdateUser(c *gin.Context) {
-	var user domain.User
+	var user domain.UpdateUserDTO
 	claims, exists := c.Get("claims")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
@@ -178,9 +183,14 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	user.ID = objectID
+	// user.ID = objectID
+	dbUser := domain.User{
+		ID:       objectID,
+		UserName: user.UserName,
+		Profile:  user.Profile,
+	}
 
-	err = h.UserUsecase.UpdateUser(&user)
+	err = h.UserUsecase.UpdateUser(&dbUser)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -196,5 +206,11 @@ func (h *UserHandler) GetAnyUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, user)
+	GetUser := domain.GetUserDTO{
+		UserName: user.UserName,
+		Email:    user.Email,
+		Role:     user.Role,
+		Profile:  user.Profile,
+	}
+	c.JSON(http.StatusOK, GetUser)
 }

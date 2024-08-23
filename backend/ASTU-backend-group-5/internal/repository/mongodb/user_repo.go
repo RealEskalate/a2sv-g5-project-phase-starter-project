@@ -40,7 +40,7 @@ func (r *UserRepositoryMongo) FindUserByEmail(ctx context.Context, email string)
 func (r *UserRepositoryMongo) FindUserById(ctx context.Context, id string) (*domain.User, error) {
 	user := &domain.User{}
 	objectID, _ := primitive.ObjectIDFromHex(id)
-	
+
 	err := r.Collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(user)
 	if err == mongo.ErrNoDocuments {
 		return nil, nil
@@ -121,7 +121,6 @@ func (r *UserRepositoryMongo) IsEmptyCollection(ctx context.Context) (bool, erro
 	}
 	return count == 0, nil
 }
-
 
 // register user
 func (r *UserRepositoryMongo) RegisterUser(ctx context.Context, user *domain.User) (*domain.User, error) {

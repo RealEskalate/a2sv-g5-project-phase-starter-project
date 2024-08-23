@@ -17,11 +17,15 @@ func (h *BlogHandler) UpdateBlogHandler(c *gin.Context) {
 		return
 	}
 
-	var blog domain.Blog
-	if err := c.ShouldBindJSON(&blog); err != nil {
+	var updateBlog domain.UpdateBlogDTO
+	if err := c.ShouldBindJSON(&updateBlog); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	var blog domain.Blog
+	blog.Title = updateBlog.Title
+	blog.Content = updateBlog.Content
+	blog.Tags = updateBlog.Tags
 
 	if err := h.UseCase.UpdateBlog(context.Background(), id, &blog, userClaims.UserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

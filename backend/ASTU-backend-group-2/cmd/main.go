@@ -18,23 +18,31 @@ func init() {
 	}
 }
 func main() {
+	// Initialize the app
 	app := bootstrap.App()
 
+	// Get the environment variables
 	env := app.Env
 
 	// Initialize the OAuth
 	auth.NewAuth(env)
 
+	// Connect to the database
 	db := app.Mongo.Database(env.DBName)
 
+	// Close the database connection when the main function is done
 	defer app.CloseDBConnection()
 
+	// Set the timeout for the context of the request
 	timeout := time.Duration(env.ContextTimeout) * time.Second
 
+	// Initialize the gin
 	gin := gin.Default()
 
-	route.Setup(env, timeout, db, gin)
+	// Setup the routes
+	route.Setup(env, timeout, db, gin, app.Cloudinary)
 
+	// Run the server
 	gin.Run(env.ServerAddress)
 
 }

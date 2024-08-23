@@ -5,6 +5,7 @@ import (
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/internal/tokenutil"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,12 +16,19 @@ type RefreshTokenController struct {
 
 func (rtc *RefreshTokenController) RefreshToken(c *gin.Context) {
 	var request domain.RefreshTokenRequest
-
+	
 	err := c.ShouldBind(&request)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
+
+	if valid,err:=tokenutil.IsAuthorized(string(request.RefreshToken),rtc.Env.RefreshTokenSecret);!valid || err!=nil{
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Invalid token"})
+		return 
+	}
+
+
 
 	id, err := rtc.RefreshTokenUsecase.ExtractIDFromToken(request.RefreshToken, rtc.Env.RefreshTokenSecret)
 	if err != nil {

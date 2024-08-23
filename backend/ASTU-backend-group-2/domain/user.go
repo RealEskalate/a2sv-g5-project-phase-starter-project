@@ -53,12 +53,6 @@ type UpdatePassword struct {
 	NewPassword string `json:"new_password" binding:"required"`
 }
 
-// user forgot the password and wants to reset
-// reset passowrd token will be exreacted from the url /reset-password/:user_id/:<reset password token>
-type ResetPassword struct {
-	NewPassword string `json:"new_password" binding:"required"`
-}
-
 type UserUsecase interface {
 	CreateUser(c context.Context, user *User) (*User, error)
 	GetUserByEmail(c context.Context, email string) (*User, error)
@@ -70,10 +64,8 @@ type UserUsecase interface {
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)
 	IsOwner(c context.Context) (bool, error)
-	ResetUserPassword(c context.Context, userID string, resetPassword *ResetPassword) error
 	UpdateUserPassword(c context.Context, userID string, updatePassword *UpdatePassword) error
 	UpdateProfilePicture(c context.Context, userID string, filename string) error
-
 	PromoteUserToAdmin(c context.Context, userID string) error
 	DemoteAdminToUser(c context.Context, userID string) error
 }
@@ -92,7 +84,7 @@ type UserRepository interface {
 	RevokeRefreshToken(c context.Context, userID, refreshToken string) error
 	UpdateProfilePicture(c context.Context, userID string, filename string) error
 
-	ResetUserPassword(c context.Context, userID string, resetPassword *ResetPassword) error
+	ResetUserPassword(c context.Context, userID string, resetPassword *ResetPasswordRequest) error
 	UpdateUserPassword(c context.Context, userID string, updatePassword *UpdatePassword) error
 
 	PromoteUserToAdmin(c context.Context, userID string) error

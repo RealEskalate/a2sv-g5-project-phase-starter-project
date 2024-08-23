@@ -1,12 +1,10 @@
 package domain
 
 import (
-	"errors"
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"encoding/json"
 )
 
-var ErrBlogNotFound = errors.New("blog not found")
 type Blog struct {
     ID            primitive.ObjectID `json:"id" bson:"_id,omitempty"`           // Unique identifier for the blog post
     Title         string    `json:"title"`          // Title of the blog post
@@ -15,13 +13,13 @@ type Blog struct {
 	AutorName     string    `json:"author_name"`    // Name of the user who created the post
     Tags          []string  `json:"tags"`           // Tags associated with the blog post
     CreatedAt     primitive.Timestamp `bson:"createdAt" json:"createdAt"`
-	UpdatedAt     primitive.Timestamp `bson:"updatedAt" json:"updatedAt"`
+	UpdatedAt     primitive.Timestamp `bson:"updatedAt" json:"-"`
     LikesCount    int       `json:"likes_count"`    // Number of likes the blog post has received
     DislikesCount int       `json:"dislikes_count"` // Number of dislikes the blog post has received
     ViewCount     int       `json:"view_count"`     // Number of views the blog post has received
     CommentsCount int       `json:"comments_count"` // Number of comments the blog post has received
 	Comment 	 []Comment `json:"comments"`
-	Visibility     string    `bson:"visibility"`
+	Visibility     string    `bson:"visibility" json:"-"`
 }
 
 
@@ -32,15 +30,26 @@ type BlogResponse struct {
     AuthorID      string    `json:"author_id"`      // ID of the user who created the post
     Tags          []string  `json:"tags"`           // Tags associated with the blog post
     CreatedAt 	  primitive.Timestamp `bson:"createdAt" json:"createdAt"`
-	UpdatedAt 	  primitive.Timestamp `bson:"updatedAt" json:"updatedAt"`
     LikesCount    int       `json:"likes_count"`    // Number of likes the blog post has received
     DislikesCount int       `json:"dislikes_count"` // Number of dislikes the blog post has received
     ViewCount     int       `json:"view_count"`     // Number of views the blog post has received
     CommentsCount int       `json:"comments_count"` // Number of comments the blog post has received
-	Visibility     string    `bson:"visibility"`
 }
 
-
+// when unmarshaling give blog response
+func (b *Blog) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&BlogResponse{
+		Title:         b.Title,
+		Content:       b.Content,
+		AuthorID:      b.AuthorID,
+		Tags:          b.Tags,
+		CreatedAt:     b.CreatedAt,
+		LikesCount:    b.LikesCount,
+		DislikesCount: b.DislikesCount,
+		ViewCount:     b.ViewCount,
+		CommentsCount: b.CommentsCount,
+	})
+}
 
 
 type BlogRepository interface {
@@ -83,12 +92,12 @@ type BlogRepository interface {
 }
 
 type BlogUsecase interface {
-    CreateBlog(username, userID string, blog Blog) (Blog, error)    
-	DeleteBlog(role, userId,id string) (Blog, error)
-	UpdateBlog( blog Blog,role, blogId string)  (Blog, error)   
-    GetBlogByID(id string) (Blog, error)     
-	GetBlogs( page, limit int64, sortBy, tag, authorName string) ([]Blog, error)
-	GetUserBlogs(userID string) ([]Blog, error)
+    CreateBlog(username, userID string, blog Blog) (Blog, *CustomError)    
+	DeleteBlog(role, userId,id string) (Blog, *CustomError)
+	UpdateBlog( blog Blog,role, blogId string)  (Blog, *CustomError)   
+    GetBlogByID(id string) (Blog, *CustomError)     
+	GetBlogs( page, limit int64, sortBy, tag, authorName string) ([]Blog, *CustomError)
+	GetUserBlogs(userID string) ([]Blog, *CustomError)
 	
 	// Like, Dislike, View, Comment on a blog post
 	// LikeBlog(userID, blogID string) error

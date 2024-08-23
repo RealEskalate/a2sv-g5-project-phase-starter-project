@@ -20,8 +20,8 @@ type LikeRepository interface {
 }
 
 type LikeUsecase interface {
-	LikeBlog(userID, blogID, Type string) error
-	DisLikeBlog(userID, blogID, Type string) error
+	LikeBlog(userID, blogID, Type string) *CustomError
+	DisLikeBlog(userID, blogID, Type string) *CustomError
 }
 
 

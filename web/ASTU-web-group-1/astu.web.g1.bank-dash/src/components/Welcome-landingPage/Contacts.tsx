@@ -5,7 +5,7 @@ const Contacts = () => {
   return (
     <>
       <div
-        className=" mt-10 flex flex-wrap space-y-5 justify-center md:space-y-0 md:space-x-1 w-full p-5 text-white md:px-24 shadow-[5px_5px_10px_10px_rgb(250,250,250)]"
+        className=" mt-32 flex flex-wrap space-y-5 justify-center md:space-y-0 md:space-x-1 w-full p-5 text-white md:px-24 shadow-[5px_5px_10px_10px_rgb(250,250,250)]"
         id="contacts"
       >
         <div className="w-64 pt-4 space-y-4">

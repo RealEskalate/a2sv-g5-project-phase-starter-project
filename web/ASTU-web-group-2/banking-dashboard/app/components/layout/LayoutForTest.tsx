@@ -1,12 +1,9 @@
-// @/components/LayoutForTest/index.js
 import React, { useState } from "react";
-import Head from "next/head";
-import Sidebar from "./Sidebar";
-import MenuBarMobile from "./MobileBar";
+import Sidebar from "./sidebar/Sidebar";
+import MenuBarMobile from "./navbar/Navbar";
 
-export default function LayoutForTest() {
+export default function LayoutForSidebarAndNavbar() {
 
-  // Mobile sidebar visibility state
   const [showSidebar, setShowSidebar] = useState(false);
 
   return (

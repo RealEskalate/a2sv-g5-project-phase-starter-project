@@ -1,19 +1,16 @@
-// @/components/Layout/MenuBarMobile.tsx
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { FiMenu as Icon } from "react-icons/fi";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
-// import logo from "/assets/navbar/default-image.svg"
 
-interface MenuBarMobileProps {
+interface NavbarProps {
   setter: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const MenuBarMobile: React.FC<MenuBarMobileProps> = ({ setter }) => {
+const Navbar: React.FC<NavbarProps> = ({ setter }) => {
   // Access the user data from Redux store
   const user = useSelector((state: RootState) => state.user.user);
 
@@ -208,4 +205,4 @@ const MenuBarMobile: React.FC<MenuBarMobileProps> = ({ setter }) => {
   );
 };
 
-export default MenuBarMobile;
+export default Navbar;

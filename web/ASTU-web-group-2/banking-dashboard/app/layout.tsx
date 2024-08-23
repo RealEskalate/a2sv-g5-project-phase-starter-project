@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/navbar/Navbar";
-import Sidebar from "./components/sidebar/Sidebar";
 import StoreProvider from "./StoreProvider";
-import { SessionProvider } from "next-auth/react";
 import { AuthProvider } from "./AuthProvider";
 
 import { ToastContainer, toast } from 'react-toastify';

@@ -1,14 +1,9 @@
-// @/components/Layout/Sidebar.tsx
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 
-import { SlHome } from "react-icons/sl";
-import { BsInfoSquare, BsEnvelopeAt } from "react-icons/bs";
-import { FaTshirt, FaRedhat } from "react-icons/fa";
-import { sidebarListItems } from "../sidebar/sidebarListItems";
+import { sidebarListItems } from "./sidebarListItems";
 
-// import logo from '@/img/logo.svg'
 
 interface SidebarProps {
   show: boolean;

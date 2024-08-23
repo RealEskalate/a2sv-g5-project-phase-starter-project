@@ -34,7 +34,6 @@ func (jwtservice *JWTService) validator(tokenString string) (*jwt.Token, error){
 		}
 		return []byte(jwtservice.secretKey), nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +93,7 @@ func (jwtservice *JWTService) ValidateRefreshToken(token string) (string, error)
 func (jwtservice *JWTService) GenerateVerificationToken(userId string) (string, error){
 	claims := jwt.MapClaims{
 		"userId" : userId,
-		"exp": time.Now().Add(time.Minute * 15).Unix(),
+		"exp": time.Now().Add(24 * time.Hour).Unix(),
 	} 
 	accToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return accToken.SignedString([]byte(jwtservice.secretKey))	
@@ -105,16 +104,13 @@ func (jwtservice *JWTService) ValidateVerificationToken(token string) (string, e
 	if err != nil {
 		return "", err
 	}	
-
 	claims, ok := Token.Claims.(jwt.MapClaims)
 	if !ok {
 		return "", err
 	}
-
 	userId, ok := claims["userId"].(string)
 	if !ok {
 		return "", err
 	}
-
 	return userId, nil
 }

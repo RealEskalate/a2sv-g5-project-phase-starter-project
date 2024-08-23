@@ -3,20 +3,6 @@ import 'package:flutter/material.dart';
 import '../wiget/frequent_user.dart';
 import '../wiget/inbox_card.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: ChatScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
 class ChatScreen extends StatefulWidget {
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -39,7 +25,7 @@ class _ChatScreenState extends State<ChatScreen> {
       'userName': 'John Borino',
       'lastMessage': 'Have a good day',
       'time': '2 min ago',
-      'unreadMessages': 0,
+      'unreadMessages': 3,
     },
     {
       'userImage': 'images/user_profile.jpg',
@@ -52,7 +38,7 @@ class _ChatScreenState extends State<ChatScreen> {
       'userImage': 'images/user_profile.jpg',
       'userName': 'Team Align',
       'lastMessage': 'Don\'t miss to attend the meeting.',
-      'time': '2 min ago',
+      'time': '0 min ago',
       'unreadMessages': 2,
     },
     {
@@ -73,7 +59,7 @@ class _ChatScreenState extends State<ChatScreen> {
       'userImage': 'images/user_profile.jpg',
       'userName': 'Angel Dayna',
       'lastMessage': 'How are you today?',
-      'time': '2 min ago',
+      'time': '0 min ago',
       'unreadMessages': 0,
     },
   ];

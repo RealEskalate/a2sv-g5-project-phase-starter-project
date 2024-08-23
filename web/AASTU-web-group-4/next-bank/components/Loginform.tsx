@@ -35,7 +35,7 @@ const LoginForm: React.FC = () => {
         
         Cookie.set('accessToken', loggedInUser.data.access_token);
         Cookie.set('refreshToken', loggedInUser.data.refresh_token);
-        // console.log("Success:", loggedInUser?.data?.access_token)
+
         setIsLoading(false);
         // console.log("redirect...")
         window.location.href = '/'

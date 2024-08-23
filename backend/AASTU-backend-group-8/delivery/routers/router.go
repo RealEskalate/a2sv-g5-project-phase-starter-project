@@ -57,6 +57,10 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 
 		// auth.POST("/blogsearch", blogController.SearchBlogPost)
 		auth.DELETE("/blogs/:id", blogController.DeleteBlogPost)
+		auth.POST("/blogs/:id/dislike", blogController.DislikeBlogPost)
+		auth.POST("/blogs/:id/comment", blogController.AddComment)
+		auth.POST("/blogs/:id/like", blogController.LikeBlogPost)
+		auth.GET("/blogs/:id/likes", likeController.GetLikesByBlogID)
 
 		// Admin-specific routes
 		auth.GET("/getallusers", adminMiddleware, userController.GetAllUsers)
@@ -74,14 +78,13 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 	r.GET("/auth/:provider/callback", oauthHandler.CallbackHandler)
 
 	// Comment routes
-	auth.POST("/blogs/:id/comments", commentController.AddComment)
+	// auth.POST("/blogs/:id/comments", commentController.AddComment)
 	auth.GET("/blogs/:id/comments", commentController.GetCommentsByBlogID)
 	auth.PUT("/comments/:id", commentController.UpdateComment)
 	auth.DELETE("/comments/:id", commentController.DeleteComment)
 
 	// Like routes
-	auth.POST("/blogs/:id/likes", likeController.AddLike)
-	auth.GET("/blogs/:id/likes", likeController.GetLikesByBlogID)
+
 	auth.DELETE("/likes/:id", likeController.RemoveLike)
 
 	// Admin-specific routes

@@ -1,39 +1,81 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaRegArrowAltCircleUp, FaRegArrowAltCircleDown } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useGetMyLoansQuery, useGetLoanDetailDataQuery } from '@/lib/redux/api/loansApi';
 import { useDispatch } from 'react-redux';
 import { setLoans } from '@/lib/redux/slices/loansSlice';
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  const formattedDate = date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  });
-
-  const formattedTime = date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  });
-
-  return `${formattedDate}, ${formattedTime}`;
-};
-
 const ActiveLoans = () => {
-  const { data: loansData, isLoading: isLoadingLoans } = useGetMyLoansQuery();
-  const {data:detailLoansData, isLoading: isLoadingDetail} = useGetLoanDetailDataQuery() 
+  const [page, setPage] = useState(1); // Start from page 1
+  const { data: loansData, isLoading: isLoadingLoans } = useGetMyLoansQuery({ page: page - 1, size: 10 });
+  const { data: detailLoansData, isLoading: isLoadingDetail } = useGetLoanDetailDataQuery();
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (loansData && loansData.success) {
-      dispatch(setLoans(loansData.data));
+      dispatch(setLoans(loansData.data.content));
     }
   }, [loansData, dispatch]);
-  useEffect(()=>{
 
-  }, [detailLoansData])
+  useEffect(() => {
+    // Handle detail loans data if necessary
+  }, [detailLoansData]);
+
+  const handlePageClick = (newPage: number) => {
+    if (newPage > 0 && newPage <= (loansData?.data.totalPages || 1)) {
+      setPage(newPage);
+    }
+  };
+
+  const renderPageButtons = () => {
+    const totalPages = loansData?.data.totalPages || 1; // Ensure totalPages is at least 1
+
+    const pageButtons = [];
+
+    // Always show first page button and ellipsis if necessary
+    if (page > 3) {
+      pageButtons.push(
+        <button
+          key={1}
+          onClick={() => handlePageClick(1)}
+          className={`px-4 py-2 rounded mx-1 ${page === 1 ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border border-blue-600'}`}
+        >
+          1
+        </button>
+      );
+      pageButtons.push(<span key="ellipsis-start" className="px-2">...</span>);
+    }
+
+    // Display the buttons for the current page and neighboring pages
+    for (let i = Math.max(page - 1, 1); i <= Math.min(page + 1, totalPages); i++) {
+      pageButtons.push(
+        <button
+          key={i}
+          onClick={() => handlePageClick(i)}
+          className={`px-4 py-2 rounded mx-1 ${i === page ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border border-blue-600'}`}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    // Ellipsis if there are more pages after the current ones
+    if (page + 1 < totalPages) {
+      pageButtons.push(<span key="ellipsis-end" className="px-2">...</span>);
+      pageButtons.push(
+        <button
+          key={totalPages}
+          onClick={() => handlePageClick(totalPages)}
+          className={`px-4 py-2 rounded mx-1 ${page === totalPages ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border border-blue-600'}`}
+        >
+          {totalPages}
+        </button>
+      );
+    }
+
+    return pageButtons;
+  };
 
   return (
     <div>
@@ -52,12 +94,12 @@ const ActiveLoans = () => {
         {isLoadingLoans ? (
           <div className="text-center my-4">Loading loans...</div>
         ) : (
-          loansData?.data.map((loan, index) => (
+          loansData?.data.content.map((loan, index) => (
             <div
               key={loan.serialNumber}
               className="grid grid-cols-3 lg:grid-cols-7 border-b min-h-12 items-center"
             >
-              <div className="hidden md:block">{index + 1}</div>
+              <div className="hidden md:block">{(page - 1) * 10 + index + 1}</div>
               <div>${loan.loanAmount}</div>
               <div>${loan.amountLeftToRepay}</div>
               <div className="hidden md:block">{loan.duration} months</div>
@@ -70,6 +112,26 @@ const ActiveLoans = () => {
           ))
         )}
       </section>
+
+      <div className="flex justify-end mt-4 mr-10 items-center">
+        <button
+          onClick={() => handlePageClick(page - 1)}
+          disabled={page === 1}
+          className={`px-4 py-2 rounded mx-1 flex items-center ${page === 1 ? 'text-gray-400' : 'text-blue-600'}`}
+        >
+          <FaArrowLeft className="mr-2" />
+          Previous
+        </button>
+        {renderPageButtons()}
+        <button
+          onClick={() => handlePageClick(page + 1)}
+          disabled={page === (loansData?.data.totalPages || 1)}
+          className={`px-4 py-2 rounded mx-1 flex items-center ${page === (loansData?.data.totalPages || 1) ? 'text-gray-400' : 'text-blue-600'}`}
+        >
+          Next
+          <FaArrowRight className="ml-2" />
+        </button>
+      </div>
     </div>
   );
 };

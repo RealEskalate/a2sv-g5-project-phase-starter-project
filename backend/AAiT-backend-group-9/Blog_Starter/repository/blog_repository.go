@@ -122,7 +122,13 @@ func (r *BlogRepository) UpdateBlog(c context.Context, blog *domain.BlogUpdate, 
 	if err != nil {
 		return nil, err
 	}
-	return &domain.Blog{}, nil
+	// fetch the updated blog and return it
+	var updatedBlog domain.Blog
+	err = collection.FindOne(c, filter).Decode(&updatedBlog)
+	if err != nil {
+		return nil, err
+	}
+	return &updatedBlog, nil
 }
 
 func (r *BlogRepository) DeleteBlog(c context.Context, blogID string) error {
@@ -344,7 +350,7 @@ func (sr *BlogRepository) DeleteRating(ctx context.Context, deletedRating *domai
 	collection := sr.db.Collection(sr.blogCollection)
 	filter := bson.M{"_id": objectID}
 	update := bson.D{{Key: "$inc", Value: bson.D{
-		{Key: "total_rating", Value: -deletedRating.Rating},
+		{Key: "total_rating", Value: (-1 * deletedRating.Rating)},
 		{Key: "rating_count", Value: -1},
 	}}}
 
@@ -363,7 +369,19 @@ func (sr *BlogRepository) DeleteRating(ctx context.Context, deletedRating *domai
 		return err
 	}
 
-	updatedAverageRating := float64(result.TotalRating) / float64(result.RatingCount)
+	if result.RatingCount == 0 {
+		_, err = collection.UpdateOne(ctx, filter, bson.D{
+			{Key: "$set", Value: bson.D{
+				{Key: "average_rating", Value: 0},
+			}},
+		})
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	updatedAverageRating := float64(result.TotalRating) / float64(result.RatingCount) // it has logical bug here because it is not checking if rating count is 0
+
 	_, err = collection.UpdateOne(ctx, filter, bson.D{
 		{Key: "$set", Value: bson.D{
 			{Key: "average_rating", Value: updatedAverageRating},
@@ -408,6 +426,10 @@ func (sr *BlogRepository) UpdateCommentCount(ctx context.Context, blogID string,
 // UpdateLikeCount implements domain.BlogRepository.
 
 func (b *BlogRepository) UpdateLikeCount(c context.Context, blogID string, isIncrement bool) error {
+	blogObjID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return err
+	}
 	collection := b.db.Collection(b.blogCollection)
 	var update int
 	if isIncrement {
@@ -415,7 +437,7 @@ func (b *BlogRepository) UpdateLikeCount(c context.Context, blogID string, isInc
 	} else {
 		update = -1
 	}
-	_, err := collection.UpdateOne(c, bson.M{"_id": blogID}, bson.M{"$inc": bson.M{"like_count": update}})
+	_, err = collection.UpdateOne(c, bson.M{"_id": blogObjID}, bson.M{"$inc": bson.M{"like_count": update}})
 	if err != nil {
 		return err
 	}

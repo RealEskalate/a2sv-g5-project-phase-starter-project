@@ -12,21 +12,20 @@ const (
 )
 
 type Blog struct {
-
-	BlogID  primitive.ObjectID `json:"blog_id" bson:"_id"`
-	UserID  primitive.ObjectID `json:"user_id" bson:"user_id"`
-	Title   string `json:"title" bson:"title"`
-	Content string `json:"content" bson:"content"`
-	Tags    []string `json:"tags" bson:"tags"`
-	Author string `json:"author" bson:"author"`
-	CreatedAt   time.Time `json:"createtimestamp" bson:"createtimestamp"`
-	UpdatedAt    time.Time `json:"updatetimestamp" bson:"updatetimestamp"`
-	AverageRating float64 `json:"average_rating" bson:"average_rating"` // do some math and modify when rating is called
-	TotalRating int `json:"total_rating" bson:"total_rating"` // add when rating is called
-	RatingCount int `json:"rating_count" bson:"total_rating"`
-	ViewCount int `json:"view_count" bson:"view_count"`  //add when getbyid is used and blog is viewed
-	LikeCount int `json:"like_count" bson:"like_count"`  // add when like is called and substarct when it is unliked
-	CommentCount int `json:"comment_count" bson:"comment_count"` // add when comment is called and substarct when it is deleted	
+	BlogID        primitive.ObjectID `json:"blog_id" bson:"_id"`
+	UserID        primitive.ObjectID `json:"user_id" bson:"user_id"`
+	Title         string             `json:"title" bson:"title"`
+	Content       string             `json:"content" bson:"content"`
+	Tags          []string           `json:"tags" bson:"tags"`
+	Author        string             `json:"author" bson:"author"`
+	CreatedAt     time.Time          `json:"createtimestamp" bson:"createtimestamp"`
+	UpdatedAt     time.Time          `json:"updatetimestamp" bson:"updatetimestamp"`
+	AverageRating float64            `json:"average_rating" bson:"average_rating"` // do some math and modify when rating is called
+	TotalRating   int                `json:"total_rating" bson:"total_rating"`     // add when rating is called
+	RatingCount   int                `json:"rating_count" bson:"rating_rating"`
+	ViewCount     int                `json:"view_count" bson:"view_count"`       //add when getbyid is used and blog is viewed
+	LikeCount     int                `json:"like_count" bson:"like_count"`       // add when like is called and substarct when it is unliked
+	CommentCount  int                `json:"comment_count" bson:"comment_count"` // add when comment is called and substarct when it is deleted
 }
 
 type BlogCreate struct {
@@ -36,18 +35,16 @@ type BlogCreate struct {
 	Tags    []string `json:"tags" bson:"tags" binding:"required"`
 }
 
-
-
 type BlogFilterRequest struct {
-    Tags    			[]string
-	LikeLowerRange		uint
-	ViewLowerRange		uint
-    Date    			*time.Time
+	Tags           []string
+	LikeLowerRange uint
+	ViewLowerRange uint
+	Date           *time.Time
 }
 
 type BlogSearchRequest struct {
-	Title			string					`json:"title"`
-	Author			string					`json:"author"`
+	Title  string `json:"title"`
+	Author string `json:"author"`
 }
 
 type BlogUpdate struct {
@@ -70,8 +67,8 @@ type BlogRepository interface {
 	GetAllBlog(c context.Context, skip int64, limit int64, sortBy string) ([]*Blog, *PaginationMetadata, error)
 	UpdateBlog(c context.Context, blog *BlogUpdate, blogID string) (*Blog, error)
 	DeleteBlog(c context.Context, blogID string) error
-	SearchBlogs(context.Context, *BlogSearchRequest)	([]*Blog, error)
-	FilterBlogs(context.Context, *BlogFilterRequest)	([]*Blog, error)
+	SearchBlogs(context.Context, *BlogSearchRequest) ([]*Blog, error)
+	FilterBlogs(context.Context, *BlogFilterRequest) ([]*Blog, error)
 	IncrementViewCount(c context.Context, blogID string) (*Blog, error)
 	UpdateRating(context.Context, *BlogRating, int) error
 	InsertRating(context.Context, *BlogRating) error
@@ -82,8 +79,8 @@ type BlogRepository interface {
 
 type BlogUseCase interface {
 	CreateBlog(c context.Context, blog *BlogCreate) (*Blog, error)
-	SearchBlogs(context.Context, *BlogSearchRequest)	([]*Blog, error)
-	FilterBlogs(context.Context, *BlogFilterRequest)	([]*Blog, error)
+	SearchBlogs(context.Context, *BlogSearchRequest) ([]*Blog, error)
+	FilterBlogs(context.Context, *BlogFilterRequest) ([]*Blog, error)
 	GetBlogByID(c context.Context, blogID string) (*Blog, error)
 	GetAllBlog(c context.Context, skip int64, limit int64, sortBy string) ([]*Blog, *PaginationMetadata, error)
 	UpdateBlog(c context.Context, blog *BlogUpdate, blogID string) (*Blog, error)

@@ -14,7 +14,6 @@ type BlogCommentRepository struct {
 	commentCollection string
 }
 
-
 func NewCommentRepository(dataBase *mongo.Database, commentCollection string, ctx *context.Context) domain.CommentRepository {
 	return &BlogCommentRepository{
 		DataBase:          dataBase,
@@ -24,7 +23,7 @@ func NewCommentRepository(dataBase *mongo.Database, commentCollection string, ct
 
 // Create implements domain.CommentRepository.
 func (bcr *BlogCommentRepository) Create(ctx context.Context, comment *domain.Comment) (*domain.Comment, error) {
-	comment.CommentID = primitive.NewObjectID() 
+	comment.CommentID = primitive.NewObjectID()
 	collection := bcr.DataBase.Collection(bcr.commentCollection)
 	_, err := collection.InsertOne(ctx, comment)
 	if err != nil {
@@ -32,7 +31,7 @@ func (bcr *BlogCommentRepository) Create(ctx context.Context, comment *domain.Co
 	}
 
 	var foundComment domain.Comment
-	filter := bson.M{"_id" : comment.CommentID}
+	filter := bson.M{"_id": comment.CommentID}
 	err = collection.FindOne(ctx, filter).Decode(&foundComment)
 	return &foundComment, err
 }
@@ -45,7 +44,7 @@ func (bcr *BlogCommentRepository) Delete(ctx context.Context, commentID string) 
 		return nil, err
 	}
 
-	filter := bson.M{"_id" : objectID}
+	filter := bson.M{"_id": objectID}
 
 	var deletedComment domain.Comment
 	err = collection.FindOne(ctx, filter).Decode(&deletedComment)
@@ -65,10 +64,10 @@ func (bcr *BlogCommentRepository) Update(ctx context.Context, content string, co
 		return nil, err
 	}
 
-	filter := bson.M{"_id" : objectID}
+	filter := bson.M{"_id": objectID}
 	update := bson.D{{
-		Key : "$set", Value : bson.D{
-			{Key : "content", Value : content},
+		Key: "$set", Value: bson.D{
+			{Key: "content", Value: content},
 		},
 	}}
 
@@ -91,7 +90,7 @@ func (bcr *BlogCommentRepository) GetCommentByID(ctx context.Context, commentID 
 		return nil, err
 	}
 
-	filter := bson.M{"commentID" : objectID}
+	filter := bson.M{"_id": objectID}
 	var foundComment domain.Comment
 	err = collection.FindOne(ctx, filter).Decode(&foundComment)
 	return &foundComment, err

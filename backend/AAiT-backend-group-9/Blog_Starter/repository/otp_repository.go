@@ -5,6 +5,7 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -59,8 +60,12 @@ func (or *otpRepository) GetOtpByEmail(c context.Context, email string) (domain.
 }
 
 func (or *otpRepository) GetByID(c context.Context, id string) (domain.Otp, error) {
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return domain.Otp{}, err
+	}
 	collection := or.database.Collection(or.collection)
 	var otp domain.Otp
-	err := collection.FindOne(c, bson.M{"_id": id}).Decode(&otp)
+	err = collection.FindOne(c, bson.M{"_id": objID}).Decode(&otp)
 	return otp, err
 }

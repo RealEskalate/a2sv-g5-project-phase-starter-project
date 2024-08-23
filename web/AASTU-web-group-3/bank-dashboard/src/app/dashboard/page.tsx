@@ -26,7 +26,7 @@ const HomePage: React.FC = () => {
       case "deposit":
         return `+$${transaction.amount}`;
       default:
-        return `$${transaction.amount}`; // Default case if type is unrecognized
+        return `$${transaction.amount}`; 
     }
   };
 

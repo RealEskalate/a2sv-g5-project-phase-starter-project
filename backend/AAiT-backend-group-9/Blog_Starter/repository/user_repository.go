@@ -120,18 +120,18 @@ func (u *UserRepository) GetUserByID(c context.Context, userID string) (*domain.
 
 // UpdatePassword implements domain.UserRepository.
 func (u *UserRepository) UpdatePassword(c context.Context, password string, userID string) (*domain.User, error) {
-	collection:= u.database.Collection(u.collection)
+	collection := u.database.Collection(u.collection)
 	hexId, err := primitive.ObjectIDFromHex(userID)
-	if err!=nil{
-		return nil,err
-	}
-	filter:= bson.M{"_id": hexId }
-	update:= bson.M{"$set":bson.M{"password": password}}
-	_,err= collection.UpdateOne(c,filter, update)
-	if err!=nil{
+	if err != nil {
 		return nil, err
 	}
-	return u.GetUserByID(c,userID)
+	filter := bson.M{"_id": hexId}
+	update := bson.M{"$set": bson.M{"password": password}}
+	_, err = collection.UpdateOne(c, filter, update)
+	if err != nil {
+		return nil, err
+	}
+	return u.GetUserByID(c, userID)
 }
 
 // UpdateProfile implements domain.UserRepository.
@@ -145,32 +145,31 @@ func (u *UserRepository) UpdateProfile(c context.Context, userUpdate *domain.Use
 
 	updateFields := bson.M{}
 
-    if userUpdate.Username != "" {
-        updateFields["username"] = userUpdate.Username
-    }
-    if userUpdate.Name != "" {
-        updateFields["name"] = userUpdate.Name
-    }
-    if userUpdate.Bio != "" {
-        updateFields["bio"] = userUpdate.Bio
-    }
+	if userUpdate.Username != "" {
+		updateFields["username"] = userUpdate.Username
+	}
+	if userUpdate.Name != "" {
+		updateFields["name"] = userUpdate.Name
+	}
+	if userUpdate.Bio != "" {
+		updateFields["bio"] = userUpdate.Bio
+	}
 	if userUpdate.ContactInfo != (domain.ContactInfo{}) {
-        contactInfoFields := bson.M{}
-        if userUpdate.ContactInfo.Phone != "" {
-            contactInfoFields["phone"] = userUpdate.ContactInfo.Phone
-        }
-        if userUpdate.ContactInfo.Address != "" {
-            contactInfoFields["address"] = userUpdate.ContactInfo.Address
-        }
-        if len(contactInfoFields) > 0 {
-            updateFields["contact_info"] = contactInfoFields
-        }
-    }
-    // Always update the timestamp
-    updateFields["updated_at"] = primitive.NewDateTimeFromTime(time.Now())
+		contactInfoFields := bson.M{}
+		if userUpdate.ContactInfo.Phone != "" {
+			contactInfoFields["phone"] = userUpdate.ContactInfo.Phone
+		}
+		if userUpdate.ContactInfo.Address != "" {
+			contactInfoFields["address"] = userUpdate.ContactInfo.Address
+		}
+		if len(contactInfoFields) > 0 {
+			updateFields["contact_info"] = contactInfoFields
+		}
+	}
+	// Always update the timestamp
+	updateFields["updated_at"] = primitive.NewDateTimeFromTime(time.Now())
 
-    update := bson.M{"$set": updateFields}
-
+	update := bson.M{"$set": updateFields}
 
 	filter := bson.M{"_id": objID}
 	opts := options.Update().SetUpsert(false) // SetUpsert(false) means we don't want to create a new document if it doesn't exist
@@ -212,18 +211,19 @@ func (u *UserRepository) UpdateProfilePicture(c context.Context, profilePicPath 
 
 // UpdateToken implements domain.UserRepository.
 func (u *UserRepository) UpdateToken(c context.Context, accessToken string, refreshToken string, userID string) (*domain.User, error) {
-	collection:= u.database.Collection(u.collection)
-	idHex,err:= primitive.ObjectIDFromHex(userID)
-	if err!=nil{
+	collection := u.database.Collection(u.collection)
+	idHex, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
 		return nil, err
 	}
-	filter:= bson.M{"_id":idHex}
-	update:=bson.M{"$set": bson.M{"accessToken":accessToken, "refreshToken": refreshToken}}
-	_,err = collection.UpdateOne(c, filter, update)
-	if err!=nil{
-		return nil,err
+
+	filter := bson.M{"_id": idHex}
+	update := bson.M{"$set": bson.M{"accessToken": accessToken, "refreshToken": refreshToken}}
+	_, err = collection.UpdateOne(c, filter, update)
+	if err != nil {
+		return nil, err
 	}
-	return u.GetUserByID(c,userID)
+	return u.GetUserByID(c, userID)
 }
 
 // UpdateRole implements domain.UserRepository.

@@ -55,7 +55,7 @@ const Layout = ({
         }
       } catch (error) {
         console.error("Failed to refresh access token:", error);
-        router.push("/login");
+        router.push("/");
       }
     };
     if (session) {
@@ -69,7 +69,7 @@ const Layout = ({
       // console.log("session", session, isTokenExpired(session.user.accessToken));
     // }
     if (status == "unauthenticated" && !session) {
-      router.push("/login");
+      router.push("/");
     }
   }, [session, router, refreshAccessToken]);
 

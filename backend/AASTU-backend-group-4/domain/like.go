@@ -15,14 +15,11 @@ type Like struct {
 }
 
 type LikeRepository interface {
-	GetLikesCount(ctx context.Context, blogID primitive.ObjectID) (int, error)
+	AddLike(ctx context.Context, like Like) error                              //
+	GetLikesCount(ctx context.Context, blogID primitive.ObjectID) (int, error) //
 	GetLikes(ctx context.Context, blogID primitive.ObjectID) ([]Like, error)
-	GetLikeByID(ctx context.Context, likeID primitive.ObjectID) (Like, error)
-	AddLike(ctx context.Context, like Like) error
-	RemoveLike(ctx context.Context, likeID primitive.ObjectID) error
-}
-
-type LikeRequest struct {
-	BlogID primitive.ObjectID `bson:"blog_id" json:"blog_id"`
-	UserID primitive.ObjectID `bson:"user_id" json:"user_id"`
+	GetBlogLikes(ctx context.Context, blogID primitive.ObjectID) ([]Like, error)                              //
+	GetLikeByID(ctx context.Context, likeID primitive.ObjectID) (Like, error)                                 //
+	RemoveLike(ctx context.Context, userID primitive.ObjectID, likeID primitive.ObjectID, isAdmin bool) error //
+	RemoveBlogLikes(ctx context.Context, blogID primitive.ObjectID) error                                     //
 }

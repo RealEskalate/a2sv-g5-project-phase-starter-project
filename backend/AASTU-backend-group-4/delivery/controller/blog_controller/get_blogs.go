@@ -1,7 +1,6 @@
 package blog_controller
 
 import (
-	"context"
 	"net/http"
 	"strconv"
 
@@ -23,7 +22,7 @@ func (bc *BlogController) GetBlogs(c *gin.Context) {
 
 	sortBy := c.DefaultQuery("sort_by", "recent") // default to "recent"
 
-	posts, totalPosts, err := bc.usecase.GetBlogs(context.Background(), page, limit, sortBy)
+	posts, totalPosts, err := bc.usecase.GetBlogs(c, page, limit, sortBy)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to retrieve blog posts"})
 		return

@@ -16,15 +16,15 @@ func (bc *BlogController) CreateComment(c *gin.Context) {
 		return
 	}
 
-	authorID := c.GetString("user_id")
+	userID := c.GetString("user_id")
 
-	ID, err := primitive.ObjectIDFromHex(authorID)
+	ID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
-	comment.UserID = ID
 
+	comment.UserID = ID
 	createdComment, err := bc.usecase.CreateComment(c, &comment)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

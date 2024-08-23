@@ -5,6 +5,7 @@ import 'features/authentication/presentation/bloc/auth_bloc.dart';
 import 'features/authentication/presentation/pages/cover_page.dart';
 import 'features/authentication/presentation/pages/sign_in_page.dart';
 import 'features/authentication/presentation/pages/sign_up_page.dart';
+import 'features/chat/presentation/pages/audio_record.dart';
 import 'features/chat/presentation/pages/message_detail.dart';
 import 'features/product/domain/entities/product_entity.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
@@ -56,6 +57,8 @@ void main() async {
             return createRoute(UpdatePage(selectedProduct: settings.arguments as ProductEntity));
           } else if (settings.name == '/message') {
             return createRoute(const MessageDetail());
+          } else if (settings.name == '/audio_record') {
+            return createRoute(const AudioPage());
           }
           return null;
         },

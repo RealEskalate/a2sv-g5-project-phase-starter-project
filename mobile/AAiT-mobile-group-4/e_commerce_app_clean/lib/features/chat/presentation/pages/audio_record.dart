@@ -185,29 +185,29 @@ class _WaveBubbleState extends State<WaveBubble> {
   }
 }
 
-void main() => runApp(const MyApp());
+void main() => runApp(const AudioPage());
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class AudioPage extends StatelessWidget {
+  const AudioPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'Audio Waveforms',
       debugShowCheckedModeBanner: false,
-      home: Home(),
+      home: AudioTest(),
     );
   }
 }
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class AudioTest extends StatefulWidget {
+  const AudioTest({Key? key}) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
+  State<AudioTest> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<AudioTest> {
   late final RecorderController recorderController;
 
   String? path;
@@ -226,7 +226,7 @@ class _HomeState extends State<Home> {
 
   void _getDir() async {
     appDirectory = await getApplicationDocumentsDirectory();
-    path = "${appDirectory.path}/recording.m4a";
+    path = '${appDirectory.path}/recording.m4a';
     isLoading = false;
     setState(() {});
   }
@@ -245,7 +245,7 @@ class _HomeState extends State<Home> {
       musicFile = result.files.single.path;
       setState(() {});
     } else {
-      debugPrint("File not picked");
+      debugPrint('File not picked');
     }
   }
 
@@ -348,7 +348,7 @@ class _HomeState extends State<Home> {
                                   child: TextField(
                                     readOnly: true,
                                     decoration: InputDecoration(
-                                      hintText: "Type Something...",
+                                      hintText: 'Type Something...',
                                       hintStyle: const TextStyle(
                                           color: Colors.white54),
                                       contentPadding:
@@ -396,7 +396,7 @@ class _HomeState extends State<Home> {
         if (path != null) {
           isRecordingCompleted = true;
           debugPrint(path);
-          debugPrint("Recorded file size: ${File(path!).lengthSync()}");
+          debugPrint('Recorded file size: ${File(path!).lengthSync()}');
         }
       } else {
         await recorderController.record(path: path); // Path is optional

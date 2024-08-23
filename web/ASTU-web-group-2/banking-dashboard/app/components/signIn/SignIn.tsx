@@ -38,7 +38,7 @@ const SignIn = ({ onClose }: { onClose: () => void }) => {
       notify.error("Invalid Credentials");
     } else {
       notify.success("Successfully logged in");
-      onClose(); // Close the modal after successful login
+    
       router.push("/dashboard");
     }
     setLoading(false);
@@ -133,7 +133,7 @@ const SignIn = ({ onClose }: { onClose: () => void }) => {
               </button>
             </form>
             <div className="text-[#515B6F] text-center text-sm mt-4">
-              Don't have an account?{" "}
+              {"Don't have an account? "}
               <Link href="/signup" className="font-semibold text-[#083E9E]">
                 Register
               </Link>

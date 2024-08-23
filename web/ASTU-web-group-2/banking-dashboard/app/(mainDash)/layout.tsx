@@ -76,7 +76,7 @@ const Layout = ({
     if (userData?.data) {
       dispatch(setUser(userData.data));
     }
-  }, [userData, dispatch]);
+  }, [userData ]);
 
   return (
     <>

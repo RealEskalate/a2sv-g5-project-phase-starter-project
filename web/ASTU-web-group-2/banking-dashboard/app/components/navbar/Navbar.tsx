@@ -83,7 +83,10 @@ const Navbar = () => {
           </div>
 
           <div className="flex-grow flex justify-start max-md:justify-center">
-            <p className="font-semibold text-[20px] sm:text-[25px] text-[#343C6A]">
+            <p
+              data-id="title"
+              className="font-semibold text-[20px] sm:text-[25px] text-[#343C6A]"
+            >
               {title.slice(0)}
             </p>
           </div>

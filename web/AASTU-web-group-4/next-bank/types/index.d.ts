@@ -10,6 +10,7 @@ export interface User {
   presentAddress: string;
   city: string;
   country: string;
+  currency: string;
   profilePicture: string;
   preference: {
     currency: string;
@@ -376,4 +377,27 @@ declare interface getBankProps {
 
 declare interface getBankByAccountIdProps {
   accountId: string;
+}
+export interface UserData {
+  id: string;
+  name: string;
+  email: string;
+  dateOfBirth: string;
+  permanentAddress: string;
+  postalCode: string;
+  username: string;
+  presentAddress: string;
+  city: string;
+  country: string;
+  profilePicture: string;
+  accountBalance: number;
+  role: 'USER';
+  preference: {
+    currency: string;
+    sentOrReceiveDigitalCurrency: boolean;
+    receiveMerchantOrder: boolean;
+    accountRecommendations: boolean;
+    timeZone: string;
+    twoFactorAuthentication: boolean;
+  };
 }

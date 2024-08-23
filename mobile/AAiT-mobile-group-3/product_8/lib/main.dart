@@ -42,14 +42,12 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => AuthBloc(
-           sl(),
+            sl(),
             sl(),
             sl(),
             sl(),
           ),
         ),
-
-         
       ],
       child: MaterialApp(
         onGenerateRoute: (settings) {
@@ -81,7 +79,7 @@ class MyApp extends StatelessWidget {
               return null;
           }
         },
-        initialRoute: '/splash',
+        initialRoute: '/dummy_page',
         title: 'Flutter Demo',
         theme: ThemeData(
           textTheme: GoogleFonts.poppinsTextTheme(),

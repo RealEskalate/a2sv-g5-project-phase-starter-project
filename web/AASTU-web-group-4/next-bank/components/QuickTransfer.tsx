@@ -200,7 +200,7 @@ const QuickTransfer: React.FC = () => {
           />
           <button
             className={`${colors.blue} text-white w-[60%] py-2 rounded-3xl`}
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit(onSubmit as any)}
           >
             Send ✈
           </button>

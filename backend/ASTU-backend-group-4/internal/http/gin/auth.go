@@ -7,17 +7,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type UserController struct {
+type AuthController struct {
 	authuserusecase auth.AuthUserUsecase
 }
 
-func NewUserController(authuserusecase auth.AuthUserUsecase) UserController {
-	return UserController{
+func NewAuthController(authuserusecase auth.AuthUserUsecase) AuthController {
+	return AuthController{
 		authuserusecase: authuserusecase,
 	}
 }
 
-func (uc *UserController) Login(ctx *gin.Context) {
+func (uc *AuthController) Login(ctx *gin.Context) {
 	var userInfo auth.LoginForm
 	if err := ctx.ShouldBindJSON(&userInfo); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -31,7 +31,7 @@ func (uc *UserController) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"access_token": accessToken, "refresh_token": refToken})
 }
 
-func (uc *UserController) RegisterUser(ctx *gin.Context) {
+func (uc *AuthController) RegisterUser(ctx *gin.Context) {
 	var user auth.User
 
 	if err := ctx.ShouldBindJSON(&user); err != nil {
@@ -46,7 +46,7 @@ func (uc *UserController) RegisterUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "successfully registered"})
 }
 
-func (uc *UserController) UpdateProfile(ctx *gin.Context) {
+func (uc *AuthController) UpdateProfile(ctx *gin.Context) {
 	var user auth.User
 	userid := ctx.Value("userID").(string)
 
@@ -62,7 +62,7 @@ func (uc *UserController) UpdateProfile(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "updated"})
 }
 
-func (uc *UserController) ActivateUser(ctx *gin.Context) {
+func (uc *AuthController) ActivateUser(ctx *gin.Context) {
 	token := ctx.Param("token")
 	userID := ctx.Param("userID")
 
@@ -73,13 +73,13 @@ func (uc *UserController) ActivateUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "activated"})
 }
 
-func (uc *UserController) Logout(ctx *gin.Context) {
+func (uc *AuthController) Logout(ctx *gin.Context) {
 	userid := ctx.Value("userID")
 	uc.authuserusecase.Logout(ctx, userid.(string))
 	ctx.JSON(http.StatusOK, gin.H{"message": "loged out successfully"})
 }
 
-func (uc *UserController) PromoteUser(ctx *gin.Context) {
+func (uc *AuthController) PromoteUser(ctx *gin.Context) {
 	userID := ctx.Param("userid")
 	err := uc.authuserusecase.PromoteUser(ctx, userID)
 
@@ -91,7 +91,7 @@ func (uc *UserController) PromoteUser(ctx *gin.Context) {
 
 }
 
-func (uc *UserController) DemoteUser(ctx *gin.Context) {
+func (uc *AuthController) DemoteUser(ctx *gin.Context) {
 	userID := ctx.Param("userid")
 	err := uc.authuserusecase.DemoteUser(ctx, userID)
 

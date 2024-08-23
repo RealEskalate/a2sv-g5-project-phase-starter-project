@@ -29,6 +29,11 @@ class UserModel extends UserEntity {
     );
   }
 
+   Map<String, dynamic> toJsonForSeller() => {
+        '_id': id,
+        'name': name,
+        'email': email,
+      };
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,

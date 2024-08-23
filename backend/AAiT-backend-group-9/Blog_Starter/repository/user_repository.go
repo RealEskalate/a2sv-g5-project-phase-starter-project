@@ -216,6 +216,7 @@ func (u *UserRepository) UpdateToken(c context.Context, accessToken string, refr
 	if err != nil {
 		return nil, err
 	}
+
 	filter := bson.M{"_id": idHex}
 	update := bson.M{"$set": bson.M{"accessToken": accessToken, "refreshToken": refreshToken}}
 	_, err = collection.UpdateOne(c, filter, update)

@@ -30,15 +30,18 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	indexModels := []mongo.IndexModel{
 		{
 			Keys:    bson.D{{Key: "email", Value: 1}}, // index in ascending order
-			Options: options.Index().SetUnique(true), // make index unique
+			Options: options.Index().SetUnique(true),  // make index unique
+		},
+		{
+			Keys:    bson.D{{Key: "username", Value: 1}}, // index in ascending order
+			Options: options.Index().SetUnique(true),     // make index unique
 		},
 	}
 	_, err := customUserCol.CreateIndexes(context.Background(), indexModels)
 	if err != nil {
 		panic(err)
 	}
-	
-	
+
 	// customBlogCol := custommongo.NewMongoCollection(blogcol)
 	customRefreshTokenCol := custommongo.NewMongoCollection(refreshtokencol)
 	customResetTokenCol := custommongo.NewMongoCollection(resettokencol)
@@ -54,16 +57,16 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	indexModels = []mongo.IndexModel{
 
 		{
-			Keys:    bson.D{{Key: "slug", Value: 1}}, // index in ascending order
+			Keys: bson.D{{Key: "slug", Value: 1}}, // index in ascending order
 		},
 		{
-			Keys:    bson.D{{Key: "authorname", Value: 1}}, // index in ascending order
+			Keys: bson.D{{Key: "authorname", Value: 1}}, // index in ascending order
 		},
 		{
-			Keys:    bson.D{{Key: "authorid", Value: 1}}, // index in ascending order
+			Keys: bson.D{{Key: "authorid", Value: 1}}, // index in ascending order
 		},
 		{
-			Keys:    bson.D{{Key: "tags", Value: 1}}, // index in ascending order
+			Keys: bson.D{{Key: "tags", Value: 1}}, // index in ascending order
 		},
 	}
 	_, err = customPostCol.CreateIndexes(context.Background(), indexModels)
@@ -74,10 +77,10 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	customCommentCol := custommongo.NewMongoCollection(comments)
 	indexModels = []mongo.IndexModel{
 		{
-			Keys:    bson.D{{Key: "postid", Value: 1}}, // index in ascending order
+			Keys: bson.D{{Key: "postid", Value: 1}}, // index in ascending order
 		},
 		{
-			Keys:    bson.D{{Key: "authorid", Value: 1}}, // index in ascending order
+			Keys: bson.D{{Key: "authorid", Value: 1}}, // index in ascending order
 		},
 	}
 	_, err = customCommentCol.CreateIndexes(context.Background(), indexModels)
@@ -88,10 +91,10 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 	customlikesDislikesCol := custommongo.NewMongoCollection(likesDislikes)
 	indexModels = []mongo.IndexModel{
 		{
-			Keys:    bson.D{{Key: "postid", Value: 1}}, // index in ascending order
+			Keys: bson.D{{Key: "postid", Value: 1}}, // index in ascending order
 		},
 		{
-			Keys:    bson.D{{Key: "userid", Value: 1}}, // index in ascending order
+			Keys: bson.D{{Key: "userid", Value: 1}}, // index in ascending order
 		},
 	}
 	_, err = customlikesDislikesCol.CreateIndexes(context.Background(), indexModels)
@@ -114,7 +117,7 @@ func Setuprouter(client *mongo.Client) *gin.Engine {
 
 	BlogCollections = Domain.BlogCollections{
 
-		Users:         customUserCol,
+		Users: customUserCol,
 		// Blogs:         customBlogCol,
 		RefreshTokens: customRefreshTokenCol,
 		ResetTokens:   customResetTokenCol,

@@ -41,6 +41,7 @@ func (suite *RefreshUsecaseTestSuite) TestRefreshToken_Success() {
 	ctx := context.Background()
 	userID := "user1"
 	refreshToken := "valid_refresh_token"
+	newAccessToken := "new_access_token"
 
 	user := &models.User{
 		ID:    userID,
@@ -50,10 +51,8 @@ func (suite *RefreshUsecaseTestSuite) TestRefreshToken_Success() {
 	session := &models.Session{
 		UserID:       userID,
 		RefreshToken: refreshToken,
+		AccessToken:  newAccessToken,
 	}
-
-	newAccessToken := "new_access_token"
-	newRefreshToken := "new_refresh_token"
 
 	suite.sessionRepositoryMock.
 		EXPECT().
@@ -69,18 +68,9 @@ func (suite *RefreshUsecaseTestSuite) TestRefreshToken_Success() {
 		EXPECT().
 		CreateAccessToken(*user, 60).
 		Return(newAccessToken, nil)
-
-	suite.jwtServiceMock.
-		EXPECT().
-		CreateRefreshToken(*user, 60).
-		Return(newRefreshToken, nil)
-
 	suite.sessionRepositoryMock.
 		EXPECT().
-		UpdateToken(ctx, &models.Session{
-			UserID:       userID,
-			RefreshToken: newRefreshToken,
-		}).
+		UpdateToken(ctx, session).
 		Return(nil)
 
 	accessToken, err := suite.refreshUsecase.RefreshToken(ctx, userID, refreshToken)
@@ -178,10 +168,7 @@ func (suite *RefreshUsecaseTestSuite) TestRefreshToken_CreateAccessTokenError() 
 		CreateAccessToken(*user, 60).
 		Return("", models.InternalServerError("Error creating access token"))
 
-	suite.jwtServiceMock.
-		EXPECT().
-		CreateRefreshToken(*user, 60).
-		Return("", models.InternalServerError("Error creating refresh token"))
+	
 
 	accessToken, err := suite.refreshUsecase.RefreshToken(ctx, userID, refreshToken)
 	suite.Equal(models.InternalServerError("An unexpected error occurred"), err)
@@ -203,9 +190,7 @@ func (suite *RefreshUsecaseTestSuite) TestRefreshToken_UpdateTokenError() {
 		RefreshToken: refreshToken,
 	}
 
-	newRefreshToken := "new_refresh_token"
 	newAccessToken := "new_access_token"
-
 	suite.sessionRepositoryMock.
 		EXPECT().
 		GetToken(ctx, userID).
@@ -221,16 +206,12 @@ func (suite *RefreshUsecaseTestSuite) TestRefreshToken_UpdateTokenError() {
 		CreateAccessToken(*user, 60).
 		Return(newAccessToken, nil)
 
-	suite.jwtServiceMock.
-		EXPECT().
-		CreateRefreshToken(*user, 60).
-		Return(newRefreshToken, nil)
-
 	suite.sessionRepositoryMock.
 		EXPECT().
 		UpdateToken(ctx, &models.Session{
 			UserID:       userID,
-			RefreshToken: newRefreshToken,
+			RefreshToken: refreshToken,
+			AccessToken:  newAccessToken,
 		}).
 		Return(models.InternalServerError("Error updating token"))
 

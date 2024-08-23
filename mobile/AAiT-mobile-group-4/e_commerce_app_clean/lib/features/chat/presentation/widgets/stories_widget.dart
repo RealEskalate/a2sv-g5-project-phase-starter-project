@@ -15,7 +15,7 @@ class StoriesWidget extends StatelessWidget {
         itemCount: 6,
         itemBuilder: (context, index) {
           return Padding(
-            padding: const EdgeInsets.all(4),
+            padding: const EdgeInsets.fromLTRB(26, 4, 0, 4),
             child: Column(
               children: [
                 Container(
@@ -42,6 +42,7 @@ class StoriesWidget extends StatelessWidget {
                 Text(
                   stories[index].storyTitle,
                   style: const TextStyle(
+                    color: Colors.white,
                     fontFamily: 'Poppins',
                     fontSize: 14,
                     fontWeight: FontWeight.w500,

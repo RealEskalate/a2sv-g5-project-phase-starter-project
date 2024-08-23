@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { settingPutUserResponse } from "../types/setting"; 
+import { RandomInvestmentData, settingPutUserResponse } from "../types/setting"; 
 
 interface settingState {
   setting: settingPutUserResponse[];
@@ -29,5 +29,5 @@ const settingSlice = createSlice({
   },
 });
 
-export const { setSetting, setLoading, setError } = settingSlice.actions;
+export const { setSetting, setLoading, setError} = settingSlice.actions;
 export default settingSlice.reducer;

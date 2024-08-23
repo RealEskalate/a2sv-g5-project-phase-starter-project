@@ -22,6 +22,7 @@ export interface settingPutUserRequest{
 
 
 export interface settingPutUserResponse{
+  data:{
     id: string,
     name: string,
     email: string,
@@ -36,4 +37,24 @@ export interface settingPutUserResponse{
     accountBalance: number,
     role: string,
     preference:Preference,
+  }
+    }
+
+    export interface RandomInvestmentData{
+      data:{
+        totalInvestment:number,
+        rateOfReturn:number
+        yearlyTotalInvestment:[
+          {
+            time:string
+            value:number
+          }
+        ]
+        monthlyRevenue:[
+          {
+            time:string
+            value:number
+          }
+        ]
+      }
     }

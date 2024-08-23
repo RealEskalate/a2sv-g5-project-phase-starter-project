@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../user/domain/entities/user.dart';
 import '../../data/models/product_model.dart';
 import '../../domain/entities/product.dart';
 import '../bloc/add_page/add_page_bloc.dart';
@@ -71,6 +72,7 @@ class _AddPageState extends State<AddPage> {
     description: _description.text,
     price: double.parse(_price.text),
     imageUrl: _selectedImage!.path,
+    seller: widget.product?.seller ?? User(email: 'default@gmail.com'),
   );
 
   BlocProvider.of<AddPageBloc>(context).add(

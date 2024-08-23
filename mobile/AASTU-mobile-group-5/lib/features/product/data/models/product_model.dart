@@ -1,3 +1,4 @@
+import '../../../user/data/models/user_model.dart';
 import '../../domain/entities/product.dart';
 
 class ProductModel extends Product {
@@ -7,6 +8,7 @@ class ProductModel extends Product {
     required super.description,
     required super.price,
     required super.imageUrl,
+    required super.seller,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -16,6 +18,7 @@ class ProductModel extends Product {
       description: json['description'] as String,
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       imageUrl: json['imageUrl'] as String,
+      seller: UserModel.fromJson(json['seller'] as Map<String, dynamic>),
     );
   }
 
@@ -26,6 +29,7 @@ class ProductModel extends Product {
       'description': description,
       'price': price,
       'imageUrl': imageUrl,
+      'seller': (seller as UserModel).toJson(),
     };
   }
 }

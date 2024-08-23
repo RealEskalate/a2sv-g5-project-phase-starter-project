@@ -14,7 +14,7 @@ import (
 	"github.com/markbates/goth/providers/google"
 )
 
-func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, refreshTokenUsecase *usecases.TokenUsecase, jwtService infrastructure.JWTService, likeUsecase *usecases.LikeUsecase, commentUsecase *usecases.CommentUsecase, tokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase) {
+func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, refreshTokenUsecase *usecases.TokenUsecase, jwtService infrastructure.JWTService, commentUsecase *usecases.CommentUsecase, tokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase) {
 	r.MaxMultipartMemory = 8 << 20 // 8 MB
 	r.Static("/public", "./uploads")
 
@@ -28,7 +28,7 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 	logoutController := controllers.NewLogoutController(refreshTokenUsecase)
 
 	commentController := controllers.NewCommentController(commentUsecase)
-	likeController := controllers.NewLikeController(likeUsecase)
+	// likeController := controllers.NewLikeController(likeUsecase)
 
 	// Admin middleware
 	// adminMiddleware := infrastructure.AdminMiddleware(jwtService)
@@ -68,7 +68,7 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 		auth.DELETE("/comments/:commentID/replies/:replyID", commentController.DeleteReply) // Delete a reply
 
 		auth.POST("/blogs/:id/like", blogController.LikeBlogPost)
-		auth.GET("/blogs/:id/likes", likeController.GetLikesByBlogID)
+		// auth.GET("/blogs/:id/likes", likeController.GetLikesByBlogID)
 
 		// Admin-specific routes
 		auth.GET("/getallusers", adminMiddleware, userController.GetAllUsers)
@@ -90,11 +90,11 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 
 	// Like routes
 
-	auth.DELETE("/likes/:id", likeController.RemoveLike)
+	// auth.DELETE("/likes/:id", likeController.RemoveLike)
 
 	// Admin-specific routes
-	auth.POST("/getallusers", adminMiddleware, userController.GetAllUsers)
-	auth.PUT("/deleteusers/:id", adminMiddleware, userController.DeleteUser)
+	// auth.POST("/getallusers", adminMiddleware, userController.GetAllUsers)
+	// auth.PUT("/deleteusers/:id", adminMiddleware, userController.DeleteUser)
 
 	// }
 }

@@ -13,18 +13,18 @@ import { ApiProvider } from '@reduxjs/toolkit/query/react';
 import StoreProvider from '@/providers/StoreProvider';
 import SingleCard from './SingleCard';
 
-export default async function page() {
+export default function page() {
   // const session = await getServerSession(authOptions);
   // console.log(session, 'session is from accounts page');
   return (
     <>
       <AccountInformation />
-      <div className=' min-[890px]:flex min-[890px]:space-x-4 lg:space-x-10 mb-5'>
+      <div className=" min-[890px]:flex min-[890px]:space-x-4 lg:space-x-10 mb-5">
         <LastTransaction />
-        <div className='mb-5'>
-          <div className='flex justify-between'>
-            <h1 className='text-[#333B69] pb-2 font-semibold'>My Card</h1>
-            <p className='text-[#333B69] pb-2 font-semibold'>See All</p>
+        <div className="mb-5">
+          <div className="flex justify-between">
+            <h1 className="text-[#333B69] pb-2 font-semibold">My Card</h1>
+            <p className="text-[#333B69] pb-2 font-semibold">See All</p>
           </div>
           <div>
             <StoreProvider>
@@ -34,7 +34,7 @@ export default async function page() {
           </div>
         </div>
       </div>
-      <div className='min-[890px]:flex min-[890px]:space-x-4 lg:space-x-10'>
+      <div className="min-[890px]:flex min-[890px]:space-x-4 lg:space-x-10">
         <DebiteAndCredit />
         <InvoiceSent />
       </div>

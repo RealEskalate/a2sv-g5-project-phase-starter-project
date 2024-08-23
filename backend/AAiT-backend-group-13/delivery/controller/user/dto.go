@@ -51,12 +51,16 @@ type ForgotPasswordDto struct {
 	Email string `json:"email" binding:"required"`
 }
 
-
 type UpdateProfileDto struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
-	Password string `json:"password"`
-	Username string `json:"username"`
-
+	Password  string `json:"password"`
+	Username  string `json:"username"`
+}
+type UserInfo struct {
+	Email         string `json:"email"`
+	VerifiedEmail bool   `json:"verified_email"`
+	GivenName     string `json:"given_name"`
+	FamilyName    string `json:"family_name"`
 }

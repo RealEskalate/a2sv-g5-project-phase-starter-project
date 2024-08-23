@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { defaultloans, loan } from "./ActiveLoansItems";
 import { useSession } from "next-auth/react";
 import { useGetMyLoanServiceQuery } from "@/lib/service/LoanService";
@@ -7,6 +7,9 @@ import { useGetMyLoanServiceQuery } from "@/lib/service/LoanService";
 const ActiveLoansOverview = () => {
   const { data: session } = useSession();
   const accessToken = session?.user.accessToken;
+  useEffect(()=>{
+    console.log("data",session)
+  },[session])
   const { data, isLoading, isError, isSuccess } = useGetMyLoanServiceQuery(
     accessToken || ""
   );

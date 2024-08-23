@@ -3,6 +3,7 @@ import {currentuser} from "@/services/userupdate"
 import {useEffect, useState } from "react"
 import { DocumentDuplicateIcon ,PencilIcon } from "@heroicons/react/24/outline"
 import Image from "next/image"
+import { UserData } from "@/types"
 import {
   Dialog,
   DialogContent,
@@ -17,7 +18,7 @@ import { Label } from "@/components/ui/label"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 
 export function DialogDemo() {
-  const [info, setinfo] = useState([]);
+  const [info, setinfo] = useState<UserData>();
   const [currentPage, setCurrentPage] = useState(0);
   const [visible , setvisible] = useState(false)
   useEffect(() => {
@@ -37,8 +38,13 @@ export function DialogDemo() {
 
     
   }
-  const dateOfBirth = new Date(info.dateOfBirth);
-const options = { month: 'long', day: 'numeric', year: 'numeric' };
+  let dateOfBirth: Date;
+if (info?.dateOfBirth) {
+  dateOfBirth = new Date(info.dateOfBirth);
+} else {
+  dateOfBirth = new Date();
+}
+const options:any = { month: 'long', day: 'numeric', year: 'numeric' };
 const formattedDateOfBirth = dateOfBirth.toLocaleDateString('en-US' , options);
   return (
     <div className="p-0">
@@ -55,8 +61,8 @@ const formattedDateOfBirth = dateOfBirth.toLocaleDateString('en-US' , options);
                 className="rounded-full aspect-square object-cover cursor-pointer "
               />
           <div className="pt-3">
-            <h2 className="user-name font-bold text-lg">{info.name}</h2>
-            <p className="user-username text-sm">@{info.email}</p>
+            <h2 className="user-name font-bold text-lg">{info?.name}</h2>
+            <p className="user-username text-sm">@{info?.email}</p>
           </div>
       </div>
       
@@ -67,7 +73,7 @@ const formattedDateOfBirth = dateOfBirth.toLocaleDateString('en-US' , options);
         {visible && (
          <div className='text-center text-xl font-bold p-4 flex justify-center gap-3 overflow-x-hidden '>
             <p >
-              ${info.accountBalance}
+              ${info?.accountBalance}
             </p>
             <button onClick={handleVisibility}> <FaEyeSlash className='text-gray-400 hover:text-gray-600 text-2xl' /> </button>
           </div>
@@ -101,7 +107,7 @@ const formattedDateOfBirth = dateOfBirth.toLocaleDateString('en-US' , options);
         <div className="profile-body-content px-4">
           <div className="profile-body-content-item flex gap-2 py-2">
             <p className="font-bold ">Username:</p>
-            <p>{info.username}</p>
+            <p>{info?.username}</p>
           </div>
           <div className="profile-body-content-item flex gap-2 py-2">
             <p className="font-bold">Dateofbirth:</p>
@@ -120,15 +126,15 @@ const formattedDateOfBirth = dateOfBirth.toLocaleDateString('en-US' , options);
       <div className="profile-body-content px-4 py-4">
           <div className="profile-body-content-item flex gap-2 py-2">
             <p className="font-bold">Country:</p>
-            <p>{info.country}</p>
+            <p>{info?.country}</p>
           </div>
           <div className="profile-body-content-item flex gap-2 py-2">
             <p className="font-bold" >City:</p>
-            <p>{info.city}</p>
+            <p>{info?.city}</p>
           </div>
           <div className="profile-body-content-item flex gap-2 py-2 ">
             <p className="font-bold">Address:</p>
-            <p>{info.presentAddress}</p>
+            <p>{info?.presentAddress}</p>
           </div>
          
         </div>

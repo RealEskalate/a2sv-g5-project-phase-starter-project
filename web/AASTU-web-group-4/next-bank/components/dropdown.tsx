@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { DialogDemo } from "./modal";
+import { UserData } from "@/types";
 
 import {
   DropdownMenu,
@@ -53,7 +54,7 @@ export function DropdownMenuDemo() {
     // Call signOut to handle session termination
     router.push("/signin"); // Redirect after sign-out
   };
-  const [info, setinfo] = useState([]);
+  const [info, setinfo] = useState<UserData>();
 
   useEffect(() => {
     const fetch = async () => {
@@ -83,7 +84,7 @@ export function DropdownMenuDemo() {
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel className="text-xl text-gray-800 font-bold  text-center">{info.name}</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-xl text-gray-800 font-bold  text-center">{info?.name}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DialogTrigger asChild  > 

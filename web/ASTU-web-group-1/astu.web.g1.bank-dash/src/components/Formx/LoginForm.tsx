@@ -53,7 +53,7 @@ function LoginForm(req: any) {
         throw new Error('invalid credentials');
       }
       if (result?.ok) {
-        // console.log('redirecting to ', result?.url);
+z        // console.log('redirecting to ', result?.url);
         const parsedUrl = new URL(result?.url || '/');
         const callbackUrl = parsedUrl.searchParams.get('callbackUrl');
         // console.log('callbackUrl is ', callbackUrl);

@@ -64,6 +64,11 @@ type UserUsecase interface {
 	ForgetPassword(email string) (string, error)
 	LoginUser(uname string, password string,email string) (string, error)
 	Logout(email string) error
+	DemoteUser(userId string) (User, error)
+	PromteUser(userId string) (User, error)
+	PromteUserByEmail(email string) (User, error)
+	DemoteUserByEmail(username string) (User, error)
+
 }
 type Claims struct {
 	ID       string `bson:"_id,omitempty" json:"id,omitempty"`

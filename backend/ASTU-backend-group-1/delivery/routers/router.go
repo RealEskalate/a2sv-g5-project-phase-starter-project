@@ -46,6 +46,15 @@ func (gr *MainRouter) GinBlogRouter() {
 		userrouter.GET("/", gr.handler.GetUsers)
 		userrouter.GET("/:id", gr.handler.GetUserByID)
 		userrouter.PUT("/:id", gr.handler.UpdateUser)
+		userrouter.Use(gr.authController.AuthenticationMiddleware())
+		{
+			userrouter.PATCH("promote/:username", gr.authController.ADMINMiddleware(), gr.handler.Promote)
+			userrouter.PATCH("demote/:username",gr.authController.ADMINMiddleware(),gr.handler.Demote)
+			userrouter.PATCH("promotebyemail/:email", gr.authController.ADMINMiddleware(), gr.handler.PromoteByEmail)
+			userrouter.PATCH("demotebyemail/:email",gr.authController.ADMINMiddleware(),gr.handler.DemoteByEmail)
+			userrouter.DELETE("/:id",gr.authController.ADMINMiddleware(),gr.handler.DeleteUser)
+			
+		}
 	}
 	blogRouter := router.Group("/blogs")
 	blogRouter.Use(gr.authController.AuthenticationMiddleware())

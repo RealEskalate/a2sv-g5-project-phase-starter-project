@@ -37,6 +37,7 @@ class TextFieldTitle extends StatelessWidget {
       {super.key,
       this.title = '',
       
+      this.iconButton,
       this.pass = false,
       
       this.hint = null,
@@ -46,6 +47,7 @@ class TextFieldTitle extends StatelessWidget {
  
   String title;
   String? hint;
+  IconButton? iconButton;
 
   bool pass;
   
@@ -85,18 +87,19 @@ class TextFieldTitle extends StatelessWidget {
             child: Center(
               child: TextField(
                 obscureText: pass,
+              
                 
                 controller: controller,
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  
+                  suffixIcon: iconButton,
                   hintText: hint,
                   hintStyle: GoogleFonts.poppins(
                     color: Color.fromRGBO(136, 136, 136, 1),
                     fontSize: 15,
                     fontWeight: FontWeight.w400
                   ),
-                  contentPadding: EdgeInsets.only(left: 16, ),
+                  contentPadding: EdgeInsets.only(left: 16, top: 10),
                 ),
               ),
             ),

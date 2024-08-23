@@ -1,0 +1,31 @@
+{
+    "_id": "chat_123",
+    "sender": {
+        "_id": "user_001",
+        "name": "Alice",
+        "email": "alice@example.com"
+    },
+    "receiver": {
+        "_id": "user_002",
+        "name": "Bob",
+        "email": "bob@example.com"
+    },
+    "messages": [
+        {
+            "_id": "msg_001",
+            "chat": "chat_123",
+            "sender": "user_001",
+            "type": "text",
+            "content": "Hello Bob!",
+            "timestamp": "2024-08-23T12:34:56.000Z"
+        },
+        {
+            "_id": "msg_002",
+            "chat": "chat_123",
+            "sender": "user_002",
+            "type": "image",
+            "content": "https://example.com/images/photo.jpg",
+            "timestamp": "2024-08-23T12:35:56.000Z"
+        }
+    ]
+}

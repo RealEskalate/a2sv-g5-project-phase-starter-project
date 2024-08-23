@@ -11,10 +11,10 @@ import (
 )
 
 type URL_Repo struct {
-	Collection *mongo.Collection
+	Collection interfaces.Collection
 }
 
-func NewURLRepository(db *mongo.Database) interfaces.URLServiceRepository {
+func NewURLRepository(db interfaces.Database) interfaces.URLServiceRepository {
 	return &URL_Repo{
 		Collection: db.Collection("url-collection"),
 	}

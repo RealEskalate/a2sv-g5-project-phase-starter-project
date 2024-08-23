@@ -13,7 +13,7 @@ func main() {
 
 	gin := gin.Default()
 
-	routers.Setup(env, *db, gin)
+	routers.Setup(env, db, gin)
 	gin.Run(env.SERVER_ADDRESS)
 	// gin.Run("0.0.0.0:8081")
 

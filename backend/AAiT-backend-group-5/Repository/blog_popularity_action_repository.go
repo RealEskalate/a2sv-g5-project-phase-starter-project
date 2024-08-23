@@ -7,16 +7,15 @@ import (
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type BlogPupularityActionRepo struct {
-	BlogUserActionCollection *mongo.Collection
-	BlogActionCollection     *mongo.Collection
+	BlogUserActionCollection interfaces.Collection
+	BlogActionCollection     interfaces.Collection
 }
 
-func NewBlogPopularityActionRepository(db *mongo.Database) interfaces.BlogPopularityActionRepository {
+func NewBlogPopularityActionRepository(db interfaces.Database) interfaces.BlogPopularityActionRepository {
 	return &BlogPupularityActionRepo{
 		BlogUserActionCollection: db.Collection("blog-user-action"),
 		BlogActionCollection:     db.Collection("blog-action"),

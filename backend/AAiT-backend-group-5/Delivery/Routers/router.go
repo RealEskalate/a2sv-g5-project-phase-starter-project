@@ -10,14 +10,15 @@ import (
 	"github.com/aait.backend.g5.main/backend/Infrastructure"
 	"github.com/aait.backend.g5.main/backend/Repository"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
+	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
+
 )
 
-func Setup(env *config.Env, db mongo.Database, gin *gin.Engine) {
-	user_repo := repository.NewUserRepository(&db)
+func Setup(env *config.Env, db interfaces.Database, gin *gin.Engine) {
+	user_repo := repository.NewUserRepository(db)
 	jwt_service := infrastructure.NewJwtService(env)
 	oAuthService := infrastructure.NewOAuthService(*env, user_repo)
-	session_repo := repository.NewSessionRepository(&db)
+	session_repo := repository.NewSessionRepository(db)
 	jwtMiddleware := middlewares.NewJwtAuthMiddleware(jwt_service, session_repo, oAuthService)
 
 	projectRoot, err := filepath.Abs(filepath.Join(""))

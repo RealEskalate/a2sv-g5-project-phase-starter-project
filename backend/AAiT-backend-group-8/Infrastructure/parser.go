@@ -21,7 +21,7 @@ func Parse(ctx *gin.Context) (*jwt.MapClaims, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
-		return []byte("123456abcd"), nil
+		return []byte("123456abed"), nil
 	})
 
 	if err != nil {

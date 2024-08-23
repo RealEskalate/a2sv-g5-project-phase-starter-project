@@ -14,12 +14,14 @@ var SecretKey = "123456abed"
 
 func main() {
 	mongoClient := mongodb.InitMongoDB("mongodb://localhost:27017")
+	rdb := infrastructure.InitRedis()
 
 	userCollection := mongoClient.Database("starter-project").Collection("users")
 	tokenCollection := mongoClient.Database("starter-project").Collection("token")
 	blogCollection := mongoClient.Database("starter-project").Collection("blogs")
 	commentCollection := mongoClient.Database("starter-project").Collection("comments")
 	likeCollection := mongoClient.Database("starter-project").Collection("likes")
+	cacheCollection := mongoClient.Database("starter-project").Collection("cache")
 
 	userRepo := mongodb.NewUserRepository(userCollection, context.TODO())
 	ts := infrastructure.NewTokenService(SecretKey)
@@ -32,6 +34,9 @@ func main() {
 	blogRepo := mongodb.NewBlogRepository(blogCollection)
 	blogUseCase := usecase.NewBlogUseCase(blogRepo)
 
+	cacheRepo := mongodb.NewCacheRepository(cacheCollection)
+	cacheUseCase := usecase.NewCacheUseCase(cacheRepo)
+
 	commentRepo := mongodb.NewCommentRepository(commentCollection, context.TODO())
 
 	commentUseCase := usecase.NewCommentUseCase(commentRepo, *infra, ts)
@@ -39,7 +44,7 @@ func main() {
 	likeRepo := mongodb.NewLikeRepository(likeCollection, context.TODO())
 	likeUseCase := usecase.NewLikeUseCase(*likeRepo, *infra)
 
-	ctrl := controller.NewController(commentUseCase, userUseCase, likeUseCase, blogUseCase)
+	ctrl := controller.NewController(commentUseCase, userUseCase, likeUseCase, blogUseCase, rdb, cacheUseCase)
 
 	r := Router.InitRouter(ctrl)
 

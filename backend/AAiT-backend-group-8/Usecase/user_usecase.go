@@ -7,9 +7,8 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"time"
-
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 func generateVerificationToken() string {

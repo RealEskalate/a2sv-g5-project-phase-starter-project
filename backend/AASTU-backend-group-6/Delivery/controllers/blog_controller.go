@@ -62,8 +62,7 @@ func (b BlogController) ReactOnBlog(c *gin.Context) {
 func (b BlogController) CommentOnBlog(c *gin.Context) {
 	var comment domain.Comment
 	userID := c.GetString("user_id")
-	userName := c.GetString("user_name")
-	if userID == "" || userName == "" {
+	if userID == ""{
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
 			Message: "Authentication failed.",
 			Status:  http.StatusUnauthorized,
@@ -84,7 +83,7 @@ func (b BlogController) CommentOnBlog(c *gin.Context) {
 		})
 		return
 	}
-	err := b.BlogUsecase.CommentOnBlog(userID, userName, comment)
+	err := b.BlogUsecase.CommentOnBlog(userID, comment)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Message: err.Error(),
@@ -125,7 +124,7 @@ func (b BlogController) CreateBlog(c *gin.Context) {
 		return
 	}
 
-	newBlog, err := b.BlogUsecase.CreateBlog(userID, blog, role)
+	newBlog, err := b.BlogUsecase.CreateBlog(userID, blog)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Message: err.Error(),
@@ -160,7 +159,7 @@ func (b BlogController) DeleteBlogByID(c *gin.Context) {
 		})
 		return
 	}
-	err := b.BlogUsecase.DeleteBlogByID(userID, blogID, role)
+	err := b.BlogUsecase.DeleteBlogByID(userID, blogID)
 	if err != (domain.ErrorResponse{}) {
 		c.JSON(err.Status, err)
 		return
@@ -178,10 +177,10 @@ func (b BlogController) FilterBlogsByTag(c *gin.Context) {
 	pageSize := c.Query("pageSize")
 
 	if pageNo == "" {
-		pageNo = "0"
+		pageNo = "1"
 	}
 	if pageSize == "" {
-		pageSize = "0"
+		pageSize = "1"
 	}
 
 	startDate := c.Query("startDate")
@@ -273,10 +272,10 @@ func (b BlogController) GetBlogs(c *gin.Context) {
 	popularity := c.Query("popularity")
 
 	if pageNo == "" {
-		pageNo = "0"
+		pageNo = "1"
 	}
 	if pageSize == "" {
-		pageSize = "0"
+		pageSize = "1"
 	}
 
 	blogs, pagination, err := b.BlogUsecase.GetBlogs(pageNo, pageSize, popularity)
@@ -307,7 +306,7 @@ func (b BlogController) GetMyBlogByID(c *gin.Context) {
 		})
 	}
 
-	blog, err := b.BlogUsecase.GetMyBlogByID(user_id, blog_id, role)
+	blog, err := b.BlogUsecase.GetMyBlogByID(user_id, blog_id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Message: err.Error(),
@@ -329,10 +328,10 @@ func (b BlogController) GetMyBlogs(c *gin.Context) {
 	pageSize := c.Query("pageSize")
 	popularity := c.Query("popularity")
 	if pageNo == "" {
-		pageNo = "0"
+		pageNo = "1"
 	}
 	if pageSize == "" {
-		pageSize = "0"
+		pageSize = "1"
 	}
 
 	// user_id, user_id_existes := c.Get("id")
@@ -363,6 +362,14 @@ func (b BlogController) SearchBlogByTitleAndAuthor(c *gin.Context) {
 	author := c.Query("author")
 	pageNo := c.Query("pageNo")
 	pageSize := c.Query("pageSize")
+
+	if pageNo == "" {
+		pageNo = "1"
+	}
+	if pageSize == "" {
+		pageSize = "1"
+	}
+
 	popularity := c.Query("popularity")
 	blogs, pagination, err := b.BlogUsecase.SearchBlogByTitleAndAuthor(title, author, pageNo, pageSize, popularity)
 
@@ -411,7 +418,7 @@ func (b BlogController) UpdateBlogByID(c *gin.Context) {
 		})
 		c.Abort()
 	}
-	updatedBlog, err := b.BlogUsecase.UpdateBlogByID(user_id, blog_id, blog, role)
+	updatedBlog, err := b.BlogUsecase.UpdateBlogByID(user_id, blog_id, blog)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Message: err.Error(),

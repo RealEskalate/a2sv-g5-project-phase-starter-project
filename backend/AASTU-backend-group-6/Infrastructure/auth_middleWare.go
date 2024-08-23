@@ -45,9 +45,7 @@ func (authenticate *Auth) AuthenticationMiddleware() gin.HandlerFunc{
 			c.Abort()
 			return
 		}
-		c.Set("user_name", claims.UserName)
 		c.Set("user_id" , claims.ID)
-		c.Set("role", claims.Role)
 		c.Next()
 		// Can check the expiration time of the token if it is valid or not
 	}

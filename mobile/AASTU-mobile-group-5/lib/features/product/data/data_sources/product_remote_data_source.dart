@@ -36,36 +36,65 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   
   Future<ProductModel> addProduct(ProductModel product, String imagePath) async {
     try {
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse(Urls.addProduct()),
-      );
-      request.fields.addAll({
-        'name': product.name,
-        'description': product.description,
-        'price': product.price.toString(),
-      });
+    var request = http.MultipartRequest('POST', Uri.parse(Urls.addProduct()));
 
-      request.files.add(await http.MultipartFile.fromPath(
-        'image',
-        imagePath,
-        contentType: MediaType('image', 'jpg'),
-      ));
+    request.fields.addAll({
+      'name': product.name,
+      'description': product.description,
+      'price': product.price.toString(),
+    });
 
-      // Add authorization header
-      request.headers.addAll(await _createHeaders());
+    request.files.add(await http.MultipartFile.fromPath(
+      'image',
+      imagePath,
+      contentType: MediaType('image', 'jpg'),
+    ));
 
-      http.StreamedResponse response = await request.send();
+    // Add authorization header
+    request.headers.addAll(await _createHeaders());
 
-      if (response.statusCode == 201) {
-        final result = await response.stream.bytesToString();
-        return ProductModel.fromJson(jsonDecode(result)['data']);
-      } else {
-        throw ServerException();
-      }
-    } catch (e) {
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 201) {
+      final result = await response.stream.bytesToString();
+      return ProductModel.fromJson(jsonDecode(result)['data']);
+    } else {
       throw ServerException();
     }
+  } catch (e) {
+    throw ServerException();
+  }
+    // try {
+    //   var request = http.MultipartRequest(
+    //     'POST',
+    //     Uri.parse(Urls.addProduct()),
+    //   );
+    //   request.fields.addAll({
+    //     'name': product.name,
+    //     'description': product.description,
+    //     'price': product.price.toString(),
+    //   });
+
+    //   request.files.add(await http.MultipartFile.fromPath(
+    //     'image',
+    //     imagePath,
+    //     contentType: MediaType('image', 'jpg'),
+    //   ));
+
+    //   // Add authorization header
+    //   request.headers.addAll(await _createHeaders());
+
+    //   http.StreamedResponse response = await request.send();
+
+    //   if (response.statusCode == 201) {
+    //     final result = await response.stream.bytesToString();
+    //     return ProductModel.fromJson(jsonDecode(result)['data']);
+    //   } else {
+    //     throw ServerException();
+    //   }
+    // } catch (e) {
+    //   throw ServerException();
+    // }
   }
 
   @override

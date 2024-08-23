@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../user/domain/entities/user.dart';
 import '../../data/models/product_model.dart';
 import '../../domain/entities/product.dart';
 import '../bloc/home_page/home_page_bloc.dart';
@@ -45,6 +46,7 @@ class _UpdatePageState extends State<UpdatePage> {
       description: _description.text,
       price: double.parse(_price.text),
       imageUrl: widget.product.imageUrl,
+      seller: widget.product?.seller ?? User(email: 'default@gmail.com'),
     );
 
     BlocProvider.of<UpdatePageBloc>(context).add(

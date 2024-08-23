@@ -7,7 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -63,6 +63,8 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
 		return service.userService.DeleteUser(user.ID.Hex())
 	}
 	
+	rand.Seed(uint64(time.Now().UnixNano()))
+
 	// Generate a random number between 10000 and 99999 (inclusive).
 	randNum := rand.Intn(99999-10000+1) + 10000
 	
@@ -136,7 +138,6 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
 		if deleteErr != nil {
 			return nil, fmt.Errorf("failed to send email and delete user: %v", deleteErr)
 		}
-		log.Println("sfsfsdfsfsdfs")
 
 		return nil, err
 	}
@@ -146,6 +147,9 @@ func (service *authService) RegisterUser(user *entities.User) (*entities.User, e
 
 func (service *authService) Login(emailOrUsername, password string) (*entities.RefreshToken, string, error) {
 	user, _ := service.userService.FindUserByEmail(emailOrUsername)
+	if user == nil {
+		return nil, "", errors.New("User not found")
+	}
 	err := service.passwordService.ComparePassword(user.Password, password)
 	if err != nil {
 		return nil, "", errors.New("Invalid password")
@@ -207,6 +211,73 @@ func (service *authService) VerifyEmail(email string, code string) error {
 	err = service.otpService.InvalidateOtp(&otp)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (service *authService) ResendOtp(request entities.ResendOTPRequest) error {
+	request.Email = strings.ToLower(request.Email)
+
+	user, err := service.userService.FindUserByEmail(request.Email)
+	if err != nil {
+		return err
+	}
+
+	if user.IsVerified {
+		return fmt.Errorf("failed to resend otp. User account already activated")
+	}
+
+	otp, err := service.otpService.GetOtpByEmail(request.Email)
+	if err != nil {
+		return fmt.Errorf("no OTP requested with the given email")
+	}
+
+	rand.Seed(uint64(time.Now().UnixNano()))
+
+	// Generate a random number between 10000 and 99999 (inclusive).
+	randNum := rand.Intn(99999-10000+1) + 10000
+	
+	// Format the code as a 5-digit string with leading zeros.
+	code := fmt.Sprintf("%05d", randNum)
+
+	// Modify OTP to database
+	otp.Code = code
+	otp.Expiration = time.Now().Add(5 * time.Minute)
+
+	err = service.otpService.SaveOtp(&otp)
+	if err != nil {
+		return fmt.Errorf("failed to save OTP: %v", err.Error())
+	}
+
+	emailContent := `
+		<p>Thank you for signing up with Blog. To verify your account and complete the signup process, please use the following verification code:</p>
+		<h3>` + code + `</h3>
+		<p><strong>This verification code is valid for 5 minutes.</strong> Please enter it on the verification page to proceed.</p>
+		<p>If you did not sign up for a Blog account, please ignore this email.</p>`
+
+	// Create the email subject
+	emailSubject := "Verify Your Email"
+
+	smtpConfig := entities.SMTPConfig{
+		Server:   "smtp.gmail.com:587",
+		Username: "haloitisme0912@gmail.com",
+		Password: "btnb soyo xqpm ooxw",
+	}
+ 
+	// Generate the email body using the template function
+	emailBody := utils.NewEmailService(smtpConfig.Server, smtpConfig.Password, smtpConfig.Username).GenerateEmailTemplate("Blog Account Verification", emailContent)
+ 
+	// Create the email template
+	emailTemplate := entities.EmailTemplate{
+		Subject: emailSubject,
+		Body:    emailBody,
+	}
+ 
+	// Send the email
+	err = utils.NewEmailService(smtpConfig.Server, smtpConfig.Password, smtpConfig.Username).SendEmail(user.Email, emailTemplate.Subject, emailTemplate.Body)
+	if err != nil {
+		return fmt.Errorf("failed to send email: %v", err.Error())
 	}
 
 	return nil

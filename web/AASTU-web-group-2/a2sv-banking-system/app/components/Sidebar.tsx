@@ -84,7 +84,7 @@ const Sidebar = ({ toggle, handleClose }: SidebarProps) => {
 
   return (
     <>
-      <div className="hidden md:flex md:flex-col md:gap-5 py-7 border-r h-svh sticky top-0">
+      <div className="hidden md:flex md:flex-col md:gap-5 py-7 border-r h-svh sticky top-0 dark:bg-[#020817]">
         <div className="px-5 py-2">
           <Image src="/Logo.png" width={183} height={36} alt="Logo" />
         </div>
@@ -99,7 +99,7 @@ const Sidebar = ({ toggle, handleClose }: SidebarProps) => {
       {toggle && (
         <div className="md:hidden flex">
           <div
-            className={`fixed top-0 left-0 w-80 bg-white shadow-black h-full transform transition-transform${
+            className={`fixed top-0 left-0 w-80 bg-white shadow-black h-full transform transition-transform dark:bg-[#020817] ${
               toggle ? "translate-x-0" : "-translate-x-full"
             }  ease-in-out duration-1000 flex flex-col px-5`}
           >
@@ -124,6 +124,23 @@ const Sidebar = ({ toggle, handleClose }: SidebarProps) => {
         </div>
       )}
     </>
+  );
+};
+
+export const SidebarLoading = () => {
+  return (
+    <div className="hidden md:flex md:flex-col md:gap-5 py-7 border-r h-svh sticky top-0 animate-pulse dark:bg-[#050914] dark:border-[#333B69]">
+      <div className="px-5 py-2">
+        <div className="bg-gray-300 dark:bg-[#333B69] w-44 h-9 rounded"></div>
+      </div>
+      <div className="flex flex-col gap-4 px-5">
+        <div className="bg-gray-300 dark:bg-[#333B69] w-40 h-20 rounded"></div>
+        <div className="bg-gray-300 dark:bg-[#333B69] w-40 h-20 rounded"></div>
+        <div className="bg-gray-300 dark:bg-[#333B69] w-40 h-20 rounded"></div>
+        <div className="bg-gray-300 dark:bg-[#333B69] w-40 h-20 rounded"></div>
+        <div className="bg-gray-300 dark:bg-[#333B69] w-40 h-20 rounded"></div>
+      </div>
+    </div>
   );
 };
 

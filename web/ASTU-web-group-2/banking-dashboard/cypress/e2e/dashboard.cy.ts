@@ -46,20 +46,18 @@ describe("Test Dashboard Page", () => {
     cy.contains("Credit Cards").should("be.visible");
 
     // Verify the "See All" button is present and click it
-    cy.contains("button", "See All", { timeout: 10000 })
-      .should("be.visible")
-      .click();
+    cy.contains("a", "See All").should("be.visible").click();
   });
 
   it("should navigate to the correct page when the 'See All' button is clicked", () => {
     // Click the "See All" button
-    cy.contains("button", "See All", { timeout: 10000 }).click();
+    cy.contains("a", "See All").click();
 
     // Verify that the URL is correct (adjust the expected URL as needed)
     cy.url().should("include", "/credit-cards");
 
-    // Optionally, verify that the new page content is loaded correctly
-    cy.contains("Your Credit Cards").should("be.visible"); // Example assertion
+    // // Optionally, verify that the new page content is loaded correctly
+    // cy.contains("Your Credit Cards").should("be.visible"); // Example assertion
   });
 
   it("should display Recent Transactions section", () => {

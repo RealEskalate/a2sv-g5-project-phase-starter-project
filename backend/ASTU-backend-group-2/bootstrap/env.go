@@ -31,6 +31,7 @@ type Env struct {
 	SessionSecret              string `mapstructure:"SESSION_SECRET"`
 	GeminiAPIKey               string `mapstructure:"GEMINI_API_KEY"`
 	GeminiWordCount            string `mapstructure:"GEMINI_WORD_COUNT"`
+	PassResetCodeExpirationMin int    `mapstructure:"PASS_RESET_CODE_EXPIRATION_MIN"`
 	CloudinaryName             string `mapstructure:"CLOUDINARY_NAME"`
 	CloudinaryKey              string `mapstructure:"CLOUDINARY_KEY"`
 	CloudinarySecret           string `mapstructure:"CLOUDINARY_SECRET"`

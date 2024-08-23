@@ -1,0 +1,58 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    xmlns:tools="http://schemas.android.com/tools"
+4    package="io.flutter.plugins.imagepicker" >
+5
+6    <uses-sdk
+7        android:minSdkVersion="19"
+7-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml
+8        android:targetSdkVersion="19" />
+8-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml
+9
+10    <application>
+10-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:5:5-25:19
+11        <provider
+11-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:6:9-14:20
+12            android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"
+12-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:7:13-82
+13            android:authorities="${applicationId}.flutter.image_provider"
+13-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:8:13-74
+14            android:exported="false"
+14-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:9:13-37
+15            android:grantUriPermissions="true" >
+15-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:10:13-47
+16            <meta-data
+16-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:11:13-13:75
+17                android:name="android.support.FILE_PROVIDER_PATHS"
+17-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:12:17-67
+18                android:resource="@xml/flutter_image_picker_file_paths" />
+18-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:13:17-72
+19        </provider>
+20        <!-- Trigger Google Play services to install the backported photo picker module. -->
+21        <service
+21-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:16:9-24:19
+22            android:name="com.google.android.gms.metadata.ModuleDependencies"
+22-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:16:18-83
+23            android:enabled="false"
+23-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:17:17-40
+24            android:exported="false"
+24-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:18:17-41
+25            tools:ignore="MissingClass" >
+25-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:19:17-44
+26            <intent-filter>
+26-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:20:13-22:29
+27                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
+27-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:21:17-94
+27-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:21:25-91
+28            </intent-filter>
+29
+30            <meta-data
+30-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:23:13-90
+31                android:name="photopicker_activity:0:required"
+31-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:23:24-70
+32                android:value="" />
+32-->/home/eyob/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+12/android/src/main/AndroidManifest.xml:23:71-87
+33        </service>
+34    </application>
+35
+36</manifest>

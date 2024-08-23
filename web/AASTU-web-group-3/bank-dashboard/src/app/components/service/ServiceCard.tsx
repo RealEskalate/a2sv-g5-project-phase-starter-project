@@ -31,7 +31,7 @@ export default function ServiceCard() {
     dispatch(setLoading(isLoading));
 
     if (data) {
-      dispatch(setService(data.data));
+      dispatch(setService(data.data.content));
     }
 
     if (isError) {

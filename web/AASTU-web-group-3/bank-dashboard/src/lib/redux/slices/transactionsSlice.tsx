@@ -2,13 +2,17 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Transaction } from "../types/transactions";
 
 interface TransactionsState {
-  transactions: Transaction[];
+  allTransactions: Transaction[];
+  incomeTransactions: Transaction[];
+  expenseTransactions: Transaction[];
   loading: boolean;
   error: string | null;
 }
 
 const initialState: TransactionsState = {
-  transactions: [],
+  allTransactions: [],
+  incomeTransactions: [],
+  expenseTransactions: [],
   loading: false,
   error: null,
 };
@@ -17,8 +21,14 @@ const transactionsSlice = createSlice({
   name: "transactions",
   initialState,
   reducers: {
-    setTransactions: (state, action: PayloadAction<Transaction[]>) => {
-      state.transactions = action.payload;
+    setAllTransactions: (state, action: PayloadAction<Transaction[]>) => {
+      state.allTransactions = action.payload;
+    },
+    setIncomeTransactions: (state, action: PayloadAction<Transaction[]>) => {
+      state.incomeTransactions = action.payload;
+    },
+    setExpenseTransactions: (state, action: PayloadAction<Transaction[]>) => {
+      state.expenseTransactions = action.payload;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
@@ -29,5 +39,12 @@ const transactionsSlice = createSlice({
   },
 });
 
-export const { setTransactions, setLoading, setError } = transactionsSlice.actions;
+export const {
+  setAllTransactions,
+  setIncomeTransactions,
+  setExpenseTransactions,
+  setLoading,
+  setError,
+} = transactionsSlice.actions;
+
 export default transactionsSlice.reducer;

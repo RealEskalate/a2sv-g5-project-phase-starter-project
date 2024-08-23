@@ -20,5 +20,8 @@ export interface ServicePostRequest{
 export interface ServiceResponce{
     success: true,
     message: string,
-    data:Service[]
+    data:{
+      content:Service[]
+    }
+    totalPages:number
   }

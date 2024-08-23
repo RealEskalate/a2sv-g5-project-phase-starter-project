@@ -43,8 +43,7 @@ func (ac *AuthController) Login(c *gin.Context) {
 	} else {
 		//success
 		c.IndentedJSON(http.StatusOK, gin.H{"message": "User logged in successfully",
-			"acess_token":   token.AccessToken,
-			"refresh_token": token.RefreshToken})
+			"acess_token":   token.AccessToken})
 	}
 
 }

@@ -18,16 +18,17 @@ import (
 
 type profileRepository struct {
 	validator       *validator.Validate
-	collection      Domain.Collection
+	userCollection  Domain.Collection
+	blogCollection  Domain.Collection
 	TokenRepository Domain.RefreshRepository
 	mu              sync.RWMutex
 }
 
-func NewProfileRepository(_collection Domain.Collection, token_collection Domain.Collection) *profileRepository {
+func NewProfileRepository(userCollection Domain.Collection, token_collection Domain.Collection, blogCollection Domain.Collection) *profileRepository {
 	return &profileRepository{
 		validator: validator.New(),
-
-		collection:      _collection,
+		blogCollection: blogCollection,
+		userCollection:  userCollection,
 		TokenRepository: NewRefreshRepository(token_collection),
 		mu:              sync.RWMutex{},
 	}
@@ -45,7 +46,7 @@ func (ps *profileRepository) GetProfile(ctx context.Context, id primitive.Object
 	var filter bson.D
 	filter = bson.D{{"_id", id}}
 	var result Domain.OmitedUser
-	err := ps.collection.FindOne(ctx, filter).Decode(&result)
+	err := ps.userCollection.FindOne(ctx, filter).Decode(&result)
 	// # handel this later
 	if err != nil {
 		return Domain.OmitedUser{}, errors.New("User not found"), http.StatusNotFound
@@ -102,7 +103,7 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 	update := bson.D{
 		{"$set", bson.D{
 			{"email", NewUser.Email},
-			{"userName", NewUser.UserName},
+			{"username", NewUser.UserName},
 			{"name", NewUser.Name},
 			{"role", NewUser.Role},
 			{"profile_picture", NewUser.ProfilePicture},
@@ -111,7 +112,7 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 		}},
 	}
 
-	updateResult, err := ps.collection.UpdateOne(ctx, filter, update)
+	updateResult, err := ps.userCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		statusCode = 500
 		return Domain.OmitedUser{}, err, statusCode
@@ -126,30 +127,54 @@ func (ps *profileRepository) UpdateProfile(ctx context.Context, id primitive.Obj
 	return NewUser, nil, statusCode
 }
 
-// delete user by id
+// DeleteProfile removes a user profile, updates posts, and deletes the user's refresh token
 func (ps *profileRepository) DeleteProfile(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (error, int) {
 	ps.mu.RLock()
 	defer ps.mu.RUnlock()
 
-	filter := bson.D{{"_id", id}}
+	// Check if the current user has permission to delete the profile
+	
+	fmt.Println(ps.userCollection)
+	fmt.Println("-------------")
+	fmt.Println(ps.blogCollection)
 	if current_user.ID != id {
 		return errors.New("permission denied"), http.StatusForbidden
 	}
 
-	deleteResult, err := ps.collection.DeleteOne(ctx, filter)
+	fakeID, err:= primitive.ObjectIDFromHex("000000000000000000000000")
 	if err != nil {
-		fmt.Println(err)
-		return err, 500
+		return errors.New("internal server error"), http.StatusInternalServerError
+	}
+	// Update all posts where the authorid matches the deleted user's id
+	updateFilter := bson.D{{"authorid", id}}
+	update := bson.D{
+		{"$set", bson.D{{"authorid", fakeID}}},
+	}
+	updateResult, err := ps.blogCollection.UpdateMany(ctx, updateFilter, update)
+	if err != nil {
+		fmt.Println("Error updating posts:", err)
+		return errors.New("internal server error"), http.StatusInternalServerError
+	}
+
+	// Attempt to delete the user profile
+	filter := bson.D{{"_id", id}}
+	deleteResult, err := ps.userCollection.DeleteOne(ctx, filter)
+	if err != nil {
+		fmt.Println("Error deleting user profile:", err)
+		return errors.New("internal server error"), http.StatusInternalServerError
 	}
 	if deleteResult.DeletedCount == 0 {
-		return errors.New("User does not exist"), http.StatusNotFound
+		return errors.New("user does not exist"), http.StatusNotFound
 	}
-	fmt.Printf("Deleted %v documents in the trainers collection\n", deleteResult.DeletedCount)
-	// delete the refresh token
+
+	// create a fake id
+	fmt.Printf("Matched %v documents and updated %v documents.\n", updateResult.MatchedCount, updateResult.ModifiedCount)
+
+	// Delete the refresh token associated with the user
 	err, statusCode := ps.TokenRepository.DeleteToken(ctx, id)
 	if err != nil {
 		return err, statusCode
 	}
-	return nil, 200
 
+	return nil, http.StatusOK
 }

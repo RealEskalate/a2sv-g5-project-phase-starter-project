@@ -30,6 +30,7 @@ type Comment struct {
 	UpdatedAt time.Time          `json:"updated_at"`
 	AuthorID  primitive.ObjectID `json:"author_id"`
 	PostID    primitive.ObjectID `json:"post_id"`
+	ParentID  primitive.ObjectID `json:"Parent_id"`
 }
 
 type Tag struct {

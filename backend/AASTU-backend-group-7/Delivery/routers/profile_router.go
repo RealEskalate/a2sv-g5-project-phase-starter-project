@@ -13,7 +13,7 @@ func ProfileRouter() {
 	{
 
 		// generate new auth repo
-		profile_repo := Repositories.NewProfileRepository(BlogCollections.Users, BlogCollections.RefreshTokens)
+		profile_repo := Repositories.NewProfileRepository(BlogCollections.Users, BlogCollections.RefreshTokens, BlogCollections.Posts)
 
 		profile_usecase := usecases.NewProfileUseCase(profile_repo)
 		profile_controller := controllers.NewProfileController(profile_usecase)

@@ -9,13 +9,13 @@ import (
 )
 
 type commentRepository struct {
-	postcollection    Domain.Collection
+	postcollection    Domain.BlogRepository
 	commentCollection Domain.Collection
 }
 
 func NewCommentRepository(blogcollection Domain.BlogCollections) *commentRepository {
 	return &commentRepository{
-		postcollection:    blogcollection.Posts,
+		postcollection:    NewBlogRepository(blogcollection),
 		commentCollection: blogcollection.Comments,
 	}
 }
@@ -77,4 +77,7 @@ func (cr *commentRepository) DeleteComment(ctx context.Context, id primitive.Obj
 	}
 	return nil, 200
 }
+
+// comment on a comment
+
 

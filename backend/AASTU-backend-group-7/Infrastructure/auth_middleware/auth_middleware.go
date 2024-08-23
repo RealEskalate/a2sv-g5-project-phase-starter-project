@@ -40,7 +40,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		})
 
 		if err != nil || !token.Valid {
-			c.JSON(401, gin.H{"error": "Invalid JWT"})
+			c.JSON(401, gin.H{"error": "Invalid JWT user must login"})
 			c.Abort()
 			return
 		}

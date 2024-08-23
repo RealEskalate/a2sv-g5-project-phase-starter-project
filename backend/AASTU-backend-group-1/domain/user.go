@@ -52,6 +52,8 @@ type UserUsecase interface {
 	RefreshToken(claims *LoginClaims) (string, error)
 	GoogleLogin() (string, error)
 	GoogleCallback(state, code string) (string, string, error)
+	ChangePassword(usernameoremail, oldPassword, newPassword string) error
+	GetUserByUsername(username string) (*User, error)
 }
 
 type OAuthStateRepository interface {

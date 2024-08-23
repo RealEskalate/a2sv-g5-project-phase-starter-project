@@ -237,7 +237,7 @@ func (_m *BlogUsecase) GetBlogLikes(blogID string) ([]*domain.Like, error) {
 }
 
 // GetBlogs provides a mock function with given fields: sortBy, page, limit, reverse
-func (_m *BlogUsecase) GetBlogs(sortBy string, page int, limit int, reverse bool) ([]*domain.Blog, error) {
+func (_m *BlogUsecase) GetBlogs(sortBy string, page int, limit int, reverse bool) ([]*domain.Blog, int, error) {
 	ret := _m.Called(sortBy, page, limit, reverse)
 
 	if len(ret) == 0 {
@@ -245,8 +245,9 @@ func (_m *BlogUsecase) GetBlogs(sortBy string, page int, limit int, reverse bool
 	}
 
 	var r0 []*domain.Blog
-	var r1 error
-	if rf, ok := ret.Get(0).(func(string, int, int, bool) ([]*domain.Blog, error)); ok {
+	var r1 int
+	var r2 error
+	if rf, ok := ret.Get(0).(func(string, int, int, bool) ([]*domain.Blog, int, error)); ok {
 		return rf(sortBy, page, limit, reverse)
 	}
 	if rf, ok := ret.Get(0).(func(string, int, int, bool) []*domain.Blog); ok {
@@ -257,13 +258,19 @@ func (_m *BlogUsecase) GetBlogs(sortBy string, page int, limit int, reverse bool
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(string, int, int, bool) error); ok {
+	if rf, ok := ret.Get(1).(func(string, int, int, bool) int); ok {
 		r1 = rf(sortBy, page, limit, reverse)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(int)
 	}
 
-	return r0, r1
+	if rf, ok := ret.Get(2).(func(string, int, int, bool) error); ok {
+		r2 = rf(sortBy, page, limit, reverse)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // InsertBlog provides a mock function with given fields: blog

@@ -57,10 +57,11 @@ func protectedRouter(router *gin.Engine, userController *usercontroller.UserCont
 }
 
 func privateUserRouter(router *gin.RouterGroup, userController *usercontroller.UserController) {
+	router.GET("/users/:username", userController.GetUserByUsername)
 	router.PATCH("/users", userController.UpdateProfile)
 	router.PATCH("/users/promote", userController.PromoteUser)
 	router.POST("/users/logout", userController.LogoutUser)
-
+	router.PATCH("/users/change-password", userController.ChangePassword)
 }
 
 func privateBlogRouter(router *gin.RouterGroup, blogController *blogcontroller.BlogController) {
@@ -80,7 +81,7 @@ func privateBlogRouter(router *gin.RouterGroup, blogController *blogcontroller.B
 	router.POST("/blogs/views", blogController.AddView)
 
 	router.GET("/blogs/search", blogController.SearchBlog)
-	router.GET("/blogs/tags", blogController.FilterBlog)
+	router.GET("/blogs/filter", blogController.FilterBlog)
 
 	router.POST("/blogs/generate", blogController.GenerateContent)
 }

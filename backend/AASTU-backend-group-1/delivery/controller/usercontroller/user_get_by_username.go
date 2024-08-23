@@ -8,23 +8,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (u *UserController) VerifyUser(ctx *gin.Context) {
-	token := ctx.Query("token")
-	if token == "" {
+func (uc *UserController) GetUserByUsername(ctx *gin.Context) {
+	username := ctx.Param("username")
+	err := config.IsValidUsername(username)
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
 			Status:  http.StatusBadRequest,
-			Message: "Invalid request",
-			Error:   "Token is required",
+			Message: "Invalid username",
 		})
 		return
 	}
 
-	err := u.UserUsecase.VerifyUser(token)
+	user, err := uc.UserUsecase.GetUserByUsername(username)
 	if err != nil {
-		code := config.GetStatusCode(err)
+		code := http.StatusInternalServerError
+
 		ctx.JSON(code, domain.APIResponse{
 			Status:  code,
-			Message: "Failed to verify user",
+			Message: "Failed to get user",
 			Error:   err.Error(),
 		})
 		return
@@ -32,6 +33,7 @@ func (u *UserController) VerifyUser(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, domain.APIResponse{
 		Status:  http.StatusOK,
-		Message: "Successfully verified user",
+		Message: "Success",
+		Data:    user,
 	})
 }

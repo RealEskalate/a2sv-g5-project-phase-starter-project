@@ -31,6 +31,24 @@ func (_m *UserUsecase) AddRoot() error {
 	return r0
 }
 
+// ChangePassword provides a mock function with given fields: usernameoremail, oldPassword, newPassword
+func (_m *UserUsecase) ChangePassword(usernameoremail string, oldPassword string, newPassword string) error {
+	ret := _m.Called(usernameoremail, oldPassword, newPassword)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ChangePassword")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string, string) error); ok {
+		r0 = rf(usernameoremail, oldPassword, newPassword)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // ForgotPassword provides a mock function with given fields: email, newPassword
 func (_m *UserUsecase) ForgotPassword(email string, newPassword string) error {
 	ret := _m.Called(email, newPassword)
@@ -47,6 +65,36 @@ func (_m *UserUsecase) ForgotPassword(email string, newPassword string) error {
 	}
 
 	return r0
+}
+
+// GetUserByUsername provides a mock function with given fields: username
+func (_m *UserUsecase) GetUserByUsername(username string) (*domain.User, error) {
+	ret := _m.Called(username)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserByUsername")
+	}
+
+	var r0 *domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (*domain.User, error)); ok {
+		return rf(username)
+	}
+	if rf, ok := ret.Get(0).(func(string) *domain.User); ok {
+		r0 = rf(username)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(username)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // GoogleCallback provides a mock function with given fields: state, code

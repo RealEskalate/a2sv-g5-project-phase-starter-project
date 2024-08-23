@@ -2,7 +2,7 @@ package blogcontroller
 
 import (
 	"blogs/config"
-	"log"
+	"blogs/domain"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +14,11 @@ func (b *BlogController) SearchBlog(ctx *gin.Context) {
 	tags := ctx.QueryArray("tags")
 
 	if title == "" && author == "" && len(tags) == 0 {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "title, author or tags is required"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "at least one of title, author, or tags is required",
+		})
 		return
 	}
 
@@ -25,15 +29,17 @@ func (b *BlogController) SearchBlog(ctx *gin.Context) {
 	blogs, err := b.BlogUsecase.SearchBlog(title, author, tags)
 	if err != nil {
 		code := config.GetStatusCode(err)
-
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Cannot search blog",
+			Error:   err.Error(),
+		})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"counts": len(blogs), "data": blogs})
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Success",
+		Data:    blogs,
+	})
 }

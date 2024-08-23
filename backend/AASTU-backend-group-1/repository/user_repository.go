@@ -14,14 +14,14 @@ import (
 type UserRepository struct {
 	userCollection  *mongo.Collection
 	tokenCollection *mongo.Collection
-	cache domain.Cache
+	cache           domain.Cache
 }
 
-func NewUserRepository(db *mongo.Database,cache domain.Cache) domain.UserRepository {
+func NewUserRepository(db *mongo.Database, cache domain.Cache) domain.UserRepository {
 	return &UserRepository{
 		userCollection:  db.Collection("users"),
 		tokenCollection: db.Collection("tokens"),
-		cache: cache,
+		cache:           cache,
 	}
 }
 
@@ -90,17 +90,18 @@ func (ur *UserRepository) GetUserByUsernameorEmail(usernameoremail string) (*dom
 	cachedKey := fmt.Sprintf("user:%s", usernameoremail)
 	cachedUser, err := ur.cache.GetCache(cachedKey)
 	if err != nil {
-		log.Println(err,"error getting cache top")
+		log.Println(err, "error getting cache top")
 	}
+
 	if err == nil && cachedUser != "" {
 		var user domain.User
-		err := bson.UnmarshalExtJSON([]byte(cachedUser),true,&user)
+		err := bson.UnmarshalExtJSON([]byte(cachedUser), true, &user)
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	}
-		
+
 	var user domain.User
 	filter := filterUser(usernameoremail)
 
@@ -114,16 +115,15 @@ func (ur *UserRepository) GetUserByUsernameorEmail(usernameoremail string) (*dom
 		return nil, err
 	}
 
-	userJSON, err := bson.MarshalExtJSON(user,true,true)
+	userJSON, err := bson.MarshalExtJSON(user, true, true)
 	if err == nil {
-		err = ur.cache.SetCache(cachedKey,string(userJSON))
-		log.Println(err,"error setting cache")
-		log.Println(cachedUser,"cached user")
+		err = ur.cache.SetCache(cachedKey, string(userJSON))
+		log.Println(err, "error setting cache")
+		log.Println(cachedUser, "cached user")
 		if err != nil {
 			return nil, err
 		}
 	}
-
 
 	return &user, nil
 }
@@ -146,14 +146,26 @@ func (ur *UserRepository) UpdateProfile(usernameoremail string, user *domain.Use
 		},
 	}
 
+	// Perform the database update
 	_, err := ur.userCollection.UpdateOne(context.TODO(), filter, update)
-
 	if err != nil {
 		return err
 	}
 
-	return nil
+	// Update the cache if it exists
+	cachedKey := fmt.Sprintf("user:%s", usernameoremail)
+	userJSON, err := bson.MarshalExtJSON(user, true, true)
+	if err != nil {
+		return err
+	}
 
+	err = ur.cache.SetCache(cachedKey, string(userJSON))
+	if err != nil {
+		log.Println("Error updating cache:", err)
+		return err
+	}
+
+	return nil
 }
 
 func (ur UserRepository) Resetpassword(usernameoremail string, password string) error {
@@ -193,7 +205,7 @@ func (ur *UserRepository) GetTokenByUsername(username string) (*domain.Token, er
 	cachedToken, err := ur.cache.GetCache(cacheKey)
 	if err == nil && cachedToken != "" {
 		var token domain.Token
-		err := bson.UnmarshalExtJSON([]byte(cachedToken),true,&token)
+		err := bson.UnmarshalExtJSON([]byte(cachedToken), true, &token)
 		if err != nil {
 			return nil, err
 		}
@@ -214,14 +226,13 @@ func (ur *UserRepository) GetTokenByUsername(username string) (*domain.Token, er
 		return nil, err
 	}
 
-	tokenJSON, err := bson.MarshalExtJSON(token,true,true)
+	tokenJSON, err := bson.MarshalExtJSON(token, true, true)
 	if err == nil {
-		err = ur.cache.SetCache(cacheKey,string(tokenJSON))
+		err = ur.cache.SetCache(cacheKey, string(tokenJSON))
 		if err != nil {
 			return nil, err
 		}
 	}
-
 
 	return &token, nil
 }

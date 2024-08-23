@@ -3,7 +3,6 @@ package usercontroller
 import (
 	"blogs/config"
 	"blogs/domain"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,8 +11,11 @@ import (
 func (u *UserController) PromoteUser(ctx *gin.Context) {
 	claims, ok := ctx.MustGet("claims").(*domain.LoginClaims)
 	if !ok {
-		log.Println("Error getting claims")
-		ctx.JSON(http.StatusInternalServerError, "Internal server error")
+		ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Internal server error",
+			Error:   "cannot get claims",
+		})
 		return
 	}
 
@@ -24,26 +26,19 @@ func (u *UserController) PromoteUser(ctx *gin.Context) {
 
 	err := ctx.ShouldBind(&request)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	if request.Username == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
-		return
-	}
-
-	err = u.UserUsecase.PromoteUser(request.Username, request.Promoted, claims)
-	if err != nil {
-		code := config.GetStatusCode(err)
-
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(code, gin.H{"error": "Internal server error"})
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Username is required",
+		})
 		return
 	}
 
@@ -52,7 +47,19 @@ func (u *UserController) PromoteUser(ctx *gin.Context) {
 		promotionWord = "promoted"
 	}
 
-	ctx.JSON(200, gin.H{
-		"message": "User " + request.Username + " has been " + promotionWord,
+	err = u.UserUsecase.PromoteUser(request.Username, request.Promoted, claims)
+	if err != nil {
+		code := config.GetStatusCode(err)
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Failed to " + promotionWord + " user",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Successfully " + promotionWord + " user",
 	})
 }

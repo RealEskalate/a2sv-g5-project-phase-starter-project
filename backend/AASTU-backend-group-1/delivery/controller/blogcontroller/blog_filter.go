@@ -21,16 +21,31 @@ func (b *BlogController) FilterBlog(ctx *gin.Context) {
 		return
 	}
 
-	dateFrom, err := time.Parse(time.RFC3339, filter.DateFrom)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_from"})
-		return
+	var dateFrom, dateTo time.Time
+	if filter.DateFrom == "" {
+		dateFrom = time.Time{}
+	} else {
+		var err error
+		dateFrom, err = time.Parse(time.RFC3339, filter.DateFrom)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_from"})
+			return
+		}
 	}
 
-	dateTo, err := time.Parse(time.RFC3339, filter.DateTo)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_to"})
-		return
+	if filter.DateTo == "" {
+		dateTo = time.Now()
+	} else {
+		var err error
+		dateTo, err = time.Parse(time.RFC3339, filter.DateTo)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_to"})
+			return
+		}
+	}
+
+	if len(filter.Tags) == 0 {
+		filter.Tags = []string{}
 	}
 
 	blogs, err := b.BlogUsecase.FilterBlog(filter.Tags, dateFrom, dateTo)
@@ -47,5 +62,5 @@ func (b *BlogController) FilterBlog(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, blogs)
+	ctx.JSON(http.StatusOK, gin.H{"counts": len(blogs), "data": blogs})
 }

@@ -3,7 +3,6 @@ package usercontroller
 import (
 	"blogs/config"
 	"blogs/domain"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,25 +11,27 @@ import (
 func (u *UserController) LogoutUser(ctx *gin.Context) {
 	claims, ok := ctx.MustGet("claims").(*domain.LoginClaims)
 	if !ok {
-		log.Println("Error getting claims")
-		ctx.JSON(http.StatusInternalServerError, "Internal server error")
+		ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Internal server error",
+			Error:   "cannot get claims",
+		})
 		return
 	}
 
 	err := u.UserUsecase.LogoutUser(claims.Username)
 	if err != nil {
 		code := config.GetStatusCode(err)
-
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(code, gin.H{"error": "Internal server error"})
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Failed to logout",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(200, gin.H{
-		"message": "Logout successfull",
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Successfully logout",
 	})
 }

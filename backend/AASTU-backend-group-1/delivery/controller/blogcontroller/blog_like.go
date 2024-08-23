@@ -15,7 +15,11 @@ func (l *BlogController) AddLike(ctx *gin.Context) {
 
 	id, err := primitive.ObjectIDFromHex(idHex)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "invalid id",
+		})
 		return
 	}
 
@@ -25,14 +29,21 @@ func (l *BlogController) AddLike(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&like); err != nil {
 		log.Println(err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	claim, ok := ctx.MustGet("claims").(*domain.LoginClaims)
 	if !ok {
-		log.Println("Error getting claims")
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Internal server error",
+			Error:   "cannot get claims",
+		})
 		return
 	}
 
@@ -45,17 +56,19 @@ func (l *BlogController) AddLike(ctx *gin.Context) {
 	err = l.BlogUsecase.AddLike(&newlike)
 	if err != nil {
 		code := config.GetStatusCode(err)
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Error adding like",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "like added"})
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Like added",
+		Data:    newlike,
+	})
 }
 
 func (l *BlogController) RemoveLike(ctx *gin.Context) {
@@ -64,32 +77,37 @@ func (l *BlogController) RemoveLike(ctx *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(idHex)
 	if err != nil {
 		log.Println(err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "invalid id",
+		})
 		return
 	}
 
 	claim, ok := ctx.MustGet("claims").(*domain.LoginClaims)
 	if !ok {
 		log.Println("Error getting claims")
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Internal server error",
+			Error:   "cannot get claims",
+		})
 		return
 	}
 
 	err = l.BlogUsecase.RemoveLike(id.Hex(), claim)
 	if err != nil {
 		code := config.GetStatusCode(err)
-
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Error removing like",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "like removed"})
+	ctx.JSON(http.StatusNoContent, nil)
 }
 
 func (l *BlogController) GetBlogLikes(ctx *gin.Context) {
@@ -98,7 +116,11 @@ func (l *BlogController) GetBlogLikes(ctx *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(idHex)
 	if err != nil {
 		log.Println(err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid request",
+			Error:   "invalid id",
+		})
 		return
 	}
 
@@ -108,11 +130,20 @@ func (l *BlogController) GetBlogLikes(ctx *gin.Context) {
 
 		if code == http.StatusInternalServerError {
 			log.Println(err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+			ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+				Status:  http.StatusInternalServerError,
+				Message: "Internal server error",
+				Error:   "cannot get likes",
+			})
 			return
 		}
 
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Cannot get likes",
+			Error:   err.Error(),
+		})
+
 		return
 	}
 
@@ -120,8 +151,9 @@ func (l *BlogController) GetBlogLikes(ctx *gin.Context) {
 		likes = []*domain.Like{}
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"count": len(likes),
-		"data":  likes,
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Success",
+		Data:    likes,
 	})
 }

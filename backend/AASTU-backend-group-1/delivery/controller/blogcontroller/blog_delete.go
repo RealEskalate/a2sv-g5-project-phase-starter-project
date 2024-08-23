@@ -15,21 +15,24 @@ func (b *BlogController) DeleteBlogByID(ctx *gin.Context) {
 	claims, ok := ctx.MustGet("claims").(*domain.LoginClaims)
 	if !ok {
 		log.Println("Error getting claims")
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		ctx.JSON(http.StatusInternalServerError, domain.APIResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Internal server error",
+			Error:   "Error getting claims",
+		})
 		return
 	}
 
 	err := b.BlogUsecase.DeleteBlogByID(id, claims)
 	if err != nil {
 		code := config.GetStatusCode(err)
+		log.Println(err)
 
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Error",
+			Error:   err.Error(),
+		})
 		return
 	}
 

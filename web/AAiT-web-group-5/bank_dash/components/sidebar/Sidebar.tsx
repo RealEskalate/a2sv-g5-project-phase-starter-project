@@ -3,6 +3,7 @@ import SideList from './SideList'; // Adjust the path based on your file structu
 import MenuIcons from '../icons/MenuIcons';
 import { Box, Toolbar } from '@mui/material';
 import Image from 'next/image';
+import { title } from 'process';
 
 const SideBar = () => {
   const menuItems = [
@@ -40,6 +41,12 @@ const SideBar = () => {
       link: '/credit-card',
       icon: <MenuIcons.CreditCardicon />,
       available: true
+    },
+    {
+      id: 'services',
+      title: 'Services',
+      link: '/services',
+      icon: <MenuIcons.Serviceicon />,
     },
     {
       id: 'loan',

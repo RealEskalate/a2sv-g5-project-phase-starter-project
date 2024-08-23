@@ -26,4 +26,6 @@ type PromoteDemoteUserUsecase interface {
 
 type UserProfileUpdateUsecase interface {
 	UpdateUserProfile(ctx context.Context, userID string, user *dtos.ProfileUpdateRequest) *models.ErrorResponse
+	GetUserProfile(ctx context.Context, userID string) (*models.User, *models.ErrorResponse)
+	DeleteUserProfile(ctx context.Context, userID string) *models.ErrorResponse
 }

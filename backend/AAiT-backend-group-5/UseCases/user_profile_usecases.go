@@ -48,3 +48,19 @@ func (uc *userProfileUpdateUsecase) UpdateUserProfile(ctx context.Context, userI
 
 	return nil
 }
+
+func (uc *userProfileUpdateUsecase) GetUserProfile(ctx context.Context, userID string) (*models.User, *models.ErrorResponse) {
+	user, err := uc.repository.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (uc *userProfileUpdateUsecase) DeleteUserProfile(ctx context.Context, userID string) *models.ErrorResponse {
+	err := uc.repository.DeleteUser(ctx, userID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

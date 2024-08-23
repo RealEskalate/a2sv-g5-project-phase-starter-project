@@ -26,7 +26,10 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "svgr.d.ts"
+    "svgr.d.ts",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "jest.setup.ts"
   ],
   "exclude": ["node_modules"]
 }

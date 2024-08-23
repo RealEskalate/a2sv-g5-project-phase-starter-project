@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (uc *userController) RefreshTokens(c *gin.Context) {
+func (uc *UserController) RefreshTokens(c *gin.Context) {
 	var req domain.RefreshRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})

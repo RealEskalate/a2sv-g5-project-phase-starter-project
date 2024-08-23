@@ -36,7 +36,6 @@ func (middleware *authMiddleware) AuthMiddleware(role string) gin.HandlerFunc {
 			}
 		}
 
-
 		if header == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing"})
 			c.Abort()
@@ -49,7 +48,7 @@ func (middleware *authMiddleware) AuthMiddleware(role string) gin.HandlerFunc {
 		}
 
 		err = middleware.TokenService.VerifyAccessToken(authParts[1])
-		fmt.Println("verify response", err)
+
 		if err != nil {
 			if errors.Is(err, &interfaces.ErrTokenExpired{}) {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Expired token"})

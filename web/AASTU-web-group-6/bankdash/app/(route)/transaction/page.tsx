@@ -1,8 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BarGraph from "@/app/components/Transaction/BarGraph";
 import Recent from "@/app/components/Transaction/Recent";
-import Pagination from "@/app/components/Transaction/Pagination";
 import VisaCard from "@/app/components/Card/VisaCard";
 import { TransactionType, ChartData } from "@/types/TransactionValue";
 import { useAppSelector } from "@/app/Redux/store/store";
@@ -15,15 +14,17 @@ const Transaction = () => {
   const accessToken = session?.accessToken as string;
   const [expenseData, setExpenseData] = useState<TransactionType[]>([]);
   const CardData: Card[] = useAppSelector((state) => state.cards.cards);
-  // const expenseData: TransactionType[] = useAppSelector(
-  //   (state) => state.transactions.expense
-  // );
 
   const fetchExpense = async () => {
-    const res = await getExpense(0, 100, accessToken);
+    while (!accessToken) {
+      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay to wait for the token
+    }
+    const res = await getExpense(0, accessToken);
     setExpenseData(res);
   };
-  fetchExpense();
+  useEffect(() => {
+    fetchExpense();
+  }, [accessToken]);
   const cardColor = [false, true];
 
   const convertToChartData = (data: TransactionType[]): ChartData[] => {
@@ -70,7 +71,7 @@ const Transaction = () => {
             </p>
           </div>
           <div className="overflow-x-auto scrollbar-hide">
-            <div className="flex gap-8 min-w-[750px] min-h-[170px]">
+            <div className="flex gap-8 min-w-[900px] min-h-[170px]">
               <>
                 {CardData.length > 0 ? (
                   CardData?.slice(0, 2).map((item, index) => (

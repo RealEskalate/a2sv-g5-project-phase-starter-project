@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 interface props {
   title: string;
-  amount: string;
+  amount: number | string | null;
   icon: string;
   color: string;
   width: string;

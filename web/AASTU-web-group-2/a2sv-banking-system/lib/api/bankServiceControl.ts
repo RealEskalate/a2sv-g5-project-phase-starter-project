@@ -1,93 +1,150 @@
 import axios from 'axios';
-const BASE_URL = 'https://bank-dashboard-1tst.onrender.com';
-interface BankServiceData {
-  id: string;
-  name: string;
-  details: string;
-  numberOfUsers: number;
-  status: string;
-  type: string;
-  icon: string;
+import { BankService, BankServiceData, ApiResponse } from '@/types/bankServiceController.interface'; // Importing interfaces
+
+const BASE_URL = 'https://a2svwallet.onrender.com';
+
+
+export const getBankServices = async (token: string, page: number, size: number ): Promise<ApiResponse> => { 
+  try {
+  console.log("Fetching")
+  const response = await fetch(`${BASE_URL}/bank-services?page=${page}&size=${size}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`, // Add the token to the headers
+    },
+  });
+  if (response.status === 200) {
+    const data: ApiResponse = await response.json();
+    return data ;
+  } else {
+    throw new Error(`Request failed with status code: ${response.status}`);
+  }
+} catch (error) {
+  console.error('Error fetching cards:', error);
+  throw error;
 }
+};
 
-interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-}
-
-export const getBankServices = async (page: number, size: number) => {
+// Search bank services by query
+export const searchBankServices = async (token: string, query: string ): Promise<BankServiceData[]> => {
   try {
-    const response = await axios.get<ApiResponse<BankServiceData[]>>(
-      `${BASE_URL}/bank-services`,
-      { params: { page, size } }
-    );
-    return response.data;
+    const response = await fetch(`${BASE_URL}/bank-services/search?query=${query}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      const data: BankServiceData[] = await response.json();
+      return data;
+    } else {
+      throw new Error(`Request failed with status code: ${response.status}`);
+    }
   } catch (error) {
-    console.error('Error fetching bank services', error);
+    console.error('Error searching bank services:', error);
     throw error;
   }
 };
 
-export const searchBankServices = async (query: string) => {
+
+// Get a specific bank service by ID
+export const getBankServiceById = async ( token: string, id: string): Promise<BankServiceData> => {
   try {
-    const response = await axios.get<ApiResponse<BankServiceData[]>>(
-      `${BASE_URL}/bank-services/search`,
-      { params: { query } }
-    );
-    return response.data;
+    const response = await fetch(`${BASE_URL}/bank-services/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      const data: BankServiceData = await response.json();
+      return data;
+    } else {
+      throw new Error(`Request failed with status code: ${response.status}`);
+    }
   } catch (error) {
-    console.error('Error searching bank services', error);
+    console.error(`Error fetching bank service with ID ${id}:`, error);
     throw error;
   }
 };
 
-export const getBankServiceById = async (id: string) => {
+
+// Create a new bank service
+export const createBankService = async (
+  token: string,
+  data: Omit<BankServiceData, 'id'>,
+  
+): Promise<BankServiceData> => {
   try {
-    const response = await axios.get<ApiResponse<BankServiceData>>(
-      `${BASE_URL}/bank-services/${id}`
-    );
-    return response.data;
+    const response = await fetch(`${BASE_URL}/bank-services`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (response.status === 200) {
+      const responseData: BankServiceData = await response.json();
+      return responseData;
+    } else {
+      throw new Error(`Request failed with status code: ${response.status}`);
+    }
   } catch (error) {
-    console.error(`Error fetching bank service with ID ${id}`, error);
+    console.error('Error creating bank service:', error);
     throw error;
   }
 };
 
-export const createBankService = async (data: Omit<BankServiceData, 'id'>) => {
+
+// Update an existing bank service by ID
+export const updateBankService = async (
+  token: string,
+  id: string,
+  data: Partial<Omit<BankServiceData, 'id'>>,
+  
+): Promise<BankServiceData> => {
   try {
-    const response = await axios.post<ApiResponse<BankServiceData>>(
-      `${BASE_URL}/bank-services`,
-      data
-    );
-    return response.data;
+    const response = await fetch(`${BASE_URL}/bank-services/${id}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (response.status === 200) {
+      const responseData: BankServiceData = await response.json();
+      return responseData;
+    } else {
+      throw new Error(`Request failed with status code: ${response.status}`);
+    }
   } catch (error) {
-    console.error('Error creating bank service', error);
+    console.error(`Error updating bank service with ID ${id}:`, error);
     throw error;
   }
 };
 
-export const updateBankService = async (id: string, data: Partial<Omit<BankServiceData, 'id'>>) => {
-  try {
-    const response = await axios.put<ApiResponse<BankServiceData>>(
-      `${BASE_URL}/bank-services/${id}`,
-      data
-    );
-    return response.data;
-  } catch (error) {
-    console.error(`Error updating bank service with ID ${id}`, error);
-    throw error;
-  }
-};
 
-export const deleteBankService = async (id: string) => {
+// Delete a bank service by ID
+export const deleteBankService = async (token: string, id: string ): Promise<void> => {
   try {
-    const response = await axios.delete<ApiResponse<BankServiceData>>(
-      `${BASE_URL}/bank-services/${id}`
-    );
-    return response.data;
+    const response = await fetch(`${BASE_URL}/bank-services/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+
+    if (response.status === 200) {
+      console.log(`Bank service with ID ${id} deleted successfully.`);
+    } else {
+      throw new Error(`Request failed with status code: ${response.status}`);
+    }
   } catch (error) {
-    console.error(`Error deleting bank service with ID ${id}`, error);
+    console.error(`Error deleting bank service with ID ${id}:`, error);
     throw error;
   }
 };

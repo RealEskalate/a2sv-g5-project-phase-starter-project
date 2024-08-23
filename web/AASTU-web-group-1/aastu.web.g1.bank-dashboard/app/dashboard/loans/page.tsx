@@ -44,7 +44,7 @@ const Loans = () => {
         <div className="flex gap-2 overflow-x-scroll scrollbar-hidden my-3 scroll md:w-[98%] md:mx-auto">
         {loanTypes.map((item) => (
             <div className="my-2" key={item.name}>
-              <Card name={item.name} description={data.item.id} icon={item.icon}  />
+              <Card name={item.name} description={data?[item?.id]:0} icon={item.icon}  />
             </div>
         ))}
       </div>

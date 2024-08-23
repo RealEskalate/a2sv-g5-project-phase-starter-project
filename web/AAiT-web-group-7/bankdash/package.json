@@ -9,10 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "@radix-ui/react-switch": "^1.1.0",
-=======
->>>>>>> 5815d9f08456f911c3bf41a77fb243b5ec94f705
     "@reduxjs/toolkit": "^2.2.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

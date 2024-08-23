@@ -39,7 +39,13 @@ func (r *MongoBlogRepository) CreateBlog(blog *models.Blog, authorId string) (st
 	if err != nil {
 		return "", err
 	}
+
 	blogID := blog.ID.Hex()
+	cacheKey := "blog:" + blogID
+	err = r.redisClt.SetBlog(cacheKey, &blog, time.Minute * 20)
+	if err != nil {
+		return "", err
+	}
 	return blogID, nil
 }
 
@@ -61,7 +67,7 @@ func (r *MongoBlogRepository) GetBlogByID(blogID string) (*models.Blog, error) {
 		return nil, err
 	}
 
-	err = r.redisClt.SetBlog(cacheKey, &blog, time.Hour)
+	err = r.redisClt.SetBlog(cacheKey, &blog, time.Minute * 20)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +113,7 @@ func (r *MongoBlogRepository) GetBlogs(filter map[string]interface{}, search str
 	if err := cursor.Err(); err != nil {
 		return nil, err
 	}
-	err = r.redisClt.SetBlog(cacheKey, blogs, time.Hour)
+	err = r.redisClt.SetBlog(cacheKey, blogs, time.Minute * 20)
 	if err != nil {
 		return nil, err
 	}
@@ -117,94 +123,175 @@ func (r *MongoBlogRepository) GetBlogs(filter map[string]interface{}, search str
 
 
 func (r *MongoBlogRepository) UpdateBlog(blogId string, newBlog *models.Blog) error {
-	blogID, _ := primitive.ObjectIDFromHex(blogId)
-	newBlog.UpdatedAt = time.Now()
+    blogID, _ := primitive.ObjectIDFromHex(blogId)
+    newBlog.UpdatedAt = time.Now()
 
-	_, err := r.collection.UpdateOne(
-		ctx,
-		bson.M{"_id": blogID},
-		bson.M{"$set": newBlog},
-	)
-	return err
+    _, err := r.collection.UpdateOne(
+        ctx,
+        bson.M{"_id": blogID},
+        bson.M{"$set": newBlog},
+    )
+    if err != nil {
+        return err
+    }
+
+    var updatedBlog models.Blog
+    err = r.collection.FindOne(ctx, bson.M{"_id": blogID}).Decode(&updatedBlog)
+    if err != nil {
+        return err
+    }
+	
+	cacheKey := "blog:" + blogId
+    err = r.redisClt.SetBlog(cacheKey, updatedBlog, time.Minute * 20)
+    if err != nil {
+        return err
+    }
+    return nil
 }
+
 
 
 func (r *MongoBlogRepository) DeleteBlog(blogId string) error {
-	blogID, _ := primitive.ObjectIDFromHex(blogId)
-	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": blogID})
-	return err
+    blogID, _ := primitive.ObjectIDFromHex(blogId)
+    _, err := r.collection.DeleteOne(ctx, bson.M{"_id": blogID})
+    if err != nil {
+        return err
+    }
+
+    cacheKey := "blog:" + blogId
+    err = r.redisClt.Delete(cacheKey)
+    if err != nil {
+        return err
+    }
+    return nil
 }
+
 
 func (r *MongoBlogRepository) AddCommentToTheList(blogId string, commentId string) error {
-	blogID, _ := primitive.ObjectIDFromHex(blogId)
-	commentID, _ := primitive.ObjectIDFromHex(commentId)
-	_, err := r.collection.UpdateOne(
-		ctx,
-		bson.M{"_id": blogID},
-		bson.M{"$push": bson.M{"comments": commentID}},
-	)
-	return err
+    blogID, _ := primitive.ObjectIDFromHex(blogId)
+    commentID, _ := primitive.ObjectIDFromHex(commentId)
+    _, err := r.collection.UpdateOne(
+        ctx,
+        bson.M{"_id": blogID},
+        bson.M{"$push": bson.M{"comments": commentID}},
+    )
+    if err != nil {
+        return err
+    }
+
+    var updatedBlog models.Blog
+    err = r.collection.FindOne(ctx, bson.M{"_id": blogID}).Decode(&updatedBlog)
+    if err != nil {
+        return err
+    }
+
+    cacheKey := "blog:" + blogId
+    err = r.redisClt.SetBlog(cacheKey, updatedBlog, time.Minute * 20)
+    if err != nil {
+        return err
+    }
+    return nil
 }
+
 
 func (r *MongoBlogRepository) DeleteCommentFromTheList(blogId string, commentId string) error {
-	blogID, _ := primitive.ObjectIDFromHex(blogId)
-	commentID, _ := primitive.ObjectIDFromHex(commentId)
-	_, err := r.collection.UpdateOne(
-		ctx,
-		bson.M{"_id": blogID},
-		bson.M{"$pull": bson.M{"comments": commentID}},
-	)
-	return err
+    blogID, _ := primitive.ObjectIDFromHex(blogId)
+    commentID, _ := primitive.ObjectIDFromHex(commentId)
+    _, err := r.collection.UpdateOne(
+        ctx,
+        bson.M{"_id": blogID},
+        bson.M{"$pull": bson.M{"comments": commentID}},
+    )
+    if err != nil {
+        return err
+    }
+
+    var updatedBlog models.Blog
+    err = r.collection.FindOne(ctx, bson.M{"_id": blogID}).Decode(&updatedBlog)
+    if err != nil {
+        return err
+    }
+    cacheKey := "blog:" + blogId
+    err = r.redisClt.SetBlog(cacheKey, updatedBlog, time.Minute * 20)
+    if err != nil {
+        return err
+    }
+    return nil
 }
+
 func (r *MongoBlogRepository) GetBlogsByAuthorID(authorID string) ([]*models.Blog, error) {
-	authorIDObj, err := primitive.ObjectIDFromHex(authorID)
-	if err != nil {
-		return nil, err
-	}
-	var blogs []*models.Blog
-	cursor, err := r.collection.Find(ctx, bson.M{"author_id": authorIDObj})
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(ctx)
+    cacheKey := "blogs:author:" + authorID
+    var blogs []*models.Blog
+    err := r.redisClt.GetBlog(cacheKey, &blogs)
+    if err == nil && len(blogs) > 0 {
+        return blogs, nil
+    }
 
-	for cursor.Next(ctx) {
-		var blog models.Blog
-		if err := cursor.Decode(&blog); err != nil {
-			return nil, err
-		}
-		blogs = append(blogs, &blog)
-	}
-	if err := cursor.Err(); err != nil {
-		return nil, err
-	}
+    authorIDObj, err := primitive.ObjectIDFromHex(authorID)
+    if err != nil {
+        return nil, err
+    }
 
-	return blogs, nil
+    cursor, err := r.collection.Find(ctx, bson.M{"author_id": authorIDObj})
+    if err != nil {
+        return nil, err
+    }
+    defer cursor.Close(ctx)
+
+    for cursor.Next(ctx) {
+        var blog models.Blog
+        if err := cursor.Decode(&blog); err != nil {
+            return nil, err
+        }
+        blogs = append(blogs, &blog)
+    }
+    if err := cursor.Err(); err != nil {
+        return nil, err
+    }
+
+    err = r.redisClt.SetBlog(cacheKey, blogs, time.Minute * 20)
+    if err != nil {
+        return nil, err
+    }
+
+    return blogs, nil
 }
+
 
 func (r *MongoBlogRepository) GetBlogsByPopularity(limit int) ([]*models.Blog, error) {
-	var blogs []*models.Blog
-	findOptions := options.Find()
-	findOptions.SetSort(bson.M{"popularity": -1}) 
-	findOptions.SetLimit(int64(limit))            
-	cursor, err := r.collection.Find(ctx, bson.M{}, findOptions)
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(ctx)
-	for cursor.Next(ctx) {
-		var blog models.Blog
-		if err := cursor.Decode(&blog); err != nil {
-			return nil, err
-		}
-		blogs = append(blogs, &blog)
-	}
-	if err := cursor.Err(); err != nil {
-		return nil, err
-	}
+    cacheKey := fmt.Sprintf("blogs:popular:%d", limit)
+    var blogs []*models.Blog
+    err := r.redisClt.GetBlog(cacheKey, &blogs)
+    if err == nil && len(blogs) > 0 {
+        return blogs, nil
+    }
 
-	return blogs, nil
+    findOptions := options.Find()
+    findOptions.SetSort(bson.M{"popularity": -1}) 
+    findOptions.SetLimit(int64(limit))            
+    cursor, err := r.collection.Find(ctx, bson.M{}, findOptions)
+    if err != nil {
+        return nil, err
+    }
+    defer cursor.Close(ctx)
+    for cursor.Next(ctx) {
+        var blog models.Blog
+        if err := cursor.Decode(&blog); err != nil {
+            return nil, err
+        }
+        blogs = append(blogs, &blog)
+    }
+    if err := cursor.Err(); err != nil {
+        return nil, err
+    }
+
+    err = r.redisClt.SetBlog(cacheKey, blogs, time.Minute * 20)
+    if err != nil {
+        return nil, err
+    }
+    return blogs, nil
 }
+
 
 
 
@@ -222,12 +309,23 @@ func (r *MongoBlogRepository) LikeBlog(blogID string, userID string) error {
         bson.M{"_id": blogIDObj},
         bson.M{"$addToSet": bson.M{"likes": userIDObj}},
     )
-	
     if err != nil {
-		return err
+        return err
+    }
+
+    var updatedBlog models.Blog
+    err = r.collection.FindOne(ctx, bson.M{"_id": blogIDObj}).Decode(&updatedBlog)
+    if err != nil {
+        return err
+    }
+    cacheKey := "blog:" + blogID
+    err = r.redisClt.SetBlog(cacheKey, updatedBlog, time.Minute * 20)
+    if err != nil {
+        return err
     }
     return nil
 }
+
 
 func (r *MongoBlogRepository) ViewBlog(blogID string) error {
     blogIDObj, err := primitive.ObjectIDFromHex(blogID)
@@ -242,5 +340,17 @@ func (r *MongoBlogRepository) ViewBlog(blogID string) error {
     if err != nil {
         return err
     }
+    var updatedBlog models.Blog
+    err = r.collection.FindOne(ctx, bson.M{"_id": blogIDObj}).Decode(&updatedBlog)
+    if err != nil {
+        return err
+    }
+
+    cacheKey := "blog:" + blogID
+    err = r.redisClt.SetBlog(cacheKey, updatedBlog, time.Minute * 20)
+    if err != nil {
+        return err
+    }
     return nil
 }
+

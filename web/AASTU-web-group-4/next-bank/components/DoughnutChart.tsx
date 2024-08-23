@@ -65,46 +65,6 @@ export default function Component() {
   return (
     <Card data-chart={id} className="flex flex-col rounded-3xl">
       <ChartStyle id={id} config={chartConfig} />
-      <CardHeader className="flex-row items-start space-y-0 pb-0">
-        <div className="grid gap-1">
-          <CardDescription>January - June 2024</CardDescription>
-        </div>
-        <Select value={activeMonth} onValueChange={setActiveMonth}>
-          <SelectTrigger
-            className="ml-auto h-7 w-[130px] rounded-lg pl-2.5"
-            aria-label="Select a value"
-          >
-            <SelectValue placeholder="Select month" />
-          </SelectTrigger>
-          <SelectContent align="end" className="rounded-xl">
-            {months.map((key) => {
-              const config = chartConfig[key as keyof typeof chartConfig]
-
-              if (!config) {
-                return null
-              }
-
-              return (
-                <SelectItem
-                  key={key}
-                  value={key}
-                  className="rounded-lg [&_span]:flex"
-                >
-                  <div className="flex items-center gap-2 text-xs">
-                    <span
-                      className="flex h-3 w-3 shrink-0 rounded-sm"
-                      style={{
-                        backgroundColor: `var(--color-${key})`,
-                      }}
-                    />
-                    {config?.label}
-                  </div>
-                </SelectItem>
-              )
-            })}
-          </SelectContent>
-        </Select>
-      </CardHeader>
       <CardContent className="flex flex-1 justify-center pb-0">
         <ChartContainer
           id={id}

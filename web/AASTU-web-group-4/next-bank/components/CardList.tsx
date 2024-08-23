@@ -10,7 +10,7 @@ interface Props {
 
 const CardList: React.FC<Props> = ({ card_list }) => {
   return (
-    <div className="max-h-[400px] lg:w-[730px] md:w-[487px] w-[325] overflow-y-scroll pr-6 py-4 scrollbar-thin scrollbar-track-[#F5F7FA] scrollbar-thumb-[#b5c2d9] scrollbar-thumb-rounded-full">
+    <div className="max-h-[400px] lg:w-[730px] md:w-[487px] w-[325] overflow-y-scroll pr-6 py-4 scrollbar-thin scrollbar-track-[#F5F7FA] dark:scrollbar-track-dark scrollbar-thumb-[#b5c2d9] scrollbar-thumb-rounded-full">
       {Array.isArray(card_list) && card_list.length > 0 ? (
         card_list.map((card: any, index: number) => (
         <div

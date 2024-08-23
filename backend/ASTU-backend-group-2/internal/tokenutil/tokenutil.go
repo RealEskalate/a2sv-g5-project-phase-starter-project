@@ -60,7 +60,7 @@ func CreateRefreshToken(user *domain.User, secret string, expiry int) (refreshTo
 }
 
 func IsAuthorized(requestToken string, secret string) (bool, error) {
-	_, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
@@ -69,7 +69,21 @@ func IsAuthorized(requestToken string, secret string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return true, nil
+
+	if claims, ok := token.Claims.(jwt.Claims); ok && token.Valid {
+		if registeredClaims, ok := claims.(*jwt.RegisteredClaims); ok {
+			if registeredClaims.ExpiresAt != nil {
+				expirationTime := registeredClaims.ExpiresAt.Time
+				if time.Now().After(expirationTime) {
+					return false, fmt.Errorf("token has expired")
+				}
+				return true, nil
+			}
+			return false, fmt.Errorf("expiry claim not present in token")
+		}
+		return false, fmt.Errorf("invalid token claims")
+	}
+	return false, fmt.Errorf("invalid token")
 }
 
 func ExtractIDFromToken(requestToken string, secret string) (string, error) {

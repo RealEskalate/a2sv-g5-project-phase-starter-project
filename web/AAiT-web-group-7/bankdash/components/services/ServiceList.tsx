@@ -9,7 +9,10 @@ interface LoanCardProps {
 const ServiceList: React.FC<LoanCardProps> = ({ imageSrc, title, bgColor }) => {
   return (
     <div className="flex justify-center items-center gap-[20px] p-[15px] rounded-2xl bg-white">
-      <div className={`bg-[${bgColor}] w-[60px] h-[60px] rounded-3xl flex justify-center p-[18px]`}>
+      <div
+        style={{ backgroundColor: bgColor }}
+        className={` w-[60px] h-[60px] rounded-3xl flex justify-center p-[18px]`}
+      >
         <img src={imageSrc} />
       </div>
       <div className=" gap-[73px] w-[995px] h-[46px] flex flex-row items-center ">

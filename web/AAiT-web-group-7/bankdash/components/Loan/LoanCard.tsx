@@ -7,12 +7,18 @@ interface LoanCardProps {
   bgColor: string;
 }
 
-const LoanCard: React.FC<LoanCardProps> = ({ imageSrc, title, amount ,bgColor }) => {
+const LoanCard: React.FC<LoanCardProps> = ({
+  imageSrc,
+  title,
+  amount,
+  bgColor,
+}) => {
   return (
     <div className="w-[255px] h-[120px] rounded-3xl flex justify-center items-center bg-white">
       <div className="flex flex-row w-[201px] h-[70px] justify-between items-center">
         <div
-          className={`rounded-full flex justify-center w-[70px] h-[70px] p-5 bg-[${bgColor}]`}
+          style={{ backgroundColor: bgColor }}
+          className={`rounded-full flex justify-center w-[70px] h-[70px] p-5 `}
         >
           <img src={imageSrc} />
         </div>

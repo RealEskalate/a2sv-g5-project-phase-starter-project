@@ -60,7 +60,7 @@ export default function Component() {
           return {
             ...dayData,
             debit: dayExpenses.reduce((sum: any, tx: { amount: any; }) => sum + tx.amount, 0),
-            credit: dayIncomes.reduce((sum, tx) => sum + tx.amount, 0),
+            credit: dayIncomes.reduce((sum: any, tx: { amount: any; }) => sum + tx.amount, 0),
           };
         });
         
@@ -73,7 +73,7 @@ export default function Component() {
     fetchTransactions();
   }, []);
 
-  const getDayIndex = (day) => {
+  const getDayIndex = (day: string) => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     return days.indexOf(day);
   };

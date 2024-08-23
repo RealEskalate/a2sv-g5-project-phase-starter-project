@@ -48,7 +48,7 @@ export const getActiveLoanById = async (id: any) => {
 // GET /active-loans/my-loans
 export const getMyLoans = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/active-loans/my-loans`, {
+    const response = await fetch(`${API_BASE_URL}/active-loans/my-loans?page=0&size=5`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -87,6 +87,7 @@ export const getLoanDetailData = async () => {
 export const getAllActiveLoans = async () => {
   const response = await fetch(`${API_BASE_URL}/active-loans/all`, {
     method: "GET",
+
   });
   return response.json();
 };

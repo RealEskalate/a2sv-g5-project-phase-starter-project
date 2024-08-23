@@ -61,6 +61,7 @@ func privateUserRouter(router *gin.RouterGroup, userController *usercontroller.U
 	router.PATCH("/users", userController.UpdateProfile)
 	router.PATCH("/users/promote", userController.PromoteUser)
 	router.POST("/users/logout", userController.LogoutUser)
+	router.DELETE("/users", userController.DeleteUser)
 	router.PATCH("/users/change-password", userController.ChangePassword)
 }
 

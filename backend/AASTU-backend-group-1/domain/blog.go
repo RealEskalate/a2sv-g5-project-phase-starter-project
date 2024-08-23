@@ -56,8 +56,12 @@ type BlogRepository interface {
 	IncrmentBlogViews(blogID string) error
 	IncrmentBlogLikes(blogID string) error
 	IncrmentBlogComments(blogID string) error
+	DecrementBlogComments(blogID string) error
+	DecrementBlogViews(blogID string) error
 	DecrementBlogLikes(blogID string) error
 	RemoveLike(blogID string, author string) error
+	DeleteComment(commentID string) error
+	GetCommentByID(commentID string) (*Comment, error)
 	GetTotalBlogs() (int, error)
 }
 
@@ -76,4 +80,5 @@ type BlogUsecase interface {
 	GetBlogLikes(blogID string) ([]*Like, error)
 	RemoveLike(id string, claim *LoginClaims) error
 	GenerateAiContent(prompt string) (string, error)
+	DeleteComment(commentID string, claim *LoginClaims) error
 }

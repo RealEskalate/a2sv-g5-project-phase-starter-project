@@ -118,3 +118,41 @@ func (l *BlogController) GetBlogComments(ctx *gin.Context) {
 		Data:    comments,
 	})
 }
+
+func (l *BlogController) DeleteComment(ctx *gin.Context) {
+	idHex := ctx.Param("id")
+	_, err := primitive.ObjectIDFromHex(idHex)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	commentIDHex := ctx.Param("commentid")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid comment id"})
+		return
+	}
+
+	claim, ok := ctx.MustGet("claims").(*domain.LoginClaims)
+	if !ok {
+		log.Println("Error getting claims")
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	err = l.BlogUsecase.DeleteComment(commentIDHex, claim)
+	if err != nil {
+		code := config.GetStatusCode(err)
+
+		if code == http.StatusInternalServerError {
+			log.Println(err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+			return
+		}
+
+		ctx.JSON(code, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully"})
+}

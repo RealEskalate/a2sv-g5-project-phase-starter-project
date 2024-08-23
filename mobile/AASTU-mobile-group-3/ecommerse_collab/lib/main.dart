@@ -8,9 +8,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'features/product/domain/usecase/get_product.dart';
 // import 'features/product/data/data_sources/remote_data_source.dart';
 // import 'features/product/data/models/product_model.dart';
+import 'features/authentication/domain/entity/user.dart';
 import 'features/authentication/presentation/bloc/blocs.dart';
 // import 'features/authentication/presentation/pages/onboarding.dart';
 import 'features/authentication/presentation/pages/onboarding.dart';
+import 'features/chat/presentation/pages/chat_list.dart';
+import 'features/chat/presentation/widgets/chat_card.dart';
 import 'features/chat/presentation/widgets/user_avater.dart';
 import 'features/product/presentation/bloc/blocs.dart';
 import 'service_locator.dart';
@@ -34,9 +37,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => getIt<ProductBloc>()),
         BlocProvider(create: (context) => userBloc),
       ],
-      child: const MaterialApp(
+      child:  MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: Onboarding()   
+        home: Onboarding()
       ),
     );
   }

@@ -9,10 +9,10 @@
 
 
 .service_list_title{
-    @apply font-inter font-medium text-[#232323] text-[14px] leading-[16.94px] md:text-[16px] md:leading-[19.36px] mb-1
+    @apply font-inter font-medium text-[#232323] text-[14px] leading-[16.94px] md:text-[16px] md:leading-[19.36px] mb-1 whitespace-nowrap
 }
 .service_list_subtitle{
-    @apply font-inter  font-normal text-[12px] leading-[14.52px]  md:text-[15px] md:leading-[18.15px]
+    @apply font-inter  font-normal text-[12px] leading-[14.52px]  md:text-[15px] md:leading-[18.15px] whitespace-nowrap
 }
 .service_list_Button{
 @apply  service_list_subtitle md:border text-[#1814F3] md:text-[#718EBF] md:border-[#718EBF] rounded-[50px] px-5 py-2 md:hover:text-[#1814F3] md:hover:border-[#1814F3] whitespace-nowrap

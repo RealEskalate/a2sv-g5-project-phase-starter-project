@@ -1,14 +1,16 @@
 import axios from "axios";
-import { LoanType, ApiResponse } from "@/types/LoanValue";
+import { LoanType, LoanDetail } from "@/types/LoanValue";
 
 const API_URL =
-  "https://bank-dashboard-rsf1.onrender.com/active-loans/my-loans"; // Adjust this to match your actual API base URL
+  "https://bank-dashboard-rsf1.onrender.com/active-loans"; // Adjust this to match your actual API base URL
 
 const handleRequest = async (
   method: string,
   endpoint: string,
   data?: LoanType[],
-  accessToken?: string
+  accessToken?: string,
+  returnContentOnly?: boolean
+
 ) => {
   try {
     const response = await axios({
@@ -20,7 +22,7 @@ const handleRequest = async (
         "Content-Type": "application/json",
       },
     });
-    return response.data.data;
+    return returnContentOnly ? response.data.data.content : response.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error("Axios error:", error.message);
@@ -32,8 +34,11 @@ const handleRequest = async (
 };
 
 class TransactionService {
-  public static getLoan(accessToken: string): Promise<LoanType[]> {
-    return handleRequest("GET", `${API_URL}`, undefined, accessToken);
+  public static getLoan(accessToken: string, page: number): Promise<LoanType[]> {
+    return handleRequest("GET", `${API_URL}/my-loans?page=${page}&size=5`, undefined, accessToken, true);
+  }
+  public static detailData(accessToken: string): Promise<LoanDetail> {
+    return handleRequest("GET", `${API_URL}/detail-data`, undefined, accessToken, false);
   }
 }
 

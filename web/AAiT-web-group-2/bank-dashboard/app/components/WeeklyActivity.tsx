@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const chartConfig = {
+  // height: 300,
+  // width: 710,
   series: [
     {
       name: "Deposit",
@@ -65,13 +67,13 @@ const chartConfig = {
 
 const WeeklyActivity = () => {
   return (
-    <div className="px-2 pb-0 mx-auto w-fit rounded-my-card-radius shadow-md">
+    <div className="max-w-full max-h-[300px] h-[300px]  overflow-hidden  bg-white rounded-lg shadow-md">
       <Chart
         options={chartConfig.options}
         series={chartConfig.series}
         type="bar"
-        height={322}
-        width={730}
+        width={"100%"}
+        height={"100%"}
       />
     </div>
   );

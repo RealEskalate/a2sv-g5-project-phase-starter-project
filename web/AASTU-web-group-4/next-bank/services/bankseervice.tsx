@@ -1,8 +1,6 @@
-import Cookies from "js-cookie";
-const API_BASE_URL = "https://web-team-g4.onrender.com";
-const token = Cookies.get('accessToken')
- 
-  "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJheXV1IiwiaWF0IjoxNzI0MTQ5MzgyLCJleHAiOjE3MjQyMzU3ODJ9.ho0P9ZYtpOiDLT810v9r_YAMUwb865p4O4iXIWu0H5ujqjdxbLI_K6lH4m_YOxPm";
+import Cookie from "js-cookie";
+const API_BASE_URL = " https://web-team-g4.onrender.com";
+const token = Cookie.get("accessToken");
 // GET /bank-services/{id}
 export const getBankServiceById = async (id: any) => {
   const response = await fetch(`${API_BASE_URL}/bank-services/${id}`, {
@@ -40,7 +38,7 @@ export const deleteBankServiceById = async (id: any) => {
 };
 
 // GET /bank-services
-export const getAllBankServices = async ( page:any , size:any) => {
+export const getAllBankServices = async (page:any , size:any) => {
   const response = await fetch(`${API_BASE_URL}/bank-services?page=${page}&size=${size}`, {
     method: "GET",
     headers: {

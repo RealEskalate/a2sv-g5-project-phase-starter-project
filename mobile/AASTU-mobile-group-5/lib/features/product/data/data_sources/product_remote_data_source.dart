@@ -192,49 +192,54 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   }
 
   @override
+  // Future<ProductModel> updateProduct(String id, ProductModel product) async {
+  //   try {
+  //     final response = await client.put(
+  //       Uri.parse(Urls.updateProduct(id)),
+  //       headers: await _createHeaders(), // Add authorization header
+  //       body: jsonEncode(product.toJson()),
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final Map<String, dynamic> jsonResponse = json.decode(response.body);
+  //       final productJson = jsonResponse['data'];
+
+  //       if (productJson != null) {
+  //         return ProductModel.fromJson(productJson);
+  //       } else {
+  //         throw ProductNotFoundException();
+  //       }
+  //     } else if (response.statusCode == 404) {
+  //       throw ProductNotFoundException();
+  //     } else {
+  //       throw ServerException();
+  //     }
+  //   } catch (e) {
+  //     // Log the error or handle it as needed
+  //     throw ServerException();
+  //   }
+  // }
   Future<ProductModel> updateProduct(String id, ProductModel product) async {
-    try {
-      final response = await client.put(
-        Uri.parse(Urls.updateProduct(id)),
-        headers: await _createHeaders(), // Add authorization header
-        body: jsonEncode(product.toJson()),
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        final productJson = jsonResponse['data'];
-
-        if (productJson != null) {
-          return ProductModel.fromJson(productJson);
-        } else {
-          throw ProductNotFoundException();
-        }
-      } else if (response.statusCode == 404) {
-        throw ProductNotFoundException();
-      } else {
-        throw ServerException();
-      }
-    } catch (e) {
-      // Log the error or handle it as needed
+  try {
+    final headers = await _createHeaders();
+    final response = await client.put(
+      Uri.parse(Urls.updateProduct(id)),
+      headers: headers,
+      body: jsonEncode({
+        'name': product.name,
+        'description': product.description,
+        'price': product.price,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return ProductModel.fromJson(jsonDecode(response.body)['data']);
+    } else {
       throw ServerException();
     }
+  } catch (e) {
+    throw ServerException();
   }
-//   Future<ProductModel> updateProduct(String id, ProductModel product) async {
-//   try {
-//     final response = await client.put(
-//       Uri.parse(Urls.updateProduct(id)),
-//       headers: await _createHeaders(),
-//       body: jsonEncode(product.toJson()),
-//     );
-//     if (response.statusCode == 200) {
-//       return ProductModel.fromJson(jsonDecode(response.body)['data']);
-//     } else {
-//       throw ServerException();
-//     }
-//   } catch (e) {
-//     throw ServerException();
-//   }
-// }
+}
 }
 
 // this is verison 1 the one above is verion 2

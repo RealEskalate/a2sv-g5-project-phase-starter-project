@@ -250,13 +250,16 @@ func (br *blogrepository) LikePost(ctx context.Context, id primitive.ObjectID, u
 
 	// if user has already liked delete like
 	if docExists {
-		_, err = br.likeDislikeCollection.DeleteOne(ctx, filter)
-		if err != nil {
-			return err, 500, ""
-		}
 		var message string
+		fmt.Println("likeDislike from like", likeDislike)
 
-		if likeDislike.IsLike == true {
+		if likeDislike.IsLike {
+			// if user already liked delete thr like
+			_, err = br.likeDislikeCollection.DeleteOne(ctx, filter)
+			if err != nil {
+				return err, 500, ""
+			}
+
 			update := bson.D{{"$inc", bson.D{{"likecount", -1}}}}
 			_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
 
@@ -266,13 +269,23 @@ func (br *blogrepository) LikePost(ctx context.Context, id primitive.ObjectID, u
 
 			message = "like removed"
 		} else {
-			update := bson.D{{"$inc", bson.D{{"dislikecount", -1}}}}
+			// if user already disliked change dislike to like
+
+			_, err = br.likeDislikeCollection.UpdateOne(ctx, filter, bson.D{
+				{"$set", bson.D{{"isLike", true}}}, // directly set isLike to true
+			})
+			if err != nil {
+				return err, 500, ""
+			}
+
+			// decrease dislike count and increase like count
+			update := bson.D{{"$inc", bson.D{{"likecount", 1}, {"dislikecount", -1}}}}
 			_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
 
 			if err != nil {
 				return err, 500, ""
 			}
-			message = "dislike removed"
+			message = "dislike changed to like"
 		}
 
 		return nil, 200, message
@@ -317,31 +330,41 @@ func (br *blogrepository) DislikePost(ctx context.Context, id primitive.ObjectID
 		}
 	}
 
-	// if user has already liked delete like
+	// if user has already disliked delete dislike
 	if docExists {
-		_, err = br.likeDislikeCollection.DeleteOne(ctx, filter)
-		if err != nil {
-			return err, 500, ""
-		}
 		var message string
+		fmt.Println("likeDislike from dislike", likeDislike)
 
-		if likeDislike.IsLike == true {
-			update := bson.D{{"$inc", bson.D{{"likecount", -1}}}}
-			_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
-
+		if !likeDislike.IsLike {
+			_, err = br.likeDislikeCollection.DeleteOne(ctx, filter)
 			if err != nil {
 				return err, 500, ""
 			}
 
-			message = "like removed"
-		} else {
 			update := bson.D{{"$inc", bson.D{{"dislikecount", -1}}}}
 			_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
 
 			if err != nil {
 				return err, 500, ""
 			}
+
 			message = "dislike removed"
+		} else {
+			// in DislikePost function where the like needs to be changed to dislike
+			_, err = br.likeDislikeCollection.UpdateOne(ctx, filter, bson.D{
+				{"$set", bson.D{{"isLike", false}}}, // directly set isLike to false
+			})
+			if err != nil {
+				return err, 500, ""
+			}
+
+			update := bson.D{{"$inc", bson.D{{"dislikecount", 1}, {"likecount", -1}}}}
+			_, err = br.postCollection.UpdateOne(ctx, bson.D{{"_id", id}}, update)
+
+			if err != nil {
+				return err, 500, ""
+			}
+			message = "like changed to dislike"
 		}
 
 		return nil, 200, message

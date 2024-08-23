@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
+import { FormType } from '@/types/register-formType';
 
 const stepOneSchema = z
   .object({
@@ -100,16 +101,14 @@ const SignUpForm = () => {
 
       console.log('Returned and combined values', finalData);
 
-      const res = await fetch(
-        "https://astu-bank-dashboard.onrender.com/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(finalData),
-        }
-      );
+      const res = await fetch('https://astu-bank-dashboard.onrender.com/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(finalData),
+      });
+      console.log('res from sign up', res);
 
       // res.then(res) => {
       if (res.ok) {
@@ -117,6 +116,7 @@ const SignUpForm = () => {
         router.push('/api/auth/signin');
       }
       if (!res.ok) {
+        alert('Failed to create user');
         console.log('Failed to create user');
       }
       // })
@@ -127,7 +127,7 @@ const SignUpForm = () => {
 
   return (
     <form
-      className='flex flex-col items-center w-full lg:w-10/12 justify-center py-6 p-4 lg:p-6 rounded-2xl bg-white'
+      className='flex flex-col items-center w-full lg:w-10/12 justify-center p-6 rounded-2xl bg-slate-50'
       onSubmit={handleSubmit(onSubmit)}
     >
       <p className='text-[#333B69] pb-3 text-20px text-left font-semibold w-full'>Register</p>

@@ -2,10 +2,10 @@ import AddNewCard from '@/components/AddNewCard/AddNewCard';
 import CardList from '@/components/CardList/CardList';
 import CardSettings from '@/components/CardSettings/CardSettings';
 import CardExpenceStatistics from '@/components/Charts/CardExpenceStatistics';
-import MyCard from '@/components/MyCard/MyCard';
 import StoreProvider from '@/providers/StoreProvider';
 import { Plus } from 'lucide-react';
 import React from 'react';
+import MyCardLists from '@/components/MyCard/MyCardLists';
 
 export default function page() {
   return (
@@ -15,9 +15,7 @@ export default function page() {
 
         <div className='flex overflow-x-scroll space-x-2 scroll whitespace-nowrap scroll-smooth lg:flex lg:space-x-4  '>
           <StoreProvider>
-            <MyCard />
-            <MyCard />
-            <MyCard />
+            <MyCardLists />
           </StoreProvider>
           <div className='w-[295px] h-[175px] bg-gray-200 rounded-3xl justify-center items-center flex flex-shrink-0'>
             <Plus size={32} />

@@ -6,19 +6,21 @@ import { useState } from "react";
 import CardListPage from "../components/cardList/CardList";
 import CreditCard from "../components/CreditCard";
 import {
+  useDeleteCardMutation,
   useGetCardsQuery,
   useCreateCardMutation,
 } from "../../lib/redux/api/cardsApi";
 import { Card } from "../../lib/redux/types/cards";
 import Loading from "../loading";
+import Link from "next/link";
 
 const cardStyles = {
-  Primary: {
+  Debit: {
     backgroundImg:
       "bg-[linear-gradient(107.38deg,#2D60FF_2.61%,#539BFF_101.2%)]",
     textColor: "text-white",
   },
-  Secondary: {
+  Primary: {
     backgroundImg:
       "bg-[linear-gradient(107.38deg,#4C49ED_2.61%,#0A06F4_101.2%)]",
     textColor: "text-white",
@@ -27,7 +29,7 @@ const cardStyles = {
     backgroundImg: "bg-black",
     textColor: "text-white",
   },
-  Debit: {
+  Secondary: {
     backgroundImg: "bg-gray-200",
     textColor: "text-black",
   },
@@ -62,8 +64,34 @@ const CreditCardPage = () => {
       setNameOnCard("");
       setExpirationDate("");
       setBalance(0);
+      window.location.reload();
     } catch (error) {
       console.error("Failed to add new card", error);
+    }
+  };
+
+  const [deleteCard] = useDeleteCardMutation();
+
+  const handleBlockCard = async () => {
+    if (data?.content.length === 0) return;
+
+    const cardIndex = prompt(
+      "Enter the card number you want to delete (e.g., 1st, 2nd, 3rd):"
+    );
+    const index = parseInt(cardIndex ?? "") - 1; // Convert to zero-based index
+
+    if (index >= 0 && data?.content && index < data.content.length) {
+      const cardId = data?.content[index].id;
+      try {
+        await deleteCard(data?.content[index].id).unwrap();
+
+        // Reload the page after successful card deletion
+        window.location.reload();
+      } catch (error) {
+        console.error("Failed to delete card", error);
+      }
+    } else {
+      alert("Invalid card number.");
     }
   };
 
@@ -175,7 +203,7 @@ const CreditCardPage = () => {
                 Password
               </label>
               <input
-                type="text"
+                type="password"
                 name="Password"
                 id="Password"
                 placeholder="******"
@@ -231,7 +259,10 @@ const CreditCardPage = () => {
             Card Setting
           </div>
           <div className="flex flex-col justify-between md:w-full md:mx-2 w-auto p-4 h-[325px] border-[1px] rounded-[15px] bg-white mx-6">
-            <div className="blockcard md:pl-0 flex w-auto h-[45px] pl-5  ">
+            <div
+              onClick={handleBlockCard}
+              className="blockcard cursor-pointer md:pl-0 flex w-auto hover:w-[75%] hover:rounded-md hover:bg-slate-100 h-[45px] pl-5  "
+            >
               <div className="left">
                 <svg
                   width="45"
@@ -240,21 +271,22 @@ const CreditCardPage = () => {
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <rect width="45" height="45" rx="12" fill="#FFF5D9" />
+                  <rect width="45" height="45" rx="12" fill="#FFE0EB" />
                   <path
                     d="M31.9036 22.2365V16.3049C31.9036 15.087 30.9127 14.0962 29.6949 14.0962H15.2086C13.9908 14.0962 13 15.087 13 16.3049V25.3089C13 26.5268 13.9908 27.5176 15.2086 27.5176H20.9365C21.7011 30.0522 24.057 31.9034 26.8375 31.9034C30.2355 31.9034 32.9999 29.139 32.9999 25.7409C33 24.4399 32.5944 23.2321 31.9036 22.2365ZM23.3331 20.6748H14.3605V18.7461H30.543V20.8202C29.511 20.0411 28.2273 19.5785 26.8375 19.5785C25.5366 19.5784 24.3288 19.984 23.3331 20.6748ZM15.2086 15.4567H29.6949C30.1626 15.4567 30.543 15.8372 30.543 16.3049V17.3856H14.3605V16.3049C14.3605 15.8372 14.741 15.4567 15.2086 15.4567ZM15.2086 26.1571C14.741 26.1571 14.3605 25.7766 14.3605 25.3089V22.0354H21.9168C21.1377 23.0674 20.6751 24.3511 20.6751 25.7409C20.6751 25.8808 20.6802 26.0195 20.6894 26.1571H15.2086V26.1571ZM26.8376 30.5428C24.1898 30.5428 22.0356 28.3887 22.0356 25.7408C22.0356 23.0931 24.1898 20.939 26.8376 20.939C29.4853 20.939 31.6395 23.0931 31.6395 25.7408C31.6395 28.3887 29.4853 30.5428 26.8376 30.5428Z"
-                    fill="#FFBB38"
+                    fill="#FF82AC"
                   />
                   <path
                     d="M23.5482 23.9644C23.1725 23.9644 22.8679 24.2689 22.8679 24.6446V26.8375C22.8679 27.2132 23.1725 27.5178 23.5482 27.5178H30.1268C30.5025 27.5178 30.8071 27.2132 30.8071 26.8375V24.6446C30.8071 24.2689 30.5025 23.9644 30.1268 23.9644H23.5482ZM29.4466 26.1573H24.2285V25.325H29.4466V26.1573Z"
-                    fill="#FFBB38"
-                  />{" "}
+                    fill="#FF82AC"
+                  />
                 </svg>
               </div>
+
               <div className="right flex-row  w-auto h-auto p-2 pl-3">
-                <div className="w-auto font-medium text-sm">Block Card</div>
+                <div className="w-auto font-medium text-sm">Delete Card</div>
                 <div className="w-auto font-normal text-xs text-[#718EBF]">
-                  Instantly block your card
+                  Instantly Delete your card
                 </div>
               </div>
             </div>
@@ -298,11 +330,11 @@ const CreditCardPage = () => {
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <rect width="45" height="45" rx="12" fill="#FFE0EB" />
+                  <rect width="45" height="45" rx="12" fill="#FFF5D9" />
                   <g clip-path="url(#clip0_196_642)">
                     <path
                       d="M24.25 22V24.5H30.15C29.55 28 26.75 30.5 23.25 30.5C19.15 30.5 15.75 27.1 15.75 23C15.75 18.9 19.15 15.5 23.25 15.5C25.35 15.5 27.15 16.4 28.45 17.8L30.25 16C28.45 14.2 26.05 13 23.25 13C17.75 13 13.25 17.5 13.25 23C13.25 28.5 17.75 33 23.25 33C28.75 33 32.75 28.5 32.75 23V22H24.25Z"
-                      fill="#FF82AC"
+                      fill="#FFBB38"
                     />
                   </g>
                   <defs>

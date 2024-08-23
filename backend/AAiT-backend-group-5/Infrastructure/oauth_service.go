@@ -127,7 +127,7 @@ func (os *OAuthService) getUser(email string, ctx context.Context) (*models.User
 func (os *OAuthService) GenerateAccessToken(ctx context.Context, refreshToken string) (string, *models.ErrorResponse) {
 	clientID := os.env.GOOGEL_CLIENT_ID
 	clientSecret := os.env.OAUTH_CLIENT_SECRET
-	tokenURL := os.env.GOOGLE_OAUTH_TOKEN_URL
+	tokenURL := google.Endpoint.TokenURL
 
 	resp, err := http.PostForm(tokenURL, url.Values{
 		"client_id":     {clientID},

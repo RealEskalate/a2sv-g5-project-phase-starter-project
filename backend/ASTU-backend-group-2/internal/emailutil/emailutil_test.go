@@ -22,3 +22,21 @@ func TestSendVerificationEmail(t *testing.T) {
 	}
 
 }
+
+func TestSendOtpVerificationEmail(t *testing.T) {
+	recipientEmail := "saleamlakwendmnew55@gmail.com"
+	otp := "abc123"
+	env := &bootstrap.Env{
+		SenderEmail:    "wendmnewsaleamlak@gmail.com",
+		SenderPassword: "nhba zihx apjr zqpx",
+		SmtpHost:       "smtp.gmail.com",
+		SmtpPort:       "587",
+	}
+
+	err := SendOtpVerificationEmail(recipientEmail, otp, env)
+	if err != nil {
+		t.Errorf("Failed to send otp verification email: %v", err)
+	}
+
+}
+

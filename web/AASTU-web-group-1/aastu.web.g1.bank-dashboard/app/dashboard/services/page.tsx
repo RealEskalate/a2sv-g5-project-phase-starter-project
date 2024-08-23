@@ -36,7 +36,7 @@ const Services = () => {
       console.log(token);
       try {
         const response = await fetch(
-          `${process.env.BASE_URL}/bank-services?page=0&size=10`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/bank-services?page=0&size=10`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -19,7 +19,7 @@ export default function RootLayout({
   
   return (
     <html lang="en">
-      <body className="max-w-screen">
+      <body className="h-screen overflow-hidden">
         <LayoutWrapper>
           {children}
           

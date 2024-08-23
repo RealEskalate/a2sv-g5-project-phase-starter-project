@@ -1,6 +1,6 @@
 "use client";
-import React from "react";
-import {BarChartComponent} from "../components/Chart/Barchart";
+import React, { useEffect } from "react";
+import Example from "../components/AccountBarChart";
 import CreditCard from "../components/CreditCard";
 import Image from "next/image";
 import {
@@ -12,6 +12,16 @@ import {
   totalinvestment,
   apple,
 } from "@/../../public/Icons";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
+import { useGetAllTransactionsQuery } from "@/lib/redux/api/transactionsApi";
+import {
+  setAllTransactions,
+  setLoading,
+  setError,
+} from "@/lib/redux/slices/transactionsSlice";
+import { setCards } from "@/lib/redux/slices/cardsSlice";
+import { useGetCardsQuery } from "@/lib/redux/api/cardsApi";
 
 interface CardProps {
   title: string;
@@ -21,7 +31,6 @@ interface CardProps {
 }
 
 interface Transaction {
-  index: number;
   title: string;
   jobtitle: string;
   creditcard: string;
@@ -41,7 +50,6 @@ const dataCorner: CardProps[] = [
 const transactions: Transaction[] = [
   {
     icon: spotify,
-    index: 5,
     title: "Spotify Subscription",
     jobtitle: "Shopping",
     creditcard: "1234****",
@@ -51,7 +59,6 @@ const transactions: Transaction[] = [
   },
   {
     icon: mobileService,
-    index: 6,
     title: "Mobile Service",
     jobtitle: "Service",
     creditcard: "1234****",
@@ -61,7 +68,6 @@ const transactions: Transaction[] = [
   },
   {
     icon: user,
-    index: 7,
     title: "Grocery Shopping",
     jobtitle: "Supermarket",
     creditcard: "1234****",
@@ -71,9 +77,71 @@ const transactions: Transaction[] = [
   },
 ];
 
-const Page: React.FC = () => {
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Add 1 because months are zero-indexed
+  const year = date.getFullYear().toString()?.slice(-2); // Get the last two digits of the year
+  return `${month}/${year}`;
+}
+
+function formatCardNumber(cardNumber: string): string {
+  const start = cardNumber?.slice(0, 4);
+  const end = cardNumber?.slice(-4);
+  return `${start} **** **** ${end}`;
+}
+
+function formatBalance(balance: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(balance);
+}
+
+const Page = () => {
+  const dispatch = useDispatch();
+  const { allTransactions, loading, error } = useSelector(
+    (state: RootState) => state.transactions
+  );
+  const { cards } = useSelector((state: RootState) => state.cards);
+
+  const {
+    data: allData,
+    isLoading: isLoadingAll,
+    isError: isErrorAll,
+  } = useGetAllTransactionsQuery({ size: 3, page: 0 });
+
+  const {
+    data,
+    error: cardError,
+    isLoading,
+  } = useGetCardsQuery({ size: 1, page: 0 });
+
+  useEffect(() => {
+    if (!isLoading && !cardError && data) {
+      dispatch(setCards(data.content));
+    }
+  }, [data, isLoading, cardError, dispatch]);
+
+  useEffect(() => {
+    dispatch(setLoading(isLoadingAll));
+
+    if (allData) {
+      dispatch(setAllTransactions(allData.data.content));
+    }
+
+    if (isErrorAll) {
+      console.error("Error fetching data", {
+        isErrorAll,
+      });
+      dispatch(setError("Error loading transactions"));
+    }
+  }, [allData, isLoadingAll, isErrorAll, dispatch]);
+
+  console.log("cards", cards);
+  console.log("all transaction", allTransactions);
   return (
-    <div className="max-w-screen max-h-screen mx-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-10 lg:py-8">
+    <div className="max-w-screen max-h-screen mx-auto px-4 py-4 sm:px-6 sm:py-3 lg:px-4 lg:py-8">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         {dataCorner.map((card) => (
           <div
@@ -99,78 +167,95 @@ const Page: React.FC = () => {
         ))}
       </div>
 
-      <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] text-left px-4 py-2">
-        Last transaction
-      </h1>
+      <div className="flex flex-col md:flex-row justify-between">
 
-      <div className=" grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="rounded-3xl bg-white shadow-xl p- w-full lg:col-span-2">
-          <div className="flex flex-col space gap-y-2">
-            {transactions.map((transaction) => (
-              <div
-                key={transaction.index}
-                className="flex items-center p-4 bg-white rounded-lg shadow-sm"
-              >
-                <div className="p-3 rounded-full">
-                  <Image
-                    width={20}
-                    height={20}
-                    src={transaction.icon}
-                    alt={`${transaction.status} Icon`}
-                    className="w-12 h-12"
-                  />
-                </div>
-                <div className="flex-grow flex flex-col ml-4">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-gray-800 font-medium">
-                      {transaction.title}
-                    </p>
+        <div className=" w-full md:w-[53%] lg:w-[63%]">
+        <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] text-left px-4 py-2">
+          Last transaction
+        </h1>
+          <div className="rounded-3xl bg-white shadow-xl w-full">
+            <div className="flex flex-col space gap-y-2">
+              {allTransactions.map((transaction, index) => (
+                <div
+                  key={index}
+                  className="flex items-center p-3 bg-white rounded-lg shadow-sm"
+                >
+                  <div className=" p-3 rounded-full">
+                    <Image
+                      width={20}
+                      height={20}
+                      src={transactions[index].icon}
+                      alt={`${transaction.type} Icon`}
+                    />
                   </div>
-                  <div className="flex items-center justify-between overflow-hidden">
-                    <p className="text-gray-400 text-xs w-1/2 text-left">
-                      {transaction.date}
-                    </p>
-                    <p className="text-gray-400 w-1/4 hidden sm:block">
-                      {transaction.jobtitle}
-                    </p>
-                    <p className="text-gray-400 w-1/4 text-center hidden sm:block">
-                      {transaction.creditcard}
-                    </p>
-                    <p
-                      className={` style={{ color: '#718EBF' }} hidden sm:block font-medium w-1/4 text-right ${
-                        transaction.status
-                          ? "style={{ color: '#718EBF' }}"
-                          : "text-green-500"
-                      }`}
-                    >
-                      {transaction.status}
-                    </p>
-                    <p
-                      className={`text-400 font-medium w-1/4 text-right ${
-                        transaction.value < 0
-                          ? "text-red-500"
-                          : "text-green-500"
-                      }`}
-                    >
-                      ${Math.abs(transaction.value).toLocaleString()}
-                    </p>
+                  <div className=" flex w-3/4 gap-2 items-center  justify-between ">
+                    <div className="w-1/2 md:w-1/3 lg:w-1/4">
+                      <p className="text-gray-800 font-medium">
+                        {transaction.senderUserName}
+                      </p>
+                      <p className="text-gray-400 hidden text-xs sm:block">
+                        {transaction.date}
+                      </p>
+                    </div>
+                    <div className="w-1/3 md:w-1/5 lg:w-1/4 flex">
+                      <p className="text-gray-400 text-xs w-10/12 flex-shrink-0 text-left truncate">
+                        {transaction.description}
+                      </p>
+                    </div>
+                    <div className="w-1/5 lg:w-1/4 flex">
+                      <p className="text-gray-400 w-10/12 flex-shrink-0 truncate hidden text-xs lg:block">
+                        {transaction.transactionId}
+                      </p>
+                    </div>
+                    <div className="w-1/5 lg:w-1/4 flex">
+                      <p
+                        className={` style={{ color: '#718EBF' }} hidden lg:block font-medium w-10/12 flex-shrink-0 truncate text-xs ${
+                          transaction.type
+                            ? "style={{ color: '#718EBF' }}"
+                            : "text-green-500"
+                        }`}
+                      >
+                        {transaction.type}
+                      </p>
+                      {/* <p className="text-gray-400 w-10/12 flex-shrink-0 truncate hidden text-xs sm:block">{transaction.transactionId}</p> */}
+                    </div>
+                    <div className="w-1/5 lg:w-1/4 flex">
+                      <p
+                        className={`text-400 font-medium w-10/12 text-right ${
+                          transaction.amount < 0
+                            ? "text-red-500"
+                            : "text-green-500"
+                        }`}
+                      >
+                        ${Math.abs(transaction.amount).toLocaleString()}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+            </div>
 
-        <div className="w-full h-56 md:h-[90%] rounded-3xl overflow-hidden col-span-1">
-          <CreditCard
-            name="Karthik P"
-            balance="$5,756"
-            cardNumber="3778 **** **** 1234"
-            validDate="11/15"
-            backgroundImg="bg-blue-600"
-            textColor="text-white"
-          />
-        </div>
+          <div className="w-full md:w-[43%] lg:w-[35%] rounded-3xl overflow-hidden col-span-1 ">
+            <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] text-left px-4 py-2">
+              my card
+            </h1>
+            {/* <div className="flex items-center justify-center"> */}
+
+            <div className="min-w-60 w-73 lg:w-72 lg:h-48 xl:w-96  xl:h-56  ">
+              <CreditCard
+                name={cards[1]?.cardHolder}
+                balance={formatBalance(cards[1]?.balance)}
+                cardNumber={formatCardNumber(cards[1]?.semiCardNumber)}
+                validDate={formatDate(cards[1]?.expiryDate)}
+                backgroundImg="bg-[linear-gradient(107.38deg,#2D60FF_2.61%,#539BFF_101.2%)]"
+                textColor="text-white"
+                />
+                
+            </div>
+                {/* </div> */}
+          </div>
       </div>
 
       <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] px-4 py-7">
@@ -182,7 +267,7 @@ const Page: React.FC = () => {
           <span className="text-left font-inter text-sm font-normal leading-4 px-6 py-2">
             $7,560 Debited & $5,420 Credited in this Week
           </span>
-          <BarChartComponent />
+          <Example />
         </div>
 
         <div className="rounded-3xl bg-white shadow-md p-6">

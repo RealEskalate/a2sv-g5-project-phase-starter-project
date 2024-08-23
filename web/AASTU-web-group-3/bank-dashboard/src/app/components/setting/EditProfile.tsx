@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import {
@@ -12,6 +12,7 @@ import { circleWithPen, profilepic } from "@/../../public/Icons";
 import { useDispatch, useSelector } from "react-redux";
 import { usePutSettingMutation } from "@/lib/redux/api/settingApi";
 import { RootState } from "@/lib/redux/store";
+import { settingPutUserResponse } from "@/lib/redux/types/setting";
 
 interface FormInput{
   name: string;
@@ -25,27 +26,37 @@ interface FormInput{
   country: string;
   profilePicture: string; // URL of the uploaded image
 }
+interface EditProfileProps {
+  userData: settingPutUserResponse[];
+}
 
+const EditProfile = ({ userData }: EditProfileProps ) => {
+  const [currentUser, setCurrentUser] = useState<settingPutUserResponse>(userData[0]);
 
-const EditProfile = () => {
+  useEffect(() => {
+    if (userData && userData.length > 0) {
+      setCurrentUser(userData[0]);
+    }
+  }, [userData]);
+
 
   const { register, handleSubmit, setValue } = useForm<FormInput>({
     defaultValues: {
-      name: "",
-      email: "",
+      name: currentUser?.data.name || "",
+      email:currentUser?.data.email || "",
       dateOfBirth:"",
-      permanentAddress: "",
-      postalCode: "",
-      username: "",
-      presentAddress: "",
-      city: "",
-      country: "",
-      profilePicture: "",
+      permanentAddress:currentUser?.data.permanentAddress || "",
+      postalCode: currentUser?.data.postalCode || "",
+      username: currentUser?.data.username || "",
+      presentAddress: currentUser?.data.presentAddress || "",
+      city: currentUser?.data.city || "",
+      country:currentUser?.data.country || "",
+      profilePicture:currentUser?.data.profilePicture || "",
     },
   });
 
   const dispatch = useDispatch();
-  const { loading, error } = useSelector((state: RootState) => state.service);
+  const { loading, error } = useSelector((state: RootState) => state.setting);
 
   const [putSetting] = usePutSettingMutation();
 
@@ -72,7 +83,6 @@ const EditProfile = () => {
     const file = event.target.files?.[0];
     if (file) {
       const imageUrl = await uploadImageToCloud(file);
-      console.log(imageUrl)
       setValue("profilePicture", imageUrl);
     } else {
       setValue("profilePicture", "");
@@ -111,23 +121,25 @@ const EditProfile = () => {
     });
   };
 
+  console.log("current user",currentUser,currentUser?.data.name)
   const formFields = [
-    { id: "name", label: "Your Name", placeholder: "Charlene Reed", type: "text" },
-    { id: "username", label: "User Name", placeholder: "Charlene Reed", type: "text" },
-    { id: "email", label: "Email", placeholder: "charlenereed@gmail.com", type: "email" },
-    { id: "dateOfBirth", label: "Date of Birth", placeholder: "Enter Date of Birth", type: "date" },
-    { id: "presentAddress", label: "Present Address", placeholder: "San Jose, California, USA", type: "text" },
-    { id: "permanentAddress", label: "Permanent Address", placeholder: "San Jose, California, USA", type: "text" },
-    { id: "city", label: "City", placeholder: "San Jose", type: "text" },
-    { id: "postalCode", label: "Postal Code", placeholder: "45962", type: "text" },
-    { id: "country", label: "Country", placeholder: "USA", type: "text" },
+    { id: "name", label: "Your Name", value: currentUser?.data.name || "Charlene Reed", type: "text" },
+    { id: "username", label: "User Name", value: currentUser?.data.username || "Charlene Reed", type: "text" },
+    { id: "email", label: "Email", value: currentUser?.data.email || "charlenereed@gmail.com", type: "email" },
+    { id: "dateOfBirth", label: "Date of Birth", value:  "Enter Date of Birth", type: "date" },
+    { id: "presentAddress", label: "Present Address", value: currentUser?.data.presentAddress || "San Jose, California, USA", type: "text" },
+    { id: "permanentAddress", label: "Permanent Address", value: currentUser?.data.permanentAddress || "San Jose, California, USA", type: "text" },
+    { id: "city", label: "City", value: currentUser?.data.city || "San Jose", type: "text" },
+    { id: "postalCode", label: "Postal Code", value: currentUser?.data.postalCode || "45962", type: "text" },
+    { id: "country", label: "Country", value: currentUser?.data.country || "USA", type: "text" },
   ];
+
 
   return (
     <div className="p-4 flex flex-col md:flex-row gap-8">
       <div className="relative rounded-full w-64 h-64 mb-5 md:w-40 md:h-40">
         <Image
-          src={profilepic}
+          src={currentUser.data.profilePicture}
           width={256}
           height={256}
           alt="profilepic"
@@ -162,7 +174,7 @@ const EditProfile = () => {
               className="w-full p-3 md:p-2 text-[#718EBF] border-2 text-sm border-[#DFEAF2] rounded-lg focus:outline-none bg-white"
               type={field.type}
               id={field.id}
-              placeholder={field.placeholder}
+              defaultValue={field.value}
               {...register(field.id as keyof FormInput, {
                 required: `${field.label} is required`,
               })}

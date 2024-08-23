@@ -78,3 +78,27 @@ func (uc *UserController) Logout(ctx *gin.Context) {
 	uc.authuserusecase.Logout(ctx, userid.(string))
 	ctx.JSON(http.StatusOK, gin.H{"message": "loged out successfully"})
 }
+
+func (uc *UserController) PromoteUser(ctx *gin.Context) {
+	userID := ctx.Value("userID")
+	err := uc.authuserusecase.PromoteUser(ctx, userID.(string))
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": " un able to promote user"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "promored "})
+
+}
+
+func (uc *UserController) DemoteUser(ctx *gin.Context) {
+	userID := ctx.Value("userID")
+	err := uc.authuserusecase.DemoteUser(ctx, userID.(string))
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": " un able to demote user"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "demoted "})
+
+}

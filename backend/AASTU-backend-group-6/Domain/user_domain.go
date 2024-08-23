@@ -24,27 +24,6 @@ type User struct {
 	DisLikePostsID       []primitive.ObjectID `json:"disliked_posts_id"`
 	ResetPasswordToken   string               `json:"reset_password_token"`
 	ResetPasswordExpires time.Time            `json:"reset_password_expires"`
-	ID                   primitive.ObjectID   `bson:"_id,omitempity" json:"id" `
-	Full_Name            string               `json:"full_name"`
-	Email                string               `json:"email" validate:"required,email"`
-	Username             string               `json:"username" validate:"required"`
-	Password             string               `json:"password" validate:"required"`
-	Profile_image_url    string               `json:"profile_image" `
-	GoogleID             string               `json:"googleId"`
-	PostsID              []primitive.ObjectID `json:"posts_id"`
-	RefreshToken         string               `json:"refreshToken" validate:"required"`
-	AccessToken          string               `json:"accessToken" validate:"required"`
-	Contact              string               `json:"contact"`
-	Bio                  string               `json:"bio"`
-	Role                 string               `json:"roles" validate:"required"`
-	CommentsID           []primitive.ObjectID `json:"comments_id"`
-	LikedPostsID         []primitive.ObjectID `json:"liked_posts_id"`
-	DisLikePostsID       []primitive.ObjectID `json:"disliked_posts_id"`
-	Verified             bool                 `json:"verified"`
-	OTP                  string               `json:"otp"`
-	ExpiresAt            time.Time            `json:"expires_at"`
-	ResetPasswordToken   string               `json:"reset_password_token"`
-	ResetPasswordExpires time.Time            `json:"reset_password_expires"`
 }
 
 type UserRepository interface {

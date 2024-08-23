@@ -29,9 +29,9 @@ const Service = ({ image, title }: { image: string; title: string }) => {
         <p className="font-semibold">Lorem Ipsum</p>
         <p className="text-[15px] text-[#718EBF]">Many publishing</p>
       </div>
-      <div className="border border-[#718EBF] text-[#718EBF] px-4 py-1 text-[15px] flex items-center rounded-3xl">
+      <button className="border transition hover:text-white hover:bg-blue-500 ease-in-out duration-200 border-[#718EBF] text-[#718EBF] px-4 py-1 text-[15px] flex items-center rounded-3xl">
         View Details
-      </div>
+      </button>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 // authenticationController.ts
 import { RegisterRequest, RegisterResponse, RefreshTokenResponse, LoginRequest, LoginResponse, ChangePasswordRequest, ChangePasswordResponse } from '@/types/authenticationController.interface';
 
-const BASE_URL = 'https://bank-dashboard-1tst.onrender.com'
+const BASE_URL = 'https://a2svwallet.onrender.com'
 
 
 const register = async (userDetails: RegisterRequest): Promise<RegisterResponse> => {
@@ -69,28 +69,34 @@ const login = async (credentials: LoginRequest): Promise<any> => {
     }
   };
 
-const changePassword = async (changePasswordDetails: ChangePasswordRequest, token:string): Promise<ChangePasswordResponse> => {
-  try {
-    const response = await fetch(`${BASE_URL}/auth/change_password`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`, // Add the token to the headers
-
-      },
-      body: JSON.stringify(changePasswordDetails),
-    });
-
-    if (response.status === 200) {
-      const data: ChangePasswordResponse = await response.json();
-      return data;
-    } else {
-      throw new Error(`Change password failed with status code: ${response.status}`);
+  const changePassword = async (
+    changePasswordDetails: ChangePasswordRequest,
+    token: string
+  ): Promise<ChangePasswordResponse> => {
+    try {
+      const response = await fetch(`${BASE_URL}/auth/change_password`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`, // Add the token to the headers
+          'Content-Type': 'application/json', // Missing Content-Type header
+        },
+        body: JSON.stringify(changePasswordDetails),
+      });
+  
+      if (response.ok) {
+        const data: ChangePasswordResponse = await response.json();
+        return data;
+      } else {
+        const errorData = await response.json();
+        throw new Error(
+          `Change password failed with status code: ${response.status} - ${errorData.message || 'Unknown error'}`
+        );
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      throw error;
     }
-  } catch (error) {
-    console.error('Error changing password:', error);
-    throw error;
-  }
-};
+  };
 
 // Named exports
 export { register, refreshToken, login, changePassword };

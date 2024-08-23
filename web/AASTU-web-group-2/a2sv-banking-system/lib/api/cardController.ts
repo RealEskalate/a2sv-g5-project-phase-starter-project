@@ -1,17 +1,15 @@
 import {
-  Card,
   GetCardsResponse,
   PostCardRequest,
   PostCardResponse,
   GetCardByIdResponse,
 } from "@/types/cardController.Interface";
-const BASE_URL = 'https://bank-dashboard-1tst.onrender.com';
+const BASE_URL = 'https://a2svwallet.onrender.com';
 
 // Extend the user type to include accessToken
 
 const getCards = async (token:string, page=0, size=1): Promise<GetCardsResponse> => {
   try {
-    console.log("Fetching")
     const response = await fetch(`${BASE_URL}/cards?page=${page}&size=${size}`, {
       headers: {
         'Authorization': `Bearer ${token}`, // Add the token to the headers

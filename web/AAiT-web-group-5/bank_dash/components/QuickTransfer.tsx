@@ -1,3 +1,4 @@
+import React from "react";
 import { GrSend } from "react-icons/gr";
 export default function QuickTransfer() {
   return (

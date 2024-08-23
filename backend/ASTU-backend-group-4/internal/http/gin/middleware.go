@@ -34,7 +34,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		c.Set("user_id", tokenClaim["id"])
 		c.Set("is_admin", tokenClaim["isadmin"])
-		c.Set("is_supper"), tokenClaim["issupper"]
+		c.Set("is_supper", tokenClaim["issupper"])
 
 		c.Next()
 	}

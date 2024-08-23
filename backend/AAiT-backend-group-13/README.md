@@ -13,11 +13,6 @@ A RESTful API for managing blog posts, comments, reactions, and users. The syste
 
 1. **Clone the repository:**
 
-   ```bash
-   git clone https://github.com/your-username/blog-system.git
-   cd blog-system
-   ```
-
 2. **Set up the environment:**
 
    - Create a `.env` file in the project root and add the necessary environment variables.

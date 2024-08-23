@@ -21,7 +21,7 @@ export const baseQuery = (baseUrl = '/') => {
 
           // Check if access token has expired
           if (decode.exp < currentTimestamp) {
-            // console.log('Token has expired, refreshing token');
+            // console.log('Token has expired, refreshing token', session.refreshToken);
 
             // Attempt to refresh the token
             const refreshedToken = await fetch(`${baseURL}/auth/refresh_token`, {
@@ -34,7 +34,7 @@ export const baseQuery = (baseUrl = '/') => {
               // console.log('new token');
               if (res.ok) {
                 const data = await res.json();
-                // console.log('is here ', data);
+                // console.log('new token ', data);
                 return data;
               }
               return null;

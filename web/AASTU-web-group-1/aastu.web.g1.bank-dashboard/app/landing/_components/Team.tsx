@@ -3,31 +3,31 @@ const people = [
     name: "Amanuael Kebede",
     role: "Team Lead",
     imageUrl:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      "https://storage.googleapis.com/a2sv_hub_bucket_2/images%2FAmanuael%20Kebede%20Kassie.jpg",
   },
   {
     name: "Bereket Tadiwos",
     role: "Developer",
     imageUrl:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      "https://storage.googleapis.com/a2sv_hub_bucket_2/images%2FBereket%20Tadiwos%20Dana.jpeg",
   },
   {
     name: "Emnet Teshome",
     role: "Developer",
     imageUrl:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      "https://storage.googleapis.com/a2sv_hub_bucket_2/images%2FEmnet%20Teshome%20Lulu.png",
   },
   {
     name: "Kibrnew Gedamu",
     role: "Developer",
     imageUrl:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      "https://storage.googleapis.com/a2sv_hub_bucket_2/%2Fimages%2FKibrnew%20Gedamu%20Mekonnen_G55.jpg",
   },
   {
     name: "Mohammed Shemim",
     role: "Developer",
     imageUrl:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      "https://storage.googleapis.com/a2sv_hub_bucket_2/%2Fimages%2FMohammed%20Shemim%20Awol_G55.jpg",
   },
 ];
 

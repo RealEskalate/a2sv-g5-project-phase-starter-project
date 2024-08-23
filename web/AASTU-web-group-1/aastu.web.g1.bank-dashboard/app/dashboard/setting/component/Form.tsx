@@ -83,7 +83,7 @@ export function ProfileForm({ formData }: ProfileFormProps) {
       const session = await getSession();
       const accessToken = session?.user.accessToken;
       const res = ky
-        .put("https://bank-dashboard-o9tl.onrender.com/user/update", {
+        .put(`${process.env.NEXT_PUBLIC_BASE_URL}/user/update`, {
           json: values,
           headers: {
             Authorization: `Bearer ${accessToken}`,

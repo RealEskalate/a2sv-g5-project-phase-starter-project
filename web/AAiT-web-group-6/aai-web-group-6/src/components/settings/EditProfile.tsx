@@ -36,7 +36,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ isActive }) => {
     >
       <div className="relative w-[130px] h-[132px] rounded-full bg-slate-500 mr-7 mt-8">
         <img src="" alt="" className="" />
-        <div className="absolute w-[40px] h-[40px] brand-back rounded-full border-2 border-white bottom-[-5px] right-[-1px]"></div>
+        <div className="absolute w-[40px] h-[40px] bg-[#1814f3] rounded-full border-2 border-white bottom-[-5px] right-[-1px]"></div>
       </div>
 
       <div className="flex flex-col items-start w-[418px] h-[600px] mt-8">
@@ -164,7 +164,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ isActive }) => {
 
         <button
           type="submit"
-          className="w-[190px] h-[50px] btn ml-auto mt-10 text-white"
+          className="w-[190px] h-[50px] rounded-[15px] bg-[#1814f3] ml-auto mt-10 text-white"
         >
           Save
         </button>

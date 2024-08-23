@@ -1,3 +1,4 @@
+import 'package:ecom_app/features/chat/presentation/pages/chat_list_page.dart';
 import 'package:ecom_app/features/chat/presentation/pages/individual_chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -79,9 +80,9 @@ class MyApp extends StatelessWidget {
             case '/signup':
               return _createRoute(const SignUpPage());
             case '/individualChat':
-              return _createRoute(const IndividualChatPage(
-               
-              ));
+              return _createRoute(const IndividualChatPage());
+            case '/ChatList':
+              return _createRoute(const ChatList());
             default:
               return null;
           }

@@ -12,10 +12,16 @@ func NewLikeUsecase(likeRepo domain.LikeRepository) domain.LikeUsecase {
 	}
 }
 
-func (lu *LikeUsecaseImpl) LikeBlog(userID, blogID, Type string) error {
-	return lu.likeRepo.LikeBlog(userID, blogID, Type)
+func (lu *LikeUsecaseImpl) LikeBlog(userID, blogID, Type string) *domain.CustomError {
+	if lu.likeRepo.LikeBlog(userID, blogID, Type) != nil {
+		return domain.ErrFailedToLikePost
+	}
+	return nil
 }
 
-func (lu *LikeUsecaseImpl) DisLikeBlog(userID, blogID, Type string) error {
-	return lu.likeRepo.DisLikeBlog(userID, blogID, Type)
+func (lu *LikeUsecaseImpl) DisLikeBlog(userID, blogID, Type string) *domain.CustomError {
+	if lu.likeRepo.DisLikeBlog(userID, blogID, Type) != nil {
+		return domain.ErrFailedToUnlikePost
+	}
+	return nil
 }

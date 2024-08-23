@@ -3,10 +3,12 @@ package usecases
 import (
 	domain "blogs/Domain"
 	infrastructure "blogs/Infrastructure"
+	utils "blogs/Utils"
 	"context"
 	"strconv"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -17,12 +19,12 @@ type SignupUseCase struct {
 	passwordService          domain.PasswordService
 }
 
-func NewSignupUseCase(SignupRepository domain.SignupRepository,uvu domain.UnverifiedUserRepository, timeout time.Duration, passwordService domain.PasswordService) domain.SignupUseCase {
+func NewSignupUseCase(SignupRepository domain.SignupRepository, uvu domain.UnverifiedUserRepository, timeout time.Duration, passwordService domain.PasswordService) domain.SignupUseCase {
 	return &SignupUseCase{
-		SignupRepository: SignupRepository,
+		SignupRepository:         SignupRepository,
 		UnverifiedUserRepository: uvu,
-		contextTimeout:  timeout,
-		passwordService: passwordService}
+		contextTimeout:           timeout,
+		passwordService:          passwordService}
 }
 
 func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} {
@@ -49,7 +51,7 @@ func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} 
 	// check if user already exists
 	existingUser, err := u.SignupRepository.FindUserByEmail(ctx, user.Email)
 
-	if err == nil && existingUser.Verified {
+	if err == nil {
 		return &domain.ErrorResponse{Message: "User already exists", Status: 400}
 	} else if err == nil && !existingUser.Verified {
 		return u.HandleUnverifiedUser(c, existingUser)
@@ -74,8 +76,23 @@ func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} 
 	}
 
 	// save OTP to db
-	user.Posts = make([]domain.Blog, 0)
-	_, err = u.SignupRepository.Create(ctx, user)
+	user.PostsID = utils.MakePrimitiveList(0)
+	var newuser domain.UnverifiedUser
+	newuser.Email = user.Email
+	newuser.OTP = otp
+	exp:=time.Now().Add(time.Minute * 10)
+	unverifiedClaim := domain.UnverifiedUserClaims{
+		User: user,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(exp), // Convert expiration time to *jwt.NumericDate
+		},
+	}
+	newuser.UserToken, err = infrastructure.CreateToken(unverifiedClaim, "unverified")
+	if err != nil {
+		return &domain.ErrorResponse{Message: "Error creating token", Status: 500}
+	}
+
+	err = u.UnverifiedUserRepository.StoreUnverifiedUser(ctx, newuser)
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error creating user", Status: 500}
 	}

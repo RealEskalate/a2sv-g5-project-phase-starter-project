@@ -34,6 +34,7 @@ const EditProfile = () => {
   const dispatch = useDispatch();
   const { data: session, status } = useSession();
   const user = session?.user as ExtendedUser;
+  console.log(session,'session')
   console.log(user,'this is user ')
   useEffect(() => {
     console.log(profilePicture,1111)

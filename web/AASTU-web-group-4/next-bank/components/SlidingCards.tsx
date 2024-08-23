@@ -8,6 +8,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel'; // Adjust the import path according to your setup
 import Link from 'next/link';
+import CreditCard from './CreditCard';
 
 const SlidingCards: React.FC = () => {
   const cards = [
@@ -19,18 +20,17 @@ const SlidingCards: React.FC = () => {
   return (
     <div>
       {/* Desktop and Tablet View */}
-      <div className="hidden lg:flex lg:justify-center lg:space-x-8 w-full max-w-[750px] mx-auto">
+      <div className="hidden lg:flex lg:justify-center lg:space-x-8 w-full max-w-[750px] ">
         {cards.slice(0, 2).map((card) => (
-          <DesktopCreditCard
+          <CreditCard
             key={card.id}
-            bgColor={card.bgColor}
-            textColor={card.textColor}
+            backgroundColor={card.bgColor}
           />
         ))}
       </div>
 
       {/* Mobile View - Carousel */}
-      <div className="lg:hidden pt-8 w-full max-w-[390px] h-[235px] mx-auto relative">
+      <div className="lg:hidden pt-8 w-full max-w-[390px] pl-5 h-[235px]  relative">
         <Carousel className=''>
           <CarouselContent>
             {cards.map((card) => (

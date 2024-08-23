@@ -7,6 +7,7 @@ const token =
 
 export const getAllTransactionsss = async (token: string) => {
   try {
+    console.log(token)
     const response = await fetch(`${API_BASE_URL}/transactions`, {
       method: "GET",
       headers: {
@@ -21,24 +22,24 @@ export const getAllTransactionsss = async (token: string) => {
 };
 
 // GET /transactions
-export const getAllTransactions = async (
-  page: any,
-  size: any,
-  tokens: string
-) => {
-  console.log("hello:", token);
-  const response = await fetch(
+export const getAllTransactions = async (page: any, size: any) => {
+  
+  try 
+  {const response = await fetch(
     `${API_BASE_URL}/transactions?page=${page}&size=${size}`,
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${tokens}`,
+        Authorization: `Bearer ${token}`,
       },
     }
   );
   return response.json();
+}catch (error) {
+  console.error("Error fetching some transactions:", error);
+  throw error;
 };
-
+};
 // POST /transactions
 export const createTransaction = async (
   transactionData: any,
@@ -127,15 +128,13 @@ export const getLatestTransfers = async (
   number: number
 ) => {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/transactions/quick-transfers?number=${number}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}/transactions/quick-transfers?number=${number}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    
     return response.json();
   } catch (error) {
     console.error("Error fetching latest transfers:", error);

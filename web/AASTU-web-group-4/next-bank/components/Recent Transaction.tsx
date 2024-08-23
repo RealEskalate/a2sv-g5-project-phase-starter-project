@@ -31,7 +31,7 @@ const RecentTransaction = () => {
   const lastThreeTransactions = recentTransaction.slice(-3).reverse();
 
   return (
-    <div className="max-w-auto">
+    <div className="max-w-auto  ">
       {lastThreeTransactions.map((transaction) => {
         // Determine icon and amount color based on transaction type
         let IconComponent = LifeInsuranceIcon; // Default icon for other types
@@ -69,11 +69,11 @@ const RecentTransaction = () => {
         }
 
         return (
-          <div key={transaction.transactionId} className={`${colors.white} max-w-auto`}>
-            <div className='flex p-2 justify-between w-auto md:w-auto'>
-              <div className='flex gap-4'>
-                <div className={`${colors.white} rounded-full flex items-center justify-center p-4 h-20 w-20`}>
-                  <IconComponent className="w-12 h-12" /> {/* Adjust size as needed */}
+          <div key={transaction.transactionId} className={`${colors.white} max-w-auto rounded-lg dark:bg-dark text-gray-900 dark:text-white`}>
+            <div className='flex p-2 justify-between items-center w-auto md:w-auto'>
+              <div className='flex gap-4 items-center'>
+                <div>
+                  <IconComponent className="w-16 h-16" /> {/* Adjust size as needed */}
                 </div>
                 <div className='my-2'>
                   <p className='text-lg font-medium'>{transaction.senderUserName}</p>

@@ -13,7 +13,7 @@ const MyInvestment = ({icon , color ,colortext , name ,category,categorycolor ,a
 }) => {
   return (
     <div className= "w-[100%] rounded-2xl">
-      <div className={`${colors.white} rounded-2xl `}>
+      <div className={`${colors.white} rounded-2xl  dark:bg-dark text-gray-900 dark:text-white`}>
           <div className=''>
             <div className='flex p-2 justify-between lg:justify-evenly'>
               <div className=' flex gap-4 justify-center items-center'>
@@ -33,7 +33,7 @@ const MyInvestment = ({icon , color ,colortext , name ,category,categorycolor ,a
               </div>
               <div className='py-5 flex gap-6 items-center'>
                 <div className=' hidden lg:block'>
-                    <p className={`${colortext} text-[14px] font-normal `} >{amount}</p>
+                    <p className={`${colortext} text-[14px] font-normal dark:text-white`} >{amount}</p>
                     <p className={`${categorycolor} text-[12px] font-normal text-start`} >Investment Value</p>
                 </div>
                   <div className='flex flex-col items-end'>

@@ -22,16 +22,16 @@ import { useSession } from "next-auth/react";
 
 const CreditCardsPage = () => {
   const { data: session, status } = useSession();
-  const router = useRouter();
+  // const router = useRouter();
 
   useEffect(() => {}, [status, session]);
   console.log(session, status);
-  if (!session?.user) router.push("/login");
+  // if (!session?.user) router.push("/login");
 
   const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
 
   const token = session?.user.accessToken || "";
-  console.log("accesstoken: ", token);
+  // console.log("accesstoken: ", token);
 
   const {
     data: allCardsDataWithContent,
@@ -78,11 +78,15 @@ const CreditCardsPage = () => {
   }
 
   if (isErrorAllCards || isErrorCardInfo) {
-    return <div>Error loading data</div>;
+    return (
+      <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-full bg-white animate-pulse rounded-[25px]">
+        <div className="flex flex-row gap-2">
+          <h1>Error While Loading the data!</h1>
+        </div>
+      </div>
+    );
   }
-  console.log("ehllo");
-  console.log("the data we want to see: ", allCardsDataWithContent);
-  console.log("the data we don't want to see: ", cardInfoData);
+  
   const allCardsData = allCardsDataWithContent.content!;
   const leng = allCardsData.length;
   

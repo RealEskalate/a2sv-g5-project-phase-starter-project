@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const API_URL = "https://bank-dashboard-o9tl.onrender.com/transactions"; // Adjust this to match your actual API base URL
+const API_URL = "https://bank-dashboard-rsf1.onrender.com/transactions"; // Adjust this to match your actual API base URL
 const extension = "/balance-history";
 const API_URL_expense =
-  "https://bank-dashboard-o9tl.onrender.com/transactions/expenses";
+  "https://bank-dashboard-rsf1.onrender.com/transactions/expenses";
 const API_URL_income =
   "https://bank-dashboard-o9tl.onrender.com/transactions/incomes";
 const API_URL_quick =

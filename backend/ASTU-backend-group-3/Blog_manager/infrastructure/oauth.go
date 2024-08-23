@@ -15,7 +15,7 @@ var OAuthConfig *oauth2.Config
 
 func init() {
 	// Load environment variables from the .env file
-	err := godotenv.Load("../Delivery/.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}

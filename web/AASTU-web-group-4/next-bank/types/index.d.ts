@@ -60,6 +60,16 @@ declare type SignUpParams = {
   password: string;
 };
 
+
+export type Notification = {
+  formattedDate: ReactNode;
+  timestamp: string | number | Date;
+  id: string;
+  message: string;
+  isRead: boolean;
+  status: 'unread' | 'read'
+};
+
 declare type LoginUser = {
   email: string;
   password: string;
@@ -377,4 +387,27 @@ export interface cardType {
   cardType: string;
   balance: number;
   expiryDate: string;
+}
+export interface UserData {
+  id: string;
+  name: string;
+  email: string;
+  dateOfBirth: string;
+  permanentAddress: string;
+  postalCode: string;
+  username: string;
+  presentAddress: string;
+  city: string;
+  country: string;
+  profilePicture: string;
+  accountBalance: number;
+  role: 'USER';
+  preference: {
+    currency: string;
+    sentOrReceiveDigitalCurrency: boolean;
+    receiveMerchantOrder: boolean;
+    accountRecommendations: boolean;
+    timeZone: string;
+    twoFactorAuthentication: boolean;
+  };
 }

@@ -26,7 +26,7 @@ import 'addupdate.dart';
 
 class MyHomePage extends StatefulWidget {
   final UserModel user;
-  MyHomePage({super.key, required this.title,required this.user});
+  MyHomePage({super.key, required this.title, required this.user});
 
   final String title;
 
@@ -40,6 +40,8 @@ class _MyHomePageState extends State<MyHomePage> {
   var product;
   void initState() {
     super.initState();
+    print("homepage user");
+    print(widget.user);
     _initializeData(); // Initialize data asynchronously
   }
 
@@ -61,7 +63,6 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.white,
         title: Row(
           children: [
-
             ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     minimumSize: const Size(55, 55),
@@ -104,17 +105,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ],
                   ),
-                  OutlinedButton (
-                    onPressed: ()async {
-                      var sharedPreference = await SharedPreferences.getInstance();
-                      sharedPreference.setString('token', '');
-                      Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => login()),
-                          );
-
-
-                    },
+                  OutlinedButton(
+                      onPressed: () async {
+                        var sharedPreference =
+                            await SharedPreferences.getInstance();
+                        sharedPreference.setString('token', '');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => login()),
+                        );
+                      },
                       iconAlignment: IconAlignment.start,
                       style: OutlinedButton.styleFrom(
                           backgroundColor:
@@ -123,10 +123,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           )),
-                      
-                      child: Text('Logout',
-                      )
-                      )
+                      child: Text(
+                        'Logout',
+                      ))
                 ],
               ),
             ),
@@ -167,14 +166,14 @@ class _MyHomePageState extends State<MyHomePage> {
                           // getIt<ProductBloc>().close();
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => Searchpage()),
+                            MaterialPageRoute(
+                                builder: (context) => Searchpage()),
                           );
                         },
                         child: const Icon(
                           Icons.search,
                           color: Colors.black,
-                        )
-                        )
+                        ))
                   ],
                 ),
                 SizedBox(
@@ -199,14 +198,15 @@ class _MyHomePageState extends State<MyHomePage> {
                             return Column(
                               children: [
                                 ProductCard(
-                                    user:widget.user,
+                                    user: widget.user,
                                     sampleproduct: Productentity(
                                         id: state.product[index].id,
                                         image: state.product[index].image,
-                                        name:
-                                            state.product[index].name,
+                                        name: state.product[index].name,
                                         price: state.product[index].price,
-                                        description: state.product[index].description)),
+                                        description:
+                                            state.product[index].description,
+                                        seller: state.product[index].seller)),
                                 const SizedBox(
                                   height: 20,
                                 ),
@@ -231,7 +231,8 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddUpdate(user: widget.user)),
+            MaterialPageRoute(
+                builder: (context) => AddUpdate(user: widget.user)),
           );
         },
         tooltip: 'Increment',
@@ -251,7 +252,8 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key, required this.sampleproduct,required this.user});
+  const ProductCard(
+      {super.key, required this.sampleproduct, required this.user});
   final Productentity sampleproduct;
   final UserModel user;
   @override
@@ -261,7 +263,8 @@ class ProductCard extends StatelessWidget {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => DetailsPage(user: user,
+                builder: (context) => DetailsPage(
+                      user: user,
                       sampleproduct: sampleproduct,
                     )));
       },

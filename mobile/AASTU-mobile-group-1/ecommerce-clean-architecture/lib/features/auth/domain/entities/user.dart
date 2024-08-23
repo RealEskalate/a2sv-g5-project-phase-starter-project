@@ -4,7 +4,7 @@ class UserEntity extends Equatable {
   final String id;
   final String name;
   final String email;
-  final String password;
+   String password;
  
 
   UserEntity({

@@ -159,7 +159,6 @@ func (uc *AuthController) HandleGoogleCallback(ctx *gin.Context) {
 }
 
 func (uc *AuthController) HandleGoogleLogin(c *gin.Context) {
-	// fmt.Println(client_id, Client_se)
 	// Redirect to Google login page
 	url := uc.googleConfig.AuthCodeURL("state-token")
 	c.Redirect(http.StatusTemporaryRedirect, url)

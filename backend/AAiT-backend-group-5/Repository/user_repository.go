@@ -121,6 +121,16 @@ func (ur *UserMongoRepository) UpdateUser(ctx context.Context, user *models.User
 	if user.Password != "" {
 		update["password"] = user.Password
 	}
+	if user.Bio != "" {
+		update["bio"] = user.Bio
+	}
+	if user.ImageKey != "" {
+		update["image_key"] = user.ImageKey
+	}
+	if user.PhoneNumber != "" {
+		update["phone_number"] = user.PhoneNumber
+	}
+	
 
 	if len(update) == 0 {
 		return models.Nil()

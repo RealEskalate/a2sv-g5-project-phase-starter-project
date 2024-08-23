@@ -248,14 +248,25 @@ func (suite *UserRepositorySuite) TestUpdateUser_Success() {
 	objID, _ := primitive.ObjectIDFromHex(id)
 	user := &models.User{
 		Username: "new-username",
-		Name:     "new-name",
+		Name: "new-name",
+		Bio: "new-bio",
+		Email: "new-email",
+		Password: "new-password",
+		ImageKey: "new-image-key",
+		PhoneNumber: "new-phone-number",
 	}
 
-	// Mock the UpdateOne operation
-	suite.collection.On("UpdateOne", mock.Anything, bson.M{"_id": objID}, bson.M{"$set": bson.M{
+	change := bson.M{
 		"username": "new-username",
-		"name":     "new-name",
-	}}).Return(&mongo.UpdateResult{MatchedCount: 1, ModifiedCount: 1}, nil)
+		"name": "new-name",
+		"bio": "new-bio",
+		"email": "new-email",
+		"password": "new-password",
+		"image_key": "new-image-key",
+		"phone_number": "new-phone-number",
+	}
+	// Mock the UpdateOne operation
+	suite.collection.On("UpdateOne", mock.Anything, bson.M{"_id": objID}, bson.M{"$set": change}).Return(&mongo.UpdateResult{MatchedCount: 1, ModifiedCount: 1}, nil)
 
 	// Call the UpdateUser method
 	errResp := suite.repository.UpdateUser(context.TODO(), user, id)

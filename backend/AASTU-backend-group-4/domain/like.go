@@ -2,20 +2,27 @@ package domain
 
 import (
 	"context"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Like struct {
-	ID     primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	BlogID primitive.ObjectID `bson:"blog_id" json:"blog_id"`
-	UserID primitive.ObjectID `bson:"user_id" json:"user_id"`
+	ID      primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	BlogID  primitive.ObjectID `bson:"blog_id" json:"blog_id"`
+	UserID  primitive.ObjectID `bson:"user_id" json:"user_id"`
+	LikedAt time.Time          `bson:"created_at" json:"created_at"`
 }
 
 type LikeRepository interface {
 	GetLikesCount(ctx context.Context, blogID primitive.ObjectID) (int, error)
+	GetLikes(ctx context.Context, blogID primitive.ObjectID) ([]Like, error)
+	GetLikeByID(ctx context.Context, likeID primitive.ObjectID) (Like, error)
+	AddLike(ctx context.Context, like Like) error
+	RemoveLike(ctx context.Context, likeID primitive.ObjectID) error
+}
 
-	// CreateLike(ctx context.Context, like Like) error
-	// DeleteLike(ctx context.Context, likeID string) error
-	// IsLikedByUser(ctx context.Context, blogID, userID string) (bool, error)
+type LikeRequest struct {
+	BlogID primitive.ObjectID `bson:"blog_id" json:"blog_id"`
+	UserID primitive.ObjectID `bson:"user_id" json:"user_id"`
 }

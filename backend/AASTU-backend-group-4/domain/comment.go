@@ -16,7 +16,14 @@ type Comment struct {
 }
 type CommentRepository interface {
 	GetCommentsCount(ctx context.Context, blogID primitive.ObjectID) (int, error)
-	// CreateComment(ctx context.Context, comment Comment) error
-	// GetCommentsByBlogID(ctx context.Context, blogID string, page, limit int) ([]Comment, error)
-	// DeleteComment(ctx context.Context, commentID string) error
+	CreateComment(ctx context.Context, comment Comment) error
+	GetCommentByID(ctx context.Context, id primitive.ObjectID) (Comment, error)
+	GetCommentsByBlogID(ctx context.Context, blogID primitive.ObjectID) ([]Comment, error)
+	RemoveComment(ctx context.Context, commentID primitive.ObjectID) error
+}
+
+type CommentRequest struct {
+	BlogID  primitive.ObjectID `bson:"blog_id" json:"blog_id" binding:"required"`
+	UserID  primitive.ObjectID `bson:"user_id" json:"user_id"`
+	Content string             `bson:"content" json:"content" binding:"required"`
 }

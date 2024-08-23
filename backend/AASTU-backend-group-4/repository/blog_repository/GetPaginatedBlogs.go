@@ -25,7 +25,7 @@ func (br *BlogRepository) GetPaginatedBlogs(ctx context.Context, page, limit int
 	if err != nil {
 		return nil, err
 	}
-	err = cursor.All(context.TODO(), &posts)
+	err = cursor.All(ctx, &posts)
 	if err != nil {
 		return nil, err
 	}

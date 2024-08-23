@@ -23,8 +23,8 @@ type User struct {
 	Role           string             `json:"role" bson:"role"`
 	ContactInfo    ContactInfo        `json:"contact_info" bson:"contact_info"` //it requires contact_info in the user profile update requirement given
 	IsActivated    bool               `json:"is_verified" bson:"is_verified"`   //useful for email verification
-	AccessToken    string             `json:"accessToken"`
-	RefreshToken   string             `json:"refreshToken"`
+	AccessToken    string             `json:"accessToken" bson:"accessToken"`
+	RefreshToken   string             `json:"refreshToken" bson:"refreshToken"`
 	CreatedAt      time.Time          `json:"created_at" bson:"createtimestamp"`
 	UpdatedAt      time.Time          `json:"updated_at" bson:"updatetimestamp"`
 	ProfilePicture string             `json:"profile_picture" bson:"profile_picture"`
@@ -77,11 +77,10 @@ type UserRepository interface {
 type UserUsecase interface {
 	GetUserByEmail(c context.Context, email string) (*UserResponse, error)
 	GetUserByID(c context.Context, userID string) (*UserResponse, error)
-
 	GetAllUser(c context.Context) ([]*UserResponse, error)              //superAdmin privilage
 	DeleteUser(c context.Context, userID string, password string) error //superAdmin,Admin,User privilage
 	PromoteUser(c context.Context, userID string) error                 //superAdmin privilage
-	DemoteUser(c context.Context, userID string) error                  //superAdmin privilage
+	DemoteUser(c context.Context, userID string) error                  
 	UpdateUser(c context.Context, user *UserUpdate, userID string) (*UserResponse, error)
 	UpdateProfilePicture(c context.Context, profilePicPath string, userID string) (*UserResponse, error)
 }

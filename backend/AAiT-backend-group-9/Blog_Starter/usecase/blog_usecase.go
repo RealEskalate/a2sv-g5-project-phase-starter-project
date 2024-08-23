@@ -84,8 +84,8 @@ func (uc *BlogUseCase) GetAllBlog(c context.Context, skip int64, limit int64, so
 		sortBy = "createtimestamp"
 	}
 
-	cacheKey := "allblogs" + sortBy + string(skip) + string(limit)
-	paginationKey := "pagination" + sortBy + string(skip) + string(limit)
+	cacheKey := "allblogs" + sortBy + string(rune(skip)) + string(rune(limit))
+	paginationKey := "pagination" + sortBy + string(rune(skip)) + string(rune(limit))
 	blogs, found := uc.cacheServ.Get(cacheKey)
 	paginations, foundPagination := uc.cacheServ.Get(paginationKey)
 

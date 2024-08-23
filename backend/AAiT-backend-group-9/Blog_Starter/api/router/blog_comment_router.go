@@ -21,6 +21,6 @@ func NewBlogCommentRouter(env *config.Env, timeout time.Duration, db *mongo.Clie
 	cc := controller.NewBlogCommentController(bcu, timeout)
 
 	group.POST("/comment", cc.CreateComment)
-	group.PUT("/comment", cc.UpdateComment)
+	group.PATCH("/comment/:id", cc.UpdateComment)
 	group.DELETE("/comment/:id", cc.DeleteCommment)
 }

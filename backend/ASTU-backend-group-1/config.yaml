@@ -10,3 +10,4 @@ jwt:
 gemini:
   api_key: "AIzaSyCowc1BcSloWsrFoh03sVXqWOIHKV2Hx9E"
   model: "gemini-1.5-flash"
+domain: "http://localhost:8000"

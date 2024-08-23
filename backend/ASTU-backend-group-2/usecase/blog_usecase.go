@@ -23,6 +23,14 @@ func NewBlogUsecase(blogRepository domain.BlogRepository, timeout time.Duration)
 	}
 }
 
+// BatchCreateBlog implements domain.BlogUsecase.
+func (b *blogUsecase) BatchCreateBlog(c context.Context, newBlogs *[]domain.BlogIn) error {
+	ctx, cancel := context.WithTimeout(c, b.contextTimeout)
+	defer cancel()
+
+	return b.blogRepository.BatchCreateBlog(ctx, newBlogs)
+}
+
 func (b *blogUsecase) GetByTags(c context.Context, tags []string, limit int64, page int64) ([]domain.Blog, mongopagination.PaginationData, error) {
 	ctx, cancel := context.WithTimeout(c, b.contextTimeout)
 	defer cancel()
@@ -137,7 +145,7 @@ func (b *blogUsecase) Search(c context.Context, searchTerm string, limit int64, 
 	return blogs, meta, nil
 }
 
-func (b *blogUsecase) CreateBlog(c context.Context, newBlog *domain.Blog) (domain.Blog, error) {
+func (b *blogUsecase) CreateBlog(c context.Context, newBlog *domain.BlogIn) (domain.Blog, error) {
 	ctx, cancel := context.WithTimeout(c, b.contextTimeout)
 	defer cancel()
 
@@ -149,7 +157,7 @@ func (b *blogUsecase) CreateBlog(c context.Context, newBlog *domain.Blog) (domai
 	return blog, nil
 }
 
-func (b *blogUsecase) UpdateBlog(c context.Context, blogID string, updatedBlog *domain.BlogUpdate) (domain.Blog, error) {
+func (b *blogUsecase) UpdateBlog(c context.Context, blogID string, updatedBlog *domain.BlogIn) (domain.Blog, error) {
 	ctx, cancel := context.WithTimeout(c, b.contextTimeout)
 	defer cancel()
 

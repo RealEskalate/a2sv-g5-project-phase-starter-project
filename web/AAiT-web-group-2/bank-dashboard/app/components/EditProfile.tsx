@@ -38,25 +38,25 @@ const EditProfile = () => {
 
   return (
     <div className="mx-auto bg-white p-10">
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-5 gap-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         <div className="flex flex-col space-y-1 items-center">
-          <div className="w-full h-48 rounded-lg flex items-center justify-center relative">
+          <div className=" w-36 h-36 rounded-lg flex items-center justify-center relative">
             <input
               type="file"
               accept="image/*"
               className="hidden"
               id="profilePic"
             />
-            <label htmlFor="profilePic" className="cursor-pointer absolute right-3 bottom-10">
+            <label htmlFor="profilePic" className="cursor-pointer absolute right-3 bottom-3">
               <Image src={pencil} alt="pencil" />
             </label>
             <div className="flex justify-center items-center">
-              <img className="bg-yellow-50 w-36 h-36 rounded-full" src="" alt="profile" />
+              <img className="bg-yellow-50 w-36 h-36 rounded-full" src="/christina.svg" alt="profile" />
             </div>
           </div>
         </div>
 
-        <div className="space-y-2 col-span-2">
+        <div className="space-y-2 md:col-span-2">
           <div>
             <label htmlFor="name" className="block text-custom-light-dark mb-2 text-base font-normal">Your Name</label>
             <input
@@ -110,7 +110,7 @@ const EditProfile = () => {
           </div>
         </div>
 
-        <div className="space-y-2 col-span-2">
+        <div className="space-y-2  md:col-span-2">
           <div>
             <label htmlFor="username" className="block text-custom-light-dark mb-2 text-base font-normal">User Name</label>
             <input
@@ -164,7 +164,7 @@ const EditProfile = () => {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="bg-custom-bright-purple w-2/4 text-white px-4 py-2 hover:shadow-md font-body font-medium text-md rounded-xl mt-6"
+              className="bg-custom-bright-purple w-full sm:w-2/4 text-white px-4 py-2 hover:shadow-md font-body font-medium text-md rounded-xl mt-6"
             >
               Save
             </button>

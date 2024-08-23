@@ -16,18 +16,18 @@ import (
 )
 
 type BlogRepository struct {
-	PostCollection mongo.Collection
-	UserCollection mongo.Collection
+	PostCollection    mongo.Collection
+	UserCollection    mongo.Collection
 	CommentCollection mongo.Collection
-	env            infrastructure.Config
+	env               infrastructure.Config
 }
 
 func NewBlogRepository(PostCollection mongo.Collection, UserCollection mongo.Collection, CommentCollection mongo.Collection, env infrastructure.Config) domain.BlogRepository {
 	return BlogRepository{
-		PostCollection: PostCollection,
-		UserCollection: UserCollection,
+		PostCollection:    PostCollection,
+		UserCollection:    UserCollection,
 		CommentCollection: CommentCollection,
-		env:            env,
+		env:               env,
 	}
 }
 
@@ -46,13 +46,22 @@ func (b BlogRepository) ReactOnBlog(user_id string, reactionType bool, blog_id s
 		}
 	}
 	post, err := b.GetBlogByID(blog_id, true)
-	if err != nil {
+	if err != nil || !post.Deleted {
 		return domain.ErrorResponse{
 			Message: "blog not found",
 			Status:  404,
 		}
 	}
-	isLiked, isDisliked := utils.IsAlreadyReacted(&post, userID)
+	var user domain.User
+	err = b.UserCollection.FindOne(context, bson.M{"_id": userID}).Decode(&user)
+	if err != nil {
+		return domain.ErrorResponse{
+			Message: "Internal server error",
+			Status:  500,
+		}
+	}
+
+	isLiked, isDisliked := utils.IsAlreadyReacted(user, userID)
 	filter, update := utils.FilterReactionBlog([]primitive.ObjectID{userID, blogID}, reactionType, isLiked, isDisliked)
 	if len(filter) == 0 || len(update) == 0 {
 		return domain.ErrorResponse{
@@ -67,7 +76,7 @@ func (b BlogRepository) ReactOnBlog(user_id string, reactionType bool, blog_id s
 			Status:  500,
 		}
 	}
-	filter, update = utils.FilterReactionUser([]primitive.ObjectID{post.Creator_id, userID, blogID}, reactionType, isLiked, isDisliked)
+	filter, update = utils.FilterReactionUser([]primitive.ObjectID{userID, blogID}, reactionType, isLiked, isDisliked)
 	_, err = b.UserCollection.UpdateOne(context, filter, update)
 	if err != nil {
 		return domain.ErrorResponse{
@@ -81,7 +90,6 @@ func (b BlogRepository) ReactOnBlog(user_id string, reactionType bool, blog_id s
 		_ = b.UpdatePopularity(blog_id, "dislike")
 	}
 	return domain.ErrorResponse{}
-
 }
 
 // Update popularity implements domain.BlogRepository.
@@ -96,6 +104,7 @@ func (b BlogRepository) UpdatePopularity(blog_id string, rateType string) error 
 	}
 	increment := utils.PopularityRate(rateType)
 	filter := bson.M{"_id": blogID}
+
 	err = b.PostCollection.FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
 		return errors.New("internal server error")
@@ -106,15 +115,16 @@ func (b BlogRepository) UpdatePopularity(blog_id string, rateType string) error 
 	if err != nil {
 		return errors.New("internal server error")
 	}
-	userFilter := bson.D{
-		{Key: "_id", Value: result.Creator_id},
-		{Key: "posts._id", Value: blogID},
-	}
-	update = bson.M{"$inc": bson.M{"posts.$.popularity": increment}}
-	_, err = b.UserCollection.UpdateOne(ctx, userFilter, update)
-	if err != nil {
-		return errors.New("internal server error")
-	}
+
+	// userFilter := bson.D{
+	// 	{Key: "_id", Value: result.Creator_id},
+	// 	{Key: "posts._id", Value: blogID},
+	// }
+	// update = bson.M{"$inc": bson.M{"posts.$.popularity": increment}}
+	// _, err = b.UserCollection.UpdateOne(ctx, userFilter, update)
+	// if err != nil {
+	// 	return errors.New("internal server error")
+	// }
 	return nil
 }
 
@@ -192,20 +202,24 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, creator_id 
 
 	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
 	defer cancel()
-
+	if blog.LikeCount != 0 {
+		blog.LikeCount = 0
+	}
+	if blog.DisLikeCount != 0 {
+		blog.DisLikeCount = 0
+	}
 	blog.ID = primitive.NewObjectID()
 	uid, err := primitive.ObjectIDFromHex(user_id)
 
 	if err != nil {
-		return domain.Blog{}, errors.New("could not get user id")
+		return domain.Blog{}, errors.New("internal server error")
 	}
-
 	role, err := b.GetUserRoleByID(user_id)
 	if err != nil {
-		return domain.Blog{}, errors.New("could not get user role")
+		return domain.Blog{}, errors.New("internal server error")
 	}
 	if strings.ToLower(role) == "admin" {
-		if creator_id == "" {
+		if blog.Creator_id == primitive.NilObjectID {
 			blog.Creator_id = uid
 		} else {
 			cid, err := primitive.ObjectIDFromHex(creator_id)
@@ -226,7 +240,7 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, creator_id 
 	}
 
 	update := bson.M{
-		"$push": bson.M{"posts_id": blog.ID},
+		"$push": bson.M{"posts": blog},
 	}
 
 	_, err = b.UserCollection.UpdateOne(context, filter, update)
@@ -241,8 +255,9 @@ func (b BlogRepository) DeleteBlogByID(user_id string, blog_id string) domain.Er
 	timeOut := b.env.ContextTimeout
 	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
 	defer cancel()
+
 	blogID, blogErr := primitive.ObjectIDFromHex(blog_id)
-	userID, userErr := primitive.ObjectIDFromHex(user_id)
+	_, userErr := primitive.ObjectIDFromHex(user_id)
 
 	if blogErr != nil || userErr != nil {
 		return domain.ErrorResponse{
@@ -252,24 +267,7 @@ func (b BlogRepository) DeleteBlogByID(user_id string, blog_id string) domain.Er
 	}
 
 	filter := bson.M{"_id": blogID}
-	// var blog domain.Blog
-	// err := b.PostCollection.FindOne(context, filter).Decode(&blog)
-
-	// if err != nil {
-	// 	return domain.ErrorResponse{
-	// 		Message: "blog not found",
-	// 		Status:  404,
-	// 	}
-	// }
-
-	// if blog.Creator_id != userID {
-	// 	return domain.ErrorResponse{
-	// 		Message: "permission denied",
-	// 		Status:  403,
-	// 	}
-	// }
-
-	_, err := b.PostCollection.UpdateOne(context, filter, bson.M{"$set": bson.M{"deleted": true, "deletedAt": time.Now()}})
+	response, err := b.PostCollection.UpdateOne(context, filter, bson.M{"$set": bson.M{"deleted": true, "deletedAt": time.Now()}})
 	if err != nil {
 		return domain.ErrorResponse{
 			Message: "Delete was not successful",
@@ -277,33 +275,33 @@ func (b BlogRepository) DeleteBlogByID(user_id string, blog_id string) domain.Er
 		}
 	}
 
-	// result, err := b.PostCollection.DeleteOne(context, filter)
+	if response.MatchedCount == 0 {
+		return domain.ErrorResponse{
+			Message: "blog not found",
+			Status:  404,
+		}
+	} else {
+		var blog domain.Blog
+		err := b.PostCollection.FindOne(context, filter).Decode(&blog)
+		if err != nil {
+			return domain.ErrorResponse{
+				Message: "blog not found",
+				Status:  404,
+			}
+		}
 
-	// if err != nil {
-	// 	return domain.ErrorResponse{
-	// 		Message: "internal server error",
-	// 		Status:  500,
-	// 	}
-	// }
-	// if result == 0 {
-	// 	return domain.ErrorResponse{
-	// 		Message: "blog not found",
-	// 		Status:  404,
-	// 	}
-	// }
-	// filter = bson.M{"_id": userID}
-	// update := bson.M{
-	// 	"$pull": bson.M{"posts": bson.M{
-	// 		"_id": blogID,
-	// 	}},
-	// }
-	// _, err = b.UserCollection.UpdateOne(context, filter, update)
-	// if err != nil {
-	// 	return domain.ErrorResponse{
-	// 		Message: "internal server error",
-	// 		Status:  500,
-	// 	}
-	// }
+		for _, commentID := range blog.Commenters_ID {
+			_, err := b.CommentCollection.UpdateOne(context, bson.M{"_id": commentID}, bson.M{"$set": bson.M{"deleted": true, "deletedAt": time.Now()}})
+			if err != nil {
+				return domain.ErrorResponse{
+					Message: "Delete was not successful deleting comments",
+					Status:  500,
+				}
+			}
+		}
+
+	}
+
 	return domain.ErrorResponse{}
 }
 
@@ -359,28 +357,15 @@ func (b BlogRepository) GetBlogByID(blog_id string, isCalled bool) (domain.Blog,
 	if err != nil {
 		return domain.Blog{}, err
 	}
-	pipeline := utils.GetBlogByIdPipeline(blog_object_id)
-	cursor, err := b.PostCollection.Aggregate(context.TODO(), pipeline)
-	if err != nil {
+	var blog domain.Blog
+	if err := b.PostCollection.FindOne(context.TODO(), primitive.D{{Key: "_id", Value: blog_object_id}}).Decode(&blog); err != nil {
 		return domain.Blog{}, err
-	}
-
-	var result domain.Blog
-    if cursor.Next(context.TODO()) {
-        if err = cursor.Decode(&result); err != nil {
-            return domain.Blog{}, err
-        }
-    } else {
-        return domain.Blog{}, errors.New("blog not found")
-    }
-	if !result.Deleted{
+	} else {
 		if !isCalled {
 			_ = b.UpdatePopularity(blog_id, "view")
 			_ = b.IncrementViewCount(blog_id)
 		}
-		return result, nil
-	}else{
-		return result, errors.New("blog not found")
+		return blog, nil
 	}
 }
 
@@ -406,7 +391,9 @@ func (b BlogRepository) GetBlogs(pageNo int64, pageSize int64, popularity string
 		if err := cursor.Decode(&blog); err != nil {
 			return []domain.Blog{}, domain.Pagination{}, err
 		}
-		blogs = append(blogs, blog)
+		if !blog.Deleted {
+			blogs = append(blogs, blog)
+		}
 	}
 	paginationInfo := domain.Pagination{
 		CurrentPage: pageNo,
@@ -435,7 +422,11 @@ func (b BlogRepository) GetMyBlogByID(user_id string, blog_id string) (domain.Bl
 	if err := b.PostCollection.FindOne(context.TODO(), filter).Decode(&myBlog); err != nil {
 		return domain.Blog{}, err
 	} else {
-		return myBlog, nil
+		if !myBlog.Deleted {
+			return myBlog, nil
+		} else {
+			return domain.Blog{}, errors.New("blog not found")
+		}
 	}
 }
 

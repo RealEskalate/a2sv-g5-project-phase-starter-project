@@ -297,8 +297,7 @@ func (b BlogController) GetMyBlogByID(c *gin.Context) {
 		c.Abort()
 	}
 	user_id := c.GetString("user_id")
-	role := c.GetString("role")
-	if user_id == "" || role == "" {
+	if user_id == "" {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: "User id is required",
 			Status:  http.StatusBadRequest,

@@ -1,6 +1,6 @@
+import 'package:e_commerce_app/features/auth/domain/entities/user.dart';
+import 'package:e_commerce_app/features/chat/domain/entities/chat_entity.dart';
 import 'package:equatable/equatable.dart';
-
-enum MessageType { text, image, video, audio, file }
 
 class MessageContent {
   final String image;
@@ -13,19 +13,20 @@ class MessageContent {
 }
 
 class MessageEntity extends Equatable {
-  final MessageType type;
-  final MessageContent content;
-  final String senderId;
   final String chatId;
-  final String? messageId;
+  final User sender;
+  final ChatEntity chat;
+  final MessageContent content;
+  final String messageId;
 
-  MessageEntity(this.messageId, {
-    required this.type,
-    required this.content,
-    required this.senderId, 
-    required this.chatId,
+  MessageEntity({
+      required this.messageId,
+      required this.content,
+      required this.chatId,
+      required this.chat,
+      required this.sender,
   });
 
   @override
-  List<Object?> get props => [type, content, senderId, chatId, messageId];
+  List<Object?> get props => [chat, content, sender, chatId, messageId];
 }

@@ -1,9 +1,12 @@
 "use client";
+
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+
 import { motion as m } from 'framer-motion';
+import React, { useEffect, useState } from "react";
+import SignIn from "../signIn/SignIn";
 
 interface LandingNavProps {
   bgWhite: boolean;
@@ -13,10 +16,13 @@ interface LandingNavProps {
 }
 
 const LandingNav: React.FC<LandingNavProps> = ({ bgWhite, homeRef, servicesRef, aboutRef }) => {
+
+
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
+  const [isSignInModalVisible, setIsSignInModalVisible] = useState<boolean>(false);
   const { data: session, status } = useSession();
 
-  const toggle = () => {
+  const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);
   };
 
@@ -29,13 +35,17 @@ const LandingNav: React.FC<LandingNavProps> = ({ bgWhite, homeRef, servicesRef, 
     }
   };
 
+  const toggleSignInModal = () => {
+    setIsSignInModalVisible(!isSignInModalVisible);
+  };
   return (
     <m.header 
      
-  
+
+
       className={`bg-[#083E9E] text-white flex justify-center items-center sm:justify-between p-2 sm:p-4 relative`}
     >
-      <div className="font-extrabold text-[25px]">BankDash</div>
+      <Link href="/" className="font-extrabold text-[25px] cursor-pointer">BankDash</Link>
 
       <div className="flex items-center">
         <Image
@@ -44,7 +54,7 @@ const LandingNav: React.FC<LandingNavProps> = ({ bgWhite, homeRef, servicesRef, 
           height={25}
           alt="hamburger"
           className="sm:hidden absolute right-5"
-          onClick={toggle}
+          onClick={toggleMenu}
         />
 
         <div
@@ -54,20 +64,21 @@ const LandingNav: React.FC<LandingNavProps> = ({ bgWhite, homeRef, servicesRef, 
               : "hidden"
           } sm:flex sm:flex-row gap-20 mr-10`}
         >
-          <div className="mb-2 sm:mb-0" onClick={() => scrollToRef(homeRef)}>Home</div>
-          <div className="mb-2 sm:mb-0" onClick={() => scrollToRef(servicesRef)}>Services</div>
-          <div className="mb-2 sm:mb-0" onClick={() => scrollToRef(aboutRef)}>About Us</div>
+          <div className="mb-2 sm:mb-0 cursor-pointer" onClick={() => scrollToRef(homeRef)}>Home</div>
+          <div className="mb-2 sm:mb-0 cursor-pointer" onClick={() => scrollToRef(servicesRef)}>Services</div>
+          <div className="mb-2 sm:mb-0 cursor-pointer" onClick={() => scrollToRef(aboutRef)}>About Us</div>
           {status === "authenticated" ? (
             <Link href="/dashboard">
               <div className="mb-2 sm:mb-0">Dashboard</div>
             </Link>
           ) : (
-            <Link href="/login">
-              <div className="mb-2 sm:mb-0">Login</div>
-            </Link>
+            <div onClick={toggleSignInModal} className="mb-2 sm:mb-0 cursor-pointer">
+              Login
+            </div>
           )}
         </div>
       </div>
+      {isSignInModalVisible && <SignIn onClose={toggleSignInModal} />}
     </m.header>
   );
 };

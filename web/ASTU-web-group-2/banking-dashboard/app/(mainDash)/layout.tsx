@@ -68,7 +68,7 @@ const Layout = ({
       // console.log("session", session, isTokenExpired(session.user.accessToken));
     // }
     if (status == "unauthenticated" && !session) {
-      router.push("/login");
+      router.push("/");
     }
   }, [session, router, refreshAccessToken]);
 
@@ -76,7 +76,7 @@ const Layout = ({
     if (userData?.data) {
       dispatch(setUser(userData.data));
     }
-  }, [userData, dispatch]);
+  }, [userData ]);
 
   return (
     <>

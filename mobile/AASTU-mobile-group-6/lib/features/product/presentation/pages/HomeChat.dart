@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+import "package:ecommerce_app_ca_tdd/features/product/presentation/widgets/bottomnavbar.dart";
 import "package:flutter/material.dart";
 
 class Chat extends StatelessWidget {
@@ -7,46 +8,54 @@ class Chat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
-        body: Column(
-          children: [
-            Text('--------profile page-------'),
-
-            ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(50),
-                topRight: Radius.circular(50),
-              ),
-              child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.65,
-                  // color: Colors.blue,
-                  //
-                  child: Center(
-                    child: Container(
-                        width: MediaQuery.of(context).size.width * 0.95,
-                        height: MediaQuery.of(context).size.height * 0.6,
-                        color: Colors.white,
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                _duplicate(context,'images/av1.png', 'Estifanos Zinabu', 'How are you today?'),
-                                _duplicate(context,'images/av2.png', 'Estifanos Zinabu', 'How are you today?'),
-                                _duplicate(context,'images/av3.png', 'Estifanos Zinabu', 'How are you today?'),
-                                _duplicate(context,'images/av1.png', 'Estifanos Zinabu', 'How are you today?'),
-                                _duplicate(context,'images/av2.png', 'Estifanos Zinabu', 'How are you today?'),
-                                _duplicate(context,'images/av3.png', 'Estifanos Zinabu', 'How are you today?'),
-                              ],
-                            ),
-                          ),
-                        )),
-                  )),
+      appBar: AppBar(),
+      body: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(50),
+              topRight: Radius.circular(50),
             ),
-            Text('----------bottom Bar----------'),
-          ],
-        ));
+            child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.65,
+                // color: Colors.blue,
+                //
+                child: Center(
+                  child: Container(
+                      width: MediaQuery.of(context).size.width * 0.95,
+                      height: MediaQuery.of(context).size.height * 0.6,
+                      color: Colors.white,
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              _duplicate(context, 'images/av1.png',
+                                  'Estifanos Zinabu', 'How are you today?'),
+                              _duplicate(context, 'images/av2.png',
+                                  'Estifanos Zinabu', 'How are you today?'),
+                              _duplicate(context, 'images/av3.png',
+                                  'Estifanos Zinabu', 'How are you today?'),
+                              _duplicate(context, 'images/av1.png',
+                                  'Estifanos Zinabu', 'How are you today?'),
+                              _duplicate(context, 'images/av2.png',
+                                  'Estifanos Zinabu', 'How are you today?'),
+                              _duplicate(context, 'images/av3.png',
+                                  'Estifanos Zinabu', 'How are you today?'),
+                            ],
+                          ),
+                        ),
+                      )),
+                )),
+          ),
+        ],
+      ),
+      bottomNavigationBar: Bottomnavbar(),
+    );
+
+    // bottomNavigationBar:
+    // Container(child: Bottomnavbar());
   }
 }
 
@@ -66,7 +75,7 @@ Widget _duplicate(
           backgroundColor: Colors.yellow,
           radius: 35,
           child: Icon(
-              Icons.person,
+            Icons.person,
             size: 35,
           ),
         ),

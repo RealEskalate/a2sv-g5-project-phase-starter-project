@@ -17,8 +17,8 @@ type Email struct {
 	Port     string
 }
 
-func NewEmail(username, password, host, port string) Email {
-	return Email{
+func NewEmail(username, password, host, port string) EmailService {
+	return &Email{
 		Username: username,
 		Password: password,
 		Host:     host,

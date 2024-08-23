@@ -13,12 +13,16 @@ var (
 	systemPrompt = "`Imagine that you are a bot that assists users in creating content for their blogs. Users rely on you to generate text content or improve their existing content. After asking the necessary questions, you will provide them with the correct content. Users cannot ask questions unrelated to blog content creation.`"
 )
 
-type AIService struct {
+type AIService interface {
+	GenerateText(propmt string, chatMesages []genai.Part) (string, error)
+}
+
+type aiService struct {
 	model *genai.GenerativeModel
 	ApiKey string
 }
 
-func NewAIService(apiKey string) *AIService {
+func NewAIService(apiKey string) AIService {
 	client, err := genai.NewClient(context.Background(), option.WithAPIKey(apiKey))
 
 	if err != nil {
@@ -34,14 +38,14 @@ func NewAIService(apiKey string) *AIService {
 		Role: "system",
 	}
 
-	return &AIService{
+	return &aiService{
 		model: model,
 		ApiKey: apiKey,
 	}
 
 }
 
-func (client *AIService) GenerateText(propmt string, chatMesages []genai.Part) (string, error) {
+func (client *aiService) GenerateText(propmt string, chatMesages []genai.Part) (string, error) {
 	chatMesages = append(chatMesages, genai.Text(propmt))
 
 	response, err := client.model.GenerateContent(context.Background(), chatMesages...)

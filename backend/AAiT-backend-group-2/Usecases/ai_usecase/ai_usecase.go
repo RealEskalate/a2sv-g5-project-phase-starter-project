@@ -13,15 +13,15 @@ import (
 
 type aiUsecase struct {
 	repo domain.AIRepository
-	aiService *services.AIService
+	aiService services.AIService
 	contextTimeout time.Duration
 }
 
-func NewAIUsecase(repo domain.AIRepository, aiService *services.AIService, timeout time.Duration) domain.AIUseCase{
+func NewAIUsecase(repo domain.AIRepository, aiService services.AIService, timeout time.Duration) domain.AIUseCase{
 	return &aiUsecase{
 		repo: repo,
 		aiService: aiService,
-		contextTimeout: timeout ,
+		contextTimeout: timeout,
 	}
 }
 

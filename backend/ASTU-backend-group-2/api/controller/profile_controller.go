@@ -205,8 +205,6 @@ func (pc *ProfileController) UploadProfilePicture(cloudinary *cloudinary.Cloudin
 			return
 		}
 
-		pc.UserUsecase.UpdateProfilePicture(c, userID, imageUrl)
-		c.JSON(http.StatusCreated, gin.H{"message": "profile picture updated"})
-
+		c.JSON(200, gin.H{"message": "Admin demoted to user successfully"})
 	}
 }

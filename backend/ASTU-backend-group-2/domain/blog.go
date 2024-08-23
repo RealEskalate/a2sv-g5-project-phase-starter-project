@@ -60,6 +60,7 @@ type Comment struct {
 	BlogID    primitive.ObjectID `json:"blog_id" bson:"blog_id"`
 	Content   string             `json:"content" bson:"content" binding:"required"`
 	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
+	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
 }
 
 // when creating and updating comments
@@ -67,6 +68,13 @@ type CommentIn struct {
 	BlogID    primitive.ObjectID `json:"blog_id" bson:"blog_id"`
 	Content   string             `json:"content" bson:"content" binding:"required"`
 	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
+	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
+}
+
+type CommentUpdate struct {
+	BlogID    primitive.ObjectID `json:"blog_id" bson:"blog_id"`
+	Content   string             `json:"content" bson:"content" binding:"required"`
+	UpdatedAt time.Time          `json:"created_at" bson:"created_at"`
 }
 
 const (
@@ -110,10 +118,10 @@ type BlogRepository interface {
 
 type CommentRepository interface {
 	GetComments(c context.Context, blogID string, limit int64, page int64) ([]Comment, mongopagination.PaginationData, error)
-	CreateComment(c context.Context, blogID string, comment *Comment) (Comment, error)
-	GetComment(c context.Context, blogID, commentID string) (Comment, error)
-	UpdateComment(c context.Context, blogID, commentID string, updatedComment *Comment) (Comment, error)
-	DeleteComment(c context.Context, blogID, commentID string) error
+	CreateComment(c context.Context, comment *Comment) (Comment, error)
+	GetComment(c context.Context, commentID string) (Comment, error)
+	UpdateComment(c context.Context, commentID string, updatedComment *CommentUpdate) (Comment, error)
+	DeleteComment(c context.Context, commentID string) error
 }
 
 type ReactionRepository interface {
@@ -135,10 +143,10 @@ type BlogUsecase interface {
 
 type CommentUsecase interface {
 	GetComments(c context.Context, blogID string, limit int64, page int64) ([]Comment, mongopagination.PaginationData, error)
-	CreateComment(c context.Context, blogID string, comment *Comment) (Comment, error)
-	GetComment(c context.Context, blogID, commentID string) (Comment, error)
-	UpdateComment(c context.Context, blogID, commentID string, updatedComment *Comment) (Comment, error)
-	DeleteComment(c context.Context, blogID, commentID string) error
+	CreateComment(c context.Context, userID string, blogID string, comment *CommentIn) (Comment, error)
+	GetComment(c context.Context, commentID string) (Comment, error)
+	UpdateComment(c context.Context, commentID string, updatedComment *CommentUpdate) (Comment, error)
+	DeleteComment(c context.Context, commentID string) error
 }
 
 type ReactionUsecase interface {

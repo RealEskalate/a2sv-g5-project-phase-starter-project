@@ -1,7 +1,7 @@
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { JWT } from "next-auth/jwt";
-
+console.log(process.env.NEXTAUTH_SECRET,'enviroment')
 async function refreshAccessToken(token: JWT) {
 	console.log('authOptions',token)
 
@@ -15,17 +15,16 @@ async function refreshAccessToken(token: JWT) {
     });
 
     const refreshedTokens = await res.json(); 
-console.log(refreshedTokens,'refreshedTokens')
+	console.log(refreshedTokens,'refreshedTokens')
     if (!res.ok) {
       throw refreshedTokens;
     } 
-	console.log() 
-
+	console.log() ;
     return {
       ...token,
-      accessToken: refreshedTokens.data.access_token,
-      refreshToken: refreshedTokens.data.refresh_token,
+      accessToken: refreshedTokens.access_token,
       accessTokenExpires: Date.now() + 10* 60 * 1000, 
+	  refreshToken:refreshedTokens.refresh_token,
     };
   } catch (error) {
     console.error("Failed to refresh access token", error);
@@ -65,7 +64,7 @@ const authOptions: AuthOptions = {
             username: credentials?.userName,
             accessToken: user.data.access_token,
             refreshToken: user.data.refresh_token,
-			accessTokenExpires: Date.now() + 10* 60 * 1000, 
+			accessTokenExpires: Date.now() + 10*60* 1000, 
 		};
         } else {
           return null;
@@ -81,15 +80,17 @@ const authOptions: AuthOptions = {
         return {
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
-          accessTokenExpires: Date.now() + 300 ,
+          accessTokenExpires: Date.now() + 10*60*1000 ,
           username: user.username,
         };
       }
+	  console.log((Date.now() - (token.accessTokenExpires as number))/600,'time111')
+
       if (Date.now() < (token.accessTokenExpires as number)) {
         return token;
       }
 
-
+	  console.log((Date.now() - (token.accessTokenExpires as number))/600,'timeleft')
       return refreshAccessToken(token);
     },
     async session({ session, token }: { session: any; token: JWT }) {

@@ -7,7 +7,6 @@ import (
 
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
-
 )
 
 type Content struct {

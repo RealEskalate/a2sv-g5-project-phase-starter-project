@@ -2,36 +2,27 @@
 package routers
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter() *gin.Engine {
     router := gin.Default()
 
+    // Add CORS middleware
+    router.Use(cors.Default())
 
     // auth routes
     SetUpAuth(router)
 
-    // // public routes
-    // SetPublicRoutes(router)
-    // // user routes
-    // SetUpUser(router)
-    // // Admin routes
-    // SetUpAdmin(router)
-
-    // // oauth routes
-    // SetupOauthRouter(router)
-
-    //public routes
+    // public routes
     SetUpPublicRoutes(router)
 
-    // // user routes
+    // user routes
     SetUpUser(router)
 
-    // // Admin routes
+    // Admin routes
     SetUpAdmin(router)
-
-
 
     // Blog routes
     SetUpBlog(router)
@@ -41,11 +32,9 @@ func SetupRouter() *gin.Engine {
 
     // Comment routes
     SetUpComment(router)
-   
 
-
-    // // Ai routes
+    // Ai routes
     SetUpAi(router)
+
     return router
 }
-

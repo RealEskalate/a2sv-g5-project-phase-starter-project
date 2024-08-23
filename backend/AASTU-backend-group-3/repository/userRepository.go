@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"group3-blogApi/domain"
+	"group3-blogApi/infrastracture"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -112,7 +114,10 @@ func (ur *UserRepositoryImpl) AccountActivation(token string, email string) erro
 
 	return nil
 	
+
 }
+
+
 
 
 
@@ -160,3 +165,73 @@ func (uc *UserRepositoryImpl) CheckPasswordHashRepo(password, hash string) bool 
 }
 
 
+////////////////////////////////////////////////////
+
+func (ur *UserRepositoryImpl) SendReminderEmail() error {
+    threeDaysAgo := time.Now().Add(-3 * 24 * time.Hour) // Adjust the threshold to 3 days ago
+
+    filter := bson.M{
+        "is_active": false,
+        "token_created_at": bson.M{"$lt": threeDaysAgo, "$gte": time.Now().Add(-7 * 24 * time.Hour)},
+    }
+
+    // Find the users who need a reminder
+    var users []domain.User
+	cur, err := ur.collection.Find(context.Background(), filter)
+	if err != nil {
+		return err
+	}
+	err = cur.All(context.Background(), &users)
+	if err != nil {
+		return err
+	}
+
+
+    for _, user := range users {
+        // Send activation email
+        err := infrastracture.SendActivationEmail(user.Email, user.ActivationToken)
+        if err != nil {
+            log.Println("Failed to send reminder email to:", user.Email, err)
+            continue
+        }
+    }
+    return nil
+}
+
+// Delete users who have been inactive for more than 7 days
+func (ur *UserRepositoryImpl) DeleteInActiveUser() error {
+    sevenDaysAgo := time.Now().Add(-7 * 24 * time.Hour)
+
+    filter := bson.M{
+        "is_active": false,
+        "token_created_at": bson.M{"$lt": sevenDaysAgo},
+    }
+
+    result, err := ur.collection.DeleteMany(context.Background(), filter)
+    if err != nil {
+        return err
+    }
+
+    log.Printf("Deleted %d inactive users", result.DeletedCount)
+    return nil
+}
+
+// Schedule the process to send reminders and delete inactive users
+func (ur *UserRepositoryImpl) ScheduleDeleteAndReminderForInActiveUser() {
+    ticker := time.NewTicker(24 * time.Hour)
+    go func() {
+        for range ticker.C {
+            // Send reminder emails to users who haven't activated within 3 days
+            err := ur.SendReminderEmail()
+            if err != nil {
+                log.Println("Error sending reminder emails:", err)
+            }
+
+            // Delete users who have been inactive for more than 7 days
+            err = ur.DeleteInActiveUser()
+            if err != nil {
+                log.Println("Error deleting inactive users:", err)
+            }
+        }
+    }()
+}

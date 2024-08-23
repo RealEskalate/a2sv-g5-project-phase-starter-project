@@ -11,13 +11,14 @@ import (
 
 func SetUpPublicRoutes(router *gin.Engine) {	
 
-
-	blogRepo := repository.NewBlogRepositoryImpl(db.BlogCollection)
+	db.CreateTextIndex(db.BlogCollection)
+	blogRepo := repository.NewBlogRepositoryImpl(db.BlogCollection, db.CommentCollection, db.LikeCollection)
     blogUsecase := usecase.NewBlogUsecase(blogRepo)
     blogController := controllers.NewBlogController(blogUsecase)
 
 	public := router.Group("/")
 	{
+
 		public.GET("/blogs", blogController.GetBlogs)
 		public.GET("/blogs/:id", blogController.GetBlogByID)
 		public.GET("/users/:id/blogs", blogController.GetUserBlogs)   

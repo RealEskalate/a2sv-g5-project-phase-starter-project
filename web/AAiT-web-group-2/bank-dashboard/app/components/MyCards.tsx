@@ -41,7 +41,7 @@ const MyCards = () => {
   return (
     <div
       className=" flex flex-col justify-between items-center
-      text-white bg-my-card-bg-1 mx-auto w-my-card-width max-md:w-[231px] max-md:h-[170px] max-sm:w-[325px] h-[225px] 
+      text-white bg-my-card-bg-1 mx-auto w-my-card-width max-md:w-[260px] max-md:h-[170px] max-sm:w-[325px] h-[225px] 
       rounded-my-card-radius font-lat shadow-lg "
     >
       <div className="flex justify-between px-6 max-md:px-2 pt-6 max-md:pt-3 items-start w-full">

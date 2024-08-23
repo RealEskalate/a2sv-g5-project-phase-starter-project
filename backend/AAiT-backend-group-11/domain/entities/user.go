@@ -7,9 +7,9 @@ import (
 
 type User struct {
     ID            primitive.ObjectID `bson:"_id,omitempty"`
-    Username      string             `bson:"username"`
-    Email         string             `bson:"email"`
-    Password      string             `bson:"password"`
+    Username      string             `bson:"username" binding:"required"`
+    Email         string             `bson:"email" binding:"required"`
+    Password      string             `bson:"password" binding:"required"`
     Profile       Profile            `bson:"profile"`
     IsVerified    bool               `bson:"isVerified"`
     Role          string             `bson:"role"`

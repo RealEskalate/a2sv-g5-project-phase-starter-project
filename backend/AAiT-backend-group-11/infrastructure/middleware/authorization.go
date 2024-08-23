@@ -3,7 +3,6 @@ package middleware
 import (
 	"backend-starter-project/domain/interfaces"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"

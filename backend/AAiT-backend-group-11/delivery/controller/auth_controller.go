@@ -24,7 +24,8 @@ func NewAuthController(authService interfaces.AuthenticationService, passwordRes
 
 func (controller *AuthController) RegisterUser(c *gin.Context) {
 
-	var userRequest entities.User
+	var userRequest dto.UserCreateRequestDTO
+
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -48,7 +49,14 @@ func (controller *AuthController) RegisterUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"data": createdUser})
+	userResponse := dto.UserResponse{
+		Username: createdUser.Username,
+		Email:    createdUser.Email,
+		Role:     createdUser.Role,
+	}
+
+
+	c.JSON(http.StatusCreated, gin.H{"data": userResponse})
 }
 
 func (controller *AuthController) Login(c *gin.Context) {
@@ -63,6 +71,7 @@ func (controller *AuthController) Login(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.Header("Authorization", "Bearer "+accessToken)
 	c.JSON(200, gin.H{"refresh_token": refreshToken.Token})
 	c.JSON(200, gin.H{"message": "login successful"})
@@ -107,7 +116,9 @@ func (controller *AuthController) VerifyEmail(c *gin.Context) {
 
 
 func (controller *AuthController) RequestPasswordReset(c *gin.Context) {
+	
 	var forgetPasswordRequest entities.ForgetPasswordRequest
+
 	if err := c.ShouldBindJSON(&forgetPasswordRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -123,7 +134,9 @@ func (controller *AuthController) RequestPasswordReset(c *gin.Context) {
 }
 
 func (controller *AuthController) ResetPassword(c *gin.Context) {
+
 	var passwordReset entities.PasswordReset
+
 	if err := c.ShouldBindJSON(&passwordReset); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -139,6 +152,7 @@ func (controller *AuthController) ResetPassword(c *gin.Context) {
 }
 
 func (controller *AuthController) ResendOtp(c *gin.Context) {
+
     var request entities.ResendOTPRequest
 
     err := c.ShouldBind(&request)

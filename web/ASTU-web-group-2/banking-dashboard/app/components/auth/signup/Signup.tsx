@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import FormComponent from './FormComponent'; // Adjust the import path as necessary
 import YourFormComponent from './Preference';
+import SignIn from '../../signIn/SignIn';
 
 interface Preference {
   currency: string;
@@ -53,11 +54,14 @@ const Signup = () => {
   const [activeTab, setActiveTab] = useState<number>(0);
   const tabs = ['User Information', 'Preferences'];
   const [mainData, setMainData] = useState<MainData>(defaultMainData);
+  const [isSignInModalVisible, setIsSignInModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     console.log(mainData);
   }, [mainData]);
-
+  const toggleSignInModal = () => {
+    setIsSignInModalVisible(!isSignInModalVisible);
+  };
   return (
     <div className="flex flex-col items-center p-6">
       <h2 className="text-2xl font-bold text-[#083E9E] mb-6 text-[3rem]">Sign Up</h2>
@@ -92,13 +96,15 @@ const Signup = () => {
         )}
       </div>
       <div className="mt-6 text-center">
-        <p className="text-sm text-gray-600">
-          Already have an account?{' '}
-          <a href="/login" className="text-[#083E9E] font-semibold hover:underline">
+        <div className="text-sm text-gray-600 flex gap-[0.7rem]">
+         <p> Already have an account?</p>
+          <p onClick={toggleSignInModal} className="cursor-pointer text-[#083E9E] font-semibold hover:underline">
             Log In
-          </a>
-        </p>
+          </p>
+        </div>
       </div>
+      {isSignInModalVisible && <SignIn onClose={toggleSignInModal} />}
+
     </div>
   );
 };

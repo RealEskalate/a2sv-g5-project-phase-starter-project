@@ -21,20 +21,21 @@ const EditProfile = () => {
     console.log(data);
   };
   return (
-    <div className="flex flex-col  h-[610px] mt-[52px]">
-      <div className="flex flex-row w-fit h-fit gap-[53px]">
-        <div className="w-[132px] h-[130px] relative">
+    <div className="flex flex-col text-sm">
+      <div className="flex  gap-8 py-10">
+        <div className="relative">
           <img src="pubimg/pp.png" className="rounded-full" />
-          <button className="bg-[#1814F3] w-[30px] h-[30px] flex justify-center items-center rounded-full absolute bottom-[16px] right-0">
+          <button className="bg-[#1814F3] h-8 w-8 flex justify-center items-center rounded-full absolute right-0 top-20">
             <img src="pubimg/pencil.svg" />
           </button>
         </div>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-row w-fit h-fit gap-[53px]"
+          className="flex flex-col items-center gap-5"
         >
-          <div className="flex flex-col gap-6">
-            <div className="w-[418px] h-[80px]">
+          <div className="flex gap-8">
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col items-start justify-center gap-2 ">
               <label className="text-[#232323] ">Your Name</label>
               <input
                 id="name"
@@ -45,7 +46,7 @@ const EditProfile = () => {
                   },
                 })}
                 placeholder="Full Name"
-                className="w-[418px] h-[50px] rounded-[15px] mt-[11px] pl-5 border border-[#DFEAF2]  text-[#718EBF]"
+                className="w-[400px] rounded-xl p-3 border border-[#DFEAF2]  text-[#718EBF]"
               />
               <p
                 className="text-red-600 flex text-xs font-semibold gap-1
@@ -70,7 +71,7 @@ const EditProfile = () => {
                 {errors.Name?.message}{" "}
               </p>
             </div>
-            <div className="w-[418px] h-[80px]">
+            <div className="flex flex-col items-start justify-center gap-2">
               <label className="text-[#232323] ">Email</label>
               <input
                 placeholder="Email"
@@ -86,7 +87,7 @@ const EditProfile = () => {
                     message: "Invalid Email",
                   },
                 })}
-                className="w-[418px] h-[50px] rounded-[15px] mt-[11px] pl-5 border border-[#DFEAF2]  text-[#718EBF]"
+                className="w-[400px] rounded-xl p-3 border border-[#DFEAF2]  text-[#718EBF]"
               />
               <p
                 className="text-red-600 flex text-xs font-semibold gap-1
@@ -112,7 +113,7 @@ const EditProfile = () => {
               </p>
             </div>
 
-            <div className="w-[418px] h-[80px]">
+            <div className="flex flex-col items-start justify-center gap-2">
               <label className="text-[#232323] ">Date of Birth</label>
               <input
                 type="date"
@@ -122,7 +123,7 @@ const EditProfile = () => {
                     message: "Date of Birth is required",
                   },
                 })}
-                className="w-[418px] h-[50px] rounded-[15px] mt-[11px] px-5 border border-[#DFEAF2]  text-[#718EBF]"
+                className="w-[400px] rounded-xl p-3 border border-[#DFEAF2]  text-[#718EBF]"
               />
               <p
                 className="text-red-600 flex  text-xs font-semibold gap-1
@@ -147,7 +148,7 @@ const EditProfile = () => {
                 {errors.DOT?.message}{" "}
               </p>
             </div>
-            <div className="w-[418px] h-[80px]">
+            <div className="flex flex-col items-start justify-center gap-2">
               <label className="text-[#232323] ">Permanent Address</label>
               <input
                 type="text"
@@ -158,7 +159,7 @@ const EditProfile = () => {
                     message: "Address is required",
                   },
                 })}
-                className="w-[418px] h-[50px] rounded-[15px] mt-[11px] pl-5 border border-[#DFEAF2]  text-[#718EBF]"
+                className="w-[400px] rounded-xl p-3 border border-[#DFEAF2]  text-[#718EBF]"
               />
               <p
                 className="text-red-600 flex text-xs font-semibold gap-1
@@ -184,7 +185,7 @@ const EditProfile = () => {
               </p>
             </div>
 
-            <div className="w-[418px] h-[80px]">
+            <div className="flex flex-col items-start justify-center gap-2">
               <label className="text-[#232323] ">Postal Code</label>
               <input
                 type="text"
@@ -195,7 +196,7 @@ const EditProfile = () => {
                     message: "Postal Code is required",
                   },
                 })}
-                className="w-[418px] h-[50px] rounded-[15px] mt-[11px] pl-5 border border-[#DFEAF2]  text-[#718EBF]"
+                className="w-[400px] rounded-xl p-3 border border-[#DFEAF2]  text-[#718EBF]"
               />
               <p
                 className="text-red-600 flex text-xs font-semibold gap-1
@@ -222,8 +223,8 @@ const EditProfile = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-6 -ml-6">
-            <div className="w-[418px] h-[80px]">
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col items-start justify-center gap-2">
               <label className="text-[#232323] ">User Name</label>
               <input
                 type="text"
@@ -234,7 +235,7 @@ const EditProfile = () => {
                   },
                 })}
                 placeholder="Name"
-                className="w-[418px] h-[50px] rounded-[15px] mt-[11px] pl-5 border border-[#DFEAF2]  text-[#718EBF]"
+                className="w-[400px] rounded-xl p-3 border border-[#DFEAF2]  text-[#718EBF]"
               />
               <p
                 className="text-red-600 flex text-xs  font-semibold gap-1
@@ -259,7 +260,7 @@ const EditProfile = () => {
                 {errors.UN?.message}{" "}
               </p>
             </div>
-            <div className="w-[418px] h-[80px]">
+            <div className="flex flex-col items-start justify-center gap-2">
               <label className="text-[#232323] ">Password</label>
               <input
                 type="password"
@@ -274,7 +275,7 @@ const EditProfile = () => {
                   },
                 })}
                 placeholder="password"
-                className="w-[418px] h-[50px] rounded-[15px] mt-[11px] pl-5 border border-[#DFEAF2]  text-[#718EBF]"
+                className="w-[400px] rounded-xl p-3 border border-[#DFEAF2]  text-[#718EBF]"
               />
               <p
                 className="text-red-600 flex text-xs font-semibold gap-1
@@ -300,7 +301,7 @@ const EditProfile = () => {
               </p>
             </div>
 
-            <div className="w-[418px] h-[80px]">
+            <div className="flex flex-col items-start justify-center gap-2">
               <label className="text-[#232323] ">Present Address</label>
               <input
                 type="text"
@@ -311,7 +312,7 @@ const EditProfile = () => {
                     message: "Address is required",
                   },
                 })}
-                className="w-[418px] h-[50px] rounded-[15px] mt-[11px] px-5 border border-[#DFEAF2]  text-[#718EBF]"
+                className="w-[400px] rounded-xl p-3 border border-[#DFEAF2]  text-[#718EBF]"
               />
               <p
                 className="text-red-600 flex text-xs font-semibold gap-1
@@ -336,7 +337,7 @@ const EditProfile = () => {
                 {errors.PresentAddress?.message}{" "}
               </p>
             </div>
-            <div className="w-[418px] h-[80px]">
+            <div className="flex flex-col items-start justify-center gap-2">
               <label className="text-[#232323] ">City</label>
               <input
                 type="text"
@@ -347,7 +348,7 @@ const EditProfile = () => {
                   },
                 })}
                 placeholder="City"
-                className="w-[418px] h-[50px] rounded-[15px] mt-[11px] pl-5 border border-[#DFEAF2]  text-[#718EBF]"
+                className="w-[400px] rounded-xl p-3 border border-[#DFEAF2]  text-[#718EBF]"
               />
               <p
                 className="text-red-600 flex text-xs font-semibold gap-1
@@ -373,7 +374,7 @@ const EditProfile = () => {
               </p>
             </div>
 
-            <div className="w-[418px] h-[80px]">
+            <div className="flex flex-col items-start justify-center gap-2">
               <label className="text-[#232323] ">Country</label>
               <input
                 type="text"
@@ -384,7 +385,7 @@ const EditProfile = () => {
                   },
                 })}
                 placeholder="Country"
-                className="w-[418px] h-[50px] rounded-[15px] mt-[11px] pl-5 border border-[#DFEAF2]  text-[#718EBF]"
+                className="w-[400px] rounded-xl p-3 border border-[#DFEAF2]  text-[#718EBF]"
               />
               <p
                 className="text-red-600 flex text-xs font-semibold gap-1
@@ -409,15 +410,18 @@ const EditProfile = () => {
                 {errors.Country?.message}{" "}
               </p>
             </div>
-            <div className="flex w-full justify-end mt-5 px-[30px] ">
+          </div>
+          </div>
+
+          <div className="flex w-full justify-end mt-5 px-[30px] ">
               <button
                 type="submit"
-                className=" w-[190px] h-[50px] text-white py-[14px] px-[74px] rounded-[15px] bg-[#1814F3]"
+                className="px-10 py-3 text-white rounded-xl bg-[#1814F3]"
               >
                 Save
               </button>
             </div>
-          </div>
+
         </form>
       </div>
     </div>

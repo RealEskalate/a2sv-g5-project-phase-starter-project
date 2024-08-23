@@ -8,34 +8,32 @@ interface LoanCardProps {
 
 const ServiceList: React.FC<LoanCardProps> = ({ imageSrc, title, bgColor }) => {
   return (
-    <div className="flex justify-center items-center gap-[20px] p-[15px] rounded-2xl bg-white">
+    <div className="flex justify-around items-center gap-8 p-[15px] rounded-2xl bg-white">
       <div
         style={{ backgroundColor: bgColor }}
-        className={` w-[60px] h-[60px] rounded-3xl flex justify-center p-[18px]`}
+        className={`rounded-full flex justify-center p-4`}
       >
         <img src={imageSrc} />
       </div>
-      <div className=" gap-[73px] w-[995px] h-[46px] flex flex-row items-center ">
-        <div className="flex flex-col gap-[1px]">
+        <div className="flex flex-col gap-1">
           <div className="font-semibold text-sm">{title}</div>
           <div className="text-sm text-[#718EBF]">It is a long established</div>
         </div>
-        <div className="flex flex-col  gap-[1px]">
+        <div className="flex flex-col  gap-1">
           <div className="font-semibold">Lorem Ipsum</div>
           <div className="text-sm text-[#718EBF]">Many publishing</div>
         </div>
-        <div className="flex flex-col  gap-[1px]">
+        <div className="flex flex-col  gap-1">
           <div className="font-semibold">Lorem Ipsum</div>
           <div className="text-sm text-[#718EBF]">Many publishing</div>
         </div>
-        <div className="flex flex-col gap-[1px]">
+        <div className="flex flex-col gap-1">
           <div className="font-semibold">Lorem Ipsum</div>
           <div className="text-sm text-[#718EBF]">Many publishing</div>
         </div>
-        <button className="border text-sm w-[150px] h-[35px] rounded-full  border-[#718EBF] text-[#718EBF] px-[31px]">
+        <button className="border text-sm rounded-full border-[#718EBF] text-[#718EBF] px-4 py-2">
           View Details
         </button>
-      </div>
     </div>
   );
 };

@@ -4,13 +4,13 @@ import {
   CompanyResponse,
   CompaniesResponse,
   TrendingCompaniesResponse,
-  Company
+  Company,
 } from "../types/companies";
 
 export const companiesApi = createApi({
   reducerPath: "companiesApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-o9tl.onrender.com",
+    baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
     prepareHeaders: async (headers) => {
       const session = await getSession();
       const token = session?.accessToken;
@@ -26,7 +26,10 @@ export const companiesApi = createApi({
       query: (id) => `/companies/${id}`,
     }),
 
-    updateCompany: builder.mutation<CompanyResponse, { id: string; company: Omit<Company, 'id'> }>({
+    updateCompany: builder.mutation<
+      CompanyResponse,
+      { id: string; company: Omit<Company, "id"> }
+    >({
       query: ({ id, company }) => ({
         url: `/companies/${id}`,
         method: "PUT",
@@ -37,18 +40,24 @@ export const companiesApi = createApi({
       }),
     }),
 
-    deleteCompany: builder.mutation<{ success: boolean; message: string }, string>({
+    deleteCompany: builder.mutation<
+      { success: boolean; message: string },
+      string
+    >({
       query: (id) => ({
         url: `/companies/${id}`,
         method: "DELETE",
       }),
     }),
 
-    getAllCompanies: builder.query<CompaniesResponse, { size: number; page: number }>({
+    getAllCompanies: builder.query<
+      CompaniesResponse,
+      { size: number; page: number }
+    >({
       query: ({ size, page }) => `/companies?size=${size}&page=${page}`,
     }),
 
-    createCompany: builder.mutation<CompanyResponse, Omit<Company, 'id'>>({
+    createCompany: builder.mutation<CompanyResponse, Omit<Company, "id">>({
       query: (company) => ({
         url: "/companies",
         method: "POST",

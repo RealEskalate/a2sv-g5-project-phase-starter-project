@@ -159,7 +159,7 @@ const HomePage: React.FC = () => {
           <div className="h-52 bg-white rounded-lg">
             <LineChart />
           </div>
-          <Loading />
+          {/* <Loading /> */}
         </div>
       </div>
     </div>

@@ -6,6 +6,8 @@ const API_URL_expense =
   "https://bank-dashboard-o9tl.onrender.com/transactions/expenses";
 const API_URL_income =
   "https://bank-dashboard-o9tl.onrender.com/transactions/incomes";
+const API_URL_quick =
+  "https://bank-dashboard-o9tl.onrender.com/transactions/quick-transfers";
 interface TransactionType {
   transactionId: string;
   type: string;
@@ -93,7 +95,7 @@ class TransactionService {
   public static getQuickTransfer(accessToken?: string): Promise<quickType[]> {
     return handleRequest(
       "GET",
-      `${API_URL_quick}?number=6`,
+      `${API_URL_quick}?number=4`,
       undefined,
       accessToken
     );

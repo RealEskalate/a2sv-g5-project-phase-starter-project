@@ -46,7 +46,7 @@ class CardService {
   public static getAllCards(accessToken?: string): Promise<Card[]> {
     return handleRequest(
       "GET",
-      `${API_URL}?page=1&size=3`,
+      `${API_URL}?page=0&size=3`,
       undefined,
       accessToken
     );

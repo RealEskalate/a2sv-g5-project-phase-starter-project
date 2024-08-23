@@ -69,9 +69,8 @@ const ModalService = ({ isOpen, onClose }: props) => {
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const formData = JSON.stringify(data);
     try {
-      const response = await axios.post(
-        "https://bank-dashboard-o9tl.onrender.com/bank-services",
-        formData,
+      const response = await axios.get(
+        `https://bank-dashboard-o9tl.onrender.com/bank-services?page=0&size=5`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

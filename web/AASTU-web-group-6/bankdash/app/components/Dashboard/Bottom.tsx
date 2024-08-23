@@ -53,9 +53,11 @@ const Bottom = () => {
   const accessToken = session?.accessToken as string;
 
   useEffect(() => {
+    
     const fetchData = async () => {
       try {
         const data = await TransactionService.getQuickTransfer(accessToken);
+
         setQuickData(data);
         console.log(quickData, "quick");
       } catch (error) {
@@ -65,7 +67,7 @@ const Bottom = () => {
     };
 
     fetchData();
-  }, []);
+  }, [accessToken]);
 
   return (
     <section className="Botom flex gap-6 xs:flex-col lg:flex-row ">
@@ -116,7 +118,7 @@ const Bottom = () => {
                 className={`flex items-center text-base text-[#718EBF] bg-[#EDF1F7] dark:bg-gray-700 dark:text-gray-400 rounded-[50px] py-1 pl-6 grow justify-end  
                   `}
               >
-                <input className="flex w-full grow bg-[#EDF1F7]" onChange={(e) => setAmount(Number(e.target.value))} ></input>
+                <input className="flex w-full grow bg-[#EDF1F7]  focus:outline-none" onChange={(e) => setAmount(Number(e.target.value))} ></input>
                 <button
                   onClick={handleModalToggle}
                   className="flex gap-2 w-full grow p-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-[50px] text-sm px-6  text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 text-6 items-center justify-center"
@@ -143,6 +145,7 @@ const Bottom = () => {
                       onClose={handleModalToggle}
                       userName = {username}
                       amount = {amount}
+                      accessToken = {accessToken}
                     />
                   </div>
                 </div>

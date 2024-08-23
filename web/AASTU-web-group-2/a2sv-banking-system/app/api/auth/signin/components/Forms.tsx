@@ -31,16 +31,16 @@ const Contact = () => {
   }
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center min-h-screen dark:bg-[#1e1e2e]">
       <div className="flex flex-col items-center justify-center w-1/2 gap-10">
         <div className="flex justify-center">
-          <span className="text-4xl mt-4 font-black text-[#202430]">
+          <span className="text-4xl mt-4 font-black text-[#202430] dark:text-[#cdd6f4]">
             Welcome Back,
           </span>
         </div>
         <div className="flex justify-between w-2/3">
-          <span className="border-b border-gray-300 text-gray-300 w-1/3"></span>
-          <span className="border-b border-gray-300 text-gray-300 w-1/3"></span>
+          <span className="border-b border-gray-300 text-gray-300 w-1/3 dark:text-gray-600"></span>
+          <span className="border-b border-gray-300 text-gray-300 w-1/3 dark:text-gray-600"></span>
         </div>
 
         <div className="card-body w-2/3">
@@ -52,7 +52,7 @@ const Contact = () => {
                 </label>
                 <input
                   type="text"
-                  className="border border-gray-400 rounded-lg py-2 px-5 w-full"
+                  className="border border-gray-400 rounded-lg py-2 px-5 w-full dark:border-gray-600 dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
                   id="username"
                   placeholder="john@example.com"
                   {...register("username")}
@@ -73,7 +73,7 @@ const Contact = () => {
                 </label>
                 <input
                   type="password"
-                  className="border border-gray-400 rounded-lg py-2 px-5 w-full"
+                  className="border border-gray-400 rounded-lg py-2 px-5 w-full dark:border-gray-600 dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
                   id="password"
                   placeholder="********"
                   {...register("password", {
@@ -92,7 +92,7 @@ const Contact = () => {
               <div className="">
                 <button
                   type="submit"
-                  className="border border-gray-400 bg-[#4640DE] hover:bg-[#2721dd] text-white font-bold rounded-3xl py-2 px-5 w-full"
+                  className="border border-gray-400 bg-[#4640DE] hover:bg-[#2721dd] text-white font-bold rounded-3xl py-2 px-5 w-full dark:border-gray-600 dark:bg-[#5857ED] dark:hover:bg-[#4640DE] dark:text-white"
                 >
                   Login
                 </button>

@@ -4,6 +4,7 @@ export interface Card {
     cardHolder: string;
     expiryDate: string;
     cardType: string;
+    semiCardNumber: string 
   }
   
 

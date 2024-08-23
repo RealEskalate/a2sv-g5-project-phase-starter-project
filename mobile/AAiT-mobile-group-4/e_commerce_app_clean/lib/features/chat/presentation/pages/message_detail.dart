@@ -15,19 +15,6 @@ class _MessageDetailState extends State<MessageDetail> {
   late Directory appDirectory;
   String? path;
 
-  // @override
-  // void initState() {
-  //   _getDir();
-  //   super.initState();
-  // }
-
-  // void _getDir() async {
-  //   appDirectory = await getApplicationDocumentsDirectory();
-  //   path = '${appDirectory.path}/recording.m4a';
-  //   isLoading = false;
-  //   setState(() {});
-  // }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -41,8 +28,7 @@ class _MessageDetailState extends State<MessageDetail> {
           child: ListView.builder(
             itemCount: 20,
             itemBuilder: (context, index) {
-              return withTime(
-                appDirectory: appDirectory,
+              return WithTime(
                 text: 'Have a great working week!!', 
                 isCurrentUser: index % 2 != 0 ? true : false, 
                 type: 'text',

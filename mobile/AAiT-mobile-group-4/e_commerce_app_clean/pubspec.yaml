@@ -50,6 +50,10 @@ dependencies:
   audio_waveforms: ^1.0.5
   file_picker: ^8.1.2
   path_provider: ^2.1.4
+  font_awesome_flutter: ^10.7.0
+  auto_size_text: ^3.0.0
+
+  
 dev_dependencies:
   test: ^1.16.0
   mockito: ^5.0.16

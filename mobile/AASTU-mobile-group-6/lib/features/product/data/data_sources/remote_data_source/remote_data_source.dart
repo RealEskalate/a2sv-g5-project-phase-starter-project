@@ -45,6 +45,7 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
     if (response.statusCode == 200) {
       var ans = jsonDecode(response.body);
       print(ans);
+      print(json.decode(ans['data']));
       return ProductModel.fromJson(json.decode(ans['data']));
 
     } else {
@@ -64,8 +65,9 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
     print(response);
     if (response.statusCode == 200) {
       var ans = jsonDecode(response.body)['data'];
-      var user_data = UserModel(name: ans['name'], email: ans['email'], password: 'password');
-      print(user_data);
+      var user_data = UserModel(id: ans['_id'], name: ans['name'], email: ans['email'], password: 'password');
+
+      print(user_data.id);
 
       return user_data;
 

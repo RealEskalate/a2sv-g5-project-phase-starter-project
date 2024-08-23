@@ -228,6 +228,7 @@ class _UpdatePageState extends State<UpdatePage> {
                                       ),
                                       onPressed: () {
                                         final updateModel = ProductModel(
+                                            sellerId: widget.product.sellerId,
                                             id: widget.product.id,
                                             name: name_input.text,
                                             description: description_input.text,

@@ -9,9 +9,9 @@ import 'package:image_picker/image_picker.dart';
 class ProductModel extends ProductEntity_local {
   const ProductModel({
     required String id,
-      required String name, required String description, required num price, required String imagePath,
+      required String name, required String description, required num price, required String imagePath,required String sellerId,
       
-    }) : super(id:id,name:  name, description: description, price: price, imagePath: imagePath);
+    }) : super(id:id,name:  name, description: description, price: price, imagePath: imagePath, sellerId: sellerId);
 
     
 
@@ -23,6 +23,7 @@ class ProductModel extends ProductEntity_local {
       description: json['description'],
       price: (json['price']).toDouble(),
       imagePath: json['imageUrl'] ?? '',
+      sellerId: json['seller']["_id"],
     );
   }
 

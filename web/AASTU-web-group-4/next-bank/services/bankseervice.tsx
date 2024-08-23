@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://bank-dashboard-o9tl.onrender.com";
+const API_BASE_URL = "https://web-team-g4.onrender.com/";
 const token =
   "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJheXV1IiwiaWF0IjoxNzI0MTQ5MzgyLCJleHAiOjE3MjQyMzU3ODJ9.ho0P9ZYtpOiDLT810v9r_YAMUwb865p4O4iXIWu0H5ujqjdxbLI_K6lH4m_YOxPm";
 // GET /bank-services/{id}

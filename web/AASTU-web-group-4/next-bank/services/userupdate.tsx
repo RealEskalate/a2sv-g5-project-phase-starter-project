@@ -6,7 +6,7 @@ const token = Cookie.get("accessToken"); // Replace with the actual token
 export const updateUserDetails = async (userData: any) => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-o9tl.onrender.com/user/update",
+      "https://web-team-g4.onrender.com//user/update",
       {
         method: "PUT",
         headers: {
@@ -33,7 +33,7 @@ export const updateUserDetails = async (userData: any) => {
 export const updatePreference = async (userData: any) => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-o9tl.onrender.com/user/update-preference",
+      "https://web-team-g4.onrender.com//user/update-preference",
       {
         method: "PUT",
         headers: {
@@ -59,7 +59,7 @@ export const updatePreference = async (userData: any) => {
 export const fetchUserDetails = async (userId: string) => {
   try {
     const response = await fetch(
-      `https://bank-dashboard-o9tl.onrender.com/user/{username}`,
+      `https://web-team-g4.onrender.com//user/{username}`,
       {
         method: "GET",
         headers: {
@@ -83,7 +83,7 @@ export const fetchUserDetails = async (userId: string) => {
 export const randominvestmentdata = async (userId: string) => {
   try {
     const response = await fetch(
-      `https://bank-dashboard-o9tl.onrender.com/user/random-investment-data`,
+      `https://web-team-g4.onrender.com//user/random-investment-data`,
       {
         method: "GET",
         headers: {
@@ -107,7 +107,7 @@ export const randominvestmentdata = async (userId: string) => {
 export const currentuser = async (userId: string) => {
   try {
     const response = await fetch(
-      `https://bank-dashboard-o9tl.onrender.com/user/current`,
+      `https://web-team-g4.onrender.com//user/current`,
       {
         method: "GET",
         headers: {

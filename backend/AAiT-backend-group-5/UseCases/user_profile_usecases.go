@@ -70,6 +70,7 @@ func (uc *userProfileUpdateUsecase) UpdateUserProfile(ctx context.Context, userI
 		updatedUser.ImageKey = uploadResult.PublicID
 	}
 
+	updatedUser.Username = user.Username
 	updatedUser.Name = user.Name
 	updatedUser.Bio = user.Bio
 	updatedUser.PhoneNumber = user.PhoneNumber

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"mime/multipart"
 	"net/http"
 
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
@@ -28,25 +28,15 @@ func (userProfileController *UserProfileController) ProfileUpdate(ctx *gin.Conte
 	// get the file from the form field
 	file, err := ctx.FormFile("profileImage")
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid file"})
-		return
+		// assign an empty file to 'file'
+		file = &multipart.FileHeader{}
 	}
-	fmt.Println("111111111111111")
-	fmt.Println(updatedUser)
-
-	// err = ctx.ShouldBind(&updatedUser)
-	// if err != nil {
-	// 	ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "invalid request"})
-	// 	return
-	// }
 
 	updatedUser.Username = ctx.PostForm("user_name")
 	updatedUser.Name = ctx.PostForm("name")
 	updatedUser.PhoneNumber = ctx.PostForm("phone_number")
 	updatedUser.Password = ctx.PostForm("password")
 	updatedUser.Bio = ctx.PostForm("bio")
-
-	fmt.Println("22222222222222222")
 
 	e := userProfileController.UserProfileUC.UpdateUserProfile(ctx, userID, &updatedUser, file)
 	if e != nil {

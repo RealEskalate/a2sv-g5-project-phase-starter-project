@@ -31,17 +31,23 @@ type Env struct {
 	REDIS_DB_PASSWORD string `mapstructure:"REDIS_DB_PASSWORD"`
 	REDIS_DB          int    `mapstructure:"REDIS_DB"`
 
-	OAUTH_CLIENT_ID     string `mapstructure:"OAUTH_CLIENT_ID"`
-	OAUTH_CLIENT_SECRET string `mapstructure:"OAUTH_CLIENT_SECRET"`
-	OAUTH_REDIRECT_URL  string `mapstructure:"OAUTH_REDIRECT_URL"`
-	GOOGEL_CLIENT_ID    string `mapstructure:"GOOGEL_CLIENT_ID"`
+	OAUTH_CLIENT_ID       string `mapstructure:"OAUTH_CLIENT_ID"`
+	OAUTH_CLIENT_SECRET   string `mapstructure:"OAUTH_CLIENT_SECRET"`
+	OAUTH_REDIRECT_URL    string `mapstructure:"OAUTH_REDIRECT_URL"`
+	GOOGEL_CLIENT_ID      string `mapstructure:"GOOGEL_CLIENT_ID"`
 	GOOGLE_TOKEN_INFO_URL string `mapstructure:"GOOGLE_TOKEN_INFO_URL"`
 }
 
 func NewEnv() *Env {
-	projectRoot := "/home/mercury/Desktop/a2sv_starter_project/a2sv-g5-project-phase-starter-project/backend/AAiT-backend-group-5"
+	projectRoot, err := filepath.Abs(filepath.Join(""))
 
+	if err != nil {
+		log.Fatalf("Error getting project root path: %v", err)
+	}
+
+	// Set the path to the .env file
 	viper.SetConfigFile(filepath.Join(projectRoot, ".env"))
+
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {

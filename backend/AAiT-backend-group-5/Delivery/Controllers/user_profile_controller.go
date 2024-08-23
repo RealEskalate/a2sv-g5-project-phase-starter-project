@@ -38,3 +38,25 @@ func (userProfileController *UserProfileController) ProfileUpdate(ctx *gin.Conte
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "user profile successfully updated"})
 }
+
+func (userProfileController *UserProfileController) ProfileGet(ctx *gin.Context) {
+	userID := ctx.GetString("id")
+	user, e := userProfileController.UserProfileUC.GetUserProfile(ctx, userID)
+	if e != nil {
+		ctx.IndentedJSON(e.Code, gin.H{"error": e.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": user})
+}
+
+func (userProfileController UserProfileController) ProfileDelete(ctx *gin.Context) {
+	userID := ctx.GetString("id")
+	e := userProfileController.UserProfileUC.DeleteUserProfile(ctx, userID)
+	if e != nil {
+		ctx.IndentedJSON(e.Code, gin.H{"error": e.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "user profile successfully deleted"})
+}

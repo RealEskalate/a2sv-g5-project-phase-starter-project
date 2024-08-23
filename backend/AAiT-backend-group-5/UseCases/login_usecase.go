@@ -34,7 +34,7 @@ func (uc *loginUsecase) LoginUser(ctx context.Context, userReqest dtos.LoginRequ
 	if err != nil {
 		return nil, err
 	}
-
+	
 	if user.Password == "" {
 		return nil, models.BadRequest("It looks like you have not set your password yet, sign in with google")
 	}

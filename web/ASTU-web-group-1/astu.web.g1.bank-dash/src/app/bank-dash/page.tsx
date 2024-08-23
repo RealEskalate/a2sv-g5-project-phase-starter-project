@@ -1,47 +1,55 @@
-import BalanceHistory from '@/components/Charts/BalanceHistory';
-import DebiteAndCredit from '@/components/Charts/DebiteAndCredit';
-import ExpenseStatistics from '@/components/Charts/ExpenseStatistics';
-import WeeklyActivity from '@/components/Charts/WeeklyActivity';
-import MyCard from '@/components/MyCard/MyCard';
-import QuickTransfer from '@/components/QuickTransfer/QuickTransfer';
-import RecentTransaction from '@/components/RecentTransaction/RecentTransaction';
-import { Plus } from 'lucide-react';
-import StoreProvider from '@/providers/StoreProvider';
-import TestNaol from '@/components/TestNaol';
+import BalanceHistory from "@/components/Charts/BalanceHistory";
+import DebiteAndCredit from "@/components/Charts/DebiteAndCredit";
+import ExpenseStatistics from "@/components/Charts/ExpenseStatistics";
+import WeeklyActivity from "@/components/Charts/WeeklyActivity";
+import MyCard from "@/components/MyCard/MyCard";
+import QuickTransfer from "@/components/QuickTransfer/QuickTransfer";
+import RecentTransaction from "@/components/RecentTransaction/RecentTransaction";
+import { Plus } from "lucide-react";
+import StoreProvider from "@/providers/StoreProvider";
+import TestNaol from "@/components/TestNaol";
+import RecentTransactionDashSkeleton from "@/components/AllSkeletons/RecentTransaction-DashSkelton/RecentTransactionDashSkelton";
+import WeeklyActivityChartSkeleton from "@/components/AllSkeletons/weeklyActivityChartSkeleton/WeeklyActvityChartSkeleton";
+import ExpenseStatisticsSkeleton from "@/components/AllSkeletons/ExpenseStatistics/ExpenseStatisticsSkeleton";
+import QuickTransferSkeleton from "@/components/AllSkeletons/QuickTransferSkeleton/QuickTransferSkeleton";
 
 export default function Home() {
   return (
     <>
-      <div className='w-full lg:flex '>
-        <div className='lg:w-2/3 md:pr-3 xl:pr-5 flex-shrink'>
-          <div className='w-full'>
-            <div className='flex justify-between'>
-              <p className='text-[#333B69] pb-3 font-semibold'>My Card</p>
-              <p className='text-[#333B69] pb-3 font-semibold'>See All</p>
+      <div className="w-full lg:flex ">
+        <div className="lg:w-2/3 md:pr-3 xl:pr-5 flex-shrink">
+          <div className="w-full">
+            <div className="flex justify-between">
+              <p className="text-[#333B69] pb-3 font-semibold">My Card</p>
+              <p className="text-[#333B69] pb-3 font-semibold">See All</p>
             </div>
-            <div className='flex  overflow-x-auto space-x-2'>
+            <div className="flex  overflow-x-auto space-x-2">
               <StoreProvider>
                 <MyCard />
                 <MyCard />
               </StoreProvider>
-              <div className='w-[295px] h-[175px] bg-gray-200 rounded-3xl justify-center items-center flex flex-shrink-0'>
+              <div className="w-[295px] h-[175px] bg-gray-200 rounded-3xl justify-center items-center flex flex-shrink-0">
                 <Plus size={32} />
               </div>
             </div>
           </div>
         </div>
-        <div className='lg:w-1/3 w-full'>
-          <RecentTransaction />
+        <div className="lg:w-1/3 w-full">
+          {/* <RecentTransaction /> */}
+          <RecentTransactionDashSkeleton />
         </div>
       </div>
-      <div className='md:flex my-5'>
-        <WeeklyActivity />
+      <div className="md:flex my-5">
+        {/* <WeeklyActivity /> */}
+        <WeeklyActivityChartSkeleton />
         {/* <DebiteAndCredit /> */}
-        <ExpenseStatistics />
+        <ExpenseStatisticsSkeleton />
+        {/* <ExpenseStatistics /> */}
       </div>
-      <div className='md:flex justify-between'>
-        <div className='w-5/12 pe-6'>
-          <QuickTransfer />
+      <div className="md:flex justify-between">
+        <div className="w-5/12 pe-6">
+          {/* <QuickTransfer /> */}
+          <QuickTransferSkeleton />
         </div>
         <BalanceHistory />
       </div>

@@ -1,0 +1,12 @@
+{
+    "success": true,
+    "message": "",
+    "data": {
+        "id": "66b74bd081afd3f58f957e21",
+        "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Yjc0YmQwODFhZmQzZjU4Zjk1N2UyMSIsInJvbGUiOiJkZXYiLCJwcm9maWxlU3RhdHVzIjoiaW5jb21wbGV0ZSIsImV4cCI6MTcyMzY0ODYzMH0.b1e9puAlh0QIx3vjc2tglVTG-UCzBsso8mevtZ7dgCY",
+        
+        "name": "samuel",
+        "email": "samuel.tolossa@a2sv.org"
+       
+    }
+}

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Example from "../components/Chart/Barchart";
+import {BarChartComponent} from "../components/Chart/Barchart";
 import CreditCard from "../components/CreditCard";
 import Image from "next/image";
 import {
@@ -182,7 +182,7 @@ const Page: React.FC = () => {
           <span className="text-left font-inter text-sm font-normal leading-4 px-6 py-2">
             $7,560 Debited & $5,420 Credited in this Week
           </span>
-          <Example />
+          <BarChartComponent />
         </div>
 
         <div className="rounded-3xl bg-white shadow-md p-6">

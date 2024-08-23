@@ -14,7 +14,7 @@ class StoryData {
 }
 
 List<StoryData> stories = [
-  StoryData(storyImage: 'assets/story_1.png', storyTitle: 'Antony', storyColor: Colors.blue),
+  StoryData(storyImage: 'assets/story_1.png', storyTitle: 'My status', storyColor: const Color.fromARGB(255, 233, 148, 216)),
   StoryData(storyImage: 'assets/story_2.png', storyTitle: 'Beth', storyColor: Colors.green),
   StoryData(storyImage: 'assets/story_3.png', storyTitle: 'Bereket', storyColor: Colors.brown),
   StoryData(storyImage: 'assets/story_3.png', storyTitle: 'Imran', storyColor: Colors.redAccent),

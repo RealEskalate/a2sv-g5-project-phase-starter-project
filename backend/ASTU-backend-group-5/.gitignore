@@ -1,0 +1,12 @@
+.env
+tmp
+.air.toml
+venv
+venv/
+.venv
+mokery.yml
+.envf
+env.yaml
+
+uploads
+.env

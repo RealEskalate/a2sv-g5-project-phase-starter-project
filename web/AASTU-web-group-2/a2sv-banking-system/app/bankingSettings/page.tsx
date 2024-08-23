@@ -40,32 +40,24 @@ const SettingsPage: React.FC = () => {
     const fetchSessionAndUser = async () => {
       setLoading(true);
 
-      try {
-        const accessToken = await Refresh();
-        const sessionData = (await getSession()) as SessionDataType | null;
+      const sessionData = (await getSession()) as SessionDataType | null;
 
-        if (!sessionData?.user) {
-          router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
-          return;
-        }
-
+      if (sessionData && sessionData.user) {
         setSession(sessionData);
-
-        if (accessToken) {
-          const userData = await getCurrentUser(accessToken);
+        try {
+          const userData = await getCurrentUser(sessionData.user.access_token);
           setUser(userData);
-          setNotifications(userData.preference);
-        } else {
-          router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
+          setNotifications(userData.preference); 
+        } catch (error) {
+          console.error("Error fetching user data:", error);
         }
-      } catch (error) {
-        console.error("Error fetching session or user data:", error);
+      } else {
         router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
       }
-
       setLoading(false);
     };
 
+    
     fetchSessionAndUser();
   }, [router]);
 

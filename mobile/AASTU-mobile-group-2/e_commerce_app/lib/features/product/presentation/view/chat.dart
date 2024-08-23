@@ -17,6 +17,7 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
   final TextEditingController _controller = TextEditingController();
+   final ScrollController _scrollController = ScrollController();
   final List<Message> messages = [
     Message(
       type: 'text',
@@ -24,7 +25,7 @@ class _ChatState extends State<Chat> {
       isUser: true,
       name: 'User',
       date: '8/23/2024',
-      profileImage: File('assets/smile.pngg'),
+      profileImage: File('assets/smile.png'),
     ),
     Message(
       type: 'image',
@@ -76,8 +77,20 @@ class _ChatState extends State<Chat> {
           date: "date"));
       selectedImage = pickedImage.path;
     });
+    _scroll();
   }
-
+  void _scroll() {
+     FocusScope.of(context).unfocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
 // Duration _getDuration(String filePath) async{
 //    return await _audioUtils.getAudioDuration(filePath) ?? Duration.zero;
 //   }
@@ -131,6 +144,7 @@ class _ChatState extends State<Chat> {
         date: "date"));
 
     // print(getFileDuration(_filePath!));
+    _scroll();
     setState(() {
       _isRecording = false;
     
@@ -171,15 +185,17 @@ class _ChatState extends State<Chat> {
 
   void _sendMessage() {
     if (_controller.text.isNotEmpty) {
+      // FocusScope.of(context).unfocus();
       setState(() {
         messages.add(Message(
-            type: "type",
-            content: "content",
+            type: "text",
+            content: _controller.text,
             isUser: true,
             name: "name",
             date: "date"));
         _controller.clear();
       });
+      _scroll();
     }
   }
 
@@ -279,6 +295,7 @@ class _ChatState extends State<Chat> {
 
           Expanded(
             child: ListView.builder(
+              controller: _scrollController,
               itemCount: messages.length,
               itemBuilder: (context, index) {
                 final message = messages[index];
@@ -404,6 +421,7 @@ class _ChatState extends State<Chat> {
           child: Image.file(File(message.content)),
         );
       case 'voice':
+      // stop here
         return BubbleNormalAudio(
           // constraints: BoxConstraints(maxWidth: screenWidth * 0.75),
           color: Color(0xFFE8E8EE),

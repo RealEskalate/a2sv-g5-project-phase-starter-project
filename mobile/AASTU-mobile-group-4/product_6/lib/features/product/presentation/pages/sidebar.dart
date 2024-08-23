@@ -8,6 +8,7 @@ import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../auth/presentation/pages/login_page.dart';
+import '../../../chat/presentation/pages/chat_screen.dart';
 import 'add_page.dart';
 import 'search.dart';
 
@@ -95,6 +96,15 @@ class _SideBarState extends State<SideBar> {
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return SearchPage();
+              }));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.chat),
+            title: const Text('Chat'),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return ChatScreen();
               }));
             },
           ),

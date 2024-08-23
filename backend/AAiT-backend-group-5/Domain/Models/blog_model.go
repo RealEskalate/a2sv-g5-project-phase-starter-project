@@ -10,7 +10,6 @@ const (
 
 )
 
-// Blog struct represents a blog post in the system
 type Blog struct {
 	ID        string    `bson:"_id,omitempty" json:"id"`
 	Title     string    `bson:"title" json:"title" validate:"required"`

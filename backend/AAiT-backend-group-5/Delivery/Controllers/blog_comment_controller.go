@@ -37,6 +37,11 @@ func (bcc *BlogCommentController) AddCommentController(ctx *gin.Context) {
 		return
 	}
 
+	if err := comment.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
+		return
+	}
+
 	newComment := models.Comment{
 		Content: comment.Content,
 		BlogID:  blogID,
@@ -88,6 +93,11 @@ func (bcc *BlogCommentController) UpdateCommentController(ctx *gin.Context) {
 		return
 	}
 
+	if err := comment.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
+		return
+	}
+
 	if err := bcc.usecase.UpdateComment(ctx, commentID, userID, comment); err != nil {
 		ctx.JSON(err.Code, gin.H{"error": err.Message})
 		return
@@ -98,7 +108,6 @@ func (bcc *BlogCommentController) UpdateCommentController(ctx *gin.Context) {
 }
 
 func (bcc *BlogCommentController) DeleteCommentController(ctx *gin.Context) {
-	// Implement the logic to delete a comment
 	commentID := ctx.Param("commentID")
 	userID := bcc.getUserID(ctx)
 

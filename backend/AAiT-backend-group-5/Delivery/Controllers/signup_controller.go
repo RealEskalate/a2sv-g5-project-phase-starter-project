@@ -24,21 +24,23 @@ func NewSignupController(signupUsecase interfaces.SignupUsecase, passwordUsecase
 func (signupController *SignupController) Signup(ctx *gin.Context) {
 	var userCreateRequest dtos.CreateAccountRequest
 
-	// attempt to bind the IndentedJSON payload
 	err := ctx.ShouldBind(&userCreateRequest)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid request payload"})
 		return
 	}
 
-	// populate fields for new user
+	if err := userCreateRequest.Validate(); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
+		return
+	}
+
 	newUser := &models.User{
 		Username: userCreateRequest.Username,
 		Name:     userCreateRequest.Name,
 		Email:    userCreateRequest.Email,
 	}
 
-	// create user
 	e := signupController.SignupUsecase.CreateUser(ctx, newUser)
 	if e != nil {
 		ctx.IndentedJSON(e.Code, gin.H{"error": e.Message})
@@ -51,10 +53,14 @@ func (signupController *SignupController) Signup(ctx *gin.Context) {
 func (signupController *SignupController) ConfirmRegistration(ctx *gin.Context) {
 	var setUpPasswordRequest dtos.SetUpPasswordRequest
 
-	// attempt to bind the payload carrying the new password
 	err := ctx.ShouldBind(&setUpPasswordRequest)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid request payload"})
+		return
+	}
+
+	if err := setUpPasswordRequest.Validate(); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
 		return
 	}
 

@@ -22,13 +22,10 @@ func NewUserProfileController(userProfileUC interfaces.UserProfileUpdateUsecase)
 func (userProfileController *UserProfileController) ProfileUpdate(ctx *gin.Context) {
 	var updatedUser dtos.ProfileUpdateRequest
 
-	// get userID from the context
 	userID := ctx.GetString("id")
 
-	// get the file from the form field
 	file, err := ctx.FormFile("profileImage")
 	if err != nil {
-		// assign an empty file to 'file'
 		file = &multipart.FileHeader{}
 	}
 
@@ -37,6 +34,11 @@ func (userProfileController *UserProfileController) ProfileUpdate(ctx *gin.Conte
 	updatedUser.PhoneNumber = ctx.PostForm("phone_number")
 	updatedUser.Password = ctx.PostForm("password")
 	updatedUser.Bio = ctx.PostForm("bio")
+
+	if err := updatedUser.Validate(); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
+		return
+	}
 
 	e := userProfileController.UserProfileUC.UpdateUserProfile(ctx, userID, &updatedUser, file)
 	if e != nil {

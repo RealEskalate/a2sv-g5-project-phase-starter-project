@@ -30,6 +30,11 @@ func (c *BlogController) CreateBlogController(ctx *gin.Context) {
 		return
 	}
 
+	if err := newBlog.Validate(); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
+		return
+	}
+
 	authorID := ctx.GetString("id")
 
 	blog := models.Blog{
@@ -130,6 +135,11 @@ func (c *BlogController) UpdateBlogController(ctx *gin.Context) {
 		return
 	}
 
+	if err := updateBlog.Validate(); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
+		return
+	}
+
 	authorID := ctx.GetString("id")
 
 	blog := models.Blog{
@@ -167,6 +177,11 @@ func (c *BlogController) DeleteBlogController(ctx *gin.Context) {
 		AuthorID: authorID,
 	}
 
+	if err := deleteBlogReq.Validate(); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
+		return
+	}
+
 	if err := c.usecase.DeleteBlog(ctx, deleteBlogReq); err != nil {
 		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})
 		return
@@ -183,6 +198,11 @@ func (c *BlogController) TrackPopularityController(ctx *gin.Context) {
 		return
 	}
 
+	if err := blogPopularity.Validate(); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
+		return
+	}
+	
 	userID := ctx.GetString("id")
 	blogID := ctx.Param("id")
 

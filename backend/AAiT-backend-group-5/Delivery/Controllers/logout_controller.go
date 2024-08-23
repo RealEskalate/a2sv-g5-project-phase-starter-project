@@ -20,7 +20,6 @@ func NewLogoutController(logoutUsecase interfaces.LogoutUsecase, jwtService inte
 }
 
 func (logoutController *LogoutController) Logout(ctx *gin.Context) {
-	// get the userId from the context
 	userId := ctx.GetString("id")
 
 	e := logoutController.LogoutUsecase.LogoutUser(ctx, userId)

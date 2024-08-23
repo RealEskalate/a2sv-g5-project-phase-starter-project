@@ -9,24 +9,29 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (bu *BlogUsecase) CreateBlog(ctx context.Context, blog *domain.Blog) (*domain.Blog, error) {
+func (bu *BlogUsecase) CreateBlog(ctx context.Context, data *domain.BlogRequest, authorID primitive.ObjectID) (*domain.Blog, error) {
 	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
 	defer cancel()
-	// Validate required fields
-	if blog.Title == "" || blog.Content == "" || blog.Author == "" || len(blog.Tags) == 0 {
-		return nil, errors.New("all fields are required")
+
+	if data.Title == "" || data.Content == "" || data.Author == "" || len(data.Tags) == 0 {
+		return nil, errors.New("tiltle, content, author name and list of tags are required")
 	}
 
-	// Set the blog ID, timestamps, and author ID
+	var blog domain.Blog
+
 	blog.ID = primitive.NewObjectID()
+	blog.Title = data.Title
+	blog.Author = data.Author
+	blog.Content = data.Content
+	blog.AuthorID = authorID
+	blog.Tags = data.Tags
 	blog.CreatedAt = time.Now()
 	blog.UpdatedAt = time.Now()
 
-	// Call the repository to save the blog post
-	err := bu.blogRepo.CreateBlog(ctx, blog)
+	err := bu.blogRepo.CreateBlog(ctx, &blog)
 	if err != nil {
 		return nil, err
 	}
 
-	return blog, nil
+	return &blog, nil
 }

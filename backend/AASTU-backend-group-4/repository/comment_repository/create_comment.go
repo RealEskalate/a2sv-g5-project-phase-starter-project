@@ -5,7 +5,7 @@ import (
 	"context"
 )
 
-func (cr *CommentRepository) CreateComment(ctx context.Context, comment *domain.Comment) error {
+func (cr *CommentRepository) CreateComment(ctx context.Context, comment domain.Comment) error {
 	_, err := cr.collection.InsertOne(ctx, comment)
 	return err
 }

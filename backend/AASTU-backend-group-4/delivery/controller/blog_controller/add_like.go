@@ -1,7 +1,6 @@
 package blog_controller
 
 import (
-	"blog-api/domain"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,29 +8,20 @@ import (
 )
 
 func (bc *BlogController) AddLike(c *gin.Context) {
-	var like domain.LikeRequest
+	blogIDParam := c.Param("id")
+	userID := c.MustGet("user_id").(primitive.ObjectID)
 
-	if err := c.ShouldBindJSON(&like); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	authorID := c.GetString("user_id")
-
-	ID, err := primitive.ObjectIDFromHex(authorID)
+	ID, err := primitive.ObjectIDFromHex(blogIDParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
-	like.UserID = ID
 
-	// Create the blog post using the usecase
-	err = bc.usecase.AddLike(c, &like)
+	err = bc.usecase.AddLike(c, userID, ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Return the created blog post with StatusCreated
 	c.JSON(http.StatusCreated, gin.H{"message": "liked successfuly"})
 }

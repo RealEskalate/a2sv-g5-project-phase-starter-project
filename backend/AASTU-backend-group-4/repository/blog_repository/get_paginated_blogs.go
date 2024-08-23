@@ -21,7 +21,7 @@ func (br *BlogRepository) GetPaginatedBlogs(ctx context.Context, page, limit int
 		SetLimit(int64(limit)).
 		SetSort(sort)
 
-	cursor, err := br.collection.Find(context.TODO(), bson.M{}, findOptions)
+	cursor, err := br.collection.Find(ctx, bson.M{}, findOptions)
 	if err != nil {
 		return nil, err
 	}

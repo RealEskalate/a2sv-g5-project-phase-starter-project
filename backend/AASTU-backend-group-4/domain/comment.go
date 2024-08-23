@@ -15,11 +15,12 @@ type Comment struct {
 	CreatedAt time.Time          `bson:"created_at" json:"created_at"`
 }
 type CommentRepository interface {
-	GetCommentsCount(ctx context.Context, blogID primitive.ObjectID) (int, error)
-	CreateComment(ctx context.Context, comment Comment) error
-	GetCommentByID(ctx context.Context, id primitive.ObjectID) (Comment, error)
-	GetCommentsByBlogID(ctx context.Context, blogID primitive.ObjectID) ([]Comment, error)
-	RemoveComment(ctx context.Context, commentID primitive.ObjectID) error
+	CreateComment(ctx context.Context, comment Comment) error                                    //
+	GetCommentsCount(ctx context.Context, blogID primitive.ObjectID) (int, error)                //
+	GetBlogComments(ctx context.Context, blogID primitive.ObjectID) ([]Comment, error)           //
+	GetCommentByID(ctx context.Context, id primitive.ObjectID) (Comment, error)                  //
+	RemoveComment(ctx context.Context, userID, commentID primitive.ObjectID, isAdmin bool) error //
+	RemoveBlogComments(ctx context.Context, blogID primitive.ObjectID) error                     //
 }
 
 type CommentRequest struct {

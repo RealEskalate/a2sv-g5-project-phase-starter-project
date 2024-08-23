@@ -113,25 +113,23 @@ export default function Home() {
 
   if (loading || Loading)
     return (
-      <div className="bg-gray-100 dark:bg-[#020817] p-6 animate-[shimmer_2s_ease_infinite]">
-        <div className="bg-white dark:bg-[#020817] shadow-1 rounded-3xl animate-[shimmer_2s_ease_infinite] my-4">
-          {/* <div className="h-10 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-t-3xl"></div> */}
-          <div className="flex gap-6 justify-between px-6 py-4">
-            <div className="h-14 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mr-4"></div>
-            <div className="h-14 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mr-4"></div>
-            <div className="h-14 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mr-4"></div>
-            <div className="h-14 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite]"></div>
-          </div>
-          <div className="px-6 py-4">
-            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
-            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
-            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
-            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
-            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
-            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
-            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
-            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
-            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite]"></div>
+      <div className="bg-gray-100 dark:bg-gray-900 p-6 animate-pulse">
+        <div className="flex justify-between flex-wrap lg:flex-nowrap gap-4">
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
+        </div>
+        <div className=" ">
+          <div className="col-span-2 lg:col-span-1">
+            <div className="my-4 bg-gray-300 dark:bg-gray-700 rounded-lg h-8 w-1/3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
           </div>
         </div>
       </div>

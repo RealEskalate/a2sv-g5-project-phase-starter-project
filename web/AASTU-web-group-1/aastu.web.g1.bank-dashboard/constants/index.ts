@@ -47,24 +47,28 @@ export const sidebarLinks = [
 export const loanTypes =[
     {
         name: 'Personal Loans',
+        id: 'personalLoan',
         route: "",
         icon: '/icons/PersonalLoan.svg',
         description:'50,000'
     },
     {
         name: 'Corporate Loans',
+        id: 'corporateLoan',
         route:'',
         icon: '/icons/CorporateLoan.svg',
         description:'100,000'
     },
     {
         name: 'Business Loans',
+        id: 'businessLoan',
         route: '',
         icon: '/icons/BusinessLoan.svg',
         description:'500,000'
     },
     {
         name: 'Custom Loans',
+        id:'',
         route: '',
         icon: '/icons/CustomLoan.svg',
         description:'50,000'

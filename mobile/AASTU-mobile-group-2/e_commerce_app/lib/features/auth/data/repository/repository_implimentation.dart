@@ -4,8 +4,6 @@ import 'package:e_commerce_app/features/auth/data/data_sources/local_data_source
 import 'package:e_commerce_app/features/auth/data/data_sources/remote_data_sources.dart';
 import 'package:e_commerce_app/features/auth/domain/entities/user.dart';
 import 'package:e_commerce_app/features/auth/domain/repository/auth_repository.dart';
-import 'package:e_commerce_app/features/product/data/data_sources/product_remote_data_source.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/network/network_info.dart';
 

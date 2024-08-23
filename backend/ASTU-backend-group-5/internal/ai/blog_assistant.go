@@ -1,7 +1,6 @@
 package ai
 
 import (
-	"blogApp/internal/config"
 	"blogApp/internal/domain"
 	"bytes"
 	"encoding/json"
@@ -11,12 +10,12 @@ import (
 
 func GetAiBlog(chat_id, query string) (domain.Blog, error) {
 
-	conf, err := config.Load()
-	if err != nil {
-		return domain.Blog{}, err
-	}
+	// conf, err := config.Load()
+	// if err != nil {
+	// 	return domain.Blog{}, err
+	// }
 
-	endpoint := conf.AI_API_DOMAIN + "/blog_assistant/"
+	endpoint := "http://localhost:8000/blog_assistant/"
 	data := map[string]string{
 		"query":   query,
 		"chat_id": chat_id,

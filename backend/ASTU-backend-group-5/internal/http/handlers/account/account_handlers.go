@@ -37,8 +37,8 @@ func (h *UserHandler) Login(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
-	}
 
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"id":    user.ID,
 		"email": user.Email,

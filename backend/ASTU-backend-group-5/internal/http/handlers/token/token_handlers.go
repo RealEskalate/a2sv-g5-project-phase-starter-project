@@ -58,11 +58,6 @@ func (h *TokenHandler) LogOut(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Authorization token required"})
 		return
 	}
-
-	if err := c.ShouldBindJSON(&token); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
 	err := h.tokenUseCase.BlacklistToken(c, token.RefreshToken, domain.TokenType("refresh"), time.Now())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

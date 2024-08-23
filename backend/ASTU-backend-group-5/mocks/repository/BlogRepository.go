@@ -16,6 +16,11 @@ type BlogRepository struct {
 	mock.Mock
 }
 
+// FindBlogs implements repository.BlogRepository.
+func (_m *BlogRepository) FindBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int) ([]*domain.Blog, int, error) {
+	panic("unimplemented")
+}
+
 // AddComment provides a mock function with given fields: ctx, comment
 func (_m *BlogRepository) AddComment(ctx context.Context, comment *domain.Comment) error {
 	ret := _m.Called(ctx, comment)

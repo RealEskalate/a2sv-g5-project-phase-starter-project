@@ -23,7 +23,7 @@ os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
      
 
-llm = ChatOpenAI(model="gpt-3.5-turbo-0613", temperature=0)
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
 # os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
 # llm = ChatGoogleGenerativeAI(

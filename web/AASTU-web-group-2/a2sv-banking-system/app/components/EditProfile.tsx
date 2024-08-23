@@ -1,31 +1,75 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { FaPencilAlt } from "react-icons/fa";
-import { useState } from "react";
+import { FaPencilAlt, FaCaretDown } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaCaretDown } from "react-icons/fa";
+import { useForm, Controller } from "react-hook-form";
 import User, { UserInfo } from "@/types/userInterface";
 import { getCurrentUser, getUserByUsername } from "@/lib/api/userControl";
 import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
 
+interface FormData {
+  name: string;
+  username: string;
+  email: string;
+  city: string;
+  dateOfBirth: Date | null;
+  presentAddress: string;
+  permanentAddress: string;
+  country: string;
+}
+
 const EditProfile = () => {
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [user, setUser] = useState<UserInfo>()
+  const { control, handleSubmit, setValue } = useForm<FormData>();
+  const [user, setUser] = useState<UserInfo | null>(null);
+  const [accessToken, setAccessToken] = useState<string>("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch User Info
-          setUser(await getUserByUsername(await getCurrentUser(await Refresh()), await Refresh()))
+        const accessToken = await Refresh();
+        setAccessToken(accessToken);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  });
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (accessToken) {
+          const currentUser = await getCurrentUser(accessToken);
+          const userData = await getUserByUsername(
+            currentUser.username,
+            accessToken
+          );
+          setUser(userData);
+
+          // Populate form fields
+          setValue("name", userData.name || "");
+          setValue("username", userData.username || "");
+          setValue("email", userData.email || "");
+          setValue("city", userData.city || "");
+          setValue("dateOfBirth", userData.dateOfBirth ? new Date(userData.dateOfBirth) : null);
+          setValue("presentAddress", userData.presentAddress || "");
+          setValue("permanentAddress", userData.permanentAddress || "");
+          setValue("country", userData.country || "");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [accessToken]);
+
+  const onSubmit = (data: FormData) => {
+    console.log(data); // Handle form submission
+  };
 
   return (
     <>
@@ -39,13 +83,13 @@ const EditProfile = () => {
             className="rounded-full"
           />
           <span className="absolute bottom-5 right-0 bg-[#1814F3] rounded-full w-10 h-10 flex items-center justify-center text-white">
-            <FaPencilAlt></FaPencilAlt>
+            <FaPencilAlt />
           </span>
         </div>
       </div>
 
       <div>
-        <form action="">
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-3 dark:bg-[#020817]">
             <div className="flex flex-col md:flex md:flex-row">
               {/* Name Goes In Here */}
@@ -56,17 +100,23 @@ const EditProfile = () => {
                 >
                   Your Name
                 </label>
-                <input
-                  type="text"
+                <Controller
                   name="name"
-                  id="name"
-                  className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
-                  placeholder="Rebuma Tadele"
-                  value={user?.name}
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      id="name"
+                      className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
+                      placeholder="Rebuma Tadele"
+                    />
+                  )}
                 />
               </div>
 
-              {/* UserName Goes In Here */}
+              {/* Username Goes In Here */}
               <div className="flex flex-col gap-3 px-6 py-3 md:w-[48%]">
                 <label
                   htmlFor="username"
@@ -74,20 +124,25 @@ const EditProfile = () => {
                 >
                   Username
                 </label>
-                <input
-                  type="text"
+                <Controller
                   name="username"
-                  id="username"
-                  className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2]  rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
-                  placeholder="rebuma"
-                  value={user?.username}
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      id="username"
+                      className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
+                      placeholder="rebuma"
+                    />
+                  )}
                 />
               </div>
             </div>
 
             <div className="flex flex-col md:flex md:flex-row">
               {/* Email Goes In Here */}
-
               <div className="flex flex-col gap-3 px-6 py-3 md:w-[48%]">
                 <label
                   htmlFor="email"
@@ -95,31 +150,43 @@ const EditProfile = () => {
                 >
                   Email
                 </label>
-                <input
-                  type="email"
+                <Controller
                   name="email"
-                  id="email"
-                  className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
-                  placeholder="john@example.com"
-                  value={user?.email}
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="email"
+                      id="email"
+                      className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
+                      placeholder="john@example.com"
+                    />
+                  )}
                 />
               </div>
-              {/* Password Goes In Here */}
 
+              {/* City Goes In Here */}
               <div className="flex flex-col gap-3 px-6 py-3 md:w-[48%]">
                 <label
-                  htmlFor="password"
+                  htmlFor="city"
                   className="text-[#232323] font-semibold px-1 dark:text-[#9faaeb]"
                 >
-                  Password
+                  City
                 </label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4] "
-                  placeholder="********"
-                  value={user?.password}
+                <Controller
+                  name="city"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      id="city"
+                      className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
+                      placeholder="Addis Ababa"
+                    />
+                  )}
                 />
               </div>
             </div>
@@ -134,17 +201,25 @@ const EditProfile = () => {
                   Date Of Birth
                 </label>
                 <div className="relative w-full">
-                  <DatePicker
-                    selected={startDate}
-                    onChange={(date: Date | null) => setStartDate(date)}
-                    placeholderText="Date Of Birth"
-                    className="w-full border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] bg-white dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
-                    dateFormat="MMMM d, yyyy"
-                    id="datePicker"
+                  <Controller
+                    name="dateOfBirth"
+                    control={control}
+                    defaultValue={null}
+                    render={({ field: { onChange, value } }) => (
+                      <DatePicker
+                        selected={value}
+                        onChange={(date: Date | null) => onChange(date)}
+                        placeholderText="Date Of Birth"
+                        className="w-full border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] bg-white dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
+                        dateFormat="MMMM d, yyyy"
+                        id="datePicker"
+                      />
+                    )}
                   />
-                  <FaCaretDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#718EBF]" />
+                  <FaCaretDown className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-500 dark:text-[#9faaeb]" />
                 </div>
               </div>
+
               {/* Present Address Goes In Here */}
               <div className="flex flex-col gap-3 px-6 py-3 md:w-[48%]">
                 <label
@@ -153,13 +228,19 @@ const EditProfile = () => {
                 >
                   Present Address
                 </label>
-                <input
-                  type="text"
+                <Controller
                   name="presentAddress"
-                  id="presentAddress"
-                  className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
-                  placeholder="Addis Ababa Ethiopia"
-                  value={user?.presentAddress}
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      id="presentAddress"
+                      className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
+                      placeholder="Present Address"
+                    />
+                  )}
                 />
               </div>
             </div>
@@ -173,55 +254,23 @@ const EditProfile = () => {
                 >
                   Permanent Address
                 </label>
-                <input
-                  type="text"
+                <Controller
                   name="permanentAddress"
-                  id="permanentAddress"
-                  className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
-                  placeholder="Addis Ababa, Ethiopia"
-                  value={user?.permanentAddress}
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      id="permanentAddress"
+                      className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
+                      placeholder="Permanent Address"
+                    />
+                  )}
                 />
               </div>
 
-              {/* City Goes In Here */}
-              <div className="flex flex-col gap-3 px-6 py-3 md:w-[48%]">
-                <label
-                  htmlFor="city"
-                  className="text-[#232323] font-semibold px-1 dark:text-[#9faaeb]"
-                >
-                  City
-                </label>
-                <input
-                  type="text"
-                  name="city"
-                  id="city"
-                  className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
-                  placeholder="Addis Ababa, Ethiopia"
-                  value={user?.city}
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col md:flex md:flex-row">
-              {/* Postal Code Goes In Here */}
-              <div className="flex flex-col gap-3 px-6 py-3 md:w-[48%]">
-                <label
-                  htmlFor="postal"
-                  className="text-[#232323] font-semibold px-1 dark:text-[#9faaeb]"
-                >
-                  Postal Code
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
-                  placeholder="10000"
-                  value={user?.postalCode}
-                />
-              </div>
-
-              {/* Country Goes in here */}
+              {/* Country Goes In Here */}
               <div className="flex flex-col gap-3 px-6 py-3 md:w-[48%]">
                 <label
                   htmlFor="country"
@@ -229,23 +278,29 @@ const EditProfile = () => {
                 >
                   Country
                 </label>
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
-                  placeholder="Ethiopia"
-                  value={user?.country}
+                <Controller
+                  name="country"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      id="country"
+                      className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
+                      placeholder="Country"
+                    />
+                  )}
                 />
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 md:px-16 px-6 py-3 md:items-end">
+            <div className="text-center">
               <button
-                type="submit" 
-                className="bg-[#1814F3] border border-[#1814F3] rounded-xl text-white px-4 py-2  text-lg md:w-1/4"
+                type="submit"
+                className="bg-[#1814F3] text-white rounded-xl py-3 px-6"
               >
-                Save
+                Save Changes
               </button>
             </div>
           </div>

@@ -1,6 +1,6 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { RootState } from '../store';
-import { getSession } from 'next-auth/react';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { RootState } from "../store";
+import { getSession } from "next-auth/react";
 
 interface LoanRequest {
   loanAmount: number;
@@ -28,7 +28,7 @@ export interface LoanResponse {
 interface LoansResponse {
   success: boolean;
   message: string;
-  data: LoanResponse['data'][];
+  data: LoanResponse["data"][];
 }
 
 interface LoanDetailDataResponse {
@@ -42,14 +42,14 @@ interface LoanDetailDataResponse {
 }
 
 export const loansApi = createApi({
-  reducerPath: 'loansApi',
+  reducerPath: "loansApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://bank-dashboard-1tst.onrender.com',
+    baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
     prepareHeaders: async (headers, { getState }) => {
-      const session = await getSession()
-      const token = session?.accessToken
+      const session = await getSession();
+      const token = session?.accessToken;
       if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
+        headers.set("Authorization", `Bearer ${token}`);
       }
       return headers;
     },
@@ -57,34 +57,36 @@ export const loansApi = createApi({
   endpoints: (builder) => ({
     createLoan: builder.mutation<LoanResponse, LoanRequest>({
       query: (loanData) => ({
-        url: '/active-loans',
-        method: 'POST',
+        url: "/active-loans",
+        method: "POST",
         body: loanData,
       }),
     }),
-    rejectLoan: builder.mutation<{ success: boolean; message: string }, string>({
-      query: (id) => ({
-        url: `/active-loans/${id}/reject`,
-        method: 'POST',
-      }),
-    }),
+    rejectLoan: builder.mutation<{ success: boolean; message: string }, string>(
+      {
+        query: (id) => ({
+          url: `/active-loans/${id}/reject`,
+          method: "POST",
+        }),
+      }
+    ),
     approveLoan: builder.mutation<LoanResponse, string>({
       query: (id) => ({
         url: `/active-loans/${id}/approve`,
-        method: 'POST',
+        method: "POST",
       }),
     }),
     getLoanById: builder.query<LoanResponse, string>({
       query: (id) => `/active-loans/${id}`,
     }),
     getMyLoans: builder.query<LoansResponse, void>({
-      query: () => '/active-loans/my-loans',
+      query: () => "/active-loans/my-loans",
     }),
     getLoanDetailData: builder.query<LoanDetailDataResponse, void>({
-      query: () => '/active-loans/detail-data',
+      query: () => "/active-loans/detail-data",
     }),
     getAllLoans: builder.query<LoansResponse, void>({
-      query: () => '/active-loans/all',
+      query: () => "/active-loans/all",
     }),
   }),
 });

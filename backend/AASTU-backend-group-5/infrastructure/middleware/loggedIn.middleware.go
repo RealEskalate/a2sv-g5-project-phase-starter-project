@@ -4,8 +4,11 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/RealEskalate/blogpost/config"
+	"github.com/RealEskalate/blogpost/database"
 	"github.com/RealEskalate/blogpost/domain"
 	tokenservice "github.com/RealEskalate/blogpost/infrastructure/token_service"
+	"github.com/RealEskalate/blogpost/repository"
 	"github.com/gin-gonic/gin"
 )
 
@@ -67,8 +70,17 @@ func LoggedIn(TS tokenservice.TokenService_imp) gin.HandlerFunc {
 		}
 
 		// Token is valid, store the user in the context
+		SC := config.ServerConnection{}
+		SC.Connect_could()
+		coll := &database.MongoCollection{Collection: SC.Client.Database("BlogPost").Collection("Users")}
+		UR := repository.NewUserRepository(coll)
 
-		usr := domain.CreateResponseUser(*user)
+		userr, err := UR.GetUserDocumentByID(user.ID.Hex())
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "internal server error"})
+			c.Abort()
+		}
+		usr := domain.CreateResponseUser(userr)
 		c.Set("user", usr)
 
 		// Proceed to the next handler

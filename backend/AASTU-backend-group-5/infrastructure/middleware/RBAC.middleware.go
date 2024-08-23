@@ -4,11 +4,13 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/RealEskalate/blogpost/config"
+	"github.com/RealEskalate/blogpost/database"
 	"github.com/RealEskalate/blogpost/domain"
+	"github.com/RealEskalate/blogpost/repository"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func RoleBasedAuth(protected bool) gin.HandlerFunc {
@@ -28,10 +30,10 @@ func RoleBasedAuth(protected bool) gin.HandlerFunc {
 			return
 		}
 
-		user := domain.UserClaims{
-			ID: claims.ID,}
+		usr, _ := c.Get("user")
+		user, _ := usr.(domain.ResponseUser)
 
-		if claims.IsAdmin {
+		if user.Is_Admin{
 			c.Set("filter", bson.M{})
 		} else {
 			if protected {
@@ -42,11 +44,22 @@ func RoleBasedAuth(protected bool) gin.HandlerFunc {
 
 			path := c.Request.URL.Path
 			idx := c.Param("id")
-			objid, _ := primitive.ObjectIDFromHex(idx)
-        	if strings.Contains(path, "user") && idx != "" && objid != user.ID {
+        	if strings.Contains(path, "user") && idx != "" && idx != user.ID {
 				c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 				c.Abort()
 				return
+			}else if strings.Contains(path, "blog") && idx != "" && c.Request.Method != "GET"{
+				SC := config.ServerConnection{}
+				SC.Connect_could()
+				coll := &database.MongoCollection{Collection: SC.Client.Database("BlogPost").Collection("Blogs")}
+				BR := repository.NewBlogRepository(coll)
+				blog, _ := BR.GetOneBlogDocument(idx)
+				if blog.Owner.ID != user.ID{
+					c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+					c.Abort()
+					return
+				}
+			
 			}
 			c.Set("filter", bson.M{"user._id": claims.ID})
 		}

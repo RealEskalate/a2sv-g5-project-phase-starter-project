@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/RealEskalate/blogpost/domain"
 	"github.com/gin-gonic/gin"
@@ -62,8 +63,9 @@ func (ac *AuthController) LogIn() gin.HandlerFunc {
             HttpOnly: true,
         })
 
+        response_user := domain.CreateResponseUser(user)
         c.JSON(http.StatusOK, gin.H{
-            "user":          user,
+            "user":          response_user,
             "access_token":  accessToken,
         })
     }
@@ -72,13 +74,18 @@ func (ac *AuthController) LogIn() gin.HandlerFunc {
 
 func (ac *AuthController) LogOut() gin.HandlerFunc {
     return func(c *gin.Context) {
-        http.SetCookie(c.Writer, &http.Cookie{
-            Name:     "refresh_token",
-            Value:    "",
-            Path:     "/",
-            HttpOnly: true,
-        })
 
+        cockies := c.Request.Cookies()
+
+        for _,cockie := range cockies {
+            http.SetCookie(c.Writer, &http.Cookie{
+                Name:     cockie.Name,
+                Value:    "",
+                Path:     "/",
+                Expires: <-time.After(-time.Hour),
+                HttpOnly: true,
+            })
+        }        
         c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
     }
 }

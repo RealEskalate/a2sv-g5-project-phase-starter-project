@@ -10,10 +10,6 @@ import (
 type UserClaims struct {
 	jwt.StandardClaims
 	ID      primitive.ObjectID
-	Avatar  Media
-	Name    string
-	Email   string
-	IsAdmin bool
 }
 
 type State struct{

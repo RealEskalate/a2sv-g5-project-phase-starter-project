@@ -75,7 +75,7 @@ export function PieChartPage() {
   const months = React.useMemo(() => desktopData.map((item) => item.month), []);
 
   return (
-    <div className="flex flex-col gap-5 bg-white rounded-2xl py-3 justify-center px-4 items-center shadow-sm h-full dark:bg-[#050914] dark:shadow-2xl">
+    <div className="flex flex-col gap-5 bg-white rounded-2xl py-3 justify-center px-4 items-center shadow-sm h-full dark:bg-[#212c35] dark:border dark:border-[#333B69] dark:shadow-2xl">
       <Card
         data-chart={id}
         className="flex flex-col w-52 shadow-none bg-transparent border-none "
@@ -177,7 +177,7 @@ export const ChartLabel = ({
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: color }}
           ></div>
-          <p className="text-[#718EBF] text-xs font-medium w-20">
+          <p className="text-[#718EBF] text-xs font-medium w-20 dark:text-[#9faaeb]">
             {labels[index]}
           </p>
         </div>

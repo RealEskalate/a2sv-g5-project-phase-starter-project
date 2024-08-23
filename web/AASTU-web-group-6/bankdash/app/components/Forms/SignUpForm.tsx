@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import AuthService from "@/app/Services/api/authService";
 import ProgressComp from "../Box/ProgressComp";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 // Define the schema using Zod
 const schema = z
@@ -54,15 +55,18 @@ const SignUpForm = () => {
     resolver: zodResolver(schema),
   });
   const confirmData = watch("password");
+  const route = useRouter();
   const onSubmit = async (data: FormData) => {
     console.log(data);
     const { confirmPassword, ...userData } = data;
     console.log("Signup successful:", userData);
+    route.push("/login");
     try {
       const responseData = await AuthService.register(userData);
       console.log(responseData);
       if (responseData.success) {
         console.log("Signup successful:", responseData.message);
+        route.push("/login");
       } else {
         console.error("Signup failed:", responseData.message);
       }

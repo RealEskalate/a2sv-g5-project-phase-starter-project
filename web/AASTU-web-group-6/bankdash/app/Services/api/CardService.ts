@@ -65,7 +65,7 @@ class CardService {
     const token = await this.ensureAccessToken(accessToken);
     return handleRequest(
       "GET",
-      `${API_URL}?page=1&size=3`,
+      `${API_URL}?page=0&size=3`,
       undefined,
       token
     );

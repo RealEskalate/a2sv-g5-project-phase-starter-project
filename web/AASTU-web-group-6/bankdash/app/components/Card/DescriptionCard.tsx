@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface DescriptionCardProps {
   img: string;
@@ -29,29 +30,41 @@ const DescriptionCard: React.FC<DescriptionCardProps> = ({
 }) => {
   console.log(img);
   return (
-    <div className="mb-5 flex items-center grow justify-between h-24 bg-white gap-5 border rounded-3xl xs:w-full md:w-full lg:w-full">
-      <div className={`{icon rounded-full p-3 ${color} ml-4`}>
-        <img src={img} alt="" />
+    <div className="mb-5 flex items-center text-nowrap grow justify-between p-5 bg-white dark:bg-[#232328] gap-5 rounded-3xl xs:w-full md:w-full lg:w-full">
+      <div className={`{icon rounded-[12px]  p-3 ${color} ml-4`}>
+        <img src={img} alt="" className="min-h-6 min-w-6" />
       </div>
-      <div className="flex flex-col">
-        <p className="font-semibold text-base text-[#232323] ">
+      <div className="flex flex-col gap-1">
+        <p className="font-semibold text-base text-[#232323] dark:text-gray-300 ">
           {title}
         </p>
-        <p className="text-[#718EBF] text-[15px]">{desc}</p>
+        <p className="text-[#718EBF] text-[15px] dark:text-gray-400">{desc}</p>
       </div>
-      <div className=" flex flex-col hidden lg:flex">
-        <p className="font-semibold text-base text-[#232323]">{colOne}</p>
-        <p className="text-[#718EBF] text-[15px]">{descOne}</p>
+      <div className=" flex flex-col gap-1 xxs:hidden md:flex">
+        <p className="font-semibold text-base text-[#232323] dark:text-gray-300">
+          {colOne}
+        </p>
+        <p className="text-[#718EBF] text-[15px] dark:text-gray-400">
+          {descOne}
+        </p>
       </div>
-      <div className="flex flex-col hidden lg:flex">
-        <p className="font-semibold text-base text-[#232323]">{colTwo}</p>
-        <p className="text-[#718EBF] text-[15px]">{descTwo}</p>
+      <div className="flex flex-col gap-1 xxs:hidden md:flex">
+        <p className="font-semibold text-base text-[#232323] dark:text-gray-300">
+          {colTwo}
+        </p>
+        <p className="text-[#718EBF] text-[15px] dark:text-gray-400">
+          {descTwo}
+        </p>
       </div>
-      <div className="flex flex-col hidden lg:flex">
-        <p className="font-semibold text-base text-[#232323]">{colThree}</p>
-        <p className="text-[#718EBF] text-[15px]">{descThree}</p>
+      <div className="flex flex-col gap-1 xxs:hidden md:flex">
+        <p className="font-semibold text-base text-[#232323] dark:text-gray-300">
+          {colThree}
+        </p>
+        <p className="text-[#718EBF] text-[15px] dark:text-gray-400">
+          {descThree}
+        </p>
       </div>
-      <button className="text-[#1814F3] font-semibold text-[15px] lg:border lg:border-[#718EBF] lg:w-36 h-8 rounded-[50px] mr-8">
+      <button className="text-[#1814F3] font-medium text-[15px] lg:border lg:border-[#1814F3] px-6 py-2 rounded-[50px] mr-8">
         {btn}
       </button>
     </div>

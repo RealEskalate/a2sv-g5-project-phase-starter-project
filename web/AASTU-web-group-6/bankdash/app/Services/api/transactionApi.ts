@@ -5,7 +5,8 @@ const extension = "/balance-history";
 const API_URL_expense =
   "https://bank-dashboard-rsf1.onrender.com/transactions/expenses";
 const API_URL_income =
-  "https://bank-dashboard-rsf1.onrender.com/transactions/incomes";
+  "https://bank-dashboard-rsfl.onrender.com/transactions/incomes";
+const API_URL_quick = "https://bank-dashboard-o9tl.onrender.com/transactions/quick-transfers"
 interface TransactionType {
   transactionId: string;
   type: string;
@@ -95,7 +96,7 @@ class TransactionService {
   ): Promise<quickType[]> {
     return handleRequest(
       "GET",
-      `${API_URL_quick}?number=6`,
+      `${API_URL_quick}?number=4`,
       undefined,
       accessToken
     );

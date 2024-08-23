@@ -36,6 +36,8 @@ const config: Config = {
     extend: {
       fontFamily: {
         Lato: "Lato",
+        Inter: "Inter",
+        Iconmoon: "icomoon",
       },
       colors: {
         border: "hsl(var(--border))",

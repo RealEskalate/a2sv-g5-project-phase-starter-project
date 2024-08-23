@@ -99,8 +99,8 @@ const SignUpForm = () => {
   return (
     <>
       <div className="left flex flex-col gap-3">
-        <h1 className="text-2xl flex flex-col text-center">SignUp</h1>
-        <ProgressComp />
+        {/* <h1 className="text-2xl flex flex-col text-center">SignUp</h1> */}
+        <ProgressComp currentStep={step} />
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}

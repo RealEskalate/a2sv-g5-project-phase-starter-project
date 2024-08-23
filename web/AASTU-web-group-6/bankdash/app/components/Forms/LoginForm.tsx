@@ -21,13 +21,13 @@ const LoginForm = () => {
     setLoading(true);
     setError("");
     console.log("login dara",data)
-    const result = signIn("credentials",{
+    const result = await signIn("credentials",{
       redirect: false,
       userName: data.userName,
       password: data.password,
       
     })
-
+    console.log("Login DATA RESULT",result)
 
     if (result?.error) {
       console.log("error",result.error);

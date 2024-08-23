@@ -4,7 +4,7 @@ const getTransaction = async (page: number) => {
     try {
         const response = await axios({
             method: "GET",
-            url: `https://bank-dashboard-1tst.onrender.com/transactions?page=${page}&size=2`,
+            url: `https://bank-dashboard-rsf1.onrender.com/transactions?page=${page}&size=2`,
             headers: {
                 Authorization: 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0bmFob20iLCJpYXQiOjE3MjQyMjc5MDIsImV4cCI6MTcyNDMxNDMwMn0.DydxCzT8qS-LiHc38KHirs0rZDUIuStwQEJANdRe2ceWPefpAil3wYWnfSdod3uG',
                 "Content-Type": "application/json",
@@ -25,7 +25,7 @@ const getExpense = async (page: number, size: number = 5) => {
     try {
         const response = await axios({
             method: "GET",
-            url: `https://bank-dashboard-1tst.onrender.com/transactions/expenses?page=${page}&size=${size}`,
+            url: `https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=${page}&size=${size}`,
             headers: {
                 Authorization: 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0bmFob20iLCJpYXQiOjE3MjQyMjc5MDIsImV4cCI6MTcyNDMxNDMwMn0.DydxCzT8qS-LiHc38KHirs0rZDUIuStwQEJANdRe2ceWPefpAil3wYWnfSdod3uG',
                 "Content-Type": "application/json",
@@ -46,7 +46,7 @@ const getIncome = async (page: number) => {
     try {
         const response = await axios({
             method: "GET",
-            url: `https://bank-dashboard-1tst.onrender.com/transactions/incomes?page=${page}&size=1`,
+            url: `https://bank-dashboard-rsf1.onrender.com/transactions/incomes?page=${page}&size=1`,
             headers: {
                 Authorization: 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0bmFob20iLCJpYXQiOjE3MjQyMjc5MDIsImV4cCI6MTcyNDMxNDMwMn0.DydxCzT8qS-LiHc38KHirs0rZDUIuStwQEJANdRe2ceWPefpAil3wYWnfSdod3uG',
                 "Content-Type": "application/json",

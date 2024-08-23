@@ -4,6 +4,7 @@ import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
 	"context"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -101,7 +102,7 @@ func (repo *userRepository) MarkUserAsVerified(email string) error {
 	if err != nil {
 		return err
 	}
-	
+	log.Println()
 	update := bson.M{"$set": bson.M{"isVerified": true}}
 
 	_, err = repo.collection.UpdateOne(context.Background(), bson.M{"_id": user.ID}, update)

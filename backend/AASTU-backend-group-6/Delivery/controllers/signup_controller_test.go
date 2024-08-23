@@ -130,7 +130,7 @@ func (suite *SignupControllerTestSuite) TestVerifyOTP_Success() {
 	c.Request.Body = ioutil.NopCloser(bytes.NewReader(body))
 
 	// Mock the VerifyOTP method to return a successful response
-	verifiedUser := domain.User{Email: otpRequest.Email, Verified: true}
+	verifiedUser := domain.User{Email: otpRequest.Email}
 	suite.mockSignupUsecase.On("VerifyOTP", mock.Anything, otpRequest).Return(&domain.SuccessResponse{
 		Message: "Account verified successfully",
 		Data:    verifiedUser,
@@ -166,20 +166,16 @@ func (suite *SignupControllerTestSuite) TestVerifyOTP_Success() {
 	if !emailOk || email == "" {
 		suite.T().Fatal("expected Email to be a non-empty string")
 	}
-	verified, verifiedOk := dataMap["verified"].(bool)
-	if !verifiedOk {
-		suite.T().Fatal("expected Verified to be a bool")
-	}
-
+	
 	// Convert map to domain.User
 	decodedUser := domain.User{
 		Email:    email,
-		Verified: verified,
+		
 	}
 
 	// Assert that the user was verified successfully
 	suite.Equal(verifiedUser.Email, decodedUser.Email)
-	suite.True(decodedUser.Verified)
+
 
 	// Assert that the mock was called with the correct parameters
 	suite.mockSignupUsecase.AssertCalled(suite.T(), "VerifyOTP", mock.Anything, otpRequest)

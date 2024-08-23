@@ -14,17 +14,17 @@ type BlogRepository struct {
 	mock.Mock
 }
 
-// CommentOnBlog provides a mock function with given fields: user_id, user_name, comment
-func (_m *BlogRepository) CommentOnBlog(user_id string, user_name string, comment domain.Comment) error {
-	ret := _m.Called(user_id, user_name, comment)
+// CommentOnBlog provides a mock function with given fields: user_id, comment
+func (_m *BlogRepository) CommentOnBlog(user_id string, comment domain.Comment) error {
+	ret := _m.Called(user_id, comment)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CommentOnBlog")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string, domain.Comment) error); ok {
-		r0 = rf(user_id, user_name, comment)
+	if rf, ok := ret.Get(0).(func(string, domain.Comment) error); ok {
+		r0 = rf(user_id, comment)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -32,9 +32,9 @@ func (_m *BlogRepository) CommentOnBlog(user_id string, user_name string, commen
 	return r0
 }
 
-// CreateBlog provides a mock function with given fields: user_id, blog, role
-func (_m *BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string) (domain.Blog, error) {
-	ret := _m.Called(user_id, blog, role)
+// CreateBlog provides a mock function with given fields: user_id, blog
+func (_m *BlogRepository) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
+	ret := _m.Called(user_id, blog)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateBlog")
@@ -42,17 +42,17 @@ func (_m *BlogRepository) CreateBlog(user_id string, blog domain.Blog, role stri
 
 	var r0 domain.Blog
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string, domain.Blog, string) (domain.Blog, error)); ok {
-		return rf(user_id, blog, role)
+	if rf, ok := ret.Get(0).(func(string, domain.Blog) (domain.Blog, error)); ok {
+		return rf(user_id, blog)
 	}
-	if rf, ok := ret.Get(0).(func(string, domain.Blog, string) domain.Blog); ok {
-		r0 = rf(user_id, blog, role)
+	if rf, ok := ret.Get(0).(func(string, domain.Blog) domain.Blog); ok {
+		r0 = rf(user_id, blog)
 	} else {
 		r0 = ret.Get(0).(domain.Blog)
 	}
 
-	if rf, ok := ret.Get(1).(func(string, domain.Blog, string) error); ok {
-		r1 = rf(user_id, blog, role)
+	if rf, ok := ret.Get(1).(func(string, domain.Blog) error); ok {
+		r1 = rf(user_id, blog)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -243,6 +243,34 @@ func (_m *BlogRepository) GetMyBlogs(user_id string, pageNo int64, pageSize int6
 	}
 
 	return r0, r1, r2
+}
+
+// GetUserRoleByID provides a mock function with given fields: id
+func (_m *BlogRepository) GetUserRoleByID(id string) (string, error) {
+	ret := _m.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserRoleByID")
+	}
+
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (string, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(string) string); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // ReactOnBlog provides a mock function with given fields: user_id, reactionType, blog_id

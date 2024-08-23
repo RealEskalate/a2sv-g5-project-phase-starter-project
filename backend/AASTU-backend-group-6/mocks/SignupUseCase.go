@@ -54,17 +54,17 @@ func (_m *SignupUseCase) ForgotPassword(c context.Context, email domain.ForgotPa
 	return r0
 }
 
-// HandleUnverifiedUser provides a mock function with given fields: c, user
-func (_m *SignupUseCase) HandleUnverifiedUser(c context.Context, user domain.User) interface{} {
-	ret := _m.Called(c, user)
+// HandleUnverifiedUser provides a mock function with given fields: c, email
+func (_m *SignupUseCase) HandleUnverifiedUser(c context.Context, email domain.Email) interface{} {
+	ret := _m.Called(c, email)
 
 	if len(ret) == 0 {
 		panic("no return value specified for HandleUnverifiedUser")
 	}
 
 	var r0 interface{}
-	if rf, ok := ret.Get(0).(func(context.Context, domain.User) interface{}); ok {
-		r0 = rf(c, user)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.Email) interface{}); ok {
+		r0 = rf(c, email)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(interface{})

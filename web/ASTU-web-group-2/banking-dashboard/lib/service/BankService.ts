@@ -18,7 +18,7 @@ export const bankApi = createApi({
       }),
     }),
 
-    // Add your requests here the same way 
+    // Add your requests here the same way
     postBankService: builder.mutation({
       query: (data: {
         accessToken: string;

@@ -21,10 +21,9 @@ const CreditCardComponent: React.FC = () => {
 	const [error, setError] = useState<string | null>(null);
 	const [currentPage, setCurrentPage] = useState(0);
 	const [totalPages, setTotalPages] = useState(0);
-
 	const { data: session, status } = useSession();
-	const user = session.user as ExtendedUser
-
+	const user = session?.user as ExtendedUser;
+  
 	const accessToken = user.accessToken;
 
 	const fetchCardData = async (page: number) => {
@@ -36,7 +35,7 @@ const CreditCardComponent: React.FC = () => {
 
 		try {
 			const response = await fetch(
-				`https://bank-dashboard-6acc.onrender.com/cards?page=${page}&size=3`,
+				`https://bank-dashboard-1tst.onrender.com/cards?page=${page}&size=3`,
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -65,7 +64,6 @@ const CreditCardComponent: React.FC = () => {
 	}, [accessToken, currentPage]);
 
 	const handleCardAdded = () => {
-		// Re-fetch the card data to update the list
 		fetchCardData(currentPage);
 	};
 

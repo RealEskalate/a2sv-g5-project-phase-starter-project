@@ -16,6 +16,7 @@ interface TableProps {
 }
 
 export function TableComponent({ columns, data }: TableProps) {
+  console.log(data,22222)
   const tableInstance = useReactTable({
     data,
     columns,

@@ -6,7 +6,7 @@ import TotalAmmount_img from "@/public/assests/icon/Investments/Group303.png";
 import Number_img from "@/public/assests/icon/Investments/Group305.png";
 import Rate_img from "@/public/assests/icon/Investments/Group307.png";
 import ChartCard_Invest from "./ChartCard_Invest";
-import MonthlyRevenueChart from "./MonthlyRevenueChart";
+import MonthlyRevenueChart from './MonthlyRevenueChart'
 import { tradingStockData, investmentsData } from "./mockData";
 import { useSession } from "next-auth/react";
 
@@ -23,10 +23,11 @@ const Investments = () => {
 
   const token: string =  ` Bearer ${session?.user?.accessToken} `;
   useEffect(() => {
+    
     const fetchInvestmentData = async () => {
       try {
         const response = await axios.get(
-          "https://bank-dashboard-6acc.onrender.com/user/random-investment-data?years=3&months=5",
+          "https://bank-dashboard-1tst.onrender.com/user/random-investment-data?years=3&months=5",
           {
             headers: {
               Authorization: token, // Make sure to add your token here
@@ -36,6 +37,7 @@ const Investments = () => {
 
         const { totalInvestment, rateOfReturn, yearlyTotalInvestment, monthlyRevenue } =
           response.data.data;
+          console.log(response.data.data, "responce.data.data");
 
         setInvestmentOverview({
           totalAmount: totalInvestment,
@@ -54,28 +56,28 @@ const Investments = () => {
   }, []);
 
   return (
-    <div className="bg-[#F5F7FA] space-y-8 mx-auto pt-3 px-4 md:px-8 lg:px-16 max-w-full overflow-hidden">
+    <div className="bg-[#F5F7FA] space-y-8 ml-[30px] pt-3    w-full overflow-hidden">
       {/* Row 1: Investment Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
           <Image height={44} width={44} src={TotalAmmount_img} alt="balance" />
           <div>
             <p>Total Invested Amount</p>
-            <p className="text-xl font-semibold">${investmentOverview.totalAmount}</p>
+            <p className="text-xl font-semibold">${investmentOverview.totalAmount.toFixed(2)}</p>
           </div>
         </div>
         <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
           <Image height={44} width={44} src={Number_img} alt="balance" />
           <div>
             <p>Number of Investments</p>
-            <p className="text-xl font-semibold">{investmentOverview.numberOfInvestments}</p>
+            <p className="text-xl font-semibold">{investmentOverview.numberOfInvestments.toFixed(2)}</p>
           </div>
         </div>
         <div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
           <Image height={44} width={44} src={Rate_img} alt="balance" />
           <div>
             <p>Rate of Return</p>
-            <p className="text-xl font-semibold">{investmentOverview.rateOfReturn}%</p>
+            <p className="text-xl font-semibold">{investmentOverview.rateOfReturn.toFixed(2)}%</p>
           </div>
         </div>
       </div>

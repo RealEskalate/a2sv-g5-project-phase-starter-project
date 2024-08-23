@@ -1,86 +1,106 @@
-"use client";
-
-import { useState } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis, Cell, LabelList } from "recharts";
+import React, { useState, useEffect } from "react";
+import { BarChart, Bar, XAxis, CartesianGrid, Tooltip as RechartsTooltip } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-];
-
+// Define chart configuration for the BarChart
 const chartConfig = {
   desktop: {
-    label: "Desktop",
+    label: "Expenses",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
-export function BarChartComponent() {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+interface TransactionData {
+  transactionId: string;
+  type: string;
+  senderUserName: string;
+  description: string;
+  date: string;
+  amount: number;
+  receiverUserName: string | null;
+}
 
-  const handleMouseEnter = (index: number) => {
-    setActiveIndex(index);
-  };
+interface BarChartComponentProps {
+  data: TransactionData[];
+}
 
-  const handleMouseLeave = () => {
-    setActiveIndex(null);
-  };
+// Define all months of the year
+const monthsOfYear = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+export function BarChartComponent({ data }: BarChartComponentProps) {
+  const [aggregatedData, setAggregatedData] = useState<{ month: string; amount: number }[]>([]);
+  const [maxAmount, setMaxAmount] = useState<number>(0);
+  const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
+
+  // Scaling factor to reduce the height of the tallest bar
+  const scalingFactor = 0.9; // 90% of the chart height
+
+  useEffect(() => {
+    const aggregated = monthsOfYear.map((month, index) => {
+      const monthData = data.filter(item => {
+        const itemMonth = new Date(item.date).getMonth(); // Extract month from date
+        return itemMonth === index;
+      });
+      const totalAmount = monthData.reduce((sum, item) => sum + item.amount, 0);
+      return { month, amount: totalAmount + 100 }; // Added 100 to totalAmount as per your example
+    });
+
+    // Find the maximum amount
+    const max = Math.max(...aggregated.map(d => d.amount));
+    setMaxAmount(max);
+
+    setAggregatedData(aggregated);
+  }, [data]);
 
   return (
     <Card>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart data={chartData} onMouseLeave={handleMouseLeave}>
+          <BarChart data={aggregatedData} width={500} height={300}>
             <CartesianGrid vertical={false} horizontal={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            
-            <Bar dataKey="desktop" radius={10}>
-              {chartData.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={activeIndex === index ? "#12887E33" : "#EDF0F7"}
-                  onMouseEnter={() => handleMouseEnter(index)}
-                />
-              ))}
-              <LabelList
-                dataKey="desktop"
-                position="top"
-                content={({ x, y, value, index }) =>
-                  activeIndex === index ? (
-                    <text
-                      x={x}
-                      y={y}
-                      dy={-10}
-                      fill="black"
-                      fontSize={12}
-                      textAnchor="top"
-                    >
-                      {value}
-                    </text>
-                  ) : null
-                }
-              />
+            <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
+            <Bar
+              dataKey="amount"
+              radius={10}
+              onMouseEnter={(data, index) => setHighlightedIndex(index)}
+              onMouseLeave={() => setHighlightedIndex(null)}
+            >
+              {aggregatedData.map((entry, index) => {
+                const isHighlighted = highlightedIndex === index;
+                const barFill = isHighlighted ? "#green" : "#blue"; // Default gray for non-highlighted bars
+                return (
+                  <rect
+                    key={`rect-${index}`}
+                    x={index * (500 / aggregatedData.length)}
+                    y={300 - ((entry.amount / maxAmount) * 300 * scalingFactor)}
+                    width={(500 / aggregatedData.length) - 10}
+                    height={((entry.amount / maxAmount) * 300 * scalingFactor)}
+                    fill={barFill}
+                    onMouseEnter={() => setHighlightedIndex(index)}
+                    onMouseLeave={() => setHighlightedIndex(null)}
+                  />
+                );
+              })}
             </Bar>
+            <RechartsTooltip
+              content={({ payload }) => {
+                if (payload && payload.length) {
+                  return (
+                    <div className="custom-tooltip">
+                      <p>{`Month: ${payload[0].payload.month}`}</p>
+                      <p>{`Amount: $${payload[0].value}`}</p>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
           </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>
   );
 }
+
+export default BarChartComponent;

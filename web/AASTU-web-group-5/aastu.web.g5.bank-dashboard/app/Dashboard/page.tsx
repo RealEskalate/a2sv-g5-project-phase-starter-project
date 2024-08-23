@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import RecentTransactionCard from "./components/RecentTransactionCard";
 import QuickTransferList from "./components/QuickTransferList";
 import PieChartComponent from "./components/PieChartComponent";
@@ -7,25 +7,58 @@ import BarchartComponent from "./components/BarchartComponent";
 import LineGraphComponent from "./components/LineGraphComponent";
 import Link from "next/link";
 import Card from "../components/common/card";
-import Chip_card1 from "@/public/assets/image/Chip_Card1.png";
-import Chip_card3 from "@/public/assets/image/Chip_Card3.png";
+import { useSession } from "next-auth/react";
+import creditCardColor from "@/app/CreditCards/cardMockData";
 
-const creditCardColor = {
-  cardOne: {
-    cardBgColor: "bg-blue-500 rounded-3xl text-white",
-    bottomBgColor: "flex justify-between p-4 bg-blue-400 rounded-bl-3xl rounded-br-3xl",
-    imageCreditCard: Chip_card1,
-    grayCircleColor: false,
-  },
-  cardThree: {
-    cardBgColor: "bg-white rounded-3xl text-black",
-    bottomBgColor: "",
-    imageCreditCard: Chip_card3,
-    grayCircleColor: true,
-  },
-};
+
+interface ExtendedUser {
+  name?: string;
+  email?: string;
+  image?: string;
+  accessToken?: string;
+}
 
 function Dashboard() {
+
+  const [error, setError] = useState<string | null>(null);
+  const [activeLink, setActiveLink] = useState<string>("recent");
+  const [cardData, setCardData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { data: session } = useSession();
+  const user = session?.user as ExtendedUser;
+  const accessToken = user?.accessToken;
+  const [data, setData] = useState<any[]>([]);
+  const [expenseData, setExpenseData] = useState<any[]>([]);
+
+
+  const fetchCardData = async (page: number) => {
+    if (!accessToken) {
+      setError("No access token available");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://bank-dashboard-1tst.onrender.com/cards?page=${page}&size=3`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch cards");
+      }
+
+      const data = await response.json();
+      setCardData(data.content || []);
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="flex flex-col bg-[#f9f9f9] min-h-screen">
       {/* Main content */}
@@ -46,9 +79,14 @@ function Dashboard() {
                   </div>
                   <div className="overflow-x-auto gap-4 mt-4">
                     <div className="flex gap-4 bg-white">
-                      <Card creditCardColor={creditCardColor.cardOne} />
-                      <Card creditCardColor={creditCardColor.cardThree} />
-                    </div>
+                    {cardData.map((card, index) => (
+              <Card
+                key={index}
+                cardData={card}
+                cardColor={creditCardColor[index % creditCardColor.length]}
+              />
+            ))}
+                      </div>
                   </div>
                 </div>
               </div>

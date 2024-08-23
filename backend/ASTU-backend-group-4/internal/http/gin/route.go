@@ -33,9 +33,9 @@ func SetUpBlogRouter(r *gin.Engine, blogController *BlogController, blogUseCase 
 }
 
 func SetUpAuthRouter(r *gin.Engine, userController *UserController, authUsecase *auth.AuthServices) {
-	r.POST("/login", AuthMiddleware(), userController.Login)
-	r.POST("/register", AuthMiddleware(), userController.RegisterUser)
+	r.POST("/login", userController.Login)
+	r.POST("/register", userController.RegisterUser)
 	r.PUT("/profile", AuthMiddleware(), userController.UpdateProfile)
-	r.POST("/activate/:userID/:token", AuthMiddleware(), userController.ActivateUser)
+	r.POST("/activate/:userID/:token", userController.ActivateUser)
 	r.POST("/logout", AuthMiddleware(), userController.Logout)
 }

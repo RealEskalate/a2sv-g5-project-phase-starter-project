@@ -1,6 +1,7 @@
 package main
 
 import (
+	"astu-backend-g1/config"
 	"astu-backend-g1/delivery/controllers"
 	_ "astu-backend-g1/delivery/docs"
 	router "astu-backend-g1/delivery/routers"
@@ -30,7 +31,11 @@ import (
 // @BasePath /
 // @schemes http
 func main() {
-	clientOptions := options.Client().ApplyURI("mongodb://hundera:55969362@localhost:27017/")
+	config_mongo,err := config.LoadConfig()
+	clientOptions := options.Client().ApplyURI(config_mongo.Database.Uri)
+	if err != nil {
+		panic(err)
+	}
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		panic(err)

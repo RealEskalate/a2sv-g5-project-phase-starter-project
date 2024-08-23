@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/chat_box.dart';
+import '../widgets/message_contaner.dart';
 import '../widgets/profile_pic_widget.dart';
 
 class ChatPage extends StatelessWidget {
@@ -15,9 +16,12 @@ class ChatPage extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: AppBar(
-              titleSpacing: 8,
+              toolbarHeight: 65,
+              titleSpacing: 0,
+              elevation: 0,
+              backgroundColor: Colors.white,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back, color: Color.fromARGB(255, 14, 8, 1)),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -53,26 +57,41 @@ class ChatPage extends StatelessWidget {
               ),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.call_outlined),
+                  icon: const Icon(Icons.call_outlined, color: Color.fromARGB(255, 14, 8, 1)),
                   onPressed: () {},
                 ),
                 IconButton(
-                  icon: const Icon(Icons.videocam_outlined),
+                  icon: const Icon(Icons.videocam_outlined, color: Color.fromARGB(255, 14, 8, 1),),
                   onPressed: () {},
                 ),
               ],
               ),
           ),
         ),
-        body: const Stack(
+        backgroundColor: Colors.white,
+        body: Stack(
           children: [
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: MessageBox(),
-            
-          ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 95.0),
+              child: ListView.builder(
+              itemCount: 20,
+              itemBuilder: (context, index) {
+                return withTime(
+                  text: 'Have a great working week!!', 
+                  isCurrentUser: index % 2 != 0 ? true : false, 
+                  type: index % 3 != 0 ?'image': 'audio',
+                  image: 'https://images.unsplash.com/photo-1557863618-9643198cb07b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Njd8fFRveW90YSUyMFY4JTIwcGF0cm9sfGVufDB8fDB8fHww',
+                  time: '09:25 AM',
+                );
+              },
+              ),
+            ),
+            const Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: MessageBox(),
+            ),
           ]
         ),
       ),

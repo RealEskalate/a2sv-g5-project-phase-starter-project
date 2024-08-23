@@ -35,20 +35,19 @@ void main() async {
           primaryColor: const Color.fromRGBO(63, 81, 243, 1),
           secondaryHeaderColor: const Color.fromARGB(230, 255, 19, 19),
           useMaterial3: false,
+          iconTheme: const IconThemeData(color: Color.fromARGB(255, 14, 8, 1)),
         ),
-        home: const ChatPage(),
         // initialRoute: '/cover_page',
+
+        initialRoute: '/chat_page',
         onGenerateRoute: (settings) {
           if(settings.name == '/sign_in_page'){
             return createRoute(SignInPage());
-          }
-          else if(settings.name == '/sign_up_page'){
+          } else if(settings.name == '/sign_up_page'){
             return createRoute(const SignUpPage());
-          }
-          else if(settings.name == '/cover_page'){
+          } else if(settings.name == '/cover_page'){
             return createRoute(const CoverPage());
-          }
-          else if (settings.name == '/home_page') {
+          } else if (settings.name == '/home_page') {
             return createRoute(const Home());
           } else if (settings.name == '/product_add_page') {
             return createRoute(const AddProudctPage());

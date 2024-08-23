@@ -33,9 +33,8 @@ func NewUserProfileUpdateUsecase(
 
 func (uc *userProfileUpdateUsecase) UpdateUserProfile(ctx context.Context, userID string, user *dtos.ProfileUpdateRequest, file *multipart.FileHeader) *models.ErrorResponse {
 	var updatedUser models.User
-	fmt.Println("You were here")
 
-	_, err := uc.UserRepository.GetUserByID(ctx, userID)
+	currUser, err := uc.UserRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return err
 	}
@@ -59,6 +58,13 @@ func (uc *userProfileUpdateUsecase) UpdateUserProfile(ctx context.Context, userI
 		if err != nil {
 			return err
 		}
+
+		fmt.Println(currUser.ImageKey)
+		err = uc.cloudinaryService.DeleteFile(currUser.ImageKey, ctx)
+		if err != nil {
+			return err
+		}
+
 		updatedUser.ImageKey = uploadResult
 	}
 
@@ -67,7 +73,6 @@ func (uc *userProfileUpdateUsecase) UpdateUserProfile(ctx context.Context, userI
 	updatedUser.Bio = user.Bio
 	updatedUser.PhoneNumber = user.PhoneNumber
 
-	fmt.Println(updatedUser)
 	err = uc.UserRepository.UpdateUser(ctx, &updatedUser, userID)
 	if err != nil {
 		return err
@@ -78,17 +83,18 @@ func (uc *userProfileUpdateUsecase) UpdateUserProfile(ctx context.Context, userI
 
 func (uc *userProfileUpdateUsecase) GetUserProfile(ctx context.Context, userID string) (*dtos.Profile, *models.ErrorResponse) {
 	user, err := uc.UserRepository.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	imageURL := uc.cloudinaryService.GetProfileImageURL(user.ImageKey, ctx)
 	userResponse := dtos.Profile{
 		Email:       user.Email,
 		Username:    user.Username,
 		Name:        user.Name,
 		Bio:         user.Bio,
 		PhoneNumber: user.PhoneNumber,
-		ImageKey:    user.ImageKey,
-	}
-
-	if err != nil {
-		return nil, err
+		ImageURL:    imageURL,
 	}
 
 	return &userResponse, nil

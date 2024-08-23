@@ -4,6 +4,7 @@ import (
 	"astu-backend-g1/domain"
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/sv-tools/mongoifc"
 	"go.mongodb.org/mongo-driver/bson"
@@ -131,6 +132,7 @@ func (repo *userRepository) Create(u *domain.User) (domain.User, error) {
 
 func (repo *userRepository) Update(userId string, updateData domain.User) (domain.User, error) {
 	user, err := repo.getByID(userId)
+	log.Println(user.IsAdmin,updateData)
 	if err != nil {
 		return domain.User{}, err
 	}
@@ -139,10 +141,11 @@ func (repo *userRepository) Update(userId string, updateData domain.User) (domai
 	}
 	if updateData.VerifyToken != "" {
 		user.VerifyToken = updateData.VerifyToken
+
 	}
-	if updateData.IsAdmin {
-		user.IsAdmin = true
-	}
+	//in every request of this function must pass the isadmin value
+	user.IsAdmin = updateData.IsAdmin
+	
 	if updateData.Password != "" {
 		user.Password = updateData.Password
 	}
@@ -152,6 +155,7 @@ func (repo *userRepository) Update(userId string, updateData domain.User) (domai
 	if updateData.FirstName != "" {
 		user.FirstName = updateData.FirstName
 	}
+	
 	if updateData.IsActive {
 		user.IsActive = true
 	}

@@ -35,7 +35,7 @@ const Investments = () => {
 		const fetchInvestmentData = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-1tst.onrender.com/user/random-investment-data?years=3&months=5",
+					"https://bank-dashboard-rsf1.onrender.com/user/random-investment-data?years=3&months=5",
 					{
 						headers: {
 							Authorization: token,

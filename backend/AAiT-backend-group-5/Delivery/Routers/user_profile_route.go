@@ -20,4 +20,6 @@ func NewUserProfileRouter(database mongo.Database, group *gin.RouterGroup) {
 	}
 
 	group.PUT("/profile", UserProfileController.ProfileUpdate)
+	group.GET("/profile", UserProfileController.ProfileGet)
+	group.DELETE("/profile", UserProfileController.ProfileDelete)
 }

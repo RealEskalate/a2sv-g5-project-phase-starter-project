@@ -17,16 +17,18 @@ import (
 // Test Suite
 type RefreshControllerTestSuite struct {
 	suite.Suite
-	mockUsecase    *mocks.RefreshUsecase
-	mockJwtService *mocks.JwtService
-	controller     *controllers.RefreshController
-	router         *gin.Engine
+	mockUsecase      *mocks.RefreshUsecase
+	mockJwtService   *mocks.JwtService
+	mockOauthService *mocks.MockOAuthService
+	controller       *controllers.RefreshController
+	router           *gin.Engine
 }
 
 func (suite *RefreshControllerTestSuite) SetupSuite() {
 	suite.mockUsecase = new(mocks.RefreshUsecase)
 	suite.mockJwtService = new(mocks.JwtService)
-	suite.controller = controllers.NewRefreshController(suite.mockUsecase, suite.mockJwtService)
+	suite.mockOauthService = new(mocks.MockOAuthService)
+	suite.controller = controllers.NewRefreshController(suite.mockUsecase, suite.mockJwtService, suite.mockOauthService)
 	suite.router = gin.Default()
 
 	// Define the route

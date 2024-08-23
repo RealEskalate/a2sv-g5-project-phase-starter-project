@@ -8,8 +8,6 @@ import '../../../auth/data/data_source/auth_local_datasource.dart';
 import '../../domain/entity/chat_entity.dart';
 import '../../domain/repository/chat_repository.dart';
 
-
-
 class ChatRepositoryImpl implements ChatRepository {
   final ChatRemoteDataSource remoteDataSource;
   final AuthLocalDataSource localDataSource;

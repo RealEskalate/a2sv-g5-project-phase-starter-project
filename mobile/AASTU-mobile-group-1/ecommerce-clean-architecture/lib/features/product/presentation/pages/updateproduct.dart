@@ -212,6 +212,7 @@ class _Updateproductstate extends State<Updateproduct> {
                               price: double.parse(priceController.text),
                               description: descriptionController.text,
                               image: _image.toString(),
+                              seller: widget.user,
                             )));
 
                             // Navigator.push(context, MaterialPageRoute(builder: (context)=>MyHomePage(title: '',)));

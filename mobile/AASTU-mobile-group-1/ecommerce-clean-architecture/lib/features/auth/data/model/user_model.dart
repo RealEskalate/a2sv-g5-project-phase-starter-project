@@ -5,7 +5,7 @@ class UserModel extends UserEntity {
     id,
     required String name,
     required String email,
-     String? password,
+    String? password,
   }) : super(
           id: id,
           name: name,
@@ -15,7 +15,15 @@ class UserModel extends UserEntity {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id : json['id'],
+      id: json['id'],
+      name: json['name'],
+      email: json['email'],
+    );
+  }
+
+  factory UserModel.forSeller(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['_id'],
       name: json['name'],
       email: json['email'],
     );
@@ -33,6 +41,7 @@ class UserModel extends UserEntity {
       id: entity.id,
       name: entity.name,
       email: entity.email,
+      password: entity.password,
     );
   }
 }

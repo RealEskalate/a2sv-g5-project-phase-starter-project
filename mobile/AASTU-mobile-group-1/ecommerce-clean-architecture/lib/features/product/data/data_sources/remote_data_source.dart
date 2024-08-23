@@ -51,6 +51,7 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource{
         };
 
         if (response.statusCode==200){
+          print("Product fetched successfully data layer$listofproducts");
           return listofproducts;
         }else{
           throw ServerException();

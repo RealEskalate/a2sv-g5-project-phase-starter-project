@@ -211,6 +211,7 @@ class _AddUpdateState extends State<AddUpdate> {
                         price: double.parse(priceController.text),
                         description: descriptionController.text,
                         image: _image!.path,
+                        seller: widget.user,
                       )));
                     },
                     child: const Text(

@@ -73,6 +73,7 @@ export function YearlyInvest({ data }: YearlyInvestProps) {
             accessibilityLayer
             data={chartData}
             margin={{
+              left:6,
               right: 12,
             }}
           >
@@ -89,7 +90,7 @@ export function YearlyInvest({ data }: YearlyInvestProps) {
               axisLine={false}
               tickMargin={8}
               ticks={[0, 10000, 20000, 30000, 40000]}
-              tickFormatter={(value) => value.toLocaleString()}
+              tickFormatter={(value) => `$${value.toLocaleString()}`}
             />
             <ChartTooltip
               cursor={false}
@@ -102,6 +103,7 @@ export function YearlyInvest({ data }: YearlyInvestProps) {
               fillOpacity={0.4}
               stroke="#EDA10D"
               strokeWidth={3}
+              
               dot={{
                 fill: "white",
                 r: 6,

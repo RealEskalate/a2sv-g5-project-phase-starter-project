@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import LayoutProvider from "./Provider/LayoutProvider";
 import ReduxProvider from "./Redux/ReduxProvider";
 import SessionWrapper from "./Provider/SessionWrapper";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,6 +27,7 @@ export default function RootLayout({
         <body className={`${inter.className}`}>
           <ReduxProvider>
             <LayoutProvider>{children}</LayoutProvider>
+            <Toaster />
           </ReduxProvider>
         </body>
       </html>

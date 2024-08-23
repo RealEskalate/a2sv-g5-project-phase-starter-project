@@ -66,11 +66,6 @@ const Page = () => {
         if (sessionData && sessionData.user) {
           setSession(sessionData.user);
         } 
-        // else {
-        //   router.push(
-        //     `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
-        //   );
-        // }
       } catch (error) {
         console.error("Error fetching session:", error);
       } finally {
@@ -213,14 +208,6 @@ const Page = () => {
   }
 
   // Don't render anything while loading
-
-  // if (!session) {
-  //   router.push(
-  //     `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
-  //   );
-  //   return null;
-  // }
-
   return (
     <>
       <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5 dark:bg-[#020817]">

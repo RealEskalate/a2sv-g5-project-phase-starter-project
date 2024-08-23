@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Sidebar from "./sidebar/Sidebar";
-import MenuBarMobile from "./navbar/Navbar";
+import Navbar from "./navbar/Navbar";
 
 export default function LayoutForSidebarAndNavbar() {
 
@@ -9,7 +9,7 @@ export default function LayoutForSidebarAndNavbar() {
   return (
     <div className="min-h-screen">
       <div className="flex">
-        <MenuBarMobile setter={setShowSidebar} />
+        <Navbar setter={setShowSidebar} />
         <Sidebar show={showSidebar} setter={setShowSidebar} />
       </div>
     </div>

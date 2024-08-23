@@ -92,7 +92,7 @@ const SignUpForm = () => {
         </h1>
         <div className="sub font-normal text-base text-white opacity-80">
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt"
+          eiusmod tempor "
         </div>
         <div className="flex w-full gap-4 mt-6">
           <ProgressComp />

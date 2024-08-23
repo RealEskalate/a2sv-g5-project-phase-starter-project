@@ -3,7 +3,7 @@ import { BankService, BankServiceData, ApiResponse } from '@/types/bankServiceCo
 
 const BASE_URL = 'https://a2svwallet.onrender.com';
 
-// Fetch paginated bank services
+
 export const getBankServices = async (token: string, page: number, size: number ): Promise<ApiResponse> => { 
   try {
   console.log("Fetching")

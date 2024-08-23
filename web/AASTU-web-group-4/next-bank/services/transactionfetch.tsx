@@ -1,8 +1,7 @@
 import Cookies from "js-cookie";
 
-const API_BASE_URL = "https://web-team-g4.onrender.com";
-
-const token = Cookies.get('accessToken');
+const API_BASE_URL = " https://web-team-g4.onrender.com";
+const token = Cookies.get("accessToken");
 
 // GET /transactionshttps://bank-dashboard-1tst.onrender.com
 export const getAllTransactionsss = async () => {
@@ -22,7 +21,9 @@ export const getAllTransactionsss = async () => {
 
 // GET /transactions
 export const getAllTransactions = async (page: any, size: any) => {
-  const response = await fetch(
+  
+  try 
+  {const response = await fetch(
     `${API_BASE_URL}/transactions?page=${page}&size=${size}`,
     {
       method: "GET",
@@ -32,8 +33,11 @@ export const getAllTransactions = async (page: any, size: any) => {
     }
   );
   return response.json();
+}catch (error) {
+  console.error("Error fetching some transactions:", error);
+  throw error;
 };
-
+};
 // POST /transactions
 export const createTransaction = async (
   transactionData: any,
@@ -118,7 +122,6 @@ export const getRandomBalanceHistory = async () => {
 
 // GET /transactions/latest-transfers
 export const getLatestTransfers = async (
-  accessToken: string,
   number: number
 ) => {
   try {

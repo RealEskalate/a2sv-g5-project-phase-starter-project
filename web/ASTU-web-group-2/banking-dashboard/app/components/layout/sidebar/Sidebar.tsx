@@ -4,19 +4,18 @@ import { usePathname } from "next/navigation";
 
 import { sidebarListItems } from "./sidebarListItems";
 
-
 interface SidebarProps {
   show: boolean;
   setter: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ show, setter }) => {
-//   const router = useRouter();
+  //   const router = useRouter();
   const pathname = usePathname();
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    const index = sidebarListItems.findIndex(item => item.path === pathname);
+    const index = sidebarListItems.findIndex((item) => item.path === pathname);
     setActiveIndex(index !== -1 ? index : 0);
   }, [pathname]);
 
@@ -24,7 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({ show, setter }) => {
   const className =
     "bg-white border-r border-[#E6EFF5] w-[250px] transition-[margin-left] ease-in-out duration-500  fixed top-0 bottom-0 left-0 z-50";
   // Append class based on state of sidebar visibility
-  const appendClass = show ? " ml-0" : " ml-[-250px] md:ml-0";
+  const appendClass = show ? " ml-0 drop-shadow-md" : " ml-[-250px] md:ml-0";
 
   // Clickable menu items
   const MenuItem: React.FC<{
@@ -34,9 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ show, setter }) => {
   }> = ({ icon, name, route }) => {
     // Highlight menu item based on currently displayed route
     const colorClass =
-      pathname === route
-        ? "text-white"
-        : "text-white/50 hover:text-white";
+      pathname === route ? "text-white" : "text-white/50 hover:text-white";
 
     return (
       <Link
@@ -53,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ show, setter }) => {
   // Overlay to prevent clicks in background, also serves as our close button
   const ModalOverlay: React.FC = () => (
     <div
-      className={`flex md:hidden fixed top-0 right-0 bottom-0 left-0 bg-black/50 z-30`}
+      className={`flex md:hidden fixed top-0 right-0 bottom-0 left-0 bg-black/40 z-30`}
       onClick={() => setter((prev) => !prev)}
     />
   );
@@ -69,9 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({ show, setter }) => {
             alt="bankDash logo"
             className="mr-3"
           />
-          <p className="font-black text-[25px] text-[#343C6A]">
-            BankDash.
-          </p>
+          <p className="font-black text-[25px] text-[#343C6A]">BankDash.</p>
         </div>
         <div className="relative flex flex-col flex-1 overflow-y-auto pt-2">
           {/* Active indicator */}
@@ -83,7 +78,15 @@ const Sidebar: React.FC<SidebarProps> = ({ show, setter }) => {
           ></div>
           <div className="flex flex-col flex-1">
             {sidebarListItems.map((item, index) => (
-              <Link key={index} href={item.path}>
+              <Link
+                key={index}
+                href={item.path}
+                onClick={() => {
+                  if (show) {
+                    setter((prev) => !prev);
+                  }
+                }}
+              >
                 <div
                   className={`flex items-center gap-8 h-[60px] ${
                     pathname === item.path ? "text-[#2D60FF]" : "text-[#B1B1B1]"

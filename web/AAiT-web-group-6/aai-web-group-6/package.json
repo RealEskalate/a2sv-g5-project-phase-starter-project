@@ -13,7 +13,6 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
-    "@next/swc-win32-x64-msvc": "^14.2.6",
     "next": "^14.2.6",
     "react": "^18.3.1",
     "react-dom": "^18"

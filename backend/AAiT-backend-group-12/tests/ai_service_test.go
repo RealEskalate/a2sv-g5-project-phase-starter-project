@@ -27,20 +27,42 @@ func (model *MockModel) GenerateContent(c context.Context, g genai.Text) (*genai
 
 type AIServicesTestSuite struct {
 	suite.Suite
-	model     *mocks.AIModelInterface
+	mockModel *mocks.AIModelInterface
 	aiService *ai_service.AIService
 }
 
 func (suite *AIServicesTestSuite) SetupSuite() {
-	suite.model = new(mocks.AIModelInterface)
+	suite.mockModel = new(mocks.AIModelInterface)
 	suite.aiService = &ai_service.AIService{
-		Model: suite.model,
+		Model: suite.mockModel,
 		Ctx:   context.Background(),
 	}
 }
 
-func (suite *AIServicesTestSuite) TestNewAIService() {
+func (suite *AIServicesTestSuite) TestGenerateContent_Negative_NoCandidates() {
+	suite.mockModel.On("GenerateContent", suite.aiService.Ctx, genai.Text("Generate a blog post about test. The content should be engaging, include relevant subheadings, and provide useful insights. Return the content in a well-structured format.")).Return(&genai.GenerateContentResponse{}, nil).Once()
 
+	res, err := suite.aiService.GenerateContent([]string{"test"})
+	suite.Nil(err)
+	suite.Equal("No candidates found", res)
+}
+
+func (suite *AIServicesTestSuite) TestGenerateContent_Negative_NoContentParts() {
+	item := &genai.Candidate{
+		Content: &genai.Content{
+			Parts: []genai.Part{},
+		},
+	}
+
+	suite.mockModel.On("GenerateContent", suite.aiService.Ctx, genai.Text("Generate a blog post about test. The content should be engaging, include relevant subheadings, and provide useful insights. Return the content in a well-structured format.")).Return(&genai.GenerateContentResponse{
+		Candidates: []*genai.Candidate{
+			item,
+		},
+	}, nil).Once()
+
+	res, err := suite.aiService.GenerateContent([]string{"test"})
+	suite.Nil(err)
+	suite.Equal("No content parts found", res)
 }
 
 func TestAIServices(t *testing.T) {

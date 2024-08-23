@@ -14,6 +14,7 @@ type Config struct {
 	DbName                   string
 	UserCollection           string
 	BlogCollection           string
+	CommentCollection		string
 	ActiveUserCollection     string
 	UnverifiedUserCollection string
 	ContextTimeout           int
@@ -40,6 +41,7 @@ func LoadEnv() (*Config, error) {
 	dbname := os.Getenv("DB_NAME")
 	usercoll := os.Getenv("user_collection")
 	blogcoll := os.Getenv("blog_collection")
+	commentcoll := os.Getenv("comment_collection")
 	activeusercoll := os.Getenv("ACTIVE_USER_COLLECTION")
 	unverifiedusercoll := os.Getenv("UNVERIFIED_USER_COLLECTION")
 	contextTimeoutStr := os.Getenv("CONTEXT_TIMEOUT")
@@ -83,6 +85,7 @@ func LoadEnv() (*Config, error) {
 		DbName:                 dbname,
 		UserCollection:         usercoll,
 		BlogCollection:         blogcoll,
+		CommentCollection: 		commentcoll,
 		ActiveUserCollection:   activeusercoll,
 		UnverifiedUserCollection: unverifiedusercoll,
 		ContextTimeout:         contextTimeout,

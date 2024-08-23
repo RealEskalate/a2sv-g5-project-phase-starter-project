@@ -52,7 +52,7 @@ export function ExpenseChart({ expenses }: ExpenseChartProps) {
       } border-none py-4`}
     >
       <CardContent
-        className="p-0"
+        className=""
         style={{
           backgroundColor: isDarkMode ? "#1f2937" : "#ffffff", // Card background color
           borderColor: isDarkMode ? "#333333" : "#dddddd", // Card border color

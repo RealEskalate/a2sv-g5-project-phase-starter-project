@@ -30,9 +30,11 @@ export const WeeklyActivity = ({ onLoadingComplete }: { onLoadingComplete: any }
         const withdraw = await getExpenses(0, 7);
         setWeeklyIncome(incomes?.content || []);
         setWeeklyWithdraw(withdraw?.content || []);
+         onLoadingComplete(false);
+            setLoading(false);
       } finally {
-        onLoadingComplete(false);
-        setLoading(false);
+       
+     
       }
     };
     fetchData();

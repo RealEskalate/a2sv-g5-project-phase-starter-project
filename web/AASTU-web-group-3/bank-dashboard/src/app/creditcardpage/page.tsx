@@ -73,7 +73,7 @@ const creditCardPage = () => {
         </div>
       </div>
 
-      <div className="addnewandcardsetting md:flex md:flex-row md:w-full ">
+      <div className="addnewandcardsetting md:flex md:flex-row md:w-full " id="add-new-card">
         <div className="addnewcard flex flex-col md:w-[65%]">
           <div className="p-5 font-semibold text-[16px] leading-[19.36px] text-[#343C6A] mx-2">
             Add New Card

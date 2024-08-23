@@ -24,7 +24,7 @@ const Navbar = () => {
         />
       )}
       <div className="w-full flex flex-col md:flex-row gap-4 items-center justify-between md:w-[95%]">
-        <div className="ml-[25%] md:ml-6 font-semibold text-[25px] text-[#343C6A]">
+        <div className="ml-[25%] md:ml-2 font-semibold text-[25px] text-[#343C6A]">
           {activeItem}
         </div>
         <div className="w-full md:w-auto flex items-center justify-between gap-4">

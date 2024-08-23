@@ -8,7 +8,7 @@ type BlogUsecase struct {
 	BlogRepo domain.BlogRepository
 }
 
-func NewBlogUsecase(br domain.BlogRepository) domain.BlogUsecase {
+func NewBlogUsecase(br domain.BlogRepository) *BlogUsecase {
 	return &BlogUsecase{
 		BlogRepo: br,
 	}

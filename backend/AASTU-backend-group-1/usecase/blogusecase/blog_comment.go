@@ -104,3 +104,52 @@ func (b *BlogUsecase) GetBlogComments(blogID string) ([]*domain.Comment, error) 
 	comments := <-commentsChan
 	return comments, nil
 }
+
+func (b *BlogUsecase) DeleteComment(commentID string,claim *domain.LoginClaims) error {
+
+	comment, err := b.BlogRepo.GetCommentByID(commentID)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return config.ErrCommentNotFound
+		}
+
+		return err
+	}
+
+	if comment.Author != claim.Username {
+		return err
+	}
+
+	id := comment.BlogID
+	var wg sync.WaitGroup
+	errChan := make(chan error, 2)
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		if err := b.BlogRepo.DecrementBlogComments(id.Hex()); err != nil {
+			errChan <- err
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		if err := b.BlogRepo.DeleteComment(commentID); err != nil {
+			errChan <- err
+		}
+	}()
+
+	// Wait for all goroutines to finish
+	wg.Wait()
+	close(errChan)
+
+	// Check if any errors occurred
+	for err := range errChan {
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

@@ -14,6 +14,9 @@ import (
 type UserRepository struct {
 	userCollection  *mongo.Collection
 	tokenCollection *mongo.Collection
+	blogCollection  *mongo.Collection
+	likesCollection *mongo.Collection
+	commentsCollection *mongo.Collection
 	cache domain.Cache
 }
 
@@ -21,6 +24,9 @@ func NewUserRepository(db *mongo.Database,cache domain.Cache) domain.UserReposit
 	return &UserRepository{
 		userCollection:  db.Collection("users"),
 		tokenCollection: db.Collection("tokens"),
+		blogCollection:  db.Collection("blog"),
+		likesCollection: db.Collection("likes"),
+		commentsCollection: db.Collection("comment"),
 		cache: cache,
 	}
 }
@@ -130,31 +136,44 @@ func (ur *UserRepository) GetUserByUsernameorEmail(usernameoremail string) (*dom
 
 func (ur *UserRepository) UpdateProfile(usernameoremail string, user *domain.User) error {
 	filter := filterUser(usernameoremail)
-
+  
 	update := bson.M{
-		"$set": bson.M{
-			"firstname":   user.FirstName,
-			"lastname":    user.LastName,
-			"bio":         user.Bio,
-			"avatar":      user.Avatar,
-			"username":    user.Username,
-			"email":       user.Email,
-			"role":        user.Role,
-			"address":     user.Address,
-			"joined_date": user.JoinedDate,
-			"is_verified": user.IsVerified,
-		},
+	  "$set": bson.M{
+		"firstname":   user.FirstName,
+		"lastname":    user.LastName,
+		"bio":         user.Bio,
+		"avatar":      user.Avatar,
+		"username":    user.Username,
+		"email":       user.Email,
+		"role":        user.Role,
+		"address":     user.Address,
+		"joined_date": user.JoinedDate,
+		"is_verified": user.IsVerified,
+	  },
 	}
-
+  
+	// Perform the database update
 	_, err := ur.userCollection.UpdateOne(context.TODO(), filter, update)
-
 	if err != nil {
-		return err
+	  return err
 	}
-
+  
+	// Update the cache if it exists
+	cachedKey := fmt.Sprintf("user:%s", usernameoremail)
+	userJSON, err := bson.MarshalExtJSON(user, true, true)
+	if err != nil {
+	  return err
+	}
+  
+	err = ur.cache.SetCache(cachedKey, string(userJSON))
+	if err != nil {
+	  log.Println("Error updating cache:", err)
+	  return err
+	}
+  
 	return nil
-
-}
+  }
+  
 
 func (ur UserRepository) Resetpassword(usernameoremail string, password string) error {
 	filter := filterUser(usernameoremail)
@@ -237,5 +256,77 @@ func (ur *UserRepository) DeleteToken(username string) error {
 		return err
 	}
 
+	
+
 	return nil
 }
+
+func (ur *UserRepository) DeleteUser(username string) error {
+	ctx := context.TODO()
+
+	tempUser := username
+
+	// Nullify user information in user collection
+	userFilter := bson.M{"username": username}
+	userUpdate := bson.M{
+		"$set": bson.M{
+			"First Name":   "Deleted User",
+			"Last Name":    "",
+			"username":     "Deleted User", 
+			"email":        "",
+			"role":         "user",
+			"address":      "",
+			"joined_date":  "",
+			"is_verified":  false,
+		},
+	}
+
+	_, err := ur.userCollection.UpdateOne(ctx, userFilter, userUpdate)
+	if err != nil {
+		return err
+	}
+
+	// Nullify the author field in the blog collection
+	blogFilter := bson.M{"author": username}
+	log.Println(blogFilter,"blog filter")
+	log.Println(tempUser,"temp user")
+	
+	blogUpdate := bson.M{
+		"$set": bson.M{
+			"author": "Deleted User",
+		},
+	}
+
+	_, err = ur.blogCollection.UpdateMany(ctx, blogFilter, blogUpdate)
+	if err != nil {
+		return err
+	}
+
+	// Nullify the author field in the comments collection
+	_, err = ur.commentsCollection.UpdateMany(ctx, blogFilter, blogUpdate)
+	if err != nil {
+		return err
+	}
+
+	// Nullify the user field in the Like collection
+	likeFilter := bson.M{"user": username}
+	likeUpdate := bson.M{
+		"$set": bson.M{
+			"user": "Deleted User",
+		},
+	}
+
+	_, err = ur.commentsCollection.UpdateMany(ctx, likeFilter, likeUpdate)
+	if err != nil {
+		return err
+	}
+
+	// Delete all refresh tokens in the token collection using this username
+	_, err = ur.tokenCollection.DeleteMany(ctx, userFilter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+

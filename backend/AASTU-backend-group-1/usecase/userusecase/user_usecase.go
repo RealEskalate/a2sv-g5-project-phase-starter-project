@@ -9,7 +9,7 @@ type UserUsecase struct {
 	Oauth2Repo domain.OAuthStateRepository
 }
 
-func NewUserUsecase(ur domain.UserRepository, or domain.OAuthStateRepository) domain.UserUsecase {
+func NewUserUsecase(ur domain.UserRepository, or domain.OAuthStateRepository) *UserUsecase {
 	return &UserUsecase{
 		UserRepo:   ur,
 		Oauth2Repo: or,

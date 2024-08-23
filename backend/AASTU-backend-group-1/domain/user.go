@@ -37,6 +37,7 @@ type UserRepository interface {
 	GetTokenByUsername(username string) (*Token, error)
 	DeleteToken(username string) error
 	CheckRoot() error
+	DeleteUser(username string) error
 }
 
 type UserUsecase interface {
@@ -52,6 +53,7 @@ type UserUsecase interface {
 	RefreshToken(claims *LoginClaims) (string, error)
 	GoogleLogin() (string, error)
 	GoogleCallback(state, code string) (string, string, error)
+	DeleteUser(username string) error
 }
 
 type OAuthStateRepository interface {

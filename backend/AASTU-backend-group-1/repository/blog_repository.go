@@ -100,6 +100,30 @@ func (b *BlogRepository) DeleteBlogByID(id string) error {
 	if err != nil {
 		return err
 	}
+
+	
+	_,err = b.commentCollection.DeleteMany(context.Background(), bson.M{"blogid": blogid})
+
+
+	if err != nil {
+		return err
+	}
+
+	_,err = b.likeCollection.DeleteMany(context.Background(), bson.M{"blogid": blogid})
+
+
+	if err != nil {
+		return err
+	}
+
+	_,err = b.viewCollection.DeleteMany(context.Background(), bson.M{"blogid": blogid})
+
+
+	if err != nil {
+		return err
+	}
+
+
 	_, err = b.blogCollection.DeleteOne(context.Background(), bson.M{"_id": blogid})
 	return err
 }
@@ -124,9 +148,9 @@ func (b *BlogRepository) SearchBlog(title, author string, tags []string) ([]*dom
 	blogs := []*domain.Blog{}
 	filter := bson.M{
 		"$or": []bson.M{
-			{"title": title},
-			{"author": author},
-			{"tags": bson.M{"$in": tags}},
+			{"title": bson.M{"$regex": title, "$options": "i"}},
+			{"author": bson.M{"$regex": author, "$options": "i"}},
+			{"tags": bson.M{"$in": bson.M{"$regex": tags, "$options": "i"}}},
 		},
 	}
 
@@ -387,6 +411,56 @@ func (b *BlogRepository) AddComment(comment *domain.Comment) error {
 	return err
 }
 
+//DeleteComment implements domain.BlogRepository.
+func (b *BlogRepository) DeleteComment(commentID string) error {
+	commentid, err := primitive.ObjectIDFromHex(commentID)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.commentCollection.DeleteOne(context.Background(), bson.M{"_id": commentid})
+	return err
+}
+//Decrement Blog Views
+func (b *BlogRepository) DecrementBlogViews(blogID string) error {
+	blogid, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.blogCollection.UpdateOne(context.Background(), bson.M{"_id": blogid}, bson.M{"$inc": bson.M{"views_count": -1}})
+	return err
+
+}
+
+//Get Comment By ID
+func (b *BlogRepository) GetCommentByID(commentID string) (*domain.Comment, error) {
+	commentid, err := primitive.ObjectIDFromHex(commentID)
+	if err != nil {
+		return nil, err
+	}
+
+	var comment domain.Comment
+	err = b.commentCollection.FindOne(context.Background(), bson.M{"_id": commentid}).Decode(&comment)
+	if err != nil {
+		return nil, err
+	}
+
+	return &comment, nil
+}
+
+//Decrement Blog Comments
+func (b *BlogRepository) DecrementBlogComments(blogID string) error {
+	blogid, err := primitive.ObjectIDFromHex(blogID)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = b.blogCollection.UpdateOne(context.Background(), bson.M{"_id": blogid}, bson.M{"$inc": bson.M{"comments_count": -1}})
+	return err
+}
+
 //GET Single Blog's Comments
 
 func (b *BlogRepository) GetBlogComments(blogID string) ([]*domain.Comment, error) {
@@ -494,6 +568,7 @@ func (b *BlogRepository) IncrmentBlogComments(blogID string) error {
 	_, err = b.blogCollection.UpdateOne(context.Background(), bson.M{"_id": blogid}, bson.M{"$inc": bson.M{"comments_count": 1}})
 	return err
 }
+
 
 func (b *BlogRepository) DecrementBlogLikes(blogID string) error {
 	blogid, err := primitive.ObjectIDFromHex(blogID)

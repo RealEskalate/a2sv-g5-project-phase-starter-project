@@ -6,14 +6,16 @@ const token = Cookie.get("accessToken");
 // Update User Details - PUT Request
 export const updateUserDetails = async (userData: any) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/user/update`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(userData),
-    });
+    const response = await fetch(
+      "https://web-team-g4.onrender.com/user/update",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      }
+    );
 
     if (!response.ok) {
       console.log(userData,response)
@@ -31,14 +33,16 @@ export const updateUserDetails = async (userData: any) => {
 // Update User Preferences - PUT Request
 export const updatePreference = async (userData: any) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/user/update-preference`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(userData),
-    });
+    const response = await fetch(
+      "https://web-team-g4.onrender.com/user/update-preference",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Failed to update user preferences");
@@ -55,13 +59,15 @@ export const updatePreference = async (userData: any) => {
 // Fetch User Details - GET Request
 export const fetchUserDetails = async (username: string) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/user/${username}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `https://web-team-g4.onrender.com/user/{username}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Failed to fetch user details");
@@ -78,13 +84,15 @@ export const fetchUserDetails = async (username: string) => {
 // Fetch Random Investment Data - GET Request
 export const randomInvestmentData = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/user/random-investment-data`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `https://web-team-g4.onrender.com/user/random-investment-data`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Failed to fetch investment data");
@@ -99,15 +107,18 @@ export const randomInvestmentData = async () => {
 };
 
 // Fetch Current User - GET Request
-export const currentUser = async () => {
+export const currentuser = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/user/current`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `https://web-team-g4.onrender.com/user/current`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Failed to fetch current user details");

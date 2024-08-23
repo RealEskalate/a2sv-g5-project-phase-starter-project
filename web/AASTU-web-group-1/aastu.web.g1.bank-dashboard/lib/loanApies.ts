@@ -1,12 +1,10 @@
 import { getSession } from "next-auth/react";
 
-const baseUrl = `https://bank-dashboard-o9tl.onrender.com`
-
 export  async function getLoansAll(page:number, size:number) {
     try {
         const session = await getSession();
         const accessToken = session?.user.accessToken;
-        const response = await fetch(`${baseUrl}/active-loans/all?page=${page}&size=${size}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/active-loans/all`, {
             method: "GET",
             cache: "reload",
             headers: {
@@ -29,7 +27,7 @@ export async function getDetailData() {
     try{
         const session = await getSession();
         const accessToken = session?.user.accessToken;
-        const response = await fetch(`${baseUrl}/active-loans/detail-data`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/active-loans/detail-data`, {
             method: "GET",
             cache:"no-cache",
             headers: {

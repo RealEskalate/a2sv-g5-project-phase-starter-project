@@ -11,17 +11,23 @@ class _TextInputterState extends State<TextInputter> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          height: 70,
-          width: 500, 
-          color: Colors.white,
+      backgroundColor: Colors.white,
+      body: Container(
+        
+        height: double.infinity,
+        width: double.infinity,
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.attach_file),
+              IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.attach_file)
+                ),
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+              
                   child: TextField(
                     controller: TextEditingController(),
                     decoration: InputDecoration(
@@ -35,20 +41,32 @@ class _TextInputterState extends State<TextInputter> {
                       fillColor: const Color.fromARGB(255, 229, 233, 233),
                       filled: true,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(25),
                         borderSide: const BorderSide(
                           width: 0,
                           style: BorderStyle.none,
                         ),
                       ),
-                      suffixIcon: Icon(Icons.send), // Correct placement of suffixIcon
+                      suffixIcon:
+                          IconButton(icon:Icon(Icons.send, size: 20),
+                          onPressed: (){
+                  
+                          }, // Correct placement of suffixIcon
                     ),
-                  ),
-                ),
-              ),
-              const Icon(Icons.camera_alt_outlined),
-              const SizedBox(width: 10),
-              const Icon(Icons.keyboard_voice_outlined),
+                  ),),),
+                
+              const SizedBox(width: 5),
+              Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+          
+              IconButton(
+                icon: Icon(Icons.camera_alt_outlined),
+                onPressed: () {},),
+              IconButton(
+                icon: Icon(Icons.keyboard_voice_outlined),
+                onPressed: () {},),
+              ],)
             ],
           ),
         ),

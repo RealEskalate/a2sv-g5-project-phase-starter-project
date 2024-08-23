@@ -1162,7 +1162,7 @@ func (suite *UserUsecaseTestSuite) TestInitResetPassword_Positive() {
 
 	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: user.Username, Email: user.Email}).Return(user, nil).Once()
 	suite.mockUserRepository.On("UpdateVerificationDetails", context.Background(), user.Username, mock.AnythingOfType("domain.VerificationData")).Return(nil).Once()
-	suite.mockMailService.On("PasswordResetTemplate", hostUrl, user.Username, token).Return(mail).Once()
+	suite.mockMailService.On("PasswordResetTemplate", token).Return(mail).Once()
 	suite.mockMailService.On("SendMail", mock.AnythingOfType("string"), user.Email, mail).Return(nil).Once()
 
 	err := suite.Usecase.InitResetPassword(context.Background(), user.Username, user.Email, hostUrl)
@@ -1228,7 +1228,7 @@ func (suite *UserUsecaseTestSuite) TestInitResetPassword_Negative_MailError() {
 	sampleErr := domain.NewError("this a sample error", domain.ERR_BAD_REQUEST)
 	suite.mockUserRepository.On("FindUser", context.Background(), &domain.User{Username: user.Username, Email: user.Email}).Return(user, nil).Once()
 	suite.mockUserRepository.On("UpdateVerificationDetails", context.Background(), user.Username, mock.AnythingOfType("domain.VerificationData")).Return(nil).Once()
-	suite.mockMailService.On("PasswordResetTemplate", hostUrl, user.Username, token).Return(mail).Once()
+	suite.mockMailService.On("PasswordResetTemplate", token).Return(mail).Once()
 	suite.mockMailService.On("SendMail", mock.AnythingOfType("string"), user.Email, mail).Return(sampleErr).Once()
 
 	err := suite.Usecase.InitResetPassword(context.Background(), user.Username, user.Email, hostUrl)

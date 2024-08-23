@@ -549,7 +549,7 @@ func (u *UserUsecase) InitResetPassword(c context.Context, username string, emai
 		return err
 	}
 
-	mail := u.MailService.PasswordResetTemplate(hostUrl, username, verificationData.Token)
+	mail := u.MailService.PasswordResetTemplate(verificationData.Token)
 	mailErr := u.MailService.SendMail("Blog API", foundUser.Email, mail)
 	if mailErr != nil {
 		return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)

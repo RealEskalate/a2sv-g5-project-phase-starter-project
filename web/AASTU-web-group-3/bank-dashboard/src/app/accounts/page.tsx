@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import Example from "../components/barchart";
+import Example from "../components/AccountBarChart";
 import CreditCard from "../components/CreditCard";
 import Image from "next/image";
 import {
@@ -180,7 +180,7 @@ const Page = () => {
                   key={index}
                   className="flex items-center p-3 bg-white rounded-lg shadow-sm"
                 >
-                  <div className="p-3 rounded-full">
+                  <div className=" p-3 rounded-full">
                     <Image
                       width={20}
                       height={20}
@@ -188,7 +188,7 @@ const Page = () => {
                       alt={`${transaction.type} Icon`}
                     />
                   </div>
-                  <div className=" flex gap-2 items-center ">
+                  <div className=" flex w-3/4 gap-2 items-center  justify-between ">
                     <div className="w-1/2 md:w-1/3 lg:w-1/4">
                       <p className="text-gray-800 font-medium">
                         {transaction.senderUserName}
@@ -197,17 +197,17 @@ const Page = () => {
                         {transaction.date}
                       </p>
                     </div>
-                    <div className="w-1/3 md:w-1/5 flex">
+                    <div className="w-1/3 md:w-1/5 lg:w-1/4 flex">
                       <p className="text-gray-400 text-xs w-10/12 flex-shrink-0 text-left truncate">
                         {transaction.description}
                       </p>
                     </div>
-                    <div className="w-1/5 flex">
+                    <div className="w-1/5 lg:w-1/4 flex">
                       <p className="text-gray-400 w-10/12 flex-shrink-0 truncate hidden text-xs lg:block">
                         {transaction.transactionId}
                       </p>
                     </div>
-                    <div className="w-1/5 flex">
+                    <div className="w-1/5 lg:w-1/4 flex">
                       <p
                         className={` style={{ color: '#718EBF' }} hidden lg:block font-medium w-10/12 flex-shrink-0 truncate text-xs ${
                           transaction.type
@@ -219,7 +219,7 @@ const Page = () => {
                       </p>
                       {/* <p className="text-gray-400 w-10/12 flex-shrink-0 truncate hidden text-xs sm:block">{transaction.transactionId}</p> */}
                     </div>
-                    <div className="w-1/5 flex">
+                    <div className="w-1/5 lg:w-1/4 flex">
                       <p
                         className={`text-400 font-medium w-10/12 text-right ${
                           transaction.amount < 0

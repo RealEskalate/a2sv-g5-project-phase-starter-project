@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import Linechart from '../components/LineChart'; 
 import LineGraphWithDots from '../components/investment/dotchart';
 import CurveGraph from '../components/investment/curvegraph';
 import Image from 'next/image';

@@ -7,3 +7,6 @@ venv/
 mokery.yml
 .envf
 env.yaml
+
+uploads
+.env

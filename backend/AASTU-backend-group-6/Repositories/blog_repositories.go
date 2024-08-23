@@ -73,42 +73,6 @@ func (b BlogRepository) ReactOnBlog(user_id string, reactionType bool, blog_id s
 			Status:  500,
 		}
 	}
-
-	// var wg sync.WaitGroup
-    // var errMutex sync.Mutex
-    // var reactionError error
-
-    // wg.Add(1)
-    // go func() {
-    //     defer wg.Done()
-    //     _, err := b.PostCollection.UpdateOne(context, filter, update)
-    //     if err != nil {
-    //         errMutex.Lock()
-    //         reactionError = err
-    //         errMutex.Unlock()
-    //     }
-    // }()
-
-    // wg.Add(1)
-    // go func() {
-    //     defer wg.Done()
-    //     filter, update = utils.FilterReactionUser([]primitive.ObjectID{post.Creater_id, userID, blogID}, reactionType, isLiked, isDisliked)
-    //     _, err := b.UserCollection.UpdateOne(context, filter, update)
-    //     if err != nil {
-    //         errMutex.Lock()
-    //         reactionError = err
-    //         errMutex.Unlock()
-    //     }
-    // }()
-
-    // wg.Wait()
-    // if reactionError != nil {
-    //     return domain.ErrorResponse{
-    //         Message: "Internal server error",
-    //         Status:  500,
-    //     }
-    // }
-
 	if reactionType {
 		_ = b.UpdatePopularity(blog_id, "like")
 	} else {
@@ -150,53 +114,6 @@ func (b BlogRepository) UpdatePopularity(blog_id string, rateType string) error 
 		return errors.New("internal server error")
 	}
 	return nil
-
-// 	var wg sync.WaitGroup
-//     var errMutex sync.Mutex
-//     var updateError error
-
-//     wg.Add(1)
-//     go func() {
-//         defer wg.Done()
-//         err = b.PostCollection.FindOne(ctx, filter).Decode(&result)
-//         if err != nil {
-//             errMutex.Lock()
-//             updateError = err
-//             errMutex.Unlock()
-//             return
-//         }
-//         update := bson.M{"$inc": bson.M{"popularity": increment}}
-//         _, err = b.PostCollection.UpdateOne(ctx, filter, update)
-//         if err != nil {
-//             errMutex.Lock()
-//             updateError = err
-//             errMutex.Unlock()
-//         }
-//     }()
-
-//     // Update user popularity
-//     userFilter := bson.D{
-//         {Key: "_id", Value: result.Creater_id},
-//         {Key: "posts._id", Value: blogID},
-//     }
-//     wg.Add(1)
-//     go func() {
-//         defer wg.Done()
-//         update := bson.M{"$inc": bson.M{"posts.$.popularity": increment}}
-//         _, err = b.UserCollection.UpdateOne(ctx, userFilter, update)
-//         if err != nil {
-//             errMutex.Lock()
-//             updateError = err
-//             errMutex.Unlock()
-//         }
-//     }()
-
-//     wg.Wait()
-//     if updateError != nil {
-//         return errors.New("internal server error")
-//     }
-//     return nil
-// }
 }
 
 // IncrementOnBlog implements domain.BlogRepository.

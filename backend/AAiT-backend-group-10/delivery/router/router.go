@@ -37,6 +37,7 @@ func NewRouter(db *mongo.Database, redisClient *redis.Client, routerControllers 
 	router.POST("blogs/generate", infrastructures.AuthMiddleware(jwtService), routerControllers.BlogController.GenerateBlogContent)
 	router.POST("blogs/suggest", infrastructures.AuthMiddleware(jwtService), routerControllers.BlogController.SuggestImprovements)
 
+	router.GET("/users/:id", infrastructures.AuthMiddleware(jwtService), infrastructures.AdminMiddleWare(), routerControllers.UserController.GetUserByID)
 	router.PATCH("/users/promote", infrastructures.AuthMiddleware(jwtService), infrastructures.AdminMiddleWare(), routerControllers.UserController.PromoteUser)
 	router.PUT("/users/:id", infrastructures.AuthMiddleware(jwtService), routerControllers.UserController.UpdateProfile)
 

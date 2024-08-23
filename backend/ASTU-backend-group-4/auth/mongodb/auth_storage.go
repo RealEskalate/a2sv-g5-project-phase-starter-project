@@ -177,39 +177,3 @@ func (at *AuthUserImple) GetCollectionCount(ctx context.Context) (int64, error) 
 
 	return count, nil
 }
-
-func (au *AuthUserImple) PromoteUser(ctx context.Context, userID string) error {
-	var user auth.User
-	filter := bson.D{bson.E{Key: "id", Value: userID}}
-	err := au.usercollection.FindOne(ctx, filter).Decode(&user)
-	if err != nil {
-		return err
-	}
-
-	user.IsAdmin = true
-	_, err = au.UpdateUser(ctx, user)
-
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (au *AuthUserImple) DemoteUser(ctx context.Context, userID string) error {
-	var user auth.User
-	filter := bson.D{bson.E{Key: "id", Value: userID}}
-	err := au.usercollection.FindOne(ctx, filter).Decode(&user)
-	if err != nil {
-		return err
-	}
-
-	if !user.IsSupper {
-		user.IsAdmin = false
-	}
-	_, err = au.UpdateUser(ctx, user)
-
-	if err != nil {
-		return err
-	}
-	return nil
-}

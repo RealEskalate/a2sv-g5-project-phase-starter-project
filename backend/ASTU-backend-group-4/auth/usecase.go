@@ -172,3 +172,34 @@ func (au *AuthUserUsecase) GenerateToken(user User, tokenType string) (string, e
 	return tokenString, nil
 
 }
+
+func (au *AuthUserUsecase) PromoteUser(ctx context.Context, userID string) error {
+	user, err := au.repository.GetUserByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	user.IsAdmin = true
+	_, err = au.repository.UpdateUser(ctx, user)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (au *AuthUserUsecase) DemoteUser(ctx context.Context, userID string) error {
+	user, err := au.repository.GetUserByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	if !user.IsSupper {
+		user.IsAdmin = false
+	}
+	_, err = au.repository.UpdateUser(ctx, user)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}

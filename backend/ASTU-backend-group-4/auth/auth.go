@@ -41,8 +41,6 @@ type AuthRepository interface {
 	GetRefreshToken(ctx context.Context, token string) (string, error)
 	DeleteRefreshToken(ctx context.Context, token string) error
 	GetCollectionCount(ctx context.Context) (int64, error)
-	PromoteUser(ctx context.Context, userID string) error
-	DemoteUser(ctx context.Context, userID string) error
 }
 
 type AuthServices interface {
@@ -53,4 +51,6 @@ type AuthServices interface {
 	Logout(ctx context.Context, userID string)
 	GenerateToken(user User, tokentype string) (string, error)
 	GenerateActivateToken(hashedpassword string, updatedat time.Time) (string, error)
+	PromoteUser(ctx context.Context, userID string) error
+	DemoteUser(ctx context.Context, userID string) error
 }

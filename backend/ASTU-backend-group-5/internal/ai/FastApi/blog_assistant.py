@@ -47,16 +47,16 @@ class BlogAssistant:
 
     def run(self, query):
         response = self.chain_with_message_history.invoke(
-            {"input": query.query},
-            {"configurable": {"session_id": query.chat_id}},
+            {"input": query},
+            {"configurable": {"session_id": "chat_id"}},
         )
 
         return response.content
 
+# from main import Q
+# # # Example of usage
+# # duck_duck_go_search = DuckDuckGoSearchAPIWrapper()  # Assuming you have a Tool defined like this
+# assistant = BlogAssistant(tools=[])
 
-# Example of usage
-# duck_duck_go_search = DuckDuckGoSearchAPIWrapper()  # Assuming you have a Tool defined like this
-# assistant = BlogAssistant(tools=[duck_duck_go_search])
-
-# response = assistant.run(Q(query="What is the meaning of life?"))
+# response = assistant.run("What is the meaning of life?")
 # print(response)

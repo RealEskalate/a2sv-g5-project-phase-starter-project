@@ -12,7 +12,7 @@ type Blog struct {
 	Author        primitive.ObjectID `json:"ownerID" bson:"ownerID"` // ID of the blog author
 	AuthorName    string             `json:"author_name" bson:"author_name"`
 	Title         string             `json:"title" bson:"title"`           // Title of the blog
-	Content       []interface{}      `json:"content" bson:"content"`       // Array of any type of content
+	Content       string             `json:"content" bson:"content"`       // Array of any type of content
 	CreatedAt     primitive.DateTime `json:"created_at" bson:"created_at"` // Timestamp for when the blog was created
 	UpdatedAt     primitive.DateTime `json:"updated_at" bson:"updated_at"` // Timestamp for when the blog was last updated
 	Tags          []BlogTag          `json:"tags" bson:"tags"`             // Tags for categorizing the blog
@@ -22,15 +22,15 @@ type Blog struct {
 }
 
 type CreateBlogDTO struct {
-	Title   string        `json:"title" bson:"title"` // Title of the blog
-	Content []interface{} `json:"content" bson:"content"`
-	Tags    []BlogTag     `json:"tags" bson:"tags"`
+	Title   string    `json:"title" bson:"title"` // Title of the blog
+	Content string    `json:"content" bson:"content"`
+	Tags    []BlogTag `json:"tags" bson:"tags"`
 }
 
 type UpdateBlogDTO struct {
-	Title   string        `json:"title" bson:"title"` // Title of the blog
-	Content []interface{} `json:"content" bson:"content"`
-	Tags    []BlogTag     `json:"tags" bson:"tags"`
+	Title   string    `json:"title" bson:"title"` // Title of the blog
+	Content string    `json:"content" bson:"content"`
+	Tags    []BlogTag `json:"tags" bson:"tags"`
 }
 
 type GetBlogDTO struct {
@@ -39,7 +39,7 @@ type GetBlogDTO struct {
 	Author     primitive.ObjectID `json:"ownerID" bson:"ownerID"`
 	AuthorName string             `json:"author_name" bson:"author_name"`
 	Title      string             `json:"title" bson:"title"`
-	Content    []interface{}      `json:"content" bson:"content"`
+	Content    string             `json:"content" bson:"content"`
 	CreatedAt  primitive.DateTime `json:"created_at" bson:"created_at"`
 	UpdatedAt  primitive.DateTime `json:"updated_at" bson:"updated_at"`
 	Tags       []BlogTag          `json:"tags" bson:"tags"`
@@ -55,7 +55,7 @@ type GetSingleBlogDTO struct {
 	Author     primitive.ObjectID `json:"ownerID" bson:"ownerID"`
 	AuthorName string             `json:"author_name" bson:"author_name"`
 	Title      string             `json:"title" bson:"title"`
-	Content    []interface{}      `json:"content" bson:"content"`
+	Content    string             `json:"content" bson:"content"`
 	CreatedAt  primitive.DateTime `json:"created_at" bson:"created_at"`
 	UpdatedAt  primitive.DateTime `json:"updated_at" bson:"updated_at"`
 	Tags       []BlogTag          `json:"tags" bson:"tags"`
@@ -81,7 +81,6 @@ type BlogFilter struct {
 	DateRange *DateRange          // Filter by Creation Date Range
 	Content   *string             // Filter by Content (exact or partial match)
 	Keyword   *string             // Filter by keyword in title, content, or tags
-
 }
 
 // DateRange represents a time range for filtering

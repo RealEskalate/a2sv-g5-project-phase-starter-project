@@ -9,7 +9,7 @@ interface Props {
 
 const Card = ({ image, title, value }: Props) => {
   return (
-    <div className='flex items-center gap-4 px-4 py-2 bg-white rounded-xl'>
+    <div className='flex items-center gap-4 p-6 bg-white rounded-xl'>
       <Image src={image} alt='title' className='w-16 h-16'/>
       <div className='flex flex-col items-start justify-center gap-2'>
         <p>{title}</p>

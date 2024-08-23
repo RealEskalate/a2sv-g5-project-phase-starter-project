@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/authentication/presentation/bloc/blocs.dart';
 // import 'features/authentication/presentation/pages/onboarding.dart';
 import 'features/authentication/presentation/pages/onboarding.dart';
+import 'features/chat/presentation/pages/chat_page.dart';
 import 'features/chat/presentation/widgets/user_avater.dart';
 import 'features/product/presentation/bloc/blocs.dart';
 import 'service_locator.dart';
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
       ],
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: Onboarding()   
+        home: ChatPage()   
       ),
     );
   }

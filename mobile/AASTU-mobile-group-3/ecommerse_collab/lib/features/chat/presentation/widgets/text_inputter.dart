@@ -11,8 +11,7 @@ class _TextInputterState extends State<TextInputter> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
+      body: Container(
           height: 70,
           width: 500, 
           color: Colors.white,
@@ -52,7 +51,6 @@ class _TextInputterState extends State<TextInputter> {
             ],
           ),
         ),
-      ),
     );
   }
 }

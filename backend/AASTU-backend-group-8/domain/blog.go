@@ -7,15 +7,17 @@ import (
 )
 
 type BlogPost struct {
-	ID        primitive.ObjectID `json:"_id" bson:"_id,omitempty"`
-	Title     string             `json:"title" validate:"required,min=5,max=255"`
-	Content   string             `json:"content" validate:"required"`
-	AuthorID  primitive.ObjectID `json:"author_id"` // Foreign key to User model
-	Tags      []string           `json:"tags"`
-	Veiws     int                `json:"views"`
-	CreatedAt time.Time          `json:"created_at"`
-	UpdatedAt time.Time          `json:"updated_at"`
-	//PublishedAt *time.Time `json:"published_at"`  Optional
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	Title        string             `bson:"title"`
+	Content      string             `bson:"content"`
+	AuthorID     primitive.ObjectID `bson:"author_id"`
+	Tags         []string           `bson:"tags"`
+	CreatedAt    time.Time          `bson:"created_at"`
+	UpdatedAt    time.Time          `bson:"updated_at"`
+	Veiws        int                `json:"views"`
+	LikeCount    int                `bson:"like_count"`
+	DislikeCount int                `bson:"dislike_count"`
+	Comments     []Comment          `bson:"comments"`
 }
 
 type SearchBlogPost struct {
@@ -23,22 +25,28 @@ type SearchBlogPost struct {
 	Author string `json:"author"`
 }
 
-type BlogUsecaseInterface interface {
-	CreateBlogPost(blog *BlogPost) (string, error)
-	GetAllBlogPosts(Pagination, string, int, BlogFilter) ([]BlogPost, error)
-	GetBlogByID(id primitive.ObjectID) (*BlogPost, error)
-	UpdateBlogPost(id primitive.ObjectID, blog *BlogPost) (*BlogPost, error)
-	// SearchBlogPosts(query *SearchBlogPost) ([]BlogPost, error) // Add this method
-	DeleteBlogPost(id primitive.ObjectID) error
-}
-
-// domain/blog_repository_interface.go
-
 type BlogRepositoryInterface interface {
 	Save(blog *BlogPost) (string, error)
 	GetAllBlog(pagination Pagination, sortBy string, sortOrder int, filter BlogFilter) ([]BlogPost, error)
 	GetBlogByID(id primitive.ObjectID) (*BlogPost, error)
 	Update(id primitive.ObjectID, blog *BlogPost) (*BlogPost, error)
-	// Search(title string) ([]BlogPost, error) // Add this method
 	Delete(id primitive.ObjectID) error
+	ToggleLikeDislike(blogID, userID primitive.ObjectID, like bool) error
+
+	HasUserLiked(blogID, userID primitive.ObjectID) (bool, error)
+	HasUserDisliked(blogID, userID primitive.ObjectID) (bool, error)
+	UpdateLikeDislikeCount(blogID, userID primitive.ObjectID, like bool) error
+	AddComment(blogID primitive.ObjectID, comment Comment) error
+	GetBlogPostByID(blogID primitive.ObjectID) (BlogPost, error)
+}
+type BlogUsecaseInterface interface {
+	CreateBlogPost(blog *BlogPost) (string, error)
+	GetAllBlogPosts(Pagination, string, int, BlogFilter) ([]BlogPost, error)
+	GetBlogByID(id primitive.ObjectID) (*BlogPost, error)
+	UpdateBlogPost(id primitive.ObjectID, blog *BlogPost) (*BlogPost, error)
+	DeleteBlogPost(id primitive.ObjectID) error
+
+	LikeBlogPost(blogID primitive.ObjectID, userID primitive.ObjectID) error
+	DislikeBlogPost(blogID primitive.ObjectID, userID primitive.ObjectID) error
+	AddCommentToBlogPost(blogID primitive.ObjectID, comment Comment) error
 }

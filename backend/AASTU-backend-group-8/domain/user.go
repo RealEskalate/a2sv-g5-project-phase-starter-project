@@ -13,9 +13,9 @@ type Email struct {
 }
 
 type Claims struct {
-	ID       primitive.ObjectID `json:"id" bson:"_id"`
-	Username string             `json:"username"`
-	Role     string             `json:"role"`
+	ID       string `json:"id"` // Store as a string
+	Username string `json:"username"`
+	Role     string `json:"role"`
 	jwt.StandardClaims
 }
 

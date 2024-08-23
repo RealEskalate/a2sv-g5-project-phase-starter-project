@@ -11,7 +11,7 @@ import (
 // JWTService interface
 type JWTService interface {
 	GenerateToken(userID primitive.ObjectID, role string) (string, error)
-	GenerateRefreshToken(userID primitive.ObjectID, role string) (string, error)  // Modified to include role
+	GenerateRefreshToken(userID primitive.ObjectID, role string) (string, error) // Modified to include role
 	ValidateToken(token string) (*Claims, error)
 	ValidateRefreshToken(token string) (*Claims, error)
 	// GetKey(key string) string
@@ -60,7 +60,7 @@ func (j *jwtService) GenerateRefreshToken(userID primitive.ObjectID, role string
 	// Set expiration time for refresh token
 	expirationTime := time.Now().Add(time.Hour * 24 * 7)
 
-	claims := &Claims{         
+	claims := &Claims{
 		ID:   userID,
 		Role: role,
 		StandardClaims: jwt.StandardClaims{
@@ -79,8 +79,7 @@ func (j *jwtService) GenerateRefreshToken(userID primitive.ObjectID, role string
 	return signedToken, nil
 }
 
-
-func (j *jwtService) ValidateRefreshToken(tokenString string) (*Claims,error) {
+func (j *jwtService) ValidateRefreshToken(tokenString string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(t *jwt.Token) (interface{}, error) {
 		// Ensure the signing method is HMAC
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -90,17 +89,17 @@ func (j *jwtService) ValidateRefreshToken(tokenString string) (*Claims,error) {
 	})
 
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	claims, ok := token.Claims.(*Claims)
 	if !ok || !token.Valid {
-		return nil,errors.New("invalid refresh token")
+		return nil, errors.New("invalid refresh token")
 	}
 
 	// Check if the token is expired
 	if time.Unix(claims.ExpiresAt, 0).Before(time.Now()) {
-		return nil,errors.New("refresh token expired")
+		return nil, errors.New("refresh token expired")
 	}
 
 	return claims, nil
@@ -127,8 +126,6 @@ func (j *jwtService) ValidateToken(tokenString string) (*Claims, error) {
 
 	return claims, nil
 }
-
-
 
 // func (j *jwtService) GetKey(key string) string {
 // 	if key == "access"{

@@ -17,20 +17,20 @@ import {
   useRetiriveCardInfoQuery,
 } from "@/lib/service/CardService";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 const AccountsPage = () => {
   const { data: session, status } = useSession();
-  const router = useRouter();
+  // const router = useRouter();
 
   useEffect(() => {}, [status, session]);
-  console.log(session, status);
-  if (!session?.user) router.push("/login");
+  // console.log(session, status);
+  
 
   const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
 
   const token = session?.user.accessToken || "";
-  console.log("accesstoken: ", token);
+  // console.log("accesstoken: ", token);
 
   const {
     data: allCardsDataWithContent,

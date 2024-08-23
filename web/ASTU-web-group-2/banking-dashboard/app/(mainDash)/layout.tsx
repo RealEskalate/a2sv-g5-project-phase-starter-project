@@ -38,11 +38,7 @@ const Layout = ({
   );
 
   useEffect(() => {
-    // console.log("step one")'
-    console.log("session", session);
     const fetchUserData = async () => {
-      // console.log("step two")
-
       try {
         const refreshToken = session?.user?.refreshToken;
         if (!refreshToken) {
@@ -65,12 +61,13 @@ const Layout = ({
     if (session) {
       console.log(isTokenExpired(session.user.accessToken));
     }
+    console.log("session && isTokenExpired(session.user.accessToken)",session && isTokenExpired(session.user.accessToken))
     // if (session && isTokenExpired(session.user.accessToken)) {
-    //   // fetchUserData();
+      // fetchUserData();
     // }
-    if (session?.user?.accessToken) {
-      console.log("session", session, isTokenExpired(session.user.accessToken));
-    }
+    // if (session?.user?.accessToken) {
+      // console.log("session", session, isTokenExpired(session.user.accessToken));
+    // }
     if (status == "unauthenticated" && !session) {
       router.push("/login");
     }

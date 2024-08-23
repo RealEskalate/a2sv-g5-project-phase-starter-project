@@ -34,7 +34,7 @@ const CardDisplay = ({ numofcard }: { numofcard: number }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!session?.user) router.push("/login");
+    // if (!session?.user) router.push("/login");
   }, [status, session]);
 
   const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);

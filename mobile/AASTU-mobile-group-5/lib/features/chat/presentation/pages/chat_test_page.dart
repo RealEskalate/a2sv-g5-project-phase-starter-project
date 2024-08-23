@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/profileWidget.dart';
+
 class TextPage extends StatelessWidget {
   const TextPage({super.key});
 
@@ -7,6 +9,10 @@ class TextPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Padding(
+          padding: EdgeInsets.only(left: 15),
+          
+          ),
         title: const Row(
           children: [
             CircleAvatar(
@@ -16,6 +22,7 @@ class TextPage extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                ProfileWidget(),
                 Text('Sabila Sayma', style: TextStyle(fontSize: 18)),
                 Text('8 members, 5 online', style: TextStyle(fontSize: 12)),
               ],

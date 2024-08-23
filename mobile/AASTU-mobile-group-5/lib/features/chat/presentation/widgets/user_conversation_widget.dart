@@ -19,7 +19,7 @@ class user_conversation_widget extends StatelessWidget {
         children: [
           Row(
             children: [
-              const ProfileWidget(iconUrl:'assets/images/Alex.png'),
+              const ProfileWidget(isOnline:true,iconUrl:'assets/images/Alex.png'),
               const SizedBox(
                 width: 15,
               ),

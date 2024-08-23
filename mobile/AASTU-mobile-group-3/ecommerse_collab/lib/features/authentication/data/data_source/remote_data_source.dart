@@ -32,7 +32,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource{
     print("Remote data source");
     
     final response = await client.post(
-      Uri.parse('https://g5-flutter-learning-path-be.onrender.com/api/v2/auth/register'),
+      Uri.parse('https://g5-flutter-learning-path-be.onrender.com/api/v3/auth/register'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -63,7 +63,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource{
   @override
   Future<UserModel> logIn(String email, String password) async {
     final response = await client.post(
-      Uri.parse('https://g5-flutter-learning-path-be.onrender.com/api/v2/auth/login'),
+      Uri.parse('https://g5-flutter-learning-path-be.onrender.com/api/v3/auth/login'),
       body: {
         'email': email,
         'password': password,
@@ -83,7 +83,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource{
   @override
   Future<UserModel> getMe() async {
     
-      final newURL = Uri.parse('https://g5-flutter-learning-path-be.onrender.com/api/v2/users/me');
+      final newURL = Uri.parse('https://g5-flutter-learning-path-be.onrender.com/api/v3/users/me');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var headers = {
         'Authorization': "Bearer ${prefs.getString('token')}",

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../service_locator.dart';
+import '../../../authentication/domain/entity/user.dart';
 import '../../domain/entity/product.dart';
 import '../../domain/usecase/add_product.dart';
 import '../../domain/usecase/delete_product.dart';
@@ -15,7 +16,8 @@ import '../bloc/states.dart';
 import '../widgets/widgets.dart';
 
 class AddProduct extends StatefulWidget {
-  const AddProduct({super.key});
+  final User user;
+  const AddProduct({super.key, required this.user});
 
   @override
   State<AddProduct> createState() => _AddProductState();
@@ -135,6 +137,7 @@ class _AddProductState extends State<AddProduct> {
                                 price: int.parse(price.text),
                                 description: description.text,
                                 image: _image?.path ?? "",
+                                seller: widget.user,
                               ),
                             ),
                           );

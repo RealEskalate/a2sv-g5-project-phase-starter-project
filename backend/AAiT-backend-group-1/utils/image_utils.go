@@ -20,20 +20,42 @@ func IsValidFileFormat(header *multipart.FileHeader, formats ...string) bool {
 	return false
 }
 
-func SaveImage(file multipart.File, name string, cxt context.Context) (string, error) {
+func SaveImage(file multipart.File, name string, cxt context.Context) (*uploader.UploadResult, error) {
 	cld, err := setupCloudinary()
 	if err != nil {
-		return "", err
+		return &uploader.UploadResult{}, err
 	}
 
 	uploadResult, err := cld.Upload.Upload(cxt, file, uploader.UploadParams{
-		PublicID: name,
-		Folder:   "a2sv_blog_project",
+		Folder:       "a2sv_blog_project",
+		UploadPreset: "profile_picture",
 	})
 	if err != nil {
-		return "", err
+		return &uploader.UploadResult{}, err
 	}
-	return uploadResult.SecureURL, nil
+	return uploadResult, nil
+}
+
+func DeleteImage(publicID string, cxt context.Context) error {
+	cld, err := setupCloudinary()
+	if err != nil {
+		return err
+	}
+
+	invalidate := true
+	resp, err := cld.Upload.Destroy(cxt, uploader.DestroyParams{
+		PublicID:   publicID,
+		Invalidate: &invalidate,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if resp.Result != "ok" {
+		return fmt.Errorf("error deleting image")
+	}
+	return nil
 }
 
 func setupCloudinary() (*cloudinary.Cloudinary, error) {

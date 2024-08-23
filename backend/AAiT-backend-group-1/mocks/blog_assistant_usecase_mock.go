@@ -56,3 +56,4 @@ func (m *MockBlogAssistantUsecase) SuggestBlog(industry string) (map[string]inte
 
 	return r0, r1
 }
+

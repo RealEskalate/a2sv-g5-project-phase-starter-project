@@ -44,10 +44,11 @@ func SetupRouter(userController domain.UserController, blogController domain.Blo
 		userRoutes.POST("/login", userController.Login)
 		userRoutes.POST("/forgot_password", userController.ForgotPassword)
 		userRoutes.POST("/reset/:token", userController.ResetPassword)
+		userRoutes.POST("/refresh_token", userController.RefreshToken)
 
 		userRoutes.POST("/logout", authMiddleware.Authenticate(), userController.Logout)
 		userRoutes.POST("/update/:id", authMiddleware.Authenticate(), userController.UpdateProfile)
-		userRoutes.POST("/upload_profile_picture", authMiddleware.Authenticate(), userController.ImageUpload)
+		userRoutes.POST("/upload_profile_picture/:id", authMiddleware.Authenticate(), userController.ImageUpload)
 
 		userRoutes.POST("/promote", authMiddleware.Authenticate(), authMiddleware.Authorize("admin"), userController.PromoteUser)
 		userRoutes.POST("/demote", authMiddleware.Authenticate(), authMiddleware.Authorize("admin"), userController.DemoteUser)

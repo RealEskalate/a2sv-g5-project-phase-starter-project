@@ -29,6 +29,7 @@ type UserController interface {
 	DemoteUser(c *gin.Context)
 	UpdateProfile(c *gin.Context)
 	ImageUpload(c *gin.Context)
+	RefreshToken(c *gin.Context)
 }
 
 type BlogAssistantController interface {

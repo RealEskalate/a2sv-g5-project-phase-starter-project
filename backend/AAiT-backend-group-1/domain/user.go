@@ -23,6 +23,7 @@ type User struct {
 type Photo struct {
 	Filename   string    `bson:"filename"`
 	FilePath   string    `bson:"file_path"`
+	Public_id  string    `bson:"public_id"`
 	UploadedAt time.Time `bson:"uploaded_at"`
 }
 

@@ -15,6 +15,7 @@ type UserRepository interface {
 	UpdatePassword(cxt context.Context, id string, password string) Error
 	UpdateRole(cxt context.Context, id string, role string) Error
 	Delete(cxt context.Context, id string) Error
+	UploadProfilePicture(cxt context.Context, picture Photo, id string) Error
 }
 
 type SessionRepository interface {

@@ -2,6 +2,7 @@ package repository_interface
 
 import (
 	"AAIT-backend-group-3/internal/domain/models"
+	"time"
 )
 type UserRepositoryInterface interface {
 	SignUp(user *models.User) (*models.User, error)
@@ -11,6 +12,7 @@ type UserRepositoryInterface interface {
 	DeleteUser(id string) error
 	UpdateProfile(id string, user *models.User) error
     PromoteUser(userID string) error
-    DemoteUser(userID string) error
-	UpdatePassword(userID, hashedPassword string) error
+	DemoteUser(userID string) error
+	UpdatePassword(userID string, hashedPassword string) error
+	BlacklistToken(token string, remainingTime time.Duration) error
 }

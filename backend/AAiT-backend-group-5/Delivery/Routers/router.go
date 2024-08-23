@@ -19,6 +19,7 @@ func Setup(env *config.Env, db interfaces.Database, gin *gin.Engine) {
 	oAuthService := infrastructure.NewOAuthService(*env, user_repo)
 	session_repo := repository.NewSessionRepository(db)
 	jwtMiddleware := middlewares.NewJwtAuthMiddleware(jwt_service, session_repo, oAuthService)
+	redisClient := config.NewRedisClient(*env, context.Background())
 
 	projectRoot, err := filepath.Abs(filepath.Join(""))
 	if err != nil {
@@ -31,15 +32,15 @@ func Setup(env *config.Env, db interfaces.Database, gin *gin.Engine) {
 	gin.LoadHTMLGlob(templatesDir)
 	gin.Static("/static", staticDir)
 
-	redisClient := config.NewRedisClient(*env, context.Background())
-
 	publicRoute := gin.Group("")
 	protectedRoute := gin.Group("")
 	adminRoute := gin.Group("")
 	refreshRoute := publicRoute.Group("")
 
+	publicRoute.Use(middlewares.NewSecureMiddleware())
 	refreshRoute.Use(jwtMiddleware.JWTRefreshAuthMiddelware())
 	protectedRoute.Use(jwtMiddleware.JWTAuthMiddelware())
+
 	adminRoute.Use(
 		jwtMiddleware.JWTAuthMiddelware(),
 		middlewares.AuthenticateAdmin(),
@@ -49,12 +50,9 @@ func Setup(env *config.Env, db interfaces.Database, gin *gin.Engine) {
 	NewForgotPasswordRouter(env, db, protectedRoute)
 	NewLogoutRouter(env, db, protectedRoute)
 	NewRefreshRouter(env, db, refreshRoute)
-
 	NewUserProfileRouter(db, *env, protectedRoute)
 	NewPromoteDemoteRouter(db, adminRoute)
-
 	NewBlogRouter(env, db, protectedRoute, redisClient)
 	NewBlogCommentRouter(env, db, protectedRoute, redisClient)
-
 	NewAISuggestionRouter(db, env, protectedRoute)
 }

@@ -22,13 +22,11 @@ func NewRefreshUsecase(jwtService interfaces.JwtService, sessionRepository inter
 }
 
 func (uc *refreshUsecase) RefreshToken(ctx context.Context, userID string, refreshToken string) (string, *models.ErrorResponse) {
-	//get the user session
 	session, err := uc.sessionRepository.GetToken(ctx, userID)
 	if err != nil {
 		return "", err
 	}
 
-	//check if the refresh token is valid
 	if session.RefreshToken != refreshToken {
 		return "", models.Unauthorized("Invalid refresh token")
 	}
@@ -37,20 +35,18 @@ func (uc *refreshUsecase) RefreshToken(ctx context.Context, userID string, refre
 	if err != nil {
 		return "", err
 	}
-	//generate a new access token
 	accessToken, tErr := uc.jwtService.CreateAccessToken(*user, 60)
-	newRefresheToken, rErr := uc.jwtService.CreateRefreshToken(*user, 60)
 
-	if tErr != nil || rErr != nil {
+	if tErr != nil {
 		return "", models.InternalServerError("An unexpected error occurred")
 	}
 
 	newSession := models.Session{
 		UserID:       userID,
-		RefreshToken: newRefresheToken,
+		RefreshToken: refreshToken,
+		AccessToken:  accessToken,
 	}
 
-	// store the new access token
 	err = uc.sessionRepository.UpdateToken(ctx, &newSession)
 	if err != nil {
 		return "", err

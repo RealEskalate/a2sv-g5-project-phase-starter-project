@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../widgets/avatar_with_name.dart';
 import '../widgets/user_conversation_widget.dart';
 
-
 class Messages extends StatelessWidget {
   const Messages({super.key});
 
@@ -34,52 +33,47 @@ class Messages extends StatelessWidget {
                   left: 15,
                 ),
                 child: SizedBox(
-                  height: 69,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: const [
-                      avatar_with_name(name: 'Aryam'),
-                      avatar_with_name(name: 'Afomia'),
-                      avatar_with_name(name: 'Daniel'),
-                      avatar_with_name(name: 'Makda'),
-                      avatar_with_name(name: 'Aryam'),
-                      avatar_with_name(name: 'Afomia'),
-                      avatar_with_name(name: 'Daniel'),
-                      avatar_with_name(name: 'Makda'),
-                    ],
+                  height: 100, // Adjust height to accommodate both profile and name
+                  child: AvatarWithName(
+                    names: ['Aryam', 'Afomia', 'Daniel', 'Makda', 'Aryam', 'Afomia', 'Daniel', 'Makda'],
                   ),
                 ),
               ),
             ],
           ),
           Positioned(
-            top: 190,
+            top: 200,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 40),
+              
+              padding: const EdgeInsets.only(top: 15),
               height: 568,
               width: MediaQuery.of(context).size.width,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(40),
-                  topRight: Radius.circular(40),
+                  topLeft: Radius.circular(45),
+                  topRight: Radius.circular(45),
                 ),
               ),
               child: ListView(
                 padding: const EdgeInsets.only(
                   left: 15,
                   right: 15,
+                  
                 ),
                 children: const [
-                  user_conversation_widget(name: 'Aryam',),
-                  user_conversation_widget(name: 'Afomia',),
-                  user_conversation_widget(name: 'Daniel',),
-                  user_conversation_widget(name: 'Makda',),
-                  user_conversation_widget(name: 'Aryam',),
-                  user_conversation_widget(name: 'Afomia',),
-                  user_conversation_widget(name: 'Daniel',),
-                  user_conversation_widget(name: 'Makda',),
+                  UserConversationWidget(name: 'Aryam',),
+                  UserConversationWidget(name: 'Afomia',),
+                  UserConversationWidget(name: 'Daniel',),
+                  UserConversationWidget(name: 'Makda',),
+                  UserConversationWidget(name: 'Aryam',),
+                  UserConversationWidget(name: 'Afomia',),
+                  UserConversationWidget(name: 'Daniel',),
+                  UserConversationWidget(name: 'Makda',),
+                  UserConversationWidget(name: 'Makda',),
+                  UserConversationWidget(name: 'Makda',),
+                  UserConversationWidget(name: 'Makda',),
                 ],
               ),
             ),

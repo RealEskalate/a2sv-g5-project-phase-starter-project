@@ -4,7 +4,7 @@ export const companyApi = createApi({
   reducerPath: "companyDash",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://astu-bank-dashboard.onrender.com",
-    }),
+  }),
   endpoints: (builder) => ({
     getCompanies: builder.query({
       query: (accessToken: string) => ({

@@ -35,10 +35,11 @@ export const QuickTransfer = ({ onLoadingComplete }: { onLoadingComplete: any })
         setQuickTransfer(accounts || []);
       } finally {
         setLoading(false);
+        onLoadingComplete(false)
       }
     };
     fetchData();
-  }, []);
+  }, [onLoadingComplete]);
 
   const handleProfileSelect = (account: QuickTransferData) => {
     setSelectedProfile(account);

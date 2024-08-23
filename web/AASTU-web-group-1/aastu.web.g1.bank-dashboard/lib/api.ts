@@ -7,6 +7,7 @@ export  async function getCreditCards(page: number, size: number) {
     try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
+    console.log(accessToken);
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/cards?page=${page}&size=${size}`, {
       method: "GET",
       headers: {

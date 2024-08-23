@@ -1,22 +1,37 @@
-import { useUser } from '@/contexts/UserContext';
-import React, { useEffect, useState } from 'react'
-import { ExpenseTable } from './ExpenseTable';
-import { TransactionContent, TransactionData } from '@/types';
-import { getallTransactions, getExpenses, getIncomes } from '@/lib/api';
+import { useUser } from "@/contexts/UserContext";
+import React, { useEffect, useState } from "react";
+import { ExpenseTable } from "./ExpenseTable";
+import { TransactionContent, TransactionData } from "@/types";
+import { getallTransactions, getExpenses, getIncomes } from "@/lib/api";
 import { MdNavigateNext } from "react-icons/md";
 import { GrFormPrevious } from "react-icons/gr";
-export const TransactionTable = () => {
+
+// Shimmer component for table rows
+const ShimmerRow = () => (
+  <div className="animate-pulse flex space-x-4">
+    <div className="bg-gray-300 h-8 w-full rounded-md mb-2"></div>
+  </div>
+);
+
+export const TransactionTable = ({
+  onLoadingComplete,
+}: {
+  onLoadingComplete: any;
+}) => {
   const { isDarkMode } = useUser();
   const [activeTab, setActiveTab] = useState<"all" | "income" | "expense">(
     "all"
   );
   const [currentPage, setCurrentPage] = useState(1);
-    const [transactions, setTransactions] = useState<TransactionContent[]>([]);
-    const [totalPages, setTotalPages] = useState<number>(5);
-      const rowsPerPage = 5;
+  const [transactions, setTransactions] = useState<TransactionContent[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(5);
+  const [loading, setLoading] = useState(true); // Loading state
+  const rowsPerPage = 5;
+
   // Fetch transactions based on active tab and current page
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         let data: TransactionData | undefined;
         if (activeTab === "all") {
@@ -30,10 +45,14 @@ export const TransactionTable = () => {
         setTotalPages(data?.totalPages || 7);
       } catch (error) {
         console.error("Error fetching transactions:", error);
+      } finally {
+        setLoading(false);
+        onLoadingComplete(false);
       }
     };
     fetchData();
-  }, [currentPage, activeTab]);
+  }, [currentPage, activeTab,onLoadingComplete]);
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -65,8 +84,10 @@ export const TransactionTable = () => {
         <button
           key={page}
           onClick={() => handlePageChange(page)}
-          className={` ${isDarkMode ? "bg-gray-800 text-white" : "bg-white "}${
-            (page === currentPage) && (!isDarkMode) ? " bg-blue-600" : "text-blue-600"
+          className={` ${isDarkMode ? "bg-gray-800 text-white" : "bg-white"} ${
+            page === currentPage && !isDarkMode
+              ? "bg-blue-600"
+              : "text-blue-600"
           } hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 me-2 mb-2`}
         >
           {page}
@@ -74,6 +95,7 @@ export const TransactionTable = () => {
       );
     });
   };
+
   return (
     <>
       <div className="space-y-5 w-[90%] items-center">
@@ -115,7 +137,17 @@ export const TransactionTable = () => {
             </button>
           </div>
         </div>
-        <ExpenseTable transactions={transactions} tab={activeTab} />
+        {/* Render the table or shimmer effect based on loading state */}
+        {loading ? (
+          <div>
+            {Array(5)
+              .map((_, index) => (
+                <ShimmerRow key={index} />
+              ))}
+          </div>
+        ) : (
+          <ExpenseTable transactions={transactions} tab={activeTab} />
+        )}
       </div>
       <div className="flex justify-end items-center space-x-2">
         <button
@@ -127,7 +159,7 @@ export const TransactionTable = () => {
         >
           <GrFormPrevious size={30} />
           <p
-            className={` m-2  ${
+            className={`m-2 ${
               currentPage === 1 ? "text-gray-400" : "text-blue-600"
             } ${isDarkMode ? "text-gray-300" : "text-gray-900"}`}
           >
@@ -156,4 +188,4 @@ export const TransactionTable = () => {
       </div>
     </>
   );
-}
+};

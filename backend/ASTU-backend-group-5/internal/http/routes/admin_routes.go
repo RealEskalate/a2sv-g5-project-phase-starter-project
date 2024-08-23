@@ -4,11 +4,10 @@ import (
 	"blogApp/internal/http/middleware"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func RegisterAdminUserRoutes(userCollection *mongo.Collection, router *gin.Engine) {
-	userHandler := InstantaiteUserHandler(userCollection)
+func RegisterAdminUserRoutes(router *gin.Engine) {
+	userHandler := InstantaiteUserHandler()
 
 	// tokenRepo := mongodb.NewMongoTokenRepository(tokenCollection)
 	// tokenUseCase := usecase.NewTokenUsecase(tokenRepo)

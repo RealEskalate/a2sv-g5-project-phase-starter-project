@@ -16,25 +16,34 @@ func (u *blogUseCase) GetBlogByID(ctx context.Context, blogId, userId string) (*
 		return nil, fmt.Errorf("failed to retrieve blog by ID: %w", err)
 	}
 
-	viewd, err := u.repo.HasUserViewedBlog(ctx, userId, blogId)
+	if userId != "" {
+		viewd, err := u.repo.HasUserViewedBlog(ctx, userId, blogId)
 
-	if err != nil {
-		log.Printf("Error checking if user has viewed blog with ID %s: %v", blogId, err)
-		return nil, fmt.Errorf("failed to check if user has viewed blog: %w", err)
-	}
-	if !viewd {
-		BlogIdObj, _ := primitive.ObjectIDFromHex(blogId)
-		UserIdObj, _ := primitive.ObjectIDFromHex(userId)
-		view := &domain.View{
-			ID:     primitive.NewObjectID(),
-			BlogID: BlogIdObj,
-			UserID: UserIdObj,
-		}
-		err = u.repo.AddView(ctx, view)
 		if err != nil {
-			log.Printf("Error creating view for blog with ID %s: %v", blogId, err)
-			return nil, fmt.Errorf("failed to create view: %w", err)
+			log.Printf("Error checking if user has viewed blog with ID %s: %v", blogId, err)
+			return nil, fmt.Errorf("failed to check if user has viewed blog: %w", err)
 		}
+		if !viewd {
+			BlogIdObj, _ := primitive.ObjectIDFromHex(blogId)
+			UserIdObj, _ := primitive.ObjectIDFromHex(userId)
+			view := &domain.View{
+				ID:     primitive.NewObjectID(),
+				BlogID: BlogIdObj,
+				UserID: UserIdObj,
+			}
+			err = u.repo.AddView(ctx, view)
+			if err != nil {
+				log.Printf("Error creating view for blog with ID %s: %v", blogId, err)
+				return nil, fmt.Errorf("failed to create view: %w", err)
+			}
+		}
+		liked, err := u.repo.HasUserLikedBlog(ctx, userId, blogId)
+
+		if err != nil {
+			log.Printf("Error checking if user has liked blog with ID %s: %v", blogId, err)
+			return nil, fmt.Errorf("failed to check if user has liked blog: %w", err)
+		}
+		blog.Liked = liked
 	}
 	return blog, nil
 }

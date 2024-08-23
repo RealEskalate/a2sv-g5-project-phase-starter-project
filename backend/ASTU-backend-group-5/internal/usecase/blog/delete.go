@@ -44,6 +44,11 @@ func (u *blogUseCase) DeleteComment(ctx context.Context, commentId, userId strin
 		log.Printf("Error deleting comment with ID %s: %v", comment.ID, err)
 		return fmt.Errorf("failed to delete comment: %w", err)
 	}
+	err = u.repo.DecrementBlogCommentCount(ctx, comment.BlogID.Hex())
+	if err != nil {
+		log.Printf("Error decrementing blog comment count: %v", err)
+		return fmt.Errorf("failed to decrement blog comment count: %w", err)
+	}
 	return nil
 
 }
@@ -66,6 +71,11 @@ func (u *blogUseCase) RemoveLike(ctx context.Context, likeId, userId string, use
 	if err != nil {
 		log.Printf("Error deleting like with ID %s: %v", like.ID, err)
 		return fmt.Errorf("failed to delete like: %w", err)
+	}
+	err = u.repo.DecrementBlogLikeCount(ctx, like.BlogID.Hex())
+	if err != nil {
+		log.Printf("Error decrementing blog like count: %v", err)
+		return fmt.Errorf("failed to decrement blog like count: %w", err)
 	}
 	return nil
 

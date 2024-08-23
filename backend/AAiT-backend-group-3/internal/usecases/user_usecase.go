@@ -53,11 +53,11 @@ func (u *UserUsecase) SignUp(user *models.User) (*models.User, error) {
 	if len(users) == 0 {
 		user.Role = "ADMIN"
 	} else {
-		user.Role = "USER"
 		existingUser, _ := u.userRepo.GetUserByEmail(user.Email)
 		if existingUser != nil {
 			return nil, err
 		}
+		user.Role = "USER"
 	}
 
 	if _, err := u.validationService.ValidatePassword(user.Password); err != nil {
@@ -183,26 +183,60 @@ func (u *UserUsecase) RefreshToken(refreshTok string ) (string, error) {
 func (u *UserUsecase) VerifyEmailToken(token string) (string, string, error) {
 	userId, err := u.jwtSevices.ValidateVerificationToken(token)
 	if err != nil {
-		return "","", errors.New(err.Error())
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			claims, ok := u.jwtSevices.GetClaimsFromToken(token)
+			if ok {
+				userId, _ := claims["userId"].(string)
+				user, err := u.userRepo.GetUserByID(userId)
+				if err != nil {
+					return "", "", errors.New("invalid token")
+				}
+				if user.IsVerified {
+					return "", "", errors.New("user already verified")
+				}
+
+				verificationToken, _ := u.jwtSevices.GenerateVerificationToken(user.ID.Hex())
+				verificationLink := fmt.Sprintf("http://localhost:8080/auth/verify-email?token=%s", verificationToken)
+
+				user.VerificationToken = verificationToken
+				err = u.userRepo.UpdateProfile(user.ID.Hex(), user)
+				if err != nil {
+					return "", "", err
+				}
+
+				err = u.emailService.SendVerificationEmail(user.Email, verificationLink)
+				if err != nil {
+					return "", "", err
+				}
+
+				return "", "", errors.New("verification token expired. A new verification email has been sent")
+			}
+		}
+		return "", "", errors.New(err.Error())
 	}
+
 	user, err := u.userRepo.GetUserByID(userId)
-	if err != nil {
-		return "", "", errors.New("invalid or expired token")
+	if err != nil{
+		return "", "", errors.New("invalid token")
+	} else if user.IsVerified {
+		return "", "", errors.New("user already verified")
+	} else if  token != user.VerificationToken {
+		return "", "", errors.New("invalid token")
 	}
+	user.IsVerified = true
+	user.VerificationToken = ""
+
 	accessToken, _ := u.jwtSevices.GenerateAccessToken(user.ID.Hex(), user.Role)
 	refershToken, _ := u.jwtSevices.GenerateRefreshToken(user.ID.Hex(), user.Role)
 
-	user.IsVerified = true
-	user.VerificationToken = "" 
 	user.RefToken = refershToken
-
 	err = u.userRepo.UpdateProfile(user.ID.Hex(), user)
-	if err != nil {
-		return "", "", err
+	if  err != nil {
+		return "", "", errors.New(err.Error())
 	}
-
 	return accessToken, refershToken, nil
 }
+
 
 func (u *UserUsecase) GetUserByID(userID string) (*models.User, error) {
 	return u.userRepo.GetUserByID(userID)

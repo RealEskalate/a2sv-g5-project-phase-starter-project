@@ -1,10 +1,10 @@
 package services
 
-
 import (
-	"github.com/golang-jwt/jwt/v4"
 	"errors"
 	"time"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type IJWT interface {
@@ -14,9 +14,10 @@ type IJWT interface {
 	ValidateRefreshToken(token string) (string, error)
 	GenerateVerificationToken(token string) (string, error)
 	ValidateVerificationToken(token string) (string, error)
+	GetClaimsFromToken(tokenString string) (jwt.MapClaims, bool)
 }
 
-type JWTService struct{
+type JWTService struct {
 	secretKey string
 }
 
@@ -26,8 +27,8 @@ func NewJWTService(secretKey string) IJWT {
 	}
 }
 
-func (jwtservice *JWTService) validator(tokenString string) (*jwt.Token, error){
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error){
+func (jwtservice *JWTService) validator(tokenString string) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
 			return nil, errors.New("invalid signing method")
@@ -47,24 +48,24 @@ func (jwtservice *JWTService) validator(tokenString string) (*jwt.Token, error){
 
 func (jwtservice *JWTService) GenerateAccessToken(userId, role string) (string, error) {
 	claims := jwt.MapClaims{
-		"userId" : userId,
-		"role": role,
-		"exp": time.Now().Add(time.Minute * 15).Unix(),
-	} 
+		"userId": userId,
+		"role":   role,
+		"exp":    time.Now().Add(time.Minute * 15).Unix(),
+	}
 	accToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return accToken.SignedString([]byte(jwtservice.secretKey))
 }
 
-func (jwtservice *JWTService) GenerateRefreshToken(userId, role string) (string, error){
+func (jwtservice *JWTService) GenerateRefreshToken(userId, role string) (string, error) {
 	claims := jwt.MapClaims{
-		"userId":userId,
-		"role": role,
-		"exp": time.Now().Add(time.Hour * 24 *7).Unix(),
+		"userId": userId,
+		"role":   role,
+		"exp":    time.Now().Add(time.Hour * 24 * 7).Unix(),
 	}
 
 	refToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return refToken.SignedString([]byte(jwtservice.secretKey))
-}	
+}
 
 func (jwtservice *JWTService) ValidateAccessToken(token string) (*jwt.Token, error) {
 	return jwtservice.validator(token)
@@ -74,7 +75,7 @@ func (jwtservice *JWTService) ValidateRefreshToken(token string) (string, error)
 	Token, err := jwtservice.validator(token)
 	if err != nil {
 		return "", err
-	}	
+	}
 
 	claims, ok := Token.Claims.(jwt.MapClaims)
 	if !ok {
@@ -89,21 +90,24 @@ func (jwtservice *JWTService) ValidateRefreshToken(token string) (string, error)
 	return userId, nil
 }
 
-
-func (jwtservice *JWTService) GenerateVerificationToken(userId string) (string, error){
+func (jwtservice *JWTService) GenerateVerificationToken(userId string) (string, error) {
 	claims := jwt.MapClaims{
-		"userId" : userId,
-		"exp": time.Now().Add(24 * time.Hour).Unix(),
-	} 
+		"userId": userId,
+		"exp":    time.Now().Add(24 * time.Hour).Unix(),
+	}
 	accToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return accToken.SignedString([]byte(jwtservice.secretKey))	
+	return accToken.SignedString([]byte(jwtservice.secretKey))
 }
 
 func (jwtservice *JWTService) ValidateVerificationToken(token string) (string, error) {
 	Token, err := jwtservice.validator(token)
 	if err != nil {
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			return "", jwt.ErrTokenExpired
+		}
 		return "", err
-	}	
+	}
+
 	claims, ok := Token.Claims.(jwt.MapClaims)
 	if !ok {
 		return "", err
@@ -113,4 +117,14 @@ func (jwtservice *JWTService) ValidateVerificationToken(token string) (string, e
 		return "", err
 	}
 	return userId, nil
+}
+
+func (jwtservice *JWTService) GetClaimsFromToken(tokenString string) (jwt.MapClaims, bool) {
+	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
+	if err != nil {
+		return nil, false
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	return claims, ok
 }

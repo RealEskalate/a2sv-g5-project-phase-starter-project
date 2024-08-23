@@ -44,20 +44,17 @@ func (mid *AuthMiddleware) Authentication() gin.HandlerFunc {
         }
 
         tokenString := authSlice[1]
-
         isBlacklisted, err := mid.cacheSvc.IsTknBlacklisted(tokenString)
         if err != nil {
             c.JSON(500, gin.H{"error": "Internal server error"})
             c.Abort()
             return
         }
-
         if isBlacklisted {
             c.JSON(401, gin.H{"error": "Token is blacklisted"})
             c.Abort()
             return
         }
-
         token, err := mid.jwtSvc.ValidateAccessToken(tokenString)
         if err != nil || !token.Valid {
             c.JSON(401, gin.H{"error": err.Error()})

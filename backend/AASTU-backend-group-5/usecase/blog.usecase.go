@@ -24,7 +24,7 @@ func (uc *BlogUseCase) CreateBlog(iblog domain.PostBlog) (domain.Blog, error) {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		Tag:       iblog.Tag,
-		Owner: iblog.Owner,
+		Owner:     iblog.Owner,
 	}
 	if blog.ID.IsZero() {
 		blog.ID = primitive.NewObjectID()
@@ -44,7 +44,7 @@ func (uc *BlogUseCase) GetBlogs(limit int, page_number int) ([]domain.Blog, erro
 	return blogs, nil
 }
 func (uc *BlogUseCase) GetMyBlogs(filter map[string]interface{}) ([]domain.Blog, error) {
-	blogs,err := uc.BlogRepo.FilterBlogDocument(filter)
+	blogs, err := uc.BlogRepo.FilterBlogDocument(filter)
 	if err != nil {
 		return []domain.Blog{}, err
 	}
@@ -77,12 +77,13 @@ func (uc *BlogUseCase) FilterBlog(filters map[string]interface{}) ([]domain.Blog
 	}
 	return blogs, nil
 }
-func (uc *BlogUseCase) GetUniqueBlog(filter map[string]interface{}, posts *[]*domain.Blog) error {
+func (uc *BlogUseCase) GetUniqueBlog(filter map[string]interface{}, posts *[]domain.Blog) error {
 	pst, err := uc.BlogRepo.FilterBlogDocument(filter)
 	if err != nil {
 		return err
 	}
-	posts = &pst
+
+	*posts = pst
 	return nil
 }
 func (uc *BlogUseCase) SearchBlogs(filters map[string]interface{}) ([]domain.Blog, error) {

@@ -39,12 +39,12 @@ func (BR *BlogRepository) GetOneBlogDocument(id string) (domain.Blog, error) {
 	return blog, nil
 }
 
-func (BR *BlogRepository) GetBlogDocuments(offset int, limit int) ([]domain.Blog, error) {
+func (BR *BlogRepository) GetBlogDocuments(page, limit int) ([]domain.Blog, error) {
 	var blogs []domain.Blog
 
 	options := options.Find()
-	options.SetSkip(int64(int64(limit)*(int64(offset)-1)))
-	options.SetLimit(int64(limit))
+	options.SetSkip(int64(limit))
+	options.SetLimit(int64(page))
 
 	cursor, err := BR.collection.Find(context.TODO(), bson.M{}, options)
 	if err != nil {
@@ -96,9 +96,9 @@ func (BR *BlogRepository) FilterBlogDocument(filter map[string]interface{}) ([]d
 	for key, value := range filter {
 		switch v := value.(type) {
 		case string:
-			query[key] = bson.M{"$regex" : v , "$option" : "i"}
+			query[key] = bson.M{"$regex": v, "$options": "i"}
 		case []string:
-			query[key] = bson.M{"$in" : v}
+			query[key] = bson.M{"$in": v}
 		}
 	}
 
@@ -118,12 +118,6 @@ func (BR *BlogRepository) FilterBlogDocument(filter map[string]interface{}) ([]d
 
 	return blogs, nil
 }
-func (BR *BlogRepository) UpdateBlogDocument(id string, blog domain.Blog) (domain.Blog, error) {
-	obId, _ := primitive.ObjectIDFromHex(id)
-	_, err := BR.collection.UpdateOne(context.TODO(), bson.M{"_id": obId}, bson.M{"$set": blog})
-	return blog, err
-}
-
 func (BR *BlogRepository) GetUniqueBlog(cookieValue string, posts *[]*domain.Blog) error {
 	filter := bson.M{"cookie_value": cookieValue}
 
@@ -143,4 +137,3 @@ func (BR *BlogRepository) GetUniqueBlog(cookieValue string, posts *[]*domain.Blo
 
 	return nil
 }
-

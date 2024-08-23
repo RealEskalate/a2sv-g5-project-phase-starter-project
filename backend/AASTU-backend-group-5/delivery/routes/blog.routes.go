@@ -20,20 +20,20 @@ func NewBlogRoutes(group *gin.RouterGroup, blog_collection database.CollectionIn
 
 	user_repo := repository.NewUserRepository(user_collection)
 	user_usecase := usecase.NewUserUseCase(user_repo)
-	ctrl := controller.NewBlogController(blog_usecase , user_usecase)
+	ctrl := controller.NewBlogController(blog_usecase, user_usecase)
 
 	//load middlewares
 	err := godotenv.Load()
 	if err != nil {
-        log.Panic(err.Error())
-    }
+		log.Panic(err.Error())
+	}
 	access_secret := os.Getenv("ACCESSTOKENSECRET")
-	if access_secret == ""{
+	if access_secret == "" {
 		log.Panic("No accesstoken")
 	}
-	
+
 	refresh_secret := os.Getenv("REFRESHTOKENSECRET")
-	if refresh_secret == ""{
+	if refresh_secret == "" {
 		log.Panic("No refreshtoken")
 	}
 	TokenSvc := *tokenservice.NewTokenService(access_secret, refresh_secret)
@@ -41,15 +41,15 @@ func NewBlogRoutes(group *gin.RouterGroup, blog_collection database.CollectionIn
 	LoggedInmiddleWare := middleware.LoggedIn(TokenSvc)
 	mustOwn := middleware.RoleBasedAuth(false)
 
+	group.GET("api/allblog", ctrl.GetAllBlogs())
+	group.GET("api/search-blog/", ctrl.FilterBlogs())
 
-	group.GET("api/blog" , ctrl.GetAllBlogs())
-	group.GET("api/search-blog/" , ctrl.FilterBlogs())
+	group.GET("api/blog/:id", LoggedInmiddleWare, ctrl.GetOneBlog())
+	group.POST("api/blog/", LoggedInmiddleWare, ctrl.CreateBlog())
+	group.GET("api/UniqueBlog", LoggedInmiddleWare, ctrl.GetUniqueBlog())
 
-	group.GET("api/blog/:id" , LoggedInmiddleWare , ctrl.GetOneBlog())
-	group.POST("api/blog/",LoggedInmiddleWare, ctrl.CreateBlog())
-
-	group.GET("api/my-blog",LoggedInmiddleWare , mustOwn , ctrl.GetMyBlogs())
-	group.PUT("api/blog/:id",LoggedInmiddleWare , mustOwn ,ctrl.UpdateBlog())
-	group.DELETE("api/blog/:id",LoggedInmiddleWare, mustOwn ,ctrl.DeleteBlog())
+	group.GET("api/my-blog", LoggedInmiddleWare, mustOwn, ctrl.GetMyBlogs())
+	group.PUT("api/blog/:id", LoggedInmiddleWare, mustOwn, ctrl.UpdateBlog())
+	group.DELETE("api/blog/:id", LoggedInmiddleWare, mustOwn, ctrl.DeleteBlog())
 
 }

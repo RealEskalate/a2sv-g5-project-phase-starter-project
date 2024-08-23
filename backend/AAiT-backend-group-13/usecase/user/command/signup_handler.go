@@ -109,6 +109,7 @@ func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, er
 		return nil, err
 	}
 	log.Println("Validation link generated")
+	log.Printf("user id is this: %s", user.ID())
 
 	// Send the sign-up email
 	mails := []string{user.Email()}

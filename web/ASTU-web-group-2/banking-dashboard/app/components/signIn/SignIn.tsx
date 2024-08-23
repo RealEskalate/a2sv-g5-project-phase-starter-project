@@ -18,7 +18,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 const inter = Inter({ subsets: ["latin"] });
 
-const SignIn = () => {
+const SignIn = ({ onClose }: { onClose: () => void }) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const {
@@ -27,7 +27,7 @@ const SignIn = () => {
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: FormData) => {
     setLoading(true);
     const res = await signIn("credentials", {
       userName: data.userName,
@@ -36,86 +36,109 @@ const SignIn = () => {
     });
     if (!res?.ok) {
       notify.error("Invalid Credentials");
-      router.push("/login");
     } else {
-      console.log("response: ", res);
       notify.success("Successfully logged in");
+      onClose(); // Close the modal after successful login
       router.push("/dashboard");
     }
     setLoading(false);
   };
+
   return (
-    <div
-      className={`${inter.className} flex justify-center pt-[34px] pb-[50px] rounded-3xl `}
+    <div 
+      onClick={onClose}
+      className="fixed inset-0 backdrop-blur w-full h-full flex justify-center items-center z-[1000]"
     >
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-6">
-          <div className={`text-center text-[32px] font-black text-[#25324B]`}>
-            Welcome Back,
+      <div 
+        className="relative w-[500px] rounded-3xl p-[2rem] bg-white shadow-md border-[3px]" 
+        onClick={(e) => e.stopPropagation()} // Prevent clicks inside the modal from closing it
+      >
+        <div className={`${inter.className} flex justify-center pt-8 pb-10 rounded-3xl`}>
+          <div className="flex flex-col gap-6 w-full">
+            <div className="text-center text-[32px] font-black text-[#25324B]">
+              Welcome Back,
+            </div>
+            <div className="flex justify-between items-center my-4">
+              <div className="border-t border-[#D6DDEB] w-2/6"></div>
+              <div className="border-t border-[#D6DDEB] w-2/6"></div>
+            </div>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col gap-6 w-full"
+              noValidate
+            >
+              <div>
+                <label
+                  htmlFor="userName"
+                  className="font-semibold text-base text-[#515B6F]"
+                >
+                  User Name
+                </label>
+                <input
+                  id="userName"
+                  type="text"
+                  placeholder="Enter your user name"
+                  className="text-[#515B6F] border focus:border-[#083E9E] border-[#DFEAF2] px-4 py-3 rounded-lg focus:outline-none w-full mt-2"
+                  {...register("userName")}
+                  disabled={loading}
+                  aria-invalid={!!errors.userName}
+                  aria-describedby="userNameError"
+                />
+                {errors.userName && (
+                  <p
+                    id="userNameError"
+                    className="text-red-700 text-sm mt-1"
+                  >
+                    {errors.userName.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label
+                  htmlFor="password"
+                  className="font-semibold text-base text-[#515B6F]"
+                >
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="Enter password"
+                  className="text-[#515B6F] border focus:border-[#083E9E] border-[#DFEAF2] px-4 py-3 rounded-lg focus:outline-none w-full mt-2"
+                  {...register("password")}
+                  disabled={loading}
+                  aria-invalid={!!errors.password}
+                  aria-describedby="passwordError"
+                />
+                {errors.password && (
+                  <p
+                    id="passwordError"
+                    className="text-red-700 text-sm mt-1"
+                  >
+                    {errors.password.message}
+                  </p>
+                )}
+              </div>
+              <button
+                type="submit"
+                className="font-bold text-white text-center bg-[#083E9E] px-6 py-3 rounded-3xl mt-4"
+                disabled={loading}
+                aria-busy={loading}
+              >
+                {loading ? (
+                  <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin [animation-duration:3s] border-white mx-auto"></div>
+                ) : (
+                  "Login"
+                )}
+              </button>
+            </form>
+            <div className="text-[#515B6F] text-center text-sm mt-4">
+              Don't have an account?{" "}
+              <Link href="/signup" className="font-semibold text-[#083E9E]">
+                Register
+              </Link>
+            </div>
           </div>
-        </div>
-        <div className="flex justify-between items-center">
-          <div className="border-[1px] w-2/6 h-0 border-[#D6DDEB]"></div>
-
-          <div className="border-[1px] w-2/6 h-0 border-[#D6DDEB]"></div>
-        </div>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-[22px]"
-          noValidate
-        >
-          <label
-            htmlFor="userName"
-            className={`font-semibold text-base text-[#515B6F]`}
-          >
-            User Name
-          </label>
-          <input
-            type="text"
-            placeholder="Enter your user name"
-            className="border-[1px] border-[#DFEAF2] px-4 py-3 rounded-lg focus:outline-none"
-            {...register("userName")}
-          />
-          {errors.userName && (
-            <p className={` font-semibold text-base text-red-700`}>
-              {errors.userName.message}
-            </p>
-          )}
-
-          <label
-            htmlFor="password"
-            className={` font-semibold text-base text-[#515B6F]`}
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            placeholder="Enter password"
-            className="border-[1px] border-[#DFEAF2] px-4 py-3 rounded-lg focus:outline-none"
-            {...register("password")}
-          />
-          {errors.password && (
-            <p className={` font-semibold text-base text-red-700`}>
-              {errors.password.message}
-            </p>
-          )}
-          <button
-            disabled={loading}
-            type="submit"
-            className={` font-bold text-white text-center bg-[#1814F3] px-6 py-3 rounded-3xl`}
-          >
-            {loading ? (
-              <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin [animation-duration:3s]  border-white mx-auto"></div>
-            ) : (
-              "Login"
-            )}
-          </button>
-        </form>
-        <div className={` font-normal`}>
-          {`Don't have an account? `}
-          <Link href="/signup" className="font-semibold text-[#1814F3]">
-            Register
-          </Link>
         </div>
       </div>
     </div>

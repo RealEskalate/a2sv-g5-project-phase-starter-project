@@ -21,6 +21,7 @@
 		"next": "^14.2.5",
 		"next-auth": "^4.24.7",
 		"react": "^18",
+		"react-chartjs-2": "^5.2.0",
 		"react-dom": "^18",
 		"react-hook-form": "^7.52.2",
 		"react-icon": "^1.0.0",
@@ -36,10 +37,10 @@
 		"tailwindcss-animate": "^1.0.7"
 	},
 	"devDependencies": {
+		"@types/next-auth": "^3.15.0",
 		"@types/node": "^20",
 		"@types/react": "^18",
 		"@types/react-dom": "^18",
-		"@types/react-redux": "^7.1.33",
 		"@types/tailwindcss": "^3.1.0",
 		"autoprefixer": "^10.4.20",
 		"eslint": "^8",

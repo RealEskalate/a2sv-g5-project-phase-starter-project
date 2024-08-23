@@ -7,11 +7,10 @@ import (
 
 	"github.com/aait.backend.g5.main/backend/Config"
 	"github.com/aait.backend.g5.main/backend/Delivery/middlewares"
+	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	"github.com/aait.backend.g5.main/backend/Infrastructure"
 	"github.com/aait.backend.g5.main/backend/Repository"
 	"github.com/gin-gonic/gin"
-	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
-
 )
 
 func Setup(env *config.Env, db interfaces.Database, gin *gin.Engine) {
@@ -51,7 +50,7 @@ func Setup(env *config.Env, db interfaces.Database, gin *gin.Engine) {
 	NewLogoutRouter(env, db, protectedRoute)
 	NewRefreshRouter(env, db, refreshRoute)
 
-	NewUserProfileRouter(db, protectedRoute)
+	NewUserProfileRouter(db, *env, protectedRoute)
 	NewPromoteDemoteRouter(db, adminRoute)
 
 	NewBlogRouter(env, db, protectedRoute, redisClient)

@@ -36,6 +36,10 @@ type Env struct {
 	OAUTH_REDIRECT_URL    string `mapstructure:"OAUTH_REDIRECT_URL"`
 	GOOGEL_CLIENT_ID      string `mapstructure:"GOOGEL_CLIENT_ID"`
 	GOOGLE_TOKEN_INFO_URL string `mapstructure:"GOOGLE_TOKEN_INFO_URL"`
+
+	CLOUDINARY_CLOUD_NAME string `mapstructure:"CLOUDINARY_CLOUD_NAME"`
+	CLOUDINARY_API_KEY    string `mapstructure:"CLOUDINARY_API_KEY"`
+	CLOUDINARY_API_SECRET string `mapstructure:"CLOUDINARY_API_SECRET"`
 }
 
 func NewEnv() *Env {
@@ -77,6 +81,10 @@ func NewEnv() *Env {
 	viper.BindEnv("OAUTH_REDIRECT_URL")
 	viper.BindEnv("GOOGLE_CLIENT_ID")
 	viper.BindEnv("GOOGLE_TOKEN_INFO_URL")
+
+	viper.BindEnv("CLOUDINARY_CLOUD_NAME")
+	viper.BindEnv("CLOUDINARY_API_KEY")
+	viper.BindEnv("CLOUDINARY_API_SECRET")
 
 	env := Env{}
 

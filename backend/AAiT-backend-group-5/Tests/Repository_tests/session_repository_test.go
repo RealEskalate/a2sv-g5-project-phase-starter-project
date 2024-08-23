@@ -1,133 +1,210 @@
 package tests
 
-// import (
-// 	"context"
-// 	"log"
-// 	"testing"
+import (
+	"context"
+	"errors"
+	"testing"
 
-// 	"github.com/stretchr/testify/suite"
-// 	"go.mongodb.org/mongo-driver/bson"
-// 	"go.mongodb.org/mongo-driver/bson/primitive"
-// 	"go.mongodb.org/mongo-driver/mongo"
-// 	"go.mongodb.org/mongo-driver/mongo/options"
-// 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/suite"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 
-// 	"github.com/aait.backend.g5.main/backend/Domain/Models"
-// 	"github.com/aait.backend.g5.main/backend/Repository"
-// )
+	models "github.com/aait.backend.g5.main/backend/Domain/Models"
+	mocks "github.com/aait.backend.g5.main/backend/Mocks"
+	repository "github.com/aait.backend.g5.main/backend/Repository"
+)
 
-// type SessionRepoTestSuite struct {
-// 	suite.Suite
-// 	Client     *mongo.Client
-// 	Collection *mongo.Collection
-// 	Repo       *repository.SessionRepo
-// }
+type SessionRepositorySuite struct {
+	suite.Suite
 
-// func (suite *SessionRepoTestSuite) SetupTest() {
-// 	// Connect to the test MongoDB instance
-// 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-// 	client, err := mongo.Connect(context.TODO(), clientOptions)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	err = client.Ping(context.TODO(), readpref.Primary())
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
+	db         *mocks.Database
+	collection *mocks.Collection
+	repository *repository.SessionRepo
+}
 
-// 	suite.Client = client
-// 	db := suite.Client.Database("test-db")
-// 	suite.Collection = db.Collection("session-collection")
-// 	suite.Repo = repository.NewSessionRepository(db).(*repository.SessionRepo)
-// }
+func (suite *SessionRepositorySuite) SetupTest() {
+	suite.db = new(mocks.Database)
+	suite.collection = new(mocks.Collection)
+	suite.repository = &repository.SessionRepo{
+		Collection: suite.collection,
+	}
+}
 
-// func (suite *SessionRepoTestSuite) TearDownSuite() {
-// 	err := suite.Client.Disconnect(context.TODO())
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// }
+// Test SaveToken function
+func (suite *SessionRepositorySuite) TestSaveToken_Success_UpdateExistingToken() {
+	session := &models.Session{
+		UserID:       "user123",
+		RefreshToken: "new-refresh-token",
+		AccessToken:  "new-access-token",
+	}
 
+	// Mock the FindOne operation to simulate an existing session
+	mockResult := new(mocks.SingleResult)
+	suite.collection.On("FindOne", mock.Anything, bson.M{"user_id": session.UserID}).Return(mockResult)
 
-// func (suite *SessionRepoTestSuite) TestSaveToken() {
-// 	session := &models.Session{
-// 		UserID:       primitive.NewObjectID().Hex(),
-// 		AccessToken:  "access_token_value",
-// 		RefreshToken: "refresh_token_value",
-// 	}
+	// Mock the Decode operation to simulate successful decoding
+	mockResult.On("Decode", mock.AnythingOfType("*models.Session")).Run(func(args mock.Arguments) {
+		arg := args.Get(0).(*models.Session)
+		arg.UserID = session.UserID
+		arg.RefreshToken = "old-refresh-token"
+		arg.AccessToken = "old-access-token"
+	}).Return(nil)
 
-// 	err := suite.Repo.SaveToken(context.TODO(), session)
-// 	suite.Empty(err)
+	// Mock the UpdateOne operation
+	suite.collection.On("UpdateOne", mock.Anything, bson.M{"user_id": session.UserID}, mock.Anything).Return(&mongo.UpdateResult{}, nil)
 
-// 	// Verify the session was saved correctly
-// 	var foundSession models.Session
-// 	ferr := suite.Collection.FindOne(context.TODO(), bson.M{"user_id": session.UserID}).Decode(&foundSession)
-// 	suite.Nil(ferr)
-// 	suite.Equal(session.AccessToken, foundSession.AccessToken)
-// 	suite.Equal(session.RefreshToken, foundSession.RefreshToken)
-// }
+	// Call the SaveToken method
+	errResp := suite.repository.SaveToken(context.TODO(), session)
 
-// func (suite *SessionRepoTestSuite) TestUpdateToken() {
-// 	session := &models.Session{
-// 		UserID:       primitive.NewObjectID().Hex(),
-// 		AccessToken:  "old_access_token",
-// 		RefreshToken: "old_refresh_token",
-// 	}
+	// Assertions
+	suite.Nil(errResp)
+	suite.collection.AssertExpectations(suite.T())
+}
 
-// 	// Insert initial session
-// 	_, err := suite.Collection.InsertOne(context.TODO(), session)
-// 	suite.Nil(err)
+func (suite *SessionRepositorySuite) TestSaveToken_Success_InsertNewToken() {
+	session := &models.Session{
+		UserID:       "user123",
+		RefreshToken: "new-refresh-token",
+		AccessToken:  "new-access-token",
+	}
 
-// 	// Update tokens
-// 	session.AccessToken = "new_access_token"
-// 	session.RefreshToken = "new_refresh_token"
-// 	err = suite.Repo.UpdateToken(context.TODO(), session)
-// 	suite.Empty(err)
+	// Mock the FindOne operation to simulate no existing session
+	mockResult := new(mocks.SingleResult)
+	suite.collection.On("FindOne", mock.Anything, bson.M{"user_id": session.UserID}).Return(mockResult)
 
-// 	// Verify the tokens were updated
-// 	var updatedSession models.Session
-// 	err = suite.Collection.FindOne(context.TODO(), bson.M{"user_id": session.UserID}).Decode(&updatedSession)
-// 	suite.Nil(err)
-// 	suite.Equal("new_access_token", updatedSession.AccessToken)
-// 	suite.Equal("new_refresh_token", updatedSession.RefreshToken)
-// }
+	// Mock the Decode operation to simulate a "no documents found" error
+	mockResult.On("Decode", mock.AnythingOfType("*models.Session")).Return(mongo.ErrNoDocuments)
 
-// func (suite *SessionRepoTestSuite) TestRemoveToken() {
-// 	session := &models.Session{
-// 		UserID:       primitive.NewObjectID().Hex(),
-// 		AccessToken:  "access_token_value",
-// 		RefreshToken: "refresh_token_value",
-// 	}
+	// Mock the InsertOne operation
+	suite.collection.On("InsertOne", mock.Anything, session).Return(&mongo.InsertOneResult{}, nil)
 
-// 	// Insert session
-// 	_, err := suite.Collection.InsertOne(context.TODO(), session)
-// 	suite.Empty(err)
+	// Call the SaveToken method
+	errResp := suite.repository.SaveToken(context.TODO(), session)
 
-// 	// Remove session token
-// 	err = suite.Repo.RemoveToken(context.TODO(), session.UserID)
-// 	suite.Empty(err)
-// }
+	// Assertions
+	suite.Nil(errResp)
+	suite.collection.AssertExpectations(suite.T())
+}
 
-// func (suite *SessionRepoTestSuite) TestGetToken() {
-// 	session := &models.Session{
-// 		UserID:       primitive.NewObjectID().Hex(),
-// 		AccessToken:  "access_token_value",
-// 		RefreshToken: "refresh_token_value",
-// 	}
+// Test UpdateToken function
+func (suite *SessionRepositorySuite) TestUpdateToken_Success() {
+	session := &models.Session{
+		UserID:       "user123",
+		RefreshToken: "updated-refresh-token",
+		AccessToken:  "updated-access-token",
+	}
 
-// 	// Insert session
-// 	_, err := suite.Collection.InsertOne(context.TODO(), session)
-// 	suite.Empty(err)
+	// Mock the UpdateOne operation
+	suite.collection.On("UpdateOne", mock.Anything, bson.M{"user_id": session.UserID}, mock.Anything).Return(&mongo.UpdateResult{}, nil)
 
-	
-// 	// Retrieve the session
-// 	foundSession, errResp := suite.Repo.GetToken(context.TODO(), session.UserID)
-// 	suite.Empty(errResp)
-// 	suite.NotNil(foundSession)
-// 	suite.Equal(session.AccessToken, foundSession.AccessToken)
-// 	suite.Equal(session.RefreshToken, foundSession.RefreshToken)
-// }
+	// Call the UpdateToken method
+	errResp := suite.repository.UpdateToken(context.TODO(), session)
 
-// func TestSessionRepoTestSuite(t *testing.T) {
-// 	suite.Run(t, new(SessionRepoTestSuite))
-// }
+	// Assertions
+	suite.Nil(errResp)
+	suite.collection.AssertExpectations(suite.T())
+}
+
+func (suite *SessionRepositorySuite) TestUpdateToken_Failure() {
+	session := &models.Session{
+		UserID:       "user123",
+		RefreshToken: "updated-refresh-token",
+		AccessToken:  "updated-access-token",
+	}
+
+	// Mock the UpdateOne operation to return an error
+	suite.collection.On("UpdateOne", mock.Anything, bson.M{"user_id": session.UserID}, mock.Anything).Return(nil, errors.New("update error"))
+
+	// Call the UpdateToken method
+	errResp := suite.repository.UpdateToken(context.TODO(), session)
+
+	// Assertions
+	suite.NotNil(errResp)
+	suite.Equal("update error", errResp.Message)
+	suite.collection.AssertExpectations(suite.T())
+}
+
+// Test RemoveToken function
+func (suite *SessionRepositorySuite) TestRemoveToken_Success() {
+	userID := "user123"
+
+	// Mock the DeleteOne operation
+	suite.collection.On("DeleteOne", mock.Anything, bson.M{"user_id": userID}).Return(int64(1), nil)
+
+	// Call the RemoveToken method
+	errResp := suite.repository.RemoveToken(context.TODO(), userID)
+
+	// Assertions
+	suite.Nil(errResp)
+	suite.collection.AssertExpectations(suite.T())
+}
+
+func (suite *SessionRepositorySuite) TestRemoveToken_Failure() {
+	userID := "user123"
+
+	// Mock the DeleteOne operation to return an error
+	suite.collection.On("DeleteOne", mock.Anything, bson.M{"user_id": userID}).Return(int64(0), errors.New("delete error"))
+
+	// Call the RemoveToken method
+	errResp := suite.repository.RemoveToken(context.TODO(), userID)
+
+	// Assertions
+	suite.NotNil(errResp)
+	suite.Equal("delete error", errResp.Message)
+	suite.collection.AssertExpectations(suite.T())
+}
+
+// Test GetToken function
+func (suite *SessionRepositorySuite) TestGetToken_Success() {
+	userID := "user123"
+	expectedSession := &models.Session{
+		UserID:       userID,
+		RefreshToken: "refresh-token",
+		AccessToken:  "access-token",
+	}
+
+	// Mock the FindOne operation
+	mockResult := new(mocks.SingleResult)
+	suite.collection.On("FindOne", mock.Anything, bson.M{"user_id": userID}).Return(mockResult)
+
+	// Mock the Decode operation to simulate successful decoding
+	mockResult.On("Decode", mock.AnythingOfType("*models.Session")).Run(func(args mock.Arguments) {
+		arg := args.Get(0).(*models.Session)
+		arg.UserID = expectedSession.UserID
+		arg.RefreshToken = expectedSession.RefreshToken
+		arg.AccessToken = expectedSession.AccessToken
+	}).Return(nil)
+
+	// Call the GetToken method
+	result, errResp := suite.repository.GetToken(context.TODO(), userID)
+
+	// Assertions
+	suite.Nil(errResp)
+	suite.Equal(expectedSession, result)
+	suite.collection.AssertExpectations(suite.T())
+}
+
+func (suite *SessionRepositorySuite) TestGetToken_Failure() {
+	userID := "user123"
+
+	// Mock the FindOne operation
+	mockResult := new(mocks.SingleResult)
+	suite.collection.On("FindOne", mock.Anything, bson.M{"user_id": userID}).Return(mockResult)
+
+	// Mock the Decode operation to return an error
+	mockResult.On("Decode", mock.AnythingOfType("*models.Session")).Return(mongo.ErrNoDocuments)
+
+	// Call the GetToken method
+	result, errResp := suite.repository.GetToken(context.TODO(), userID)
+
+	// Assertions
+	suite.Nil(result)
+	suite.NotNil(errResp)
+	suite.Equal("Session not found", errResp.Message)
+	suite.collection.AssertExpectations(suite.T())
+}
+
+func TestSessionRepositorySuite(t *testing.T) {
+	suite.Run(t, new(SessionRepositorySuite))
+}

@@ -6,15 +6,16 @@ import (
 	infrastructure "github.com/aait.backend.g5.main/backend/Infrastructure"
 	repository "github.com/aait.backend.g5.main/backend/Repository"
 	usecases "github.com/aait.backend.g5.main/backend/UseCases"
+	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
+
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewForgotPasswordRouter(env *config.Env, database mongo.Database, group *gin.RouterGroup) {
+func NewForgotPasswordRouter(env *config.Env, database interfaces.Database, group *gin.RouterGroup) {
 	emailConfig := config.NewEmailServer(*env)
 
-	url_repo := repository.NewURLRepository(&database)
-	user_repo := repository.NewUserRepository(&database)
+	url_repo := repository.NewURLRepository(database)
+	user_repo := repository.NewUserRepository(database)
 
 	jwt_service := infrastructure.NewJwtService(env)
 	password_service := infrastructure.NewPasswordService()

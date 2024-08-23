@@ -5,9 +5,9 @@ import { getSession, signOut } from 'next-auth/react';
 export const baseQuery = (baseUrl = '/') => {
   // console.log('first base url is ', process.env.BACKEND_URL);
   return fetchBaseQuery({
-    baseUrl: 'https://bank-dashboard-1tst.onrender.com',
+    baseUrl: 'https://astu-bank-dashboard.onrender.com',
     prepareHeaders: async (headers) => {
-      const baseURL = 'https://bank-dashboard-1tst.onrender.com';
+      const baseURL = 'https://astu-bank-dashboard.onrender.com';
 
       const session = await getSession();
       // console.log('session from baseQuery', session);
@@ -21,7 +21,7 @@ export const baseQuery = (baseUrl = '/') => {
 
           // Check if access token has expired
           if (decode.exp < currentTimestamp) {
-            // console.log('Token has expired, refreshing token');
+            // console.log('Token has expired, refreshing token', session.refreshToken);
 
             // Attempt to refresh the token
             const refreshedToken = await fetch(`${baseURL}/auth/refresh_token`, {
@@ -34,7 +34,7 @@ export const baseQuery = (baseUrl = '/') => {
               // console.log('new token');
               if (res.ok) {
                 const data = await res.json();
-                // console.log('is here ', data);
+                // console.log('new token ', data);
                 return data;
               }
               return null;

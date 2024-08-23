@@ -9,23 +9,23 @@ import (
 )
 
 type Config struct {
-	DatabaseUrl            string
-	Port                   int
-	DbName                 string
-	UserCollection         string
-	BlogCollection         string
-	ActiveUserCollection   string
-	ContextTimeout         int
-	AccessTokenExpiryHour  int
-	RefreshTokenExpiryHour int
-	AccessTokenSecret      string
-	RefreshTokenSecret     string
-	ClientID			   string
-	ClientSecret		   string
-	RedirectURL			   string
-	OauthSecret			   string
-	GeminiAPIKey		   string
-
+	DatabaseUrl              string
+	Port                     int
+	DbName                   string
+	UserCollection           string
+	BlogCollection           string
+	ActiveUserCollection     string
+	UnverifiedUserCollection string
+	ContextTimeout           int
+	AccessTokenExpiryHour    int
+	RefreshTokenExpiryHour   int
+	AccessTokenSecret        string
+	RefreshTokenSecret       string
+	ClientID                 string
+	ClientSecret             string
+	RedirectURL              string
+	OauthSecret              string
+	GeminiAPIKey             string
 }
 
 func LoadEnv() (*Config, error) {
@@ -41,19 +41,17 @@ func LoadEnv() (*Config, error) {
 	usercoll := os.Getenv("user_collection")
 	blogcoll := os.Getenv("blog_collection")
 	activeusercoll := os.Getenv("ACTIVE_USER_COLLECTION")
+	unverifiedusercoll := os.Getenv("UNVERIFIED_USER_COLLECTION")
 	contextTimeoutStr := os.Getenv("CONTEXT_TIMEOUT")
 	accessTokenExpiryHourStr := os.Getenv("ACCESS_TOKEN_EXPIRY_HOUR")
 	refreshTokenExpiryHourStr := os.Getenv("REFRESH_TOKEN_EXPIRY_HOUR")
 	accessTokenSecret := os.Getenv("ACCESS_TOKEN_SECRET")
 	refreshTokenSecret := os.Getenv("REFRESH_TOKEN_SECRET")
-	clientId	:= os.Getenv("CLIENT_ID")
-	clientSecret	:= os.Getenv("CLIENT_SECRET")
-	redirectURL	:= os.Getenv("REDIRECT_URI")
-	oauthSecret	:= os.Getenv("OAUTH_STATE_STRING")
+	clientId := os.Getenv("CLIENT_ID")
+	clientSecret := os.Getenv("CLIENT_SECRET")
+	redirectURL := os.Getenv("REDIRECT_URI")
+	oauthSecret := os.Getenv("OAUTH_STATE_STRING")
 	geminiAPIKey := os.Getenv("GEMINI_API_KEY")
-	
-
-
 
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
@@ -86,16 +84,17 @@ func LoadEnv() (*Config, error) {
 		UserCollection:         usercoll,
 		BlogCollection:         blogcoll,
 		ActiveUserCollection:   activeusercoll,
+		UnverifiedUserCollection: unverifiedusercoll,
 		ContextTimeout:         contextTimeout,
 		AccessTokenExpiryHour:  accessTokenExpiryHour,
 		RefreshTokenExpiryHour: refreshTokenExpiryHour,
 		AccessTokenSecret:      accessTokenSecret,
 		RefreshTokenSecret:     refreshTokenSecret,
-		ClientID:				clientId,
-		ClientSecret:			clientSecret,
-		RedirectURL:			redirectURL,
-		OauthSecret:			oauthSecret,
-		GeminiAPIKey:			geminiAPIKey,
+		ClientID:               clientId,
+		ClientSecret:           clientSecret,
+		RedirectURL:            redirectURL,
+		OauthSecret:            oauthSecret,
+		GeminiAPIKey:           geminiAPIKey,
 	}
 
 	return config, nil

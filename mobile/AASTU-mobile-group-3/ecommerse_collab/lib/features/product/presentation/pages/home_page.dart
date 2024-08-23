@@ -213,7 +213,7 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (BuildContext context) {
-                  return const AddProduct();
+                  return  AddProduct(user: widget.user,);
                 }));
               },
               child: const Icon(

@@ -15,7 +15,7 @@ var secretKey []byte
 
 func init() {
 	// Load environment variables from .env file (if present)
-	_ = godotenv.Load()
+	_ = godotenv.Load(".env")
 
 	// Retrieve the secret key from the environment variable
 	secretKey = []byte(os.Getenv("JWT_SECRET"))

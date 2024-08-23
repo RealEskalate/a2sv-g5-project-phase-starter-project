@@ -33,7 +33,7 @@ type EnvironmentVariables struct {
 var ENV EnvironmentVariables
 
 func LoadEnvironmentVariables() error {
-	err := godotenv.Load()
+	err := godotenv.Load("../.env")
 	if err != nil {
 		return fmt.Errorf("error: %v", err.Error())
 	}

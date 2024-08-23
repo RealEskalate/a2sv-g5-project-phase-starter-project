@@ -43,7 +43,7 @@ class ProductCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        product.category ?? "",
+                        product.seller.username,
                         style: const TextStyle(color: Colors.grey),
                       ),
                       const Row(

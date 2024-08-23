@@ -65,94 +65,81 @@ const getTransactions = async (
   }
 };
 
-const postTransaction = async (
-  transactionDetails: PostTransactionRequest,
-  token: string
-): Promise<PostTransactionResponse> => {
-  try {
-    // const token = await getAccessToken();
-    const response = await fetch(`${BASE_URL}/transactions`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(transactionDetails),
-    });
-
-    if (response.status === 200) {
-      const data: PostTransactionResponse = await response.json();
-      return data;
-    } else {
-      throw new Error(`Request failed with status code: ${response.status}`);
+  const postTransaction = async (transactionDetails: PostTransactionRequest, token:string): Promise<PostTransactionResponse> => {
+    try {
+      // const token = await getAccessToken();
+      const response = await fetch(`${BASE_URL}/transactions`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(transactionDetails),
+      });
+  
+      if (response.status === 200) {
+        const data: PostTransactionResponse = await response.json();
+        return data;
+      } else {
+        throw new Error(`Request failed with status code: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error posting transaction:', error);
+      throw error;
     }
-  } catch (error) {
-    console.error("Error posting transaction:", error);
-    throw error;
-  }
-};
-
-const postTransactionsDeposit = async (
-  transactionDetails: PostDepositTransactionRequest,
-  token: string
-): Promise<TransactionResponse> => {
-  try {
-    // const token = await getAccessToken();
-    const response = await fetch(`${BASE_URL}/transactions/deposit`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(transactionDetails),
-    });
-
-    if (response.status === 200) {
-      const data: TransactionResponse = await response.json();
-      return data;
-    } else {
-      throw new Error(`Request failed with status code: ${response.status}`);
+  };
+  
+  const postTransactionsDeposit = async (transactionDetails: PostDepositTransactionRequest, token:string): Promise<TransactionResponse> => {
+    try {
+      // const token = await getAccessToken();
+      const response = await fetch(`${BASE_URL}/transactions/deposit`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(transactionDetails),
+      });
+  
+      if (response.status === 200) {
+        const data: TransactionResponse = await response.json();
+        return data;
+      } else {
+        throw new Error(`Request failed with status code: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error posting transaction:', error);
+      throw error;
     }
-  } catch (error) {
-    console.error("Error posting transaction:", error);
-    throw error;
-  }
-};
-const getTransactionById = async (
-  transactionId: string,
-  token: string
-): Promise<GetTransactionByID> => {
-  try {
-    // const token = await getAccessToken();
-    const response = await fetch(`${BASE_URL}/transactions/${transactionId}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+  };
+  const getTransactionById = async (transactionId: string, token:string): Promise<GetTransactionByID> => {
+    try {
+      // const token = await getAccessToken();
+      const response = await fetch(`${BASE_URL}/transactions/${transactionId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.status === 200) {
+        const data: TransactionResponse = await response.json();
+        return data;
+      } else {
+        throw new Error(`Request failed with status code: ${response.status}`);
+      }
+    } catch (error) {
 
-    if (response.status === 200) {
-      const data: TransactionResponse = await response.json();
-      return data;
-    } else {
-      throw new Error(`Request failed with status code: ${response.status}`);
+      console.error('Error fetching transaction:', error);
+      throw error;
     }
-  } catch (error) {
-    console.error("Error fetching transaction:", error);
-    throw error;
-  }
-};
-const getRandomBalanceHistory = async (
-  monthsBeforeFirstTransaction: number,
-  token: string
-): Promise<BalanceHistoryResponse> => {
-  try {
-    // const token = await getAccessToken();
-    const response = await fetch(
-      `${BASE_URL}/transactions/random-balance-history?monthsBeforeFirstTransaction=${monthsBeforeFirstTransaction}`,
-      {
-        method: "GET",
+  };
+  const getRandomBalanceHistory = async (monthsBeforeFirstTransaction: number, token: string): Promise<BalanceHistoryResponse> => {
+    try {
+      // const token = await getAccessToken();
+      const response = await fetch(`${BASE_URL}/transactions/random-balance-history?monthsBeforeFirstTransaction=${monthsBeforeFirstTransaction}`, {
+        method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

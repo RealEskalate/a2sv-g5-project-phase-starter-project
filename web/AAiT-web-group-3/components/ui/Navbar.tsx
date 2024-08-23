@@ -18,6 +18,9 @@ const Navbar = () => {
   const toggle = useAppSelector(
     (state) => state.navigationReducer.value.toggle
   );
+  const activePage = useAppSelector(
+    (state) => state.navigationReducer.value.activePage
+  );
   return (
     <div className="flex flex-col gap-5 py-5 border-b px-10">
       <div className="flex gap-5 justify-between items-center">
@@ -31,7 +34,7 @@ const Navbar = () => {
           </button>
         </div>
         <div className="font-bold text-2xl text-primary-color-800">
-          Overview
+          {activePage}
         </div>
 
         <div className="flex gap-20">
@@ -49,10 +52,14 @@ const Navbar = () => {
 
           <div className="hidden md:flex gap-5 text-xl md:items-center">
             <div className="cursor-pointer text-xl bg-primary-color-50 rounded-full px-2 py-2">
-              <IoSettingsOutline />
+              <span className="text-2xl">
+                <IoSettingsOutline />
+              </span>
             </div>
-            <div className="cursor-pointer text-xl bg-primary-color-50 rounded-full px-2 py-2">
-              <IoMdNotificationsOutline />
+            <div className="cursor-pointer text-xl bg-primary-color-50 text-red-400 rounded-full px-2 py-2">
+              <span className="text-2xl">
+                <IoMdNotificationsOutline />
+              </span>
             </div>
           </div>
           <div className="items-center">

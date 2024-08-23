@@ -37,6 +37,7 @@ const EditProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       const session = await getSession();
+      console.log("session from Edit profile", session);
       const accessToken = session?.user.accessToken;
       console.log(accessToken);
       if (!accessToken) {

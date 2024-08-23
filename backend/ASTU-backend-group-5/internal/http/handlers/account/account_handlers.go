@@ -174,6 +174,10 @@ func (h *UserHandler) GetAnyUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	if user == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
 	GetUser := domain.GetUserDTO{
 		UserName: user.UserName,
 		Email:    user.Email,

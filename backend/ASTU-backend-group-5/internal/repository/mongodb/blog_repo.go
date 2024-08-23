@@ -58,7 +58,9 @@ func (r *MongoBlogRepository) CreateBlog(ctx context.Context, blog *domain.Blog)
 // }
 
 func (r *MongoBlogRepository) GetBlogByID(ctx context.Context, id string) (*domain.GetSingleBlogDTO, error) {
+
 	objectID, err := primitive.ObjectIDFromHex(id)
+
 	if err != nil {
 		return nil, err
 	}
@@ -101,32 +103,6 @@ func (r *MongoBlogRepository) GetBlogByID(ctx context.Context, id string) (*doma
 		return nil, err
 	}
 	result.Comments = comments
-
-	// Fetch the first 10 likes for the blog
-	cursor, err = r.likesCollection.Find(ctx, bson.M{"blog_id": objectID}, options.Find().SetLimit(10))
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(ctx)
-
-	var likes []domain.Like
-	if err := cursor.All(ctx, &likes); err != nil {
-		return nil, err
-	}
-	result.Likes = likes
-
-	// Fetch the first 10 views for the blog
-	cursor, err = r.viewsCollection.Find(ctx, bson.M{"blog_id": objectID}, options.Find().SetLimit(10))
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(ctx)
-
-	var views []domain.View
-	if err := cursor.All(ctx, &views); err != nil {
-		return nil, err
-	}
-	result.Views = views
 
 	return result, nil
 }
@@ -172,78 +148,6 @@ func (r *MongoBlogRepository) GetAllBlogs(ctx context.Context) ([]*domain.Blog, 
 
 	return blogs, nil
 }
-
-// // FilterBlogs filters blogs based on the provided criteria
-// func (r *MongoBlogRepository) FilterBlogs(ctx context.Context, filter domain.BlogFilter) ([]*domain.Blog, error) {
-// 	query := bson.M{}
-
-// 	// Apply filters based on the provided filter object
-// 	if filter.Title != nil && *filter.Title != "" {
-// 		query["title"] = *filter.Title
-// 	}
-// 	if filter.AuthorID != nil {
-// 		query["ownerID"] = *filter.AuthorID
-// 	}
-// 	if len(filter.Tags) > 0 {
-// 		query["tags.name"] = bson.M{"$in": filter.Tags}
-// 	}
-// 	if filter.DateRange != nil {
-// 		query["created_at"] = bson.M{
-// 			"$gte": filter.DateRange.From,
-// 			"$lte": filter.DateRange.To,
-// 		}
-// 	}
-// 	if filter.Content != nil && *filter.Content != "" {
-// 		query["content"] = bson.M{"$regex": *filter.Content, "$options": "i"}
-// 	}
-// 	if filter.Keyword != nil && *filter.Keyword != "" {
-// 		keyword := *filter.Keyword
-// 		query["$or"] = []bson.M{
-// 			{"title": bson.M{"$regex": keyword, "$options": "i"}},
-// 			{"content": bson.M{"$regex": keyword, "$options": "i"}},
-// 			{"tags.name": bson.M{"$regex": keyword, "$options": "i"}},
-// 		}
-// 	}
-
-// 	// Retrieve blogs matching the filter
-// 	cursor, err := r.blogsCollection.Find(ctx, query)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer cursor.Close(ctx)
-
-// 	var blogs []*domain.Blog
-// 	for cursor.Next(ctx) {
-// 		var blog domain.Blog
-// 		if err := cursor.Decode(&blog); err != nil {
-// 			return nil, err
-// 		}
-
-// 		// Get view count for the blog
-// 		viewCount, err := r.viewsCollection.CountDocuments(ctx, bson.M{"blog_id": blog.ID})
-// 		if err != nil {
-// 			return nil, err
-// 		}
-
-// 		// Get like count for the blog
-// 		likeCount, err := r.likesCollection.CountDocuments(ctx, bson.M{"blog_id": blog.ID})
-// 		if err != nil {
-// 			return nil, err
-// 		}
-
-// 		// Add view and like counts to the blog structure
-// 		blog.Views = viewCount
-// 		blog.Likes = likeCount
-
-// 		blogs = append(blogs, &blog)
-// 	}
-
-// 	if err := cursor.Err(); err != nil {
-// 		return nil, err
-// 	}
-
-// 	return blogs, nil
-// }
 
 // PaginateBlogs retrieves paginated results of blogs based on the filter and pagination parameters
 func (r *MongoBlogRepository) PaginateBlogs(ctx context.Context, filter domain.BlogFilter, page, pageSize int) ([]*domain.Blog, error) {
@@ -538,151 +442,80 @@ func (r *MongoBlogRepository) GetCommentById(ctx context.Context, commentId stri
 	return &comment, nil
 }
 
-// func (r *MongoBlogRepository) FindBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int) ([]*domain.GetBlogDTO, int, error) {
-// 	collection := r.blogsCollection
+func (r *MongoBlogRepository) IncrementBlogViewCount(ctx context.Context, blogID string) error {
+	// Create an update filter
+	blogIdObj, _ := primitive.ObjectIDFromHex(blogID)
+	filter := bson.M{"_id": blogIdObj}
+	// Create an update operation
+	update := bson.M{"$inc": bson.M{"views_count": 1}}
 
-// 	query := bson.M{}
+	// Execute the update
+	_, err := r.blogsCollection.UpdateOne(ctx, filter, update)
 
-// 	if filter.AuthorID != nil {
-// 		query["ownerID"] = *filter.AuthorID
-// 	}
+	return err
+}
 
-// 	if filter.Tags != nil && len(filter.Tags) > 0 {
-// 		query["tags.name"] = bson.M{"$in": filter.Tags}
-// 	}
+func (r *MongoBlogRepository) IncrementBlogLikeCount(ctx context.Context, blogID string) error {
+	// Create an update filter
+	blogIdObj, _ := primitive.ObjectIDFromHex(blogID)
+	filter := bson.M{"_id": blogIdObj}
+	// Create an update operation
+	update := bson.M{"$inc": bson.M{"likes_count": 1}}
 
-// 	if filter.Keyword != nil {
-// 		query["$text"] = bson.M{"$search": *filter.Keyword}
-// 	}
+	// Execute the update
+	_, err := r.blogsCollection.UpdateOne(ctx, filter, update)
 
-// 	opr := options.Find().
-// 		SetSkip(int64((page - 1) * pageSize)).
-// 		SetLimit(int64(pageSize))
+	return err
+}
 
-// 	cursor, err := collection.Find(ctx, query, opr)
-// 	if err != nil {
-// 		return nil, 0, err
-// 	}
-// 	defer cursor.Close(ctx)
+func (r *MongoBlogRepository) IncrementBlogCommentCount(ctx context.Context, blogID string) error {
+	// Create an update filter
+	blogIdObj, _ := primitive.ObjectIDFromHex(blogID)
+	filter := bson.M{"_id": blogIdObj}
+	// Create an update operation
+	update := bson.M{"$inc": bson.M{"comments_count": 1}}
 
-// 	var blogs []*domain.GetBlogDTO
-// 	if err := cursor.All(ctx, &blogs); err != nil {
-// 		return nil, 0, err
-// 	}
+	// Execute the update
+	_, err := r.blogsCollection.UpdateOne(ctx, filter, update)
 
-// 	// Fetch like and view counts for each blog
-// 	for _, blog := range blogs {
-// 		// Get view count for the blog
-// 		viewCount, err := r.viewsCollection.CountDocuments(ctx, bson.M{"blog_id": blog.ID})
-// 		if err != nil {
-// 			return nil, 0, err
-// 		}
+	return err
+}
 
-// 		// Get like count for the blog
-// 		likeCount, err := r.likesCollection.CountDocuments(ctx, bson.M{"blog_id": blog.ID})
-// 		if err != nil {
-// 			return nil, 0, err
-// 		}
+func (r *MongoBlogRepository) DecrementBlogViewCount(ctx context.Context, blogID string) error {
+	// Create an update filter
+	blogIdObj, _ := primitive.ObjectIDFromHex(blogID)
+	filter := bson.M{"_id": blogIdObj}
+	// Create an update operation
+	update := bson.M{"$inc": bson.M{"views_count": -1}}
 
-// 		// Add view and like counts to the blog structure
-// 		blog.ViewsCount = viewCount
-// 		blog.LikesCount = likeCount
-// 	}
+	// Execute the update
+	_, err := r.blogsCollection.UpdateOne(ctx, filter, update)
 
-// 	// Get the total count of blogs matching the query
-// 	count, err := collection.CountDocuments(ctx, query)
-// 	if err != nil {
-// 		return nil, 0, err
-// 	}
+	return err
+}
 
-// 	return blogs, int(count), nil
-// }
+func (r *MongoBlogRepository) DecrementBlogLikeCount(ctx context.Context, blogID string) error {
+	// Create an update filter
+	blogIdObj, _ := primitive.ObjectIDFromHex(blogID)
+	filter := bson.M{"_id": blogIdObj}
+	// Create an update operation
+	update := bson.M{"$inc": bson.M{"likes_count": -1}}
 
-func (r *MongoBlogRepository) FindBlogs(
-	ctx context.Context,
-	filter domain.BlogFilter,
-	page int,
-	pageSize int,
-	orderBy []string, // Accept a list of sorting criteria
+	// Execute the update
+	_, err := r.blogsCollection.UpdateOne(ctx, filter, update)
 
-) ([]*domain.GetBlogDTO, int, error) {
-	collection := r.blogsCollection
+	return err
+}
 
-	// Building the query
-	query := bson.M{}
+func (r *MongoBlogRepository) DecrementBlogCommentCount(ctx context.Context, blogID string) error {
+	// Create an update filter
+	blogIdObj, _ := primitive.ObjectIDFromHex(blogID)
+	filter := bson.M{"_id": blogIdObj}
+	// Create an update operation
+	update := bson.M{"$inc": bson.M{"comments_count": -1}}
 
-	// Filter by Author ID
-	if filter.AuthorID != nil {
-		query["ownerID"] = *filter.AuthorID
-	}
+	// Execute the update
+	_, err := r.blogsCollection.UpdateOne(ctx, filter, update)
 
-	// Filter by Tags (normal tags)
-	if filter.Tags != nil && len(filter.Tags) > 0 {
-		query["tags.name"] = bson.M{"$in": filter.Tags}
-	}
-
-	// Filter by Keyword using $text search
-	if filter.Keyword != nil {
-		query["$text"] = bson.M{"$search": *filter.Keyword}
-	}
-
-	// Additional filters like title, content, date range, etc.
-	if filter.Title != nil {
-		query["title"] = bson.M{"$regex": *filter.Title, "$options": "i"}
-	}
-
-	if filter.Content != nil {
-		query["content"] = bson.M{"$regex": *filter.Content, "$options": "i"}
-	}
-
-	if filter.DateRange != nil {
-		query["created_at"] = bson.M{
-			"$gte": filter.DateRange.From,
-			"$lte": filter.DateRange.To,
-		}
-	}
-
-	// Set sorting options based on the list of orderBy parameters
-	sortOptions := bson.D{}
-	for _, order := range orderBy {
-		switch order {
-		case "oldest":
-			sortOptions = append(sortOptions, bson.E{Key: "created_at", Value: 1})
-		case "newest":
-			sortOptions = append(sortOptions, bson.E{Key: "created_at", Value: -1})
-		case "most_likes":
-			sortOptions = append(sortOptions, bson.E{Key: "likes_count", Value: -1})
-		case "most_views":
-			sortOptions = append(sortOptions, bson.E{Key: "views_count", Value: -1})
-		case "most_comments":
-			sortOptions = append(sortOptions, bson.E{Key: "comments_count", Value: -1})
-		default:
-			// Handle unknown sorting parameters (you might want to ignore or log this)
-		}
-	}
-
-	opr := options.Find().
-		SetSkip(int64((page - 1) * pageSize)).
-		SetLimit(int64(pageSize)).
-		SetSort(sortOptions)
-
-	// Execute the query
-	cursor, err := collection.Find(ctx, query, opr)
-	if err != nil {
-		return nil, 0, err
-	}
-	defer cursor.Close(ctx)
-
-	var blogs []*domain.GetBlogDTO
-	if err := cursor.All(ctx, &blogs); err != nil {
-		return nil, 0, err
-	}
-
-	// Get the total count of blogs matching the query
-	count, err := collection.CountDocuments(ctx, query)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return blogs, int(count), nil
+	return err
 }

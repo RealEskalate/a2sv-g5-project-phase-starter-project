@@ -5,11 +5,11 @@ import 'profile_pic_widget.dart';
 
 class StoriesWidget extends StatelessWidget {
   const StoriesWidget({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100,
+      height: 102,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: 6,
@@ -18,15 +18,7 @@ class StoriesWidget extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(26, 4, 0, 4),
             child: Column(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: stories[index].storyColor,
-                      width: 2,
-                    ),
-                  ),
-                  child: Container(
+                  Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
@@ -35,10 +27,13 @@ class StoriesWidget extends StatelessWidget {
                       ),
                     ),
                     child: ProfilePicWidget(
-                        imagePath: stories[index].storyImage,
-                        bgColor: stories[index].storyColor,
-                        radius: 30)),
-                ),
+                      isStory: true,
+                      isMystory: index == 0,
+                      imagePath: stories[index].storyImage,
+                      bgColor: stories[index].storyColor,
+                      radius: 30,
+                    ),
+                  ),
                 Text(
                   stories[index].storyTitle,
                   style: const TextStyle(

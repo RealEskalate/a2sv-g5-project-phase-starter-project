@@ -24,6 +24,7 @@ func (cont *LikeController) LikeBlog(c *gin.Context) {
 	reacterId, err := uuid.Parse(c.MustGet("id").(string))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
 	}
 	like.ReacterID = reacterId
 	cerr := cont.LikeUseCase.LikeBlog(like)
@@ -43,6 +44,7 @@ func (cont *LikeController) DeleteLike(c *gin.Context) {
 	requester_id, err := uuid.Parse(c.MustGet("id").(string))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return 
 	}
 	like.ReacterID = requester_id
 	cerr := cont.LikeUseCase.DeleteLike(like)

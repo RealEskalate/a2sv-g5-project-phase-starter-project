@@ -50,6 +50,7 @@ dependencies:
   audio_waveforms: ^1.0.5
   file_picker: ^8.1.2
   path_provider: ^2.1.4
+  dotted_border: ^2.1.0
   font_awesome_flutter: ^10.7.0
   auto_size_text: ^3.0.0
 

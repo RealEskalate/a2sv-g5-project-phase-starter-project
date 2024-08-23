@@ -32,13 +32,14 @@ func (bu *blogUsecase) CreateBlog(ctx context.Context, req *domain.BlogCreationR
 	defer cancel()
 
 	blog := &domain.Blog{
-		ID:        primitive.NewObjectID(),
-		Title:     req.Title,
-		Content:   req.Content,
-		AuthorID:  claims.UserID,
-		Tags:      req.Tags,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		ID:         primitive.NewObjectID(),
+		Title:      req.Title,
+		Content:    req.Content,
+		AuthorID:   claims.UserID,
+		AuthorName: claims.Username,
+		Tags:       req.Tags,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
 	}
 
 	if err := bu.blogRepository.CreateBlog(ctx, blog); err != nil {
@@ -46,13 +47,19 @@ func (bu *blogUsecase) CreateBlog(ctx context.Context, req *domain.BlogCreationR
 	}
 
 	return &domain.BlogResponse{
-		ID:        blog.ID,
-		Title:     blog.Title,
-		Content:   blog.Content,
-		Tags:      blog.Tags,
-		CreatedAt: blog.CreatedAt,
-		UpdatedAt: blog.UpdatedAt,
-		AuthorID:  blog.AuthorID,
+		ID:         blog.ID,
+		Title:      blog.Title,
+		Content:    blog.Content,
+		Tags:       blog.Tags,
+		CreatedAt:  blog.CreatedAt,
+		UpdatedAt:  blog.UpdatedAt,
+		AuthorID:   blog.AuthorID,
+		AuthorName: claims.Username,
+		Likes:      blog.Likes,
+		Dislikes:   blog.Dislikes,
+		Views:      blog.Views,
+		Comments:   blog.Comments,
+		Popularity: blog.Popularity,
 	}, nil
 }
 
@@ -66,13 +73,19 @@ func (bu *blogUsecase) GetBlogByID(ctx context.Context, id primitive.ObjectID) (
 	}
 
 	return &domain.BlogResponse{
-		ID:        blog.ID,
-		Title:     blog.Title,
-		Content:   blog.Content,
-		Tags:      blog.Tags,
-		CreatedAt: blog.CreatedAt,
-		UpdatedAt: blog.UpdatedAt,
-		AuthorID:  blog.AuthorID,
+		ID:         blog.ID,
+		Title:      blog.Title,
+		Content:    blog.Content,
+		Tags:       blog.Tags,
+		CreatedAt:  blog.CreatedAt,
+		UpdatedAt:  blog.UpdatedAt,
+		AuthorID:   blog.AuthorID,
+		AuthorName: blog.AuthorName,
+		Likes:      blog.Likes,
+		Dislikes:   blog.Dislikes,
+		Views:      blog.Views,
+		Comments:   blog.Comments,
+		Popularity: blog.Popularity,
 	}, nil
 }
 
@@ -92,13 +105,19 @@ func (bu *blogUsecase) GetAllBlogs(ctx context.Context, page int, limit int, sor
 		blog := blog // capture range variable
 		go func() {
 			responseChan <- &domain.BlogResponse{
-				ID:        blog.ID,
-				Title:     blog.Title,
-				Content:   blog.Content,
-				Tags:      blog.Tags,
-				CreatedAt: blog.CreatedAt,
-				UpdatedAt: blog.UpdatedAt,
-				AuthorID:  blog.AuthorID,
+				ID:         blog.ID,
+				Title:      blog.Title,
+				Content:    blog.Content,
+				Tags:       blog.Tags,
+				CreatedAt:  blog.CreatedAt,
+				UpdatedAt:  blog.UpdatedAt,
+				AuthorID:   blog.AuthorID,
+				AuthorName: blog.AuthorName,
+				Likes:      blog.Likes,
+				Dislikes:   blog.Dislikes,
+				Views:      blog.Views,
+				Comments:   blog.Comments,
+				Popularity: blog.Popularity,
 			}
 		}()
 	}
@@ -136,13 +155,19 @@ func (bu *blogUsecase) UpdateBlog(ctx context.Context, id primitive.ObjectID, re
 	}
 
 	return &domain.BlogResponse{
-		ID:        blog.ID,
-		Title:     blog.Title,
-		Content:   blog.Content,
-		Tags:      blog.Tags,
-		CreatedAt: blog.CreatedAt,
-		UpdatedAt: blog.UpdatedAt,
-		AuthorID:  blog.AuthorID,
+		ID:         blog.ID,
+		Title:      blog.Title,
+		Content:    blog.Content,
+		Tags:       blog.Tags,
+		CreatedAt:  blog.CreatedAt,
+		UpdatedAt:  blog.UpdatedAt,
+		AuthorID:   blog.AuthorID,
+		AuthorName: blog.AuthorName,
+		Likes:      blog.Likes,
+		Dislikes:   blog.Dislikes,
+		Views:      blog.Views,
+		Comments:   blog.Comments,
+		Popularity: blog.Popularity,
 	}, nil
 }
 
@@ -183,6 +208,14 @@ func (bu *blogUsecase) TrackView(ctx context.Context, id primitive.ObjectID) err
 	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
 	defer cancel()
 
+	_, err := bu.GetBlogByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	err = bu.blogRepository.IncrementPopularity(ctx, id, "popularity")
+	if err != nil {
+		return err
+	}
 	return bu.blogRepository.IncrementPopularity(ctx, id, "views")
 }
 
@@ -237,6 +270,11 @@ func (bu *blogUsecase) TrackLike(ctx context.Context, id primitive.ObjectID, use
 		UserID:          userID,
 		InteractionType: "Like",
 	})
+	if err != nil {
+		return err
+	}
+
+	err = bu.blogRepository.IncrementPopularity(ctx, id, "popularity")
 	if err != nil {
 		return err
 	}
@@ -298,23 +336,32 @@ func (bu *blogUsecase) TrackDislike(ctx context.Context, id primitive.ObjectID, 
 		return err
 	}
 
+	err = bu.blogRepository.DecrementPopularity(ctx, id, "popularity")
+	if err != nil {
+		return err
+	}
+
 	return bu.blogRepository.IncrementPopularity(ctx, id, "dislikes")
 }
-
 
 func (bu *blogUsecase) AddComment(ctx context.Context, post_id primitive.ObjectID, userID primitive.ObjectID, comment *domain.Comment) error {
 	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
 	defer cancel()
 
-	errChan := make(chan error, 2)
+	errChan := make(chan error, 3)
 
 	go func() {
-		err := bu.blogRepository.IncrementPopularity(ctx, post_id, "comment")
+		err := bu.blogRepository.IncrementPopularity(ctx, post_id, "comments")
 		errChan <- err
 	}()
 
 	go func() {
 		err := bu.commentRepo.AddComment(ctx, post_id, userID, comment)
+		errChan <- err
+	}()
+
+	go func() {
+		err := bu.blogRepository.IncrementPopularity(ctx, post_id, "popularity")
 		errChan <- err
 	}()
 
@@ -327,28 +374,38 @@ func (bu *blogUsecase) AddComment(ctx context.Context, post_id primitive.ObjectI
 	return nil
 }
 
-
-func (bu *blogUsecase) GetComments(ctx context.Context, post_id primitive.ObjectID) (*domain.Comment, error) {
+func (bu *blogUsecase) GetComments(ctx context.Context, post_id primitive.ObjectID) ([]domain.Comment, error) {
+	// Set a timeout for the context based on bu.contextTimeout
 	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
-	defer cancel()
+	defer cancel() // Ensure the cancel function is called to release resources
 
+	// Call the repository method to get the comments
 	return bu.commentRepo.GetComments(ctx, post_id)
 }
 
-func (bu *blogUsecase) DeleteComment(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID) error {
+func (bu *blogUsecase) DeleteComment(ctx context.Context, postID, commentID, userID primitive.ObjectID) error {
 	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
 	defer cancel()
 
-	err := bu.commentRepo.DeleteComment(ctx, post_id, comment_id, userID)
+	// Delete the comment from the repository
+	err := bu.commentRepo.DeleteComment(ctx, postID, commentID, userID)
 	if err != nil {
 		return err
 	}
-	return bu.blogRepository.DecrementPopularity(ctx, post_id, "comment")
+
+	// Decrement the comment count in the blog's popularity
+	err = bu.blogRepository.DecrementPopularity(ctx, postID, "comments")
+	if err != nil {
+		return err
+	}
+
+	// Decrement the popularity score (if applicable)
+	return bu.blogRepository.DecrementPopularity(ctx, postID, "popularity")
 }
 
 func (bu *blogUsecase) UpdateComment(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID, comment *domain.Comment) error {
 	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
 	defer cancel()
-	
+
 	return bu.commentRepo.UpdateComment(ctx, post_id, comment_id, userID, comment)
 }

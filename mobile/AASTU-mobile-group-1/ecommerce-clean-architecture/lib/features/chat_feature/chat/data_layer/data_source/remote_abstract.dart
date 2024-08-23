@@ -1,5 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:ecommerce/core/error/failure.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../model/chat_model.dart';
 import '../model/message_model.dart';
@@ -12,3 +14,4 @@ abstract class RemoteAbstract {
   Stream<Either<Failure,List<ChatModel>>> getChatHistory(String token);
 
 }
+

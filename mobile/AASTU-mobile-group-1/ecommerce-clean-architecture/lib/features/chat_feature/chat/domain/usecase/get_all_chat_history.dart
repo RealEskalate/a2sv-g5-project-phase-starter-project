@@ -12,6 +12,7 @@ class GetAllChatHistory {
   GetAllChatHistory({required this.repository});
 
   Stream<Either<Failure, List<ChatEntity>>> call() async* {
+   
     yield* repository.getChatHistory();
   }
 }

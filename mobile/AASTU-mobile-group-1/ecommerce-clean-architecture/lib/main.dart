@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'features/auth/presentation/login.dart';
 import 'features/auth/presentation/register.dart';
 import 'features/auth/presentation/splash.dart';
+import 'features/chat_feature/chat/domain/usecase/get_all_chat_history.dart';
 import 'features/chat_feature/chat/domain/usecase/initialize_chat.dart';
 import 'features/chat_feature/chat/presentation/pages/direct_messages.dart';
 import 'features/product/data/data_sources/local_data_source.dart';
@@ -38,7 +39,7 @@ class Sample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: TempDart(initializeChat:getIt<InitializeChat>() ,),
+      home: TempDart(chatHistory:getIt<GetAllChatHistory>() ,),
     );
   }
 }

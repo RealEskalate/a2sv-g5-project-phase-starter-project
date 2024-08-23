@@ -36,9 +36,9 @@ class ChatRepositoryImp extends ChatRepository {
   }
 
   @override
-  Stream<Either<Failure, List<ChatModel>>> getChatHistory() {
-    // get token form local storage and call get chat history from remote
-    // TODO: implement getChatHistory
-    throw UnimplementedError();
+  Stream<Either<Failure, List<ChatModel>>> getChatHistory() async*{
+    var token =await getToken();
+   
+    yield* remoteAbstract.getChatHistory(token!);
   }
 }

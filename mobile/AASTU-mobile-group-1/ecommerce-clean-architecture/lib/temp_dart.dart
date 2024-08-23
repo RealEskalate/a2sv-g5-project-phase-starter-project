@@ -1,23 +1,46 @@
-import 'package:flutter/foundation.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
-
-import 'features/chat_feature/chat/domain/usecase/initialize_chat.dart';
+import 'core/error/failure.dart';
+import 'features/chat_feature/chat/data_layer/model/chat_model.dart';
+import 'features/chat_feature/chat/domain/entity/chat.dart';
+import 'features/chat_feature/chat/domain/usecase/get_all_chat_history.dart';
 
 class TempDart extends StatelessWidget {
-  InitializeChat initializeChat;
-  TempDart({required this.initializeChat, super.key});
+  final GetAllChatHistory chatHistory;
+
+  TempDart({required this.chatHistory, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Chat History'),
+      ),
       body: Center(
-        child: ElevatedButton(
-            onPressed: () async {
-              var chatroom =
-                  await initializeChat.call('66c5dc6700781697dc798f44');
-              print("Chatroom: $chatroom");
-            },
-            child: Text('TempDart')),
+        child: StreamBuilder<Either<Failure, List<ChatEntity>>>(
+          stream: chatHistory.call(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator(); 
+            }
+
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}'); 
+            }
+
+            if (snapshot.hasData) {
+              print(snapshot.data);
+            }
+
+            return Text('No data available'); // Fallback UI
+          },
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          print("Button pressed");
+        },
+        child: Icon(Icons.refresh),
       ),
     );
   }

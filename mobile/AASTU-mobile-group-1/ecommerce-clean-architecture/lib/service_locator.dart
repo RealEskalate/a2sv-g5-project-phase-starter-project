@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'core/networkinfo.dart';
 import 'features/auth/data/data_sources/local_data_source.dart';
@@ -16,6 +17,7 @@ import 'features/chat_feature/chat/data_layer/data_source/remote_abstract.dart';
 import 'features/chat_feature/chat/data_layer/data_source/remote_chat_source.dart';
 import 'features/chat_feature/chat/data_layer/repository_imp/chat_repository_imp.dart';
 import 'features/chat_feature/chat/domain/repository/chat_repository.dart';
+import 'features/chat_feature/chat/domain/usecase/get_all_chat_history.dart';
 import 'features/chat_feature/chat/domain/usecase/initialize_chat.dart';
 import 'features/product/data/data_sources/local_data_source.dart';
 import 'features/product/data/data_sources/remote_data_source.dart';
@@ -53,7 +55,9 @@ Future<void> setup() async {
   getIt.registerSingleton<RegisterUserUseCase>(RegisterUserUseCase(getIt()));
   getIt.registerSingleton<LoginUserUsecase>(LoginUserUsecase(getIt()));
   getIt.registerSingleton<UserBloc>(UserBloc(loginUserUsecase: getIt(), registerUserUsecase: getIt())); 
-  getIt.registerSingleton<RemoteAbstract>(RemoteChatSource(client: getIt()));
+  getIt.registerSingleton<RemoteAbstract>(RemoteChatSource(client: getIt(),));
   getIt.registerSingleton<ChatRepository>(ChatRepositoryImp(remoteAbstract: getIt()));
   getIt.registerSingleton<InitializeChat>(InitializeChat(repository: getIt()));
+  getIt.registerSingleton<GetAllChatHistory>(GetAllChatHistory(repository: getIt()));
+
 }

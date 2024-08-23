@@ -233,8 +233,33 @@ func (c *BlogController) FilterBlogs(ctx *gin.Context) {
 	if ctx.Query("tags") != "" {
 		tags = strings.Split(ctx.Query("tags"), ",")
 	}
-	startDate, _ := time.Parse(time.RFC3339, ctx.Query("startDate"))
-	endDate, _ := time.Parse(time.RFC3339, ctx.Query("endDate"))
+
+	// Define the date format to include only year, month, and day
+	const layout = "2006-01-02"
+
+	startDateStr := ctx.Query("startDate")
+	endDateStr := ctx.Query("endDate")
+
+	var startDate, endDate time.Time
+	var err error
+
+	if startDateStr != "" {
+		startDate, err = time.Parse(layout, startDateStr)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid startDate format. Use YYYY-MM-DD"})
+			return
+		}
+	}
+
+	if endDateStr != "" {
+		endDate, err = time.Parse(layout, endDateStr)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid endDate format. Use YYYY-MM-DD"})
+			return
+		}
+	}
+
+	fmt.Print(startDate,endDate)
 	sortBy := ctx.Query("sortBy")
 
 	blogs, err := c.blogUsecase.FilterBlogs(tags, startDate, endDate, sortBy)

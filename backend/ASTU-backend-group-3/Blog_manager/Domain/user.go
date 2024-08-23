@@ -15,6 +15,7 @@ type User struct {
 	Role           string             `json:"role" bson:"role"`
 	IsActive       bool               `json:"is_active" bson:"is_active"`
 	Address        string             `json:"address" bson:"address"`
+	IsOauth        bool               `json:"isoauth" bson:"isoauth"`
 }
 
 type RegisterInput struct {
@@ -26,6 +27,7 @@ type RegisterInput struct {
 	Bio            string `json:"bio" bson:"bio"`
 	Gender         string `json:"gender" bson:"gender"`
 	Address        string `json:"address" bson:"address"`
+	IsOauth        bool   `json:"isoauth" bson:"isoauth"`
 }
 
 type LoginInput struct {
@@ -42,17 +44,16 @@ type UpdateUserInput struct {
 }
 
 type ForgetPasswordInput struct {
-	Email string `json:"email" bson:"email"`
+	Email    string `json:"email" bson:"email"`
 	Username string `json:"username" bson:"username"`
 }
 
 type ResetPasswordInput struct {
-	Username string `json:"username" bson:"username"`
+	Username    string `json:"username" bson:"username"`
 	NewPassword string `json:"password" bson:"password"`
 }
 
-
 type ChangePasswordInput struct {
-	Username string `json:"username" bson:"username"`
+	Username    string `json:"username" bson:"username"`
 	NewPassword string `json:"password" bson:"password"`
 }

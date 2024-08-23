@@ -29,13 +29,13 @@ func NewAuthController(uc usecases.IAuthUsecase, googleConfig *oauth2.Config) *A
 func (ctrl *AuthController) Register(c *gin.Context) {
 	var userDTO dto.RegisterUserDTO
 	if err := c.ShouldBindJSON(&userDTO); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	user, err := ctrl.userUsecase.RegisterUser(&userDTO)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
 		return
 	}
 

@@ -58,7 +58,13 @@ func (bc *BlogController) GetBlogs() gin.HandlerFunc {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(200, gin.H{"blogs": blogs, "metadata": pagination})
+
+		res := domain.PaginatedResponse{
+			Data:     blogs,
+			MetaData: pagination,
+		}
+
+		c.JSON(200, res)
 	}
 }
 
@@ -76,7 +82,7 @@ func (bc *BlogController) GetBlog() gin.HandlerFunc {
 
 func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var newBlog domain.Blog
+		var newBlog domain.BlogIn
 		if err := c.ShouldBindJSON(&newBlog); err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
@@ -90,10 +96,16 @@ func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 	}
 }
 
+func (bc *BlogController) BatchCreateBlog() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+	}
+}
+
 func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		blogID := c.Param("id")
-		var updatedBlog domain.BlogUpdate
+		var updatedBlog domain.BlogIn
 		if err := c.ShouldBindJSON(&updatedBlog); err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
 	mongopagination "github.com/gobeam/mongo-go-pagination"
@@ -38,29 +39,13 @@ func (br *blogRepository) GetAllBlogs(c context.Context, filter bson.M, blogFilt
 }
 
 // utility filteration function that used to filter the blogs based on the user query
-func getFiltered(c context.Context, collection *mongo.Collection, filter bson.M, blogFilter domain.BlogFilter) ([]domain.Blog, mongopagination.PaginationData, error) {
-	blogs := make([]domain.Blog, 0)
+func getFiltered(c context.Context, coll *mongo.Collection, filter bson.M, blogFilter domain.BlogFilter) ([]domain.Blog, mongopagination.PaginationData, error) {
+	var blogs []domain.Blog
 
-	paginated := mongopagination.New(collection).Context(c).Limit(10).Page(blogFilter.Pages)
+	paginatedData, err := mongopagination.New(coll).Context(c).Limit(10).Page(blogFilter.Pages).Decode(&blogs).Aggregate(filter)
 
-	// Aggregate()
-
-	var paginatedData *mongopagination.PaginatedData
-	var err error
-	if filter != nil {
-		paginatedData, err = paginated.Aggregate(filter)
-		// paginatedData, err = paginated.Aggregate(bson.M{"$match": bson.M{"title": "ale", "$in": bson.M{"tag": []string{}}}})
-		if err != nil {
-			log.Println("[REPO] error in GET  Filter", err.Error())
-			return []domain.Blog{}, mongopagination.PaginationData{}, err
-		}
-		for _, raw := range paginatedData.Data {
-			var blog domain.Blog
-			if marshallErr := bson.Unmarshal(raw, &blog); marshallErr == nil {
-				blogs = append(blogs, blog)
-			}
-
-		}
+	if err != nil {
+		return []domain.Blog{}, mongopagination.PaginationData{}, err
 	}
 
 	return blogs, paginatedData.Pagination, nil
@@ -107,19 +92,27 @@ func (br *blogRepository) Search(c context.Context, searchTerm string, limit int
 	return []domain.Blog{}, mongopagination.PaginationData{}, nil
 }
 
-func (br *blogRepository) CreateBlog(c context.Context, newBlog *domain.Blog) (domain.Blog, error) {
+func (br *blogRepository) CreateBlog(c context.Context, newBlog *domain.BlogIn) (domain.Blog, error) {
 	collection := br.database.Collection(br.collection)
 
-	_, err := collection.InsertOne(c, newBlog)
+	insertedBlog, err := collection.InsertOne(c, newBlog)
 
 	if err != nil {
 		return domain.Blog{}, err
 	}
 
-	return *newBlog, nil
+	blog := domain.Blog{}
+	blog.ID = insertedBlog.InsertedID.(primitive.ObjectID)
+	blog.Title = newBlog.Title
+	blog.Tags = newBlog.Tags
+	blog.Content = newBlog.Content
+	blog.CreatedAt = time.Now()
+	blog.UpdatedAt = time.Now()
+
+	return blog, nil
 }
 
-func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBlog *domain.BlogUpdate) (domain.Blog, error) {
+func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBlog *domain.BlogIn) (domain.Blog, error) {
 	collection := br.database.Collection(br.collection)
 
 	ID, err := primitive.ObjectIDFromHex(blogID)
@@ -133,6 +126,7 @@ func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBl
 	if err != nil {
 		return domain.Blog{}, err
 	}
+
 	blog, err := br.GetBlogByID(c, blogID)
 	if err != nil {
 		return domain.Blog{}, err
@@ -192,7 +186,6 @@ func (br *blogRepository) GetByPopularity(c context.Context, limit int64, page i
 func getSortedBlog(c context.Context, collection *mongo.Collection, limit int64, page int64, sortField string) ([]domain.Blog, mongopagination.PaginationData, error) {
 	projection := bson.D{
 		{Key: "content", Value: 0},
-		{Key: "popularity", Value: 0},
 	}
 
 	var blogs []domain.Blog

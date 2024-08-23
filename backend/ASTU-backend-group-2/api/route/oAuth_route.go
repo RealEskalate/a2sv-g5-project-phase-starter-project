@@ -19,7 +19,7 @@ func NewOAuthRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Databas
 		LoginUsecase: usecase.NewLoginUsecase(ur, timeout),
 		Env:          env,
 	}
-	group.POST("/auth/:provider", oc.OAuthLogin())
-	group.POST("/auth/:provider/callback", oc.OAuthCallback())
+	group.GET("/auth/:provider", oc.OAuthLogin())
+	group.GET("/auth/:provider/callback", oc.OAuthCallback())
 	group.POST("/logout/:provider", oc.OAuthLogout())
 }

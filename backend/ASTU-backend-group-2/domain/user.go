@@ -2,8 +2,10 @@ package domain
 
 import (
 	"context"
+	"time"
 
 	mongopagination "github.com/gobeam/mongo-go-pagination"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -21,7 +23,7 @@ type User struct {
 	ProfileImg string             `json:"profile_img" bson:"profile_img"`
 	Password   string             `json:"password" bson:"password" binding:"required,min=4,max=30,StrongPassword"`
 	IsOwner    bool               `json:"is_owner" bson:"is_owner"`
-	Role       string             `json:"role" bson:"role"` //may make only tobe admin or user
+	Role       string             `json:"role" bson:"role"`
 	Tokens     []string           `json:"tokens" bson:"tokens"`
 	VerToken   string             `json:"verify_token" bson:"verfiy_token"`
 	CreatedAt  primitive.DateTime `json:"created_at" bson:"created_at"`
@@ -40,6 +42,20 @@ type UserOut struct {
 	IsOwner    bool               `json:"is_owner" bson:"is_owner"`
 	Role       string             `json:"role" bson:"role"` //may make only tobe admin or user
 }
+
+func (u *User) ToUserOut() *UserOut {
+	return &UserOut{
+		ID:         u.ID,
+		FirstName:  u.FirstName,
+		LastName:   u.LastName,
+		Email:      u.Email,
+		Bio:        u.Bio,
+		ProfileImg: u.ProfileImg,
+		IsOwner:    u.IsOwner,
+		Role:       u.Role,
+	}
+}
+
 type UserUpdate struct {
 	FirstName  string `json:"first_name" bson:"first_name"`
 	LastName   string `json:"last_name" bson:"last_name"`
@@ -53,12 +69,33 @@ type UpdatePassword struct {
 	NewPassword string `json:"new_password" binding:"required"`
 }
 
+// user forgot the password and wants to reset
+// reset passowrd token will be exreacted from the url /reset-password/:user_id/:<reset password token>
+type ResetPassword struct {
+	NewPassword string `json:"new_password" binding:"required"`
+}
+
+type UserFilter struct {
+	Email     string
+	DateFrom  time.Time
+	DateTo    time.Time
+	Limit     int64
+	Pages     int64
+	FirstName string
+	LastName  string
+	Role      string
+	IsOwner   string
+	Active    string
+	Bio       string
+	sort      string
+}
+
 type UserUsecase interface {
 	CreateUser(c context.Context, user *User) (*User, error)
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
 
-	GetUsers(c context.Context, limit int64, page int64) (*[]User, mongopagination.PaginationData, error)
+	GetUsers(c context.Context, filter UserFilter) (*[]UserOut, mongopagination.PaginationData, error)
 	UpdateUser(c context.Context, userID string, updatedUser *User) error
 	ActivateUser(c context.Context, userID string) error
 	DeleteUser(c context.Context, userID string) error
@@ -76,7 +113,7 @@ type UserRepository interface {
 	UpdateRefreshToken(c context.Context, userID string, refreshToken string) error
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
-	GetUsers(c context.Context, limit int64, page int64) (*[]User, mongopagination.PaginationData, error)
+	GetUsers(c context.Context, filter bson.M, userFilter UserFilter) (*[]User, mongopagination.PaginationData, error)
 	UpdateUser(c context.Context, userID string, updatedUser *User) (*User, error)
 	ActivateUser(c context.Context, userID string) (*User, error)
 	DeleteUser(c context.Context, userID string) error

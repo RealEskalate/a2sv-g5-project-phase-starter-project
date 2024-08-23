@@ -2,7 +2,7 @@ package main
 
 import (
 	"backend-starter-project/bootstrap"
-	route "backend-starter-project/delivery/router"
+	"backend-starter-project/delivery/router"
 	"backend-starter-project/infrastructure/middleware"
 	"backend-starter-project/repository"
 	"backend-starter-project/service"

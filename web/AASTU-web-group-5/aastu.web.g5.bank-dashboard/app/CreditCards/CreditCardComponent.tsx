@@ -9,13 +9,19 @@ import AddNewCard from "./AddNewCard";
 import CardSetting from "./CardSetting";
 import creditCardColor from "./cardMockData";
 import { useSession } from "next-auth/react";
-import Shimmer from "./Shimmer";
+import Shimmer from "./Shimmers/Shimmer";
+import ShimmerCardStatistics from "./Shimmers/ShimmerCardStatistics";
+import ShimmerCardList from "./Shimmers/ShimmerCardList";
+import ShimmerAddNewCard from "./Shimmers/ShimmerAddNewCard";
+import ShimmerCardSetting from "./Shimmers/ShimmerCardSetting";
+
 interface ExtendedUser {
 	name?: string;
 	email?: string;
 	image?: string;
 	accessToken?: string;
 }
+
 const CreditCardComponent: React.FC = () => {
 	const [cardData, setCardData] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -25,8 +31,7 @@ const CreditCardComponent: React.FC = () => {
 	const { data: session, status } = useSession();
 
 	const user = session?.user as ExtendedUser;
-
-	const accessToken = user.accessToken;
+	const accessToken = user?.accessToken;
 
 	const fetchCardData = async (page: number) => {
 		if (!accessToken) {
@@ -37,7 +42,7 @@ const CreditCardComponent: React.FC = () => {
 
 		try {
 			const response = await fetch(
-				`https://bank-dashboard-1tst.onrender.com/cards?page=${page}&size=3`,
+				`https://bank-dashboard-rsf1.onrender.com/cards?page=${page}&size=3`,
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -63,7 +68,7 @@ const CreditCardComponent: React.FC = () => {
 		if (accessToken) {
 			fetchCardData(currentPage);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [accessToken, currentPage]);
 
 	const handleCardAdded = () => {
@@ -84,8 +89,7 @@ const CreditCardComponent: React.FC = () => {
 
 	if (loading) {
 		return (
-			<div className="bg-[#F5F7FA] p-4 sm:px-8 sm:py-4">
-				<div className="font-semibold text-blue-900 p-2">My Cards</div>
+			<div className="bg-[#F5F7FA] dark:bg-gray-600 p-4 sm:px-8 sm:py-4 ">
 				<div className="overflow-x-auto">
 					<div className="flex flex-nowrap gap-6 w-[940px] sm:w-[1024px] md:w-full">
 						{Array.from({ length: 3 }).map((_, index) => (
@@ -93,18 +97,36 @@ const CreditCardComponent: React.FC = () => {
 						))}
 					</div>
 				</div>
-				{/* Include additional shimmers for other sections if needed */}
+				<div className="flex flex-col sm:flex-row gap-6 sm:gap-12 mt-6 pb-2">
+					<div className="w-full sm:w-[33%]">
+						<ShimmerCardStatistics />
+					</div>
+					<div className="flex flex-col w-full sm:w-[67%]">
+						<ShimmerCardList />
+					</div>
+				</div>
+				<div className="flex flex-col sm:flex-row gap-6 py-3">
+					<div className="w-full sm:w-[67%]">
+						<ShimmerAddNewCard />
+					</div>
+					<div className="w-full sm:w-[33%]">
+						<ShimmerCardSetting />
+					</div>
+				</div>
 			</div>
 		);
 	}
+
 	if (error) {
 		return <p className="py-5">Error: {error}</p>;
 	}
 
 	return (
-		<div className="bg-[#F5F7FA] p-4 sm:px-8 sm:py-4">
+		<div className="bg-[#F5F7FA] dark:bg-gray-800 p-4 sm:px-8 sm:py-4">
 			<div>
-				<div className="font-semibold text-blue-900 p-2">My Cards</div>
+				<div className="font-semibold text-blue-900 dark:text-blue-600 p-2">
+					My Cards
+				</div>
 				<div className="overflow-x-auto">
 					<div className="flex flex-nowrap gap-6 w-[940px] sm:w-[1024px] md:w-full">
 						{cardData.map((card, index) => (
@@ -122,22 +144,23 @@ const CreditCardComponent: React.FC = () => {
 				<div className="w-full sm:w-[33%]">
 					<CardStatistics />
 				</div>
-				<div className="flex flex-col w-full sm:w-[67%] ">
-					<div className="font-semibold text-blue-900 p-3">Card List</div>
+				<div className="flex flex-col w-full sm:w-[67%]">
+					<div className="font-semibold text-blue-900 dark:text-blue-600 p-3">
+						Card List
+					</div>
 					<CardList cardId={cardData.map((card) => card.id)} />
-					<div className="flex justify-end  items-center px-3 text-sm">
-						<div className="flex gap-1 items-center ">
-							<FaLessThan className="text-[#1814F3]  opacity-60   " />
+					<div className="flex justify-end items-center px-3 text-sm">
+						<div className="flex gap-1 items-center">
+							<FaLessThan className="text-[#1814F3] opacity-60" />
 							<button
 								onClick={handlePreviousPage}
 								disabled={currentPage === 0}
-								className=" text-[#1814F3] rounded "
+								className="text-[#1814F3] rounded"
 							>
 								Previous
 							</button>
 						</div>
 
-						{/* Page numbers */}
 						<div className="flex px-2">
 							{Array.from({ length: totalPages }, (_, index) => (
 								<button
@@ -146,22 +169,22 @@ const CreditCardComponent: React.FC = () => {
 									className={`px-4 py-2 rounded-xl ${
 										currentPage === index
 											? "bg-blue-500 text-white"
-											: " text-[#1814F3]"
+											: "text-[#1814F3]"
 									}`}
 								>
 									{index + 1}
 								</button>
 							))}
 						</div>
-						<div className="flex gap-1 items-center ">
+						<div className="flex gap-1 items-center">
 							<button
 								onClick={handleNextPage}
 								disabled={currentPage >= totalPages - 1}
-								className="  text-[#1814F3] rounded"
+								className="text-[#1814F3] rounded"
 							>
 								Next
 							</button>
-							<FaGreaterThan className="text-[#1814F3]  opacity-60 " />
+							<FaGreaterThan className="text-[#1814F3] opacity-60" />
 						</div>
 					</div>
 				</div>

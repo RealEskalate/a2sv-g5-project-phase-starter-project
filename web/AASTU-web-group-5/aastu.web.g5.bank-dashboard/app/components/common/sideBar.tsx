@@ -62,7 +62,10 @@ const SideBar = ({
 					alt="BankDash Logo"
 					className="h-[36px] w-[36px]"
 				/>
-				<div className="font-bold" style={{ color: primary_2 }}>
+				<div
+					className="font-bold  dark:text-blue-600 "
+					style={{ color: primary_2 }}
+				>
 					BankDash.
 				</div>
 				<button

@@ -51,7 +51,7 @@ const Accounts = () => {
 
 		try {
 			const response = await fetch(
-				`https://bank-dashboard-1tst.onrender.com/cards?page=${page}&size=3`,
+				`https://bank-dashboard-rsf1.onrender.com/cards?page=${page}&size=3`,
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -85,7 +85,7 @@ const Accounts = () => {
 		const fetchTransactions = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-1tst.onrender.com/transactions?page=0&size=10",
+					"https://bank-dashboard-rsf1.onrender.com/transactions?page=0&size=10",
 					{
 						headers: {
 							Authorization: token,
@@ -104,7 +104,7 @@ const Accounts = () => {
 		const fetchBalanceData = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-1tst.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=2",
+					"https://bank-dashboard-rsf1.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=2",
 					{
 						headers: {
 							Authorization: token,
@@ -126,7 +126,7 @@ const Accounts = () => {
 		const fetchIncomes = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-1tst.onrender.com/transactions/incomes?page=0&size=7",
+					"https://bank-dashboard-rsf1.onrender.com/transactions/incomes?page=0&size=7",
 					{
 						headers: {
 							Authorization: token,
@@ -150,7 +150,7 @@ const Accounts = () => {
 		const fetchExpenses = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-1tst.onrender.com/transactions/expenses?page=0&size=3",
+					"https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=0&size=3",
 					{
 						headers: {
 							Authorization: token,
@@ -187,13 +187,13 @@ const Accounts = () => {
 	}
 
 	return (
-		<div className="bg-[#F5F7FA] w-[90%] space-y-8 ">
+		<div className="bg-[#F5F7FA] dark:bg-gray-900 p-5 w-full space-y-8 ">
 			{/* Balance and Overview */}
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-				<div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
+				<div className="p-4 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center space-x-4">
 					<Image height={44} width={44} src={Balance_img} alt="balance" />
 					<div>
-						<p className="text-sm md:text-lg lg:text-xl font-semibold">
+						<p className="text-sm md:text-lg lg:text-xl font-semibold ">
 							My balance
 						</p>
 						<p className="text-base md:text-xl lg:text-2xl break-all">
@@ -201,7 +201,7 @@ const Accounts = () => {
 						</p>
 					</div>
 				</div>
-				<div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
+				<div className="p-4 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center space-x-4">
 					<Image height={44} width={44} src={Income_img} alt="income" />
 					<div>
 						<p className="text-sm md:text-lg lg:text-xl font-semibold">
@@ -212,7 +212,7 @@ const Accounts = () => {
 						</p>
 					</div>
 				</div>
-				<div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
+				<div className="p-4 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center space-x-4">
 					<Image height={44} width={44} src={Expense_img} alt="expense" />
 					<div>
 						<p className="text-sm md:text-lg lg:text-xl font-semibold">
@@ -223,7 +223,7 @@ const Accounts = () => {
 						</p>
 					</div>
 				</div>
-				<div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
+				<div className="p-4 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center space-x-4">
 					<Image
 						height={44}
 						width={44}
@@ -243,8 +243,10 @@ const Accounts = () => {
 
 			{/* Last Transactions and Card */}
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-				<div className="p-4 bg-white rounded-lg lg:col-span-2 space-y-7">
-					<p className="text-lg font-semibold">Last transactions</p>
+				<div className="p-4 bg-white dark:bg-gray-900 rounded-lg lg:col-span-2 space-y-7">
+					<p className="text-lg font-semibold dark:text-blue-500">
+						Last transactions
+					</p>
 					{transactions.map((transaction, index) => (
 						<div key={index} className="flex items-center pr-4 space-x-4 mb-4">
 							<Image
@@ -293,9 +295,9 @@ const Accounts = () => {
 				</div>
 
 				{/* Hidden on small screens */}
-				<div className="bg-white rounded-lg">
+				<div className="bg-white dark:bg-gray-900 rounded-lg px-2">
 					<div className="flex justify-between p-2">
-						<p className="text-lg font-semibold">My card</p>
+						<p className="text-lg font-semibold dark:text-blue-500">My card</p>
 						<button
 							onClick={() => router.push("/CreditCards")}
 							className="text-blue-500"
@@ -317,17 +319,21 @@ const Accounts = () => {
 
 			{/* Debit and Credit Overview */}
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-				<div className="bg-gray-100 rounded-lg lg:col-span-2">
-					<p className="text-lg font-semibold">Debit and credit overview</p>
-					<div className="p-1 mt-3 bg-white rounded-lg shadow">
+				<div className="bg-gray-100 dark:bg-gray-900 rounded-lg lg:col-span-2">
+					<p className="text-lg font-semibold dark:text-blue-500">
+						Debit and credit overview
+					</p>
+					<div className="p-1 mt-3 bg-white dark:bg-gray-900 rounded-lg shadow">
 						<ChartCard />
 					</div>
 				</div>
 
 				{/* Invoices Sent */}
-				<div className="w-full bg-gray-100 rounded-lg">
-					<p className="text-lg font-semibold">Invoices sent</p>
-					<div className="p-4 mt-4 rounded-lg shadow h-[364px] bg-white">
+				<div className="w-full bg-gray-100 dark:bg-gray-900 rounded-lg">
+					<p className="text-lg font-semibold dark:text-blue-500">
+						Invoices sent
+					</p>
+					<div className="p-4 mt-4 rounded-lg shadow h-[364px] bg-white dark:bg-gray-900">
 						{invoicesData.slice(0, 4).map((data, index) => (
 							<div
 								key={index}

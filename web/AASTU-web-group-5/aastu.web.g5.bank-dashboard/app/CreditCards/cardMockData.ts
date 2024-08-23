@@ -19,7 +19,7 @@ const creditCardColor = [
 	},
 	{
 		cardBgColor:
-			"bg-[#fff] rounded-3xl text-[#343C6A]  border-2 border-solid border-gray-200 ",
+			"bg-[#fff] rounded-3xl text-[#343C6A] dark:bg-gray-900 dark:text-white  border-2 border-solid border-gray-200 ",
 		bottomBgColor:
 			"flex justify-between p-4 border-t-2 border-solid border-gray-200 rounded-bl-3xl rounded-br-3xl",
 		imageCreditCard: Chip_card3,

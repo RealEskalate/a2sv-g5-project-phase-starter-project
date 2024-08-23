@@ -13,11 +13,11 @@ const CardStatistics = () => {
 
 	return (
 		<div className="statics  ">
-			<div className="p-3 font-semibold text-blue-900">
+			<div className="p-3 font-semibold text-blue-900 dark:text-blue-600">
 				Card Expense Statistics
 			</div>
 			<div>
-				<div className="w-full  bg-white rounded-2xl">
+				<div className="w-full  bg-white dark:bg-gray-900 dark:text-gray-400 rounded-2xl">
 					<div className="flex justify-center p-6">
 						<DonutChart data={chartData} />
 					</div>

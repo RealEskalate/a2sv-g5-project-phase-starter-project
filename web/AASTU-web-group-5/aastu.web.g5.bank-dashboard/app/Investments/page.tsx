@@ -35,7 +35,7 @@ const Investments = () => {
 		const fetchInvestmentData = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-1tst.onrender.com/user/random-investment-data?years=3&months=5",
+					"https://bank-dashboard-rsf1.onrender.com/user/random-investment-data?years=3&months=5",
 					{
 						headers: {
 							Authorization: token,
@@ -71,28 +71,28 @@ const Investments = () => {
 		<div className="bg-[#F5F7FA] space-y-8 pt-3    w-full overflow-hidden dark:bg-gray-800 ">
 			{/* Row 1: Investment Overview */}
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-				<div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4 ">
+				<div className="p-4 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center space-x-4 ">
 					<Image height={44} width={44} src={TotalAmmount_img} alt="balance" />
 					<div>
-						<p>Total Invested Amount</p>
+						<p className="dark:text-gray-400">Total Invested Amount</p>
 						<p className="text-xl font-semibold">
 							${investmentOverview.totalAmount.toFixed(2)}
 						</p>
 					</div>
 				</div>
-				<div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
+				<div className="p-4 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center space-x-4">
 					<Image height={44} width={44} src={Number_img} alt="balance" />
 					<div>
-						<p>Number of Investments</p>
+						<p className="dark:text-gray-400">Number of Investments</p>
 						<p className="text-xl font-semibold">
 							{investmentOverview.numberOfInvestments.toFixed(2)}
 						</p>
 					</div>
 				</div>
-				<div className="p-4 bg-white rounded-lg flex items-center justify-center space-x-4">
+				<div className="p-4 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center space-x-4">
 					<Image height={44} width={44} src={Rate_img} alt="balance" />
 					<div>
-						<p>Rate of Return</p>
+						<p className="dark:text-gray-400">Rate of Return</p>
 						<p className="text-xl font-semibold">
 							{investmentOverview.rateOfReturn.toFixed(2)}%
 						</p>
@@ -102,19 +102,19 @@ const Investments = () => {
 
 			{/* Row 2: Yearly Total Investment and Monthly Revenue */}
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				<div className="p-4 bg-gray-100 rounded-lg">
-					<p>Yearly Total Investment</p>
+				<div className="p-4 bg-gray-100 dark:bg-gray-900 rounded-lg">
+					<p className="dark:text-blue-500">Yearly Total Investment</p>
 					<div
-						className="h-36 bg-white rounded mt-4"
+						className="h-36 bg-white dark:bg-gray-900 dark:text-[#fff] rounded mt-4"
 						style={{ width: "100%", height: 329 }}
 					>
 						<ChartCard_Invest data={yearlyTotalInvestment} />
 					</div>
 				</div>
-				<div className="p-4 bg-gray-100 rounded-lg">
-					<p>Monthly Revenue</p>
+				<div className="p-4 bg-gray-100 dark:bg-gray-900 rounded-lg">
+					<p className="dark:text-blue-500">Monthly Revenue</p>
 					<div
-						className="h-36 bg-white rounded mt-4"
+						className="h-36 bg-white dark:bg-gray-900 dark:text-[#fff]  rounded mt-4"
 						style={{ width: "100%", height: 329 }}
 					>
 						<MonthlyRevenueChart data={monthlyRevenue} />
@@ -125,13 +125,15 @@ const Investments = () => {
 			{/* Row 3: Investments and Trading Stock */}
 			<div className="flex flex-col md:flex-row gap-4">
 				{/* Investments Section */}
-				<div className="md:w-[58%] p-4 bg-gray-100 rounded-lg min-h-[345px]">
-					<p className="text-lg font-semibold">My Investments</p>
+				<div className="md:w-[58%] p-4 bg-gray-100 dark:bg-gray-900 rounded-lg min-h-[345px]">
+					<p className="text-lg font-semibold dark:text-blue-500">
+						My Investments
+					</p>
 					<div className="space-y-4 mt-4">
 						{investmentsData.slice(0, 3).map((investment) => (
 							<div
 								key={investment.id}
-								className="flex items-center space-x-4 p-2 bg-white rounded-lg shadow"
+								className="flex items-center space-x-4 p-2 bg-white dark:bg-gray-900 rounded-lg shadow"
 							>
 								<Image
 									src={investment.image}
@@ -164,12 +166,14 @@ const Investments = () => {
 				</div>
 
 				{/* Trading Stock Section */}
-				<div className="md:w-[42%] p-4 bg-gray-100 rounded-lg min-h-[345px]">
-					<p className="text-lg font-semibold">Trading Stock</p>
+				<div className="md:w-[42%] p-4 bg-gray-100 dark:bg-gray-900 rounded-lg min-h-[345px]">
+					<p className="text-lg font-semibold dark:text-blue-500">
+						Trading Stock
+					</p>
 					<div className="mt-4">
-						<table className="w-full bg-white rounded-lg shadow">
+						<table className="w-full bg-white dark:bg-gray-900 rounded-lg shadow">
 							<thead>
-								<tr className="bg-gray-200">
+								<tr className="bg-gray-200 dark:bg-gray-700">
 									<th className="p-2">Sl.No</th>
 									<th className="p-2">Name</th>
 									<th className="p-2">Price</th>

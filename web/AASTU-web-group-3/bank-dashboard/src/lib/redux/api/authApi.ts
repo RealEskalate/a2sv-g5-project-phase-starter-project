@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
+import {RegisterResponse,RegisterRequest} from '@/lib/redux/types/auth'
 interface Credentials {
   userName: string;
   password: string;
@@ -28,7 +28,16 @@ export const authApi = createApi({
         headers: { 'Content-Type': 'application/json' },
       }),
     }),
+
+    signUp:builder.mutation<RegisterResponse,RegisterRequest>({
+      query:(userData) => ({
+        url:'/auth/register',
+        method:'POST',
+        body: userData,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    })
   }),
 });
 
-export const { useLoginMutation } = authApi;
+export const { useLoginMutation,useSignUpMutation } = authApi;

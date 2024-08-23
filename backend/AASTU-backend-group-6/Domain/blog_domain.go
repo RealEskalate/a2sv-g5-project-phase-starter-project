@@ -21,6 +21,8 @@ type Blog struct {
 	DisLikeCount   int64 		`bson:"dislike_count"`
 	Popularity int64			  `bson:"popularity"`
 	Blog_image string             `bson:"blog_image"`
+	Deleted bool `bson:"deleted"`
+	DeletedAt time.Time `bson:"deletedAt"`	
 }
 
 type Comment struct {

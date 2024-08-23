@@ -18,13 +18,15 @@ import (
 type BlogRepository struct {
 	PostCollection mongo.Collection
 	UserCollection mongo.Collection
+	CommentCollection mongo.Collection
 	env            infrastructure.Config
 }
 
-func NewBlogRepository(PostCollection mongo.Collection, UserCollection mongo.Collection, env infrastructure.Config) domain.BlogRepository {
+func NewBlogRepository(PostCollection mongo.Collection, UserCollection mongo.Collection, CommentCollection mongo.Collection, env infrastructure.Config) domain.BlogRepository {
 	return BlogRepository{
 		PostCollection: PostCollection,
 		UserCollection: UserCollection,
+		CommentCollection: CommentCollection,
 		env:            env,
 	}
 }
@@ -325,15 +327,28 @@ func (b BlogRepository) GetBlogByID(blog_id string, isCalled bool) (domain.Blog,
 	if err != nil {
 		return domain.Blog{}, err
 	}
-	var blog domain.Blog
-	if err := b.PostCollection.FindOne(context.TODO(), primitive.D{{Key: "_id", Value: blog_object_id}}).Decode(&blog); err != nil {
+	pipeline := utils.GetBlogByIdPipeline(blog_object_id)
+	cursor, err := b.PostCollection.Aggregate(context.TODO(), pipeline)
+	if err != nil {
 		return domain.Blog{}, err
-	} else {
+	}
+
+	var result domain.Blog
+    if cursor.Next(context.TODO()) {
+        if err = cursor.Decode(&result); err != nil {
+            return domain.Blog{}, err
+        }
+    } else {
+        return domain.Blog{}, errors.New("blog not found")
+    }
+	if !result.Deleted{
 		if !isCalled {
 			_ = b.UpdatePopularity(blog_id, "view")
 			_ = b.IncrementViewCount(blog_id)
 		}
-		return blog, nil
+		return result, nil
+	}else{
+		return result, errors.New("blog not found")
 	}
 }
 

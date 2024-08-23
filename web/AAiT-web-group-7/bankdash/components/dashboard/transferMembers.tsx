@@ -7,7 +7,7 @@ interface Person {
     role: string;
 }
 
-const TransferMembers = ({person, selectedPerson}: {person: Person, selectedPerson:string}) => {
+const TransferMembers = ({person, selectedPerson}: {person: Person, selectedPerson:string | null}) => {
   return (
     <div className="flex flex-col items-center">
               <Image

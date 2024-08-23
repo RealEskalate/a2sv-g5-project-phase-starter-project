@@ -21,7 +21,9 @@ import {
   
   const AreaChartComponent = () => {
     return (
-        <ResponsiveContainer width='100%' height='100%' className='bg-white rounded-3xl px-3 py-6' >
+      // w-full h-[300px] sm:h-[400px] lg:h-[500px] bg-white rounded-3xl px-3 py-6
+      <div className="w-full h-[300px] sm:h-[200px] md:h-[250px]">
+        <ResponsiveContainer width='100%' height='100%' className='bg-white rounded-3xl py-2 md:px-3 md:py-6' >
           <AreaChart
             width={500}
             height={80}
@@ -57,6 +59,7 @@ import {
             />
           </AreaChart>
         </ResponsiveContainer>
+        </div>
     );
   };
   

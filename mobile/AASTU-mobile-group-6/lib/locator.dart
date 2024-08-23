@@ -12,6 +12,7 @@ import 'package:ecommerce_app_ca_tdd/features/product/domain/usecases/update_use
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/add/add_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/detail_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/home_bloc.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/update/bloc/update_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/data/data_sources/remote_data_source/remote_data_source.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/data/repository/user_repository_impl.dart';
@@ -76,6 +77,7 @@ Future<void> init() async {
     AddProductUseCase(sl())));
     sl.registerFactory(()=> UpdateBloc(
     UpdateUsecase(sl())));
+    sl.registerFactory(()=> SearchBloc(GetAllUsecase(sl())));
     
     // Auth Bloc
     sl.registerFactory(()=> SignUpBloc(RegisterUser(sl())));

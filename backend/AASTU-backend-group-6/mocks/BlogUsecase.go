@@ -13,17 +13,17 @@ type BlogUsecase struct {
 	mock.Mock
 }
 
-// CommentOnBlog provides a mock function with given fields: user_id, user_name, comment
-func (_m *BlogUsecase) CommentOnBlog(user_id string, user_name string, comment domain.Comment) error {
-	ret := _m.Called(user_id, user_name, comment)
+// CommentOnBlog provides a mock function with given fields: user_id, comment
+func (_m *BlogUsecase) CommentOnBlog(user_id string, comment domain.Comment) error {
+	ret := _m.Called(user_id, comment)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CommentOnBlog")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string, domain.Comment) error); ok {
-		r0 = rf(user_id, user_name, comment)
+	if rf, ok := ret.Get(0).(func(string, domain.Comment) error); ok {
+		r0 = rf(user_id, comment)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -31,9 +31,9 @@ func (_m *BlogUsecase) CommentOnBlog(user_id string, user_name string, comment d
 	return r0
 }
 
-// CreateBlog provides a mock function with given fields: user_id, blog, role
-func (_m *BlogUsecase) CreateBlog(user_id string, blog domain.Blog, role string) (domain.Blog, error) {
-	ret := _m.Called(user_id, blog, role)
+// CreateBlog provides a mock function with given fields: user_id, blog
+func (_m *BlogUsecase) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
+	ret := _m.Called(user_id, blog)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateBlog")
@@ -41,17 +41,17 @@ func (_m *BlogUsecase) CreateBlog(user_id string, blog domain.Blog, role string)
 
 	var r0 domain.Blog
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string, domain.Blog, string) (domain.Blog, error)); ok {
-		return rf(user_id, blog, role)
+	if rf, ok := ret.Get(0).(func(string, domain.Blog) (domain.Blog, error)); ok {
+		return rf(user_id, blog)
 	}
-	if rf, ok := ret.Get(0).(func(string, domain.Blog, string) domain.Blog); ok {
-		r0 = rf(user_id, blog, role)
+	if rf, ok := ret.Get(0).(func(string, domain.Blog) domain.Blog); ok {
+		r0 = rf(user_id, blog)
 	} else {
 		r0 = ret.Get(0).(domain.Blog)
 	}
 
-	if rf, ok := ret.Get(1).(func(string, domain.Blog, string) error); ok {
-		r1 = rf(user_id, blog, role)
+	if rf, ok := ret.Get(1).(func(string, domain.Blog) error); ok {
+		r1 = rf(user_id, blog)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -59,17 +59,17 @@ func (_m *BlogUsecase) CreateBlog(user_id string, blog domain.Blog, role string)
 	return r0, r1
 }
 
-// DeleteBlogByID provides a mock function with given fields: user_id, blog_id, role
-func (_m *BlogUsecase) DeleteBlogByID(user_id string, blog_id string, role string) domain.ErrorResponse {
-	ret := _m.Called(user_id, blog_id, role)
+// DeleteBlogByID provides a mock function with given fields: user_id, blog_id
+func (_m *BlogUsecase) DeleteBlogByID(user_id string, blog_id string) domain.ErrorResponse {
+	ret := _m.Called(user_id, blog_id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteBlogByID")
 	}
 
 	var r0 domain.ErrorResponse
-	if rf, ok := ret.Get(0).(func(string, string, string) domain.ErrorResponse); ok {
-		r0 = rf(user_id, blog_id, role)
+	if rf, ok := ret.Get(0).(func(string, string) domain.ErrorResponse); ok {
+		r0 = rf(user_id, blog_id)
 	} else {
 		r0 = ret.Get(0).(domain.ErrorResponse)
 	}
@@ -179,9 +179,9 @@ func (_m *BlogUsecase) GetBlogs(pageNo string, pageSize string, popularity strin
 	return r0, r1, r2
 }
 
-// GetMyBlogByID provides a mock function with given fields: user_id, blog_id, role
-func (_m *BlogUsecase) GetMyBlogByID(user_id string, blog_id string, role string) (domain.Blog, error) {
-	ret := _m.Called(user_id, blog_id, role)
+// GetMyBlogByID provides a mock function with given fields: user_id, blog_id
+func (_m *BlogUsecase) GetMyBlogByID(user_id string, blog_id string) (domain.Blog, error) {
+	ret := _m.Called(user_id, blog_id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetMyBlogByID")
@@ -189,17 +189,17 @@ func (_m *BlogUsecase) GetMyBlogByID(user_id string, blog_id string, role string
 
 	var r0 domain.Blog
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string, string) (domain.Blog, error)); ok {
-		return rf(user_id, blog_id, role)
+	if rf, ok := ret.Get(0).(func(string, string) (domain.Blog, error)); ok {
+		return rf(user_id, blog_id)
 	}
-	if rf, ok := ret.Get(0).(func(string, string, string) domain.Blog); ok {
-		r0 = rf(user_id, blog_id, role)
+	if rf, ok := ret.Get(0).(func(string, string) domain.Blog); ok {
+		r0 = rf(user_id, blog_id)
 	} else {
 		r0 = ret.Get(0).(domain.Blog)
 	}
 
-	if rf, ok := ret.Get(1).(func(string, string, string) error); ok {
-		r1 = rf(user_id, blog_id, role)
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(user_id, blog_id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -299,9 +299,9 @@ func (_m *BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, p
 	return r0, r1, r2
 }
 
-// UpdateBlogByID provides a mock function with given fields: user_id, blog_id, blog, role
-func (_m *BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.Blog, role string) (domain.Blog, error) {
-	ret := _m.Called(user_id, blog_id, blog, role)
+// UpdateBlogByID provides a mock function with given fields: user_id, blog_id, blog
+func (_m *BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domain.Blog) (domain.Blog, error) {
+	ret := _m.Called(user_id, blog_id, blog)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateBlogByID")
@@ -309,17 +309,17 @@ func (_m *BlogUsecase) UpdateBlogByID(user_id string, blog_id string, blog domai
 
 	var r0 domain.Blog
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string, domain.Blog, string) (domain.Blog, error)); ok {
-		return rf(user_id, blog_id, blog, role)
+	if rf, ok := ret.Get(0).(func(string, string, domain.Blog) (domain.Blog, error)); ok {
+		return rf(user_id, blog_id, blog)
 	}
-	if rf, ok := ret.Get(0).(func(string, string, domain.Blog, string) domain.Blog); ok {
-		r0 = rf(user_id, blog_id, blog, role)
+	if rf, ok := ret.Get(0).(func(string, string, domain.Blog) domain.Blog); ok {
+		r0 = rf(user_id, blog_id, blog)
 	} else {
 		r0 = ret.Get(0).(domain.Blog)
 	}
 
-	if rf, ok := ret.Get(1).(func(string, string, domain.Blog, string) error); ok {
-		r1 = rf(user_id, blog_id, blog, role)
+	if rf, ok := ret.Get(1).(func(string, string, domain.Blog) error); ok {
+		r1 = rf(user_id, blog_id, blog)
 	} else {
 		r1 = ret.Error(1)
 	}

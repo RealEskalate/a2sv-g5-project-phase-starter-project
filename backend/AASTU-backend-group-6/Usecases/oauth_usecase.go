@@ -77,7 +77,6 @@ func (u *OauthUseCase) OauthCallback(c context.Context, query string) interface{
 		userData.Profile_image_url = userinfo.Picture
 		userData.GoogleID = userinfo.Id
 		userData.Role = "user"
-		userData.Verified = true
 		userData.ID = primitive.NewObjectID()
 		// spliting with @
 		userData.Username = userinfo.Email[:strings.Index(userinfo.Email, "@")]

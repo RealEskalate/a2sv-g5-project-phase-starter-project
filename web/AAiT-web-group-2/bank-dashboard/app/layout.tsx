@@ -22,13 +22,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="h-screen overflow-hidden">
-        <LayoutWrapper>
+        
           <SessionWrapper>
             <StoreProvider>
+              <LayoutWrapper>
                 {children}
+              </LayoutWrapper>
             </StoreProvider>  
           </SessionWrapper>
-        </LayoutWrapper>
+        
       
       </body>
     </html>

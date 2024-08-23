@@ -2,7 +2,6 @@ package infrastructure
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -194,7 +193,7 @@ func (service *JWTTokenService) ValidateVerificationToken(token string) (*jwt.To
 func (service *JWTTokenService) ValidateRefreshToken(token string) (*jwt.Token,  domain.Error) {
 	parsedToken, errParse := jwt.Parse(token, func(t *jwt.Token) (interface{},  error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New(fmt.Sprintf("unexpected signing method: %v", t.Header["alg"]))
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 		return []byte(service.RefreshSecret), nil
 	})

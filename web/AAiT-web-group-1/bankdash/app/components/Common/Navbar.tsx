@@ -5,15 +5,20 @@ import settings from "../../../public/images/settings.svg";
 import hamburger from "../../../public/images/ham.jpg";
 import Image from "next/image";
 import search from "../../../public/images/search.svg";
-// import Sidebar from "./Sidebar";
+import profile from "../../../public/images/Mask Group.svg";
+
 interface Props {
   title: string;
   profilepic: string;
 }
 
-const Header = ({ title, profilepic }: Props) => {
+const Header = () => {
+  const title = "Overview"
+  const profilepic = profile
+
+
   return (
-    <div className="flex md:pl-8 bg-white md:pr-10 pb-1 items-center justify-between">
+    <div className="flex bg-white md:pr-10 pb-1 md:px-0 items-center justify-between">
       <div className="w-1/6 md:block hidden">
         <Image src={logo} className="ml-1" alt="LOGO" />
       </div>

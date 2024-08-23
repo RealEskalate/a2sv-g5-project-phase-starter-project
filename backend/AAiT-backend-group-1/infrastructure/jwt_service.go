@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -23,7 +24,7 @@ func NewJWTTokenService(accessSecret, refreshSecret, verifySecret, resetSecret s
 	return &JWTTokenService{AccessSecret: accessSecret, RefreshSecret: refreshSecret, ResetSecret: resetSecret, Collection: collection, VerifySecret: verifySecret}
 }
 
-func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User) (string, error) {
+func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User) (string, domain.Error) {
 	claim := jwt.MapClaims{
 		"user_id":  user.ID,
 		"username": user.Username,
@@ -35,12 +36,12 @@ func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	jwtToken, err := token.SignedString([]byte(service.AccessSecret))
 	if err != nil {
-		return "", err
+		return "", domain.CustomError{Code: 500, Message: "error generating token"}
 	}
 	return jwtToken, nil
 }
 
-func (service *JWTTokenService) GenerateRefreshTokenWithPayload(user domain.User) (string, error) {
+func (service *JWTTokenService) GenerateRefreshTokenWithPayload(user domain.User) (string,  domain.Error) {
 	claim := jwt.MapClaims{
 		"user_id": user.ID,
 		"exp":     time.Now().Add(time.Minute * 15).Unix(),
@@ -49,13 +50,13 @@ func (service *JWTTokenService) GenerateRefreshTokenWithPayload(user domain.User
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	jwtToken, err := token.SignedString([]byte(service.RefreshSecret))
 	if err != nil {
-		return "", err
+		return "", domain.CustomError{Code: 500, Message: "error generating token"}
 	}
 
 	return jwtToken, nil
 }
 
-func (service *JWTTokenService) GenerateVerificationToken(user domain.User) (string, error) {
+func (service *JWTTokenService) GenerateVerificationToken(user domain.User) (string,  domain.Error) {
 	claim := jwt.MapClaims{
 		"username": user.Username,
 		"email":    user.Email,
@@ -67,12 +68,12 @@ func (service *JWTTokenService) GenerateVerificationToken(user domain.User) (str
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	jwtToken, err := token.SignedString([]byte(service.VerifySecret))
 	if err != nil {
-		return "", err
+		return "", domain.CustomError{Code: 500, Message: "error generating token"}
 	}
 	return jwtToken, nil
 }
 
-func (service *JWTTokenService) GenerateResetToken(email string) (string, error) {
+func (service *JWTTokenService) GenerateResetToken(email string) (string,  domain.Error) {
 	claim := jwt.MapClaims{
 		"email": email,
 		"exp":   time.Now().Add(time.Minute * 15).Unix(),
@@ -81,150 +82,154 @@ func (service *JWTTokenService) GenerateResetToken(email string) (string, error)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	jwtToken, err := token.SignedString([]byte(service.ResetSecret))
 	if err != nil {
-		return "", err
+		return "", domain.CustomError{Code: 500, Message: "error generating token"}
 	}
 
 	return jwtToken, nil
 }
 
-func (service *JWTTokenService) ValidateResetToken(token string) (*jwt.Token, error) {
-	parsedToken, errParse := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+func (service *JWTTokenService) ValidateResetToken(token string) (*jwt.Token,  domain.Error) {
+	parsedToken, errParse := jwt.Parse(token, func(t *jwt.Token) (interface{},  error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 		return []byte(service.ResetSecret), nil
 	})
 	if errParse != nil {
-		return nil, errParse
+		return nil, domain.CustomError{Code: 500, Message: "error parsing token"}
 	}
 
 	if !parsedToken.Valid {
-		return nil, fmt.Errorf("token is invalid")
+		return nil, domain.CustomError{Code: 400, Message: "invalid token"}
 	}
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, fmt.Errorf("invalid token claims")
+		return nil, domain.CustomError{Code: 400, Message: "invalid token claims"}
 	}
 
 	requiredClaims := []string{"email", "exp"}
 	for _, claim := range requiredClaims {
 		if _, exists := claims[claim]; !exists {
-			return nil, fmt.Errorf("missing required claim: %s", claim)
+			return nil, domain.CustomError{Code: 400, Message: fmt.Sprintf("missing required claim: %s", claim)}
 		}
 	}
 
 	exp, ok := claims["exp"].(float64)
 	if !ok || time.Now().Unix() > int64(exp) {
-		return nil, fmt.Errorf("token has expired")
+		return nil, domain.CustomError{Code: 400, Message: "token is expired"}
 	}
 	return parsedToken, nil
 }
 
-func (service *JWTTokenService) ValidateAccessToken(token string) (*jwt.Token, error) {
-	parsedToken, errParse := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+func (service *JWTTokenService) ValidateAccessToken(token string) (*jwt.Token,  domain.Error) {
+	parsedToken, errParse := jwt.Parse(token, func(t *jwt.Token) (interface{},  error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 		return []byte(service.AccessSecret), nil
 	})
 	if errParse != nil {
-		return nil, errParse
+		return nil, domain.CustomError{Code: 500, Message: "error parsing token"}
 	}
 	if !parsedToken.Valid {
-		return nil, fmt.Errorf("token is invalid")
+		return nil, domain.CustomError{Code: 400, Message: "invalid token"}
 	}
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, fmt.Errorf("invalid token claims")
+		return nil, domain.CustomError{Code: 400, Message: "invalid token claims"}
 	}
 
 	requiredClaims := []string{"username", "user_id", "role", "iat", "exp"}
 	for _, claim := range requiredClaims {
 		if _, exists := claims[claim]; !exists {
-			return nil, fmt.Errorf("missing required claim: %s", claim)
+			return nil, domain.CustomError{Code: 400, Message: fmt.Sprintf("missing required claim: %s", claim)}
 		}
 	}
 
 	exp, ok := claims["exp"].(float64)
 	if !ok || time.Now().Unix() > int64(exp) {
-		return nil, fmt.Errorf("token has expired")
+		return nil, domain.CustomError{Code: 400, Message: "token is expired"}
 	}
 
 	return parsedToken, nil
 }
 
-func (service *JWTTokenService) ValidateVerificationToken(token string) (*jwt.Token, error) {
-	parsedToken, errParse := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+func (service *JWTTokenService) ValidateVerificationToken(token string) (*jwt.Token,  domain.Error) {
+	parsedToken, errParse := jwt.Parse(token, func(t *jwt.Token) (interface{},  error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 		return []byte(service.VerifySecret), nil
 	})
 	if errParse != nil {
-		return nil, errParse
+		return nil, domain.CustomError{Code: 500, Message: "error parsing token"}
 	}
 
 	if !parsedToken.Valid {
-		return nil, fmt.Errorf("token is invalid")
+		return nil, domain.CustomError{Code: 400, Message: "token is invalid"}
 	}
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, fmt.Errorf("invalid token claims")
+		return nil, domain.CustomError{Code: 400, Message: "invalid token claims"}
 	}
 
 	requiredClaims := []string{"username", "email", "role", "password", "exp"}
 	for _, claim := range requiredClaims {
 		if _, exists := claims[claim]; !exists {
-			return nil, fmt.Errorf("missing required claim: %s", claim)
+			return nil, domain.CustomError{Code: 400,  Message: fmt.Sprintf("missing required claim: %s", claim)}
 		}
 	}
 
 	exp, ok := claims["exp"].(float64)
 	if !ok || time.Now().Unix() > int64(exp) {
-		return nil, fmt.Errorf("token has expired")
+		return nil, domain.CustomError{Code: 400, }
 	}
 
 	return parsedToken, nil
 }
 
-func (service *JWTTokenService) ValidateRefreshToken(token string) (*jwt.Token, error) {
-	parsedToken, errParse := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+func (service *JWTTokenService) ValidateRefreshToken(token string) (*jwt.Token,  domain.Error) {
+	parsedToken, errParse := jwt.Parse(token, func(t *jwt.Token) (interface{},  error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+			return nil, errors.New(fmt.Sprintf("unexpected signing method: %v", t.Header["alg"]))
 		}
 		return []byte(service.RefreshSecret), nil
 	})
 	if errParse != nil {
-		return nil, errParse
+		return nil, domain.CustomError{Code: 500, Message: "error parsing token"}
 	}
 	if !parsedToken.Valid {
-		return nil, fmt.Errorf("token is invalid")
+		return nil, domain.CustomError{Code: 400, Message: "invalid token"}
 	}
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, fmt.Errorf("invalid token claims")
+		return nil, domain.CustomError{Code: 400, Message: "invalid token claims"}
 	}
 
 	requiredClaims := []string{"user_id", "exp"}
 	for _, claim := range requiredClaims {
 		if _, exists := claims[claim]; !exists {
-			return nil, fmt.Errorf("missing required claim: %s", claim)
+			return nil, domain.CustomError{Code: 400, Message: fmt.Sprintf("missing required claim: %s", claim)}
 		}
 	}
 
 	exp, ok := claims["exp"].(float64)
 	if !ok || time.Now().Unix() > int64(exp) {
-		return nil, fmt.Errorf("token has expired")
+		return nil, domain.CustomError{Code: 400, Message: "token is expired"}
 	}
 
 	return parsedToken, nil
 }
 
-func (service *JWTTokenService) RevokedToken(token string) error {
+func (service *JWTTokenService) RevokedToken(token string)  domain.Error {
 	_, err := service.Collection.DeleteOne(context.TODO(), bson.M{"token": token})
-	return err
+	if err != nil {
+		return domain.CustomError{Code: 500, Message: "error revoking token"}
+	}
+
+	return nil
 }

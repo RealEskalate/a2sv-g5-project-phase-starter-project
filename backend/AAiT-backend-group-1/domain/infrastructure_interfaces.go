@@ -8,15 +8,15 @@ import (
 )
 
 type JwtService interface {
-	GenerateAccessTokenWithPayload(user User) (string, error)
-	GenerateRefreshTokenWithPayload(user User) (string, error)
-	GenerateVerificationToken(user User) (string, error)
-	GenerateResetToken(email string) (string, error)
-	ValidateVerificationToken(token string) (*jwt.Token, error)
-	ValidateAccessToken(token string) (*jwt.Token, error)
-	ValidateRefreshToken(token string) (*jwt.Token, error)
-	ValidateResetToken(token string) (*jwt.Token, error)
-	RevokedToken(token string) error
+	GenerateAccessTokenWithPayload(user User) (string,  Error)
+	GenerateRefreshTokenWithPayload(user User) (string,  Error)
+	GenerateVerificationToken(user User) (string,  Error)
+	GenerateResetToken(email string) (string,  Error)
+	ValidateVerificationToken(token string) (*jwt.Token,  Error)
+	ValidateAccessToken(token string) (*jwt.Token,  Error)
+	ValidateRefreshToken(token string) (*jwt.Token,  Error)
+	ValidateResetToken(token string) (*jwt.Token,  Error)
+	RevokedToken(token string) Error
 }
 
 type PasswordService interface {

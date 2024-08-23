@@ -1,11 +1,9 @@
-
 import axios from "axios";
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { useState } from "react";
-
 
 interface FormValues {
   receiverUserName: string;
@@ -15,17 +13,23 @@ interface FormValues {
 interface props {
   isOpen: boolean;
   onClose: () => void;
-  userName : string
-  amount :number
-  accessToken:string
+  userName: string;
+  amount: number;
+  accessToken: string;
 }
-const ModalTrans =  ({ isOpen, onClose , userName ,amount , accessToken }: props) => {
+const ModalTrans = ({
+  isOpen,
+  onClose,
+  userName,
+  amount,
+  accessToken,
+}: props) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
-  const [message , setMessage] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const formData = JSON.stringify({ ...data, type: "transfer" });
     // change to tranService
@@ -41,17 +45,16 @@ const ModalTrans =  ({ isOpen, onClose , userName ,amount , accessToken }: props
         }
       );
       console.log("Transaction successful", response.data);
-      setMessage(response.data.message)
+      setMessage(response.data.message);
       onClose();
     } catch (error) {
       console.error("Error occurred:", error);
       if (axios.isAxiosError(error) && error.response) {
-        console.log(error.response.data.message); 
-        setMessage(error.response.data.message)
-    } else {
-      setMessage("Transaction Error. Please try again")
-    }
-      
+        console.log(error.response.data.message);
+        setMessage(error.response.data.message);
+      } else {
+        setMessage("Transaction Error. Please try again");
+      }
     }
   };
   return (
@@ -59,7 +62,6 @@ const ModalTrans =  ({ isOpen, onClose , userName ,amount , accessToken }: props
       className="flex flex-col space-y-4 p-4 bg-white rounded-lg"
       onSubmit={handleSubmit(onSubmit)}
     >
-      
       <div className="flex justify-between">
         <p className="text-base font-semibold">Quick Transfer</p>
         <button className="text-right" onClick={onClose}>

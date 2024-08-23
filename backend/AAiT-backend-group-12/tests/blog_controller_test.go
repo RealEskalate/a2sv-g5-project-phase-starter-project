@@ -103,27 +103,27 @@ func (suite *BlogControllerTestSuite) TestDeleteBlogHandler_Success() {
 }
 
 func (suite *BlogControllerTestSuite) TestGetBlogHandler_Success() {
-    filters := domain.BlogFilterOptions{
-        Author: "test_user",
-    }
-    expectedBlogs := []domain.Blog{
-        {ID: "blog123", Title: "Sample Blog", Content: "This is a sample blog post content ;vjdfnvjnvf fkvndlvn jvfdjkvn vjfd jvnjdsf  vjdfv fj vjfd jv fv jdf v fdj vdfj vjdf vjkd fv d fvd vdfuivdfiu uv df vufv fj vufid pv  vuf vd vu psdfvu vfv."},
-    }
-    expectedTotal := 1
+	filters := domain.BlogFilterOptions{
+		Author: "test_user",
+	}
+	expectedBlogs := []domain.Blog{
+		{ID: "blog123", Title: "Sample Blog", Content: "This is a sample blog post content ;vjdfnvjnvf fkvndlvn jvfdjkvn vjfd jvnjdsf  vjdfv fj vjfd jv fv jdf v fdj vdfj vjdf vjkd fv d fvd vdfuivdfiu uv df vufv fj vufid pv  vuf vd vu psdfvu vfv."},
+	}
+	expectedTotal := 1
 
-    suite.mockBlogUseCase.On("GetBlogPosts", mock.Anything, filters).Return(expectedBlogs, expectedTotal, nil)
+	suite.mockBlogUseCase.On("GetBlogPosts", mock.Anything, filters).Return(expectedBlogs, expectedTotal, nil)
 
-    reqBody, _ := json.Marshal(filters)
-    req, _ := http.NewRequest(http.MethodPost, "/blogs", bytes.NewBuffer(reqBody))
-    req.Header.Set("Content-Type", "application/json")
+	reqBody, _ := json.Marshal(filters)
+	req, _ := http.NewRequest(http.MethodPost, "/blogs", bytes.NewBuffer(reqBody))
+	req.Header.Set("Content-Type", "application/json")
 
-    w := httptest.NewRecorder()
-    ctx, _ := gin.CreateTestContext(w)
-    ctx.Request = req
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Request = req
 
-    suite.controller.GetBlogHandler(ctx)
+	suite.controller.GetBlogHandler(ctx)
 
-    expectedResponse := `{
+	expectedResponse := `{
         "blogs": [{
             "id": "blog123",
             "title": "Sample Blog",
@@ -142,32 +142,32 @@ func (suite *BlogControllerTestSuite) TestGetBlogHandler_Success() {
         "postsPerPage": 10
     }`
 
-    assert.Equal(suite.T(), http.StatusOK, w.Code)
-    assert.JSONEq(suite.T(), expectedResponse, w.Body.String())
-    suite.mockBlogUseCase.AssertExpectations(suite.T())
+	assert.Equal(suite.T(), http.StatusOK, w.Code)
+	assert.JSONEq(suite.T(), expectedResponse, w.Body.String())
+	suite.mockBlogUseCase.AssertExpectations(suite.T())
 }
 
 func (suite *BlogControllerTestSuite) TestGetBlogPostByIDHandler_Success() {
-    blogID := "blog123"
-    expectedBlog := domain.Blog{
-        ID:      blogID,
-        Title:   "Sample Blog",
-        Content: "This is a sample blog post content ;vjdfnvjnvf fkvndlvn jvfdjkvn vjfd jvnjdsf  vjdfv fj vjfd jv fv jdf v fdj vdfj vjdf vjkd fv d fvd vdfuivdfiu uv df vufv fj vufid pv  vuf vd vu psdfvu vfv.",
-    }
+	blogID := "blog123"
+	expectedBlog := domain.Blog{
+		ID:      blogID,
+		Title:   "Sample Blog",
+		Content: "This is a sample blog post content ;vjdfnvjnvf fkvndlvn jvfdjkvn vjfd jvnjdsf  vjdfv fj vjfd jv fv jdf v fdj vdfj vjdf vjkd fv d fvd vdfuivdfiu uv df vufv fj vufid pv  vuf vd vu psdfvu vfv.",
+	}
 
-    suite.mockBlogUseCase.On("GetBlogPostByID", mock.Anything, blogID).Return(&expectedBlog, nil)
+	suite.mockBlogUseCase.On("GetBlogPostByID", mock.Anything, blogID).Return(&expectedBlog, nil)
 
-    req, _ := http.NewRequest(http.MethodGet, "/blogs/"+blogID, nil)
-    req.Header.Set("Content-Type", "application/json")
+	req, _ := http.NewRequest(http.MethodGet, "/blogs/"+blogID, nil)
+	req.Header.Set("Content-Type", "application/json")
 
-    w := httptest.NewRecorder()
-    ctx, _ := gin.CreateTestContext(w)
-    ctx.Request = req
-    ctx.Params = gin.Params{gin.Param{Key: "id", Value: blogID}}
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Request = req
+	ctx.Params = gin.Params{gin.Param{Key: "id", Value: blogID}}
 
-    suite.controller.GetBlogByIDHandler(ctx)
+	suite.controller.GetBlogByIDHandler(ctx)
 
-    expectedResponse := `{
+	expectedResponse := `{
         "id": "blog123",
         "title": "Sample Blog",
         "content": "This is a sample blog post content ;vjdfnvjnvf fkvndlvn jvfdjkvn vjfd jvnjdsf  vjdfv fj vjfd jv fv jdf v fdj vdfj vjdf vjkd fv d fvd vdfuivdfiu uv df vufv fj vufid pv  vuf vd vu psdfvu vfv.",
@@ -181,9 +181,9 @@ func (suite *BlogControllerTestSuite) TestGetBlogPostByIDHandler_Success() {
         "view_count": 0
     }`
 
-    assert.Equal(suite.T(), http.StatusOK, w.Code)
-    assert.JSONEq(suite.T(), expectedResponse, w.Body.String())
-    suite.mockBlogUseCase.AssertExpectations(suite.T())
+	assert.Equal(suite.T(), http.StatusOK, w.Code)
+	assert.JSONEq(suite.T(), expectedResponse, w.Body.String())
+	suite.mockBlogUseCase.AssertExpectations(suite.T())
 }
 func (suite *BlogControllerTestSuite) TestLikeBlogHandler_Success() {
 	// Arrange
@@ -226,7 +226,6 @@ func (suite *BlogControllerTestSuite) TestDislikeBlogHandler_Success() {
 	suite.Nil(err)
 	suite.mockBlogUseCase.AssertExpectations(suite.T())
 }
-
 
 func (suite *BlogControllerTestSuite) TestGenerateTopicHandler_Success() {
 	// Arrange
@@ -319,7 +318,6 @@ func (suite *BlogControllerTestSuite) TestReviewContentHandler_Success() {
 	assert.JSONEq(suite.T(), expectedResponse, w.Body.String())
 	suite.mockBlogUseCase.AssertExpectations(suite.T())
 }
-
 
 func (suite *BlogControllerTestSuite) TestHandleCreateComment_Success() {
 	comment := domain.NewComment{
@@ -468,9 +466,6 @@ func (suite *BlogControllerTestSuite) TestHandleCreateComment() {
 	assert.Equal(suite.T(), http.StatusBadRequest, w.Code)
 	assert.JSONEq(suite.T(), `{"error": "Key: 'NewComment.Content' Error:Field validation for 'Content' failed on the 'required' tag"}`, w.Body.String())
 }
-
-
-
 
 func TestBlogControllerTestSuite(t *testing.T) {
 	suite.Run(t, new(BlogControllerTestSuite))

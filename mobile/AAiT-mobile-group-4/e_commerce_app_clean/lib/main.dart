@@ -5,9 +5,8 @@ import 'features/authentication/presentation/bloc/auth_bloc.dart';
 import 'features/authentication/presentation/pages/cover_page.dart';
 import 'features/authentication/presentation/pages/sign_in_page.dart';
 import 'features/authentication/presentation/pages/sign_up_page.dart';
-import 'features/chat/presentation/widgets/notification_screen.dart';
-import 'features/chat/presentation/pages/message_detail.dart';
 import 'features/chat/presentation/pages/root_page.dart';
+import 'features/chat/presentation/widgets/notification_screen.dart';
 import 'features/product/domain/entities/product_entity.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
 import 'features/product/presentation/pages/details_page.dart';
@@ -37,6 +36,7 @@ void main() async {
           primaryColor: const Color.fromRGBO(63, 81, 243, 1),
           secondaryHeaderColor: const Color.fromARGB(230, 255, 19, 19),
           useMaterial3: false,
+          iconTheme: const IconThemeData(color: Color.fromARGB(255, 14, 8, 1)),
         ),
         initialRoute: '/Root_page',
         onGenerateRoute: (settings) {
@@ -60,8 +60,8 @@ void main() async {
             return createRoute(DetailsPage(selectedProduct: settings.arguments as ProductEntity));
           } else if (settings.name == '/update_page') {
             return createRoute(UpdatePage(selectedProduct: settings.arguments as ProductEntity));
-          } else if (settings.name == '/message') {
-            return createRoute(const MessageDetail());
+          } else if (settings.name == '/chat_page') {
+            return createRoute(const ChatPage());
           }
           return null;
         },

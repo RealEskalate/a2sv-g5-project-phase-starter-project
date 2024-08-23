@@ -76,12 +76,67 @@ class ChatPage extends StatelessWidget {
               child: ListView.builder(
               itemCount: 20,
               itemBuilder: (context, index) {
-                return withTime(
-                  text: 'Have a great working week!!', 
-                  isCurrentUser: index % 2 != 0 ? true : false, 
-                  type: index % 3 != 0 ?'image': 'audio',
-                  image: 'https://images.unsplash.com/photo-1557863618-9643198cb07b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Njd8fFRveW90YSUyMFY4JTIwcGF0cm9sfGVufDB8fDB8fHww',
-                  time: '09:25 AM',
+                return Padding(
+                  padding:const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: Row(
+                    mainAxisAlignment: index % 2 == 0 ? MainAxisAlignment.start : MainAxisAlignment.end,
+                    crossAxisAlignment: index%2 == 0 ? CrossAxisAlignment.start: CrossAxisAlignment.start ,
+                    children: index % 2 == 0 ?  [
+                      const Padding(
+                        padding: EdgeInsets.only(top: 10),
+                        child: ProfilePicWidget(bgColor: Color.fromARGB(255, 228, 146, 119), radius: 25),
+                      ),
+                      Column(
+                        crossAxisAlignment: index% 2 == 0 ? CrossAxisAlignment.start: CrossAxisAlignment.start ,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(left: 8.0),
+                            child:  Text(
+                              'Annei Ellison',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500
+                              ),
+                            ),
+                          ),
+                          WithTime(
+                            text: 'Have a great working week ajsgj sjhfge wiywiory asgfjsd skfhkds sjkfdjgf !!', 
+                            isCurrentUser: index % 2 != 0 ? true : false, 
+                            type: index % 3 != 0 ?'text': 'text',
+                            image: 'https://images.unsplash.com/photo-1557863618-9643198cb07b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Njd8fFRveW90YSUyMFY4JTIwcGF0cm9sfGVufDB8fDB8fHww',
+                            time: '09:25 AM',
+                          ),
+                        ],
+                      ),
+                    ] : [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(right: 8.0),
+                            child:  Text(
+                              'You',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500
+                              ),
+                            ),
+                          ),
+                          WithTime(
+                            text: 'Have a great working week!!', 
+                            isCurrentUser: index % 2 != 0 ? true : false, 
+                            type: index % 3 != 0 ?'text': 'text',
+                            image: 'https://images.unsplash.com/photo-1557863618-9643198cb07b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Njd8fFRveW90YSUyMFY4JTIwcGF0cm9sfGVufDB8fDB8fHww',
+                            time: '09:25 AM',
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: const ProfilePicWidget(bgColor: Color.fromARGB(255, 228, 146, 119), radius: 25),
+                      ),
+                    ],
+                  ),
                 );
               },
               ),

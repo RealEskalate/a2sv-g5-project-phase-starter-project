@@ -163,7 +163,7 @@ func (c *UserController) LoginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	access_token, err := c.userUsecase.LoginUser(user.Username, user.Password)
+	access_token, err := c.userUsecase.LoginUser(user.Username, user.Password,user.Email)
 	if err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return

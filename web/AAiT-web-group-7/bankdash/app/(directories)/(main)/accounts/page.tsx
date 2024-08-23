@@ -100,7 +100,7 @@ const page = () => {
 ]
   return (
     <div className='pb-5 md:pb-10'>
-      <div className="flex items-center justify-between mx-auto p-6">
+      <div className="flex items-center justify-around mx-auto p-6">
         {
           Cards.map((item, index) => {
               return <Card key={index} title={item.title} value={item.value} image={item.image} />;

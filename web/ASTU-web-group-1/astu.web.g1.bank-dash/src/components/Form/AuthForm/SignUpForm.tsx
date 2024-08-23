@@ -281,9 +281,8 @@ const SignUpForm = () => {
                 className='w-full border-2 border-[#DFEAF2] p-5 py-3 rounded-xl placeholder:text-blue-steel focus:border-blue-steel outline-none'
               >
                 <option value='USD'>USD</option>
-                <option value='US'>Birr</option>
-                <option value='CA'>Birr</option>
-                <option value='FR'>Birr</option>
+                <option value='ETB'>ETB</option>
+                <option value='GPY'>Yen</option>
               </select>
               {errors?.currency && (
                 <p className='text-red-400'> {errors?.currency?.message as string} </p>
@@ -299,10 +298,10 @@ const SignUpForm = () => {
                 {...register('timeZone')}
                 className='w-full border-2 border-[#DFEAF2] p-5 py-3 rounded-xl placeholder:text-blue-steel focus:border-blue-steel outline-none'
               >
-                <option value='GMT 3+'>GMT 3+</option>
-                <option value='US'>Birr</option>
-                <option value='CA'>Birr</option>
-                <option value='FR'>Birr</option>
+                <option value='GMT3p'>GMT 3+</option>
+                <option value='GMT4p'>GMT 4+</option>
+                <option value='GMT5p'>GMT 5+</option>
+                <option value='GMT6p'>GMT 6+</option>
               </select>
               {errors?.timeZone && (
                 <p className='text-red-400'> {errors?.timeZone?.message as string} </p>

@@ -54,6 +54,7 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	blog.AuthorName = claims.Username
 
 	c.JSON(http.StatusCreated, blog)
 }
@@ -82,7 +83,7 @@ func (bc *BlogController) GetAllBlogs(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit format"})
 		return
 	}
-	sortBy := c.DefaultQuery("sortBy", "created_at")
+	sortBy := c.DefaultQuery("sortBy", "likes")
 
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {
@@ -170,18 +171,18 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 
 // Delivery/controllers/blog_controller.go
 // controller/blog_controller.go
-func (bc *BlogController) SearchBlogs(c *gin.Context)  {
+func (bc *BlogController) SearchBlogs(c *gin.Context) {
 	title := c.Query("title")
-    author := c.Query("author")
+	author := c.Query("author")
 
-    // Call the use case with the search criteria
-    blogs, err := bc.BlogUsecase.SearchBlogs(c ,title, author)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
+	// Call the use case with the search criteria
+	blogs, err := bc.BlogUsecase.SearchBlogs(c, title, author)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-    c.JSON(http.StatusOK, blogs)
+	c.JSON(http.StatusOK, blogs)
 }
 
 // func (bc *BlogController) FilterBlogsByTags(c *gin.Context) {
@@ -280,38 +281,73 @@ func (bc *BlogController) AddComment(c *gin.Context) {
 }
 
 func (bc *BlogController) GetComments(c *gin.Context) {
-	post_id, _ := primitive.ObjectIDFromHex(c.Param("id"))
-	comments, err := bc.BlogUsecase.GetComments(c.Request.Context(), post_id)
+	// Convert the post ID from the URL parameter to an ObjectID
+	postID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
+		return
+	}
+
+	// Retrieve the comments from the use case
+	comments, err := bc.BlogUsecase.GetComments(c.Request.Context(), postID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	response := domain.ResponseComment{
-		AuthorID: comments.AuthorID,
-		Comments: comments.Content,
+	// Prepare the response, transforming each comment into the response structure
+	response := make([]domain.ResponseComment, len(comments))
+	for i, comment := range comments {
+		response[i] = domain.ResponseComment{
+			AuthorID: comment.AuthorID,
+			Comments: comment.Content,
+		}
 	}
 
+	// Send the response with a status code of 200 (OK)
 	c.JSON(http.StatusOK, response)
 }
 
 func (bc *BlogController) DeleteComment(c *gin.Context) {
-	post_id, _ := primitive.ObjectIDFromHex(c.Param("id"))
-	comment_id, _ := primitive.ObjectIDFromHex(c.Param("comment_id"))
-	claims, err := getclaim(c)
+	// Convert the post ID from the URL parameter to an ObjectID
+	postID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
+		return
+	}
 
+	// Convert the comment ID from the URL parameter to an ObjectID
+	commentID, err := primitive.ObjectIDFromHex(c.Param("comment_id"))
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "claim not setttt"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid comment ID"})
 		return
 	}
+
+	// Retrieve the claims (user data)
+	claims, err := getclaim(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authorized"})
+		return
+	}
+
+	// Extract the userID from claims
 	userID := claims.UserID
-	err = bc.BlogUsecase.DeleteComment(c.Request.Context(), post_id, comment_id, userID)
+
+	// Call the use case to delete the comment
+	err = bc.BlogUsecase.DeleteComment(c.Request.Context(), postID, commentID, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err.Error() == "you are not authorized to delete this comment" {
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
+
+	// Send a success response
 	c.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully"})
 }
+
 func (bc *BlogController) UpdateComment(c *gin.Context) {
 	post_id, _ := primitive.ObjectIDFromHex(c.Param("id"))
 	comment_id, _ := primitive.ObjectIDFromHex(c.Param("comment_id"))

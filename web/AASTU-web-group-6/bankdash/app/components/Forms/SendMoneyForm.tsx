@@ -3,6 +3,7 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
+import { useState } from "react";
 
 interface FormValues {
   receiverUserName: string;
@@ -14,22 +15,27 @@ interface props {
   onClose: () => void;
   userName: string;
   amount: number;
+  accessToken: string;
 }
-const ModalTrans = async ({ isOpen, onClose, userName, amount }: props) => {
+const ModalTrans = ({
+  isOpen,
+  onClose,
+  userName,
+  amount,
+  accessToken,
+}: props) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
-  const session = await getServerSession(options);
-  const accessToken = session?.accessToken as string;
-
+  const [message, setMessage] = useState<string>("");
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const formData = JSON.stringify({ ...data, type: "transfer" });
     // change to tranService
     try {
       const response = await axios.post(
-        "https://bank-dashboard-1tst.onrender.com/transactions",
+        "https://bank-dashboard-rsf1.onrender.com/transactions",
         formData,
         {
           headers: {
@@ -39,12 +45,16 @@ const ModalTrans = async ({ isOpen, onClose, userName, amount }: props) => {
         }
       );
       console.log("Transaction successful", response.data);
+      setMessage(response.data.message);
       onClose();
     } catch (error) {
       console.error("Error occurred:", error);
-      alert(
-        "There was an issue processing your transaction. Please try again."
-      );
+      if (axios.isAxiosError(error) && error.response) {
+        console.log(error.response.data.message);
+        setMessage(error.response.data.message);
+      } else {
+        setMessage("Transaction Error. Please try again");
+      }
     }
   };
   return (
@@ -58,6 +68,7 @@ const ModalTrans = async ({ isOpen, onClose, userName, amount }: props) => {
           <CloseIcon />
         </button>
       </div>
+      {message && <p className="text-[#1814F3] mt-2 text-center">{message}</p>}
       <div>
         <label
           htmlFor="receiverUserName"

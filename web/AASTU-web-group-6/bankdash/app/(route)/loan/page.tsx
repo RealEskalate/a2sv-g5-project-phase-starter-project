@@ -14,10 +14,10 @@ const Loan = () => {
 
   const fetchLoan = async () => {
     while (!accessToken) {
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay to wait for the token
+      await new Promise((resolve) => setTimeout(resolve, 150)); // Delay to wait for the token
     }
     const loanData = await loanApi.detailData(accessToken);
-    console.log(loanData);
+    // console.log(loanData);
     setGetLoan(loanData);
 
     setLoading(false);

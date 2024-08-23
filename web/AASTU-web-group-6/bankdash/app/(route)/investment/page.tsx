@@ -21,8 +21,9 @@ const InvestmentPage = () => {
   ];
   const [data, setData] = useState<InvestmentData>();
   const [error, setError] = useState<string>("");
-
+ 
   const accessToken = session?.accessToken as string;
+    
   useUserDispatch(accessToken);
   const investmentData: InvestmentData = useAppSelector(
     (state) => state.user.investment
@@ -43,8 +44,8 @@ const InvestmentPage = () => {
   const formattedAmount = `$${data?.totalInvestment.toLocaleString()}`;
   const formattedReturn = `${data?.rateOfReturn.toFixed(2).toLocaleString()}%`;
   return (
-    <div className="w-[96%] flex flex-col grow gap-6 p-8 pt-6">
-      <div className="flex flex-col lg:flex-row gap-6 pt-16 sm:pt-0">
+    <div className="w-[96%] flex flex-col grow gap-6 lg:p-8 pt-11 md:pt-6">
+      <div className="flex flex-col lg:flex-row gap-6 pt-0">
         <Card
           title="Total Invested Amount"
           amount={formattedAmount}

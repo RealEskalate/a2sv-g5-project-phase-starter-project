@@ -12,7 +12,6 @@ import BarChart from "./components/barchart";
 import PieChart from "./components/PieChart";
 import LineChart from "./components/LineChart";
 import CreditCard from "./components/CreditCard";
-import Loading from "./loading";
 
 const imageData = [
   { src: julia.src, alt: "julia", name: "Livia Bator", position: "CEO" },
@@ -159,7 +158,6 @@ const HomePage: React.FC = () => {
           <div className="h-52 bg-white rounded-lg">
             <LineChart />
           </div>
-          {/* <Loading /> */}
         </div>
       </div>
     </div>

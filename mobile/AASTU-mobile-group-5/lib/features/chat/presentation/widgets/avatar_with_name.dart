@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'profile_widget.dart';
 
 // ignore: camel_case_types
-class avatar_with_name extends StatelessWidget {
-  final String name;
-  const avatar_with_name({
+class AvatarWithName extends StatelessWidget {
+  final List<String> names;
+  const AvatarWithName({
     super.key,
-    required this.name,
+    required this.names,
   });
 
   @override
@@ -15,18 +16,31 @@ class avatar_with_name extends StatelessWidget {
       padding: const EdgeInsets.only(
         right: 20,
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const ProfileWidget(isOnline:true, iconUrl: 'images/leather_shoe_1.png',),
-          Text(
-            name,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
-          ),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: List.generate(names.length, (index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Column(
+                children: [
+                  ProfileWidget(
+                    isOnline: false,
+                    iconUrl: 'assets/images/Alex.png',
+                    isFirst: index == 0, // Set isFirst to true for the first element
+                  ),
+                  Text(
+                    names[index],
+                  style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ),
       ),
     );
   }

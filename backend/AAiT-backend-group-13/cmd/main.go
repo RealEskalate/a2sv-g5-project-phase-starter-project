@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	
-	"strconv"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/generative-ai-go/genai"
@@ -24,10 +22,10 @@ import (
 	commentrepo "github.com/group13/blog/infrastructure/repo/comment"
 	reactionrepo "github.com/group13/blog/infrastructure/repo/reaction"
 	userrepo "github.com/group13/blog/infrastructure/repo/user"
+	geminiService "github.com/group13/blog/usecase/ai_recommendation/query"
 	blogcmd "github.com/group13/blog/usecase/blog/command"
 	blogqry "github.com/group13/blog/usecase/blog/query"
 	passwordreset "github.com/group13/blog/usecase/password_reset"
-	geminiService "github.com/group13/blog/usecase/ai_recommendation/query"
 	usercmd "github.com/group13/blog/usecase/user/command"
 	userqry "github.com/group13/blog/usecase/user/query"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -53,18 +51,23 @@ func main() {
 			ExpTime:   config.Envs.JWTExpirationInSeconds,
 		})
 	hashService := &hash.Service{}
-	emailService := &email.MailTrapService{}
+	emailService := email.NewMailTrapService(email.Config{
+		Port:     cfg.MailTrapPort,
+		Host:     cfg.MailTrapHost,
+		Username: cfg.MailTrapUsername,
+		Password: cfg.MailTrapPassword,
+	})
 
 	// init controllers
 	userController := initUserController(userRepo, hashService, jwtService, emailService)
 	blogController := initBlogController(blogRepo, cacheClient)
 	geminiController := initGeminiController(geminiService.NewReccomendationHandler(geminiModel))
-	
+
 	// Router configuration
 	routerConfig := router.Config{
 		Addr:        fmt.Sprintf(":%s", cfg.ServerPort),
 		BaseURL:     "/api",
-		Controllers: []common.IController{userController, blogController,geminiController},
+		Controllers: []common.IController{userController, blogController, geminiController},
 		JwtService:  jwtService,
 	}
 	r := router.NewRouter(routerConfig)
@@ -99,32 +102,26 @@ func initRepos(cfg config.Config, mongoClient *mongo.Client) (*userrepo.Repo, *b
 }
 
 func initCache(cfg config.Config) *cache.RedisCache {
-	host, err := strconv.ParseInt(cfg.Cache_port, 10, 32)
-	if err != nil {
-		log.Fatalf("Error parsing cache db: %v", err)
-	}
-
 	// Initialize the cache
 	client := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%s", cfg.Cache_host, cfg.Cache_port),
+		Addr:     fmt.Sprintf("%s:%s", cfg.CacheHost, cfg.CachePort),
 		Password: "",
-		DB:       int(host),
+		DB:       cfg.CacheDB,
 	})
 
-	redisClient := cache.NewRedisCache(client, cfg.Blog_cache_expiry)
+	redisClient := cache.NewRedisCache(client, cfg.CacheExpiry)
 	return redisClient
 }
 
-
-func initGeminiClient(cfg config.Config) *genai.GenerativeModel{
+func initGeminiClient(cfg config.Config) *genai.GenerativeModel {
 	ctx := context.Background()
-	key := cfg.Google_Api_Key
+	key := cfg.GoogleApiKey
 	if key == "" {
 		log.Fatalf("Error: Google API Key not found")
 	}
 
 	client, err := genai.NewClient(ctx, option.WithAPIKey(key))
-	
+
 	if err != nil {
 		log.Printf("Error Gemini client not created: %v", err)
 	}
@@ -136,9 +133,8 @@ func initGeminiClient(cfg config.Config) *genai.GenerativeModel{
 	model.SetMaxOutputTokens(100)
 	return model
 
-
 }
-func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtService *jwt.Service, mailService *email.MailTrapService,) *usercontroller.UserController {
+func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtService *jwt.Service, mailService *email.MailTrapService) *usercontroller.UserController {
 	promoteHandler := usercmd.NewPromoteHandler(userRepo)
 	loginHandler := userqry.NewLoginHandler(userqry.LoginConfig{
 		UserRepo:     userRepo,
@@ -153,8 +149,7 @@ func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtS
 		EmailService: mailService,
 	})
 	updateProfileHandler := usercmd.NewUpdateProfileHandler(userRepo, hashService, mailService)
-	// aiController := gemini.NewAiController(geminiHandler)
-	
+
 	resetPasswordHandler := passwordreset.NewResetHandler(userRepo, hashService, jwtService)
 	resetCodeSendHandler := passwordreset.NewSendcodeHandler(userRepo, mailService, hashService)
 	validateCodeHandler := passwordreset.NewValidateCodeHandler(userRepo, jwtService, hashService)
@@ -192,7 +187,3 @@ func initBlogController(blogRepo *blogrepo.Repo, cacheService *cache.RedisCache)
 func initGeminiController(geminiHandler *geminiService.RecomendationHandler) *gemini.Controller {
 	return gemini.NewAiController(geminiHandler)
 }
-
-
-
-

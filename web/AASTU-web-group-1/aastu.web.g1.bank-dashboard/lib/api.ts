@@ -2,11 +2,11 @@ import { getSession } from "next-auth/react";
 import { TransactionProps,RandomBalanceHistory,UserResponse, CreditCardProps,QuickTransferProps, TransactionResponse } from "@/types";
 
 
+
 export  async function getCreditCards(page: number, size: number) {
     try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
-    console.log("bbvvv",URL)
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/cards?page=${page}&size=${size}`, {
       method: "GET",
       headers: {
@@ -18,6 +18,7 @@ export  async function getCreditCards(page: number, size: number) {
       throw new Error("failed to get data");
     }
     const cards: CreditCardProps = await res.json();
+    console.log(cards)
     return cards;
   } catch (error) {
     console.error("An error occurred on card:", error);
@@ -62,6 +63,7 @@ export async function addTransactions({
   receiverUserName,
 }: Props) {
   try {
+    console.log(process.env.NEXT_PUBLIC_BASE_URL)
     const session = await getSession();
     const accessToken = session?.user.accessToken;
     const res = await fetch(

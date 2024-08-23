@@ -18,7 +18,7 @@ const Shimmer = () => {
   );
 };
 
-export const RecentTransaction = () => {
+export const RecentTransaction = ({onLoadingComplete}:{onLoadingComplete:any}) => {
   const { isDarkMode } = useUser();
   const [recentTransactions, setRecentTransactions] = useState<
     TransactionContent[]
@@ -30,12 +30,13 @@ export const RecentTransaction = () => {
       try {
         const recent = await getallTransactions(0, 3);
         setRecentTransactions(recent?.content || []);
+        onLoadingComplete(false);
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, []);
+  }, [onLoadingComplete]);
 
   return (
     <div className="space-y-5 md:space-y-5 w-full md:w-1/3">

@@ -8,7 +8,11 @@ const Shimmer = () => {
   return <div className="animate-pulse h-64 bg-gray-200 rounded-xl"></div>;
 };
 
-export const ExpenseStatistics = () => {
+export const ExpenseStatistics = ({
+  onLoadingComplete,
+}: {
+  onLoadingComplete: any;
+}) => {
   const [transactions, setTransactions] = useState<TransactionContent[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -20,10 +24,11 @@ export const ExpenseStatistics = () => {
         setTransactions(statistics?.content || []);
       } finally {
         setLoading(false);
+        onLoadingComplete(false);
       }
     };
     fetchData();
-  }, []);
+  }, [onLoadingComplete]);
 
   return (
     <div className="md:w-1/3 space-y-5">

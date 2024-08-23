@@ -18,19 +18,20 @@ const Shimmer = () => {
   );
 };
 
-export const QuickTransfer = () => {
+export const QuickTransfer = ({ onLoadingComplete }: { onLoadingComplete: any }) => {
   const { isDarkMode } = useUser();
   const QuickTransferSection = useRef<HTMLDivElement | null>(null);
   const [quickTransfer, setQuickTransfer] = useState<QuickTransferData[]>([]);
-  const [selectedProfile, setSelectedProfile] =
-    useState<QuickTransferData >({} as QuickTransferData);
+  const [selectedProfile, setSelectedProfile] = useState<QuickTransferData>(
+    {} as QuickTransferData
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const accounts = await getQuickTransfer(7);
+        const accounts = await getQuickTransfer(10);
         setQuickTransfer(accounts || []);
       } finally {
         setLoading(false);
@@ -42,7 +43,6 @@ export const QuickTransfer = () => {
   const handleProfileSelect = (account: QuickTransferData) => {
     setSelectedProfile(account);
   };
-
 
   const handleModalToggle = () => {
     setIsModalOpen(!isModalOpen);
@@ -138,20 +138,22 @@ export const QuickTransfer = () => {
               transition-all duration-300 ease-in-out
             `}
             onClick={handleModalToggle}
-            disabled={!selectedProfile }
+            disabled={!selectedProfile}
           >
             <p>Transfer</p>
             <PiTelegramLogoLight />
           </button>
           {isModalOpen && (
-            <div
-              onClick={handleModalToggle}
-            >
+            <div onClick={handleModalToggle}>
               <div
                 className="relative bg-white p-6 rounded-lg shadow-lg max-w-md w-full"
                 onClick={(e) => e.stopPropagation()}
               >
-                <ModalTrans isOpen={isModalOpen} onClose={handleModalToggle} reciverUserName={selectedProfile.username}/>
+                <ModalTrans
+                  isOpen={isModalOpen}
+                  onClose={handleModalToggle}
+                  reciverUserName={selectedProfile.username}
+                />
               </div>
             </div>
           )}

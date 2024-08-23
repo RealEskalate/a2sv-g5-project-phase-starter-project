@@ -10,7 +10,7 @@ const Shimmer = () => {
   return <div className="animate-pulse h-64 bg-gray-200 rounded-xl"></div>;
 };
 
-export const BalanceHistory = () => {
+export const BalanceHistory = ({ onLoadingComplete }: { onLoadingComplete: any }) => {
   const { isDarkMode } = useUser();
   const [balanceHistory, setBalanceHistory] = useState<BalanceData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,10 +22,11 @@ export const BalanceHistory = () => {
         setBalanceHistory(BalanceHistory || []);
       } finally {
         setLoading(false);
+        onLoadingComplete(false);
       }
     };
     fetchData();
-  }, []);
+  }, [onLoadingComplete]);
 
   return (
     <div className="space-y-5">

@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
-import on from '../../../public/on.svg';
-import off from '../../../public/of.svg';
+import on from '../../../public/images/on.svg';
+import off from '../../../public/images/of.svg';
 import UserProfile from './setting';
 interface FormData {
   currency: string;

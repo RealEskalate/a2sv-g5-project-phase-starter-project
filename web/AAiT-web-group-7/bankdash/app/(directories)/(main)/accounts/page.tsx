@@ -133,7 +133,7 @@ const page = () => {
         </div>
         <div className="col-span-4 space-y-5">
           <h1 className='font-bold'>Invoices Sent</h1>
-          <div className="flex flex-col justify-center gap-2 bg-white py-10 rounded-3xl">
+          <div className="flex flex-col justify-center gap-3 bg-white py-10 rounded-3xl">
             {
               Invoices.map((item, index) => {
                 return <Invoice key={index} item={item}/>

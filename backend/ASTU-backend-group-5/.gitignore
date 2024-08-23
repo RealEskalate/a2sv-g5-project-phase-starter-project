@@ -5,4 +5,6 @@ venv
 venv/
 .venv
 mokery.yml
-.envf
+
+uploads
+.env

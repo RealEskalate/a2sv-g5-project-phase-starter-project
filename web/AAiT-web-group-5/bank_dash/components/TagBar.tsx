@@ -14,7 +14,7 @@ const TagBar = ({
   return (
     <div className="flex gap-4 justify-center items-center bg-white rounded-2xl px-10 py-5 hover:shadow-md">
       <div className="flex justify-center items-center  bg-[#E7EDFF] rounded-full size-16">
-        <Image src={image} width={28} height={34} alt="lock" />
+        <Image src={image} width={28} height={34} alt={title} />
       </div>
       <div className="flex flex-col">
         <p className="text-xl">{title}</p>

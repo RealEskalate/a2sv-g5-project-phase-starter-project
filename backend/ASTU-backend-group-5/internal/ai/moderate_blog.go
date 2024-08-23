@@ -7,24 +7,10 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 )
 
-func extractTextFromContent(content []interface{}) string {
-	var textContent strings.Builder
-
-	for _, item := range content {
-		if str, ok := item.(string); ok {
-			textContent.WriteString(str)
-			textContent.WriteString("\n")
-		}
-	}
-
-	return textContent.String()
-}
-
-func ModerateBlog(blog_content []interface{}, blog_title string) (bool, string, error) {
+func ModerateBlog(blog_content string, blog_title string) (bool, string, error) {
 	// conf, err := config.Load()
 	// if err != nil {
 	// 	return false, "", errors.New("failed to load config: " + err.Error())
@@ -33,9 +19,8 @@ func ModerateBlog(blog_content []interface{}, blog_title string) (bool, string, 
 	endpoint := "http://127.0.0.1:8000/validate_post/" //conf.AI_API_DOMAIN + "/validate_post/"
 	log.Printf("ModerateBlog: using endpoint %s", endpoint)
 
-	blogString := extractTextFromContent(blog_content)
 	data := map[string]string{
-		"content": blogString,
+		"content": blog_content,
 		"title":   blog_title,
 	}
 	marshal, err := json.Marshal(data)

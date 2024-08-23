@@ -43,7 +43,7 @@ func (BR *BlogRepository) GetBlogDocuments(offset int, limit int) ([]domain.Blog
 	var blogs []domain.Blog
 
 	options := options.Find()
-	options.SetSkip(int64(offset))
+	options.SetSkip(int64(int64(limit)*(int64(offset)-1)))
 	options.SetLimit(int64(limit))
 
 	cursor, err := BR.collection.Find(context.TODO(), bson.M{}, options)
@@ -94,7 +94,12 @@ func (BR *BlogRepository) FilterBlogDocument(filter map[string]interface{}) ([]d
 	query := bson.M{}
 
 	for key, value := range filter {
-		query[key] = value
+		switch v := value.(type) {
+		case string:
+			query[key] = bson.M{"$regex" : v , "$option" : "i"}
+		case []string:
+			query[key] = bson.M{"$in" : v}
+		}
 	}
 
 	cursor, err := BR.collection.Find(context.TODO(), query)

@@ -40,9 +40,9 @@ func NewLikeRoutes(group *gin.RouterGroup, collection database.CollectionInterfa
 	likeController := controller.NewLikeController(likeUseCase)
 
 	group.GET("/like/:post_id", LoggedInmiddleWare,likeController.GetLikes)
-	group.POST("/like/:post_id", LoggedInmiddleWare,likeController.CreateLike)
-	group.PUT("/like/toggle/:user_id/:post_id", LoggedInmiddleWare,likeController.ToggleLike)
-	group.DELETE("/like/:user_id/:post_id", LoggedInmiddleWare,likeController.RemoveLike)
+	group.PATCH("/like/:post_id", LoggedInmiddleWare,likeController.CreateLike)
+	group.PATCH("/like/toggle/:post_id", LoggedInmiddleWare,likeController.ToggleLike)
+	group.DELETE("/like/:post_id", LoggedInmiddleWare,likeController.RemoveLike)
 }
 
 func NewDislikeRoutes(group *gin.RouterGroup, collection database.CollectionInterface, blog database.CollectionInterface) {
@@ -70,8 +70,8 @@ func NewDislikeRoutes(group *gin.RouterGroup, collection database.CollectionInte
 	LoggedInmiddleWare := middleware.LoggedIn(TokenSvc)
 
 	group.GET("/dislike/:post_id",LoggedInmiddleWare, dislikeController.GetDislikes)
-	group.POST("/dislike/:post_id", LoggedInmiddleWare,dislikeController.CreateDislike)
-	group.PUT("/dislike/toggle/:post_id",LoggedInmiddleWare, dislikeController.ToggleDislike)
+	group.PATCH("/dislike/:post_id", LoggedInmiddleWare,dislikeController.CreateDislike)
+	group.PATCH("/dislike/toggle/:post_id",LoggedInmiddleWare, dislikeController.ToggleDislike)
 	group.DELETE("/dislike/:post_id", LoggedInmiddleWare,dislikeController.RemoveDislike)
 }
 

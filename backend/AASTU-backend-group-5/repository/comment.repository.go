@@ -24,7 +24,8 @@ func NewCommentRepository(collection database.CollectionInterface, blog database
 
 func (CR *CommentRepository) GetComments(post_id string) ([]domain.Comment, error) {
 	var comments []domain.Comment
-	query := bson.M{"post_id": post_id}
+	objID,_ := primitive.ObjectIDFromHex(post_id)
+	query := bson.M{"post_id": objID}
 
 	cursor, err := CR.collection.Find(context.TODO(), query)
 	if err != nil {

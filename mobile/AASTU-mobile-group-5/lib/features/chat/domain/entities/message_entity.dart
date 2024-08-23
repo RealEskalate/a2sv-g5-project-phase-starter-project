@@ -5,21 +5,23 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../user/domain/entities/user.dart';
+import 'chat_entity.dart';
 
 class MessageEntity extends Equatable{
-  final String chatId;
+  final String messageId;
   final User sender;
-  final String type;
+  
   final String content;
+  final ChatEntity chat;
   MessageEntity({
-    required this.chatId,
+    required this.messageId,
     required this.sender,
-    required this.type,
+  
     required this.content,
-    
+    required this.chat,
   });
   @override
   
-  List<Object?> get props => [chatId,sender,type,content];
+  List<Object?> get props => [messageId,sender,content,chat];
   
 }

@@ -7,6 +7,7 @@ import 'features/auth/presentation/bloc/auth_bloc/auth_bloc.dart';
 import 'features/auth/presentation/pages/sign_in_page.dart';
 import 'features/auth/presentation/pages/sign_up_page.dart';
 import 'features/auth/presentation/pages/splash_page.dart';
+import 'features/chat/presentation/pages/chat_page.dart';
 import 'features/product/domain/entities/product_entity.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
 import 'features/product/presentation/pages/add_product_page.dart';
@@ -75,15 +76,19 @@ class MyApp extends StatelessWidget {
               return _createRoute(Detailspage(
                 product: args,
               ));
+
+            case '/chat_page':
+              return _createRoute(ChatPage());
             default:
               return null;
           }
         },
-        initialRoute: '/dummy_page',
+        initialRoute: '/splash',
         title: 'Flutter Demo',
         theme: ThemeData(
           textTheme: GoogleFonts.poppinsTextTheme(),
           primaryColor: const Color.fromARGB(255, 63, 81, 243),
+          secondaryHeaderColor: Colors.blue,
           colorScheme: ColorScheme.fromSeed(
               seedColor: const Color.fromARGB(255, 63, 81, 243)),
           useMaterial3: true,

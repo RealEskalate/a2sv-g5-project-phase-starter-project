@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-class ChatterCard extends StatefulWidget {
+class ChatterCard extends StatelessWidget {
   final String name;
   final String lastMessage;
   final int unreadCount;
   final String time;
   final String imageUrl;
+  final bool isOnline;
 
   const ChatterCard({
     super.key,
@@ -14,13 +15,9 @@ class ChatterCard extends StatefulWidget {
     required this.unreadCount,
     required this.time,
     required this.imageUrl,
+    required this.isOnline,
   });
 
-  @override
-  _ChatterCardState createState() => _ChatterCardState();
-}
-
-class _ChatterCardState extends State<ChatterCard> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -29,7 +26,7 @@ class _ChatterCardState extends State<ChatterCard> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
         child: Card(
-					color: Colors.white,
+          color: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -53,18 +50,25 @@ class _ChatterCardState extends State<ChatterCard> {
   }
 
   Widget _buildProfileImage() {
-    return ClipOval(
-      child: Image.asset(
-        widget.imageUrl,
-        width: 55,
-        height: 55,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => Icon(
-          Icons.account_circle,
-          size: 55,
-          color: Colors.grey.shade400,
+    return Stack(
+      children: [
+        CircleAvatar(
+          radius: 28,
+          backgroundImage:
+              AssetImage(imageUrl), // Replace with the correct image path
         ),
-      ),
+
+        // Add online status indicator here
+
+        Positioned(
+          bottom: 0,
+          right: 0,
+          top: 30,
+          child: isOnline
+              ? const Icon(Icons.circle, color: Colors.green, size: 10)
+              : const Icon(Icons.circle, color: Colors.grey, size: 10),
+        ),
+      ],
     );
   }
 
@@ -74,20 +78,20 @@ class _ChatterCardState extends State<ChatterCard> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          widget.name,
+          name,
           style: const TextStyle(
-						fontFamily: 'General Sans Variable',
+            fontFamily: 'General Sans Variable',
             fontSize: 18,
             fontWeight: FontWeight.w500,
-						color: Color(0xFF000E08),
+            color: Color(0xFF000E08),
           ),
           overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 4),
         Text(
-          widget.lastMessage,
+          lastMessage,
           style: const TextStyle(
-						fontFamily: 'General Sans Variable',
+            fontFamily: 'General Sans Variable',
             fontSize: 12,
             color: Color(0xFF797C7B),
           ),
@@ -103,15 +107,15 @@ class _ChatterCardState extends State<ChatterCard> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          widget.time,
+          time,
           style: const TextStyle(
             fontSize: 12,
-						fontFamily: 'General Sans Variable',
+            fontFamily: 'General Sans Variable',
             color: Color(0xFF797C7B),
           ),
         ),
         const SizedBox(height: 8),
-        if (widget.unreadCount > 0)
+        if (unreadCount > 0)
           Container(
             padding: const EdgeInsets.all(6),
             decoration: const BoxDecoration(
@@ -119,7 +123,7 @@ class _ChatterCardState extends State<ChatterCard> {
               shape: BoxShape.circle,
             ),
             child: Text(
-              '${widget.unreadCount}',
+              '$unreadCount',
               style: const TextStyle(
                 fontSize: 11,
                 color: Colors.white,

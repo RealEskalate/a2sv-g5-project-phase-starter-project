@@ -16,38 +16,41 @@ class AuthenticationTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          labelText,
-          style: GoogleFonts.poppins(
-            textStyle: const TextStyle(
-              color: Color(0xFF6F6F6F),
-              fontWeight: FontWeight.normal,
-              fontSize: 15,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10 ,horizontal: 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            labelText,
+            style: GoogleFonts.poppins(
+              textStyle: const TextStyle(
+                color: Color(0xFF6F6F6F),
+                fontWeight: FontWeight.normal,
+                fontSize: 15,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 5.0),
-        TextFormField(
-          controller: controller,
-          obscureText: isPassword, // Always obscure the text if isPassword is true
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: TextStyle(
-              color: Colors.grey.shade400,
-              fontStyle: FontStyle.italic,
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade100,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide.none,
+          const SizedBox(height: 5.0),
+          TextFormField(
+            controller: controller,
+            obscureText: isPassword, 
+            decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: TextStyle(
+                color: Colors.grey.shade400,
+                fontStyle: FontStyle.italic,
+              ),
+              filled: true,
+              fillColor: const Color.fromARGB(95, 242, 239, 239),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide.none,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

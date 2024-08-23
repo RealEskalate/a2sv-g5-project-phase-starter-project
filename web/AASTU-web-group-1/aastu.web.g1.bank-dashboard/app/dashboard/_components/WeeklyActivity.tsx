@@ -15,7 +15,7 @@ const Shimmer = () => {
   );
 };
 
-export const WeeklyActivity = () => {
+export const WeeklyActivity = ({ onLoadingComplete }: { onLoadingComplete: any }) => {
   const { isDarkMode } = useUser();
   const [weeklyIncome, setWeeklyIncome] = useState<TransactionContent[]>([]);
   const [weeklyWithdraw, setWeeklyWithdraw] = useState<TransactionContent[]>(
@@ -32,10 +32,11 @@ export const WeeklyActivity = () => {
         setWeeklyWithdraw(withdraw?.content || []);
       } finally {
         setLoading(false);
+        onLoadingComplete(false);
       }
     };
     fetchData();
-  }, []);
+  }, [onLoadingComplete]);
 
   return (
     <div className="md:w-2/3 space-y-5">

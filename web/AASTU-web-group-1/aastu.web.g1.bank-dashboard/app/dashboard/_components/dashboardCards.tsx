@@ -13,7 +13,7 @@ const Shimmer = () => {
   );
 };
 
-export const Cards = () => {
+export const Cards = ({onLoadingComplete}: {onLoadingComplete: any}) => {
   const [creditCards, setCreditCards] = useState<CardDetails[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,9 +22,10 @@ export const Cards = () => {
       const res = await getCreditCards(0, 2);
       setCreditCards(res?.content || []);
       setLoading(false);
+      onLoadingComplete(false);
     };
     fetchData();
-  }, []);
+  }, [onLoadingComplete]);
 
   return (
     <div className="md:w-2/3 space-y-5">

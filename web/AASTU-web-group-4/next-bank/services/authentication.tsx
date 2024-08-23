@@ -3,7 +3,7 @@
 export const registerUser = async (userData: any) => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-1tst.onrender.com/auth/register",
+      "https://web-team-g4.onrender.com/auth/register",
       {
         method: "POST",
         headers: {
@@ -31,7 +31,7 @@ export const registerUser = async (userData: any) => {
 export const refreshToken = async (tokenData: any) => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-1tst.onrender.com/auth/refresh_token",
+      "https://web-team-g4.onrender.com/auth/refresh_token",
       {
         method: "POST",
         headers: {
@@ -83,7 +83,7 @@ export const loginUser = async (loginData: any) => {
 export const changePassword = async (passwordData: any) => {
   try {
     const response = await fetch(
-      "https://bank-dashboard-1tst.onrender.com/auth/change_password",
+      "https://web-team-g4.onrender.com/auth/change_password",
       {
         method: "POST",
         headers: {

@@ -1,6 +1,7 @@
-import Cookie from "js-cookie";
-const API_BASE_URL = " https://web-team-g4.onrender.com";
-const token = Cookie.get("accessToken");
+import Cookies from "js-cookie";
+const API_BASE_URL = "https://web-team-g4.onrender.com";
+const token = Cookies.get("accessToken");
+
 // GET /bank-services/{id}
 export const getBankServiceById = async (id: any) => {
   const response = await fetch(`${API_BASE_URL}/bank-services/${id}`, {

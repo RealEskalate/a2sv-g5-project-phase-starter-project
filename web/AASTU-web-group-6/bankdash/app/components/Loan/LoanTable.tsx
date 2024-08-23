@@ -16,7 +16,7 @@ const LoanTable = () => {
 
   const fetchLoan = async () => {
     while (!accessToken) {
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay to wait for the token
+      await new Promise((resolve) => setTimeout(resolve, 120)); // Delay to wait for the token
     }
 
     const loanData = await loanApi.getLoan(accessToken, currentPage);

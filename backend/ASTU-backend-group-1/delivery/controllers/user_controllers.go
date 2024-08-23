@@ -5,6 +5,7 @@ import (
 	"astu-backend-g1/domain"
 	"astu-backend-g1/infrastructure"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -257,7 +258,7 @@ func (c *UserController) DeleteUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.String(http.StatusNoContent, "")
+	ctx.JSON(http.StatusNoContent, gin.H{"message":"user deleted from database"})
 }
 
 // UpdateUser godoc
@@ -366,4 +367,42 @@ func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
 		}
 	}
 	ctx.IndentedJSON(http.StatusForbidden, gin.H{"error": "couldn't refrsh the token"})
+}
+func (c *UserController) Promote(ctx *gin.Context) {
+	username := ctx.Param("username")
+	_, err := c.userUsecase.PromteUser(username)
+	log.Println(err)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "User promoted to admin"})
+}
+func (c *UserController) Demote(ctx *gin.Context) {
+	username := ctx.Param("username")
+	_, err := c.userUsecase.DemoteUser(username)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "User demoted to user"})
+}
+func (c *UserController) PromoteByEmail(ctx *gin.Context) {
+	email := ctx.Param("email")
+	_, err := c.userUsecase.PromteUserByEmail(email)
+	log.Println(err)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "User promoted to admin"})
+}
+func (c *UserController) DemoteByEmail(ctx *gin.Context) {
+	email := ctx.Param("email")
+	_, err := c.userUsecase.DemoteUserByEmail(email)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "User demoted to user"})
 }

@@ -19,8 +19,8 @@ const TransactionTable: React.FC = () => {
   );
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white shadow-md rounded-lg">
+    <div className="overflow-x-auto ">
+      <table className="min-w-full bg-white shadow-md rounded-lg ">
         <thead>
           <tr>
             {TABLE_HEADERS.map((header) => (

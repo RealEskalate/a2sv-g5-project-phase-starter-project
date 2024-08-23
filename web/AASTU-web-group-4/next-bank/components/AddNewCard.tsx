@@ -24,13 +24,13 @@ const AddNewCard: React.FC = () => {
   return (
     // w-[330px] md:w-[600px] h-[530px] md:h-[380px]
     <div className='mr-4'>
-      <h1 className='text-[20px] mb-3 font-bold text-[#333B69]'>Add New Card</h1>
-      <div className="bg-white lg:w-[800px] w-[330px] md:w-[630px] sm:h-[720px] md:h-[430px] p-7 border-[1px] rounded-xl">
+      <h1 className='text-[20px] mb-3 font-bold text-[#333B69] dark:text-blue-500'>Add New Card</h1>
+      <div className="bg-white lg:w-[800px] w-[330px] md:w-[630px] sm:h-[720px] md:h-[430px] p-7 border-[1px] rounded-xl dark:bg-dark dark:text-white">
         <p className='text-[17px] text-[#718EBF]'>
           Credit Card generally means a plastic card issued by Scheduled Commercial Banks assigned to a Cardholder, with a credit limit, that can be used to purchase goods and services on credit or obtain cash advances.
         </p>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 dark:bg-dark text-gray-900 dark:text-white">
           <div>
             <label htmlFor="cardTypeId" className='text-[16px] block pb-2'>Card Type</label>
             <input
@@ -90,7 +90,7 @@ const AddNewCard: React.FC = () => {
           </div>
 
           <div className="md:col-span-2">
-            <button type="submit" className='rounded-xl text-[16px] px-7 text-center bg-[#1814F3] text-white w-[95%] md:w-[auto] mt-4 p-2'>
+            <button type="submit" className='rounded-xl text-[16px] px-7 text-center bg-[#1814F3] dark:bg-blue-700 text-white w-[95%] md:w-[auto] mt-4 p-2'>
               Add Card
             </button>
           </div>

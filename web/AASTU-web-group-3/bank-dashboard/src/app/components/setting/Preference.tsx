@@ -5,6 +5,8 @@ import SwitchButton from "./switch";
 import { useDispatch, useSelector } from "react-redux";
 import { usePutPreferenceMutation } from "@/lib/redux/api/settingApi";
 import { RootState } from "@/lib/redux/store";
+import { Preference } from "@/lib/redux/types/setting";
+
 
 
 interface FormInput extends FormData {
@@ -16,15 +18,19 @@ interface FormInput extends FormData {
   timeZone: string;
 }
 
-const Preference = () => {
+interface userPrefernceType{
+  userPrefernce:Preference
+}
+
+const PreferencePage = ({userPrefernce}:userPrefernceType) => {
   const { register, handleSubmit, setValue, watch } = useForm<FormInput>({
     defaultValues: {
-      currency: "",
-      timeZone: "",
-      sentOrReceiveDigitalCurrency: false,
-      receiveMerchantOrder: false,
-      accountRecommendations: false,
-      twoFactorAuthentication: false
+      currency: userPrefernce.currency,
+      timeZone: userPrefernce.timeZone,
+      sentOrReceiveDigitalCurrency: userPrefernce.sentOrReceiveDigitalCurrency,
+      receiveMerchantOrder: userPrefernce.receiveMerchantOrder,
+      accountRecommendations: userPrefernce.accountRecommendations,
+      twoFactorAuthentication: userPrefernce.twoFactorAuthentication
     },
   });
 
@@ -152,4 +158,4 @@ const Preference = () => {
   );
 };
 
-export default Preference;
+export default PreferencePage;

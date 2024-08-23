@@ -1,19 +1,45 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import EditProfile from "../components/setting/EditProfile";
 import Preference from "../components/setting/Preference";
 import Security from "../components/setting/Security";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
+import { useGetCurrentUserQuery } from "@/lib/redux/api/settingApi";
+import { setSetting,setError,setLoading } from "@/lib/redux/slices/settingSlice";
 
 
-const HomePage: React.FC = () => {
+const HomePage = () => {
   const [activeTab, setActiveTab] = useState("Edit Profile");
+  const dispatch = useDispatch();
+  const { setting, loading, error } = useSelector(
+    (state: RootState) => state.setting
+  );
 
+  console.log(setting)
+  const { data, isLoading, isError } = useGetCurrentUserQuery();
+
+  useEffect(() => {
+    dispatch(setLoading(isLoading));
+  
+    if (data) {
+      dispatch(setSetting([data]));
+    }
+  
+    if (isError) {
+      dispatch(setError("Error loading transactions"));
+    }
+  }, [data, isLoading, isError, dispatch]);
+  
+  if (loading || setting.length === 0) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+  
   const renderContent = () => {
     switch (activeTab) {
       case "Edit Profile":
-        return <EditProfile />;
+        return <EditProfile  userData = {setting}/>;
       case "Preference":
-        return <Preference />;
+        return <Preference userPrefernce = {setting[0].data.preference} />;
       case "Security":
         return <Security />;
       default:

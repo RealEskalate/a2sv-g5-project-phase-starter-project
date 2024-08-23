@@ -1,10 +1,15 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Linechart from '../components/LineChart'; 
 import LineGraphWithDots from '../components/investment/dotchart';
 import CurveGraph from '../components/investment/curvegraph';
 import Image from 'next/image';
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
+import { useGetRandomInvestmentDataQuery } from "@/lib/redux/api/settingApi";
+import { setSetting,setError,setLoading } from "@/lib/redux/slices/settingSlice";
 import {apple,google,tesla,returnValue,nameinvestment,totalinvestment} from '@/../../public/Icons'
+import { RandomInvestmentData } from '@/lib/redux/types/setting';
 interface Investment {
   index: number;
   title: string;
@@ -30,11 +35,6 @@ interface tables {
   return: number;
 }
 
-const datacorner: Investment[] = [
-  {icon:returnValue, index: 0, title: 'Total Invested Amount', value: 150000 },
-  {icon: nameinvestment, index: 1, title: 'Number of Investments', value: 1250 },
-  {icon: totalinvestment, index: 2, title: 'Rate of Return', value: 5.69 }
-];
 
 const investor: Datas[] = [
   {icon:apple, titles: 'Apple Store', jobtitle: ['E-commerce', 'Marketplace'], price: 54000, investmentvalue: 'investment value', percent: 16, returnval: 'Return Value' },
@@ -51,6 +51,26 @@ const tabledata: tables[] = [
 ];
 
 const Page: React.FC = () => {
+  const [RandInvestment , setRandInvestment] = useState<RandomInvestmentData>()
+  
+  const { data:investment, isLoading, isError } = useGetRandomInvestmentDataQuery({years:6,months:5});
+  useEffect (()=>{
+    setRandInvestment(investment)
+  },[investment])
+  
+  console.log(RandInvestment?.data)
+  if (isLoading || RandInvestment === undefined) return <div>Loading...</div>;
+
+  const datacorner: Investment[] = [
+    {icon: totalinvestment, index: 0, title: 'Total Invested Amount', value:Math.floor(RandInvestment?.data?.totalInvestment)},
+    {icon: nameinvestment, index: 1, title: 'Number of Investments', value:2000 },
+    {icon: returnValue, index: 2, title: 'Rate of Return', value:Math.floor(RandInvestment?.data?.rateOfReturn) }
+  ];
+  if (isError) return <div>{isError}</div>;
+
+
+
+
   return (
     <div>
       <div className="justify-between grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-2 py-8 px-8 w-full">
@@ -72,12 +92,12 @@ const Page: React.FC = () => {
       <div className="gap-6 max-w-full flex flex-col md:flex-row px-9 py-10 ">
         
 
-        <LineGraphWithDots />
-        <CurveGraph />
+        <LineGraphWithDots TotInvestment = {RandInvestment?.data?.yearlyTotalInvestment} />
+        <CurveGraph MonthlyRevenue = {RandInvestment?.data?.monthlyRevenue} />
       </div>
       <div className='flex flex-col md:flex-row w-full'>
 
-      <div className='w-full md:w-3/5 px-8'>
+      <div className='w-full md:w-[55%] px-8'>
       <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] text-left px-4 py-4">
         My Investment
       </h1>

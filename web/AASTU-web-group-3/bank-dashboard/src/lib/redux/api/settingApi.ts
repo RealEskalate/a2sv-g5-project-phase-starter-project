@@ -1,10 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getSession } from "next-auth/react";
-import {
-  settingPutUserResponse,
-  settingPutUserRequest,
-  Preference,
-} from "../types/setting";
+import { settingPutUserResponse, settingPutUserRequest, Preference,RandomInvestmentData } from "../types/setting";
 import { url } from "inspector";
 import { METHODS } from "http";
 
@@ -55,12 +51,21 @@ export const settingApi = createApi({
           "Content-Type": "application/json",
         },
       }),
-    }),
   }),
+
+  getRandomInvestmentData: builder.query<
+      RandomInvestmentData,
+      { years: number; months: number }
+    >({
+      query: ({ years, months }) => `/user/random-investment-data?years=${years}&months=${months}`,
+    }),
+}),
+
 });
 
 export const {
   usePutSettingMutation,
   usePutPreferenceMutation,
   useGetCurrentUserQuery,
+  useGetRandomInvestmentDataQuery
 } = settingApi;

@@ -6,10 +6,11 @@ import RecentTransaction from "../components/RecentTransaction";
 import WeeklyActivity from "../components/WeeklyActivity";
 import PieChart from "../components/PieChart";
 import QuickTransfer from "../components/QuickTransfer";
+import LineGraph from "../components/LineGraph";
 
 const Dashboard = () => {
   return (
-    <div className="flex flex-col p-4 space-y-6">
+    <div className="flex flex-col space-y-6">
       <div className="flex flex-col justify-start lg:space-x-4 lg:flex-row lg:items-center ">
         <div className="flex flex-col w-full lg:w-2/3">
           <div className="flex justify-between items-center pb-4 text-[#343C6A] font-semibold">
@@ -24,7 +25,7 @@ const Dashboard = () => {
           </div>
         </div>
         <div className=" lg:w-1/3 w-full">
-          <p className="pb-4 text-[#343C6A] text-[22px] w-full font-semibold">
+          <p className="pb-3 text-[#343C6A] text-[22px] w-full font-semibold">
             Recent Transactions
           </p>
           <RecentTransaction />
@@ -46,17 +47,21 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div>
-        <p className="text-[#343C6A] text-[22px] font-semibold mb-2">
-          Quick Transfer
-        </p>
-        <QuickTransfer />
-      </div>
+      <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4">
+        <div className="">
+          <p className="text-[#343C6A] text-[22px] font-semibold mb-2">
+            Quick Transfer
+          </p>
+          <QuickTransfer />
+        </div>
 
-      {/* <div className="mt-6">
-        <p className="text-[#343C6A] text-[22px] font-semibold mb-2">Balance History</p>
-        <BalanceHistory />
-      </div> */}
+        <div className="w-full lg:w-2/3">
+          <p className="text-[#343C6A] text-[22px] font-semibold mb-2">
+            Balance History
+          </p>
+          <LineGraph />
+        </div>
+      </div>
     </div>
   );
 };

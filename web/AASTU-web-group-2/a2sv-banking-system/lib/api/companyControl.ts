@@ -1,11 +1,11 @@
 import axios from "axios";
-import User, { Preference } from "../../types/userInterface";
-// Extend the user type to include accessToken
+import Company from "../../types/companyInterface";
+
 const baseUrl = "https://bank-dashboard-o9tl.onrender.com";
 
-export async function userUpdate(user: User, accessToken: string) {
+export async function getCompanyById(id: string, accessToken: string) {
   try {
-    const response = await axios.put(baseUrl + "/user/update", user, {
+    const response = await axios.get(baseUrl + `/companies/${id}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
@@ -13,36 +13,33 @@ export async function userUpdate(user: User, accessToken: string) {
     });
     return response.data;
   } catch (error) {
-    console.error("Error updating user:", error);
+    console.error("Error fetching company by ID:", error);
     throw error;
   }
 }
 
-export async function userUpdatePreference(
-  preference: Preference,
+export async function createCompany(company: Company, accessToken: string) {
+  try {
+    const response = await axios.post(baseUrl + `/companies`, company, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creating company:", error);
+    throw error;
+  }
+}
+
+export async function updateCompany(
+  id: string,
+  company: Company,
   accessToken: string
 ) {
   try {
-    const response = await axios.put(
-      baseUrl + "/user/update-preference",
-      preference,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error updating user preference:", error);
-    throw error;
-  }
-}
-
-export async function getUserByUsername(username: string, accessToken: string) {
-  try {
-    const response = await axios.get(baseUrl + `/user/${username}`, {
+    const response = await axios.put(baseUrl + `/companies/${id}`, company, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
@@ -50,19 +47,34 @@ export async function getUserByUsername(username: string, accessToken: string) {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching user by username:", error);
+    console.error("Error updating company:", error);
     throw error;
   }
 }
 
-export async function getRandomInvestementData(
-  months: number,
-  years: number,
+export async function deleteCompany(id: string, accessToken: string) {
+  try {
+    const response = await axios.delete(baseUrl + `/companies/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting company:", error);
+    throw error;
+  }
+}
+
+export async function getCompanies(
+  page: number,
+  size: number,
   accessToken: string
 ) {
   try {
     const response = await axios.get(
-      baseUrl + `/user/random-investment-data?months=${months}&years=${years}`,
+      baseUrl + `/companies/?page=${page}&size=${size}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -72,22 +84,25 @@ export async function getRandomInvestementData(
     );
     return response.data;
   } catch (error) {
-    console.error("Error fetching random investment data:", error);
+    console.error("Error fetching companies:", error);
     throw error;
   }
 }
 
-export async function getCurrentUser(accessToken: string) {
+export async function getTrendingCompanies(accessToken: string) {
   try {
-    const response = await axios.get(baseUrl + `/user/current`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-    return response.data.data;
+    const response = await axios.get(
+      baseUrl + `/companies/trending-companies`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
   } catch (error) {
-    console.error("Error fetching current user:", error);
+    console.error("Error fetching trending companies:", error);
     throw error;
   }
 }

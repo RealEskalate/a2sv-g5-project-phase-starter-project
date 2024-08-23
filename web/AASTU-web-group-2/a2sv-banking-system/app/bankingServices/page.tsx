@@ -72,9 +72,9 @@ const Page = () => {
     const addingData = async () => {
       if (!access_token) return;
       if (access_token) {
-        const bankServices = await getBankServices(access_token, 0, 100);
-        console.log("Fetching Completed", bankServices.data.content);
-        setBankServices(bankServices.data.content); // Set the content array
+        const bankServices = await getBankServices( 0, 100, access_token);
+        console.log("Fetching Completed", bankServices.data);
+        setBankServices(bankServices.data); // Set the content array
       }
     };
     addingData();

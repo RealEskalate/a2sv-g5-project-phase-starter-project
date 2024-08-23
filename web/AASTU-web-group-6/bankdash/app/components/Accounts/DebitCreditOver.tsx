@@ -39,7 +39,7 @@ interface chartData {
 function isDateInLast7Days(dateString: string): boolean {
   const currentDate = new Date();
   const sevenDaysAgo = new Date(currentDate);
-  sevenDaysAgo.setDate(currentDate.getDate() - 7);
+  sevenDaysAgo.setDate(currentDate.getDate() - 6);
   sevenDaysAgo.setHours(0, 0, 0, 0);
 
   const transactionDate = new Date(dateString);
@@ -71,6 +71,7 @@ export function DebitCreditOver() {
 
   console.log(expense, "from expense");
   console.log(income, "from income");
+ 
   useEffect(() => {
     const getData = () => {
       try {

@@ -2,7 +2,7 @@ import LoginValue from "@/types/LoginValue";
 import UserValue from "@/types/UserValue";
 import axios from "axios";
 
-const API_URL = "https://bank-dashboard-o9tl.onrender.com/auth";
+const API_URL = "https://bank-dashboard-rsf1.onrender.com/auth";
 
 // Request & Response Interfaces
 

@@ -15,11 +15,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import ky, { HTTPError } from "ky";
 import { getSession } from "next-auth/react";
 import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { Currency } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 
 const Preferences = () => {
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const formSchema = z.object({
     sentOrReceiveDigitalCurrency: z.boolean().default(true).optional(),
@@ -47,7 +49,7 @@ const Preferences = () => {
       const session = await getSession();
       const accessToken = session?.user.accessToken;
       const res = await ky.put(
-        "https://bank-dashboard-o9tl.onrender.com/user/update-preference",
+        `${process.env.BASE_URL}/user/update-preference`,
         {
           json: { ...values, twoFactorAuthentication: false },
           headers: {
@@ -57,14 +59,22 @@ const Preferences = () => {
       );
       const data = await res.json();
       console.log("Response", data);
-      toast("Update Successful");
+      toast({
+        title: "Success",
+        description: "Preferences updated successfully",
+        variant: "success",
+      });
     } catch (err) {
       if (err instanceof HTTPError && err.response) {
         const errorResponse = await err.response.json();
         console.error("Error Response", errorResponse);
+        toast({
+          title: "Error",
+          description: "There was a problem with your request",
+          variant: "destructive",
+        });
       }
       console.error("Console Error", err);
-      toast("Update Unsuccessful");
     } finally {
       setLoading(false);
     }

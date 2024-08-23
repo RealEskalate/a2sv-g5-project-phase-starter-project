@@ -7,7 +7,7 @@ export  async function getCreditCards(page: number, size: number) {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
     console.log("bbvvv",URL)
-    const res = await fetch(`https://bank-dashboard-1tst.onrender.com/cards?page=${page}&size=${size}`, {
+    const res = await fetch(`${process.env.BASE_URL}/cards?page=${page}&size=${size}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -29,7 +29,7 @@ export async function getQuickTransfer(num: number) {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
     const res = await fetch(
-      `https://bank-dashboard-1tst.onrender.com/transactions/quick-transfers?number=${num}`,
+      `${process.env.BASE_URL}/transactions/quick-transfers?number=${num}`,
       {
         method: "GET",
         headers: {
@@ -65,7 +65,7 @@ export async function addTransactions({
     const session = await getSession();
     const accessToken = session?.user.accessToken;
     const res = await fetch(
-      `https://bank-dashboard-1tst.onrender.com/transactions`,
+      `${process.env.BASE_URL}/transactions`,
       {
         method: "POST",
         headers: {
@@ -95,7 +95,7 @@ export async function getCurrentUser() {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
     const res = await fetch(
-      `https://bank-dashboard-6acc.onrender.com/user/current`,
+      `${process.env.BASE_URL}/user/current`,
       {
         method: "GET",
         headers: {
@@ -121,7 +121,7 @@ export async function getExpenses(page: number, size: number) {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
     const res = await fetch(
-      `https://bank-dashboard-1tst.onrender.com/transactions/expenses?page=${page}&size=${size}`,
+      `${process.env.BASE_URL}/transactions/expenses?page=${page}&size=${size}`,
       {
         method: "GET",
         headers: {
@@ -147,7 +147,7 @@ export async function getIncomes(page: number, size: number) {
     const accessToken = session?.user.accessToken;
 
     const res = await fetch(
-      `https://bank-dashboard-1tst.onrender.com/transactions/incomes?page=${page}&size=${size}`,
+      `${process.env.BASE_URL}/transactions/incomes?page=${page}&size=${size}`,
       {
         method: "GET",
         headers: {
@@ -172,7 +172,7 @@ export default async function getRandomBalance() {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
     const res = await fetch(
-      `https://bank-dashboard-6acc.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=7`,
+      `${process.env.BASE_URL}/transactions/random-balance-history?monthsBeforeFirstTransaction=7`,
       {
         method: "GET",
         headers: {
@@ -196,7 +196,7 @@ export async function getallTransactions(page: number, size: number) {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
     const res = await fetch(
-      `https://bank-dashboard-1tst.onrender.com/transactions?page=${page}&size=${size}`,
+      `${process.env.BASE_URL}/transactions?page=${page}&size=${size}`,
       {
         method: "GET",
         headers: {
@@ -233,7 +233,7 @@ export async function postCards({
   try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
-    const res = await fetch(`https://bank-dashboard-6acc.onrender.com/cards`, {
+    const res = await fetch(`${process.env.BASE_URL}/cards`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -263,7 +263,7 @@ export async function getbalance(){
     const session = await getSession();
     const accessToken = session?.user.accessToken;
     const res = await fetch(
-      `https://bank-dashboard-6acc.onrender.com/transactions/balance-history`,
+      `${process.env.BASE_URL}/transactions/balance-history`,
       {
         method: "GET",
         headers:{

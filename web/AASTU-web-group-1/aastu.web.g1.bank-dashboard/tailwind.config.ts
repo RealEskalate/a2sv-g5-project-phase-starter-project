@@ -81,7 +81,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"),
+  plugins: [require("flowbite/plugin"),require("tailwindcss-animate"),
     function ({ addUtilities }:any) {
       const newUtilities = {
         '.scrollbar-hidden': {

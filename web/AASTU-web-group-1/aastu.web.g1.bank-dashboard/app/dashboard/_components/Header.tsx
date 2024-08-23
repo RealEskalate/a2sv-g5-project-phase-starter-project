@@ -57,7 +57,7 @@ const Header = ({ title }: { title: string }) => {
 
   return (
     <div
-      className={`max-md:hidden ${
+      className={`max-md:hidden sticky top-0 z-50 ${
         isDarkMode ? "border-gray-700 bg-gray-800" : "bg-white"
       }`}
     >
@@ -80,7 +80,7 @@ const Header = ({ title }: { title: string }) => {
               alt="Search"
             />
             <input
-              className={`outline-none bg-[#F5F7FA]`}
+              className="bg-[#F5F7FA] outline-none border-none"
               type="text"
               placeholder="Search for something"
             />

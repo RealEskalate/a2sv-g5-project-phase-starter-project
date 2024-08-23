@@ -29,4 +29,8 @@ func Setup(env *config.Env, timeout time.Duration, db *mongo.Client, gin *gin.En
 	privateRouterUser := gin.Group("/api/user")
 	privateRouterUser.Use(middleware.AuthMiddleWare(env.AccessTokenSecret))
 	NewUserRouter(env, timeout, db, privateRouterUser)
+
+	privateRouterRefreshToken := gin.Group("/api")
+	privateRouterRefreshToken.Use(middleware.RefreshMiddleware(env.RefreshTokenSecret))
+	NewRefreshTokenRouter(env, timeout, db, privateRouterRefreshToken)
 }

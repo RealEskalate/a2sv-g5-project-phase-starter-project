@@ -22,7 +22,6 @@ func NewAuthUserUsecase(repository AuthRepository, emailService infrastructure.E
 		repository:   repository,
 		emailService: emailService,
 	}
-
 }
 
 func (au *AuthUserUsecase) Login(ctx context.Context, info LoginForm) (string, string, error) {
@@ -75,6 +74,15 @@ func (au *AuthUserUsecase) RegisterUser(ctx context.Context, user User) error {
 
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
+	// if the user is first user is make it admin and super admin
+	count, err := au.repository.GetCollectionCount(ctx)
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		user.IsAdmin = true
+		user.IsSupper = true
+	}
 	_, err = au.repository.CreateUser(ctx, user)
 	if err != nil {
 		return ErrCantCreateUser

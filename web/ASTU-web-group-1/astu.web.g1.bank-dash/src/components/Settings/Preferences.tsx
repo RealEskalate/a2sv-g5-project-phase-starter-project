@@ -24,9 +24,13 @@ const Preferences = () => {
     mode: "onTouched",
   });
 
+  const onSubmit = (data: any) => {
+    console.log("Form Data:", data);
+  };
+
   return (
     <div>
-      <form action="">
+      <form action="" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col md:flex-row md:space-x-5">
           <div className=" w-full lg:w-6/12 space-y-3 my-3">
             <label htmlFor="select" className="gray-dark text-16px">

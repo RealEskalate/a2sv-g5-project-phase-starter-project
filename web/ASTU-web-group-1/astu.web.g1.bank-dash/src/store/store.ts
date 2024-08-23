@@ -1,6 +1,7 @@
 import { profileAPI } from "@/lib/redux/api/profileAPI";
 import { activeLoanApi } from "@/lib/redux/slices/activeLoanSlice";
 import { cardApi } from "@/lib/redux/slices/cardSlice";
+import profileSlice from "@/lib/redux/slices/profileSlice";
 import { transactionApi } from "@/lib/redux/slices/transactionSlice";
 import uiSlice from "@/lib/redux/slices/uiSlice";
 import { configureStore } from "@reduxjs/toolkit";
@@ -8,7 +9,7 @@ import { configureStore } from "@reduxjs/toolkit";
 export const store = configureStore({
   reducer: {
     ui: uiSlice,
-    // use: userReducer
+    profile: profileSlice,
     [cardApi.reducerPath]: cardApi.reducer,
     [transactionApi.reducerPath]: transactionApi.reducer,
     [activeLoanApi.reducerPath]: activeLoanApi.reducer,

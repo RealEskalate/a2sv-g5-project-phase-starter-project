@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "./baseQuery";
-import { UserDataType, UserResponseType } from "@/types/user.types";
+import { UpdatedUser, UserResponseType } from "@/types/user.types";
 
 export const profileAPI = createApi({
     reducerPath: "profileAPI",
@@ -9,15 +9,19 @@ export const profileAPI = createApi({
         getProfile: builder.query<UserResponseType, void>({
             query: () => `user/current`,
         }),
+        
+        getPreferences: builder.query<void, void>({
+            query: () => `/user/update-preference`,
+        }),
 
-        updateProfile: builder.mutation<void, UserDataType>({
+        updateUser: builder.mutation<void, UpdatedUser>({
             query: (body) => ({
-                url: `user/update`,
-                method: "POST",
+                url: `/user/update`,
+                method: "PUT",
                 body,
             }),
         })
     }),
 })
 
-export const { useGetProfileQuery, useUpdateProfileMutation } = profileAPI
+export const { useGetProfileQuery, useUpdateUserMutation } = profileAPI

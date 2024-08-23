@@ -6,6 +6,20 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+// User represents a user in the system.
+// @Description User model
+// @Model User
+// @Property ID string "ID of the user"
+// @Property Username string "Username of the user"
+// @Property Email string "Email of the user"
+// @Property FirstName string "First name of the user"
+// @Property LastName string "Last name of the user"
+// @Property Password string "Password of the user"
+// @Property VerifyToken string "Verification token"
+// @Property RefreshToken string "Refresh token"
+// @Property ExpirationDate string "Expiration date of the token" format(date-time)
+// @Property IsAdmin bool "Is the user an admin"
+// @Property IsActive bool "Is the user active"
 type User struct {
 	ID             string    `bson:"_id" json:"id"`
 	Username       string    `json:"username"`
@@ -25,8 +39,7 @@ type UserFilter struct {
 	Email     string
 	FirstName string
 	LastName  string
-
-	IsAdmin bool
+	IsAdmin   bool
 }
 type UserFilterOption struct {
 	Filter     UserFilter

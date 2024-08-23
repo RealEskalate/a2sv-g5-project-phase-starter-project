@@ -20,6 +20,7 @@ type Blog struct {
 	Likes      int                `bson:"likes" json:"likes"`
 	Dislikes   int                `bson:"dislikes" json:"dislikes"`
 	Comments   int                `bson:"comments" json:"comments"`
+	Popularity int                `bson:"popularity" json:"popularity"`
 }
 type Comment struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
@@ -50,6 +51,7 @@ type BlogResponse struct {
 	Title     string             `json:"title"`
 	Content   string             `json:"content"`
 	AuthorID  primitive.ObjectID `json:"author_id"`
+	AuthorName   string             `json:"author"`
 	Tags      []string           `json:"tags"`
 	CreatedAt time.Time          `json:"created_at"`
 	UpdatedAt time.Time          `json:"updated_at"`
@@ -57,6 +59,8 @@ type BlogResponse struct {
 	Likes     int                `json:"likes"`
 	Dislikes  int                `bson:"dislikes" json:"dislikes"`
 	Comments  int                `json:"comments"`
+	Popularity int                `json:"popularity"`
+
 }
 
 // BlogFilters are the filters that can be applied when searching or filtering blog posts.

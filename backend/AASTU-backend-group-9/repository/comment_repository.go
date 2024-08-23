@@ -5,6 +5,7 @@ import (
 	"blog/domain"
 	"context"
 	"errors"
+	// "fmt"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	// "context"
@@ -36,37 +37,56 @@ func (r *CommentRepository) AddComment(ctx context.Context, post_id primitive.Ob
 	return err
 
 }
-
-func (r *CommentRepository) GetComments(ctx context.Context, post_id primitive.ObjectID) (*domain.Comment, error) {
-	var blog domain.Comment
+func (r *CommentRepository) GetComments(ctx context.Context, post_id primitive.ObjectID) ([]domain.Comment, error) {
+	var comments []domain.Comment
 	collection := r.commentdb.Collection(r.collection)
 
 	cursor, err := collection.Find(ctx, bson.M{"blog_id": post_id})
 	if err != nil {
 		return nil, err
 	}
-	err = cursor.Decode(&blog)
-	if err != nil {
+	defer cursor.Close(ctx) // Ensure the cursor is closed after iteration
+
+	for cursor.Next(ctx) {
+		var comment domain.Comment
+		if err := cursor.Decode(&comment); err != nil {
+			return nil, err
+		}
+		comments = append(comments, comment)
+	}
+
+	if cursor == nil {
 		return nil, err
 	}
-	return &blog, nil
+
+	return comments, nil
 }
 
-func (r *CommentRepository) DeleteComment(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID) error {
+
+func (r *CommentRepository) DeleteComment(ctx context.Context, postID, commentID, userID primitive.ObjectID) error {
 	var comment domain.Comment
 	collection := r.commentdb.Collection(r.collection)
-	err := collection.FindOne(ctx, bson.M{"_id": comment_id, "blog_id": post_id}).Decode(&comment)
 
+	// Find the comment by ID and blog ID
+	err := collection.FindOne(ctx, bson.M{"_id": commentID, "blog_id": postID}).Decode(&comment)
 	if err != nil {
 		return err
 	}
+
+	// Check if the user is authorized to delete the comment
 	if comment.AuthorID != userID {
 		return errors.New("you are not authorized to delete this comment")
 	}
 
-	_, err = collection.DeleteOne(ctx, bson.M{"_id": comment_id})
-	return err
+	// Delete the comment
+	_, err = collection.DeleteOne(ctx, bson.M{"_id": commentID})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
+
 
 func (r *CommentRepository) UpdateComment(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID, comment *domain.Comment) error {
 	var oldComment domain.Comment

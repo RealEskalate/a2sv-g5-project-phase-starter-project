@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 	"group3-blogApi/domain"
 	"group3-blogApi/infrastracture"
 	"time"
@@ -305,7 +304,6 @@ func (u *UserUsecase) ResetPassword(token, newPassword string) error {
 func (u *UserUsecase) ActivateAccountMe(userID string) error {
 
 	user, err := u.UserRepo.GetUserByID(userID)
-	fmt.Println(userID, "userID 899999999999999999999999999999999999************")
 	if err != nil {
 		return errors.New("user not found")
 	}

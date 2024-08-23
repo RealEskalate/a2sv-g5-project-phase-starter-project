@@ -18,7 +18,7 @@ func NewCommentUsecase(commentRepo domain.CommentRepository) domain.CommentUseca
 }
 
 func (u *commentUsecase) CreateComment(comment *domain.Comment) (*domain.Comment, error) {
-	if comment.PostID.IsZero() || comment.UserID.IsZero() || comment.Content == "" {
+	if comment.PostID.IsZero()  || comment.Content == "" {
 		return nil, errors.New("missing required fields")
 	}
 	return u.commentRepo.CreateComment(comment)

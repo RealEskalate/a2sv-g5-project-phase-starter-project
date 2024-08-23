@@ -80,8 +80,8 @@ func (uc *UserController) Logout(ctx *gin.Context) {
 }
 
 func (uc *UserController) PromoteUser(ctx *gin.Context) {
-	userID := ctx.Value("userID")
-	err := uc.authuserusecase.PromoteUser(ctx, userID.(string))
+	userID := ctx.Param("userid")
+	err := uc.authuserusecase.PromoteUser(ctx, userID)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": " un able to promote user"})
@@ -92,8 +92,8 @@ func (uc *UserController) PromoteUser(ctx *gin.Context) {
 }
 
 func (uc *UserController) DemoteUser(ctx *gin.Context) {
-	userID := ctx.Value("userID")
-	err := uc.authuserusecase.DemoteUser(ctx, userID.(string))
+	userID := ctx.Param("userid")
+	err := uc.authuserusecase.DemoteUser(ctx, userID)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": " un able to demote user"})

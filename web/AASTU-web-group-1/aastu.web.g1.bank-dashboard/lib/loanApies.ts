@@ -4,7 +4,7 @@ export  async function getLoansAll() {
     try {
         const session = await getSession();
         const accessToken = session?.user.accessToken;
-        const response = await fetch(`${process.env.BASE_URL}/active-loans/all`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/active-loans/all`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${accessToken}`,

@@ -21,7 +21,7 @@ interface SignInResponse {
 }
 
 export async function signInWithCredentials(credentials: Credentials): Promise<SignInResponse> {
-  return await ky.post(`${process.env.BASE_URL}/auth/login`, {
+  return await ky.post(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`, {
     json: credentials,
   }).json<SignInResponse>();
 }
@@ -55,7 +55,7 @@ export async function signInWithCredentials(credentials: Credentials): Promise<S
 
 export async function refreshAccessToken(refreshToken: string): Promise<string | null> {
     try {
-      const response = await ky.post(`${process.env.BASE_URL}/refresh-token`, {
+      const response = await ky.post(`${process.env.NEXT_PUBLIC_BASE_URL}/refresh-token`, {
         json: { refreshToken },
       }).json<{ access_token: string }>();
   

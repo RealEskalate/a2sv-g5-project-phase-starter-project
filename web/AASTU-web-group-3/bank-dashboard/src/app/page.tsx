@@ -77,30 +77,35 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-      <div className="mt-5 lg:mt-0 lg:w-1/3 lg:bg-white lg:p-5 lg:rounded-lg lg:border lg:shadow-md lg:h-56">
-        <h3 className="text-lg font-semibold">Recent Transactions</h3>
-        {transactionData.map((transaction, index) => (
-          <div key={index} className="flex justify-between items-center mt-3">
-            <div className="flex items-center space-x-2">
-              <div
-                className={`relative ${transaction.backgroundColor} w-12 h-12 rounded-full flex items-center justify-center`}
+        <div className="mt-5 lg:mt-0 lg:w-1/3 lg:bg-white lg:p-5 lg:rounded-lg lg:border lg:shadow-md lg:h-56">
+          <h3 className="text-lg font-semibold">Recent Transactions</h3>
+          {transactionData.map((transaction, index) => (
+            <div key={index} className="flex justify-between items-center mt-3">
+              <div className="flex items-center space-x-2">
+                <div
+                  className={`relative ${transaction.backgroundColor} w-12 h-12 rounded-full flex items-center justify-center`}
                 >
-                <Image width ={100} height={100} src={transaction.src} alt={transaction.alt} />
+                  <Image
+                    width={100}
+                    height={100}
+                    src={transaction.src}
+                    alt={transaction.alt}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-sm font-medium">{transaction.title}</p>
+                  <small className="text-xs text-gray-500">
+                    {transaction.date}
+                  </small>
+                </div>
               </div>
-              <div className="flex flex-col">
-                <p className="text-sm font-medium">{transaction.title}</p>
-                <small className="text-xs text-gray-500">
-                  {transaction.date}
-                </small>
-              </div>
+              <p className={`${transaction.amountColor} font-semibold ml-auto`}>
+                {transaction.amount}
+              </p>
             </div>
-            <p className={`${transaction.amountColor} font-semibold ml-auto`}>
-              {transaction.amount}
-            </p>
-          </div>
-        ))}
-      </div>
+          ))}
         </div>
+      </div>
 
       <div className="mt-5 lg:flex lg:space-x-8">
         <div className="lg:w-2/3 lg:bg-white lg:p-5 lg:rounded-lg lg:border lg:shadow-md">

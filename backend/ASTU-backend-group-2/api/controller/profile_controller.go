@@ -138,19 +138,19 @@ func (pc *ProfileController) ChangePassword() gin.HandlerFunc {
 func (pc *ProfileController) UpdateProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.Param("id")
-		var user domain.User
+		var user domain.UserUpdate
 		if err := c.ShouldBindJSON(&user); err != nil {
 			c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
 			return
 		}
 
-		err := pc.UserUsecase.UpdateUser(c, userID, &user)
+		updatedUser, err := pc.UserUsecase.UpdateUser(c, userID, &user)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "Profile updated successfully"})
+		c.JSON(http.StatusOK, gin.H{"user": updatedUser.ToUserOut()})
 	}
 }
 

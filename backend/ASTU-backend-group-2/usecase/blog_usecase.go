@@ -24,16 +24,11 @@ func NewBlogUsecase(blogRepository domain.BlogRepository, timeout time.Duration)
 }
 
 // BatchCreateBlog implements domain.BlogUsecase.
-func (b *blogUsecase) BatchCreateBlog(c context.Context, newBlogs *[]domain.BlogIn) ([]domain.Blog, error) {
+func (b *blogUsecase) BatchCreateBlog(c context.Context, newBlogs *[]domain.BlogIn) error {
 	ctx, cancel := context.WithTimeout(c, b.contextTimeout)
 	defer cancel()
 
-	blogs, err := b.blogRepository.BatchCreateBlog(ctx, newBlogs)
-	if err != nil {
-		return nil, err
-	}
-
-	return blogs, nil
+	return b.blogRepository.BatchCreateBlog(ctx, newBlogs)
 }
 
 func (b *blogUsecase) GetByTags(c context.Context, tags []string, limit int64, page int64) ([]domain.Blog, mongopagination.PaginationData, error) {

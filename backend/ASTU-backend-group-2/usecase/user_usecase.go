@@ -60,11 +60,11 @@ func (uu *userUsecase) GetUsers(c context.Context, userFilter domain.UserFilter)
 	return &res, meta, nil
 }
 
-func (uu *userUsecase) UpdateUser(c context.Context, userID string, updatedUser *domain.User) error {
+func (uu *userUsecase) UpdateUser(c context.Context, userID string, updatedUser *domain.UserUpdate) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
-	_, err := uu.userRepository.UpdateUser(ctx, userID, updatedUser)
-	return err
+
+	return uu.userRepository.UpdateUser(ctx, userID, updatedUser)
 }
 
 func (uu *userUsecase) ActivateUser(c context.Context, userID string) error {
@@ -92,7 +92,7 @@ func (uu *userUsecase) IsOwner(c context.Context) (bool, error) {
 	return uu.userRepository.IsOwner(ctx)
 }
 
-func (uu *userUsecase) ResetUserPassword(c context.Context, userID string, resetPassword *domain.ResetPassword) error {
+func (uu *userUsecase) ResetUserPassword(c context.Context, userID string, resetPassword *domain.ResetPasswordRequest) error {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 	return uu.userRepository.ResetUserPassword(ctx, userID, resetPassword)

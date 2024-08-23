@@ -36,11 +36,8 @@ const Services = () => {
       console.log(token);
       try {
         const response = await fetch(
-<<<<<<< HEAD
-          "https://bank-dashboard-o9tl.onrender.com/bank-services?page=0&size=10",
-=======
+
           `${process.env.BASE_URL}/bank-services?page=0&size=10`,
->>>>>>> a1b95dce29c82fe044f0048021df70e9e3f23f01
           {
             headers: {
               Authorization: `Bearer ${token}`,

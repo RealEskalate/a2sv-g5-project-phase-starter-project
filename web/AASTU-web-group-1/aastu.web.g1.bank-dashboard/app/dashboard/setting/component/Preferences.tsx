@@ -49,7 +49,7 @@ const Preferences = () => {
       const session = await getSession();
       const accessToken = session?.user.accessToken;
       const res = await ky.put(
-        `${process.env.BASE_URL}/user/update-preference`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/user/update-preference`,
         {
           json: { ...values, twoFactorAuthentication: false },
           headers: {

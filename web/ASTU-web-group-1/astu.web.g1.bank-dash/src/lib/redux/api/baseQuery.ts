@@ -9,6 +9,7 @@ export const baseQuery = (baseUrl = '/') => {
     prepareHeaders: async (headers) => {
       const baseURL = 'https://astu-bank-dashboard.onrender.com';
 
+
       const session = await getSession();
       // console.log('session from baseQuery', session);
 

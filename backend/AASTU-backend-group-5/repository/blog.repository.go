@@ -94,7 +94,12 @@ func (BR *BlogRepository) FilterBlogDocument(filter map[string]interface{}) ([]d
 	query := bson.M{}
 
 	for key, value := range filter {
-		query[key] = value
+		switch v := value.(type) {
+		case string:
+			query[key] = bson.M{"$regex" : v , "$option" : "i"}
+		case []string:
+			query[key] = bson.M{"$in" : v}
+		}
 	}
 
 	cursor, err := BR.collection.Find(context.TODO(), query)

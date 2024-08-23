@@ -91,6 +91,9 @@ flutter:
     - family: CaveatBrush
       fonts:
         - asset: assets/fonts/CaveatBrush-Regular.ttf
+    - family: AbhayaLibre
+      fonts:
+        - asset: assets\fonts\AbhayaLibre-SemiBold.ttf
     - family: Poppins
       fonts:
         - asset: assets/fonts/Poppins-Medium.ttf

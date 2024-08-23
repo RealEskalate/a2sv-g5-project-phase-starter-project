@@ -20,11 +20,9 @@ export default function Home() {
               <p className='text-[#333B69] pb-3 font-semibold'>My Card</p>
               <p className='text-[#333B69] pb-3 font-semibold'>See All</p>
             </div>
-            <div className='flex  overflow-x-auto space-x-2'>
+            <div className='flex  overflow-x-auto scrollbar-none space-x-2'>
               <StoreProvider>
                 <MyCardLists />
-                {/* <MyCard />
-                <MyCard /> */}
               </StoreProvider>
               <div className='w-[295px] h-[175px] bg-gray-200 rounded-3xl justify-center items-center flex flex-shrink-0'>
                 <Plus size={32} />

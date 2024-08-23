@@ -114,11 +114,11 @@ const LoansPage: React.FC = () => {
   );
 
   return (
-    <div className="flex lg:ml-64 lg:max-w-[100%] dark:text-blue-500 bg-gray-100 dark:bg-dark ">
+    <div className="flex lg:ml-64 lg:max-w-[100%] px-6 dark:text-blue-500 bg-gray-100 dark:bg-dark ">
       {/* Mobile and Tablet View */}
       <div className="w-[100%] block lg:hidden">
         {loanCardsLoading ? (
-          <div className="flex w-[100%] py-6 justify-center gap-5">
+          <div className="flex w-[100%] py-6  justify-center gap-5">
             <div className=" lg:hidden flex items-center space-x-4 animate-pulse p-4 bg-gray-200 rounded-md w-[240px] h-[85px]">
               <div className="pl-1 w-12 h-12 bg-gray-300 rounded-full" />
               <div>

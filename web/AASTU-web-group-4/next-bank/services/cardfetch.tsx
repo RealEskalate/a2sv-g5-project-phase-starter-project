@@ -1,15 +1,12 @@
 // Get All Cards - GET Request
 export const getAllCards = async () => {
   try {
-    const response = await fetch(
-      "https://bank-dashboard-o9tl.onrender.com/cards",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await fetch(" https://web-team-g4.onrender.com/cards", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     if (!response.ok) {
       throw new Error("Failed to fetch cards");
@@ -27,7 +24,7 @@ export const getAllCards = async () => {
 export const getCardById = async (id: string) => {
   try {
     const response = await fetch(
-      `https://bank-dashboard-o9tl.onrender.com/cards/${id}`,
+      ` https://web-team-g4.onrender.com/cards/${id}`,
       {
         method: "GET",
         headers: {
@@ -51,16 +48,13 @@ export const getCardById = async (id: string) => {
 // Create a New Card - POST Request
 export const createCard = async (cardData: any) => {
   try {
-    const response = await fetch(
-      "https://bank-dashboard-o9tl.onrender.com/cards",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cardData),
-      }
-    );
+    const response = await fetch(" https://web-team-g4.onrender.com/cards", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(cardData),
+    });
 
     if (!response.ok) {
       throw new Error("Failed to create a new card");
@@ -78,7 +72,7 @@ export const createCard = async (cardData: any) => {
 export const deleteCardById = async (id: string) => {
   try {
     const response = await fetch(
-      `https://bank-dashboard-o9tl.onrender.com/cards/${id}`,
+      ` https://web-team-g4.onrender.com/cards/${id}`,
       {
         method: "DELETE",
         headers: {

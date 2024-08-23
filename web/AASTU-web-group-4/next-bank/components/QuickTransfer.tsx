@@ -4,40 +4,64 @@ import { colors } from "@/constants/index";
 import Image from "next/image";
 import { createTransaction, getLatestTransfers } from '@/services/transactionfetch';
 import { useForm } from "react-hook-form";
-import Cookie from 'js-cookie'
-
-const dummyData = [
-  { name: "Natnael Worku", position: "CEO", imageSrc: "/Images/pp.jpg" },
-  { name: "John Doe", position: "CTO", imageSrc: "/Images/pp.jpg" },
-  { name: "Jane Smith", position: "CFO", imageSrc: "/Images/pp.jpg" },
-  { name: "Michael Johnson", position: "COO", imageSrc: "/Images/pp.jpg" },
-  { name: "Emily Davis", position: "CMO", imageSrc: "/Images/pp.jpg" },
-];
+import Cookie from 'js-cookie';
+import { TbFileSad } from "react-icons/tb";
+import { message } from 'antd';
 
 interface UserType {
-  id: string,
-  name: string,
-  username: string,
-  city: string,
-  country: string,
-  profilePicture: string
+  id: string;
+  name: string;
+  username: string;
+  city: string;
+  country: string;
+  profilePicture: string;
 }
 
-
-const QuickTransfer = () => {
-  const {register, reset,handleSubmit,formState:{errors}} = useForm();
+const QuickTransfer: React.FC = () => {
+  const { register, reset, handleSubmit, formState: { errors } } = useForm();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [users, setUsers] = useState<UserType[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>('');
-  const accessToken = Cookie.get('accessToken') ?? ''
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const accessToken = Cookie.get('accessToken') ?? '';
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const success = (amount: string, username: string) => {
+    messageApi.open({
+      type: 'success',
+      content: `Successfully transferred ${amount} to ${username}`,
+      duration: 4
+    });
+  };
+
+  const errormessage = () => {
+    messageApi.open({
+      type: 'error',
+      content: 'Transaction was not successful',
+      duration:4
+    });
+  };
 
   useEffect(() => {
-    const getUsersData = async () => {
-      const data = await getLatestTransfers(accessToken, 6);
-      setUsers(data.data);
+    const fetchUsers = async () => {
+      setStatus('loading');
+      try {
+        const data = await getLatestTransfers( 6);
+        if (data.success) {
+          setUsers(data.data);
+          setStatus('success');
+        } else {
+          setStatus('error');
+        }
+        console.log(data,status)
+      } catch (error) {
+        console.error("Error fetching the users: ", error);
+        setStatus('error');
+      }
     };
-    getUsersData();
-  });
+
+    fetchUsers();
+  }, []);
 
   const handleNext = () => {
     if (currentIndex < users.length - 3) {
@@ -54,30 +78,69 @@ const QuickTransfer = () => {
   const handleUserSelect = (event: React.MouseEvent<HTMLDivElement>) => {
     const userId = event.currentTarget.dataset.id;
     setSelectedUser(userId || '');
-    console.log(userId);
+  };
+
+  const onSubmit = async (data: { amount: string }) => {
+    const transactionData = {
+      type: "transfer",
+      description: `Transfer to ${selectedUser}`,
+      amount: data.amount,
+      receiverUserName: selectedUser
+    };
+
+    try {
+      const res = await createTransaction(transactionData, accessToken);
+      if (res.success) {
+        success(transactionData.amount, transactionData.receiverUserName);
+        reset();
+      } else {
+        errormessage();
+        console.error('Failed to create transaction', res);
+      }
+    } catch (error) {
+      errormessage();
+      console.error('Error creating transaction:', error);
+    }
+  };
+
+  if (status === 'loading') {
+    return (
+      <div className="flex  rounded-2xl flex-col py-4 items-start gap-3 w-[100%] bg-gray-200 dark:bg-dark text-gray-900 dark:text-white animate-pulse">
+        {/* Loading skeleton */}
+        <div className="flex justify-between items-center h-35 w-[100%] px-2">
+          <div className="w-[40px] h-[40px] rounded-full bg-gray-300 dark:bg-gray-600 flex justify-center items-center shadow-lg"></div>
+          <div className="flex py-6 gap-2">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="flex flex-col gap-2 flex-1 cursor-pointer">
+                <div className="w-[70px] h-[70px] bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                <div className="flex flex-col items-center">
+                  <div className="w-24 h-4 bg-gray-300 dark:bg-gray-600"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="w-[40px] h-[40px] rounded-full bg-gray-300 dark:bg-gray-600 flex justify-center items-center shadow-lg"></div>
+        </div>
+        <div className="grid grid-cols-5 w-[100%] justify-center items-center px-2">
+          <div className="w-24 h-4 bg-gray-300 dark:bg-gray-600 col-span-2"></div>
+          <div className="w-44 h-10 bg-gray-300 rounded-xl dark:bg-gray-600 col-span-3"></div>
+        </div>
+      </div>
+    );
   }
 
-
-
-  const onSubmit  = async (data: { amount: string; }) =>{
-    const objectData = {
-      type: "transfer",
-      description: ` Transfer to ${selectedUser}`,
-      amount: data.amount,
-      receiverUserName: `${selectedUser}`
-    }
-    const res = await createTransaction( objectData ,accessToken)
-    if (res.status === 200){
-      console.log('Transaction created successfully')
-      
-      reset()
-    }
-    console.log(res)
-
+  if (status === 'error') {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-red-500">
+        <TbFileSad className={`${colors.textblue} dark:text-white w-[400px] h-[70px]`} />
+        <div>Error fetching the users</div>
+      </div>
+    );
   }
 
   return (
-    <div className="flex bg-white rounded-2xl flex-col py-4 items-start gap-3 w-[100%]  dark:bg-dark text-gray-900 dark:text-white">
+    <div className="flex bg-white rounded-2xl flex-col py-4 items-start gap-3 w-[100%] dark:bg-dark text-gray-900 dark:text-white">
+      {contextHolder}
       <div className="flex justify-between items-center h-35 w-[100%] px-2">
         <div
           onClick={handlePrev}
@@ -87,45 +150,25 @@ const QuickTransfer = () => {
         </div>
 
         <div className="flex py-6 overflow-hidden gap-2">
-          {users.length > 3 ? (
-            users.slice(currentIndex, currentIndex + 3).map((item, index) => (
-              <div key={item.id}  data-id={item.username}
-              className={`flex flex-col gap-2 flex-1 cursor-pointer  `}
-              onClick={handleUserSelect}
+          {users.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-white dark:text-blue-500">
+              <div>No data to display</div>
+            </div>
+          ) : (
+            users.slice(currentIndex, currentIndex + 3).map((item) => (
+              <div key={item.id} data-id={item.username}
+                className={`flex flex-col gap-2 flex-1 cursor-pointer`}
+                onClick={handleUserSelect}
               >
                 <Image
                   src={'/Images/pp.jpg'}
                   width={70}
                   height={70}
-                  className={`rounded-full ${item.username === selectedUser ? `border border-linear-gradient(to bottom,blue-500,blue-300)`: ''}`}
+                  className={`rounded-full ${item.username === selectedUser ? `border-4 border-blue-500 shadow-md` : ''}`}
                   alt={item.name}
                 />
                 <div className="flex flex-col items-center">
-                  <div
-                    className={`font-normal text-[12px] ${colors.textblack} text-center whitespace-normal`}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            users.map((item, index) => (
-              <div key={item.id} data-id= {item.username} 
-              className={`flex flex-col gap-2 flex-1 cursor-pointer  `}
-              onClick={handleUserSelect}
-              >
-                <Image
-                  src={'/Images/pp.jpg'}
-                  width={70}
-                  height={70}
-                  className={`rounded-full ${item.username === selectedUser ? `border-4 border-blue-500  shadow-md`: ''}`}
-                  alt={item.name}
-                />
-                <div className="flex flex-col">
-                  <div
-                    className={`font-normal text-[12px] ${colors.textblack} text-center whitespace-normal`}
-                  >
+                  <div className={`font-normal text-[12px] ${colors.textblack} text-center whitespace-normal`}>
                     {item.name}
                   </div>
                 </div>
@@ -143,23 +186,19 @@ const QuickTransfer = () => {
       </div>
 
       <div className="grid grid-cols-3 w-[100%] justify-center items-center px-2">
-        <p
-          className={`text-center px-2 text-nowrap text-[12px] font-normal ${colors.textgray}`}
-        >
+        <p className={`text-center px-2 text-nowrap text-[12px] font-normal ${colors.textgray}`}>
           Write amount
         </p>
-        <div
-          className={`col-span-2 flex w-[100%] ${colors.lightblue} rounded-3xl`}
-        >
+        <div className={`col-span-2 flex w-[100%] ${colors.lightblue} rounded-3xl`}>
           <input
             type="number"
-            {...register("amount", { required: "Username is required" })}
+            {...register("amount", { required: "Amount is required" })}
             placeholder="535.35"
             className={`w-[50%] border-1 rounded-3xl py-2 border-black ${colors.lightblue} focus:${colors.lightblue} focus:outline-none px-3 focus:border-none`}
           />
           <button
             className={`${colors.blue} text-white w-[60%] py-2 rounded-3xl`}
-            onClick={handleSubmit(onSubmit as any)}
+            onClick={handleSubmit(onSubmit)}
           >
             Send ✈
           </button>

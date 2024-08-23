@@ -14,6 +14,7 @@ import {
 } from "@/types/transactionController.interface";
 // Extend the user type to include accessToken
 import { getServerSession } from "next-auth";
+import { GiConsoleController } from "react-icons/gi";
 // interface ExtendedUser {
 //   refresh_token: string;
 //   data: any;
@@ -165,7 +166,7 @@ const getQuickTransfers = async (
   try {
     // const token = await getAccessToken();
     const response = await fetch(
-      `${BASE_URL}/transactions/quick-transfers?input=${inputInteger}`,
+      `${BASE_URL}/transactions/quick-transfers?number=${inputInteger}`,
       {
         method: "GET",
         headers: {

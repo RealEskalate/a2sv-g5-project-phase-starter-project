@@ -6,7 +6,7 @@ import (
 	infrastructure "AAiT-backend-group-8/Infrastructure"
 	"AAiT-backend-group-8/Infrastructure/mongodb"
 	usecase "AAiT-backend-group-8/Usecase"
-
+    "log"
 	"context"
 )
 
@@ -40,10 +40,15 @@ func main() {
 	likeRepo := mongodb.NewLikeRepository(likeCollection, context.TODO())
 	likeUseCase := usecase.NewLikeUseCase(*likeRepo, *infra)
 
-	ctrl := controller.NewController(commentUseCase, userUseCase, likeUseCase, blogUseCase)
+    aiService, ai_err := infrastructure.NewGenAIService("AIzaSyCcpZ8utOr8xCRTc-QufZWKSDPIbYz2v7Q")
+	if ai_err != nil {
+		log.Fatal(ai_err)
+	}
 
+	aiblogUsecase := usecase.NewAiBlogUsecase(aiService)
+
+	ctrl := controller.NewController(commentUseCase, userUseCase, likeUseCase, blogUseCase,aiblogUsecase)
 	r := Router.InitRouter(ctrl)
-
 	err := r.Run(":8080")
 	if err != nil {
 		panic(err)

@@ -34,7 +34,7 @@ const AddCardForm = ({
   });
 
   return (
-    <div className="bg-white p-5 flex-col gap-7 rounded-xl flex shadow h-full">
+    <div className="bg-white p-5 flex-col gap-7 rounded-xl flex shadow h-full dark:bg-[#050914] dark:border dark:border-[#333B69]">
       <p className="text-xs text-[#718EBF] leading-5 lg:text-base">
         Credit Card generally means a plastic card issued by Scheduled
         Commercial Banks assigned to a Cardholder, with a credit limit, that can
@@ -53,9 +53,9 @@ const AddCardForm = ({
             <input
               type="text"
               placeholder="Card Type"
-              className={`border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base ${
-                errors.cardType ? "border-red-500" : "border-indigo-50"
-              }`}
+              className={`border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base dark:bg-[#313245]
+ dark:border-[#333B69] 
+${errors.cardType ? "border-red-500" : "border-indigo-50"}`}
               {...register("cardType", {
                 required: "Card Type is required",
                 minLength: {
@@ -75,9 +75,10 @@ const AddCardForm = ({
             <input
               type="text"
               placeholder="My Cards"
-              className={`border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base ${
-                errors.cardHolder ? "border-red-500" : "border-indigo-50"
-              }`}
+              className={`border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base dark:bg-[#313245]
+ dark:border-[#333B69]  ${
+   errors.cardHolder ? "border-red-500" : "border-indigo-50"
+ }`}
               {...register("cardHolder", {
                 required: "Card Holder name is required",
                 minLength: {
@@ -99,9 +100,10 @@ const AddCardForm = ({
             <input
               type="number"
               placeholder="27,000$"
-              className={`border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base ${
-                errors.balance ? "border-red-500" : "border-indigo-50"
-              }`}
+              className={`border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base dark:bg-[#313245]
+ dark:border-[#333B69] ${
+   errors.balance ? "border-red-500" : "border-indigo-50"
+ }`}
               {...register("balance", {
                 required: "Balance is required",
                 min: {
@@ -122,9 +124,10 @@ const AddCardForm = ({
             <InputLabel label="Expiration Date" />
             <input
               type="date"
-              className={`border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base ${
-                errors.expiryDate ? "border-red-500" : "border-indigo-50"
-              }`}
+              className={`border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base dark:bg-[#313245]
+ dark:border-[#333B69] text-slate-500 ${
+   errors.expiryDate ? "border-red-500" : "border-indigo-50"
+ }`}
               {...register("expiryDate", {
                 required: "Expiration Date is required",
                 validate: (value) => {

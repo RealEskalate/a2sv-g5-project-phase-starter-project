@@ -35,11 +35,9 @@ func (blog *Blog) UpdatePopularity() {
 
 // defines the structure for the blogs that will be  received from the request when creating and updating
 type BlogIn struct {
-	Title     string    `json:"title" bson:"title" binding:"required"`
-	Tags      []string  `json:"tags" bson:"tags"`
-	Content   string    `json:"content" bson:"content" binding:"required"`
-	CreatedAt time.Time `json:"created_at" bson:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
+	Title   string   `json:"title" bson:"title" binding:"required"`
+	Tags    []string `json:"tags" bson:"tags"`
+	Content string   `json:"content" bson:"content" binding:"required"`
 }
 
 type BlogUpdate struct {
@@ -99,8 +97,9 @@ type BlogRepository interface {
 	GetBlogByID(c context.Context, blogID string) (Blog, error)
 	GetByPopularity(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	Search(c context.Context, searchTerm string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
-	CreateBlog(c context.Context, newBlog *Blog) (Blog, error)
-	UpdateBlog(c context.Context, blogID string, updatedBlog *BlogUpdate) (Blog, error)
+	CreateBlog(c context.Context, newBlog *BlogIn) (Blog, error)
+	BatchCreateBlog(c context.Context, newBlogs *[]BlogIn) ([]Blog, error)
+	UpdateBlog(c context.Context, blogID string, updatedBlog *BlogIn) (Blog, error)
 	DeleteBlog(c context.Context, blogID string) error
 	SortByDate(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	UpdateLikeCount(c context.Context, blogID string, increment bool) error
@@ -127,8 +126,9 @@ type BlogUsecase interface {
 	GetBlogByID(c context.Context, blogID string) (Blog, error)
 	GetByPopularity(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	Search(c context.Context, searchTerm string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
-	CreateBlog(c context.Context, newBlog *Blog) (Blog, error)
-	UpdateBlog(c context.Context, blogID string, updatedBlog *BlogUpdate) (Blog, error)
+	CreateBlog(c context.Context, newBlog *BlogIn) (Blog, error)
+	BatchCreateBlog(c context.Context, newBlogs *[]BlogIn) ([]Blog, error)
+	UpdateBlog(c context.Context, blogID string, updatedBlog *BlogIn) (Blog, error)
 	DeleteBlog(c context.Context, blogID string) error
 	SortByDate(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 }

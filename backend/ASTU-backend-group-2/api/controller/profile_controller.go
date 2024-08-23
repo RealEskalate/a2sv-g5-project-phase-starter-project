@@ -40,13 +40,26 @@ func (pc *ProfileController) GetProfile() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"user": user})
+		c.JSON(http.StatusOK, gin.H{"user": user.ToUserOut()})
 	}
 }
 
 func (pc *ProfileController) GetProfiles() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		page, _ := strconv.ParseInt(c.Query("page"), 10, 64)
+
+		var page int64 = 1
+		var limit int64 = 10
+
+		in_page, err := strconv.ParseInt(c.Query("page"), 10, 64)
+		if err == nil {
+			page = in_page
+		}
+
+		in_limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
+		if err == nil {
+			limit = in_limit
+		}
+
 		dateFrom, _ := time.Parse(time.RFC3339, c.Query("date_from"))
 		dateTo, _ := time.Parse(time.RFC3339, c.Query("date_to"))
 
@@ -57,21 +70,13 @@ func (pc *ProfileController) GetProfiles() gin.HandlerFunc {
 			FirstName: c.Query("first_name"),
 			LastName:  c.Query("last_name"),
 			Role:      c.Query("role"),
-			IsOwner:   false,
-			Active:    true,
+			IsOwner:   c.Query("is_owner"),
+			Active:    c.Query("active"),
 			Bio:       c.Query("bio"),
 			DateFrom:  dateFrom,
 			DateTo:    dateTo,
-			Limit:     10, // 10 pages perfilter
+			Limit:     limit,
 			Pages:     page,
-		}
-
-		if c.Query("active") == "false" {
-			userFilter.Active = false
-		}
-
-		if c.Query("is_owner") == "true" {
-			userFilter.IsOwner = true
 		}
 
 		users, pagination, err := pc.UserUsecase.GetUsers(context.Background(), userFilter)
@@ -81,7 +86,12 @@ func (pc *ProfileController) GetProfiles() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"blogs": users, "metadata": pagination})
+		res := domain.PaginatedResponse{
+			Data:     users,
+			MetaData: pagination,
+		}
+
+		c.JSON(http.StatusOK, res)
 	}
 }
 

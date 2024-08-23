@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
@@ -29,6 +30,11 @@ func (lc *LoginController) Login(c *gin.Context) {
 		return
 	}
 
+	if !user.Active {
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "User is not active. Please activate your account."})
+		return
+	}
+
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)) != nil {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Invalid credentials"})
 		return
@@ -46,8 +52,7 @@ func (lc *LoginController) Login(c *gin.Context) {
 		return
 	}
 
-	err=lc.LoginUsecase.UpdateRefreshToken(c.Request.Context(), user.ID.Hex(),refreshToken)
-
+	err = lc.LoginUsecase.UpdateRefreshToken(c.Request.Context(), user.ID.Hex(), refreshToken)
 
 	loginResponse := domain.LoginResponse{
 		AccessToken:  accessToken,

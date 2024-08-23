@@ -5,7 +5,8 @@ bin/
 .idea
 .env
 .vscode
-.exe
+*.exe
+*.exe~
 .log
 dummy.md
 assets/

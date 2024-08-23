@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-
 import 'package:ecom_app/core/error/exception.dart';
 import 'package:ecom_app/features/product/data/datasources/product_local_data_source.dart';
 import 'package:ecom_app/features/product/data/models/product_model.dart';
+import 'package:ecom_app/features/product/data/models/seller_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -60,20 +60,22 @@ void main() {
           name: 'Test Pineapple',
           description: 'A yellow pineapple for the summer',
           imageUrl: 'pineapple.jpg',
-          price: 5.33)
+          price: 5.33,
+          seller: SellerModel(id: '1', name: 'John', email: 'john@gmail.com'))
     ];
 
     test('should call SharedPreference to cache the data', () {
       //arrange
       final expectedJson =
           json.encode(ProductModel.toJsonList(testProductModelList));
-      when(mockSharedPreferences.setString(any, expectedJson)).thenAnswer((_) async => true);
-      
+      when(mockSharedPreferences.setString(any, expectedJson))
+          .thenAnswer((_) async => true);
+
       //act
       localDataSourceImpl.cacheAllProducts(testProductModelList);
 
       //assert
-      
+
       verify(mockSharedPreferences.setString(CACHED_PRODUCTS, expectedJson));
     });
   });

@@ -15,64 +15,63 @@ abstract class AuthRemoteDataSource {
   Future<AuthenticatedModel> login(LoginModel login_model);
   Future<Unit> register(RegisterModel register_model);
   Future<UserDataModel> getUser(String token);
-  
 }
 
-class AuthRemoteDataSourceImpl extends AuthRemoteDataSource{
+class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
   final http.Client client;
 
   AuthRemoteDataSourceImpl({required this.client});
-  
+
   @override
-  Future<UserDataModel> getUser(String token) async{
-    var uri = Uri.parse('${Urls.authUrl}/users/me');
-    try{
-      final response = await client.get(uri, headers: {'Authorization' : 'Bearer $token'});
-      if (response.statusCode == 200){
+  Future<UserDataModel> getUser(String token) async {
+    var uri = Uri.parse('${Urls.baseUrl3}/users/me');
+    try {
+      final response =
+          await client.get(uri, headers: {'Authorization': 'Bearer $token'});
+      if (response.statusCode == 200) {
         return UserDataModel.fromJson(json.decode(response.body)['data']);
-      } else if (response.statusCode == 401){
+      } else if (response.statusCode == 401) {
         throw UnauthorizedException();
-      } else{
+      } else {
         throw ServerException();
       }
-    } on SocketException{
+    } on SocketException {
       throw const SocketException(ErrorMessages.socketError);
     }
   }
 
   @override
-  Future<AuthenticatedModel> login(LoginModel login_model) async{
-    var uri = Uri.parse('${Urls.authUrl}/auth/login');
-    try{
-      final response = await client.post(uri, body: login_model.toJson() );
-      if (response.statusCode == 201){
+  Future<AuthenticatedModel> login(LoginModel login_model) async {
+    var uri = Uri.parse('${Urls.baseUrl3}/auth/login');
+    try {
+      final response = await client.post(uri, body: login_model.toJson());
+      if (response.statusCode == 201) {
         return AuthenticatedModel.fromJson(json.decode(response.body)['data']);
       } else if (response.statusCode == 401) {
         throw UnauthorizedException();
-      }else{
+      } else {
         throw ServerException();
       }
-    } on SocketException{
+    } on SocketException {
       throw const SocketException(ErrorMessages.socketError);
     }
   }
 
   @override
-  Future<Unit> register(RegisterModel register_model) async{
-    var uri = Uri.parse('${Urls.authUrl}/auth/register');
+  Future<Unit> register(RegisterModel register_model) async {
+    var uri = Uri.parse('${Urls.baseUrl3}/auth/register');
 
-    try{
+    try {
       final response = await client.post(uri, body: register_model.toJson());
-      if (response.statusCode == 201){
+      if (response.statusCode == 201) {
         return unit;
-      } else if(response.statusCode == 409){
+      } else if (response.statusCode == 409) {
         throw UserAlreadyExistsException();
-      } else{
+      } else {
         throw ServerException();
       }
-    } on SocketException{
+    } on SocketException {
       throw const SocketException(ErrorMessages.socketError);
     }
   }
-
 }

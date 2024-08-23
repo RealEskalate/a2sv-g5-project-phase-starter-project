@@ -5,6 +5,7 @@ import 'package:ecom_app/core/constants/constants.dart';
 import 'package:ecom_app/core/error/exception.dart';
 import 'package:ecom_app/features/product/data/datasources/product_remote_data_source.dart';
 import 'package:ecom_app/features/product/data/models/product_model.dart';
+import 'package:ecom_app/features/product/data/models/seller_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
@@ -15,10 +16,8 @@ import '../../../../helpers/test_helper.mocks.dart';
 void main() {
   late MockCustomHttpClient mockHttpClient;
   late ProductRemoteDataSourceImpl productRemoteDataSourceImpl;
-  
 
   setUp(() {
-    
     mockHttpClient = MockCustomHttpClient();
     productRemoteDataSourceImpl =
         ProductRemoteDataSourceImpl(client: mockHttpClient);
@@ -34,7 +33,8 @@ void main() {
       description: 'Explore anime characters.',
       imageUrl:
           'https://res.cloudinary.com/g5-mobile-track/image/upload/v1718777711/images/clmxnecvavxfvrz9by4w.jpg',
-      price: 123);
+      price: 123,
+      seller: SellerModel(id: '1', name: 'John', email: 'john@gmail.com'));
 
   group('get current product', () {
     test('should return product model when the response code is 200', () async {
@@ -64,8 +64,8 @@ void main() {
 
     test('should throw a socket exception if it happens', () {
       //arrange
-      when(mockHttpClient.get((Urls.currentProductById(productId))))
-          .thenThrow(const SocketException(
+      when(mockHttpClient.get((Urls.currentProductById(productId)))).thenThrow(
+          const SocketException(
               'No Internet connection or server unreachable'));
 
       //act
@@ -80,10 +80,11 @@ void main() {
     test('should return a list of product models if status code is 200',
         () async {
       //arrange
-      when(mockHttpClient.get((Urls.baseUrl2)))
+      when(mockHttpClient.get(("${Urls.baseUrl3}/products")))
           .thenAnswer((_) async => http.Response(readJson(jsonAll), 200));
 
       //act
+
       final result = await productRemoteDataSourceImpl.getAllProducts();
 
       //assert
@@ -93,7 +94,7 @@ void main() {
     test('should throw a server exception if status code is different from 200',
         () async {
       //arrange
-      when(mockHttpClient.get((Urls.baseUrl2)))
+      when(mockHttpClient.get(('${Urls.baseUrl3}/products')))
           .thenAnswer((_) async => http.Response(readJson(jsonAll), 400));
 
       //act and assert
@@ -103,7 +104,7 @@ void main() {
 
     test('should throw a socket exception if it happens', () {
       //arrange
-      when(mockHttpClient.get((Urls.baseUrl2))).thenThrow(
+      when(mockHttpClient.get(('${Urls.baseUrl3}/products'))).thenThrow(
           const SocketException(
               'No Internet connection or server unreachable'));
 
@@ -158,14 +159,15 @@ void main() {
     test('should return an updated product model if status code is 200',
         () async {
       //arrange
-      final jsonBody =jsonEncode( {
-      'name': testProductModel.name,
-      'description': testProductModel.description,
-      'price': testProductModel.price,
-    });
-      when(mockHttpClient.put((Urls.currentProductById(productId)),
-              body: jsonBody,))
-          .thenAnswer((_) async => http.Response(readJson(jsonCurrent), 200));
+      final jsonBody = jsonEncode({
+        'name': testProductModel.name,
+        'description': testProductModel.description,
+        'price': testProductModel.price,
+      });
+      when(mockHttpClient.put(
+        (Urls.currentProductById(productId)),
+        body: jsonBody,
+      )).thenAnswer((_) async => http.Response(readJson(jsonCurrent), 200));
 
       //act
       final result =
@@ -178,14 +180,15 @@ void main() {
     test('should throw a ServerException when the response code is not 200',
         () async {
       // arrange
-      final jsonBody = jsonEncode( {
-      'name': testProductModel.name,
-      'description': testProductModel.description,
-      'price': testProductModel.price,
-    });
-      when(mockHttpClient.put((Urls.currentProductById(productId)),
-              body: jsonBody,))
-          .thenAnswer((_) async => http.Response('Something went wrong', 500));
+      final jsonBody = jsonEncode({
+        'name': testProductModel.name,
+        'description': testProductModel.description,
+        'price': testProductModel.price,
+      });
+      when(mockHttpClient.put(
+        (Urls.currentProductById(productId)),
+        body: jsonBody,
+      )).thenAnswer((_) async => http.Response('Something went wrong', 500));
 
       // act
       final call = await productRemoteDataSourceImpl.updateProduct;
@@ -196,15 +199,16 @@ void main() {
 
     test('should throw a socket exception if it happens', () {
       //arrange
-      final jsonBody = jsonEncode( {
-      'name': testProductModel.name,
-      'description': testProductModel.description,
-      'price': testProductModel.price,
-    });
-      when(mockHttpClient.put((Urls.currentProductById(productId)),
-              body: jsonBody,))
-          .thenThrow(const SocketException(
-              'No Internet connection or server unreachable'));
+      final jsonBody = jsonEncode({
+        'name': testProductModel.name,
+        'description': testProductModel.description,
+        'price': testProductModel.price,
+      });
+      when(mockHttpClient.put(
+        (Urls.currentProductById(productId)),
+        body: jsonBody,
+      )).thenThrow(const SocketException(
+          'No Internet connection or server unreachable'));
 
       //act
       final call = productRemoteDataSourceImpl.updateProduct;
@@ -278,7 +282,7 @@ void main() {
   //     id: '1',
   //     name: 'Test Product',
   //     description: 'Test Description',
-  //     imageUrl: 'C:/Users/VICTUS 15/Desktop/a2sv-project-phase/clean-architecture/2024-project-phase-mobile-tasks/mobile/ecommerce-tdd/ecommerce_a2sv/test/helpers/images/burger.jpg', 
+  //     imageUrl: 'C:/Users/VICTUS 15/Desktop/a2sv-project-phase/clean-architecture/2024-project-phase-mobile-tasks/mobile/ecommerce-tdd/ecommerce_a2sv/test/helpers/images/burger.jpg',
   //     price: 100,
   //   );
 
@@ -293,9 +297,7 @@ void main() {
 
   //   test('getting products', () async{
   //     final result = await productRemoteDataSourceImpl.getAllProducts();
-  //     expect(result, isA<List<ProductModel>>());
-  //   });
-    
+  //     expect(result, isA<List<ProductModel>>());  //   });
 
   //   // test('should throw ImageException when the image file does not exist',
   //   //     () async {

@@ -13,6 +13,21 @@ import (
 	"github.com/markbates/goth/providers/google"
 )
 
+type GoogleUser struct {
+	ISS           string `json:"iss"`
+	AZP           string `json:"azp"`
+	AUD           string `json:"aud"`
+	SUB           string `json:"sub"`
+	Email         string `json:"email"`
+	EmailVerified string `json:"email_verified"`
+	AtHash        string `json:"at_hash"`
+	Iat           string `json:"iat"`
+	Exp           string `json:"exp"`
+	Alg           string `json:"alg"`
+	Kid           string `json:"kid"`
+	Typ           string `json:"typ"`
+}
+
 // NewAuth initializes the Google OAuth provider
 func NewAuth(clientId string, clientSecret string, maxAgeDays int, callbackUrl string) {
 	store := sessions.NewCookieStore([]byte(clientSecret))
@@ -45,35 +60,27 @@ func VerifyIdToken(idToken string, tokenEmail string, googleClientID string) err
 
 	defer resp.Body.Close()
 
-	var USER struct {
-		ISS           string `json:"iss"`
-		AZP           string `json:"azp"`
-		AUD           string `json:"aud"`
-		SUB           string `json:"sub"`
-		Email         string `json:"email"`
-		EmailVerified string `json:"email_verified"`
-		AtHash        string `json:"at_hash"`
-		Iat           string `json:"iat"`
-		Exp           string `json:"exp"`
-		Alg           string `json:"alg"`
-		Kid           string `json:"kid"`
-		Typ           string `json:"typ"`
-	}
+	var USER GoogleUser
 
 	err = json.NewDecoder(resp.Body).Decode(&USER)
 	if err != nil {
 		return err
 	}
 
-	if USER.ISS != "accounts.google.com" && USER.ISS != "https://accounts.google.com" {
+	return VerifyResponseContents(USER, googleClientID, tokenEmail)
+}
+
+// VerifyResponseContents verifies the contents of the Google response
+func VerifyResponseContents(user GoogleUser, googleClientID string, tokenEmail string) error {
+	if user.ISS != "accounts.google.com" && user.ISS != "https://accounts.google.com" {
 		return fmt.Errorf("invalid issuer")
 	}
 
-	if USER.AUD != googleClientID {
+	if user.AUD != googleClientID {
 		return fmt.Errorf("invalid audience")
 	}
 
-	exp, err := strconv.ParseInt(USER.Exp, 10, 64)
+	exp, err := strconv.ParseInt(user.Exp, 10, 64)
 	if exp == 0 || err != nil {
 		return fmt.Errorf("invalid expiration date")
 	}
@@ -83,7 +90,7 @@ func VerifyIdToken(idToken string, tokenEmail string, googleClientID string) err
 		return fmt.Errorf("token expired")
 	}
 
-	if USER.Email != tokenEmail {
+	if user.Email != tokenEmail {
 		return fmt.Errorf("email does not match")
 	}
 

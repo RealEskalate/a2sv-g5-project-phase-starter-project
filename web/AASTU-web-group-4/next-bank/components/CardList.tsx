@@ -15,7 +15,7 @@ const CardList: React.FC<Props> = ({ card_list }) => {
         card_list.map((card: any, index: number) => (
         <div
           key={index}
-          className="flex flex-row justify-between w-full bg-white p-4 mb-4 rounded-lg shadow-md "
+          className="flex flex-row justify-between w-full bg-white p-4 mb-4 rounded-lg shadow-md dark:bg-dark dark:text-white"
         >
           {/* Icon */}
           <div className="h-12 w-12 rounded-xl bg-[#E7EDFF] flex items-center justify-center">

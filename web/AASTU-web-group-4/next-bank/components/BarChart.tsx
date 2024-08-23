@@ -35,13 +35,11 @@ const chartConfig = {
 
 export default function Component() {
   return (
-    <Card>
-      <CardHeader>
-        
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
+    <Card className="w-[100%] flex items-end justify-start ">
+      <CardContent className=" p-0 w-[100%] flex items-end justify-start " >
+        <ChartContainer className="w-[100%] " config={chartConfig}>
+              
+              <BarChart className="w-[100%]" accessibilityLayer barSize={10} data={chartData} >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
@@ -57,8 +55,8 @@ export default function Component() {
             />
             <Legend verticalAlign="top" align="right"  />
 
-            <Bar dataKey="desktop" fill={chartConfig.desktop.color} radius={[20,20,0,0]} />
-            <Bar dataKey="mobile" fill={chartConfig.mobile.color} radius={[20,20,0,0]} />
+            <Bar dataKey="desktop" fill={chartConfig.desktop.color} radius={[10,10,10,10]} />
+            <Bar dataKey="mobile" fill={chartConfig.mobile.color} radius={[10,10,10,10]} />
           </BarChart>
         </ChartContainer>
       </CardContent>

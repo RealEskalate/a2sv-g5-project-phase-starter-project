@@ -1,11 +1,14 @@
-const API_BASE_URL = 'https://your-api-domain.com';
+import Cookies from "js-cookie";
+
+const API_BASE_URL = 'https://web-team-g4.onrender.com';
+const token = Cookies.get('accessToken')
 
 // POST /active-loans
-export const createActiveLoan = async (loanData:any) => {
+export const createActiveLoan = async (loanData: any) => {
   const response = await fetch(`${API_BASE_URL}/active-loans`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(loanData),
   });
@@ -13,11 +16,11 @@ export const createActiveLoan = async (loanData:any) => {
 };
 
 // POST /active-loans/{id}/reject
-export const rejectActiveLoan = async (id:any) => {
+export const rejectActiveLoan = async (id: any) => {
   const response = await fetch(`${API_BASE_URL}/active-loans/${id}/reject`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
   return response.json();
@@ -26,42 +29,65 @@ export const rejectActiveLoan = async (id:any) => {
 // POST /active-loans/{id}/approve
 export const approveActiveLoan = async (id: any) => {
   const response = await fetch(`${API_BASE_URL}/active-loans/${id}/approve`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
   return response.json();
 };
 
 // GET /active-loans/{id}
-export const getActiveLoanById = async (id:any) => {
+export const getActiveLoanById = async (id: any) => {
   const response = await fetch(`${API_BASE_URL}/active-loans/${id}`, {
-    method: 'GET',
+    method: "GET",
   });
   return response.json();
 };
 
 // GET /active-loans/my-loans
 export const getMyLoans = async () => {
-  const response = await fetch(`${API_BASE_URL}/active-loans/my-loans`, {
-    method: 'GET',
-  });
-  return response.json();
+  try {
+    const response = await fetch(`${API_BASE_URL}/active-loans/my-loans?page=0&size=5`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      console.log(response);
+      throw new Error("Failed to fetch ");
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error: ", error);
+  }
 };
 
 // GET /active-loans/detail-data
 export const getLoanDetailData = async () => {
-  const response = await fetch(`${API_BASE_URL}/active-loans/detail-data`, {
-    method: 'GET',
-  });
-  return response.json();
+  try {
+    const response = await fetch(`${API_BASE_URL}/active-loans/detail-data`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      console.log(response);
+      throw new Error("Failed to fetch");
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error: ", error);
+  }
 };
 
 // GET /active-loans/all
 export const getAllActiveLoans = async () => {
   const response = await fetch(`${API_BASE_URL}/active-loans/all`, {
-    method: 'GET',
+    method: "GET",
+
   });
   return response.json();
 };

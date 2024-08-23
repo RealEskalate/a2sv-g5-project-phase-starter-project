@@ -28,6 +28,13 @@ func main() {
 	}
 
 	aiService := infrastructure.NewGeminiService(os.Getenv("GEMINI_API_KEY"))
+	emailService := infrastructure.NewEmailService(
+        "localhost",
+        "1025",    
+        "",         
+        "",        
+    )
+
 	db := client.Database("blog_project")
 	userCollection := db.Collection("users")
 	blogCollection := db.Collection("blogs")
@@ -36,7 +43,7 @@ func main() {
 	blogRepo := repositories.NewBlogRepository(blogCollection, redisCache)
 	userRepo := repositories.NewUserRepository(userCollection, redisCache)
 	tokenRepo := repositories.NewTokenRepository(tokenCollection)
-	userUsecase := usecases.NewUserUsecase(userRepo, tokenRepo)
+	userUsecase := usecases.NewUserUsecase(userRepo,emailService , tokenRepo)
 	blogUsecase := usecases.NewBlogUsecase(aiService, blogRepo, userUsecase)
 	blogController := controllers.NewBlogController(blogUsecase)
 	userController := controllers.NewUserController(userUsecase)

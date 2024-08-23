@@ -98,7 +98,18 @@ func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 
 func (bc *BlogController) BatchCreateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var newBlogs []domain.BlogIn
+		if err := c.ShouldBindJSON(&newBlogs); err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
 
+		err := bc.BlogUsecase.BatchCreateBlog(context.Background(), &newBlogs)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(201, gin.H{"message": "Blogs created successfully"})
 	}
 }
 

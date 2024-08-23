@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewPrivateBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
+func NewProtectedBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
 	br := repository.NewBlogRepository(*db, domain.CollectionBlog)
 	bc := controller.BlogController{
 		BlogUsecase: usecase.NewBlogUsecase(br, timeout),

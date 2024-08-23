@@ -17,6 +17,20 @@ type blogRepository struct {
 	collection string
 }
 
+// BatchCreateBlog implements domain.BlogRepository.
+func (br *blogRepository) BatchCreateBlog(c context.Context, newBlogs *[]domain.BlogIn) error {
+	collection := br.database.Collection(br.collection)
+
+	var blogs []interface{}
+
+	for _, blog := range *newBlogs {
+		blogs = append(blogs, blog)
+	}
+
+	_, err := collection.InsertMany(c, blogs)
+	return err
+}
+
 func NewBlogRepository(db mongo.Database, collection string) domain.BlogRepository {
 	return &blogRepository{
 		database:   db,

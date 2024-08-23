@@ -98,7 +98,7 @@ type BlogRepository interface {
 	GetByPopularity(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	Search(c context.Context, searchTerm string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	CreateBlog(c context.Context, newBlog *BlogIn) (Blog, error)
-	BatchCreateBlog(c context.Context, newBlogs *[]BlogIn) ([]Blog, error)
+	BatchCreateBlog(c context.Context, newBlogs *[]BlogIn) error
 	UpdateBlog(c context.Context, blogID string, updatedBlog *BlogIn) (Blog, error)
 	DeleteBlog(c context.Context, blogID string) error
 	SortByDate(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
@@ -127,7 +127,7 @@ type BlogUsecase interface {
 	GetByPopularity(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	Search(c context.Context, searchTerm string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	CreateBlog(c context.Context, newBlog *BlogIn) (Blog, error)
-	BatchCreateBlog(c context.Context, newBlogs *[]BlogIn) ([]Blog, error)
+	BatchCreateBlog(c context.Context, newBlogs *[]BlogIn) error
 	UpdateBlog(c context.Context, blogID string, updatedBlog *BlogIn) (Blog, error)
 	DeleteBlog(c context.Context, blogID string) error
 	SortByDate(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)

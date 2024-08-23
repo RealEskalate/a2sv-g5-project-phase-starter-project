@@ -57,10 +57,17 @@ func (u *User) ToUserOut() *UserOut {
 }
 
 type UserUpdate struct {
-	FirstName  string `json:"first_name" bson:"first_name"`
-	LastName   string `json:"last_name" bson:"last_name"`
-	Bio        string `json:"bio" bson:"bio"`
-	ProfileImg string `json:"profile_img" bson:"profile_img"`
+	FirstName string `json:"first_name" bson:"first_name"`
+	LastName  string `json:"last_name" bson:"last_name"`
+	Bio       string `json:"bio" bson:"bio"`
+}
+
+func (u *UserUpdate) ToUser() *User {
+	return &User{
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Bio:       u.Bio,
+	}
 }
 
 // user knows the password and wants to update
@@ -71,9 +78,6 @@ type UpdatePassword struct {
 
 // user forgot the password and wants to reset
 // reset passowrd token will be exreacted from the url /reset-password/:user_id/:<reset password token>
-type ResetPassword struct {
-	NewPassword string `json:"new_password" binding:"required"`
-}
 
 type UserFilter struct {
 	Email     string
@@ -96,7 +100,7 @@ type UserUsecase interface {
 	GetUserById(c context.Context, userId string) (*User, error)
 
 	GetUsers(c context.Context, filter UserFilter) (*[]UserOut, mongopagination.PaginationData, error)
-	UpdateUser(c context.Context, userID string, updatedUser *User) error
+	UpdateUser(c context.Context, userID string, updatedUser *UserUpdate) (*User, error)
 	ActivateUser(c context.Context, userID string) error
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)
@@ -114,7 +118,7 @@ type UserRepository interface {
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
 	GetUsers(c context.Context, filter bson.M, userFilter UserFilter) (*[]User, mongopagination.PaginationData, error)
-	UpdateUser(c context.Context, userID string, updatedUser *User) (*User, error)
+	UpdateUser(c context.Context, userID string, updatedUser *UserUpdate) (*User, error)
 	ActivateUser(c context.Context, userID string) (*User, error)
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)

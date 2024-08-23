@@ -131,7 +131,7 @@ func (ur *userRepository) RevokeRefreshToken(c context.Context, userID, refreshT
 	return nil
 }
 
-func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *domain.User) (*domain.User, error) {
+func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *domain.UserUpdate) (*domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 	id, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {

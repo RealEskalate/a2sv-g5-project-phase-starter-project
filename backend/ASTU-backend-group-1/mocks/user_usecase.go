@@ -77,6 +77,62 @@ func (_m *UserUsecase) Delete(userId string) error {
 	return r0
 }
 
+// DemoteUser provides a mock function with given fields: userId
+func (_m *UserUsecase) DemoteUser(userId string) (domain.User, error) {
+	ret := _m.Called(userId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DemoteUser")
+	}
+
+	var r0 domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (domain.User, error)); ok {
+		return rf(userId)
+	}
+	if rf, ok := ret.Get(0).(func(string) domain.User); ok {
+		r0 = rf(userId)
+	} else {
+		r0 = ret.Get(0).(domain.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(userId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// DemoteUserByEmail provides a mock function with given fields: username
+func (_m *UserUsecase) DemoteUserByEmail(username string) (domain.User, error) {
+	ret := _m.Called(username)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DemoteUserByEmail")
+	}
+
+	var r0 domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (domain.User, error)); ok {
+		return rf(username)
+	}
+	if rf, ok := ret.Get(0).(func(string) domain.User); ok {
+		r0 = rf(username)
+	} else {
+		r0 = ret.Get(0).(domain.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(username)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // ForgetPassword provides a mock function with given fields: email
 func (_m *UserUsecase) ForgetPassword(email string) (string, error) {
 	ret := _m.Called(email)
@@ -263,6 +319,62 @@ func (_m *UserUsecase) Logout(email string) error {
 	}
 
 	return r0
+}
+
+// PromteUser provides a mock function with given fields: userId
+func (_m *UserUsecase) PromteUser(userId string) (domain.User, error) {
+	ret := _m.Called(userId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PromteUser")
+	}
+
+	var r0 domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (domain.User, error)); ok {
+		return rf(userId)
+	}
+	if rf, ok := ret.Get(0).(func(string) domain.User); ok {
+		r0 = rf(userId)
+	} else {
+		r0 = ret.Get(0).(domain.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(userId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// PromteUserByEmail provides a mock function with given fields: email
+func (_m *UserUsecase) PromteUserByEmail(email string) (domain.User, error) {
+	ret := _m.Called(email)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PromteUserByEmail")
+	}
+
+	var r0 domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (domain.User, error)); ok {
+		return rf(email)
+	}
+	if rf, ok := ret.Get(0).(func(string) domain.User); ok {
+		r0 = rf(email)
+	} else {
+		r0 = ret.Get(0).(domain.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(email)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // ResetPassword provides a mock function with given fields: email, token, password

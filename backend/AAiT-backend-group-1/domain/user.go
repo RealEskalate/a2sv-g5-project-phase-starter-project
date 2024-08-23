@@ -41,8 +41,25 @@ func NewUser(username, email, password, bio string, profilePictureUrl Photo) *Us
 
 func (u *User) Validate() error {
 	if !regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`).MatchString(u.Email) {
-		return errors.New("invalid email")
+		return errors.New("invalid email format")
 	}
+
+	// if IsValidDomain(u.Email) {
+	// 	return errors.New("invalid email Domain")
+	// }
+
+	// if HasMXRecord(u.Email) {
+	// 	return errors.New("inactive email record")
+	// }
+
+	// if IsValidDomain(u.Email) {
+	// 	return errors.New("invalid email domain")
+	// }
+	//
+	// if HasMXRecord(u.Email) {
+	// 	return errors.New("inactive email")
+	// }
+	//
 
 	if !IsStrongPassword(u.Password) {
 		return errors.New("password is not strong enough")

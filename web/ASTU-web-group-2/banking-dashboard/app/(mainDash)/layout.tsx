@@ -1,8 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
 import Head from "next/head";
-import Navbar from "../components/navbar/Navbar";
-import Sidebar from "../components/sidebar/Sidebar";
 import { Inter } from "next/font/google";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation"; // Correct import

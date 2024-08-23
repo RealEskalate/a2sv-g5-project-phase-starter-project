@@ -21,8 +21,8 @@ export const BalanceHistory = ({ onLoadingComplete }: { onLoadingComplete: any }
         const BalanceHistory = await getRandomBalance();
         setBalanceHistory(BalanceHistory || []);
       } finally {
-        setLoading(false);
         onLoadingComplete(false);
+        setLoading(false);
       }
     };
     fetchData();

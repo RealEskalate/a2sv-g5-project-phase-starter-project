@@ -23,8 +23,8 @@ export const ExpenseStatistics = ({
         console.log(statistics);
         setTransactions(statistics?.content || []);
       } finally {
-        setLoading(false);
         onLoadingComplete(false);
+        setLoading(false);
       }
     };
     fetchData();

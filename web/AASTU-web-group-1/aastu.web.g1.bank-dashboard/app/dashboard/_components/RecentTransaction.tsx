@@ -30,8 +30,9 @@ export const RecentTransaction = ({onLoadingComplete}:{onLoadingComplete:any}) =
       try {
         const recent = await getallTransactions(0, 3);
         setRecentTransactions(recent?.content || []);
-        onLoadingComplete(false);
+      
       } finally {
+        onLoadingComplete(false);
         setLoading(false);
       }
     };

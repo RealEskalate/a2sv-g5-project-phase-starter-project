@@ -31,8 +31,8 @@ export const WeeklyActivity = ({ onLoadingComplete }: { onLoadingComplete: any }
         setWeeklyIncome(incomes?.content || []);
         setWeeklyWithdraw(withdraw?.content || []);
       } finally {
-        setLoading(false);
         onLoadingComplete(false);
+        setLoading(false);
       }
     };
     fetchData();

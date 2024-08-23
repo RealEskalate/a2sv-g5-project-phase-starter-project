@@ -14,7 +14,11 @@ const Shimmer = () => (
   </div>
 );
 
-export const TransactionCards = () => {
+export const TransactionCards = ({
+  onLoadingComplete,
+}: {
+  onLoadingComplete: any;
+}) => {
   const { isDarkMode } = useUser();
   const [creditCards, setCreditCards] = useState<CardDetails[]>([]);
   const [expenses, setExpenses] = useState<TransactionContent[]>([]);
@@ -33,10 +37,11 @@ export const TransactionCards = () => {
         console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
+        onLoadingComplete(false);
       }
     };
     fetchData();
-  }, []);
+  }, [onLoadingComplete]);
 
   return (
     <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
@@ -49,8 +54,7 @@ export const TransactionCards = () => {
         </div>
         <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {loading
-            ? Array(2)
-                .map((_, i) => <Shimmer key={i} />)
+            ? Array(2).map((_, i) => <Shimmer key={i} />)
             : creditCards.map((card) => (
                 <CreditCard
                   key={card.id}

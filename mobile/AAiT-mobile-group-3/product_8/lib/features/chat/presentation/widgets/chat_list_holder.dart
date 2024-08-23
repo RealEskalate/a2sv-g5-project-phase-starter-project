@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 
-class ChatListHolder extends StatefulWidget {
+class ChatListHolder extends StatelessWidget {
   final List<Widget> chats;
   const ChatListHolder({super.key, required this.chats});
 
-  @override
-  _ChatListHolder createState() => _ChatListHolder();
-}
-
-class _ChatListHolder extends State<ChatListHolder> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -21,7 +16,7 @@ class _ChatListHolder extends State<ChatListHolder> {
           color: Colors.white,
         ),
         child: Column(
-          children: widget.chats,
+          children: chats,
         ),
       ),
     );

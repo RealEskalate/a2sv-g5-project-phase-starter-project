@@ -8,23 +8,23 @@ interface Props {
 }
 const CreditCard = ({ icon, data, linkUrl }: Props) => {
   return (
-    <div className="flex justify-around items-center bg-white p-3 lg:p-4 rounded-2xl shadow-sm">
+    <div className="flex justify-around items-center bg-white p-3 lg:p-4 rounded-2xl shadow-sm dark:bg-[#050914] dark:border dark:border-[#333B69]">
       {icon}
       <div className="flex gap-9">
         {data.map((data, index) => {
           return (
             <div className={`${index > 1 && "hidden"}  lg:block`} key={index}>
-              <p className="text-[#232323] font-medium text-sm lg:text-base">
+              <p className="text-[#232323] font-medium text-sm lg:text-base dark:text-[#d2d6ef]">
                 {data[0]}
               </p>
-              <p className="text-[#8297c0] text-xs lg:text-sm">{data[1]}</p>
+              <p className="text-[#8297c0] text-xs lg:text-sm ">{data[1]}</p>
             </div>
           );
         })}
       </div>
       <Link
         href={linkUrl}
-        className="text-[#1814F3] font-medium text-xs lg:text-base"
+        className="text-[#1814F3] font-medium text-xs lg:text-base dark:text-[#1492f3]"
       >
         View Detail
       </Link>

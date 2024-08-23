@@ -1,9 +1,9 @@
 package domain
 
 import (
-	"time"
-
+	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 type Role string
@@ -19,44 +19,61 @@ type User struct {
 	Email     string              `bson:"email" json:"email"`
 	Password  string              `bson:"password" json:"password"`
 	Bio       string              `bson:"bio,omitempty" json:"bio,omitempty"`
-	Role      string                `bson:"role" json:"role"`
+	Role      string              `bson:"role" json:"role"`
 	CreatedAt primitive.Timestamp `bson:"createdAt" json:"createdAt"`
 	UpdatedAt primitive.Timestamp `bson:"updatedAt" json:"updatedAt"`
-	Image    string              `bson:"image,omitempty" json:"image,omitempty"`
+	Image     string              `bson:"image,omitempty" json:"image,omitempty"`
 
-	ActivationToken string             `bson:"activation_token,omitempty" json:"activation_token,omitempty"`
-	TokenCreatedAt time.Time          `bson:"token_created_at"`
-	IsActive       bool               `bson:"is_active"`
-	RefreshTokens   []RefreshToken      `bson:"refresh_tokens" json:"refresh_tokens"`
+	ActivationToken string         `bson:"activation_token,omitempty" json:"activation_token,omitempty"`
+	TokenCreatedAt  time.Time      `bson:"token_created_at"`
+	IsActive        bool           `bson:"is_active"`
+	RefreshTokens   []RefreshToken `bson:"refresh_tokens" json:"refresh_tokens"`
 
-
-	GoogleID       string              `bson:"google_id,omitempty" json:"google_id,omitempty"`
-	PasswordResetToken string             `bson:"password_reset_token,omitempty" json:"password_reset_token,omitempty"`
+	GoogleID           string `bson:"google_id,omitempty" json:"google_id,omitempty"`
+	PasswordResetToken string `bson:"password_reset_token,omitempty" json:"password_reset_token,omitempty"`
 }
 
+func (u *User) MarshalJSON() ([]byte, error) {
+	type Alias User
+	return json.Marshal(&struct {
+		Username string `json:"username"`
+		Email    string `json:"email"`
+		Name     string `json:"name"`
+		Bio      string `bson:"bio,omitempty" json:"bio,omitempty"`
+		Role     string `bson:"role" json:"role"`
+		Image    string `bson:"image,omitempty" json:"image,omitempty"`
+		IsActive bool   `bson:"is_active"`
+	}{
+		Username: u.Username,
+		Email:    u.Email,
+		Name:     u.Username,
+		Bio:      u.Bio,
+		Role:     u.Role,
+		IsActive: u.IsActive,
+	})
+
+}
 
 type OAuthProvider string
 
 const (
-    Google OAuthProvider = "google"
+	Google OAuthProvider = "google"
 )
 
 type OAuthUserInfo struct {
-    Provider   OAuthProvider
-    ProviderID string
-    Email      string
-    FirstName  string
-    LastName   string
+	Provider   OAuthProvider
+	ProviderID string
+	Email      string
+	FirstName  string
+	LastName   string
 	Name       string
-    Picture    string
-	
+	Picture    string
 }
 
-
 type RefreshToken struct {
-    Token     string    `bson:"token" json:"token"`
-    DeviceID  string    `bson:"device_id" json:"device_id"`
-    CreatedAt time.Time `bson:"created_at" json:"created_at"`
+	Token     string    `bson:"token" json:"token"`
+	DeviceID  string    `bson:"device_id" json:"device_id"`
+	CreatedAt time.Time `bson:"created_at" json:"created_at"`
 }
 
 type LogInResponse struct {
@@ -69,8 +86,8 @@ type ResetPasswordRequest struct {
 }
 
 type TokenGenerator interface {
-    GenerateToken(user User) (string, error)
-    GenerateRefreshToken(user User) (string, error)
+	GenerateToken(user User) (string, error)
+	GenerateRefreshToken(user User) (string, error)
 	RefreshToken(token string) (string, error)
 }
 
@@ -84,49 +101,37 @@ type PasswordService interface {
 	CheckPasswordHash(password, hash string) bool
 }
 
-
-
-
-
 type UserUsecase interface {
 	// for every user
-	Login(user *User, deviceID string) (LogInResponse, error)
-	RefreshToken(userID, deviceID, token string) (LogInResponse, error)
-	Register(user User) error
-	GetUserByUsernameOrEmail(username, email string) (User, error)
-	AccountActivation(token string, email string) error
-	Logout(userID, deviceID, token string) error
-	LogoutAllDevices(userID string) error
-	LogoutDevice(userID, deviceID string) error
-	GetDevices(userID string) ([]string, error)
+	Login(user *User, deviceID string) (LogInResponse, *CustomError)
+	RefreshToken(userID, deviceID, token string) (LogInResponse, *CustomError)
+	Register(user User) *CustomError
+	GetUserByUsernameOrEmail(username, email string) (User, *CustomError)
+	AccountActivation(token string, email string) *CustomError
+	Logout(userID, deviceID, token string) *CustomError
+	LogoutAllDevices(userID string) *CustomError
+	LogoutDevice(userID, deviceID string) *CustomError
+	GetDevices(userID string) ([]string, *CustomError)
 
-
-	ActivateAccountMe(Email string) error
+	ActivateAccountMe(Email string) *CustomError
 
 	// for google oauth
-	OAuthLogin(oauthUserInfo OAuthUserInfo, deviceID string) (LogInResponse, error)
+	OAuthLogin(oauthUserInfo OAuthUserInfo, deviceID string) (LogInResponse, *CustomError)
 
 	// reset password
-	ResetPassword(token, newPassword string) error
-	SendPasswordResetLink(email string) error
-
+	ResetPassword(token, newPassword string) *CustomError
+	SendPasswordResetLink(email string) *CustomError
 
 	// for user profile
-	GetMyProfile( userID string) (User, error)
-	GetUsers() ([]User, error)
-	DeleteUser( userID string) (User, error)
-	DeleteMyAccount( userID string) error
-	UploadImage(userID string, imagePath string) error
-	UpdateMyProfile( user User, UserID string) error
+	GetMyProfile(userID string) (User, *CustomError)
+	GetUsers() ([]User, *CustomError)
+	DeleteUser(userID string) (User, *CustomError)
+	DeleteMyAccount(userID string) *CustomError
+	UploadImage(userID string, imagePath string) *CustomError
+	UpdateMyProfile(user User, UserID string) *CustomError
 
-
-
-	UpdateUserRole(  userID, role string) (User, error)
-
-
+	UpdateUserRole(userID, role string) (User, *CustomError)
 }
-
-
 
 type UserRepository interface {
 	// for every user
@@ -136,32 +141,26 @@ type UserRepository interface {
 	GetUserByUsernameOrEmail(username, email string) (User, error)
 	AccountActivation(token string, email string) error
 	UpdateUser(user *User) error
-    DeleteRefreshToken(user *User, refreshToken string) error
-    DeleteAllRefreshTokens(user *User) error
+	DeleteRefreshToken(user *User, refreshToken string) error
+	DeleteAllRefreshTokens(user *User) error
 	GetUserByID(id string) (User, error)
-	FindOrCreateUserByGoogleID(oauthUserInfo OAuthUserInfo, deviceID string ) (*User, error)
+	FindOrCreateUserByGoogleID(oauthUserInfo OAuthUserInfo, deviceID string) (*User, error)
 	GetUserByResetToken(token string) (User, error)
 	GetUserByEmail(email string) (User, error)
 
-
 	// ActivateAccountMe(Email string) error
 
-
 	// // for user profile
-	GetMyProfile( userID string) (User, error)
+	GetMyProfile(userID string) (User, error)
 	GetUsers() ([]User, error)
-	DeleteUser( userID string) (User, error)
-	DeleteMyAccount( userID string) error
+	DeleteUser(userID string) (User, error)
+	DeleteMyAccount(userID string) error
 	// GetUser( userID string) (User, error)
 	UploadImage(userID string, imagePath string) error
-	UpdateMyProfile( user User, userID string) error
+	UpdateMyProfile(user User, userID string) error
 
 	// // GetUserBlogs(ctx context.Context, userID string) ([]Blog, error)
 
 	// // Admin only
-	UpdateUserRole(  userID, role string) (User, error)
-
-
-
+	UpdateUserRole(userID, role string) (User, error)
 }
-

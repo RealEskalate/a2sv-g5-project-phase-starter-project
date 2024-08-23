@@ -56,17 +56,14 @@ const Security = () => {
 
       setLoading(true);
 
-      const res = await fetch(
-        "https://bank-dashboard-o9tl.onrender.com/auth/change_password",
-        {
-          method: "POST",
-          body: JSON.stringify(formData),
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      ).then((res) => res.json());
+      const res = await fetch(`${process.env.BASE_URL}/auth/change_password`, {
+        method: "POST",
+        body: JSON.stringify(formData),
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }).then((res) => res.json());
 
       console.log(res);
       toast.success(res.message);

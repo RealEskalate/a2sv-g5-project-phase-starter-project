@@ -1,9 +1,10 @@
 import { addTransactions } from "@/lib/api";
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { toast } from "sonner";
+
 import { IoClose } from "react-icons/io5";
 import { useUser } from "@/contexts/UserContext";
+import { toast } from "@/components/ui/use-toast";
 
 interface FormValues {
   receiverUserName: string;
@@ -37,11 +38,19 @@ export const ModalTrans = ({ isOpen, onClose,reciverUserName }: Props) => {
       });
 
       if (success) {
-        toast("Transaction successful!");
+        toast({
+          title: "Success",
+          description: "Transaction Success",
+          variant: "success",
+        });
         onClose();
       } else {
-        toast("Transaction failed!");
-      }
+          toast({
+            title: "Error",
+            description: "Transaction failed!",
+            variant: "destructive",
+          });
+            }
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("An unexpected error occurred.");
@@ -79,14 +88,12 @@ export const ModalTrans = ({ isOpen, onClose,reciverUserName }: Props) => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           <div className="text-center">
-            <h2 className="text-2xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">
+            <h2 className="text-2xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-indigo-500">
               Send Money
             </h2>
           </div>
 
           <div className="space-y-6">
-           
-
             <div>
               <label
                 htmlFor="amount"
@@ -146,7 +153,7 @@ export const ModalTrans = ({ isOpen, onClose,reciverUserName }: Props) => {
             className={`w-full py-3 px-4 rounded-lg shadow-lg font-semibold text-white focus:outline-none focus:ring-2 transition-all duration-300 ${
               isSubmitting
                 ? "bg-gradient-to-r from-blue-300 to-teal-300 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 focus:ring-blue-500"
+                : "bg-gradient-to-r from-sky-500 to-indigo-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300"
             }`}
           >
             {isSubmitting ? "Sending..." : "Send"}

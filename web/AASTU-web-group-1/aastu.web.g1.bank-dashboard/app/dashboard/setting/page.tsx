@@ -8,10 +8,10 @@ import { useUser } from "@/contexts/UserContext";
 const Setting = () => {
   const { isDarkMode } = useUser();
   return (
-    <div className="flex w-full mt-5 md:ml-5">
+    <div className="flex justify-center w-full mt-5 md:ml-5">
       <Tabs
         defaultValue="editProfile"
-        className={`w-full max-w-full md:max-w-[900px] p-4 rounded-2xl ${
+        className={`w-full max-w-full md:max-w-[1100px] p-4 rounded-2xl ${
           isDarkMode ? "bg-gray-800 text-gray-200" : "bg-white text-black"
         }`}
       >

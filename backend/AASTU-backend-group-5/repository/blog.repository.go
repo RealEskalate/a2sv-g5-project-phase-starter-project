@@ -118,3 +118,29 @@ func (BR *BlogRepository) FilterBlogDocument(filter map[string]interface{}) ([]d
 
 	return blogs, nil
 }
+func (BR *BlogRepository) UpdateBlogDocument(id string, blog domain.Blog) (domain.Blog, error) {
+	obId, _ := primitive.ObjectIDFromHex(id)
+	_, err := BR.collection.UpdateOne(context.TODO(), bson.M{"_id": obId}, bson.M{"$set": blog})
+	return blog, err
+}
+
+func (BR *BlogRepository) GetUniqueBlog(cookieValue string, posts *[]*domain.Blog) error {
+	filter := bson.M{"cookie_value": cookieValue}
+
+	cursor, err := BR.collection.Find(context.TODO(), filter)
+	if err != nil {
+		return err
+	}
+	defer cursor.Close(context.TODO())
+
+	for cursor.Next(context.TODO()) {
+		var blog domain.Blog
+		if err := cursor.Decode(&blog); err != nil {
+			return err
+		}
+		*posts = append(*posts, &blog)
+	}
+
+	return nil
+}
+

@@ -1,10 +1,11 @@
+import SettingsPage from "@/components/ui/Settings/SettingsPage";
 import React from "react";
 
 const page = () => {
   return (
-    <>
-      <h1 className="text-2xl">Settings Page</h1>
-    </>
+    <div className="bg-primary-color-50 h-full w-9/10 flex justify-center">
+        <SettingsPage />
+    </div>
   );
 };
 

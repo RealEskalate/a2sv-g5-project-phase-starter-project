@@ -30,7 +30,7 @@ const Sidebar = () => {
       </div>
 
       {toggle && (
-        <div className="md:hidden flex">
+        <div className="md:hidden flex opacity-90">
           <div
             className={`fixed top-0 left-0 w-80 bg-white shadow-black h-full transform transition-transform${
               toggle ? "translate-x-0" : "-translate-x-full"

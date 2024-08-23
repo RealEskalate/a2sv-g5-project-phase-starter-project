@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/authentication/domain/entity/user.dart';
 import 'features/authentication/presentation/bloc/blocs.dart';
 // import 'features/authentication/presentation/pages/onboarding.dart';
+import 'features/authentication/presentation/pages/onboarding.dart';
 import 'features/chat/presentation/pages/chat_list.dart';
 import 'features/chat/presentation/widgets/chat_card.dart';
 import 'features/chat/presentation/widgets/user_avater.dart';
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
       ],
       child:  MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: Scaffold(body: Center(child: ChatList(infos: [["How are you?", User(id: "id", username: "Username", password: "password", email: "email"), 2,4, true], ["How are you?", User(id: "id", username: "Username", password: "password", email: "email"), 2,4, false], ["How are you?", User(id: "id", username: "Username", password: "password", email: "email"), 2,4, true], ["Helloooo", User(id: "id", username: "User name", password: "password", email: "email"), 2,7, false]],)))     
+        home: Onboarding()
       ),
     );
   }

@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-export const endpointsApiFunc = createApi({
-  reducerPath: 'endpointsApi',
+export const transactionApi = createApi({
+  reducerPath: 'transactionApi',
   baseQuery: fetchBaseQuery({
     baseUrl: "",
     // the header depends on where we put our access token. either cookies or local storage
@@ -18,7 +18,7 @@ export const endpointsApiFunc = createApi({
   endpoints: (builder) => ({}),
 });
 
-export const {} = endpointsApiFunc;
+export const {} = transactionApi;
 
 
 

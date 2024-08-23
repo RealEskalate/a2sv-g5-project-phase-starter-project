@@ -8,9 +8,16 @@ import BalanceCard from '@/components/commonalities/BalanceCard';
 import spotify from '@/public/accountsimage/spotify.svg';
 import service from '@/public/accountsimage/service.svg';
 import person from '@/public/accountsimage/person.svg'
+import apple from '@/public/accountsimage/apple.svg';
+import user1 from '@/public/accountsimage/user1.svg';
+import user2 from '@/public/accountsimage/user2.svg';
+import playstation from '@/public/accountsimage/playstation.svg';
+
+
 import LastTransactionsComp from '@/components/accounts/lastTransactions';
 import AccountsBarChartComponent from '@/components/accounts/AccountsBarChart';
-
+import Invoice from '@/components/accounts/invoices';
+import { appendFile } from 'fs';
 
 const page = () => {
   const Cards = [
@@ -65,8 +72,35 @@ const page = () => {
       amount: "780"
     },
   ]
+
+  const Invoices = [
+    {
+    image: apple,
+    entity: "Apple Store",
+    time: "5h",
+    amount: "450"
+    },
+    {
+      image: user2,
+      entity: "Michael",
+      time: "2 days",
+      amount: "160"
+    },
+    {
+      image: playstation,
+      entity: "Playstation",
+      time: "5 days",
+      amount: "1085"
+    },
+    {
+      image: user1,
+      entity: "William",
+      time: "10 days",
+      amount: "90"
+    },
+]
   return (
-    <div>
+    <div className='pb-5 md:pb-10'>
       <div className="flex items-center justify-between mx-auto p-6">
         {
           Cards.map((item, index) => {
@@ -75,7 +109,7 @@ const page = () => {
         }
       </div>
       <div className="grid grid-cols-12 gap-4 mt-5  md:mt-10">
-        <div className="col-span-7 space-y-3 px-6">
+        <div className="col-span-8 space-y-3 px-6">
           <h2 className='font-semibold'>Last Transaction</h2>
           <div className="flex flex-col bg-white rounded-xl">
           {
@@ -85,7 +119,7 @@ const page = () => {
           }
           </div>
         </div>
-        <div className="col-span-5 mx-auto space-y-3">
+        <div className="col-span-4 mx-auto space-y-3">
           <span className='flex items-center space-x-40'>
             <p>My Card</p>
             <button>See All</button>
@@ -94,13 +128,19 @@ const page = () => {
         </div>
       </div>
       <div className="grid grid-cols-12 gap-4 px-6 mt-10">
-        <div className="col-span-7 space-y-5">
+        <div className="col-span-8 space-y-5">
           <h1 className='font-bold'>Debit & Credit Overview</h1>
           <AccountsBarChartComponent/>
         </div>
-        <div className="col-span-5 border border-black">
+        <div className="col-span-4 space-y-5">
           <h1 className='font-bold'>Invoices Sent</h1>
-          <></>
+          <div className="flex flex-col justify-center gap-2 bg-white py-10 rounded-3xl">
+            {
+              Invoices.map((item, index) => {
+                return <Invoice key={index} item={item}/>
+              })
+            }
+          </div>
         </div>
       </div>
     </div>

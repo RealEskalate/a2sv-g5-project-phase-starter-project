@@ -3,7 +3,6 @@ import {
   BarChart,
   Bar,
   XAxis,
-  YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
@@ -22,7 +21,7 @@ const data = [
 
 const AccountsBarChartComponent = () => {
   return (
-    <ResponsiveContainer width="100%" height={300} className='bg-white rounded-xl'>
+    <ResponsiveContainer width="100%" height={300} className='bg-white rounded-3xl'>
       <BarChart
         data={data}
         margin={{

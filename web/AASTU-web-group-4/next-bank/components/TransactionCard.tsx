@@ -64,7 +64,6 @@ const TransactionCard: React.FC<{ transaction: Transaction,currentname:string }>
         </div>
         <div className="flex items-center">
           <p className={`text-lg ${amountColor} truncate`}>
-          {/* ${transaction.amount.startsWith("+") ? "text-green-500" : "text-red-500"} */}
             {formattedAmount}
           </p>
         </div>

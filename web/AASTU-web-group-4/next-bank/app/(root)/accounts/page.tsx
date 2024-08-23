@@ -27,7 +27,7 @@ const Accounts = () => {
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 sm:gap-8 mb-8">
           <div className="lg:col-span-7 flex flex-col">
             <h2 className="text-lg font-semibold mb-3 dark:text-blue-500">Last Transaction</h2>
-            <div className="flex-1 flex items-stretch">
+            <div>
               <LastTransactionCard />
             </div>
           </div>

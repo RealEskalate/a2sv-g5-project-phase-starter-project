@@ -2,7 +2,7 @@
 // Register User - POST Request
 export const registerUser = async (userData: any) => {
     try {
-      const response = await fetch('https://bank-dashboard-o9tl.onrender.com/auth/register', {
+      const response = await fetch('https://web-team-g4.onrender.com/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -26,7 +26,7 @@ export const registerUser = async (userData: any) => {
   // Refresh Token - POST Request
   export const refreshToken = async (tokenData: any) => {
     try {
-      const response = await fetch('https://bank-dashboard-o9tl.onrender.com/auth/refresh_token', {
+      const response = await fetch('https://web-team-g4.onrender.com/auth/refresh_token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export const registerUser = async (userData: any) => {
   // Login User - POST Request
   export const loginUser = async (loginData: any) => {
     try {
-      const response = await fetch('https://bank-dashboard-o9tl.onrender.com/auth/login', {
+      const response = await fetch('https://web-team-g4.onrender.com/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export const registerUser = async (userData: any) => {
   // Change Password - POST Request
   export const changePassword = async (passwordData: any) => {
     try {
-      const response = await fetch('https://bank-dashboard-o9tl.onrender.com/auth/change_password', {
+      const response = await fetch('https://web-team-g4.onrender.com/auth/change_password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,6 +1,7 @@
 package ai_service
 
 import (
+	"blog_api/domain"
 	"context"
 	"fmt"
 	"log"
@@ -13,8 +14,8 @@ import (
 
 // AIService provides an interface to interact with the AI service.
 type AIService struct {
-	model *genai.GenerativeModel
-	ctx   context.Context
+	Model domain.AIModelInterface
+	Ctx   context.Context
 }
 
 // NewAIService creates a new AIService instance with the provided API key.
@@ -28,8 +29,8 @@ func NewAIService(apiKey string) *AIService {
 	model := client.GenerativeModel("gemini-pro")
 
 	return &AIService{
-		model: model,
-		ctx:   ctx,
+		Model: model,
+		Ctx:   ctx,
 	}
 }
 
@@ -39,7 +40,7 @@ func (s *AIService) GenerateContent(topics []string) (string, error) {
 		"The content should be engaging, include relevant subheadings, and provide useful insights. " +
 		"Return the content in a well-structured format."
 
-	resp, err := s.model.GenerateContent(s.ctx, genai.Text(prompt))
+	resp, err := s.Model.GenerateContent(s.Ctx, genai.Text(prompt))
 	if err != nil {
 		log.Printf("Error generating content: %v", err)
 		return "", err
@@ -65,7 +66,7 @@ func (s *AIService) ReviewContent(blogContent string) (string, error) {
 	prompt := "Review the following blog content and provide suggestions or enhancements:\n\n" + blogContent +
 		"\n\nProvide constructive feedback, highlight improvements, and suggest any enhancements."
 
-	resp, err := s.model.GenerateContent(s.ctx, genai.Text(prompt))
+	resp, err := s.Model.GenerateContent(s.Ctx, genai.Text(prompt))
 	if err != nil {
 		log.Printf("Error generating review content: %v", err)
 		return "", err
@@ -123,7 +124,7 @@ func (s *AIService) GenerateTrendingTopics(keywords []string) ([]string, error) 
 	prompt := "Based on the following keywords: " + strings.Join(keywords, ", ") +
 		", generate a list of trending blog topics that are currently popular."
 
-	resp, err := s.model.GenerateContent(s.ctx, genai.Text(prompt))
+	resp, err := s.Model.GenerateContent(s.Ctx, genai.Text(prompt))
 	if err != nil {
 		log.Printf("Error generating trending topics: %v", err)
 		return nil, err

@@ -1,10 +1,16 @@
 package domain
 
 import (
+	"context"
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/google/generative-ai-go/genai"
 )
+
+type AIModelInterface interface {
+	GenerateContent(context.Context, ...genai.Part) (*genai.GenerateContentResponse, error)
+}
 
 type AIServicesInterface interface {
 	GenerateContent(topics []string) (string, error)

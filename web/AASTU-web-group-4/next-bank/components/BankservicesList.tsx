@@ -7,6 +7,7 @@ import CheckingAccountsIcon from "@/public/icons/CheckingAccountsIcon";
 import SavingAccountsIcon from "@/public/icons/SavingAccountsIcon";
 import DebitCreditIcon from "@/public/icons/DebitCreditIcon";
 import SafetyIcon from "@/public/icons/SafetyIcon";
+import Pagination from "./Pagination";
 import { TbFileSad } from "react-icons/tb";
 import { colors } from "@/constants";
 import Cookie from "js-cookie";
@@ -76,31 +77,48 @@ const renderShimmer = (count: number) => {
   return shimmers;
 };
 
+
+const ITEMS_PER_PAGE = 10;
+
 const BankservicesList: React.FC = () => {
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const[filtered , setfiltered] = useState([])
+  const [services , setservices] = useState([])
+  const randomIcons = icons;
+  const [totalPages, setTotalPages] = useState(0);
   // const token = Cookie.get("accessToken") || 'null'
 
-  const [services, setServices] = useState([]);
+  
   const [status, setStatus] = useState<"loading" | "error" | "success">(
     "loading"
   );
+  const filter = (e: any) => {
+    const keyword = e.target.value;
+    if (keyword !== "") {
+      const results = services.filter((service: any) => {
+        return service.name.toLowerCase().startsWith(keyword.toLowerCase());
+      });
+      setfiltered(results);
+    } else {
+      setfiltered(services);}}
 
   useEffect(() => {
     const fetchData = async () => {
       setStatus("loading");
 
       try {
-        const response = await getAllBankServices();
-        console.log("response:", response);
+        const response= await getAllBankServices( currentPage, ITEMS_PER_PAGE);
+        console.log("response:" , response)
         if (response.success === true) {
           setStatus("success");
-          setServices(response.data.content);
           
-          
-
-        } else {
-          setStatus("error");
-        }
-      } catch (error) {
+        setservices(response.data.content || []);
+        setfiltered(response.data.content || []);
+        setTotalPages(response.data.totalPages);
+        
+      }
+     } catch (error) {
         setStatus("error");
         console.error("Error fetching bank services:", error);
       }
@@ -124,7 +142,9 @@ const BankservicesList: React.FC = () => {
           Bank Services List
         </h2>
         <div className="text-xl w-[100%] text-center gap-4 flex flex-col items-center  font-bold mb-4 text-red-500">
-          <TbFileSad className={`${colors.textblue} dark:text-white w-[400px] h-[70px] `} />
+        <TbFileSad
+          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+        />
           <div> Failed to fetch the data</div>
         </div>
       </div>
@@ -148,13 +168,18 @@ const BankservicesList: React.FC = () => {
               </div>
             </div>
           </div>
-        ) : (
+        
+      )
+  
+        : (
           <div className="max-w-[1110px] px-4 md:mx-auto">
             <h2 className="text-xl font-bold mb-4 dark:text-blue-500">
               Bank Services List
             </h2>
-            {services.map((service: any, index: any) => (
+            <input type="text" onChange={filter} placeholder="search" />
+            {filtered.map((service: any, index: any) => (
               <div key={index} className="mb-4">
+             
                 {/* Mobile View */}
                 <div className="lg:hidden shadow-lg p-4 rounded-md flex items-center justify-between">
                   <div className="flex items-center space-x-4">
@@ -229,13 +254,20 @@ const BankservicesList: React.FC = () => {
                   </Link>
                 </div>
               </div>
+              
             ))}
-          </div>
-        )}
-      </>
-    );
+          <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
+          </div>)
+  }
+   </>
+  )
   }
 
+    
   return null; // fallback, though it shouldn't reach here
 };
 

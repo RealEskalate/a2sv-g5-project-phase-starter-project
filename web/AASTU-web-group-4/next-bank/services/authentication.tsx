@@ -1,9 +1,11 @@
 
 // Register User - POST Request
 export const registerUser = async (userData: any) => {
-    try {
-      const response = await fetch('https://web-team-g4.onrender.com/auth/register', {
-        method: 'POST',
+  try {
+    const response = await fetch(
+      "https://web-team-g4.onrender.com/auth/register",
+      {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -21,13 +23,17 @@ export const registerUser = async (userData: any) => {
       console.error('Error:', error);
       throw error;
     }
-  };
-  
-  // Refresh Token - POST Request
-  export const refreshToken = async (tokenData: any) => {
-    try {
-      const response = await fetch('https://web-team-g4.onrender.com/auth/refresh_token', {
-        method: 'POST',
+
+
+};
+
+// Refresh Token - POST Request
+export const refreshToken = async (tokenData: any) => {
+  try {
+    const response = await fetch(
+      "https://web-team-g4.onrender.com/auth/refresh_token",
+      {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -44,13 +50,16 @@ export const registerUser = async (userData: any) => {
       console.error('Error:', error);
       throw error;
     }
-  };
-  
-  // Login User - POST Request
-  export const loginUser = async (loginData: any) => {
-    try {
-      const response = await fetch('https://web-team-g4.onrender.com/auth/login', {
-        method: 'POST',
+
+};
+
+// Login User - POST Request
+export const loginUser = async (loginData: any) => {
+  try {
+    const response = await fetch(
+      "https://web-team-g4.onrender.com/auth/login",
+      {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -67,13 +76,16 @@ export const registerUser = async (userData: any) => {
       console.error('Error:', error);
       throw error;
     }
-  };
-  
-  // Change Password - POST Request
-  export const changePassword = async (passwordData: any) => {
-    try {
-      const response = await fetch('https://web-team-g4.onrender.com/auth/change_password', {
-        method: 'POST',
+
+};
+
+// Change Password - POST Request
+export const changePassword = async (passwordData: any) => {
+  try {
+    const response = await fetch(
+      "https://web-team-g4.onrender.com/auth/change_password",
+      {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },

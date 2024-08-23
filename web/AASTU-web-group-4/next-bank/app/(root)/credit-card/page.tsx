@@ -45,10 +45,10 @@ const CreditCard = () => {
   return (
     <div className="lg:ml-72 ml-5 overflow-x-hidden mx-auto">
       <div className="myCards max-w-[97%] mt-4">
-        <h1 className="text-[19px] mb-3 font-bold text-[#333B69]">My Cards</h1>
-        <div className="flex overflow-x-auto space-x-4 md:pr-3 pr-1 scrollbar-thin scrollbar-track-[#F5F7FA] scrollbar-thumb-[#92a7c5] scrollbar-thumb-rounded-full">
+        <h1 className="text-[19px] mb-3 font-bold text-[#333B69] dark:text-blue-500">My Cards</h1>
+        <div className="flex overflow-x-auto space-x-4 md:pr-3 pr-1 scrollbar-thin scrollbar-track-[#F5F7FA] dark:scrollbar-track-dark scrollbar-thumb-[#92a7c5] scrollbar-thumb-rounded-full">
           {loading ? (
-            <MyCardsLoad />
+            <MyCardsLoad count={3}/>
           ) : Array.isArray(cards) && cards.length > 0 ? (
             cards.map((card: any, index: number) => (
               <span key={index} className="p-3">
@@ -62,7 +62,7 @@ const CreditCard = () => {
               </span>
             ))
           ) : token ? (
-            <div className="w-screen bg-white py-16 rounded-xl flex flex-col justify-center">
+            <div className="w-screen bg-white py-16 rounded-xl flex flex-col justify-center dark:bg-dark dark:border-[1px] dark:border-gray-700">
               <Image
                 src="/icons/null.png"
                 width={80}
@@ -75,7 +75,7 @@ const CreditCard = () => {
               </span>
             </div>
           ) : (
-            <MyCardsLoad />
+            <MyCardsLoad count={3}/>
           )}
         </div>
       </div>
@@ -88,12 +88,12 @@ const CreditCard = () => {
           <Component />
         </div>
         <div className="cardlist lg:w-[730px] md:w-[487px] sm-w-[325] my-6">
-          <h1 className="text-[19px] mb-3 font-bold text-[#333B69]">Card List</h1>
+          <h1 className="text-[19px] mb-3 font-bold text-[#333B69] dark:text-blue-500">Card List</h1>
           {loading ? (
             <CardListLoad />
           ) : token ? (
             error ? (
-              <div className="pr-6 py-32 bg-white w-full flex flex-col justify-center align-middle rounded-xl scrollbar-none">
+              <div className="pr-6 py-32 bg-white w-full flex flex-col justify-center align-middle rounded-xl scrollbar-none dark:bg-dark dark:border-[1px] dark:border-gray-700 ">
                 <Image
                   src="/icons/null.png"
                   width={80}
@@ -116,7 +116,7 @@ const CreditCard = () => {
 
       <div className="flex flex-col md:flex-row w-[80%] mb-16">
         <div className="md:mb-2 mb-0 md:mr-10">
-          <h1 className="text-[20px] mb-3 font-bold text-[#333B69]">Add New Card</h1>
+          <h1 className="text-[20px] mb-3 font-bold text-[#333B69] dark:text-blue-500">Add New Card</h1>
           <AddNewCard token={token} />
         </div>
 

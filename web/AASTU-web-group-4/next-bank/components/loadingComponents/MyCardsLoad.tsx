@@ -1,11 +1,11 @@
 import { CardSkeleton } from "./CardSkeleton";
 
-const MyCardsLoad = () => {
+const MyCardsLoad = ({ count }: { count: number }) => {
   return (
     <div className="flex overflow-x-auto space-x-4 md:pr-3 pr-1 scrollbar-none">
-      <CardSkeleton />
-      <CardSkeleton />
-      <CardSkeleton />
+      {Array.from({ length: count }).map((_, index) => (
+        <CardSkeleton key={index} />
+      ))}
     </div>
   );
 };

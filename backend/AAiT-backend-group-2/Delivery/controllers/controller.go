@@ -1,19 +1,23 @@
 package controllers
 
 import (
-	"AAiT-backend-group-2/Domain"
-	"github.com/gin-gonic/gin"
+	domain "AAiT-backend-group-2/Domain"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type BlogController struct {
-	blogUseCase domain.BlogUseCase
+	blogUseCase    domain.BlogUseCase
+	commentUseCase domain.CommentUsecase
 }
 
-func NewBlogController(bu domain.BlogUseCase) *BlogController {
+func NewBlogController(bu domain.BlogUseCase, cu domain.CommentUsecase) *BlogController {
 	return &BlogController{
-		blogUseCase: bu,
+		blogUseCase:    bu,
+		commentUseCase: cu,
 	}
 }
 
@@ -94,7 +98,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 			"error": "Unauthorized",
 		})
 	}
-	
+
 	var req domain.RequestBlog
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
@@ -127,18 +131,92 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 }
 
 func (bc *BlogController) FilterBlogs(c *gin.Context) {
-	tags:= c.QueryArray("tags")
+	tags := c.QueryArray("tags")
 	startDate := c.Query("startDate")
 	endDate := c.Query("endDate")
-	sortBy := c.DefaultQuery("sortBy","created_at")
+	sortBy := c.DefaultQuery("sortBy", "created_at")
 
-	blogs,err := bc.blogUseCase.FilterBlogs(c.Request.Context(), tags ,startDate,endDate, sortBy)
+	blogs, err := bc.blogUseCase.FilterBlogs(c.Request.Context(), tags, startDate, endDate, sortBy)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError,gin.H{
-			"error":err.Error(),
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
 		})
 		return
 	}
-	c.JSON(http.StatusOK,gin.H{"data":blogs})
+	c.JSON(http.StatusOK, gin.H{"data": blogs})
+}
+
+func (bc *BlogController) CreateComment(c *gin.Context) {
+	var req domain.Comment
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+	author := c.GetString("userID")
+	if author == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	req.Author = author
+	req.BlogID = c.Param("id")
+
+	req.ID = uuid.New().String()
+
+	err := bc.commentUseCase.CreateComment(c.Request.Context(), &req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"message": "Comment added successfully"})
+}
+
+func (bc *BlogController) GetCommentsByBlogID(c *gin.Context) {
+	blogID := c.Param("id")
+	comments, err := bc.commentUseCase.GetCommentsByBlogID(c.Request.Context(), blogID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"comments": comments})
+}
+
+func (bc *BlogController) UpdateComment(c *gin.Context) {
+	id := c.Param("comment_id")
+	author := c.GetString("userID")
+	if author == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var req domain.Comment
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+	req.ID = id
+	req.Author = author
+
+	err := bc.commentUseCase.UpdateComment(c.Request.Context(), &req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Comment updated successfully"})
+}
+
+func (bc *BlogController) DeleteComment(c *gin.Context) {
+	id := c.Param("comment_id")
+	author := c.GetString("userID")
+	if author == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	err := bc.commentUseCase.DeleteComment(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully"})
 }

@@ -32,7 +32,7 @@ type JWTServiceInterface interface {
 type MailServiceInterface interface {
 	SendMail(from string, to string, mailContent string) error
 	EmailVerificationTemplate(hostUrl string, username string, token string) string
-	PasswordResetTemplate(hostUrl string, username string, token string) string
+	PasswordResetTemplate(token string) string
 }
 
 type HashingServiceInterface interface {

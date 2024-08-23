@@ -5,22 +5,22 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (br *BlogRepository) SearchBlog(ctx context.Context, title string, author string) ([]*domain.Blog, error) {
+func (br *BlogRepository) SearchBlog(ctx context.Context, filter map[string]string) ([]*domain.Blog, error) {
 
-	filter := bson.M{}
+	filters := bson.M{}
 
-	if title != "" {
-		filter["title"] = bson.M{"$regex": title, "$options": "i"}
+	if filter["title"] != "" {
+		filters["title"] = bson.M{"$regex": filter["title"], "$options": "i"}
 	}
-	if author != "" {
-		filter["author"] = bson.M{"$regex": author, "$options": "i"}
+
+	if filter["author"] != "" {
+		filters["author"] = bson.M{"$regex": filter["author"], "$options": "i"}
 	}
 
 	var blogs []*domain.Blog
-	cursor, err := br.collection.Find(ctx, filter, options.Find())
+	cursor, err := br.collection.Find(ctx, filters)
 	if err != nil {
 		return nil, err
 	}

@@ -15,7 +15,7 @@ func (bc *BlogController) GetBlogByID(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
-	blog, err := bc.usecase.GetBlogByID(context.Background(), blogID)
+	post, err := bc.usecase.GetBlogByID(context.Background(), blogID)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Blog not found"})
@@ -25,5 +25,5 @@ func (bc *BlogController) GetBlogByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, blog)
+	c.JSON(http.StatusOK, post)
 }

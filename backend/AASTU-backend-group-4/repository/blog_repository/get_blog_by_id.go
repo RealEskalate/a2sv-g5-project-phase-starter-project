@@ -11,7 +11,7 @@ import (
 
 func (r *BlogRepository) GetBlogByID(ctx context.Context, id primitive.ObjectID) (*domain.Blog, error) {
 	var blog domain.Blog
-	err := r.collection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&blog)
+	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&blog)
 	if err != nil {
 		return nil, err
 	}

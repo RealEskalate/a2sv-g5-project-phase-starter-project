@@ -57,7 +57,7 @@ const CreditCard: React.FC<CardProps> = ({
         </div>
 
         <div className="relative mt-8 flex justify-between py-4 items-center">
-        <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-white/30 to-transparent z-0"></div>
+        <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/30 to-transparent z-0"></div>
           <div className="relative z-10 text-base font-medium px-6">
             {cardNumber}
           </div>

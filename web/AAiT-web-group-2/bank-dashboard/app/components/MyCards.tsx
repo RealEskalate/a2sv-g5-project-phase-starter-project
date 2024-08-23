@@ -41,28 +41,27 @@ const MyCards = () => {
   return (
     <div
       className=" flex flex-col justify-between items-center
-      text-white bg-my-card-bg-1 mx-auto w-my-card-width max-md:w-[231px] max-md:h-[170px] max-sm:w-[325px] h-[225px] 
-      rounded-my-card-radius font-lat shadow-lg "
+      text-white bg-my-card-bg-1 min-w-[235px] min-h-[170px] max-w-[350px] max-h-[235px] rounded-[25px] shadow-lg"
     >
-      <div className="flex justify-between px-6 max-md:px-2 pt-6 max-md:pt-3 items-start w-full">
-        <div className="flex flex-col items-start max-md:h-[33px]">
-          <span className="font-extralight text-sm max-md:text-[11px] max-md:w-[51px]">Balance</span>
-          <span className="text-lg w-[51px]">$5,756</span>
+      <div className="flex justify-between px-6 pt-6 items-start w-full">
+        <div className="flex flex-col items-start">
+          <span className="font-extralight text-sm text-[clamp(14px,1vw,13px)] ">Balance</span>
+          <span className="text-[clamp(19px,1vw,24px)]">$5,756</span>
         </div>
         <ChipCard color="white"/>
       </div>
-      <div className="flex justify-between items-center px-6 max-md:px-1 max-md:h-[30px]  w-full">
+      <div className="flex justify-between items-center px-6 w-full">
         <div className="flex flex-col items-start w-1/2">
-          <span className="font-extralight text-sm">CARD HOLDER</span>
-          <span className="max-md:text-[14px]">Eddy Cusuma</span>
+          <span className="font-extralight text-[clamp(14px,1vw,13px)]">CARD HOLDER</span>
+          <span className="text-[clamp(16px,1vw,18px)]">Eddy Cusuma</span>
         </div>
         <div className="flex flex-col items-start w-1/2">
-          <span className="font-extralight text-sm">VALID THRU</span>
-          <span>12/22</span>
+          <span className="font-extralight text-[clamp(14px,1vw,13px)]">VALID THRU</span>
+          <span className="text-[clamp(16px,1vw,18px)]">12/22</span>
         </div>
       </div>
-      <div className="flex justify-between items-center bg-my-card-bg-2 h-my-card-height-2 max-md:h-[35px] w-full px-6 rounded-b-my-card-radius">
-        <div className="text-xl max-md:text-[15px] max-md:w-[191px]">3778 **** **** 1234</div>
+      <div className="flex justify-between items-center bg-my-card-bg-2 min-h-[70px] max-h-[70px] w-full px-6 rounded-b-my-card-radius">
+        <div className="text-[clamp(18px,1vw,26px)]">3778 **** **** 1234</div>
         <div className="flex justify-center items-center -space-x-4">
           <div className="w-8 max-md:w-6 h-8 max-md:h-6  bg-white bg-opacity-50 rounded-full"></div>
           <div className="w-8 max-md:w-6 h-8 max-md:h-6 bg-white bg-opacity-50 rounded-full"></div>

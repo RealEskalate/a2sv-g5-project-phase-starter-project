@@ -7,9 +7,12 @@ import { usePathname } from 'next/navigation'
 
 
 const Navbar = ({onMenuClick}: {onMenuClick: () => void}) => {
-  const path = usePathname()
-  let title = path.split("/")[1]
-  title = title[0].toUpperCase().concat(title)
+  const path = usePathname();
+  let title = path.split("/")[1] || ''; // Use an empty string if there is no second segment
+
+  if (title) {
+    title = title[0].toUpperCase().concat(title.slice(1));
+  }
 
   return (
     <div className="flex justify-between items-center  h-24 px-3 ">

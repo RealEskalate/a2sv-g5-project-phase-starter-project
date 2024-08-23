@@ -3,7 +3,6 @@ import React from 'react'
 const QuickTransfer = () => {
   return (
     <div className='bg-[#F5F7FA]'>
-      <p className='text-[22px] py-5 text-[#343C6A]'>Quick Transfer</p>
       <div className="bg-white px-5 py-5 w-[445px] rounded-xl">
       <div className=' flex items-center gap-5 '>
         <div className='font-bold flex flex-col items-center text-center'>

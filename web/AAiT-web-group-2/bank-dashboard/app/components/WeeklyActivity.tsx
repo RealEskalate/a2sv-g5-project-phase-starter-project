@@ -65,13 +65,13 @@ const chartConfig = {
 
 const WeeklyActivity = () => {
   return (
-    <div className="px-2 pb-0 mx-auto w-fit rounded-my-card-radius shadow-md">
+    <div className="px-2 pb-0 mx-auto  bg-white rounded-my-card-radius shadow-md">
       <Chart
         options={chartConfig.options}
         series={chartConfig.series}
         type="bar"
-        height={322}
-        width={730}
+        height={300}
+        width={710}
       />
     </div>
   );

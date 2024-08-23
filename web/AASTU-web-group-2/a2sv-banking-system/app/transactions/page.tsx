@@ -11,11 +11,7 @@ import { Card as CardType } from '@/types/cardController.Interface';
 import { TransactionData, GetTransactionsResponse, PaginatedTransactionsResponse } from '@/types/transactionController.interface';
 import { getTransactions, getTransactionIncomes, getTransactionsExpenses } from '@/lib/api/transactionController';
 import { useRouter } from 'next/navigation';
-
-const formatDate = (date: string): string => {
-  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit' };
-  return new Date(date).toLocaleDateString('en-US', options);
-};
+import Refresh from '@/app/api/auth/[...nextauth]/token/RefreshToken'; 
 
 type Data = {
   access_token: string;
@@ -27,11 +23,14 @@ type SessionDataType = {
   user: Data;
 };
 
+const formatDate = (date: string): string => {
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit' };
+  return new Date(date).toLocaleDateString('en-US', options);
+};
 
 const isPaginatedTransactionsResponse = (response: GetTransactionsResponse | PaginatedTransactionsResponse): response is PaginatedTransactionsResponse => {
   return (response as PaginatedTransactionsResponse).data !== undefined;
 };
-
 
 const isGetTransactionsResponse = (response: GetTransactionsResponse | PaginatedTransactionsResponse): response is GetTransactionsResponse => {
   return (response as GetTransactionsResponse).transactions !== undefined;
@@ -50,20 +49,25 @@ const Page = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchSession = async () => {
+    const fetchSessionAndRefreshToken = async () => {
       setLoading(true);
-      const sessionData = (await getSession()) as SessionDataType | null;
-      if (sessionData && sessionData.user) {
-        setSession(sessionData);
-      } else {
-        router.push(
-          `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
-        );
+      try {
+        const accessToken = await Refresh(); 
+        const sessionData = (await getSession()) as SessionDataType | null;
+        if (sessionData && sessionData.user) {
+          setSession({ user: { ...sessionData.user, access_token: accessToken } });
+        } else {
+          router.push(`/api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
+        }
+      } catch (error) {
+        console.error("Error fetching session or refreshing token:", error);
+        router.push(`/api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    fetchSession();
+    fetchSessionAndRefreshToken();
   }, [router]);
 
   useEffect(() => {
@@ -97,7 +101,7 @@ const Page = () => {
         loadCards();
       }
     }
-  }, [session]);
+  }, [session, page, size, cards.length]);
 
   useEffect(() => {
     const loadTransactions = async () => {
@@ -121,7 +125,6 @@ const Page = () => {
             const allTransactions = response.transactions.flatMap(transactionResponse => transactionResponse.data.content);
             setTransactions(allTransactions);
           } else {
-            
             console.error('Unknown response type:', response);
           }
         } catch (error) {
@@ -141,35 +144,11 @@ const Page = () => {
     setActiveTab(tab);
   };
 
-  const loadMoreCards = async () => {
-    if (session?.user?.access_token && hasMore) {
-      try {
-        setLoading(true);
-        const cardData = await getCards(session.user.access_token, page, size);
-        if (cardData.content.length > 0) {
-          setCards((prevCards) => [
-            ...prevCards.filter(card => !cardData.content.some(newCard => newCard.id === card.id)),
-            ...cardData.content
-          ]);
-          setPage((prevPage) => prevPage + 1);
-          if (cardData.content.length < size) {
-            setHasMore(false);
-          }
-        } else {
-          setHasMore(false);
-        }
-      } catch (error) {
-        console.error('Error fetching more cards:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
   return (
     <div className="bg-[#f5f7fa] py-4 px-8 max-w-full">
       {loading ? (
         <div className="animate-pulse">
+          {/* Shimmer for Cards Section */}
           <div className="flex flex-col md:flex-row md:space-x-8 mb-4">
             <div className="w-full md:w-1/3 lg:w-3/5">
               <div className="pt-4 flex items-center justify-between">
@@ -185,11 +164,15 @@ const Page = () => {
                 <div className="h-8 bg-gray-200 rounded-lg w-48"></div>
               </div>
             </div>
+
+            {/* Shimmer for BarChart Section */}
             <div className="w-full md:w-1/3 lg:w-1/5 mt-8 md:mt-0 pt-4 pb-8">
               <div className="h-8 bg-gray-200 rounded-lg mb-4"></div>
               <div className="h-64 bg-gray-200 rounded-lg"></div>
             </div>
           </div>
+
+          {/* Shimmer for Transactions Section */}
           <div className="mb-4 md:w-4/5 lg:w-10/12">
             <div className="h-8 bg-gray-200 rounded-lg mb-4"></div>
             <div className="h-8 bg-gray-200 rounded-lg w-1/4"></div>
@@ -208,7 +191,7 @@ const Page = () => {
                   </button>
                 </div>
 
-                <div className="flex overflow-x-auto space-x-6 scrollbar-hide gap-16 mt-4">
+                <div className="flex overflow-x-auto space-x-6 [&::-webkit-scrollbar]:hidden gap-16 mt-4">
                   {cards.length > 0 ? (
                     cards.map((item, index) => (
                       <div key={item.id} className="flex-shrink-0 w-72">
@@ -229,18 +212,6 @@ const Page = () => {
                     <div>No cards available</div>
                   )}
                 </div>
-
-                {hasMore && (
-                  <div className="mt-4 flex justify-center">
-                    <button
-                      className="px-4 py-2 text-sm font-bold text-white bg-blue-500 rounded"
-                      onClick={loadMoreCards}
-                      disabled={loading}
-                    >
-                      {loading ? 'Loading...' : 'Load More Cards'}
-                    </button>
-                  </div>
-                )}
               </div>
 
               <div className="w-full md:w-1/3 lg:w-1/5 mt-8 md:mt-0 pt-4 pb-8">

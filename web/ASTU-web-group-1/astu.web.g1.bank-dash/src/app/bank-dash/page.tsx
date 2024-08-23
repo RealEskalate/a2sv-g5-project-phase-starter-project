@@ -23,7 +23,6 @@ export default function Home() {
               <StoreProvider>
                 <MyCard />
                 <MyCard />
-                <TestNaol />
               </StoreProvider>
               <div className='w-[295px] h-[175px] bg-gray-200 rounded-3xl justify-center items-center flex flex-shrink-0'>
                 <Plus size={32} />

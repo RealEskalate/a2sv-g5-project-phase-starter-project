@@ -29,7 +29,7 @@ function LoginForm(req: any) {
 
   if (session.data) {
     // console.log('redirect user to posts', session);
-    router.push('/bank-dash');
+    // router.push('/bank-dash');
   }
 
   const {
@@ -67,7 +67,7 @@ function LoginForm(req: any) {
   return (
     <div className=' sm:min-w-[450px] max-w-lg shadow-lg rounded-xl p-3 mb-8 pb-14 space-y-5'>
       <h1 className='text-indigo-900 text-4xl m-5 text-center font-poppins font-[800]'>
-        Welcome Back
+        Bank Dash
       </h1>
       <div className='w-full flex justify-between px-5 my-4 mb-5'>
         <p className='min-w-32 border border-indigo-500'></p>
@@ -79,11 +79,11 @@ function LoginForm(req: any) {
             htmlFor='Email'
             className='block mb-1 font-epilogue text-sm font-[600] text-indigo-900'
           >
-            Email Address
+            Username
           </label>
           <input
             type='text'
-            id='email'
+            id='username'
             {...register('username')}
             className='w-full font-[600] font-epilogue outline-none rounded-lg p-2 text-indigo-950 text-sm border border-slate-400'
           />

@@ -1,8 +1,7 @@
 import Cookies from "js-cookie";
 
-
-const API_BASE_URL = 'https://bank-dashboard-1tst.onrender.com';
-const token = Cookies.get('accessToken')
+const API_BASE_URL = "https://bank-dashboard-o9tl.onrender.com";
+const token = Cookies.get("accessToken");
 
 // GET /transactions
 export const getAllTransactionsss = async () => {

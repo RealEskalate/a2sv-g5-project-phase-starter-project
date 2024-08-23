@@ -20,6 +20,5 @@ func IsAlreadyReacted(post *domain.Blog, user_id primitive.ObjectID) (bool, bool
 	// 		break
 	// 	}
 	// }
-	// return liked, disLike
 	return true, true
 }

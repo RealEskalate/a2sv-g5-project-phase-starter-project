@@ -3,10 +3,12 @@ package usecases
 import (
 	domain "blogs/Domain"
 	infrastructure "blogs/Infrastructure"
+	utils "blogs/Utils"
 	"context"
 	"strconv"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -17,12 +19,12 @@ type SignupUseCase struct {
 	passwordService          domain.PasswordService
 }
 
-func NewSignupUseCase(SignupRepository domain.SignupRepository,uvu domain.UnverifiedUserRepository, timeout time.Duration, passwordService domain.PasswordService) domain.SignupUseCase {
+func NewSignupUseCase(SignupRepository domain.SignupRepository, uvu domain.UnverifiedUserRepository, timeout time.Duration, passwordService domain.PasswordService) domain.SignupUseCase {
 	return &SignupUseCase{
-		SignupRepository: SignupRepository,
+		SignupRepository:         SignupRepository,
 		UnverifiedUserRepository: uvu,
-		contextTimeout:  timeout,
-		passwordService: passwordService}
+		contextTimeout:           timeout,
+		passwordService:          passwordService}
 }
 
 func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} {
@@ -47,14 +49,17 @@ func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} 
 	user.ID = idofNumber
 
 	// check if user already exists
-	existingUser, err := u.SignupRepository.FindUserByEmail(ctx, user.Email)
+	_, err := u.SignupRepository.FindUserByEmail(ctx, user.Email)
 
-	if err == nil && existingUser.Verified {
-		return &domain.ErrorResponse{Message: "User already exists", Status: 400}
-	} else if err == nil && !existingUser.Verified {
-		return u.HandleUnverifiedUser(c, existingUser)
+	if err == nil {
+		return &domain.ErrorResponse{Message: "User already exists please login", Status: 400}
 	}
+	existingUnverifiedUser, err := u.UnverifiedUserRepository.FindUnverifiedUser(ctx, user.Email)
 
+	if existingUnverifiedUser.Email != "" && err == nil {
+		return &domain.ErrorResponse{Message: "User already Registerd Verify Your account", Status: 400}
+
+	}
 	// hash the password
 	hashedPassword, err := u.passwordService.HashPassword(user.Password)
 
@@ -64,32 +69,39 @@ func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} 
 
 	user.Password = hashedPassword
 
-	// 15 minute for expiration
-	user.ExpiresAt = time.Now().Add(time.Minute * 2)
 
-	// send OTP
+	// Generate OTP
 	otp, err := infrastructure.GenerateOTP()
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error generating OTP", Status: 500}
 	}
 
 	// save OTP to db
-	user.Posts = make([]domain.Blog, 0)
-	_, err = u.SignupRepository.Create(ctx, user)
-	if err != nil {
-		return &domain.ErrorResponse{Message: "Error creating user", Status: 500}
+	user.PostsID = utils.MakePrimitiveList(0)
+	var newuser domain.UnverifiedUser
+	newuser.Email = user.Email
+	newuser.OTP = otp
+	newuser.ExpiresAt = time.Now().Add(time.Minute * 10)
+	exp := time.Now().Add(time.Hour * 10)
+	unverifiedClaim := domain.UnverifiedUserClaims{
+		User: user,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(exp), // Convert expiration time to *jwt.NumericDate
+		},
 	}
-
-	err = u.SignupRepository.SetOTP(ctx, user.Email, otp)
-
+	newuser.UserToken, err = infrastructure.CreateToken(unverifiedClaim, "unverified")
 	if err != nil {
-		return &domain.ErrorResponse{Message: "Error saving OTP", Status: 500}
+		return &domain.ErrorResponse{Message: "Error creating token", Status: 500}
 	}
 
 	err = infrastructure.SendOTPEmail(user.Email, otp)
 
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error sending OTP", Status: 500}
+	}
+	err = u.UnverifiedUserRepository.StoreUnverifiedUser(ctx, newuser)
+	if err != nil {
+		return &domain.ErrorResponse{Message: "Error creating user", Status: 500}
 	}
 
 	return &domain.SuccessResponse{Message: "Registerd Sucessfully Verify your account", Data: "", Status: 201}
@@ -102,30 +114,36 @@ func (u *SignupUseCase) VerifyOTP(c context.Context, otp domain.OtpToken) interf
 
 	// check if OTP is correct
 
-	user, err := u.SignupRepository.FindUserByEmail(ctx, otp.Email)
+	unverifiedUser, err := u.UnverifiedUserRepository.FindUnverifiedUser(ctx, otp.Email)
 	if err != nil {
 		return &domain.ErrorResponse{Message: "User not found", Status: 404}
 	}
+	user, err := infrastructure.ExtractFromToken(unverifiedUser.UserToken, "unverified")
+	if err != nil {
+		u.UnverifiedUserRepository.DeleteUnverifiedUser(ctx, otp.Email)
+		return &domain.ErrorResponse{Message: "Register Again", Status: 500}
+	}
 
-	if user.OTP != otp.OTP {
+	if unverifiedUser.OTP != otp.OTP {
 		return &domain.ErrorResponse{Message: "Invalid OTP", Status: 400}
 	}
 
 	// check if OTP is expired
-	if time.Now().After(user.ExpiresAt) {
-		return &domain.ErrorResponse{Message: "OTP expired", Status: 400}
+	if time.Now().After(unverifiedUser.ExpiresAt) {
+		return &domain.ErrorResponse{Message: "OTP expired resend OTP", Status: 400}
 	}
 
-	// update user
-	user.Verified = true
-	user.OTP = ""
-
-	verifiedUser, err := u.SignupRepository.VerifyUser(ctx, user)
-
+	// create Verified user
+	verifiedUser, err := u.SignupRepository.Create(ctx, user)
+	verifiedUser.Password = ""
+	
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error verifying user", Status: 500}
 	}
-
+	err=u.UnverifiedUserRepository.DeleteUnverifiedUser(ctx, otp.Email)
+	if err != nil {
+		return &domain.ErrorResponse{Message: "Error deleting unverified user", Status: 500}
+	}
 	return &domain.SuccessResponse{Message: "Account verified successfully", Data: verifiedUser, Status: 200}
 
 }
@@ -145,7 +163,7 @@ func (u *SignupUseCase) ForgotPassword(c context.Context, email domain.ForgotPas
 
 	// check if token is already set and the expiration time is not passed
 	if existing.ResetPasswordToken != "" && time.Now().Before(existing.ResetPasswordExpires) {
-		difftime := existing.ResetPasswordExpires.Sub(time.Now())
+		difftime := time.Until(existing.ResetPasswordExpires)
 		return &domain.ErrorResponse{Message: "Reset token already sent Please wait for " + strconv.FormatFloat(difftime.Minutes(), 'f', -1, 64) + " to resend reset token", Status: 400}
 	}
 
@@ -222,57 +240,58 @@ func (u *SignupUseCase) ResetPassword(c context.Context, password domain.ResetPa
 
 	return &domain.SuccessResponse{Message: "Password Reset Sucessfully", Status: 200}
 }
-
-func (u *SignupUseCase) HandleUnverifiedUser(c context.Context, user domain.User) interface{} {
+func (u *SignupUseCase) HandleUnverifiedUser(c context.Context, user domain.Email) interface{} {
 
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
-
-	if user.Username == "" {
-		existingUser, err := u.SignupRepository.FindUserByEmail(ctx, user.Email)
-		if err != nil {
-			return &domain.ErrorResponse{Message: "User not found", Status: 404}
-		}
-		user = existingUser
+  
+	email := user.Email
+  
+	// check if the user is already verified
+	_ , err := u.SignupRepository.FindUserByEmail(ctx, email)
+  
+	if err == nil { 
+	  return &domain.ErrorResponse{Message: "User Already Verified", Status: 404}
 	}
-	if user.Verified {
-		return &domain.ErrorResponse{Message: "User already verified", Status: 400}
+  
+	// check if the user is already registered
+  
+	existingUser, err := u.UnverifiedUserRepository.FindUnverifiedUser(ctx, email)
+  
+	if err != nil { 
+	  return &domain.ErrorResponse{Message: "User not found", Status: 404}
 	}
+  
 	// check if the user send the register button again Not to send the OTP again before the expiration time
-
-	if time.Now().Before(user.ExpiresAt) {
-		difftime := user.ExpiresAt.Sub(time.Now())
-
-		return &domain.ErrorResponse{Message: "Otp already Sent Please wait for " + strconv.FormatFloat(difftime.Minutes(), 'f', -1, 64) + " to resend OTP", Status: 400}
-
+  
+	if time.Now().Before(existingUser.ExpiresAt) {
+	  difftime := existingUser.ExpiresAt.Sub(time.Now())
+	  return &domain.ErrorResponse{Message: "Otp already Sent Please wait for " + strconv.FormatFloat(difftime.Minutes(), 'f', -1, 64)[:2] + " to resend OTP", Status: 400}
+  
 	}
-
-	user.ExpiresAt = time.Now().Add(time.Minute * 10)
-	_, err := u.SignupRepository.UpdateUser(ctx, user)
-
-	if err != nil {
-		return &domain.ErrorResponse{Message: "Error in setting Expiration time", Status: 500}
-	}
+  
 	// Generate OTP
 	otp, err := infrastructure.GenerateOTP()
-
-	if err != nil {
-		return &domain.ErrorResponse{Message: "Error generating OTP", Status: 500}
+  
+	if err != nil { 
+	  return &domain.ErrorResponse{Message: "Error in Generating OTP", Status: 500}
 	}
-
-	// SaveOTP to the DB
-	err = u.SignupRepository.SetOTP(ctx, user.Email, otp)
-
-	if err != nil {
-		return &domain.ErrorResponse{Message: "Error saving OTP", Status: 500}
+  
+	expiry := time.Now().Add(time.Minute * 10)
+  
+	_ , err  = u.UnverifiedUserRepository.UpdateOTP(ctx, email , otp , expiry)
+	if err != nil { 
+	  return &domain.ErrorResponse{Message: "Error in setting OTP ", Status: 500}
 	}
-
-	// Send The email
-	err = infrastructure.SendOTPEmail(user.Email, otp)
-
-	if err != nil {
-		return &domain.ErrorResponse{Message: "Error sending OTP", Status: 500}
+  
+	// send OTP
+	err = infrastructure.SendOTPEmail(email, otp)
+  
+	if err != nil { 
+	  return &domain.ErrorResponse{Message: "Error sending OTP", Status: 500}
 	}
-
+  
 	return &domain.SuccessResponse{Message: "OTP send to your Email Verify Your Account", Data: "", Status: 201}
-}
+  
+  }
+  

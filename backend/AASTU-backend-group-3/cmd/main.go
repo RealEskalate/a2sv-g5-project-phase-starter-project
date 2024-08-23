@@ -11,6 +11,7 @@ func main() {
     db.ConnectDB(config.EnvConfigs.MongoURI)
       
     router := routers.SetupRouter()
+    router.Run(":3000")
 
     router.Run(config.EnvConfigs.LocalServerPort)
 }

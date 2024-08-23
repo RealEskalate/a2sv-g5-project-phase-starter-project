@@ -6,8 +6,9 @@ import (
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/chat"
 	"github.com/gin-gonic/gin"
 )
+
 func SetUpChatRouter(r *gin.Engine, chatHandler *ChatHandler, chatUsecase *chat.ChatUsecase) {
-	r.GET("/", AuthMiddleware(),chatHandler.GetChatsHandler)
+	r.GET("/", AuthMiddleware(), chatHandler.GetChatsHandler)
 	r.POST("/", AuthMiddleware(), chatHandler.CreateChatHandler)
 	r.POST("/", AuthMiddleware(), chatHandler.GenerateChatTitleHandler)
 	r.GET("/:id", AuthMiddleware(), chatHandler.GetChatHandler)
@@ -19,7 +20,7 @@ func SetUpBlogRouter(r *gin.Engine, blogController *BlogController, blogUseCase 
 	r.POST("/", AuthMiddleware(), blogController.CreateBlog)
 	r.GET("/", AuthMiddleware(), blogController.GetBlogs)
 	r.GET("/:id", AuthMiddleware(), blogController.GetBlogByID)
-	r.PUT("/:id", AuthMiddleware(), blogController.UpdateBlog)	
+	r.PUT("/:id", AuthMiddleware(), blogController.UpdateBlog)
 	r.DELETE("/:id", AuthMiddleware(), blogController.DeleteBlog)
 	r.GET("/search", AuthMiddleware(), blogController.SearchBlogs)
 	r.GET("/:id/comments", AuthMiddleware(), blogController.GetCommentsByBlogID)
@@ -31,7 +32,7 @@ func SetUpBlogRouter(r *gin.Engine, blogController *BlogController, blogUseCase 
 	r.DELETE("/:id/undislike", AuthMiddleware(), blogController.UnDislikeBlog)
 }
 
-func SetUpAuthRouter(r *gin.Engine, userController *UserController, authUsecase *auth.AuthServices) {
+func SetUpAuthRouter(r *gin.Engine, userController *AuthController, authUsecase *auth.AuthServices) {
 	r.POST("/login", AuthMiddleware(), userController.Login)
 	r.POST("/register", AuthMiddleware(), userController.RegisterUser)
 	r.PUT("/profile", AuthMiddleware(), userController.UpdateProfile)

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -6,7 +6,8 @@ import ToggleSwitch from './ToggleSwitch';
 import { MainData } from './Signup'; 
 import { useSignUpMutation } from '@/lib/service/TransactionService';
 import { useRouter } from 'next/navigation'; 
-import notify from "@/utils/notify"
+import { signIn } from 'next-auth/react';
+import notify from '@/utils/notify';
 const schema = Yup.object().shape({
   currency: Yup.string().required('Currency is required'),
   timeZone: Yup.string().required('TimeZone is required'),
@@ -50,8 +51,9 @@ const YourFormComponent: React.FC<YourFormComponentProps> = ({ setMainData, main
     },
   });
   const [signUp,{isLoading}] = useSignUpMutation();
-  
+  const [posting,setIsPosting] = useState(false);
   const onSubmit = async (data: FormValues) => {
+    setIsPosting(true)
     const formattedData = {
       ...mainData,
       preference: {
@@ -69,8 +71,19 @@ const YourFormComponent: React.FC<YourFormComponentProps> = ({ setMainData, main
     const res = await signUp(formattedData);
   
     if ('data' in res) {
-      notify.success('Signup successful');
-      router.push('/login');
+      const loginRes = await signIn("credentials", {
+        userName: mainData.username,
+        password: mainData.password,
+        redirect: false,
+      });
+      if (!loginRes?.ok) {
+        notify.error("Invalid Credentials");
+      } else {
+        notify.success('Signup successful');
+     
+        router.push("/dashboard");
+      }
+      
     } else if ('error' in res) {
       let errorMessage = 'Signup failed';
       if (res.error && 'data' in res.error) {
@@ -80,6 +93,7 @@ const YourFormComponent: React.FC<YourFormComponentProps> = ({ setMainData, main
       notify.error(errorMessage);
       console.error('Signup failed', res.error);
     }
+    setIsPosting(false)
   };
 
   return (
@@ -155,10 +169,10 @@ const YourFormComponent: React.FC<YourFormComponentProps> = ({ setMainData, main
       <div className='flex justify-end'>
         <button
           type='submit'
-          className='w-full md:w-auto px-4 py-2 bg-blue-500 text-white rounded-lg'
-          disabled = {isLoading}
-        >
-          Register
+          className='w-full md:w-auto px-4 py-2 bg-[#083E9E] text-white rounded-lg'
+          disabled = {posting}
+        >{posting?<div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin [animation-duration:3s]  border-white mx-auto"></div>:"Register"}
+          
         </button>
       </div>
     </form>

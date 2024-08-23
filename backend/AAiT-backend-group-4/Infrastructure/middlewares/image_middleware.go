@@ -14,6 +14,15 @@ import (
 )
 
 // ImageUploadMiddleware checks and processes the uploaded image
+// ImageUploadMiddleware is a middleware function that handles the uploading of images.
+// It retrieves the image from the request form, validates its type, creates a directory for the user if it doesn't exist,
+// generates a unique filename for the image, saves the image to the user's directory, and passes the image path to the next handler.
+//
+// Parameters:
+//   - c: A pointer to the gin.Context object representing the current HTTP request and response.
+//
+// Returns:
+//   - A gin.HandlerFunc that performs the image upload middleware logic.
 func ImageUploadMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 

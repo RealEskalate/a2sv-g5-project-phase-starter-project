@@ -13,6 +13,12 @@ type LoginController struct {
 	Env          *bootstrap.Env
 }
 
+// Login is a method of the LoginController struct that handles the login functionality.
+// It receives a gin.Context object as a parameter and binds the JSON request to the domain.LoginRequest struct.
+// If the JSON binding fails, it returns a JSON response with a bad request error.
+// Otherwise, it calls the LoginWithIdentifier method of the LoginUsecase to perform the login operation.
+// If the login operation fails, it returns a JSON response with an error message.
+// Finally, it returns a JSON response with the access token and refresh token.
 func (lc *LoginController) Login(c *gin.Context) {
 	var request domain.LoginRequest
 

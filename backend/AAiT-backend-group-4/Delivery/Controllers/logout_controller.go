@@ -1,8 +1,9 @@
 package controllers
 
 import (
+	domain "aait-backend-group4/Domain"
 	"net/http"
-	"aait-backend-group4/Domain"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,9 +14,9 @@ type LogoutController struct {
 
 // NewLogoutController creates a new instance of LogoutController with the given LogoutUsecase.
 func NewLogoutController(logoutUsecase domain.LogoutUsecase) *LogoutController {
-    return &LogoutController{
-        LogoutUsecase: logoutUsecase,
-    }
+	return &LogoutController{
+		LogoutUsecase: logoutUsecase,
+	}
 }
 
 // Logout handles user logout requests.

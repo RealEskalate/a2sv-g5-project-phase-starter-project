@@ -10,6 +10,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// AuthMiddleware is a middleware function that handles authentication for incoming requests.
+// It checks the Authorization header for a valid access token and refresh token.
+// If the access token is valid, it extracts the claims and sets them in the context.
+// If the access token is invalid or expired, it checks the refresh token.
+// If the refresh token is valid, it issues new access and refresh tokens.
+// If the refresh token is invalid or expired, it returns an error response.
+// The middleware function requires an instance of bootstrap.Env and domain.TokenInfrastructure as parameters.
+// It returns a gin.HandlerFunc that can be used as middleware in a Gin router.
 func AuthMiddleware(env *bootstrap.Env, tokenService domain.TokenInfrastructure) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")

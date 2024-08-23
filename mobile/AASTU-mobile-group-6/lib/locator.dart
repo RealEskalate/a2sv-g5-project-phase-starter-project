@@ -1,4 +1,5 @@
 import 'package:ecommerce_app_ca_tdd/core/network/network_info.dart';
+import 'package:ecommerce_app_ca_tdd/extra/theme_cubit.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/data_sources/local_data_source/local_data_source.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/data_sources/remote_data_source/remote_data_source.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/repositories/product_repository_impl.dart';
@@ -76,6 +77,7 @@ Future<void> init() async {
     AddProductUseCase(sl())));
     sl.registerFactory(()=> UpdateBloc(
     UpdateUsecase(sl())));
+    sl.registerFactory(()=> ThemeCubit());
     
     // Auth Bloc
     sl.registerFactory(()=> SignUpBloc(RegisterUser(sl())));

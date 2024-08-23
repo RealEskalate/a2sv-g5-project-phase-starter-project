@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:ecommerce_app_ca_tdd/extra/dark_mode.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/models/product_models.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/data/models/user_access.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/data/models/user_model.dart';
@@ -128,38 +129,43 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Color.fromRGBO(221, 221, 221, 1), width: 2),
-                        borderRadius: BorderRadius.circular(9)),
-                          child: GestureDetector(
-                              onTap: (){
-                                  showDialog(
-                                      context: context, 
-                                      builder: (context)=> AlertDialog(
-                                        title: Text("Are you sure you want to logout ?",style: GoogleFonts.poppins(fontSize: 15),),
-                                        actions: [
-                                          TextButton(onPressed: (){
-                                            Navigator.pop(context);
-                                          }, child: Text("Cancel")),
-                                          TextButton(
-                                            onPressed: (){
-                                              logOut();
-                                              Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => true);
-                                            },
-                                            child: Text("Log-Out")
-                                            )
-                                        ],
-                                                                  )
-                                                                );
-                              },
-                      child: Image(
-                          width: 40,
-                          height: 40,
-                          image: AssetImage(
-                              'assets/icons8-notification-bell-24.png')),
-                    ))
+                Row(
+                  children: [
+                    const DarkMode(),
+                    Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Color.fromRGBO(221, 221, 221, 1), width: 2),
+                            borderRadius: BorderRadius.circular(9)),
+                              child: GestureDetector(
+                                  onTap: (){
+                                      showDialog(
+                                          context: context, 
+                                          builder: (context)=> AlertDialog(
+                                            title: Text("Are you sure you want to logout ?",style: GoogleFonts.poppins(fontSize: 15),),
+                                            actions: [
+                                              TextButton(onPressed: (){
+                                                Navigator.pop(context);
+                                              }, child: Text("Cancel")),
+                                              TextButton(
+                                                onPressed: (){
+                                                  logOut();
+                                                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => true);
+                                                },
+                                                child: Text("Log-Out")
+                                                )
+                                            ],
+                                                                      )
+                                                                    );
+                                  },
+                          child: Image(
+                              width: 40,
+                              height: 40,
+                              image: AssetImage(
+                                  'assets/icons8-notification-bell-24.png')),
+                        )),
+                  ],
+                )
               ],
             ),
 

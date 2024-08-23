@@ -29,6 +29,7 @@ func RegisterBlogRoutes(router *gin.Engine) {
 		blogRoutes.POST("/views", blogHandler.AddViewHandler)
 		blogRoutes.DELETE("/comments/:id", blogHandler.DeleteCommentHandler)
 		blogRoutes.DELETE("/likes/:id", blogHandler.DeleteLikeHandler)
+		blogRoutes.POST("/uploads", blogHandler.UploadBlogPhotos)
 		// blogRoutes.GET("")
 
 	}

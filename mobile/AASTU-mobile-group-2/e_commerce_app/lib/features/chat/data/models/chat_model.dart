@@ -1,5 +1,4 @@
 import 'package:e_commerce_app/features/auth/data/models/user_model.dart';
-import 'package:e_commerce_app/features/chat/data/models/message_model.dart';
 import 'package:e_commerce_app/features/chat/domain/entities/chat_entity.dart';
 
 class ChatModel extends ChatEntity {

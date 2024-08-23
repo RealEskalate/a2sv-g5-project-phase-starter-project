@@ -43,6 +43,6 @@ Cypress.Commands.add("login", () => {
   cy.get('input[name="password"]').type("testjrtestjr");
 
   cy.get('button[type="submit"]').click();
-
+  cy.wait(5000);
   cy.url().should("not.include", "/login");
 });

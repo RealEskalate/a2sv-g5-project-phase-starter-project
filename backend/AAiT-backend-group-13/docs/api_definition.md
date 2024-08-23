@@ -1,3 +1,7 @@
+# API definition
+
+[here is a postman docs](https://documenter.getpostman.com/view/37481680/2sAXjF7ZRt)
+
 ### 1. **Signup**
 
 - **Endpoint:** `POST /api/v1/auth/signup`

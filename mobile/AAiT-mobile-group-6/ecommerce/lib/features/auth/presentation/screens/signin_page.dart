@@ -33,6 +33,7 @@ class SigninPage extends StatelessWidget {
                 fontSize: 45,
                 fontWeight: FontWeight.bold,
                 color: Color.fromARGB(255, 33, 68, 243),
+                fontFamily: 'Caveat Brush',
               ),
             ),
           ),

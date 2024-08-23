@@ -67,6 +67,7 @@ class _SignupPageState extends State<SignupPage> {
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 33, 68, 243),
+                            fontFamily: 'Caveat Brush',
                           ),
                         ),
                       ),
@@ -83,7 +84,7 @@ class _SignupPageState extends State<SignupPage> {
                 ),
               ),
               Container(
-                  margin: EdgeInsets.symmetric(horizontal: 42, vertical: 40),
+                  margin: const EdgeInsets.symmetric(horizontal: 42, vertical: 40),
                   child: Column(
                     children: [
                       MyTextField(
@@ -120,16 +121,16 @@ class _SignupPageState extends State<SignupPage> {
                               });
                             },
                           ),
-                          Text(
+                          const Text(
                             'I understood the',
                             style: TextStyle(
                               fontSize: 15,
-                              color: const Color.fromARGB(255, 149, 148, 148),
+                              color: Color.fromARGB(255, 149, 148, 148),
                             ),
                           ),
                           GestureDetector(
                             onTap: () => {},
-                            child: Text('terms & policy.',
+                            child: const Text('terms & policy.',
                                 style: TextStyle(
                                   color: Color.fromARGB(255, 38, 80, 232),
                                 )),
@@ -157,21 +158,21 @@ class _SignupPageState extends State<SignupPage> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(left: 70, right: 60, top: 50),
+                margin: const EdgeInsets.only(left: 70, right: 60, top: 50),
                 child: Row(
                   children: [
-                    Text(
+                    const Text(
                       ' Have an account? ',
                       style: TextStyle(
                           fontSize: 15,
-                          color: const Color.fromARGB(255, 149, 148, 148)),
+                          color: Color.fromARGB(255, 149, 148, 148)),
                       textAlign: TextAlign.center,
                     ),
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(context, '/signin_page');
                       },
-                      child: Text('SIGN IN',
+                      child: const Text('SIGN IN',
                           style: TextStyle(
                             color: Color.fromARGB(255, 38, 80, 232),
                           )),

@@ -3,8 +3,8 @@ package email
 import (
 	"blogApp/internal/config"
 	"fmt"
-	"io/ioutil"
 	"net/smtp"
+	"os"
 	"strings"
 )
 
@@ -60,7 +60,7 @@ func (s *SimpleEmailSender) SendPasswordResetEmail(userEmail string, token strin
 }
 
 func (s *SimpleEmailSender) loadHTML(filename string) (string, error) {
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return "", err
 	}

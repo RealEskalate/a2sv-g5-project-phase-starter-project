@@ -19,8 +19,13 @@ func (h *BlogHandler) GetBlogByIDHandler(c *gin.Context) {
 
 	blogId := c.Param("id")
 	blog, err := h.UseCase.GetBlogByID(context.Background(), blogId, userId)
+
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	if blog == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Blog not found"})
 		return
 	}
 

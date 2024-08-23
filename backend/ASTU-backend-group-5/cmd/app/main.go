@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	// os.Clearenv()
 	confs, err := config.Load()
 	if err != nil {
 		panic(err)
@@ -17,16 +18,9 @@ func main() {
 	defer mongo.DisconnectDB()
 	mongo.InitializeCollections()
 
-	userCollection := mongo.UserCollection
-	blogCollection := mongo.BlogsCollection
-	commentCollection := mongo.CommentsCollection
-	likeCollection := mongo.LikesCollection
-	viewCollection := mongo.ViewsCollection
-	tagCollection := mongo.TagsCollection
-
 	router := gin.Default()
 	// Serve static files from the "upload" directory
 	router.Static("/uploads", "./uploads")
-	routes.SetUpRoute(router, blogCollection, commentCollection, likeCollection, viewCollection, tagCollection, userCollection)
+	routes.SetUpRoute(router)
 	router.Run(":" + confs.GO_PORT)
 }

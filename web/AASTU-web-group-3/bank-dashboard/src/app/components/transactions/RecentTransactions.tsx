@@ -21,6 +21,7 @@ import {
 
 import { setCards } from '@/lib/redux/slices/cardsSlice';
 import { RootState } from "@/lib/redux/store";
+import Loading from '@/app/loading';
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -180,7 +181,7 @@ const RecentTransactions = () => {
   
   
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
   if (error) return <div>{error}</div>;
 
   return (

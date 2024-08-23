@@ -217,3 +217,21 @@ func (userRepo *userRepository) Delete(cxt context.Context, id string) domain.Er
 	}
 	return nil
 }
+
+func (userRepo *userRepository) UploadProfilePicture(cxt context.Context, picture domain.Photo, id string) domain.Error {
+	updateID, errIDParse := primitive.ObjectIDFromHex(id)
+	if errIDParse != nil {
+		return domain.CustomError{Message: fmt.Sprintln("error parsing the user id."), Code: http.StatusInternalServerError}
+	}
+	filter := bson.D{{Key: "_id", Value: updateID}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "profile_picture", Value: picture}}}}
+	opts := options.Update().SetUpsert(false)
+	updateResult, errUpdate := userRepo.collection.UpdateOne(cxt, filter, update, opts)
+	if errUpdate != nil {
+		return domain.CustomError{Message: fmt.Sprintf("error updating the user profile_picture. %v \n", errUpdate.Error()), Code: http.StatusInternalServerError}
+	}
+	if updateResult.MatchedCount == 0 {
+		return domain.CustomError{Message: fmt.Sprintln("user not found"), Code: http.StatusNotFound}
+	}
+	return nil
+}

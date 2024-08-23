@@ -79,6 +79,26 @@ func (userController *userController) Login(cxt *gin.Context) {
 	cxt.JSON(http.StatusOK, gin.H{"data": loginResult})
 }
 
+func (userController *userController) RefreshToken(cxt *gin.Context) {
+	var refreshToken struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+
+	errUnmarshal := cxt.ShouldBind(&refreshToken)
+	if errUnmarshal != nil {
+		cxt.JSON(http.StatusInternalServerError, gin.H{"Error": errUnmarshal.Error()})
+		return
+	}
+
+	refreshResult, errRefresh := userController.UserUseCase.RefreshToken(cxt, refreshToken.RefreshToken)
+	if errRefresh != nil {
+		cxt.JSON(http.StatusInternalServerError, gin.H{"Error": errRefresh.Error()})
+		return
+	}
+
+	cxt.JSON(http.StatusOK, gin.H{"data": refreshResult})
+}
+
 func (userController *userController) ForgotPassword(cxt *gin.Context) {
 	var email struct {
 		Email string `json:"email"`
@@ -203,7 +223,9 @@ func (userController *userController) ImageUpload(cxt *gin.Context) {
 	}
 	defer file.Close()
 
-	errUpload := userController.UserUseCase.ImageUpload(cxt, &file, header)
+	userID := cxt.Param("id")
+
+	errUpload := userController.UserUseCase.ImageUpload(cxt, &file, header, userID)
 	if errUpload != nil {
 		cxt.JSON(errUpload.StatusCode(), gin.H{"Error": errUpload.Error()})
 		return

@@ -9,7 +9,7 @@ import (
 )
 
 func SetUpAi(router *gin.Engine) {
-	
+
 	geminiApiKey := config.EnvConfigs.GEMINI_API_KEY
 
 	// Initialize the use case

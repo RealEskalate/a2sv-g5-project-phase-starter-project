@@ -2,12 +2,12 @@ package controllers
 
 import (
 	"net/http"
-
-	"group3-blogApi/domain"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"group3-blogApi/domain"
 )
 
 type CommentController struct {
@@ -35,8 +35,6 @@ func (c *CommentController) CreateComment(ctx *gin.Context) {
 		return
 	}
 
-
-
 	createdComment, err := c.commentUsecase.CreateComment(&comment)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -45,7 +43,7 @@ func (c *CommentController) CreateComment(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{
 		"message": "Comment created successfully",
-		
+
 		"data": createdComment,
 	})
 }
@@ -61,7 +59,7 @@ func (c *CommentController) UpdateComment(ctx *gin.Context) {
 	commentID := ctx.Param("id")
 	userID := ctx.GetString("user_id")
 	Roles := ctx.GetString("role")
-	
+
 	commentIDObj, err := primitive.ObjectIDFromHex(commentID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -77,7 +75,7 @@ func (c *CommentController) UpdateComment(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Comment updated successfully",
-		
+
 		"data": updatedComment,
 	})
 }
@@ -86,7 +84,6 @@ func (c *CommentController) DeleteComment(ctx *gin.Context) {
 	commentID := ctx.Param("id")
 	userID := ctx.GetString("user_id")
 	Roles := ctx.GetString("role")
-	
 
 	deletedComment, err := c.commentUsecase.DeleteComment(commentID, Roles, userID)
 	if err != nil {
@@ -95,8 +92,8 @@ func (c *CommentController) DeleteComment(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Comment deleted successfully", 
-		"data": deletedComment,
+		"message": "Comment deleted successfully",
+		"data":    deletedComment,
 	})
 }
 
@@ -117,19 +114,18 @@ func (c *CommentController) GetComments(ctx *gin.Context) {
 	page := ctx.DefaultQuery("page", "1")
 	limit := ctx.DefaultQuery("limit", "10")
 
-
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	comments, err := c.commentUsecase.GetComments(postID, pageInt, limitInt)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -154,7 +150,7 @@ func (c *CommentController) CreateReply(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{
 		"message": "Reply created successfully",
-		"data": createdReply,
+		"data":    createdReply,
 	})
 }
 
@@ -171,7 +167,7 @@ func (c *CommentController) UpdateReply(ctx *gin.Context) {
 	replyIDObj, err := primitive.ObjectIDFromHex(replyID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return 
+		return
 	}
 	reply.ID = replyIDObj
 
@@ -183,7 +179,7 @@ func (c *CommentController) UpdateReply(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Reply updated successfully",
-		"data": updatedReply,
+		"data":    updatedReply,
 	})
 }
 
@@ -200,7 +196,7 @@ func (c *CommentController) DeleteReply(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Reply deleted successfully",
-		"data": deletedReply,
+		"data":    deletedReply,
 	})
 }
 
@@ -214,7 +210,7 @@ func (c *CommentController) GetReplies(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -228,14 +224,13 @@ func (c *CommentController) GetReplies(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Replies retrieved successfully",
-		"data": replies,
+		"data":    replies,
 	})
 }
 
 func (c *CommentController) LikeComment(ctx *gin.Context) {
 	commentID := ctx.Param("id")
 	userID := ctx.GetString("user_id")
-
 
 	if err := c.commentUsecase.LikeComment(commentID, userID); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

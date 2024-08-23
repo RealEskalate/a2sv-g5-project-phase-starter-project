@@ -2,9 +2,10 @@ package usecase
 
 import (
 	"errors"
-	"group3-blogApi/domain"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"group3-blogApi/domain"
 )
 
 type commentUsecase struct {

@@ -74,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ show, setter }) => {
             alt="bankDash logo"
             className="mr-3"
           />
-          <p className="font-black lg:text-[25px] text-[#343C6A] md:text-[25px] sm:text-[20px] text-[16px]">
+          <p className="font-black text-[25px] text-[#343C6A]">
             BankDash.
           </p>
         </div>

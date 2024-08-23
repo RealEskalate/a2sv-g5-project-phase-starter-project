@@ -67,3 +67,17 @@ func (u *UserController) UpdateProfile(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User profile updated successfully"})
 }
+
+func (u *UserController) GetUserByID(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	user, cerr := u.userUseCase.GetUserByID(id)
+	if cerr != nil {
+		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}

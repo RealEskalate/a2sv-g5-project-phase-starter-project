@@ -20,7 +20,7 @@ func (cont *CommentController) GetComments(c *gin.Context) {
 	}
 	comments, cerr := cont.CommentUsecase.GetComments(blogID)
 	if cerr != nil {
-		c.JSON(cerr.StatusCode, gin.H{"error": err.Error()})
+		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"comments": comments})

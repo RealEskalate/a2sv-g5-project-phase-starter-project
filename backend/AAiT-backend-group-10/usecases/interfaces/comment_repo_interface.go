@@ -12,4 +12,5 @@ type CommentRepositoryInterface interface {
 	AddComment(comment domain.Comment) *domain.CustomError
 	UpdateComment(updatedComment domain.Comment) *domain.CustomError
 	DeleteComment(commentID uuid.UUID) *domain.CustomError
+	DeleteCommentsByBlog(blogID uuid.UUID) *domain.CustomError
 }

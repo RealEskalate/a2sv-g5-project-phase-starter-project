@@ -28,7 +28,8 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, gin *g
 	protectedRouter := gin.Group("")
 	protectedRouter.Use(middleware.JwtAuthMiddleware(env.AccessTokenSecret))
 
-	// All Private APIs
-	NewPrivateBlogsRouter(env, timeout, db, protectedRouter)
+	// All Protected APIs
+	NewProtectedBlogsRouter(env, timeout, db, protectedRouter)
 	NewProfileRouter(env, timeout, db, protectedRouter, cloudinary)
+	NewChatRouter(env, timeout, protectedRouter)
 }

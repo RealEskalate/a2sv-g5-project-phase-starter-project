@@ -83,23 +83,33 @@ func (ur *userRepository) GetUserByEmail(c context.Context, email string) (*doma
 	return &user, err
 }
 
-func (ur *userRepository) GetUsers(c context.Context, limit int64, page int64) (*[]domain.User, mongopagination.PaginationData, error) {
+func (ur *userRepository) GetUsers(c context.Context, filter bson.M, userFilter domain.UserFilter) (*[]domain.User, mongopagination.PaginationData, error) {
 	collection := ur.database.Collection(ur.collection)
-	projection := bson.D{
-		{Key: "password", Value: 0},
-		{Key: "tokens", Value: 0},
-		{Key: "is_owner", Value: 0},
-	}
 
-	var users []domain.User
+	projectQuery := bson.M{"$project": bson.M{
+		"password":     0,
+		"tokens":       0,
+		"verfiy_token": 0,
+		"is_owner":     0,
+	}}
 
-	paginatedData, err := mongopagination.New(collection).Context(c).Limit(limit).Page(page).Select(projection).Decode(&users).Find()
+	var aggUserList []domain.User = make([]domain.User, 0)
+
+	paginatedData, err := mongopagination.New(collection).Context(c).Limit(userFilter.Limit).Page(userFilter.Pages).Aggregate(filter, projectQuery)
 
 	if err != nil {
 		return &[]domain.User{}, mongopagination.PaginationData{}, err
 	}
 
-	return &users, paginatedData.Pagination, nil
+	for _, raw := range paginatedData.Data {
+		var user *domain.User
+		if marshallErr := bson.Unmarshal(raw, &user); marshallErr == nil {
+			aggUserList = append(aggUserList, *user)
+		}
+
+	}
+
+	return &aggUserList, paginatedData.Pagination, nil
 
 }
 
@@ -121,7 +131,7 @@ func (ur *userRepository) RevokeRefreshToken(c context.Context, userID, refreshT
 	return nil
 }
 
-func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *domain.User) (*domain.User, error) {
+func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *domain.UserUpdate) (*domain.User, error) {
 	collection := ur.database.Collection(ur.collection)
 	id, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {

@@ -40,7 +40,7 @@ flutter:
   fonts:
     - family: Caveat Brush
       fonts:
-        - asset: fonts/CaveatBrush-Regular.ttf
+        - asset: assets/fonts/CaveatBrush-Regular.ttf
     - family: Poppins
       fonts:
         - asset: assets/fonts/poppins/Poppins-Regular.ttf

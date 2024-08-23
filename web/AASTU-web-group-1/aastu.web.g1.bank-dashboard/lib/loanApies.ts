@@ -4,7 +4,7 @@ export  async function getLoansAll(page:number, size:number) {
     try {
         const session = await getSession();
         const accessToken = session?.user.accessToken;
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/active-loans/all`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/active-loans/all?page=${page}&size=${size}`, {
             method: "GET",
             cache: "reload",
             headers: {
@@ -19,7 +19,7 @@ export  async function getLoansAll(page:number, size:number) {
             throw new Error("failed to get data");
         }
     } catch (error) {
-      console.error("An error occurred on card:", error);
+      console.error("An error occurred on table:", error);
     }
 }
 

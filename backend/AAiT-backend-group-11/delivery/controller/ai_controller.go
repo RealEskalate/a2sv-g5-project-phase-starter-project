@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"backend-starter-project/domain/dto"
 	"backend-starter-project/service"
 	"net/http"
 
@@ -22,20 +23,29 @@ func (acc *AIContentController) GenerateContentSuggestions(c *gin.Context) {
 		Keywords []string `json:"keywords"`
 	}
 
+	var response dto.Response
+
+
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		response.Success = false
+		response.Error = "Invalid request payload"
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	contentSuggestion, err := acc.aiContentService.GenerateContentSuggestions( req.Keywords)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.Success = false
+		response.Error = "Error generating content suggestions"
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	response.Success = true
+	response.Data = gin.H{
 		"content": contentSuggestion,
-	})
+	}
+	c.JSON(http.StatusOK, response)
 }
 
 func (acc *AIContentController) SuggestContentImprovements(c *gin.Context) {
@@ -44,16 +54,27 @@ func (acc *AIContentController) SuggestContentImprovements(c *gin.Context) {
 		Instruction string `json:"instruction"`
 	}
 
+	var response dto.Response
+
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		response.Success = false
+		response.Error = "Invalid request payload"
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	contentSuggestion, err := acc.aiContentService.SuggestContentImprovements(req.BlogPostID, req.Instruction)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.Success = false
+		response.Error = "Error suggesting content improvements"
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, contentSuggestion)
+
+	response.Success = true
+	response.Data = gin.H{
+		"suggestion result": contentSuggestion,
+	}
+	c.JSON(http.StatusOK, response)
 }

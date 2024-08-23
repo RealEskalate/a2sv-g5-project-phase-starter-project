@@ -122,14 +122,14 @@ export default function Home() {
         <div className=" ">
           <div className="col-span-2 lg:col-span-1">
             <div className="my-4 bg-gray-300 dark:bg-gray-700 rounded-lg h-8 w-1/3"></div>
-            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
-            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
-            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
-            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
-            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
-            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
-            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
-            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 m-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 my-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 my-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 my-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 my-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 my-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 my-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 my-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-10 my-3"></div>
           </div>
         </div>
       </div>

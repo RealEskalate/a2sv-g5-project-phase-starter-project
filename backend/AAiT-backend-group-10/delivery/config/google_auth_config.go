@@ -1,21 +1,13 @@
-package controllers
+package config
 
 import (
-	"log"
-	"os"
-
-	"github.com/joho/godotenv"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
 
 func Config() *oauth2.Config {
-	err := godotenv.Load("../.env")
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-	var Client_se = os.Getenv("GOOGLE_CLIENT_SECRET")
-	var client_id = os.Getenv("GOOGLE_CLIENT_ID")
+	var Client_se = ENV.GOOGLE_CLIENT_SECRET
+	var client_id = ENV.GOOGLE_CLIENT_ID
 	var (
 		GoogleOAuthConfig = &oauth2.Config{
 			ClientID:     client_id,

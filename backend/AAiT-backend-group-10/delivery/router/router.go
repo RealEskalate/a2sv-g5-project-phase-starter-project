@@ -1,8 +1,7 @@
 package router
 
 import (
-	"os"
-
+	"aait.backend.g10/delivery/config"
 	"aait.backend.g10/delivery/controllers"
 	"aait.backend.g10/infrastructures"
 	"github.com/gin-gonic/gin"
@@ -57,6 +56,5 @@ func NewRouter(db *mongo.Database, redisClient *redis.Client, routerControllers 
 	router.GET("/auth/google", routerControllers.AuthController.HandleGoogleLogin)
 	router.GET("/auth/google/callback", routerControllers.AuthController.HandleGoogleCallback)
 
-	port := os.Getenv("PORT")
-	router.Run(":" + port)
+	router.Run(":" + config.ENV.PORT)
 }

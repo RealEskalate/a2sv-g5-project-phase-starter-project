@@ -3,34 +3,37 @@ package main
 import (
 	"context"
 	"log"
-	"os"
 
-	"aait.backend.g10/repositories"
-	"aait.backend.g10/usecases"
+	"aait.backend.g10/delivery/config"
 	"aait.backend.g10/delivery/controllers"
 	"aait.backend.g10/delivery/router"
 	"aait.backend.g10/infrastructures"
+	"aait.backend.g10/repositories"
+	"aait.backend.g10/usecases"
 	"github.com/go-redis/redis/v8"
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
-	err := godotenv.Load("../.env")
+	// load environment variables
+	err := config.LoadEnvironmentVariables()
 	if err != nil {
-		log.Fatalf("Error loading .env file")
+		log.Fatal(err.Error())
+		return
 	}
-	clientOption := options.Client().ApplyURI(os.Getenv("DB_URI"))
+
+
+	clientOption := options.Client().ApplyURI(config.ENV.DB_URI)
 	client, err := mongo.Connect(context.TODO(), clientOption)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	db := client.Database(os.Getenv("DB_NAME"))
+	db := client.Database(config.ENV.DB_NAME)
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_ADDR"),
-		Password: os.Getenv("REDIS_PASSWORD"),
+		Addr:     config.ENV.REDIS_ADDR,
+		Password: config.ENV.REDIS_PASSWORD,
 		DB:       0,
 	})
 	_, err = redisClient.Ping(context.Background()).Result()
@@ -38,41 +41,36 @@ func main() {
 		log.Fatal(err)
 	}
 
-	email := os.Getenv("EMAIL")
-	password := os.Getenv("EMAIL_PASSWORD")
-	username := os.Getenv("EMAIL_USERNAME")
-	host := os.Getenv("EMAIL_HOST")
+	aiService := infrastructures.NewAIService(config.ENV.GEMINI_API_KEY)
+	jwtService := infrastructures.JwtService{JwtSecret: config.ENV.JWT_SECRET}
+	pwdService := infrastructures.HashingService{}
+	emailService := infrastructures.EmailService{
+		AppEmail:    config.ENV.EMAIL,
+		AppPass:     config.ENV.EMAIL_PASSWORD,
+		AppUsername: config.ENV.EMAIL_USERNAME,
+		AppHost:     config.ENV.EMAIL_HOST,
+	}
 
 	cacheRepo := infrastructures.NewCacheRepo(redisClient, context.Background())
 
-	aiService := infrastructures.NewAIService(os.Getenv("GEMINI_API_KEY"))
-	jwtService := infrastructures.JwtService{JwtSecret: os.Getenv("JWT_SECRET")}
-	pwdService := infrastructures.HashingService{}
-	emailService := infrastructures.EmailService{
-		AppEmail:    email,
-		AppPass:     password,
-		AppUsername: username,
-		AppHost:     host,
-	}
-
-	userRepo := repositories.NewUserRepository(db, os.Getenv("USER_COLLECTION"))
+	userRepo := repositories.NewUserRepository(db, config.ENV.USER_COLLECTION)
 	userUseCase := usecases.NewUserUseCase(userRepo)
 	userController := controllers.NewUserController(userUseCase)
 
 	authUsecases := usecases.NewAuthUsecase(userRepo, &jwtService, &pwdService, &emailService)
-	authController := controllers.NewAuthController(authUsecases, controllers.GoogleOAuthConfig)
+	authController := controllers.NewAuthController(authUsecases, config.GoogleOAuthConfig)
 
-	commentRepo := repositories.NewCommentRepository(db, os.Getenv("COMMENT_COLLECTION_NAME"))
+	commentRepo := repositories.NewCommentRepository(db, config.ENV.COMMENT_COLLECTION_NAME)
 	commentController := &controllers.CommentController{
 		CommentUsecase: usecases.NewCommentUsecase(commentRepo, userRepo, cacheRepo),
 	}
 
-	likeRepo := repositories.NewLikeRepository(db, os.Getenv("LIKE_COLLECTION_NAME"))
+	likeRepo := repositories.NewLikeRepository(db, config.ENV.LIKE_COLLECTION_NAME)
 	likeController := &controllers.LikeController{
 		LikeUseCase: usecases.NewLikeUseCase(likeRepo, cacheRepo),
 	}
 
-	blogRepo := repositories.NewBlogRepository(db, os.Getenv("BLOG_COLLECTION"))
+	blogRepo := repositories.NewBlogRepository(db, config.ENV.BLOG_COLLECTION)
 	blogUseCase := usecases.NewBlogUseCase(blogRepo, userRepo, likeRepo, commentRepo, aiService, cacheRepo)
 	blogController := controllers.NewBlogController(blogUseCase)
 

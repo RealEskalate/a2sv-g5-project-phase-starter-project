@@ -18,7 +18,7 @@ import {
 } from "./Shimmer";
 const HeadingTitle = ({ title }: { title: string }) => {
   return (
-    <h1 className="text-[#343C6A] font-semibold lg:text-xl md:text-lg">
+    <h1 className="text-[#343C6A] font-semibold lg:text-xl md:text-lg dark:text-[#9faaeb]">
       {title}
     </h1>
   );
@@ -92,10 +92,7 @@ const CreditCards = () => {
     );
   }
   return (
-    <div
-      className="bg-[#f5f7fb] w-full p-5 gap-5 flex flex-col dark:bg-[#020817]
-"
-    >
+    <div className="bg-[#f5f7fb] w-full p-5 gap-5 flex flex-col dark:bg-[#020817]">
       <div className="flex-col gap-5">
         <HeadingTitle title="My Cards" />
 
@@ -145,7 +142,7 @@ const CreditCards = () => {
               placeholder="Search cards..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="p-2 border border-gray-300 rounded-lg basis-4/12"
+              className="p-2 border border-gray-300 rounded-lg basis-4/12 dark:bg-[#313245] dark:border dark:border-[#333B69]"
             />
           </div>
           <div className="overflow-y-auto h-80 flex flex-col gap-4 [&::-webkit-scrollbar]:hidden">

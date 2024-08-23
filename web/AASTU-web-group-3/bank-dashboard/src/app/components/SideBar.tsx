@@ -1,29 +1,32 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import {useEffect} from 'react'
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@/lib/redux/store'; // Update the path if necessary
-import { toggleSidebar, setActiveItem } from '@/lib/redux/slices/layoutSlice'; // Update the path if necessary
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/lib/redux/store"; // Update the path if necessary
+import { toggleSidebar, setActiveItem } from "@/lib/redux/slices/layoutSlice"; // Update the path if necessary
 import { menuItems, logo } from "@/../../public/Icons";
-
+import { signOut } from "next-auth/react";
+import { AiOutlineLogout } from "react-icons/ai";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
-  const pathname = usePathname
-  const { ishidden, activeItem } = useSelector((state: RootState) => state.layout);
-  const currentPath = pathname()
-  useEffect(()=>{
-    const activeMenuItem = menuItems.find((item) => currentPath.startsWith(item.href));
-    if(activeMenuItem){
-      dispatch(setActiveItem(activeMenuItem!.title))
+  const pathname = usePathname;
+  const { ishidden, activeItem } = useSelector(
+    (state: RootState) => state.layout
+  );
+  const currentPath = pathname();
+  useEffect(() => {
+    const activeMenuItem = menuItems.find((item) =>
+      currentPath.startsWith(item.href)
+    );
+    if (activeMenuItem) {
+      dispatch(setActiveItem(activeMenuItem!.title));
     } else if (!activeMenuItem && currentPath === "/") {
-      dispatch(setActiveItem('Dashboard'))
+      dispatch(setActiveItem("Dashboard"));
     }
-
-  }, [currentPath, dispatch])
-
+  }, [currentPath, dispatch]);
 
   return (
     <aside
@@ -45,33 +48,44 @@ const Sidebar = () => {
           X
         </div>
       </div>
-      <ul className="flex flex-col">
-        {menuItems.map((item) => (
-          <Link href={item.href} key={item.title}>
-            <li
-              onClick={() => dispatch(setActiveItem(item.title))}
-              className={`flex gap-3 items-center px-8 py-3 text-md md:text-lg ${
-                activeItem === item.title
-                  ? "border-l-4 border-l-[#2D60FF] text-[#2D60FF] font-bold"
-                  : "text-[#B1B1B1]"
-              }`}
-            >
-              <Image
-                src={item.icon}
-                alt={item.title}
-                width={24}
-                height={24}
-                className={`w-6 h-6 ${
+      <div className="flex flex-col justify-between h-full">
+        <ul className="flex flex-col mb-16">
+          {menuItems.map((item) => (
+            <Link href={item.href} key={item.title}>
+              <li
+                onClick={() => dispatch(setActiveItem(item.title))}
+                className={`flex gap-3 items-center px-8 py-3 text-md md:text-lg ${
                   activeItem === item.title
-                    ? "filter-active"
-                    : "filter-inactive"
+                    ? "border-l-4 border-l-[#2D60FF] text-[#2D60FF] font-bold"
+                    : "text-[#a59d9d]"
                 }`}
-              />
-              <div>{item.title}</div>
-            </li>
-          </Link>
-        ))}
-      </ul>
+              >
+                <Image
+                  src={item.icon}
+                  alt={item.title}
+                  width={24}
+                  height={24}
+                  className={`w-6 h-6 ${
+                    activeItem === item.title
+                      ? "filter-active"
+                      : "filter-inactive"
+                  }`}
+                />
+                <div>{item.title}</div>
+              </li>
+            </Link>
+          ))}
+        </ul>
+        <button
+          className="ml-5 w-1/2 mb-4 flex gap-3 items-center text-xl font-semibold hover:bg-[#F5F7FA] p-2"
+          onClick={() => {
+            signOut({ callbackUrl: "/auth/signin" });
+          }}
+        >
+          <AiOutlineLogout />
+          Logout
+        </button>
+      </div>
     </aside>
   );
 };

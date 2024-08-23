@@ -59,6 +59,16 @@ declare type SignUpParams = {
   password: string;
 };
 
+
+export type Notification = {
+  formattedDate: ReactNode;
+  timestamp: string | number | Date;
+  id: string;
+  message: string;
+  isRead: boolean;
+  status: 'unread' | 'read'
+};
+
 declare type LoginUser = {
   email: string;
   password: string;

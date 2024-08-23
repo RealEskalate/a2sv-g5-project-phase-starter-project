@@ -8,21 +8,26 @@ import (
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
-	"github.com/cloudinary/cloudinary-go/v2"
-	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 )
 
 type userProfileUpdateUsecase struct {
-	UserRepository  interfaces.UserRepository
-	PasswordService interfaces.PasswordService
-	cloudinary      *cloudinary.Cloudinary
+	UserRepository    interfaces.UserRepository
+	PasswordService   interfaces.PasswordService
+	sessionRepo       interfaces.SessionRepository
+	cloudinaryService interfaces.CloudinaryInterface
 }
 
-func NewUserProfileUpdateUsecase(UserRepository interfaces.UserRepository, PasswordService interfaces.PasswordService, cld *cloudinary.Cloudinary) interfaces.UserProfileUpdateUsecase {
+func NewUserProfileUpdateUsecase(
+	UserRepository interfaces.UserRepository,
+	PasswordService interfaces.PasswordService,
+	cloudinaryService interfaces.CloudinaryInterface,
+	sessionRepo interfaces.SessionRepository,
+) interfaces.UserProfileUpdateUsecase {
 	return &userProfileUpdateUsecase{
-		UserRepository:  UserRepository,
-		PasswordService: PasswordService,
-		cloudinary:      cld,
+		UserRepository:    UserRepository,
+		PasswordService:   PasswordService,
+		cloudinaryService: cloudinaryService,
+		sessionRepo:       sessionRepo,
 	}
 }
 
@@ -30,13 +35,11 @@ func (uc *userProfileUpdateUsecase) UpdateUserProfile(ctx context.Context, userI
 	var updatedUser models.User
 	fmt.Println("You were here")
 
-	// Check if the user exists
 	_, err := uc.UserRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return err
 	}
 
-	// handle password update
 	if user.Password != "" {
 		if err := uc.PasswordService.ValidatePasswordStrength(user.Password); err != nil {
 			return err
@@ -48,26 +51,15 @@ func (uc *userProfileUpdateUsecase) UpdateUserProfile(ctx context.Context, userI
 
 		}
 
-		// set the password field of user with a hashed password
 		updatedUser.Password = hashedPassword
 	}
 
-	// handel profile picture update
 	if file.Filename != "" {
-		src, e := file.Open()
-		if e != nil {
-			return models.BadRequest("")
+		uploadResult, err := uc.cloudinaryService.UploadFile(*file, ctx)
+		if err != nil {
+			return err
 		}
-		defer src.Close()
-
-		// upload the image to Cloudinary
-		uploadResult, e := uc.cloudinary.Upload.Upload(context.TODO(), src, uploader.UploadParams{})
-		if e != nil {
-			return models.InternalServerError("image upload failed")
-		}
-
-		// set the image public key to 'ImageKey' of user
-		updatedUser.ImageKey = uploadResult.PublicID
+		updatedUser.ImageKey = uploadResult
 	}
 
 	updatedUser.Username = user.Username
@@ -84,12 +76,22 @@ func (uc *userProfileUpdateUsecase) UpdateUserProfile(ctx context.Context, userI
 	return nil
 }
 
-func (uc *userProfileUpdateUsecase) GetUserProfile(ctx context.Context, userID string) (*models.User, *models.ErrorResponse) {
+func (uc *userProfileUpdateUsecase) GetUserProfile(ctx context.Context, userID string) (*dtos.Profile, *models.ErrorResponse) {
 	user, err := uc.UserRepository.GetUserByID(ctx, userID)
+	userResponse := dtos.Profile{
+		Email:       user.Email,
+		Username:    user.Username,
+		Name:        user.Name,
+		Bio:         user.Bio,
+		PhoneNumber: user.PhoneNumber,
+		ImageKey:    user.ImageKey,
+	}
+
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+
+	return &userResponse, nil
 }
 
 func (uc *userProfileUpdateUsecase) DeleteUserProfile(ctx context.Context, userID string) *models.ErrorResponse {
@@ -97,9 +99,15 @@ func (uc *userProfileUpdateUsecase) DeleteUserProfile(ctx context.Context, userI
 	if _, err := uc.UserRepository.GetUserByID(ctx, userID); err != nil {
 		return err
 	}
+	session := models.Session{
+		UserID: userID,
+	}
 
-	err := uc.UserRepository.DeleteUser(ctx, userID)
-	if err != nil {
+	if err := uc.UserRepository.DeleteUser(ctx, userID); err != nil {
+
+		return err
+	}
+	if err := uc.sessionRepo.UpdateToken(ctx, &session); err != nil {
 		return err
 	}
 	return nil

@@ -49,12 +49,21 @@ type ProfileUpdateRequest struct {
 	PhoneNumber string `bson:"phone_number" json:"phone_number"`
 }
 
+type Profile struct {
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	Name        string `json:"name"`
+	Bio         string `bson:"bio" json:"bio"`
+	ImageKey    string `bson:"image_url" json:"image_url"`
+	PhoneNumber string `bson:"phone_number" json:"phone_number"`
+}
+
 type OAuthRequest struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 	Name         string `json:"name" validate:"required"`
 	Email        string `json:"email" validate:"required,email"`
-	PhoneNumber string `json:"phone_number"`
-	Bio         string `json:"bio"`
-	Password    string `bson:"password" json:"password"`
+	PhoneNumber  string `json:"phone_number"`
+	Bio          string `json:"bio"`
+	Password     string `bson:"password" json:"password"`
 }

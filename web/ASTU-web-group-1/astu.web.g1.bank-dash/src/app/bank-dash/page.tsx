@@ -8,10 +8,6 @@ import RecentTransaction from "@/components/RecentTransaction/RecentTransaction"
 import { Plus } from "lucide-react";
 import StoreProvider from "@/providers/StoreProvider";
 import TestNaol from "@/components/TestNaol";
-import RecentTransactionDashSkeleton from "@/components/AllSkeletons/RecentTransaction-DashSkelton/RecentTransactionDashSkelton";
-import WeeklyActivityChartSkeleton from "@/components/AllSkeletons/weeklyActivityChartSkeleton/WeeklyActvityChartSkeleton";
-import ExpenseStatisticsSkeleton from "@/components/AllSkeletons/ExpenseStatistics/ExpenseStatisticsSkeleton";
-import QuickTransferSkeleton from "@/components/AllSkeletons/QuickTransferSkeleton/QuickTransferSkeleton";
 
 export default function Home() {
   return (
@@ -35,21 +31,17 @@ export default function Home() {
           </div>
         </div>
         <div className="lg:w-1/3 w-full">
-          {/* <RecentTransaction /> */}
-          <RecentTransactionDashSkeleton />
+          <RecentTransaction />
         </div>
       </div>
       <div className="md:flex my-5">
-        {/* <WeeklyActivity /> */}
-        <WeeklyActivityChartSkeleton />
+        <WeeklyActivity />
         {/* <DebiteAndCredit /> */}
-        <ExpenseStatisticsSkeleton />
-        {/* <ExpenseStatistics /> */}
+        <ExpenseStatistics />
       </div>
       <div className="md:flex justify-between">
         <div className="w-5/12 pe-6">
-          {/* <QuickTransfer /> */}
-          <QuickTransferSkeleton />
+          <QuickTransfer />
         </div>
         <BalanceHistory />
       </div>

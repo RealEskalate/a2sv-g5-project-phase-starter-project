@@ -27,7 +27,7 @@ const SendMoneyComponent = () => {
   };
 
   return (
-    <div className="p-7 bg-white rounded-xl shadow-lg w-full max-w-lg mx-auto">
+    <div className="p-7 bg-white rounded-xl shadow-lg w-full md:w-full max-w-lg mx-auto">
       <div className="flex items-center justify-between mb-4">
         <button onClick={handlePrev} className="p-2 rounded-full bg-gray-200">
           <FaChevronLeft />

@@ -7,11 +7,11 @@ export const CreditCardInfoApi = createApi({
   }),
   endpoints: (builder) => ({
     getAllCardInfo: builder.query({
-      query: (accessToken : string) => ({
-        url: `/cards?page=0&size=${4}`,
+      query: (data: { token: string; size: number }) => ({
+        url: `/cards?page=0&size=${data.size}`,
         method: "GET",
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${data.token}`,
         },
       }),
     }),

@@ -2,9 +2,17 @@
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { motion as m } from 'framer-motion';
 
-const LandingNav = ({bgWhite}:{bgWhite:boolean}) => {
+interface LandingNavProps {
+  bgWhite: boolean;
+  homeRef: React.RefObject<HTMLDivElement>;
+  servicesRef: React.RefObject<HTMLDivElement>;
+  aboutRef: React.RefObject<HTMLDivElement>;
+}
+
+const LandingNav: React.FC<LandingNavProps> = ({ bgWhite, homeRef, servicesRef, aboutRef }) => {
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
   const { data: session, status } = useSession();
 
@@ -12,12 +20,21 @@ const LandingNav = ({bgWhite}:{bgWhite:boolean}) => {
     setIsMenuVisible(!isMenuVisible);
   };
 
-  useEffect(() => {
-    console.log(isMenuVisible);
-  }, [isMenuVisible]);
+  const scrollToRef = (ref: React.RefObject<HTMLDivElement>) => {
+    if (ref.current) {
+      window.scrollTo({
+        top: ref.current.offsetTop,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   return (
-    <header className={`bg-[#083E9E] text-white flex justify-center items-center sm:justify-between p-2 sm:p-4  relative `}>
+    <m.header 
+     
+  
+      className={`bg-[#083E9E] text-white flex justify-center items-center sm:justify-between p-2 sm:p-4 relative`}
+    >
       <div className="font-extrabold text-[25px]">BankDash</div>
 
       <div className="flex items-center">
@@ -37,28 +54,21 @@ const LandingNav = ({bgWhite}:{bgWhite:boolean}) => {
               : "hidden"
           } sm:flex sm:flex-row gap-20 mr-10`}
         >
-          <Link href={"#home"}>
-            <div className="mb-2 sm:mb-0">Home</div>
-          </Link>
-          <Link href={"#services"}>
-            <div className="mb-2 sm:mb-0">Services</div>
-          </Link>
-
-          <Link href={"#about"}>
-            <div className="mb-2 sm:mb-0">About Us</div>
-          </Link>
+          <div className="mb-2 sm:mb-0" onClick={() => scrollToRef(homeRef)}>Home</div>
+          <div className="mb-2 sm:mb-0" onClick={() => scrollToRef(servicesRef)}>Services</div>
+          <div className="mb-2 sm:mb-0" onClick={() => scrollToRef(aboutRef)}>About Us</div>
           {status === "authenticated" ? (
-            <Link href={"/dashboard"}>
-              <div className="mb-2 sm:mb-0">DashBoard</div>
+            <Link href="/dashboard">
+              <div className="mb-2 sm:mb-0">Dashboard</div>
             </Link>
           ) : (
-            <Link href={"/login"}>
+            <Link href="/login">
               <div className="mb-2 sm:mb-0">Login</div>
             </Link>
           )}
         </div>
       </div>
-    </header>
+    </m.header>
   );
 };
 

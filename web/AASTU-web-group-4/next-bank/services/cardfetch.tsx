@@ -30,19 +30,19 @@ export const getCardById = async (id: string) => {
         headers: {
           "Content-Type": "application/json",
         },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to fetch card with ID: ${id}`);
       }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch card with ID: ${id}`);
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error:", error);
-    throw error;
-  }
 };
 
 // Create a New Card - POST Request

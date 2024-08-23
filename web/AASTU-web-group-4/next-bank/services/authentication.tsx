@@ -1,4 +1,3 @@
-import { Console } from "console";
 
 // Register User - POST Request
 export const registerUser = async (userData: any) => {
@@ -8,22 +7,24 @@ export const registerUser = async (userData: any) => {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(userData),
+      });
+  
+      console.log("response:",response)
+      if (!response.ok) {
+        throw new Error('Failed to register user');
       }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to register user");
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error:", error);
-    throw error;
-  }
+
 };
 
 // Refresh Token - POST Request
@@ -34,22 +35,22 @@ export const refreshToken = async (tokenData: any) => {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(tokenData),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to refresh token');
       }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to refresh token");
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error:", error);
-    throw error;
-  }
 };
 
 // Login User - POST Request
@@ -60,22 +61,22 @@ export const loginUser = async (loginData: any) => {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(loginData),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to login');
       }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to login");
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error:", error);
-    throw error;
-  }
 };
 
 // Change Password - POST Request
@@ -86,22 +87,22 @@ export const changePassword = async (passwordData: any) => {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(passwordData),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to change password');
       }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to change password");
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error:", error);
-    throw error;
-  }
-};
-
-// You can export all functions from this file
+  };
+  
+  // You can export all functions from this file
+      

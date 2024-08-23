@@ -2,9 +2,7 @@ package domain
 
 import (
 	"errors"
-	"net"
 	"regexp"
-	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -62,6 +60,7 @@ func (u *User) Validate() error {
 	// 	return errors.New("inactive email")
 	// }
 	//
+
 	if !IsStrongPassword(u.Password) {
 		return errors.New("password is not strong enough")
 	}
@@ -93,22 +92,4 @@ func IsStrongPassword(password string) bool {
 	}
 
 	return hasUpper && hasLower && hasNumber && hasSpecial
-}
-
-func IsValidDomain(email string) bool {
-	splitedEmail := strings.Split(email, "@")
-	if len(splitedEmail) != 2 {
-		return false
-	}
-	_, err := net.LookupIP(splitedEmail[1])
-	return err == nil
-}
-
-func HasMXRecord(email string) bool {
-	splitedEmail := strings.Split(email, "@")
-	if len(splitedEmail) != 2 {
-		return false
-	}
-	mxRecord, err := net.LookupMX(splitedEmail[1])
-	return err == nil && len(mxRecord) > 0
 }

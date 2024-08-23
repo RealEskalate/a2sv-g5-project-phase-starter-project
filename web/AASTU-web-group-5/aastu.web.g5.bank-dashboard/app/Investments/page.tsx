@@ -65,7 +65,7 @@ const Investments = () => {
     };
 
     fetchInvestmentData();
-  }, []);
+  }, [session,token]);
 
   return (
     <div className="bg-[#F5F7FA] space-y-8 w-[95%] pt-3 overflow-hidden mx-auto">

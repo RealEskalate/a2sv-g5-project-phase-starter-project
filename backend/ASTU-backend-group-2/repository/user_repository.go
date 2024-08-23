@@ -182,7 +182,7 @@ func (ur *userRepository) IsUserActive(c context.Context, userID string) (bool, 
 	return user.Active, err
 
 }
-func (ur *userRepository) ResetUserPassword(c context.Context, userID string, resetPassword *domain.ResetPassword) error {
+func (ur *userRepository) ResetUserPassword(c context.Context, userID string, resetPassword *domain.ResetPasswordRequest) error {
 	collection := ur.database.Collection(ur.collection)
 	ObjID, err := primitive.ObjectIDFromHex(userID)
 

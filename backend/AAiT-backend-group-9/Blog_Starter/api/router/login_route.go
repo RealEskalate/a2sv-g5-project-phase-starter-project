@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"Blog_Starter/api/controller"
+	"Blog_Starter/api/middleware"
 	"Blog_Starter/config"
 	"Blog_Starter/domain"
 	"Blog_Starter/repository"
@@ -35,4 +36,5 @@ func NewLoginRouter(env *config.Env, timeout time.Duration, db *mongo.Client, gr
     group.POST("/login", loginController.Login)
     group.POST("/forgotpassword", loginController.ForgotPassword)
     group.POST("/updatepassword", loginController.UpdatePassword)
+    group.POST("/logout", middleware.AuthMiddleWare(env.AccessTokenSecret), loginController.LogOut)
 }

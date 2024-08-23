@@ -22,13 +22,10 @@ func NewRefreshTokenRouter(env *config.Env, timeout time.Duration, db *mongo.Cli
 
 	// Initialize repositories
 	ur := repository.NewUserRepository(database, domain.CollectionUser)
-	tm := &infrastructure.NewTokenManager{} // Assuming NewTokenManager returns an implementation of TokenManager
-	// Initialize use cases
+	tm := &infrastructure.NewTokenManager{} 
 	refreshTokenUsecase := usecase.NewRefreshTokenUsecase(ur, tm, timeout, env)
 
-	// Initialize controller
 	refreshTokenController := controller.NewRefreshTokenController(refreshTokenUsecase)
 
-	// Set up routes
 	group.POST("/refreshtoken", refreshTokenController.RefreshToken)
 }

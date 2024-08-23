@@ -1,8 +1,7 @@
+"use client";
 import React from "react";
-import axios from "axios";
+import { useSession } from "next-auth/react";
 import { TransactionType } from "@/types/TransactionValue";
-import { getServerSession } from "next-auth";
-import { options } from "@/app/api/auth/[...nextauth]/options";
 
 const Download = ({
   transactionId,
@@ -11,24 +10,32 @@ const Download = ({
   transactionId: string;
   transaction: TransactionType;
 }) => {
-  const handleDownload = async () => {
-    const session = await getServerSession(options);
-    const accessToken = session?.accessToken as string;
-    try {
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      };
+  const { data: session } = useSession();
+  const accessToken = session?.accessToken as string;
 
-      // Fetch the transaction data using Axios with headers
-      const response = await axios.get(
-        `https://bank-dashboard-o9tl.onrender.com/transactions/${transactionId}`,
+  const handleDownload = async () => {
+    if (!accessToken) {
+      alert("You are not authenticated. Please log in.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://bank-dashboard-rsf1.onrender.com/transactions/${transactionId}`,
         {
-          headers,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
-      // Create a simple text-based receipt
+      if (!response.ok) {
+        throw new Error("Failed to fetch transaction data");
+      }
+
+      const data = await response.json();
+
       const receipt = `
         Transaction Receipt
         -------------------
@@ -38,22 +45,17 @@ const Download = ({
         Amount: $${Math.abs(transaction.amount)}
         Date: ${transaction.date}
         -------------------
-    `;
+      `;
 
-      // Create a Blob with the receipt content
       const blob = new Blob([receipt], { type: "text/plain" });
-
-      // Create a temporary URL for the Blob
       const url = window.URL.createObjectURL(blob);
 
-      // Create a temporary anchor element and trigger the download
       const link = document.createElement("a");
       link.href = url;
       link.download = `receipt-${transactionId}.txt`;
       document.body.appendChild(link);
       link.click();
 
-      // Clean up
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -61,8 +63,9 @@ const Download = ({
       alert("Failed to download receipt. Please try again.");
     }
   };
+
   return (
-    <button className="table-button" onClick={() => handleDownload()}>
+    <button className="table-button" onClick={handleDownload}>
       Download
     </button>
   );

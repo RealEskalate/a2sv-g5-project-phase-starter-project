@@ -1,5 +1,4 @@
 import 'package:e_commerce_app/features/auth/domain/entities/user.dart';
-import 'package:equatable/equatable.dart';
 
 class UserModel extends User {
   final String id;
@@ -19,7 +18,7 @@ class UserModel extends User {
       'name': name,
     };
   }
-  
+
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'],

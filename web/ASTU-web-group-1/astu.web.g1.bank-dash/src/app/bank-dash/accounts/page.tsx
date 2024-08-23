@@ -1,16 +1,17 @@
-"use client";
-import AccountInformation from "@/components/AccountInformation/AccountInformation";
-import DebiteAndCredit from "@/components/Charts/DebiteAndCredit";
-import MonthlyRevenue from "@/components/Charts/MonthlyRevenue";
-import InvoiceSent from "@/components/InvoiceSent/InvoiceSent";
-import MyCard from "@/components/MyCard/MyCard";
-import LastTransaction from "@/components/Transaction/LastTransaction";
-import { getServerSession } from "next-auth";
-import { getSession } from "next-auth/react";
-import React from "react";
-import { authOptions } from "../../api/auth/[...nextauth]/options";
-import { ApiProvider } from "@reduxjs/toolkit/query/react";
-import StoreProvider from "@/providers/StoreProvider";
+'use client';
+import AccountInformation from '@/components/AccountInformation/AccountInformation';
+import DebiteAndCredit from '@/components/Charts/DebiteAndCredit';
+import MonthlyRevenue from '@/components/Charts/MonthlyRevenue';
+import InvoiceSent from '@/components/InvoiceSent/InvoiceSent';
+import MyCard from '@/components/MyCard/MyCard';
+import LastTransaction from '@/components/Transaction/LastTransaction';
+import { getServerSession } from 'next-auth';
+import { getSession } from 'next-auth/react';
+import React from 'react';
+import { authOptions } from '../../api/auth/[...nextauth]/options';
+import { ApiProvider } from '@reduxjs/toolkit/query/react';
+import StoreProvider from '@/providers/StoreProvider';
+import SingleCard from './SingleCard';
 
 export default function page() {
   // const session = await getServerSession(authOptions);
@@ -27,7 +28,8 @@ export default function page() {
           </div>
           <div>
             <StoreProvider>
-              <MyCard />
+              <SingleCard />
+              {/* <MyCard /> */}
             </StoreProvider>
           </div>
         </div>

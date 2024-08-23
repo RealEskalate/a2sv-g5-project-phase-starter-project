@@ -12,6 +12,7 @@ const BankServicesList = () => {
   const size = 6;
   const { data, error, isLoading } = useGetBankServiceQuery({ page, size });
   console.log("data is ", data, error);
+
   if (isLoading) {
     return <p>Loading...</p>; // Add a loading indicator
   }
@@ -23,6 +24,7 @@ const BankServicesList = () => {
 
   console.log("the contents", contents);
   console.log("the icon path", contents);
+
   return (
     <div className="flex flex-col gap-4">
       <p className="text-[#333B69] pb-3 font-semibold">Bank Services List</p>

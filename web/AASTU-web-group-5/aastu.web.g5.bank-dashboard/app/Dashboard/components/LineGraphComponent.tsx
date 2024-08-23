@@ -18,35 +18,85 @@ interface ExtendedUser {
   email?: string;
   image?: string;
   accessToken?: string;
+  refreshToken?: string;
 }
 
 const LineGraphComponent = () => {
   const { data: session } = useSession();
   const user = session?.user as ExtendedUser;
 
-  const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState<{ time: string; value: number }[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user?.accessToken) {
-      axios
-        .get('https://bank-dashboard-o9tl.onrender.com/transactions/balance-history', {
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-          },
-        })
-        .then((response) => {
-          // Assuming the API response has a data array with time and value fields
-          const data = response.data.map((transaction: { time: string; value: number }) => ({
-            time: transaction.time,
-            value: transaction.value,
-          }));
+    const fetchData = async () => {
+      if (user?.accessToken) {
+        try {
+          const response = await axios.get('https://bank-dashboard-rsf1.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=6', {
+            headers: {
+              Authorization: `Bearer ${user.accessToken}`,
+            },
+          });
+
+          // Map the response data to match the expected structure for the chart
+          const data = response.data.data.map((transaction: { time: string; value: number }) => {
+            const date = new Date(transaction.time);
+            const formattedTime = date.toLocaleString('en-US', { month: 'short' });
+            return {
+              time: formattedTime,
+              value: transaction.value,
+            };
+          });
+
           setChartData(data);
-        })
-        .catch((error) => {
-          console.error('Error fetching chart data:', error);
-        });
-    }
-  }, [user?.accessToken]);
+          setError(null); // Clear any previous errors
+        } catch (error) {
+          if (error.response?.status === 401) {
+            // Token might be expired, try to refresh it
+            try {
+              const refreshResponse = await axios.post('https://bank-dashboard-rsf1.onrender.com/auth/refresh_token', {}, {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${user.refreshToken}`,
+                },
+              });
+
+              const refreshedTokens = refreshResponse.data.data;
+              const newAccessToken = refreshedTokens.access_token;
+
+              // Retry the original request with the new access token
+              const retryResponse = await axios.get('https://bank-dashboard-o9tl.onrender.com/transactions/balance-history', {
+                headers: {
+                  Authorization: `Bearer ${newAccessToken}`,
+                },
+              });
+
+              const retriedData = retryResponse.data.data.map((transaction: { time: string; value: number }) => {
+                const date = new Date(transaction.time);
+                const formattedTime = date.toLocaleString('en-US', { month: 'short' });
+                return {
+                  time: formattedTime,
+                  value: transaction.value,
+                };
+              });
+
+              setChartData(retriedData);
+            } catch (refreshError) {
+              console.error("Failed to refresh access token:", refreshError);
+              setError("Failed to refresh access token. Please log in again.");
+            }
+          } else {
+            console.error("Failed to fetch data:", error);
+            setError("Failed to fetch data. Please check the console for more details.");
+          }
+        }
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="w-full h-64">

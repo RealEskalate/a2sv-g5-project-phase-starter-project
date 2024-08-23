@@ -1,32 +1,33 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { QuickTransferCard } from './QuickTransferCard';
+import { useSession } from 'next-auth/react';
 
 interface Transfer {
   id: string;
   name: string;
   username: string;
   profilePicture: string;
+  city: string;
+  country: string;
 }
 
 export const QuickTransferList = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Replace this with the actual way you retrieve the access token, e.g., from context or props
-  const accessToken = 'YOUR_ACCESS_TOKEN_HERE';
-
+  const { data: session } = useSession();
+  // Replace this with the actual way you retrieve the access token
+  const user = session?.user as { accessToken?: string; refreshToken?: string };
+  
   useEffect(() => {
     const fetchTransfers = async () => {
       try {
         const response = await axios.get<{ data: Transfer[] }>(
-          'https://astu-bank-dashboard.onrender.com/transactions/quick-transfers?number=3',
+          'https://bank-dashboard-rsf1.onrender.com/transactions/quick-transfers?number=3',
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${user?.accessToken}`,
             },
           }
         );
@@ -40,7 +41,7 @@ export const QuickTransferList = () => {
     };
 
     fetchTransfers();
-  }, [accessToken]);
+  }, [user?.accessToken]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -52,7 +53,12 @@ export const QuickTransferList = () => {
           {transfers.map((transfer) => (
             <QuickTransferCard
               key={transfer.id}
-              userId={transfer.id} // Pass userId to QuickTransferCard
+              userId={transfer.id}
+              name={transfer.name}
+              username={transfer.username}
+              profilePicture={transfer.profilePicture}
+              city={transfer.city}
+              country={transfer.country}
             />
           ))}
         </div>

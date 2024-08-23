@@ -75,7 +75,7 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
         >
           Overview
         </div>
-        <Image src={person} alt="User Icon" className="h-12 w-12" />
+        <Image src={profilePicture} width={50} height={50}  alt="User Icon" className="h-12 w-12" />
         <button
           onClick={() => signOut()}
           className="bg-slate-500 text-white rounded-full px-4 py-2 ml-4"
@@ -150,9 +150,9 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
               height={45}
             />
           </button>
-          <Image src={seetings} alt="Settings Icon" className="h-10 w-10" />
           <Image src={notification} alt="Notification Icon" className="h-10 w-10" />
-          <Image src={person} alt="User Icon" className="h-12 w-12" />
+          <Image src={seetings} alt="Settings Icon" className="h-10 w-10" />
+          <Image width={50} height={50}   src={profilePicture} alt="User Icon" className="h-12 rounded-full w-12" />
           <button
             onClick={() => signOut()}
             className="bg-slate-500 text-white rounded-full p-4 py-2 ml-4"

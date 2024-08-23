@@ -21,7 +21,9 @@ export const getAllTransactionsss = async () => {
 
 // GET /transactions
 export const getAllTransactions = async (page: any, size: any) => {
-  const response = await fetch(
+  
+  try 
+  {const response = await fetch(
     `${API_BASE_URL}/transactions?page=${page}&size=${size}`,
     {
       method: "GET",
@@ -31,8 +33,11 @@ export const getAllTransactions = async (page: any, size: any) => {
     }
   );
   return response.json();
+}catch (error) {
+  console.error("Error fetching some transactions:", error);
+  throw error;
 };
-
+};
 // POST /transactions
 export const createTransaction = async (
   transactionData: any,

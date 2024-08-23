@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { currentuser } from "@/services/userupdate";
+import { currentUser } from "@/services/userupdate";
 import {FC, useState } from "react";
 import { signOut } from 'next-auth/react';
 import Cookies from 'js-cookie';
@@ -43,7 +43,7 @@ export function DropdownMenuDemo() {
 const fetch = async () => {
 
     try {
-      const data = await currentuser();
+      const data = await currentUser();
       setname(data.data.name)
     } catch (error) {
       console.error("Error:", error);

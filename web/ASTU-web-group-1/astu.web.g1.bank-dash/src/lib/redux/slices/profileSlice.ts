@@ -30,7 +30,16 @@ export const profileApi = createSlice({
   initialState,
   reducers: {
     setProfile: (state, action) => {
-      state = action.payload;
+      return { ...state, ...action.payload };
+    },
+    setPreferences: (state, action) => {
+      return {
+        ...state,
+        preference: {
+          ...state.preference,
+          ...action.payload,
+        },
+      };
     },
   },
 });

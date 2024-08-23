@@ -10,7 +10,7 @@ const page = () => {
     <>
       <div className="bg-gray-100 px-[25px] md:px-[50px]">
         <div className="mt-10 overflow-x-auto no-scrollbar ">
-          <div className="flex space-x-4 ">
+          <div className="flex space-x-4 md:space-x-16 ">
             <Card icon={FaShieldHeart} title="Life Insurance" sub_title="Unlimited Protection" />
             <Card icon={GiShoppingBag} title="Shopping" sub_title="Buy.Think.Grow." />
             <Card icon={AiFillSafetyCertificate} title="Safety" sub_title="We are your allies" />

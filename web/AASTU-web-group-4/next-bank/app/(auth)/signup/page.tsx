@@ -2,32 +2,28 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { User } from "@/types/index";
+import { creditcardstyles, colors, logo } from "../../../constants/index";
 import Image from "next/image";
-import Cookie from "js-cookie";
-import { registerUser } from "@/services/authentication";
-import { uploadImage } from "@/components/Imageupload"; // Import your upload function
-import { logo } from "../../../constants/index";
 import Link from "next/link";
+import { registerUser } from "@/services/authentication";
+import Cookie from "js-cookie";
+import { uploadImage } from "@/components/Imageupload"; // Import your upload function
 
 const SignupForm = () => {
-  const [step, setStep] = useState(1); // Manage form steps
-  const [imageUrl, setImageUrl] = useState(""); // Store image URL after upload
-
+  const [step, setStep] = useState(1);
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
-  } = useForm<User>({
-    mode: "onChange", // Enable form validation on change
-  });
+    formState: { errors },
+  } = useForm<User>();
+  const [imageUrl, setImageUrl] = useState("");
 
-  // Handle file change and upload image
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       try {
         const url = await uploadImage(file);
-        setImageUrl(url); // Set the uploaded image URL
+        setImageUrl(url);
         console.log("Image uploaded successfully:", url);
       } catch (error) {
         console.error("Error uploading image:", error);
@@ -35,111 +31,120 @@ const SignupForm = () => {
     }
   };
 
-  // Handle form submission
   const onSubmit = async (data: User) => {
+    data.profilePicture = imageUrl ? imageUrl : data.profilePicture = imageUrl;
+    console.log(data, imageUrl);
     try {
-      const updatedData = {
-        ...data,
-        profilePicture: imageUrl || "", // Add profile picture if available
-      };
-
-      const registeredUser = await registerUser(updatedData); // Register the user
+      const registeredUser = await registerUser(data);
       console.log("Registered User:", registeredUser);
-
-      // Store access and refresh tokens in cookies
       Cookie.set("accessToken", registeredUser.data.access_token);
       Cookie.set("refreshToken", registeredUser.data.refresh_token);
-
-      window.location.href = "/"; // Redirect to homepage on success
     } catch (error) {
       console.error("Registration Error:", error);
     }
   };
-
-  // Step navigation
-  const handleNextStep = () => {
-    if (isValid) setStep(step + 1); // Move to the next step if form is valid
-  };
-  const handlePreviousStep = () => setStep(step - 1); // Move to the previous step
+  const handleNextStep = () => setStep(step + 1);
+  const handlePreviousStep = () => setStep(step - 1);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-3xl mx-auto p-8 bg-white shadow-md rounded-lg">
-      <div className="flex justify-center items-center mb-8">
-        <Image src={logo.icon} alt="Logo" height={60} width={60} />
-        <h1 className="font-bold text-3xl text-gray-700 font-serif p-2">
-          <p className="text-gray-600">NEXT BANK</p>
-        </h1>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-3xl mx-auto p-3 bg-white shadow-md rounded-lg">
+        <div className="flex justify-center items-center m-2">
+          <Image src={logo.icon} alt="Logo" height={60} width={60} />
+          <h1 className="font-bold text-3xl text-gray-700 font-serif p-2">
+            <p className="text-gray-600">NEXT BANK</p>
+          </h1>
+        </div>
+        <h2 className="text-blue-600 font-semibold text-2xl text-center mb-4">Sign Up</h2>
+        <p className="text-center text-gray-600 mb-8">Please enter your details</p>
+  
+        {step === 1 && (
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
+            {/* Step 1 Fields */}
+            <div>
+              <label htmlFor="name" className="block font-medium text-gray-700">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                placeholder="ex: John"
+                {...register("name", { required: "Name is required" })}
+                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+              />
+              {errors.name && <p className="text-red-500 mt-1">{errors.name.message}</p>}
+            </div>
+  
+            <div>
+              <label htmlFor="email" className="block font-medium text-gray-700">Email</label>
+              <input
+                type="email"
+                id="email"
+                placeholder="ex: example@gmail.com"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^\S+@\S+\.\S+$/,
+                    message: "Invalid email format",
+                  },
+                })}
+                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+              />
+              {errors.email && <p className="text-red-500 mt-1">{errors.email.message}</p>}
+            </div>
+  
+            <div>
+              <label htmlFor="dateOfBirth" className="block font-medium text-gray-700">Date of Birth</label>
+              <input
+                type="date"
+                id="dateOfBirth"
+                {...register("dateOfBirth", { required: "Date of Birth is required" })}
+                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+              />
+              {errors.dateOfBirth && <p className="text-red-500 mt-1">{errors.dateOfBirth.message}</p>}
+            </div>
+  
+            <div>
+              <label htmlFor="username" className="block font-medium text-gray-700">Username</label>
+              <input
+                type="text"
+                id="username"
+                placeholder="ex: Star"
+                {...register("username", { 
+                  required: "Username is required",  
+                  // minLength: {
+                  //   value: 4,
+                  //   message: "Username must be at least 4 characters",
+                  // },
+                  // maxLength: {
+                  //   value: 12,
+                  //   message: "Username must not exceed 12 characters",
+                  // }
+                })}
+                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+              />
+              {errors.username && <p className="text-red-500 mt-1">{errors.username.message}</p>}
+            </div>
 
-      <h2 className="text-blue-600 font-semibold text-2xl text-center mb-4">Sign Up</h2>
-      <p className="text-center text-gray-600 mb-8">Please enter your details</p>
+  
 
-      {step === 1 && (
-        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
-          {/* Step 1 Fields */}
-          <div>
-            <label htmlFor="name" className="block font-medium text-gray-700">Full Name</label>
-            <input
-              type="text"
-              id="name"
-              placeholder="ex: John"
-              {...register("name", { required: "Name is required" })}
-              className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
-            />
-            {errors.name && <p className="text-red-500 mt-1">{errors.name.message}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="email" className="block font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              id="email"
-              placeholder="ex: example@gmail.com"
-              {...register("email", {
-                required: "Email is required",
-                pattern: /^\S+@\S+\.\S+$/,
-              })}
-              className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
-            />
-            {errors.email && <p className="text-red-500 mt-1">{errors.email.message}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="dateOfBirth" className="block font-medium text-gray-700">Date of Birth</label>
-            <input
-              type="date"
-              id="dateOfBirth"
-              {...register("dateOfBirth", { required: "Date of Birth is required" })}
-              className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
-            />
-            {errors.dateOfBirth && <p className="text-red-500 mt-1">{errors.dateOfBirth.message}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="username" className="block font-medium text-gray-700">Username</label>
-            <input
-              type="text"
-              id="username"
-              placeholder="ex: Star"
-              {...register("username", { required: "Username is required" })}
-              className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
-            />
-            {errors.username && <p className="text-red-500 mt-1">{errors.username.message}</p>}
-          </div>
-
-          <div>
+  <div>
             <label htmlFor="password" className="block font-medium text-gray-700">Password</label>
             <input
               type="password"
               id="password"
               placeholder="ex: password"
-              {...register("password", { required: "Password is required", minLength: 8 })}
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters",
+                },
+              })}
               className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
             />
             {errors.password && <p className="text-red-500 mt-1">{errors.password.message}</p>}
           </div>
 
-          <div>
+          <div className="md:row-span-2">
             <label htmlFor="permanentAddress" className="block font-medium text-gray-700">Permanent Address</label>
             <textarea
               id="permanentAddress"
@@ -150,23 +155,22 @@ const SignupForm = () => {
             {errors.permanentAddress && <p className="text-red-500 mt-1">{errors.permanentAddress.message}</p>}
           </div>
 
-          <div className="col-span-2 flex justify-center">
-            <button type="button" onClick={handleNextStep} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg mt-8 transition duration-300">
-              Continue
-            </button>
-          </div>
-
-          <div className="col-span-2 flex justify-center">
-            <p className="mx-2">Already have an account?</p>
-            <Link className="text-blue-800" href="/signin">
-              Login
-            </Link>
+          <div>
+            <label htmlFor="postalCode" className="block font-medium text-gray-700">Postal Code</label>
+            <input
+              type="text"
+              id="postalCode"
+              placeholder="ex: 1000"
+              {...register("postalCode", { required: "Postal Code is required" })}
+              className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+            />
+            {errors.postalCode && <p className="text-red-500 mt-1">{errors.postalCode.message}</p>}
           </div>
         </div>
       )}
 
       {step === 2 && (
-        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-1 mb-6 md:py-14 md:grid-cols-2">
           {/* Step 2 Fields */}
           <div>
             <label htmlFor="presentAddress" className="block font-medium text-gray-700">Present Address</label>
@@ -204,31 +208,80 @@ const SignupForm = () => {
             {errors.country && <p className="text-red-500 mt-1">{errors.country.message}</p>}
           </div>
 
-         
 
           <div>
-            <label htmlFor="file" className="block font-medium text-gray-700">Profile Picture</label>
+            <label htmlFor="profilePicture" className="block font-medium text-gray-700">Profile Picture</label>
             <input
               type="file"
-              id="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+              id="profilePicture"
+              {...register("profilePicture")}
+              className="p-2 w-full border border-gray-300 rounded-lg mt-1 focus:outline-none focus:border-blue-500"
             />
+            {errors.profilePicture && <p className="text-red-500 mt-1">{errors.profilePicture.message}</p>}
           </div>
 
-          <div className="col-span-2 flex justify-between">
-            <button type="button" onClick={handlePreviousStep} className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg mt-8 transition duration-300">
-              Back
-            </button>
-            <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg mt-8 transition duration-300">
-              Submit
-            </button>
+          <div>
+            <label htmlFor="currency" className="block font-medium text-gray-700">Preferred Currency</label>
+            <select
+              id="currency"
+              {...register("currency", { required: "Preferred Currency is required" })}
+              className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+            >
+              <option value="">Select Currency</option>
+              <option value="USD">USD</option>
+              <option value="ETB">ETB</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+              <option value="JPY">JPY</option>
+              <option value="CAD">CAD</option>
+            </select>
+            {errors.currency && <p className="text-red-500 mt-1">{errors.currency.message}</p>}
           </div>
         </div>
       )}
+
+      <div className="flex justify-between mt-8">
+        {step > 1 && (
+          <button
+            type="button"
+            onClick={handlePreviousStep}
+            className="bg-gray-700 text-white py-2 px-4 rounded-md hover:bg-gray-600"
+          >
+            Previous
+          </button>
+        )}
+        {step < 2 ? (
+        <div className="flex flex-col w-full items-center">
+        <button
+          type="button"
+          onClick={handleNextStep}
+          className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mb-4"
+        >
+          Continue
+        </button>
+        <div className="flex justify-center">
+          <p className="mx-2">Already have an account?</p>
+          <Link href="/signin" className="text-blue-900">Login</Link>
+        </div>
+      </div>
+        ) : (
+          <button
+            type="submit"
+            className="bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-green-600"
+          >
+            Sign Up
+          </button>
+        )}
+      </div>
     </form>
-  );
+  </div>
+);
 };
 
 export default SignupForm;
+
+          
+        
+      
+
+

@@ -1,12 +1,7 @@
 import Cookies from "js-cookie";
 
-<<<<<<< HEAD
-const API_BASE_URL = "https://web-team-g4.onrender.com/";
-const token = Cookies.get("accessToken");
-=======
 const API_BASE_URL = 'https://web-team-g4.onrender.com';
 const token = Cookies.get('accessToken')
->>>>>>> 4c18eaee10a18bbefdc03fa57c6e957d354b34ad
 
 // POST /active-loans
 export const createActiveLoan = async (loanData: any) => {
@@ -53,11 +48,7 @@ export const getActiveLoanById = async (id: any) => {
 // GET /active-loans/my-loans
 export const getMyLoans = async () => {
   try {
-<<<<<<< HEAD
-    const response = await fetch(`${API_BASE_URL}/active-loans/my-loans`, {
-=======
     const response = await fetch(`${API_BASE_URL}/active-loans/my-loans?page=0&size=5`, {
->>>>>>> 4c18eaee10a18bbefdc03fa57c6e957d354b34ad
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -96,10 +87,6 @@ export const getLoanDetailData = async () => {
 export const getAllActiveLoans = async () => {
   const response = await fetch(`${API_BASE_URL}/active-loans/all`, {
     method: "GET",
-<<<<<<< HEAD
-=======
-
->>>>>>> 4c18eaee10a18bbefdc03fa57c6e957d354b34ad
   });
   return response.json();
 };

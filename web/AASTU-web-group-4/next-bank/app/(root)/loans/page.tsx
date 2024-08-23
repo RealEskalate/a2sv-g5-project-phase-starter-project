@@ -114,11 +114,11 @@ const LoansPage: React.FC = () => {
   );
 
   return (
-    <div className="flex lg:ml-64 lg:max-w-[100%] dark:text-blue-500 bg-gray-100 dark:bg-dark ">
+    <div className="flex lg:ml-64 lg:max-w-[100%] px-6 dark:text-blue-500 bg-gray-100 dark:bg-dark ">
       {/* Mobile and Tablet View */}
       <div className="w-[100%] block lg:hidden">
         {loanCardsLoading ? (
-          <div className="flex w-[100%] py-6 justify-center gap-5">
+          <div className="flex w-[100%] py-6  justify-center gap-5">
             <div className=" lg:hidden flex items-center space-x-4 animate-pulse p-4 bg-gray-200 rounded-md w-[240px] h-[85px]">
               <div className="pl-1 w-12 h-12 bg-gray-300 rounded-full" />
               <div>
@@ -146,8 +146,8 @@ const LoansPage: React.FC = () => {
         ) : loanCardsError ? (
           <div className="flex flex-col items-center justify-center text-center space-y-4">
             <TbFileSad
-              className={`${colors.textblue} dark:text-white w-[400px] h-[70px] `}
-            />
+          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+        />
             <div className="text-red-500 text-lg">{loanCardsError}</div>
           </div>
         ) : (
@@ -206,8 +206,8 @@ const LoansPage: React.FC = () => {
           ) : loansError ? (
             <div className="w-[100%] flex justify-center items-center flex-col p-4">
               <TbFileSad
-                className={`${colors.textblue} dark:text-white w-[400px] h-[70px] `}
-              />
+          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+        />
               <div className="text-red-500 text-xl">{loansError}</div>
             </div>
           ) : (
@@ -280,8 +280,8 @@ const LoansPage: React.FC = () => {
         ) : loanCardsError ? (
           <div className="hidden  lg:flex lg:flex-col lg:items-center lg:justify-center lg:text-center lg:space-y-4 lg:h-200px lg:bg-gray-100 lg:dark:bg-gray-800 lg:py-8">
             <TbFileSad
-              className={`${colors.textblue} dark:text-white w-[400px] h-[70px] `}
-            />
+          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+        />
             <div className="text-red-500 text-xl lg:text-2xl">
               {loanCardsError}
             </div>
@@ -355,8 +355,8 @@ const LoansPage: React.FC = () => {
           ) : loansError ? (
             <div className="hidden lg:flex lg:bg-gray-100 lg:dark:bg-gray-800 lg:h-[400px] lg:flex-col lg:items-center lg:justify-center h-20">
               <TbFileSad
-                className={`${colors.textblue} dark:text-white w-[400px] h-[70px] `}
-              />
+          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+        />
               <div className="text-red-500 text-center">{loansError}</div>
             </div>
           ) : (

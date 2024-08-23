@@ -4,21 +4,21 @@ import {
   TransactionsResponse,
   TransactionRequest,
   TransactionResponse,
-  TransactionDepositRequest, 
+  TransactionDepositRequest,
   LatestTransferResponse,
-  BalanceHistoryResponse, 
-  MyExpenseResponse, 
-  IncomeResponse
+  BalanceHistoryResponse,
+  MyExpenseResponse,
+  IncomeResponse,
 } from "../types/transactions";
 
 export const transactionsApi = createApi({
   reducerPath: "transactionsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-o9tl.onrender.com",
+    baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
     prepareHeaders: async (headers) => {
       const session = await getSession();
       const token = session?.accessToken;
-      console.log('token form rtk query', token)
+      console.log("token form rtk query", token);
 
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
@@ -27,7 +27,10 @@ export const transactionsApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getAllTransactions: builder.query<MyExpenseResponse,{ size: number; page: number }>({
+    getAllTransactions: builder.query<
+      MyExpenseResponse,
+      { size: number; page: number }
+    >({
       query: ({ size, page }) => `/transactions?page=${page}&size=${size}`,
     }),
 
@@ -35,54 +38,66 @@ export const transactionsApi = createApi({
       query: (id) => `/transactions/${id}`,
     }),
 
-    getRandomBalanceHistory: builder.query<any,{ monthsBeforeFirstTransaction: number }>({
+    getRandomBalanceHistory: builder.query<
+      any,
+      { monthsBeforeFirstTransaction: number }
+    >({
       query: ({ monthsBeforeFirstTransaction }) =>
         `/transactions/random-balance-history?monthsBeforeFirstTransaction=${monthsBeforeFirstTransaction}`,
     }),
 
-
-    getIncomeTransactions: builder.query<IncomeResponse, { size: number; page: number }>({
+    getIncomeTransactions: builder.query<
+      IncomeResponse,
+      { size: number; page: number }
+    >({
       query: ({ size, page }) =>
         `/transactions/incomes?page=${page}&size=${size}`,
     }),
 
-    getExpenseTransactions: builder.query<MyExpenseResponse, { size: number; page: number }>({
+    getExpenseTransactions: builder.query<
+      MyExpenseResponse,
+      { size: number; page: number }
+    >({
       query: ({ size, page }) =>
         `/transactions/expenses?page=${page}&size=${size}`,
     }),
 
-    createTransaction: builder.mutation<TransactionResponse,TransactionRequest>({
+    createTransaction: builder.mutation<
+      TransactionResponse,
+      TransactionRequest
+    >({
       query: (transaction) => ({
         url: "/transactions",
         method: "POST",
         body: transaction,
         headers: {
-          "Content-Type": "application/json", 
+          "Content-Type": "application/json",
         },
       }),
     }),
 
-    createTransactionDeposit: builder.mutation<TransactionResponse,TransactionDepositRequest>({
+    createTransactionDeposit: builder.mutation<
+      TransactionResponse,
+      TransactionDepositRequest
+    >({
       query: (deposit) => ({
         url: "/transactions/deposit",
         method: "POST",
         body: deposit,
         headers: {
-          "Content-Type": "application/json", 
+          "Content-Type": "application/json",
         },
       }),
     }),
-    getLatestTransfer: builder.query<LatestTransferResponse, {num:number}>({
-      query: ({num}) => 
-        `/transactions/latest-transfers${num}`,
+    getLatestTransfer: builder.query<LatestTransferResponse, { num: number }>({
+      query: ({ num }) => `/transactions/latest-transfers${num}`,
     }),
-    getBalanceHistory:builder.query<BalanceHistoryResponse, {}>({
-      query:()=> '/transactions/balance-history'
+    getBalanceHistory: builder.query<BalanceHistoryResponse, {}>({
+      query: () => "/transactions/balance-history",
     }),
-    getQuickTransfers:builder.query<BalanceHistoryResponse, {num:number}>({
-      query:({num})=> `/transactions/quick-transfers/${num}`
+    getQuickTransfers: builder.query<BalanceHistoryResponse, { num: number }>({
+      query: ({ num }) => `/transactions/quick-transfers/${num}`,
     }),
-    
   }),
 });
 
@@ -92,8 +107,8 @@ export const {
   useGetRandomBalanceHistoryQuery,
   useGetIncomeTransactionsQuery,
   useGetExpenseTransactionsQuery,
-  useGetLatestTransferQuery, 
+  useGetLatestTransferQuery,
   useCreateTransactionMutation,
   useCreateTransactionDepositMutation,
-  useGetBalanceHistoryQuery
+  useGetBalanceHistoryQuery,
 } = transactionsApi;

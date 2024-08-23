@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CardData } from "@/types/cardData";
+import NotFound from "@/app/not-found";
 
 export default function CardBox({
   cardType,

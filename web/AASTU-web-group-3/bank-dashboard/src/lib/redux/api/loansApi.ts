@@ -30,7 +30,7 @@ export interface LoanResponse {
 interface LoansResponse {
   success: boolean;
   message: string;
-  data: LoanResponse['data'][];
+  data: LoanResponse["data"][];
 }
 
 interface LoanDetailDataResponse {
@@ -44,14 +44,14 @@ interface LoanDetailDataResponse {
 }
 
 export const loansApi = createApi({
-  reducerPath: 'loansApi',
+  reducerPath: "loansApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://bank-dashboard-o9tl.onrender.com',
+    baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
     prepareHeaders: async (headers, { getState }) => {
-      const session = await getSession()
-      const token = session?.accessToken
+      const session = await getSession();
+      const token = session?.accessToken;
       if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
+        headers.set("Authorization", `Bearer ${token}`);
       }
       return headers;
     },
@@ -59,21 +59,23 @@ export const loansApi = createApi({
   endpoints: (builder) => ({
     createLoan: builder.mutation<LoanResponse, LoanRequest>({
       query: (loanData) => ({
-        url: '/active-loans',
-        method: 'POST',
+        url: "/active-loans",
+        method: "POST",
         body: loanData,
       }),
     }),
-    rejectLoan: builder.mutation<{ success: boolean; message: string }, string>({
-      query: (id) => ({
-        url: `/active-loans/${id}/reject`,
-        method: 'POST',
-      }),
-    }),
+    rejectLoan: builder.mutation<{ success: boolean; message: string }, string>(
+      {
+        query: (id) => ({
+          url: `/active-loans/${id}/reject`,
+          method: "POST",
+        }),
+      }
+    ),
     approveLoan: builder.mutation<LoanResponse, string>({
       query: (id) => ({
         url: `/active-loans/${id}/approve`,
-        method: 'POST',
+        method: "POST",
       }),
     }),
     getLoanById: builder.query<LoanResponse, string>({
@@ -83,10 +85,10 @@ export const loansApi = createApi({
       query: ({ page, size }) => `/active-loans/my-loans?page=${page}&size=${size}`,
     }),
     getLoanDetailData: builder.query<LoanDetailDataResponse, void>({
-      query: () => '/active-loans/detail-data',
+      query: () => "/active-loans/detail-data",
     }),
     getAllLoans: builder.query<LoansResponse, void>({
-      query: () => '/active-loans/all',
+      query: () => "/active-loans/all",
     }),
   }),
 });

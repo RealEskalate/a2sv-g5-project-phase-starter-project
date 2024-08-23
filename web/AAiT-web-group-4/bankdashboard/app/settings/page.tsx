@@ -1,11 +1,8 @@
-import React from 'react'
+// import SettingNavBar from "./components/navbar";
+import React from "react";
+import EditProfile from "./components/edit";
 
-const Page = () => {
-  return (
-    <div className='bg-Very-Light-White w-full h-full'>
-      <p>settings</p>
-    </div>
-  )
+export default function SettingHome() {
+  console.log("hi");
+  return <EditProfile />;
 }
-
-export default Page

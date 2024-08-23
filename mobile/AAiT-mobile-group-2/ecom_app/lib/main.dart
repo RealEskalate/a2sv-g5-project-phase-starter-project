@@ -1,3 +1,4 @@
+import 'package:ecom_app/features/chat/presentation/pages/individual_chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -77,6 +78,10 @@ class MyApp extends StatelessWidget {
               return _createRoute(const SignInPage());
             case '/signup':
               return _createRoute(const SignUpPage());
+            case '/individualChat':
+              return _createRoute(const IndividualChatPage(
+               
+              ));
             default:
               return null;
           }
@@ -86,7 +91,7 @@ class MyApp extends StatelessWidget {
             primaryColor: const Color.fromARGB(255, 63, 81, 243),
             colorScheme: ColorScheme.fromSeed(
                 seedColor: const Color.fromARGB(255, 63, 81, 243))),
-        initialRoute: '/splash',
+        initialRoute: '/individualChat',
         debugShowCheckedModeBanner: false,
       ),
     );

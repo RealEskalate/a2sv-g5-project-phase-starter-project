@@ -16,11 +16,11 @@ import (
 )
 
 type BlogMongoRepository struct {
-	BlogCollection       *mongo.Collection
-	BlogActionCollection *mongo.Collection
+	BlogCollection       interfaces.Collection
+	BlogActionCollection interfaces.Collection
 }
 
-func NewBlogRepository(db *mongo.Database) interfaces.BlogRepository {
+func NewBlogRepository(db interfaces.Database) interfaces.BlogRepository {
 	return &BlogMongoRepository{
 		BlogCollection:       db.Collection("blogs"),
 		BlogActionCollection: db.Collection("blog-action"),
@@ -87,7 +87,6 @@ func (br *BlogMongoRepository) GetBlogs(ctx context.Context, page int) ([]*model
 
 func (br *BlogMongoRepository) UpdateBlog(ctx context.Context, blogID string, blog *models.Blog) *models.ErrorResponse {
 	updateFields := bson.M{}
-	blog.UpdatedAt = time.Now()
 
 	if blog.Title != "" {
 		updateFields["title"] = blog.Title
@@ -102,8 +101,8 @@ func (br *BlogMongoRepository) UpdateBlog(ctx context.Context, blogID string, bl
 		updateFields["author_id"] = blog.AuthorID
 	}
 
-	updateFields["updated_at"] = blog.UpdatedAt
-	update := bson.M{
+	updateFields["updated_at"] = time.Now().Truncate(time.Minute)
+		update := bson.M{
 		"$set": updateFields,
 	}
 
@@ -164,10 +163,11 @@ func (br *BlogMongoRepository) GetPopularity(ctx context.Context, blogID string)
 	return &popularity, models.Nil()
 
 }
+
+
 func (br *BlogMongoRepository) SearchBlogsByPopularity(ctx context.Context, filter dtos.FilterBlogRequest, blogs_slice map[string]*models.Blog) ([]*models.Blog, *models.ErrorResponse) {
 
 	query_two := bson.M{}
-	// this
 	if filter.LikeCount > 0 {
 		query_two["like_count"] = bson.M{"$gte": filter.LikeCount}
 	}

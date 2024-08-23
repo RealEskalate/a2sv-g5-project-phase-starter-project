@@ -12,10 +12,10 @@ import (
 )
 
 type BlogCommentRepository struct {
-	BlogCommentCollection *mongo.Collection
+	BlogCommentCollection interfaces.Collection
 }
 
-func NewBlogCommentRepository(db *mongo.Database) interfaces.BlogCommentRepository {
+func NewBlogCommentRepository(db interfaces.Database) interfaces.BlogCommentRepository {
 	return &BlogCommentRepository{
 		BlogCommentCollection: db.Collection("comments"),
 	}

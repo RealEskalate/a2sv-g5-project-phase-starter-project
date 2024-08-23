@@ -18,11 +18,11 @@ var ErrUserNotFound = errors.New("user not found")
 
 // mongodb implementation of UserRepository interface
 type UserMongoRepository struct {
-	Collection *mongo.Collection
+	Collection interfaces.Collection
 }
 
 // NewUserRepository creates a new UserMongoRepository
-func NewUserRepository(db *mongo.Database) interfaces.UserRepository {
+func NewUserRepository(db interfaces.Database) interfaces.UserRepository {
 	return &UserMongoRepository{
 		Collection: db.Collection("user-collection"),
 	}
@@ -121,6 +121,16 @@ func (ur *UserMongoRepository) UpdateUser(ctx context.Context, user *models.User
 	if user.Password != "" {
 		update["password"] = user.Password
 	}
+	if user.Bio != "" {
+		update["bio"] = user.Bio
+	}
+	if user.ImageKey != "" {
+		update["image_key"] = user.ImageKey
+	}
+	if user.PhoneNumber != "" {
+		update["phone_number"] = user.PhoneNumber
+	}
+	
 
 	if len(update) == 0 {
 		return models.Nil()

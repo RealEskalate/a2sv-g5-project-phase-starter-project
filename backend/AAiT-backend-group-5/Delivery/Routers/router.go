@@ -9,12 +9,13 @@ import (
 	repository "github.com/aait.backend.g5.main/backend/Repository"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
+	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
+
 )
 
-func Setup(env *config.Env, db mongo.Database, gin *gin.Engine) {
+func Setup(env *config.Env, db interfaces.Database, gin *gin.Engine) {
 	jwt_service := infrastructure.NewJwtService(env)
-	session_repo := repository.NewSessionRepository(&db)
+	session_repo := repository.NewSessionRepository(db)
 	jwtMiddleware := middlewares.NewJwtAuthMiddleware(jwt_service, session_repo)
 	redisClient := config.NewRedisClient(*env, context.Background())
 

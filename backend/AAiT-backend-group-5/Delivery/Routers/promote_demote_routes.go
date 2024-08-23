@@ -5,12 +5,13 @@ import (
 	repository "github.com/aait.backend.g5.main/backend/Repository"
 	usecases "github.com/aait.backend.g5.main/backend/UseCases"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
+	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
+
 )
 
-func NewPromoteDemoteRouter(database mongo.Database, group *gin.RouterGroup) {
+func NewPromoteDemoteRouter(database interfaces.Database, group *gin.RouterGroup) {
 
-	user_repo := repository.NewUserRepository(&database)
+	user_repo := repository.NewUserRepository(database)
 
 	// instantiate PromoteDemote controller
 	PromteDemoteController := &controllers.PromoteDemoteController{

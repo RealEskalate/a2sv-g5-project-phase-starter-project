@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import LayoutWrapper from "./components/LayoutWrapper";
+import StoreProvider from "./StoreProvider";
+import SessionWrapper from "./components/SessionWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,8 +23,11 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className="h-screen overflow-hidden">
         <LayoutWrapper>
-          {children}
-          
+          <SessionWrapper>
+            <StoreProvider>
+                {children}
+            </StoreProvider>  
+          </SessionWrapper>
         </LayoutWrapper>
       
       </body>

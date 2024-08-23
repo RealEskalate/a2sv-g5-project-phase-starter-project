@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FiMenu } from "react-icons/fi";
 
-const Navbar = ({ onMenuClick }: { onMenuClick: () => void }) => {
-  const path = usePathname();
-  // let title = path.split("/")[1]
-  // title = title[0].toUpperCase().concat(title)
+
+
+const Navbar = ({onMenuClick}: {onMenuClick: () => void}) => {
+  const path = usePathname()
 
   return (
     <div className="flex flex-col justify-center h-24 gap-2 px-3 ">

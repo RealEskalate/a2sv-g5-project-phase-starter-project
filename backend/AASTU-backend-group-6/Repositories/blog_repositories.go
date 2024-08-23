@@ -65,7 +65,7 @@ func (b BlogRepository) ReactOnBlog(user_id string, reactionType bool, blog_id s
 			Status:  500,
 		}
 	}
-	filter, update = utils.FilterReactionUser([]primitive.ObjectID{post.Creater_id, userID, blogID}, reactionType, isLiked, isDisliked)
+	filter, update = utils.FilterReactionUser([]primitive.ObjectID{post.Creator_id, userID, blogID}, reactionType, isLiked, isDisliked)
 	_, err = b.UserCollection.UpdateOne(context, filter, update)
 	if err != nil {
 		return domain.ErrorResponse{
@@ -73,12 +73,49 @@ func (b BlogRepository) ReactOnBlog(user_id string, reactionType bool, blog_id s
 			Status:  500,
 		}
 	}
+
+	// var wg sync.WaitGroup
+    // var errMutex sync.Mutex
+    // var reactionError error
+
+    // wg.Add(1)
+    // go func() {
+    //     defer wg.Done()
+    //     _, err := b.PostCollection.UpdateOne(context, filter, update)
+    //     if err != nil {
+    //         errMutex.Lock()
+    //         reactionError = err
+    //         errMutex.Unlock()
+    //     }
+    // }()
+
+    // wg.Add(1)
+    // go func() {
+    //     defer wg.Done()
+    //     filter, update = utils.FilterReactionUser([]primitive.ObjectID{post.Creater_id, userID, blogID}, reactionType, isLiked, isDisliked)
+    //     _, err := b.UserCollection.UpdateOne(context, filter, update)
+    //     if err != nil {
+    //         errMutex.Lock()
+    //         reactionError = err
+    //         errMutex.Unlock()
+    //     }
+    // }()
+
+    // wg.Wait()
+    // if reactionError != nil {
+    //     return domain.ErrorResponse{
+    //         Message: "Internal server error",
+    //         Status:  500,
+    //     }
+    // }
+
 	if reactionType {
 		_ = b.UpdatePopularity(blog_id, "like")
 	} else {
 		_ = b.UpdatePopularity(blog_id, "dislike")
 	}
 	return domain.ErrorResponse{}
+
 }
 
 // Update popularity implements domain.BlogRepository.
@@ -104,7 +141,7 @@ func (b BlogRepository) UpdatePopularity(blog_id string, rateType string) error 
 		return errors.New("internal server error")
 	}
 	userFilter := bson.D{
-		{Key: "_id", Value: result.Creater_id},
+		{Key: "_id", Value: result.Creator_id},
 		{Key: "posts._id", Value: blogID},
 	}
 	update = bson.M{"$inc": bson.M{"posts.$.popularity": increment}}
@@ -113,6 +150,53 @@ func (b BlogRepository) UpdatePopularity(blog_id string, rateType string) error 
 		return errors.New("internal server error")
 	}
 	return nil
+
+// 	var wg sync.WaitGroup
+//     var errMutex sync.Mutex
+//     var updateError error
+
+//     wg.Add(1)
+//     go func() {
+//         defer wg.Done()
+//         err = b.PostCollection.FindOne(ctx, filter).Decode(&result)
+//         if err != nil {
+//             errMutex.Lock()
+//             updateError = err
+//             errMutex.Unlock()
+//             return
+//         }
+//         update := bson.M{"$inc": bson.M{"popularity": increment}}
+//         _, err = b.PostCollection.UpdateOne(ctx, filter, update)
+//         if err != nil {
+//             errMutex.Lock()
+//             updateError = err
+//             errMutex.Unlock()
+//         }
+//     }()
+
+//     // Update user popularity
+//     userFilter := bson.D{
+//         {Key: "_id", Value: result.Creater_id},
+//         {Key: "posts._id", Value: blogID},
+//     }
+//     wg.Add(1)
+//     go func() {
+//         defer wg.Done()
+//         update := bson.M{"$inc": bson.M{"posts.$.popularity": increment}}
+//         _, err = b.UserCollection.UpdateOne(ctx, userFilter, update)
+//         if err != nil {
+//             errMutex.Lock()
+//             updateError = err
+//             errMutex.Unlock()
+//         }
+//     }()
+
+//     wg.Wait()
+//     if updateError != nil {
+//         return errors.New("internal server error")
+//     }
+//     return nil
+// }
 }
 
 // IncrementOnBlog implements domain.BlogRepository.
@@ -138,7 +222,7 @@ func (b BlogRepository) IncrementViewCount(blog_id string) error {
 		return errors.New("internal server error")
 	}
 	userFilter := bson.D{
-		{Key: "_id", Value: result.Creater_id},
+		{Key: "_id", Value: result.Creator_id},
 		{Key: "posts._id", Value: blogID},
 	}
 	update = bson.M{"$inc": bson.M{"posts.$.view_count": 1}}
@@ -150,7 +234,7 @@ func (b BlogRepository) IncrementViewCount(blog_id string) error {
 }
 
 // CommentOnBlog implements domain.BlogRepository.
-func (b BlogRepository) CommentOnBlog(user_id string, user_name string, comment domain.Comment) error {
+func (b BlogRepository) CommentOnBlog(user_id string, comment domain.Comment) error {
 	timeOut := b.env.ContextTimeout
 	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
 	defer cancel()
@@ -184,16 +268,16 @@ func (b BlogRepository) CommentOnBlog(user_id string, user_name string, comment 
 }
 
 // CreateBlog implements domain.BlogRepository.
-func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string) (domain.Blog, error) {
+func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
 	timeOut := b.env.ContextTimeout
 
 	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
 	defer cancel()
-	if len(blog.Likes) == 0 {
-		blog.Likes = make([]primitive.ObjectID, 0)
+	if blog.LikeCount != 0 {
+		blog.LikeCount = 0
 	}
-	if len(blog.DisLikes) == 0 {
-		blog.DisLikes = make([]primitive.ObjectID, 0)
+	if blog.DisLikeCount != 0 {
+		blog.DisLikeCount = 0
 	}
 	blog.ID = primitive.NewObjectID()
 	uid, err := primitive.ObjectIDFromHex(user_id)
@@ -201,14 +285,18 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, role string
 	if err != nil {
 		return domain.Blog{}, errors.New("internal server error")
 	}
-	filter := bson.M{"_id": blog.Creater_id}
+	filter := bson.M{"_id": blog.Creator_id}
+	role, err := b.GetUserRoleByID(user_id)
+	if err != nil {
+		return domain.Blog{}, errors.New("internal server error")
+	}
 	if strings.ToLower(role) == "admin" {
-		if blog.Creater_id == primitive.NilObjectID {
-			blog.Creater_id = uid
+		if blog.Creator_id == primitive.NilObjectID {
+			blog.Creator_id = uid
 			filter = bson.M{"_id": uid}
 		}
 	} else {
-		blog.Creater_id = uid
+		blog.Creator_id = uid
 		filter = bson.M{"_id": uid}
 	}
 	_, err = b.PostCollection.InsertOne(context, blog)
@@ -522,4 +610,14 @@ func (b BlogRepository) UpdateBlogByID(user_id string, blog_id string, blog doma
 	} else {
 		return updated_blog, nil
 	}
+}
+
+func (b BlogRepository) GetUserRoleByID(id string) (string, error) {
+	var user domain.User
+	user_id, _ := primitive.ObjectIDFromHex(id)
+	err := b.UserCollection.FindOne(context.TODO(), primitive.M{"_id": user_id}).Decode(&user)
+	if err != nil {
+		return "", err
+	}
+	return user.Role, nil
 }

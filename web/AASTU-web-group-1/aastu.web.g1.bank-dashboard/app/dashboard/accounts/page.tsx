@@ -60,7 +60,7 @@ const Accounts = () => {
     >
       <div
         className={`grid grid-cols-2 md:grid-cols-4 gap-4 md:flex-row p-3 ${
-          isDarkMode ? "bg-gray-700" : "bg-white"
+          isDarkMode ? "bg-gray-700" : ""
         }`}
       >
         <div
@@ -114,7 +114,7 @@ const Accounts = () => {
       </div>
       <div
         className={`md:flex md:gap-12 ${
-          isDarkMode ? "bg-gray-700" : "bg-white"
+          isDarkMode ? "bg-gray-700" : ""
         }`}
       >
         <div className="w-[70%]">
@@ -181,7 +181,7 @@ const Accounts = () => {
       </div>
       <div
         className={`md:flex gap-6 mb-5 ${
-          isDarkMode ? "bg-gray-700" : "bg-white"
+          isDarkMode ? "bg-gray-700" : ""
         }`}
       >
         <div>
@@ -194,7 +194,7 @@ const Accounts = () => {
           <div>
             <h1 className="text-xl mb-4">Invoices Sent</h1>
             <div
-              className={`rounded-xl ${
+              className={`rounded-xl  ${
                 isDarkMode ? "bg-gray-800" : "bg-white"
               }`}
             >

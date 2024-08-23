@@ -285,9 +285,12 @@ class _HomePageState extends State<HomePage> {
                               itemBuilder: (context, index) {
                                 return GestureDetector(
                                     onTap: () {
+                                      
+
                                       Navigator.pushNamed(context, '/detail',
-                                          arguments: state.products[index]);
-                                    },
+                                          arguments: state.products[index],);
+                                      },
+                                    
                                     child: OverflowCard(
                                       product: state.products[index],
                                     ));

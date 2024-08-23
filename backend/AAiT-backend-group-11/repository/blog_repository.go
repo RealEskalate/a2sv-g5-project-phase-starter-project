@@ -4,7 +4,7 @@ import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
 	"context"
-	"log"
+	// "log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -26,7 +26,7 @@ func NewBlogRepository(collection *mongo.Collection, ctx context.Context) interf
 }
 
 func (br *blogRepository) CreateBlogPost(blogPost *entities.BlogPost, userId string) (*entities.BlogPost, error) {
-	log.Println(userId)
+	// log.Println(userId)
 	userObjectId, err := primitive.ObjectIDFromHex(userId)
 	
 	if err != nil {

@@ -1,38 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/chat_app_bar.dart';
+
 class TextPage extends StatelessWidget {
   const TextPage({super.key});
+  //here used the app bar widget instead of the appbar code 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Row(
-          children: [
-            CircleAvatar(
-              backgroundImage: AssetImage('assets/profile.jpg'), // Example image
-            ),
-            SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Sabila Sayma', style: TextStyle(fontSize: 18)),
-                Text('8 members, 5 online', style: TextStyle(fontSize: 12)),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.call),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.video_call),
-            onPressed: () {},
-          ),
-        ],
-      ),
+      appBar: CustomAppBar(),
+      
       body: Column(
         children: [
           Expanded(

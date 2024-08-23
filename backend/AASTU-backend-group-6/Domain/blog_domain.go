@@ -12,13 +12,13 @@ type Blog struct {
 	Title      string             `bson:"title" validate:"required,min=1,max=255"`
 	Content    string             `bson:"content" validate:"required,min=9"`
 	Tags       []string           `bson:"tags"`
-	Creater_id primitive.ObjectID `bson:"creater_id"`
+	Creator_id primitive.ObjectID `bson:"creater_id"`
 	CreatedAt  time.Time          `bson:"createdAt"`
 	UpdatedAt  time.Time          `bson:"updatedAt"`
 	ViewCount  int64			  `bson:"view_count"`
-	Comments   []Comment          `bson:"comments"`
-	Likes      []primitive.ObjectID `bson:"likes"`
-	DisLikes   []primitive.ObjectID `bson:"dislikes"`
+	Commenters_ID []primitive.ObjectID      `bson:"comment_ids"`
+	LikeCount    int64 				`bson:"like_count"`
+	DisLikeCount   int64 		`bson:"dislike_count"`
 	Popularity int64			  `bson:"popularity"`
 	Blog_image string             `bson:"blog_image"`
 }
@@ -32,27 +32,27 @@ type Comment struct {
 }
 
 type BlogUsecase interface {
-	CreateBlog(user_id string, blog Blog, role string) (Blog, error)
+	CreateBlog(user_id string, blog Blog) (Blog, error)
 	GetBlogByID(blog_id string, isCalled bool) (Blog, error)
 	GetBlogs(pageNo string, pageSize string, popularity string) ([]Blog, Pagination, error)
-	UpdateBlogByID(user_id string, blog_id string, blog Blog, role string) (Blog, error)
-	DeleteBlogByID(user_id string, blog_id string, role string) ErrorResponse
-	CommentOnBlog(user_id string, user_name string, comment Comment) error
+	UpdateBlogByID(user_id string, blog_id string, blog Blog) (Blog, error)
+	DeleteBlogByID(user_id string, blog_id string) ErrorResponse
+	CommentOnBlog(user_id string, comment Comment) error
 	ReactOnBlog(user_id string, reactionType string, blog_id string) ErrorResponse
 
 	SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string, popularity string) ([]Blog, Pagination, ErrorResponse)
 	FilterBlogsByTag(tags []string, pageNo string, pageSize string, startDate string, endDate string, popularity string) ([]Blog, Pagination, error)
 
 	GetMyBlogs(user_id string, pageNo string, pageSize string, popularity string) ([]Blog, Pagination, error)
-	GetMyBlogByID(user_id string, blog_id string, role string) (Blog, error)
+	GetMyBlogByID(user_id string, blog_id string) (Blog, error)
 }
 type BlogRepository interface {
-	CreateBlog(user_id string, blog Blog, role string) (Blog, error)
+	CreateBlog(user_id string, blog Blog) (Blog, error)
 	GetBlogByID(blog_id string, isCalled bool) (Blog, error)
 	GetBlogs(pageNo int64, pageSize int64, popularity string) ([]Blog, Pagination, error)
 	UpdateBlogByID(user_id string, blog_id string, blog Blog) (Blog, error)
 	DeleteBlogByID(user_id string, blog_id string) ErrorResponse
-	CommentOnBlog(user_id string, user_name string, comment Comment) error
+	CommentOnBlog(user_id string, comment Comment) error
 	ReactOnBlog(user_id string, reactionType bool, blog_id string) ErrorResponse
 
 	SearchBlogByTitleAndAuthor(title string, author string, pageNo int64, pageSize int64, popularity string) ([]Blog, Pagination, error)
@@ -60,4 +60,5 @@ type BlogRepository interface {
 
 	GetMyBlogs(user_id string, pageNo int64, pageSize int64, popularity string) ([]Blog, Pagination, error)
 	GetMyBlogByID(user_id string, blog_id string) (Blog, error)
+	GetUserRoleByID(id string) (string, error)
 }

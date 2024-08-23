@@ -15,13 +15,15 @@ type User struct {
 	Password          string             `json:"password" validate:"required"`
 	Profile_image_url string             `json:"profile_image" `
 	GoogleID          string             `json:"googleId"`
-	Posts             []Blog             `json:"posts"`
+	PostsID            []primitive.ObjectID             `json:"posts_id"`
 	RefreshToken      string             `json:"refreshToken" validate:"required"`
 	AccessToken       string             `json:"accessToken" validate:"required"`
 	Contact           string             `json:"contact"`
 	Bio               string             `json:"bio"`
 	Role              string             `json:"roles" validate:"required"`
-	Comments          []Comment          `json:"comments"`
+	CommentsID          []primitive.ObjectID          `json:"comments_id"`
+	LikedPostsID       []primitive.ObjectID          `json:"liked_posts_id"`
+	DisLikePostsID     []primitive.ObjectID          `json:"disliked_posts_id"`
 	Verified 		 bool 				`json:"verified"`
 	OTP 			 string 			`json:"otp"`
 	ExpiresAt 		 time.Time			`json:"expires_at"` 

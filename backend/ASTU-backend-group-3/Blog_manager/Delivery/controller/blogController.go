@@ -3,6 +3,7 @@ package controller
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"ASTU-backend-group-3/Blog_manager/Usecases"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -81,7 +82,7 @@ func (h *BlogController) RetrieveBlogs(c *gin.Context) {
 }
 func (h *BlogController) DeleteBlogByID(c *gin.Context) {
 	id := c.Param("id")
-	userRole := c.GetHeader("Role") // Extract the role from the header
+	userRole, _ := c.Get("role") // Extract the role from the header
 
 	// Get the current user's username from the context
 	username, exists := c.Get("username")
@@ -89,7 +90,7 @@ func (h *BlogController) DeleteBlogByID(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found in context"})
 		return
 	}
-
+	fmt.Println("Username from context:", username)
 	// Check if the user is an admin or the author of the blog
 	isAdmin := userRole == "admin"
 	if !isAdmin {

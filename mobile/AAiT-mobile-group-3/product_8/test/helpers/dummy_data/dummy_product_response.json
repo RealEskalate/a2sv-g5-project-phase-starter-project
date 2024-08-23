@@ -1,0 +1,16 @@
+[{
+    "id": "1",
+    "name": "Nike",
+    "description": "Nike is the Best",
+    "price": 344,
+    "imageUrl": "imageUrl"
+
+},
+{
+    "id": "1",
+    "title": "Nike",
+    "description": "Nike is the Best",
+    "price": 344.0,
+    "imageUrl": "imageUrl"
+
+}]

@@ -6,7 +6,6 @@ class ConversationCard extends StatelessWidget {
   final String lastMessage;
   final String time;
   final int unreadMessages;
-  final bool isOnline; // New field to check if the user is online
 
   const ConversationCard({
     required this.userImage,
@@ -14,7 +13,6 @@ class ConversationCard extends StatelessWidget {
     required this.lastMessage,
     required this.time,
     this.unreadMessages = 0,
-    this.isOnline = true,
   });
 
   @override
@@ -40,7 +38,7 @@ class ConversationCard extends StatelessWidget {
               width: 12,
               height: 12,
               decoration: BoxDecoration(
-                color: isOnline
+                color: onlineChecker(time)
                     ? Colors.green
                     : Colors.grey, // Green if online, gray if offline
                 shape: BoxShape.circle,
@@ -72,7 +70,7 @@ class ConversationCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            time,
+            displayOnline(time),
             style: TextStyle(
               color: Colors.grey,
               fontSize: 12,
@@ -100,5 +98,30 @@ class ConversationCard extends StatelessWidget {
         // Handle tap event
       },
     );
+  }
+}
+
+bool onlineChecker(String time) {
+  RegExp regExp = RegExp(r'\d+');
+
+  Match? match = regExp.firstMatch(time);
+
+  if (match != null) {
+    int number = int.parse(match.group(0)!);
+    if (number != 0) {
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    return true;
+  }
+}
+
+String displayOnline(String timeStamp) {
+  if (onlineChecker(timeStamp)) {
+    return 'Online';
+  } else {
+    return timeStamp;
   }
 }

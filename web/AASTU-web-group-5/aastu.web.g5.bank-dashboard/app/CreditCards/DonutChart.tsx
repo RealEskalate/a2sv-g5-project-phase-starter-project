@@ -42,7 +42,7 @@ const chartConfig = {
 
 export default function DonutChart({ data }: DonutChartProps) {
 	return (
-		<Card className="flex flex-col border-none">
+		<Card className="flex flex-col border-none dark:bg-gray-900">
 			<CardContent className="flex-1 pb-0">
 				<ChartContainer
 					config={chartConfig}
@@ -70,7 +70,7 @@ export default function DonutChart({ data }: DonutChartProps) {
 					</PieChart>
 				</ChartContainer>
 			</CardContent>
-			<div className="flex justify-center px-5 py-2 gap-2">
+			<div className="flex justify-center px-4 py-2 gap-4">
 				<div>
 					{data.slice(0, 2).map((item, index) => (
 						<div key={index} className="flex items-center gap-1 pb-2">
@@ -78,7 +78,9 @@ export default function DonutChart({ data }: DonutChartProps) {
 								className="w-3.5 h-3.5 rounded-full"
 								style={{ backgroundColor: item.fill }}
 							></div>
-							<div className="text-blue-900 opacity-60">{item.browser}</div>
+							<div className="text-blue-900 dark:text-gray-300 opacity-60 pt-1">
+								{item.browser}
+							</div>
 						</div>
 					))}
 				</div>
@@ -89,7 +91,9 @@ export default function DonutChart({ data }: DonutChartProps) {
 								className="w-3.5 h-3.5 rounded-full"
 								style={{ backgroundColor: item.fill }}
 							></div>
-							<div className="text-blue-900 opacity-60">{item.browser}</div>
+							<div className="text-blue-900 dark:text-gray-300 opacity-60 pt-1">
+								{item.browser}
+							</div>
 						</div>
 					))}
 				</div>

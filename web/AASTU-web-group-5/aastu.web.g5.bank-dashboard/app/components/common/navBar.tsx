@@ -28,8 +28,17 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
 		dispatch(toggleDarkMode());
 	};
 
+	// Update body background color when dark mode changes
+	useEffect(() => {
+		if (darkmode) {
+			document.body.classList.add("dark-mode");
+		} else {
+			document.body.classList.remove("dark-mode");
+		}
+	}, [darkmode]);
+
 	return (
-		<div className={`shadow-md bg-white dark:bg-gray-900 `}>
+		<div className={`shadow-md bg-white dark:bg-gray-900`}>
 			{/* Mobile view */}
 			<div className="flex justify-between items-center p-6 sm:hidden">
 				<button onClick={toggleSidebar} aria-label="Toggle sidebar">

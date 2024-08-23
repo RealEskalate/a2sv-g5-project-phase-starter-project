@@ -27,7 +27,7 @@ function Settings() {
 	};
 
 	return (
-		<div className="bg-white rounded-2xl pt-4 text-neutral-800 w-[95%] text-sm md:text-base justify-center mt-6 px-6 sm:px-10 pb-5 mx-auto">
+		<div className="bg-white dark:bg-gray-900 rounded-2xl pt-4 text-neutral-800 w-[95%] text-sm md:text-base justify-center mt-6 px-6 sm:px-10 pb-5 mx-auto">
 			<div className="relative mt-8 md:mt-10">
 				<div className="flex gap-10 md:flex-row md:gap-16 lg:gap-20">
 					<div

@@ -122,9 +122,9 @@ export default function Component() {
 	}, [accessToken, session]);
 
 	return (
-		<Card className="relative h-[364px] bg-white w-full">
+		<Card className="relative h-[364px] bg-white dark:bg-gray-900 w-full">
 			{/* Color Titles at the Top Right */}
-			<div className="absolute top-0 right-0 p-2 flex gap-2 bg-white">
+			<div className="absolute top-0 right-0 p-2 flex gap-2 bg-white dark:bg-gray-900">
 				<span className="flex items-center gap-1">
 					<span
 						className="w-3 h-3 inline-block rounded-full"

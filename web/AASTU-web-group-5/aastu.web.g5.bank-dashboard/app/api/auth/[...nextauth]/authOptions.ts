@@ -1,7 +1,7 @@
-import  { AuthOptions } from "next-auth";
+import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { JWT } from "next-auth/jwt"; 
-const authOptions:AuthOptions = {
+import { JWT } from "next-auth/jwt";
+const authOptions: AuthOptions = {
 	providers: [
 		CredentialsProvider({
 			name: "Credentials",
@@ -11,7 +11,7 @@ const authOptions:AuthOptions = {
 			},
 			async authorize(credentials) {
 				const res = await fetch(
-					"https://bank-dashboard-1tst.onrender.com/auth/login",
+					"https://bank-dashboard-rsf1.onrender.com/auth/login",
 					{
 						method: "POST",
 						headers: {
@@ -61,4 +61,4 @@ const authOptions:AuthOptions = {
 	},
 };
 
-export{ authOptions};
+export { authOptions };

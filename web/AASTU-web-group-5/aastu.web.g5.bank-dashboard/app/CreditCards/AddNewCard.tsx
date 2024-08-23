@@ -65,7 +65,7 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 
 		try {
 			const response = await fetch(
-				"https://bank-dashboard-1tst.onrender.com/cards",
+				"https://bank-dashboard-rsf1.onrender.com/cards",
 				{
 					method: "POST",
 					headers: {
@@ -104,11 +104,11 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 
 	return (
 		<div>
-			<div className="p-2 font-semibold text-blue-900 w-full sm:w-1/2">
+			<div className="p-2 font-semibold text-blue-900 dark:text-blue-600 w-full sm:w-1/2">
 				Add New Card
 			</div>
-			<div className="bg-white rounded-2xl py-6">
-				<div className="py-3 pl-8 pr-5 sm:pr-16 text-blue-900 opacity-70">
+			<div className="bg-white dark:bg-gray-900 rounded-2xl py-6">
+				<div className="py-3 pl-8 pr-5 sm:pr-16 text-blue-900 dark:text-[#fff] opacity-90">
 					Credit Card generally means a plastic card issued by Scheduled
 					Commercial Banks assigned to a Cardholder, with a credit limit, that
 					can be used to purchase goods and services on credit or obtain cash
@@ -130,7 +130,7 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 										value={cardData.cardType}
 										onChange={handleChange}
 										placeholder="Classic"
-										className="border-2 border-solid border-blue-100 p-2 rounded-xl focus:outline-none focus:border-blue-300"
+										className="border-2 border-solid border-blue-100 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff] p-2 rounded-xl focus:outline-none focus:border-blue-300"
 										aria-required="true"
 									/>
 								</div>
@@ -145,7 +145,7 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 										value={cardData.balance}
 										onChange={handleChange}
 										placeholder="27,000$"
-										className="border-2 border-solid border-blue-100 p-2 rounded-xl focus:outline-none focus:border-blue-300"
+										className="border-2 border-solid border-blue-100 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff] p-2 rounded-xl focus:outline-none focus:border-blue-300"
 										aria-required="true"
 									/>
 								</div>
@@ -160,7 +160,7 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 										value={cardData.passcode}
 										onChange={handleChange}
 										placeholder="••••••"
-										className="border-2 border-solid border-blue-100 p-2 rounded-xl focus:outline-none focus:border-blue-300"
+										className="border-2 border-solid border-blue-100 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff] p-2 rounded-xl focus:outline-none focus:border-blue-300"
 										aria-required="true"
 									/>
 								</div>
@@ -177,7 +177,7 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 										value={cardData.cardHolder}
 										onChange={handleChange}
 										placeholder="My Cards"
-										className="border-2 border-solid border-blue-100 p-2 rounded-xl focus:outline-none focus:border-blue-300"
+										className="border-2 border-solid border-blue-100 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff] p-2 rounded-xl focus:outline-none focus:border-blue-300"
 										aria-required="true"
 									/>
 								</div>
@@ -191,7 +191,7 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 										name="expiryDate"
 										value={cardData.expiryDate}
 										onChange={handleChange}
-										className="border-2 border-solid border-blue-100 p-2 rounded-xl focus:outline-none focus:border-blue-300"
+										className="border-2 border-solid border-blue-100 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff] p-2 rounded-xl focus:outline-none focus:border-blue-300"
 										aria-required="true"
 									/>
 								</div>

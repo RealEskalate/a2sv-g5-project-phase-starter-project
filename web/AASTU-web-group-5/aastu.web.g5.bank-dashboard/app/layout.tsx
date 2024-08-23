@@ -85,7 +85,7 @@ function SidebarWrapper({
 			<div
 				className={`fixed inset-0 bg-white z-50 sm:static sm:block ${
 					isSidebarVisible ? "block" : "hidden"
-				} dark:bg-gray-900 dark:text-white `}
+				} dark:bg-gray-900 dark:text-white pr-10`}
 			>
 				<SideBar
 					isSidebarVisible={isSidebarVisible}

@@ -28,9 +28,10 @@ type CreateBlogDTO struct {
 }
 
 type UpdateBlogDTO struct {
-	Title   string    `json:"title" bson:"title"` // Title of the blog
-	Content string    `json:"content" bson:"content"`
-	Tags    []BlogTag `json:"tags" bson:"tags"`
+	Title      string    `json:"title" bson:"title"` // Title of the blog
+	Content    string    `json:"content" bson:"content"`
+	Tags       []BlogTag `json:"tags" bson:"tags"`
+	AuthorName string    `json:"author_name" bson:"author_name"`
 }
 
 type GetBlogDTO struct {

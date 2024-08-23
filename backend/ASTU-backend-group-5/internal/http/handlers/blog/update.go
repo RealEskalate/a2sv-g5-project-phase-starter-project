@@ -26,6 +26,7 @@ func (h *BlogHandler) UpdateBlogHandler(c *gin.Context) {
 	blog.Title = updateBlog.Title
 	blog.Content = updateBlog.Content
 	blog.Tags = updateBlog.Tags
+	blog.AuthorName = updateBlog.AuthorName
 
 	if err := h.UseCase.UpdateBlog(context.Background(), id, &blog, userClaims.UserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

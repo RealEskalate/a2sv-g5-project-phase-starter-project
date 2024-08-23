@@ -5,8 +5,8 @@ import React from "react";
 const Loan = () => {
   return(
     <div className="">
-      <Loan_box />
-      <Loan_table />
+<Loan_box />
+<Loan_table />
     </div>
   );
 };

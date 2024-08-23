@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:ecommerce_app_ca_tdd/features/product/data/models/product_models.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/bottomnavbar.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/data/models/user_access.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/data/models/user_model.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_bloc.dart';
@@ -52,22 +53,33 @@ class _HomePageState extends State<HomePage> {
     
     const maxNum = 10.0;
     return Scaffold(
+
+      // bottomNavigationBar: NavigationBar(destinations: [
+
+      //   NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+      //   NavigationDestination(icon: Icon(Icons.add), label: 'Add'),
+      //   NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
+      // ], 
+      // height: MediaQuery.of(context).size.height * 0.07),
+
+      bottomNavigationBar: Container(
+        child: Bottomnavbar()),
+
       backgroundColor: Colors.white,
-      floatingActionButton: SizedBox(
-        width: 72,
-        height: 72,
-        child: FloatingActionButton(
-          shape: CircleBorder(),
-          backgroundColor: Color.fromARGB(255, 63, 81, 243),
-          child: Icon(Icons.add_rounded, color: Colors.white, size: 55),
-          // Named ROute Implementation
-          onPressed: () {
-            Navigator.pushNamed(context, '/add');
-          },
-        ),
-      ),
+      // floatingActionButton: SizedBox(
+      //   width: 72,
+      //   height: 72,
+      //   child: FloatingActionButton(
+      //     shape: CircleBorder(),
+      //     backgroundColor: Color.fromARGB(255, 63, 81, 243),
+      //     child: Icon(Icons.add_rounded, color: Colors.white, size: 55),
+      //     // Named ROute Implementation
+      //     onPressed: () {
+      //       Navigator.pushNamed(context, '/add');
+      //     },
+      //   ),
+      // ),
       body: SafeArea(
-          // ignore: prefer_const_constructors
           child: Padding(
         padding: const EdgeInsets.only(left: 21.0, right: 21.0),
         child: Column(
@@ -128,39 +140,88 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                Container(
+                
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                        decoration: BoxDecoration(
+                            // border: Border.all(
+                                // color: Color.fromRGBO(221, 221, 221, 1), width: 2),
+                            borderRadius: BorderRadius.circular(9)),
+                              child: GestureDetector(
+                                  onTap: (){
+                                      showDialog(
+                                          context: context, 
+                                          builder: (context)=> AlertDialog(
+                                            title: Text("Are you sure you want to logout ?",style: GoogleFonts.poppins(fontSize: 15),),
+                                            actions: [
+                                              TextButton(onPressed: (){
+                                                Navigator.pop(context);
+                                              }, child: Text("Cancel")),
+                                              TextButton(
+                                                onPressed: (){
+                                                  logOut();
+                                                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => true);
+                                                },
+                                                child: Text("Log-Out")
+                                                )
+                                            ],
+                                            )
+                                            );
+                                  },
+                          child: Image(
+                              width: 40,
+                              height: 40,
+                              image: AssetImage(
+                                  'assets/icons8-notification-bell-24.png')),
+                        )),
+                        SizedBox(width: MediaQuery.of(context).size.width * 0.05,),
+                        Container(
                     decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Color.fromRGBO(221, 221, 221, 1), width: 2),
+                        // border: Border.all(
+                            // color: Color.fromRGBO(221, 221, 221, 1), width: 2),
                         borderRadius: BorderRadius.circular(9)),
                           child: GestureDetector(
                               onTap: (){
-                                  showDialog(
-                                      context: context, 
-                                      builder: (context)=> AlertDialog(
-                                        title: Text("Are you sure you want to logout ?",style: GoogleFonts.poppins(fontSize: 15),),
-                                        actions: [
-                                          TextButton(onPressed: (){
-                                            Navigator.pop(context);
-                                          }, child: Text("Cancel")),
-                                          TextButton(
-                                            onPressed: (){
-                                              logOut();
-                                              Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => true);
-                                            },
-                                            child: Text("Log-Out")
-                                            )
-                                        ],
-                                                                  )
-                                                                );
+                                 
                               },
                       child: Image(
-                          width: 40,
-                          height: 40,
+                          width: 30,
+                          height: 30,
                           image: AssetImage(
-                              'assets/icons8-notification-bell-24.png')),
-                    ))
+                              'assets/message.png')),
+                    )),
+              
+                  ],
+                ),
+
+              //       Container(
+              //         decoration: BoxDecoration(
+              //             // border: Border.all(color: Colors.grey, width: 1),
+              //             borderRadius: BorderRadius.circular(10)),
+              //         // padding: EdgeInsets.only(right: 2),
+              //         child: IconButton(
+              //             onPressed: () {
+              //               Navigator.push(
+              //                 context,
+              //                 PageTransition(
+              //                     alignment: Alignment.bottomCenter,
+              //                     curve: Curves.easeInOut,
+              //                     duration: Duration(milliseconds: 1200),
+              //                     reverseDuration: Duration(milliseconds: 400),
+              //                     type: PageTransitionType.leftToRightPop,
+              //                     child: searchPage(),
+              //                     childCurrent: HomePage()),
+              //               );
+              //             },
+              //             icon: Icon(Icons.messenger_outline_sharp),
+              //             color: Color.fromARGB(255, 217, 217, 217),
+              //             iconSize: 29))
+
               ],
+                    
+
             ),
 
             Container(
@@ -175,28 +236,28 @@ class _HomePageState extends State<HomePage> {
                         fontSize: 24,
                         fontWeight: FontWeight.w600),
                   ),
-                  Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey, width: 1),
-                          borderRadius: BorderRadius.circular(10)),
-                      padding: EdgeInsets.only(right: 2),
-                      child: IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              PageTransition(
-                                  alignment: Alignment.bottomCenter,
-                                  curve: Curves.easeInOut,
-                                  duration: Duration(milliseconds: 1200),
-                                  reverseDuration: Duration(milliseconds: 400),
-                                  type: PageTransitionType.leftToRightPop,
-                                  child: searchPage(),
-                                  childCurrent: HomePage()),
-                            );
-                          },
-                          icon: Icon(Icons.search),
-                          color: Color.fromARGB(255, 217, 217, 217),
-                          iconSize: 29))
+                //   Container(
+                //       decoration: BoxDecoration(
+                //           border: Border.all(color: Colors.grey, width: 1),
+                //           borderRadius: BorderRadius.circular(10)),
+                //       padding: EdgeInsets.only(right: 2),
+                //       child: IconButton(
+                //           onPressed: () {
+                //             Navigator.push(
+                //               context,
+                //               PageTransition(
+                //                   alignment: Alignment.bottomCenter,
+                //                   curve: Curves.easeInOut,
+                //                   duration: Duration(milliseconds: 1200),
+                //                   reverseDuration: Duration(milliseconds: 400),
+                //                   type: PageTransitionType.leftToRightPop,
+                //                   child: searchPage(),
+                //                   childCurrent: HomePage()),
+                //             );
+                //           },
+                //           icon: Icon(Icons.search),
+                //           color: Color.fromARGB(255, 217, 217, 217),
+                //           iconSize: 29))
                 ],
               ),
             ),

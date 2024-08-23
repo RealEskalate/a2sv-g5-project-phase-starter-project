@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from "react";
 
 const ServicePage = () => {
@@ -233,3 +234,16 @@ const ServicePage = () => {
 };
 
 export default ServicePage;
+=======
+import React from 'react'
+
+const page = () => {
+  return (
+    <div>
+      services page
+    </div>
+  )
+}
+
+export default page
+>>>>>>> 5815d9f08456f911c3bf41a77fb243b5ec94f705

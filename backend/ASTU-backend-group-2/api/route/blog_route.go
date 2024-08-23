@@ -22,6 +22,7 @@ func NewProtectedBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mong
 	}
 
 	group.POST("/blogs", bc.CreateBlog())
+	group.POST("/blogs/batch", bc.BatchCreateBlog())
 	group.PUT("/blogs/:id", bc.UpdateBlog())
 	group.PATCH("/blogs/:id", bc.UpdateBlog())
 	group.DELETE("/blogs/:id", bc.DeleteBlog())

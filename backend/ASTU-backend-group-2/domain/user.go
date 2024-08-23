@@ -40,7 +40,11 @@ type UserOut struct {
 	Bio        string             `json:"bio" bson:"bio"`
 	ProfileImg string             `json:"profile_img" bson:"profile_img"`
 	IsOwner    bool               `json:"is_owner" bson:"is_owner"`
-	Role       string             `json:"role" bson:"role"` //may make only tobe admin or user
+	Active     bool               `json:"is_active" bson:"is_active"`
+	Role       string             `json:"role" bson:"role"`
+	CreatedAt  primitive.DateTime `json:"created_at" bson:"created_at"`
+	UpdatedAt  primitive.DateTime `json:"updated_at" bson:"updated_at"`
+	LastLogin  primitive.DateTime `json:"last_login" bson:"last_login"`
 }
 
 func (u *User) ToUserOut() *UserOut {
@@ -53,6 +57,10 @@ func (u *User) ToUserOut() *UserOut {
 		ProfileImg: u.ProfileImg,
 		IsOwner:    u.IsOwner,
 		Role:       u.Role,
+		Active:     u.Active,
+		CreatedAt:  u.CreatedAt,
+		UpdatedAt:  u.UpdatedAt,
+		LastLogin:  u.LastLogin,
 	}
 }
 

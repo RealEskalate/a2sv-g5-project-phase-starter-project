@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+
 export const cardApi = createApi({
   reducerPath: 'cardApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: "",
-    // the header depends on where we put our access token. either cookies or local storage
+    baseUrl: "https://bank-dashboard-latest.onrender.com",
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {
@@ -15,10 +15,46 @@ export const cardApi = createApi({
   }),
 
   tagTypes: [],
-  endpoints: (builder) => ({}),
+  endpoints: (builder) => ({
+
+    getCards: builder.query({
+      query: ({page, size}) => ({
+        url: `/cards?page=${page}&size=${size}`,
+        method: 'GET',
+      }),
+    }),
+
+    postCards: builder.mutation({
+      query: ({balance, cardHolder, expiryDate, passcode, cardType}) => ({
+        url: '/cards',
+        method: 'POST',
+        body: { cardHolder, passcode, cardType, expiryDate, balance },
+      }),
+    }),
+
+    getCard: builder.query({
+      query: ({id}) => ({
+        url: `/cards/${id}`,
+        method: 'GET',
+      }),
+    }),
+
+    deleteCard: builder.mutation({
+      query: ({id}) => ({
+        url: `/cards/${id}`,
+        method: 'DELETE',
+      }),
+    }),
+
+  }),
 });
 
-export const {} = cardApi;
+export const {
+  useGetCardsQuery,
+  usePostCardsMutation,
+  useGetCardQuery,
+  useDeleteCardMutation,
+} = cardApi;
 
 
 

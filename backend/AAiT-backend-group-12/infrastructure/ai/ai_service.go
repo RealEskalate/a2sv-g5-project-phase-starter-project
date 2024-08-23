@@ -49,6 +49,7 @@ func (s *AIService) GenerateContent(topics []string) (string, error) {
 	if len(resp.Candidates) == 0 {
 		return "No candidates found", nil
 	}
+
 	if len(resp.Candidates[0].Content.Parts) == 0 {
 		return "No content parts found", nil
 	}

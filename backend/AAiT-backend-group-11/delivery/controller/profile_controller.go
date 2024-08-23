@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"backend-starter-project/domain/entities"
+	"backend-starter-project/domain/dto"
 	"backend-starter-project/domain/interfaces"
 
 	"github.com/gin-gonic/gin"
@@ -16,18 +16,30 @@ func NewProfileController(service interfaces.ProfileService) ProfileController {
 }
 
 func (controller *ProfileController) CreateUserProfile(ctx *gin.Context) {
-	var profile entities.Profile
+	var profile dto.CreateProfileDto
 	err := ctx.ShouldBindJSON(&profile)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(200, gin.H{"message": "Profile created successfully"})
+	userID := ctx.GetString("userId")
+	if userID == "" {
+		ctx.JSON(400, gin.H{"error": "user id is required"})
+		return
+	}
+	profile.UserID = userID
+	
+	profile_, err := controller.ProfileService.CreateUserProfile(&profile)
+	if err!=nil{
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, gin.H{"message": "Profile created successfully", "profile": profile_})
 
 }
 
 func (controller *ProfileController) GetUserProfile(ctx *gin.Context) {
-	userId := ctx.Param("userId")
+	userId:=ctx.Param("userId")
 	profile, err := controller.ProfileService.GetUserProfile(userId)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
@@ -37,17 +49,36 @@ func (controller *ProfileController) GetUserProfile(ctx *gin.Context) {
 }
 
 func (controller *ProfileController) UpdateUserProfile(ctx *gin.Context) {
-	var profile entities.Profile
+	var profile dto.UpdateProfileDto
 	err := ctx.ShouldBindJSON(&profile)
+
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(200, gin.H{"message": "Profile updated successfully"})
+	updUserId:=ctx.Param("userId")
+
+	UserID := ctx.GetString("userId")
+	if UserID!=updUserId {
+		ctx.JSON(400, gin.H{"error": "You are only authorized to update your own profile"})
+		return
+	}
+	profile.UserID = UserID
+	updated, err := controller.ProfileService.UpdateUserProfile(&profile)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, gin.H{"message": "Profile updated successfully", "updated profile": updated})
 }
 
 func (controller *ProfileController) DeleteUserProfile(ctx *gin.Context) {
-	userId := ctx.Param("userId")
+	delId:=ctx.Param("userId")
+	userId := ctx.GetString("userId")
+	if userId!=delId {
+		ctx.JSON(400, gin.H{"error": "You are only authorized to delete your own profile"})
+		return
+	}
 	err := controller.ProfileService.DeleteUserProfile(userId)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})

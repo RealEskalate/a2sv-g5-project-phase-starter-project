@@ -3,6 +3,7 @@ package middleware
 import (
 	"backend-starter-project/domain/interfaces"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -26,7 +27,7 @@ func (middleware *authMiddleware) AuthMiddleware(role string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader("Authorization")
 		refresh, err := c.Cookie("refresh_token")
-		if err == nil {
+		if err != nil {
 			err := middleware.TokenService.VerifyRefreshToken(refresh)
 			if err != nil {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
@@ -34,7 +35,6 @@ func (middleware *authMiddleware) AuthMiddleware(role string) gin.HandlerFunc {
 				return
 			}
 		}
-
 
 		if header == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing"})
@@ -44,10 +44,11 @@ func (middleware *authMiddleware) AuthMiddleware(role string) gin.HandlerFunc {
 
 		authParts := strings.Split(header, " ")
 		if len(authParts) != 2 || strings.ToLower(authParts[0]) != "bearer" {
-			 c.JSON(http.StatusBadRequest ,"Authorization header format must be Bearer {token}")
+			c.JSON(http.StatusBadRequest, "Authorization header format must be Bearer {token}")
 		}
 
 		err = middleware.TokenService.VerifyAccessToken(authParts[1])
+
 		if err != nil {
 			if errors.Is(err, &interfaces.ErrTokenExpired{}) {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Expired token"})

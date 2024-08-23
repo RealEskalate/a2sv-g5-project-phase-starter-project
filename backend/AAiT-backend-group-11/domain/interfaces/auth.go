@@ -8,5 +8,6 @@ type AuthenticationService interface {
 	Logout(userId string) error
 	RefreshAccessToken(token *entities.RefreshToken) (string,error)
 	VerifyEmail(email string, code string) error
+	ResendOtp(request entities.ResendOTPRequest) error 
 }
 

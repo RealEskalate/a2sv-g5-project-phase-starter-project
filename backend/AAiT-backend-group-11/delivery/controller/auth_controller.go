@@ -13,13 +13,17 @@ import (
 
 type AuthController struct {
 	authService interfaces.AuthenticationService
-}
-func NewAuthController(authService interfaces.AuthenticationService) *AuthController{
-	return &AuthController{authService: authService}
+	passwordResetService interfaces.PasswordResetService
 }
 
-func (controller *AuthController) RegisterUser(c *gin.Context){
-	
+func NewAuthController(authService interfaces.AuthenticationService, passwordResetService interfaces.PasswordResetService) *AuthController{
+	return &AuthController{
+		authService: authService,
+		passwordResetService: passwordResetService}
+	}
+
+func (controller *AuthController) RegisterUser(c *gin.Context) {
+
 	var userRequest entities.User
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -27,15 +31,15 @@ func (controller *AuthController) RegisterUser(c *gin.Context){
 	}
 
 	user := entities.User{
-		ID: primitive.NewObjectID(),
-		Username: userRequest.Username,
-		Email: userRequest.Email,
-		Password: userRequest.Password,
+		ID:         primitive.NewObjectID(),
+		Username:   userRequest.Username,
+		Email:      userRequest.Email,
+		Password:   userRequest.Password,
 		IsVerified: false,
-		Role: "user",
-		Profile: entities.Profile{},
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Role:       "user",
+		Profile:    entities.Profile{},
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
 	}
 
 	createdUser, err := controller.authService.RegisterUser(&user)
@@ -59,19 +63,21 @@ func (controller *AuthController) Login(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"access_token": accessToken})
+	c.Header("Authorization", "Bearer "+accessToken)
+	c.JSON(200, gin.H{"refresh_token": refreshToken.Token})
+	c.JSON(200, gin.H{"message": "login successful"})
+	c.Set("userId", refreshToken.UserID)
 	c.SetCookie("refresh_token", refreshToken.Token, int(refreshToken.ExpiresAt.Unix()), "/", "localhost", false, true)
 }
 
+func (controller *AuthController) Logout(c *gin.Context) {
+	userId := c.GetString("userId")
 
-func (controller *AuthController) Logout(c *gin.Context){
-	userId:=c.GetString("userId")
-	
 	controller.authService.Logout(userId)
-	c.JSON(200,gin.H{"message":"succesfully logged out"})
+	c.JSON(200, gin.H{"message": "succesfully logged out"})
 }
 
-func (controller *AuthController) RefreshAccessToken(c *gin.Context){
+func (controller *AuthController) RefreshAccessToken(c *gin.Context) {
 	var token entities.RefreshToken
 	err := c.ShouldBindJSON(&token)
 	if err != nil {
@@ -81,7 +87,7 @@ func (controller *AuthController) RefreshAccessToken(c *gin.Context){
 	controller.authService.RefreshAccessToken(&token)
 }
 
-func (controller *AuthController) VerifyEmail(c *gin.Context)  {
+func (controller *AuthController) VerifyEmail(c *gin.Context) {
 
 	var emailVerification entities.EmailVerificationRequest
 
@@ -97,4 +103,55 @@ func (controller *AuthController) VerifyEmail(c *gin.Context)  {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Email verified successfully"})
+}
+
+
+func (controller *AuthController) RequestPasswordReset(c *gin.Context) {
+	var forgetPasswordRequest entities.ForgetPasswordRequest
+	if err := c.ShouldBindJSON(&forgetPasswordRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := controller.passwordResetService.RequestPasswordReset(forgetPasswordRequest.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password reset link sent to your email"})
+}
+
+func (controller *AuthController) ResetPassword(c *gin.Context) {
+	var passwordReset entities.PasswordReset
+	if err := c.ShouldBindJSON(&passwordReset); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := controller.passwordResetService.ResetPassword(passwordReset.Token, passwordReset.NewPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password reset successfully"})
+}
+
+func (controller *AuthController) ResendOtp(c *gin.Context) {
+    var request entities.ResendOTPRequest
+
+    err := c.ShouldBind(&request)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    err = controller.authService.ResendOtp(request)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "OTP sent successfully"})
 }

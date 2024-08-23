@@ -43,7 +43,8 @@ func (o *OtpRepository) InvalidateOtp(otp *entities.OTP) error {
 	collection := o.collection.Database().Collection("otp")
 	ctx := context.Background()
 
-	update := bson.M{}
+	// Update the is_valid field to false
+	update := bson.M{"$set": bson.M{"is_valid": false,},}
 
 	// Define options for the update operation (e.g., to perform an upsert)
 	options := options.Update().SetUpsert(false)

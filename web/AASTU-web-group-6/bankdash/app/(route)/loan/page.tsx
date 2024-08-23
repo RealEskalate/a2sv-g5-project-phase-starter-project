@@ -1,38 +1,54 @@
+"use client";
 import LoanTable from "@/app/components/Loan/LoanTable";
-import React from "react";
-import { LoanType } from "@/types/LoanValue";
+import React, { useEffect, useState } from "react";
+import { ApiResponse, LoanType } from "@/types/LoanValue";
 import Card from "../../components/Accounts/account";
-// import loanApi from "@/app/Services/api/loanApi";
-import { getServerSession } from "next-auth";
-import { options } from "@/app/api/auth/[...nextauth]/options";
+import loanApi from "@/app/Services/api/loanApi";
+import { useSession } from "next-auth/react";
 
-const Loan = async () => {
-  const session = await getServerSession(options);
+const Loan = () => {
+  const { data: session } = useSession();
   const accessToken = session?.accessToken as string;
-  // console.log(accessToken, "Server Token");
-  // const loanData = await loanApi.getLoan(accessToken);
-  const loanData = [];
+  const [loading, setLoading] = useState(true);
+  const [getLoan, setGetLoan] = useState<ApiResponse | null>(null);
+
+  const fetchLoan = async () => {
+    while (!accessToken) {
+      await new Promise((resolve) => setTimeout(resolve, 150)); // Delay to wait for the token
+    }
+    const loanData = await loanApi.detailData(accessToken);
+    // console.log(loanData);
+    setGetLoan(loanData);
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    fetchLoan();
+    console.log(getLoan, "--");
+  }, [accessToken]);
   return (
     <div className="px-5 space-y-4 mt-4 w-full h-screen">
       <div className="flex flex-col xxs:overflow-x-auto md:overflow-hidden lg:flex-row gap-6 xl:gap-7">
         <div className="flex scrollbar-hide overflow-x-scroll lg:w-[100%] gap-4 xl:gap-7">
           <Card
             title="Personal Loans"
-            amount="$12,750"
+            amount={getLoan?.personalLoan ?? null}
             color="#FFF5D9"
             icon="/assets/money-tag 1.svg"
             width="w-full"
           />
           <Card
-            title="My Balance"
-            amount="$5,600"
+            title="Corporate Loan"
+            amount={getLoan?.corporateLoan ?? null}
             color="#E7EDFF"
             icon="/assets/expense.svg"
             width="w-full"
           />
           <Card
-            title="My Balance"
-            amount="$500,000"
+            title="Buissness Loan"
+            amount={getLoan?.businessLoan ?? null}
             color="#FFE0EB"
             icon="/assets/growth.svg"
             width="w-full"
@@ -46,7 +62,7 @@ const Loan = async () => {
           />
         </div>
       </div>
-      <LoanTable loans={loanData} />
+      <LoanTable />
     </div>
   );
 };

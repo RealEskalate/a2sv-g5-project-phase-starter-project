@@ -18,13 +18,15 @@ type SignupUsecaseTestSuite struct {
 	suite.Suite
 	SignupUsecaseTestSuite domain.SignupUseCase
 	mockSignupRepo         *mocks.SignupRepository
+	mockUnverified         *mocks.UnverifiedUserRepository
 	contextTimeout         time.Duration
 }
 
 func (suite *SignupUsecaseTestSuite) SetupTest() {
 	suite.mockSignupRepo = new(mocks.SignupRepository)
+	suite.mockUnverified = new(mocks.UnverifiedUserRepository)
 	suite.contextTimeout = time.Second * 5
-	suite.SignupUsecaseTestSuite = NewSignupUseCase(suite.mockSignupRepo, suite.contextTimeout, infrastructure.NewPasswordService())
+	suite.SignupUsecaseTestSuite = NewSignupUseCase(suite.mockSignupRepo, suite.mockUnverified, suite.contextTimeout, infrastructure.NewPasswordService())
 }
 func (suite *SignupUsecaseTestSuite) TestCreate() {
 	suite.Run("TestSuccess", func() {

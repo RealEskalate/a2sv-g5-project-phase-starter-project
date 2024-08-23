@@ -8,18 +8,16 @@ import (
 )
 
 type AIUsecase struct {
-	aiService domain.AIConfig
+	aiService      domain.AIConfig
 	contextTimeout time.Duration
-
-	
 }
 
-func NewAIUsecase(aiService domain.AIConfig , timeout time.Duration) domain.AIUsecase {
+func NewAIUsecase(aiService domain.AIConfig, timeout time.Duration) domain.AIUsecase {
 	return &AIUsecase{aiService: aiService,
-					contextTimeout: timeout,}
+		contextTimeout: timeout}
 }
 
-func (u *AIUsecase) AskAI(c context.Context , request domain.AiRequest) interface{} {
+func (u *AIUsecase) AskAI(c context.Context, request domain.AiRequest) interface{} {
 	prompt := domain.Prompt_keyword
 	formattedPrompt := fmt.Sprintf(prompt, request.Message)
 

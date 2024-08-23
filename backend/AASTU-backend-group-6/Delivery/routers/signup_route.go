@@ -15,8 +15,8 @@ func NewSignupRoute(config *infrastructure.Config, DB mongo.Database, SignupRout
 
 	repo := repositories.NewSignupRepository(DB, config.UserCollection)
 	passwordService := infrastructure.NewPasswordService()
-
-	usecase := usecases.NewSignupUseCase(repo, time.Duration(config.ContextTimeout)*time.Second , passwordService)
+	unverRepo := repositories.NewUnverifiedUserRepository(DB, config.UnverifiedUserCollection)
+	usecase := usecases.NewSignupUseCase(repo, unverRepo, time.Duration(config.ContextTimeout)*time.Second, passwordService)
 	signup := controllers.SignupController{
 		SignupUsecase: usecase,
 	}
@@ -25,7 +25,5 @@ func NewSignupRoute(config *infrastructure.Config, DB mongo.Database, SignupRout
 	SignupRoute.POST("/signup/verify", signup.VerifyOTP)
 	SignupRoute.POST("/reset", signup.ForgotPassword)
 	SignupRoute.POST("/resend", signup.ResendOTP)
-	
 
-	
 }

@@ -11,13 +11,16 @@ import (
 )
 
 type SignupUseCase struct {
-	SignupRepository domain.SignupRepository
-	contextTimeout   time.Duration
-	passwordService  domain.PasswordService
+	SignupRepository         domain.SignupRepository
+	UnverifiedUserRepository domain.UnverifiedUserRepository
+	contextTimeout           time.Duration
+	passwordService          domain.PasswordService
 }
 
-func NewSignupUseCase(SignupRepository domain.SignupRepository, timeout time.Duration, passwordService domain.PasswordService) domain.SignupUseCase {
-	return &SignupUseCase{SignupRepository: SignupRepository,
+func NewSignupUseCase(SignupRepository domain.SignupRepository,uvu domain.UnverifiedUserRepository, timeout time.Duration, passwordService domain.PasswordService) domain.SignupUseCase {
+	return &SignupUseCase{
+		SignupRepository: SignupRepository,
+		UnverifiedUserRepository: uvu,
 		contextTimeout:  timeout,
 		passwordService: passwordService}
 }

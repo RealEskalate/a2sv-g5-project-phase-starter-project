@@ -32,7 +32,7 @@ type Blog struct {
 func (b *Blog) CalculatePopularity() {
 	b.Popularity = float32(
 		float32(b.ViewsCount)*weightsToUse["views"] +
-			float32(b.CommentsCount)*weightsToUse["comments"] +
+			// float32(b.CommentsCount)*weightsToUse["comments"] +
 			float32(b.LikesCount)*weightsToUse["likes"] -
 			float32(b.DislikesCount)*weightsToUse["dislikes"],
 	)

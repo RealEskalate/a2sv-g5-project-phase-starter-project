@@ -1,6 +1,5 @@
-const API_BASE_URL = "https://bank-dashboard-o9tl.onrender.com";
-const token =
-  "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJxd2VyIiwiaWF0IjoxNzI0MTQwNzE1LCJleHAiOjE3MjQyMjcxMTV9.90gS2PauXlM2v4Dv8LlEG2r2Dr4ZnlWS19A7cDRf-OA0SpWxwanSEDW8ddH_vn9E";
+const API_BASE_URL = 'https://web-team-g4.onrender.com';
+const token = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJxd2VyIiwiaWF0IjoxNzI0MTQwNzE1LCJleHAiOjE3MjQyMjcxMTV9.90gS2PauXlM2v4Dv8LlEG2r2Dr4ZnlWS19A7cDRf-OA0SpWxwanSEDW8ddH_vn9E"
 // GET /companies/{id}
 export const getCompanyById = async (id: any) => {
   const response = await fetch(`${API_BASE_URL}/companies/${id}`, {

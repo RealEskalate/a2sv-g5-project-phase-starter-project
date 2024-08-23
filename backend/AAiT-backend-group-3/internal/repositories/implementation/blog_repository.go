@@ -2,24 +2,29 @@ package repositories
 
 import (
 	"AAIT-backend-group-3/internal/domain/models"
+	"AAIT-backend-group-3/internal/infrastructures/services"
 	"AAIT-backend-group-3/internal/repositories/interfaces"
 	"context"
+	"fmt"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"time"
 )
 
 var ctx = context.TODO()
 
 type MongoBlogRepository struct {
 	collection *mongo.Collection
+	redisClt services.ICacheService
 }
 
-func NewMongoBlogRepository(db *mongo.Database, collectionName string) repository_interface.BlogRepositoryInterface {
+func NewMongoBlogRepository(db *mongo.Database, collectionName string, redisClient services.ICacheService) repository_interface.BlogRepositoryInterface {
 	return &MongoBlogRepository{
 		collection: db.Collection(collectionName),
+		redisClt: redisClient,
 	}
 }
 
@@ -39,20 +44,41 @@ func (r *MongoBlogRepository) CreateBlog(blog *models.Blog, authorId string) (st
 }
 
 func (r *MongoBlogRepository) GetBlogByID(blogID string) (*models.Blog, error) {
+	cacheKey := "blog:" + blogID
+	var blog models.Blog
+	err := r.redisClt.GetBlog(cacheKey, &blog)
+	if err == nil && blog.ID != primitive.NilObjectID {
+		return &blog, nil
+	} 
+
 	blogIDObj, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return nil, err
 	}
-	var blog models.Blog
+
 	err = r.collection.FindOne(ctx, bson.M{"_id": blogIDObj}).Decode(&blog)
 	if err != nil {
 		return nil, err
 	}
+
+	err = r.redisClt.SetBlog(cacheKey, &blog, time.Hour)
+	if err != nil {
+		return nil, err
+	}
+
 	return &blog, nil
 }
 
+
+
 func (r *MongoBlogRepository) GetBlogs(filter map[string]interface{}, search string, page int, limit int) ([]*models.Blog, error) {
+	cacheKey := fmt.Sprintf("blogs:%v:%v:%v:%v", filter, search, page, limit)
 	var blogs []*models.Blog
+	err := r.redisClt.GetBlog(cacheKey, &blogs)
+	if err == nil && len(blogs) > 0 {
+		return blogs, nil
+	}
+
 	filterBson := bson.M{}
 	if search != "" {
 		filterBson["$text"] = bson.M{"$search": search}
@@ -81,9 +107,14 @@ func (r *MongoBlogRepository) GetBlogs(filter map[string]interface{}, search str
 	if err := cursor.Err(); err != nil {
 		return nil, err
 	}
+	err = r.redisClt.SetBlog(cacheKey, blogs, time.Hour)
+	if err != nil {
+		return nil, err
+	}
 
 	return blogs, nil
 }
+
 
 func (r *MongoBlogRepository) UpdateBlog(blogId string, newBlog *models.Blog) error {
 	blogID, _ := primitive.ObjectIDFromHex(blogId)

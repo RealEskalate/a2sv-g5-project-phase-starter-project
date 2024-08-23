@@ -2,8 +2,11 @@ package repositories
 
 import (
 	"AAIT-backend-group-3/internal/domain/models"
+	"AAIT-backend-group-3/internal/infrastructures/services"
 	"AAIT-backend-group-3/internal/repositories/interfaces"
 	"errors"
+	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -12,11 +15,13 @@ import (
 
 type MongoUserRepository struct {
 	collection *mongo.Collection
+	redisClient services.ICacheService
 }
 
-func NewMongoUserRepository(db *mongo.Database, collectionName string) repository_interface.UserRepositoryInterface {
+func NewMongoUserRepository(db *mongo.Database, collectionName string, redisClient services.ICacheService) repository_interface.UserRepositoryInterface {
 	return &MongoUserRepository{
 		collection: db.Collection(collectionName),
+		redisClient: redisClient,
 	}
 }
 
@@ -29,6 +34,14 @@ func (r *MongoUserRepository) SignUp(user *models.User) (*models.User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (r *MongoUserRepository) BlacklistToken(token string, remainingTime time.Duration) error {
+	err := r.redisClient.BlacklistTkn(token, remainingTime)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *MongoUserRepository) GetUserByID(id string) (*models.User, error) {
@@ -69,7 +82,11 @@ func (r *MongoUserRepository) GetUserByEmail(email string) (*models.User, error)
 }
 
 func (r *MongoUserRepository) DeleteUser(id string) error {
-	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": id})
+	user_id, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	_, err = r.collection.DeleteOne(ctx, bson.M{"_id": user_id})
 	return err
 }
 
@@ -78,17 +95,26 @@ func (r *MongoUserRepository) UpdateProfile(id string, user *models.User) error 
 	if err != nil {
 		return errors.New(err.Error())
 	}
+	fmt.Println("refToken", user.RefToken)
 	_, err = r.collection.UpdateOne(ctx, bson.M{"_id": user_id}, bson.M{"$set": user})
 	return err
 }
 
 func (r *MongoUserRepository) PromoteUser(userID string) error {
-	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": userID}, bson.M{"$set": bson.M{"role": "admin"}})
+	user_id, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
+	_, err = r.collection.UpdateOne(ctx, bson.M{"_id": user_id}, bson.M{"$set": bson.M{"role": "admin"}})
 	return err
 }
 
 func (r *MongoUserRepository) DemoteUser(userID string) error {
-	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": userID}, bson.M{"$set": bson.M{"role": "user"}})
+	user_id, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
+	_, err = r.collection.UpdateOne(ctx, bson.M{"_id": user_id}, bson.M{"$set": bson.M{"role": "user"}})
 	return err
 }
 

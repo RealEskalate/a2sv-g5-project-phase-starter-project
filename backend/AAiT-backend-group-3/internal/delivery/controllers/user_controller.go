@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 type UserController struct {
 	user_usecase usecases.UserUsecaseInterface
 }
@@ -16,6 +15,7 @@ type UserControllerInterface interface {
 	Login(c *gin.Context)
 	RefreshToken(c *gin.Context)
 	VerifyEmail(c *gin.Context)
+	Logout(c *gin.Context)
 }
 
 func NewUserController(u usecases.UserUsecaseInterface) UserControllerInterface {
@@ -24,25 +24,19 @@ func NewUserController(u usecases.UserUsecaseInterface) UserControllerInterface 
 	}
 }
 func (uc *UserController) Register(c *gin.Context) {
-    var user *models.User
-    err := c.ShouldBindJSON(&user)
-    if err != nil {
-        fmt.Println("Error binding JSON:", err)
-        c.JSON(400, gin.H{"message": "invalid json format"})
-        return
-    }
+	var user *models.User
+	err := c.ShouldBindJSON(&user)
+	if err != nil {
+		c.JSON(400, gin.H{"message": "invalid json format"})
+		return
+	}
+	_, err = uc.user_usecase.SignUp(user)
 
-    fmt.Println("User data received:", user)
-
-    registeredUser, err := uc.user_usecase.SignUp(user)
-    if err != nil {
-        fmt.Println("Error during SignUp:", err)
-        c.JSON(500, gin.H{"error": err.Error()})
-        return
-    }
-
-    fmt.Println("User registered successfully with ID:", registeredUser.ID.Hex())
-    c.JSON(200, gin.H{"user": registeredUser.ID.Hex()})
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message": "verification email sent to your email"})
 }
 
 func (uc *UserController) Login(c *gin.Context) {
@@ -53,7 +47,7 @@ func (uc *UserController) Login(c *gin.Context) {
 	}
 	accessTkn, refreshTkn, err := uc.user_usecase.Login(user)
 	if err != nil {
-		c.JSON(500, gin.H{"error":err.Error()})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{"accessToken": accessTkn, "refreshToken": refreshTkn})
@@ -91,3 +85,23 @@ func (uc *UserController) VerifyEmail(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Email successfully verified", "access_token": accTkn, "refresh_token": refTkn})
 }
 
+func (uc *UserController) Logout(c *gin.Context) {
+	token, ok := c.Get("token")
+	if !ok {
+		c.JSON(400, gin.H{"error": "Missing token"})
+		return
+	}
+	tokenStr, ok := token.(string)
+	fmt.Println(tokenStr)
+
+	if !ok {
+		c.JSON(500, gin.H{"error": "Invalid token format"})
+		return
+	}
+	err := uc.user_usecase.Logout(tokenStr)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to logout"})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Successfully logged out"})
+}

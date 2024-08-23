@@ -53,22 +53,26 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//repositories
-	userRepo := repositories.NewMongoUserRepository(dbClient.Database, "users")
-	otpRepo := repositories.NewMongoOtpRepository(dbClient.Database, "otps")
-	blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs")
-	commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
-	tagRep := repositories.NewMongoTagRepository(dbClient.Database, "tags")
 
 	//services
 	emailSvc := services.NewEmailService(smtpHost, smtpPort, userName, passWord)
 	passSvc := services.NewPasswordService()
 	validationSvc := services.NewValidationService()
 	jwtSvc := services.NewJWTService(secretKey)
+	cacheSvc := services.NewCacheService("localhost:6379", "", 0)
+
 	aiService := services.NewAiService(gemini_client)
 
+	//repositories
+	userRepo := repositories.NewMongoUserRepository(dbClient.Database, "users", cacheSvc)
+	otpRepo := repositories.NewMongoOtpRepository(dbClient.Database, "otps")
+	blogRepo := repositories.NewMongoBlogRepository(dbClient.Database, "blogs",cacheSvc)
+	commentRepo := repositories.NewMongoCommentRepository(dbClient.Database, "comments")
+	tagRep := repositories.NewMongoTagRepository(dbClient.Database, "tags")
+
 	//middlewares
-	authMiddleware := middlewares.NewAuthMiddleware(jwtSvc)
+	authMiddleware := middlewares.NewAuthMiddleware(jwtSvc, cacheSvc)
+
 
 	//usecases
 	userUsecase := usecases.NewUserUsecase(userRepo, passSvc, validationSvc, emailSvc, jwtSvc)
@@ -77,6 +81,7 @@ func main() {
 	commentService := usecases.NewCommentUsecase(commentRepo)
 	aiHelperUsecase := usecases.NewAiHelperUsecase(aiService)
 
+
 	// controllers
 	userController := controllers.NewUserController(userUsecase)
 	otpController := controllers.NewOTPController(otpUsecase)
@@ -84,16 +89,17 @@ func main() {
 	commentController := controllers.NewCommentController(commentService)
 	aiHelperController := controllers.NewAiHelperController(aiHelperUsecase)
 
+
 	router := gin.New()
 	router.Use(gin.Logger())
 
+
 	// routers
-	routers.CreateUserRouter(router, userController, otpController)
+	routers.CreateUserRouter(router, userController, otpController, authMiddleware)
 	routers.CreateBlogRouter(router, blogController, authMiddleware)
 	routers.CreateCommentRouter(router, commentController, authMiddleware)
 	routers.CreateAiHelperRouter(router, aiHelperController)
 	if err := router.Run(":" + os.Getenv("PORT")); err!= nil{
 		log.Fatal(err)
 	}
-	fmt.Println("server connnected")
 }

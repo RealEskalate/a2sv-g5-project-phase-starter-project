@@ -81,10 +81,14 @@ func (u *blogUseCase) AddComment(ctx context.Context, comment *domain.Comment, u
 	comment.BlogID = blogObjectID
 
 	err = u.repo.AddComment(ctx, comment)
-
 	if err != nil {
 		log.Printf("Error adding comment to blog with ID %s: %v", comment.BlogID.Hex(), err)
 		return fmt.Errorf("failed to add comment: %w", err)
+	}
+
+	err = u.repo.IncrementBlogCommentCount(ctx, comment.BlogID.Hex())
+	if err != nil {
+		log.Printf("Error incrementing comment count for blog with ID %s: %v", comment.BlogID.Hex(), err)
 	}
 	return nil
 }
@@ -96,6 +100,7 @@ func (u *blogUseCase) AddLike(ctx context.Context, like *domain.Like, userId str
 	}
 	alreadyLiked, _ := u.repo.HasUserLikedBlog(ctx, userId, like.BlogID.Hex())
 	if alreadyLiked {
+		u.RemoveLike(ctx, like.BlogID.Hex(), userId, "user")
 		return nil
 	}
 	like.UserID, _ = primitive.ObjectIDFromHex(userId)
@@ -103,6 +108,10 @@ func (u *blogUseCase) AddLike(ctx context.Context, like *domain.Like, userId str
 	if err != nil {
 		log.Printf("Error adding like to blog with ID %s: %v", like.BlogID.Hex(), err)
 		return fmt.Errorf("failed to add like: %w", err)
+	}
+	err = u.repo.IncrementBlogLikeCount(ctx, like.BlogID.Hex())
+	if err != nil {
+		log.Printf("Error incrementing like count for blog with ID %s: %v", like.BlogID.Hex(), err)
 	}
 	return nil
 }
@@ -121,6 +130,10 @@ func (u *blogUseCase) AddView(ctx context.Context, view *domain.View, userId str
 	if err != nil {
 		log.Printf("Error adding view to blog with ID %s: %v", view.BlogID.Hex(), err)
 		return fmt.Errorf("failed to add view: %w", err)
+	}
+	err = u.repo.IncrementBlogViewCount(ctx, view.BlogID.Hex())
+	if err != nil {
+		log.Printf("Error incrementing view count for blog with ID %s: %v", view.BlogID.Hex(), err)
 	}
 	return nil
 }

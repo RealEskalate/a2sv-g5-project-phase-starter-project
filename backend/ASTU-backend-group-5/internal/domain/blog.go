@@ -36,7 +36,6 @@ type UpdateBlogDTO struct {
 
 type GetBlogDTO struct {
 	ID         primitive.ObjectID `json:"id" bson:"_id"`
-	Name       string             `json:"name" bson:"name"`
 	Author     primitive.ObjectID `json:"ownerID" bson:"ownerID"`
 	AuthorName string             `json:"author_name" bson:"author_name"`
 	Title      string             `json:"title" bson:"title"`
@@ -60,14 +59,13 @@ type GetSingleBlogDTO struct {
 	CreatedAt  primitive.DateTime `json:"created_at" bson:"created_at"`
 	UpdatedAt  primitive.DateTime `json:"updated_at" bson:"updated_at"`
 	Tags       []BlogTag          `json:"tags" bson:"tags"`
+	Liked      bool               `json:"liked" bson:"liked"`
 
 	ViewsCount    int `json:"views_count" bson:"views_count"`
 	LikesCount    int `json:"likes_count" bson:"likes_count"`
 	CommentsCount int `json:"comments_count" bson:"comments_count"`
 
 	Comments []Comment `json:"comments" bson:"comments"`
-	Likes    []Like    `json:"likes" bson:"likes"`
-	Views    []View    `json:"views" bson:"views"`
 }
 
 type BlogTag struct {

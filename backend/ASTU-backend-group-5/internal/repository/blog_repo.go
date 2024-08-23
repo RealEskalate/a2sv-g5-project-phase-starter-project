@@ -56,4 +56,10 @@ type BlogRepository interface {
 	IncrementBlogLikeCount(ctx context.Context, blogId string) error
 
 	IncrementBlogCommentCount(ctx context.Context, blogId string) error
+
+	DecrementBlogLikeCount(ctx context.Context, blogId string) error
+
+	DecrementBlogCommentCount(ctx context.Context, blogId string) error
+
+	DecrementBlogViewCount(ctx context.Context, blogId string) error
 }

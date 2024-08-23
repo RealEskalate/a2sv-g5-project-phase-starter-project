@@ -8,12 +8,12 @@ import (
 )
 
 type UserController struct {
-	authuserusecase auth.AuthUserUsecase
+	authuserusecase auth.AuthServices
 }
 
-func NewUserController(authuserusecase auth.AuthUserUsecase) UserController {
-	return UserController{
-		authuserusecase: authuserusecase,
+func NewUserController(authServices auth.AuthServices) *UserController {
+	return &UserController{
+		authuserusecase: authServices,
 	}
 }
 

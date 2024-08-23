@@ -79,10 +79,26 @@ func (userUC *userUseCase) RegisterStart(cxt *gin.Context, user *domain.User) do
 		return &domain.CustomError{Message: errVerification.Error() + "third", Code: http.StatusInternalServerError}
 	}
 
-	userUC.sessionRepo.CreateToken(context, &domain.Session{
-		Username:          user.Username,
-		VerificationToken: verificationToken,
-	})
+	existingRegisteringUser, checkExistingSession, errRegisteringUser := userUC.sessionRepo.FindTokenByUserUsername(context, user.Username)
+	if errRegisteringUser != nil {
+		return domain.CustomError{Message: errRegisteringUser.Error(), Code: errRegisteringUser.StatusCode()}
+	}
+
+	if checkExistingSession {
+		existingRegisteringUser.VerificationToken = verificationToken
+		errUpdate := userUC.sessionRepo.UpdateToken(context, existingRegisteringUser.ID.Hex(), existingRegisteringUser)
+		if errUpdate != nil {
+			return domain.CustomError{Message: errUpdate.Error(), Code: errUpdate.StatusCode()}
+		}
+	} else {
+		_, errStoreSession := userUC.sessionRepo.CreateToken(context, &domain.Session{
+			Username:          user.Username,
+			VerificationToken: verificationToken,
+		})
+		if errStoreSession != nil {
+			return domain.CustomError{Message: errStoreSession.Error(), Code: errStoreSession.StatusCode()}
+		}
+	}
 
 	err := userUC.mailService.SendVerificationEmail(user.Email, user.Username, fmt.Sprintf(os.Getenv("VERIFY_PATH"), verificationToken))
 

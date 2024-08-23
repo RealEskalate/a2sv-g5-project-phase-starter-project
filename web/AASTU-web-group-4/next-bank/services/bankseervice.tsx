@@ -1,5 +1,5 @@
 import Cookie from "js-cookie";
-const API_BASE_URL = "https://bank-dashboard-o9tl.onrender.com";
+const API_BASE_URL = " https://web-team-g4.onrender.com";
 const token = Cookie.get("accessToken");
 // GET /bank-services/{id}
 export const getBankServiceById = async (id: any) => {
@@ -39,10 +39,12 @@ export const deleteBankServiceById = async (id: any) => {
 
 // GET /bank-services
 export const getAllBankServices = async () => {
-  const response = await fetch(`${API_BASE_URL}/bank-services?page=${0}&size=${5}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const response = await fetch(
+    `${API_BASE_URL}/bank-services?page=${0}&size=${5}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
     }
   );

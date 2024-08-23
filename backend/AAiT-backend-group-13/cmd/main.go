@@ -14,6 +14,7 @@ import (
 	blogcontroller "github.com/group13/blog/delivery/controller/blog"
 	"github.com/group13/blog/delivery/controller/gemini"
 	usercontroller "github.com/group13/blog/delivery/controller/user"
+	reactioncontroller "github.com/group13/blog/delivery/controller/reaction"
 	"github.com/group13/blog/delivery/router"
 	cache "github.com/group13/blog/infrastructure/cache"
 	db "github.com/group13/blog/infrastructure/database"
@@ -29,6 +30,7 @@ import (
 	passwordreset "github.com/group13/blog/usecase/password_reset"
 	geminiService "github.com/group13/blog/usecase/ai_recommendation/query"
 	usercmd "github.com/group13/blog/usecase/user/command"
+	reactioncmd "github.com/group13/blog/usecase/reaction/command"
 	userqry "github.com/group13/blog/usecase/user/query"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/api/option"
@@ -45,7 +47,7 @@ func main() {
 	geminiModel := initGeminiClient(cfg)
 
 	// Initialize services
-	userRepo, blogRepo, _, _ := initRepos(cfg, mongoClient)
+	userRepo, blogRepo, _, reactionRepo := initRepos(cfg, mongoClient)
 	jwtService := jwt.New(
 		jwt.Config{
 			SecretKey: config.Envs.JWTSecret,
@@ -56,6 +58,8 @@ func main() {
 	emailService := &email.MailTrapService{}
 
 	// init controllers
+	
+	reactionController := initReactionController(reactionRepo, blogRepo)
 	userController := initUserController(userRepo, hashService, jwtService, emailService)
 	blogController := initBlogController(blogRepo, cacheClient)
 	geminiController := initGeminiController(geminiService.NewReccomendationHandler(geminiModel))
@@ -64,7 +68,7 @@ func main() {
 	routerConfig := router.Config{
 		Addr:        fmt.Sprintf(":%s", cfg.ServerPort),
 		BaseURL:     "/api",
-		Controllers: []common.IController{userController, blogController,geminiController},
+		Controllers: []common.IController{userController, blogController,geminiController, reactionController},
 		JwtService:  jwtService,
 	}
 	r := router.NewRouter(routerConfig)
@@ -193,6 +197,15 @@ func initGeminiController(geminiHandler *geminiService.RecomendationHandler) *ge
 	return gemini.NewAiController(geminiHandler)
 }
 
+func initReactionController(reactionRepo *reactionrepo.Repo ,blogRepo  *blogrepo.Repo) *reactioncontroller.ReactionController {
+	updateHandler := reactioncmd.NewUpdateHandler(reactionRepo,blogRepo)
+	deleteHandler := reactioncmd.NewDeleteHandler(blogRepo, reactionRepo)
+
+	return reactioncontroller.New(reactioncontroller.Config{
+		UpdateReactionHandler: updateHandler,
+		DeleteReactionHandler: deleteHandler,
+	})
+}
 
 
 

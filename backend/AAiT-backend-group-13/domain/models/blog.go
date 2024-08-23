@@ -3,6 +3,8 @@
 package models
 
 import (
+	
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -56,12 +58,15 @@ type MapBlogConfig struct {
 // It validates the title and content according to predefined length constraints.
 func NewBlog(config BlogConfig) (*Blog, error) {
 	if err := validateBlogTitle(config.Title); err != nil {
+		log.Println("Error validating blog title:", err)
 		return nil, err
 	}
 	if err := validateBlogContent(config.Content); err != nil {
+		log.Println("Error validating blog content:", err)
 		return nil, err
 	}
 	now := time.Now()
+	log.Println("Creating new blog with title:", config.Title)
 	return &Blog{
 		id:          uuid.New(),
 		title:       config.Title,
@@ -75,6 +80,7 @@ func NewBlog(config BlogConfig) (*Blog, error) {
 
 // MapBlog maps a Blog instance from the database using the provided configuration.
 func MapBlog(config MapBlogConfig) *Blog {
+	log.Println("Mapping blog with ID:", config.ID)
 	return &Blog{
 		id:           config.ID,
 		title:        config.Title,
@@ -90,38 +96,70 @@ func MapBlog(config MapBlogConfig) *Blog {
 }
 
 // ID returns the unique identifier of the Blog.
-func (b *Blog) ID() uuid.UUID { return b.id }
+func (b *Blog) ID() uuid.UUID { 
+	log.Println("Retrieving blog ID:", b.id)
+	return b.id 
+}
 
 // UserID returns the ID of the user who created the Blog.
-func (b *Blog) UserID() uuid.UUID { return b.userID }
+func (b *Blog) UserID() uuid.UUID { 
+	log.Println("Retrieving user ID:", b.userID)
+	return b.userID 
+}
 
 // Title returns the title of the Blog.
-func (b *Blog) Title() string { return b.title }
+func (b *Blog) Title() string { 
+	log.Println("Retrieving blog title:", b.title)
+	return b.title 
+}
 
 // Content returns the content of the Blog.
-func (b *Blog) Content() string { return b.content }
+func (b *Blog) Content() string { 
+	log.Println("Retrieving blog content:", b.content)
+	return b.content 
+}
 
 // Tags returns the tags associated with the Blog.
-func (b *Blog) Tags() []string { return b.tags }
+func (b *Blog) Tags() []string { 
+	log.Println("Retrieving blog tags:", b.tags)
+	return b.tags 
+}
 
 // CreatedDate returns the date when the Blog was created.
-func (b *Blog) CreatedDate() time.Time { return b.createdDate }
+func (b *Blog) CreatedDate() time.Time { 
+	log.Println("Retrieving blog created date:", b.createdDate)
+	return b.createdDate 
+}
 
 // UpdatedDate returns the date when the Blog was last updated.
-func (b *Blog) UpdatedDate() time.Time { return b.updatedDate }
+func (b *Blog) UpdatedDate() time.Time { 
+	log.Println("Retrieving blog updated date:", b.updatedDate)
+	return b.updatedDate 
+}
 
 // LikeCount returns the number of likes on the Blog.
-func (b *Blog) LikeCount() int { return b.likeCount }
+func (b *Blog) LikeCount() int { 
+	log.Println("Retrieving blog like count:", b.likeCount)
+	return b.likeCount 
+}
 
 // DislikeCount returns the number of dislikes on the Blog.
-func (b *Blog) DislikeCount() int { return b.dislikeCount }
+func (b *Blog) DislikeCount() int { 
+	log.Println("Retrieving blog dislike count:", b.dislikeCount)
+	return b.dislikeCount 
+}
 
 // CommentCount returns the number of comments on the Blog.
-func (b *Blog) CommentCount() int { return b.commentCount }
+func (b *Blog) CommentCount() int { 
+	log.Println("Retrieving blog comment count:", b.commentCount)
+	return b.commentCount 
+}
 
 // UpdateTitle updates the title of the Blog after validating the new title.
 func (b *Blog) UpdateTitle(title string) error {
+	log.Println("Updating blog title to:", title)
 	if err := validateBlogTitle(title); err != nil {
+		log.Println("Error validating new title:", err)
 		return err
 	}
 	b.title = title
@@ -130,7 +168,9 @@ func (b *Blog) UpdateTitle(title string) error {
 
 // UpdateContent updates the content of the Blog after validating the new content.
 func (b *Blog) UpdateContent(content string) error {
+	log.Println("Updating blog content to:", content)
 	if err := validateBlogContent(content); err != nil {
+		log.Println("Error validating new content:", err)
 		return err
 	}
 	b.content = content
@@ -139,6 +179,7 @@ func (b *Blog) UpdateContent(content string) error {
 
 // UpdateTags updates the tags associated with the Blog.
 func (b *Blog) UpdateTags(tags []string) error {
+	log.Println("Updating blog tags to:", tags)
 	b.tags = tags
 	return nil
 }
@@ -161,9 +202,11 @@ func (b *Blog) UpdateDislikeCount(increment bool) error {
 // validateBlogTitle validates the blog's title according to predefined length constraints.
 func validateBlogTitle(title string) error {
 	if len(title) < minTitleLength {
+		log.Println("Title is too short:", title)
 		return er.TitleTooShort
 	}
 	if len(title) > maxTitleLength {
+		log.Println("Title is too long:", title)
 		return er.TitleTooLong
 	}
 	return nil
@@ -172,9 +215,11 @@ func validateBlogTitle(title string) error {
 // validateBlogContent validates the blog's content according to predefined length constraints.
 func validateBlogContent(content string) error {
 	if len(content) < minContentLength {
+		log.Println("Content is too short:", content)
 		return er.ContentTooShort
 	}
 	if len(content) > maxContentLength {
+		log.Println("Content is too long:", content)
 		return er.ContentTooLong
 	}
 	return nil

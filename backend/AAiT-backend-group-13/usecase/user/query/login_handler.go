@@ -45,7 +45,7 @@ var _ icmd.IHandler[*LoginQuery, *result.LoginInResult] = &LoginHandler{}
 func (h *LoginHandler) Handle(command *LoginQuery) (*result.LoginInResult, error) {
 	log.Printf("Finding user by username: %s -- LoginHandler", command.username)
 	user, err := h.repo.FindByUsername(command.username)
-	if user.Username() == "" || err != nil {
+	if  err != nil {
 		return nil, er.NewUnauthorized("user not found")
 	} else if !user.IsActive() {
 		return nil, er.NewUnauthorized("user is not activated")

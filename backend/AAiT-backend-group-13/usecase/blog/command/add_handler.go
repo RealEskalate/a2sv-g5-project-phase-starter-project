@@ -1,6 +1,8 @@
 package blogcmd
 
 import (
+	"log"
+
 	"github.com/group13/blog/domain/models"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
 	irepo "github.com/group13/blog/usecase/common/i_repo"
@@ -27,6 +29,7 @@ func (h *AddHandler) Handle(cmd *AddCommand) (*models.Blog, error) {
 		Tags:    cmd.tags,
 		UserID:  cmd.userID,
 	})
+	log.Println("blog id is this", blog.UserID())
 	if err != nil {
 		return nil, err
 	}

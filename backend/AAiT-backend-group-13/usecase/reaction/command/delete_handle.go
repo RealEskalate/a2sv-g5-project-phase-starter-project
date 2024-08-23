@@ -16,7 +16,7 @@ type DeleteHandler struct {
 var _ icmd.IHandler[uuid.UUID, bool] = &DeleteHandler{}
 
 // New creates a new instance of Handler with the provided reaction repository.
-func New(blogRepo irepo.Blog, reactRepo irepo.Reaction) *DeleteHandler {
+func NewDeleteHandler(blogRepo irepo.Blog, reactRepo irepo.Reaction) *DeleteHandler {
 	return &DeleteHandler{
 		blogRepo:  blogRepo,
 		reactRepo: reactRepo,

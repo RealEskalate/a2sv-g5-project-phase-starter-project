@@ -2,7 +2,11 @@
 // including structures for managing blog posts, users, comments, and reactions.
 package models
 
-import "github.com/google/uuid"
+import (
+	"log"
+
+	"github.com/google/uuid"
+)
 
 // Reaction represents a user's reaction (like or dislike) to a blog post.
 type Reaction struct {
@@ -40,3 +44,20 @@ func (r *Reaction) UserID() uuid.UUID { return r.userID }
 
 // BlogID returns the ID of the blog post being reacted to.
 func (r *Reaction) BlogID() uuid.UUID { return r.blogID }
+
+// MapReactionConfig holds the parameters for mapping a Reaction from the database.
+type MapReactionConfig struct {
+	
+	UserId       uuid.UUID
+	IsLike 	     bool
+}
+
+// MapReactionConfig holds the parameters for mapping a Reaction from the database.
+func MapReaction(config MapReactionConfig) *Reaction {
+	log.Println("Mapping reaction with")
+	return &Reaction{
+		userID: config.UserId,
+		isLike: config.IsLike,
+	}
+}
+

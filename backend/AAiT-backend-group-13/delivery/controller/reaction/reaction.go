@@ -1,6 +1,8 @@
 package reactioncontroller
 
 import (
+	
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,21 +16,21 @@ import (
 
 type ReactionController struct {
 	basecontroller.BaseHandler
-	updateReactionHandler icmd.IHandler[*reactioncmd.UpdateCommand, bool]
-	deleteReactionHandler icmd.IHandler[uuid.UUID, bool]
+	UpdateReactionHandler icmd.IHandler[*reactioncmd.UpdateCommand, bool]
+	DeleteReactionHandler icmd.IHandler[uuid.UUID, bool]
 }
 
 var _ common.IController = &ReactionController{}
 
 type Config struct {
-	updateReactionHandler icmd.IHandler[*reactioncmd.UpdateCommand, bool]
-	deleteReactionHandler icmd.IHandler[uuid.UUID, bool]
+	UpdateReactionHandler icmd.IHandler[*reactioncmd.UpdateCommand, bool]
+	DeleteReactionHandler icmd.IHandler[uuid.UUID, bool]
 }
 
 func New(config Config) *ReactionController {
 	return &ReactionController{
-		updateReactionHandler: config.updateReactionHandler,
-		deleteReactionHandler: config.deleteReactionHandler,
+		UpdateReactionHandler: config.UpdateReactionHandler,
+		DeleteReactionHandler: config.DeleteReactionHandler,
 	}
 }
 
@@ -42,39 +44,43 @@ func (r *ReactionController) RegisterPrivileged(route *gin.RouterGroup) {}
 func (r *ReactionController) RegisterProtected(route *gin.RouterGroup) {
 	reaction := route.Group("/reaction")
 	{
-
 		reaction.PUT("/:id", r.UpdateReaction)
 		reaction.DELETE("/:id", r.DeleteReaction)
-
 	}
 }
 
 func (r ReactionController) UpdateReaction(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	log.Println("UpdateReaction started")
 
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		log.Println("Invalid UUID:", err)
 		r.Respond(c, http.StatusBadRequest, gin.H{"error": "Id is not valid"})
 		return
 	}
+	
+	// log.Printf("Binding JSON %s", )
 	var reaction ReactionDto
-
 	if err := c.ShouldBindJSON(&reaction); err != nil {
+		log.Println("Failed to bind JSON:", err)
 		r.Respond(c, http.StatusBadRequest, er.NewBadRequest(err.Error()))
 		return
 	}
 
+	log.Println("Creating update command with is_like:", reaction.IsLike, "user_id:", reaction.UserId)
 	command := reactioncmd.NewUpdateCommand(reaction.IsLike, id, reaction.UserId)
 
-	_, err = r.updateReactionHandler.Handle(command)
-
+	_, err = r.UpdateReactionHandler.Handle(command)
 	if err != nil {
+		log.Println("Failed to handle update command:", err)
 		r.Respond(c, http.StatusNotFound, er.NewBadRequest(err.Error()))
 		return
 	}
 
+	log.Println("Reaction updated successfully")
 	r.Respond(c, http.StatusNoContent, gin.H{})
-
 }
+
 
 func (r ReactionController) DeleteReaction(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
@@ -84,7 +90,7 @@ func (r ReactionController) DeleteReaction(c *gin.Context) {
 		return
 	}
 
-	_, err = r.deleteReactionHandler.Handle(id)
+	_, err = r.DeleteReactionHandler.Handle(id)
 
 	if err != nil {
 		r.Respond(c, http.StatusNotFound, er.NewBadRequest(err.Error()))

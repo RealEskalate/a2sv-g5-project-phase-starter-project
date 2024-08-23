@@ -6,16 +6,16 @@ import (
 	infrastructure "github.com/aait.backend.g5.main/backend/Infrastructure"
 	repository "github.com/aait.backend.g5.main/backend/Repository"
 	usecases "github.com/aait.backend.g5.main/backend/UseCases"
+	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewAuthenticationRouter(env *config.Env, database mongo.Database, group *gin.RouterGroup) {
+func NewAuthenticationRouter(env *config.Env, database interfaces.Database, group *gin.RouterGroup) {
 	emailConfig := config.NewEmailServer(*env)
 
-	url_repository := repository.NewURLRepository(&database)
-	user_repository := repository.NewUserRepository(&database)
-	session_repository := repository.NewSessionRepository(&database)
+	url_repository := repository.NewURLRepository(database)
+	user_repository := repository.NewUserRepository(database)
+	session_repository := repository.NewSessionRepository(database)
 
 	jwt_service := infrastructure.NewJwtService(env)
 	password_service := infrastructure.NewPasswordService()

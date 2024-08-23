@@ -54,4 +54,7 @@ type OAuthRequest struct {
 	RefreshToken string `json:"refresh_token"`
 	Name         string `json:"name" validate:"required"`
 	Email        string `json:"email" validate:"required,email"`
+	PhoneNumber string `json:"phone_number"`
+	Bio         string `json:"bio"`
+	Password    string `bson:"password" json:"password"`
 }

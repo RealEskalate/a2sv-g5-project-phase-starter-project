@@ -2,222 +2,401 @@ package tests
 
 import (
 	"context"
+	"errors"
 	"testing"
 
-	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
-	models "github.com/aait.backend.g5.main/backend/Domain/Models"
-	repository "github.com/aait.backend.g5.main/backend/Repository"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+
+	models "github.com/aait.backend.g5.main/backend/Domain/Models"
+	mocks "github.com/aait.backend.g5.main/backend/Mocks"
+	repository "github.com/aait.backend.g5.main/backend/Repository"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UserRepositorySuite struct {
 	suite.Suite
-	Repository  interfaces.UserRepository
-	DB          *mongo.Database
-	Collection  *mongo.Collection
-	TestContext context.Context
+
+	db         *mocks.Database
+	collection *mocks.Collection
+	repository *repository.UserMongoRepository
 }
 
-// SetupSuite runs before all tests in the suite
-func (suite *UserRepositorySuite) SetupSuite() {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-
-	client, err := mongo.Connect(context.Background(), clientOptions)
-	if err != nil {
-		suite.T().Fatalf("Failed to connect to MongoDB: %v", err)
-	}
-
-	suite.DB = client.Database("test_db")
-	suite.Collection = suite.DB.Collection("user-collection")
-	suite.Repository = repository.NewUserRepository(suite.DB)
-	suite.TestContext = context.Background()
-}
-
-// TearDownSuite runs after all tests in the suite
-func (suite *UserRepositorySuite) TearDownSuite() {
-	err := suite.DB.Drop(suite.TestContext)
-	if err != nil {
-		suite.T().Fatalf("Failed to clean up test database: %v", err)
+func (suite *UserRepositorySuite) SetupTest() {
+	suite.db = new(mocks.Database)
+	suite.collection = new(mocks.Collection)
+	suite.repository = &repository.UserMongoRepository{
+		Collection: suite.collection,
 	}
 }
 
-// TestCreateUser tests the CreateUser method
-func (suite *UserRepositorySuite) TestCreateUser() {
+func (suite *UserRepositorySuite) TestCreateUser_Success() {
+	// Prepare input data
 	user := &models.User{
-		Username: "testuser",
-		Name:     "Test User",
-		Email:    "testuser@example.com",
+		Username: "test-username",
+		Email:    "email@email.com",
 	}
 
-	err := suite.Repository.CreateUser(suite.TestContext, user)
-	suite.Empty(err, "Expected no error when creating a user")
+	// Mock the InsertOne operation
+	mockInsertResult := &mongo.InsertOneResult{InsertedID: "some-id"} // Simulating the InsertOne result
+	suite.collection.On("InsertOne", mock.Anything, user).Return(mockInsertResult, nil)
 
-	// Check if the user was inserted correctly
-	var insertedUser models.User
-	Err := suite.Collection.FindOne(suite.TestContext, bson.M{"username": "testuser"}).Decode(&insertedUser)
-	suite.Nil(Err, "Expected no error when fetching the inserted user")
-	suite.Equal(user.Email, insertedUser.Email, "Expected inserted email to match")
+	// Call the CreateUser method
+	errResp := suite.repository.CreateUser(context.TODO(), user)
+
+	// Assertions
+	suite.Nil(errResp) // Expecting no error
+	suite.collection.AssertExpectations(suite.T())
 }
 
-// TestGetUserByEmailOrUsername tests the GetUserByEmailOrUsername method
-func (suite *UserRepositorySuite) TestGetUserByEmailOrUsername() {
-	// Insert a user for testing
+func (suite *UserRepositorySuite) TestCreateUser_Failure() {
+	// Prepare input data
 	user := &models.User{
-		Username: "fetchuser",
-		Email:    "fetchuser@example.com",
+		Username: "test-username",
+		Email:    "email@email.com",
 	}
-	suite.Collection.InsertOne(suite.TestContext, user)
 
-	// Fetch by username
-	fetchedUser, err := suite.Repository.GetUserByEmailOrUsername(suite.TestContext, "fetchuser", "")
-	suite.Empty(err, "Expected no error when fetching by username")
-	suite.Equal("fetchuser@example.com", fetchedUser.Email, "Expected fetched email to match")
+	// Mock the InsertOne operation to return an error
+	mockErr := errors.New("failed to insert document")
+	suite.collection.On("InsertOne", mock.Anything, user).Return(nil, mockErr)
 
-	// Fetch by email
-	fetchedUser, err = suite.Repository.GetUserByEmailOrUsername(suite.TestContext, "", "fetchuser@example.com")
-	suite.Empty(err, "Expected no error when fetching by email")
-	suite.Equal("fetchuser", fetchedUser.Username, "Expected fetched username to match")
+	// Call the CreateUser method
+	errResp := suite.repository.CreateUser(context.TODO(), user)
+
+	// Assertions
+	suite.NotNil(errResp)                                 // Expecting an error
+	suite.Equal("failed to insert document", errResp.Message) // Check if the error message matches
+	suite.collection.AssertExpectations(suite.T())
 }
 
-// TestUpdateUser tests the UpdateUser method
-// TestUpdateUser tests the UpdateUser method
-func (suite *UserRepositorySuite) TestUpdateUser() {
-	// Insert a user to update
+func (suite *UserRepositorySuite) TestGetUserByEmailOrUsername_Success() {
+	// Prepare input data
+	username := "test-username"
+	email := "email@email.com"
 	user := &models.User{
-		Username: "updatableuser",
-		Email:    "updatable@example.com",
-		Name:     "Old Name",
-	}
-	insertResult, err := suite.Collection.InsertOne(suite.TestContext, user)
-	suite.Nil(err, "Expected no error when inserting user for update test")
-
-	// Convert inserted ID to string
-	objID := insertResult.InsertedID.(primitive.ObjectID).Hex()
-
-	// Test updating with new fields
-	updatedUser := &models.User{
-		Username: "newusername",
-		Email:    "newemail@example.com",
-		Name:     "New Name",
+		Username: username,
+		Email:    email,
 	}
 
-	errResp := suite.Repository.UpdateUser(suite.TestContext, updatedUser, objID)
-	suite.Empty(errResp, "Expected no error when updating user")
+	// Create a mock SingleResult
+	mockSingleResult := mocks.NewSingleResult(suite.T())
+	mockSingleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
+		*(args[0].(*models.User)) = *user
+	}).Return(nil)
 
-	// Verify the update
-	var result models.User
-	err = suite.Collection.FindOne(suite.TestContext, bson.M{"_id": insertResult.InsertedID}).Decode(&result)
-	suite.Empty(err, "Expected no error when fetching updated user")
-	suite.Equal("newusername", result.Username, "Expected username to be updated")
-	suite.Equal("newemail@example.com", result.Email, "Expected email to be updated")
-	suite.Equal("New Name", result.Name, "Expected name to be updated")
+	// Mock the FindOne operation
+	suite.collection.On("FindOne", mock.Anything, bson.M{
+		"$or": []bson.M{
+			{"username": username},
+			{"email": email},
+		},
+	}).Return(mockSingleResult, nil)
 
-	// Test updating with empty fields (no update should occur)
-	emptyUpdateUser := &models.User{}
-	errResp = suite.Repository.UpdateUser(suite.TestContext, emptyUpdateUser, objID)
-	suite.Empty(errResp, "Expected no error when updating with empty fields")
+	// Call the GetUserByEmailOrUsername method
+	result, errResp := suite.repository.GetUserByEmailOrUsername(context.TODO(), username, email)
 
-	// Verify no changes occurred
-	err = suite.Collection.FindOne(suite.TestContext, bson.M{"_id": insertResult.InsertedID}).Decode(&result)
-	suite.Empty(err, "Expected no error when fetching user after empty update")
-	suite.Equal("newusername", result.Username, "Expected username to remain unchanged")
-	suite.Equal("newemail@example.com", result.Email, "Expected email to remain unchanged")
-	suite.Equal("New Name", result.Name, "Expected name to remain unchanged")
+	// Assertions
+	suite.NotNil(result)                                    // Expecting a user object
+	suite.Equal(user, result)                              // Check if the user object matches
+	suite.Nil(errResp)                                     // Expecting no error
+	suite.collection.AssertExpectations(suite.T())
 }
 
-// TestUpdateUserInvalidID tests the UpdateUser method with an invalid ID
-func (suite *UserRepositorySuite) TestUpdateUserInvalidID() {
-	invalidID := "invalidObjectID"
-
+func (suite *UserRepositorySuite) TestGetUserByEmailOrUsername_NotFound() {
+	// Prepare input data
+	username := "test-username"
+	email := "email@email.com"
 	user := &models.User{
-		Username: "username",
-		Email:    "email@example.com",
-		Name:     "User Name",
 	}
 
-	errResp := suite.Repository.UpdateUser(suite.TestContext, user, invalidID)
-	suite.NotEmpty(errResp, "Expected an error when using an invalid ObjectID")
+	// Create a mock SingleResult
+	mockSingleResult := mocks.NewSingleResult(suite.T())
+	mockSingleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
+		*(args[0].(*models.User)) = *user
+	}).Return(mongo.ErrNoDocuments)
+
+	// Mock the FindOne operation to return an error (not found)
+	suite.collection.On("FindOne", mock.Anything, bson.M{
+		"$or": []bson.M{
+			{"username": username},
+			{"email": email},
+		},
+	}).Return(mockSingleResult, mongo.ErrNoDocuments)
+
+	// Call the GetUserByEmailOrUsername method
+	result, errResp := suite.repository.GetUserByEmailOrUsername(context.TODO(), username, email)
+
+	// Assertions
+	suite.Empty(result)               
+	suite.NotEmpty(*errResp)                     // 
+	suite.Equal("user not found", errResp.Message)      // Check if the error message matches
+	suite.collection.AssertExpectations(suite.T())
 }
 
-// TestDeleteUser tests the DeleteUser method
-func (suite *UserRepositorySuite) TestDeleteUser() {
-	// Insert a user to delete
+func (suite *UserRepositorySuite) TestGetUserByName_Success() {
+	// Prepare input data
+	name := "test-name"
 	user := &models.User{
-		Username: "deletableuser",
-		Email:    "deletable@example.com",
+		Name: name,
 	}
-	insertResult, rr := suite.Collection.InsertOne(suite.TestContext, user)
-	suite.Empty(rr, "Expected no error when inserting user")
 
-	var result models.User
-	Err := suite.Collection.FindOne(suite.TestContext, bson.M{"_id": insertResult.InsertedID}).Decode(&result)
-	suite.Empty(Err, "Expected no error when fetching user")
-	// Delete the user
+	// Create a mock SingleResult
+	mockSingleResult := mocks.NewSingleResult(suite.T())
+	mockSingleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
+		*(args[0].(*models.User)) = *user
+	}).Return(nil)
 
-	err := suite.Repository.DeleteUser(suite.TestContext, result.ID)
-	suite.Empty(err, "Expected no error when deleting user")
+	// Mock the FindOne operation
+	suite.collection.On("FindOne", mock.Anything, bson.M{"name": name}).Return(mockSingleResult, nil)
 
-	// Ensure the user is deleted
-	var deletedUser models.User
-	Err = suite.Collection.FindOne(suite.TestContext, bson.M{"username": "deletableuser"}).Decode(&deletedUser)
-	suite.Error(Err, "Expected an error when fetching a deleted user")
+	// Call the GetUserByName method
+	result, errResp := suite.repository.GetUserByName(context.TODO(), name)
 
+	// Assertions
+	suite.NotNil(result)                                    // Expecting a user object
+	suite.Equal(user, result)                              // Check if the user object matches
+	suite.Nil(errResp)                                     // Expecting no error
+	suite.collection.AssertExpectations(suite.T())
 }
 
-func (suite *UserRepositorySuite) TestPromoteUser() {
-	// Insert a user for testing promotion
+func (suite *UserRepositorySuite) TestGetUserByName_NotFound() {
+	// Prepare input data
+	name := "test-name"
 	user := &models.User{
-		Username: "promotableuser",
-		Email:    "promotable@example.com",
-		Name:     "Promotable User",
-		Role:     "user",
+		Name: "wrong-name",
 	}
-	insertResult, err := suite.Collection.InsertOne(suite.TestContext, user)
-	suite.Empty(err, "Expected no error when inserting user for promotion test")
 
-	// Convert inserted ID to string
-	objID := insertResult.InsertedID.(primitive.ObjectID).Hex()
+	// Create a mock SingleResult
+	mockSingleResult := mocks.NewSingleResult(suite.T())
+	mockSingleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
+		*(args[0].(*models.User)) = *user
+	}).Return(mongo.ErrNoDocuments)
+	// Mock the FindOne operation to return an error (not found)
+	suite.collection.On("FindOne", mock.Anything, bson.M{"name": name}).Return(mockSingleResult, mongo.ErrNoDocuments)
 
-	// Test promoting the user to "admin"
-	errResp := suite.Repository.PromoteUser(suite.TestContext, objID)
-	suite.Empty(errResp, "Expected no error when promoting user to admin")
+	// Call the GetUserByName method
+	result, errResp := suite.repository.GetUserByName(context.TODO(), name)
 
-	// Verify the role update
-	var promotedUser models.User
-	var role models.Role = "admin"
-	err = suite.Collection.FindOne(suite.TestContext, bson.M{"_id": insertResult.InsertedID}).Decode(&promotedUser)
-	suite.Empty(err, "Expected no error when fetching user after promotion")
-	suite.Equal(role, promotedUser.Role, "Expected role to be updated to admin")
+	// Assertions
+	suite.Nil(result)                                    // Expecting no user object
+	suite.NotNil(errResp)                               // Expecting an error
+	suite.Equal("user not found", errResp.Message)      // Check if the error message matches
+	suite.collection.AssertExpectations(suite.T())
 }
 
-func (suite *UserRepositorySuite) TestDemoteUser() {
-	// Insert a user for testing demotion
+
+func (suite *UserRepositorySuite) TestGetUserByID_Success() {
+	// Prepare input data
+	id := "605c72ef8f4c7a9f1d9a5c4f"
+	objID, _ := primitive.ObjectIDFromHex(id)
 	user := &models.User{
-		Username: "demotableuser",
-		Email:    "demotable@example.com",
-		Name:     "Demotable User",
-		Role:     "admin", // Initially an admin
+		ID:       id,
+		Username: "test-username",
 	}
-	insertResult, err := suite.Collection.InsertOne(suite.TestContext, user)
-	suite.Empty(err, "Expected no error when inserting user for demotion test")
 
-	// Convert inserted ID to string
-	objID := insertResult.InsertedID.(primitive.ObjectID).Hex()
+	// Create a mock SingleResult
+	mockSingleResult := mocks.NewSingleResult(suite.T())
+	mockSingleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
+		*(args[0].(*models.User)) = *user
+	}).Return(nil)
 
-	// Test demoting the user (e.g., to a lower role)
-	errResp := suite.Repository.DemoteUser(suite.TestContext, objID)
-	suite.Empty(errResp, "Expected no error when demoting user")
+	// Mock the FindOne operation
+	suite.collection.On("FindOne", mock.Anything, bson.M{"_id": objID}).Return(mockSingleResult, nil)
 
-	// Verify the role update
-	var demotedUser models.User
-	var role models.Role = "admin"
-	err = suite.Collection.FindOne(suite.TestContext, bson.M{"_id": insertResult.InsertedID}).Decode(&demotedUser)
-	suite.Empty(err, "Expected no error when fetching user after demotion")
-	suite.Equal(role, demotedUser.Role, "Expected role to remain admin (demotion logic should be handled correctly)")
+	// Call the GetUserByID method
+	result, errResp := suite.repository.GetUserByID(context.TODO(), id)
+
+	// Assertions
+	suite.NotNil(result)                                     // Expecting a user object
+	suite.Equal(user.ID, result.ID)                         // Check if the user ID matches
+	suite.Nil(errResp)                                      // Expecting no error
+	suite.collection.AssertExpectations(suite.T())
+}
+
+func (suite *UserRepositorySuite) TestGetUserByID_Failure() {
+	// Prepare input data
+	id := "605c72ef8f4c7a9f1d9a5c4f"
+	objID, _ := primitive.ObjectIDFromHex(id)
+	user := &models.User{
+		ID:       id,
+		Username: "test-username",
+	}
+
+	// Create a mock SingleResult
+	mockSingleResult := mocks.NewSingleResult(suite.T())
+	mockSingleResult.On("Decode", mock.Anything).Run(func(args mock.Arguments) {
+		*(args[0].(*models.User)) = *user
+	}).Return(mongo.ErrNoDocuments)
+	// Mock the FindOne operation to return an error (not found)
+	suite.collection.On("FindOne", mock.Anything, bson.M{"_id": objID}).Return(mockSingleResult, mongo.ErrNoDocuments)
+
+	// Call the GetUserByID method
+	result, errResp := suite.repository.GetUserByID(context.TODO(), id)
+
+	// Assertions
+	suite.Nil(result)                                     // Expecting no user object
+	suite.NotNil(errResp)                                // Expecting an error
+	suite.Equal("user with the given ID not found", errResp.Message) // Check if the error message matches
+	suite.collection.AssertExpectations(suite.T())
+}
+
+func (suite *UserRepositorySuite) TestUpdateUser_Success() {
+	// Prepare input data
+	id := "605c72ef8f4c7a9f1d9a5c4f"
+	objID, _ := primitive.ObjectIDFromHex(id)
+	user := &models.User{
+		Username: "new-username",
+		Name: "new-name",
+		Bio: "new-bio",
+		Email: "new-email",
+		Password: "new-password",
+		ImageKey: "new-image-key",
+		PhoneNumber: "new-phone-number",
+	}
+
+	change := bson.M{
+		"username": "new-username",
+		"name": "new-name",
+		"bio": "new-bio",
+		"email": "new-email",
+		"password": "new-password",
+		"image_key": "new-image-key",
+		"phone_number": "new-phone-number",
+	}
+	// Mock the UpdateOne operation
+	suite.collection.On("UpdateOne", mock.Anything, bson.M{"_id": objID}, bson.M{"$set": change}).Return(&mongo.UpdateResult{MatchedCount: 1, ModifiedCount: 1}, nil)
+
+	// Call the UpdateUser method
+	errResp := suite.repository.UpdateUser(context.TODO(), user, id)
+
+	// Assertions
+	suite.Nil(errResp) // Expecting no error
+	suite.collection.AssertExpectations(suite.T())
+}
+
+func (suite *UserRepositorySuite) TestUpdateUser_Failure() {
+	// Prepare input data
+	id := "605c72ef8f4c7a9f1d9a5c4f"
+	objID, _ := primitive.ObjectIDFromHex(id)
+	user := &models.User{
+		Username: "new-username",
+	}
+
+	// Mock the UpdateOne operation to return an error
+	suite.collection.On("UpdateOne", mock.Anything, bson.M{"_id": objID}, bson.M{"$set": bson.M{
+		"username": "new-username",
+	}}).Return(nil, errors.New("update error"))
+
+	// Call the UpdateUser method
+	errResp := suite.repository.UpdateUser(context.TODO(), user, id)
+
+	// Assertions
+	suite.NotNil(errResp)                          // Expecting an error
+	suite.Equal("update error", errResp.Message)  // Check if the error message matches
+	suite.collection.AssertExpectations(suite.T())
+}
+
+func (suite *UserRepositorySuite) TestDeleteUser_Success() {
+	// Prepare input data
+	id := "605c72ef8f4c7a9f1d9a5c4f"
+	objID, _ := primitive.ObjectIDFromHex(id)
+
+	// Mock the DeleteOne operation
+	suite.collection.On("DeleteOne", mock.Anything, bson.M{"_id": objID}).Return(int64(1), nil)
+
+	// Call the DeleteUser method
+	errResp := suite.repository.DeleteUser(context.TODO(), id)
+
+	// Assertions
+	suite.Nil(errResp) // Expecting no error
+	suite.collection.AssertExpectations(suite.T())
+}
+
+func (suite *UserRepositorySuite) TestDeleteUser_Failure() {
+	// Prepare input data
+	id := "605c72ef8f4c7a9f1d9a5c4f"
+	objID, _ := primitive.ObjectIDFromHex(id)
+
+	// Mock the DeleteOne operation to return an error
+	suite.collection.On("DeleteOne", mock.Anything, bson.M{"_id": objID}).Return(int64(0), errors.New("delete error"))
+
+	// Call the DeleteUser method
+	errResp := suite.repository.DeleteUser(context.TODO(), id)
+
+	// Assertions
+	suite.NotNil(errResp)                         // Expecting an error
+	suite.Equal("delete error", errResp.Message) // Check if the error message matches
+	suite.collection.AssertExpectations(suite.T())
+}
+
+
+
+func (suite *UserRepositorySuite) TestPromoteUser_Success() {
+	// Prepare input data
+	userID := "605c72ef8f4c7a9f1d9a5c4f"
+	objID, _ := primitive.ObjectIDFromHex(userID)
+
+	// Mock the UpdateOne operation
+	suite.collection.On("UpdateOne", mock.Anything, bson.M{"_id": objID}, bson.M{"$set": bson.M{"role": "admin"}}).Return(&mongo.UpdateResult{MatchedCount: 1, ModifiedCount: 1}, nil)
+
+	// Call the PromoteUser method
+	errResp := suite.repository.PromoteUser(context.TODO(), userID)
+
+	// Assertions
+	suite.Nil(errResp) // Expecting no error
+	suite.collection.AssertExpectations(suite.T())
+}
+
+func (suite *UserRepositorySuite) TestPromoteUser_Failure() {
+	// Prepare input data
+	userID := "605c72ef8f4c7a9f1d9a5c4f"
+	objID, _ := primitive.ObjectIDFromHex(userID)
+
+	// Mock the UpdateOne operation to return an error
+	suite.collection.On("UpdateOne", mock.Anything, bson.M{"_id": objID}, bson.M{"$set": bson.M{"role": "admin"}}).Return(nil, errors.New("update error"))
+
+	// Call the PromoteUser method
+	errResp := suite.repository.PromoteUser(context.TODO(), userID)
+
+	// Assertions
+	suite.NotNil(errResp)                          // Expecting an error
+	suite.Equal("update error", errResp.Message)  // Check if the error message matches
+	suite.collection.AssertExpectations(suite.T())
+}
+
+func (suite *UserRepositorySuite) TestDemoteUser_Success() {
+	// Prepare input data
+	userID := "605c72ef8f4c7a9f1d9a5c4f"
+	objID, _ := primitive.ObjectIDFromHex(userID)
+
+	// Mock the UpdateOne operation
+	suite.collection.On("UpdateOne", mock.Anything, bson.M{"_id": objID}, bson.M{"$set": bson.M{"role": "user"}}).Return(&mongo.UpdateResult{MatchedCount: 1, ModifiedCount: 1}, nil)
+
+	// Call the DemoteUser method
+	errResp := suite.repository.DemoteUser(context.TODO(), userID)
+
+	// Assertions
+	suite.Nil(errResp) // Expecting no error
+	suite.collection.AssertExpectations(suite.T())
+}
+
+func (suite *UserRepositorySuite) TestDemoteUser_Failure() {
+	// Prepare input data
+	userID := "605c72ef8f4c7a9f1d9a5c4f"
+	objID, _ := primitive.ObjectIDFromHex(userID)
+
+	// Mock the UpdateOne operation to return an error
+	suite.collection.On("UpdateOne", mock.Anything, bson.M{"_id": objID}, bson.M{"$set": bson.M{"role": "user"}}).Return(nil, errors.New("update error"))
+
+	// Call the DemoteUser method
+	errResp := suite.repository.DemoteUser(context.TODO(), userID)
+
+	// Assertions
+	suite.NotNil(errResp)                          // Expecting an error
+	suite.Equal("update error", errResp.Message)  // Check if the error message matches
+	suite.collection.AssertExpectations(suite.T())
 }
 
 func TestUserRepositorySuite(t *testing.T) {

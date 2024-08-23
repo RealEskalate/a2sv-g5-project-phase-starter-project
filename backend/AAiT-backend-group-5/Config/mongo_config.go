@@ -2,36 +2,41 @@ package config
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
+
 )
 
-func ConnectDB(env *Env) *mongo.Client {
-	mongoURI := env.MONGO_URI
-	clientOptions := options.Client().ApplyURI(mongoURI)
 
+func ConnectDB(env *Env) interfaces.Client {
+	mongoURI := env.MONGO_URI
+	if mongoURI == "" {
+		log.Fatal("MONGO_URI is not set in .env file")
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	client, err := mongo.Connect(ctx, clientOptions)
+	client, err := interfaces.NewClient(mongoURI)
 	if err != nil {
-		log.Fatalf("Failed to create MongoDB client: %v", err)
+		log.Fatal(err)
 	}
 
-	err = client.Ping(ctx, nil)
+	err = client.Connect(ctx)
 	if err != nil {
-		log.Fatalf("Failed to ping MongoDB: %v", err)
+		log.Fatal(err)
 	}
 
-	fmt.Println("Successfully connected to MongoDB")
+	err = client.Ping(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return client
 }
 
-func GetDatabase(client *mongo.Client, env *Env) *mongo.Database {
+func GetDatabase(client interfaces.Client, env *Env) interfaces.Database {
 	dbName := env.DB_NAME
 	if dbName == "" {
 		log.Fatal("DB_NAME is not set in .env file")

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
+import 'features/chat/presentation/pages/dm_page.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
 import 'features/product/presentation/bloc/product_event.dart';
 import 'injection_container.dart';

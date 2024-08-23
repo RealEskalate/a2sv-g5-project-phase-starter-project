@@ -1,89 +1,97 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Inter } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
-import { Provider } from 'react-redux';
-import store from './redux/store';
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { store, persistor } from "./redux/store";
 import "./globals.css";
 import NavBar from "./components/common/navBar";
 import SideBar from "./components/common/sideBar";
 import { useSession } from "next-auth/react";
+import { useSelector } from "react-redux";
+import { RootState } from "./redux/store";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-  const [darkmode, setDarkmode] = useState(false);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', darkmode ? 'dark' : 'light');
-  }, [darkmode]);
-
-  const toggleSidebar = () => {
-    setIsSidebarVisible(!isSidebarVisible);
-  };
-
-  const toggleDarkMode = () => {
-    setDarkmode(!darkmode);
-  };
-
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <SessionProvider>
-          <Provider store={store}>
-            <SessionWrapper>
-              <div className={`min-h-screen flex ${darkmode ? 'dark' : ''}`}>
-                <SidebarWrapper
-                  isSidebarVisible={isSidebarVisible}
-                  toggleSidebar={toggleSidebar}
-                />
-                <div className="flex flex-col flex-1 transition-all duration-300">
-                  <NavBar
-                    toggleSidebar={toggleSidebar}
-                    isSidebarVisible={isSidebarVisible}
-                    toggleDarkMode={toggleDarkMode}
-                    darkmode={darkmode}
-                  />
-                  <main >
-                    {children}
-                  </main>
-                </div>
-              </div>
-            </SessionWrapper>
-          </Provider>
-        </SessionProvider>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en">
+			<body className={inter.className}>
+				<SessionProvider>
+					<Provider store={store}>
+						<PersistGate loading={null} persistor={persistor}>
+							<LayoutContent>{children}</LayoutContent>
+						</PersistGate>
+					</Provider>
+				</SessionProvider>
+			</body>
+		</html>
+	);
 }
 
-function SessionWrapper({ children }: { children: React.ReactNode }) {
-  const { status } = useSession();
+function LayoutContent({ children }: { children: React.ReactNode }) {
+	const { status } = useSession();
+	const darkmode = useSelector((state: RootState) => state.theme.darkMode);
+	const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
+	useEffect(() => {
+		document.documentElement.setAttribute(
+			"data-theme",
+			darkmode ? "dark" : "light"
+		);
+	}, [darkmode]);
 
-  return <>{children}</>;
+	const toggleSidebar = () => {
+		setIsSidebarVisible(!isSidebarVisible);
+	};
+
+	const darkClass = darkmode ? "dark" : "";
+	return (
+		<div className={`min-h-screen flex ${darkClass}`}>
+			{status === "authenticated" && (
+				<SidebarWrapper
+					isSidebarVisible={isSidebarVisible}
+					toggleSidebar={toggleSidebar}
+				/>
+			)}
+			<div className="flex flex-col flex-1 transition-all duration-300">
+				<NavBar
+					toggleSidebar={toggleSidebar}
+					isSidebarVisible={isSidebarVisible}
+				/>
+				<main>{children}</main>
+			</div>
+		</div>
+	);
 }
 
-function SidebarWrapper({ isSidebarVisible, toggleSidebar }: { isSidebarVisible: boolean, toggleSidebar: () => void }) {
-  const { status } = useSession();
+function SidebarWrapper({
+	isSidebarVisible,
+	toggleSidebar,
+}: {
+	isSidebarVisible: boolean;
+	toggleSidebar: () => void;
+}) {
+	const { status } = useSession();
 
-  return (
-    status === "authenticated" && (
-      <div className={`fixed inset-0 bg-white z-50 sm:static sm:block ${isSidebarVisible ? 'block' : 'hidden'}`}>
-        <SideBar
-          isSidebarVisible={isSidebarVisible}
-          toggleSidebar={toggleSidebar}
-        />
-      </div>
-    )
-  );
+	return (
+		status === "authenticated" && (
+			<div
+				className={`fixed inset-0 bg-white z-50 sm:static sm:block ${
+					isSidebarVisible ? "block" : "hidden"
+				} dark:bg-gray-900 dark:text-white `}
+			>
+				<SideBar
+					isSidebarVisible={isSidebarVisible}
+					toggleSidebar={toggleSidebar}
+				/>
+			</div>
+		)
+	);
 }

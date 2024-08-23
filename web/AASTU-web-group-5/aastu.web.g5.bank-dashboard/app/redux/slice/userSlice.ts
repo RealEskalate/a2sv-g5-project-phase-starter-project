@@ -21,7 +21,8 @@ const initialState:User= {
     accountRecommendations: false,
     timeZone: '',
     twoFactorAuthentication: false,
-  }
+  },
+  
 };
 
 const userSlice = createSlice({
@@ -29,13 +30,15 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUser(state, action) {
-      return { ...state, ...action.payload };
+      console.log('Setting user:', action.payload); // Log the payload
+      return { ...state, ...action.payload.data }; // Access the `data` property
     },
     resetUser(state) {
       return initialState;
     }
   }
 });
+
 
 export const { setUser, resetUser } = userSlice.actions;
 export default userSlice.reducer;

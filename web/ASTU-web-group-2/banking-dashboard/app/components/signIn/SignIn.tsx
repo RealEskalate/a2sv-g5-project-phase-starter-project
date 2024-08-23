@@ -100,7 +100,7 @@ const SignIn = () => {
             </p>
           )}
           <button
-            disabled = {loading}
+            disabled={loading}
             type="submit"
             className={` font-bold text-white text-center bg-[#1814F3] px-6 py-3 rounded-3xl`}
           >

@@ -7,14 +7,13 @@ import (
 	localmongo "blogApp/pkg/mongo"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func RegisterVerificationRoutes(collection *mongo.Collection, router *gin.Engine) {
+func RegisterVerificationRoutes(router *gin.Engine) {
 
 	// userRepo := &mongodb.UserRepositoryMongo{Collection: collection}
 	// userUsecase := user.NewUserUsecase(userRepo)
-	userHandler := InstantaiteUserHandler(collection)
+	userHandler := InstantaiteUserHandler()
 	authRoutes := router.Group("/api/v1/auth")
 
 	{

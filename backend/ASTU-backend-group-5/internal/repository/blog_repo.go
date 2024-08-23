@@ -50,4 +50,10 @@ type BlogRepository interface {
 	GetCommentById(ctx context.Context, commentId string) (*domain.Comment, error)
 
 	FindBlogs(ctx context.Context, filter domain.BlogFilter, page, pageSize int, orderBy []string) ([]*domain.GetBlogDTO, int, error)
+
+	IncrementBlogViewCount(ctx context.Context, blogId string) error
+
+	IncrementBlogLikeCount(ctx context.Context, blogId string) error
+
+	IncrementBlogCommentCount(ctx context.Context, blogId string) error
 }

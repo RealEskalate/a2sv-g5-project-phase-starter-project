@@ -14,13 +14,15 @@ import (
 
 // blogUseCase implements the BlogUseCase interface
 type blogUseCase struct {
-	repo repository.BlogRepository
+	repo     repository.BlogRepository
+	userRepo repository.UserRepository
 }
 
 // NewBlogUseCase creates a new instance of BlogUseCase
-func NewBlogUseCase(repo repository.BlogRepository) BlogUseCase {
+func NewBlogUseCase(repo repository.BlogRepository, userRepo repository.UserRepository) BlogUseCase {
 	return &blogUseCase{
-		repo: repo,
+		repo:     repo,
+		userRepo: userRepo,
 	}
 }
 
@@ -29,6 +31,16 @@ func (u *blogUseCase) CreateBlog(ctx context.Context, blog *domain.Blog, authorI
 	if blog == nil {
 		return errors.New("blog cannot be nil")
 	}
+	// authorUser, err := u.repo(ctx, authorId)
+	creator, err := u.userRepo.FindUserById(ctx, authorId)
+	if err != nil {
+		log.Printf("Error creating blog: %v", err)
+		return fmt.Errorf("failed to create blog: %w", err)
+	}
+	if creator == nil {
+		return errors.New("user not found")
+	}
+
 	Author, err := primitive.ObjectIDFromHex(authorId)
 	if err != nil {
 		log.Printf("Error creating blog: %v", err)
@@ -36,6 +48,7 @@ func (u *blogUseCase) CreateBlog(ctx context.Context, blog *domain.Blog, authorI
 	}
 	blog.Author = Author
 	blog.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
+	blog.AuthorName = creator.Profile.FirstName + " " + creator.Profile.LastName
 
 	//is_valid, message, err := ai.ModerateBlog(blog.Content, blog.Title)
 	// if err != nil {

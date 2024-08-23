@@ -41,10 +41,6 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
     };
   }, [dropdownRef]);
 
-  // Toggle sidebar visibility
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
 
   // Toggle dropdown visibility
   const toggleDropdown = () => {

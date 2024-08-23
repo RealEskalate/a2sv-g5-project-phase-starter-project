@@ -28,13 +28,6 @@ type BlogFilter struct {
 	} `json:"date_range"`
 }
 
-type Comment struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	BlogID    primitive.ObjectID `bson:"blog_id"`
-	UserID    primitive.ObjectID `bson:"author_id"`
-	Content   string             `bson:"content"`
-	CreatedAt time.Time          `bson:"created_at"`
-}
 type Like struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
 	BlogID    primitive.ObjectID `bson:"blog_id"`
@@ -46,12 +39,13 @@ type LikeUsecaseInterface interface {
 	RemoveLike(likeID primitive.ObjectID) error
 	GetLikesByBlogID(blogID primitive.ObjectID) ([]Like, error)
 }
-type CommentUsecaseInterface interface {
-	AddComment(comment *Comment) error
-	GetCommentsByBlogID(blogID primitive.ObjectID) ([]Comment, error)
-	UpdateComment(commentID primitive.ObjectID, content string) error
-	DeleteComment(commentID primitive.ObjectID) error
-}
+
+// type CommentUsecaseInterface interface {
+// 	AddComment(comment *Comment) error
+// 	GetCommentsByBlogID(blogID primitive.ObjectID) ([]Comment, error)
+// 	UpdateComment(commentID primitive.ObjectID, content string) error
+// 	DeleteComment(commentID primitive.ObjectID) error
+// }
 
 // // IsExpired checks if the refresh token is expired
 // func (r *RefreshToken) IsExpired() bool {

@@ -1,9 +1,9 @@
 import { useRouter } from "next/navigation";
 import React from "react";
 import { IconType } from "react-icons";
-import { IoMdNotificationsOutline } from "react-icons/io";
-import { IoMoonOutline, IoSettingsOutline } from "react-icons/io5";
+import { IoLogOutOutline, IoMoonOutline, IoSettingsOutline } from "react-icons/io5";
 import { useDarkMode } from "./Context/DarkModeContext";
+import { signOut } from "next-auth/react";
 
 type ElementType = {
   id: number;
@@ -73,6 +73,14 @@ const SidebarElements = ({
           onClick={toggleDarkMode}
         >
           <IoMoonOutline />
+        </div>
+        <div
+          className="cursor-pointer text-xl bg-[#F5F7FA] rounded-lg px-2 py-2 dark:bg-[#050914] dark:border dark:border-[#333B69]"
+          onClick={() => {
+            signOut();
+          }}
+        >
+          <IoLogOutOutline />
         </div>
       </div>
     </div>

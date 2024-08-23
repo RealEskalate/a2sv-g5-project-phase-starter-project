@@ -130,6 +130,11 @@ func (usecase *ChatUsecase) SendMessage(ctx context.Context, chatForm DefaultCha
 			return Message{}, err
 		}
 		chat.Title = title
+		
+		_, err = usecase.Repository.UpdateChat(ctx, chatForm.ChatID, chat)
+		if err != nil{
+			return Message{}, err
+		}
 	}
 
 	response, err := usecase.AIService.SendMessage(ctx, chat.History, message)
@@ -148,7 +153,17 @@ func (usecase *ChatUsecase) SendMessage(ctx context.Context, chatForm DefaultCha
 	return response, nil
 }
 
+func (usecase *ChatUsecase) UpdateChat(ctx context.Context, form DefaultChatForm, updatedChat Chat) (Chat, error){
+	if err := infrastructure.Validate(validate, form); err != nil{
+		return Chat{}, err
+	}
 
+	if err := infrastructure.Validate(validate, updatedChat); err != nil{
+		return Chat{}, err
+	}
+
+	return usecase.Repository.UpdateChat(ctx, form.ChatID, updatedChat)
+}
 
 
 

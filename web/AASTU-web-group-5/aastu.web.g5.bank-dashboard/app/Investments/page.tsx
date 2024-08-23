@@ -23,14 +23,12 @@ const Investments = () => {
 		totalAmount: 0,
 		numberOfInvestments: 0,
 		rateOfReturn: 0,
-	});
+	}); 
 	const user = session.user as ExtendedUser;
-	const accessToken = user.accessToken;
 
 	const [yearlyTotalInvestment, setYearlyTotalInvestment] = useState([]);
 	const [monthlyRevenue, setMonthlyRevenue] = useState([]);
 
-	const token: string = ` Bearer ${accessToken} `;
 	useEffect(() => {
 		const fetchInvestmentData = async () => {
 			try {
@@ -38,7 +36,7 @@ const Investments = () => {
 					"https://bank-dashboard-rsf1.onrender.com/user/random-investment-data?years=3&months=5",
 					{
 						headers: {
-							Authorization: token,
+							Authorization: `Bearer ${user.accessToken}`,
 						},
 					}
 				);
@@ -65,7 +63,7 @@ const Investments = () => {
 		};
 
 		fetchInvestmentData();
-	}, [token]);
+	}, [session,user]);
 
 	return (
 		<div className="bg-[#F5F7FA] space-y-8 pt-3    w-full overflow-hidden dark:bg-gray-800 ">

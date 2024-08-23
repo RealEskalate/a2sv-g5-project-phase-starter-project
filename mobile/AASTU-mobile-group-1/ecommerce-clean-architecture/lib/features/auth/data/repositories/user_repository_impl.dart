@@ -22,37 +22,41 @@ class UserRepositoryImpl implements UserRepository {
     required this.networkInfo,
   });
 
-  @override 
-  Future<Either<Failure,UserEntity>> registerUser(String name, String email, String password) async {
-  try{
-    if (await networkInfo.isConnected) {
-      final remoteUser = await remoteDataSource.register(name, email, password);
-      localDataSource.cacheUser(UserModel(id:remoteUser.id ,name: name, email: email, password: password));
-      return Right(remoteUser);
-    } else {
-      throw ServerException('failed to register user');
-    }
-  }on ServerException {
+  @override
+  Future<Either<Failure, UserEntity>> registerUser(
+      String name, String email, String password) async {
+    try {
+      if (await networkInfo.isConnected) {
+        final remoteUser =
+            await remoteDataSource.register(name, email, password);
+        localDataSource.cacheUser(UserModel(
+            id: remoteUser.id, name: name, email: email, password: password));
+        return Right(remoteUser);
+      } else {
+        throw ServerException('failed to register user');
+      }
+    } on ServerException {
       return Left(ServerFailure('An error has occured'));
     } on SocketException {
       return Left(ServerFailure('No internet connection'));
     }
-
   }
+
   @override
-  Future<Either<Failure,UserModel>> loginUser(String email, String password) async {
-      try{
-        if (await networkInfo.isConnected) {
-          final remoteUser = await remoteDataSource.login(email, password);
-          localDataSource.cacheUser(remoteUser);
-          return Right(remoteUser);
-        } else {
-          throw ServerException('failed to login user');
-        }
-      }on ServerException {
-          return Left(ServerFailure('An error has occured'));
-        } on SocketException {
-          return Left(ServerFailure('No internet connection'));
-        }
-}
+  Future<Either<Failure, UserModel>> loginUser(
+      String email, String password) async {
+    try {
+      if (await networkInfo.isConnected) {
+        final remoteUser = await remoteDataSource.login(email, password);
+        localDataSource.cacheUser(remoteUser);
+        return Right(remoteUser);
+      } else {
+        throw ServerException('failed to login user');
+      }
+    } on ServerException {
+      return Left(ServerFailure('An error has occured'));
+    } on SocketException {
+      return Left(ServerFailure('No internet connection'));
+    }
+  }
 }

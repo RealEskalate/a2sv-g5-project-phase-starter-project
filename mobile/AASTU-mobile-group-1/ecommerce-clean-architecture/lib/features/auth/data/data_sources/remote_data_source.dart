@@ -10,26 +10,29 @@ import '../../../../core/error/exception.dart';
 
 abstract class UserRemoteDataSource {
   Future<UserModel> login(String email, String password);
-  Future<UserEntity> register(String name,String email, String password);
+  Future<UserEntity> register(String name, String email, String password);
 }
 
-Future<void>saveToken(String token) async {
+Future<void> saveToken(String token) async {
   final sharedPreferences = await SharedPreferences.getInstance();
   await sharedPreferences.setString('token', token);
   print('from save');
   print(sharedPreferences.getString('token'));
 }
+
 Future<String?> getToken() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   final token = sharedPreferences.getString('token');
   return token;
 }
+
 class UserRemoteDataSourceImpl extends UserRemoteDataSource {
   final http.Client client;
   UserRemoteDataSourceImpl({required this.client});
 
   @override
-  Future<UserEntity> register(String name, String email, String password) async {
+  Future<UserEntity> register(
+      String name, String email, String password) async {
     final uri = Uri.parse(Urls.registerUrl);
     final response = await client.post(
       uri,
@@ -39,7 +42,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
         'email': email,
         'password': password,
       }),
-    );  
+    );
     print('from remote');
     print(response.body);
     if (response.statusCode == 201) {
@@ -51,43 +54,41 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
   }
 
   @override
-    Future<UserModel> login(String email, String password) async {
-      final urilogin = Uri.parse(Urls.loginUrl);
-      final urime = Uri.parse(Urls.meUrl);
-      final responselogin = await client.post(
-        urilogin,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-        }),
-      );
-      if (responselogin.statusCode == 201) {
-        final jsondatalogin = jsonDecode(responselogin.body);
-        final accesstoken =jsondatalogin['data']['access_token'];
-        saveToken(accesstoken);
-        // print('from func');
-        // print(accesstoken);
-        // print(getToken());
-        
+  Future<UserModel> login(String email, String password) async {
+    final urilogin = Uri.parse(Urls.loginUrl);
+    final urime = Uri.parse(Urls.meUrl);
+    final responselogin = await client.post(
+      urilogin,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'password': password,
+      }),
+    );
+    if (responselogin.statusCode == 201) {
+      final jsondatalogin = jsonDecode(responselogin.body);
+      final accesstoken = jsondatalogin['data']['access_token'];
+      saveToken(accesstoken);
+      // print('from func');
+      // print(accesstoken);
+      // print(getToken());
 
-        final response_me = await client.get(
-          urime,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accesstoken'}
-        );
-        if(response_me.statusCode == 200){
-          final jsondata_me = jsonDecode(response_me.body);
-          return UserModel.fromJson(jsondata_me['data']);
+      final response_me = await client.get(urime, headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accesstoken'
+      });
+      if (response_me.statusCode == 200) {
+        final jsondata_me = jsonDecode(response_me.body);
+        
+        var us = UserModel.fromJson(jsondata_me['data']);
+        us.password = password;
+        return us;
 
       } else {
         throw ServerException('get me failed');
       }
-    }else{
+    } else {
       throw ServerException('login failed');
     }
-    
   }
-  
 }

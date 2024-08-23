@@ -31,28 +31,33 @@ class _loginState extends State<login> {
       body: SingleChildScrollView(
         child: BlocListener<UserBloc, UserState>(
           listener: (context, state) {
-            if (state is logging){
+            if (state is logging) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Logging in...'),
                 ),
               );
             } else if (state is logged) {
-               UserModel user = state.user;
+              UserModel user = state.user;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Logged in as ${user.name}'),
                 ),
               );
-
+              print("curr user ${user.id} ${user.name} ${user.email}");
+              
+              print(user.name);
+              print(user.email);
+              print(user);
               Navigator.push(
-                 context,
-              MaterialPageRoute(
-              builder: (context) => MyHomePage(title: '',user: user)));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MyHomePage(title: '', user: user)));
             } else if (state is logginfailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Loggin failed. Please ensure you used the correct email and password.'),
+                  content: Text(
+                      'Loggin failed. Please ensure you used the correct email and password.'),
                 ),
               );
             }
@@ -150,41 +155,39 @@ class _loginState extends State<login> {
                   ),
                   const SizedBox(height: 30),
                   GestureDetector(
-                    child: Container(
-                      width: double.infinity,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Color(0xFF3F51F3),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'SIGN IN',
-                          style: GoogleFonts.poppins(
-                              textStyle: TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w500,
-                          )),
+                      child: Container(
+                        width: double.infinity,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Color(0xFF3F51F3),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'SIGN IN',
+                            style: GoogleFonts.poppins(
+                                textStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w500,
+                            )),
+                          ),
                         ),
                       ),
-                    ),
-                    onTap: (){
-                      if (
-                        emailController.text.isEmpty ||
-                        passwordController.text.isEmpty ) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please fill all fields'),
-                        ),
-                      );
-                    }  else {
-                      user_bloc.add(LoginEvent(email: emailController.text, password: passwordController.text));
-                    }
-
-
-                    }
-                  ),
+                      onTap: () {
+                        if (emailController.text.isEmpty ||
+                            passwordController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please fill all fields'),
+                            ),
+                          );
+                        } else {
+                          user_bloc.add(LoginEvent(
+                              email: emailController.text,
+                              password: passwordController.text));
+                        }
+                      }),
                   const SizedBox(height: 180),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

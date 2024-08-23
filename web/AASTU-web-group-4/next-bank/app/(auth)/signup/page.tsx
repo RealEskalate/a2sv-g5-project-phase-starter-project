@@ -44,8 +44,8 @@ const SignupForm = () => {
   const handlePreviousStep = () => setStep((prevStep) => prevStep - 1);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-3xl mx-auto p-3 bg-white shadow-md rounded-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-dark">
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-3xl mx-auto p-3 bg-white dark:bg-gray-900 shadow-md rounded-lg">
         <div className="flex justify-center items-center m-2">
           <Image src={logo.icon} alt="Logo" height={60} width={60} />
           <h1 className="font-bold text-3xl text-gray-700 font-serif p-2">
@@ -65,7 +65,7 @@ const SignupForm = () => {
                 id="name"
                 placeholder="ex: John"
                 {...register("name", { required: "Name is required" })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border border-gray-300 dark:text-black dark:bg-white rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.name && <p className="text-red-500 mt-1">{errors.name.message}</p>}
             </div>
@@ -83,7 +83,7 @@ const SignupForm = () => {
                     message: "Invalid email format",
                   },
                 })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.email && <p className="text-red-500 mt-1">{errors.email.message}</p>}
             </div>
@@ -94,7 +94,7 @@ const SignupForm = () => {
                 type="date"
                 id="dateOfBirth"
                 {...register("dateOfBirth", { required: "Date of Birth is required" })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.dateOfBirth && <p className="text-red-500 mt-1">{errors.dateOfBirth.message}</p>}
             </div>
@@ -106,7 +106,7 @@ const SignupForm = () => {
                 id="username"
                 placeholder="ex: Star"
                 {...register("username", { required: "Username is required" })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.username && <p className="text-red-500 mt-1">{errors.username.message}</p>}
             </div>
@@ -124,7 +124,7 @@ const SignupForm = () => {
                     message: "Password must be at least 8 characters",
                   },
                 })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.password && <p className="text-red-500 mt-1">{errors.password.message}</p>}
             </div>
@@ -135,7 +135,7 @@ const SignupForm = () => {
                 id="permanentAddress"
                 placeholder="ex: A.A"
                 {...register("permanentAddress", { required: "Permanent Address is required" })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.permanentAddress && <p className="text-red-500 mt-1">{errors.permanentAddress.message}</p>}
             </div>
@@ -147,7 +147,7 @@ const SignupForm = () => {
                 id="postalCode"
                 placeholder="ex: 1000"
                 {...register("postalCode", { required: "Postal Code is required" })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.postalCode && <p className="text-red-500 mt-1">{errors.postalCode.message}</p>}
             </div>
@@ -164,7 +164,7 @@ const SignupForm = () => {
                 id="presentAddress"
                 placeholder="ex: Bola"
                 {...register("presentAddress", { required: "Present Address is required" })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.presentAddress && <p className="text-red-500 mt-1">{errors.presentAddress.message}</p>}
             </div>
@@ -176,7 +176,7 @@ const SignupForm = () => {
                 id="city"
                 placeholder="ex: A.A"
                 {...register("city", { required: "City is required" })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.city && <p className="text-red-500 mt-1">{errors.city.message}</p>}
             </div>
@@ -188,7 +188,7 @@ const SignupForm = () => {
                 id="country"
                 placeholder="ex: Ethiopia"
                 {...register("country", { required: "Country is required" })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.country && <p className="text-red-500 mt-1">{errors.country.message}</p>}
             </div>
@@ -199,7 +199,7 @@ const SignupForm = () => {
                 type="file"
                 id="profilePicture"
                 {...register("profilePicture")}
-                className="p-2 w-full border border-gray-300 rounded-lg mt-1 focus:outline-none focus:border-blue-500"
+                className="p-2 dark:text-black dark:bg-white w-full border border-gray-300 rounded-lg mt-1 focus:outline-none focus:border-blue-500"
               />
               {errors.profilePicture && <p className="text-red-500 mt-1">{errors.profilePicture.message}</p>}
             </div>
@@ -209,7 +209,7 @@ const SignupForm = () => {
               <select
                 id="currency"
                 {...register("currency", { required: "Preferred Currency is required" })}
-                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               >
                 <option value="">Select Currency</option>
                 <option value="USD">USD</option>

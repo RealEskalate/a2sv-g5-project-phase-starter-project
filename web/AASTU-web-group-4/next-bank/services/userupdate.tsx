@@ -106,7 +106,7 @@ export const randomInvestmentData = async () => {
 };
 
 // Fetch Current User - GET Request
-export const currentUser = async () => {
+export const currentuser = async () => {
   try {
     const response = await fetch(
       ` https://web-team-g4.onrender.com/user/current`,

@@ -57,7 +57,7 @@ export default function Home() {
   const [Loading, setLoading] = useState(true);
   const [f, setf] = useState<invoices[]>();
   const [data, setdata] = useState<loantype>();
-  const [page, setpage] = useState<number>(1);
+  const [page, setpage] = useState<number>(0);
   const [total, settotal] = useState<number>(1);
   const numbers = [];
 
@@ -113,24 +113,25 @@ export default function Home() {
 
   if (loading || Loading)
     return (
-      <div className="bg-gray-100 p-6 animate-[shimmer_2s_ease_infinite]">
-        <div className="bg-white shadow-1 rounded-3xl animate-[shimmer_2s_ease_infinite] my-4">
-          <div className="h-10 w-full bg-gray-200 rounded-t-3xl"></div>
-          <div className="flex justify-between px-6 py-4">
-            <div className="h-8 w-20 bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mr-4"></div>
-            <div className="h-8 w-20 bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mr-4"></div>
-            <div className="h-8 w-20 bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mr-4"></div>
-            <div className="h-8 w-20 bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mr-4"></div>
-            <div className="h-8 w-20 bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mr-4"></div>
-            <div className="h-8 w-20 bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite]"></div>
+      <div className="bg-gray-100 dark:bg-[#020817] p-6 animate-[shimmer_2s_ease_infinite]">
+        <div className="bg-white dark:bg-[#020817] shadow-1 rounded-3xl animate-[shimmer_2s_ease_infinite] my-4">
+          {/* <div className="h-10 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-t-3xl"></div> */}
+          <div className="flex gap-6 justify-between px-6 py-4">
+            <div className="h-14 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mr-4"></div>
+            <div className="h-14 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mr-4"></div>
+            <div className="h-14 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mr-4"></div>
+            <div className="h-14 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite]"></div>
           </div>
           <div className="px-6 py-4">
-            <div className="h-8 w-full bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
-            <div className="h-8 w-full bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
-            <div className="h-8 w-full bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
-            <div className="h-8 w-full bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
-            <div className="h-8 w-full bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
-            <div className="h-8 w-full bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite]"></div>
+            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
+            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
+            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
+            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
+            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
+            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
+            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
+            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite] mb-4"></div>
+            <div className="h-8 w-full dark:border dark:border-[#333B69]  dark:bg-[#050914] bg-gray-200 rounded-md animate-[shimmer_2s_ease_infinite]"></div>
           </div>
         </div>
       </div>
@@ -142,8 +143,8 @@ export default function Home() {
     setpage(page);
   };
   return (
-    <div className="bg-gray-100 p-6 ">
-      <div className="flex justify-between gap-8 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+    <div className="bg-gray-100 p-6 dark:bg-[#020817]">
+      <div className="flex justify-between gap-8 overflow-x-auto [&::-webkit-scrollbar]:hidden ">
         <Card1
           text="Personal Loans"
           img="/personal.png"
@@ -164,11 +165,11 @@ export default function Home() {
         />
         <Card1 text="Custom Loans" img="/custom.png" num="Choose Money" />
       </div>
-      <div className="my-4 text-2xl font-bold text-[#333B69]">
+      <div className="my-4 text-2xl font-bold text-[#333B69] dark:text-[#9faaeb]">
         Active Loans Overview
       </div>
-      <Table className="bg-white shadow-1 rounded-3xl">
-        <TableHeader>
+      <Table className="bg-white shadow-1 rounded-3xl  dark:border dark:border-[#333B69] ">
+        <TableHeader className="dark:bg-[#050914]">
           <TableRow className="text-[#718EBF]">
             <TableHead className="w-[100px] text-[#718EBF] hidden md:table-cell">
               SL No
@@ -187,14 +188,14 @@ export default function Home() {
             <TableHead className=" text-[#718EBF]">Repay</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="dark:bg-[#050914] ">
           {f?.map((invoice: invoices) => (
             <TableRow key={invoice.serialNumber}>
               <TableCell
                 className={
                   invoice.serialNumber !== "Total"
-                    ? "font-medium text-[#232323] hidden md:table-cell"
-                    : "font-medium text-[#FE5C73] hidden md:table-cell"
+                    ? "font-medium text-[#232323] hidden md:table-cell dark:text-[#9faaeb]"
+                    : "font-medium text-[#FE5C73] hidden md:table-cell dark:text-[#9faaeb]"
                 }
               >
                 {invoice.serialNumber}
@@ -202,8 +203,8 @@ export default function Home() {
               <TableCell
                 className={
                   invoice.serialNumber !== "Total"
-                    ? "font-medium text-[#232323]"
-                    : "font-medium text-[#FE5C73]"
+                    ? "font-medium text-[#232323] dark:text-[#9faaeb]"
+                    : "font-medium text-[#FE5C73] dark:text-[#9faaeb]"
                 }
               >
                 {invoice.loanAmount}
@@ -211,8 +212,8 @@ export default function Home() {
               <TableCell
                 className={
                   invoice.serialNumber !== "Total"
-                    ? "font-medium text-[#232323]"
-                    : "font-medium text-[#FE5C73]"
+                    ? "font-medium text-[#232323] dark:text-[#9faaeb]"
+                    : "font-medium text-[#FE5C73] dark:text-[#9faaeb]"
                 }
               >
                 {invoice.amountLeftToRepay}
@@ -220,8 +221,8 @@ export default function Home() {
               <TableCell
                 className={
                   invoice.serialNumber !== "Total"
-                    ? "font-medium text-[#232323] hidden md:table-cell"
-                    : "font-medium text-[#FE5C73] hidden md:table-cell"
+                    ? "font-medium text-[#232323] hidden md:table-cell dark:text-[#9faaeb]"
+                    : "font-medium text-[#FE5C73] hidden md:table-cell dark:text-[#9faaeb]"
                 }
               >
                 {invoice.duration}
@@ -229,8 +230,8 @@ export default function Home() {
               <TableCell
                 className={
                   invoice.serialNumber !== "Total"
-                    ? "font-medium text-[#232323] hidden md:table-cell"
-                    : "font-medium text-[#FE5C73] hidden md:table-cell"
+                    ? "font-medium text-[#232323] hidden md:table-cell dark:text-[#9faaeb]"
+                    : "font-medium text-[#FE5C73] hidden md:table-cell dark:text-[#9faaeb]"
                 }
               >
                 {invoice.interestRate}
@@ -238,8 +239,8 @@ export default function Home() {
               <TableCell
                 className={
                   invoice.serialNumber !== "Total"
-                    ? "font-medium text-[#232323] hidden md:table-cell"
-                    : "font-medium text-[#FE5C73] hidden md:table-cell"
+                    ? "font-medium text-[#232323] hidden md:table-cell dark:text-[#9faaeb]"
+                    : "font-medium text-[#FE5C73] hidden md:table-cell dark:text-[#9faaeb]"
                 }
               >
                 {invoice.installment}
@@ -248,15 +249,15 @@ export default function Home() {
                 <div
                   className={
                     invoice.serialNumber !== "01"
-                      ? "border-2 rounded-full border-[#1814F3] md:border-[#232323] w-full h-full py-1 px-3"
-                      : "border-2 rounded-full border-[#1814F3] w-full h-full py-1 px-3"
+                      ? "border-2 rounded-full border-[#1814F3] md:border-[#232323] w-full h-full py-1 px-3 dark:text-[#9faaeb]"
+                      : "border-2 rounded-full border-[#1814F3] w-full h-full py-1 px-3 dark:text-[#9faaeb]"
                   }
                 >
                   <button
                     className={
                       invoice.serialNumber !== "01"
-                        ? "text-[#1814F3] md:text-[#232323] font-bold"
-                        : "text-[#1814F3] font-semibold"
+                        ? "text-[#1814F3] md:text-[#232323] font-bold dark:text-[#9faaeb]"
+                        : "text-[#1814F3] font-semibold dark:text-[#9faaeb]"
                     }
                   >
                     repay
@@ -268,7 +269,9 @@ export default function Home() {
         </TableBody>
       </Table>
       <div className="flex justify-center items-center pt-5">
-        <div className="mx-3 text-blue-900 font-bold text-2xl">Pages</div>
+        <div className="mx-3 text-blue-900 dark:text-[#9faaeb] font-bold text-2xl">
+          Pages
+        </div>
         <div className="flex flex-wrap">
           {numbers.map((number) => (
             <button

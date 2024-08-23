@@ -11,7 +11,7 @@ interface Props {
 }
 import Image from "next/image";
 const Navbar = ({ handleClick, toggleDarkMode }: Props) => {
-  const route = useRouter()
+  const route = useRouter();
   return (
     <div className="flex flex-col gap-5 py-5 border-b px-10">
       <div className="flex gap-5 justify-between items-center">
@@ -35,8 +35,9 @@ const Navbar = ({ handleClick, toggleDarkMode }: Props) => {
           </div>
 
           <div className="hidden md:flex gap-5 text-xl md:items-center">
-            <div className="cursor-pointer text-xl bg-[#F5F7FA] rounded-full px-2 py-2 dark:bg-[#050914] dark:border dark:border-[#333B69]"
-            onClick={() => route.push("./bankingSettings")}
+            <div
+              className="cursor-pointer text-xl bg-[#F5F7FA] rounded-full px-2 py-2 dark:bg-[#050914] dark:border dark:border-[#333B69]"
+              onClick={() => route.push("./bankingSettings")}
             >
               <IoSettingsOutline />
             </div>
@@ -61,11 +62,13 @@ const Navbar = ({ handleClick, toggleDarkMode }: Props) => {
         </div>
       </div>
 
-      <div className="flex md:hidden rounded-full bg-[#F5F7FA] text-[#8BA3CB] text-sm font-normal gap-2 items-center py-3 px-4 ml-2">
-        <span className="text-xl">
-          <MdOutlineSearch />
-        </span>
-        Search for Something
+      <div className="md:hidden rounded-full flex md:gap-2 bg-[#F5F7FA] text-[#8BA3CB] text-sm font-normal py-3 px-8 ml-2 items-center dark:bg-[#050914] dark:border dark:border-[#333B69]">
+        <MdOutlineSearch className="text-xl" />
+        <input
+          type="text"
+          placeholder="Search for Something"
+          className="bg-transparent border-none outline-none text-[#8BA3CB] placeholder-[#8BA3CB] text-sm flex-grow"
+        />
       </div>
     </div>
   );

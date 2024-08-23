@@ -48,7 +48,7 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 // GetBlogByID godoc
 func (bc *BlogController) GetBlogByID(c *gin.Context) {
 	// implementation create a context and pass to the usecase not the gin context
-	blogID := c.Param("id")
+	blogID := c.Param("blog_id")
 	blog, err := bc.blogUseCase.GetBlogByID(c, blogID)
 	if err != nil {
 		// Check for specific errors and return appropriate status codes
@@ -83,7 +83,7 @@ func (bc *BlogController) GetAllBlog(c *gin.Context) {
 // UpdateBlog godoc
 func (bc *BlogController) UpdateBlog(c *gin.Context) {
 	// implementation
-	blogID := c.Param("id")
+	blogID := c.Param("blog_id")
 	var blog domain.BlogUpdate
 	err := c.ShouldBindJSON(&blog)
 	if err != nil {
@@ -115,7 +115,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 // DeleteBlog godoc
 func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	// implementation
-	blogID := c.Param("id")
+	blogID := c.Param("blog_id")
 	user, err := utils.CheckUser(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})

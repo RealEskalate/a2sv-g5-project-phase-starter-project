@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"errors"
 	"group3-blogApi/domain"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -17,58 +16,75 @@ func NewCommentUsecase(commentRepo domain.CommentRepository) domain.CommentUseca
 	}
 }
 
-func (u *commentUsecase) CreateComment(comment *domain.Comment) (*domain.Comment, error) {
-	if comment.PostID.IsZero()  || comment.Content == "" {
-		return nil, errors.New("missing required fields")
+func (u *commentUsecase) CreateComment(comment *domain.Comment) (*domain.Comment, *domain.CustomError) {
+	if comment.PostID.IsZero() || comment.UserID.IsZero() || comment.Content == "" {
+		return nil, domain.ErrMissingRequiredFields
+
 	}
-	return u.commentRepo.CreateComment(comment)
+	createdComment, err := u.commentRepo.CreateComment(comment)
+	if err != nil {
+		return nil, domain.ErrFailedToCreateComment
+	}
+	return createdComment, nil
 }
 
-func (u *commentUsecase) UpdateComment(comment *domain.Comment, role_, userId string) (*domain.Comment, error) {
+func (u *commentUsecase) UpdateComment(comment *domain.Comment, role_, userId string) (*domain.Comment, *domain.CustomError) {
 	existingComment, err := u.GetCommentByID(comment.ID.Hex())
 	if err != nil {
 		return nil, err
 	}
-	if existingComment.UserID.Hex() != userId || role_ != "admin" {
-		return nil, errors.New("unauthorized")
+	if existingComment.UserID.Hex() != userId && role_ != "admin" {
+		return nil, domain.ErrUnauthorized
 	}
 	if comment.ID.IsZero() {
-		return nil, errors.New("invalid comment ID")
+		return nil, domain.ErrInvalidCommentID
 	}
-	return u.commentRepo.UpdateComment(comment)
+	updatedComment, rerr := u.commentRepo.UpdateComment(comment)
+	if rerr != nil {
+		return nil, domain.ErrFailedToUpdateComment
+	}
+	return updatedComment, nil
 }
 
-func (u *commentUsecase) DeleteComment(commentID, role_, UserID string) (*domain.Comment, error) {
-	existingComment, err := u.GetCommentByID(commentID)
-	if err != nil {
-		return nil, err
+func (u *commentUsecase) DeleteComment(commentID, role_, userID string) (*domain.Comment, *domain.CustomError) {
+	existingComment, cerr := u.GetCommentByID(commentID)
+	if cerr != nil {
+		return nil, cerr
 	}
-	if existingComment.UserID.Hex() != UserID || role_ != "admin" {
-		return nil, errors.New("unauthorized")
+	if existingComment.UserID.Hex() != userID && role_ != "admin" {
+		return nil, domain.ErrUnauthorized
 	}
 
 	objID, err := primitive.ObjectIDFromHex(commentID)
 	if err != nil {
-		return nil, errors.New("invalid comment ID")
+		return nil, domain.ErrInvalidCommentID
 	}
-	return u.commentRepo.DeleteComment(objID)
+	deletedComment, err := u.commentRepo.DeleteComment(objID)
+	if err != nil {
+		return nil, domain.ErrFailedToDeleteComment
+	}
+	return deletedComment, nil
 }
 
-func (u *commentUsecase) GetCommentByID(commentID string) (*domain.Comment, error) {
+func (u *commentUsecase) GetCommentByID(commentID string) (*domain.Comment, *domain.CustomError) {
 	objID, err := primitive.ObjectIDFromHex(commentID)
 	if err != nil {
-		return nil, errors.New("invalid comment ID")
+		return nil, domain.ErrInvalidCommentID
 	}
-	return u.commentRepo.GetCommentByID(objID)
+	comment, err := u.commentRepo.GetCommentByID(objID)
+	if err != nil {
+		return nil, domain.ErrFailedToGetComment
+	}
+	return comment, nil
 }
 
-func (u *commentUsecase) GetComments(postID string, page, limit int) ([]domain.Comment, error) {
+func (u *commentUsecase) GetComments(postID string, page, limit int) ([]domain.Comment, *domain.CustomError) {
 	if page <= 0 || limit <= 0 {
-		return nil, errors.New("invalid pagination parameters")
+		return nil, domain.ErrInvalidPaginationParameters
 	}
 	comments, err := u.commentRepo.GetCommentsByPostID(postID, int64(page), int64(limit))
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrFailedToGetComments
 	}
 	return convertComments(comments), nil
 }
@@ -81,50 +97,62 @@ func convertComments(comments []*domain.Comment) []domain.Comment {
 	return result
 }
 
-func (u *commentUsecase) CreateReply(reply *domain.Reply) (*domain.Reply, error) {
+func (u *commentUsecase) CreateReply(reply *domain.Reply) (*domain.Reply, *domain.CustomError) {
 	if reply.CommentID.IsZero() || reply.UserID == "" || reply.Content == "" {
-		return nil, errors.New("missing required fields")
+		return nil, domain.ErrMissingRequiredFields
 	}
-	return u.commentRepo.CreateReply(reply)
+	createdReply, err := u.commentRepo.CreateReply(reply)
+	if err != nil {
+		return nil, domain.ErrFailedToCreateReply
+	}
+	return createdReply, nil
 }
 
-func (u *commentUsecase) UpdateReply(reply *domain.Reply, userID string) (*domain.Reply, error) {
+func (u *commentUsecase) UpdateReply(reply *domain.Reply, userID string) (*domain.Reply, *domain.CustomError) {
 	existingReply, err := u.commentRepo.GetReplyByID(reply.ID)
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrReplyNotFound
 	}
 	if existingReply.UserID != userID {
-		return nil, errors.New("unauthorized")
+		return nil, domain.ErrUnauthorized
 	}
 	if reply.ID.IsZero() {
-		return nil, errors.New("invalid reply ID")
+		return nil, domain.ErrInvalidReplyID
 	}
-	return u.commentRepo.UpdateReply(reply)
+	updatedReply, err := u.commentRepo.UpdateReply(reply)
+	if err != nil {
+		return nil, domain.ErrFailedToUpdateReply
+	}
+	return updatedReply, nil
 }
 
-func (u *commentUsecase) DeleteReply(replyID, role_, UserID string) (*domain.Reply, error) {
+func (u *commentUsecase) DeleteReply(replyID, role_, userID string) (*domain.Reply, *domain.CustomError) {
 	objID, err := primitive.ObjectIDFromHex(replyID)
 	if err != nil {
-		return nil, errors.New("invalid reply ID")
+		return nil, domain.ErrInvalidReplyID
 	}
 	existingReply, err := u.commentRepo.GetReplyByID(objID)
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrReplyNotFound
 	}
-	if existingReply.UserID != UserID || role_ != "admin" {
-		return nil, errors.New("unauthorized")
+	if existingReply.UserID != userID && role_ != "admin" {
+		return nil, domain.ErrUnauthorized
 	}
 
-	return u.commentRepo.DeleteReply(objID)
+	deletedReply, err := u.commentRepo.DeleteReply(objID)
+	if err != nil {
+		return nil, domain.ErrFailedToDeleteReply
+	}
+	return deletedReply, nil
 }
 
-func (u *commentUsecase) GetReplies(commentID string, page, limit int) ([]domain.Reply, error) {
+func (u *commentUsecase) GetReplies(commentID string, page, limit int) ([]domain.Reply, *domain.CustomError) {
 	if page <= 0 || limit <= 0 {
-		return nil, errors.New("invalid pagination parameters")
+		return nil, domain.ErrInvalidPaginationParameters
 	}
 	replies, err := u.commentRepo.GetRepliesByCommentID(commentID, int64(page), int64(limit))
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrFailedToGetReplies
 	}
 	return convertReplies(replies), nil
 }
@@ -137,34 +165,50 @@ func convertReplies(replies []*domain.Reply) []domain.Reply {
 	return result
 }
 
-func (u *commentUsecase) LikeComment(commentID, userID string) error {
+func (u *commentUsecase) LikeComment(commentID, userID string) *domain.CustomError {
 	objID, err := primitive.ObjectIDFromHex(commentID)
 	if err != nil {
-		return errors.New("invalid comment ID")
+		return domain.ErrInvalidCommentID
 	}
-	return u.commentRepo.LikeComment(objID, userID)
+	err = u.commentRepo.LikeComment(objID, userID)
+	if err != nil {
+		return domain.ErrFailedToLikeComment
+	}
+	return nil
 }
 
-func (u *commentUsecase) UnlikeComment(commentID, userID string) error {
+func (u *commentUsecase) UnlikeComment(commentID, userID string) *domain.CustomError {
 	objID, err := primitive.ObjectIDFromHex(commentID)
 	if err != nil {
-		return errors.New("invalid comment ID")
+		return domain.ErrInvalidCommentID
 	}
-	return u.commentRepo.UnlikeComment(objID, userID)
+	err = u.commentRepo.UnlikeComment(objID, userID)
+	if err != nil {
+		return domain.ErrFailedToUnlikeComment
+	}
+	return nil
 }
 
-func (u *commentUsecase) LikeReply(replyID, userID string) error {
+func (u *commentUsecase) LikeReply(replyID, userID string) *domain.CustomError {
 	objID, err := primitive.ObjectIDFromHex(replyID)
 	if err != nil {
-		return errors.New("invalid reply ID")
+		return domain.ErrInvalidReplyID
 	}
-	return u.commentRepo.LikeReply(objID, userID)
+	err = u.commentRepo.LikeReply(objID, userID)
+	if err != nil {
+		return domain.ErrFailedToLikeReply
+	}
+	return nil
 }
 
-func (u *commentUsecase) UnlikeReply(replyID, userID string) error {
+func (u *commentUsecase) UnlikeReply(replyID, userID string) *domain.CustomError {
 	objID, err := primitive.ObjectIDFromHex(replyID)
 	if err != nil {
-		return errors.New("invalid reply ID")
+		return domain.ErrInvalidReplyID
 	}
-	return u.commentRepo.UnlikeReply(objID, userID)
+	err = u.commentRepo.UnlikeReply(objID, userID)
+	if err != nil {
+		return domain.ErrFailedToUnlikeReply
+	}
+	return nil
 }

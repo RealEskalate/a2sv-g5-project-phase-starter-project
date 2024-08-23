@@ -26,7 +26,7 @@ func SetUpAdmin(router *gin.Engine) {
 
 	// Set up admin routes
 	admin := router.Group("/admin")
-	admin.Use(infrastracture.AuthMiddleware()) // Ensure AuthMiddleware is properly defined
+	// admin.Use(infrastracture.AuthMiddleware()) // Ensure AuthMiddleware is properly defined
 	{
 		// Admin Profile Routes
 		admin.GET("/me", infrastracture.RoleMiddleware("admin"), adminController.GetMyProfile)
@@ -35,7 +35,7 @@ func SetUpAdmin(router *gin.Engine) {
 		admin.DELETE("/me", infrastracture.RoleMiddleware("admin"), adminController.DeleteMyAccount)
 
 		// User Management Routes
-		admin.GET("/users", infrastracture.RoleMiddleware("admin"), adminController.GetUsers)
+		admin.GET("/users", adminController.GetUsers)
 		admin.GET("/users/:id", infrastracture.RoleMiddleware("admin"), adminController.GetUser)
 		admin.DELETE("/users/:id", infrastracture.RoleMiddleware("admin"), adminController.DeleteUser)
 		admin.PUT("/users/:id", infrastracture.RoleMiddleware("admin"), adminController.UpdateUserRole)

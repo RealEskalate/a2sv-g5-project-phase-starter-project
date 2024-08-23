@@ -17,22 +17,19 @@ func NewLikeController(likeUsecase domain.LikeUsecase) *LikeController {
 	}
 }
 
-
 func (c *LikeController) LikeBlog(ctx *gin.Context) {
 	id := ctx.Param("id")
 	userId := ctx.GetString("user_id")
 	Type := "like"
 	err := c.likeUsecase.LikeBlog(userId, id, Type)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err.Message != "" {
+		ctx.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Blog liked successfully",
-		
 	})
 }
-
 
 func (c *LikeController) DisLikeBlog(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -40,12 +37,11 @@ func (c *LikeController) DisLikeBlog(ctx *gin.Context) {
 	Type := "dislike"
 
 	err := c.likeUsecase.DisLikeBlog(userId, id, Type)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err.Message != "" {
+		ctx.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Blog disliked successfully",
-		
 	})
 }

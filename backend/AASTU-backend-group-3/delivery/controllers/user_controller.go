@@ -22,20 +22,18 @@ func (uc *UserController) Login(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	ipAddress := c.ClientIP()
-    userAgent := c.Request.UserAgent()
-    deviceFingerprint := infrastracture.GenerateDeviceFingerprint(ipAddress, userAgent)
+	userAgent := c.Request.UserAgent()
+	deviceFingerprint := infrastracture.GenerateDeviceFingerprint(ipAddress, userAgent)
 
 	LogInResponse, err := uc.UserUsecase.Login(&user, deviceFingerprint)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
-	
 	c.JSON(200, gin.H{"tokens": LogInResponse})
-
 
 }
 
@@ -47,12 +45,12 @@ func (uc *UserController) Logout(c *gin.Context) {
 		return
 	}
 	ipAddress := c.ClientIP()
-    userAgent := c.Request.UserAgent()
-    deviceFingerprint := infrastracture.GenerateDeviceFingerprint(ipAddress, userAgent)
+	userAgent := c.Request.UserAgent()
+	deviceFingerprint := infrastracture.GenerateDeviceFingerprint(ipAddress, userAgent)
 
 	err := uc.UserUsecase.Logout(logoutRequest.UserID, deviceFingerprint, logoutRequest.Token)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if err.Message != "" {
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
@@ -63,8 +61,8 @@ func (uc *UserController) Logout(c *gin.Context) {
 func (uc *UserController) LogoutAll(c *gin.Context) {
 	userID := c.GetString("user_id")
 	err := uc.UserUsecase.LogoutAllDevices(userID)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if err.Message != "" {
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
@@ -76,8 +74,8 @@ func (uc *UserController) LogoutDevice(c *gin.Context) {
 	userID := c.GetString("user_id")
 	deviceID := c.Query("deviceID")
 	err := uc.UserUsecase.LogoutDevice(userID, deviceID)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if err.Message != "" {
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
@@ -88,8 +86,8 @@ func (uc *UserController) LogoutDevice(c *gin.Context) {
 func (uc *UserController) GetDevices(c *gin.Context) {
 	userID := c.GetString("user_id")
 	devices, err := uc.UserUsecase.GetDevices(userID)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if err.Message != "" {
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
@@ -103,15 +101,15 @@ func (uc *UserController) RefreshToken(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 	}
 	ipAddress := c.ClientIP()
-    userAgent := c.Request.UserAgent()
-    deviceFingerprint := infrastracture.GenerateDeviceFingerprint(ipAddress, userAgent)
+	userAgent := c.Request.UserAgent()
+	deviceFingerprint := infrastracture.GenerateDeviceFingerprint(ipAddress, userAgent)
 
 	refreshResponse, err := uc.UserUsecase.RefreshToken(refreshRequest.UserID, deviceFingerprint, refreshRequest.Token)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if err.Message != "" {
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
-	
+
 	c.JSON(200, gin.H{"tokens": refreshResponse})
 }
 
@@ -122,10 +120,9 @@ func (uc *UserController) Register(c *gin.Context) {
 		return
 	}
 
-
 	err := uc.UserUsecase.Register(user)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if err.Message != "" {
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
@@ -133,45 +130,43 @@ func (uc *UserController) Register(c *gin.Context) {
 
 }
 
-func (uc* UserController) ActivateAccountMe(c *gin.Context) {
+func (uc *UserController) ActivateAccountMe(c *gin.Context) {
 	userID := c.GetString("user_id")
 
 	err := uc.UserUsecase.ActivateAccountMe(userID)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if err.Message != "" {
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
 	c.JSON(200, gin.H{"message": "Check your email."})
 }
 
-
 func (uc *UserController) ActivateAccount(c *gin.Context) {
 	token := c.Query("token")
 	Email := c.Query("Email")
 	err := uc.UserUsecase.AccountActivation(token, Email)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if err.Message != "" {
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
 	c.JSON(200, gin.H{"message": "Account activated successfully"})
 }
 
-
 // reset password
 
 func (uc *UserController) SendPasswordResetLink(c *gin.Context) {
 	var req domain.ResetPasswordRequest
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
 
 	err := uc.UserUsecase.SendPasswordResetLink(req.Email)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err.Message != "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
 
@@ -189,8 +184,8 @@ func (uc *UserController) ResetPassword(c *gin.Context) {
 	}
 
 	err := uc.UserUsecase.ResetPassword(token, req.Password)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err.Message != "" {
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 

@@ -1,5 +1,6 @@
 import { profileAPI } from "@/lib/redux/api/profileAPI";
 import { activeLoanApi } from "@/lib/redux/slices/activeLoanSlice";
+import { bankServiceApi } from "@/lib/redux/slices/bankService";
 import { cardApi } from "@/lib/redux/slices/cardSlice";
 import profileSlice from "@/lib/redux/slices/profileSlice";
 import { transactionApi } from "@/lib/redux/slices/transactionSlice";
@@ -20,7 +21,7 @@ export const store = configureStore({
       .concat(cardApi.middleware)
       .concat(transactionApi.middleware)
       .concat(activeLoanApi.middleware)
-      .concat(profileAPI.middleware);
+      .concat(profileAPI.middleware)
   },
 });
 

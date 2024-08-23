@@ -25,7 +25,7 @@ const initialState: UserDataType = {
   },
 };
 
-export const profileApi = createSlice({
+export const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
@@ -44,5 +44,5 @@ export const profileApi = createSlice({
   },
 });
 
-export const { setProfile } = profileApi.actions;
-export default profileApi.reducer
+export const { setProfile } = profileSlice.actions;
+export default profileSlice.reducer

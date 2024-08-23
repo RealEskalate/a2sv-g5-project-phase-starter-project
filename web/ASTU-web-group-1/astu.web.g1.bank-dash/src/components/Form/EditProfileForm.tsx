@@ -1,18 +1,19 @@
 "use client";
 import InputGroup from "./InputGroup";
 
-import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
   useGetProfileQuery,
   useUpdateUserMutation,
 } from "@/lib/redux/api/profileAPI";
+
 import { setProfile } from "@/lib/redux/slices/profileSlice";
 import { useEffect } from "react";
 import { UpdatedUser } from "@/types/user.types";
 import { useAppDispatch, useAppSelector } from "@/hooks/hoooks";
-import { useRouter } from "next/navigation";
 import { Loader } from "lucide-react";
 
 const editProfileSchema = z.object({
@@ -32,9 +33,8 @@ const editProfileSchema = z.object({
 const EditProfileForm = () => {
   const dispatch = useAppDispatch();
   const getData = useAppSelector((state) => state.profile);
-  const rounter = useRouter();
 
-  let { refetch, data, error, isSuccess } = useGetProfileQuery();
+  const { refetch, data, error, isSuccess } = useGetProfileQuery();
 
   useEffect(() => {
     if (isSuccess && data) {
@@ -63,7 +63,7 @@ const EditProfileForm = () => {
   });
 
   if (error) {
-    return <h1>{error as string}</h1>;
+    return <h1>An Error Occured..</h1>;
   }
 
   const [updateUser, { isLoading }] = useUpdateUserMutation();
@@ -175,7 +175,7 @@ const EditProfileForm = () => {
               type="submit"
               className="bg-[#1814f3] text-white px-10 py-2 rounded-lg w-full md:w-auto mt-4"
             >
-              {isLoading ? <Loader /> : "Save"}
+              {isLoading ? <Loader className="animate-spin" /> : "Save"}
             </button>
           </div>
         </form>

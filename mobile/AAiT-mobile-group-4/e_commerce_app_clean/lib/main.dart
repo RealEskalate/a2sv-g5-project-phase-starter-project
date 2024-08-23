@@ -5,8 +5,9 @@ import 'features/authentication/presentation/bloc/auth_bloc.dart';
 import 'features/authentication/presentation/pages/cover_page.dart';
 import 'features/authentication/presentation/pages/sign_in_page.dart';
 import 'features/authentication/presentation/pages/sign_up_page.dart';
-import 'features/chat/presentation/pages/chat_page.dart';
+import 'features/chat/presentation/widgets/notification_screen.dart';
 import 'features/chat/presentation/pages/message_detail.dart';
+import 'features/chat/presentation/pages/root_page.dart';
 import 'features/product/domain/entities/product_entity.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
 import 'features/product/presentation/pages/details_page.dart';
@@ -37,10 +38,10 @@ void main() async {
           secondaryHeaderColor: const Color.fromARGB(230, 255, 19, 19),
           useMaterial3: false,
         ),
-        initialRoute: '/chat_page',
+        initialRoute: '/Root_page',
         onGenerateRoute: (settings) {
-          if(settings.name == '/chat_page'){
-            return createRoute(const ChatPage());
+          if(settings.name == '/Root_page'){
+            return createRoute(const RootPage());
           }
           else
           if(settings.name == '/sign_in_page'){

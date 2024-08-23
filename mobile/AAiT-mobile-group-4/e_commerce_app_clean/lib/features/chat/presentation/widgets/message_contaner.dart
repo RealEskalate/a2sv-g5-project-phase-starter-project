@@ -2,21 +2,20 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class withTime extends StatelessWidget {
-  const withTime({
-    Key? key,
+class WithTime extends StatelessWidget {
+  const WithTime({
+    super.key,
     required this.text,
     required this.image,
-    required this.appDirectory,
     required this.isCurrentUser,
     required this.type,
     required this.time,
-  }): super(key: key);
-  
-  final Directory appDirectory;
+  });
+
   final String? text;
   final String? image;
   final String type;
@@ -25,23 +24,21 @@ class withTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChatBubble(text: text, image: image, isCurrentUser: isCurrentUser, type: type, time: time, appDirectory: appDirectory,);
+    return ChatBubble(text: text, image: image, isCurrentUser: isCurrentUser, type: type, time: time,);
   }
 }
 
 class ChatBubble extends StatelessWidget {
   const ChatBubble({
-    Key? key,
+    super.key,
     required this.text,
-    required this.appDirectory,
     required this.image,
     required this.isCurrentUser,
     required this.type,
     required this.time,
-  }) : super(key: key);
+  });
   
   final String? text;
-  final Directory appDirectory;
   final String? image;
   final String type;
   final bool isCurrentUser;
@@ -58,14 +55,6 @@ class ChatBubble extends StatelessWidget {
       }
     } else if(type == 'text'){
       return TextType(isCurrentUser: isCurrentUser, text: text, time: time,);
-    } else if (type == 'audio') {
-      return WaveBubble(
-        index: 2,
-        isSender: isCurrentUser, 
-        appDirectory: appDirectory,
-        width: MediaQuery.of(context).size.width / 2,
-        path: appDirectory.path,
-      );
     } else {
       return const Placeholder();
     }
@@ -130,9 +119,9 @@ class TextType extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.fromLTRB(
-        isCurrentUser ? 64.0 : 16.0,
+        isCurrentUser ? 40.0 : 10.0,
         4,
-        isCurrentUser ? 16.0 : 64.0,
+        isCurrentUser ? 10.0 : 40.0,
         4,
       ),
       child: Align(
@@ -155,13 +144,16 @@ class TextType extends StatelessWidget {
                   ) ,
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Text(
-                    text!,
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w500,
-                      color: isCurrentUser ? Colors.white : Colors.black
+                  padding: const EdgeInsets.all(10),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width - 150,
+                    child: AutoSizeText(
+                      text!,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                        color: isCurrentUser ? Colors.white : Colors.black
+                      ),
                     ),
                   ),
                 ),
@@ -185,13 +177,13 @@ class WaveBubble extends StatefulWidget {
   final Directory appDirectory;
 
   const WaveBubble({
-    Key? key,
+    super.key,
     required this.appDirectory,
     this.width,
     this.index,
     this.isSender = false,
     this.path,
-  }) : super(key: key);
+  });
 
   @override
   State<WaveBubble> createState() => _WaveBubbleState();
@@ -223,7 +215,6 @@ class _WaveBubbleState extends State<WaveBubble> {
     // Opening file from assets folder
     if (widget.index != null) {
       file = File('${widget.appDirectory.path}/audio${widget.index}.mp3');
-      print(file);
       await file?.writeAsBytes(
           (await rootBundle.load('assets/audios/audio1.mp3')).buffer.asUint8List());
     }

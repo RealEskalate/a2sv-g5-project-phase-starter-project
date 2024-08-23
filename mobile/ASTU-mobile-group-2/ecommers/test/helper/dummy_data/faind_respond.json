@@ -1,0 +1,7 @@
+{
+    "success": false,
+    "message": "User not found with the given email",
+    "data": null,
+    "errors": null,
+    "count": 0
+}

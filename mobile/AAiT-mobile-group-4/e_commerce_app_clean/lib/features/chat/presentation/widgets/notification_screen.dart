@@ -1,15 +1,19 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
-import '../widgets/stories_widget.dart';
+import '../../../../core/personal_message_notification_data.dart';
+import 'personal_message_notification_widget.dart';
+import 'stories_widget.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromRGBO(73, 140, 240, 1),
-      body: Padding(
+    return Container(
+      color: const Color.fromRGBO(73, 140, 240, 1),
+      child: Padding(
         padding: const EdgeInsets.only(top: 36),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,8 +38,21 @@ class ChatPage extends StatelessWidget {
                 ),
                 // content goes here
                 // ------------------------------------------
-                
-                child: const Center(child: Text('messages go here')),
+
+                child: ListView.builder(
+                    itemCount: personalNotifications.length,
+                    itemBuilder: (context, index) {
+                      return PersonalMessageNotification(
+                        imagePath: 'assets/story_${(index%3)+1}.png',
+                        bgColor: Color((Random().nextDouble() * 0xFFFFFF).toInt() << 0).withOpacity(1.0),
+                        fullName: personalNotifications[index].fullName,
+                        message: personalNotifications[index].message,
+                        timeSent: personalNotifications[index].timeSent,
+                        isRead: personalNotifications[index].isRead,
+                        isOnline: personalNotifications[index].isOnline,
+                        unreadMessages: personalNotifications[index].unreadMessages,
+                      );
+                    }),
 
                 // ------------------------------------------
               ),

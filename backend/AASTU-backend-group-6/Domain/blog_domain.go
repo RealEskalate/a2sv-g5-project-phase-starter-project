@@ -34,7 +34,7 @@ type Comment struct {
 }
 
 type BlogUsecase interface {
-	CreateBlog(user_id string, blog Blog) (Blog, error)
+	CreateBlog(user_id string, blog Blog, creator_id string) (Blog, error)
 	GetBlogByID(blog_id string, isCalled bool) (Blog, error)
 	GetBlogs(pageNo string, pageSize string, popularity string) ([]Blog, Pagination, error)
 	UpdateBlogByID(user_id string, blog_id string, blog Blog) (Blog, error)
@@ -49,7 +49,7 @@ type BlogUsecase interface {
 	GetMyBlogByID(user_id string, blog_id string) (Blog, error)
 }
 type BlogRepository interface {
-	CreateBlog(user_id string, blog Blog) (Blog, error)
+	CreateBlog(user_id string, blog Blog, creator_id string) (Blog, error)
 	GetBlogByID(blog_id string, isCalled bool) (Blog, error)
 	GetBlogs(pageNo int64, pageSize int64, popularity string) ([]Blog, Pagination, error)
 	UpdateBlogByID(user_id string, blog_id string, blog Blog) (Blog, error)

@@ -187,44 +187,48 @@ func (b BlogRepository) CommentOnBlog(user_id string, comment domain.Comment) er
 }
 
 // CreateBlog implements domain.BlogRepository.
-func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog) (domain.Blog, error) {
+func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, creator_id string) (domain.Blog, error) {
 	timeOut := b.env.ContextTimeout
 
 	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*time.Second)
 	defer cancel()
-	if blog.LikeCount != 0 {
-		blog.LikeCount = 0
-	}
-	if blog.DisLikeCount != 0 {
-		blog.DisLikeCount = 0
-	}
+
 	blog.ID = primitive.NewObjectID()
 	uid, err := primitive.ObjectIDFromHex(user_id)
 
 	if err != nil {
-		return domain.Blog{}, errors.New("internal server error")
+		return domain.Blog{}, errors.New("could not get user id")
 	}
-	filter := bson.M{"_id": blog.Creator_id}
+
 	role, err := b.GetUserRoleByID(user_id)
 	if err != nil {
-		return domain.Blog{}, errors.New("internal server error")
+		return domain.Blog{}, errors.New("could not get user role")
 	}
 	if strings.ToLower(role) == "admin" {
-		if blog.Creator_id == primitive.NilObjectID {
+		if creator_id == "" {
 			blog.Creator_id = uid
-			filter = bson.M{"_id": uid}
+		} else {
+			cid, err := primitive.ObjectIDFromHex(creator_id)
+			if err != nil {
+				return domain.Blog{}, err
+			}
+			blog.Creator_id = cid
 		}
 	} else {
 		blog.Creator_id = uid
-		filter = bson.M{"_id": uid}
 	}
+
+	filter := bson.M{"_id": blog.Creator_id}
+
 	_, err = b.PostCollection.InsertOne(context, blog)
 	if err != nil {
 		return domain.Blog{}, errors.New("internal server error")
 	}
+
 	update := bson.M{
-		"$push": bson.M{"posts": blog},
+		"$push": bson.M{"posts_id": blog.ID},
 	}
+
 	_, err = b.UserCollection.UpdateOne(context, filter, update)
 	if err != nil {
 		return domain.Blog{}, errors.New("internal server error")
@@ -239,39 +243,67 @@ func (b BlogRepository) DeleteBlogByID(user_id string, blog_id string) domain.Er
 	defer cancel()
 	blogID, blogErr := primitive.ObjectIDFromHex(blog_id)
 	userID, userErr := primitive.ObjectIDFromHex(user_id)
+
 	if blogErr != nil || userErr != nil {
 		return domain.ErrorResponse{
 			Message: "internal server error",
 			Status:  500,
 		}
 	}
+
 	filter := bson.M{"_id": blogID}
-	result, err := b.PostCollection.DeleteOne(context, filter)
+	// var blog domain.Blog
+	// err := b.PostCollection.FindOne(context, filter).Decode(&blog)
+
+	// if err != nil {
+	// 	return domain.ErrorResponse{
+	// 		Message: "blog not found",
+	// 		Status:  404,
+	// 	}
+	// }
+
+	// if blog.Creator_id != userID {
+	// 	return domain.ErrorResponse{
+	// 		Message: "permission denied",
+	// 		Status:  403,
+	// 	}
+	// }
+
+	_, err := b.PostCollection.UpdateOne(context, filter, bson.M{"$set": bson.M{"deleted": true, "deletedAt": time.Now()}})
 	if err != nil {
 		return domain.ErrorResponse{
-			Message: "internal server error",
+			Message: "Delete was not successful",
 			Status:  500,
 		}
 	}
-	if result == 0 {
-		return domain.ErrorResponse{
-			Message: "blog not found",
-			Status:  404,
-		}
-	}
-	filter = bson.M{"_id": userID}
-	update := bson.M{
-		"$pull": bson.M{"posts": bson.M{
-			"_id": blogID,
-		}},
-	}
-	_, err = b.UserCollection.UpdateOne(context, filter, update)
-	if err != nil {
-		return domain.ErrorResponse{
-			Message: "internal server error",
-			Status:  500,
-		}
-	}
+
+	// result, err := b.PostCollection.DeleteOne(context, filter)
+
+	// if err != nil {
+	// 	return domain.ErrorResponse{
+	// 		Message: "internal server error",
+	// 		Status:  500,
+	// 	}
+	// }
+	// if result == 0 {
+	// 	return domain.ErrorResponse{
+	// 		Message: "blog not found",
+	// 		Status:  404,
+	// 	}
+	// }
+	// filter = bson.M{"_id": userID}
+	// update := bson.M{
+	// 	"$pull": bson.M{"posts": bson.M{
+	// 		"_id": blogID,
+	// 	}},
+	// }
+	// _, err = b.UserCollection.UpdateOne(context, filter, update)
+	// if err != nil {
+	// 	return domain.ErrorResponse{
+	// 		Message: "internal server error",
+	// 		Status:  500,
+	// 	}
+	// }
 	return domain.ErrorResponse{}
 }
 

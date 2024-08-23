@@ -62,7 +62,7 @@ func (b BlogController) ReactOnBlog(c *gin.Context) {
 func (b BlogController) CommentOnBlog(c *gin.Context) {
 	var comment domain.Comment
 	userID := c.GetString("user_id")
-	if userID == ""{
+	if userID == "" {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
 			Message: "Authentication failed.",
 			Status:  http.StatusUnauthorized,
@@ -101,8 +101,8 @@ func (b BlogController) CommentOnBlog(c *gin.Context) {
 func (b BlogController) CreateBlog(c *gin.Context) {
 	var blog domain.Blog
 	userID := c.GetString("user_id")
-	role := c.GetString("role")
-	if userID == "" || role == "" {
+	creater_id := c.GetString("creater_id")
+	if userID == "" {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
 			Message: "Authentication failed.",
 			Status:  http.StatusUnauthorized,
@@ -124,7 +124,7 @@ func (b BlogController) CreateBlog(c *gin.Context) {
 		return
 	}
 
-	newBlog, err := b.BlogUsecase.CreateBlog(userID, blog)
+	newBlog, err := b.BlogUsecase.CreateBlog(userID, blog, creater_id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Message: err.Error(),
@@ -151,8 +151,7 @@ func (b BlogController) DeleteBlogByID(c *gin.Context) {
 		return
 	}
 	userID := c.GetString("user_id")
-	role := c.GetString("role")
-	if userID == "" || role == "" {
+	if userID == "" {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
 			Message: "Authentication failed.",
 			Status:  http.StatusUnauthorized,
@@ -275,7 +274,7 @@ func (b BlogController) GetBlogs(c *gin.Context) {
 		pageNo = "1"
 	}
 	if pageSize == "" {
-		pageSize = "1"
+		pageSize = "10"
 	}
 
 	blogs, pagination, err := b.BlogUsecase.GetBlogs(pageNo, pageSize, popularity)

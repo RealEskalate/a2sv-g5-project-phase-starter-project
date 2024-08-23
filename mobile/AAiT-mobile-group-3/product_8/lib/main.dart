@@ -7,6 +7,7 @@ import 'features/auth/presentation/bloc/auth_bloc/auth_bloc.dart';
 import 'features/auth/presentation/pages/sign_in_page.dart';
 import 'features/auth/presentation/pages/sign_up_page.dart';
 import 'features/auth/presentation/pages/splash_page.dart';
+import 'features/chat/presentation/pages/temp.dart';
 import 'features/product/domain/entities/product_entity.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
 import 'features/product/presentation/pages/add_product_page.dart';
@@ -42,14 +43,12 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => AuthBloc(
-           sl(),
+            sl(),
             sl(),
             sl(),
             sl(),
           ),
         ),
-
-         
       ],
       child: MaterialApp(
         onGenerateRoute: (settings) {
@@ -72,6 +71,9 @@ class MyApp extends StatelessWidget {
             case '/add':
               return _createRoute(const ADDPage());
 
+            case '/dummy_page':
+              return _createRoute(const DummyPage());
+
             case '/detail':
               final args = settings.arguments as Product;
               return _createRoute(Detailspage(
@@ -81,7 +83,7 @@ class MyApp extends StatelessWidget {
               return null;
           }
         },
-        initialRoute: '/splash',
+        initialRoute: '/dummy_page',
         title: 'Flutter Demo',
         theme: ThemeData(
           textTheme: GoogleFonts.poppinsTextTheme(),

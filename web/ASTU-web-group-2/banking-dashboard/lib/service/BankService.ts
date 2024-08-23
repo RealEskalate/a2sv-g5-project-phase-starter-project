@@ -5,6 +5,7 @@ export const bankApi = createApi({
   reducerPath: "bankDash",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://astu-bank-dashboard.onrender.com",
+    
   }),
   endpoints: (builder) => ({
     getBankService: builder.query({
@@ -17,7 +18,7 @@ export const bankApi = createApi({
       }),
     }),
 
-    // Add your requests here the same way 
+    // Add your requests here the same way
     postBankService: builder.mutation({
       query: (data: {
         accessToken: string;

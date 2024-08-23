@@ -4,6 +4,7 @@ import InfoboxCard from "./InfoboxCard";
 import { infoboxForLoans } from "./infoboxListItemsLoans";
 import { useSession } from "next-auth/react";
 import { useGetMyLoansDetailQuery } from "@/lib/service/LoanService";
+import BalanceCardSkeleton from "./BalanceCardSkeleton";
 
 const InfoboxForLoans = () => {
 
@@ -17,8 +18,12 @@ const InfoboxForLoans = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="w-16 h-16 border-t-4 border-b-4 border-blue-500 rounded-full animate-spin"></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+      <BalanceCardSkeleton />
+      <BalanceCardSkeleton />
+      <BalanceCardSkeleton />
+      <BalanceCardSkeleton />
+
       </div>
     );
   }
@@ -32,7 +37,7 @@ const InfoboxForLoans = () => {
     "Choose Money",
   ];
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
       {infoboxForLoans.map((item, index) => (
         <InfoboxCard
           key={index}

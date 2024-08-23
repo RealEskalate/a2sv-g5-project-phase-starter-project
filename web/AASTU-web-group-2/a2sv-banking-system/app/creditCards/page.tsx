@@ -178,10 +178,12 @@ const CreditCards = () => {
       <div className="flex flex-col gap-6 md:flex-row">
         <div className="flex flex-col gap-5">
           <HeadingTitle title="Add New Card" />
-          <AddCardForm
-            access_token={accessToken}
-            handleAddition={handleAddition}
-          />
+          <div className="shadow rounded-lg">
+            <AddCardForm
+              access_token={accessToken}
+              handleAddition={handleAddition}
+            />
+          </div>
         </div>
         <div className="flex flex-col gap-5 min-w-64 h-full">
           <HeadingTitle title="Card Setting" />

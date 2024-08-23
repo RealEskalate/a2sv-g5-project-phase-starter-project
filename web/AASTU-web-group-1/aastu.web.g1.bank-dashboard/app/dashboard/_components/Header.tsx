@@ -14,6 +14,7 @@ import Link from "next/link";
 import { Separator } from "@radix-ui/react-select";
 import { useUser } from "@/contexts/UserContext";
 import ky from "ky";
+import { Input } from "@/components/ui/input";
 
 const Header = ({ title }: { title: string }) => {
   const { isDarkMode, setIsDarkMode } = useUser();
@@ -71,17 +72,17 @@ const Header = ({ title }: { title: string }) => {
           {title}
         </h1>
 
+        {/* Search */}
         <div className={`flex gap-5 items-center `}>
-          {/* Search */}
-          <div className={`flex gap-3 p-3 rounded-full bg-[#F5F7FA] `}>
+          <div className="flex gap-3 bg-[#F5F7FA] p-1 px-2 rounded-full">
             <Image
               src="/icons/Search.svg"
               width={20}
               height={20}
               alt="Search"
             />
-            <input
-              className="bg-[#F5F7FA] outline-none border-none"
+            <Input
+              className="outline-none bg-[#F5F7FA] focus:outline-none focus:border-none border-none focus-visible:ring-0"
               type="text"
               placeholder="Search for something"
             />

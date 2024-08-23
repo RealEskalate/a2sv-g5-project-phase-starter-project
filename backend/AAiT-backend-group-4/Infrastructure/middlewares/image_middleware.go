@@ -1,4 +1,4 @@
-package infrastructure
+package middlewares
 
 import (
 	"fmt"
@@ -16,12 +16,6 @@ import (
 // ImageUploadMiddleware checks and processes the uploaded image
 func ImageUploadMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		username := c.Param("username") // Assuming the username is passed as a URL parameter
-		if username == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
-			c.Abort()
-			return
-		}
 
 		file, err := c.FormFile("image")
 		if err != nil {
@@ -40,7 +34,7 @@ func ImageUploadMiddleware() gin.HandlerFunc {
 		}
 
 		// Create a directory for the user if it doesn't exist
-		userDir := filepath.Join("./images", username)
+		userDir := filepath.Join("./uploads", "profileImages")
 		if err := os.MkdirAll(userDir, os.ModePerm); err != nil {
 			log.Println("Error creating user directory:", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Server error"})
@@ -50,12 +44,16 @@ func ImageUploadMiddleware() gin.HandlerFunc {
 
 		// Generate a unique filename for the image
 		uniqueId := uuid.New()
-		filename := strings.Replace(uniqueId.String(), "-", "", -1)
-		fileExt := strings.Split(file.Filename, ".")[1]
-		image := fmt.Sprintf("%s.%s", filename, fileExt)
+		fileExt := filepath.Ext(file.Filename)
+		if fileExt == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image file extension"})
+			c.Abort()
+			return
+		}
+		filename := fmt.Sprintf("%s%s", strings.Replace(uniqueId.String(), "-", "", -1), fileExt)
 
 		// Save the image to the user's directory
-		filePath := filepath.Join(userDir, image)
+		filePath := filepath.Join(userDir, filename)
 		if err := c.SaveUploadedFile(file, filePath); err != nil {
 			log.Println("Error saving the image:", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Server error"})
@@ -64,7 +62,7 @@ func ImageUploadMiddleware() gin.HandlerFunc {
 		}
 
 		// Pass the image path to the next handler
-		imagePath := filepath.Join("/images", username, image)
+		imagePath := filepath.Join("/uploads/profileImages", filename)
 		c.Set("profileImagePath", imagePath)
 
 		c.Next()

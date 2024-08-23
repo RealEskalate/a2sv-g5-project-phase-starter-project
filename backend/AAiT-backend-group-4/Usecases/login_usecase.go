@@ -5,12 +5,10 @@ import (
 	domain "aait-backend-group4/Domain"
 	"context"
 	"fmt"
+	"log"
+	"regexp"
 	"time"
-
-	emailverifier "github.com/AfterShip/email-verifier"
 )
-
-var Verifier = emailverifier.NewVerifier()
 
 type loginUsecase struct {
 	userRepository domain.UserRepository
@@ -45,9 +43,13 @@ func NewLoginUsecase(userRepository domain.UserRepository, tokenService domain.T
 func (lu *loginUsecase) LoginWithIdentifier(c context.Context, identifier string) (accessToken string, refreshToken string, err error) {
 	var user domain.User
 
-	val, _ := Verifier.Verify(identifier)
+	log.Printf("indentifier: %v", identifier)
 
-	if !val.Syntax.Valid {
+	ok := IsValidEmail(identifier)
+
+	log.Printf("Email: %v", ok)
+
+	if !ok {
 		user, err = lu.userRepository.GetByUsername(c, identifier)
 		if err != nil {
 			return "", "", fmt.Errorf("user with this username not found")
@@ -96,4 +98,15 @@ func (lu *loginUsecase) CreateAllTokens(c context.Context, user *domain.User, ac
 
 	return accessToken, refreshToken, nil
 
+}
+
+func IsValidEmail(email string) bool {
+	// Define the regular expression pattern for a valid email address.
+	const emailRegexPattern = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+
+	// Compile the regular expression.
+	re := regexp.MustCompile(emailRegexPattern)
+
+	// Use the compiled regular expression to match the input email string.
+	return re.MatchString(email)
 }

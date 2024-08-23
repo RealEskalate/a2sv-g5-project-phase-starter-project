@@ -8,6 +8,7 @@ type SignupRequest struct {
 	User_Name  string  `json:"user_name" validate:"required,min=5"`
 	Email      string  `json:"email" validate:"required,email"`
 	Password   string  `json:"password" validate:"required,min=6"`
+	Image_Path string  `json:"image_path"`
 	Phone      *string `json:"phone"`
 	Bio        *string `json:"bio"`
 }

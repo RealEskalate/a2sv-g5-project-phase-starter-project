@@ -4,7 +4,9 @@ import (
 	bootstrap "aait-backend-group4/Bootstrap"
 	domain "aait-backend-group4/Domain"
 	"context"
+	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -15,8 +17,11 @@ type tokenService struct {
 	Env            *bootstrap.Env
 }
 
-func NewTokenService() domain.TokenInfrastructure {
-	return &tokenService{}
+func NewTokenService(userRepository domain.UserRepository, env *bootstrap.Env) domain.TokenInfrastructure {
+	return &tokenService{
+		UserRepository: userRepository,
+		Env:            env,
+	}
 }
 
 // CreateAllTokens generates access and refresh tokens for a user.
@@ -56,26 +61,18 @@ func (s *tokenService) CreateAllTokens(user *domain.User, accessSecret string,
 // ValidateToken validates the given token string using the provided secret key.
 // It returns the claims extracted from the token if the token is valid and not expired.
 // Otherwise, it returns an error indicating the reason for the validation failure.
-func (s *tokenService) ValidateToken(tokenString string, secret string) (claims *domain.JwtCustomClaims, err error) {
-	token, err := jwt.ParseWithClaims(tokenString,
-		&domain.JwtCustomClaims{},
-		func(t *jwt.Token) (interface{}, error) {
-			return []byte(secret), nil
-		})
+func (s *tokenService) ValidateToken(tokenString string, secret string) (bool, error) {
+	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, &jwt.StandardClaims{})
 	if err != nil {
-		return nil, err
+		return false, fmt.Errorf("invalid token: %v", err)
 	}
 
-	claims, ok := token.Claims.(*domain.JwtCustomClaims)
-	if !ok {
-		return nil, fmt.Errorf("the token is invalid")
+	// Verify the signing method
+	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+		return false, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 	}
 
-	if claims.ExpiresAt < time.Now().UTC().Unix() {
-		return nil, fmt.Errorf("the token is expired")
-	}
-
-	return claims, nil
+	return true, nil
 }
 
 // ExtractRoleFromToken extracts the role from a JWT token.
@@ -102,7 +99,7 @@ func (s *tokenService) ExtractRoleFromToken(tokenString string, secret string) (
 	return claims["Role"].(string), nil
 }
 
-func (s *tokenService)ExtractUserIDFromToken(tokenString string) (string, error){
+func (s *tokenService) ExtractUserIDFromToken(tokenString string) (string, error) {
 
 	type JwtCustomClaims struct {
 		UserID string `json:"user_id"`
@@ -124,12 +121,11 @@ func (s *tokenService)ExtractUserIDFromToken(tokenString string) (string, error)
 	return "", fmt.Errorf("invalid token")
 }
 
-
 // CheckTokenExpiry checks the expiry of a given token.
 // It takes a token string and a secret as input parameters.
 // It returns a boolean value indicating whether the token has expired or not, and an error if any.
 func (s *tokenService) CheckTokenExpiry(tokenString string, secret string) (bool, error) {
-	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
 	})
 
@@ -137,16 +133,22 @@ func (s *tokenService) CheckTokenExpiry(tokenString string, secret string) (bool
 		return false, err
 	}
 
-	claims, ok := token.Claims.(jwt.MapClaims)
-
-	if !ok && !token.Valid {
-		return false, fmt.Errorf("invalid token")
+	if token == nil {
+		return false, errors.New("token is nil")
 	}
 
-	if exp, ok := claims["exp"].(float64); ok {
-		if time.Unix(int64(exp), 0).Before(time.Now()) {
-			return false, nil
-		}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return false, errors.New("invalid token claims")
+	}
+
+	exp, ok := claims["exp"].(float64)
+	if !ok {
+		return false, errors.New("invalid exp claim")
+	}
+
+	if time.Unix(int64(exp), 0).Before(time.Now()) {
+		return false, nil
 	}
 
 	return true, nil
@@ -156,24 +158,45 @@ func (s *tokenService) CheckTokenExpiry(tokenString string, secret string) (bool
 // It takes the token string and the secret key as input parameters.
 // It returns a map[string]interface{} containing the extracted claims and an error if any.
 func (s *tokenService) ExtractClaims(tokenString string, secret string) (map[string]interface{}, error) {
-	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
-		}
-		return []byte(secret), nil
-	})
-
+	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
 	if err != nil {
-		return nil, fmt.Errorf("invalid token")
+		log.Printf("Token parsing error: %v", err)
+		return nil, fmt.Errorf("invalid token: %v", err)
 	}
 
-	claims := make(map[string]interface{})
-	claims["UserID"] = token.Claims.(jwt.MapClaims)["user_id"].(string)
-	claims["UserName"] = token.Claims.(jwt.MapClaims)["user_name"].(string)
-	claims["Role"] = token.Claims.(jwt.MapClaims)["role"].(string)
-	claims["exp"] = token.Claims.(jwt.MapClaims)["exp"].(float64)
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		extractedClaims := make(map[string]interface{})
 
-	return claims, nil
+		log.Printf("claims: %v", claims)
+
+		if userID, ok := claims["user_id"].(string); ok {
+			extractedClaims["UserID"] = userID
+		} else {
+			return nil, fmt.Errorf("user_id claim is missing or not a string")
+		}
+
+		if userName, ok := claims["username"].(string); ok {
+			extractedClaims["UserName"] = userName
+		} else {
+			return nil, fmt.Errorf("user_name claim is missing or not a string")
+		}
+
+		if role, ok := claims["role"].(string); ok {
+			extractedClaims["Role"] = role
+		} else {
+			return nil, fmt.Errorf("role claim is missing or not a string")
+		}
+
+		if exp, ok := claims["exp"].(float64); ok {
+			extractedClaims["exp"] = exp
+		} else {
+			return nil, fmt.Errorf("exp claim is missing or not a float64")
+		}
+
+		return extractedClaims, nil
+	}
+
+	return nil, fmt.Errorf("invalid token claims")
 }
 
 func (s *tokenService) UpdateTokens(id string) (accessToken string, refreshToken string, err error) {

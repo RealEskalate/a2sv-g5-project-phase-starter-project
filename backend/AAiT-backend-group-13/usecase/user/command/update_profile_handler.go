@@ -36,6 +36,7 @@ func NewUpdateProfileHandler(repo irepo.UserRepository, hashService ihash.Servic
 func (h *UpdateProfileHandler) Handle(command *UpdateProfileCommand) (*result.UpdateProfileResult, error) {
 	log.Println("Handling UpdateProfileCommand")
 
+	emailUpdated := false 
 	// Parse the user ID from the command
 	userID, err := uuid.Parse(command.userid)
 	if err != nil {
@@ -59,23 +60,9 @@ func (h *UpdateProfileHandler) Handle(command *UpdateProfileCommand) (*result.Up
 	if command.Email != "" {
 		log.Println("Updating email")
 		user.UpdateEmail(command.Email)
-
+		emailUpdated = true
 		// Generate a validation link
-		validationLink, err := h.generateValidationLink(*user)
-		if err != nil {
-			log.Printf("Error generating validation link: %v", err)
-			return &result.UpdateProfileResult{}, err
-		}
-		log.Println("Validation link generated")
-
-		// Send the sign-up email
-		mails := []string{user.Email()}
-		mail := iemail.NewSignUpEmail("", mails, validationLink)
-		if err := h.emailService.Send(mail); err != nil {
-			log.Printf("Error sending sign-up email: %v", err)
-			return &result.UpdateProfileResult{}, err
-		}
-		log.Println("Sign-up email sent")
+		
 	} 
 
 	// Check if the new username is available
@@ -106,6 +93,24 @@ func (h *UpdateProfileHandler) Handle(command *UpdateProfileCommand) (*result.Up
 	if err != nil {
 		log.Printf("Error saving user: %v", err)
 		return &result.UpdateProfileResult{}, err
+	}
+	
+	if emailUpdated{
+		validationLink, err := h.generateValidationLink(*user)
+		if err != nil {
+			log.Printf("Error generating validation link: %v", err)
+			return &result.UpdateProfileResult{}, err
+		}
+		log.Println("Validation link generated")
+
+		// Send the sign-up email
+		mails := []string{user.Email()}
+		mail := iemail.NewSignUpEmail("", mails, validationLink)
+		if err := h.emailService.Send(mail); err != nil {
+			log.Printf("Error sending sign-up email: %v", err)
+			return &result.UpdateProfileResult{}, err
+		}
+		log.Println("Sign-up email sent")
 	}
 
 	log.Println("Profile updated successfully")

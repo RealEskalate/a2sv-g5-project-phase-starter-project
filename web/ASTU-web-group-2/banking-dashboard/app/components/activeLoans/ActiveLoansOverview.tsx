@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { defaultloans, loan } from "./ActiveLoansItems";
 import { useSession } from "next-auth/react";
 import { useGetMyLoanServiceQuery } from "@/lib/service/LoanService";
@@ -10,6 +10,9 @@ import LoanTableSkeleton from "./LoanTableSkeleton";
 const ActiveLoansOverview = () => {
   const { data: session } = useSession();
   const accessToken = session?.user.accessToken;
+  useEffect(()=>{
+    console.log("data",session)
+  },[session])
   const { data, isLoading, isError, isSuccess } = useGetMyLoanServiceQuery(
     accessToken || ""
   );

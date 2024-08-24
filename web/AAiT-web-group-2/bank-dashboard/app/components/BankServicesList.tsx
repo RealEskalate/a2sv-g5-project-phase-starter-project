@@ -1,33 +1,40 @@
-import React from 'react'
+import React from "react";
+import BankService from "./BankService";
+import styles from "../../src/styles/hide-scroll.module.css";
+import BankServiceCard from "./BankServiceCard";
 
 const BankServicesList = () => {
+  const icons = [
+    "./icons/insurance.svg",
+    "./icons/shopping.svg",
+    "./icons/safety.svg",
+  ];
+  const icons2 = [
+    "./icons/loans.svg",
+    "./icons/checking.svg",
+    "./icons/saving.svg",
+    "./icons/debit.svg",
+    "./icons/life_insurance.svg",
+    "./icons/loans.svg",
+  ];
   return (
-    <div className='w-[1000px] bg-[#F5F7FA]'>
-        <p className='text-[#343C6A] text-[22px]'>Bank Services List</p>
-        <div className="bg-white rounded-2xl h-[90px] flex justify-around items-center mt-5">
-        <img src="/loans.png" alt="" />
-        <div>
-            <p> Business loans</p>
-            <p className="font-light text-[#718EBF]">it is a long established</p>
-        </div>
-        <div>
-            <p> Lorem Ipsum</p>
-            <p className="font-light text-[#718EBF]">Many publishing</p>
-        </div>
-        <div>
-            <p> Lorem Ipsum</p>
-            <p className="font-light text-[#718EBF]">Many publishing</p>
-        </div>
-        <div>
-            <p> Lorem Ipsum</p>
-            <p className="font-light text-[#718EBF]">Many publishing</p>
-        </div>
-        <div className="rounded-3xl text-[#718EBF] border px-9 py-1 hover:text-[#1814F3] hover:border-blue-800">
-            view details
-        </div>
+    <>
+      <div
+        className={`flex  gap-10 mb-3 overflow-x-auto ${styles.hide_scroll}`}
+      >
+        {[...Array(3)].map((_, index) => (
+          <BankServiceCard iconUrl={icons[index]} key={index} />
+        ))}
       </div>
-    </div>
-  )
-}
 
-export default BankServicesList
+      <p className="text-[#343C6A] text-[22px] font-semibold my-5">
+        Bank Services List
+      </p>
+      {[...Array(6)].map((_, index) => (
+        <BankService iconUrl={icons2[index]} key={index} />
+      ))}
+    </>
+  );
+};
+
+export default BankServicesList;

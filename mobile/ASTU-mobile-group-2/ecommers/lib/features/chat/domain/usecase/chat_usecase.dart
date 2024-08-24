@@ -7,7 +7,7 @@ import '../repository/chat_repo.dart';
 
 class ChatUsecase extends Equatable {
   final ChatRepositories repositories;
-  const ChatUsecase({required this.repositories});
+  ChatUsecase({required this.repositories});
 
   // feach all data
 
@@ -23,11 +23,6 @@ class ChatUsecase extends Equatable {
   // edit the product
   Future<Either<Failure, bool>> deleteChats(String id) {
     return repositories.deleteMessages(id);
-  }
-
-  // delte product
-  Future<Either<Failure, bool>> initiate(String id) {
-    return repositories.initiateChat(id);
   }
 
   @override

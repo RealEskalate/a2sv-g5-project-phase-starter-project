@@ -44,7 +44,7 @@ func main() {
 	mongoDB := mongoClient.Database(os.Getenv("MONGO_DB"))
 
 	authRepository := authMongo.NewAuthStorage(mongoDB.Collection("users"), mongoDB.Collection("tokens"))
-	chatRepository := chatMongo.NewChatRepository(mongoDB, "chats")
+	chatRepository := chatMongo.NewChatRepository(mongoDB)
 	blogRepository := blogMongo.NewBlogStorage(mongoDB)
 	aiService := gemini_ai.NewAIService(gemini_ai.NewModel())
 

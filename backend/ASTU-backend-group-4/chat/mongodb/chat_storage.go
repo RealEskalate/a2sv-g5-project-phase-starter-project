@@ -18,7 +18,7 @@ type ChatRepository struct {
 	Database *mongo.Database
 }
 
-func NewChatRepository(database *mongo.Database, collectionName string) *ChatRepository {
+func NewChatRepository(database *mongo.Database) *ChatRepository {
 	return &ChatRepository{
 		Database: database,
 	}

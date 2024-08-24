@@ -1,0 +1,17 @@
+export const Currencies = [
+    { value: "USD", label: "United States Dollar - $" },
+    { value: "EUR", label: "Euro - €" },
+    { value: "GBP", label: "British Pound - £" },
+    { value: "JPY", label: "Japanese Yen - ¥" },
+    { value: "CNY", label: "Chinese Renminbi - ¥" },
+    { value: "AUD", label: "Australian Dollar - AU$" },
+    { value: "CAD", label: "Canadian Dollar - CA$" },
+    { value: "CHF", label: "Swiss Franc - CHF" },
+    { value: "HKD", label: "Hong Kong Dollar - HK$" },
+    { value: "INR", label: "Indian Rupee - ₹" },
+    { value: "MXN", label: "Mexican Peso - $" },
+    { value: "RUB", label: "Russian Ruble - ₽" },
+    { value: "SGD", label: "Singapore Dollar - SGD" },
+    { value: "ZAR", label: "South African Rand - R" },
+    { value: "ETB", label: "Ethiopian Birr - Br" },
+  ];

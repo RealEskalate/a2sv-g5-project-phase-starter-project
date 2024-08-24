@@ -8,6 +8,7 @@ import AuthService from "@/app/Services/api/authService";
 import ProgressComp from "../Box/ProgressComp";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 // Define the schema using Zod
 const schema = z
@@ -60,10 +61,11 @@ const SignUpForm = () => {
     console.log(data);
     const { confirmPassword, ...userData } = data;
     console.log("Signup successful:", userData);
+    userData.profilePicture = "/assets/profile.png";
     route.push("/login");
     try {
       const responseData = await AuthService.register(userData);
-      console.log(responseData);
+      // console.log(responseData);
       if (responseData.success) {
         console.log("Signup successful:", responseData.message);
         route.push("/login");
@@ -75,83 +77,106 @@ const SignUpForm = () => {
     }
   };
 
-  const nextStep = async () => {
-    const fieldsToValidate: (
-      | keyof FormData
-      | `preference.${keyof FormData["preference"]}`
-    )[] =
-      step === 1
-        ? ["name", "email", "username", "password", "confirmPassword"]
-        : step === 2
-        ? [
-            "permanentAddress",
-            "postalCode",
-            "presentAddress",
-            "city",
-            "country",
-          ]
-        : ["profilePicture", "preference.currency", "preference.timeZone"];
-
-    const isStepValid = await trigger(fieldsToValidate);
-    if (isStepValid) {
-      setStep((prev) => prev + 1);
-    }
+  const nextStep = () => {
+    setStep((prev) => prev + 1);
+    console.log(step, "step");
   };
 
   const prevStep = () => setStep((prev) => prev - 1);
 
   return (
-    <>
-      <div className="left flex flex-col gap-3">
-        <h1 className="text-2xl flex flex-col text-center">SignUp</h1>
-        <ProgressComp />
+    <div className="flex w-[55%] items-center justify-center bg-white rounded-3xl g-6 relative p-4">
+      <div className="left w-[45%] flex flex-col items-center justify-stretch gap-3 bg-[#1814F3] bg-gradient-to-b from-[#1814F3] to-[#03032A] p-[36px] py-[72px] rounded-xl ">
+        <h1 className="headline text-center font-semibold text-white text-[36px]">
+          Welcome to Bank <span className="text-[#FFDD00]">Dash.</span>
+        </h1>
+        <div className="sub font-normal text-base text-white opacity-80">
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor "
+        </div>
+        <div className="flex w-full gap-4 mt-6">
+          <ProgressComp />
+          <div className="cont flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <div className="title text-white text-xl font-medium">Step-1</div>
+              <div className="desc text-white opacity-80">
+                Basic information
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <div className="title text-white text-xl font-medium">Step-2</div>
+              <div className="desc text-white opacity-80">
+                Address information
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <div className="title text-white text-xl font-medium">Step-3</div>
+              <div className="desc text-white opacity-80">
+                Personal information
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="already text-gray-300 mt-9">
+          Already have an account?
+          <button className="login-btn text-white ml-1"> Login</button>
+        </div>
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col justify-center items-center gap-3 w-[40%] min-w-[35%] p-6 py-8 bg-[#ffff] rounded-2xl border-[0.3px] border-solid border-[#1814f326] shadow-sm shadow-blue-100"
+        className="w-[55%] flex flex-col justify-center items-center"
       >
-        <div className="flex items-center circle p-4 pt-5 bg-blue-50 rounded-full">
-          <Image src="/assets/logo-blue.svg" width={48} height={48} alt="" />
-        </div>
         {step === 1 && (
-          <div key={1} className="flex flex-col w-full px-6 gap-2">
-            <h3 className="text-lg font-normal text-gray-400 text-center">
-              Basic information
-            </h3>
+          <div key={1} className="flex flex-col w-full px-6 py-3 gap-2">
+            <div className="flex gap-3 items-center w-full justify-center py-6">
+              <div className="flex items-center circle p-4 pt-5 bg-blue-50 rounded-full">
+                <Image
+                  src="/assets/logo-blue.svg"
+                  width={24}
+                  height={24}
+                  alt=""
+                />
+              </div>
+              <h3 className="text-2xl font-medium text-[#3C3B8B] text-center">
+                Basic information
+              </h3>
+            </div>
             {/* <ProgressComp /> */}
+            <div className="flex gap-3 w-full">
+              <div className="flex flex-col w-[48%]">
+                <label className="mb-1 text-slate-500" htmlFor="userName">
+                  Fullname
+                </label>
+                <input
+                  {...register("name", { required: "* FullName is required" })}
+                  placeholder="John Doe"
+                  id="userName"
+                  className="p-3 border-2 border-[#0d0b6f13] rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
+                  type="text"
+                />
+                {errors.name && (
+                  <p className="text-[#1814F3]">{errors.name.message}</p>
+                )}
+              </div>
+              <div className="flex flex-col w-[48%]">
+                <label className="mb-1 text-slate-500" htmlFor="userName">
+                  Username
+                </label>
+                <input
+                  {...register("username", {
+                    required: "* Username is required",
+                  })}
+                  placeholder="@John"
+                  id="userName"
+                  className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
+                  type="text"
+                />
+                {errors.username && (
+                  <p className="text-[#1814F3]">{errors.username.message}</p>
+                )}
+              </div>
+            </div>
 
-            <div className="flex flex-col">
-              <label className="mb-1 text-slate-500" htmlFor="userName">
-                Name
-              </label>
-              <input
-                {...register("name", { required: "* FullName is required" })}
-                placeholder="John Doe"
-                id="userName"
-                className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
-                type="text"
-              />
-              {errors.name && (
-                <p className="text-[#1814F3]">{errors.name.message}</p>
-              )}
-            </div>
-            <div className="flex flex-col">
-              <label className="mb-1 text-slate-500" htmlFor="userName">
-                Username
-              </label>
-              <input
-                {...register("username", {
-                  required: "* Username is required",
-                })}
-                placeholder="@John"
-                id="userName"
-                className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
-                type="text"
-              />
-              {errors.username && (
-                <p className="text-[#1814F3]">{errors.username.message}</p>
-              )}
-            </div>
             <div className="flex flex-col">
               <label className="mb-1 text-slate-500" htmlFor="userName">
                 Email
@@ -176,7 +201,7 @@ const SignUpForm = () => {
                 className="password p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE] "
                 placeholder="Enter password"
                 {...register("password", {
-                  required: "* Password is required",
+                  required: "*Password is required",
                   pattern: {
                     value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/,
                     message:
@@ -234,8 +259,19 @@ const SignUpForm = () => {
 
         {step === 2 && (
           <div key={2} className="flex flex-col gap-3 w-full px-6">
-            <h3 className="text-xl font-semibold mb-4">Address Information</h3>
-
+            <div className="flex gap-3 items-center w-full justify-center py-6">
+              <div className="flex items-center circle p-4 pt-5 bg-blue-50 rounded-full">
+                <Image
+                  src="/assets/logo-blue.svg"
+                  width={24}
+                  height={24}
+                  alt=""
+                />
+              </div>
+              <h3 className="text-2xl font-medium text-[#3C3B8B] text-center">
+                Address Information
+              </h3>
+            </div>
             <div className="flex flex-col gap-2">
               <label className="mb-1 text-slate-500" htmlFor="permanentAddress">
                 Permanent Address
@@ -251,22 +287,6 @@ const SignUpForm = () => {
                 <p className="text-[#1814F3]">
                   {errors.permanentAddress.message}
                 </p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="mb-1 text-slate-500" htmlFor="postalCode">
-                Postal Code
-              </label>
-              <input
-                {...register("postalCode")}
-                id="postalCode"
-                placeholder="12345"
-                className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]"
-                type="text"
-              />
-              {errors.postalCode && (
-                <p className="text-[#1814F3]">{errors.postalCode.message}</p>
               )}
             </div>
 
@@ -289,22 +309,6 @@ const SignUpForm = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="mb-1 text-slate-500" htmlFor="city">
-                City
-              </label>
-              <input
-                {...register("city")}
-                id="city"
-                placeholder="New York"
-                className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]"
-                type="text"
-              />
-              {errors.city && (
-                <p className="text-[#1814F3]">{errors.city.message}</p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
               <label className="mb-1 text-slate-500" htmlFor="country">
                 Country
               </label>
@@ -319,29 +323,55 @@ const SignUpForm = () => {
                 <p className="text-[#1814F3]">{errors.country.message}</p>
               )}
             </div>
+            <div className="btm flex gap-3 w-full">
+              <div className="flex flex-col gap-2 w-[48%]">
+                <label className="mb-1 text-slate-500" htmlFor="city">
+                  City
+                </label>
+                <input
+                  {...register("city")}
+                  id="city"
+                  placeholder="New York"
+                  className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]"
+                  type="text"
+                />
+                {errors.city && (
+                  <p className="text-[#1814F3]">{errors.city.message}</p>
+                )}
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="mb-1 text-slate-500" htmlFor="postalCode">
+                  Postal Code
+                </label>
+                <input
+                  {...register("postalCode")}
+                  id="postalCode"
+                  placeholder="12345"
+                  className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]"
+                  type="text"
+                />
+                {errors.postalCode && (
+                  <p className="text-[#1814F3]">{errors.postalCode.message}</p>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
         {step === 3 && (
           <div key={3} className="flex flex-col gap-3 w-full px-6">
-            <h3 className="text-xl font-semibold mb-4">Personal Information</h3>
-
-            <div className="flex flex-col gap-2">
-              <label className="mb-1 text-slate-500" htmlFor="profilePicture">
-                Profile Picture URL
-              </label>
-              <input
-                {...register("profilePicture")}
-                id="profilePicture"
-                placeholder="https://example.com/profile.jpg"
-                className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]"
-                type="text"
-              />
-              {errors.profilePicture && (
-                <p className="text-[#1814F3]">
-                  {errors.profilePicture.message}
-                </p>
-              )}
+            <div className="flex gap-3 items-center w-full justify-center py-6">
+              <div className="flex items-center circle p-4 pt-5 bg-blue-50 rounded-full">
+                <Image
+                  src="/assets/logo-blue.svg"
+                  width={24}
+                  height={24}
+                  alt=""
+                />
+              </div>
+              <h3 className="text-2xl font-medium text-[#3C3B8B] text-center">
+                Personal Information
+              </h3>
             </div>
 
             <div className="flex flex-col gap-2">
@@ -358,8 +388,6 @@ const SignUpForm = () => {
                 <p className="text-[#1814F3]">{errors.dateOfBirth.message}</p>
               )}
             </div>
-
-            <h3 className="text-xl font-semibold mt-6">Preferences</h3>
 
             <div className="flex flex-col gap-2">
               <label className="mb-1 text-slate-500" htmlFor="currency">
@@ -435,44 +463,6 @@ const SignUpForm = () => {
                 </p>
               )}
             </div>
-
-            <div className="mt-2 flex flex-col gap-2">
-              <label className="mb-1 text-slate-500" htmlFor="timeZone">
-                Time Zone
-              </label>
-              <input
-                {...register("preference.timeZone")}
-                id="timeZone"
-                placeholder="UTC+0"
-                className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]"
-                type="text"
-              />
-              {errors.preference?.timeZone && (
-                <p className="text-[#1814F3]">
-                  {errors.preference.timeZone.message}
-                </p>
-              )}
-            </div>
-
-            <div className="flex gap-2">
-              <input
-                {...register("preference.twoFactorAuthentication")}
-                id="twoFactorAuthentication"
-                type="checkbox"
-                className="h-5 w-5 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4640DE]"
-              />
-              <label
-                className="text-slate-500"
-                htmlFor="twoFactorAuthentication"
-              >
-                Two-Factor Authentication
-              </label>
-              {errors.preference?.twoFactorAuthentication && (
-                <p className="text-[#1814F3]">
-                  {errors.preference.twoFactorAuthentication.message}
-                </p>
-              )}
-            </div>
           </div>
         )}
 
@@ -506,7 +496,7 @@ const SignUpForm = () => {
           )}
         </div>
       </form>
-    </>
+    </div>
   );
 };
 

@@ -6,7 +6,6 @@ const API_URL = "https://bank-dashboard-rsf1.onrender.com/auth";
 
 // Request & Response Interfaces
 
-
 interface RegisterResponse {
   success: boolean;
   message: string;
@@ -16,8 +15,6 @@ interface RegisterResponse {
     data: UserValue;
   };
 }
-
-
 
 interface LoginResponse {
   success: boolean;
@@ -63,7 +60,7 @@ const handleRequest = async <T>(
         "Content-Type": "application/json",
       },
     });
-    console.log(response)
+    console.log(response);
     return response.data as T;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -78,8 +75,6 @@ const handleRequest = async <T>(
 // AuthService class
 class AuthService {
   public static register(formData: UserValue): Promise<RegisterResponse> {
-
-
     return handleRequest<RegisterResponse>(
       "POST",
       `${API_URL}/register`,
@@ -87,14 +82,8 @@ class AuthService {
     );
   }
 
-  public static login(
-    loginData: LoginValue
-  ): Promise<LoginResponse> {
-    return handleRequest<LoginResponse>(
-      "POST",
-      `${API_URL}/login`,
-      loginData
-    );
+  public static login(loginData: LoginValue): Promise<LoginResponse> {
+    return handleRequest<LoginResponse>("POST", `${API_URL}/login`, loginData);
   }
 
   public static refreshToken(

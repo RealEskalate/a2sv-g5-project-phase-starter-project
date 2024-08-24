@@ -60,7 +60,7 @@ func main() {
 	validationSvc := services.NewValidationService()
 	jwtSvc := services.NewJWTService(secretKey)
 	cacheSvc := services.NewCacheService("localhost:6379", "", 0)
-
+	cloudSvc := services.NewCloudinaryService(os.Getenv("CLOUDINARY_NAME"), os.Getenv("CLOUDINARY_API_KEY"), os.Getenv("CLOUDINARY_API_SECRET"), os.Getenv("CLOUDINARY_UPLOAD_FOLDER"),)
 	aiService := services.NewAiService(gemini_client)
 
 	//repositories
@@ -75,7 +75,7 @@ func main() {
 
 
 	//usecases
-	userUsecase := usecases.NewUserUsecase(userRepo, passSvc, validationSvc, emailSvc, jwtSvc)
+	userUsecase := usecases.NewUserUsecase(userRepo, passSvc, validationSvc, emailSvc, jwtSvc, cloudSvc)
 	otpUsecase := usecases.NewOtpUseCase(otpRepo, userRepo, emailSvc, passSvc, "http://localhost:8080", validationSvc)
 	blogService := usecases.NewBlogUsecase(blogRepo, tagRep)
 	commentService := usecases.NewCommentUsecase(commentRepo)

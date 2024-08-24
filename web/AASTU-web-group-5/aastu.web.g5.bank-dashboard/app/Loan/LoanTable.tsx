@@ -33,7 +33,7 @@ const LoanTable: React.FC<LoanTableProps> = ({ data }) => {
 				<p>Active Loans Overview</p>
 			</div>
 			<div className="overflow-x-auto">
-				<div className="p-6 bg-white dark:bg-gray-900 dark:text-[#fff] rounded-3xl">
+				<div className="p-6 bg-white dark:bg-gray-800 dark:text-[#fff] rounded-3xl">
 					<table className="w-full">
 						<thead>
 							<tr className="text-[#718EBF] border-b-2 border-solid border-gray-200 dark:border-gray-300 ">

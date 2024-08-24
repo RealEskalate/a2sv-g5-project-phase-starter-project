@@ -12,7 +12,7 @@ const CardSetting = () => {
 				<div className="p-2 font-semibold text-blue-900 dark:text-blue-600 w-1/2">
 					Card Setting
 				</div>
-				<div className="flex flex-col gap-10 bg-white dark:bg-gray-900  rounded-2xl p-7 ">
+				<div className="flex flex-col gap-10 bg-white dark:bg-gray-800 dark:text-[#fff] rounded-2xl p-7 ">
 					<div className="flex gap-4   ">
 						<div>
 							<div className="flex items-center justify-center bg-[#FFF5D9] p-2 w-14 h-14 rounded-2xl">

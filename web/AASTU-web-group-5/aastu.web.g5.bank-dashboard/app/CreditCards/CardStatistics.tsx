@@ -17,7 +17,7 @@ const CardStatistics = () => {
 				Card Expense Statistics
 			</div>
 			<div>
-				<div className="w-full  bg-white dark:bg-gray-900 dark:text-gray-400 rounded-2xl">
+				<div className="w-full  bg-white dark:bg-gray-800 dark:text-gray-400 rounded-2xl">
 					<div className="flex justify-center p-6">
 						<DonutChart data={chartData} />
 					</div>

@@ -10,7 +10,7 @@ import "./globals.css";
 import NavBar from "./components/common/navBar";
 import SideBar from "./components/common/sideBar";
 import { useSession } from "next-auth/react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={inter.className}>
+			<body className={`${inter.className} dark:bg-gray-900`}>
 				<SessionProvider>
 					<Provider store={store}>
 						<PersistGate loading={null} persistor={persistor}>
@@ -85,7 +85,7 @@ function SidebarWrapper({
 			<div
 				className={`fixed inset-0 bg-white z-50 sm:static sm:block ${
 					isSidebarVisible ? "block" : "hidden"
-				} dark:bg-gray-900 dark:text-white pr-10`}
+				} dark:bg-gray-800 dark:text-white pr-10`}
 			>
 				<SideBar
 					isSidebarVisible={isSidebarVisible}

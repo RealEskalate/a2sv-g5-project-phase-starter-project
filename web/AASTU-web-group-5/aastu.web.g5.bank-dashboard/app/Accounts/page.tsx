@@ -187,16 +187,16 @@ const Accounts = () => {
 	}
 
 	return (
-		<div className="bg-[#F5F7FA] dark:bg-gray-900 p-5 w-full space-y-8 ">
+		<div className="bg-[#F5F7FA] dark:bg-gray-800 p-5 w-full space-y-8 ">
 			{/* Balance and Overview */}
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				<div className="p-4 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center space-x-4">
 					<Image height={44} width={44} src={Balance_img} alt="balance" />
 					<div>
-						<p className="text-sm md:text-lg lg:text-xl font-semibold ">
+						<p className="text-sm md:text-lg lg:text-xl font-semibold dark:text-gray-300">
 							My balance
 						</p>
-						<p className="text-base md:text-xl lg:text-2xl break-all">
+						<p className="text-base md:text-xl lg:text-2xl break-all dark:text-[#fff] dark:text-[#fff]">
 							${Math.round(balance)}
 						</p>
 					</div>
@@ -204,10 +204,10 @@ const Accounts = () => {
 				<div className="p-4 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center space-x-4">
 					<Image height={44} width={44} src={Income_img} alt="income" />
 					<div>
-						<p className="text-sm md:text-lg lg:text-xl font-semibold">
+						<p className="text-sm md:text-lg lg:text-xl font-semibold dark:text-gray-300">
 							Income
 						</p>
-						<p className="text-base md:text-xl lg:text-2xl break-all">
+						<p className="text-base md:text-xl lg:text-2xl break-all dark:text-[#fff]">
 							${Math.round(income)}
 						</p>
 					</div>
@@ -215,10 +215,10 @@ const Accounts = () => {
 				<div className="p-4 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center space-x-4">
 					<Image height={44} width={44} src={Expense_img} alt="expense" />
 					<div>
-						<p className="text-sm md:text-lg lg:text-xl font-semibold">
+						<p className="text-sm md:text-lg lg:text-xl font-semibold dark:text-gray-300">
 							Expense
 						</p>
-						<p className="text-base md:text-xl lg:text-2xl break-all">
+						<p className="text-base md:text-xl lg:text-2xl break-all dark:text-[#fff]">
 							${Math.round(expense)}
 						</p>
 					</div>
@@ -231,10 +231,10 @@ const Accounts = () => {
 						alt="total saving"
 					/>
 					<div>
-						<p className="text-sm md:text-lg lg:text-xl font-semibold">
+						<p className="text-sm md:text-lg lg:text-xl font-semibold dark:text-gray-300">
 							Total saving
 						</p>
-						<p className="text-base md:text-xl lg:text-2xl break-all">
+						<p className="text-base md:text-xl lg:text-2xl break-all dark:text-[#fff]">
 							${Math.round(netBalance)}
 						</p>
 					</div>
@@ -248,7 +248,10 @@ const Accounts = () => {
 						Last transactions
 					</p>
 					{transactions.map((transaction, index) => (
-						<div key={index} className="flex items-center pr-4 space-x-4 mb-4">
+						<div
+							key={index}
+							className="flex items-center pr-4 space-x-4 mb-4 dark:text-[#fff]"
+						>
 							<Image
 								height={44}
 								width={44}
@@ -263,22 +266,22 @@ const Accounts = () => {
 								className="rounded-full object-cover"
 							/>
 							<div className="flex-1">
-								<p className="font-semibold text-sm md:text-base">
+								<p className="font-semibold text-sm md:text-base dark:text-[#fff]">
 									{transaction.description}
 								</p>
 								<p className="text-xs md:text-sm text-gray-500">
 									{transaction.date}
 								</p>
 							</div>
-							<p className="flex-1 text-xs md:text-sm break-words">
+							<p className="flex-1 text-xs md:text-sm break-words dark:text-[#fff]">
 								{transaction.type}
 							</p>
-							<p className="flex-1 text-xs md:text-sm break-words">
+							<p className="flex-1 text-xs md:text-sm break-words dark:text-[#fff]">
 								{transaction.transactionId
 									? `${transaction.transactionId.slice(0, 4)}***`
 									: "N/A"}
 							</p>
-							<p className="flex-1 text-xs md:text-sm break-words">
+							<p className="flex-1 text-xs md:text-sm break-words dark:text-[#fff]">
 								{transaction.receiverUserName}
 							</p>
 							<p className="flex-1 text-xs md:text-sm break-words">
@@ -319,7 +322,7 @@ const Accounts = () => {
 
 			{/* Debit and Credit Overview */}
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-				<div className="bg-gray-100 dark:bg-gray-900 rounded-lg lg:col-span-2">
+				<div className="bg-gray-100 dark:bg-gray-800 rounded-lg lg:col-span-2">
 					<p className="text-lg font-semibold dark:text-blue-500">
 						Debit and credit overview
 					</p>
@@ -329,7 +332,7 @@ const Accounts = () => {
 				</div>
 
 				{/* Invoices Sent */}
-				<div className="w-full bg-gray-100 dark:bg-gray-900 rounded-lg">
+				<div className="w-full bg-gray-100 dark:bg-gray-800 rounded-lg">
 					<p className="text-lg font-semibold dark:text-blue-500">
 						Invoices sent
 					</p>
@@ -348,7 +351,7 @@ const Accounts = () => {
 										className="rounded-full object-cover"
 									/>
 									<div>
-										<p className="font-semibold text-sm md:text-base">
+										<p className="font-semibold text-sm md:text-base dark:text-[#fff]">
 											{data.name}
 										</p>
 										<p className="text-xs md:text-sm text-gray-500">
@@ -356,7 +359,7 @@ const Accounts = () => {
 										</p>
 									</div>
 								</div>
-								<p className="font-semibold text-sm md:text-base">
+								<p className="font-semibold text-sm md:text-base dark:text-[#fff]">
 									{data.amount}
 								</p>
 							</div>

@@ -9,7 +9,10 @@ const nextConfig = {
   webpack: (config) => {
     config.resolve.alias['@'] = path.resolve(__dirname);
     return config;
-  }
+  },
+  images: {
+    domains: ['firebasestorage.googleapis.com'],
+  },
 };
 
 export default nextConfig;

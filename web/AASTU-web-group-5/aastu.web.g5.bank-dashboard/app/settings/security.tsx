@@ -33,7 +33,7 @@ export default function Security() {
 
 		try {
 			const response = await axios.post(
-				`https://bank-dashboard-rsf1.onrender.com/auth/change_password`,
+				`https://bank-dashboard-1tst.onrender.com/auth/change_password`,
 				data,
 				{
 					headers: {
@@ -62,19 +62,19 @@ export default function Security() {
 	};
 
 	return (
-		<div className="text-[16px] ">
-			<div className="text-slate-700 dark:text-gray-400 text-sm md:text-base lg:text-[17px]">
+		<div className="text-[16px]">
+			<div className="text-slate-700 dark:text-[#fff] text-sm md:text-base lg:text-[17px]">
 				Two-factor Authentication
 			</div>
 			<div className="flex gap-5 md:gap-6 mt-4">
 				<Toggle />
-				<div className="text-slate-700 dark:text-gray-400 text-sm md:text-base lg:text-[17px]">
+				<div className="text-slate-700 dark:text-[#fff] text-sm md:text-base lg:text-[17px]">
 					Enable or disable two-factor authentication
 				</div>
 			</div>
 
 			<form onSubmit={handleSubmit} className="mt-10">
-				<div className="text-slate-700 dark:text-gray-400 text-sm md:text-base lg:text-[17px]">
+				<div className="text-slate-700 text-sm md:text-base lg:text-[17px] dark:text-[#fff]">
 					Change Password
 				</div>
 				{apiError && <div className="text-red-500 mt-2">{apiError}</div>}
@@ -83,7 +83,7 @@ export default function Security() {
 				)}
 
 				<div className="mt-4">
-					<div className="text-slate-700 dark:text-gray-400 text-sm md:text-base lg:text-[17px]">
+					<div className="text-slate-700 dark:text-[#fff] text-sm md:text-base lg:text-[17px] ">
 						Current Password
 					</div>
 					<input
@@ -106,7 +106,7 @@ export default function Security() {
 				</div>
 
 				<div className="mt-4">
-					<div className="text-slate-700 dark:text-gray-400 text-sm md:text-base lg:text-[17px]">
+					<div className="text-slate-700 dark:text-[#fff] text-sm md:text-base lg:text-[17px]">
 						New Password
 					</div>
 					<input

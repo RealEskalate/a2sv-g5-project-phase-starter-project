@@ -1,7 +1,7 @@
 import SettingWhole from "@/components/settings/SettingWhole";
 const page = () => {
   return (
-    <div>
+    <div className="flex justify-center mt-[31px]">
       <SettingWhole />
     </div>
   );

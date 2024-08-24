@@ -31,6 +31,11 @@ class AuthRepositoryImpl extends AuthRepository {
       try {
         final token = await localDataSource.getToken();
         final result = await remoteDataSource.getUser(token);
+        try {
+          await localDataSource.cacheEmail(result.email);
+        } on CacheException {
+          debugPrint('Caching Email Error');
+        }
         return Right(result.toEntity());
       } on ServerException {
         return const Left(ServerFailure(ErrorMessages.serverError));

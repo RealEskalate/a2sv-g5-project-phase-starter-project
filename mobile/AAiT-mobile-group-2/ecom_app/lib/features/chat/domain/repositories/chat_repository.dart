@@ -5,6 +5,6 @@ import 'package:ecom_app/features/chat/domain/entities/user_chat_entity.dart';
 
 abstract class ChatRepository {
   Future<Either<Failure, List<UserChatEntity>>> getChats();
-  Future<Either<Failure, UserChatEntity>> initiateChat();
+  Future<Either<Failure, UserChatEntity>> initiateChat(String UserID);
   Future<Either<Failure, List<MessageEntity>>> getMessages(String ChatID);
 }

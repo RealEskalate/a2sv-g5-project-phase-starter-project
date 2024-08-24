@@ -41,6 +41,11 @@ func (uc *urlService) GenerateURL(token string, purpose string) (string, *models
 }
 
 func (uc *urlService) RemoveURL(short_url_code string) *models.ErrorResponse {
+
+	if _, err := uc.repo.GetURL(short_url_code, uc.ctx); err != nil {
+		return err
+
+	}
 	err := uc.repo.DeleteURL(short_url_code, uc.ctx)
 
 	if err != nil {

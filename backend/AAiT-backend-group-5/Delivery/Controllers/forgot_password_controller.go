@@ -32,7 +32,8 @@ func (forgotPasswordController *ForgotPasswordController) ForgotPasswordRequest(
 		return
 	}
 
-	resetURL, e := forgotPasswordController.PasswordUsecase.GenerateResetURL(ctx, request.Email)
+	agent := ctx.Request.UserAgent()
+	resetURL, e := forgotPasswordController.PasswordUsecase.GenerateResetURL(ctx, request.Email, agent)
 	if e != nil {
 		ctx.IndentedJSON(e.Code, e.Error())
 		return

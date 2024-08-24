@@ -1,4 +1,7 @@
 import CardS from "@/components/CardS";
+import Balance from "@/components/charts/Balance";
+import Monthly from "@/components/charts/Monthly";
+import Yearly from "@/components/charts/Yearly";
 import QuickTransfer from "@/components/QuickTransfer";
 import RecentTransactionTable from "@/components/RecentTable/RecentTransactionTable";
 import Top from "@/components/Top";
@@ -11,7 +14,10 @@ export default function Home() {
       <CardS />
       <RecentTransactionTable />{" "}
       {/* I used this as a place holder remove it when needed */}
-      <QuickTransfer />
+      <div className="flex gap-5 justify-center items-center">
+        <QuickTransfer />
+        <Yearly />
+      </div>
     </div>
   );
 }

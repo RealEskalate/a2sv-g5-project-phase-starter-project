@@ -8,24 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// In `routes/routes.go`
-func NewBookmarkRoutes(group *gin.RouterGroup, bookmarkCollection database.CollectionInterface, userCollection database.CollectionInterface) {
+func NewBookmarkRoutes(group *gin.RouterGroup, bookmarkCollection database.CollectionInterface, BlogCollection database.CollectionInterface) {
 	repo := repository.NewBookmarkRepository(bookmarkCollection)
-	usecase := usecase.NewBookmarkUseCase(repo)
+	blog := repository.NewBlogRepository(BlogCollection)
+	usecase := usecase.NewBookmarkUseCase(repo, blog)
 	ctrl := controller.NewBookmarkController(usecase)
 
 	group.POST("/add/:userID/:blogID", ctrl.AddBookmark())
 	group.DELETE("/remove/:userID/:blogID", ctrl.RemoveBookmark())
 	group.GET("/getbook/:userID", ctrl.GetUserBookmarks())
 }
-
-// In `routes/routes.go`
-// func NewSearchHistoryRoutes(group *gin.RouterGroup, searchHistoryCollection database.CollectionInterface) {
-// 	//repo:= repository.NewSearchHistoryRepository(searchHistoryCollection)
-// 	usecase := usecase.NewSearchHistoryUseCase(nil)
-// 	ctrl := controller.NewSearchHistoryController(usecase)
-
-// 	group.POST("/log/:userID", ctrl.LogSearch())
-// 	group.GET("/history/:userID", ctrl.GetSearchHistory())
-// 	group.DELETE("/clear/:userID", ctrl.ClearSearchHistory())
-// }

@@ -54,7 +54,7 @@ type Profile struct {
 	Email       string `json:"email"`
 	Name        string `json:"name"`
 	Bio         string `bson:"bio" json:"bio"`
-	ImageKey    string `bson:"image_url" json:"image_url"`
+	ImageURL    string `bson:"image_url" json:"image_url"`
 	PhoneNumber string `bson:"phone_number" json:"phone_number"`
 }
 

@@ -78,11 +78,15 @@ const BankServicesList = () => {
             <div className="flex-col  flex col-span-2 items-end md:items-start">
               <div className="">
                 <TableButton
+                  data-testid={`view-details-button-${index}`}
                   text="View Details"
                   classname="hidden md:flex px-6 lg:text-[14px]"
                 />
               </div>
-              <span className="font-medium text-12px lg:text-15px text-blue-bright md:hidden">
+              <span
+                data-testid={`mobile-view-details-${index}`}
+                className="font-medium text-12px lg:text-15px text-blue-bright md:hidden"
+              >
                 View Details
               </span>
             </div>

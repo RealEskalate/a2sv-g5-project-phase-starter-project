@@ -13,16 +13,8 @@ import (
 var SecretKey = "123456abcd"
 
 func main() {
-	mongoClient := mongodb.InitMongoDB("mongodb://localhost:27017")
-	rdb := infrastructure.InitRedis()
-
-	userCollection := mongoClient.Database("starter-project").Collection("users")
-	tokenCollection := mongoClient.Database("starter-project").Collection("token")
-	blogCollection := mongoClient.Database("starter-project").Collection("blogs")
-	commentCollection := mongoClient.Database("starter-project").Collection("comments")
-	likeCollection := mongoClient.Database("starter-project").Collection("likes")
-	cacheCollection := mongoClient.Database("starter-project").Collection("cache")
 	mongoClient := mongodb.InitMongoDB()
+	rdb := infrastructure.InitRedis()
 
 	dbName := "starter-project"
 	userCollection := mongodb.CreateCollection(mongoClient, dbName, "users")
@@ -30,7 +22,7 @@ func main() {
 	blogCollection := mongodb.CreateCollection(mongoClient, dbName, "blogs")
 	commentCollection := mongodb.CreateCollection(mongoClient, dbName, "comments")
 	likeCollection := mongodb.CreateCollection(mongoClient, dbName, "likes")
-	cacheCollection := mongoClient.Database("starter-project").Collection("cache")
+	cacheCollection := mongodb.CreateCollection(mongoClient, dbName, "cache")
 
 	userRepo := mongodb.NewUserRepository(userCollection, context.TODO())
 	ts := infrastructure.NewTokenService(SecretKey)
@@ -60,7 +52,7 @@ func main() {
 
 	aiblogUsecase := usecase.NewAiBlogUsecase(aiService)
 
-	ctrl := controller.NewController(commentUseCase, userUseCase, likeUseCase, blogUseCase, rdb, cacheUseCase, aiblogUsecase)
+	ctrl := controller.NewController(commentUseCase, userUseCase, likeUseCase, blogUseCase, aiblogUsecase, rdb, cacheUseCase)
 	r := Router.InitRouter(ctrl)
 	err := r.Run(":8080")
 	if err != nil {

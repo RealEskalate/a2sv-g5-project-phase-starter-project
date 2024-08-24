@@ -1,8 +1,9 @@
-package infrastructure
+package Infrastructure
 
 import (
 	"context"
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 )

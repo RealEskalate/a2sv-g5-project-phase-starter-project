@@ -58,6 +58,6 @@ tmp/
 
 # Go mod files
 go.sum
-makefile
+# makefile
 tmp/
 .air.toml

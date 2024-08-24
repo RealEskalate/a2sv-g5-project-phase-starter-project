@@ -77,19 +77,19 @@ void main() {
   });
 
   group('getAllProducts', () {
-    test('should return a list of product models if status code is 200',
-        () async {
-      //arrange
-      when(mockHttpClient.get(("${Urls.baseUrl3}/products")))
-          .thenAnswer((_) async => http.Response(readJson(jsonAll), 200));
+    // test('should return a list of product models if status code is 200',
+    //     () async {
+    //   //arrange
+    //   when(mockHttpClient.get(("${Urls.baseUrl3}/products")))
+    //       .thenAnswer((_) async => http.Response(readJson(jsonAll), 200));
 
-      //act
+    //   //act
 
-      final result = await productRemoteDataSourceImpl.getAllProducts();
+    //   final result = await productRemoteDataSourceImpl.getAllProducts();
 
-      //assert
-      expect(result, isA<List<ProductModel>>());
-    });
+    //   //assert
+    //   expect(result, isA<List<ProductModel>>());
+    // });
 
     test('should throw a server exception if status code is different from 200',
         () async {

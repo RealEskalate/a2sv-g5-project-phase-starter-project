@@ -1,16 +1,28 @@
 [
   {
-    "id": "1",
-    "name": "Product 1",
-    "price": 100,
-    "description": "Product 1 description",
-    "imageUrl": "product1.jpg"
+    "id": "66c775b9322c0bf78ca69c59",
+    "name": "PC",
+    "description": "long description",
+    "price": 123,
+    "imageUrl": "https://res.cloudinary.com/g5-mobile-track/image/upload/v1724347832/images/niqoqvv6rvwuatzuikkr.png",
+    "seller": {
+      "_id": "66bde36e9bbe07fc39034cdd",
+      "name": "Mr. User",
+      "email": "user@gmail.com",
+      "__v": 0
+    }
   },
   {
-    "id": "2",
-    "name": "Product 2",
-    "price": 200,
-    "description": "Product 2 description",
-    "imageUrl": "product2.jpg"
+    "id": "66c778ec10de84211de27fe1",
+    "name": "PC",
+    "description": "long description",
+    "price": 123,
+    "imageUrl": "https://res.cloudinary.com/g5-mobile-track/image/upload/v1724348651/images/pug5nl6gv14np2bqdofu.png",
+    "seller": {
+      "_id": "66bde36e9bbe07fc39034cdd",
+      "name": "Mr. User",
+      "email": "user@gmail.com",
+      "__v": 0
+    }
   }
 ]

@@ -26,7 +26,7 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
 
   @override
   Future<ProductModel> createProduct(ProductModel product) async {
-    var uri = Uri.parse(Urls.baseUrl2);
+    var uri = Uri.parse('${Urls.baseUrl3}/products');
     var request = http.MultipartRequest('POST', uri);
     // request.headers['Content-Type'] = 'multipart/form-data';
     request.fields['name'] = product.name;
@@ -39,14 +39,17 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
           'created image: ${imageFile.existsSync()}, ${product.imageUrl}');
       if (imageFile.existsSync()) {
         request.files
-            .add(await http.MultipartFile.fromPath('image', product.imageUrl, contentType: MediaType('image', 'jpg',)));
+            .add(await http.MultipartFile.fromPath('image', product.imageUrl,
+                contentType: MediaType(
+                  'image',
+                  'jpg',
+                )));
       } else {
         throw ImageException();
       }
     }
 
     try {
-
       http.StreamedResponse streamedResponse = await client.send(request);
 
       if (streamedResponse.statusCode == 201) {
@@ -66,8 +69,7 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   @override
   Future<void> deleteProduct(String id) async {
     try {
-      final response =
-          await client.delete(Urls.currentProductById(id));
+      final response = await client.delete(Urls.currentProductById(id));
       if (response.statusCode == 200) {
         return;
       } else {
@@ -81,9 +83,8 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   @override
   Future<List<ProductModel>> getAllProducts() async {
     try {
-      final response = await client.get((Urls.baseUrl2));
+      final response = await client.get(('${Urls.baseUrl3}/products'));
       if (response.statusCode == 200) {
-        // print(response.body);
         return ProductModel.fromJsonList(json.decode(response.body)['data']);
       } else {
         throw ServerException();
@@ -117,9 +118,9 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
     });
     try {
       final response = await client.put(
-          (Urls.currentProductById(productId)),
-          body: jsonBody,
-          );
+        (Urls.currentProductById(productId)),
+        body: jsonBody,
+      );
       if (response.statusCode == 200) {
         return ProductModel.fromJson(json.decode(response.body)['data']);
       } else {

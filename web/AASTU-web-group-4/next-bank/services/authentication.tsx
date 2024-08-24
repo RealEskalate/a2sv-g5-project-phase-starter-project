@@ -7,7 +7,7 @@ export const registerUser = async (userData: any) => {
       {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
       });
@@ -35,7 +35,7 @@ export const refreshToken = async (tokenData: any) => {
       {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(tokenData),
       });
@@ -61,7 +61,7 @@ export const loginUser = async (loginData: any) => {
       {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(loginData),
       });
@@ -87,22 +87,22 @@ export const changePassword = async (passwordData: any) => {
       {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(passwordData),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to change password');
       }
-  
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to change password");
     }
-  };
-  
-  // You can export all functions from this file
-      
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+// You can export all functions from this file

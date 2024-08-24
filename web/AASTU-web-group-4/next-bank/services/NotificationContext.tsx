@@ -1,11 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, FC } from 'react';
-import { format } from 'date-fns'; // Import date-fns for date formatting
+import { format } from 'date-fns';
 import { Notification } from '@/types/index';
-import { getAllTransactions } from '@/services/transactionfetch'; // Adjust the import path accordingly
-
+import { getAllTransactions } from '@/services/transactionfetch'; 
 import Cookies from "js-cookie";
 
-const API_BASE_URL = "https://web-team-g4.onrender.com";
 const token = Cookies.get('accessToken');
 
 type NotificationContextType = {
@@ -20,27 +18,39 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  // Fetch notifications from API and filter out already read notifications
   const fetchNotifications = async () => {
     try {
       const response = await getAllTransactions(0, 1000);
-      console.log("Fetched response data:", response); // Check the full response structure
-
+      console.log("Fetched response data:", response);
+  
       if (response && response.data && Array.isArray(response.data.content)) {
         const readNotificationIds = JSON.parse(localStorage.getItem('readNotifications') || '[]');
-        
-        const formattedNotifications = response.data.content
-          .filter((transaction: { transactionId: any }) => !readNotificationIds.includes(transaction.transactionId)) // Exclude read notifications
-          .map((transaction: { transactionId: any; type: any; receiverUserName: any; senderUserName: any; date: any; amount: any; }) => ({
+  
+        // Process and format the notifications, adding a sequence number based on the index
+        const formattedNotifications = response.data.content.map((transaction: { transactionId: any; type: any; receiverUserName: any; senderUserName: any; date: string; amount: any; }, index: number) => {
+          return {
             id: transaction.transactionId,
-            message: `${transaction.senderUserName} transferred you $${transaction.amount}`, // Show sender's name
+            message: `${transaction.senderUserName} transferred you $${transaction.amount}`,
             transactionId: transaction.transactionId,
-            userId: transaction.senderUserName, // Use sender's name
-            timestamp: transaction.date,
-            formattedDate: format(new Date(transaction.date), 'MMM dd, yyyy'), // Format the date
-            status: 'unread',
-            isRead: false,
-          }));
+            userId: transaction.senderUserName,
+            timestamp: new Date(transaction.date).getTime(),
+            formattedDate: format(new Date(transaction.date), 'MMM dd, yyyy'),
+            isRead: readNotificationIds.includes(transaction.transactionId),
+            sequence: index, // Use index as a sequence number
+          };
+        });
+  
+        // Sort notifications by timestamp (and sequence if needed)
+        formattedNotifications.sort((a: { timestamp: number; sequence: number; }, b: { timestamp: number; sequence: number; }) => {
+          // First, sort by timestamp in descending order
+          if (b.timestamp !== a.timestamp) {
+            return b.timestamp - a.timestamp;
+          }
+          // If timestamps are identical, sort by sequence number (descending)
+          return b.sequence - a.sequence;
+        });
+  
+        // console.log("Sorted notifications:", formattedNotifications);
   
         setNotifications(formattedNotifications);
       } else {
@@ -50,6 +60,10 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
       console.error("Error fetching notifications:", error);
     }
   };
+  
+  
+  
+  
 
   const markAllAsRead = () => {
     const readNotificationIds = notifications.map(notification => notification.id);
@@ -59,7 +73,6 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
       prevNotifications.map(notification => ({
         ...notification,
         isRead: true,
-        status: 'read',
       }))
     );
   };
@@ -84,3 +97,4 @@ export const useNotifications = () => {
   }
   return context;
 };
+

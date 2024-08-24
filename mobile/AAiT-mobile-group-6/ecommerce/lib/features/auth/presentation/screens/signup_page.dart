@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/common_widget/circular_indicator.dart';
@@ -6,6 +7,7 @@ import '../../../../core/common_widget/snack_bar.dart';
 import '../../../product/presentation/widgets/text_field.dart';
 import '../../data/models/auth_model.dart';
 import '../bloc/auth_bloc.dart';
+
 
 class SignupPage extends StatefulWidget {
   SignupPage({super.key});
@@ -25,6 +27,7 @@ class _SignupPageState extends State<SignupPage> {
       TextEditingController();
 
   bool _isChecked = false;
+
 
 void _signUp(BuildContext context) async {
     final newUser = SignUPModel(
@@ -65,6 +68,7 @@ void _signUp(BuildContext context) async {
 
   Widget _buildForm(BuildContext context) {
     return Scaffold(
+
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
@@ -108,7 +112,9 @@ void _signUp(BuildContext context) async {
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 33, 68, 243),
+
                             fontFamily: 'Caveat Brush',
+
                           ),
                         ),
                       ),
@@ -125,8 +131,10 @@ void _signUp(BuildContext context) async {
                 ),
               ),
               Container(
+
                   margin:
                       const EdgeInsets.symmetric(horizontal: 42, vertical: 40),
+
                   child: Column(
                     children: [
                       MyTextField(
@@ -163,6 +171,7 @@ void _signUp(BuildContext context) async {
                               });
                             },
                           ),
+
                           const Text(
                             'I understood the',
                             style: TextStyle(
@@ -175,6 +184,7 @@ void _signUp(BuildContext context) async {
 
                             },
                             child: const Text('terms & policy.',
+
                                 style: TextStyle(
                                   color: Color.fromARGB(255, 38, 80, 232),
                                 )),
@@ -184,9 +194,11 @@ void _signUp(BuildContext context) async {
                     ],
                   )),
               ElevatedButton(
+
                 onPressed: () {
                   _signUp(context);
                 },
+
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(
                     const Color.fromARGB(255, 38, 80, 232),
@@ -204,6 +216,7 @@ void _signUp(BuildContext context) async {
                 ),
               ),
               Container(
+
                 margin: const EdgeInsets.only(left: 70, right: 60, top: 50),
                 child: Row(
                   children: [
@@ -212,13 +225,16 @@ void _signUp(BuildContext context) async {
                       style: TextStyle(
                           fontSize: 15,
                           color: Color.fromARGB(255, 149, 148, 148)),
+
                       textAlign: TextAlign.center,
                     ),
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(context, '/signin_page');
                       },
+
                       child: const Text('SIGN IN',
+
                           style: TextStyle(
                             color: Color.fromARGB(255, 38, 80, 232),
                           )),

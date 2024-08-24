@@ -22,7 +22,9 @@ dependencies:
   rxdart: ^0.28.0
   bloc_test: ^9.1.7
   path: ^1.8.3
+
   jwt_decoder: ^2.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -40,7 +42,9 @@ flutter:
   fonts:
     - family: Caveat Brush
       fonts:
+
         - asset: assets/fonts/CaveatBrush-Regular.ttf
+
     - family: Poppins
       fonts:
         - asset: assets/fonts/poppins/Poppins-Regular.ttf

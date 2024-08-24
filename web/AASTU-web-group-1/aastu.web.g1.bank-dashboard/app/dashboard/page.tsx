@@ -42,41 +42,36 @@ const MainDashboard = () => {
 
   return (
     <div
-      className={`min-h-screen ${
-        dataFetched ? "p-10 space-y-5" : "flex justify-center items-center"
+      className={`min-h-screen 
+        p-10 space-y-5" 
       } ${isDarkMode ? "bg-gray-700 text-white" : "bg-[#F5F7FA] text-black"}`}
     >
-      {!dataFetched && <Loading />}
-
       {/* Render components in the background to trigger data fetching */}
-      <div className={dataFetched ? "space-y-5" : "hidden"}>
-        {/* First Row: My Cards and Recent Transactions */}
-        <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
-          <Cards onLoadingComplete={() => setCardLoaded(true)} />
-          <RecentTransaction
-            onLoadingComplete={() => setRecentTransactionLoaded(true)}
-          />
-        </div>
 
-        {/* Second Row: Weekly Activity and Expense Statistics */}
-        <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
-          <WeeklyActivity
-            onLoadingComplete={() => setWeeklyActivityLoaded(true)}
-          />
-          <ExpenseStatistics
-            onLoadingComplete={() => setExpenseStatisticsLoaded(true)}
-          />
-        </div>
+      {/* First Row: My Cards and Recent Transactions */}
+      <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
+        <Cards onLoadingComplete={() => setCardLoaded(true)} />
+        <RecentTransaction
+          onLoadingComplete={() => setRecentTransactionLoaded(true)}
+        />
+      </div>
 
-        {/* Third Row: Quick Transfer and Balance History */}
-        <div className="md:grid md:grid-cols-[1fr,2fr] md:gap-10 space-y-5 md:space-y-0">
-          <QuickTransfer
-            onLoadingComplete={() => setQuickTransferLoaded(true)}
-          />
-          <BalanceHistory
-            onLoadingComplete={() => setBalanceHistoryLoaded(true)}
-          />
-        </div>
+      {/* Second Row: Weekly Activity and Expense Statistics */}
+      <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
+        <WeeklyActivity
+          onLoadingComplete={() => setWeeklyActivityLoaded(true)}
+        />
+        <ExpenseStatistics
+          onLoadingComplete={() => setExpenseStatisticsLoaded(true)}
+        />
+      </div>
+
+      {/* Third Row: Quick Transfer and Balance History */}
+      <div className="md:grid md:grid-cols-[1fr,2fr] md:gap-10 space-y-5 md:space-y-0">
+        <QuickTransfer onLoadingComplete={() => setQuickTransferLoaded(true)} />
+        <BalanceHistory
+          onLoadingComplete={() => setBalanceHistoryLoaded(true)}
+        />
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        console.log('data from credentials', process.env.BACKEND_URL);
+        // console.log('data from credentials', process.env.BACKEND_URL);
         const userName = credentials?.username;
         const password = credentials?.password;
         const res = await fetch(`${process.env.BACKEND_URL}/auth/login`, {
@@ -25,7 +25,7 @@ export const authOptions: NextAuthOptions = {
         const user = await res.json();
         // console.log('first user is ', user);
         if (res.status === 200) {
-          console.log('authorize response is ', user);
+          // console.log('authorize response is ', user);
           return {
             id: user.data.id,
             email: user.data.email,

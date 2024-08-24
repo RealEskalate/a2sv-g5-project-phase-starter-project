@@ -49,29 +49,34 @@ func (uc *CommentUseCase) GetComments(blogID string) ([]domain.Comment, error) {
 
 }
 
-func (uc *CommentUseCase) DeleteComment(commentID string) error {
+func (uc *CommentUseCase) DeleteComment(commentID string) (string, error) {
 	primitiveID, err := uc.infrastructure.ConvertToPrimitiveObjectID(commentID)
 	if err != nil {
-		return errors.New("invalid comment id")
+		return "", errors.New("invalid comment id")
 	}
-	err = uc.repository.DeleteComment(primitiveID)
+	blogID, err := uc.repository.DeleteComment(primitiveID)
 	if err != nil {
-		return err
+		return blogID, err
 	}
-	return nil
+	return blogID, nil
 }
 
-func (uc *CommentUseCase) UpdateComment(comment *domain.Comment, commentID string) error {
+func (uc *CommentUseCase) UpdateComment(comment *domain.Comment, commentID string) (string, error) {
+
 	primitive, err := uc.infrastructure.ConvertToPrimitiveObjectID(commentID)
+
 	if err != nil {
-		return errors.New("invalid comment id")
+		return "", errors.New("invalid comment id")
 	}
+
 	comment.Id = primitive
-	err = uc.repository.UpdateComment(comment)
+
+	res, err := uc.repository.UpdateComment(comment)
+
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return res, nil
 }
 
 func (uc *CommentUseCase) DeleteCommentsOfBlog(blogID string) error {

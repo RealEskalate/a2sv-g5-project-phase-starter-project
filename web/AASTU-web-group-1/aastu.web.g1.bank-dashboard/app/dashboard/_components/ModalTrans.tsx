@@ -1,7 +1,6 @@
 import { addTransactions } from "@/lib/api";
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-
 import { IoClose } from "react-icons/io5";
 import { useUser } from "@/contexts/UserContext";
 import { toast } from "@/components/ui/use-toast";
@@ -18,14 +17,18 @@ interface Props {
   reciverUserName: string;
 }
 
-export const ModalTrans = ({ isOpen, onClose,reciverUserName }: Props) => {
+export const ModalTrans = ({ isOpen, onClose, reciverUserName }: Props) => {
   const { isDarkMode } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    defaultValues: {
+      receiverUserName: reciverUserName, // Set the default value
+    },
+  });
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsSubmitting(true);
@@ -34,7 +37,7 @@ export const ModalTrans = ({ isOpen, onClose,reciverUserName }: Props) => {
         type: "transfer",
         description: data.description,
         amount: data.amount,
-        receiverUserName: reciverUserName,
+        receiverUserName: data.receiverUserName,
       });
 
       if (success) {
@@ -45,12 +48,12 @@ export const ModalTrans = ({ isOpen, onClose,reciverUserName }: Props) => {
         });
         onClose();
       } else {
-          toast({
-            title: "Error",
-            description: "Transaction failed!",
-            variant: "destructive",
-          });
-            }
+        toast({
+          title: "Error",
+          description: "Transaction failed!",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("An unexpected error occurred.");
@@ -64,13 +67,15 @@ export const ModalTrans = ({ isOpen, onClose,reciverUserName }: Props) => {
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center ${
-        isDarkMode ? "bg-gray-900/70" : "bg-gray-500/70"
-      } backdrop-blur-md`}
+        isDarkMode
+          ? "bg-gray-900/70 backdrop-blur-md"
+          : "bg-black bg-opacity-50"
+      } `}
     >
       <div
         className={`relative w-full max-w-lg p-8 rounded-3xl shadow-xl transition-transform transform ${
           isDarkMode
-            ? "bg-gradient-to-r from-gray-800 via-gray-900 to-black"
+            ? "bg-black bg-opacity-50"
             : "bg-gradient-to-r from-white via-gray-100 to-white"
         } ${isSubmitting ? "scale-95" : "scale-100"}`}
       >
@@ -92,7 +97,34 @@ export const ModalTrans = ({ isOpen, onClose,reciverUserName }: Props) => {
               Send Money
             </h2>
           </div>
+          <div>
+            <label
+              htmlFor="receiverUserName"
+              className={`block text-md font-medium  ${
+                isDarkMode ? "text-gray-300" : "text-gray-700"
+              }`}
+            >
+              Receiver Username
+            </label>
+            <input
+              {...register("receiverUserName", {
+                required: "Receiver username is required",
+              })}
+              type="text"
+              placeholder="Enter Receiver Username Here"
+              className={`mt-1 p-3 border block w-full rounded-lg shadow-sm sm:text-sm ${
+                isDarkMode
+                  ? "bg-gray-800 border-gray-700 focus:border-blue-500 focus:ring-blue-500 text-gray-300"
+                  : "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              }`}
+            />
 
+            {errors.receiverUserName && (
+              <span className="text-red-600 text-sm">
+                {errors.receiverUserName.message}
+              </span>
+            )}
+          </div>
           <div className="space-y-6">
             <div>
               <label

@@ -3,30 +3,24 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import CreditCard from "./Credit_Card";
 import { getCreditCards } from "@/lib/api";
+import { CreditCardShimmer } from "./Shimmer";
 
-// Shimmer component for skeleton loading effect
-const Shimmer = () => {
-  return (
-    <div className="animate-pulse">
-      <div className="bg-gray-200 h-40 w-64 rounded-lg"></div>
-    </div>
-  );
-};
 
-export const Cards = ({onLoadingComplete}: {onLoadingComplete: any}) => {
+export const Cards = ({ onLoadingComplete }: { onLoadingComplete: any }) => {
   const [creditCards, setCreditCards] = useState<CardDetails[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      try{
+      try {
         const res = await getCreditCards(0, 2);
         setCreditCards(res?.content || []);
-           onLoadingComplete(false);
-           setLoading(false);
-      }finally{
-   }
-      
+        onLoadingComplete(false);
+      } catch (error) {
+        console.error("Failed to fetch credit cards:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, [onLoadingComplete]);
@@ -39,9 +33,13 @@ export const Cards = ({onLoadingComplete}: {onLoadingComplete: any}) => {
           <Link href="/dashboard/credit-cards/">See All</Link>
         </h4>
       </div>
-      <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        {loading
-          ? [1, 2].map((index) => <Shimmer key={index} />) // Render shimmer loaders while loading
+      <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ">
+        {loading || creditCards.length === 0
+          ? [1, 2].map((index) => (
+              <div className="">
+                <CreditCardShimmer key={index} />
+              </div>
+            )) // Render shimmer loaders if loading or no data
           : creditCards.map((card) => (
               <CreditCard
                 key={card.id}

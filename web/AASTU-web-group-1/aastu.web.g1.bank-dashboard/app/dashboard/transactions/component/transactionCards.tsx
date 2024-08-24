@@ -6,13 +6,11 @@ import CreditCard from "../../_components/Credit_Card";
 import { CardDetails, TransactionContent } from "@/types";
 import { getCreditCards, getExpenses } from "@/lib/api";
 import { ExpenseChart } from "./ExpenseChart";
+import { CreditCardShimmer, RecentTransactionShimmer } from "../../_components/Shimmer";
+import { AddCardModal } from "./AddCardModal";
 
-// Shimmer component
-const Shimmer = () => (
-  <div className="animate-pulse flex space-x-4">
-    <div className="rounded-lg bg-gray-300 h-24 w-full"></div>
-  </div>
-);
+
+
 
 export const TransactionCards = ({
   onLoadingComplete,
@@ -23,7 +21,8 @@ export const TransactionCards = ({
   const [creditCards, setCreditCards] = useState<CardDetails[]>([]);
   const [expenses, setExpenses] = useState<TransactionContent[]>([]);
   const [loading, setLoading] = useState(true);
-
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,29 +32,45 @@ export const TransactionCards = ({
         ]);
         setCreditCards(cards?.content || []);
         setExpenses(initialExpenses?.content || []);
-        setLoading(false);
+     
         onLoadingComplete(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-      } finally {
-        
       }
+      finally{   setLoading(false);}
     };
     fetchData();
   }, [onLoadingComplete]);
 
+  const handleModalToggle = () => {
+    setIsModalOpen(!isModalOpen);
+  };
   return (
     <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
       <div className="md:w-2/3 space-y-5">
         <div className="flex justify-between font-inter text-[16px] font-semibold">
           <h4>My Cards</h4>
           <h4>
-            <Link href="/dashboard/credit-cards/#add-card">+Add Card</Link>
+            <button onClick={handleModalToggle}>+Add Card</button>
           </h4>
+          {isModalOpen && (
+            <div onClick={handleModalToggle}>
+              <div
+                className="relative bg-white p-6 rounded-lg shadow-lg max-w-md w-full"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <AddCardModal
+                  isOpen={isModalOpen}
+                  onClose={handleModalToggle}
+                 
+                />
+              </div>
+            </div>
+          )}
         </div>
         <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {loading
-            ? Array(2).map((_, i) => <Shimmer key={i} />)
+          {loading || creditCards.length === 0
+            ? [1, 2].map((index) => <CreditCardShimmer key={index} />)
             : creditCards.map((card) => (
                 <CreditCard
                   key={card.id}
@@ -74,14 +89,12 @@ export const TransactionCards = ({
           <h4>My Expense</h4>
         </div>
         <div
-          className={`rounded-xl pt-1 ${
-            isDarkMode ? "bg-gray-800" : "bg-white s"
-          }hadow-lg`}
+          className={`rounded-xl space-y-5 p-3 md:h-[200px] lg:w-[365px] lg:h-[220px] ${
+            isDarkMode ? "bg-gray-800" : "bg-white "
+          } shadow-lg`}
         >
-          {loading ? (
-            <div className="p-2">
-              <Shimmer />
-            </div>
+          {loading || expenses.length === 0 ? (
+            [1, 2, 3].map((index) => <RecentTransactionShimmer key={index} />)
           ) : (
             <ExpenseChart expenses={expenses} />
           )}

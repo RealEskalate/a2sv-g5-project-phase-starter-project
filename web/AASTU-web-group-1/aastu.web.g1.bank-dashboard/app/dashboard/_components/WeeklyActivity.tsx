@@ -31,10 +31,10 @@ export const WeeklyActivity = ({ onLoadingComplete }: { onLoadingComplete: any }
         setWeeklyIncome(incomes?.content || []);
         setWeeklyWithdraw(withdraw?.content || []);
          onLoadingComplete(false);
-            setLoading(false);
+           
       } finally {
        
-     
+      setLoading(false);
       }
     };
     fetchData();
@@ -52,7 +52,7 @@ export const WeeklyActivity = ({ onLoadingComplete }: { onLoadingComplete: any }
             : "bg-white text-black "
         }  md:shadow-lg  rounded-xl `}
       >
-        {loading ? (
+        {loading || (weeklyIncome.length === 0 || weeklyWithdraw.length === 0) ? (
           <Shimmer />
         ) : (
           <Barchart

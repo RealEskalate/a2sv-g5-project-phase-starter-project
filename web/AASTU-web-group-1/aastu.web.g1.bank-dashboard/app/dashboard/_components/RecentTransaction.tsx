@@ -4,19 +4,9 @@ import { getallTransactions } from "@/lib/api";
 import { TransactionContent } from "@/types";
 import React, { useEffect, useState } from "react";
 import { Transaction } from "./Transaction";
+import { RecentTransactionShimmer } from "./Shimmer";
 
-// Shimmer component for skeleton loading effect
-const Shimmer = () => {
-  return (
-    <div className="animate-pulse flex space-x-4">
-      <div className="rounded-full bg-gray-300 h-12 w-12"></div>
-      <div className="flex-1 space-y-4 ">
-        <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-        <div className="h-4 bg-gray-300 rounded"></div>
-      </div>
-    </div>
-  );
-};
+
 
 export const RecentTransaction = ({onLoadingComplete}:{onLoadingComplete:any}) => {
   const { isDarkMode } = useUser();
@@ -31,8 +21,9 @@ export const RecentTransaction = ({onLoadingComplete}:{onLoadingComplete:any}) =
         const recent = await getallTransactions(0, 3);
         setRecentTransactions(recent?.content || []);
          onLoadingComplete(false);
-           setLoading(false);
+        
       } finally {
+           setLoading(false);
       }
     };
     fetchData();
@@ -53,8 +44,8 @@ export const RecentTransaction = ({onLoadingComplete}:{onLoadingComplete:any}) =
         md:shadow-lg
           `}
       >
-        {loading
-          ? [1, 2, 3].map((index) => <Shimmer key={index} />)
+        {loading || recentTransactions.length === 0
+          ? [1, 2, 3].map((index) => <RecentTransactionShimmer key={index} />)
           : recentTransactions.map((transaction) => (
               <Transaction
                 key={transaction.transactionId}

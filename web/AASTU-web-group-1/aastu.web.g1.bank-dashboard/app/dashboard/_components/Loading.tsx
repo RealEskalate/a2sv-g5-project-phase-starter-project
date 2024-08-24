@@ -6,9 +6,7 @@ export const Loading = () => {
 
   return (
     <div
-      className={`flex space-x-2 justify-center items-center h-screen pb-40 pr-10 transition-colors duration-300 ${
-        isDarkMode ? "bg-gray-900" : "bg-white"
-      }`}
+      className={`flex space-x-2 justify-center items-center h-screen pb-32 pr-10 transition-colors duration-300 `}
     >
       <span className="sr-only">Loading...</span>
       <div

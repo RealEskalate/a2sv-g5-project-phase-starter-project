@@ -77,6 +77,45 @@ func (s *SimpleEmailSender) sendMail(to string, subject string, html string) err
 
 	msg := header + body
 
+	// Debug output
+	fmt.Printf("Sending email to: %s\n", to)
+	fmt.Printf("Message:\n%s\n", msg)
+
 	err := smtp.SendMail(s.smtpHost+":"+s.smtpPort, auth, from, toList, []byte(msg))
+	if err != nil {
+		fmt.Printf("Failed to send email: %v\n", err)
+	}
 	return err
+}
+
+func (s *SimpleEmailSender) SendPromotionToAdminEmail(userEmail string) error {
+	config, err := config.Load()
+	if err != nil {
+		return err
+	}
+	url := config.APP_DOMAIN
+
+	subject := "Congratulations! You've Been Promoted to Admin"
+	html, err := s.loadHTML("pkg/email/templates/admin_promotion.html")
+	if err != nil {
+		return err
+	}
+	html = strings.Replace(html, "{{url}}", "http://"+url, -1)
+	return s.sendMail(userEmail, subject, html)
+}
+
+func (s *SimpleEmailSender) SendDemotionFromAdminEmail(userEmail string) error {
+	config, err := config.Load()
+	if err != nil {
+		return err
+	}
+	url := config.APP_DOMAIN
+
+	subject := "Notice: You Have Been Demoted from Admin"
+	html, err := s.loadHTML("pkg/email/templates/admin_demotion.html")
+	if err != nil {
+		return err
+	}
+	html = strings.Replace(html, "{{url}}", "http://"+url, -1)
+	return s.sendMail(userEmail, subject, html)
 }

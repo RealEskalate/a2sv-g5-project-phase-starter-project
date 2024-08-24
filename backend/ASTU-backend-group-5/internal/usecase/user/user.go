@@ -9,7 +9,7 @@ type UserUseCaseInterface interface {
 	Login(email, password string) (*domain.User, *domain.Token, error)
 	RequestEmailVerification(user domain.User) error
 	RequestPasswordResetUsecase(userEmail string) error
-	ResetPassword(token string, password string, email string) error
+	ResetPassword(token string, password string) error
 	VerifyEmail(token string) error
 
 	FindUserById(id string) (*domain.User, error)

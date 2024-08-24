@@ -3,6 +3,7 @@ tmp
 .air.toml
 venv
 venv/
+virtual/
 .venv
 mokery.yml
 .envf

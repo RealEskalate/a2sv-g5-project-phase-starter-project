@@ -2,7 +2,7 @@ from langchain.agents import  tool
 from langchain.utilities import DuckDuckGoSearchAPIWrapper
 
 @tool
-def set_decision(decision, reason):
+def set_decision(grade, reason) -> None:
     '''
     this tool simple returns its own argument (decision)
     if the post is valid it will be called with argument of "True"
@@ -10,16 +10,15 @@ def set_decision(decision, reason):
     so call this function with "True" or "False"
     
     Args:
-        decision : (bool) (wheather the given post is valid or not)
+        grade : (int) (the grade of the given post from 0 to 100 )
         reason: (str) (detailed reason for the decision)
     returns:
-        decision : (bool) the argument passed to the function
-        reason : (str) (detailed reason for the decision)
+        None
     
     '''
     from post_moderator import decision_state
-    decision_state.valid = decision
     decision_state.message = reason
+    decision_state.grade = grade
     return decision
 
 
@@ -50,12 +49,12 @@ blog = Blog("", [])
 @tool
 def generate_image(prompt: str) -> str:
     """Useful for when you need to generate an image. for your blog post
-    it generates and sets the image to the blog posts content
+    it generates and returns image uri
     the image must be detailed and informative. if the prompt is not detailed the ai will generate random image which negatively affects your blog so be careful here
     args:
         prompt: (str) (what you want to generate) detailed description of the image to be generated
     returns:
-        status: (str) (the status of the image generation) 
+        image url: (str) (the url of the image)
     """
     try:
         from openai import OpenAI
@@ -75,11 +74,7 @@ def generate_image(prompt: str) -> str:
         for content in blog.content:
             if content["type"] == "image":
                 image_count += 1
-                
-        res =  "image generated and added to the blog content " + "now you have generated " + str(image_count) + " images to your blog post"
-        if image_count > 4:
-            res += "you cant generate image anymore"
-        return res
+        return image_url
     
     except:
         return "failed to generate image"

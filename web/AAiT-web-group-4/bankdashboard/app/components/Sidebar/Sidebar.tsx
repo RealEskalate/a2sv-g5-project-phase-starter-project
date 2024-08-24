@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const isActive = (path : string) => pathname === path;
+  const isActive = (path: string) => pathname === path;
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -19,14 +19,14 @@ const Sidebar = () => {
     <>
       {/* Burger Menu */}
       <div className="mobile:hidden p-4 text-Dark-Slate-Blue h-[60px] fixed top-2">
-        <button onClick={toggleSidebar} className="text-xl">
+        <button onClick={toggleSidebar} className="text-xl z-20">
           ☰
         </button>
       </div>
 
       {/* Sidebar */}
       <div
-        className={`flex-grow w-[250px] pr-1 border border-l-Very-Pale-Blue  h-full max-mobile:fixed transition-transform transform ${
+        className={` w-[250px] pr-1 bg-white  h-full sticky top-0 max-mobile:fixed transition-transform transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } mobile:translate-x-0`}
       >
@@ -91,7 +91,10 @@ const Sidebar = () => {
               />
             </svg>
 
-            <Link href="/transactions" className=" ml-9 flex items-center w-full ">
+            <Link
+              href="/transactions"
+              className=" ml-9 flex items-center w-full "
+            >
               <svg
                 width="20"
                 height="20"

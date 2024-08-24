@@ -37,17 +37,19 @@
 // }
 
 Cypress.Commands.add("login", () => {
-  // Change the path to the new login URL
+  cy.intercept(
+    "POST",
+    "https://astu-bank-dashboard.onrender.com/auth/login"
+  ).as("loginRequest");
+
   cy.visit("/");
-  cy.contains("Login").click();
-  cy.get('input[name="userName"]').type("kala33");
-  cy.get('input[name="password"]').type("12345678");
+  cy.contains("div", "Login").should("be.visible");
+  cy.contains("div", "Login").click();
 
-  cy.get('button[type="submit"]').click();
-
-  // Wait and verify the URL to ensure login was successful
+  cy.get('input[name="userName"]').type("testjunior");
+  cy.get('input[name="password"]').type("testjunior");
+  cy.get("form").submit();
   cy.wait(5000);
 
-  // Update the URL check to ensure it no longer includes the base path after login
-  // cy.url().should("not.equal", "/");
+  cy.url().should("include", "/dashboard");
 });

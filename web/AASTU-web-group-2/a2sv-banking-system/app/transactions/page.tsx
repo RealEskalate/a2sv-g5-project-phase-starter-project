@@ -294,27 +294,27 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [access_token, setAccess_token] = useState("");
-
+  const [session, setSession] = useState<Data | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchSessionAndRefreshToken = async () => {
-      setLoading(true);
+    const fetchSession = async () => {
       try {
-        const accessToken = await Refresh();
-        console.log("Access Token:", accessToken);
-        setAccess_token(accessToken);
+        const sessionData = (await getSession()) as SessionDataType | null;
+        setAccess_token(await Refresh());
+        if (sessionData && sessionData.user) {
+          setSession(sessionData.user);
+        } 
       } catch (error) {
-        console.error("Error fetching session or refreshing token:", error);
-        router.push(`/api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
+        console.error("Error fetching session:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSessionAndRefreshToken();
+    fetchSession();
   }, [router]);
-
+  console.log("Access Token", access_token)
   useEffect(() => {
     const loadCards = async () => {
       if (access_token) {

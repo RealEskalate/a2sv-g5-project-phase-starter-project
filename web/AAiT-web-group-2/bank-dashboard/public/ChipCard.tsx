@@ -2,7 +2,7 @@
 
 import React from "react";
 
-const ChipCard = ({color}: {color: string}) => {
+const ChipCard = ({ color }: { color: string }) => {
   return (
     <>
       <svg

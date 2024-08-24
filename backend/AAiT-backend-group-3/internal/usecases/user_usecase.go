@@ -1,11 +1,14 @@
 package usecases
 
 import (
+	"AAIT-backend-group-3/internal/domain/dtos"
 	"AAIT-backend-group-3/internal/domain/models"
 	"AAIT-backend-group-3/internal/infrastructures/services"
-	"AAIT-backend-group-3/internal/repositories/interfaces"
+	repository_interface "AAIT-backend-group-3/internal/repositories/interfaces"
+	"context"
 	"errors"
 	"fmt"
+	"mime/multipart"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -19,31 +22,32 @@ type UserUsecaseInterface interface {
 	GetUserByID(userID string) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
 	DeleteUser(userID string) error
-	UpdateProfile(userID string, user *models.User) error
+	UpdateUser(userID string, user *models.User) error
+	UpdateProfile(userID string, user *dtos.Profile, image multipart.File) error
 	PromoteUser(userID string) error
 	DemoteUser(userID string) error
 	VerifyEmailToken(token string) (string, string, error)
-	
 }
 
 type UserUsecase struct {
-	userRepo repository_interface.UserRepositoryInterface
-	passwordService services.IHashService
+	userRepo          repository_interface.UserRepositoryInterface
+	passwordService   services.IHashService
 	validationService services.IValidationService
-	emailService services.IEmailService
-	jwtSevices services.IJWT
+	emailService      services.IEmailService
+	jwtSevices        services.IJWT
+	cloudSvc		  services.ICloudinaryService
 }
 
-func NewUserUsecase(userRepo repository_interface.UserRepositoryInterface, passwordService services.IHashService, validationService services.IValidationService, emailService services.IEmailService, jwtService services.IJWT) UserUsecaseInterface {
+func NewUserUsecase(userRepo repository_interface.UserRepositoryInterface, passwordService services.IHashService, validationService services.IValidationService, emailService services.IEmailService, jwtService services.IJWT, cloudSvc services.ICloudinaryService) UserUsecaseInterface {
 	return &UserUsecase{
-		userRepo: userRepo,
-		passwordService: passwordService,
+		userRepo:          userRepo,
+		passwordService:   passwordService,
 		validationService: validationService,
-		emailService: emailService,
-		jwtSevices: jwtService,
+		emailService:      emailService,
+		jwtSevices:        jwtService,
+		cloudSvc:          cloudSvc,		
 	}
 }
-
 
 func (u *UserUsecase) SignUp(user *models.User) (*models.User, error) {
 	users, err := u.userRepo.GetAllUsers()
@@ -53,11 +57,11 @@ func (u *UserUsecase) SignUp(user *models.User) (*models.User, error) {
 	if len(users) == 0 {
 		user.Role = "ADMIN"
 	} else {
-		user.Role = "USER"
 		existingUser, _ := u.userRepo.GetUserByEmail(user.Email)
 		if existingUser != nil {
 			return nil, err
 		}
+		user.Role = "USER"
 	}
 
 	if _, err := u.validationService.ValidatePassword(user.Password); err != nil {
@@ -73,14 +77,14 @@ func (u *UserUsecase) SignUp(user *models.User) (*models.User, error) {
 	}
 	user.Password = encryptedPassword
 	user.CreatedAt = time.Now()
-	user.IsVerified = false 
+	user.IsVerified = false
 
 	regUser, err := u.userRepo.SignUp(user)
 	if err != nil {
 		return nil, err
 	}
 
-	verificationToken, err := u.jwtSevices.GenerateVerificationToken(regUser.ID.Hex())	
+	verificationToken, err := u.jwtSevices.GenerateVerificationToken(regUser.ID.Hex())
 	if err != nil {
 		return nil, err
 	}
@@ -88,16 +92,14 @@ func (u *UserUsecase) SignUp(user *models.User) (*models.User, error) {
 
 	user.VerificationToken = verificationToken
 
-
-	u.userRepo.UpdateProfile(regUser.ID.Hex(), user)
+	u.userRepo.UpdateUser(regUser.ID.Hex(), user)
 
 	err = u.emailService.SendVerificationEmail(user.Email, verificationLink)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil 
+	return user, nil
 }
-
 
 func (u *UserUsecase) Login(user *models.User) (string, string, error) {
 	if _, err := u.validationService.ValidateEmail(user.Email); err != nil {
@@ -107,21 +109,20 @@ func (u *UserUsecase) Login(user *models.User) (string, string, error) {
 	if err != nil {
 		return "", "", errors.New("invalid email or password")
 	}
-	if !u.passwordService.CompareHash(existingUser.Password,user.Password, ) {
-		return "","", errors.New("invalid password")
+	if !u.passwordService.CompareHash(existingUser.Password, user.Password) {
+		return "", "", errors.New("invalid password")
 	}
 
 	accessToken, _ := u.jwtSevices.GenerateAccessToken(existingUser.ID.Hex(), existingUser.Role)
 	refershToken, _ := u.jwtSevices.GenerateRefreshToken(existingUser.ID.Hex(), existingUser.Role)
 
 	existingUser.RefToken = refershToken
-	err = u.userRepo.UpdateProfile(existingUser.ID.Hex(), existingUser)
-	if  err != nil {
+	err = u.userRepo.UpdateUser(existingUser.ID.Hex(), existingUser)
+	if err != nil {
 		return "", "", errors.New(err.Error())
 	}
 	return accessToken, refershToken, nil
 }
-
 
 func (u *UserUsecase) Logout(token string) error {
 	parsedToken, err := u.jwtSevices.ValidateAccessToken(token)
@@ -155,14 +156,14 @@ func (u *UserUsecase) Logout(token string) error {
 	}
 
 	existingUser.RefToken = ""
-	err = u.userRepo.UpdateProfile(existingUser.ID.Hex(), existingUser)
+	err = u.userRepo.UpdateUser(existingUser.ID.Hex(), existingUser)
 	if err != nil {
 		return errors.New("failed to update user profile")
 	}
 	return nil
 }
 
-func (u *UserUsecase) RefreshToken(refreshTok string ) (string, error) {
+func (u *UserUsecase) RefreshToken(refreshTok string) (string, error) {
 	userId, err := u.jwtSevices.ValidateRefreshToken(refreshTok)
 	if err != nil {
 		return "", errors.New(err.Error())
@@ -173,7 +174,7 @@ func (u *UserUsecase) RefreshToken(refreshTok string ) (string, error) {
 		return "", errors.New("user not found")
 	}
 
-	if (existingUser.RefToken != refreshTok) {
+	if existingUser.RefToken != refreshTok {
 		return "", errors.New("invalid token")
 	}
 	accessToken, _ := u.jwtSevices.GenerateAccessToken(existingUser.ID.Hex(), existingUser.Role)
@@ -183,24 +184,57 @@ func (u *UserUsecase) RefreshToken(refreshTok string ) (string, error) {
 func (u *UserUsecase) VerifyEmailToken(token string) (string, string, error) {
 	userId, err := u.jwtSevices.ValidateVerificationToken(token)
 	if err != nil {
-		return "","", errors.New(err.Error())
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			claims, ok := u.jwtSevices.GetClaimsFromToken(token)
+			if ok {
+				userId, _ := claims["userId"].(string)
+				user, err := u.userRepo.GetUserByID(userId)
+				if err != nil {
+					return "", "", errors.New("invalid token")
+				}
+				if user.IsVerified {
+					return "", "", errors.New("user already verified")
+				}
+
+				verificationToken, _ := u.jwtSevices.GenerateVerificationToken(user.ID.Hex())
+				verificationLink := fmt.Sprintf("http://localhost:8080/auth/verify-email?token=%s", verificationToken)
+
+				user.VerificationToken = verificationToken
+				err = u.userRepo.UpdateUser(user.ID.Hex(), user)
+				if err != nil {
+					return "", "", err
+				}
+
+				err = u.emailService.SendVerificationEmail(user.Email, verificationLink)
+				if err != nil {
+					return "", "", err
+				}
+
+				return "", "", errors.New("verification token expired. A new verification email has been sent")
+			}
+		}
+		return "", "", errors.New(err.Error())
 	}
+
 	user, err := u.userRepo.GetUserByID(userId)
 	if err != nil {
-		return "", "", errors.New("invalid or expired token")
+		return "", "", errors.New("invalid token")
+	} else if user.IsVerified {
+		return "", "", errors.New("user already verified")
+	} else if token != user.VerificationToken {
+		return "", "", errors.New("invalid token")
 	}
+	user.IsVerified = true
+	user.VerificationToken = ""
+
 	accessToken, _ := u.jwtSevices.GenerateAccessToken(user.ID.Hex(), user.Role)
 	refershToken, _ := u.jwtSevices.GenerateRefreshToken(user.ID.Hex(), user.Role)
 
-	user.IsVerified = true
-	user.VerificationToken = "" 
 	user.RefToken = refershToken
-
-	err = u.userRepo.UpdateProfile(user.ID.Hex(), user)
+	err = u.userRepo.UpdateUser(user.ID.Hex(), user)
 	if err != nil {
-		return "", "", err
+		return "", "", errors.New(err.Error())
 	}
-
 	return accessToken, refershToken, nil
 }
 
@@ -219,15 +253,47 @@ func (u *UserUsecase) DeleteUser(userID string) error {
 	return u.userRepo.DeleteUser(userID)
 }
 
-func (u *UserUsecase) UpdateProfile(userID string, user *models.User) error {
+func (u *UserUsecase) UpdateUser(userID string, user *models.User) error {
 	if _, err := u.validationService.ValidateEmail(user.Email); err != nil {
 		return err
 	}
-	return u.userRepo.UpdateProfile(userID, user)
+	return u.userRepo.UpdateUser(userID, user)
 }
+
+func (u *UserUsecase) UpdateProfile(userID string, user *dtos.Profile, image multipart.File) error{
+	existingUser, err := u.userRepo.GetUserByID(userID)
+    if err != nil {
+        return err
+    }
+
+    if image != nil {
+        profilePictureURL, err := u.cloudSvc.UploadProfilePicture(context.Background(), image)
+        if err != nil {
+            return err
+        }
+        user.ProfilePic = profilePictureURL
+    }
+
+    if user.UserName != "" {
+        existingUser.FullName = user.UserName
+    }
+    if user.PhoneNum != "" {
+        existingUser.PhoneNum = user.PhoneNum
+    }
+    if user.Bio != "" {
+        existingUser.Bio = user.Bio
+    }
+    if user.ProfilePic != "" {
+        existingUser.ProfilePic = user.ProfilePic
+    }
+
+    return u.userRepo.UpdateUserProfile(userID, existingUser)
+}
+
 func (u *UserUsecase) PromoteUser(userID string) error {
 	return u.userRepo.PromoteUser(userID)
 }
+
 func (u *UserUsecase) DemoteUser(userID string) error {
 	return u.userRepo.DemoteUser(userID)
 }

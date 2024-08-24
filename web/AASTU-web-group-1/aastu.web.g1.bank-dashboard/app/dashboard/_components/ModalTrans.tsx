@@ -68,14 +68,14 @@ export const ModalTrans = ({ isOpen, onClose, reciverUserName }: Props) => {
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center ${
         isDarkMode
-          ? "bg-gray-900/70 backdrop-blur-md"
+          ? "bg-black  bg-opacity-5 backdrop-blur-md"
           : "bg-black bg-opacity-50"
       } `}
     >
       <div
         className={`relative w-full max-w-lg p-8 rounded-3xl shadow-xl transition-transform transform ${
           isDarkMode
-            ? "bg-black bg-opacity-50"
+            ? "bg-black bg-opacity-5"
             : "bg-gradient-to-r from-white via-gray-100 to-white"
         } ${isSubmitting ? "scale-95" : "scale-100"}`}
       >

@@ -42,6 +42,23 @@ func NewComment(config CommentConfig) (*Comment, error) {
 	}, nil
 }
 
+type MapCommentConfig struct {
+	Id      uuid.UUID
+	Content string
+	UserID  uuid.UUID
+	BlogID  uuid.UUID
+}
+
+func MapComment(config MapCommentConfig) *Comment {
+
+	return &Comment{
+		id:      config.Id,
+		content: config.Content,
+		userID:  config.UserID,
+		blogID:  config.BlogID,
+	}
+}
+
 // validateCommentContent checks if the length of the content is within the allowed limits.
 // Returns an error if the content is too short or too long.
 func validateCommentContent(content string) error {

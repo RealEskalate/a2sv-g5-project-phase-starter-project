@@ -1,8 +1,14 @@
 package usercontroller
 
 import (
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -16,7 +22,30 @@ import (
 	usercmd "github.com/group13/blog/usecase/user/command"
 	userqry "github.com/group13/blog/usecase/user/query"
 	"github.com/group13/blog/usecase/user/result"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
+
+var (
+	googleOauthConfig *oauth2.Config
+
+	oauthStateString = generateStateString(16)
+)
+
+func init() {
+	googleOauthConfig = &oauth2.Config{
+		RedirectURL:  "http://localhost:8080/api/v1/auth/callback",
+		ClientID:     os.Getenv("GOOGLE_ID"),
+		ClientSecret: os.Getenv("GOOGLE_SECRET"),
+		Scopes: []string{
+			"https://www.googleapis.com/auth/userinfo.email",
+			"https://www.googleapis.com/auth/userinfo.profile",
+		},
+		Endpoint: google.Endpoint,
+	}
+
+	fmt.Println("config", googleOauthConfig)
+}
 
 // UserController handles user-related HTTP requests.
 type UserController struct {
@@ -28,7 +57,9 @@ type UserController struct {
 	resetCodeSendHandler icmd.IHandler[string, time.Time]
 	validateCodeHandler  icmd.IHandler[*passwordreset.ValidateCodeCommand, string]
 	validateEmailHandler icmd.IHandler[string, *result.ValidateEmailResult]
-	updateProfileHandler 	  icmd.IHandler[*usercmd.UpdateProfileCommand, *result.UpdateProfileResult]
+	updateProfileHandler icmd.IHandler[*usercmd.UpdateProfileCommand, *result.UpdateProfileResult]
+	googleSignin         icmd.IHandler[usercmd.GoogleSigninCommand, *result.LoginInResult]
+	googleSignup         icmd.IHandler[usercmd.GoogleSignupCommand, bool]
 }
 
 // Config holds the configuration for creating a new UserController.
@@ -40,7 +71,9 @@ type Config struct {
 	ResetCodeSendHandler icmd.IHandler[string, time.Time]
 	ValidateCodeHandler  icmd.IHandler[*passwordreset.ValidateCodeCommand, string]
 	ValidateEmailHandler icmd.IHandler[string, *result.ValidateEmailResult]
-	UpdateProfileHandler 	  	 icmd.IHandler[*usercmd.UpdateProfileCommand, *result.UpdateProfileResult]
+	UpdateProfileHandler icmd.IHandler[*usercmd.UpdateProfileCommand, *result.UpdateProfileResult]
+	GoogleSignin         icmd.IHandler[usercmd.GoogleSigninCommand, *result.LoginInResult]
+	GoogleSignup         icmd.IHandler[usercmd.GoogleSignupCommand, bool]
 }
 
 // New creates a new UserController with the given CQRS handlers.
@@ -54,6 +87,8 @@ func New(config Config) *UserController {
 		validateCodeHandler:  config.ValidateCodeHandler,
 		validateEmailHandler: config.ValidateEmailHandler,
 		updateProfileHandler: config.UpdateProfileHandler,
+		googleSignin:         config.GoogleSignin,
+		googleSignup:         config.GoogleSignup,
 	}
 }
 
@@ -72,6 +107,9 @@ func (u UserController) RegisterPublic(router *gin.RouterGroup) {
 	router = router.Group("/auth")
 	router.POST("/signup", u.signUp)
 	router.POST("/login", u.login)
+	router.GET("/login", u.handleGoogleLogin)
+	router.GET("/signup", u.handleGoogleSignup)
+	router.GET("/callback", u.handleGoogleCallback)
 	router.POST("/resetPasswordCode", u.forgotPassword)
 	router.POST("/validateCode", u.validateCode)
 	router.POST("/resetPassword", u.resetPassword)
@@ -282,16 +320,14 @@ func (u UserController) validateEmail(ctx *gin.Context) {
 	u.BaseHandler.Respond(ctx, http.StatusOK, gin.H{"message": "Email validated successfully"})
 }
 
-
 func (u UserController) updateProfile(ctx *gin.Context) {
 	var request UpdateProfileDto
-	userid  := ctx.Param("id")
+	userid := ctx.Param("id")
 	if userid == "" {
 		ctx.JSON(http.StatusBadRequest, "Invalid Input")
 		log.Println("User input could not be bound -- UserController")
 		return
 	}
-
 
 	if err := ctx.BindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, "Invalid Input")
@@ -299,8 +335,7 @@ func (u UserController) updateProfile(ctx *gin.Context) {
 		return
 	}
 
-
-	command := usercmd.NewUpdateProfileCommand( request.Username, request.FirstName, request.LastName, request.Email, request.Password, userid)
+	command := usercmd.NewUpdateProfileCommand(request.Username, request.FirstName, request.LastName, request.Email, request.Password, userid)
 	_, err := u.updateProfileHandler.Handle(command)
 	if err != nil {
 		u.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
@@ -310,4 +345,109 @@ func (u UserController) updateProfile(ctx *gin.Context) {
 
 	log.Println("User profile updated successfully -- UserController")
 	u.Respond(ctx, http.StatusOK, "Profile updated successfully")
+}
+func (u UserController) handleGoogleLogin(ctx *gin.Context) {
+	state := oauthStateString + "_login"
+	url := googleOauthConfig.AuthCodeURL(state)
+	ctx.Redirect(http.StatusTemporaryRedirect, url)
+}
+
+func (u UserController) handleGoogleSignup(ctx *gin.Context) {
+	state := oauthStateString + "_signup"
+	url := googleOauthConfig.AuthCodeURL(state)
+	ctx.Redirect(http.StatusTemporaryRedirect, url)
+}
+
+func (u UserController) handleGoogleCallback(ctx *gin.Context) {
+	state := ctx.Query("state")
+	code := ctx.Query("code")
+
+	userInfo, err := getUserInfo(state, code)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if state == oauthStateString+"_login" {
+
+		command := usercmd.NewGoogleSigninCommand(userInfo.Email, userInfo.VerifiedEmail)
+		res, err := u.googleSignin.Handle(*command)
+
+		if err != nil {
+			ctx.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+		u.RespondWithCookies(ctx, http.StatusOK, res, []*http.Cookie{
+			{
+				Name:     "accessToken",
+				Value:    res.Token,
+				Path:     "/",
+				Domain:   ctx.Request.Host,
+				MaxAge:   24 * 60 * 60,
+				HttpOnly: true,
+				Secure:   true,
+			},
+			{
+				Name:     "refreshToken",
+				Value:    res.RefreshToken,
+				Path:     "/",
+				Domain:   ctx.Request.Host,
+				MaxAge:   48 * 60 * 60,
+				HttpOnly: true,
+				Secure:   true,
+			},
+		})
+	} else if state == oauthStateString+"_signup" {
+		command := usercmd.NewGoogleSignupCommand(userInfo.GivenName, userInfo.FamilyName, userInfo.Email, userInfo.VerifiedEmail)
+
+		registered, err := u.googleSignup.Handle(*command)
+		if err != nil {
+			ctx.JSON(http.StatusConflict, err.Error())
+			return
+		}
+		if registered {
+			u.BaseHandler.Respond(ctx, http.StatusCreated, "Signed Up Successfully")
+			return
+		}
+	} else {
+		ctx.JSON(http.StatusBadRequest, "Invalid state")
+	}
+}
+
+func getUserInfo(state, code string) (*UserInfo, error) {
+	if state != oauthStateString+"_login" && state != oauthStateString+"_signup" {
+		return nil, fmt.Errorf("invalid oauth state")
+	}
+
+	token, err := googleOauthConfig.Exchange(oauth2.NoContext, code)
+	if err != nil {
+		return nil, fmt.Errorf("code exchange failed: %s", err.Error())
+	}
+
+	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
+	if err != nil {
+		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
+	}
+
+	defer response.Body.Close()
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed reading response body: %s", err.Error())
+	}
+
+	var userInfo UserInfo
+	if err := json.Unmarshal(contents, &userInfo); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal user info: %s", err.Error())
+	}
+
+	return &userInfo, nil
+}
+
+func generateStateString(length int) string {
+	b := make([]byte, length)
+	if _, err := rand.Read(b); err != nil {
+		log.Fatalf("Unable to generate random state: %v", err)
+	}
+	// URL-safe base64 encoding
+	return base64.URLEncoding.EncodeToString(b)
 }

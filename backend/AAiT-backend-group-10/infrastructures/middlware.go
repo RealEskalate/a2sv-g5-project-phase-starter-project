@@ -4,11 +4,12 @@ import (
 	"net/http"
 	"strings"
 
+	"aait.backend.g10/usecases/interfaces"
 	"github.com/gin-gonic/gin"
 )
 
 
-func AuthMiddleware(JwtService *JwtService) gin.HandlerFunc {
+func AuthMiddleware(JwtService interfaces.IJwtService) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		defer context.Next()
 
@@ -23,7 +24,7 @@ func AuthMiddleware(JwtService *JwtService) gin.HandlerFunc {
 		authPart := strings.Split(authHeader, " ")
 
 		if len(authPart) != 2 || strings.ToLower(authPart[0]) != "bearer" {
-			context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid Authoriztion header"})
+			context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid Authorization header"})
 			context.Abort()
 			return
 		}

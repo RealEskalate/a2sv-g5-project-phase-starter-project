@@ -1,8 +1,6 @@
 package infrastructures
 
 import (
-	"fmt"
-
 	"aait.backend.g10/domain"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -20,6 +18,5 @@ func (s *HashingService) HashPassword(password string) (string, *domain.CustomEr
 
 func (s *HashingService) CheckPasswordHash(password string, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	fmt.Println(err)
 	return err == nil
 }

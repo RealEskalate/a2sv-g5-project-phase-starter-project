@@ -67,7 +67,13 @@ export const generateDummyTransactions = (count: number): Transaction[] => {
 export const transactions = generateDummyTransactions(100);
 
 
-
+export function convertDateToISOString(date: Date):string {
+  if (date instanceof Date && !isNaN(date.getTime())) {
+    return date.toISOString(); // Converts the date to ISO 8601 format
+  } else {
+    throw new Error("Invalid date");
+  }
+}
 
 // FORMAT DATE TIME
 // export const formatDateTime = (dateString: Date) => {

@@ -9,9 +9,9 @@ const PageNumbers = ({ totalPages, currentPage, setCurrentPage }:paginationProps
   const renderPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 3;
-    const startPage = Math.min(currentPage, totalPages - maxVisiblePages + 1);
+    const startPage = Math.max(Math.min(currentPage, totalPages - maxVisiblePages + 1),0);
     const endPage = Math.min(startPage + maxVisiblePages - 1, totalPages);
-
+    console.log("the total pages are",totalPages,endPage,startPage)
     for (let i = startPage; i < endPage; i++) {
       pages.push(
         <li key={i}>

@@ -1,77 +1,92 @@
+import Cookies from "js-cookie";
+
 // Get All Cards - GET Request
-export const getAllCards = async () => {
-    try {
-      const response = await fetch('https://web-team-g4.onrender.com/cards', {
-        method: 'GET',
+export const getAllCards = async (token: string) => {
+  try {
+    const response = await fetch(
+      "https://web-team-g4.onrender.com/cards?page=0&size=10",
+      {
+        method: "GET",
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to fetch cards');
       }
-  
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
+    );
+
+    if (!response.ok) {
+      console.log(response);
+      throw new Error("Failed to fetch cards");
     }
-  };
-  
-  // Get Card by ID - GET Request
-  export const getCardById = async (id: string) => {
-    try {
-      const response = await fetch(`https://web-team-g4.onrender.com//cards/${id}`, {
-        method: 'GET',
+
+    const data = await response.json();
+    return data.content;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+// Get Card by ID - GET Request
+export const getCardById = async (id: string, token: string) => {
+  try {
+    const response = await fetch(
+      `https://web-team-g4.onrender.com/cards/${id}`,
+      {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      });
-  
-      if (!response.ok) {
-        throw new Error(`Failed to fetch card with ID: ${id}`);
       }
-  
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch card with ID: ${id}`);
     }
-  };
-  
-  // Create a New Card - POST Request
-  export const createCard = async (cardData: any) => {
-    try {
-      const response = await fetch('https://web-team-g4.onrender.com//cards', {
-        method: 'POST',
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+// Create a New Card - POST Request
+export const createCard = async (cardData: any, token: string) => {
+  try {
+    const response = await fetch("https://web-team-g4.onrender.com/cards", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(cardData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to create a new card");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+// Delete Card by ID - DELETE Request
+export const deleteCardById = async (id: string, token: string) => {
+  try {
+    const response = await fetch(
+      `https://web-team-g4.onrender.com/cards/${id}`,
+      {
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cardData),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to create a new card');
-      }
-  
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }
-  };
-  
-  // Delete Card by ID - DELETE Request
-  export const deleteCardById = async (id: string) => {
-    try {
-      const response = await fetch(`https://web-team-g4.onrender.com//cards/${id}`, {
-        method: 'DELETE',
-        headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       }
     );

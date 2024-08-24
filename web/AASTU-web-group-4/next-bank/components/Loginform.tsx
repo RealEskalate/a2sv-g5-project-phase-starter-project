@@ -35,7 +35,7 @@ const LoginForm: React.FC = () => {
         
         Cookie.set('accessToken', loggedInUser.data.access_token);
         Cookie.set('refreshToken', loggedInUser.data.refresh_token);
-        // console.log("Success:", loggedInUser?.data?.access_token)
+
         setIsLoading(false);
         // console.log("redirect...")
         window.location.href = '/'
@@ -80,7 +80,7 @@ const LoginForm: React.FC = () => {
           type="text"
           placeholder="Username"
           {...register("userName", { required: "Username is required" })}
-          className="w-full m-auto border-gray-200 border-2 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-14 px-2.5"
+          className="w-full m-auto border-gray-200  dark:text-dark dark:bg-white border-2 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-14 px-2.5"
           />
           {errors.userName && (
           <div className="flex gap-1">
@@ -101,7 +101,7 @@ const LoginForm: React.FC = () => {
           type="password"
           placeholder="Password"
           {...register("password", { required: "Password is required" })}
-          className="w-full m-auto border-gray-200 border-2 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-14 px-2.5"
+          className="w-full m-auto border-gray-200 dark:text-dark dark:bg-white border-2 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-14 px-2.5"
           />
           {errors.password && (
           <div className="flex gap-1">
@@ -140,10 +140,10 @@ const LoginForm: React.FC = () => {
         <p className={`${colors.textgray}`}>
           Don&apos;t have an account?{" "}
           <span className={`${colors.textblue} font-medium text-l`}>
-          <Link href="./signup">Sign Up</Link>
+          <Link href="./signup" className="dark:text-gray-300" >Sign Up</Link>
           </span>
         </p>
-        <span className={`${colors.textblue} font-medium text-l py-2`}>
+        <span className={`${colors.textblue} dark:text-gray-300 font-medium text-l py-2`}>
           <Link href="/forgotpassword">Forgot password?</Link>
         </span>
         </div>

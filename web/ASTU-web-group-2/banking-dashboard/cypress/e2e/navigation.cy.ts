@@ -42,6 +42,9 @@ describe("should navigate to the desired page", () => {
         );
       }
 
+      image.should("have.css", "color", "rgb(52, 60, 106)");
+      side_name.should("have.css", "color", "rgb(52, 60, 106)");
+
       cy.wait(2000);
     });
   }

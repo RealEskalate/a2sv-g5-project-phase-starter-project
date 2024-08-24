@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect } from "react";
-import InputGroup from "../Form/InputGroup";
 import ToggleInput from "../Form/ToggleInput";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -22,6 +21,7 @@ const preferencesSchema = z.object({
   accountRecommendations: z.boolean(),
   twoFactorAuthentication: z.boolean(),
 });
+
 const Preferences = () => {
   const dispatch = useAppDispatch();
   const getData = useAppSelector((state) => state.profile);

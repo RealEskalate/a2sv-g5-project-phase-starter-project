@@ -7,8 +7,9 @@ export interface InputGroupType {
   register: any;
   placeholder: string;
   errorMessage?: string;
+  min?: string;
 }
 
 export interface ToggleInputType extends InputGroupType {
-  currentState: boolean
+  currentState: boolean;
 }

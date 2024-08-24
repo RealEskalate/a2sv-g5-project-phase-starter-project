@@ -318,31 +318,37 @@ To run all the tests:
 go test -v blog_api/tests
 ```
 Each file contains a suite that groups up all the related tests. To run one of suites contained in one of the files, run this command:
+```bash
+go test -run NAME_OF_THE_SUITE ./tests/file_name_test.go 
 
-go test -run file_name_test.go NAME_OF_THE_SUITE
-
+# example
+go test -run TestUserUsecase ./tests/user_usecase_test.go
+```
 With timeout:
-
-go test -timeout 30s -run file_name_test.go NAME_OF_THE_SUITE
-
-The suites are usually the functions defined last, accepting a *testing.T as a parameter and running the test suite.
-
-Coverage Profile on Controllers
 ```bash
-go test -v -coverprofile="cover.out" -coverpkg="blog_api/controller"  blog_api/tests
+go test -timeout 30s -run NAME_OF_THE_SUITE ./tests/file_name_test.go 
 ```
 
-#### Coverage Profile on Usecases
+The suites are usually run using the functions defined last, accepting a `*testing.T` as a parameter and running the test suite.
+
+Coverage profiles can also be created. To run tests and generate the corresponding coverage file:
 ```bash
-go test -v -coverprofile="cover.out" -coverpkg="blog_api/usecase"  blog_api/tests
+go test -v -coverprofile="OUTPUT" -coverpkg="PACKAGE"  ./tests/FILENAME
+
+# example: repository coverage
+go test -v -coverprofile="cover.out" -coverpkg="blog_api/repository"  ./tests/blog_repository_test.go ./tests/user_repository_test.go ./tests/cache_repository_test.go
+
+# example: usecase coverage
+go test -v -coverprofile="cover.out" -coverpkg="blog_api/usecase"  ./tests/blog_usecase_test.go ./tests/user_usecase_test.go
+
+# example: jwt service coverage
+go test -v -coverprofile="cover.out" -coverpkg="blog_api/infrastructure/jwt"  ./tests/jwt_service_test.go
 ```
 
-#### Coverage Profile on Repositories
-```bash
-go test -v -coverprofile="cover.out" -coverpkg="blog_api/repository"  blog_api/tests
-```
-
-#### Coverage Profile Rendering
+The output of the commands above are not human-readable. To generate a `.html` file with all the data obtained from the coverage profile, use the following command:
 ```bash
 go tool cover -html="cover.out" -o coverage.html
 ```
+
+# The Blog API
+

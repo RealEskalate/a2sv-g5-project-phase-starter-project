@@ -122,7 +122,7 @@ const CreditCardComponent: React.FC = () => {
 	}
 
 	return (
-		<div className="bg-[#F5F7FA] dark:bg-gray-800 p-4 sm:px-8 sm:py-4">
+		<div className="bg-[#F5F7FA] dark:bg-gray-900 p-4 sm:px-8 sm:py-4">
 			<div>
 				<div className="font-semibold text-blue-900 dark:text-blue-600 p-2">
 					My Cards

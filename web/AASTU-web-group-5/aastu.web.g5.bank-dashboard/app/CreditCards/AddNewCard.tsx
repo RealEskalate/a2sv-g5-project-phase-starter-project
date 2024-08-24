@@ -107,7 +107,7 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 			<div className="p-2 font-semibold text-blue-900 dark:text-blue-600 w-full sm:w-1/2">
 				Add New Card
 			</div>
-			<div className="bg-white dark:bg-gray-900 rounded-2xl py-6">
+			<div className="bg-white dark:bg-gray-800 rounded-2xl py-6">
 				<div className="py-3 pl-8 pr-5 sm:pr-16 text-blue-900 dark:text-[#fff] opacity-90">
 					Credit Card generally means a plastic card issued by Scheduled
 					Commercial Banks assigned to a Cardholder, with a credit limit, that
@@ -117,10 +117,10 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 
 				<div>
 					<form onSubmit={handleAddCard}>
-						<div className="flex flex-col sm:flex-row p-2 px-5 gap-4 sm:gap-8">
+						<div className="flex flex-col sm:flex-row p-2 px-5 gap-4 sm:gap-8 dark:text-[#fff]">
 							<div className="flex-1 ">
 								<div className="flex flex-col px-2">
-									<label htmlFor="cardType" className="p-2">
+									<label htmlFor="cardType" className="p-2 dark:text-[#fff]">
 										Card Type
 									</label>
 									<input
@@ -135,7 +135,7 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 									/>
 								</div>
 								<div className="flex flex-col px-2 ">
-									<label htmlFor="balance" className="p-2">
+									<label htmlFor="balance" className="p-2 dark:text-[#fff]">
 										Balance
 									</label>
 									<input
@@ -145,12 +145,12 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 										value={cardData.balance}
 										onChange={handleChange}
 										placeholder="27,000$"
-										className="border-2 border-solid border-blue-100 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff] p-2 rounded-xl focus:outline-none focus:border-blue-300"
+										className="border-2 border-solid border-blue-100 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff] p-2 dark:text-[#fff] rounded-xl focus:outline-none focus:border-blue-300"
 										aria-required="true"
 									/>
 								</div>
 								<div className="flex flex-col px-2">
-									<label htmlFor="passcode" className="p-2">
+									<label htmlFor="passcode" className="p-2 dark:text-[#fff]">
 										Passcode
 									</label>
 									<input
@@ -166,8 +166,8 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 								</div>
 							</div>
 							<div className="flex-1">
-								<div className="flex flex-col px-2">
-									<label htmlFor="cardHolder" className="p-2">
+								<div className="flex flex-col px-2 ">
+									<label htmlFor="cardHolder" className="p-2 dark:text-[#fff]">
 										Name On Card
 									</label>
 									<input
@@ -182,7 +182,7 @@ const AddNewCard: React.FC<AddNewCardProps> = ({
 									/>
 								</div>
 								<div className="flex flex-col px-2">
-									<label htmlFor="expiryDate" className="p-2">
+									<label htmlFor="expiryDate" className="p-2 dark:text-[#fff]">
 										Expiry Date
 									</label>
 									<input

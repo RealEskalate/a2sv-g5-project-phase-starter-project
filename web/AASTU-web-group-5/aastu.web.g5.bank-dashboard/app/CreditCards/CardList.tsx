@@ -98,7 +98,7 @@ const CardList: React.FC<CardListProps> = ({ cardId }) => {
 		<div className="">
 			{cardListData.map((card, index) => (
 				<div key={card.id} className="list pb-2 p-1">
-					<div className="flex sm:flex-row items-start sm:items-center gap-4 bg-white dark:bg-gray-900 py-5 px-5 pr-6 rounded-xl sm:justify-between">
+					<div className="flex sm:flex-row items-start sm:items-center gap-4 bg-white dark:bg-gray-800 dark:text-white py-5 px-5 pr-6 rounded-xl sm:justify-between">
 						<div className="flex items-center gap-5">
 							<div
 								className={
@@ -116,7 +116,7 @@ const CardList: React.FC<CardListProps> = ({ cardId }) => {
 								/>
 							</div>
 							<div>
-								<div className="font-medium py-1">{card.cardType}</div>
+								<div className="font-medium py-1 ">{card.cardType}</div>
 								<div className="text-blue-900 dark:text-gray-300 opacity-70">
 									Secondary
 								</div>

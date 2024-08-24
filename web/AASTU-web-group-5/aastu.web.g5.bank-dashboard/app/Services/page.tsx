@@ -21,7 +21,7 @@ const Page = () => {
 		const fetchServices = async () => {
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-rsf1.onrender.com/bank-services?page=0&size=7",
+					"https://bank-dashboard-1tst.onrender.com/bank-services?page=0&size=7",
 					{
 						headers: {
 							Authorization: token,
@@ -79,10 +79,10 @@ const Page = () => {
 	};
 
 	return (
-		<div className="bg-gray-100 dark:bg-gray-800">
+		<div className="bg-gray-100 0">
 			{/* Life Insurance Section */}
-			<div className="w-full flex items-center bg-gray-100 dark:bg-gray-800  p-6 gap-6 ">
-				<div className=" lg:mr-0 flex gap-4 overflow-x-auto lg:overflow-x-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:pl-10 lg:pt-10 w-full">
+			<div className="w-full flex items-center bg-gray-100 dark:bg-gray-800 p-6 gap-6 pr-10 pl-10">
+				<div className="mr-5 lg:mr-0 flex gap-4 overflow-x-auto lg:overflow-x-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:pl-10 lg:pt-10 w-full">
 					<div className="bg-white dark:bg-gray-900 h-[90px] rounded-xl flex-grow flex justify-center items-center gap-4">
 						<div className="flex items-center justify-center bg-blue-100 rounded-full w-14 h-14">
 							<Image
@@ -94,7 +94,7 @@ const Page = () => {
 							/>
 						</div>
 						<div className="flex flex-col">
-							<h3 className="font-inter text-black dark:text-[#fff] text-lg font-medium leading-[16.94px] text-left">
+							<h3 className="font-inter text-black dark:text-[#fff]  text-lg font-medium leading-[16.94px] text-left">
 								Life Insurance
 							</h3>
 							<p className="font-inter text-blue-900 dark:text-gray-400 opacity-60 text-base">
@@ -104,7 +104,7 @@ const Page = () => {
 					</div>
 
 					{/* Shopping */}
-					<div className="bg-white dark:bg-gray-900 h-[90px] rounded-xl flex-grow flex justify-center items-center gap-4">
+					<div className="bg-white dark:bg-gray-900  h-[90px] rounded-xl flex-grow flex justify-center items-center gap-4">
 						<div className="flex items-center justify-center bg-orange-100 rounded-full w-14 h-14">
 							<Image
 								src="/images/shopping.png"
@@ -148,7 +148,7 @@ const Page = () => {
 			</div>
 
 			{/* Title Section */}
-			<div className="p-2 sm:p-1">
+			<div className="p-2 sm:p-1 dark:bg-gray-800">
 				<p className="ml-8 text-xl sm:text-2xl font-inter text-blue-950 dark:text-blue-600 font-semibold">
 					Bank Service List
 				</p>

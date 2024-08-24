@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Toggle from "./toogle";
 import { useSelector, useDispatch } from "react-redux";
@@ -31,6 +31,7 @@ function Preference() {
 	const [apiError, setApiError] = useState("");
 
 	const user = useSelector((state: RootState) => state.user as User);
+	console.log(user, "11111111111111");
 	const dispatch = useDispatch();
 
 	const {
@@ -45,7 +46,7 @@ function Preference() {
 	const [accountRecommendations, setAccountRecommendations] = useState(false);
 
 	const users = session?.user as ExtendedUser;
-	const key = users?.accessToken || "";
+	console.log(users, "users");
 
 	useEffect(() => {
 		if (user) {
@@ -57,8 +58,10 @@ function Preference() {
 				user.preference.accountRecommendations || false
 			);
 		}
-	}, [user, setValue]);
-
+	}, [users, setValue, user]);
+	if (!users) {
+		return <></>;
+	}
 	const handleDigitalCurrencyChange = () =>
 		setDigitalCurrency(!digitalCurrency);
 	const handleMerchantOrderChange = () => setMerchantOrder(!merchantOrder);
@@ -66,7 +69,9 @@ function Preference() {
 		setAccountRecommendations(!accountRecommendations);
 
 	const onSubmit: SubmitHandler<FormData> = async (data) => {
+		setSuccessMessage("");
 		setApiError("");
+		console.log(users.accessToken, "access token ");
 		const updatedData = {
 			...data,
 			sentOrReceiveDigitalCurrency: digitalCurrency,
@@ -74,7 +79,7 @@ function Preference() {
 			accountRecommendations: accountRecommendations,
 			twoFactorAuthentication: true,
 		};
-
+		console.log(updatedData, "upadted data ");
 		try {
 			const response = await axios.put(
 				"https://bank-dashboard-rsf1.onrender.com/user/update-preference",
@@ -82,18 +87,24 @@ function Preference() {
 				{
 					headers: {
 						"Content-Type": "application/json",
-						Authorization: `Bearer ${key}`,
+						Authorization: `Bearer ${users.accessToken}`,
 					},
 				}
 			);
 
+			console.log(response.status, 111111);
 			if (response.status === 200) {
 				setSuccessMessage("Preferences updated successfully!");
 				dispatch(setUser(updatedData));
+			} else if (response.status == 401) {
+				signOut();
 			} else {
 				throw new Error(`Failed to update preferences: ${response.statusText}`);
 			}
 		} catch (error: any) {
+			if (error.response.status == 401) {
+				signOut();
+			}
 			setApiError(
 				error.response?.data?.message || "Failed to update preferences."
 			);
@@ -102,9 +113,9 @@ function Preference() {
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)}>
-			<div className="flex flex-wrap flex-col md:flex-row md:gap-10 lg:gap-12 mt-10 md:mt-12 mx-4 dark:text-gray-400">
+			<div className="flex flex-wrap flex-col md:flex-row md:gap-10 lg:gap-12 mt-10 md:mt-12 mx-4 dark:text-[#fff]">
 				<div>
-					<div>Currency</div>
+					<div className="dark:text-[#fff">Currency</div>
 					<input
 						type="text"
 						className={`border-slate-200 border-[1px] w-full h-10 mt-3 rounded-3xl md:w-[20rem] lg:w-[30rem] dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff] ${
@@ -121,10 +132,10 @@ function Preference() {
 					)}
 				</div>
 				<div>
-					<div>Time Zone</div>
+					<div className="dark:text-[#fff]">Time Zone</div>
 					<input
 						type="text"
-						className={`border-slate-200 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff] border-[1px] w-full h-10 mt-3 rounded-2xl md:w-[20rem] lg:w-[30rem] ${
+						className={`border-slate-200 border-[1px] w-full h-10 mt-3 rounded-2xl md:w-[20rem] lg:w-[30rem] dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff] ${
 							errors.timeZone ? "border-red-500" : ""
 						}`}
 						placeholder="(GMT-12:00) International Date Line West"
@@ -138,18 +149,27 @@ function Preference() {
 					)}
 				</div>
 			</div>
-			<div className="mt-6 md:mt-8 text-slate-700 text-sm md:text-base lg:text-[17px] dark:text-gray-400">
+			<div className="mt-6 md:mt-8 text-slate-700 text-sm md:text-base lg:text-[17px] dark:text-[#fff]">
 				Notification
 				<div className="flex flex-col gap-4 mt-5 md:mt-6">
-					<div className="flex gap-5 md:gap-6">
+					<div
+						className="flex gap-5 md:gap-6"
+						onClick={handleDigitalCurrencyChange}
+					>
 						<Toggle />
 						<div>I send or receive digital currency</div>
 					</div>
-					<div className="flex gap-5 md:gap-6">
+					<div
+						className="flex gap-5 md:gap-6"
+						onClick={handleMerchantOrderChange}
+					>
 						<Toggle />
 						<div>I receive merchant order</div>
 					</div>
-					<div className="flex gap-5 md:gap-6">
+					<div
+						className="flex gap-5 md:gap-6"
+						onClick={handleAccountRecommendationsChange}
+					>
 						<Toggle />
 						<div>There are recommendations for my account</div>
 					</div>

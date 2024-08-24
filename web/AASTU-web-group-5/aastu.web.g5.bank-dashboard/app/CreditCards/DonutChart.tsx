@@ -42,7 +42,7 @@ const chartConfig = {
 
 export default function DonutChart({ data }: DonutChartProps) {
 	return (
-		<Card className="flex flex-col border-none dark:bg-gray-900">
+		<Card className="flex flex-col border-none dark:bg-gray-800">
 			<CardContent className="flex-1 pb-0">
 				<ChartContainer
 					config={chartConfig}

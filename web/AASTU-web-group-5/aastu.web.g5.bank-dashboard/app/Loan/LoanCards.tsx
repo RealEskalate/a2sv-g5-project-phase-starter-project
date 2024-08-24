@@ -25,7 +25,7 @@ const LoanCards: React.FC<LoanCardsProps> = ({ data = [] }) => {
 		<div className="overflow-x-auto">
 			<div className="flex flex-nowrap gap-7 text-sm">
 				{/* Personal Loan Card */}
-				<div className="flex items-center gap-4 bg-white dark:bg-gray-900 sm:w-[48%] md:w-[30%] lg:w-[23%] p-6 rounded-3xl">
+				<div className="flex items-center gap-4 bg-white dark:bg-gray-800 sm:w-[48%] md:w-[30%] lg:w-[23%] p-6 rounded-3xl">
 					<div className="flex items-center justify-center rounded-full bg-[#E7EDFF] dark:opacity-90 w-24 h-16">
 						<Image src={UserImg} alt="Personal Loan" />
 					</div>
@@ -37,7 +37,7 @@ const LoanCards: React.FC<LoanCardsProps> = ({ data = [] }) => {
 					</div>
 				</div>
 				{/* Corporate Loan Card */}
-				<div className="flex items-center gap-4 bg-white dark:bg-gray-900 sm:w-[48%] md:w-[30%] lg:w-[23%] p-6 rounded-3xl">
+				<div className="flex items-center gap-4 bg-white dark:bg-gray-800 sm:w-[48%] md:w-[30%] lg:w-[23%] p-6 rounded-3xl">
 					<div className="flex items-center justify-center rounded-full bg-[#FFF5D9] dark:opacity-90 w-24 h-16">
 						<Image src={bagImg} alt="Corporate Loan" />
 					</div>
@@ -51,7 +51,7 @@ const LoanCards: React.FC<LoanCardsProps> = ({ data = [] }) => {
 					</div>
 				</div>
 				{/* Business Loan Card */}
-				<div className="flex items-center gap-4 bg-white dark:bg-gray-900 sm:w-[48%] md:w-[30%] lg:w-[23%] p-6 rounded-3xl">
+				<div className="flex items-center gap-4 bg-white dark:bg-gray-800 sm:w-[48%] md:w-[30%] lg:w-[23%] p-6 rounded-3xl">
 					<div className="flex items-center justify-center rounded-full bg-[#FFE0EB] dark:opacity-90 w-24 h-16">
 						<Image src={graphImg} alt="Business Loan" />
 					</div>
@@ -63,7 +63,7 @@ const LoanCards: React.FC<LoanCardsProps> = ({ data = [] }) => {
 					</div>
 				</div>
 				{/* Custom Loan Card */}
-				<div className="flex items-center gap-4 bg-white dark:bg-gray-900 sm:w-[48%] md:w-[30%] lg:w-[23%] p-6 rounded-3xl">
+				<div className="flex items-center gap-4 bg-white dark:bg-gray-800 sm:w-[48%] md:w-[30%] lg:w-[23%] p-6 rounded-3xl">
 					<div className="flex items-center justify-center rounded-full bg-[#DCFAF8] dark:opacity-90 w-24 h-16">
 						<Image src={supportImg} alt="Custom Loan" />
 					</div>

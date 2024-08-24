@@ -2,7 +2,6 @@ import React from 'react';
 import PaypalIcon from '../icons/PaypalIcon';
 import CreditIcon from '../icons/CreditCardIcon';
 import CoinIcon from '../icons/CoinIcon';
-// import { currencyFormat } from 'helpers/utils';
 
 function TransactionCard() {
   return (

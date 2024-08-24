@@ -1,4 +1,5 @@
-import React from "react";
+'use client';
+import React, { useEffect, useState } from "react";
 import dashboard from "../../../public/images/Dashboard.svg";
 import dashboardNone from "../../../public/images/Dashboard-none.svg";
 import transaction from "../../../public/images/transaction.svg";
@@ -18,15 +19,49 @@ import settingBlue from "../../../public/images/setting-blue.svg";
 import logo from "../../../public/images/Logo.svg";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // Import the usePathname hook
+import { useSelector } from 'react-redux';
+import { RootState } from "@/lib/redux/store";
+import { useRouter } from "next/navigation";
 
 interface Props {
   selected: string | string[];
 }
 
-const Sidebar = ({ selected }: Props) => {
+const Sidebar = () => {
+  const isSidebarVisible = useSelector((state: RootState) => state.menu.isSidebarVisible);
+  const pathname = usePathname();
+  const [selected, setSelected] = useState("Dashboard");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (pathname) {
+      const pathToItem: { [key: string]: string } = {
+        "/": "Dashboard",
+        "/transactions": "Transactions",
+        "/accounts": "Accounts",
+        "/investments": "Investments",
+        "/credit-cards": "Credit Cards",
+        "/loans": "Loans",
+        "/services": "Services",
+        "/setting": "Setting",
+      };
+
+      setSelected(pathToItem[pathname] || ""); 
+    }
+  }, [pathname]);
+
+  const sidebarStyle = `w-1/6 bg-white left-0 top-0 w-fit h-full fixed pt-1 ${isSidebarVisible ? '': 'hidden'} md:block z-20 ` 
+
+  
+  const handleRoute = (route: string) => {
+    // use next/router to navigate to the route
+    router.push(route);
+  }
+
   return (
-    <div className="w-1/6 bg-white absolute left-0 top-0 h-full pt-1 hidden md:block bg-fixed ">
-      <ul className="flex mt-5 justify-center space-y-7 flex-col">
+    <div className={sidebarStyle}>
+      <ul className="flex mt-5 justify-center space-y-7 flex-col mr-5">
           <div className="w-2/3 ml-10 md:block hidden">
             <Image src={logo} className="ml-1" alt="LOGO" />
           </div>
@@ -37,6 +72,7 @@ const Sidebar = ({ selected }: Props) => {
                 ? `text-[#2D60FF] relative font-semibold ] flex space-x-5`
                 : `text-[#B1B1B1] relative flex space-x-5  ` + `  cursor-pointer`
             }
+            onClick={() => handleRoute("/")}
           >
             {selected === "Dashboard" ? (
               <div>
@@ -157,6 +193,7 @@ const Sidebar = ({ selected }: Props) => {
               ? `text-[#2D60FF] relative font-semibold ] flex space-x-5`
               : `text-[#B1B1B1] relative flex space-x-5  ` + `  cursor-pointer`
           }
+          onClick={() => handleRoute("/services")}
         >
           {selected === "Services" ? (
             <div>

@@ -12,6 +12,7 @@ export default function ProgressComp({ currentStep }: { currentStep: any }) {
   const menuStep = ["Basic Information","Address Information","Personal Information"]
 
   // Helper to determine if the circle should be active or not
+  console.log(currentStep)
   const isActive = (step: number) => step <= currentStep;
 
   return (

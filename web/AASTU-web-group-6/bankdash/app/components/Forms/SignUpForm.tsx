@@ -95,7 +95,7 @@ const SignUpForm = () => {
           eiusmod tempor "
         </div>
         <div className="flex w-full gap-4 mt-6">
-          <ProgressComp />
+          <ProgressComp currentStep={step} />
           <div className="cont flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <div className="title text-white text-xl font-medium">Step-1</div>

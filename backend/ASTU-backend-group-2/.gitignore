@@ -11,3 +11,6 @@ bin/
 dummy.md
 assets/
 images/
+air.*
+.air.*
+/tmp

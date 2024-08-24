@@ -16,11 +16,14 @@ func NewProtectedBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mong
 	br := repository.NewBlogRepository(*db, entities.CollectionBlog)
 	ur := repository.NewUserRepository(*db, entities.CollectionUser)
 	cr := repository.NewCommentRepository(db)
+	rr := repository.NewReactionRepository(db)
+
 	bc := controller.BlogController{
-		Env:            env,
-		BlogUsecase:    usecase.NewBlogUsecase(br, timeout),
-		CommentUsecase: usecase.NewCommentUsecase(cr, timeout),
-		UserUsecase:    usecase.NewUserUsecase(ur, timeout),
+		Env:             env,
+		BlogUsecase:     usecase.NewBlogUsecase(br, timeout),
+		CommentUsecase:  usecase.NewCommentUsecase(cr, timeout),
+		UserUsecase:     usecase.NewUserUsecase(ur, timeout),
+		ReactionUsecase: usecase.NewReactionUsecase(rr, br, timeout),
 	}
 
 	group.POST("/blogs", bc.CreateBlog())
@@ -35,17 +38,20 @@ func NewProtectedBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mong
 	// // only authenticated users can access
 	group.PUT("/comments/:comment_id", bc.UpdateComment())
 	group.DELETE("/comments/:comment_id", bc.DeleteComment())
-
-	// group.POST("/blogs/:id/like", bc.CreateLike())
+	//like and dislike
+	group.POST("/blogs/:id/like", bc.Like())
+	group.POST("/blogs/:id/dislike", bc.Dislike())
 }
 
 func NewPublicBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
 	br := repository.NewBlogRepository(*db, entities.CollectionBlog)
 	cr := repository.NewCommentRepository(db)
+	// rr := repository.NewReactionRepository(db)
 	bc := controller.BlogController{
 		BlogUsecase:    usecase.NewBlogUsecase(br, timeout),
 		Env:            env,
 		CommentUsecase: usecase.NewCommentUsecase(cr, timeout),
+		// ReactionUsecase: usecase.NewReactionUsecase(rr, br, timeout),
 	}
 
 	group.GET("/blogs", bc.GetBlogs())

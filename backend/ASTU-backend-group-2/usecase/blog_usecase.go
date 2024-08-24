@@ -131,7 +131,7 @@ func (b *blogUsecase) GetBlogByID(c context.Context, blogID string) (entities.Bl
 	ctx, cancel := context.WithTimeout(c, b.contextTimeout)
 	defer cancel()
 
-	blog, err := b.blogRepository.GetBlogByID(ctx, blogID)
+	blog, err := b.blogRepository.GetBlogByID(ctx, blogID, true)
 	if err != nil {
 		return entities.Blog{}, err
 	}

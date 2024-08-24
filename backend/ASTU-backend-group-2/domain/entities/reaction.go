@@ -21,11 +21,15 @@ type Reaction struct {
 }
 
 type ReactionRepository interface {
-	GetReaction(c context.Context, blogID, userID string) (Reaction, error)
-	UpdateReaction(c context.Context, blogID, userID string, reaction Reaction) error
+	Like(c context.Context, blogID, userID string) error
+	Dislike(c context.Context, blogID, userID string) error
+	RemoveLike(c context.Context, blogID, userID string) error
+	RemoveDislike(c context.Context, blogID, userID string) error
+	IsPostLiked(c context.Context, blogID, userID string) (bool, error)
+	IsPostDisliked(c context.Context, blogID, userID string) (bool, error)
 }
 
 type ReactionUsecase interface {
 	ToggleLike(c context.Context, blogID, userID string) error
-	ToogleDislike(c context.Context, blogID, userID string) error
+	ToggleDislike(c context.Context, blogID, userID string) error
 }

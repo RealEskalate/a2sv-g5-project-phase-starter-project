@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"log"
+	"time"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	mongopagination "github.com/gobeam/mongo-go-pagination"
@@ -153,7 +153,7 @@ func getFiltered(c context.Context, collection *mongo.Collection, filter bson.M,
 	return blogs, paginatedData.Pagination, nil
 }
 
-func (br *blogRepository) GetBlogByID(c context.Context, blogID string) (entities.Blog, error) {
+func (br *blogRepository) GetBlogByID(c context.Context, blogID string, view bool) (entities.Blog, error) {
 	collection := br.database.Collection(br.collection)
 
 	ID, err := primitive.ObjectIDFromHex(blogID)
@@ -172,8 +172,10 @@ func (br *blogRepository) GetBlogByID(c context.Context, blogID string) (entitie
 
 	// increase the view count
 	// update the popularity
-	blog.ViewCount++
-	blog.UpdatePopularity()
+	if view {
+		blog.ViewCount++
+		blog.UpdatePopularity()
+	}
 
 	_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$set": blog})
 
@@ -192,12 +194,20 @@ func (br *blogRepository) GetBlogByID(c context.Context, blogID string) (entitie
 
 func (br *blogRepository) CreateBlog(c context.Context, newBlog *entities.Blog) (entities.Blog, error) {
 	collection := br.database.Collection(br.collection)
+	blog := entities.Blog{}
+	blog.ID = primitive.NewObjectID()
 
-	insertedBlog, err := collection.InsertOne(c, newBlog)
+	blog.Title = newBlog.Title
+	blog.Tags = newBlog.Tags
+	blog.Content = newBlog.Content
+	blog.CreatedAt = time.Now()
+	blog.UpdatedAt = time.Now()
+	_, err := collection.InsertOne(c, blog)
 
 	if err != nil {
 		return entities.Blog{}, err
 	}
+
 
 	fmt.Println("insertedBlog", insertedBlog.InsertedID)
 
@@ -223,7 +233,7 @@ func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBl
 		return entities.Blog{}, err
 	}
 
-	blog, err := br.GetBlogByID(c, blogID)
+	blog, err := br.GetBlogByID(c, blogID, false)
 	if err != nil {
 		return entities.Blog{}, err
 	}
@@ -345,37 +355,69 @@ func getFilteredBlog(c context.Context, collection *mongo.Collection, limit int6
 	return blogs, paginatedData.Pagination, nil
 }
 func (br *blogRepository) UpdateLikeCount(c context.Context, blogID string, increment bool) error {
-
 	collection := br.database.Collection(br.collection)
 
+	// Convert blogID to a MongoDB ObjectID
 	ID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return err
 	}
 
-	if increment {
-		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"like_count": 1}})
-	} else {
-		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"like_count": -1}})
+	// Define the aggregation pipeline for updating the counts
+	pipeline := bson.A{
+		bson.M{
+			"$set": bson.M{
+				"like_count":    bson.M{"$size": "$likes"},
+				"dislike_count": bson.M{"$size": "$dislikes"},
+			},
+		},
 	}
 
-	return err
+	// Perform the update with an aggregation pipeline
+	_, err = collection.UpdateOne(
+		c,
+		bson.M{"_id": ID},
+		pipeline,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
-func (br *blogRepository) UpdateDislikeCount(c context.Context, blogID string, increment bool) error {
 
+func (br *blogRepository) UpdateDislikeCount(c context.Context, blogID string, increment bool) error {
 	collection := br.database.Collection(br.collection)
 
+	// Convert blogID to a MongoDB ObjectID
 	ID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return err
 	}
 
-	if increment {
-		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"dislike_count": 1}})
-	} else {
-		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"dislike_count": -1}})
+	// Define the aggregation pipeline for updating the counts
+	pipeline := bson.A{
+		bson.M{
+			"$set": bson.M{
+				"like_count":    bson.M{"$size": "$likes"},
+				"dislike_count": bson.M{"$size": "$dislikes"},
+			},
+		},
 	}
-	return err
+
+	// Perform the update with an aggregation pipeline
+	_, err = collection.UpdateOne(
+		c,
+		bson.M{"_id": ID},
+		pipeline,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 func (br *blogRepository) UpdateCommentCount(c context.Context, blogID string, increment bool) error {
 	collection := br.database.Collection(br.collection)

@@ -5,7 +5,6 @@ import (
 	"astu-backend-g1/infrastructure"
 	usecase "astu-backend-g1/usecases"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,7 +38,6 @@ func (cont *BlogController) HandleCreateBlog(ctx *gin.Context) {
 	}
 }
 
-	
 func (cont *BlogController) HandleGetAllBlogs(ctx *gin.Context) {
 	blogs, err := cont.usecase.GetAllBlogs()
 	if err != nil {
@@ -175,7 +173,7 @@ func (cont *BlogController) HandleCommentOnBlog(ctx *gin.Context) {
 		return
 	}
 	newComment.AuthorId = claims.ID
-	err = cont.usecase.AddComment(ctx.Param("blogId"), newComment)
+	err = cont.usecase.AddComment(newComment)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -184,7 +182,7 @@ func (cont *BlogController) HandleCommentOnBlog(ctx *gin.Context) {
 }
 
 func (cont *BlogController) HandleGetAllComments(ctx *gin.Context) {
-	comments, err := cont.usecase.GetAllComments(ctx.Param("blogId"))
+	comments, err := cont.usecase.GetAllComments()
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -193,7 +191,7 @@ func (cont *BlogController) HandleGetAllComments(ctx *gin.Context) {
 }
 
 func (cont *BlogController) HandleGetCommentById(ctx *gin.Context) {
-	comments, err := cont.usecase.GetCommentById(ctx.Param("blogId"), ctx.Param("commentId"))
+	comments, err := cont.usecase.GetCommentById(ctx.Param("blogId"))
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -204,7 +202,7 @@ func (cont *BlogController) HandleGetCommentById(ctx *gin.Context) {
 func (cont *BlogController) HandleCommentLikeOrDislike(ctx *gin.Context) {
 	interactionType := ctx.Param("type")
 	commentId := ctx.Param("commentId")
-	blogId := ctx.Param("blogId")
+	// blogId := ctx.Param("blogId")
 	claims, err := infrastructure.GetClaims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "could not get the claims"})
@@ -212,21 +210,21 @@ func (cont *BlogController) HandleCommentLikeOrDislike(ctx *gin.Context) {
 	}
 
 	if interactionType == "like" {
-		err := cont.usecase.LikeComment(blogId, commentId, claims.ID)
+		err := cont.usecase.LikeComment(commentId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {
 			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment liked successfully"})
 		}
 	} else if interactionType == "dislike" {
-		err := cont.usecase.DislikeComment(blogId, commentId, claims.ID)
+		err := cont.usecase.DislikeComment(commentId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {
 			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment disliked successfully"})
 		}
 	} else if interactionType == "view" {
-		err := cont.usecase.ViewComment(blogId, commentId, claims.ID)
+		err := cont.usecase.ViewComment(commentId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {
@@ -250,7 +248,7 @@ func (cont *BlogController) HandleReplyOnComment(ctx *gin.Context) {
 		return
 	}
 	newReply.AuthorId = claims.ID
-	err = cont.usecase.ReplyToComment(ctx.Param("blogId"), ctx.Param("commentId"), newReply)
+	err = cont.usecase.ReplyToComment(newReply)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -259,7 +257,7 @@ func (cont *BlogController) HandleReplyOnComment(ctx *gin.Context) {
 }
 
 func (cont *BlogController) HandleGetAllRepliesForComment(ctx *gin.Context) {
-	replies, err := cont.usecase.GetAllRepliesForComment(ctx.Param("blogId"), ctx.Param("commentId"))
+	replies, err := cont.usecase.GetAllReplies()
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -268,7 +266,7 @@ func (cont *BlogController) HandleGetAllRepliesForComment(ctx *gin.Context) {
 }
 
 func (cont *BlogController) HandleGetReplyById(ctx *gin.Context) {
-	replies, err := cont.usecase.GetReplyById(ctx.Param("blogId"), ctx.Param("commentId"), ctx.Param("replyId"))
+	replies, err := cont.usecase.GetReplyById(ctx.Param("replyId"))
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -278,8 +276,8 @@ func (cont *BlogController) HandleGetReplyById(ctx *gin.Context) {
 
 func (cont *BlogController) HandleReplyLikeOrDislike(ctx *gin.Context) {
 	like := ctx.Param("type")
-	commentId := ctx.Param("commentId")
-	blogId := ctx.Param("blogId")
+	// commentId := ctx.Param("commentId")
+	// blogId := ctx.Param("blogId")
 	replyId := ctx.Param("replyId")
 	claims, err := infrastructure.GetClaims(ctx)
 	if err != nil {
@@ -287,21 +285,21 @@ func (cont *BlogController) HandleReplyLikeOrDislike(ctx *gin.Context) {
 		return
 	}
 	if like == "like" {
-		err := cont.usecase.LikeReply(blogId, commentId, replyId, claims.ID)
+		err := cont.usecase.LikeReply(replyId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {
 			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply liked successfully"})
 		}
 	} else if like == "dislike" {
-		err := cont.usecase.DislikeReply(blogId, commentId, replyId, claims.ID)
+		err := cont.usecase.DislikeReply(replyId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {
 			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply disliked successfully"})
 		}
 	} else if like == "view" {
-		err := cont.usecase.ViewReply(blogId, commentId, replyId, claims.ID)
+		err := cont.usecase.ViewReply(replyId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {

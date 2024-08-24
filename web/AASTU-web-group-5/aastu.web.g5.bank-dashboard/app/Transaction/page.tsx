@@ -57,6 +57,68 @@ const Transactions: React.FC = () => {
     }
   };
 
+<<<<<<< HEAD
+  const fetchRecentData = async () => {
+    if (!accessToken) {
+      setError("No access token available");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `https://bank-dashboard-rsf1.onrender.com/transactions?page=0&size=5`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      const transformedData = response.data.data.content.map((item: any) => ({
+        column1: item.description,
+        column2: item.transactionId,
+        column3: item.type,
+        column4: "N/A", // Update this if you have card info
+        column5: new Date(item.date).toLocaleDateString(),
+        column6: `$${item.amount.toFixed(2)}`, // Format amount as currency
+        column7: "N/A", // Update this if you have receipt info
+      }));
+
+      setData(transformedData);
+    } catch (error) {
+      setError("Failed to fetch data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchIncomeData = async () => {
+    if (!accessToken) {
+      setError("No access token available");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://bank-dashboard-rsf1.onrender.com/transactions/incomes?page=0&size=5`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+      setData(data.data.content || []);
+    } catch (error) {
+      setError("Failed to fetch income data");
+    } finally {
+      setLoading(false);
+    }
+  };
+=======
   useEffect(() => {
     console.log("Updated expenseData:", expenseData);
   }, [expenseData]);
@@ -64,6 +126,7 @@ const Transactions: React.FC = () => {
   useEffect(() => {
     fetchExpenseData();
   }, [accessToken]);
+>>>>>>> aastu.web.g5.main
 
   const fetchCardData = async (page: number) => {
     if (!accessToken) {
@@ -95,6 +158,8 @@ const Transactions: React.FC = () => {
     }
   };
 
+<<<<<<< HEAD
+=======
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -123,15 +188,33 @@ const Transactions: React.FC = () => {
     }
   };
 
+>>>>>>> aastu.web.g5.main
   useEffect(() => {
     fetchCardData(0);
-    fetchData();
-  }, [accessToken]);
+    fetchExpenseData(); // Always fetch expense data for BarChartComponent
+
+    switch (activeLink) {
+      case "recent":
+        fetchRecentData();
+        break;
+      case "income":
+        fetchIncomeData();
+        break;
+      case "expenses":
+        // No action needed here, since expenseData is fetched already
+        break;
+      default:
+        break;
+    }
+  }, [activeLink, accessToken]);
 
   const handleLinkClick = (linkName: string) => {
     setActiveLink(linkName);
   };
+<<<<<<< HEAD
+=======
 
+>>>>>>> aastu.web.g5.main
 
   return (
     <div className="bg-[#F5F7FA] space-y-8 w-[95%] pt-3 overflow-hidden mx-auto">
@@ -209,3 +292,4 @@ const Transactions: React.FC = () => {
 };
 
 export default Transactions;
+``

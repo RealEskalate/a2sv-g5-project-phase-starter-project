@@ -12,6 +12,8 @@ class ChatEntity extends Equatable {
     required this.user1,
     required this.user2,
   });
+  // add getter for id
+  String get getId => _id;
   @override
   List<Object?> get props => [_id, user1, user2];
 }

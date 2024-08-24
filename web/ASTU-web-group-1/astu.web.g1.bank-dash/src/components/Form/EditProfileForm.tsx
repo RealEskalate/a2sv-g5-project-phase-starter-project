@@ -29,6 +29,7 @@ const editProfileSchema = z.object({
   city: z.string().min(1, "City is required"),
   postalCode: z.string().min(1, "Postal code is required"),
   country: z.string().min(1, "Country is required"),
+  profilePicture: z.string(),
 });
 
 const EditProfileForm = () => {
@@ -40,7 +41,7 @@ const EditProfileForm = () => {
   useEffect(() => {
     if (isSuccess && data) {
       dispatch(setProfile(data?.data));
-      console.log(data.data);
+      // console.log(data.data);
     }
   }, [data, dispatch]);
 
@@ -48,6 +49,7 @@ const EditProfileForm = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: zodResolver(editProfileSchema),
     defaultValues: {
@@ -60,12 +62,29 @@ const EditProfileForm = () => {
       city: getData?.city,
       postalCode: getData?.postalCode,
       country: getData?.country,
+      profilePicture: getData?.profilePicture,
     },
   });
   const [updateUser, { isLoading }] = useUpdateUserMutation();
 
+  const handleFileChange = (e: any) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        dispatch(setProfile({ profilePicture: reader.result as string }));
+        reset({ profilePicture: reader.result as string });
+      };
+
+      reader.readAsDataURL(file);
+    } else {
+      console.log("No data");
+    }
+  };
+
   if (error) {
-    return <h1>An Error Occured..</h1>;
+    return <h1>An Error Occurred..</h1>;
   }
 
   const onSubmit = (data: UpdatedUser) => {
@@ -170,6 +189,12 @@ const EditProfileForm = () => {
               placeholder={data?.data?.country}
             />
           </div>
+          <input
+            type="file"
+            id="profilePicture"
+            className="hidden"
+            onChange={handleFileChange}
+          />
           <div className="flex justify-end">
             <button
               type="submit"

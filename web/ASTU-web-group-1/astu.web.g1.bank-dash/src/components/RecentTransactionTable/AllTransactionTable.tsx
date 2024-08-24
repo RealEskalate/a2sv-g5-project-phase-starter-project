@@ -88,7 +88,7 @@ const AllTransactionTable = () => {
                       }`}
                     >
                       {datax.amount < 0
-                        ? "-$" + datax.amount
+                        ? "-$" + -(datax.amount)
                         : "+$" + datax.amount}
                     </td>
                     <td className="hidden lg:table-cell py-3 w-24 md:w-32">

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../auth/domain/entities/user_data_entity.dart';
 import '../../domain/entities/product_entity.dart';
 import '../pages/product_details_page.dart';
 
@@ -19,7 +20,9 @@ class ProductCard extends StatelessWidget {
                   imageUrl: product.imageUrl,
                   price: product.price,
                   description: product.description,
-                  id: product.id))
+                  id: product.id,
+                  seller: const UserDataEntity(
+                      id: 'id', email: 'email', name: 'name')))
         },
         splashColor: Colors.indigoAccent.shade400,
         child: Column(

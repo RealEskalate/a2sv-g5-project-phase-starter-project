@@ -13,8 +13,8 @@ type RegisterUserDto struct {
 	Bio            string    `json:"bio"`
 	EmailVerified  bool      `bson:"email_verified" default:"false"`
 	Name           string    `json:name`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	CreatedAt      time.Time `json:"createdat"`
+	UpdatedAt      time.Time `json:"updatedat"`
 }
 
 type LoginUserDto struct {

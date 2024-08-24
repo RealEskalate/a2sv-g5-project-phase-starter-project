@@ -34,9 +34,11 @@ func Envinit() {
 		log.Fatal("Google_Callback is not set")
 	}
 
-	GROQ_API_KEY := os.Getenv("GROQ_API_KEY")
-	if GROQ_API_KEY == "" {
+	GROQKEY := os.Getenv("GROQ_API_KEY")
+	if GROQKEY == "" {
 		log.Fatal("GROQ_API_KEY is not set")
+	} else {
+		GROQ_API_KEY = GROQKEY
 	}
 	JwtSecretKey := os.Getenv("JWT_SECRETE_KEY")
 	if JwtSecretKey != "" {

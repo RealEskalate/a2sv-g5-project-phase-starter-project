@@ -29,12 +29,12 @@ func NewBlogStorage(db *mongo.Database) blogDomain.BlogRepository {
 
 // DeleteCommentsByBlogID implements blog.BlogRepository.
 func (b *BlogStorage) DeleteCommentsByBlogID(ctx context.Context, blogID string) error {
-	blogIDPrimitive, err := primitive.ObjectIDFromHex(blogID)
+	_, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return blogDomain.ErrInvalidID
 	}
 
-	filter := bson.D{{Key: "blog_id", Value: blogIDPrimitive}}
+	filter := bson.D{{Key: "blog_id", Value: blogID}}
 	_, err = b.db.Collection(commentCollection).DeleteMany(ctx, filter)
 	if err != nil {
 		return blogDomain.ErrUnableToDeleteComments
@@ -45,12 +45,12 @@ func (b *BlogStorage) DeleteCommentsByBlogID(ctx context.Context, blogID string)
 
 // DeleteDislikesByBlogID implements blog.BlogRepository.
 func (b *BlogStorage) DeleteDislikesByBlogID(ctx context.Context, blogID string) error {
-	blogIDPrimitive, err := primitive.ObjectIDFromHex(blogID)
+	_, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return blogDomain.ErrInvalidID
 	}
 
-	filter := bson.D{{Key: "blog_id", Value: blogIDPrimitive}}
+	filter := bson.D{{Key: "blog_id", Value: blogID}}
 	_, err = b.db.Collection(dislikeCollection).DeleteMany(ctx, filter)
 	if err != nil {
 		return blogDomain.ErrUnableToDeleteDislikes
@@ -61,12 +61,12 @@ func (b *BlogStorage) DeleteDislikesByBlogID(ctx context.Context, blogID string)
 
 // DeleteLikesByBlogID implements blog.BlogRepository.
 func (b *BlogStorage) DeleteLikesByBlogID(ctx context.Context, blogID string) error {
-	blogIDPrimitive, err := primitive.ObjectIDFromHex(blogID)
+	_, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return blogDomain.ErrInvalidID
 	}
 
-	filter := bson.D{{Key: "blog_id", Value: blogIDPrimitive}}
+	filter := bson.D{{Key: "blog_id", Value: blogID}}
 	_, err = b.db.Collection(likeCollection).DeleteMany(ctx, filter)
 	if err != nil {
 		return blogDomain.ErrUnableToDeleteLikes
@@ -77,12 +77,12 @@ func (b *BlogStorage) DeleteLikesByBlogID(ctx context.Context, blogID string) er
 
 // GetCommentByID implements blog.BlogRepository.
 func (b *BlogStorage) GetCommentByID(ctx context.Context, id string) (blogDomain.Comment, error) {
-	blogIDPrimitive, err := primitive.ObjectIDFromHex(id)
+	_, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return blogDomain.Comment{}, blogDomain.ErrInvalidID
 	}
 
-	filter := bson.D{{Key: "_id", Value: blogIDPrimitive}}
+	filter := bson.D{{Key: "_id", Value: id}}
 	comment := blogDomain.Comment{}
 	err = b.db.Collection(commentCollection).FindOne(ctx, filter).Decode(&comment)
 	if err != nil {
@@ -97,6 +97,8 @@ func (b *BlogStorage) GetCommentByID(ctx context.Context, id string) (blogDomain
 
 // CreateBlog implements BlogRepository.
 func (b *BlogStorage) CreateBlog(ctx context.Context, blog blogDomain.Blog) (string, error) {
+	blog.ID = primitive.NewObjectID().Hex()
+
 	result, err := b.db.Collection(blogCollection).InsertOne(ctx, blog)
 	if err != nil {
 		log.Default().Printf("Failed to create blog: %v", err)
@@ -108,6 +110,8 @@ func (b *BlogStorage) CreateBlog(ctx context.Context, blog blogDomain.Blog) (str
 
 // CreateComment implements BlogRepository.
 func (b *BlogStorage) CreateComment(ctx context.Context, comment blogDomain.Comment) (string, error) {
+	comment.ID = primitive.NewObjectID().Hex()
+
 	result, err := b.db.Collection(commentCollection).InsertOne(ctx, comment)
 	if err != nil {
 		log.Default().Printf("Failed to create comment: %v", err)
@@ -119,12 +123,12 @@ func (b *BlogStorage) CreateComment(ctx context.Context, comment blogDomain.Comm
 
 // DeleteBlog implements BlogRepository.
 func (b *BlogStorage) DeleteBlog(ctx context.Context, id string) error {
-	blogIDPrimitive, err := primitive.ObjectIDFromHex(id)
+	_, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return blogDomain.ErrInvalidID
 	}
 
-	filter := bson.D{{Key: "_id", Value: blogIDPrimitive}}
+	filter := bson.D{{Key: "_id", Value: id}}
 
 	result, err := b.db.Collection(blogCollection).DeleteOne(ctx, filter)
 
@@ -142,12 +146,12 @@ func (b *BlogStorage) DeleteBlog(ctx context.Context, id string) error {
 
 // DeleteComment implements BlogRepository.
 func (b *BlogStorage) DeleteComment(ctx context.Context, id string) error {
-	commentIDPrimitive, err := primitive.ObjectIDFromHex(id)
+	_, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return blogDomain.ErrInvalidID
 	}
 
-	filter := bson.D{{Key: "_id", Value: commentIDPrimitive}}
+	filter := bson.D{{Key: "_id", Value: id}}
 
 	result, err := b.db.Collection(commentCollection).DeleteOne(ctx, filter)
 
@@ -165,6 +169,8 @@ func (b *BlogStorage) DeleteComment(ctx context.Context, id string) error {
 
 // DislikeBlog implements BlogRepository.
 func (b *BlogStorage) DislikeBlog(ctx context.Context, dislike blogDomain.Dislike) error {
+	dislike.ID = primitive.NewObjectID().Hex()
+
 	_, err := b.db.Collection(dislikeCollection).InsertOne(ctx, dislike)
 	if err != nil {
 		log.Default().Printf("Failed to dislike blog: %v", err)
@@ -176,12 +182,12 @@ func (b *BlogStorage) DislikeBlog(ctx context.Context, dislike blogDomain.Dislik
 
 // GetBlogByID implements BlogRepository.
 func (b *BlogStorage) GetBlogByID(ctx context.Context, id string) (blogDomain.Blog, error) {
-	blogIDPrimitive, err := primitive.ObjectIDFromHex(id)
+	_, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return blogDomain.Blog{}, blogDomain.ErrInvalidID
 	}
 
-	filter := bson.D{{Key: "_id", Value: blogIDPrimitive}}
+	filter := bson.D{{Key: "_id", Value: id}}
 
 	var blogData blogDomain.Blog
 	err = b.db.Collection(blogCollection).FindOne(ctx, filter).Decode(&blogData)
@@ -243,12 +249,12 @@ func (b *BlogStorage) GetBlogs(ctx context.Context, filterQuery blogDomain.Filte
 
 // GetCommentsByBlogID implements BlogRepository.
 func (b *BlogStorage) GetCommentsByBlogID(ctx context.Context, blogID string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[blogDomain.Comment], error) {
-	blogIDPrimitive, err := primitive.ObjectIDFromHex(blogID)
+	_, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return infrastructure.PaginationResponse[blogDomain.Comment]{}, blogDomain.ErrInvalidID
 	}
 
-	filter := bson.D{{Key: "blog_id", Value: blogIDPrimitive}}
+	filter := bson.D{{Key: "blog_id", Value: blogID}}
 
 	findOptions := options.Find()
 	findOptions.SetSkip(int64(pagination.Limit*pagination.Page - 1))
@@ -274,6 +280,8 @@ func (b *BlogStorage) GetCommentsByBlogID(ctx context.Context, blogID string, pa
 
 // LikeBlog implements BlogRepository.
 func (b *BlogStorage) LikeBlog(ctx context.Context, like blogDomain.Like) error {
+	like.ID = primitive.NewObjectID().Hex()
+
 	_, err := b.db.Collection(likeCollection).InsertOne(ctx, like)
 	if err != nil {
 		log.Default().Printf("Failed to like blog: %v", err)
@@ -315,12 +323,12 @@ func (b *BlogStorage) SearchBlogs(ctx context.Context, query string, pagination 
 
 // UpdateBlog implements BlogRepository.
 func (b *BlogStorage) UpdateBlog(ctx context.Context, id string, blog blogDomain.Blog) error {
-	blogIDPrimitive, err := primitive.ObjectIDFromHex(id)
+	_, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return blogDomain.ErrInvalidID
 	}
 
-	filter := bson.D{{Key: "_id", Value: blogIDPrimitive}}
+	filter := bson.D{{Key: "_id", Value: id}}
 
 	result, err := b.db.Collection(blogCollection).ReplaceOne(ctx, filter, blog)
 	if err != nil {

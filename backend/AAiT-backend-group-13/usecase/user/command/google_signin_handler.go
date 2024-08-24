@@ -1,8 +1,6 @@
 package usercmd
 
 import (
-	"fmt"
-
 	er "github.com/group13/blog/domain/errors"
 	"github.com/group13/blog/infrastructure/jwt"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
@@ -47,8 +45,6 @@ func (h *GoogleSignInHandler) Handle(command GoogleSigninCommand) (*result.Login
 		}
 		return nil, err
 	}
-
-	fmt.Println("user", user)
 
 	user.MakeActive()
 

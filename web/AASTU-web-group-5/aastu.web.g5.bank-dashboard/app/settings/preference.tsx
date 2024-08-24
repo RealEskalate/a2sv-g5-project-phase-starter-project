@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setUser } from "../redux/slice/userSlice";
 import { RootState } from "../redux/store";
 import User from "../../type/user";
+
 interface ExtendedUser {
 	name?: string;
 	email?: string;
@@ -31,7 +32,7 @@ function Preference() {
 	const [apiError, setApiError] = useState("");
 
 	const user = useSelector((state: RootState) => state.user as User);
-	console.log(user, "11111111111111");
+	const darkMode = useSelector((state: RootState) => state.theme.darkMode);
 	const dispatch = useDispatch();
 
 	const {
@@ -59,9 +60,11 @@ function Preference() {
 			);
 		}
 	}, [users, setValue, user]);
+
 	if (!users) {
 		return <></>;
 	}
+
 	const handleDigitalCurrencyChange = () =>
 		setDigitalCurrency(!digitalCurrency);
 	const handleMerchantOrderChange = () => setMerchantOrder(!merchantOrder);
@@ -79,7 +82,7 @@ function Preference() {
 			accountRecommendations: accountRecommendations,
 			twoFactorAuthentication: true,
 		};
-		console.log(updatedData, "upadted data ");
+		console.log(updatedData, "updated data ");
 		try {
 			const response = await axios.put(
 				"https://bank-dashboard-rsf1.onrender.com/user/update-preference",
@@ -112,15 +115,20 @@ function Preference() {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)}>
-			<div className="flex flex-wrap flex-col md:flex-row md:gap-10 lg:gap-12 mt-10 md:mt-12 mx-4 dark:text-[#fff]">
+		<form
+			onSubmit={handleSubmit(onSubmit)}
+			className={`${
+				darkMode ? "bg-gray-900 text-white" : "bg-white text-neutral-800"
+			}`}
+		>
+			<div className="flex flex-wrap flex-col md:flex-row md:gap-10 lg:gap-12 mt-10 md:mt-12 mx-4">
 				<div>
-					<div className="dark:text-[#fff">Currency</div>
+					<div>Currency</div>
 					<input
 						type="text"
-						className={`border-slate-200 border-[1px] w-full h-10 mt-3 rounded-3xl md:w-[20rem] lg:w-[30rem] dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff] ${
+						className={`border-slate-200 border-[1px] w-full h-10 mt-3 rounded-3xl md:w-[20rem] lg:w-[30rem] ${
 							errors.currency ? "border-red-500" : ""
-						}`}
+						} ${darkMode ? "bg-gray-800 text-white" : ""}`}
 						style={{ paddingLeft: "1.25rem" }}
 						placeholder="USD"
 						{...register("currency", { required: "Currency is required" })}
@@ -132,12 +140,12 @@ function Preference() {
 					)}
 				</div>
 				<div>
-					<div className="dark:text-[#fff]">Time Zone</div>
+					<div>Time Zone</div>
 					<input
 						type="text"
-						className={`border-slate-200 border-[1px] w-full h-10 mt-3 rounded-2xl md:w-[20rem] lg:w-[30rem] dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff] ${
+						className={`border-slate-200 border-[1px] w-full h-10 mt-3 rounded-2xl md:w-[20rem] lg:w-[30rem] ${
 							errors.timeZone ? "border-red-500" : ""
-						}`}
+						} ${darkMode ? "bg-gray-800 text-white" : ""}`}
 						placeholder="(GMT-12:00) International Date Line West"
 						style={{ paddingLeft: "1.25rem" }}
 						{...register("timeZone", { required: "Time Zone is required" })}
@@ -149,7 +157,11 @@ function Preference() {
 					)}
 				</div>
 			</div>
-			<div className="mt-6 md:mt-8 text-slate-700 text-sm md:text-base lg:text-[17px] dark:text-[#fff]">
+			<div
+				className={`mt-6 md:mt-8 text-sm md:text-base lg:text-[17px] ${
+					darkMode ? "text-white" : "text-slate-700"
+				}`}
+			>
 				Notification
 				<div className="flex flex-col gap-4 mt-5 md:mt-6">
 					<div
@@ -182,7 +194,9 @@ function Preference() {
 			<div className="flex justify-end mt-16 md:mt-18">
 				<button
 					type="submit"
-					className="border-none bg-blue-700 text-white w-full h-12 rounded-full md:w-[12rem] text-[13px] md:text-base"
+					className={`border-none w-full h-12 rounded-full md:w-[12rem] text-[13px] md:text-base ${
+						darkMode ? "bg-blue-500 text-white" : "bg-blue-700 text-white"
+					}`}
 				>
 					Save
 				</button>

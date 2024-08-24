@@ -22,11 +22,13 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${inter.className} dark:bg-gray-900`}>
+			<body className={`${inter.className}`}>
 				<SessionProvider>
 					<Provider store={store}>
 						<PersistGate loading={null} persistor={persistor}>
-							<LayoutContent>{children}</LayoutContent>
+							<LayoutContent>
+								<div className=" dark:bg-gray-900">{children}</div>
+							</LayoutContent>
 						</PersistGate>
 					</Provider>
 				</SessionProvider>
@@ -60,12 +62,12 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 					toggleSidebar={toggleSidebar}
 				/>
 			)}
-			<div className="flex flex-col flex-1 transition-all duration-300">
+			<div className="flex flex-col dark:bg-gray-900 flex-1 transition-all duration-300">
 				<NavBar
 					toggleSidebar={toggleSidebar}
 					isSidebarVisible={isSidebarVisible}
 				/>
-				<main>{children}</main>
+				<main className=" dark:bg-gray-900">{children}</main>
 			</div>
 		</div>
 	);
@@ -85,7 +87,7 @@ function SidebarWrapper({
 			<div
 				className={`fixed inset-0 bg-white z-50 sm:static sm:block ${
 					isSidebarVisible ? "block" : "hidden"
-				} dark:bg-gray-800 dark:text-white pr-10`}
+				} dark:bg-gray-900 dark:text-white `}
 			>
 				<SideBar
 					isSidebarVisible={isSidebarVisible}

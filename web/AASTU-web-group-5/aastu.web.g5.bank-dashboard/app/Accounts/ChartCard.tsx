@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { TrendingUp } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/redux/store";
 import {
 	Bar,
 	BarChart,
-	CartesianGrid,
 	XAxis,
 	YAxis,
 	Tooltip,
@@ -14,13 +15,14 @@ import {
 import { Card, CardContent } from "../../@/components/ui/card";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-
 interface ExtendedUser {
 	name?: string;
 	email?: string;
 	image?: string;
 	accessToken?: string;
 }
+
+// Configuration for chart colors
 const chartConfig = {
 	debited: {
 		label: "Debited",
@@ -39,6 +41,7 @@ const getDayName = (dateString) => {
 };
 
 export default function Component() {
+	const { data: session } = useSession();
 	const [chartData, setChartData] = useState([
 		{ day: "Mon", debited: 0, credited: 0 },
 		{ day: "Tue", debited: 0, credited: 0 },
@@ -48,12 +51,11 @@ export default function Component() {
 		{ day: "Sat", debited: 0, credited: 0 },
 		{ day: "Sun", debited: 0, credited: 0 },
 	]);
-	const { data: session, status } = useSession();
-	const user = session?.user as ExtendedUser;
-	const accessToken = user.accessToken;
+	const user = session.user as ExtendedUser;
+	const darkmode = useSelector((state: RootState) => state.theme.darkMode);
 
 	useEffect(() => {
-		const token = `Bearer ${accessToken}`;
+		const token = `Bearer ${user?.accessToken}`;
 
 		const fetchData = async () => {
 			try {
@@ -80,6 +82,7 @@ export default function Component() {
 				const expensesData = expensesResponse.data.data.content;
 				const incomesData = incomesResponse.data.data.content;
 
+				// Initialize a map to accumulate debited and credited amounts by day
 				const dataMap = {
 					Mon: { debited: 12000, credited: 10000 },
 					Tue: { debited: 15000, credited: 10000 },
@@ -119,12 +122,20 @@ export default function Component() {
 		};
 
 		fetchData();
-	}, [accessToken, session]);
+	}, [session]);
 
 	return (
-		<Card className="relative h-[364px] bg-white dark:bg-gray-900 w-full">
+		<Card
+			className={`relative h-[364px] w-full ${
+				darkmode ? "bg-gray-800 text-white" : "bg-white text-black"
+			}`}
+		>
 			{/* Color Titles at the Top Right */}
-			<div className="absolute top-0 right-0 p-2 flex gap-2 bg-white dark:bg-gray-900">
+			<div
+				className={`absolute top-0 right-0 p-2 flex gap-2 ${
+					darkmode ? "bg-gray-800" : "bg-white"
+				}`}
+			>
 				<span className="flex items-center gap-1">
 					<span
 						className="w-3 h-3 inline-block rounded-full"
@@ -141,7 +152,7 @@ export default function Component() {
 				</span>
 			</div>
 
-			<CardContent className="flex  flex-col h-[calc(100%-2rem)] w-full">
+			<CardContent className=" p-3 flex flex-col h-[calc(100%-2rem)] w-full">
 				{/* Transaction Summary */}
 				<div className="mb-1 text-sm">
 					<div className="flex gap-2 font-medium leading-none">
@@ -157,7 +168,6 @@ export default function Component() {
 				<div className="pt-7 w-full flex-1 h-[calc(100%-2rem)] pb-0">
 					<ResponsiveContainer width="100%" height="100%">
 						<BarChart data={chartData}>
-							<CartesianGrid strokeDasharray="3 3" strokeWidth={0.5} />
 							<XAxis
 								dataKey="day"
 								tickLine={false}
@@ -166,13 +176,6 @@ export default function Component() {
 								tick={{ fontSize: 12 }}
 								strokeWidth={0.5}
 							/>
-							{/* <YAxis
-                width={70} // Increased width for better visibility of large numbers
-                tickMargin={10}
-                tick={{ fontSize: 9 }} // Adjust font size if necessary
-                strokeWidth={0.5}
-                // padding={{ right: 10 }} // Adding padding for better visibility
-              /> */}
 							<Tooltip />
 							<Bar
 								dataKey="debited"

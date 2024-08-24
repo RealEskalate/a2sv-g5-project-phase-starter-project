@@ -1,9 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import Toggle from "./toogle";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import Error from "../error";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+
 interface ExtendedUser {
 	name?: string;
 	email?: string;
@@ -22,6 +26,7 @@ export default function Security() {
 	const { data: session } = useSession();
 	const user = session.user as ExtendedUser;
 	const [successMessage, setSuccessMessage] = useState("");
+	const darkMode = useSelector((state: RootState) => state.theme.darkMode);
 
 	const key: string = user.accessToken || "";
 	const handleSubmit = async (e) => {
@@ -33,7 +38,7 @@ export default function Security() {
 
 		try {
 			const response = await axios.post(
-				`https://bank-dashboard-1tst.onrender.com/auth/change_password`,
+				`https://bank-dashboard-rsf1.onrender.com/auth/change_password`,
 				data,
 				{
 					headers: {
@@ -47,6 +52,7 @@ export default function Security() {
 				const result = response.data;
 				if (result.success) {
 					setSuccessMessage("Password changed successfully!");
+					// signOut()
 				} else {
 					setApiError(result.message || "Failed to change password.");
 				}
@@ -62,19 +68,37 @@ export default function Security() {
 	};
 
 	return (
-		<div className="text-[16px]">
-			<div className="text-slate-700 dark:text-[#fff] text-sm md:text-base lg:text-[17px]">
+		<div
+			className={`text-[16px] ${
+				darkMode ? "bg-gray-900 text-white" : "bg-white text-neutral-800"
+			}`}
+		>
+			<Error session={session} />
+
+			<div
+				className={`text-sm md:text-base lg:text-[17px] ${
+					darkMode ? "text-white" : "text-slate-700"
+				}`}
+			>
 				Two-factor Authentication
 			</div>
 			<div className="flex gap-5 md:gap-6 mt-4">
 				<Toggle />
-				<div className="text-slate-700 dark:text-[#fff] text-sm md:text-base lg:text-[17px]">
+				<div
+					className={`text-sm md:text-base lg:text-[17px] ${
+						darkMode ? "text-white" : "text-slate-700"
+					}`}
+				>
 					Enable or disable two-factor authentication
 				</div>
 			</div>
 
 			<form onSubmit={handleSubmit} className="mt-10">
-				<div className="text-slate-700 text-sm md:text-base lg:text-[17px] dark:text-[#fff]">
+				<div
+					className={`text-sm md:text-base lg:text-[17px] ${
+						darkMode ? "text-white" : "text-slate-700"
+					}`}
+				>
 					Change Password
 				</div>
 				{apiError && <div className="text-red-500 mt-2">{apiError}</div>}
@@ -83,7 +107,7 @@ export default function Security() {
 				)}
 
 				<div className="mt-4">
-					<div className="text-slate-700 dark:text-[#fff] text-sm md:text-base lg:text-[17px] ">
+					<div className="text-slate-700 text-sm md:text-base lg:text-[17px]">
 						Current Password
 					</div>
 					<input
@@ -91,7 +115,7 @@ export default function Security() {
 						{...register("currentPassword", {
 							required: "Current password is required",
 						})}
-						className={`border-slate-200 border-[1px] w-full h-10 mt-3 rounded-3xl md:w-[20rem] lg:w-[30rem] dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff] ${
+						className={`border-slate-200 border-[1px] w-full h-10 mt-3 rounded-3xl md:w-[20rem] lg:w-[30rem] ${
 							errors.currentPassword ? "border-red-500" : ""
 						}`}
 						style={{ paddingLeft: "1.25rem" }}
@@ -106,7 +130,7 @@ export default function Security() {
 				</div>
 
 				<div className="mt-4">
-					<div className="text-slate-700 dark:text-[#fff] text-sm md:text-base lg:text-[17px]">
+					<div className="text-slate-700 text-sm md:text-base lg:text-[17px]">
 						New Password
 					</div>
 					<input
@@ -116,7 +140,7 @@ export default function Security() {
 						})}
 						value={newPassword}
 						onChange={(e) => setNewPassword(e.target.value)}
-						className="border-slate-200 border-[1px] w-full h-10 mt-3 rounded-3xl md:w-[20rem] lg:w-[30rem] dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff]"
+						className="border-slate-200 border-[1px] w-full h-10 mt-3 rounded-3xl md:w-[20rem] lg:w-[30rem]"
 						style={{ paddingLeft: "1.25rem" }}
 						placeholder="************"
 					/>

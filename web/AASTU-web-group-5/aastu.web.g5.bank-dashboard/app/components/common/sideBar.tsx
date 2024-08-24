@@ -51,7 +51,7 @@ const SideBar = ({
 		<div
 			className={`pl-[38px]   ${
 				isSidebarVisible ? "block" : "hidden"
-			} sm:block flex items-center flex-col min-w-full sm:w-auto dark:bg-gray-800 `}
+			} sm:block flex items-center flex-col min-w-full sm:w-auto  `}
 		>
 			<div
 				className="flex gap-[9px] items-center relative"
@@ -62,10 +62,7 @@ const SideBar = ({
 					alt="BankDash Logo"
 					className="h-[36px] w-[36px]"
 				/>
-				<div
-					className="font-bold  dark:text-blue-600 "
-					style={{ color: primary_2 }}
-				>
+				<div className="font-bold" style={{ color: primary_2 }}>
 					BankDash.
 				</div>
 				<button
@@ -158,13 +155,18 @@ const SidebarItem = ({
 	enabledIcon: string;
 	label: string;
 }) => (
-	<div className="flex gap-[23px]" onClick={onClick}>
+	<div
+		className={`flex gap-[23px] items-center p-2 pr-4 rounded-md cursor-pointer ${
+			isEnabled ? "text-blue-500" : "hover:bg-gray-200 dark:hover:bg-gray-700"
+		}`}
+		onClick={onClick}
+	>
 		<Image
 			src={isEnabled ? enabledIcon : icon}
 			alt={`${label} Icon`}
-			className="h-[25px] w-[25px]"
+			className={`h-[25px] w-[25px] ${isEnabled ? "text-blue-500" : ""}`}
 		/>
-		<div>{label}</div>
+		<div className={`${isEnabled ? "text-blue-500" : ""}`}>{label}</div>
 	</div>
 );
 

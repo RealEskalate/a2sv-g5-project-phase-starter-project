@@ -5,7 +5,7 @@ import (
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/api/controller"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/repository"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/usecase"
 	"github.com/gin-gonic/gin"
@@ -13,7 +13,7 @@ import (
 )
 
 func NewOAuthRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
-	ur := repository.NewUserRepository(*db, domain.CollectionUser)
+	ur := repository.NewUserRepository(*db, entities.CollectionUser)
 	oc := controller.OAuthController{
 		UserUsecase:  usecase.NewUserUsecase(ur, timeout),
 		LoginUsecase: usecase.NewLoginUsecase(ur, timeout),

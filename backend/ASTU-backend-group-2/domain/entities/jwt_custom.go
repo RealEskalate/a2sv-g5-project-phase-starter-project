@@ -1,4 +1,4 @@
-package domain
+package entities
 
 import (
 	jwt "github.com/golang-jwt/jwt/v4"

@@ -17,7 +17,7 @@ func NewUserProfileRouter(database interfaces.Database, env config.Env, group *g
 	session_repository := repository.NewSessionRepository(database)
 	cld, _ := config.NewCloudinaryConfig(env)
 
-	cloudinary_service := infrastructure.NewCloudinaryService(cld)
+	cloudinary_service := infrastructure.NewCloudinaryService(cld, &env)
 
 	UserProfileController := &controllers.UserProfileController{
 		UserProfileUC: usecases.NewUserProfileUpdateUsecase(user_repo, password_service, cloudinary_service, session_repository),

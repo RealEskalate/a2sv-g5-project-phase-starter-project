@@ -43,7 +43,7 @@ type Env struct {
 }
 
 func NewEnv() *Env {
-	projectRoot, err := filepath.Abs(filepath.Join(""))
+	projectRoot, err := filepath.Abs(filepath.Join("/home/mercury/Desktop/a2sv_starter_project/a2sv-g5-project-phase-starter-project/backend/AAiT-backend-group-5/"))
 
 	if err != nil {
 		log.Fatalf("Error getting project root path: %v", err)

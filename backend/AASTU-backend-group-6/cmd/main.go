@@ -28,6 +28,6 @@ func main() {
 	}
 	defer infrastructure.CloseDB(client)
 	routers.Router(server.Group("api/v0"), config, DB)
-	server.Run(fmt.Sprintf(":%d", config.Port))
+	server.Run()
 
 }

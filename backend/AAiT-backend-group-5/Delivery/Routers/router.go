@@ -5,11 +5,11 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/aait.backend.g5.main/backend/Config"
+	config "github.com/aait.backend.g5.main/backend/Config"
 	"github.com/aait.backend.g5.main/backend/Delivery/middlewares"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
-	"github.com/aait.backend.g5.main/backend/Infrastructure"
-	"github.com/aait.backend.g5.main/backend/Repository"
+	infrastructure "github.com/aait.backend.g5.main/backend/Infrastructure"
+	repository "github.com/aait.backend.g5.main/backend/Repository"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,6 +38,8 @@ func Setup(env *config.Env, db interfaces.Database, gin *gin.Engine) {
 	refreshRoute := publicRoute.Group("")
 
 	publicRoute.Use(middlewares.NewSecureMiddleware())
+	publicRoute.Use(middlewares.RateLimitMiddleware(redisClient, context.Background()))
+
 	refreshRoute.Use(jwtMiddleware.JWTRefreshAuthMiddelware())
 	protectedRoute.Use(jwtMiddleware.JWTAuthMiddelware())
 

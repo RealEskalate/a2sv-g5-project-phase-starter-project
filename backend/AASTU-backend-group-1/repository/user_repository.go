@@ -15,22 +15,20 @@ type UserRepository struct {
 	userCollection  *mongo.Collection
 	tokenCollection *mongo.Collection
 
-	blogCollection  *mongo.Collection
-	likesCollection *mongo.Collection
+	blogCollection     *mongo.Collection
+	likesCollection    *mongo.Collection
 	commentsCollection *mongo.Collection
-	cache domain.Cache
-	cache           domain.Cache
-
+	cache              domain.Cache
 }
 
 func NewUserRepository(db *mongo.Database, cache domain.Cache) domain.UserRepository {
 	return &UserRepository{
-		userCollection:  db.Collection("users"),
-		tokenCollection: db.Collection("tokens"),
-		blogCollection:  db.Collection("blog"),
-		likesCollection: db.Collection("likes"),
+		userCollection:     db.Collection("users"),
+		tokenCollection:    db.Collection("tokens"),
+		blogCollection:     db.Collection("blog"),
+		likesCollection:    db.Collection("likes"),
 		commentsCollection: db.Collection("comment"),
-		cache:           cache,
+		cache:              cache,
 	}
 }
 
@@ -257,8 +255,6 @@ func (ur *UserRepository) DeleteToken(username string) error {
 		return err
 	}
 
-	
-
 	return nil
 }
 
@@ -271,14 +267,14 @@ func (ur *UserRepository) DeleteUser(username string) error {
 	userFilter := bson.M{"username": username}
 	userUpdate := bson.M{
 		"$set": bson.M{
-			"First Name":   "Deleted User",
-			"Last Name":    "",
-			"username":     "Deleted User", 
-			"email":        "",
-			"role":         "user",
-			"address":      "",
-			"joined_date":  "",
-			"is_verified":  false,
+			"First Name":  "Deleted User",
+			"Last Name":   "",
+			"username":    "Deleted User",
+			"email":       "",
+			"role":        "user",
+			"address":     "",
+			"joined_date": "",
+			"is_verified": false,
 		},
 	}
 
@@ -289,9 +285,9 @@ func (ur *UserRepository) DeleteUser(username string) error {
 
 	// Nullify the author field in the blog collection
 	blogFilter := bson.M{"author": username}
-	log.Println(blogFilter,"blog filter")
-	log.Println(tempUser,"temp user")
-	
+	log.Println(blogFilter, "blog filter")
+	log.Println(tempUser, "temp user")
+
 	blogUpdate := bson.M{
 		"$set": bson.M{
 			"author": "Deleted User",
@@ -330,4 +326,3 @@ func (ur *UserRepository) DeleteUser(username string) error {
 
 	return nil
 }
-

@@ -2,9 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+.hidden {
+  display: none;
+}
+
+:root {
+  --font-size: 1vw; /* Adjust the value based on design needs */
+}
+
+.text-responsive {
+  font-size: var(--font-size);
 }

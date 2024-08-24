@@ -16,19 +16,19 @@ const config: Config = {
 
       screens: {
         // Override default breakpoints with custom values
-        mobile: '440px',    // Small screens: 480px and up
-        tablet: '768px',    // Medium screens: 768px and up (default)
-        desktop: '1024px',   // Large screens: 1024px and up (default)
-        xl: '1280px',   // Extra Large screens: 1280px and up (default)
-        '2xl': '1440px' // 2x Extra Large screens: 1440px and up
+        mobile: "440px", // Small screens: 480px and up
+        tablet: "768px", // Medium screens: 768px and up (default)
+        desktop: "1024px", // Large screens: 1024px and up (default)
+        xl: "1280px", // Extra Large screens: 1280px and up (default)
+        "2xl": "1440px", // 2x Extra Large screens: 1440px and up
       },
 
       colors: {
-        "Very-Pale-Blue" : "#E6EFF5",
-        "Very-Light-Grey" : "#B1B1B1",
-        "Dark-Slate-Blue" : "#343C6A",
-        "Very-Light-White" : "#F5F7FA",
-      }
+        "Very-Pale-Blue": "#E6EFF5",
+        "Very-Light-Grey": "#B1B1B1",
+        "Dark-Slate-Blue": "#343C6A",
+        "Very-Light-White": "#F5F7FA",
+      },
     },
   },
   plugins: [],

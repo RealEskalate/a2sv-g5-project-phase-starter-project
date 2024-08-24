@@ -3,12 +3,12 @@ package repository
 import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
+	"backend-starter-project/mongo"
 	"context"
 	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type tokenRepository struct {
@@ -16,8 +16,8 @@ type tokenRepository struct {
 	Collection *mongo.Collection
 }
 
-func NewTokenRepository(db *mongo.Database) interfaces.RefreshTokenRepository {
-	return &tokenRepository{Database: db, Collection: db.Collection("refresh_tokens")}
+func NewTokenRepository(db mongo.Database, collection mongo.Collection) interfaces.RefreshTokenRepository {
+	return &tokenRepository{Database: &db, Collection: &collection}
 }
 
 func (tr *tokenRepository) CreateRefreshToken(token *entities.RefreshToken) (*entities.RefreshToken, error) {
@@ -25,9 +25,9 @@ func (tr *tokenRepository) CreateRefreshToken(token *entities.RefreshToken) (*en
 	
 	filter := bson.D{{"userId", userID}}
 	
-	existed := tr.Collection.FindOne(context.TODO(), filter)
+	existed := (*tr.Collection).FindOne(context.TODO(), filter)
 	if existed.Err() != nil {
-		_, err := tr.Collection.InsertOne(context.TODO(), token)
+		_, err := (*tr.Collection).InsertOne(context.TODO(), token)
 		if err != nil {
 			return nil, err
 		}
@@ -46,7 +46,7 @@ func (tr *tokenRepository) FindRefreshTokenByUserId(user_id string) (*entities.R
 	filter := bson.D{{"userId", userID}}
 
 
-	result := tr.Collection.FindOne(context.TODO(), filter)
+	result := (*tr.Collection).FindOne(context.TODO(), filter)
 	if result.Err() != nil {
 		return nil, result.Err()
 	}
@@ -66,7 +66,7 @@ func (tr *tokenRepository) DeleteRefreshTokenByUserId(user_id string) error {
 
 	filter := bson.D{{"userId", userID}}
 
-	result := tr.Collection.FindOneAndDelete(context.TODO(), filter)
+	result := (*tr.Collection).FindOneAndDelete(context.TODO(), filter)
 	if result.Err() != nil {
 		return result.Err()
 	}

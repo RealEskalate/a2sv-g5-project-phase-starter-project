@@ -6,10 +6,10 @@ import (
 
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
+	"backend-starter-project/mongo"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type commentRepository struct {
@@ -28,7 +28,7 @@ func (cr *commentRepository) AddComment( comment *entities.Comment) (*entities.C
 	comment.ID = primitive.NewObjectID()
 	comment.CreatedAt = time.Now()
 
-	_, err := cr.collection.InsertOne(cr.ctx, comment)
+	_, err := (*cr.collection).InsertOne(cr.ctx, comment)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (cr *commentRepository) DeleteComment( commentId string) error {
 		return err
 	}
 
-	_, err = cr.collection.DeleteOne(cr.ctx, bson.M{"_id": objID})
+	_, err = (*cr.collection).DeleteOne(cr.ctx, bson.M{"_id": objID})
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func (cr *commentRepository) GetCommentsByBlogPostId( blogPostId string) ([]enti
 		return nil, err
 	}
 
-	cursor, err := cr.collection.Find(cr.ctx, bson.M{"blogPostId": objID})
+	cursor, err := (*cr.collection).Find(cr.ctx, bson.M{"blogPostId": objID})
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (cr *commentRepository) UpdateComment( comment *entities.Comment) (*entitie
 		},
 	}
 
-	_, err := cr.collection.UpdateOne(cr.ctx, filter, update)
+	_, err := (*cr.collection).UpdateOne(cr.ctx, filter, update)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func (cr * commentRepository) GetCommentById(commentId string) (*entities.Commen
 	if err != nil {
 		return nil, err}
 	var comment entities.Comment
-	err = cr.collection.FindOne(cr.ctx, bson.M{"_id": objID}).Decode(&comment)
+	err = (*cr.collection).FindOne(cr.ctx, bson.M{"_id": objID}).Decode(&comment)
 	if err != nil {
 		return nil, err
 	}

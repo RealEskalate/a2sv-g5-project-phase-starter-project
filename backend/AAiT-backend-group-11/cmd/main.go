@@ -15,11 +15,14 @@ func main()  {
 
 	env := app.Env
 
-	db := app.Mongo.Database(env.DBName)
+	mongoClient := app.Mongo
+
+	db := (*mongoClient).Database(env.DBName)
+	
 	defer app.CloseDBConnection()
 	defer app.CloseModelClient()
 
-	tr := repository.NewTokenRepository(db)
+	tr := repository.NewTokenRepository(db, db.Collection("tokens"))
 	ur := repository.NewUserRepository(db.Collection("users"))
 	ts := service.NewTokenService(env.AccessTokenSecret,env.RefreshTokenSecret, tr,ur)
 	authMiddleware := middleware.NewAuthMiddleware(ts)

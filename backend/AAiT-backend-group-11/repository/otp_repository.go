@@ -3,10 +3,10 @@ package repository
 import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
+	"backend-starter-project/mongo"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -16,31 +16,28 @@ type OtpRepository struct {
 
 // GetByID implements interfaces.OTPRepository.
 func (o *OtpRepository) GetByID(id string) (entities.OTP, error) {
-	colllection := o.collection.Database().Collection("otp")
 	ctx := context.Background()
 
 	var otp entities.OTP
 
-	err := colllection.FindOne(ctx, bson.M{"_id": id}).Decode(&otp)
+	err := (*o.collection).FindOne(ctx, bson.M{"_id": id}).Decode(&otp)
 
 	return otp, err
 }
 
 // GetOtpByEmail implements interfaces.OTPRepository.
 func (o *OtpRepository) GetOtpByEmail(email string) (entities.OTP, error) {
-	collection := o.collection.Database().Collection("otp")
 	ctx := context.Background()
 
 	var otp entities.OTP
 
-	err := collection.FindOne(ctx, bson.M {"email": email}).Decode(&otp)
+	err := (*o.collection).FindOne(ctx, bson.M {"email": email}).Decode(&otp)
 
 	return otp, err
 }
 
 // InvalidateOtp implements interfaces.OTPRepository.
 func (o *OtpRepository) InvalidateOtp(otp *entities.OTP) error {
-	collection := o.collection.Database().Collection("otp")
 	ctx := context.Background()
 
 	// Update the is_valid field to false
@@ -50,14 +47,13 @@ func (o *OtpRepository) InvalidateOtp(otp *entities.OTP) error {
 	options := options.Update().SetUpsert(false)
 
 	// Perform the update operation
-	_, err := collection.UpdateOne(ctx, bson.M{"_id": otp.ID}, update, options)
+	_, err := (*o.collection).UpdateOne(ctx, bson.M{"_id": otp.ID}, update, options)
 
 	return err
 }
 
 // SaveOtp implements interfaces.OTPRepository.
 func (o *OtpRepository) SaveOtp(otp *entities.OTP) error {
-	collection := o.collection.Database().Collection("otp")
 	ctx := context.Background()
 
 	update := bson.M{
@@ -66,7 +62,7 @@ func (o *OtpRepository) SaveOtp(otp *entities.OTP) error {
 
 	options := options.Update().SetUpsert(true)
 
-	_, err := collection.UpdateOne(ctx, bson.M{"_id": otp.ID}, update, options)
+	_, err := (*o.collection).UpdateOne(ctx, bson.M{"_id": otp.ID}, update, options)
 
 	return err
 

@@ -2,20 +2,23 @@ package route
 
 import (
 	"backend-starter-project/delivery/controller"
+	"backend-starter-project/mongo"
 	"backend-starter-project/repository"
 	"backend-starter-project/service"
 	"context"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/generative-ai-go/genai"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func NewBlogRouter(db *mongo.Database, group *gin.RouterGroup, model *genai.GenerativeModel)  {
-	br := repository.NewBlogRepository(db.Collection("blogs"), context.TODO())
+	blogcollection := (*db).Collection("blogs")
+	br := repository.NewBlogRepository(&blogcollection, context.TODO())
 	bs := service.NewBlogService(br)
 	ais := service.NewAIContentService(context.TODO(), model, br)
-	cr := repository.NewCommentRepository(db.Collection("comments"), context.TODO())
+
+	commentcollection := (*db).Collection("comments")
+	cr := repository.NewCommentRepository(&commentcollection, context.TODO())
 
 	pts := service.NewPopularityTrackingService(br,cr)
 	

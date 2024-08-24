@@ -4,16 +4,20 @@ import (
 	"backend-starter-project/delivery/controller"
 	"backend-starter-project/repository"
 	"backend-starter-project/service"
+	"backend-starter-project/mongo"
 	"context"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func NewCommmentRouter(db *mongo.Database,  group *gin.RouterGroup) {
-	ur := repository.NewUserRepository(db.Collection("users"))
-	br := repository.NewBlogRepository(db.Collection("blogs"),context.TODO())
-	cr := repository.NewCommentRepository(db.Collection("comments"), context.TODO())
+	blogcollection := (*db).Collection("blogs")
+	usercollection := (*db).Collection("users")
+	commentcollection := (*db).Collection("comments")
+
+	ur := repository.NewUserRepository(usercollection)
+	br := repository.NewBlogRepository(&blogcollection,context.TODO())
+	cr := repository.NewCommentRepository(&commentcollection, context.TODO())
 	cs := service.NewCommentService(cr,br,ur)
 	cc := controller.NewCommentController(cs)
 	

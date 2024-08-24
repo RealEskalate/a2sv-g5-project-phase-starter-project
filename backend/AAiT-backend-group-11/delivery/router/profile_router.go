@@ -4,14 +4,16 @@ import (
 	"backend-starter-project/delivery/controller"
 	"backend-starter-project/repository"
 	"backend-starter-project/service"
+	"backend-starter-project/mongo"
 	"context"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func NewProfileRouter(db *mongo.Database, group *gin.RouterGroup) {
-	profile_repo := repository.NewProfileRepository(context.TODO(), db)
+	profilecollection := (*db).Collection("profiles")
+
+	profile_repo := repository.NewProfileRepository(context.TODO(), db, &profilecollection)
 	profile_service := service.NewProfileService(profile_repo)
 	profile_controller := controller.NewProfileController(profile_service)
 

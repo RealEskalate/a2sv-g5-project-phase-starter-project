@@ -3,14 +3,14 @@ package route
 import (
 	"backend-starter-project/bootstrap"
 	"backend-starter-project/infrastructure/middleware"
+	"backend-starter-project/mongo"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/generative-ai-go/genai"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 
-func Setup(env *bootstrap.Env, db *mongo.Database, gin *gin.Engine, auth middleware.AuthMiddleware, model *genai.GenerativeModel) {
+func Setup(env *bootstrap.Env, db mongo.Database, gin *gin.Engine, auth middleware.AuthMiddleware, model *genai.GenerativeModel) {
 	
 	publicRouter := gin.Group("")
 
@@ -22,10 +22,10 @@ func Setup(env *bootstrap.Env, db *mongo.Database, gin *gin.Engine, auth middlew
 	_ = publicRouter
 
 
-	NewBlogRouter(db, privateRouter.Group("/blogs"), model)
-	NewCommmentRouter(db, privateRouter.Group("/comments"))	
+	NewBlogRouter(&db, privateRouter.Group("/blogs"), model)
+	NewCommmentRouter(&db, privateRouter.Group("/comments"))	
 	NewAuthRouter(env,db, publicRouter.Group("/auth"))
-	NewProfileRouter(db, privateRouter.Group("/user"))
+	NewProfileRouter(&db, privateRouter.Group("/user"))
 
 	gin.Run(":8080")
 }

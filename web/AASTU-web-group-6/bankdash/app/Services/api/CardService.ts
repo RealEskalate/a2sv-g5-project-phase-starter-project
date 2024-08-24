@@ -1,8 +1,8 @@
-// src/services/cardService.ts
 import axios from "axios";
+import {jwtDecode} from "jwt-decode"; // Assuming you're using the jwt-decode library
 import { checkAndRefreshToken } from "./hooks/useRefresh";
 
-const API_URL = "https://bank-dashboard-rsf1.onrender.com/cards"; // Adjust this to match your actual API base URL
+const API_URL = "https://bank-dashboard-rsf1.onrender.com/cards";
 
 interface Card {
   id?: string;
@@ -16,7 +16,7 @@ interface Card {
 }
 
 interface DecodedToken {
-  exp: number; 
+  exp: number;
 }
 
 const handleRequest = async (
@@ -35,11 +35,10 @@ const handleRequest = async (
         "Content-Type": "application/json",
       },
     });
-    console.log("Response Status",response.status);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      if (error.response.status === 401)
+      
       console.error("Axios error:", error.message);
     } else {
       console.error("Unexpected error:", error);
@@ -48,27 +47,28 @@ const handleRequest = async (
   }
 };
 
-
 class CardService {
-
   private static async ensureAccessToken(accessToken?: string): Promise<string> {
-    console.log('checking')
-    const decodedToken = jwtDecode<DecodedToken>(accessToken);
-    console.log("DECODED TOKEN",decodedToken)
     if (accessToken) {
-      return accessToken;
+      try {
+        const decodedToken = jwtDecode<any>(accessToken);
+
+        const currentTime = Date.now() / 1000;
+
+        if (decodedToken.exp > currentTime) {
+          return accessToken;
+        }
+      } catch (error) {
+        console.error("Failed to decode token:", error);
+      }
     }
+
     return await checkAndRefreshToken() as string;
   }
 
   public static async getAllCards(accessToken?: string): Promise<Card[]> {
     const token = await this.ensureAccessToken(accessToken);
-    return handleRequest(
-      "GET",
-      `${API_URL}?page=0&size=3`,
-      undefined,
-      token
-    );
+    return handleRequest("GET", `${API_URL}?page=0&size=3`, undefined, token);
   }
 
   public static async addCard(card: Card, accessToken?: string): Promise<Card> {
@@ -88,7 +88,3 @@ class CardService {
 }
 
 export default CardService;
-function jwtDecode<T>(accessToken: string | undefined) {
-  throw new Error("Function not implemented.");
-}
-

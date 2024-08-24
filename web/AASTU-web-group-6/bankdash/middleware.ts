@@ -3,12 +3,9 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(req: NextRequest) {
-  const publicPaths = ["/login", "/signup"];
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-  // console.log('Token:', token);
-
-  if (publicPaths.includes(req.nextUrl.pathname) || token) {
+  if (token) {
     return NextResponse.next();
   } else {
     const signInUrl = new URL("/login", req.url);
@@ -17,6 +14,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/page-not-found"],
-  // console.log("middleware")
+  matcher: ["/settings"], // Protect all routes except login and signup
 };

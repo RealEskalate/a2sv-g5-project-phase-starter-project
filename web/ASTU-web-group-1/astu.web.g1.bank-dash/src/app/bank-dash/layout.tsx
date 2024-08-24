@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import NavBar from '@/components/NavBar/NavBar';
 import Sidebar from '@/components/SideBar/Sidebar';
 import StoreProvider from '@/providers/StoreProvider';
-
+import { Toaster } from "@/components/ui/toaster"
 // const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -33,6 +33,7 @@ export default function RootLayout({
             <div className='p-5 z-0'>{children}</div>
           </div>
         </div>
+        <Toaster />
       </body>
     </html>
   );

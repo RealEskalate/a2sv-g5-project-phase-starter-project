@@ -31,7 +31,7 @@ class _ChatListTileState extends State<ChatListTile> {
                     ))
               ],
             ),
-            SizedBox(
+            const SizedBox(
               width: 20,
             ),
             const Column(
@@ -83,7 +83,7 @@ class _ChatListTileState extends State<ChatListTile> {
             ],
           ),
         ]),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
       ],

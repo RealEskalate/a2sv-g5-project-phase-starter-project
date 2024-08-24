@@ -87,6 +87,9 @@ fresh
 
 To access the blog API, use the base URL `localhost:8080/api/v1/blog`.
 
+## Class Diagram
+![alt text](<./Class Diagram.drawio.svg>)
+
 ## Architecture and Folder Structure 
 The project follows clean architecture principles, using interfaces defined in domains for dependency inversion. The folder structure is as follows:
 
@@ -292,6 +295,10 @@ CACHE_EXPIRATION=
 ```
 Note: The `SMTP_GMAIL` and `SMTP_PASSWORD` variables are used for sending the mail using the `smpt.gmail.com`. To use a different provider, you have to change the code located in `mail_service.go`. The same files contains HTML templates for generating the mail that will be sent to users as well. Modification to those templates will change how the email verification and password request emails look like.
 
+The `TEST_DB_NAME` variable will be used by the repository during testing. The tests will use the same database cluster defined under `DB_ADDRESS`. Not providing a name for the test database will cause the repository tests to fail.
+
+The same redis store will be used for the cache repository tests. Again, failing to provide the redis connection url will cause the tests to fail.
+
 ## Sending requests using tokens
 
 The authentication system is based on JWT. The token will be sent to the client when it makes a request to the login endpoint (or the oauth login endpoint) with the correct credentials. That token must be included in the Authorization header of any requests to protected routes. The format of the token follows the standard `bearer e...` format. Any deviation from this might cause the middleware to block the incoming request.
@@ -304,3 +311,38 @@ curl --location --request DELETE 'http://localhost:8080/protected_endpoint' \
 
 ## Testing
 
+Note: The repository tests WILL NOT pass if a valid test database has not been setup. Make sure to check the environment variables section for more information on how to provide a test DB.
+
+To run all the tests:
+```bash 
+go test -v blog_api/tests
+```
+Each file contains a suite that groups up all the related tests. To run one of suites contained in one of the files, run this command:
+
+go test -run file_name_test.go NAME_OF_THE_SUITE
+
+With timeout:
+
+go test -timeout 30s -run file_name_test.go NAME_OF_THE_SUITE
+
+The suites are usually the functions defined last, accepting a *testing.T as a parameter and running the test suite.
+
+Coverage Profile on Controllers
+```bash
+go test -v -coverprofile="cover.out" -coverpkg="blog_api/controller"  blog_api/tests
+```
+
+#### Coverage Profile on Usecases
+```bash
+go test -v -coverprofile="cover.out" -coverpkg="blog_api/usecase"  blog_api/tests
+```
+
+#### Coverage Profile on Repositories
+```bash
+go test -v -coverprofile="cover.out" -coverpkg="blog_api/repository"  blog_api/tests
+```
+
+#### Coverage Profile Rendering
+```bash
+go tool cover -html="cover.out" -o coverage.html
+```

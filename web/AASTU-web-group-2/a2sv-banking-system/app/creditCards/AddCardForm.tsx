@@ -34,8 +34,8 @@ const AddCardForm = ({
   });
 
   return (
-    <div className="bg-white p-5 flex-col gap-7 rounded-xl flex shadow h-full">
-      <p className="text-xs text-[#718EBF] leading-5 lg:text-base">
+    <div className="bg-white p-5 flex-col gap-7 w-full rounded-xl flex  h-full dark:bg-[#050914] dark:border dark:border-[#333B69]">
+      <p className="text-xs text-[#718EBF] leading-5 lg:text-base dark:text-[#b7b8cb]">
         Credit Card generally means a plastic card issued by Scheduled
         Commercial Banks assigned to a Cardholder, with a credit limit, that can
         be used to purchase goods and services on credit or obtain cash
@@ -48,14 +48,14 @@ const AddCardForm = ({
         onSubmit={onSubmit_}
       >
         <div className="flex flex-col md:flex-row gap-4 w-full">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 md:w-5/12">
             <InputLabel label="Card Type" />
             <input
               type="text"
               placeholder="Card Type"
-              className={`border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base ${
-                errors.cardType ? "border-red-500" : "border-indigo-50"
-              }`}
+              className={`border px-3 py-3 rounded-xl md:w-full text-xs lg:text-base dark:bg-[#313245]
+ dark:border-[#333B69] 
+${errors.cardType ? "border-red-500" : "border-indigo-50"}`}
               {...register("cardType", {
                 required: "Card Type is required",
                 minLength: {
@@ -70,14 +70,15 @@ const AddCardForm = ({
               </span>
             )}
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 md:w-5/12">
             <InputLabel label="Name On Card" />
             <input
               type="text"
               placeholder="My Cards"
-              className={`border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base ${
-                errors.cardHolder ? "border-red-500" : "border-indigo-50"
-              }`}
+              className={`border px-3 py-3 rounded-xl md:w-full text-xs lg:text-base dark:bg-[#313245]
+ dark:border-[#333B69]  ${
+   errors.cardHolder ? "border-red-500" : "border-indigo-50"
+ }`}
               {...register("cardHolder", {
                 required: "Card Holder name is required",
                 minLength: {
@@ -94,14 +95,15 @@ const AddCardForm = ({
           </div>
         </div>
         <div className="flex flex-col md:flex-row gap-4 w-full">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 md:w-5/12">
             <InputLabel label="Balance" />
             <input
               type="number"
               placeholder="27,000$"
-              className={`border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base ${
-                errors.balance ? "border-red-500" : "border-indigo-50"
-              }`}
+              className={`border px-3 py-3 rounded-xl md:w-full text-xs lg:text-base dark:bg-[#313245]
+ dark:border-[#333B69] ${
+   errors.balance ? "border-red-500" : "border-indigo-50"
+ }`}
               {...register("balance", {
                 required: "Balance is required",
                 min: {
@@ -118,13 +120,14 @@ const AddCardForm = ({
               </span>
             )}
           </div>
-          <div className="flex flex-col gap-2 w-full md:w-auto">
+          <div className="flex flex-col gap-2 md:w-5/12">
             <InputLabel label="Expiration Date" />
             <input
               type="date"
-              className={`border px-3 py-3 rounded-xl lg:w-80 text-xs lg:text-base ${
-                errors.expiryDate ? "border-red-500" : "border-indigo-50"
-              }`}
+              className={`border px-3 py-3 rounded-xl md:w-full text-xs lg:text-base dark:bg-[#313245]
+ dark:border-[#333B69] text-slate-500 ${
+   errors.expiryDate ? "border-red-500" : "border-indigo-50"
+ }`}
               {...register("expiryDate", {
                 required: "Expiration Date is required",
                 validate: (value) => {
@@ -147,7 +150,7 @@ const AddCardForm = ({
 
         <button
           type="submit"
-          className="bg-[#1814F3] hover:bg-[#423fef] text-white px-5 py-3 rounded-xl w-full lg:w-auto text-sm"
+          className="bg-[#1814F3] hover:bg-[#423fef] text-white px-5 py-3 rounded-xl w-full md:w-2/6 text-sm"
         >
           Add Card
         </button>

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../auth/domain/entities/user_data_entity.dart';
 import '../../domain/entities/product_entity.dart';
 import '../bloc/product_bloc.dart';
 import '../bloc/product_event.dart';
@@ -15,6 +16,13 @@ class Detailspage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: null,
+        child: Icon(
+          Icons.chat_bubble,
+          color: Theme.of(context).primaryColor,
+        ),
+      ),
       body: SingleChildScrollView(
         child: BlocListener<ProductBloc, ProductState>(
           listener: (context, state) {
@@ -193,7 +201,11 @@ class Detailspage extends StatelessWidget {
                                           imageUrl: product.imageUrl,
                                           name: product.name,
                                           price: product.price,
-                                          description: product.description));
+                                          description: product.description,
+                                          seller: const UserDataEntity(
+                                              id: 'id',
+                                              email: 'email',
+                                              name: 'name')));
                                 })
                           ],
                         );

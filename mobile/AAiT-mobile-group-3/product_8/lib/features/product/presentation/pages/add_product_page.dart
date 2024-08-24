@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:image_picker/image_picker.dart';
 
+import '../../../auth/domain/entities/user_data_entity.dart';
 import '../../domain/entities/product_entity.dart';
 import '../bloc/product_bloc.dart';
 import '../bloc/product_event.dart';
@@ -227,7 +228,12 @@ class _ADDPageState extends State<ADDPage> {
                                   price: double.parse(priceController.text),
                                   description: descriptionController.text,
                                   imageUrl: _image!
-                                      .path, // Handle the image URL accordingly
+                                      .path,
+                                  seller: UserDataEntity(
+                                    id: 'id',
+                                    email: 'email',
+                                    name: 'name',
+                                  ), // Handle the image URL accordingly
                                 ),
                               ),
                             );

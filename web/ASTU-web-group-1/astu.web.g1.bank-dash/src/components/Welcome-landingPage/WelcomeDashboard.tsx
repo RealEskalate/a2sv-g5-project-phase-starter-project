@@ -36,9 +36,9 @@ const WelcomeDashboard = async () => {
             <h1 className='text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl'>
               Empowering Your Finances, Securing Your Future.
             </h1>
-            <p className='mt-6 text-lg leading-8 text-gray-600'>
-              Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat
-              commodo. Elit sunt amet fugiat veniam occaecat fugiat aliqua.
+            <p className="mt-6 text-lg leading-8 text-gray-600">
+              Empower your financial future by managing accounts, tracking
+              spending, and setting savings goals all in one secure platform.
             </p>
             <div className='mt-10 flex items-center justify-center gap-x-6'>
               <AuthProvider>

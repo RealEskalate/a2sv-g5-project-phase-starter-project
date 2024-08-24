@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import ServiceList from "./serviceComponenet/ServiceList";
-import BenefitComp from "./serviceComponenet/BenefitComp";
 import { servicesList } from "@/constants/index";
-import { getSession } from "next-auth/react";
 import { useUser } from "@/contexts/UserContext";
+import { getSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import BenefitComp from "./serviceComponenet/BenefitComp";
+import ServiceList from "./serviceComponenet/ServiceList";
 
 // Type definition for a single bank service
 interface BankService {

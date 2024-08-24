@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^2.2.7",
+    "@mui/styles": "^5.16.7",
     "apexcharts": "^3.52.0",
     "chart.js": "^4.4.4",
     "next": "14.2.5",

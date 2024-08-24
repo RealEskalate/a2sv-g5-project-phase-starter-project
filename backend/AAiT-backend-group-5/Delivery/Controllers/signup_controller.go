@@ -41,7 +41,9 @@ func (signupController *SignupController) Signup(ctx *gin.Context) {
 		Email:    userCreateRequest.Email,
 	}
 
-	e := signupController.SignupUsecase.CreateUser(ctx, newUser)
+	agent := ctx.Request.UserAgent()
+
+	e := signupController.SignupUsecase.CreateUser(ctx, newUser, agent)
 	if e != nil {
 		ctx.IndentedJSON(e.Code, gin.H{"error": e.Message})
 		return

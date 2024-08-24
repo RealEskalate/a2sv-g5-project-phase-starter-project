@@ -7,5 +7,5 @@ import (
 )
 
 type SignupUsecase interface {
-	CreateUser(ctx context.Context, user *models.User) *models.ErrorResponse
+	CreateUser(ctx context.Context, user *models.User, agent string) *models.ErrorResponse
 }

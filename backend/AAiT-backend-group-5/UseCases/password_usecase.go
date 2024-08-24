@@ -6,6 +6,7 @@ import (
 
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
+	"github.com/mssola/user_agent"
 )
 
 type setup_password struct {
@@ -14,6 +15,7 @@ type setup_password struct {
 	emailService    interfaces.EmailService
 	passwordService interfaces.PasswordService
 	repo            interfaces.UserRepository
+	otpService      interfaces.OTPService
 }
 
 func NewSetupPassword(
@@ -22,6 +24,7 @@ func NewSetupPassword(
 	repo interfaces.UserRepository,
 	emailService interfaces.EmailService,
 	passwordService interfaces.PasswordService,
+	otpService interfaces.OTPService,
 
 ) interfaces.PasswordUsecase {
 
@@ -31,10 +34,11 @@ func NewSetupPassword(
 		repo:            repo,
 		emailService:    emailService,
 		passwordService: passwordService,
+		otpService:      otpService,
 	}
 }
 
-func (sp *setup_password) GenerateResetURL(ctx context.Context, email string) (string, *models.ErrorResponse) {
+func (sp *setup_password) GenerateResetURL(ctx context.Context, email string, agent string) (string, *models.ErrorResponse) {
 
 	// get user data
 	user, uErr := sp.repo.GetUserByEmailOrUsername(ctx, email, email)
@@ -51,7 +55,7 @@ func (sp *setup_password) GenerateResetURL(ctx context.Context, email string) (s
 	}
 
 	// generate reset URL
-	resetURL, rErr := sp.urlService.GenerateURL(token, "resetPassword")
+	resetURL, rErr := sp.getBody(token, agent)
 	if rErr != nil {
 		return "", rErr
 	}
@@ -61,7 +65,7 @@ func (sp *setup_password) GenerateResetURL(ctx context.Context, email string) (s
 
 func (sp *setup_password) SendResetEmail(ctx context.Context, email string, resetURL string) *models.ErrorResponse {
 	subject := "Password Reset"
-	body := "Click the link below to reset your password\n" + resetURL + "\nThis link will expire in 1 hour"
+	body := "you can use the below to reset your password \n" + resetURL + "\nThis link will expire in 1 hour"
 
 	valid := sp.emailService.IsValidEmail(email)
 	if !valid {
@@ -172,4 +176,45 @@ func (sp *setup_password) SetUpdateUserPassword(ctx context.Context, shortURlCod
 	}
 
 	return nil
+}
+
+func (uc *setup_password) handleWebForgetPassword(token string) (string, *models.ErrorResponse) {
+	resetURL, err := uc.urlService.GenerateURL(token, "resetPassword")
+
+	if err != nil {
+		return "", models.InternalServerError("Error while creating url" + err.Error())
+	}
+
+	return resetURL, nil
+}
+
+func (uc *setup_password) handleMobileForgetPassword(token string) (string, *models.ErrorResponse) {
+	code, err := uc.otpService.GenerateOTP(token)
+
+	if err != nil {
+		return "", models.InternalServerError("Error while creating token")
+	}
+
+	return code, nil
+}
+
+func (uc *setup_password) getBody(token string, agent string) (string, *models.ErrorResponse) {
+	ua := user_agent.New(agent)
+	isMobile := ua.Mobile()
+
+	if isMobile {
+		url, nErr := uc.handleMobileForgetPassword(token)
+		if nErr != nil {
+			return "", nErr
+		}
+
+		return url, nil
+
+	}
+	url, nErr := uc.handleWebForgetPassword(token)
+	if nErr != nil {
+		return "", nErr
+	}
+
+	return url, nil
 }

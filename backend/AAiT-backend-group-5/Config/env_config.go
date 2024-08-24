@@ -43,13 +43,12 @@ type Env struct {
 }
 
 func NewEnv() *Env {
-	projectRoot, err := filepath.Abs(filepath.Join("/home/mercury/Desktop/a2sv_starter_project/a2sv-g5-project-phase-starter-project/backend/AAiT-backend-group-5/"))
+	projectRoot, err := filepath.Abs(filepath.Join(""))
 
 	if err != nil {
 		log.Fatalf("Error getting project root path: %v", err)
 	}
 
-	// Set the path to the .env file
 	viper.SetConfigFile(filepath.Join(projectRoot, ".env"))
 
 	viper.AutomaticEnv()
@@ -57,6 +56,8 @@ func NewEnv() *Env {
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalf("Error reading .env file: %v", err)
 	}
+
+
 	viper.BindEnv("JWT_SECRET")
 	viper.BindEnv("SMTP_SERVER")
 	viper.BindEnv("SMTP_PORT")

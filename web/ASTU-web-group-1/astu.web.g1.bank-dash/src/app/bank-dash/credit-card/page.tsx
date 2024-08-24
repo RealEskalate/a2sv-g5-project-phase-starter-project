@@ -13,7 +13,7 @@ export default function page() {
       <div>
         <h1 className="text-[#333B69] pb-3 font-semibold">My Cards</h1>
 
-        <div className="flex overflow-x-scroll space-x-2 scroll whitespace-nowrap scroll-smooth lg:flex lg:space-x-3  ">
+        <div className="flex overflow-x-scroll scrollbar-none space-x-2 scroll whitespace-nowrap scroll-smooth lg:flex lg:space-x-4  ">
           <StoreProvider>
             <MyCardLists />
           </StoreProvider>

@@ -32,8 +32,8 @@ const Income = () => {
   return (
     <div>
       <div className="flex flex-col gap-4">
-        {currentData?.length == 0 ? (
-          <div>No transactions found.</div>
+        {!currentData || currentData.length == 0 ? (
+          <div>No Income found.</div>
         ) : (
           <div className="relative overflow-x-auto bg-white px-4 md:px-6 pt-5 md:pt-6 rounded-2xl md:rounded-2xl">
             <table className="bg-white px-5 lg:px-11 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -88,7 +88,7 @@ const Income = () => {
                       }`}
                     >
                       {datax.amount < 0
-                        ? "-$" + datax.amount
+                        ? "-$" + -(datax.amount)
                         : "+$" + datax.amount}
                     </td>
                     <td className="hidden lg:table-cell py-3 w-24 md:w-32">

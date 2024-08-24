@@ -43,7 +43,7 @@ func (ac *AuthController) Login(c *gin.Context) {
 	} else {
 		//success
 		c.IndentedJSON(http.StatusOK, gin.H{"message": "User logged in successfully",
-			"acess_token":   token.AccessToken})
+			"acess_token": token.AccessToken})
 	}
 
 }
@@ -117,7 +117,7 @@ const resetTemplate = `
 </head>
 <body>
     <h1>Reset Password</h1>
-    <form action="/reset-password/{{ .ResetToken }}" method="post">
+    <form action="/forget-password/{{ .ResetToken }}" method="post">
         <label for="password">New Password:</label>
         <input type="password" id="password" name="password" required><br><br>
         <br><br>

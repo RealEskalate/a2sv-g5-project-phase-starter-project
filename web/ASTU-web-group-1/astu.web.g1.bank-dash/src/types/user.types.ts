@@ -9,7 +9,11 @@ export interface UpdatedUser  {
   presentAddress: string;
   city: string;
   country: string;
+<<<<<<< HEAD
   profilePicture?: string;
+=======
+  profilePicture?: string | null;
+>>>>>>> 8c3532ff24279cab0d57070c8126ce87ede8b7a4
 };
 
 export interface UserPreferenceType {

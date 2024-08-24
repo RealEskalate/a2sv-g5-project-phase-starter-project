@@ -1,5 +1,5 @@
 "use client";
-import { LabelList, Pie, PieChart } from "recharts";
+import { LabelList, Legend, Pie, PieChart } from "recharts";
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -104,11 +104,11 @@ export function Pie_chart({
   return (
     <Card
       className={` ${
-        isDarkMode ? "bg-gray-800 border-none " : "bg-white"
-      } py-5`}
+        isDarkMode ? "bg-gray-800  " : "bg-white "
+      } py-5 border-none`}
     >
       <CardContent
-        className="p-0"
+        className="p-0 border-none"
         style={{
           backgroundColor: isDarkMode ? "#1f2937" : "#ffffff", // Card background color
           borderColor: isDarkMode ? "#333333" : "#dddddd", // Card border color
@@ -116,7 +116,7 @@ export function Pie_chart({
       >
         <ChartContainer
           config={chartConfig}
-          className="h-60 w-full rounded-xl"
+          className="h-64 w-full rounded-xl"
           style={{
             backgroundColor: isDarkMode ? "#1f2937" : "#ffffff", // Chart container background color
             borderColor: isDarkMode ? "#34495e" : "#dddddd", // Chart container border color
@@ -142,6 +142,7 @@ export function Pie_chart({
                 formatter={(value: number) => ` ${value}`}
               />
             </Pie>
+            <Legend  />
           </PieChart>
         </ChartContainer>
       </CardContent>

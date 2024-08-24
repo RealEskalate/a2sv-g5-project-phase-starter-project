@@ -114,9 +114,9 @@ export const ExpenseTable: React.FC<Props> = ({ transactions, tab }: Props) => {
                   <span className="inline-block align-middle">
                     {tab === "income" ||
                     transaction.senderUserName !== currentUser?.username ? (
-                      <CiSaveDown1 size={20} />
+                      <CiSaveDown1 size={20} color="red"/>
                     ) : (
-                      <CiSaveUp1 size={20} />
+                      <CiSaveUp1 size={20} color="green"/>
                     )}
                   </span>
                   <span

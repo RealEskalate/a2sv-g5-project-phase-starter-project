@@ -30,17 +30,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^2.2.0
-  dio: ^5.3.2
-  dartz: ^0.10.1
-  data_connection_checker_tv: ^0.3.5-nullsafety
-  provider: ^6.0.5
-  path_provider: ^2.1.0
-  intl: ^0.19.0
-  google_fonts: ^6.2.1
-  image_picker: ^1.1.2
-  flutter_clean_architecture: ^6.0.1
-  cupertino_icons: ^1.0.6
+  shared_preferences: 
+  dio: 
+  dartz: 
+  data_connection_checker_tv: 
+  provider: 
+  path_provider:
+  intl: 
+  google_fonts: 
+  image_picker:
+  flutter_clean_architecture: 
+  cupertino_icons: 
   equatable:
   get_it:
   flutter_bloc:
@@ -55,10 +55,14 @@ dependencies:
   internet_connection_checker:
   injectable:
   flutter_secure_storage:
-  file_picker: ^8.1.2
-  record: ^5.1.2
+  file_picker:
+  record: ^5.1.2 
   camera:
-  web_socket_channel: ^2.4.0
+  web_socket_channel: 
+  audioplayers: 
+  permission_handler:
+  flutter_sound:  
+
 
 
 

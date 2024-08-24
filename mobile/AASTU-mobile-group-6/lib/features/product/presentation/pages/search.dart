@@ -151,6 +151,10 @@ class _searchPageState extends State<searchPage> {
                           final product = state.data[index];
                           return InkWell(
                             onTap: () {
+                              context.read<GetUserBloc>().add(GetUserInfoEvent());
+                              context.read<DetailsPage>();
+                              
+                              
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

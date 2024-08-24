@@ -1,7 +1,8 @@
 import React from 'react';
 import { IoMdNotificationsOutline } from 'react-icons/io';
+import { MdDoneAll } from 'react-icons/md'; // Import the double check icon
 import { useNotifications } from '@/services/NotificationContext';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'; // Adjust import as needed
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 const NotificationBell: React.FC = () => {
   const { notifications, markAllAsRead, unreadCount } = useNotifications();
@@ -16,27 +17,34 @@ const NotificationBell: React.FC = () => {
           </span>
         )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-80 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
-        <DropdownMenuLabel className="text-lg font-bold mb-2">Notifications</DropdownMenuLabel>
+      <DropdownMenuContent className="w-64 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
+        <DropdownMenuLabel className="flex justify-between items-center text-lg font-bold mb-2">
+          Notifications
+          <MdDoneAll 
+            className="cursor-pointer text-blue-500 mr-12" 
+            onClick={() => markAllAsRead()} 
+            size={22}
+            title="Mark all as read"
+          />
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {notifications.length === 0 ? (
           <DropdownMenuItem>No recent notifications</DropdownMenuItem>
         ) : (
           <>
             {notifications.map(notification => (
-              <DropdownMenuItem key={notification.id} className="flex justify-between items-center">
+              <DropdownMenuItem 
+                key={notification.id} 
+                className={`flex justify-between items-center ${notification.isRead ? 'text-gray-200 dark:text-gray-600' : ''}`}
+              >
                 <div>
                   <p className="text-sm">{notification.message}</p>
-                  <span className="text-xs text-gray-500">{notification.formattedDate}</span>
+                  <span className="text-xs text-gray-400">{notification.formattedDate}</span>
                 </div>
               </DropdownMenuItem>
             ))}
           </>
         )}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-blue-500 hover:underline" onClick={() => markAllAsRead()}>
-          Mark all as read
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

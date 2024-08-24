@@ -34,22 +34,17 @@ const data = [
 
 export default function CardSettings() {
   return (
-    <div className="w-full md:w-1/3">
-      <p className="text-[#333B69] pb-2 font-semibold">Card Setting</p>
-      <div className="bg-white w-full px-5 py-6 rounded-3xl space-y-5">
-        <div className="w-full md:w-1/3">
-          <p className="text-[#333B69] pb-2 font-semibold">Card Setting</p>
-          <div className="bg-white w-full px-5 py-6 rounded-3xl space-y-5">
-            {data.map((ele) => (
-              <CardSettingItem
-                key={ele.title}
-                Icon={ele.Icon}
-                title={ele.title}
-                description={ele.description}
-              />
-            ))}
-          </div>
-        </div>
+    <div className='w-full md:w-1/3'>
+      <p className='text-[#333B69] pb-2 font-semibold'>Card Setting</p>
+      <div className='bg-white w-full px-5 py-6 rounded-3xl space-y-5'>
+        {data.map((ele) => (
+          <CardSettingItem
+            key={ele.title}
+            Icon={ele.Icon}
+            title={ele.title}
+            description={ele.description}
+          />
+        ))}
       </div>
     </div>
   );

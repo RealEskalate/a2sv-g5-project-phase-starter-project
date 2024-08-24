@@ -1,19 +1,18 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Image from "next/image";
-import { getSession, signOut } from "next-auth/react";
-import { CiLight } from "react-icons/ci";
-import { CiDark } from "react-icons/ci";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import Link from "next/link";
-import { Separator } from "@radix-ui/react-select";
 import { useUser } from "@/contexts/UserContext";
+import { Separator } from "@radix-ui/react-select";
 import ky from "ky";
+import { getSession, signOut } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { CiDark, CiLight } from "react-icons/ci";
 
 const Header = ({ title }: { title: string }) => {
   const { isDarkMode, setIsDarkMode } = useUser();
@@ -73,7 +72,11 @@ const Header = ({ title }: { title: string }) => {
 
         <div className={`flex gap-5 items-center `}>
           {/* Search */}
-          <div className={`flex gap-3 p-3 rounded-full bg-[#F5F7FA] `}>
+          <div
+            className={`flex gap-3 p-3 rounded-full ${
+              !isDarkMode ? "" : ""
+            } `}
+          >
             <Image
               src="/icons/Search.svg"
               width={20}
@@ -81,7 +84,9 @@ const Header = ({ title }: { title: string }) => {
               alt="Search"
             />
             <input
-              className="bg-[#F5F7FA] outline-none border-none"
+              className={`${
+                !isDarkMode ? "bg-[#F5F7FA]" : "bg-gray-600 "
+              } outline-none border-none rounded-3xl`}
               type="text"
               placeholder="Search for something"
             />

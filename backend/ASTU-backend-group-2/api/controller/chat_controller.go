@@ -27,7 +27,7 @@ func (sc *ChatController) Chat(ctx context.Context) gin.HandlerFunc {
 			return
 		}
 
-		chat_gemini := gemini.NewAIUtil()
+		chat_gemini := gemini.NewAIUtil(sc.Env)
 
 		res, err := chat_gemini.GenerateContentFromGemini(
 			chatRequest.Title,

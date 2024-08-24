@@ -5,7 +5,7 @@ import (
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/api/controller"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/repository"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/usecase"
 	"github.com/gin-gonic/gin"
@@ -13,14 +13,16 @@ import (
 )
 
 func NewProtectedBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
-	br := repository.NewBlogRepository(*db, domain.CollectionBlog)
+	br := repository.NewBlogRepository(*db, entities.CollectionBlog)
+	ur := repository.NewUserRepository(*db, entities.CollectionUser)
 	cr := repository.NewCommentRepository(db)
 	rr := repository.NewReactionRepository(db)
 
 	bc := controller.BlogController{
-		BlogUsecase:     usecase.NewBlogUsecase(br, timeout),
 		Env:             env,
+		BlogUsecase:     usecase.NewBlogUsecase(br, timeout),
 		CommentUsecase:  usecase.NewCommentUsecase(cr, timeout),
+		UserUsecase:     usecase.NewUserUsecase(ur, timeout),
 		ReactionUsecase: usecase.NewReactionUsecase(rr, br, timeout),
 	}
 
@@ -42,7 +44,7 @@ func NewProtectedBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mong
 }
 
 func NewPublicBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
-	br := repository.NewBlogRepository(*db, domain.CollectionBlog)
+	br := repository.NewBlogRepository(*db, entities.CollectionBlog)
 	cr := repository.NewCommentRepository(db)
 	// rr := repository.NewReactionRepository(db)
 	bc := controller.BlogController{
@@ -57,7 +59,6 @@ func NewPublicBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.D
 	group.GET("blogs/popular", bc.GetbyPopularity())
 
 	group.GET("/blogs/tags/", bc.GetByTags())
-	group.GET("/blogs/search/", bc.Search())
 	group.GET("/blogs/recent", bc.SortByDate())
 	//comments
 	group.GET("/blogs/:id/comments", bc.GetComments())

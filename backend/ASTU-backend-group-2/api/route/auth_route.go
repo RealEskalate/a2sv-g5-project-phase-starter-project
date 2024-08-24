@@ -5,7 +5,7 @@ import (
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/api/controller"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/repository"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/usecase"
 	"github.com/gin-gonic/gin"
@@ -13,7 +13,7 @@ import (
 )
 
 func NewSignupRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
-	ur := repository.NewUserRepository(*db, domain.CollectionUser)
+	ur := repository.NewUserRepository(*db, entities.CollectionUser)
 	sc := controller.SignupController{
 		SignupUsecase: usecase.NewSignupUsecase(ur, timeout),
 		Env:           env,
@@ -23,7 +23,7 @@ func NewSignupRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Databa
 }
 
 func NewLoginRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
-	ur := repository.NewUserRepository(*db, domain.CollectionUser)
+	ur := repository.NewUserRepository(*db, entities.CollectionUser)
 	lc := &controller.LoginController{
 		LoginUsecase: usecase.NewLoginUsecase(ur, timeout),
 		Env:          env,
@@ -32,7 +32,7 @@ func NewLoginRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Databas
 }
 
 func NewLogoutRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
-	ur := repository.NewUserRepository(*db, domain.CollectionUser)
+	ur := repository.NewUserRepository(*db, entities.CollectionUser)
 	lc := &controller.LoginController{
 		LoginUsecase: usecase.NewLogoutUsecase(ur, timeout),
 		Env:          env,
@@ -41,7 +41,7 @@ func NewLogoutRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Databa
 }
 
 func NewRefreshTokenRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
-	ur := repository.NewUserRepository(*db, domain.CollectionUser)
+	ur := repository.NewUserRepository(*db, entities.CollectionUser)
 	rtc := &controller.RefreshTokenController{
 		RefreshTokenUsecase: usecase.NewRefreshTokenUsecase(ur, timeout),
 		Env:                 env,

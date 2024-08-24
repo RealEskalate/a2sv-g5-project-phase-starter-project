@@ -6,16 +6,16 @@ import (
 	"log"
 	"time"
 
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type reactionUsecase struct {
-	reactionRepo domain.ReactionRepository
-	BlogRepo     domain.BlogRepository
+	reactionRepo entities.ReactionRepository
+	BlogRepo     entities.BlogRepository
 }
 
-func NewReactionUsecase(reaction domain.ReactionRepository, blog domain.BlogRepository, timeout time.Duration) domain.ReactionUsecase {
+func NewReactionUsecase(reaction entities.ReactionRepository, blog entities.BlogRepository, timeout time.Duration) entities.ReactionUsecase {
 
 	return &reactionUsecase{
 		reactionRepo: reaction,
@@ -23,41 +23,26 @@ func NewReactionUsecase(reaction domain.ReactionRepository, blog domain.BlogRepo
 	}
 }
 
-//utility functions for creating reaction
-
-func createReaction(blogID, userID primitive.ObjectID) domain.Reaction {
-	return domain.Reaction{
-		BlogID:   blogID,
-		UserID:   userID,
-		Liked:    false,
-		Disliked: false,
-		Date:     time.Now(),
-	}
-
-}
 func (ru *reactionUsecase) ToggleLike(c context.Context, blogID, userID string) error {
 
 	log.Printf("Toggle like for blog %s by user %s", blogID, userID)
 
 	_, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		return errors.New("invalid user ID")
+		return errors.New("invalid user id")
 	}
 
 	_, err = primitive.ObjectIDFromHex(blogID)
 	if err != nil {
-		return errors.New("invalid blog ID")
+		return errors.New("invalid blog id")
 	}
-
 	//check if the blog exists
-	log.Printf("Checking if blog %s exists", blogID)
-	_, err = ru.BlogRepo.GetBlogByID(c, blogID)
+	_, err = ru.BlogRepo.GetBlogByID(c, blogID, false)
 	if err != nil {
-		log.Printf("Blog %s does not exist", blogID)
 		return err
 	}
-
-	//check if the user has already made a reaction to the blog
+	//check if the blog exists
+	log.Printf("Checking if blog %s exists", blogID)
 	log.Printf("Checking if user %s has liked blog %s", userID, blogID)
 	isLiked, err := ru.reactionRepo.IsPostLiked(c, blogID, userID)
 	if err != nil {
@@ -95,7 +80,7 @@ func (ru *reactionUsecase) ToggleDislike(c context.Context, blogID, userID strin
 		return errors.New("invalid blog id")
 	}
 	//check if the blog exists
-	_, err = ru.BlogRepo.GetBlogByID(c, blogID)
+	_, err = ru.BlogRepo.GetBlogByID(c, blogID, false)
 	if err != nil {
 		return err
 	}

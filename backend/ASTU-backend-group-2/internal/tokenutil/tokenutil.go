@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	jwt "github.com/golang-jwt/jwt/v4"
 )
 
-func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
+func CreateAccessToken(user *entities.User, secret string, expiry int) (accessToken string, err error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry))
-	claims := &domain.JwtCustomClaims{
+	claims := &entities.JwtCustomClaims{
 		Role:    user.Role,
 		IsOwner: user.IsOwner,
 		ID:      user.ID.Hex(),
@@ -26,9 +26,9 @@ func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToke
 	return t, err
 }
 
-func CreateVerificationToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
+func CreateVerificationToken(user *entities.User, secret string, expiry int) (accessToken string, err error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry))
-	claims := &domain.JwtCustomClaims{
+	claims := &entities.JwtCustomClaims{
 		ID: user.ID.Hex(),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(exp),
@@ -41,9 +41,9 @@ func CreateVerificationToken(user *domain.User, secret string, expiry int) (acce
 	}
 	return t, err
 }
-func CreateRefreshToken(user *domain.User, secret string, expiry int) (refreshToken string, err error) {
+func CreateRefreshToken(user *entities.User, secret string, expiry int) (refreshToken string, err error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry))
-	claimsRefresh := &domain.JwtCustomRefreshClaims{
+	claimsRefresh := &entities.JwtCustomRefreshClaims{
 		ID: user.ID.Hex(),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(exp),

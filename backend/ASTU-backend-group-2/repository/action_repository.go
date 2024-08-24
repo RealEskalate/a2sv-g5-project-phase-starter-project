@@ -5,7 +5,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -22,7 +22,7 @@ var ErrUserNotFound = errors.New("user not found")
 var ErrIDNotFound = errors.New("id not found")
 var ErrInvalidID = errors.New("invalid id")
 
-func NewReactionRepository(database *mongo.Database) domain.ReactionRepository {
+func NewReactionRepository(database *mongo.Database) entities.ReactionRepository {
 	return reactionRepository{
 		db:         database,
 		Collection: database.Collection("blogs"),

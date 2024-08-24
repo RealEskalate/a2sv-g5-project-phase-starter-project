@@ -24,11 +24,14 @@ import {
   getTransactionIncomes,
   getTransactionsExpenses,
 } from "@/lib/api/transactionController";
+import Refresh from "@/app/api/auth/[...nextauth]/token/RefreshToken";
+import { IconType } from "react-icons";
 
 const initialChartData = [
   { browser: "shopping", visitors: 0, fill: "var(--color-shopping)" },
   { browser: "transfer", visitors: 0, fill: "var(--color-transfer)" },
-  { browser: "other", visitors: 0, fill: "var(--color-other)" },
+  { browser: "deposit", visitors: 0, fill: "var(--color-deposit)" },
+  {browser: "service", visitors: 0, fill: "var(--color-service)"}
 ];
 
 const chartConfig = {
@@ -43,11 +46,29 @@ const chartConfig = {
     label: "Transfer",
     color: "hsl(var(--chart-2))",
   },
-  other: {
-    label: "Other",
+  deposit: {
+    label: "Deposit",
     color: "hsl(var(--chart-3))",
   },
+  service: {
+    label: "Service",
+    color: "hsl(var(--chart-4))",
+  },
 } satisfies ChartConfig;
+
+type DataItem = {
+  heading: string;
+  text: string;
+  headingStyle: string;
+  dataStyle: string;
+};
+
+type Column = {
+  icon: IconType;
+  iconStyle: string;
+  data: DataItem[];
+};
+
 type Data = {
   access_token: string;
   data: string;
@@ -57,16 +78,20 @@ type Data = {
 type SessionDataType = {
   user: Data;
 };
+
 export function ExpenseStatistics() {
   const [chartData, setChartData] = useState(initialChartData);
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Data | null>(null);
   const router = useRouter();
+  const [access_token, setAccess_token] = useState("");
 
 
   useEffect(() => {
     const fetchSession = async () => {
       const sessionData = (await getSession()) as SessionDataType | null;
+      setAccess_token(await Refresh());
+
       if (sessionData && sessionData.user) {
         setSession(sessionData.user);
       } else {
@@ -85,14 +110,14 @@ export function ExpenseStatistics() {
   useEffect(() => {
     const fetchAndProcessExpenses = async () => {
       try {
-        const sessionToken = session?.access_token;
-        if (sessionToken) {
-          const { data } = await getTransactionsExpenses(0, 1, sessionToken);
-          
+        if (access_token) {
+          const { data } = await getTransactionsExpenses(0, 1000, access_token);
+          console.log("worked", data)
           const typeAmounts: { [key: string]: number } = {
             shopping: 0,
             transfer: 0,
-            other: 0,
+            deposit: 0,
+            service: 0
           };
 
           data.content.forEach((transaction: any) => {
@@ -106,7 +131,8 @@ export function ExpenseStatistics() {
           setChartData([
             { browser: "shopping", visitors: typeAmounts.shopping, fill: "var(--color-shopping)" },
             { browser: "transfer", visitors: typeAmounts.transfer, fill: "var(--color-transfer)" },
-            { browser: "other", visitors: typeAmounts.other, fill: "var(--color-other)" },
+            { browser: "deposit", visitors: typeAmounts.deposit, fill: "var(--color-deposit)" },
+            { browser: "service", visitors: typeAmounts.service, fill: "var(--color-service)" },
           ]);
 
           setLoading(false);
@@ -118,7 +144,7 @@ export function ExpenseStatistics() {
     };
 
     fetchAndProcessExpenses();
-  }, []);
+  });
 
   return (
     <Card className="mx-4 my-6 md:my-0 flex-grow rounded-3xl">
@@ -143,7 +169,7 @@ export function ExpenseStatistics() {
                 <Pie
                   data={chartData}
                   dataKey="visitors"
-                  paddingAngle={5} // Adds margin between the slices
+                  paddingAngle={0} // Adds margin between the slices
                 >
                   <LabelList
                     dataKey="browser"

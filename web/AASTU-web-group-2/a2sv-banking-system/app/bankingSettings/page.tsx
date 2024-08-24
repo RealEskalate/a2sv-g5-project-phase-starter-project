@@ -145,7 +145,7 @@ const SettingsPage: React.FC = () => {
                       type="text"
                       id="currency-input"
                       title="Currency"
-                      className="mt-1 block w-full border border-[#DFEAF2] dark:bg-[#050914]  dark:border dark:border-[#333B69] rounded-full shadow-sm px-4 py-2 text-[#718EBF] dark:text-[#9faaeb] bg-white placeholder-[#718EBF] dark:placeholder-[#9faaeb]"
+                      className="mt-1 block w-full border border-[#DFEAF2] dark:bg-[#050914]  dark:border dark:border-[#333B69] rounded-full shadow-sm px-4 py-2 text-[#232323] dark:text-[#9faaeb] bg-white placeholder-[#718EBF] dark:placeholder-[#9faaeb]"
                       placeholder="Enter your currency"
                       value={notifications.currency || ""}  
                       onChange={(e) => handleTextInputChange('currency', e.target.value)}

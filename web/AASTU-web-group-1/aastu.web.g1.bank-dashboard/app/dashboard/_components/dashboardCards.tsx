@@ -36,10 +36,10 @@ export const Cards = ({ onLoadingComplete }: { onLoadingComplete: any }) => {
       <div className="flex space-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ">
         {loading || creditCards.length === 0
           ? [1, 2].map((index) => (
-              <div className="">
+              
                 <CreditCardShimmer key={index} />
-              </div>
-            )) // Render shimmer loaders if loading or no data
+              
+            )) 
           : creditCards.map((card) => (
               <CreditCard
                 key={card.id}

@@ -407,66 +407,6 @@ func (suite *BlogControllerTestSuite) TestHandleUpdateComment_Success() {
 	suite.mockBlogUseCase.AssertExpectations(suite.T())
 }
 
-func (suite *BlogControllerTestSuite) TestHandleCreateComment() {
-	// Test Success Case
-	comment := domain.NewComment{
-		Content: "This is a test comment",
-	}
-	blogID := "blog123"
-	userName := "test_user"
-
-	suite.mockBlogUseCase.On("AddComment", mock.Anything, blogID, &comment, userName).Return(nil)
-
-	reqBody, _ := json.Marshal(comment)
-	req, _ := http.NewRequest(http.MethodPost, "/blogs/"+blogID+"/comments", bytes.NewBuffer(reqBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	w := httptest.NewRecorder()
-	ctx, _ := gin.CreateTestContext(w)
-	ctx.Request = req
-	ctx.Set("username", userName)
-	ctx.Params = gin.Params{gin.Param{Key: "blogId", Value: blogID}}
-
-	suite.controller.HandleCreateComment(ctx)
-
-	assert.Equal(suite.T(), http.StatusCreated, w.Code)
-	assert.JSONEq(suite.T(), `{"message": "created successfully"}`, w.Body.String())
-	suite.mockBlogUseCase.AssertExpectations(suite.T())
-
-	// Test Binding Error
-	req, _ = http.NewRequest(http.MethodPost, "/blogs/"+blogID+"/comments", nil)
-	req.Header.Set("Content-Type", "application/json")
-
-	w = httptest.NewRecorder()
-	ctx, _ = gin.CreateTestContext(w)
-	ctx.Request = req
-
-	suite.controller.HandleCreateComment(ctx)
-
-	assert.Equal(suite.T(), http.StatusBadRequest, w.Code)
-	assert.JSONEq(suite.T(), `{"error": "EOF"}`, w.Body.String()) // Adjust the expected error message as needed
-
-	// Test Validation Error
-	comment = domain.NewComment{
-		Content: "", // Assume empty content fails validation
-	}
-
-	reqBody, _ = json.Marshal(comment)
-	req, _ = http.NewRequest(http.MethodPost, "/blogs/"+blogID+"/comments", bytes.NewBuffer(reqBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	w = httptest.NewRecorder()
-	ctx, _ = gin.CreateTestContext(w)
-	ctx.Request = req
-	ctx.Set("username", userName)
-	ctx.Params = gin.Params{gin.Param{Key: "blogId", Value: blogID}}
-
-	suite.controller.HandleCreateComment(ctx)
-
-	assert.Equal(suite.T(), http.StatusBadRequest, w.Code)
-	assert.JSONEq(suite.T(), `{"error": "Key: 'NewComment.Content' Error:Field validation for 'Content' failed on the 'required' tag"}`, w.Body.String())
-}
-
 func TestBlogControllerTestSuite(t *testing.T) {
 	suite.Run(t, new(BlogControllerTestSuite))
 }

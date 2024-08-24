@@ -2,12 +2,12 @@ package controller
 
 import (
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	"github.com/gin-gonic/gin"
 )
 
 type LogoutController struct {
-	LogoutUsecase domain.LoginUsecase
+	LogoutUsecase entities.LoginUsecase
 	Env           *bootstrap.Env
 }
 

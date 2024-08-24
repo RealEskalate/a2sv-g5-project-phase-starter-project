@@ -29,11 +29,11 @@ func main() {
 
 	aiService := infrastructure.NewGeminiService(os.Getenv("GEMINI_API_KEY"))
 	emailService := infrastructure.NewEmailService(
-        "localhost",
-        "1025",    
-        "",         
-        "",        
-    )
+		"localhost",
+		"1025",
+		"",
+		"",
+	)
 
 	db := client.Database("blog_project")
 	userCollection := db.Collection("users")
@@ -43,13 +43,12 @@ func main() {
 	blogRepo := repositories.NewBlogRepository(blogCollection, redisCache)
 	userRepo := repositories.NewUserRepository(userCollection, redisCache)
 	tokenRepo := repositories.NewTokenRepository(tokenCollection)
-	userUsecase := usecases.NewUserUsecase(userRepo,emailService , tokenRepo)
+	userUsecase := usecases.NewUserUsecase(userRepo, blogRepo, emailService, tokenRepo)
 	blogUsecase := usecases.NewBlogUsecase(aiService, blogRepo, userUsecase)
 	blogController := controllers.NewBlogController(blogUsecase)
 	userController := controllers.NewUserController(userUsecase)
 
 	r := routers.SetupRouter(blogController, userController)
-	r.Static("/uploads", "./uploads")
 
 	r.Run("localhost:8080")
 }

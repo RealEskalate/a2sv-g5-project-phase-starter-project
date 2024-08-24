@@ -14,15 +14,17 @@ import (
 
 type UserUsecase struct {
 	emailService *infrastructure.EmailService
-	UserRepo  domain.IUserRepository
-	TokenRepo domain.ITokenRepository
+	UserRepo     domain.IUserRepository
+	BlogRepo     domain.IBlogRepository
+	TokenRepo    domain.ITokenRepository
 }
 
-func NewUserUsecase(userRepo domain.IUserRepository, emailService *infrastructure.EmailService, tokenRepo domain.ITokenRepository) domain.IUserUsecase {
+func NewUserUsecase(userRepo domain.IUserRepository, blogRepo domain.IBlogRepository, emailService *infrastructure.EmailService, tokenRepo domain.ITokenRepository) domain.IUserUsecase {
 	return &UserUsecase{
 		emailService: emailService,
-		UserRepo:  userRepo,
-		TokenRepo: tokenRepo,
+		UserRepo:     userRepo,
+		TokenRepo:    tokenRepo,
+		BlogRepo:     blogRepo,
 	}
 }
 
@@ -32,6 +34,15 @@ func (u *UserUsecase) GetAllUsers(ctx context.Context) ([]domain.User, error) {
 
 func (u *UserUsecase) GetUserByID(ctx context.Context, id int) (domain.User, error) {
 	user, err := u.UserRepo.GetUserByID(ctx, id)
+	if err != nil {
+		return domain.User{}, errors.New(err.Error())
+	}
+
+	return user, nil
+}
+
+func (u *UserUsecase) GetUserByUsername(ctx context.Context, username string) (domain.User, error) {
+	user, err := u.UserRepo.SearchByUsername(ctx, username)
 	if err != nil {
 		return domain.User{}, errors.New(err.Error())
 	}
@@ -70,15 +81,71 @@ func (u *UserUsecase) CreateUser(ctx context.Context, user domain.User) (domain.
 		return domain.User{}, errors.New(err.Error())
 	}
 
+	if user.Username == "" {
+		return domain.User{}, errors.New("username is required")
+	}
+
 	user.Password = hashedPassword
 
 	user.ID = generateUniqueID()
+
+	users, err := u.GetAllUsers(ctx)
+	if err != nil {
+		return domain.User{}, errors.New(err.Error())
+	}
+
+	if len(users) == 0 {
+		user.Role = "admin"
+	} else {
+		user.Role = "user"
+	}
 
 	return u.UserRepo.CreateUser(ctx, user)
 }
 
 func (u *UserUsecase) UpdateUser(ctx context.Context, id int, user domain.User) (domain.User, error) {
-	return u.UserRepo.UpdateUser(ctx, id, user)
+	existingUser, err := u.UserRepo.GetUserByID(ctx, id)
+	if err != nil {
+		return domain.User{}, errors.New(err.Error())
+	}
+
+	if user.Email != "" {
+		if !isValidEmail(user.Email) {
+			return domain.User{}, errors.New("invalid email")
+		}
+		existingUser.Email = user.Email
+	}
+
+	if user.Password != "" {
+		if !isValidPassword(user.Password) {
+			return domain.User{}, errors.New("invalid password, must contain at least one uppercase letter, one lowercase letter, one number, one special character, and minimum length of 8")
+		}
+
+		hashedPassword, err := infrastructure.HashPassword(user.Password)
+		if err != nil {
+			return domain.User{}, errors.New(err.Error())
+		}
+		existingUser.Password = hashedPassword
+	}
+
+	if user.Username != "" {
+		u.BlogRepo.UpdateAuthorName(ctx, existingUser.Username, user.Username)
+		existingUser.Username = user.Username
+	}
+
+	if user.Bio != "" {
+		existingUser.Bio = user.Bio
+	}
+
+	if user.Phone != "" {
+		existingUser.Phone = user.Phone
+	}
+
+	if user.ProfilePic != "" {
+		existingUser.ProfilePic = user.ProfilePic
+	}
+
+	return u.UserRepo.UpdateUser(ctx, id, existingUser)
 }
 
 func (u *UserUsecase) DeleteUser(ctx context.Context, id int) error {
@@ -160,13 +227,13 @@ func (u *UserUsecase) RefreshToken(ctx context.Context, refreshToken string) (st
 }
 
 // RequestPasswordReset handles the logic for initiating a password reset
-func (u *UserUsecase) ForgetPassword(ctx context.Context , email string) error {
-	user, err := u.UserRepo.SearchByEmail(ctx , email)
+func (u *UserUsecase) ForgetPassword(ctx context.Context, email string) error {
+	user, err := u.UserRepo.SearchByEmail(ctx, email)
 	if err != nil {
 		return errors.New("user not found")
 	}
 
-	resetToken  , err:=  infrastructure.GenerateJWTRefreshToken(&user, os.Getenv("jwt_secret"),1)
+	resetToken, err := infrastructure.GenerateJWTRefreshToken(&user, os.Getenv("jwt_secret"), 1)
 
 	if err != nil {
 		return err
@@ -180,8 +247,8 @@ func (u *UserUsecase) ForgetPassword(ctx context.Context , email string) error {
 }
 
 // ResetPassword handles the logic for resetting the password
-func (u *UserUsecase) ResetPassword(ctx context.Context ,token, newPassword string) error {
-	 claims , err := infrastructure.IsAuthorized(token, os.Getenv("jwt_secret"))
+func (u *UserUsecase) ResetPassword(ctx context.Context, token, newPassword string) error {
+	claims, err := infrastructure.IsAuthorized(token, os.Getenv("jwt_secret"))
 
 	if err != nil {
 		return errors.New("invalid token")
@@ -204,15 +271,12 @@ func (u *UserUsecase) ResetPassword(ctx context.Context ,token, newPassword stri
 
 	user.Password = hashedPassword
 
-
-	if _ , err := u.UserRepo.UpdateUser(ctx ,user.ID , user); err != nil {
+	if _, err := u.UserRepo.UpdateUser(ctx, user.ID, user); err != nil {
 		return errors.New("failed to update password")
 	}
 
 	return nil
 }
-
-
 
 func (u *UserUsecase) PromoteUser(ctx context.Context, userID int) (domain.User, error) {
 	user, err := u.UserRepo.GetUserByID(ctx, userID)

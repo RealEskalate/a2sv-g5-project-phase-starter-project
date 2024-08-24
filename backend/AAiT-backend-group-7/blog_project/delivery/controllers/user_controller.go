@@ -81,7 +81,7 @@ func (uc *userController) CreateUser(c *gin.Context) {
 		defer file.Close()
 
 		// Define the path where the file will be stored
-		filePath := fmt.Sprintf("uploads/%s", handler.Filename)
+		filePath := fmt.Sprintf("./uploads/%s", handler.Filename)
 
 		// Save the file to disk
 		out, err := os.Create(filePath)
@@ -98,7 +98,7 @@ func (uc *userController) CreateUser(c *gin.Context) {
 		}
 
 		// Set the profile picture path
-		user.ProfilePic = filePath
+		user.ProfilePic = "/uploads/" + handler.Filename
 	}
 
 	newUser, err := uc.UserUsecase.CreateUser(c, user)
@@ -119,11 +119,46 @@ func (uc *userController) UpdateUser(c *gin.Context) {
 	}
 
 	var user domain.User
-	err = c.BindJSON(&user)
 
+	// Parse form data
+	err = c.Request.ParseMultipartForm(10 << 20) // Limit upload size to 10MB
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(400, gin.H{"error": "Could not parse form data"})
 		return
+	}
+
+	// Retrieve JSON fields
+	user.Username = c.PostForm("username")
+	user.Password = c.PostForm("password")
+	user.Email = c.PostForm("email")
+	user.Role = c.PostForm("role")
+	user.Bio = c.PostForm("bio")
+	user.Phone = c.PostForm("phone")
+
+	// Handle profile picture upload (optional)
+	file, handler, err := c.Request.FormFile("profile_pic")
+	if err == nil { // Only proceed if the file was uploaded
+		defer file.Close()
+
+		// Define the path where the file will be stored
+		filePath := fmt.Sprintf("./uploads/%s", handler.Filename)
+
+		// Save the file to disk
+		out, err := os.Create(filePath)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Unable to create the file for writing: " + err.Error()})
+			return
+		}
+		defer out.Close()
+
+		_, err = io.Copy(out, file)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Unable to save the file"})
+			return
+		}
+
+		// Set the profile picture path
+		user.ProfilePic = "/uploads/" + handler.Filename
 	}
 
 	newUser, err := uc.UserUsecase.UpdateUser(c, idInt, user)

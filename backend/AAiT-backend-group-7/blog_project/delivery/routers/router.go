@@ -36,17 +36,23 @@ func SetupRouter(blogController domain.IBlogController, userController domain.IU
 	users.POST("/forget-password/:email", userController.ForgetPassword)
 	users.POST("/reset-password/:username/:password", userController.ResetPassword)
 	users.POST("/logout", userController.Logout)
+	users.POST("/refresh-token", userController.RefreshToken)
 
 	users.Use(infrastructure.JwtAuthMiddleware(os.Getenv("jwt_secret")))
 	{
-		users.GET("/", userController.GetAllUsers)
-		users.GET("/:id", userController.GetUserByID)
+		users.GET("/", infrastructure.AdminMiddleware(), userController.GetAllUsers)
+		users.GET("/:id", infrastructure.AdminMiddleware(), userController.GetUserByID)
 		users.PUT("/:id", userController.UpdateUser)
 		users.DELETE("/:id", userController.DeleteUser)
 		// users.POST("/:userID/blog", userController.AddBlog)
 		users.POST("/promote/:id", infrastructure.AdminMiddleware(), userController.PromoteUser)
 		users.POST("/demote/:id", infrastructure.AdminMiddleware(), userController.DemoteUser)
-		users.POST("/refresh-token", userController.RefreshToken)
+	}
+
+	uploads := r.Group("/uploads")
+	uploads.Use(infrastructure.JwtAuthMiddleware(os.Getenv("jwt_secret")))
+	{
+		uploads.Static("/", "./uploads")
 	}
 
 	return r

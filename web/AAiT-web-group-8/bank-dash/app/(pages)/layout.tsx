@@ -7,7 +7,7 @@ import TableUI from "@/components/stats/table";
 import Paginate from "@/components/stats/paginate";
 import {BarChartt} from "@/components/stats/barchart";
 import LineGraph from "@/components/stats/linegraph";
-import Sidebar from "@/components/dashboard/sidebar";
+import Sidebar from "@/components/Layout/sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 

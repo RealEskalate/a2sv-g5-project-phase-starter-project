@@ -1,0 +1,56 @@
+[
+  {
+    "id": "abc123",
+    "name": "Business loans",
+    "details": "Many publishing",
+    "numberOfUsers": 0,
+    "status": "Lorem Ipsum",
+    "type": "It is a long established",
+    "icon": "/images/business_loans.png"
+  },
+  {
+    "id": "def456",
+    "name": "Checking accounts",
+    "details": "Many publishing",
+    "numberOfUsers": 0,
+    "status": "Lorem Ipsum",
+    "type": "It is a long established",
+    "icon": "/images/checking_accounts.png"
+  },
+  {
+    "id": "ghi789",
+    "name": "Saving accounts",
+    "details": "Many publishing",
+    "numberOfUsers": 0,
+    "status": "Lorem Ipsum",
+    "type": "It is a long established",
+    "icon": "/images/saving_accounts.png"
+  },
+  {
+    "id": "jkl012",
+    "name": "Debit and credit cards",
+    "details": "Many publishing",
+    "numberOfUsers": 0,
+    "status": "Lorem Ipsum",
+    "type": "It is a long established",
+    "icon": "/images/debit_credit.png"
+  },
+  {
+    "id": "mno345",
+    "name": "Life Insurance",
+    "details": "Many publishing",
+    "numberOfUsers": 0,
+    "status": "Lorem Ipsum",
+    "type": "It is a long established",
+    "icon": "/images/life_insurance.png"
+  },
+  {
+    "id": "pqr678",
+    "name": "Business loans",
+    "details": "Many publishing",
+    "numberOfUsers": 0,
+    "status": "Lorem Ipsum",
+    "type": "It is a long established",
+    "icon": "/images/business_loans.png"
+  }
+]

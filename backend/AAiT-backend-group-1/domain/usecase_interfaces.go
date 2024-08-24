@@ -1,24 +1,23 @@
 package domain
 
 import (
+	"context"
 	"mime/multipart"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 type UserUseCase interface {
-	RegisterStart(cxt *gin.Context, user *User) Error
-	RegisterEnd(cxt *gin.Context, token string) Error
-	Login(context *gin.Context, username, password string) (map[string]string, Error)
-	RefreshToken(cxt *gin.Context, refreshToken string) (map[string]string, Error)
-	ForgotPassword(context *gin.Context, email string) Error
-	ResetPassword(cxt *gin.Context, newPassword, confirmPassword, token string, resetCode int) Error
-	Logout(cxt *gin.Context, token map[string]string) Error
-	PromoteUser(cxt *gin.Context, userID string) Error
-	DemoteUser(cxt *gin.Context, userID string) Error
-	UpdateProfile(cxt *gin.Context, userID string, user map[string]interface{}) Error
-	ImageUpload(cxt *gin.Context, file *multipart.File, header *multipart.FileHeader, id string) Error
+	RegisterStart(cxt context.Context, user *User) Error
+	RegisterEnd(cxt context.Context, token string) Error
+	Login(context context.Context, username, password string) (map[string]string, Error)
+	RefreshToken(cxt context.Context, refreshToken string) (map[string]string, Error)
+	ForgotPassword(context context.Context, email string) Error
+	ResetPassword(cxt context.Context, newPassword, confirmPassword, token string, resetCode int) Error
+	Logout(cxt context.Context, token map[string]string) Error
+	PromoteUser(cxt context.Context, userID string) Error
+	DemoteUser(cxt context.Context, userID string) Error
+	UpdateProfile(cxt context.Context, userID string, user map[string]interface{}) Error
+	ImageUpload(cxt context.Context, file *multipart.File, header *multipart.FileHeader, id string) Error
 }
 
 type BlogUseCase interface {
@@ -26,7 +25,7 @@ type BlogUseCase interface {
 	GetBlog(blogID string, userID string) (*Blog, Error)
 	GetBlogs(page_number string) ([]Blog, Error)
 	UpdateBlog(blogID string, blog *Blog, userId string) Error
-	DeleteBlog(blogID string , currUserId string) Error
+	DeleteBlog(blogID string, currUserId string) Error
 	SearchBlogsByTitle(title string, page_number string) ([]Blog, Error)
 	SearchBlogsByAuthor(author string, page_number string) ([]Blog, Error)
 	FilterBlogs(tags []string, dateAfter time.Time, popular bool) ([]Blog, Error)

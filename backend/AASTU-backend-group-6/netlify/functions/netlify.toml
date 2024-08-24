@@ -4,7 +4,7 @@
   command = "go build cmd/main.go && ./main"
 
 [build.environment]
-  GO_VERSION = "1.22.5"
+  GO_VERSION = "1.23"
 
 
 

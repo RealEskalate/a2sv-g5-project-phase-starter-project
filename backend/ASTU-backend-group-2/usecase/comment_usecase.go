@@ -30,6 +30,10 @@ func (cu *commentUsecase) CreateComment(c context.Context, userID string, blogID
 		return domain.Comment{}, err
 	}
 	userObjID, err := primitive.ObjectIDFromHex(userID)
+
+	if err != nil {
+		return domain.Comment{}, err
+	}
 	newComment := domain.Comment{
 		ID:        primitive.NewObjectID(),
 		UserID:    userObjID,

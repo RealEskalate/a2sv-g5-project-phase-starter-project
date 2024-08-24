@@ -169,8 +169,8 @@ func (at *AuthTokenImple) DeleteRefreshToken(ctx context.Context, token string) 
 	}
 	return nil
 }
-func (at *AuthUserImple) GetCollectionCount(ctx context.Context) (int64, error) {
-	count, err := at.usercollection.CountDocuments(ctx, bson.D{})
+func (au *AuthUserImple) GetCollectionCount(ctx context.Context) (int64, error) {
+	count, err := au.usercollection.CountDocuments(ctx, bson.D{})
 	if err != nil {
 		return 0, err
 	}

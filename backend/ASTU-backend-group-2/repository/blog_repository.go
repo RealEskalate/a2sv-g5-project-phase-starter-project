@@ -74,27 +74,67 @@ func getFiltered(c context.Context, collection *mongo.Collection, filter bson.M,
 					"$author.last_name",
 				},
 			},
+			"score": bson.M{"$meta": "searchScore"},
 		},
 	}
 
-	search := bson.M{"$match": bson.M{
-		"$text": bson.M{
-			"$search": blogFilter.Search,
-		},
-	}}
-
-	if blogFilter.Search == "" {
-		search = bson.M{"$match": bson.M{}}
+	sort := bson.M{
+		"$sort": bson.M{"score": -1},
 	}
 
+	fuzzy := bson.M{
+		"maxEdits":      2,
+		"prefixLength":  0,
+		"maxExpansions": 50,
+	}
+
+	search := bson.M{
+		"$search": bson.M{
+			"index": "default",
+			"compound": bson.M{
+				"should": bson.A{
+					bson.M{
+						"autocomplete": bson.M{
+							"query": blogFilter.Search,
+							"path":  "content",
+							"fuzzy": fuzzy,
+						},
+					},
+
+					bson.M{
+						"autocomplete": bson.M{
+							"query": blogFilter.Search,
+							"path":  "title",
+							"fuzzy": fuzzy,
+						},
+					},
+
+					bson.M{
+						"autocomplete": bson.M{
+							"query": blogFilter.Search,
+							"path":  "author.first_name",
+							"fuzzy": fuzzy,
+						},
+					},
+
+					bson.M{
+						"autocomplete": bson.M{
+							"query": blogFilter.Search,
+							"path":  "author.last_name",
+							"fuzzy": fuzzy,
+						},
+					},
+				},
+				"minimumShouldMatch": 1,
+			},
+		},
+	}
 	paginated := mongopagination.New(collection).Context(c).Limit(blogFilter.Limit).Page(blogFilter.Pages)
-
-	// Aggregate()
 
 	var paginatedData *mongopagination.PaginatedData
 	var err error
 	if filter != nil {
-		paginatedData, err = paginated.Aggregate(search, filter, project)
+		paginatedData, err = paginated.Aggregate(search, filter, project, sort)
 		// paginatedData, err = paginated.Aggregate(bson.M{"$match": bson.M{"title": "ale", "$in": bson.M{"tag": []string{}}}})
 		if err != nil {
 			log.Println("[REPO] error in GET  Filter", err.Error())
@@ -103,6 +143,7 @@ func getFiltered(c context.Context, collection *mongo.Collection, filter bson.M,
 		for _, raw := range paginatedData.Data {
 			var blog entities.Blog
 			if marshallErr := bson.Unmarshal(raw, &blog); marshallErr == nil {
+				blog.Author = nil
 				blogs = append(blogs, blog)
 			}
 
@@ -167,7 +208,14 @@ func (br *blogRepository) CreateBlog(c context.Context, newBlog *entities.Blog) 
 		return entities.Blog{}, err
 	}
 
-	return blog, nil
+
+	fmt.Println("insertedBlog", insertedBlog.InsertedID)
+
+	newBlog.ID = insertedBlog.InsertedID.(primitive.ObjectID)
+	newBlog.AuthorName = newBlog.Author.FirstName + " " + newBlog.Author.LastName
+	newBlog.Author = nil
+
+	return *newBlog, nil
 }
 
 func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBlog *entities.BlogUpdate) (entities.Blog, error) {

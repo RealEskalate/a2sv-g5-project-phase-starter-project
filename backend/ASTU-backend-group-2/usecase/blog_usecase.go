@@ -40,7 +40,7 @@ func (b *blogUsecase) BatchCreateBlog(c context.Context, newBlogs *[]forms.BlogF
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 			ID:        primitive.NewObjectID(),
-			Author:    *user,
+			Author:    user,
 		}
 
 		blogs = append(blogs, newBlog)
@@ -162,7 +162,7 @@ func (b *blogUsecase) CreateBlog(c context.Context, newBlog *forms.BlogForm, use
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		ID:        primitive.NewObjectID(),
-		Author:    *user,
+		Author:    user,
 	}
 
 	Blog, err := b.blogRepository.CreateBlog(ctx, &blog)

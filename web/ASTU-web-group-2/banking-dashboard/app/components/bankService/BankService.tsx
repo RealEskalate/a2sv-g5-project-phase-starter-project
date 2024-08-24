@@ -1,7 +1,6 @@
 "use client";
 import { Inter } from "next/font/google";
 import { BankServiceType } from "./BankServiceMobile";
-import { useRouter } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 const BankService = ({
@@ -13,7 +12,6 @@ const BankService = ({
   status,
   type,
 }: BankServiceType) => {
-  console.log(icon);
   return (
     <div
       className={`${inter.className} flex justify-between bg-white rounded-[22px] h-fit pl-5 pt-5 pb-5 items-center`}

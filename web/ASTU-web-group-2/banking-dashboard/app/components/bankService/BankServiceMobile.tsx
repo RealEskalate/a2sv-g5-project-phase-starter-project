@@ -1,7 +1,6 @@
 "use client";
 import { Inter } from "next/font/google";
 import { useRouter } from "next/navigation";
-import { Router } from "next/router";
 
 const inter = Inter({ subsets: ["latin"] });
 

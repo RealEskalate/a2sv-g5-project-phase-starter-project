@@ -50,7 +50,6 @@ func NewEnv() *Env {
 	}
 
 	viper.SetConfigFile(filepath.Join(projectRoot, ".env"))
-
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {

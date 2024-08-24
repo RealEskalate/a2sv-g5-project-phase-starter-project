@@ -4,8 +4,6 @@ import (
 	"log"
 	"os"
 	"strconv"
-
-	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -14,7 +12,7 @@ type Config struct {
 	DbName                   string
 	UserCollection           string
 	BlogCollection           string
-	CommentCollection		string
+	CommentCollection        string
 	ActiveUserCollection     string
 	UnverifiedUserCollection string
 	ContextTimeout           int
@@ -30,11 +28,11 @@ type Config struct {
 }
 
 func LoadEnv() (*Config, error) {
-	err := godotenv.Load("/etc/secrets/env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-		return nil, err
-	}
+	// err := godotenv.Load("/etc/secrets/env")
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// 	return nil, err
+	// }
 
 	dbURL := os.Getenv("DATABASE_URL")
 	portStr := os.Getenv("PORT")
@@ -80,24 +78,24 @@ func LoadEnv() (*Config, error) {
 	}
 
 	config := &Config{
-		DatabaseUrl:            dbURL,
-		Port:                   port,
-		DbName:                 dbname,
-		UserCollection:         usercoll,
-		BlogCollection:         blogcoll,
-		CommentCollection: 		commentcoll,
-		ActiveUserCollection:   activeusercoll,
+		DatabaseUrl:              dbURL,
+		Port:                     port,
+		DbName:                   dbname,
+		UserCollection:           usercoll,
+		BlogCollection:           blogcoll,
+		CommentCollection:        commentcoll,
+		ActiveUserCollection:     activeusercoll,
 		UnverifiedUserCollection: unverifiedusercoll,
-		ContextTimeout:         contextTimeout,
-		AccessTokenExpiryHour:  accessTokenExpiryHour,
-		RefreshTokenExpiryHour: refreshTokenExpiryHour,
-		AccessTokenSecret:      accessTokenSecret,
-		RefreshTokenSecret:     refreshTokenSecret,
-		ClientID:               clientId,
-		ClientSecret:           clientSecret,
-		RedirectURL:            redirectURL,
-		OauthSecret:            oauthSecret,
-		GeminiAPIKey:           geminiAPIKey,
+		ContextTimeout:           contextTimeout,
+		AccessTokenExpiryHour:    accessTokenExpiryHour,
+		RefreshTokenExpiryHour:   refreshTokenExpiryHour,
+		AccessTokenSecret:        accessTokenSecret,
+		RefreshTokenSecret:       refreshTokenSecret,
+		ClientID:                 clientId,
+		ClientSecret:             clientSecret,
+		RedirectURL:              redirectURL,
+		OauthSecret:              oauthSecret,
+		GeminiAPIKey:             geminiAPIKey,
 	}
 
 	return config, nil

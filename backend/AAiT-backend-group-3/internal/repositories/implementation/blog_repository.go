@@ -315,7 +315,6 @@ func (r *MongoBlogRepository) AddLike(blogID string, userID string) error {
     if err != nil {
         return err
     }
-
     _, err = r.collection.UpdateOne(
         ctx,
         bson.M{"_id": blogIDObj},
@@ -324,22 +323,33 @@ func (r *MongoBlogRepository) AddLike(blogID string, userID string) error {
     if err != nil {
         return err
     }
+    var updatedBlog models.Blog
+    err = r.collection.FindOne(ctx, bson.M{"_id": blogIDObj}).Decode(&updatedBlog)
+    if err != nil {
+        return err
+    }
+    cacheKey := "blog:" + blogID
+    err = r.redisClt.SetBlog(cacheKey, updatedBlog, time.Minute*20)
+    if err != nil {
+        return err
+    }
+
     return nil
 }
 
 
+
 func (r *MongoBlogRepository) RemoveLike(blogID string, userID string) error {
     blogIDObj, err := primitive.ObjectIDFromHex(blogID)
-
     if err != nil {
         return err
     }
-	userIDObj, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return err
-	}
+    userIDObj, err := primitive.ObjectIDFromHex(userID)
+    if err != nil {
+        return err
+    }
     _, err = r.collection.UpdateOne(
-        context.TODO(),
+        ctx,
         bson.M{"_id": blogIDObj},
         bson.M{"$pull": bson.M{"likes": userIDObj}},
     )
@@ -347,36 +357,55 @@ func (r *MongoBlogRepository) RemoveLike(blogID string, userID string) error {
         return err
     }
 
+    var updatedBlog models.Blog
+    err = r.collection.FindOne(ctx, bson.M{"_id": blogIDObj}).Decode(&updatedBlog)
+    if err != nil {
+        return err
+    }
+    cacheKey := "blog:" + blogID
+    err = r.redisClt.SetBlog(cacheKey, updatedBlog, time.Minute*20)
+    if err != nil {
+        return err
+    }
+
     return nil
 }
 
 
 
-func (r *MongoBlogRepository) ViewBlog( blogID string) error {
-	testValue := 1
+func (r *MongoBlogRepository) ViewBlog(blogID string) error {
     blogIDObj, err := primitive.ObjectIDFromHex(blogID)
     if err != nil {
         return fmt.Errorf("invalid blog ID format: %v", err)
     }
 
+    // Increment the view count
     result, err := r.collection.UpdateOne(
         ctx,
         bson.M{"_id": blogIDObj},
-        bson.M{"$set": bson.M{"views": testValue}},
+        bson.M{"$inc": bson.M{"views": 1}}, // Increment the views by 1
     )
     if err != nil {
-        return fmt.Errorf("failed to set blog views: %v", err)
+        return fmt.Errorf("failed to increment blog views: %v", err)
     }
 
     if result.MatchedCount == 0 {
         return fmt.Errorf("no document found with ID: %s", blogID)
     }
 
-    if result.ModifiedCount == 0 {
-        return fmt.Errorf("no document updated for ID: %s", blogID)
+    // Fetch the updated blog
+    var updatedBlog models.Blog
+    err = r.collection.FindOne(ctx, bson.M{"_id": blogIDObj}).Decode(&updatedBlog)
+    if err != nil {
+        return err
     }
 
-    fmt.Printf("Successfully set views to %d for blogID: %s\n", testValue, blogID)
+    cacheKey := "blog:" + blogID
+    err = r.redisClt.SetBlog(cacheKey, updatedBlog, time.Minute*20)
+    if err != nil {
+        return err
+    }
+
+    fmt.Printf("Successfully incremented views for blogID: %s\n", blogID)
     return nil
 }
-

@@ -213,36 +213,42 @@ func (r *MongoBlogRepository) GetBlogsByPopularity(limit int) ([]*models.Blog, e
 	return blogs, nil
 }
 
-
-
 func (r *MongoBlogRepository) AddLike(blogID string, userID string) error {
     blogIDObj, err := primitive.ObjectIDFromHex(blogID)
     if err != nil {
         return err
     }
+    userIDObj, err := primitive.ObjectIDFromHex(userID)
+    if err != nil {
+        return err
+    }
 
     _, err = r.collection.UpdateOne(
-        context.TODO(),
+        ctx,
         bson.M{"_id": blogIDObj},
-        bson.M{"$addToSet": bson.M{"likes": userID}},
+        bson.M{"$push": bson.M{"likes": userIDObj}},
     )
     if err != nil {
         return err
     }
-
     return nil
 }
 
+
 func (r *MongoBlogRepository) RemoveLike(blogID string, userID string) error {
     blogIDObj, err := primitive.ObjectIDFromHex(blogID)
+
     if err != nil {
         return err
     }
-
+	userIDObj, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
     _, err = r.collection.UpdateOne(
         context.TODO(),
         bson.M{"_id": blogIDObj},
-        bson.M{"$pull": bson.M{"likes": userID}},
+        bson.M{"$pull": bson.M{"likes": userIDObj}},
     )
     if err != nil {
         return err

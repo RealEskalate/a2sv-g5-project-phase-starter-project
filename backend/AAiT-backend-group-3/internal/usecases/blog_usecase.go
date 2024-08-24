@@ -191,7 +191,7 @@ if tags, ok := filter["tags"]; ok {
 	}
 
 	func (u *BlogUsecase) ToggleLike(blogID string, userID string) (bool, error) {
-		// Retrieve the blog from the repository
+
 		blog, err := u.blogRepo.GetBlogByID(blogID)
 		if err != nil {
 			return false, err
@@ -199,8 +199,6 @@ if tags, ok := filter["tags"]; ok {
 		if blog == nil {
 			return false, fmt.Errorf("blog not found")
 		}
-	
-		// Check if the user has already liked the blog
 		liked := false
 		for _, like := range blog.Likes {
 			if like.Hex() == userID {
@@ -208,30 +206,27 @@ if tags, ok := filter["tags"]; ok {
 				break
 			}
 		}
-	
-		// Toggle the like status
 		if liked {
-			// Remove the like if already liked
 			err = u.blogRepo.RemoveLike(blogID, userID)
+			fmt.Println("disliked")
 			if err != nil {
 				return false, err
 			}
 		} else {
-			// Add the like if not already liked
 			err = u.blogRepo.AddLike(blogID, userID)
 			if err != nil {
 				return false, err
 			}
 		}
-	
-		// Update the blog's popularity score
+		blog, err = u.blogRepo.GetBlogByID(blogID)
+		if err != nil {
+			return false, err
+		}
 		blog.PopularityScore = CalculateBlogPopularity(blog)
 		err = u.blogRepo.UpdateBlog(blogID, blog)
 		if err != nil {
 			return false, err
 		}
-	
-		// Return the updated like status
 		return !liked, nil
 	}
 	

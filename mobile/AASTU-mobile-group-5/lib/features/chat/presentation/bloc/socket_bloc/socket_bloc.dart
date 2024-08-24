@@ -9,12 +9,7 @@ class SocketBloc{
 
 
   final channel =  WebSocketChannel.connect(Uri.parse('https://g5-flutter-learning-path-be.onrender.com/'));
-  StreamBuilder(
-    Stream: channel.stream,
-    builder:(context,snapshot){
-      return Text(snapshot.hasData ? '${snapshot.data}' : '');
-    }
-  )
+  
 
   // void dispose(List<String> arguments) async {
   

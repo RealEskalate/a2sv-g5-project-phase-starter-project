@@ -68,6 +68,7 @@ const EditProfile = () => {
             {tabs.map((tab, index) => (
               <div key={index} className="flex flex-col">
                 <li
+                  data-id={tab}
                   className={`cursor-pointer p-2 font-[500] text-[16px] ${
                     activeTab === index
                       ? "text-blue-700 font-bold"

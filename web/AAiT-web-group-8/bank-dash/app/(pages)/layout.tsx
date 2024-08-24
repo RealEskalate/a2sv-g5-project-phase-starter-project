@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "../globals.css";
 
 import Header from "@/components/dashboard/header";
-import TableUI from "@/components/stats/table";
+import TableUI from "@/components/stats/transanction_table";
 import Paginate from "@/components/stats/paginate";
 import {BarChartt} from "@/components/stats/barchart";
 import Sidebar from "@/components/dashboard/sidebar";
@@ -33,7 +33,6 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
           <main className="flex-1 p-6 bg-slate-200 overflow-auto">
             <TableUI Data={exampleData} />
             <Paginate />
-            <BarChartt />
             {children}
           </main>
         </div>

@@ -16,7 +16,9 @@ const (
 
 type Blog struct {
 	ID            primitive.ObjectID `json:"id,omitempty" bson:"_id"`
-	Author        User               `json:"author,omitempty" bson:"author"`
+	Author        *User              `json:"author,omitempty" bson:"author"`
+	AuthorName    string             `json:"author_name,omitempty" bson:"author_name"`
+	AuthorID      string             `json:"author_id,omitempty" bson:"author_id"`
 	Title         string             `json:"title,omitempty" bson:"title" binding:"required"`
 	Tags          []string           `json:"tags" bson:"tags"`
 	Content       string             `json:"content,omitempty" bson:"content" binding:"required"`
@@ -27,7 +29,6 @@ type Blog struct {
 	Popularity    float64            `json:"popularity,omitempty" bson:"popularity"`
 	CreatedAt     time.Time          `json:"created_at,omitempty" bson:"created_at"`
 	UpdatedAt     time.Time          `json:"updated_at,omitempty" bson:"updated_at"`
-	AuthorName    string             `json:"author_name,omitempty" bson:"author_name"`
 }
 
 func (blog *Blog) UpdatePopularity() {

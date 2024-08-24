@@ -10,7 +10,7 @@ type Props = {
 export default function DashboardLayout({ children }: Props) {
     return (
         <div className="wrapper">
-            <div className="sidebar hidden md:block fixed">
+            <div className="sidebar hidden md:block fixed ">
                 <div className="flex gap-x-2 h-[100px] items-center pl-10">
                     <Image src='/icons/logo.svg' alt="Logo" width={36} height={36} />
                     <h1 className="font-[900] text-2xl">BankDash.</h1>
@@ -22,7 +22,7 @@ export default function DashboardLayout({ children }: Props) {
                     <Header />
                 </div>
                 <div className="content">
-                    <main>{children}</main>
+                    <main className="bg-[#E6EFF5] min-h-screen">{children}</main>
                 </div>
             </div>
         </div>

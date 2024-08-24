@@ -11,9 +11,9 @@ export default function page() {
   return (
     <div className='space-y-5 '>
       <div>
-        <h1 className='text-[#333B69] py-2 font-semibold'>My Cards</h1>
+        <h1 className='text-[#333B69] pb-3 font-semibold'>My Cards</h1>
 
-        <div className='flex overflow-x-scroll space-x-2 scroll whitespace-nowrap scroll-smooth lg:flex lg:space-x-4  '>
+        <div className='flex overflow-x-scroll space-x-2 scroll whitespace-nowrap scroll-smooth lg:flex lg:space-x-3  '>
           <StoreProvider>
             <MyCardLists />
           </StoreProvider>

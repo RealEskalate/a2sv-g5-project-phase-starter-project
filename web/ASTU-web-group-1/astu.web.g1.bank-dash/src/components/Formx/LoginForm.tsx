@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { redirect, useRouter } from 'next/navigation';
+import { useGetProfileQuery } from '@/lib/redux/api/profileAPI';
 
 const LoginFormSchema = z.object({
   username: z
@@ -29,7 +30,7 @@ function LoginForm(req: any) {
 
   if (session.data) {
     // console.log('redirect user to posts', session);
-    // router.push('/bank-dash');
+    router.push('/bank-dash');
   }
 
   const {
@@ -52,7 +53,8 @@ function LoginForm(req: any) {
       if (!result?.ok) {
         throw new Error('invalid credentials');
       }
-      if (result?.ok) {
+
+      if (result?.ok) {        
         // console.log('redirecting to ', result?.url);
         const parsedUrl = new URL(result?.url || '/');
         const callbackUrl = parsedUrl.searchParams.get('callbackUrl');

@@ -31,25 +31,32 @@ func (b *BlogRepository) FetchBlogPostByID(ctx context.Context, blogId string, i
 	if err != nil {
 		return nil, domain.NewError("Invalid blog ID", domain.ERR_BAD_REQUEST)
 	}
-	filter := bson.D{{Key: "_id", Value: objID}}
-	update := bson.D{{}}
-	if incrementView {
-		update = bson.D{{Key: "$inc", Value: bson.D{{Key: "view_count", Value: 1}}}}
-	}
 
-	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	filter := bson.D{{Key: "_id", Value: objID}}
 
 	var post dtos.BlogDTO
-	err = b.collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&post)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, domain.NewError("Blog post not found", domain.ERR_NOT_FOUND)
+	if !incrementView {
+		err := b.collection.FindOne(ctx, filter).Decode(&post)
+		if err != nil {
+			if err == mongo.ErrNoDocuments {
+				return nil, domain.NewError("Blog post not found", domain.ERR_NOT_FOUND)
+			}
+			return nil, domain.NewError("Internal server error: "+err.Error(), domain.ERR_INTERNAL_SERVER)
 		}
-		return nil, domain.NewError("Internal server error: "+err.Error(), domain.ERR_INTERNAL_SERVER)
+	} else {
+		update := bson.D{{Key: "$inc", Value: bson.D{{Key: "view_count", Value: 1}}}}
+		opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	
+		err = b.collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&post)
+		if err != nil {
+			if err == mongo.ErrNoDocuments {
+				return nil, domain.NewError("Blog post not found", domain.ERR_NOT_FOUND)
+			}
+			return nil, domain.NewError("Internal server error: "+err.Error(), domain.ERR_INTERNAL_SERVER)
+		}
 	}
 
 	convertedPost := *toDomain(&post)
-
 	return &convertedPost, nil
 }
 

@@ -12,8 +12,8 @@ import (
 var ENV domain.EnvironmentVariables
 
 // Loads environment variables from .env file and verifies that all required variables are set
-func LoadEnvironmentVariables() error {
-	err := godotenv.Load()
+func LoadEnvironmentVariables(filename string) error {
+	err := godotenv.Load(filename)
 	if err != nil {
 		return fmt.Errorf("error: %v", err.Error())
 	}
@@ -31,6 +31,7 @@ func LoadEnvironmentVariables() error {
 	ENV.GOOGLE_CLIENT_ID = os.Getenv("GOOGLE_CLIENT_ID")
 	ENV.GOOGLE_CLIENT_SECRET = os.Getenv("GOOGLE_CLIENT_SECRET")
 	ENV.GEMINI_API_KEY = os.Getenv(("GEMINI_API_KEY"))
+
 	port, err := strconv.ParseInt(os.Getenv("PORT"), 10, 64)
 	if err != nil {
 		return fmt.Errorf("error parsing PORT number: %v", err.Error())
@@ -46,9 +47,15 @@ func LoadEnvironmentVariables() error {
 		return fmt.Errorf("error parsing refreshTkLifespan number: %v", err.Error())
 	}
 
+	cacheExpiration, err := strconv.ParseInt(os.Getenv("CACHE_EXPIRATION"), 10, 64)
+	if err != nil {
+		return fmt.Errorf("error parsing cacheExpiration number: %v", err.Error())
+	}
+
 	ENV.PORT = int(port)
 	ENV.ACCESS_TOKEN_LIFESPAN = int(accessTkLifespan)
 	ENV.REFRESH_TOKEN_LIFESPAN = int(refreshTkLifespan)
+	ENV.CACHE_EXPIRATION = int(cacheExpiration)
 
 	switch {
 	case ENV.DB_ADDRESS == "":
@@ -79,6 +86,8 @@ func LoadEnvironmentVariables() error {
 		return fmt.Errorf("error: couldn't load environment variable 'GOOGLE_CLIENT_SECRET'")
 	case ENV.GEMINI_API_KEY == "":
 		return fmt.Errorf("error: couldn't load environment variable 'GEMINI_API_KEY'")
+	case ENV.CACHE_EXPIRATION == 0:
+		return fmt.Errorf("error: couldn't load environment variable 'CACHE_EXPIRATION'")
 	default:
 		return nil
 	}

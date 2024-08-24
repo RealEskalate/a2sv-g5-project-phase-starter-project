@@ -26,12 +26,12 @@ func (r *UserRepository) CreateUser(c context.Context, user *domain.User) domain
 
 	// check for duplicate emails
 	if mongo.IsDuplicateKeyError(err) && strings.Contains(err.Error(), "email") {
-		return *domain.NewError("email already taken", domain.ERR_BAD_REQUEST)
+		return *domain.NewError("email already taken", domain.ERR_CONFLICT)
 	}
 
 	// check for duplicate usernames
 	if mongo.IsDuplicateKeyError(err) && strings.Contains(err.Error(), "username") {
-		return *domain.NewError("username already taken", domain.ERR_BAD_REQUEST)
+		return *domain.NewError("username already taken", domain.ERR_CONFLICT)
 	}
 
 	if err != nil {
@@ -128,7 +128,7 @@ func (r *UserRepository) UpdateUser(c context.Context, username string, user *dt
 	}
 
 	// return the name of the file if the profile picture is local
-	if user.ProfilePicture.IsLocal {
+	if foundUser.ProfilePicture.IsLocal {
 		return updatedData, foundUser.ProfilePicture.FileName, nil
 	}
 
@@ -226,7 +226,11 @@ func (r *UserRepository) UpdatePassword(c context.Context, username string, newP
 
 // DeleteUser deletes the user with the provided username
 func (r *UserRepository) DeleteUser(c context.Context, username string) domain.CodedError {
-	_, err := r.collection.DeleteOne(c, bson.D{{Key: "username", Value: username}})
+	res, err := r.collection.DeleteOne(c, bson.D{{Key: "username", Value: username}})
+	if res.DeletedCount == 0 {
+		return domain.NewError("User not found", domain.ERR_NOT_FOUND)
+	}
+
 	if err != nil {
 		return domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
 	}

@@ -14,21 +14,21 @@ const (
 )
 
 type User struct {
-	ID         primitive.ObjectID `json:"id" bson:"_id"`
-	FirstName  string             `json:"first_name" bson:"first_name" binding:"required,min=3,max=30"`
-	LastName   string             `json:"last_name" bson:"last_name" binding:"max=30"`
-	Email      string             `json:"email" bson:"email" binding:"required,email"`
-	Active     bool               `json:"is_active" bson:"is_active"`
-	Bio        string             `json:"bio" bson:"bio"`
-	ProfileImg string             `json:"profile_img" bson:"profile_img"`
-	Password   string             `json:"password" bson:"password" binding:"required,min=4,max=30,StrongPassword"`
-	IsOwner    bool               `json:"is_owner" bson:"is_owner"`
-	Role       string             `json:"role" bson:"role"`
-	Tokens     []string           `json:"tokens" bson:"tokens"`
-	VerToken   string             `json:"verify_token" bson:"verfiy_token"`
-	CreatedAt  primitive.DateTime `json:"created_at" bson:"created_at"`
-	UpdatedAt  primitive.DateTime `json:"updated_at" bson:"updated_at"`
-	LastLogin  primitive.DateTime `json:"last_login" bson:"last_login"`
+	ID         primitive.ObjectID `json:"id,omitempty" bson:"_id"`
+	FirstName  string             `json:"first_name,omitempty" bson:"first_name" binding:"required,min=3,max=30"`
+	LastName   string             `json:"last_name,omitempty" bson:"last_name" binding:"max=30"`
+	Email      string             `json:"email,omitempty" bson:"email" binding:"required,email"`
+	Active     bool               `json:"is_active,omitempty" bson:"is_active"`
+	Bio        string             `json:"bio,omitempty" bson:"bio"`
+	ProfileImg string             `json:"profile_img,omitempty" bson:"profile_img"`
+	Password   string             `json:"password,omitempty" bson:"password" binding:"required,min=4,max=30,StrongPassword"`
+	IsOwner    bool               `json:"is_owner,omitempty" bson:"is_owner"`
+	Role       string             `json:"role,omitempty" bson:"role"`
+	Tokens     []string           `json:"tokens,omitempty" bson:"tokens"`
+	VerToken   string             `json:"verify_token,omitempty" bson:"verfiy_token"`
+	CreatedAt  primitive.DateTime `json:"created_at,omitempty" bson:"created_at"`
+	UpdatedAt  primitive.DateTime `json:"updated_at,omitempty" bson:"updated_at"`
+	LastLogin  primitive.DateTime `json:"last_login,omitempty" bson:"last_login"`
 }
 
 // this structure defined for data sent as a response

@@ -8,15 +8,11 @@ import {
 import { useUser } from "@/contexts/UserContext";
 import { Separator } from "@radix-ui/react-select";
 import ky from "ky";
-<<<<<<< HEAD
-import { Input } from "@/components/ui/input";
-=======
 import { getSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { CiDark, CiLight } from "react-icons/ci";
->>>>>>> 63872bfd17d58d533915fbf025790c6bc2dddb1e
 
 const Header = ({ title }: { title: string }) => {
   const { isDarkMode, setIsDarkMode } = useUser();
@@ -65,9 +61,9 @@ const Header = ({ title }: { title: string }) => {
         isDarkMode ? "border-gray-700 bg-gray-800" : "bg-white"
       }`}
     >
-      <div className="flex justify-between px-10 py-4">
+      <div className="flex items-center justify-between px-10 pt-1">
         <h1
-          className={`text-3xl font-[600] ${
+          className={`pt-2 text-3xl font-[600] ${
             isDarkMode ? "text-white" : "text-primaryBlack"
           }`}
         >
@@ -76,31 +72,20 @@ const Header = ({ title }: { title: string }) => {
 
         {/* Search */}
         <div className={`flex gap-5 items-center `}>
-<<<<<<< HEAD
-          <div className="flex gap-3 bg-[#F5F7FA] p-1 px-2 rounded-full">
-=======
           {/* Search */}
           <div
-            className={`flex gap-3 p-3 rounded-full ${
-              !isDarkMode ? "" : ""
-            } `}
+            className={`flex gap-3 p-3 rounded-full ${!isDarkMode ? "" : ""} `}
           >
->>>>>>> 63872bfd17d58d533915fbf025790c6bc2dddb1e
             <Image
               src="/icons/Search.svg"
               width={20}
               height={20}
               alt="Search"
             />
-<<<<<<< HEAD
-            <Input
-              className="outline-none bg-[#F5F7FA] focus:outline-none focus:border-none border-none focus-visible:ring-0"
-=======
             <input
               className={`${
                 !isDarkMode ? "bg-[#F5F7FA]" : "bg-gray-600 "
               } outline-none border-none rounded-3xl`}
->>>>>>> 63872bfd17d58d533915fbf025790c6bc2dddb1e
               type="text"
               placeholder="Search for something"
             />

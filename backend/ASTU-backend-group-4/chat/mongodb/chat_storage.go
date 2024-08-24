@@ -25,7 +25,7 @@ func NewChatRepository(database *mongo.Database) *ChatRepository {
 }
 
 func (chatRepository *ChatRepository) AddMessage(ctx context.Context, chatID string, message chat.Message) error {
-	id, err := primitive.ObjectIDFromHex(chatID)
+	_, err := primitive.ObjectIDFromHex(chatID)
 	if err != nil{
 		return chat.ErrInvalidID
 	}
@@ -35,7 +35,7 @@ func (chatRepository *ChatRepository) AddMessage(ctx context.Context, chatID str
 		"$push": bson.M{"history": message},
 	}
 
-	_, err = collection.UpdateByID(ctx, id, update)
+	_, err = collection.UpdateByID(ctx, chatID, update)
 	if err == mongo.ErrNoDocuments{
 		return chat.ErrChatNotFound
 	}
@@ -48,6 +48,8 @@ func (chatRepository *ChatRepository) AddMessage(ctx context.Context, chatID str
 }
 
 func (chatRepository *ChatRepository) CreateChat(ctx context.Context, newChat chat.Chat) (chat.Chat, error) {
+	newChat.ID = primitive.NewObjectID().String()
+
 	collection := chatRepository.Database.Collection(collectionName)
 	_, err := collection.InsertOne(ctx, newChat)
 	if err != nil {
@@ -58,13 +60,13 @@ func (chatRepository *ChatRepository) CreateChat(ctx context.Context, newChat ch
 }
 
 func (chatRepository *ChatRepository) DeleteChat(ctx context.Context, chatID string) error {
-	id, err := primitive.ObjectIDFromHex(chatID)
+	_, err := primitive.ObjectIDFromHex(chatID)
 	if err != nil{
 		return chat.ErrInvalidID
 	} 
 
 	collection := chatRepository.Database.Collection(collectionName)
-	filter := bson.M{"_id": id}
+	filter := bson.M{"_id": chatID}
 
 	deleteResult, err := collection.DeleteOne(ctx, filter)
 	if err != nil {
@@ -79,13 +81,13 @@ func (chatRepository *ChatRepository) DeleteChat(ctx context.Context, chatID str
 }
 
 func (chatRepository *ChatRepository) GetChat(ctx context.Context, chatID string) (chat.Chat, error) {
-	id, err := primitive.ObjectIDFromHex(chatID)
+	_, err := primitive.ObjectIDFromHex(chatID)
 	if err != nil{
 		return chat.Chat{}, chat.ErrInvalidID
 	} 
 
 	collection := chatRepository.Database.Collection(collectionName)
-	filter := bson.M{"_id": id}
+	filter := bson.M{"_id": chatID}
 	var retrievedChat chat.Chat
 	if err := collection.FindOne(ctx, filter).Decode(&retrievedChat); err == mongo.ErrNoDocuments{
 		return chat.Chat{}, chat.ErrChatNotFound
@@ -137,10 +139,15 @@ func (chatRepository *ChatRepository) GetChats(ctx context.Context, userID strin
 }
 
 func (chatRepository *ChatRepository) UpdateChat(ctx context.Context, chatID string, updatedChat chat.Chat) (chat.Chat, error) {
+	_, err := primitive.ObjectIDFromHex(chatID)
+	if err != nil{
+		return chat.Chat{}, chat.ErrInvalidID
+	} 
+
 	collection := chatRepository.Database.Collection(collectionName)
 	filter := bson.M{"_id": chatID}
 
-	_, err := collection.UpdateOne(ctx, filter, bson.M{"$set": updatedChat})
+	_, err = collection.UpdateOne(ctx, filter, bson.M{"$set": updatedChat})
 	
 	if err == mongo.ErrNoDocuments{
 		return chat.Chat{}, chat.ErrChatNotFound

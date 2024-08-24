@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+
 import '../../../../core/injection/injection.dart';
 
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+
 import '../bloc/product_bloc.dart';
 import '../bloc/product_event.dart';
 import '../bloc/product_state.dart';
@@ -62,10 +64,12 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+
           Navigator.pushNamed(
             context,
             '/add_product_page',
           );
+
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         backgroundColor: const Color.fromARGB(255, 33, 75, 243),
@@ -122,10 +126,12 @@ Widget _buildHeader(BuildContext context) {
           border: Border.all(color: Colors.grey),
         ),
         child: IconButton(
+
           onPressed: () {
             _showLogoutDialog(context);
           },
           icon: const Icon(Icons.logout),
+
         ),
       ),
     ],
@@ -229,3 +235,4 @@ void _showLogoutDialog(BuildContext context) {
     },
   );
 }
+

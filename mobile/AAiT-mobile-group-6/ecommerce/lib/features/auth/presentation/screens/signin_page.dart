@@ -9,10 +9,12 @@ import '../../../product/presentation/widgets/text_field.dart';
 import '../../data/models/auth_model.dart';
 import '../bloc/auth_bloc.dart';
 
+
 class SigninPage extends StatelessWidget {
   SigninPage({super.key});
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
 
   void _logIn(BuildContext context) async {
     final newUser = LogInModel(
@@ -54,6 +56,7 @@ class SigninPage extends StatelessWidget {
 
   Widget _build(BuildContext context) {
     return Scaffold(
+
       body: Center(
           child: Column(
         children: [
@@ -79,6 +82,7 @@ class SigninPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: Color.fromARGB(255, 33, 68, 243),
                 fontFamily: 'Caveat Brush',
+
               ),
             ),
           ),
@@ -114,6 +118,7 @@ class SigninPage extends StatelessWidget {
             onPressed: () {
               _logIn(context);
             },
+
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(
                 const Color.fromARGB(255, 38, 80, 232),

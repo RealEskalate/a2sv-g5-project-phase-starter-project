@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/injection/injection.dart' as di;
-import 'bloc_observer.dart';
-import 'core/utils/bloc_provider.dart';
-import 'features/auth/presentation/screens/signin_page.dart';
-import 'features/auth/presentation/screens/signup_page.dart';
-import 'features/auth/presentation/screens/splash_screen.dart';
-import 'features/chat/presentation/screens/chat_list_page.dart';
+
 import 'features/product/presentation/screens/add_product_page.dart';
 import 'features/product/presentation/screens/homepage.dart';
 import 'features/product/presentation/screens/product_detail_page.dart';
 import 'features/product/presentation/screens/search_product.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
   Bloc.observer = SimpleBlocObserver();
+
   runApp(MyApp());
 }
 

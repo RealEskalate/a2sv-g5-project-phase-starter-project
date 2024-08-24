@@ -12,7 +12,7 @@ import (
 
 // Handler is responsible for handling the Get comments query by blog ID.
 type GetAllHandler struct {
-	repo irepo.Comment // Repository for comment.
+	repo         irepo.Comment // Repository for comment.
 	commentCache cache.ICache
 }
 
@@ -20,29 +20,29 @@ type GetAllHandler struct {
 var _ icmd.IHandler[uuid.UUID, *[]models.Comment] = &GetAllHandler{}
 
 // NewGetAllHandler creates a new instance of Handler with the provided comment repository.
-func NewGetAllHandler(commmentRepo irepo.Comment, cacheService *cache.ICache) *GetAllHandler {
+func NewGetAllHandler(commmentRepo irepo.Comment, cacheService cache.ICache) *GetAllHandler {
 	return &GetAllHandler{
-		repo: commmentRepo,
-		commentCache: *cacheService,
+		repo:         commmentRepo,
+		commentCache: cacheService,
 	}
 }
+
 
 // Handle processes the Get query by blog ID and returns the corresponding comments.
 func (h *GetAllHandler) Handle(id uuid.UUID) (*[]models.Comment, error) {
 	cacheKey := id.String()
-	
+
 	if cachedComments, err := h.commentCache.Get(cacheKey); err == nil && cachedComments != nil {
 		if comments, ok := cachedComments.(*[]models.Comment); ok {
 			return comments, nil
 		}
 	}
 
-
 	var err error
 	var comments *[]models.Comment
 
-	comments, err = h.repo.GetCommentsByBlogId(id) 
-	
+	comments, err = h.repo.GetCommentsByBlogId(id)
+
 	if err != nil {
 		return nil, err
 	}

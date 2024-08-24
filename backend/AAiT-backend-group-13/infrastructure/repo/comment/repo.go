@@ -25,7 +25,7 @@ func New(client *mongo.Client, dbName, collectionName string) *Repo {
 }
 
 // Save adds a new comment if it does not exist, else updates the existing one.
-func (r *Repo) Save(comment models.Comment) error {
+func (r Repo) Save(comment models.Comment) error {
 
 	filter := bson.M{"_id": comment.ID()}
 	update := bson.M{
@@ -44,7 +44,7 @@ func (r *Repo) Save(comment models.Comment) error {
 }
 
 // Delete removes a comment by ID.
-func (r *Repo) Delete(id uuid.UUID) error {
+func (r Repo) Delete(id uuid.UUID) error {
 	filter := bson.M{"_id": id}
 	_, err := r.collection.DeleteOne(context.Background(), filter)
 	if err != nil {
@@ -54,10 +54,10 @@ func (r *Repo) Delete(id uuid.UUID) error {
 }
 
 // GetCommentById retrieves a comment by ID.
-func (r *Repo) GetCommentById(id uuid.UUID) (*models.Comment, error) {
+func (r Repo) GetCommentById(id uuid.UUID) (*models.Comment, error) {
 	filter := bson.M{"_id": id}
 
-	var c models.Comment
+	var c CommentDto
 
 	err := r.collection.FindOne(context.Background(), filter).Decode(&c)
 	if err != nil {
@@ -66,15 +66,16 @@ func (r *Repo) GetCommentById(id uuid.UUID) (*models.Comment, error) {
 		}
 		return nil, fmt.Errorf("error retrieving blog: %w", err)
 	}
+	comment := toCommentModel(&c)
 
-	return &c, nil
+	return comment, nil
 
 }
 
 // GetCommentsByBlogId retrieves all comment by blogId.
-func (r *Repo) GetCommentsByBlogId(id uuid.UUID) (*[]models.Comment, error) {
+func (r Repo) GetCommentsByBlogId(id uuid.UUID) (*[]models.Comment, error) {
 
-	filter := bson.M{"_id": id}
+	filter := bson.M{"blogId": id}
 	var comments []models.Comment
 
 	cur, err := r.collection.Find(context.Background(), filter)
@@ -83,14 +84,15 @@ func (r *Repo) GetCommentsByBlogId(id uuid.UUID) (*[]models.Comment, error) {
 	}
 
 	for cur.Next(context.Background()) {
-		var c models.Comment
+		var c CommentDto
 
 		err := cur.Decode(&c)
 
 		if err != nil {
 			return nil, err
 		}
-		comments = append(comments, c)
+		comment := toCommentModel(&c)
+		comments = append(comments, *comment)
 	}
 
 	err = cur.Close(context.Background())
@@ -101,4 +103,15 @@ func (r *Repo) GetCommentsByBlogId(id uuid.UUID) (*[]models.Comment, error) {
 
 	return &comments, nil
 
+}
+
+// toBlogModel converts a BlogDTO to a blogmodel.Blog.
+func toCommentModel(dto *CommentDto) *models.Comment {
+	comment := models.MapComment(models.MapCommentConfig{
+		Id:      dto.ID,
+		BlogID:  dto.BlogId,
+		UserID:  dto.UserId,
+		Content: dto.Content,
+	})
+	return comment
 }

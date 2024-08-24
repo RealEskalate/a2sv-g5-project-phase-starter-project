@@ -10,14 +10,15 @@ import (
 type AddHandler struct {
 	blogRepo    irepo.Blog
 	commentRepo irepo.Comment
+	userRepo    irepo.UserRepository
 }
 
 // Ensure Handler implements icmd.IHandler
 var _ icmd.IHandler[*AddCommand, *models.Comment] = &AddHandler{}
 
 // NewHandler creates a new instance of Handler with the given blog repository.
-func NewHandler(blogRepo irepo.Blog, commentRepo irepo.Comment) *AddHandler {
-	return &AddHandler{blogRepo: blogRepo, commentRepo: commentRepo}
+func NewHandler(blogRepo irepo.Blog, userRepo irepo.UserRepository, commentRepo irepo.Comment) *AddHandler {
+	return &AddHandler{blogRepo: blogRepo, commentRepo: commentRepo, userRepo: userRepo}
 }
 
 // Handle processes the command to add a new blog to the repository.
@@ -32,17 +33,24 @@ func (h *AddHandler) Handle(cmd *AddCommand) (*models.Comment, error) {
 		return nil, err
 	}
 
-	err = h.commentRepo.Save(comment)
-
-	if err != nil {
-		return nil, err
-	}
-
 	blog, err := h.blogRepo.GetSingle(cmd.blogID)
 
 	if err != nil {
 		return nil, err
 	}
+
+	_, err = h.userRepo.FindById(cmd.userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = h.commentRepo.Save(*comment)
+
+	if err != nil {
+		return nil, err
+	}
+
 	err = blog.UpdateCommentCount(true)
 	if err != nil {
 		return nil, err

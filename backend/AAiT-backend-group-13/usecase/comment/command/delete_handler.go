@@ -30,6 +30,9 @@ func (h *DeleteHandler) Handle(id uuid.UUID) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	if c == nil {
+		return false, err
+	}
 
 	blog, err := h.blogRepo.GetSingle(c.BlogID())
 

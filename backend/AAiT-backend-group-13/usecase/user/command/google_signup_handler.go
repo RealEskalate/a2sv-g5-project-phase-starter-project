@@ -33,6 +33,15 @@ func (h *GoogleSignUpHandler) Handle(command GoogleSignupCommand) (bool, error) 
 		return false, er.NewBadRequest("email is not verified")
 	}
 
+	user, err := h.repo.FindByEmail(command.email)
+
+	if user != nil {
+		return false, er.NewConflict("User already exists")
+	}
+	if err != nil {
+		return false, err
+	}
+
 	cfg := models.UserConfig{
 		Email:     command.email,
 		FirstName: command.firstName,
@@ -40,8 +49,8 @@ func (h *GoogleSignUpHandler) Handle(command GoogleSignupCommand) (bool, error) 
 		IsAdmin:   false,
 	}
 
-	user := models.NewFederatedUser(cfg)
-	err := h.repo.Save(user)
+	user = models.NewFederatedUser(cfg)
+	err = h.repo.Save(user)
 
 	if err != nil {
 		return false, err

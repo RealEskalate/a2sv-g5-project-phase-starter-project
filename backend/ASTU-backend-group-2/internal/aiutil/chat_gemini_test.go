@@ -9,11 +9,11 @@ import (
 func TestGenerateContentFromGemini(t *testing.T) {
 	title := "Test Title"
 	description := "Test Description"
-	ai := NewAIUtil()
 	env := bootstrap.Env{
 		GeminiAPIKey:    "AIzaSyAPhVnC6ERQY7xILuWDEMfW0SKBIXaH_48",
 		GeminiWordCount: "300",
 	}
+	ai := NewAIUtil(&env)
 
 	content, err := ai.GenerateContentFromGemini(title, description, env)
 	if err != nil {

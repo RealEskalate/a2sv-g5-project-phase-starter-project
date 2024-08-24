@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	mongopagination "github.com/gobeam/mongo-go-pagination"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -17,14 +17,14 @@ type userRepository struct {
 	collection string
 }
 
-func NewUserRepository(db mongo.Database, collection string) domain.UserRepository {
+func NewUserRepository(db mongo.Database, collection string) entities.UserRepository {
 	return &userRepository{
 		database:   db,
 		collection: collection,
 	}
 }
 
-func (ur *userRepository) CreateUser(c context.Context, user *domain.User) (*domain.User, error) {
+func (ur *userRepository) CreateUser(c context.Context, user *entities.User) (*entities.User, error) {
 	collection := ur.database.Collection(ur.collection)
 
 	_, err := collection.InsertOne(c, user)
@@ -53,9 +53,9 @@ func (ur *userRepository) UpdateRefreshToken(c context.Context, userID string, r
 	return err
 }
 
-func (ur *userRepository) GetUserById(c context.Context, userId string) (*domain.User, error) {
+func (ur *userRepository) GetUserById(c context.Context, userId string) (*entities.User, error) {
 	collection := ur.database.Collection(ur.collection)
-	var user domain.User
+	var user entities.User
 
 	id, err := primitive.ObjectIDFromHex(userId)
 
@@ -73,9 +73,9 @@ func (ur *userRepository) GetUserById(c context.Context, userId string) (*domain
 
 }
 
-func (ur *userRepository) GetUserByEmail(c context.Context, email string) (*domain.User, error) {
+func (ur *userRepository) GetUserByEmail(c context.Context, email string) (*entities.User, error) {
 	collection := ur.database.Collection(ur.collection)
-	var user domain.User
+	var user entities.User
 	err := collection.FindOne(c, bson.M{"email": email}).Decode(&user)
 	if err != nil {
 		return nil, err
@@ -83,7 +83,7 @@ func (ur *userRepository) GetUserByEmail(c context.Context, email string) (*doma
 	return &user, err
 }
 
-func (ur *userRepository) GetUsers(c context.Context, filter bson.M, userFilter domain.UserFilter) (*[]domain.User, mongopagination.PaginationData, error) {
+func (ur *userRepository) GetUsers(c context.Context, filter bson.M, userFilter entities.UserFilter) (*[]entities.User, mongopagination.PaginationData, error) {
 	collection := ur.database.Collection(ur.collection)
 
 	projectQuery := bson.M{"$project": bson.M{
@@ -93,16 +93,16 @@ func (ur *userRepository) GetUsers(c context.Context, filter bson.M, userFilter 
 		"is_owner":     0,
 	}}
 
-	var aggUserList []domain.User = make([]domain.User, 0)
+	var aggUserList []entities.User = make([]entities.User, 0)
 
 	paginatedData, err := mongopagination.New(collection).Context(c).Limit(userFilter.Limit).Page(userFilter.Pages).Aggregate(filter, projectQuery)
 
 	if err != nil {
-		return &[]domain.User{}, mongopagination.PaginationData{}, err
+		return &[]entities.User{}, mongopagination.PaginationData{}, err
 	}
 
 	for _, raw := range paginatedData.Data {
-		var user *domain.User
+		var user *entities.User
 		if marshallErr := bson.Unmarshal(raw, &user); marshallErr == nil {
 			aggUserList = append(aggUserList, *user)
 		}
@@ -131,7 +131,7 @@ func (ur *userRepository) RevokeRefreshToken(c context.Context, userID, refreshT
 	return nil
 }
 
-func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *domain.UserUpdate) (*domain.User, error) {
+func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *entities.UserUpdate) (*entities.User, error) {
 	collection := ur.database.Collection(ur.collection)
 	id, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -141,7 +141,7 @@ func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUs
 	update := bson.M{"$set": updatedUser}
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 
-	var ResultUser domain.User
+	var ResultUser entities.User
 	err = collection.FindOneAndUpdate(c, filter, update, opts).Decode(&ResultUser)
 
 	if err != nil {
@@ -151,7 +151,7 @@ func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUs
 	return &ResultUser, nil
 }
 
-func (ur *userRepository) ActivateUser(c context.Context, userID string) (*domain.User, error) {
+func (ur *userRepository) ActivateUser(c context.Context, userID string) (*entities.User, error) {
 	collection := ur.database.Collection(ur.collection)
 	id, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -162,7 +162,7 @@ func (ur *userRepository) ActivateUser(c context.Context, userID string) (*domai
 
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 
-	var ResultUser domain.User
+	var ResultUser entities.User
 	err = collection.FindOneAndUpdate(c, filter, update, opts).Decode(&ResultUser)
 
 	if err != nil {
@@ -193,7 +193,7 @@ func (ur *userRepository) DeleteUser(c context.Context, userID string) error {
 }
 func (ur *userRepository) IsUserActive(c context.Context, userID string) (bool, error) {
 	collection := ur.database.Collection(ur.collection)
-	var user domain.User
+	var user entities.User
 	err := collection.FindOne(c, bson.M{"_id": userID}).Decode(&user)
 	if err != nil {
 		return false, err
@@ -201,7 +201,7 @@ func (ur *userRepository) IsUserActive(c context.Context, userID string) (bool, 
 	return user.Active, err
 
 }
-func (ur *userRepository) ResetUserPassword(c context.Context, userID string, resetPassword *domain.ResetPasswordRequest) error {
+func (ur *userRepository) ResetUserPassword(c context.Context, userID string, resetPassword *entities.ResetPasswordRequest) error {
 	collection := ur.database.Collection(ur.collection)
 	ObjID, err := primitive.ObjectIDFromHex(userID)
 
@@ -217,7 +217,7 @@ func (ur *userRepository) ResetUserPassword(c context.Context, userID string, re
 	}
 	return nil
 }
-func (ur *userRepository) UpdateUserPassword(c context.Context, userID string, updatePassword *domain.UpdatePassword) error {
+func (ur *userRepository) UpdateUserPassword(c context.Context, userID string, updatePassword *entities.UpdatePassword) error {
 	collection := ur.database.Collection(ur.collection)
 	ObjID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {

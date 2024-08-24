@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth/gothic"
 )
@@ -17,8 +17,8 @@ type OpenAuthController interface {
 
 // ProfileController is a struct to hold the usecase and env
 type OAuthController struct {
-	UserUsecase  domain.UserUsecase
-	LoginUsecase domain.LoginUsecase
+	UserUsecase  entities.UserUsecase
+	LoginUsecase entities.LoginUsecase
 	Env          *bootstrap.Env
 }
 
@@ -55,7 +55,7 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 				return
 			}
 
-			insertUser := domain.User{
+			insertUser := entities.User{
 				Email:      user.Email,
 				FirstName:  user.FirstName,
 				LastName:   user.LastName,
@@ -91,7 +91,7 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 
 		err = oc.LoginUsecase.UpdateRefreshToken(c.Request.Context(), dbUser.ID.Hex(), refreshToken)
 
-		loginResponse := domain.LoginResponse{
+		loginResponse := entities.LoginResponse{
 			AccessToken:  accessToken,
 			RefreshToken: refreshToken,
 		}

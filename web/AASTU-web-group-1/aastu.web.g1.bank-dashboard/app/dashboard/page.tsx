@@ -58,7 +58,7 @@ const MainDashboard = () => {
     useState<QuickTransferData | null>(null);
   const [amount, setAmount] = useState<string>("");
   const [sendLoading, setSendLoading] = useState(false);
-  const [isModalOpen,setIsModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false);
   let totalCreditcardpage;
   const handleProfileSelect = (account: QuickTransferData) => {
     setSelectedProfile(account);
@@ -68,9 +68,9 @@ const MainDashboard = () => {
     setAmount(e.target.value);
   };
 
-  const handleModalToggle = ()=>{
+  const handleModalToggle = () => {
     setIsModalOpen(!isModalOpen);
-  }
+  };
 
   const handleSend = async () => {
     if (selectedProfile) {

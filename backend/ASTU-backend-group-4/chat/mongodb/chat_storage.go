@@ -48,7 +48,7 @@ func (chatRepository *ChatRepository) AddMessage(ctx context.Context, chatID str
 }
 
 func (chatRepository *ChatRepository) CreateChat(ctx context.Context, newChat chat.Chat) (chat.Chat, error) {
-	newChat.ID = primitive.NewObjectID().String()
+	newChat.ID = primitive.NewObjectID().Hex()
 
 	collection := chatRepository.Database.Collection(collectionName)
 	_, err := collection.InsertOne(ctx, newChat)

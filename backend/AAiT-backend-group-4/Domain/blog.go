@@ -48,7 +48,6 @@ type Comment struct {
 	Date      time.Time `json:"date"`
 }
 
-
 type Feedback struct {
 	View_count int       `json:"view_count"`
 	Dislikes   int       `json:"dislikes"`

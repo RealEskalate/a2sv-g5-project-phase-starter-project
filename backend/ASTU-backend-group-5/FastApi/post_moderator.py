@@ -12,10 +12,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 llm = ChatOpenAI(temperature=0, model="gpt-4-turbo", verbose=True, api_key=os.getenv("OPENAI_API_KEY"))
-print(os.getenv("OPENAI_API_KEY"))
+print(os.getenv("OPENAI_KEY"))
 class DecisionState:
     def __init__(self):
-        self.valid = None
+        self.grade = None
         self.message = None
 
 decision_state = DecisionState()
@@ -34,6 +34,10 @@ system_message = SystemMessage(
      5. should not contain any profanity, hate speech, or insults, fake news, fake information or any other harmful content.
      and also
      As helpful AI model you have to be as polite as possible
+     
+     for the post given you give a point out of 100
+     100 means the post is perfect and 0 means the post should never be posted and 50 means the post is not suggested to be posted you can use 
+     any number from 0 to 100 to grade the post
     """
 )
 

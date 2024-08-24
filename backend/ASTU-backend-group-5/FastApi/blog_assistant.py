@@ -22,7 +22,7 @@ class BlogAssistant:
             You never talk on topics that are not relevant to the blog post. You only talk on the topic of the blog post.
             Never respond to questions that are not related to the blog post.
             """
-        chat = ChatOpenAI(model="gpt-3.5-turbo-0125", api_key=os.getenv("OPENAI_API_KEY"))
+        chat = ChatOpenAI(model="gpt-3.5-turbo-0125", api_key=os.getenv("OPENAI_KEY"))
         prompt = ChatPromptTemplate.from_messages(
         [
             (
@@ -56,7 +56,7 @@ class BlogAssistant:
 # from main import Q
 # # # Example of usage
 # # duck_duck_go_search = DuckDuckGoSearchAPIWrapper()  # Assuming you have a Tool defined like this
-# assistant = BlogAssistant(tools=[])
+assistant = BlogAssistant(tools=[])
 
-# response = assistant.run("What is the meaning of life?")
-# print(response)
+response = assistant.run("write a blog about abc?")
+print(response)

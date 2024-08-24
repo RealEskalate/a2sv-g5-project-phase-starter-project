@@ -29,19 +29,19 @@ func (u *UserUsecase) RequestEmailVerification(user domain.User) error {
 	}
 	emailProvider := Config.EMAIL_PROVIDER
 
-	fmt.Println("Port: ", Config.SMTP_PORT)
+	fmt.Println("Port: ", Config.EMAIL_PORT)
 	switch emailProvider {
 	case "simple":
 		emailSender = email.NewSimpleEmailSender(
 			Config.SMTP_HOST,
-			Config.SMTP_PORT,
+			Config.EMAIL_PORT,
 			Config.EMAIL_SENDER_EMAIL,
 			Config.EMAIL_SENDER_PASSWORD,
 		)
 	default:
 		emailSender = email.NewSimpleEmailSender(
 			Config.SMTP_HOST,
-			Config.SMTP_PORT,
+			Config.EMAIL_PORT,
 			Config.EMAIL_SENDER_EMAIL,
 			Config.EMAIL_SENDER_PASSWORD,
 		)
@@ -66,6 +66,11 @@ func (u *UserUsecase) VerifyEmail(token string) error {
 	if err != nil {
 		return err
 	}
+
+	if claims.Role != "email-verification" || claims.Email == "email-verification" || claims.ID != "email-verification" {
+		return errors.New("invalid token")
+	}
+
 	issuerEmail := claims.Email
 	user, err := u.repo.FindUserByEmail(context.Background(), issuerEmail)
 	if err != nil {

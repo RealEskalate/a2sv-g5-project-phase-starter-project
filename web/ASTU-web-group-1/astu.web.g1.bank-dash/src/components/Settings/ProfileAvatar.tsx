@@ -1,13 +1,22 @@
+'use client'
+import { useAppSelector } from "@/hooks/hoooks";
 import Image from "next/image";
+
 const ProfileAvatar = () => {
+
+  const getData = useAppSelector((state) => state.profile);
+
   return (
     <div className="mr-10 flex justify-center md:block py-3 h-auto">
-      <Image
-        alt="Profile Image"
-        src={"/assets/images/profile-avatar.png"}
-        width={`170`}
-        height={`170`}
-      />
+      <label htmlFor="profilePicture">
+        <Image
+          alt="Profile Image"
+          src={getData.profilePicture || '/assets/default-user.png'}
+          width={170}
+          height={170}
+          className="rounded-full aspect-square border-2"
+        />
+      </label>
     </div>
   );
 };

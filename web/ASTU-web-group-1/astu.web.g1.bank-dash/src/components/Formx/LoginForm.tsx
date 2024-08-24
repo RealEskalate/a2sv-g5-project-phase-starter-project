@@ -19,7 +19,7 @@ const LoginFormSchema = z.object({
     .min(4, {
       message: 'Email is too short',
     }),
-  password: z.string().min(8),
+  password: z.string().min(6),
 });
 
 type FormData = z.infer<typeof LoginFormSchema>;

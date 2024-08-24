@@ -40,10 +40,9 @@ func InitRouter(controller *controller.Controller) *gin.Engine {
 	router.PUT("/blogs", infrastructure.UserMiddleware(SECRET_KEY), controller.UpdateBlog)
 	router.GET("/blogs/search", infrastructure.UserMiddleware(SECRET_KEY), controller.SearchBlog)
 	router.GET("/blogs/filter", infrastructure.UserMiddleware(SECRET_KEY), controller.SearchBlog)
-       
 
 	// Ai routes
-	router.POST("/generate-blog",infrastructure.UserMiddleware(SECRET_KEY), controller.GenerateBlog)
-	router.POST("/blog-suggest-improvement", infrastructure.UserMiddleware(SECRET_KEY),controller.SuggestImprovements)
+	router.POST("/generate-blog", infrastructure.UserMiddleware(SECRET_KEY), controller.GenerateBlog)
+	router.POST("/blog-suggest-improvement", infrastructure.UserMiddleware(SECRET_KEY), controller.SuggestImprovements)
 	return router
 }

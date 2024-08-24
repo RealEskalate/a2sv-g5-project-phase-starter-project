@@ -6,21 +6,23 @@ import (
 	infrastructure "AAiT-backend-group-8/Infrastructure"
 	"AAiT-backend-group-8/Infrastructure/mongodb"
 	usecase "AAiT-backend-group-8/Usecase"
-    "log"
 	"context"
+	"log"
 )
 
 var SecretKey = "123456abcd"
 
 func main() {
 	mongoClient := mongodb.InitMongoDB()
+	rdb := infrastructure.InitRedis()
 
-	dbName := "started-project"
+	dbName := "starter-project"
 	userCollection := mongodb.CreateCollection(mongoClient, dbName, "users")
 	tokenCollection := mongodb.CreateCollection(mongoClient, dbName, "token")
 	blogCollection := mongodb.CreateCollection(mongoClient, dbName, "blogs")
 	commentCollection := mongodb.CreateCollection(mongoClient, dbName, "comments")
 	likeCollection := mongodb.CreateCollection(mongoClient, dbName, "likes")
+	cacheCollection := mongodb.CreateCollection(mongoClient, dbName, "cache")
 
 	userRepo := mongodb.NewUserRepository(userCollection, context.TODO())
 	ts := infrastructure.NewTokenService(SecretKey)
@@ -33,6 +35,9 @@ func main() {
 	blogRepo := mongodb.NewBlogRepository(blogCollection)
 	blogUseCase := usecase.NewBlogUseCase(blogRepo)
 
+	cacheRepo := mongodb.NewCacheRepository(cacheCollection)
+	cacheUseCase := usecase.NewCacheUseCase(cacheRepo)
+
 	commentRepo := mongodb.NewCommentRepository(commentCollection, context.TODO())
 
 	commentUseCase := usecase.NewCommentUseCase(commentRepo, *infra, ts)
@@ -40,14 +45,14 @@ func main() {
 	likeRepo := mongodb.NewLikeRepository(likeCollection, context.TODO())
 	likeUseCase := usecase.NewLikeUseCase(*likeRepo, *infra)
 
-    aiService, ai_err := infrastructure.NewGenAIService("AIzaSyCcpZ8utOr8xCRTc-QufZWKSDPIbYz2v7Q")
+	aiService, ai_err := infrastructure.NewGenAIService("AIzaSyCcpZ8utOr8xCRTc-QufZWKSDPIbYz2v7Q")
 	if ai_err != nil {
 		log.Fatal(ai_err)
 	}
 
 	aiblogUsecase := usecase.NewAiBlogUsecase(aiService)
 
-	ctrl := controller.NewController(commentUseCase, userUseCase, likeUseCase, blogUseCase,aiblogUsecase)
+	ctrl := controller.NewController(commentUseCase, userUseCase, likeUseCase, blogUseCase, aiblogUsecase, rdb, cacheUseCase)
 	r := Router.InitRouter(ctrl)
 	err := r.Run(":8080")
 	if err != nil {

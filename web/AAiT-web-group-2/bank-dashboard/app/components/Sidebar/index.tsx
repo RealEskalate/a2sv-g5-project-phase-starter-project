@@ -1,11 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import SidebarItem from "./SidebarItem";
-import useLocalStorage from "@/src/hooks/UseLocalStorage";
 import Home from "../../../public/iconI.png";
 import Transaction from "../../../public/iconII.png";
 import User from "../../../public/iconIII.png";
@@ -15,6 +14,7 @@ import LocalAtm from "../../../public/iconVI.png";
 import Services from "../../../public/iconVII.png";
 import Pereferences from "../../../public/iconVIII.png";
 import Settings from "../../../public/iconVIIII.png";
+import { PiSignOut } from "react-icons/pi";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -25,22 +25,24 @@ const menuGroups = [
   {
     name: "MENU",
     menuItems: [
-      { icon: Home.src, label: "Home", route: "#" },
+      { icon: Home.src, label: "Dashboard", route: "/dashboard" },
       { icon: Transaction.src, label: "Calendar", route: "/calendar" },
       { icon: User.src, label: "Profile", route: "/profile" },
-      { icon: Dollars.src, label: "Forms", route: "#" },
+      { icon: Dollars.src, label: "Forms", route: "/forms" },
       { icon: CreditCard.src, label: "Tables", route: "/tables" },
       { icon: LocalAtm.src, label: "Settings", route: "/settings" },
       { icon: Services.src, label: "UI Elements", route: "#" },
       { icon: Pereferences.src, label: "Authentication", route: "#" },
       { icon: Settings.src, label: "Settings", route: "#" },
+     
     ],
   },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const pathname = usePathname();
-  const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
+  // const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
+  const [pageName, setPageName] = useState("dashboard")
 
   return (
       <aside
@@ -97,6 +99,10 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                 </ul>
               </div>
             ))}
+            <div className="flex items-center font-medium text-lg gap-2.5 px-4 text-gray-500">
+            <PiSignOut />
+            <Link href={"/api/auth/signout"}>Sign out</Link>
+            </div>
           </nav>
         </div>
       </aside>

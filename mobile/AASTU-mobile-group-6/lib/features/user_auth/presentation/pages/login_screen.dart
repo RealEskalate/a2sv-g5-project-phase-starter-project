@@ -211,6 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 onPressed: () {
                                   var user = UserModel(
+                                      id: '',
                                       name: '',
                                       email: email_input.text,
                                       password: password_input.text);

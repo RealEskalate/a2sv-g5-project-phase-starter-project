@@ -5,6 +5,7 @@ import '../../../../core/use_cases/no_para_use_case.dart';
 import '../entities/chat_entity.dart';
 import '../repositories/chat_repository.dart';
 
+
 class MyChatById extends NoParamsUseCase<Future<Either<Failure, ChatEntity>>> {
   final ChatRepository repository;
 

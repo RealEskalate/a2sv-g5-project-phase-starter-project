@@ -4,6 +4,7 @@ import '../../../../core/failure/failure.dart';
 import '../../domain/entities/chat_entity.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../datasources/chat_remote_data_source.dart';
+import '../models/chat_model.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
   final ChatRemoteDataSource remoteDataSource;
@@ -12,42 +13,23 @@ class ChatRepositoryImpl implements ChatRepository {
 
   @override
   Future<Either<Failure, List<ChatEntity>>> myChats() async {
-    try {
-      final chats = await remoteDataSource.myChats();
-      return Right(chats);
-    } catch (e) {
-      return Left(ServerFailure(message: 'message'));
-    }
+    // Your implementation here...
   }
 
   @override
   Future<Either<Failure, ChatEntity>> myChatById() async {
-    // try {
-    //   final chat = await remoteDataSource.myChatById(chatId);
-    //   return Right(chat);
-    // } catch (e) {
-    //   return Left(ServerFailure(message: 'message'));
-    // }
+    return remoteDataSource.myChatById();
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure, void>> deleteChat(String chatId) async {
-    try {
-      await remoteDataSource.deleteChat(chatId);
-      return const Right(null);
-    } catch (e) {
-      return Left(ServerFailure(message: 'message'));
-    }
+  Future<Either<Failure, void>> deleteChat(String id) {
+    return remoteDataSource.deleteChat(id);
   }
 
   @override
-  Future<Either<Failure, ChatEntity>> initiateChat(String sellerId) async {
-    try {
-      final chat = await remoteDataSource.initiateChat(sellerId);
-      return Right(chat);
-    } catch (e) {
-      return Left(ServerFailure(message: 'message'));
-    }
+  Future<Either<Failure, ChatModel>> initiateChat(String sellerId) async {
+    return remoteDataSource.initiateChat(sellerId);
+    
   }
 }

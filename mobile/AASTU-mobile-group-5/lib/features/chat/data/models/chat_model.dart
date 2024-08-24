@@ -1,7 +1,3 @@
-
-
-
-
 import '../../../user/data/models/user_model.dart';
 import '../../domain/entities/chat_entity.dart';
 

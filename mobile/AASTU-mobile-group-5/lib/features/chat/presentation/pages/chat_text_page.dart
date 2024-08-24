@@ -8,9 +8,8 @@ import '../widgets/bottom_nav_bar/bottom_nav_bar.dart';
 import '../widgets/chat_app_bar.dart';
 
 class TextPage extends StatelessWidget {
-  final WebSocketService webSocketService;
 
-  const TextPage({super.key, required this.webSocketService});
+  const TextPage({super.key,});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +18,6 @@ class TextPage extends StatelessWidget {
         children: [
           Expanded(
             child: StreamBuilder(
-              stream: webSocketService.messages,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   // Handle the incoming message

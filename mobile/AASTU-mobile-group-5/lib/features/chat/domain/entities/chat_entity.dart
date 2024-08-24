@@ -9,8 +9,9 @@ class ChatEntity extends Equatable{
   final String chat_id;
   final User seller_one;
   final User seller_two;
-  ChatEntity({
-     required this.chat_id,
+
+  const ChatEntity({
+    required this.chat_id,
     required this.seller_one,
     required this.seller_two,
   });

@@ -12,6 +12,6 @@ class MyChats extends NoParamsUseCase<Future<Either<Failure, List<ChatEntity>>>>
 
   @override
   Future<Either<Failure, List<ChatEntity>>> call() async {
-    return await repository.myChats();
+    return repository.myChats();
   }
 }

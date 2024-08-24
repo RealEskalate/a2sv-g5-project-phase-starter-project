@@ -17,7 +17,28 @@ type blogRepository struct {
 	collection string
 }
 
+var project bson.M = bson.M{
+	"title":          1,
+	"tags":           1,
+	"view_count":     1,
+	"like_count":     1,
+	"dislike_count":  1,
+	"comments_count": 1,
+	"popularity":     1,
+	"created_at":     1,
+	"updated_at":     1,
+	"author_name": bson.M{
+		"$concat": bson.A{
+			"$author.first_name",
+			" ",
+			"$author.last_name",
+		},
+	},
+	"author_id": "$author._id",
+}
+
 func NewBlogRepository(db mongo.Database, collection string) entities.BlogRepository {
+
 	return &blogRepository{
 		database:   db,
 		collection: collection,
@@ -56,45 +77,75 @@ func (br *blogRepository) GetAllBlogs(c context.Context, filter bson.M, blogFilt
 
 func getFiltered(c context.Context, collection *mongo.Collection, filter bson.M, blogFilter entities.BlogFilter) ([]entities.Blog, mongopagination.PaginationData, error) {
 	blogs := make([]entities.Blog, 0)
-	project := bson.M{
-		"$project": bson.M{
-			"title":          1,
-			"tags":           1,
-			"view_count":     1,
-			"like_count":     1,
-			"dislike_count":  1,
-			"comments_count": 1,
-			"popularity":     1,
-			"created_at":     1,
-			"updated_at":     1,
-			"author_name": bson.M{
-				"$concat": bson.A{
-					"$author.first_name",
-					" ",
-					"$author.last_name",
+
+	project["score"] = bson.M{"$meta": "searchScore"}
+
+	projection := bson.M{
+		"$project": project,
+	}
+
+	sort := bson.M{
+		"$sort": bson.M{"score": -1},
+	}
+
+	fuzzy := bson.M{
+		"maxEdits":      2,
+		"prefixLength":  0,
+		"maxExpansions": 50,
+	}
+
+	if blogFilter.Search == "" {
+		blogFilter.Search = ".*"
+	}
+
+	search := bson.M{
+		"$search": bson.M{
+			"index": "default",
+			"compound": bson.M{
+				"should": bson.A{
+					bson.M{
+						"autocomplete": bson.M{
+							"query": blogFilter.Search,
+							"path":  "content",
+							"fuzzy": fuzzy,
+						},
+					},
+
+					bson.M{
+						"autocomplete": bson.M{
+							"query": blogFilter.Search,
+							"path":  "title",
+							"fuzzy": fuzzy,
+						},
+					},
+
+					bson.M{
+						"autocomplete": bson.M{
+							"query": blogFilter.Search,
+							"path":  "author.first_name",
+							"fuzzy": fuzzy,
+						},
+					},
+
+					bson.M{
+						"autocomplete": bson.M{
+							"query": blogFilter.Search,
+							"path":  "author.last_name",
+							"fuzzy": fuzzy,
+						},
+					},
 				},
+				"minimumShouldMatch": 1,
 			},
 		},
 	}
 
-	search := bson.M{"$match": bson.M{
-		"$text": bson.M{
-			"$search": blogFilter.Search,
-		},
-	}}
-
-	if blogFilter.Search == "" {
-		search = bson.M{"$match": bson.M{}}
-	}
-
 	paginated := mongopagination.New(collection).Context(c).Limit(blogFilter.Limit).Page(blogFilter.Pages)
-
-	// Aggregate()
 
 	var paginatedData *mongopagination.PaginatedData
 	var err error
 	if filter != nil {
-		paginatedData, err = paginated.Aggregate(search, filter, project)
+		paginatedData, err = paginated.Aggregate(search, filter, projection, sort)
 		// paginatedData, err = paginated.Aggregate(bson.M{"$match": bson.M{"title": "ale", "$in": bson.M{"tag": []string{}}}})
 		if err != nil {
 			log.Println("[REPO] error in GET  Filter", err.Error())
@@ -103,6 +154,7 @@ func getFiltered(c context.Context, collection *mongo.Collection, filter bson.M,
 		for _, raw := range paginatedData.Data {
 			var blog entities.Blog
 			if marshallErr := bson.Unmarshal(raw, &blog); marshallErr == nil {
+				blog.Author = nil
 				blogs = append(blogs, blog)
 			}
 
@@ -123,6 +175,8 @@ func (br *blogRepository) GetBlogByID(c context.Context, blogID string, view boo
 
 	var blog entities.Blog
 
+	// options := options.FindOne()
+
 	err = collection.FindOne(c, bson.M{"_id": ID}).Decode(&blog)
 
 	if err != nil {
@@ -136,7 +190,9 @@ func (br *blogRepository) GetBlogByID(c context.Context, blogID string, view boo
 		blog.UpdatePopularity()
 	}
 
-	_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$set": blog})
+	// blog.Author = nil
+
+	_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$set": bson.M{"view_count": blog.ViewCount, "popularity": blog.Popularity}})
 
 	if err != nil {
 
@@ -161,13 +217,17 @@ func (br *blogRepository) CreateBlog(c context.Context, newBlog *entities.Blog) 
 	blog.Content = newBlog.Content
 	blog.CreatedAt = time.Now()
 	blog.UpdatedAt = time.Now()
-	_, err := collection.InsertOne(c, blog)
+	insertedBlog, err := collection.InsertOne(c, blog)
 
 	if err != nil {
 		return entities.Blog{}, err
 	}
 
-	return blog, nil
+	newBlog.ID = insertedBlog.InsertedID.(primitive.ObjectID)
+	newBlog.AuthorName = newBlog.Author.FirstName + " " + newBlog.Author.LastName
+	newBlog.Author = nil
+
+	return *newBlog, nil
 }
 
 func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBlog *entities.BlogUpdate) (entities.Blog, error) {
@@ -189,6 +249,8 @@ func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBl
 	if err != nil {
 		return entities.Blog{}, err
 	}
+
+	blog.Author = nil
 
 	return blog, nil
 
@@ -246,28 +308,10 @@ func (br *blogRepository) GetByPopularity(c context.Context, limit int64, page i
 }
 
 func getSortedBlog(c context.Context, collection *mongo.Collection, limit int64, page int64, sortField string) ([]entities.Blog, mongopagination.PaginationData, error) {
-	projection := bson.M{
-		"title":          1,
-		"tags":           1,
-		"view_count":     1,
-		"like_count":     1,
-		"dislike_count":  1,
-		"comments_count": 1,
-		"popularity":     1,
-		"created_at":     1,
-		"updated_at":     1,
-		"author_name": bson.M{
-			"$concat": bson.A{
-				"$author.first_name",
-				" ",
-				"$author.last_name",
-			},
-		},
-	}
 
 	var blogs []entities.Blog
 
-	paginatedData, err := mongopagination.New(collection).Context(c).Limit(limit).Page(page).Filter(bson.M{}).Select(projection).Sort(sortField, -1).Decode(&blogs).Find()
+	paginatedData, err := mongopagination.New(collection).Context(c).Limit(limit).Page(page).Filter(bson.M{}).Select(project).Sort(sortField, -1).Decode(&blogs).Find()
 
 	if err != nil {
 		return []entities.Blog{}, mongopagination.PaginationData{}, err
@@ -277,28 +321,10 @@ func getSortedBlog(c context.Context, collection *mongo.Collection, limit int64,
 }
 
 func getFilteredBlog(c context.Context, collection *mongo.Collection, limit int64, page int64, filter bson.M) ([]entities.Blog, mongopagination.PaginationData, error) {
-	projection := bson.M{
-		"title":          1,
-		"tags":           1,
-		"view_count":     1,
-		"like_count":     1,
-		"dislike_count":  1,
-		"comments_count": 1,
-		"popularity":     1,
-		"created_at":     1,
-		"updated_at":     1,
-		"author_name": bson.M{
-			"$concat": bson.A{
-				"$author.first_name",
-				" ",
-				"$author.last_name",
-			},
-		},
-	}
 
 	var blogs []entities.Blog
 
-	paginatedData, err := mongopagination.New(collection).Context(c).Limit(limit).Page(page).Select(projection).Filter(filter).Decode(&blogs).Find()
+	paginatedData, err := mongopagination.New(collection).Context(c).Limit(limit).Page(page).Select(project).Filter(filter).Decode(&blogs).Find()
 
 	if err != nil {
 		return []entities.Blog{}, mongopagination.PaginationData{}, err

@@ -11,11 +11,11 @@ export const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, children }) => 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl relative"> {/* Increased max-w-lg to max-w-2xl */}
+      <div className="bg-white dark:bg-[#050914] dark:border dark:border-[#333B69] rounded-lg shadow-lg p-6 w-full max-w-2xl relative">
         {children}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+          className="absolute top-2 right-2 text-gray-500 dark:text-[#9faaeb] hover:text-gray-700 dark:hover:text-white"
         >
           &times;
         </button>
@@ -52,20 +52,20 @@ export const DialogHeader: React.FC<DialogHeaderProps> = ({ children }) => {
 
 interface DialogTitleProps {
   children: React.ReactNode;
-  className?: string
+  className?: string;
 }
 
 export const DialogTitle: React.FC<DialogTitleProps> = ({ children }) => {
-  return <h2 className="text-xl font-semibold">{children}</h2>;
+  return <h2 className="text-xl font-semibold dark:text-[#9faaeb]">{children}</h2>;
 };
 
 interface DialogDescriptionProps {
   children: React.ReactNode;
-  className?: string
+  className?: string;
 }
 
 export const DialogDescription: React.FC<DialogDescriptionProps> = ({ children }) => {
-  return <p className="text-sm text-gray-600">{children}</p>;
+  return <p className="text-sm text-gray-600 dark:text-[#9faaeb]">{children}</p>;
 };
 
 interface DialogFooterProps {

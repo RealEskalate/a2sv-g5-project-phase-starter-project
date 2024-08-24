@@ -5,9 +5,12 @@ import (
 )
 
 type Reply struct {
-	ReplyId  string `json:"reply_id,omitempty" bson:"reply_id,omitempty" `
-	AuthorId string `json:"author_id,omitempty" bson:"author_id,omitempty"`
-	Content  string `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
+	BlogId    string `json:"blog_id,omitempty" bson:"blog_id,omitempty" `
+	CommentId string `json:"comment_id,omitempty" bson:"comment_id,omitempty" `
+	ReplyId   string `json:"reply_id,omitempty" bson:"reply_id,omitempty" `
+	AuthorId  string `json:"author_id,omitempty" bson:"author_id,omitempty" `
+
+	Content   string `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
 
 	Likes    []string `json:"likes,omitempty" bson:"likes,omitempty"`
 	Dislikes []string `json:"dislikes,omitempty" bson:"dislikes,omitempty"`
@@ -15,27 +18,30 @@ type Reply struct {
 }
 
 type Comment struct {
+	BlogId    string `json:"blog_id,omitempty" bson:"blog_id,omitempty" `
 	CommentId string `json:"comment_id,omitempty" bson:"comment_id,omitempty" `
 	AuthorId  string `json:"author_id,omitempty" bson:"author_id,omitempty"`
+
 	Content   string `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
 
 	Likes    []string `json:"likes,omitempty" bson:"likes,omitempty"`
 	Dislikes []string `json:"dislikes,omitempty" bson:"dislikes,omitempty"`
-	Replies  []Reply  `json:"replies,omitempty" bson:"replies,omitempty"`
+	Replies  []string  `json:"replies,omitempty" bson:"replies,omitempty"`
 	Views    []string `json:"views,omitempty" bson:"views,omitempty"`
 }
 
 type Blog struct {
-	Id       string    `json:"id,omitempty" bson:"_id,omitempty"`
+	BlogId    string `json:"blog_id,omitempty" bson:"blog_id,omitempty" `
 	AuthorId string    `json:"author_id,omitempty" bson:"author_id,omitempty" `
+	Date     time.Time `json:"date,omitempty" bson:"date,omitempty" `
+	
 	Title    string    `json:"title,omitempty" bson:"title,omitempty" binding:"required"`
 	Content  string    `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
-	Date     time.Time `json:"date,omitempty" bson:"date,omitempty" `
 	Tags     []string  `json:"tags,omitempty" bson:"tags,omitempty" binding:"required"`
 
 	Likes    []string  `json:"likes,omitempty" bson:"likes,omitempty"  `
 	Dislikes []string  `json:"dislikes,omitempty" bson:"dislikes,omitempty"  `
-	Comments []Comment `json:"comments,omitempty" bson:"comments,omitempty"`
+	Comments []string `json:"comments,omitempty" bson:"comments,omitempty"`
 	Views    []string  `json:"views,omitempty" bson:"views,omitempty"  `
 }
 
@@ -66,13 +72,13 @@ type BlogRepository interface {
 	// information: 1 for like -1,for dislike others,view
 
 	// TODO: to comment or reply to comment you have to view the blog then the comment
-	AddComment(blogId string, comment Comment) error
-	GetAllComments(blogId string) ([]Comment, error)
-	GetCommentById(blogId, commentId string) (Comment, error)
-	LikeOrDislikeComment(blogId, commentId, userId string, like int) error
+	AddComment(comment Comment) error
+	GetAllComments() ([]Comment, error)
+	GetCommentById(commentId string) (Comment, error)
+	LikeOrDislikeComment(commentId, userId string, like int) error
 
-	ReplyToComment(blogId, commentId string, reply Reply) error
-	GetAllRepliesForComment(blogId, commentId string) ([]Reply, error)
-	GetReplyById(blogId, commentId, replyId string) (Reply, error)
-	LikeOrDislikeReply(blogId, commentId, replyId, userId string, like int) error
+	AddReply(reply Reply) error
+	GetAllReplies() ([]Reply, error)
+	GetReplyById( replyId string) (Reply, error)
+	LikeOrDislikeReply(replyId, userId string, like int) error
 }

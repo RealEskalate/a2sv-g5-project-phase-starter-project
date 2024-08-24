@@ -2,7 +2,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useUserRegistrationMutation } from "../../../../redux/api/authentication-controller";
+import { useUserRegistrationMutation } from "@/redux/api/authentication-controller";
+import Link from "next/link";
 
 interface PreferenceValues {
   currency: string;
@@ -77,67 +78,68 @@ const Signup = () => {
   };
 
   return (
-    <div className="container  flex justify-between w-full  p-8">
-      <div className="signup-container ml-6 w-fit h-fit flex flex-col gap-4">
-        <div className="w-full flex flex-col gap-4">
-          <h1 className="text-[28px] font-poppins font-black leading-[34px] text-center text-[#25324B]">
-            Sign Up Today!
-          </h1>
-        </div>
+    <div className="w-full h-screen flex justify-center">
+      <div className="w-[90%]">
+
+        <h1 className="text-2xl font-poppins font-bold text-center text-[#25324B] py-10">
+          Sign Up Today!
+        </h1>
+  
 
         <form
-          className="w-fit h-fit flex justify-between"
+          className="flex items-start"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <div className="flex flex-col gap-5">
-            <div className="w-[350px] h-[60px] flex flex-col gap-2">
-              <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
-                Full Name
-              </label>
-              <input
-                className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
-                placeholder="Enter your full name"
-                type="text"
-                {...register("name", {
-                  required: "Full Name is required",
-                  minLength: {
-                    value: 2,
-                    message: "Full Name must be at least 2 characters long",
-                  },
-                })}
-              />
-              <p className="error text-[12px] text-center text-red-700">
-                {errors.name?.message}
-              </p>
-            </div>
+          <div className="flex gap-3 px-6 mx-auto">
+            <div className="">
+              <div className="w-[400px] flex flex-col gap-2">
+                <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
+                  Full Name
+                </label>
+                <input
+                  className="w-[400px] px-4 py-2 rounded-md border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                  placeholder="Enter your full name"
+                  type="text"
+                  {...register("name", {
+                    required: "Full Name is required",
+                    minLength: {
+                      value: 2,
+                      message: "Full Name must be at least 2 characters long",
+                    },
+                  })}
+                />
+                <p className="error text-[12px] text-center text-red-700">
+                  {errors.name?.message}
+                </p>
+              </div>
 
-            <div className="w-[350px] h-[60px] flex flex-col gap-2">
-              <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
-                Email
-              </label>
-              <input
-                className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
-                type="email"
-                placeholder="Enter your email"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                    message: "Please enter a valid email address",
-                  },
-                })}
-              />
-              <p className="error text-[12px] text-center text-red-700">
-                {errors.email?.message}
-              </p>
-            </div>
+              <div className="w-[350px] flex flex-col gap-2">
+                <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
+                  Email
+                </label>
+                <input
+                  className="w-[400px] px-4 py-2 rounded-md border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                  type="email"
+                  placeholder="Enter your email"
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                      message: "Please enter a valid email address",
+                    },
+                  })}
+                />
+                <p className="error text-[12px] text-center text-red-700">
+                  {errors.email?.message}
+                </p>
+              </div>
 
-            <div className="w-[350px] h-[60px] flex flex-col gap-2">
+            <div className="w-[350px] flex flex-col gap-2">
               <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
                 Date of Birth
               </label>
               <input
-                className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                className="w-[400px] px-4 py-2 rounded-md border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
                 type="date"
                 {...register("dateOfBirth", {
                   required: "Date of Birth is required",
@@ -148,12 +150,12 @@ const Signup = () => {
               </p>
             </div>
 
-            <div className="w-[350px] h-[60px] flex flex-col gap-2">
+            <div className="w-[350px] flex flex-col gap-2">
               <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
                 Permanent Address
               </label>
               <input
-                className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                className="w-[400px] px-4 py-2 rounded-md border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
                 placeholder="Enter your permanent address"
                 type="text"
                 {...register("permanentAddress", {
@@ -165,12 +167,12 @@ const Signup = () => {
               </p>
             </div>
 
-            <div className="w-[350px] h-[60px] flex flex-col gap-2">
+            <div className="w-[350px] flex flex-col gap-2">
               <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
                 Postal Code
               </label>
               <input
-                className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                className="w-[400px] px-4 py-2 rounded-md border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
                 placeholder="Enter your postal code"
                 type="text"
                 {...register("postalCode", {
@@ -182,12 +184,14 @@ const Signup = () => {
               </p>
             </div>
 
-            <div className="w-[350px] h-[60px] flex flex-col gap-2">
+            </div>
+            <div className="">
+            <div className="w-[350px] flex flex-col gap-2">
               <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
                 Username
               </label>
               <input
-                className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                className="w-[400px] px-4 py-2 rounded-md border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
                 placeholder="Choose a username"
                 type="text"
                 {...register("username", { required: "Username is required" })}
@@ -197,12 +201,12 @@ const Signup = () => {
               </p>
             </div>
 
-            <div className="w-[350px] h-[60px] flex flex-col gap-2">
+            <div className="w-[350px] flex flex-col gap-2">
               <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
                 Password
               </label>
               <input
-                className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                className="w-[400px] px-4 py-2 rounded-md border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
                 placeholder="Enter your password"
                 type="password"
                 {...register("password", {
@@ -218,12 +222,12 @@ const Signup = () => {
               </p>
             </div>
 
-            <div className="w-[350px] h-[60px] flex flex-col gap-2">
+            <div className="w-[400px] flex flex-col gap-2">
               <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
                 Present Address
               </label>
               <input
-                className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                className="w-[400px] px-4 py-2 rounded-md border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
                 placeholder="Enter your present address"
                 type="text"
                 {...register("presentAddress", {
@@ -235,12 +239,12 @@ const Signup = () => {
               </p>
             </div>
 
-            <div className="w-[350px] h-[60px] flex flex-col gap-2">
+            <div className="w-[350px] flex flex-col gap-2">
               <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
                 City
               </label>
               <input
-                className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                className="w-[400px] px-4 py-2 rounded-md border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
                 placeholder="Enter your city"
                 type="text"
                 {...register("city", { required: "City is required" })}
@@ -250,12 +254,12 @@ const Signup = () => {
               </p>
             </div>
 
-            <div className="w-[350px] h-[60px] flex flex-col gap-2">
+            <div className="w-[350px] flex flex-col gap-2">
               <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
                 Country
               </label>
               <input
-                className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                className="w-[400px] px-4 py-2 rounded-md border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
                 placeholder="Enter your city"
                 type="text"
                 {...register("country", { required: "country is required" })}
@@ -265,12 +269,12 @@ const Signup = () => {
               </p>
             </div>
 
-            <div className="w-[350px] h-[60px] flex flex-col gap-2">
+            <div className="w-[350px] flex flex-col gap-2">
               <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
                 Profile Picture
               </label>
               <input
-                className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                className="w-[400px] px-4 py-2 rounded-md border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
                 type="file"
                 accept="image/*"
                 onChange={handleProfilePictureChange}
@@ -279,19 +283,21 @@ const Signup = () => {
                 {errors.profilePicture?.message}
               </p>
             </div>
+            </div>
           </div>
-          <div className="container h-[100vh] flex justify-between w-full p-8">
-            <div className="signup-container ml-6 w-fit h-fit flex flex-col gap-6">
-              <h1 className="text-[28px] font-poppins font-black leading-[34px] text-center text-[#25324B]">
+
+          <div className="flex justify-between  ">
+            <div className="signup-container w-fit h-fit flex flex-col gap-6">
+              <h1 className="text-xl font-poppins text-center text-[#25324B]">
                 Set Your Preferences
               </h1>
 
-              <div className="w-[350px] h-[60px] flex flex-col gap-2">
+              <div className="w-[350px] flex flex-col gap-2">
                 <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
                   Currency
                 </label>
                 <select
-                  className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                  className="px-4 py-2 gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
                   {...register("preference.currency", {
                     required: "Currency is required",
                   })}
@@ -315,7 +321,7 @@ const Signup = () => {
                   Time Zone
                 </label>
                 <select
-                  className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                  className="px-4 py-2 gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
                   {...register("preference.timeZone", {
                     required: "Time Zone is required",
                   })}
@@ -333,59 +339,67 @@ const Signup = () => {
                 </p>
               </div>
 
-              <div className=" flex flex-row-reverse  gap-2">
-                <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
-                  Send or Receive Digital Currency
-                </label>
-                <input
-                  className=" rounded-[6px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px]]"
-                  type="checkbox"
-                  {...register("preference.sentOrReceiveDigitalCurrency")}
-                />
-              </div>
+              <div className="flex flex-col items-start justify-center mt-4 gap-2">
+                <div className=" flex flex-row-reverse  gap-2">
+                  <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
+                    Send or Receive Digital Currency
+                  </label>
+                  <input
+                    className=" rounded-[6px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px]]"
+                    type="checkbox"
+                    {...register("preference.sentOrReceiveDigitalCurrency")}
+                  />
+                </div>
 
-              <div className=" flex flex-row-reverse gap-2">
-                <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
-                  Receive Merchant Order
-                </label>
-                <input
-                  className="rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px]]"
-                  type="checkbox"
-                  {...register("preference.receiveMerchantOrder")}
-                />
-              </div>
+                <div className=" flex flex-row-reverse gap-2">
+                  <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
+                    Receive Merchant Order
+                  </label>
+                  <input
+                    className="rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px]]"
+                    type="checkbox"
+                    {...register("preference.receiveMerchantOrder")}
+                  />
+                </div>
 
-              <div className=" flex flex-row-reverse gap-2">
-                <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
-                  Account Recommendations
-                </label>
-                <input
-                  className=" rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px]]"
-                  type="checkbox"
-                  {...register("preference.accountRecommendations")}
-                />
-              </div>
+                <div className=" flex flex-row-reverse gap-2">
+                  <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
+                    Account Recommendations
+                  </label>
+                  <input
+                    className=" rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px]]"
+                    type="checkbox"
+                    {...register("preference.accountRecommendations")}
+                  />
+                </div>
 
-              <div className=" flex flex-row-reverse gap-2">
-                <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
-                  Two-Factor Authentication
-                </label>
-                <input
-                  className=" rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px]]"
-                  type="checkbox"
-                  {...register("preference.twoFactorAuthentication")}
-                />
+                <div className=" flex flex-row-reverse gap-2">
+                  <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
+                    Two-Factor Authentication
+                  </label>
+                  <input
+                    className=" rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px]]"
+                    type="checkbox"
+                    {...register("preference.twoFactorAuthentication")}
+                  />
+                </div>
+
               </div>
 
               <button
                 type="submit"
-                className="w-[350px] h-[45px] bg-[#4640DE] text-white rounded-[6px] text-center text-[16px] font-semibold"
+                className="w-full py-1 bg-[#4640DE] text-white rounded-[6px] text-center text-[16px] font-semibold"
               >
                 Submit Preferences
               </button>
+              <div className="text-center text-sm text-gray-500">
+                Already have an account? {' '}
+                <Link href='/auth/login' className="hover:underline text-[#4640DE]" >Login</Link>
+              </div>
             </div>
           </div>
         </form>
+
       </div>
     </div>
   );

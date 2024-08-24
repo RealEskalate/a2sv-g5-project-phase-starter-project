@@ -69,7 +69,7 @@
 		transition: background-color 0.3s, color 0.3s;
 	}
 	.dark-mode {
-		@apply bg-gray-900 text-white;
+		@apply dark:bg-gray-900 text-white;
 	}
 }
 

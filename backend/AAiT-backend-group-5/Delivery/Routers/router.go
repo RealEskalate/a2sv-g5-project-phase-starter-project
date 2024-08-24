@@ -47,6 +47,7 @@ func Setup(env *config.Env, db interfaces.Database, gin *gin.Engine) {
 	)
 
 	NewAuthenticationRouter(env, db, publicRoute)
+	NewOAuthRouter(env, db, *publicRoute)
 	NewForgotPasswordRouter(env, db, protectedRoute)
 	NewLogoutRouter(env, db, protectedRoute)
 	NewRefreshRouter(env, db, refreshRoute)

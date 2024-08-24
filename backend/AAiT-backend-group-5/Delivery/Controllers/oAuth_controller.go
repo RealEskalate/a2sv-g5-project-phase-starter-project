@@ -8,6 +8,7 @@ import (
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	"github.com/gin-gonic/gin"
+	"github.com/mssola/user_agent"
 	"golang.org/x/oauth2"
 )
 
@@ -31,6 +32,14 @@ func NewOAuthController(
 }
 
 func (c *oAuthController) LoginHandlerController(ctx *gin.Context) {
+	user_ag := ctx.Request.UserAgent()
+
+	agent := user_agent.New(user_ag)
+	if agent.Mobile() {
+		ctx.IndentedJSON(http.StatusTemporaryRedirect, gin.H{"error": "Google login is not supported on mobile devices, yet"})
+		return
+	}
+
 	ctx.HTML(http.StatusOK, "login.html", nil)
 }
 

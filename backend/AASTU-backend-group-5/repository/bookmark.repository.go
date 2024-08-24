@@ -37,8 +37,8 @@ func (br *BookmarkRepository) RemoveBookmark(userID, blogID primitive.ObjectID) 
 	return nil
 }
 
-func (br *BookmarkRepository) GetUserBookmarks(userID primitive.ObjectID) ([]domain.Blog, error) {
-	var bookmarks []domain.Blog
+func (br *BookmarkRepository) GetUserBookmarks(userID primitive.ObjectID) ([]domain.Bookmark, error) {
+	var bookmarks []domain.Bookmark
 	cursor, err := br.collection.Find(context.TODO(), bson.M{"user_id": userID})
 	if err != nil {
 		return nil, err
@@ -51,12 +51,8 @@ func (br *BookmarkRepository) GetUserBookmarks(userID primitive.ObjectID) ([]dom
 			return nil, err
 		}
 
-		var blogDoc domain.Blog
-		err := br.collection.FindOne(context.TODO(), bson.M{"_id": bookmark.BlogID}).Decode(&blogDoc)
-		if err == nil {
+		bookmarks = append(bookmarks, bookmark)
 
-			bookmarks = append(bookmarks, blogDoc)
-		}
 	}
 	return bookmarks, nil
 }

@@ -18,13 +18,16 @@ const Shimmer = () => {
   );
 };
 
-export const QuickTransfer = ({ onLoadingComplete }: { onLoadingComplete: any }) => {
+export const QuickTransfer = ({
+  onLoadingComplete,
+}: {
+  onLoadingComplete: any;
+}) => {
   const { isDarkMode } = useUser();
   const QuickTransferSection = useRef<HTMLDivElement | null>(null);
   const [quickTransfer, setQuickTransfer] = useState<QuickTransferData[]>([]);
-  const [selectedProfile, setSelectedProfile] = useState<QuickTransferData>(
-    {} as QuickTransferData
-  );
+  const [selectedProfile, setSelectedProfile] =
+    useState<QuickTransferData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -33,11 +36,9 @@ export const QuickTransfer = ({ onLoadingComplete }: { onLoadingComplete: any })
       try {
         const accounts = await getQuickTransfer(10);
         setQuickTransfer(accounts || []);
-          onLoadingComplete(false);
-           setLoading(false);
+        onLoadingComplete(false);
       } finally {
-       
-      
+        setLoading(false);
       }
     };
     fetchData();
@@ -108,7 +109,7 @@ export const QuickTransfer = ({ onLoadingComplete }: { onLoadingComplete: any })
           [scrollbar-width:none]
         `}
         >
-          {loading
+          {loading || quickTransfer.length === 0
             ? [1, 2, 3, 4].map((index) => <Shimmer key={index} />)
             : quickTransfer.map((account) => (
                 <Profile
@@ -141,7 +142,7 @@ export const QuickTransfer = ({ onLoadingComplete }: { onLoadingComplete: any })
               transition-all duration-300 ease-in-out
             `}
             onClick={handleModalToggle}
-            disabled={!selectedProfile}
+        
           >
             <p>Transfer</p>
             <PiTelegramLogoLight />
@@ -155,7 +156,7 @@ export const QuickTransfer = ({ onLoadingComplete }: { onLoadingComplete: any })
                 <ModalTrans
                   isOpen={isModalOpen}
                   onClose={handleModalToggle}
-                  reciverUserName={selectedProfile.username}
+                  reciverUserName={selectedProfile?.username || ""}
                 />
               </div>
             </div>

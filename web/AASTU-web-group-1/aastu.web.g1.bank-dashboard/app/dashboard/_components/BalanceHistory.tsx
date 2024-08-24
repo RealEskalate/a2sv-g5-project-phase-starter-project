@@ -5,12 +5,23 @@ import { BalanceData } from "@/types";
 import React, { useEffect, useState } from "react";
 import { BalanceAreachart } from "../transactions/component/balanceChart";
 
-// Shimmer component for skeleton loading effect
+// Enhanced Shimmer component for skeleton loading effect
 const Shimmer = () => {
-  return <div className="animate-pulse h-64 bg-gray-200 rounded-xl"></div>;
+  return (
+    <div className="animate-pulse space-y-4">
+      <div className="h-6 bg-gray-300 rounded w-1/4"></div>{" "}
+      {/* Simulate title */}
+      <div className="h-48 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 rounded-xl"></div>{" "}
+      {/* Simulate chart area */}
+    </div>
+  );
 };
 
-export const BalanceHistory = ({ onLoadingComplete }: { onLoadingComplete: any }) => {
+export const BalanceHistory = ({
+  onLoadingComplete,
+}: {
+  onLoadingComplete: any;
+}) => {
   const { isDarkMode } = useUser();
   const [balanceHistory, setBalanceHistory] = useState<BalanceData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,10 +31,9 @@ export const BalanceHistory = ({ onLoadingComplete }: { onLoadingComplete: any }
       try {
         const BalanceHistory = await getRandomBalance();
         setBalanceHistory(BalanceHistory || []);
-         onLoadingComplete(false);
-           setLoading(false);
+        onLoadingComplete(false);
       } finally {
-      
+        setLoading(false);
       }
     };
     fetchData();
@@ -41,9 +51,10 @@ export const BalanceHistory = ({ onLoadingComplete }: { onLoadingComplete: any }
         md:shadow
         transition-all
         duration-300
+        p-5
       `}
       >
-        {loading ? (
+        {loading || balanceHistory.length === 0 ? (
           <Shimmer />
         ) : (
           <BalanceAreachart balanceHistory={balanceHistory} />

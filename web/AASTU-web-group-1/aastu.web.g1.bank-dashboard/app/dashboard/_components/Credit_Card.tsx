@@ -21,19 +21,19 @@ const CreditCard: React.FC<CardDetails> = ({
 
   switch (cardType) {
     case "Visa":
-      bgColor = "bg-blue-700";
+      bgColor = "bg-gradient-to-r from-blue-600 to-blue-800";
       textColor = "text-white";
       break;
     case "MasterCard":
-      bgColor = "bg-black";
+      bgColor = "bg-gradient-to-r from-gray-800 to-black";
       textColor = "text-white";
       break;
     case "American Express":
-      bgColor = "bg-gray-300";
+      bgColor = "bg-gradient-to-r from-gray-300 to-gray-400";
       textColor = "text-black";
       break;
     default:
-      bgColor = "bg-white";
+      bgColor = "bg-gradient-to-r from-gray-100 to-gray-200";
       textColor = "text-black";
   }
 
@@ -41,7 +41,7 @@ const CreditCard: React.FC<CardDetails> = ({
 
   return (
     <div
-      className={`min-w-[300px] h-55  md:w-[350px] ${bgColor} rounded-2xl space-y-6 ${
+      className={`min-w-[300px] h-55  md:w-[350px] ${bgColor} rounded-2xl space-y-6  shadow ${
         !isDarkMode ? "border border-gray-300" : ""
       }`}
     >
@@ -59,7 +59,13 @@ const CreditCard: React.FC<CardDetails> = ({
 
       <div className="flex px-5">
         <div className="w-[60%] block space-y-1">
-          <p className="text-[10px] md:text-[11px] text-white text-opacity-50 font-lato font-normal">
+          <p
+            className={`text-[10px] md:text-[11px] ${
+              bgColor == "bg-gradient-to-r from-gray-100 to-gray-200"
+                ? "text-[#718ebf]"
+                : "text-white text-opacity-50"
+            } font-lato font-normal`}
+          >
             CARD HOLDER
           </p>
           <p
@@ -69,7 +75,13 @@ const CreditCard: React.FC<CardDetails> = ({
           </p>
         </div>
         <div className="block space-y-1">
-          <p className="text-[10px] md:text-[11px] text-white text-opacity-50 font-lato font-normal">
+          <p
+            className={`text-[10px] md:text-[11px] ${
+              bgColor == "bg-gradient-to-r from-gray-100 to-gray-200"
+                ? "text-[#718EBF]"
+                : "text-white text-opacity-50"
+            } font-lato font-normal`}
+          >
             Exp. Date
           </p>
           <p
@@ -81,7 +93,9 @@ const CreditCard: React.FC<CardDetails> = ({
       </div>
 
       <div
-        className={`flex justify-between px-5 items-center py-6 bg-gradient-to-r from-white/30 to-white/5 rounded-b-2xl backdrop-blur-[3px]`}
+        className={`flex justify-between px-5 items-center py-6 ${
+          bgColor !== "bg-gradient-to-r from-gray-100 to-gray-200" ?"bg-gradient-to-r from-white/30 to-white/5 rounded-b-2xl backdrop-blur-[3px]":""}
+        `}
       >
         <p
           className={`text-[15px] md:text-[16px] ${textColor} font-lato font-semibold w-[80%]`}
@@ -90,7 +104,7 @@ const CreditCard: React.FC<CardDetails> = ({
         </p>
         <Image
           src={`${
-            bgColor !== "bg-white"
+            bgColor !== "bg-gradient-to-r from-gray-100 to-gray-200"
               ? "/icons/cardwhite.svg"
               : "/icons/cardgray.svg"
           }`}

@@ -5,13 +5,7 @@ import { TransactionContent, TransactionData } from "@/types";
 import { getallTransactions, getExpenses, getIncomes } from "@/lib/api";
 import { MdNavigateNext } from "react-icons/md";
 import { GrFormPrevious } from "react-icons/gr";
-
-// Shimmer component for table rows
-const ShimmerRow = () => (
-  <div className="animate-pulse flex space-x-4">
-    <div className="bg-gray-300 h-8 w-full rounded-md mb-2"></div>
-  </div>
-);
+import { ShimmerRow } from "../../_components/Shimmer";
 
 export const TransactionTable = ({
   onLoadingComplete,
@@ -25,13 +19,15 @@ export const TransactionTable = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [transactions, setTransactions] = useState<TransactionContent[]>([]);
   const [totalPages, setTotalPages] = useState<number>(5);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
+  const [dataFetched, setDataFetched] = useState(false);
   const rowsPerPage = 5;
 
-  // Fetch transactions based on active tab and current page
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      onLoadingComplete(true);
+
       try {
         let data: TransactionData | undefined;
         if (activeTab === "all") {
@@ -43,16 +39,20 @@ export const TransactionTable = ({
         }
         setTransactions(data?.content || []);
         setTotalPages(data?.totalPages || 7);
-        setLoading(false);
+        setDataFetched(true); // Mark data as fetched
         onLoadingComplete(false);
       } catch (error) {
         console.error("Error fetching transactions:", error);
       } finally {
-       
+        setLoading(false);
       }
     };
-    fetchData();
-  }, [currentPage, activeTab,onLoadingComplete]);
+
+    // Only fetch data if not already fetched
+    if (!dataFetched) {
+      fetchData();
+    }
+  }, [currentPage, activeTab, onLoadingComplete, dataFetched]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -71,30 +71,83 @@ export const TransactionTable = ({
   };
 
   const renderPageButtons = () => {
-    const pagesToShow = Math.min(totalPages, 4);
-    const startPage =
-      currentPage <= 2 || totalPages <= 4
-        ? 1
-        : currentPage > totalPages - 2
-        ? totalPages - 3
-        : currentPage - 1;
+    const pageButtons = [];
+    const maxVisiblePages = 3; // Number of pages to show before the ellipsis
 
-    return Array.from({ length: pagesToShow }, (_, index) => {
-      const page = startPage + index;
-      return (
-        <button
-          key={page}
-          onClick={() => handlePageChange(page)}
-          className={` ${isDarkMode ? "bg-gray-800 text-white" : "bg-white"} ${
-            page === currentPage && !isDarkMode
-              ? "bg-blue-600"
-              : "text-blue-600"
-          } hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 me-2 mb-2`}
-        >
-          {page}
-        </button>
+    // Determine the range of pages to show
+    const startPage = Math.max(currentPage - 1, 1);
+    const endPage = Math.min(startPage + maxVisiblePages - 1, totalPages - 1);
+
+    // Always show the first page when it's close enough
+    if (currentPage <= maxVisiblePages) {
+      for (let page = 1; page <= endPage; page++) {
+        pageButtons.push(
+          <button
+            key={page}
+            onClick={() => handlePageChange(page)}
+            className={`${
+              page !== currentPage
+                ? isDarkMode
+                  ? "text-gray-300 hover:bg-gray-700 hover:text-white bg-gray-900"
+                  : "text-blue-600 hover:bg-blue-700 hover:text-white bg-white"
+                : isDarkMode
+                ? "bg-blue-600 text-white"
+                : "bg-blue-600 text-white"
+            } 
+            focus:ring-4 ${
+              isDarkMode ? "focus:ring-gray-500" : "focus:ring-blue-300"
+            } font-medium rounded-lg text-sm px-4 py-2 me-2 mb-2 shadow-lg`}
+          >
+            {page}
+          </button>
+        );
+      }
+    } else {
+      for (let page = startPage; page <= endPage; page++) {
+        pageButtons.push(
+          <button
+            key={page}
+            onClick={() => handlePageChange(page)}
+            className={`${
+              page === currentPage
+                ? "bg-blue-600 text-white"
+                : isDarkMode
+                ? "text-gray-300 hover:bg-gray-700 hover:text-white"
+                : "text-blue-600 bg-white hover:bg-blue-700 hover:text-white"
+            }
+            focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 me-2 mb-2 shadow-lg`}
+          >
+            {page}
+          </button>
+        );
+      }
+    }
+
+    // Always show the last page
+    if (endPage < totalPages - 1) {
+      pageButtons.push(
+        <span key="dots-end" className="text-gray-500">
+          ...
+        </span>
       );
-    });
+    }
+
+    pageButtons.push(
+      <button
+        key={totalPages}
+        onClick={() => handlePageChange(totalPages)}
+        className={`${
+          currentPage === totalPages
+            ? "bg-blue-600 text-white"
+            : "text-blue-600 hover:bg-blue-700 hover:text-white"
+        } ${isDarkMode ? "bg-gray-800" : "bg-white"} 
+        focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 me-2 mb-2 shadow-lg`}
+      >
+        {totalPages}
+      </button>
+    );
+
+    return pageButtons;
   };
 
   return (
@@ -138,48 +191,57 @@ export const TransactionTable = ({
             </button>
           </div>
         </div>
-        {/* Render the table or shimmer effect based on loading state */}
-        {loading ? (
+        {loading && !dataFetched ? (
           <div>
-            {Array(5)
-              .map((_, index) => (
-                <ShimmerRow key={index} />
-              ))}
+            {Array.from({ length: rowsPerPage }).map((_, index) => (
+              <ShimmerRow key={index} />
+            ))}
           </div>
         ) : (
           <ExpenseTable transactions={transactions} tab={activeTab} />
         )}
       </div>
-      <div className="flex justify-end items-center space-x-2">
-       <button
-  onClick={handlePreviousPage}
-  className={`flex items-center justify-center rounded-xl ${
-    currentPage === 1 ? "text-gray-400" : "text-blue-600"
-  } ${isDarkMode ? "bg-gray-800" : "bg-white"}`}
-  disabled={currentPage === 1}
->
-  <GrFormPrevious size={30} />
-  <p
-    className={`ml-2 ${
-      currentPage === 1 ? "text-gray-400" : "text-blue-600"
-    } ${isDarkMode ? "text-gray-300" : "text-gray-900"}`}
-  >
-    Previous
-  </p>
-</button>
-
+      <div className="flex justify-end items-center space-x-2 m-5">
+        <button
+          onClick={handlePreviousPage}
+          className={`flex items-center justify-center rounded-xl shadow-lg p-1 ${
+            currentPage === 1
+              ? "text-gray-400"
+              : isDarkMode
+              ? "text-gray-300 hover:bg-blue-600 hover:text-white"
+              : "text-blue-600 hover:bg-blue-400 hover:text-black"
+          } ${isDarkMode ? "bg-gray-800" : "bg-white"}`}
+          disabled={currentPage === 1}
+        >
+          <GrFormPrevious size={30} />
+          <p
+            className={` ${
+              currentPage === 1
+                ? "text-gray-400"
+                : isDarkMode
+                ? "text-gray-300"
+                : "text-blue-600"
+            }`}
+          >
+            Previous
+          </p>
+        </button>
 
         {renderPageButtons()}
 
         <button
           onClick={handleNextPage}
-          className={`flex rounded-xl ${
-            currentPage === totalPages ? "text-gray-400" : "text-blue-600"
-          } ${isDarkMode ? "bg-gray-800" : "bg-white"}`}
+          className={`flex items-center justify-center rounded-xl shadow-lg p-1 ${
+            currentPage === totalPages
+              ? "text-gray-400 "
+              : isDarkMode
+              ? "text-gray-300 hover:bg-blue-600 hover:text-white"
+              : "text-blue-600 hover:bg-blue-400 hover:text-black"
+          } ${isDarkMode ? "bg-gray-800" : "bg-white"} hover:bg-blue-100`}
           disabled={currentPage === totalPages}
         >
           <p
-            className={`m-2 ${
+            className={` ${
               currentPage === totalPages ? "text-gray-400" : "text-blue-600"
             } ${isDarkMode ? "text-gray-300" : "text-gray-900"}`}
           >

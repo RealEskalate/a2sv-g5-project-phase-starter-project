@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
 import { useUser } from "@/contexts/UserContext";
 import { Loading } from "../_components/Loading";
 import { TransactionCards } from "./component/transactionCards";
@@ -13,6 +12,7 @@ const Transactions = () => {
   const [transactionCardsLoaded, setTransactionCardsLoaded] = useState(false);
   const [transactionTableLoaded, setTransactionTableLoaded] = useState(false);
 
+  // Check if all data has been fetched
   useEffect(() => {
     if (transactionCardsLoaded && transactionTableLoaded) {
       setDataFetched(true);
@@ -21,19 +21,25 @@ const Transactions = () => {
 
   return (
     <div
-      className={`space-y-5 ${dataFetched?"p-10":""} ${
+      className={`min-h-screen ${
+        dataFetched ? "p-10 space-y-5" : "flex justify-center items-center"
+      } ${
         isDarkMode ? "bg-gray-700 text-gray-200" : "bg-[#F5F7FA] text-gray-900"
       }`}
     >
       {!dataFetched && <Loading />}
-      {/* First row */}
-      <TransactionCards
-        onLoadingComplete={() => setTransactionCardsLoaded(true)}
-      />
-      {/* Second row */}
-      <TransactionTable
-        onLoadingComplete={() => setTransactionTableLoaded(true)}
-      />
+
+      {/* Render components in the background to trigger data fetching */}
+      <div className={dataFetched ? "" : "hidden"}>
+        {/* First row */}
+        <TransactionCards
+          onLoadingComplete={() => setTransactionCardsLoaded(true)}
+        />
+        {/* Second row */}
+        <TransactionTable
+          onLoadingComplete={() => setTransactionTableLoaded(true)}
+        />
+      </div>
     </div>
   );
 };

@@ -76,34 +76,21 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
 		return null; // Do not render NavBar if not authenticated
 	}
 
-	return (
-		<div className={`shadow-md bg-white dark:bg-gray-900`}>
-			{/* Mobile view */}
-			<div className="flex justify-between items-center p-6 sm:hidden">
-				<button onClick={toggleSidebar} aria-label="Toggle sidebar">
-					{isSidebarVisible ? <FaTimes size={24} /> : <FaBars size={24} />}
-				</button>
-				<div
-					className={`font-semibold text-lg ${
-						darkmode ? "text-gray-200" : "text-primary-2"
-					}`}
-				>
-					Overview
-				</div>
-				<Image
-					src={profilePicture}
-					width={50}
-					height={50}
-					alt="User Icon"
-					className="h-12 w-12"
-				/>
-				<button
-					onClick={() => signOut()}
-					className="bg-slate-500 text-white rounded-full px-4 py-2 ml-4"
-				>
-					Logout
-				</button>
-			</div>
+  return (
+    <div className={`shadow-md bg-white dark:bg-gray-800`}>
+      {/* Mobile view */}
+      <div className="flex justify-between items-center p-6 sm:hidden">
+        <button onClick={toggleSidebar} aria-label="Toggle sidebar">
+          {isSidebarVisible ? <FaTimes size={24} /> : <FaBars size={24} />}
+        </button>
+        <div className={`font-semibold text-lg ${darkmode ? "text-gray-200" : "text-primary-2"}`}>
+          Overview
+        </div>
+        <Image src={profilePicture} width={50} height={50} alt="User Icon" className="h-12 w-12" />
+        <button onClick={() => signOut()} className="bg-slate-500 text-white rounded-full px-4 py-2 ml-4">
+          Logout
+        </button>
+      </div>
 
 			{/* Mobile search bar */}
 			<div className="sm:hidden p-6">

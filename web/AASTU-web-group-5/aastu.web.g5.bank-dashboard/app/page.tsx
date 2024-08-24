@@ -9,14 +9,10 @@ export default function Home() {
 	const { status } = useSession();
 	const darkMode = useSelector((state: RootState) => state.theme.darkMode);
 
-	return (
-		<div
-			className={`p-4 ${
-				darkMode ? "bg-gray-800 text-white" : "bg-white text-neutral-800"
-			}`}
-		>
-			{/* Render Investments if authenticated, otherwise render Signin */}
-			{status === "authenticated" ? <Investments /> : <Signin />}
-		</div>
-	);
+    return (
+        <div className={`p-4 ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-neutral-800'}`}>
+            {/* Render Investments if authenticated, otherwise render Signin */}
+            {status === "authenticated" ? <Investments /> : <Signin />}
+        </div>
+    );
 }

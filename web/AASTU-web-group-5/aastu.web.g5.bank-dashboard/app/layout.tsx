@@ -20,21 +20,24 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	return (
-		<html lang="en">
-			<body className={`${inter.className}`}>
-				<SessionProvider>
-					<Provider store={store}>
-						<PersistGate loading={null} persistor={persistor}>
-							<LayoutContent>
-								<div className=" dark:bg-gray-900">{children}</div>
-							</LayoutContent>
-						</PersistGate>
-					</Provider>
-				</SessionProvider>
-			</body>
-		</html>
-	);
+    return (
+        <html lang="en">
+            <body className={`${inter.className}`}>
+                <SessionProvider>
+                    <Provider store={store}>
+                        <PersistGate loading={null} persistor={persistor}>
+
+                            <LayoutContent>
+                                <div className=" dark:bg-gray-950">
+                                {children}
+                                </div>
+                            </LayoutContent>
+                        </PersistGate>
+                    </Provider>
+                </SessionProvider>
+            </body>
+        </html>
+    );
 }
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
@@ -82,18 +85,18 @@ function SidebarWrapper({
 }) {
 	const { status } = useSession();
 
-	return (
-		status === "authenticated" && (
-			<div
-				className={`fixed inset-0 bg-white z-50 sm:static sm:block ${
-					isSidebarVisible ? "block" : "hidden"
-				} dark:bg-gray-900 dark:text-white `}
-			>
-				<SideBar
-					isSidebarVisible={isSidebarVisible}
-					toggleSidebar={toggleSidebar}
-				/>
-			</div>
-		)
-	);
+    return (
+        status === "authenticated" && (
+            <div
+                className={`fixed inset-0 bg-white z-50 sm:static sm:block ${
+                    isSidebarVisible ? "block" : "hidden"
+                } dark:bg-gray-800 dark:text-white `}
+            >
+                <SideBar
+                    isSidebarVisible={isSidebarVisible}
+                    toggleSidebar={toggleSidebar}
+                />
+            </div>
+        )
+    );
 }

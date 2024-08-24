@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import FormComponent from './FormComponent'; // Adjust the import path as necessary
 import YourFormComponent from './Preference';
+import SignIn from '../../signIn/SignIn';
 
 interface Preference {
   currency: string;
@@ -53,26 +54,29 @@ const Signup = () => {
   const [activeTab, setActiveTab] = useState<number>(0);
   const tabs = ['User Information', 'Preferences'];
   const [mainData, setMainData] = useState<MainData>(defaultMainData);
+  const [isSignInModalVisible, setIsSignInModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     console.log(mainData);
   }, [mainData]);
-
+  const toggleSignInModal = () => {
+    setIsSignInModalVisible(!isSignInModalVisible);
+  };
   return (
     <div className="flex flex-col items-center p-6">
-      <h2 className="text-2xl font-bold text-blue-700 mb-6">Sign Up</h2>
+      <h2 className="text-2xl font-bold text-[#083E9E] mb-6 text-[3rem]">Sign Up</h2>
 
       <div className="bg-white rounded-[25px] p-[1rem] grid gap-[2rem] w-full relative">
         <ul className="flex justify-between list-none p-0 relative w-[25%]">
           {tabs.map((tab, index) => (
             <li
               key={index}
-              className={`cursor-pointer p-2 font-[500] text-[16px] ${activeTab === index ? 'text-blue-700 font-bold' : 'text-[#718EBF]'} relative`}
+              className={`cursor-pointer p-2 font-[500] text-[16px] ${activeTab === index ? 'text-[#083E9E] font-bold' : 'text-[#718EBF]'} relative`}
               onClick={() => setActiveTab(index)}
             >
               {tab}
               {activeTab === index && (
-                <div className="absolute bottom-0 left-0 w-full h-[3px] rounded-t-[1rem] bg-[#1814F3] transition-all duration-300" ></div>
+                <div className="absolute bottom-0 left-0 w-full h-[3px] rounded-t-[1rem] bg-[#083E9E] transition-all duration-300" ></div>
               )}
             </li>
           ))}
@@ -92,13 +96,15 @@ const Signup = () => {
         )}
       </div>
       <div className="mt-6 text-center">
-        <p className="text-sm text-gray-600">
-          Already have an account?{' '}
-          <a href="/login" className="text-blue-700 font-semibold hover:underline">
+        <div className="text-sm text-gray-600 flex gap-[0.7rem]">
+         <p> Already have an account?</p>
+          <p onClick={toggleSignInModal} className="cursor-pointer text-[#083E9E] font-semibold hover:underline">
             Log In
-          </a>
-        </p>
+          </p>
+        </div>
       </div>
+      {isSignInModalVisible && <SignIn onClose={toggleSignInModal} />}
+
     </div>
   );
 };

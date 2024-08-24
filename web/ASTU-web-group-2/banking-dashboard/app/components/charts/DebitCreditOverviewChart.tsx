@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useEffect } from "react";
 import { Chart } from "chart.js/auto";
+import LineChartSkeleton from "./LineChartSkeleton";
 
 export interface ChartRef extends HTMLCanvasElement {
   chart?: Chart;
@@ -91,6 +92,11 @@ function DebitCreditOverviewChart() {
       }
     }
   }, []);
+  // if (true){
+  //   return (
+  //     <LineChartSkeleton />
+  //   )
+  // }
 
   return (
     <div className="text-gray-500 rounded-[22px] bg-white md:max-h-none max-h-[230px] ">

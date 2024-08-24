@@ -15,6 +15,7 @@ export const store = configureStore({
     [transactionApi.reducerPath]: transactionApi.reducer,
     [activeLoanApi.reducerPath]: activeLoanApi.reducer,
     [profileAPI.reducerPath]: profileAPI.reducer,
+    [bankServiceApi.reducerPath]: bankServiceApi.reducer,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware()
@@ -22,6 +23,7 @@ export const store = configureStore({
       .concat(transactionApi.middleware)
       .concat(activeLoanApi.middleware)
       .concat(profileAPI.middleware)
+      .concat(bankServiceApi.middleware);
   },
 });
 

@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type commentRepository struct {
@@ -61,6 +62,10 @@ func (cr *commentRepository) GetComments(c context.Context, blogID string, limit
 		return []entities.Comment{}, mongopagination.PaginationData{}, err
 	}
 
+	if len(comments) == 0 {
+		comments = make([]entities.Comment, 0)
+	}
+
 	return comments, paginatedData.Pagination, nil
 }
 
@@ -88,7 +93,9 @@ func (cr *commentRepository) UpdateComment(c context.Context, commentID string, 
 		return comment, err
 	}
 
-	err = cr.Collection.FindOneAndUpdate(c, bson.M{"_id": id}, bson.M{"$set": updatedComment}).Decode(&comment)
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	// Update the comment and return the updated comment
+	err = cr.Collection.FindOneAndUpdate(c, bson.M{"_id": id}, bson.M{"$set": bson.M{"content": updatedComment.Content, "updated_at": updatedComment.UpdatedAt}}, opts).Decode(&comment)
 
 	return comment, err
 

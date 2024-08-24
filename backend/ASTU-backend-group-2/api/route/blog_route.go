@@ -36,8 +36,8 @@ func NewProtectedBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mong
 	group.POST("/blogs/:id/comments", bc.CreateComment())
 
 	// // only authenticated users can access
-	group.PUT("/comments/:comment_id", bc.UpdateComment())
-	group.DELETE("/comments/:comment_id", bc.DeleteComment())
+	group.PUT("blogs/comments/:comment_id", bc.UpdateComment())
+	group.DELETE("blogs/comments/:comment_id", bc.DeleteComment())
 	//like and dislike
 	group.POST("/blogs/:id/like", bc.Like())
 	group.POST("/blogs/:id/dislike", bc.Dislike())
@@ -56,11 +56,11 @@ func NewPublicBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.D
 
 	group.GET("/blogs", bc.GetBlogs())
 	group.GET("/blogs/:id", bc.GetBlog())
-	group.GET("blogs/popular", bc.GetbyPopularity())
+	group.GET("/blogs/popular", bc.GetbyPopularity())
 
 	group.GET("/blogs/tags/", bc.GetByTags())
 	group.GET("/blogs/recent", bc.SortByDate())
 	//comments
 	group.GET("/blogs/:id/comments", bc.GetComments())
-	group.GET("/comments/:comment_id", bc.GetComment())
+	group.GET("/blogs/comments/:comment_id", bc.GetComment())
 }

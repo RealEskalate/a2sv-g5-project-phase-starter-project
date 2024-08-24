@@ -41,7 +41,6 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
     };
   }, [dropdownRef]);
 
-
   // Toggle dropdown visibility
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -139,6 +138,7 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
                   alt="profile-picture"
                   className="block mx-auto h-12 rounded-full cursor-pointer"
                   onClick={toggleDropdown}
+                  data-id="Profile-image"
                 />
               </div>
 

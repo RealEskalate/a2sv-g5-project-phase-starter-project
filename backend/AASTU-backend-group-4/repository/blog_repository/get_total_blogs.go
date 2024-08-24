@@ -7,7 +7,7 @@ import (
 )
 
 func (br *BlogRepository) GetTotalBlogs(ctx context.Context) (int, error) {
-	count, err := br.collection.CountDocuments(context.TODO(), bson.M{})
+	count, err := br.collection.CountDocuments(ctx, bson.M{})
 	if err != nil {
 		return 0, err
 	}

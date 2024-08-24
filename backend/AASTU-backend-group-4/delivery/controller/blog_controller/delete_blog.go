@@ -18,7 +18,7 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 		return
 	}
 
-	err = bc.usecase.DeleteBlog(c.Request.Context(), userID, blogID, isAdmin)
+	err = bc.usecase.DeleteBlog(c, userID, blogID, isAdmin)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

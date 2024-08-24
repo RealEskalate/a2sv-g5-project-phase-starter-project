@@ -2,11 +2,11 @@ import { getSession } from "next-auth/react";
 import { TransactionProps,RandomBalanceHistory,UserResponse, CreditCardProps,QuickTransferProps, TransactionResponse } from "@/types";
 
 
+
 export  async function getCreditCards(page: number, size: number) {
     try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
-    console.log("bbvvv",URL)
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/cards?page=${page}&size=${size}`, {
       method: "GET",
       headers: {
@@ -64,6 +64,7 @@ export async function addTransactions({
   try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
+    console.log("add transaction",accessToken);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/transactions`,
       {
@@ -111,7 +112,6 @@ export async function getCurrentUser() {
     const currentUser: UserResponse = await res.json();
     return currentUser.data;
   } catch (error) {
-    console.log(error);
     console.log("An error occurred:", error);
   }
 }
@@ -145,7 +145,7 @@ export async function getIncomes(page: number, size: number) {
   try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
-
+    console.log("get income",accessToken);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/transactions/incomes?page=${page}&size=${size}`,
       {
@@ -171,6 +171,7 @@ export default async function getRandomBalance() {
   try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
+    console.log("random balance",accessToken);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/transactions/random-balance-history?monthsBeforeFirstTransaction=7`,
       {
@@ -195,6 +196,7 @@ export async function getallTransactions(page: number, size: number) {
   try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
+    console.log("get all transactions",accessToken);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/transactions?page=${page}&size=${size}`,
       {

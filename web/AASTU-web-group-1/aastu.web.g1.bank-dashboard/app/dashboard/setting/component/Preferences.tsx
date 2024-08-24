@@ -1,8 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,11 +11,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { zodResolver } from "@hookform/resolvers/zod";
 import ky, { HTTPError } from "ky";
+import { getSession } from "next-auth/react";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { getSession } from "next-auth/react";
 import { Currency } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const Preferences = () => {
   const { toast } = useToast();

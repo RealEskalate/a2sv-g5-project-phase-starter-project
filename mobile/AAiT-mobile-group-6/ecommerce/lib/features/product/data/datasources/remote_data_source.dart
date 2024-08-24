@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+
 import '../../../../core/constants/constants.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../domain/entitity/product.dart';
 import '../model/product_model.dart';
-import 'package:http_parser/http_parser.dart';
 
 abstract class ProductRemoteDataSource {
   Future<Product> getProduct(String id);

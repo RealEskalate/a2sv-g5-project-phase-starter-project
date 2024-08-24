@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/common_widget/circular_indicator.dart';
+import '../../../../core/common_widget/snack_bar.dart';
 import '../../../product/presentation/widgets/text_field.dart';
+import '../../data/models/auth_model.dart';
+import '../bloc/auth_bloc.dart';
 
 class SignupPage extends StatefulWidget {
   SignupPage({super.key});
@@ -21,8 +26,44 @@ class _SignupPageState extends State<SignupPage> {
 
   bool _isChecked = false;
 
+void _signUp(BuildContext context) async {
+    final newUser = SignUPModel(
+        id: '',
+        name: nameController.text,
+        email: emailController.text,
+        password: passwordController.text);
+
+    context.read<AuthBloc>().add(SingUpEvent(signUpEntity: newUser));
+  }
+
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+        body: BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthSuccessState) {
+          final snack = snackBar('User created successfully');
+          ScaffoldMessenger.of(context).showSnackBar(snack);
+
+          Future.delayed(const Duration(seconds: 2), () {
+            Navigator.pushNamed(context, '/signin_page');
+          });
+        } else if (state is AuthErrorState) {
+          final snack = errorsnackBar('Sign up failed, try again');
+          ScaffoldMessenger.of(context).showSnackBar(snack);
+        }
+      },
+      builder: (context, state) {
+        if (state is AuthLoadingState) {
+          return const CircularIndicator();
+        } else {
+          return _buildForm(context);
+        }
+      },
+    ));
+  }
+
+  Widget _buildForm(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: SafeArea(
@@ -84,7 +125,8 @@ class _SignupPageState extends State<SignupPage> {
                 ),
               ),
               Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 42, vertical: 40),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 42, vertical: 40),
                   child: Column(
                     children: [
                       MyTextField(
@@ -129,7 +171,9 @@ class _SignupPageState extends State<SignupPage> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => {},
+                            onTap: () => {
+
+                            },
                             child: const Text('terms & policy.',
                                 style: TextStyle(
                                   color: Color.fromARGB(255, 38, 80, 232),
@@ -140,7 +184,9 @@ class _SignupPageState extends State<SignupPage> {
                     ],
                   )),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  _signUp(context);
+                },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(
                     const Color.fromARGB(255, 38, 80, 232),

@@ -256,6 +256,35 @@ import { useRouter } from 'next/navigation';
 import Refresh from '@/app/api/auth/[...nextauth]/token/RefreshToken'; 
 import WhiteCard from '../components/Page2/WhiteCard';
 
+type Data = {
+  access_token: string;
+  data: string;
+  refresh_token: string;
+};
+
+type SessionDataType = {
+  user: Data;
+};
+
+const formatDate = (date: string): string => {
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit' };
+  return new Date(date).toLocaleDateString('en-US', options);
+};
+
+// Type guard function to check if the response is PaginatedTransactionsResponse
+const isPaginatedTransactionsResponse = (
+  response: GetTransactionsResponse | PaginatedTransactionsResponse
+): response is PaginatedTransactionsResponse => {
+  return (response as PaginatedTransactionsResponse).data !== undefined;
+};
+
+// Type guard function to check if the response is GetTransactionsResponse
+const isGetTransactionsResponse = (
+  response: GetTransactionsResponse | PaginatedTransactionsResponse
+): response is GetTransactionsResponse => {
+  return (response as GetTransactionsResponse).transactions !== undefined;
+};
+
 const Page = () => {
   const [activeTab, setActiveTab] = useState('All Transactions');
   const [cards, setCards] = useState<CardType[]>([]);
@@ -265,10 +294,9 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [access_token, setAccess_token] = useState("");
-  
+
   const router = useRouter();
 
-  // Fetch session and refresh token only once when the component mounts
   useEffect(() => {
     const fetchSessionAndRefreshToken = async () => {
       setLoading(true);
@@ -284,8 +312,8 @@ const Page = () => {
       }
     };
 
-    fetchSessionAndRefreshToken(); // Call it only once when component mounts
-  }, [router]); // Empty dependency array with `router`
+    fetchSessionAndRefreshToken();
+  }, [router]);
 
   useEffect(() => {
     const loadCards = async () => {
@@ -324,7 +352,6 @@ const Page = () => {
   useEffect(() => {
     const loadTransactions = async () => {
       if (access_token) {
-        console.log("Fetching transactions with access token:", access_token);
         try {
           setLoading(true);
           let response: GetTransactionsResponse | PaginatedTransactionsResponse;
@@ -338,13 +365,12 @@ const Page = () => {
             default:
               response = await getTransactions(0, 100, access_token);
           }
+
           if (isPaginatedTransactionsResponse(response)) {
             setTransactions(response.data.content);
-            console.log("Transaction data:", response.data.content);
           } else if (isGetTransactionsResponse(response)) {
             const allTransactions = response.transactions.flatMap(transactionResponse => transactionResponse.data.content);
             setTransactions(allTransactions);
-            console.log("All transactions:", allTransactions);
           } else {
             console.error('Unknown response type:', response);
           }
@@ -658,9 +684,7 @@ export default Page;
 //                 </div>
 
 //                 <div className="flex overflow-x-auto space-x-6 [&::-webkit-scrollbar]:hidden gap-6 mt-4">
-//                   <WhiteCard />
-//                   <WhiteCard />
-//                   <WhiteCard />
+
 //                   {cards.slice(0, 2).map((item, index) => (  // Slicing to show only 2 cards
 //                     <div key={item.id} className="flex-shrink-0 w-72">
 //                       <Card

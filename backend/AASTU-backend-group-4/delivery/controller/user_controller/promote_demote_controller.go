@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (uc *userController) PromoteDemoteController(c *gin.Context) {
+func (uc *UserController) PromoteDemote(c *gin.Context) {
 	var request domain.PromoteDemoteRequest
 	var user_ domain.User
 

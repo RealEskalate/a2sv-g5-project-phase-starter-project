@@ -81,7 +81,7 @@ const Signup = () => {
     <div className="w-full h-screen flex justify-center">
       <div className="w-[90%]">
 
-        <h1 className="text-2xl font-poppins font-bold text-center text-[#25324B] py-10">
+        <h1 className="text-2xl font-poppins font-bold text-center text-[#4640DE] py-10">
           Sign Up Today!
         </h1>
   

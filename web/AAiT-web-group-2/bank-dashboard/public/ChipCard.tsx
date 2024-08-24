@@ -9,7 +9,7 @@ const ChipCard = ({color}: {color: string}) => {
         width="35"
         height="35"
         viewBox="0 0 35 35"
-        fill={color}
+        // class="fill-cyan-500"
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
       >

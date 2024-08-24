@@ -135,3 +135,20 @@ func (chatRepository *ChatRepository) GetChats(ctx context.Context, userID strin
 
 	return paginationReponse, nil
 }
+
+func (chatRepository *ChatRepository) UpdateChat(ctx context.Context, chatID string, updatedChat chat.Chat) (chat.Chat, error) {
+	collection := chatRepository.Database.Collection(collectionName)
+	filter := bson.M{"_id": chatID}
+
+	_, err := collection.UpdateOne(ctx, filter, bson.M{"$set": updatedChat})
+	
+	if err == mongo.ErrNoDocuments{
+		return chat.Chat{}, chat.ErrChatNotFound
+	}
+
+	if err != nil {
+		return chat.Chat{}, err
+	}
+
+	return updatedChat, nil
+}

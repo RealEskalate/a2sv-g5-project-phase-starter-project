@@ -19,8 +19,6 @@ export const AddCardModal = ({ isOpen, onClose }: Props) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
   const { isDarkMode } = useUser();
 
-  if (!isOpen) return null;
-
   const {
     register,
     handleSubmit,
@@ -28,6 +26,8 @@ export const AddCardModal = ({ isOpen, onClose }: Props) => {
   } = useForm<FormData>({
     resolver: zodResolver(cardSchema),
   });
+
+  if (!isOpen) return null;
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);

@@ -3,11 +3,13 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FiMenu } from "react-icons/fi";
+import { useSession } from "next-auth/react";
 
-const Navbar = ({ onMenuClick }: { onMenuClick: () => void }) => {
-  const path = usePathname();
-  // let title = path.split("/")[1]
-  // title = title[0].toUpperCase().concat(title)
+
+
+const Navbar = ({onMenuClick}: {onMenuClick: () => void}) => {
+  const path = usePathname()
+  const session = useSession()
 
   return (
     <div className="flex flex-col justify-center h-24 gap-2 px-3 ">
@@ -15,7 +17,14 @@ const Navbar = ({ onMenuClick }: { onMenuClick: () => void }) => {
         <div className="text-2xl sm:hidden ">
           <FiMenu onClick={onMenuClick} />
         </div>
+        { session.status === "unauthenticated" && 
+        <div className="flex gap-4 text-lg ">
+          <Link className='text-custom-purple font-semibold text-lg hover:text-blue-500' href='/auth/signup'>Signup</Link>
+          <Link className='text-custom-purple font-semibold text-lg hover:text-blue-500' href='/auth/login'>Signin</Link>
+        </div>
+        }
 
+        {session.status === "authenticated" && <>
         <div className="flex gap-[50px] items-center">
           <p className="text-wrap font-[600] text-[28px] text-[#343C6A]">
             {path.slice(1, 2).toUpperCase() + path.slice(2)}
@@ -48,8 +57,10 @@ const Navbar = ({ onMenuClick }: { onMenuClick: () => void }) => {
             <img src="/profile.png" alt="" />
           </Link>
         </div>
+        </>
+        }
       </div>
-      <div className="sm:hidden flex justify-center ">
+      {session.status === "authenticated" && <div className="sm:hidden flex justify-center ">
         <label className="sm:hidden w-2/3 flex items-center gap-3 h-[40px] bg-[#F5F7FA] rounded-3xl cursor-pointer px-5">
           <img src="/search.png" alt="" />
           <input
@@ -58,7 +69,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick: () => void }) => {
             placeholder="search for something"
           />
         </label>
-      </div>
+      </div>}
     </div>
   );
 };

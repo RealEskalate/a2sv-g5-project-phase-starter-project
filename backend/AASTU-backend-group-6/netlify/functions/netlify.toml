@@ -1,5 +1,6 @@
 [build]
-  publish = "public"
+  base    = "backend/AASTU-backend-group-6"
+  publish = "build"
   command = "go build cmd/main.go && ./main"
 
 [build.environment]

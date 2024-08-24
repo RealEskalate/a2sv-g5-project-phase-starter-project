@@ -4,10 +4,10 @@
   # Binary to run.
   bin = "main"
   # Watch these filename extensions.
-  include_ext = ["go", "tpl", "tmpl", "html"]
+  include_ext = ["go", "tpl", "tmpl", "html", "toml"]
   # Ignore these filename extensions or directories.
   exclude_dir = ["assets", "tmp", "vendor"]
   # Main package.
-  cmd = "go run main.go"
+  cmd = "go build cmd/main.go &&./main"
   # Working directory.
   work_dir = "."

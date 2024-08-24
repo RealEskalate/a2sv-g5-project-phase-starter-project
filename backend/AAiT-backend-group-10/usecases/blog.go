@@ -271,47 +271,84 @@ func (b *BlogUseCase) SuggestImprovements(content string) (*domain.SuggestionRes
 
 
 func (b *BlogUseCase) getLikeAndCommentCount(id uuid.UUID) (int, int, int, *domain.CustomError) {
-	//check if like count is in cache first then fetch from db
-	var likeCount int
-	likeCacheKey := "LikeCount:" + id.String()
-	likeCountCached, err := b.cacheRepo.Get(likeCacheKey)
-	if err == nil && likeCountCached != "" {
-		likeCount, _ = strconv.Atoi(likeCountCached)
-	} else {
-		likeCount, err = b.likeRepo.BlogLikeCount(id, true)
-		if err != nil {
-			return 0, 0, 0, err
-		}
-		_ = b.cacheRepo.Set(likeCacheKey, strconv.Itoa(likeCount), 10*time.Minute)
-	}
+    type result struct {
+        count int
+        err   *domain.CustomError
+    }
 
+    likeChan := make(chan result)
+    dislikeChan := make(chan result)
+    commentChan := make(chan result)
 
-	var dislikeCount int
-	dislikeCacheKey := "DislikeCount:" + id.String()
-	dislikeCountCached, err := b.cacheRepo.Get(dislikeCacheKey)
-	if err == nil && dislikeCountCached != "" {
-		dislikeCount, _ = strconv.Atoi(dislikeCountCached)
-	} else {
-		dislikeCount, err = b.likeRepo.BlogLikeCount(id, false)
-		if err != nil {
-			return 0, 0, 0, err
-		}
-		_ = b.cacheRepo.Set(dislikeCacheKey, strconv.Itoa(dislikeCount), 10*time.Minute)
-	}
+    // Goroutine to fetch like count
+    go func() {
+        var likeCount int
+        likeCacheKey := "LikeCount:" + id.String()
+        likeCountCached, err := b.cacheRepo.Get(likeCacheKey)
+        if err == nil && likeCountCached != "" {
+            likeCount, _ = strconv.Atoi(likeCountCached)
+        } else {
+            likeCount, err = b.likeRepo.BlogLikeCount(id, true)
+            if err != nil {
+                likeChan <- result{0, err}
+                return
+            }
+            _ = b.cacheRepo.Set(likeCacheKey, strconv.Itoa(likeCount), 10*time.Minute)
+        }
+        likeChan <- result{likeCount, nil}
+    }()
 
-	//check if comment count is in cache first then fetch from db
-	var commentCount int
-	commentCacheKey := "CommentCount:" + id.String()
-	commentCountCached, err := b.cacheRepo.Get(commentCacheKey)
-	if err == nil && commentCountCached != "" {
-		commentCount, _ = strconv.Atoi(commentCountCached)
-	} else {
-		commentCount, err = b.commentRepo.GetCommentsCount(id)
-		if err != nil {
-			return 0, 0, 0, err
-		}
-		_ = b.cacheRepo.Set(commentCacheKey, strconv.Itoa(commentCount), 10*time.Minute)
-	}
+    // Goroutine to fetch dislike count
+    go func() {
+        var dislikeCount int
+        dislikeCacheKey := "DislikeCount:" + id.String()
+        dislikeCountCached, err := b.cacheRepo.Get(dislikeCacheKey)
+        if err == nil && dislikeCountCached != "" {
+            dislikeCount, _ = strconv.Atoi(dislikeCountCached)
+        } else {
+            dislikeCount, err = b.likeRepo.BlogLikeCount(id, false)
+            if err != nil {
+                dislikeChan <- result{0, err}
+                return
+            }
+            _ = b.cacheRepo.Set(dislikeCacheKey, strconv.Itoa(dislikeCount), 10*time.Minute)
+        }
+        dislikeChan <- result{dislikeCount, nil}
+    }()
 
-	return likeCount,  dislikeCount, commentCount, nil
+    // Goroutine to fetch comment count
+    go func() {
+        var commentCount int
+        commentCacheKey := "CommentCount:" + id.String()
+        commentCountCached, err := b.cacheRepo.Get(commentCacheKey)
+        if err == nil && commentCountCached != "" {
+            commentCount, _ = strconv.Atoi(commentCountCached)
+        } else {
+            commentCount, err = b.commentRepo.GetCommentsCount(id)
+            if err != nil {
+                commentChan <- result{0, err}
+                return
+            }
+            _ = b.cacheRepo.Set(commentCacheKey, strconv.Itoa(commentCount), 10*time.Minute)
+        }
+        commentChan <- result{commentCount, nil}
+    }()
+
+    // Wait for results from all goroutines
+    likeResult := <-likeChan
+    dislikeResult := <-dislikeChan
+    commentResult := <-commentChan
+
+    // Check if any of the operations failed
+    if likeResult.err != nil {
+        return 0, 0, 0, likeResult.err
+    }
+    if dislikeResult.err != nil {
+        return 0, 0, 0, dislikeResult.err
+    }
+    if commentResult.err != nil {
+        return 0, 0, 0, commentResult.err
+    }
+
+    return likeResult.count, dislikeResult.count, commentResult.count, nil
 }

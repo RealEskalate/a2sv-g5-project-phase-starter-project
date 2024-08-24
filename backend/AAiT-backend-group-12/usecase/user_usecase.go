@@ -15,10 +15,10 @@ import (
 type UserUsecase struct {
 	userRepository  domain.UserRepositoryInterface
 	cacheRepository domain.CacheRepositoryInterface
-	GenerateToken   func(int) (string, error)
 	MailService     domain.MailServiceInterface
 	JWTService      domain.JWTServiceInterface
 	HashingService  domain.HashingServiceInterface
+	GenerateToken   func(int) (string, error)
 	VerifyIdToken   func(string, string, string) error
 	DeleteFile      func(string) error
 	ENV             domain.EnvironmentVariables
@@ -53,12 +53,33 @@ func NewUserUsecase(
 
 /* Validates password length constraints*/
 func (u *UserUsecase) ValidatePassword(password string) domain.CodedError {
+	// validate length
 	if len(password) < 8 {
 		return domain.NewError("Password too short", domain.ERR_BAD_REQUEST)
 	}
 
 	if len(password) > 71 {
 		return domain.NewError("Password too long", domain.ERR_BAD_REQUEST)
+	}
+
+	// validate lower case letter
+	if !strings.ContainsAny(password, "abcdefghijklmnopqrstuvwxyz") {
+		return domain.NewError("Password must contain a lower case letter", domain.ERR_BAD_REQUEST)
+	}
+
+	// validate upper case letter
+	if !strings.ContainsAny(password, "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
+		return domain.NewError("Password must contain an upper case letter", domain.ERR_BAD_REQUEST)
+	}
+
+	// validate number
+	if !strings.ContainsAny(password, "0123456789") {
+		return domain.NewError("Password must contain a number", domain.ERR_BAD_REQUEST)
+	}
+
+	// validate special character
+	if !strings.ContainsAny(password, "!@#$%^&*()_+-=[]{}|;:,.<>?/\\") {
+		return domain.NewError("Password must contain a special character", domain.ERR_BAD_REQUEST)
 	}
 
 	return nil
@@ -71,12 +92,12 @@ func (u *UserUsecase) ValidateUsername(username string) domain.CodedError {
 	}
 
 	if len(username) > 20 {
-		return domain.NewError("Username too short", domain.ERR_BAD_REQUEST)
+		return domain.NewError("Username too long", domain.ERR_BAD_REQUEST)
 	}
 
 	re := regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 	if !re.MatchString(username) {
-		return domain.NewError("Invalid username: must contain only letters, numbers and underscores", domain.ERR_BAD_REQUEST)
+		return domain.NewError("Invalid Username: must contain only letters, numbers and underscores", domain.ERR_BAD_REQUEST)
 	}
 
 	return nil
@@ -85,7 +106,7 @@ func (u *UserUsecase) ValidateUsername(username string) domain.CodedError {
 /* Validates email format */
 func (u *UserUsecase) ValidateEmail(email string) domain.CodedError {
 	if _, err := mail.ParseAddress(email); err != nil {
-		return domain.NewError("Invalid email", domain.ERR_BAD_REQUEST)
+		return domain.NewError("Invalid Email", domain.ERR_BAD_REQUEST)
 	}
 
 	return nil
@@ -93,10 +114,10 @@ func (u *UserUsecase) ValidateEmail(email string) domain.CodedError {
 
 /* Sanitizes user email, username, bio and phonenumber fields */
 func (u *UserUsecase) SantizeUserFields(user *domain.User) {
-	user.Email = strings.TrimSpace(strings.ToLower(user.Email))
-	user.Username = strings.TrimSpace(strings.ToLower(user.Username))
+	user.Email = strings.ReplaceAll(strings.TrimSpace(strings.ToLower(user.Email)), " ", "")
+	user.Username = strings.ReplaceAll(strings.TrimSpace(strings.ToLower(user.Username)), " ", "")
 	user.Bio = strings.TrimSpace(user.Bio)
-	user.PhoneNumber = strings.TrimSpace(user.PhoneNumber)
+	user.PhoneNumber = strings.ReplaceAll(strings.TrimSpace(user.PhoneNumber), " ", "")
 }
 
 /* Calls sanitization and validation functions and validates bio and phonenumber format */
@@ -124,14 +145,14 @@ func (u *UserUsecase) SanitizeAndValidateNewUser(user *domain.User) domain.Coded
 	}
 
 	if !PhoneRegex.MatchString(user.PhoneNumber) {
-		return domain.NewError("Invalid phone number: must be informat +XXXXXXXXXX", domain.ERR_BAD_REQUEST)
+		return domain.NewError("Invalid PhoneNumber: must be informat +XXXXXXXXXX", domain.ERR_BAD_REQUEST)
 	}
 
 	return nil
 }
 
 /* Generates a verification struct with the provided fields */
-func (u *UserUsecase) GetVerificationData(c context.Context, username string, verificationType string, expiresAt time.Time, tokenLength int) (domain.VerificationData, domain.CodedError) {
+func (u *UserUsecase) GetVerificationData(c context.Context, verificationType string, expiresAt time.Time, tokenLength int) (domain.VerificationData, domain.CodedError) {
 	var verificationData domain.VerificationData
 	generatedToken, gErr := u.GenerateToken(tokenLength)
 	if gErr != nil {
@@ -162,7 +183,7 @@ func (u *UserUsecase) Signup(c context.Context, user *domain.User, hostUrl strin
 		return domain.NewError("Internal server error", domain.ERR_INTERNAL_SERVER)
 	}
 
-	verificationData, err := u.GetVerificationData(c, user.Username, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2), 32)
+	verificationData, err := u.GetVerificationData(c, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2), 32)
 	if err != nil {
 		return err
 	}
@@ -285,12 +306,12 @@ func (u *UserUsecase) Login(c context.Context, user *domain.User) (string, strin
 	}
 
 	// sign the new access and refresh tokens
-	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN))
+	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(u.ENV.ACCESS_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", "", err
 	}
 
-	refreshToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(env.ENV.REFRESH_TOKEN_LIFESPAN))
+	refreshToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(u.ENV.REFRESH_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", "", err
 	}
@@ -335,12 +356,12 @@ func (u *UserUsecase) OAuthLogin(c context.Context, data *dtos.GoogleResponse) (
 	}
 
 	// signs the new access and refresh tokens
-	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN))
+	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(u.ENV.ACCESS_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", "", err
 	}
 
-	refreshToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(env.ENV.REFRESH_TOKEN_LIFESPAN))
+	refreshToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "refreshToken", time.Hour*time.Duration(u.ENV.REFRESH_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", "", err
 	}
@@ -416,7 +437,7 @@ func (u *UserUsecase) RenewAccessToken(c context.Context, refreshToken string) (
 		return "", domain.NewError(err.Error(), domain.ERR_UNAUTHORIZED)
 	}
 
-	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(env.ENV.ACCESS_TOKEN_LIFESPAN))
+	accessToken, err := u.JWTService.SignJWTWithPayload(foundUser.Username, foundUser.Role, "accessToken", time.Minute*time.Duration(u.ENV.ACCESS_TOKEN_LIFESPAN))
 	if err != nil {
 		return "", domain.NewError(err.Error(), domain.ERR_INTERNAL_SERVER)
 	}
@@ -481,7 +502,7 @@ func (u *UserUsecase) VerifyEmail(c context.Context, username string, token stri
 	}
 
 	if user.VerificationData.ExpiresAt.Before(time.Now().Round(0)) {
-		verificationData, err := u.GetVerificationData(c, username, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2), 32)
+		verificationData, err := u.GetVerificationData(c, domain.VerifyEmailType, time.Now().Round(0).Add(time.Hour*2), 32)
 		if err != nil {
 			return err
 		}
@@ -518,7 +539,7 @@ func (u *UserUsecase) InitResetPassword(c context.Context, username string, emai
 		return domain.NewError("User email not verified", domain.ERR_UNAUTHORIZED)
 	}
 
-	verificationData, err := u.GetVerificationData(c, username, domain.ResetPasswordType, time.Now().Round(0).Add(time.Minute*10), 12)
+	verificationData, err := u.GetVerificationData(c, domain.ResetPasswordType, time.Now().Round(0).Add(time.Minute*10), 12)
 	if err != nil {
 		return err
 	}
@@ -528,7 +549,7 @@ func (u *UserUsecase) InitResetPassword(c context.Context, username string, emai
 		return err
 	}
 
-	mail := u.MailService.PasswordResetTemplate(hostUrl, username, verificationData.Token)
+	mail := u.MailService.PasswordResetTemplate(verificationData.Token)
 	mailErr := u.MailService.SendMail("Blog API", foundUser.Email, mail)
 	if mailErr != nil {
 		return domain.NewError("Internal server error: "+mailErr.Error(), domain.ERR_INTERNAL_SERVER)

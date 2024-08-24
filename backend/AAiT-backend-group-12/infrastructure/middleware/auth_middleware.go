@@ -3,6 +3,7 @@ package middleware
 import (
 	"blog_api/domain"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -29,65 +30,65 @@ func AuthMiddlewareWithRoles(jwtService domain.JWTServiceInterface, cacheReposit
 		// obtain token from the request header
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			MiddlewareError(c, 401, "Authorization header not found")
+			MiddlewareError(c, http.StatusUnauthorized, "Authorization header not found")
 			return
 		}
 
 		headerSegments := strings.Split(authHeader, " ")
 		if len(headerSegments) != 2 || strings.ToLower(headerSegments[0]) != "bearer" {
-			MiddlewareError(c, 401, "Authorization header is invalid")
+			MiddlewareError(c, http.StatusUnauthorized, "Authorization header is invalid")
 			return
 		}
 
 		// check if the access token has been blacklisted
 		// an access token is blacklisted when the user logs out
 		if cacheRepository.IsCached(headerSegments[1]) {
-			MiddlewareError(c, 401, "User has been logged out")
+			MiddlewareError(c, 401, "User has already logged out")
 			return
 		}
 
 		// parses token with the correct signing method and checks for errors and token validity
 		token, validErr := jwtService.ValidateAndParseToken(headerSegments[1])
 		if validErr != nil {
-			MiddlewareError(c, 401, validErr.Error())
+			MiddlewareError(c, http.StatusUnauthorized, validErr.Error())
 			return
 		}
 
 		// check whether the token is an accessToken
 		tokenType, err := jwtService.GetTokenType(token)
 		if err != nil {
-			MiddlewareError(c, 401, err.Error())
+			MiddlewareError(c, http.StatusUnauthorized, err.Error())
 			return
 		}
 
 		if tokenType != "accessToken" {
-			MiddlewareError(c, 401, "Invalid token type: make sure to use the accessToken to authorize actions")
+			MiddlewareError(c, http.StatusUnauthorized, "Invalid token type: make sure to use the accessToken to authorize actions")
 			return
 		}
 
 		// check the expiry date of the token
 		expiresAtTime, err := jwtService.GetExpiryDate(token)
 		if err != nil {
-			MiddlewareError(c, 401, err.Error())
+			MiddlewareError(c, http.StatusUnauthorized, err.Error())
 			return
 		}
 
 		if expiresAtTime.Compare(time.Now()) == -1 {
-			MiddlewareError(c, 401, "Token expired")
+			MiddlewareError(c, http.StatusUnauthorized, "Token expired")
 			return
 		}
 
 		// get the role from the claims of the JWT
 		userRole, err := jwtService.GetRole(token)
 		if err != nil {
-			MiddlewareError(c, 401, err.Error())
+			MiddlewareError(c, http.StatusUnauthorized, err.Error())
 			return
 		}
 
 		// get the username from the claims of the JWT
 		username, err := jwtService.GetUsername(token)
 		if err != nil {
-			MiddlewareError(c, 401, err.Error())
+			MiddlewareError(c, http.StatusUnauthorized, err.Error())
 			return
 		}
 
@@ -100,7 +101,7 @@ func AuthMiddlewareWithRoles(jwtService domain.JWTServiceInterface, cacheReposit
 		}
 
 		if !valid {
-			MiddlewareError(c, 403, fmt.Sprintf("'%v' roles are not allowed to access this endpoint", userRole))
+			MiddlewareError(c, http.StatusForbidden, fmt.Sprintf("'%v' roles are not allowed to access this endpoint", userRole))
 			return
 		}
 

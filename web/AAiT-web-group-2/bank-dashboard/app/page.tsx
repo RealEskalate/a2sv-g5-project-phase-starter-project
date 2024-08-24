@@ -1,7 +1,12 @@
+import SidebarItem from "./components/Sidebar/SidebarItem";
+
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-background">
-      <h1>Bank dashboard</h1>
-    </main>
-  );
-}
+    <div className="min-h-screen  bg-background flex  justify-center ">
+
+      <h1 className="font-bold text-3xl mt-6  ">Bank dashboard</h1>
+
+    </div>
+
+)}

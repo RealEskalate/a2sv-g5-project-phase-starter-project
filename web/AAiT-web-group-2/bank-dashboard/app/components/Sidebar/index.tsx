@@ -1,12 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import SidebarItem from "./SidebarItem";
-import ClickOutside from "../ClickOutside";
-import useLocalStorage from "@/src/hooks/UseLocalStorage";
 import Home from "../../../public/iconI.png";
 import Transaction from "../../../public/iconII.png";
 import User from "../../../public/iconIII.png";
@@ -16,6 +14,7 @@ import LocalAtm from "../../../public/iconVI.png";
 import Services from "../../../public/iconVII.png";
 import Pereferences from "../../../public/iconVIII.png";
 import Settings from "../../../public/iconVIIII.png";
+import { PiSignOut } from "react-icons/pi";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -26,31 +25,32 @@ const menuGroups = [
   {
     name: "MENU",
     menuItems: [
-      { icon: Home.src, label: "Home", route: "#" },
+      { icon: Home.src, label: "Dashboard", route: "/dashboard" },
       { icon: Transaction.src, label: "Calendar", route: "/calendar" },
       { icon: User.src, label: "Profile", route: "/profile" },
-      { icon: Dollars.src, label: "Forms", route: "#" },
+      { icon: Dollars.src, label: "Forms", route: "/forms" },
       { icon: CreditCard.src, label: "Tables", route: "/tables" },
       { icon: LocalAtm.src, label: "Settings", route: "/settings" },
       { icon: Services.src, label: "UI Elements", route: "#" },
       { icon: Pereferences.src, label: "Authentication", route: "#" },
       { icon: Settings.src, label: "Settings", route: "#" },
+     
     ],
   },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const pathname = usePathname();
-  const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
+  // const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
+  const [pageName, setPageName] = useState("dashboard")
 
   return (
-    <ClickOutside onClick={() => setSidebarOpen(false)}>
       <aside
-        className={`fixed left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-white duration-300 ease-linear lg:translate-x-0 ${
+        className={`pt-6 border-r-2 border-[#E6EFF5]  left-0 min-w-52 md:w-64 sm:top-0 z-9999 flex h-full flex-col overflow-y-hidden bg-white duration-300 ease-linear  sm:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
+        <div className="flex  items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
           <Link href="/">
             <Image
               width={176}
@@ -63,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             aria-controls="sidebar"
-            className="block lg:hidden"
+            className="block sm:hidden"
           >
             <svg
               className="fill-current"
@@ -86,9 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           <nav className="mt-5 px-4 py-4 lg:mt-9 lg:px-6">
             {menuGroups.map((group, groupIndex) => (
               <div key={groupIndex}>
-                <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
-                  {group.name}
-                </h3>
+                
                 <ul className="mb-6 flex flex-col gap-1.5">
                   {group.menuItems.map((menuItem, menuIndex) => (
                     <SidebarItem
@@ -101,10 +99,15 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                 </ul>
               </div>
             ))}
+            <div className="flex items-center font-medium text-lg gap-2.5 px-4 text-gray-500">
+            <PiSignOut />
+            <Link href={"/api/auth/signout"}>Sign out</Link>
+            </div>
           </nav>
         </div>
       </aside>
-    </ClickOutside>
+      
+    
   );
 };
 

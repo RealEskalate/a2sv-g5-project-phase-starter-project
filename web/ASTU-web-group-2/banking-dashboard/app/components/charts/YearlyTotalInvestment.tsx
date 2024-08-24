@@ -3,6 +3,8 @@ import { useRef, useEffect } from "react";
 import { Chart, ChartData, ChartOptions } from "chart.js/auto";
 import { useGetInvestmentHistoryQuery } from "@/lib/service/TransactionService";
 import { useSession } from "next-auth/react";
+import LineChartSkeleton from "./LineChartSkeleton";
+import ErrorImage from "../Error/ErrorImage";
 
 interface CustomCanvasElement extends HTMLCanvasElement {
   chart?: Chart;
@@ -98,7 +100,14 @@ function YearlyTotalInvestment() {
       }
     }
   }, [data]);
-
+  if (isLoading){
+    return(
+      <LineChartSkeleton />
+    )
+  }
+  if (isError) {
+    return  <div className="text-gray-500 border rounded-[22px] bg-gray-200 p-5 w-full h-auto animate-pulse"><ErrorImage /></div>;
+  }
   return (
     <div className="text-gray-500 border rounded-[22px] bg-white p-5">
         <canvas ref={chartRef} />

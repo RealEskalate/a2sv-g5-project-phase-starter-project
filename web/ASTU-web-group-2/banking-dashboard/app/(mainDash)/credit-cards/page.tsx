@@ -19,6 +19,8 @@ import {
 } from "@/lib/service/CardService";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import ErrorImage from "@/app/components/Error/ErrorImage";
+import ComponentSkeleton from "@/app/components/card/ComponentSkeleton";
 
 const CreditCardsPage = () => {
   const { data: session, status } = useSession();
@@ -65,30 +67,8 @@ const CreditCardsPage = () => {
     }
   );
 
-  if (isLoadingAllCards || isLoadingCardInfo) {
-    return (
-      <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-full bg-white animate-pulse rounded-[25px]">
-        <div className="flex flex-row gap-2">
-          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
-          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-        </div>
-      </div>
-    );
-  }
 
-  if (isErrorAllCards || isErrorCardInfo) {
-    return (
-      <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-full bg-white animate-pulse rounded-[25px]">
-        <div className="flex flex-row gap-2">
-          <h1>Error While Loading the data!</h1>
-        </div>
-      </div>
-    );
-  }
-  
-  const allCardsData = allCardsDataWithContent.content!;
-  const leng = allCardsData.length;
+ 
   
   return (
     <div className="grid grid-cols-1 gap-2 pb-5">
@@ -98,8 +78,20 @@ const CreditCardsPage = () => {
           className="overflow-x-auto"
           link="/credit-cards"
           button=""
-        >
-          <CardDisplay numofcard={leng} />
+        >{(isLoadingAllCards || isLoadingCardInfo)?  (<ComponentSkeleton />) :
+
+          ( (isErrorAllCards || isErrorCardInfo) ? (
+            <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-full bg-white animate-pulse rounded-[25px]">
+            <ErrorImage />
+           </div>
+          ) : (
+            
+            <CardDisplay numofcard={allCardsDataWithContent.content!.length} />
+          )
+            
+          )
+        }
+          
         </CardForCreditCards>
       </div>
       <div className="grid lg:grid-cols-[4fr_6fr] max-md:grid-cols-1  gap-7 p-4">

@@ -13,6 +13,16 @@ import CardDisplay, {
   card,
 } from "@/app/components/cardDisplay/CardDisplay";
 
+import {
+  useGetAllCardInfoQuery,
+  useRetiriveCardInfoQuery,
+} from "@/lib/service/CardService";
+import { useSession } from "next-auth/react";
+import CardSkeleton from "@/app/components/creditCard/CardSkeleton";
+
+// import { useRouter } from "next/navigation";
+
+
 const AccountsPage = () => {
   return (
     <div className="grid grid-cols-1 gap-2 pb-5">
@@ -30,7 +40,9 @@ const AccountsPage = () => {
           link="/credit-cards"
           className="flex flex-col lg:h-[300px] w-[350px]"
         >
+
           <CardDisplay numofcard={1} />
+
         </CardForCreditCards>
       </div>
       <div className="grid lg:grid-cols-[3fr_2fr] max-md:grid-cols-1 gap-7 p-4 w-auto">

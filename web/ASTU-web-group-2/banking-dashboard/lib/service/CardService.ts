@@ -41,4 +41,5 @@ export const {
   useGetAllCardInfoQuery,
   useAddCreditCardMutation,
   useRetiriveCardInfoQuery,
+  useLazyRetiriveCardInfoQuery
 } = CreditCardInfoApi;

@@ -2,12 +2,12 @@ const CardSkeleton = () => {
     return (
       <div className="flex flex-col animate-pulse">
         <div className="w-[350px] h-[165px] bg-gray-300 rounded-t-[25px]">
-          <div className="pl-[26px] pt-[24px] flex gap-[202px]">
+          <div className="pl-[26px] pt-[24px] flex gap-[150px]">
             <div>
               <div className="bg-gray-400 h-[14.4px] w-[60px] mb-[10px] rounded"></div>
               <div className="bg-gray-400 h-[24px] w-[100px] rounded"></div>
             </div>
-            <div className="bg-gray-400 h-[34.77px] w-[34.77px] rounded-full"></div>
+            <div className="bg-gray-400 h-[34.77px] w-[50.77px] rounded-md mr-5"></div>
           </div>
           <div className="flex justify-between pt-[33px] pl-[24px] pr-[24px]">
             <div>

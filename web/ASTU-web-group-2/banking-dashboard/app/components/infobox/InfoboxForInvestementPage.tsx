@@ -5,6 +5,7 @@ import InfoboxCard from "./InfoboxCard";
 import { useRouter } from "next/navigation";
 import { useGetInvestmentHistoryQuery } from "@/lib/service/TransactionService";
 import { useSession } from "next-auth/react";
+import BalanceCardSkeleton from "./BalanceCardSkeleton";
 
 const InfoboxForInvestementPage = () => {
   const router = useRouter();
@@ -19,8 +20,12 @@ const InfoboxForInvestementPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="w-16 h-16 border-t-4 border-b-4 border-blue-500 rounded-full animate-spin"></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+      <BalanceCardSkeleton />
+      <BalanceCardSkeleton />
+      <BalanceCardSkeleton />
+      
+
       </div>
     );
   }
@@ -35,7 +40,7 @@ const InfoboxForInvestementPage = () => {
     `+${Math.round(rateOfReturn * 100) / 100}%`,
   ];
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols gap-4 p-4 w-auto">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
       {infoboxListItemsInvestement.map((item, index) => (
         <InfoboxCard
           key={index}

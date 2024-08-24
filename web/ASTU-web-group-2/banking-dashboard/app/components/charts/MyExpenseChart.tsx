@@ -3,6 +3,9 @@ import { useGetExpensesQuery } from "@/lib/service/TransactionService";
 import { useRef, useEffect } from "react";
 import { Chart } from "chart.js/auto";
 import { useSession } from "next-auth/react";
+import BarChartSkeleton from "./BarChartSkeleton";
+import BarSkeleton from "./BarSkeleton";
+import ErrorImage from "../Error/ErrorImage";
 
 export interface ChartRef extends HTMLCanvasElement {
   chart?: Chart;
@@ -151,21 +154,16 @@ function MyExpenseChart() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center flex-col flex-initial flex-wrap h-[225px] w-full bg-white animate-pulse rounded-[25px]">
-        <div className="flex flex-row gap-2">
-          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
-          <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-        </div>
-      </div>
+      <div className="animate-pulse flex flex-col flex-initial flex-wrap gap-[10px] bg-gray-300 font-medium rounded-[25px] h-[225px] pt-[45px] w-full justify-center items-center">
+  
+      <BarSkeleton  />
+    </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="flex justify-center items-center h-[225px] w-[350px] bg-white drop-shadow-xl font-medium rounded-[25px]">
-        <p>Failed to load data. Please try again later.</p>
-      </div>
+      <ErrorImage />
     );
   }
 

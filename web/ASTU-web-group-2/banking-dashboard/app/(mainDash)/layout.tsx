@@ -1,8 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
 import Head from "next/head";
-import Navbar from "../components/navbar/Navbar";
-import Sidebar from "../components/sidebar/Sidebar";
 import { Inter } from "next/font/google";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation"; // Correct import
@@ -12,6 +10,7 @@ import { RootState, AppDispatch } from "@/lib/store";
 import { setUser } from "@/lib/features/userSlice/userSlice";
 import { isTokenExpired } from "@/utils/authUtils";
 import { useRefreshAccessTokenMutation } from "@/lib/service/authentication";
+import LayoutForSidebarAndNavbar from "../components/layout/LayoutForSidebarAndNavbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -69,7 +68,7 @@ const Layout = ({
       // console.log("session", session, isTokenExpired(session.user.accessToken));
     // }
     if (status == "unauthenticated" && !session) {
-      router.push("/login");
+      router.push("/");
     }
   }, [session, router, refreshAccessToken]);
 
@@ -77,7 +76,7 @@ const Layout = ({
     if (userData?.data) {
       dispatch(setUser(userData.data));
     }
-  }, [userData, dispatch]);
+  }, [userData ]);
 
   return (
     <>
@@ -86,10 +85,9 @@ const Layout = ({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <div className={`${inter.className} flex flex-col min-h-screen`}>
-        <Navbar />
         <div className="flex flex-1">
-          <Sidebar />
-          <main className="max-md:pt-[100px] flex-1 p-4 mt-[60px] lg:ml-[240px] sm:ml-[240px] ml-0 bg-[#F5F7FA]">
+          <LayoutForSidebarAndNavbar/>
+          <main className="max-md:pt-[100px] flex-1 p-4 mt-[60px] lg:ml-[240px] md:ml-[240px] ml-0 bg-[#F5F7FA]">
             {children}
           </main>
         </div>

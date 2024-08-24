@@ -5,9 +5,9 @@ const extension = "/balance-history";
 const API_URL_expense =
   "https://bank-dashboard-rsf1.onrender.com/transactions/expenses";
 const API_URL_income =
-  "https://bank-dashboard-o9tl.onrender.com/transactions/incomes";
+  "https://bank-dashboard-rsf1.onrender.com/transactions/expenses";
 const API_URL_quick =
-  "https://bank-dashboard-o9tl.onrender.com/transactions/quick-transfers";
+  "https://bank-dashboard-rsf1.onrender.com/transactions/quick-transfers";
 interface TransactionType {
   transactionId: string;
   type: string;
@@ -72,22 +72,45 @@ class TransactionService {
       accessToken
     );
   }
+  public static getOneExpenseData(
+    accessToken?: string,
+    
+  ): Promise<TransactionType[]> {
+    return handleRequest(
+      "GET",
+      `${API_URL_expense}?page=0&size=1`,
+      undefined,
+      accessToken
+    );
+  }
   public static getExpenseData(
+    accessToken?: string,
+    total? : any
+  ): Promise<TransactionType[]> {
+    return handleRequest(
+      "GET",
+      `${API_URL_expense}?page=0&size=${total}`,
+      undefined,
+      accessToken
+    );
+  }
+  public static getOneIncomeData(
     accessToken?: string
   ): Promise<TransactionType[]> {
     return handleRequest(
       "GET",
-      `${API_URL_expense}?page=0&size=1000`,
+      `${API_URL_income}?page=0&size=1`,
       undefined,
       accessToken
     );
   }
   public static getIncomeData(
-    accessToken?: string
+    accessToken?: string,
+    total?:any
   ): Promise<TransactionType[]> {
     return handleRequest(
       "GET",
-      `${API_URL_income}?page=0&size=1000`,
+      `${API_URL_income}?page=0&size=${total}`,
       undefined,
       accessToken
     );

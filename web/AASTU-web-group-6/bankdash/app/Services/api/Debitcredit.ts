@@ -1,4 +1,4 @@
-import axios from "axios";
+
 interface TransactionType {
   transactionId: string;
   type: string;
@@ -45,70 +45,29 @@ function groupTransactionsByWeek(
   return grouped;
 }
 
-const DebitCredit = async (accessToken : string) => {
-  try {
-    const expense_count = await axios.get(
-      "https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=0&size=1",
-      {
-        headers: {
-          Authorization:
-          accessToken ? `Bearer ${accessToken}` : undefined,
-        },
-      }
-    );
-    const total_expense = expense_count.data.data.totalPages;
-    const expense = await axios.get(
-      `https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=0&size=${total_expense}`,
-      {
-        headers: {
-          Authorization:
-            accessToken ? `Bearer ${accessToken}` : undefined,
-        },
-      }
-    );
-    console.log(expense, "debit result");
-    const expense_transactions = expense.data.data.content.map(
-      (transaction: TransactionType) => ({
-        ...transaction,
-        type: "expense",
-      })
-    );
-    const income_count = await axios.get(
-      "https://bank-dashboard-rsf1.onrender.com/transactions/incomes?page=0&size=1",
-      {
-        headers: {
-          Authorization:
-            accessToken ? `Bearer ${accessToken}` : undefined,
-        },
-      }
-    );
-    const total_income = income_count.data.data.totalPages;
-    const income = await axios.get(
-      `https://bank-dashboard-rsf1.onrender.com/transactions/incomes?page=0&size=${total_income}`,
-      {
-        headers: {
-          Authorization:
-            accessToken ? `Bearer ${accessToken}` : undefined,
-        },
-      }
-    );
-    console.log(income, "income result");
-    const income_transactions = income.data.data.content.map(
+const DebitCredit =  (accessToken : string , income:any , expense:any) => {
+   
+    
+    const income_transactions = income.map(
       (transaction: TransactionType) => ({
         ...transaction,
         type: "income",
       })
     );
-
+    
+    const expense_transactions = expense.map(
+          (transaction: TransactionType) => ({
+            ...transaction,
+            type: "expense",
+          })
+        );
     const combinedTransactions = [
       ...expense_transactions,
       ...income_transactions,
     ];
     const ans = groupTransactionsByWeek(combinedTransactions);
     return ans;
-  } catch (error) {
-    console.log(error, "error");
-  }
+  
 };
 
 export default DebitCredit;

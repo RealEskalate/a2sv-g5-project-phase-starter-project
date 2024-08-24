@@ -24,11 +24,15 @@ const Center = () => {
   // Update initial card and tran data using the custom hook
   useCardDispatch(accessToken);
   useTranDispatch(accessToken);
+  const income = useAppSelector((state) => state.transactions.income )
+    console.log(income , "hell")
 
   const CardData: Card[] = useAppSelector((state) => state.cards.cards);
   const TranData: TransactionType[] = useAppSelector(
     (state) => state.transactions.transactions
+
   );
+  // console.log(TranData , "yyyyyyyyyyy")
   const cardColor = [false, true];
 
   return (

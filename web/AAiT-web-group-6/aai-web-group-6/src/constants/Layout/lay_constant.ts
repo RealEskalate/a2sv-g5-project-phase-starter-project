@@ -47,7 +47,7 @@ export const sidebarLinks = [
   },
   {
     title: "Setting",
-    route: "/dashboard/setting",
+    route: "/dashboard/settings",
     icon: Settingsicon,
   },
 ];

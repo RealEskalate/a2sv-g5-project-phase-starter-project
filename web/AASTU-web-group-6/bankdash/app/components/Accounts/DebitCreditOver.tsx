@@ -19,6 +19,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useAppSelector } from "@/app/Redux/store/store";
 const chartConfig = {
   debit: {
     label: "Debit",
@@ -64,11 +65,15 @@ export function DebitCreditOver() {
   );
   const [dateRange, setDateRange] = useState("");
   const {data:session} = useSession();
-  const accessToken = session?.accessToken as string;
+  const accessToken =  session?.accessToken as string;
+  console.log(accessToken , "accessTokenDebit")
+  const income = useAppSelector((state) => state.transactions.income )
+  const expense = useAppSelector((state) => state.transactions.expense )
   useEffect(() => {
     const fetchData = async () => {
+      // console.log(ac)
       try {
-        const ans: GroupedTransactions | undefined = await DebitCredit(accessToken);
+        const ans: GroupedTransactions | undefined = await DebitCredit(accessToken , income , expense);
         if (ans) {
           setTransactions(ans);
           processWeekData(ans, currentWeek);

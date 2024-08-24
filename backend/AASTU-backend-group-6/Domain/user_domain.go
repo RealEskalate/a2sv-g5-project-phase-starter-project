@@ -7,23 +7,24 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+
 type User struct {
 	ID                   primitive.ObjectID   `bson:"_id,omitempity" json:"id" `
-	Full_Name            string               `json:"full_name"`
-	Email                string               `json:"email" validate:"required,email"`
-	Username             string               `json:"username" validate:"required"`
-	Password             string               `json:"password" validate:"required"`
-	Profile_image_url    string               `json:"profile_image" `
-	GoogleID             string               `json:"googleId"`
-	PostsID              []primitive.ObjectID `json:"posts_id"`
-	Contact              string               `json:"contact"`
-	Bio                  string               `json:"bio"`
-	Role                 string               `json:"roles" validate:"required"`
-	CommentsID           []primitive.ObjectID `json:"comments_id"`
-	LikedPostsID         []primitive.ObjectID `json:"liked_posts_id"`
-	DisLikePostsID       []primitive.ObjectID `json:"disliked_posts_id"`
-	ResetPasswordToken   string               `json:"reset_password_token"`
-	ResetPasswordExpires time.Time            `json:"reset_password_expires"`
+	Full_Name            string               `bson:"full_name"  json:"full_name"`
+	Email string `bson:"email" validate:"required,email" json:"email"`
+    Username             string               `bson:"username" json:"username" validate:"required"`
+    Password             string               `bson:"password" json:"password" validate:"required"`
+    Profile_image_url    string               `bson:"profile_image" json:"profile_image"`
+    GoogleID             string               `bson:"googleId" json:"googleId"`
+    PostsID              []primitive.ObjectID `bson:"posts_id" json:"posts_id"`
+    Contact              string               `bson:"contact" json:"contact"`
+    Bio                  string               `bson:"bio" json:"bio"`
+    Role                 string               `bson:"role" json:"role" validate:"required"`
+    CommentsID           []primitive.ObjectID `bson:"comments_id" json:"comments_id"`
+    LikedPostsID         []primitive.ObjectID `bson:"liked_posts_id" json:"liked_posts_id"`
+    DisLikePostsID       []primitive.ObjectID `bson:"disliked_posts_id" json:"disliked_posts_id"`
+    ResetPasswordToken   string               `bson:"reset_password_token" json:"reset_password_token"`
+    ResetPasswordExpires time.Time            `bson:"reset_password_expires" json:"reset_password_expires"`
 }
 
 type UserRepository interface {

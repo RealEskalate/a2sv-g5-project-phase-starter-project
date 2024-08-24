@@ -5,8 +5,9 @@ const extension = "/balance-history";
 const API_URL_expense =
   "https://bank-dashboard-rsf1.onrender.com/transactions/expenses";
 const API_URL_income =
-  "https://bank-dashboard-rsf1.onrender.com/transactions/incomes";
-const API_URL_quick = "https://bank-dashboard-rsf1.onrender.com/transactions/quick-transfers"
+  "https://bank-dashboard-o9tl.onrender.com/transactions/incomes";
+const API_URL_quick =
+  "https://bank-dashboard-o9tl.onrender.com/transactions/quick-transfers";
 interface TransactionType {
   transactionId: string;
   type: string;
@@ -18,12 +19,12 @@ interface TransactionType {
 }
 
 interface quickType {
-  id: string,
-  name: string,
-  username: string,
-  city: string,
-  country: string,
-  profilePicture: string
+  id: string;
+  name: string;
+  username: string;
+  city: string;
+  country: string;
+  profilePicture: string;
 }
 
 const handleRequest = async (
@@ -42,7 +43,7 @@ const handleRequest = async (
         "Content-Type": "application/json",
       },
     });
-    return response.data.data
+    return response.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error("Axios error:", error.message);
@@ -91,9 +92,7 @@ class TransactionService {
       accessToken
     );
   }
-  public static getQuickTransfer(
-    accessToken?: string
-  ): Promise<quickType[]> {
+  public static getQuickTransfer(accessToken?: string): Promise<quickType[]> {
     return handleRequest(
       "GET",
       `${API_URL_quick}?number=4`,

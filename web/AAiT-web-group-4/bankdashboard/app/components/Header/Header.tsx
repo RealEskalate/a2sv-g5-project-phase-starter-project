@@ -4,7 +4,7 @@ import Messi from "@/assets/Header/MESSI.jpg";
 
 const Header = () => {
   return (
-    <div className="min-h-[101px] items-center h-auto w-full ">
+    <div className="min-h-[101px] items-center h-auto w-full sticky top-0 bg-white z-10">
       <div className="flex flex-wrap items-center max-mobile:justify-end mobile:justify-between  w-auto   py-5 tablet:px-9 ">
         <h1 className="desktop:text-[28px] mobile:text-xl tablet:text-2xl text-Dark-Slate-Blue leading-[34px]">
           Overview

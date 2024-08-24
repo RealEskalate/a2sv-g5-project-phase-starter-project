@@ -22,7 +22,7 @@ class ProductRemoteDatasourceImp implements ProductRemoteDatasource {
   final AuthLocalDataSource localDataSource;
   final http.Client client;
   final String baseUrl =
-      'https://g5-flutter-learning-path-be.onrender.com/api/v2/products';
+      'https://g5-flutter-learning-path-be.onrender.com/api/v3/products';
 
   ProductRemoteDatasourceImp(
       {required this.localDataSource, required this.client});

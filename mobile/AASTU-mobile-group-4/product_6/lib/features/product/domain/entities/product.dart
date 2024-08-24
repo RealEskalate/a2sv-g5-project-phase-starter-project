@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../auth/domain/entity/auth_entity.dart';
 
 class Product extends Equatable {
   final String id;
@@ -6,6 +7,8 @@ class Product extends Equatable {
   final String description;
   final String imageUrl;
   final double price;
+  final UserEntity seller;
+
 
   const Product({
     required this.id,
@@ -13,6 +16,9 @@ class Product extends Equatable {
     required this.description,
     required this.imageUrl,
     required this.price,
+    required this.seller,
+
+
   });
 
 // for bloc state management
@@ -22,13 +28,16 @@ class Product extends Equatable {
     String? description,
     String? imageUrl,
     double? price,
+    UserEntity? seller,
   }) {
     return Product(
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
       imageUrl: imageUrl ?? this.imageUrl,
-      price: price ?? this.price,
+      price: price ?? this.price, 
+      seller: seller ?? this.seller,
+      
     );
   }
 
@@ -40,6 +49,7 @@ class Product extends Equatable {
       description: json['description'],
       imageUrl: json['imageUrl'],
       price: json['price'].toDouble(),
+      seller:json['seller'],
     );
   }
 

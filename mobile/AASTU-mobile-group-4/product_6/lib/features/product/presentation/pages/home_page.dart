@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../../auth/domain/entity/auth_entity.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
@@ -168,24 +169,35 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: const Color.fromRGBO(63, 81, 243, 1),
-        shape: const CircleBorder(),
-        child: IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddPage(),
-                ),
-              );
-            },
-            icon: const Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 30,
-            )),
+      floatingActionButton: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          return FloatingActionButton(
+            onPressed: () {},
+            backgroundColor: const Color.fromRGBO(63, 81, 243, 1),
+            shape: const CircleBorder(),
+            child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      
+                      builder: (context) => AddPage(user: state is UserProfileLoaded ? state.user : UserEntity(
+                          id: '',
+                          name: 'user',
+                          email: 'user@gmail.com',
+
+                        
+                      )),
+                    ),
+                  );
+                },
+                icon: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 30,
+                )),
+          );
+        },
       ),
     );
   }

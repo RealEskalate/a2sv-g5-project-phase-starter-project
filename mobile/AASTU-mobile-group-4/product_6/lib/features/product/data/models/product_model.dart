@@ -7,6 +7,7 @@ class ProductModel extends Product {
     required super.description,
     required super.imageUrl,
     required super.price,
+    required super.seller,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -16,6 +17,7 @@ class ProductModel extends Product {
       description: json['description'],
       imageUrl: json['imageUrl'],
       price: json['price'].toDouble(),
+      seller: json['seller'],
     );
   }
   @override
@@ -34,7 +36,7 @@ class ProductModel extends Product {
       name: name,
       description: description,
       imageUrl: imageUrl,
-      price: price);
+      price: price, seller: seller);
   static List<Product> listToEntity(List<ProductModel> models) {
     return models.map((model) => model.toEntity()).toList();
   }

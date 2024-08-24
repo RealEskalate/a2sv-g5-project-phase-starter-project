@@ -14,7 +14,7 @@ abstract class AuthRemoteDataSource {
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final http.Client client;
-  final String url = 'https://g5-flutter-learning-path-be.onrender.com/api/v2';
+  final String url = 'https://g5-flutter-learning-path-be.onrender.com/api/v3';
 
   AuthRemoteDataSourceImpl({required this.client});
 

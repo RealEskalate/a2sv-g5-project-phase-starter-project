@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../auth/domain/entity/auth_entity.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
@@ -81,13 +82,24 @@ class _SideBarState extends State<SideBar> {
               Navigator.pop(context);
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.add_circle_rounded),
-            title: const Text('Add Product'),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return AddPage();
-              }));
+          BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              return ListTile(
+                leading: const Icon(Icons.add_circle_rounded),
+                title: const Text('Add Product'),
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return AddPage(
+                        user: state is UserProfileLoaded
+                            ? state.user
+                            : UserEntity(
+                                id: '',
+                                name: 'user',
+                                email: 'user@gmail.com',
+                              ));
+                  }));
+                },
+              );
             },
           ),
           ListTile(

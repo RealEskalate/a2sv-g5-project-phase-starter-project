@@ -33,6 +33,7 @@ class ProductRepositoryImp extends ProductRepository {
           description: product.description,
           imageUrl: product.imageUrl,
           price: product.price,
+          seller: product.seller,
         );
         final result =
             await productRemoteDatasource.createProduct(productModel);
@@ -125,6 +126,7 @@ class ProductRepositoryImp extends ProductRepository {
           description: product.description,
           imageUrl: product.imageUrl,
           price: product.price,
+          seller: product.seller,
         );
         final result =
             await productRemoteDatasource.updateProduct(productModel);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../auth/domain/entity/auth_entity.dart';
 import '../../domain/entities/product.dart';
 import '../bloc/product_bloc.dart';
 import '../bloc/product_event.dart';
@@ -19,8 +20,9 @@ class AddPage extends StatelessWidget {
 
   final ImagePicker _picker = ImagePicker();
   File? _image;
+  final UserEntity user;
 
-  AddPage({super.key});
+  AddPage({super.key , required this.user});
 
   Future<void> _pickImage(BuildContext context) async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -215,7 +217,9 @@ class AddPage extends StatelessWidget {
                               name: _nameController.text,
                               description: _descriptionController.text,
                               price: double.parse(_priceController.text),
-                              imageUrl: _image != null ? _image!.path : '',
+                              imageUrl: _image != null ? _image!.path : '', 
+                              seller: user,
+
                             );
 
                             context

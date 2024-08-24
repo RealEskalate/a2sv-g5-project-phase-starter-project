@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"strconv"
@@ -210,7 +211,7 @@ func (pc *ProfileController) UploadProfilePicture(cloudinary *cloudinary.Cloudin
 		}
 
 		imageUrl, err := assetutil.UploadToCloudinary(file.(multipart.File), filename.(string), cloudinary)
-
+		log.Println(imageUrl, userID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

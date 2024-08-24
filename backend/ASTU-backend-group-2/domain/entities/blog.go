@@ -57,7 +57,7 @@ type BlogFilter struct {
 type BlogRepository interface {
 	GetByTags(c context.Context, tags []string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	GetAllBlogs(c context.Context, filter bson.M, blogFilter BlogFilter) ([]Blog, mongopagination.PaginationData, error)
-	GetBlogByID(c context.Context, blogID string) (Blog, error)
+	GetBlogByID(c context.Context, blogID string, view bool) (Blog, error)
 	GetByPopularity(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	CreateBlog(c context.Context, newBlog *Blog) (Blog, error)
 	BatchCreateBlog(c context.Context, newBlogs *[]Blog) error

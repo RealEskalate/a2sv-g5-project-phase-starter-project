@@ -47,7 +47,6 @@ type BlogFilters struct {
 	Tags     []string  `json:"tags,omitempty" bson:"tags,omitempty"`
 }
 
-
 type BlogFilterOption struct {
 	Filter     BlogFilters    `json:"filter,omitempty" `
 	Pagination PaginationInfo `json:"pagination,omitempty"`
@@ -60,7 +59,7 @@ type BlogRepository interface {
 	DeleteBlog(blogId, authorId string) error
 	FindPopularBlog() ([]Blog, error)
 	GetBlogById(blogid string) (Blog, error)
-	LikeOrDislikeBlog(blogId, userId string, like int) error
+	LikeOrDislikeBlog(blogId, userId string, like int) (string, error)
 
 	// TODO: To like or dislike something you have to view it
 

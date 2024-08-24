@@ -58,7 +58,7 @@ func (uc *BlogUsecase) UpdateBLog(blogId string, updateBlog domain.Blog) (domain
 	}
 	return blog, nil
 }
-func (uc *BlogUsecase) DeleteBLog(blogId ,authorId string) error {
+func (uc *BlogUsecase) DeleteBLog(blogId, authorId string) error {
 	err := uc.blogRepository.DeleteBlog(blogId, authorId)
 	if err != nil {
 		return err
@@ -66,26 +66,26 @@ func (uc *BlogUsecase) DeleteBLog(blogId ,authorId string) error {
 	return nil
 }
 
-func (uc *BlogUsecase) LikeBlog(blogId, userId string) error {
-	err := uc.blogRepository.LikeOrDislikeBlog(blogId, userId, 1)
+func (uc *BlogUsecase) LikeBlog(blogId, userId string) (string, error) {
+	message, err := uc.blogRepository.LikeOrDislikeBlog(blogId, userId, 1)
 	if err != nil {
-		return err
+		return message, err
 	}
-	return nil
+	return message, nil
 }
-func (uc *BlogUsecase) DislikeBlog(blogId, userId string) error {
-	err := uc.blogRepository.LikeOrDislikeBlog(blogId, userId, -1)
+func (uc *BlogUsecase) DislikeBlog(blogId, userId string) (string, error) {
+	message, err := uc.blogRepository.LikeOrDislikeBlog(blogId, userId, -1)
 	if err != nil {
-		return err
+		return message, err
 	}
-	return nil
+	return message, err
 }
-func (uc *BlogUsecase) ViewBlogs(blogId, userId string) error {
-	err := uc.blogRepository.LikeOrDislikeBlog(blogId, userId, 0)
+func (uc *BlogUsecase) ViewBlogs(blogId, userId string) (string, error) {
+	message, err := uc.blogRepository.LikeOrDislikeBlog(blogId, userId, 0)
 	if err != nil {
-		return err
+		return message, err
 	}
-	return nil
+	return message, err
 }
 
 func (uc *BlogUsecase) AddComment(blogId string, comment domain.Comment) error {

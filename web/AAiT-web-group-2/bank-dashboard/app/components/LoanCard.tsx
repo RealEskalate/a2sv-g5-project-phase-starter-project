@@ -17,34 +17,73 @@ const LoanCard: React.FC<LoanCardProps> = ({
   return (
     <Card
       className="shadow-lg p-4"
-      style={{ margin: "10px", width: "auto", borderRadius: "20px" }}
+      style={{
+        margin: "5px",
+        width: "220px",
+        height: "115px",
+        borderRadius: "30px",
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+      }}
     >
-      <CardContent style={{ display: "flex", alignItems: "center" }}>
+      <CardContent
+        style={{
+          display: "flex",
+          alignItems: "center",
+          padding: "0 8px",
+          height: "100%",
+          width: "100%",
+        }}
+      >
         <Box
           component="div"
           style={{
-            width: "50px",
-            height: "50px",
+            width: "55px",
+            height: "55px",
             backgroundImage: `url(${background})`,
-            backgroundSize: "cover",
+            backgroundSize: "contain",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            marginRight: "10px",
+            marginRight: "8px",
+            borderRadius: "50%",
           }}
         >
-          {icon}
+          <div
+            style={{
+              width: "45px",
+              height: "45px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {icon}
+          </div>
         </Box>
-        <div>
+        <div style={{ overflow: "hidden", width: "calc(100% - 60px)" }}>
           <Typography
             variant="subtitle2"
-            style={{ color: "gray", fontSize: "1.2rem" }}
+            style={{
+              color: "gray",
+              fontSize: "0.8rem",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
           >
             {title}
           </Typography>
           <Typography
             variant="subtitle1"
-            style={{ fontWeight: "bold", fontSize: "1.5rem" }}
+            style={{
+              fontWeight: "bold",
+              fontSize: "0.9rem",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
           >
             {subtitle}
           </Typography>

@@ -12,7 +12,6 @@ import (
 )
 
 func NewSignupRoute(config *infrastructure.Config, DB mongo.Database, SignupRoute *gin.RouterGroup) {
-
 	repo := repositories.NewSignupRepository(DB, config.UserCollection)
 	passwordService := infrastructure.NewPasswordService()
 	unverRepo := repositories.NewUnverifiedUserRepository(DB, config.UnverifiedUserCollection)

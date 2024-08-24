@@ -7,6 +7,7 @@ import (
 	"blogs/mongo"
 	"context"
 	"errors"
+	"fmt"
 	"math"
 	"strings"
 	"time"
@@ -46,7 +47,7 @@ func (b BlogRepository) ReactOnBlog(user_id string, reactionType bool, blog_id s
 		}
 	}
 	post, err := b.GetBlogByID(blog_id, true)
-	if err != nil || !post.Deleted {
+	if err != nil || post.Deleted {
 		return domain.ErrorResponse{
 			Message: "blog not found",
 			Status:  404,
@@ -234,7 +235,7 @@ func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, creator_id 
 	}
 
 	update := bson.M{
-		"$push": bson.M{"posts": blog},
+		"$push": bson.M{"postsid": blog.ID},
 	}
 
 	_, err = b.UserCollection.UpdateOne(context, filter, update)
@@ -358,23 +359,32 @@ func (b BlogRepository) GetBlogByID(blog_id string, isCalled bool) (domain.Blog,
 	if err != nil {
 		return domain.Blog{}, err
 	}
-	var blog domain.Blog
-	if err := b.PostCollection.FindOne(context.TODO(), primitive.D{{Key: "_id", Value: blog_object_id}}).Decode(&blog); err != nil {
+	pipeline := utils.GetBlogByIdPipeline(blog_object_id)
+	cursor, err := b.PostCollection.Aggregate(context.TODO(), pipeline)
+	if err != nil {
 		return domain.Blog{}, err
-	} else {
-		if !isCalled {
-			_ = b.UpdatePopularity(blog_id, "view")
-			_ = b.IncrementViewCount(blog_id)
-		}
-		return blog, nil
 	}
+	var newblog domain.Blog
+	if cursor.Next(context.TODO()) {
+		if err := cursor.Decode(&newblog); err != nil {
+			return domain.Blog{}, err
+		}
+	}
+	if newblog.Deleted {
+		return domain.Blog{}, errors.New("blog not found")
+	}
+	if !isCalled {
+		_ = b.UpdatePopularity(blog_id, "view")
+		_ = b.IncrementViewCount(blog_id)
+	}
+	return newblog, nil
 }
 
 // GetBlogs implements domain.BlogRepository.
 func (b BlogRepository) GetBlogs(pageNo int64, pageSize int64, popularity string) ([]domain.Blog, domain.Pagination, error) {
 	pagination := utils.PaginationByPage(pageNo, pageSize, popularity)
 
-	totalResults, err := b.PostCollection.CountDocuments(context.TODO(), bson.E{Key: "deleted", Value: false})
+	totalResults, err := b.PostCollection.CountDocuments(context.TODO(), bson.M{"deleted" : false})
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
@@ -382,7 +392,7 @@ func (b BlogRepository) GetBlogs(pageNo int64, pageSize int64, popularity string
 	// Calculate total pages
 	totalPages := int64(math.Ceil(float64(totalResults) / float64(pageSize)))
 
-	cursor, err := b.PostCollection.Find(context.TODO(), bson.E{Key: "deleted", Value: false}, pagination)
+	cursor, err := b.PostCollection.Find(context.TODO(), bson.M{"deleted" : false}, pagination)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
@@ -416,7 +426,7 @@ func (b BlogRepository) GetMyBlogByID(user_id string, blog_id string) (domain.Bl
 	if err != nil {
 		return domain.Blog{}, err
 	}
-
+	
 	filter := utils.FilterByTaskAndUserID(user_object_id, blog_object_id)
 
 	var myBlog domain.Blog
@@ -438,6 +448,7 @@ func (b BlogRepository) GetMyBlogs(user_id string, pageNo int64, pageSize int64,
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
 	pagination := utils.PaginationByPage(pageNo, pageSize, popularity)
+	fmt.Println(user_object_id)
 	totalResults, err := b.PostCollection.CountDocuments(context.TODO(), utils.FilterTaskByUserID(user_object_id))
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
@@ -446,7 +457,7 @@ func (b BlogRepository) GetMyBlogs(user_id string, pageNo int64, pageSize int64,
 	// Calculate total pages
 	totalPages := int64(math.Ceil(float64(totalResults) / float64(pageSize)))
 
-	cursor, err := b.PostCollection.Find(context.TODO(), primitive.D{{}}, pagination)
+	cursor, err := b.PostCollection.Find(context.TODO(), utils.FilterTaskByUserID(user_object_id), pagination)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	}

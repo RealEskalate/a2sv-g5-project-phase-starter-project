@@ -155,13 +155,18 @@ const SidebarItem = ({
 	enabledIcon: string;
 	label: string;
 }) => (
-	<div className="flex gap-[23px]" onClick={onClick}>
+	<div
+		className={`flex gap-[23px] items-center p-2 pr-4 rounded-md cursor-pointer ${
+			isEnabled ? "text-blue-500" : "hover:bg-gray-200 dark:hover:bg-gray-700"
+		}`}
+		onClick={onClick}
+	>
 		<Image
 			src={isEnabled ? enabledIcon : icon}
 			alt={`${label} Icon`}
-			className="h-[25px] w-[25px]"
+			className={`h-[25px] w-[25px] ${isEnabled ? "text-blue-500" : ""}`}
 		/>
-		<div>{label}</div>
+		<div className={`${isEnabled ? "text-blue-500" : ""}`}>{label}</div>
 	</div>
 );
 

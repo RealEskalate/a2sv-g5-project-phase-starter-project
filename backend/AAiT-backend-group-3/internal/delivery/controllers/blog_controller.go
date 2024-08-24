@@ -38,12 +38,14 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	claims, _ := c.Get("claims")
-	authorID := claims.(map[string]interface{})["id"].(string)
-
-	blog, err := bc.blog_usecase.CreateBlog(&req, authorID)
+	userId, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userId not found"})
+		return
+	}
+	blog, err := bc.blog_usecase.CreateBlog(&req, userId.(string))
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to create blog"})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -67,9 +69,11 @@ func (bc *BlogController) GetBlogs(c *gin.Context) {
 	search := c.Query("search")
 	page, err1 := strconv.Atoi(c.Query("page"))
 	limit, err2 := strconv.Atoi(c.Query("limit"))
-	if err1 != nil || err2 != nil {
-		c.JSON(400, gin.H{"error": "Invalid limit or page number"})
-		return
+	if err1 != nil {
+		page = 1
+	}
+	if err2 != nil {
+		limit = 10
 	}
 
 	filterMap := make(map[string]interface{})
@@ -102,7 +106,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
         return
     }
 
-    userID := c.GetString("userID")
+    userID := c.GetString("userId")
     if existingBlog.AuthorID.Hex() != userID {
         c.JSON(http.StatusForbidden, gin.H{"error": "You can only update your own blog"})
         return
@@ -110,7 +114,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 
     err = bc.blog_usecase.UpdateBlog(blogID, &req)
     if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to edit blog"})
+        c.JSON(http.StatusInternalServerError, err.Error())
         return
     }
 

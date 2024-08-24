@@ -17,6 +17,7 @@ import Cookies from "js-cookie";
 import { getAllCards } from "@/services/cardfetch";
 import Image from "next/image";
 import MyCardsLoad from "@/components/loadingComponents/MyCardsLoad";
+import { TbFileSad } from "react-icons/tb";
 
 const Page = () => {
   const [cards, setCards] = useState<any[]>([]);
@@ -50,7 +51,9 @@ const Page = () => {
   }, []);
 
   return (
-    <div className={`${colors.graybg} p-6 md:ml-64 md:max-w-full md:px-12  dark:bg-dark text-gray-900 dark:text-white`}>
+    <div
+      className={`${colors.graybg} p-6 md:ml-64 md:max-w-full md:px-12  dark:bg-dark text-gray-900 dark:text-white`}
+    >
       <div className="flex flex-col justify-between md:flex-row  gap-10 ">
         <div className=" py-4 md:w-3/5 md:max-w-full">
           <div className={`${colors.navbartext} flex justify-between `}>
@@ -64,7 +67,7 @@ const Page = () => {
           <div className="max-w-[345px] md:max-w-full">
             <div className="flex gap-3 overflow-x-auto md:w-auto">
               {loading ? (
-                <MyCardsLoad count={2}/>
+                <MyCardsLoad count={2} />
               ) : Array.isArray(cards) && cards.length > 0 ? (
                 cards.map((card: any, index: number) => (
                   <div key={index} className="p-1 flex gap-1">
@@ -80,20 +83,15 @@ const Page = () => {
                   </div>
                 ))
               ) : token ? (
-                <div className="w-screen bg-white py-16 rounded-xl flex flex-col justify-center dark:bg-dark dark:border-[1px] dark:border-gray-700">
-                  <Image
-                    src="/icons/null.png"
-                    width={80}
-                    height={80}
-                    alt="null"
-                    className="mx-auto pb-2 block"
+                <div className="flex flex-col items-center justify-center h-full text-red-500">
+                  <TbFileSad
+                    className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
+                    strokeWidth={1}
                   />
-                  <span className="mx-auto my-auto md:text-xl text-sm text-[#993d4b] font-bold mb-5">
-                    {error ? error : "There are no cards for now!"}
-                  </span>
-                </div>
+                  <div>Error fetching the recent transactions</div>
+                 </div>
               ) : (
-                <MyCardsLoad count={2}/>
+                <MyCardsLoad count={2} />
               )}
             </div>
           </div>

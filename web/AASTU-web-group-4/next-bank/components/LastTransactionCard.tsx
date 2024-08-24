@@ -50,7 +50,8 @@ const App: React.FC = () => {
     return (
       <div className="p-3 gap-4  flex flex-col justify-center items-center h-auto  dark:bg-dark   text-center ">
         <TbFileSad
-          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+          className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
+          strokeWidth={1}
         />
         <p className="text-red-500" >Failed to fetch</p>
       </div>

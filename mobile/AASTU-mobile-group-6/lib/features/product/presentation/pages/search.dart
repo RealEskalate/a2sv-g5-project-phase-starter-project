@@ -9,6 +9,7 @@ import 'package:ecommerce_app_ca_tdd/locator.dart';
 import "package:flutter/material.dart";
 import 'package:ecommerce_app_ca_tdd/extra/overflow_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:ecommerce_app_ca_tdd/extra/search_func.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/home.dart';
@@ -27,6 +28,8 @@ class searchPage extends StatefulWidget {
 }
 
 class _searchPageState extends State<searchPage> {
+  TextEditingController search_term = TextEditingController();
+  
   Future<void> _refresh() {
     context.read<SearchBloc>().add(LoadAllProductEvent());
 
@@ -53,8 +56,10 @@ class _searchPageState extends State<searchPage> {
                   color: Color.fromARGB(255, 63, 81, 243),
                   size: 20,
                 )),
-            const Center(
-              child: Text("Search  Product"),
+             Center(
+              child: Text("Search  Product",
+              style: GoogleFonts.poppins(),
+              ),
             ),
             const SizedBox(
               height: 60,
@@ -64,7 +69,6 @@ class _searchPageState extends State<searchPage> {
         ),
       ),
 
-      // Body Starts Here
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.only(left: 32, right: 24),
@@ -73,30 +77,33 @@ class _searchPageState extends State<searchPage> {
               Row(
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(
-                      onTap: () {
-                        SearchFunc();
-                      },
-                      child: SizedBox(
-                        width: 300,
-                        height: 48,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Color.fromRGBO(217, 217, 217, 1)),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8))),
-                          child: const Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                suffixIcon: Icon(Icons.arrow_forward),
-                                border: InputBorder.none,
-                                hintText: "  Leather",
-                              ),
-                            ),
+                  SizedBox(
+                    width: 300,
+                    height: 48,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Color.fromRGBO(217, 217, 217, 1)),
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(8))),
+                      child:  Expanded(
+                        child: TextField(
+                          controller: search_term,
+                          decoration: InputDecoration(
+                            suffixIcon: IconButton(onPressed: (){
+                              final search = search_term.text;
+                              context.read<SearchBloc>().add(SearchProductEvent(search));
+                            }, icon: Icon(Icons.arrow_forward_ios)),
+                            border: InputBorder.none,
+                            hintText: "  Leather",
+                            hintStyle: TextStyle(
+                              color: Colors.grey.shade400
+                            )
                           ),
                         ),
-                      )),
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     width: 7,
                   ),
@@ -132,48 +139,47 @@ class _searchPageState extends State<searchPage> {
                 ],
               ),
               SizedBox(height: 31),
-              BlocProvider(
-                create: (context) => sl.get<SearchBloc>(),
-                child: BlocBuilder<SearchBloc, SearchState>(
-                  builder: (context, state) {
-                    if (state is LoadingState) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (state is FailedState) {
-                      return SnackBar(
-                        content: Text(state.message),
-                      );
-                    } else if (state is LoadedState) {
-                      return Expanded(
-                        child: SizedBox(
-                          child: SingleChildScrollView(
-                            child: SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.8,
-                              child: RefreshIndicator(
-                                onRefresh: _refresh,
-                                child: ListView.builder(
-                                  itemCount: state.data.length,
-                                  itemBuilder: (context, index) {
-                                    return GestureDetector(
-                                        onTap: () {
-                                          Navigator.pushNamed(
-                                              context, '/detail',
-                                              arguments: state.data[index]);
-                                        },
-                                        child: OverflowCard(
-                                          product: state.data[index],
-                                        ));
-                                  },
+              BlocBuilder<SearchBloc, SearchState>(
+                builder: (context, state) {
+                  if (state is LoadingState) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is LoadedState) {
+                    return RefreshIndicator(
+                      onRefresh: _refresh,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: state.data.length,
+                        itemBuilder: (context, index) {
+                          final product = state.data[index];
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DetailsPage(item: product),
                                 ),
-                              ),
+                              );
+                            },
+                            child: OverflowCard(
+                              product: product,
                             ),
-                          ),
-                        ),
-                      );
-                    }
-                    return Container();
-                  },
-                ),
+                          );
+                        },
+                      ),
+                    );
+                  } else if (state is FailedState) {
+                    return Center(
+                      child: Text(state.message),
+                    );
+                  } else {
+                    return const SizedBox();
+                  }
+                },
               ),
+              
               //
             ],
           ),

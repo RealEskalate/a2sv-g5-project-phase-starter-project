@@ -1,9 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import AllTransactionTable from "./AllTransactionTable";
-import Income from "./Income";
-import Expense from "./Expense";
+import RecentTransctionSkeleton from "../../../components/AllSkeletons/RecentTransactionSkeleton/recentTransactionSkeleton";
 
-const RecentTransactionTable = () => {
+const Other = () => {
   return (
     <div>
       <h1 className="text-16px md:text-18px xl:text-22px text-[#333B69] font-semibold">
@@ -33,13 +31,13 @@ const RecentTransactionTable = () => {
           </TabsList>
 
           <TabsContent value="all_transaction">
-            <AllTransactionTable />
+            <RecentTransctionSkeleton />
           </TabsContent>
           <TabsContent value="income">
-            <Income />
+            <RecentTransctionSkeleton />
           </TabsContent>
           <TabsContent value="expence">
-            <Expense />
+            <RecentTransctionSkeleton />
           </TabsContent>
         </Tabs>
       </div>
@@ -47,4 +45,4 @@ const RecentTransactionTable = () => {
   );
 };
 
-export default RecentTransactionTable;
+export default Other;

@@ -47,7 +47,7 @@ const EditProfile = () => {
         },
       });
     }
-  }, [status, dispatch, session, user]);
+  }, [status, dispatch, session, user, reduxUser?.name]);
 
   useEffect(() => {
     setProfilePicture(reduxUser?.profilePicture && reduxUser?.profilePicture.startsWith('https') ? reduxUser?.profilePicture : "/images/christina.png");

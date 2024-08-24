@@ -17,6 +17,7 @@ func (cont *CommentController) GetComments(c *gin.Context) {
 	blogID, err := uuid.Parse(c.Param("blog_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
 	}
 	comments, cerr := cont.CommentUsecase.GetComments(blogID)
 	if cerr != nil {
@@ -36,6 +37,7 @@ func (cont *CommentController) AddComment(c *gin.Context) {
 	commenterId, err := uuid.Parse(c.MustGet("id").(string))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return 
 	}
 	comment.CommenterID = commenterId
 	cerr := cont.CommentUsecase.AddComment(comment)
@@ -50,6 +52,7 @@ func (cont *CommentController) UpdateComment(c *gin.Context) {
 	commentID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return 
 	}
 	var comment domain.Comment
 	if err := c.BindJSON(&comment); err != nil {
@@ -59,6 +62,7 @@ func (cont *CommentController) UpdateComment(c *gin.Context) {
 	requesterID, err := uuid.Parse(c.MustGet("id").(string))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return 
 	}
 	comment.CommenterID = requesterID
 	comment.ID = commentID
@@ -74,15 +78,17 @@ func (cont *CommentController) DeleteComment(c *gin.Context) {
 	commentID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return 
 	}
 	requesterID, err := uuid.Parse(c.MustGet("id").(string))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return 
 	}
 	requesterRole := c.MustGet("is_admin").(bool)
-	if cerr := cont.CommentUsecase.DeleteComment(commentID, requesterID, requesterRole); err != nil {
-		c.JSON(cerr.StatusCode, gin.H{"error": err.Error()})
+	if cerr := cont.CommentUsecase.DeleteComment(commentID, requesterID, requesterRole); cerr != nil {
+		c.JSON(cerr.StatusCode, gin.H{"error": cerr.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfuly"})
+	c.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully"})
 }

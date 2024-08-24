@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/internal/assetutil"
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/gin-gonic/gin"
@@ -27,7 +27,7 @@ type profileController interface {
 
 // ProfileController is a struct to hold the usecase and env
 type ProfileController struct {
-	UserUsecase domain.UserUsecase
+	UserUsecase entities.UserUsecase
 	Env         *bootstrap.Env
 }
 
@@ -36,7 +36,7 @@ func (pc *ProfileController) GetProfile() gin.HandlerFunc {
 		userID := c.Param("id")
 		user, err := pc.UserUsecase.GetUserById(c, userID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
+			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
 			return
 		}
 
@@ -63,9 +63,9 @@ func (pc *ProfileController) GetProfiles() gin.HandlerFunc {
 		dateFrom, _ := time.Parse(time.RFC3339, c.Query("date_from"))
 		dateTo, _ := time.Parse(time.RFC3339, c.Query("date_to"))
 
-		var userFilter domain.UserFilter
+		var userFilter entities.UserFilter
 
-		userFilter = domain.UserFilter{
+		userFilter = entities.UserFilter{
 			Email:     c.Query("email"),
 			FirstName: c.Query("first_name"),
 			LastName:  c.Query("last_name"),
@@ -86,7 +86,7 @@ func (pc *ProfileController) GetProfiles() gin.HandlerFunc {
 			return
 		}
 
-		res := domain.PaginatedResponse{
+		res := entities.PaginatedResponse{
 			Data:     users,
 			MetaData: pagination,
 		}
@@ -97,9 +97,9 @@ func (pc *ProfileController) GetProfiles() gin.HandlerFunc {
 
 func (pc *ProfileController) ChangePassword() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var UpdatedPassword domain.UpdatePassword
+		var UpdatedPassword entities.UpdatePassword
 		if err := c.ShouldBindJSON(&UpdatedPassword); err != nil {
-			c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
+			c.JSON(http.StatusBadRequest, entities.ErrorResponse{Message: err.Error()})
 			return
 		}
 		userID, exists := c.Get("x-user-id")
@@ -117,19 +117,19 @@ func (pc *ProfileController) ChangePassword() gin.HandlerFunc {
 
 		user, err := pc.UserUsecase.GetUserById(c, userIDStr)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
+			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
 			return
 		}
 
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(UpdatedPassword.OldPassword))
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Old password is not correct"})
+			c.JSON(http.StatusUnauthorized, entities.ErrorResponse{Message: "Old password is not correct"})
 			return
 		}
 
 		err = pc.UserUsecase.UpdateUserPassword(c, userIDStr, &UpdatedPassword)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
+			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"message": "Password updated successfully"})
@@ -138,15 +138,15 @@ func (pc *ProfileController) ChangePassword() gin.HandlerFunc {
 func (pc *ProfileController) UpdateProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.Param("id")
-		var user domain.UserUpdate
+		var user entities.UserUpdate
 		if err := c.ShouldBindJSON(&user); err != nil {
-			c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
+			c.JSON(http.StatusBadRequest, entities.ErrorResponse{Message: err.Error()})
 			return
 		}
 
 		updatedUser, err := pc.UserUsecase.UpdateUser(c, userID, &user)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
+			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
 			return
 		}
 
@@ -160,7 +160,7 @@ func (pc *ProfileController) DeleteProfile() gin.HandlerFunc {
 		err := pc.UserUsecase.DeleteUser(c, userID)
 
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
+			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
 			return
 		}
 
@@ -173,7 +173,7 @@ func (pc *ProfileController) PromoteUser() gin.HandlerFunc {
 		userID := c.Param("id")
 		err := pc.UserUsecase.PromoteUserToAdmin(c, userID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
+			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
 			return
 		}
 
@@ -186,7 +186,7 @@ func (pc *ProfileController) DemoteUser() gin.HandlerFunc {
 		userID := c.Param("id")
 		err := pc.UserUsecase.DemoteAdminToUser(c, userID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
+			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
 			return
 		}
 

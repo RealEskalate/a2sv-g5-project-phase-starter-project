@@ -1,4 +1,4 @@
-package domain
+package entities
 
 import mongopagination "github.com/gobeam/mongo-go-pagination"
 

@@ -5,14 +5,14 @@ import (
 	"errors"
 	"time"
 
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type reactionUsecase struct {
-	reactionRepo domain.ReactionRepository
-	BlogRepo     domain.BlogRepository
+	reactionRepo entities.ReactionRepository
+	BlogRepo     entities.BlogRepository
 }
 
 func (ru *reactionUsecase) ToggleLike(c context.Context, blogID, userID string) error {
@@ -31,7 +31,7 @@ func (ru *reactionUsecase) ToggleLike(c context.Context, blogID, userID string) 
 	reaction, err := ru.reactionRepo.GetReaction(c, blogID, userID)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			reaction = domain.Reaction{
+			reaction = entities.Reaction{
 				BlogID:   blogObjID,
 				UserID:   userObjID,
 				Liked:    false,
@@ -69,7 +69,7 @@ func (ru *reactionUsecase) ToggleDislike(c context.Context, blogID, userID strin
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			// if no reaction is found, create a new one
-			reaction = domain.Reaction{
+			reaction = entities.Reaction{
 				BlogID:   blogObjID,
 				UserID:   userObjID,
 				Liked:    false,

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -9,9 +10,9 @@ import (
 	"time"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/forms"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // interface for blog controllers
@@ -31,8 +32,9 @@ type blogController interface {
 }
 
 type BlogController struct {
-	BlogUsecase    domain.BlogUsecase
-	CommentUsecase domain.CommentUsecase
+	BlogUsecase    entities.BlogUsecase
+	CommentUsecase entities.CommentUsecase
+	UserUsecase    entities.UserUsecase
 	Env            *bootstrap.Env
 }
 
@@ -51,14 +53,15 @@ func (bc *BlogController) GetBlogs() gin.HandlerFunc {
 		if len(tags) == 1 && tags[0] == "" {
 			tags = []string{}
 		}
-		var blogFilter domain.BlogFilter
+		var blogFilter entities.BlogFilter
 		log.Printf("%#v\n", tags)
-		blogFilter = domain.BlogFilter{
+		blogFilter = entities.BlogFilter{
 			Title:          c.Query("title"),
+			Search:         c.Query("search"),
 			Tags:           tags,
 			DateFrom:       dateFrom,
 			DateTo:         dateTo,
-			Limit:          limit, //  pages perfilter
+			Limit:          limit,
 			Pages:          page,
 			PopularityFrom: popularityFrom,
 			PopularityTo:   popularityTo,
@@ -70,7 +73,7 @@ func (bc *BlogController) GetBlogs() gin.HandlerFunc {
 			return
 		}
 
-		res := domain.PaginatedResponse{
+		res := entities.PaginatedResponse{
 			Data:     blogs,
 			MetaData: pagination,
 		}
@@ -93,12 +96,36 @@ func (bc *BlogController) GetBlog() gin.HandlerFunc {
 
 func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var newBlog domain.BlogIn
+		var newBlog forms.BlogForm
 		if err := c.ShouldBindJSON(&newBlog); err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
-		blog, err := bc.BlogUsecase.CreateBlog(context.Background(), &newBlog)
+
+		userID, exists := c.Get("x-user-id")
+
+		if !exists {
+			c.JSON(500, gin.H{"error": "User not found"})
+			return
+		}
+
+		uid, ok := userID.(string)
+
+		if !ok {
+			c.JSON(500, gin.H{"error": "User not found"})
+			return
+		}
+
+		fmt.Println("user id", uid)
+
+		user, err := bc.UserUsecase.GetUserById(context.Background(), uid)
+
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+
+		blog, err := bc.BlogUsecase.CreateBlog(context.Background(), &newBlog, user)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
@@ -109,26 +136,24 @@ func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 
 func (bc *BlogController) BatchCreateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userID := c.MustGet("x-user-id").(string)
-		id, err := primitive.ObjectIDFromHex(userID)
 
-		if err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-
-		var newBlogs []domain.BlogIn
+		var newBlogs []forms.BlogForm
 
 		if err := c.ShouldBindJSON(&newBlogs); err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
 
-		for _, blog := range newBlogs {
-			blog.ID = id
+		userID := c.MustGet("x-user-id").(string)
+
+		user, err := bc.UserUsecase.GetUserById(context.Background(), userID)
+
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
 		}
 
-		err = bc.BlogUsecase.BatchCreateBlog(context.Background(), &newBlogs)
+		err = bc.BlogUsecase.BatchCreateBlog(context.Background(), &newBlogs, user)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
@@ -140,7 +165,7 @@ func (bc *BlogController) BatchCreateBlog() gin.HandlerFunc {
 func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		blogID := c.Param("id")
-		var updatedBlog domain.BlogIn
+		var updatedBlog forms.BlogForm
 		if err := c.ShouldBindJSON(&updatedBlog); err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
@@ -192,20 +217,6 @@ func (bc *BlogController) GetbyPopularity() gin.HandlerFunc {
 		c.JSON(200, gin.H{"blogs": blogs, "pageination": pagination})
 	}
 }
-func (bc *BlogController) Search() gin.HandlerFunc {
-
-	return func(c *gin.Context) {
-		searchTerm := c.Query("search")
-		limit, _ := strconv.ParseInt(c.Query("limit"), 10, 64)
-		page, _ := strconv.ParseInt(c.Query("page"), 10, 64)
-		blogs, pagination, err := bc.BlogUsecase.Search(context.Background(), searchTerm, limit, page)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(200, gin.H{"blogs": blogs, "pageination": pagination})
-	}
-}
 func (bc *BlogController) SortByDate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		limit, _ := strconv.ParseInt(c.Query("limit"), 10, 64)
@@ -238,7 +249,7 @@ func (bc *BlogController) CreateComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.MustGet("x-user-id").(string)
 		blogID := c.Param("id")
-		var commentIn domain.CommentIn
+		var commentIn forms.CommentForm
 
 		if err := c.BindJSON(&commentIn); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -271,7 +282,7 @@ func (bc *BlogController) UpdateComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		commentID := c.Param("comment_id")
 
-		var commentUpd domain.CommentUpdate
+		var commentUpd entities.CommentUpdate
 
 		if err := c.BindJSON(&commentUpd); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

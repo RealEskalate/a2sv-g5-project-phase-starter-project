@@ -6,41 +6,41 @@ import (
 	"log"
 	"time"
 
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	mongopagination "github.com/gobeam/mongo-go-pagination"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 type userUsecase struct {
-	userRepository domain.UserRepository
+	userRepository entities.UserRepository
 	contextTimeout time.Duration
 }
 
-func NewUserUsecase(userRepository domain.UserRepository, timeout time.Duration) domain.UserUsecase {
+func NewUserUsecase(userRepository entities.UserRepository, timeout time.Duration) entities.UserUsecase {
 	return &userUsecase{
 		userRepository: userRepository,
 		contextTimeout: timeout,
 	}
 }
 
-func (uu *userUsecase) CreateUser(c context.Context, user *domain.User) (*domain.User, error) {
+func (uu *userUsecase) CreateUser(c context.Context, user *entities.User) (*entities.User, error) {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 	return uu.userRepository.CreateUser(ctx, user)
 }
 
-func (uu *userUsecase) GetUserByEmail(c context.Context, email string) (*domain.User, error) {
+func (uu *userUsecase) GetUserByEmail(c context.Context, email string) (*entities.User, error) {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 	return uu.userRepository.GetUserByEmail(ctx, email)
 }
 
-func (uu *userUsecase) GetUserById(c context.Context, userId string) (*domain.User, error) {
+func (uu *userUsecase) GetUserById(c context.Context, userId string) (*entities.User, error) {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 	return uu.userRepository.GetUserById(ctx, userId)
 }
-func (uu *userUsecase) GetUsers(c context.Context, userFilter domain.UserFilter) (*[]domain.UserOut, mongopagination.PaginationData, error) {
+func (uu *userUsecase) GetUsers(c context.Context, userFilter entities.UserFilter) (*[]entities.UserOut, mongopagination.PaginationData, error) {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 	filter := UserFilterOption(userFilter)
@@ -51,7 +51,7 @@ func (uu *userUsecase) GetUsers(c context.Context, userFilter domain.UserFilter)
 	}
 
 	// map users to userout
-	res := make([]domain.UserOut, 0)
+	res := make([]entities.UserOut, 0)
 
 	for _, user := range *users {
 		res = append(res, *user.ToUserOut())
@@ -60,7 +60,7 @@ func (uu *userUsecase) GetUsers(c context.Context, userFilter domain.UserFilter)
 	return &res, meta, nil
 }
 
-func (uu *userUsecase) UpdateUser(c context.Context, userID string, updatedUser *domain.UserUpdate) (*domain.User, error) {
+func (uu *userUsecase) UpdateUser(c context.Context, userID string, updatedUser *entities.UserUpdate) (*entities.User, error) {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 
@@ -92,13 +92,13 @@ func (uu *userUsecase) IsOwner(c context.Context) (bool, error) {
 	return uu.userRepository.IsOwner(ctx)
 }
 
-func (uu *userUsecase) ResetUserPassword(c context.Context, userID string, resetPassword *domain.ResetPasswordRequest) error {
+func (uu *userUsecase) ResetUserPassword(c context.Context, userID string, resetPassword *entities.ResetPasswordRequest) error {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 	return uu.userRepository.ResetUserPassword(ctx, userID, resetPassword)
 }
 
-func (uu *userUsecase) UpdateUserPassword(c context.Context, userID string, updatePassword *domain.UpdatePassword) error {
+func (uu *userUsecase) UpdateUserPassword(c context.Context, userID string, updatePassword *entities.UpdatePassword) error {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 	return uu.userRepository.UpdateUserPassword(ctx, userID, updatePassword)
@@ -130,7 +130,7 @@ func (uu *userUsecase) UpdateProfilePicture(c context.Context, userID string, fi
 	return uu.userRepository.UpdateProfilePicture(ctx, userID, filename)
 }
 
-func UserFilterOption(filter domain.UserFilter) bson.M {
+func UserFilterOption(filter entities.UserFilter) bson.M {
 
 	query := bson.M{
 		"$match": bson.M{},

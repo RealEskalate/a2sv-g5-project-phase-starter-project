@@ -5,6 +5,8 @@
 		"AAIT-backend-group-3/internal/repositories/interfaces"
 		"go.mongodb.org/mongo-driver/bson"
 		"time"
+		"fmt"
+		"go.mongodb.org/mongo-driver/bson/primitive"
 	)
 
 	type BlogUsecaseInterface interface {
@@ -17,7 +19,7 @@
 		AddCommentToTheList(blogID string, commentID string) error
 		GetBlogsByAuthorID(authorID string) ([]*models.Blog, error)
 		GetBlogsByPopularity(limit int) ([]*models.Blog, error)
-		LikeBlog(blogID string, userID string) error
+		ToggleLike(blogID string, userID string) (bool, error)
 		ViewBlog(blogID string) error
 
 	}
@@ -25,12 +27,14 @@
 	type BlogUsecase struct {
 		blogRepo repository_interface.BlogRepositoryInterface
 		tagRepo  repository_interface.TagRepositoryInterface
+		commentRepo repository_interface.CommentRepositoryInterface
 	}
 
-	func NewBlogUsecase(blogRepo repository_interface.BlogRepositoryInterface, tagRepo repository_interface.TagRepositoryInterface) BlogUsecaseInterface {
+	func NewBlogUsecase(blogRepo repository_interface.BlogRepositoryInterface, tagRepo repository_interface.TagRepositoryInterface, commentRepo repository_interface.CommentRepositoryInterface) BlogUsecaseInterface {
 		return &BlogUsecase{
 			blogRepo: blogRepo,
 			tagRepo:  tagRepo,
+			commentRepo: commentRepo,
 		}
 	}
 
@@ -51,35 +55,61 @@
 	}
 
 	func (u *BlogUsecase) GetBlogs(filter map[string]interface{}, search string, page int, limit int) ([]*models.Blog, error) {
-		if tags, ok := filter["tags"]; ok {
-			if tagList, ok := tags.([]string); ok {
-				blogIDs, err := u.tagRepo.GetBlogsByTags(tagList)
-				if err != nil {
-					return nil, err
-				}
-				filter["id"] = bson.M{"$in": blogIDs}
-	
-				delete(filter, "tags")
-			}
+		var filters []bson.M
+if tags, ok := filter["tags"]; ok {
+    if tagList, ok := tags.([]string); ok {
+        blogIDs, err := u.tagRepo.GetBlogsByTags(tagList)
+        if err != nil {
+            return nil, err
+        }
+
+        // Convert blogIDs from strings to ObjectIDs
+        var objectIDs []primitive.ObjectID
+        for _, blogID := range blogIDs {
+            objID, err := primitive.ObjectIDFromHex(blogID)
+            if err != nil {
+                return nil, fmt.Errorf("invalid ObjectID format: %v", err)
+            }
+            objectIDs = append(objectIDs, objID)
+        }
+
+        if len(objectIDs) > 0 {
+            filters = append(filters, bson.M{"_id": bson.M{"$in": objectIDs}})
+        }
+    }
+}
+		fmt.Println("filters", filters)
+		if search != "" {
+			filters = append(filters, bson.M{"title": bson.M{"$regex": search, "$options": "i"}})
 		}
-		return u.blogRepo.GetBlogs(filter, search, page, limit)
+		if authorID, ok := filter["author_id"]; ok && authorID != "" {
+			authorIDObj, err := primitive.ObjectIDFromHex(authorID.(string))
+			if err != nil {
+				fmt.Println("authorID", authorID)
+				return nil, fmt.Errorf("invalid ObjectID format: %v", err)
+			}
+			filters = append(filters, bson.M{"author_id": authorIDObj})
+		}
+		finalFilter := bson.M{}
+		if len(filters) > 0 {
+			finalFilter["$or"] = filters
+		}
+
+		return u.blogRepo.GetBlogs(finalFilter, page, limit)
 	}
-	
 
 	func (u *BlogUsecase) UpdateBlog(blogID string, newBlog *models.Blog) error {
+		// Retrieve the existing blog by its ID
 		existingBlog, err := u.blogRepo.GetBlogByID(blogID)
 		if err != nil {
 			return err
 		}
-
 		newBlog.Views = existingBlog.Views
 		newBlog.AuthorID = existingBlog.AuthorID
-		newBlog.PopularityScore = existingBlog.PopularityScore
 		newBlog.CreatedAt = existingBlog.CreatedAt
 		newBlog.UpdatedAt = time.Now()
 		newBlog.Likes = existingBlog.Likes
 		newBlog.Comments = existingBlog.Comments
-
 		if newBlog.Title == "" {
 			newBlog.Title = existingBlog.Title
 		}
@@ -95,9 +125,12 @@
 				return err
 			}
 		}
-
+		if newBlog.PopularityScore == 0 {
+			newBlog.PopularityScore = existingBlog.PopularityScore
+		}
 		return u.blogRepo.UpdateBlog(blogID, newBlog)
 	}
+	
 
 	func (u *BlogUsecase) DeleteBlog(blogID string) error {
 		blog, err := u.blogRepo.GetBlogByID(blogID)
@@ -109,12 +142,24 @@
 		if err != nil {
 			return err
 		}
-
+		for _, commentID := range blog.Comments {
+			err = u.commentRepo.DeleteComment(commentID.Hex())
+			if err != nil {
+				return err
+			}
+		}
 		return u.blogRepo.DeleteBlog(blogID)
 	}
 
 	func (u *BlogUsecase) AddCommentToTheList(blogID string, commentID string) error {
-		return u.blogRepo.AddCommentToTheList(blogID, commentID)
+		err := u.blogRepo.AddCommentToTheList(blogID, commentID)
+		if err != nil {
+			return err
+		}
+		blog,_ := u.blogRepo.GetBlogByID(blogID)
+		blog.PopularityScore = CalculateBlogPopularity(blog)
+		err = u.blogRepo.UpdateBlog(blogID, blog)
+		return err
 	}
 
 	func (u *BlogUsecase) GetBlogsByAuthorID(authorID string) ([]*models.Blog, error) {
@@ -127,11 +172,11 @@
 
 	func CalculateBlogPopularity(blog *models.Blog) int {
 		const (
-			likesWeight    = 0.5
-			commentsWeight = 0.3
-			viewsWeight    = 0.1
-			recencyWeight  = 0.1
-			recencyFactor  = 100
+			likesWeight    = 5
+			commentsWeight = 10
+			viewsWeight    = 3
+			recencyWeight  = 2
+			recencyFactor  = 10
 		)
 		currentTime := time.Now()
 		timeDiff := currentTime.Sub(blog.CreatedAt).Hours()
@@ -145,55 +190,66 @@
 		return popularity
 	}
 
-	func (u *BlogUsecase) LikeBlog(blogID string, userID string) error {
-		errChan := make(chan error, 2)
-		defer close(errChan)
-		go func() {
-			err := u.blogRepo.LikeBlog(blogID, userID)
-			errChan <- err
-		}()
-		go func() {
-			blog, err := u.blogRepo.GetBlogByID(blogID)
-			if err != nil {
-				errChan <- err
-				return
-			}
-			blog.PopularityScore = CalculateBlogPopularity(blog)
-			err = u.blogRepo.UpdateBlog(blogID, blog)
-			errChan <- err
-		}()
-		for i := 0; i < 2; i++ {
-			if err := <-errChan; err != nil {
-				return err
+	func (u *BlogUsecase) ToggleLike(blogID string, userID string) (bool, error) {
+		// Retrieve the blog from the repository
+		blog, err := u.blogRepo.GetBlogByID(blogID)
+		if err != nil {
+			return false, err
+		}
+		if blog == nil {
+			return false, fmt.Errorf("blog not found")
+		}
+	
+		// Check if the user has already liked the blog
+		liked := false
+		for _, like := range blog.Likes {
+			if like.Hex() == userID {
+				liked = true
+				break
 			}
 		}
-
-		return nil
+	
+		// Toggle the like status
+		if liked {
+			// Remove the like if already liked
+			err = u.blogRepo.RemoveLike(blogID, userID)
+			if err != nil {
+				return false, err
+			}
+		} else {
+			// Add the like if not already liked
+			err = u.blogRepo.AddLike(blogID, userID)
+			if err != nil {
+				return false, err
+			}
+		}
+	
+		// Update the blog's popularity score
+		blog.PopularityScore = CalculateBlogPopularity(blog)
+		err = u.blogRepo.UpdateBlog(blogID, blog)
+		if err != nil {
+			return false, err
+		}
+	
+		// Return the updated like status
+		return !liked, nil
 	}
+	
 
 	func (u *BlogUsecase) ViewBlog(blogID string) error {
-		errChan := make(chan error, 2)
-		defer close(errChan)
-		go func() {
 			err := u.blogRepo.ViewBlog(blogID)
-			errChan <- err
-		}()
-
-		go func() {
+			if err != nil {
+				return err
+			}
 			blog, err := u.blogRepo.GetBlogByID(blogID)
 			if err != nil {
-				errChan <- err
-				return
+				return err
 			}
 			blog.PopularityScore = CalculateBlogPopularity(blog)
 			err = u.blogRepo.UpdateBlog(blogID, blog)
-			errChan <- err
-		}()
-		for i := 0; i < 2; i++ {
-			if err := <-errChan; err != nil {
+			if err != nil {
 				return err
 			}
-		}
 		return nil
 	}
 	func equalTags(tags1, tags2 []string) bool {
@@ -218,7 +274,16 @@
 		if err != nil {
 			return nil, err
 		}
-		return u.blogRepo.GetBlogs(map[string]interface{}{"id": bson.M{"$in": blogIDs}}, "", 1, 0)
+		blogs := make([]*models.Blog, 0, len(blogIDs))
+		for _, blogID := range blogIDs {
+			blog, err := u.blogRepo.GetBlogByID(blogID)
+			if err != nil {
+				return nil, err
+			}
+			blogs = append(blogs, blog)
+		}
+		return blogs, nil
+		
 	}
 
 	

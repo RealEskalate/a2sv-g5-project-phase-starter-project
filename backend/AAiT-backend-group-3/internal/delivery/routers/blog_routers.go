@@ -23,5 +23,7 @@ func CreateBlogRouter(router *gin.Engine, blogController controllers.BlogControl
 	router.GET("/blogs/popularity", authMiddleware.Authentication(), authMiddleware.RoleAuth("ADMIN", "USER"), blogController.GetBlogsByPopularity)
 	
 	router.GET("/blogs/tags", authMiddleware.Authentication(), authMiddleware.RoleAuth("ADMIN", "USER"), blogController.GetBlogsByTags)
+	router.POST("/blogs/:id/like", authMiddleware.Authentication(), authMiddleware.RoleAuth("ADMIN", "USER"), blogController.LikeBlog)
+	router.POST("/blogs/:id/view", authMiddleware.Authentication(), authMiddleware.RoleAuth("ADMIN", "USER"), blogController.ViewBlog)
 }
 

@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,7 +20,7 @@ func NewMongoCommentRepository(db *mongo.Database, collectionName string) *Mongo
 func (r *MongoCommentRepository) CreateComment(comment *models.Comment, authorID string) (string, error) {
 	comment.ID = primitive.NewObjectID()
 	comment.AuthorID, _ = primitive.ObjectIDFromHex(authorID)
-	_, err := r.collection.InsertOne(context.Background(), comment)
+	_, err := r.collection.InsertOne(ctx, comment)
 	if err != nil {
 		return "", err
 	}
@@ -34,7 +33,7 @@ func (r *MongoCommentRepository) GetCommentByID(commentID string) (*models.Comme
 		return nil, err
 	}
 	var comment models.Comment
-	err = r.collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&comment)
+	err = r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&comment)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +45,7 @@ func (r *MongoCommentRepository) EditComment(commentID string, newComment *model
 	if err != nil {
 		return err
 	}
-	_, err = r.collection.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$set": newComment})
+	_, err = r.collection.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": newComment})
 	return err
 }
 func (r *MongoCommentRepository) DeleteComment(commentID string) error {
@@ -54,7 +53,7 @@ func (r *MongoCommentRepository) DeleteComment(commentID string) error {
 	if err != nil {
 		return err
 	}
-	_, err = r.collection.DeleteOne(context.Background(), bson.M{"_id": id})
+	_, err = r.collection.DeleteOne(ctx, bson.M{"_id": id})
 	return err
 }
 
@@ -68,12 +67,12 @@ func (r *MongoCommentRepository) GetCommentsByIDList(commentIDs []string) ([]*mo
 		objectIDs = append(objectIDs, objectID)
 	}
 	var comments []*models.Comment
-	cursor, err := r.collection.Find(context.Background(), bson.M{"_id": bson.M{"$in": objectIDs}})
+	cursor, err := r.collection.Find(ctx, bson.M{"_id": bson.M{"$in": objectIDs}})
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(context.Background())
-	for cursor.Next(context.Background()) {
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
 		var comment models.Comment
 		if err := cursor.Decode(&comment); err != nil {
 			return nil, err
@@ -88,12 +87,12 @@ func (r *MongoCommentRepository) GetCommentByAuthorID(authorID string) ([]*model
 		return nil, err
 	}
 	var comments []*models.Comment
-	cursor, err := r.collection.Find(context.Background(), bson.M{"author_id": id})
+	cursor, err := r.collection.Find(ctx, bson.M{"author_id": id})
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(context.Background())
-	for cursor.Next(context.Background()) {
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
 		var comment models.Comment
 		if err := cursor.Decode(&comment); err != nil {
 			return nil, err
@@ -101,4 +100,13 @@ func (r *MongoCommentRepository) GetCommentByAuthorID(authorID string) ([]*model
 		comments = append(comments, &comment)
 	}
 	return comments, nil
+}
+
+func (u *MongoCommentRepository) DeleteCommentByID(commentID string) error {
+	id, err := primitive.ObjectIDFromHex(commentID)
+	if err != nil {
+		return err
+	}
+	_, err = u.collection.DeleteOne(ctx, bson.M{"_id": id})
+	return err
 }

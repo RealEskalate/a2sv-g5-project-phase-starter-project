@@ -6,7 +6,7 @@ import (
 )
 
 type Comment struct {
-	ID        primitive.ObjectID `bson:"id" json:"_id"`                
+	ID        primitive.ObjectID `bson:"_id" json:"id"`                
 	AuthorID  primitive.ObjectID `bson:"author_id" json:"author_id"`    
 	Content   string             `bson:"content" json:"content"`        
 	CreatedAt time.Time          `bson:"created_at" json:"created_at"`  

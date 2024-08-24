@@ -67,20 +67,22 @@ func (bc *BlogController) GetBlogByID(c *gin.Context) {
 func (bc *BlogController) GetBlogs(c *gin.Context) {
 	filters := c.QueryMap("filter")
 	search := c.Query("search")
-	page, err1 := strconv.Atoi(c.Query("page"))
-	limit, err2 := strconv.Atoi(c.Query("limit"))
-	if err1 != nil {
+	page, err1 := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, err2 := strconv.Atoi(c.DefaultQuery("limit", "10"))
+
+	if err1 != nil || page < 1 {
 		page = 1
 	}
-	if err2 != nil {
+	if err2 != nil || limit < 1 {
 		limit = 10
 	}
 
 	filterMap := make(map[string]interface{})
-	for _, filter := range filters {
-		keyValue := strings.SplitN(filter, ":", 2)
-		if len(keyValue) == 2 {
-			filterMap[keyValue[0]] = keyValue[1]
+	for key, filter := range filters {
+		if key == "tags" {
+			filterMap[key] = strings.Split(filter, ",")
+		} else {
+			filterMap[key] = filter
 		}
 	}
 
@@ -123,33 +125,41 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 
 func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	blogID := c.Param("id")
-
-	err := bc.blog_usecase.DeleteBlog(blogID)
+	userID := c.GetString("userId")
+	blog, err := bc.blog_usecase.GetBlogByID(blogID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to get blog"})
+		return
+	}
+	if blog.AuthorID.Hex() != userID {
+		c.JSON(403, gin.H{"error": "You can only delete your own blog"})
+		return
+	}
+	err = bc.blog_usecase.DeleteBlog(blogID)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to delete blog"})
 		return
 	}
-
 	c.JSON(200, gin.H{"message": "Blog deleted successfully"})
 }
 
 func (bc *BlogController) LikeBlog(c *gin.Context) {
-	var requestBody struct {
-		UserID string `json:"user_id"`
-	}
-	if err := c.BindJSON(&requestBody); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
+    userID := c.GetString("userId")
+    blogID := c.Param("id")
+    
+    liked, err := bc.blog_usecase.ToggleLike(blogID, userID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
 
-	blogID := c.Param("id")
-	if err := bc.blog_usecase.LikeBlog(blogID, requestBody.UserID); err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(200, gin.H{"message": "Blog liked successfully"})
+    if liked {
+        c.JSON(http.StatusOK, gin.H{"message": "Blog liked successfully", "liked": true})
+    } else {
+        c.JSON(http.StatusOK, gin.H{"message": "Blog disliked successfully", "liked": false})
+    }
 }
+
 
 func (bc *BlogController) ViewBlog(c *gin.Context) {
 	blogID := c.Param("id")
@@ -163,7 +173,6 @@ func (bc *BlogController) ViewBlog(c *gin.Context) {
 
 func (bc *BlogController) GetBlogsByAuthorID(c *gin.Context) {
 	authorID := c.Param("author_id")
-
 	blogs, err := bc.blog_usecase.GetBlogsByAuthorID(authorID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get blogs by author"})
@@ -174,18 +183,21 @@ func (bc *BlogController) GetBlogsByAuthorID(c *gin.Context) {
 }
 
 func (bc *BlogController) GetBlogsByPopularity(c *gin.Context) {
-	limit, err := strconv.Atoi(c.Query("limit"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
-		return
+	limitStr := c.Query("limit")
+	limit := 10 // Default value
+	if limitStr != "" {
+		var err error
+		limit, err = strconv.Atoi(limitStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+			return
+		}
 	}
-
 	blogs, err := bc.blog_usecase.GetBlogsByPopularity(limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get popular blogs"})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"blogs": blogs})
 }
 

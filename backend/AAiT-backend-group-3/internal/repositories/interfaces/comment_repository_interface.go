@@ -10,4 +10,5 @@ type CommentRepositoryInterface interface {
 	DeleteComment(commentID string) error
 	GetCommentsByIDList(commentIDs []string) ([]*models.Comment, error)
 	GetCommentByAuthorID(authorID string) ([]*models.Comment, error)
+	DeleteCommentByID(commentID string) error
 }

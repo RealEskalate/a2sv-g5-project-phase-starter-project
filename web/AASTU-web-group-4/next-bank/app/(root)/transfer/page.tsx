@@ -31,6 +31,7 @@ const TransferPage: React.FC = () => {
     };
     fetch();
   } , []);
+  
   useEffect(() => {
     if (status === 'success') {
       messageApi.open({

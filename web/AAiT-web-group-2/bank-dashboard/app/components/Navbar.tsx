@@ -12,7 +12,7 @@ const Navbar = ({onMenuClick}: {onMenuClick: () => void}) => {
   const session = useSession()
 
   return (
-    <div className="flex flex-col justify-center h-28 gap-2 px-3 ">
+    <div className="flex flex-col justify-center h-24 gap-2 px-3 ">
       <div className="flex justify-between items-center">
         <div className="text-2xl sm:hidden ">
           <FiMenu onClick={onMenuClick} />

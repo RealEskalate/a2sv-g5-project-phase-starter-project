@@ -1,88 +1,102 @@
-"use client";
-import React from "react";
-import { Line } from "react-chartjs-2";
-import { Card } from "@mui/material";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import dynamic from "next/dynamic";
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend
-);
-
-const data = {
-  labels: ["January", "February", "March", "April", "May", "June", "July"],
-  datasets: [
+const chartConfig = {
+  // type: "line",
+  series: [
     {
-      label: "",
-      data: [75, 100, 85, 120, 90, 100, 90],
-      fill: true,
-      backgroundColor: (context: any) => {
-        const ctx = context.chart.ctx;
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, "rgba(0, 0, 255, 0.2)");
-        gradient.addColorStop(1, "rgba(255, 255, 255, 0.2)");
-        return gradient;
-      },
-      borderColor: "rgba(0, 0, 255, 1)",
-      borderWidth: 2,
-      pointRadius: 0,
-      tension: 0.4,
+      name: "Balance",
+      data: [50, 40, 320, 340, 350, 200, 230, 500],
     },
   ],
-};
-
-const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      display: false,
+  options: {
+    chart: {
+      toolbar: {
+        show: false,
+      },
+      dropShadow: {
+        enabled: true,
+        top: 2,
+        left: 2,
+        blur: 4,
+        opacity: 0.2,
+        color: '#1814F3'
+      },
+    },
+    title: {
+      show: "",
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    colors: ["#1814F3"],
+    stroke: {
+      lineCap: "round",
+      curve: "smooth",
+    },
+    markers: {
+      size: 0,
+    },
+    xaxis: {
+      axisTicks: {
+        show: false,
+      },
+      axisBorder: {
+        show: false,
+      },
+      labels: {
+        style: {
+          colors: "#616161",
+          fontSize: "12px",
+          fontFamily: "inherit",
+          fontWeight: 400,
+        },
+      },
+      categories: ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan"],
+    },
+    yaxis: {
+      labels: {
+        style: {
+          colors: "#616161",
+          fontSize: "12px",
+          fontFamily: "inherit",
+          fontWeight: 400,
+        },
+      },
+    },
+    grid: {
+      show: true,
+      borderColor: "#dddddd",
+      strokeDashArray: 5,
+      xaxis: {
+        lines: {
+          show: true,
+        },
+      },
+      padding: {
+        top: 5,
+        right: 20,
+      },
+    },
+    fill: {
+      opacity: 0.8,
     },
     tooltip: {
-      enabled: true,
+      theme: "dark",
     },
   },
-  scales: {
-    x: {
-      grid: {
-        display: true,
-        color: "rgba(128, 128, 128, 0.2)", // Gray broken line grid
-        borderDash: [5, 5],
-      },
-    },
-    y: {
-      grid: {
-        display: true,
-        color: "rgba(128, 128, 128, 0.2)", // Gray broken line grid
-        borderDash: [5, 5],
-      },
-    },
-  },
-  maintainAspectRatio: false,
 };
 
-const LineGraph: React.FC = () => {
+export default function Example() {
   return (
-    <Card
-      className="shadow-lg rounded-lg p-4"
-      style={{ width: "400px", height: "200px" }}
-    >
-      <Line data={data} options={options} />
-    </Card>
+    <div className="max-w-full max-h-[276px] h-[276px] overflow-hidden bg-white rounded-lg shadow-md">
+      <Chart
+        options={chartConfig.options}
+        series={chartConfig.series}
+        type="line"
+        width={"100%"}
+        height={"100%"}
+      />
+    </div>
   );
-};
-
-export default LineGraph;
+}

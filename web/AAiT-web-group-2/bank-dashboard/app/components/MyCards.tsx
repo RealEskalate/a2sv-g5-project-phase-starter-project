@@ -23,6 +23,20 @@ const data: MyCardsType[] = [
   },
 ];
 
+export function IsoToLocalDate(isoDate: string) {
+  // Create a new Date object from the ISO string
+  const date = new Date(isoDate);
+
+  // Extract the month and year
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+  const year = String(date.getUTCFullYear()).slice(-2); // Get last 2 digits of the year
+
+  // Combine them into the desired format
+  const formattedDate = `${month}/${year}`;
+
+  console.log(formattedDate); // Output: "mm/yy"
+}
+
 const MyCards = () => {
   return (
 
@@ -55,7 +69,7 @@ const MyCards = () => {
       </div>
       <div className="flex justify-between items-center bg-my-card-bg-2 h-[70px] w-full px-6 rounded-b-lg">
         <div className="text-[18px] sm:text-[26px]">3778 **** **** 1234</div>
-        <div className="flex justify-center items-center -space-x-4">
+        <div className="flex justify-center items-center -space-x-3">
           <div className="w-8 h-8 sm:w-6 sm:h-6 bg-white bg-opacity-50 rounded-full"></div>
           <div className="w-8 h-8 sm:w-6 sm:h-6 bg-white bg-opacity-50 rounded-full"></div>
         </div>

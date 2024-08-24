@@ -67,7 +67,7 @@ const chartConfig = {
 
 const WeeklyActivity = () => {
   return (
-    <div className="max-w-full max-h-[300px] h-[300px]  overflow-hidden  bg-white rounded-lg shadow-md">
+    <div className="max-w-full max-h-[300px] h-[300px] overflow-hidden  bg-white rounded-lg shadow-md">
       <Chart
         options={chartConfig.options}
         series={chartConfig.series}

@@ -73,6 +73,7 @@
 		}
 
 		newBlog.Views = existingBlog.Views
+		newBlog.AuthorID = existingBlog.AuthorID
 		newBlog.PopularityScore = existingBlog.PopularityScore
 		newBlog.CreatedAt = existingBlog.CreatedAt
 		newBlog.UpdatedAt = time.Now()

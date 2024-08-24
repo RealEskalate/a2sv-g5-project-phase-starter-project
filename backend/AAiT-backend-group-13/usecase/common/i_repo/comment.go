@@ -8,7 +8,7 @@ import (
 
 // Comment defines methods to manage comment in the store.
 type Comment interface {
-	Save(*models.Comment) error
+	Save(models.Comment) error
 
 	// Delete removes a comment by ID.
 	Delete(id uuid.UUID) error

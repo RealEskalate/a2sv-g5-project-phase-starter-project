@@ -58,6 +58,6 @@ func SetUp(router *gin.Engine) {
 	NewLikeRoutes(likeRoute, likeCollection, blogCollection)
 	NewDislikeRoutes(dislikeRoute, dislikeCollection, blogCollection)
 	NewCommentRoutes(commentRoute, commentCollection, blogCollection)
-	NewBookmarkRoutes(bookmarkRoute, bookmarkCollection, userCollection)
+	NewBookmarkRoutes(bookmarkRoute, bookmarkCollection, blogCollection)
 
 }

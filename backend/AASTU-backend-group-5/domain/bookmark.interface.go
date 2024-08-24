@@ -7,7 +7,7 @@ import (
 type BookmarkRepositoryInterface interface {
 	AddBookmark(bookmark Bookmark) (Bookmark, error)
 	RemoveBookmark(userID, blogID primitive.ObjectID) error
-	GetUserBookmarks(userID primitive.ObjectID) ([]Blog, error)
+	GetUserBookmarks(userID primitive.ObjectID) ([]Bookmark, error)
 }
 
 type BookmarkUseCaseInterface interface {

@@ -1,17 +1,21 @@
 package usecase
 
 import (
+	"fmt"
+
 	"github.com/RealEskalate/blogpost/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BookmarkUseCase struct {
 	BookmarkRepo domain.BookmarkRepositoryInterface
+	BlogRepo     domain.Blog_Repository_interface
 }
 
-func NewBookmarkUseCase(repo domain.BookmarkRepositoryInterface) *BookmarkUseCase {
+func NewBookmarkUseCase(repo domain.BookmarkRepositoryInterface, blog domain.Blog_Repository_interface) *BookmarkUseCase {
 	return &BookmarkUseCase{
 		BookmarkRepo: repo,
+		BlogRepo:     blog,
 	}
 }
 
@@ -49,5 +53,23 @@ func (uc *BookmarkUseCase) GetUserBookmarks(userID string) ([]domain.Blog, error
 	if err != nil {
 		return nil, err
 	}
-	return uc.BookmarkRepo.GetUserBookmarks(userObjID)
+	bookmarks, err :=  uc.BookmarkRepo.GetUserBookmarks(userObjID)
+	if err != nil {
+		fmt.Println("->",err.Error())
+		return nil, err
+	}
+
+
+	var blogs []domain.Blog
+	fmt.Println("->","bookmarks",bookmarks)
+	for _, bookmark := range bookmarks {
+		fmt.Println(bookmark.BlogID.Hex())
+		blog, err := uc.BlogRepo.GetOneBlogDocument(bookmark.BlogID.Hex())
+		if err != nil {
+			return nil, err
+		}
+		blogs = append(blogs, blog)
+	}
+
+	return blogs, nil
 }

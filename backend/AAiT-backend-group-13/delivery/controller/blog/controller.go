@@ -53,7 +53,9 @@ func New(config Config) *Controller {
 }
 
 // RegisterPublic registers public routes.
-func (c *Controller) RegisterPublic(route *gin.RouterGroup) {}
+func (c *Controller) RegisterPublic(route *gin.RouterGroup) {
+
+}
 
 // RegisterPrivileged registers privileged routes.
 func (c *Controller) RegisterPrivileged(route *gin.RouterGroup) {}
@@ -84,6 +86,7 @@ func (c *Controller) addBlog(ctx *gin.Context) {
 		c.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
 		return
 	}
+
 	baseURL := fmt.Sprintf("http://%s", ctx.Request.Host)
 	resourceLocation := fmt.Sprintf("%s%s/%s", baseURL, ctx.Request.URL.Path, blog.ID().String())
 	c.RespondWithLocation(ctx, http.StatusCreated, nil, resourceLocation)
@@ -173,6 +176,7 @@ func (c *Controller) getBlogById(ctx *gin.Context) {
 		log.Printf("Fetched Blog unsuccessfull %s -- BlogController", err.Error())
 		c.Problem(ctx, errapi.FromErrDMN(err.(*er.Error)))
 	}
+
 	log.Printf("Fetched Blog for %v successfull -- BlogController", id)
 
 	c.Respond(ctx, http.StatusOK, FromBlog(blog))

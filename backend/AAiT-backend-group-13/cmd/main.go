@@ -10,6 +10,7 @@ import (
 	"github.com/group13/blog/config"
 	"github.com/group13/blog/delivery/common"
 	blogcontroller "github.com/group13/blog/delivery/controller/blog"
+	commentcontroller "github.com/group13/blog/delivery/controller/comment"
 	"github.com/group13/blog/delivery/controller/gemini"
 	usercontroller "github.com/group13/blog/delivery/controller/user"
 	"github.com/group13/blog/delivery/router"
@@ -25,6 +26,8 @@ import (
 	geminiService "github.com/group13/blog/usecase/ai_recommendation/query"
 	blogcmd "github.com/group13/blog/usecase/blog/command"
 	blogqry "github.com/group13/blog/usecase/blog/query"
+	commentcmd "github.com/group13/blog/usecase/comment/command"
+	commentqry "github.com/group13/blog/usecase/comment/query"
 	passwordreset "github.com/group13/blog/usecase/password_reset"
 	usercmd "github.com/group13/blog/usecase/user/command"
 	userqry "github.com/group13/blog/usecase/user/query"
@@ -43,7 +46,7 @@ func main() {
 	geminiModel := initGeminiClient(cfg)
 
 	// Initialize services
-	userRepo, blogRepo, _, _ := initRepos(cfg, mongoClient)
+	userRepo, blogRepo, commentRepo, _ := initRepos(cfg, mongoClient)
 	jwtService := jwt.New(
 		jwt.Config{
 			SecretKey: config.Envs.JWTSecret,
@@ -63,11 +66,16 @@ func main() {
 	blogController := initBlogController(blogRepo, cacheClient)
 	geminiController := initGeminiController(geminiService.NewReccomendationHandler(geminiModel))
 
+	commentController := initCommentController(blogRepo, cacheClient, *commentRepo, userRepo)
+
+
 	// Router configuration
 	routerConfig := router.Config{
 		Addr:        fmt.Sprintf(":%s", cfg.ServerPort),
 		BaseURL:     "/api",
-		Controllers: []common.IController{userController, blogController, geminiController},
+
+		Controllers: []common.IController{userController, blogController, geminiController, commentController},
+
 		JwtService:  jwtService,
 	}
 	r := router.NewRouter(routerConfig)
@@ -154,6 +162,8 @@ func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtS
 	resetCodeSendHandler := passwordreset.NewSendcodeHandler(userRepo, mailService, hashService)
 	validateCodeHandler := passwordreset.NewValidateCodeHandler(userRepo, jwtService, hashService)
 	validateEmailHandler := usercmd.NewValidateEmailHandler(userRepo, hashService, jwtService)
+	googleSignup := usercmd.NewGoogleSignupHandler(usercmd.GoogleSignUpConfig{UserRepo: userRepo})
+	googleSignin := usercmd.NewGoogleSigninHandler(usercmd.GoogleSignInConfig{UserRepo: userRepo, JwtService: *jwtService})
 
 	return usercontroller.New(usercontroller.Config{
 		PromoteHandler:       promoteHandler,
@@ -164,6 +174,8 @@ func initUserController(userRepo *userrepo.Repo, hashService *hash.Service, jwtS
 		ValidateCodeHandler:  validateCodeHandler,
 		ValidateEmailHandler: validateEmailHandler,
 		UpdateProfileHandler: updateProfileHandler,
+		GoogleSignin:         googleSignin,
+		GoogleSignup:         googleSignup,
 	})
 
 }
@@ -187,3 +199,19 @@ func initBlogController(blogRepo *blogrepo.Repo, cacheService *cache.RedisCache)
 func initGeminiController(geminiHandler *geminiService.RecomendationHandler) *gemini.Controller {
 	return gemini.NewAiController(geminiHandler)
 }
+
+
+func initCommentController(blogRepo *blogrepo.Repo, cacheService *cache.RedisCache, commentRepo commentrepo.Repo, userRepo *userrepo.Repo) *commentcontroller.CommentController {
+	addHandler := commentcmd.NewHandler(blogRepo, userRepo, commentRepo)
+	deleteHandler := commentcmd.New(blogRepo, commentRepo)
+	getcomHandler := commentqry.NewGetHandler(commentRepo, cacheService)
+	getBlogComHandler := commentqry.NewGetAllHandler(commentRepo, cacheService)
+
+	return commentcontroller.New(commentcontroller.Config{
+		AddcomHandler:     addHandler,
+		DeletecomHandler:  deleteHandler,
+		GetcomHandler:     getcomHandler,
+		GetBlogComHandler: getBlogComHandler,
+	})
+}
+

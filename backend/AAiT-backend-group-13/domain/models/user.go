@@ -107,6 +107,20 @@ func NewUser(config UserConfig) (*User, error) {
 	}, nil
 }
 
+// NewUser creates a new User with the provided configuration.
+func NewFederatedUser(config UserConfig) *User {
+
+	return &User{
+		id:        uuid.New(),
+		firstName: config.FirstName,
+		lastName:  config.LastName,
+		email:     config.Email,
+		isAdmin:   config.IsAdmin,
+		createdAt: time.Now(),
+		updatedAt: time.Now(),
+	}
+}
+
 // MapUser maps an existing User from the database configuration.
 func MapUser(config MapUserConfig) *User {
 	return &User{

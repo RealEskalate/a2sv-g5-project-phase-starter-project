@@ -48,7 +48,7 @@ func (r *Repo) Delete(id uuid.UUID) error {
 	deleteResult, err := r.collection.DeleteOne(context.Background(), filter)
 	if err != nil {
 		log.Println("Error deleting document:", err)
-		return err 
+		return err
 	} else if deleteResult.DeletedCount == 0 {
 		log.Println("No documents were deleted. It might not exist.")
 		return er.BlogNotFound
@@ -176,7 +176,10 @@ func (r *Repo) GetSingle(id uuid.UUID) (*models.Blog, error) {
 	var blogDTO BlogDTO
 	err := r.collection.FindOne(context.Background(), filter).Decode(&blogDTO)
 	if err != nil {
+
 		if err == mongo.ErrNoDocuments {
+			fmt.Println("not not found")
+
 			return nil, er.BlogNotFound
 		}
 		return nil, er.NewUnexpected("error retrieving blog")

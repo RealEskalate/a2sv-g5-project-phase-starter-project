@@ -11,15 +11,13 @@ import ErrorImage from "../Error/ErrorImage";
 const ActiveLoansOverview = () => {
   const { data: session } = useSession();
   const accessToken = session?.user.accessToken!;
-  useEffect(()=>{
-    console.log("data",session)
-  },[session])
-  const { data, isLoading, isError, isSuccess } = useGetMyLoanServiceQuery(
-    accessToken
-  );
+  useEffect(() => {
+    console.log("data", session);
+  }, [session]);
+  const { data, isLoading, isError, isSuccess, error } =
+    useGetMyLoanServiceQuery(accessToken);
   let loans: loan[] = [];
 
- 
   if (isLoading) {
     return (
       <div>
@@ -28,14 +26,17 @@ const ActiveLoansOverview = () => {
     );
   }
   if (isError) {
+    console.log("errorrrrs");
+    console.log(error);
     return (
       <div>
         <ErrorImage />
       </div>
-    )
+    );
   }
   if (isSuccess) {
-    loans = data.data;
+    console.log("data", data);
+    loans = data.data.content;
   }
 
   return (
@@ -48,7 +49,6 @@ const ActiveLoansOverview = () => {
           />
         </div>
       ) : (
-
         <table className="min-w-full divide-y">
           <thead>
             <tr>

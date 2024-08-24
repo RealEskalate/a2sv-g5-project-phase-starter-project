@@ -79,6 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ show, setter }) => {
           <div className="flex flex-col flex-1">
             {sidebarListItems.map((item, index) => (
               <Link
+                data-id={`side-link-${item.path.slice(1)}`}
                 key={index}
                 href={item.path}
                 onClick={() => {
@@ -94,6 +95,7 @@ const Sidebar: React.FC<SidebarProps> = ({ show, setter }) => {
                 >
                   <div className="flex gap-8 items-center pl-6">
                     <img
+                      data-id={`side-image-${item.path.slice(1)}`}
                       src={pathname === item.path ? item.activeIcon : item.icon}
                       alt={item.name}
                       width={20}

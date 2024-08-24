@@ -11,6 +11,15 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
+import { makeStyles } from "@mui/styles";
+
+const useStyles = makeStyles({
+  mobileHidden: {
+    "@media (max-width: 600px)": {
+      display: "none",
+    },
+  },
+});
 
 const loans = [
   {
@@ -113,81 +122,132 @@ loans.push({
 });
 
 const ActiveLoans: React.FC = () => {
+  const classes = useStyles();
+  const commonStyle = {
+    fontFamily: "Inter",
+    fontSize: "16px",
+    fontWeight: 400,
+    lineHeight: "19.36px",
+    textAlign: "left",
+    color: "#232323",
+  };
+
   return (
-    <Card style={{ margin: "20px", borderRadius: "20px" }}>
-      <CardContent>
-        <Typography variant="h5" style={{ margin: "20px 0" }}>
-          Active Loans Overview
-        </Typography>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell style={{ color: "#718EBF" }}>SL No</TableCell>
-                <TableCell style={{ color: "#718EBF" }}>Loan Money</TableCell>
-                <TableCell style={{ color: "#718EBF" }}>
-                  Left to Repay
-                </TableCell>
-                <TableCell style={{ color: "#718EBF" }}>Duration</TableCell>
-                <TableCell style={{ color: "#718EBF" }}>
-                  Interest Rate
-                </TableCell>
-                <TableCell style={{ color: "#718EBF" }}>Installment</TableCell>
-                <TableCell style={{ color: "#718EBF" }}>Repay</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {loans.map((loan, index) => (
-                <TableRow key={index}>
+    <div>
+      <Typography
+        variant="h5"
+        style={{ marginLeft: "20px", marginBottom: "20px", marginTop: "20px" }}
+      >
+        Active Loans Overview
+      </Typography>
+      <Card style={{ margin: "20px", borderRadius: "20px" }}>
+        <CardContent>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
                   <TableCell
-                    style={loan.slNo === "Total" ? { color: "red" } : {}}
+                    className={classes.mobileHidden}
+                    style={{ color: "#718EBF" }}
                   >
-                    {loan.slNo}
+                    SL No
+                  </TableCell>
+                  <TableCell style={{ color: "#718EBF" }}>Loan Money</TableCell>
+                  <TableCell style={{ color: "#718EBF" }}>
+                    Left to Repay
                   </TableCell>
                   <TableCell
-                    style={loan.slNo === "Total" ? { color: "red" } : {}}
+                    className={classes.mobileHidden}
+                    style={{ color: "#718EBF" }}
                   >
-                    {loan.loanMoney}
+                    Duration
                   </TableCell>
                   <TableCell
-                    style={loan.slNo === "Total" ? { color: "red" } : {}}
+                    className={classes.mobileHidden}
+                    style={{ color: "#718EBF" }}
                   >
-                    {loan.leftToRepay}
+                    Interest Rate
                   </TableCell>
                   <TableCell
-                    style={loan.slNo === "Total" ? { color: "red" } : {}}
+                    className={classes.mobileHidden}
+                    style={{ color: "#718EBF" }}
                   >
-                    {loan.duration}
+                    Installment
                   </TableCell>
-                  <TableCell
-                    style={loan.slNo === "Total" ? { color: "red" } : {}}
-                  >
-                    {loan.interestRate}
-                  </TableCell>
-                  <TableCell
-                    style={loan.slNo === "Total" ? { color: "red" } : {}}
-                  >
-                    {loan.installment}
-                  </TableCell>
-                  <TableCell
-                    style={loan.slNo === "Total" ? { color: "red" } : {}}
-                  >
-                    {loan.repay && (
-                      <Button
-                        variant="outlined"
-                        style={{ borderRadius: "20px" }}
-                      >
-                        {loan.repay}
-                      </Button>
-                    )}
-                  </TableCell>
+                  <TableCell style={{ color: "#718EBF" }}>Repay</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </CardContent>
-    </Card>
+              </TableHead>
+              <TableBody>
+                {loans.map((loan, index) => (
+                  <TableRow key={index}>
+                    <TableCell
+                      className={classes.mobileHidden}
+                      style={
+                        loan.slNo === "Total" ? { color: "red" } : commonStyle
+                      }
+                    >
+                      {loan.slNo}
+                    </TableCell>
+                    <TableCell
+                      style={
+                        loan.slNo === "Total" ? { color: "red" } : commonStyle
+                      }
+                    >
+                      {loan.loanMoney}
+                    </TableCell>
+                    <TableCell
+                      style={
+                        loan.slNo === "Total" ? { color: "red" } : commonStyle
+                      }
+                    >
+                      {loan.leftToRepay}
+                    </TableCell>
+                    <TableCell
+                      className={classes.mobileHidden}
+                      style={
+                        loan.slNo === "Total" ? { color: "red" } : commonStyle
+                      }
+                    >
+                      {loan.duration}
+                    </TableCell>
+                    <TableCell
+                      className={classes.mobileHidden}
+                      style={
+                        loan.slNo === "Total" ? { color: "red" } : commonStyle
+                      }
+                    >
+                      {loan.interestRate}
+                    </TableCell>
+                    <TableCell
+                      className={classes.mobileHidden}
+                      style={
+                        loan.slNo === "Total" ? { color: "red" } : commonStyle
+                      }
+                    >
+                      {loan.installment}
+                    </TableCell>
+                    <TableCell
+                      style={
+                        loan.slNo === "Total" ? { color: "red" } : commonStyle
+                      }
+                    >
+                      {loan.repay && (
+                        <Button
+                          variant="outlined"
+                          style={{ borderRadius: "20px" }}
+                        >
+                          {loan.repay}
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

@@ -16,6 +16,73 @@ import {
   ShimmerMainCreditCard,
   ShimmerPieChartPage,
 } from "./Shimmer";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { CopyIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+
+function DialogDemo() {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          setDialogOpen(true);
+        }}
+      >
+        btn
+      </button>
+      <Dialog
+        isOpen={dialogOpen}
+        onClose={() => {
+          setDialogOpen(false);
+        }}
+      >
+        <ContextMenu>
+          <ContextMenuTrigger>Right click</ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem>Open</ContextMenuItem>
+            <ContextMenuItem>Download</ContextMenuItem>
+            <DialogTrigger onClick={() => {}}>
+              <ContextMenuItem>
+                <span>Delete</span>
+              </ContextMenuItem>
+            </DialogTrigger>
+          </ContextMenuContent>
+        </ContextMenu>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. Are you sure you want to permanently
+              delete this file from our servers?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="submit">Confirm</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
 const HeadingTitle = ({ title }: { title: string }) => {
   return (
     <h1 className="text-[#343C6A] font-semibold lg:text-xl md:text-lg dark:text-[#9faaeb]">
@@ -93,6 +160,8 @@ const CreditCards = () => {
   }
   return (
     <div className="bg-[#f5f7fb] w-full p-5 gap-5 flex flex-col dark:bg-[#020817]">
+      <DialogDemo />
+
       <div className="flex-col gap-5">
         <HeadingTitle title="My Cards" />
 
@@ -130,7 +199,7 @@ const CreditCards = () => {
         </div>
       </div>
       <div className="flex flex-col gap-6 md:flex-row">
-        <div className="flex flex-col gap-5 basis-5/12 ">
+        <div className="flex flex-col gap-5 basis-5/12">
           <HeadingTitle title="Card Expense Statistics" />
           {loading ? <ShimmerPieChartPage /> : <PieChart />}
         </div>

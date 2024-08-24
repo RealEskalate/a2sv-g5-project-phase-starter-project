@@ -30,7 +30,7 @@ function LoginForm(req: any) {
 
   if (session.data) {
     // console.log('redirect user to posts', session);
-    // router.push('/bank-dash');
+    router.push('/bank-dash');
   }
 
   const {

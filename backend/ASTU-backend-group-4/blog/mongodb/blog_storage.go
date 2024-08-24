@@ -105,7 +105,7 @@ func (b *BlogStorage) CreateBlog(ctx context.Context, blog blogDomain.Blog) (str
 		return "", blogDomain.ErrUnableToCreateBlog
 	}
 
-	return result.InsertedID.(primitive.ObjectID).Hex(), nil
+	return result.InsertedID.(string), nil
 }
 
 // CreateComment implements BlogRepository.

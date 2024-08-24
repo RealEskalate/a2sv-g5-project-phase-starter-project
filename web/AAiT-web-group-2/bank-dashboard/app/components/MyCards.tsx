@@ -39,13 +39,17 @@ export function IsoToLocalDate(isoDate: string) {
 
 const MyCards = () => {
   return (
-    <div className="flex flex-col justify-between items-center snap-center text-white bg-my-card-bg-1 w-[350px] min-w-[300px] h-[235px] rounded-2xl shadow-lg">
-      <div className="flex justify-between px-6 pt-6 items-start w-full">
-        <div className="flex flex-col items-start">
-          <span className="font-extralight text-[14px] sm:text-[16px]">
-            Balance
-          </span>
-          <span className="text-[19px] sm:text-[24px]">$5,756</span>
+
+    <div
+      className=" flex flex-col justify-between items-center
+      text-white bg-my-card-bg-1 mx-auto w-my-card-width max-md:w-[260px] max-md:h-[170px] max-sm:w-[325px] h-[225px] 
+      rounded-my-card-radius font-lat shadow-lg "
+    >
+      <div className="flex justify-between px-6 max-md:px-2 pt-6 max-md:pt-3 items-start w-full">
+        <div className="flex flex-col items-start max-md:h-[33px]">
+          <span className="font-extralight text-sm max-md:text-[11px] max-md:w-[51px]">Balance</span>
+          <span className="text-lg w-[51px]">$5,756</span>
+
         </div>
         <ChipCard color="white" />
       </div>

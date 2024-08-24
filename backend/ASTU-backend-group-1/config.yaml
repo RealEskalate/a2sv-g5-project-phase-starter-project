@@ -5,7 +5,7 @@ database:
   uri: "mongodb://localhost:27017"
 email:
   key: "nenbydebhwkqanpf"
-port: "http://localhost:9090/"
+port: "http://localhost:8000/"
 jwt:
   jwtKey: "starterproject"
 gemini:

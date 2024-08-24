@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	infrastructure "astu-backend-g1/Infrastructure"
 	"astu-backend-g1/domain"
+	"astu-backend-g1/infrastructure"
 	usecase "astu-backend-g1/usecases"
 	"net/http"
 	"strconv"
@@ -38,40 +38,26 @@ func (cont *BlogController) HandleCreateBlog(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusOK, blog)
 	}
 }
+
+	
 func (cont *BlogController) HandleGetAllBlogs(ctx *gin.Context) {
-
-	page := ctx.Query("pageNumber")
-	ipage, err := strconv.Atoi(page)
-	if err != nil || ipage < 1 {
-		ipage = 1
-	}
-	pageSize := ctx.Query("pageSize")
-	ipageSize, err := strconv.Atoi(pageSize)
-	if err != nil || ipageSize < 1 {
-		ipageSize = 5
-	}
-	x := domain.BlogFilterOption{}
-	x.Pagination.Page = ipage
-	x.Pagination.PageSize = ipageSize
-
-	blogs, err := cont.usecase.FilterBlogs(x)
+	blogs, err := cont.usecase.GetAllBlogs()
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
 		ctx.IndentedJSON(http.StatusOK, blogs)
 	}
-
 }
-func (cont *BlogController) HandleGetBlogById(ctx *gin.Context) {
 
+func (cont *BlogController) HandleGetBlogById(ctx *gin.Context) {
 	blogs, err := cont.usecase.GetBlogByBLogId(ctx.Param("blogId"))
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
 		ctx.IndentedJSON(http.StatusOK, blogs)
 	}
-
 }
+
 func (cont *BlogController) HandleGetPopularBlog(ctx *gin.Context) {
 	blogs, err := cont.usecase.FindPopularBlog()
 	if err != nil {
@@ -79,8 +65,8 @@ func (cont *BlogController) HandleGetPopularBlog(ctx *gin.Context) {
 	} else {
 		ctx.IndentedJSON(http.StatusOK, blogs)
 	}
-
 }
+
 func (cont *BlogController) HandleFilterBlogs(ctx *gin.Context) {
 	var blf domain.BlogFilterOption
 	err := ctx.ShouldBindJSON(&blf)
@@ -88,6 +74,21 @@ func (cont *BlogController) HandleFilterBlogs(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, err)
 		return
 	}
+	// page := ctx.Query("pageNumber")
+	// ipage, err := strconv.Atoi(page)
+	// if err != nil || ipage < 1 {
+	// 	ipage = 1
+	// }
+	// pageSize := ctx.Query("pageSize")
+	// ipageSize, err := strconv.Atoi(pageSize)
+	// if err != nil || ipageSize < 1 {
+	// 	ipageSize = 5
+	// }
+	// x := domain.BlogFilterOption{}
+	// x.Pagination.Page = ipage
+	// x.Pagination.PageSize = ipageSize
+
+	// blogs, err := cont.usecase.FilterBlogs(x)
 
 	blogs, err := cont.usecase.FilterBlogs(blf)
 	if err != nil {
@@ -95,7 +96,6 @@ func (cont *BlogController) HandleFilterBlogs(ctx *gin.Context) {
 	} else {
 		ctx.IndentedJSON(http.StatusOK, blogs)
 	}
-
 }
 
 // todo: start tesing  here
@@ -112,8 +112,8 @@ func (cont *BlogController) HandleBlogUpdate(ctx *gin.Context) {
 	} else {
 		ctx.IndentedJSON(http.StatusOK, blog)
 	}
-
 }
+
 func (cont *BlogController) HandleBlogDelete(ctx *gin.Context) {
 	claims, err := infrastructure.GetClaims(ctx)
 	if err != nil {
@@ -126,8 +126,8 @@ func (cont *BlogController) HandleBlogDelete(ctx *gin.Context) {
 	} else {
 		ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Blog deleted"})
 	}
-
 }
+
 func (cont *BlogController) HandleBlogLikeOrDislike(ctx *gin.Context) {
 	interactionType := ctx.Param("type")
 	blogId := ctx.Param("blogId")
@@ -181,11 +181,9 @@ func (cont *BlogController) HandleCommentOnBlog(ctx *gin.Context) {
 	} else {
 		ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
 	}
-
 }
 
 func (cont *BlogController) HandleGetAllComments(ctx *gin.Context) {
-
 	comments, err := cont.usecase.GetAllComments(ctx.Param("blogId"))
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)

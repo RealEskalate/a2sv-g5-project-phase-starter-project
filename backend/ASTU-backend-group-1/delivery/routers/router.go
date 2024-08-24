@@ -1,8 +1,8 @@
 package router
 
 import (
-	infrastructure "astu-backend-g1/Infrastructure"
 	"astu-backend-g1/delivery/controllers"
+	"astu-backend-g1/infrastructure"
 
 	_ "astu-backend-g1/delivery/docs"
 
@@ -25,7 +25,6 @@ func NewMainRouter(uc controllers.UserController, bc controllers.BlogController,
 	}
 }
 
-// @title Blog API in Golang
 func (gr *MainRouter) GinBlogRouter() {
 
 	router := gin.Default()
@@ -38,6 +37,9 @@ func (gr *MainRouter) GinBlogRouter() {
 	userrouter := router.Group("/users")
 	{
 	
+		userrouter.GET("/", gr.handler.GetUsers)
+		userrouter.GET("/:id", gr.handler.GetUserByID)
+		userrouter.PUT("/:id", gr.handler.UpdateUser)
 		userrouter.POST("/register", gr.handler.Register)
 		userrouter.GET("/accountVerification", gr.handler.AccountVerification)
 		userrouter.POST("/login", gr.handler.LoginUser)

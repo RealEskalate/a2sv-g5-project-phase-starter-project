@@ -1,12 +1,9 @@
-"use client"
-import SettingPage from '@/components/settings/SettingPage'
-import React from 'react'
+"use client";
+import SettingPage from "@/components/settings/SettingPage";
+import React from "react";
 
 const SettingDashboard = () => {
-  
-  return (
-    <SettingPage />
-  )
-}
+  return <SettingPage />;
+};
 
-export default SettingDashboard
+export default SettingDashboard;

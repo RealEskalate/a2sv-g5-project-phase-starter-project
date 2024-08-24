@@ -27,13 +27,16 @@ type blogController interface {
 	GetComment() gin.HandlerFunc
 	UpdateComment() gin.HandlerFunc
 	DeleteComment() gin.HandlerFunc
-	CreateLike() gin.HandlerFunc
+
+	Like() gin.HandlerFunc
+	DisLike() gin.HandlerFunc
 }
 
 type BlogController struct {
-	BlogUsecase    domain.BlogUsecase
-	CommentUsecase domain.CommentUsecase
-	Env            *bootstrap.Env
+	BlogUsecase     domain.BlogUsecase
+	CommentUsecase  domain.CommentUsecase
+	ReactionUsecase domain.ReactionUsecase
+	Env             *bootstrap.Env
 }
 
 func (bc *BlogController) GetBlogs() gin.HandlerFunc {
@@ -93,12 +96,13 @@ func (bc *BlogController) GetBlog() gin.HandlerFunc {
 
 func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		userID := c.MustGet("x-user-id").(string)
 		var newBlog domain.BlogIn
 		if err := c.ShouldBindJSON(&newBlog); err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
-		blog, err := bc.BlogUsecase.CreateBlog(context.Background(), &newBlog)
+		blog, err := bc.BlogUsecase.CreateBlog(context.Background(), userID, &newBlog)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
@@ -289,13 +293,50 @@ func (bc *BlogController) UpdateComment() gin.HandlerFunc {
 func (bc *BlogController) DeleteComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		commentID := c.Param("comment_id")
-
-		err := bc.CommentUsecase.DeleteComment(c, commentID)
+		comment, err := bc.CommentUsecase.GetComment(c, commentID)
+		userID := c.MustGet("x-user-id").(string)
+		role := c.MustGet("x-user-role").(string)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		if comment.UserID.Hex() != userID && role != "admin" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+			return
+		}
+		err = bc.CommentUsecase.DeleteComment(c, commentID)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		c.JSON(http.StatusNoContent, gin.H{})
+	}
+}
+func (bc *BlogController) Like() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.MustGet("x-user-id").(string)
+		BlogID := c.Param("id")
+		// .blogs/:id/like
+		err := bc.ReactionUsecase.ToggleLike(c, BlogID, userID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, nil)
+	}
+}
+func (bc *BlogController) Dislike() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.MustGet("x-user-id").(string)
+		BlogID := c.Param("id")
+		// .blogs/:id/like
+		log.Println("[ctrl] disliking blog", BlogID)
+		err := bc.ReactionUsecase.ToggleDislike(c, BlogID, userID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, nil)
 	}
 }

@@ -35,10 +35,11 @@ func (blog *Blog) UpdatePopularity() {
 
 // defines the structure for the blogs that will be  received from the request when creating and updating
 type BlogIn struct {
-	ID      primitive.ObjectID `json:"id" bson:"_id"`
-	Title   string             `json:"title" bson:"title" binding:"required"`
-	Tags    []string           `json:"tags" bson:"tags"`
-	Content string             `json:"content" bson:"content" binding:"required"`
+	ID       primitive.ObjectID `json:"id" bson:"_id"`
+	AuthorID primitive.ObjectID `json:"author_id" bson:"author_id"`
+	Title    string             `json:"title" bson:"title" binding:"required"`
+	Tags     []string           `json:"tags" bson:"tags"`
+	Content  string             `json:"content" bson:"content" binding:"required"`
 }
 
 type BlogUpdate struct {
@@ -125,8 +126,12 @@ type CommentRepository interface {
 }
 
 type ReactionRepository interface {
-	GetReaction(c context.Context, blogID, userID string) (Reaction, error)
-	UpdateReaction(c context.Context, blogID, userID string, reaction Reaction) error
+	Like(c context.Context, blogID, userID string) error
+	Dislike(c context.Context, blogID, userID string) error
+	RemoveLike(c context.Context, blogID, userID string) error
+	RemoveDislike(c context.Context, blogID, userID string) error
+	IsPostLiked(c context.Context, blogID, userID string) (bool, error)
+	IsPostDisliked(c context.Context, blogID, userID string) (bool, error)
 }
 
 type BlogUsecase interface {
@@ -135,7 +140,7 @@ type BlogUsecase interface {
 	GetBlogByID(c context.Context, blogID string) (Blog, error)
 	GetByPopularity(c context.Context, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
 	Search(c context.Context, searchTerm string, limit int64, page int64) ([]Blog, mongopagination.PaginationData, error)
-	CreateBlog(c context.Context, newBlog *BlogIn) (Blog, error)
+	CreateBlog(c context.Context, userID string, newBlog *BlogIn) (Blog, error)
 	BatchCreateBlog(c context.Context, newBlogs *[]BlogIn) error
 	UpdateBlog(c context.Context, blogID string, updatedBlog *BlogIn) (Blog, error)
 	DeleteBlog(c context.Context, blogID string) error
@@ -152,5 +157,5 @@ type CommentUsecase interface {
 
 type ReactionUsecase interface {
 	ToggleLike(c context.Context, blogID, userID string) error
-	ToogleDislike(c context.Context, blogID, userID string) error
+	ToggleDislike(c context.Context, blogID, userID string) error
 }

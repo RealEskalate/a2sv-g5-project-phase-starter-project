@@ -8,6 +8,7 @@ import (
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain"
 	mongopagination "github.com/gobeam/mongo-go-pagination"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -145,7 +146,13 @@ func (b *blogUsecase) Search(c context.Context, searchTerm string, limit int64, 
 	return blogs, meta, nil
 }
 
-func (b *blogUsecase) CreateBlog(c context.Context, newBlog *domain.BlogIn) (domain.Blog, error) {
+func (b *blogUsecase) CreateBlog(c context.Context, userID string, newBlog *domain.BlogIn) (domain.Blog, error) {
+	ObjID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return domain.Blog{}, err
+	}
+
+	newBlog.AuthorID = ObjID
 	ctx, cancel := context.WithTimeout(c, b.contextTimeout)
 	defer cancel()
 

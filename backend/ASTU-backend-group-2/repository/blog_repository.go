@@ -125,20 +125,19 @@ func (br *blogRepository) Search(c context.Context, searchTerm string, limit int
 
 func (br *blogRepository) CreateBlog(c context.Context, newBlog *domain.BlogIn) (domain.Blog, error) {
 	collection := br.database.Collection(br.collection)
-
-	insertedBlog, err := collection.InsertOne(c, newBlog)
-
-	if err != nil {
-		return domain.Blog{}, err
-	}
-
 	blog := domain.Blog{}
-	blog.ID = insertedBlog.InsertedID.(primitive.ObjectID)
+	blog.ID = primitive.NewObjectID()
+
 	blog.Title = newBlog.Title
 	blog.Tags = newBlog.Tags
 	blog.Content = newBlog.Content
 	blog.CreatedAt = time.Now()
 	blog.UpdatedAt = time.Now()
+	_, err := collection.InsertOne(c, blog)
+
+	if err != nil {
+		return domain.Blog{}, err
+	}
 
 	return blog, nil
 }
@@ -251,37 +250,69 @@ func getFilteredBlog(c context.Context, collection *mongo.Collection, limit int6
 	return blogs, paginatedData.Pagination, nil
 }
 func (br *blogRepository) UpdateLikeCount(c context.Context, blogID string, increment bool) error {
-
 	collection := br.database.Collection(br.collection)
 
+	// Convert blogID to a MongoDB ObjectID
 	ID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return err
 	}
 
-	if increment {
-		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"like_count": 1}})
-	} else {
-		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"like_count": -1}})
+	// Define the aggregation pipeline for updating the counts
+	pipeline := bson.A{
+		bson.M{
+			"$set": bson.M{
+				"like_count":    bson.M{"$size": "$likes"},
+				"dislike_count": bson.M{"$size": "$dislikes"},
+			},
+		},
 	}
 
-	return err
+	// Perform the update with an aggregation pipeline
+	_, err = collection.UpdateOne(
+		c,
+		bson.M{"_id": ID},
+		pipeline,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
-func (br *blogRepository) UpdateDislikeCount(c context.Context, blogID string, increment bool) error {
 
+func (br *blogRepository) UpdateDislikeCount(c context.Context, blogID string, increment bool) error {
 	collection := br.database.Collection(br.collection)
 
+	// Convert blogID to a MongoDB ObjectID
 	ID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return err
 	}
 
-	if increment {
-		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"dislike_count": 1}})
-	} else {
-		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"dislike_count": -1}})
+	// Define the aggregation pipeline for updating the counts
+	pipeline := bson.A{
+		bson.M{
+			"$set": bson.M{
+				"like_count":    bson.M{"$size": "$likes"},
+				"dislike_count": bson.M{"$size": "$dislikes"},
+			},
+		},
 	}
-	return err
+
+	// Perform the update with an aggregation pipeline
+	_, err = collection.UpdateOne(
+		c,
+		bson.M{"_id": ID},
+		pipeline,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 func (br *blogRepository) UpdateCommentCount(c context.Context, blogID string, increment bool) error {
 	collection := br.database.Collection(br.collection)

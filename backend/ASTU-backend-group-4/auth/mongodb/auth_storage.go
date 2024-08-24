@@ -33,19 +33,22 @@ func NewAuthStorage(usercollection *mongo.Collection, tokencollection *mongo.Col
 }
 
 func (au *AuthUserImple) CreateUser(ctx context.Context, user auth.User) (string, error) {
+	user.ID = primitive.NewObjectID().Hex()
+
 	result, err := au.usercollection.InsertOne(ctx, user)
 	if err != nil {
 		return "", auth.ErrFailToCreateUser
 	}
-	return result.InsertedID.(primitive.ObjectID).Hex(), nil
+	return result.InsertedID.(string), nil
 }
 
 func (au *AuthUserImple) UpdateUser(ctx context.Context, user auth.User) (auth.User, error) {
-	userID, err := primitive.ObjectIDFromHex(user.ID)
+	_, err := primitive.ObjectIDFromHex(user.ID)
+
 	if err != nil {
 		return auth.User{}, auth.ErrIsnvalidID
 	}
-	filter := bson.D{bson.E{Key: "_id", Value: userID}}
+	filter := bson.D{bson.E{Key: "_id", Value: user.ID}}
 	update := bson.D{{Key: "$set", Value: bson.D{
 		{Key: "name", Value: user.Name},
 		{Key: "username", Value: user.Username},
@@ -77,10 +80,15 @@ func (au *AuthUserImple) GetUserByUsername(ctx context.Context, username string)
 }
 
 func (au *AuthUserImple) GetUserByID(ctx context.Context, id string) (auth.User, error) {
+	_, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return auth.User{}, auth.ErrIsnvalidID
+	}
+
 	var user auth.User
 
 	filter := bson.D{bson.E{Key: "id", Value: id}}
-	err := au.usercollection.FindOne(ctx, filter).Decode(&user)
+	err = au.usercollection.FindOne(ctx, filter).Decode(&user)
 
 	if err != nil {
 		return auth.User{}, auth.ErrNoUserWithId
@@ -142,7 +150,13 @@ func (au *AuthUserImple) DeleteUser(ctx context.Context, id string) error {
 }
 
 func (at *AuthTokenImple) RegisterRefreshToken(ctx context.Context, userId string, token string) error {
-	_, err := at.tokencollection.InsertOne(ctx, token)
+	savedToken := auth.Token{
+		UserId:       userId,
+		RefreshToken: token,
+	}
+	savedToken.ID = primitive.NewObjectID().Hex()
+
+	_, err := at.tokencollection.InsertOne(ctx, savedToken)
 	return err
 }
 
@@ -159,7 +173,7 @@ func (at *AuthTokenImple) GetRefreshToken(ctx context.Context, userId string) (s
 }
 
 func (at *AuthTokenImple) DeleteRefreshToken(ctx context.Context, token string) error {
-	filter := bson.D{bson.E{Key: "tokenstring"}}
+	filter := bson.D{bson.E{Key: "refresh_token", Value: token}}
 	result, err := at.tokencollection.DeleteOne(ctx, filter)
 	if err != nil {
 		return err

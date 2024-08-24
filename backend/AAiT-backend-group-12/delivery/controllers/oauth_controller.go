@@ -5,14 +5,23 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/markbates/goth/gothic"
+	"github.com/markbates/goth"
 )
 
-type OAuthController struct{}
+type OAuthController struct {
+	CompleteUserAuth func(res http.ResponseWriter, req *http.Request) (goth.User, error)
+	BeginAuthHandler func(res http.ResponseWriter, req *http.Request)
+}
 
 // NewOAuthController initializes the OAuth controller
-func NewOAuthController() *OAuthController {
-	return &OAuthController{}
+func NewOAuthController(
+	CompleteUserAuth func(res http.ResponseWriter, req *http.Request) (goth.User, error),
+	BeginAuthHandler func(res http.ResponseWriter, req *http.Request),
+) *OAuthController {
+	return &OAuthController{
+		CompleteUserAuth: CompleteUserAuth,
+		BeginAuthHandler: BeginAuthHandler,
+	}
 }
 
 // Handler for /auth/google/start
@@ -20,7 +29,7 @@ func (controller *OAuthController) GoogleAuthInit(c *gin.Context) {
 	query := c.Request.URL.Query()
 	query.Add("provider", "google")
 	c.Request.URL.RawQuery = query.Encode()
-	gothic.BeginAuthHandler(c.Writer, c.Request)
+	controller.BeginAuthHandler(c.Writer, c.Request)
 }
 
 // Handler for /auth/google/callback
@@ -28,7 +37,7 @@ func (controller *OAuthController) OAuthCallback(c *gin.Context) {
 	query := c.Request.URL.Query()
 	query.Add("provider", "google")
 	c.Request.URL.RawQuery = query.Encode()
-	user, err := gothic.CompleteUserAuth(c.Writer, c.Request)
+	user, err := controller.CompleteUserAuth(c.Writer, c.Request)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

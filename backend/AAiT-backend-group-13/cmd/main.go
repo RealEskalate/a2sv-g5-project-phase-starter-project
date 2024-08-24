@@ -65,13 +65,17 @@ func main() {
 	userController := initUserController(userRepo, hashService, jwtService, emailService)
 	blogController := initBlogController(blogRepo, cacheClient)
 	geminiController := initGeminiController(geminiService.NewReccomendationHandler(geminiModel))
+
 	commentController := initCommentController(blogRepo, cacheClient, *commentRepo, userRepo)
+
 
 	// Router configuration
 	routerConfig := router.Config{
 		Addr:        fmt.Sprintf(":%s", cfg.ServerPort),
 		BaseURL:     "/api",
+
 		Controllers: []common.IController{userController, blogController, geminiController, commentController},
+
 		JwtService:  jwtService,
 	}
 	r := router.NewRouter(routerConfig)
@@ -196,6 +200,7 @@ func initGeminiController(geminiHandler *geminiService.RecomendationHandler) *ge
 	return gemini.NewAiController(geminiHandler)
 }
 
+
 func initCommentController(blogRepo *blogrepo.Repo, cacheService *cache.RedisCache, commentRepo commentrepo.Repo, userRepo *userrepo.Repo) *commentcontroller.CommentController {
 	addHandler := commentcmd.NewHandler(blogRepo, userRepo, commentRepo)
 	deleteHandler := commentcmd.New(blogRepo, commentRepo)
@@ -209,3 +214,4 @@ func initCommentController(blogRepo *blogrepo.Repo, cacheService *cache.RedisCac
 		GetBlogComHandler: getBlogComHandler,
 	})
 }
+

@@ -146,23 +146,23 @@ export default function Home() {
       <div className="flex justify-between gap-8 overflow-x-auto [&::-webkit-scrollbar]:hidden ">
         <Card1
           text="Personal Loans"
-          img="/personal.png"
+          img="/personal.svg"
           num={data?.personalLoan}
           // num = {2}
         />
         <Card1
           text="Corporate Loans"
-          img="/corporate.png"
+          img="/corporate.svg"
           num={data?.corporateLoan}
           // num={2}
         />
         <Card1
           text="Business Loans"
-          img="/business.png"
+          img="/business.svg"
           num={data?.businessLoan}
           // num = {2}
         />
-        <Card1 text="Custom Loans" img="/custom.png" num="Choose Money" />
+        <Card1 text="Custom Loans" img="/custom.svg" num="Choose Money" />
       </div>
       <div className="my-4 text-2xl font-bold text-[#333B69] dark:text-[#9faaeb]">
         Active Loans Overview

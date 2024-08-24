@@ -11,8 +11,7 @@ class SignUpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
             leading: IconButton(
               onPressed: () { Navigator.push(
@@ -32,7 +31,7 @@ class SignUpPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text("Sign into your account",
+              Text("Create your account",
                   style: GoogleFonts.poppins(
                       textStyle: const TextStyle(
                     color: Colors.black,
@@ -84,7 +83,7 @@ class SignUpPage extends StatelessWidget {
                                   RoundedRectangleBorder(
                                       borderRadius:
                                           BorderRadius.circular(12.0)))),
-                          child: const Text("SIGN IN"),
+                          child: const Text("SIGN UP"),
                         ),
                       ),
                       const Redirect(
@@ -98,8 +97,7 @@ class SignUpPage extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }
 

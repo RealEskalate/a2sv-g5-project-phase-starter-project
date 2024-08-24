@@ -20,6 +20,7 @@ void main() {
         GetCurrentUserUsecase(authRepository: mockAuthRepository);
   });
   const tUserEntity =  UserEntity(
+    id: '1',
     email: 'ley@gmail.com',
     name: 'ley',
   );

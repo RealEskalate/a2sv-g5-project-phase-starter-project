@@ -21,7 +21,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDataSource {
   Future<UserModel> getCurrentUser() async {
     final token = await authLocalDataSource.getToken();
     final response =
-        await client.get(Uri.parse(Urls2.getCurrentUser()), headers: {
+        await client.get(Uri.parse(Urls3.getCurrentUser()), headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     });
@@ -35,7 +35,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> logIn(LogInModel logInModel) async {
-    final response = await client.post(Uri.parse(Urls2.login()),
+    final response = await client.post(Uri.parse(Urls3.login()),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(logInModel));
 
@@ -59,7 +59,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> signUp(SignUpModel signUpModel) async {
     final response = await client.post(
-      Uri.parse(Urls2.signUp()),
+      Uri.parse(Urls3.signUp()),
       body: jsonEncode(signUpModel),
       headers: {'Content-Type': 'application/json'},
     );

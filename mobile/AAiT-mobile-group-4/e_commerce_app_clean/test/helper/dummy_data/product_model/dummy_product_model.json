@@ -4,6 +4,9 @@
   "description": "something you wear",
   "price": 566,
   "imageUrl": "https://www.google.com",
-  "category": "men's shoes",
-  "rating": 3
+  "seller": {
+    "_id": "1",
+    "name": "Mr. User",
+    "email": "user@gmail.com"
+  }
 }

@@ -99,7 +99,7 @@ class ChatPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          WithTime(
+                          withTime(
                             text: 'Have a great working week ajsgj sjhfge wiywiory asgfjsd skfhkds sjkfdjgf !!', 
                             isCurrentUser: index % 2 != 0 ? true : false, 
                             type: index % 3 != 0 ?'text': 'text',
@@ -122,7 +122,7 @@ class ChatPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          WithTime(
+                          withTime(
                             text: 'Have a great working week!!', 
                             isCurrentUser: index % 2 != 0 ? true : false, 
                             type: index % 3 != 0 ?'text': 'text',

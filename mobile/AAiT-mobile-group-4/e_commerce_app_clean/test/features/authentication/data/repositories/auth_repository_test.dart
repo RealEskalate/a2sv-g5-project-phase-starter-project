@@ -23,6 +23,7 @@ void main() {
   const tUserModel = UserModel(
     name: 'ley',
     email: 'ley@gmail.com',
+    id: '1',
   );
   group('get current user', () {
     test(

@@ -18,3 +18,15 @@ class Urls2 {
   static const String addProduct = '$baseUrl/products';
   static String updateProductId(String id) => '$baseUrl/products/$id';
 }
+
+class Urls3 {
+  static const String baseUrl = 'https://g5-flutter-learning-path-be.onrender.com/api/v3';
+  static String getCurrentUser() => '$baseUrl/users/me';
+  static String login() => '$baseUrl/auth/login';
+  static String signUp() => '$baseUrl/auth/register';
+  static String getProductId(String id) => '$baseUrl/products/$id';
+  static String deleteProductId(String id) => '$baseUrl/products/$id';
+  static const String getProducts = '$baseUrl/products';
+  static const String addProduct = '$baseUrl/products';
+  static String updateProductId(String id) => '$baseUrl/products/$id';
+}

@@ -101,12 +101,14 @@ const Header = ({ title }: { title: string }) => {
               isDarkMode ? "bg-gray-800" : "bg-[#F5F7FA]"
             }`}
           >
-            <Image
-              src="/icons/Settings.svg"
-              width={22}
-              height={22}
-              alt="Settings"
-            />
+            <Link href="/dashboard/setting">
+              <Image
+                src="/icons/Settings.svg"
+                width={22}
+                height={22}
+                alt="Settings"
+              />
+            </Link>
           </div>
 
           <div

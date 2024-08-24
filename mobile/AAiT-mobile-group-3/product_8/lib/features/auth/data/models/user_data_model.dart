@@ -25,4 +25,21 @@ class UserDataModel extends UserDataEntity {
       throw JsonParsingException();
     }
   }
+  // add toJson method
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'email': email,
+      'name': name,
+    };
+  }
+
+  // to model
+  static UserDataModel toModel(UserDataEntity entity) {
+    return UserDataModel(
+      id: entity.id,
+      email: entity.email,
+      name: entity.name,
+    );
+  }
 }

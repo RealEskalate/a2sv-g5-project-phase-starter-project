@@ -5,7 +5,14 @@ class Urls {
       'https://g5-flutter-learning-path-be.onrender.com/api/v2';
   static const String baseUrl2 =
       'https://g5-flutter-learning-path-be.onrender.com/api/v2';
+  static const String baseUrl3 =
+      'https://g5-flutter-learning-path-be.onrender.com/api/v3';
 
   // static const String apiKey = 'api_key=1f54bd990f1cdfb230adb312546d765d';
   static String getProdutbyId(String id) => '$baseUrl/$id';
+
+  static String myChats() => '$baseUrl3/chats';
+  static String myChatById(String chatId) => '$baseUrl3/chats/$chatId';
+  static String getChatMessages(String chatId) =>
+      '$baseUrl3/chats/$chatId/messages';
 }

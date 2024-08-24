@@ -142,39 +142,39 @@ export default function Home() {
 
   if (loading || Loading)
     return (
-      <div className="bg-gray-100 p-6 animate-pulse">
+      <div className="bg-gray-100 dark:bg-gray-900 p-6 animate-pulse">
         <div className="flex justify-between flex-wrap lg:flex-nowrap gap-4">
-          <div className="bg-gray-300 rounded-lg w-1/3 h-20"></div>
-          <div className="bg-gray-300 rounded-lg w-1/3 h-20"></div>
-          <div className="bg-gray-300 rounded-lg w-1/3 h-20"></div>
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
         </div>
         <div className="grid grid-cols-2 gap-6">
           <div className="col-span-2 lg:col-span-1">
-            <div className="my-4 bg-gray-300 rounded-lg h-8 w-1/2"></div>
-            <div className="bg-gray-300 rounded-lg h-40"></div>
+            <div className="my-4 bg-gray-300 dark:bg-gray-700 rounded-lg h-8 w-1/2"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-40"></div>
           </div>
           <div className="col-span-2 lg:col-span-1">
-            <div className="my-4 bg-gray-300 rounded-lg h-8 w-1/2"></div>
-            <div className="bg-gray-300 rounded-lg h-40"></div>
+            <div className="my-4 bg-gray-300 dark:bg-gray-700 rounded-lg h-8 w-1/2"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-40"></div>
           </div>
         </div>
         <div className="grid grid-cols-12 gap-8">
           <div className="col-span-12 lg:col-span-7">
-            <div className="my-4 bg-gray-300 rounded-lg h-8 w-1/2"></div>
-            <div className="bg-gray-300 rounded-lg h-24 my-3"></div>
-            <div className="bg-gray-300 rounded-lg h-24 my-3"></div>
-            <div className="bg-gray-300 rounded-lg h-24 my-3"></div>
+            <div className="my-4 bg-gray-300 dark:bg-gray-700 rounded-lg h-8 w-1/2"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-24 my-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-24 my-3"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-24 my-3"></div>
           </div>
           <div className="col-span-12 lg:col-span-5">
-            <div className="my-4 bg-gray-300 rounded-lg h-8 w-1/2"></div>
-            <div className="bg-gray-300 rounded-lg h-72"></div>
+            <div className="my-4 bg-gray-300 dark:bg-gray-700 rounded-lg h-8 w-1/2"></div>
+            <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-72"></div>
           </div>
         </div>
       </div>
     );
 
   return (
-    <div className="bg-gray-100 p-6">
+    <div className="bg-gray-100 p-6 dark:bg-[#020817]">
       <div className="flex justify-between flex-wrap lg:flex-nowrap">
         <Card1
           text="Total Invested Amount"
@@ -186,13 +186,13 @@ export default function Home() {
       </div>
       <div className="grid grid-cols-2 gap-6">
         <div className="col-span-2 lg:col-span-1">
-          <div className="my-4 text-2xl font-bold text-[#333B69]">
+          <div className="my-4 text-2xl font-bold text-[#333B69] dark:text-[#9faaeb]">
             Yearly Total Investment
           </div>
           <Linechart />
         </div>
         <div className="col-span-2 lg:col-span-1">
-          <div className="my-4 text-2xl font-bold col-span-1 text-[#333B69]">
+          <div className="my-4 text-2xl font-bold col-span-1 text-[#333B69] dark:text-[#9faaeb]">
             Monthly Revenue
           </div>
           <div>
@@ -202,11 +202,11 @@ export default function Home() {
       </div>
       <div className="grid grid-cols-12 gap-8">
         <div className="col-span-12 lg:col-span-7">
-          <div className="my-4 text-2xl font-bold text-[#333B69]">
+          <div className="my-4 text-2xl font-bold text-[#333B69] dark:text-[#9faaeb]">
             My Investment
           </div>
           <div>
-            <div className="flex bg-white rounded-2xl p-5 justify-between my-3">
+            <div className="flex bg-white rounded-2xl p-5 justify-between my-3 dark:bg-[#050914] dark:border dark:border-[#333B69]">
               <div>
                 <svg
                   width="45"
@@ -247,7 +247,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="flex bg-white rounded-2xl p-5 justify-between my-3">
+            <div className="flex bg-white rounded-2xl p-5 justify-between my-3 dark:bg-[#050914] dark:border dark:border-[#333B69]">
               <div>
                 <svg
                   width="45"
@@ -300,7 +300,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="flex bg-white rounded-2xl p-5 justify-between my-3">
+            <div className="flex bg-white rounded-2xl p-5 justify-between my-3 dark:bg-[#050914] dark:border dark:border-[#333B69]">
               <div>
                 <svg
                   width="45"
@@ -348,37 +348,43 @@ export default function Home() {
           </div>
         </div>
         <div className="col-span-12 lg:col-span-5">
-          <div className="my-4 text-2xl font-bold text-[#333B69]">
+          <div className="my-4 text-2xl font-bold text-[#333B69] dark:text-[#9faaeb]">
             Trending Stock
           </div>
-          <Table className="bg-white shadow-1 rounded-3xl">
-            <TableHeader>
+          <Table className="bg-white shadow-1 rounded-3xl ">
+            <TableHeader className="dark:bg-[#050914] dark:border dark:border-[#333B69]">
               <TableRow className="text-[#718EBF] p1">
-                <TableHead className="w-[100px] text-[#718EBF] h1 hidden md:table-cell">
+                <TableHead className="w-[100px] text-[#718EBF] dark:text-[#9faaeb] h1 hidden md:table-cell">
                   SL No
                 </TableHead>
-                <TableHead className="text-[#718EBF]">Name</TableHead>
-                <TableHead className="text-[#718EBF]">Price</TableHead>
-                <TableHead className="text-[#718EBF]">Return</TableHead>
+                <TableHead className="text-[#718EBF] dark:text-[#9faaeb]">
+                  Name
+                </TableHead>
+                <TableHead className="text-[#718EBF] dark:text-[#9faaeb]">
+                  Price
+                </TableHead>
+                <TableHead className="text-[#718EBF] dark:text-[#9faaeb]">
+                  Return
+                </TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="dark:bg-[#050914] dark:border dark:border-[#333B69]">
               {invoices.map((invoice) => (
                 <TableRow key={invoice.slno}>
-                  <TableCell className="font-medium text-[#232323] px-5  h-2 p-3">
+                  <TableCell className="font-medium text-[#232323] dark:text-[#718EBF] px-5  h-2 p-3">
                     {invoice.slno}
                   </TableCell>
-                  <TableCell className="font-medium text-[#232323] h-2 p-3">
+                  <TableCell className="font-medium text-[#232323] dark:text-[#718EBF] h-2 p-3">
                     {invoice.name}
                   </TableCell>
-                  <TableCell className="font-medium text-[#232323] h-2 p-3">
+                  <TableCell className="font-medium text-[#232323] dark:text-[#718EBF] h-2 p-3">
                     {invoice.price}
                   </TableCell>
                   <TableCell
                     className={
                       invoice.slno === "03." || invoice.slno === "05."
-                        ? "font-medium text-[#16DBAA] h-2 p-3"
-                        : "font-medium text-[#FE5C73] h-2 p-3"
+                        ? "font-medium text-[#16DBAA] h-2 p-3 dark:text-[#718EBF]"
+                        : "font-medium text-[#FE5C73] h-2 p-3 dark:text-[#718EBF]"
                     }
                   >
                     {invoice.return}

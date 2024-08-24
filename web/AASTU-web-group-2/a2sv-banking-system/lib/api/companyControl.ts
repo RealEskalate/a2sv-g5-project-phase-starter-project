@@ -1,7 +1,7 @@
 import axios from "axios";
 import Company from "../../types/companyInterface";
 
-const baseUrl = "https://a2svwallet.onrender.com";
+const baseUrl = "https://bank-dashboard-mih0.onrender.com";
 
 export async function getCompanyById(id: string, accessToken: string) {
   try {

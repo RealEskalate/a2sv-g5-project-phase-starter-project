@@ -11,7 +11,7 @@ export default function Header({ }: Props) {
     return (
         <div className='flex justify-between items-center h-[100px] px-[30px] md:px-[40px]'>
             <div className="headerTitle">
-                <h1>{HeadersTitle(currentPath)}</h1>
+                <h1 className='text-[28px] text-[#343C6A]'>{HeadersTitle(currentPath)}</h1>
             </div>
             <div className="headerRight flex gap-x-[35px] items-center ">
                 <div className='md:flex gap-x-[30px] hidden '>

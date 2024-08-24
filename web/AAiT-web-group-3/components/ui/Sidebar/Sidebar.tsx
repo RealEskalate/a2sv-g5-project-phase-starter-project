@@ -21,7 +21,7 @@ const Sidebar = () => {
           <Image
             // TODO: Change Image
             src="https://res.cloudinary.com/dtt1wnvfb/image/upload/v1701954159/photo_2023-12-07%2016.02.23.jpeg.jpg"
-            width={183}
+            width={223}
             height={36}
             alt="Logo"
           />

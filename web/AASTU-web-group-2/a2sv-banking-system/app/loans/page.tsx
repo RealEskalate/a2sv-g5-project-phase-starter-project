@@ -93,7 +93,7 @@ export default function Home() {
 
       try {
         // Fetch f
-        const data1 = await activeloansall(access_token, 10, page);
+        const data1 = await activeloansall(access_token, 9, page);
         // console.log(data1);
         setf(data1.content);
         settotal(data1.totalPages);
@@ -115,6 +115,7 @@ export default function Home() {
     return (
       <div className="bg-gray-100 dark:bg-gray-900 p-6 animate-pulse">
         <div className="flex justify-between flex-wrap lg:flex-nowrap gap-4">
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
           <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
           <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
           <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
@@ -187,7 +188,7 @@ export default function Home() {
           </TableRow>
         </TableHeader>
         <TableBody className="dark:bg-[#050914] ">
-          {f?.map((invoice: invoices) => (
+          {f?.map((invoice: invoices, idx:number) => (
             <TableRow key={invoice.serialNumber}>
               <TableCell
                 className={
@@ -196,7 +197,7 @@ export default function Home() {
                     : "font-medium text-[#FE5C73] hidden md:table-cell dark:text-[#9faaeb]"
                 }
               >
-                {invoice.serialNumber}
+               {page}{idx+1}
               </TableCell>
               <TableCell
                 className={
@@ -267,25 +268,46 @@ export default function Home() {
         </TableBody>
       </Table>
       <div className="flex justify-center items-center pt-5">
-        <div className="mx-3 text-blue-900 dark:text-[#9faaeb] font-bold text-2xl">
-          Pages
-        </div>
         <div className="flex flex-wrap">
-          {numbers.map((number) => 
-          ( 
+          <button
+            onClick={() => handlePage(page - 1)}
+            className={
+              page > 0
+                ? "mx-3 text-slate-400 hover:text-slate-700 dark:text-[#9faaeb] font-bold text-xl"
+                : "hidden"
+            }
+          >
+            {"< "}Previous
+          </button>
+          {numbers.map((number) => (
             <button
               key=""
               onClick={() => handlePage(number - 1)}
               className={
-                page != number - 1
-                  ? "m-3 p-2 border border-x-4 border-blue-500"
-                  : "m-3 p-2 border border-x-4 border-red-500"
+                (page >= number && page - number < 1) ||
+                (number >= page && number - page <= 2) ||
+                (number === 3 && page < 2) ||
+                (number === page - 1 && page === total - 1)
+                  ? page != number - 1
+                    ? "m-2 px-2 bg-blue-500 hover:bg-blue-700 rounded"
+                    : "m-2 px-2 bg-red-500 hover:bg-red-700"
+                  : "hidden"
               }
             >
               {" "}
               {number}
             </button>
           ))}
+          <button
+            onClick={() => handlePage(page + 1)}
+            className={
+              page < total - 1
+                ? "mx-3 text-slate-400 hover:text-slate-700 dark:text-[#9faaeb] font-bold text-xl"
+                : "hidden"
+            }
+          >
+            Next{" >"}
+          </button>
         </div>
       </div>
     </div>

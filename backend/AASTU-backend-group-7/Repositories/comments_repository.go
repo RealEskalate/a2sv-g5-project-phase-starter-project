@@ -15,7 +15,6 @@ type commentRepository struct {
 
 func NewCommentRepository(blogcollection Domain.BlogCollections) *commentRepository {
 	return &commentRepository{
-		postcollection:    NewBlogRepository(blogcollection),
 		commentCollection: blogcollection.Comments,
 	}
 }

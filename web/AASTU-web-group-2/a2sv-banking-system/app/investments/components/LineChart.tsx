@@ -106,16 +106,16 @@ export default function Linechart() {
 
   if (loading || Loading)
     return (
-      <div className="bg-white rounded-3xl border-none p-8 animate-shimmer">
-        <div className="h-6 w-full bg-gray-300 rounded-md mb-4"></div>
-        <div className="h-4 w-3/4 bg-gray-300 rounded-md mb-4"></div>
-        <div className="h-4 w-1/2 bg-gray-300 rounded-md mb-4"></div>
-        <div className="h-4 w-2/3 bg-gray-300 rounded-md"></div>
+      <div className="bg-white dark:bg-gray-800 rounded-3xl border-none p-8 animate-shimmer">
+        <div className="h-6 w-full bg-gray-300 dark:bg-gray-600 rounded-md mb-4"></div>
+        <div className="h-4 w-3/4 bg-gray-300 dark:bg-gray-600 rounded-md mb-4"></div>
+        <div className="h-4 w-1/2 bg-gray-300 dark:bg-gray-600 rounded-md mb-4"></div>
+        <div className="h-4 w-2/3 bg-gray-300 dark:bg-gray-600 rounded-md"></div>
       </div>
     );
   const { yearlyTotalInvestment } = data;
   return (
-    <Card className="bg-white rounded-3xl border-none ">
+    <Card className="bg-white rounded-3xl border-none dark:bg-[#050914] dark:border dark:border-[#333B69]">
       <CardContent className="pt-8 pb-6 w-full">
         <ChartContainer config={chartConfig}>
           <LineChart

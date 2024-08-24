@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { Bar, BarChart, ResponsiveContainer, XAxis } from "recharts";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useState, useEffect } from "react";
@@ -9,6 +9,8 @@ import {
   ChartTooltip, 
   ChartTooltipContent
 } from "@/components/ui/chart";
+
+import { TbFileSad } from "react-icons/tb";
 
 export default function Component() {
   const [bottomMargin, setBottomMargin] = useState(90);
@@ -22,6 +24,7 @@ export default function Component() {
     { day: "Thu", debit: 0, credit: 0 },
     { day: "Fri", debit: 0, credit: 0 },
   ]);
+  const [status, setStatus] = useState<'loading' | 'error' | 'success'>('loading');
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,7 +51,7 @@ export default function Component() {
       try {
         const expensesData = await getExpenses(0, 5); 
         const incomesData = await getIncomes(0, 5);
-        ``
+
         const updatedChartData = chartData.map((dayData) => {
           const dayExpenses = expensesData.data.content.filter(
             (transaction: { date: string | number | Date; }) => new Date(transaction.date).getDay() === getDayIndex(dayData.day)
@@ -56,17 +59,19 @@ export default function Component() {
           const dayIncomes = incomesData.data.content.filter(
             (transaction: { date: string | number | Date; }) => new Date(transaction.date).getDay() === getDayIndex(dayData.day)
           );                                
-          
+
           return {
             ...dayData,
             debit: dayExpenses.reduce((sum: any, tx: { amount: any; }) => sum + tx.amount, 0),
             credit: dayIncomes.reduce((sum: any, tx: { amount: any; }) => sum + tx.amount, 0),
           };
         });
-        
+
         setChartData(updatedChartData);
+        setStatus('success');
       } catch (error) {
         console.error("Failed to fetch transactions", error);
+        setStatus('error');
       }
     };
 
@@ -85,6 +90,25 @@ export default function Component() {
     debit: { color: "#1814F3" },
     credit: { color: "#FC7900" },
   } satisfies ChartConfig;
+
+  if (status === 'loading') {
+    return (
+      <div className="w-full h-[300px] bg-gray-200 rounded-lg animate-pulse">
+</div>
+
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="p-3 gap-4  flex flex-col justify-center items-center h-auto  dark:bg-dark   text-center ">
+        <TbFileSad
+          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+        />
+        <p className="text-red-500" >Failed to fetch</p>
+      </div>
+    );
+  }
 
   return (
     <Card className="flex flex-col w-full h-full">

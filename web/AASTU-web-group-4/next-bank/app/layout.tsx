@@ -22,6 +22,7 @@ export default function RootLayout({
         <Providers>
         <ProgressBar>
           {children}
+          
         </ProgressBar>
         </Providers>
         </body>

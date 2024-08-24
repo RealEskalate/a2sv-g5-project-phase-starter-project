@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/unrolled/secure"
 )
@@ -21,7 +23,7 @@ func NewSecureMiddleware() gin.HandlerFunc {
 			err := secureMiddleware.Process(c.Writer, c.Request)
 
 			if err != nil {
-				c.Abort()
+				c.AbortWithStatus(http.StatusInternalServerError)
 				return
 			}
 

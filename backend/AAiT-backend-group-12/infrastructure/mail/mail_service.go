@@ -108,7 +108,7 @@ func (s *MailService) EmailVerificationTemplate(hostUrl string, username string,
 }
 
 // PasswordResetTemplate returns the HTML template for the password reset email
-func (s *MailService) PasswordResetTemplate(hostUrl string, username string, token string) string {
+func (s *MailService) PasswordResetTemplate(token string) string {
 	return fmt.Sprintf(`
 		<!DOCTYPE html>
 		<html>

@@ -27,17 +27,17 @@ func (_m *MailServiceInterface) EmailVerificationTemplate(hostUrl string, userna
 	return r0
 }
 
-// PasswordResetTemplate provides a mock function with given fields: hostUrl, username, token
-func (_m *MailServiceInterface) PasswordResetTemplate(hostUrl string, username string, token string) string {
-	ret := _m.Called(hostUrl, username, token)
+// PasswordResetTemplate provides a mock function with given fields: token
+func (_m *MailServiceInterface) PasswordResetTemplate(token string) string {
+	ret := _m.Called(token)
 
 	if len(ret) == 0 {
 		panic("no return value specified for PasswordResetTemplate")
 	}
 
 	var r0 string
-	if rf, ok := ret.Get(0).(func(string, string, string) string); ok {
-		r0 = rf(hostUrl, username, token)
+	if rf, ok := ret.Get(0).(func(string) string); ok {
+		r0 = rf(token)
 	} else {
 		r0 = ret.Get(0).(string)
 	}

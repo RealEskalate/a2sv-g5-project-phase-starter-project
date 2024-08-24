@@ -16,9 +16,9 @@ import { RootState } from "./redux/store";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
-    children,
+	children,
 }: Readonly<{
-    children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
     return (
         <html lang="en">
@@ -41,49 +41,49 @@ export default function RootLayout({
 }
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
-    const { status } = useSession();
-    const darkmode = useSelector((state: RootState) => state.theme.darkMode);
-    const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+	const { status } = useSession();
+	const darkmode = useSelector((state: RootState) => state.theme.darkMode);
+	const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
-    useEffect(() => {
-        document.documentElement.setAttribute(
-            "data-theme",
-            darkmode ? "dark" : "light"
-        );
-    }, [darkmode]);
+	useEffect(() => {
+		document.documentElement.setAttribute(
+			"data-theme",
+			darkmode ? "dark" : "light"
+		);
+	}, [darkmode]);
 
-    const toggleSidebar = () => {
-        setIsSidebarVisible(!isSidebarVisible);
-    };
+	const toggleSidebar = () => {
+		setIsSidebarVisible(!isSidebarVisible);
+	};
 
-    const darkClass = darkmode ? "dark" : "";
-    return (
-        <div className={`min-h-screen flex ${darkClass}`}>
-            {status === "authenticated" && (
-                <SidebarWrapper
-                    isSidebarVisible={isSidebarVisible}
-                    toggleSidebar={toggleSidebar}
-                />
-            )}
-            <div className="flex flex-col dark:bg-gray-900 flex-1 transition-all duration-300">
-                <NavBar
-                    toggleSidebar={toggleSidebar}
-                    isSidebarVisible={isSidebarVisible}
-                />
-                <main className=" dark:bg-gray-900">{children}</main>
-            </div>
-        </div>
-    );
+	const darkClass = darkmode ? "dark" : "";
+	return (
+		<div className={`min-h-screen flex ${darkClass}`}>
+			{status === "authenticated" && (
+				<SidebarWrapper
+					isSidebarVisible={isSidebarVisible}
+					toggleSidebar={toggleSidebar}
+				/>
+			)}
+			<div className="flex flex-col dark:bg-gray-900 flex-1 transition-all duration-300">
+				<NavBar
+					toggleSidebar={toggleSidebar}
+					isSidebarVisible={isSidebarVisible}
+				/>
+				<main className=" dark:bg-gray-900">{children}</main>
+			</div>
+		</div>
+	);
 }
 
 function SidebarWrapper({
-    isSidebarVisible,
-    toggleSidebar,
+	isSidebarVisible,
+	toggleSidebar,
 }: {
-    isSidebarVisible: boolean;
-    toggleSidebar: () => void;
+	isSidebarVisible: boolean;
+	toggleSidebar: () => void;
 }) {
-    const { status } = useSession();
+	const { status } = useSession();
 
     return (
         status === "authenticated" && (

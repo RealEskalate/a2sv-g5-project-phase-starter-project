@@ -30,11 +30,9 @@ const LoanPage = () => {
 	const { data: session, status } = useSession();
 	const user = session?.user as ExtendedUser;
 
-	const accessToken = user.accessToken;
-
 	useEffect(() => {
 		const fetchLoanData = async () => {
-			if (!accessToken) {
+			if (!user) {
 				console.error("Access token is missing");
 				return;
 			}
@@ -43,7 +41,7 @@ const LoanPage = () => {
 					`https://bank-dashboard-rsf1.onrender.com/active-loans/all?page=${currentPage}&size=8`,
 					{
 						headers: {
-							Authorization: `Bearer ${accessToken}`,
+							Authorization: `Bearer ${user.accessToken}`,
 						},
 					}
 				);
@@ -64,7 +62,7 @@ const LoanPage = () => {
 		};
 
 		fetchLoanData();
-	}, [accessToken, currentPage]);
+	}, [status, session, user, currentPage]);
 
 	// Handle page change
 	const handlePreviousPage = () => {

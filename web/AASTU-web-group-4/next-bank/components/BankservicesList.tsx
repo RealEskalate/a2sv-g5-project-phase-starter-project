@@ -143,7 +143,8 @@ const BankservicesList: React.FC = () => {
         </h2>
         <div className="text-xl w-[100%] text-center gap-4 flex flex-col items-center  font-bold mb-4 text-red-500">
         <TbFileSad
-          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+          className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
+          strokeWidth={1}
         />
           <div> Failed to fetch the data</div>
         </div>

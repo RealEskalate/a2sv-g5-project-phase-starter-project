@@ -9,7 +9,7 @@ export interface UpdatedUser  {
   presentAddress: string;
   city: string;
   country: string;
-  profilePicture?: string | null;
+  profilePicture?: string;
 };
 
 export interface UserPreferenceType {

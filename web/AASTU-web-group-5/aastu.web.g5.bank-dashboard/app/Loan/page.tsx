@@ -3,10 +3,9 @@ import LoanPage from "./LoanPage";
 import Login from "../login/page";
 function Page() {
 	return (
-		<>
-			<Login />
+		<div className="dark:bg-gray-900">
 			<LoanPage />
-		</>
+		</div>
 	);
 }
 

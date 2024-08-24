@@ -65,7 +65,7 @@ class _ChatPageState extends State<ChatPage> {
         ),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.phone_outlined),
+            icon: const Icon(Icons.call),
             onPressed: () {},
           ),
           IconButton(
@@ -92,7 +92,7 @@ class _ChatPageState extends State<ChatPage> {
           SafeArea(
               child: Container(
                 constraints: BoxConstraints(
-                maxHeight: 90, // Limit the height to avoid overflow
+                maxHeight: 70, // Limit the height to avoid overflow
               ),
               decoration: BoxDecoration(
           color: Colors.white,

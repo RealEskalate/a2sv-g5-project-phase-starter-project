@@ -1,17 +1,19 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../../auth/domain/entities/user.dart';
+import 'chat.dart';
 
 class Message extends Equatable {
+  final String messageId;
   final UserEntity sender;
-  final String chatId;
+  final ChatEntity chat;
   final String type;
   final String content;
- 
 
   Message(
-      {required this.sender,
-      required this.chatId,
+      {required this.messageId,
+      required this.sender,
+      required this.chat,
       required this.type,
       required this.content});
   @override

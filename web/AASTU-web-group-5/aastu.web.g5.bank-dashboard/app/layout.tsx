@@ -28,7 +28,7 @@ export default function RootLayout({
                         <PersistGate loading={null} persistor={persistor}>
 
                             <LayoutContent>
-                                <div className=" dark:bg-gray-900">
+                                <div className=" dark:bg-gray-950">
                                 {children}
                                 </div>
                             </LayoutContent>
@@ -90,7 +90,7 @@ function SidebarWrapper({
             <div
                 className={`fixed inset-0 bg-white z-50 sm:static sm:block ${
                     isSidebarVisible ? "block" : "hidden"
-                } dark:bg-gray-900 dark:text-white `}
+                } dark:bg-gray-800 dark:text-white `}
             >
                 <SideBar
                     isSidebarVisible={isSidebarVisible}

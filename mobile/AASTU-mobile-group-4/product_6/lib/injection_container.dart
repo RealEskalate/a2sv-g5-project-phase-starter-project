@@ -15,6 +15,14 @@ import 'features/auth/domain/usecases/login_usecase.dart';
 import 'features/auth/domain/usecases/logout_usecase.dart';
 import 'features/auth/domain/usecases/register_usecase.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/chat/data/datasources/chat_remote_datasource.dart';
+import 'features/chat/data/repository_impl.dart/chat_repository_impl.dart';
+import 'features/chat/domain/repository/chat_repository.dart';
+import 'features/chat/domain/usecase/delete_chart.dart';
+import 'features/chat/domain/usecase/get_all_chats.dart';
+import 'features/chat/domain/usecase/get_chat_byid.dart';
+import 'features/chat/domain/usecase/intiate_chat.dart';
+import 'features/chat/presentation/bloc/chat_bloc.dart';
 import 'features/product/data/data_sources/product_local_data_source.dart';
 import 'features/product/data/data_sources/product_remote_datasource.dart';
 import 'features/product/data/repository/product_repository_imp.dart';
@@ -42,14 +50,22 @@ Future<void> setupLocator() async {
   // Product Data sources
   locator.registerLazySingleton<ProductLocalDataSource>(
       () => ProductLocalDataSourceImpl(sharedPreferences: locator()));
-  locator.registerLazySingleton<ProductRemoteDatasource>(
-      () => ProductRemoteDatasourceImp(client: locator(), localDataSource: locator()));
+  locator.registerLazySingleton<ProductRemoteDatasource>(() =>
+      ProductRemoteDatasourceImp(
+          client: locator(), localDataSource: locator()));
 
   //Auth Data sources
   locator.registerLazySingleton<AuthRemoteDataSource>(
       () => AuthRemoteDataSourceImpl(client: locator()));
   locator.registerLazySingleton<AuthLocalDataSource>(
       () => AuthLocalDataSourceImpl(sharedPreferences: locator()));
+
+  //chat Data sources
+  locator.registerLazySingleton<ChatRemoteDataSource>(
+      () => ChatRemoteDataSourceImpl(client: locator()));
+
+  // locator.registerLazySingleton<ChatLocalDataSource>(
+//    () => ChatLocalDataSourceImpl(sharedPreferences: locator()));
 
   // Product Repository
   locator.registerLazySingleton<ProductRepository>(() => ProductRepositoryImp(
@@ -63,6 +79,13 @@ Future<void> setupLocator() async {
         remoteDataSource: locator(),
         localDataSource: locator(),
         networkInfo: locator(),
+      ));
+
+  //chat Repository
+  locator.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl(
+        remoteDataSource: locator(),
+        networkInfo: locator(),
+        localDataSource: locator(),
       ));
 
   // Product Use cases
@@ -83,6 +106,16 @@ Future<void> setupLocator() async {
       .registerLazySingleton<GetUserProfile>(() => GetUserProfile(locator()));
   locator.registerLazySingleton<LogoutUseCase>(() => LogoutUseCase(locator()));
 
+  //chat Use cases
+  locator.registerLazySingleton<GetAllChatsUsecase>(
+      () => GetAllChatsUsecase(locator()));
+  locator.registerLazySingleton<InitiateChatUsecase>(
+      () => InitiateChatUsecase(locator()));
+  locator.registerLazySingleton<GetChatByIdUsecase>(
+      () => GetChatByIdUsecase(locator()));
+  locator.registerLazySingleton<DeleteChatUsecase>(
+      () => DeleteChatUsecase(locator()));
+
   // Product Bloc
   locator.registerFactory<ProductBloc>(() => ProductBloc(
         createProductUseCase: locator(),
@@ -91,6 +124,7 @@ Future<void> setupLocator() async {
         viewAllProductsUseCase: locator(),
         viewProductUseCase: locator(),
       ));
+
   // Auth Bloc
   locator.registerFactory<AuthBloc>(() => AuthBloc(
         loginUseCase: locator(),
@@ -98,21 +132,15 @@ Future<void> setupLocator() async {
         getUserProfileUseCase: locator(),
         logoutUseCase: locator(),
       ));
+
+  //chat Bloc
+  locator.registerFactory<ChatBloc>(() => ChatBloc(
+        getAllChatsUsecase: locator(),
+        initiateChatUsecase: locator(),
+        deleteChatUsecase: locator(),
+        getchatbyidusecase: locator(),
+      ));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import 'dart:async';
 // import 'dart:io';

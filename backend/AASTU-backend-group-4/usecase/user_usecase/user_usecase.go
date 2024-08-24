@@ -13,7 +13,7 @@ type userUsecase struct {
 	contextTimeout time.Duration
 }
 
-func NewUserUsecase(userRepository domain.UserRepository, authService domain.AuthService, emailService domain.EmailService, timeout time.Duration) *userUsecase {
+func NewUserUsecase(userRepository domain.UserRepository, authService domain.AuthService, emailService domain.EmailService, timeout time.Duration) domain.UserUsecase {
 	return &userUsecase{
 		userRepo:       userRepository,
 		emailService:   emailService,

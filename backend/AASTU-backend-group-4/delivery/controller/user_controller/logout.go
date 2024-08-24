@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (uc *userController) Logout(c *gin.Context) {
+func (uc *UserController) Logout(c *gin.Context) {
 	// Get the user ID from the context (set by the middleware)
 	userID, exists := c.Get("userID")
 	if !exists {

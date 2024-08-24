@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (uc *userController) ResetPassword(c *gin.Context) {
+func (uc *UserController) ResetPassword(c *gin.Context) {
 	var req domain.ResetPasswordRequest
 
 	// Bind JSON request to the ResetPasswordRequest struct

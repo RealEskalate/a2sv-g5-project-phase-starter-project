@@ -14,7 +14,7 @@ type BlogUsecase struct {
 	contextTimeout time.Duration
 }
 
-func NewBlogUsecase(blogRepo domain.BlogRepository, commentRepo domain.CommentRepository, likeRepo domain.LikeRepository, aiService domain.AIContentGenerator, timeout time.Duration) *BlogUsecase {
+func NewBlogUsecase(blogRepo domain.BlogRepository, commentRepo domain.CommentRepository, likeRepo domain.LikeRepository, aiService domain.AIContentGenerator, timeout time.Duration) domain.BlogUsecase {
 	return &BlogUsecase{
 		blogRepo:       blogRepo,
 		commentRepo:    commentRepo,

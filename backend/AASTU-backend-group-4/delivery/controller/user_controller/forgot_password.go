@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (uc *userController) ForgotPassword(c *gin.Context) {
+func (uc *UserController) ForgotPassword(c *gin.Context) {
 	var req domain.ForgotPasswordRequest
 
 	// Parse the JSON request body

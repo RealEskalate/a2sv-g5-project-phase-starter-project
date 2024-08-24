@@ -1,13 +1,20 @@
 package main
 
 import (
+	"blog-api/delivery/controller/blog_controller"
 	"blog-api/delivery/controller/user_controller"
+	"blog-api/delivery/router"
+	"blog-api/infrastructure"
 	"blog-api/infrastructure/auth"
 	"blog-api/infrastructure/bootstrap"
 	"blog-api/infrastructure/email"
+	"blog-api/repository/blog_repository"
+	"blog-api/repository/comment_repository"
+	"blog-api/repository/like_repository"
 	"blog-api/repository/refresh_token_repository"
 	"blog-api/repository/reset_token_repository"
 	"blog-api/repository/user_repository"
+	"blog-api/usecase/blog_usecase"
 	"blog-api/usecase/user_usecase"
 	"fmt"
 	"time"
@@ -35,21 +42,19 @@ func main() {
 	emailService := email.NewEmailService(env.SMTPServer, env.SMTPPort, env.SMTPUser, env.SMTPPassword, env.FromAddress)
 
 	userUsecase := user_usecase.NewUserUsecase(userRepo, authService, emailService, time.Duration(env.ContextTimeout))
-
 	userController := user_controller.NewUserController(userUsecase, authService, env)
 
-	router := gin.Default()
+	blogRepo := blog_repository.NewBlogRepository(db.Collection("blogs"))
+	commRepo := comment_repository.NewCommentRepository(db.Collection("comments"))
+	likeRepo := like_repository.NewLikeRepository(db.Collection("likes"))
+	aiService := infrastructure.NewGenAIService()
 
-	// Register routes
+	blogUsecase := blog_usecase.NewBlogUsecase(blogRepo, commRepo, likeRepo, aiService, time.Duration(env.ContextTimeout))
+	blogController := blog_controller.NewBlogController(blogUsecase)
 
-	router.POST("/signup", userController.SignUp)
-	router.POST("/login", userController.Login)
-	router.POST("/refresh", userController.RefreshTokens)
-	router.GET("/logout", auth.JwtAuthMiddleware(env.AccessTokenSecret), userController.Logout)
-	router.POST("/forgot-password", userController.ForgotPassword)
-	router.POST("/reset-password", userController.ResetPassword)
-	// Run the server
-	router.Run(env.ServerAddress)
+	r := gin.Default()
+	router.SetRouter(r, blogController, userController, env)
+	r.Run(env.ServerAddress)
 
 	fmt.Println("Work correctly", env.DBName)
 }

@@ -5,16 +5,16 @@ import (
 	"blog-api/infrastructure/bootstrap"
 )
 
-type userController struct {
+type UserController struct {
 	userUsecase domain.UserUsecase
-	authService  domain.AuthService
+	authService domain.AuthService
 	Env         *bootstrap.Env
 }
 
-func NewUserController(userUsecase domain.UserUsecase, authService domain.AuthService, env *bootstrap.Env) *userController {
-	return &userController{
+func NewUserController(userUsecase domain.UserUsecase, authService domain.AuthService, env *bootstrap.Env) *UserController {
+	return &UserController{
 		userUsecase: userUsecase,
-		authService:  authService,
+		authService: authService,
 		Env:         env,
 	}
 }

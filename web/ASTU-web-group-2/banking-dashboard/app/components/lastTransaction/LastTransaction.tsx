@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { defaultItems } from "./lastTransactionItems";
+import RecentTransactionSkeleton from "../recent-transaction/RecentTransactionSkeleton";
+import ErrorImage from "../Error/ErrorImage";
 
 export type Item = {
   transactionId: string;
@@ -34,7 +36,12 @@ const LastTransaction = () => {
   const { data, isError, isLoading } = useGetAllTransactionQuery(access);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <RecentTransactionSkeleton />
+    );
+  }
+  if (isError){
+    <ErrorImage />
   }
 
   let transactions: { content: Item[]; totalPages: number } =

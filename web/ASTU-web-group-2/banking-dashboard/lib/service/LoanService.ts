@@ -1,3 +1,4 @@
+import page from "@/app/signup/page";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const loanApi = createApi({
@@ -13,6 +14,10 @@ export const loanApi = createApi({
         method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
+        },
+        params: {
+          page: 1,
+          size: 1,
         },
       }),
     }),

@@ -8,7 +8,7 @@ const ProfileSecurity = () => {
     setIsToggled(!isToggled);
   };
   return (
-    <div className="bg-white p-6 w-full flex flex-col">
+    <div className="bg-white  w-full flex flex-col">
       <div className="w-full mb-5">
         <p className="text-[#333B69] font-medium sm:text-[14px] md:text-[17px]">
           Two-factor Authentication
@@ -18,7 +18,7 @@ const ProfileSecurity = () => {
           {/* toggle button */}
           <div
             onClick={handleToggle}
-            className={`mr-5 relative w-14 h-8 flex items-center rounded-full p-1 cursor-pointer ${
+            className={`mr-5 relative max-md:min-w-[56px] md:w-14 lg:w-14 h-8 flex items-center rounded-full p-1 cursor-pointer ${
               isToggled ? "bg-[#16DBCC]" : "bg-gray-300"
             }`}
           >
@@ -30,7 +30,7 @@ const ProfileSecurity = () => {
           </div>
           {/* toggle button */}
 
-          <span className="sm:text-[13px] md:text-[16px] text-[#232323] font-normal">
+          <span className="text-[16px]  text-[#232323] font-normal">
             Enable or disable two factor authentication
           </span>
         </div>

@@ -1,16 +1,15 @@
 import 'package:equatable/equatable.dart';
+import '../../../data/models/message_model.dart';
+import '../../../domain/entities/message_entity.dart';
+// import '../../domain/entities/message_entity.dart';
 
 abstract class SocketEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
 
-class ConnectSocket extends SocketEvent {}
-
-class DisconnectSocket extends SocketEvent {}
-
 class SendMessage extends SocketEvent {
-  final String message;
+  final MessageModel message;
 
   SendMessage(this.message);
 
@@ -19,17 +18,19 @@ class SendMessage extends SocketEvent {
 }
 
 class ReceiveMessage extends SocketEvent {
-  final String message;
+  final MessageModel message;
 
   ReceiveMessage(this.message);
 
   @override
   List<Object> get props => [message];
 }
-class DeliverMessage extends SocketEvent{
-  final String message;
-  DeliverMessage(this.message);
+
+class MessageDelivered extends SocketEvent {
+  final MessageModel message;
+
+  MessageDelivered(this.message);
+
   @override
-  // TODO: implement props
   List<Object> get props => [message];
 }

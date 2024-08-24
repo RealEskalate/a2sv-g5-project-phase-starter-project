@@ -9,6 +9,7 @@ import 'package:ecommerce_app_ca_tdd/locator.dart';
 import "package:flutter/material.dart";
 import 'package:ecommerce_app_ca_tdd/extra/overflow_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:ecommerce_app_ca_tdd/extra/search_func.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/home.dart';
@@ -55,8 +56,10 @@ class _searchPageState extends State<searchPage> {
                   color: Color.fromARGB(255, 63, 81, 243),
                   size: 20,
                 )),
-            const Center(
-              child: Text("Search  Product"),
+             Center(
+              child: Text("Search  Product",
+              style: GoogleFonts.poppins(),
+              ),
             ),
             const SizedBox(
               height: 60,
@@ -66,7 +69,6 @@ class _searchPageState extends State<searchPage> {
         ),
       ),
 
-      // Body Starts Here
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.only(left: 32, right: 24),
@@ -93,7 +95,10 @@ class _searchPageState extends State<searchPage> {
                               context.read<SearchBloc>().add(SearchProductEvent(search));
                             }, icon: Icon(Icons.arrow_forward_ios)),
                             border: InputBorder.none,
-                            hintText: "Leather",
+                            hintText: "  Leather",
+                            hintStyle: TextStyle(
+                              color: Colors.grey.shade400
+                            )
                           ),
                         ),
                       ),

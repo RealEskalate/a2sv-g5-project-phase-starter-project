@@ -32,9 +32,7 @@ const BankServiceSkeleton = () => {
               <Skeleton className="w-full h-5 border"></Skeleton>
             </div>
             <div className="flex-col  flex col-span-2 items-end md:items-start">
-              <Skeleton className="flex items-center rounded-3xl px-7 w-32 h-12 border">
-                <Skeleton className="bg-slate-300 w-full h-3" />
-              </Skeleton>
+              <Skeleton className="flex items-center rounded-3xl px-7 w-32 h-10 border" />
             </div>
           </div>
         ))}

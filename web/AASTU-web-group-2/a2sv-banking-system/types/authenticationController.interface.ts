@@ -54,7 +54,16 @@ export interface Preference {
   export interface RefreshTokenResponse {
     success: boolean;
     message: string;
-    data: string; // New access token
+    data: {
+      access_token: string;
+      refresh_token: string;
+      data: RefreshTokenResponse;
+    }
+  }
+  export interface RefreshTokenReturn{
+    access_token: string;
+    refresh_token: string;
+    data: {};
   }
   
   export interface LoginRequest {

@@ -2,6 +2,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { useUserRegistrationMutation } from "../../../../redux/api/authentication-controller";
 
 interface PreferenceValues {
   currency: string;
@@ -30,11 +31,35 @@ interface FormValues {
 const Signup = () => {
   const { register, setValue, handleSubmit, formState, watch } =
     useForm<FormValues>();
+
+  const [registerUser] = useUserRegistrationMutation();
+
   const { errors } = formState;
 
   // onSubmit function
   const onSubmit = async (formData: FormValues) => {
     console.log("formData", formData);
+
+    try {
+      const { data, error } = await registerUser({
+        name: formData.name,
+        email: formData.email,
+        dateOfBirth: formData.dateOfBirth,
+        password: formData.password,
+        username: formData.username,
+        permanentAddress: formData.permanentAddress,
+        postalCode: formData.postalCode,
+        presentAddress: formData.presentAddress,
+        city: formData.city,
+        country: formData.country,
+        profilePicture: formData.profilePicture,
+        preference: formData.preference,
+      }).unwrap();
+
+      console.log("response from server upon registration", data);
+    } catch (error) {
+      console.log("error from server upon registration", error);
+    }
   };
 
   const handleProfilePictureChange = (
@@ -83,6 +108,27 @@ const Signup = () => {
               />
               <p className="error text-[12px] text-center text-red-700">
                 {errors.name?.message}
+              </p>
+            </div>
+
+            <div className="w-[350px] h-[60px] flex flex-col gap-2">
+              <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
+                Email
+              </label>
+              <input
+                className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                type="email"
+                placeholder="Enter your email"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: "Please enter a valid email address",
+                  },
+                })}
+              />
+              <p className="error text-[12px] text-center text-red-700">
+                {errors.email?.message}
               </p>
             </div>
 
@@ -212,7 +258,7 @@ const Signup = () => {
                 className="w-[350px] h-[45px] px-[14px] py-[10px] gap-[8px] rounded-[6px] border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
                 placeholder="Enter your city"
                 type="text"
-                {...register("city", { required: "City is required" })}
+                {...register("country", { required: "country is required" })}
               />
               <p className="error text-[12px] text-center text-red-700">
                 {errors.city?.message}

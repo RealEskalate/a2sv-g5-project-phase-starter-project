@@ -19,10 +19,27 @@ export const options = {
         password: {},
       },
       async authorize(credentials, req) {
-        const username = credentials?.username;
+        const userName = credentials?.username;
         const password = credentials?.password;
-
-        return null;
+        try {
+          const resesponse = await fetch(
+            "https://bank-dashboard-latest.onrender.com//auth/login",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ userName, password }),
+            }
+          );
+          const response = await resesponse.json();
+          console.log("data returned from the server on fetching", response);
+          if (response) {
+            return response;
+          }
+        } catch (err) {
+          console.log("error", err);
+        }
       },
     }),
   ],
@@ -30,19 +47,16 @@ export const options = {
   callbacks: {
     async session({ session, token }: { session: any; token: any }) {
       if (token) {
-        session.user.accessToken = token.accessToken;
-        session.user.role = token.role;
-        session.user.id = token.id;
-        session.user.refreshToken = token.refreshToken;
+        session.user.access_token = token.access_token;
+
+        session.user.refresh_token = token.refresh_token;
       }
       return session;
     },
     async jwt({ token, user }: { token: JWT; user: any }) {
       if (user) {
-        token.id = user.id;
-        token.role = user.role;
-        token.accessToken = user.accessToken;
-        token.refreshToken = user.refreshToken;
+        token.access_token = user.access_token;
+        token.refresh_token = user.refresh_token;
       }
       return token;
     },

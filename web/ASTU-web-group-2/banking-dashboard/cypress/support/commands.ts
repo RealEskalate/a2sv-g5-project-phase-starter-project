@@ -37,12 +37,19 @@
 // }
 
 Cypress.Commands.add("login", () => {
+  cy.intercept(
+    "POST",
+    "https://astu-bank-dashboard.onrender.com/auth/login"
+  ).as("loginRequest");
+
   cy.visit("/");
+  cy.contains("div", "Login").should("be.visible");
+  cy.contains("div", "Login").click();
 
-  cy.contains("Login").click();
-  cy.get('input[name="userName"]').type("testjr");
-  cy.get('input[name="password"]').type("testjrtestjr");
-
-  cy.get('button[type="submit"]').click();
+  cy.get('input[name="userName"]').type("testjunior");
+  cy.get('input[name="password"]').type("testjunior");
+  cy.get("form").submit();
   cy.wait(5000);
+
+  cy.url().should("include", "/dashboard");
 });

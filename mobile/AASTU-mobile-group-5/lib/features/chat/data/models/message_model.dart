@@ -13,6 +13,7 @@ class MessageModel extends MessageEntity{
     required super.sender,
     required super.content,
     required super.chat
+
   });
   factory MessageModel.fromJson(Map<String,dynamic>Json){
     return MessageModel(

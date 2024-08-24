@@ -27,7 +27,7 @@ class ChatUsecase extends Equatable {
     }
 
     // edit the product
-    Future<Either<Failure,bool>> delteChats(String id){
+    Future<Either<Failure,bool>> deleteChats(String id){
        return repositories.deleteMessages(id);
     }
 

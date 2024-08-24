@@ -9,6 +9,7 @@ export const activeLoanApi = createApi({
       getAllActiveLoans: builder.query<ActiveLoanResponseType, void>({
         query: () => `/active-loans/all`,
     }),
+    
     getActiveLoanById: builder.query<void, string>({
       query: (id) => `/active-loans/${id}`,
     }),

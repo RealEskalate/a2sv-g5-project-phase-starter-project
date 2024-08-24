@@ -40,7 +40,7 @@ func (cont *BlogController) HandleCreateBlog(ctx *gin.Context) {
 }
 func (cont *BlogController) HandleGetAllBlogs(ctx *gin.Context) {
 
-	page := ctx.Query("page")
+	page := ctx.Query("pageNumber")
 	ipage, err := strconv.Atoi(page)
 	if err != nil || ipage < 1 {
 		ipage = 1
@@ -73,7 +73,6 @@ func (cont *BlogController) HandleGetBlogById(ctx *gin.Context) {
 
 }
 func (cont *BlogController) HandleGetPopularBlog(ctx *gin.Context) {
-
 	blogs, err := cont.usecase.FindPopularBlog()
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
@@ -138,28 +137,28 @@ func (cont *BlogController) HandleBlogLikeOrDislike(ctx *gin.Context) {
 		return
 	}
 	if interactionType == "like" {
-		err := cont.usecase.LikeBlog(blogId, claims.ID)
+		message, err := cont.usecase.LikeBlog(blogId, claims.ID)
 		if err != nil {
-			ctx.IndentedJSON(http.StatusNotFound, err)
+			ctx.IndentedJSON(http.StatusNotFound, gin.H{"message": message, "error": err})
 		} else {
-			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Blog liked successfully"})
+			ctx.IndentedJSON(http.StatusOK, gin.H{"message": message, "error": err})
 		}
 	} else if interactionType == "dislike" {
-		err := cont.usecase.DislikeBlog(blogId, claims.ID)
+		message, err := cont.usecase.DislikeBlog(blogId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {
-			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Blog disliked successfully"})
+			ctx.IndentedJSON(http.StatusOK, gin.H{"message": message, "error": err})
 		}
 	} else if interactionType == "view" {
-		err := cont.usecase.ViewBlogs(blogId, claims.ID)
+		message, err := cont.usecase.ViewBlogs(blogId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {
-			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Blog viewed successfully"})
+			ctx.IndentedJSON(http.StatusOK, gin.H{"message": message, "error": err})
 		}
 	} else {
-		ctx.IndentedJSON(http.StatusNotFound, gin.H{"message": "invalid interaction type"})
+		ctx.IndentedJSON(http.StatusNotFound, gin.H{"message": "allowed:[like,view,dislike]", "error": "unknown interaction type"})
 	}
 }
 

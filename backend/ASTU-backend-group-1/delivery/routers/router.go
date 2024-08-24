@@ -45,6 +45,7 @@ func (gr *MainRouter) GinBlogRouter() {
 		userrouter.POST("/resetPassword", gr.handler.ResetPassword)
 		userrouter.GET("/logout", gr.handler.LogoutUser)
 		userrouter.POST("/:uid/refresh", gr.handler.RefreshAccessToken)
+		
 		userrouter.GET("/", gr.handler.GetUsers)
 		userrouter.GET("/:id", gr.handler.GetUsers)
 	}

@@ -9,15 +9,15 @@ import (
 )
 
 type User struct {
-	ID                primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	Username          string             `json:"username"`
-	Email             string             `json:"email"`
-	Password          string             `json:"password"`
-	Role              string             `json:"role"`
-	ProfilePictureUrl Photo              `json:"profile_picture"`
-	Bio               string             `json:"bio"`
-	CreatedAt         time.Time          `json:"created_at"`
-	UpdatedAt         time.Time          `json:"updated_at"`
+	ID             primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	Username       string             `json:"username"`
+	Email          string             `json:"email"`
+	Password       string             `json:"password"`
+	Role           string             `json:"role"`
+	ProfilePicture Photo              `json:"profile_picture" bson:"profile_picture"`
+	Bio            string             `json:"bio"`
+	CreatedAt      time.Time          `json:"created_at"`
+	UpdatedAt      time.Time          `json:"updated_at"`
 }
 
 type Photo struct {
@@ -27,16 +27,16 @@ type Photo struct {
 	UploadedAt time.Time `bson:"uploaded_at"`
 }
 
-func NewUser(username, email, password, bio string, profilePictureUrl Photo) *User {
+func NewUser(username, email, password, bio string, profilePicture Photo) *User {
 	return &User{
-		Username:          username,
-		Email:             email,
-		Password:          password,
-		Role:              "User",
-		ProfilePictureUrl: profilePictureUrl,
-		Bio:               bio,
-		CreatedAt:         time.Now(),
-		UpdatedAt:         time.Now(),
+		Username:       username,
+		Email:          email,
+		Password:       password,
+		Role:           "User",
+		ProfilePicture: profilePicture,
+		Bio:            bio,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 }
 

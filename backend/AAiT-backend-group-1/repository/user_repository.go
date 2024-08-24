@@ -99,6 +99,7 @@ func (userRepo *UserRepository) FindByUsername(cxt context.Context, username str
 	}
 	return &fetchedUser, nil
 }
+
 func (userRepo *UserRepository) FindAll(cxt context.Context) ([]domain.User, domain.Error) {
 	filter := bson.D{}
 	opts := options.Find().SetSort(bson.D{{Key: "username", Value: 1}})
@@ -210,7 +211,7 @@ func (userRepo *UserRepository) Delete(cxt context.Context, id string) domain.Er
 	deleteResult, errDelete := userRepo.collection.DeleteOne(cxt, filter)
 
 	if errDelete != nil {
-		return domain.CustomError{Message: fmt.Sprintf("error updating the user. %v \n", errDelete.Error()), Code: http.StatusInternalServerError}
+		return domain.CustomError{Message: fmt.Sprintf("error deleting the user. %v \n", errDelete.Error()), Code: http.StatusInternalServerError}
 	}
 	if deleteResult.DeletedCount == 0 {
 		return domain.CustomError{Message: fmt.Sprintln("user not found"), Code: http.StatusNotFound}
@@ -221,17 +222,35 @@ func (userRepo *UserRepository) Delete(cxt context.Context, id string) domain.Er
 func (userRepo *UserRepository) UploadProfilePicture(cxt context.Context, picture domain.Photo, id string) domain.Error {
 	updateID, errIDParse := primitive.ObjectIDFromHex(id)
 	if errIDParse != nil {
-		return domain.CustomError{Message: fmt.Sprintln("error parsing the user id."), Code: http.StatusInternalServerError}
+		return domain.CustomError{
+			Message: "Error parsing the user ID.",
+			Code:    http.StatusInternalServerError,
+		}
 	}
+
 	filter := bson.D{{Key: "_id", Value: updateID}}
-	update := bson.D{{Key: "$set", Value: bson.D{{Key: "profile_picture", Value: picture}}}}
+	update := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "profile_picture", Value: picture},
+			{Key: "updated_at", Value: time.Now()},
+		}},
+	}
 	opts := options.Update().SetUpsert(false)
+
 	updateResult, errUpdate := userRepo.collection.UpdateOne(cxt, filter, update, opts)
 	if errUpdate != nil {
-		return domain.CustomError{Message: fmt.Sprintf("error updating the user profile_picture. %v \n", errUpdate.Error()), Code: http.StatusInternalServerError}
+		return domain.CustomError{
+			Message: fmt.Sprintf("Error updating the user profile picture: %v", errUpdate.Error()),
+			Code:    http.StatusInternalServerError,
+		}
 	}
+
 	if updateResult.MatchedCount == 0 {
-		return domain.CustomError{Message: fmt.Sprintln("user not found"), Code: http.StatusNotFound}
+		return domain.CustomError{
+			Message: "User not found.",
+			Code:    http.StatusNotFound,
+		}
 	}
+
 	return nil
 }

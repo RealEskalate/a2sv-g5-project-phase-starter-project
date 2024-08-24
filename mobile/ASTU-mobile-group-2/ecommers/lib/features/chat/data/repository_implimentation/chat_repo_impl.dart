@@ -1,13 +1,10 @@
-
-
+import 'package:dartz/dartz.dart';
 
 import '../../../../core/Error/failure.dart';
 import '../../domain/entity/chat_entity.dart';
-import 'package:dartz/dartz.dart';
-
 import '../../domain/repository/chat_repo.dart';
 
-class ChatRepoImpl  implements ChatRepositories{
+class ChatRepoImpl implements ChatRepositories {
   @override
   Future<Either<Failure, bool>> deleteMessages(String id) {
     // TODO: implement deleteMessages
@@ -31,6 +28,4 @@ class ChatRepoImpl  implements ChatRepositories{
     // TODO: implement initiateChat
     throw UnimplementedError();
   }
-
-
 }

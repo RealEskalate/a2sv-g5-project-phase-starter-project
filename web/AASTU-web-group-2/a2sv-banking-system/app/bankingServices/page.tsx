@@ -1,13 +1,24 @@
 'use client'
-import React from 'react'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from "next/navigation";
 import InformationCard from './components/InformationCard'
 import BankServiceList from './components/BankServiceList'
 import { getSession } from 'next-auth/react';
 import { IconType } from 'react-icons';
-// import { useRouter } from "next/navigation";
-import { GetCardsResponse, Card as CardType } from "@/types/cardController.Interface";
+import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
+import { getBankServices } from '@/lib/api/bankServiceControl';
+
+const shimmerClass = 'bg-gray-200 animate-pulse';
+
+type infoType = {
+  id: string;
+  name: string;
+  details: string;
+  numberOfUsers: number;
+  status: string;
+  type: string;
+  icon: string;
+}
 
 type DataItem = {
   heading: string;
@@ -31,40 +42,78 @@ type Data = {
 type SessionDataType = {
   user: Data;
 };
+
 const Page = () => {
   const [session, setSession] = useState<Data | null>(null);
+  const [access_token, setAccess_token] = useState("");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [getCard, setGetCards] = useState<CardType[]>();
-  const route = useRouter();
+  const [bankInfo, setBankServices] = useState<infoType[]>([]);
+  
   useEffect(() => {
     const fetchSession = async () => {
-      const sessionData = (await getSession()) as SessionDataType | null;
-      if (sessionData && sessionData.user) {
-        setSession(sessionData.user);
-      } else {
-        router.push(
-          `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
-        );
+      try {
+        const sessionData = (await getSession()) as SessionDataType | null;
+        setAccess_token(await Refresh());
+        if (sessionData && sessionData.user) {
+          setSession(sessionData.user);
+        } else {
+          router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
+        }
+      } catch (error) {
+        console.error("Error fetching session:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchSession();
   }, [router]);
-  // getting the session ends here
-    
-  if (loading) return null; // Don't render anything while loading
+  console.log(access_token)
+  useEffect(() => {
+    const addingData = async () => {
+      if (!access_token) return;
+      if (access_token) {
+        const bankServices = await getBankServices(access_token, 0, 100);
+        console.log("Fetching Completed", bankServices.data.content);
+        setBankServices(bankServices.data.content); // Set the content array
+      }
+    };
+    addingData();
+  }, [access_token]);
 
-
-  if (!session) {
-    router.push(
-      `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+  if (loading) {
+    // Render shimmer effect while loading
+    return (
+      <div className="flex-col bg-gray-100 p-4">
+        <div className="flex mx-5 my-4 gap-4 overflow-x-auto">
+          <div className={`${shimmerClass} w-40 h-10 rounded-md mb-4`} />
+          <div className={`${shimmerClass} w-full h-8 rounded-md mb-4`} />
+          <div className={`${shimmerClass} w-full h-32 rounded-md`} />
+        </div>
+      </div>
     );
+  }
+
+
+
+
+  
+  if (!session) {
+    router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
     return null;
   }
+
+  const getBackgroundColor = (index: number) => {
+    const colors = ['bg-[#FFE0EB]', 'bg-[#E0F7FA]', 'bg-[#FFF9C4]'];
+    return colors[index % colors.length];
+  };
+
   return (
     <div className='flex-col bg-[#f5f7fa]'>
+
+
+
       <div className='flex mx-5 my-4 rounded-3xl gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden'>
       <InformationCard
         logoBgColor="#e7edff"
@@ -86,11 +135,11 @@ const Page = () => {
         cardBgColor="bg-[#ffffff]"
       />
             <InformationCard
-        logoBgColor="#fff5d9"
-        logo={
-<svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M15.3125 17.275L14.2463 5.56875C14.2175 5.24625 13.9475 5 13.6238 5H11.7488V3.75C11.7488 2.745 11.3588 1.8025 10.6525 1.09625C9.95752 0.4 8.99002 0 7.99877 0C5.93127 0 4.24877 1.6825 4.24877 3.75V5H2.37377C2.05002 5 1.78002 5.24625 1.75127 5.56875L0.687524 17.2738C0.623774 17.9725 0.858775 18.6688 1.33127 19.1863C1.80377 19.7038 2.47627 20 3.17752 20H12.8213C13.5213 20 14.1938 19.7038 14.6663 19.1875C15.14 18.67 15.3738 17.9725 15.3125 17.275ZM10.4988 5H5.49877V3.75C5.49877 2.37125 6.62002 1.25 7.99877 1.25C8.66127 1.25 9.30627 1.515 9.76877 1.97875C10.24 2.45 10.4988 3.07875 10.4988 3.75V5Z" fill="#FFBB38"/>
-</svg>
+                  logoBgColor="#fff5d9"
+                  logo={
+          <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15.3125 17.275L14.2463 5.56875C14.2175 5.24625 13.9475 5 13.6238 5H11.7488V3.75C11.7488 2.745 11.3588 1.8025 10.6525 1.09625C9.95752 0.4 8.99002 0 7.99877 0C5.93127 0 4.24877 1.6825 4.24877 3.75V5H2.37377C2.05002 5 1.78002 5.24625 1.75127 5.56875L0.687524 17.2738C0.623774 17.9725 0.858775 18.6688 1.33127 19.1863C1.80377 19.7038 2.47627 20 3.17752 20H12.8213C13.5213 20 14.1938 19.7038 14.6663 19.1875C15.14 18.67 15.3738 17.9725 15.3125 17.275ZM10.4988 5H5.49877V3.75C5.49877 2.37125 6.62002 1.25 7.99877 1.25C8.66127 1.25 9.30627 1.515 9.76877 1.97875C10.24 2.45 10.4988 3.07875 10.4988 3.75V5Z" fill="#FFBB38"/>
+          </svg>
 
         }
         title="Shopping"
@@ -111,125 +160,37 @@ const Page = () => {
         description="We are your allies"
         cardBgColor="bg-[#ffffff]"
       />
-      
-      
       </div>
-      <h1 className='text-[#343C6A] font-semibold mx-5 my-4 text-xl md:font-bold'>Bank Services List</h1>
-        <div className='flex-col gap-5'>
+      <h1 className='text-[#343C6A] font-semibold mx-5 my-4 text-2xl md:font-bold'>Bank Services List</h1>
+      <div className='flex-col gap-5'>
+        {bankInfo.map((item, index) => (
           <BankServiceList
-            logoBgColor="bg-[#FFE0EB]"
+            key={item.id}
+            logoBgColor={getBackgroundColor(index)}
             logoSvg={(
-              <svg className="w-8 h-8 text-blue-500 items-center" fill="currentColor" viewBox="0 0 24 24">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <g clip-path="url(#clip0_163_431)">
-                    <path d="M11.5941 12.2698C14.95 12.2698 17.6803 9.51765 17.6803 6.1349C17.6803 2.75215 14.95 0 11.5941 0C8.2381 0 5.50781 2.75211 5.50781 6.13486C5.50781 9.51761 8.2381 12.2698 11.5941 12.2698ZM9.63836 8.04927C9.8154 7.77865 10.1784 7.70268 10.449 7.8798C10.8433 8.13773 10.9921 8.16151 11.5124 8.15788C12.0203 8.15452 12.315 7.77595 12.3739 7.42562C12.4026 7.25521 12.4135 6.83909 11.8978 6.65678C11.2929 6.44292 10.6738 6.1985 10.2432 5.86069C9.81248 5.52288 9.61525 4.93971 9.7285 4.33886C9.85128 3.68749 10.3057 3.16897 10.9144 2.98564C10.9199 2.984 10.9253 2.98268 10.9308 2.98104V2.75906C10.9308 2.43566 11.1929 2.17347 11.5163 2.17347C11.8397 2.17347 12.1019 2.43566 12.1019 2.75906V2.94414C12.4997 3.03909 12.7774 3.22105 12.8902 3.30534C13.1492 3.49901 13.2023 3.86594 13.0086 4.125C12.815 4.38407 12.4481 4.43708 12.189 4.24337C12.069 4.15366 11.7373 3.9608 11.2521 4.10701C10.9687 4.19242 10.8952 4.4721 10.8794 4.55576C10.8484 4.72016 10.8832 4.87425 10.9659 4.93913C11.2645 5.17329 11.8019 5.38062 12.2881 5.55251C13.1848 5.86947 13.6835 6.70023 13.5289 7.61976C13.453 8.07094 13.2261 8.48951 12.8897 8.79851C12.6607 9.00901 12.394 9.15908 12.1019 9.24477V9.51066C12.1019 9.83406 11.8397 10.0963 11.5163 10.0963C11.1929 10.0963 10.9308 9.83406 10.9308 9.51066V9.30317C10.5521 9.25726 10.2343 9.13885 9.80779 8.85988C9.53721 8.68284 9.46132 8.31989 9.63836 8.04927Z" fill="#FF82AC"/>
-                    <path d="M2.21964 14.2373H0.884417C0.561016 14.2373 0.298828 14.4995 0.298828 14.8229V19.4135C0.298828 19.7369 0.561016 19.9991 0.884417 19.9991H2.21968V14.2373H2.21964Z" fill="#FF82AC"/>
-                    <path d="M19.5295 14.1965C18.4319 13.0989 16.646 13.0989 15.5485 14.1965L13.7943 15.9507L13.0753 16.6697C12.7847 16.9602 12.3906 17.1235 11.9797 17.1235H8.48353C8.16778 17.1235 7.89607 16.8808 7.8812 16.5654C7.86535 16.2287 8.13366 15.9507 8.46694 15.9507H12.0205C12.735 15.9507 13.3547 15.442 13.4776 14.7382C13.5058 14.5765 13.5205 14.4104 13.5205 14.2408C13.5205 13.9168 13.258 13.6539 12.9341 13.6539H10.9869C10.3506 13.6539 9.7395 13.3652 9.0925 13.0596C8.41389 12.739 7.71219 12.4075 6.89171 12.3529C6.17409 12.3051 5.45483 12.3837 4.7538 12.5861C4.00319 12.8029 3.46363 13.4697 3.3982 14.2397C3.3957 14.2395 3.39316 14.2394 3.39062 14.2393V19.9972L13.4794 20C14.1731 20 14.8253 19.7298 15.3158 19.2393L19.5293 15.0258C19.7585 14.7969 19.7585 14.4255 19.5295 14.1965Z" fill="#FF82AC"/>
-                    </g>
-                    <defs>
-                    <clipPath id="clip0_163_431">
-                    <rect width="20" height="20" fill="white"/>
-                    </clipPath>
-                  </defs>
-                  </svg>
-
+              <svg className="w-8 h-8" viewBox="0 0 24 24">
+                <image
+                  href={item.icon}
+                  x="3" // Adjust this value to center the image horizontally
+                  y="3" // Adjust this value to center the image vertically
+                  width="18" // Smaller width
+                  height="18" // Smaller height
+                />
               </svg>
             )}
-            serviceName="Custom Service"
-            serviceDescription="This is a custom description"
+            serviceName={item.name}
+            serviceDescription={item.details}
             additionalServices={[
-              { name: "Service 1", description: "Service 1 Description" },
-              { name: "Service 2", description: "Service 2 Description" },
-              { name: "Service 3", description: "Service 3 Description" },
+              { name: `Users: ${item.numberOfUsers}`, description: "" },
+              { name: `Type: ${item.type}`, description: "" },
+              { name: `Status: ${item.status}`, description: ""},
             ]}
-            viewDetailsLink="https://example.com/details"
+            viewDetailsLink={`https://example.com/details/${index}`}
           />
-                    <BankServiceList
-            logoBgColor="bg-[#FFF5D9]"
-            logoSvg={(
-              <svg className="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                {/* Custom SVG content */}
-              </svg>
-            )}
-            serviceName="Custom Service"
-            serviceDescription="This is a custom description"
-            additionalServices={[
-              { name: "Service 1", description: "Service 1 Description" },
-              { name: "Service 2", description: "Service 2 Description" },
-              { name: "Service 3", description: "Service 3 Description" },
-            ]}
-            viewDetailsLink="https://example.com/details"
-          />
-                    <BankServiceList
-            logoBgColor="bg-[#FFE0EB]"
-            logoSvg={(
-              <svg className="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                {/* Custom SVG content */}
-              </svg>
-            )}
-            serviceName="Custom Service"
-            serviceDescription="This is a custom description"
-            additionalServices={[
-              { name: "Service 1", description: "Service 1 Description" },
-              { name: "Service 2", description: "Service 2 Description" },
-              { name: "Service 3", description: "Service 3 Description" },
-            ]}
-            viewDetailsLink="https://example.com/details"
-          />
-                    <BankServiceList
-            logoBgColor="bg-[#E7EDFF]"
-            logoSvg={(
-              <svg className="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                {/* Custom SVG content */}
-              </svg>
-            )}
-            serviceName="Custom Service"
-            serviceDescription="This is a custom description"
-            additionalServices={[
-              { name: "Service 1", description: "Service 1 Description" },
-              { name: "Service 2", description: "Service 2 Description" },
-              { name: "Service 3", description: "Service 3 Description" },
-            ]}
-            viewDetailsLink="https://example.com/details"
-          />
-                    <BankServiceList
-            logoBgColor="bg-[#DCFAF8]"
-            logoSvg={(
-              <svg className="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                {/* Custom SVG content */}
-              </svg>
-            )}
-            serviceName="Custom Service"
-            serviceDescription="This is a custom description"
-            additionalServices={[
-              { name: "Service 1", description: "Service 1 Description" },
-              { name: "Service 2", description: "Service 2 Description" },
-              { name: "Service 3", description: "Service 3 Description" },
-            ]}
-            viewDetailsLink="https://example.com/details"
-          />
-                    <BankServiceList
-            logoBgColor="bg-[#FFE0EB]"
-            logoSvg={(
-              <svg className="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                {/* Custom SVG content */}
-              </svg>
-            )}
-            serviceName="Custom Service"
-            serviceDescription="This is a custom description"
-            additionalServices={[
-              { name: "Service 1", description: "Service 1 Description" },
-              { name: "Service 2", description: "Service 2 Description" },
-              { name: "Service 3", description: "Service 3 Description" },
-            ]}
-            viewDetailsLink="https://example.com/details"
-          />
+        ))}
       </div>
-
-
-
     </div>
-  )
+  );
 }
 
-export default Page
+export default Page;

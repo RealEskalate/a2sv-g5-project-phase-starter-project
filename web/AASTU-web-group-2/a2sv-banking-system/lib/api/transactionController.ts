@@ -14,26 +14,27 @@ import {
 } from "@/types/transactionController.interface";
 // Extend the user type to include accessToken
 import { getServerSession } from "next-auth";
-interface ExtendedUser {
-  refresh_token: string;
-  data: any;
-  accessToken?: string;
-}
+import { GiConsoleController } from "react-icons/gi";
+// interface ExtendedUser {
+//   refresh_token: string;
+//   data: any;
+//   accessToken?: string;
+// }
 
-interface ExtendedSession {
-  user?: ExtendedUser;
-}
-const BASE_URL = "https://bank-dashboard-1tst.onrender.com/";
+// interface ExtendedSession {
+//   user?: ExtendedUser;
+// }
+const BASE_URL = "https://bank-dashboard-mih0.onrender.com";
 
-const fetchSession = async (): Promise<ExtendedSession> => {
-  const session = await getServerSession();
-  return session as ExtendedSession;
-};
+// const fetchSession = async (): Promise<ExtendedSession> => {
+//   const session = await getServerSession();
+//   return session as ExtendedSession;
+// };
 
-const getAccessToken = async (): Promise<string | undefined> => {
-  const session = await fetchSession();
-  return session?.user?.accessToken;
-};
+// const getAccessToken = async (): Promise<string | undefined> => {
+//   const session = await fetchSession();
+//   return session?.user?.accessToken;
+// };
 
 const getTransactions = async (
   page = 0,
@@ -165,7 +166,7 @@ const getQuickTransfers = async (
   try {
     // const token = await getAccessToken();
     const response = await fetch(
-      `${BASE_URL}/transactions/quick-transfers?input=${inputInteger}`,
+      `${BASE_URL}/transactions/quick-transfers?number=${inputInteger}`,
       {
         method: "GET",
         headers: {
@@ -216,8 +217,8 @@ const getTransactionIncomes = async (
   }
 };
 const getTransactionsExpenses = async (
-  page: number,
-  size: number,
+  page : number,
+  size : number,
   token: string
 ): Promise<PaginatedTransactionsResponse> => {
   try {

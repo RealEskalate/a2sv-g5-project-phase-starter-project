@@ -9,6 +9,7 @@ import { Country } from "country-state-city";
 import { useState } from "react";
 import { Currencies } from "@/components/constants/currency";
 import { timezones } from "@/components/constants/timezones";
+
 interface PreferenceValues {
   currency: string;
   sentOrReceiveDigitalCurrency: boolean;
@@ -267,29 +268,33 @@ const Signup = () => {
                 </select>
                 <ErrorMessage message={errors.city?.message} />
               </div>
-
-              <div className="w-[350px] flex flex-col gap-2">
-                <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
-                  Profile Picture
-                </label>
-                <input
-                  className="w-[350px] px-4 py-2 rounded-xl border-[1px] border-solid border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleProfilePictureChange}
-                />
-                <ErrorMessage message={errors.profilePicture?.message} />
+              <div className=" flex flex-col  gap-2 py-10">
+                <button
+                  type="submit"
+                  className="w-full py-2 bg-[#4640DE] text-white rounded-[25px] text-center text-[16px] font-semibold"
+                >
+                  Continue
+                </button>
+                <div className="text-center text-sm text-gray-500">
+                  Already have an account?{" "}
+                  <Link
+                    href="/auth/login"
+                    className="hover:underline text-[#4640DE] font-medium"
+                  >
+                    Login
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-between  ">
-            <div className="signup-container w-fit h-fit flex flex-col gap-6">
-              <h1 className="text-xl font-poppins text-center text-[#25324B]">
+          <div className="">
+            <div className="signup-container w-fit h-fit flex flex-col gap-3">
+              <h1 className="text-l font-poppins text-center text-[#25324B]">
                 Set Your Preferences
               </h1>
 
-              <div className="w-[350px] flex flex-col gap-2">
+              <div className="w-[350px] flex flex-col gap-1">
                 <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
                   Currency
                 </label>
@@ -310,7 +315,7 @@ const Signup = () => {
                 <ErrorMessage message={errors.preference?.currency?.message} />
               </div>
 
-              <div className="w-[350px] h-[60px] flex flex-col gap-2">
+              <div className="w-[350px] h-[60px] flex flex-col gap-1">
                 <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
                   Time Zone
                 </label>
@@ -326,14 +331,20 @@ const Signup = () => {
                   <option value="">Select a currency</option>
                   {timezones.map((time) => (
                     <option value={time.offset}>{`(${
-                      time.offset === 0 ? "GMT" : time.offset > 0 ? "GMT+" : "GMT-"
-                    }${Math.abs(time.offset)>0 ? Math.abs(time.offset) : ""}) ${time.name}`}</option>
+                      time.offset === 0
+                        ? "GMT"
+                        : time.offset > 0
+                        ? "GMT+"
+                        : "GMT-"
+                    }${
+                      Math.abs(time.offset) > 0 ? Math.abs(time.offset) : ""
+                    }) ${time.name}`}</option>
                   ))}
                 </select>
                 <ErrorMessage message={errors.preference?.timeZone?.message} />
               </div>
 
-              <div className="flex flex-col items-start justify-center mt-4 gap-2">
+              <div className="flex flex-col items-start justify-center mt-4 gap-1">
                 <div className=" flex flex-row-reverse  gap-2">
                   <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
                     Send or Receive Digital Currency
@@ -378,21 +389,21 @@ const Signup = () => {
                   />
                 </div>
               </div>
+              <div className="w-[340px] flex flex-col gap-1 ">
+                <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
+                  Profile Picture
+                </label>
+                <div className="w-[340px] border rounded-xl px-2 flex flex-row gap-2 items-center">
+                  <img src="/pubimg/picture.svg" className="size-8" />
 
-              <button
-                type="submit"
-                className="w-full py-1 bg-[#4640DE] text-white rounded-[6px] text-center text-[16px] font-semibold"
-              >
-                Submit Preferences
-              </button>
-              <div className="text-center text-sm text-gray-500">
-                Already have an account?{" "}
-                <Link
-                  href="/auth/login"
-                  className="hover:underline text-[#4640DE]"
-                >
-                  Login
-                </Link>
+                  <input
+                    className="w-full  py-2 border-[#D6DDEB] focus:outline-none focus:ring-[1px] focus:ring-[#4640DE]"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProfilePictureChange}
+                  />
+                </div>
+                <ErrorMessage message={errors.profilePicture?.message} />
               </div>
             </div>
           </div>

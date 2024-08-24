@@ -33,9 +33,7 @@ const EditProfile = () => {
 	const [country, setCountry] = useState("");
 	const reduxUser = useSelector((state: RootState) => state.user);
 	const [profilePicture, setProfilePicture] = useState(
-		reduxUser.profilePicture != "string"
-			? reduxUser.profilePicture
-			: "/images/christina.png"
+		reduxUser?.profilePicture || "/images/christina.png"
 	);
 	const [uploading, setUploading] = useState(false);
 	const [message, setMessage] = useState("");
@@ -61,15 +59,11 @@ const EditProfile = () => {
 	}, [status, dispatch, session, user]);
 
 	useEffect(() => {
-		setProfilePicture(
-			reduxUser.profilePicture.startsWith("https")
-				? reduxUser.profilePicture
-				: "/images/christina.png"
-		);
+		setProfilePicture(reduxUser?.profilePicture || "/images/christina.png");
 		console.log("Profile picture updated:", reduxUser?.profilePicture);
 	}, [reduxUser?.profilePicture]);
-	console.log(user?.accessToken, "user.accessToken");
-	if (!user?.accessToken) {
+
+	if (!user?.name || !user?.accessToken) {
 		return <div>Loading...</div>;
 	}
 
@@ -149,7 +143,7 @@ const EditProfile = () => {
 	};
 
 	return (
-		<div className="bg-white dark:bg-gray-900 dark:bg-gray-900 p-4 md:p-8">
+		<div className="bg-white p-4 md:p-8">
 			<form onSubmit={handleSubmit}>
 				<div className="flex flex-col md:flex-row md:space-x-8">
 					{/* Profile Image Section */}
@@ -178,60 +172,54 @@ const EditProfile = () => {
 					<div className="w-full md:w-[80%] flex flex-col md:flex-row gap-6">
 						{/* Left Column */}
 						<div className="w-full md:w-[50%] space-y-6">
-							<div className="bg-white dark:bg-gray-900 dark:bg-gray-900 ">
-								<p className="text-black dark:text-white font-sans text-lg mb-2">
-									Your Name
-								</p>
+							<div className="bg-white">
+								<p className="text-black font-sans text-lg mb-2">Your Name</p>
 								<input
 									type="text"
-									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff]"
+									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 									placeholder="Charlene Reed"
 									value={name}
 									onChange={(e) => setName(e.target.value)}
 								/>
 							</div>
-							<div className="bg-white dark:bg-gray-900">
-								<p className="text-black dark:text-white font-sans text-lg mb-2">
-									Email
-								</p>
+							<div className="bg-white">
+								<p className="text-black font-sans text-lg mb-2">Email</p>
 								<input
 									type="email"
-									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff]"
+									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 									placeholder="charlenereed@gmail.com"
 									value={email}
 									onChange={(e) => setEmail(e.target.value)}
 								/>
 							</div>
-							<div className="bg-white dark:bg-gray-900">
-								<p className="text-black dark:text-white font-sans text-lg mb-2">
+							<div className="bg-white">
+								<p className="text-black font-sans text-lg mb-2">
 									Date of Birth
 								</p>
 								<input
 									type="date"
-									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff]"
+									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 									value={dateOfBirth}
 									onChange={(e) => setDateOfBirth(e.target.value)}
 								/>
 							</div>
-							<div className="bg-white dark:bg-gray-900">
-								<p className="text-black dark:text-white font-sans text-lg mb-2">
+							<div className="bg-white">
+								<p className="text-black font-sans text-lg mb-2">
 									Permanent Address
 								</p>
 								<input
 									type="text"
-									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff]"
+									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 									placeholder="San Jose, California, USA"
 									value={permanentAddress}
 									onChange={(e) => setPermanentAddress(e.target.value)}
 								/>
 							</div>
-							<div className="bg-white dark:bg-gray-900">
-								<p className="text-black dark:text-white font-sans text-lg mb-2">
-									Postal Code
-								</p>
+							<div className="bg-white">
+								<p className="text-black font-sans text-lg mb-2">Postal Code</p>
 								<input
 									type="text"
-									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff]"
+									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 									placeholder="45962"
 									value={postalCode}
 									onChange={(e) => setPostalCode(e.target.value)}
@@ -241,46 +229,40 @@ const EditProfile = () => {
 
 						{/* Right Column */}
 						<div className="w-full md:w-[50%] space-y-6 mt-8 md:mt-0">
-							<div className="bg-white dark:bg-gray-900">
-								<p className="text-black dark:text-white font-sans text-lg mb-2">
-									Username
-								</p>
+							<div className="bg-white">
+								<p className="text-black font-sans text-lg mb-2">Username</p>
 								<input
 									type="text"
-									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff]"
+									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 									value={username}
 									onChange={(e) => setUsername(e.target.value)}
 								/>
 							</div>
-							<div className="bg-white dark:bg-gray-900">
-								<p className="text-black dark:text-white font-sans text-lg mb-2">
+							<div className="bg-white">
+								<p className="text-black font-sans text-lg mb-2">
 									Present Address
 								</p>
 								<input
 									type="text"
-									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff]"
+									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 									value={presentAddress}
 									onChange={(e) => setPresentAddress(e.target.value)}
 								/>
 							</div>
-							<div className="bg-white dark:bg-gray-900">
-								<p className="text-black dark:text-white font-sans text-lg mb-2">
-									City
-								</p>
+							<div className="bg-white">
+								<p className="text-black font-sans text-lg mb-2">City</p>
 								<input
 									type="text"
-									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff]"
+									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 									value={city}
 									onChange={(e) => setCity(e.target.value)}
 								/>
 							</div>
-							<div className="bg-white dark:bg-gray-900">
-								<p className="text-black dark:text-white font-sans text-lg mb-2">
-									Country
-								</p>
+							<div className="bg-white">
+								<p className="text-black font-sans text-lg mb-2">Country</p>
 								<input
 									type="text"
-									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-[#fff] dark:focus:outline-none dark:border-opacity-50 dark:opacity-80 dark:bg-gray-500 dark:text-[#fff]"
+									className="border border-[#DFEAF2] p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 									value={country}
 									onChange={(e) => setCountry(e.target.value)}
 								/>

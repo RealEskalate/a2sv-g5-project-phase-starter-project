@@ -26,19 +26,19 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
 	const { data: session, status } = useSession();
 	const router = useRouter();
 	const [searchText, setSearchText] = useState("");
-	const name = usePathname();
+	const pathname = usePathname();
 
 	const darkmode = useSelector((state: RootState) => state.theme.darkMode);
 	const reduxUser = useSelector((state: RootState) => state.user);
-
 	const [profilePicture, setProfilePicture] = useState(
-		reduxUser.profilePicture != "string"
-			? reduxUser.profilePicture
+		reduxUser?.profilePicture && reduxUser?.profilePicture.startsWith("https")
+			? reduxUser?.profilePicture
 			: "/images/christina.png"
 	);
+
 	const user = session?.user as ExtendedUser;
 	const dispatch = useDispatch();
-	console.log(reduxUser?.profilePicture, profilePicture, "profilepicture");
+
 	useEffect(() => {
 		if (status === "authenticated" && user?.accessToken && !reduxUser?.name) {
 			dispatch({
@@ -49,18 +49,27 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
 				},
 			});
 		}
-	}, [status, dispatch, user]);
+	}, [status, dispatch, user, reduxUser?.name]);
 
 	useEffect(() => {
-		setProfilePicture(
-			reduxUser.profilePicture != "string"
-				? reduxUser.profilePicture
-				: "/images/christina.png"
-		);
+		if (
+			reduxUser?.profilePicture &&
+			reduxUser?.profilePicture.startsWith("https")
+		) {
+			setProfilePicture(reduxUser.profilePicture);
+		} else {
+			setProfilePicture("/images/christina.png");
+		}
 	}, [reduxUser?.profilePicture]);
 
 	const handleToggleDarkMode = () => {
 		dispatch(toggleDarkMode());
+	};
+
+	const handleSearchSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		// Implement search functionality here
+		console.log("Search submitted:", searchText);
 	};
 
 	if (status !== "authenticated") {
@@ -68,7 +77,7 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
 	}
 
 	return (
-		<div className={`shadow-md bg-white dark:bg-gray-800 `}>
+		<div className={`shadow-md bg-white dark:bg-gray-900`}>
 			{/* Mobile view */}
 			<div className="flex justify-between items-center p-6 sm:hidden">
 				<button onClick={toggleSidebar} aria-label="Toggle sidebar">
@@ -98,7 +107,7 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
 
 			{/* Mobile search bar */}
 			<div className="sm:hidden p-6">
-				<div className="relative w-full">
+				<form onSubmit={handleSearchSubmit} className="relative w-full">
 					<input
 						type="text"
 						placeholder="Search..."
@@ -111,13 +120,14 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
 					</div>
 					{searchText && (
 						<button
+							type="button"
 							onClick={() => setSearchText("")}
 							className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
 						>
 							<FaTimes />
 						</button>
 					)}
-				</div>
+				</form>
 			</div>
 
 			{/* Desktop view */}
@@ -127,12 +137,15 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
 						darkmode ? "text-gray-200" : "text-primary-2"
 					}`}
 				>
-					{name !== `/auth/signup` && name !== `/auth/signin`
-						? name.slice(1, name.length)
+					{pathname !== `/auth/signup` && pathname !== `/auth/signin`
+						? pathname.slice(1)
 						: "Overview"}
 				</div>
 				<div className="flex gap-5 items-center">
-					<div className="relative w-full max-w-xs">
+					<form
+						onSubmit={handleSearchSubmit}
+						className="relative w-full max-w-xs"
+					>
 						<input
 							type="text"
 							placeholder="Search..."
@@ -152,13 +165,14 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
 						</div>
 						{searchText && (
 							<button
+								type="button"
 								onClick={() => setSearchText("")}
 								className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
 							>
 								<FaTimes />
 							</button>
 						)}
-					</div>
+					</form>
 					<button onClick={handleToggleDarkMode}>
 						<Image
 							src={darkmode ? lightModeImg : darkModeImg}

@@ -6,12 +6,12 @@ const Footer = () => {
     initial={{opacity:0}} animate = {{opacity:1}}
     transition={{duration:0.75 , ease:"easeOut"}}
     
-    id="footer" className="bg-[#083E9E] text-white">
+    id="footer" className="bg-[#083E9E] text-white p-[2rem]">
       <div className="mx-auto max-w-screen-xl space-y-8 px-4 py-16 sm:px-6 lg:space-y-16 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          <div>
+          <div className =" max-sm:flex max-sm:flex-col max-sm:items-center">
             <h1 className="text-2xl font-extrabold">BankDash</h1>
-            <p className="mt-4 max-w-xs text-gray-300">
+            <p className="mt-4 max-w-xs text-gray-300 max-sm:text-center">
               Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse non
               cupiditate quae nam molestias.
             </p>
@@ -102,7 +102,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
+          <div className="grid grid-cols-3 gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
             <div>
               <p className="font-medium text-gray-200">Services</p>
               <ul className="mt-6 space-y-4 text-sm text-gray-300">

@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { FaPencilAlt } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/lib/store';
-import { setUser } from '@/lib/features/userSlice/userSlice';
-import { useUpdateUserMutation } from '@/lib/service/UserService';
-import { useSession } from 'next-auth/react';
-import notify from '@/utils/notify';
+import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { FaPencilAlt } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import { setUser } from "@/lib/features/userSlice/userSlice";
+import { useUpdateUserMutation } from "@/lib/service/UserService";
+import { useSession } from "next-auth/react";
+import notify from "@/utils/notify";
 
 interface FormValues {
   name: string;
@@ -25,43 +25,55 @@ interface FormValues {
 }
 
 const schema = yup.object().shape({
-  name: yup.string().required('Name is required'),
-  email: yup.string().email('Invalid email format').required('Email is required'),
-  dateOfBirth: yup.string().required('Date of Birth is required'),
-  permanentAddress: yup.string().required('Permanent Address is required'),
-  postalCode: yup.string().required('Postal Code is required'),
-  username: yup.string().required('Username is required'),
-  password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
-  presentAddress: yup.string().required('Present Address is required'),
-  city: yup.string().required('City is required'),
-  country: yup.string().required('Country is required'),
+  name: yup.string().required("Name is required"),
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  dateOfBirth: yup.string().required("Date of Birth is required"),
+  permanentAddress: yup.string().required("Permanent Address is required"),
+  postalCode: yup.string().required("Postal Code is required"),
+  username: yup.string().required("Username is required"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  presentAddress: yup.string().required("Present Address is required"),
+  city: yup.string().required("City is required"),
+  country: yup.string().required("Country is required"),
 });
 
 const FormComponent: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
   const dispatch = useDispatch();
-  const [updateUser, {isLoading,isError}] = useUpdateUserMutation(); // Use the mutation hook
+  const [updateUser, { isLoading, isError }] = useUpdateUserMutation(); // Use the mutation hook
 
-  const [selectedImage, setSelectedImage] = useState<string | null>(user?.profilePicture || null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(
+    user?.profilePicture || null
+  );
 
-  const { control, handleSubmit, formState: { errors } } = useForm<FormValues>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
-      name: user?.name || '',
-      email: user?.email || '',
-      dateOfBirth: user?.dateOfBirth?.split('T')[0] || '',
-      permanentAddress: user?.permanentAddress || '',
-      postalCode: user?.postalCode || '',
-      username: user?.username || '',
-      password: '',
-      presentAddress: user?.presentAddress || '',
-      city: user?.city || '',
-      country: user?.country || '',
-      profilePicture: user?.profilePicture || '',
-    }
+      name: user?.name || "",
+      email: user?.email || "",
+      dateOfBirth: user?.dateOfBirth?.split("T")[0] || "",
+      permanentAddress: user?.permanentAddress || "",
+      postalCode: user?.postalCode || "",
+      username: user?.username || "",
+      password: "",
+      presentAddress: user?.presentAddress || "",
+      city: user?.city || "",
+      country: user?.country || "",
+      profilePicture: user?.profilePicture || "",
+    },
   });
   const { data: session, status } = useSession();
-  
+
   const onSubmit = async (data: FormValues) => {
     const updatedUser = {
       ...user,
@@ -74,7 +86,7 @@ const FormComponent: React.FC = () => {
       if (session?.user?.accessToken) {
         const response = await updateUser({
           accessToken: session.user.accessToken,
-          updatedUser: updatedUser
+          updatedUser: updatedUser,
         }).unwrap();
         console.log("Updated User:", response);
         dispatch(setUser(response.data));
@@ -82,9 +94,8 @@ const FormComponent: React.FC = () => {
         // Show success message or handle successful update
       } else {
         notify.error("Access token is missing");
-        
-        throw new Error("Access token is missing");
 
+        throw new Error("Access token is missing");
       }
     } catch (error) {
       console.error("Failed to update user:", error);
@@ -103,7 +114,7 @@ const FormComponent: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className=''>
+    <form onSubmit={handleSubmit(onSubmit)} className="">
       <div className="flex max-md:flex-col justify-between gap-[2rem]">
         <div className="flex flex-col w-[30rem] max-md:w-full">
           <div className="mb-6 flex justify-center">
@@ -136,7 +147,15 @@ const FormComponent: React.FC = () => {
         </div>
 
         <div className="flex flex-col w-[100%]">
-          {(['name', 'email', 'dateOfBirth', 'permanentAddress', 'postalCode'] as const).map((field) => (
+          {(
+            [
+              "name",
+              "email",
+              "dateOfBirth",
+              "permanentAddress",
+              "postalCode",
+            ] as const
+          ).map((field) => (
             <div className="mb-4" key={field}>
               <Controller
                 name={field}
@@ -144,16 +163,21 @@ const FormComponent: React.FC = () => {
                 render={({ field }) => (
                   <div className="mb-4">
                     <label className="block mb-1 font-400 text-[16px] text-[#232323] capitalize">
-                      {field.name.charAt(0).toUpperCase() + field.name.slice(1).replace(/([A-Z])/g, ' $1')}
+                      {field.name.charAt(0).toUpperCase() +
+                        field.name.slice(1).replace(/([A-Z])/g, " $1")}
                     </label>
                     <input
                       {...field}
-                      type={field.name === 'dateOfBirth' ? 'date' : 'text'}
+                      type={field.name === "dateOfBirth" ? "date" : "text"}
                       placeholder={field.value as string}
                       className="w-full p-2 border border-[#DFEAF2] rounded-[15px] focus:outline-none focus:ring-2 focus:ring-blue-200"
                       onChange={(e) => field.onChange(e.target.value)}
                     />
-                    {errors[field.name] && <p className="text-red-500 text-sm">{errors[field.name]?.message}</p>}
+                    {errors[field.name] && (
+                      <p className="text-red-500 text-sm">
+                        {errors[field.name]?.message}
+                      </p>
+                    )}
                   </div>
                 )}
               />
@@ -161,7 +185,15 @@ const FormComponent: React.FC = () => {
           ))}
         </div>
         <div className="flex flex-col w-[100%]">
-          {(['username', 'password', 'presentAddress', 'city', 'country'] as const).map((field) => (
+          {(
+            [
+              "username",
+              "password",
+              "presentAddress",
+              "city",
+              "country",
+            ] as const
+          ).map((field) => (
             <div className="mb-4" key={field}>
               <Controller
                 name={field}
@@ -169,16 +201,21 @@ const FormComponent: React.FC = () => {
                 render={({ field }) => (
                   <div className="mb-4">
                     <label className="block mb-1 font-400 text-[16px] text-[#232323] capitalize">
-                      {field.name.charAt(0).toUpperCase() + field.name.slice(1).replace(/([A-Z])/g, ' $1')}
+                      {field.name.charAt(0).toUpperCase() +
+                        field.name.slice(1).replace(/([A-Z])/g, " $1")}
                     </label>
                     <input
                       {...field}
-                      type={field.name === 'password' ? 'password' : 'text'}
+                      type={field.name === "password" ? "password" : "text"}
                       placeholder={field.value as string}
                       className="w-full p-2 border border-[#DFEAF2] rounded-[15px] focus:outline-none focus:ring-2 focus:ring-blue-200"
                       onChange={(e) => field.onChange(e.target.value)}
                     />
-                    {errors[field.name] && <p className="text-red-500 text-sm">{errors[field.name]?.message}</p>}
+                    {errors[field.name] && (
+                      <p className="text-red-500 text-sm">
+                        {errors[field.name]?.message}
+                      </p>
+                    )}
                   </div>
                 )}
               />
@@ -186,12 +223,12 @@ const FormComponent: React.FC = () => {
           ))}
         </div>
       </div>
-      <div 
-      className="flex justify-end mt-6">
-        <button type="submit" 
-          className='w-full md:w-auto px-4 py-2 bg-[#1814F3] text-white rounded-lg'
-          disabled = {isLoading}
-          >
+      <div className="flex justify-end mt-6">
+        <button
+          type="submit"
+          className="w-full md:w-auto px-4 py-2 bg-[#1814F3] text-white rounded-lg"
+          disabled={isLoading}
+        >
           Save Changes
         </button>
       </div>

@@ -271,7 +271,8 @@ export default function Home() {
           Pages
         </div>
         <div className="flex flex-wrap">
-          {numbers.map((number) => (
+          {numbers.map((number) => 
+          ( 
             <button
               key=""
               onClick={() => handlePage(number - 1)}

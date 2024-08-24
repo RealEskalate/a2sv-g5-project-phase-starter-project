@@ -3,9 +3,10 @@ import type { Config } from "tailwindcss";
 const config = {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -19,16 +20,24 @@ const config = {
     },
     extend: {
       colors: {
-        "primary-color-50": "#F5F7FA",
-        "primary-color-100": "#B1B1B1",
-        "primary-color-200": "#8BA3CB",
-        "primary-color-500": "#2D60FF",
-        "primary-color-800": "#343C6A",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        "primary-color-50": "#F5F7FA",
+        "primary-color-100": "#B1B1B1",
+        "primary-color-200": "#8BA3CB",
+        "primary-color-500": "#2D60FF",
+        "primary-color-600": "#16DBCC",
+        "primary-color-800": "#343C6A",
+// if it make error
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+// /// ///
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -76,6 +85,11 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+
+      },
+      fontFamily: {
+        inter: ['Inter', 'sans-serif'],
+
       },
     },
   },

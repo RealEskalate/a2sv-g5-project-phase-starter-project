@@ -1,3 +1,5 @@
+import { should } from "chai";
+
 const paths: string[] = [
   "/dashboard",
   "/transactions",
@@ -62,4 +64,11 @@ describe("should navigate to the desired page", () => {
       cy.wait(2000);
     });
   }
+
+  it("Should Logout successfully", () => {
+    cy.get('[data-id="Profile-image"]').should("be.visible").click();
+    cy.contains("button", "Logout").should("be.visible").click();
+
+    cy.url().should("include", "/");
+  });
 });

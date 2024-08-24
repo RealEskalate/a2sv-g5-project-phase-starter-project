@@ -6,6 +6,7 @@ import 'package:ecom_app/core/error/failure.dart';
 import 'package:ecom_app/features/product/data/models/product_model.dart';
 import 'package:ecom_app/features/product/data/repositories/product_repository_impl.dart';
 import 'package:ecom_app/features/product/domain/entities/product.dart';
+import 'package:ecom_app/features/product/domain/entities/seller.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -31,32 +32,36 @@ void main() {
 
   const testProductModel = ProductModel(
       id: '1',
-      name: 'Test Pineapple',
-      description: 'A yellow pineapple for the summer',
-      imageUrl: 'pineapple.jpg',
-      price: 5.33);
+      name: 'Product 1',
+      description: 'Product 1 description',
+      imageUrl: 'product1.jpg',
+      price: 100,
+      seller: Seller(id: '1', name: 'john', email: 'john@email.com'));
   const testProductModelList = [
     ProductModel(
         id: '1',
-        name: 'Test Pineapple',
-        description: 'A yellow pineapple for the summer',
-        imageUrl: 'pineapple.jpg',
-        price: 5.33)
+        name: 'Product 1',
+        description: 'Product 1 description',
+        imageUrl: 'product1.jpg',
+        price: 100,
+        seller: Seller(id: '1', name: 'john', email: 'john@email.com'))
   ];
   const testProductEntityList = [
     Product(
         id: '1',
-        name: 'Test Pineapple',
-        description: 'A yellow pineapple for the summer',
-        imageUrl: 'pineapple.jpg',
-        price: 5.33)
+        name: 'Product 1',
+        description: 'Product 1 description',
+        imageUrl: 'product1.jpg',
+        price: 100,
+        seller: Seller(id: '1', name: 'john', email: 'john@email.com'))
   ];
   const testProductEntity = Product(
       id: '1',
-      name: 'Test Pineapple',
-      description: 'A yellow pineapple for the summer',
-      imageUrl: 'pineapple.jpg',
-      price: 5.33);
+      name: 'Product 1',
+      description: 'Product 1 description',
+      imageUrl: 'product1.jpg',
+      price: 100,
+      seller: Seller(id: '1', name: 'john', email: 'john@email.com'));
   const testProductId = '1';
 
   void runTestsOnline(Function body) {
@@ -153,7 +158,8 @@ void main() {
     });
 
     runTestsOnline(() {
-      test('should cache products after getting them from the remote data source',
+      test(
+          'should cache products after getting them from the remote data source',
           () async {
         //arrange
         when(mockProductRemoteDataSource.getAllProducts())
@@ -163,10 +169,10 @@ void main() {
 
         //act
         await productRepositoryImpl.getAllProducts();
-        
-        //assert
-        verify(mockProductLocalDataSource.cacheAllProducts(testProductModelList));
 
+        //assert
+        verify(
+            mockProductLocalDataSource.cacheAllProducts(testProductModelList));
       });
     });
 
@@ -219,7 +225,7 @@ void main() {
       });
     });
 
-     runTestsOffline(() {
+    runTestsOffline(() {
       test('should return cache failure when failing to get cached products',
           () async {
         //arrange
@@ -228,10 +234,10 @@ void main() {
 
         //act
         final result = await productRepositoryImpl.getAllProducts();
-        
 
         //assert
-        expect(result, equals(const Left(CacheFailure('Failed to load cache'))));
+        expect(
+            result, equals(const Left(CacheFailure('Failed to load cache'))));
       });
     });
   });

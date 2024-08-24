@@ -5,11 +5,16 @@ import (
 	infrastructure "blogs/Infrastructure"
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	server := gin.Default()
+	confi := cors.DefaultConfig()
+	confi.AllowAllOrigins = true
+
+	server.Use(cors.New(confi))
 
 	config, err := infrastructure.LoadEnv()
 	if err != nil {

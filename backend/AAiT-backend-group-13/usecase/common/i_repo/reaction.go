@@ -7,7 +7,7 @@ import (
 
 // Reaction defines methods to manage reaction in the store.
 type Reaction interface {
-	Save(*models.Reaction) error
+	Save(models.Reaction) error
 
 	// Delete removes a reaction by ID.
 	Delete(id uuid.UUID) error

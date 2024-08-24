@@ -15,45 +15,48 @@ import (
 type ReactionController struct {
 	basecontroller.BaseHandler
 	updateReactionHandler icmd.IHandler[*reactioncmd.UpdateCommand, bool]
-	deleteReactionHandler icmd.IHandler[uuid.UUID, bool]
+	deleteReactionHandler icmd.IHandler[*reactioncmd.DeleteCommand, bool]
 }
 
 var _ common.IController = &ReactionController{}
 
 type Config struct {
-	updateReactionHandler icmd.IHandler[*reactioncmd.UpdateCommand, bool]
-	deleteReactionHandler icmd.IHandler[uuid.UUID, bool]
+	UpdateReactionHandler icmd.IHandler[*reactioncmd.UpdateCommand, bool]
+	DeleteReactionHandler icmd.IHandler[*reactioncmd.DeleteCommand, bool]
 }
 
 func New(config Config) *ReactionController {
 	return &ReactionController{
-		updateReactionHandler: config.updateReactionHandler,
-		deleteReactionHandler: config.deleteReactionHandler,
+		updateReactionHandler: config.UpdateReactionHandler,
+		deleteReactionHandler: config.DeleteReactionHandler,
 	}
 }
 
 // RegisterPublic registers public routes.
-func (r *ReactionController) RegisterPublic(route *gin.RouterGroup) {}
+func (r *ReactionController) RegisterPublic(route *gin.RouterGroup) {
+
+}
 
 // RegisterPrivileged registers privileged routes.
 func (r *ReactionController) RegisterPrivileged(route *gin.RouterGroup) {}
 
 // RegisterProtected registers protected routes.
 func (r *ReactionController) RegisterProtected(route *gin.RouterGroup) {
-	reaction := route.Group("/reaction")
+	reaction := route.Group("/blogs")
 	{
 
-		reaction.PUT("/:id", r.UpdateReaction)
-		reaction.DELETE("/:id", r.DeleteReaction)
+		reaction.PUT("/:id/reaction", r.UpdateReaction)
+		reaction.DELETE("/:id/reaction", r.DeleteReaction)
 
 	}
+
 }
 
 func (r ReactionController) UpdateReaction(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 
 	if err != nil {
-		r.Respond(c, http.StatusBadRequest, gin.H{"error": "Id is not valid"})
+		r.Respond(c, http.StatusBadRequest, gin.H{"error": "blogId is not valid"})
 		return
 	}
 	var reaction ReactionDto
@@ -63,7 +66,14 @@ func (r ReactionController) UpdateReaction(c *gin.Context) {
 		return
 	}
 
-	command := reactioncmd.NewUpdateCommand(reaction.IsLike, id, reaction.UserId)
+	decoded, err := uuid.Parse(reaction.UserId)
+
+	if err != nil {
+		r.Respond(c, http.StatusBadRequest, gin.H{"error": "userId is not valid"})
+		return
+	}
+
+	command := reactioncmd.NewUpdateCommand(reaction.IsLike, id, uuid.UUID(decoded))
 
 	_, err = r.updateReactionHandler.Handle(command)
 
@@ -80,11 +90,26 @@ func (r ReactionController) DeleteReaction(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 
 	if err != nil {
-		r.Respond(c, http.StatusBadRequest, gin.H{"error": "Id is not valid"})
+		r.Respond(c, http.StatusBadRequest, gin.H{"error": "blogId is not valid"})
+		return
+	}
+	var reaction ReactionDto
+
+	if err := c.ShouldBindJSON(&reaction); err != nil {
+		r.Respond(c, http.StatusBadRequest, er.NewBadRequest(err.Error()))
 		return
 	}
 
-	_, err = r.deleteReactionHandler.Handle(id)
+	decoded, err := uuid.Parse(reaction.UserId)
+
+	if err != nil {
+		r.Respond(c, http.StatusBadRequest, gin.H{"error": "userId is not valid"})
+		return
+	}
+
+	command := reactioncmd.NewDeleteCommand(id, uuid.UUID(decoded))
+
+	_, err = r.deleteReactionHandler.Handle(command)
 
 	if err != nil {
 		r.Respond(c, http.StatusNotFound, er.NewBadRequest(err.Error()))
@@ -92,5 +117,4 @@ func (r ReactionController) DeleteReaction(c *gin.Context) {
 	}
 
 	r.Respond(c, http.StatusNoContent, gin.H{})
-
 }

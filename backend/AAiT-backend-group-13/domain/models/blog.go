@@ -3,6 +3,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -150,6 +151,7 @@ func (b *Blog) UpdateCommentCount(increment bool) error {
 
 // UpdateLikeCount increments or decrements the like count based on the increment parameter.
 func (b *Blog) UpdateLikeCount(increment bool) error {
+	fmt.Println(b.likeCount, increment)
 	return updateCount(&b.likeCount, increment)
 }
 

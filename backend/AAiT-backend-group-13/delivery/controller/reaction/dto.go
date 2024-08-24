@@ -1,8 +1,6 @@
 package reactioncontroller
 
-import "github.com/google/uuid"
-
 type ReactionDto struct {
-	IsLike bool      `json:"isLike" binding:"required"`
-	UserId uuid.UUID `json:"userId" binding:"required"`
+	IsLike bool   `json:"isLike"`
+	UserId string `json:"userId" binding:"required"`
 }

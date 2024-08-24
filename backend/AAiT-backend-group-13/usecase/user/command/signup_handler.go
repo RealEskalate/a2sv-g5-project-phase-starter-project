@@ -54,7 +54,7 @@ func NewSignUpHandler(config SignUpConfig) *SignUpHandler {
 }
 
 // Handle processes the sign-up command to register a new user.
-// It creates a new user, checks for conflicts in username and email,
+// It creates a new user, checks for conflicts in email,
 // generates a validation link, and sends a sign-up email.
 func (h *SignUpHandler) Handle(command *SignUpCommand) (*result.SignUpResult, error) {
 	log.Printf("Starting sign-up process for user %s -- SignUpHandler", command.username)

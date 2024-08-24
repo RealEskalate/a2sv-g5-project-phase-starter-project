@@ -3,6 +3,7 @@ package reactionrepo
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/group13/blog/domain/models"
@@ -93,5 +94,39 @@ func (r Repo) FindReactionByBlogId(blogId uuid.UUID) (*[]models.Reaction, error)
 }
 
 func (r Repo) FindReactionByUserIdAndBlogId(userId uuid.UUID, blogId uuid.UUID) (*models.Reaction, error) {
-	return nil, nil
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Create a filter to find a reaction with matching userId and blogId.
+	filter := bson.M{
+		"userId": userId,
+		"blogId": blogId,
+	}
+
+	var reaction ReactionDTO
+
+	// Use the FindOne method to fetch a single document that matches the filter.
+	err := r.collection.FindOne(ctx, filter).Decode(&reaction)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			// Return nil if no reaction is found for the given userId and blogId.
+			return nil, nil
+		}
+		// Handle other potential errors from the database query.
+		return nil, fmt.Errorf("failed to find reaction: %v", err)
+	}
+
+	react := toReactionModel(&reaction)
+
+	return react, nil
+}
+
+func toReactionModel(dto *ReactionDTO) *models.Reaction {
+	comment := models.MapReaction(models.MapReactionConfig{
+		Id:     dto.ID,
+		BlogID: dto.BlogId,
+		UserID: dto.UserId,
+		IsLike: dto.IsLike,
+	})
+	return comment
 }

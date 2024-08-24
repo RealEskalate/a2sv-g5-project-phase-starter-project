@@ -29,6 +29,23 @@ func NewReaction(config ReactionConfig) *Reaction {
 	}
 }
 
+type MapReactionConfig struct {
+	Id     uuid.UUID
+	IsLike bool      // True if the reaction is a like, false if a dislike
+	UserID uuid.UUID // ID of the user who made the reaction
+	BlogID uuid.UUID // ID of the blog post being reacted to
+}
+
+// NewReaction creates a new Reaction with the specified configuration.
+func MapReaction(config MapReactionConfig) *Reaction {
+	return &Reaction{
+		id:     config.Id,
+		isLike: config.IsLike,
+		userID: config.UserID,
+		blogID: config.BlogID,
+	}
+}
+
 // ID returns the unique identifier of the Reaction.
 func (r *Reaction) ID() uuid.UUID { return r.id }
 

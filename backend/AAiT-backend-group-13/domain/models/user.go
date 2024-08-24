@@ -220,7 +220,7 @@ func (u *User) UpdateUsername(username string) error {
 }
 
 // MakeActive sets the User's status to active.
-func (u *User) MakeActive() { u.isActive = true }
+func (u *User) MakeActive()   { u.isActive = true }
 func (u *User) MakeInactive() { u.isActive = false }
 
 // UpdateFirstName updates the User's first name after validation.
@@ -276,3 +276,5 @@ func (u *User) UpdatePassword(newPassword string, hasher ihash.Service) error {
 
 // UpdateAdminStatus updates the User's admin status.
 func (u *User) UpdateAdminStatus(isAdmin bool) { u.isAdmin = isAdmin }
+
+

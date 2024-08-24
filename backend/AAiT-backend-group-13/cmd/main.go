@@ -12,6 +12,7 @@ import (
 	blogcontroller "github.com/group13/blog/delivery/controller/blog"
 	commentcontroller "github.com/group13/blog/delivery/controller/comment"
 	"github.com/group13/blog/delivery/controller/gemini"
+	reactioncontroller "github.com/group13/blog/delivery/controller/reaction"
 	usercontroller "github.com/group13/blog/delivery/controller/user"
 	"github.com/group13/blog/delivery/router"
 	cache "github.com/group13/blog/infrastructure/cache"
@@ -29,6 +30,7 @@ import (
 	commentcmd "github.com/group13/blog/usecase/comment/command"
 	commentqry "github.com/group13/blog/usecase/comment/query"
 	passwordreset "github.com/group13/blog/usecase/password_reset"
+	reactioncmd "github.com/group13/blog/usecase/reaction/command"
 	usercmd "github.com/group13/blog/usecase/user/command"
 	userqry "github.com/group13/blog/usecase/user/query"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -46,7 +48,7 @@ func main() {
 	geminiModel := initGeminiClient(cfg)
 
 	// Initialize services
-	userRepo, blogRepo, commentRepo, _ := initRepos(cfg, mongoClient)
+	userRepo, blogRepo, commentRepo, reactionRepo := initRepos(cfg, mongoClient)
 	jwtService := jwt.New(
 		jwt.Config{
 			SecretKey: config.Envs.JWTSecret,
@@ -67,16 +69,16 @@ func main() {
 	geminiController := initGeminiController(geminiService.NewReccomendationHandler(geminiModel))
 
 	commentController := initCommentController(blogRepo, cacheClient, *commentRepo, userRepo)
-
+	reactionController := initReactionController(reactionRepo, blogRepo)
 
 	// Router configuration
 	routerConfig := router.Config{
-		Addr:        fmt.Sprintf(":%s", cfg.ServerPort),
-		BaseURL:     "/api",
+		Addr:    fmt.Sprintf(":%s", cfg.ServerPort),
+		BaseURL: "/api",
 
-		Controllers: []common.IController{userController, blogController, geminiController, commentController},
+		Controllers: []common.IController{userController, blogController, geminiController, commentController, reactionController},
 
-		JwtService:  jwtService,
+		JwtService: jwtService,
 	}
 	r := router.NewRouter(routerConfig)
 
@@ -200,7 +202,6 @@ func initGeminiController(geminiHandler *geminiService.RecomendationHandler) *ge
 	return gemini.NewAiController(geminiHandler)
 }
 
-
 func initCommentController(blogRepo *blogrepo.Repo, cacheService *cache.RedisCache, commentRepo commentrepo.Repo, userRepo *userrepo.Repo) *commentcontroller.CommentController {
 	addHandler := commentcmd.NewHandler(blogRepo, userRepo, commentRepo)
 	deleteHandler := commentcmd.New(blogRepo, commentRepo)
@@ -215,3 +216,11 @@ func initCommentController(blogRepo *blogrepo.Repo, cacheService *cache.RedisCac
 	})
 }
 
+func initReactionController(reactionRepo *reactionrepo.Repo, blogRepo *blogrepo.Repo) *reactioncontroller.ReactionController {
+	updateHandler := reactioncmd.NewUpdateHandler(reactionRepo, blogRepo)
+	deleteHandler := reactioncmd.New(blogRepo, reactionRepo)
+	return reactioncontroller.New(reactioncontroller.Config{
+		UpdateReactionHandler: updateHandler,
+		DeleteReactionHandler: deleteHandler,
+	})
+}

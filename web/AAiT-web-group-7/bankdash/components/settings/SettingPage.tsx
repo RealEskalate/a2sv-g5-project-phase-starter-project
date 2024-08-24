@@ -10,7 +10,7 @@ const SettingPage = () => {
     setActiveButton(button);
   };
   return (
-    <div className="">
+    <div className="p-8">
       <div className="flex flex-col rounded-3xl w-fill p-8 bg-white">
         <div className="flex flex-row border-b  w-fill text-[#718EBF] gap-12">
           <button

@@ -5,7 +5,7 @@ import ServiceList from "./ServiceList";
 const ServicePage = () => {
   return (
     <div className="flex flex-col py-10 space-y-10">
-      <div className="flex justify-center gap-5">
+      <div className="flex justify-around gap-5">
         <ServiceCard
           imageSrc="pubimg/key.svg"
           title="Life Insurance"

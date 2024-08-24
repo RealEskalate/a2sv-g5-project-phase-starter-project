@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
 	"time"
 
@@ -13,6 +14,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
+
+var ErrNoDocuments = errors.New("mongo: no documents in result")
 
 type Database interface {
 	Collection(string) Collection
@@ -150,6 +153,9 @@ func (mc *mongoCollection) UpdateOne(ctx context.Context, filter interface{}, up
 
 func (mc *mongoCollection) InsertOne(ctx context.Context, document interface{}) (interface{}, error) {
 	id, err := mc.coll.InsertOne(ctx, document)
+	if err != nil {
+		return nil, fmt.Errorf("error inserting document: %w", err)
+	}
 	return id.InsertedID, err
 }
 
@@ -186,7 +192,14 @@ func (mc *mongoCollection) CountDocuments(ctx context.Context, filter interface{
 }
 
 func (sr *mongoSingleResult) Decode(v interface{}) error {
-	return sr.sr.Decode(v)
+	err := sr.sr.Decode(v)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return ErrNoDocuments
+		}
+		return err
+	}
+	return nil
 }
 
 func (mr *mongoCursor) Close(ctx context.Context) error {

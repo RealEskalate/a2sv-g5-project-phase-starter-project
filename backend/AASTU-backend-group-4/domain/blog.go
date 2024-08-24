@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/generative-ai-go/genai"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -22,6 +23,7 @@ type Blog struct {
 }
 
 type BlogUsecase interface {
+  GenerateAIContent(ctx context.Context, prompt string) (*genai.GenerateContentResponse, error)
 	CreateBlog(ctx context.Context, blog *BlogRequest, authorID primitive.ObjectID) (*Blog, error)                        //
 	CreateComment(ctx context.Context, comment *CommentRequest) (*Comment, error)                                         //
 	AddLike(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID) error                              //

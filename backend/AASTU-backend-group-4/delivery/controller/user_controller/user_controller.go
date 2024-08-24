@@ -6,6 +6,15 @@ import (
 )
 
 type UserController struct {
-	usecase domain.UserUsecase
-	Env     *bootstrap.Env
+	userUsecase domain.UserUsecase
+	authService domain.AuthService
+	Env         *bootstrap.Env
+}
+
+func NewUserController(userUsecase domain.UserUsecase, authService domain.AuthService, env *bootstrap.Env) *UserController {
+	return &UserController{
+		userUsecase: userUsecase,
+		authService: authService,
+		Env:         env,
+	}
 }

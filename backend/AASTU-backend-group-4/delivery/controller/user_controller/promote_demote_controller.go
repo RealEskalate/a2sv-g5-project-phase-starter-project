@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (uc *UserController) PromoteDemoteController(c *gin.Context) {
+func (uc *UserController) PromoteDemote(c *gin.Context) {
 	var request domain.PromoteDemoteRequest
 	var user_ domain.User
 
@@ -18,12 +18,12 @@ func (uc *UserController) PromoteDemoteController(c *gin.Context) {
 	}
 
 	if request.Email != "" {
-		if user_, err := uc.usecase.GetByEmail(c, request.Email); err != nil {
+		if user_, err := uc.userUsecase.GetByEmail(c, request.Email); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Email doesn't exist.", "request": user_})
 			return
 		}
 	} else if request.Username != "" {
-		if user_, err := uc.usecase.GetByUsername(c, request.Username); err != nil {
+		if user_, err := uc.userUsecase.GetByUsername(c, request.Username); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Username doesn't exist.", "request": user_})
 			return
 		}
@@ -41,7 +41,7 @@ func (uc *UserController) PromoteDemoteController(c *gin.Context) {
 		return
 	}
 
-	if err := uc.usecase.PromoteDemote(c, user_.ID, action); err != nil {
+	if err := uc.userUsecase.PromoteDemote(c, user_.ID, action); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

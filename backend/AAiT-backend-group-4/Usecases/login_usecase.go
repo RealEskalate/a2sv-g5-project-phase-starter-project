@@ -5,7 +5,6 @@ import (
 	domain "aait-backend-group4/Domain"
 	"context"
 	"fmt"
-	"log"
 	"regexp"
 	"time"
 )
@@ -43,11 +42,7 @@ func NewLoginUsecase(userRepository domain.UserRepository, tokenService domain.T
 func (lu *loginUsecase) LoginWithIdentifier(c context.Context, identifier string) (accessToken string, refreshToken string, err error) {
 	var user domain.User
 
-	log.Printf("indentifier: %v", identifier)
-
 	ok := IsValidEmail(identifier)
-
-	log.Printf("Email: %v", ok)
 
 	if !ok {
 		user, err = lu.userRepository.GetByUsername(c, identifier)

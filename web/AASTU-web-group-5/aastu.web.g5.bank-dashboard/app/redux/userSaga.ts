@@ -12,7 +12,8 @@ interface FetchUserAction {
 
 // Function to fetch user data from the API
 function fetchUserData(username: string, token: string) {
-  return axios.get(`https://bank-dashboard-1tst.onrender.com/user/${username}`, {
+  console.log(username,token,'token111111')
+  return axios.get(`https://bank-dashboard-rsf1.onrender.com/user/${username}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -21,14 +22,16 @@ function fetchUserData(username: string, token: string) {
 
 // Saga to handle the user fetch request
 function* fetchUser(action: FetchUserAction) {
-  try {
+  try { 
     const response = yield call(fetchUserData, action.payload.username, action.payload.token);
-    const data = response.data;
-    yield put(setUser(data));
+    const data = response.data.data; 
+    console.log('Fetched user data:', data);
+    yield put(setUser({ data })); 
   } catch (e) {
     console.error('Failed to fetch user data', e);
   }
 }
+
 
 function* userSaga() {
   yield takeLatest('USER_FETCH_REQUESTED', fetchUser);

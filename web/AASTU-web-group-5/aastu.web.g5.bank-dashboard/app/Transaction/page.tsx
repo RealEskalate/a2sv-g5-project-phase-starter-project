@@ -37,7 +37,7 @@ const Transactions: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://bank-dashboard-1tst.onrender.com/transactions/expenses?page=0&size=7`,
+        `https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=0&size=7`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -57,13 +57,66 @@ const Transactions: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("Updated expenseData:", expenseData);
-  }, [expenseData]);
+  const fetchRecentData = async () => {
+    if (!accessToken) {
+      setError("No access token available");
+      setLoading(false);
+      return;
+    }
 
-  useEffect(() => {
-    fetchExpenseData();
-  }, [accessToken]);
+    try {
+      const response = await axios.get(
+        `https://bank-dashboard-rsf1.onrender.com/transactions?page=0&size=5`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      const transformedData = response.data.data.content.map((item: any) => ({
+        column1: item.description,
+        column2: item.transactionId,
+        column3: item.type,
+        column4: "N/A", // Update this if you have card info
+        column5: new Date(item.date).toLocaleDateString(),
+        column6: `$${item.amount.toFixed(2)}`, // Format amount as currency
+        column7: "N/A", // Update this if you have receipt info
+      }));
+
+      setData(transformedData);
+    } catch (error) {
+      setError("Failed to fetch data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchIncomeData = async () => {
+    if (!accessToken) {
+      setError("No access token available");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://bank-dashboard-rsf1.onrender.com/transactions/incomes?page=0&size=5`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+      setData(data.data.content || []);
+    } catch (error) {
+      setError("Failed to fetch income data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchCardData = async (page: number) => {
     if (!accessToken) {
@@ -74,7 +127,7 @@ const Transactions: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://bank-dashboard-1tst.onrender.com/cards?page=${page}&size=3`,
+        `https://bank-dashboard-rsf1.onrender.com/cards?page=${page}&size=3`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -95,38 +148,24 @@ const Transactions: React.FC = () => {
     }
   };
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        `https://bank-dashboard-1tst.onrender.com/transactions?page=${0}&size${5}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      const transformedData = response.data.data.content.map((item: any) => ({
-        column1: item.description,
-        column2: item.transactionId,
-        column3: item.type,
-        column4: "N/A", // Update this if you have card info
-        column5: new Date(item.date).toLocaleDateString(),
-        column6: `$${item.amount.toFixed(2)}`, // Format amount as currency
-        column7: "N/A", // Update this if you have receipt info
-      }));
-
-      setData(transformedData);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-      setError("Failed to fetch data. Please check the console for more details.");
-    }
-  };
-
   useEffect(() => {
     fetchCardData(0);
-    fetchData();
-  }, [accessToken]);
+    fetchExpenseData(); // Always fetch expense data for BarChartComponent
+
+    switch (activeLink) {
+      case "recent":
+        fetchRecentData();
+        break;
+      case "income":
+        fetchIncomeData();
+        break;
+      case "expenses":
+        // No action needed here, since expenseData is fetched already
+        break;
+      default:
+        break;
+    }
+  }, [activeLink, accessToken]);
 
   const handleLinkClick = (linkName: string) => {
     setActiveLink(linkName);
@@ -208,3 +247,4 @@ const Transactions: React.FC = () => {
 };
 
 export default Transactions;
+``

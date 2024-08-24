@@ -8,6 +8,20 @@ const paths: string[] = [
   "/services",
   "/settings",
 ];
+describe("should check for invalid login form submission", () => {
+  it("should present the error message upon invalid submission", () => {
+    cy.visit("/");
+    cy.contains("div", "Login").should("be.visible");
+    cy.contains("div", "Login").click();
+
+    cy.get('input[name="userName"]').clear();
+    cy.get('input[name="password"]').clear();
+
+    cy.contains("button", "Login").click();
+    cy.contains("User name field is required").should("be.visible");
+    cy.contains("Password field is required").should("be.visible");
+  });
+});
 
 describe("should navigate to the desired page", () => {
   beforeEach(() => {

@@ -1,8 +1,12 @@
 import React from "react";
-
+import {motion as m } from 'framer-motion';
 const Footer = () => {
   return (
-    <footer id="footer" className="bg-[#083E9E] text-white">
+    <m.footer 
+    initial={{opacity:0}} animate = {{opacity:1}}
+    transition={{duration:0.75 , ease:"easeOut"}}
+    
+    id="footer" className="bg-[#083E9E] text-white">
       <div className="mx-auto max-w-screen-xl space-y-8 px-4 py-16 sm:px-6 lg:space-y-16 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div>
@@ -200,7 +204,7 @@ const Footer = () => {
           &copy; 2024. BankDash. All rights reserved.
         </p>
       </div>
-    </footer>
+    </m.footer>
   );
 };
 

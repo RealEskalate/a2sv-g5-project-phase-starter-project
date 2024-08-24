@@ -42,12 +42,14 @@ Cypress.Commands.add("login", () => {
     "https://astu-bank-dashboard.onrender.com/auth/login"
   ).as("loginRequest");
 
-  cy.visit("/login");
+  cy.visit("/");
+  cy.contains("div", "Login").should("be.visible");
+  cy.contains("div", "Login").click();
 
   cy.get('input[name="userName"]').type("testjunior");
   cy.get('input[name="password"]').type("testjunior");
   cy.get("form").submit();
   cy.wait(5000);
 
-  cy.url().should("not.include", "/login");
+  cy.url().should("include", "/dashboard");
 });

@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useEffect } from "react";
 import { Chart, ChartData, ChartOptions } from "chart.js/auto";
+import LineChartSkeleton from "./LineChartSkeleton";
 
 interface CustomCanvasElement extends HTMLCanvasElement {
   chart?: Chart;
@@ -131,6 +132,11 @@ function MonthlyRevenueChart() {
       }
     }
   }, []);
+  // if (true){
+  //   return(
+  //     <LineChartSkeleton />
+  //   )
+  // }
 
   return (
         <div className="text-gray-500 border rounded-[22px] bg-white p-5">

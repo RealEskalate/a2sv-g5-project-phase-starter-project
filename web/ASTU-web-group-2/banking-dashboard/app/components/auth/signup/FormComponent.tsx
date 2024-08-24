@@ -40,7 +40,7 @@ const schema = yup.object().shape({
 });
 
 const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData, setActiveTab }) => {
-  const [selectedImage, setSelectedImage] = useState<string | null>(mainData.profilePicture || null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(mainData.profilePicture || "https://cdn-icons-png.flaticon.com/512/3541/3541871.png");
 
   const { control, formState: { errors } } = useForm<FormValues>({
     resolver: yupResolver(schema),
@@ -91,13 +91,13 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData, se
                 {selectedImage ? (
                   <img
                     src={selectedImage}
-                    alt="Profile"
+                    // alt="Profile"
                     className="object-cover w-full h-full"
                   />
                 ) : (
                   <img
-                    src="/public/assets/auth/avatardefault.png"
-                    alt="Profile"
+                    src=""
+                    // alt="Profile"
                     className="object-cover w-full h-full"
                   />
                 )}

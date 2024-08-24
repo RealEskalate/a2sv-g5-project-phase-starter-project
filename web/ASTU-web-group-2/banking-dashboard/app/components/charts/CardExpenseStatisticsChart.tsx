@@ -9,6 +9,7 @@ import {
   ChartData,
   ChartOptions,
 } from "chart.js";
+import PieChartSkeleton from "./PieChartSkeleton";
 
 Chart.register(DoughnutController, ArcElement, Tooltip, Legend);
 
@@ -108,6 +109,11 @@ function CardExpenseStatisticsChart() {
       }
     };
   }, []);
+  // if(true){
+  //   return (
+  //     <PieChartSkeleton />
+  //   )
+  // }
 
   return (
     <div className="grid grid-cols-1 bg-white rounded-[28px] text-[#718EBF] h-[310px]">

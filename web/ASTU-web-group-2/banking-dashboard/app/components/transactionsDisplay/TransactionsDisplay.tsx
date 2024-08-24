@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useGetAllTransactionQuery } from "@/lib/service/TransactionService";
 import { TransactionType } from "../transaction/Transaction";
+import RecentTransactionSkeleton from "../recent-transaction/RecentTransactionSkeleton";
 
 const inter = Inter({ subsets: ["latin"] });
 const TransactionsDisplay = () => {
@@ -26,9 +27,7 @@ const TransactionsDisplay = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="w-16 h-16 border-t-4 border-b-4 border-blue-500 rounded-full animate-spin"></div>
-      </div>
+      <RecentTransactionSkeleton />
     );
   }
   const data = res.data!.content!;

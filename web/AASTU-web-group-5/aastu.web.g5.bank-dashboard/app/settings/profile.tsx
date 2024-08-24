@@ -55,8 +55,8 @@ const EditProfile = () => {
     setProfilePicture(reduxUser?.profilePicture || '/images/christina.png');
     console.log('Profile picture updated:', reduxUser?.profilePicture);
 }, [reduxUser?.profilePicture]);
-
-  if (!user?.name || !user?.accessToken) {
+console.log(user?.accessToken,'user.accessToken')
+  if (!user?.accessToken) {
     return <div>Loading...</div>; 
   }
 

@@ -13,19 +13,18 @@ async function refreshAccessToken(token: JWT) {
         Authorization: `Bearer ${token.refreshToken}`,
       },
     });
-	console.log(res,'11111111111111111111')
 
     const refreshedTokens = await res.json(); 
 	console.log(refreshedTokens,'refreshedTokens')
     if (!res.ok) {
       throw refreshedTokens;
     } 
-	console.log() 
-
+	console.log() ;
     return {
       ...token,
-      accessToken: refreshedTokens.data,
+      accessToken: refreshedTokens.access_token,
       accessTokenExpires: Date.now() + 10* 60 * 1000, 
+	  refreshToken:refreshedTokens.refresh_token,
     };
   } catch (error) {
     console.error("Failed to refresh access token", error);
@@ -65,7 +64,7 @@ const authOptions: AuthOptions = {
             username: credentials?.userName,
             accessToken: user.data.access_token,
             refreshToken: user.data.refresh_token,
-			accessTokenExpires: Date.now() + 10* 60 * 1000, 
+			accessTokenExpires: Date.now() + 10*60* 1000, 
 		};
         } else {
           return null;
@@ -81,7 +80,7 @@ const authOptions: AuthOptions = {
         return {
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
-          accessTokenExpires: Date.now() + 300 ,
+          accessTokenExpires: Date.now() + 10*60*1000 ,
           username: user.username,
         };
       }

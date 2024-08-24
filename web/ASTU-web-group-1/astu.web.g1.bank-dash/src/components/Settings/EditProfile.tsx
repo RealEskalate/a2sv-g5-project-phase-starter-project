@@ -5,7 +5,7 @@ const EditProfile = () => {
   return (
     <div className="flex flex-col md:flex-row">
       <ProfileAvatar />
-      <EditProfileForm />
+        <EditProfileForm />
     </div>
   );
 };

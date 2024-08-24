@@ -14,7 +14,7 @@ const ServiceCard: React.FC<LoanCardProps> = ({
   bgColor,
 }) => {
   return (
-    <div className="rounded-3xl flex justify-center items-center bg-white p-4 text-sm">
+    <div className="rounded-3xl flex justify-between items-center bg-white py-4 px-16 text-sm">
       <div className="flex justify-between items-center gap-4">
         <div
           style={{ backgroundColor: bgColor }}

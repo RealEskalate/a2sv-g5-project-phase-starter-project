@@ -62,4 +62,6 @@ type BlogRepository interface {
 	DecrementBlogCommentCount(ctx context.Context, blogId string) error
 
 	DecrementBlogViewCount(ctx context.Context, blogId string) error
+
+	GetUserBlogs(ctx context.Context, userID string, page, pageSize int) ([]*domain.Blog, error)
 }

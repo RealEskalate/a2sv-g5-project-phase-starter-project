@@ -19,6 +19,7 @@ type Config struct {
 	ACCESS_TOKEN_LIFE_TIME      string
 	REFRESH_TOKEN_LIFE_TIME     string
 	VERIFICATION_TOKEN_LIFETIME string
+	MODERATE_BLOG_BEFORE_CREATE string
 }
 
 func Load() (*Config, error) {
@@ -39,6 +40,7 @@ func Load() (*Config, error) {
 		ACCESS_TOKEN_LIFE_TIME:      os.Getenv("ACCESS_TOKEN_LIFE_TIME"),
 		REFRESH_TOKEN_LIFE_TIME:     os.Getenv("REFRESH_TOKEN_LIFE_TIME"),
 		VERIFICATION_TOKEN_LIFETIME: os.Getenv("VERIFICATION_TOKEN_LIFETIME"),
+		MODERATE_BLOG_BEFORE_CREATE: os.Getenv("MODERATE_BLOG_BEFORE_CREATE"),
 	}
 	return Config, nil
 }

@@ -33,7 +33,6 @@ func (h *BlogHandler) GetAiBlog(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, blog)
-
 }
 
 func (h *BlogHandler) ModerateBlog(c *gin.Context) {
@@ -42,11 +41,11 @@ func (h *BlogHandler) ModerateBlog(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	is_valid, message, err := ai.ModerateBlog(blog.Content, blog.Title)
+	grade, message, err := ai.ModerateBlog(blog.Content, blog.Title)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"is_valid": is_valid, "message": message})
+	c.JSON(http.StatusOK, gin.H{"grade": grade, "message": message})
 
 }

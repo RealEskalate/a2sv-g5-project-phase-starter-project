@@ -138,3 +138,25 @@ func (h *BlogHandler) GetTagByIDHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, tag)
 }
+
+func (h *BlogHandler) GetMyBlogsHandler(c *gin.Context) {
+	userClaims, err := GetClaims(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+
+	blogs, err := h.UseCase.GetUserBlogs(context.Background(), userClaims.UserID, page, pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	nextUrl := fmt.Sprintf("%s?page=%d&pageSize=%d", c.Request.URL.Path, page+1, pageSize)
+	previousUrl := ""
+	if page > 1 {
+		previousUrl = fmt.Sprintf("%s?page=%d&pageSize=%d", c.Request.URL.Path, page, pageSize)
+	}
+	c.JSON(http.StatusOK, gin.H{"blogs": blogs, "nextUrl": nextUrl, "previousUrl": previousUrl})
+}

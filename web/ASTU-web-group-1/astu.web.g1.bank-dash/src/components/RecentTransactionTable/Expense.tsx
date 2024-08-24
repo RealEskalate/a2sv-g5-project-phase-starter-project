@@ -11,16 +11,19 @@ import {
 import Pagination from "./Pagination";
 import { TransactionDataType } from "@/types/transaction.types";
 import { number } from "zod";
+import RecentTransctionSkeleton from "../AllSkeletons/RecentTransactionSkeleton/recentTransactionSkeleton";
 
 const Expense = () => {
   const [currentPage, setCurrentPage] = useState(0);
 
-
-  const { data, error, isLoading } = useGetTransactionExpenseQuery({ page: currentPage, size: 5 });
+  const { data, error, isLoading } = useGetTransactionExpenseQuery({
+    page: currentPage,
+    size: 5,
+  });
   console.log(data);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Display loading state
+    return <RecentTransctionSkeleton />; // Display loading state
   }
 
   if (error || !data) {
@@ -28,7 +31,6 @@ const Expense = () => {
   }
   const currentData = data?.data.content;
   const totalPages = data?.data.totalPages;
-
 
   return (
     <div>

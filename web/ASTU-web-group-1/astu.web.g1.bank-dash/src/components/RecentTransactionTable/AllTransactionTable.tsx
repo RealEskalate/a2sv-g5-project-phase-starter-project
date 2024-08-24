@@ -11,16 +11,19 @@ import {
 import Pagination from "./Pagination";
 import { TransactionDataType } from "@/types/transaction.types";
 import { number } from "zod";
+import RecentTransctionSkeleton from "../AllSkeletons/RecentTransactionSkeleton/recentTransactionSkeleton";
 
 const AllTransactionTable = () => {
   const [currentPage, setCurrentPage] = useState(0);
 
-
-  const { data, error, isLoading } = useGetAllTransactionsQuery({ page: currentPage, size: 5 });
+  const { data, error, isLoading } = useGetAllTransactionsQuery({
+    page: currentPage,
+    size: 5,
+  });
   console.log(data);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Display loading state
+    return <RecentTransctionSkeleton />; // Display loading state
   }
 
   const currentData = data?.data.content;
@@ -29,7 +32,6 @@ const AllTransactionTable = () => {
   return (
     <div>
       <div className="flex flex-col gap-4">
-        
         {currentData?.length == 0 ? (
           <div>No transactions found.</div>
         ) : (

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useGetAllTransactionQuery } from "@/lib/service/TransactionService";
 import { useGetCurrentUserQuery } from "@/lib/service/UserService";
+import BalanceCardSkeleton from "./BalanceCardSkeleton";
 
 const Infobox = () => {
   const router = useRouter();
@@ -20,10 +21,15 @@ const Infobox = () => {
   const { data: resUserCurrent, isLoading: userIsLoading } =
     useGetCurrentUserQuery(accessToken);
 
-  if (isLoading || userIsLoading) {
+  // if (isLoading || userIsLoading) {
+  if (isLoading){
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="w-16 h-16 border-t-4 border-b-4 border-blue-500 rounded-full animate-spin"></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+      <BalanceCardSkeleton />
+      <BalanceCardSkeleton />
+      <BalanceCardSkeleton />
+      <BalanceCardSkeleton />
+
       </div>
     );
   }

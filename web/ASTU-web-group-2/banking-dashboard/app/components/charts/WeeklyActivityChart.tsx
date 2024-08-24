@@ -3,6 +3,8 @@ import { useRef, useEffect } from "react";
 import { Chart } from "chart.js/auto";
 import { useGetAllTransactionQuery } from "@/lib/service/TransactionService";
 import { useSession } from "next-auth/react";
+import BarChartSkeleton from "./BarChartSkeleton";
+import ErrorImage from "../Error/ErrorImage";
 
 export interface ChartRef extends HTMLCanvasElement {
   chart?: Chart;
@@ -36,8 +38,7 @@ function WeeklyActivityChart() {
 
     transactions.forEach((transaction) => {
         const date = new Date(transaction.date);
-        
-        // Only include transactions from the last 7 days
+
         if (date >= sevenDaysAgo && date <= today) {
             const dayIndex = (todayIndex - date.getDay() + 7) % 7;
 
@@ -147,22 +148,13 @@ function WeeklyActivityChart() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center flex-col flex-initial flex-wrap bg-white  px-5 lg:h-[322px] h-[261px] w-full rounded-[22px]">
-      <div className="flex flex-row gap-2">
-        <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-        <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
-        <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.7s]"></div>
-      </div>
-    </div>
-
+      <BarChartSkeleton />
     );
   }
 
   if (isError) {
     return (
-      <div className="text-gray-500 border rounded-[22px] bg-white px-5 w-full lg:h-[322px] h-[261px] p-5">
-        Ooops! error loading your Activities.
-      </div>
+     <ErrorImage />
     );
   }
 
@@ -179,7 +171,7 @@ function WeeklyActivityChart() {
         </div>
       </div>
       <div className="h-[75%] mx-5 mb-5">
-        <canvas ref={chartRef} className="" />
+        <canvas ref={chartRef} className="" /> 
       </div>
     </div>
   );

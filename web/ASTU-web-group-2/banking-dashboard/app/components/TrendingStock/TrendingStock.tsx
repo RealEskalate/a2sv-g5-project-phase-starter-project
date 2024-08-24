@@ -1,6 +1,13 @@
+"use client"
 import React from "react";
+import TableSkeleton from "./TableSkeleton";
 
 const TrendingStock = () => {
+  // if (true){
+  //   return (
+  //     <TableSkeleton />
+  //   )
+  // }
   return (
     <div className="bg-white rounded-3xl">
       <table className="w-full border-collapse">

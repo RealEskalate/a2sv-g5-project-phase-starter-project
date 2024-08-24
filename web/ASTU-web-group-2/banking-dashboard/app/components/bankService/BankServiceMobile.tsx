@@ -22,7 +22,15 @@ const BankServiceMobile = ({ id, name, details, icon }: BankServiceType) => {
       className={`${inter.className} flex justify-between bg-white rounded-[22px] h-fit p-5 items-center`}
     >
       <div className="flex gap-3 items-center">
-        <img src={icon} alt="business-loans" />
+        <img
+          src={
+            icon && icon.startsWith("https")
+              ? icon
+              : "/assets/bankService/checkAccounts.svg"
+          }
+          alt="business-loans"
+          className="min-w-6"
+        />
         <div>
           <div className="font-medium ">{name}</div>
           <div className="font-normal text-[#718EBF]">{details}</div>

@@ -1,8 +1,12 @@
-# Getting Started
+## Getting Started
 
 Welcome to the documentation for the Blog API. This document describes routes and features of the API, their authorization level and all the necessary details one needs to run, build and use the application.
 
 > Note: All the commands listed here are supposed to be executed in the __root directory of the project__. 
+
+To facilitate API testing and continuous development with updated documents, [Postman](https://www.postman.com/) has been used to document the API endpoints. The details of the API are presented with their descriptions, authorization levels, sample request and response bodies and relevant examples.
+
+- https://documenter.getpostman.com/view/37574343/2sAXjF6thE
 
 ## Quickstart
 To run the application locally, use the following command:
@@ -338,17 +342,17 @@ go test -v -coverprofile="OUTPUT" -coverpkg="PACKAGE"  ./tests/FILENAME
 # example: repository coverage
 go test -v -coverprofile="cover.out" -coverpkg="blog_api/repository"  ./tests/blog_repository_test.go ./tests/user_repository_test.go ./tests/cache_repository_test.go
 
+# example: jwt service coverage
+go test -v -coverprofile="cover.out" -coverpkg="blog_api/infrastructure/jwt"  ./tests/jwt_service_test.go
+
 # example: usecase coverage
 go test -v -coverprofile="cover.out" -coverpkg="blog_api/usecase"  ./tests/blog_usecase_test.go ./tests/user_usecase_test.go
 
-# example: jwt service coverage
-go test -v -coverprofile="cover.out" -coverpkg="blog_api/infrastructure/jwt"  ./tests/jwt_service_test.go
+# example: controller coverage
+go test -v -coverprofile="cover.out" -coverpkg="blog_api/delivery/controllers"  ./tests/auth_controller_test.go ./tests/oauth_controller_test.go ./tests/blog_controller_test.go ./tests/comment_controller_test.go
 ```
 
 The output of the commands above are not human-readable. To generate a `.html` file with all the data obtained from the coverage profile, use the following command:
 ```bash
 go tool cover -html="cover.out" -o coverage.html
 ```
-
-# The Blog API
-

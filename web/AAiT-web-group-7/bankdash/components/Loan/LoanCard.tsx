@@ -14,17 +14,17 @@ const LoanCard: React.FC<LoanCardProps> = ({
   bgColor,
 }) => {
   return (
-    <div className="w-[255px] h-[120px] rounded-3xl flex justify-center items-center bg-white">
-      <div className="flex flex-row w-[201px] h-[70px] justify-between items-center">
+    <div className="p-5 rounded-3xl flex justify-center items-center bg-white text-sm">
+      <div className="flex flex-row gap-4 justify-between items-center">
         <div
           style={{ backgroundColor: bgColor }}
-          className={`rounded-full flex justify-center w-[70px] h-[70px] p-5 `}
+          className={`rounded-full flex justify-center w-14 h-14 p-5 `}
         >
           <img src={imageSrc} />
         </div>
-        <div className="flex flex-col w-[116px] h-[51px] gap-1">
-          <div className="font-[intel] text-[#718EBF]">{title}</div>
-          <div className="text-[#232323] font-[intel] font-bold">{amount}</div>
+        <div className="flex flex-col item-start">
+          <div className="text-[#718EBF]">{title}</div>
+          <div className="text-[#232323] font-semibold">{amount}</div>
         </div>
       </div>
     </div>

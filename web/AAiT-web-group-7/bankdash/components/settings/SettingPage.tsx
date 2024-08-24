@@ -10,11 +10,11 @@ const SettingPage = () => {
     setActiveButton(button);
   };
   return (
-    <div className="py-8 px-10">
-      <div className="flex flex-col rounded-[25px] w-fill  pt-[37px] px-[30px]  bg-white">
-        <div className="flex flex-row border-b  w-fill h-[30px] text-[#718EBF] gap-12">
+    <div className="">
+      <div className="flex flex-col rounded-3xl w-fill p-8 bg-white">
+        <div className="flex flex-row border-b  w-fill text-[#718EBF] gap-12">
           <button
-            className={`w-[114px] h-[30px]  items-center ${
+            className={`items-center ${
               activeButton === "edit"
                 ? "border-b-2  text-[#1814F3] border-[#1814F3]"
                 : ""
@@ -24,7 +24,7 @@ const SettingPage = () => {
             Edit Profile
           </button>
           <button
-            className={`w-[114px] h-[30px]  items-center ${
+            className={` items-center ${
               activeButton === "preferences"
                 ? "border-b-2  text-[#1814F3] border-[#1814F3]"
                 : ""
@@ -34,7 +34,7 @@ const SettingPage = () => {
             Preferences
           </button>
           <button
-            className={`w-[114px] h-[30px]  items-center ${
+            className={` items-center ${
               activeButton === "Security"
                 ? "border-b-2  text-[#1814F3] border-[#1814F3]"
                 : ""

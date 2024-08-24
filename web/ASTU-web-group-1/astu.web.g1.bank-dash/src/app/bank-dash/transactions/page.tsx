@@ -22,7 +22,7 @@ export default function page({ params }: idParamsType) {
                 <p className="text-[#333B69] pb-2 font-semibold">My Card</p>
                 <p className="text-[#333B69] pb-2 font-semibold">+ Add</p>
               </div>
-              <div className="flex  overflow-x-auto space-x-2">
+              <div className='flex  overflow-x-auto scrollbar-none space-x-2'>
                 <StoreProvider>
                   <MyCardLists />
                 </StoreProvider>

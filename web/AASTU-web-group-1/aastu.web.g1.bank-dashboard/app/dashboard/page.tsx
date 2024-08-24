@@ -42,14 +42,14 @@ const MainDashboard = () => {
 
   return (
     <div
-      className={`min-h-screen ${
-        dataFetched ? "p-10 space-y-5" : "flex justify-center items-center"
+      className={`min-h-screen 
+        p-10 space-y-5" 
       } ${isDarkMode ? "bg-gray-700 text-white" : "bg-[#F5F7FA] text-black"}`}
     >
-      {!dataFetched && <Loading />}
+     
 
       {/* Render components in the background to trigger data fetching */}
-      <div className={dataFetched ? "space-y-5" : "hidden"}>
+   
         {/* First Row: My Cards and Recent Transactions */}
         <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
           <Cards onLoadingComplete={() => setCardLoaded(true)} />
@@ -79,7 +79,7 @@ const MainDashboard = () => {
         </div>
       </div>
 
-    </div>
+ 
   );
 };
 

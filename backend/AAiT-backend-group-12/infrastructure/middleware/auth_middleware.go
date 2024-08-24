@@ -42,7 +42,7 @@ func AuthMiddlewareWithRoles(jwtService domain.JWTServiceInterface, cacheReposit
 		// check if the access token has been blacklisted
 		// an access token is blacklisted when the user logs out
 		if cacheRepository.IsCached(headerSegments[1]) {
-			MiddlewareError(c, 401, "User has been logged out")
+			MiddlewareError(c, 401, "User has already logged out")
 			return
 		}
 

@@ -79,3 +79,14 @@ func (u *blogUseCase) GetViewsByBlogID(ctx context.Context, blogID string) ([]*d
 	}
 	return views, nil
 }
+
+func (u *blogUseCase) GetUserBlogs(ctx context.Context, userID string, page int, pageSize int) ([]*domain.Blog, error) {
+	blogs, err := u.repo.GetUserBlogs(ctx, userID, page, pageSize)
+	if err != nil {
+		log.Printf("Error retrieving blogs for user with ID %s: %v", userID, err)
+		return nil, fmt.Errorf("failed to retrieve blogs: %w", err)
+	}
+
+	return blogs, nil
+
+}

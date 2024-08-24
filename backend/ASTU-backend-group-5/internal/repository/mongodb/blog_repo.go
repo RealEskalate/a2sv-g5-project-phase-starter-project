@@ -57,56 +57,6 @@ func (r *MongoBlogRepository) CreateBlog(ctx context.Context, blog *domain.Blog)
 // 	return &blog, nil
 // }
 
-func (r *MongoBlogRepository) GetBlogByID(ctx context.Context, id string) (*domain.GetSingleBlogDTO, error) {
-
-	objectID, err := primitive.ObjectIDFromHex(id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	// Find the blog by ID
-	var blog domain.Blog
-	err = r.blogsCollection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&blog)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	// Prepare the result DTO
-	result := &domain.GetSingleBlogDTO{
-		ID:            blog.ID,
-		Name:          blog.Title, // Assuming Name is the Title in this case
-		Author:        blog.Author,
-		AuthorName:    blog.AuthorName,
-		Title:         blog.Title,
-		Content:       blog.Content,
-		CreatedAt:     blog.CreatedAt,
-		UpdatedAt:     blog.UpdatedAt,
-		Tags:          blog.Tags,
-		ViewsCount:    blog.ViewsCount,
-		LikesCount:    blog.LikesCount,
-		CommentsCount: blog.CommentsCount,
-	}
-
-	// Fetch the first 10 comments for the blog
-	cursor, err := r.commentsCollection.Find(ctx, bson.M{"blog_id": objectID}, options.Find().SetLimit(10))
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(ctx)
-
-	var comments []domain.Comment
-	if err := cursor.All(ctx, &comments); err != nil {
-		return nil, err
-	}
-	result.Comments = comments
-
-	return result, nil
-}
-
 func (r *MongoBlogRepository) UpdateBlog(ctx context.Context, id string, blog *domain.Blog) error {
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -128,25 +78,6 @@ func (r *MongoBlogRepository) DeleteBlog(ctx context.Context, id string) error {
 
 	_, err = r.blogsCollection.DeleteOne(ctx, bson.M{"_id": objectID})
 	return err
-}
-
-func (r *MongoBlogRepository) GetAllBlogs(ctx context.Context) ([]*domain.Blog, error) {
-	cursor, err := r.blogsCollection.Find(ctx, bson.M{})
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(ctx)
-
-	var blogs []*domain.Blog
-	for cursor.Next(ctx) {
-		var blog domain.Blog
-		if err := cursor.Decode(&blog); err != nil {
-			return nil, err
-		}
-		blogs = append(blogs, &blog)
-	}
-
-	return blogs, nil
 }
 
 // PaginateBlogs retrieves paginated results of blogs based on the filter and pagination parameters
@@ -440,82 +371,4 @@ func (r *MongoBlogRepository) GetCommentById(ctx context.Context, commentId stri
 		return nil, err
 	}
 	return &comment, nil
-}
-
-func (r *MongoBlogRepository) IncrementBlogViewCount(ctx context.Context, blogID string) error {
-	// Create an update filter
-	blogIdObj, _ := primitive.ObjectIDFromHex(blogID)
-	filter := bson.M{"_id": blogIdObj}
-	// Create an update operation
-	update := bson.M{"$inc": bson.M{"views_count": 1}}
-
-	// Execute the update
-	_, err := r.blogsCollection.UpdateOne(ctx, filter, update)
-
-	return err
-}
-
-func (r *MongoBlogRepository) IncrementBlogLikeCount(ctx context.Context, blogID string) error {
-	// Create an update filter
-	blogIdObj, _ := primitive.ObjectIDFromHex(blogID)
-	filter := bson.M{"_id": blogIdObj}
-	// Create an update operation
-	update := bson.M{"$inc": bson.M{"likes_count": 1}}
-
-	// Execute the update
-	_, err := r.blogsCollection.UpdateOne(ctx, filter, update)
-
-	return err
-}
-
-func (r *MongoBlogRepository) IncrementBlogCommentCount(ctx context.Context, blogID string) error {
-	// Create an update filter
-	blogIdObj, _ := primitive.ObjectIDFromHex(blogID)
-	filter := bson.M{"_id": blogIdObj}
-	// Create an update operation
-	update := bson.M{"$inc": bson.M{"comments_count": 1}}
-
-	// Execute the update
-	_, err := r.blogsCollection.UpdateOne(ctx, filter, update)
-
-	return err
-}
-
-func (r *MongoBlogRepository) DecrementBlogViewCount(ctx context.Context, blogID string) error {
-	// Create an update filter
-	blogIdObj, _ := primitive.ObjectIDFromHex(blogID)
-	filter := bson.M{"_id": blogIdObj}
-	// Create an update operation
-	update := bson.M{"$inc": bson.M{"views_count": -1}}
-
-	// Execute the update
-	_, err := r.blogsCollection.UpdateOne(ctx, filter, update)
-
-	return err
-}
-
-func (r *MongoBlogRepository) DecrementBlogLikeCount(ctx context.Context, blogID string) error {
-	// Create an update filter
-	blogIdObj, _ := primitive.ObjectIDFromHex(blogID)
-	filter := bson.M{"_id": blogIdObj}
-	// Create an update operation
-	update := bson.M{"$inc": bson.M{"likes_count": -1}}
-
-	// Execute the update
-	_, err := r.blogsCollection.UpdateOne(ctx, filter, update)
-
-	return err
-}
-
-func (r *MongoBlogRepository) DecrementBlogCommentCount(ctx context.Context, blogID string) error {
-	// Create an update filter
-	blogIdObj, _ := primitive.ObjectIDFromHex(blogID)
-	filter := bson.M{"_id": blogIdObj}
-	// Create an update operation
-	update := bson.M{"$inc": bson.M{"comments_count": -1}}
-
-	// Execute the update
-	_, err := r.blogsCollection.UpdateOne(ctx, filter, update)
-
-	return err
 }

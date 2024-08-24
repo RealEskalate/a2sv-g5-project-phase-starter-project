@@ -52,17 +52,34 @@ func (h *TokenHandler) RefreshToken(c *gin.Context) {
 
 func (h *TokenHandler) LogOut(c *gin.Context) {
 	token := domain.Token{}
-	token.AccessToken = strings.Split(c.GetHeader("x_access_token"), " ")[1]
-	token.RefreshToken = strings.Split(c.GetHeader("x_refresh_token"), " ")[1]
+
+	accessTokenHeader := c.GetHeader("x_access_token")
+	refreshTokenHeader := c.GetHeader("x_refresh_token")
+
+	accessTokenParts := strings.Split(accessTokenHeader, " ")
+	if len(accessTokenParts) != 2 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid access token format"})
+		return
+	}
+	token.AccessToken = accessTokenParts[1]
+
+	refreshTokenParts := strings.Split(refreshTokenHeader, " ")
+	if len(refreshTokenParts) != 2 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid refresh token format"})
+		return
+	}
+	token.RefreshToken = refreshTokenParts[1]
+
+	// Check if the tokens are empty after splitting
 	if token.AccessToken == "" || token.RefreshToken == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Authorization token required"})
 		return
 	}
 
-	if err := c.ShouldBindJSON(&token); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	// if err := c.ShouldBindJSON(&token); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
 	err := h.tokenUseCase.BlacklistToken(c, token.RefreshToken, domain.TokenType("refresh"), time.Now())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

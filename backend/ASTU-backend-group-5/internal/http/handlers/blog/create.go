@@ -1,6 +1,8 @@
 package blog
 
 import (
+	"blogApp/internal/ai"
+	"blogApp/internal/config"
 	"blogApp/internal/domain"
 	"blogApp/internal/usecase/blog"
 	"context"
@@ -34,13 +36,28 @@ func (h *BlogHandler) CreateBlogHandler(c *gin.Context) {
 		Content: blog.Content,
 		Tags:    blog.Tags,
 	}
-
-	if err := h.UseCase.CreateBlog(context.Background(), &dbBlog, claims.UserID); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	pass := false
+	Config, err := config.Load()
+	if err == nil {
+		if Config.MODERATE_BLOG_BEFORE_CREATE == "TRUE" {
+			grade, message, err := ai.ModerateBlog(blog.Content, blog.Title)
+			if err != nil {
+				pass = true
+			}
+			if grade < 50 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": message})
+				return
+			}
+			pass = true
+		}
 	}
-
-	c.JSON(http.StatusCreated, blog)
+	if pass {
+		if err := h.UseCase.CreateBlog(context.Background(), &dbBlog, claims.UserID); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusCreated, blog)
+	}
 }
 
 func (h *BlogHandler) AddCommentHandler(c *gin.Context) {

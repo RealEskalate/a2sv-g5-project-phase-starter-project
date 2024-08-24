@@ -1,18 +1,18 @@
-from fastapi import FastAPI, HTTPException
 from langchain_community.chat_models import ChatOpenAI
 from langchain.schema import SystemMessage
 from langchain.agents import AgentType
 from langchain.agents import initialize_agent
-from pydantic import BaseModel
-from langchain_google_genai import ChatGoogleGenerativeAI
 from tools import set_decision
 
 import os
 from dotenv import load_dotenv
 load_dotenv()
 
-llm = ChatOpenAI(temperature=0, model="gpt-4-turbo", verbose=True, api_key=os.getenv("OPENAI_API_KEY"))
-print(os.getenv("OPENAI_KEY"))
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_KEY")
+
+
+llm = ChatOpenAI(temperature=0, model="gpt-4-turbo")
+
 class DecisionState:
     def __init__(self):
         self.grade = None
@@ -30,14 +30,17 @@ system_message = SystemMessage(
      1. as objective as possible
      2. as informative as possible
      3. as relevant as possible
-     4. should agree with the title
-     5. should not contain any profanity, hate speech, or insults, fake news, fake information or any other harmful content.
+     4. should not contain any profanity, hate speech, or insults, fake news, fake information or any other harmful content.
      and also
      As helpful AI model you have to be as polite as possible
      
      for the post given you give a point out of 100
      100 means the post is perfect and 0 means the post should never be posted and 50 means the post is not suggested to be posted you can use 
      any number from 0 to 100 to grade the post
+     
+     Your only job is to analize the post and use your 'set_decision' tool to give a grade and feedback message for the blog
+     be professional on the message you give act like you are someone who analyzez and interacts with blog writers on the platform
+     You must use a tool for your decision
     """
 )
 

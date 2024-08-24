@@ -16,6 +16,7 @@ func RegisterBlogRoutes(router *gin.Engine) {
 
 	{
 		blogRoutes.POST("/", blogHandler.CreateBlogHandler)
+		blogRoutes.GET("/", blogHandler.GetMyBlogsHandler)
 		blogRoutes.PUT("/:id", blogHandler.UpdateBlogHandler)
 		blogRoutes.DELETE("/:id", blogHandler.DeleteBlogHandler)
 
@@ -36,7 +37,7 @@ func RegisterBlogRoutes(router *gin.Engine) {
 	{
 		publicBlogRoutes.GET("/:id", blogHandler.GetBlogByIDHandler)
 		publicBlogRoutes.GET("/paginate", blogHandler.PaginateBlogsHandler)
-		publicBlogRoutes.GET("/", blogHandler.GetAllBlogsHandler)
+		// publicBlogRoutes.GET("/", blogHandler.GetAllBlogsHandler)
 		publicBlogRoutes.GET("/:id/comments", blogHandler.GetCommentsByBlogIDHandler)
 		publicBlogRoutes.GET("/search", blogHandler.SearchBlogsHandler)
 		publicBlogRoutes.GET("/:id/views", blogHandler.GetViewsByBlogIDHandler)

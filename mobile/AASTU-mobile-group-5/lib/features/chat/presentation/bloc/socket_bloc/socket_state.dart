@@ -25,7 +25,7 @@ class SocketMessageDelivered extends SocketState{
   final String message;
   SocketMessageDelivered(this.message);
   @override
-  // TODO: implement props
+  
   List<Object> get props => [message];
 }
 

@@ -21,16 +21,11 @@ const Transactions = () => {
 
   return (
     <div
-      className={`min-h-screen ${
-        dataFetched ? "p-10 space-y-5" : "flex justify-center items-center"
+      className={`min-h-screen  p-10 space-y-5" 
       } ${
         isDarkMode ? "bg-gray-700 text-gray-200" : "bg-[#F5F7FA] text-gray-900"
       }`}
     >
-      {!dataFetched && <Loading />}
-
-      {/* Render components in the background to trigger data fetching */}
-      <div className={dataFetched ? "" : "hidden"}>
         {/* First row */}
         <TransactionCards
           onLoadingComplete={() => setTransactionCardsLoaded(true)}
@@ -40,7 +35,7 @@ const Transactions = () => {
           onLoadingComplete={() => setTransactionTableLoaded(true)}
         />
       </div>
-    </div>
+ 
   );
 };
 

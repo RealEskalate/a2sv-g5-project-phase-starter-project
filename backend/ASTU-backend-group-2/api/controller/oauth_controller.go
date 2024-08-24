@@ -34,7 +34,7 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 
 		user, err := gothic.CompleteUserAuth(c.Writer, c.Request)
 
-		fmt.Println(user)
+		fmt.Println("user from callback", user.Email)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -105,7 +105,9 @@ func (pc *OAuthController) OAuthLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		provider := c.Param("provider")
 		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), "provider", provider))
-
+		q := c.Request.URL.Query()
+		q.Add("provider", provider)
+		c.Request.URL.RawQuery = q.Encode()
 		gothic.BeginAuthHandler(c.Writer, c.Request)
 	}
 }

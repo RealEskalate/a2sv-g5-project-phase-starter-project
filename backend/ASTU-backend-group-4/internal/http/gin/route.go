@@ -40,7 +40,7 @@ func SetUpBlogRouter(r *gin.RouterGroup, blogController *BlogController) {
 	r.DELETE("/:id/dislike", blogController.UnDislikeBlog)
 }
 
-func SetUpAuthRouter(r *gin.Engine, userController *AuthController, authUsecase *auth.AuthServices) {
+func SetUpAuthRouter(r *gin.RouterGroup, userController *UserController) {
 	r.POST("/login", AuthMiddleware(), userController.Login)
 	r.POST("/register", AuthMiddleware(), userController.RegisterUser)
 	r.PUT("/profile", AuthMiddleware(), userController.UpdateProfile)

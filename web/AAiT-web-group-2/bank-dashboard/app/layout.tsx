@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <body className="h-screen overflow-hidden">
         <LayoutWrapper>
           {children}

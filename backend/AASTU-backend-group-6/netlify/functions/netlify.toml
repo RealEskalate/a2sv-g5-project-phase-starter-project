@@ -1,0 +1,9 @@
+[build]
+  publish = "public"
+  command = "go build cmd/main.go && ./main"
+
+[build.environment]
+  GO_VERSION = "1.22.5"
+
+
+

@@ -33,7 +33,7 @@ const Login = () => {
     <div className="flex items-center justify-center h-screen">
       <div className="w-[70%] flex items-center justify-between gap-10">
       <div className="w-fit h-fit  flex flex-col gap-8">
-        <h1 className="text-[32px] font-poppins font-black leading-[38.4px] text-center text-[#202430] w- h-[38px]">
+        <h1 className="text-[32px] font-poppins font-black leading-[38.4px] text-center text-[#4640DE] w- h-[38px]">
           Welcome Back,
         </h1>
         <form

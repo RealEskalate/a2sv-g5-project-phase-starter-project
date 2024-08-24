@@ -1,6 +1,8 @@
 package usercmd
 
 import (
+	"fmt"
+
 	er "github.com/group13/blog/domain/errors"
 	"github.com/group13/blog/domain/models"
 	icmd "github.com/group13/blog/usecase/common/cqrs/command"
@@ -33,13 +35,10 @@ func (h *GoogleSignUpHandler) Handle(command GoogleSignupCommand) (bool, error) 
 		return false, er.NewBadRequest("email is not verified")
 	}
 
-	user, err := h.repo.FindByEmail(command.email)
+	_, err := h.repo.FindByEmail(command.email)
 
-	if user != nil {
-		return false, er.NewConflict("User already exists")
-	}
-	if err != nil {
-		return false, err
+	if err == nil {
+		return false, er.NewConflict("email already in use")
 	}
 
 	cfg := models.UserConfig{
@@ -49,7 +48,9 @@ func (h *GoogleSignUpHandler) Handle(command GoogleSignupCommand) (bool, error) 
 		IsAdmin:   false,
 	}
 
-	user = models.NewFederatedUser(cfg)
+	user := models.NewFederatedUser(cfg)
+
+	fmt.Println(user)
 	err = h.repo.Save(user)
 
 	if err != nil {

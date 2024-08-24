@@ -1,6 +1,8 @@
 package usercontroller
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -26,8 +28,8 @@ import (
 
 var (
 	googleOauthConfig *oauth2.Config
-	// TODO: randomize it
-	oauthStateString = "pseudo-random"
+
+	oauthStateString = generateStateString(16)
 )
 
 func init() {
@@ -370,9 +372,9 @@ func (u UserController) handleGoogleCallback(ctx *gin.Context) {
 
 		command := usercmd.NewGoogleSigninCommand(userInfo.Email, userInfo.VerifiedEmail)
 		res, err := u.googleSignin.Handle(*command)
-		fmt.Println("res", res)
+
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, err.Error())
+			ctx.JSON(http.StatusNotFound, err.Error())
 			return
 		}
 		u.RespondWithCookies(ctx, http.StatusOK, res, []*http.Cookie{
@@ -397,13 +399,15 @@ func (u UserController) handleGoogleCallback(ctx *gin.Context) {
 		})
 	} else if state == oauthStateString+"_signup" {
 		command := usercmd.NewGoogleSignupCommand(userInfo.GivenName, userInfo.FamilyName, userInfo.Email, userInfo.VerifiedEmail)
+
 		registered, err := u.googleSignup.Handle(*command)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, err.Error())
+			ctx.JSON(http.StatusConflict, err.Error())
 			return
 		}
 		if registered {
-			u.BaseHandler.Respond(ctx, http.StatusCreated, "")
+			u.BaseHandler.Respond(ctx, http.StatusCreated, "Signed Up Successfully")
+			return
 		}
 	} else {
 		ctx.JSON(http.StatusBadRequest, "Invalid state")
@@ -437,4 +441,13 @@ func getUserInfo(state, code string) (*UserInfo, error) {
 	}
 
 	return &userInfo, nil
+}
+
+func generateStateString(length int) string {
+	b := make([]byte, length)
+	if _, err := rand.Read(b); err != nil {
+		log.Fatalf("Unable to generate random state: %v", err)
+	}
+	// URL-safe base64 encoding
+	return base64.URLEncoding.EncodeToString(b)
 }

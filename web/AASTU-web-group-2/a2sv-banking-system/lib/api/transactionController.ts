@@ -24,7 +24,7 @@ import { GiConsoleController } from "react-icons/gi";
 // interface ExtendedSession {
 //   user?: ExtendedUser;
 // }
-const BASE_URL = "https://a2svwallet.onrender.com";
+const BASE_URL = "https://bank-dashboard-mih0.onrender.com";
 
 // const fetchSession = async (): Promise<ExtendedSession> => {
 //   const session = await getServerSession();

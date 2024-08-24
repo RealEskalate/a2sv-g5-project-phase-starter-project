@@ -7,8 +7,8 @@ import Image from 'next/image';
 import mainIcon from "/public/assets/icons/logo-card.png";
 import Background from '@/public/images/background.jpg'
 interface LoginFormData {
-	userName: string;
-	password: string;
+  userName: string;
+  password: string;
 }
 
 const Login = () => {
@@ -56,12 +56,12 @@ const Login = () => {
   const onSubmit = async (data: LoginFormData) => {
     setErrorMessage(null);
 
-		try {
-			const result = await signIn("credentials", {
-				redirect: false,
-				userName: data.userName,
-				password: data.password,
-			});
+    try {
+      const result = await signIn('credentials', {
+        redirect: false,
+        userName: data.userName,
+        password: data.password,
+      });
 
       if (result?.error) {
         setErrorMessage(result.error);
@@ -128,7 +128,7 @@ const Login = () => {
             </button>
           </form>
           <p className="mt-8 text-center text-gray-400">
-            Don &apos; t have an account? <a href="/auth/signup" className="text-blue-400 hover:text-blue-600 underline">Sign up</a>
+            Don't have an account? <a href="/auth/signup" className="text-blue-400 hover:text-blue-600 underline">Sign up</a>
           </p>
         </div>
       </div>

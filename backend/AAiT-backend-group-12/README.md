@@ -1,4 +1,4 @@
-## Getting Started
+# Getting Started
 
 Welcome to the documentation for the Blog API. This document describes routes and features of the API, their authorization level and all the necessary details one needs to run, build and use the application.
 
@@ -88,8 +88,6 @@ In the root of the project:
 ```bash
 fresh
 ```
-
-To access the blog API, use the base URL `localhost:8080/api/v1/blog`.
 
 ## Class Diagram
 ![alt text](<./docs/Class Diagram.drawio.svg>)

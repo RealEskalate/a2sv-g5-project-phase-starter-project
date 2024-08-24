@@ -30,8 +30,9 @@ const Login = () => {
   };
 
   return (
-    <div className="flex  gap-10 p-11 ">
-      <div className="w-fit h-fit  flex flex-col gap-[24px]">
+    <div className="flex items-center justify-center h-screen">
+      <div className="w-[70%] flex items-center justify-between gap-10">
+      <div className="w-fit h-fit  flex flex-col gap-8">
         <h1 className="text-[32px] font-poppins font-black leading-[38.4px] text-center text-[#202430] w- h-[38px]">
           Welcome Back,
         </h1>
@@ -82,20 +83,21 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="w-fit h-fit flex gap-3">
-          <p className="text-[16px] font-epilogue font-normal leading-[25.6px] text-[#202430] w-[203px] h-[26px] opacity-[0.7]">
-            Don't have an account?
+        <div className="flex items-center gap-2 mx-auto">
+          <p className="text-sm font-epilogue font-normal text-[#202430] opacity-[0.7]">
+            Don&apos;t have an account?
           </p>
           <Link
             href="/auth/signup"
-            className="text-[16px] font-inter font-semibold leading-[24px] text-[#4640DE] h-[24px]"
+            className="hover:underline text-[#4640DE]"
           >
             Sign up
           </Link>
         </div>
       </div>
       <div className="w-full">
-        <img src="/bankloin.jpg" alt="login" className="object-cover" />
+        <img src="/bankloin.jpg" alt="login" className="rounded-full" />
+      </div>
       </div>
     </div>
   );

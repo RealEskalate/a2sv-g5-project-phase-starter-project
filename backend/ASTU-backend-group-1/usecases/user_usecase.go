@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	infrastructure "astu-backend-g1/Infrastructure"
 	"astu-backend-g1/domain"
+	"astu-backend-g1/infrastructure"
 	"crypto/rand"
 	"errors"
 	"math/big"

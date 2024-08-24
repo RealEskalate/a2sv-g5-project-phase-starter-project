@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	infrastructure "astu-backend-g1/Infrastructure"
 	"astu-backend-g1/config"
 	"astu-backend-g1/domain"
+	"astu-backend-g1/infrastructure"
 	"fmt"
 	"net/http"
 	"time"
@@ -194,6 +194,7 @@ func (c *UserController) LogoutUser(ctx *gin.Context) {
 // @Success      200 {array} domain.User "List of users"
 // @Failure      404 {object} map[string]string "error"
 // @Router       /users [get]
+// logout user
 func (c *UserController) GetUsers(ctx *gin.Context) {
 	username := ctx.Query("username")
 	email := ctx.Query("email")
@@ -278,7 +279,7 @@ func (c *UserController) DeleteUser(ctx *gin.Context) {
 func (c *UserController) UpdateUser(ctx *gin.Context) {
 	userId := ctx.Param("id")
 	updateData := domain.User{}
-	if err := ctx.ShouldBind(updateData); err != nil {
+	if err := ctx.ShouldBind(&updateData); err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}

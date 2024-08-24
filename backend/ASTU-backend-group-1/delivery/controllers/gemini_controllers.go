@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	infrastructure "astu-backend-g1/Infrastructure"
+	"astu-backend-g1/infrastructure"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

@@ -49,10 +49,10 @@ func (ac *AuthController) ADMINMiddleware() gin.HandlerFunc {
 			}
 		}()
 		claims, err := GetClaims(c)
-		if err != nil {
+		if err != nil{
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			c.Abort()
-			return
+            c.Abort()
+            return
 		}
 		if claims.IsAdmin {
 			c.Next()
@@ -128,10 +128,10 @@ func GetClaims(c *gin.Context) (*domain.Claims, error) {
 	}
 
 	TokenString := strings.Split(authHeader, " ")
-	if len(TokenString) != 2 || TokenString[0] != "Bearer" {
-		return &domain.Claims{}, errors.New("invalid token format")
-	}
-	tokenString := TokenString[1]
+		if len(TokenString) != 2 || TokenString[0] != "Bearer" {
+			return  &domain.Claims{}, errors.New("invalid token format")
+		}
+		tokenString := TokenString[1]
 
 	token, err := jwt.ParseWithClaims(tokenString, &domain.Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return jwtSecret, nil

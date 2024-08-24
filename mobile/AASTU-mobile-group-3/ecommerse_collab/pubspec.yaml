@@ -46,6 +46,7 @@ dependencies:
   uuid: ^3.0.6
   cupertino_icons: ^1.0.6
   internet_connection_checker: ^1.0.0+1
+  web_socket_channel: ^2.4.0
 
 dev_dependencies:
   flutter_test:

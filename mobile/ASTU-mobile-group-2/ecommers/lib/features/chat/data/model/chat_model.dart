@@ -7,7 +7,8 @@ class ChatModel extends ChatEntity {
     required super.recieverId,
     required super.recieverName,
     required super.chatId,
-    required super.messages,
+    required super.messages
+
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> json) => ChatModel(
@@ -16,7 +17,7 @@ class ChatModel extends ChatEntity {
         recieverId: json['email'],
         recieverName: json['email'],
         chatId: json['email'],
-        messages: json['email'],
+        messages: json['messages']
       );
 
   Map<String, dynamic> toJson() => {};
@@ -27,6 +28,7 @@ class ChatModel extends ChatEntity {
         recieverId: recieverId,
         recieverName: recieverName,
         chatId: chatId,
-        messages: messages,
+        messages:messages
+
       );
 }

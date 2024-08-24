@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../core/Error/failure.dart';
 import '../../domain/entity/chat_entity.dart';
+
 import '../../domain/repository/chat_repo.dart';
 
 class ChatRepoImpl implements ChatRepositories {
@@ -28,4 +29,6 @@ class ChatRepoImpl implements ChatRepositories {
     // TODO: implement initiateChat
     throw UnimplementedError();
   }
+
+
 }

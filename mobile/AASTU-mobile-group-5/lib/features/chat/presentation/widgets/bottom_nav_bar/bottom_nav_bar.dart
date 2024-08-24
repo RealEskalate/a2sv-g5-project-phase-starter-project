@@ -91,7 +91,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           //     // Handle voice recording
           //   },
           // ),
-          Visibility(visible: _isTextFieldEmpty, child: VoiceRecordingWidget()),
+          Visibility(visible: _isTextFieldEmpty, child: AudioRecorder()),
           if (!_isTextFieldEmpty)
             IconButton(
               icon: Icon(Icons.send),

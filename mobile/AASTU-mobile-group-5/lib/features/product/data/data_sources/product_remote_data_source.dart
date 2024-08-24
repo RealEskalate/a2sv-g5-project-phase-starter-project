@@ -232,7 +232,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       }),
     );
     if (response.statusCode == 200) {
-      return ProductModel.fromJson(jsonDecode(response.body)['data']);
+      return ProductModel.fromJson(jsonDecode(response.body));
     } else {
       throw ServerException();
     }

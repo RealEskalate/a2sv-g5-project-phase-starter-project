@@ -48,7 +48,7 @@ export default function MonthlyRevenueChart({ data }: MonthlyRevenueChartProps) 
 
   if (loading) {
     return (
-      <Card style={{ height: '100%' }} className={darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}>
+      <Card style={{ height: '100%' }} className={darkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'}>
         <CardContent style={{ height: '100%' }}>
           <Shimmer1 />
         </CardContent>
@@ -57,7 +57,7 @@ export default function MonthlyRevenueChart({ data }: MonthlyRevenueChartProps) 
   }
 
   return (
-    <Card style={{ height: '100%' }} className={darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}>
+    <Card style={{ height: '100%' }} className={darkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'}>
       <CardContent style={{ height: '100%' }}>
         <div className='pt-6' style={{ width: '100%', height: '100%' }}>
           <ResponsiveContainer width="100%" height="100%">

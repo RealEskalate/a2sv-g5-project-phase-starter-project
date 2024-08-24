@@ -44,50 +44,36 @@ const CustomTooltip = ({
 export default function ChartCard_Invest({ data }: ChartCardInvestProps) {
 	const darkMode = useSelector((state: RootState) => state.theme.darkMode);
 
-	return (
-		<Card
-			style={{ height: "100%" }}
-			className={darkMode ? "bg-gray-900 text-white" : "bg-white text-black"}
-		>
-			<CardContent style={{ height: "100%" }}>
-				<div className="pt-6" style={{ width: "100%", height: "100%" }}>
-					<ResponsiveContainer width="100%" height="100%">
-						<LineChart
-							margin={{
-								top: 5,
-								right: 30,
-								left: 20,
-								bottom: 5,
-							}}
-							data={data}
-						>
-							<CartesianGrid
-								strokeDasharray="3 3"
-								stroke={darkMode ? "#444" : "#ccc"}
-							/>
-							<XAxis
-								dataKey="time"
-								axisLine={false}
-								tickMargin={10}
-								stroke={darkMode ? "#ccc" : "#000"}
-							/>
-							<YAxis
-								axisLine={false}
-								tickFormatter={(value) => `$${value.toLocaleString()}`}
-								tickMargin={10}
-								stroke={darkMode ? "#ccc" : "#000"}
-							/>
-							<Tooltip content={<CustomTooltip />} />
-							<Line
-								type="linear"
-								dataKey="value"
-								stroke="#ff7300"
-								strokeWidth={3}
-							/>
-						</LineChart>
-					</ResponsiveContainer>
-				</div>
-			</CardContent>
-		</Card>
-	);
+  return (
+    <Card style={{ height: '100%' }} className={darkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'}>
+      <CardContent style={{ height: '100%' }}>
+        <div className="pt-6" style={{ width: '100%', height: '100%' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              margin={{
+                top: 5, right: 30, left: 20, bottom: 5,
+              }}
+              data={data}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#ccc'} />
+              <XAxis 
+                dataKey="time" 
+                axisLine={false} 
+                tickMargin={10} 
+                stroke={darkMode ? '#ccc' : '#000'}
+              />
+              <YAxis 
+                axisLine={false} 
+                tickFormatter={(value) => `$${value.toLocaleString()}`} 
+                tickMargin={10} 
+                stroke={darkMode ? '#ccc' : '#000'}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Line type="linear" dataKey="value" stroke="#ff7300" strokeWidth={3} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }

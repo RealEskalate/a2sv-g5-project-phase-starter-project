@@ -191,56 +191,47 @@ const Page = () => {
 				</div>
 			</div>
 
-			{/* Bank Service List Section */}
-			<div className="space-y-3">
-				<div className="p-2 sm:p-1">
-					<p className="ml-8 text-xl sm:text-2xl font-inter font-semibold">
-						Bank Service List
-					</p>
-				</div>
-				{loading ? (
-					<>
-						<Shimmer1 />
-						<Shimmer1 />
-						<Shimmer1 />
-					</>
-				) : (
-					services.map((service) => {
-						const { src, alt, bgClass } = getImageProps(service.name);
-						return (
-							<div
-								key={service.id}
-								className="w-full flex items-center justify-center"
-							>
-								<div
-									className={`rounded-xl flex-grow items-center justify-center sm:shadow-md ${
-										darkMode ? "bg-gray-800" : "bg-white"
-									} w-full md:w-11/12`}
-								>
-									<div className="flex items-center justify-center p-1 m-0">
-										<div className="flex items-center gap-3 w-full sm:flex sm:items-center sm:gap-3 sm:w-full">
-											<div
-												className={`flex items-center justify-center rounded-xl w-12 h-12 ${bgClass}`}
-											>
-												<Image src={src} alt={alt} width={25} height={25} />
-											</div>
-											<div className="flex-1 sm:flex-none">
-												<h3
-													className={`font-inter text-base font-medium leading-[16.94px] text-left whitespace-nowrap ${
-														darkMode ? "text-white" : "text-black"
-													}`}
-												>
-													{service.name}
-												</h3>
-												<p
-													className={`sm:font-inter sm:text-xs sm:font-normal sm:leading-[14.52px] sm:text-left opacity-60 whitespace-nowrap ${
-														darkMode ? "text-gray-400" : "text-gray-600"
-													}`}
-												>
-													{service.details.slice(0, 25)}
-												</p>
-											</div>
-										</div>
+      {/* Bank Service List Section */}
+      <div className="space-y-3">
+        <div className="p-2 sm:p-1">
+          <p className="ml-8 text-xl sm:text-2xl font-inter font-semibold">
+            Bank Service List
+          </p>
+        </div>
+        {loading ? (
+          <>
+            <Shimmer1 />
+            <Shimmer1 />
+            <Shimmer1 />
+            <Shimmer1 />
+            <Shimmer1 />
+            <Shimmer1 />
+          </>
+        ) : (
+          services.map((service) => {
+            const { src, alt, bgClass } = getImageProps(service.name);
+            return (
+              <div key={service.id} className="w-full flex items-center justify-center">
+                  <div className={`rounded-xl flex-grow items-center justify-center sm:shadow-md ${darkMode ? "bg-gray-800" : "bg-white"} w-full md:w-11/12`}>
+                    <div className="flex items-center justify-center p-1 m-0">
+                      <div className="flex items-center gap-3 w-full sm:flex sm:items-center sm:gap-3 sm:w-full">
+                        <div className={`flex items-center justify-center rounded-xl w-12 h-12 ${bgClass}`}>
+                          <Image
+                            src={src}
+                            alt={alt}
+                            width={25}
+                            height={25}
+                          />
+                        </div>
+                        <div className="flex-1 sm:flex-none">
+                          <h3 className={`font-inter text-base font-medium leading-[16.94px] text-left whitespace-nowrap ${darkMode ? "text-white" : "text-black"}`}>
+                            {service.name}
+                          </h3>
+                          <p className={`sm:font-inter sm:text-xs sm:font-normal sm:leading-[14.52px] sm:text-left opacity-60 whitespace-nowrap ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                            {service.details.slice(0, 25)}
+                          </p>
+                        </div>
+                      </div>
 
 										<div className="hidden sm:flex sm:flex-row items-center justify-between w-full sm:w-auto mt-3 sm:mt-0 sm:ml-auto sm:pr-6">
 											<div className="hidden sm:flex flex-row gap-4 sm:gap-12 items-start pr-6">

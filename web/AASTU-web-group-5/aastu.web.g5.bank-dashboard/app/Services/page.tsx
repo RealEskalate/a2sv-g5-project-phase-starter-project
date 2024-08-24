@@ -151,6 +151,9 @@ const Page = () => {
             <Shimmer1 />
             <Shimmer1 />
             <Shimmer1 />
+            <Shimmer1 />
+            <Shimmer1 />
+            <Shimmer1 />
           </>
         ) : (
           services.map((service) => {

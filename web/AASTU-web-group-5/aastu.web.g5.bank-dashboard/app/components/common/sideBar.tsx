@@ -25,7 +25,8 @@ import enabledService from "/public/assets/icons/enabled/service 1.svg";
 import enabledSettingsSolid from "/public/assets/icons/enabled/settings solid 1.svg";
 import enabledTransfer from "/public/assets/icons/enabled/transfer 1.svg";
 import enabledUser from "/public/assets/icons/enabled/user 3 1.svg";
-
+import { useSelector } from "react-redux";
+import { RootState } from '@/app/redux/store';
 const primary_2 = "rgba(52, 60, 106, 1)";
 const primary_3 = "rgba(45, 96, 255, 1)";
 const sidecolor = "#B1B1B1";
@@ -39,7 +40,7 @@ const SideBar = ({
 }) => {
     const pathname = usePathname() || "Dashboard";
     const [enabled, setEnabled] = useState<string>(pathname);
-
+    const darkMode = useSelector((state: RootState) => state.theme.darkMode);   
     const router = useRouter();
 
     const handleIconClick = (option: string, path: string) => {

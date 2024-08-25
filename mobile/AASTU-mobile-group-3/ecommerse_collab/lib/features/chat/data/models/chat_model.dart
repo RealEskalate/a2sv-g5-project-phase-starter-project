@@ -24,7 +24,7 @@ class ChatModel extends Chat{
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      '_id': id,
       'user1': user1.toJson(),
       'user2': user2.toJson(),
     };

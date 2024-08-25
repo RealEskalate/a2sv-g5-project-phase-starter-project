@@ -58,6 +58,8 @@ dependencies:
   permission_handler: ^11.3.1
   chat_bubbles: ^1.6.0
   bubble: ^1.2.1
+  audio_waveforms: ^1.0.5
+  socket_io_client: ^3.0.0-beta.2
 
 dev_dependencies:
   flutter_test:

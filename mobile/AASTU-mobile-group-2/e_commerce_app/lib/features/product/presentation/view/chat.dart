@@ -7,7 +7,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'package:chat_bubbles/bubbles/bubble_normal_audio.dart';
 import 'package:bubble/bubble.dart';
-
+// import 'package:social_media_recorder/audio_encoder_type.dart';
+// import 'package:social_media_recorder/screen/social_media_recorder.dart';
 class Chat extends StatefulWidget {
   const Chat({super.key});
 
@@ -343,6 +344,23 @@ class _ChatState extends State<Chat> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+
+
+            //     Align(
+            // alignment: Alignment.centerRight,
+            // child: SocialMediaRecorder(
+            //   // maxRecordTimeInSecond: 5,
+            //   startRecording: () {
+            //     // function called when start recording
+            //   },
+            //   stopRecording: (_time) {
+            //     // function called when stop recording, return the recording time
+            //   },
+            //   sendRequestFunction: (soundFile, _time) {
+            //     //  print("the current path is ${soundFile.path}");
+            //   },
+            //   encode: AudioEncoderType.AAC,
+            // ),),
                 IconButton(
                   icon: Icon(Icons.attach_file),
                   onPressed: null,

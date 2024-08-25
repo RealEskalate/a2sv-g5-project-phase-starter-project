@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
-
 import { PolarArea } from 'react-chartjs-2';
-
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -13,7 +11,6 @@ import {
   LinearScale,
   ChartOptions,
 } from 'chart.js';
-
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(
@@ -27,8 +24,7 @@ ChartJS.register(
 );
 
 const vals = [18, 16, 18, 24];
-const labels = ['Transfer', 'Services', 'Otheres', 'Shopping'];
-let index = 0;
+const labels = ['Transfer', 'Services', 'Others', 'Shopping'];
 
 const roundToDecimal = (num: number): number => {
   const factor = Math.pow(10, 2);
@@ -53,6 +49,7 @@ const data = {
 
 const options: ChartOptions<'polarArea'> = {
   responsive: true,
+  maintainAspectRatio: false, // Ensures the chart maintains the correct aspect ratio
   plugins: {
     legend: {
       display: false,
@@ -62,14 +59,13 @@ const options: ChartOptions<'polarArea'> = {
         label: (context) => {
           const label = context.label || '';
           const value = context.raw || 0;
-          return `${label}: ${value}`;
+          return `${label}: ${value}%`;
         },
       },
     },
     datalabels: {
       display: true,
       formatter: (value) => {
-        // return `${labels[index++]} ${value}%`;
         return `${value}%`;
       },
       color: 'white',
@@ -79,7 +75,6 @@ const options: ChartOptions<'polarArea'> = {
       },
     },
   },
-
   scales: {
     r: {
       grid: {
@@ -96,8 +91,10 @@ const ExpenseStatistics: React.FC = () => {
   return (
     <div className='w-full md:w-4/12'>
       <h1 className='text-[#333B69] pb-3 font-semibold'>Expense Statistics</h1>
-      <div className='bg-white rounded-3xl flex justify-center items-center'>
-        <PolarArea data={data} options={options} />
+      <div className='bg-white rounded-3xl flex justify-center items-center p-4'>
+        <div style={{ position: 'relative', width: '100%', height: '300px' }}>
+          <PolarArea data={data} options={options} />
+        </div>
       </div>
     </div>
   );

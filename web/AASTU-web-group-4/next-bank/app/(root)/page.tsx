@@ -17,6 +17,7 @@ import Cookies from "js-cookie";
 import { getAllCards } from "@/services/cardfetch";
 import Image from "next/image";
 import MyCardsLoad from "@/components/loadingComponents/MyCardsLoad";
+import { TbFileSad } from "react-icons/tb";
 
 const Page = () => {
   const [cards, setCards] = useState<any[]>([]);
@@ -64,7 +65,7 @@ const Page = () => {
           <div className="max-w-[345px] md:max-w-full">
             <div className="flex gap-3 overflow-x-auto md:w-auto">
               {loading ? (
-                <MyCardsLoad count={2}/>
+                <MyCardsLoad count={2} />
               ) : Array.isArray(cards) && cards.length > 0 ? (
                 cards.map((card: any, index: number) => (
                   <div key={index} className="p-1 flex gap-1">
@@ -81,19 +82,16 @@ const Page = () => {
                 ))
               ) : token ? (
                 <div className="w-screen bg-white py-16 rounded-xl flex flex-col justify-center dark:bg-dark dark:border-[1px] dark:border-gray-700">
-                  <Image
-                    src="/icons/null.png"
-                    width={80}
-                    height={80}
-                    alt="null"
-                    className="mx-auto pb-2 block"
+                  <TbFileSad
+                    className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
+                    strokeWidth={1}
                   />
-                  <span className="mx-auto my-auto md:text-xl text-sm text-[#993d4b] font-bold mb-5">
+                  <span className="mx-auto my-auto md:text-xl text-sm text-red-500 mb-5">
                     {error ? error : "There are no cards for now!"}
                   </span>
                 </div>
               ) : (
-                <MyCardsLoad count={2}/>
+                <MyCardsLoad count={2} />
               )}
             </div>
           </div>

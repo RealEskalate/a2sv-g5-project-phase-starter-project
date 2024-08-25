@@ -1,5 +1,4 @@
-
-export interface UpdatedUser  {
+export interface UpdatedUser {
   name: string;
   email: string;
   dateOfBirth: string;
@@ -10,7 +9,13 @@ export interface UpdatedUser  {
   city: string;
   country: string;
   profilePicture?: string;
-};
+}
+
+export interface ChangePasswordResponse {
+  data: any | null;
+  message: string;
+  success: boolean;
+}
 
 export interface UserPreferenceType {
   currency: string;

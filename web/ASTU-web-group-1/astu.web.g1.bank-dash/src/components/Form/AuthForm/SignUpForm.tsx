@@ -117,6 +117,7 @@ const SignUpForm = () => {
           body: JSON.stringify(finalData),
         }
       );
+      
       console.log("res from sign up", res);
 
       // res.then(res) => {

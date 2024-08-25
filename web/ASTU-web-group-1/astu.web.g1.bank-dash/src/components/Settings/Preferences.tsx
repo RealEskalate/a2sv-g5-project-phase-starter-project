@@ -12,6 +12,7 @@ import {
 import { setProfile } from "@/lib/redux/slices/profileSlice";
 import { UserPreferenceType } from "@/types/user.types";
 import { Loader } from "lucide-react";
+import { toastError, toastSuccess } from "../Toastify/Toastify";
 
 const preferencesSchema = z.object({
   currency: z.enum(["USD", "ETB", "Yen"]).default("USD"), // Assuming these are the available options
@@ -64,8 +65,11 @@ const Preferences = () => {
   const onSubmit = (data: UserPreferenceType) => {
     updatePreference(data).then((res: any) => {
       dispatch(setProfile(res?.data?.data));
-      alert("Preferences updated successfully");
+      toastSuccess("Preferences updated successfully");
       refetch();
+    }).catch((err) => {
+      console.log(err)
+      toastError("Something went wrong");
     });
   };
 

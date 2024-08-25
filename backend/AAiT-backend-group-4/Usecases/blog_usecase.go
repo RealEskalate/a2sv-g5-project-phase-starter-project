@@ -43,6 +43,23 @@ func (blogU *blogUsecase) SearchBlogs(c context.Context, filter domain.Filter, l
 		return domain.PaginatedBlogs{}, fmt.Errorf("invalid limit or page number")
 	}
 
+	// Generate cache key
+	cacheKey := fmt.Sprintf("blogs:search:limit=%d:page=%d&filter=%v", limit, page, filter)
+
+	// check cache
+	val, err := blogU.RedisClient.Get(ctx, cacheKey).Result()
+	if err == nil {
+		var cachedBlogs domain.PaginatedBlogs
+		if err := json.Unmarshal([]byte(val), &cachedBlogs); err == nil {
+			log.Println("Cache hit")
+			return cachedBlogs, nil
+		} else {
+			log.Printf("Error unmarshalling json: %v", err)
+		}
+	} else {
+		log.Printf("Error getting value from Redis: %v", err)
+	}
+
 	offset := (page - 1) * limit
 
 	blogs, totalItems, err := blogU.blogRepository.SearchBlogs(ctx, filter, limit, offset)
@@ -62,7 +79,7 @@ func (blogU *blogUsecase) SearchBlogs(c context.Context, filter domain.Filter, l
 		nextPage = 0
 	}
 
-	return domain.PaginatedBlogs{
+	returnedValue := domain.PaginatedBlogs{
 		Blogs: blogs,
 		Pagination: domain.PaginationData{
 			NextPage:     nextPage,
@@ -71,7 +88,19 @@ func (blogU *blogUsecase) SearchBlogs(c context.Context, filter domain.Filter, l
 			TotalPages:   totalPages,
 			TotalItems:   totalItems,
 		},
-	}, nil
+	}
+
+	// Update cache
+	blogJson, err := json.Marshal(returnedValue)
+	if err == nil {
+		expiration := 5 * time.Minute
+		if err := blogU.RedisClient.Set(ctx, cacheKey, blogJson, expiration).Err(); err != nil {
+			log.Printf("Failed to update cache: %v", err)
+		}
+	}
+
+	log.Println("Cache miss")
+	return returnedValue, nil
 }
 
 // CreateBlog adds a new blog to the repository

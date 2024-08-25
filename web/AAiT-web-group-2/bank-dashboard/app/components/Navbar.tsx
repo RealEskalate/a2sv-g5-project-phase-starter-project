@@ -24,11 +24,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick: () => void }) => {
   }
 
   return (
-<<<<<<< Updated upstream
     <div className="flex flex-col justify-center h-24 gap-2 px-3 ">
-=======
-    <div className="flex flex-col justify-center h-28 sm:h-24 gap-2 px-3 ">
->>>>>>> Stashed changes
       <div className="flex justify-between items-center">
         <div className="text-2xl sm:hidden ">
           <FiMenu onClick={onMenuClick} />
@@ -73,7 +69,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick: () => void }) => {
             <div className="flex justify-center items-center">
                 {data && data.data.profilePicture &&
                 <Link  href="/settings">
-                  <img className="bg-yellow-50 w-20 h-20 rounded-full" src={data.data.profilePicture} alt="profile" />
+                  <img className="bg-yellow-50 w-14 h-14 rounded-full" src={data.data.profilePicture} alt="profile" />
                   </Link>
                 }
                 {data && data.data.name && !data.data.profilePicture &&

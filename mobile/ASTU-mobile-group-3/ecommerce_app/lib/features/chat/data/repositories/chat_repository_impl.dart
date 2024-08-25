@@ -1,1 +1,45 @@
+import '../../domain/entity/chat.dart';
+import '../../domain/entity/message.dart';
+import '../../domain/repository/chat_repository.dart';
+import '../data_resources/remote_chat_data_source.dart';
+import '../data_resources/socket_io_sesrvice.dart';
 
+class ChatRepositoryImpl implements ChatRepository {
+  final ChatRemoteDataSource chatRemoteDataSource;
+  final SocketIOService socketIOService;
+
+  ChatRepositoryImpl({
+    required this.chatRemoteDataSource,
+    required this.socketIOService,
+  });
+
+  @override
+  Future<List<ChatEntity>> retrieveChatRooms() async {
+    return await chatRemoteDataSource.getChatRooms();
+  }
+
+  @override
+  Future<List<MessageEntity>> retrieveMessages(String chatId) async {
+    return await chatRemoteDataSource.getMessages(chatId);
+  }
+
+  @override
+  Future<void> createChatRoom(ChatEntity chat) async {
+    await chatRemoteDataSource.createChatRoom(chat);
+  }
+
+  @override
+  Future<void> sendMessage(String chatId, MessageEntity message) async {
+    await socketIOService.emitSendMessage(chatId, message);
+  }
+
+  @override
+  Future<void> acknowledgeMessageDelivery(String messageId) async {
+    await socketIOService.emitMessageDelivered(messageId);
+  }
+
+  @override
+  Stream<MessageEntity> onMessageReceived() {
+    return socketIOService.onMessageReceived();
+  }
+}

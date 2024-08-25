@@ -152,7 +152,7 @@ const Page = () => {
             <div className="space-y-6 mt-10">
               <h2 className="font-poppins  text-[#7C8493]">
                 Already have an account?
-                <Link href={`/login`}>
+                <Link href={`/auth/login`}>
                   <span className="font-bold text-indigo-800"> Login</span>
                 </Link>
               </h2>

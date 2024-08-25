@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { formType } from "@/types/formType";
-import { setform, setLastForm } from "@/lib/redux/slices/formSlice";
+import { setform } from "@/lib/redux/slices/formSlice";
 import Image from "next/image";
 import logo from "../../../public/images/Logo.svg";
 import { useSignUpMutation } from "@/lib/redux/api/authApi";
@@ -15,57 +15,46 @@ const Page = () => {
   const dispatch = useDispatch();
   const form = useForm<formType>();
   const { control, register, formState, handleSubmit } = form;
-  const curr_form = useSelector((state: any) => state.form.value);
+  let curr_form = useSelector((state: any) => state.form.value);
   const { errors } = formState;
-  const [image, setImage] = useState<string | null | ArrayBuffer>(null);
+  const [image, setImage] = useState<string>("");
 
   // rtk query hook
-  const [signUp, { data, isLoading, isError}] = useSignUpMutation()
+  const [signUp, { data, isLoading, isError }] = useSignUpMutation();
 
-  if (isError){
-      alert('Invalid information')
-      // router.push(`/signup-first`)
+  if (isError) {
+    // alert("Invalid information");
+    // router.push(`/signup-first`)
   }
-  if (isLoading){
-        return  <h1 className='text-center text-lg mt-72'>Loading ....</h1>
+  if (isLoading) {
+    return <h1 className="text-center text-lg mt-72">Loading ....</h1>;
   }
 
   const signUP = async () => {
-    console.log("currform:", curr_form)
-    const user = curr_form
-      try{
-          const res = await signUp(user)
-          const { data } = res;
-          if (data.success){
-            alert('success')
-              // router.push(`/`)
-          }
-          console.log(data.message)
+    const user = curr_form;
+    console.log("u:", user)
 
-      } catch (err) {
-          console.error(err)
-      }}
-
-  const handleprofile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const img = e.target.files?.[0];
-    if (img) {
-      const reader = new FileReader();
-      reader.readAsDataURL(img);
-      reader.onload = () => {
-        console.log(reader.result);
-        setImage(reader.result);
-      };
-      reader.onerror = (err) => {
-        console.log("Error: ", err);
-      };
+    try {
+      const res = await signUp(user);
+      const { data } = res;
+      if (data.success) {
+        alert("success");
+        // router.push(`/`)
+      }
+      console.log(data.message);
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const onSubmit = (form: formType) => {
-    const decoy = {profilePicture: "string"}
-    dispatch(setform(decoy))
-    dispatch(setLastForm(form));
-    signUP()
+    console.log(image);
+    // curr_form = { ...curr_form, profilePicture: image };
+    // dispatch(setLastForm(form));
+    const decoy2 = { preference: form };
+    // curr_form = { ...curr_form, ...decoy2 };
+    console.log("c", curr_form);
+    signUP();
   };
 
   return (
@@ -95,15 +84,15 @@ const Page = () => {
             className="mb-3 mt-5 w-3/4 flex flex-col space-y-3"
             action=""
           >
-            <div className="flex border p-2 space-y-2 flex-col">
-              <label className="font-semibold" htmlFor="name">
-                Add a Profile Picture
+            <div className="flex space-y-2 flex-col">
+              <label className="font-semibold" htmlFor="email">
+                Add a profile picture
               </label>
               <input
-                onChange={(e) => handleprofile(e)}
-                className=""
-                type="file"
-                id="file"
+                className="bg-white border p-2"
+                type="text"
+                placeholder="link for your profile picture"
+                onChange={(e) => setImage(e.target.value)}
               />
             </div>
 
@@ -118,10 +107,10 @@ const Page = () => {
                 {...register("currency", { required: "currency is required" })}
               />
             </div>
-            
+
             <div className="flex space-y-2 flex-col">
               <label className="font-semibold" htmlFor="email">
-              Time Zone
+                Time Zone
               </label>
               <input
                 className="bg-white border p-2"
@@ -141,7 +130,6 @@ const Page = () => {
                 />
               </div>
 
-
               <div className="flex mt-4 mb-4 space-x-6">
                 <label htmlFor="">Receive Merchant Order</label>
                 <input
@@ -150,7 +138,6 @@ const Page = () => {
                   {...register("receiveMerchantOrder", {})}
                 />
               </div>
-
 
               <div className="flex mt-4 mb-4 space-x-6">
                 <label htmlFor="">Account Recommendations</label>
@@ -194,7 +181,7 @@ const Page = () => {
             <div className="space-y-6 mt-10">
               <h2 className="font-poppins  text-[#7C8493]">
                 Already have an account?
-                <Link href={`/login`}>
+                <Link href={`/auth/login`}>
                   <span className="font-bold text-indigo-800"> Login</span>
                 </Link>
               </h2>

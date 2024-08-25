@@ -7,6 +7,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { createCard } from "@/services/cardfetch";
 import { convertDateToISOString } from "@/lib/utils";
 import Image from "next/image";
+import { message } from 'antd';
 
 type NewCardProps = {
   cardType: string;
@@ -33,6 +34,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
   const [Loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<string | null>(null);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const onSubmit: SubmitHandler<NewCardProps> = async (data) => {
     setLoading(true);
@@ -46,10 +48,22 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
         cardType: data.cardType,
       };
       const fetch = await createCard(apiData, token);
-      setSubmissionResult("Card added successfully!");
-      console.log(fetch);
-      setError(false);
+      console.log(fetch,"gfjyfjc");
+      if (fetch){
+        messageApi.open({
+          type: 'success',
+          content: `Successfully created your new card`,
+          duration: 4,
+        });
+        setSubmissionResult("Card added successfully!");
+        setError(false);
+      }
     } catch (error) {
+      messageApi.open({
+        type: 'error',
+        content: `card creation was not successful try again`,
+        duration: 4,
+      });
       console.error("Date conversion error: ", error);
       setSubmissionResult("Failed to add the card. Please try again!");
       setError(true);
@@ -66,6 +80,9 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
 
   if (submissionResult) {
     return (
+      <>
+    {contextHolder}
+      
       <div className="mr-4 lg:w-[800px] w-[330px] md:w-[630px] p-6 border-[1px] m:h-[720px] md:h-[470px] rounded-xl md:px-20 md:py-40 mb-5 flex flex-col items-center justify-center">
         {error ? (
           <Image
@@ -98,10 +115,13 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
           Enter New Card
         </button>
       </div>
+      </>
     );
   }
 
   return (
+    <>
+    {contextHolder}
     <div className={`mr-4 ${Loading ? "animate-pulse opacity-50 pointer-events-none" : ""}`}>
       <div className="bg-white lg:w-[800px] w-[330px] md:w-[630px] sm:h-[720px] md:h-[470px] p-7 dark:border-[1px] dark:border-gray-700 rounded-xl dark:bg-dark dark:text-white">
         <p className="text-[17px] text-[#718EBF]">
@@ -233,6 +253,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 

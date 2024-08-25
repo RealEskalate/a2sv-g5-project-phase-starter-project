@@ -22,7 +22,7 @@ class MessageModel extends Message {
 
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
-      id: json['id'],
+      id: json['_id'],
       chat: ChatModel.fromJson(json['chat']),
       sender: UserModel.fromJson(json['sender']),
       type: json['type'],
@@ -32,7 +32,7 @@ class MessageModel extends Message {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      '_id': id,
       'chat': chat.toJson(),
       'sender': sender.toJson(),
       'type': type,

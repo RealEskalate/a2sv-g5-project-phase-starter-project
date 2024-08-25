@@ -28,7 +28,7 @@ export default function page() {
           <CardExpenceStatistics />
         </div>
         <div className="w-full lg:w-2/3  ">
-          <StoreProvider>
+        <StoreProvider>
             <CardList />
           </StoreProvider>
         </div>

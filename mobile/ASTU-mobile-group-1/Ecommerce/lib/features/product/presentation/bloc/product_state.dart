@@ -7,7 +7,7 @@ sealed class ProductState extends Equatable {
   List<Object> get props => [];
 }
 
-class IntialState extends ProductState {}
+class InitalState extends ProductState {}
 
 class LoadingState extends ProductState {}
 
@@ -42,7 +42,7 @@ class DeletedProductState extends ProductState {}
 
 class AddedProductState extends ProductState {}
 
-class AddProuctSTate extends ProductState {}
+class AddProuctState extends ProductState {}
 
 class NeutralState extends ProductState {}
 

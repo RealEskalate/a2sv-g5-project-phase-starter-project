@@ -45,7 +45,7 @@ void main() {
       seller: UserEntity.empty);
 
   test('initial state should be empty', () {
-    expect(productBloc.state, IntialState());
+    expect(productBloc.state, InitalState());
   });
 
   group(

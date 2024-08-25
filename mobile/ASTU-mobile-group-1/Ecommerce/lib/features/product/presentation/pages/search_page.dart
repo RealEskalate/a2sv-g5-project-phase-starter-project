@@ -10,7 +10,7 @@ class SearchPage extends StatelessWidget {
         automaticallyImplyLeading: false,
         title: Row(
           children: [
-            backButton(
+            BackButtonWidget.backButtonWidget(
               iconColor: const Color(
                 0xFF3F51F3,
               ),

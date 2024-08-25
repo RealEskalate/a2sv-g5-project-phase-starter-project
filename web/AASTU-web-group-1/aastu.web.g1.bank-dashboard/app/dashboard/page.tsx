@@ -55,14 +55,6 @@ const MainDashboard = () => {
         />
       </div>
 
-      {/* First Row: My Cards and Recent Transactions */}
-      <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
-        <Cards onLoadingComplete={() => setCardLoaded(true)} />
-        <RecentTransaction
-          onLoadingComplete={() => setRecentTransactionLoaded(true)}
-        />
-      </div>
-
       {/* Second Row: Weekly Activity and Expense Statistics */}
       <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
         <WeeklyActivity

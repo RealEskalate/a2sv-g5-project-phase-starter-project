@@ -2,10 +2,10 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"log"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
+	custom_error "github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,12 +15,6 @@ type reactionRepository struct {
 	db         *mongo.Database
 	Collection *mongo.Collection
 }
-
-// CreateReaction implements domain.ReactionRepository.
-var ErrBlogNotFound = errors.New("blog not found")
-var ErrUserNotFound = errors.New("user not found")
-var ErrIDNotFound = errors.New("id not found")
-var ErrInvalidID = errors.New("invalid id")
 
 func NewReactionRepository(database *mongo.Database) entities.ReactionRepository {
 	return reactionRepository{
@@ -35,12 +29,12 @@ func (ar reactionRepository) Like(c context.Context, blogID, userID string) erro
 	userObjID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		log.Printf("error while converting user id to object id. Error: %v", err)
-		return ErrInvalidID
+		return custom_error.ErrInvalidID
 	}
 	blogObjID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		log.Printf("error while converting blog id to object id. Error: %v", err)
-		return ErrInvalidID
+		return custom_error.ErrInvalidID
 	}
 
 	filter := bson.M{"_id": blogObjID}
@@ -55,7 +49,7 @@ func (ar reactionRepository) Like(c context.Context, blogID, userID string) erro
 	}
 	if res.ModifiedCount < 1 {
 		log.Printf("document not found. Returning error")
-		return ErrBlogNotFound
+		return custom_error.ErrBlogNotFound
 	}
 
 	log.Printf("successfully liked the blog")
@@ -64,18 +58,18 @@ func (ar reactionRepository) Like(c context.Context, blogID, userID string) erro
 func (ar reactionRepository) Dislike(c context.Context, blogID, userID string) error {
 	userObjID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		return ErrInvalidID
+		return custom_error.ErrInvalidID
 	}
 	blogObjID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
-		return ErrInvalidID
+		return custom_error.ErrInvalidID
 	}
 
 	filter := bson.M{"_id": blogObjID}
 
 	res, err := ar.Collection.UpdateOne(c, filter, bson.M{"$addToSet": bson.M{"dislikes": userObjID}})
 	if res.ModifiedCount < 1 {
-		return ErrBlogNotFound
+		return custom_error.ErrBlogNotFound
 	}
 	return err
 
@@ -84,16 +78,16 @@ func (ar reactionRepository) RemoveLike(c context.Context, blogID, userID string
 
 	userObjID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		return ErrInvalidID
+		return custom_error.ErrInvalidID
 	}
 	blogObjID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
-		return ErrInvalidID
+		return custom_error.ErrInvalidID
 	}
 	filter := bson.M{"_id": blogObjID}
 	res, err := ar.Collection.UpdateOne(c, filter, bson.M{"$pull": bson.M{"likes": userObjID}})
 	if res.ModifiedCount < 1 {
-		return ErrBlogNotFound
+		return custom_error.ErrBlogNotFound
 	}
 	return err
 }
@@ -101,16 +95,16 @@ func (ar reactionRepository) RemoveDislike(c context.Context, blogID, userID str
 
 	userObjID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		return ErrInvalidID
+		return custom_error.ErrInvalidID
 	}
 	blogObjID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
-		return ErrInvalidID
+		return custom_error.ErrInvalidID
 	}
 	filter := bson.M{"_id": blogObjID}
 	res, err := ar.Collection.UpdateOne(c, filter, bson.M{"$pull": bson.M{"dislikes": userObjID}})
 	if res.ModifiedCount < 1 {
-		return ErrBlogNotFound
+		return custom_error.ErrBlogNotFound
 	}
 	return err
 }
@@ -118,11 +112,11 @@ func (ar reactionRepository) IsPostLiked(c context.Context, blogID, userID strin
 
 	userObjID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		return false, ErrInvalidID
+		return false, custom_error.ErrInvalidID
 	}
 	blogObjID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
-		return false, ErrInvalidID
+		return false, custom_error.ErrInvalidID
 	}
 	filter := bson.M{
 		"_id":   blogObjID,
@@ -131,18 +125,18 @@ func (ar reactionRepository) IsPostLiked(c context.Context, blogID, userID strin
 
 	count, err := ar.Collection.CountDocuments(c, filter)
 	if err != nil {
-		return false, err
+		return false, custom_error.ErrErrorCountingBlogLikes
 	}
 	return count > 0, nil
 }
 func (ar reactionRepository) IsPostDisliked(c context.Context, blogID, userID string) (bool, error) {
 	userObjID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		return false, ErrInvalidID
+		return false, custom_error.ErrInvalidID
 	}
 	blogObjID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
-		return false, ErrInvalidID
+		return false, custom_error.ErrInvalidID
 	}
 	filter := bson.M{
 		"_id":      blogObjID,
@@ -150,7 +144,7 @@ func (ar reactionRepository) IsPostDisliked(c context.Context, blogID, userID st
 	}
 	count, err := ar.Collection.CountDocuments(c, filter)
 	if err != nil {
-		return false, err
+		return false, custom_error.ErrErrorCountingBlogDisLikes
 	}
 	return count > 0, nil
 }

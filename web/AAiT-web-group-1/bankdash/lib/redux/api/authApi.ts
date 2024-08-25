@@ -4,7 +4,7 @@ import { formType } from "@/types/formType";
 
 export const authApi = createApi({
     reducerPath: "auth",
-    baseQuery: fetchBaseQuery({ baseUrl: "https://bank-dashboard-latest.onrender.com/"}),
+    baseQuery: fetchBaseQuery({ baseUrl: "https://bank-aait-web-group-1.onrender.com/"}),
     endpoints: (builder) => ({
         signUp: builder.mutation({
             query: (data:formType) => (console.log("data:", data),{
@@ -16,7 +16,7 @@ export const authApi = createApi({
         }),
         signIn: builder.mutation({
             query: (data) => ({
-                url: `/login`,
+                url: `/auth/login`,
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: data

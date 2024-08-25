@@ -1,22 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const value = {name: "bjkbakjbvjb",
-                email: "oiacnldkncal@pdojfaj.com",
+const value = {name: "bjkbafdsafkjbvjb",
+                email: "nferefdddsdcafefefl@pdojfaj.com",
                 dateOfBirth: "2024-08-01",
                 permanentAddress: "Addis abaaba",
                 postalCode: "432424",
-                username: "peofjpifjqpff",
-                password: "pfjqpwfijepfj",
-                presentAddress: "foiefnoif",
+                username: "dpiffddffefefcjf",
+                password: "pfjfefedsdffdfefqpwfcijepfj",
+                presentAddress: "foieffdnoif",
                 city: "oeifhoqfih",
                 country: "ofiehfoq",
-                profilePicture: "foiofhofh",
+                profilePicture: "foiofhfdofh",
                 preference: {
-                    currency: "dollar",
+                    currency: "birr",
                     sentOrReceiveDigitalCurrency: true,
                     receiveMerchantOrder: true,
                     accountRecommendations: true,
-                    timeZone: "east-african",
+                    timeZone: "opi",
                     twoFactorAuthentication: true
 }}
 
@@ -28,15 +28,9 @@ export const formSlice = createSlice({
     reducers: {
         setform: (state, newForm) => {
             state.value = {...state.value, ...newForm.payload}
-            console.log(state.value)
         },
-        setLastForm: (state, comingform) => {
-            const newForm = {preference: comingform.payload}
-            state.value = {...state.value, ...newForm}
-            console.log(state.value)
-        }
     }
 })
 
-export const  { setform, setLastForm } = formSlice.actions;
+export const  { setform } = formSlice.actions;
 export default formSlice.reducer

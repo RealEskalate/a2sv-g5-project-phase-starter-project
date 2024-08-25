@@ -23,7 +23,7 @@ export const options = {
         const password = credentials?.password;
         try {
           const resesponse = await fetch(
-            "https://bank-dashboard-latest.onrender.com//auth/login",
+            "https://bank-dashboard-aait-latest-sy48.onrender.com/auth/login",
             {
               method: "POST",
               headers: {

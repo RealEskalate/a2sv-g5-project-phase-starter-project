@@ -1,9 +1,10 @@
 import useNavigation from "@/hooks/use-navigation";
 import React, { useEffect, useState } from "react";
-import { BsJustify, BsSearch } from "react-icons/bs";
+import { BsJustify } from "react-icons/bs";
 import { MdSettings, MdNotifications } from "react-icons/md";
 import { IoPersonCircleSharp } from "react-icons/io5";
 import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 
 interface Props {
   openSidebar: () => void;
@@ -11,6 +12,11 @@ interface Props {
 
 const NavBar: React.FC<Props> = ({ openSidebar }) => {
   const [currentPage, setCurrentPage] = useState<string>("");
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  console.log("session", session);
+
   const {
     isDashboardActive,
     isInvestmentsActive,
@@ -23,7 +29,6 @@ const NavBar: React.FC<Props> = ({ openSidebar }) => {
     isCreditsActive,
   } = useNavigation();
 
-  const router = useRouter();
 
   useEffect(() => {
     let page = "";
@@ -71,6 +76,11 @@ const NavBar: React.FC<Props> = ({ openSidebar }) => {
     isCreditsActive,
   ]);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    signOut({ callbackUrl: "/auth/login" });
+  };
+
   return (
     <div className="shadow-md flex justify-between items-center py-3 px-4 rounded-md bg-white sticky top-0 z-40">
       <p className="text-lg font-semibold">{currentPage}</p>
@@ -87,12 +97,25 @@ const NavBar: React.FC<Props> = ({ openSidebar }) => {
           aria-label="Notification-Bell-Button"
           size={20}
         />
-        <IoPersonCircleSharp
-          className="cursor-pointer"
-          onClick={() => router.push("/settings")}
-          aria-label="Profile-Avatar-Button"
-          size={40}
-        />
+        {session ? (
+          <div className="flex items-center space-x-2">
+            <span className="font-medium">{session.user?.name}</span>
+            <button
+              className="bg-[#2b37e0] text-white rounded px-3 py-1"
+              onClick={handleLogout}
+              aria-label="Logout-Button"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <IoPersonCircleSharp
+            className="cursor-pointer"
+            onClick={() => router.push("/auth/login")}
+            aria-label="Profile-Avatar-Button"
+            size={40}
+          />
+        )}
         <button className="md:hidden" onClick={openSidebar} aria-label="Open-Sidebar-Button">
           <BsJustify className="h-6 w-6" />
         </button>

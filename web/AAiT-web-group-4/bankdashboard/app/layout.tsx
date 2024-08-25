@@ -13,7 +13,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Provider store={store}>
-        <body className="flex h-screen w-screen">
+        <body className="flex w-full h-full">
           <Sidebar />
           <div className="w-full flex flex-col h-full">
             <Header />

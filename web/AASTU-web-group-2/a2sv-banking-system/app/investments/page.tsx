@@ -178,11 +178,11 @@ export default function Home() {
       <div className="flex justify-between flex-wrap lg:flex-nowrap">
         <Card1
           text="Total Invested Amount"
-          img="/total.png"
+          img="/total.svg"
           num={data?.totalInvestment}
         />
-        <Card1 text="Number of Investments" img="/number.png" num="1,250" />
-        <Card1 text="Rate of Return" img="/rate.png" num={data?.rateOfReturn} />
+        <Card1 text="Number of Investments" img="/number.svg" num="1,250" />
+        <Card1 text="Rate of Return" img="/rate.svg" num={data?.rateOfReturn} />
       </div>
       <div className="grid grid-cols-2 gap-6">
         <div className="col-span-2 lg:col-span-1">

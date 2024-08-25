@@ -2,15 +2,35 @@ import React from "react";
 import { GrSend } from "react-icons/gr";
 export default function QuickTransfer() {
   return (
-    <div className="relative flex-col    h-48 w-96 rounded-xl bg-gradient-to-r  text-white shadow-2xl ">
-      <div className="text-black flex items-ceneter justify-center gap-2 overflow-hidden">
-        <div className="rounded-full bg-slate-300">P1</div>{" "}
-        {/* this is just a place holder */}
-        <div className="rounded-full bg-slate-300">P1</div>
-        <div className="rounded-full bg-slate-300">P1</div>
-        <div className="rounded-full bg-slate-300">P1</div>
-        <div className="rounded-full bg-slate-300">P1</div>
-        <div className="rounded-full bg-slate-300">P1</div>
+    <div className="relative flex-col  p-2  min-h-48 w-96 rounded-xl bg-white  text-white shadow-2xl ">
+      <div className="text-black flex items-ceneter justify-center gap-5 overflow-auto mb-3">
+        <div>
+          <div className="avatar">
+            <div className="w-20 h-20 rounded-full">
+              <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+            </div>
+          </div>
+          <div className="flex justify-center">Work Man</div>
+          <div className="flex justify-center font-thin">Designer</div>
+        </div>
+        <div>
+          <div className="avatar">
+            <div className="w-20 h-20 rounded-full">
+              <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+            </div>
+          </div>
+          <div className="flex justify-center">Work Man</div>
+          <div className="flex justify-center font-thin">Designer</div>
+        </div>
+        <div>
+          <div className="avatar">
+            <div className="w-20 h-20 rounded-full">
+              <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+            </div>
+          </div>
+          <div className="flex justify-center">Work Man</div>
+          <div className="flex justify-center font-thin">Designer</div>
+        </div>
       </div>
       <div className="flex justify-between gap-3 items-center text-black">
         <p className="font-thin  ml-5">Write Amount</p>

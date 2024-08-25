@@ -8,6 +8,7 @@ import (
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
+	custom_error "github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth/gothic"
 )
@@ -38,7 +39,7 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 		fmt.Println("user from callback", user.Email)
 
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 
@@ -79,20 +80,20 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 		accessToken, err := oc.LoginUsecase.CreateAccessToken(dbUser, oc.Env.AccessTokenSecret, oc.Env.AccessTokenExpiryHour)
 
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 
 		refreshToken, err := oc.LoginUsecase.CreateRefreshToken(dbUser, oc.Env.RefreshTokenSecret, oc.Env.RefreshTokenExpiryHour)
 
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 
 		err = oc.LoginUsecase.UpdateRefreshToken(c.Request.Context(), dbUser.ID.Hex(), refreshToken)
 		if err != nil {
-			c.JSON(500, entities.ErrorResponse{Message: err.Error()})
+			c.JSON(500, custom_error.ErrorMessage{Message: err.Error()})
 			return
 
 		}

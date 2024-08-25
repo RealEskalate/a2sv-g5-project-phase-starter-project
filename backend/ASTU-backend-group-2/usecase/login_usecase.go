@@ -38,6 +38,15 @@ func (lu *loginUsecase) UpdateRefreshToken(c context.Context, userID string, ref
 }
 
 func (lu *loginUsecase) CreateAccessToken(user *entities.User, secret string, expiry int) (accessToken string, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), lu.contextTimeout)
+	defer cancel()
+
+	err = lu.userRepository.UpdateLastLogin(ctx, user.ID.Hex())
+
+	if err != nil {
+		return "", err
+	}
+
 	return tokenutil.CreateAccessToken(user, secret, expiry)
 }
 

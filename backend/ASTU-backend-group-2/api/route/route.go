@@ -11,6 +11,10 @@ import (
 )
 
 func Setup(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, gin *gin.Engine, cloudinary *cloudinary.Cloudinary) {
+
+	// Error handling
+	gin.Use(middleware.ErrorHandlerMiddleware())
+
 	publicRouter := gin.Group("")
 
 	// All Public APIs

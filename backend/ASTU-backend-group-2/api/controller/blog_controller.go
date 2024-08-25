@@ -2,14 +2,17 @@ package controller
 
 import (
 	"context"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/api/middleware"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
+	custom_error "github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/errors"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/forms"
 	"github.com/gin-gonic/gin"
 )
@@ -71,7 +74,7 @@ func (bc *BlogController) GetBlogs() gin.HandlerFunc {
 
 		blogs, pagination, err := bc.BlogUsecase.GetAllBlogs(context.Background(), blogFilter)
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 
@@ -80,7 +83,7 @@ func (bc *BlogController) GetBlogs() gin.HandlerFunc {
 			MetaData: pagination,
 		}
 
-		c.JSON(200, res)
+		c.JSON(http.StatusOK, res)
 	}
 }
 
@@ -88,11 +91,13 @@ func (bc *BlogController) GetBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		blogID := c.Param("id")
 		blog, err := bc.BlogUsecase.GetBlogByID(context.Background(), blogID)
+
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
-		c.JSON(200, blog)
+
+		c.JSON(http.StatusOK, blog)
 	}
 }
 
@@ -101,20 +106,24 @@ func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 		userID := c.MustGet("x-user-id").(string)
 		var newBlog forms.BlogForm
 		if err := c.ShouldBindJSON(&newBlog); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
+			if err == io.EOF {
+				c.JSON(http.StatusBadRequest, custom_error.ErrMessage(custom_error.EreInvalidRequestBody))
+				return
+			}
+			middleware.CustomErrorResponse(c, err)
 			return
 		}
 
 		user, err := bc.UserUsecase.GetUserById(context.Background(), userID)
 
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 
 		blog, err := bc.BlogUsecase.CreateBlog(context.Background(), &newBlog, user)
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 		c.JSON(201, blog)
@@ -127,22 +136,25 @@ func (bc *BlogController) BatchCreateBlog() gin.HandlerFunc {
 		var newBlogs []forms.BlogForm
 
 		if err := c.ShouldBindJSON(&newBlogs); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
+			if err == io.EOF {
+				c.JSON(http.StatusBadRequest, custom_error.ErrMessage(custom_error.EreInvalidRequestBody))
+				return
+			}
+			middleware.CustomErrorResponse(c, err)
 			return
 		}
-
 		userID := c.MustGet("x-user-id").(string)
 
 		user, err := bc.UserUsecase.GetUserById(context.Background(), userID)
 
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 
 		err = bc.BlogUsecase.BatchCreateBlog(context.Background(), &newBlogs, user)
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 		c.JSON(201, gin.H{"message": "Blogs created successfully"})
@@ -155,23 +167,28 @@ func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 		userID := c.MustGet("x-user-id").(string)
 		role := c.MustGet("x-user-role").(string)
 		var updatedBlog forms.BlogForm
+
 		if err := c.ShouldBindJSON(&updatedBlog); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
+			if err == io.EOF {
+				c.JSON(http.StatusBadRequest, custom_error.ErrMessage(custom_error.EreInvalidRequestBody))
+				return
+			}
+			middleware.CustomErrorResponse(c, err)
 			return
 		}
 		existingBlog, err := bc.BlogUsecase.GetBlogByID(c, blogID)
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 
 		if userID != existingBlog.AuthorID && role != "admin" {
-			c.JSON(http.StatusUnauthorized, entities.ErrorResponse{Message: "unauthorized"})
+			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
 			return
 		}
 		blog, err := bc.BlogUsecase.UpdateBlog(context.Background(), blogID, &updatedBlog)
 		if err != nil {
-			c.JSON(500, entities.ErrorResponse{Message: err.Error()})
+			c.JSON(500, custom_error.ErrorMessage{Message: err.Error()})
 			return
 		}
 		c.JSON(200, blog)
@@ -190,7 +207,7 @@ func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 			return
 		}
 		if userID != existingBlog.AuthorID && role != "admin" {
-			c.JSON(http.StatusUnauthorized, entities.ErrorResponse{Message: "unauthorized"})
+			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
 			return
 		}
 		err = bc.BlogUsecase.DeleteBlog(context.TODO(), blogID)
@@ -209,10 +226,10 @@ func (bc *BlogController) GetByTags() gin.HandlerFunc {
 
 		blogs, pagination, err := bc.BlogUsecase.GetByTags(context.TODO(), tags, limit, page)
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
-		c.JSON(200, gin.H{"blogs": blogs, "pageination": pagination})
+		c.JSON(http.StatusOK, gin.H{"blogs": blogs, "pageination": pagination})
 	}
 }
 
@@ -222,10 +239,10 @@ func (bc *BlogController) GetbyPopularity() gin.HandlerFunc {
 		page, _ := strconv.ParseInt(c.Query("page"), 10, 64)
 		blogs, pagination, err := bc.BlogUsecase.GetByPopularity(context.Background(), limit, page)
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
-		c.JSON(200, gin.H{"blogs": blogs, "pageination": pagination})
+		c.JSON(http.StatusOK, gin.H{"blogs": blogs, "pageination": pagination})
 	}
 }
 func (bc *BlogController) SortByDate() gin.HandlerFunc {
@@ -234,10 +251,10 @@ func (bc *BlogController) SortByDate() gin.HandlerFunc {
 		page, _ := strconv.ParseInt(c.Query("page"), 10, 64)
 		blogs, pagination, err := bc.BlogUsecase.SortByDate(context.Background(), limit, page)
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
-		c.JSON(200, gin.H{"blogs": blogs, "pageination": pagination})
+		c.JSON(http.StatusOK, gin.H{"blogs": blogs, "pageination": pagination})
 	}
 }
 func (bc *BlogController) GetComments() gin.HandlerFunc {
@@ -248,11 +265,9 @@ func (bc *BlogController) GetComments() gin.HandlerFunc {
 
 		comments, pageination, err := bc.CommentUsecase.GetComments(c, blogID, limit, page)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
-		log.Println("[ctrl] blog id", blogID)
-
 		c.JSON(http.StatusOK, gin.H{"comments": comments, "metadata": pageination})
 	}
 }
@@ -266,10 +281,11 @@ func (bc *BlogController) CreateComment() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		log.Println("comment input:", bc.CommentUsecase)
+
 		comment, err := bc.CommentUsecase.CreateComment(c, userID, blogID, &commentIn)
+
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 		c.JSON(http.StatusCreated, gin.H{"comment": comment})
@@ -282,7 +298,7 @@ func (bc *BlogController) GetComment() gin.HandlerFunc {
 
 		comment, err := bc.CommentUsecase.GetComment(c, commentID)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 
@@ -308,13 +324,24 @@ func (bc *BlogController) UpdateComment() gin.HandlerFunc {
 		}
 
 		if existingComment.UserID.Hex() != userID && role != "admin" {
-			c.JSON(http.StatusUnauthorized, entities.ErrorResponse{Message: "unauthorized"})
+			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
 			return
 		}
 
 		comment, err := bc.CommentUsecase.UpdateComment(c.Request.Context(), commentID, &commentUpd)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if existingComment.UserID.Hex() != userID && role != "admin" {
+			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorizrd"})
+			return
+		}
+
+		comment, err = bc.CommentUsecase.UpdateComment(c.Request.Context(), commentID, &commentUpd)
+		if err != nil {
+			c.Error(err)
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"comment": comment})
@@ -329,16 +356,16 @@ func (bc *BlogController) DeleteComment() gin.HandlerFunc {
 
 		comment, err := bc.CommentUsecase.GetComment(c, commentID)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 		if comment.UserID.Hex() != userID && role != "admin" {
-			c.JSON(http.StatusUnauthorized, entities.ErrorResponse{Message: "unauthorized"})
+			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
 			return
 		}
 		err = bc.CommentUsecase.DeleteComment(c, commentID)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 
@@ -349,10 +376,10 @@ func (bc *BlogController) Like() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.MustGet("x-user-id").(string)
 		BlogID := c.Param("id")
-		// .blogs/:id/like
+
 		err := bc.ReactionUsecase.ToggleLike(c, BlogID, userID)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 		c.JSON(http.StatusOK, nil)
@@ -362,11 +389,11 @@ func (bc *BlogController) Dislike() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.MustGet("x-user-id").(string)
 		BlogID := c.Param("id")
-		// .blogs/:id/like
+
 		log.Println("[ctrl] disliking blog", BlogID)
 		err := bc.ReactionUsecase.ToggleDislike(c, BlogID, userID)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 		c.JSON(http.StatusOK, nil)

@@ -2,14 +2,17 @@ package controller
 
 import (
 	"context"
+	"io"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/api/middleware"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
+	custom_error "github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/errors"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/internal/assetutil"
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/gin-gonic/gin"
@@ -39,11 +42,11 @@ func (pc *ProfileController) GetProfile() gin.HandlerFunc {
 		role := c.MustGet("x-user-role").(string)
 		user, err := pc.UserUsecase.GetUserById(c, userID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
+			c.Error(err)
 			return
 		}
 		if userID != claimUserID && role != "admin" {
-			c.JSON(http.StatusUnauthorized, entities.ErrorResponse{Message: "unauthorized"})
+			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
 			return
 		}
 
@@ -89,7 +92,7 @@ func (pc *ProfileController) GetProfiles() gin.HandlerFunc {
 		users, pagination, err := pc.UserUsecase.GetUsers(context.Background(), userFilter)
 
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 
@@ -104,9 +107,13 @@ func (pc *ProfileController) GetProfiles() gin.HandlerFunc {
 
 func (pc *ProfileController) ChangePassword() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var UpdatedPassword entities.UpdatePassword
-		if err := c.ShouldBindJSON(&UpdatedPassword); err != nil {
-			c.JSON(http.StatusBadRequest, entities.ErrorResponse{Message: err.Error()})
+		var updatedPassword entities.UpdatePassword
+		if err := c.ShouldBindJSON(&updatedPassword); err != nil {
+			if err == io.EOF {
+				c.JSON(http.StatusBadRequest, custom_error.ErrMessage(custom_error.EreInvalidRequestBody))
+				return
+			}
+			middleware.CustomErrorResponse(c, err)
 			return
 		}
 		userID, exists := c.Get("x-user-id")
@@ -124,19 +131,19 @@ func (pc *ProfileController) ChangePassword() gin.HandlerFunc {
 
 		user, err := pc.UserUsecase.GetUserById(c, userIDStr)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
+			c.Error(err)
 			return
 		}
 
-		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(UpdatedPassword.OldPassword))
+		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(updatedPassword.OldPassword))
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, entities.ErrorResponse{Message: "Old password is not correct"})
+			c.Error(err)
 			return
 		}
 
-		err = pc.UserUsecase.UpdateUserPassword(c, userIDStr, &UpdatedPassword)
+		err = pc.UserUsecase.UpdateUserPassword(c, userIDStr, &updatedPassword)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
+			c.Error(err)
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"message": "Password updated successfully"})
@@ -150,16 +157,20 @@ func (pc *ProfileController) UpdateProfile() gin.HandlerFunc {
 
 		var user entities.UserUpdate
 		if err := c.ShouldBindJSON(&user); err != nil {
-			c.JSON(http.StatusBadRequest, entities.ErrorResponse{Message: err.Error()})
+			if err == io.EOF {
+				c.JSON(http.StatusBadRequest, custom_error.ErrMessage(custom_error.EreInvalidRequestBody))
+				return
+			}
+			middleware.CustomErrorResponse(c, err)
 			return
 		}
 		if userID != claimUserID && role != "admin" {
-			c.JSON(http.StatusUnauthorized, entities.ErrorResponse{Message: "unauthorized"})
+			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
 			return
 		}
 		updatedUser, err := pc.UserUsecase.UpdateUser(c, userID, &user)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
+			c.Error(err)
 			return
 		}
 
@@ -174,14 +185,14 @@ func (pc *ProfileController) DeleteProfile() gin.HandlerFunc {
 		role := c.MustGet("x-user-role").(string)
 
 		if userID != claimUserID && role != "admin" {
-			c.JSON(http.StatusUnauthorized, entities.ErrorResponse{Message: "unauthorized"})
+			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
 			return
 		}
 
 		err := pc.UserUsecase.DeleteUser(c, userID)
 
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
+			c.Error(err)
 			return
 		}
 
@@ -194,7 +205,7 @@ func (pc *ProfileController) PromoteUser() gin.HandlerFunc {
 		userID := c.Param("id")
 		err := pc.UserUsecase.PromoteUserToAdmin(c, userID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
+			c.Error(err)
 			return
 		}
 
@@ -207,7 +218,7 @@ func (pc *ProfileController) DemoteUser() gin.HandlerFunc {
 		userID := c.Param("id")
 		err := pc.UserUsecase.DemoteAdminToUser(c, userID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
+			c.Error(err)
 			return
 		}
 
@@ -233,10 +244,10 @@ func (pc *ProfileController) UploadProfilePicture(cloudinary *cloudinary.Cloudin
 		imageUrl, err := assetutil.UploadToCloudinary(file.(multipart.File), filename.(string), cloudinary)
 		log.Println(imageUrl, userID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 		pc.UserUsecase.UpdateProfilePicture(c, userID, imageUrl)
-		c.JSON(200, gin.H{"message": "Admin demoted to user successfully"})
+		c.JSON(http.StatusOK, gin.H{"message": "Admin demoted to user successfully"})
 	}
 }

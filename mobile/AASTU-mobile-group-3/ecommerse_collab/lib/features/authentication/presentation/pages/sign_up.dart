@@ -33,15 +33,20 @@ class SignUp extends StatelessWidget {
                 
               
             } else if (state is RegisterErrorState) {
+
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
+                  backgroundColor: Colors.red,
+                  
                 ),
               );
             } else if (state is UserRegisteredState) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text("User Registered"),
+                  backgroundColor: Colors.green,
+                  
                 ),
                 
               );

@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:equatable/equatable.dart';
 
 import '../../../authentication/domain/entity/user.dart';
@@ -19,7 +21,7 @@ class Product extends Equatable {
   final String? category;
   final String description;
   final String image;
-  final int price;
+  final double price;
   final User seller;
 
 

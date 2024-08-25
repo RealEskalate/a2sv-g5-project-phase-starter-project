@@ -62,6 +62,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource{
 
   @override
   Future<UserModel> logIn(String email, String password) async {
+    print("Response");
     final response = await client.post(
       Uri.parse('https://g5-flutter-learning-path-be.onrender.com/api/v3/auth/login'),
       body: {
@@ -69,6 +70,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource{
         'password': password,
       },
     );
+    print(response.body);
     if (response.statusCode == 201){
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var result = prefs.setString('token', json.decode(response.body)['data']['access_token']);

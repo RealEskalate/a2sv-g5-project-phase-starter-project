@@ -36,28 +36,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home:Onboarding(),
-        // home: Scaffold(
-        //   key: scaffoldKey, // Assign the key to the Scaffold
-        //   appBar: AppBar(
-        //     title: Text('My Chat App'),
-        //     leading: IconButton(
-        //       icon: Icon(Icons.menu),
-        //       onPressed: () {
-        //         scaffoldKey.currentState?.openDrawer(); // Use the key to open the drawer
-        //       },
-        //     ),
-        //   ),
-        //   drawer: const Sidebar(), // Add your Sidebar here as the drawer
-        //   body: const Column(
-        //     children: [
-        //       // Placeholder for the chat widgets or other contents
-        //       // Chat(message: "Sample message"),
-        //       // SizedBox(height: 20),
-        //       // RealTimeAudioRecorder(),
-        //     ],
-        //   ),
-        // ),
+        home: Onboarding()
       ),
     );
   }

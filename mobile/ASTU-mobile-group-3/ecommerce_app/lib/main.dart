@@ -14,6 +14,7 @@ import 'features/product/presentation/pages/product_list_page.dart';
 import 'features/product/presentation/pages/search_product_page.dart';
 import 'features/product/presentation/pages/single_product_page.dart';
 import 'features/product/presentation/pages/update_product_page.dart';
+import 'landing_page.dart';
 import 'splash_page.dart';
 
 void main() async {
@@ -52,7 +53,8 @@ class MyApp extends StatelessWidget {
           SplashPage.routes: (context) => const SplashPage(),
           LoginPage.routes: (context) => LoginPage(),
           SignUpPage.routes: (context) => SignUpPage(),
-          UpdateProductPage.routes: (context) => UpdateProductPage()
+          UpdateProductPage.routes: (context) => UpdateProductPage(),
+          LandingPage.routes: (context) => const LandingPage()
         },
         initialRoute: SplashPage.routes,
       ),

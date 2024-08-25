@@ -8,6 +8,7 @@ import 'dependency_injection.dart';
 import 'features/auth/presentation/page/login_page.dart';
 import 'features/chat/presentation/pages/chat_list.dart';
 import 'features/product/presentation/pages/product_list_page.dart';
+import 'landing_page.dart';
 
 class SplashPage extends StatefulWidget {
   static const String routes = '/splash_page';
@@ -31,11 +32,11 @@ class _SplashPageState extends State<SplashPage>
       if (result == null) {
         // ignore: use_build_context_synchronously
         Navigator.of(context)
-            .pushReplacement(MaterialPageRoute(builder: (_) => ChatList()));
+            .pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));
       } else {
         // ignore: use_build_context_synchronously
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const ChatList()));
+            MaterialPageRoute(builder: (_) => const LandingPage()));
       }
     });
   }

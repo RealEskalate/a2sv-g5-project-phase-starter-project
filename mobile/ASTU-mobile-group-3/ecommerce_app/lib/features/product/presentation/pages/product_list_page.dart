@@ -3,11 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/page/login_page.dart';
-import '../bloc/cubit/input_validation_cubit.dart';
 import '../bloc/product_bloc.dart';
 import '../bloc/product_events.dart';
 import '../widgets/product_widgets.dart';
-import 'add_product_page.dart';
 
 class ProductListPage extends StatelessWidget {
   static String routes = '/product_list_page';
@@ -30,19 +28,6 @@ class ProductListPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100),
-          ),
-          onPressed: () {
-            BlocProvider.of<InputValidationCubit>(context).refresh();
-            Navigator.pushNamed(context, AddProductPage.routes);
-          },
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
-        ),
         body: RefreshIndicator(
           onRefresh: () async {
             await Future.delayed(const Duration(seconds: 1));

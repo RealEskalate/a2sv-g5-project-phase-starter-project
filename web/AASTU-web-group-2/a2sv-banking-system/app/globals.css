@@ -69,3 +69,10 @@
 .react-datepicker-wrapper {
   @apply inline-block p-0 border-0 w-full;
 }
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}

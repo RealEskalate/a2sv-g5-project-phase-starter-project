@@ -4,12 +4,6 @@ import 'chat_app_bar.dart';
 import 'currentUser.dart';
 import 'mockdata.dart';
 
-void main() {
-  runApp(const MaterialApp(
-    home: IndividualChatPage(),
-    debugShowCheckedModeBanner: false,
-  ));
-}
 
 class IndividualChatPage extends StatefulWidget {
   const IndividualChatPage({

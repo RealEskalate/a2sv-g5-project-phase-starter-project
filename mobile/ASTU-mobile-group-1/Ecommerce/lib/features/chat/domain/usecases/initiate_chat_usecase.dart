@@ -10,7 +10,7 @@ class InitiateChatUsecase {
   InitiateChatUsecase({required ChatRepository chatRepository})
       : _chatRepository = chatRepository;
 
-  Future<Either<Failure, ChatEntity>> initiateChat(String userId) {
+  Future<Either<Failure, ChatEntity>> execute(String userId) {
     return _chatRepository.initiateChat(userId);
   }
 }

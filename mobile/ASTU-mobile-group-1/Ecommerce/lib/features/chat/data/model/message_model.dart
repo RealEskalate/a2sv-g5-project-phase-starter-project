@@ -20,9 +20,10 @@ class MessageModel extends MessageEntity{
       type: json['type'] as String,
       messageId: json['messageId'] as String,
 
-    
       );
   } 
+
+  
 
 }
 

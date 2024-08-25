@@ -1,9 +1,9 @@
-"use client";
-import Image from "next/image";
-import React from "react";
-import InvestmentCard from "./investmentCard";
-import { useGetInvestmentItemsQuery } from "@/lib/redux/slices/investmentSlice";
-import { SkeletonCard } from "../AllSkeletons/investmentItemSkeleton/SkeletonCard";
+'use client';
+import Image from 'next/image';
+import React from 'react';
+import InvestmentCard from './investmentCard';
+import { useGetInvestmentItemsQuery } from '@/lib/redux/slices/investmentSlice';
+import { SkeletonCard } from '../AllSkeletons/investmentItemSkeleton/SkeletonCard';
 
 const InvestmentItem = () => {
   const { data, isLoading } = useGetInvestmentItemsQuery({
@@ -20,21 +20,21 @@ const InvestmentItem = () => {
   const numberOfInvestments = Alldata?.yearlyTotalInvestment?.length;
 
   return (
-    <div className="flex flex-col md:flex-row gap-2 md:gap-2 justify-evenly w-full">
+    <div className='flex flex-col md:flex-row gap-2 md:gap-2 justify-evenly w-full'>
       <InvestmentCard
-        image={"/assets/icons/moneyBag.svg"}
-        name={"Total Invested Amount"}
-        amount={`$${Alldata?.totalInvestment}`}
+        image={'/assets/icons/moneyBag.svg'}
+        name={'Total Invested Amount'}
+        amount={`$${Alldata?.totalInvestment.toFixed(2)}`}
       />
       <InvestmentCard
-        image={"/assets/icons/numberof-investment.svg"}
-        name={"Number of Investments"}
+        image={'/assets/icons/numberof-investment.svg'}
+        name={'Number of Investments'}
         amount={`${numberOfInvestments}`}
       />
       <InvestmentCard
-        image={"/assets/icons/rate-return.svg"}
-        name={"Rate of Return"}
-        amount={`+${Alldata?.rateOfReturn}%`}
+        image={'/assets/icons/rate-return.svg'}
+        name={'Rate of Return'}
+        amount={`+${Alldata?.rateOfReturn.toFixed(2)}%`}
       />
     </div>
   );

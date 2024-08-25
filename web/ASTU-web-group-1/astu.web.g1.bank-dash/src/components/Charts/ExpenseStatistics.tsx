@@ -56,7 +56,7 @@ const options: ChartOptions<'polarArea'> = {
     },
     tooltip: {
       callbacks: {
-        label: (context) => {
+        label: (context: any) => {
           const label = context.label || '';
           const value = context.raw || 0;
           return `${label}: ${value}%`;
@@ -65,7 +65,7 @@ const options: ChartOptions<'polarArea'> = {
     },
     datalabels: {
       display: true,
-      formatter: (value) => {
+      formatter: (value: any) => {
         return `${value}%`;
       },
       color: 'white',

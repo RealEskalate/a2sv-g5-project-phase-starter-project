@@ -333,7 +333,7 @@ func (blogU *blogUsecase) FetchByTags(ctx context.Context, tags []domain.Tag, li
 	}
 
 	tagsString := strings.Join(tagStrings, ",")
-	// Geberate a cache key
+	// Generate a cache key
 	cacheKey := fmt.Sprintf("blogs:limit=%d:page=%d&tags=%v", limit, page, tagsString)
 
 	// Check cache

@@ -164,16 +164,16 @@ func (service *JWTTokenService) ValidateVerificationToken(token string) (*jwt.To
 		return []byte(service.VerifySecret), nil
 	})
 	if errParse != nil {
-		return nil, domain.CustomError{Code: 500, Message: "error parsing token"}
+		return nil, domain.CustomError{Code: http.StatusBadRequest, Message: "error parsing token"}
 	}
 
 	if !parsedToken.Valid {
-		return nil, domain.CustomError{Code: 400, Message: "token is invalid"}
+		return nil, domain.CustomError{Code: http.StatusUnauthorized, Message: "token is invalid"}
 	}
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, domain.CustomError{Code: 400, Message: "invalid token claims"}
+		return nil, domain.CustomError{Code: http.StatusBadRequest, Message: "invalid token claims"}
 	}
 
 	requiredClaims := []string{"username", "email", "role", "password", "exp"}
@@ -185,7 +185,7 @@ func (service *JWTTokenService) ValidateVerificationToken(token string) (*jwt.To
 
 	exp, ok := claims["exp"].(float64)
 	if !ok || time.Now().Unix() > int64(exp) {
-		return nil, domain.CustomError{Code: 400}
+		return nil, domain.CustomError{Message: "error at time ", Code: 400}
 	}
 
 	return parsedToken, nil

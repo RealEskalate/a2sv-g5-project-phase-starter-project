@@ -22,6 +22,6 @@ func NewSignupRouter(env *config.Env, timeout time.Duration, db *mongo.Client, g
         usecase.NewOtpUsecase(or, timeout),
     )
     group.POST("/signup", sc.SignUp)
-    group.POST("/verifyemail", sc.VerifyEmail)
-    group.POST("/resendotp", sc.ResendOTP)
+    group.PATCH("/verifyemail", sc.VerifyEmail)
+    group.PATCH("/resendotp", sc.ResendOTP)
 }

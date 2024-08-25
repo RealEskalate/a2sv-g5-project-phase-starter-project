@@ -17,7 +17,7 @@ abstract class ProductRemoteDataSource {
   Future<ProductModel> updateProduct(
       {required String id,
       required String name,
-      required int price,
+      required double price,
       required String description});
 }
 
@@ -89,7 +89,7 @@ print(response.statusCode);
   Future<ProductModel> updateProduct(
       {required String id,
       required String name,
-      required int price,
+      required double price,
       required String description}) async {
         SharedPreferences prefs = await SharedPreferences.getInstance();
       var headers = {

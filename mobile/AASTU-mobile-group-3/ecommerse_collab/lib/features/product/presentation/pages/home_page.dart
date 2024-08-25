@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:http/http.dart' as http;
 
 import '../../../authentication/domain/entity/user.dart';
 import '../../../authentication/presentation/bloc/blocs.dart';
@@ -7,6 +8,7 @@ import '../../../authentication/presentation/bloc/events.dart';
 import '../../../authentication/presentation/bloc/states.dart';
 import '../../../authentication/presentation/pages/sign_in.dart';
 
+// import '../../../chat/data/data_source/remote_data_source.dart';
 import '../bloc/blocs.dart';
 import '../bloc/events.dart';
 import '../bloc/states.dart';
@@ -135,9 +137,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // void chats() async {
+  //   var chats = await ChatRemoteDataSourceImpl(client: http.Client()).getMyChats();
+  //   print(chats[0]);
+  // }
+
   @override
   Widget build(BuildContext context) {
     print(widget.user.username);
+    // chats();
     return BlocConsumer<UserBloc, UserState>(
       listener: (context, state) {
         if (state is LogOutLoadingState){
@@ -170,35 +178,37 @@ class _HomePageState extends State<HomePage> {
                 header(),
                 bigTitle("Available Products", Icons.search),
                 
-          Expanded(
-                    child: RefreshIndicator(
-                      onRefresh: () => widget._refreshProducts(context),
-                      child: BlocBuilder<ProductBloc, ProductState>(
-                        builder: (context, state) {
-                          if (state is LoadingState) {
-                            return const CircularProgressIndicator();
-                          } else if (state is LoadedState) {
-                            // print(state.products);
-                            if (state.products.isEmpty) {
-                              return const Text('No products available');
+          Container(
+            child: Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: () => widget._refreshProducts(context),
+                        child: BlocBuilder<ProductBloc, ProductState>(
+                          builder: (context, state) {
+                            if (state is LoadingState) {
+                              return const CircularProgressIndicator();
+                            } else if (state is LoadedState) {
+                              // print(state.products);
+                              if (state.products.isEmpty) {
+                                return const Text('No products available');
+                              }
+                              return ListView.builder(
+                                itemCount: state.products.length,
+                                itemBuilder: (context, index) {
+                                  return ProductCard(
+                                      product: state.products[index]);
+                                },
+                              );
+                            } else if (state is ErrorState) {
+                              print(state.message);
+                              return const Text('Failed to fetch products');
+                            } else {
+                              return Container();
                             }
-                            return ListView.builder(
-                              itemCount: state.products.length,
-                              itemBuilder: (context, index) {
-                                return ProductCard(
-                                    product: state.products[index]);
-                              },
-                            );
-                          } else if (state is ErrorState) {
-                            print(state.message);
-                            return const Text('Failed to fetch products');
-                          } else {
-                            return Container();
-                          }
-                        },
+                          },
+                        ),
                       ),
                     ),
-                  ),
+          ),
                 
               ],
             ),

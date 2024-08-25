@@ -8,7 +8,7 @@ class ProductModel extends Product {
      String? category,
     required String description,
     required String image,
-    required int price,
+    required double price,
     required UserModel seller,
   }) : super(
             name: name,
@@ -22,11 +22,12 @@ class ProductModel extends Product {
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
       category: json['category'] ?? '',
       name: json['name'],
-      price: json['price'],
-      id: json['id'],
       image: json['imageUrl'],
+      price: (json['price']).toDouble(),
+      id: json['id'],
       description: json['description'],
-      seller: UserModel.fromJson(json['seller']));
+      seller: UserModel.fromJson(json['seller'])
+      );
 
   @override
   // ignore: override_on_non_overriding_member

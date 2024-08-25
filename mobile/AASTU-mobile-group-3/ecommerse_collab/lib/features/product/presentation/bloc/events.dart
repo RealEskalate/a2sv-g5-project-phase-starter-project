@@ -18,7 +18,7 @@ class GetProductEvent extends ProductEvent{
 class UpdateProductEvent  extends ProductEvent{
   final String productId;
   final String newName;
-  final int newPrice;
+  final double newPrice;
   final String newDescription;
 
   UpdateProductEvent({required this.productId, required this.newName,   required this.newPrice, required this.newDescription});

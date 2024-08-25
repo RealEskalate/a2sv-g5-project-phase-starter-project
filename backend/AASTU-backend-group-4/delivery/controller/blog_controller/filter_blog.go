@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func FilterBlogController(c *gin.Context) {
+func (uc *BlogController) FilterBlog(c *gin.Context) {
 	var filters domain.FilterRequest
 	var posts []domain.Blog
 	if err := c.ShouldBind(&filters); err != nil {

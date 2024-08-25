@@ -6,11 +6,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (uc *UserUsecase) PromoteDemote(ctx context.Context, userID primitive.ObjectID, action string) error {
+func (uc *userUsecase) PromoteDemote(ctx context.Context, userID primitive.ObjectID, action string) error {
 	ctx, cancel := context.WithTimeout(ctx, uc.contextTimeout)
 	defer cancel()
 
-	err := uc.repo.PromoteDemote(ctx, userID, action)
+	err := uc.userRepo.PromoteDemote(ctx, userID, action)
 
 	return err
 }

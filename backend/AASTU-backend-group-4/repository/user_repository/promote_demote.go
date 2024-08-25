@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (ur *UserRepository) PromoteDemote(ctx context.Context, userID primitive.ObjectID, action string) error {
+func (ur *userRepository) PromoteDemote(ctx context.Context, userID primitive.ObjectID, action string) error {
 	var isAdmin bool
 	if action == "promote" {
 		isAdmin = true

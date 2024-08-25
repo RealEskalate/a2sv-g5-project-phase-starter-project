@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:ecommerce_app_ca_tdd/features/product/data/models/product_models.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/data/models/seller_model.dart';
 import 'package:equatable/equatable.dart';
 
 class ProductEntity_local extends Equatable {
@@ -8,7 +10,7 @@ class ProductEntity_local extends Equatable {
   final String description;
   final num price;
   final String imagePath;
-  final String sellerId;
+  final SellerModel sellerId;
   const ProductEntity_local(
       {
       required this.id,

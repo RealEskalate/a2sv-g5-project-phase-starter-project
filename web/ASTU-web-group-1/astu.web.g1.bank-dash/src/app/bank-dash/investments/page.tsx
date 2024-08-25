@@ -13,8 +13,10 @@ export default function page() {
         <InvestmentItem />
       </StoreProvider>
       <div className="md:flex space-x-4">
-        <YearlyTotalInvestment />
-        <MonthlyRevenue />
+        <StoreProvider>
+          <YearlyTotalInvestment />
+          <MonthlyRevenue />
+        </StoreProvider>
       </div>
       <div className="flex flex-col md:flex-row ">
         <InvestmentList />

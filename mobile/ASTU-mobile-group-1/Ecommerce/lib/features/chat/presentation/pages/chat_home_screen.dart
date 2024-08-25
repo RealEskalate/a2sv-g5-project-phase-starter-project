@@ -33,7 +33,13 @@ class ChatHomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(5.0),
                 child: Column(
                   children: [
-                    showUser(),
+                    showUser(onClicked: (){
+                      Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const IndividiualChatScreen(),
+                            )
+                     );
+                    }),
                     const Text(
                       'Marina',
                       style: TextStyle(color: Colors.white),

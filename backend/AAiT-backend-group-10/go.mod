@@ -14,14 +14,11 @@ require (
 	google.golang.org/api v0.193.0
 )
 
-<<<<<<< HEAD
-=======
 require (
 	github.com/creasty/defaults v1.7.0 // indirect
 	github.com/gorilla/schema v1.4.1 // indirect
 )
 
->>>>>>> adb759457 (aait.backend.g10.Yordanos: add image upload)
 require (
 	cloud.google.com/go v0.115.1 // indirect
 	cloud.google.com/go/ai v0.8.0 // indirect
@@ -42,6 +39,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/googleapis/gax-go/v2 v2.13.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	go.opencensus.io v0.24.0 // indirect

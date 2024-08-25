@@ -15,7 +15,6 @@ func (s *JwtService) GenerateToken(user *domain.User) (string, string, *domain.C
 	// Define JWT claims
 	claims := jwt.MapClaims{
 		"id":          user.ID,
-		"id":          user.ID,
 		"exp":         time.Now().Add(time.Hour * 1).Unix(), // 1 hour expiration
 		"is_is_admin": user.IsAdmin,
 	}
@@ -89,10 +88,6 @@ func (s *JwtService) CheckToken(authPart string) (*jwt.Token, *domain.CustomErro
 }
 
 func (s *JwtService) FindClaim(token *jwt.Token) (jwt.MapClaims, bool) {
-	claims, ok := token.Claims.(jwt.MapClaims)
-	return claims, ok
-}
-func (s *Jwt) FindClaim(token *jwt.Token) (jwt.MapClaims, bool) {
 	claims, ok := token.Claims.(jwt.MapClaims)
 	return claims, ok
 }

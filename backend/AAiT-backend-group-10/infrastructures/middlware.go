@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func AuthMiddleware(JwtService interfaces.IJwt) gin.HandlerFunc {
+func AuthMiddleware(JwtService interfaces.IJwtService) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		defer context.Next()
 
@@ -58,7 +58,7 @@ func AuthMiddleware(JwtService interfaces.IJwt) gin.HandlerFunc {
 			return
 		}
 
-		if role == nil || id == nil {
+		if role == nil || id == uuid.Nil {
 			context.JSON(401, gin.H{"error": "Invalid token claims"})
 			context.Abort()
 			return

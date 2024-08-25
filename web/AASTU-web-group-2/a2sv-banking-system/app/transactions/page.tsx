@@ -361,7 +361,7 @@ const Page = () => {
           </div>
 
           {/* Recent Transactions */}
-          <div className="mb-4 w-full mx-auto">
+          <div className="mb-4 w-80% mx-auto">
             <h2 className="text-xl font-bold mb-4 pt-6 text-[#343C6A] dark:text-[#9faaeb]">Recent Transactions</h2>
             <Tabs tabs={["All Transactions", "Income", "Expense"]} activeTab={activeTab} onTabChange={setActiveTab} />
             <TransactionsList transactions={transactions.map((transaction) => ({ ...transaction, amount: transaction.amount.toString() }))} />

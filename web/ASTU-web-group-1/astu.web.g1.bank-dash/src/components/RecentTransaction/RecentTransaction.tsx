@@ -1,45 +1,50 @@
+'use client';
 import React from 'react';
 import RecentTransactionCard from './RecentTransactionCard';
+import { useGetAllTransactionsQuery } from '@/lib/redux/slices/transactionSlice';
+import { Skeleton } from '../ui/skeleton';
 
 const RecentTransaction = () => {
+  const { data, isLoading } = useGetAllTransactionsQuery({ page: 0, size: 3 });
+  if (isLoading) {
+    return (
+      <div className='w-full pb-3 '>
+        <h1 className='text-[#333B69] pb-3 font-semibold'>Recent Transaction</h1>
+        <div className='space-y-4 bg-white p-5 rounded-3xl'>
+          <div className='flex'>
+            <Skeleton className='h-9 w-9 rounded-xl bg-slate-200 flex-shrink-0 mr-3' />
+            <Skeleton className='h-8 w-full bg-slate-200' />
+          </div>
+          <div className='flex'>
+            <Skeleton className='h-9 w-9 rounded-xl bg-slate-200 flex-shrink-0 mr-3' />
+            <Skeleton className='h-8 w-full bg-slate-200' />
+          </div>
+          <div className='flex'>
+            <Skeleton className='h-9 w-9 rounded-xl bg-slate-200 flex-shrink-0 mr-3' />
+            <Skeleton className='h-8 w-full bg-slate-200' />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className='w-full'>
       <h1 className='text-[#333B69] pb-3 font-semibold'>Recent Transaction</h1>
-      <div className=' max-w-md  bg-white  rounded-[15px] px-4 py-3'>
-        <div className='flow-root'>
-          <ul role='list' className=' '>
-            <li className='py-1'>
+      <div className='  bg-white  rounded-[15px] px-4 py-3'>
+        <ul role='list' className=' '>
+          {data?.data.content.map((transaction) => (
+            <li className='py-1' key={transaction.transactionId}>
               <RecentTransactionCard
-                TransactionName='Deposit from my'
-                calender='28 January 2021'
-                amount={850}
-                imageUrl='/assets/images/deposit.png'
-                moneyColor='#FF4B4A'
-                sign='-'
-              />
-            </li>
-            <li className='py-1'>
-              <RecentTransactionCard
-                TransactionName='Depoist Paypal'
-                calender='25 January 2021'
-                amount={2500}
-                imageUrl='/assets/images/paypal.png'
-                moneyColor='#41D4A8'
-                sign='+'
-              />
-            </li>
-            <li className='py-1'>
-              <RecentTransactionCard
-                TransactionName='Jemi Wilson'
-                calender='21 January 2021'
-                amount={5400}
+                TransactionName={transaction.description}
+                calender={transaction.date}
+                amount={transaction.amount}
                 imageUrl='/assets/images/dollarCoin.png'
-                moneyColor='#41D4A8'
-                sign='+'
+                sign={transaction.type}
               />
             </li>
-          </ul>
-        </div>
+          ))}
+        </ul>
       </div>
     </div>
   );

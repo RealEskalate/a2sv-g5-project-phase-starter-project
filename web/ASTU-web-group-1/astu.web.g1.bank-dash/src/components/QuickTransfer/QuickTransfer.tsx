@@ -11,10 +11,10 @@ import {
 
 const QuickTransfer = () => {
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col h-full'>
       <p className='text-[#333B69] pb-3 font-semibold'>Quick Transfer</p>
-      <div className='flex flex-col lg:gap-5 rounded-3xl  w-full py-5 px-6 bg-white'>
-        <div className='px-10 md:px-6 w-full'>
+      <div className='flex flex-col lg:gap-5 rounded-3xl  w-full py-5 px-6 bg-white h-full items-center justify-around'>
+        <div className='px-10 md:px-4 w-full'>
           <Carousel className='w-full'>
             <CarouselContent className='-ml-1'>
               {Array.from({ length: 6 }).map((_, index) => (

@@ -11,6 +11,7 @@ import Cookies from "js-cookie";
 import Image from "next/image";
 import CardListLoad from "@/components/loadingComponents/CardListLoad";
 import MyCardsLoad from "@/components/loadingComponents/MyCardsLoad";
+import { TbFileSad } from "react-icons/tb";
 
 const CreditCard = () => {
   const [cards, setCards] = useState<any[]>([]);
@@ -63,12 +64,9 @@ const CreditCard = () => {
             ))
           ) : token ? (
             <div className="w-screen bg-white py-16 rounded-xl flex flex-col justify-center dark:bg-dark dark:border-[1px] dark:border-gray-700">
-              <Image
-                src="/icons/null.png"
-                width={80}
-                height={80}
-                alt="null"
-                className="mx-auto pb-2 block"
+              <TbFileSad
+                className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
+                strokeWidth={1}
               />
               <span className="mx-auto my-auto md:text-xl text-sm text-[#993d4b] font-bold mb-5">
                 {error ? error : "There are no cards for now!"}
@@ -94,13 +92,10 @@ const CreditCard = () => {
           ) : token ? (
             error ? (
               <div className="pr-6 py-32 bg-white w-full flex flex-col justify-center align-middle rounded-xl scrollbar-none dark:bg-dark dark:border-[1px] dark:border-gray-700 ">
-                <Image
-                  src="/icons/null.png"
-                  width={80}
-                  height={80}
-                  alt="null"
-                  className="mx-auto pb-2 block"
-                />
+                <TbFileSad
+                    className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
+                    strokeWidth={1}
+                  />
                 <span className="mx-auto my-auto md:text-xl text-sm text-[#993d4b] font-bold">
                   {error}
                 </span>

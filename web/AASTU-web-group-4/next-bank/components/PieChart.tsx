@@ -24,27 +24,30 @@ const chartData = [
 
 
 export default function Component() {
-  const [pierad , setpierad] = useState(130)
-  useEffect(()=>{
+  const [pierad , setPierad] = useState(100)
+  useEffect(() => {
+    const updateRadius = () => {
 
-    const fun= () =>{
-      if(window.innerWidth < 1024){
-        setpierad(20)
-        alert('less than 1024')
-    
+      console.log(pierad)
+      if (window.innerWidth >= 768) { // Mobile screens
+        setPierad(60)
+      } else if (window.innerWidth >= 1024) { // Tablet screens
+        setPierad(95)
+      } else if (window.innerWidth >= 1440) { // Large screens
+        setPierad(100)
+      } else {
+        setPierad(85)
       }
-      else{
-        setpierad(100)
-      }
-    fun()
-    window.addEventListener('resize' , fun)
-    return()=>{
-      window.removeEventListener('resize' , fun)
     }
+
+    updateRadius() // Set the initial radius
+    window.addEventListener('resize', updateRadius) // Update radius on resize
+    return () => {
+      window.removeEventListener('resize', updateRadius) // Clean up on unmount
     }
-    },[])
+  }, [pierad])
   return (
-    <Card className=" w-[100%] md:py-14 ">
+    <Card className=" w-[100%] py-6">
 
       <CardContent className=" w-[100%] ">
         <ChartContainer
@@ -61,7 +64,7 @@ export default function Component() {
               nameKey="category"
               cx="50%"
               cy="50%"
-              outerRadius={80}
+              outerRadius={pierad}
               style={{stroke: "none"}}
               // className="md:"
               labelLine={false}
@@ -90,3 +93,4 @@ export default function Component() {
     </Card>
   )
 }
+

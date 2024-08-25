@@ -28,12 +28,14 @@ class ChatList extends StatelessWidget {
                   child: Stack(
                     children: [
                       StoryCircle(
-                        'My Status',
-                        'https://media.istockphoto.com/id/1300512215/photo/headshot-portrait-of-smiling-ethnic-businessman-in-office.jpg?s=612x612&w=0&k=20&c=QjebAlXBgee05B3rcLDAtOaMtmdLjtZ5Yg9IJoiy-VY=',
+                        name: 'My Status',
+                        hasStory: true,
+                        numberOfStories: 4,
+                        profileImageUrl: 'https://media.istockphoto.com/id/1300512215/photo/headshot-portrait-of-smiling-ethnic-businessman-in-office.jpg?s=612x612&w=0&k=20&c=QjebAlXBgee05B3rcLDAtOaMtmdLjtZ5Yg9IJoiy-VY='
                       ),
                       Positioned(
-                        top: 40,
-                        right: 5,
+                        top: 35,
+                        right: 0,
                         child: PlusButton(), // Add the PlusButton widget
                       ),
                     ],
@@ -45,11 +47,14 @@ class ChatList extends StatelessWidget {
                     itemCount: 10,
                     itemBuilder: (context, index) {
                       return const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: StoryCircle(
-                            'user',
-                            'https://media.istockphoto.com/id/1300512215/photo/headshot-portrait-of-smiling-ethnic-businessman-in-office.jpg?s=612x612&w=0&k=20&c=QjebAlXBgee05B3rcLDAtOaMtmdLjtZ5Yg9IJoiy-VY=',
-                          ));
+                        padding: EdgeInsets.all(8.0),
+                        child: StoryCircle(
+                          name: 'User',
+                          hasStory: true,
+                          numberOfStories: 1,
+                          profileImageUrl: 'https://media.istockphoto.com/id/1300512215/photo/headshot-portrait-of-smiling-ethnic-businessman-in-office.jpg?s=612x612&w=0&k=20&c=QjebAlXBgee05B3rcLDAtOaMtmdLjtZ5Yg9IJoiy-VY='
+                        ),
+                      );
                     },
                   ),
                 )

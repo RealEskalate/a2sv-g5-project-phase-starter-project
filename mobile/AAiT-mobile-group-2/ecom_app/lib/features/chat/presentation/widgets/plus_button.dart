@@ -12,7 +12,7 @@ class PlusButton extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(
           color: Colors.black, // Border color
-          width: 2, // Border width
+          width: 1, // Border width
         ),
       ),
       child: Container(

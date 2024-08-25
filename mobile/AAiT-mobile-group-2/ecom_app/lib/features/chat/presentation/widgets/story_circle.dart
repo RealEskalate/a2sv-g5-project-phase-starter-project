@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class StoryCircle extends StatelessWidget {
+  final String name;
   final bool hasStory;
   final int numberOfStories;
   final String profileImageUrl;
@@ -8,6 +9,7 @@ class StoryCircle extends StatelessWidget {
 
   const StoryCircle({
     super.key,
+    required this.name,
     required this.hasStory,
     required this.numberOfStories,
     required this.profileImageUrl,
@@ -16,21 +18,35 @@ class StoryCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: CustomPaint(
-        painter: StoryCirclePainter(hasStory: hasStory, numberOfStories: numberOfStories),
-        child: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-              image: NetworkImage(profileImageUrl),
-              fit: BoxFit.cover,
+    return Column(
+      children: [
+        SizedBox(
+          width: size,
+          height: size,
+          child: CustomPaint(
+            painter: StoryCirclePainter(hasStory: hasStory, numberOfStories: numberOfStories),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: NetworkImage(profileImageUrl),
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
         ),
-      ),
+        const SizedBox(height: 5),
+        Text(
+          name,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.white
+          ),
+        ),
+      ],
     );
   }
 }
@@ -47,13 +63,13 @@ class StoryCirclePainter extends CustomPainter {
       final paint = Paint()
         ..color = Colors.blue
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 4.0;
+        ..strokeWidth = 2;
 
       final center = Offset(size.width / 2, size.height / 2);
-      final radius = size.width / 2;
+      final radius = size.width / 2 + 3;
 
       if (numberOfStories > 1) {
-        const gapAngle = 5 * 3.141592653589793 / 180; // 5 degrees in radians
+        const gapAngle = 10 * 3.141592653589793 / 180; // 5 degrees in radians
         final angleStep = (2 * 3.141592653589793 - gapAngle * numberOfStories) / numberOfStories;
 
         for (int i = 0; i < numberOfStories; i++) {

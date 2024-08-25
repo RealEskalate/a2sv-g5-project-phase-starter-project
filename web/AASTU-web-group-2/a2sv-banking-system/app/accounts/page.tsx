@@ -20,9 +20,11 @@ import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
 import { ListCardLoading } from "./components/ListCard";
 import {
   getTransactionIncomes,
+  getTransactions,
   getTransactionsExpenses,
 } from "@/lib/api/transactionController";
 import Loading from "./components/Loading";
+import { TransactionData, TransactionResponse } from "@/types/transactionController.interface";
 type DataItem = {
   heading: string;
   text: string;
@@ -56,6 +58,7 @@ const Page = () => {
   const [balance, setBalance] = useState("Loading...");
   const [income, setIncome] = useState("Loading...");
   const [expense, setExpense] = useState("Loading...");
+  const [transaction, setTransaction] = useState<TransactionData[]>([])
 
   // Getting the session from the server and Access Token From Refresh
   useEffect(() => {
@@ -108,6 +111,11 @@ const Page = () => {
         );
         setExpense("0");
         setExpense(String(totalExpense));
+
+        // Fetch Transactions
+        const transactionData:TransactionResponse = await getTransactions(0, 3, access_token)
+        setTransaction(transactionData.data.content)
+
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -162,6 +170,7 @@ const Page = () => {
     })),
   };
 
+
   // First column with multiple data items
   const ReusableLastTransaction: Column = {
     icon: MdHome,
@@ -203,6 +212,32 @@ const Page = () => {
     })),
   };
 
+
+
+
+   // Map transaction data to ListCard columns
+   const createTransactionColumn = (transaction: TransactionData): Column => {
+    return {
+      icon: MdAccountBalance, // Default icon, you can customize based on type
+      iconStyle: "text-[#16DBCC] bg-[#DCFAF8]", // Default iconStyle, you can customize based on type
+      data: [
+        {
+          heading: transaction.description,
+          text: formatDate(transaction.date),
+          headingStyle: "text-sm font-bold text-nowrap",
+          dataStyle: "text-xs text-nowrap text-[#718EBF]",
+        },
+        {
+          heading: transaction.amount < 0 ? `-${Math.abs(transaction.amount)}` : `+${transaction.amount}`,
+          text: transaction.receiverUserName || "unknown source",
+          headingStyle: `text-xs font-bold ${transaction.amount < 0 ? "text-[#FE5C73]" : "text-[#16DBAA]"}`,
+          dataStyle: "text-xs text-nowrap",
+        },
+      ],
+    };
+  };
+
+
   if (loading) {
     return <Loading></Loading>;
   }
@@ -210,7 +245,7 @@ const Page = () => {
   // Don't render anything while loading
   return (
     <>
-      <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5 dark:bg-[#020817]">
+      <div className="flex flex-col h-full bg-[#F5F7FA] px-3 py-3 gap-5 dark:bg-[#090b0e]">
         <div>
           <div className="flex flex-wrap gap-2">
             {balance || income == "0" ? (
@@ -253,23 +288,28 @@ const Page = () => {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-5">
+        <div className="flex flex-col md:flex-row gap-10">
           <div className="flex flex-col gap-5 md:w-1/2">
             <span className="text-xl text-[#333B69] font-semibold dark:text-[#9faaeb]">
               Last Transaction
             </span>
             <div className="bg-white flex flex-col justify-between rounded-2xl dark:bg-[#020817] dark:border dark:border-[#333B69]">
-              <ListCard
-                column={ReusableLastTransaction}
-                width={"w-full"}
-                darkMode={""}
-              />
-              <ListCard column={transaction1} width={"w-full"} darkMode={""} />
-              <ListCard column={transaction2} width={"w-full"} darkMode={""} />
+              {transaction.length > 0 ? (
+                transaction.slice(0, 3).map((txn, index) => (
+                  <ListCard
+                    key={index}
+                    column={createTransactionColumn(txn)}
+                    width={"w-full"}
+                    darkMode={""}
+                  />
+                ))
+              ) : (
+                <ListCardLoading />
+              )}
             </div>
           </div>
 
-          <div className="md:w-1/2 gap-1 flex flex-col">
+          <div className="md:w-2/5 gap-1 flex flex-col max-w-lg">
             <div className="flex justify-between mr-2">
               <span className="text-xl text-[#333B69] font-semibold dark:text-[#9faaeb]">
                 My Card

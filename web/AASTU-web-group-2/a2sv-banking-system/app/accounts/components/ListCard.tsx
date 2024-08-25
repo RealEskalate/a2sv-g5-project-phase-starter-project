@@ -22,7 +22,7 @@ interface Props {
 const ListCard = ({ column, width, darkMode }: Props) => {
   return (
     <div
-      className={`flex gap-3 items-center rounded-2xl px-5 py-4 bg-white ${width} dark:bg-[#050914] ${darkMode}`}
+      className={`flex gap-3 items-center rounded-2xl px-5 py-4 bg-white ${width} dark:bg-[#020817] ${darkMode}`}
     >
       <div className={`text-3xl px-2 py-2 rounded-full ${column.iconStyle}`}>
         <column.icon />
@@ -41,7 +41,7 @@ const ListCard = ({ column, width, darkMode }: Props) => {
 
 export const ListCardLoading = () => {
   return (
-    <div className="flex gap-3 items-center rounded-2xl px-5 py-4 bg-white dark:bg-[#050914] w-[48%] md:w-[23%] animate-pulse">
+    <div className="flex gap-3 items-center rounded-2xl px-5 py-4 bg-white dark:bg-[#020817] w-[48%] md:w-[23%] animate-pulse">
       <div className="text-3xl px-2 py-2 rounded-xl bg-gray-200 dark:bg-[#333B69]">
         <div className="w-8 h-8 bg-gray-300 dark:bg-[#555B85] rounded-full"></div>
       </div>

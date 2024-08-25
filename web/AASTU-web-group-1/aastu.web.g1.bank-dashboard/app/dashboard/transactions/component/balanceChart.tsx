@@ -43,11 +43,17 @@ export function BalanceAreachart({
   }, [balanceHistory]);
 
   return (
-    <Card className={`${isDarkMode ? "bg-gray-800 border-none" : "bg-white"} py-5`}>
-      <CardContent className="px-0">
+    <Card
+      className={`border-none py-5 shadow-none ${
+        isDarkMode ? "bg-gray-800 " : "bg-white"
+      }`}
+    >
+      <CardContent className="p-0">
         <ChartContainer
           config={chartConfig}
-          className={`h-40 w-full rounded-xl ${isDarkMode ? "bg-gray-800" : "bg-white"}`}
+          className={`h-44 w-full rounded-xl ${
+            isDarkMode ? "bg-gray-800" : "bg-white"
+          }`}
         >
           <AreaChart
             data={chartData}
@@ -63,12 +69,12 @@ export function BalanceAreachart({
                 <stop
                   offset="5%"
                   stopColor={isDarkMode ? "#6EE7B7" : "#2D60FF"}
-                  stopOpacity={0.8}
+                  stopOpacity={0.5}
                 />
                 <stop
                   offset="95%"
                   stopColor={isDarkMode ? "#6EE7B7" : "#2D60FF"}
-                  stopOpacity={0.01}
+                  stopOpacity={0.1}
                 />
               </linearGradient>
             </defs>
@@ -103,7 +109,8 @@ export function BalanceAreachart({
             <Area
               type="natural"
               dataKey="value"
-              stroke={isDarkMode ? "#6EE7B7" : "#2D60FF"}
+              stroke={isDarkMode ? "#6EE7B7" : "#1814F3"}
+              strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorValue)"
             />

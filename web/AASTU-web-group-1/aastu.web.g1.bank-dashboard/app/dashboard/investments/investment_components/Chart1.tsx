@@ -36,58 +36,62 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function LineChartComp() {
-  const {isDarkMode} = useUser();
+  const { isDarkMode } = useUser();
   return (
-      <Card className={`${isDarkMode ? "bg-gray-800 border-none " : "bg-white"}  py-3 rounded-3xl md:min-w-[500px]`} >
-        <CardContent>
-          <ChartContainer config={chartConfig} className="">
-            <AreaChart
-              accessibilityLayer
-              data={chartData}
-              margin={{
-                top: 18,
+    <Card
+      className={`${
+        isDarkMode ? "bg-gray-800 border-none " : "bg-white"
+      }  py-3 rounded-3xl md:min-w-[500px]`}
+    >
+      <CardContent>
+        <ChartContainer config={chartConfig} className="">
+          <AreaChart
+            accessibilityLayer
+            data={chartData}
+            margin={{
+              top: 18,
+            }}
+          >
+            <CartesianGrid
+              vertical={false}
+              strokeDasharray="3 3"
+              strokeWidth={2}
+            />
+            <XAxis
+              dataKey="month"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value) => value.slice(0, 5)}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `$${value}`}
+            />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent indicator="dot" hideLabel />}
+            />
+            <Area
+              dataKey="desktop"
+              type="linear"
+              fill="white"
+              fillOpacity={0.1}
+              stroke="#EDA10D"
+              strokeWidth={2.5}
+              dot={{
+                fill: "white",
+                fillOpacity: 1,
+                r: 4,
               }}
-            >
-              <CartesianGrid
-                vertical={false}
-                strokeDasharray="3 3"
-                strokeWidth={2}
-              />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => value.slice(0, 5)}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `$${value}`}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent indicator="dot" hideLabel />}
-              />
-              <Area
-                dataKey="desktop"
-                type="linear"
-                fill="white"
-                fillOpacity={0.1}
-                stroke="#EDA10D"
-                strokeWidth={2.5}
-                dot={{
-                  fill: "white",
-                  fillOpacity: 1,
-                  r: 4,
-                }}
-                activeDot={{
-                  r: 4,
-                }}
-              />
-            </AreaChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
+              activeDot={{
+                r: 4,
+              }}
+            />
+          </AreaChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   );
 }

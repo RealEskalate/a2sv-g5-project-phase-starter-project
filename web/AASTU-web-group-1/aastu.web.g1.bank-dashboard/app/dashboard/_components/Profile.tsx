@@ -18,7 +18,7 @@ export const Profile = ({ image, name, job, isSelected, onClick }: Props) => {
       className={`
         min-w-[55px]
         cursor-pointer
-        p-2
+        p-1
         rounded-xl
         transition-all
         duration-300

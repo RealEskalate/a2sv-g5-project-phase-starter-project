@@ -52,6 +52,7 @@ class CostumInput extends StatelessWidget {
                 }
               }
               return TextField(
+                key: Key(text),
                 controller: control,
                 maxLines: maxLine,
                 obscureText: obsecure,

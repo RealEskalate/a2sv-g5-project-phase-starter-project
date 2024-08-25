@@ -1,7 +1,13 @@
 {
-    "id": "6672752cbd218790438efdb0",
-    "name": "Anime website",
-    "description": "Explore anime characters.",
+    "id": "66c778ec10de84211de27fe1",
+    "name": "PC",
+    "description": "long description",
     "price": 123,
-    "imageUrl": "https://res.cloudinary.com/g5-mobile-track/image/upload/v1718777132/images/zxjhzrflkvsjutgbmr0f.jpg"
-}
+    "imageUrl": "https://res.cloudinary.com/g5-mobile-track/image/upload/v1724348651/images/pug5nl6gv14np2bqdofu.png",
+    "seller": {
+      "_id": "66bde36e9bbe07fc39034cdd",
+      "name": "Mr. User",
+      "email": "user@gmail.com",
+      "__v": 0
+    }
+  }

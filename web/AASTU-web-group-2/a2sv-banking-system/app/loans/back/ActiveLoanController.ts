@@ -76,15 +76,17 @@ interface activeloanbody {
   type: string;
 }
 
-const activeloans = async (token: string) => {
+type Form = {
+  loanAmount: number;
+  duration: number;
+  interestRate: number;
+  type: string;
+};
+
+const activeloans = async (token: string, data: Form) => {
   const response = await axios.post(
     baseUrl + "/active-loans",
-    JSON.stringify({
-      loanAmount: 1,
-      duration: 1,
-      interestRate: 1,
-      type: "personal",
-    }),
+    JSON.stringify(data),
     {
       headers: {
         Authorization: `Bearer ${token}`,

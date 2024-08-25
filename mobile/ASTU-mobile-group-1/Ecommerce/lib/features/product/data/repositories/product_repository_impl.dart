@@ -9,8 +9,6 @@ import '../../domain/entities/product_entity.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../data_sources/local_data_source.dart';
 import '../data_sources/remote_data_source.dart';
-import '../models/product_model.dart';
-import '../../../auth/data/models/user_model.dart';
 
 class ProductRepositoryImpl extends ProductRepository {
   final ProductRemoteDataSource remoteDataSource;

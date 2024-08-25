@@ -202,7 +202,7 @@ class _DetailsState extends State<DetailsPage> {
                           
                           BlocBuilder<GetUserBloc, GetUserState>(
                             builder: (context, state) {
-                              if (state is GetUserLoaded && state.user.id==widget.item.sellerId){
+                              if (state is GetUserLoaded && state.user.id==widget.item.sellerId.id){
                               return Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -295,7 +295,7 @@ class _DetailsState extends State<DetailsPage> {
                                   ),
                                 ],
                               );
-                              }else if (state is GetUserLoaded && state.user.id!=widget.item.sellerId){
+                              }else if (state is GetUserLoaded && state.user.id!=widget.item.sellerId.id){
                                 return Column(
                                   children: [
                                     SizedBox(
@@ -315,7 +315,9 @@ class _DetailsState extends State<DetailsPage> {
                                         foregroundColor: Colors.white,
                                         backgroundColor: Color(0xff3F51F3),
                                       ),
-                                        onPressed: (){},
+                                        onPressed: (){
+                                          Navigator.pushNamed(context, '/chatPage', arguments: widget.item.sellerId);
+                                        },
                                         child: Row(
                                           children: [
                                             SizedBox(width: MediaQuery.of(context).size.width*0.17,),

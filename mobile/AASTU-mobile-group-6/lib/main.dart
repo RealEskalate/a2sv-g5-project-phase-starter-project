@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'package:ecommerce_app_ca_tdd/features/product/data/models/seller_model.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/add/add_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/detail_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/update/bloc/update_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/HomeChat.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/chat_page.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/login/bloc/sign_in_bloc.dart';
@@ -91,6 +93,16 @@ class Main extends StatelessWidget {
                 );
               },
             );
+          }else if (settings.name == '/chatPage') {
+            final item = settings.arguments as SellerModel;
+            return MaterialPageRoute(
+              builder: (context) {
+                return BlocProvider(
+                  create: (context) => sl.get<GetUserBloc>()..add(GetUserInfoEvent()),
+                  child: ChatPage(sellerID: item),
+                );
+              },
+            );
           }
           // Handle other routes here
           return null;
@@ -129,7 +141,8 @@ class Main extends StatelessWidget {
 
           '/splash': (context) => SplashScreen(),
 
-          '/HomeChat': (context) => Chat(),
+          '/HomeChat': (context) => Chat(),//Estifanos
+          // '/chatPage': (context) => ChatPage(),//Meron
 
           // '/detail': (context) => DetailsPage(),
         },

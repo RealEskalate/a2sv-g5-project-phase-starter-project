@@ -43,7 +43,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource{
       }),
     );
     print("from remote ${response.body}");
-     print('Response status: ${response.statusCode}');
+    print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
 
     if (response.statusCode == 201) {

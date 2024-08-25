@@ -1,4 +1,5 @@
-class MessageEntity {
+
+class MessageEntity{
   final String messageId;
   final List<Map<String,String>> messages;
 

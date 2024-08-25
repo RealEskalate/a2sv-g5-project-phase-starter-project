@@ -7,7 +7,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-
 type User struct {
 	ID                   primitive.ObjectID   `bson:"_id,omitempity" json:"id" `
 	Full_Name            string               `bson:"full_name"  json:"full_name"`

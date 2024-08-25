@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { MdHome, MdMiscellaneousServices, MdSettings, MdBarChart, MdClose } from "react-icons/md";
 import { FaMoneyBillTransfer, FaUser, FaCreditCard, FaHandHoldingDollar, FaLightbulb } from "react-icons/fa6";
-import { SidebarProps } from '../../types'
+import { SidebarProps } from '@/types/index.';
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   const sidebarRef = useRef<HTMLDivElement>(null);

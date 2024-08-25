@@ -36,12 +36,10 @@ const LastTransaction = () => {
   const { data, isError, isLoading } = useGetAllTransactionQuery(access);
 
   if (isLoading) {
-    return (
-      <RecentTransactionSkeleton />
-    );
+    return <RecentTransactionSkeleton />;
   }
-  if (isError){
-    <ErrorImage />
+  if (isError) {
+    <ErrorImage />;
   }
 
   let transactions: { content: Item[]; totalPages: number } =
@@ -64,13 +62,16 @@ const LastTransaction = () => {
 
   return (
     // The width depends on the width of container
-    <div className=" flex flex-col bg-white gap-5 p-5 rounded-3xl">
+    <div className=" flex flex-col bg-white gap-5 p-5 rounded-3xl h-[100%]">
       {items.length === 0 && (
-        <div className="flex justify-center">
-          <img
-            src="/assets/bankService/empty-image.png"
-            className="w-[35%]  "
+        <div className="flex flex-col items-center h-[100%] justify-center">
+          <Image
+            src="/assets/emptyimage/emptyimage.png"
+            width={100}
+            height={500}
+            alt="empty showing image"
           />
+          <p>No Transaction available</p>
         </div>
       )}
       {items.map((item, index) => (

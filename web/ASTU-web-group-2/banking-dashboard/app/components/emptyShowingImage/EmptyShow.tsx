@@ -1,19 +1,19 @@
 import React from "react";
 import Image from "next/image";
-interface ImageWithTextProps {
+interface EmptyMessageProps {
   text: string;
 }
 
-const EmptyShow: React.FC<ImageWithTextProps> = ({ text }) => {
+const EmptyShow: React.FC<EmptyMessageProps> = ({ text }) => {
   return (
-    <div className="text-center flex justify-center flex-col">
+    <div className="flex flex-col items-center justify-center min-h-[200px] p-6 rounded-lg w-[100%]">
       <Image
-        src="/assets/emptyImage/empty.png"
+        src="/assets/emptyimage/emptyimage.png"
         width={200}
         height={100}
         alt="empty showing image"
       />
-      <p className="mt-2 text-lg font-semibold">{text}</p>
+      <p className="text-gray text-center font-semibold">{text}</p>
     </div>
   );
 };

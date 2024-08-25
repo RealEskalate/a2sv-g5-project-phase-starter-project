@@ -22,7 +22,6 @@ import CardSkeleton from "@/app/components/creditCard/CardSkeleton";
 
 // import { useRouter } from "next/navigation";
 
-
 const AccountsPage = () => {
   return (
     <div className="grid grid-cols-1 gap-2 pb-5">
@@ -30,7 +29,7 @@ const AccountsPage = () => {
       <div className="flex max-sm:flex-col justify-between gap-8">
         <Card
           title="Last Transaction"
-          className="flex flex-col md:h-[299px] h-[254] w-full"
+          className="flex flex-col md:h-[299px] h-[254] w-full h-[100%]"
         >
           <LastTransaction />
         </Card>
@@ -40,9 +39,7 @@ const AccountsPage = () => {
           link="/credit-cards"
           className="flex flex-col lg:h-[300px] w-[350px]"
         >
-
           <CardDisplay numofcard={1} />
-
         </CardForCreditCards>
       </div>
       <div className="grid lg:grid-cols-[3fr_2fr] max-md:grid-cols-1 gap-7 p-4 w-auto">

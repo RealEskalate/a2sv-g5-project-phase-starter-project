@@ -6,17 +6,16 @@ import { useSession } from "next-auth/react";
 import { useGetAllTransactionQuery } from "@/lib/service/TransactionService";
 import { TransactionType } from "../transaction/Transaction";
 import RecentTransactionSkeleton from "../recent-transaction/RecentTransactionSkeleton";
+import EmptyShow from "../emptyShowingImage/EmptyShow";
 
 const inter = Inter({ subsets: ["latin"] });
 const TransactionsDisplay = () => {
   const [chooseIndex, setChooseIndex] = useState(0);
   const [focusedPage, setFocusedPage] = useState(1);
 
-
   const { data: session, status } = useSession();
 
   useEffect(() => {}, [session, status]);
-
 
   const accessToken = session?.user.accessToken!;
 
@@ -26,9 +25,7 @@ const TransactionsDisplay = () => {
   const range = Array.from({ length: pageLength }, (_, i) => i + 1);
 
   if (isLoading) {
-    return (
-      <RecentTransactionSkeleton />
-    );
+    return <RecentTransactionSkeleton />;
   }
   const data = res.data!.content!;
 
@@ -84,25 +81,28 @@ const TransactionsDisplay = () => {
       />
       <div className="flex justify-center">
         {chooseIndex == 0 && transactions.length == 0 && (
-          <img
-            src="/assets/bankService/empty-image.png"
-            alt="list empty"
-            className="w-fit h-fit"
-          />
+          // <img
+          //   src="/assets/bankService/empty-image.png"
+          //   alt="list empty"
+          //   className="w-fit h-fit"
+          // />
+          <EmptyShow text="No Transaction available" />
         )}
         {chooseIndex == 1 && deposit.length == 0 && (
-          <img
-            src="/assets/bankService/empty-image.png"
-            alt="list empty"
-            className="w-fit h-fit"
-          />
+          // <img
+          //   src="/assets/bankService/empty-image.png"
+          //   alt="list empty"
+          //   className="w-fit h-fit"
+          // />
+          <EmptyShow text="No deposit Found" />
         )}
         {chooseIndex == 2 && expense.length == 0 && (
-          <img
-            src="/assets/bankService/empty-image.png"
-            alt="list empty"
-            className="w-fit h-fit"
-          />
+          // <img
+          //   src="/assets/bankService/empty-image.png"
+          //   alt="list empty"
+          //   className="w-fit h-fit"
+          // />
+          <EmptyShow text="No expense Found" />
         )}
       </div>
 

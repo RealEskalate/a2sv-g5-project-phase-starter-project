@@ -6,8 +6,8 @@ import '../../../../../core/error/failure.dart';
 import '../entity/chat.dart';
 
 abstract class ChatRepository {
-  Future<Either<Failure,void>>sendMessage(Message message);
-  Stream<Either<Failure,List<Message>>> getMessages(String chatId);
+  void sendMessage(String chatId, String content, String type);
+  Stream<Message> getMessages(String chatId);
   Stream<Either<Failure,List<ChatEntity>>> getChatHistory();
   Future<Either<Failure,void>> deleteMessage(String chatId);
   Future<Either<Failure,String>> chatRoom(String receiverId);

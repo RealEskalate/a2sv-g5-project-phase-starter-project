@@ -8,7 +8,14 @@ class GetMessages {
 
   GetMessages({required this.repository});
 
-  Stream<Either<Failure,List<Message>>> call(String chatId) async* {
-    yield* repository.getMessages(chatId);
+  Stream<Message> call(String chatId) async* {
+    // print("get");
+    // yield* repository.getMessages(chatId);
+    yield* repository.getMessages(chatId).map((message) {
+      // Log each message received
+      print('Received message: ${message}');
+      return message;
+    });
+    ;
   }
 }

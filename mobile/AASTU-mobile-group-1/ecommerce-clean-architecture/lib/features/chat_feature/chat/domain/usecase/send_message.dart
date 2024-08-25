@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:ecommerce/core/error/exception.dart';
 import 'package:ecommerce/core/error/failure.dart';
 import 'package:ecommerce/features/chat_feature/chat/domain/repository/chat_repository.dart';
 
@@ -10,7 +11,13 @@ class SendMessage {
 
   SendMessage({required this.repository});
 
-  Future<Either<Failure, void>> call(Message message) async {
-    return await repository.sendMessage(message);
+  void call(
+      String chatId, String content, String type)  {
+    try {
+       repository.sendMessage(chatId, content, type);
+     
+    } catch (e) {
+      throw ServerException("Server Error");
+    }
   }
 }

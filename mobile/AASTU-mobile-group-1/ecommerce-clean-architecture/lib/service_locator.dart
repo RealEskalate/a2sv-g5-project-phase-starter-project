@@ -3,6 +3,7 @@ import 'package:ecommerce/features/auth/data/repositories/user_repository_impl.d
 import 'package:ecommerce/features/auth/domain/repository/user_repository.dart';
 import 'package:ecommerce/features/auth/domain/usecases/loginUser.dart';
 import 'package:ecommerce/features/auth/presentation/bloc/authbloc/auth_bloc.dart';
+import 'package:ecommerce/features/chat_feature/chat/domain/usecase/get_messages.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,12 +14,15 @@ import 'core/networkinfo.dart';
 import 'features/auth/data/data_sources/local_data_source.dart';
 import 'features/auth/data/data_sources/remote_data_source.dart';
 import 'features/auth/domain/usecases/registerUser.dart';
+import 'features/chat_feature/chat/data_layer/data_source/Service/socker_service.dart';
 import 'features/chat_feature/chat/data_layer/data_source/remote_abstract.dart';
 import 'features/chat_feature/chat/data_layer/data_source/remote_chat_source.dart';
 import 'features/chat_feature/chat/data_layer/repository_imp/chat_repository_imp.dart';
 import 'features/chat_feature/chat/domain/repository/chat_repository.dart';
+import 'features/chat_feature/chat/domain/usecase/delete_chat.dart';
 import 'features/chat_feature/chat/domain/usecase/get_all_chat_history.dart';
 import 'features/chat_feature/chat/domain/usecase/initialize_chat.dart';
+import 'features/chat_feature/chat/domain/usecase/send_message.dart';
 import 'features/product/data/data_sources/local_data_source.dart';
 import 'features/product/data/data_sources/remote_data_source.dart';
 import 'features/product/data/repositories/product_repository_imp.dart';
@@ -55,9 +59,13 @@ Future<void> setup() async {
   getIt.registerSingleton<RegisterUserUseCase>(RegisterUserUseCase(getIt()));
   getIt.registerSingleton<LoginUserUsecase>(LoginUserUsecase(getIt()));
   getIt.registerSingleton<UserBloc>(UserBloc(loginUserUsecase: getIt(), registerUserUsecase: getIt())); 
+  
+  // getIt.registerSingleton<SocketService>(SocketService());
   getIt.registerSingleton<RemoteAbstract>(RemoteChatSource(client: getIt(),));
   getIt.registerSingleton<ChatRepository>(ChatRepositoryImp(remoteAbstract: getIt()));
   getIt.registerSingleton<InitializeChat>(InitializeChat(repository: getIt()));
   getIt.registerSingleton<GetAllChatHistory>(GetAllChatHistory(repository: getIt()));
+   getIt.registerSingleton<GetMessages>(GetMessages(repository: getIt()));
+  getIt.registerSingleton<SendMessage>(SendMessage(repository: getIt()));
 
 }

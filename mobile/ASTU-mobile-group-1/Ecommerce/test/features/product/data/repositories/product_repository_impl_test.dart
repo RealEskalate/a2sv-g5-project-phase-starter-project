@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:product_6/core/error/exception.dart';
 import 'package:product_6/core/error/failure.dart';
+import 'package:product_6/features/auth/domain/entities/user_entity.dart';
 import 'package:product_6/features/product/data/models/product_model.dart';
 import 'package:product_6/features/product/data/repositories/product_repository_impl.dart';
 import 'package:product_6/features/product/domain/entities/product_entity.dart';
@@ -29,19 +30,19 @@ void main() {
   });
 
   const testProductModel = ProductModel(
-    id: '1',
-    name: 'shoe',
-    description: 'best shoes',
-    price: 12.0,
-    imageUrl: 'http',
-  );
+      id: '1',
+      name: 'shoe',
+      description: 'best shoes',
+      price: 12.0,
+      imageUrl: 'http',
+      seller: UserEntity.empty);
   const testProductEntity = ProductEntity(
-    id: '1',
-    name: 'shoe',
-    description: 'best shoes',
-    price: 12.0,
-    imageUrl: 'http',
-  );
+      id: '1',
+      name: 'shoe',
+      description: 'best shoes',
+      price: 12.0,
+      imageUrl: 'http',
+      seller: UserEntity.empty);
 
   const testId = '1';
 

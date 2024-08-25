@@ -170,6 +170,11 @@ func (suite *BlogUsecaseTestSuite) TestUpdateBlog_Success() {
 
 	suite.repositoryMock.
 		EXPECT().
+		GetBlog(ctx, blogID).
+		Return(blog, nil)
+
+	suite.repositoryMock.
+		EXPECT().
 		UpdateBlog(ctx, blogID, blog).
 		Return(nil)
 

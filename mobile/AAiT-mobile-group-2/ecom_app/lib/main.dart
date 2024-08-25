@@ -92,7 +92,7 @@ class MyApp extends StatelessWidget {
             primaryColor: const Color.fromARGB(255, 63, 81, 243),
             colorScheme: ColorScheme.fromSeed(
                 seedColor: const Color.fromARGB(255, 63, 81, 243))),
-        initialRoute: '/splash',
+        initialRoute: '/ChatList',
         debugShowCheckedModeBanner: false,
       ),
     );

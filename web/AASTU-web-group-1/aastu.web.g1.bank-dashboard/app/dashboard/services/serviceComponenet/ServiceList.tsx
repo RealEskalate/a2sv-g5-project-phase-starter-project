@@ -10,28 +10,52 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+import {
+  LifeIcon,
+  SafteyIcon,
+  CheckingIcon,
+  BusinessIcon,
+  DebitIcon,
+  SavingIcon,
+} from "../serviceIcons/icons";
+
 interface itemProp {
   icon: string;
   name: string;
   details: string;
 }
-
 const ServiceList = ({ icon, name, details }: itemProp) => {
   const { isDarkMode } = useUser();
+  const first = name.split(" ")[0].toLowerCase();
+  console.log(first, " this is first");
+  const iconfunc = (params: string) => {
+    if (params === "life") {
+      return <LifeIcon />;
+    } else if (params === "saftey") {
+      return <SafteyIcon />;
+    } else if (params === "checking") {
+      return <CheckingIcon />;
+    } else if (params === "savings") {
+      return <SavingIcon />;
+    } else if (params === "business") {
+      return <BusinessIcon />;
+    } else if (params === "debit") {
+      return <DebitIcon />;
+    } else {
+      return <CheckingIcon />;
+    }
+  };
+
   return (
     <div
       className={`flex justify-between items-center p-3 md:p5 rounded-xl ${
         isDarkMode ? "bg-gray-600 text-gray-300" : "bg-white text-gray-900"
       }`}
     >
-      <div className="flex ml-1 gap-1">
+      {" "}
+      <div className="flex ml-1 gap-2">
         <div className=" flex w-12 h-12 items-center justify-center bg-green-50 rounded-2xl ">
-          <Image
-            src="/servicesIcons/saftey.svg"
-            alt="Service Icon"
-            width={30}
-            height={30}
-          />
+          {iconfunc(first)}
         </div>
         <div className="px-2">
           <div className="mt-1 font-medium">{name}</div>
@@ -76,7 +100,6 @@ const ServiceList = ({ icon, name, details }: itemProp) => {
           </div>
         </div>
       </div>
-
       <Dialog>
         <DialogTrigger
           className={`text-sm font-bold lg:border-2 lg:px-6 lg:rounded-full lg:my-auto lg:py-1 ${

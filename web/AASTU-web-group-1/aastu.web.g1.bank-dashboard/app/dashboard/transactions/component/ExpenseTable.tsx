@@ -4,6 +4,8 @@ import { CiSaveDown1, CiSaveUp1 } from "react-icons/ci";
 import { TransactionContent, UserData } from "@/types";
 import { getCurrentUser } from "@/lib/api";
 import { useUser } from "@/contexts/UserContext";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import Receipt from "./receipt";
 
 interface Props {
   transactions: TransactionContent[];
@@ -24,8 +26,8 @@ export const ExpenseTable: React.FC<Props> = ({ transactions, tab }: Props) => {
 
   return (
     <div
-      className={`w-full border ${
-        isDarkMode ? "border-gray-700 bg-gray-800" : "border-gray-300 bg-white"
+      className={`w-full  ${
+        isDarkMode ? " bg-gray-800" : " bg-white"
       } rounded-3xl shadow-lg`}
     >
       <table
@@ -35,62 +37,62 @@ export const ExpenseTable: React.FC<Props> = ({ transactions, tab }: Props) => {
       >
         <thead>
           <tr
-            className={`${
-              isDarkMode ? "border-b-2 border-gray-700" : "border-b-2"
+            className={`hidden md:table-row  ${
+              isDarkMode ? "md:border-b-2 md:border-gray-700" : "md:border-b-2"
             }`}
           >
             <th
               scope="col"
-              className={`lg:px-5 py-3 md:px-2 text-left text-xs font-medium uppercase truncate md:max-w-[6rem] lg:max-w-[10rem] ${
-                isDarkMode ? "text-gray-400" : "text-gray-500"
+              className={`lg:px-5 py-3 md:px-2 text-left text-sm font-medium uppercase truncate md:max-w-[6rem] lg:max-w-[10rem] ${
+                isDarkMode ? "text-gray-300" : "text-[#718EBF]"
               }`}
             >
               Description
             </th>
             <th
               scope="col"
-              className={`lg:px-5 py-3 md:px-2 text-left text-xs font-medium uppercase truncate hidden md:table-cell md:max-w-[6rem] ${
-                isDarkMode ? "text-gray-400" : "text-gray-500"
+              className={`lg:px-5 py-3 md:px-2 text-left text-sm font-medium uppercase truncate hidden md:table-cell md:max-w-[6rem] ${
+                isDarkMode ? "text-gray-300" : "text-[#718EBF]"
               }`}
             >
               Transaction ID
             </th>
             <th
               scope="col"
-              className={`lg:px-5 py-3 md:px-2 text-left text-xs font-medium uppercase hidden md:table-cell md:max-w-[6rem] ${
-                isDarkMode ? "text-gray-400" : "text-gray-500"
+              className={`lg:px-5 py-3 md:px-2 text-left text-sm font-medium uppercase hidden md:table-cell md:max-w-[6rem] ${
+                isDarkMode ? "text-gray-300" : "text-[#718EBF]"
               }`}
             >
               Type
             </th>
             <th
               scope="col"
-              className={`lg:px-5 py-3 md:px-2 text-left text-xs font-medium uppercase hidden md:table-cell md:max-w-[6rem] ${
-                isDarkMode ? "text-gray-400" : "text-gray-500"
+              className={`lg:px-5 py-3 md:px-2 text-left text-sm font-medium uppercase hidden md:table-cell md:max-w-[6rem] ${
+                isDarkMode ? "text-gray-300" : "text-[#718EBF]"
               }`}
             >
               Card
             </th>
             <th
               scope="col"
-              className={`lg:px-5 py-3 md:px-2 text-left text-xs font-medium uppercase hidden md:table-cell md:max-w-[6rem] ${
-                isDarkMode ? "text-gray-400" : "text-gray-500"
+              className={`lg:px-5 py-3 md:px-2 text-left text-sm font-medium uppercase hidden md:table-cell md:max-w-[6rem] ${
+                isDarkMode ? "text-gray-300" : "text-[#718EBF]"
               }`}
             >
               Date
             </th>
             <th
               scope="col"
-              className={`lg:px-5 py-3 md:px-2 text-left text-xs font-medium uppercase md:max-w-[4rem] ${
-                isDarkMode ? "text-gray-400" : "text-gray-500"
+              className={`lg:px-5 py-3 md:px-2 text-left text-sm font-medium uppercase md:max-w-[4rem] ${
+                isDarkMode ? "text-gray-300" : "text-[#718EBF]"
               }`}
             >
               Amount
             </th>
             <th
               scope="col"
-              className={`lg:px-5 py-3 md:px-2 text-left text-xs font-medium uppercase hidden md:table-cell md:max-w-[6rem] ${
-                isDarkMode ? "text-gray-400" : "text-gray-500"
+              className={`lg:px-5 py-3 md:px-2 text-left text-sm font-medium uppercase hidden md:table-cell md:max-w-[6rem] ${
+                isDarkMode ? "text-gray-300" : "text-[#718EBF]"
               }`}
             >
               Receipt
@@ -114,9 +116,9 @@ export const ExpenseTable: React.FC<Props> = ({ transactions, tab }: Props) => {
                   <span className="inline-block align-middle">
                     {tab === "income" ||
                     transaction.senderUserName !== currentUser?.username ? (
-                      <CiSaveDown1 size={20} />
+                      <CiSaveDown1 size={30} color="green" />
                     ) : (
-                      <CiSaveUp1 size={20} />
+                      <CiSaveUp1 size={30} color="red" />
                     )}
                   </span>
                   <span
@@ -185,7 +187,24 @@ export const ExpenseTable: React.FC<Props> = ({ transactions, tab }: Props) => {
                 }`}
               >
                 <button className="bg-transparent hover:bg-gradient-to-r hover:from-blue-400 hover:to-blue-600 text-blue-700 font-semibold py-2 px-2 border border-blue-500 rounded-full shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 truncate">
-                  Download
+                  <PDFDownloadLink
+                 
+                    document={
+                      <Receipt
+                        senderUserName={transaction.senderUserName}
+                        receiverUserName={transaction.receiverUserName}
+                        paymentDate={transaction.date}
+                        transactionId={transaction.transactionId}
+                        description={transaction.description}
+                        amount={transaction.amount}
+                      />
+                    }
+                    fileName="Transaction.pdf"
+                  >
+                    {({ blob, url, loading, error }) =>
+                      loading ? "Downloading..." : "Download "
+                    }
+                  </PDFDownloadLink>
                 </button>
               </td>
             </tr>

@@ -94,27 +94,27 @@ export const servicesList =[
 export const bankServices =[
     {
         name: 'Business Loans',
-        icon: '/servicesIcons/lifeinsurance.svg'
+        icon: '@/servicesIcons/lifeinsurance.svg'
     },
     {
         name: 'Checking Account',
-        icon: '/servicesIcons/checkingaccount.svg'
+        icon: '@/servicesIcons/checkingaccount.svg'
     },
     {
         name: 'Saving',
-        icon: '/servicesIcons/saving.svg'
+        icon: '@/servicesIcons/saving.svg'
     },
     {
         name: 'User',
-        icon: '/servicesIcons/user.svg'
+        icon: '@/servicesIcons/user.svg'
     },
     {
         name: 'Life Insurance',
-        icon: '/servicesIcons/lifeinsurance.svg'
+        icon: '@/servicesIcons/lifeinsurance.svg'
     },
     {
         name: 'Business loan',
-        icon: '/servicesIcons/businessloans.svg'
+        icon: '@/servicesIcons/businessloans.svg'
     },
 ]
     

@@ -1,9 +1,9 @@
 "use client";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { ProfileForm } from "./Form";
-import { getSession } from "next-auth/react";
 import ky from "ky";
+import { getSession } from "next-auth/react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { ProfileForm } from "./Form";
 
 interface FormData {
   name: string;
@@ -37,6 +37,7 @@ const EditProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       const session = await getSession();
+      console.log("session from Edit profile", session);
       const accessToken = session?.user.accessToken;
       console.log(accessToken);
       if (!accessToken) {

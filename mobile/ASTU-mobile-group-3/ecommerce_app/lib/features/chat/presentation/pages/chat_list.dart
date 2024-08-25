@@ -1,5 +1,12 @@
 import 'package:ecommerce_app/features/chat/presentation/pages/chat_room.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/chat_bloc.dart';
+
+import '../bloc/chat_event.dart';
+
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatList extends StatefulWidget {
   const ChatList({super.key});
@@ -23,6 +30,17 @@ class _ChatListState extends State<ChatList> {
     const Color(0xffC8ECFD),
     const Color(0xffC7FEE0)
   ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    final productBloc = BlocProvider.of<ChatBloc>(context);
+
+    productBloc.add(ConnectServerEvent());
+    productBloc.add(SendMessage("", "", ""));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

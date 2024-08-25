@@ -31,7 +31,7 @@ class _SplashPageState extends State<SplashPage>
       if (result == null) {
         // ignore: use_build_context_synchronously
         Navigator.of(context)
-            .pushReplacement(MaterialPageRoute(builder: (_) => ChatList()));
+            .pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));
       } else {
         // ignore: use_build_context_synchronously
         Navigator.of(context).pushReplacement(

@@ -4,6 +4,7 @@ import 'package:ecommerce_app/features/chat/presentation/bloc/chat_state.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import '../../../../core/constants/constants.dart';
+import '../../data/data_resources/socket_io_sesrvice.dart';
 import '../../domain/usecases/AcknowledgeMessageDeliveryUseCase.dart';
 import '../../domain/usecases/CreateChatRoomUseCase.dart';
 import '../../domain/usecases/OnMessageReceivedUseCase.dart';
@@ -18,6 +19,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final RetrieveChatRoomsUseCase retrieveChatRoomsUseCase;
   final RetrieveMessagesUseCase retrieveMessagesUseCase;
   final SendMessageUseCase sendMessageUseCase;
+  final SocketIOService socketIOService;
 
   ChatBloc(
     this.acknowledgeMessageDeliveryUseCase,
@@ -26,6 +28,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     this.retrieveChatRoomsUseCase,
     this.retrieveMessagesUseCase,
     this.sendMessageUseCase,
+    this.socketIOService,
   ) : super(ChatInitial()) {
     on<LoadChatRooms>(_onLoadChatRooms);
     on<LoadMessages>(_onLoadMessages);
@@ -81,7 +84,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) async {
     try {
-      await sendMessageUseCase.call(event.chatId, event.message);
+      await sendMessageUseCase.call(event.chatId, event.content, event.type);
     } catch (e) {
       emit(ChatError('Failed to send message'));
     }
@@ -109,17 +112,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     ConnectServerEvent event,
     Emitter<ChatState> emit,
   ) {
-    late IO.Socket socket;
-    socket = IO.io(AppData.chatserver, <String, dynamic>{
-      'transports': ['websocket'],
-      "autoConnect": false,
-      'force new connection': true,
-    });
+    String Token =
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRhZ2ltQGdtYWlsLmNvbSIsInN1YiI6IjY2Y2EyODBhZjk4ZDMyYzY4ZWFkY2UxNSIsImlhdCI6MTcyNDUyNDU4NCwiZXhwIjoxNzI0OTU2NTg0fQ.P435ttt-_a53CUjJ7ZFeoaDvm-MNmcZapRBUkkqY7eM";
 
-    socket.connect();
+    socketIOService.connect();
 
-    socket.on('connect', (_) {
-      print('Connected to server');
+    socketIOService.socket.onConnect((_) {
+      print('Connected to the socket server');
     });
   }
 }

@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:product_6/core/error/failure.dart';
+import 'package:product_6/features/auth/domain/entities/user_entity.dart';
 import 'package:product_6/features/product/domain/entities/product_entity.dart';
 import 'package:product_6/features/product/presentation/bloc/product_bloc.dart';
 
@@ -36,12 +37,12 @@ void main() {
   });
 
   const testProductEntity = ProductEntity(
-    id: '1',
-    name: 'shoe',
-    description: 'best shoes',
-    price: 12.0,
-    imageUrl: 'http',
-  );
+      id: '1',
+      name: 'shoe',
+      description: 'best shoes',
+      price: 12.0,
+      imageUrl: 'http',
+      seller: UserEntity.empty);
 
   test('initial state should be empty', () {
     expect(productBloc.state, IntialState());

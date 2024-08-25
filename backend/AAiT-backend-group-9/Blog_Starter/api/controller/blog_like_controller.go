@@ -30,7 +30,7 @@ func(lc *LikeController) LikeBlog(c *gin.Context){
 		return
 	}
 
-	blogID := c.Param("id")
+	blogID := c.Param("blog_id")
 	likeRequest.UserID = user.UserID
 	likeRequest.BlogID = blogID
 	likeResponse,err := lc.LikeUsecase.LikeBlog(c, &likeRequest)
@@ -52,7 +52,7 @@ func(lc *LikeController) UnlikeBlog(c *gin.Context){
 }
 
 func (lc *LikeController) GetByID(c *gin.Context){
-	blogID := c.Param("id")
+	blogID := c.Param("blog_id")
 	user, err := utils.CheckUser(c)
 	if err != nil {
 		c.IndentedJSON(http.StatusUnauthorized, gin.H{"error" : "unauthorized user"})

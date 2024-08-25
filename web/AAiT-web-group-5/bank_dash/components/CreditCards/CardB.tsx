@@ -3,9 +3,9 @@ import Image from "next/image";
 
 export default function CardB() {
   return (
-    <div className="flex gap-16 justify-center">
-      <div className="relative  h-48 w-80 rounded-xl bg-gradient-to-r from-violet-700 to-blue-600 text-white shadow-2xl transition-transform sm:h-56  sm:hover:scale-110">
-        <div className="absolute top-4 w-full px-8 sm:top-8">
+    <div className="flex gap-12 justify-between pl-6 ">
+      <div className=" w-full rounded-xl bg-gradient-to-r from-violet-700 to-blue-600 text-white shadow-2xl transition-transform sm:h-56  sm:hover:scale-110">
+        <div className="flex flex-col  w-full px-8 py-8 sm:top-8">
           <div className="flex justify-between">
             <div className="">
               <p className="font-light">Name</p>
@@ -45,8 +45,8 @@ export default function CardB() {
         </div>
       </div>
 
-      <div className="relative  h-48 w-80 rounded-xl bg-gradient-to-r from-slate-500 to-slate-400 text-white shadow-2xl transition-transform sm:h-56 sm:hover:scale-110">
-        <div className="absolute top-4 w-full px-8 sm:top-8">
+      <div className=" w-full rounded-xl bg-gradient-to-r from-slate-500 to-slate-400 text-white shadow-2xl transition-transform sm:h-56 sm:hover:scale-110">
+        <div className=" top-4 w-full px-8 py-8 sm:top-8">
           <div className="flex justify-between">
             <div className="">
               <p className="font-light">Name</p>

@@ -2,8 +2,8 @@ import React from "react";
 import { GrSend } from "react-icons/gr";
 export default function QuickTransfer() {
   return (
-    <div className="relative flex-col  p-2  min-h-48 w-96 rounded-xl bg-white  text-white shadow-2xl ">
-      <div className="text-black flex items-ceneter justify-center gap-5 overflow-auto mb-3">
+    <div className="flex flex-col py-9 px-12 gap-8 min-h-48 h-full rounded-xl bg-white  text-white shadow-2xl ">
+      <div className="text-black flex items-ceneter justify-between mr-12 gap-9 overflow-auto mb-3">
         <div>
           <div className="avatar">
             <div className="w-20 h-20 rounded-full">

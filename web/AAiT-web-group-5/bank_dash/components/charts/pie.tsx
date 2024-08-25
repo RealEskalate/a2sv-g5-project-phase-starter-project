@@ -23,10 +23,10 @@ echarts.use([PieChart, LegendComponent, CanvasRenderer, GridComponent]);
 // Sample Expense Data
 type ExpenseDataType = { value: number; name: string; selected: boolean }[];
 const expenseData: ExpenseDataType = [
-  { value: 22, name: "Service", selected: true },
-  { value: 28, name: "Others", selected: true },
-  { value: 23, name: "Shopping", selected: true },
-  { value: 27, name: "Transfer", selected: true },
+  { value: 26, name: "Service", selected: true },
+  { value: 23, name: "Others", selected: true },
+  { value: 26, name: "Shopping", selected: true },
+  { value: 25, name: "Transfer", selected: true },
 ];
 
 const PieStat = () => {
@@ -52,6 +52,7 @@ const PieStat = () => {
           roseType: "radius",
           avoidLabelOverlap: false,
           data: expenseData,
+          startAngle: 45,
           label: {
             show: true,
             position: "inside",
@@ -87,7 +88,9 @@ const PieStat = () => {
 
   return (
     <div className="flex flex-col gap-3 p-4 rounded-lg w-full">
-      <h2 className="text-lg font-semibold text-center">Expense Statistics</h2>
+      <h2 className="text-lg font-semibold text-center text-gray-700">
+        Expense Statistics
+      </h2>
       <div className="bg-white p-5 rounded-2xl">
         <EChartsReactCore
           echarts={echarts}

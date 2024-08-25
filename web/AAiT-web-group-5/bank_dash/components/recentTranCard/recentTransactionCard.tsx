@@ -1,12 +1,12 @@
-import React from 'react';
-import PaypalIcon from '../icons/PaypalIcon';
-import CreditIcon from '../icons/CreditCardIcon';
-import CoinIcon from '../icons/CoinIcon';
+import React from "react";
+import PaypalIcon from "../icons/PaypalIcon";
+import CreditIcon from "../icons/CreditCardIcon";
+import CoinIcon from "../icons/CoinIcon";
 
 function TransactionCard() {
   return (
-    <section className='flex w-5/12 px-10 flex-col gap-5 mt-5'>
-      <h2 className="flex items-center text-2xl font-semibold text-primary-200">
+    <section className="flex w-5/12 px-10 flex-col gap-5 mt-5">
+      <h2 className="flex items-center text-2xl font-semibold text-gray-700">
         Recent Transactions
       </h2>
       <div className="bg-white w-full p-5 overflow-hidden rounded-3xl space-y-5">

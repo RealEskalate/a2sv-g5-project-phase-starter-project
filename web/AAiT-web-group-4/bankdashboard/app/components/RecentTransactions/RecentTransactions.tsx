@@ -2,7 +2,7 @@ import React from "react";
 
 const RecentTransactions = () => {
   return (
-    <div className="flex flex-col justify-evenly tablet:w-[360px] max-tablet:w-[325px] h-3/4 bg-white rounded-3xl">
+    <div className="flex flex-col justify-evenly w-full h-full py-4 bg-white rounded-3xl">
       <div className="flex px-4 justify-evenly">
         <svg
           width="40"

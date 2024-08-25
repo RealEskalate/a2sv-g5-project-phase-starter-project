@@ -58,6 +58,7 @@ const BalanceHistoryLineGraph = ({ balanceHistory }: GRAPHDATA) => {
           options: {
             responsive: true,
             maintainAspectRatio: false,
+           
 
             scales: {
               x: {
@@ -122,9 +123,8 @@ const BalanceHistoryLineGraph = ({ balanceHistory }: GRAPHDATA) => {
   }, [balanceHistory]);
   return (
     // <div className=" flex flex-grow mobile:w-3/5 max-mobile:w-full max-mobile:h-52 mobile:h-80 bg-white rounded-3xl">
-    <div className="max-mobile:h-[223px] max-mobile:w-[325px] mobile:w-[423px] mobile:h-[220px] tablet:h-[276px] tablet:w-[635px]">
-      <canvas className=" bg-white rounded-3xl w-full h-full " ref={chartRef} />
-    </div>
+    <div className="w-[98%] ">
+      <canvas className=" bg-white rounded-3xl w-full h-full  " ref={chartRef} /></div>
   );
 };
 

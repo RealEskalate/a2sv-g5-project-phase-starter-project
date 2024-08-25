@@ -88,8 +88,13 @@ class HeaderPart extends StatelessWidget {
                   left: BorderSide(color: Colors.grey),
                   bottom: BorderSide(color: Colors.grey),
                 )),
-            child: const Icon(
-              Icons.notifications_none_sharp,
+            child: GestureDetector(
+              onTap: () {
+               print(123);
+              },
+              child: const Icon(
+                Icons.message,
+              ),
             ),
           )
         ],

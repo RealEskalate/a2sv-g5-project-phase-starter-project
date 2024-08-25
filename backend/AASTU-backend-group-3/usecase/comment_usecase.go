@@ -8,11 +8,13 @@ import (
 
 type commentUsecase struct {
 	commentRepo domain.CommentRepository
+	userRepo   domain.UserRepository
 }
 
-func NewCommentUsecase(commentRepo domain.CommentRepository) domain.CommentUsecase {
+func NewCommentUsecase(commentRepo domain.CommentRepository, userRepo domain.UserRepository) domain.CommentUsecase {
 	return &commentUsecase{
 		commentRepo: commentRepo,
+		userRepo:   userRepo,
 	}
 }
 
@@ -21,6 +23,15 @@ func (u *commentUsecase) CreateComment(comment *domain.Comment) (*domain.Comment
 		return nil, domain.ErrMissingRequiredFields
 
 	}
+	
+	isVerified, verr := u.userRepo.IsVerified(comment.UserID)
+	if verr != nil {
+		return nil, domain.ErrUserNotVerified
+	}
+	if !isVerified {
+		return nil, domain.ErrUserNotVerified
+	}
+
 	createdComment, err := u.commentRepo.CreateComment(comment)
 	if err != nil {
 		return nil, domain.ErrFailedToCreateComment
@@ -39,6 +50,15 @@ func (u *commentUsecase) UpdateComment(comment *domain.Comment, role_, userId st
 	if comment.ID.IsZero() {
 		return nil, domain.ErrInvalidCommentID
 	}
+	
+	isVerified, verr := u.userRepo.IsVerified(comment.UserID)
+	if verr != nil {
+		return nil, domain.ErrUserNotVerified
+	}
+	if !isVerified {
+		return nil, domain.ErrUserNotVerified
+	}
+
 	updatedComment, rerr := u.commentRepo.UpdateComment(comment)
 	if rerr != nil {
 		return nil, domain.ErrFailedToUpdateComment
@@ -103,6 +123,20 @@ func (u *commentUsecase) CreateReply(reply *domain.Reply) (*domain.Reply, *domai
 	if reply.CommentID.IsZero() || reply.UserID == "" || reply.Content == "" {
 		return nil, domain.ErrMissingRequiredFields
 	}
+
+	userIdObj, err := primitive.ObjectIDFromHex(reply.UserID)
+	if err != nil {
+		return nil, domain.ErrInvalidUserID
+	}
+	
+	isVerified, verr := u.userRepo.IsVerified(userIdObj)
+	if verr != nil {
+		return nil, domain.ErrUserNotVerified
+	}
+	if !isVerified {
+		return nil, domain.ErrUserNotVerified
+	}
+
 	createdReply, err := u.commentRepo.CreateReply(reply)
 	if err != nil {
 		return nil, domain.ErrFailedToCreateReply
@@ -120,6 +154,18 @@ func (u *commentUsecase) UpdateReply(reply *domain.Reply, userID string) (*domai
 	}
 	if reply.ID.IsZero() {
 		return nil, domain.ErrInvalidReplyID
+	}
+	userIdObj, err := primitive.ObjectIDFromHex(reply.UserID)
+	if err != nil {
+		return nil, domain.ErrInvalidUserID
+	}
+	
+	isVerified, verr := u.userRepo.IsVerified(userIdObj)
+	if verr != nil {
+		return nil, domain.ErrUserNotVerified
+	}
+	if !isVerified {
+		return nil, domain.ErrUserNotVerified
 	}
 	updatedReply, err := u.commentRepo.UpdateReply(reply)
 	if err != nil {
@@ -172,6 +218,14 @@ func (u *commentUsecase) LikeComment(commentID, userID string) *domain.CustomErr
 	if err != nil {
 		return domain.ErrInvalidCommentID
 	}
+
+	isVerified, verr := u.userRepo.IsVerified(objID)
+	if verr != nil {
+		return domain.ErrUserNotVerified
+	}
+	if !isVerified {
+		return domain.ErrUserNotVerified
+	}
 	err = u.commentRepo.LikeComment(objID, userID)
 	if err != nil {
 		return domain.ErrFailedToLikeComment
@@ -183,6 +237,14 @@ func (u *commentUsecase) UnlikeComment(commentID, userID string) *domain.CustomE
 	objID, err := primitive.ObjectIDFromHex(commentID)
 	if err != nil {
 		return domain.ErrInvalidCommentID
+	}
+	
+	isVerified, verr := u.userRepo.IsVerified(objID)
+	if verr != nil {
+		return domain.ErrUserNotVerified
+	}
+	if !isVerified {
+		return domain.ErrUserNotVerified
 	}
 	err = u.commentRepo.UnlikeComment(objID, userID)
 	if err != nil {
@@ -196,6 +258,14 @@ func (u *commentUsecase) LikeReply(replyID, userID string) *domain.CustomError {
 	if err != nil {
 		return domain.ErrInvalidReplyID
 	}
+	
+	isVerified, verr := u.userRepo.IsVerified(objID)
+	if verr != nil {
+		return domain.ErrUserNotVerified
+	}
+	if !isVerified {
+		return domain.ErrUserNotVerified
+	}
 	err = u.commentRepo.LikeReply(objID, userID)
 	if err != nil {
 		return domain.ErrFailedToLikeReply
@@ -207,6 +277,14 @@ func (u *commentUsecase) UnlikeReply(replyID, userID string) *domain.CustomError
 	objID, err := primitive.ObjectIDFromHex(replyID)
 	if err != nil {
 		return domain.ErrInvalidReplyID
+	}
+	
+	isVerified, verr := u.userRepo.IsVerified(objID)
+	if verr != nil {
+		return domain.ErrUserNotVerified
+	}
+	if !isVerified {
+		return domain.ErrUserNotVerified
 	}
 	err = u.commentRepo.UnlikeReply(objID, userID)
 	if err != nil {

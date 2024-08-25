@@ -1,5 +1,7 @@
 import 'dart:async';
-import 'package:socket_io/socket_io.dart';
+// import 'package:socket_io/socket_io.dart';
+import 'package:socket_io_client/socket_io_client.dart';
+
 import '../../domain/entity/message.dart';
 
 abstract class SocketIOService {

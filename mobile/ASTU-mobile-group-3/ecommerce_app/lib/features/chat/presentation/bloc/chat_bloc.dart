@@ -109,7 +109,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     ConnectServerEvent event,
     Emitter<ChatState> emit,
   ) {
-    // add(MessageReceived(event.message));
     late IO.Socket socket;
     socket = IO.io(AppData.chatserver, <String, dynamic>{
       'transports': ['websocket'],

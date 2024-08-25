@@ -16,14 +16,16 @@ import (
 type SignupUsecase struct {
 	userRepo       domain.UserRepository
 	TokenManager   utils.TokenManager
+	OAuthManager   utils.OAuthManager
 	contextTimeout time.Duration
 	Env            *config.Env
 }
 
-func NewSignUpUsecase(userRepo domain.UserRepository, tokenManager utils.TokenManager, env *config.Env, timeout time.Duration) domain.SignupUsecase {
+func NewSignUpUsecase(userRepo domain.UserRepository, tokenManager utils.TokenManager, oauthManager utils.OAuthManager, env *config.Env, timeout time.Duration) domain.SignupUsecase {
 	return &SignupUsecase{
 		userRepo:       userRepo,
 		TokenManager:   tokenManager,
+		OAuthManager:   oauthManager,
 		Env:            env,
 		contextTimeout: timeout,
 	}
@@ -139,9 +141,9 @@ func (s *SignupUsecase) CreateTokens(c context.Context, user *domain.User) (*dom
 
 	userID := user.UserID.Hex()
 	_, err = s.userRepo.UpdateToken(ctx, accessToken, refreshToken, userID)
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
 	return &domain.TokenResponse{
 		AccessToken:  accessToken,
@@ -149,39 +151,38 @@ func (s *SignupUsecase) CreateTokens(c context.Context, user *domain.User) (*dom
 	}, nil
 }
 
+func (s *SignupUsecase) HandleFederatedSignup(c context.Context, token string) (*domain.User, error) {
+	// Verify the token with the federated identity provider (e.g., Google)
+	userInfo, err := s.OAuthManager.VerifyFederatedToken(token, s.Env.GoogleClientID)
+	if err != nil {
+		return nil, err
+	}
 
-func (s *SignupUsecase) HandleFederatedSignup(c context.Context, token string)  (*domain.User, error) {
-    // Verify the token with the federated identity provider (e.g., Google)
-    userInfo, err := utils.VerifyFederatedToken(token, s.Env.GoogleClientID)
-    if err != nil {
-        return nil, err
-    }
+	userInfo.Email = strings.ToLower(userInfo.Email)
 
-    userInfo.Email = strings.ToLower(userInfo.Email)
+	// Check if the user already exists in the database
+	existingUser, err := s.userRepo.GetUserByEmail(c, userInfo.Email)
+	if err != nil {
+		// User doesn't exist, create a new user
+		newUser := domain.User{
+			UserID:         primitive.NewObjectID(),
+			Name:           userInfo.Name,
+			Username:       userInfo.Name, // Set a default username or customize based on your application
+			Email:          userInfo.Email,
+			Password:       "", // You may leave this empty or handle it differently for federated signup
+			CreatedAt:      time.Now(),
+			IsActivated:    true,                   // Assuming the user is activated upon federated signup
+			ProfilePicture: userInfo.ProfilePicUrl, // Assuming the federated provider provides a profile picture URL
+		}
 
-    // Check if the user already exists in the database
-    existingUser, err := s.userRepo.GetUserByEmail(c, userInfo.Email)
-    if err != nil {
-        // User doesn't exist, create a new user
-        newUser := domain.User{
-            UserID:        primitive.NewObjectID(),
-            Name:          userInfo.Name,
-            Username:      userInfo.Name, // Set a default username or customize based on your application
-            Email:         userInfo.Email,
-            Password:      "",   // You may leave this empty or handle it differently for federated signup
-            CreatedAt:     time.Now(),
-            IsActivated:   true,                   // Assuming the user is activated upon federated signup
-            ProfilePicture: userInfo.ProfilePicUrl, // Assuming the federated provider provides a profile picture URL
-        }
+		// Save the new user to the database
+		_, err := s.userRepo.CreateUser(c, &newUser)
+		if err != nil {
+			return nil, err
+		}
 
-        // Save the new user to the database
-        _, err := s.userRepo.CreateUser(c, &newUser)
-        if err != nil {
-            return nil, err
-        }
+		return &newUser, nil
+	}
 
-        return &newUser, nil
-    }
-
-    return existingUser, nil
+	return existingUser, nil
 }

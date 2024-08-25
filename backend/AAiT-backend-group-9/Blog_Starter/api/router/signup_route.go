@@ -19,10 +19,12 @@ func NewSignupRouter(env *config.Env, timeout time.Duration, db *mongo.Client, g
 	database := db.Database(env.DBName) // Replace with your actual database name
 	or := repository.NewOtpRepository(database, domain.CollectionOTP)
 	ur := repository.NewUserRepository(database, domain.CollectionUser)
+
 	tm := &infrastructure.NewTokenManager{}
+	om := &infrastructure.NewOAuthManager{}
 
 	sc := controller.NewSignUpController(
-		usecase.NewSignUpUsecase(ur, tm, env, timeout),
+		usecase.NewSignUpUsecase(ur, tm, om, env, timeout),
 		usecase.NewOtpUsecase(or, timeout),
 	)
 	group.POST("/signup", sc.SignUp)

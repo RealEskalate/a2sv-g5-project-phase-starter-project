@@ -9,8 +9,8 @@ import (
 	"blog-api/domain"
 )
 
-func (lr *LikeRepository) GetLikes(ctx context.Context, blogID, userID primitive.ObjectID) ([]*domain.Like, error) {
-	var likes []*domain.Like
+func (lr *LikeRepository) GetLikes(ctx context.Context, blogID, userID primitive.ObjectID) ([]domain.Like, error) {
+	var likes []domain.Like
 	filter := bson.M{}
 	if blogID != primitive.NilObjectID {
 		filter["blog_id"] = blogID

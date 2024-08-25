@@ -4,13 +4,13 @@ import (
 	"blog-api/domain"
 	"blog-api/infrastructure/auth"
 	"blog-api/infrastructure/bootstrap"
+	"context"
 	"errors"
 
-	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (uc *UserUsecase) LoginUser(c *gin.Context, loginRequest domain.LoginRequest, Env *bootstrap.Env) (domain.LoginResponse, error) {
+func (uc *UserUsecase) LoginUser(c context.Context, loginRequest domain.LoginRequest, Env *bootstrap.Env) (domain.LoginResponse, error) {
 	var u domain.User
 	var err error
 

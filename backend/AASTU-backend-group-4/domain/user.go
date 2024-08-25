@@ -59,7 +59,7 @@ type ResetPasswordRequest struct {
 
 type UserUsecase interface {
 	SignupUsecase(ctx context.Context, user *User) error
-	UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *User) error
+	UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *UpdateRequest) error
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)
 	DeleteRefreshTokenByUserID(ctx context.Context, userID string) error

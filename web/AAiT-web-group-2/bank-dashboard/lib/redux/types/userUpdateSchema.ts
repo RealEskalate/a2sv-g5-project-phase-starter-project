@@ -1,7 +1,7 @@
 interface UserUpdate{
   name : string,
   email : string,
-  dateOfBirth : Date,
+  dateOfBirth : string,
   permanentAddress : string,
   postalCode : string,
   username : string,

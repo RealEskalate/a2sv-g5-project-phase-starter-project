@@ -4,6 +4,8 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import Alert from './Alert';
 
 interface SignInFormData {
   username: string;
@@ -13,7 +15,16 @@ interface SignInFormData {
 export default function SignIn() {
   const { register, handleSubmit, formState: { errors } } = useForm<SignInFormData>();
   const router = useRouter();
+  const [signinStatus, setSigninStatus] = useState('')
+  const [isError, setIsError] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
 
+  const reset = () => {
+    setIsSuccess(false)
+    setIsError(false)
+  }
+
+  
   const onSubmit: SubmitHandler<SignInFormData> = async (data) => {
     console.log("data", data)
     const result = await signIn('sign-in', {
@@ -21,9 +32,19 @@ export default function SignIn() {
       userName: data.username,
       password: data.password,
     });
-    console.log("result", result)
+    console.log("result", result?.error)
+    if(result?.error){
+      setSigninStatus(result?.error as string)
+      setIsError(true)      
+    } else{
+      setSigninStatus('Successfully logged in.')
+      setIsSuccess(true)
 
+    }
+    
 
+   
+    
     if (result?.ok) {
       router.push('/dashboard');
     } else {
@@ -68,7 +89,9 @@ export default function SignIn() {
         <p className='text-gray-500 font-body font-normal text-sm'>By clicking 'Signin', you acknowledge that you have read and accepted our terms of <Link className='text-purple-tag'  href={'/terms-of-service'}>Terms of Service</Link> and <Link className='text-purple-tag '  href={'/privacy-policy'}>Privacy Policy</Link></p>
 
       </form>
-        
+        {isSuccess && <Alert type='success' message={signinStatus} duration={2000} onClose={reset} />}
+        {isError && <Alert type='error' message={signinStatus} duration={2000} onClose={reset} />}
+
     </div>
   );
 }

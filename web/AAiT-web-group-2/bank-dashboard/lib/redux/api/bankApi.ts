@@ -1,14 +1,29 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import {User} from '../../../types/User'
+import {Preference, User} from '../../../types/User'
 import { UserResponse } from '../types/userResponse'
 import { UserSignup } from '@/types/UserSignUp'
+import { RootState } from '../store'
+import { useSession } from 'next-auth/react'
 
 export const bankApi = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://bank-dashboard-latest.onrender.com/' }),
+  baseQuery: fetchBaseQuery({ 
+    baseUrl: 'https://bank-dashboard-aait-team-2.onrender.com',
+  }),
+  
   endpoints: builder => ({
     getUserByUsername: builder.query<{data: User}, string>({
       query: (username) => `/user/${username}`
+    }),
+    getCurrentUser: builder.query<{data: User}, string>({
+      query: (token) => ({
+          url: `/user/current`,
+          method: 'Get',
+          headers: {
+            contentType: 'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        })
     }),
     signup: builder.mutation<UserResponse, UserSignup>({
       query: (user) => ({
@@ -26,20 +41,50 @@ export const bankApi = createApi({
       }),
     }),
 
-    updateUserProfile: builder.mutation<UserUpdate, User>({
-        query: (userUpdate) => ({
+    updateUserProfile: builder.mutation<User, {userUpdate: UserUpdate, token: string} >({
+        query: ({userUpdate, token}) => ({
           url: '/user/update',
           method: 'PUT',
+          headers: {
+            contentType: 'application/json',
+            Authorization: `Bearer ${token}`
+          },
           body: userUpdate,
         }),
       }),
+    updateUserPreference: builder.mutation<User, {userUpdate: Preference, token: string} >({
+      query: ({userUpdate, token}) => ({
+        url: '/user/update-preference',
+        method: 'PUT',
+        headers: {
+          contentType: 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: userUpdate,
+      }),
+    }),
+    changePassword:builder.mutation<User, {credentials: PasswordChange, token: string} >({
+      query: ({credentials, token}) => ({
+        url: '/auth/change_password',
+        method: 'Post',
+        headers: {
+          contentType: 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: credentials,
+      }),
+    }),
      
   })
 })
 
 export const {
   useGetUserByUsernameQuery,
+  useGetCurrentUserQuery,
   useSignupMutation,
   useSigninMutation,
-  useUpdateUserProfileMutation
+  useUpdateUserProfileMutation,
+  useUpdateUserPreferenceMutation,
+  useChangePasswordMutation
+
 } = bankApi

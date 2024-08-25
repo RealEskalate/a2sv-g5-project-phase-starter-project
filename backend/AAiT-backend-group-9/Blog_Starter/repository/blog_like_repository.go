@@ -69,11 +69,8 @@ func (lr *LikeRepository) UnlikeBlog(c context.Context, likeID string) (*domain.
 
 // DeleteLikeByBlogID implements domain.LikeRepository.
 func (lr *LikeRepository) DeleteLikeByBlogID(c context.Context, blogID string) error {
-	objId, err := primitive.ObjectIDFromHex(blogID)
-	if err != nil {
-		return err
-	}
+
 	collection := lr.database.Collection(lr.repoCollection)
-	_, err = collection.DeleteMany(c, bson.M{"blog_id": objId})
+	_, err := collection.DeleteMany(c, bson.M{"blog_id": blogID})
 	return err
 }

@@ -130,12 +130,9 @@ func (bcr *BlogCommentRepository) GetComments(ctx context.Context, userID string
 
 // DeleteCommentByBlogID implements domain.CommentRepository.
 func (bcr *BlogCommentRepository) DeleteCommentByBlogID(ctx context.Context, blogID string) error {
-	objId, err := primitive.ObjectIDFromHex(blogID)
-	if err != nil {
-		return err
-	}
+
 	collection := bcr.DataBase.Collection(bcr.commentCollection)
-	filter := bson.M{"blog_id": objId}
-	_, err = collection.DeleteMany(ctx, filter)
+	filter := bson.M{"blog_id": blogID}
+	_, err := collection.DeleteMany(ctx, filter)
 	return err
 }

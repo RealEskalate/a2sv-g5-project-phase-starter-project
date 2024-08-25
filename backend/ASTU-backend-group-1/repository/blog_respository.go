@@ -4,6 +4,7 @@ import (
 	"astu-backend-g1/domain"
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/sv-tools/mongoifc"
@@ -79,8 +80,8 @@ func (r *MongoBlogRepository) FindPopularBlog() ([]domain.Blog, error) {
 			{Key: "$addFields", Value: bson.D{
 				{Key: "likesCount", Value: bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$likes", bson.A{}}}}}}},
 				{Key: "dislikesCount", Value: bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$dislikes", bson.A{}}}}}}},
-				{Key: "viewsCount", Value: bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$views", bson.A{}}}}}}},
-				{Key: "commentsCount", Value: bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$comments", bson.A{}}}}}}},
+				{Key: "viewsCount", Value: "$views"},
+				{Key: "commentsCount", Value: "$comments"},
 			}},
 		},
 		{
@@ -156,7 +157,9 @@ func BuildBlogQueryAndOptions(filterOption domain.BlogFilterOption) (bson.M, *op
 
 func (r *MongoBlogRepository) GetBlog(opts domain.BlogFilterOption) ([]domain.Blog, error) {
 	filter, filteroptions := BuildBlogQueryAndOptions(opts)
-
+	fmt.Println("this is the filter options", opts)
+	fmt.Println("this is the filter ", filter)
+	fmt.Println("this is the find option", filteroptions)
 	cursor, err := r.BlogCollection.Find(context.Background(), filter, filteroptions)
 	if err != nil {
 		return nil, err

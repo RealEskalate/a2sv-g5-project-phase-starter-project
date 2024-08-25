@@ -27,4 +27,3 @@ func main() {
 	route.Setup(env, timeout, db, gin, redisClient)
 	gin.Run(env.ServerAddress)
 }
-

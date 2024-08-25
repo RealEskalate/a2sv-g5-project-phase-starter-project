@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { UpdatedUser } from "@/types/user.types";
 import { useAppDispatch, useAppSelector } from "@/hooks/hoooks";
 import { Loader } from "lucide-react";
+import EditProfileSkeleton from "../AllSkeletons/SettingSkeleton/EditProfileSkeleton";
 
 const editProfileSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -64,6 +65,7 @@ const EditProfileForm = () => {
       profilePicture: getData?.profilePicture,
     },
   });
+  const [updateUser, { isLoading }] = useUpdateUserMutation();
 
   const handleFileChange = (e: any) => {
     const file = e.target.files?.[0];
@@ -84,8 +86,6 @@ const EditProfileForm = () => {
   if (error) {
     return <h1>An Error Occurred..</h1>;
   }
-
-  const [updateUser, { isLoading }] = useUpdateUserMutation();
 
   const onSubmit = (data: UpdatedUser) => {
     updateUser(data).then((res: any) => {
@@ -205,7 +205,7 @@ const EditProfileForm = () => {
           </div>
         </form>
       ) : (
-        <h1>Loading...</h1>
+        <EditProfileSkeleton />
       )}
     </div>
   );

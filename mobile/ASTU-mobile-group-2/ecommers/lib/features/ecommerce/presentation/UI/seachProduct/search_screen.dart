@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 
 import 'filter.dart';
-import 'search_input_filter.dart';
+
 import 'search_view.dart';
 
 class SearchScreen extends StatefulWidget {

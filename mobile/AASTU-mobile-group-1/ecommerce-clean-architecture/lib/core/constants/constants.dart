@@ -10,4 +10,6 @@ class Urls{
   static const String meUrl  = 'https://g5-flutter-learning-path-be.onrender.com/api/v2/users/me';
   static const String getChatRoom = 'https://g5-flutter-learning-path-be.onrender.com/api/v3/chats';
   static const String getChatHistory = 'https://g5-flutter-learning-path-be.onrender.com/api/v3/chats';
+  static const String deleteChat = 'https://g5-flutter-learning-path-be.onrender.com/api/v3/chats';
+
 }

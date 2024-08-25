@@ -3,12 +3,16 @@ package main
 import (
 	"blog_api/delivery/env"
 	"blog_api/delivery/router"
+	"blog_api/domain"
+	cron_jobs "blog_api/infrastructure/cron"
 	"blog_api/infrastructure/cryptography"
 	initdb "blog_api/infrastructure/db"
 	google_auth "blog_api/infrastructure/oauth"
 	redis_service "blog_api/infrastructure/redis"
 	"fmt"
 	"log"
+
+	"github.com/robfig/cron/v3"
 )
 
 func main() {
@@ -53,6 +57,11 @@ func main() {
 
 	// create google provider for oauth
 	google_auth.NewAuth(env.ENV.GOOGLE_CLIENT_ID, env.ENV.GOOGLE_CLIENT_SECRET, 1, fmt.Sprintf("http://localhost:%v/auth/google/callback", env.ENV.PORT))
+
+	// setup cron jobs
+	cronManager := cron.New()
+
+	cronManager.AddFunc("@every 1h", cron_jobs.DeleteUnverifiedUsers(database.Collection(domain.CollectionUsers)))
 
 	// setup router
 	router.SetupRouter(env.ENV.PORT, env.ENV.ROUTE_PREFIX, database, redisClient)

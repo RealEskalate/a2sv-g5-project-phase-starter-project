@@ -7,6 +7,7 @@ import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/cubit/user_input_validation_cubit.dart';
 import 'features/auth/presentation/page/login_page.dart';
 import 'features/auth/presentation/page/signup_page.dart';
+import 'features/chat/presentation/bloc/chat_bloc.dart';
 import 'features/product/presentation/bloc/cubit/input_validation_cubit.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
 import 'features/product/presentation/pages/add_product_page.dart';
@@ -15,6 +16,9 @@ import 'features/product/presentation/pages/search_product_page.dart';
 import 'features/product/presentation/pages/single_product_page.dart';
 import 'features/product/presentation/pages/update_product_page.dart';
 import 'splash_page.dart';
+
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'dart:developer';
 
 void main() async {
   WidgetsFlutterBinding().ensureSemantics();
@@ -40,6 +44,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => locator<UserInputValidationCubit>(),
+        ),
+        BlocProvider(
+          create: (_) => locator<ChatBloc>(),
         )
       ],
       child: MaterialApp(

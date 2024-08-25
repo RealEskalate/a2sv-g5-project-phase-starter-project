@@ -1,13 +1,30 @@
 import 'package:custom_clippers/custom_clippers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math' as math;
 
+import '../bloc/chat_bloc.dart';
+import '../bloc/chat_event.dart';
 import '../widgets/messages.dart';
 import '../widgets/reusable_textfield.dart';
 
-class ChatRoom extends StatelessWidget {
+class ChatRoom extends StatefulWidget {
   const ChatRoom({super.key});
+
+  @override
+  State<ChatRoom> createState() => _ChatRoomState();
+}
+
+class _ChatRoomState extends State<ChatRoom> {
+  @override
+  void initState() {
+    final productBloc = BlocProvider.of<ChatBloc>(context);
+
+    productBloc.add(ConnectServerEvent());
+    productBloc.add(SendMessage("", "", ""));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

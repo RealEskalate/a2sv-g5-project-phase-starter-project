@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../auth/data/model/user_model.dart';
 import '../../../auth/domain/entities/user_entity.dart';
 import 'chat.dart';
 
@@ -16,19 +17,19 @@ class MessageEntity extends Equatable {
   });
 
   // Method to convert MessageEntity to JSON
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': messageId,
-      'sender': sender.toJson(),
-      'chat': chat.toJson(),
-      'content': content,
-    };
-  }
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     '_id': messageId,
+  //     'sender': sender.toJson(),
+  //     'chat': chat.toJson(),
+  //     'content': content,
+  //   };
+  // }
 
   factory MessageEntity.fromJson(Map<String, dynamic> json) {
     return MessageEntity(
       messageId: json['_id'],
-      sender: UserEntity.fromJson(json['sender']),
+      sender: UserModel.fromSellerJson(json['sender']),
       chat: ChatEntity.fromJson(json['chat']),
       content: json['content'],
     );

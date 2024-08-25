@@ -32,12 +32,13 @@ class CreateChatRoom extends ChatEvent {
 
 class SendMessage extends ChatEvent {
   final String chatId;
-  final MessageEntity message;
+  final String content;
+  final String type;
 
-  SendMessage(this.chatId, this.message);
+  SendMessage(this.chatId, this.content, this.type);
 
   @override
-  List<Object?> get props => [chatId, message];
+  List<Object?> get props => [chatId, content, type];
 }
 
 class AcknowledgeMessageDelivery extends ChatEvent {

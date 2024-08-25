@@ -29,17 +29,35 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<void> sendMessage(String chatId, MessageEntity message) async {
-    await socketIOService.emitSendMessage(chatId, message);
-  }
-
-  @override
-  Future<void> acknowledgeMessageDelivery(String messageId) async {
-    await socketIOService.emitMessageDelivered(messageId);
+  Future<void> acknowledgeMessageDelivery(String messageId) {
+    // TODO: implement acknowledgeMessageDelivery
+    throw UnimplementedError();
   }
 
   @override
   Stream<MessageEntity> onMessageReceived() {
-    return socketIOService.onMessageReceived();
+    // TODO: implement onMessageReceived
+    throw UnimplementedError();
   }
+
+  @override
+  Future<void> sendMessage(String chatId, String content, String type) {
+    // TODO: implement sendMessage
+    throw UnimplementedError();
+  }
+
+  // @override
+  // Future<void> sendMessage(String chatId, String content, String type) async {
+  //   await socketIOService.emitSendMessage(chatId, content, type);
+  // }
+
+  // @override
+  // Future<void> acknowledgeMessageDelivery(String messageId) async {
+  //   await socketIOService.emitMessageDelivered(messageId);
+  // }
+
+  // @override
+  // Stream<MessageEntity> onMessageReceived() {
+  //   // return socketIOService.onMessageReceived();
+  // }
 }

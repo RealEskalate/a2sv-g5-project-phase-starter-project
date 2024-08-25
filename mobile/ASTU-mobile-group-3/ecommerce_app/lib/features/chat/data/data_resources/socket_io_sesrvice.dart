@@ -1,49 +1,35 @@
-import 'dart:async';
-// import 'package:socket_io/socket_io.dart';
-import 'package:socket_io_client/socket_io_client.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-import '../../domain/entity/message.dart';
+import '../../../../core/constants/constants.dart';
+import '../../../auth/data/data_source/auth_local_data_source.dart';
 
 abstract class SocketIOService {
-  Future<void> emitSendMessage(String chatId, MessageEntity message);
-  Future<void> emitMessageDelivered(String messageId);
-  Stream<MessageEntity> onMessageReceived();
+  IO.Socket get socket;
+  void connect();
+  void disconnect();
 }
 
 class SocketIOServiceImpl implements SocketIOService {
-  final Socket socket;
-  final _messageStreamController = StreamController<MessageEntity>.broadcast();
+  late IO.Socket socket;
+  final AuthLocalDataSource authLocalDataSource;
 
-  SocketIOServiceImpl({required this.socket}) {
-    _setupListeners();
-  }
-
-  void _setupListeners() {
-    socket.on('message:received', (data) {
-      final message = MessageEntity.fromJson(data);
-      _messageStreamController.add(message);
+  SocketIOServiceImpl({required this.authLocalDataSource}) {
+    socket = IO.io(AppData.chatserver, <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': false,
+      'extraHeaders': {
+        'Authorization': 'Bearer ${authLocalDataSource.getToken()}'
+      }
     });
   }
 
   @override
-  Future<void> emitSendMessage(String chatId, MessageEntity message) async {
-    socket.emit('send:message', {
-      'chatId': chatId,
-      'message': message.toJson(),
-    });
+  void connect() {
+    socket.connect();
   }
 
   @override
-  Future<void> emitMessageDelivered(String messageId) async {
-    socket.emit('message:delivered', {'messageId': messageId});
-  }
-
-  @override
-  Stream<MessageEntity> onMessageReceived() {
-    return _messageStreamController.stream;
-  }
-
-  void dispose() {
-    _messageStreamController.close();
+  void disconnect() {
+    socket.disconnect();
   }
 }

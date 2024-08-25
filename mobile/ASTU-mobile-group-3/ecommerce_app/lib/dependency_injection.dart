@@ -36,24 +36,13 @@ import 'features/product/domain/usecases/insert_product_usecase.dart';
 import 'features/product/domain/usecases/update_product_usecase.dart';
 import 'features/product/presentation/bloc/cubit/input_validation_cubit.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 final locator = GetIt.instance;
 
 void initSocketIOService() {
-  late IO.Socket socket;
-  // Initialize the socket
-  socket = IO.io('http://your_socket_server_address', <String, dynamic>{
-    'transports': ['websocket'],
-    'autoConnect': false,
-  });
-
   locator.registerLazySingleton<SocketIOService>(
-    () => SocketIOServiceImpl(socket: socket),
+    () => SocketIOServiceImpl(authLocalDataSource: locator()),
   );
-
-  // Connect to the socket server when the service is initialized
-  socket.connect();
 }
 
 Future<void> init() async {
@@ -118,8 +107,8 @@ Future<void> init() async {
   locator.registerFactory(
       () => UserInputValidationCubit(inputDataValidator: locator()));
 
-  locator.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(
-      remoteAuthDataSource: locator(), authLocalDataSource: locator()));
+  // locator.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(
+  //     remoteAuthDataSource: locator(), authLocalDataSource: locator()));
 
   // chat feature
   locator.registerLazySingleton(() => OnMessageReceivedUseCase(locator()));
@@ -130,8 +119,8 @@ Future<void> init() async {
   locator.registerLazySingleton(() => RetrieveMessagesUseCase(locator()));
   locator.registerLazySingleton(() => SendMessageUseCase(locator()));
 
-  locator.registerFactory(() => ChatBloc(
-      locator(), locator(), locator(), locator(), locator(), locator()));
+  locator.registerFactory(() => ChatBloc(locator(), locator(), locator(),
+      locator(), locator(), locator(), locator()));
 
   locator.registerLazySingleton<ChatRemoteDataSource>(
       () => ChatRemoteDataSourceImpl(httpClient: locator()));
@@ -141,13 +130,13 @@ Future<void> init() async {
 
   //
   // Repositories
-  locator.registerLazySingleton<ProductRepository>(
-    () => ProductRepositoryImpl(
-      remoteProductDataSource: locator(),
-      localProductDataSource: locator(),
-      networkInfo: locator(),
-    ),
-  );
+  // locator.registerLazySingleton<ProductRepository>(
+  //   () => ProductRepositoryImpl(
+  //     remoteProductDataSource: locator(),
+  //     localProductDataSource: locator(),
+  //     networkInfo: locator(),
+  //   ),
+  // );
   //! Shared pref
 
   final sharedPreferences = await SharedPreferences.getInstance();

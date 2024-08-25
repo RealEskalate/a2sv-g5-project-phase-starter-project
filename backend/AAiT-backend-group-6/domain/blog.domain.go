@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"AAiT-backend-group-6/domain/dtos"
 	"context"
 	"time"
 
@@ -9,6 +10,12 @@ import (
 
 const (
 	CollectionBlogs = "blogs"
+)
+const (
+	CollectionComments = "comments"
+)
+const (
+	CollectionReactions = "reactions"
 )
 
 type Blog struct {
@@ -21,7 +28,7 @@ type Blog struct {
 	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
 }
 
-type Like struct {
+type Reaction struct {
 	ID      primitive.ObjectID `json:"id" bson:"_id"`
 	UserID  primitive.ObjectID `json:"user_id" bson:"user_id"`
 	BlogID  primitive.ObjectID `json:"blog_id" bson:"blog_id"`
@@ -30,7 +37,7 @@ type Like struct {
 
 type Comment struct {
 	ID        primitive.ObjectID `json:"id" bson:"_id"`
-	AuthorID  primitive.ObjectID `json:"author" bson:"author"`
+	Author    User               `json:"author" bson:"author"`
 	BlogID    primitive.ObjectID `json:"blog_id" bson:"blog_id"`
 	Content   string             `json:"content" bson:"content"`
 	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
@@ -66,15 +73,28 @@ type BlogRepository interface {
 }
 
 type CommentUseCase interface {
-	CreateComment(c context.Context, comment *Comment) error
+	CreateComment(c context.Context, comment *Comment, userID primitive.ObjectID) error
 	GetComment(c context.Context, id string) (*Comment, error)
-	UpdateComment(c context.Context, comment *Comment) error
+	UpdateComment(c context.Context, comment *dtos.UpdateDto, commentID primitive.ObjectID) error
 	DeleteComment(c context.Context, id string) error
 }
 
 type CommentRepository interface {
 	CreateComment(c context.Context, comment *Comment) error
 	GetComment(c context.Context, id string) (*Comment, error)
-	UpdateComment(c context.Context, comment *Comment) error
+	UpdateComment(c context.Context, comment *dtos.UpdateDto, commentID primitive.ObjectID) error
 	DeleteComment(c context.Context, id string) error
+}
+
+type ReactionRepository interface {
+	LikeBlog(c context.Context, blogID, userID primitive.ObjectID) error
+	UnLikeBlog(c context.Context, blogID, userID primitive.ObjectID) error
+	DeleteLike(c context.Context, blogID, userID primitive.ObjectID) error
+	GetLike(ctx context.Context, userID, blogID primitive.ObjectID) (*Reaction, error)
+}
+type ReactionUsecase interface {
+	LikeBlog(c context.Context, blogID, userID primitive.ObjectID) error
+	UnLikeBlog(c context.Context, blogID, userID primitive.ObjectID) error
+	DeleteLike(c context.Context, blogID, userID primitive.ObjectID) error
+	GetLike(ctx context.Context, userID, blogID primitive.ObjectID) (*Reaction, error)
 }

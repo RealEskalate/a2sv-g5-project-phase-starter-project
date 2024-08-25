@@ -2,6 +2,7 @@ package repository
 
 import (
 	"AAiT-backend-group-6/domain"
+	"AAiT-backend-group-6/domain/dtos"
 	"AAiT-backend-group-6/mongo"
 	"context"
 
@@ -48,12 +49,22 @@ func (r *commentRepository) GetComment(c context.Context, id string) (*domain.Co
 	return &comment, nil
 }
 
-func (r *commentRepository) UpdateComment(c context.Context, comment *domain.Comment) error {
+func (r *commentRepository) UpdateComment(c context.Context, comment *dtos.UpdateDto, commentID primitive.ObjectID) error {
 	collection := r.database.Collection(r.collection)
 
-	_, err := collection.UpdateOne(
+	var oldComment domain.Comment
+
+	err := collection.FindOne(c, bson.M{"_id": commentID}).Decode(&oldComment)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return err // Comment not found
+		}
+		return nil
+	}
+
+	_, err = collection.UpdateOne(
 		c,
-		bson.M{"_id": comment.ID},
+		bson.M{"_id": commentID},
 		bson.M{"$set": comment},
 	)
 	return err

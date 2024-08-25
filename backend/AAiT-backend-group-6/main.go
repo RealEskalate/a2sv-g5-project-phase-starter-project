@@ -14,9 +14,9 @@ func main() {
 
 	db := app.Mongo.Database(env.DBName)
 
-	if app.Redis == nil {
-		panic("Redis is not connected")
-	}
+	// if app.Redis == nil {
+	// 	panic("Redis is not connected")
+	// }
 	redisClient := app.Redis
 	defer app.Close()
 
@@ -27,4 +27,3 @@ func main() {
 	route.Setup(env, timeout, db, gin, redisClient)
 	gin.Run(env.ServerAddress)
 }
-

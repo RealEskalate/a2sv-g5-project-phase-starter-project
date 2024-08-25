@@ -76,52 +76,18 @@ func (_m *SignupUsecase) CreateRefreshToken(user *domain.User, secret string, ex
 	return r0, r1
 }
 
-// GetUserByEmail provides a mock function with given fields: c, email
-func (_m *SignupUsecase) GetUserByEmail(c context.Context, email string) (domain.User, error) {
-	ret := _m.Called(c, email)
+// VerifyEmail provides a mock function with given fields: c, email, code
+func (_m *SignupUsecase) VerifyEmail(c context.Context, email string, code string) error {
+	ret := _m.Called(c, email, code)
 
-	var r0 domain.User
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (domain.User, error)); ok {
-		return rf(c, email)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) domain.User); ok {
-		r0 = rf(c, email)
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) error); ok {
+		r0 = rf(c, email, code)
 	} else {
-		r0 = ret.Get(0).(domain.User)
+		r0 = ret.Error(0)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(c, email)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// GetUserByUsername provides a mock function with given fields: c, username
-func (_m *SignupUsecase) GetUserByUsername(c context.Context, username string) (domain.User, error) {
-	ret := _m.Called(c, username)
-
-	var r0 domain.User
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (domain.User, error)); ok {
-		return rf(c, username)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) domain.User); ok {
-		r0 = rf(c, username)
-	} else {
-		r0 = ret.Get(0).(domain.User)
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(c, username)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 type mockConstructorTestingTNewSignupUsecase interface {

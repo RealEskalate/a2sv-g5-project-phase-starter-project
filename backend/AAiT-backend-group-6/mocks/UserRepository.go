@@ -42,19 +42,21 @@ func (_m *UserRepository) DeleteUser(c context.Context, id string) error {
 	return r0
 }
 
-// GetByEmail provides a mock function with given fields: c, email
-func (_m *UserRepository) GetByEmail(c context.Context, email string) (domain.User, error) {
+// GetUserByEmail provides a mock function with given fields: c, email
+func (_m *UserRepository) GetUserByEmail(c context.Context, email string) (*domain.User, error) {
 	ret := _m.Called(c, email)
 
-	var r0 domain.User
+	var r0 *domain.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (domain.User, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*domain.User, error)); ok {
 		return rf(c, email)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) domain.User); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.User); ok {
 		r0 = rf(c, email)
 	} else {
-		r0 = ret.Get(0).(domain.User)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.User)
+		}
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
@@ -66,19 +68,21 @@ func (_m *UserRepository) GetByEmail(c context.Context, email string) (domain.Us
 	return r0, r1
 }
 
-// GetByID provides a mock function with given fields: c, id
-func (_m *UserRepository) GetByID(c context.Context, id string) (domain.User, error) {
+// GetUserByID provides a mock function with given fields: c, id
+func (_m *UserRepository) GetUserByID(c context.Context, id string) (*domain.User, error) {
 	ret := _m.Called(c, id)
 
-	var r0 domain.User
+	var r0 *domain.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (domain.User, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*domain.User, error)); ok {
 		return rf(c, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) domain.User); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.User); ok {
 		r0 = rf(c, id)
 	} else {
-		r0 = ret.Get(0).(domain.User)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.User)
+		}
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
@@ -90,19 +94,21 @@ func (_m *UserRepository) GetByID(c context.Context, id string) (domain.User, er
 	return r0, r1
 }
 
-// GetByUsername provides a mock function with given fields: c, username
-func (_m *UserRepository) GetByUsername(c context.Context, username string) (domain.User, error) {
+// GetUserByUsername provides a mock function with given fields: c, username
+func (_m *UserRepository) GetUserByUsername(c context.Context, username string) (*domain.User, error) {
 	ret := _m.Called(c, username)
 
-	var r0 domain.User
+	var r0 *domain.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (domain.User, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*domain.User, error)); ok {
 		return rf(c, username)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) domain.User); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.User); ok {
 		r0 = rf(c, username)
 	} else {
-		r0 = ret.Get(0).(domain.User)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.User)
+		}
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
@@ -115,48 +121,24 @@ func (_m *UserRepository) GetByUsername(c context.Context, username string) (dom
 }
 
 // GetUsers provides a mock function with given fields: c
-func (_m *UserRepository) GetUsers(c context.Context) ([]domain.User, error) {
+func (_m *UserRepository) GetUsers(c context.Context) ([]*domain.User, error) {
 	ret := _m.Called(c)
 
-	var r0 []domain.User
+	var r0 []*domain.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context) ([]domain.User, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context) ([]*domain.User, error)); ok {
 		return rf(c)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context) []domain.User); ok {
+	if rf, ok := ret.Get(0).(func(context.Context) []*domain.User); ok {
 		r0 = rf(c)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.User)
+			r0 = ret.Get(0).([]*domain.User)
 		}
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
 		r1 = rf(c)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// LoginUser provides a mock function with given fields: c, user
-func (_m *UserRepository) LoginUser(c context.Context, user *domain.User) (domain.User, error) {
-	ret := _m.Called(c, user)
-
-	var r0 domain.User
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) (domain.User, error)); ok {
-		return rf(c, user)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) domain.User); ok {
-		r0 = rf(c, user)
-	} else {
-		r0 = ret.Get(0).(domain.User)
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, *domain.User) error); ok {
-		r1 = rf(c, user)
 	} else {
 		r1 = ret.Error(1)
 	}

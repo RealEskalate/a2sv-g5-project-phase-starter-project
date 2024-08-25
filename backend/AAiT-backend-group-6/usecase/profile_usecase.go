@@ -81,7 +81,7 @@ func (pu *profileUsecase) GetProfileByID(c context.Context, userID string) (*dom
 	ctx, cancel := context.WithTimeout(c, pu.contextTimeout)
 	defer cancel()
 
-	user, err := pu.userRepository.GetByID(ctx, userID)
+	user, err := pu.userRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

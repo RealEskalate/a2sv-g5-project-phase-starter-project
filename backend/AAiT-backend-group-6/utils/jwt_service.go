@@ -46,7 +46,7 @@ func ValidateToken(signedToken string, secret_key string) (claims *UserClaim, er
 
 func GenerateAccessToken(user *domain.User, expiry int, secret_key string) (signedAccessToken string, err error){
 	claims := &UserClaim{
-		User_id: user.User_id,
+		User_id: user.ID.Hex(),
 		Username: user.Username,
 		Email: user.Email,
 		User_type: user.User_type,
@@ -65,7 +65,7 @@ func GenerateAccessToken(user *domain.User, expiry int, secret_key string) (sign
 
 func GenerateRefreshToken(user *domain.User, expiry int, secret_key string) (signedRefreshToken string, err error){
 	refreshClaims := &UserClaim{
-		User_id: user.User_id,
+		User_id: user.ID.Hex(),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(expiry)).Unix(),
 		},

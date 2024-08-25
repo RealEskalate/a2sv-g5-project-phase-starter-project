@@ -6,6 +6,7 @@ import (
 	"AAiT-backend-group-6/mongo"
 	"AAiT-backend-group-6/redis"
 	"time"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,13 +15,18 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db mongo.Database, gin *gi
 	// All Public APIs
 	NewSignupRouter(env, timeout, db, publicRouter)
 	NewLoginRouter(env, timeout, db, publicRouter)
-	NewAiRouter(env,timeout,db,publicRouter)
+	NewFogetPWRouter(env, timeout, db, publicRouter)
+	NewRefreshTokenRouter(env, timeout, db, publicRouter)
 
-	NewBlogRouter(db, gin,redisClient)
+	NewAiRouter(env, timeout, db, publicRouter)
+
+	NewBlogRouter(db, gin, redisClient)
+	NewCommentRouter(env, db, gin)
+	NewReactionRouter(env, db, gin)
 
 	protectedRouter := gin.Group("")
-	// Middleware to verify AccessToken
 	protectedRouter.Use(middleware.JwtAuthMiddleware(env.AccessTokenSecret))
 	// All Private APIs
-	// NewProfileRouter(env, timeout, db, protectedRouter)
+	NewLogoutRouter(env, timeout, db, protectedRouter)
+	NewPromoteRouter(env, timeout, db, protectedRouter)
 }

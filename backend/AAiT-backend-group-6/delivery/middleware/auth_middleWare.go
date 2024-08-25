@@ -4,17 +4,15 @@ import (
 	"AAiT-backend-group-6/utils"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-var SECRET_KEY string = os.Getenv("SECRET_KEY")
-
 func JwtAuthMiddleware(secret string) gin.HandlerFunc{
 
     return func(c *gin.Context){
+
       authHeader := c.GetHeader("Authorization")
       if authHeader == ""{
         c.JSON(401, gin.H{"error": "Authorization header is required"})

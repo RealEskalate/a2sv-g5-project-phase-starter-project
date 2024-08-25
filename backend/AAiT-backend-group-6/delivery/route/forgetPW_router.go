@@ -4,6 +4,7 @@ import (
 	"AAiT-backend-group-6/bootstrap"
 	"AAiT-backend-group-6/delivery/controller"
 	"AAiT-backend-group-6/domain"
+	"AAiT-backend-group-6/infrastructure"
 	"AAiT-backend-group-6/mongo"
 	"AAiT-backend-group-6/repository"
 	"AAiT-backend-group-6/usecase"
@@ -15,11 +16,17 @@ import (
 
 func NewFogetPWRouter(env *bootstrap.Env, timeout time.Duration, db mongo.Database, group *gin.RouterGroup){
 	ur := repository.NewUserRepository(db, domain.UserCollection)
-	su := usecase.NewLoginUsecase(ur, timeout)
-	sc := controller.LoginController{
-		LoginUsecase: su,
+	emailService := infrastructure.NewEmailService(env.SmtpServer, env.Mail, env.MailPassword)
+
+	fpu := usecase.NewForgetPWUsecase(ur, timeout, *emailService)
+	uu := usecase.NewUserUsecase(ur, timeout)
+
+	fpc := controller.ForgetPWController{
+		Userusecase: uu,
+		ForgetPWUsecase: fpu,
 		Env: env,
 	}
 
-	group.POST("/login", sc.Login)
+	group.POST("/forget-password", fpc.ForgetPW)
+	group.POST("/recover-password", fpc.ResetPW)
 }

@@ -42,8 +42,8 @@ func (_m *UserUsecase) DeleteUser(c context.Context, id string) error {
 	return r0
 }
 
-// GetByEmail provides a mock function with given fields: c, id
-func (_m *UserUsecase) GetByEmail(c context.Context, id string) (*domain.User, error) {
+// GetUserByEmail provides a mock function with given fields: c, id
+func (_m *UserUsecase) GetUserByEmail(c context.Context, id string) (*domain.User, error) {
 	ret := _m.Called(c, id)
 
 	var r0 *domain.User
@@ -68,8 +68,8 @@ func (_m *UserUsecase) GetByEmail(c context.Context, id string) (*domain.User, e
 	return r0, r1
 }
 
-// GetByID provides a mock function with given fields: c, id
-func (_m *UserUsecase) GetByID(c context.Context, id string) (*domain.User, error) {
+// GetUserByID provides a mock function with given fields: c, id
+func (_m *UserUsecase) GetUserByID(c context.Context, id string) (*domain.User, error) {
 	ret := _m.Called(c, id)
 
 	var r0 *domain.User
@@ -87,6 +87,32 @@ func (_m *UserUsecase) GetByID(c context.Context, id string) (*domain.User, erro
 
 	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = rf(c, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetUserByUsername provides a mock function with given fields: c, username
+func (_m *UserUsecase) GetUserByUsername(c context.Context, username string) (*domain.User, error) {
+	ret := _m.Called(c, username)
+
+	var r0 *domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*domain.User, error)); ok {
+		return rf(c, username)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.User); ok {
+		r0 = rf(c, username)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(c, username)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -120,39 +146,13 @@ func (_m *UserUsecase) GetUsers(c context.Context) ([]*domain.User, error) {
 	return r0, r1
 }
 
-// LoginUser provides a mock function with given fields: c, user
-func (_m *UserUsecase) LoginUser(c context.Context, user *domain.User) (*domain.User, error) {
+// UpdateUser provides a mock function with given fields: c, user
+func (_m *UserUsecase) UpdateUser(c context.Context, user *domain.User) error {
 	ret := _m.Called(c, user)
 
-	var r0 *domain.User
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) (*domain.User, error)); ok {
-		return rf(c, user)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) *domain.User); ok {
-		r0 = rf(c, user)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.User)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, *domain.User) error); ok {
-		r1 = rf(c, user)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// UpdateUser provides a mock function with given fields: c, user, user_id
-func (_m *UserUsecase) UpdateUser(c context.Context, user *domain.User, user_id string) error {
-	ret := _m.Called(c, user, user_id)
-
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.User, string) error); ok {
-		r0 = rf(c, user, user_id)
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) error); ok {
+		r0 = rf(c, user)
 	} else {
 		r0 = ret.Error(0)
 	}

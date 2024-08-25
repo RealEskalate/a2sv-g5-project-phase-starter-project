@@ -6,7 +6,7 @@ const Avatar = () => {
     <img
       src='/assets/images/profilepicture.jpg'
       alt=''
-      className='object-cover rounded-full w-[50px] h-[50px] md:w-[50px] md:h-[50px]'
+      className='object-cover rounded-full w-[50px] h-[50px] md:w-[55px] md:h-[55px]'
     />
   );
 };

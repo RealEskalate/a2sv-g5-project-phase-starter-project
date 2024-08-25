@@ -1,4 +1,4 @@
-import ActiveLoanSkeleton from "@/components/AllSkeletons/ActiveSkeleton/ActiveLoanSkeleton";
+import ActiveLoanSkeleton from "@/components/AllSkeletons/ActiveLoansSkeleton/ActiveLoanSkeleton";
 import LoanSkeletons from "@/components/AllSkeletons/loanSkeleton/loanSkeletons";
 import React from "react";
 

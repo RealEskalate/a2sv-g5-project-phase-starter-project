@@ -23,8 +23,10 @@ class UserBloc extends Bloc<UserEvent, UserState>{
         print("from user bloc $user");
         emit(UserRegisteredState(user));
       } catch (e) {
-        emit(RegisterErrorState("Fail to Register"));
+          print('Error during registration: $e');
+          emit(RegisterErrorState("Fail to Register"));
       }
+
     },);
     on<LogInEvent> ((event, emit) async {
       emit(LoginLoadingState());

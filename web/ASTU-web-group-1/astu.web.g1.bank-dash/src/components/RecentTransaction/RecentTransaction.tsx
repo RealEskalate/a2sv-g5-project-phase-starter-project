@@ -6,11 +6,24 @@ import { Skeleton } from '../ui/skeleton';
 
 const RecentTransaction = () => {
   const { data, isLoading } = useGetAllTransactionsQuery({ page: 0, size: 3 });
-  if (12) {
+  if (isLoading) {
     return (
-      <div className='w-full'>
-        <Skeleton className='h-8 w-52 bg-slate-200' />
-        hello world
+      <div className='w-full pb-3 '>
+        <h1 className='text-[#333B69] pb-3 font-semibold'>Recent Transaction</h1>
+        <div className='space-y-4 bg-white p-5 rounded-3xl'>
+          <div className='flex'>
+            <Skeleton className='h-9 w-9 rounded-xl bg-slate-200 flex-shrink-0 mr-3' />
+            <Skeleton className='h-8 w-full bg-slate-200' />
+          </div>
+          <div className='flex'>
+            <Skeleton className='h-9 w-9 rounded-xl bg-slate-200 flex-shrink-0 mr-3' />
+            <Skeleton className='h-8 w-full bg-slate-200' />
+          </div>
+          <div className='flex'>
+            <Skeleton className='h-9 w-9 rounded-xl bg-slate-200 flex-shrink-0 mr-3' />
+            <Skeleton className='h-8 w-full bg-slate-200' />
+          </div>
+        </div>
       </div>
     );
   }

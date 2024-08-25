@@ -15,8 +15,8 @@ func (u *UserUsecase) FindUserById(id string) (*domain.User, error) {
 	return user, nil
 }
 
-func (u *UserUsecase) GetAllUsers() ([]*domain.User, error) {
-	users, err := u.repo.GetAllUsers(context.Background())
+func (u *UserUsecase) GetAllUsers(page int, pageSize int, filter domain.UserFilter) ([]*domain.User, error) {
+	users, err := u.repo.GetAllUsers(context.Background(), page, pageSize, filter)
 	if err != nil {
 		return nil, err
 	}

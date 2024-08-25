@@ -22,7 +22,7 @@ type UserUseCaseInterface interface {
 
 	PromoteToAdmin(UserId string) error
 	DemoteFromAdmin(UserId string) error
-	GetAllUsers() ([]*domain.User, error)
+	GetAllUsers(page int, pageSize int, filter domain.UserFilter) ([]*domain.User, error)
 	FilterUsers(filter map[string]interface{}) ([]*domain.User, error)
 
 	GoogleCallback(code string) (*domain.User, *domain.Token, error)

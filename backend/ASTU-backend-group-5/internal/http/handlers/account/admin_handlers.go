@@ -1,8 +1,10 @@
 package account
 
 import (
+	"blogApp/internal/domain"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,14 +29,44 @@ func (h *UserHandler) DemoteUser(c *gin.Context) {
 }
 
 func (h *UserHandler) GetAllUsers(c *gin.Context) {
-	users, err := h.UserUsecase.GetAllUsers()
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
 
+	if page < 1 {
+		page = 1
+	}
+	if pageSize < 1 {
+		pageSize = 10
+	}
+
+	filter := domain.UserFilter{
+		Username:   c.Query("username"),
+		Email:      c.Query("email"),
+		Role:       c.Query("role"),
+		Gender:     c.Query("gender"),
+		Profession: c.Query("profession"),
+		Verified:   c.Query("verified"),
+		OrderBy:    c.DefaultQuery("orderBy", "alphabet"),
+	}
+
+	users, err := h.UserUsecase.GetAllUsers(page, pageSize, filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve users"})
 		return
 	}
 
-	c.JSON(http.StatusOK, users)
+	baseUrl := c.Request.URL.Scheme + "://" + c.Request.Host + c.Request.URL.Path
+	nextUrl := baseUrl + "?page=" + strconv.Itoa(page+1) + "&pageSize=" + strconv.Itoa(pageSize)
+	prevUrl := ""
+	if page > 1 {
+		prevUrl = baseUrl + "?page=" + strconv.Itoa(page-1) + "&pageSize=" + strconv.Itoa(pageSize)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"users":   users,
+		"nextUrl": nextUrl,
+		"prevUrl": prevUrl,
+	})
 }
 
 func (h *UserHandler) AdminRemoveUser(c *gin.Context) {

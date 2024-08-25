@@ -49,8 +49,8 @@ func (u *blogUseCase) GetBlogByID(ctx context.Context, blogId, userId string) (*
 }
 
 // GetCommentsByBlogID retrieves comments by blog ID
-func (u *blogUseCase) GetCommentsByBlogID(ctx context.Context, blogID string) ([]*domain.Comment, error) {
-	comments, err := u.repo.GetCommentsByBlogID(ctx, blogID)
+func (u *blogUseCase) GetCommentsByBlogID(ctx context.Context, blogID string, page int, pageSize int) ([]*domain.Comment, error) {
+	comments, err := u.repo.GetCommentsByBlogID(ctx, blogID, page, pageSize)
 	if err != nil {
 		log.Printf("Error retrieving comments for blog with ID %s: %v", blogID, err)
 		return nil, fmt.Errorf("failed to retrieve comments: %w", err)
@@ -89,4 +89,15 @@ func (u *blogUseCase) GetUserBlogs(ctx context.Context, userID string, page int,
 
 	return blogs, nil
 
+}
+
+func (u *blogUseCase) GetCommentById(ctx context.Context, title string) (*domain.Comment, error) {
+
+	blog, err := u.repo.GetCommentById(ctx, title)
+	if err != nil {
+		log.Printf("Error retrieving blog with ID %s: %v", title, err)
+		return nil, fmt.Errorf("failed to retrieve blog: %w", err)
+	}
+
+	return blog, nil
 }

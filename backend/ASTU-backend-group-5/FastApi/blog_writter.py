@@ -13,15 +13,16 @@ os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_KEY")
 
 
 class Blog:
-    def __init__(self, title, content):
+    def __init__(self, title):
         self.title = title
-        self.content = content
+        self.content = []
+        self.tags = []
 
     def __str__(self):
         return f"Blog(title={self.title}, content={self.content})"
     
     
-blog = Blog("", [])
+blog = Blog("")
 
 @tool
 def duck_duck_go_search(query):
@@ -141,24 +142,34 @@ def generate_blog_outline(blog_description: str) -> str:
         return response.choices[0].message.content
     except:
         return "failed to generate blog outline"
-
+@tool
+def add_tags(tags) ->str:
+    """
+    adds tags to the blog post
+    args:
+        *tags: (List) list of tags to be added to the blog post
+    returns:
+        status: (str)
+    """
+    for tag in tags:
+        blog.tags.append(tag)
+    return "tags added successfully"
+    
 
 class BlogAssistant:
     def __init__(self, tools):
         self.tools = [tools]
-        system_message ="""You are an intelligent content intelligent Assistant that helps users write powerful and informative blog posts.
-            You have access to tools that assist you in making accurate and informed decisions.
-            You never talk on topics that are not relevant to the blog post. You only talk on the topic of the blog post.
-            Never respond to questions that are not related to the blog post.
-            You have acces to a blog object into which you can add contents by using apropirate tool.
-            You always have to use generate outline tool before starting building the blog post.
-            once the outline is generated you iteratively generates blog contents and adds the content to the blog object.
-            try to include all contents of the generated blog outline in the blog post.
-            The generated Blog must be in markup so that it can be rendered beautifully.
-            Never Geberate images exccesively only generate lessthan 3 images per blog!
-            If your content includes images the images should be in a markup format.
+        system_message ="""You are a highly intelligent Content Assistant dedicated to helping users create powerful, informative, and visually appealing blog posts.
+                Focused Expertise: You only discuss topics directly related to the blog post you are working on and avoid any unrelated subjects or questions.
+                Tool Utilization: You have access to tools that assist you in making accurate and informed decisions, and you use these tools effectively to enhance the quality of the blog post.
+                Content Generation: Before beginning the blog post, you must always generate a detailed outline using the "Generate Outline" tool. Once the outline is ready, you generate content for each section and add it to the blog object, ensuring that all outline elements are thoroughly covered.
+                Also Add lage contents at once to increase your speed of writing. you may not call generate content more than 4 times to increase speed and efficintcy add more contents at once and your content should be so detailed
+                 Markup: The final blog content should be delivered in  markup format, ensuring the blog is visually appealing and ready for rendering.
+                Image Guidelines: Limit image generation to no more than three images per blog post. If images are included, they should be presented in beautiful way
+                Structured Content: The blog must be highly structured, well-organized, and comprehensive, including all necessary information as per the generated outline.
+                after finishing up writing the blog you use add_Tags tool with necessary list of tags to be added to the blog post.
             """
-        llm = ChatOpenAI(model="gpt-4-turbo", temperature=0)
+        llm = ChatOpenAI(model="gpt-4-1106-preview", temperature=0)
             
         self.prompt = ChatPromptTemplate.from_messages(
                 [
@@ -180,4 +191,4 @@ class BlogAssistant:
         response = self.agent_executor.invoke({"input": query })
         return response
 
-blog_assistant = BlogAssistant([generate_blog_outline, generate_image, add_content, set_title, duck_duck_go_search])
+blog_assistant = BlogAssistant([generate_blog_outline, generate_image, add_content, set_title, duck_duck_go_search, add_tags])

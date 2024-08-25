@@ -54,9 +54,8 @@ type CreateUserDTO struct {
 type UpdateUserDTO struct {
 	UserName string      `bson:"username" json:"username" form:"username"`
 	Profile  UserProfile `bson:"profile" json:"profile" form:"profile"`
-	Email	string      `bson:"email" json:"email" form:"email"`
+	Email    string      `bson:"email" json:"email" form:"email"`
 }
-
 
 type UpdateUserPasswordDTO struct {
 	Password string `bson:"password" json:"password" form:"password"`
@@ -65,4 +64,14 @@ type UpdateUserPasswordDTO struct {
 type LoginUserDTO struct {
 	Email    string
 	Password string
+}
+
+type UserFilter struct {
+	Username   string
+	Email      string
+	Role       string
+	Gender     string
+	Profession string
+	Verified   string
+	OrderBy    string
 }

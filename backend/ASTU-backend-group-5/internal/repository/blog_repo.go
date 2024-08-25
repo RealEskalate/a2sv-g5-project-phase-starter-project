@@ -23,7 +23,7 @@ type BlogRepository interface {
 
 	// Comment operations
 	AddComment(ctx context.Context, comment *domain.Comment) error
-	GetCommentsByBlogID(ctx context.Context, blogID string) ([]*domain.Comment, error)
+	GetCommentsByBlogID(ctx context.Context, blogID string, page int, pageSize int) ([]*domain.Comment, error)
 
 	// Like operations
 	AddLike(ctx context.Context, like *domain.Like) error

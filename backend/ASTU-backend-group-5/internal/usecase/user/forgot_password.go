@@ -7,6 +7,7 @@ import (
 	"blogApp/pkg/jwt"
 	"context"
 	"errors"
+	"fmt"
 	"log"
 )
 
@@ -56,7 +57,8 @@ func (u *UserUsecase) ResetPassword(resetToken string, newPassword string) error
 	if err != nil {
 		return err
 	}
-	if claims.Role != "password-reset" || claims.Email == "password-reset" || claims.ID != "password-reset" {
+	fmt.Println(claims, "claims ====================")
+	if claims.Role != "password-reset" || claims.UserID != "password-reset" {
 		return errors.New("invalid token")
 	}
 	email := claims.Email

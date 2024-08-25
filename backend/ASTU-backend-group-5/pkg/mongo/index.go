@@ -14,3 +14,11 @@ package mongo
 // 	_, err := collection.Indexes().CreateOne(ctx, indexModel)
 // 	return err
 // }
+
+//index user collection
+// db.users.createIndex({ username: 1 })
+// db.users.createIndex({ email: 1 })
+// db.users.createIndex({ "profile.gender": 1 })
+// db.users.createIndex({ "profile.profession": 1 })
+// db.users.createIndex({ verified: 1 })
+// db.users.createIndex({ created: 1 })

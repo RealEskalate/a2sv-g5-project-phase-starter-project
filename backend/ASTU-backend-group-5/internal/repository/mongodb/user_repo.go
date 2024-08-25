@@ -3,10 +3,12 @@ package mongodb
 import (
 	"blogApp/internal/domain"
 	"context"
+	"strconv"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UserRepositoryMongo struct {
@@ -73,20 +75,67 @@ func (r *UserRepositoryMongo) DeleteUser(ctx context.Context, id string) error {
 	return err
 }
 
-func (r *UserRepositoryMongo) GetAllUsers(ctx context.Context) ([]*domain.User, error) {
+func (r *UserRepositoryMongo) GetAllUsers(ctx context.Context, page int, pageSize int, filter domain.UserFilter) ([]*domain.User, error) {
 	var users []*domain.User
 
-	cursor, err := r.Collection.Find(ctx, bson.M{})
+	// Construct the filter using the UserFilter struct
+	bsonFilter := bson.M{}
+	if filter.Username != "" {
+		bsonFilter["username"] = bson.M{"$regex": filter.Username, "$options": "i"}
+	}
+	if filter.Email != "" {
+		bsonFilter["email"] = bson.M{"$regex": filter.Email, "$options": "i"}
+	}
+	if filter.Role != "" {
+		bsonFilter["role"] = filter.Role
+	}
+	if filter.Gender != "" {
+		bsonFilter["profile.gender"] = filter.Gender
+	}
+	if filter.Profession != "" {
+		bsonFilter["profile.profession"] = filter.Profession
+	}
+	if filter.Verified != "" {
+		verifiedBool, _ := strconv.ParseBool(filter.Verified)
+		bsonFilter["verified"] = verifiedBool
+	}
+
+	// Set options for pagination
+	skip := (page - 1) * pageSize
+	findOptions := options.Find()
+	findOptions.SetSkip(int64(skip))
+	findOptions.SetLimit(int64(pageSize))
+
+	// Set sorting options based on filter.OrderBy
+	sortBy := bson.D{}
+	switch filter.OrderBy {
+	case "alphabet":
+		sortBy = bson.D{{Key: "username", Value: 1}} // Sort by username alphabetically
+	case "created_at":
+		sortBy = bson.D{{Key: "created", Value: 1}} // Sort by creation date ascending
+	case "created_at_desc":
+		sortBy = bson.D{{Key: "created", Value: -1}} // Sort by creation date descending
+	}
+	findOptions.SetSort(sortBy)
+
+	// Perform the query with filters and pagination options
+	cursor, err := r.Collection.Find(ctx, bsonFilter, findOptions)
 	if err != nil {
 		return nil, err
 	}
+	defer cursor.Close(ctx)
 
+	// Iterate through the cursor and decode each user
 	for cursor.Next(ctx) {
 		var user domain.User
 		if err := cursor.Decode(&user); err != nil {
 			return nil, err
 		}
 		users = append(users, &user)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
 	}
 
 	return users, nil

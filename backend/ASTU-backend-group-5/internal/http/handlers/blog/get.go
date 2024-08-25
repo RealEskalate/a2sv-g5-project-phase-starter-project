@@ -85,13 +85,37 @@ func (h *BlogHandler) PaginateBlogsHandler(c *gin.Context) {
 func (h *BlogHandler) GetCommentsByBlogIDHandler(c *gin.Context) {
 	blogID := c.Param("id")
 
-	comments, err := h.UseCase.GetCommentsByBlogID(context.Background(), blogID)
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+
+	if page < 1 {
+		page = 1
+	}
+	if pageSize < 1 {
+		pageSize = 10
+	}
+
+	// Fetch comments with pagination
+	comments, err := h.UseCase.GetCommentsByBlogID(context.Background(), blogID, page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, comments)
+	// Construct nextUrl and prevUrl
+	baseUrl := c.Request.URL.Scheme + "://" + c.Request.Host + c.Request.URL.Path
+	nextUrl := baseUrl + "?page=" + strconv.Itoa(page+1) + "&pageSize=" + strconv.Itoa(pageSize)
+	prevUrl := ""
+	if page > 1 {
+		prevUrl = baseUrl + "?page=" + strconv.Itoa(page-1) + "&pageSize=" + strconv.Itoa(pageSize)
+	}
+
+	// Return response with comments and pagination URLs
+	c.JSON(http.StatusOK, gin.H{
+		"comments": comments,
+		"nextUrl":  nextUrl,
+		"prevUrl":  prevUrl,
+	})
 }
 
 func (h *BlogHandler) GetLikesByBlogIDHandler(c *gin.Context) {

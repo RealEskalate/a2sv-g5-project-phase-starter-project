@@ -19,7 +19,7 @@ type UserRepository interface {
 	UpdateUser(ctx context.Context, user *domain.User) error
 	DeleteUser(ctx context.Context, id string) error
 
-	GetAllUsers(ctx context.Context) ([]*domain.User, error)
+	GetAllUsers(ctx context.Context, page int, pageSize int, filter domain.UserFilter) ([]*domain.User, error)
 	FilterUsers(ctx context.Context, filter map[string]interface{}) ([]*domain.User, error)
 
 	IsEmptyCollection(ctx context.Context) (bool, error)

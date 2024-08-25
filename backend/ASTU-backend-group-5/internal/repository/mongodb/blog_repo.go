@@ -143,14 +143,23 @@ func (r *MongoBlogRepository) AddComment(ctx context.Context, comment *domain.Co
 	_, err := r.commentsCollection.InsertOne(ctx, comment)
 	return err
 }
-
-func (r *MongoBlogRepository) GetCommentsByBlogID(ctx context.Context, blogID string) ([]*domain.Comment, error) {
+func (r *MongoBlogRepository) GetCommentsByBlogID(ctx context.Context, blogID string, page int, pageSize int) ([]*domain.Comment, error) {
+	// Convert blogID to ObjectID
 	objectID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
 		return nil, err
 	}
 
-	cursor, err := r.commentsCollection.Find(ctx, bson.M{"blog_id": objectID})
+	// Calculate the number of documents to skip
+	skip := (page - 1) * pageSize
+
+	// Set options for pagination
+	findOptions := options.Find()
+	findOptions.SetSkip(int64(skip))
+	findOptions.SetLimit(int64(pageSize))
+
+	// Perform the query with pagination options
+	cursor, err := r.commentsCollection.Find(ctx, bson.M{"blog_id": objectID}, findOptions)
 	if err != nil {
 		return nil, err
 	}
@@ -163,6 +172,10 @@ func (r *MongoBlogRepository) GetCommentsByBlogID(ctx context.Context, blogID st
 			return nil, err
 		}
 		comments = append(comments, &comment)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
 	}
 
 	return comments, nil

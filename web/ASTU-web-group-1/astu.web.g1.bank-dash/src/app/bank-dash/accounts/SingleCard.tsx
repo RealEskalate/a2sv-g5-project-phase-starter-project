@@ -1,8 +1,9 @@
-'use client';
-import MyCard from '@/components/MyCard/MyCard';
-import { useGetAllCardsQuery } from '@/lib/redux/slices/cardSlice';
-import { CardContentType } from '@/types/card.types';
-import React from 'react';
+"use client";
+import CardSkeleton from "@/components/AllSkeletons/CardSkeleton/CardSkeleton";
+import MyCard from "@/components/MyCard/MyCard";
+import { useGetAllCardsQuery } from "@/lib/redux/slices/cardSlice";
+import { CardContentType } from "@/types/card.types";
+import React from "react";
 
 export default function SingleCard() {
   const { data, isLoading } = useGetAllCardsQuery({ page: 0, size: 5 });
@@ -11,11 +12,15 @@ export default function SingleCard() {
   return (
     <>
       {isLoading ? (
-        <>loading card</>
+        <CardSkeleton />
       ) : card ? (
         <MyCard key={card.id} content={card} index={0} />
       ) : (
-        <>no card</>
+        <div
+          className={`bg-white w-[280px] h-[175px] rounded-3xl flex items-center justify-center font-bold`}
+        >
+          No Card Found
+        </div>
       )}
     </>
   );

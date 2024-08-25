@@ -9,7 +9,7 @@ class CustomButton extends StatelessWidget {
   final bool login;
   final List<TextEditingController> controllers;
   
-  const CustomButton({super.key, required this.name, required this.login, required this.controllers});
+  const CustomButton({super.key, required this.name, required this.login, required this.controllers, required Null Function() onPressed});
 
   @override
   Widget build(BuildContext context) {

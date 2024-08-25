@@ -1,6 +1,4 @@
 class ServerException implements Exception {
-
-  
   ServerException();
   @override
   String toString() {

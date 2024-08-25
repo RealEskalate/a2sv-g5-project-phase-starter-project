@@ -23,14 +23,14 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     required this.addProductUseCase,
   }) : super(InitialState()){
     on<GetAllProductEvent>((event, emit) async {
-      emit(LoadingState());
+      emit( LoadingState());
       try {
+        print("event is GetAllProductEvent");
         // print('Getting all products');
         final products = await getAllProductUseCase.execute();
-        // print(products);
-        products.fold((failure) => emit(ErrorState("Failed")), (products) => emit(LoadedState(products)));
+        print("$products is the products");
+        products.fold((l) => emit(ErrorState(l.message)), (r) => emit(LoadedState(r)));
       } catch (e) {
-        
         emit(ErrorState('Failed to get all products'));
       }
     });

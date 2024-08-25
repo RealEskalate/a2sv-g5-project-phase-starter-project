@@ -134,7 +134,7 @@ class _AddProductState extends State<AddProduct> {
                                 id: '',
                                 name: name.text,
                                 category: category.text,
-                                price: int.parse(price.text),
+                                price: double.parse(price.text),
                                 description: description.text,
                                 image: _image?.path ?? "",
                                 seller: widget.user,

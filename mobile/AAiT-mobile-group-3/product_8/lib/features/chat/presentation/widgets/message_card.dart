@@ -2,15 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'text_message.dart';
 
-class MessageCard extends StatefulWidget {
+class MessageCard extends StatelessWidget {
   final bool isLeft;
-  const MessageCard({super.key, required this.isLeft});
+  MessageCard({super.key, required this.isLeft});
 
-  @override
-  State<MessageCard> createState() => _MessageCardState();
-}
-
-class _MessageCardState extends State<MessageCard> {
   Widget avator = Card(
     elevation: 10,
     color: const Color(0xFFF2F7FB).withOpacity(0),
@@ -25,6 +20,8 @@ class _MessageCardState extends State<MessageCard> {
   Widget message(bool isLeft) {
     return Expanded(
       child: Column(
+        // fit the container size
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment:
             isLeft ? CrossAxisAlignment.start : CrossAxisAlignment.end,
         children: [
@@ -49,12 +46,11 @@ class _MessageCardState extends State<MessageCard> {
   late Widget left;
 
   void intiate() {
-    super.initState();
-    if (widget.isLeft == true) {
+    if (isLeft == true) {
       left = avator;
-      right = message(widget.isLeft);
+      right = message(isLeft);
     } else {
-      left = message(widget.isLeft);
+      left = message(isLeft);
       right = avator;
     }
   }
@@ -62,30 +58,26 @@ class _MessageCardState extends State<MessageCard> {
   @override
   Widget build(BuildContext context) {
     intiate();
-    return Scaffold(
-      appBar: AppBar(),
-      body: Row(
-        mainAxisAlignment:
-            widget.isLeft ? MainAxisAlignment.start : MainAxisAlignment.end,
-        children: [
-          SizedBox(
-            width: 285,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: widget.isLeft
-                  ? MainAxisAlignment.start
-                  : MainAxisAlignment.end,
-              children: [
-                left,
-                const SizedBox(
-                  width: 9,
-                ),
-                right,
-              ],
-            ),
+    return Row(
+      mainAxisAlignment:
+          isLeft ? MainAxisAlignment.start : MainAxisAlignment.end,
+      children: [
+        SizedBox(
+          width: 285,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment:
+                isLeft ? MainAxisAlignment.start : MainAxisAlignment.end,
+            children: [
+              left,
+              const SizedBox(
+                width: 9,
+              ),
+              right,
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

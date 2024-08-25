@@ -10,6 +10,7 @@ class TextMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      // 
       margin:
           EdgeInsets.only(top: 18, left: isLeft ? 9 : 0, right: isLeft ? 0 : 9),
       shadowColor: const Color(0xFFF2F7FB).withOpacity(0.5),
@@ -32,7 +33,9 @@ class TextMessage extends StatelessWidget {
         child: Text(
           'Have a great working week!!padding: const EdgeInsets.only(top: 18, left: 9)',
           softWrap: true,
-          overflow: TextOverflow.ellipsis,
+          // go down to the next line if the text is too long
+          overflow: TextOverflow.clip,
+
           maxLines: 10,
           style: TextStyle(
             color: isLeft ? Colors.black : Colors.white,

@@ -88,8 +88,8 @@ func (uc *BlogUsecase) ViewBlogs(blogId, userId string) (string, error) {
 	return message, err
 }
 
-func (uc *BlogUsecase) AddComment(comment domain.Comment) error {
-	err := uc.blogRepository.AddComment(comment)
+func (uc *BlogUsecase) AddComment(blogid string,comment domain.Comment) error {
+	err := uc.blogRepository.AddComment(blogid,comment)
 	if err != nil {
 		return err
 	}
@@ -134,8 +134,8 @@ func (uc *BlogUsecase) ViewComment(commentId, userId string) error {
 	return nil
 }
 
-func (uc *BlogUsecase) ReplyToComment(reply domain.Reply) error {
-	err := uc.blogRepository.AddReply(reply)
+func (uc *BlogUsecase) ReplyToComment(blogid,commentid string,reply domain.Reply) error {
+	err := uc.blogRepository.AddReply(blogid,commentid,reply)
 	if err != nil {
 		return err
 	}

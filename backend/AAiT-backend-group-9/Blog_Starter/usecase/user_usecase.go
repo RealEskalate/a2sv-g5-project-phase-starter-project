@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"time"
-
 	"golang.org/x/crypto/bcrypt"
 )
 

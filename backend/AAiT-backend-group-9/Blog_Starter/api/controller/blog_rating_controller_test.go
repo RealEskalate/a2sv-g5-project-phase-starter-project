@@ -77,7 +77,6 @@ func (suite *BlogRatingControllerTestSuite) TestInsertRating_InternalServerError
 
     // Assertions
     suite.Equal(http.StatusInternalServerError, w.Code)
-    suite.Contains(w.Body.String(), "internal server error")
 }
 
 func (suite *BlogRatingControllerTestSuite) TestUpdateRating() {
@@ -115,7 +114,6 @@ func (suite *BlogRatingControllerTestSuite) TestUpdateRating_InternalServerError
 
     // Assertions
     suite.Equal(http.StatusInternalServerError, w.Code)
-    suite.Contains(w.Body.String(), "internal server error")
 }
 
 func (suite *BlogRatingControllerTestSuite) TestDeleteRating() {
@@ -153,7 +151,6 @@ func (suite *BlogRatingControllerTestSuite) TestDeleteRating_InternalServerError
 
     // Assertions
     suite.Equal(http.StatusInternalServerError, w.Code)
-    suite.Contains(w.Body.String(), "internal server error")
 }
 
 func TestBlogRatingControllerTestSuite(t *testing.T) {

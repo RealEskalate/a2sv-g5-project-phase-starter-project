@@ -1,7 +1,8 @@
 import '../../domain/entity/chat_entity.dart';
+import '../../domain/entity/message_entity.dart';
 
 class ChatModel extends ChatEntity {
-  const ChatModel({
+  ChatModel({
     required super.senderId,
     required super.senderName,
     required super.recieverId,
@@ -12,13 +13,16 @@ class ChatModel extends ChatEntity {
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> json) => ChatModel(
-        senderId: json['_id'],
-        senderName: json['name'],
-        recieverId: json['email'],
-        recieverName: json['email'],
-        chatId: json['email'],
+        senderId: json['senderId'],
+        senderName: json['senderName'],
+        recieverId: json['recieverId'],
+        recieverName: json['recieverName'],
+        chatId: json['chatId'],
         messages: json['messages']
       );
+    
+
+  
 
   Map<String, dynamic> toJson() => {};
 
@@ -31,4 +35,17 @@ class ChatModel extends ChatEntity {
         messages:messages
 
       );
+}
+
+
+class MessageModel extends MessageEntity {
+  MessageModel({required super.messageId, required super.messages});
+
+  factory MessageModel.fromJson(Map<String, dynamic> json) => MessageModel(
+        messageId: json['messageId'],
+        messages : json['messages']
+      );
+  MessageEntity toEntity() => MessageEntity(
+    messageId: messageId,
+    messages: messages,);
 }

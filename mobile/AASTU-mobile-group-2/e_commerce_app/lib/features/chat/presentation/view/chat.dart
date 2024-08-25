@@ -1,6 +1,7 @@
 import 'package:e_commerce_app/features/auth/presentation/view/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -23,7 +24,7 @@ class _ChatState extends State<Chat> {
       content: 'Hello!',
       isUser: true,
       name: 'User',
-      date: '8/23/2024',
+      time: '9:25 am',
       profileImage: File('assets/smile.pngg'),
     ),
     Message(
@@ -31,7 +32,7 @@ class _ChatState extends State<Chat> {
       content: 'assets/smile.png',
       isUser: false,
       name: 'Bot',
-      date: '8/23/2024',
+      time: '9:25 am',
       profileImage: File('assets/smile.png'),
     ),
     // Message(
@@ -39,7 +40,7 @@ class _ChatState extends State<Chat> {
     //   content: 'voice.mp3',
     //   isUser: true,
     //   name: 'User',
-    //   date: '8/23/2024',
+    //   time: '8/23/2024',
     //   profileImage: File('images/image.png'),
     // ),
   ];
@@ -73,7 +74,7 @@ class _ChatState extends State<Chat> {
           content: pickedImage.path,
           isUser: true,
           name: "name",
-          date: "date"));
+          time: "time"));
       selectedImage = pickedImage.path;
     });
   }
@@ -128,7 +129,7 @@ class _ChatState extends State<Chat> {
         content: _filePath!,
         isUser: true,
         name: "trial voice",
-        date: "date"));
+        time: "time"));
 
     // print(getFileDuration(_filePath!));
     setState(() {
@@ -175,9 +176,9 @@ class _ChatState extends State<Chat> {
         messages.add(Message(
             type: "type",
             content: "content",
-            isUser: true,
+            isUser: false,
             name: "name",
-            date: "date"));
+            time: "time"));
         _controller.clear();
       });
     }
@@ -198,42 +199,48 @@ class _ChatState extends State<Chat> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: screenHeight * 0.09,
+
         title: Row(
           children: [
             IconButton(
               onPressed: () {},
               icon: const Icon(Icons.arrow_back),
             ),
-            const SizedBox(width: 8),
-            Container(
-              width: screenWidth * 0.15,
-              height: screenWidth * 0.15,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Icon(
-                    Icons.circle,
-                    color: Color(0xFFFEC7D3),
-                    size: screenWidth * 0.15,
-                  ),
-                  Image(
-                    image: AssetImage('assets/smile.png'),
-                    width: screenWidth * 0.12,
-                    height: screenWidth * 0.12,
-                  ),
-                  Positioned(
-                    bottom: 5,
-                    right: 5,
-                    child: Icon(
-                      Icons.circle,
-                      color: Colors.green,
-                      size: screenWidth * 0.03,
-                    ),
-                  ),
-                ],
-              ),
+            SizedBox(width: screenWidth * 0.03),
+            // Container(
+            //   width: screenWidth * 0.15,
+            //   height: screenWidth * 0.15,
+            //   child: Stack(
+            //     alignment: Alignment.center,
+            //     children: [
+            //       Icon(
+            //         Icons.circle,
+            //         color: Color(0xFFFEC7D3),
+            //         size: screenWidth * 0.15,
+            //       ),
+            //       Image(
+            //         image: AssetImage('assets/smile.png'),
+            //         width: screenWidth * 0.12,
+            //         height: screenWidth * 0.12,
+            //       ),
+            //       Positioned(
+            //         bottom: 5,
+            //         right: 5,
+            //         child: Icon(
+            //           Icons.circle,
+            //           color: Colors.green,
+            //           size: screenWidth * 0.03,
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            CircleAvatar(
+              radius: screenHeight * 0.038,
+              backgroundImage: AssetImage('assets/smile.png'),
             ),
-            SizedBox(width: 8),
+            SizedBox(width: screenWidth * 0.015),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,10 +261,10 @@ class _ChatState extends State<Chat> {
                 ],
               ),
             ),
-            SizedBox(width: 16),
+            SizedBox(width: screenWidth * 0.03),
             Icon(Icons.call, size: screenWidth * 0.07),
-            SizedBox(width: 16),
-            Icon(Icons.video_call, size: screenWidth * 0.07),
+            SizedBox(width: screenWidth * 0.03),
+            Icon(Icons.video_call_outlined, size: screenWidth * 0.07),
           ],
         ),
       ),
@@ -265,7 +272,7 @@ class _ChatState extends State<Chat> {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // mebebt
+          // merbebt
           // Expanded(
           //   child: ListView.builder(
           //     itemCount: _messages.length,
@@ -284,7 +291,7 @@ class _ChatState extends State<Chat> {
                 final message = messages[index];
                 return Padding(
                   padding:
-                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      EdgeInsets.symmetric(vertical: screenHeight * 0.01, horizontal: screenWidth * 0.05),
                   child: Row(
                     mainAxisAlignment: message.isUser
                         ? MainAxisAlignment.start
@@ -292,8 +299,9 @@ class _ChatState extends State<Chat> {
                     children: [
                       if (message.isUser)
                         _buildProfileAvatar(message.profileImage),
-                      SizedBox(width: 10),
-                      Expanded(child: _buildMessageContent(message)),
+                      SizedBox(width: screenWidth * 0.03),
+                      Expanded(
+                        child: _buildMessageContent(message)),
                       if (!message.isUser)
                         _buildProfileAvatar(message.profileImage),
                     ],
@@ -361,31 +369,41 @@ class _ChatState extends State<Chat> {
   ///mer
 
   Widget _buildProfileAvatar(File? profileImage) {
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return CircleAvatar(
+      radius: screenHeight * 0.03,
       backgroundImage: profileImage != null ? FileImage(profileImage) : null,
       child: profileImage == null ? Icon(Icons.person) : null,
     );
   }
 
   Widget _buildMessageContent(Message message) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
     
     // duration = await FlutterSoundHelper().duration(File(message.content));
-    return Column(
-      crossAxisAlignment:
-          message.isUser ? CrossAxisAlignment.start : CrossAxisAlignment.end,
-      children: [
-        Text(
-          message.name,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-        SizedBox(height: 5),
-        _buildMessageBubble(message),
-        SizedBox(height: 5),
-        Text(
-          message.date,
-          style: TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-      ],
+    return Padding(
+      padding: EdgeInsets.only(top: screenHeight * 0.01),
+      child: Column(
+        crossAxisAlignment:
+            message.isUser ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+        children: [
+          Text(
+            message.name,
+            style:  GoogleFonts.lexend(
+        textStyle:TextStyle(fontWeight: FontWeight.w500, fontSize: 15),),
+          ),
+          SizedBox(width: screenHeight * 0.1),
+          _buildMessageBubble(message),
+          SizedBox(width: screenHeight * 0.1),
+          Text(
+            message.time,
+            style:  GoogleFonts.lexend(
+        textStyle:TextStyle(fontSize: 12, color: Color.fromARGB(255,121, 124, 123)),),
+          ),
+        ],
+      ),
     );
   }
 
@@ -395,7 +413,7 @@ class _ChatState extends State<Chat> {
       case 'text':
         return Bubble(
           child: Text(message.content),
-          color: message.isUser ? Colors.blue : Colors.grey[300],
+          color: message.isUser ? Color.fromARGB(255, 242, 247, 251) : Color.fromARGB(255, 63, 81, 243),
           nip: message.isUser ? BubbleNip.leftTop : BubbleNip.rightTop,
         );
       case 'image':
@@ -439,7 +457,7 @@ class Message {
   final String content; // message text or image/voice file path
   final bool isUser;
   final String name;
-  final String date;
+  final String time;
   final File? profileImage;
 
   Message({
@@ -447,7 +465,7 @@ class Message {
     required this.content,
     required this.isUser,
     required this.name,
-    required this.date,
+    required this.time,
     this.profileImage,
   });
 }

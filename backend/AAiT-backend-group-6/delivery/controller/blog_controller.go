@@ -100,17 +100,25 @@ func (bc *BlogController) GetBlogs(c *gin.Context) {
 	if err == rd.Nil{
 		blogs, err := bc.BlogUsecase.GetBlogs(c,&pagination)
 		if err != nil {
+			println("dfdkjjfakl",err.Error())
 			c.JSON(http.StatusInternalServerError,gin.H{"message":"Internal Server Error"})
+			return
 		}
+		blogM,err := json.Marshal(blogs)
 		// cache the blog for 5 minutes
-		err = bc.RedisClient.Set(c,cacheKey,blogs,300)
+		err = bc.RedisClient.Set(c,cacheKey,blogM,300)
 		if err != nil {
+			println(err.Error())
 			c.JSON(http.StatusInternalServerError,gin.H{"message":"Internal Server Error"})
+			return
 		}
 		c.JSON(http.StatusOK,blogs)
 
 	}else if err != nil {
+		println("dddd",err.Error())
+
 		c.JSON(http.StatusInternalServerError,gin.H{"message":"Internal Server Error"})
+		return
 	}else{
 		c.JSON(http.StatusOK,cachedBlogs)
 	}
@@ -127,6 +135,7 @@ func (bc *BlogController) UpdateBlog(cxt *gin.Context) {
 		cxt.JSON(http.StatusBadRequest, gin.H{"message": "Invalid Request"})
 	}
 	err = bc.BlogUsecase.UpdateBlog(cxt, &blog, id)
+	bc.RedisClient.Del(cxt,id)
 	if err != nil {
 		cxt.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
 	}
@@ -139,47 +148,7 @@ func (bc *BlogController) DeleteBlog(cxt *gin.Context) {
 	if err != nil {
 		cxt.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
 	}
+	bc.RedisClient.Del(cxt,id)
 	cxt.JSON(http.StatusOK, gin.H{"message": "Blog Deleted Successfully"})
 }
 
-func (bc *BlogController) LikeBlog(cxt *gin.Context) {
-	blogID := cxt.Param("blog_id")
-	userID := cxt.Param("user_id")
-	err := bc.BlogUsecase.LikeBlog(cxt, blogID, userID)
-	if err != nil {
-		cxt.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
-	}
-	cxt.JSON(http.StatusOK, gin.H{"message": "Blog Liked Successfully"})
-}
-
-func (ctrl *BlogController) UnlikeBlog(cxt *gin.Context) {
-	blogID := cxt.Param("blogID")
-	userID := cxt.Param("userID")
-
-	err := ctrl.BlogUsecase.UnlikeBlog(cxt, blogID, userID)
-	if err != nil {
-		cxt.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	cxt.JSON(http.StatusOK, gin.H{"message": "Blog unliked successfully"})
-}
-
-// CommentBlog handles HTTP requests to add a comment to a blog post
-func (ctrl *BlogController) CommentBlog(cxt *gin.Context) {
-	blogID := cxt.Param("blogID")
-
-	var comment domain.Comment
-	if err := cxt.BindJSON(&comment); err != nil {
-		cxt.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-		return
-	}
-
-	err := ctrl.BlogUsecase.CommentBlog(cxt, blogID, &comment)
-	if err != nil {
-		cxt.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	cxt.JSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
-}

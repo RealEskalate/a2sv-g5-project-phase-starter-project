@@ -24,8 +24,4 @@ func NewBlogRouter(db mongo.Database, gin *gin.Engine, redisClient redis.Client)
 	publicRoute.POST("/blogs", tc.CreateBlog)
 	publicRoute.PUT("/blogs/:id", tc.UpdateBlog)
 	publicRoute.DELETE("/blogs/:id", tc.DeleteBlog)
-	publicRoute.POST("/blogs/:id/like", tc.LikeBlog)
-	publicRoute.POST("/blogs/:id/unlike", tc.UnlikeBlog)
-	publicRoute.POST("/blogs/:id/comment", tc.CommentBlog)
-
 }

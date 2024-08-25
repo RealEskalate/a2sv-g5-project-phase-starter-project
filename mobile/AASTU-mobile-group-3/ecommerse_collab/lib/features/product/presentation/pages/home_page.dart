@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:http/http.dart' as http;
 
 import '../../../authentication/domain/entity/user.dart';
 import '../../../authentication/presentation/bloc/blocs.dart';
@@ -7,6 +8,7 @@ import '../../../authentication/presentation/bloc/events.dart';
 import '../../../authentication/presentation/bloc/states.dart';
 import '../../../authentication/presentation/pages/sign_in.dart';
 
+// import '../../../chat/data/data_source/remote_data_source.dart';
 import '../bloc/blocs.dart';
 import '../bloc/events.dart';
 import '../bloc/states.dart';
@@ -135,9 +137,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // void chats() async {
+  //   var chats = await ChatRemoteDataSourceImpl(client: http.Client()).getMyChats();
+  //   print(chats[0]);
+  // }
+
   @override
   Widget build(BuildContext context) {
     print(widget.user.username);
+    // chats();
     return BlocConsumer<UserBloc, UserState>(
       listener: (context, state) {
         if (state is LogOutLoadingState){

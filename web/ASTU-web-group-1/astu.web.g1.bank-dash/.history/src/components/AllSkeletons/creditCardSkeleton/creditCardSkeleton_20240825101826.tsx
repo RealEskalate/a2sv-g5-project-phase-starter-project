@@ -1,8 +1,9 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
 import CardSkeleton from "./CardSkeleton";
 
 const CardListCardSkeleton = () => {
-  const data = [1, 2, 3];
+  const data = [1, 2];
   return (
     <div className="flex space-x-2">
       {data?.map((index: number) => (

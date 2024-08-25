@@ -1,13 +1,12 @@
 'use client';
 import React from "react";
-import logo from "../../../public/images/Logo.svg";
-import bell from "../../../public/images/bell.svg";
-import settings from "../../../public/images/settings.svg";
-import hamburger from "../../../public/images/ham.jpg";
+const logo = require("../../../public/images/Logo.svg");
+const bell = require("../../../public/images/bell.svg");
+const settings = require("../../../public/images/settings.svg");
+const hamburger = require("../../../public/images/ham.jpg");
+const search = require("../../../public/images/search.svg");
+const profile = require("../../../public/images/Mask Group.svg");
 import Image from "next/image";
-import search from "../../../public/images/search.svg";
-import profile from "../../../public/images/Mask Group.svg";
-
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../lib/redux/store';
 import { toggleSidebar } from '../../../lib/redux/slices/menuSlice';
@@ -29,13 +28,13 @@ const Header = () => {
 
 
   return (
-    <div className="flex bg-white md:pr-10 pb-1 md:px-0 items-center justify-between w-full top-0 fixed md:block z-10">
+    <div className="flex bg-white md:pr-10 pb-1 md:px-0 items-center lg:justify-between w-full top-0 fixed md:block z-10">
       {/* <div className="w-1/6 md:block hidden">
         <Image src={logo} className="ml-1" alt="LOGO" />
       </div> */}
 
       <div className=" w-full md:pl-4 flex">
-        <div className="flex flex-row flex-wrap justify-center md:items-center align-middle w-full space-y-4 md:space-y-0 ml-60">
+        <div className="flex flex-row flex-wrap justify-center md:items-center align-middle w-full space-y-4 md:space-y-0 md:ml-60 ">
           <div className="md:hidden  flex justify-start align-middle pt-3 w-1/3 z-40" onClick={handleBurgerClick} >
             <Image
               className="w-8 h-8 order-1 bg-white"
@@ -44,11 +43,11 @@ const Header = () => {
             />
           </div>
 
-          <div className="md:text-2xl md:order-none text-xl order-2 md:mr-96 md:w-fit w-1/3 md:mb-0 text-[#343C6A] font-bold">
+          <div className="md:text-2xl md:order-none text-xl order-2 md:mr-10 lg:mr-24 xl:mr-72 w-fit  md:mb-0 text-[#343C6A] font-bold ">
             <h1 className="ml-2 font-bold">{title}</h1>
           </div>
 
-          <div className="flex md:ml-32 order-4 md:order-none bg-[#F5F7FA] h-10 md:w-48 w-3/4 items-center rounded-full  ">
+          <div className="flex lg:ml-32 order-4 md:order-none bg-[#F5F7FA] h-10 md:w-60 w-3/4 items-center rounded-full  ">
             <Image src={search} className="w-3 h-3 ml-2" alt="search" />
             <input
               className="bg-[#F5F7FA] md:w-38 w-10/12 px-4 outline-none placeholder:bg-[#F5F7FA] placeholder:text-xs md:placeholder:text-base"

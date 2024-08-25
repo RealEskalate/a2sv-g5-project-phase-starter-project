@@ -10,7 +10,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 import ComponentSkeleton from "../card/ComponentSkeleton";
-
+import EmptyShow from "../emptyShowingImage/EmptyShow";
 export interface card {
   card: string;
   id: string;
@@ -77,17 +77,11 @@ const CardDisplay = ({ numofcard }: { numofcard: number }) => {
   );
 
   if (isLoadingAllCards || isLoadingCardInfo) {
-
-    return (
-      <ComponentSkeleton />
-
-    );
+    return <ComponentSkeleton />;
   }
 
   if (isErrorAllCards || isErrorCardInfo) {
-    return (
-      <ComponentSkeleton />
-    );
+    return <ComponentSkeleton />;
   }
 
   const allCardsData = allCardsDataWithContent.content!;
@@ -98,8 +92,8 @@ const CardDisplay = ({ numofcard }: { numofcard: number }) => {
   ];
 
   return (
-    <div className="flex flex-col gap-2 pb-5">
-      <div className="flex max-sm:flex-col justify-between">
+    <div className="flex flex-col gap-2 pb-5 w-[100%]">
+      <div className="flex max-sm:flex-col justify-between w-[100%]">
         {allCardsData.length > 0 ? (
           <div className="flex gap-[30px]">
             {allCardsData
@@ -119,13 +113,8 @@ const CardDisplay = ({ numofcard }: { numofcard: number }) => {
               ))}
           </div>
         ) : (
-          <div className="flex max-sm:flex-col justify-center w-[500px]">
-            {/* Placeholder image or message when no cards are available */}
-            <img
-              src="/assets/bankService/empty-image.png"
-              alt="No cards available"
-              className="w-[300px] h-fit "
-            />
+          <div className="flex max-sm:flex-col justify-center w-[100%]">
+            <EmptyShow text="No Card To Display" />
           </div>
         )}
       </div>

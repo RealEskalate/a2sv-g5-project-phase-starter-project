@@ -39,17 +39,16 @@ func SetRouter(router *gin.Engine, com *controllers.CommentController, c *contro
 
 		r.POST("/comment/:blog_id", com.CreateComment)
 		r.GET("/comment/:blog_id", com.GetComment)
-		r.PUT("/comment/:blog_id/:id", com.UpdateComment)
-		r.DELETE("/comment/:blog_id/:id", com.DeleteComment)
+		r.PUT("/comment/:comm_id", com.UpdateComment)
+		r.DELETE("/comment/:comm_id", com.DeleteComment)
 
 		r.POST("/like/:postID", lc.CreateLike)
-		r.DELETE("/like/:postID", lc.DeleteLike)
 		r.GET("/like/:postID", lc.GetLikes)
+		r.DELETE("/like/:likeid", lc.DeleteLike)
 
 		r.POST("/dislike/:postID", dsl.CreateDisLike)
-		r.DELETE("/dislike/:postID", dsl.DeleteDisLike)
 		r.GET("/dislike/:postID", dsl.GetDisLikes)
-
+		r.DELETE("/dislike/:dislikeid", dsl.DeleteDisLike)
 	}
 
 }

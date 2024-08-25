@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"sync"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -64,17 +65,45 @@ func (lrep *LikeRepository) CreateLike(user_id string, post_id string) error {
 		return errors.New("User has already liked this post")
 	}
 
-	lrep.deleteDisLike(user_id)
+	var wg sync.WaitGroup
+	errChan := make(chan error, 3)
 
-	_, err := lrep.likecollection.InsertOne(context.TODO(), like)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		lrep.deleteDisLike(user_id, post_id)
+	}()
 
-	if err != nil {
-		return err
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		_, err := lrep.likecollection.InsertOne(context.TODO(), like)
+
+		if err != nil {
+			errChan <- err
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		_, err := lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": like.BlogID}, bson.M{"$inc": bson.M{"likes": 1}})
+
+		if err != nil {
+			errChan <- err
+		}
+	}()
+
+	// Wait for all goroutines to finish
+	wg.Wait()
+	close(errChan)
+
+	for err := range errChan {
+		if err != nil {
+			return err
+		}
 	}
-	_, err = lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": like.BlogID}, bson.M{"$inc": bson.M{"likes": 1}})
-	if err != nil {
-		return err
-	}
+
 	return nil
 }
 
@@ -86,34 +115,82 @@ func (lrep *LikeRepository) DeleteLike(like_id string) error {
 	if err != nil {
 		return err
 	}
-	_, err = lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": like.BlogID}, bson.M{"$inc": bson.M{"likes": -1}})
 
-	if err != nil {
-		return err
-	}
-	_, err = lrep.likecollection.DeleteOne(context.TODO(), bson.M{"user_id": likeID})
-	if err != nil {
-		return err
+	var wg sync.WaitGroup
+	errChan := make(chan error, 2)
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		_, err := lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": like.BlogID}, bson.M{"$inc": bson.M{"likes": -1}})
+
+		if err != nil {
+			errChan <- err
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		_, err := lrep.likecollection.DeleteOne(context.TODO(), bson.M{"user_id": likeID})
+		if err != nil {
+			errChan <- err
+		}
+	}()
+
+	// Wait for all goroutines to finish
+	wg.Wait()
+	close(errChan)
+
+	for err := range errChan {
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func (lrep *LikeRepository) deleteDisLike(dislike_id string) error {
-	dislikeID, _ := primitive.ObjectIDFromHex(dislike_id)
-	var dislike domain.DisLike
+func (lrep *LikeRepository) deleteDisLike(user_id string, post_id string) error {
+	userID, _ := primitive.ObjectIDFromHex(user_id)
+	postID, _ := primitive.ObjectIDFromHex(post_id)
 
-	err := lrep.dislikecollection.FindOne(context.TODO(), bson.M{"user_id": dislikeID}).Decode(&dislike)
+	var dislike domain.DisLike
+	err := lrep.dislikecollection.FindOne(context.TODO(), bson.M{"user_id": userID, "post_id": postID}).Decode(&dislike)
 	if err != nil {
 		return err
 	}
-	_, err = lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": dislike.BlogID}, bson.M{"$inc": bson.M{"dislikes": -1}})
-	if err != nil {
-		return err
-	}
-	_, err = lrep.dislikecollection.DeleteOne(context.TODO(), bson.M{"user_id": dislikeID})
-	if err != nil {
-		return err
+
+	var wg sync.WaitGroup
+	errChan := make(chan error, 2)
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		_, err := lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": dislike.BlogID}, bson.M{"$inc": bson.M{"likes": -1}})
+
+		if err != nil {
+			errChan <- err
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		_, err = lrep.dislikecollection.DeleteOne(context.TODO(), bson.M{"user_id": userID, "post_id": postID})
+		if err != nil {
+			errChan <- err
+		}
+	}()
+
+	// Wait for all goroutines to finish
+	wg.Wait()
+	close(errChan)
+
+	for err := range errChan {
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

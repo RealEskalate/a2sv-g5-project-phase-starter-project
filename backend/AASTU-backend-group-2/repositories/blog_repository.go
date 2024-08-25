@@ -15,16 +15,22 @@ import (
 )
 
 type BlogRepository struct {
-	client     *mongo.Client
-	database   *mongo.Database
-	collection *mongo.Collection
+	client            *mongo.Client
+	database          *mongo.Database
+	collection        *mongo.Collection
+	likeCollection    *mongo.Collection
+	dislikeCollection *mongo.Collection
+	commentCollection *mongo.Collection
 }
 
 func NewBlogRepository(mongoClient *mongo.Client) domain.BlogRepository {
 	return &BlogRepository{
-		client:     mongoClient,
-		database:   mongoClient.Database("Blog-manager"),
-		collection: mongoClient.Database("Blog-manager").Collection("Blogs"),
+		client:            mongoClient,
+		database:          mongoClient.Database("Blog-manager"),
+		collection:        mongoClient.Database("Blog-manager").Collection("Blogs"),
+		likeCollection:    mongoClient.Database("Blog-manager").Collection("Likes"),
+		dislikeCollection: mongoClient.Database("Blog-manager").Collection("Dislikes"),
+		commentCollection: mongoClient.Database("Blog-manager").Collection("Comments"),
 	}
 
 }
@@ -196,7 +202,7 @@ func (br *BlogRepository) DeleteBlog(blogID string, isAdmin bool, userid string)
 	if err != nil {
 		return err
 	}
-	// Convert the blogID to a MongoDB ObjectID
+	// Convert the userID to a MongoDB ObjectID
 	userID, err := primitive.ObjectIDFromHex(userid)
 	if err != nil {
 		return err
@@ -216,17 +222,64 @@ func (br *BlogRepository) DeleteBlog(blogID string, isAdmin bool, userid string)
 
 	// Check if the user is an admin or the owner of the blog
 	if !isAdmin && existingBlog.UserID != userID {
-		return errors.New("permission denied: you do not have the right to update this blog")
+		return errors.New("permission denied: you do not have the right to delete this blog")
 	}
 
-	query := bson.M{"_id": ID}
-	result, err := br.collection.DeleteOne(context.TODO(), query)
+	// Start a session for transaction
+	session, err := br.collection.Database().Client().StartSession()
 	if err != nil {
 		return err
 	}
+	defer session.EndSession(context.TODO())
 
-	if result.DeletedCount == 0 {
-		return errors.New("no blog with this id exists")
+	err = mongo.WithSession(context.TODO(), session, func(sc mongo.SessionContext) error {
+		// Start the transaction
+		if err := session.StartTransaction(); err != nil {
+			return err
+		}
+
+		// Delete the blog post
+		blogQuery := bson.M{"_id": ID}
+		_, err := br.collection.DeleteOne(sc, blogQuery)
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		// Delete associated comments
+		commentQuery := bson.M{"post_id": ID}
+		_, err = br.commentCollection.DeleteMany(sc, commentQuery)
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		// Delete associated likes
+		likeQuery := bson.M{"post_id": ID}
+		_, err = br.likeCollection.DeleteMany(sc, likeQuery)
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		// Delete associated dislikes
+		dislikeQuery := bson.M{"post_id": ID}
+		_, err = br.dislikeCollection.DeleteMany(sc, dislikeQuery)
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		// Commit the transaction
+		if err := session.CommitTransaction(sc); err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return err
 	}
 
 	return nil

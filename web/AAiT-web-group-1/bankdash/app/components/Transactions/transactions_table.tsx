@@ -38,7 +38,7 @@ const TransactionsTable:React.FC<TransactionsTableProps>= ({transactions}) => {
   };
 
   return (
-    <div className="p-5 bg-[#F5F7FA] relative min-h-screen">
+    <div className="p-4 bg-[#F5F7FA] relative min-h-screen">
       {/* Header */}
       <div>
         <p className="font-inter text-[18px] font-semibold leading-[21.78px] text-left text-[#343C6A] mb-5">

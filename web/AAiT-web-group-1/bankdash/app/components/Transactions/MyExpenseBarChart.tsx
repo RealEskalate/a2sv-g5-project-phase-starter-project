@@ -136,9 +136,8 @@ const MyExpenseBarChart = ({Expenses, months} : MyExpenseBarChartProps) => {
 
     return (
             <div className=''>
-                <h3 className=" text-lg">My Expense</h3>
-                <div className="bg-white rounded-3xl w-96 ">
-                    <div className='relative ml-4  h-60 text-sm text-barTextGray' >
+                <div className="bg-white rounded-3xl">
+                    <div className='relative h-[200px] text-sm text-barTextGray' >
                         <canvas ref={chartRef} />
                     </div>
                 </div>

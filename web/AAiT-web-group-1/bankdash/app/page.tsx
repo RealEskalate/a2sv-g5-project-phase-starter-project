@@ -14,7 +14,7 @@ export default function Home() {
   };
   return (
     <div className="w-full" onClick={handleBurgerClick}>
-        <TransactionPage />
+        <DashboardPage/>
     </div>
   );
 }

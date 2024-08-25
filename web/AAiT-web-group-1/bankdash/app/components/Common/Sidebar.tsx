@@ -51,7 +51,7 @@ const Sidebar = () => {
     }
   }, [pathname]);
 
-  const sidebarStyle = `w-1/6 bg-white left-0 top-0 w-fit h-full fixed pt-1 ${isSidebarVisible ? '': 'hidden'} md:block z-20 ` 
+  const sidebarStyle = `w-[220px] bg-white left-0 top-0 w-fit h-full fixed pt-1 ${isSidebarVisible ? '': 'hidden'} md:block z-20 `
 
   
   const handleRoute = (route: string) => {

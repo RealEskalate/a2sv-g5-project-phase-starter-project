@@ -52,6 +52,7 @@ func SetupRouter(userController *controller.UserController, blogController *cont
 	adminRoute := usersRoute.Group("/")
 	adminRoute.Use(infrastructure.RoleMiddleware("admin")) // Apply admin role middleware
 
+	adminRoute.GET("/users", userController.FindUsers)
 	adminRoute.DELETE("/delete/:username", userController.DeleteUser)
 	adminRoute.PUT("/promote/:username", userController.PromoteToAdmin)
 

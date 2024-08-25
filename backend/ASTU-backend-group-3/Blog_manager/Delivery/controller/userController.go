@@ -237,3 +237,15 @@ func (uc *UserController) Verify(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Email verified successfully"})
 }
+
+func (uc *UserController) FindUsers(c *gin.Context) {
+
+	users, err := uc.UserUsecase.FindUser()
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"users": users})
+
+}

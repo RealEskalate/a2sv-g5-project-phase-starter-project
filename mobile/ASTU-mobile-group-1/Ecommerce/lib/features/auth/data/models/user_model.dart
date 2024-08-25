@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import '../../domain/entities/user_entity.dart';
 

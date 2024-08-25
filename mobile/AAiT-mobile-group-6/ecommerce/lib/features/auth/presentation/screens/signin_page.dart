@@ -1,14 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path/path.dart';
 
+import '../../../../core/common_widget/circular_indicator.dart';
+import '../../../../core/common_widget/snack_bar.dart';
+import '../../../product/domain/entitity/user.dart';
 import '../../../product/presentation/widgets/text_field.dart';
+import '../../data/models/auth_model.dart';
+import '../bloc/auth_bloc.dart';
+
 
 class SigninPage extends StatelessWidget {
   SigninPage({super.key});
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+
+  void _logIn(BuildContext context) async {
+    final newUser = LogInModel(
+        id: '', email: emailController.text, password: passwordController.text);
+
+    context.read<AuthBloc>().add(LogInEvent(logInEntity: newUser));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthSuccessState) {
+            final snac = snackBar('User logged in successfully');
+            ScaffoldMessenger.of(context).showSnackBar(snac);
+            Future.delayed(const Duration(seconds: 2), () {
+              Navigator.pushNamed(
+                context,
+                '/homepage',
+              );
+              // arguments: {'user': User(id: state.token)});
+            });
+          } else if (state is AuthErrorState) {
+            final snac = errorsnackBar('Log in failed, try again');
+            ScaffoldMessenger.of(context).showSnackBar(snac);
+          }
+        },
+        builder: (context, state) {
+          if (state is AuthLoadingState) {
+            return const CircularIndicator();
+          } else {
+            return _build(context);
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _build(BuildContext context) {
+    return Scaffold(
+
       body: Center(
           child: Column(
         children: [
@@ -33,6 +81,8 @@ class SigninPage extends StatelessWidget {
                 fontSize: 45,
                 fontWeight: FontWeight.bold,
                 color: Color.fromARGB(255, 33, 68, 243),
+                fontFamily: 'Caveat Brush',
+
               ),
             ),
           ),
@@ -65,7 +115,10 @@ class SigninPage extends StatelessWidget {
                 ],
               )),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              _logIn(context);
+            },
+
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(
                 const Color.fromARGB(255, 38, 80, 232),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/utils/dummy_data/products_data.dart';
-import '../../../../injection_container.dart';
+
+import '../../../../core/injection/injection.dart';
+
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+
 import '../bloc/product_bloc.dart';
 import '../bloc/product_event.dart';
 import '../bloc/product_state.dart';
@@ -61,8 +64,12 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/add_product_page',
-              arguments: {'products': Products});
+
+          Navigator.pushNamed(
+            context,
+            '/add_product_page',
+          );
+
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         backgroundColor: const Color.fromARGB(255, 33, 75, 243),
@@ -119,8 +126,12 @@ Widget _buildHeader(BuildContext context) {
           border: Border.all(color: Colors.grey),
         ),
         child: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.notifications_outlined),
+
+          onPressed: () {
+            _showLogoutDialog(context);
+          },
+          icon: const Icon(Icons.logout),
+
         ),
       ),
     ],
@@ -174,4 +185,54 @@ Widget _buildProductList() {
   );
 }
 
+void _showLogoutDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is UserLogoutState) {
+            if (state.status == AuthStatus.loaded) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+              Navigator.of(context).pop(); // Close the dialog
+              Navigator.pushNamed(context, '/signin_page'); // Navigate to login
+            } else if (state.status == AuthStatus.error) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+            }
+          }
+        },
+        builder: (context, state) {
+          return AlertDialog(
+            title: const Text('Log Out'),
+            content: const Text('Are you sure you want to log out?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .pop(); // Close the dialog without logging out
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Close the dialog first, then trigger the logout event
+                  Navigator.of(context).pop();
+                  context.read<AuthBloc>().add(LogOutEvent());
+                },
+                child: const Text(
+                  'Log Out',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
 

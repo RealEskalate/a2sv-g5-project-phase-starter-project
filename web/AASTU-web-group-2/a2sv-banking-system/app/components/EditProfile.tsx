@@ -37,7 +37,6 @@ const EditProfile = () => {
   const { control, handleSubmit, setValue } = useForm<FormData>();
   const [user, setUser] = useState<UserInfo | null>(null);
   const [accessToken, setAccessToken] = useState<string>("");
-  const [imageUpload, setImageUpload] = useState();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -86,31 +85,11 @@ const EditProfile = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      if (user?.profilePicture !== "string") {
-        const previousImageRef = ref(storage, user?.profilePicture);
-        // Delete the previous image
-        await deleteObject(previousImageRef);
-        console.log("Previous profile picture deleted");
-      }
       if (data.profilePicture != null) {
-        const imageRef = ref(
-          storage,
-          `images/${typeof data.profilePicture === "string" ? data.profilePicture : data.profilePicture.name}-${v4()}`
-        );
-
-        // Upload the image
-        const profilePictureBlob = new Blob([data.profilePicture]);
-        await uploadBytes(imageRef, profilePictureBlob);
-
-        // Get the download URL after the image is uploaded
-        const downloadUrl = await getDownloadURL(imageRef);
-        alert("Image Uploaded");
-        console.log(downloadUrl);
-
         // Update the data with the download URL for profilePicture
         const updatedData = {
           ...data,
-          profilePicture: downloadUrl,
+          profilePicture: String(data.profilePicture),
           dateOfBirth: data.dateOfBirth
             ? data.dateOfBirth.toISOString().split("T")[0]
             : null,
@@ -121,6 +100,7 @@ const EditProfile = () => {
       }
 
       console.log("Profile updated successfully");
+      alert("Profile Edited Successfully")
     } catch (error) {
       console.error("Error updating profile:", error);
     }
@@ -133,7 +113,7 @@ const EditProfile = () => {
           <Image
             src={
               user?.profilePicture ||
-              "https://firebasestorage.googleapis.com/v0/b/a2sv-wallet.appspot.com/o/images%2Fminions-removebg-preview.png-65386b73-d848-4f43-bd10-983d6fe55c36?alt=media&token=ae2cc291-f8c0-4e7c-b423-bd9236397e3e" || "/ProfilePicture"
+              "https://firebasestorage.googleapis.com/v0/b/a2sv-wallet.appspot.com/o/images%2Fminions-removebg-preview.png-99cefd58-79e9-408d-b747-94bcb3bb16ab?alt=media&token=5822c470-99fb-4875-a4fc-425a64bf1473" || "/ProfilePicture"
             } // Fallback to a default image if userData.profilePicture is null or undefined
             alt="Profile Picture"
             width={170}
@@ -157,7 +137,7 @@ const EditProfile = () => {
 
                   // Get the download URL after the image is uploaded
                   const downloadUrl = await getDownloadURL(imageRef);
-                  console.log(downloadUrl);
+                  console.log("dowloaded the url ", downloadUrl);
 
                   // Update the profile picture in the form state and in the UI
                   setValue("profilePicture", downloadUrl);

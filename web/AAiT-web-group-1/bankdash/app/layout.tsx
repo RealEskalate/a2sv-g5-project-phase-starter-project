@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <SessionProvider>
-        <Provider store={store}> 
+        <Provider store={store}>
               <body className="w-full h-full flex bg-[#f5f7fa]">
                 <div className="">
                   <Sidebar />
